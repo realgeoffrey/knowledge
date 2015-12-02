@@ -23,12 +23,12 @@
 6. ie6图片无法用png-24透明图，会把透明部分显示为灰色，可以使用js插件或用gulp压缩png图片使其可以在ie6下正常显示来修复：
 	不依赖其他插件
 	``` html
-	<!—[if IE 6]>
+	<!--[if IE 6]>
 	<script src="js/pngfilter.js" ></script>
 	<script>
 		DD_belatedPNG.fix('.j-png');
 	</script>
-	<![endif]—>
+	<![endif]-->
 	```
 		
 	>插件问题：
