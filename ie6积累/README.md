@@ -33,9 +33,9 @@
 	```
 		
 	>插件问题：
-		>- 不能用a:hover之后设置透明图节点的display: none/block来消失/展现节点，要用js写`show()/hide()`等展示隐藏方法。
-		>- 对透明背景变化可以用a{} a:hover{}，但是对于absolute用的遮罩(比如头像)效果就不能用css的效果，只能用js的`show()/hide()`等展示隐藏方法。
-		>- 用div透明背景图覆盖出圆角效果会单边缩短1px，要给背景图左右多出1px背景(js的bugs)。
+	>   - 不能用a:hover之后设置透明图节点的display: none/block来消失/展现节点，要用js写`show()/hide()`等展示隐藏方法。
+	>   - 对透明背景变化可以用a{} a:hover{}，但是对于absolute用的遮罩(比如头像)效果就不能用css的效果，只能用js的`show()/hide()`等展示隐藏方法。
+	>   - 用div透明背景图覆盖出圆角效果会单边缩短1px，要给背景图左右多出1px背景(js的bugs)。
 
 7. ie6/7的底部3px间距：
 	- `vertical-align: 任意值`
@@ -150,8 +150,8 @@
 
 36. 
 	>ie6下，用js改变节点高度，有时会导致盒子无法渲染到新的位置，可以尝试
-	>- 去除不必要的position: relative
-	>- 在父级加上`zoom: 1`
+	>   - 去除不必要的position: relative
+	>   - 在父级加上`zoom: 1`
 
 37. 
 	>ie6下的absolute/float节点在页面重新渲染时，可能出现margin-left/maring-top的渲染问题，导致位置发生变化，用以下解决
