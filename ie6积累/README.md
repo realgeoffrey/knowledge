@@ -31,11 +31,8 @@
 	</script>
 	<![endif]-->
 	```
-		
 	>插件问题：
-	>   - 不能用a:hover之后设置透明图节点的display: none/block来消失/展现节点，要用js写`show()/hide()`等展示隐藏方法。
-	>   - 对透明背景变化可以用a{} a:hover{}，但是对于absolute用的遮罩(比如头像)效果就不能用css的效果，只能用js的`show()/hide()`等展示隐藏方法。
-	>   - 用div透明背景图覆盖出圆角效果会单边缩短1px，要给背景图左右多出1px背景(js的bugs)。
+	>用div透明背景图覆盖出圆角效果会单边缩短1px，要给背景图左右多出1px背景(js的bugs)。
 
 7. ie6/7的底部3px间距：
 	- `vertical-align: 任意值`
@@ -107,7 +104,7 @@
 	使用此css属性的盒子和要覆盖的盒子之间，要把它们第一个共同父子之内的兄弟节点设置`position: relative/absolut`并且添加`z-index`(可以仅设置一方)才能对比覆盖
 
 24. ie6的a:hover之后添加派生选择器css效果，e.g. a:hover .class{}：
-	先要设置a:hover{}触发:hover时候的重绘(或重排)效果，可以用zoom: 1；再添加a:hover之后的派生选择器css效果
+	先要设置a:hover{}触发:hover时候的重绘(或重排)效果，可以用zoom: 1；再添加a:hover之后的派生选择器css效果，比如显示／隐藏
 
 25. ie6的:hover的某些css属性值会导致高度变化，用以下解决：
 	父级设置固定height，如果可以，也增加`zoom: 1`或`overflow: hidden`
