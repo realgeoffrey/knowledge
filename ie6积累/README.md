@@ -7,19 +7,16 @@
 	- ie8 ~ ie10: \0
 
 2. ie6使用float会导致双边距问题，用以下解决：
-	`float: left/right;
-	_display: inline;`
+	- `float: left/right;_display: inline;`
 
 3. ie6/7的display: inline-block无效，用以下解决：
-	`display: inline-block;
-	*display: inline;
-	zoom: 1;`
+	- `display: inline-block; *display: inline; zoom: 1;`
 
 4. ie6闭合BFC，阻止外边距重叠，清除浮动，触发haslayout：
-	`zoom: 1;`
+	- `zoom: 1;`
 
 5. ie6的高度无法小于行高，用以下解决：
-	`overflow: hidden;`
+	- `overflow: hidden;`
 
 6. ie6图片无法用png-24透明图，会把透明部分显示为灰色，可以使用js插件或用gulp压缩png图片使其可以在ie6下正常显示来修复：
 	不依赖其他插件
@@ -39,34 +36,34 @@
 	- `float: 除了none之外任意值`
 
 8. ie6不支持max/min-height/width：
-	用下划线height/width固定值代替，没有最大最小效果
+	- 用下划线height/width固定值代替，没有最大最小效果
 
 9. ie6字体渲染的高度和其他浏览器不同，line-height可能会渲染小一些：
-	不处理，否则都要细微调节ie6情况下的`line-height`
+	- 不处理，否则都要细微调节ie6情况下的`line-height`
 
 10. ie6的text-decoration: underline的位置与其他主流浏览器不同，可以尝试：
-	用`border-bottom`替代
+	- 用`border-bottom`替代
 
 11. ie6的:hover效果：
-	仅支持a标签并且要有`href=某值`
+	- 仅支持a标签并且要有`href=某值`
 
 12. ie6查看的网页文件若文件编码不是utf-8会乱码：
-	无论html/css/js文件都要手动转化为**utf-8**
+	- 无论html/css/js文件都要手动转化为**utf-8**
 
 13. ie6的tr/tbody不支持border：
-	`border`写在 **td/td > div**
+	- `border`写在 **td/td > div**
 
 14. ie6的width/height/line-height写在td上时，内容超过后设置的限制无效：
-	`width/height/line-height`不写在td标签上，写在**td > div**
+	- `width/height/line-height`不写在td标签上，写在**td > div**
 
 15. ie6的table/tr/td，用js增加有背景色的class无效：
-	**table/tr/td**要有原始的`background`值，才可以在添加class之后改变background值
+	- **table/tr/td**要有原始的`background`值，才可以在添加class之后改变background值
 
 16. ie6下tr标签没有:hover效果：
-	把tr标签的:hover效果用js表示
+	- 把tr标签的:hover效果用js表示
 
 17. ie6浮动元素的中间有注释会导致出现重复字符：
-	删除浮动元素内的注释
+	- 删除浮动元素内的注释
 
 18. ie6不能使用多类选择器(不能连写class或id，e.g. .a.b/.a#b/#a#b)，会自动忽略前面的选择器而仅剩下最后一个class/id
 
@@ -101,25 +98,27 @@
 	- 若要用overflow: hidden作用于float的子节点，必须父级也`浮动`或`清除浮动`
 
 23. ie6的z-index使用：
-	使用此css属性的盒子和要覆盖的盒子之间，要把它们第一个共同父子之内的兄弟节点设置`position: relative/absolut`并且添加`z-index`(可以仅设置一方)才能对比覆盖
+	- 使用此css属性的盒子和要覆盖的盒子之间，要把它们第一个共同父子之内的兄弟节点设置`position: relative/absolut`并且添加`z-index`(可以仅设置一方)才能对比覆盖
 
 24. ie6的a:hover之后添加派生选择器css效果，e.g. a:hover .class{}：
-	先要设置a:hover{}触发:hover时候的重绘(或重排)效果，可以用zoom: 1；再添加a:hover之后的派生选择器css效果，比如显示／隐藏，
+	- 先要设置a:hover{}触发:hover时候的重绘(或重排)效果，可以用zoom: 1；再添加a:hover之后的派生选择器css效果，比如显示／隐藏，
 	>ie6用css控制子项根据父项a:hover的显示隐藏，只能作用于一些文本效果，因此还是要用js的方式替代此种效果。
 
 25. ie6的:hover的某些css属性值会导致高度变化，用以下解决：
-	父级设置固定height，如果可以，也增加`zoom: 1`或`overflow: hidden`
+	- 父级设置固定height，如果可以，也增加`zoom: 1`或`overflow: hidden`
 
 26. ie6修改absolute的盒子为display: none会改变父级的height：
 	- 父节点设定height，增加`overflow: hidden和position: relative`
 	- 先show()出替换的内容，再hide()被替换的内容
 
 27. ie6的一些奇怪展示问题：
-	给能确定高度的盒子加入`height`和`width`，并对能添加如下属性的盒子添加`overflow: hidden;position: relative; zoom: 1;`
+	- 给能确定高度的盒子加入`height`和`width`，并对能添加如下属性的盒子添加`overflow: hidden;position: relative; zoom: 1;`
 
 28. ie6/7的text-decoration会被overflow: hidden截断
 
-29. ie6不支持transparent，除了filter: alpha(opacity=透明值)
+29. ie6不支持css3的透明，可以用ie特有的滤镜：
+	- filter: alpha(opacity=透明值);
+	- filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr=#40000000, endColorStr=#40000000);
 
 30. ie6没有console方法（执行会报错），可用alert替代：
 	``` js
