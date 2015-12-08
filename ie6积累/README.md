@@ -104,7 +104,8 @@
 	使用此css属性的盒子和要覆盖的盒子之间，要把它们第一个共同父子之内的兄弟节点设置`position: relative/absolut`并且添加`z-index`(可以仅设置一方)才能对比覆盖
 
 24. ie6的a:hover之后添加派生选择器css效果，e.g. a:hover .class{}：
-	先要设置a:hover{}触发:hover时候的重绘(或重排)效果，可以用zoom: 1；再添加a:hover之后的派生选择器css效果，比如显示／隐藏
+	先要设置a:hover{}触发:hover时候的重绘(或重排)效果，可以用zoom: 1；再添加a:hover之后的派生选择器css效果，比如显示／隐藏，
+	>ie6用css控制子项根据父项a:hover的显示隐藏，只能作用于一些文本效果，因此还是要用js的方式替代此种效果。
 
 25. ie6的:hover的某些css属性值会导致高度变化，用以下解决：
 	父级设置固定height，如果可以，也增加`zoom: 1`或`overflow: hidden`
