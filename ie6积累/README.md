@@ -117,8 +117,8 @@
 28. ie6/7的text-decoration会被overflow: hidden截断
 
 29. ie6不支持css3的透明，可以用ie特有的滤镜：
-	- filter: alpha(opacity=透明值);
-	- filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr=#40000000, endColorStr=#40000000);
+	- 整个节点透明：`filter: alpha(opacity=50);/*必须激活haslayout，比如zoom: 1;*/`，等价于高级浏览器的`opacity:0.5;`
+	- 仅仅背景透明，不影响子项内容：`filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr=#40000000, endColorStr=#40000000);/*必须激活haslayout，比如zoom: 1;*/`，等价于高级浏览器的`background: rgba(0,0,0,.5);`
 
 30. ie6没有console方法（执行会报错），可用alert替代：
 	``` js
