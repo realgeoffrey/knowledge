@@ -19,7 +19,7 @@
 	- `overflow: hidden;`
 
 6. ie6图片无法用png-24透明图，会把透明部分显示为灰色，可以使用js插件或用gulp压缩png图片使其可以在ie6下正常显示来修复：
-	不依赖其他插件
+	- 不依赖其他插件
 	``` html
 	<!--[if IE 6]>
 	<script src="js/pngfilter.js" ></script>
@@ -68,7 +68,7 @@
 18. ie6不能使用多类选择器(不能连写class或id，e.g. .a.b/.a#b/#a#b)，会自动忽略前面的选择器而仅剩下最后一个class/id
 
 19. ie6不支持position: fixed，需使用js组建：
-	依赖jquery
+	- 依赖jquery
 	``` html
 	<script src="js/ks.gototop.js"></script>
 	<script>
