@@ -1,6 +1,6 @@
 # accumulations
 
-Knowledge of my work area.
+Knowledge of my work area...
 
 
 ###浏览器兼容问题
