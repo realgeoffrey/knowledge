@@ -55,6 +55,7 @@
 
 14. ie6的width/height/line-height写在td上时，内容超过后设置的限制无效：
 	- `width/height/line-height`不写在td标签上，写在**td > div**
+	- 在父级table标签上设置`table-layout: layout:fixed;`,并在第一个tr的各个子级td上设置宽度，就能为整个表固定各td宽度
 
 15. ie6的table/tr/td，用js增加有背景色的class无效：
 	- **table/tr/td**要有原始的`background`值，才可以在添加class之后改变background值
