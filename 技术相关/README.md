@@ -6,7 +6,7 @@ Maybe there're just summaries of js, html, css.
 - [ie6积累](./pc端/ie6积累/)
 
 ###wap端
-- [播放视频支持小结](./wap端/播放视频支持小结/)
+- [手机浏览器播放视频支持程度](./wap端/手机浏览器播放视频支持程度/)
 
 ###综合
 - [HTTP协议流程](./综合/HTTP协议流程/)
