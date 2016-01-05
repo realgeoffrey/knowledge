@@ -8,5 +8,5 @@ Maybe there're just summaries of js, html, css.
 ###wap端
 - [播放视频支持小结](./wap端/播放视频支持小结/)
 
-###HTTP协议相关
-- [HTTP协议流程](./HTTP协议流程/)
+###综合
+- [HTTP协议流程](./综合/HTTP协议流程/)
