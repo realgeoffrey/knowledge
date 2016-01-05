@@ -2,7 +2,7 @@
 
 Knowledge of my work area.
 
-##技术相关
+##[技术相关](./技术相关/)
 ###pc端
 - [ie6积累](./技术相关/pc端/ie6积累/)
 
