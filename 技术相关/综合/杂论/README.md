@@ -46,25 +46,25 @@
 
     ```html
     <div class="box">
-        <img> or <span>...</span>
+        <img src=""> or <span>...</span>
     </div>
     ```
 
     ```css
-    .box {  /* 此层不能是float或absolute，可以在此层外嵌套*/
-        display: table-cell;
-        height: 114px;  /* height/font-size = 1.14*/
-        *font-size: 100px;
-        vertical-align: middle; /* 无继承性*/
-        text-align: center; /* 有继承性*/
+    .box { /* 此层不能是float或absolute，可以在此层外嵌套*/
+       display: table-cell;
+       height: 114px; /* height/font-size = 1.14*/
+       *font-size: 100px;
+       vertical-align: middle; /* 无继承性*/
+       text-align: center; /* 有继承性*/
     }
-    span {  /* 必须是内联元素*/
-        display: inline-block;
-        vertical-align: middle;
-        /* font-size覆盖父级的字体*/
+    span { /* 必须是内联元素*/
+       display: inline-block;
+       vertical-align: middle;
+       /* font-size覆盖父级的字体*/
     }
     img {
-        vertical-align: middle;
+       vertical-align: middle;
     }
     ```
 
