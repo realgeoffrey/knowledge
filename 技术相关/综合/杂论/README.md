@@ -84,16 +84,16 @@
 
 - JS性能
     - 平稳退化：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
+        - 为JS代码预留出退路（html使用常规链接，用js事件绑定去拦截浏览器默认行为）
+            >`<a href="真实地址" class="j-func">...</a>`
+
         - ~~伪协议(javascript:)~~
             >`<a href="javascript: func();">...</a>`
 
         - ~~内嵌事件处理函数~~
             >`<a href="#" onclick="func();return false;">...</a>`
 
-        - 为JS代码预留出退路（html使用常规链接，用js事件绑定去拦截浏览器默认行为）
-            >`<a href="真实地址" class="j-func">...</a>`
-
-    - 渐进增强：对具体某功能支持的判断，并向后兼容，用一些额外判断语句去包裹调用的内置方法。
+    - 渐进增强：对具体某功能支持的判断，并向后兼容，用一些额外信息层去包裹原始内容。
     - 向后兼容：确保老版本浏览器功能，使之虽不能支持某些功能，但仍能基本访问。
         - 对象检测：`if(func){func();}`
         - ~~浏览器嗅探技术~~
@@ -106,3 +106,20 @@
         - 减少外链请求数量（合并js、css、图片）。
         - 压缩资源。
         - 脚本放置在`/body>`前。
+
+- js实现类似jQuery$(function(){})方法
+
+    ```javascript
+    function addLoadEvent(func) {
+        var oldOnLoad = window.onload;
+
+        if (typeof window.onload !== 'function') { /* 未绑定*/
+            window.onload = func;
+        } else {  /* 已绑定*/
+            window.onload = function () {
+                oldOnLoad();
+                func();
+            };
+        }
+    }
+    ```
