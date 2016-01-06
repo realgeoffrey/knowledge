@@ -43,13 +43,13 @@
 
 ##HTML + CSS
 - 垂直居中
-    html:
+
     ```html
     <div class="box">
         <img> or <span>...</span>
     </div>
     ```
-    css:
+
     ```css
     .box {  /* 此层不能是float或absolute，可以在此层外嵌套*/
         display: table-cell;
