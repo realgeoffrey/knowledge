@@ -6,6 +6,7 @@
 - z-index用于控制设置了absolute、relative或fixed定位的元素。应该只给有堆叠关系的节点设置此属性，而不要试图通过设定个别元素的z-index来确保元素不重叠。
 
 - 用css创造三角形
+
     ```css
     div {
         border: 12px solid;
@@ -38,3 +39,32 @@
             _width: 100%;
         }
         ```
+
+
+##HTML + CSS
+- 垂直居中
+    html:
+    ```html
+    <div class="box">
+        <img> or <span>...</span>
+    </div>
+    ```
+    css:
+    ```css
+    .box {  /* 此层不能是float或absolute，可以在此层外嵌套*/
+        display: table-cell;
+        height: 114px;  /* height/font-size = 1.14*/
+        *font-size: 100px;
+        vertical-align: middle; /* 无继承性*/
+        text-align: center; /* 有继承性*/
+    }
+    span {  /* 必须是内联元素*/
+        display: inline-block;
+        vertical-align: middle;
+        /* font-size覆盖父级的字体*/
+    }
+    img {
+        vertical-align: middle;
+    }
+    ```
+
