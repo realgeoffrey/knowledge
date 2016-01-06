@@ -14,3 +14,25 @@
         width: 0;
     }
     ```
+
+- 清除浮动：
+    - 在父级设置
+        ```css
+        .clearfix:after {
+           display: block;
+           clear: both;
+           content: ".";
+           visibility: hidden;
+           height: 0;
+        }
+        .clearfix {
+           zoom: 1;
+        }
+        ```
+    - 截断不影响时，在父级设置
+        ```css
+        .father {
+            overflow: hidden;
+            _width: 100%;
+        }
+        ```
