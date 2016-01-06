@@ -81,3 +81,12 @@
 
 ##JavaScript
 - if中用赋值（大部分是误用）并非总是返回真值：`if(var = false){...}`中的条件判断为假。
+
+- JS性能
+    - 平稳退化：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
+        - ~~伪协议(javascript:)~~
+            >`<a href="javascript: func();">...</a>`
+        - ~~内嵌事件处理函数~~
+            >`<a href="#" onclick="func();return false;">...</a>`
+        - 为JS代码预留出退路
+            >`<a href="真实地址" class="j-func">...</a>`
