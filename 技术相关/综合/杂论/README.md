@@ -40,9 +40,6 @@
         }
         ```
 
-- 响应式设计之媒体查询
-    - `@media (min-width: 360px) and (max-width: 640px) {...}`
-    - `<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
 
 ##HTML + CSS
 - 垂直居中
@@ -71,4 +68,16 @@
     }
     ```
 
--
+- 响应式设计之媒体查询
+    - css属性：`@media (min-width: 360px) and (max-width: 640px) {...}`
+    - html标签：`<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
+
+- 响应式设计三大要素
+    - 媒体查询
+    - 流式布局：节点用百分比
+    - 弹性图片： `img {max-width: 100%;}`
+    - wap可以用rem和html的font-size配合
+
+
+##JavaScript
+- if中用赋值（大部分是误用）并非总是返回真值：`if(var = false){...}`中的条件判断为假。
