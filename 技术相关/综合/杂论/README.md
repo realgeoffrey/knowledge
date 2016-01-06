@@ -102,12 +102,12 @@
         - 不在html上用事件处理函数。
         - 对只为DOM增添的内容，转移到外部资源中动态创建。
     - 性能提升。
-        - 减少访问DOM（搜索结果保存在变量中），减少标记。
+        - 减少访问DOM（搜索结果保存在变量中）。
         - 减少外链请求数量（合并js、css、图片）。
         - 压缩资源。
-        - 脚本放置在`/body>`前。
+        - 脚本放置在`</body>`前。
 
-- js实现类似jQuery$(function(){})方法
+- js实现类似jQuery的`$(function(){})`方法
 
     ```javascript
     function addLoadEvent(func) {
