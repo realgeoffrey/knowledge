@@ -40,6 +40,9 @@
         }
         ```
 
+- 响应式设计之媒体查询
+    - `@media (min-width: 360px) and (max-width: 640px) {...}`
+    - `<link type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="..">`
 
 ##HTML + CSS
 - 垂直居中
@@ -68,3 +71,4 @@
     }
     ```
 
+-
