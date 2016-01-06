@@ -17,6 +17,7 @@
 
 - 清除浮动：
     - 在父级设置
+    
         ```css
         .clearfix:after {
            display: block;
@@ -30,6 +31,7 @@
         }
         ```
     - 截断不影响时，在父级设置
+    
         ```css
         .father {
             overflow: hidden;
