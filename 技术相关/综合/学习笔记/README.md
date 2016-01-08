@@ -110,7 +110,7 @@
 - js实现类似jQuery的`$(function(){})`方法
 
     ```javascript
-    function addLoadEvent(func) {
+    function onloads(func) {
         var oldOnLoad = window.onload;
 
         if (typeof window.onload !== 'function') { /* 未绑定*/
@@ -120,6 +120,19 @@
                 oldOnLoad();
                 func();
             };
+        }
+    }
+    ```
+    
+- js实现类似jQuery的after方法
+    ```javascript
+    function after(elem, target) {
+        var parent = target.parentNode;
+
+        if (parent.lastChild == target) {
+            parent.appendChild(elem);
+        } else {
+            parent.insertBefore(elem, target.nextSibling);
         }
     }
     ```
