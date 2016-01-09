@@ -82,5 +82,88 @@
     }
 
     /* 实例化使用*/
-    var a = new TouchMoveAction(document.getElementById("aa"));
+    new TouchMoveAction(document.getElementById("test"));
+    ```
+
+- js实现突破延时加载（依赖jQuery或zepto）
+
+    ```javascript
+    <img class="j-img" src="images/2.png" alt="" data-src="images/1.png">
+
+    /* 突破延时加载的构造函数*/
+    function ImgLazyLoad(className, func) {
+        var self = this;
+
+        self.timeoutId = null;
+
+        function init(className, func) {
+            bindEvent(className);
+
+            $(window).on('scroll', function () {
+                bindEvent(className, func);
+            });
+        }
+
+        function bindEvent(className, func) {    /* 绑定触发事件*/
+            clearTimeout(self.timeoutId);
+            self.timeoutId = setTimeout(function () {
+                lazyLoad(getImgArr(className), className, func);
+            }, 500);
+        }
+
+        function getImgArr(className, offset) { /* 获取屏幕内dom数组*/
+            var $all = $('.' + className),
+                minHeight = document.body.scrollTop || document.documentElement.scrollTop,
+                maxHeight = minHeight + $(window).height(),
+                domArr = [];
+
+            if (typeof offset !== 'number') {
+                offset = 50;
+            }
+
+            $all.each(function (index, element) {
+                var elemHeight = $(element).offset().top;
+
+                if (elemHeight <= maxHeight + offset && elemHeight >= minHeight - offset) {
+                    domArr.push(element);
+                }
+            });
+
+            return domArr;
+        }
+
+        function lazyLoad(domArr, className, func) { /* 图片延时加载*/
+            $.each(domArr, function (index, value) {
+                var $this = $(value);
+                var src = $this.attr('data-src'),
+                    newImg = new Image();
+
+                if (src !== undefined) {
+                    newImg.src = src;
+
+                    if (newImg.complete) {  /* 缓存加载*/
+                        $this.attr('src', src)
+                            .removeAttr('data-src')
+                            .removeClass(className);
+                    } else {
+                        newImg.onload = function () {   /* 新加载*/
+                            $this.attr('src', src)
+                                .removeAttr('data-src')
+                                .removeClass(className);
+                        };
+                    }
+                    if (typeof func === "function") {
+                        func.call($this);
+                    }
+                }
+            });
+        }
+
+        init(className, func);
+    }
+
+    /* 实例化使用*/
+    new ImgLazyLoad('j-img', function () {
+        console.log(this);
+    });
     ```
