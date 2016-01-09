@@ -85,12 +85,12 @@
     new TouchMoveAction(document.getElementById("test"));
     ```
 
-- js实现突破延时加载（依赖jQuery或zepto）
+- js实现图片延时加载（依赖jQuery或zepto）
 
     ```javascript
     <img class="j-img" src="images/2.png" alt="" data-src="images/1.png">
 
-    /* 突破延时加载的构造函数*/
+    /* 图片延时加载的构造函数*/
     function ImgLazyLoad(className, func) {
         var self = this;
 
