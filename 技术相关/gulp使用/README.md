@@ -6,10 +6,10 @@
 
 ```json
 {
-    "name": "gulp.me",
+    "name": "gulp项目名",
     "version": "1.1.0",
-    "author": "feijie",
-    "description": "my gulp tools",
+    "author": "Jeff",
+    "description": "My gulp tools",
     "dependencies": {
         "gulp": "^3.9.0",
         "gulp-concat": "^2.6.0",
