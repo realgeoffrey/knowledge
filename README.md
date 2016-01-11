@@ -4,14 +4,14 @@ Knowledge of my work area.
 
 
 ##技术相关
-- [ie6积累](./技术相关/ie6积累/)
-- [html+css学习笔记](./技术相关/html+css学习笔记/)
-- [cssReset](./技术相关/cssReset/)
-- [js方法积累](./技术相关/js方法积累/)
-- [js学习笔记](./技术相关/js学习笔记/)
-- [gulp使用](./技术相关/gulp使用/)
-- [HTTP协议流程](./技术相关/HTTP协议流程/)
-- [wap浏览器播放视频支持小结](./技术相关/wap浏览器播放视频支持小结/)
+- [ie6积累](./技术相关/ie6积累)
+- [html+css学习笔记](./技术相关/html+css学习笔记)
+- [cssReset](./技术相关/cssReset)
+- [js方法积累](./技术相关/js方法积累)
+- [js学习笔记](./技术相关/js学习笔记)
+- [gulp使用](./技术相关/gulp使用)
+- [HTTP协议流程](./技术相关/HTTP协议流程)
+- [wap浏览器播放视频支持小结](./技术相关/wap浏览器播放视频支持小结)
 
 
 ##工具使用
@@ -24,3 +24,4 @@ Knowledge of my work area.
 
 ###软件使用
 - [Charles使用](./工具使用/Charles使用)
+- [ide设置](./工具使用/ide设置)
