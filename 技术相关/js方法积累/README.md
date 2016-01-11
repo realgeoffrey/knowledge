@@ -17,7 +17,7 @@
     }
     ```
     
-- js实现类似jQuery的after
+- js实现类似jQuery的`after`
 
     ```javascript
     function after(elem, target) {
@@ -174,7 +174,7 @@
     test.unbindEvent();
     ```
 
-- js判断浏览器userAgent
+- js判断浏览器`userAgent`
 
     ```javascript
     var snifBrowser = {
@@ -300,7 +300,7 @@
     }
     ```
 
-- jQuery修复html标签placeholder属性无效
+- jQuery修复html标签`placeholder`属性无效
 
     ```javascript
     function fixPlaceholder($dom) {
@@ -345,7 +345,7 @@
     }
     ```
 
-- js实现类似jQuery的$('html,body').animate({'scrollTop':scrollTo},time);（scrollTo和time是变量）
+- js实现类似jQuery的`$('html,body').animate({'scrollTop':scrollTo},time);`（scrollTo和time是变量）
 
     ```javascript
     function animateToTop(scrollTo, time) { /* time毫秒*/
