@@ -38,26 +38,27 @@
     function TouchMoveAction(dom) {
         var self = this;
 
-        self.actionDom = null;
-        self.initialX = 0;
-        self.initialY = 0;
+        var actionDom,
+            initialX = 0,
+            initialY = 0;
+
         self.movFuc = function (dom, x, y) {
             console.log(x, y);
             /* do sth...*/
         };
 
         function init(dom) {
-            self.actionDom = dom;
+            actionDom = dom;
 
             /* 不能用attachEvent、ontouchstart或jQuery绑定*/
             dom.addEventListener("touchstart", touchStart, false);
         }
 
         function touchStart(e) {
-            self.initialX = e.touches[0].clientX;
-            self.initialY = e.touches[0].clientY;
+            initialX = e.touches[0].clientX;
+            initialY = e.touches[0].clientY;
 
-            self.actionDom.addEventListener("touchmove", touchMove, false);
+            actionDom.addEventListener("touchmove", touchMove, false);
         }
 
         function touchMove(e) {
@@ -65,16 +66,16 @@
             e.stopPropagation();
             e.preventDefault();
 
-            var x = e.touches[0].clientX - self.initialX,
-                y = e.touches[0].clientY - self.initialY;
+            var x = e.touches[0].clientX - initialX,
+                y = e.touches[0].clientY - initialY;
 
-            self.initialX = e.touches[0].clientX;
-            self.initialY = e.touches[0].clientY;
+            initialX = e.touches[0].clientX;
+            initialY = e.touches[0].clientY;
 
             self.movFuc(this, x, y);
 
-            self.actionDom.addEventListener("touchend", function () {
-                self.actionDom.removeEventListener("touchmove", touchMove, false);
+            actionDom.addEventListener("touchend", function () {
+                actionDom.removeEventListener("touchmove", touchMove, false);
             }, false);
         }
 
@@ -94,7 +95,7 @@
     function ImgLazyLoad(className, func) {
         var self = this;
 
-        self.timeoutId = null;
+        var timeoutId;
 
         function init(className, func) {
             bindEvent(className);
@@ -105,8 +106,8 @@
         }
 
         function bindEvent(className, func) {    /* 绑定触发事件*/
-            clearTimeout(self.timeoutId);
-            self.timeoutId = setTimeout(function () {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(function () {
                 lazyLoad(getImgArr(className), className, func);
             }, 500);
         }
