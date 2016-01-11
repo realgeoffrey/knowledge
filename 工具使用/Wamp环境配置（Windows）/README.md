@@ -1,4 +1,5 @@
 #Wamp环境配置（Windows）
+
 >官网<http://www.wampserver.com>下载。本文中使用的版本是Wampserver2.2e，其中包括Apache:2.2.22、MySQL:5.5.24、PHP:5.3.13、PHPMyAdmin:3.5.1、SqlBuddy:1.3.3、XDebug:2.2.0。win7以上系统可以安装最新版，xp只能安装2.2e及更低版本。
 	
 1. 安装

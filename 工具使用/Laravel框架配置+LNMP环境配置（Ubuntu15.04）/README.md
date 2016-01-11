@@ -1,4 +1,5 @@
 #Laravel框架配置+LNMP环境配置（Ubuntu15.04）
+
 1. 安装**Ubuntu Desktop**或**Ubuntu Server**
 	>安装完毕之后可以删除ios虚拟光盘
 	

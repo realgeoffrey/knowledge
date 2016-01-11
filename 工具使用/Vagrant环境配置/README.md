@@ -1,4 +1,5 @@
 #Vagrant环境配置
+
 1. 官网下载、安装**virtualbox**和**vagrant**
 
 2. 选择Vagrant Boxes：
