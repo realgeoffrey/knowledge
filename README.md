@@ -2,9 +2,11 @@
 
 Knowledge of my work area.
 
-##一.[技术相关](./技术相关/)
+
+##技术相关
 ###html+css相关
 - [学习笔记](./技术相关/html+css相关/学习笔记/)
+- [cssReset](./技术相关/html+css相关/cssReset/)
 
 ###js相关
 - [方法积累](./技术相关/js相关/方法积累/)
@@ -20,7 +22,7 @@ Knowledge of my work area.
 - [HTTP协议流程](./技术相关/其他/HTTP协议流程/)
 
 
-##二.[工具使用](./工具使用/)
+##工具使用
 ###服务器环境安装
 - [Laravel框架配置+LNMP环境配置（Ubuntu15.04）](./工具使用/Laravel框架配置+LNMP环境配置（Ubuntu15.04）)
 - [LAMP环境配置（CentOS7.0）](./工具使用/LAMP环境配置（CentOS7.0）)
