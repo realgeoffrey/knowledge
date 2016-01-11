@@ -1,4 +1,5 @@
 #LAMP环境配置（CentOS7.0）
+
 1. 新增用户
 	创建一个新用户，并设置密码，增加进root，apache组内：
 	`useradd 用户名
