@@ -2,13 +2,10 @@
 
 There'are **webstorm** and **phpstorm** settings. I exported these settings to make sure settings in my workplace and my pc are the same.
 
-By using these settings:
+>- You should choose the **Scheme** of my name -- *Geoffrey* in preferences in "**Code Style**" and "**Colors & Fonts**".
+>- There are two types of keymap in "**Keymap**" named *MyMac* for Mac and *MyWindows* for Windows.
+>- There is a template of html in "**File and Code Templates**" in settings of webstorm.
 
-- You should choose the **Scheme** of my name -- *Geoffrey* in preferences in "**Code Style**" and "**Colors & Fonts**".
-- There are two types of keymap in "**Keymap**" named *MyMac* for Mac and *MyWindows* for Windows.
-- *There is a template of html in "**File and Code Templates**" in settings of webstorm.*
-
-----
 - html
 
     ```html
