@@ -23,7 +23,7 @@ blockquote:before,blockquote:after,q:before,q:after {content:'';content:none;}
 sub,sup {font-size:75%;line-height:0;position:relative;vertical-align:baseline;}
 sup {top:-0.5em;}
 sub {bottom:-0.25em;}
-article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,iframe {display:block;}
+article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,iframe,main {display:block;}
 
 html {-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;-webkit-overflow-scrolling:touch;}
 img {max-width: 100%;}
