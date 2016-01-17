@@ -20,7 +20,7 @@
 - js实现类似jQuery的`after`
 
     ```javascript
-    function after(elem, target) {
+    function insertAfter(elem, target) {
         var parent = target.parentNode;
 
         if (parent.lastChild == target) {
@@ -28,6 +28,43 @@
         } else {
             parent.insertBefore(elem, target.nextSibling);
         }
+    }
+    ```
+
+- js实现类似jQuery的`next`
+
+    ```javascript
+    function getNextElement(node) {
+        if (node.nextSibling.nodeType === 1) {
+            return node.nextSibling;
+        } else if (node.nextSibling !== null) {
+            return getNextElement(node.nextSibling);
+        } else {
+            return null;
+        }
+    }
+    ```
+
+- js实现类似jQuery的`addClass`
+
+    ```javascript
+    function addClass(node, newClassName) {
+        var oldNames,
+            i;
+
+        if (!node.className) {
+            node.className = newClassName;
+        } else {
+            oldNames = node.className.split(' ');
+            for (i = 0; i < oldNames.length; i++) {
+                if (newClassName === oldNames[i]) {
+                    return false;
+                }
+            }
+            node.className = node.className + ' ' + newClassName;
+        }
+
+        return true;
     }
     ```
 
@@ -218,7 +255,7 @@
     snifBrowser.init();
     ```
 
-- js判断IE版本
+- js判断IE各版本
 
     ```javascript
     function isIE(num) {
@@ -259,7 +296,7 @@
     };
     ```
 
-- jQuery或zepto获取response header信息
+- jQuery或zepto获取`response header`信息
 
     ```javascript
     function getResponseHeaders(requestName) {

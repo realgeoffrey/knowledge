@@ -39,7 +39,43 @@
             _width: 100%;
         }
         ```
+- 单行文本和多行文本超出显示省略号
 
+    ```css
+    .ellipsis {
+        _width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .multi_ellipsis {
+        line-height: 1;
+        height: 2em;
+        display: block;
+        display: -webkit-box;
+        *display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+    ```
+
+- 单词内断字换行
+    - ~~默认~~:
+        若此行放不下则整个单词换行,若下行也放不下则溢出(保持单词不断词)
+    - ~~`word-break: break-all;`~~:
+        若此行放不下则直接断词,不会尝试整个单词换行
+    - `word-wrap: break-word;`:
+        若此行放不下则整个单词先换行,若下行也放不下再断词
+
+- body标签设置min-width属性为项目内容宽度(忽略ie6)
+
+    ```css
+    body {
+       min-width: ;
+    }
+    ```
 
 ##HTML + CSS
 - 垂直居中
