@@ -82,9 +82,8 @@
         默认值,换算具体值为:**本元素width = 父级width - 本元素(margin + padding + border)水平值**
 
         >当块级width为默认的auto时,设置负的水平margin会使width增加
-
     - `width: 100%;`
-        负值父级的px为自己的px
+        父级的px为自己的px
 
 
 
