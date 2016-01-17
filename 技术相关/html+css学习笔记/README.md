@@ -87,15 +87,14 @@
     - `width: 100%;`
         父级的px为自己的px
 
-- margin合并
+- margin合并(非ie浏览器)
 
     >In CSS, the adjoining margins of two or more boxes (which might or might not be siblings) can combine to form a single margin. Margins that combine this way are said to collapse, and the resulting combined margin is called a collapsed margin.
 
     - 在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加(collapsed margin)
         - 毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开
         - 普通流：除**浮动（float）**、**绝对定位（absolute）**外的代码
-    - 对容器添加css属性使其成为独立的BFC,从而无法达到margin合并的条件
-
+    - 产生独立的BFC结构可避免margin合并
 
 - BFC(Block Formatting Context)块级格式上下文
 
@@ -106,7 +105,7 @@
     - 浮动元素和绝对定位元素，非块级盒子的块级容器（例如 inline-blocks, table-cells, 和 table-captions），以及overflow值不为“visiable”的块级盒子，都会为他们的内容创建新的块级格式化上下文。
     在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由他们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
     在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘(border-left)（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
-    - 首先BFC是一个名词，是一个独立的布局环境，我们可以理解为一个箱子（实际上是看不见摸不着的），箱子里面物品的摆放是不受外界的影响的。转换为BFC的理解则是：BFC中的元素的布局是不受外界的影响（我们往往利用这个特性来消除浮动元素对其非浮动的兄弟元素和其子元素带来的影响。）并且在一个BFC中，块盒与行盒（行盒由一行中所有的内联元素所组成）都会垂直的沿着其父元素的边框排列。
+    - 首先BFC是一个独立的布局环境，可以理解为一个箱子，箱子里面物品的摆放不受外界的影响,并且每个BFC都遵守同一套布局规则
     - 对容器添加以下css属性使其成为独立的BFC
         - `float: left / right;`
         - `overflow: hidden / auto / scroll;`
@@ -140,6 +139,38 @@
     }
     ```
 
+- 多列等高
+
+    ```css
+    .father {
+        overflow: hidden;
+    }
+    .sons {
+        padding-bottom: 9999px;
+        margin-bottom: -9999px;
+    }
+    ```
+    >~~部分浏览器用url跳转到某id会导致页面向上溢出~~(未复现)
+
+- 实现hover去除左右间隔效果
+
+    ```css
+    ul {
+        overflow: hidden;
+    }
+    ul li {
+        float: left;
+        margin-left: -1px;
+    }
+    ul li a {
+        background: url(与li的margin-left大小一致的border样式图片) 100% center no-repeat;
+    }
+    ul li a:hover {
+        background: #fff;;
+    }
+    ```
+    >hover之后本身的背景被替换,前一个兄弟的背景被覆盖
+
 - 响应式设计之媒体查询
     - css属性：`@media (min-width: 360px) and (max-width: 640px) {...}`
     - html标签：`<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
@@ -149,3 +180,7 @@
     - 流式布局：节点用百分比
     - 弹性图片： `img {max-width: 100%;}`
     - wap可以用rem和html的font-size配合
+
+
+##经验总结
+
