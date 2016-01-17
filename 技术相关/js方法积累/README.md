@@ -35,12 +35,12 @@
 
     ```javascript
     function getNextElement(node) {
-        if (node.nextSibling.nodeType === 1) {
-            return node.nextSibling;
-        } else if (node.nextSibling !== null) {
-            return getNextElement(node.nextSibling);
-        } else {
+        if (node === null || node.nextSibling === null) {
             return null;
+        } else if (node.nextSibling.nodeType === 1) {
+            return node.nextSibling;
+        } else {
+            return getNextElement(node.nextSibling);
         }
     }
     ```
@@ -65,6 +65,31 @@
         }
 
         return true;
+    }
+    ```
+
+- js实现类似jQuery的`removeClass`
+
+    ```javascript
+    function removeClass(node, removeClassName) {
+        var newNames = [],
+            oldNames,
+            i,
+            flag = false;
+
+        if (node.className) {
+            oldNames = node.className.split(' ');
+            for (i = 0; i < oldNames.length; i++) {
+                if (removeClassName !== oldNames[i]) {
+                    newNames.push(oldNames[i]);
+                } else {
+                    flag = true;
+                }
+            }
+            node.className = newNames.join(' ');
+        }
+
+        return flag;
     }
     ```
 

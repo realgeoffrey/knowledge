@@ -16,6 +16,7 @@
         width: 0;
     }
     ```
+
     > 两个同样大小的三角形,第二个设置为背景色并且覆盖到第一个上面,可以模拟箭头**>**
 
 - 清除浮动：
@@ -83,9 +84,10 @@
 -  块级元素的width
     - `width: auto;`
     默认值,换算具体值为:**本元素width = 父级width - 本元素(margin + padding + border)水平值**
+
         >当块级width为默认的auto时,设置负的水平margin会使width增加
     - `width: 100%;`
-        父级的px为自己的px
+    父级的px为自己的px
 
 - margin合并(非ie浏览器)
 
@@ -170,6 +172,7 @@
         background: #fff;;
     }
     ```
+
     >hover之后本身的背景被替换,前一个兄弟的背景被覆盖
 
 - 响应式设计之媒体查询
@@ -179,7 +182,7 @@
 - 响应式设计三大要素
     - 媒体查询
     - 流式布局：节点用百分比
-    - 弹性图片： `img {max-width: 100%;}`
+    - 弹性图片：`img {max-width: 100%;}`
     - wap可以用rem和html的font-size配合
 
 
