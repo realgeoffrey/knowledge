@@ -114,6 +114,10 @@
         - `display: inline-block / table-cell / flex / table-caption / inline-flex;`
         - `position: absolute / fixed;`
 
+- word-spacing
+
+    对有空白字符包裹的非空白字符(中文、英文、标点)产生效果.
+
 
 ##HTML + CSS
 - 垂直居中
