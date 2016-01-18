@@ -139,7 +139,7 @@
     span { /* 必须是内联元素*/
        display: inline-block;
        vertical-align: middle;
-       /* font-size覆盖父级的字体*/
+       /*font-size覆盖父级的字体*/
     }
     img {
        vertical-align: middle;
@@ -278,8 +278,10 @@
 
 
 - 响应式设计之媒体查询
-    - css属性：`@media (min-width: 360px) and (max-width: 640px) {...}`
-    - html标签：`<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
+    - css属性：
+    `@media (min-width: 360px) and (max-width: 640px) {...}`
+    - html标签：
+    `<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
 
 - 响应式设计三大要素
     - 媒体查询
