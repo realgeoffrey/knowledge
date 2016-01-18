@@ -175,6 +175,103 @@
 
     >hover之后本身的背景被替换,前一个兄弟的背景被覆盖
 
+- 自适应宽度布局
+    1. 中间内容自适应,两边固定(中间内容先书写)
+
+        ```html
+        <div class="clearfix">
+            <div class="middle_out">
+                <div class="middle_in">
+                    中间内容
+                </div>
+            </div>
+            <div class="float_l">左边内容</div>
+            <div class="float_r">右边内容</div>
+        </div>
+        ```
+        ```css
+        .main_out,
+        .float_l,
+        .float_r {
+            float: left;
+        }
+        .middle_out {
+            width: 100%;
+        }
+        .middle_in {
+            margin: 0 大于等于右边块宽度 0 大于等于左边块宽度;
+        }
+        .float_l {
+            width: 右边块宽度;
+            margin-left: -100%;
+        }
+        .float_r {
+            width: 左边块宽度;
+            margin-left: -左边块宽度;
+        }
+        ```
+
+        >dom结构不能颠倒,需要中间结构放最前;
+        >注意节点上不要设定`clear: both;`.
+
+    2. 中间内容自适应,两边固定(中间内容后书写)
+
+        ```html
+        <div class="clearfix">
+            <div class="float_l">左边内容</div>
+            <div class="float_r">右边内容</div>
+            <div class="middle">中间内容</div>
+        </div>
+        ```
+        ```css
+        .float_l {
+            float: left;
+            width: 左边块宽度;
+        }
+        .float_r {
+            float: right;
+            width: 右边块宽度;
+        }
+        .middle {
+            margin-left: 大于等于左边块宽度;
+            margin-right: 大于等于右边块宽度;
+        }
+        ```
+
+        >dom结构不能颠倒,需要中间结构放最后;
+        >注意节点上不要设定`clear: both;`.
+
+        >float属性的节点可以填补于之后节点的水平margin区域内,padding区域内不可以;不可以填补于之前节点的水平margin区域内.
+
+    3. 中间与两边内容都自适应
+
+        ```html
+        <div class="clearfix">
+            <div class="float_l">左边内容</div>
+            <div class="float_r">右边内容</div>
+            <div class="middle">中间内容</div>
+        </div>
+        ```
+        ```css
+        .float_l {
+            float: left;
+        }
+        .float_r {
+            float: right;
+        }
+        .middle {
+            display: table-cell;
+            *display: inline-block;
+            width: 9999px;
+            *width: auto;
+        }
+        ```
+
+        >dom结构不能颠倒,需要中间结构放最后;
+        >注意节点上不要设定`clear: both;`;
+        >完全由内容决定布局
+
+
 - 响应式设计之媒体查询
     - css属性：`@media (min-width: 360px) and (max-width: 640px) {...}`
     - html标签：`<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
