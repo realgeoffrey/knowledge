@@ -66,11 +66,11 @@
     ```
 
 - 单词内断字换行
-    - ~~默认~~
+    - ~~默认~~:
     若此行放不下则整个单词换行,若下行也放不下则溢出(保持单词不断词)
-    - ~~`word-break: break-all;`~~
+    - ~~`word-break: break-all;`~~:
     若此行放不下则直接断词,不会尝试整个单词换行
-    - `word-wrap: break-word;`
+    - `word-wrap: break-word;`:
     若此行放不下则整个单词先换行,若下行也放不下再断词
 
 - body标签设置min-width属性为项目内容宽度(忽略ie6)
@@ -82,13 +82,11 @@
     ```
 
 -  块级元素的width
-    - `width: auto;`
-
+    - `width: auto;`:
         默认值,换算具体值为:**本元素width = 父级width - 本元素(margin + padding + border)水平值**
 
         >当块级width为默认的auto时,设置负的水平margin会使width增加
-    - `width: 100%;`
-
+    - `width: 100%;`:
         父级的px为自己的px
 
 - margin合并(非ie浏览器)
