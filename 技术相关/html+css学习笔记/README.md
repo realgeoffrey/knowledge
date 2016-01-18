@@ -83,11 +83,13 @@
 
 -  块级元素的width
     - `width: auto;`
-    默认值,换算具体值为:**本元素width = 父级width - 本元素(margin + padding + border)水平值**
+
+        默认值,换算具体值为:**本元素width = 父级width - 本元素(margin + padding + border)水平值**
 
         >当块级width为默认的auto时,设置负的水平margin会使width增加
     - `width: 100%;`
-    父级的px为自己的px
+
+        父级的px为自己的px
 
 - margin合并(非ie浏览器)
 
@@ -153,6 +155,7 @@
         margin-bottom: -9999px;
     }
     ```
+
     >~~部分浏览器用url跳转到某id会导致页面向上溢出~~(未复现)
 
 - 实现hover去除左右间隔效果
@@ -285,5 +288,6 @@
 
 ##经验总结
 - html请求资源:
+
     页面是按照顺序加载资源,当且仅当有使用需求时才会去加载外部资源.
 比如已加载完成的css文件内有多个url请求(background),但也仅在页面要用到某个url请求时(比如某类有url背景),才会去请求这个资源,而不是在加载css文件时就加载外部资源.
