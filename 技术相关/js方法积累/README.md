@@ -93,7 +93,7 @@
     }
     ```
 
-- js移动端获取触屏滚动距离
+- js移动端获取触屏滚动距离(可改写为鼠标拖拽功能)
 
     ```javascript
     function TouchMoveAction(dom) {
@@ -296,7 +296,7 @@
 
     ```javascript
     var cookieFuc = {
-        getCookie: function (name) {   /* 获取指定cookie*/
+        get: function (name) {   /* 获取指定cookie*/
             var cookieArr = document.cookie.split("; "),
                 cookieValue,
                 i,
@@ -312,7 +312,7 @@
 
             return cookieValue;
         },
-        setCookie: function (c_name, value, days) {   /* 设置cookie*/
+        set: function (c_name, value, days) {   /* 设置cookie*/
             var expiresDays = new Date();
 
             expiresDays.setDate(expiresDays.getDate() + days);
@@ -321,7 +321,7 @@
     };
     ```
 
-- jQuery或zepto获取`response header`信息
+- jQuery或zepto获取`HTTP response header`信息
 
     ```javascript
     function getResponseHeaders(requestName) {
