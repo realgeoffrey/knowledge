@@ -4,7 +4,8 @@
 - 限定布局宽度，让内容决定布局高度。
 
 - z-index用于控制设置了absolute、relative或fixed定位的元素。
-应该只给有堆叠关系的节点设置此属性，而不要试图通过设定个别元素的z-index来确保元素不重叠。
+
+    应该只给有堆叠关系的节点设置此属性，而不要试图通过设定个别元素的z-index来确保元素不重叠。
 
 - 用css创造三角形
 
@@ -67,11 +68,11 @@
 
 - 单词内断字换行
     - ~~默认~~:
-    若此行放不下则整个单词换行,若下行也放不下则溢出(保持单词不断词)
+        若此行放不下则整个单词换行,若下行也放不下则溢出(保持单词不断词)
     - ~~`word-break: break-all;`~~:
-    若此行放不下则直接断词,不会尝试整个单词换行
+        若此行放不下则直接断词,不会尝试整个单词换行
     - `word-wrap: break-word;`:
-    若此行放不下则整个单词先换行,若下行也放不下再断词
+        若此行放不下则整个单词先换行,若下行也放不下再断词
 
 - body标签设置min-width属性为项目内容宽度(忽略ie6)
 
@@ -105,8 +106,8 @@
     >In a block formatting context, each box’s left outer edge touches the left edge of the containing block (for right-to-left formatting, right edges touch). This is true even in the presence of floats (although a box’s line boxes may shrink due to the floats), unless the box establishes a new block formatting context (in which case the box itself may become narrower due to the floats).
 
     - 浮动元素和绝对定位元素，非块级盒子的块级容器（例如 inline-blocks, table-cells, 和 table-captions），以及overflow值不为“visiable”的块级盒子，都会为他们的内容创建新的块级格式化上下文。
-    在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由他们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
-    在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘(border-left)（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
+        在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由他们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
+        在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘(border-left)（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
     - 首先BFC是一个独立的布局环境，可以理解为一个箱子，箱子里面物品的摆放不受外界的影响,并且每个BFC都遵守同一套布局规则
     - 对容器添加以下css属性使其成为独立的BFC
         - `float: left / right;`
@@ -127,7 +128,6 @@
         <img src=""> or <span>...</span>
     </div>
     ```
-
     ```css
     .box { /* 此层不能是float或absolute，可以在此层外嵌套*/
        display: table-cell;
@@ -279,9 +279,9 @@
 
 - 响应式设计之媒体查询
     - css属性：
-    `@media (min-width: 360px) and (max-width: 640px) {...}`
+        `@media (min-width: 360px) and (max-width: 640px) {...}`
     - html标签：
-    `<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
+        `<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
 
 - 响应式设计三大要素
     - 媒体查询

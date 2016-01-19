@@ -150,7 +150,7 @@
 - jQuery或zepto图片延时加载
 
     ```javascript
-    <img class="j-img" src="images/2.png" alt="" data-src="images/1.png">
+    <img class="方法类" src="默认图地址" data-src="真实图地址">
 
     function ImgLazyLoad(className, func) {
         var self = this;
@@ -449,7 +449,7 @@
     }
     ```
 
-- js格式化文件属性
+- js格式化文件属性（大小、日期）
 
     ```javascript
     var format = {
@@ -538,7 +538,7 @@
                 if (typeof func === 'function') {
                     func();
                 }
-                return true;
+                return;
             }
             h = formatNum(Math.floor(time / (60 * 60)));
             m = formatNum(Math.floor((time - (h * 60 * 60)) / 60));
