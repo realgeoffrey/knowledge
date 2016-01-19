@@ -502,3 +502,51 @@
         }
     };
     ```
+
+- js倒计时显示
+
+    ```javascript
+    /*
+     * @deadline：将来的时间戳（秒）
+     * @id：输出节点id
+     * @func：到点后的回调函数
+     * @hType：'时'后面的文字
+     * @mType：'分'后面的文字
+     * @sType：'秒'后面的文字
+     */
+    function countDown(deadline, id, func, hType, mType, sType) {
+        function formatNum(number) {    /* 格式化数字格式*/
+            if (number < 10) {
+                return '0' + number;
+            } else {
+                return number;
+            }
+        }
+
+        hType = hType || ' ';
+        mType = mType || ' ';
+        sType = sType || ' ';
+
+        var intervalId = setInterval(function () {
+            var now = (Date.parse(new Date())) / 1000;
+            var time = Math.round(deadline - now);
+
+            var s, m, h;
+
+            h = formatNum(Math.floor(time / (60 * 60)));
+            m = formatNum(Math.floor((time - (h * 60 * 60)) / 60));
+            s = formatNum(time % 60);
+            if (document.getElementById(id)) {
+                document.getElementById(id).innerHTML = h + hType + m + mType + s + sType;
+            } else {
+                console.log(h + hType + m + mType + s + sType);
+            }
+            if (time <= 0) {
+                clearInterval(intervalId);
+                if (typeof func === 'function') {
+                    func();
+                }
+            }
+        }, 1000);
+    }
+    ```
