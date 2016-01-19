@@ -533,6 +533,13 @@
 
             var s, m, h;
 
+            if (time < 0) {
+                clearInterval(intervalId);
+                if (typeof func === 'function') {
+                    func();
+                }
+                return true;
+            }
             h = formatNum(Math.floor(time / (60 * 60)));
             m = formatNum(Math.floor((time - (h * 60 * 60)) / 60));
             s = formatNum(time % 60);
@@ -540,12 +547,6 @@
                 document.getElementById(id).innerHTML = h + hType + m + mType + s + sType;
             } else {
                 console.log(h + hType + m + mType + s + sType);
-            }
-            if (time <= 0) {
-                clearInterval(intervalId);
-                if (typeof func === 'function') {
-                    func();
-                }
             }
         }, 1000);
     }
