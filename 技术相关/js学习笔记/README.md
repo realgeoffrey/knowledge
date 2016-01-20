@@ -51,10 +51,12 @@
             ```javascript
             /* 以sessionStorage为例，localStorage有完全同样用法*/
             /* setItem存储value(可以直接用"."和"[]"操作)*/
-            sessionStorage.setItem("key1", "value1");   /* sessionStorage.key1 = "value1";或 sessionStorage['key1'] = "value1";*/
+            sessionStorage.setItem("key1", "value1");
+            sessionStorage.key2 = "value2"; /* 或 sessionStorage['key2'] = "value2";*/
 
             /* getItem获取value(可以直接用"."和"[]"操作)*/
-            var value1 = sessionStorage.getItem("key1");    /* var value1 = sessionStorage.key1或var value1 = sessionStorage['key1']*/
+            var value1 = sessionStorage.getItem("key1");
+            var value2 = sessionStorage.key2;   /* 或 var value1 = sessionStorage['key1']*/
 
             /* removeItem删除key|value*/
             sessionStorage.removeItem("key1");
