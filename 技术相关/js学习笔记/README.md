@@ -43,27 +43,57 @@
 
     都存储在本地
 
-    - `localStorage`:
-        - 同源,除非被清除，否则永久保存
-        - 5m
-        - 仅在客户端（即浏览器）中保存，不参与和服务器的通信
-        - 源生接口可以接受，亦可再次封装来对Object和Array有更好的支持
-        - 应用场景:所有需要长期本地存储的数据
-        一个域名存储一个localStorage对象,意味着随时修改一个会话的值,同域名下的其他会话的值也会变化(因为修改和访问的都是本地文件).
-        除非手动删除,否则用不删除,一个域名4m.
-    - `sessionStorage`:
+    - `web storage`
 
-        - 仅在同源且当前会话(tab窗口)下有效,跳转页面为同源后仍旧有效，关闭页面或浏览器后被清除
-        - 5m
-        - 仅在客户端（即浏览器）中保存，不参与和服务器的通信
-        - 源生接口可以接受，亦可再次封装来对Object和Array有更好的支持
-        - 应用场景:拆分成多个子页面的填写数据
-        一个会话存储一个sessionStorage对象,不同tab的值不共通.
-        只在单个会话中保存,会话关闭则删除,一个会话4m.
+        - 除了ie6、ie7外其他浏览器都支持（ie及FF需在web服务器里运行），然而ie6、ie7的UserData通过代码封装可以统一到所有浏览器都支持web storage。`if(typeof window.localStorage == 'undefined'){...}`
+        - 拥有方便的api（以sessionStorage为例，localStorage有完全同样用法）
+
+            ```javascript
+            /* setItem存储value(可以直接用"."和"[]"操作)*/
+            window.sessionStorage.setItem("key1", "value1");    /* window.sessionStorage.key1 = "value1";或 window.sessionStorage['key1'] = "value1";*/
+
+            /* getItem获取value(可以直接用"."和"[]"操作)*/
+            var value1 = window.sessionStorage.getItem("key1");    /* var value1 = window.sessionStorage.key1或var value1 = window.sessionStorage['key1']*/
+
+            /* removeItem删除key|value*/
+            window.sessionStorage.removeItem("key1");
+
+            /* 清除所有的key|value*/
+            window.sessionStorage.clear();
+
+            /* 遍历数据的key方法和length属性*/
+            for (var i = 0; i  <  window.sessionStorage.length; i++){
+                var key1 = window.sessionStorage.key(i);
+                var value1 = window.sessionStorage.getItem(key1);
+            }
+            ```
+        - `localStorage`:
+            - 本地保存，字符串形式保存
+            - 持久化本地存储
+            - 同源,除非被清除，否则永久保存
+            - 在所有同源窗口中共享（因为修改和访问的都是本地文件，因此随时修改一个会话的值,同域名下的其他会话的值也会变化).
+            - 5m
+            - 仅在客户端（即浏览器）中保存，不参与和服务器的通信
+            - 源生接口方便操作（setItem,getItem,removeItem,clear等方法），亦可再次封装来对Object和Array有更好的支持
+            - 应用场景:所有需要长期本地存储的数据
+        - `sessionStorage`:
+            - 本地保存，字符串形式保存
+            - 会话级别存储
+            - 同源且同会话(tab窗口)下有效,跳转页面为同源后仍旧有效，关闭页面或浏览器后被清除
+            - 5m
+            - 仅在客户端（即浏览器）中保存，不参与和服务器的通信
+            - 源生接口方便操作（setItem,getItem,removeItem,clear等方法），亦可再次封装来对Object和Array有更好的支持
+            - 应用场景:拆分成多个子页面的填写数据
+            - 一个会话存储一个sessionStorage对象,不同tab的值不共通.
     - `cookie`:
-        - 同源,一般由服务器生成，可设置失效时间。如果在浏览器端生成Cookie，默认是关闭浏览器后失效
-        - 4k
-        - 每次都会携带在HTTP头中，如果使用cookie保存过多数据会带来性能问题
-        - 需要程序员自己封装，源生的Cookie接口不友好
-        - 应用场景:主要判断用户登录
-        每个http请求都会携带,一个域名4k.
+        - 本地保存，字符串形式保存
+        - 若不设置失效期则存储在内存中，若设置了失效期则存储在硬盘
+        - 同源,默认是关闭浏览器后失效，设置失效时间则到期后才失效
+        - 始终在同源的http请求中携带（即使不需要）
+        - 单个cookie保存的数据不超过4k，单个域名有限制数量的cookie（最少20个）
+        - 需要程序员自己封装get和set方法，源生的Cookie接口不友好
+        - 应用场景:主要判断用户登录，需要个性化服务的需要用cookie来辨认用户
+    - `session`:
+        - 服务端保存，对象形式保存
+        - 需要借助本地cookie进行控制
+        - 无状态值（无法区分请求地址）
