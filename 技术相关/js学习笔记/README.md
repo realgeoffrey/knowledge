@@ -53,7 +53,6 @@
             /* setItem存储value(可以直接用"."和"[]"操作)*/
             sessionStorage.setItem("key1", "value1");   /* sessionStorage.key1 = "value1";或 sessionStorage['key1'] = "value1";*/
 
-
             /* getItem获取value(可以直接用"."和"[]"操作)*/
             var value1 = sessionStorage.getItem("key1");    /* var value1 = sessionStorage.key1或var value1 = sessionStorage['key1']*/
 
@@ -70,12 +69,14 @@
             }
             ```
         - localStorage、sessionStorage区别
-            1. `localStorage`:
-                - 同源共享，除非被清除，否则永久保存（因为修改和访问的都是本地文件，因此在一个会话中修改值,同域名下的其他会话的值也变化)
+            1. `localStorage`
+                - 同源共享
+                - 持久化本地存储。除非被清除，否则永久保存（因为修改和访问的都是本地文件，因此在一个会话中修改值,同域名下的其他会话的值也变化)
                 - 5m
                 - 应用场景:所有需要长期本地存储的数据
-            2. `sessionStorage`:
-                - 同源且同会话(tab窗口)下共享，跳转页面为同源后仍旧有效，关闭浏览器后被清除（一个会话存储一个sessionStorage对象,不同tab的值不共通;关闭tab后恢复此tab可能恢复数据）
+            2. `sessionStorage`
+                - 同源且同会话(tab窗口)下共享
+                - 会话级别存储。跳转页面为同源后仍旧有效，关闭浏览器后被清除（一个会话存储一个sessionStorage对象,不同tab的值不共通;关闭tab后恢复此tab可能恢复数据）
                 - 5m
                 - 应用场景:需要拆分成多个子页面的填写数据
     - `cookie`:
