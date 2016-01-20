@@ -289,6 +289,15 @@
     - 弹性图片：`img {max-width: 100%;}`
     - wap可以用rem和html的font-size配合
 
+- wap响应式页面解决方案:使用rem单位+媒体查询
+
+    rem(font size of the root element):相对于根元素的字体大小的单位.
+    某样式的rem转换为具体px值的换算方式为:rem值乘于html的font-size像素值.
+    1. 媒体查询设置html的font-size,把要做成响应式的内容转换为rem单位.
+        1. 正常完成切图:用正常的320px设计稿切完图,用px作为单位.
+        2. 媒体查询仅设置html的不同情况下的font-size值.
+        3. 把css内需要响应式内容的px值,除以在320px宽度下的html的font-szie值(320px宽度时设置为10px方便计算,设置为小于6px不起作用),单位改为rem.
+    2. 用js根据浏览器宽度修改html的font-size,内容完全使用rem和百分比~~css内要用响应式的内容必须用媒体查询设置多份样式表~~.还可以根据iOS与Android而设置viewport为0.5与1.
 
 ##经验总结
 - html请求资源:
