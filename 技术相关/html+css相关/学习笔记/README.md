@@ -285,6 +285,33 @@
     - 弹性图片： `img {max-width: 100%;}`
     - wap可以用rem和html的font-size配合
 
+- wap响应式页面解决方案:使用rem单位+媒体查询
+
+    rem(font size of the root element):相对于根元素的字体大小的单位.
+    某样式的rem转换为具体px值的换算方式为:rem值乘于html的font-size像素值.
+    1. 媒体查询设置html的font-size,把要做成响应式的内容转换为rem单位.
+        1. 正常完成切图:用正常的320px设计稿切完图,用px作为单位.
+        2. 媒体查询仅设置html的不同情况下的font-size值.
+        3. 把css内需要响应式内容的px值,除以在320px宽度下的html的font-szie值(320px宽度时设置为10px方便计算,设置为小于6px不起作用),单位改为rem.
+
+        >仅需要把要响应式布局的内容进行转变
+    2. *用js根据是否是苹果设备进行判断：若是苹果设备则viewport设置为0.5，html的font-size设置为2倍；若非苹果设备则viewport设置为1，html的font-size设置为1倍*
+
+        ```javascript
+        var fontSize = 10;
+
+        /* 实现根据iOS和Android不同设备设置不同的viewport*/
+        if ((/iphone|ipad|ipod/i).test(navigator.appVersion) && window.devicePixelRatio >= 2) {
+            document.getElementById('j-viewport').content = 'width=device-width, initial-scale=0.5, user-scalable=no, minimum-scale=0.5, maximum-scale=0.5'
+            document.documentElement.style.fontSize = 2 * fontSize + "px";
+        } else {
+            document.getElementById('j-viewport').content = 'width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1, maximum-scale=1'
+            document.documentElement.style.fontSize = fontSize + "px";
+        }
+        ```
+
+        >因为html的font-size是用js写死的，而且viewport会变化，所以所有大小都要用百分比+rem。
+    3. *用js根据浏览器宽度的改变修改html的font-size,页面总宽度固定为某rem。所有大小都要用百分比+rem*
 
 ##经验总结
 - html请求资源:
