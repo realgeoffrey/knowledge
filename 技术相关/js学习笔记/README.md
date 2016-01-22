@@ -2,6 +2,26 @@
 
 - if中用赋值（大部分是误用）并非总是返回真值，条件判断赋值内容Boolen后为假即判断为假：`if(a = false){...}`。
 
+- 判断jQuery选择器选择到空内容
+
+    无论选择器选取的内容是否为空，都返回数组，所以`if($(...)) {...}`永远成立。因此用以下方法
+    - `if($(...).length > 0) {...}`
+    - `if($(...)[]) {...}/* 若无则为undefined*/`
+
+- Object.prototype.toString
+
+    >ECMA 对Object.prototype.toString的解释:
+    >Object.prototype.toString ( )
+
+    >When the toString method is called, the following steps are taken:
+
+    >If the this value is undefined, return "[object Undefined]".
+    >If the this value is null, return "[object Null]".
+    >Let O be the result of calling ToObject passing the this value as the argument.
+    >Let class be the value of the [[Class]] internal property of O.
+    >Return the String value that is the result of concatenating the three Strings "[object ", class, and "]".
+
+
 - JS性能
     - 平稳退化：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
         - 为JS代码预留出退路（html标签添加属性链接，用js事件绑定去拦截浏览器默认行为）
