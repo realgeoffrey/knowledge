@@ -42,6 +42,8 @@
         }
         ```
 
+    >部分浏览器设置`.clear:after{display: block;clear: both;content: ".";visibility: hidden;height: 0;}`，会导致:after的内容有占高宽，必须使用`overflow: hidden;`代替使用。
+
 - 单行文本和多行文本超出宽度显示省略号
 
     ```css
