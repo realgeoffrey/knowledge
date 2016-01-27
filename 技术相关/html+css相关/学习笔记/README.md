@@ -118,6 +118,44 @@
 
     对有空白字符包裹的非空白字符(中文、英文、标点)产生效果.
 
+- 模糊效果滤镜（高斯模糊）
+    - CSS3（除*ie10*与*ie11*外基本所有主流浏览器）
+
+        ```css
+        .filter {
+            -webkit-filter: blur(10px);
+            -moz-filter: blur(10px);
+            -ms-filter: blur(10px);
+            filter: blur(10px);
+            filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* IE6~IE9 */
+        }
+        ```
+    - SVG（较新版本的FireFox, Chrome, Opera）
+
+        >新建一个SVG文件，把滤镜方法放进去，然后css调用`filter: url(某.svg#某id)`
+
+        ```svg
+        <?xml version="1.0" standalone="no"?>
+        <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events" baseProfile="full">
+            <defs>
+                <filter id="某id">
+                    <feGaussianBlur stdDeviation="10"/>
+                </filter>
+            </defs>
+        </svg>
+        ```
+        ```css
+        .filter {
+            -webkit-filter: url(某文件.svg#某id);
+            -moz-filter: url(某文件.svg#某id);
+            filter: url(某文件.svg#某id);
+        }
+        ```
+
+    - canvas
+
+        ...
 
 ##HTML + CSS
 - 垂直居中
