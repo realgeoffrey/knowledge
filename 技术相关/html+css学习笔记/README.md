@@ -126,7 +126,7 @@
 
         ```css
         .filter {
-            -webkit-filter: blur(10px); /* Chrome, Opera */
+            -webkit-filter: blur(10px);
             -moz-filter: blur(10px);
             -ms-filter: blur(10px);
             filter: blur(10px);
