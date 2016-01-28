@@ -20,14 +20,16 @@
 
 6. ie6图片无法用png-24透明图，会把透明部分显示为灰色，可以使用js插件或用gulp压缩png图片使其可以在ie6下正常显示来修复：
 	- 不依赖其他插件
-	``` html
-	<!--[if IE 6]>
-	<script src="js/pngfilter.js" ></script>
-	<script>
-		DD_belatedPNG.fix('.j-png');
-	</script>
-	<![endif]-->
-	```
+
+        ``` html
+        <!--[if IE 6]>
+        <script src="js/pngfilter.js" ></script>
+        <script>
+            DD_belatedPNG.fix('.j-png');
+        </script>
+        <![endif]-->
+        ```
+
 	>插件问题：
 	>用div透明背景图覆盖出圆角效果会单边缩短1px，要给背景图左右多出1px背景(js的bugs)。
 
@@ -70,22 +72,23 @@
 
 19. ie6不支持position: fixed，需使用js组建：
 	- 依赖jquery
-	``` html
-	<script src="js/ks.gototop.js"></script>
-	<script>
-		ue.gototop({
-			relative: $(".content_wrapper"),	// 相对定位的对象
-			target: $('#j-sidenav'),	// gototop对象，必须设置具体width
-			top/bottom: 270,	// 距离顶部或者底部的高度
-			left/right: 25,	// 距离相对定位对象的距离
-			scrollTop: 123, 	// y轴滚动条滚动到这个位置显示gototop对象 默认0
-			fade: false,	// 是否开启针对ie6取消渐隐渐现 默认开启
-			btn: $('#btn'),	// 到达scrollTop位置以内会隐藏
-			onscroll: function(){	// 滚动页面回调函数
-		}
-		});
-	</script>
-	```
+
+        ``` html
+        <script src="js/ks.gototop.js"></script>
+        <script>
+            ue.gototop({
+                relative: $(".content_wrapper"),	// 相对定位的对象
+                target: $('#j-sidenav'),	// gototop对象，必须设置具体width
+                top/bottom: 270,	// 距离顶部或者底部的高度
+                left/right: 25,	// 距离相对定位对象的距离
+                scrollTop: 123, 	// y轴滚动条滚动到这个位置显示gototop对象 默认0
+                fade: false,	// 是否开启针对ie6取消渐隐渐现 默认开启
+                btn: $('#btn'),	// 到达scrollTop位置以内会隐藏
+                onscroll: function(){	// 滚动页面回调函数
+            }
+            });
+        </script>
+        ```
 
 20. ie6的input标签有很多css问题，尽量不要设置复杂的css效果在input标签上：
 	- input设display: block会跟父级上下有1px间距，用`float`解决
@@ -123,6 +126,7 @@
 	- 仅仅背景透明，不影响子项内容：`filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr=#40000000, endColorStr=#40000000);/*必须激活haslayout，比如zoom: 1;*/`，等价于高级浏览器的`background: rgba(0,0,0,.5);`
 
 30. ie6没有console方法（执行会报错），可用alert替代：
+
 	``` js
 	if(typeof console === "undefined" || typeof console.log === "undefined") {
 		console = {};

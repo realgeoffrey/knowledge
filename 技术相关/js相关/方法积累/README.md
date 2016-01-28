@@ -526,3 +526,16 @@
         }, 1000);
     }
     ```
+
+- jQuery实现判断按下具体键值取消默认行为
+
+    ```javascript
+    $(...).on('keydown', function (e) {
+        var event = e || window.event;
+        var keyCode = event.charCode || event.keyCode;
+
+        if (keyCode === 13) {   /* 查询键值表 13：换行*/
+            return false;
+        }
+    });
+    ```

@@ -77,3 +77,7 @@ There'are **webstorm** and **phpstorm** settings. I exported these settings to m
     </body>
     </html>
     ```
+
+- `resources_cn.jar`
+
+    Chinese Language Pack for PhpStorm.
