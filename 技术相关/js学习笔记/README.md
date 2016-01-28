@@ -64,13 +64,12 @@
         /* 对象已经定义 && 对象不为null && 对象方法存在*/
         if (typeof obj !== "undefined" && obj !== null && typeof obj.func === "function") {
             /* 对象方法已定义 可执行*/
-            console.log(1);
         }
         ```
     - 判断全局对象方法是否可以执行
 
         ```javascript
-        /* window下子对象存在 && 对象方法存在*/
+        /* window的子对象存在 && 对象方法存在*/
         if (window.obj && typeof window.obj.func === "function") {
             /* 对象方法已定义 可执行*/
         }
@@ -86,9 +85,9 @@
     - 变量已定义
 
         ```javascript
-        /* 变量已定义（不排除null） && ...*/
+        /* 变量已定义（不排除null）*/
         if (typeof a !== 'undefined') {
-
+            /* 对象已定义 可操作*/
         }
         ```
 
@@ -183,3 +182,9 @@
     - `session`:
         - 服务端保存，对象形式保存
         - 无状态值（无法区分请求地址），需要借助本地cookie进行操作
+
+- jQuery的`.on()`绑定效率
+
+    `$(event handler).on(event,selector,...)`
+    1. 执行`on`方法的时间时刻，把所有满足条件的DOM对象安装指定的内容，成为**event handler**。有且仅有这些event handler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的event handler处理DOM也不会使绑定内容失效（除非删除）；在event handler内动态增删的**selector**都可以由条件判定生效绑定内容。
+    2. 绑定的event handler距离selector越近，效率越高。因此把selector都绑定再`$(document)``上是低效的。
