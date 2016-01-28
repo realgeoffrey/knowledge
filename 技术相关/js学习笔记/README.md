@@ -9,7 +9,7 @@
     - `if($(...)[]) {...}/* 若无则为undefined*/`
 
 - 判断类型
-    - `Object.prototype.toString.apply(值)`
+    - `Object.prototype.toString.apply(值)`（或call）
 
         >[ECMA]When the toString method is called, the following steps are taken:
         >   - If the this value is undefined, return "[object Undefined]".
@@ -20,13 +20,36 @@
 
         - 如果this的值为undefined,则返回"[object Undefined]".
 
-          如果this的值为null,则返回"[object Null]".
+            如果this的值为null,则返回"[object Null]".
 
-          让O成为调用ToObject(this)的结果.
+            让O成为调用ToObject(this)的结果.
 
-          让class成为O的内部属性[[Class]]的值.
+            让class成为O的内部属性[[Class]]的值.
 
-          返回三个字符串"[object ", class, 以及 "]"连接后的新字符串.
+            返回三个字符串"[object ", class, 以及 "]"连接后的新字符串.
+        - 除了放入undefined或null外，放入**对象**，返回**[object 构造函数的名称]**的字符串
+
+            `Object.prototype.toString.call(值);` -> 输出字符串
+            - `undefined` 或 不填 -> `[object Undefined]`
+            - `null` -> `[object Null]`
+            - `function(){}`（匿名与不匿名） -> `[object Function]`
+            - `{}` -> `[object Object]`
+
+            只要是内置对象，则返回其构造函数名。以下为举例：
+            - `[]` -> `[object Array]`
+            - 数字 -> `[object Number]`
+            - 字符串 -> `[object String]`
+            - 布尔型对象 -> `[object Boolean]`
+            - Date对象 -> `[object Date]`
+            - RegExp对象 -> `[object RegExp]`
+            - arguments对象 -> `[object Arguments]`
+            - Error对象 -> `[object Error]`
+            - Math对象 -> `[object Math]`
+            - window对象 -> `[object global]`
+            - document对象 -> `[object HTMLDocument]`
+            - JSON对象 -> `[object JSON]`
+            - Map对象 -> `[object Map]`
+            - console对象 -> `[object Console]`
 
     - `typeof 值`
 
