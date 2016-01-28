@@ -57,6 +57,42 @@
 
     - `值 in 值`
 
+- 判断对象、方法是否定义
+    - 判断对象方法是否可以执行
+
+        ```javascript
+        /* 对象已经定义 && 对象不为null && 对象方法存在*/
+        if (typeof obj !== "undefined" && obj !== null && typeof obj.func === "function") {
+            /* 对象方法已定义 可执行*/
+            console.log(1);
+        }
+        ```
+    - 判断全局对象方法是否可以执行
+
+        ```javascript
+        /* window下子对象存在 && 对象方法存在*/
+        if (window.obj && typeof window.obj.func === "function") {
+            /* 对象方法已定义 可执行*/
+        }
+        ```
+    - 判断是否需要重新定义
+
+        ```javascript
+        /* 对象不存在 || 对象不为null || 对象方法不存在*/
+        if (typeof obj === "undefined" || obj === null || typeof obj.func !== "function") {
+            /* 对象或对象方法没有定义 需重新定义*/
+        }
+        ```
+    - 变量已定义
+
+        ```javascript
+        /* 变量已定义（不排除null） && ...*/
+        if (typeof a !== 'undefined') {
+
+        }
+        ```
+
+
 - JS性能
     - 平稳退化：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
         - 为JS代码预留出退路（html标签添加属性链接，用js事件绑定去拦截浏览器默认行为）
