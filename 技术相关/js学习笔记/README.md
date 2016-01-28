@@ -18,6 +18,16 @@
         >   - Let class be the value of the [[Class]] internal property of O.
         >   - Return the String value that is the result of concatenating the three Strings **"[object ", class, and "]"**.
 
+        - 如果this的值为undefined,则返回"[object Undefined]".
+
+          如果this的值为null,则返回"[object Null]".
+
+          让O成为调用ToObject(this)的结果.
+
+          让class成为O的内部属性[[Class]]的值.
+
+          返回三个字符串"[object ", class, 以及 "]"连接后的新字符串.
+
     - `typeof 值`
 
     - `值 instanceof 值`
