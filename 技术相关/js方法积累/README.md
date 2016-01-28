@@ -555,11 +555,11 @@
 - jQuery实现判断按下具体键值取消默认行为
 
     ```javascript
-    $(...).on('keydown', function (e) {
-        var event = e || window.event;
-        var keyCode = event.charCode || event.keyCode;
+    $(...).on('keydown', function (event) {
+        var e = event || window.event;
+        var keyCode = e.charCode || e.keyCode;
 
-        if (keyCode === 13) {   /* 查询键值表 13：换行*/
+        if (keyCode === 13) {   /* 查询键值表 例:13->换行*/
             return false;
         }
     });
