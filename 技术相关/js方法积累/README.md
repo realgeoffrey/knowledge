@@ -552,15 +552,15 @@
     }
     ```
 
-- jQuery实现判断按下具体键值取消默认行为
+- jQuery实现判断按下具体某键值
 
     ```javascript
     $(...).on('keydown', function (event) {
         var e = event || window.event;
-        var keyCode = e.charCode || e.keyCode;
+        var keyCode = e.charCode || e.keyCode;  /* 获取键值*/
 
         if (keyCode === 13) {   /* 查询键值表 例:13->换行*/
-            return false;
+            return false;   /* 具体操作...*/
         }
     });
     ```
