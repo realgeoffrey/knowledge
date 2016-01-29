@@ -560,7 +560,9 @@
         var keyCode = e.charCode || e.keyCode;  /* 获取键值*/
 
         if (keyCode === 13) {   /* 查询键值表 例:13->换行*/
-            return false;   /* 具体操作...*/
+            $(this).val($(this).val()+'换行');   /* 具体操作...*/
+
+            return false;
         }
     });
     ```
