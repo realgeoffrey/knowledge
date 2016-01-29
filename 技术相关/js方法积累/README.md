@@ -552,17 +552,64 @@
     }
     ```
 
-- jQuery实现判断按下具体某键值
+- js绑定、解绑事件
 
     ```javascript
-    $(...).on('keydown', function (event) {
+    function addEvent(obj, type, handle) {
+        if (typeof obj.addEventListener === 'function') {   /* DOM2级，除ie6~8外的高级浏览器*/
+            obj.addEventListener(type, handle, false);
+        } else if (typeof obj.attachEvent === 'function') { /* 所有ie浏览器*/
+            obj.attachEvent('on' + type, handle);
+        } else {    /* DOM0级，最早期的浏览器都支持*/
+            obj['on' + type] = handle;
+        }
+    }
+
+    addEvent(document.getElementById('test1'), 'keydown', func1);
+
+
+    function removeEvent(obj, type, handle) {
+        if (typeof obj.removeEventListener === 'function') {
+            obj.removeEventListener(type, handle, false);
+        } else if (typeof obj.detachEvent === 'function') {
+            obj.detachEvent('on' + type, handle);
+        } else {
+            obj['on' + type] = null;
+        }
+    }
+
+    removeEvent(document.getElementById('test1'), 'keydown', func1);
+    ```
+
+- js、jQuery实现判断按下具体某键值
+
+    ```javascript
+    /* js原生*/
+    function checkKeyCode(event) {
         var e = event || window.event;
         var keyCode = e.charCode || e.keyCode;  /* 获取键值*/
 
         if (keyCode === 13) {   /* 查询键值表 例:13->换行*/
-            $(this).val($(this).val()+'换行');   /* 具体操作...*/
+            /* 具体操作...*/
 
-            return false;
+            /* 取消默认行为*/
+            if (window.event) {
+                window.event.returnValue = false;
+            } else {
+                event.preventDefault();
+            }
+        }
+    }
+
+    addEvent(document.getElementById('test'), 'keydown', checkKeyCode);  /* 上面绑定事件*/
+
+
+    /* jQuery*/
+    $(...).on('keydown', function (e) {
+        if (e.which === 13) {   /* 查询键值表 例:13->换行*/
+            /* 具体操作...*/
+
+            return false;   /* 取消默认行为*/
         }
     });
     ```
