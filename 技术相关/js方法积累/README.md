@@ -555,6 +555,7 @@
 - js绑定、解绑事件
 
     ```javascript
+    /* 绑定*/
     function addEvent(obj, type, handle) {
         if (typeof obj.addEventListener === 'function') {   /* DOM2级，除ie6~8外的高级浏览器*/
             obj.addEventListener(type, handle, false);
@@ -568,6 +569,7 @@
     addEvent(document.getElementById('test1'), 'keydown', func1);
 
 
+    /* 解绑*/
     function removeEvent(obj, type, handle) {
         if (typeof obj.removeEventListener === 'function') {
             obj.removeEventListener(type, handle, false);
