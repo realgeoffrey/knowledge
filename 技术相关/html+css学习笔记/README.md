@@ -80,6 +80,7 @@ body {
 ### 块级元素的width
 - `width: auto;`:
     默认值,换算具体值为:**本元素width = 父级width - 本元素(margin + padding + border)水平值**
+
     >当块级width为默认的auto时,设置负的水平margin会使width增加
 - `width: 100%;`:
     父级的px为自己的px
@@ -319,7 +320,7 @@ ul li a:hover {
 
 ### wap响应式页面解决方案:使用rem单位+媒体查询
 rem(font size of the root element):相对于根元素的字体大小的单位.
-某样式的rem转换为具体px值的换算方式为:rem值乘于html的font-size像素值.
+某样式的rem转换为具体px值的换算方式为:**rem值乘于html的font-size像素值**.
 
 1. 媒体查询设置html的font-size,把要做成响应式的内容转换为rem单位.
     1. 正常完成切图:用正常的320px设计稿切完图,用px作为单位.
