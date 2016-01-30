@@ -1,9 +1,7 @@
-#html+css学习笔记
-
 ##CSS
-### 限定布局宽度，让内容决定布局高度。
+### 限定布局宽度，让内容决定布局高度
 
-### z-index用于控制设置了absolute、relative或fixed定位的元素。
+### z-index用于控制设置了absolute、relative或fixed定位的元素
 应该只给有堆叠关系的节点设置此属性，而不要试图通过设定个别元素的z-index来确保元素不重叠。
 
 ### 用css创造三角形
@@ -20,7 +18,6 @@ div {
 
 ### 清除浮动：
 - 在父级设置
-
     ```css
     .clearfix:after {
        display: block;
@@ -73,7 +70,7 @@ div {
 - `word-wrap: break-word;`:
     若此行放不下则整个单词先换行,若下行也放不下再断词
 
-### body标签设置min-width属性为项目内容宽度(忽略ie6)
+### body标签设置min-width属性为项目内容宽度(不兼容ie6)
 ```css
 body {
    min-width: ;
