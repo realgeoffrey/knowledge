@@ -1,14 +1,14 @@
 #js学习笔记
 
-## if中用赋值（大部分是误用）并非总是返回真值，条件判断赋值内容Boolen后为假即判断为假：`if(a = false){...}`。
+### if中用赋值（大部分是误用）并非总是返回真值，条件判断赋值内容Boolen后为假即判断为假：`if(a = false){...}`。
 
-## 判断jQuery选择器选择到空内容
+### 判断jQuery选择器选择到空内容
 
     无论选择器选取的内容是否为空，都返回数组，所以`if($(...)) {...}`永远成立。因此用以下方法
     - `if($(...).length > 0) {...}`
     - `if($(...)[]) {...}/* 若无则为undefined*/`
 
-## 判断类型
+### 判断类型
     - `Object.prototype.toString.apply(值)`（或call）
 
         >[ECMA]When the toString method is called, the following steps are taken:
@@ -57,7 +57,7 @@
 
     - `值 in 值`
 
-## 判断对象、方法是否定义
+### 判断对象、方法是否定义
     - 判断对象方法是否可以执行
 
         ```javascript
@@ -92,7 +92,7 @@
         ```
 
 
-## JS性能
+### JS性能
     - 平稳退化：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
         - 为JS代码预留出退路（html标签添加属性链接，用js事件绑定去拦截浏览器默认行为）
             >`<a href="真实地址" class="j-func">...</a>`
@@ -117,7 +117,7 @@
         - 压缩资源。
         - 脚本放置在`</body>`前。
 
-## DOM加载步骤、jQuery的文档ready事件和js的onload事件顺序
+### DOM加载步骤、jQuery的文档ready事件和js的onload事件顺序
     1. 解析Html结构
     2. 加载外部脚本和样式表文件
     3. 解析并执行脚本代码
@@ -125,11 +125,11 @@
     5. 加载图片等外部文件
     6. 页面加载完毕 -> 完成后执行`window.onload();`
 
-## 构造函数中的变量
+### 构造函数中的变量
 
     实例化（new）一个构造函数,得到的对象拥有构造函数内用`this`定义的属性(或方法),在构造函数内的`var`变量无法被这个对象使用,只能在构造函数里使用(类似私有变量).
 
-## web storage（localStorage、sessionStorage）、cookie、session
+### web storage（localStorage、sessionStorage）、cookie、session
     - `web storage（localStorage、sessionStorage）`
         - 本地保存，字符串形式保存
         - 仅在客户端（即浏览器）中保存，不参与和服务器的通信
@@ -183,7 +183,7 @@
         - 服务端保存，对象形式保存
         - 无状态值（无法区分请求地址），需要借助本地cookie进行操作
 
-## jQuery的`.on()`绑定效率
+### jQuery的`.on()`绑定效率
 
     `$(event handler).on(event,selector,function(){})`
     1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的内容，成为**event handler**。有且仅有这些event handler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的event handler处理DOM也不会使绑定内容失效（除非删除）；在event handler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
