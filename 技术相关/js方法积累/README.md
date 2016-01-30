@@ -396,7 +396,7 @@ function addFavorite(url, title) {  /* url必须带有协议头*/
 
 ### js实现类似jQuery的`$('html,body').animate({'scrollTop': 像素}, 毫秒);`
 ```javascript
-function animateToTop(scrollTo, time) { /* time毫秒*/
+function animateToTop(scrollTo, time) { /* scrollTo像素，time毫秒*/
     var scrollFrom = parseInt(document.body.scrollTop),
         i = 0,
         runEvery = 5;
