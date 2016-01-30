@@ -394,7 +394,7 @@ function addFavorite(url, title) {  /* url必须带有协议头*/
 }
 ```
 
-### js实现类似jQuery的`$('html,body').animate({'scrollTop':scrollTo},time);`（scrollTo和time是变量）
+### js实现类似jQuery的`$('html,body').animate({'scrollTop':scrollTo},time);` （scrollTo和time是变量）
 ```javascript
 function animateToTop(scrollTo, time) { /* time毫秒*/
     var scrollFrom = parseInt(document.body.scrollTop),
