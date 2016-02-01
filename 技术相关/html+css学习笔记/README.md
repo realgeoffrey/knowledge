@@ -152,6 +152,12 @@ body {
 
     ...
 
+### css的小数
+不同浏览器对小数（以及百分比换算成的小数）有不同的处理方式，会出现一列百分比相加为100%的节点换算之后无法占满整列：
+- 四舍五入：ie8 ie9 chrome firefox
+- 直接向下取整：ie7 safari
+
+
 ##HTML + CSS
 ### 垂直居中
 ```html
@@ -345,6 +351,15 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
 
     >因为html的font-size是用js写死的，而且viewport会变化，所以所有大小都要用百分比+rem。
 3. *用js根据浏览器宽度的改变修改html的font-size,页面总宽度固定为某rem。所有大小都要用百分比+rem*
+
+### img标签的圆形边框
+
+1. 圆形+边框
+    - pc：直接在img上设置`border`和`border-radius`
+    - wap：再img上设置`border`和`border-radius`，并且再外层嵌套一层设置`border`和`border-radius`
+2. 圆形（无边框）
+    -pc+wap：直接在img上设置`border-radius`
+
 
 ##经验总结
 ### html请求资源:
