@@ -128,9 +128,7 @@ if中用赋值操作（大部分是误用）并非总是返回真值，赋值的
 
 ### 构造函数中的变量
 实例化（new）一个构造函数,得到的对象拥有构造函数内用`this`定义的属性(或方法),在构造函数内`var`的变量和`function`无法被这个对象使用,只能在构造函数里使用(类似私有变量).
-```javascript
-
-```
+相对于单全局变量，构造函数更加灵活，可以生成多个对象进行互相独立的操作。
 
 ### web storage（localStorage、sessionStorage）、cookie、session
 - `web storage（localStorage、sessionStorage）`

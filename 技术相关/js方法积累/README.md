@@ -596,3 +596,61 @@ $(...).on('keydown', function (e) {
     }
 });
 ```
+
+### jQuery弹出toast
+```javascript
+function alertDialog(text) {
+    if ($('.j-pop-text').length === 0) {
+        $('body').append('<div class="j-pop-text 样式类" style="display: none;"></div>');
+    }
+
+    var $popText = $('.j-pop-text');
+
+    text = text || '';
+    $popText.text(text);
+
+    if ($popText.is(':hidden')) {
+        $popText.show(function () {
+            setTimeout(function () {
+                $popText.fadeOut(function () {
+                    $popText.text('');
+                });
+            }, 2500);
+        });
+    }
+}
+```
+
+### jQuery全选、取消全选
+```html
+所有：
+<input type="checkbox" name="all">
+<br>
+
+单个：
+<input type="checkbox" name="ones">
+<input type="checkbox" name="ones">
+<input type="checkbox" name="ones">
+```
+```javascript
+var $allInput = $('[name="all"]'),
+    $oneInput = $('[name="ones"]');
+
+$allInput.on('click', function () {
+    $oneInput.prop('checked', this.checked);
+});
+
+$oneInput.on('click', function () {
+    var flag = true;
+
+    $oneInput.each(function () {
+        if (!this.checked) {
+            flag = false;
+
+            return false;
+        }
+    });
+
+    $allInput.prop('checked', flag);
+});
+```
