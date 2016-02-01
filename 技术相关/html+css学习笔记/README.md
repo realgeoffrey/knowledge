@@ -356,9 +356,9 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
 
 1. 圆形+边框
     - pc：直接在img上设置`border`和`border-radius`
-    - wap：再img上设置`border`和`border-radius`，并且再外层嵌套一层设置`border`和`border-radius`
+    - wap：在img上设置`border`和`border-radius`，并且在父级嵌套一层设置`border`和`border-radius`
 2. 圆形（无边框）
-    -pc+wap：直接在img上设置`border-radius`
+    - pc+wap：直接在img上设置`border-radius`
 
 
 ##经验总结
