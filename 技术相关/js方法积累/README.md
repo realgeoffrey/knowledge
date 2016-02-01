@@ -625,7 +625,6 @@ function alertDialog(text) {
 ```html
 所有：
 <input type="checkbox" name="all">
-<br>
 
 单个：
 <input type="checkbox" name="ones">
