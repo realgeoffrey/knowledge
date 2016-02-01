@@ -630,6 +630,7 @@ function alertDialog(text) {
 <input type="checkbox" name="ones">
 <input type="checkbox" name="ones">
 <input type="checkbox" name="ones">
+...
 ```
 ```javascript
 var $allInput = $('[name="all"]'),
