@@ -122,7 +122,7 @@ body {
         -moz-filter: blur(10px);
         -ms-filter: blur(10px);
         filter: blur(10px);
-        filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* IE6~IE9 */
+        filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* ie6~ie9 */
     }
     ```
 - SVG（较新版本的FireFox, Chrome, Opera）
@@ -157,6 +157,19 @@ body {
 - 四舍五入：ie8 ie9 chrome firefox
 - 直接向下取整：ie7 safari
 
+
+### img标签的src属性
+当img标签的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
+- 不要用~~空的img标签加上背景来用作默认图~~，必须用其他标签来代替。
+- img标签没有src属性或src属性为空隐藏
+    ```css
+    img[src=''] {   /* ie8+*/
+        visibility: hidden; /* 属性为空隐藏*/
+    }
+    img:not([src]) {    /* ie9+*/
+        visibility: hidden; /* 属性不存在隐藏*/
+    }
+    ```
 
 ##HTML + CSS
 ### 垂直居中
@@ -355,10 +368,10 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
 ### img标签的圆形边框
 
 1. 圆形+边框
-    - pc：直接在img上设置`border`和`border-radius`
-    - wap：在img上设置`border`和`border-radius`，并且在父级嵌套一层设置`border`和`border-radius`
+    - pc：直接在img标签上设置`border`和`border-radius`
+    - wap：在img标签上设置`border`和`border-radius`，并且在父级标签嵌套一层设置`border`和`border-radius`
 2. 圆形（无边框）
-    - pc+wap：直接在img上设置`border-radius`
+    - pc+wap：直接在img标签上设置`border-radius`
 
 
 ##经验总结

@@ -272,7 +272,7 @@ var snifBrowser = {
 snifBrowser.init();
 ```
 
-### js判断IE各版本
+### js判断ie各版本
 ```javascript
 function isIE(num) {
     var dom = document.createElement("b");
