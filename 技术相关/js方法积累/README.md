@@ -168,8 +168,8 @@ function ImgLazyLoad(className, func) {
 
     function getImgArr(className, offset) { /* 获取屏幕内dom数组*/
         var $all = $('.' + className),
-            minHeight = document.body.scrollTop || document.documentElement.scrollTop,
-            maxHeight = minHeight + $(window).height(),
+            screenTop = document.body.scrollTop || document.documentElement.scrollTop,
+            screenBottom = screenTop + $(window).height(),
             domArr = [];
 
         if (typeof offset !== 'number') {
@@ -179,7 +179,7 @@ function ImgLazyLoad(className, func) {
         $all.each(function (index, element) {
             var elemHeight = $(element).offset().top;
 
-            if (elemHeight <= maxHeight + offset && elemHeight >= minHeight - offset) {
+            if (elemHeight <= screenBottom + offset && elemHeight >= screenTop - offset) {
                 domArr.push(element);
             }
         });
