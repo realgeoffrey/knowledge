@@ -175,7 +175,7 @@ body {
     }
     ```
 
-### `inline-block`元素互相以及与文本对齐
+### inline-block元素之间或与文本的文本对齐
 并排排列的不同元素间，若不使用float，而使用inline-block
 - 非img标签
 
