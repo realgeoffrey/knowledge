@@ -26,7 +26,7 @@ sub {bottom:-0.25em;}
 article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,iframe,main {display:block;}
 
 html {-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;-webkit-overflow-scrolling:touch;}
-img {max-width: 100%;}
+img {max-width: 100%;vertical-align: middle;}
 a,button,input,textarea {-webkit-tap-highlight-color:rgba(63,40,1,.3);}
 /*/CSS reset */
 /* 全局*/

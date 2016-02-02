@@ -157,6 +157,9 @@ body {
 - 四舍五入：ie8 ie9 chrome firefox
 - 直接向下取整：ie7 safari
 
+### font-size最小值
+- wap端没有最小限制
+- pc端最小限制为12px
 
 ### img标签的src属性
 当img标签的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
@@ -171,6 +174,36 @@ body {
         visibility: hidden; /* 属性不存在隐藏*/
     }
     ```
+
+### `inline-block`元素互相以及与文本对齐
+并排排列的不同元素间，若不使用float，而使用inline-block
+- 非img标签
+
+    ```css
+    标签 {
+        display: inline-block;
+        *display: inline;
+        zoom: 1;
+        height: 宽;
+        width: 高;
+        vertical-align: bottom;
+        *vertical-align: middle;
+    }
+    ```
+- img标签
+
+    ```css
+    img {
+        display: inline-block;
+        *display: inline;
+        zoom: 1;
+        height: 宽;
+        width: 高;
+        vertical-align: middle;
+    }
+    ```
+
+
 
 ##HTML + CSS
 ### 垂直居中
