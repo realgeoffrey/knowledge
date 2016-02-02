@@ -191,16 +191,5 @@ if中用赋值操作（大部分是误用）并非总是返回真值，赋值的
 2. 绑定的event handler距离selector越近，效率越高。因此把selector都绑定在`$(document)``上是低效的。
 
 ### 自执行匿名函数
-- （推荐）
-
-    ```javascript
-    (function () {
-      /* code*/
-    }());
-    ```
--
-    ```javascript
-      (function () {
-          /* code*/
-      })();
-    ```
+- `(function () {/* code*/}());`推荐
+- `(function () {/* code*/})();`
