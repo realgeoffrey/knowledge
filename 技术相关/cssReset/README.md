@@ -24,9 +24,10 @@ sub,sup {font-size:75%;line-height:0;position:relative;vertical-align:baseline;}
 sup {top:-0.5em;}
 sub {bottom:-0.25em;}
 article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,iframe,main {display:block;}
+img {vertical-align:middle;}
 
 html {-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;-webkit-overflow-scrolling:touch;}
-img {max-width: 100%;vertical-align: middle;}
+img {max-width:100%;}
 a,button,input,textarea {-webkit-tap-highlight-color:rgba(63,40,1,.3);}
 /*/CSS reset */
 /* 全局*/
