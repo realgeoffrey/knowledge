@@ -189,3 +189,18 @@ if中用赋值操作（大部分是误用）并非总是返回真值，赋值的
 
 1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的内容，成为**event handler**。有且仅有这些event handler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的event handler处理DOM也不会使绑定内容失效（除非删除）；在event handler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
 2. 绑定的event handler距离selector越近，效率越高。因此把selector都绑定在`$(document)``上是低效的。
+
+### 自执行匿名函数
+- （推荐）
+
+    ```javascript
+    (function () {
+      /* code*/
+    }());
+    ```
+-
+    ```javascript
+      (function () {
+          /* code*/
+      })();
+    ```
