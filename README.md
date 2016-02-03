@@ -1,6 +1,6 @@
 #Knowledge
 
-Knowledge of my work area.
+Knowledge of my work area..
 
 
 ##技术相关
