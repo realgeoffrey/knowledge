@@ -6,15 +6,16 @@
 
 ```json
 {
-    "name": "gulp项目名",
+    "name": "gulp.me",
     "version": "1.1.0",
-    "author": "Jeff",
-    "description": "My gulp tools",
+    "author": "feijie",
+    "description": "my gulp tools",
     "dependencies": {
+        "browser-sync": "^2.11.1",
         "gulp": "^3.9.0",
         "gulp-concat": "^2.6.0",
-        "gulp-cssnano": "^2.0.0",
-        "gulp-load-plugins": "^1.1.0",
+        "gulp-cssnano": "^2.1.0",
+        "gulp-load-plugins": "^1.2.0",
         "gulp-make-css-url-version": "0.0.13",
         "gulp-rename": "^1.2.2",
         "gulp-uglify": "^1.5.1",
@@ -39,6 +40,8 @@ var rename = require('gulp-rename'), /* 重命名*/
     nano = require('gulp-cssnano'), /* css压缩*/
     makeUrlVer = require('gulp-make-css-url-version'), /* css中url添加版本号*/
     uglify = require('gulp-uglify'), /* js压缩*/
+    browserSync = require('browser-sync').create(), /* 同步修改*/
+    reload = browserSync.reload, /* 刷新*/
     gulp = require('gulp');
 
 
@@ -81,9 +84,16 @@ gulp.task('doJs', function () {
         .pipe(gulp.dest('../js/release/'));
 });
 
-
-/* default*/
-gulp.task('default', ['doImage', 'doCss', 'doJs']);
+/* 监听代理服务器*/
+gulp.task('browserSync', function () {
+    browserSync.init({
+        proxy: "192.168.57.60"
+    });
+    gulp.watch("../../**/*.html").on('change', reload);
+    gulp.watch("../../**/js/**").on('change', reload);
+    gulp.watch("../../**/css/**").on('change', reload);
+    gulp.watch("../../**/images/**").on('change', reload);
+});
 
 /* 监视文件，自动执行*/
 gulp.task('watch', function () {
@@ -91,4 +101,8 @@ gulp.task('watch', function () {
     gulp.watch('../css/dev/*.css', ['doCss']);
     gulp.watch('../js/dev/*.js', ['doJs']);
 });
+
+
+/* default*/
+gulp.task('default', ['doImage', 'doCss', 'doJs']);
 ```

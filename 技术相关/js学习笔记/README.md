@@ -201,8 +201,23 @@ if中用赋值操作（大部分是误用）并非总是返回真值，赋值的
 - `if(var a = 1, b = 2, c = 3, false){ /* 不执行*/}`
 
     逗号运算符，从左往右依次执行，逻辑结果取最后一个值。
+- html5的`audio`标签有自动播放属性`autoplay`，但ios系统是无法自动播放，可以设置触屏的时候开始播放
 
-### jQuery性能
+    ```html
+    <audio src="1.mp3" controls="controls" autoplay="autoplay" id="audio">
+        您的浏览器不支持 audio 标签
+    </audio>
+
+    <script>
+        window.ontouchstart = function () {
+            document.getElementById('audio').play();
+            window.ontouchstart = null;
+        }
+    </script>
+    ```
+
+
+### jQuery相关
 - 长字符串连使用`.join()`：
 
     ```javascript
@@ -226,4 +241,11 @@ if中用赋值操作（大部分是误用）并非总是返回真值，赋值的
     }
 
     $('body').text(text);
+    ```
+- 判断是否加载成功，不成功则执行载入本地文件
+
+    ```html
+    <script>
+        window.jQuery || document.write('<script src="本地地址"><\/script>');
+    </script>
     ```
