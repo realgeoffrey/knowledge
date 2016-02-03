@@ -407,6 +407,33 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
 2. 圆形（无边框）
     - pc+wap：直接在img标签上设置`border-radius`
 
+### 超出内容区域的内容
+```html
+<style>
+    .full_page {
+        min-width: 内容宽度;
+        overflow: hidden;
+        background: url(背景图) #背景色 center 0 no-repeat;
+    }
+    .container {
+        width: 内容宽度;
+        margin: 0 auto;
+        position: relative;
+    }
+</style>
+<div class="full_page">
+    方法一：absolute
+    <div class="container">
+        ...
+        <div class="超出内容区域的绝对定位内容"></div>
+    </div>
+
+    方法二：大背景模式
+    <div class="大背景"></div>
+</div>
+```
+1. 用绝对定位把内容设置在外部，其中在ie6、ie7情况下，绝对定位内容在右边的（左边全部兼容），会根据超出内容出现滚动条而背景颜色无法延生出，因此当ie6，ie7情况时可以选择当窗口宽度小于文档宽度时隐藏右边隐藏内容。
+2. ~~用大背景模式~~
 
 ##经验总结
 ### html请求资源:
