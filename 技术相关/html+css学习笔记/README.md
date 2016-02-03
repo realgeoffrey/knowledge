@@ -443,13 +443,13 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
     ```html
     <style>
     .outer_2 {
-        width: 300px;
+        width: 总宽度;
         margin: 0 auto;
     }
     .float_2 {
         float: left;
         background: yellow;
-        width: 100px;
+        width: 单个宽度;
     }
     </style>
     <div class="outer_2 clearfix">
