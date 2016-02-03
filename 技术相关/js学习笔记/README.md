@@ -201,3 +201,29 @@ if中用赋值操作（大部分是误用）并非总是返回真值，赋值的
 - `if(var a = 1, b = 2, c = 3, false){ /* 不执行*/}`
 
     逗号运算符，从左往右依次执行，逻辑结果取最后一个值。
+
+### jQuery性能
+- 长字符串连接不用`+`，而使用`.join()`
+
+    ```javascript
+    var arr = [],
+        i;
+
+    for (i = 0; i < 100; i++) {
+        arr[i] = '字符串' + i + '字符串';
+    }
+
+    $('body').text(arr.join(''));
+    ```
+
+    而不是:
+     ```javascript
+    var text = '',
+        i;
+
+    for (i = 0; i < 100; i++) {
+        text = text + '字符串' + i + '字符串';
+    }
+
+    $('body').text(text);
+    ```
