@@ -654,3 +654,25 @@ $oneInput.on('click', function () {
     $allInput.prop('checked', flag);
 });
 ```
+
+### js判断对象是否为空
+```javascript
+function isObjEmpty(obj) {
+    var i;
+    if (obj !== Object(obj)) {  /* 参数不是对象*/
+        throw new TypeError('参数不是对象');
+    } else if (typeof Object.keys === "function") { /* ie9+及高级浏览器支持*/
+
+        return Object.keys(obj).length === 0;
+    } else {
+        for (i in obj) {
+            if (obj.hasOwnProperty(i)) {
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+```
