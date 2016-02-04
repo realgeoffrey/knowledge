@@ -676,3 +676,40 @@ function isObjEmpty(obj) {
     }
 }
 ```
+
+### js、jQuery阻止冒泡和阻止浏览器默认行为
+```javascript
+/* 阻止冒泡*/
+function stopBubble(e) {    /* js原生*/
+    if (e && e.stopPropagation) {
+        e.stopPropagation();
+    } else {
+        window.event.cancelBubble = true;
+    }
+}
+
+$('...').on('...', function (e) {  /* jQuery*/
+    e.stopPropagation();
+});
+
+
+/* 阻止默认行为*/
+function stopDefault(e) {    /* js原生*/
+    if (e && e.preventDefault) {
+        e.preventDefault();
+    } else {
+        window.event.returnValue = false;
+    }
+    return false;
+}
+
+$('...').on('...', function (e) {  /* jQuery*/
+    e.preventDefault();
+});
+
+
+/* jQuery阻止冒泡和默认行为*/
+$('...').on('...', function (e) {
+    return false;
+});
+```
