@@ -194,7 +194,7 @@ if中用赋值操作（大部分是误用）并非总是返回真值，赋值的
 - `(function () {/* code*/}()); /* 推荐*/`
 - `(function () {/* code*/})();`
 
-### `prototype`（待续）
+### prototype（待续）
 prototype属性是js函数的继承机制，是构造函数的方法，可以为构造函数添加成员属性（或方法），`构造函数.prototype`和`实例对象.__proto__`（已弃用）指向同一个原型链
 
 对于构造函数`function Fun(){}`
