@@ -459,7 +459,43 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
     </div>
     ```
 
-
+### 翻转效果（ie9+及高级浏览器）
+```html
+<div class="item">
+    <div class="front">
+        <img>
+    </div>
+    <div class="back">
+        <img>
+    </div>
+</div>
+```
+```css
+.item {
+    position: relative;
+    display: inline-block;
+    *display: inline;
+    zoom: 1;
+}
+.front {
+    backface-visibility: hidden;
+    transition: 1s;
+    transform: rotateY(0deg);
+}
+.back {
+    backface-visibility: hidden;
+    transition: 1s;
+    transform: rotateY(180deg);
+    position: absolute;
+    top: 0;
+}
+.item:hover .front {
+    transform: rotateY(180deg);
+}
+.item:hover .back {
+    transform: rotateY(360deg);
+}
+```
 
 ##经验总结
 ### html请求资源:
