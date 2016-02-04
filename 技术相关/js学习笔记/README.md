@@ -194,6 +194,34 @@ if中用赋值操作（大部分是误用）并非总是返回真值，赋值的
 - `(function () {/* code*/}()); /* 推荐*/`
 - `(function () {/* code*/})();`
 
+### `prototype`（待续）
+prototype属性是js函数的继承机制，是构造函数的方法，可以为构造函数添加成员属性（或方法），`构造函数.prototype`和`实例对象.__proto__`（已弃用）指向同一个原型链
+
+对于构造函数`function Fun(){}`
+1. 覆盖原型链
+
+    ```javascript
+    Func.prototype = {
+        fun2: function () {
+            console.log('add fucntion fun1');
+        },
+        fun3: function () {
+            console.log('add fucntion fun2');
+        }
+    };
+    ```
+2. 不覆盖，在原型链上添加
+
+    ```javascript
+    Func.prototype.fun2 = function () {
+        console.log('add fucntion fun2');
+    };
+    Func.prototype.fun3 = function () {
+        console.log('add fucntion fun3');
+    };
+    ```
+
+
 ### 注意点
 - `var a = b = 1;   /* b没有var的声明*/`
 

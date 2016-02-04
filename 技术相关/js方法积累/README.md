@@ -720,6 +720,6 @@ function returnFalse(e) {   /* js原生*/
     return false;
 }
 
-$('...').on('...', function (e) {  /* jQuery*/
+$('...').on('...', function () {  /* jQuery*/
     return false;
 });
