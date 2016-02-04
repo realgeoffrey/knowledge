@@ -706,12 +706,6 @@ function stopDefault(e) {    /* js原生*/
 $('...').on('...', function (e) {  /* jQuery*/
     e.preventDefault();
 });
-
-
-/* jQuery阻止冒泡和默认行为*/
-$('...').on('...', function (e) {
-    return false;
-});
 ```
 - 阻止冒泡&阻止默认行为
 ```javascript
