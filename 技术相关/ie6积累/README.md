@@ -20,14 +20,15 @@
 
 6. ie6图片无法用png-24透明图，会把透明部分显示为灰色，可以使用js插件或用gulp压缩png图片使其可以在ie6下正常显示来修复：
 	- 不依赖其他插件
-	``` html
-	<!--[if IE 6]>
-	<script src="js/pngfilter.js" ></script>
-	<script>
-		DD_belatedPNG.fix('.j-png');
-	</script>
-	<![endif]-->
-	```
+
+        ``` html
+        <!--[if IE 6]>
+        <script src="js/pngfilter.js" ></script>
+        <script>
+            DD_belatedPNG.fix('.j-png');
+        </script>
+        <![endif]-->
+        ```
 	>插件问题：
 	>用div透明背景图覆盖出圆角效果会单边缩短1px，要给背景图左右多出1px背景(js的bugs)。
 
@@ -124,6 +125,7 @@
 	- 仅仅背景透明，不影响子项内容：`filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr=#40000000, endColorStr=#40000000);/*必须激活haslayout，比如zoom: 1;*/`，等价于高级浏览器的`background: rgba(0,0,0,.5);`
 
 30. ie6没有console方法（执行会报错），可用alert替代：
+
 	``` js
 	if(typeof console === "undefined" || typeof console.log === "undefined") {
 		console = {};
