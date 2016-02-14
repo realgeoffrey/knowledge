@@ -318,6 +318,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     2. ~~`$('父 子')`~~
 
         找到所有子级，然后向前找出有父级的，则选择（性能差）。
+
 ### 移动端相关
 - 移动端或者Zepto的`tap事件`点透bug解决
 >移动端触摸事件顺序：touchstart->touchmove->touchend->click，tap事件发生后300ms才触发click事件。
