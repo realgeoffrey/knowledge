@@ -499,6 +499,7 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
 
 ### 移动端半像素
 1. 整个边框0.5px
+
     ```css
     div {
         width: 宽度;
@@ -516,6 +517,7 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
     }
     ```
 2. 某一边0.5px
+
     ```css
     div {
         width: 100px;
