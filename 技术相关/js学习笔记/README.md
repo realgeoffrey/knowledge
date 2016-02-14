@@ -308,8 +308,8 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
 ### Zepto相关（移动端）
 - Zepto的`tap事件`点透bug解决
->因为Zepto的tap事件发生后300ms再触发click事件。
->在使用zepto框架的tap相关方法时，若绑定tap方法的dom元素在tap方法触发后会隐藏、css3 transfer移走、requestAnimationFrame移走等，而“隐藏、移走”后，
+>移动端触摸事件顺序：touchstart->touchmove->touchend->click，tap事件发生后300ms才触发click事件。
+>在使用Zepto框架的tap相关方法时，若绑定tap方法的dom元素在tap方法触发后会隐藏、css3 transfer移走、requestAnimationFrame移走等，而“隐藏、移走”后，
 >它底下同一位置正好有一个dom元素绑定了click的事件、或者有浏览器认为可以被点击有交互反应的dom元素（默认）,则会出现“点透”现象。
 
     1. 使用`fastclick.js`后用`click`代替tap
