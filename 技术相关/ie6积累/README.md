@@ -70,6 +70,7 @@
 
 19. ie6不支持position: fixed，需使用js组建：
 	- 依赖jquery
+
         ``` html
         <script src="js/ks.gototop.js"></script>
         <script>
