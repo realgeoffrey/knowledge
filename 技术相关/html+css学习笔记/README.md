@@ -40,17 +40,17 @@ div {
     }
     ```
 
->部分浏览器设置`.clear:after{display: block;clear: both;content: ".";visibility: hidden;height: 0;}`，会导致:after的内容有占高宽，必须使用`overflow: hidden;`代替使用。
+>部分浏览器设置`clearfix`，会导致:after的内容有占高宽，必须使用`overflow: hidden;`代替使用。
 
 ### 单行文本和多行文本超出宽度显示省略号
 ```css
-.ellipsis {
+.ellipsis { /* 单行*/
     _width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.multi_ellipsis {
+.multi_ellipsis {   /* 多行*/
     line-height: 1;
     height: 2em;
     display: block;
