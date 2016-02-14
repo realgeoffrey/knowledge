@@ -201,28 +201,28 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
 对于构造函数`function Fun(){}`：
 
-    1. 覆盖原型链
+1. 覆盖原型链
 
-        ```javascript
-        Func.prototype = {
-            fun2: function () {
-                console.log('add fucntion fun1');
-            },
-            fun3: function () {
-                console.log('add fucntion fun2');
-            }
-        };
-        ```
-    2. 不覆盖，在原型链上添加
-
-        ```javascript
-        Func.prototype.fun2 = function () {
+    ```javascript
+    Func.prototype = {
+        fun2: function () {
+            console.log('add fucntion fun1');
+        },
+        fun3: function () {
             console.log('add fucntion fun2');
-        };
-        Func.prototype.fun3 = function () {
-            console.log('add fucntion fun3');
-        };
-        ```
+        }
+    };
+    ```
+2. 不覆盖，在原型链上添加
+
+    ```javascript
+    Func.prototype.fun2 = function () {
+        console.log('add fucntion fun2');
+    };
+    Func.prototype.fun3 = function () {
+        console.log('add fucntion fun3');
+    };
+    ```
 
 ### 注意点
 - `var a = b = 1;   /* b没有var的声明*/`
