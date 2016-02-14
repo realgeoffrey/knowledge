@@ -679,34 +679,34 @@ function isObjEmpty(obj) {
 
 ### js、jQuery阻止冒泡和阻止浏览器默认行为
 - 阻止冒泡
-```javascript
-function stopBubble(e) {    /* js原生*/
-    if (e && e.stopPropagation) {
+    ```javascript
+    function stopBubble(e) {    /* js原生*/
+        if (e && e.stopPropagation) {
+            e.stopPropagation();
+        } else {
+            window.event.cancelBubble = true;
+        }
+    }
+
+    $('...').on('...', function (e) {  /* jQuery*/
         e.stopPropagation();
-    } else {
-        window.event.cancelBubble = true;
-    }
-}
-
-$('...').on('...', function (e) {  /* jQuery*/
-    e.stopPropagation();
-});
-```
+    });
+    ```
 - 阻止默认行为
-```javascript
-function stopDefault(e) {    /* js原生*/
-    if (e && e.preventDefault) {
-        e.preventDefault();
-    } else {
-        window.event.returnValue = false;
+    ```javascript
+    function stopDefault(e) {    /* js原生*/
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        } else {
+            window.event.returnValue = false;
+        }
+        return false;
     }
-    return false;
-}
 
-$('...').on('...', function (e) {  /* jQuery*/
-    e.preventDefault();
-});
-```
+    $('...').on('...', function (e) {  /* jQuery*/
+        e.preventDefault();
+    });
+    ```
 - 阻止冒泡&阻止默认行为
     ```javascript
     function returnFalse(e) {   /* js原生*/
