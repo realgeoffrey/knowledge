@@ -497,6 +497,42 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
 }
 ```
 
+### 移动端半像素
+1. 整个边框0.5px
+    ```css
+    div {
+        width: 宽度;
+        position: relative;
+    }
+    div:before {
+        position: absolute;
+        content: "";
+        width: 200%;
+        height: 200%;
+        border: 1px solid 颜色;
+        transform: scale(.5, .5);
+        transform-origin: 0 0;
+        box-sizing: border-box;
+    }
+    ```
+2. 某一边0.5px
+    ```css
+    div {
+        width: 100px;
+        position: relative;
+    }
+    div:before {
+        position: absolute;
+        content: "";
+        width: 100%;
+        height: 1px;
+        border-top: 1px solid 颜色;
+        transform: scaleY(.5);
+        transform-origin: 0 0;
+        box-sizing: border-box;
+    }
+    ```
+
 ##经验总结
 ### html请求资源:
 页面是按照顺序加载资源,当且仅当有使用需求时才会去加载外部资源.
