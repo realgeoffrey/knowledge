@@ -553,6 +553,52 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
 }
 ```
 
+### 切图复制背景
+1. 背景不规则，并且内容要贯穿不规则的上下背景
+
+    ```html
+    <div class="main">
+        <div class="top"></div>
+        <div class="content_3">
+            <div class="content_2">
+                <div class="content_1">
+                    内容
+                </div>
+            </div>
+        </div>
+        <div class="bottom"></div>
+    </div>
+    ```
+    ```css
+    .main {
+        width: 宽度;
+        overflow: hidden;
+    }
+    .top {
+        background: url(背景图) 0 0 no-repeat;
+        height: 高度1;
+    }
+    .content_3 {
+        background: url(背景图) -宽度 0 repeat-y;
+    }
+    .content_2 {
+        position: relative;
+        top: -高度2;
+        zoom: 1;
+    }
+    .content_1 {
+        position: relative;
+        margin-bottom: -2*高度2;
+    }
+    .bottom {
+        background: url(背景图) -2*宽度 0 no-repeat;
+        height: 高度1;
+    }
+    ```
+2.
+
+3.
+
 
 ##经验总结
 ### html请求资源:
