@@ -273,7 +273,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     console.log(obj3.x);    /* 4*/
     ```
 
-### jQuery相关
+### jQuery或Zepto相关
 - 长字符串连使用`.join()`：
 
     ```javascript
@@ -305,9 +305,15 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         window.jQuery || document.write('<script src="本地地址"><\/script>');
     </script>
     ```
+- 当变量是jQuery或Zepto对象是，可以用`$`作为开头命名，利于区别与普通变量的区别
 
-### Zepto相关（移动端）
-- Zepto的`tap事件`点透bug解决
+    ```javascript
+    var a = 1;
+    var $a = $('a');
+    ```
+
+### 移动端相关
+- 移动端或者Zepto的`tap事件`点透bug解决
 >移动端触摸事件顺序：touchstart->touchmove->touchend->click，tap事件发生后300ms才触发click事件。
 >在使用Zepto框架的tap相关方法时，若绑定tap方法的dom元素在tap方法触发后会隐藏、css3 transfer移走、requestAnimationFrame移走等，而“隐藏、移走”后，
 >它底下同一位置正好有一个dom元素绑定了click的事件、或者有浏览器认为可以被点击有交互反应的dom元素（默认）,则会出现“点透”现象。

@@ -730,12 +730,12 @@ function isObjEmpty(obj) {
 var start_x,
     start_y;
 
-document.getElementById('div1').addEventListener('touchstart', function (e) {
+document.getElementById('...').addEventListener('touchstart', function (e) {
     start_x = e.changedTouches[0].clientX;
     start_y = e.changedTouches[0].clientY;
 }, false);
 
-document.getElementById('div1').addEventListener('touchend', function (e) {
+document.getElementById('...').addEventListener('touchend', function (e) {
     end_x = e.changedTouches[0].clientX;
     end_y = e.changedTouches[0].clientY;
 
