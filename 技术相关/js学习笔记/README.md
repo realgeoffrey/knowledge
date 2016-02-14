@@ -195,33 +195,33 @@ if中用赋值操作（大部分是误用）并非总是返回真值，赋值的
 - `(function () {/* code*/})();`
 
 ### prototype（待续）
-prototype属性是js函数的继承机制，是构造函数的方法，可以为构造函数添加成员属性（或方法），`构造函数.prototype`和`实例对象.__proto__`（已弃用）指向同一个原型链
+prototype属性是js函数的继承机制，是构造函数的属性，作用是为构造函数添加成员属性（或方法），`构造函数.prototype`和`实例对象.__proto__`（已弃用）指向同一个原型链。
 
-对于构造函数`function Fun(){}`
+由同一个构造函数实例化的不同对象，各自有自己的属性和方法副本，但是引用共同的prototype对象的属性和方法，因此在prototype上对属性进行操作就可以影响所有该构造函数的实例。
 
-1. 覆盖原型链
+对于构造函数`function Fun(){}`：
+    1. 覆盖原型链
 
-    ```javascript
-    Func.prototype = {
-        fun2: function () {
-            console.log('add fucntion fun1');
-        },
-        fun3: function () {
+        ```javascript
+        Func.prototype = {
+            fun2: function () {
+                console.log('add fucntion fun1');
+            },
+            fun3: function () {
+                console.log('add fucntion fun2');
+            }
+        };
+        ```
+    2. 不覆盖，在原型链上添加
+
+        ```javascript
+        Func.prototype.fun2 = function () {
             console.log('add fucntion fun2');
-        }
-    };
-    ```
-2. 不覆盖，在原型链上添加
-
-    ```javascript
-    Func.prototype.fun2 = function () {
-        console.log('add fucntion fun2');
-    };
-    Func.prototype.fun3 = function () {
-        console.log('add fucntion fun3');
-    };
-    ```
-
+        };
+        Func.prototype.fun3 = function () {
+            console.log('add fucntion fun3');
+        };
+        ```
 
 ### 注意点
 - `var a = b = 1;   /* b没有var的声明*/`
