@@ -613,7 +613,7 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
         width: 宽度;
     }
     .out {
-        background: url(背景图) -宽度 0 repeat-y;
+        background: url(背景图) -宽度 0 repeat-y;    /* 横版背景图*/
     }
     .middle {
         background: url(背景图) 0 0 no-repeat;
@@ -638,7 +638,7 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
         width: 宽度;
     }
     .top {
-        background: url(背景图) 0 0 no-repeat;
+        background: url(背景图) 0 0 no-repeat; /* 横版背景图*/
         height: 高度;
     }
     .content {
