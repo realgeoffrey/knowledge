@@ -723,3 +723,25 @@ function returnFalse(e) {   /* js原生*/
 $('...').on('...', function () {  /* jQuery*/
     return false;
 });
+
+### 移动端模拟点击事件（避免300毫秒click）
+```javascript
+    var start_x,
+        start_y;
+
+    document.getElementById('div1').addEventListener('touchstart', function (e) {
+        start_x = e.changedTouches[0].clientX;
+        start_y = e.changedTouches[0].clientY;
+    }, false);
+
+    document.getElementById('div1').addEventListener('touchend', function (e) {
+        end_x = e.changedTouches[0].clientX;
+        end_y = e.changedTouches[0].clientY;
+
+        if (Math.abs(end_x - start_x) > 5 || Math.abs(end_y - start_y) > 5) {   /* 滑动则不是点击*/
+            return false;
+        }
+
+        /* do click*/
+    }, false);
+```
