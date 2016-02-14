@@ -36,7 +36,7 @@ if中用赋值操作（大部分是误用）并非总是返回真值，赋值的
         - `function(){}`（匿名与不匿名） -> `[object Function]`
         - `{}` -> `[object Object]`
 
-        只要是内置对象，则返回其构造函数名。以下为举例：
+        只要是内置对象，则返回其构造函数名。举例为：
         - `[]` -> `[object Array]`
         - 数字 -> `[object Number]`
         - 字符串 -> `[object String]`
