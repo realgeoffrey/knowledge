@@ -1,6 +1,13 @@
 ##CSS
 ### 限定布局宽度，让内容决定布局高度
 
+### body标签设置min-width属性为项目内容宽度(不兼容ie6)
+```css
+body {
+   min-width: ;
+}
+```
+
 ### z-index用于控制设置了absolute、relative或fixed定位的元素
 应该只给有堆叠关系的节点设置此属性，而不要试图通过设定个别元素的z-index来确保元素不重叠。
 
@@ -70,13 +77,6 @@ div {
     若此行放不下则直接断词,不会尝试整个单词换行
 - `word-wrap: break-word;`:
     若此行放不下则整个单词先换行,若下行也放不下再断词
-
-### body标签设置min-width属性为项目内容宽度(不兼容ie6)
-```css
-body {
-   min-width: ;
-}
-```
 
 ### 块级元素的width
 - `width: auto;`:
@@ -212,6 +212,7 @@ body {
 - 滚动条会占用容器的可用高度或宽度
 
 ### 移动端半像素
+不可以使用`border: 0.5px`
 1. 整个边框0.5px
 
     ```css
