@@ -125,8 +125,8 @@ if中用赋值操作（大部分是误用）并非总是返回真值，赋值的
 5. 加载图片等外部文件
 6. 页面加载完毕 -> 完成后执行`window.onload();`
 
-### web storage（localStorage、sessionStorage）、cookie、session
-- `web storage（localStorage、sessionStorage）`
+### web storage、cookie、session
+- web storage（localStorage、sessionStorage）
     - 本地保存，字符串形式保存
     - 仅在客户端（即浏览器）中保存，不参与和服务器的通信
     - 除了ie6、ie7外其他浏览器都支持（ie及FF需在web服务器里运行）
