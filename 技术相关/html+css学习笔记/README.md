@@ -576,7 +576,7 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
             overflow: hidden;
         }
         .top {
-            background: url(背景图) 0 0 no-repeat; /* 横版背景图*/
+            background: url(背景图) 0 0 no-repeat; /* 横版背景图，分别从左到右是头部内容、中间内容、底部内容*/
             height: 高度1;
         }
         .content_3 {
@@ -614,7 +614,7 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
             width: 宽度;
         }
         .out {
-            background: url(背景图) -宽度 0 repeat-y;    /* 横版背景图*/
+            background: url(背景图) -宽度 0 repeat-y;    /* 横版背景图，分别从左到右是头部内容、中间内容、底部内容*/
         }
         .middle {
             background: url(背景图) 0 0 no-repeat;
@@ -639,7 +639,7 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
         width: 宽度;
     }
     .top {
-        background: url(背景图) 0 0 no-repeat; /* 横版背景图*/
+        background: url(背景图) 0 0 no-repeat; /* 横版背景图，分别从左到右是头部内容、中间内容、底部内容*/
         height: 高度;
     }
     .content {
