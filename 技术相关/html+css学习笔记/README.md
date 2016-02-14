@@ -554,7 +554,7 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
 ```
 
 ### 复制背景切图
-1. （背景不透明情况）背景不规则，内容贯穿不规则的上下背景
+- （背景不透明情况）背景不规则，内容贯穿不规则的上下背景
     1. 上下级结构
 
         ```html
@@ -623,7 +623,7 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
             background: url(背景图) -2*宽度 bottom no-repeat;
         }
         ```
-2. （背景可透明情况）背景不规则，内容不贯穿的上下背景
+- （背景可透明情况）背景不规则，内容不贯穿的上下背景
 
     ```html
     <div class="main">
