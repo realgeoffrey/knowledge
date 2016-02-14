@@ -203,7 +203,12 @@ body {
     }
     ```
 
-
+### 滚动条
+- 若`overflow-x`和`overflow-y`相同，则等同于`overflow`
+- 若不同，且其中一个值为`visible`，另一个为`hidden/scroll/auto`，则`visible`重置为`auto`
+- 默认滚动条均来自`html`标签，而不是body标签。因此，除去默认滚动条应在html上设置overflow值
+- js滚动条高度为：`document.documentElement.scrollTop || document.body.scrollTop`
+- 滚动条会占用容器的可用高度或宽度
 
 ##HTML + CSS
 ### 垂直居中
