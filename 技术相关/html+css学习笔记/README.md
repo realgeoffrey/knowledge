@@ -210,6 +210,52 @@ body {
 - js滚动条高度为：`document.documentElement.scrollTop || document.body.scrollTop`
 - 滚动条会占用容器的可用高度或宽度
 
+### 移动端半像素
+1. 整个边框0.5px
+
+    ```css
+    div {
+        width: 宽度;
+        position: relative;
+    }
+    div:before {
+        position: absolute;
+        content: "";
+        width: 200%;
+        height: 200%;
+        border: 1px solid 颜色;
+        transform: scale(.5, .5);
+        transform-origin: 0 0;
+        box-sizing: border-box;
+    }
+    ```
+2. 某一边0.5px
+
+    ```css
+    div {
+        width: 100px;
+        position: relative;
+    }
+    div:before {
+        position: absolute;
+        content: "";
+        width: 100%;
+        height: 1px;
+        border-top: 1px solid 颜色;
+        transform: scaleY(.5);
+        transform-origin: 0 0;
+        box-sizing: border-box;
+    }
+    ```
+
+### 内阴影效果
+```css
+div {
+    box-shadow: 0 -2px 0 0 颜色 inset;  /* 左右偏移 上下偏移 模糊 尺寸*/
+    border-radius: 5px;
+}
+```
+
 ##HTML + CSS
 ### 垂直居中
 ```html
@@ -502,43 +548,6 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
 }
 ```
 
-### 移动端半像素
-1. 整个边框0.5px
-
-    ```css
-    div {
-        width: 宽度;
-        position: relative;
-    }
-    div:before {
-        position: absolute;
-        content: "";
-        width: 200%;
-        height: 200%;
-        border: 1px solid 颜色;
-        transform: scale(.5, .5);
-        transform-origin: 0 0;
-        box-sizing: border-box;
-    }
-    ```
-2. 某一边0.5px
-
-    ```css
-    div {
-        width: 100px;
-        position: relative;
-    }
-    div:before {
-        position: absolute;
-        content: "";
-        width: 100%;
-        height: 1px;
-        border-top: 1px solid 颜色;
-        transform: scaleY(.5);
-        transform-origin: 0 0;
-        box-sizing: border-box;
-    }
-    ```
 
 ##经验总结
 ### html请求资源:
