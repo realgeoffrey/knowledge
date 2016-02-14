@@ -554,7 +554,7 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
 ```
 
 ### 切图复制背景
-1. 背景不规则，并且内容要贯穿不规则的上下背景
+1. （背景不透明情况）背景不规则，内容贯穿不规则的上下背景
 
     ```html
     <div class="main">
@@ -575,7 +575,7 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
         overflow: hidden;
     }
     .top {
-        background: url(背景图) 0 0 no-repeat;
+        background: url(背景图) 0 0 no-repeat; /* 横版背景图*/
         height: 高度1;
     }
     .content_3 {
@@ -595,9 +595,60 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
         height: 高度1;
     }
     ```
-2.
+2. （背景不透明情况）背景不规则，内容贯穿不规则的上下背景（覆盖）
 
-3.
+    ```html
+    <div class="main">
+        <div class="out"><!-- 中间平铺的背景-->
+            <div class="middle"><!-- 头部背景（覆盖）-->
+                <div class="in"><!-- 底部背景（覆盖）-->
+                    内容
+                </div>
+            </div>
+        </div>
+    </div>
+    ```
+    ```css
+    .main {
+        width: 宽度;
+    }
+    .out {
+        background: url(背景图) -宽度 0 repeat-y;
+    }
+    .middle {
+        background: url(背景图) 0 0 no-repeat;
+    }
+    .in {
+        background: url(背景图) -2*宽度 bottom no-repeat;
+    }
+    ```
+3. （背景可透明情况）背景不规则，内容不贯穿的上下背景
+
+    ```html
+    <div class="main">
+        <div class="top"></div>
+        <div class="content">
+            内容
+        </div>
+        <div class="bottom"></div>
+    </div>
+    ```
+    ```css
+    .main {
+        width: 宽度;
+    }
+    .top {
+        background: url(背景图) 0 0 no-repeat;
+        height: 高度;
+    }
+    .content {
+        background: url(背景图) -宽度 0 repeat-y;
+    }
+    .bottom {
+        background: url(背景图) -2*宽度 0 no-repeat;
+        height: 高度;
+    }
+    ```
 
 
 ##经验总结
