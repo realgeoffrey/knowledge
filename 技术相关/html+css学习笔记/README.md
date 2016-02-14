@@ -596,7 +596,7 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
             height: 高度1;
         }
         ```
-    2. （背景不透明情况）背景不规则，内容贯穿不规则的上下背景（覆盖）
+    2. 层层覆盖
 
         ```html
         <div class="main">
