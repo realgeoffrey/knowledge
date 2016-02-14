@@ -708,41 +708,41 @@ $('...').on('...', function (e) {  /* jQuery*/
 });
 ```
 - 阻止冒泡&阻止默认行为
-```javascript
-function returnFalse(e) {   /* js原生*/
-    if (e && e.stopPropagation) {
-        e.stopPropagation();
-        e.preventDefault();
-    } else {
-        window.event.cancelBubble = true;
-        window.event.returnValue = false;
+    ```javascript
+    function returnFalse(e) {   /* js原生*/
+        if (e && e.stopPropagation) {
+            e.stopPropagation();
+            e.preventDefault();
+        } else {
+            window.event.cancelBubble = true;
+            window.event.returnValue = false;
+        }
+        return false;
     }
-    return false;
-}
 
-$('...').on('...', function () {  /* jQuery*/
-    return false;
-});
-```
+    $('...').on('...', function () {  /* jQuery*/
+        return false;
+    });
+    ```
 
 ### 移动端模拟点击事件（避免300毫秒click）
 ```javascript
-    var start_x,
-        start_y;
+var start_x,
+    start_y;
 
-    document.getElementById('div1').addEventListener('touchstart', function (e) {
-        start_x = e.changedTouches[0].clientX;
-        start_y = e.changedTouches[0].clientY;
-    }, false);
+document.getElementById('div1').addEventListener('touchstart', function (e) {
+    start_x = e.changedTouches[0].clientX;
+    start_y = e.changedTouches[0].clientY;
+}, false);
 
-    document.getElementById('div1').addEventListener('touchend', function (e) {
-        end_x = e.changedTouches[0].clientX;
-        end_y = e.changedTouches[0].clientY;
+document.getElementById('div1').addEventListener('touchend', function (e) {
+    end_x = e.changedTouches[0].clientX;
+    end_y = e.changedTouches[0].clientY;
 
-        if (Math.abs(end_x - start_x) > 5 || Math.abs(end_y - start_y) > 5) {   /* 滑动则不是点击*/
-            return false;
-        }
+    if (Math.abs(end_x - start_x) > 5 || Math.abs(end_y - start_y) > 5) {   /* 滑动则不是点击*/
+        return false;
+    }
 
-        /* do click*/
-    }, false);
+    /* do click*/
+}, false);
 ```
