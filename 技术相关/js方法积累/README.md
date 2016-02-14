@@ -723,6 +723,7 @@ function returnFalse(e) {   /* js原生*/
 $('...').on('...', function () {  /* jQuery*/
     return false;
 });
+```
 
 ### 移动端模拟点击事件（避免300毫秒click）
 ```javascript
