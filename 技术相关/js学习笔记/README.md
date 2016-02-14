@@ -92,7 +92,6 @@ if中用赋值操作（大部分是误用）并非总是返回真值，赋值的
     }
     ```
 
-
 ### JS性能
 - 平稳退化：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
     - 为JS代码预留出退路（html标签添加属性链接，用js事件绑定去拦截浏览器默认行为）
@@ -125,10 +124,6 @@ if中用赋值操作（大部分是误用）并非总是返回真值，赋值的
 4. 构造Html DOM模型 ->完成后执行`$(document).ready(function(){});`
 5. 加载图片等外部文件
 6. 页面加载完毕 -> 完成后执行`window.onload();`
-
-### 构造函数中的变量
-实例化（new）一个构造函数,得到的对象拥有构造函数内用`this`定义的属性(或方法),在构造函数内`var`的变量和`function`无法被这个对象使用,只能在构造函数里使用(类似私有变量).
-相对于单全局变量，构造函数更加灵活，可以生成多个对象进行互相独立的操作。
 
 ### web storage（localStorage、sessionStorage）、cookie、session
 - `web storage（localStorage、sessionStorage）`
@@ -194,7 +189,7 @@ if中用赋值操作（大部分是误用）并非总是返回真值，赋值的
 - `(function () {/* code*/}()); /* 推荐*/`
 - `(function () {/* code*/})();`
 
-### prototype（待续）
+### prototype
 prototype属性是js函数的继承机制，是构造函数的属性，作用是为实例共享属性（或方法），`构造函数.prototype`和`实例对象.__proto__`（已弃用）指向同一个原型链。
 
 由同一个构造函数实例化的不同对象，各自有不共享的属性和方法副本，改变一个实例内容不会影响其他实例；但共同引用的prototype对象则共享其中内容，修改了prototype对象就会影响所有该构造函数的实例。
@@ -245,7 +240,38 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         }
     </script>
     ```
+- 实例化（new）一个构造函数,得到的对象拥有构造函数内用`this`定义的属性(或方法),在构造函数内`var`的变量和`function`无法被这个对象使用,只能在构造函数里使用(类似私有变量).
 
+    相对于单全局变量，构造函数更加灵活，可以生成多个对象进行互相独立的操作。
+- `this`指的是，调用函数的那个对象。
+
+    ```javascript
+    /* 函数作为某个对象的方法调用，this指向上级对象*/
+    function test() {
+        console.log(this.x);
+    }
+
+    x = 1;
+    test(); /* 1 等价于window.test*/
+
+    var obj = {};
+    obj.x = 2;
+    obj.func = test;
+    obj.func(); /* 2*/
+
+
+    /* apply或call调用，传入对象代替this调用*/
+    var obj2 = {x: 3};
+    obj.func.call(obj2);    /* 3*/
+
+
+    /* 作为构造函数生成一个新对象，this指向这个新对象*/
+    function Test2() {
+        this.x = 4;
+    }
+    var obj3 = new Test2();
+    console.log(obj3.x);    /* 4*/
+    ```
 
 ### jQuery相关
 - 长字符串连使用`.join()`：
