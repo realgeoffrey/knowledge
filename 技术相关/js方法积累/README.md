@@ -736,8 +736,8 @@ document.getElementById('...').addEventListener('touchstart', function (e) {
 }, false);
 
 document.getElementById('...').addEventListener('touchend', function (e) {
-    end_x = e.changedTouches[0].clientX;
-    end_y = e.changedTouches[0].clientY;
+    var end_x = e.changedTouches[0].clientX,
+        end_y = e.changedTouches[0].clientY;
 
     if (Math.abs(end_x - start_x) > 5 || Math.abs(end_y - start_y) > 5) {   /* 滑动则不是点击*/
         return false;
