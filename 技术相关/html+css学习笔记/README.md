@@ -671,9 +671,9 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
 6. 配置ETags报头（用来验证浏览器缓存和原服务器上内容是否一致）
 7. 浏览器为了避免当样式变化时重绘页面中的元素，会阻塞页面内容的逐步呈现，样式表之前的内容和JS脚本之后的内容都会因为这些文件的下载而阻塞呈现
 8. 不要使用~~`@import`~~，只用`<link>`
-9. 避免css表达式（CSS expression）
+9. 避免~~css表达式（CSS expression）~~
 10. 虽然内联css和js比外部文件快，但只有外部的才可能被浏览器缓存。因此使用外部的css和js
 11. 减少DNS查找，设置合适的TTL值
-12. 避免重定向（http://a.com/folder会重定向到http://a.com/folder/，但根目录http://a.com不会发生重定向）
-13. 使Ajax可缓存（服务端的CDN缓存，可用jQuery的$.Ajax的cash属性设置为false，或url加时间戳，来避免）
+12. 避免重定向（`http://a.com/folder`会重定向到`http://a.com/folder/`，但根目录`http://a.com`不会发生重定向）
+13. 使Ajax可缓存（服务端的CDN缓存，可用jQuery的$.Ajax的cash属性设置为false，或url加时间戳，来避免缓存）
 14. 避免使用不可缓存且是外部HTTP请求的iFrame
