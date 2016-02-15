@@ -318,8 +318,9 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         /* 一般写法*/
         var b = 'abc' + 'def';
         ```
-    - 对象直接量:用直接量代替`Object`构造函数
+    - 对象直接量
 
+        用直接量代替`Object`构造函数
         ```javascript
         /* 不提倡的构造函数法*/
         var a = new Object();
@@ -328,8 +329,9 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         /* 直接量*/
         var b = {attr1: '...'};
         ```
-    - 数组直接量:用直接量代替`Array`构造函数
+    - 数组直接量
 
+        用直接量代替`Array`构造函数
         ```javascript
         /* 不提倡的构造函数法*/
         var arr1 = new Array("a", "b");
