@@ -58,8 +58,8 @@ gulp.task('doImage', function () {
 /* css任务*/
 gulp.task('doCss', function () {
     gulp.src(['../css/dev/*'])
-        //        .pipe(concat('all.css'))    /* 合并文件*/
-        .pipe(makeUrlVer()) /*路径自动添加版本号*/
+//        .pipe(concat('all.css'))    /* 合并文件*/
+//        .pipe(makeUrlVer()) /*路径自动添加版本号*/
         .pipe(nano({
             /* 压缩css*/
             discardUnused: false,
@@ -74,7 +74,7 @@ gulp.task('doCss', function () {
 /* js任务*/
 gulp.task('doJs', function () {
     gulp.src(['../js/dev/*'])
-        //        .pipe(concat('all.js'))    /* 合并文件*/
+//      .pipe(concat('all.js'))    /* 合并文件*/
         .pipe(uglify({
             /* js压缩*/
             mangle: true, /* 默认：true 是否混淆变量名*/
@@ -87,7 +87,8 @@ gulp.task('doJs', function () {
 /* 监听代理服务器*/
 gulp.task('browserSync', function () {
     browserSync.init({
-        proxy: "192.168.57.60"
+//      proxy: "192.168.57.60"
+        server: "../"
     });
     gulp.watch("../../**/*.html").on('change', reload);
     gulp.watch("../../**/js/**").on('change', reload);
