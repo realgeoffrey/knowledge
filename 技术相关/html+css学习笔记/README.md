@@ -1,16 +1,4 @@
 ##CSS
-### 限定布局宽度，让内容决定布局高度
-
-### body标签设置min-width属性为项目内容宽度(不兼容ie6)
-```css
-body {
-   min-width: ;
-}
-```
-
-### z-index用于控制设置了absolute、relative或fixed定位的元素
-应该只给有堆叠关系的节点设置此属性，而不要试图通过设定个别元素的z-index来确保元素不重叠。
-
 ### 用css创造三角形
 ```css
 div {
@@ -21,7 +9,7 @@ div {
 }
 ```
 
-> 两个同样大小的三角形,第二个设置为背景色并且覆盖到第一个上面,可以模拟箭头**>**
+> 两个同样大小的三角形，第二个设置为背景色并且覆盖到第一个上面，可以模拟箭头**>**
 
 ### 清除浮动：
 - 在父级设置
@@ -72,17 +60,17 @@ div {
 
 ### 单词内断字换行
 - ~~默认~~:
-    若此行放不下则整个单词换行,若下行也放不下则溢出(保持单词不断词)
+    若此行放不下则整个单词换行，若下行也放不下则溢出(保持单词不断词)
 - ~~`word-break: break-all;`~~:
-    若此行放不下则直接断词,不会尝试整个单词换行
+    若此行放不下则直接断词，不会尝试整个单词换行
 - `word-wrap: break-word;`:
-    若此行放不下则整个单词先换行,若下行也放不下再断词
+    若此行放不下则整个单词先换行，若下行也放不下再断词
 
 ### 块级元素的width
 - `width: auto;`:
-    默认值,换算具体值为:**本元素width = 父级width - 本元素(margin + padding + border)水平值**
+    默认值，换算具体值为:**本元素width = 父级width - 本元素(margin + padding + border)水平值**
 
-    >当块级width为默认的auto时,设置负的水平margin会使width增加
+    >当块级width为默认的auto时，设置负的水平margin会使width增加
 - `width: 100%;`:
     父级的px为自己的px
 
@@ -99,12 +87,12 @@ div {
 >- In a block formatting context, boxes are laid out one after the other, vertically, beginning at the top of a containing block. The vertical distance between two sibling boxes is determined by the ‘margin’ properties. Vertical margins between adjacent block-level boxes in a block formatting context collapse.
 >- In a block formatting context, each box’s left outer edge touches the left edge of the containing block (for right-to-left formatting, right edges touch). This is true even in the presence of floats (although a box’s line boxes may shrink due to the floats), unless the box establishes a new block formatting context (in which case the box itself may become narrower due to the floats).
 
-- 浮动元素和绝对定位元素，非块级盒子的块级容器（例如 inline-blocks, table-cells, 和 table-captions），以及overflow值不为“visiable”的块级盒子，都会为他们的内容创建新的块级格式化上下文。
+- 浮动元素和绝对定位元素，非块级盒子的块级容器（例如 inline-blocks、table-cells、和table-captions），以及overflow值不为“visiable”的块级盒子，都会为他们的内容创建新的块级格式化上下文。
 
     在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由他们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
 
     在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘(border-left)（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
-- BFC是一个独立的布局环境，可以理解为一个箱子，箱子里面物品的摆放不受外界的影响,并且每个BFC都遵守同一套布局规则
+- BFC是一个独立的布局环境，可以理解为一个箱子，箱子里面物品的摆放不受外界的影响，并且每个BFC都遵守同一套布局规则
 - 对容器添加以下css属性使其成为独立的BFC
     - `float: left / right;`
     - `overflow: hidden / auto / scroll;`
@@ -112,7 +100,10 @@ div {
     - `position: absolute / fixed;`
 
 ### word-spacing
-对有空白字符包裹的非空白字符产生效果.
+对有空白字符包裹的非空白字符产生效果。
+
+### z-index用于控制设置了absolute、relative或fixed定位的元素
+应该只给有堆叠关系的节点设置此属性，而不要试图通过设定个别元素的z-index来确保元素不重叠。
 
 ### 模糊效果滤镜（高斯模糊）
 - CSS3（除*ie10*与*ie11*外基本所有主流浏览器）
@@ -126,9 +117,9 @@ div {
         filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* ie6~ie9 */
     }
     ```
-- SVG（较新版本的FireFox, Chrome, Opera）
+- SVG（较新版本的FireFox、Chrome、Opera）
 
-    >新建一个SVG文件，把滤镜方法放进去，然后css调用`filter: url(某.svg#某id)`
+    >新建一个SVG文件，把滤镜方法放进去，然后css调用`filter: url(某.svg#某id);`
 
     ```svg
     <?xml version="1.0" standalone="no"?>
@@ -151,12 +142,14 @@ div {
 
 - canvas
 
-    ...
+    (待续)
 
 ### css的小数
-不同浏览器对小数（以及百分比换算成的小数）有不同的处理方式，会出现一列百分比相加为100%的节点换算之后无法占满整列：
+浏览器会把小数以及百分比换算成整数的单位（px）
 - 四舍五入：ie8 ie9 chrome firefox
 - 直接向下取整：ie7 safari
+
+>有些浏览器会出现一列百分比相加为100%的节点换算之后无法占满整列
 
 ### font-size最小值
 - wap端没有最小限制
@@ -176,7 +169,7 @@ div {
     }
     ```
 
-### inline-block元素之间或与文本的文本对齐
+### inline-block元素之间或与文本的水平对齐
 并排排列的不同元素间，若不使用float，而使用inline-block
 - 非img标签
 
@@ -269,7 +262,7 @@ div {
 </div>
 ```
 ```css
-.box { /* 此层不能是float或absolute，可以在此层外嵌套*/
+.box { /* 此层不能是float或absolute，可以在此层外嵌套的设置为float或absolute*/
    display: table-cell;
    height: 114px; /* height/font-size = 1.14*/
    *font-size: 100px;
@@ -297,8 +290,6 @@ img {
 }
 ```
 
->~~部分浏览器用url跳转到某id会导致页面向上溢出~~
-
 ### 实现hover去除左右间隔效果
 ```css
 ul {
@@ -312,14 +303,14 @@ ul li a {
     background: url(与li的margin-left大小一致的border样式图片) 100% center no-repeat;
 }
 ul li a:hover {
-    background: #fff;;
+    background: 背景色;
 }
 ```
 
->hover之后本身的背景被替换,前一个兄弟的背景被覆盖
+>hover之后本身的背景被替换，前一个兄弟的背景被覆盖
 
 ### 自适应宽度布局
-1. 中间内容自适应,两边固定(中间内容先书写)
+1. 中间内容自适应，两边固定(中间内容先加载)
 
     ```html
     <div class="clearfix">
@@ -354,10 +345,10 @@ ul li a:hover {
     }
     ```
 
-    >DOM结构不能颠倒,需要中间结构放最前;
-    >节点上能设定`clear: both;`.
+    >DOM结构不能颠倒，需要中间结构放最前;
+    >节点上能设定`clear: both;`。
 
-2. 中间内容自适应,两边固定(中间内容后书写)
+2. 中间内容自适应，两边固定(中间内容后加载)
 
     ```html
     <div class="clearfix">
@@ -367,7 +358,7 @@ ul li a:hover {
     </div>
     ```
     ```css
-    .float_l {
+    。float_l {
         float: left;
         width: 左边块宽度;
     }
@@ -381,10 +372,10 @@ ul li a:hover {
     }
     ```
 
-    >DOM结构不能颠倒,需要中间结构放最后;
-    >节点上能设定`clear: both;`.
+    >DOM结构不能颠倒，需要中间结构放最后;
+    >节点上能设定`clear: both;`。
 
-    >float属性的节点可以填补于之后节点的水平margin区域内,padding区域内不可以;不可以填补于之前节点的水平margin区域内.
+    >float属性的节点可以填补在之后节点的水平margin区域内，padding区域内不可以;不可以填补于之前节点的水平margin区域内。
 
 3. 中间与两边内容都自适应
 
@@ -410,9 +401,9 @@ ul li a:hover {
     }
     ```
 
-    >DOM结构不能颠倒,需要中间结构放最后;
+    >DOM结构不能颠倒，需要中间结构放最后;
     >节点上能设定`clear: both;`;
-    >完全由内容决定布局.
+    >完全由内容决定布局。
 
 
 ### 响应式设计之媒体查询
@@ -428,13 +419,13 @@ ul li a:hover {
 - wap可以用rem和html的font-size配合
 
 ### wap响应式页面解决方案:使用rem单位+媒体查询
-rem(font size of the root element):相对于根元素的字体大小的单位.
-某样式的rem转换为具体px值的换算方式为:**rem值乘于html的font-size像素值**.
+rem(font size of the root element):相对于根元素的字体大小的单位。
+rem单位转换为具体px值:**rem乘于html的font-size像素**。
 
-1. 媒体查询设置html的font-size,把要做成响应式的内容转换为rem单位.
-    1. 正常完成切图:用正常的320px设计稿切完图,用px作为单位.
-    2. 媒体查询仅设置html的不同情况下的font-size值.
-    3. 把css内需要响应式内容的px值,除以在320px宽度下的html的font-szie值(320px宽度时设置为10px方便计算,设置为小于6px不起作用),单位改为rem.
+1. 媒体查询设置html的font-size，把要做成响应式的内容转换为rem单位。
+    1. 正常完成切图:用正常的320px设计稿切完图，用px作为单位。
+    2. 媒体查询仅设置html的不同情况下的font-size值。
+    3. 把css内需要响应式内容的px值，除以在320px宽度下的html的font-szie值(320px宽度时设置为10px方便计算，设置为小于6px不起作用)，单位改为rem。
 
     >仅需要把要响应式布局的内容进行转变
 2. *用js根据是否是苹果设备进行判断：若是苹果设备则viewport设置为0.5，html的font-size设置为2倍；若非苹果设备则viewport设置为1，html的font-size设置为1倍*
@@ -452,8 +443,8 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
     }
     ```
 
-    >因为html的font-size是用js写死的，而且viewport会变化，所以所有大小都要用百分比+rem。
-3. *用js根据浏览器宽度的改变修改html的font-size,页面总宽度固定为某rem。所有大小都要用百分比+rem*
+    >因为html的font-size是用js写死的，而且viewport会变化，所以所有页面元素都要用百分比+rem。
+3. *用js根据浏览器宽度的改变修改html的font-size，页面总宽度固定为某rem。所有页面元素都要用百分比+rem*
 
 ### img标签的圆形边框
 
@@ -463,14 +454,8 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
 2. 圆形（无边框）
     - pc+wap：直接在img标签上设置`border-radius`
 
-### 超出内容区域的内容
-1. 用绝对定位把内容设置在外部
-
-    >在ie6、ie7情况下，绝对定位内容在右边的（左边全部兼容），会根据超出内容出现滚动条并且背景颜色无法延生。因此当ie6、ie7情况时，可以选择当窗口宽度小于文档宽度时隐藏右边隐藏内容。
-2. ~~用大背景模式~~
-
 ### 内容居中
-1. 内容宽度不确定，三层模式
+1. 内容宽度可变，三层模式
 
     ```html
     <style>
@@ -494,7 +479,7 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
         </div>
     </div>
     ```
-2. 内容宽度确定，二层结构
+2. 内容宽度固定，二层结构
 
     ```html
     <style>
@@ -553,8 +538,8 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
 }
 ```
 
-### 复制背景切图
-- （背景不透明情况）背景不规则，内容贯穿不规则的上下背景
+### 复杂背景切图
+- （背景不透明情况）背景不规则，内容贯穿背景
     1. 上下级结构
 
         ```html
@@ -601,8 +586,8 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
         ```html
         <div class="main">
             <div class="out"><!-- 中间平铺的背景-->
-                <div class="middle"><!-- 头部背景（覆盖）-->
-                    <div class="in"><!-- 底部背景（覆盖）-->
+                <div class="middle"><!-- 头部背景（覆盖中间背景）-->
+                    <div class="in"><!-- 底部背景（覆盖头部以及中间背景）-->
                         内容
                     </div>
                 </div>
@@ -614,16 +599,16 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
             width: 宽度;
         }
         .out {
-            background: url(背景图) -宽度 0 repeat-y;    /* 横版背景图，分别从左到右是头部、中间、底部内容*/
+            background: url(背景图) 0 0 repeat-y;    /* 横版背景图，分别从左到右是头部、中间、底部内容*/
         }
         .middle {
-            background: url(背景图) 0 0 no-repeat;
+            background: url(背景图) -宽度 0 no-repeat;
         }
         .in {
             background: url(背景图) -2*宽度 bottom no-repeat;
         }
         ```
-- （背景可透明情况）背景不规则，内容不贯穿的上下背景
+- （背景可透明情况）背景不规则，内容不贯穿背景
 
     ```html
     <div class="main">
@@ -653,19 +638,34 @@ rem(font size of the root element):相对于根元素的字体大小的单位.
 
 
 ##经验总结
+### 限定布局宽度，让内容决定布局高度
+
+### body标签设置min-width属性为项目内容宽度(不兼容ie6)
+```css
+body {
+   min-width: ;
+}
+```
+
+### 超出内容区域的内容
+1. 用绝对定位把内容设置在外部
+
+    >在ie6、ie7情况下，绝对定位内容在右边的（左边全部兼容），会根据超出内容出现滚动条并且背景颜色无法延伸。因此当ie6、ie7情况时，可以选择当窗口宽度小于文档宽度时隐藏右边隐藏内容。
+2. ~~用大背景模式~~
+
 ### html请求资源:
-页面是按照顺序加载资源,当且仅当有使用需求时才会去加载外部资源.
-比如已加载完成的css文件内有多个url请求(background),但也仅在页面要用到某个url请求时(比如某类有url背景),才会去请求这个资源,而不是在加载css文件时就加载外部资源.
+页面是按照顺序加载资源，当且仅当有使用需求时才会去加载外部资源。
+比如已加载完成的css文件内有多个url请求(background)，但也仅在页面要用到某个url请求时(比如某类有url背景)，才会去请求这个资源，而不是在加载css文件时就加载外部资源。
 
 ### 高性能网站建设指南
 - 标签语义化，不能全用div。先用纯html标签语义化结构，再加入css满足样式，最后加入交互
 - 减少层级嵌套，合理嵌套，行内元素不要嵌套块级元素（如a标签不嵌套div）
-- 用父的class去管理子元素
+- 用父节点的class去管理子节点
 - 移动端大部分是webkit内核浏览器，因此可以使用较新的技术，如css3；pc端要适配到ie6，因此要渐进增强
 - js用变量保存下已经使用过的DOM对象
 
 ----
-1. 减少HTTP请求，图片以及外链资源的优化，包括压缩与整合，服务器开启g-zip等（不要压缩图片与PDF，因为它们本身已经被压缩，再压缩可能会增加文件大小，而且压缩都耗费CPU）
+1. 减少HTTP请求，图片以及外链资源的优化，包括压缩与整合，服务器开启g-zip等（不要压缩图片与PDF，因为它们本身已经被压缩，再压缩可能会增加文件大小；压缩都耗费CPU）
 2. 图片的处理，包括压缩、大banner切分成多个小图、小图合并成雪碧图、图片的延迟加载
 3. 不要缩小放大图片（使用原始大小展现）
 4. 使用内容发布网络CDN
