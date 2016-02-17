@@ -35,7 +35,7 @@ div {
     }
     ```
 
->部分浏览器设置`clearfix`，会导致:after的内容有占高宽，必须使用`overflow: hidden;`代替使用。
+>部分浏览器设置`clearfix`，会导致:after的内容有占高宽，必须使用`overflow: hidden;`代替使用
 
 ### 单行文本和多行文本超出宽度显示省略号
 ```css
@@ -77,7 +77,7 @@ div {
 ### margin合并(非ie浏览器)
 >[W3C]In CSS, the adjoining margins of two or more boxes (which might or might not be siblings) can combine to form a single margin. Margins that combine this way are said to collapse, and the resulting combined margin is called a collapsed margin.
 
-- 在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加(collapsed margin)
+- 在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加(collapsed margin)。
     - 毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开
     - 普通流：除**浮动（float）**、**绝对定位（absolute）**外的代码
 - 产生独立的BFC结构可避免margin合并
@@ -92,7 +92,7 @@ div {
     在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由他们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
 
     在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘(border-left)（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
-- BFC是一个独立的布局环境，可以理解为一个箱子，箱子里面物品的摆放不受外界的影响，并且每个BFC都遵守同一套布局规则
+- BFC是一个独立的布局环境，可以理解为一个箱子，箱子里面物品的摆放不受外界的影响，并且每个BFC都遵守同一套布局规则。
 - 对容器添加以下css属性使其成为独立的BFC
     - `float: left / right;`
     - `overflow: hidden / auto / scroll;`
