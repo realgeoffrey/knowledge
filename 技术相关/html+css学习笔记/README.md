@@ -35,7 +35,7 @@ div {
     }
     ```
 
->部分浏览器设置`clearfix`，会导致:after的内容有占高宽，必须使用`overflow: hidden;`代替使用
+>部分浏览器设置`clearfix`，会导致`:after`的内容有占高宽，必须使用`overflow: hidden;`代替使用
 
 ### 单行文本和多行文本超出宽度显示省略号
 ```css
@@ -59,19 +59,19 @@ div {
 ```
 
 ### 单词内断字换行
-- ~~默认~~:
+- ~~默认~~：
     若此行放不下则整个单词换行，若下行也放不下则溢出（保持单词不断词）
-- ~~`word-break: break-all;`~~:
+- ~~`word-break: break-all;`~~：
     若此行放不下则直接断词，不会尝试整个单词换行
-- `word-wrap: break-word;`:
+- `word-wrap: break-word;`：
     若此行放不下则整个单词先换行，若下行也放不下再断词
 
 ### 块级元素的width
-- `width: auto;`:
-    默认值，换算具体值为:**本元素width = 父级width - 本元素（margin + padding + border）水平值**
+- `width: auto;`：
+    默认值，换算具体值为：**本元素width = 父级width - 本元素（margin + padding + border）水平值**
 
     >当块级width为默认的auto时，设置负的水平margin会使width增加
-- `width: 100%;`:
+- `width: 100%;`：
     父级的px为自己的px
 
 ### margin合并（非ie浏览器）
@@ -418,12 +418,12 @@ ul li a:hover {
 - 弹性图片：`img {max-width: 100%;}`
 - wap可以用rem和html的font-size配合
 
-### wap响应式页面解决方案:使用rem单位+媒体查询
-rem（font size of the root element）:相对于根元素的字体大小的单位。
-rem单位转换为具体px值:**rem乘于html的font-size像素**。
+### wap响应式页面解决方案：使用rem单位+媒体查询
+rem（font size of the root element）：相对于根元素的字体大小的单位。
+rem单位转换为具体px值：**rem乘于html的font-size像素**。
 
 1. 媒体查询设置html的font-size，把要做成响应式的内容转换为rem单位。
-    1. 正常完成切图:用正常的320px设计稿切完图，用px作为单位。
+    1. 正常完成切图：用正常的320px设计稿切完图，用px作为单位。
     2. 媒体查询仅设置html的不同情况下的font-size值。
     3. 把css内需要响应式内容的px值，除以在320px宽度下的html的font-szie值（320px宽度时设置为10px方便计算，设置为小于6px不起作用），单位改为rem。
 
@@ -435,10 +435,10 @@ rem单位转换为具体px值:**rem乘于html的font-size像素**。
 
     /* 实现根据iOS和Android不同设备设置不同的viewport*/
     if ((/iphone|ipad|ipod/i).test(navigator.appVersion) && window.devicePixelRatio >= 2) {
-        document.getElementById('j-viewport').content = 'width=device-width, initial-scale=0.5, user-scalable=no, minimum-scale=0.5, maximum-scale=0.5'
+        document.getElementById('j-viewport').content = 'width=device-width, initial-scale=0.5, user-scalable=no, minimum-scale=0.5, maximum-scale=0.5';
         document.documentElement.style.fontSize = 2 * fontSize + "px";
     } else {
-        document.getElementById('j-viewport').content = 'width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1, maximum-scale=1'
+        document.getElementById('j-viewport').content = 'width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1, maximum-scale=1';
         document.documentElement.style.fontSize = fontSize + "px";
     }
     ```
@@ -653,7 +653,7 @@ body {
     >在ie6、ie7情况下，绝对定位内容在右边的（左边全部兼容），会根据超出内容出现滚动条并且背景颜色无法延伸。因此当ie6、ie7情况时，可以选择当窗口宽度小于文档宽度时隐藏右边隐藏内容。
 2. ~~用大背景模式~~
 
-### html请求资源:
+### html请求资源：
 页面是按照顺序加载资源，当且仅当有使用需求时才会去加载外部资源。
 比如已加载完成的css文件内有多个url请求（background），但也仅在页面要用到某个url请求时（比如某类有url背景），才会去请求这个资源，而不是在加载css文件时就加载外部资源。
 
