@@ -187,7 +187,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
  * 函数说明
  * @param {Object} param1 参数描述
  * @param {String|Object} [param2] 参数描述
- * @returns {Object} result 参数参数
+ * @returns {Object} result 参数描述
  */
 function func(param1, param2) {
 
