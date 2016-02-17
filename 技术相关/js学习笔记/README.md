@@ -360,7 +360,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 2. 绑定的event handler距离selector越近，效率越高。因此把selector都绑定在`$(document)``上是低效的。
 
 ### jQuery或Zepto相关
-- 长字符串连使用`.join()`，而不使用~~`+`~~：
+- 长字符串连使用`.join()`，而不使用`+`：
 
     ```javascript
     /* 性能好*/
