@@ -321,27 +321,28 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         /* 一般写法*/
         var b = 'abc' + 'def';
         ```
-    - 对象直接量
+    - 直接量
+        - 对象直接量
 
-        用直接量代替`Object`构造函数
-        ```javascript
-        /* 不提倡的构造函数写法*/
-        var a = new Object();
-        a.attr1 = '...';
+            用直接量代替`Object`构造函数
+            ```javascript
+            /* 不提倡的构造函数写法*/
+            var a = new Object();
+            a.attr1 = '...';
 
-        /* 直接量*/
-        var b = {attr1: '...'};
-        ```
-    - 数组直接量
+            /* 直接量*/
+            var b = {attr1: '...'};
+            ```
+        - 数组直接量
 
-        用直接量代替`Array`构造函数
-        ```javascript
-        /* 不提倡的构造函数写法*/
-        var arr1 = new Array("a", "b");
+            用直接量代替`Array`构造函数
+            ```javascript
+            /* 不提倡的构造函数写法*/
+            var arr1 = new Array("a", "b");
 
-        /* 直接量*/
-        var arr2 = ["a", "b"];
-        ```
+            /* 直接量*/
+            var arr2 = ["a", "b"];
+            ```
     - 对象的属性、方法，与变量、方法命名规则相同，若属性、方法是私有的，应当在之前加一个下划线`_`
 
 ### jQuery或Zepto相关
