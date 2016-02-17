@@ -1,6 +1,6 @@
 #js方法积累
 
-### js实现类似jQuery的`$(function(){})`
+### js实现类似jQuery的`$(document).ready(function () {});`
 ```javascript
 function onloads(func) {
     var oldOnLoad = window.onload;
@@ -16,7 +16,7 @@ function onloads(func) {
 }
 ```
 
-### js实现类似jQuery的`after`
+### js实现类似jQuery的`.after()`
 ```javascript
 function insertAfter(elem, target) {
     var parent = target.parentNode;
@@ -29,7 +29,7 @@ function insertAfter(elem, target) {
 }
 ```
 
-### js实现类似jQuery的`next`
+### js实现类似jQuery的`.next()`
 ```javascript
 function getNextElement(node) {
     if (node === null || node.nextSibling === null) {
@@ -42,7 +42,7 @@ function getNextElement(node) {
 }
 ```
 
-### js实现类似jQuery的`addClass`
+### js实现类似jQuery的`.addClass()`
 ```javascript
 function addClass(node, newClassName) {
     var oldNames,
@@ -64,7 +64,7 @@ function addClass(node, newClassName) {
 }
 ```
 
-### js实现类似jQuery的`removeClass`
+### js实现类似jQuery的`.removeClass()`
 ```javascript
 function removeClass(node, removeClassName) {
     var newNames = [],
