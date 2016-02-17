@@ -133,7 +133,7 @@
     - 仅在客户端（即浏览器）中保存，不参与和服务器的通信
     - 除了ie6、ie7外其他浏览器都支持（ie及FF需在web服务器里运行）
 
-        >ie6、ie7可以用它们独有的`UserData`代替使用（用对象检测封装）
+        >ie6、ie7可以用它们独有的`UserData`代替使用
     - 拥有方便的api
 
         ```javascript
@@ -188,7 +188,7 @@
 2. 绑定的event handler距离selector越近，效率越高。因此把selector都绑定在`$(document)``上是低效的。
 
 ### 自执行匿名函数
-- `(function () {/* code*/}()); /* 推荐*/`
+- `(function () {/* code*/}());`推荐
 - `(function () {/* code*/})();`
 
 ### prototype
@@ -309,7 +309,8 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     - 常量用大写字母和下划线分割，如`MAX_COUNT`
     - 构造函数用大驼峰命名法（Pascal Case），首字母大写（以非动词开头），单词首字母大写。这样对于首字母大写的函数即可认定为构造函数，否则为普通函数。
 
-        如：`var a = new Person();    /* 构造函数*/`，`var b = getPerson();    /* 普通函数*/`
+        - `var a = new Person();    /* 构造函数*/`
+        - `var b = getPerson();    /* 普通函数*/`
     - 不要用多行的字符串写法
 
         ```javascript
