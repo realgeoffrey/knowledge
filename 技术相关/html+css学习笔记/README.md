@@ -79,8 +79,9 @@ div {
 
 - 在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
 
-    >   - 毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开
-    >   - 普通流：除**浮动（float）**、**绝对定位（absolute）**外的代码
+    >毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开
+
+    >普通流：除**浮动（float）**、**绝对定位（absolute）**外的代码
 - 产生独立的BFC结构可避免margin合并
 
 ### BFC（Block Formatting Context）块级格式上下文
