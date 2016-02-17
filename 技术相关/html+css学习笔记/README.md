@@ -60,7 +60,7 @@ div {
 
 ### 单词内断字换行
 - ~~默认~~:
-    若此行放不下则整个单词换行，若下行也放不下则溢出(保持单词不断词)
+    若此行放不下则整个单词换行，若下行也放不下则溢出（保持单词不断词）
 - ~~`word-break: break-all;`~~:
     若此行放不下则直接断词，不会尝试整个单词换行
 - `word-wrap: break-word;`:
@@ -68,21 +68,21 @@ div {
 
 ### 块级元素的width
 - `width: auto;`:
-    默认值，换算具体值为:**本元素width = 父级width - 本元素(margin + padding + border)水平值**
+    默认值，换算具体值为:**本元素width = 父级width - 本元素（margin + padding + border）水平值**
 
     >当块级width为默认的auto时，设置负的水平margin会使width增加
 - `width: 100%;`:
     父级的px为自己的px
 
-### margin合并(非ie浏览器)
+### margin合并（非ie浏览器）
 >[W3C]In CSS, the adjoining margins of two or more boxes (which might or might not be siblings) can combine to form a single margin. Margins that combine this way are said to collapse, and the resulting combined margin is called a collapsed margin.
 
-- 在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加(collapsed margin)。
+- 在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
     - 毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开
     - 普通流：除**浮动（float）**、**绝对定位（absolute）**外的代码
 - 产生独立的BFC结构可避免margin合并
 
-### BFC(Block Formatting Context)块级格式上下文
+### BFC（Block Formatting Context）块级格式上下文
 >- [W3C]Floats, absolutely positioned elements, block containers (such as inline-blocks, table-cells, and table-captions) that are not block boxes, and block boxes with ‘overflow’ other than ‘visible’ (except when that value has been propagated to the viewport) establish new block formatting contexts for their contents.
 >- In a block formatting context, boxes are laid out one after the other, vertically, beginning at the top of a containing block. The vertical distance between two sibling boxes is determined by the ‘margin’ properties. Vertical margins between adjacent block-level boxes in a block formatting context collapse.
 >- In a block formatting context, each box’s left outer edge touches the left edge of the containing block (for right-to-left formatting, right edges touch). This is true even in the presence of floats (although a box’s line boxes may shrink due to the floats), unless the box establishes a new block formatting context (in which case the box itself may become narrower due to the floats).
@@ -91,7 +91,7 @@ div {
 
     在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由他们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
 
-    在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘(border-left)（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
+    在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘（border-left）（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
 - BFC是一个独立的布局环境，可以理解为一个箱子，箱子里面物品的摆放不受外界的影响，并且每个BFC都遵守同一套布局规则。
 - 对容器添加以下css属性使其成为独立的BFC
     - `float: left / right;`
@@ -142,7 +142,7 @@ div {
 
 - canvas
 
-    (待续)
+    （待续）
 
 ### css的小数
 浏览器会把小数以及百分比换算成整数的单位（px）
@@ -310,7 +310,7 @@ ul li a:hover {
 >hover之后本身的背景被替换，前一个兄弟的背景被覆盖
 
 ### 自适应宽度布局
-1. 中间内容自适应，两边固定(中间内容先加载)
+1. 中间内容自适应，两边固定（中间内容先加载）
 
     ```html
     <div class="clearfix">
@@ -348,7 +348,7 @@ ul li a:hover {
     >DOM结构不能颠倒，需要中间结构放最前;
     >节点上能设定`clear: both;`。
 
-2. 中间内容自适应，两边固定(中间内容后加载)
+2. 中间内容自适应，两边固定（中间内容后加载）
 
     ```html
     <div class="clearfix">
@@ -419,13 +419,13 @@ ul li a:hover {
 - wap可以用rem和html的font-size配合
 
 ### wap响应式页面解决方案:使用rem单位+媒体查询
-rem(font size of the root element):相对于根元素的字体大小的单位。
+rem（font size of the root element）:相对于根元素的字体大小的单位。
 rem单位转换为具体px值:**rem乘于html的font-size像素**。
 
 1. 媒体查询设置html的font-size，把要做成响应式的内容转换为rem单位。
     1. 正常完成切图:用正常的320px设计稿切完图，用px作为单位。
     2. 媒体查询仅设置html的不同情况下的font-size值。
-    3. 把css内需要响应式内容的px值，除以在320px宽度下的html的font-szie值(320px宽度时设置为10px方便计算，设置为小于6px不起作用)，单位改为rem。
+    3. 把css内需要响应式内容的px值，除以在320px宽度下的html的font-szie值（320px宽度时设置为10px方便计算，设置为小于6px不起作用），单位改为rem。
 
     >仅需要把要响应式布局的内容进行转变
 2. *用js根据是否是苹果设备进行判断：若是苹果设备则viewport设置为0.5，html的font-size设置为2倍；若非苹果设备则viewport设置为1，html的font-size设置为1倍*
@@ -640,7 +640,7 @@ rem单位转换为具体px值:**rem乘于html的font-size像素**。
 ##经验总结
 ### 限定布局宽度，让内容决定布局高度
 
-### body标签设置min-width属性为项目内容宽度(不兼容ie6)
+### body标签设置min-width属性为项目内容宽度（不兼容ie6）
 ```css
 body {
    min-width: ;
@@ -655,7 +655,7 @@ body {
 
 ### html请求资源:
 页面是按照顺序加载资源，当且仅当有使用需求时才会去加载外部资源。
-比如已加载完成的css文件内有多个url请求(background)，但也仅在页面要用到某个url请求时(比如某类有url背景)，才会去请求这个资源，而不是在加载css文件时就加载外部资源。
+比如已加载完成的css文件内有多个url请求（background），但也仅在页面要用到某个url请求时（比如某类有url背景），才会去请求这个资源，而不是在加载css文件时就加载外部资源。
 
 ### 高性能网站建设指南
 - 标签语义化，不能全用div。先用纯html标签语义化结构，再加入css满足样式，最后加入交互
