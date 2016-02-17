@@ -181,6 +181,20 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     2. 使用缓动动画，过度300ms延迟
     3. 中间增加一层接受这个点透事件，然后去除此层
 
+### 函数注释规范
+
+    ```javascript
+    /*
+     * 函数说明
+     * @param {Object} param1 参数描述
+     * @param {String|Object} [param2] 参数描述
+     * @returns {Object} result 参数参数
+     */
+    function func(param1, param2) {
+
+        return result;
+    }
+    ```
 
 ## 功能用法
 ### 判断类型
