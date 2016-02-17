@@ -422,6 +422,7 @@ ul li a:hover {
 
 ### wap响应式页面解决方案：使用rem单位+媒体查询
 rem（font size of the root element）：相对于根元素的字体大小的单位。
+
 rem单位转换为具体px值：**rem乘于html的font-size像素**。
 
 1. 媒体查询设置html的font-size，把要做成响应式的内容转换为rem单位。
