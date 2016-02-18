@@ -164,6 +164,21 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
             ```
     - 对象的属性、方法，与变量、方法命名规则相同
     - 若属性、方法是私有的，应当在之前加一个下划线`_`
+- 函数注释规范
+
+    ```javascript
+    /*
+     * 函数说明
+     * @param {Object} param1 [1|2|3] 参数描述
+     * @param {String|Object} param2 参数描述
+     * @param {类型1|类型2} 参数名 [取值1|取值2] 描述
+     * @returns {Object} result 参数描述
+     */
+    function func(param1, param2) {
+
+        return result;
+    }
+    ```
 
 ### 判断jQuery选择器选择到空内容
 无论选择器选取的内容是否为空，都返回数组，所以`if($(...)) {...}`永远成立。因此用以下方法
@@ -181,20 +196,6 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     2. 使用缓动动画，过度300ms延迟
     3. 中间增加一层接受这个点透事件，然后去除此层
 
-### 函数注释规范
-```javascript
-/*
- * 函数说明
- * @param {Object} param1 [1|2|3] 参数描述
- * @param {String|Object} param2 参数描述
- * @param {类型1|类型2} 参数名 [取值1|取值2] 描述
- * @returns {Object} result 参数描述
- */
-function func(param1, param2) {
-
-    return result;
-}
-```
 
 ## 功能用法
 ### 判断类型
