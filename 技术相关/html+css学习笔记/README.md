@@ -255,7 +255,7 @@ div {
 
 ### wap页面自适应图片
 图片根据浏览器窗口变化而宽高一同等比例变化，不使用`img`标签
-- 横向、纵向百分比的`padding`和`margin`值都是以父元素的`width`为基础（`height`是以父元素的`height`为基础）
+- 横向、纵向百分比的`padding`（和`margin`）值都是以父元素的`width`为基础，`height`是以父元素的`height`为基础
 
     ```css
     自适应图片 {
