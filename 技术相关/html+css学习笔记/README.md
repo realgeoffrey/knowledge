@@ -299,7 +299,7 @@ div {
                 height: 0;
                 width: 宽%;
                 padding-bottom: 高%;
-                background-size: 雪碧图宽/图片宽度*100%;
+                background-size: 雪碧图宽/单图宽度*100%;
                 background: url(雪碧图) 0 计算出的百分比 no-repeat;
             }
         ```
