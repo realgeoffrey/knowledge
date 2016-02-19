@@ -254,16 +254,16 @@ div {
 ```
 
 ### wap页面自适应图片
-节点根据浏览器窗口变化而高宽一同等比例变化，使用雪碧图、不使用`img`标签
+节点根据浏览器窗口变化而高宽一同等比例变化，无法使用雪碧图、不使用`img`标签
 - 横向、纵向百分比的`padding`和`margin`值都是以父元素的`width`为基础（`height`是以父元素的`height`为基础）
 
     ```css
     自适应图片 {
-        width: 长%;
         height: 0;
+        width: 长%;
         padding-bottom: 宽%; /* 长与宽成图片比例*/
-        background: url(雪碧图) 横轴坐标/2 纵轴坐标/2 no-repeat;
-        background-size: 雪碧图宽度/2;
+        background-size: 100%;
+        background: url(单图) 0 0 no-repeat;
     }
     ```
 
@@ -274,6 +274,8 @@ div {
     自适应图片 {
         width: 长rem;
         height: 宽rem;
+        background-size: 100%;
+        background: url(单图) 0 0 no-repeat;
     }
     ```
 
