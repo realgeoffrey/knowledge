@@ -285,7 +285,7 @@ div {
         自适应图片 {
             width: 宽rem;
             height: 高rem;
-            background-size: 宽rem;
+            background-size: 雪碧图宽rem;
             background: url(雪碧图) 0 -纵轴rem no-repeat;
         }
         ```
@@ -297,7 +297,7 @@ div {
                 height: 0;
                 width: 宽%;
                 padding-bottom: 高%;
-                background-size: 100%;
+                background-size: 雪碧图宽/图片宽度*100%;
                 background: url(雪碧图) 0 计算出的百分比 no-repeat;
             }
         ```
@@ -307,7 +307,7 @@ div {
         自适应图片 {
             width: 宽rem;
             height: 高rem;
-            background-size: 100%;
+            background-size: 雪碧图宽rem;
             background: url(雪碧图) 0 计算出的百分比 no-repeat;
         }
         ```
