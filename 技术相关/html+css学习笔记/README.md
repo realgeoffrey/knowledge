@@ -2,10 +2,12 @@
 ### 用css创造三角形
 ```css
 div {
-    border: 12px solid;
+    border-width: 20px;
+    border-style: dashed solid dashed dashed; /* dashed兼容ie6不支持透明*/
     border-color: transparent #000 transparent transparent;
     height: 0;
     width: 0;
+    _overflow: hidden;
 }
 ```
 
