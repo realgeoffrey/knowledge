@@ -254,30 +254,63 @@ div {
 ```
 
 ### wap页面自适应图片
-节点根据浏览器窗口变化而高宽一同等比例变化，无法使用雪碧图、不使用`img`标签
+节点根据浏览器窗口变化而高宽一同等比例变化，不使用`img`标签
 - 横向、纵向百分比的`padding`和`margin`值都是以父元素的`width`为基础（`height`是以父元素的`height`为基础）
 
     ```css
     自适应图片 {
         height: 0;
-        width: 长%;
-        padding-bottom: 宽%; /* 长与宽成图片比例*/
+        width: 宽%;
+        padding-bottom: 高%;
         background-size: 100%;
         background: url(单图) 0 0 no-repeat;
     }
     ```
 
     >缺点：只能用于空标签
-- 长宽都用rem（与html的font-size配合）
+- 宽高都用rem（与html的font-size配合）
+    - 单图
 
-    ```css
-    自适应图片 {
-        width: 长rem;
-        height: 宽rem;
-        background-size: 100%;
-        background: url(单图) 0 0 no-repeat;
-    }
-    ```
+        ```css
+        自适应图片 {
+            width: 宽rem;
+            height: 高rem;
+            background-size: 100%;
+            background: url(单图) 0 0 no-repeat;
+        }
+        ```
+    - 雪碧图
+
+        ```css
+        自适应图片 {
+            width: 宽rem;
+            height: 高rem;
+            background-size: 宽rem;
+            background: url(雪碧图) 0 -纵轴rem no-repeat;
+        }
+        ```
+- 雪碧图并且`background-position`用百分比：公式`横向百分比数值 = 小图横坐标 / ( 大图宽度 - 小图宽度 ) * 100% | 纵向百分比数值 = 小图纵坐标 / ( 大图高度 - 小图高度 ) * 100% `
+    - 百分比宽高
+
+        ```css
+            自适应图片 {
+                height: 0;
+                width: 宽%;
+                padding-bottom: 高%;
+                background-size: 100%;
+                background: url(雪碧图) 0 计算出的百分比 no-repeat;
+            }
+        ```
+    - rem宽高
+
+        ```css
+        自适应图片 {
+            width: 宽rem;
+            height: 高rem;
+            background-size: 100%;
+            background: url(雪碧图) 0 计算出的百分比 no-repeat;
+        }
+        ```
 
 
 ##HTML + CSS
