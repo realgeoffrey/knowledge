@@ -164,21 +164,36 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
             ```
     - 对象的属性、方法，与变量、方法命名规则相同
     - 若属性、方法是私有的，应当在之前加一个下划线`_`
-- 函数注释规范
+- 注释规范
+    - 单行注释
+        - 缩进与备注内容一致，‘//’后不空格
+        - 代码上方独占一行，注释前必须空一行
+        - 使用场景
+            - 代码尾部，至少一个缩进，若注释太长则必须挪到代码上方
+            - 被注释的大段代码
+    - 多行注释
 
-    ```javascript
-    /*
-     * 函数说明
-     * @param {Object} param1 [1|2|3] 参数描述
-     * @param {String|Object} param2 参数描述
-     * @param {类型1|类型2} 参数名 [取值1|取值2] 描述
-     * @returns {Object} result 参数描述
-     */
-    function func(param1, param2) {
+        - 缩进与备注内容一致，‘*’或‘/*’后空一格
+        - 代码上方独占多行，注释前必须有空一行
+        - 使用场景
+            - 难以理解的代码
+            - 可能被误认为错误的代码
+            - 浏览器特性hack
+    - 函数注释规范
 
-        return result;
-    }
-    ```
+        ```javascript
+        /*
+         * 函数说明
+         * @param {Object} param1 [1|2|3] 参数描述
+         * @param {String|Object} param2 参数描述
+         * @param {类型1|类型2} 参数名 [取值1|取值2] 描述
+         * @returns {Object} result 参数描述
+         */
+        function func(param1, param2) {
+
+            return result;
+        }
+        ```
 
 ### 判断jQuery选择器选择到空内容
 无论选择器选取的内容是否为空，都返回数组，所以`if($(...)) {...}`永远成立。因此用以下方法

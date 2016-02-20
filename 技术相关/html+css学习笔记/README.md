@@ -1,4 +1,8 @@
 ##CSS
+### 使元素强制表现为`block`
+- `float: left/right;`
+- `position: absolute/fixed;`
+
 ### 用css创造三角形
 ```css
 div {
