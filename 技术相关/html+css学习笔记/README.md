@@ -336,7 +336,7 @@ td,th {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    _height: 1em;
+    _height: 高度;
 }
 ```
 >若`table-layout`使用默认值`automatic`，则td或th上设置宽度无效，列的宽度由列单元格中没有折行的最宽的内容决定
