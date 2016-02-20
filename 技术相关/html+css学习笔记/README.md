@@ -324,6 +324,23 @@ div {
         }
         ```
 
+### `table-layout: fixed;`
+由第一行td或th的宽度来确定此table元素内的布局（css2）
+```css
+table {
+    table-layout: fixed;
+    width: 宽度;
+    white-space: nowrap;
+}
+td,th {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    _height: 1em;
+}
+```
+>若`table-layout`使用默认值`automatic`，则td或th上设置宽度无效，列的宽度由列单元格中没有折行的最宽的内容决定
+
 
 ##HTML + CSS
 ### 垂直居中
