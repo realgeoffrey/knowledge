@@ -401,10 +401,12 @@ ul {
 }
 ul li {
     float: left;
+    _display: inline;
     margin-left: -1px;
 }
 ul li a {
-    background: url(与li的margin-left大小一致的border样式图片) 100% center no-repeat;
+    background: url(宽度根据li的margin-left、高度根据a的高度决定的border样式图片) 100% center no-repeat;
+    display: block;
 }
 ul li a:hover {
     background: 背景色;
@@ -740,6 +742,22 @@ rem单位转换为具体px值：**rem乘于html的font-size像素**。
         height: 高度;
     }
     ```
+
+### 等宽文字
+要做到不同字数的一行文字等宽，可以用标签填补中间间隙
+
+```html
+<标签>文字文字</标签>
+<标签>文<i></i><i></i>字</标签>
+```
+```css
+i {
+    display: inline-block;
+    *display: inline;
+    zoom: 1;
+    width: 1em;
+}
+```
 
 
 ##经验总结
