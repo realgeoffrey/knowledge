@@ -293,13 +293,29 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     - **`null` -> `"object"`**
     - 函数 -> `"function"`
 
-    >因为`typeof null`返回`"object"`，因此typeof不能判断是否是引用类型
+    >因为`typeof null`返回`"object"`，因此typeof不能判断是否是引用类型。
     >
-    >ie-的DOM节点的方法返回不是~~`function`~~，而是`object`，因此只能用`方法名 in DOM`检测DOM是否拥有某方法
+    >ie8-的DOM节点的方法返回不是~~`function`~~，而是`object`，因此只能用`方法名 in DOM`检测DOM是否拥有某方法。
 
-- `值 instanceof 值`
+- `对象 instanceof 构造函数`
 
-- `值 in 值`
+    不能跨帧（iframe）。
+
+    判断是否是对象的构造函数（判断某个构造函数的prototype属性所指向的对象是否存在于另外一个要检测对象的原型链上）。
+
+    不仅检测对象本身，还检测至原型链。如`new nNmber() instanceof Object`返回true。
+
+    **检测自定义类型的唯一方法。**
+- `属性 in 对象`
+
+    仅判断属性是否存在检测的对象上，不会去读取属性值。
+
+    `in`检测至原型链。
+
+    >`对象.hasOwnProperty(属性)`仅检查在当前实例对象，不检测其原型链。
+    >
+    >ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
+
 
 ### 判断对象、方法是否定义
 - 判断对象方法是否可以执行
