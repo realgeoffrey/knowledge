@@ -25,3 +25,4 @@ Knowledge of my work area..
 ###软件使用
 - [Charles使用](./工具使用/Charles使用)
 - [ide设置](./工具使用/ide设置)
+- [Google搜索技巧](./工具使用/Google搜索技巧)
