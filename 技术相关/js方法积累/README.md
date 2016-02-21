@@ -573,7 +573,6 @@ removeEvent(document.getElementById('test1'), 'keydown', func1);
 
 jQuery的`on`与`off`，不用一一对应某个handle：当写具体handle时解绑那个具体handle；不写默认解绑所有对象下某事件的方法。
 
-
 ### js、jQuery实现判断按下具体某键值
 ```javascript
 /* js原生*/
