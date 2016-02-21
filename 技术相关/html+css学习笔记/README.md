@@ -351,7 +351,8 @@ td,th {
 - 查看内联元素时，展示的高度（鼠标指示出的高度）为内容区域高度(height)，元素所占高度由`line-height`决定。
 - 元素高度表现为： 内容区域+行间距，刚好等于行高。
 
-    内容区域（content area） + 行间距（vertical spacing） = 行高（line-height）
+    `内容区域（content area） + 行间距（vertical spacing） = 行高（line-height）`
+
         - 内容区域：只与字号（font-size）和font-family有关
         - 行间距：摇摆不定，可以为负值，仅为达成以上等式而变化
 
