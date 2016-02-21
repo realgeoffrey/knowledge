@@ -759,6 +759,37 @@ i {
 }
 ```
 
+### 实现hover之后底部border替换父级border
+```css
+ul {
+    height: 高度;
+    border-bottom: 1px solid 颜色;
+    /* 不能overflow: hidden;*/
+}
+li {
+    width: 宽度;
+
+    height: 高度+1;
+    float: left;
+    _display: inline;
+}
+a {
+    width: 宽度;
+    /* 不能background*/
+
+    height: 高度+1;
+    margin-bottom: -1px;
+    display: block;
+    _position: relative;
+}
+li.hover a,
+li:hover a {
+    height: 高度; /* 若border要超过原来的父级border，这里高度减少多少，下面border-bottom就增加多少*/
+    border-bottom: 1px solid pink;
+    _border-bottom: 2px solid pink;
+}
+```
+
 
 ##经验总结
 ### 限定布局宽度，让内容决定布局高度
