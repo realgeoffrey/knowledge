@@ -325,7 +325,7 @@ div {
         ```
 
 ### `table-layout: fixed;`
-由第一行td或th的宽度来确定此table元素内的布局（css2）
+由第一行td或th的宽度来确定此table元素内的布局
 ```css
 table {
     table-layout: fixed;
@@ -346,6 +346,16 @@ td,th {
 ```
 >若`table-layout`使用默认值`automatic`，则td或th上设置宽度无效，列的宽度由列单元格中没有折行的最宽的内容决定
 
+### `line-height`
+- 单行文本情况下：内联元素的高度由`line-height`决定；块级元素的高度先由`height`决定，若没有设置`height`再由`line-height`决定（ie6是`line-height`优先决定）。
+- 查看内联元素时，展示的高度（鼠标指示出的高度）为内容区域高度(height)，元素所占高度由`line-height`决定。
+- 元素高度表现为： 内容区域+行间距，刚好等于行高。
+
+    内容区域（content area） + 行间距（vertical spacing） = 行高（line-height）
+        - 内容区域：只与字号（font-size）和font-family有关
+        - 行间距：摇摆不定，可以为负值，仅为达成以上等式而变化
+
+>ie6不能用line-height控制图片与文字的对齐位置
 
 ##HTML + CSS
 ### 垂直居中
