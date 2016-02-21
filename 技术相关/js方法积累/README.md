@@ -565,6 +565,15 @@ function removeEvent(obj, type, handle) {
 removeEvent(document.getElementById('test1'), 'keydown', func1);
 ```
 
+`addEventListener`与`removeEventListener`是高级浏览器都有的方法（ie8-不支持），必须一一对应具体的handle和布尔值，才可以解绑。
+
+`attachEvent`与`detachEvent`是ie特有方法，必须一一对应具体的handle，才可以解绑。
+
+`on+type`是所有浏览器都支持，用赋值覆盖解绑。
+
+jQuery的`on`与`off`，不用一一对应某个handle：当写具体handle时解绑那个具体handle；不写默认解绑所有对象下某事件的方法。
+
+
 ### js、jQuery实现判断按下具体某键值
 ```javascript
 /* js原生*/
