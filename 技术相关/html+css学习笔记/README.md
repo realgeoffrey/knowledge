@@ -352,7 +352,6 @@ td,th {
 - 元素高度表现为： 内容区域+行间距，刚好等于行高。
 
     **内容区域（content area） + 行间距（vertical spacing） = 行高（line-height）**
-
         - 内容区域：只与字号（font-size）和font-family有关
         - 行间距：摇摆不定，可以为负值，仅为达成以上等式而变化
 
