@@ -791,7 +791,7 @@ li:hover a {
 ```
 
 ### 页面高度不够时，footer依然置于页面最底部
-- ~~ie6中，当.last_container高度变化的时候会渲染错误~~
+- （劣）ie6中，当.last_container高度变化的时候会渲染错误
 
     ```html
     <div class="wrapper">
@@ -824,7 +824,7 @@ li:hover a {
     }
 
     ```
-- 兼容大部分情况
+- （优）兼容大部分情况
 
     ```html
     <div class="content">
