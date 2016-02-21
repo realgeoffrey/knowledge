@@ -752,3 +752,16 @@ document.getElementById('...').addEventListener('touchend', function (e) {
     /* do click*/
 }, false);
 ```
+
+### 判断是否是数组
+```javascript
+function isArray(value) {
+    if (typeof Array.isArray === "function") {    /* ie8及以下不支持*/
+
+        return Array.isArray(value);
+    } else {
+
+        return Object.prototype.toString.call(value) === "[Object Array]";  /* instanceof不能跨帧*/
+    }
+}
+```
