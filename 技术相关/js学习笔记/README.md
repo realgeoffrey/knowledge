@@ -102,6 +102,16 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
     >在DOM中随意添加一个属性（DOM所没有的也可以），`此属性 in 此DOM`永远为真，不可以判断是否此DOM存在此属性。
 
+### Boolean转换
+| 数据类型 | 转换为true的值 | 转换为false的值 |
+| ------------- | ------------- | ------------- |
+| Boolean | true | false |
+| String | 任何非空字符串 | ""（空字符串） |
+| Number | 任何非零数值（包括无穷大） | 0和NaN |
+| Object | 任何对象 | null |
+| undefined | n/a | undefined |
+
+>`!!变量`等价于`Boolean(变量)`。
 
 ### js代码风格规范（style guideline）
 - 变量声明
