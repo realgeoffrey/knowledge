@@ -763,7 +763,7 @@ i {
 ```css
 ul {
     height: 高度;
-    border-bottom: 1px solid 颜色;
+    border-bottom: 1px solid 父级颜色;
     /* 不能overflow: hidden;*/
 }
 li {
@@ -785,8 +785,8 @@ a {
 li.hover a,
 li:hover a {
     height: 高度; /* 若border要超过原来的父级border，这里高度减少多少，下面border-bottom就增加多少*/
-    border-bottom: 1px solid pink;
-    _border-bottom: 2px solid pink;
+    border-bottom: 1px solid 子级颜色;
+    _border-bottom: 2px solid 子级颜色;
 }
 ```
 
