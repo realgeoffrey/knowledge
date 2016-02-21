@@ -353,8 +353,8 @@ td,th {
 
     **内容区域（content area） + 行间距（vertical spacing） = 行高（line-height）**
 
-        >   - 内容区域：只与字号（font-size）和font-family有关
-        >   - 行间距：摇摆不定，可以为负值，仅为达成以上等式而变化
+    >   - 内容区域：只与字号（font-size）和font-family有关
+    >   - 行间距：摇摆不定，可以为负值，仅为达成以上等式而变化
 
 >ie6不能用line-height控制图片与文字的对齐位置
 
