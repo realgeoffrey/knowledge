@@ -238,7 +238,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
 ## 功能用法
 ### 判断类型
-- `Object.prototype.toString.apply(值)`（或call）
+- `Object.prototype.toString.apply(值);  /* 或call*/`
 
     >[ECMA]When the toString method is called, the following steps are taken:
     >   - If the this value is undefined, return "[object Undefined]".
@@ -281,6 +281,21 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         - console对象 -> `[object Console]`
 
 - `typeof 值`
+
+    可以跨帧（iframe）。
+
+    返回一个表示值类型的字符串。
+    - 字符串 -> `"string"`
+    - 布尔型 -> `"boolean"`
+    - 数值型 -> `"number"`
+    - `undefined` -> `"undefined"`
+    - 引用型 -> `"object"`
+    - **`null` -> `"object"`**
+    - 函数 -> `"function"`
+
+    >因为`typeof null`返回`"object"`，因此typeof不能判断是否是引用类型
+    >
+    >ie-的DOM节点的方法返回不是~~`function`~~，而是`object`，因此只能用`方法名 in DOM`检测DOM是否拥有某方法
 
 - `值 instanceof 值`
 
