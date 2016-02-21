@@ -790,6 +790,70 @@ li:hover a {
 }
 ```
 
+### 页面高度不够时，footer依然置于页面最底部
+- ~~ie6中，当.last_container高度变化的时候会渲染错误~~
+
+    ```html
+    <div class="wrapper">
+        内容
+        <div class="last_container">内容</div>
+        <div class="footer">底部内容</div>
+    </div>
+    ```
+    ```css
+    html,
+    body {
+        height: 100%;
+    }
+    .wrapper {
+        position: relative;
+        height: auto !important;
+        min-height: 100%;
+        _height: 100%;
+    }
+    .last_container {
+        padding-bottom: 底部高度;
+    }
+    .footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        _width: 100%;
+        height: 底部高度;
+    }
+
+    ```
+- 兼容大部分情况
+
+    ```html
+    <div class="content">
+        内容
+        <div class="last_content">内容</div>
+    </div>
+    <div class="footer">底部内容</div>
+    ```
+    ```css
+    html,
+    body {
+        height: 100%;
+    }
+    .content {
+        min-height: 100%;
+        height: auto !important;
+        _height: 100%;
+    }
+    .last_content {
+        padding-bottom: 底部高度;
+    }
+    .footer {
+        margin-top: -底部高度;
+        height: 底部高度;
+    }
+    ```
+
+>有些插件效果不能支持`html,body {height: 100%;}`。
+
 
 ##经验总结
 ### 限定布局宽度，让内容决定布局高度
@@ -812,7 +876,8 @@ body {
 比如已加载完成的css文件内有多个url请求（background），但也仅在页面要用到某个url请求时（比如某类有url背景），才会去请求这个资源，而不是在加载css文件时就加载外部资源。
 
 ### 知识点
-- a标签的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（（包括#和javascript: void(0);））都会打开新的页面
+- a标签的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（包括#和javascript: void(0);）都会打开新的页面。
+- `absolute`元素用`top: 0;bottom: 0;left: 0;right: 0;_height: 100%;_width: 100%;`可以拉伸至父容器的高宽。
 
 ### 高性能网站建设指南
 - 标签语义化，不能全用div。先用纯html标签语义化结构，再加入css满足样式，最后加入交互

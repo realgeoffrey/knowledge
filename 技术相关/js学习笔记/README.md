@@ -404,6 +404,19 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
     >可能产生一个严重的问题：循环引用，引用次数永远不会是0
 
+### 排版引擎与js引擎
+- 排版引擎（layout engine）
+
+    也称为浏览器内核（web browser engine）、页面渲染引擎（rendering engine）或样板引擎，是一种软件组件，负责获取标记式内容（如html、xml以及图像文件等）、整理信息（如css、xsl），并将排版后的内容输出至显示屏或打印机。
+    所有网页浏览器、电子邮件客户端以及其他需要根据表示性的标记语言来显示内容的应用程序，都需要排版引擎。
+
+    IE：Trident；Chrome：前WebKit，现Blink；Firefox：Gecko；Safari：WebKit；Opera：前Presto，现Blink；Edge：EdgeHTML。
+- js引擎
+
+    一个专门处理js脚本的虚拟机，一般会附带在网页浏览器中。
+
+    JScript：ie8-，ASP；Chakra：ie9+，Edge；V8：Chrome，Opera，Nodejs，MongoDB；SpiderMonkey：Firefox；Nitro：Safari。
+
 ### 引用类型与基本类型的变量传递
 - 只能给引用类型动态地添加属性和方法，不能给基本类型添加。
 - js的变量传递都是**值传递**，都是把变量中存储的值复制一份给另一个变量。
