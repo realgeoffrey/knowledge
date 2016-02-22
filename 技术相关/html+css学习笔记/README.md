@@ -1,13 +1,10 @@
 ##CSS
-### 使元素强制表现为`block`
-- `float: left/right;`
-- `position: absolute/fixed;`
 
 ### 用css创造三角形
 ```css
 div {
     border-width: 20px;
-    border-style: dashed solid dashed dashed; /* dashed兼容ie6不支持透明*/
+    border-style: dashed solid dashed dashed; /* dashed兼容ie6*/
     border-color: transparent #000 transparent transparent;
     height: 0;
     width: 0;
@@ -64,55 +61,6 @@ div {
 }
 ```
 
-### 单词内断字换行
-- ~~默认~~：
-    若此行放不下则整个单词换行，若下行也放不下则溢出（保持单词不断词）
-- ~~`word-break: break-all;`~~：
-    若此行放不下则直接断词，不会尝试整个单词换行
-- `word-wrap: break-word;`：
-    若此行放不下则整个单词先换行，若下行也放不下再断词
-
-### 块级元素的width
-- `width: auto;`：
-    默认值，换算具体值为：**本元素width = 父级width - 本元素（margin + padding + border）水平值**
-
-    >当块级width为默认的auto时，设置负的水平margin会使width增加
-- `width: 100%;`：
-    父级的px为自己的px
-
-### margin合并（非ie浏览器）
->[W3C]In CSS, the adjoining margins of two or more boxes (which might or might not be siblings) can combine to form a single margin. Margins that combine this way are said to collapse, and the resulting combined margin is called a collapsed margin.
-
-- 在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
-
-    >毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开
-
-    >普通流：除**浮动（float）**、**绝对定位（absolute）**外的代码
-- 产生独立的BFC结构可避免margin合并
-
-### BFC（Block Formatting Context）块级格式上下文
->- [W3C]Floats, absolutely positioned elements, block containers (such as inline-blocks, table-cells, and table-captions) that are not block boxes, and block boxes with ‘overflow’ other than ‘visible’ (except when that value has been propagated to the viewport) establish new block formatting contexts for their contents.
->- In a block formatting context, boxes are laid out one after the other, vertically, beginning at the top of a containing block. The vertical distance between two sibling boxes is determined by the ‘margin’ properties. Vertical margins between adjacent block-level boxes in a block formatting context collapse.
->- In a block formatting context, each box’s left outer edge touches the left edge of the containing block (for right-to-left formatting, right edges touch). This is true even in the presence of floats (although a box’s line boxes may shrink due to the floats), unless the box establishes a new block formatting context (in which case the box itself may become narrower due to the floats).
-
-- 浮动元素和绝对定位元素，非块级盒子的块级容器（例如 inline-blocks、table-cells、和table-captions），以及overflow值不为“visiable”的块级盒子，都会为他们的内容创建新的块级格式化上下文。
-
-    在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由他们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
-
-    在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘（border-left）（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
-- BFC是一个独立的布局环境，可以理解为一个箱子，箱子里面物品的摆放不受外界的影响，并且每个BFC都遵守同一套布局规则。
-- 对容器添加以下css属性使其成为独立的BFC
-    - `float: left / right;`
-    - `overflow: hidden / auto / scroll;`
-    - `display: inline-block / table-cell / flex / table-caption / inline-flex;`
-    - `position: absolute / fixed;`
-
-### word-spacing
-对有空白字符包裹的非空白字符产生效果。
-
-### z-index用于控制设置了absolute、relative或fixed定位的元素
-应该只给有堆叠关系的节点设置此属性，而不要试图通过设定个别元素的z-index来确保元素不重叠。
-
 ### 模糊效果滤镜（高斯模糊）
 - CSS3（除*ie10*与*ie11*外基本所有主流浏览器）
 
@@ -152,31 +100,6 @@ div {
 
     （待续）
 
-### css的小数
-浏览器会把小数以及百分比换算成整数的单位（px）
-- 四舍五入：ie8 ie9 chrome firefox
-- 直接向下取整：ie7 safari
-
->有些浏览器会出现一列百分比相加为100%的节点换算之后无法占满整列
-
-### font-size最小值
-- wap端没有最小限制
-- pc端最小限制为12px
-
-### img标签的src属性
-当img标签的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
-- 不要用~~空的img标签加上背景来用作默认图~~，必须用其他标签来代替。
-- img标签没有src属性或src属性为空隐藏
-
-    ```css
-    img[src=''] {   /* ie8+*/
-        visibility: hidden; /* 属性为空隐藏*/
-    }
-    img:not([src]) {    /* ie9+*/
-        visibility: hidden; /* 属性不存在隐藏*/
-    }
-    ```
-
 ### inline-block元素之间或与文本的水平对齐
 并排排列的不同元素间，若不使用float，而使用inline-block
 - 非img标签
@@ -204,13 +127,6 @@ div {
         vertical-align: middle;
     }
     ```
-
-### 滚动条
-- 若`overflow-x`和`overflow-y`相同，则等同于`overflow`
-- 若不同，且其中一个值为`visible`，另一个为`hidden/scroll/auto`，则`visible`重置为`auto`
-- 默认滚动条均来自`html`标签，而不是body标签。因此，除去默认滚动条应在html上设置overflow值
-- js滚动条高度为：`document.documentElement.scrollTop || document.body.scrollTop`
-- 滚动条会占用容器的可用高度或宽度
 
 ### 移动端半像素
 不可以使用`border: 0.5px`，因为浏览器会把宽度换算成0或者1
@@ -346,6 +262,94 @@ td,th {
 ```
 >若`table-layout`使用默认值`automatic`，则td或th上设置宽度无效，列的宽度由列单元格中没有折行的最宽的内容决定
 
+### 使元素强制表现为`block`
+- `float: left/right;`
+- `position: absolute/fixed;`
+
+### 单词内断字换行
+- ~~默认~~：
+    若此行放不下则整个单词换行，若下行也放不下则溢出（保持单词不断词）
+- ~~`word-break: break-all;`~~：
+    若此行放不下则直接断词，不会尝试整个单词换行
+- `word-wrap: break-word;`：
+    若此行放不下则整个单词先换行，若下行也放不下再断词
+
+### 块级元素的width
+- `width: auto;`：
+    默认值，换算具体值为：**本元素width = 父级width - 本元素（margin + padding + border）水平值**
+
+    >当块级width为默认的auto时，设置负的水平margin会使width增加
+- `width: 100%;`：
+    父级的px为自己的px
+
+### margin合并（非ie浏览器）
+>[W3C]In CSS, the adjoining margins of two or more boxes (which might or might not be siblings) can combine to form a single margin. Margins that combine this way are said to collapse, and the resulting combined margin is called a collapsed margin.
+
+- 在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
+
+    >毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开
+
+    >普通流：除**浮动（float）**、**绝对定位（absolute）**外的代码
+- 产生独立的BFC结构可避免margin合并
+
+### BFC（Block Formatting Context）块级格式上下文
+- W3C定义：
+
+    浮动元素和绝对定位元素，非块级盒子的块级容器（例如 inline-blocks、table-cells、和table-captions），以及overflow值不为“visiable”的块级盒子，都会为他们的内容创建新的块级格式化上下文。
+
+    在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由他们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
+
+    在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘（border-left）（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
+
+    >- [W3C]Floats, absolutely positioned elements, block containers (such as inline-blocks, table-cells, and table-captions) that are not block boxes, and block boxes with ‘overflow’ other than ‘visible’ (except when that value has been propagated to the viewport) establish new block formatting contexts for their contents.
+    >- In a block formatting context, boxes are laid out one after the other, vertically, beginning at the top of a containing block. The vertical distance between two sibling boxes is determined by the ‘margin’ properties. Vertical margins between adjacent block-level boxes in a block formatting context collapse.
+    >- In a block formatting context, each box’s left outer edge touches the left edge of the containing block (for right-to-left formatting, right edges touch). This is true even in the presence of floats (although a box’s line boxes may shrink due to the floats), unless the box establishes a new block formatting context (in which case the box itself may become narrower due to the floats).
+
+- BFC是一个独立的布局环境，可以理解为一个箱子，箱子里面物品的摆放不受外界的影响，并且每个BFC都遵守同一套布局规则。
+- 对容器添加以下css属性使其成为独立的BFC
+    - `float: left / right;`
+    - `overflow: hidden / auto / scroll;`
+    - `display: inline-block / table-cell / table-caption / flex / inline-flex;`
+    - `position: absolute / fixed;`
+
+### word-spacing
+对有空白字符包裹的非空白字符产生效果。
+
+### z-index用于控制设置了absolute、relative或fixed定位的元素
+应该只给有堆叠关系的节点设置此属性，而不要试图通过设定个别元素的z-index来确保元素不重叠。
+
+### css的小数
+浏览器会把小数以及百分比换算成整数的单位（px）
+- 四舍五入：ie8 ie9 chrome firefox
+- 直接向下取整：ie7 safari
+
+>有些浏览器会出现一列百分比相加为100%的节点换算之后无法占满整列
+
+### font-size最小值
+- wap端没有最小限制
+- pc端最小限制为12px
+
+### img标签的src属性
+当img标签的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
+- 不要用~~空的img标签加上背景来用作默认图~~，必须用其他标签来代替。
+- img标签没有src属性或src属性为空隐藏
+
+    ```css
+    img[src=''] {   /* ie8+*/
+        visibility: hidden; /* 属性为空隐藏*/
+    }
+    img:not([src]) {    /* ie9+*/
+        visibility: hidden; /* 属性不存在隐藏*/
+    }
+    ```
+
+### 滚动条
+- 若`overflow-x`和`overflow-y`相同，则等同于`overflow`
+- 若不同，且其中一个值为`visible`，另一个为`hidden/scroll/auto`，则`visible`重置为`auto`
+- 默认滚动条均来自`html`标签，而不是body标签。因此，除去默认滚动条应在html上设置overflow值
+- js滚动条高度为：`document.documentElement.scrollTop || document.body.scrollTop`
+- 滚动条会占用容器的可用高度或宽度
+
 ### `line-height`
 - 单行文本情况下：内联元素的高度由`line-height`决定；块级元素的高度先由`height`决定，若没有设置`height`再由`line-height`决定（ie6是`line-height`优先决定）。
 - 查看内联元素时，展示的高度（鼠标指示出的高度）为内容区域高度(height)，元素所占高度由`line-height`决定。
@@ -357,6 +361,7 @@ td,th {
     >   - 行间距：摇摆不定，可以为负值，仅为达成以上等式而变化
 
 >ie6不能用line-height控制图片与文字的对齐位置
+
 
 ##HTML + CSS
 ### 垂直居中
