@@ -374,11 +374,11 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 - `$.each()`jQuery方法
 
     ```javascript
-    $.each(obj, function (index, value) {
+    $.each(obj, function (index, element) {
 
     });
     ```
-    - obj为数组或对象（原生或jQuery对象），index为数组下标或对象名，value为值（不是jQuery对象，是DOM对象，与this相同）。
+    - obj为数组或对象（原生或jQuery对象），index为数组下标或对象名，element为值（不是jQuery对象，是DOM对象，与this相同）。
 - `obj.each()`jQuery方法
 
     ```javascript
