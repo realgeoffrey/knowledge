@@ -357,11 +357,11 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     >ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
 
 ### 循环遍历
-    >`break`应用在循环（while、do-while、for、for-in）和switch。
-    >
-    >`continue`应用在循环。
-    >
-    >`$.each/obj.each`跳出循环用`return true`和`return false`。
+>`break`应用在循环（while、do-while、for、for-in）和switch。
+>
+>`continue`应用在循环。
+>
+>`$.each/obj.each`跳出循环用`return true`和`return false`。
 
 - `for-in`js原生语法
 
