@@ -356,6 +356,41 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     >
     >ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
 
+### 循环遍历
+    >`break`应用在循环（while、do-while、for、for-in）和switch。
+    >
+    >`continue`应用在循环。
+    >
+    >`$.each/obj.each`跳出循环用`return true`和`return false`。
+
+- `for-in`js原生语法
+
+    ```javascript
+    for (var i in obj) {
+
+    }
+    ```
+    - obj为数组或对象，i为数组下标或对象属性名。
+    - 用`continue`和`break`退出。
+- `$.each()`jQuery方法
+
+    ```javascript
+    $.each(obj, function (index, value) {
+
+    });
+    ```
+    - obj为数组或对象（原生或jQuery对象），index为数组下标或对象名，value为值（不是jQuery对象，是DOM对象，与this相同）。
+    - 用`return true`和`return false`退出。
+- `obj.each()`jQuery方法
+
+    ```javascript
+    obj.each(function (index, element) {
+
+    });
+    ```
+    - obj为jQuery对象，index为从0开始的下标，element为值（不是jQuery对象，是DOM对象，与this相同）。
+    - 用`return true`和`return false`退出。
+
 
 ### 判断对象、方法是否定义
 - 判断对象方法是否可以执行
