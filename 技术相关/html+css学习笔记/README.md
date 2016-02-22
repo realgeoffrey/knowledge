@@ -262,6 +262,8 @@ td,th {
 ```
 >若`table-layout`使用默认值`automatic`，则td或th上设置宽度无效，列的宽度由列单元格中没有折行的最宽的内容决定
 
+----
+
 ### 使元素强制表现为`block`
 - `float: left/right;`
 - `position: absolute/fixed;`
@@ -364,6 +366,7 @@ td,th {
 
 
 ##HTML + CSS
+
 ### 垂直居中
 ```html
 <div class="box">
@@ -515,56 +518,6 @@ ul li a:hover {
     >DOM结构不能颠倒，需要中间结构放最后;
     >节点上能设定`clear: both;`;
     >完全由内容决定布局。
-
-
-### 响应式设计之媒体查询
-- css属性：
-    `@media (min-width: 360px) and (max-width: 640px) {...}`
-- html标签：
-    `<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
-
-### 响应式设计三大要素
-- 媒体查询
-- 流式布局：节点用百分比
-- 弹性图片：`img {max-width: 100%;}`
-- wap可以用rem和html的font-size配合
-
-### wap响应式页面解决方案：使用rem单位+媒体查询
-rem（font size of the root element）：相对于根元素的字体大小的单位。
-
-rem单位转换为具体px值：**rem乘于html的font-size像素**。
-
-1. 媒体查询设置html的font-size，把要做成响应式的内容转换为rem单位。
-    1. 正常完成切图：用正常的320px设计稿切完图，用px作为单位。
-    2. 媒体查询仅设置html的不同情况下的font-size值。
-    3. 把css内需要响应式内容的px值，除以在320px宽度下的html的font-szie值（320px宽度时设置为10px方便计算，设置为小于6px不起作用），单位改为rem。
-
-    >仅需要把要响应式布局的内容进行转变
-2. *用js根据是否是苹果设备进行判断：若是苹果设备则viewport设置为0.5，html的font-size设置为2倍；若非苹果设备则viewport设置为1，html的font-size设置为1倍*
-
-    ```javascript
-    var fontSize = 10;
-
-    /* 实现根据iOS和Android不同设备设置不同的viewport*/
-    if ((/iphone|ipad|ipod/i).test(navigator.appVersion) && window.devicePixelRatio >= 2) {
-        document.getElementById('j-viewport').content = 'width=device-width, initial-scale=0.5, user-scalable=no, minimum-scale=0.5, maximum-scale=0.5';
-        document.documentElement.style.fontSize = 2 * fontSize + "px";
-    } else {
-        document.getElementById('j-viewport').content = 'width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1, maximum-scale=1';
-        document.documentElement.style.fontSize = fontSize + "px";
-    }
-    ```
-
-    >因为html的font-size是用js写死的，而且viewport会变化，所以所有页面元素都要用百分比+rem。
-3. *用js根据浏览器宽度的改变修改html的font-size，页面总宽度固定为某rem。所有页面元素都要用百分比+rem*
-
-### img标签的圆形边框
-
-1. 圆形+边框
-    - pc：直接在img标签上设置`border`和`border-radius`
-    - wap：在img标签上设置`border`和`border-radius`，并且在父级标签嵌套一层设置`border`和`border-radius`
-2. 圆形（无边框）
-    - pc+wap：直接在img标签上设置`border-radius`
 
 ### 内容居中
 1. 内容宽度可变，三层模式
@@ -859,6 +812,58 @@ li:hover a {
 
 >有些插件效果不能支持`html,body {height: 100%;}`。
 
+----
+
+### 响应式设计之媒体查询
+- css属性：
+    `@media (min-width: 360px) and (max-width: 640px) {...}`
+- html标签：
+    `<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
+
+### 响应式设计三大要素
+- 媒体查询
+- 流式布局：节点用百分比
+- 弹性图片：`img {max-width: 100%;}`
+
+>wap可以用rem和html的font-size配合
+
+### wap响应式页面解决方案：使用rem单位+媒体查询
+rem（font size of the root element）：相对于根元素的字体大小的单位。
+
+rem单位转换为具体px值：**rem乘于html的font-size像素**。
+
+1. 媒体查询设置html的font-size，把要做成响应式的内容转换为rem单位。
+    1. 正常完成切图：用正常的320px设计稿切完图，用px作为单位。
+    2. 媒体查询仅设置html的不同情况下的font-size值。
+    3. 把css内需要响应式内容的px值，除以在320px宽度下的html的font-szie值（320px宽度时设置为10px方便计算，设置为小于6px不起作用），单位改为rem。
+
+    >仅需要把要响应式布局的内容进行转变
+2. *用js根据是否是苹果设备进行判断：若是苹果设备则viewport设置为0.5，html的font-size设置为2倍；若非苹果设备则viewport设置为1，html的font-size设置为1倍*
+
+    ```javascript
+    var fontSize = 10;
+
+    /* 实现根据iOS和Android不同设备设置不同的viewport*/
+    if ((/iphone|ipad|ipod/i).test(navigator.appVersion) && window.devicePixelRatio >= 2) {
+        document.getElementById('j-viewport').content = 'width=device-width, initial-scale=0.5, user-scalable=no, minimum-scale=0.5, maximum-scale=0.5';
+        document.documentElement.style.fontSize = 2 * fontSize + "px";
+    } else {
+        document.getElementById('j-viewport').content = 'width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1, maximum-scale=1';
+        document.documentElement.style.fontSize = fontSize + "px";
+    }
+    ```
+
+    >因为html的font-size是用js写死的，而且viewport会变化，所以所有页面元素都要用百分比+rem。
+3. *用js根据浏览器宽度的改变修改html的font-size，页面总宽度固定为某rem。所有页面元素都要用百分比+rem*
+
+### img标签的圆形边框
+
+1. 圆形+边框
+    - pc：直接在img标签上设置`border`和`border-radius`
+    - wap：在img标签上设置`border`和`border-radius`，并且在父级标签嵌套一层设置`border`和`border-radius`
+2. 圆形（无边框）
+    - pc+wap：直接在img标签上设置`border-radius`
+
 
 ##经验总结
 ### 限定布局宽度，让内容决定布局高度
@@ -903,7 +908,6 @@ body {
 - 移动端大部分是webkit内核浏览器，因此可以使用较新的技术，如css3；pc端要适配到ie6，因此要渐进增强
 - js用变量保存下已经使用过的DOM对象
 
-----
 1. 减少HTTP请求，图片以及外链资源的优化，包括压缩与整合，服务器开启g-zip等（不要压缩图片与PDF，因为它们本身已经被压缩，再压缩可能会增加文件大小；压缩都耗费CPU）
 2. 图片的处理，包括压缩、大banner切分成多个小图、小图合并成雪碧图、图片的延迟加载
 3. 不要缩小放大图片（使用原始大小展现）
