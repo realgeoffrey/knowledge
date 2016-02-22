@@ -160,7 +160,8 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         def';
 
         /* 一般写法*/
-        var b = 'abc' + 'def';
+        var b = 'abc' +
+            'def';
         ```
     - 直接量
         - 对象直接量
@@ -223,10 +224,10 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         ```
 
 ### 判断jQuery选择器选择到空内容
-无论选择器选取的内容是否为空，都返回数组，所以`if($(...)) {...}`永远成立。因此用以下方法
+无论选择器选取的内容是否为空，都返回数组，所以`if($(...)) {/* 永远执行*/}`永远成立。因此用以下方法：
 
-- `if($(...).length > 0) {...}`
-- `if($(...)[]) {...}/* 若无则为undefined*/`
+- `if($(...).length > 0) {/* 代码*/}`
+- `if($(...)[]) {/* 代码*/}   /* 若无则为undefined*/`
 
 ### 移动端相关
 - 移动端或者Zepto的`tap事件`点透bug解决
@@ -243,14 +244,9 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 ### 判断类型
 - `Object.prototype.toString.apply(值);  /* 或call*/`
 
-    >[ECMA]When the toString method is called, the following steps are taken:
-    >   - If the this value is undefined, return "[object Undefined]".
-    >   - If the this value is null, return "[object Null]".
-    >   - Let O be the result of calling ToObject passing the this value as the argument.
-    >   - Let class be the value of the [[Class]] internal property of O.
-    >   - Return the String value that is the result of concatenating the three Strings **"[object ", class, and "]"**.
+    - ECMA解释：
 
-    - 如果this的值为undefined，则返回"[object Undefined]"。
+        如果this的值为undefined，则返回"[object Undefined]"。
 
         如果this的值为null，则返回"[object Null]"。
 
@@ -259,6 +255,13 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         让class成为O的内部属性[[Class]]的值。
 
         返回三个字符串"[object "、class以及"]"连接后的新字符串。
+
+        >[ECMA]When the toString method is called, the following steps are taken:
+        >   - If the this value is undefined, return "[object Undefined]".
+        >   - If the this value is null, return "[object Null]".
+        >   - Let O be the result of calling ToObject passing the this value as the argument.
+        >   - Let class be the value of the [[Class]] internal property of O.
+        >   - Return the String value that is the result of concatenating the three Strings **"[object ", class, and "]"**.
     - 除了放入undefined或null外，放入**对象**，返回`"[object 构造函数的名称]"`的字符串
 
         `Object.prototype.toString.call(值);` -> 输出字符串
