@@ -4,8 +4,8 @@ Knowledge of my work area..
 
 
 ##技术相关
-- [js学习笔记](./技术相关/js学习笔记)
 - [js方法积累](./技术相关/js方法积累)
+- [js学习笔记](./技术相关/js学习笔记)
 - [html+css学习笔记](./技术相关/html+css学习笔记)
 - [cssReset](./技术相关/cssReset)
 - [ie6积累](./技术相关/ie6积累)
