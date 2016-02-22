@@ -262,7 +262,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         >   - Let O be the result of calling ToObject passing the this value as the argument.
         >   - Let class be the value of the [[Class]] internal property of O.
         >   - Return the String value that is the result of concatenating the three Strings **"[object ", class, and "]"**.
-    - 除了放入undefined或null外，放入**对象**，返回`"[object 构造函数的名称]"`的字符串
+    - 除了放入*undefined*或*null*外，放入**对象**，返回`"[object 构造函数的名称]"`的字符串
 
         `Object.prototype.toString.call(值);` -> 输出字符串
         - `undefined` 或 不填 -> `[object Undefined]`
@@ -309,7 +309,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
     判断是否是对象的构造函数（判断某个构造函数的prototype属性所指向的对象是否存在于另外一个要检测对象的原型链上）。
 
-    不仅检测对象本身，还检测至原型链。如`new nNmber() instanceof Object`返回true。
+    不仅检测对象本身，还检测至原型链。如`new Number() instanceof Object`返回true。
 
     **检测自定义类型的唯一方法。**
 - `属性 in 对象`
