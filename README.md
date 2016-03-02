@@ -7,6 +7,7 @@ Knowledge of my work area..
 - [js方法积累](./技术相关/js方法积累)
 - [js学习笔记](./技术相关/js学习笔记)
 - [html+css学习笔记](./技术相关/html+css学习笔记)
+- [js模块化](./技术相关/js模块化)
 - [cssReset](./技术相关/cssReset)
 - [ie6积累](./技术相关/ie6积累)
 - [gulp使用](./技术相关/gulp使用)
