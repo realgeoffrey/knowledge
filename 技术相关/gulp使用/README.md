@@ -7,7 +7,7 @@
 ```json
 {
     "name": "gulp.me",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "author": "feijie",
     "description": "my gulp tools",
     "dependencies": {
@@ -18,10 +18,10 @@
         "gulp-load-plugins": "^1.2.0",
         "gulp-make-css-url-version": "0.0.13",
         "gulp-rename": "^1.2.2",
-        "gulp-uglify": "^1.5.1",
+        "gulp-uglify": "^1.5.3",
         "imagemin-gifsicle": "^4.2.0",
         "imagemin-jpegtran": "^4.3.2",
-        "imagemin-pngquant": "^4.2.0",
+        "imagemin-pngquant": "^4.2.2",
         "imagemin-svgo": "^4.2.0"
     }
 }
