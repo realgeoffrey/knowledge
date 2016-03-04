@@ -18,7 +18,7 @@
 	
 3. 配置www目录
 
-	进入程序所在的文件夹，找到 *..\wamp\Scripts* 下的**config.inc.php**，文本打开并找到`\$wwwDir`（默认为安装目录的 www 文件夹），修改为`$wwwDir = 'E:/www;'`，如图：
+	进入程序所在的文件夹，找到 *..\wamp\Scripts* 下的 **config.inc.php**，文本打开并找到`\$wwwDir`（默认为安装目录的 www 文件夹），修改为`$wwwDir = 'E:/www;'`，如图：
 	![Alt text](./images/1.png)
 	
 	>注意：Windows 里的文件夹为`E:\www`，这里的是 `E:/www`，斜杠方向的区别。
@@ -31,7 +31,7 @@
 	
 4. 配置 Apache Web 服务器
 
-	设置主目录：左击系统托盘中的WampServer，选择**Apache->httpd.conf**配置文件，找到如下图所示的代码，注意Windows路径里面的“\”（反斜杠）都要替换成“/”（正斜杠），路径外面的双引号要保留：
+	设置主目录：左击系统托盘中的WampServer，选择**Apache->httpd.conf**配置文件，找到`DocumentRoot`，设置为`DocumentRoot "E:/www/"`：
 	![Alt text](./images/2.png)
 	
 	继续查找如下，设置的目录要和上一步所设置的目录一样，如图所示：
@@ -61,7 +61,7 @@
 	当修改完密码，出现成功信息后，再点击主菜单的任意一项，就会产生错误，如下图所示：
 	![Alt text](./images/8.png)
 	
-	打开WampServer安装目录的 *apps\phpmyadmin3.5.1* 下的**config.inc.php**，找到`['password']`,把刚才的密码输入（如果是默认配置，单引号内为空，即空密码。）：
+	打开WampServer安装目录的 *apps\phpmyadmin3.5.1* 下的 **config.inc.php**，找到`['password']`,把刚才的密码输入（如果是默认配置，单引号内为空，即空密码。）：
 	![Alt text](./images/9.png)
 	
 7. phpMyAdmin上传最大限制设置
@@ -93,7 +93,7 @@
 		![Alt text](./images/15.png)
 
 8. Apache配置虚拟主机
-	1. 文本打开 *...wamp\bin\apache\Apache2.2.22\conf* 下的**httpd.conf**文件，找到如下模块:
+	1. 文本打开 *...wamp\bin\apache\Apache2.2.22\conf* 下的 **httpd.conf**，找到如下模块:
 		```
 		# Virtual hosts
 		#Include conf/extra/httpd-vhosts.conf
@@ -105,7 +105,7 @@
 		Include conf/extra/httpd-vhosts.conf
 		```
 		
-	2. 文本打开 *...wamp\bin\apache\Apache2.4.4\conf\extra*下的**httpd-vhosts**文件，配置localhost虚拟主机，把原内容修改成如下：
+	2. 文本打开 *...wamp\bin\apache\Apache2.4.4\conf\extra* 下的 **httpd-vhosts**，配置localhost虚拟主机，把原内容修改成如下：
 		```
 		<VirtualHost *:80>
 			ServerAdmin webmaster@dummy-host.localhost
@@ -128,7 +128,7 @@
 		
 		>在www文件内新建123.com文件夹。
 		
-	3. 打开 *C:\WINDOWS\system32\drivers\etc* 下的**hosts**，增加代码：
+	3. 打开 *C:\WINDOWS\system32\drivers\etc* 下的 **hosts**，增加代码：
 		```
 		127.0.0.1 www.123.com
 		127.0.0.1 123.com
@@ -140,7 +140,7 @@
 		>Forbidden
 		>You don't have permission to access / on this server.
 		>这主要是目录访问权限没有设置，需要设置对目录的访问权。
-		>打开*...wamp\bin\apache\Apache2.2.22\conf*下的的**httpd.conf**文件，找到如下语句：
+		>打开 *...wamp\bin\apache\Apache2.2.22\conf* 下的 **httpd.conf**，找到如下语句：
 		>```
 		><Directory />
 		>   Options FollowSymLinks
@@ -149,7 +149,7 @@
 		>   Deny from all
 		></Directory>
 		>```
-		>复制以上代码，并进行目录修改，把**/**替换为`D:\www\123.com`，修改*...\wamp\bin\apache\Apache2.2.11\conf\extra*下的**httpd-vhosts.conf**文件：
+		>复制以上代码，并进行目录修改，把**/**替换为`D:\www\123.com`，修改 *...\wamp\bin\apache\Apache2.2.11\conf\extra* 下的 **httpd-vhosts.conf**：
 		>```
 		><VirtualHost *:80>
 		>   DocumentRoot "D:\www\123.com" 
