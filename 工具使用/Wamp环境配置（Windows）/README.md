@@ -1,6 +1,8 @@
 #Wamp环境配置（Windows）
 
->官网<http://www.wampserver.com>下载。本文中使用的版本是Wampserver2.2e，其中包括Apache:2.2.22、MySQL:5.5.24、PHP:5.3.13、PHPMyAdmin:3.5.1、SqlBuddy:1.3.3、XDebug:2.2.0。win7以上系统可以安装最新版，xp只能安装2.2e及更低版本。
+>[官网](http://www.wampserver.com)下载。本文中使用的版本是Wampserver2.2e，其中包括Apache:2.2.22、MySQL:5.5.24、PHP:5.3.13、PHPMyAdmin:3.5.1、SqlBuddy:1.3.3、XDebug:2.2.0。
+>
+>win7以上系统可以安装最新版，xp只能安装2.2e及更低版本。
 	
 1. 安装
 	>不要试图从 Wamp5 1.x（x 代表任意数字）版本升级到这个版本，如果已经安装了 Wamp5.1.x，请保存数据，然后在安装这个新版本之前卸载 Wamp5，并删除相关文件夹。对于新用户来说，本机上没有安装过 WampServer，所以不考虑这个问题。
@@ -113,7 +115,7 @@
 		</VirtualHost>   
 		```
 		
-		在www文件内新建123.com文件夹。
+		>在www文件内新建123.com文件夹。
 		
 	3. 文本	打开 *C:\WINDOWS\system32\drivers\etc* 下的**hosts**，增加代码：
 		```
@@ -127,7 +129,7 @@
 		>Forbidden
 		>You don't have permission to access / on this server.
 		>这主要是目录访问权限没有设置，需要设置对目录的访问权。
-		>打开**httpd**文件，找到如下语句：
+		>打开*...wamp\bin\apache\Apache2.2.22\conf*下的的**httpd.conf**文件，找到如下语句：
 		>```
 		><Directory />
 		>   Options FollowSymLinks
