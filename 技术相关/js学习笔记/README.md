@@ -572,6 +572,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         URI相关函数的参数不正确时抛出的错误，主要涉及`encodeURI()`、`decodeURI()`、`encodeURIComponent()`、`decodeURIComponent()`、`escape()`和`unescape()`这六个函数。
 
     6.
+
         >EvalError
         >
         >eval函数没有被正确执行时，会抛出EvalError错误。该错误类型已经不再在ES5中出现了，只是为了保证与以前代码兼容，才继续保留。
