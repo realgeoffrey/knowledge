@@ -646,9 +646,9 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
             img.src = "错误地址";
             ```
 
-        >与window对象的onerror事件处理函数不同，Image实例对象的onerror事件没有任何参数。
+        >与window对象的onerror事件处理函数不同，Image实例对象或img标签的onerror事件没有任何参数。
 
->捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
+    >捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
 
 ### jQuery的`.on()`绑定效率
 `$(event handler).on(event,selector,function(){})`
