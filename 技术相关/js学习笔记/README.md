@@ -577,20 +577,20 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
        >该错误类型已经不再在ES5中出现了，只是为了保证与以前代码兼容，才继续保留。
 
-    >浏览器不会抛出`Error`类型的exception异常，所以如果捕获到`Error`类型的异常，可以确定这个异常是用户代码抛出的，不是浏览器抛出的。浏览器默认只会抛出Error的6个派生类型错误。
+    >浏览器不会抛出`Error`类型的错误，所以如果捕获到`Error`类型的错误，可以确定这个异常是用户代码抛出的。浏览器默认只会抛出Error的6个派生类型错误。
 
 - Error对象属性
 
-    Error有两个基本的属性`message`和`name`。
+    Error实例对象有两个基本的属性`message`和`name`。
     `message`用来表示异常的详细信息；`name`指的的是Error对象的构造函数。
 
     此外，不同的js引擎对Error还各自提供了一些扩展属性。
 
 - 处理代码中抛出的error
 
-    当javascript代码中出现错误的时候，js引擎就会根据js的调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或者**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，而firefix会显示在错误控制台中）显示错误信息给访问者，可以用`window.onerror`进行控制。
+    当js出现错误时，js引擎就会根据js调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或者**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，而firefix会显示在错误控制台中）显示错误信息给访问者，可以用`window.onerror`进行自定义操作。
 
-    在某个**JavaScript block**（`<script>`标签或`try-catch`的`try`语句块？）内，第一个错误触发后，当前Javascript block后面的代码会被自动忽略，不再执行，其他的JavaScript block内代码不被影响。
+    在某个**JavaScript block**（`<script>`标签或`try-catch`的`try`语句块）内，第一个错误触发后，当前Javascript block后面的代码会被自动忽略，不再执行，其他的JavaScript block内代码不被影响。
 
     - `try-catch-finally`
 
