@@ -573,12 +573,12 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
        eval函数没有被正确执行时，会抛出EvalError错误。该错误类型已经不再在ES5中出现了，只是为了保证与以前代码兼容，才继续保留。
 
-    >浏览器不会抛出`Error`类型的exception异常，所以如果捕获到`Error`类型的异常，可以确定这个异常是用户代码抛出的，不是浏览器抛出的。浏览器只会默认抛出Error的6个派生类型错误。
+    >浏览器不会抛出`Error`类型的exception异常，所以如果捕获到`Error`类型的异常，可以确定这个异常是用户代码抛出的，不是浏览器抛出的。浏览器默认只会抛出Error的6个派生类型错误。
 
 - Error对象属性
 
-    Error有两个基本的属性`name`和`message`。
-    message用来表示异常的详细信息；name指的的是Error对象的构造函数。
+    Error有两个基本的属性`message`和`name`。
+    `message`用来表示异常的详细信息；`name`指的的是Error对象的构造函数。
 
     此外，不同的js引擎对Error还各自提供了一些扩展属性。
 
@@ -599,13 +599,21 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
     - `window.onerror`
 
-        `window`对象有`onerror`属性，把一个方法赋值给此对象后，但凡这个window中有javascript错误出现，则会调用此方法。
+        `window`对象有`onerror`属性，把一个方法赋值给此属性后，但凡这个window中有javascript错误出现，则会调用此方法。
 
-        onerror方法会传入3个参数，分别是**错误信息提示*、**产生错误的javascript的document url**和**错误出现的行号**。
-        方法返回`true`，浏览器不再显示错误信息；如果返回`false`，浏览器还是会提示错误信息：
+        onerror方法会传入3个参数，分别是**错误信息提示**、**javascript产生错误的document url**和**错误出现的行号**。
+        若方法返回`true`，浏览器不再显示错误信息；若返回`false`，浏览器还是会提示错误信息：
 
         ```javascript
+        /*
+         * window错误处理
+         * @param {String} msg 错误信息提示
+         * @param {String} url 错误出现url
+         * @param {Number} line 错误出现行号
+         * @returns {Boolean} [true|false] 不显示错误信息|显示
+         */
         window.onerror = function (msg, url, line) {
+            /* code*/
 
             return true;    /* 浏览器不再显示错误信息*/
         };
