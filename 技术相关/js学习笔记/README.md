@@ -627,7 +627,8 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         ```
     - 图像的`onerror`事件
 
-        只要图像的src属性中的URL不能返回可以被识别的图像格式，就会触发图像的`onerror`事件。错误不会提交到`window.onerror`。
+        只要图像的src属性中的URL不能返回可以被识别的图像格式，就会触发图像的`onerror`事件。
+        错误不会提交到`window.onerror`。
 
         - `<img>`标签的`onerror`事件
 
