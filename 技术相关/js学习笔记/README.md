@@ -550,6 +550,36 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
     >函数的参数也是同以上两种传递方式一样，区分基本类型或引用类型。
 
+### 错误处理机制
+- 原生错误类型
+
+    浏览器不会抛出`Error`类型的exception异常，所以如果捕获到`Error`类型的异常，可以确定这个异常是用户代码抛出的，不是浏览器抛出的。浏览器只会默认抛出Error的6个派生类型错误。
+
+    1. SyntaxError
+
+        解析代码时发生的语法错误。
+    2. ReferenceError
+
+        引用一个不存在的变量时发生的错误；另一种触发场景是，将一个值分配给无法分配的对象，比如对函数的运行结果或者this赋值。
+    3. RangeError
+
+        当一个值超出有效范围时发生的错误。主要有几种情况，一是数组长度为负数，二是Number对象的方法参数超出范围，以及函数堆栈超过最大值。
+    4. TypeError
+
+        变量或参数不是预期类型时发生的错误。比如，对字符串、布尔值、数值等原始类型的值使用new命令，就会抛出这种错误，因为new命令的参数应该是一个构造函数。
+    5. URIError
+
+        URI相关函数的参数不正确时抛出的错误，主要涉及`encodeURI()`、`decodeURI()`、`encodeURIComponent()`、`decodeURIComponent()`、`escape()`和`unescape()`这六个函数。
+    6.
+        >EvalError
+        >
+        >eval函数没有被正确执行时，会抛出EvalError错误。该错误类型已经不再在ES5中出现了，只是为了保证与以前代码兼容，才继续保留。
+
+`try`语句内的错误或`throw`的错误，其之后代码不再执行，立即转移到`catch`代码块中执行。`catch`代码块之后内容继续执行。
+
+`try`必须跟`catch`或`finally`或`catch + finally`同时出现。
+
+如果错误没有被`catch`接住，则会中断程序执行。
 
 ### jQuery的`.on()`绑定效率
 `$(event handler).on(event,selector,function(){})`
