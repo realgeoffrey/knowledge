@@ -571,15 +571,26 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
         URI相关函数的参数不正确时抛出的错误，主要涉及`encodeURI()`、`decodeURI()`、`encodeURIComponent()`、`decodeURIComponent()`、`escape()`和`unescape()`这六个函数。
 
-    6. *EvalError*
+    6. ~~EvalError~~
 
        eval函数没有被正确执行时，会抛出EvalError错误。该错误类型已经不再在ES5中出现了，只是为了保证与以前代码兼容，才继续保留。
 
-`try`语句内的错误或`throw`的错误，其之后代码不再执行，立即转移到`catch`代码块中执行。`catch`代码块之后内容继续执行。
+- Error对象属性
 
-`try`必须跟`catch`或`finally`或`catch + finally`同时出现。
+    Error有两个基本的属性`name`和`message`。
+    message用来表示异常的详细信息；name指的的是Error对象的构造函数。
 
-如果错误没有被`catch`接住，则会中断js执行。
+    此外，不同的js引擎对Error还各自提供了一些扩展属性。
+
+- `try-catch-finally`语句
+
+    `try`语句内的出现错误或`throw`错误，其之后代码不再执行，立即转移到`catch`代码块中执行。`catch`代码块之后内容继续执行。
+
+    `try`必须跟`catch`或`finally`或`catch + finally`同时出现。
+
+    如果错误没有被`catch`接住，则会中断之后的js代码并向上抛出错误（最终都没有被`catch`接住的话就在客户端抛出）。
+
+    如果`try`中代码是以`return`、`continue`或`break`终止的，必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
 
 ### jQuery的`.on()`绑定效率
 `$(event handler).on(event,selector,function(){})`
