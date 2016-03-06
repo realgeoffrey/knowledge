@@ -606,9 +606,9 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
         没有通过`try-catch`处理的错误都会触发`window`对象的`onerror`。
 
-        用方法赋值给`window.onerror`后，但凡这个window中有javascript错误出现，则会调用此方法。
+        用方法赋值给`window.onerror`后，但凡这个window中有js错误出现，则会调用此方法。
 
-        onerror方法会传入3个参数，分别是**错误信息提示**、**javascript产生错误的document url**和**错误出现的行号**。
+        onerror方法会传入3个参数（至少），分别是**错误信息提示**、**javascript产生错误的document url**和**错误出现的行号**。
         若方法返回`true`，浏览器不再显示错误信息；若返回`false`，浏览器还是会提示错误信息：
 
         ```javascript
@@ -633,7 +633,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         - `<img>`标签的`onerror`事件
 
             ```html
-            <img src="错误地址" alt="" onerror="func();">
+            <img src="错误地址" onerror="func();">
             ```
         - `Image`实例的属性
 
@@ -652,10 +652,10 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
         - 非客户端页面
 
-            前端代码只需要在加载js之前配置好`window.onerror`就可以处理页面的js错误。
+            只需在加载js之前配置好`window.onerror`就可以处理页面的js错误。
         - 客户端内嵌页面
 
-            因为客户端调用前端的方法是直接通过函数运行js代码，此时`window.onerror`传入的参数仅有第一个`message`参数（`file`、`line`以及其他参数都没有），所以必须在给客户端调用的js方法中嵌套`try-catch`并且抛出能标识出所调用方法名字的错误信息。
+            因为客户端调用前端的方法是直接通过函数运行js代码，抛出错误时`window.onerror`传入的参数仅有第一个`message`参数（`file`、`line`以及其他参数都没有），所以必须在给客户端调用的js方法中嵌套`try-catch`并且抛出能标识出所调用方法名字的错误信息。
 
         >捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
 
