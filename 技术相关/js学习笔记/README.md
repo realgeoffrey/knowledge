@@ -590,7 +590,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
     当javascript代码中出现错误的时候，js引擎就会根据js的调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或者**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，而firefix会显示在错误控制台中）显示错误信息给访问者，可以用`window.onerror`进行控制。
 
-    在某个**JavaScript block**（`<script>`标签）内，第一个错误触发后，当前Javascript block后面的代码会被自动忽略，不再执行，其他的JavaScript block内代码不被影响。
+    在某个**JavaScript block**（`<script>`标签或`try-catch`的`try`语句块）内，第一个错误触发后，当前Javascript block后面的代码会被自动忽略，不再执行，其他的JavaScript block内代码不被影响。
 
     - `try-catch-finally`
 
