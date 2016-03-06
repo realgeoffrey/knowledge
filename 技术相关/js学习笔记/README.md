@@ -570,6 +570,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     5. URIError
 
         URI相关函数的参数不正确时抛出的错误，主要涉及`encodeURI()`、`decodeURI()`、`encodeURIComponent()`、`decodeURIComponent()`、`escape()`和`unescape()`这六个函数。
+
     6.
         >EvalError
         >
