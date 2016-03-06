@@ -553,7 +553,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 ### 错误处理机制
 - 原生错误类型
 
-    浏览器不会抛出`Error`类型的exception异常，所以如果捕获到`Error`类型的异常，可以确定这个异常是用户代码抛出的，不是浏览器抛出的。浏览器只会默认抛出Error的6个派生类型错误。
+    >浏览器不会抛出`Error`类型的exception异常，所以如果捕获到`Error`类型的异常，可以确定这个异常是用户代码抛出的，不是浏览器抛出的。浏览器只会默认抛出Error的6个派生类型错误。
 
     1. SyntaxError
 
@@ -582,15 +582,31 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
     此外，不同的js引擎对Error还各自提供了一些扩展属性。
 
-- `try-catch-finally`语句
+- 代码中出现error
 
-    `try`语句内的出现错误或`throw`错误，其之后代码不再执行，立即转移到`catch`代码块中执行。`catch`代码块之后内容继续执行。
+    - 当javascript代码中出现错误的时候，js引擎就会根据js的调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或者**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，而firefix会显示在错误控制台中）显示错误信息给访问者。
 
-    `try`必须跟`catch`或`finally`或`catch + finally`同时出现。
+    - `try-catch-finally`
 
-    如果错误没有被`catch`接住，则会中断之后的js代码并向上抛出错误（最终都没有被`catch`接住的话就在客户端抛出）。
+        `try`语句内的出现错误或`throw`错误，`try`之后代码不再执行，立即转移到`catch`代码块中执行。`catch`代码块结束后的代码继续执行。
 
-    如果`try`中代码是以`return`、`continue`或`break`终止的，必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
+        `try`必须跟`catch`或`finally`或`catch + finally`同时出现。
+
+        如果`try`中代码是以`return`、`continue`或`break`终止的，必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
+
+    - `window.onerror`
+
+        `window`对象有`onerror`属性，把一个方法赋值给此对象后，但凡这个window中有javascript错误出现，则会调用此方法。
+
+        onerror方法会传入3个参数，分别是**错误信息提示*、**产生错误的javascript的document url**和**错误出现的行号**。
+        方法返回`true`，浏览器不再显示错误信息；如果返回`false`，浏览器还是会提示错误信息：
+
+        ```javascript
+        window.onerror = function (msg, url, line) {
+
+            return true;    /* 浏览器不再显示错误信息*/
+        };
+        ```
 
 ### jQuery的`.on()`绑定效率
 `$(event handler).on(event,selector,function(){})`
