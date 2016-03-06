@@ -625,7 +625,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
             return true;    /* 浏览器不再显示错误信息*/
         };
         ```
-    - 图像的`error`事件
+    - 图像的`onerror`事件
 
         只要图像的src属性中的URL不能返回可以被识别的图像格式，就会触发图像的error事件。
 
@@ -645,7 +645,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
             img.src = "错误地址";
             ```
 
-        >不会提交到`window.onerror`。
+        >与window对象的onerror事件处理函数不同，image的onerror事件没有任何参数。不会提交到`window.onerror`。
 
 >捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
 
