@@ -555,23 +555,27 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
     1. SyntaxError
 
-        解析代码时发生的语法错误。
+        解析代码发生语法错误时抛出。
     2. ReferenceError
 
-        引用一个不存在的变量时发生的错误；另一种触发场景是，将一个值分配给无法分配的对象，比如对函数的运行结果或者this赋值。
+        引用不存在的变量时抛出；另一种触发场景是，将一个值分配给无法分配的对象，比如对函数的运行结果或者this赋值。
     3. RangeError
 
-        当一个值超出有效范围时发生的错误。主要有几种情况，一是数组长度为负数，二是Number对象的方法参数超出范围，以及函数堆栈超过最大值。
+        数值超出相应范围时抛出。
+        主要有几种情况，一是数组长度为负数，二是Number对象的方法参数超出范围，以及函数堆栈超过最大值。
     4. TypeError
 
-        变量或参数不是预期类型时发生的错误。比如，对字符串、布尔值、数值等原始类型的值使用new命令，就会抛出这种错误，因为new命令的参数应该是一个构造函数。
+        变量或参数不是预期类型时抛出。
+        比如，对字符串、布尔值、数值等原始类型的值使用new命令，就会抛出这种错误，因为new命令的参数应该是一个构造函数。
     5. URIError
 
-        URI相关函数的参数不正确时抛出的错误，主要涉及`encodeURI()`、`decodeURI()`、`encodeURIComponent()`、`decodeURIComponent()`、`escape()`和`unescape()`这六个函数。
-
+        URI相关函数的参数不正确时抛出。
+        主要涉及`encodeURI()`、`decodeURI()`、`encodeURIComponent()`、`decodeURIComponent()`、`escape()`和`unescape()`这六个函数。
     6. ~~EvalError~~
 
-       eval函数没有被正确执行时，会抛出EvalError错误。该错误类型已经不再在ES5中出现了，只是为了保证与以前代码兼容，才继续保留。
+       使用`eval()`函数发生异常时抛出。
+
+       >该错误类型已经不再在ES5中出现了，只是为了保证与以前代码兼容，才继续保留。
 
     >浏览器不会抛出`Error`类型的exception异常，所以如果捕获到`Error`类型的异常，可以确定这个异常是用户代码抛出的，不是浏览器抛出的。浏览器默认只会抛出Error的6个派生类型错误。
 
@@ -584,9 +588,9 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
 - 代码中出现error
 
-    当javascript代码中出现错误的时候，js引擎就会根据js的调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或者**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，而firefix会显示在错误控制台中）显示错误信息给访问者。
+    当javascript代码中出现错误的时候，js引擎就会根据js的调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或者**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，而firefix会显示在错误控制台中）显示错误信息给访问者，可以用`window.onerror`进行控制。
 
-    在某个**JavaScript block**（`<script>`标签）内，第一个错误触发后，当前Javascript block后面的代码会被自动忽略，不再执行。其他的JavaScript block内代码不被影响，直到也触发错误。
+    在某个**JavaScript block**（`<script>`标签）内，第一个错误触发后，当前Javascript block后面的代码会被自动忽略，不再执行，其他的JavaScript block内代码不被影响。
 
     - `try-catch-finally`
 
@@ -597,7 +601,10 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
         如果`try`中代码是以`return`、`continue`或`break`终止的，必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
 
+        在`catch`中处理的错误，不会再向上提交给浏览器。
     - `window.onerror`
+
+        没有通过`try-catch`处理的错误都会触发`window`对象的`onerror`。
 
         `window`对象有`onerror`属性，把一个方法赋值给此属性后，但凡这个window中有javascript错误出现，则会调用此方法。
 
@@ -618,6 +625,29 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
             return true;    /* 浏览器不再显示错误信息*/
         };
         ```
+    - 图像的`error`事件
+
+        只要图像的src属性中的URL不能返回可以被识别的图像格式，就会触发图像的error事件。
+
+        - `<img>`标签的`onerror`事件
+
+            ```html
+            <img src="asdas" alt="" onerror="func();">
+            ```
+        - `Image`实例的属性
+
+            ```javascript
+            var img = new Image();
+            img.onerror = function () {
+                /* code*/
+            };
+
+            img.src = "错误地址";
+            ```
+
+        >不会提交到`window.onerror`。
+
+>捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
 
 ### jQuery的`.on()`绑定效率
 `$(event handler).on(event,selector,function(){})`
