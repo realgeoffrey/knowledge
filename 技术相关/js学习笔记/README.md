@@ -601,12 +601,12 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
         如果`try`中代码是以`return`、`continue`或`break`终止的，必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
 
-        在`catch`中处理的错误，不会再向上提交给浏览器。
+        在`catch`中接收的错误，不会再向上提交给浏览器。
     - `window.onerror`
 
         没有通过`try-catch`处理的错误都会触发`window`对象的`onerror`。
 
-        `window`对象有`onerror`属性，把一个方法赋值给此属性后，但凡这个window中有javascript错误出现，则会调用此方法。
+        用方法赋值给`window.onerror`后，但凡这个window中有javascript错误出现，则会调用此方法。
 
         onerror方法会传入3个参数，分别是**错误信息提示**、**javascript产生错误的document url**和**错误出现的行号**。
         若方法返回`true`，浏览器不再显示错误信息；若返回`false`，浏览器还是会提示错误信息：
@@ -627,12 +627,12 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         ```
     - 图像的`onerror`事件
 
-        只要图像的src属性中的URL不能返回可以被识别的图像格式，就会触发图像的error事件。
+        只要图像的src属性中的URL不能返回可以被识别的图像格式，就会触发图像的`onerror`事件。错误不会提交到`window.onerror`。
 
         - `<img>`标签的`onerror`事件
 
             ```html
-            <img src="asdas" alt="" onerror="func();">
+            <img src="错误地址" alt="" onerror="func();">
             ```
         - `Image`实例的属性
 
@@ -645,7 +645,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
             img.src = "错误地址";
             ```
 
-        >与window对象的onerror事件处理函数不同，image的onerror事件没有任何参数。不会提交到`window.onerror`。
+        >与window对象的onerror事件处理函数不同，Image实例对象的onerror事件没有任何参数。
 
 >捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
 
