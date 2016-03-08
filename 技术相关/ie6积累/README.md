@@ -7,16 +7,10 @@
 	- ie8 ~ ie10：`\0`（在属性结束、分号之前）。
 
 2. ie6使用`float`会导致双边距问题，用以下解决：
-	- ```css
-	    float: left/right;
-	    _display: inline;
-        ```
+	- `float: left/right;_display: inline;`
 
 3. ie6/7的`display: inline-block`无效，用以下解决：
-	- `display: inline-block; *display: inline; zoom: 1;`
-
-4. ie6闭合BFC，阻止外边距重叠，清除浮动，触发haslayout：
-	- `zoom: 1;`
+	- `display: inline-block;*display: inline;zoom: 1;`
 
 5. ie6的高度无法小于行高，用以下解决：
 	- `overflow: hidden;`
@@ -174,3 +168,53 @@
 
     - ~~子级为`display: block;`，若要设置`height`就必须要设置`width`，否者会导致子级铺满父级。~~无法满足自适应需求。
     - 子级设置为`display: inline-block;*display: inline;zoom: 1;`，可以仅设置`height`，不用设定`width`。
+
+
+## haslayout
+
+layout是ie6、ie7的一个私有概念，它决定了元素如何对其内容定位和尺寸计算，以及与其他元素的关系和相互作用。当一个元素“拥有布局”时，它会负责本身及其子元素的尺寸和定位。而如果一个元素“没有拥有布局”，那么它的尺寸和位置由最近的拥有布局的祖先元素控制。
+
+对于早期的IE显示引擎来说，如果所有元素都“拥有布局”的话，会导致很大的性能问题。因此IE开发团队决定使用布局概念来减少浏览器的性能开销，即只将布局应用于实际需要的那些元素，所以便出现了“拥有布局”和“没有拥有布局”两种情况。
+
+- 默认拥有布局的元素：
+
+    ```html
+    html, body
+    table
+    tr, td
+    img
+    hr
+    input, select, textarea, button
+    iframe, embed, object, applet
+    marquee
+    ```
+- 查看haslayout
+
+    haslayout不是css属性，我们无法通过css显式的设置元素的haslayout。
+
+    可以用js读取某dom对象是否拥有布局（只读）：`document.getElementById('某id').currentStyle.hasLayout;`，返回布尔值。
+- 触发haslayout
+
+    - ie6、7：
+
+        ```css
+        float: left/right;
+        display: inline-block;
+        position: absolute;
+        width: 除auto外任何值;
+        height: 除auto外任何值;
+        zoom: 除normal外任何值;
+        writing-mode: tb-rl;
+        ```
+    - ie7独有
+
+        ```css
+        min-height: 任意值;
+        min-width: 任意值;
+        max-height: 除none 外任意值;
+        max-width: 除none 外任意值;
+        overflow: 除visible外任意值，仅用于块级元素;
+        overflow-x: 除visible 外任意值，仅用于块级元素;
+        overflow-y: 除visible 外任意值，仅用于块级元素;
+        position: fixed;
+        ```
