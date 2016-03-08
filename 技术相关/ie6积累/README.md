@@ -7,9 +7,7 @@
 	- ie8 ~ ie10：`\0`（在属性结束、分号之前）。
 
 2. ie6使用`float`会导致双边距问题，用以下解决：
-	-
-
-	    ```css
+	- ```css
 	    float: left/right;_display: inline;
         ```
 
