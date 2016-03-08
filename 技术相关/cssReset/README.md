@@ -127,7 +127,7 @@ a:hover {
 .header .wrap,
 .main .wrap,
 .footer .wrap {
-    width: 1000px;
+    width: ;
     margin: 0 auto;
     position: relative;
 }
