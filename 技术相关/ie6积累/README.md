@@ -8,7 +8,8 @@
 
 2. ie6使用`float`会导致双边距问题，用以下解决：
 	- ```css
-	    float: left/right;_display: inline;
+	    float: left/right;
+	    _display: inline;
         ```
 
 3. ie6/7的`display: inline-block`无效，用以下解决：
