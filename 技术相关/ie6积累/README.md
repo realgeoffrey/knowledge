@@ -156,13 +156,16 @@
 	- `white-space: nowrap`强制文本不换行
 
 30.
+
 	>ie6的负margin有些情况需要多设置一些，因为可能出现不是设定值的情况
 
 31.
+
 	>ie6的某些兄弟间节点间（比如img和span）因为出现比如`overflow: hidden`造成相对于基线会有对齐问题，用以下解决
 	>`vertical: top;margin-top: …`
 
 32.
+
 	>ie6下的`absolute/float`节点在页面重新渲染时，可能出现`margin-left/maring-top`的渲染问题，导致位置发生变化，用以下解决
 	>用`margin-right/margin-bottom/padding`替代
 
@@ -171,6 +174,7 @@
 	- 给img父级设置`font-size: 0`(可用这个方法排查是不是其前后的空格导致)
 
 34.
+
 	>ie6下调用的function在还未加载到的地方，因为兼容性差，会导致调用不成功的错误，受加载速度影响，其他高级浏览器不会出现类似情况
 
 35. ie6下，父级为`float`，其子级要根据内容宽度自适应：
