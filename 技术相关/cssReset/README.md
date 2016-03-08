@@ -109,24 +109,25 @@ a:hover {
 /*/手机媒体查询*/
 /* 多大图模式*/
 .header {
-    background: url() center 0 no-repeat;
+    background: url() #fff center 0 no-repeat;
     min-width: ;
     height: ;
     overflow: hidden;
 }
 .main {
-    background: url() center 0 no-repeat;
+    background: url() #fff center 0 no-repeat;
     min-width: ;
     overflow: hidden;
 }
 .footer {
-    background: url() #fff 0 0 repeat-x;
+    background: url() 0 0 repeat-x;
     min-width: ;
     overflow: hidden;
 }
 .header .wrap,
 .main .wrap,
 .footer .wrap {
+    background: url() center 0 no-repeat;
     width: ;
     margin: 0 auto;
     position: relative;
@@ -140,6 +141,7 @@ a:hover {
 }
 .header,
 .main {
+    background: url() center 0 no-repeat;
     width: ;
     margin: 0 auto;
     position: relative;
