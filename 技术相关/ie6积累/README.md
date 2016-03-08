@@ -155,30 +155,23 @@
 	- 此文字的节点设置`width固定值`
 	- `white-space: nowrap`强制文本不换行
 
-30.
+30. ie6的负margin有些情况需要多设置一些，因为可能出现不是设定值的情况
 
-	>ie6的负margin有些情况需要多设置一些，因为可能出现不是设定值的情况
+31. ie6的某些兄弟间节点间（比如img和span）因为出现比如`overflow: hidden`造成相对于基线会有对齐问题，用以下解决
 
-31.
+	`vertical: top;margin-top: …`
 
-	>ie6的某些兄弟间节点间（比如img和span）因为出现比如`overflow: hidden`造成相对于基线会有对齐问题，用以下解决
-	>`vertical: top;margin-top: …`
+32. ie6下的`absolute/float`节点在页面重新渲染时，可能出现`margin-left/maring-top`的渲染问题，导致位置发生变化，用以下解决
 
-32.
-
-	>ie6下的`absolute/float`节点在页面重新渲染时，可能出现`margin-left/maring-top`的渲染问题，导致位置发生变化，用以下解决
-	>用`margin-right/margin-bottom/padding`替代
+	用`margin-right/margin-bottom/padding`替代
 
 33. 一些情况下，`inline-block`节点标签前后的空格导致出现占位的间隙
 	- 把此节点设置为`display: block`（可通过设置浮动、绝对定位、固定定位，自动转换为block）
 	- 给img父级设置`font-size: 0`(可用这个方法排查是不是其前后的空格导致)
 
-34.
-
-	>ie6下调用的function在还未加载到的地方，因为兼容性差，会导致调用不成功的错误，受加载速度影响，其他高级浏览器不会出现类似情况
+34. ie6下调用的function在还未加载到的地方，因为兼容性差，会导致调用不成功的错误，受加载速度影响，其他高级浏览器不会出现类似情况
 
 35. ie6下，父级为`float`，其子级要根据内容宽度自适应：
-
     - ~~子级为`display: block;`，若要设置`height`就必须要设置`width`，否者会导致子级铺满父级。~~
     - 子级设置为`display: inline-block;*display: inline;zoom: 1;`，可以仅设置`height`，不用设定`width`。
 
