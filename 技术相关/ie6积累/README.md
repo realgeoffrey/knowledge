@@ -1,15 +1,18 @@
 #ie6积累
 
 1. hack：
-	- ie6: _
-	- ie6 ie7 : *
-	- ie6 ~ ie10: \9 
-	- ie8 ~ ie10: \0
+	- ie6：`_`。
+	- ie6、ie7：`*`。
+	- ie6 ~ ie10：`\9`（在属性结束、分号之前）。
+	- ie8 ~ ie10：`\0`（在属性结束、分号之前）。
 
-2. ie6使用float会导致双边距问题，用以下解决：
-	- `float: left/right;_display: inline;`
+2. ie6使用`float`会导致双边距问题，用以下解决：
+	-
+	    ```css
+	    float: left/right;_display: inline;
+        ```
 
-3. ie6/7的display: inline-block无效，用以下解决：
+3. ie6/7的`display: inline-block`无效，用以下解决：
 	- `display: inline-block; *display: inline; zoom: 1;`
 
 4. ie6闭合BFC，阻止外边距重叠，清除浮动，触发haslayout：
@@ -166,3 +169,8 @@
 
 39. 
 	>ie6下调用的function在还未加载到的地方，因为兼容性差，会导致调用不成功的错误，受加载速度影响，其他高级浏览器不会出现类似情况
+
+40. ie6下，`float`的父级，子级要根据内容宽度自适应：
+
+    - ~~子级为`display: block;`，若要设置`height`就必须要设置`width`，否者会导致子级铺满父级。~~无法满足自适应需求。
+    - 子级设置为`display: inline-block;*display: inline;zoom: 1;`，可以仅设置`height`，不用设定`width`。
