@@ -178,28 +178,32 @@
 
 ## haslayout
 
-layout是ie6、ie7的一个私有概念，它决定了元素如何对其内容定位和尺寸计算，以及与其他元素的关系和相互作用。当一个元素“拥有布局”时，它会负责本身及其子元素的尺寸和定位。而如果一个元素“没有拥有布局”，那么它的尺寸和位置由最近的拥有布局的祖先元素控制。
+layout是ie6、ie7的一个私有概念，它决定了元素**如何对其内容定位和尺寸计算**，以及与其他元素的关系和相互作用。
 
-对于早期的IE显示引擎来说，如果所有元素都“拥有布局”的话，会导致很大的性能问题。因此IE开发团队决定使用布局概念来减少浏览器的性能开销，即只将布局应用于实际需要的那些元素，所以便出现了“拥有布局”和“没有拥有布局”两种情况。
+当一个元素“拥有布局”时，它会负责本身及其子元素的尺寸和定位。而如果一个元素“没有拥有布局”，那么它的尺寸和位置由最近的拥有布局的祖先元素控制。
+
+>对于早期的IE显示引擎来说，如果所有元素都“拥有布局”的话，会导致很大的性能问题。因此IE开发团队决定使用布局概念来减少浏览器的性能开销，即只将布局应用于实际需要的那些元素，所以便出现了“拥有布局”和“没有拥有布局”两种情况。
+
+- 查看haslayout
+
+    1. 可以用js读取某dom对象是否拥有布局（只读）：`document.getElementById('某id').currentStyle.hasLayout;`，返回布尔值。
+
+    2. 通过**IE Developer Toolbar**可以查看 IE 下html元素是否拥有haslayout（只读）。在IE Developer Toolbar下，拥有`haslayout`的元素，通常显示为`haslayout = -1`；不拥有的，显示为`haslayout = 0`。
 
 - 默认拥有布局的元素：
 
     ```html
     html, body
-    table
-    tr, td, th
+    table, tr, th, td
     img
     hr
     input, select, textarea, button
     iframe, embed, object, applet
     marquee
     ```
-- 查看haslayout
-
-    haslayout不是css属性，我们无法通过css显式的设置元素的haslayout。
-
-    可以用js读取某dom对象是否拥有布局（只读）：`document.getElementById('某id').currentStyle.hasLayout;`，返回布尔值。
 - 触发haslayout
+
+    haslayout不是css属性，我们无法通过css显式的设置元素的haslayout，只能通过其他css样式触发。
 
     - ie6、7：
 
@@ -224,3 +228,6 @@ layout是ie6、ie7的一个私有概念，它决定了元素如何对其内容�
         overflow-y: 除visible 外任意值，仅用于块级元素;
         position: fixed;
         ```
+
+>一个“layout元素”只可能是一个**默认就拥有 layout 的元素**或者一个**通过设置某些 CSS 属性得到 layout的元素**。
+
