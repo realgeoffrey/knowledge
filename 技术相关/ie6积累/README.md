@@ -188,9 +188,9 @@ haslayout是ie6、ie7的一个私有概念，它决定了元素**如何对其内
 
     1. 可以用js读取某dom对象是否拥有布局（只读）：
 
-        `document.getElementById('某id').currentStyle.hasLayout;`，返回true->拥有，返回false->不拥有。
+        `某dom.currentStyle.hasLayout;`，返回true->拥有，返回false->不拥有。
 
-    2. 通过**IE Developer Toolbar**可以查看 IE 下html元素是否拥有布局（只读）：
+    2. 通过**IE Developer Toolbar**（打开*Show Default Style Values*）可以查看 IE 下html元素是否拥有布局（只读）：
 
         拥有`haslayout`的元素，属性显示为`haslayout = -1`；不拥有的，显示为`haslayout = 0`。
 - 默认拥有布局的元素：
