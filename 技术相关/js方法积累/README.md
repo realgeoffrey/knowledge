@@ -773,3 +773,26 @@ function isArray(value) {
     }
 }
 ```
+
+### 深复制（仅针对原始类型、数组和最基本的对象，以及他们的组合）
+```javascript
+    /*
+     * @param {Object|Array|Undefined|Null|Boolean|Number|String} obj 深复制参数
+     */
+    function deepCopy(obj) {
+        var i,
+            newObj;
+
+        if (typeof obj !== 'object' || obj === null) {
+
+            return obj;
+        }
+
+        newObj = Object.prototype.toString.call(obj) === '[object Array]' ? [] : {};
+        for (i in obj) {
+            newObj[i] = arguments.callee(obj[i]);
+        }
+
+        return newObj;
+    }
+```
