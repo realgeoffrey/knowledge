@@ -100,34 +100,6 @@ div {
 
     （待续）
 
-### inline-block元素之间或与文本的水平对齐
-并排排列的不同元素间，若不使用float，而使用inline-block
-- 非img标签
-
-    ```css
-    标签 {
-        display: inline-block;
-        *display: inline;
-        zoom: 1;
-        height: 宽;
-        width: 高;
-        vertical-align: bottom;
-        *vertical-align: middle;
-    }
-    ```
-- img标签
-
-    ```css
-    img {
-        display: inline-block;
-        *display: inline;
-        zoom: 1;
-        height: 宽;
-        width: 高;
-        vertical-align: middle;
-    }
-    ```
-
 ### 移动端半像素
 不可以使用`border: 0.5px`，因为浏览器会把宽度换算成0或者1
 
