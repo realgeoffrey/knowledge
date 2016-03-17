@@ -475,9 +475,11 @@ ul li a:hover {
     ```css
     .float_l {
         float: left;
+        _display: inline;
     }
     .float_r {
         float: right;
+        _display: inline;
     }
     .middle {
         display: table-cell;
