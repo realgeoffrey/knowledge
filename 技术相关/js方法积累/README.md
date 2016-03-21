@@ -396,23 +396,32 @@ function addFavorite(url, title) {  /* url必须带有协议头*/
 
 ### js实现类似jQuery的`$('html,body').animate({'scrollTop': 像素}, 毫秒);`
 ```javascript
-function animateTo(endX, endY, time) { /* endPosition像素，time毫秒*/
-    var scrollFromX = parseInt(document.body.scrollTop),
-        scrollFromY = parseInt(document.body.scrollLeft),
+/*
+ * 滚动到
+ * @param {Number} endX 到达x轴像素
+ * @param {Number} endY 到达y轴像素
+ * @param {Number} time 所用毫秒
+ * @returns undefined
+ */
+function animateTo(endX, endY, time) {
+    var scrollFromX = document.body.scrollLeft || document.documentElement.scrollLeft,
+        scrollFromY = document.body.scrollTop || document.documentElement.scrollTop,
+        scrollToX = endX > document.documentElement.scrollHeight ? document.documentElement.scrollHeight : endX,
+        scrollToY = endY > document.documentElement.scrollWidth ? document.documentElement.scrollWidth : endY,
         i = 0,
         runEvery = 5;
 
     time /= runEvery;
+    if (arguments.callee.animateToInterval) {
+        clearInterval(arguments.callee.animateToInterval);
+    }
 
-    window.animateToInterval = window.animateToInterval || '';
-    clearInterval(window.animateToInterval);
-
-    window.animateToInterval = setInterval(function () {
+    arguments.callee.animateToInterval = setInterval(function () {
         i++;
-        document.body.scrollLeft = (parseInt(endX) - scrollFromX) / time * i + scrollFromX;
-        document.body.scrollTop = (parseInt(endY) - scrollFromY) / time * i + scrollFromY;
+        document.body.scrollLeft = (parseInt(scrollToX) - scrollFromX) / time * i + scrollFromX;
+        document.body.scrollTop = (parseInt(scrollToY) - scrollFromY) / time * i + scrollFromY;
         if (i >= time) {
-            clearInterval(window.animateToInterval);
+            clearInterval(arguments.callee.animateToInterval);
         }
     }, runEvery);
 }
