@@ -396,18 +396,20 @@ function addFavorite(url, title) {  /* url必须带有协议头*/
 
 ### js实现类似jQuery的`$('html,body').animate({'scrollTop': 像素}, 毫秒);`
 ```javascript
-function animateToTop(scrollTo, time) { /* scrollTo像素，time毫秒*/
+function animateTo(endPosition, time) { /* endPosition像素，time毫秒*/
     var scrollFrom = parseInt(document.body.scrollTop),
         i = 0,
         runEvery = 5;
 
     time /= runEvery;
 
-    var interval = setInterval(function () {
+    clearInterval(window.animateToInterval);
+
+    window.animateToInterval = setInterval(function () {
         i++;
-        document.body.scrollTop = (parseInt(scrollTo) - scrollFrom) / time * i + scrollFrom;
+        document.body.scrollTop = (parseInt(endPosition) - scrollFrom) / time * i + scrollFrom;
         if (i >= time) {
-            clearInterval(interval);
+            clearInterval(window.animateToInterval);
         }
     }, runEvery);
 }
