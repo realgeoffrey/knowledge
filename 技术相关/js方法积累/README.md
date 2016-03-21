@@ -406,8 +406,8 @@ function addFavorite(url, title) {  /* url必须带有协议头*/
 function animateTo(endX, endY, time) {
     var scrollFromX = document.body.scrollLeft || document.documentElement.scrollLeft,
         scrollFromY = document.body.scrollTop || document.documentElement.scrollTop,
-        scrollToX = endX > document.documentElement.scrollHeight ? document.documentElement.scrollHeight : endX,
-        scrollToY = endY > document.documentElement.scrollWidth ? document.documentElement.scrollWidth : endY,
+        scrollToX = endY > document.documentElement.scrollWidth ? document.documentElement.scrollWidth : endY,
+        scrollToY = endX > document.documentElement.scrollHeight ? document.documentElement.scrollHeight : endX,
         i = 0,
         runEvery = 5;
 
