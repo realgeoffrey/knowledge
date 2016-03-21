@@ -409,19 +409,19 @@ function animateTo(endX, endY, time) {
         scrollToX = endX > document.documentElement.scrollWidth ? document.documentElement.scrollWidth : endX,
         scrollToY = endY > document.documentElement.scrollHeight ? document.documentElement.scrollHeight : endY,
         i = 0,
-        runEvery = 5;
+        runEvery = 5,
+        myself = arguments.callee;
 
     time /= runEvery;
-    if (arguments.callee.animateToInterval) {
-        clearInterval(arguments.callee.animateToInterval);
+    if (myself.animateToInterval) {
+        clearInterval(myself.animateToInterval);
     }
 
-    arguments.callee.animateToInterval = setInterval(function () {
+    myself.animateToInterval = setInterval(function () {
         i++;
-        document.body.scrollLeft = (parseInt(scrollToX) - scrollFromX) / time * i + scrollFromX;
-        document.body.scrollTop = (parseInt(scrollToY) - scrollFromY) / time * i + scrollFromY;
+        window.scrollTo((scrollToX - scrollFromX) / time * i + scrollFromX, (scrollToY - scrollFromY) / time * i + scrollFromY);
         if (i >= time) {
-            clearInterval(arguments.callee.animateToInterval);
+            clearInterval(myself.animateToInterval);
         }
     }, runEvery);
 }
