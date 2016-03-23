@@ -128,14 +128,14 @@
         >产生的结果：
         >
         >| 对象[属性/索引] | 描述 | 例子中的值 |
-        >| :---: | :---: | :---: |
+        >| :--- | :--- | :--- |
         >| `regexObj[0]` | 匹配的全部字符串 | `Quick Brown Fox Jumps` |
         >| `regexObj[1], ...regexObj[n ]` | 括号中的分组捕获 | `[1] = Brown` `[2] = Jumps` |
         >| `regexObj.index` | 匹配到的字符位于原始字符串的基于0的索引值 | 4 |
         >| `regexObj.input` | 原始字符串 | `The Quick Brown Fox Jumps Over The Lazy Dog` |
         >
         >| 对象[属性/索引] | 描述 | 例子中的值 |
-        >| :---: | :---: | :---: |
+        >| :--- | :--- | :--- |
         >| `result.lastIndex` | 下一次匹配开始的位置 | 25 |
         >| `result.ignoreCase` | 是否使用了'i'标记使正则匹配忽略大小写 | `true` |
         >| `result.global` | 是否使用了'g'标记来进行全局的匹配 | `true` |
