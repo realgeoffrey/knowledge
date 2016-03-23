@@ -109,126 +109,63 @@
 
 - RegExp对象的方法
 
-    - `regexObj.test(str)`
+    - `regexp.test(str)`
 
         判断正则表达式与指定的字符串是否匹配。返回`true`或`false`。
-    - `regexObj.exec(str)`
+    - `regexp.exec(str)`
 
-        指定的一段字符串执行搜索匹配操作。返回一个数组或者`null`。
+        指定的一段字符串执行搜索匹配操作。返回`数组`或者`null`。
 
-        如果成功匹配，exec 方法返回一个数组，并且更新正则表达式对象的属性。返回的数组包括匹配的字符串作为第一个元素，紧接着一个元素对应一个成功匹配被捕获的字符串的捕获括号（capturing parenthesis）。
+        如果成功匹配，返回一个数组，并且更新正则表达式对象的属性。返回的数组包括匹配的字符串作为第一个元素，紧接着多个元素对应成功匹配被捕获的字符串，数组还拥有`index`和`input`属性。
 
         >例：
         >
         >```javasscript
-        >var regexObj = /quick\s(brown).+?(jumps)/ig;
-        >var result = re.exec('The Quick Brown Fox Jumps Over The Lazy Dog');
+        >var regexp = /quick\s(brown).+?(jumps)/ig;
+        >var arr = re.exec('The Quick Brown Fox Jumps Over The Lazy Dog');
         >```
         >
         >产生的结果：
         >
-        >| 对象[属性/索引] | 描述 | 例子中的值 |
+        >| 返回对象[属性/索引] | 描述 | 例子中的值 |
         >| :--- | :--- | :--- |
-        >| `regexObj[0]` | 匹配得到的字符串 | `Quick Brown Fox Jumps` |
-        >| `regexObj[1], ...regexObj[n ]` | 括号中的分组捕获 | `regexObj[1] = Brown``regexObj[2] = Jumps` |
-        >| `regexObj.index` | 匹配到的字符位于原始字符串的基于0的索引值 | 4 |
-        >| `regexObj.input` | 原始字符串 | `The Quick Brown Fox Jumps Over The Lazy Dog` |
+        >| `arr[0]` | 匹配得到的字符串 | `Quick Brown Fox Jumps` |
+        >| `arr[1]`~`arr[n]` | 捕获项 | `arr[1] = Brown``arr[2] = Jumps` |
+        >| `arr.index` | 匹配到的字符位于原始字符串的基于0的索引值 | `4` |
+        >| `arr.input` | 原始字符串 | `The Quick Brown Fox Jumps Over The Lazy Dog` |
         >
-        >| 对象[属性/索引] | 描述 | 例子中的值 |
+        >| 正则对象[属性/索引] | 描述 | 例子中的值 |
         >| :--- | :--- | :--- |
-        >| `result.lastIndex` | 下一次匹配开始的位置 | 25 |
-        >| `result.ignoreCase` | 是否使用了`i`标记 | `true` |
-        >| `result.global` | 是否使用了`g`标记 | `true` |
-        >| `result.multiline` | 是否使用了`m`标记 | `false` |
-        >| `result.source` | 正则模式的字符串 | `quick\s(brown).+?(jumps)` |
+        >| `regexp.lastIndex` | 下一次匹配开始的位置 | `25` |
+        >| `regexp.ignoreCase` | 是否使用了`i`标记 | `true` |
+        >| `regexp.global` | 是否使用了`g`标记 | `true` |
+        >| `regexp.multiline` | 是否使用了`m`标记 | `false` |
+        >| `regexp.source` | 正则模式的字符串 | `quick\s(brown).+?(jumps)` |
 
-    #### exec()
-    在字符串中匹配，返回包含第匹配项信息的数组，没有则返回null。
+- String对象的方法
 
-    包含两个属性：
-    - index ：匹配项在字符串中的位置
-    - input ：应用正则的字符串
+    - `str.match(regexp)`
 
-    全局模式下，每次调用exec()会在字符串中继续查找新匹配项；否则会重新从头匹配。
+        当字符串匹配到正则表达式（regular expression）时，方法返回`匹配项`，否则返回`null`。
 
-    ```
-    var str = "Chrome/48.0.2564.109";
-    var reg = /(\d+)\./g;  //全局模式
+        - 匹配到的情况：
 
-    var a = reg.exec(str); //["48.", "48", index: 7, input: "Chrome/48.0.2564.109"]
-    var b = reg.exec(str); //["0.", "0", index: 10, input: "Chrome/48.0.2564.109"]
-    var c = reg.exec(str); //["2564.", "2564", index: 12, input: "Chrome/48.0.2564.109"]
+            如果正则表达式没有`g`标志，返回和`regexp.exec(str)`相同的结果的`数组`（包含匹配的字符串、捕获项，还拥有`index`和`input`属性）。
 
-    a.index; //7
-    b.input; //Chrome/48.0.2564.109
-    ```
+            如果正则表达式包含`g`标志，返回一个`包含所有匹配结果的数组`。
 
-    ## 支持正则表达式的 String 对象的方法
-    #### search() 
+    - `str.search(regexp)`
 
-    返回匹配到的字符串所在的位置， 没有则返回-1
+        判断字符串对象与一个正则表达式是否匹配，返回`正则表达式在字符串中首次匹配项的索引`，否则返回`-1`。
 
-    ```javascript
-    var str = "Chrome/48.0.2564.109";
-    var reg = /\/(\d+)\./i;
+    - `str.replace(regexp|substr, newSubStr|function[, flags])`
 
-    str.search(reg); //6
-    ```
+        方法使用一个替换值（replacement）替换掉一个匹配模式（pattern）在原字符串中某些或所有的匹配项，并返回替换后的`字符串`（不改变调用的字符串对象）。
 
-    #### match()
-    查找符合正则的字符串，以数组的形式返回（ 注意全局，否则只返回第一个 ） ,  没有就返回null
+    - `str.split([separator][, limit])`
 
-    ```javascript
-    var str = "Chrome/48.0.2564.109";
+        以separator为间隔，把String对象分割成一个字符串`数组`。
 
-    //非全局模式
-    var reg1 = /(\d+)\./;  
-    str.match(reg1);  //["48.", "48", index: 7, input: "Chrome/48.0.2564.109"]
+        `separator`:可以是一个字符串或正则表达式，指定用来分割字符串的字符（串）。 如果忽略 separator，则返回整个字符串的数组形式。如果 separator 是一个空字符串，则 str 将会把原字符串中每个字符的数组形式返回。
 
-    //全局模式
-    var reg2 = /(\d+)\./g;
-    str.match(reg2);  //["48.", "0.", "2564."]
-    ```
-
-    #### split()
-    将字符串转换成数组，以传入参数为间隔
-
-    ```javascript
-    var str = "Chrome/48.0.2564.109";
-
-    str.split(/[\/\.]/); //["Chrome", "48", "0", "2564", "109"]
-    ```
-
-    #### replace ( )
-    查找替换字符串（注意全局，否则只替换第一个）
-
-    - 参数1 ：`字符串` 或者 `正则`，表示查找的字符串。（如果第一个参数是字符串，那么只会替换第一个子字符串。要替换所有子字符串就必须传正则表达式，并且要制定全局g标志 ）
-
-    - 参数2： `字符串` 或者 `函数` ，表示替换的字符串。
-
-    ```javascript
-     //当正则里没有分组时：
-     var   str =  '中华人民共和国' ;
-     var   reg = /人/g;
-     var   nStr = str.replace(reg, function (){
-          console.log(arguments[0] +  ' '   + arguments[1] +  ' '   + arguments[2]);
-          /* 第一个参数表示匹配的字符串，即'人'；
-           * 第二个参数表示匹配的字符串出现的位置，即2；
-           * 第三个参数表示目标字符串，即'中华人民共和国'；
-           */
-     });
-
-     //当正则里有一个或多个分组时：
-     var   str =  '中华人民 共 和国' ;
-     var   reg = /(人)民(共)/g;
-     var   nStr = str.replace(reg, function (){
-          console.log(arguments[0] +  ' '   + arguments[1] +  ' '   + arguments[2]);
-          /* 第一个参数表示匹配的字符串，即'人民共'；
-           * 第二个参数表示第一个分组匹配的字符串，即（人）；
-           * 第三个参数表示第二个分组匹配的字符串，即（共）；
-           * 以此类推……
-           * 倒数第二个参数表示匹配的字符串出现的位置，即2；
-           * 最后一个参数表示目标字符串，即'中华人民共和国'；
-           */
-     });
-    ```
+        `limit`：一个整数，限定返回的分割片段数量。split 方法仍然分割每一个匹配的 separator，但是返回的数组只会截取最多 limit 个元素。
