@@ -11,7 +11,7 @@
     "author": "feijie",
     "description": "my gulp tools",
     "dependencies": {
-        "browser-sync": "^2.11.1",
+        "browser-sync": "^2.11.2",
         "gulp": "^3.9.0",
         "gulp-concat": "^2.6.0",
         "gulp-cssnano": "^2.1.0",
