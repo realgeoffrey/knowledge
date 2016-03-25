@@ -1,3 +1,5 @@
+#js学习笔记
+
 ## 技巧经验
 
 ### DOM加载步骤、jQuery文档ready事件和js的onload事件顺序

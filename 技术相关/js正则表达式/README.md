@@ -1,4 +1,4 @@
-# 正则表达式（javascript）
+#正则表达式（javascript）
 
 ## 创建 RegExp 对象
 - 创建方式
