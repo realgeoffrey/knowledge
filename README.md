@@ -17,13 +17,13 @@ Knowledge of my work area..
 
 ##工具使用
 ###服务器环境安装
+- [WAMP环境配置（Windows）](./工具使用/WAMP环境配置（Windows）)
 - [Laravel框架配置+LNMP环境配置（Ubuntu15.04）](./工具使用/Laravel框架配置+LNMP环境配置（Ubuntu15.04）)
 - [LAMP环境配置（CentOS7.0）](./工具使用/LAMP环境配置（CentOS7.0）)
 - [svn环境配置（CentOS）](./工具使用/svn环境配置（CentOS）)
 - [Vagrant环境配置](./工具使用/Vagrant环境配置)
-- [Wamp环境配置（Windows）](./工具使用/Wamp环境配置（Windows）)
 
 ###软件使用
-- [Charles使用](./工具使用/Charles使用)
-- [ide设置](./工具使用/ide设置)
 - [Google搜索技巧](./工具使用/Google搜索技巧)
+- [ide设置](./工具使用/ide设置)
+- [Charles使用](./工具使用/Charles使用)
