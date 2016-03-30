@@ -134,30 +134,29 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
         无论语句在何处，无论是否会真正执行到，所有的`var`语句的**声明**都提前到作用域（函数内部或者全局）顶部执行（var hoisting），但是具体**赋值**不会被提前。
 
-        >例子：
-        >   ```javascript
-        >   var a = 1;
+        >```javascript
+        >var a = 1;
         >
-        >   (function () {
-        >       console.log(a);    /* undefined*/
+        >(function () {
+        >    console.log(a);    /* undefined*/
         >
-        >       var a = 2;
+        >    var a = 2;
         >
-        >       console.log(a);    /* 2*/
-        >   })();
-        >   ```
-        >   等效于：
-        >   ```javascript
-        >   var a = 1;
+        >    console.log(a);    /* 2*/
+        >})();
+        >```
+        >等效于：
+        >```javascript
+        >var a = 1;
         >
-        >   (function () {
-        >       var a;
-        >       console.log(a);    /* undefined*/
+        >(function () {
+        >    var a;
+        >    console.log(a);    /* undefined*/
         >
-        >       a = 2;
+        >    a = 2;
         >
-        >       console.log(a);    /* 2*/
-        >   })();
+        >    console.log(a);    /* 2*/
+        >})();
 
         声明变量是它所在上下文环境的不可配置属性（non-configurable property），非声明变量是可配置的（例如非声明变量可以被`delete`）。
 
