@@ -394,7 +394,7 @@ function addFavorite(url, title) {  /* url必须带有协议头*/
 }
 ```
 
-### js实现类似jQuery的`$('html,body').animate({'scrollTop': 像素}, 毫秒);`
+### js实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
 ```javascript
 /*
  * 滚动到
