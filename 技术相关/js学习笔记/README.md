@@ -133,10 +133,10 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     - 函数构造函数
 
         `new Function(参数);`
-    - 函数语句
+    - 函数声明（函数语句）
 
         `function 名字(参数) {};`
-    - 函数表达式
+    - 函数表达式（function expression）
 
         `var 名字 = function(参数) {};`
 
