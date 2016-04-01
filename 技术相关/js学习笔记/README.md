@@ -111,6 +111,8 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     var obj3 = new Test2();
     console.log(obj3.x);    /* 4*/
     ```
+
+    如果方法没有对象调用（比如匿名函数的执行），默认`this`指向`window`对象。
 - 浮点数的计算
 
     浮点数值计算会产生舍入误差，因此永远不要用条件语句判断某个特定浮点数值，也不要用js进行复杂的计算
@@ -144,10 +146,44 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         `var 名字 = function(参数) {};`
 
         >命名函数表达式：`var 名字1 = function 名字2(参数) {};`，其中函数名`名字2`只能在函数体内部使用。
+        >
+        >例：
+        >```javascript
+        >var func1 = function func2() {};
+        >
+        >console.log(typeof func1);  /* function*/
+        >console.log(typeof func2);  /* undefined*/
+        >```
 
     >通过函数声明和函数表达式定义的函数只会被解析一次；而构造函数定义的函数在每次构造函数被调用，函数体字符串都要被解析一次。
     >
     >不推荐使用Function构造函数创建函数，因为它需要的函数体作为字符串可能会阻止一些JS引擎优化，也会引起其他问题。
+- `setTimeout`
+
+    ```javascript
+    setTimeout(function () {
+        console.log(1); /* 后执行*/
+    }, 0);
+        console.log(2); /* 先执行*/
+    ```
+
+    `setTimeout`会把要延迟执行的方法放到执行队列末尾并加上延迟时间，因此就算是0毫秒执行，也会在之后代码后面执行。
+- 自动插入分号（Automatic Semicolon Insertion，ASI）
+
+    ASI机制不是说在解析过程中解析器自动把分号添加到代码中，而是说解析器除了分号还会以换行为基础按一定的规则作为断句的依据，从而保证解析的正确性。
+
+    js的自动插入分号的情况：
+
+        - empty statement
+        - var statement
+        - expression statement
+        - do-while statement
+        - continue statement
+        - break statement
+        - return statement
+        - throw statement
+
+    前置分号策略：只要对行首字符进行token判断是否是`[`、`(`、`+`、`-`、`/`五个符号之一，就在其前面增加分号。
 
 ### Boolean转换
 | 数据类型 | 转换为true的值 | 转换为false的值 |
