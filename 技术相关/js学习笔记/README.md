@@ -174,14 +174,14 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
     js的自动插入分号的情况：
 
-        - empty statement
-        - var statement
-        - expression statement
-        - do-while statement
-        - continue statement
-        - break statement
-        - return statement
-        - throw statement
+    - empty statement
+    - var statement
+    - expression statement
+    - do-while statement
+    - continue statement
+    - break statement
+    - return statement
+    - throw statement
 
     前置分号策略：只要对行首字符进行token判断是否是`[`、`(`、`+`、`-`、`/`五个符号之一，就在其前面增加分号。
 
