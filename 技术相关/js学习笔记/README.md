@@ -170,20 +170,20 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     `setTimeout`会把要延迟执行的方法放到执行队列末尾并加上延迟时间，因此就算是0毫秒执行，也会在之后代码后面执行。
 - 自动插入分号机制（Automatic Semicolon Insertion，ASI）
 
-    ASI机制不是说在解析过程中解析器自动把分号添加到代码中，而是说解析器除了分号还会以换行为基础按一定的规则作为断句的依据，从而保证解析的正确性。
+    ASI机制不是说在解析过程中解析器自动把分号添加到代码中，而是说解析器除了分号还会以换行为基础按一定的规则作为断句（EOC）的依据，从而保证解析的正确性。
 
     解析器会尽量将新行并入当前行，当且仅当符合ASI规则时才会将新行视为独立的语句。js自动插入分号的情况（将新行视为独立行）：
 
     - empty statement
     - `var` statement
     - expression statement
-    - `do-while` statement(not `while`)
+    - `do-while` statement（not `while`）
     - `continue` statement
     - `break` statement
     - `return` statement
     - `throw` statement
 
-    前置分号策略：只要对行首字符进行token判断是否是：`[` `(` `+` `-` `/`五个符号之一，就在其前面增加分号（如果不加分号，之前代码很可能和这些符号混合成一个语句）。
+    >前置分号策略：只要对行首字符进行token判断是否为：`[` `(` `+` `-` `/`五个符号之一，就在其前面增加分号（如果不加分号，之前代码很可能和这些符号混合成一个语句而导致错误）。
 
 ### Boolean转换
 | 数据类型 | 转换为true的值 | 转换为false的值 |
