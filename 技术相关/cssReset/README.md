@@ -82,31 +82,28 @@ a:hover {
     -webkit-line-clamp: 2;
 }
 /*/全局*/
-/* 手机媒体查询*/
-@media (max-width: 374px) {
-    html {
-        font-size: 10px;
-    }
+/* 单大图模式*/
+.full_bg {
+    background: url() #fff center 0 no-repeat;
+    min-width: ;
+    overflow: hidden;
 }
-@media (min-width: 375px) and (max-width: 639px) {
-    html {
-        font-size: 15px;
-    }
+.header,
+.main {
+    background: url() center 0 no-repeat;
+    width: ;
+    margin: 0 auto;
+    position: relative;
 }
-@media (min-width: 640px) and (max-width: 736px){
-    html {
-        font-size: 20px;
-    }
+.footer {
+    background-color: #fff;
+    min-width: ;
 }
-@media (min-width: 737px) {
-    html {
-        font-size: 25px;
-    }
+.footer .wrap {
+    width: ;
+    margin: 0 auto;
 }
-@media (orientation: landscape) {
-
-}
-/*/手机媒体查询*/
+/*/单大图模式*/
 /* 多大图模式*/
 .header {
     background: url() #fff center 0 no-repeat;
@@ -133,55 +130,29 @@ a:hover {
     position: relative;
 }
 /*/多大图模式*/
-/* 单大图模式*/
-.full_bg {
-    background: url() #fff center 0 no-repeat;
-    min-width: ;
-    overflow: hidden;
-}
-.header,
-.main {
-    background: url() center 0 no-repeat;
-    width: ;
-    margin: 0 auto;
-    position: relative;
-}
-.footer {
-    background-color: #fff;
-    min-width: ;
-}
-.footer .wrap {
-    width: ;
-    margin: 0 auto;
-}
-/*/单大图模式*/
 
-/* 头像-png24兼容ie6*/
-.avatar {
-    width: ;
-    height: ;
-    position: relative;
-    cursor: pointer;
+/* 手机媒体查询*/
+@media (max-width: 374px) {
+    html {
+        font-size: 10px;
+    }
 }
-.avatar img {
-    background: url() 0 0 no-repeat; /* 默认图*/
-    width: ;
-    height: ;
-    display: block;
+@media (min-width: 375px) and (max-width: 639px) {
+    html {
+        font-size: 15px;
+    }
 }
-.avatar span.hover,
-.avatar span.normal {
-    width: ;
-    height: ;
-    position: absolute;
-    top: 0;
-    left: 0;
+@media (min-width: 640px) and (max-width: 736px){
+    html {
+        font-size: 20px;
+    }
 }
-.avatar span.hover {
-    background: url() 0 0 no-repeat;
+@media (min-width: 737px) {
+    html {
+        font-size: 25px;
+    }
 }
-.avatar span.normal {
-    background: url() 0 0 no-repeat;
+@media (orientation: landscape) {
+
 }
-/*/头像-png24兼容ie6*/
-```
+/*/手机媒体查询*/

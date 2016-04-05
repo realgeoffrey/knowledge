@@ -725,7 +725,34 @@ li:hover a {
 ```
 
 ### 页面高度不够时，footer依然置于页面最底部
-- （劣）ie6中，当.last_container高度变化的时候会渲染错误
+- 兼容大部分情况
+
+    ```html
+    <div class="content">
+        内容
+        <div class="last_content">内容</div>
+    </div>
+    <div class="footer">底部内容</div>
+    ```
+    ```css
+    html,
+    body {
+        height: 100%;
+    }
+    .content {
+        min-height: 100%;
+        height: auto !important;
+        _height: 100%;
+    }
+    .last_content {
+        padding-bottom: 底部高度;
+    }
+    .footer {
+        margin-top: -底部高度;
+        height: 底部高度;
+    }
+    ```
+- *ie6中，当.last_container高度变化的时候会渲染错误*
 
     ```html
     <div class="wrapper">
@@ -757,33 +784,6 @@ li:hover a {
         height: 底部高度;
     }
 
-    ```
-- （优）兼容大部分情况
-
-    ```html
-    <div class="content">
-        内容
-        <div class="last_content">内容</div>
-    </div>
-    <div class="footer">底部内容</div>
-    ```
-    ```css
-    html,
-    body {
-        height: 100%;
-    }
-    .content {
-        min-height: 100%;
-        height: auto !important;
-        _height: 100%;
-    }
-    .last_content {
-        padding-bottom: 底部高度;
-    }
-    .footer {
-        margin-top: -底部高度;
-        height: 底部高度;
-    }
     ```
 
 >有些插件效果不能支持`html,body {height: 100%;}`。
@@ -855,7 +855,7 @@ body {
 ### 超出内容区域的内容
 1. 用绝对定位把内容设置在外部
 
-    >在ie6、ie7情况下，绝对定位内容在右边的（左边全部兼容），会根据超出内容出现滚动条并且背景颜色无法延伸。因此当ie6、ie7情况时，可以选择当窗口宽度小于文档宽度时隐藏右边隐藏内容。
+    >在ie6、ie7情况下，绝对定位内容在右边的（左边全部浏览器都兼容），会根据超出内容出现滚动条并且背景颜色无法延伸。因此当ie6、ie7情况时，可以选择当窗口宽度小于文档宽度时隐藏右边隐藏内容。
 2. ~~用大背景模式~~
 
 ### html请求资源：
