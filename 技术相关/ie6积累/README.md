@@ -173,7 +173,7 @@
 
 35. ie6下，父级为`float`，其子级要根据内容宽度自适应：
     - ~~子级为`display: block;`，若要设置`height`就必须要设置`width`，否者会导致子级铺满父级。~~
-    - 子级设置为`display: inline-block;*display: inline;zoom: 1;`，可以仅设置`height`，不用设定`width`。
+    - 子级或者子级包裹的内容设置为`display: inline-block;*display: inline;zoom: 1;`，可以仅设置`height`，不用设定`width`。
 
 36. ie6下，图片类型直接改变后缀名会导致无法打开；当把`.jpg`的文件后缀保存为`.png`在ie6显示时，会阻塞之后所有图片的加载。
 
