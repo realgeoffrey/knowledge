@@ -814,9 +814,16 @@ function deepCopy(obj) {
 ### 从字符串中获取绝对路径
 ```javascript
 function getAbsoluteUrl(url) {
-    var domA = document.createElement('a');
-    domA.href = url;
+    var domA;
 
-    return domA.href;
+    if (typeof url === 'undefined') {
+
+        return document.location.href;
+    } else {
+        domA = document.createElement('a');
+        domA.href = url;
+
+        return domA.href;
+    }
 }
 ```
