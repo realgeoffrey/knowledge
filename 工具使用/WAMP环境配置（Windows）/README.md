@@ -19,6 +19,7 @@
 3. 配置www目录
 
 	进入程序所在的文件夹，找到 *..\wamp\Scripts* 下的 **config.inc.php**，文本打开并找到`\$wwwDir`（默认为安装目录的 www 文件夹），修改为`$wwwDir = 'E:/www;'`，如图：
+
 	![Alt text](./images/1.png)
 	
 	>注意：Windows 里的文件夹为`E:\www`，这里的是 `E:/www`，斜杠方向的区别。
@@ -32,9 +33,11 @@
 4. 配置 Apache Web 服务器
 
 	设置主目录：左击系统托盘中的WampServer，选择**Apache->httpd.conf**配置文件，找到`DocumentRoot`，设置为`DocumentRoot "E:/www/"`：
+
 	![Alt text](./images/2.png)
 	
 	继续查找如下，设置的目录要和上一步所设置的目录一样，如图所示：
+
 	![Alt text](./images/3.png)	
 	
 	重新启动Apache Web服务器生效修改。
@@ -43,25 +46,31 @@
 	- PHP 核心配置：
 
 		默认情况下，PHP不允许执行一些函数，但是这些往往造成一些应用不能实现，因此需调整过来，左击系统托盘中的WampServer，选择**PHP->PHP 设置**，依次点击下图右边所示的那些允许启用的项（设置完一个后等待服务器完全重启再进行下一个设置），不同系统服务可能不同：
+
 		![Alt text](./images/4.png)
 		
 	- PHP 时区设置：
 
 		左击系统托盘中的WampServer，选择**PHP->php.ini**，找到`[Date]`，去掉`date.timezone`前的分号，并在等号后面加上`"Asia/Shanghai"`如图所示：
+
 		![Alt text](./images/5.png)
 
 6. 配置 MySQL 数据库
 
 	左击系统托盘中的WampServer，选择**phpMyAdmin**，在打开的页面中选择**权限**或**用户**，在“用户概览”能看到 root 账户，单击 root 用户一行最后的编辑权限链接，如图：
+
 	![Alt text](./images/6.png)
 
 	出现如下图所示的界面（在主页面的中间部分）：
+
 	![Alt text](./images/7.png)
 	
 	当修改完密码，出现成功信息后，再点击主菜单的任意一项，就会产生错误，如下图所示：
+
 	![Alt text](./images/8.png)
 	
 	打开WampServer安装目录的 *apps\phpmyadmin3.5.1* 下的 **config.inc.php**，找到`['password']`,把刚才的密码输入（如果是默认配置，单引号内为空，即空密码。）：
+
 	![Alt text](./images/9.png)
 	
 7. phpMyAdmin上传最大限制设置
@@ -69,6 +78,7 @@
 	php配置：文本打开目录 *wamp\bin\php\php5.2.9-2* 下的 **php.ini**，修改**upload_max_filesize、post_max_size、max_execution_time、max_input_time、memory_limit**。
 	1. 打开修改功能
 		查找**File Uploads**，设置默认允许HTTP文件上传，设置`file_uploads = On`。
+
 		![Alt text](./images/10.png)
 
 	2. 设置上传临时目录
@@ -77,19 +87,23 @@
 
 	3. 设置上传文件、数据字节最大限制
 		查找**upload_max_filesize**，此选项设定文件上传大小限制，设置`upload_max_filesize = 100M`。
+
 		![Alt text](./images/12.png)
 
 		查找**post_max_size**，此选项代表允许POST的数据最大字节长度。此值需大于upload_max_filesize，小于memory_limit值，一般设定该值与upload_max_filesize值相等或者略大。设置`post_max_size = 150M`。
+
 		![Alt text](./images/13.png)
 
 	4. 设置脚本页面执行、接受数据最大时间及占用最大内存
 		查找**max_execution_time**，该值设置每个脚本最大允许执行时间(秒)，0表示没有限制，脚本执行超过设置时间则会报脚本执行超时错误，不推荐设定为0。设置`max_execution_time = 200`。
 		查找**max_input_time**，该值设置php页面接受数据最大时间。设置`max_input_time = 400`。
 		查找**memory_limit**，该值设置php页面占用的最大内存，上传文件越大则内存占用越大。设置`memory_limit = 960M`。
+
 		![Alt text](./images/14.png)
 
 	5. phpAdmin配置：修改 *\wamp\apps\phpmyadmin3.1.3.1\libraries\config.default.php* 配置文件中的时间限制。
 		查找`\$cfg['ExecTimeLimit']``，0为没有时间限制，设置`$cfg['ExecTimeLimit'] = 0;`。
+
 		![Alt text](./images/15.png)
 
 8. Apache配置虚拟主机
