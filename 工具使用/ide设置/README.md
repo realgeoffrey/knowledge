@@ -34,44 +34,44 @@ There'are **webstorm** and **phpstorm** settings. I exported these settings to m
         </script>
     </head>
     <body>
-    
+    <!-- 单大图模式-->
+    <div class="full_bg">
+        <div class="header">
+
+        </div>
+        <div class="main">
+
+        </div>
+    </div>
+    <div class="footer">
+        <div class="wrap">
+
+        </div>
+    </div>
+    <!--/单大图模式-->
+
     <!-- 多大图模式-->
     <div class="header">
         <div class="wrap">
-    
+
         </div>
     </div>
     <div class="main">
         <div class="wrap">
-    
+
         </div>
     </div>
     <div class="footer">
         <div class="wrap">
-    
+
         </div>
     </div>
     <!--/多大图模式-->
-    <!-- 单大图模式-->
-    <div class="full_bg">
-        <div class="header">
-    
-        </div>
-        <div class="main">
-    
-        </div>
-    </div>
-    <div class="footer">
-        <div class="wrap">
-    
-        </div>
-    </div>
-    <!--/单大图模式-->
-    
+
     <script type="text/javascript" src=""></script>
     <script type="text/javascript">
         $(function () {
-    
+
         });
     </script>
     </body>
