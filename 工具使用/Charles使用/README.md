@@ -33,56 +33,65 @@ Charles是目前最强大的http调试工具，在界面和功能上远强于Fid
 2. 本地代理和远程代理
 	Charles的代理服务器端口为**8888**，即你的本机**ip:8888**。
 	
-	将一个文件代理成本地的源码文件：
+	- 将一个文件代理成本地的源码文件：
 
-	![Alt text](./images/7.png)
+        ![Alt text](./images/7.png)
 
-	点击“Map Local”后：
+        点击“Map Local”后：
 
-	![Alt text](./images/8.png)
-	
-	Charles是支持子目录代理，使用通配符*：
+        ![Alt text](./images/8.png)
 
-	![Alt text](./images/9.png)
+        Charles是支持子目录代理，使用通配符*：
 
-	本地地址选择个子目录，不需要通配符。
-	校验是否代理成功，最省力的方式是点击工具条上的刷新按钮，刷新单个请求，如果代理成功，Charles会往“Notes”界面打个log:
+        ![Alt text](./images/9.png)
 
-	![Alt text](./images/10.png)
+        本地地址选择个子目录，不需要通配符。
+        校验是否代理成功，最省力的方式是点击工具条上的刷新按钮，刷新单个请求，如果代理成功，Charles会往“Notes”界面打个log:
 
-	>小技巧：所有的配置开关都可以通过工具条上的“工具”设置（倒数第二个按钮）。
-	
-	去掉代理配置：
+        ![Alt text](./images/10.png)
 
-	![Alt text](./images/11.png)
+        >小技巧：所有的配置开关都可以通过工具条上的“工具”设置（倒数第二个按钮）。
 
-	>小技巧：建议开启No Caching，不缓存请求。
-	
-	手机或平板页面的调试，我们需要把请求代理到pc端的Charles上：
-	1. 使手机和电脑在一个局域网内，不一定非要是一个ip段，只要是同一个路由器下就可以了，比如电脑连接的有线网ip为192.168.16.12，然后手机链接到wifi的ip为192.168.1.103，但是这个有线网和无线网的最终都是来自于一个外部ip，这样的话也是可以的。
-	2. charles设置需要设置下允许接收的ip地址的范围：进入设置**Proxy - Access Control Settings**，然后如果接收的ip范围是192.168.1.xxx的话，那么就添加并设置成192.168.1.0/24；如果全部范围都接收的话，那么就直接设置成0.0.0.0/0。
+        去掉代理配置：
 
-		![Alt text](./images/12.png)
-	
-	输入代理端口8888之后，电脑必须打开Charles后手机才可以上网。
+        ![Alt text](./images/11.png)
 
-	1. ios或android的配置：
+        >小技巧：建议开启No Caching，不缓存请求。
 
-		![Alt text](./images/13.png)
+        手机或平板页面的调试，我们需要把请求代理到pc端的Charles上：
+        1. 使手机和电脑在一个局域网内，不一定非要是一个ip段，只要是同一个路由器下就可以了，比如电脑连接的有线网ip为192.168.16.12，然后手机链接到wifi的ip为192.168.1.103，但是这个有线网和无线网的最终都是来自于一个外部ip，这样的话也是可以的。
+        2. charles设置需要设置下允许接收的ip地址的范围：进入设置**Proxy - Access Control Settings**，然后如果接收的ip范围是192.168.1.xxx的话，那么就添加并设置成192.168.1.0/24；如果全部范围都接收的话，那么就直接设置成0.0.0.0/0。
 
-		服务器ip设置成pc的ip，端口好设置成8888即可。
-	
-	2. 远程代理：
+            ![Alt text](./images/12.png)
 
-		![Alt text](./images/14.png)
+        输入代理端口8888之后，电脑必须打开Charles后手机才可以上网。
 
-	代理配置：
+        1. ios或android的配置：
 
-    ![Alt text](./images/15.png)
+            ![Alt text](./images/13.png)
 
-	![Alt text](./images/16.png)
+            服务器ip设置成pc的ip，端口好设置成8888即可。
 
-	Charles支持https和http，不支持sockets。
+        2. 远程代理：
+
+            ![Alt text](./images/14.png)
+
+        代理配置：
+
+        ![Alt text](./images/15.png)
+
+        ![Alt text](./images/16.png)
+
+        Charles支持https和http，不支持sockets。
+
+	- 将一个文件代理成网上的地址：
+
+	    选择“Map Remote”
+
+        ![Alt text](./images/28.png)
+
+        ![Alt text](./images/29.png)
+
 	
 3. 网速模拟功能
 	在线上环境通常有些因为网速慢导致的bug，在本机无法重现，可以使用**throttle**功能。
