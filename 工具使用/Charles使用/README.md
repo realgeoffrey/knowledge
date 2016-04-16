@@ -42,8 +42,6 @@ Charles是目前最强大的http调试工具，在界面和功能上远强于Fid
 
         ![Alt text](./images/12.png)
 
-    输入代理端口8888之后，电脑必须打开Charles后手机才可以上网。
-
     ios或android的配置：
 
     ![Alt text](./images/13.png)
