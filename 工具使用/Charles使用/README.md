@@ -33,9 +33,32 @@ Charles是目前最强大的http调试工具，在界面和功能上远强于Fid
 	![Alt text](./images/6.png)
 
 2. 本地代理和远程代理
+
 	Charles的代理服务器端口为**8888**，即你的本机**ip:8888**。
-	
-	- 将一个文件代理成本地的源码文件：
+
+    手机或平板页面的调试，我们需要把请求代理到pc端的Charles上：
+    1. 使手机和电脑在一个局域网内，不一定非要是一个ip段，只要是同一个路由器下就可以了，比如电脑连接的有线网ip为192.168.16.12，然后手机链接到wifi的ip为192.168.1.103，但是这个有线网和无线网的最终都是来自于一个外部ip，这样的话也是可以的。
+    2. charles设置需要设置下允许接收的ip地址的范围：进入设置**Proxy - Access Control Settings**，然后如果接收的ip范围是192.168.1.xxx的话，那么就添加并设置成192.168.1.0/24；如果全部范围都接收的话，那么就直接设置成0.0.0.0/0。
+
+        ![Alt text](./images/12.png)
+
+    输入代理端口8888之后，电脑必须打开Charles后手机才可以上网。
+
+    ios或android的配置：
+
+    ![Alt text](./images/13.png)
+
+    服务器ip设置成pc的ip，端口好设置成8888即可。
+
+    代理配置：
+
+    ![Alt text](./images/15.png)
+
+    ![Alt text](./images/16.png)
+
+    Charles支持https和http，不支持sockets。
+
+    - 将一个文件代理成本地的源码文件：
 
         ![Alt text](./images/7.png)
 
@@ -59,28 +82,6 @@ Charles是目前最强大的http调试工具，在界面和功能上远强于Fid
         ![Alt text](./images/11.png)
 
         >小技巧：建议开启No Caching，不缓存请求。
-
-        手机或平板页面的调试，我们需要把请求代理到pc端的Charles上：
-        1. 使手机和电脑在一个局域网内，不一定非要是一个ip段，只要是同一个路由器下就可以了，比如电脑连接的有线网ip为192.168.16.12，然后手机链接到wifi的ip为192.168.1.103，但是这个有线网和无线网的最终都是来自于一个外部ip，这样的话也是可以的。
-        2. charles设置需要设置下允许接收的ip地址的范围：进入设置**Proxy - Access Control Settings**，然后如果接收的ip范围是192.168.1.xxx的话，那么就添加并设置成192.168.1.0/24；如果全部范围都接收的话，那么就直接设置成0.0.0.0/0。
-
-            ![Alt text](./images/12.png)
-
-        输入代理端口8888之后，电脑必须打开Charles后手机才可以上网。
-
-        ios或android的配置：
-
-        ![Alt text](./images/13.png)
-
-        服务器ip设置成pc的ip，端口好设置成8888即可。
-
-        代理配置：
-
-        ![Alt text](./images/15.png)
-
-        ![Alt text](./images/16.png)
-
-        Charles支持https和http，不支持sockets。
 
 	- 将一个文件代理成网上的地址：
 
