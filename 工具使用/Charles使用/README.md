@@ -68,15 +68,11 @@ Charles是目前最强大的http调试工具，在界面和功能上远强于Fid
 
         输入代理端口8888之后，电脑必须打开Charles后手机才可以上网。
 
-        1. ios或android的配置：
+        ios或android的配置：
 
-            ![Alt text](./images/13.png)
+        ![Alt text](./images/13.png)
 
-            服务器ip设置成pc的ip，端口好设置成8888即可。
-
-        2. 远程代理：
-
-            ![Alt text](./images/14.png)
+        服务器ip设置成pc的ip，端口好设置成8888即可。
 
         代理配置：
 
