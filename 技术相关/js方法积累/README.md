@@ -232,6 +232,39 @@ var test = new ImgLazyLoad('j-img', function () {
 test.unbindEvent();
 ```
 
+### js实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
+```javascript
+/*
+ * 滚动到
+ * @param {Number} endX 到达x轴像素
+ * @param {Number} endY 到达y轴像素
+ * @param {Number} time 所用毫秒
+ * @returns undefined
+ */
+function animateTo(endX, endY, time) {
+    var scrollFromX = document.body.scrollLeft || document.documentElement.scrollLeft,
+        scrollFromY = document.body.scrollTop || document.documentElement.scrollTop,
+        scrollToX = endX > document.documentElement.scrollWidth ? document.documentElement.scrollWidth : endX,
+        scrollToY = endY > document.documentElement.scrollHeight ? document.documentElement.scrollHeight : endY,
+        i = 0,
+        runEvery = 5,
+        myself = arguments.callee;
+
+    time /= runEvery;
+    if (myself.animateToInterval) {
+        clearInterval(myself.animateToInterval);
+    }
+
+    myself.animateToInterval = setInterval(function () {
+        i++;
+        window.scrollTo((scrollToX - scrollFromX) / time * i + scrollFromX, (scrollToY - scrollFromY) / time * i + scrollFromY);
+        if (i >= time) {
+            clearInterval(myself.animateToInterval);
+        }
+    }, runEvery);
+}
+```
+
 ### js判断浏览器`userAgent`
 ```javascript
 var snifBrowser = {
@@ -397,42 +430,9 @@ function addFavorite(url, title) {  /* url必须带有协议头*/
 }
 ```
 
-### js实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
+### js判断版本（类似**1.1.1**）是否较低
 ```javascript
-/*
- * 滚动到
- * @param {Number} endX 到达x轴像素
- * @param {Number} endY 到达y轴像素
- * @param {Number} time 所用毫秒
- * @returns undefined
- */
-function animateTo(endX, endY, time) {
-    var scrollFromX = document.body.scrollLeft || document.documentElement.scrollLeft,
-        scrollFromY = document.body.scrollTop || document.documentElement.scrollTop,
-        scrollToX = endX > document.documentElement.scrollWidth ? document.documentElement.scrollWidth : endX,
-        scrollToY = endY > document.documentElement.scrollHeight ? document.documentElement.scrollHeight : endY,
-        i = 0,
-        runEvery = 5,
-        myself = arguments.callee;
-
-    time /= runEvery;
-    if (myself.animateToInterval) {
-        clearInterval(myself.animateToInterval);
-    }
-
-    myself.animateToInterval = setInterval(function () {
-        i++;
-        window.scrollTo((scrollToX - scrollFromX) / time * i + scrollFromX, (scrollToY - scrollFromY) / time * i + scrollFromY);
-        if (i >= time) {
-            clearInterval(myself.animateToInterval);
-        }
-    }, runEvery);
-}
-```
-
-### js判断version是否较低
-```javascript
-function lowerVersion(version, base) {
+function isLowerVersion(version, base) {
     var arr1 = version.toString().split('.'),
         arr2 = base.toString().split('.'),
         length = arr1.length > arr2.length ? arr1.length : arr2.length,
@@ -507,12 +507,14 @@ var format = {
 ### js倒计时显示
 ```javascript
 /*
- * @deadline：将来的时间戳（秒）
- * @id：输出节点id
- * @func：到点后的回调函数
- * @hType：'时'后面的文字
- * @mType：'分'后面的文字
- * @sType：'秒'后面的文字
+ * 显示倒计时
+ * @param {Number} deadline 将来的时间戳（秒）
+ * @param {String} id 输出节点id
+ * @param {Function} func 到点后的回调函数
+ * @param {String} hType ‘时’后面的文字
+ * @param {String} mType ‘分’后面的文字
+ * @param {String} sType ‘秒’后面的文字
+ * @returns undefined
  */
 function countDown(deadline, id, func, hType, mType, sType) {
     function formatNum(number) {    /* 格式化数字格式*/
