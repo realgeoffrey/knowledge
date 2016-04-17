@@ -3,7 +3,7 @@
 
 ## 实用方法
 
-### js实现类似jQuery的`$(document).ready(function () {});`
+### 原生js实现类似jQuery的`$(document).ready(function () {});`
 ```javascript
 function onloads(func) {
     var oldOnLoad = window.onload;
@@ -19,7 +19,7 @@ function onloads(func) {
 }
 ```
 
-### js实现类似jQuery的`.after()`
+### 原生js实现类似jQuery的`.after()`
 ```javascript
 function insertAfter(elem, target) {
     var parent = target.parentNode;
@@ -32,7 +32,7 @@ function insertAfter(elem, target) {
 }
 ```
 
-### js实现类似jQuery的`.next()`
+### 原生js实现类似jQuery的`.next()`
 ```javascript
 function getNextElement(node) {
     if (node === null || node.nextSibling === null) {
@@ -45,7 +45,7 @@ function getNextElement(node) {
 }
 ```
 
-### js实现类似jQuery的`.addClass()`
+### 原生js实现类似jQuery的`.addClass()`
 ```javascript
 function addClass(node, newClassName) {
     var oldNames,
@@ -67,7 +67,7 @@ function addClass(node, newClassName) {
 }
 ```
 
-### js实现类似jQuery的`.removeClass()`
+### 原生js实现类似jQuery的`.removeClass()`
 ```javascript
 function removeClass(node, removeClassName) {
     var newNames = [],
@@ -91,7 +91,7 @@ function removeClass(node, removeClassName) {
 }
 ```
 
-### js移动端获取触屏滚动距离(可改写为鼠标拖拽功能)
+### 原生js移动端获取触屏滚动距离(可改写为鼠标拖拽功能)
 ```javascript
 function TouchMoveAction(dom) {
     var self = this;
@@ -232,7 +232,7 @@ var test = new ImgLazyLoad('j-img', function () {
 test.unbindEvent();
 ```
 
-### js实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
+### 原生js实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
 ```javascript
 /*
  * 滚动到
@@ -265,7 +265,7 @@ function animateTo(endX, endY, time) {
 }
 ```
 
-### js判断浏览器`userAgent`
+### 原生js判断浏览器`userAgent`
 ```javascript
 var snifBrowser = {
     isWebkit: false,
@@ -308,7 +308,7 @@ var snifBrowser = {
 snifBrowser.init();
 ```
 
-### js判断ie各版本
+### 原生js判断ie各版本
 ```javascript
 function isIE(num) {
     var dom = document.createElement("b");
@@ -319,7 +319,7 @@ function isIE(num) {
 }
 ```
 
-### js操作cookie
+### 原生js操作cookie
 ```javascript
 var cookieFuc = {
     get: function (name) {   /* 获取指定cookie*/
@@ -414,7 +414,7 @@ function fixPlaceholder($dom) {
 }
 ```
 
-### js加入收藏夹
+### 原生js加入收藏夹
 ```javascript
 function addFavorite(url, title) {  /* url必须带有协议头*/
     if (window.external && 'addFavorite' in window.external) {
@@ -430,7 +430,7 @@ function addFavorite(url, title) {  /* url必须带有协议头*/
 }
 ```
 
-### js判断版本（类似**1.1.1**）是否较低
+### 原生js判断版本（类似**1.1.1**）是否较低
 ```javascript
 function isLowerVersion(version, base) {
     var arr1 = version.toString().split('.'),
@@ -451,7 +451,22 @@ function isLowerVersion(version, base) {
 }
 ```
 
-### js格式化文件属性（大小、日期）
+### 原生js选取范围内随机值
+```javascript
+/*
+ * 选取范围内随机值
+ * @param {Number} lowerNum 下限
+ * @param {Number} upperNum 上限
+ * @returns {Number} 上下限区间内的随机值
+ */
+function selectFrom(lowerNum, upperNum) {
+    var choices = upperNum - lowerNum + 1;
+
+    return Math.floor(Math.random() * choices + lowerNum);
+}
+```
+
+### 原生js格式化文件属性（大小、日期）
 ```javascript
 var format = {
     fileSize: function (bytes) {    /* 格式化文件大小*/
@@ -504,7 +519,7 @@ var format = {
 };
 ```
 
-### js倒计时显示
+### 原生js倒计时显示
 ```javascript
 /*
  * 显示倒计时
@@ -554,7 +569,7 @@ function countDown(deadline, id, func, hType, mType, sType) {
 }
 ```
 
-### js绑定、解绑事件
+### 原生js绑定、解绑事件
 ```javascript
 /* 绑定*/
 function addEvent(obj, type, handle) {
@@ -592,7 +607,7 @@ removeEvent(document.getElementById('test1'), 'keydown', func1);
 
 jQuery的`on`与`off`，不用一一对应某个handle：当写具体handle时解绑那个具体handle；不写默认解绑所有对象下某事件的方法。
 
-### js、jQuery实现判断按下具体某键值
+### 原生js、jQuery实现判断按下具体某键值
 ```javascript
 /* js原生*/
 function checkKeyCode(event) {
@@ -682,7 +697,7 @@ $oneInput.on('click', function () {
 });
 ```
 
-### js判断对象是否为空
+### 原生js判断对象是否为空
 ```javascript
 function isObjEmpty(obj) {
     var i;
@@ -704,7 +719,7 @@ function isObjEmpty(obj) {
 }
 ```
 
-### js、jQuery阻止冒泡和阻止浏览器默认行为
+### 原生js、jQuery阻止冒泡和阻止浏览器默认行为
 - 阻止冒泡
     ```javascript
     /* js原生*/
@@ -758,7 +773,7 @@ function isObjEmpty(obj) {
     });
     ```
 
-### 移动端模拟点击事件（避免300毫秒click）
+### 原生js移动端模拟点击事件（避免300毫秒click）
 ```javascript
 var start_x,
     start_y;
@@ -780,7 +795,7 @@ document.getElementById('...').addEventListener('touchend', function (e) {
 }, false);
 ```
 
-### 判断是否是数组
+### 原生js判断是否是数组
 ```javascript
 function isArray(value) {
     if (typeof Array.isArray === "function") {    /* ie8及以下不支持*/
@@ -793,7 +808,7 @@ function isArray(value) {
 }
 ```
 
-### 深复制（仅针对原始类型、数组和最基本的对象，以及他们的组合）
+### 原生js深复制（仅针对原始类型、数组和最基本的对象，以及他们的组合）
 ```javascript
 /*
  * @param {Object|Array|Undefined|Null|Boolean|Number|String} obj 深复制参数
@@ -816,7 +831,7 @@ function deepCopy(obj) {
 }
 ```
 
-### 从字符串中获取绝对路径
+### 原生js从字符串中获取绝对路径
 ```javascript
 function getAbsoluteUrl(url) {
     var domA;
@@ -834,7 +849,7 @@ function getAbsoluteUrl(url) {
 ```
 
 
-## 数学 && 算法
+## 数学 && 算法（原生js）
 
 ### 阶乘函数
 ```javascript
