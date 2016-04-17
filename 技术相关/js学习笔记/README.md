@@ -126,38 +126,6 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     （大部分是误用）赋值的内容Boolen后为假会导致条件判断为假：`if(a = false){/* 不执行*/}`。
 
     >判断语句内只判断整体返回值是true或false，与里面执行内容无关（尽管对其语法有所限制）。
-- 函数
-
-    每个函数都是一个Function对象，可以像普通对象一样拥有**属性**和**方法**。
-
-    函数总有返回值。不显式`return`的话，默认返回`undefined`。
-
-    定义函数方法：
-    - 构造函数
-
-        `new Function(参数);`
-
-        把Function的构造函数当作函数一样调用（不使用new操作符）的效果与作为Function的构造函数调用一样。
-    - 函数声明（函数语句）
-
-        `function 名字(参数) {};`
-    - 函数表达式（function expression）
-
-        `var 名字 = function(参数) {};`
-
-        >命名函数表达式：`var 名字1 = function 名字2(参数) {};`，其中函数名`名字2`只能在函数体内部使用。
-        >
-        >例：
-        >```javascript
-        >var func1 = function func2() {};
-        >
-        >console.log(typeof func1);  /* function*/
-        >console.log(typeof func2);  /* undefined*/
-        >```
-
-    >通过函数声明和函数表达式定义的函数只会被解析一次；而构造函数定义的函数在每次构造函数被调用，函数体字符串都要被解析一次。
-    >
-    >不推荐使用Function构造函数创建函数，因为它需要的函数体作为字符串可能会阻止一些JS引擎优化，也会引起其他问题。
 - `setTimeout`
 
     ```javascript
@@ -836,6 +804,48 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
                 >仅能获取原始error的`message`信息，无法获取`line`等其他信息，因此还是必须前端在回调函数中嵌套`try-catch`
 
         >捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
+
+### 函数
+- 每个函数都是一个Function对象，像普通对象一样拥有**属性**和**方法**。
+
+    函数默认有`length`（希望接收的命名参数个数）和`prototype`属性。
+
+    `函数对象.caller`：保存调用当前函数的函数（嵌套的外一层函数）的引用。
+
+    函数内的`arguments.caller`：`undefined`（仅仅为了分清`arguments.caller`和函数的`caller`属性）。
+
+    函数内的`arguments.callee`是一个指针：其指向拥有`arguments`对象的函数。
+
+    函数继承的`toLocaleString`、`toString`、`valueOf`的返回值为：**经过浏览器处理过的函数代码(因浏览器而异)**。
+- 函数总有返回值。不显式`return`的话，默认返回`undefined`。
+
+- 定义函数方法：
+
+    - 构造函数
+
+        `new Function(参数);`
+
+        把Function的构造函数当作函数一样调用（不使用new操作符）的效果与作为Function的构造函数调用一样。
+    - 函数声明（函数语句）
+
+        `function 名字(参数) {};`
+    - 函数表达式（function expression）
+
+        `var 名字 = function(参数) {};`
+
+        >命名函数表达式：`var 名字1 = function 名字2(参数) {};`，其中函数名`名字2`只能在函数体内部使用。
+        >
+        >例：
+        >```javascript
+        >var func1 = function func2() {};
+        >
+        >console.log(typeof func1);  /* function*/
+        >console.log(typeof func2);  /* undefined*/
+        >```
+
+    >通过函数声明和函数表达式定义的函数只会被解析一次；而构造函数定义的函数在每次构造函数被调用，函数体字符串都要被解析一次。
+    >
+    >不推荐使用Function构造函数创建函数，因为它需要的函数体作为字符串可能会阻止一些JS引擎优化，也会引起其他问题。
 
 ### 闭包
 闭包是指函数有自由独立的变量。换句话说，定义在闭包中的函数可以“记忆”它创建时候的环境。

@@ -1,5 +1,8 @@
 #js方法积累
 
+
+## 实用方法
+
 ### js实现类似jQuery的`$(document).ready(function () {});`
 ```javascript
 function onloads(func) {
@@ -827,3 +830,19 @@ function getAbsoluteUrl(url) {
     }
 }
 ```
+
+
+## 数学 && 算法
+
+### 阶乘函数
+```javascript
+function factorial(num) {
+    if (num <= 1) {
+        return 1;
+    } else {
+        return num * arguments.callee(num - 1);
+    }
+}
+```
+
+### 排序算法
