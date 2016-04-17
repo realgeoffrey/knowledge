@@ -812,7 +812,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
     `函数对象.caller`：保存调用当前函数的函数（嵌套的外一层函数）的引用。
 
-    函数内的`arguments.caller`：`undefined`（仅仅为了分清`arguments.caller`和函数的`caller`属性）。
+    函数内的`arguments.caller`：`undefined`（仅仅为了分清`arguments.caller`和`函数对象.caller`）。
 
     函数内的`arguments.callee`是一个指针：其指向拥有`arguments`对象的函数。
 
@@ -843,8 +843,8 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         >console.log(typeof func2);  /* undefined*/
         >```
 
-    >通过函数声明和函数表达式定义的函数只会被解析一次；而构造函数定义的函数在每次构造函数被调用，函数体字符串都要被解析一次。
-    >
+    通过函数声明和函数表达式定义的函数只会被解析一次；而构造函数定义的函数在每次构造函数被调用，函数体字符串都要被解析一次。
+
     >不推荐使用Function构造函数创建函数，因为它需要的函数体作为字符串可能会阻止一些JS引擎优化，也会引起其他问题。
 
 ### 闭包
