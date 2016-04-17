@@ -3,7 +3,7 @@
 
 ## 实用方法
 
-### 原生js实现类似jQuery的`$(document).ready(function () {});`
+### *原生js*实现类似jQuery的`$(document).ready(function () {});`
 ```javascript
 function onloads(func) {
     var oldOnLoad = window.onload;
