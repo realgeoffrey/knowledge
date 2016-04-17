@@ -849,17 +849,6 @@ function getAbsoluteUrl(url) {
 ```
 
 
-## 数学 && 算法（*原生js*）
-
-### 阶乘函数
-```javascript
-function factorial(num) {
-    if (num <= 1) {
-        return 1;
-    } else {
-        return num * arguments.callee(num - 1);
-    }
-}
-```
+## 算法（*原生js*）
 
 ### 排序算法
