@@ -851,7 +851,7 @@ function getAbsoluteUrl(url) {
 
 ## 算法（*原生js*）
 
-### 排序算法
+### 插入排序
 ```javascript
 function insertionSort(arr) {
     if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
@@ -866,13 +866,13 @@ function insertionSort(arr) {
 
     if (len > 1) {
         for (i = 1; i < len; i++) { /* 逐个取出*/
-            tmp = arr[i];
+            tmp = arr[i];   /* 被向前对比的一个*/
 
-            for (j = i; j > 0 && arr[j - 1] > tmp; j--) {/* 向前逐个对比*/
-                arr[j] = arr[j - 1];
+            for (j = i; j > 0 && arr[j - 1] > tmp; j--) {   /* 向前逐个对比*/
+                arr[j] = arr[j - 1];    /* 前面的值向后移*/
             }
 
-            arr[j] = tmp;
+            arr[j] = tmp;   /* 被对比的值插入替代位置*/
         }
     }
 
