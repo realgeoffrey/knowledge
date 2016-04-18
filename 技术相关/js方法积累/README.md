@@ -852,3 +852,30 @@ function getAbsoluteUrl(url) {
 ## 算法（*原生js*）
 
 ### 排序算法
+```javascript
+function insertionSort(arr) {
+    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
+
+        return false;
+    }
+
+    var len = arr.length,
+        i,
+        tmp,
+        j;
+
+    if (len > 1) {
+        for (i = 1; i < len; i++) { /* 逐个取出*/
+            tmp = arr[i];
+
+            for (j = i; j > 0 && arr[j - 1] > tmp; j--) {/* 向前逐个对比*/
+                arr[j] = arr[j - 1];
+            }
+
+            arr[j] = tmp;
+        }
+    }
+
+    return arr;
+}
+```
