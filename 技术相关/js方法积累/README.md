@@ -866,16 +866,18 @@ function insertionSort(arr) {
 
     if (len > 1) {
         for (i = 1; i < len; i++) { /* 逐个取出*/
-            tmp = arr[i];   /* 被向前对比的一个*/
+            tmp = arr[i];   /* 被向前对比的一个元素*/
 
             for (j = i; j > 0 && arr[j - 1] > tmp; j--) {   /* 向前逐个对比*/
                 arr[j] = arr[j - 1];    /* 前面的值向后移*/
             }
 
-            arr[j] = tmp;   /* 被对比的值插入替代位置*/
+            arr[j] = tmp;   /* 被对比的元素插入替代位置*/
         }
     }
 
     return arr;
 }
 ```
+
+![Insertion Sort gif](./images/1.gif)
