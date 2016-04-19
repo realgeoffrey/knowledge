@@ -884,7 +884,7 @@ function insertionSort(arr) {
 >5. 将新元素插入到该位置后
 >6. 重复步骤2~5
 
-![Insertion Sort gif](./images/2.gif)
+![Insertion Sort gif](./images/1.gif)
 
 ### 希尔排序
 ```javascript
@@ -953,7 +953,7 @@ function bubbleSort(arr) {
 >3. 针对所有的元素重复以上的步骤，除了最后一个。
 >4. 持续每次对越来越少的元素重复上面的步骤，直到没有任何一对数字需要比较。
 
-![Bubble Sort gif](./images/4.gif)
+![Bubble Sort gif](./images/2.gif)
 
 ### 归并排序
 ```javascript
@@ -999,7 +999,7 @@ function mergeSort(arr) {
 >2. 将上述序列再次归并，形成floor(n/4)个序列，每个序列包含四个元素
 >3. 重复步骤2，直到所有元素排序完毕
 
-![Merge Sort gif](./images/1.gif)
+![Merge Sort gif](./images/3.gif)
 
 ### 选择排序
 ```javascript
@@ -1034,4 +1034,4 @@ function selectionSort(arr) {
 ```
 >首先在未排序序列中找到最小（大）元素，存放到排序序列的起始位置，然后，再从剩余未排序元素中继续寻找最小（大）元素，然后放到已排序序列的末尾。以此类推，直到所有元素均排序完毕。
 
-![Selection Sort gif](./images/3.gif)
+![Selection Sort gif](./images/4.gif)
