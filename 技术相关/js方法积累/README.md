@@ -886,6 +886,42 @@ function insertionSort(arr) {
 
 ![Insertion Sort gif](./images/2.gif)
 
+### 希尔排序
+```javascript
+function shellSort(arr) {
+    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
+
+        return false;
+    }
+
+    var len = arr.length,
+        gap,
+        i,
+        j,
+        temp;
+
+    for (gap = Math.floor(len / 2); gap > 0; gap = Math.floor(gap / 2)) {   /* 不断分割成越来越大的区域分别进行插入排序*/
+
+        for (i = gap; i < len; i++) {
+
+            for (j = i; j > 0; j -= gap) {
+
+                if (arr[j - gap] > arr[j]) {
+                    temp = arr[j - gap];
+                    arr[j - gap] = arr[j];
+                    arr[j] = temp;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
+    return arr;
+}
+```
+>将比较的全部元素分为几个区域来提升插入排序的性能。这样可以让一个元素可以一次性地朝最终位置前进一大步。然后算法再取越来越小的步长进行排序，算法的最后一步就是普通的插入排序，但是到了这步，需排序的数据几乎是已排好的了（此时插入排序较快）。
+
 ### 冒泡排序
 ```javascript
 function bubbleSort(arr) {
@@ -973,15 +1009,16 @@ function selectionSort(arr) {
         return false;
     }
 
-    var i,
+    var len = arr.length,
+        i,
         j,
         min,
         temp;
 
-    for (i = 0; i < arr.length - 1; i++) {
+    for (i = 0; i < len - 1; i++) {
         min = i;
 
-        for (j = i + 1; j < arr.length; j++) {
+        for (j = i + 1; j < len; j++) {  /* 找出最小的元素*/
             if (arr[min] > arr[j]) {
                 min = j;
             }
