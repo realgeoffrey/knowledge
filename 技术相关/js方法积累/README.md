@@ -915,6 +915,8 @@ function bubbleSort(arr) {
 >3. 针对所有的元素重复以上的步骤，除了最后一个。
 >4. 持续每次对越来越少的元素重复上面的步骤，直到没有任何一对数字需要比较。
 
+![selectionSort gif](../images/2.gif)
+
 ### 归并排序
 ```javascript
 function mergeSort(arr) {
@@ -958,3 +960,39 @@ function mergeSort(arr) {
 >1. 将序列每相邻两个数字进行归并操作（将两个已经排序的序列合并成一个序列的操作），形成floor(n/2)个序列，排序后每个序列包含两个元素
 >2. 将上述序列再次归并，形成floor(n/4)个序列，每个序列包含四个元素
 >3. 重复步骤2，直到所有元素排序完毕
+
+![selectionSort gif](../images/1.gif)
+
+### 选择排序
+```javascript
+function selectionSort(arr) {
+    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
+
+        return false;
+    }
+
+    var i,
+        j,
+        min,
+        temp;
+
+    for (i = 0; i < arr.length - 1; i++) {
+        min = i;
+
+        for (j = i + 1; j < arr.length; j++) {
+            if (arr[min] > arr[j]) {
+                min = j;
+            }
+        }
+
+        temp = arr[min];
+        arr[min] = arr[i];
+        arr[i] = temp;
+    }
+
+    return arr;
+}
+```
+>首先在未排序序列中找到最小（大）元素，存放到排序序列的起始位置，然后，再从剩余未排序元素中继续寻找最小（大）元素，然后放到已排序序列的末尾。以此类推，直到所有元素均排序完毕。
+
+![selectionSort gif](../images/3.gif)
