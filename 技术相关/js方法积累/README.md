@@ -914,3 +914,46 @@ function bubbleSort(arr) {
 >2. 对每一对相邻元素作同样的工作，从开始第一对到结尾的最后一对。这步做完后，最后的元素会是最大的数。
 >3. 针对所有的元素重复以上的步骤，除了最后一个。
 >4. 持续每次对越来越少的元素重复上面的步骤，直到没有任何一对数字需要比较。
+
+### 归并排序
+```javascript
+function mergeSort(arr) {
+    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
+
+        return false;
+    }
+
+    function merge(left, right) {   /* 合并2个已经分别排序好的数组*/
+        var final = [];
+
+        while (left.length && right.length) {   /* 对比2个数组第一个元素，小的加入新的数组并且从原来的数组中删去*/
+            if (left[0] <= right[0]) {
+                final.push(left.shift());
+            } else {
+                final.push(right.shift());
+            }
+        }
+
+        return final.concat(left.concat(right));
+    }
+
+    return (function (arr) {
+        var len = arr.length;
+
+        if (len < 2) {  /* 递归出口*/
+
+            return arr;
+        }
+
+        var mid = parseInt(len / 2),
+            _left = arr.slice(0, mid),
+            _right = arr.slice(mid);
+
+        return merge(arguments.callee(_left), arguments.callee(_right));
+    }(arr));
+}
+```
+>递归法
+>1. 将序列每相邻两个数字进行归并操作，形成floor(n/2)个序列，排序后每个序列包含两个元素
+>2. 将上述序列再次归并，形成floor(n/4)个序列，每个序列包含四个元素
+>3. 重复步骤2，直到所有元素排序完毕
