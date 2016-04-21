@@ -399,7 +399,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
     配置数据：URL、展示给用户的字符串、重复的值、设置、任何可能发生变更的值。
 
-### 判断jQuery选择器选择到空内容
+### 判断jQuery（Zepto）选择器选择到空内容
 无论选择器选取的内容是否为空，都返回数组，所以`if($(...)) {/* 永远执行*/}`永远成立。因此用以下方法：
 
 - `if($(...).length > 0) {/* 代码*/}`
@@ -407,13 +407,32 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
 ### 移动端相关
 - 移动端或者Zepto的`tap事件`点透bug解决
->移动端触摸事件顺序：touchstart->touchmove->touchend->click，tap事件发生后300ms才触发click事件。
->在使用Zepto框架的tap相关方法时，若绑定tap方法的dom元素在tap方法触发后会隐藏、css3 transfer移走、requestAnimationFrame移走等，而“隐藏、移走”后，
->它底下同一位置正好有一个dom元素绑定了click的事件、或者有浏览器认为可以被点击有交互反应的dom元素（默认），则会出现“点透”现象。
+
+    >移动端触摸事件顺序：touchstart->touchmove->touchend->click，tap事件发生后300ms才触发click事件。
+    >在使用Zepto框架的tap相关方法时，若绑定tap方法的dom元素在tap方法触发后会隐藏、css3 transfer移走、requestAnimationFrame移走等，而“隐藏、移走”后，
+    >它底下同一位置正好有一个dom元素绑定了click的事件、或者有浏览器认为可以被点击有交互反应的dom元素（默认），则会出现“点透”现象。
 
     1. 使用`fastclick.js`后用`click`代替tap
     2. 使用缓动动画，过度300ms延迟
     3. 中间增加一层接受这个点透事件，然后去除此层
+- 移动端制作类似pc端`:hover`或者`:active`效果
+
+    ```javascript
+    var selector = '.a,.b .c,.d';
+
+    $(document.body).on("touchstart", selector, function () {
+        $(this).addClass("hover");
+    }).on("touchmove touchend touchcancel", selector, function () {
+        $(this).removeClass("hover");
+    });
+    ```
+    ```css
+    .d:hover,
+    .d.hover {
+
+    }
+    ```
+    来补充`.d:hover {-webkit-tap-highlight-color:rgba( , , , );}`。
 
 
 ## 功能用法
@@ -853,7 +872,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
 闭包是一种特殊的对象。它由两部分构成：函数，以及创建该函数的环境。环境由闭包创建时在作用域中的任何局部变量组成。
 
-### jQuery的`.on()`绑定效率
+### jQuery或Zepto的`.on()`绑定效率
 `$(event handler).on(event,selector,function(){})`
 
 1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的内容，成为**event handler**。有且仅有这些event handler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的event handler处理DOM也不会使绑定内容失效（除非删除）；在event handler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
