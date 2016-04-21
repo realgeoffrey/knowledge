@@ -418,7 +418,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 - 移动端制作类似pc端`:hover`或者`:active`效果
 
     ```javascript
-    var selector = '.a,.b .c,.d';
+    var selector = '.a,.b .c,.d';   /* 选择器字符串*/
 
     $(document.body).on("touchstart", selector, function () {
         $(this).addClass("hover");
