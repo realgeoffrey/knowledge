@@ -114,6 +114,8 @@ div {
     }
     div:before {
         position: absolute;
+        top: 0;
+        left: 0;
         content: "";
         width: 200%;
         height: 200%;
@@ -132,6 +134,8 @@ div {
     }
     div:before {
         position: absolute;
+        top: 0;
+        left: 0;
         content: "";
         width: 100%;
         height: 1px;
