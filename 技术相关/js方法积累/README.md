@@ -955,6 +955,78 @@ function bubbleSort(arr) {
 
 ![Bubble Sort gif](./images/2.gif)
 
+### 快速排序
+```javascript
+function quickSort(arr) {
+    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
+
+        return false;
+    }
+
+    var len = arr.length,
+        left = [],
+        right = [],
+        mid = [arr[0]],
+        i;
+
+    if (len <= 1) { /* 递归终点*/
+
+        return arr;
+    }
+
+    for (i = 1; i < len; i++)
+        if (arr[i] < mid[0]) {
+            left.push(arr[i]);
+        } else {
+            right.push(arr[i]);
+        }
+
+    return arguments.callee(left).concat(mid.concat(arguments.callee(right)));
+}
+```
+>1. 从数列中挑出一个元素，称为"基准"（pivot）。
+>2. 重新排序数列，所有元素比基准值小的摆放在基准前面，所有元素比基准值大的摆在基准的后面（相同的数可以到任一边）。在这个分区结束之后，该基准就处于数列的中间位置。这个称为分区（partition）操作。
+>3. 递归地（recursive）把小于基准值元素的子数列和大于基准值元素的子数列排序。
+
+
+### 梳排序
+```javascript
+function combSort(arr) {
+    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
+
+        return false;
+    }
+
+    var shrink_factor = 0.8,    /* 递减率*/
+        gap = arr.length,
+        swapped = 1,
+        i,
+        temp;
+
+    while (gap > 1 || swapped) {    /* 未完成排序*/
+        if (gap > 1){
+            gap = Math.floor(gap * shrink_factor);  /* 更新间距*/
+        }
+
+        swapped = 0;
+
+        for (i = 0; gap + i < arr.length; i++)
+            if (arr[i] > arr[i + gap]) {
+                temp = arr[i];
+                arr[i] = arr[i + gap];
+                arr[i + gap] = temp;
+
+                swapped = 1;    /* 进行过交换,因此还未排序好*/
+            }
+    }
+
+    return arr;
+}
+```
+>梳排序是改良自泡沫排序和快速排序，其要旨在于消除乌龟，亦即在阵列尾部的小数值，这些数值是造成泡沫排序缓慢的主因。
+>在泡沫排序中，只比较阵列中相邻的二项，即比较的二项的间距（Gap）是1，梳排序提出此间距其实可大于1。
+>梳排序中，开始时的间距设定为阵列长度，并在循环中以固定比率递减，通常递减率设定为1.3。在一次循环中，梳排序如同泡沫排序一样把阵列从首到尾扫描一次，比较及交换两项，不同的是两项的间距不固定于1。如果间距递减至1，梳排序假定输入阵列大致排序好，并以泡沫排序作最后检查及修正。
+
 ### 归并排序
 ```javascript
 function mergeSort(arr) {
@@ -1035,41 +1107,3 @@ function selectionSort(arr) {
 >首先在未排序序列中找到最小（大）元素，存放到排序序列的起始位置，然后，再从剩余未排序元素中继续寻找最小（大）元素，然后放到已排序序列的末尾。以此类推，直到所有元素均排序完毕。
 
 ![Selection Sort gif](./images/4.gif)
-
-### 梳排序
-```javascript
-function combSort(arr) {
-    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
-
-        return false;
-    }
-
-    var shrink_factor = 0.8,    /* 递减率*/
-        gap = arr.length,
-        swapped = 1,
-        i,
-        temp;
-
-    while (gap > 1 || swapped) {    /* 未完成排序*/
-        if (gap > 1){
-            gap = Math.floor(gap * shrink_factor);  /* 更新间距*/
-        }
-
-        swapped = 0;
-
-        for (i = 0; gap + i < arr.length; i++)
-            if (arr[i] > arr[i + gap]) {
-                temp = arr[i];
-                arr[i] = arr[i + gap];
-                arr[i + gap] = temp;
-
-                swapped = 1;    /* 进行过交换,因此还未排序好*/
-            }
-    }
-
-    return arr;
-}
-```
->梳排序是改良自泡沫排序和快速排序，其要旨在于消除乌龟，亦即在阵列尾部的小数值，这些数值是造成泡沫排序缓慢的主因。
->在泡沫排序中，只比较阵列中相邻的二项，即比较的二项的间距（Gap）是1，梳排序提出此间距其实可大于1。
->梳排序中，开始时的间距设定为阵列长度，并在循环中以固定比率递减，通常递减率设定为1.3。在一次循环中，梳排序如同泡沫排序一样把阵列从首到尾扫描一次，比较及交换两项，不同的是两项的间距不固定于1。如果间距递减至1，梳排序假定输入阵列大致排序好，并以泡沫排序作最后检查及修正。
