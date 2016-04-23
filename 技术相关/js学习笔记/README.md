@@ -155,6 +155,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
 ### 清空数组
 对于数组`arr`：
+
 1. `arr = [];`
 2. `arr.length = 0;`
 3. `arr.splice(0, arr.length);`
