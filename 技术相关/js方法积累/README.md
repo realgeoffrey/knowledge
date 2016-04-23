@@ -849,7 +849,7 @@ function getAbsoluteUrl(url) {
 ```
 
 
-## 算法（*原生js*）
+## 排序算法（*原生js*）
 
 ### 插入排序
 ```javascript
