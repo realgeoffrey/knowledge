@@ -1107,3 +1107,64 @@ function selectionSort(arr) {
 >首先在未排序序列中找到最小（大）元素，存放到排序序列的起始位置，然后，再从剩余未排序元素中继续寻找最小（大）元素，然后放到已排序序列的末尾。以此类推，直到所有元素均排序完毕。
 
 ![Selection Sort gif](./images/4.gif)
+
+### 基数排序
+```javascript
+function radixSort(arr) {
+    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
+
+        return false;
+    }
+
+    var bucket = [],
+        len = arr.length,
+        max = arr[0],
+        loop,
+        str,
+        i,
+        j,
+        k,
+        t;
+
+    for (i = 0; i < 10; i++) {  /* 创建十个空桶（十进制），位数的每一次循环时放入这个位数对应值的被排序元素*/
+        bucket[i] = [];
+    }
+
+    for (i = 1; i < len; i++) {   /* 获取被排序元素最高值*/
+        if (arr[i] > max) {
+            max = arr[i]
+        }
+    }
+
+    loop = (max + '').length;   /* 获取最高值的位数*/
+
+    for (i = 1; i <= loop; i++) {   /* 对每一个位数进行一次排序*/
+        for (j = 0; j < len; j++) { /* 排序元素放入对应桶里*/
+            str = arr[j] + '';  /* 排序元素字符串化（可以使用字符串的length属性）*/
+
+            if (str.length >= i) {
+                k = parseInt(str[str.length - i]);  /* e.g. 元素：'1234'.length=4，位数：百位数 i=3，'1234'[1]=2 => k=2 所以百位数上2的数字放入bucket[2]*/
+                bucket[k].push(arr[j]);
+            } else {    /* 元素的最高位小于位数都放入第一个桶内*/
+                bucket[0].push(arr[j]);
+            }
+        }
+
+        arr = [];   /* 清空数组*/
+
+        for (j = 0; j < 10; j++) {  /* 把每个桶内数组放回原始数组中（桶内不排序）*/
+            t = bucket[j].length;
+
+            for (k = 0; k < t; k++) {
+                arr.push(bucket[j][k]);
+            }
+
+            bucket[j] = [];
+        }
+    }
+
+    return arr;
+}
+```
+>其原理是将整数按位数切割成不同的数字，然后按每个位数分别比较。
+>从最低位开始，依次进行一次排序，排序结束后再用已经排序过的内容进行高一位的排序。这样从最低位排序一直到最高位排序完成以后，数列就变成一个有序序列。
