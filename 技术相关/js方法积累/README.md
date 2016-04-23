@@ -969,7 +969,7 @@ function quickSort(arr) {
         mid = [arr[0]],
         i;
 
-    if (len <= 1) { /* 递归终点*/
+    if (len <= 1) { /* 递归边界条件*/
 
         return arr;
     }
@@ -1052,7 +1052,7 @@ function mergeSort(arr) {
     return (function (arr) {
         var len = arr.length;
 
-        if (len < 2) {  /* 递归出口*/
+        if (len < 2) {  /* 递归边界条件*/
 
             return arr;
         }
