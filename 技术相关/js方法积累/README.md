@@ -1037,7 +1037,7 @@ function mergeSort(arr) {
         return false;
     }
 
-    function merge(left, right) {   /* 合并2个已经分别排序好的数组*/
+    function _merge(left, right) {   /* 合并2个已经分别排序好的数组*/
         var final = [];
 
         while (left.length && right.length) {   /* 对比2个数组第一个元素，小的加入新的数组并且从原来的数组中删去*/
@@ -1063,7 +1063,7 @@ function mergeSort(arr) {
             _left = arr.slice(0, mid),
             _right = arr.slice(mid);
 
-        return merge(arguments.callee(_left), arguments.callee(_right));
+        return _merge(arguments.callee(_left), arguments.callee(_right));
     }(arr));
 }
 ```
@@ -1176,6 +1176,63 @@ function radixSort(arr) {
 
 ### 堆排序
 ```javascript
+function heapSort(arr) {
+    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
 
+        return false;
+    }
+
+    function _swap(i, j) {   /* 替换数组内位置*/
+        var tmp = arr[i];
+
+        arr[i] = arr[j];
+        arr[j] = tmp;
+    }
+
+    /*
+     * 调整为最大堆，使得此父节点以下的子节点（所有后裔）永远小于各自的父节点
+     * @param {Number} dad 父节点
+     * @param {Number} end 调整到的长度
+     * @returns undefined
+     */
+    function _maxHeapify(dad, end) {
+        var son = dad * 2 + 1;  /* 父节点的左子节点位置*/
+
+        if (son >= end) {   /* 子节点超出范围*/
+
+            return;
+        }
+
+        if (son + 1 < end && arr[son] < arr[son + 1]) { /* 如果有右子节点，选择两个子节点中较大的*/
+            son++;
+        }
+
+        if (arr[dad] <= arr[son]) {
+            _swap(dad, son); /* 保证父节点大于子节点*/
+            arguments.callee(son, end);
+        }
+    }
+
+    var arr = arr.slice(0),
+        len = arr.length,
+        i;
+
+    for (i = Math.floor(len / 2) - 1; i >= 0; i--) {    /* i的初始值为堆的最后一个父节点，然后顺序往上操作其他父节点*/
+        _maxHeapify(i, len);
+    }
+
+    for (i = len - 1; i > 0; i--) { /* 把已达成的最大堆的第一个元素（最大）放到末尾，并且重新进行减少长度的最大堆排序*/
+        _swap(0, i);
+        _maxHeapify(0, i);
+    }
+
+    return arr;
+}
 ```
+>循环进行：最大堆调整，移除在顶端的最大元素。
 >
+>通常堆是通过一维数组来实现的。在数组起始位置为0的情形中：
+>
+> - 父节点i的左子节点在位置(2*i+1);
+> - 父节点i的右子节点在位置(2*i+2);
+> - 子节点i的父节点在位置floor((i-1)/2);
