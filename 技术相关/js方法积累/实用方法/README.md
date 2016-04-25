@@ -1,4 +1,4 @@
-#js方法积累————实用方法
+#js方法积累——实用方法
 
 ### *原生js*实现类似jQuery的`$(document).ready(function () {});`
 ```javascript
