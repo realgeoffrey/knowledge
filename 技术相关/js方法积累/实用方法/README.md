@@ -248,15 +248,14 @@ function animateTo(endX, endY, time) {
         myself = arguments.callee;
 
     time /= runEvery;
-    if (myself.animateToInterval) {
-        clearInterval(myself.animateToInterval);
-    }
 
-    myself.animateToInterval = setInterval(function () {
+    clearInterval(myself.setIntervalId);
+
+    myself.setIntervalId = setInterval(function () {
         i++;
         window.scrollTo((scrollToX - scrollFromX) / time * i + scrollFromX, (scrollToY - scrollFromY) / time * i + scrollFromY);
         if (i >= time) {
-            clearInterval(myself.animateToInterval);
+            clearInterval(myself.setIntervalId);
         }
     }, runEvery);
 }
@@ -636,29 +635,52 @@ $(...).on('keydown', function (e) {
 });
 ```
 
-### jQuery弹出toast
+### jQuery或Zepto弹出toast
+
 ```javascript
-function alertDialog(text) {
+/* jQuery*/
+function alertToast(text) {
     if ($('.j-pop-text').length === 0) {
         $('body').append('<div class="j-pop-text 样式类" style="display: none;"></div>');
     }
 
-    var $popText = $('.j-pop-text');
+    var $popText = $('.j-pop-text'),
+        myself = arguments.callee;
+
+    clearTimeout(myself.setTimeoutId);
 
     text = text || '';
     $popText.text(text);
 
-    if ($popText.is(':hidden')) {
-        $popText.show(function () {
-            setTimeout(function () {
-                $popText.fadeOut(function () {
-                    $popText.text('');
-                });
-            }, 2500);
-        });
-    }
+    $popText.show(function () {
+        myself.setTimeoutId = setTimeout(function () {
+            $popText.fadeOut(function () {
+                $popText.text('');
+            });
+        }, 2500);
+    });
 }
 ```
+```javascript
+/* Zepto*/
+function alertToast(text) {
+    if ($('.j-pop-text').length === 0) {
+        $('body').append('<div class="j-pop-text 样式类 hidden"></div>');  /* .hidden {display: none !important;}*/
+    }
+
+    var $popText = $('.j-pop-text');
+
+    clearTimeout(arguments.callee.setTimeoutId);
+
+    text = text || '';
+    $popText.text(text).removeClass('hidden');
+
+    arguments.callee.setTimeoutId = setTimeout(function () {
+        $popText.addClass('hidden').text('');
+    }, 2500);
+}
+```
+
 
 ### jQuery全选、取消全选
 ```html
