@@ -681,7 +681,6 @@ function alertToast(text) {
 }
 ```
 
-
 ### jQuery全选、取消全选
 ```html
 所有：
