@@ -132,24 +132,44 @@ a:hover {
 /*/多大图模式*/
 
 /* 手机媒体查询*/
-@media (max-width: 374px) {
+@media (max-width: 351px) {
     html {
         font-size: 10px;
     }
 }
-@media (min-width: 375px) and (max-width: 639px) {
+@media (min-width: 352px) and (max-width: 383px) {
+    html {
+        font-size: 11px;
+    }
+}
+@media (min-width: 384px) and (max-width: 415px) {
+    html {
+        font-size: 12px;
+    }
+}
+@media (min-width: 416px) and (max-width: 447px) {
+    html {
+        font-size: 13px;
+    }
+}
+@media (min-width: 448px) and (max-width: 479px) {
+    html {
+        font-size: 14px;
+    }
+}
+@media (min-width: 480px) and (max-width: 543px) {
     html {
         font-size: 15px;
     }
 }
-@media (min-width: 640px) and (max-width: 736px){
+@media (min-width: 544px) and (max-width: 639px) {
     html {
-        font-size: 20px;
+        font-size: 17px;
     }
 }
-@media (min-width: 737px) {
+@media (min-width: 640px) {
     html {
-        font-size: 25px;
+        font-size: 20px;
     }
 }
 @media (orientation: landscape) {
