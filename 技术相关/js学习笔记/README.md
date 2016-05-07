@@ -426,24 +426,32 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     1. 使用`fastclick.js`后用`click`代替tap
     2. 使用缓动动画，过度300ms延迟
     3. 中间增加一层接受这个点透事件，然后去除此层
-- 移动端制作类似pc端`:hover`或者`:active`效果
+- 移动端制作类似pc端的`:active`效果（或`:hover`）
 
-    ```javascript
-    var selector = '.a,.b .c,.d';   /* 选择器字符串*/
+    - android系统的浏览器大部分直接使用css伪类即可。
+    - ios系统的浏览器要添加以下代码触发使css伪类生效：
 
-    $(document.body).on("touchstart", selector, function () {
-        $(this).addClass("hover");
-    }).on("touchmove touchend touchcancel", selector, function () {
-        $(this).removeClass("hover");
-    });
-    ```
-    ```css
-    .d:hover,
-    .d.hover {
+        ```javascript
+        document.body.addEventListener('touchstart', function () {}, true);
+        ```
+    - ~~或者用js添加类的方法替代~~：
 
-    }
-    ```
-    来补充`.d:hover {-webkit-tap-highlight-color:rgba( , , , );}`。
+        ```javascript
+        var selector = '.a,.b .c,.d';   /* 选择器字符串*/
+
+        $(document.body).on("touchstart", selector, function () {
+            $(this).addClass("active");
+        }).on("touchmove touchend touchcancel", selector, function () {
+            $(this).removeClass("active");
+        });
+        ```
+        ```css
+        .d:active,
+        .d.active {
+
+        }
+        ```
+        来补充`.d:hover {-webkit-tap-highlight-color:rgba( , , , );}`。
 
 
 ## 功能用法
