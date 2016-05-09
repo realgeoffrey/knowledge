@@ -21,14 +21,12 @@ div {
 
     ```css
     .clearfix:after {
-       display: block;
-       clear: both;
-       content: ".";
-       visibility: hidden;
-       height: 0;
+        content: "";
+        display: table;
+        clear: both;
     }
     .clearfix {
-       zoom: 1;
+       *zoom: 1;
     }
     ```
 - 截断不影响时，在父级设置
