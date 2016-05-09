@@ -30,7 +30,8 @@ img {vertical-align:middle;}
 img,video {max-width:100%;}
 html {-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;-webkit-overflow-scrolling:touch;}
 a,button,input,textarea {-webkit-tap-highlight-color:rgba(63,40,1,.3);}
-* {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;}
+html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;}
+*,*:before,*:after {-webkit-box-sizing:inherit;-moz-box-sizing:inherit;box-sizing:inherit;}
 /*/-wap*/
 /*/CSS reset*/
 /* 全局*/
@@ -58,14 +59,12 @@ a:hover {
     _display: inline;
 }
 .clearfix:after {
-    display: block;
+    content: "";
+    display: table;
     clear: both;
-    content: ".";
-    visibility: hidden;
-    height: 0;
 }
 .clearfix {
-    zoom: 1;
+    *zoom: 1;
 }
 .ellipsis {
     _width: 100%;
