@@ -306,11 +306,9 @@ td,th {
     - 四舍五入：ie8 ie9 chrome firefox
     - 直接向下取整：ie7 safari
 
-    >有些浏览器会出现一列百分比相加为100%的节点换算之后无法占满整列
+- 多个子节点浮动的总宽度可以大于或者小于100%，却表现为100%。
 
-- 多个子级浮动的总宽度可以大于或者小于100%，却表现为100%。
-
-    根据bootstrap的标准，设置百分比宽度时，用百分比小数点后第六位四舍五入：
+    根据[Bootstrap's Grid system](http://getbootstrap.com/css/#grid)的标准，设置百分比宽度时，用百分比小数点后第六位的四舍五入值可以兼容大多数浏览器：
     ```css
     .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12 {
         float: left;
