@@ -300,12 +300,35 @@ td,th {
 ### z-index用于控制设置了absolute、relative或fixed定位的元素
 应该只给有堆叠关系的节点设置此属性，而不要试图通过设定个别元素的z-index来确保元素不重叠。
 
-### css的小数
-浏览器会把小数以及百分比换算成整数的单位（px）
-- 四舍五入：ie8 ie9 chrome firefox
-- 直接向下取整：ie7 safari
+### css的小数、百分比
+- 浏览器会把小数以及百分比换算成整数的单位（px）
 
->有些浏览器会出现一列百分比相加为100%的节点换算之后无法占满整列
+    - 四舍五入：ie8 ie9 chrome firefox
+    - 直接向下取整：ie7 safari
+
+    >有些浏览器会出现一列百分比相加为100%的节点换算之后无法占满整列
+
+- 多个子级浮动的总宽度可以大于或者小于100%，却表现为100%。
+
+    根据bootstrap的标准，设置百分比宽度时，用百分比小数点后第六位四舍五入：
+    ```css
+    .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12 {
+        float: left;
+        _display: inline;
+    }
+    .col-1 {width: 8.333333%;}
+    .col-2 {width: 16.666667%;}
+    .col-3 {width: 25%;}
+    .col-4 {width: 33.333333%;}
+    .col-5 {width: 41.666667%;}
+    .col-6 {width: 50%;}
+    .col-7 {width: 58.333333%;}
+    .col-8 {width: 66.666667%;}
+    .col-9 {width: 75%;}
+    .col-10 {width: 83.333333%;}
+    .col-11 {width: 91.666667%;}
+    .col-12 {width: 100%;}
+    ```
 
 ### font-size最小值
 - wap端没有最小限制
