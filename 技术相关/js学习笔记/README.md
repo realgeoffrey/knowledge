@@ -661,42 +661,71 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 - `(function () {/* code*/}());`推荐
 - `(function () {/* code*/})();`
 
-### js向页面中添加样式
-1. 添加`style`标签
+### 动态添加样式、脚本
+- 动态添加样式
 
-    ```javascript
-    var newStyle = document.createElement('style');
+    1. 添加`style`标签
 
-    newStyle.type = 'text/css';
+        ```javascript
+        var newStyle = document.createElement('style');
 
-    if (newStyle.styleSheet) {    //for ie
-        newStyle.styleSheet.cssText = '纯css内容';
-    } else {
-        newStyle.appendChild(document.createTextNode('纯css内容'));
-    }
+        newStyle.type = 'text/css';
 
-    document.getElementsByTagName('head')[0].appendChild(newStyle);
-    ```
-2. 添加`link`标签
+        if (newStyle.styleSheet) {    //for ie
+            newStyle.styleSheet.cssText = '纯css内容';
+        } else {
+            newStyle.appendChild(document.createTextNode('纯css内容'));
+        }
 
-    ```javascript
-    var newLink = document.createElement('link');
+        document.getElementsByTagName('head')[0].appendChild(newStyle);
+        ```
+    2. 添加`link`标签
 
-    newLink.rel = 'styleSheet';
-    newLink.type = 'text/css';
+        ```javascript
+        var newLink = document.createElement('link');
 
-    newLink.href = 'css文件地址';
+        newLink.rel = 'styleSheet';
+        newLink.type = 'text/css';
 
-    document.getElementsByTagName('head')[0].appendChild(newLink);
-    ```
-3. 添加内嵌样式
+        newLink.href = 'css文件地址';
 
-    ```javascript
-    var oneDom = document.getElementById('节点id');
+        document.getElementsByTagName('head')[0].appendChild(newLink);
+        ```
+    3. 添加内嵌样式
 
-    oneDom.style.cssText += '; 纯css内容'
-    ```
->纯css内容，例如 `div {background-color: yellow;}`。
+        ```javascript
+        var oneDom = document.getElementById('节点id');
+
+        oneDom.style.cssText += '; 纯css内容'
+        ```
+    >纯css内容，例如 `div {background-color: yellow;}`。
+- 动态添加脚本（异步）
+
+    1. 直接`document.write`
+
+        ```javascript
+        document.write("<script src='js文件地址'><\/script>");
+        ```
+    2. 动态改变已有的script的src属性
+
+        ```html
+        <script type="text/javascript" id="j_script"></script>
+
+        <script>
+            j_script.src = 'js文件地址';
+        </script>
+        ```
+    3. 动态创建script元素
+
+        ```javascript
+        var newScript= document.createElement("script");
+
+        newScript.type = "text/javascript";
+
+        newScript.src="js文件地址";
+
+        document.body.appendChild(newScript);
+        ```
 
 
 ## 性能原理
