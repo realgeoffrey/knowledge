@@ -719,11 +719,11 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     3. 动态创建script元素
 
         ```javascript
-        var newScript= document.createElement("script");
+        var newScript = document.createElement("script");
 
         newScript.type = "text/javascript";
 
-        newScript.src="js文件地址";
+        newScript.src = "js文件地址";
 
         document.body.appendChild(newScript);
         ```
