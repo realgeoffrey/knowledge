@@ -698,6 +698,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
         oneDom.style.cssText += '; 纯css内容'
         ```
+
     >纯css内容，例如 `div {background-color: yellow;}`。
 - 动态添加脚本（异步）
 
