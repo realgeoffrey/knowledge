@@ -661,6 +661,43 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 - `(function () {/* code*/}());`推荐
 - `(function () {/* code*/})();`
 
+### js向页面中添加样式
+1. 添加`style`标签
+
+    ```javascript
+    var newStyle = document.createElement('style');
+
+    newStyle.type = 'text/css';
+
+    if (newStyle.styleSheet) {    //for ie
+        newStyle.styleSheet.cssText = '纯css内容';
+    } else {
+        newStyle.appendChild(document.createTextNode('纯css内容'));
+    }
+
+    document.getElementsByTagName('head')[0].appendChild(newStyle);
+    ```
+2. 添加`link`标签
+
+    ```javascript
+    var newLink = document.createElement('link');
+
+    newLink.rel = 'styleSheet';
+    newLink.type = 'text/css';
+
+    newLink.href = 'css文件地址';
+
+    document.getElementsByTagName('head')[0].appendChild(newLink);
+    ```
+3. 添加内嵌样式
+
+    ```javascript
+    var oneDom = document.getElementById('节点id');
+
+    oneDom.style.cssText += '; 纯css内容'
+    ```
+>纯css内容，例如 `div {background-color: yellow;}`。
+
 
 ## 性能原理
 
