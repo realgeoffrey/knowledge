@@ -106,15 +106,12 @@ Charles是目前最强大的http调试工具，在界面和功能上远强于Fid
 4. 断点功能
 	Charles能够断到发送请求前（篡改Request）和请求后（篡改Response）。
 
-	场景：ajax发送请求，我们需要测试接口的各种边界情况，比如出错、超时等表现，Charles的断点+随意篡改，非常方便测试：
+	场景：ajax发送请求，我们需要测试接口的各种边界情况，比如出错、超时等表现，Charles的断点+随意篡改，非常方便测试，右键选择“BreakPoints”，开启断点：
 
 	![Alt text](./images/19.png)
 
-	右键选择“BreakPoints”，开启断点：
-
-	![Alt text](./images/20.png)
-
-	>小技巧：不用在web界面中操作，使用repeat功能，就可再次发送一样的请求：
+	>小技巧：断点配合repeat功能：
+	>![Alt text](./images/20.png)
 
 	断点列表查看：
 
