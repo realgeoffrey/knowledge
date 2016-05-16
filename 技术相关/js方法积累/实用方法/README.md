@@ -865,3 +865,38 @@ function getAbsoluteUrl(url) {
     }
 }
 ```
+
+### jQuery节点跟随屏幕滚动
+```javascript
+/*
+ * 跟随屏幕滚动
+ * @param {wrapper} String 跟随节点的父级
+ * @param {dependent} String 跟随节点的父级的同级参照物
+ * @param {target} String 跟随节点
+ * @returns undefined
+ */
+(function (wrapper, dependent, target) {
+    var $wrapper = $(wrapper),
+        wrapperHeight = $wrapper.height(),
+        $dependent = $wrapper.siblings(dependent),
+        max = $dependent.height() - wrapperHeight,
+        $target = $(target),
+        $targetPrev = $target.prev(),
+        startOffset = $targetPrev.offset().top + $targetPrev.height();
+
+    $(window).on('scroll', function () {
+        var scollTop = $(document).scrollTop(),
+            marginTop = 0;
+
+        if (scollTop > startOffset) {
+            marginTop = scollTop - startOffset;
+
+            if (marginTop > max) {
+                marginTop = max;
+            }
+        }
+
+        $target.css({"marginTop": marginTop});
+    });
+}('.father', '.dependent', '.target'));
+```
