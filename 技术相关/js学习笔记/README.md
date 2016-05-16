@@ -2,14 +2,6 @@
 
 ## 技巧经验
 
-### DOM加载步骤、jQuery文档ready事件和js的onload事件顺序
-1. 解析Html结构
-2. 加载外部脚本和样式表文件
-3. 解析并执行脚本代码
-4. 构造Html DOM模型 -> 完成后执行`$(document).ready(function(){});`
-5. 加载图片等外部文件
-6. 页面加载完毕 -> 完成后执行`window.onload();`
-
 ### prototype
 prototype属性是js函数的继承机制，是构造函数的属性，作用是为实例共享属性（或方法），`构造函数.prototype`和`实例对象.__proto__`（已弃用）指向同一个原型链。
 
@@ -40,7 +32,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     };
     ```
 
-### 注意点
+### 易错点
 - `var a = b = 1;   /* b没有var的声明*/`
 
     在局部作用域中用如上写法，第二个以后的变量自动变成没有var定义的状态，意味着如果之前没有声明，那么就转化为全局变量的声明。
@@ -152,6 +144,30 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     - `throw` statement
 
     >前置分号策略：只要对行首字符进行token判断是否为：`[` `(` `+` `-` `/`五个符号之一，就在其前面增加分号。
+- 长字符串连使用`.join()`，而不使用`+`：
+
+    ```javascript
+    /* 性能好*/
+    var arr = [],
+        i;
+
+    for (i = 0; i < 100; i++) {
+        arr[i] = '字符串' + i + '字符串';
+    }
+
+    $('body').text(arr.join(''));
+    ```
+    ```javascript
+    /* 性能差*/
+    var text = '',
+        i;
+
+    for (i = 0; i < 100; i++) {
+        text = text + '字符串' + i + '字符串';
+    }
+
+    $('body').text(text);
+    ```
 
 ### 清空数组
 对于数组`arr`：
@@ -163,17 +179,6 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 对传入方法里的形参使用以上方法（内存地址未改变）时，第一种方法不会改变实参,第二、三种方法会改变实参。
 
 >使用传入的数组形参，不想改变实参：`var arr = arr.slice(0);`。
-
-### Boolean转换
-| 数据类型 | 转换为true的值 | 转换为false的值 |
-| ------------- | ------------- | ------------- |
-| Boolean | true | false |
-| String | 任何非空字符串 | ""（空字符串） |
-| Number | 任何非零数值（包括无穷大） | 0和NaN |
-| Object | 任何对象 | null |
-| undefined | n/a | undefined |
-
->`!!变量`等价于`Boolean(变量)`。
 
 ### js代码风格规范（style guideline）
 - 声明
@@ -420,12 +425,12 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 - 移动端或者Zepto的`tap事件`点透bug解决
 
     >移动端触摸事件顺序：touchstart->touchmove->touchend->click，tap事件发生后300ms才触发click事件。
-    >在使用Zepto框架的tap相关方法时，若绑定tap方法的dom元素在tap方法触发后会隐藏、css3 transfer移走、requestAnimationFrame移走等，而“隐藏、移走”后，
-    >它底下同一位置正好有一个dom元素绑定了click的事件、或者有浏览器认为可以被点击有交互反应的dom元素（默认），则会出现“点透”现象。
+    >
+    >在使用Zepto框架的tap相关方法时，若绑定tap方法的dom元素在tap方法触发后会**隐藏、css3 transfer移走、requestAnimationFrame移走**等，而“隐藏、移走”后，它底下同一位置正好有一个dom元素绑定了click的事件、或者有浏览器认为可以被点击有交互反应的dom元素（默认），则会出现“点透”现象。
 
-    1. 使用`fastclick.js`后用`click`代替tap
-    2. 使用缓动动画，过度300ms延迟
-    3. 中间增加一层接受这个点透事件，然后去除此层
+    1. 使用`fastclick.js`后用`click`代替tap。
+    2. 使用缓动动画，过度300ms延迟。
+    3. 中间增加一层接受这个点透事件，然后去除此层。
 
 
 ## 功能用法
@@ -705,6 +710,25 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
 ## 性能原理
 
+### Boolean转换
+| 数据类型 | 转换为true的值 | 转换为false的值 |
+| ------------- | ------------- | ------------- |
+| Boolean | true | false |
+| String | 任何非空字符串 | ""（空字符串） |
+| Number | 任何非零数值（包括无穷大） | 0和NaN |
+| Object | 任何对象 | null |
+| undefined | n/a | undefined |
+
+>`!!变量`等价于`Boolean(变量)`。
+
+### DOM加载步骤、jQuery文档ready事件和js的onload事件顺序
+1. 解析Html结构
+2. 加载外部脚本和样式表文件
+3. 解析并执行脚本代码
+4. 构造Html DOM模型 -> 完成后执行`$(document).ready(function(){});`
+5. 加载图片等外部文件
+6. 页面加载完毕 -> 完成后执行`window.onload();`
+
 ### JS性能
 - 平稳退化：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
     - 为JS代码预留出退路（html标签添加属性链接，用js事件绑定去拦截浏览器默认行为）
@@ -939,30 +963,6 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 2. 绑定的event handler距离selector越近，效率越高。因此把selector都绑定在`$(document)``上是低效的。
 
 ### jQuery或Zepto相关
-- 长字符串连使用`.join()`，而不使用`+`：
-
-    ```javascript
-    /* 性能好*/
-    var arr = [],
-        i;
-
-    for (i = 0; i < 100; i++) {
-        arr[i] = '字符串' + i + '字符串';
-    }
-
-    $('body').text(arr.join(''));
-
-
-    /* 性能差*/
-    var text = '',
-        i;
-
-    for (i = 0; i < 100; i++) {
-        text = text + '字符串' + i + '字符串';
-    }
-
-    $('body').text(text);
-    ```
 - 判断是否加载成功，不成功则执行载入本地文件
 
     ```html
@@ -982,4 +982,4 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         找到所有父级，若子级在此父级后面，则选择。
     2. ~~`$('父 子')`~~
 
-        找到所有子级，然后向前找出有父级的，则选择（性能差）。
+        找到所有子级，然后向前找出有父级的，则选择（性能差）。与css相同的查询方式
