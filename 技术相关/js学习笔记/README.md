@@ -144,30 +144,6 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     - `throw` statement
 
     >前置分号策略：只要对行首字符进行token判断是否为：`[` `(` `+` `-` `/`五个符号之一，就在其前面增加分号。
-- 长字符串连使用`.join()`，而不使用`+`：
-
-    ```javascript
-    /* 性能好*/
-    var arr = [],
-        i;
-
-    for (i = 0; i < 100; i++) {
-        arr[i] = '字符串' + i + '字符串';
-    }
-
-    $('body').text(arr.join(''));
-    ```
-    ```javascript
-    /* 性能差*/
-    var text = '',
-        i;
-
-    for (i = 0; i < 100; i++) {
-        text = text + '字符串' + i + '字符串';
-    }
-
-    $('body').text(text);
-    ```
 
 ### 清空数组
 对于数组`arr`：
@@ -706,6 +682,31 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
         document.body.appendChild(newScript);
         ```
+
+### 拼接字符串
+长字符串连使用`.join()`，而不使用`+`：
+```javascript
+/* 性能好*/
+var arr = [],
+    i;
+
+for (i = 0; i < 100; i++) {
+    arr[i] = '字符串' + i + '字符串';
+}
+
+$('body').text(arr.join(''));
+```
+```javascript
+/* 性能差*/
+var text = '',
+    i;
+
+for (i = 0; i < 100; i++) {
+    text = text + '字符串' + i + '字符串';
+}
+
+$('body').text(text);
+```
 
 
 ## 性能原理
