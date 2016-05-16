@@ -871,7 +871,7 @@ function getAbsoluteUrl(url) {
 /*
  * 跟随屏幕滚动
  * @param {wrapper} String 跟随节点的父级
- * @param {dependent} String 跟随节点的父级的同级参照物
+ * @param {dependent} String 跟随节点的父级的兄弟参照物
  * @param {target} String 跟随节点
  * @returns undefined
  */
