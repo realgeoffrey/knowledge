@@ -897,20 +897,23 @@ li:hover a {
     ```
 - ~~js添加类的方法替代~~：
 
-    ```javascript
-    var selector = '.a,.b .c,.d';   /* 选择器字符串*/
+    ```html
+    <style>
+        .d:active,
+        .d.active {
 
-    $(document.body).on("touchstart", selector, function () {
-        $(this).addClass("active");
-    }).on("touchmove touchend touchcancel", selector, function () {
-        $(this).removeClass("active");
-    });
-    ```
-    ```css
-    .d:active,
-    .d.active {
+        }
+    </style>
 
-    }
+    <script type="text/javascript">
+        var selector = '.a,.b .c,.d';   /* 选择器字符串*/
+
+        $(document.body).on("touchstart", selector, function () {
+            $(this).addClass("active");
+        }).on("touchmove touchend touchcancel", selector, function () {
+            $(this).removeClass("active");
+        });
+    </script>
     ```
     来补充`.d:hover {-webkit-tap-highlight-color:rgba( , , , );}`。
 
