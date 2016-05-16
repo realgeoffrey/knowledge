@@ -828,6 +828,92 @@ li:hover a {
 
 >wap可以用rem和html的font-size配合
 
+### 横竖屏切换
+- 纯css媒体查询控制
+
+    ```css
+    @media (orientation: portrait) {
+        .normal {
+            transform: rotate(90deg);
+        }
+    }
+    @media (orientation: landscape) {
+        .normal {
+
+        }
+    }
+    ```
+- ~~js添加类的方法替代~~：
+
+    ```html
+    <style>
+        .portrait {
+            transform: rotate(90deg);
+        }
+    </style>
+
+    <div id="test">...</div>
+
+    <script type="text/javascript">
+        var orientationSwitch = {
+            setTimeoutId: '',
+            orientation: function (domId, portraitClass, landscapeClass) {
+                var winHeight = window.innerHeight || document.documentElement.clientHeight,
+                    winWidth = window.innerWidth || document.documentElement.clientWidth;
+
+                if (winWidth < winHeight) {
+                    document.getElementById(domId).className = portraitClass;
+                } else {
+                    document.getElementById(domId).className = landscapeClass;
+                }
+            },
+            init: function (domId, portraitClass, landscapeClass) {
+                var that = this;
+
+                var resizeEvent = "onorientationchange" in window ? "onorientationchange" : "onresize";
+
+                that.orientation(domId, portraitClass, landscapeClass);
+
+                window[resizeEvent] = function () {
+                    clearTimeout(that.setTimeoutId);
+
+                    that.setTimeoutId = setTimeout(function () {
+                        that.orientation(domId, portraitClass, landscapeClass);
+                    }, 1000);
+                };
+            }
+        };
+
+        orientationSwitch.init('test', 'normal portrait', 'normal');
+    </script>
+    ```
+
+### 移动端制作类似pc端的`:active`效果（或`:hover`）
+- android系统的浏览器大部分直接使用css伪类即可。
+- ios系统的浏览器要添加以下代码触发使css伪类生效：
+
+    ```javascript
+    document.body.addEventListener('touchstart', function () {}, true);
+    ```
+- ~~js添加类的方法替代~~：
+
+    ```javascript
+    var selector = '.a,.b .c,.d';   /* 选择器字符串*/
+
+    $(document.body).on("touchstart", selector, function () {
+        $(this).addClass("active");
+    }).on("touchmove touchend touchcancel", selector, function () {
+        $(this).removeClass("active");
+    });
+    ```
+    ```css
+    .d:active,
+    .d.active {
+
+    }
+    ```
+    来补充`.d:hover {-webkit-tap-highlight-color:rgba( , , , );}`。
+
 ### wap响应式页面解决方案：使用rem单位+媒体查询
 rem（font size of the root element）：相对于根元素的字体大小的单位。
 
