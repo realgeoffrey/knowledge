@@ -916,12 +916,12 @@ function getAbsoluteUrl(url) {
     ```css
     @media (orientation: portrait) {
         .normal {
-
+            transform: rotate(90deg);
         }
     }
     @media (orientation: landscape) {
         .normal {
-            transform: rotate(90deg);
+
         }
     }
     ```
