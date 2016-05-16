@@ -14,7 +14,7 @@ div {
 }
 ```
 
-> 两个同样大小的三角形，第二个设置为背景色并且覆盖到第一个上面，可以模拟箭头**>**
+> 两个同样大小的三角形，第二个设置为背景色并且覆盖到第一个上面，可以模拟箭头**>**。
 
 ### 清除浮动：
 - 在父级设置
@@ -38,7 +38,7 @@ div {
     }
     ```
 
->部分浏览器设置`clearfix`，会导致`:after`的内容有占高宽，必须使用`overflow: hidden;`代替使用
+>部分浏览器设置`clearfix`，会导致`:after`的内容有占高宽，必须使用`overflow: hidden;`代替使用。
 
 ### 单行文本和多行文本超出宽度显示省略号
 ```css
@@ -101,7 +101,7 @@ div {
     （待续）
 
 ### 移动端半像素
-不可以使用`border: 0.5px`，因为浏览器会把宽度换算成0或者1
+不可以使用`border: 0.5px`，因为浏览器会把宽度换算成0或者1。
 
 1. 整个边框0.5px
 
@@ -144,16 +144,8 @@ div {
     }
     ```
 
-### 内阴影效果
-```css
-div {
-    box-shadow: 0 -2px 0 0 颜色 inset;  /* 左右偏移 上下偏移 模糊 尺寸*/
-    border-radius: 5px;
-}
-```
-
 ### wap页面自适应图片
-图片根据浏览器窗口变化而宽高一同等比例变化，不使用`img`标签
+要求：图片根据浏览器窗口变化而宽高一同等比例变化，不使用`img`标签。
 - 横向、纵向百分比的`padding`（和`margin`）值都是以父元素的`width`为基础，`height`是以父元素的`height`为基础
 
     ```css
@@ -218,7 +210,7 @@ div {
 >`background-position`用`rem`会有小数问题，改用百分比不会有问题。
 
 ### `table-layout: fixed;`
-由第一行td或th的宽度来确定此table元素内的布局
+由第一行td或th的宽度来确定此table元素内的布局。
 ```css
 table {
     table-layout: fixed;
@@ -237,39 +229,38 @@ td,th {
 }
 ...
 ```
->若`table-layout`使用默认值`automatic`，则td或th上设置宽度无效，列的宽度由列单元格中没有折行的最宽的内容决定
+>若`table-layout`使用默认值`automatic`，则td或th上设置宽度无效，列的宽度由列单元格中没有折行的最宽的内容决定。
 
 >`table`标签里有很多`display`为其他值的标签，要注意他们的表现形式和对一些css属性不起作用。
-----
 
-### 使元素强制表现为`block`
+### 使元素强制表现为`block`的css设置
 - `float: left/right;`
 - `position: absolute/fixed;`
 
 ### 单词内断字换行
 - ~~默认~~：
-    若此行放不下则整个单词换行，若下行也放不下则溢出（保持单词不断词）
+    若此行放不下则整个单词换行，若下行也放不下则溢出（保持单词不断词）。
 - ~~`word-break: break-all;`~~：
-    若此行放不下则直接断词，不会尝试整个单词换行
+    若此行放不下则直接断词，不会尝试整个单词换行。
 - `word-wrap: break-word;`：
-    若此行放不下则整个单词先换行，若下行也放不下再断词
+    若此行放不下则整个单词先换行，若下行也放不下再断词。
 
 ### 块级元素的width
 - `width: auto;`：
-    默认值，换算具体值为：**本元素width = 父级width - 本元素（margin + padding + border）水平值**
+    默认值，换算具体值为：**本元素width = 父级width - 本元素（margin + padding + border）水平值**。
 
-    >当块级width为默认的auto时，设置负的水平margin会使width增加
+    >当块级width为默认的auto时，设置负的水平margin会使width增加。
 - `width: 100%;`：
-    父级的px为自己的px
+    父级的px为自己的px。
 
 ### margin合并（非ie浏览器）
 >[W3C]In CSS, the adjoining margins of two or more boxes (which might or might not be siblings) can combine to form a single margin. Margins that combine this way are said to collapse, and the resulting combined margin is called a collapsed margin.
 
 - 在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
 
-    >毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开
+    >毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开。
 
-    >普通流：除**浮动（float）**、**绝对定位（absolute）**外的代码
+    >普通流：除**浮动（float）**、**绝对定位（absolute）**外的代码。
 - 产生独立的BFC结构可避免margin合并
 
 ### BFC（Block Formatting Context）块级格式上下文
@@ -327,12 +318,12 @@ td,th {
     ```
 
 ### font-size最小值
-- wap端没有最小限制
+- wap端没有最小限制（或6px为最小值）
 - pc端最小限制为12px
 
 ### img标签的src属性
 当img标签的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
-- 不要用~~空的img标签加上背景来用作默认图~~，必须用其他标签来代替。
+- 不要用**空的img标签加上背景来用作默认图**，必须用其他标签来代替。
 - img标签没有src属性或src属性为空隐藏
 
     ```css
@@ -703,7 +694,7 @@ ul li a:hover {
     ```
 
 ### 等宽文字
-要做到不同字数的一行文字等宽，可以用标签填补中间间隙
+要做到不同字数的一行文字等宽，可以用标签填补中间间隙。
 
 ```html
 <标签>文字文字</标签>
@@ -915,7 +906,7 @@ li:hover a {
         });
     </script>
     ```
-    来补充`.d:hover {-webkit-tap-highlight-color:rgba( , , , );}`。
+    用来补充`.d:hover {-webkit-tap-highlight-color:rgba( , , , );}`。
 
 ### wap响应式页面解决方案：使用rem单位+媒体查询
 rem（font size of the root element）：相对于根元素的字体大小的单位。
@@ -984,6 +975,7 @@ body {
 
 ### html请求资源：
 页面是按照顺序加载资源，当且仅当有使用需求时才会去加载外部资源。
+
 比如已加载完成的css文件内有多个url请求（background），但也仅在页面要用到某个url请求时（比如某类有url背景），才会去请求这个资源，而不是在加载css文件时就加载外部资源。
 
 ### 知识点
