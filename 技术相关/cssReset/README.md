@@ -40,9 +40,11 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
 }
 .rich_text ol {
     list-style-type: decimal;
+    list-style-position: inside;
 }
 .rich_text ul {
     list-style-type: disc;
+    list-style-position: inside;
 }
 /*/-使用富文本需覆盖*/
 /*/CSS reset*/
