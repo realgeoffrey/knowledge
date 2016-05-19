@@ -12,11 +12,9 @@ a,ins {text-decoration:none;}
 button,input,select,textarea,:focus {outline:none;}
 audio,canvas,video {display:inline-block;*display:inline;zoom:1;}
 table {border-collapse:collapse;border-spacing:0;}
-ol,ul {list-style:none;}
 hr {display:block;height:1px;border:0;border-top:1px solid #ccc;margin:1em 0;padding:0;}
 abbr,acronym {border:0;font-variant:normal;}
 del {text-decoration:line-through;}
-address,caption,cite,code,dfn,th,var,em,i,b,time {font-style:normal;font-weight:500;}
 caption,th {text-align:left;}
 blockquote,q {quotes:none;}
 blockquote:before,blockquote:after,q:before,q:after {content:'';content:none;}
@@ -25,6 +23,8 @@ sup {top:-0.5em;}
 sub {bottom:-0.25em;}
 article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,iframe,main {display:block;}
 img {vertical-align:middle;}
+address,caption,cite,code,dfn,th,var,em,i,time {font-style:normal;font-weight:500;}
+ol,ul {list-style:none;}
 
 /* -wap*/
 img,video {max-width:100%;}
@@ -33,6 +33,18 @@ a,button,input,textarea {-webkit-tap-highlight-color:rgba(63,40,1,.3);}
 html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;}
 *,*:before,*:after {-webkit-box-sizing:inherit;-moz-box-sizing:inherit;box-sizing:inherit;}
 /*/-wap*/
+
+/* -使用富文本需覆盖*/
+.rich_text em {
+    font-style: italic;
+}
+.rich_text ol {
+    list-style-type: decimal;
+}
+.rich_text ul {
+    list-style-type: disc;
+}
+/*/-使用富文本需覆盖*/
 /*/CSS reset*/
 /* 全局*/
 html, body {
