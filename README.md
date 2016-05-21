@@ -1,8 +1,3 @@
-#Knowledge
-
-Knowledge of my work area..
-
-
 ##技术相关
 - [js学习笔记](./技术相关/js学习笔记)
 - [js正则表达式](./技术相关/js正则表达式)
