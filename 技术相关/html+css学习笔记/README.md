@@ -948,12 +948,46 @@ rem单位转换为具体px值：**rem乘于html的font-size像素**。
 3. *用js根据浏览器宽度的改变修改html的font-size，页面总宽度固定为某rem。所有页面元素都要用百分比+rem*
 
 ### img标签的圆形边框
-
 1. 圆形+边框
     - pc：直接在img标签上设置`border`和`border-radius`
     - wap：在img标签上设置`border`和`border-radius`，并且在父级标签嵌套一层设置`border`和`border-radius`
 2. 圆形（无边框）
     - pc+wap：直接在img标签上设置`border-radius`
+
+### css3的`animation`使用
+在使用`animation`节点（或父节点）上加入两种状态的类，一个控制启动时的动画效果，一个控制关闭时的动画效果，例：
+
+```html
+<style>
+    .dom {
+        animation-duration: 1s;
+        animation-fill-mode: both;
+        animation-iteration-count: 1;
+    }
+    .dom.fade_in {
+        animation-name: in;
+    }
+    .dom.fade_out {
+        animation-name: out;
+    }
+    @keyframes in {
+
+    }
+    @keyframes out {
+
+    }
+</style>
+
+<div class="dom j-dom">...</div>
+
+<script>
+    $(document).on('mouseenter', '.j-dom', function () {
+        $('.j-dom').addClass('fade_in').removeClass('fade_out');
+    }).on('mouseleave', '.j-dom', function () {
+        $('.j-dom').addClass('fade_out').removeClass('fade_in');
+    });
+</script>
+```
 
 
 ##经验总结
