@@ -955,40 +955,86 @@ rem单位转换为具体px值：**rem乘于html的font-size像素**。
     - pc+wap：直接在img标签上设置`border-radius`
 
 ### css3的`animation`使用
-在使用`animation`节点（或父节点）上加入两种状态的类，一个控制启动时的动画效果，一个控制关闭时的动画效果，例：
+- 用`:hover`触发
 
-```html
-<style>
-    .dom {
-        animation-duration: 1s;
-        animation-fill-mode: both;
-        animation-iteration-count: 1;
-    }
-    .dom.fade_in {
-        animation-name: in;
-    }
-    .dom.fade_out {
-        animation-name: out;
-    }
-    @keyframes in {
+- 在使用`animation`节点（或父节点）上加入两种状态的类，一个控制启动时的动画效果，一个控制关闭时的动画效果
 
-    }
-    @keyframes out {
+    ```html
+    <style>
+        .dom {
+            animation-duration: 1s;
+            animation-iteration-count: 1;
+        }
+        .dom.fade_in {
+            animation-name: in;
+        }
+        .dom.fade_out {
+            animation-name: out;
+        }
+        @keyframes in {
 
-    }
-</style>
+        }
+        @keyframes out {
 
-<div class="dom j-dom">...</div>
+        }
+    </style>
 
-<script>
-    $(document).on('mouseenter', '.j-dom', function () {
-        $('.j-dom').addClass('fade_in').removeClass('fade_out');
-    }).on('mouseleave', '.j-dom', function () {
-        $('.j-dom').addClass('fade_out').removeClass('fade_in');
-    });
-</script>
-```
-> 动画进行到一半取消动画（去除了相关类）或者替换动画，会导致节点突兀地回到初始位置，暂时无法解决这种问题。
+    <div class="dom j-dom">...</div>
+
+    <script>
+        $(document).on('mouseenter', '.j-dom', function () {
+            $('.j-dom').addClass('fade_in').removeClass('fade_out');
+        }).on('mouseleave', '.j-dom', function () {
+            $('.j-dom').addClass('fade_out').removeClass('fade_in');
+        });
+    </script>
+    ```
+
+> 动画进行到一半取消动画（去除了相关类）或者替换动画，会导致节点突兀地回到初始位置。
+
+-监听动画结束事件，在结束时候再去除动画
+
+    ```html
+    <style>
+        .dom {
+
+        }
+        .dom.hover {
+            animation: act 1s infinite;
+        }
+        @keyframes act {
+
+        }
+    </style>
+
+    <div class="dom j-dom">...</div>
+
+    <script>
+        var animationHover = {
+            isStop: false,
+            init: function (selector, hoverClass) {
+                var $dom = $(selector),
+                    self = this;
+
+                $dom.on('mouseover', function () {
+                    $(this).addClass(hoverClass);
+
+                    self.isStop = false;
+                }).on('mouseout', function () {
+                    self.isStop = true;
+                }).on('animationiteration', function () {    /* css的animation结束触发*/
+                    if (self.isStop) {
+                        $dom.removeClass(hoverClass);
+
+                        self.isStop = false;
+                    }
+                });
+            }
+        };
+        animationHover.init('.j-dom', 'hover');
+    </script>
+    ```
+
 
 ##经验总结
 
