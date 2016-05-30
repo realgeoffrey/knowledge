@@ -1035,6 +1035,14 @@ rem单位转换为具体px值：**rem乘于html的font-size像素**。
     </script>
     ```
 
+### 禁用`a`标签鼠标、键盘事件
+1. `pointer-events: none;`穿透`a`标签的鼠标事件（包括点击和hover等）。
+2. 不设置`href`属性，可以忽略键盘索引（tab键无法切换到）。
+
+```html
+<a style="pointer-events: none;">禁用鼠标和键盘的链接</a>
+```
+
 
 ##经验总结
 
