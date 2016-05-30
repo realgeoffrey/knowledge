@@ -365,9 +365,10 @@ function heapSort(arr) {
         }
     }
 
-    var arr = arr.slice(0),
-        len = arr.length,
+    var len = arr.length,
         i;
+
+    arr = arr.slice(0); /* 不改变实参*/
 
     for (i = Math.floor(len / 2) - 1; i >= 0; i--) {    /* i的初始值为堆的最后一个父节点，然后顺序往上操作其他父节点*/
         _maxHeapify(i, len);
@@ -388,3 +389,32 @@ function heapSort(arr) {
 > - 父节点i的左子节点在位置(2*i+1);
 > - 父节点i的右子节点在位置(2*i+2);
 > - 子节点i的父节点在位置floor((i-1)/2);
+
+
+### 洗牌算法
+```javascript
+function shuffle(arr) {
+    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
+
+        return false;
+    }
+
+    var len = arr.length,
+        lastOne,
+        randomOne,
+        temp;
+
+    arr = arr.slice(0);
+
+    for (lastOne = len; lastOne > 0; lastOne--) {
+        randomOne = Math.floor(Math.random() * lastOne);    /* lastOne长度内随机一个位置*/
+
+        /* 元素交换*/
+        temp = arr[lastOne];
+        arr[lastOne] = arr[randomOne];
+        arr[randomOne] = temp;
+    }
+
+    return arr;
+}
+```
