@@ -950,7 +950,7 @@ function isEventSupported(eventName, element) {
 ### *原生js*用整数进行小数的四则运算（避免浮点数运算误差）
 ```javascript
 var fourOperations = {
-    add: function (arg1, arg2) {
+    add: function (arg1, arg2) {    /* 加*/
         var r1, r2, m, c, cm;
 
         try {
@@ -984,7 +984,7 @@ var fourOperations = {
 
         return (arg1 + arg2) / m;
     },
-    sub: function (arg1, arg2) {
+    sub: function (arg1, arg2) {    /* 减*/
         var r1, r2, m, n;
 
         try {
@@ -1003,7 +1003,7 @@ var fourOperations = {
 
         return ((arg1 * m - arg2 * m) / m).toFixed(n);
     },
-    mul: function (arg1, arg2) {
+    mul: function (arg1, arg2) {    /* 乘*/
         var m;
 
         try {
@@ -1019,7 +1019,7 @@ var fourOperations = {
 
         return Number(arg1.toString().replace('.', '')) * Number(arg2.toString().replace('.', '')) / Math.pow(10, m);
     },
-    div: function (arg1, arg2) {
+    div: function (arg1, arg2) {    /* 除*/
         var r1, r2;
 
         try {
