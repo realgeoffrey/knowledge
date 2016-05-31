@@ -900,3 +900,49 @@ function getAbsoluteUrl(url) {
     });
 }('.father', '.dependent', '.target'));
 ```
+
+### *原生js*判断事件在浏览器是否存在
+```javascript
+/*
+ * 判断DOM节点是否支持某事件
+ * @param {String} eventName 事件名
+ * @param {Object} element DOM的Document对象
+ * @returns {Boolean} [true|false]
+ */
+function isEventSupported(eventName, element) {
+    var tagNames = {
+            'select': 'input',
+            'change': 'input',
+            'submit': 'form',
+            'reset': 'form',
+            'error': 'img',
+            'load': 'img',
+            'abort': 'img'
+        },
+        isSupported;
+
+    element = element || document.createElement(tagNames[eventName] || 'div');
+    eventName = 'on' + eventName;
+
+    isSupported = eventName in element;
+
+    if (!isSupported) {
+        if (!element.setAttribute) {    /* 若节点没有setAttribute方法，则改用div节点进行测试*/
+            element = document.createElement('div');
+        }
+        if (element.setAttribute && element.removeAttribute) {
+            element.setAttribute(eventName, '');
+            isSupported = typeof element[eventName] === 'function';
+
+            if (element[eventName] !== undefined) { /* 内存回收*/
+                element[eventName] = undefined;
+            }
+            element.removeAttribute(eventName); /* 内存回收*/
+        }
+    }
+
+    element = null; /* 内存回收*/
+
+    return isSupported;
+}
+```

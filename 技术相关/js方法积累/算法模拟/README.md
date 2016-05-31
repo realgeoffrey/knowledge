@@ -391,6 +391,8 @@ function heapSort(arr) {
 > - 子节点i的父节点在位置floor((i-1)/2);
 
 
+----
+
 ### 洗牌算法
 ```javascript
 function shuffle(arr) {
