@@ -951,7 +951,9 @@ function isEventSupported(eventName, element) {
 ```javascript
 var fourOperations = {
     add: function (arg1, arg2) {    /* 加*/
-        var r1, r2, m, c, cm;
+        var r1, r2, m, c, cm,
+            int1 = Number(arg1.toString().replace('.', '')),
+            int2 = Number(arg2.toString().replace('.', ''));
 
         try {
             r1 = arg1.toString().split('.')[1].length;
@@ -971,20 +973,19 @@ var fourOperations = {
             cm = Math.pow(10, c);
 
             if (r1 > r2) {
-                arg1 = Number(arg1.toString().replace('.', ''));
-                arg2 = Number(arg2.toString().replace('.', '')) * cm;
+                int2 = int2 * cm;
             } else {
-                arg1 = Number(arg1.toString().replace('.', '')) * cm;
-                arg2 = Number(arg2.toString().replace('.', ''));
+                int1 = int1 * cm;
             }
-        } else {
-            arg1 = Number(arg1.toString().replace('.', ''));
-            arg2 = Number(arg2.toString().replace('.', ''));
         }
 
-        return (arg1 + arg2) / m;
+        return (int1 + int2) / m;
     },
     sub: function (arg1, arg2) {    /* 减*/
+
+        return this.add(arg1, -arg2);
+    },
+    sub_: function (arg1, arg2) {    /* 减：用小数进行运算后再四舍五入保留小数*/
         var r1, r2, m, n;
 
         try {
