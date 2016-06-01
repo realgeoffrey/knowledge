@@ -985,25 +985,6 @@ var fourOperations = {
 
         return this.add(arg1, -arg2);
     },
-    sub_: function (arg1, arg2) {    /* 减：用小数进行运算后再四舍五入保留小数*/
-        var r1, r2, m, n;
-
-        try {
-            r1 = arg1.toString().split('.')[1].length;
-        } catch (e) {
-            r1 = 0;
-        }
-        try {
-            r2 = arg2.toString().split('.')[1].length;
-        } catch (e) {
-            r2 = 0;
-        }
-
-        n = Math.max(r1, r2);
-        m = Math.pow(10, n);
-
-        return ((arg1 * m - arg2 * m) / m).toFixed(n);
-    },
     mul: function (arg1, arg2) {    /* 乘*/
         var m;
 
