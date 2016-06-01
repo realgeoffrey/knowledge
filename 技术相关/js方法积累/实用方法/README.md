@@ -849,6 +849,28 @@ function deepCopy(obj) {
 }
 ```
 
+### *原生js*对象合二为一（改变第一个参数）
+```javascript
+function extend(target, options) {
+    var copy, name;
+
+    for (name in options) {
+        copy = options[name];
+
+        if (Object.prototype.toString.call(copy) === '[object Array]') {
+            target[name] = arguments.callee([], copy);
+        } else if (Object.prototype.toString.call(copy) === '[object Object]') {
+            target[name] = arguments.callee(target[name] ? target[name] : {}, copy);
+        } else {
+            target[name] = options[name];
+        }
+    }
+
+    return target;
+}
+```
+
+
 ### *原生js*从字符串中获取绝对路径
 ```javascript
 function getAbsoluteUrl(url) {

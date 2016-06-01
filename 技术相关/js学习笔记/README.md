@@ -443,7 +443,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         `Object.prototype.toString.call(值);` -> 输出字符串
         - `undefined` 或 不填 -> `'[object Undefined]'`
         - `null` -> `'[object Null]'`
-        - `function(){}`（匿名与不匿名） -> `'[object Function]'`
+        - `function(){}`（匿名或不匿名） -> `'[object Function]'`
         - `{}` -> `'[object Object]'`
 
         只要是内置对象，则返回其构造函数名。举例为：
