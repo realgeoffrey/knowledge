@@ -441,26 +441,26 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     - 除了放入*undefined*或*null*外，放入**对象**，返回`"[object 构造函数的名称]"`的字符串
 
         `Object.prototype.toString.call(值);` -> 输出字符串
-        - `undefined` 或 不填 -> `[object Undefined]`
-        - `null` -> `[object Null]`
-        - `function(){}`（匿名与不匿名） -> `[object Function]`
-        - `{}` -> `[object Object]`
+        - `undefined` 或 不填 -> `'[object Undefined]'`
+        - `null` -> `'[object Null]'`
+        - `function(){}`（匿名与不匿名） -> `'[object Function]'`
+        - `{}` -> `'[object Object]'`
 
         只要是内置对象，则返回其构造函数名。举例为：
-        - `[]` -> `[object Array]`
-        - 数字 -> `[object Number]`
-        - 字符串 -> `[object String]`
-        - 布尔型对象 -> `[object Boolean]`
-        - Date对象 -> `[object Date]`
-        - RegExp对象 -> `[object RegExp]`
-        - arguments对象 -> `[object Arguments]`
-        - Error对象 -> `[object Error]`
-        - Math对象 -> `[object Math]`
-        - window对象 -> `[object global]`
-        - document对象 -> `[object HTMLDocument]`
-        - JSON对象 -> `[object JSON]`
-        - Map对象 -> `[object Map]`
-        - console对象 -> `[object Console]`
+        - `[]` -> `'[object Array]'`
+        - 数字 -> `'[object Number]'`
+        - 字符串 -> `'[object String]'`
+        - 布尔型对象 -> `'[object Boolean]'`
+        - Date对象 -> `'[object Date]'`
+        - RegExp对象 -> `'[object RegExp]'`
+        - arguments对象 -> `'[object Arguments]'`
+        - Error对象 -> `'[object Error]'`
+        - Math对象 -> `'[object Math]'`
+        - window对象 -> `'[object global]'`
+        - document对象 -> `'[object HTMLDocument]'`
+        - JSON对象 -> `'[object JSON]'`
+        - Map对象 -> `'[object Map]'`
+        - console对象 -> `'[object Console]'`
 
 - `typeof 值`
 
