@@ -34,19 +34,19 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
 *,*:before,*:after {-webkit-box-sizing:inherit;-moz-box-sizing:inherit;box-sizing:inherit;}
 /*/-wap*/
 
-/* -使用富文本需覆盖*/
-.rich_text em {
+/* -富文本需覆盖*/
+.富文本类 em {
     font-style: italic;
 }
-.rich_text ol {
+.富文本类 ol {
     list-style-type: decimal;
     list-style-position: inside;
 }
-.rich_text ul {
+.富文本类 ul {
     list-style-type: disc;
     list-style-position: inside;
 }
-/*/-使用富文本需覆盖*/
+/*/-富文本需覆盖*/
 /*/CSS reset*/
 /* 全局*/
 html, body {
