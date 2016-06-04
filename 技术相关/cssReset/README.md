@@ -52,17 +52,20 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
 html, body {
     /*height: 100%;*/
 }
+html {
+    _overflow-x: hidden;
+}
 body {
     background-color: #fff;
     color: #333;
-    min-width: ;
+    min-width: 最小宽度;
     position: relative;
 }
 a {
     color: #333;
 }
 a:hover {
-
+    text-decoration: none;
 }
 .left {
     float: left;
@@ -101,11 +104,12 @@ a:hover {
 /* 单大图模式*/
 .full_bg {
     background: url() #fff center 0 no-repeat;
-    min-width: ;
+    min-width: 最小宽度;
+    _width: 100%;
     overflow: hidden;
 }
-.header,
-.main {
+.full_bg .header,
+.full_bg .main {
     background: url() center 0 no-repeat;
     width: ;
     margin: 0 auto;
@@ -113,7 +117,8 @@ a:hover {
 }
 .footer {
     background-color: #fff;
-    min-width: ;
+    min-width: 最小宽度;
+    _width: 100%;
 }
 .footer .wrap {
     width: ;
@@ -123,18 +128,21 @@ a:hover {
 /* 多大图模式*/
 .header {
     background: url() #fff center 0 no-repeat;
-    min-width: ;
+    min-width: 最小宽度;
+    _width: 100%;
     height: ;
     overflow: hidden;
 }
 .main {
     background: url() #fff center 0 no-repeat;
-    min-width: ;
+    min-width: 最小宽度;
+    _width: 100%;
     overflow: hidden;
 }
 .footer {
     background: url() 0 0 repeat-x;
-    min-width: ;
+    min-width: 最小宽度;
+    _width: 100%;
     overflow: hidden;
 }
 .header .wrap,
