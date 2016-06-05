@@ -633,9 +633,9 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         newStyle.type = 'text/css';
 
         if (newStyle.styleSheet) {    //for ie
-            newStyle.styleSheet.cssText = '纯css内容';
+            newStyle.styleSheet.cssText = 'css内容';
         } else {
-            newStyle.appendChild(document.createTextNode('纯css内容'));
+            newStyle.appendChild(document.createTextNode('css内容'));
         }
 
         document.getElementsByTagName('head')[0].appendChild(newStyle);
@@ -657,20 +657,20 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         ```javascript
         var oneDom = document.getElementById('节点id');
 
-        oneDom.style.cssText += '; 纯css内容'
+        oneDom.style.cssText += '; css内容'
         ```
 
-    >纯css内容，例如 `div {background-color: yellow;}`。
+    >css内容，例如 `div {background-color: yellow;}`。
 - 动态添加脚本
 
     1. 异步
 
-        1. 直接`document.write`添加code
+        1. 直接`document.write`
 
             ```javascript
             document.write("<script src='js文件地址'><\/script>");
             ```
-        2. 动态改变已有的`script`标签`src`属性
+        2. 动态改变已有的`script`标签的`src`属性
 
             ```html
             <script type="text/javascript" id="节点id"></script>
@@ -693,7 +693,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
             ```
     2. 同步
 
-        1. 添加code
+        1. 添加js代码
 
             ```javascript
             var newScript = document.createElement("script"),
@@ -702,10 +702,10 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
             newScript.type = "text/javascript";
 
             try {
-                newScript.appendChild(document.createTextNode(code));
+                newScript.appendChild(document.createTextNode('js代码'));
             }
             catch (e) {
-                newScript.text = code;  /* ie8及以下，Safari老版本*/
+                newScript.text = 'js代码';  /* ie8及以下，Safari老版本*/
             }
 
             appendPlace.appendChild(newScript);
