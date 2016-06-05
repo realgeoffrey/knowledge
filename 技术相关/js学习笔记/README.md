@@ -661,33 +661,113 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         ```
 
     >纯css内容，例如 `div {background-color: yellow;}`。
-- 动态添加脚本（异步）
+- 动态添加脚本
 
-    1. 直接`document.write`
+    1. 异步
 
-        ```javascript
-        document.write("<script src='js文件地址'><\/script>");
-        ```
-    2. 动态改变已有的script的src属性
+        1. 直接`document.write`添加code
 
-        ```html
-        <script type="text/javascript" id="节点id"></script>
+            ```javascript
+            document.write("<script src='js文件地址'><\/script>");
+            ```
+        2. 动态改变已有的`script`标签`src`属性
 
-        <script>
-            document.getElementById('节点id').src = 'js文件地址';
-        </script>
-        ```
-    3. 动态创建script元素
+            ```html
+            <script type="text/javascript" id="节点id"></script>
 
-        ```javascript
-        var newScript = document.createElement("script");
+            <script>
+                document.getElementById('节点id').src = 'js文件地址';
+            </script>
+            ```
+        3. 动态创建`script`标签
 
-        newScript.type = "text/javascript";
+            ```javascript
+            var newScript = document.createElement("script"),
+                appendPlace = document.body || document.getElementsByTagName("HEAD").item(0);
 
-        newScript.src = "js文件地址";
+            newScript.type = "text/javascript";
 
-        document.body.appendChild(newScript);
-        ```
+            newScript.src = "js文件地址";
+
+            appendPlace.appendChild(newScript);
+            ```
+    2. 同步
+
+        1. 添加code
+
+            ```javascript
+            var newScript = document.createElement("script"),
+                appendPlace = document.body || document.getElementsByTagName("HEAD").item(0);
+
+            newScript.type = "text/javascript";
+
+            try {
+                newScript.appendChild(document.createTextNode(code));
+            }
+            catch (e) {
+                newScript.text = code;  /* ie8及以下，Safari老版本*/
+            }
+
+            appendPlace.appendChild(newScript);
+            ```
+        2. 添加`script`标签
+
+            ```javascript
+           /*
+             * 同步加载js脚本
+             * @param {String} url js文件的相对路径或绝对路径
+             * @returns {Boolean} 是否加载成功
+             */
+            function syncLoadJS(url) {
+                var xmlHttp,
+                    appendPlace,
+                    newScript;
+
+                if (window.ActiveXObject) { /* ie*/
+                    try {
+                        xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+                    }
+                    catch (e) {
+                        xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+                    }
+                } else if (window.XMLHttpRequest) {
+                    xmlHttp = new XMLHttpRequest();
+                }
+
+                xmlHttp.open("GET", url, false);    /* 采用同步加载*/
+                xmlHttp.send(null); /* 发送同步请求，如果浏览器为Chrome或Opera，必须发布后才能运行，不然会报错*/
+
+                /* 4代表数据发送完毕*/
+                if (xmlHttp.readyState == 4) {
+                    /* 0为访问的本地，200到300代表访问服务器成功，304代表没做修改访问的是缓存*/
+                    if ((xmlHttp.status >= 200 && xmlHttp.status < 300) || xmlHttp.status == 0 || xmlHttp.status == 304) {
+                        newScript = document.createElement("script");
+                        appendPlace = document.body || document.getElementsByTagName("HEAD").item(0);
+
+                        newScript.type = "text/javascript";
+
+                        try {
+                            newScript.appendChild(document.createTextNode(xmlHttp.responseText));
+                        }
+                        catch (e) {
+                            newScript.text = xmlHttp.responseText;
+                        }
+
+                        appendPlace.appendChild(newScript);
+
+                        return true;
+                    }
+                    else {
+
+                        return false;
+                    }
+                }
+                else {
+
+                    return false;
+                }
+            }
+            ```
 
 ### 拼接字符串
 长字符串拼接使用`.join()`，而不使用`+`：
