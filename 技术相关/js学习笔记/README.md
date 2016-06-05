@@ -633,9 +633,9 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         newStyle.type = 'text/css';
 
         if (newStyle.styleSheet) {    //for ie
-            newStyle.styleSheet.cssText = 'css内容';
+            newStyle.styleSheet.cssText = 'css代码';
         } else {
-            newStyle.appendChild(document.createTextNode('css内容'));
+            newStyle.appendChild(document.createTextNode('css代码'));
         }
 
         document.getElementsByTagName('head')[0].appendChild(newStyle);
@@ -657,10 +657,10 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         ```javascript
         var oneDom = document.getElementById('节点id');
 
-        oneDom.style.cssText += '; css内容'
+        oneDom.style.cssText += '; css代码'
         ```
 
-    >css内容，例如 `div {background-color: yellow;}`。
+    >css代码，例如 `div {background-color: yellow;}`。
 - 动态添加脚本
 
     1. 异步
