@@ -462,7 +462,9 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         - Map对象 -> `'[object Map]'`
         - console对象 -> `'[object Console]'`
 
-        > 对于没有声明的变量，直接使用此行代码会报**引用不存在变量**的错误，，因此需要：`if (typeof 变量 !== 'undefined' && Object.prototype.toString.call(变量) === '[object 某]') {}`来配合。
+        >对于没有声明的变量，直接使用此行代码会报**引用不存在变量**的错误，因此需要：
+        >
+        >`if (typeof 变量 !== 'undefined' && Object.prototype.toString.call(变量) === '[object 某]') {}`来配合。
 - `typeof 值`
 
     可以跨帧（iframe）。
