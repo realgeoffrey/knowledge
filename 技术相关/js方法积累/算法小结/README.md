@@ -12,9 +12,7 @@ function insertionSort(arr) {
     }
 
     var len = arr.length,
-        i,
-        tmp,
-        j;
+        i, tmp, j;
 
     for (i = 1; i < len; i++) { /* 逐个取出*/
         tmp = arr[i];   /* 被向前对比的一个元素*/
@@ -47,10 +45,7 @@ function shellSort(arr) {
     }
 
     var len = arr.length,
-        gap,
-        i,
-        j,
-        temp;
+        gap, i, j, temp;
 
     for (gap = Math.floor(len / 2); gap > 0; gap = Math.floor(gap / 2)) {   /* 不断分割成越来越大的区域分别进行插入排序*/
 
@@ -83,9 +78,7 @@ function bubbleSort(arr) {
     }
 
     var len = arr.length,
-        i,
-        j,
-        temp;
+        i, j, temp;
 
     for (i = 0; i < len; i++) { /* 一共比较趟数*/
         for (j = 0; j < len - i - 1; j++) { /* 每一趟比较的次数*/
@@ -152,8 +145,7 @@ function combSort(arr) {
     var shrink_factor = 0.8,    /* 递减率*/
         gap = arr.length,
         swapped = 1,
-        i,
-        temp;
+        i, temp;
 
     while (gap > 1 || swapped) {    /* 未完成排序*/
         if (gap > 1){
@@ -236,10 +228,7 @@ function selectionSort(arr) {
     }
 
     var len = arr.length,
-        i,
-        j,
-        min,
-        temp;
+        i, j, min, temp;
 
     for (i = 0; i < len - 1; i++) {
         min = i;
@@ -275,12 +264,7 @@ function radixSort(arr) {
     var bucket = [],
         len = arr.length,
         max = arr[0],
-        loop,
-        str,
-        i,
-        j,
-        k,
-        t;
+        loop, str, i, j, k, t;
 
     for (i = 0; i < 10; i++) {  /* 创建十个空桶（十进制），位数的每一次循环时放入这个位数对应值的被排序元素*/
         bucket[i] = [];
@@ -402,9 +386,7 @@ function shuffle(arr) {
     }
 
     var len = arr.length,
-        lastOne,
-        randomOne,
-        temp;
+        lastOne, randomOne, temp;
 
     arr = arr.slice(0);
 

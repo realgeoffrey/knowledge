@@ -45,8 +45,7 @@ function getNextElement(node) {
 ### *原生js*实现类似jQuery的`.addClass()`
 ```javascript
 function addClass(node, newClassName) {
-    var oldNames,
-        i;
+    var oldNames, i;
 
     if (!node.className) {
         node.className = newClassName;
@@ -68,9 +67,8 @@ function addClass(node, newClassName) {
 ```javascript
 function removeClass(node, removeClassName) {
     var newNames = [],
-        oldNames,
-        i,
-        flag = false;
+        flag = false,
+        oldNames, i;
 
     if (node.className) {
         oldNames = node.className.split(' ');
@@ -190,6 +188,7 @@ function ImgLazyLoad(className, func) {
     function lazyLoad(domArr, className, func) { /* 图片延时加载*/
         $.each(domArr, function (index, value) {
             var $this = $(value);
+
             var src = $this.attr('data-src'),
                 newImg = new Image();
 
@@ -320,9 +319,7 @@ function isIE(num) {
 var cookieFuc = {
     get: function (name) {   /* 获取指定cookie*/
         var cookieArr = document.cookie.split("; "),
-            cookieValue,
-            i,
-            temArr;
+            cookieValue, i, temArr;
 
         for (i = 0; i < cookieArr.length; i++) {
             temArr = cookieArr[i].split("=");
@@ -353,9 +350,7 @@ function getResponseHeaders(requestName) {
         url: document.location.href,
         async: false,
         complete: function (xhr, data) {
-            var responseHeaders,
-                headerArr,
-                i;
+            var responseHeaders, headerArr, i;
 
             if (data !== "error" && data !== "timeout" && data !== "parsererror") {
                 responseHeaders = xhr.getAllResponseHeaders();
@@ -541,8 +536,8 @@ function countDown(deadline, id, func, hType, mType, sType) {
     sType = sType || ' ';
 
     var intervalId = setInterval(function () {
-        var now = (Date.parse(new Date())) / 1000;
-        var time = Math.round(deadline - now);
+        var now = (Date.parse(new Date())) / 1000,
+            time = Math.round(deadline - now);
 
         var s, m, h;
 
@@ -607,8 +602,8 @@ jQuery的`on`与`off`，不用一一对应某个handle：当写具体handle时�
 ```javascript
 /* js原生*/
 function checkKeyCode(event) {
-    var e = event || window.event;
-    var keyCode = e.charCode || e.keyCode;  /* 获取键值*/
+    var e = event || window.event,
+        keyCode = e.charCode || e.keyCode;  /* 获取键值*/
 
     if (keyCode === 13) {   /* 查询键值表 例:13->换行*/
         /* 具体操作...*/
@@ -719,6 +714,7 @@ $oneInput.on('click', function () {
 ```javascript
 function isObjEmpty(obj) {
     var i;
+
     if (obj !== Object(obj)) {  /* 参数不是对象*/
         throw new TypeError('参数不是对象');
     } else if (typeof Object.keys === "function") { /* ie9+及高级浏览器支持*/
@@ -793,8 +789,7 @@ function isObjEmpty(obj) {
 
 ### *原生js*移动端模拟点击事件（避免300毫秒click）
 ```javascript
-var start_x,
-    start_y;
+var start_x, start_y;
 
 document.getElementById('...').addEventListener('touchstart', function (e) {
     start_x = e.changedTouches[0].clientX;
@@ -832,8 +827,7 @@ function isArray(value) {
  * @param {Object|Array|Undefined|Null|Boolean|Number|String} obj 深复制参数
  */
 function deepCopy(obj) {
-    var i,
-        newObj;
+    var i, newObj;
 
     if (typeof obj !== 'object' || obj === null) {
 
