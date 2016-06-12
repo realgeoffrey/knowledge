@@ -28,14 +28,14 @@ table {border-collapse:collapse;border-spacing:0;}
 ol,ul {list-style:none;}
 
 /* -wap*/
-img,video {max-width:100%;}
+img,video,audio {max-width:100%;}
 html {-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;-webkit-overflow-scrolling:touch;}
 a,button,input,textarea {-webkit-tap-highlight-color:rgba(63,40,1,.3);}
 html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;}
 *,*:before,*:after {-webkit-box-sizing:inherit;-moz-box-sizing:inherit;box-sizing:inherit;}
 /*/-wap*/
 
-/* -富文本需覆盖*/
+/* -富文本需重载*/
 .富文本类 em {
     font-style: italic;
 }
@@ -47,7 +47,7 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
     list-style-type: disc;
     list-style-position: inside;
 }
-/*/-富文本需覆盖*/
+/*/-富文本需重载*/
 /*/CSS reset*/
 /* 全局*/
 html, body {
