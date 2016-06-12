@@ -11,8 +11,6 @@ h1,h2,h3,h4,h5,h6 {font-size:100%;font-weight:500;}
 a,ins {text-decoration:none;}
 button,input,select,textarea,:focus {outline:none;}
 audio,canvas,video {display:inline-block;*display:inline;zoom:1;}
-table,tbody,tfoot,thead,tr,th,td {margin:0;padding:0;}
-table {border-collapse:collapse;border-spacing:0;}
 hr {display:block;height:1px;border:0;border-top:1px solid #ccc;margin:1em 0;padding:0;}
 abbr,acronym {border:0;font-variant:normal;}
 del {text-decoration:line-through;}
@@ -25,6 +23,8 @@ sub {bottom:-0.25em;}
 article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,iframe,main {display:block;}
 img {vertical-align:middle;}
 address,caption,cite,code,dfn,th,var,em,i,time {font-style:normal;font-weight:500;}
+table,tbody,tfoot,thead,tr,th,td {margin:0;padding:0;}
+table {border-collapse:collapse;border-spacing:0;}
 ol,ul {list-style:none;}
 
 /* -wap*/
