@@ -2,6 +2,7 @@
 
 - cssReset.css
     ```css
+    @charset "UTF-8";
     /* CSS reset*/
     html,body,div,span,iframe,h1,h2,h3,h4,h5,h6,p,a,img,button,
     dl,dt,dd,ul,ol,li,caption,object,input,textarea,video,audio,
