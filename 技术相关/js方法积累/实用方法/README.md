@@ -252,7 +252,9 @@ function animateTo(endX, endY, time) {
 
     myself.setIntervalId = setInterval(function () {
         i++;
+
         window.scrollTo((scrollToX - scrollFromX) / time * i + scrollFromX, (scrollToY - scrollFromY) / time * i + scrollFromY);
+
         if (i >= time) {
             clearInterval(myself.setIntervalId);
         }
