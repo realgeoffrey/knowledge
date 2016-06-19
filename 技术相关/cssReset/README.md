@@ -4,10 +4,9 @@
     ```css
     @charset "UTF-8";
     /* CSS reset*/
-    html,body,div,span,iframe,h1,h2,h3,h4,h5,h6,p,a,img,button,
-    dl,dt,dd,ul,ol,li,caption,object,input,textarea,video,audio,
-    footer,header,pre,code,form,fieldset,legend,blockquote,q,
-    article,aside,details,figcaption,figure,hgroup,menu,nav,section {margin:0;padding:0;border:0;font-size:100%;vertical-align:baseline;}
+    html,body,div,span,h1,h2,h3,h4,h5,h6,p,a,img,dl,dt,dd,ul,ol,li,nav,footer,header,
+    form,input,textarea,video,audio,iframe,button,pre,code,blockquote,q,
+    fieldset,legend,caption,object,article,aside,details,figcaption,figure,hgroup,menu,section {margin:0;padding:0;border:0;font-size:100%;vertical-align:baseline;}
     body,button,input,select,textarea {font:14px/1.4286 "microsoft yahei",simsun,tahoma,arial,sans-serif;}
     h1,h2,h3,h4,h5,h6 {font-size:100%;font-weight:500;}
     a,ins {text-decoration:none;}
