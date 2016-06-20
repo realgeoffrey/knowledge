@@ -110,7 +110,7 @@
 	- 用js制作，又因为input问题多，在input外嵌套一层div，对其进行css样式修改
 	- 优雅降级
 
-19. ie6的子节点脱离文档流后，父节点要截断子节点内容，必须使父节点也脱离文档流：
+19. ie6/7的子节点脱离文档流后，父节点要截断子节点内容，必须使父节点也脱离文档流：
 	- 若要用`overflow: hidden`作用于`position: relative/absolute`的子节点，必须父级也设置`position: relative/absolute`
 	- 若要用`overflow: hidden`作用于`float`的子节点，必须父级也`浮动`或`清除浮动`
 
@@ -191,7 +191,6 @@
 
 39. ie6下父级设置`height`、`width`，当子级超过限制后，会把父级撑大（没有`overflow: hidden;`情况）。
 
-40. ie6/7下父级设置`overflow: auto;`为了产生滚动条，要再添加`*position: relative;`才有滚动条效果。
 
 ## haslayout
 
