@@ -191,6 +191,8 @@
 
 39. ie6下父级设置`height`、`width`，当子级超过限制后，会把父级撑大（没有`overflow: hidden;`情况）。
 
+40. ie6/7下父级设置`overflow: auto;`为了产生滚动条，要再添加`*position: relative;`才有滚动条效果。
+
 ## haslayout
 
 haslayout是ie6、ie7的一个私有概念，它决定了元素**如何对其内容定位和尺寸计算**，以及与其他元素的关系和相互作用。
