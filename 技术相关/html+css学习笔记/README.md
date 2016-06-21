@@ -818,6 +818,23 @@ li:hover a {
 
 >wap可以用rem和html的font-size配合
 
+### 横竖屏切换
+- 纯css媒体查询控制
+
+    ```css
+    @media (orientation: portrait) {
+        .dom {
+            transform: rotate(90deg);
+        }
+    }
+    @media (orientation: landscape) {
+        .dom {
+
+        }
+    }
+    ```
+- 用js方法更全面控制：[链接](../js方法积累/实用方法/README.md#jquery或zepto模拟手机翻转使页面都以竖屏模式展示)
+
 ### 移动端制作类似pc端的`:active`效果（或`:hover`）
 - android系统的浏览器大部分直接使用css伪类即可。
 - ios系统的浏览器要添加以下代码触发使css伪类生效：
