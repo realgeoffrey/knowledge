@@ -282,6 +282,7 @@ td,th {
     - `overflow: hidden / auto / scroll;`
     - `display: inline-block / table-cell / table-caption / flex / inline-flex;`
     - `position: absolute / fixed;`
+
 >ie6、7不支持BFC，但是有haslayout。
 
 ### word-spacing
