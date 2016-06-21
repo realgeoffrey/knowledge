@@ -1037,3 +1037,67 @@ var fourOperations = {
     }
 };
 ```
+
+### jQuery或zepto模拟手机翻转（使页面都以“竖屏”模式展示）
+```html
+<style>
+    .dom {
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+    .reversal {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(90deg);
+    }
+</style>
+
+<div class="dom" id="j-dom">...</div>
+
+<script type="text/javascript">
+    var reversalAct = {
+        setTimeoutId: '',
+        init: function (selector, className) {
+            var self = this;
+
+            var wHeight = $(window).height(),
+                wWidth = $(window).width(),
+                i;
+
+            if (wHeight > wWidth) {
+                i = wHeight;
+                wHeight = wWidth;
+                wWidth = i;
+            }
+
+            /* 固定宽高：边长较长的设置为width，边长较短的设置为height*/
+            $(selector).css({'width': wWidth + 'px', 'height': wHeight + 'px'});
+
+            window['onorientationchange' in window ? 'onorientationchange' : 'onresize'] = function () {
+                clearTimeout(self.setTimeoutId);
+
+                self.setTimeoutId = setTimeout(function () {
+                    self.resize(selector, className);
+                }, 1000);
+            };
+
+            self.resize(selector, className);
+        },
+        resize: function (selector, className) {    /* 屏幕高度>宽度，增加“顺时针翻转90度的类”*/
+            var wHeight = $(window).height(),
+                wWidth = $(window).width(),
+                $dialog = $(selector);
+
+            if (wHeight > wWidth) {
+                $dialog.addClass(className);
+            } else {
+                $dialog.removeClass(className);
+            }
+        }
+    };
+
+    reversalAct.init('#j-dom', 'reversal');
+</script>
+
+```
