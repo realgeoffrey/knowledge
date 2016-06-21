@@ -1038,7 +1038,7 @@ var fourOperations = {
 };
 ```
 
-### jQuery或zepto模拟手机翻转（使页面都以“竖屏”模式展示）
+### jQuery或zepto模拟手机翻转（使页面都以“横屏”展示）
 ```html
 <style>
     .dom {
