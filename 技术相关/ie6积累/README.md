@@ -249,4 +249,6 @@ haslayout是ie6、ie7的一个私有概念，它决定了元素**如何对其内
         ```
 
 >一个“layout元素”只可能是一个**默认就拥有 layout 的元素**或者一个**通过设置某些 CSS 属性得到 layout的元素**。
+>
+>ie6、7没有BFC，而拥有haslayout。
 
