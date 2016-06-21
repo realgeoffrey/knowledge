@@ -834,24 +834,21 @@ li:hover a {
         }
     }
     ```
-
-横竖屏切换的媒体查询（要改变html的font-size）：
-
-- 当**竖屏**的时候用屏幕高度来判断；
-- 当**横屏**的时候用屏幕宽度来判断。
-
-```css
-@media (min-height: ) and (max-height: ) and (orientation: portrait) {
-    html {
-
+- 横竖屏切换后2种状态的不同设置（要改变html的font-size）
+    ```css
+    /* 当竖屏时用屏幕高度来判断*/
+    @media (min-height: ) and (max-height: ) and (orientation: portrait) {
+        html {
+            font-size: ;
+        }
     }
-}
-@media (min-width: ) and (max-width: ) and (orientation: landscape) {
-    html {
-
+    /* 当横屏时用屏幕宽度来判断*/
+    @media (min-width: ) and (max-width: ) and (orientation: landscape) {
+        html {
+            font-size: ;
+        }
     }
-}
-```
+    ```
 
 ### 移动端制作类似pc端的`:active`效果（或`:hover`）
 - android系统的浏览器大部分直接使用css伪类即可。
