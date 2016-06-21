@@ -18,7 +18,6 @@ div {
 
 ### 清除浮动：
 - 在父级设置
-
     ```css
     .clearfix:after {
         content: "";
@@ -805,82 +804,19 @@ li:hover a {
 
 ----
 
-### 响应式设计之媒体查询
-- css属性：
-    `@media (min-width: 360px) and (max-width: 640px) {...}`
-- html标签：
-    `<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
+### 响应式设计
+- 媒体查询方式
+    1. css属性：
+        `@media (min-width: 360px) and (max-width: 640px) {...}`
+    2. html标签：
+        `<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
+- 响应式设计三大要素
+    1. 媒体查询
+    2. 流式布局：节点用百分比或rem
+    3. 弹性图片：`img {max-width: 100%;}`
 
-### 响应式设计三大要素
-- 媒体查询
-- 流式布局：节点用百分比
-- 弹性图片：`img {max-width: 100%;}`
 
->wap可以用rem和html的font-size配合
-
-### 横竖屏切换
-1. 用js方法控制：[链接](../js方法积累/实用方法/README.md#jquery或zepto模拟手机翻转使页面都以横屏展示)
-2. 媒体查询控制
-
-    ```css
-    @media (orientation: portrait) {
-        .dom {
-            transform: rotate(90deg);
-        }
-    }
-    @media (orientation: landscape) {
-        .dom {
-
-        }
-    }
-    ```
-3. 横竖屏切换后2种状态的不同设置
-
-    ```css
-    /* 当竖屏时用屏幕高度来判断*/
-    @media (min-height: ) and (max-height: ) and (orientation: portrait) {
-        html {
-            font-size: ;
-        }
-    }
-    /* 当横屏时用屏幕宽度来判断*/
-    @media (min-width: ) and (max-width: ) and (orientation: landscape) {
-        html {
-            font-size: ;
-        }
-    }
-    ```
-
-### 移动端制作类似pc端的`:active`效果（或`:hover`）
-- android系统的浏览器大部分直接使用css伪类即可。
-- ios系统的浏览器要添加以下代码触发使css伪类生效：
-
-    ```javascript
-    document.body.addEventListener('touchstart', function () {}, true);
-    ```
-- ~~js添加类的方法替代~~：
-
-    ```html
-    <style>
-        .d:active,
-        .d.active {
-
-        }
-    </style>
-
-    <script type="text/javascript">
-        var selector = '.a,.b .c,.d';   /* 选择器字符串*/
-
-        $(document.body).on("touchstart", selector, function () {
-            $(this).addClass("active");
-        }).on("touchmove touchend touchcancel", selector, function () {
-            $(this).removeClass("active");
-        });
-    </script>
-    ```
-    用来补充`.d:hover {-webkit-tap-highlight-color:rgba( , , , );}`。
-
-### wap响应式页面解决方案：使用rem单位+媒体查询
+### 响应式页面解决方案：使用rem单位+媒体查询
 rem（font size of the root element）：相对于根元素的字体大小的单位。
 
 rem单位转换为具体px值：**rem乘于html的font-size像素**。
@@ -918,6 +854,68 @@ rem单位转换为具体px值：**rem乘于html的font-size像素**。
 
     >因为html的font-size是用js写死的，而且viewport会变化，所以所有页面元素都要用百分比+rem。
 3. *用js根据浏览器宽度的改变修改html的font-size，页面总宽度固定为某rem。所有页面元素都要用百分比+rem*
+
+### 横竖屏切换
+1. 用js方法控制：[链接](../js方法积累/实用方法/README.md#jquery或zepto模拟手机翻转使页面都以横屏展示)
+2. 媒体查询控制
+
+    ```css
+    @media (orientation: portrait) {
+        .dom {
+            transform: rotate(90deg);
+        }
+    }
+    @media (orientation: landscape) {
+        .dom {
+
+        }
+    }
+    ```
+>横竖屏切换后2种状态的不同设置
+>
+>    ```css
+>    /* 当竖屏时用屏幕高度来判断*/
+>    @media (min-height: ) and (max-height: ) and (orientation: portrait) {
+>        html {
+>            font-size: ;
+>        }
+>    }
+>    /* 当横屏时用屏幕宽度来判断*/
+>    @media (min-width: ) and (max-width: ) and (orientation: landscape) {
+>        html {
+>            font-size: ;
+>        }
+>    }
+>    ```
+
+### 移动端制作类似pc端的`:active`效果（或`:hover`）
+- android系统的浏览器大部分直接使用css伪类即可。
+- ios系统的浏览器要添加以下代码触发使css伪类生效：
+
+    ```javascript
+    document.body.addEventListener('touchstart', function () {}, true);
+    ```
+- ~~js添加类的方法替代~~：
+
+    ```html
+    <style>
+        .d:active,
+        .d.active {
+
+        }
+    </style>
+
+    <script type="text/javascript">
+        var selector = '.a,.b .c,.d';   /* 选择器字符串*/
+
+        $(document.body).on("touchstart", selector, function () {
+            $(this).addClass("active");
+        }).on("touchmove touchend touchcancel", selector, function () {
+            $(this).removeClass("active");
+        });
+    </script>
+    ```
+    用来补充`.d:hover {-webkit-tap-highlight-color:rgba( , , , );}`。
 
 ### img标签的圆形边框
 1. 圆形+边框
