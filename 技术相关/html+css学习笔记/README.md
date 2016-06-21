@@ -297,7 +297,7 @@ td,th {
     - 四舍五入：ie8 ie9 chrome firefox
     - 直接向下取整：ie7 safari
 
-- 多个子节点浮动的总宽度可以大于或者小于100%，却表现为100%。
+- 多个子节点浮动的总宽度接近100%会表现成100%
 
     根据[Bootstrap's Grid system](http://getbootstrap.com/css/#grid)的标准，设置百分比宽度时，用百分比小数点后第六位的四舍五入值可以兼容大多数浏览器：
     ```css
@@ -320,22 +320,10 @@ td,th {
     ```
 
 ### font-size最小值
-- wap端没有最小限制（或6px为最小值）
+- wap端没有最小限制
 - pc端最小限制为12px
 
-### img标签的src属性
-当img标签的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
-- 不要用**空的img标签加上背景来用作默认图**，必须用其他标签来代替。
-- img标签没有src属性或src属性为空隐藏
-
-    ```css
-    img[src=''] {   /* ie8+*/
-        visibility: hidden; /* 属性为空隐藏*/
-    }
-    img:not([src]) {    /* ie9+*/
-        visibility: hidden; /* 属性不存在隐藏*/
-    }
-    ```
+>chrome浏览器可以设置到的最小值为6px，因此为了浏览器模拟wap时不会影响效果，wap字体不要小于6px。
 
 ### 滚动条
 - 若`overflow-x`和`overflow-y`相同，则等同于`overflow`
@@ -355,6 +343,20 @@ td,th {
     >   - 行间距：摇摆不定，可以为负值，仅为达成以上等式而变化
 
 >ie6不能用line-height控制图片与文字的对齐位置
+
+### img标签的src属性
+当img标签的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
+- 不要用**空的img标签加上背景来用作默认图**，必须用其他标签来代替。
+- img标签没有src属性或src属性为空隐藏
+
+    ```css
+    img[src=''] {   /* ie8+*/
+        visibility: hidden; /* 属性为空隐藏*/
+    }
+    img:not([src]) {    /* ie9+*/
+        visibility: hidden; /* 属性不存在隐藏*/
+    }
+    ```
 
 
 ##HTML + CSS
