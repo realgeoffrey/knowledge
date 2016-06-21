@@ -834,7 +834,8 @@ li:hover a {
         }
     }
     ```
-- 横竖屏切换后2种状态的不同设置（要改变html的font-size）
+3. 横竖屏切换后2种状态的不同设置（要改变html的font-size）
+
     ```css
     /* 当竖屏时用屏幕高度来判断*/
     @media (min-height: ) and (max-height: ) and (orientation: portrait) {
