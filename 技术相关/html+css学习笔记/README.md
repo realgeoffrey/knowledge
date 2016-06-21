@@ -205,7 +205,7 @@ div {
             background: url(雪碧图) 0 计算出的百分比 no-repeat;
         }
         ```
->`background-position`用`rem`会有小数问题，改用百分比不会有问题。
+>?`background-position`用`rem`会有小数问题，改用百分比不会有问题。?
 
 ### `table-layout: fixed;`
 由第一行td或th的宽度来确定此table元素内的布局。
@@ -232,6 +232,7 @@ td,th {
 ### 使元素强制表现为`block`的css设置
 - `float: left/right;`
 - `position: absolute/fixed;`
+
 >意味着有以上css属性的内联标签可以当做块级标签使用。
 
 ### 单词内断字换行
