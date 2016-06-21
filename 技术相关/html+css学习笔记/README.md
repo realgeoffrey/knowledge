@@ -834,7 +834,7 @@ li:hover a {
     }
     ```
     >可以用`@media (orientation: portrait) and ... {html {font-size: }}`和`@media (orientation: landscape) and ... {html {font-size: }}`进行媒体查询调整横竖屏下`rem`的使用。
-- 用js方法更全面控制：[链接](../js方法积累/实用方法/README.md#jQuery或zepto模拟手机翻转（使页面都以“横屏”展示）)
+- 用js方法更全面控制：[链接](../js方法积累/实用方法/README.md#jquery或zepto模拟手机翻转使页面都以横屏展示)
 
 ### 移动端制作类似pc端的`:active`效果（或`:hover`）
 - android系统的浏览器大部分直接使用css伪类即可。
