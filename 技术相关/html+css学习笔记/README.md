@@ -819,8 +819,8 @@ li:hover a {
 >wap可以用rem和html的font-size配合
 
 ### 横竖屏切换
-- 用js方法控制：[链接](../js方法积累/实用方法/README.md#jquery或zepto模拟手机翻转使页面都以横屏展示)
-- 媒体查询控制
+1. 用js方法控制：[链接](../js方法积累/实用方法/README.md#jquery或zepto模拟手机翻转使页面都以横屏展示)
+2. 媒体查询控制
 
     ```css
     @media (orientation: portrait) {
@@ -834,11 +834,24 @@ li:hover a {
         }
     }
     ```
->可以用
->`@media (orientation: portrait) and ... {html {font-size: }}`
->和
->`@media (orientation: landscape) and ... {html {font-size: }}`
->调整横屏和竖屏下各自对`rem`的使用。
+
+横竖屏切换的媒体查询（要改变html的font-size）：
+
+- 当**竖屏**的时候用屏幕高度来判断；
+- 当**横屏**的时候用屏幕宽度来判断。
+
+```css
+@media (min-height: ) and (max-height: ) and (orientation: portrait) {
+    html {
+
+    }
+}
+@media (min-width: ) and (max-width: ) and (orientation: landscape) {
+    html {
+
+    }
+}
+```
 
 ### 移动端制作类似pc端的`:active`效果（或`:hover`）
 - android系统的浏览器大部分直接使用css伪类即可。
