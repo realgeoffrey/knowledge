@@ -1053,7 +1053,8 @@ var fourOperations = {
     }
 </style>
 
-<div class="dom" id="j-dom">...</div>
+<div class="dom" id="j-dom-1">...</div>
+<div class="dom" id="j-dom-2">...</div>
 
 <script type="text/javascript">
     var reversalAct = {
@@ -1063,6 +1064,7 @@ var fourOperations = {
 
             var wHeight = $(window).height(),
                 wWidth = $(window).width(),
+                resizeEvent = "onorientationchange" in window ? "orientationchange" : "resize",
                 i;
 
             if (wHeight > wWidth) {
@@ -1074,30 +1076,30 @@ var fourOperations = {
             /* 固定宽高：边长较长的设置为width，边长较短的设置为height*/
             $(selector).css({'width': wWidth + 'px', 'height': wHeight + 'px'});
 
-            window['onorientationchange' in window ? 'onorientationchange' : 'onresize'] = function () {
+            $(window).on(resizeEvent, function () {
                 clearTimeout(self.setTimeoutId);
 
                 self.setTimeoutId = setTimeout(function () {
                     self.resize(selector, className);
-                }, 1000);
-            };
+                }, 500);
+            });
 
             self.resize(selector, className);
         },
         resize: function (selector, className) {    /* 屏幕高度>宽度，增加“顺时针翻转90度的类”*/
             var wHeight = $(window).height(),
                 wWidth = $(window).width(),
-                $dialog = $(selector);
+                $dom = $(selector);
 
             if (wHeight > wWidth) {
-                $dialog.addClass(className);
+                $dom.addClass(className);
             } else {
-                $dialog.removeClass(className);
+                $dom.removeClass(className);
             }
         }
     };
 
-    reversalAct.init('#j-dom', 'reversal');
+    reversalAct.init('#j-dom-1, #j-dom-2', 'reversal');
 </script>
 
 ```
