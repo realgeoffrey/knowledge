@@ -806,8 +806,10 @@ li:hover a {
 ### 响应式设计
 - 媒体查询方式
     1. css属性：
+
         `@media (min-width: 360px) and (max-width: 640px) {...}`
     2. html标签：
+
         `<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
 - 响应式设计三大要素
     1. 媒体查询
@@ -872,20 +874,20 @@ rem单位转换为具体px值：**rem乘于html的font-size像素**。
     ```
 >横竖屏切换后2种状态的不同设置
 >
->    ```css
->    /* 当竖屏时用屏幕高度来判断*/
->    @media (min-height: ) and (max-height: ) and (orientation: portrait) {
->        html {
->            font-size: ;
->        }
+>```css
+>/* 当竖屏时用屏幕高度来判断*/
+>@media (min-height: ) and (max-height: ) and (orientation: portrait) {
+>    html {
+>        font-size: ;
 >    }
->    /* 当横屏时用屏幕宽度来判断*/
->    @media (min-width: ) and (max-width: ) and (orientation: landscape) {
->        html {
->            font-size: ;
->        }
+>}
+>/* 当横屏时用屏幕宽度来判断*/
+>@media (min-width: ) and (max-width: ) and (orientation: landscape) {
+>    html {
+>        font-size: ;
 >    }
->    ```
+>}
+>```
 
 ### 移动端制作类似pc端的`:active`效果（或`:hover`）
 - android系统的浏览器大部分直接使用css伪类即可。
