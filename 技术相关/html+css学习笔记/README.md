@@ -251,7 +251,7 @@ td,th {
 - `width: 100%;`：
     父级的px为自己的px。
 
-### margin合并（非ie浏览器）
+### margin合并
 >[W3C]In CSS, the adjoining margins of two or more boxes (which might or might not be siblings) can combine to form a single margin. Margins that combine this way are said to collapse, and the resulting combined margin is called a collapsed margin.
 
 - 在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
@@ -260,6 +260,8 @@ td,th {
 
     >普通流：除**浮动（float）**、**绝对定位（absolute）**外的代码。
 - 产生独立的BFC结构可避免margin合并
+
+>ie6、7触发haslayout会影响margin合并的发生。
 
 ### BFC（Block Formatting Context）块级格式上下文
 - W3C定义：
@@ -280,6 +282,7 @@ td,th {
     - `overflow: hidden / auto / scroll;`
     - `display: inline-block / table-cell / table-caption / flex / inline-flex;`
     - `position: absolute / fixed;`
+>ie6、7不支持BFC，但是有haslayout。
 
 ### word-spacing
 对有空白字符包裹的非空白字符产生效果。
