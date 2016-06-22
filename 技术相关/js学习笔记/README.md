@@ -652,7 +652,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 2. `(function () {/* code*/})();`
 
 ### 动态添加样式、脚本
-- 动态添加样式
+1. 动态添加样式
 
     1. 添加`style`标签
 
@@ -690,7 +690,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         ```
 
     >css代码，例如 `div {background-color: yellow;}`。
-- 动态添加脚本
+2. 动态添加脚本
 
     1. 异步
 
@@ -799,7 +799,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
             ```
 
 ### 拼接字符串
-长字符串拼接使用`.join()`，而不使用`+`：
+长字符串拼接使用`.join()`，而不使用`+`
 ```javascript
 /* 性能好*/
 var arr = [],
@@ -838,12 +838,12 @@ $('body').text(text);
 >`!!变量`等价于`Boolean(变量)`。
 
 ### DOM加载步骤、jQuery文档ready事件和js的onload事件顺序
-1. 解析Html结构
-2. 加载外部脚本和样式表文件
-3. 解析并执行脚本代码
-4. 构造Html DOM模型 -> 完成后执行`$(document).ready(function(){});`
-5. 加载图片等外部文件
-6. 页面加载完毕 -> 完成后执行`window.onload();`
+1. 解析Html结构；
+2. 加载外部脚本和样式表文件；
+3. 解析并执行脚本代码；
+4. 构造Html DOM模型 -> 完成后执行`$(document).ready(function(){});`；
+5. 加载图片等外部文件；
+6. 页面加载完毕 -> 完成后执行`window.onload();`。
 
 ### JS性能
 - 平稳退化：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
@@ -994,12 +994,12 @@ $('body').text(text);
         只要图像的src属性中的URL不能返回可以被识别的图像格式，就会触发图像的`onerror`事件。
         错误不会提交到`window.onerror`。
 
-        - `<img>`标签的`onerror`事件
+        1. `<img>`标签的`onerror`事件
 
             ```html
             <img src="错误地址" onerror="func();">
             ```
-        - `Image`实例的属性
+        2. `Image`实例的属性
 
             ```javascript
             var img = new Image();
@@ -1014,10 +1014,10 @@ $('body').text(text);
 
     - 使用策略
 
-        - 非客户端页面
+        1. 非客户端页面
 
             仅需在加载js之前配置好`window.onerror`。
-        - 客户端内嵌页面
+        2. 客户端内嵌页面
 
             1. 同样也需要在加载js之前配置好`window.onerror`，来处理页面内错误。
             2. 客户端回调函数嵌套一层`try-catch`以提供**哪个方法发生错误等额外信息**。
@@ -1045,15 +1045,15 @@ $('body').text(text);
 
 - 定义函数方法：
 
-    - 构造函数
+    1. 构造函数
 
         `new Function(参数);`
 
         把Function的构造函数当作函数一样调用（不使用new操作符）的效果与作为Function的构造函数调用一样。
-    - 函数声明（函数语句）
+    2. 函数声明（函数语句）
 
         `function 名字(参数) {};`
-    - 函数表达式（function expression）
+    3. 函数表达式（function expression）
 
         `var 名字 = function(参数) {};`
 
