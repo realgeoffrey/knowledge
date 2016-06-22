@@ -283,21 +283,21 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
     >建议：都用`===`或`!==`进行比较。
 - 三元运算符应当仅仅用在条件赋值语句中，而不要作为if语句的替代。
-    - ~~`condition ? func1() : func2();`~~
-    - `var a = condition ? '1' : '2';`
+    1. ~~`condition ? func1() : func2();`~~
+    2. `var a = condition ? '1' : '2';`
 - 命名
-    - 变量命名的前缀应当是**名词**，函数命名的前缀应当是**动词**
-    - 约定函数名：
-        - `can`、`has`、`is`开头的返回值是布尔型
-        - `get`开头的返回是非布尔型
-        - `set`开头的执行保存动作
-    - 常量用大写字母和下划线分割，如`MAX_COUNT`
-    - 构造函数用大驼峰命名法（Pascal Case），首字母大写（以非动词开头），单词首字母大写。
-        - `var a = new Person();    /* 构造函数*/`
-        - `var b = getPerson();    /* 普通函数*/`
+    1. 变量命名的前缀应当是**名词**，函数命名的前缀应当是**动词**
+    2. 约定函数名：
+        1. `can`、`has`、`is`开头的返回值是布尔型
+        2. `get`开头的返回是非布尔型
+        3. `set`开头的执行保存动作
+    3. 常量用大写字母和下划线分割，如`MAX_COUNT`
+    4. 构造函数用大驼峰命名法（Pascal Case），首字母大写（以非动词开头），单词首字母大写。
+        1. `var a = new Person();    /* 构造函数*/`
+        2. `var b = getPerson();    /* 普通函数*/`
 
         >这样对于首字母大写的函数即可认定为构造函数，否则为普通函数。
-    - 不要用多行的字符串写法
+    5. 不要用多行的字符串写法
 
         ```javascript
         /* 不提倡的多行写法*/
@@ -308,10 +308,10 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         var b = 'abc' +
             'def';
         ```
-    - 对象的属性、方法，与变量、方法命名规则相同
-    - 若属性、变量、方法在表示其是私有的，可在之前加一个下划线`_`作为区分
+    6. 对象的属性、方法，与变量、方法命名规则相同
+    7. 若属性、变量、方法在表示其是私有的，可在之前加一个下划线`_`作为区分
 - 使用直接量
-    - 对象直接量
+    1. 对象直接量
 
         用直接量代替`Object`构造函数
 
@@ -323,7 +323,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         /* 直接量*/
         var b = {attr1: '...'};
         ```
-    - 数组直接量
+    2. 数组直接量
 
         用直接量代替`Array`构造函数
 
@@ -335,7 +335,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         var arr2 = ["a", "b"];
         ```
 - 注释规范
-    - 单行注释
+    1. 单行注释
 
         ‘//’后不空格
 
@@ -344,7 +344,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
             1. 代码上方独占一行，缩进与备注内容一致，注释前必须空一行
             2. 代码尾部，至少一个缩进（若注释太长则必须挪到代码上方）
             3. 被注释的大段代码
-    - 多行注释
+    2. 多行注释
 
         ‘\*’或‘/\*’后空一格
 
@@ -353,7 +353,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
             1. 难以理解的代码
             2. 可能被误认为错误的代码
             3. 浏览器特性hack
-    - 函数注释规范
+    3. 函数注释规范
 
         ```javascript
         /*
@@ -390,18 +390,18 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
 ### 编程实践
 - UI层的松耦合
-    - 不要用js修改css样式，只修改class（任何时刻，css中的样式都可以修改，而不必更新js）。
+    1. 不要用js修改css样式，只修改class（任何时刻，css中的样式都可以修改，而不必更新js）。
 
         >特例：根据页面重新定位，可以用js设定定位置。
-    - 将html从js中抽离，避免增加跟踪文本和结构性问题的复杂度。可以使用一些模板类，如baidu模板。
+    2. 将html从js中抽离，避免增加跟踪文本和结构性问题的复杂度。可以使用一些模板类，如baidu模板。
 - 避免使用全局变量
 
     >任何来自函数外的数据都应当以参数形式传递进函数，这样做可以将函数与其外部环境隔离开来，并且修改不会对程序其他部分造成影响。
 
-    - 单全局变量
+    1. 单全局变量
 
         所创建的这个唯一全局对象名是独一无二的（不与内置API冲突），并将你所有的功能代码都挂载到这个全局对象上，因此每个可能的全局变量都成为唯一全局对象的属性（或方法），从而不会创建多个全局变量。
-    - 零全局变量
+    2. 零全局变量（匿名函数）
 
         当不与其他代码产生交互，不需要直接引用任何全局变量，可以使用此法。使用场景有限。例：
 
@@ -415,8 +415,8 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         }(window));
         ```
 - 事件处理
-    - 把事件处理（与用户行为相关的代码）与应用逻辑（与应用相关的功能性代码）隔离开。
-    - 不要分发事件：
+    1. 把事件处理（与用户行为相关的代码）与应用逻辑（与应用相关的功能性代码）隔离开。
+    2. 不要分发事件：
 
         让事件处理函数成为接触到`event`对象的唯一函数，在event进入应用逻辑前进行（包括阻止默认事件或阻止冒泡等）操作。
 - 将配置数据从代码中分离
@@ -426,8 +426,8 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 ### 判断jQuery（Zepto）选择器选择到空内容
 无论选择器选取的内容是否为空，都返回数组，所以`if($(...)) {/* 永远执行*/}`永远成立。因此用以下方法：
 
-- `if($(...).length > 0) {/* 代码*/}`
-- `if($(...)[]) {/* 代码*/}   /* 若无则为undefined*/`
+1. `if($(...).length > 0) {/* 代码*/}`
+2. `if($(...)[]) {/* 代码*/}   /* 若无则为undefined*/`
 
 ### 移动端相关
 - 移动端或者Zepto的`tap事件`点透bug解决
@@ -445,25 +445,6 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
 ### 判断类型
 - `Object.prototype.toString.apply(值);  /* 或call*/`
-
-    - ECMA解释：
-
-        如果this的值为undefined，则返回"[object Undefined]"。
-
-        如果this的值为null，则返回"[object Null]"。
-
-        让O成为调用ToObject(this)的结果。
-
-        让class成为O的内部属性[[Class]]的值。
-
-        返回三个字符串"[object "、class以及"]"连接后的新字符串。
-
-        >[ECMA]When the toString method is called, the following steps are taken:
-        >   - If the this value is undefined, return "[object Undefined]".
-        >   - If the this value is null, return "[object Null]".
-        >   - Let O be the result of calling ToObject passing the this value as the argument.
-        >   - Let class be the value of the [[Class]] internal property of O.
-        >   - Return the String value that is the result of concatenating the three Strings **"[object ", class, and "]"**.
     - 除了放入*undefined*或*null*外，放入**对象**，返回`"[object 构造函数的名称]"`的字符串
 
         `Object.prototype.toString.call(值);` -> 输出字符串
@@ -491,6 +472,24 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         >对于没有声明的变量，直接使用此行代码会报**引用不存在变量**的错误，因此需要：
         >
         >`if (typeof 变量 !== 'undefined' && Object.prototype.toString.call(变量) === '[object 某]') {}`来使用。
+    - ECMA解释：
+
+        如果this的值为undefined，则返回"[object Undefined]"。
+
+        如果this的值为null，则返回"[object Null]"。
+
+        让O成为调用ToObject(this)的结果。
+
+        让class成为O的内部属性[[Class]]的值。
+
+        返回三个字符串"[object "、class以及"]"连接后的新字符串。
+
+        >[ECMA]When the toString method is called, the following steps are taken:
+        >   - If the this value is undefined, return "[object Undefined]".
+        >   - If the this value is null, return "[object Null]".
+        >   - Let O be the result of calling ToObject passing the this value as the argument.
+        >   - Let class be the value of the [[Class]] internal property of O.
+        >   - Return the String value that is the result of concatenating the three Strings **"[object ", class, and "]"**.
 - `typeof 值`
 
     可以跨帧（iframe）。
@@ -528,36 +527,34 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     >ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
 
 ### 循环遍历
->`break`应用在循环（while、do-while、for、for-in）和switch。
->
->`continue`应用在循环。
->
->`$.each/obj.each`跳出循环用`return true`（功能类似于continue）和`return false`（功能类似于break）。
+>1. `break`应用在循环（while、do-while、for、for-in）和switch。
+>2. `continue`应用在循环。
+>3. `$.each/obj.each`跳出循环用`return true`（功能类似于continue）和`return false`（功能类似于break）。
 
-- `for-in`js原生语法
+1. `for-in`js原生语法
 
     ```javascript
+    /* obj为数组或对象，i为数组下标或对象属性名*/
     for (var i in obj) {
 
     }
     ```
-    - obj为数组或对象，i为数组下标或对象属性名。
-- `$.each()`jQuery方法
+2. `$.each()`jQuery方法
 
     ```javascript
+    /* obj为数组或对象（原生或jQuery对象），index为数组下标或对象名，element为值（不是jQuery对象，是DOM对象，与this相同）*/
     $.each(obj, function (index, element) {
 
     });
     ```
-    - obj为数组或对象（原生或jQuery对象），index为数组下标或对象名，element为值（不是jQuery对象，是DOM对象，与this相同）。
-- `obj.each()`jQuery方法
+3. `obj.each()`jQuery方法
 
     ```javascript
+    /* obj为jQuery对象，index为从0开始的下标，element为值（不是jQuery对象，是DOM对象，与this相同）*/
     obj.each(function (index, element) {
 
     });
     ```
-    - obj为jQuery对象，index为从0开始的下标，element为值（不是jQuery对象，是DOM对象，与this相同）。
 
 ### 判断对象、方法是否定义
 - 判断对象方法是否可以执行
@@ -594,7 +591,8 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     ```
 
 ### web storage、cookie、session
-- web storage（localStorage、sessionStorage）
+1. web storage（localStorage、sessionStorage）
+
     - 本地保存，字符串形式保存
     - 仅在客户端（即浏览器）中保存，不参与和服务器的通信
     - 除了ie6、ie7外其他浏览器都支持（ie及FF需在web服务器里运行）
@@ -635,7 +633,8 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
             - 会话级别存储。跳转页面为同源后仍旧有效，关闭浏览器后被清除（一个会话存储一个sessionStorage对象，不同tab的值不共通;关闭tab后恢复此tab可能恢复数据）
             - 5m
             - 应用场景：需要拆分成多个子页面的填写数据
-- `cookie`：
+2. `cookie`：
+
     - 本地保存，字符串形式保存
     - 若不设置失效期则存储在内存中；若设置了失效期则存储在硬盘
     - 同源同路径，默认是关闭浏览器后失效，设置失效时间则到期后才失效
@@ -643,13 +642,14 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     - 单个cookie保存的数据不超过4k，单个域名有限制数量的cookie（最少20个）
     - 需要程序员自己封装get和set方法，源生的Cookie接口不友好
     - 应用场景：主要判断用户登录，用于辨认不同用户以提供不同个性化服务
-- `session`：
+3. `session`：
+
     - 服务端保存，对象形式保存
     - 无状态值（无法区分请求地址），需要借助本地cookie进行操作
 
 ### 自执行匿名函数
-- `(function () {/* code*/}());`推荐
-- `(function () {/* code*/})();`
+1. `(function () {/* code*/}());`推荐
+2. `(function () {/* code*/})();`
 
 ### 动态添加样式、脚本
 - 动态添加样式
@@ -876,37 +876,39 @@ $('body').text(text);
 垃圾收集器会按照固定的时间间隔（或代码执行中预定的时间）周期性地执行，找出不再继续使用的变量，然后释放其占用的内存。
 
 垃圾收集器必须跟踪并判断变量是否有用，对于不再有用的变量打上标记，以备将来回收。
-- 标记清除（mark-and-sweep）
+
+1. 标记清除（mark-and-sweep）
 
     垃圾收集器在运行时给存储在内存中的所有变量加上标记；然后，去掉环境中的变量以及被环境中变量引用的变量的标记；最后，对那些带标记的值进行释放。
-- 引用计数（reference counting）
+2. 引用计数（reference counting）
 
     跟踪记录每个值被引用的次数，被引用一次加1，引用取消就减1，当引用次数为0时，则说明没有办法再访问这个值了，当垃圾收集器下次运行时，释放引用次数为0的值所占空间。
 
     >可能产生一个严重的问题：循环引用，引用次数永远不会是0。
 
-用`变量 = null;`等方法，让变量成为零引用，从而进行清除元素、垃圾回收。
+>用`变量 = null;`等方法，让变量成为零引用，从而进行清除元素、垃圾回收。
 
 ### 排版引擎与js引擎
-- 排版引擎（layout engine）
+1. 排版引擎（layout engine）
 
     也称为浏览器内核（web browser engine）、页面渲染引擎（rendering engine）或样板引擎，是一种软件组件，负责获取标记式内容（如html、xml以及图像文件等）、整理信息（如css、xsl），并将排版后的内容输出至显示屏或打印机。
     所有网页浏览器、电子邮件客户端以及其他需要根据表示性的标记语言来显示内容的应用程序，都需要排版引擎。
 
     IE：Trident；Chrome：前WebKit，现Blink；Firefox：Gecko；Safari：WebKit；Opera：前Presto，现Blink；Edge：EdgeHTML。
-- js引擎
+2. js引擎
 
     一个专门处理js脚本的虚拟机，一般会附带在网页浏览器中。
 
     JScript：ie8-，ASP；Chakra：ie9+，Edge；V8：Chrome，Opera，Nodejs，MongoDB；SpiderMonkey：Firefox；Nitro：Safari。
 
 ### 引用类型与基本类型的变量传递
-- 只能给引用类型动态地添加属性和方法，不能给基本类型添加。
-- js的变量传递都是**值传递**，都是把变量中存储的值复制一份给另一个变量。
-    - 基本类型的复制
+1. 只能给引用类型动态地添加属性和方法，不能给基本类型添加。
+2. js的变量传递都是**值传递**，都是把变量中存储的值复制一份给另一个变量。
+
+    1. 基本类型的复制
 
         把变量的值复制到新变量分配的位置上，两个变量可以参与任何操作而不会互相影响。
-    - 引用类型的复制
+    2. 引用类型的复制
 
         引用类型的变量保存的是指向该对象内容的指针，复制给新变量指针后，两个变量实际上引用同一对象，改变其中一个引用对象中的属性，会影响另一个。但是如果给其中一个引用对象赋值（不是操作属性），因为值引用改变了引用地址，所以两个变量不再保存同一个指针。
 
@@ -954,7 +956,7 @@ $('body').text(text);
 
     在某个**JavaScript block**（`<script>`标签或`try-catch`的`try`语句块）内，第一个错误触发后，当前Javascript block后面的代码会被自动忽略，不再执行，其他的JavaScript block内代码不被影响。
 
-    - `try-catch-finally`
+    1. `try-catch-finally`
 
         `try`必须跟`catch`或`finally`或`catch + finally`同时出现。
 
@@ -964,7 +966,7 @@ $('body').text(text);
         如果`try`中代码是以`return`、`continue`或`break`终止的，必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
 
         在`catch`中接收的错误，不会再向上提交给浏览器。
-    - `window.onerror`
+    2. `window.onerror`
 
         没有通过`try-catch`处理的错误都会触发`window`对象的`onerror`。
 
@@ -987,7 +989,7 @@ $('body').text(text);
             return true;    /* 浏览器不再显示错误信息*/
         };
         ```
-    - 图像的`onerror`事件
+    3. 图像的`onerror`事件
 
         只要图像的src属性中的URL不能返回可以被识别的图像格式，就会触发图像的`onerror`事件。
         错误不会提交到`window.onerror`。
