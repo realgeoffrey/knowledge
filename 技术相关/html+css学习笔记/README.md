@@ -17,7 +17,7 @@ div {
 > 两个同样大小的三角形，第二个设置为背景色并且覆盖到第一个上面，可以模拟箭头**>**。
 
 ### 清除浮动：
-- 在父级设置
+1. 在父级设置
 
     ```css
     .clearfix:after {
@@ -29,7 +29,7 @@ div {
        *zoom: 1;
     }
     ```
-- 截断不影响时，在父级设置
+2. 截断不影响时，在父级设置
 
     ```css
     .father {
@@ -60,7 +60,7 @@ div {
 ```
 
 ### 模糊效果滤镜（高斯模糊）
-- CSS3（除*ie10*与*ie11*外基本所有主流浏览器）
+1. CSS3（除*ie10*与*ie11*外基本所有主流浏览器）
 
     ```css
     .filter {
@@ -71,7 +71,7 @@ div {
         filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* ie6~ie9 */
     }
     ```
-- SVG（较新版本的FireFox、Chrome、Opera）
+2. SVG（较新版本的FireFox、Chrome、Opera）
 
     >新建一个SVG文件，把滤镜方法放进去，然后css调用`filter: url(某.svg#某id);`
 
@@ -94,7 +94,7 @@ div {
     }
     ```
 
-- canvas
+3. canvas
 
     （待续）
 
@@ -144,7 +144,7 @@ div {
 
 ### wap页面自适应图片
 要求：图片根据浏览器窗口变化而宽高一同等比例变化，不使用`img`标签。
-- 横向、纵向百分比的`padding`（和`margin`）值都是以父元素的`width`为基础，`height`是以父元素的`height`为基础
+1. 横向、纵向百分比的`padding`（和`margin`）值都是以父元素的`width`为基础，`height`是以父元素的`height`为基础
 
     ```css
     自适应图片 {
@@ -157,8 +157,8 @@ div {
     ```
 
     >缺点：只能用于空标签
-- 宽高都用rem（与html的font-size配合）
-    - 单图
+2. 宽高都用rem（与html的font-size配合）
+    1. 单图
 
         ```css
         自适应图片 {
@@ -168,7 +168,7 @@ div {
             background: url(单图) 0 0 no-repeat;
         }
         ```
-    - 雪碧图
+    2. 雪碧图
 
         ```css
         自适应图片 {
@@ -178,13 +178,13 @@ div {
             background: url(雪碧图) 0 -纵轴rem no-repeat;
         }
         ```
-- 雪碧图并且`background-position`用百分比
+3. 雪碧图并且`background-position`用百分比
 
     >百分比公式：
     >   - **background-position-x = 小图横坐标 / ( 大图宽度 - 小图宽度 ) \* 100%**
     >   - **background-position-y = 小图纵坐标 / ( 大图高度 - 小图高度 ) \* 100%**
 
-    - 百分比宽高
+    1. 百分比宽高
 
         ```css
             自适应图片 {
@@ -195,7 +195,7 @@ div {
                 background: url(雪碧图) 0 计算出的百分比 no-repeat;
             }
         ```
-    - rem宽高
+    2. rem宽高
 
         ```css
         自适应图片 {
@@ -230,25 +230,25 @@ td,th {
 >若`table-layout`使用默认值`automatic`，则td或th上设置宽度无效，列的宽度由列单元格中没有折行的最宽的内容决定。
 
 ### 使元素强制表现为`block`的css设置
-- `float: left/right;`
-- `position: absolute/fixed;`
+1. `float: left/right;`
+2. `position: absolute/fixed;`
 
 >意味着有以上css属性的内联标签可以当做块级标签使用。
 
 ### 单词内断字换行
-- ~~默认~~：
+1. ~~默认~~：
     *若此行放不下则整个单词换行，若下行也放不下则溢出（保持单词不断词）。*
-- ~~`word-break: break-all;`~~：
+2. ~~`word-break: break-all;`~~：
     *若此行放不下则直接断词，不会尝试整个单词换行。*
-- `word-wrap: break-word;`：
+3. `word-wrap: break-word;`：
     若此行放不下则整个单词先换行，若下行也放不下再断词。
 
 ### 块级元素的width
-- `width: auto;`：
+1. `width: auto;`：
     默认值，换算具体值为：**本元素width = 父级width - 本元素（margin + padding + border）水平值**。
 
     >当块级width为默认的auto时，设置负的水平margin会使width增加。
-- `width: 100%;`：
+2. `width: 100%;`：
     父级的px为自己的px。
 
 ### margin合并
@@ -292,12 +292,12 @@ td,th {
 应该只给有堆叠关系的节点设置此属性，而不要试图通过设定个别元素的z-index来确保元素不重叠。
 
 ### css的小数、百分比
-- 浏览器会把小数以及百分比换算成整数的单位（px）
+1. 浏览器会把小数以及百分比换算成整数的单位（px）
 
     - 四舍五入：ie8 ie9 chrome firefox
     - 直接向下取整：ie7 safari
 
-- 多个子节点浮动的总宽度接近100%会表现成100%
+2. 多个子节点浮动的总宽度接近100%会表现成100%
 
     根据[Bootstrap's Grid system](http://getbootstrap.com/css/#grid)的标准，设置百分比宽度时，用百分比小数点后第六位的四舍五入值可以兼容大多数浏览器：
     ```css
@@ -326,16 +326,16 @@ td,th {
 >chrome浏览器可以设置到的最小值为6px，因此为了浏览器模拟wap时不会影响效果，wap字体不要小于6px。
 
 ### 滚动条
-- 若`overflow-x`和`overflow-y`相同，则等同于`overflow`
-- 若不同，且其中一个值为`visible`，另一个为`hidden/scroll/auto`，则`visible`重置为`auto`
-- 默认滚动条均来自`html`标签，而不是body标签。因此，除去默认滚动条应在html上设置overflow值
-- js滚动条高度为：`document.documentElement.scrollTop || document.body.scrollTop`
-- 滚动条会占用容器的可用高度或宽度
+1. 若`overflow-x`和`overflow-y`相同，则等同于`overflow`
+2. 若不同，且其中一个值为`visible`，另一个为`hidden/scroll/auto`，则`visible`重置为`auto`
+3. 默认滚动条均来自`html`标签，而不是body标签。因此，除去默认滚动条应在html上设置overflow值
+4. js滚动条高度为：`document.documentElement.scrollTop || document.body.scrollTop`
+5. 滚动条会占用容器的可用高度或宽度
 
 ### `line-height`
-- 单行文本情况下：内联元素的高度由`line-height`决定；块级元素的高度先由`height`决定，若没有设置`height`再由`line-height`决定（ie6是`line-height`优先决定）。
-- 查看内联元素时，展示的高度（鼠标指示出的高度）为内容区域高度(height)，元素所占高度由`line-height`决定。
-- 元素高度表现为： 内容区域+行间距，刚好等于行高。
+1. 单行文本情况下：内联元素的高度由`line-height`决定；块级元素的高度先由`height`决定，若没有设置`height`再由`line-height`决定（ie6是`line-height`优先决定）。
+2. 查看内联元素时，展示的高度（鼠标指示出的高度）为内容区域高度(height)，元素所占高度由`line-height`决定。
+3. 元素高度表现为： 内容区域+行间距，刚好等于行高。
 
     **内容区域（content area） + 行间距（vertical spacing） = 行高（line-height）**
 
@@ -346,8 +346,8 @@ td,th {
 
 ### img标签的src属性
 当img标签的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
-- 不要用**空的img标签加上背景来用作默认图**，必须用其他标签来代替。
-- img标签没有src属性或src属性为空隐藏
+1. 不要用**空的img标签加上背景来用作默认图**，必须用其他标签来代替。
+2. img标签没有src属性或src属性为空隐藏
 
     ```css
     img[src=''] {   /* ie8+*/
@@ -363,26 +363,27 @@ td,th {
 
 ### 垂直居中
 ```html
+<style type="text/css">
+    .box { /* 此层不能是float或absolute，可以在此层外嵌套的设置为float或absolute*/
+       display: table-cell;
+       height: 114px; /* height/font-size = 1.14*/
+       *font-size: 100px;
+       vertical-align: middle; /* 无继承性*/
+       text-align: center; /* 有继承性*/
+    }
+    span { /* 必须是内联元素*/
+       display: inline-block;
+       vertical-align: middle;
+       /*font-size覆盖父级的字体*/
+    }
+    img {
+       vertical-align: middle;
+    }
+</style>
+
 <div class="box">
     <img src=""> or <span>...</span>
 </div>
-```
-```css
-.box { /* 此层不能是float或absolute，可以在此层外嵌套的设置为float或absolute*/
-   display: table-cell;
-   height: 114px; /* height/font-size = 1.14*/
-   *font-size: 100px;
-   vertical-align: middle; /* 无继承性*/
-   text-align: center; /* 有继承性*/
-}
-span { /* 必须是内联元素*/
-   display: inline-block;
-   vertical-align: middle;
-   /*font-size覆盖父级的字体*/
-}
-img {
-   vertical-align: middle;
-}
 ```
 
 ### 多列等高
@@ -453,8 +454,8 @@ ul li a:hover {
     }
     ```
 
-    >DOM结构不能颠倒，需要中间结构放最前;
-    >节点上能设定`clear: both;`。
+    >- DOM结构不能颠倒，需要中间结构放最前;
+    >- 节点上能设定`clear: both;`。
 
 2. 中间内容自适应，两边固定（中间内容后加载）
 
@@ -466,7 +467,7 @@ ul li a:hover {
     </div>
     ```
     ```css
-    。float_l {
+    .float_l {
         float: left;
         width: 左边块宽度;
     }
@@ -480,8 +481,8 @@ ul li a:hover {
     }
     ```
 
-    >DOM结构不能颠倒，需要中间结构放最后;
-    >节点上能设定`clear: both;`。
+    >- DOM结构不能颠倒，需要中间结构放最后;
+    >- 节点上能设定`clear: both;`。
 
     >float属性的节点可以填补在之后节点的水平margin区域内，padding区域内不可以;不可以填补于之前节点的水平margin区域内。
 
@@ -511,9 +512,9 @@ ul li a:hover {
     }
     ```
 
-    >DOM结构不能颠倒，需要中间结构放最后;
-    >节点上能设定`clear: both;`;
-    >完全由内容决定布局。
+    >- DOM结构不能颠倒，需要中间结构放最后;
+    >- 节点上能设定`clear: both;`;
+    >- 完全由内容决定布局。
 
 ### 内容居中
 1. 内容宽度可变，三层模式
@@ -563,6 +564,33 @@ ul li a:hover {
 
 ### 翻转效果（ie9+及高级浏览器）
 ```html
+<style type="text/css">
+    .item {
+        position: relative;
+        display: inline-block;
+        *display: inline;
+        zoom: 1;
+    }
+    .front {
+        backface-visibility: hidden;
+        transition: 1s;
+        transform: rotateY(0deg);
+    }
+    .back {
+        backface-visibility: hidden;
+        transition: 1s;
+        transform: rotateY(180deg);
+        position: absolute;
+        top: 0;
+    }
+    .item:hover .front {
+        transform: rotateY(180deg);
+    }
+    .item:hover .back {
+        transform: rotateY(360deg);
+    }
+</style>
+
 <div class="item">
     <div class="front">
         <img>
@@ -572,35 +600,9 @@ ul li a:hover {
     </div>
 </div>
 ```
-```css
-.item {
-    position: relative;
-    display: inline-block;
-    *display: inline;
-    zoom: 1;
-}
-.front {
-    backface-visibility: hidden;
-    transition: 1s;
-    transform: rotateY(0deg);
-}
-.back {
-    backface-visibility: hidden;
-    transition: 1s;
-    transform: rotateY(180deg);
-    position: absolute;
-    top: 0;
-}
-.item:hover .front {
-    transform: rotateY(180deg);
-}
-.item:hover .back {
-    transform: rotateY(360deg);
-}
-```
 
 ### 复杂背景切图
-- （背景不透明情况）背景不规则，内容贯穿背景
+1. （背景不透明情况）背景不规则，内容贯穿背景
     1. 上下级结构
 
         ```html
@@ -669,7 +671,7 @@ ul li a:hover {
             background: url(背景图) -2*宽度 bottom no-repeat;
         }
         ```
-- （背景可透明情况）背景不规则，内容不贯穿背景
+2. （背景可透明情况）背景不规则，内容不贯穿背景
 
     ```html
     <div class="main">
@@ -701,16 +703,17 @@ ul li a:hover {
 要做到不同字数的一行文字等宽，可以用标签填补中间间隙。
 
 ```html
+<style type="text/css">
+    i {
+        display: inline-block;
+        *display: inline;
+        zoom: 1;
+        width: 1em;
+    }
+</style>
+
 <标签>文字文字</标签>
 <标签>文<i></i><i></i>字</标签>
-```
-```css
-i {
-    display: inline-block;
-    *display: inline;
-    zoom: 1;
-    width: 1em;
-}
 ```
 
 ### 实现hover之后底部border替换父级border
@@ -745,7 +748,7 @@ li:hover a {
 ```
 
 ### 页面高度不够时，footer依然置于页面最底部
-- 兼容大部分情况
+1. 兼容大部分情况
 
     ```html
     <div class="content">
@@ -772,7 +775,7 @@ li:hover a {
         height: 底部高度;
     }
     ```
-- *ie6中，当.last_container高度变化的时候会渲染错误*
+2. *ie6中，当.last_container高度变化的时候会渲染错误*
 
     ```html
     <div class="wrapper">
@@ -896,20 +899,18 @@ rem单位转换为具体px值：**rem乘于html的font-size像素**。
 >```
 
 ### 移动端制作类似pc端的`:active`效果（或`:hover`）
-- android系统的浏览器大部分直接使用css伪类即可。
-- ios系统的浏览器要添加以下代码触发使css伪类生效：
+1. android系统的浏览器大部分直接使用css伪类即可。
+2. ios系统的浏览器要添加以下代码触发使css伪类生效：
 
     ```javascript
     document.body.addEventListener('touchstart', function () {}, true);
     ```
-- ~~js添加类的方法替代~~：
+3. ~~js添加类的方法替代~~：
 
     ```html
     <style>
         .d:active,
-        .d.active {
-
-        }
+        .d.active { }
     </style>
 
     <script type="text/javascript">
@@ -922,7 +923,7 @@ rem单位转换为具体px值：**rem乘于html的font-size像素**。
         });
     </script>
     ```
-    用来补充`.d:hover {-webkit-tap-highlight-color:rgba( , , , );}`。
+    >仅用来补充`.d:hover {-webkit-tap-highlight-color:rgba( , , , );}`。
 
 ### img标签的圆形边框
 1. 圆形+边框
@@ -932,9 +933,9 @@ rem单位转换为具体px值：**rem乘于html的font-size像素**。
     - pc+wap：直接在img标签上设置`border-radius`
 
 ### css3的`animation`使用
-- 用`:hover`触发
+1. 用`:hover`触发
 
-- 在使用`animation`节点（或父节点）上加入两种状态的类，一个控制启动时的动画效果，一个控制关闭时的动画效果
+2. 在使用`animation`节点（或父节点）上加入两种状态的类，一个控制启动时的动画效果，一个控制关闭时的动画效果
 
     ```html
     <style>
@@ -969,7 +970,7 @@ rem单位转换为具体px值：**rem乘于html的font-size像素**。
 
 > 动画进行到一半取消动画（去除了相关类）或者替换动画，会导致节点突兀地回到初始位置。
 
-- 监听动画结束事件，在结束时候再去除动画
+3. 监听动画结束事件，在结束时候再去除动画
 
     ```html
     <style>
@@ -1056,8 +1057,8 @@ body {
 - 没有设置宽度的`float`元素，其宽度等于子节点宽度：主流浏览器等于最外层子节点宽度，ie6等于所有子节点中最大的宽度。
 - `inline`或`inline-block`节点标签前可能导致其父级的宽度变大（其实是内联标签前面会有间隙，若拥有`font-size`之后便会有高度撑开），通过以下办法解决：
 
-    - 把`inline`节点设置为`block`
-    - 给父级节点设置`font-size: 0;`（可用此方法排查是否是空格造成的）
+    1. 把`inline`节点设置为`block`
+    2. 给父级节点设置`font-size: 0;`（可用此方法排查是否是空格造成的）
 
 ### 高性能网站建设指南
 - 标签语义化。
