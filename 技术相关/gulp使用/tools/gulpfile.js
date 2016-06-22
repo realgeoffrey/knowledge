@@ -16,8 +16,8 @@ var jpegtran = require('imagemin-jpegtran'), /* jpg压缩*/
 /* 图片任务*/
 gulp.task('doImage', function () {
     gulp.src(['../images/dev/**'])
-        .pipe(jpegtran({progressive: true})())  /* jpg*/
-        .pipe(pngquant()()) /* png*/
+        .pipe(jpegtran({progressive: true})())  /* jpg：压缩程度比较小*/
+        .pipe(pngquant()()) /* png：能够把png8与png24压缩成png8（可透明）*/
         .pipe(gifsicle()()) /* gif*/
         .pipe(svgo()()) /* svg*/
         .pipe(gulp.dest('../images/release/'));
@@ -57,8 +57,8 @@ gulp.task('browserSync', function () {
         //server: "../"
     });
     gulp.watch("../../**/*.html").on('change', reload);
-    gulp.watch("../../**/js/**").on('change', reload);
-    gulp.watch("../../**/css/**").on('change', reload);
+    gulp.watch("../../**/js/**/*.js").on('change', reload);
+    gulp.watch("../../**/css/**/*.css").on('change', reload);
     gulp.watch("../../**/images/**").on('change', reload);
 });
 
@@ -78,8 +78,8 @@ gulp.task('sprites', function () {
 /* 监视文件，自动执行*/
 gulp.task('watch', function () {
     gulp.watch('../images/dev/**', ['doImage']);
-    gulp.watch('../css/dev/*.css', ['doCss']);
-    gulp.watch('../js/dev/*.js', ['doJs']);
+    gulp.watch('../css/dev/**/*.css', ['doCss']);
+    gulp.watch('../js/dev/**/*.js', ['doJs']);
     gulp.watch('../sprites/dev/**', ['sprites']);
 });
 

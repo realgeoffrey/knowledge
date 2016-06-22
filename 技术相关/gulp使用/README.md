@@ -7,15 +7,15 @@
     ```json
     {
         "name": "gulp.me",
-        "version": "1.2.0",
+        "version": "1.3.0",
         "author": "feijie",
         "description": "my gulp tools",
         "dependencies": {
-            "browser-sync": "^2.11.2",
+            "browser-sync": "^2.13.0",
             "gulp": "^3.9.0",
             "gulp-concat": "^2.6.0",
-            "gulp-cssnano": "^2.1.0",
-            "gulp-load-plugins": "^1.2.0",
+            "gulp-cssnano": "^2.1.2",
+            "gulp-load-plugins": "^1.2.4",
             "gulp-make-css-url-version": "0.0.13",
             "gulp-rename": "^1.2.2",
             "gulp-uglify": "^1.5.3",
@@ -49,8 +49,8 @@
     /* 图片任务*/
     gulp.task('doImage', function () {
         gulp.src(['../images/dev/**'])
-            .pipe(jpegtran({progressive: true})())  /* jpg*/
-            .pipe(pngquant()()) /* png*/
+            .pipe(jpegtran({progressive: true})())  /* jpg：压缩程度比较小*/
+            .pipe(pngquant()()) /* png：能够把png8与png24压缩成png8（可透明）*/
             .pipe(gifsicle()()) /* gif*/
             .pipe(svgo()()) /* svg*/
             .pipe(gulp.dest('../images/release/'));
@@ -90,8 +90,8 @@
             //server: "../"
         });
         gulp.watch("../../**/*.html").on('change', reload);
-        gulp.watch("../../**/js/**").on('change', reload);
-        gulp.watch("../../**/css/**").on('change', reload);
+        gulp.watch("../../**/js/**/*.js").on('change', reload);
+        gulp.watch("../../**/css/**/*.css").on('change', reload);
         gulp.watch("../../**/images/**").on('change', reload);
     });
 
@@ -111,8 +111,8 @@
     /* 监视文件，自动执行*/
     gulp.task('watch', function () {
         gulp.watch('../images/dev/**', ['doImage']);
-        gulp.watch('../css/dev/*.css', ['doCss']);
-        gulp.watch('../js/dev/*.js', ['doJs']);
+        gulp.watch('../css/dev/**/*.css', ['doCss']);
+        gulp.watch('../js/dev/**/*.js', ['doJs']);
         gulp.watch('../sprites/dev/**', ['sprites']);
     });
 
@@ -127,9 +127,9 @@
     .sprites-{{name}} {
         background-image: url({{{escaped_image}}});
         background-repeat: no-repeat;
+        background-position: {{px.offset_x}} {{px.offset_y}};
         width: {{px.width}};
         height: {{px.height}};
-        background-position: {{px.offset_x}} {{px.offset_y}};
     }
     {{/sprites}}
     ```
