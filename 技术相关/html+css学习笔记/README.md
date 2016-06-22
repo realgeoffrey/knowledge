@@ -257,9 +257,8 @@ td,th {
 
 - 在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
 
-    >毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开。
-
-    >普通流：除**浮动（float）**、**绝对定位（absolute）**外的代码。
+    >- 毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开。
+    >- 普通流：除**浮动（float）**、**绝对定位（absolute）**外的代码。
 - 产生独立的BFC结构可避免margin合并
 
 >ie6、7触发haslayout会影响margin合并的发生。
@@ -839,8 +838,8 @@ li:hover a {
 
 
 ### 响应式页面解决方案：使用rem单位+媒体查询
->1. rem（font size of the root element）：相对于根元素的字体大小的单位。
->2. rem单位转换为具体px值：**rem乘于html的font-size像素**。
+>- rem（font size of the root element）：相对于根元素的字体大小的单位。
+>- rem单位转换为具体px值：**rem乘于html的font-size像素**。
 
 1. 媒体查询设置html的font-size，把要做成响应式的内容转换为rem单位。
     1. *不需要使用css预处理语言的不全面方法*：
