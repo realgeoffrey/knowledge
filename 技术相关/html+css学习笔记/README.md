@@ -144,6 +144,7 @@ div {
 
 ### wap页面自适应图片
 要求：图片根据浏览器窗口变化而宽高一同等比例变化，不使用`img`标签。
+
 1. 横向、纵向百分比的`padding`（和`margin`）值都是以父元素的`width`为基础，`height`是以父元素的`height`为基础
 
     ```css
@@ -346,6 +347,7 @@ td,th {
 
 ### img标签的src属性
 当img标签的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
+
 1. 不要用**空的img标签加上背景来用作默认图**，必须用其他标签来代替。
 2. img标签没有src属性或src属性为空隐藏
 
@@ -422,6 +424,28 @@ ul li a:hover {
 1. 中间内容自适应，两边固定（中间内容先加载）
 
     ```html
+    <style type="text/css">
+        .main_out,
+        .float_l,
+        .float_r {
+            float: left;
+        }
+        .middle_out {
+            width: 100%;
+        }
+        .middle_in {
+            margin: 0 大于等于右边块宽度 0 大于等于左边块宽度;
+        }
+        .float_l {
+            width: 右边块宽度;
+            margin-left: -100%;
+        }
+        .float_r {
+            width: 左边块宽度;
+            margin-left: -左边块宽度;
+        }
+    </style>
+
     <div class="clearfix">
         <div class="middle_out">
             <div class="middle_in">
@@ -432,27 +456,6 @@ ul li a:hover {
         <div class="float_r">右边内容</div>
     </div>
     ```
-    ```css
-    .main_out,
-    .float_l,
-    .float_r {
-        float: left;
-    }
-    .middle_out {
-        width: 100%;
-    }
-    .middle_in {
-        margin: 0 大于等于右边块宽度 0 大于等于左边块宽度;
-    }
-    .float_l {
-        width: 右边块宽度;
-        margin-left: -100%;
-    }
-    .float_r {
-        width: 左边块宽度;
-        margin-left: -左边块宽度;
-    }
-    ```
 
     >- DOM结构不能颠倒，需要中间结构放最前;
     >- 节点上能设定`clear: both;`。
@@ -460,56 +463,59 @@ ul li a:hover {
 2. 中间内容自适应，两边固定（中间内容后加载）
 
     ```html
+    <style type="text/css">
+        .float_l {
+            float: left;
+            width: 左边块宽度;
+        }
+        .float_r {
+            float: right;
+            width: 右边块宽度;
+        }
+        .middle {
+            margin-left: 大于等于左边块宽度;
+            margin-right: 大于等于右边块宽度;
+        }
+    </style>
+
     <div class="clearfix">
         <div class="float_l">左边内容</div>
         <div class="float_r">右边内容</div>
         <div class="middle">中间内容</div>
     </div>
-    ```
-    ```css
-    .float_l {
-        float: left;
-        width: 左边块宽度;
-    }
-    .float_r {
-        float: right;
-        width: 右边块宽度;
-    }
-    .middle {
-        margin-left: 大于等于左边块宽度;
-        margin-right: 大于等于右边块宽度;
-    }
     ```
 
     >- DOM结构不能颠倒，需要中间结构放最后;
     >- 节点上能设定`clear: both;`。
-
-    >float属性的节点可以填补在之后节点的水平margin区域内，padding区域内不可以;不可以填补于之前节点的水平margin区域内。
+    >
+    >float属性的节点可以填补在之后节点的水平margin区域内，padding区域内不可以；
+    >不可以填补于之前节点的水平margin区域内。
 
 3. 中间与两边内容都自适应
 
     ```html
+    <style type="text/css">
+        .float_l {
+            float: left;
+            _display: inline;
+        }
+        .float_r {
+            float: right;
+            _display: inline;
+        }
+        .middle {
+            display: table-cell;
+            *display: inline-block;
+            width: 9999px;
+            *width: auto;
+        }
+    </style>
+
     <div class="clearfix">
         <div class="float_l">左边内容</div>
         <div class="float_r">右边内容</div>
         <div class="middle">中间内容</div>
     </div>
-    ```
-    ```css
-    .float_l {
-        float: left;
-        _display: inline;
-    }
-    .float_r {
-        float: right;
-        _display: inline;
-    }
-    .middle {
-        display: table-cell;
-        *display: inline-block;
-        width: 9999px;
-        *width: auto;
-    }
     ```
 
     >- DOM结构不能颠倒，需要中间结构放最后;
@@ -533,6 +539,7 @@ ul li a:hover {
             float: left;
         }
     </style>
+
     <div class="outer_1">
         <div class="inner clearfix">
             <div class="float_1">...</div>
@@ -555,6 +562,7 @@ ul li a:hover {
         width: 单个宽度;
     }
     </style>
+
     <div class="outer_2 clearfix">
         <div class="float_2">...</div>
         <div class="float_2">...</div>
@@ -603,9 +611,37 @@ ul li a:hover {
 
 ### 复杂背景切图
 1. （背景不透明情况）背景不规则，内容贯穿背景
+
     1. 上下级结构
 
         ```html
+        <style type="text/css">
+            .main {
+                width: 宽度;
+                overflow: hidden;
+            }
+            .top {
+                background: url(背景图) 0 0 no-repeat; /* 横版背景图，分别从左到右是头部、中间、底部内容*/
+                height: 高度1;
+            }
+            .content_3 {
+                background: url(背景图) -宽度 0 repeat-y;
+            }
+            .content_2 {
+                position: relative;
+                top: -高度2;
+                zoom: 1;
+            }
+            .content_1 {
+                position: relative;
+                margin-bottom: -2*高度2;
+            }
+            .bottom {
+                background: url(背景图) -2*宽度 0 no-repeat;
+                height: 高度1;
+            }
+        </style>
+
         <div class="main">
             <div class="top"></div>
             <div class="content_3">
@@ -618,35 +654,24 @@ ul li a:hover {
             <div class="bottom"></div>
         </div>
         ```
-        ```css
-        .main {
-            width: 宽度;
-            overflow: hidden;
-        }
-        .top {
-            background: url(背景图) 0 0 no-repeat; /* 横版背景图，分别从左到右是头部、中间、底部内容*/
-            height: 高度1;
-        }
-        .content_3 {
-            background: url(背景图) -宽度 0 repeat-y;
-        }
-        .content_2 {
-            position: relative;
-            top: -高度2;
-            zoom: 1;
-        }
-        .content_1 {
-            position: relative;
-            margin-bottom: -2*高度2;
-        }
-        .bottom {
-            background: url(背景图) -2*宽度 0 no-repeat;
-            height: 高度1;
-        }
-        ```
     2. 层层覆盖
 
         ```html
+        <style type="text/css">
+            .main {
+                width: 宽度;
+            }
+            .out {
+                background: url(背景图) 0 0 repeat-y;    /* 横版背景图，分别从左到右是头部、中间、底部内容*/
+            }
+            .middle {
+                background: url(背景图) -宽度 0 no-repeat;
+            }
+            .in {
+                background: url(背景图) -2*宽度 bottom no-repeat;
+            }
+        </style>
+
         <div class="main">
             <div class="out"><!-- 中间平铺的背景-->
                 <div class="middle"><!-- 头部背景（覆盖中间背景）-->
@@ -657,23 +682,26 @@ ul li a:hover {
             </div>
         </div>
         ```
-        ```css
-        .main {
-            width: 宽度;
-        }
-        .out {
-            background: url(背景图) 0 0 repeat-y;    /* 横版背景图，分别从左到右是头部、中间、底部内容*/
-        }
-        .middle {
-            background: url(背景图) -宽度 0 no-repeat;
-        }
-        .in {
-            background: url(背景图) -2*宽度 bottom no-repeat;
-        }
-        ```
 2. （背景可透明情况）背景不规则，内容不贯穿背景
 
     ```html
+    <style type="text/css">
+        .main {
+            width: 宽度;
+        }
+        .top {
+            background: url(背景图) 0 0 no-repeat; /* 横版背景图，分别从左到右是头部、中间、底部内容*/
+            height: 高度;
+        }
+        .content {
+            background: url(背景图) -宽度 0 repeat-y;
+        }
+        .bottom {
+            background: url(背景图) -2*宽度 0 no-repeat;
+            height: 高度;
+        }
+    </style>
+
     <div class="main">
         <div class="top"></div>
         <div class="content">
@@ -681,22 +709,6 @@ ul li a:hover {
         </div>
         <div class="bottom"></div>
     </div>
-    ```
-    ```css
-    .main {
-        width: 宽度;
-    }
-    .top {
-        background: url(背景图) 0 0 no-repeat; /* 横版背景图，分别从左到右是头部、中间、底部内容*/
-        height: 高度;
-    }
-    .content {
-        background: url(背景图) -宽度 0 repeat-y;
-    }
-    .bottom {
-        background: url(背景图) -2*宽度 0 no-repeat;
-        height: 高度;
-    }
     ```
 
 ### 等宽文字
@@ -751,66 +763,66 @@ li:hover a {
 1. 兼容大部分情况
 
     ```html
+    <style type="text/css">
+        html,
+        body {
+            height: 100%;
+        }
+        .content {
+            min-height: 100%;
+            height: auto !important;
+            _height: 100%;
+        }
+        .last_content {
+            padding-bottom: 底部高度;
+        }
+        .footer {
+            margin-top: -底部高度;
+            height: 底部高度;
+        }
+    </style>
+
     <div class="content">
         内容
         <div class="last_content">内容</div>
     </div>
     <div class="footer">底部内容</div>
     ```
-    ```css
-    html,
-    body {
-        height: 100%;
-    }
-    .content {
-        min-height: 100%;
-        height: auto !important;
-        _height: 100%;
-    }
-    .last_content {
-        padding-bottom: 底部高度;
-    }
-    .footer {
-        margin-top: -底部高度;
-        height: 底部高度;
-    }
-    ```
 2. *ie6中，当.last_container高度变化的时候会渲染错误*
 
     ```html
+    <style type="text/css">
+        html,
+        body {
+            height: 100%;
+        }
+        .wrapper {
+            position: relative;
+            height: auto !important;
+            min-height: 100%;
+            _height: 100%;
+        }
+        .last_container {
+            padding-bottom: 底部高度;
+        }
+        .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            _width: 100%;
+            height: 底部高度;
+        }
+    </style>
+
     <div class="wrapper">
         内容
         <div class="last_container">内容</div>
         <div class="footer">底部内容</div>
     </div>
     ```
-    ```css
-    html,
-    body {
-        height: 100%;
-    }
-    .wrapper {
-        position: relative;
-        height: auto !important;
-        min-height: 100%;
-        _height: 100%;
-    }
-    .last_container {
-        padding-bottom: 底部高度;
-    }
-    .footer {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        _width: 100%;
-        height: 底部高度;
-    }
-    ```
 
 >有些插件效果不能支持`html,body {height: 100%;}`。
-
-----
 
 ### 响应式设计
 - 媒体查询方式
@@ -827,9 +839,8 @@ li:hover a {
 
 
 ### 响应式页面解决方案：使用rem单位+媒体查询
-rem（font size of the root element）：相对于根元素的字体大小的单位。
-
-rem单位转换为具体px值：**rem乘于html的font-size像素**。
+>1. rem（font size of the root element）：相对于根元素的字体大小的单位。
+>2. rem单位转换为具体px值：**rem乘于html的font-size像素**。
 
 1. 媒体查询设置html的font-size，把要做成响应式的内容转换为rem单位。
     1. *不需要使用css预处理语言的不全面方法*：
@@ -927,12 +938,14 @@ rem单位转换为具体px值：**rem乘于html的font-size像素**。
 
 ### img标签的圆形边框
 1. 圆形+边框
-    - pc：直接在img标签上设置`border`和`border-radius`
-    - wap：在img标签上设置`border`和`border-radius`，并且在父级标签嵌套一层设置`border`和`border-radius`
+    1. **pc**：直接在img标签上设置`border`和`border-radius`。
+    2. **wap**：在img标签上设置`border`和`border-radius`，并且在父级标签嵌套一层设置`border`和`border-radius`。
 2. 圆形（无边框）
-    - pc+wap：直接在img标签上设置`border-radius`
+    - **pc+wap**：直接在img标签上设置`border-radius`。
 
 ### css3的`animation`使用
+> 动画进行到一半取消动画（去除了相关类）或者替换动画，会导致节点突兀地回到初始位置。
+
 1. 用`:hover`触发
 
 2. 在使用`animation`节点（或父节点）上加入两种状态的类，一个控制启动时的动画效果，一个控制关闭时的动画效果
@@ -967,8 +980,6 @@ rem单位转换为具体px值：**rem乘于html的font-size像素**。
         });
     </script>
     ```
-
-> 动画进行到一半取消动画（去除了相关类）或者替换动画，会导致节点突兀地回到初始位置。
 
 3. 监听动画结束事件，在结束时候再去除动画
 
@@ -1027,18 +1038,11 @@ rem单位转换为具体px值：**rem乘于html的font-size像素**。
 ### 限定布局宽度，让内容决定布局高度
 
 ### 富文本
-- 富文本内容除了要检测用户输入标签的闭合性，还要注意**不要用`li`标签嵌套富文本**，因为代码中如果有单独的`li`（没有嵌套`ol`或`ul`），就会“升级”到跟祖先级li同级的内容。
+1. 富文本内容除了要检测用户输入标签的闭合性，还要注意**不要用`li`标签嵌套富文本**，因为代码中如果有单独的`li`（没有嵌套`ol`或`ul`），就会“升级”到跟祖先级li同级的内容。
 
-- 部分富文本会用标签`em`、`ol`、`ul`来表示**斜体**、**有序序列**、**无序序列**，因此如果用css重置了以上标签后，要在富文本内重载开启它们的默认效果；
+2. 部分富文本会用标签`em`、`ol`、`ul`来表示**斜体**、**有序序列**、**无序序列**，因此如果用css重置了以上标签后，要在富文本内重载开启它们的默认效果；
 
-- 部分富文本还会在`table`标签上使用`cellspacing`、`border`、`bordercolor`属性来设置表格，又因为设置了`border: 0;`的表格标签无法重载开启以上属性作用，所以css重置时不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性。
-
-### body标签设置min-width属性为项目内容宽度（不兼容ie6）
-```css
-body {
-   min-width: ;
-}
-```
+3. 部分富文本还会在`table`标签上使用`cellspacing`、`border`、`bordercolor`属性来设置表格，又因为设置了`border: 0;`的表格标签无法重载开启以上属性作用，所以css重置时不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性。
 
 ### 超出内容区域的内容
 1. 用绝对定位把内容设置在外部
@@ -1065,9 +1069,8 @@ body {
 
     先用纯html标签语义化结构，再加入css满足样式，最后加入交互
 
-    >不要全用div标签；用ul>li、ol>li、dl>dt来代替p标签。
-    >
-    >h1~h5标签不要根据其字体大小的不同来使用，应该根据页面内的重要程度来使用（SEO）。
+    >1. 不要全用div标签；用ul>li、ol>li、dl>dt来代替p标签。
+    >2. h1~h5标签不要根据其字体大小的不同来使用，应该根据页面内的重要程度来使用（SEO）。
 
 - 减少层级嵌套，合理嵌套，行内元素不要嵌套块级元素（如a标签不嵌套div）
 - 用父节点的class去管理子节点
