@@ -146,14 +146,14 @@
 
 	        `filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr=#40000000, endColorStr=#40000000); *zoom: 1;/* 必须激活haslayout*/`
 
-	        >- `startColorStr`是起色点，`endColorStr`是终色点（用于渐变色），两个值相同则单色透明。
+	        >- `startColorStr`是起色点，`endColorStr`是终色点（用于渐变色），两个值相同则单色透明；
 	        >- 值为十六进制数，前两位表示alpha通道值，后六位为RGB值。
 
 	    2. ie9+及高级浏览器：
 
 	        `background: rgba(0,0,0,.5);`
 
-	    - 使用gif或png图
+	    >还可以使用gif透明图（IE下24位PNG图透明时引起的内存泄漏）。
 
 26. ie6没有console方法（执行会报错），可用alert替代：
 
