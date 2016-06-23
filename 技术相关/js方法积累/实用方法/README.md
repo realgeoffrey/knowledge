@@ -1065,17 +1065,17 @@ var fourOperations = {
 
             var resizeEvent = "onorientationchange" in window ? "orientationchange" : "resize";
 
-            $(window).on(resizeEvent, function () {
-                clearTimeout(self.setTimeoutId1);
-
-                self.setTimeoutId1 = setTimeout(function () {
-                    self.portrait(selector, className);
-                }, 500);
-            }).on('resize', function () {
+            $(window).on('resize', function () {
                 clearTimeout(self.setTimeoutId2);
 
                 self.setTimeoutId2 = setTimeout(function () {
                     self.resize(selector);
+                }, 500);
+            }).on(resizeEvent, function () {
+                clearTimeout(self.setTimeoutId1);
+
+                self.setTimeoutId1 = setTimeout(function () {
+                    self.portrait(selector, className);
                 }, 500);
             });
 
@@ -1084,11 +1084,9 @@ var fourOperations = {
             self.portrait(selector, className);
         },
         portrait: function (selector, className) {    /* 屏幕高度>宽度（竖屏），增加“顺时针翻转90度的类”*/
-            var wHeight = $(window).height(),
-                wWidth = $(window).width(),
-                $dom = $(selector);
+            var $dom = $(selector);
 
-            if (wHeight > wWidth) {
+            if ($(window).height() > $(window).width()) {
                 $dom.addClass(className);
             } else {
                 $dom.removeClass(className);
