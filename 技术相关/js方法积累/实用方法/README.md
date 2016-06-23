@@ -1049,6 +1049,7 @@ var fourOperations = {
     .reversal {
         top: 50%;
         left: 50%;
+        -webkit-transform: translate(-50%, -50%) rotate(90deg);
         transform: translate(-50%, -50%) rotate(90deg);
     }
 </style>
