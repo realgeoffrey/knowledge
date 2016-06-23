@@ -1058,35 +1058,32 @@ var fourOperations = {
 
 <script type="text/javascript">
     var reversalAct = {
-        setTimeoutId: '',
+        setTimeoutId1: '',
+        setTimeoutId2: '',
         init: function (selector, className) {
             var self = this;
 
-            var wHeight = $(window).height(),
-                wWidth = $(window).width(),
-                resizeEvent = "onorientationchange" in window ? "orientationchange" : "resize",
-                i;
-
-            if (wHeight > wWidth) {
-                i = wHeight;
-                wHeight = wWidth;
-                wWidth = i;
-            }
-
-            /* 固定宽高：边长较长的设置为width，边长较短的设置为height*/
-            $(selector).css({'width': wWidth + 'px', 'height': wHeight + 'px'});
+            var resizeEvent = "onorientationchange" in window ? "orientationchange" : "resize";
 
             $(window).on(resizeEvent, function () {
-                clearTimeout(self.setTimeoutId);
+                clearTimeout(self.setTimeoutId1);
 
-                self.setTimeoutId = setTimeout(function () {
-                    self.resize(selector, className);
+                self.setTimeoutId1 = setTimeout(function () {
+                    self.portrait(selector, className);
+                }, 500);
+            }).on('resize', function () {
+                clearTimeout(self.setTimeoutId2);
+
+                self.setTimeoutId2 = setTimeout(function () {
+                    self.resize(selector);
                 }, 500);
             });
 
-            self.resize(selector, className);
+            self.resize(selector);
+
+            self.portrait(selector, className);
         },
-        resize: function (selector, className) {    /* 屏幕高度>宽度，增加“顺时针翻转90度的类”*/
+        portrait: function (selector, className) {    /* 屏幕高度>宽度（竖屏），增加“顺时针翻转90度的类”*/
             var wHeight = $(window).height(),
                 wWidth = $(window).width(),
                 $dom = $(selector);
@@ -1096,6 +1093,19 @@ var fourOperations = {
             } else {
                 $dom.removeClass(className);
             }
+        },
+        resize: function (selector) {   /* 设置高宽的值（边长较长的一边设置为宽度，较短的设置为高度）*/
+            var wHeight = $(window).height(),
+                wWidth = $(window).width(),
+                i;
+
+            if (wHeight > wWidth) {
+                i = wHeight;
+                wHeight = wWidth;
+                wWidth = i;
+            }
+
+            $(selector).css({'width': wWidth + 'px', 'height': wHeight + 'px'});
         }
     };
 
