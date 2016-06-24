@@ -145,7 +145,7 @@ div {
 ### wap页面自适应图片
 要求：图片根据浏览器窗口变化而宽高一同等比例变化，不使用`img`标签。
 
-1. 横向、纵向百分比的`padding`（和`margin`）值都是以父元素的`width`为基础，`height`是以父元素的`height`为基础
+1. *横向、纵向百分比的`padding`（和`margin`）值都是以父元素的`width`为基础，`height`是以父元素的`height`为基础*
 
     ```css
     自适应图片 {
@@ -158,7 +158,7 @@ div {
     ```
 
     >缺点：只能用于空标签
-2. 宽高都用rem（与html的font-size配合）
+2. 宽高都用rem
     1. 单图
 
         ```css
@@ -166,7 +166,7 @@ div {
             width: 宽rem;
             height: 高rem;
             background-size: 100%;
-            background: url(单图) 0 0 no-repeat;
+            background: url(单图) center center no-repeat;
         }
         ```
     2. 雪碧图
@@ -179,34 +179,33 @@ div {
             background: url(雪碧图) 0 -纵轴rem no-repeat;
         }
         ```
-3. 雪碧图并且`background-position`用百分比
+        >`background-position`用`rem`会出现换算小数导致定位偏离问题，改用以下百分比可以解决偏离问题。
+3. 宽高都用rem并且雪碧图并且`background-position`用百分比
 
     >百分比公式：
-    >   - **background-position-x = 小图横坐标 / ( 大图宽度 - 小图宽度 ) \* 100%**
-    >   - **background-position-y = 小图纵坐标 / ( 大图高度 - 小图高度 ) \* 100%**
-
-    1. 百分比宽高
-
-        ```css
-            自适应图片 {
-                height: 0;
-                width: 宽%;
-                padding-bottom: 高%;
-                background-size: 雪碧图宽/单图宽度*100%;
-                background: url(雪碧图) 0 计算出的百分比 no-repeat;
-            }
-        ```
-    2. rem宽高
+    >   - `background-position-x = 小图横坐标px / ( 大图宽度px - 小图宽度px ) \* 100%`
+    >   - `background-position-y = 小图纵坐标px / ( 大图高度px - 小图高度px ) \* 100%`
+    1. rem宽高（最佳情况）
 
         ```css
         自适应图片 {
             width: 宽rem;
             height: 高rem;
             background-size: 雪碧图宽rem;
-            background: url(雪碧图) 0 计算出的百分比 no-repeat;
+            background: url(雪碧图) 计算出x轴的百分比 计算出y轴的百分比 no-repeat;
         }
         ```
->?`background-position`用`rem`会有小数问题，改用百分比不会有问题。?
+    2. *百分比宽高*
+
+        ```css
+        自适应图片 {
+            height: 0;
+            width: 宽%;
+            padding-bottom: 高%;
+            background-size: 雪碧图宽/单图宽度*100%;
+            background: url(雪碧图) 计算出x轴的百分比 计算出y轴的百分比 no-repeat;
+        }
+        ```
 
 ### `table-layout: fixed;`
 由第一行td或th的宽度来确定此table元素内的布局。
