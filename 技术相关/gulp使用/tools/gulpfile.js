@@ -26,8 +26,8 @@ gulp.task('doImage', function () {
 /* css任务*/
 gulp.task('doCss', function () {
     gulp.src(['../css/dev/*'])
-        //.pipe(concat('all.css'))    /* 合并文件*/
-        //.pipe(makeUrlVer()) /*路径自动添加版本号*/
+    //.pipe(concat('all.css'))    /* 合并文件*/
+    //.pipe(makeUrlVer()) /*路径自动添加版本号*/
         .pipe(nano({
             discardUnused: false,
             zindex: false,
@@ -41,7 +41,7 @@ gulp.task('doCss', function () {
 /* js任务*/
 gulp.task('doJs', function () {
     gulp.src(['../js/dev/*'])
-        //.pipe(concat('all.js'))    /* 合并文件*/
+    //.pipe(concat('all.js'))    /* 合并文件*/
         .pipe(uglify({
             mangle: true, /* 默认：true 是否混淆变量名*/
             compress: true  /* 默认：true 是否完全压缩*/
@@ -53,8 +53,8 @@ gulp.task('doJs', function () {
 /* 监听代理服务器*/
 gulp.task('browserSync', function () {
     browserSync.init({
-        proxy: "192.168.57.60"
-        //server: "../"
+        proxy: "192.168.57.60"  /* 服务器*/
+        //server: "../" /* 相对地址*/
     });
     gulp.watch("../../**/*.html").on('change', reload);
     gulp.watch("../../**/js/**/*.js").on('change', reload);
@@ -62,15 +62,27 @@ gulp.task('browserSync', function () {
     gulp.watch("../../**/images/**").on('change', reload);
 });
 
-/* 多个小图 -> 雪碧图&样式表*/
+/* 多图 -> 雪碧图 + 样式表*/
 gulp.task('sprites', function () {
+    /* pc版*/
     gulp.src('../sprites/dev/*')
         .pipe(spritesmith({
             padding: 2, /* 合并图间距*/
             algorithm: 'top-down', /* 排列方式 ['binary-tree' | 'top-down' | 'left-right' | 'diagonal' | 'alt-diagonal']*/
-            cssTemplate: 'sprites.handlebars', /* 渲染输出css的模板文件*/
             imgName: 'sprites.png', /* 输出合并后图片*/
-            cssName: 'sprites.css'   /* 输出合并后样式*/
+            cssTemplate: 'pc.handlebars', /* 渲染输出css的模板文件*/
+            cssName: 'sprites_pc.css' /* 输出合并后样式（后缀为[.css | .sass | .scss | .less | .styl/.stylus | .json]）*/
+        }))
+        .pipe(gulp.dest('../sprites/release/'));
+
+    /* wap版（rem+%）*/
+    gulp.src('../sprites/dev/*')
+        .pipe(spritesmith({
+            padding: 2,
+            algorithm: 'top-down',
+            imgName: 'sprites.png',
+            cssTemplate: 'wap.handlebars',
+            cssName: 'sprites_wap.sass'
         }))
         .pipe(gulp.dest('../sprites/release/'));
 });
