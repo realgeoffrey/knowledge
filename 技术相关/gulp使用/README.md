@@ -87,7 +87,7 @@
     gulp.task('browserSync', function () {
         browserSync.init({
             proxy: "192.168.57.60"  /* 服务器*/
-            //server: "../" /* 相对地址*/
+            //server: "../../" /* 相对地址*/
         });
         gulp.watch("../../**/*.html").on('change', reload);
         gulp.watch("../../**/js/**/*.js").on('change', reload);
@@ -138,7 +138,7 @@
 
         ```handlebars
         {{#sprites}}
-        .sprites-{{name}} {
+        .sprites_{{name}} {
             background: url({{{escaped_image}}}) {{px.offset_x}} {{px.offset_y}} no-repeat;
             width: {{px.width}};
             height: {{px.height}};
@@ -148,26 +148,32 @@
     2. wap:
 
         ```handlebars
-        {{#extend "scss"}}
-            {{#content "sprites"}}
-        @function px($num){
-            @return $num / 20 + rem
+        @charset "utf-8";
+
+        @function px($num) {
+            @return $num / 20 + rem;
         }
 
+        {{#extend "scss"}}
+            {{#content "sprites"}}
+
+        // 图片类内@include
                 {{#each sprites}}
-        @mixin {{name}} {
-            background-position: {{#if offset_x}}{{offset_x}}/({{width}}-{{total_width}})*100%{{else}}0{{/if}} {{#if offset_y}}{{offset_y}}/({{height}}-{{total_height}})*100%;{{else}}0{{/if}};
+        @mixin sprites_{{name}} {
+            background-position: {{#if offset_x}}{{offset_x}}/({{width}}-{{total_width}})*100%{{else}}0{{/if}} {{#if offset_y}}{{offset_y}}/({{height}}-{{total_height}})*100%{{else}}0{{/if}};
             width: px({{width}});
             height: px({{height}});
-            @extend %sprites_normal;
+            @extend %sprites_img;
         }
                 {{/each}}
             {{/content}}
 
             {{#content "spritesheet"}}
 
-        %sprites_normal {
-            background: url('{{{spritesheet.escaped_image}}}') px({{spritesheet.width}}) px({{spritesheet.height}}) no-repeat;
+        %sprites_img {
+            background-image: url('{{{spritesheet.escaped_image}}}');
+            background-size: px({{spritesheet.width}}) px({{spritesheet.height}});
+            background-repeat: no-repeat;
         }
             {{/content}}
         {{/extend}}
