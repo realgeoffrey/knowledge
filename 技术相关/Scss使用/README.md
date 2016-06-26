@@ -23,7 +23,7 @@
 
         a.#{$name} {
             #{$attr}: #fff;
-            font: #{$font-size}/#{$line-height};
+            font: #{$font-size}/#{$line-height} sans-serif;
         }
         ```
     变量有命名空间，全局、局部之分。
@@ -167,12 +167,12 @@
 9. 方法`@function`
 
     ```scss
-    @function a($para) {
+    @function func($para) {
         @return $para * 2 + rem;
     }
 
     .name {
-        font-size: a(10);
+        font-size: func(10);
     }
     ```
 
