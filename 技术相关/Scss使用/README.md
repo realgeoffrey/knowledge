@@ -1,4 +1,5 @@
 #Scss使用（part of [it](http://sass-lang.com/documentation/file.SASS_REFERENCE.html#css_extensions)）
+>推荐使用傻瓜式前端预处理器语言图形编译工具:[Koala](http://koala-app.com/index-zh.html)。
 
 1. `变量`、`方法`和`引用`必须在使用前定义，`继承`不需要提前定义；声明相同内容不会报错，只会用最后一次声明覆盖之前声明。
 
@@ -53,11 +54,11 @@
 
         ```scss
         a {
-           color: #f00;
+            color: #f00;
 
-           span {
-               color: red;
-           }
+            span {
+                color: red;
+            }
 
             font: {
                 weight: bold;
@@ -114,7 +115,7 @@
 
 5. 继承`@extend`
 
-    查找所有满足`@extend`后的**选择器**，再查找出包含这个选择器的所有内容，把此选择器替换成使用继承的选择器。
+    查找所有满足`@extend`后的**选择器**的内容，把此选择器替换成使用继承的选择器。
 
     1. 正常情况
 
