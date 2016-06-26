@@ -1,6 +1,6 @@
 #Scss使用（part of [it](http://sass-lang.com/documentation/file.SASS_REFERENCE.html#css_extensions)）
 
-1. `变量`、`方法`和`引用`必须在使用前定义，`继承`不需要提前定义；声明相同内容不会报错只会用最后一次声明覆盖之前声明。
+1. `变量`、`方法`和`引用`必须在使用前定义，`继承`不需要提前定义；声明相同内容不会报错，只会用最后一次声明覆盖之前声明。
 
 2. 变量以`$`开头
 
@@ -26,7 +26,7 @@
             font: #{$font-size}/#{$line-height};
         }
         ```
-    变量有命名空间，全局/局部之分。
+    变量有命名空间，全局、局部之分。
 
 3. 嵌套，引用父级`&`
 
@@ -34,17 +34,17 @@
 
         ```scss
         .name {
-            color: #f00;
+            color: #fff;
 
             span {
-                color: red;
+                color: #fff;
             }
 
             &:hover {
                 color: #fff;
             }
 
-            &_cde {
+            &_suffix {
                 color: #fff;
             }
         }
