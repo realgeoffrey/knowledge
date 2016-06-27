@@ -388,6 +388,50 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     14. 不要使用自增（++）和自减（--）运算符，用+=和-=代替。
     15. 总是使用大括号表示区块。
 
+- js代码书写结构
+
+    ```javascript
+    var GlobalFunc = (function () {
+        /* 私有的内容*/
+        var _para_1 = {1: '私有的变量_para_1'},
+            _func_1 = function () {
+                console.log('私有的业务逻辑_func_1');
+            },
+            _func_2 = function () {
+                console.log('私有的业务逻辑_func_2');
+            },
+            _bindEvent = function () {  /* 绑定事件（不定义具体业务逻辑）*/
+                $(document).on('click', function () {
+                    _func_2();
+                });
+                console.log('私有的绑定事件_bindEvent');
+            },
+            _init = function () {   /* 初始化*/
+                _bindEvent();
+                _func_1();
+            };
+
+        function Constructor() {
+            _init();
+
+            /* 暴露的内容*/
+            this.func_1 = function () {
+                console.log('暴露的业务逻辑func_1');
+            };
+            this.para_1 = {1: '暴露的变量para_1'};
+        }
+
+        return Constructor;
+    }());
+
+    var a, b;
+
+    $(function () {
+        a = new GlobalFunc();
+        b = new GlobalFunc();
+    });
+    ```
+
 ### 编程实践
 - UI层的松耦合
     1. 不要用js修改css样式，只修改class（任何时刻，css中的样式都可以修改，而不必更新js）。
