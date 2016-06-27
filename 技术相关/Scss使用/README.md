@@ -82,7 +82,7 @@
         }
 
         .name1 {
-            @include b
+            @include b;
         }
         ```
     2. 带参数
@@ -164,7 +164,7 @@
     // 不出现在css
     /* 出现在css*/
     ```
-    >有中文注释时，要在scss文件顶部增加`@charset "utf-8";`。
+    >有中文注释时，要在scss文件顶部增加`@charset "utf-8";`，否则编译报错。
 
 9. 方法`@function`
 
