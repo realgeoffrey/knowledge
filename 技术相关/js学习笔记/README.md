@@ -424,11 +424,10 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         return Constructor;
     }());
 
-    var a, b;
+    var obj;
 
     $(function () {
-        a = new GlobalFunc();
-        b = new GlobalFunc();
+        obj = new GlobalFunc();   /* {func_1: function(){}, para_1: {}}*/
     });
     ```
 
