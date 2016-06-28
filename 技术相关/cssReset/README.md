@@ -11,7 +11,7 @@
     h1,h2,h3,h4,h5,h6 {font-size:100%;font-weight:500;}
     a,ins {text-decoration:none;}
     button,input,select,textarea,:focus {outline:none;}
-    audio,canvas,video {display:inline-block;*display:inline;zoom:1;}
+    audio,canvas,video {display:inline-block;*display:inline;*zoom:1;}
     hr {display:block;height:1px;border:0;border-top:1px solid #ccc;margin:1em 0;padding:0;}
     abbr,acronym {border:0;font-variant:normal;}
     del {text-decoration:line-through;}
