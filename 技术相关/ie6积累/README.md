@@ -204,6 +204,7 @@
 
 39. ie6下父级设置`height`、`width`，当子级超过限制后，会把父级撑大（没有`overflow: hidden;`情况）。
 
+> 若ie6下无法打开https链接，尝试：**internet选项－－高级－－使用TLS1.0打钩**。
 
 ## haslayout
 
