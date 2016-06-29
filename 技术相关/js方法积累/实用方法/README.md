@@ -646,36 +646,41 @@ function alertToast(text) {
 
     clearTimeout(myself.setTimeoutId);
 
-    text = text || '';
+    text = text || 'warning';
     $popText.text(text);
 
     $popText.show(function () {
         myself.setTimeoutId = setTimeout(function () {
-            $popText.fadeOut(function () {
-                $popText.text('');
-            });
+            $popText.fadeOut();
         }, 2500);
     });
 }
 ```
-```javascript
-/* Zepto*/
-function alertToast(text) {
-    if ($('.j-pop-text').length === 0) {
-        $('body').append('<div class="j-pop-text 样式类 hidden"></div>');  /* .hidden {display: none !important;}*/
+```html
+<style>
+    .hidden {
+        display: none;
     }
+</style>
+<script >
+    /* Zepto*/
+    function alertToast(text) {
+        if ($('.j-pop-text').length === 0) {
+            $('body').append('<div class="j-pop-text hidden 样式类"></div>');  /* .hidden {display: none !important;}*/
+        }
 
-    var $popText = $('.j-pop-text');
+        var $popText = $('.j-pop-text');
 
-    clearTimeout(arguments.callee.setTimeoutId);
+        clearTimeout(arguments.callee.setTimeoutId);
 
-    text = text || '';
-    $popText.text(text).removeClass('hidden');
+        text = text || 'warning';
+        $popText.text(text).removeClass('hidden');
 
-    arguments.callee.setTimeoutId = setTimeout(function () {
-        $popText.addClass('hidden').text('');
-    }, 2500);
-}
+        arguments.callee.setTimeoutId = setTimeout(function () {
+            $popText.addClass('hidden').text('');
+        }, 2500);
+    }
+</script>
 ```
 
 ### jQuery全选、取消全选
