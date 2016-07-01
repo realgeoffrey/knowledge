@@ -1117,3 +1117,38 @@ var fourOperations = {
 </script>
 
 ```
+
+### *原生js*用请求图片作log统计
+```javascript
+var sendLog = (function () {
+    var _unique = (function () {    /* 产生唯一标识*/
+        var time = (new Date()).getTime() + '_',
+            i = 0;
+
+        return function () {
+            return time + (i++);
+        }
+    }());
+
+    var run = function (url) {
+        var data = window['imgLogData'] || (window['imgLogData'] = {}),
+            img = new Image(),
+            uid = _unique();
+
+        data[uid] = img;    /* 防止img被垃圾处理*/
+
+        img.onload = img.onerror = function () {    /* 成功或失败后销毁对象*/
+            img.onload = img.onerror = null;
+            img = null;
+            delete data[uid];
+        };
+
+        img.src = url + '&_cache=' + uid;   /* 发送统计内容*/
+    };
+
+    return run;
+}());
+
+
+sendLog('统计url');
+```
