@@ -1,10 +1,13 @@
 #LAMP环境配置（CentOS7.0）
 
 1. 新增用户
+
 	创建一个新用户，并设置密码，增加进root，apache组内：
-	`useradd 用户名
+	```bash
+	useradd 用户名
 	passwd 用户名
-	usermod -a -G root,apache 用户名`
+	usermod -a -G root,apache 用户名
+	```
 	
 	>若无法使用**sudo**命令：
 	>   1. 进入root模式：
@@ -41,8 +44,10 @@
 		>有可能需要：`sudo yum php-ZendFramework-Db-Adapter-Mysqli.noarch`
 
 3. 配置apache（ */etc/httpd/conf/httpd.conf* ）
+
 	*（以下事例，用3个域名a.com、b.com、c.com都指向本服务器，现在配置前两个域名的虚拟主机，使前两个指向各自的文件夹，第三个和其他没有配置的域名都指向默认的文件夹）*
 	1. 网站目录
+
 		创建网站文件夹：
 		`sudo mkdir /var/www/a.com
 		sudo mkdir /var/www/b.com`
@@ -59,6 +64,7 @@
 		vi /var/www/b.com/index.php`
 		
 	2. 配置apache虚拟主机
+
 		新建虚拟机配置文件夹：
 		`sudo mkdir /etc/httpd/sites-available
 		sudo mkdir /etc/httpd/sites-enabled`
@@ -113,4 +119,5 @@
 		`sudo service httpd restart`
 
 4. 使用phpmyadmin
+
     下载phpmyadmin（<http://www.phpmyadmin.net>）放在项目文件夹下，即可使用。
