@@ -510,6 +510,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         4. `{}` -> `'[object Object]'`
 
         只要是内置对象，则返回其构造函数名（自定义类型返回`'[object Object]'`）。举例：
+
         5. `[]` -> `'[object Array]'`
         6. 数字 -> `'[object Number]'`
         7. 字符串 -> `'[object String]'`
