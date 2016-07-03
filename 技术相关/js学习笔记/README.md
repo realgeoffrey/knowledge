@@ -1155,27 +1155,27 @@ $('body').text(text);
 
 闭包是一种特殊的对象。它由两部分构成：函数，以及创建该函数的环境。环境由闭包创建时在作用域中的任何局部变量组成。
 
-### jQuery或Zepto的`.on()`绑定效率
-`$(event handler).on(event, selector, function(){});`
-
-1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的内容，成为**event handler**。有且仅有这些event handler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的event handler处理DOM也不会使绑定内容失效（除非删除）；在event handler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
-2. 绑定的event handler距离selector越近，效率越高。因此虽然把selector都绑定在`$(document)`上能够避免增删节点造成事件绑定的影响，但确是低效的。
-
 ### jQuery或Zepto相关
-- 判断是否加载成功，不成功则执行载入本地文件
+1. `.on()`的绑定效率
+
+    `$(event handler).on(event, selector, function(){});`
+
+    1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的内容，成为**event handler**。有且仅有这些event handler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的event handler处理DOM也不会使绑定内容失效（除非删除）；在event handler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
+    2. 绑定的event handler距离selector越近，效率越高。因此虽然把selector都绑定在`$(document)`上能够避免增删节点对事件绑定造成的影响，但确是低效的。
+2. 判断是否加载成功，不成功则执行载入本地文件
 
     ```html
     <script>
         window.jQuery || document.write('<script src="本地地址"><\/script>');
     </script>
     ```
-- 当变量是jQuery或Zepto对象是，可以用`$`作为开头命名，利于区别与普通变量的区别
+3. 当变量是jQuery或Zepto对象是，可以用`$`作为开头命名，利于区别与普通变量的区别
 
     ```javascript
     var a = 1;
     var $a = $('a');
     ```
-- 选择器
+4. 选择器
     1. `$('子','父') === $('父').find('子')`
 
         找到所有父级，若子级在此父级后面，则选择。
