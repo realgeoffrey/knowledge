@@ -156,5 +156,4 @@ Charles是目前最强大的http调试工具，在界面和功能上远强于Fid
 	浏览器输入<http://control.charles/>
 	
 8.
-
 	>tips：如果charles是非正常状态下关闭的话，有些浏览器的代理就不会被自动取消，会出现无法访问网络情况。重新打开Charles再正常关闭可以解决。
