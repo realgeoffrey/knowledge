@@ -1,41 +1,47 @@
 # 兼容至ie6
 
 1. hack：
-	- ie6：`_`(在属性之前)。
-	- ie6、ie7：`*`(在属性之前)。
-	- ie6 ~ ie8：`\9`（在属性结束、分号之前），部分情况ie9也有效果。
-	- ie8 ~ ie10：`\0`（在属性结束、分号之前）。
+
+	1. ie6：`_`(在属性之前)。
+	2. ie6、ie7：`*`(在属性之前)。
+	3. ie6 ~ ie8：`\9`（在属性结束、分号之前），部分情况ie9也有效果。
+	4. ie8 ~ ie10：`\0`（在属性结束、分号之前）。
 
 	>用gulp压缩图片后，图片在ie6~8表现出的颜色会改变，因此不要把背景切入图中，最好用透明的切图。
 	>
 	>**png-24透明图**和**png-24不透明图**或**png-8不透明图**压缩后的文件大小相差不大，因此可以都使用**png-24透明图**切图后再用gulp压缩。
 	>
 	>png24透明图增加透明区域对文件大小增加很小，因此可以不必限制纯透明区域大小。
-
 2. ie6/7替换写法：
-	- `float`：
+
+	1. `float`：
 
 	    ```css
 	    float: left/right;
 	    _display: inline;
 	    ```
-    - `display: inline-block`：
+    2. `display: inline-block`：
 
         ```css
         display: inline-block;
         *display: inline;
-        zoom: 1;
+        *zoom: 1;
         ```
+    3. `.clearfix:after {content: ""; display: table; clear: both;}`
 
+        ```css
+        .clearfix {*zoom: 1;}
+        ```
 3. ie6的高度无法小于行高，用以下解决：
-	- `overflow: hidden;`，尤其对于设置背景的节点
 
+	- `_overflow: hidden;`（尤其对于设置背景的节点）
 4. ie6图片无法用png-24透明图，会把透明部分显示为灰色，用以下解决：
-    - gulp压缩图片:
+
+    1. gulp压缩图片：
 
         切图出png-24透明图，再用gulp压缩。
 
-	- js方法，比较麻烦，不建议
+	2. ~~js方法~~：
 
         ``` html
         <!--[if IE 6]>
@@ -45,43 +51,42 @@
         </script>
         <![endif]-->
         ```
+        >插件bug：用div透明背景图覆盖出圆角效果会单边缩短1px，要给背景图左右多出1px背景(js的bugs)。
+5. ie6不支持`max-height/ min-height/ max-width/ min-width`：
 
-        >插件问题：用div透明背景图覆盖出圆角效果会单边缩短1px，要给背景图左右多出1px背景(js的bugs)。
-
-5. ie6不支持`max-height/min-height/max-width/min-width`：
-	- 用`_height/_width`等于固定值适量代替
-
+	- 用`_height/_width`等于固定值适量代替。
 6. ie6字体渲染的高度和其他浏览器不同，`line-height`可能会渲染小一些：
-	- 不处理，否则都要细微调节ie6情况下的`line-height`
 
+	- 不处理，否则都要细微调节ie6的行高。
 7. ie6的`text-decoration: underline`的位置与其他主流浏览器不同，可以尝试：
-	- 用`border-bottom`替代
 
-8. ie6的:hover效果：
-	- 仅支持a标签并且要有a标签的`href`属性要赋值
+	- 用`border-bottom`替代。
+8. ie6的`:hover`效果：
 
-9. ie6查看的网页文件若文件编码不是utf-8会乱码。若出现除ie6外都无错误并且提示的错误位置排查后没有错误的，需要检查编码格式：
-	- 无论html/css/js文件都要手动转化为**utf-8**
+	- 仅支持a标签并且`href`属性要赋值
 
+	    `<a href="#"></a>`
+9. ie6查看的网页文件若文件编码不是**utf-8**会乱码（若出现除ie6外都无错误，并且提示的错误位置排查后没有错误的，需要检查编码格式）：
+
+	- 无论html/css/js文件都要手动转化为**utf-8**。
 10. ie6的`tr/tbody`不支持`border`：
-	- `border`写在`td/td > div`中
 
+	- `border`写在`td/td > div`中。
 11. ie6的`width/height/line-height`写在td上时，内容超过后设置的限制无效：
-	- `width/height/line-height`不写在td标签上，写在`td > div`中
-	- 在父级table标签上设置`table-layout: layout:fixed;`,并在第一个tr的各个子级`td/tr`上设置宽度，就能为整个表固定各项目宽度
 
+	1. `width/height/line-height`不写在td标签上，写在`td > div`中。
+	2. 在父级table标签上设置`table-layout: layout:fixed;`，并在第一个tr的各个子级`td/tr`上设置宽度，就能为整个表固定各项目宽度。
 12. ie6的`table/tr/td`，用js增加有背景色的class无效：
-	- 要有原始的`background`值，才可以在添加class之后改变background值
 
+	- 要有原始的`background`值，才可以在添加class之后改变background值。
 13. ie6下tr标签没有`:hover`效果：
-	- 把tr标签的`:hover`效果用js制作
-	- 优雅降级（优先完成全部功能，再针对浏览器测试和修复）
 
+	1. 把tr标签的`:hover`效果用js制作。
+	2. 优雅降级（优先完成全部功能，再针对浏览器测试和修复）。
 14. ie6浮动元素的中间有注释会导致出现重复字符：
-	- 删除浮动元素内的注释
 
-15. ie6不能使用多类选择器(不能连写class或id，e.g. `.a.b/.a#b/#a#b`)，会自动忽略前面的选择器而仅剩下最后一个class/id
-
+	- 删除浮动元素内的注释。
+15. ie6不能使用**多类选择器**（不能连写class或id，e.g. `.a.b/.a#b/#a#b`），会自动忽略前面的选择器而仅剩下最后一个class或id。
 16. ie6不支持`position: fixed`，需使用js组建：
 
     ``` html
@@ -102,35 +107,32 @@
         });
     </script>
     ```
-
 17. ie6的input标签有很多css问题，尽量不要设置复杂的css效果在input标签上：
-	- input设`display: block`会跟父级上下有1px间距，用`float`解决
 
+	- input设`display: block`会跟父级上下有1px间距，用`float`解决。
 18. ie6/7不支持`:focus`，用以下解决：
-	- 用js制作，又因为input问题多，在input外嵌套一层div，对其进行css样式修改
-	- 优雅降级
 
+	1. 用js制作，又因为input问题多，在input外嵌套一层div，对其进行css样式修改。
+	2. 优雅降级。
 19. ie6/7的子节点脱离文档流后，父节点要截断子节点内容，必须使父节点也脱离文档流：
-	- 若要用`overflow: hidden`作用于`position: relative/absolute`的子节点，必须父级也设置`position: relative/absolute`
-	- 若要用`overflow: hidden`作用于`float`的子节点，必须父级也`浮动`或`清除浮动`
 
+	1. 若要用`overflow: hidden`作用于`position: relative/absolute`的子节点，必须父级也设置`position: relative/absolute`。
+	2. 若要用`overflow: hidden`作用于`float`的子节点，必须父级也`浮动`或`清除浮动`。
 20. ie6的`z-index`使用：
-	- 节点与要覆盖的节点之间，它们的第一个共同父级内的兄弟节点（2个节点分别的父级）设置`position: relative/absolut`并且添加`z-index`(可以仅设置一方)才能对比覆盖
 
+	- 节点与要覆盖的节点之间，它们的第一个共同父级内的兄弟节点（2个节点分别的父级）设置`position: relative/absolut`并且添加`z-index`(可以仅设置一方)才能对比覆盖。
 21. ie6的`a:hover`之后添加派生选择器css效果，e.g. `a:hover .class{}`：
-	- 先要设置`a:hover{}`触发`:hover`时候的重绘(或重排)效果，可以用`zoom: 1`再添加`a:hover`之后的派生选择器css效果，比如显示／隐藏
-	
-	>ie6用css控制子项根据父项`a:hover`的显示隐藏，仅作用于一些文本效果，因此还是要用js的方式替代此种效果：mouseenter时候添加一个类，类控制css来操作子项内容的显示隐藏；mouseleave时候去除此类
 
-22. ie6的`:hover`的某些css属性值会导致高度变化，其实是触发了haslayout，可以设置css属性使`:hover`之前就已经haslayout
-
+	- 先要设置`a:hover{}`触发`:hover`时候的重绘(或重排)效果，可以用`zoom: 1`再添加`a:hover`之后的派生选择器css效果，比如显示／隐藏。
+	>ie6用css控制子项根据父项`a:hover`的显示隐藏，仅作用于一些文本效果，因此还是要用js的方式替代此种效果：mouseenter时候添加一个类，类控制css来操作子项内容的显示隐藏；mouseleave时候去除此类。
+22. ie6的`:hover`的某些css属性值会导致高度变化，其实是触发了**haslayout**，可以设置css属性使`:hover`之前就已经haslayout。
 23. ie6修改`absolute`的盒子为`display: none`会改变父级的`height`（可能也是haslayout作祟）：
-	- 父节点设定`height`，增加`overflow: hidden和position: relative`
-	- 先show()出替换的内容，再hide()被替换的内容
 
-24. ie6/7的`text-decoration`会被`overflow: hidden`截断
-
+	1. 父节点设定`height`，增加`overflow: hidden;`和`position: relative;`。
+	2. 先show()出替换的内容，再hide()被替换的内容。
+24. ie6/7的`text-decoration`会被`overflow: hidden`截断。
 25. ie6/7/8不支持css3的透明，可以用ie特有的滤镜：
+
 	1. 整个节点透明：
 
 	    1. ie6/7：
@@ -146,18 +148,15 @@
 
 	        `filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr=#40000000, endColorStr=#40000000); *zoom: 1;/* 必须激活haslayout*/`
 
-	        >- `startColorStr`是起色点，`endColorStr`是终色点（用于渐变色），两个值相同则单色透明；
-	        >- 值为十六进制数，前两位表示alpha通道值，后六位为RGB值。
-
+	        >- `startColorStr`是起色点，`endColorStr`是终色点（用于渐变色），两个值相同则单色；
+	        >- 值为十六进制数，前两位表示alpha通道值（透明），后六位为RGB值。
 	    2. ie9+及高级浏览器：
 
-	        `background: rgba(0,0,0,.5);`
-
-	    >还可以使用gif透明图（IE下24位PNG图透明时引起的内存泄漏）。
-
+	        `background: rgba(0, 0, 0, .5);`
+	    >还可以使用gif透明图（IE下较小的24位PNG图透明时引起的内存泄漏）。
 26. ie6没有console方法（执行会报错），可用alert替代：
 
-	``` js
+	```javascript
 	if(typeof console === "undefined" || typeof console.log === "undefined") {
 		console = {};
 		console.log = function(msg){
@@ -165,46 +164,35 @@
 		};
 	}
 	```
-	
 27. ie6下当子节点的宽度超过父节点设置的宽度时，会产生奇怪的样式效果，比如仅设置`padding-top`而会把`padding-bottom`也设置一样的值，用以下解决：
 
-    计算好子节点不要超过父节点宽度
+    - 计算好子节点不要超过父节点宽度。
+28. ie6下**(qrcode.js)[https://github.com/davidshimjs/qrcodejs]**要先把节点展示出来才能够调用方法产生效果，调用完之后再隐藏节点不会有影响（插件bugs），ie6下是用table模拟效果。
+29. ie6下`position: absolute`的文字宽度，若不设置宽度值，其最大宽度等于吧父级宽度的一半，而在其他主流浏览器下最大宽度等于父级宽度，用以下解决：
 
-28. ie6下qrcode.js要先把节点展示出来才能够调用方法产生效果，调用完之后再隐藏节点不会有影响（算是插件bugs），ie6下是用table模拟效果
+	1. 此文字的节点设置`width固定值`。
+	2. `white-space: nowrap`强制文本不换行。
+30. ie6的`负margin`有些情况需要多设置一些，因为可能出现子节点内容超过设定值的情况。
+31. ie6的某些兄弟间节点间（比如img和span）因为出现比如`overflow: hidden`造成相对于基线会有对齐问题，用以下解决：
 
-29. ie6下`position: absolute`的文字宽度，若不设置宽度值，其最大宽度等于吧父级宽度的一半，而在其他主流浏览器下最大宽度等于父级宽度，用以下解决
-	- 此文字的节点设置`width固定值`
-	- `white-space: nowrap`强制文本不换行
+	- `vertical: top;margin-top: …`
+32. ie6下的`absolute/float`节点在页面重新渲染时，可能出现`margin-left/maring-top`的渲染问题，导致位置发生变化，用以下解决：
 
-30. ie6的负margin有些情况需要多设置一些，因为可能出现不是设定值的情况
+	- 用`margin-right/ margin-bottom/ padding`替代。
+33. 一些情况下，`inline-block`节点标签前后的空格导致出现占位的间隙，用一下解决：
 
-31. ie6的某些兄弟间节点间（比如img和span）因为出现比如`overflow: hidden`造成相对于基线会有对齐问题，用以下解决
-
-	`vertical: top;margin-top: …`
-
-32. ie6下的`absolute/float`节点在页面重新渲染时，可能出现`margin-left/maring-top`的渲染问题，导致位置发生变化，用以下解决
-
-	用`margin-right/margin-bottom/padding`替代
-
-33. 一些情况下，`inline-block`节点标签前后的空格导致出现占位的间隙
-	- 把此节点设置为`display: block`（可通过设置浮动、绝对定位、固定定位，自动转换为block）
-	- 给img父级设置`font-size: 0`(可用这个方法排查是不是其前后的空格导致)
-
-34. ie6下调用的function在还未加载到的地方，因为兼容性差，会导致调用不成功的错误，受加载速度影响，其他高级浏览器不会出现类似情况
-
+	1. 把此节点设置为`display: block`（可通过设置浮动、绝对定位、固定定位，自动转换为block），这样此节点前后就不会有空格产生的内联元素占据空间。
+	2. 给父级设置`font-size: 0`(可用这个方法排查是不是其前后的空格导致)。
+34. ie6下调用的`function`在还未加载到的地方，因为兼容性差，会导致调用不成功的错误，受加载速度影响，其他高级浏览器不会出现类似情况。
 35. ie6下，父级为`float`，其子级要根据内容宽度自适应：
+
     - ~~子级为`display: block;`，若要设置`height`就必须要设置`width`，否者会导致子级铺满父级。~~
-    - 子级或者子级包裹的内容设置为`display: inline-block;*display: inline;zoom: 1;`，可以仅设置`height`，不用设定`width`。
-
+    - **子级或者子级包裹的内容设置为`display: inline-block; *display: inline; *zoom: 1;`，可以仅设置`height`，不用设定`width`。**
 36. ie6下，图片类型直接改变后缀名会导致无法打开；当把`.jpg`的文件后缀保存为`.png`在ie6显示时，会阻塞之后所有图片的加载。
-
 37. ie6下因为hover或者改变视窗大小或者改变dom位置而导致元素高度变化（甚至移动到看不见地方），可以试着往其父级层层向上增加`zoom: 1;`进行测试，若还是不行则在有高度的地方设置`overflow: hidden;`，甚至是最顶端的位置添加才可以修复（有时候基本是向上试错的碰运气）。
-
-38. ie6/7下的js多出来的`,`会报错，高级浏览器只会warning不会产生错误。
-
+38. ie6/7下js的对象内部多出来的`,`会报错，高级浏览器只会warning不会产生错误。
 39. ie6下父级设置`height`、`width`，当子级超过限制后，会把父级撑大（没有`overflow: hidden;`情况）。
-
-> 若ie6下无法打开https链接，尝试：**internet选项－－高级－－使用TLS1.0打钩**。
+40. 若ie6下无法打开https链接，尝试：**internet选项－－高级－－使用TLS1.0打钩**。
 
 ## haslayout
 
