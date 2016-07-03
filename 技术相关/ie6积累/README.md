@@ -120,10 +120,11 @@
 	2. 若要用`overflow: hidden`作用于`float`的子节点，必须父级也`浮动`或`清除浮动`。
 20. ie6的`z-index`使用：
 
-	- 节点与要覆盖的节点之间，它们的第一个共同父级内的兄弟节点（2个节点分别的父级）设置`position: relative/absolut`并且添加`z-index`(可以仅设置一方)才能对比覆盖。
+	- 节点与要覆盖的节点之间，它们的第一个共同父级内的兄弟节点（2个节点分别的父级）设置`position: relative/absolut`并且添加`z-index`（可以仅设置一方）才能对比覆盖。
 21. ie6的`a:hover`之后添加派生选择器css效果，e.g. `a:hover .class{}`：
 
 	- 先要设置`a:hover{}`触发`:hover`时候的重绘(或重排)效果，可以用`zoom: 1`再添加`a:hover`之后的派生选择器css效果，比如显示／隐藏。
+
 	>ie6用css控制子项根据父项`a:hover`的显示隐藏，仅作用于一些文本效果，因此还是要用js的方式替代此种效果：mouseenter时候添加一个类，类控制css来操作子项内容的显示隐藏；mouseleave时候去除此类。
 22. ie6的`:hover`的某些css属性值会导致高度变化，其实是触发了**haslayout**，可以设置css属性使`:hover`之前就已经haslayout。
 23. ie6修改`absolute`的盒子为`display: none`会改变父级的`height`（可能也是haslayout作祟）：
