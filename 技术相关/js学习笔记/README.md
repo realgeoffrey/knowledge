@@ -499,30 +499,31 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 ## 功能用法
 
 ### 判断类型
-- `Object.prototype.toString.apply(值);  /* 或call*/`
+1. `Object.prototype.toString.apply(值);  /* 或call*/`
+
     - 除了放入*undefined*或*null*外，放入**对象**，返回`"[object 构造函数的名称]"`的字符串
 
         `Object.prototype.toString.call(值);` -> 输出字符串
-        - `undefined` 或 不填 -> `'[object Undefined]'`
-        - `null` -> `'[object Null]'`
-        - `function(){}`（匿名或不匿名） -> `'[object Function]'`
-        - `{}` -> `'[object Object]'`
+        1. `undefined` 或 不填 -> `'[object Undefined]'`
+        2. `null` -> `'[object Null]'`
+        3. `function(){}`（匿名或不匿名） -> `'[object Function]'`
+        4. `{}` -> `'[object Object]'`
 
-        只要是内置对象，则返回其构造函数名。举例为：
-        - `[]` -> `'[object Array]'`
-        - 数字 -> `'[object Number]'`
-        - 字符串 -> `'[object String]'`
-        - 布尔型对象 -> `'[object Boolean]'`
-        - Date对象 -> `'[object Date]'`
-        - RegExp对象 -> `'[object RegExp]'`
-        - arguments对象 -> `'[object Arguments]'`
-        - Error对象 -> `'[object Error]'`
-        - Math对象 -> `'[object Math]'`
-        - window对象 -> `'[object global]'`
-        - document对象 -> `'[object HTMLDocument]'`
-        - JSON对象 -> `'[object JSON]'`
-        - Map对象 -> `'[object Map]'`
-        - console对象 -> `'[object Console]'`
+        只要是内置对象，则返回其构造函数名（自定义类型返回`'[object Object]'`）。举例：
+        5. `[]` -> `'[object Array]'`
+        6. 数字 -> `'[object Number]'`
+        7. 字符串 -> `'[object String]'`
+        8. 布尔型对象 -> `'[object Boolean]'`
+        9. Date对象 -> `'[object Date]'`
+        10. RegExp对象 -> `'[object RegExp]'`
+        11. arguments对象 -> `'[object Arguments]'`
+        12. Error对象 -> `'[object Error]'`
+        13. Math对象 -> `'[object Math]'`
+        14. window对象 -> `'[object global]'`
+        15. document对象 -> `'[object HTMLDocument]'`
+        16. JSON对象 -> `'[object JSON]'`
+        17. Map对象 -> `'[object Map]'`
+        18. console对象 -> `'[object Console]'`
 
         >对于没有声明的变量，直接使用此行代码会报**引用不存在变量**的错误，因此需要：
         >
@@ -545,7 +546,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
         >   - Let O be the result of calling ToObject passing the this value as the argument.
         >   - Let class be the value of the [[Class]] internal property of O.
         >   - Return the String value that is the result of concatenating the three Strings **"[object ", class, and "]"**.
-- `typeof 值`
+2. `typeof 值`
 
     可以跨帧（iframe）。
 
@@ -562,7 +563,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     >
     >ie8-的DOM节点的方法返回不是~~`function`~~，而是`object`，因此只能用`方法名 in DOM`检测DOM是否拥有某方法。
 
-- `对象 instanceof 构造函数`
+3. `对象 instanceof 构造函数`
 
     不能跨帧（iframe）。
 
@@ -571,7 +572,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     不仅检测对象本身，还检测至原型链。如`new Number() instanceof Object`返回true。
 
     **检测自定义类型的唯一方法。**
-- `属性 in 对象`
+4. `属性 in 对象`
 
     仅判断属性是否存在检测的对象上，不会去读取属性值。
 
