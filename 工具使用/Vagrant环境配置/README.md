@@ -42,7 +42,9 @@
 	```text
     config.vm.synced_folder "主机目录", "客户机目录" ,owner: "www-data",group:"www-data"
     ```
-	>第一个参数为主机共享目录的绝对路径 *"E:/vagrant_ubuntu/shares/"* 或 *”/Users/Geoffrey/vagrant_centOS/shares”* ，第二个参数为客户机里的共享目录的绝对路径 *"/home/vagrant/shares/"* ，后面参数为设置所有者和所有组的名字，因为共享文件夹里面的所有者、所有组以及操作权限是无法修改的，并且权限为①文件夹755②文件775，要使www-data或apache对文件和文件夹都是775权限，所以要给共享文件夹的owner设置为服务器的组
+	>1. 第一个参数为主机共享目录的绝对路径 *"E:/vagrant_ubuntu/shares/"* 或 *”/Users/Geoffrey/vagrant_centOS/shares”* ，
+	>2. 第二个参数为客户机里的共享目录的绝对路径 *"/home/vagrant/shares/"* ，
+	>3. 后面参数为设置所有者和所有组的名字，因为共享文件夹里面的所有者、所有组以及操作权限是无法修改的，并且权限为①文件夹755②文件775，要使www-data或apache对文件和文件夹都是775权限，所以要给共享文件夹的owner设置为服务器的组
 	
 	设置虚拟机的主机名字，在Vagrantfile中加入：
 	```text
