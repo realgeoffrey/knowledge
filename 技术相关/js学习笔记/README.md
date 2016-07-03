@@ -1102,14 +1102,14 @@ $('body').text(text);
             2. 客户端回调函数嵌套一层`try-catch`以提供**哪个方法发生错误等额外信息**。
 
                 因为客户端调用前端的方法是直接通过函数运行js代码，抛出错误时`window.onerror`传入的参数仅有第一个`message`参数（`file`、`line`以及其他参数都没有），所以必须在给客户端调用的js方法中嵌套`try-catch`并且抛出能标识出所调用方法名字等信息。
-            3. 又因为要避免**js代码还未加载完毕客户端就调用回调函数**，需在客户端调用前端js回调函数的时候嵌套一层`try-catch`，在`catch`中提供调用哪个方法的信息。
+            3. （可选）又因为要避免**js代码还未加载完毕客户端就调用回调函数**，需在客户端调用前端js回调函数的时候嵌套一层`try-catch`，在`catch`中提供调用哪个方法的信息。
 
                 >仅能获取原始error的`message`信息，无法获取`line`等其他信息，因此还是必须前端在回调函数中嵌套`try-catch`
 
         >捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
 
 ### 函数
-- 每个函数都是一个Function对象，像普通对象一样拥有**属性**和**方法**。
+1. 每个函数都是一个Function对象，像普通对象一样拥有**属性**和**方法**。
 
     函数默认有`length`（希望接收的命名参数个数）和`prototype`属性。
 
@@ -1120,9 +1120,9 @@ $('body').text(text);
     函数内的`arguments.callee`是一个指针：其指向拥有`arguments`对象的函数。
 
     函数继承的`toLocaleString`、`toString`、`valueOf`的返回值为：**经过浏览器处理过的函数代码(因浏览器而异)**。
-- 函数总有返回值。不显式`return`的话，默认返回`undefined`。
+2. 函数总有返回值。不显式`return`的话，默认返回`undefined`。
 
-- 定义函数方法：
+3. 定义函数方法：
 
     1. 构造函数
 
@@ -1156,10 +1156,10 @@ $('body').text(text);
 闭包是一种特殊的对象。它由两部分构成：函数，以及创建该函数的环境。环境由闭包创建时在作用域中的任何局部变量组成。
 
 ### jQuery或Zepto的`.on()`绑定效率
-`$(event handler).on(event,selector,function(){})`
+`$(event handler).on(event, selector, function(){});`
 
 1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的内容，成为**event handler**。有且仅有这些event handler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的event handler处理DOM也不会使绑定内容失效（除非删除）；在event handler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
-2. 绑定的event handler距离selector越近，效率越高。因此把selector都绑定在`$(document)``上是低效的。
+2. 绑定的event handler距离selector越近，效率越高。因此虽然把selector都绑定在`$(document)`上能够避免增删节点造成事件绑定的影响，但确是低效的。
 
 ### jQuery或Zepto相关
 - 判断是否加载成功，不成功则执行载入本地文件
