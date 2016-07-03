@@ -86,6 +86,40 @@ function removeClass(node, removeClassName) {
 }
 ```
 
+### *原生js*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
+```javascript
+/*
+ * 滚动到
+ * @param {Number} endX 到达x轴像素
+ * @param {Number} endY 到达y轴像素
+ * @param {Number} time 所用毫秒
+ * @returns undefined
+ */
+function animateTo(endX, endY, time) {
+    var scrollFromX = document.body.scrollLeft || document.documentElement.scrollLeft,
+        scrollFromY = document.body.scrollTop || document.documentElement.scrollTop,
+        scrollToX = endX > document.documentElement.scrollWidth ? document.documentElement.scrollWidth : endX,
+        scrollToY = endY > document.documentElement.scrollHeight ? document.documentElement.scrollHeight : endY,
+        i = 0,
+        runEvery = 5,
+        myself = arguments.callee;
+
+    time /= runEvery;
+
+    clearInterval(myself.setIntervalId);
+
+    myself.setIntervalId = setInterval(function () {
+        i++;
+
+        window.scrollTo((scrollToX - scrollFromX) / time * i + scrollFromX, (scrollToY - scrollFromY) / time * i + scrollFromY);
+
+        if (i >= time) {
+            clearInterval(myself.setIntervalId);
+        }
+    }, runEvery);
+}
+```
+
 ### *原生js*移动端获取触屏滚动距离(可改写为鼠标拖拽功能)
 ```javascript
 function TouchMoveAction(dom) {
@@ -137,129 +171,6 @@ function TouchMoveAction(dom) {
 
 /* 实例化使用*/
 new TouchMoveAction(document.getElementById("test"));
-```
-
-### jQuery或zepto图片延时加载
-```javascript
-<img class="方法类" src="默认图地址" data-src="真实图地址">
-
-function ImgLazyLoad(className, func) {
-    var self = this;
-
-    var timeoutId,
-        timeStamp = (new Date()).valueOf(); /* 事件命名空间*/
-
-    function init(className, func) {
-        bindEvent(className);
-
-        $(window).on('scroll' + '.' + timeStamp, function () {
-            bindEvent(className, func);
-        });
-    }
-
-    function bindEvent(className, func) {    /* 绑定触发事件*/
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(function () {
-            lazyLoad(getImgArr(className), className, func);
-        }, 500);
-    }
-
-    function getImgArr(className, offset) { /* 获取屏幕内dom数组*/
-        var $all = $('.' + className),
-            screenTop = document.body.scrollTop || document.documentElement.scrollTop,
-            screenBottom = screenTop + $(window).height(),
-            domArr = [];
-
-        if (typeof offset !== 'number') {
-            offset = 50;
-        }
-
-        $all.each(function (index, element) {
-            var elemHeight = $(element).offset().top;
-
-            if (elemHeight <= screenBottom + offset && elemHeight >= screenTop - offset) {
-                domArr.push(element);
-            }
-        });
-
-        return domArr;
-    }
-
-    function lazyLoad(domArr, className, func) { /* 图片延时加载*/
-        $.each(domArr, function (index, value) {
-            var $this = $(value);
-
-            var src = $this.attr('data-src'),
-                newImg = new Image();
-
-            if (src !== undefined) {
-                newImg.src = src;
-
-                if (newImg.complete) {  /* 缓存加载*/
-                    $this.attr('src', src)
-                        .removeAttr('data-src')
-                        .removeClass(className);
-                } else {
-                    newImg.onload = function () {   /* 新加载*/
-                        $this.attr('src', src)
-                            .removeAttr('data-src')
-                            .removeClass(className);
-                    };
-                }
-                if (typeof func === "function") {
-                    func.call($this);
-                }
-            }
-        });
-    }
-
-    self.unbindEvent = function () {    /* 解绑事件绑定*/
-        $(window).off('scroll' + '.' + timeStamp);
-    };
-
-    init(className, func);
-}
-
-
-var test = new ImgLazyLoad('j-img', function () {
-    console.log(this);
-});
-
-test.unbindEvent();
-```
-
-### *原生js*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
-```javascript
-/*
- * 滚动到
- * @param {Number} endX 到达x轴像素
- * @param {Number} endY 到达y轴像素
- * @param {Number} time 所用毫秒
- * @returns undefined
- */
-function animateTo(endX, endY, time) {
-    var scrollFromX = document.body.scrollLeft || document.documentElement.scrollLeft,
-        scrollFromY = document.body.scrollTop || document.documentElement.scrollTop,
-        scrollToX = endX > document.documentElement.scrollWidth ? document.documentElement.scrollWidth : endX,
-        scrollToY = endY > document.documentElement.scrollHeight ? document.documentElement.scrollHeight : endY,
-        i = 0,
-        runEvery = 5,
-        myself = arguments.callee;
-
-    time /= runEvery;
-
-    clearInterval(myself.setIntervalId);
-
-    myself.setIntervalId = setInterval(function () {
-        i++;
-
-        window.scrollTo((scrollToX - scrollFromX) / time * i + scrollFromX, (scrollToY - scrollFromY) / time * i + scrollFromY);
-
-        if (i >= time) {
-            clearInterval(myself.setIntervalId);
-        }
-    }, runEvery);
-}
 ```
 
 ### *原生js*判断浏览器`userAgent`
@@ -340,71 +251,6 @@ var cookieFuc = {
         document.cookie = c_name + "=" + escape(value) + ((typeof days === 'number') ? ';expires=' + expiresDays.toGMTString() : '');
     }
 };
-```
-
-### jQuery或zepto获取`HTTP response header`信息
-```javascript
-function getResponseHeaders(requestName) {
-    var text;
-
-    $.ajax({
-        type: 'HEAD',
-        url: document.location.href,
-        async: false,
-        complete: function (xhr, data) {
-            var responseHeaders, headerArr, i;
-
-            if (data !== "error" && data !== "timeout" && data !== "parsererror") {
-                responseHeaders = xhr.getAllResponseHeaders();
-
-                if (requestName) {
-                    requestName += ": ";
-                    headerArr = responseHeaders.split(/[\r\n]+/);
-
-                    for (i = 0; i < headerArr.length; i++) {
-                        if (headerArr[i].indexOf(requestName) === 0) {
-                            text = headerArr[i].slice(requestName.length);
-                            break;
-                        }
-                    }
-                } else {
-                    text = responseHeaders;
-                }
-            } else {
-                alert("获取头信息: " + data);
-            }
-        }
-    });
-
-    return text;
-}
-```
-
-### jQuery修复html标签`placeholder`属性无效
-```javascript
-function fixPlaceholder($dom) {
-    var $input = $dom || $('input, textarea');
-
-    if (!('placeholder' in document.createElement("input"))) {
-        $input.each(function (index, element) {
-            var placeText = $(element).attr('placeholder');
-
-            if ($(element).val() === '') {
-                $(element).val(placeText);
-            }
-
-            $(this).on('focus', function () {
-                if ($(this).val() === placeText) {
-                    $(this).val('');
-                }
-            }).on('blur', function () {
-                if ($(this).val() === '') {
-                    $(this).val(placeText);
-                }
-            });
-        });
-    }
-}
 ```
 
 ### *原生js*加入收藏夹
@@ -600,123 +446,6 @@ removeEvent(document.getElementById('test1'), 'keydown', func1);
 
 jQuery的`on`与`off`，不用一一对应某个handle：当写具体handle时解绑那个具体handle；不写默认解绑所有对象下某事件的方法。
 
-### *原生js*、jQuery实现判断按下具体某键值
-```javascript
-/* js原生*/
-function checkKeyCode(event) {
-    var e = event || window.event,
-        keyCode = e.charCode || e.keyCode;  /* 获取键值*/
-
-    if (keyCode === 13) {   /* 查询键值表 例:13->换行*/
-        /* 具体操作...*/
-
-        /* 取消默认行为*/
-        if (window.event) {
-            window.event.returnValue = false;
-        } else {
-            event.preventDefault();
-        }
-    }
-}
-
-addEvent(document.getElementById('test'), 'keydown', checkKeyCode);  /* 上面绑定事件*/
-
-
-/* jQuery*/
-$(...).on('keydown', function (e) {
-    if (e.which === 13) {   /* 查询键值表 例:13->换行*/
-        /* 具体操作...*/
-
-        return false;   /* 取消默认行为*/
-    }
-});
-```
-
-### jQuery或Zepto弹出toast
-
-```javascript
-/* jQuery*/
-function alertToast(text) {
-    if ($('.j-pop-text').length === 0) {
-        $('body').append('<div class="j-pop-text 样式类" style="display: none;"></div>');
-    }
-
-    var $popText = $('.j-pop-text'),
-        myself = arguments.callee;
-
-    clearTimeout(myself.setTimeoutId);
-
-    text = text || 'warning';
-    $popText.text(text);
-
-    $popText.show(function () {
-        myself.setTimeoutId = setTimeout(function () {
-            $popText.fadeOut();
-        }, 2500);
-    });
-}
-```
-```html
-<style>
-    .hidden {
-        display: none;
-    }
-</style>
-<script >
-    /* Zepto*/
-    function alertToast(text) {
-        if ($('.j-pop-text').length === 0) {
-            $('body').append('<div class="j-pop-text hidden 样式类"></div>');  /* .hidden {display: none !important;}*/
-        }
-
-        var $popText = $('.j-pop-text');
-
-        clearTimeout(arguments.callee.setTimeoutId);
-
-        text = text || 'warning';
-        $popText.text(text).removeClass('hidden');
-
-        arguments.callee.setTimeoutId = setTimeout(function () {
-            $popText.addClass('hidden').text('');
-        }, 2500);
-    }
-</script>
-```
-
-### jQuery全选、取消全选
-```html
-所有：
-<input type="checkbox" name="all">
-
-单个：
-<input type="checkbox" name="ones">
-<input type="checkbox" name="ones">
-<input type="checkbox" name="ones">
-...
-```
-```javascript
-var $allInput = $('[name="all"]'),
-    $oneInput = $('[name="ones"]');
-
-$allInput.on('click', function () {
-    $oneInput.prop('checked', this.checked);
-});
-
-$oneInput.on('click', function () {
-    var flag = true;
-
-    $oneInput.each(function () {
-        if (!this.checked) {
-            flag = false;
-
-            return false;
-        }
-    });
-
-    $allInput.prop('checked', flag);
-});
-```
-
 ### *原生js*判断对象是否为空
 ```javascript
 function isObjEmpty(obj) {
@@ -739,60 +468,6 @@ function isObjEmpty(obj) {
     }
 }
 ```
-
-### *原生js*、jQuery阻止冒泡和阻止浏览器默认行为
-- 阻止冒泡
-    ```javascript
-    /* js原生*/
-    function stopBubble(e) {
-        if (e && e.stopPropagation) {
-            e.stopPropagation();
-        } else {
-            window.event.cancelBubble = true;
-        }
-    }
-
-    /* jQuery*/
-    $('...').on('...', function (e) {
-        e.stopPropagation();
-    });
-    ```
-- 阻止默认行为
-    ```javascript
-    /* js原生*/
-    function stopDefault(e) {
-        if (e && e.preventDefault) {
-            e.preventDefault();
-        } else {
-            window.event.returnValue = false;
-        }
-        return false;
-    }
-
-    /* jQuery*/
-    $('...').on('...', function (e) {
-        e.preventDefault();
-    });
-    ```
-- 阻止冒泡&阻止默认行为
-    ```javascript
-    /* js原生*/
-    function returnFalse(e) {
-        if (e && e.stopPropagation) {
-            e.stopPropagation();
-            e.preventDefault();
-        } else {
-            window.event.cancelBubble = true;
-            window.event.returnValue = false;
-        }
-        return false;
-    }
-
-    /* jQuery*/
-    $('...').on('...', function () {
-        return false;
-    });
-    ```
 
 ### *原生js*移动端模拟点击事件（避免300毫秒click）
 ```javascript
@@ -887,41 +562,6 @@ function getAbsoluteUrl(url) {
         return domA.href;
     }
 }
-```
-
-### jQuery节点跟随屏幕滚动
-```javascript
-/*
- * 跟随屏幕滚动
- * @param {wrapper} String 跟随节点的父级
- * @param {dependent} String 跟随节点的父级的兄弟参照物
- * @param {target} String 跟随节点
- * @returns undefined
- */
-(function (wrapper, dependent, target) {
-    var $wrapper = $(wrapper),
-        wrapperHeight = $wrapper.height(),
-        $dependent = $wrapper.siblings(dependent),
-        max = $dependent.height() - wrapperHeight,
-        $target = $(target),
-        $targetPrev = $target.prev(),
-        startOffset = $targetPrev.offset().top + $targetPrev.height();
-
-    $(window).on('scroll', function () {
-        var scollTop = $(document).scrollTop(),
-            marginTop = 0;
-
-        if (scollTop > startOffset) {
-            marginTop = scollTop - startOffset;
-
-            if (marginTop > max) {
-                marginTop = max;
-            }
-        }
-
-        $target.css({"marginTop": marginTop});
-    });
-}('.father', '.dependent', '.target'));
 ```
 
 ### *原生js*判断事件在浏览器是否存在
@@ -1043,6 +683,404 @@ var fourOperations = {
 };
 ```
 
+### *原生js*用请求图片作log统计
+```javascript
+var sendLog = (function () {
+    var _unique = (function () {    /* 产生唯一标识*/
+        var time = (new Date()).getTime() + '_',
+            i = 0;
+
+        return function () {
+            return time + (i++);
+        }
+    }());
+
+    var run = function (url) {
+        var data = window['imgLogData'] || (window['imgLogData'] = {}),
+            img = new Image(),
+            uid = _unique();
+
+        data[uid] = img;    /* 防止img被垃圾处理*/
+
+        img.onload = img.onerror = function () {    /* 成功或失败后销毁对象*/
+            img.onload = img.onerror = null;
+            img = null;
+            delete data[uid];
+        };
+
+        img.src = url + '&_cache=' + uid;   /* 发送统计内容*/
+    };
+
+    return run;
+}());
+
+
+sendLog('统计url');
+```
+
+### *原生js*、jQuery实现判断按下具体某键值
+```javascript
+/* js原生*/
+function checkKeyCode(event) {
+    var e = event || window.event,
+        keyCode = e.charCode || e.keyCode;  /* 获取键值*/
+
+    if (keyCode === 13) {   /* 查询键值表 例:13->换行*/
+        /* 具体操作...*/
+
+        /* 取消默认行为*/
+        if (window.event) {
+            window.event.returnValue = false;
+        } else {
+            event.preventDefault();
+        }
+    }
+}
+
+addEvent(document.getElementById('test'), 'keydown', checkKeyCode);  /* 上面绑定事件*/
+
+
+/* jQuery*/
+$(...).on('keydown', function (e) {
+    if (e.which === 13) {   /* 查询键值表 例:13->换行*/
+        /* 具体操作...*/
+
+        return false;   /* 取消默认行为*/
+    }
+});
+```
+
+### *原生js*、jQuery阻止冒泡和阻止浏览器默认行为
+- 阻止冒泡
+    ```javascript
+    /* js原生*/
+    function stopBubble(e) {
+        if (e && e.stopPropagation) {
+            e.stopPropagation();
+        } else {
+            window.event.cancelBubble = true;
+        }
+    }
+
+    /* jQuery*/
+    $('...').on('...', function (e) {
+        e.stopPropagation();
+    });
+    ```
+- 阻止默认行为
+    ```javascript
+    /* js原生*/
+    function stopDefault(e) {
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        } else {
+            window.event.returnValue = false;
+        }
+        return false;
+    }
+
+    /* jQuery*/
+    $('...').on('...', function (e) {
+        e.preventDefault();
+    });
+    ```
+- 阻止冒泡&阻止默认行为
+    ```javascript
+    /* js原生*/
+    function returnFalse(e) {
+        if (e && e.stopPropagation) {
+            e.stopPropagation();
+            e.preventDefault();
+        } else {
+            window.event.cancelBubble = true;
+            window.event.returnValue = false;
+        }
+        return false;
+    }
+
+    /* jQuery*/
+    $('...').on('...', function () {
+        return false;
+    });
+    ```
+
+----
+
+### jQuery或zepto图片延时加载
+```html
+<img class="方法类" src="默认图地址" data-src="真实图地址">
+
+<script>
+    function ImgLazyLoad(className, func) {
+        var self = this;
+
+        var timeoutId,
+            timeStamp = (new Date()).valueOf(); /* 事件命名空间*/
+
+        function init(className, func) {
+            bindEvent(className);
+
+            $(window).on('scroll' + '.' + timeStamp, function () {
+                bindEvent(className, func);
+            });
+        }
+
+        function bindEvent(className, func) {    /* 绑定触发事件*/
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(function () {
+                lazyLoad(getImgArr(className), className, func);
+            }, 500);
+        }
+
+        function getImgArr(className, offset) { /* 获取屏幕内dom数组*/
+            var $all = $('.' + className),
+                screenTop = document.body.scrollTop || document.documentElement.scrollTop,
+                screenBottom = screenTop + $(window).height(),
+                domArr = [];
+
+            if (typeof offset !== 'number') {
+                offset = 50;
+            }
+
+            $all.each(function (index, element) {
+                var elemHeight = $(element).offset().top;
+
+                if (elemHeight <= screenBottom + offset && elemHeight >= screenTop - offset) {
+                    domArr.push(element);
+                }
+            });
+
+            return domArr;
+        }
+
+        function lazyLoad(domArr, className, func) { /* 图片延时加载*/
+            $.each(domArr, function (index, value) {
+                var $this = $(value);
+
+                var src = $this.attr('data-src'),
+                    newImg = new Image();
+
+                if (src !== undefined) {
+                    newImg.src = src;
+
+                    if (newImg.complete) {  /* 缓存加载*/
+                        $this.attr('src', src)
+                            .removeAttr('data-src')
+                            .removeClass(className);
+                    } else {
+                        newImg.onload = function () {   /* 新加载*/
+                            $this.attr('src', src)
+                                .removeAttr('data-src')
+                                .removeClass(className);
+                        };
+                    }
+                    if (typeof func === "function") {
+                        func.call($this);
+                    }
+                }
+            });
+        }
+
+        self.unbindEvent = function () {    /* 解绑事件绑定*/
+            $(window).off('scroll' + '.' + timeStamp);
+        };
+
+        init(className, func);
+    }
+
+
+    var test = new ImgLazyLoad('j-img', function () {
+        console.log(this);
+    });
+
+    test.unbindEvent();
+</script>
+```
+
+### jQuery或zepto获取`HTTP response header`信息
+```javascript
+function getResponseHeaders(requestName) {
+    var text;
+
+    $.ajax({
+        type: 'HEAD',
+        url: document.location.href,
+        async: false,
+        complete: function (xhr, data) {
+            var responseHeaders, headerArr, i;
+
+            if (data !== "error" && data !== "timeout" && data !== "parsererror") {
+                responseHeaders = xhr.getAllResponseHeaders();
+
+                if (requestName) {
+                    requestName += ": ";
+                    headerArr = responseHeaders.split(/[\r\n]+/);
+
+                    for (i = 0; i < headerArr.length; i++) {
+                        if (headerArr[i].indexOf(requestName) === 0) {
+                            text = headerArr[i].slice(requestName.length);
+                            break;
+                        }
+                    }
+                } else {
+                    text = responseHeaders;
+                }
+            } else {
+                alert("获取头信息: " + data);
+            }
+        }
+    });
+
+    return text;
+}
+```
+
+### jQuery修复html标签`placeholder`属性无效
+```javascript
+function fixPlaceholder($dom) {
+    var $input = $dom || $('input, textarea');
+
+    if (!('placeholder' in document.createElement("input"))) {
+        $input.each(function (index, element) {
+            var placeText = $(element).attr('placeholder');
+
+            if ($(element).val() === '') {
+                $(element).val(placeText);
+            }
+
+            $(this).on('focus', function () {
+                if ($(this).val() === placeText) {
+                    $(this).val('');
+                }
+            }).on('blur', function () {
+                if ($(this).val() === '') {
+                    $(this).val(placeText);
+                }
+            });
+        });
+    }
+}
+```
+
+### jQuery或Zepto弹出toast
+```javascript
+/* jQuery*/
+function alertToast(text) {
+    if ($('.j-pop-text').length === 0) {
+        $('body').append('<div class="j-pop-text 样式类" style="display: none;"></div>');
+    }
+
+    var $popText = $('.j-pop-text'),
+        myself = arguments.callee;
+
+    clearTimeout(myself.setTimeoutId);
+
+    text = text || 'warning';
+    $popText.text(text);
+
+    $popText.show(function () {
+        myself.setTimeoutId = setTimeout(function () {
+            $popText.fadeOut();
+        }, 2500);
+    });
+}
+```
+```html
+<style>
+    .hidden {
+        display: none;
+    }
+</style>
+<script >
+    /* Zepto*/
+    function alertToast(text) {
+        if ($('.j-pop-text').length === 0) {
+            $('body').append('<div class="j-pop-text hidden 样式类"></div>');  /* .hidden {display: none !important;}*/
+        }
+
+        var $popText = $('.j-pop-text');
+
+        clearTimeout(arguments.callee.setTimeoutId);
+
+        text = text || 'warning';
+        $popText.text(text).removeClass('hidden');
+
+        arguments.callee.setTimeoutId = setTimeout(function () {
+            $popText.addClass('hidden').text('');
+        }, 2500);
+    }
+</script>
+```
+
+### jQuery全选、取消全选
+```html
+所有：
+<input type="checkbox" name="all">
+
+单个：
+<input type="checkbox" name="ones">
+<input type="checkbox" name="ones">
+<input type="checkbox" name="ones">
+...
+```
+```javascript
+var $allInput = $('[name="all"]'),
+    $oneInput = $('[name="ones"]');
+
+$allInput.on('click', function () {
+    $oneInput.prop('checked', this.checked);
+});
+
+$oneInput.on('click', function () {
+    var flag = true;
+
+    $oneInput.each(function () {
+        if (!this.checked) {
+            flag = false;
+
+            return false;
+        }
+    });
+
+    $allInput.prop('checked', flag);
+});
+```
+
+### jQuery节点跟随屏幕滚动
+```javascript
+/*
+ * 跟随屏幕滚动
+ * @param {wrapper} String 跟随节点的父级
+ * @param {dependent} String 跟随节点的父级的兄弟参照物
+ * @param {target} String 跟随节点
+ * @returns undefined
+ */
+(function (wrapper, dependent, target) {
+    var $wrapper = $(wrapper),
+        wrapperHeight = $wrapper.height(),
+        $dependent = $wrapper.siblings(dependent),
+        max = $dependent.height() - wrapperHeight,
+        $target = $(target),
+        $targetPrev = $target.prev(),
+        startOffset = $targetPrev.offset().top + $targetPrev.height();
+
+    $(window).on('scroll', function () {
+        var scollTop = $(document).scrollTop(),
+            marginTop = 0;
+
+        if (scollTop > startOffset) {
+            marginTop = scollTop - startOffset;
+
+            if (marginTop > max) {
+                marginTop = max;
+            }
+        }
+
+        $target.css({"marginTop": marginTop});
+    });
+}('.father', '.dependent', '.target'));
+```
+
 ### jQuery或zepto模拟手机翻转（使页面都以“横屏”展示）
 ```html
 <style>
@@ -1116,39 +1154,4 @@ var fourOperations = {
     reversalAct.init('#j-dom-1, #j-dom-2', 'reversal');
 </script>
 
-```
-
-### *原生js*用请求图片作log统计
-```javascript
-var sendLog = (function () {
-    var _unique = (function () {    /* 产生唯一标识*/
-        var time = (new Date()).getTime() + '_',
-            i = 0;
-
-        return function () {
-            return time + (i++);
-        }
-    }());
-
-    var run = function (url) {
-        var data = window['imgLogData'] || (window['imgLogData'] = {}),
-            img = new Image(),
-            uid = _unique();
-
-        data[uid] = img;    /* 防止img被垃圾处理*/
-
-        img.onload = img.onerror = function () {    /* 成功或失败后销毁对象*/
-            img.onload = img.onerror = null;
-            img = null;
-            delete data[uid];
-        };
-
-        img.src = url + '&_cache=' + uid;   /* 发送统计内容*/
-    };
-
-    return run;
-}());
-
-
-sendLog('统计url');
 ```
