@@ -1,5 +1,7 @@
 #js方法积累——实用方法
 
+## 原生js方法
+
 ### *原生js*实现类似jQuery的`$(document).ready(function () {});`
 ```javascript
 function onloads(func) {
@@ -804,9 +806,10 @@ $(...).on('keydown', function (e) {
     });
     ```
 
-----
 
-### jQuery或zepto图片延时加载
+## jQuery（或Zepto）方法
+
+### jQuery或Zepto图片延时加载
 ```html
 <img class="方法类" src="默认图地址" data-src="真实图地址">
 
@@ -897,7 +900,7 @@ $(...).on('keydown', function (e) {
 </script>
 ```
 
-### jQuery或zepto获取`HTTP response header`信息
+### jQuery或Zepto获取`HTTP response header`信息
 ```javascript
 function getResponseHeaders(requestName) {
     var text;
@@ -1081,7 +1084,7 @@ $oneInput.on('click', function () {
 }('.father', '.dependent', '.target'));
 ```
 
-### jQuery或zepto模拟手机翻转（使页面都以“横屏”展示）
+### jQuery或Zepto模拟手机翻转（使页面都以“横屏”展示）
 ```html
 <style>
     .dom {

@@ -875,7 +875,7 @@ li:hover a {
 3. *用js根据浏览器宽度的改变修改html的font-size，页面总宽度固定为某rem。所有页面元素都要用百分比+rem*
 
 ### 横竖屏切换
-1. 用js方法控制：[链接](../js方法积累/实用方法/README.md#jquery或zepto模拟手机翻转使页面都以横屏展示)
+1. 用js方法控制：[链接](../js方法积累/实用方法/README.md#jquery或Zepto模拟手机翻转使页面都以横屏展示)
 2. 媒体查询控制
 
     ```css
