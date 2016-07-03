@@ -491,7 +491,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
 解决方法：
 
-1. 使用`fastclick.js`后用`click`代替tap。
+1. 使用[fastclick.js](https://github.com/ftlabs/fastclick)后用`click`代替全部tap。
 2. 使用缓动动画，过度300ms延迟。
 3. 中间增加一层接受这个点透事件，然后去除此层。
 
