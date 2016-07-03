@@ -276,7 +276,7 @@
 		xunsearch官网（<http://www.xunsearch.com/>）下载，并解压出文件夹，打开文件夹，运行脚本即可完成安装。
 		```shell
         cd 文件夹
-        		sh setup.sh
+        sh setup.sh
         ```
 		>若安装失败，查看setup.log纠错后再执行脚本一遍
 		
