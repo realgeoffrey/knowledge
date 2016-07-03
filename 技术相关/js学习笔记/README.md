@@ -75,7 +75,7 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
     因此结果为数组`[10, 20, 30, 40]`的`[3]`属性值：`40`。
 5. html5的`audio`标签的自动播放属性`autoplay`
 
-    部分浏览器无法自动播放，可以设置触屏的时候开始播放：
+    移动端的部分浏览器无法自动播放，可以设置触屏的时候开始播放：
 
     ```html
     <audio src="1.mp3" controls="controls" autoplay="autoplay" id="audio">
@@ -157,14 +157,14 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
     解析器会尽量将新行并入当前行，当且仅当符合ASI规则时才会将新行视为独立的语句。js自动插入分号的情况（将新行视为独立行）：
 
-    - empty statement
-    - `var` statement
-    - expression statement
-    - `do-while` statement（not `while`）
-    - `continue` statement
-    - `break` statement
-    - `return` statement
-    - `throw` statement
+    1. empty statement
+    2. `var` statement
+    3. expression statement
+    4. `do-while` statement（not `while`）
+    5. `continue` statement
+    6. `break` statement
+    7. `return` statement
+    8. `throw` statement
 
     >前置分号策略：只要对行首字符进行token判断是否为：`[` `(` `+` `-` `/`五个符号之一，就在其前面增加分号。
 
@@ -336,17 +336,16 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
         ‘//’后不空格
 
-        - 使用场景
-
-            1. 代码上方独占一行，缩进与备注内容一致，注释前必须空一行
-            2. 代码尾部，至少一个缩进（若注释太长则必须挪到代码上方）
-            3. 被注释的大段代码
+        使用场景：
+        1. 代码上方独占一行，缩进与备注内容一致，注释前必须空一行
+        2. 代码尾部，至少一个缩进（若注释太长则必须挪到代码上方）
+        3. 被注释的大段代码
     2. 多行注释
 
         ‘\*’或‘/\*’后空一格
 
         - 代码上方独占多行，缩进与备注内容一致，注释前必须空一行
-        - 使用场景
+        - 使用场景：
 
             1. 难以理解的代码
             2. 可能被误认为错误的代码
