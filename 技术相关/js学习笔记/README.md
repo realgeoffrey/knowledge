@@ -477,12 +477,6 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 
     配置数据：URL、展示给用户的字符串、重复的值、设置、任何可能发生变更的值。
 
-### 判断jQuery（Zepto）选择器选择到空内容
-无论选择器选取的内容是否为空，都返回数组，所以`if($(...)) {/* 永远执行*/}`永远成立。因此用以下方法：
-
-1. `if($(...).length > 0) {/* 代码*/}`
-2. `if($(...)[]) {/* 代码*/}   /* 若无则为undefined*/`
-
 ### 移动端的`tap事件`点透bug
 移动端触摸事件顺序：**touchstart**->**touchmove**->**touchend**->**click**，tap事件发生后300ms才触发click事件。
 
@@ -493,6 +487,35 @@ prototype属性是js函数的继承机制，是构造函数的属性，作用是
 1. 使用[fastclick.js](https://github.com/ftlabs/fastclick)后用`click`代替全部tap。
 2. 使用缓动动画，过度300ms延迟。
 3. 中间增加一层接受这个点透事件，然后去除此层。
+
+
+### jQuery或Zepto相关
+1. 判断是否加载成功，不成功则执行载入本地文件
+
+    ```html
+    <script>
+        window.jQuery || document.write('<script src="本地地址"><\/script>');
+    </script>
+    ```
+2. 当变量是jQuery或Zepto对象是，可以用`$`作为开头命名，利于区别与普通变量的区别
+
+    ```javascript
+    var a = 1;
+    var $a = $('a');
+    ```
+3. 选择器
+    1. `$('子','父') === $('父').find('子')`
+
+        找到所有父级，若子级在此父级后面，则选择。
+    2. ~~`$('父 子')`~~
+
+        找到所有子级，然后向前找出有父级的，则选择（性能差）。与css相同的查询方式。
+4. 选择器选择到空内容
+
+    无论选择器选取的内容是否为空，都返回数组，所以`if($(...)) {/* 永远执行*/}`永远成立。因此用以下方法：
+
+    1. `if($(...).length > 0) {/* 代码*/}`
+    2. `if($(...)[]) {/* 代码*/}   /* 若无则为undefined*/`
 
 
 ## 功能用法
@@ -1155,30 +1178,8 @@ $('body').text(text);
 
 闭包是一种特殊的对象。它由两部分构成：函数，以及创建该函数的环境。环境由闭包创建时在作用域中的任何局部变量组成。
 
-### jQuery或Zepto相关
-1. `.on()`的绑定效率
+### jQuery或Zepto的`.on()`绑定效率
+>e.g. `$(event handler).on(event, selector, function(){});`
 
-    >e.g. `$(event handler).on(event, selector, function(){});`
-
-    1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的内容，成为**event handler**。有且仅有这些event handler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的event handler处理DOM也不会使绑定内容失效（除非删除）；在event handler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
-    2. 绑定的event handler距离selector越近，效率越高。因此虽然把selector都绑定在`$(document)`上能够避免增删节点对事件绑定造成的影响，但确是低效的。
-2. 判断是否加载成功，不成功则执行载入本地文件
-
-    ```html
-    <script>
-        window.jQuery || document.write('<script src="本地地址"><\/script>');
-    </script>
-    ```
-3. 当变量是jQuery或Zepto对象是，可以用`$`作为开头命名，利于区别与普通变量的区别
-
-    ```javascript
-    var a = 1;
-    var $a = $('a');
-    ```
-4. 选择器
-    1. `$('子','父') === $('父').find('子')`
-
-        找到所有父级，若子级在此父级后面，则选择。
-    2. ~~`$('父 子')`~~
-
-        找到所有子级，然后向前找出有父级的，则选择（性能差）。与css相同的查询方式。
+1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的内容，成为**event handler**。有且仅有这些event handler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的event handler处理DOM也不会使绑定内容失效（除非删除）；在event handler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
+2. 绑定的event handler距离selector越近，效率越高。因此虽然把selector都绑定在`$(document)`上能够避免增删节点对事件绑定造成的影响，但确是低效的。
