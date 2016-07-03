@@ -269,7 +269,7 @@ function addFavorite(url, title) {  /* url必须带有协议头*/
 }
 ```
 
-### *原生js*判断版本（类似**1.1.1**）是否较低
+### *原生js*判断版本（e.g. 1.1.1）是否较低
 ```javascript
 function isLowerVersion(version, base) {
     var arr1 = version.toString().split('.'),
