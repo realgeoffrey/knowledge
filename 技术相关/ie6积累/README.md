@@ -121,7 +121,9 @@
 20. ie6的`z-index`使用：
 
 	- 节点与要覆盖的节点之间，它们的第一个共同父级内的兄弟节点（2个节点分别的父级）设置`position: relative/absolut`并且添加`z-index`（可以仅设置一方）才能对比覆盖。
-21. ie6的`a:hover`之后添加派生选择器css效果，e.g. `a:hover .class{}`：
+21. ie6的`a:hover`之后添加派生选择器css效果：
+
+    >e.g. `a:hover .class{}`
 
 	- 先要设置`a:hover{}`触发`:hover`时候的重绘(或重排)效果，可以用`zoom: 1`再添加`a:hover`之后的派生选择器css效果，比如显示／隐藏。
 
@@ -168,7 +170,7 @@
 27. ie6下当子节点的宽度超过父节点设置的宽度时，会产生奇怪的样式效果，比如仅设置`padding-top`而会把`padding-bottom`也设置一样的值，用以下解决：
 
     - 计算好子节点不要超过父节点宽度。
-28. ie6下**(qrcode.js)[https://github.com/davidshimjs/qrcodejs]**要先把节点展示出来才能够调用方法产生效果，调用完之后再隐藏节点不会有影响（插件bugs），ie6下是用table模拟效果。
+28. ie6下[qrcode.js](https://github.com/davidshimjs/qrcodejs)要先把节点展示出来才能够调用方法产生效果，调用完之后再隐藏节点不会有影响（插件bugs），ie6下是用table模拟效果。
 29. ie6下`position: absolute`的文字宽度，若不设置宽度值，其最大宽度等于吧父级宽度的一半，而在其他主流浏览器下最大宽度等于父级宽度，用以下解决：
 
 	1. 此文字的节点设置`width固定值`。
@@ -176,7 +178,7 @@
 30. ie6的`负margin`有些情况需要多设置一些，因为可能出现子节点内容超过设定值的情况。
 31. ie6的某些兄弟间节点间（比如img和span）因为出现比如`overflow: hidden`造成相对于基线会有对齐问题，用以下解决：
 
-	- `vertical: top;margin-top: …`
+	- `vertical: top; margin-top: 某px;`
 32. ie6下的`absolute/float`节点在页面重新渲染时，可能出现`margin-left/maring-top`的渲染问题，导致位置发生变化，用以下解决：
 
 	- 用`margin-right/ margin-bottom/ padding`替代。
@@ -190,7 +192,9 @@
     - ~~子级为`display: block;`，若要设置`height`就必须要设置`width`，否者会导致子级铺满父级。~~
     - **子级或者子级包裹的内容设置为`display: inline-block; *display: inline; *zoom: 1;`，可以仅设置`height`，不用设定`width`。**
 36. ie6下，图片类型直接改变后缀名会导致无法打开；当把`.jpg`的文件后缀保存为`.png`在ie6显示时，会阻塞之后所有图片的加载。
-37. ie6下因为hover或者改变视窗大小或者改变dom位置而导致元素高度变化（甚至移动到看不见地方），可以试着往其父级层层向上增加`zoom: 1;`进行测试，若还是不行则在有高度的地方设置`overflow: hidden;`，甚至是最顶端的位置添加才可以修复（有时候基本是向上试错的碰运气）。
+37. ie6下因为hover或者改变视窗大小或者改变dom位置而导致元素高度变化（甚至移动到看不见地方）：
+
+    - 可以试着往其父级层层向上增加`zoom: 1;`进行测试，若还是不行则在有高度的地方设置`overflow: hidden;`，甚至是最顶端的位置添加才可以修复（有时候基本是向上试错的碰运气）。
 38. ie6/7下js的对象内部多出来的`,`会报错，高级浏览器只会warning不会产生错误。
 39. ie6下父级设置`height`、`width`，当子级超过限制后，会把父级撑大（没有`overflow: hidden;`情况）。
 40. 若ie6下无法打开https链接，尝试：**internet选项－－高级－－使用TLS1.0打钩**。
