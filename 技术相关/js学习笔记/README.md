@@ -988,7 +988,7 @@ $('body').text(text);
     >ECMAScript中，所有函数的参数都是按值来传递的。基本类型值的传递和基本类型变量复制一致（采用在栈内新建值），引用类型值的传递和引用类型变量的复制一致（栈内存放的是指针，指向堆中同一对象）。
 
 ### 错误处理机制
-- 原生错误类型
+1. 原生错误类型
 
     1. SyntaxError
 
@@ -999,14 +999,17 @@ $('body').text(text);
     3. RangeError
 
         数值超出相应范围时抛出。
+
         主要有几种情况，一是数组长度为负数，二是Number对象的方法参数超出范围，以及函数堆栈超过最大值。
     4. TypeError
 
         变量或参数不是预期类型时抛出。
+
         比如，对字符串、布尔值、数值等原始类型的值使用new命令，就会抛出这种错误，因为new命令的参数应该是一个构造函数。
     5. URIError
 
         URI相关函数的参数不正确时抛出。
+
         主要涉及`encodeURI()`、`decodeURI()`、`encodeURIComponent()`、`decodeURIComponent()`、`escape()`和`unescape()`这六个函数。
     6. ~~EvalError~~
 
@@ -1016,14 +1019,14 @@ $('body').text(text);
 
     >浏览器不会抛出`Error`类型的错误，所以如果捕获到`Error`类型的错误，可以确定这个异常是用户代码抛出的。浏览器默认只会抛出Error的6个派生类型错误。
 
-- Error对象属性
+2. Error对象属性
 
     Error实例对象有两个基本的属性`message`和`name`。
-    `message`用来表示异常的详细信息；`name`指的的是Error对象的构造函数。
+    >`message`用来表示异常的详细信息；`name`指的的是Error对象的构造函数。
 
     此外，不同的js引擎对Error还各自提供了一些扩展属性。
 
-- 处理代码中抛出的error
+3. 处理代码中抛出的error
 
     当js出现错误时，js引擎就会根据js调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或者**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，而firefix会显示在错误控制台中）显示错误信息给访问者，可以用`window.onerror`进行自定义操作。
 
@@ -1034,6 +1037,7 @@ $('body').text(text);
         `try`必须跟`catch`或`finally`或`catch + finally`同时出现。
 
         如果有`catch`，一旦`try`中抛出错误以后就先执行`catch`中的代码，然后执行`finally`中的代码；
+
         如果没有`catch`，`try`中的代码抛出错误后，就会先执行`finally`中的语句，然后将`try`中抛出的错误继续往上抛。
 
         如果`try`中代码是以`return`、`continue`或`break`终止的，必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
@@ -1046,6 +1050,7 @@ $('body').text(text);
         用方法赋值给`window.onerror`后，但凡这个window中有js错误出现，则会调用此方法。
 
         onerror方法会传入3个参数（至少），分别是**错误信息提示**、**javascript产生错误的document url**和**错误出现的行号**。
+
         若方法返回`true`，浏览器不再显示错误信息；若返回`false`，浏览器还是会提示错误信息：
 
         ```javascript
@@ -1065,6 +1070,7 @@ $('body').text(text);
     3. 图像的`onerror`事件
 
         只要图像的src属性中的URL不能返回可以被识别的图像格式，就会触发图像的`onerror`事件。
+
         错误不会提交到`window.onerror`。
 
         1. `<img>`标签的`onerror`事件
