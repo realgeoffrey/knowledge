@@ -11,7 +11,7 @@
 	建立文件夹后执行
 	```shell
     svnadmin create /home/svn/one
-    	svnadmin create /home/svn/two
+    svnadmin create /home/svn/two
     ```
 	“*/home/svn/two*” 、“*/home/svn/one*” 为所创建仓库的2个路径。
 	
