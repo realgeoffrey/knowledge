@@ -1158,7 +1158,7 @@ $('body').text(text);
 ### jQuery或Zepto相关
 1. `.on()`的绑定效率
 
-    `$(event handler).on(event, selector, function(){});`
+    >e.g. `$(event handler).on(event, selector, function(){});`
 
     1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的内容，成为**event handler**。有且仅有这些event handler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的event handler处理DOM也不会使绑定内容失效（除非删除）；在event handler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
     2. 绑定的event handler距离selector越近，效率越高。因此虽然把selector都绑定在`$(document)`上能够避免增删节点对事件绑定造成的影响，但确是低效的。
