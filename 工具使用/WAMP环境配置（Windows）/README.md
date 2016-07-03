@@ -109,19 +109,19 @@
 
 8. Apache配置虚拟主机
 	1. 文本打开 *...wamp\bin\apache\Apache2.2.22\conf* 下的 **httpd.conf**，找到如下模块:
-		```
+		```text
 		# Virtual hosts
 		#Include conf/extra/httpd-vhosts.conf
 		```
 		
 		去掉第二个的#，修改为:
-		```
+		```text
 		# Virtual hosts
 		Include conf/extra/httpd-vhosts.conf
 		```
 		
 	2. 文本打开 *...wamp\bin\apache\Apache2.4.4\conf\extra* 下的 **httpd-vhosts**，配置localhost虚拟主机，把原内容修改成如下：
-		```
+		```text
 		<VirtualHost *:80>
 			ServerAdmin webmaster@dummy-host.localhost
 			DocumentRoot "D:\www"
@@ -133,7 +133,7 @@
 		```
 		 
 		在默认配置后面添加虚拟主机：
-		```
+		```text
 		<VirtualHost *:80>
 			DocumentRoot "D:\www\123.com" 
 			ServerName www.123.com
@@ -144,7 +144,7 @@
 		>在www文件内新建123.com文件夹。
 		
 	3. 打开 *C:\WINDOWS\system32\drivers\etc* 下的 **hosts**，增加代码：
-		```
+		```text
 		127.0.0.1 www.123.com
 		127.0.0.1 123.com
 		```
@@ -156,7 +156,7 @@
 		>You don't have permission to access / on this server.
 		>这主要是目录访问权限没有设置，需要设置对目录的访问权。
 		>打开 *...wamp\bin\apache\Apache2.2.22\conf* 下的 **httpd.conf**，找到如下语句：
-		>```
+		>```text
 		><Directory />
 		>   Options FollowSymLinks
 		>   AllowOverride None
@@ -165,7 +165,7 @@
 		></Directory>
 		>```
 		>复制以上代码，并进行目录修改，把**/**替换为`D:\www\123.com`，修改 *...\wamp\bin\apache\Apache2.2.11\conf\extra* 下的 **httpd-vhosts.conf**：
-		>```
+		>```text
 		><VirtualHost *:80>
 		>   DocumentRoot "D:\www\123.com" 
 		>   ServerName www.123.com
