@@ -882,28 +882,31 @@
 
 ### 拼接字符串
 长字符串拼接使用`.join()`，而不使用`+`
-```javascript
-/* 性能好*/
-var arr = [],
-    i;
 
-for (i = 0; i < 100; i++) {
-    arr[i] = '字符串' + i + '字符串';
-}
+1. `.join()`性能好，推荐：
 
-$('body').text(arr.join(''));
-```
-```javascript
-/* 性能差*/
-var text = '',
-    i;
+    ```javascript
+    var arr = [],
+        i;
 
-for (i = 0; i < 100; i++) {
-    text = text + '字符串' + i + '字符串';
-}
+    for (i = 0; i < 100; i++) {
+        arr[i] = '字符串' + i + '字符串';
+    }
 
-$('body').text(text);
-```
+    $('body').text(arr.join(''));
+    ```
+2. `+`性能差，不推荐：
+
+    ```javascript
+    var text = '',
+        i;
+
+    for (i = 0; i < 100; i++) {
+        text = text + '字符串' + i + '字符串';
+    }
+
+    $('body').text(text);
+    ```
 
 
 ## 性能原理
