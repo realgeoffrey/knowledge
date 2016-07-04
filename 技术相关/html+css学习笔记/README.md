@@ -859,10 +859,18 @@ li:hover a {
 
 ### img标签的圆形边框
 1. 圆形+边框
-    1. **pc**：直接在img标签上设置`border`和`border-radius`。
-    2. **wap**：在img标签上设置`border`和`border-radius`，并且在父级标签嵌套一层设置`border`和`border-radius`。
+
+    1. pc
+
+        直接在img标签上设置`border`和`border-radius`。
+    2. wap
+
+        在img标签上设置`border`和`border-radius`，并且在父级标签嵌套一层设置`border`和`border-radius`。
 2. 圆形（无边框）
-    - **pc+wap**：直接在img标签上设置`border-radius`。
+
+    - pc+wap
+
+        直接在img标签上设置`border-radius`。
 
 ### css3的`animation`使用
 > 动画进行到一半取消动画（去除了相关类）或者替换动画，会导致节点突兀地回到初始位置。
