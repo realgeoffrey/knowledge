@@ -207,27 +207,54 @@ div {
         }
         ```
 
-### `table-layout: fixed;`
-由第一行td或th的宽度来确定此table元素内的布局。
-```css
-table {
-    table-layout: fixed;
-    width: 宽度;
-}
-td,th {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.first {
-    width: 第一列宽度;
-}
-.second {
-    width: 第二列宽度;
-}
-...
+### `table`
+1. `table-layout: fixed`的table，td或th的内容由第一行宽度决定。
+2. 没有设定宽度的td或th宽度自适应（**父级宽度减去其他固定宽度的兄弟td或th**）。
+3. 一个tr内的各项，随内容决定每一项占多少行，各项内容自动垂直居中（table特性）。
+
+```html
+<style>
+    table {
+        width: 宽度;
+        table-layout: fixed;
+    }
+    td, th {
+        word-wrap: break-word;
+    }
+    .piece_1 {
+        width: 固定宽度1;
+    }
+    .piece_2 {
+
+    }
+    .piece_3 {
+        width: 固定宽度3;
+    }
+    .piece_4 {
+        width: 固定宽度4;
+    }
+</style>
+
+<table>
+    <tbody>
+    <tr>
+        <td class="piece_1">
+            固定宽度内容1
+        </td>
+        <th class="piece_2">
+            自适应宽度内容2
+        </th>
+        <td class="piece_3">
+            固定宽度内容3
+        </td>
+        <td class="piece_4">
+            固定宽度内容4
+        </td>
+    </tr>
+    ...
+    </tbody>
+</table>
 ```
->若`table-layout`使用默认值`automatic`，则td或th上设置宽度无效，列的宽度由列单元格中没有折行的最宽的内容决定。
 
 ### 使元素强制表现为`block`的css设置
 1. `float: left/right;`
@@ -277,17 +304,17 @@ td,th {
 
 - BFC是一个独立的布局环境，可以理解为一个箱子，箱子里面物品的摆放不受外界的影响，并且每个BFC都遵守同一套布局规则。
 - 对容器添加以下css属性使其成为独立的BFC
-    - `float: left / right;`
-    - `overflow: hidden / auto / scroll;`
-    - `display: inline-block / table-cell / table-caption / flex / inline-flex;`
-    - `position: absolute / fixed;`
+    1. `float: left / right;`
+    2. `overflow: hidden / auto / scroll;`
+    3. `display: inline-block / table-cell / table-caption / flex / inline-flex;`
+    4. `position: absolute / fixed;`
 
 >ie6、7不支持BFC，但是有haslayout。
 
-### word-spacing
+### `word-spacing`
 对有空白字符包裹的非空白字符产生效果。
 
-### z-index用于控制设置了absolute、relative或fixed定位的元素
+### `z-index`用于控制设置了absolute、relative或fixed定位的元素
 应该只给有堆叠关系的节点设置此属性，而不要试图通过设定个别元素的z-index来确保元素不重叠。
 
 ### css的小数、百分比
@@ -318,7 +345,7 @@ td,th {
     .col-12 {width: 100%;}
     ```
 
-### font-size最小值
+### `font-size`最小值
 1. wap端没有最小限制
 2. pc端最小限制为12px
 
