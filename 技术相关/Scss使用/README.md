@@ -1,5 +1,5 @@
 #Scss使用（part of [it](http://sass-lang.com/documentation/file.SASS_REFERENCE.html#css_extensions)）
->推荐使用傻瓜式前端预处理器语言图形编译工具:[Koala](http://koala-app.com/index-zh.html)。
+>推荐使用傻瓜式前端预处理器语言图形编译工具：[Koala](http://koala-app.com/index-zh.html)。
 
 1. `变量`、`方法`和`引用`必须在使用前定义，`继承`不需要提前定义；声明相同内容不会报错，只会用最后一次声明覆盖之前声明。
 
