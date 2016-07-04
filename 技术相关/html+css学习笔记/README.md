@@ -39,25 +39,31 @@ div {
     ```
 
 ### 单行文本和多行文本超出宽度显示省略号
-```css
-.ellipsis { /* 单行*/
-    _width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.multi_ellipsis {   /* 多行*/
-    line-height: 1;
-    height: 2em;
-    display: block;
-    display: -webkit-box;
-    *display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-}
-```
+1. 单行
+
+    ```css
+    .ellipsis {
+        _width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    ```
+2. 多行
+
+    ```css
+    .multi_ellipsis {
+        line-height: 1;
+        height: 2em;
+        display: block;
+        display: -webkit-box;
+        *display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+    ```
 
 ### 模糊效果滤镜（高斯模糊）
 1. CSS3（除*ie10*与*ie11*外基本所有主流浏览器）
