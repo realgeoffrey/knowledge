@@ -511,14 +511,15 @@ ul li a:hover {
 
     <div class="clearfix">
         <div class="float_l">左边内容</div>
-        <div class="float_r">右边内容</div>
-        <div class="middle">中间内容</div>
+        <div class="float_r">右边内容（没有足够空间则整体换行）</div>
+        <div class="middle">中间内容（没有足够空间则整体换行）</div>
     </div>
     ```
 
     >- DOM结构不能颠倒，需要中间结构放最后;
     >- 节点上能设定`clear: both;`;
-    >- 完全由内容决定布局。
+    >- 完全由内容决定布局；
+    >- 第一块内容要给第二块内容留下足够空间，否则第二块放不下会整个换行；第一块+第二块要给第三块留下足够空间，否则第三块放不下会整个换行。
 
 ### 内容居中
 1. 内容宽度可变，三层模式
