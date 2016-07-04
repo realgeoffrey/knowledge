@@ -210,7 +210,7 @@ div {
 ### `table`
 1. `table-layout: fixed`的table，td或th的内容由第一行宽度决定。
 2. 没有设定宽度的td或th宽度自适应（父级宽度减去其他固定宽度的兄弟td或th）。
-3. 一个tr内的各项，随内容决定每一项占多少行，各项内容自动垂直居中（table特性）。
+3. 一个tr内的各项，随内容决定每一项占多少行，默认各项内容自动垂直居中，用`vertical-align`调节垂直对齐。
 
 ```html
 <style>
@@ -220,6 +220,7 @@ div {
     }
     td, th {
         word-wrap: break-word;
+        /*vertical-align: top;*/
     }
     .piece_1 {
         width: 固定宽度1;
