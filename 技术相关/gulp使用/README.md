@@ -1,6 +1,6 @@
 #gulp使用
 
-- node's package for gulp
+1. node's package for gulp
 
     >By using gulp for the first time, error always occurred because of the bad network when we installed the plug-ins. If shit happened, we should have to re-install the problem plugins.
 
@@ -28,7 +28,7 @@
     }
     ```
 
-- gulp settings for tasks
+2. gulp settings for tasks
 
     ```javascript
     var jpegtran = require('imagemin-jpegtran'), /* jpg压缩*/
@@ -132,7 +132,7 @@
     /* default*/
     gulp.task('default', ['doImage', 'doCss', 'doJs', 'sprites']);
     ```
-- handlebars settings for spritesmith(gulp plugin)
+3. handlebars settings for spritesmith(gulp plugin)
 
     1. pc:
 

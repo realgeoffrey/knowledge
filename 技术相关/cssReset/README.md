@@ -1,6 +1,7 @@
 #Reset for css && html
 
-- cssReset.css
+1. cssReset.css
+
     ```css
     @charset "UTF-8";
     /* CSS reset*/
@@ -306,7 +307,7 @@
     /*/pc媒体查询*/
     ```
 
-- Html template
+2. Html template
 
     ```html
     <!DOCTYPE html>

@@ -386,34 +386,6 @@ div {
     }
     ```
 
-
-##HTML + CSS
-
-### 垂直居中
-```html
-<style type="text/css">
-    .box { /* 此层不能是float或absolute，可以在此层外嵌套的设置为float或absolute*/
-       display: table-cell;
-       height: 114px; /* height/font-size = 1.14*/
-       *font-size: 100px;
-       vertical-align: middle; /* 无继承性*/
-       text-align: center; /* 有继承性*/
-    }
-    span { /* 必须是内联元素*/
-       display: inline-block;
-       vertical-align: middle;
-       /*font-size覆盖父级的字体*/
-    }
-    img {
-       vertical-align: middle;
-    }
-</style>
-
-<div class="box">
-    <img src=""> or <span>...</span>
-</div>
-```
-
 ### 多列等高
 ```css
 .father {
@@ -445,6 +417,34 @@ ul li a:hover {
 ```
 
 >hover之后本身的背景被替换，前一个兄弟的背景被覆盖
+
+
+##HTML + CSS
+
+### 垂直居中
+```html
+<style type="text/css">
+    .box { /* 此层不能是float或absolute，可以在此层外嵌套的设置为float或absolute*/
+       display: table-cell;
+       height: 114px; /* height/font-size = 1.14*/
+       *font-size: 100px;
+       vertical-align: middle; /* 无继承性*/
+       text-align: center; /* 有继承性*/
+    }
+    span { /* 必须是内联元素*/
+       display: inline-block;
+       vertical-align: middle;
+       /*font-size覆盖父级的字体*/
+    }
+    img {
+       vertical-align: middle;
+    }
+</style>
+
+<div class="box">
+    <img src=""> or <span>...</span>
+</div>
+```
 
 ### 自适应宽度布局
 1. 中间内容自适应，两边固定（中间内容先加载）
@@ -851,118 +851,6 @@ li:hover a {
 
 >有些插件效果不能支持`html,body {height: 100%;}`。
 
-### 响应式设计
-- 媒体查询方式
-    1. css属性：
-
-        `@media (min-width: 360px) and (max-width: 640px) {...}`
-    2. html标签：
-
-        `<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
-- 响应式设计三大要素
-    1. 媒体查询
-    2. 流式布局：节点用百分比或rem
-    3. 弹性图片：`img {max-width: 100%;}`
-
-
-### 响应式页面解决方案：使用rem单位+媒体查询
->- rem（font size of the root element）：相对于根元素的字体大小的单位。
->- rem单位转换为具体px值：**rem乘于html的font-size像素**。
-
-1. 媒体查询设置html的font-size，把要做成响应式的内容转换为rem单位。
-    1. *不需要使用css预处理语言的不全面方法*：
-
-        1. 正常完成切图（只能用正常的320px设计稿切完图），用px作为单位。
-        2. 媒体查询仅设置html的不同情况下的font-size值。
-        3. 把css内需要响应式内容的px值，除以**在320px宽度下的html的font-szie值**（320px宽度时设置为10px方便计算，设置为小于6px不起作用），单位改为rem。
-
-        >仅需要把要响应式布局的内容进行转变
-    2. 需要使用css预处理语言的最优解：
-
-        1. 正常完成切图（可以用大于320px设计稿切完图），大小值用**调用传入参数（设计稿是多大px就用多大值作为参数）的返回值**。
-        2. 媒体查询仅设置html的不同情况下的font-size值。
-        3. 调用的方法：返回 **参数**除以**在320px宽度下的html的font-szie值**再除以**2（设计稿放大倍数）**。如果设计稿大于320px并且想要最低适配至320px屏幕，这里返回的参数要再缩小一些。
-        4. 用预处理语言生成为css文件，其中所有单位都为rem。
-
-        >整个页面都是用rem进行制作。
-2. *用js根据是否是苹果设备进行判断：若是苹果设备则viewport设置为0.5，html的font-size设置为2倍；若非苹果设备则viewport设置为1，html的font-size设置为1倍*
-
-    ```javascript
-    var fontSize = 10;
-
-    /* 实现根据iOS和Android不同设备设置不同的viewport*/
-    if ((/iphone|ipad|ipod/i).test(navigator.appVersion) && window.devicePixelRatio >= 2) {
-        document.getElementById('j-viewport').content = 'width=device-width, initial-scale=0.5, user-scalable=no, minimum-scale=0.5, maximum-scale=0.5';
-        document.documentElement.style.fontSize = 2 * fontSize + "px";
-    } else {
-        document.getElementById('j-viewport').content = 'width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1, maximum-scale=1';
-        document.documentElement.style.fontSize = fontSize + "px";
-    }
-    ```
-
-    >因为html的font-size是用js写死的，而且viewport会变化，所以所有页面元素都要用百分比+rem。
-3. *用js根据浏览器宽度的改变修改html的font-size，页面总宽度固定为某rem。所有页面元素都要用百分比+rem*
-
-### 横竖屏切换
-1. 用js方法控制：[链接](../js方法积累/实用方法/README.md#jquery或Zepto模拟手机翻转使页面都以横屏展示)
-2. 媒体查询控制
-
-    ```css
-    @media (orientation: portrait) {
-        .dom {
-            transform: rotate(90deg);
-        }
-    }
-    @media (orientation: landscape) {
-        .dom {
-
-        }
-    }
-    ```
->横竖屏切换后2种状态的不同设置
->
->```css
->/* 当竖屏时用屏幕高度来判断*/
->@media (min-height: ) and (max-height: ) and (orientation: portrait) {
->    html {
->        font-size: ;
->    }
->}
->/* 当横屏时用屏幕宽度来判断*/
->@media (min-width: ) and (max-width: ) and (orientation: landscape) {
->    html {
->        font-size: ;
->    }
->}
->```
-
-### 移动端制作类似pc端的`:active`效果（或`:hover`）
-1. android系统的浏览器大部分直接使用css伪类即可。
-2. ios系统的浏览器要添加以下代码触发使css伪类生效：
-
-    ```javascript
-    document.body.addEventListener('touchstart', function () {}, true);
-    ```
-3. ~~js添加类的方法替代~~：
-
-    ```html
-    <style>
-        .d:active,
-        .d.active { }
-    </style>
-
-    <script type="text/javascript">
-        var selector = '.a,.b .c,.d';   /* 选择器字符串*/
-
-        $(document.body).on("touchstart", selector, function () {
-            $(this).addClass("active");
-        }).on("touchmove touchend touchcancel", selector, function () {
-            $(this).removeClass("active");
-        });
-    </script>
-    ```
-    >仅用来补充`.d:hover {-webkit-tap-highlight-color:rgba( , , , );}`。
-
 ### img标签的圆形边框
 1. 圆形+边框
     1. **pc**：直接在img标签上设置`border`和`border-radius`。
@@ -1059,8 +947,121 @@ li:hover a {
 <a style="pointer-events: none;">禁用鼠标和键盘的链接</a>
 ```
 
+### 横竖屏切换
+1. 用js方法控制：[链接](../js方法积累/实用方法/README.md#jquery或Zepto模拟手机翻转使页面都以横屏展示)
+2. 媒体查询控制
+
+    ```css
+    @media (orientation: portrait) {
+        .dom {
+            transform: rotate(90deg);
+        }
+    }
+    @media (orientation: landscape) {
+        .dom {
+
+        }
+    }
+    ```
+
+>横竖屏切换后2种状态的不同设置
+>
+>```css
+>/* 当竖屏时用屏幕高度来判断*/
+>@media (min-height: ) and (max-height: ) and (orientation: portrait) {
+>    html {
+>        font-size: ;
+>    }
+>}
+>/* 当横屏时用屏幕宽度来判断*/
+>@media (min-width: ) and (max-width: ) and (orientation: landscape) {
+>    html {
+>        font-size: ;
+>    }
+>}
+>```
+
+### 移动端制作类似pc端的`:active`效果（或`:hover`）
+1. android系统的浏览器大部分直接使用css伪类即可。
+2. ios系统的浏览器要添加以下代码触发使css伪类生效：
+
+    ```javascript
+    document.body.addEventListener('touchstart', function () {}, true);
+    ```
+3. ~~js添加类的方法替代~~：
+
+    ```html
+    <style>
+        .d:active,
+        .d.active { }
+    </style>
+
+    <script type="text/javascript">
+        var selector = '.a,.b .c,.d';   /* 选择器字符串*/
+
+        $(document.body).on("touchstart", selector, function () {
+            $(this).addClass("active");
+        }).on("touchmove touchend touchcancel", selector, function () {
+            $(this).removeClass("active");
+        });
+    </script>
+    ```
+    >仅用来补充`.d:hover {-webkit-tap-highlight-color:rgba( , , , );}`。
+
 
 ##经验总结
+
+### 响应式设计
+- 媒体查询方式
+    1. css属性：
+
+        `@media (min-width: 360px) and (max-width: 640px) {...}`
+    2. html标签：
+
+        `<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
+- 响应式设计三大要素
+    1. 媒体查询
+    2. 流式布局：节点用百分比或rem
+    3. 弹性图片：`img {max-width: 100%;}`
+
+### 响应式页面解决方案：使用rem单位+媒体查询
+>- rem（font size of the root element）：相对于根元素的字体大小的单位。
+>- rem单位转换为具体px值：**rem乘于html的font-size像素**。
+
+1. 媒体查询设置html的font-size，把要做成响应式的内容转换为rem单位。
+
+    1. *不需要使用css预处理语言的不全面方法*：
+
+        1. 正常完成切图（只能用正常的320px设计稿切完图），用px作为单位。
+        2. 媒体查询仅设置html的不同情况下的font-size值。
+        3. 把css内需要响应式内容的px值，除以**在320px宽度下的html的font-szie值**（320px宽度时设置为10px方便计算，设置为小于6px不起作用），单位改为rem。
+
+        >仅需要把要响应式布局的内容进行转变
+    2. 需要使用css预处理语言的最优解：
+
+        1. 正常完成切图（可以用大于320px设计稿切完图），大小值用**调用传入参数（设计稿是多大px就用多大值作为参数）的返回值**。
+        2. 媒体查询仅设置html的不同情况下的font-size值。
+        3. 调用的方法：返回 **参数**除以**在320px宽度下的html的font-szie值**再除以**2（设计稿放大倍数）**。如果设计稿大于320px并且想要最低适配至320px屏幕，这里返回的参数要再缩小一些。
+        4. 用预处理语言生成为css文件，其中所有单位都为rem。
+
+        >整个页面都是用rem进行制作。
+2. *用js根据是否是苹果设备进行判断：若是苹果设备则viewport设置为0.5，html的font-size设置为2倍；若非苹果设备则viewport设置为1，html的font-size设置为1倍*
+
+    ```javascript
+    var fontSize = 10;
+
+    /* 实现根据iOS和Android不同设备设置不同的viewport*/
+    if ((/iphone|ipad|ipod/i).test(navigator.appVersion) && window.devicePixelRatio >= 2) {
+        document.getElementById('j-viewport').content = 'width=device-width, initial-scale=0.5, user-scalable=no, minimum-scale=0.5, maximum-scale=0.5';
+        document.documentElement.style.fontSize = 2 * fontSize + "px";
+    } else {
+        document.getElementById('j-viewport').content = 'width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1, maximum-scale=1';
+        document.documentElement.style.fontSize = fontSize + "px";
+    }
+    ```
+
+    >因为html的font-size是用js写死的，而且viewport会变化，所以所有页面元素都要用百分比+rem。
+3. *用js根据浏览器宽度的改变修改html的font-size，页面总宽度固定为某rem。所有页面元素都要用百分比+rem*
 
 ### 限定布局宽度，让内容决定布局高度
 
@@ -1084,12 +1085,12 @@ li:hover a {
 
 ### 知识点
 1. a标签的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（包括#和javascript: void(0);）都会打开新的页面。
-2. `absolute`元素用`top: 0;bottom: 0;left: 0;right: 0;_height: 100%;_width: 100%;`可以拉伸至父容器的高宽。
+2. `absolute`元素用`top: 0; bottom: 0; left: 0; right: 0; _height: 100%; _width: 100%;`可以拉伸至父容器的高宽。
 3. 没有设置宽度的`float`元素，其宽度等于子节点宽度：主流浏览器等于最外层子节点宽度，ie6等于所有子节点中最大的宽度。
 4. `inline`或`inline-block`节点标签前可能导致其父级的宽度变大（其实是内联标签前面会有间隙，若拥有`font-size`之后便会有高度撑开），通过以下办法解决：
 
-    1. 把`inline`节点设置为`block`
-    2. 给父级节点设置`font-size: 0;`（可用此方法排查是否是空格造成的）
+    1. 把`inline`节点设置为`block`。
+    2. 给父级节点设置`font-size: 0;`（可用此方法排查是否是空格造成的）。
 
 ### 前端技巧
 - 经验
