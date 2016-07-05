@@ -11,23 +11,23 @@
     body,button,input,select,textarea {font:14px/1.4286 "microsoft yahei",simsun,tahoma,arial,sans-serif;}
     h1,h2,h3,h4,h5,h6 {font-size:100%;font-weight:500;}
     a,ins {text-decoration:none;}
-    button,input,select,textarea,:focus {outline:none;}
     audio,canvas,video {display:inline-block;*display:inline;*zoom:1;}
-    hr {display:block;height:1px;border:0;border-top:1px solid #ccc;margin:1em 0;padding:0;}
+    article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,iframe,main {display:block;}
     abbr,acronym {border:0;font-variant:normal;}
     del {text-decoration:line-through;}
     caption,th {text-align:left;}
-    blockquote,q {quotes:none;}
-    blockquote:before,blockquote:after,q:before,q:after {content:'';content:none;}
     sub,sup {font-size:75%;line-height:0;position:relative;vertical-align:baseline;}
     sup {top:-0.5em;}
     sub {bottom:-0.25em;}
-    article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,iframe,main {display:block;}
     img {vertical-align:middle;}
-    address,caption,cite,code,dfn,th,var,em,i,time {font-style:normal;font-weight:500;}
-    table,tbody,tfoot,thead,tr,th,td {margin:0;padding:0;}
-    table {border-collapse:collapse;border-spacing:0;}
     ol,ul {list-style:none;}
+    table {border-collapse:collapse;border-spacing:0;}
+    table,tbody,tfoot,thead,tr,th,td {margin:0;padding:0;}
+    address,caption,cite,code,dfn,th,var,em,i,time {font-style:normal;font-weight:500;}
+    blockquote,q {quotes:none;}
+    blockquote:before,blockquote:after,q:before,q:after {content:'';content:none;}
+    hr {display:block;height:1px;border:0;border-top:1px solid #ccc;margin:1em 0;padding:0;}
+    button,input,select,textarea,:focus {outline:none;}
 
     /* -wap*/
     img,video,audio {max-width:100%;}
