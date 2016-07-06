@@ -761,6 +761,33 @@ ul li a:hover {
 <标签>文<i></i><i></i>字</标签>
 ```
 
+### 标签溢出则换行隐藏、不截断
+```html
+<style>
+    .test {
+        height: 高度;
+        line-height: 高度;
+        /* white-space: nowrap; */
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    .test span {
+        display: inline-block;
+        *display: inline;
+        *zoom: 1;
+    }
+</style>
+
+<div class="test">
+    内容
+    <span>超出内容不截断，而是换行隐藏</span>
+    <span>超出内容不截断，而是换行隐藏</span>
+    <span>超出内容不截断，而是换行隐藏</span>
+    <span>超出内容不截断，而是换行隐藏</span>
+</div>
+```
+>无法出现`...`效果。
+
 ### 实现hover之后底部border替换父级border
 ```css
 ul {
