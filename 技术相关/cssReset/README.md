@@ -111,12 +111,16 @@
         _width: 100%;
         overflow: hidden;
     }
-    .full_bg .header,
     .full_bg .main {
         background: url() center 0 no-repeat;
-        width: ;
+        width: 最小宽度;
         margin: 0 auto;
         position: relative;
+        /* 不要增加：overflow: hidden;*/
+    }
+    .full_bg .main:before {
+        content: '';
+        display: table;
     }
     .footer {
         background-color: #fff;
@@ -124,18 +128,16 @@
         _width: 100%;
     }
     .footer .wrap {
-        width: ;
+        width: 最小宽度;
         margin: 0 auto;
+        /* 不要增加：overflow: hidden;*/
+    }
+    .footer .wrap:before {
+        content: '';
+        display: table;
     }
     /*/单大图模式*/
     /* 多大图模式*/
-    .header {
-        background: url() #fff center 0 no-repeat;
-        min-width: 最小宽度;
-        _width: 100%;
-        height: ;
-        overflow: hidden;
-    }
     .main {
         background: url() #fff center 0 no-repeat;
         min-width: 最小宽度;
@@ -148,13 +150,18 @@
         _width: 100%;
         overflow: hidden;
     }
-    .header .wrap,
     .main .wrap,
     .footer .wrap {
         background: url() center 0 no-repeat;
-        width: ;
+        width: 最小宽度;
         margin: 0 auto;
         position: relative;
+        /* 不要增加：overflow: hidden;*/
+    }
+    .main .wrap:before,
+    .footer .wrap:before {
+        content: '';
+        display: table;
     }
     /*/多大图模式*/
 
