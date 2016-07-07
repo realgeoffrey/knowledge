@@ -51,6 +51,7 @@
     }
     /*/-富文本需重载*/
     /*/CSS reset*/
+
     /* 全局*/
     html, body {
         /*height: 100%;*/
@@ -104,21 +105,22 @@
         -webkit-line-clamp: 2;
     }
     /*/全局*/
-    /* 单大图模式*/
+
+    /* 布局*/
     .full_bg {
         background: url() #fff center 0 no-repeat;
         min-width: 最小宽度;
         _width: 100%;
         overflow: hidden;
     }
-    .full_bg .main {
+    .full_bg .full_wrap {
         background: url() center 0 no-repeat;
         width: 最小宽度;
         margin: 0 auto;
         position: relative;
         /* 不要增加：overflow: hidden;*/
     }
-    .full_bg .main:before {
+    .full_bg .full_wrap:before {
         content: '';
         display: table;
     }
@@ -136,34 +138,7 @@
         content: '';
         display: table;
     }
-    /*/单大图模式*/
-    /* 多大图模式*/
-    .main {
-        background: url() #fff center 0 no-repeat;
-        min-width: 最小宽度;
-        _width: 100%;
-        overflow: hidden;
-    }
-    .footer {
-        background: url() 0 0 repeat-x;
-        min-width: 最小宽度;
-        _width: 100%;
-        overflow: hidden;
-    }
-    .main .wrap,
-    .footer .wrap {
-        background: url() center 0 no-repeat;
-        width: 最小宽度;
-        margin: 0 auto;
-        position: relative;
-        /* 不要增加：overflow: hidden;*/
-    }
-    .main .wrap:before,
-    .footer .wrap:before {
-        content: '';
-        display: table;
-    }
-    /*/多大图模式*/
+    /*/布局*/
 
     /* wap媒体查询（320px~640px），最大width:32rem;*/
     @media (max-width: 351px) {
@@ -206,7 +181,7 @@
             font-size: 20px;
         }
     }
-    @media (orientation: landscape) {
+    @media (orientation: landscape) {  /* 横屏*/
 
     }
     /*/wap媒体查询*/
@@ -342,39 +317,18 @@
         </script>
     </head>
     <body>
-    <!-- 单大图模式-->
+
     <div class="full_bg">
-        <div class="header">
-
-        </div>
-        <div class="main">
+        <div class="full_wrap">
 
         </div>
     </div>
+
     <div class="footer">
         <div class="wrap">
 
         </div>
     </div>
-    <!--/单大图模式-->
-
-    <!-- 多大图模式-->
-    <div class="header">
-        <div class="wrap">
-
-        </div>
-    </div>
-    <div class="main">
-        <div class="wrap">
-
-        </div>
-    </div>
-    <div class="footer">
-        <div class="wrap">
-
-        </div>
-    </div>
-    <!--/多大图模式-->
 
     <script type="text/javascript" src=""></script>
     <script type="text/javascript">
