@@ -1,4 +1,4 @@
-#cssReset && html template for 4399's pc
+#cssReset && html template for Company's pc
 
 1. cssReset.css after KS.css
 
