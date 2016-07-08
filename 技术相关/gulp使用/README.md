@@ -150,8 +150,8 @@
         ```handlebars
         @charset "utf-8";
 
-        @function px($num) {
-            @return $num / 20 + rem;
+        @function rem($px) {
+            @return $px / 20 + rem;
         }
 
         {{#extend "scss"}}
@@ -161,8 +161,8 @@
                 {{#each sprites}}
         @mixin sprites_{{name}} {
             background-position: {{#if offset_x}}{{offset_x}}/({{width}}-{{total_width}})*100%{{else}}0{{/if}} {{#if offset_y}}{{offset_y}}/({{height}}-{{total_height}})*100%{{else}}0{{/if}};
-            width: px({{width}});
-            height: px({{height}});
+            width: rem({{width}});
+            height: rem({{height}});
             @extend %sprites_img;
         }
                 {{/each}}
@@ -172,7 +172,7 @@
 
         %sprites_img {
             background-image: url('{{{spritesheet.escaped_image}}}');
-            background-size: px({{spritesheet.width}}) px({{spritesheet.height}});
+            background-size: rem({{spritesheet.width}}) rem({{spritesheet.height}});
             background-repeat: no-repeat;
         }
             {{/content}}
