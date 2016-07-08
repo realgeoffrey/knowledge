@@ -115,7 +115,7 @@
                 algorithm: 'top-down',
                 imgName: 'sprites.png',
                 cssTemplate: 'wap.handlebars',
-                cssName: 'sprites_wap.sass'
+                cssName: 'sprites_wap.scss'
             }))
             .pipe(gulp.dest('../sprites/release/'));
     });
