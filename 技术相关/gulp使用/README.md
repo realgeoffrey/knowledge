@@ -1,34 +1,34 @@
 #gulp使用
 
-1. node's package for gulp
+1. node's package for gulp([package.json](tools/package.json))
 
     >By using gulp for the first time, error always occurred because of the bad network when we installed the plug-ins. If shit happened, we should have to re-install the problem plugins.
 
     ```json
     {
-        "name": "gulp.me",
-        "version": "1.3.0",
-        "author": "feijie",
-        "description": "my gulp tools",
-        "dependencies": {
-            "browser-sync": "^2.13.0",
-            "gulp": "^3.9.0",
-            "gulp-concat": "^2.6.0",
-            "gulp-cssnano": "^2.1.2",
-            "gulp-load-plugins": "^1.2.4",
-            "gulp-make-css-url-version": "0.0.13",
-            "gulp-rename": "^1.2.2",
-            "gulp-uglify": "^1.5.3",
-            "gulp.spritesmith": "^6.2.1",
-            "imagemin-gifsicle": "^4.2.0",
-            "imagemin-jpegtran": "^4.3.2",
-            "imagemin-pngquant": "^4.2.2",
-            "imagemin-svgo": "^4.2.0"
-        }
+      "name": "gulp.me",
+      "version": "1.3.0",
+      "author": "feijie",
+      "description": "my gulp tools",
+      "dependencies": {
+        "browser-sync": "^2.13.0",
+        "gulp": "^3.9.0",
+        "gulp-concat": "^2.6.0",
+        "gulp-cssnano": "^2.1.2",
+        "gulp-load-plugins": "^1.2.4",
+        "gulp-make-css-url-version": "0.0.13",
+        "gulp-rename": "^1.2.2",
+        "gulp-uglify": "^1.5.4",
+        "gulp.spritesmith": "^6.2.1",
+        "imagemin-gifsicle": "^4.2.0",
+        "imagemin-jpegtran": "^4.3.2",
+        "imagemin-pngquant": "^4.2.2",
+        "imagemin-svgo": "^4.2.0"
+      }
     }
     ```
 
-2. gulp settings for tasks
+2. gulp settings for tasks([gulpfile.js](tools/gulpfile.js))
 
     ```javascript
     var jpegtran = require('imagemin-jpegtran'), /* jpg压缩*/
@@ -134,7 +134,7 @@
     ```
 3. handlebars settings for spritesmith(gulp plugin)
 
-    1. pc:
+    1. pc([pc.handlebars](tools/pc.handlebars)):
 
         ```handlebars
         {{#sprites}}
@@ -145,7 +145,7 @@
         }
         {{/sprites}}
         ```
-    2. wap:
+    2. wap([wap.handlebars](tools/wap.handlebars)):
 
         ```handlebars
         @charset "utf-8";
