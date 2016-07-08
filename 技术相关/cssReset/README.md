@@ -1,4 +1,4 @@
-#Reset for css && html
+#cssReset && html template
 
 1. cssReset.scss
 
@@ -288,7 +288,6 @@
     }
     /*/pc媒体查询*/
     ```
-
 2. Html template
 
     ```html
@@ -333,3 +332,4 @@
     </body>
     </html>
     ```
+- [for 4399's pc](4399's)
