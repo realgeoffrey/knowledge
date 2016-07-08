@@ -1,8 +1,8 @@
 #Reset for css && html
 
-1. cssReset.css
+1. cssReset.scss
 
-    ```css
+    ```scss
     @charset "UTF-8";
     /* CSS reset*/
     html,body,div,span,h1,h2,h3,h4,h5,h6,p,a,img,dl,dt,dd,ul,ol,li,nav,footer,header,
@@ -71,71 +71,71 @@
     a:hover {
         text-decoration: none;
     }
-    .left {
+    /* -scss的@function、@mixin*/
+    @function rem($px) {
+        @return $px / 20 + rem;
+    }
+    @function sprites($y,$height: 单图固定高度) {
+        @return percentage($y / (合并图高度 - $height));
+    }
+    @mixin inline-block {
+        display: inline-block;
+        *display: inline;
+        *zoom: 1;
+    }
+    @mixin left {
         float: left;
         _display: inline;
     }
-    .right {
+    @mixin right {
         float: right;
         _display: inline;
     }
-    .clearfix:after {
-        content: "";
-        display: table;
-        clear: both;
-    }
-    .clearfix {
+    @mixin clearfix {
         *zoom: 1;
+        &:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
     }
-    .ellipsis {
-        _width: 100%;
+    @mixin ellipsis($boolen: true) {
+        @if $boolen == true {
+            _width: 100%;
+        }
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    .multi_ellipsis {
-        line-height: 1;
-        height: 2em;
+    @mixin multi_ellipsis($height,$line) {
+        line-height: $height;
+        height: ($height * $line);
         display: block;
         display: -webkit-box;
         *display: block;
         overflow: hidden;
         text-overflow: ellipsis;
         -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: $line;
     }
+    /*/-scss*/
     /*/全局*/
 
     /* 布局*/
     .full_bg {
-        background: url() #fff center 0 no-repeat;
+        background: center top no-repeat;
         min-width: 最小宽度;
         _width: 100%;
         overflow: hidden;
     }
     .full_bg .full_wrap {
-        background: url() center 0 no-repeat;
+        background: center top no-repeat;
         width: 最小宽度;
         margin: 0 auto;
         position: relative;
-        /* 不要增加：overflow: hidden;*/
     }
     .full_bg .full_wrap:before {
-        content: '';
-        display: table;
-    }
-    .footer {
-        background-color: #fff;
-        min-width: 最小宽度;
-        _width: 100%;
-    }
-    .footer .wrap {
-        width: 最小宽度;
-        margin: 0 auto;
-        /* 不要增加：overflow: hidden;*/
-    }
-    .footer .wrap:before {
-        content: '';
+        content: "";
         display: table;
     }
     /*/布局*/
@@ -318,14 +318,8 @@
     </head>
     <body>
 
-    <div class="full_bg">
-        <div class="full_wrap">
-
-        </div>
-    </div>
-
-    <div class="footer">
-        <div class="wrap">
+    <div class="full_bg" style="background-image: url(); background-color: #fff;">
+        <div class="full_wrap" style="background-image: url();">
 
         </div>
     </div>
