@@ -44,7 +44,7 @@
         <meta name="renderer" content="webkit">
         <meta name="keywords" content="">
         <meta name="description" content="">
-        <title>4399 PC项目</title>
+        <title>公司PC项目</title>
         <link href="http://s1.img4399.com/base/css/KS.css" type="text/css" rel="stylesheet">
         <link href="http://s1.img4399.com/base/css/ue_common.css" type="text/css" rel="stylesheet">
         <link href="" type="text/css" rel="stylesheet">
