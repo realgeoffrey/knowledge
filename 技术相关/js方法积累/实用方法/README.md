@@ -410,44 +410,6 @@ function countDown(deadline, id, func, hType, mType, sType) {
 }
 ```
 
-### *原生js*绑定、解绑事件
-```javascript
-/* 绑定*/
-function addEvent(obj, type, handle) {
-    if (typeof obj.addEventListener === 'function') {   /* DOM2级，除ie6~8外的高级浏览器*/
-        obj.addEventListener(type, handle, false);
-    } else if (typeof obj.attachEvent === 'function') { /* 所有ie浏览器*/
-        obj.attachEvent('on' + type, handle);
-    } else {    /* DOM0级，最早期的浏览器都支持*/
-        obj['on' + type] = handle;
-    }
-}
-
-addEvent(document.getElementById('test1'), 'keydown', func1);
-
-
-/* 解绑*/
-function removeEvent(obj, type, handle) {
-    if (typeof obj.removeEventListener === 'function') {
-        obj.removeEventListener(type, handle, false);
-    } else if (typeof obj.detachEvent === 'function') {
-        obj.detachEvent('on' + type, handle);
-    } else {
-        obj['on' + type] = null;
-    }
-}
-
-removeEvent(document.getElementById('test1'), 'keydown', func1);
-```
-
-`addEventListener`与`removeEventListener`是高级浏览器都有的方法（ie8-不支持），必须一一对应具体的handle和布尔值，才可以解绑。
-
-`attachEvent`与`detachEvent`是ie特有方法，必须一一对应具体的handle，才可以解绑。
-
-`on+type`是所有浏览器都支持，用赋值覆盖解绑。
-
-jQuery的`on`与`off`，不用一一对应某个handle：当写具体handle时解绑那个具体handle；不写默认解绑所有对象下某事件的方法。
-
 ### *原生js*判断对象是否为空
 ```javascript
 function isObjEmpty(obj) {
@@ -547,7 +509,6 @@ function extend(target, options) {
     return target;
 }
 ```
-
 
 ### *原生js*从字符串中获取绝对路径
 ```javascript
@@ -720,37 +681,43 @@ var sendLog = (function () {
 sendLog('统计url');
 ```
 
-### *原生js*、jQuery实现判断按下具体某键值
+### *原生js*绑定、解绑事件
 ```javascript
-/* js原生*/
-function checkKeyCode(event) {
-    var e = event || window.event,
-        keyCode = e.charCode || e.keyCode;  /* 获取键值*/
-
-    if (keyCode === 13) {   /* 查询键值表 例:13->换行*/
-        /* 具体操作...*/
-
-        /* 取消默认行为*/
-        if (window.event) {
-            window.event.returnValue = false;
-        } else {
-            event.preventDefault();
-        }
+/* 绑定*/
+function addEvent(obj, type, handle) {
+    if (typeof obj.addEventListener === 'function') {   /* DOM2级，除ie6~8外的高级浏览器*/
+        obj.addEventListener(type, handle, false);
+    } else if (typeof obj.attachEvent === 'function') { /* 所有ie浏览器*/
+        obj.attachEvent('on' + type, handle);
+    } else {    /* DOM0级，最早期的浏览器都支持*/
+        obj['on' + type] = handle;
     }
 }
 
-addEvent(document.getElementById('test'), 'keydown', checkKeyCode);  /* 上面绑定事件*/
+addEvent(document.getElementById('test1'), 'keydown', func1);
 
 
-/* jQuery*/
-$(...).on('keydown', function (e) {
-    if (e.which === 13) {   /* 查询键值表 例:13->换行*/
-        /* 具体操作...*/
-
-        return false;   /* 取消默认行为*/
+/* 解绑*/
+function removeEvent(obj, type, handle) {
+    if (typeof obj.removeEventListener === 'function') {
+        obj.removeEventListener(type, handle, false);
+    } else if (typeof obj.detachEvent === 'function') {
+        obj.detachEvent('on' + type, handle);
+    } else {
+        obj['on' + type] = null;
     }
-});
+}
+
+removeEvent(document.getElementById('test1'), 'keydown', func1);
 ```
+
+`addEventListener`与`removeEventListener`是高级浏览器都有的方法（ie8-不支持），必须一一对应具体的handle和布尔值，才可以解绑。
+
+`attachEvent`与`detachEvent`是ie特有方法，必须一一对应具体的handle，才可以解绑。
+
+`on+type`是所有浏览器都支持，用赋值覆盖解绑。
+
+jQuery的`on`与`off`，不用一一对应某个handle：当写具体handle时解绑那个具体handle；不写默认解绑所有对象下某事件的方法。
 
 ### *原生js*、jQuery阻止冒泡和阻止浏览器默认行为
 - 阻止冒泡
@@ -805,6 +772,38 @@ $(...).on('keydown', function (e) {
         return false;
     });
     ```
+
+### *原生js*、jQuery实现判断按下具体某键值
+```javascript
+/* js原生*/
+function checkKeyCode(event) {
+    var e = event || window.event,
+        keyCode = e.charCode || e.keyCode;  /* 获取键值*/
+
+    if (keyCode === 13) {   /* 查询键值表 例:13->换行*/
+        /* 具体操作...*/
+
+        /* 取消默认行为*/
+        if (window.event) {
+            window.event.returnValue = false;
+        } else {
+            event.preventDefault();
+        }
+    }
+}
+
+addEvent(document.getElementById('test'), 'keydown', checkKeyCode);  /* 上面绑定事件*/
+
+
+/* jQuery*/
+$(...).on('keydown', function (e) {
+    if (e.which === 13) {   /* 查询键值表 例:13->换行*/
+        /* 具体操作...*/
+
+        return false;   /* 取消默认行为*/
+    }
+});
+```
 
 
 ## jQuery（或Zepto）方法
