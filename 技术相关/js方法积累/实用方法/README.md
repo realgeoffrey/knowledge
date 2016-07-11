@@ -719,6 +719,30 @@ removeEvent(document.getElementById('test1'), 'keydown', func1);
 
 jQuery的`on`与`off`，不用一一对应某个handle：当写具体handle时解绑那个具体handle；不写默认解绑所有对象下某事件的方法。
 
+### *原生js*、jQuery获取事件对象引用、目标元素引用
+ie8-的DOM0事件（直接on+type）没有传递事件对象到事件处理函数中，有额外的`window.event`对象进行相关操作。
+
+```javascript
+/* js原生*/
+function getEvent(event) {
+    return event || window.event;
+}
+function getTarget(event) {
+    if (event && event.target) {
+
+        return event.target;
+    } else {
+
+        return window.event.srcElement;
+    }
+}
+
+/* jQuery*/
+$('...').on('...', function (e) {
+    /* 可以直接使用事件对象引用e和目标引用e.target*/
+});
+```
+
 ### *原生js*、jQuery阻止冒泡和阻止浏览器默认行为
 - 阻止冒泡
     ```javascript
