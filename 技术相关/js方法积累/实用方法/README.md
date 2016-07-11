@@ -720,7 +720,7 @@ removeEvent(document.getElementById('test1'), 'keydown', func1);
 jQuery的`on`与`off`，不用一一对应某个handle：当写具体handle时解绑那个具体handle；不写默认解绑所有对象下某事件的方法。
 
 ### *原生js*、jQuery获取事件对象引用、目标元素引用
-ie8-的DOM0事件（直接on+type）没有传递事件对象到事件处理函数中，有额外的`window.event`对象进行相关操作。
+ie8-的DOM0事件（直接on+type）没有传递**事件对象**到**事件处理函数**中，有额外的`window.event`对象进行相关操作。
 
 ```javascript
 /* js原生*/
