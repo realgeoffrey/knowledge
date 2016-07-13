@@ -5,7 +5,7 @@
   "description": "my gulp tools",
   "dependencies": {
     "browser-sync": "^2.13.0",
-    "gulp": "^3.9.0",
+    "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-cssnano": "^2.1.2",
     "gulp-load-plugins": "^1.2.4",
@@ -16,6 +16,6 @@
     "imagemin-gifsicle": "^4.2.0",
     "imagemin-jpegtran": "^4.3.2",
     "imagemin-pngquant": "^4.2.2",
-    "imagemin-svgo": "^4.2.0"
+    "imagemin-svgo": "^4.2.1"
   }
 }
