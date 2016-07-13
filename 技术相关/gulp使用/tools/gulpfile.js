@@ -1,7 +1,4 @@
-var jpegtran = require('imagemin-jpegtran'), /* jpg压缩*/
-    pngquant = require('imagemin-pngquant'), /* png压缩*/
-    gifsicle = require('imagemin-gifsicle'), /* gif压缩*/
-    svgo = require('imagemin-svgo'), /* svg压缩*/
+var imagemin = require('gulp-imagemin'), /* 压缩PNG, JPEG, GIF, SVG*/
     concat = require('gulp-concat'), /* 合并文件*/
     makeUrlVer = require('gulp-make-css-url-version'), /* css中url添加版本号*/
     nano = require('gulp-cssnano'), /* css压缩*/
@@ -16,10 +13,7 @@ var jpegtran = require('imagemin-jpegtran'), /* jpg压缩*/
 /* 图片任务*/
 gulp.task('doImage', function () {
     gulp.src(['../images/dev/**'])
-        .pipe(jpegtran({progressive: true})())  /* jpg：压缩程度比较小*/
-        .pipe(pngquant()()) /* png：能够把png8与png24压缩成png8（可透明）*/
-        .pipe(gifsicle()()) /* gif*/
-        .pipe(svgo()()) /* svg*/
+        .pipe(imagemin())
         .pipe(gulp.dest('../images/release/'));
 });
 
