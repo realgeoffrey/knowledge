@@ -462,10 +462,12 @@ ul li a:hover {
     <style type="text/css">
         .float_l {
             float: left;
+            _display: inline;
             width: 左边块宽度;
         }
         .float_r {
             float: right;
+            _display: inline;
             width: 右边块宽度;
         }
         .middle {
@@ -491,6 +493,7 @@ ul li a:hover {
         .float_l,
         .float_r {
             float: left;
+            _display: inline;
         }
         .middle_out {
             width: 100%;
