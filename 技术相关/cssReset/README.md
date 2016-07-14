@@ -75,7 +75,7 @@
     @function rem($px) {
         @return $px / 20 + rem;
     }
-    @function sprites($y,$height: 单图固定高度) {
+    @function sprites_y($y,$height: 单图固定高度) {
         @return percentage($y / (合并图高度 - $height));
     }
     @mixin inline-block {
@@ -134,7 +134,8 @@
         margin: 0 auto;
         position: relative;
     }
-    .full_bg .full_wrap:before {
+    .full_bg .full_wrap:before,
+    .full_bg .full_wrap:after {
         content: "";
         display: table;
     }
