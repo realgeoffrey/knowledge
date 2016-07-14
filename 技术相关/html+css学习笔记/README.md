@@ -453,7 +453,36 @@ ul li a:hover {
 ```
 
 ### 自适应宽度布局
-1. 中间内容自适应，两边固定（中间内容先加载）
+>1. float属性的节点可以填补在之后节点的水平margin区域内，padding区域内不可以；
+>2. 不可以填补于之前节点的水平margin区域内。
+1. 中间内容自适应，两边固定（中间内容后加载）
+
+    ```html
+    <style type="text/css">
+        .float_l {
+            float: left;
+            width: 左边块宽度;
+        }
+        .float_r {
+            float: right;
+            width: 右边块宽度;
+        }
+        .middle {
+            margin-left: 大于等于左边块宽度;
+            margin-right: 大于等于右边块宽度;
+        }
+    </style>
+
+    <div class="clearfix">
+        <div class="float_l">左边内容</div>
+        <div class="float_r">右边内容</div>
+        <div class="middle">中间内容</div>
+    </div>
+    ```
+
+    >- DOM结构不能颠倒，需要中间结构放最后;
+    >- 节点上能设定`clear: both;`。
+2. 中间内容自适应，两边固定（中间内容先加载）
 
     ```html
     <style type="text/css">
@@ -491,38 +520,6 @@ ul li a:hover {
 
     >- DOM结构不能颠倒，需要中间结构放最前;
     >- 节点上能设定`clear: both;`。
-
-2. 中间内容自适应，两边固定（中间内容后加载）
-
-    ```html
-    <style type="text/css">
-        .float_l {
-            float: left;
-            width: 左边块宽度;
-        }
-        .float_r {
-            float: right;
-            width: 右边块宽度;
-        }
-        .middle {
-            margin-left: 大于等于左边块宽度;
-            margin-right: 大于等于右边块宽度;
-        }
-    </style>
-
-    <div class="clearfix">
-        <div class="float_l">左边内容</div>
-        <div class="float_r">右边内容</div>
-        <div class="middle">中间内容</div>
-    </div>
-    ```
-
-    >- DOM结构不能颠倒，需要中间结构放最后;
-    >- 节点上能设定`clear: both;`。
-    >
-    >float属性的节点可以填补在之后节点的水平margin区域内，padding区域内不可以；
-    >不可以填补于之前节点的水平margin区域内。
-
 3. 中间与两边内容都自适应
 
     ```html
