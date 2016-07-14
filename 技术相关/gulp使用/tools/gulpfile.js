@@ -48,7 +48,7 @@ gulp.task('doJs', function () {
 gulp.task('browserSync', function () {
     browserSync.init({
         proxy: "192.168.57.60"  /* 服务器*/
-        //server: "../" /* 相对地址*/
+        //server: "../../" /* 相对地址*/
     });
     gulp.watch("../../**/*.html").on('change', reload);
     gulp.watch("../../**/js/**/*.js").on('change', reload);
