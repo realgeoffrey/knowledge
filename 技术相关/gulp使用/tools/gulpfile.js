@@ -1,4 +1,5 @@
 var imagemin = require('gulp-imagemin'), /* 压缩PNG, JPEG, GIF, SVG*/
+    pngquant = require('imagemin-pngquant'), /* 深度压缩PNG*/
     concat = require('gulp-concat'), /* 合并文件*/
     makeUrlVer = require('gulp-make-css-url-version'), /* css中url添加版本号*/
     nano = require('gulp-cssnano'), /* css压缩*/
@@ -13,6 +14,7 @@ var imagemin = require('gulp-imagemin'), /* 压缩PNG, JPEG, GIF, SVG*/
 /* 图片任务*/
 gulp.task('doImage', function () {
     gulp.src(['../images/dev/**'])
+        .pipe(pngquant()())
         .pipe(imagemin())
         .pipe(gulp.dest('../images/release/'));
 });
