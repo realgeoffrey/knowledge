@@ -456,7 +456,7 @@ ul li a:hover {
 >1. `float`节点可以填补在**之后节点**的水平`margin`内（`padding`内不可以）；
 >2. 不可以填补在*之前节点*的水平`margin`内。
 
-1. 中间内容自适应，两边固定（中间内容后加载）
+1. 中间内容自适应，两边固定（中间内容最后加载）
 
     ```html
     <style type="text/css">
@@ -485,7 +485,9 @@ ul li a:hover {
 
     >- DOM结构不能颠倒，需要中间结构放最后;
     >- 节点上能设定`clear: both;`。
-2. 中间内容自适应，两边固定（中间内容先加载）
+2. 中间内容自适应，两边固定（中间内容最先加载）
+
+    >所谓的“双飞翼布局”。
 
     ```html
     <style type="text/css">
@@ -502,11 +504,11 @@ ul li a:hover {
             margin: 0 大于等于右边块宽度 0 大于等于左边块宽度;
         }
         .float_l {
-            width: 右边块宽度;
+            width: 左边块宽度;
             margin-left: -100%;
         }
         .float_r {
-            width: 左边块宽度;
+            width: 右边块宽度;
             margin-left: -左边块宽度;
         }
     </style>
