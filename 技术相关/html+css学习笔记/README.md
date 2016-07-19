@@ -1069,6 +1069,8 @@ li:hover a {
 - 响应式设计三大要素
     1. 媒体查询
     2. 流式布局：节点用百分比或rem
+        
+        >使用自适应结构，比如：[自适应宽度布局](https://github.com/realgeoffrey/knowledge/tree/master/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/html+css%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0#自适应宽度布局)。
     3. 弹性图片：`img {max-width: 100%;}`
 
 ### 响应式页面解决方案：使用rem单位+媒体查询
