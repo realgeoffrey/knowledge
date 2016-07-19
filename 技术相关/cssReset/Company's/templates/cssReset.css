@@ -19,18 +19,18 @@ img,video,audio {max-width:100%;}
 }
 .my_ftop {
     background: center top no-repeat;
-    min-width: 最小宽度;
+    min-width: 1000px;
     _width: 100%;
     overflow: hidden;
 }
-.my_ftop .my_fbtm {
+.my_fbtm {
     background: center top no-repeat;
-    width: 最小宽度;
+    width: 1000px;
     margin: 0 auto;
     position: relative;
 }
-.my_ftop .my_fbtm:before,
-.my_ftop .my_fbtm:after {
+.my_fbtm:before,
+.my_fbtm:after {
     content: "";
     display: table;
 }
