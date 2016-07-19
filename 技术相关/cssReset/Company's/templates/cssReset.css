@@ -12,10 +12,27 @@ button,textarea,:focus {outline:none;}
 img,video,audio {max-width:100%;}
 /*/补充KS的reset*/
 
-/* 覆盖原框架*/
+/* 原框架布局*/
 .my_topbar {
     position: relative;
     z-index: 1;
+}
+.my_ftop {
+    background: center top no-repeat;
+    min-width: 最小宽度;
+    _width: 100%;
+    overflow: hidden;
+}
+.my_ftop .my_fbtm {
+    background: center top no-repeat;
+    width: 最小宽度;
+    margin: 0 auto;
+    position: relative;
+}
+.my_ftop .my_fbtm:before,
+.my_ftop .my_fbtm:after {
+    content: "";
+    display: table;
 }
 .part_bgcover {
     position: absolute;
@@ -27,4 +44,4 @@ img,video,audio {max-width:100%;}
     height: 340px;
     z-index: 0;
 }
-/*/覆盖原框架*/
+/*/原框架布局*/
