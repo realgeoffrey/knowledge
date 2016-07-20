@@ -554,6 +554,7 @@ ul li a:hover {
                     1文字文字文字文字文字文字文字文字文字文字文字文字文字文字2
                 </div>
                 ```
+                
         >以上`i`标签都可以用`:before`或`:after`代替。
     2. ~~图标设置为`inline-block`，再用`vertical-align`微调。~~
 
