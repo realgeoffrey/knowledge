@@ -428,29 +428,135 @@ ul li a:hover {
 ##HTML + CSS
 
 ### 垂直居中
-```html
-<style type="text/css">
-    .box { /* 此层不能是float或absolute，可以在此层外嵌套的设置为float或absolute*/
-       display: table-cell;
-       height: 114px; /* height/font-size = 1.14*/
-       *font-size: 100px;
-       vertical-align: middle; /* 无继承性*/
-       text-align: center; /* 有继承性*/
-    }
-    span { /* 必须是内联元素*/
-       display: inline-block;
-       vertical-align: middle;
-       /*font-size覆盖父级的字体*/
-    }
-    img {
-       vertical-align: middle;
-    }
-</style>
+1. 不确定高度的垂直居中
 
-<div class="box">
-    <img src=""> or <span>...</span>
-</div>
-```
+    ```html
+    <style type="text/css">
+        .box { /* 此层不能是float或absolute，可以在此层外嵌套的设置为float或absolute*/
+           display: table-cell;
+           height: 114px; /* height/font-size = 1.14*/
+           *font-size: 100px;
+           vertical-align: middle; /* 无继承性*/
+           text-align: center; /* 有继承性*/
+        }
+        span { /* 必须是内联元素*/
+           display: inline-block;
+           vertical-align: middle;
+           /*font-size覆盖父级的字体*/
+        }
+        img {
+           vertical-align: middle;
+        }
+    </style>
+
+    <div class="box">
+        <img src=""> or <span>...</span>
+    </div>
+    ```
+2. 图片和文字并排垂直居中
+
+    1. 图标设置为`absolute`，用`margin-left`调整水平位置（没有设置`left`或`right`，则在文档流所在的水平位置开始定位，并且不在文档流中），用`top`和`margin-top`调整垂直位置。
+
+        1. 水平居中
+
+            1. 图标前置
+
+                ```html
+                <style>
+                    .father {
+                        text-align: center;
+                        position: relative;
+                        padding-left: 图标宽度;
+                    }
+                    .father i {
+                        width: 图标宽度;
+                        height: 图标高度;
+                        position: absolute;
+                        top: 50%;
+                        margin-top: -图标高度/2;
+                        margin-left: -图标宽度;
+                    }
+                </style>
+
+                <div class="father">
+                    <i></i>
+                    文字文字文字文字文字文字文字文字文字文字文字文字文字文字
+                </div>
+                ```
+            2. 图标后置
+
+                ```html
+                <style>
+                    .father {
+                        text-align: center;
+                        position: relative;
+                        padding-right: 图标宽度;
+                    }
+                    .father i {
+                        width: 图标宽度;
+                        height: 图标高度;
+                        position: absolute;
+                        top: 50%;
+                        margin-top: -图标高度/2;
+                    }
+                </style>
+
+                <div class="father">
+                    文字文字文字文字文字文字文字文字文字文字文字文字文字文字
+                    <i></i>
+                </div>
+                ```
+        2. 居左
+
+            1. 图标后置
+
+                ```html
+                <style>
+                    .father {
+                        position: relative;
+                    }
+                    .father i {
+                        width: 图标宽度;
+                        height: 图标高度;
+                        position: absolute;
+                        top: 50%;
+                        margin-top: -图标高度/2;
+                    }
+                </style>
+
+                <div class="father">
+                    文字文字文字文字文字文字文字文字文字文字文字文字文字文字
+                    <i></i>
+                </div>
+                ```
+        3. 居右
+
+            1. 图标前置
+
+                ```html
+                <style>
+                    .father {
+                        text-align: right;
+                        position: relative;
+                    }
+                    .father i {
+                        width: 图标宽度;
+                        height: 图标高度;
+                        position: absolute;
+                        top: 50%;
+                        margin-top: -图标高度/2;
+                        margin-left: -图标宽度;
+                    }
+                </style>
+
+                <div class="father">
+                    <i></i>
+                    文字文字文字文字文字文字文字文字文字文字文字文字文字文字
+                </div>
+                ```
+    2. ~~图标设置为`inline-block`，再用`vertical-align`微调。~~
+
+        鉴于`vertical-align`在不同浏览器表现太不一致，垂直方向无法获得完美居中效果。
 
 ### 自适应宽度布局
 >1. `float`节点可以填补在**之后节点**的水平`margin`内（`padding`内不可以）；
