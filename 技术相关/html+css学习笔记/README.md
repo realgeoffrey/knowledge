@@ -453,7 +453,7 @@ ul li a:hover {
         <img src=""> or <span>...</span>
     </div>
     ```
-2. 图片和文字并排垂直居中
+2. 图标和文字并排垂直居中
 
     1. 图标设置为`absolute`，用`margin-left`调整水平位置（没有设置`left`或`right`，则在文档流所在的水平位置开始定位，并且不在文档流中），用`top`和`margin-top`调整垂直位置。
 
@@ -554,6 +554,7 @@ ul li a:hover {
                     1文字文字文字文字文字文字文字文字文字文字文字文字文字文字2
                 </div>
                 ```
+        >以上`i`标签都可以用`:before`或`:after`代替。
     2. ~~图标设置为`inline-block`，再用`vertical-align`微调。~~
 
         鉴于`vertical-align`在不同浏览器表现太不一致，垂直方向无法获得完美居中效果。
