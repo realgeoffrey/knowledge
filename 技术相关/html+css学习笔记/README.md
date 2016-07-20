@@ -427,6 +427,112 @@ ul li a:hover {
 
 ##HTML + CSS
 
+### 自适应宽度布局
+>1. `float`节点可以填补在**之后节点**的水平`margin`内（`padding`内不可以）；
+>2. 不可以填补在*之前节点*的水平`margin`内。
+
+1. 中间内容自适应，两边固定（中间内容最后加载）
+
+    ```html
+    <style type="text/css">
+        .float_l {
+            float: left;
+            _display: inline;
+            width: 左边块宽度;
+        }
+        .float_r {
+            float: right;
+            _display: inline;
+            width: 右边块宽度;
+        }
+        .middle {
+            margin-left: 大于等于左边块宽度;
+            margin-right: 大于等于右边块宽度;
+        }
+    </style>
+
+    <div class="clearfix">
+        <div class="float_l">左边内容</div>
+        <div class="float_r">右边内容</div>
+        <div class="middle">中间内容</div>
+    </div>
+    ```
+
+    >- DOM结构不能颠倒，需要中间结构放最后;
+    >- 节点上能设定`clear: both;`。
+2. 中间内容自适应，两边固定（中间内容最先加载）
+
+    >所谓的“双飞翼布局”。
+
+    ```html
+    <style type="text/css">
+        .main_out,
+        .float_l,
+        .float_r {
+            float: left;
+            _display: inline;
+        }
+        .middle_out {
+            width: 100%;
+        }
+        .middle_in {
+            margin: 0 大于等于右边块宽度 0 大于等于左边块宽度;
+        }
+        .float_l {
+            width: 左边块宽度;
+            margin-left: -100%;
+        }
+        .float_r {
+            width: 右边块宽度;
+            margin-left: -左边块宽度;
+        }
+    </style>
+
+    <div class="clearfix">
+        <div class="middle_out">
+            <div class="middle_in">
+                中间内容
+            </div>
+        </div>
+        <div class="float_l">左边内容</div>
+        <div class="float_r">右边内容</div>
+    </div>
+    ```
+
+    >- DOM结构不能颠倒，需要中间结构放最前;
+    >- 节点上能设定`clear: both;`。
+3. 中间与两边内容都自适应
+
+    ```html
+    <style type="text/css">
+        .float_l {
+            float: left;
+            _display: inline;
+        }
+        .float_r {
+            float: right;
+            _display: inline;
+        }
+        .middle {
+            display: table-cell;
+            *display: inline-block;
+            width: 9999px;
+            *width: auto;
+        }
+    </style>
+
+    <div class="clearfix">
+        <div class="float_l">左边内容</div>
+        <div class="float_r">右边内容（没有足够空间则整体换行）</div>
+        <div class="middle">中间内容（没有足够空间则整体换行）</div>
+    </div>
+    ```
+
+    >- DOM结构不能颠倒，需要中间结构放最后;
+    >- 节点上能设定`clear: both;`;
+    >- 完全由内容决定布局；
+    >- 第一块内容要给第二块内容留下足够空间，否则第二块放不下会整个换行；第一块+第二块要给第三块留下足够空间，否则第三块放不下会整个换行。
+
 ### 垂直居中
 1. 不确定高度的垂直居中
 
@@ -559,112 +665,6 @@ ul li a:hover {
     2. ~~图标设置为`inline-block`，再用`vertical-align`微调。~~
 
         鉴于`vertical-align`在不同浏览器表现太不一致，垂直方向无法获得完美居中效果。
-
-### 自适应宽度布局
->1. `float`节点可以填补在**之后节点**的水平`margin`内（`padding`内不可以）；
->2. 不可以填补在*之前节点*的水平`margin`内。
-
-1. 中间内容自适应，两边固定（中间内容最后加载）
-
-    ```html
-    <style type="text/css">
-        .float_l {
-            float: left;
-            _display: inline;
-            width: 左边块宽度;
-        }
-        .float_r {
-            float: right;
-            _display: inline;
-            width: 右边块宽度;
-        }
-        .middle {
-            margin-left: 大于等于左边块宽度;
-            margin-right: 大于等于右边块宽度;
-        }
-    </style>
-
-    <div class="clearfix">
-        <div class="float_l">左边内容</div>
-        <div class="float_r">右边内容</div>
-        <div class="middle">中间内容</div>
-    </div>
-    ```
-
-    >- DOM结构不能颠倒，需要中间结构放最后;
-    >- 节点上能设定`clear: both;`。
-2. 中间内容自适应，两边固定（中间内容最先加载）
-
-    >所谓的“双飞翼布局”。
-
-    ```html
-    <style type="text/css">
-        .main_out,
-        .float_l,
-        .float_r {
-            float: left;
-            _display: inline;
-        }
-        .middle_out {
-            width: 100%;
-        }
-        .middle_in {
-            margin: 0 大于等于右边块宽度 0 大于等于左边块宽度;
-        }
-        .float_l {
-            width: 左边块宽度;
-            margin-left: -100%;
-        }
-        .float_r {
-            width: 右边块宽度;
-            margin-left: -左边块宽度;
-        }
-    </style>
-
-    <div class="clearfix">
-        <div class="middle_out">
-            <div class="middle_in">
-                中间内容
-            </div>
-        </div>
-        <div class="float_l">左边内容</div>
-        <div class="float_r">右边内容</div>
-    </div>
-    ```
-
-    >- DOM结构不能颠倒，需要中间结构放最前;
-    >- 节点上能设定`clear: both;`。
-3. 中间与两边内容都自适应
-
-    ```html
-    <style type="text/css">
-        .float_l {
-            float: left;
-            _display: inline;
-        }
-        .float_r {
-            float: right;
-            _display: inline;
-        }
-        .middle {
-            display: table-cell;
-            *display: inline-block;
-            width: 9999px;
-            *width: auto;
-        }
-    </style>
-
-    <div class="clearfix">
-        <div class="float_l">左边内容</div>
-        <div class="float_r">右边内容（没有足够空间则整体换行）</div>
-        <div class="middle">中间内容（没有足够空间则整体换行）</div>
-    </div>
-    ```
-
-    >- DOM结构不能颠倒，需要中间结构放最后;
-    >- 节点上能设定`clear: both;`;
-    >- 完全由内容决定布局；
-    >- 第一块内容要给第二块内容留下足够空间，否则第二块放不下会整个换行；第一块+第二块要给第三块留下足够空间，否则第三块放不下会整个换行。
 
 ### 内容居中
 1. 内容宽度可变，三层模式
