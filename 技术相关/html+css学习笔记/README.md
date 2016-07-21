@@ -534,32 +534,7 @@ ul li a:hover {
     >- 第一块内容要给第二块内容留下足够空间，否则第二块放不下会整个换行；第一块+第二块要给第三块留下足够空间，否则第三块放不下会整个换行。
 
 ### 垂直居中
-1. 不确定高度的垂直居中
-
-    ```html
-    <style type="text/css">
-        .box { /* 此层不能是float或absolute，可以在此层外嵌套的设置为float或absolute*/
-           display: table-cell;
-           height: 114px; /* height/font-size = 1.14*/
-           *font-size: 100px;
-           vertical-align: middle; /* 无继承性*/
-           text-align: center; /* 有继承性*/
-        }
-        span { /* 必须是内联元素*/
-           display: inline-block;
-           vertical-align: middle;
-           /*font-size覆盖父级的字体*/
-        }
-        img {
-           vertical-align: middle;
-        }
-    </style>
-
-    <div class="box">
-        <img src=""> or <span>...</span>
-    </div>
-    ```
-2. 图标和文字并排垂直居中
+1. 图标和文字并排垂直居中
 
     1. 图标设置为`absolute`，用`margin-left`调整水平位置（没有设置`left`或`right`，则在文档流所在的水平位置开始定位，并且不在文档流中），用`top`和`margin-top`调整垂直位置。
 
@@ -665,7 +640,32 @@ ul li a:hover {
     2. ~~图标设置为`inline-block`，再用`vertical-align`微调。~~
 
         鉴于`vertical-align`在不同浏览器表现太不一致，垂直方向无法获得完美居中效果。
+2. 不确定高度的垂直居中
 
+    ```html
+    <style type="text/css">
+        .box { /* 此层不能是float或absolute，可以在此层外嵌套的设置为float或absolute*/
+           display: table-cell;
+           height: 114px; /* height/font-size = 1.14*/
+           *font-size: 100px;
+           vertical-align: middle; /* 无继承性*/
+           text-align: center; /* 有继承性*/
+        }
+        span { /* 必须是内联元素*/
+           display: inline-block;
+           vertical-align: middle;
+           /*font-size覆盖父级的字体*/
+        }
+        img {
+           vertical-align: middle;
+        }
+    </style>
+
+    <div class="box">
+        <img src=""> or <span>...</span>
+    </div>
+    ```
+    
 ### 内容居中
 1. 内容宽度可变，三层模式
 
