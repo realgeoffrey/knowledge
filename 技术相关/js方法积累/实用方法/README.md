@@ -1184,7 +1184,7 @@ $oneInput.on('click', function () {
 ### jQuery或Zepto点击指定区域以外执行函数
 ```javascript
 /*
- * 点击所传入节点外区域执行函数
+ * 点击指定区域以外执行函数
  * @$dom {Object} jQuery节点
  * @callback {Function} 回调函数
  * @namespace {String} 事件命名空间
@@ -1213,8 +1213,6 @@ function beyongOneAct($dom, callback, namespace) {
     });
 }
 
-beyongOneAct($('.text1,.text2'), function () {
-    console.log('成功点击在区域外');
-}, 'clickNamespace');
+beyongOneAct($(选择器), function () {console.log('成功点击在区域外');}, 'clickNamespace');
 ```
 [JSfiddle Demo](https://jsfiddle.net/realgeoffrey/mvv9wxnw/)
