@@ -1214,7 +1214,7 @@ function beyongOneAct($dom, callback, namespace) {
 }
 
 beyongOneAct($('.text1,.text2'), function () {
-    $('body').append('<div style="background: red;">区域外点击成功</div>');
+    console.log('成功点击在区域外');
 }, 'clickNamespace');
 ```
 [JSfiddle Demo](https://jsfiddle.net/realgeoffrey/mvv9wxnw/)
