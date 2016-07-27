@@ -149,13 +149,13 @@
 
 	    1. ie6/7/8/9：
 
-	        `filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr=#40000000, endColorStr=#40000000); *zoom: 1;/* 必须激活haslayout*/`
+	        `filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr=#70000000, endColorStr=#70000000)\9; *zoom: 1;/* 必须激活haslayout*/`
 
 	        >- `startColorStr`是起色点，`endColorStr`是终色点（用于渐变色），两个值相同则单色；
 	        >- 值为十六进制数，前两位表示alpha通道值（透明），后六位为RGB值。
 	    2. ie9+及高级浏览器：
 
-	        `background: rgba(0, 0, 0, .5);`
+	        `background: rgba(0, 0, 0, .7);`
 	    >还可以使用gif透明图（IE下较小的24位PNG图透明时引起的内存泄漏）。
 26. ie6没有console方法（执行会报错），可用alert替代：
 
