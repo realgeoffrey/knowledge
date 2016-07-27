@@ -1182,37 +1182,55 @@ $oneInput.on('click', function () {
 ```
 
 ### jQuery或Zepto点击指定区域以外执行函数
-```javascript
-/*
- * 点击指定区域以外执行函数
- * @$dom {Object} jQuery节点
- * @callback {Function} 回调函数
- * @namespace {String} 事件命名空间
- * @returns undefined
- */
-function beyongOneAct($dom, callback, namespace) {
-    $(document.body).on('click.' + namespace, function (e) {
-        var $area = $dom,
-            withinArea = false,
-            i;
+1. jQuery
 
-        for (i = 0; i < $area.length; i++) {
-            if ($area.get(i) === e.target || $area.eq(i).has(e.target).length !== 0) {
-                withinArea = true;
-                break;
+    ```javascript
+    function beyongOneAct($dom, callback, namespace) {
+        $(document.body).on('click.' + namespace, function (e) {
+            var $area = $dom;
+
+            if (!$area.is(e.target) && $area.has(e.target).length === 0) {    /* 点击不在指定区域内*/
+                $(document.body).off('click.' + namespace);
+
+                if (typeof callback === 'function') {
+                    callback();
+                }
             }
-        }
+        });
+    }
+    ```
+    [JSfiddle Demo](https://jsfiddle.net/realgeoffrey/enyxz9a6/)
+2. Zepto
 
-        if (!withinArea) {    /* 点击不在指定区域内*/
-            $(document.body).off('click.' + namespace);
-
-            if (typeof callback === 'function') {
-                callback();
+    ```javascript
+    /*
+     * 点击指定区域以外执行函数
+     * @$dom {Object} jQuery节点
+     * @callback {Function} 回调函数
+     * @namespace {String} 事件命名空间
+     * @returns undefined
+     */
+    function beyongOneAct($dom, callback, namespace) {
+        $(document.body).on('click.' + namespace, function (e) {
+            var $area = $dom,
+                withinArea = false,
+                i;
+    
+            for (i = 0; i < $area.length; i++) {
+                if ($area.get(i) === e.target || $area.eq(i).has(e.target).length !== 0) {
+                    withinArea = true;
+                    break;
+                }
             }
-        }
-    });
-}
-
-beyongOneAct($(选择器), function () {console.log('成功点击在区域外');}, 'clickNamespace');
-```
-[JSfiddle Demo](https://jsfiddle.net/realgeoffrey/mvv9wxnw/)
+    
+            if (!withinArea) {    /* 点击不在指定区域内*/
+                $(document.body).off('click.' + namespace);
+    
+                if (typeof callback === 'function') {
+                    callback();
+                }
+            }
+        });
+    }
+    ```
+    [JSfiddle Demo](https://jsfiddle.net/realgeoffrey/mvv9wxnw/)
