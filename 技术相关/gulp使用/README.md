@@ -6,6 +6,8 @@
     >
     >If shit happened, we should have to uninstall then install the problem plugins.
 2. gulp settings for tasks:[gulpfile.js](tools/gulpfile.js)
+    
+    >BrowserSync is working with ajax. Blocking ajax will stop browserSync, such as Mock.js. 
 3. handlebars settings for spritesmith(gulp plugin)
 
     1. [pc.handlebars](tools/pc.handlebars)
