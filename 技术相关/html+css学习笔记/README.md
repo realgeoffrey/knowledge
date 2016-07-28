@@ -65,6 +65,7 @@ div {
         -webkit-line-clamp: 2;
     }
     ```
+[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/5j8hxxLb/)
 
 ### 模糊效果滤镜（高斯模糊）
 1. CSS3（除*ie10*与*ie11*外基本所有主流浏览器）
