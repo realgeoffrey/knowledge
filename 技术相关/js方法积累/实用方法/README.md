@@ -923,6 +923,37 @@ $(...).on('keydown', function (e) {
 </script>
 ```
 
+### jQuery或Zepto滚动加载
+```html
+<div class="j-load" data-status="loading">触发滚动加载</div>
+
+<script>
+    $(function () {
+        var $load = $('.j-load');
+
+        $(window).on('scroll.loading', function () {
+            if ($load.length >= 1 && $load.attr('data-status') === 'loading' && (+$(window).scrollTop() + $(window).height()) >= $load.offset().top) {  /* 滚动到屏幕内*/
+                $load.attr('data-status', '');
+
+                $.ajax({
+                    url: '',
+                    dataType: 'json',
+                    data: {}
+                }).done(function (data) {
+                    if (/* 某条件*/) {   /* 不再加载*/
+                        $(window).off('scroll.loading');
+                    } else {
+                        $load.attr('data-status', 'loading');
+                    }
+                }).fail(function () {
+                    console.log("网络错误");
+                });
+            }
+        });
+    });
+</script>
+```
+
 ### jQuery或Zepto获取`HTTP response header`信息
 ```javascript
 function getResponseHeaders(requestName) {
