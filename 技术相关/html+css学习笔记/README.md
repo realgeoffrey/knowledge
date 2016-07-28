@@ -13,8 +13,9 @@ div {
     _overflow: hidden;
 }
 ```
-
 > 两个同样大小的三角形，第二个设置为背景色并且覆盖到第一个上面，可以模拟箭头**>**。
+
+[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/17v1cchL/)
 
 ### 清除浮动：
 1. 在父级设置
@@ -536,7 +537,7 @@ ul li a:hover {
 ### 垂直居中
 1. 图标和文字并排垂直居中
 
-    1. 图标设置为`absolute`，用`margin-left`调整水平位置（没有设置`left`或`right`，则在文档流所在的水平位置开始定位，并且不在文档流中），用`top`和`margin-top`调整垂直位置：[JSfiddle Demo](https://jsfiddle.net/realgeoffrey/4z8r51or/)
+    1. 图标设置为`absolute`，用`margin-left`调整水平位置（没有设置`left`或`right`，则在文档流所在的水平位置开始定位，并且不在文档流中），用`top`和`margin-top`调整垂直位置：[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/4z8r51or/)
 
         1. 水平居中
 

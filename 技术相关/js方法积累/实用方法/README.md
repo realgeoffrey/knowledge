@@ -1230,7 +1230,7 @@ $oneInput.on('click', function () {
         });
     }
     ```
-    [JSfiddle Demo](https://jsfiddle.net/realgeoffrey/enyxz9a6/)
+    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/enyxz9a6/)
 2. Zepto
 
     ```javascript
@@ -1264,4 +1264,4 @@ $oneInput.on('click', function () {
         });
     }
     ```
-    [JSfiddle Demo](https://jsfiddle.net/realgeoffrey/mvv9wxnw/)
+    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/mvv9wxnw/)
