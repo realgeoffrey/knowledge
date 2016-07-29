@@ -174,6 +174,7 @@ function TouchMoveAction(dom) {
 /* 实例化使用*/
 new TouchMoveAction(document.getElementById("test"));
 ```
+>其中可以用`mousedown`、`mousemove`代替`touchstart`、`touchmove`来改写成鼠标拖拽。
 
 ### *原生js*判断浏览器`userAgent`
 ```javascript
