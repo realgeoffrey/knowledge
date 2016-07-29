@@ -933,6 +933,8 @@ $(...).on('keydown', function (e) {
         function loadMore(next) {
             var $load = $('.j-load');
 
+            next = parseInt(next);
+
             if (next !== -1 && $load.length >= 1) {
                 if ($load.attr('data-status') === 'loading') {
                     $load.attr('data-status', '');
@@ -948,7 +950,7 @@ $(...).on('keydown', function (e) {
                             $(window).off('scroll.loading');
                         } else {
                             $load.attr('data-status', 'loading');
-                            autoLoadMore(parseInt($load.attr('data-next')));
+                            autoLoadMore($load.attr('data-next'));
                         }
                     }).fail(function () {
                         console.log("网络错误");
@@ -969,13 +971,13 @@ $(...).on('keydown', function (e) {
         var $load = $('.j-load'),
             scrollSetTimeoutId;
 
-        autoLoadMore(parseInt($load.attr('data-next')));
+        autoLoadMore($load.attr('data-next'));
 
         $(window).on('scroll.loading', function () {
             clearTimeout(scrollSetTimeoutId);
             scrollSetTimeoutId = setTimeout(function () {
                 if ((+$(window).scrollTop() + $(window).height()) >= $load.offset().top) {  /* 滚动到屏幕内*/
-                    loadMore(parseInt($load.attr('data-next')));
+                    loadMore($load.attr('data-next'));
                 }
             }, 200);
         });
