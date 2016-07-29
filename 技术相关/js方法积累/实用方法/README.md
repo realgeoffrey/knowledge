@@ -1248,6 +1248,13 @@ $oneInput.on('click', function () {
 1. jQuery
 
     ```javascript
+    /*
+     * 点击指定区域以外执行函数
+     * @$dom {Object} jQuery节点
+     * @callback {Function} 回调函数
+     * @namespace {String} 事件命名空间
+     * @returns undefined
+     */
     function beyongOneAct($dom, callback, namespace) {
         $(document.body).on('click.' + namespace, function (e) {
             var $area = $dom;
@@ -1266,13 +1273,6 @@ $oneInput.on('click', function () {
 2. Zepto
 
     ```javascript
-    /*
-     * 点击指定区域以外执行函数
-     * @$dom {Object} jQuery节点
-     * @callback {Function} 回调函数
-     * @namespace {String} 事件命名空间
-     * @returns undefined
-     */
     function beyongOneAct($dom, callback, namespace) {
         $(document.body).on('click.' + namespace, function (e) {
             var $area = $dom,
