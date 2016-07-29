@@ -925,30 +925,59 @@ $(...).on('keydown', function (e) {
 
 ### jQuery或Zepto滚动加载
 ```html
-<div class="j-load" data-status="loading">触发滚动加载</div>
+<!-- data-next：是否还可以加载；data-status：是否正在加载-->
+<div class="j-load" data-status="loading" data-next="123">触发滚动加载</div>
 
-<script>
+<script type="text/javascript">
     $(function () {
-        var $load = $('.j-load');
+        function loadMore(next) {
+            var $load = $('.j-load');
+
+            if (next !== -1 && $load.length >= 1) {
+                if ($load.attr('data-status') === 'loading') {
+                    $load.attr('data-status', '');
+
+                    $.ajax({
+                        url: '',
+                        dataType: 'json',
+                        data: {}
+                    }).done(function (data) {
+                        /* do sth.*/
+
+                        if (false/* 某条件*/) {   /* 不再加载*/
+                            $(window).off('scroll.loading');
+                        } else {
+                            $load.attr('data-status', 'loading');
+                            autoLoadMore($load.attr('data-next'));
+                        }
+                    }).fail(function () {
+                        console.log("网络错误");
+                        $load.attr('data-status', 'loading');
+                    });
+                }
+            } else {
+                $(window).off('scroll.postmore');
+            }
+        }
+
+        function autoLoadMore(next) {   /* 若文档内容小于视窗则再次加载*/
+            if ($(window).height() >= $(document).height()) {
+                loadMore(next);
+            }
+        }
+
+        var $load = $('.j-load'),
+            scrollSetTimeoutId;
+
+        autoLoadMore(parseInt($load.attr('data-next')));
 
         $(window).on('scroll.loading', function () {
-            if ($load.length >= 1 && $load.attr('data-status') === 'loading' && (+$(window).scrollTop() + $(window).height()) >= $load.offset().top) {  /* 滚动到屏幕内*/
-                $load.attr('data-status', '');
-
-                $.ajax({
-                    url: '',
-                    dataType: 'json',
-                    data: {}
-                }).done(function (data) {
-                    if (/* 某条件*/) {   /* 不再加载*/
-                        $(window).off('scroll.loading');
-                    } else {
-                        $load.attr('data-status', 'loading');
-                    }
-                }).fail(function () {
-                    console.log("网络错误");
-                });
-            }
+            clearTimeout(scrollSetTimeoutId);
+            scrollSetTimeoutId = setTimeout(function () {
+                if ((+$(window).scrollTop() + $(window).height()) >= $load.offset().top) {  /* 滚动到屏幕内*/
+                    loadMore(parseInt($load.attr('data-next')));
+                }
+            }, 200);
         });
     });
 </script>
