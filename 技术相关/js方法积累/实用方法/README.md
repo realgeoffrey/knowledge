@@ -982,6 +982,7 @@ $(...).on('keydown', function (e) {
     });
 </script>
 ```
+> Zepto没有`deferred`的对象。
 
 ### jQuery或Zepto获取`HTTP response header`信息
 ```javascript
