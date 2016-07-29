@@ -948,7 +948,7 @@ $(...).on('keydown', function (e) {
                             $(window).off('scroll.loading');
                         } else {
                             $load.attr('data-status', 'loading');
-                            autoLoadMore($load.attr('data-next'));
+                            autoLoadMore(parseInt($load.attr('data-next')));
                         }
                     }).fail(function () {
                         console.log("网络错误");
