@@ -944,7 +944,7 @@ $(...).on('keydown', function (e) {
                     }).done(function (data) {
                         /* do sth.*/
 
-                        if (false/* 某条件*/) {   /* 不再加载*/
+                        if (/* 某条件*/) {   /* 不再加载*/
                             $(window).off('scroll.loading');
                         } else {
                             $load.attr('data-status', 'loading');
