@@ -124,55 +124,43 @@ function animateTo(endX, endY, time) {
 
 ### *原生js*移动端获取触屏滚动距离(可改写为鼠标拖拽功能)
 ```javascript
-function TouchMoveAction(dom) {
-    var self = this;
+function touchMoveAct(dom) {
+    var beginX,
+        beginY;
 
-    var actionDom,
-        initialX = 0,
-        initialY = 0;
+    function _touchStart(e) {
+        beginX = e.touches[0].clientX;
+        beginY = e.touches[0].clientY;
 
-    self.movFuc = function (dom, x, y) {
-        console.log(x, y);
-        /* do sth...*/
-    };
-
-    function init(dom) {
-        actionDom = dom;
-
-        /* 不能用attachEvent、ontouchstart或jQuery绑定*/
-        dom.addEventListener("touchstart", touchStart, false);
+        dom.addEventListener("touchmove", _touchMove, false);
     }
 
-    function touchStart(e) {
-        initialX = e.touches[0].clientX;
-        initialY = e.touches[0].clientY;
-
-        actionDom.addEventListener("touchmove", touchMove, false);
-    }
-
-    function touchMove(e) {
-        /* 阻止冒泡和默认行为*/
+    function _touchMove(e) {
         e.stopPropagation();
         e.preventDefault();
 
-        var x = e.touches[0].clientX - initialX,
-            y = e.touches[0].clientY - initialY;
+        var offsetX = e.touches[0].clientX - beginX,
+            offsetY = e.touches[0].clientY - beginY;
 
-        initialX = e.touches[0].clientX;
-        initialY = e.touches[0].clientY;
+        beginX = e.touches[0].clientX;
+        beginY = e.touches[0].clientY;
 
-        self.movFuc(this, x, y);
-
-        actionDom.addEventListener("touchend", function () {
-            actionDom.removeEventListener("touchmove", touchMove, false);
-        }, false);
+        _movFuc(this, offsetX, offsetY);
     }
 
-    init(dom);
+    function _movFuc(dom, x, y) {
+        console.log(x, y);
+        /* do sth...*/
+    }
+
+    dom.addEventListener("touchstart", _touchStart, false);
+
+    dom.addEventListener("touchend", function () {
+        dom.removeEventListener("touchmove", _touchMove, false);
+    }, false);
 }
 
-/* 实例化使用*/
-new TouchMoveAction(document.getElementById("test"));
+touchMoveAct(document.getElementById("test"));
 ```
 >其中可以用`mousedown`、`mousemove`代替`touchstart`、`touchmove`来改写成鼠标拖拽。
 
