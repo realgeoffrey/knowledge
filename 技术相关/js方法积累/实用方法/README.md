@@ -835,7 +835,7 @@ function getCursorPosition(input) {
     } else if (document.selection) {    /* IE（ie8-在textarea标签位置计算有bug）*/
         input.focus();
         sel = document.selection.createRange();
-        selLen = document.selection.createRange().text.length;
+        selLen = document.selection.createRange().text.length;  /* 光标选中长度*/
         sel.moveStart('character', -input.value.length);
 
         return sel.text.length - selLen;
