@@ -732,59 +732,71 @@ $('...').on('...', function (e) {
 });
 ```
 
-### *原生js*、jQuery阻止冒泡和阻止浏览器默认行为
-- 阻止冒泡
-    ```javascript
-    /* js原生*/
-    function stopBubble(e) {
-        if (e && e.stopPropagation) {
+### *原生js*、jQuery或Zepto阻止冒泡和阻止浏览器默认行为
+1. 阻止冒泡
+
+    1. *原生js*
+    
+        ```javascript
+        function stopBubble(e) {
+            if (e && e.stopPropagation) {
+                e.stopPropagation();
+            } else {
+                window.event.cancelBubble = true;
+            }
+        }
+        ```
+    2. jQuery或Zepto
+    
+        ```javascript
+        $('...').on('...', function (e) {
             e.stopPropagation();
-        } else {
-            window.event.cancelBubble = true;
-        }
-    }
+        });
+        ```
+2. 阻止默认行为
 
-    /* jQuery*/
-    $('...').on('...', function (e) {
-        e.stopPropagation();
-    });
-    ```
-- 阻止默认行为
-    ```javascript
-    /* js原生*/
-    function stopDefault(e) {
-        if (e && e.preventDefault) {
+    1. *原生js*
+    
+        ```javascript
+        function stopDefault(e) {
+            if (e && e.preventDefault) {
+                e.preventDefault();
+            } else {
+                window.event.returnValue = false;
+            }
+            return false;
+        }
+        ```
+    2. jQuery或Zepto
+    
+        ```javascript
+        $('...').on('...', function (e) {
             e.preventDefault();
-        } else {
-            window.event.returnValue = false;
-        }
-        return false;
-    }
+        });
+        ```
+3. 阻止冒泡&阻止默认行为
 
-    /* jQuery*/
-    $('...').on('...', function (e) {
-        e.preventDefault();
-    });
-    ```
-- 阻止冒泡&阻止默认行为
-    ```javascript
-    /* js原生*/
-    function returnFalse(e) {
-        if (e && e.stopPropagation) {
-            e.stopPropagation();
-            e.preventDefault();
-        } else {
-            window.event.cancelBubble = true;
-            window.event.returnValue = false;
-        }
-        return false;
-    }
+    1. *原生js*
 
-    /* jQuery*/
-    $('...').on('...', function () {
-        return false;
-    });
-    ```
+        ```javascript
+        function returnFalse(e) {
+            if (e && e.stopPropagation) {
+                e.stopPropagation();
+                e.preventDefault();
+            } else {
+                window.event.cancelBubble = true;
+                window.event.returnValue = false;
+            }
+            return false;
+        }
+        ```
+    2. jQuery或Zepto
+
+        ```javascript
+        $('...').on('...', function () {
+            return false;
+        });
+        ```
 
 ### *原生js*、jQuery实现判断按下具体某键值
 ```javascript
@@ -1076,54 +1088,56 @@ function fixPlaceholder($dom) {
 ```
 
 ### jQuery或Zepto弹出toast
-```javascript
-/* jQuery*/
-function alertToast(text) {
-    if ($('.j-pop-text').length === 0) {
-        $('body').append('<div class="j-pop-text 样式类" style="display: none;"></div>');
-    }
+1. jQuery
 
-    var $popText = $('.j-pop-text'),
-        myself = arguments.callee;
-
-    clearTimeout(myself.setTimeoutId);
-
-    text = text || 'warning';
-    $popText.text(text);
-
-    $popText.show(function () {
-        myself.setTimeoutId = setTimeout(function () {
-            $popText.fadeOut();
-        }, 2500);
-    });
-}
-```
-```html
-<style>
-    .hidden {
-        display: none;
-    }
-</style>
-<script >
-    /* Zepto*/
+    ```javascript
     function alertToast(text) {
         if ($('.j-pop-text').length === 0) {
-            $('body').append('<div class="j-pop-text hidden 样式类"></div>');  /* .hidden {display: none !important;}*/
+            $('body').append('<div class="j-pop-text 样式类" style="display: none;"></div>');
         }
-
-        var $popText = $('.j-pop-text');
-
-        clearTimeout(arguments.callee.setTimeoutId);
-
+    
+        var $popText = $('.j-pop-text'),
+            myself = arguments.callee;
+    
+        clearTimeout(myself.setTimeoutId);
+    
         text = text || 'warning';
-        $popText.text(text).removeClass('hidden');
-
-        arguments.callee.setTimeoutId = setTimeout(function () {
-            $popText.addClass('hidden').text('');
-        }, 2500);
+        $popText.text(text);
+    
+        $popText.show(function () {
+            myself.setTimeoutId = setTimeout(function () {
+                $popText.fadeOut();
+            }, 2500);
+        });
     }
-</script>
-```
+    ```
+2. Zepto
+
+    ```html
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+    <script >
+        function alertToast(text) {
+            if ($('.j-pop-text').length === 0) {
+                $('body').append('<div class="j-pop-text hidden 样式类"></div>');  /* .hidden {display: none !important;}*/
+            }
+    
+            var $popText = $('.j-pop-text');
+    
+            clearTimeout(arguments.callee.setTimeoutId);
+    
+            text = text || 'warning';
+            $popText.text(text).removeClass('hidden');
+    
+            arguments.callee.setTimeoutId = setTimeout(function () {
+                $popText.addClass('hidden').text('');
+            }, 2500);
+        }
+    </script>
+    ```
 
 ### jQuery全选、取消全选
 ```html
