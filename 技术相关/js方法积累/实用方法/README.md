@@ -818,6 +818,41 @@ $(...).on('keydown', function (e) {
 });
 ```
 
+### *原生js*获取输入框光标位置
+```javascript
+/*
+ * 获取光标位置
+ * @param {Object} input 标签input或textarea的dom对象
+ * @returns {Number} 光标所在位置
+ */
+function getCursorPosition(input) {
+    var sel,
+        selLen;
+
+    if ('selectionStart' in input) {
+
+        return input.selectionStart;
+    } else if (document.selection) {    /* IE（ie8-在textarea标签位置计算有bug）*/
+        input.focus();
+        sel = document.selection.createRange();
+        selLen = document.selection.createRange().text.length;
+        sel.moveStart('character', -input.value.length);
+
+        return sel.text.length - selLen;
+    }
+}
+
+/* jQuery调用*/
+$(输入框选择器).on('click keydown', function () {
+    var self = this;
+
+    setTimeout(function () {
+        console.log(getCursorPosition(self));
+    }, 0);
+});
+```
+[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/L3k46dy3/)
+
 
 ## jQuery（或Zepto）方法
 
