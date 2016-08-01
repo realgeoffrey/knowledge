@@ -671,34 +671,36 @@ sendLog('统计url');
 ```
 
 ### *原生js*绑定、解绑事件
-```javascript
-/* 绑定*/
-function addEvent(obj, type, handle) {
-    if (typeof obj.addEventListener === 'function') {   /* DOM2级，除ie6~8外的高级浏览器*/
-        obj.addEventListener(type, handle, false);
-    } else if (typeof obj.attachEvent === 'function') { /* 所有ie浏览器*/
-        obj.attachEvent('on' + type, handle);
-    } else {    /* DOM0级，最早期的浏览器都支持*/
-        obj['on' + type] = handle;
+1. 绑定事件
+
+    ```javascript
+    function addEvent(obj, type, handle) {
+        if (typeof obj.addEventListener === 'function') {   /* DOM2级，除ie6~8外的高级浏览器*/
+            obj.addEventListener(type, handle, false);
+        } else if (typeof obj.attachEvent === 'function') { /* 所有ie浏览器*/
+            obj.attachEvent('on' + type, handle);
+        } else {    /* DOM0级，最早期的浏览器都支持*/
+            obj['on' + type] = handle;
+        }
     }
-}
+    
+    addEvent(document.getElementById('test1'), 'keydown', func1);
+    ```
+2. 解绑事件
 
-addEvent(document.getElementById('test1'), 'keydown', func1);
-
-
-/* 解绑*/
-function removeEvent(obj, type, handle) {
-    if (typeof obj.removeEventListener === 'function') {
-        obj.removeEventListener(type, handle, false);
-    } else if (typeof obj.detachEvent === 'function') {
-        obj.detachEvent('on' + type, handle);
-    } else {
-        obj['on' + type] = null;
+    ```javascript
+    function removeEvent(obj, type, handle) {
+        if (typeof obj.removeEventListener === 'function') {
+            obj.removeEventListener(type, handle, false);
+        } else if (typeof obj.detachEvent === 'function') {
+            obj.detachEvent('on' + type, handle);
+        } else {
+            obj['on' + type] = null;
+        }
     }
-}
-
-removeEvent(document.getElementById('test1'), 'keydown', func1);
-```
+    
+    removeEvent(document.getElementById('test1'), 'keydown', func1);
+    ```
 
 `addEventListener`与`removeEventListener`是高级浏览器都有的方法（ie8-不支持），必须一一对应具体的handle和布尔值，才可以解绑。
 
@@ -708,29 +710,33 @@ removeEvent(document.getElementById('test1'), 'keydown', func1);
 
 jQuery的`on`与`off`，不用一一对应某个handle：当写具体handle时解绑那个具体handle；不写默认解绑所有对象下某事件的方法。
 
-### *原生js*、jQuery获取事件对象引用、目标元素引用
+### *原生js*、jQuery或Zepto获取事件对象引用、目标元素引用
 ie8-的DOM0事件（直接on+type）没有传递**事件对象**到**事件处理函数**中，有额外的`window.event`对象进行相关操作。
 
-```javascript
-/* js原生*/
-function getEvent(event) {
-    return event || window.event;
-}
-function getTarget(event) {
-    if (event && event.target) {
+1. *原生js*
 
-        return event.target;
-    } else {
-
-        return window.event.srcElement;
+    ```javascript
+    function getEvent(event) {
+        return event || window.event;
     }
-}
+ 
+    function getTarget(event) {
+        if (event && event.target) {
+    
+            return event.target;
+        } else {
+    
+            return window.event.srcElement;
+        }
+    }
+    ```
+2. jQuery或Zepto
 
-/* jQuery*/
-$('...').on('...', function (e) {
-    /* 可以直接使用事件对象引用e和目标引用e.target*/
-});
-```
+    ```javascript
+    $('...').on('...', function (e) {
+        /* 可以直接使用事件对象引用e和目标引用e.target*/
+    });
+    ```
 
 ### *原生js*、jQuery或Zepto阻止冒泡和阻止浏览器默认行为
 1. 阻止冒泡
@@ -798,37 +804,39 @@ $('...').on('...', function (e) {
         });
         ```
 
-### *原生js*、jQuery实现判断按下具体某键值
-```javascript
-/* js原生*/
-function checkKeyCode(event) {
-    var e = event || window.event,
-        keyCode = e.charCode || e.keyCode;  /* 获取键值*/
+### *原生js*、jQuery或Zepto实现判断按下具体某键值
+1. *原生js*
 
-    if (keyCode === 13) {   /* 查询键值表 例:13->换行*/
-        /* 具体操作...*/
-
-        /* 取消默认行为*/
-        if (window.event) {
-            window.event.returnValue = false;
-        } else {
-            event.preventDefault();
+    ```javascript
+    function checkKeyCode(event) {
+        var e = event || window.event,
+            keyCode = e.charCode || e.keyCode;  /* 获取键值*/
+    
+        if (keyCode === 13) {   /* 查询键值表 例:13->换行*/
+            /* 具体操作...*/
+    
+            /* 取消默认行为*/
+            if (window.event) {
+                window.event.returnValue = false;
+            } else {
+                event.preventDefault();
+            }
         }
     }
-}
+    
+    addEvent(document.getElementById('test'), 'keydown', checkKeyCode);  /* 上面绑定事件*/
+    ```
+2. jQuery或Zepto
 
-addEvent(document.getElementById('test'), 'keydown', checkKeyCode);  /* 上面绑定事件*/
-
-
-/* jQuery*/
-$(...).on('keydown', function (e) {
-    if (e.which === 13) {   /* 查询键值表 例:13->换行*/
-        /* 具体操作...*/
-
-        return false;   /* 取消默认行为*/
-    }
-});
-```
+    ```javascript
+    $(...).on('keydown', function (e) {
+        if (e.which === 13) {   /* 查询键值表 例:13->换行*/
+            /* 具体操作...*/
+    
+            return false;   /* 取消默认行为*/
+        }
+    });
+    ```
 
 ### *原生js*获取输入框光标位置
 ```javascript
