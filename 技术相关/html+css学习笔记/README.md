@@ -721,14 +721,13 @@ ul li a:hover {
     </div>
     ```
 
-### 翻转效果（ie9+及高级浏览器）
+### 翻转效果（ie10+及高级浏览器）
 ```html
 <style type="text/css">
     .item {
         position: relative;
-        display: inline-block;
-        *display: inline;
-        zoom: 1;
+        width: 宽度;
+        height: 高度;
     }
     .front {
         backface-visibility: hidden;
@@ -741,6 +740,10 @@ ul li a:hover {
         transform: rotateY(180deg);
         position: absolute;
         top: 0;
+    }
+    .item .front img,
+    .item .front img {
+        display: block;
     }
     .item:hover .front {
         transform: rotateY(180deg);
@@ -759,6 +762,7 @@ ul li a:hover {
     </div>
 </div>
 ```
+[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/88hob0d7/)
 
 ### 复杂背景切图
 1. （背景不透明情况）背景不规则，内容贯穿背景

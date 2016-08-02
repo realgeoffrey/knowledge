@@ -4,7 +4,7 @@
   "author": "feijie",
   "description": "my gulp tools",
   "dependencies": {
-    "browser-sync": "^2.13.0",
+    "browser-sync": "^2.14.0",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-cssnano": "^2.1.2",
