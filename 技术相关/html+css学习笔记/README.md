@@ -149,6 +149,7 @@ div {
         box-sizing: border-box;
     }
     ```
+[JSFiddle](https://jsfiddle.net/realgeoffrey/3wbf62xj/)
 
 ### wap页面自适应图片
 要求：图片根据浏览器窗口变化而宽高一同等比例变化，不使用`img`标签。
