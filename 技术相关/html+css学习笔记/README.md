@@ -539,7 +539,7 @@ ul li a:hover {
 ### 垂直居中
 1. 图标和文字并排垂直居中
 
-    1. 图标设置为`absolute`，用`margin-left`调整水平位置（没有设置`left`或`right`，则在文档流所在的水平位置开始定位，并且不在文档流中），用`top`和`margin-top`调整垂直位置：[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/4z8r51or/)
+    1. 图标设置为`absolute`，用`margin-left`调整水平位置（没有设置`left`或`right`，则在文档流所在的水平位置开始定位，并且不在文档流中），用`top`和`margin-top`调整垂直位置
 
         1. 水平居中
 
@@ -642,6 +642,8 @@ ul li a:hover {
                 ```
                 
         >以上`i`标签都可以用`:before`或`:after`代替。
+        
+        [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/4z8r51or/)
     2. ~~图标设置为`inline-block`，再用`vertical-align`微调。~~
 
         鉴于`vertical-align`在不同浏览器表现太不一致，垂直方向无法获得完美居中效果。
