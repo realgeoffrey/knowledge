@@ -868,7 +868,6 @@ ul li a:hover {
 
 ### 等宽文字
 要做到不同字数的一行文字等宽，可以用标签填补中间间隙。
-
 ```html
 <style type="text/css">
     i {
@@ -879,9 +878,10 @@ ul li a:hover {
     }
 </style>
 
-<标签>文字文字</标签>
-<标签>文<i></i><i></i>字</标签>
+<p>文字文字</p>
+<p>文<i></i><i></i>字</p>
 ```
+[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/zdh8oxrt/)
 
 ### 标签溢出则换行隐藏、不截断
 ```html
