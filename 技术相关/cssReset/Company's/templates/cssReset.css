@@ -21,6 +21,7 @@ img,video,audio {max-width:100%;}
     background: center top no-repeat;
     min-width: 1000px;
     _width: 100%;
+    padding-bottom: 20px;
     overflow: hidden;
 }
 .my_fbtm {
