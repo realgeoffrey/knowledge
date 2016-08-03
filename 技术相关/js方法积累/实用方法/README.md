@@ -1254,13 +1254,14 @@ function FollowFixed(target, father, cssObj1, cssObj2) {
 }
 
 var a = new FollowFixed(
-    '.m-msglist', 
-    '.personal_page_l',
+    '.target', 
+    '.father',
     {'position': 'fixed', 'top': '0', 'left': '50%', 'margin-left': '-500px'},
     {'position': 'static', 'top': 'initial', 'left': 'initial', 'margin-left': '0'}
 );
 //a.stop();
 ```
+[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/v69fr64x/)
 
 ### jQuery或Zepto模拟手机翻转（使页面都以“横屏”展示）
 ```html
