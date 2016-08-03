@@ -1231,7 +1231,7 @@ $oneInput.on('click', function () {
      * 跟随屏幕滚动（fixed设置）
      * @param {String} target 跟屏目标
      * @param {String} father 目标的父级容器
-     * @param {String} className 触发滚动距离超过父级容器最低端时，谈价的类名
+     * @param {String} className 滚动到父级容器最底端时，添加的类名
      * @returns {Object} 带有停止滚动方法的对象
      */
     function FollowFixed(target, father, className) {
