@@ -1239,11 +1239,9 @@ function FollowFixed(target, father, cssObj1, cssObj2) {
         if (scollTop >= startOffset && !isFollowing) {
             $target.css(cssObj1);
             isFollowing = true;
-            console.log('执行变换1');
         } else if (scollTop < startOffset && isFollowing) {
             $target.css(cssObj2);
             isFollowing = false;
-            console.log('执行变换2');
         }
     });
 
