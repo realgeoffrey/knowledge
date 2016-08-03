@@ -1217,49 +1217,54 @@ $oneInput.on('click', function () {
 ```
 
 ### jQuery节点跟随屏幕滚动II（`fixed`）
-```javascript
-/*
- * 跟随屏幕滚动（fixed设置）
- * @param {String} target 跟屏目标
- * @param {String} father 目标的父级容器
- * @param {Object} cssObj1 触发滚动距离超过父级容器最低端时，目标的css状态
- * @param {Object} cssObj2 目标恢复时的css状态
- * @returns {Object} 带有停止滚动方法的对象
- */
-function FollowFixed(target, father, cssObj1, cssObj2) {
-    var isFollowing = false, /* ture：进行css1，false：进行css2*/
-        timeStamp = (new Date()).valueOf(), /* 时间戳用于绑定事件的namespace*/
-        $target = $(target),
-        $father = $(father),
-        startOffset = $father.offset().top + $father.height();
+```html
+<style>
+    .z-follow {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+    }
+</style>
 
-    $(window).on('scroll' + '.' + timeStamp, function () {
-        var scollTop = $(document).scrollTop();
-
-        if (scollTop >= startOffset && !isFollowing) {
-            $target.css(cssObj1);
-            isFollowing = true;
-        } else if (scollTop < startOffset && isFollowing) {
-            $target.css(cssObj2);
-            isFollowing = false;
-        }
-    });
-
-    this.stop = function () {
-        $target.css(cssObj2);
-        $(window).off('scroll' + '.' + timeStamp);
-    };
-
-    return this;
-}
-
-var a = new FollowFixed(
-    '.target', 
-    '.father',
-    {'position': 'fixed', 'top': '0', 'left': '50%', 'margin-left': '-500px'},
-    {'position': 'static', 'top': 'initial', 'left': 'initial', 'margin-left': '0'}
-);
-//a.stop();
+<script>
+    /*
+     * 跟随屏幕滚动（fixed设置）
+     * @param {String} target 跟屏目标
+     * @param {String} father 目标的父级容器
+     * @param {String} className 触发滚动距离超过父级容器最低端时，谈价的类名
+     * @returns {Object} 带有停止滚动方法的对象
+     */
+    function FollowFixed(target, father, className) {
+        var isFollowing = false, /* ture：添加className，false：去除className*/
+            timeStamp = (new Date()).valueOf(), /* 时间戳用于绑定事件的namespace*/
+            $target = $(target),
+            $father = $(father),
+            startOffset = $father.offset().top + $father.height();
+    
+        $(window).on('scroll' + '.' + timeStamp, function () {
+            var scollTop = $(document).scrollTop();
+    
+            if (scollTop >= startOffset && !isFollowing) {
+                $target.addClass(className);
+                isFollowing = true;
+            } else if (scollTop < startOffset && isFollowing) {
+                $target.removeClass(className);
+                isFollowing = false;
+            }
+        });
+    
+        this.stop = function () {
+            $target.removeClass(className);
+            $(window).off('scroll' + '.' + timeStamp);
+        };
+    
+        return this;
+    }
+    
+    
+    var a = new FollowFixed('.target', '.father', 'z-follow');
+    //a.stop();
+</script>
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/v69fr64x/)
 
