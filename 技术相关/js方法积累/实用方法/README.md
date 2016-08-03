@@ -1181,7 +1181,7 @@ $oneInput.on('click', function () {
 });
 ```
 
-### jQuery节点跟随屏幕滚动I（`margin-top`）
+### jQuery节点跟随屏幕滚动（`margin-top`）
 ```html
 <div class="clearfix">
     <div class="father">
@@ -1236,7 +1236,7 @@ $oneInput.on('click', function () {
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/gc45ehdb/)
 
-### jQuery节点跟随屏幕滚动II（`fixed`）
+### jQuery节点跟随屏幕滚动（`fixed`）
 ```html
 <style>
     .z-follow {
