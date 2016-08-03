@@ -1222,7 +1222,6 @@ $oneInput.on('click', function () {
     
         this.stop = function () {
             $target.css({"margin-top": defaultMarginTop});
-    
             $(window).off('scroll' + '.' + timeStamp);
         };
     
