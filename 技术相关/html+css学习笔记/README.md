@@ -149,7 +149,7 @@ div {
         box-sizing: border-box;
     }
     ```
-[JSFiddle](https://jsfiddle.net/realgeoffrey/3wbf62xj/)
+[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/3wbf62xj/)
 
 ### wap页面自适应图片
 要求：图片根据浏览器窗口变化而宽高一同等比例变化，不使用`img`标签。
@@ -672,6 +672,7 @@ ul li a:hover {
         <img src=""> or <span>...</span>
     </div>
     ```
+    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/c1pz8mow/)
     
 ### 内容居中
 1. 内容宽度可变，三层模式
@@ -970,7 +971,8 @@ li:hover a {
     </div>
     <div class="footer">底部内容</div>
     ```
-2. *ie6中，当.last_container高度变化的时候会渲染错误*
+    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/1xbeo5cu/)
+2. *ie6中，当.last_container高度变化的时候会渲染错误（每次改变高度，需要用js给某些节点增加haslayout）*
 
     ```html
     <style type="text/css">
@@ -1003,6 +1005,7 @@ li:hover a {
         <div class="footer">底部内容</div>
     </div>
     ```
+    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/w6veg7ep/)
 
 >有些插件效果不能支持`html,body {height: 100%;}`。
 
