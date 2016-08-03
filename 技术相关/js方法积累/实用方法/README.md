@@ -1182,39 +1182,59 @@ $oneInput.on('click', function () {
 ```
 
 ### jQuery节点跟随屏幕滚动I（`margin-top`）
-```javascript
-/*
- * 跟随屏幕滚动（margin-top变化）
- * @param {String} wrapper 跟随节点的父级
- * @param {String} dependent 跟随节点的父级的兄弟参照物
- * @param {String} target 跟随节点
- * @returns undefined
- */
-(function (wrapper, dependent, target) {
-    var $wrapper = $(wrapper),
-        wrapperHeight = $wrapper.height(),
-        $dependent = $wrapper.siblings(dependent),
-        max = $dependent.height() - wrapperHeight,
-        $target = $(target),
-        $targetPrev = $target.prev(),
-        startOffset = $targetPrev.offset().top + $targetPrev.height();
+```html
+<div class="clearfix">
+    <div class="father">
+        父级内容
+        <div class="target">target内容</div>
+    </div>
+    <div class="dependent">
+        父级的兄弟节点
+    </div>
+</div>
 
-    $(window).on('scroll', function () {
-        var scollTop = $(document).scrollTop(),
-            marginTop = 0;
-
-        if (scollTop > startOffset) {
-            marginTop = scollTop - startOffset;
-
-            if (marginTop > max) {
-                marginTop = max;
+<script>
+    /*
+     * 跟随屏幕滚动（margin-top变化）
+     * @param {String} target 跟随节点
+     * @param {String} father 跟随节点的父级
+     * @param {String} dependent 跟随节点的父级的兄弟参照物
+     * @returns {Object} 带有停止滚动方法的对象
+     */
+    function FollowMarginTop(target, father, dependent) {
+        var timeStamp = (new Date()).valueOf(), /* 时间戳用于绑定事件的namespace*/
+            $target = $(target),
+            defaultMarginTop = parseInt($target.css('margin-top').slice(0, -2)),
+            maxMarginTop = $(dependent).height() - $(father).height() + defaultMarginTop,
+            startOffset = $target.offset().top;
+    
+        $(window).on('scroll' + '.' + timeStamp, function () {
+            var marginTop = $(document).scrollTop() - startOffset + defaultMarginTop;
+    
+            if (marginTop > defaultMarginTop) {
+                if (marginTop > maxMarginTop) {
+                    marginTop = maxMarginTop;
+                }
+    
+                $target.css({"margin-top": marginTop});
             }
-        }
-
-        $target.css({"marginTop": marginTop});
-    });
-}('.father', '.dependent', '.target'));
+        });
+    
+        this.stop = function () {
+            $target.css({"margin-top": defaultMarginTop});
+    
+            $(window).off('scroll' + '.' + timeStamp);
+        };
+    
+        return this;
+    }
+    
+    
+    var a = new FollowMarginTop('.target', '.father', '.dependent');
+    //a.stop();
+</script>
 ```
+[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/gc45ehdb/)
 
 ### jQuery节点跟随屏幕滚动II（`fixed`）
 ```html
