@@ -91,7 +91,7 @@ function removeClass(node, removeClassName) {
 ### *原生js*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
 ```javascript
 /*
- * 滚动到
+ * 滚动到x、y轴指定位置
  * @param {Number} endX 到达x轴像素
  * @param {Number} endY 到达y轴像素
  * @param {Number} time 所用毫秒
@@ -1181,13 +1181,13 @@ $oneInput.on('click', function () {
 });
 ```
 
-### jQuery节点跟随屏幕滚动
+### jQuery节点跟随屏幕滚动I（`margin-top`）
 ```javascript
 /*
- * 跟随屏幕滚动
- * @param {wrapper} String 跟随节点的父级
- * @param {dependent} String 跟随节点的父级的兄弟参照物
- * @param {target} String 跟随节点
+ * 跟随屏幕滚动（margin-top变化）
+ * @param {String} wrapper 跟随节点的父级
+ * @param {String} dependent 跟随节点的父级的兄弟参照物
+ * @param {String} target 跟随节点
  * @returns undefined
  */
 (function (wrapper, dependent, target) {
@@ -1214,6 +1214,54 @@ $oneInput.on('click', function () {
         $target.css({"marginTop": marginTop});
     });
 }('.father', '.dependent', '.target'));
+```
+
+### jQuery节点跟随屏幕滚动II（`fixed`）
+```javascript
+/*
+ * 跟随屏幕滚动（fixed设置）
+ * @param {String} target 跟屏目标
+ * @param {String} father 目标的父级容器
+ * @param {Object} cssObj1 触发滚动距离超过父级容器最低端时，目标的css状态
+ * @param {Object} cssObj2 目标恢复时的css状态
+ * @returns {Object} 带有停止滚动方法的对象
+ */
+function FollowFixed(target, father, cssObj1, cssObj2) {
+    var isFollowing = false, /* ture：进行css1，false：进行css2*/
+        timeStamp = (new Date()).valueOf(), /* 时间戳用于绑定事件的namespace*/
+        $target = $(target),
+        $father = $(father),
+        startOffset = $father.offset().top + $father.height();
+
+    $(window).on('scroll' + '.' + timeStamp, function () {
+        var scollTop = $(document).scrollTop();
+
+        if (scollTop >= startOffset && !isFollowing) {
+            $target.css(cssObj1);
+            isFollowing = true;
+            console.log('执行变换1');
+        } else if (scollTop < startOffset && isFollowing) {
+            $target.css(cssObj2);
+            isFollowing = false;
+            console.log('执行变换2');
+        }
+    });
+
+    this.stop = function () {
+        $target.css(cssObj2);
+        $(window).off('scroll' + '.' + timeStamp);
+    };
+
+    return this;
+}
+
+var a = new FollowFixed(
+    '.m-msglist', 
+    '.personal_page_l',
+    {'position': 'fixed', 'top': '0', 'left': '50%', 'margin-left': '-500px'},
+    {'position': 'static', 'top': 'initial', 'left': 'initial', 'margin-left': '0'}
+);
+//a.stop();
 ```
 
 ### jQuery或Zepto模拟手机翻转（使页面都以“横屏”展示）
@@ -1296,9 +1344,9 @@ $oneInput.on('click', function () {
     ```javascript
     /*
      * 点击指定区域以外执行函数
-     * @$dom {Object} jQuery节点
-     * @callback {Function} 回调函数
-     * @namespace {String} 事件命名空间
+     * @param {Object} $dom jQuery节点
+     * @param {Function} callback 回调函数
+     * @param {String} namespace 事件命名空间
      * @returns undefined
      */
     function beyongOneAct($dom, callback, namespace) {
