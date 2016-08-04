@@ -846,8 +846,8 @@ ie8-的DOM0事件（直接on+type）没有传递**事件对象**到**事件处�
  * @returns {Array} [光标起始位置,选中长度]
  */
 function getCursorPosition(dom) {
-    var selLen = 0, /* 光标选中长度*/
-        caret = 0, /* 光标所在位置*/
+    var caret = 0, /* 光标起始位置*/ 
+        selLen = 0, /* 光标选中长度*/
         sel, ieSel;
 
     if ('selectionStart' in dom) {
