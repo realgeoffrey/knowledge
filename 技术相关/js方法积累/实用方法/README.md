@@ -841,34 +841,39 @@ ie8-的DOM0事件（直接on+type）没有传递**事件对象**到**事件处�
 ### *原生js*获取输入框光标位置
 ```javascript
 /*
- * 获取光标位置
- * @param {Object} input 标签input或textarea的dom对象
- * @returns {Number} 光标所在位置
+ * 获取光标位置、选中长度
+ * @param {Object} dom 标签input或textarea的dom对象
+ * @returns {Array} [光标起始位置,选中长度]
  */
-function getCursorPosition(input) {
-    var sel,
-        selLen;
+function getCursorPosition(dom) {
+    var selLen = 0, /* 光标选中长度*/
+        caret = 0, /* 光标所在位置*/
+        sel, ieSel;
 
-    if ('selectionStart' in input) {
-
-        return input.selectionStart;
-    } else if (document.selection) {    /* IE（ie8-在textarea标签位置计算有bug）*/
-        input.focus();
+    if ('selectionStart' in dom) {
+        caret = dom.selectionStart;
+        selLen = dom.selectionEnd - caret;
+    } else if (document.selection) {    /* ie*/
         sel = document.selection.createRange();
-        selLen = document.selection.createRange().text.length;  /* 光标选中长度*/
-        sel.moveStart('character', -input.value.length);
+        selLen = sel.text.length;
 
-        return sel.text.length - selLen;
+        if (dom.nodeName.toLowerCase() === 'textarea') {
+            ieSel = document.body.createTextRange();
+            ieSel.moveToElementText(dom);
+        } else {
+            ieSel = dom.createTextRange();
+        }
+
+        ieSel.setEndPoint("EndToEnd", sel);
+        caret = ieSel.text.length - selLen;
     }
+    return [caret, selLen];
 }
 
-/* jQuery调用*/
-$(输入框选择器).on('click keydown', function () {
-    var self = this;
 
-    setTimeout(function () {
-        console.log(getCursorPosition(self));
-    }, 0);
+/* jQuery调用*/
+$(输入框选择器).on('mouseup keyup', function () {
+    console.log(getCursorPosition(this));
 });
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/L3k46dy3/)
