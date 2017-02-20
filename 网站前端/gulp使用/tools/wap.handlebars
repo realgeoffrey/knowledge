@@ -1,0 +1,29 @@
+@charset "utf-8";
+
+@function rem($px) {
+    @return $px / 20 + rem;
+}
+
+{{#extend "scss"}}
+    {{#content "sprites"}}
+
+// 图片类内@include
+        {{#each sprites}}
+@mixin sprites_{{name}} {
+    background-position: {{#if offset_x}}{{offset_x}}/({{width}}-{{total_width}})*100%{{else}}0{{/if}} {{#if offset_y}}{{offset_y}}/({{height}}-{{total_height}})*100%{{else}}0{{/if}};
+    width: rem({{width}});
+    height: rem({{height}});
+    @extend %sprites_img;
+}
+        {{/each}}
+    {{/content}}
+
+    {{#content "spritesheet"}}
+
+%sprites_img {
+    background-image: url({{{spritesheet.escaped_image}}});
+    background-size: rem({{spritesheet.width}}) rem({{spritesheet.height}});
+    background-repeat: no-repeat;
+}
+    {{/content}}
+{{/extend}}
