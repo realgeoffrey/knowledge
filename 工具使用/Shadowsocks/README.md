@@ -12,4 +12,4 @@
 
 >SwitchyOmega配置备份文件：
 >
->[https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/Shadowsocks使用/OmegaOptions.bak](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/Shadowsocks使用/OmegaOptions.bak)
+>[https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/Shadowsocks/OmegaOptions.bak](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/Shadowsocks/OmegaOptions.bak)
