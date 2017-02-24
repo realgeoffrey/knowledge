@@ -1182,6 +1182,17 @@ for (var i = 0; i < 3; i++) {
     >1. 高级浏览器才有定义此方法，因此需要[Polyfill](https://github.com/realgeoffrey/knowledge/tree/master/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/js%E6%96%B9%E6%B3%95%E7%A7%AF%E7%B4%AF/%E5%AE%9E%E7%94%A8%E6%96%B9%E6%B3%95#原生jsrequestanimationframe和cancelanimationframe的polyfill)。
     >2. 类似`setInterval`实现[递归调用](https://github.com/realgeoffrey/knowledge/tree/master/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/js%E6%96%B9%E6%B3%95%E7%A7%AF%E7%B4%AF/%E5%AE%9E%E7%94%A8%E6%96%B9%E6%B3%95#原生jsrequestanimationframe的递归)。
 
+### jQuery的[`deferred`](http://api.jquery.com/category/deferred-object/)
+>参考[阮一峰：jQuery的deferred对象详解](http://www.ruanyifeng.com/blog/2011/08/a_detailed_explanation_of_jquery_deferred_object.html)、[阮一峰：jQuery.Deferred对象](http://javascript.ruanyifeng.com/jquery/deferred.html)。
+
+jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准实现。
+
+1. `Promise对象`是`Deferred对象`的子集。相对于`Deferred对象`，`Promise对象`无法改变执行状态。`Promise对象`：
+
+    1. 开放**与改变执行状态无关的方法**：`always`、`catch`、`done`、`fail`、`pipe`、`progress`、`promise`、`state`、`then`
+    2. 屏蔽**与改变执行状态有关的方法**：`notify`、`notifyWith`、`reject`、`rejectWith`、`resolve`、`resolveWith`
+2. `$.ajax`返回`Promise对象`；允许把所有jQuery对象设置为`Promise对象`（如动画方法后接`.promise().done(方法)`）。
+
 ----
 ## 性能原理
 
