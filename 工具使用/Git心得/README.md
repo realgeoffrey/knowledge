@@ -2,7 +2,7 @@
 
 >除了基本GIT操作外的操作。
 
-### 如何在一台电脑中使用2个[Github](https://github.com)账号的SSH keys
+### 如何在一台电脑中使用2（多个）个Github账号的SSH keys
 
 >在github网站中：不同账户无法使用相同的**SSH key**。
 
