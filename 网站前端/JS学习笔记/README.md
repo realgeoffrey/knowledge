@@ -1,4 +1,4 @@
-# js学习笔记
+# JS学习笔记
 
 ## 技巧经验
 
@@ -6,12 +6,7 @@
 1. `var a = b = 1;   /* b没有var的声明*/`
 
     在局部作用域中用如上写法，第二个以后的变量自动变成没有var定义的状态，意味着如果之前没有声明，那么就转化为全局变量的声明。
-2. `if(var a = 1, b = 2, c = 3, false){ /* 不执行*/}`
-
-    逗号操作符`,`，对它的每个操作对象求值（从左至右），然后返回最后一个操作对象的值。
-
-    >`var`语句中的逗号不是逗号操作符，因为它不是存在于一个表达式中。尽管从实际效果来看，那个逗号同逗号运算符的表现很相似。但确切地说，它是`var`语句中的一个特殊符号，用于把多个变量声明结合成一个。
-3. `var a = a || {};`
+2. `var a = a || {};`
 
     1. 先声明提前`var a;`；
     2. 接着右侧的表达式`a || {}`先执行：根据规则先判断a的值是否为真，如果a为真，则返回a；如果a不为真，则返回后面的{}；
@@ -33,18 +28,22 @@
         }
     }
     ```
-    >- `var a = b || {};`与`if (c) {}`会因为b或c没有定义而报错。
+    >`var a = b || {};`与`if (c) {}`会因为b或c没有定义而报错，可以用`typeof`来使代码健壮：
     >
-    >   可以用`typeof`来使代码健壮：
-    >
-    >   `var a = typeof b !== 'undefined' ? b : {};`与`if (typeof c !== 'undefined') {}`。
+    >1. `var a = typeof b !== 'undefined' && b !== null ? b : {};`
+    >2. `if (typeof c !== 'undefined' && c !== null) {}`
+3. `if(var a = 1, b = 2, c = 3, false){ /* 不执行*/}`
+
+    逗号操作符`,`对每个操作对象求值（从左至右），然后返回最后一个操作对象的值。
+
+    >`var`语句中的逗号不是逗号操作符，因为它不是存在于一个表达式中。尽管从实际效果来看，那个逗号同逗号运算符的表现很相似。但确切地说，它是`var`语句中的一个特殊符号，用于把多个变量声明结合成一个。
 4. `var a = [10, 20, 30, 40][1, 2, 3];   /* 40*/`
 
     1. `[10, 20, 30, 40]`被解析为数组；
     2. `[1, 2, 3]`被解析为属性调用，逗号操作符取最后一个值为结果。
 
     因此结果为数组`[10, 20, 30, 40]`的`[3]`属性值：`40`。
-5. html5的`audio`标签的自动播放属性`autoplay`
+5. HTML5的`audio`标签的自动播放属性`autoplay`
 
     wap端的部分浏览器无法自动播放，可以设置触屏的时候开始播放：
 
@@ -56,11 +55,20 @@
     <script>
         window.ontouchstart = function () {
             document.getElementById('audio').play();
+
             window.ontouchstart = null;
         }
     </script>
     ```
-6. `eval`中直接执行`function`声明无效，必须用引号把`function`声明包裹起来才有效（尽量不用`eval`）
+6. 浮点数的计算
+
+    浮点数值计算会产生舍入误差，因此永远不要用条件语句判断某个特定浮点数值，也不要用JS进行复杂的计算。
+    >避免浮点数运算误差函数：[用整数进行小数的四则运算](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用整数进行小数的四则运算避免浮点数运算误差)。
+7. 判断DOM是否支持某属性
+
+    若要判定一个属性是否被DOM所支持，新建一个DOM来判断：`if('属性' in document.creatElement('某标签')){...}`。
+    >在DOM中随意添加一个属性（DOM所没有的也可以），`此属性 in 此DOM`永远为真，不可以判断是否此DOM存在此属性（或方法）。
+8. `eval`中直接执行`function`声明无效，必须用引号把`function`声明包裹起来才有效（尽量不用`eval`）
 
     ```javascript
     eval(function a() {});  /* 返回function a() {}，但是没有声明*/
@@ -69,23 +77,15 @@
 
     >1. `if()`中的代码对于`function`的声明就是用`eval`带入方法当做参数，因此虽然返回true，但是方法没有被声明。
     >2. `setTimeout`与`setInterval`中第一个参数若使用字符串，也是使用`eval`把字符串转化为代码。
-7. 浮点数的计算
-
-    浮点数值计算会产生舍入误差，因此永远不要用条件语句判断某个特定浮点数值，也不要用js进行复杂的计算。
-    >避免浮点数运算误差算法：[链接](../js方法积累/实用方法/README.md#原生js用整数进行小数的四则运算避免浮点数运算误差)。
-8. 判断DOM是否支持某属性
-
-    若要判定一个属性是否被DOM所支持，新建一个DOM来判断：`if('属性' in document.creatElement('某标签')){...}`。
-    >在DOM中随意添加一个属性（DOM所没有的也可以），`此属性 in 此DOM`永远为真，不可以判断是否此DOM存在此属性（或方法）。
 9. `if`、`for`以及`while`之类的判断语句中用赋值操作
 
     （大部分是误用）赋值的内容Boolen后为假会导致条件判断为假：`if(a = false){/* 不执行*/}`。
     >判断语句内只判断整体返回值是`true`还是`false`，与里面执行内容无关（尽管对其语法有所限制）。
 
-### js和jQuery（Zepto）获取的位置信息（纵轴为例）
+### JS和jQuery（Zepto）获取的位置信息（纵轴为例）
 1. DOM节点
 
-    > `dom`为js对象，`$dom`为jQuery（或Zepto）对象。
+    > `dom`为JS对象，`$dom`为jQuery（或Zepto）对象。
 
     1. 节点高度：
 
@@ -147,7 +147,7 @@
     3. 节点在屏幕内
 
         以上`&&`结合。
-2. 原生js
+2. 原生JS
 
     > 屏幕高度 = `window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight` 或 `$(window).height()`。
 
@@ -185,18 +185,20 @@
 
         `文档滚动高度 === 0`
 
-### 清空数组
+### 数组的值传递
 对于数组`arr`：
 
-1. `arr = [];`
-2. `arr.length = 0;`
-3. `arr.splice(0, arr.length);`
+1. 清空数组
 
-对传入方法里的形参使用以上方法（内存地址未改变）时，第一种方法不会改变实参，第二、三种方法会改变实参。
+    1. `arr = [];   /* 不改变原始数组（新赋值一个空数组）*/`
+    2. `arr.length = 0; /* 改变原始数组*/`
+    3. `arr.splice(0, arr.length);  /* 改变原始数组*/`
+2. 操作数组形参，不改变数组实参
 
->使用传入的数组形参，不想改变实参：`arr = arr.slice(0);`。
+    1. 浅复制：`arr = arr.slice(0);`
+    2. 深复制：？
 
-### js代码风格规范（style guideline）
+### JS代码风格规范（style guideline）
 1. 声明
 
     1. 变量声明
@@ -214,9 +216,8 @@
         >
         >    console.log(a);    /* 2*/
         >})();
-        >```
-        >等效于：
-        >```javascript
+        >
+        >//等效于：
         >var a = 1;
         >
         >(function () {
@@ -235,12 +236,12 @@
         相同作用域中，对同一个变量进行多次声明，则忽略第一次之后的声明（会执行变量赋值）。
     2. 函数声明
 
-        也会被js引擎提前到作用域顶部声明，因此代码中函数的调用可以出现在函数声明之前。
+        也会被JS引擎提前到作用域顶部声明，因此代码中函数的调用可以出现在函数声明之前。
 
         >函数声明不应当出现在语句块之内（如条件语句等），语句块的函数也会提前声明，导致语义不清容易出错。
-    3. 函数表达式（Function expressions）
+    3. 函数表达式（Function expressions）声明
 
-        必须先声明：`var a = function(){...};`才可以使用，不会被提前到顶部。
+        必须先声明：`var a = function(){...};`才可以使用，声明会被提前，但赋值不会被提前。
     4. 同名的变量声明和函数声明
 
         同时声明的情况下（顺序不影响结果）：
@@ -275,7 +276,7 @@
 
     可用于全局，也可以用于局部（如函数内）。
 
-    >建议：不推荐用在全局作用域中，因为当有js文件合并时，一个文件的全局严格模式会导致整个文件都是严格模式。
+    >不推荐用在全局作用域中，因为当有JS文件合并时，一个文件的全局严格模式会导致整个文件都是严格模式。
     >全局可以用`(function(){'use strict'; /* 执行内容*/}());`匿名函数方式使用。
 3. 全等`===`（不全等`!==`）与等号`==`（不等`!=`）区别
 
@@ -340,7 +341,7 @@
         var a = new Object();
         a.attr1 = '...';
 
-        /* 直接量*/
+        /* 提倡的直接量*/
         var b = {attr1: '...'};
         ```
     2. 数组直接量
@@ -351,7 +352,7 @@
         /* 不提倡的构造函数写法*/
         var arr1 = new Array('a', 'b');
 
-        /* 直接量*/
+        /* 提倡的直接量*/
         var arr2 = ['a', 'b'];
         ```
 8. 注释规范
@@ -395,7 +396,7 @@
         }
         ```
 
-9. js编程风格总结（[链接](http://www.ruanyifeng.com/blog/2012/04/javascript_programming_style.html)）
+9. [JS编程风格总结](http://www.ruanyifeng.com/blog/2012/04/javascript_programming_style.html)（programming style）
 
     1. 表示区块起首的大括号，不要另起一行。
     2. 调用函数的时候，函数名与左括号之间没有空格。
@@ -412,6 +413,49 @@
     13. 建构函数的函数名，采用首字母大写；其他函数名，一律首字母小写。
     14. 不要使用自增（++）和自减（--）运算符，用+=和-=代替。
     15. 总是使用大括号表示区块。
+
+### 编程实践
+1. UI层的松耦合
+
+    1. 不要~~用JS修改CSS样式~~，JS只修改class（任何时刻，CSS中的样式都可以修改，而不必更新JS）。
+
+        >特例：根据页面重新定位，可以用JS设定定位置（如`top`、`bottom`等）。
+    2. 将HTML从JS中抽离，避免增加跟踪文本和结构性问题的复杂度。可以使用模板引擎，如[handlebars.js](https://github.com/wycats/handlebars.js)。
+2. 避免使用全局变量
+
+    >任何来自函数外的数据都应当以参数形式传递进函数，这样做可以将函数与其外部环境隔离开来，并且修改不会对程序其他部分造成影响。
+
+    1. 单全局变量
+
+        所创建的这个唯一全局对象名是独一无二的（不与内置API冲突），并将你所有的功能代码都挂载到这个全局对象上，因此每个可能的全局变量都成为唯一全局对象的属性（或方法），从而不会创建多个全局变量。
+    2. 零全局变量（匿名函数）
+
+        当不与其他代码产生交互，不需要直接引用任何全局变量，可以使用此法（使用场景有限）。例：
+
+        ```javascript
+        (function (win) {
+            'use strict';
+            /* 严格模式可以避免创建全局变量*/
+
+            var doc = win.document;
+            /* 代码*/
+        }(window));
+        ```
+3. 事件处理
+
+    1. 把事件处理（与用户行为相关的代码）与应用逻辑（与应用相关的功能性代码）隔离开。
+    2. 不要分发事件：
+
+        让事件处理函数成为接触到`event`对象的唯一函数，在event进入应用逻辑前完成用户相关操作（包括阻止默认事件或阻止冒泡等）。
+
+    >JS的自定义事件建议直接使用jQuery的自定义事件：
+    >```javascript
+    >$('选择器').on('自定义事件', function () {});
+    >$('选择器').trigger('自定义事件');
+    >```
+4. 将配置数据从代码中分离
+
+    配置数据：URL、展示给用户的字符串、重复的值、设置、任何可能发生变更的值。
 
 ### 设计模式
 1. 构造函数
@@ -449,7 +493,7 @@
             };
         };
         ```
-    2. 拥有所有实例都共享的原型链上内容：
+    2. 拥有原型链内容（所有实例都共享）：
 
         ```javascript
         var oneConstructor = (function () {
@@ -485,12 +529,22 @@
 
             /* 原型链上，每个实例共享*/
             Constructor.prototype = {
-                constructor: Constructor,
                 para_2: {c: '公开的变量para_2（在原型链上，每个实例共享）'},
                 func_2: function () {
                     console.log('公开的业务逻辑func_2（在原型链上，每个实例共享）');
                 }
             };
+
+            /* 原型对象添加constructor属性*/
+            if (typeof Object.defineProperty === 'function') {
+
+                /* 使属性：不可以改变描述符、不可以删除、不可以枚举、不可以被赋值运算符改变*/
+                Object.defineProperty(Constructor.prototype, 'constructor', {
+                    value: Constructor
+                });
+            } else {
+                Constructor.prototype.constructor = Constructor;
+            }
 
             return Constructor;
         }());
@@ -532,49 +586,6 @@
     >};
     >```
 
-### 编程实践
-1. UI层的松耦合
-
-    1. 不要用js修改css样式，只修改class（任何时刻，css中的样式都可以修改，而不必更新js）。
-
-        >特例：根据页面重新定位，可以用js设定定位置（如`top`、`bottom`等）。
-    2. 将html从js中抽离，避免增加跟踪文本和结构性问题的复杂度。可以使用一些模板类，如[Baidu模板](https://github.com/wangxiao/BaiduTemplate)。
-2. 避免使用全局变量
-
-    >任何来自函数外的数据都应当以参数形式传递进函数，这样做可以将函数与其外部环境隔离开来，并且修改不会对程序其他部分造成影响。
-
-    1. 单全局变量
-
-        所创建的这个唯一全局对象名是独一无二的（不与内置API冲突），并将你所有的功能代码都挂载到这个全局对象上，因此每个可能的全局变量都成为唯一全局对象的属性（或方法），从而不会创建多个全局变量。
-    2. 零全局变量（匿名函数）
-
-        当不与其他代码产生交互，不需要直接引用任何全局变量，可以使用此法。使用场景有限。例：
-
-        ```javascript
-        (function (win) {
-            'use strict';
-            /* 严格模式可以避免创建全局变量*/
-
-            var doc = win.document;
-            /* 代码*/
-        }(window));
-        ```
-3. 事件处理
-
-    1. 把事件处理（与用户行为相关的代码）与应用逻辑（与应用相关的功能性代码）隔离开。
-    2. 不要分发事件：
-
-        让事件处理函数成为接触到`event`对象的唯一函数，在event进入应用逻辑前进行（包括阻止默认事件或阻止冒泡等）操作。
-
-    >js的自定义事件比较复杂，建议直接使用jQuery的自定义事件：
-    >```javascript
-    >$('选择器').on('自定义事件', function () {});
-    >$('选择器').trigger('自定义事件');
-    >```
-4. 将配置数据从代码中分离
-
-    配置数据：URL、展示给用户的字符串、重复的值、设置、任何可能发生变更的值。
-
 ### wap端点透bug
 >1. pc端没有`touch`一系列事件。
 >2. wap端有`touchstart`、`touchmove`、`touchend`、`touchcancel`等`touch`一系列事件。
@@ -582,7 +593,7 @@
 
 - 点透现象：
 
-    使用Zepto的`tap`事件绑定（或直接使用`touchstart`绑定）后，若此元素在触摸事件发生后离开原始位置（css或js方式），底下同一位置正好有一个DOM元素绑定了`click`事件或有一个a标签，则会出现“点透”bug（触发了底下元素的点击事件）。
+    使用Zepto的`tap`事件绑定（或直接使用`touchstart`绑定）后，若此元素在触摸事件发生后离开原始位置（CSS或JS方式），底下同一位置正好有一个DOM元素绑定了`click`事件或有一个a标签，则会出现“点透”bug（触发了底下元素的点击事件）。
 - 原因：
 
     wap端触摸事件顺序：`touchstart`->`touchmove`->`touchend`->`click`，触摸一瞬间就触发`touchstart`（触摸结束后瞬间触发Zepto封装的`tap`事件），触摸结束后300ms才触发`click`事件。
@@ -597,9 +608,9 @@
 
         1. 使用缓动动画，过度300ms延迟。
         2. 中间增加一层接受这个点透事件，然后去除此层。
-        3. 使用[模拟点击事件](https://github.com/realgeoffrey/knowledge/tree/master/%E7%BD%91%E7%AB%99%E5%89%8D%E7%AB%AF/js%E6%96%B9%E6%B3%95%E7%A7%AF%E7%B4%AF/%E5%AE%9E%E7%94%A8%E6%96%B9%E6%B3%95#原生js移动端模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)代替`click`。
+        3. 使用[模拟点击事件](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS方法积累/实用方法#原生js移动端模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)代替`click`。
 
-### [函数防抖](https://github.com/realgeoffrey/knowledge/tree/master/%E7%BD%91%E7%AB%99%E5%89%8D%E7%AB%AF/js%E6%96%B9%E6%B3%95%E7%A7%AF%E7%B4%AF/%E5%AE%9E%E7%94%A8%E6%96%B9%E6%B3%95#原生js防抖函数)、[函数节流](https://github.com/realgeoffrey/knowledge/tree/master/%E7%BD%91%E7%AB%99%E5%89%8D%E7%AB%AF/js%E6%96%B9%E6%B3%95%E7%A7%AF%E7%B4%AF/%E5%AE%9E%E7%94%A8%E6%96%B9%E6%B3%95#原生js节流函数)
+### [函数防抖](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS方法积累/实用方法#原生js防抖函数)、[函数节流](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS方法积累/实用方法#原生js节流函数)
 >都是用来控制某个函数在一定时间内执行多少次的技巧。
 
 1. 防抖（Debounce）
@@ -618,7 +629,7 @@
         window.jQuery || document.write('<script src="本地地址"><\/script>');
     </script>
     ```
-2. 当变量是jQuery或Zepto对象是，可以用`$`作为开头命名，利于区别与普通变量的区别
+2. 当变量是jQuery或Zepto对象是，可以用`$`作为开头命名，利于与普通变量区别
 
     ```javascript
     var a = 1;
@@ -628,15 +639,16 @@
     1. `$('子','父') === $('父').find('子')`
 
         找到所有父级，若子级在此父级后面，则选择。
-    2. ~~`$('父 子')`~~
+    2. ~~`$('父 子')`~~（效率低）
 
-        找到所有子级，然后向前找出有父级的，则选择（性能差）。与css相同的查询方式。
+        找到所有子级，然后向前找出有父级的，则选择。
+        >与CSS相同的查询方式。
 4. 选择器选择到空内容
 
-    无论选择器选取的内容是否为空，都返回数组，所以`if($(...)) {/* 永远执行*/}`永远成立。因此用以下方法：
+    无论选择器选取的内容是否为空，都返回数组，所以`if($(...)) {}`永远成立。因此用以下方法：
 
-    1. `if($(...).length > 0) {/* 代码*/}`
-    2. `if($(...)[]) {/* 代码*/}   /* 若无则为undefined*/`
+    1. `if($(...).length > 0) {}    /* 若无则为0*/`
+    2. `if($(...)[0]) {}   /* 若无则为undefined*/`
 5. `focus`方法
 
     1. 直接调用，光标停留在文本开头或上一次光标停留的地方。
@@ -648,7 +660,7 @@
 >浏览器同源策略限制
 >
 >1. 不能通过`ajax`去请求不同源中的内容。
->2. 不同源的文档（`iframe`或`window.open`的新窗口）间不能进行js的交互操作：DOM无法获取（可以获取window对象，但无法再进一步获取相应的属性和方法）；`Cookie`、`LocalStorage`和`IndexDB`无法读取。
+>2. 不同源的文档（`iframe`或`window.open`的新窗口）间不能进行JS的交互操作：DOM无法获取（可以获取window对象，但无法再进一步获取相应的属性和方法）；`Cookie`、`LocalStorage`和`IndexDB`无法读取。
 
 1. `document.domain`相同则可以文档间互相操作
 
@@ -736,6 +748,7 @@
 ### 判断类型
 1. `Object.prototype.toString.apply(值);  /* 或call*/`
 
+    - 没有跨帧问题。
     - 放入**内置对象**，返回`'[object 构造函数的名称]'`的字符串
 
         >特例：自定义类型返回`'[object Object]'`，*undefined*、*null*返回对应名字。
@@ -761,26 +774,12 @@
         19. Audio对象 -> `'[object HTMLAudioElement]'`
         20. 自定义类型实例 -> `'[object Object]'`
 
-        >- 对于没有声明的变量，直接使用此行代码会报**引用不存在变量**的错误，因此需要：
+        >对于没有声明的变量，直接使用此行代码会报**引用不存在变量**的错误，因此需要：
         >
-        >   `if (typeof 变量 !== 'undefined' && Object.prototype.toString.call(变量) === '[object 某]') {/* code*/}`
-    - ECMA解释：
-
-        1. 如果this的值为undefined，则返回'[object Undefined]'。
-        2. 如果this的值为null，则返回'[object Null]'。
-        3. 让O成为调用ToObject(this)的结果。
-        4. 让class成为O的内部属性[[Class]]的值。
-        5. 返回三个字符串'[object '、class以及']'连接后的新字符串。
-
-        >[ECMA]When the toString method is called, the following steps are taken:
-        >   - If the this value is undefined, return "[object Undefined]".
-        >   - If the this value is null, return "[object Null]".
-        >   - Let O be the result of calling ToObject passing the this value as the argument.
-        >   - Let class be the value of the [[Class]] internal property of O.
-        >   - Return the String value that is the result of concatenating the three Strings **"[object ", class, and "]"**.
+        >`if (typeof 变量 !== 'undefined' && Object.prototype.toString.call(变量) === '[object 某]') {}`
 2. `typeof 值`
 
-    - 可以跨帧（iframe）。
+    - 没有跨帧问题。
     - 返回一个表示值类型的字符串。
     
         1. 字符串 -> `'string'`
@@ -788,15 +787,22 @@
         3. 数值型 -> `'number'`
         4. `undefined` -> `'undefined'`
         5. 引用型 -> `'object'`
-        6. **`null` -> `'object'`**
-        7. 函数 -> `'function'`
+        6. 函数 -> `'function'`
+        7. **`null`** -> **`'object'`**
 
-        >- 因为`typeof null`返回`'object'`，因此typeof不能判断是否是引用类型。
-        >- ie8-的DOM节点的方法返回不是~~`function`~~，而是`object`，因此只能用`方法名 in DOM`检测DOM是否拥有某方法。
+        >1. 因为`typeof null`返回`'object'`，因此typeof不能判断是否是引用类型。
+        >2. ie8-的DOM节点的方法返回不是~~`function`~~，而是`object`，因此只能用`方法名 in DOM`检测DOM是否拥有某方法。
 
 3. `对象 instanceof 构造函数`
 
-    - 不能跨帧（iframe）。
+    - 不能跨帧（iframe、window.open）。
+
+        >跨帧：假设在一个浏览器的帧（frame A）里的一个对象传入到另外一个帧（frame B）中，两个帧都定义了一个相同构造函数APerson、BPerson，则：
+        >
+        >```javascript
+        >frameAPersonInstance instanceof frameAPerson; //true
+        >frameAPersonInstance instanceof frameBPerson; //false
+        >```
     - 判断是否是对象的构造函数（判断某个构造函数的prototype属性所指向的对象是否存在于另外一个要检测对象的原型链上）。
     - 不仅检测对象本身，还检测至原型链。如`new Number() instanceof Object`返回true。
     - **检测自定义类型的唯一方法。**
@@ -813,7 +819,7 @@
 >2. `continue`应用在循环。
 >3. `$.each/obj.each`跳出循环用`return true`（功能类似于`continue`）和`return false`（功能类似于`break`）。
 
-1. `for-in`js原生语法
+1. `for-in`JS原生语法
 
     ```javascript
     /* obj为数组或对象，i为数组下标或对象属性名*/
@@ -927,7 +933,7 @@
     2. 字符串形式。不能包含任何**逗号**、**分号**或**空格**（可使用`encodeURIComponent`编码，再用`decodeURIComponent`解码）。
     3. 所有浏览器都支持。
     4. 单域名下，cookie保存的数据不超过4k，数量（最少）20个。
-    5. 源生的cookie接口不友好，需要程序员自己[封装](https://github.com/realgeoffrey/knowledge/blob/master/%E7%BD%91%E7%AB%99%E5%89%8D%E7%AB%AF/js%E6%96%B9%E6%B3%95%E7%A7%AF%E7%B4%AF/%E5%AE%9E%E7%94%A8%E6%96%B9%E6%B3%95/README.md#原生js操作cookie)。
+    5. 源生的cookie接口不友好，需要程序员自己封装[操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js操作cookie)。
     6. 同源且同路径共享。
     7. 默认（存储在内存）关闭浏览器后失效，设置失效时间（存储在硬盘）则到期后失效。
     8. 应用场景：服务端确定两次请求是否来自于同一个客户端，从而能够确认和保持用户的登录状态（无状态的HTTP协议上记录稳定的状态信息）。
@@ -942,7 +948,7 @@
 >隐身模式策略：（大多数浏览器的策略）存储API仍然可用，并且看起来功能齐全，只是无法真正储存（比如分配储存空间为0）。
 
 ### 自执行匿名函数
->匿名函数，也称为**拉姆达函数**。
+>匿名函数，也称为**拉姆达（λ，lambda）函数**。
 
 1. `(function () {/* code*/}());    /* 推荐*/`
 2. `(function () {/* code*/})();`
@@ -950,9 +956,9 @@
 >1. `function`关键字当作一个**函数声明**的开始，函数声明的后面不能跟圆括号；
 >2. 将函数声明包含在圆括号中，表示**函数表达式**，函数表达式的后面可以跟圆括号，表示执行此函数。
 
-传值进自执行匿名函数可以避免闭包导致无法记录变量值的问题：
-
 ```javascript
+//传值进自执行匿名函数可以避免闭包导致无法记录变量值的问题
+
 for (var i = 0; i < 3; i++) {
     //匿名函数
     (function (i) {
@@ -989,9 +995,9 @@ for (var i = 0; i < 3; i++) {
         newStyle.type = 'text/css';
 
         if (newStyle.styleSheet) {    //for ie
-            newStyle.styleSheet.cssText = 'css代码';
+            newStyle.styleSheet.cssText = 'CSS代码';
         } else {
-            newStyle.appendChild(document.createTextNode('css代码'));
+            newStyle.appendChild(document.createTextNode('CSS代码'));
         }
 
         document.getElementsByTagName('head')[0].appendChild(newStyle);
@@ -1004,7 +1010,7 @@ for (var i = 0; i < 3; i++) {
         newLink.rel = 'styleSheet';
         newLink.type = 'text/css';
 
-        newLink.href = 'css文件地址';
+        newLink.href = 'CSS文件地址';
 
         document.getElementsByTagName('head')[0].appendChild(newLink);
         ```
@@ -1013,10 +1019,10 @@ for (var i = 0; i < 3; i++) {
         ```javascript
         var oneDom = document.getElementById('节点id');
 
-        oneDom.style.cssText += '; css代码'
+        oneDom.style.cssText += '; CSS代码'
         ```
 
-    >css代码，例如 `div {background-color: yellow;}`。
+    >CSS代码，例如 `div {background-color: yellow;}`。
 2. 动态添加脚本
 
     1. 异步
@@ -1024,7 +1030,7 @@ for (var i = 0; i < 3; i++) {
         1. 直接`document.write`
 
             ```javascript
-            document.write('<script src="js文件地址"><\/script>');
+            document.write('<script src="JS文件地址"><\/script>');
             ```
         2. 动态改变已有的`script`标签的`src`属性
 
@@ -1032,7 +1038,7 @@ for (var i = 0; i < 3; i++) {
             <script type="text/javascript" id="节点id"></script>
 
             <script>
-                document.getElementById('节点id').src = 'js文件地址';
+                document.getElementById('节点id').src = 'JS文件地址';
             </script>
             ```
         3. 动态创建`script`标签
@@ -1043,13 +1049,13 @@ for (var i = 0; i < 3; i++) {
 
             newScript.type = 'text/javascript';
 
-            newScript.src = 'js文件地址';
+            newScript.src = 'JS文件地址';
 
             appendPlace.appendChild(newScript);
             ```
     2. 同步
 
-        1. 添加js代码
+        1. 添加JS代码
 
             ```javascript
             var newScript = document.createElement('script'),
@@ -1058,10 +1064,10 @@ for (var i = 0; i < 3; i++) {
             newScript.type = 'text/javascript';
 
             try {
-                newScript.appendChild(document.createTextNode('js代码'));
+                newScript.appendChild(document.createTextNode('JS代码'));
             }
             catch (e) {
-                newScript.text = 'js代码';  /* ie8及以下，Safari老版本*/
+                newScript.text = 'JS代码';  /* ie8及以下，Safari老版本*/
             }
 
             appendPlace.appendChild(newScript);
@@ -1070,8 +1076,8 @@ for (var i = 0; i < 3; i++) {
 
             ```javascript
             /**
-             * 同步加载js脚本
-             * @param {String} url - js文件的相对路径或绝对路径
+             * 同步加载JS脚本
+             * @param {String} url - JS文件的相对路径或绝对路径
              * @returns {Boolean} - 是否加载成功
              */
             function syncLoadJS(url) {
@@ -1156,20 +1162,21 @@ for (var i = 0; i < 3; i++) {
 ### 定时器`setInterval`、`setTimeout` && 重绘函数`requestAnimationFrame`
 1. 定时器
 
-    1. 运行机制：
+    - 运行机制：
 
-        1. JavaScript是单线程的，程序在执行时必须排队，并且一个程序不能中断另一个程序的执行。
+        1. JS是单线程的，程序在执行时必须排队，并且一个程序不能中断另一个程序的执行。
         2. 没有任何代码是立即执行的，但一旦进程空闲则尽快执行。
         3. 定时器触发会把*定时器处理程序*插入**等待执行队列**最后面。
-    2. `setInterval`：
+
+    1. `setInterval`：
 
         1. 同一个被setInterval执行的函数只能插入一个*定时器处理程序*到**等待执行队列**。
         2. setInterval是每隔时间去尝试执行函数，不关注上一次是何时执行。
         3. 若setInterval触发时已经有它的*定时器处理程序*在**等待执行队列**中，则忽略此次触发。直到没有它的*定时器处理程序*在**等待执行队列**后才可以再次插入到**等待执行队列**（正在执行的不算在**等待执行队列**）。
         4. 相邻的2次*定时器处理程序*可能小于或大于（或等于）设定的间隔时间。无法确定*定时器处理程序*什么时候执行。
-    3. `setTimeout`:
+    2. `setTimeout`:
 
-        [用setTimeout模拟setInterval](https://github.com/realgeoffrey/knowledge/tree/master/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/js%E6%96%B9%E6%B3%95%E7%A7%AF%E7%B4%AF/%E5%AE%9E%E7%94%A8%E6%96%B9%E6%B3%95#原生js用settimeout模拟setinterval)，可以提高性能（上一次执行完毕间隔时间后再执行下一次，而不是固定间隔时间都尝试执行），并且可以确保每次*定时器处理程序*执行间隔一定大于（或等于）设置的间隔时间。
+        [用setTimeout模拟setInterval](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用settimeout模拟setinterval)，可以提高性能（上一次执行完毕间隔时间后再执行下一次，而不是固定间隔时间都尝试执行），并且可以确保每次*定时器处理程序*执行间隔一定大于（或等于）设置的间隔时间。
 2. 重绘函数`requestAnimationFrame`
 
     1. 浏览器重绘之前（大部分浏览器是1秒钟60帧，也就是16.67ms进行一帧重绘）调用一次。
@@ -1179,15 +1186,17 @@ for (var i = 0; i < 3; i++) {
         2. 仅仅绘制用户可见的动画。这意味着没把CPU或电池寿命浪费在绘制处于背景标签，最小化窗口，或者页面隐藏区域的动画上。
         3. 当浏览器准备好绘制时（空闲时），才绘制一帧，此时没有等待中的帧。意味着其绘制动画不可能出现多个排队的回调函数，或者阻塞浏览器。因此动画更平滑，CPU和电池使用被进一步优化。
 
-    >1. 高级浏览器才有定义此方法，因此需要[Polyfill](https://github.com/realgeoffrey/knowledge/tree/master/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/js%E6%96%B9%E6%B3%95%E7%A7%AF%E7%B4%AF/%E5%AE%9E%E7%94%A8%E6%96%B9%E6%B3%95#原生jsrequestanimationframe和cancelanimationframe的polyfill)。
-    >2. 类似`setInterval`实现[递归调用](https://github.com/realgeoffrey/knowledge/tree/master/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/js%E6%96%B9%E6%B3%95%E7%A7%AF%E7%B4%AF/%E5%AE%9E%E7%94%A8%E6%96%B9%E6%B3%95#原生jsrequestanimationframe的递归)。
+    >1. 高级浏览器才有定义此方法，因此需要[Polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe和cancelanimationframe的polyfill)。
+    >2. 类似`setInterval`实现[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
 
 ### jQuery的[`deferred`](http://api.jquery.com/category/deferred-object/)
 >参考[阮一峰：jQuery的deferred对象详解](http://www.ruanyifeng.com/blog/2011/08/a_detailed_explanation_of_jquery_deferred_object.html)、[阮一峰：jQuery.Deferred对象](http://javascript.ruanyifeng.com/jquery/deferred.html)。
 
 jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准实现。
 
-1. `Promise对象`是`Deferred对象`的子集。相对于`Deferred对象`，`Promise对象`无法改变执行状态。`Promise对象`：
+1. `Promise对象`是`Deferred对象`的子集。相对于`Deferred对象`，`Promise对象`无法改变执行状态。
+
+    `Promise对象`：
 
     1. 开放**与改变执行状态无关的方法**：`always`、`catch`、`done`、`fail`、`pipe`、`progress`、`promise`、`state`、`then`
     2. 屏蔽**与改变执行状态有关的方法**：`notify`、`notifyWith`、`reject`、`rejectWith`、`resolve`、`resolveWith`
@@ -1202,7 +1211,7 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
     1. 函数默认有`length`（希望接收的命名参数个数）和`prototype`属性。
     2. `函数对象.caller`：保存调用当前函数的函数（嵌套的外一层函数）的引用。
     3. 函数内的`arguments.caller`：`undefined`（仅仅为了分清`arguments.caller`和`函数对象.caller`）。
-    4. 函数内的`arguments.callee`是一个指针：其指向拥有`arguments`对象的函数（就是自己）。
+    4. 函数内的`arguments.callee`是一个指针：其指向拥有`arguments`对象的函数（就是自身）。
     5. 函数继承的`toLocaleString`、`toString`、`valueOf`的返回值为：**经过浏览器处理过的函数代码（因浏览器而异）**。
 2. 函数总有返回值。
 
@@ -1226,7 +1235,12 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
         >
         >例：
         >```javascript
-        >var func1 = function func2() {};
+        >var func1 = function func2() {
+        >   console.log(typeof func1);  /* function*/
+        >   console.log(typeof func2);  /* function*/
+        >};
+        >
+        >func1();
         >
         >console.log(typeof func1);  /* function*/
         >console.log(typeof func2);  /* undefined*/
@@ -1250,7 +1264,7 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
     3. 构造函数调用`new RegExp();`
     
         `this`->新实例对象
-    4. 间接调用`alert.call();`
+    4. 间接调用`alert.call(传入的对象);`（或`apply`）
     
         `this`->传入的对象
 6. `this`——调用函数的那个对象
@@ -1302,7 +1316,7 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
         互相连接：函数拥有一个`prototype`属性指向其原型对象，原型对象拥有一个`constructor`属性指向函数。
     2. 当调用构造函数创建一个新实例后（new），该实例的内部有一个`[[Prototype]]`属性（内部属性、没有标准方式访问，但部分高级浏览器在对象上支持`__proto__`访问），指向**构造函数的原型对象**。
     
-        连接存在于实例与**构造函数的原型对象**之间，而不直接存在于实例与~~构造函数~~之间（**实例**通过`[[Prototype]]`指向**原型对象**再与**构造函数**产生关联）。
+        连接存在于实例与**原型对象**之间，而不直接存在于~~实例与构造函数~~之间（**实例**通过`[[Prototype]]`指向**原型对象**再间接与**构造函数**产生关联）。
         
     ```javascript
     var A = function () {
@@ -1326,11 +1340,12 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
     };
 
     if (typeof Object.defineProperty === 'function') {
+
+        /* 使属性：不可以改变描述符、不可以删除、不可以枚举、不可以被赋值运算符改变*/
         Object.defineProperty(A.prototype, 'constructor', {
-            enumerable: false,
             value: A
         });
-    } else {    /* 导致属性的[[Enumerable]]为true*/
+    } else {
         A.prototype.constructor = A;
     }
 
@@ -1341,20 +1356,20 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
     ```
 3. 通过**原型链**实现**继承**。
 
-    原型链的构建是通过**将一个类型的实例赋值给另一个构造函数的原型**实现。
+    继承：通过**将一个类型的实例赋值给另一个构造函数的原型**实现。
 
 ### 自动插入分号机制（Automatic Semicolon Insertion，ASI）
 1. ASI机制不是说在解析过程中解析器自动把分号添加到代码中，而是说解析器除了分号还会以换行为基础按一定的规则作为断句（EOC）的依据，从而保证解析的正确性。
 2. 解析器会尽量将新行并入当前行，当且仅当符合ASI规则时才会将新行视为独立的语句：
 
-    1. empty statement
-    2. `var` statement
-    3. expression statement
-    4. `do-while` statement（not `while`）
-    5. `continue` statement
-    6. `break` statement
-    7. `return` statement
-    8. `throw` statement
+    1. `;`空语句
+    2. `var`语句
+    3. 表达式语句（一定会产生一个值）
+    4. `do-while`语句（不是`while`）
+    5. `continue`语句
+    6. `break`语句
+    7. `return`语句
+    8. `throw`语句
 
 >前置分号策略：只要对行首字符进行token判断是否为：`[` `(` `+` `-` `/`五个符号之一，就在其前面增加分号。
 
@@ -1379,7 +1394,7 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
     1. 如果expr1能转换成false（`Boolean(expr1)`）则返回expr1，否则返回expr2。
     2. 在Boolean环境（如if的条件判断）中使用时，两个操作结果都为true时返回true，否则返回false。
 
-### DOM加载步骤、jQuery文档ready事件和js的onload事件顺序
+### DOM加载步骤、jQuery文档`ready`事件和JS的`onload`事件顺序
 1. 解析Html结构；
 2. 加载外部脚本和样式表文件；
 3. 解析并执行脚本代码；
@@ -1390,7 +1405,7 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
 ### JS性能
 1. 平稳退化：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
 
-    1. 为JS代码预留出退路（html标签添加属性链接，用js事件绑定去拦截浏览器默认行为）
+    1. 为JS代码预留出退路（a标签添加属性链接，用JS事件绑定去拦截浏览器默认行为）
 
         `<a href="真实地址" class="j-func">...</a>`
 
@@ -1402,31 +1417,42 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
 
         `<a href="#" onclick="func();return false;">...</a>`
 2. 渐进增强：先完成基本通用功能，再追加额外功能。
-3. 向后兼容：确保老版本浏览器功能，使之虽不能支持某些功能，但仍能基本访问。
+3. 向后兼容：确保老版本浏览器基本可用，使之虽不能支持某些功能，但仍能基本访问。
 
-    1. 能力检测：`if(func){func();}`。
+    1. **能力检测：`if(func){func();}`**。
     2. 怪癖检测：`try-catch`。
-    3. ~~浏览器嗅探技术（用户代理检测）。~~
-4. 资源分离：把样式表和脚本分离出html。
+    3. 浏览器嗅探技术（用户代理检测）。
+4. 资源分离：把样式表和脚本分离出HTML。
 
     1. 使用外部资源。
-    2. 不在html上用事件处理函数。
+    2. 不在HTML上用事件处理函数。
     3. 对只为DOM增添的内容，转移到外部资源中动态创建。
 5. 性能提升。
 
     1. 减少访问DOM（搜索结果保存在变量中）。
-    2. 减少外链请求数量（合并js、css、图片）。
+    2. 减少外链请求数量（合并JS、CSS、图片）。
     3. 压缩资源。
     4. 脚本放置在`</body>`前。
+
+### 闭包
+1. 当函数内部定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数被返回（寿命终结）之后。
+2. 闭包是一种特殊的对象。它由两部分构成：**函数**、创建该函数的**环境**（链式作用域）。
+3. 闭包的创建依赖于函数（函数是唯一拥有自身作用域的结构）。闭包通常用来创建私有变量或方法，使得这些内容不被外部随意访问，同时又可以通过指定的闭包函数接口来操作（将函数内部和外部连接起来）。
+
+- 产生效果：
+    1. 可以操作函数内部的私有内容（特权方法）。
+    2. 让被操作的私有内容始终保持在内存中不被垃圾回收。
+    3. 占用较多的内存。
 
 ### 垃圾回收
 >垃圾回收器会按照固定的时间间隔（或代码执行中预定的时间）周期性地执行，找出不再继续使用的变量，然后释放其占用的内存。
 
 垃圾回收器必须跟踪并判断变量是否有用，对于不再有用的变量打上标记，以备将来回收。
 
-1. 标记清除（mark-and-sweep）
+1. **标记清除（mark-and-sweep）**
 
     垃圾回收器在运行时给存储在内存中的所有变量加上标记；然后，去掉环境中的变量以及被环境中变量引用的变量的标记；最后，对那些带标记的值进行释放。
+    >从2012年起，所有现代浏览器都使用了标记-清除垃圾回收算法。
 2. 引用计数（reference counting）
 
     跟踪记录每个值被引用的次数，被引用一次加1，引用取消就减1，当引用次数为0时，则说明没有办法再访问这个值了，当垃圾回收器下次运行时，释放引用次数为0的值所占空间。
@@ -1435,18 +1461,8 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
 
 >用`变量 = null;`等方法，让变量成为零引用，从而进行清除元素、垃圾回收（导致内存泄露的情况除外）。
 
-### 闭包
-1. 当函数内部定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数被返回（寿命终结）之后。
-2. 闭包是一种特殊的对象。它由两部分构成：**函数**、创建该函数的**环境**（链式作用域）。
-3. 闭包的创建依赖于函数（函数是唯一拥有自身作用域的结构）。闭包通常用来创建私有变量或方法，使得这些内容不被外部随意访问，同时又可以通过指定的闭包函数接口来操作（将函数内部和外部连接起来）。
-
-- 产生效果：
-    1. 可以操作函数内部的私有内容。
-    2. 让被操作的私有内容始终保持在内存中不被垃圾回收。
-    3. 占用较多的内存。
-
 ### 内存泄漏
-> 内存泄露是指计算机内存逐渐丢失。当某个程序总是无法释放内存时，就会出现内存泄露。JavaScript有内存回收机制（垃圾回收）。
+> 内存泄露是指计算机内存逐渐丢失。当某个程序总是无法释放内存时，就会出现内存泄露。JS有内存回收机制（垃圾回收）。
 
 1. 使用chrome的**Profiles**和**Timeline**面板来查看页面占用内存使用和变化。
 2. 内存泄漏的原因以及防止建议：
@@ -1458,15 +1474,15 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
 
         ![内存泄漏图](./images/memory-leak-1.gif)
 
-        1. 黄色是指直接被 js变量所引用，在内存里。
-        2. 红色是指间接被 js变量所引用，如上图，refB 被 refA 间接引用，导致即使 refB 变量被清空，也是不会被回收的。
+        1. 黄色是指直接被 JS变量所引用，在内存里。
+        2. 红色是指间接被 JS变量所引用，如上图，refB 被 refA 间接引用，导致即使 refB 变量被清空，也是不会被回收的。
         3. 子元素 refB 由于 parentNode 的间接引用，只要它不被删除，它所有的父元素（图中红色部分）都不会被删除。
     5. 被遗忘的计数器或回调函数：不使用时及时清除。
 
-### 排版引擎与js引擎
+### 排版引擎与JS引擎
 1. 排版引擎（layout engine）
 
-    也称为浏览器内核（web browser engine）、页面渲染引擎（rendering engine）或样板引擎，是一种软件组件，负责获取标记式内容（如html、xml以及图像文件等）、整理信息（如css、xsl），并将排版后的内容输出至显示屏或打印机。
+    也称为浏览器内核（web browser engine）、页面渲染引擎（rendering engine）或样板引擎，是一种软件组件，负责获取标记式内容（如HTML、XML以及图像文件等）、整理信息（如CSS、XSL），并将排版后的内容输出至显示屏或打印机。
 
     所有网页浏览器、电子邮件客户端以及其他需要根据表示性的标记语言来显示内容的应用程序，都需要排版引擎。
 
@@ -1476,9 +1492,9 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
     >4. Safari：WebKit。
     >5. Opera：前Presto，现Blink。
     >6. Edge：EdgeHTML。
-2. js引擎
+2. JS引擎
 
-    一个专门处理js脚本的虚拟机，一般会附带在网页浏览器中。
+    一个专门处理JS脚本的虚拟机，一般会附带在网页浏览器中。
 
     >1. JScript：ie8-，ASP。
     >2. Chakra：ie9+，Edge。
@@ -1488,7 +1504,7 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
 
 ### 引用类型与基本类型的变量传递
 1. 只能给引用类型动态地添加属性和方法，不能给基本类型添加。
-2. js的变量传递都是**值传递**，都是把变量中存储的值复制一份给另一个变量。
+2. JS的变量传递都是**值传递**，都是把变量中存储的值复制一份给另一个变量。
 
     1. 基本类型的复制
 
@@ -1498,6 +1514,15 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
         引用类型的变量保存的是指向该对象内容的指针，复制给新变量指针后，两个变量实际上引用同一对象，改变其中一个引用对象中的属性，会影响另一个。但是如果给其中一个引用对象赋值（不是操作属性），因为值引用改变了引用地址，所以两个变量不再保存同一个指针。
 
     >所有函数的参数都是按值来传递的。基本类型值的传递和基本类型变量复制一致（采用在栈内新建值），引用类型值的传递和引用类型变量的复制一致（栈内存放的是指针，指向堆中同一对象）。
+3. 引用类型的**深、浅复制（拷贝）**
+
+    1. 浅复制
+
+        1. 拷贝对象A时，对象B将拷贝A的所有字段。若字段是内存地址（引用类型），B将拷贝地址；若字段是基本类型，B将复制其值。
+        2. 它的缺点是如果你改变了对象B所指向的内存地址，你同时也改变了对象A指向这个地址的字段。
+    2. 深复制
+
+        这种方式会完全拷贝所有数据，优点是B与A不会相互依赖（A,B完全脱离关联），缺点是拷贝的速度更慢，代价更大。
 
 ### 错误处理机制
 1. 原生错误类型
@@ -1536,12 +1561,12 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
     Error实例对象有两个基本的属性`message`和`name`。
     >`message`用来表示异常的详细信息；`name`指的的是Error对象的构造函数。
 
-    此外，不同的js引擎对Error还各自提供了一些扩展属性。
+    此外，不同的JS引擎对Error还各自提供了一些扩展属性。
 
 3. 处理代码中抛出的error
 
-    - 当js出现错误时，js引擎就会根据js调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或者**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，而firefix会显示在错误控制台中）显示错误信息给访问者，可以用`window.onerror`进行自定义操作。
-    - 在某个**JavaScript block**（`<script>`标签或`try-catch`的`try`语句块）内，第一个错误触发后，当前Javascript block后面的代码会被自动忽略，不再执行，其他的JavaScript block内代码不被影响。
+    - 当JS出现错误时，JS引擎就会根据JS调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或者**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，而firefix会显示在错误控制台中）显示错误信息给访问者，可以用`window.onerror`进行自定义操作。
+    - 在某个**JS block**（`<script>`标签或`try-catch`的`try`语句块）内，第一个错误触发后，当前JS block后面的代码会被自动忽略，不再执行，其他的JS block内代码不被影响。
 
     1. `try-catch-finally`
 
@@ -1553,7 +1578,7 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
     2. `window.onerror`
 
         1. 没有通过`try-catch`处理的错误都会触发`window`对象的`onerror`。
-        2. 用方法赋值给`window.onerror`后，但凡这个window中有js错误出现，则会调用此方法。
+        2. 用方法赋值给`window.onerror`后，但凡这个window中有JS错误出现，则会调用此方法。
         3. onerror方法会传入3个参数（至少），分别是**错误信息提示**、**javascript产生错误的document url**和**错误出现的行号**。
         4. 若方法返回`true`，浏览器不再显示错误信息；若返回`false`，浏览器还是会提示错误信息：
 
@@ -1599,14 +1624,14 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
 
         1. 非客户端页面
 
-            仅需在加载js之前配置好`window.onerror`。
+            仅需在加载JS之前配置好`window.onerror`。
         2. 客户端内嵌页面
 
-            1. 同样也需要在加载js之前配置好`window.onerror`，来处理页面内错误。
+            1. 同样也需要在加载JS之前配置好`window.onerror`，来处理页面内错误。
             2. 客户端回调函数嵌套一层`try-catch`以提供**哪个方法发生错误等额外信息**。
 
-                因为客户端调用前端的方法是直接通过函数运行js代码，抛出错误时`window.onerror`传入的参数仅有第一个`message`参数（`file`、`line`以及其他参数都没有），所以必须在给客户端调用的js方法中嵌套`try-catch`并且抛出能标识出所调用方法名字等信息。
-            3. （可选）又因为要避免**js代码还未加载完毕客户端就调用回调函数**，需在客户端调用前端js回调函数的时候嵌套一层`try-catch`，在`catch`中提供调用哪个方法的信息。
+                因为客户端调用前端的方法是直接通过函数运行JS代码，抛出错误时`window.onerror`传入的参数仅有第一个`message`参数（`file`、`line`以及其他参数都没有），所以必须在给客户端调用的JS方法中嵌套`try-catch`并且抛出能标识出所调用方法名字等信息。
+            3. （可选）又因为要避免**JS代码还未加载完毕客户端就调用回调函数**，需在客户端调用前端JS回调函数的时候嵌套一层`try-catch`，在`catch`中提供调用哪个方法的信息。
 
                 >仅能获取原始error的`message`信息，无法获取`line`等其他信息，因此还是必须前端在回调函数中嵌套`try-catch`
 

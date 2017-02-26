@@ -4,13 +4,13 @@
 
 1. 根据不同的ie版本进行操作（hack）
 
-    1. css属性：
+    1. CSS属性：
 
         1. ie6：`_`(在属性之前)。
         2. ie6、ie7：`*`(在属性之前)。
         3. ie6、ie7、ie8(部分ie9、ie10)：`\9`（在属性结束、分号之前）。
         4. ie8、ie9、ie10、ie11：`\0`（在属性结束、分号之前）。
-    2. html条件注释法：
+    2. HTML条件注释法：
 
         1. 小于ie某版本
 
@@ -28,10 +28,10 @@
             ```
 
         >上面2种一起写，可以覆盖所有浏览器（包括非ie浏览器）。
-    3. js判断：
+    3. JS判断：
 
-        1. [html条件注释法判断ie6、7、8、9版本](https://github.com/realgeoffrey/knowledge/tree/master/%E7%BD%91%E7%AB%99%E5%89%8D%E7%AB%AF/js%E6%96%B9%E6%B3%95%E7%A7%AF%E7%B4%AF/%E5%AE%9E%E7%94%A8%E6%96%B9%E6%B3%95#原生js判断ie6789版本)。
-        2. [用户代理判断ie所有版本](https://github.com/realgeoffrey/knowledge/tree/master/%E7%BD%91%E7%AB%99%E5%89%8D%E7%AB%AF/js%E6%96%B9%E6%B3%95%E7%A7%AF%E7%B4%AF/%E5%AE%9E%E7%94%A8%E6%96%B9%E6%B3%95#原生js判断ie所有版本)。
+        1. [HTML条件注释法判断ie6、7、8、9版本](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS方法积累/实用方法#原生js判断ie6789版本)。
+        2. [用户代理判断ie所有版本](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS方法积累/实用方法#原生js判断ie所有版本)。
 
     >图片类型选择：
     >
@@ -67,7 +67,7 @@
 
         用png-24透明图切图，再用gulp压缩。
 
-	2. ~~js方法~~：
+	2. ~~JS方法~~：
 
         ``` html
         <!--[if IE 6]>
@@ -77,7 +77,7 @@
         </script>
         <![endif]-->
         ```
-        >插件bug：用div透明背景图覆盖出圆角效果会单边缩短1px，要给背景图左右多出1px背景(js的bugs)。
+        >插件bug：用div透明背景图覆盖出圆角效果会单边缩短1px，要给背景图左右多出1px背景(JS的bugs)。
 5. ie6不支持`max-height/ min-height/ max-width/ min-width`：
 
 	- 用`_height/_width`等于固定值适量代替。
@@ -95,7 +95,7 @@
 	    `<a href="#"></a>`
 9. ie6查看的网页文件若文件编码不是**utf-8**会乱码（若出现除ie6外都无错误，并且提示的错误位置排查后没有错误的，需要检查编码格式）：
 
-	- 无论html/css/js文件都要手动转化为**utf-8**。
+	- 无论HTML/CSS/JS文件都要手动转化为**utf-8**。
 10. ie6的`tr/tbody`不支持`border`：
 
 	- `border`写在`td`或`td > *`中。
@@ -103,22 +103,22 @@
 
 	1. 在父级table标签上设置`table-layout: layout:fixed;`，并在第一个tr的各个子级`td/tr`上设置宽度，就能为整个表固定各项目宽度。
 	2. `width/height/line-height`不写在td标签上，写在`td > *`中。
-12. ie6的`table/tr/td`，用js增加有背景色的class无效：
+12. ie6的`table/tr/td`，用JS增加有背景色的class无效：
 
 	- 要有原始的`background`值，才可以在添加class之后改变background值。
 13. ie6下tr标签没有`:hover`效果：
 
-	1. 把tr标签的`:hover`效果用js制作。
+	1. 把tr标签的`:hover`效果用JS制作。
 	2. 不处理。优雅降级（优先完成全部功能，再针对浏览器测试和修复）。
 14. ie6浮动元素的中间有注释会导致出现重复字符：
 
 	- 删除浮动元素内的注释。
 15. ie6不能使用**多类选择器**（不能连写class或id，e.g. `.a.b`、`.a#b`、`#a#b`），会自动忽略前面的选择器而仅剩下最后一个class或id。
 
-    - 用`_`css属性hack，对ie6中优雅降级。
-16. ie6不支持`position: fixed`，需使用js组建：
+    - 用`_`CSS属性hack，对ie6中优雅降级。
+16. ie6不支持`position: fixed`，需使用JS组建：
 
-    1. 用js插件
+    1. 用JS插件
 
         ``` html
         <script src="js/jquery.js"></script>
@@ -139,12 +139,12 @@
         </script>
         ```
     2. 优雅降级。用`position: absolute;`模拟。
-17. ie6的input标签有很多css问题，尽量不要设置复杂的css效果在input标签上：
+17. ie6的input标签有很多CSS问题，尽量不要设置复杂的CSS效果在input标签上：
 
 	- input设`display: block`会跟父级上下有1px间距，用`float`解决。
 18. ie6/7不支持`:focus`：
 
-	1. 用js制作，又因为input问题多，在input外嵌套一层div，对其进行css样式修改。
+	1. 用JS制作，又因为input问题多，在input外嵌套一层div，对其进行CSS样式修改。
 	2. 优雅降级。
 19. ie6/7的子节点脱离文档流后，父节点要截断子节点内容，必须使父节点也脱离文档流：
 
@@ -158,16 +158,16 @@
 
 	1. 父节点设定`height`，增加`overflow: hidden;`和`position: relative;`。
 	2. 先show()出替换的内容，再hide()被替换的内容。
-23. ie6的`a:hover`之后添加派生选择器css效果：
+23. ie6的`a:hover`之后添加派生选择器CSS效果：
 
     >e.g. `a:hover .class{}`
 
-	- 先要设置`a:hover{}`触发`:hover`时候的重绘(或重排)效果（可以用`zoom: 1`），再添加`a:hover`之后的派生选择器css效果，比如显示／隐藏。
+	- 先要设置`a:hover{}`触发`:hover`时候的重绘(或重排)效果（可以用`zoom: 1`），再添加`a:hover`之后的派生选择器CSS效果，比如显示／隐藏。
 
-	>ie6用css控制子项根据父项`a:hover`的显示隐藏，仅作用于一些文本效果，因此还是要用js的方式替代此种效果：mouseenter时候添加一个类，类控制css来操作子项内容的显示隐藏；mouseleave时候去除此类。
-24. ie6的`:hover`的某些css属性值会导致高度变化，其实是触发了**haslayout**，可以设置css属性使`:hover`之前就已经haslayout。
+	>ie6用CSS控制子项根据父项`a:hover`的显示隐藏，仅作用于一些文本效果，因此还是要用JS的方式替代此种效果：mouseenter时候添加一个类，类控制CSS来操作子项内容的显示隐藏；mouseleave时候去除此类。
+24. ie6的`:hover`的某些CSS属性值会导致高度变化，其实是触发了**haslayout**，可以设置CSS属性使`:hover`之前就已经haslayout。
 25. ie6/7的`text-decoration`会被`overflow: hidden`截断。
-26. ie6/7/8不支持css3的透明，可以用ie特有的滤镜：
+26. ie6/7/8不支持CSS3的透明，可以用ie特有的滤镜：
 
 	1. 整个节点透明：
 
@@ -231,12 +231,12 @@
 37. ie6下因为hover或者改变视窗大小或者改变DOM位置而导致元素高度变化（甚至移动到看不见地方）：
 
     - 可以试着往其父级层层向上增加`zoom: 1;`进行测试，若还是不行则在有高度的地方设置`overflow: hidden;`，甚至是最顶端的位置添加才可以修复（有时候基本是向上试错的碰运气）。
-38. ie6/7下js的对象内部多出来的`,`会报错，高级浏览器只会warning不会产生错误。
+38. ie6/7下JS的对象内部多出来的`,`会报错，高级浏览器只会warning不会产生错误。
 39. ie6下父级设置`height`、`width`，当子级超过限制后，会把父级撑大（没有`overflow: hidden;`情况）。
 40. 若ie6下无法打开https链接：
 
     - 尝试**internet选项－－高级－－使用TLS1.0打钩**。
-41. ie6/7（/8的低版本或怪异模式）的`document.getElementById`不区分**ID**大小写，css样式会区分大小写。
+41. ie6/7（/8的低版本或怪异模式）的`document.getElementById`不区分**ID**大小写，CSS样式会区分大小写。
 42. ie6/7的`document.getElementById`会获取`name`属性匹配的节点（如表单节点或其他节点）：
 
     - 不要让节点的`name`属性与其他节点ID相同。
@@ -252,11 +252,11 @@ haslayout是ie6/7的一个私有概念，它决定了元素**如何对其内容�
 
 1. 查看haslayout
 
-    1. 可以用js读取某DOM对象是否拥有布局（只读）：
+    1. 可以用JS读取某DOM对象是否拥有布局（只读）：
 
         `某DOM.currentStyle.hasLayout;`，返回true->拥有，返回false->不拥有。
 
-    2. 通过**IE Developer Toolbar**（打开*Show Default Style Values*）可以查看 IE 下html元素是否拥有布局（只读）：
+    2. 通过**IE Developer Toolbar**（打开*Show Default Style Values*）可以查看 IE 下HTML元素是否拥有布局（只读）：
 
         拥有`haslayout`的元素，属性显示为`haslayout = -1`；不拥有的，显示为`haslayout = 0`。
 2. 默认拥有布局的元素：
@@ -272,7 +272,7 @@ haslayout是ie6/7的一个私有概念，它决定了元素**如何对其内容�
     ```
 3. 触发haslayout
 
-    haslayout不是css属性，我们无法通过css显式的设置元素的haslayout，只能通过其他css样式触发。
+    haslayout不是CSS属性，我们无法通过CSS显式的设置元素的haslayout，只能通过其他CSS样式触发。
 
     1. ie6/7：
 

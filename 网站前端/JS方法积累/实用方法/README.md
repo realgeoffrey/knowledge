@@ -1,8 +1,8 @@
-# js方法积累——实用方法
+# JS方法积累——实用方法
 
-## 原生js方法
+## 原生JS方法
 
-### *原生js*`Date.now`的**Polyfill**
+### *原生JS*`Date.now`的**Polyfill**
 ```javascript
 if (typeof Date.now !== 'function') {
     Date.now = function () {
@@ -12,7 +12,7 @@ if (typeof Date.now !== 'function') {
 ```
 >`Date.now()`相对于`new Date().getTime()`及其他方式，可以避免生成不必要的`Date`对象，更高效。
 
-### *原生js*用`setTimeout`模拟`setInterval`
+### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript
 /**
  * 用setTimeout模拟setInterval
@@ -49,7 +49,7 @@ var a = new SetInterval(function () {
 //a.stop();
 ```
 
-### *原生js*`requestAnimationFrame`和`cancelAnimationFrame`的**Polyfill**
+### *原生JS*`requestAnimationFrame`和`cancelAnimationFrame`的**Polyfill**
 ```javascript
 (function () {
     var lastTime = 0,
@@ -84,7 +84,7 @@ var a = new SetInterval(function () {
 ```
 >来自[rAF.js](https://gist.github.com/paulirish/1579671)。
 
-### *原生js*`requestAnimationFrame`的递归
+### *原生JS*`requestAnimationFrame`的递归
 ```javascript
 /**
  * 每一帧都执行一次func
@@ -120,7 +120,7 @@ var a = new RepeatRAF(function () {
 //a.stop();
 ```
 
-### *原生js*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
+### *原生JS*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
 ```javascript
 /**
  * 滚动到x、y轴指定位置
@@ -152,10 +152,10 @@ function animateTo(endX, endY, time) {
     }, runEvery);
 }
 ```
->使用[velocity动画库](https://github.com/julianshapiro/velocity)（[中文文档](http://www.mrfront.com/docs/velocity.js/)）做所有的动画（包括js和css）才是最简单且性能最佳的选择。
+>使用[velocity动画库](https://github.com/julianshapiro/velocity)（[中文文档](http://www.mrfront.com/docs/velocity.js/)）做所有的动画（包括JS和CSS）才是最简单且性能最佳的选择。
 >比如滚动到某位置：`$('html').velocity('scroll', {offset: y轴像素, duration: 毫秒});`。
 
-### *原生js*移动端获取触屏滚动距离(可改写为鼠标拖拽功能)
+### *原生JS*移动端获取触屏滚动距离(可改写为鼠标拖拽功能)
 ```javascript
 function touchMoveAct(dom) {
     var beginX,
@@ -199,7 +199,7 @@ touchMoveAct(document.getElementById('test'));
 ```
 >可以用`mousedown`、`mousemove`代替`touchstart`、`touchmove`来改写成鼠标拖拽。
 
-### *原生js*判断浏览器userAgent（`window.navigator`）
+### *原生JS*判断浏览器userAgent（`window.navigator`）
 ```javascript
 function SnifBrowser() {
     var self = this;
@@ -250,7 +250,7 @@ function SnifBrowser() {
 var a = new SnifBrowser();
 ```
 
-### *原生js*判断ie6、7、8、9版本
+### *原生JS*判断ie6、7、8、9版本
 ```javascript
 /**
  * 判断ie6、7、8、9版本
@@ -266,7 +266,7 @@ function isIE(num) {
 }
 ```
 
-### *原生js*判断ie所有版本
+### *原生JS*判断ie所有版本
 ```javascript
 /**
  * 判断ie所有版本
@@ -302,7 +302,7 @@ function detectIE() {
 }
 ```
 
-### *原生js*操作cookie
+### *原生JS*操作cookie
 ```javascript
 var cookieFuc = {
         /**
@@ -421,7 +421,7 @@ var cookieFuc = {
 ```
 >参考[MDN:cookie](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie#一个小框架：一个完整支持unicode的cookie读取写入器)。
 
-### *原生js*加入收藏夹
+### *原生JS*加入收藏夹
 ```javascript
 function addFavorite(url, title) {  /* url必须带有协议头*/
     if (window.external && 'addFavorite' in window.external) {
@@ -441,28 +441,44 @@ function addFavorite(url, title) {  /* url必须带有协议头*/
 addFavorite(window.location.href, '收藏名字');
 ```
 
-### *原生js*判断版本（e.g. 1.1.1）是否较低
+### *原生JS*比较版本号大小（纯数字）
 ```javascript
-function isLowerVersion(version, base) {
-    var arr1 = version.toString().split('.'),
-        arr2 = base.toString().split('.'),
-        length = arr1.length > arr2.length ? arr1.length : arr2.length,
-        i;
+    /**
+     * 比较版本号大小（纯数字）
+     * @param {Number|String} version - 比较数1
+     * @param {Number|String} base - 比较数2
+     * @param {String} [separator = '.'] - 版本分隔符
+     * @returns {String} flag - '=' 或 '>' 或 '<'
+     */
+    function versionCompare(version, base, separator) {
+        separator = separator || '.';
 
-    /* 两值不同*/
-    for (i = 0; i < length; i++) {
-        if (arr1[i] !== arr2[i]) {
+        var arr1 = version.toString().split(separator),
+            arr2 = base.toString().split(separator),
+            length = arr1.length > arr2.length ? arr1.length : arr2.length,
+            flag = '=',
+            i;
 
-            return parseInt(arr1[i]) < parseInt(arr2[i]);
+        for (i = 0; i < length; i++) {
+            arr1[i] = arr1[i] || '0';
+            arr2[i] = arr2[i] || '0';
+
+            if (arr1[i] !== arr2[i]) {  /* 两值不同*/
+                flag = parseInt(arr1[i]) < parseInt(arr2[i]) ? '<' : '>';
+
+                break;
+            }
         }
+
+        return flag;
     }
 
-    /* 两值相同*/
-    return false;
-}
+
+    /* 使用测试*/
+    console.log(versionCompare('1.1.10', '1.2'));
 ```
 
-### *原生js*判断检索内容是否在被检索内容的分隔符间
+### *原生JS*判断检索内容是否在被检索内容的分隔符间
 ```javascript
 /**
  * 判断key是否存在以separator分割的str当中
@@ -472,18 +488,20 @@ function isLowerVersion(version, base) {
  * @returns {Boolean} flag
  */
 function isKeyInStr(key, str, separator) {
+    separator = separator || '|';
+
     var flag = false,
         strArr, i;
 
     key = key.toString();
     str = str.toString();
 
-    separator = separator || '|';
     strArr = str.split(separator);
 
     for (i = 0; i < strArr.length; i++) {
         if (key === strArr[i]) {
             flag = true;
+            
             break;
         }
     }
@@ -492,22 +510,28 @@ function isKeyInStr(key, str, separator) {
 }
 ```
 
-### *原生js*选取范围内随机值
+### *原生JS*选取范围内随机值
 ```javascript
 /**
  * 选取范围内随机值
- * @param {Number} lowerNum - 下限
- * @param {Number} upperNum - 上限
+ * @param {Number} minimum - 下限（或上限）
+ * @param {Number} maximum - 上限（或下限）
  * @returns {Number} - 上下限区间内的随机值
  */
-function selectFrom(lowerNum, upperNum) {
-    var choices = upperNum - lowerNum + 1;
+function randomFrom(minimum, maximum) {
+    var medium;
 
-    return Math.floor(Math.random() * choices + lowerNum);
+    if (minimum > maximum) {
+        medium = minimum;
+        minimum = maximum;
+        maximum = medium;
+    }
+
+    return Math.floor(Math.random() * (maximum - minimum + 1) + minimum);
 }
 ```
 
-### *原生js*格式化文件属性（大小、日期）
+### *原生JS*格式化文件属性（大小、日期）
 ```javascript
 var format = {
     fileSize: function (bytes) {    /* 格式化文件大小*/
@@ -564,7 +588,7 @@ var format = {
 var a = format.date(new Date(Date.parse('Wed, 09 Aug 1995 00:00:00 GMT')),'yyyy-MM-dd HH:mm:ss');
 ```
 
-### *原生js*倒计时显示
+### *原生JS*倒计时显示
 ```javascript
 /**
  * 显示倒计时
@@ -677,7 +701,7 @@ var a = new CountDown(Date.now() + 500000, 'test1', function () {
 //a.stop();
 ```
 
-### *原生js*判断对象是否为空
+### *原生JS*判断对象是否为空
 ```javascript
 function isObjEmpty(obj) {
     var i;
@@ -700,7 +724,7 @@ function isObjEmpty(obj) {
 }
 ```
 
-### *原生js*移动端模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）
+### *原生JS*移动端模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）
 ```javascript
 /* 不要绑定click事件，用touchstart和touchend模拟，以消除“延时300毫秒后才触发”的问题*/
 
@@ -725,7 +749,7 @@ document.getElementById('...').addEventListener('touchend', function (e) {
 /* 还要处理浏览器默认点击事件（如a标签）*/
 ```
 
-### *原生js*判断是否是数组
+### *原生JS*判断是否是数组
 ```javascript
 function isArray(value) {
     if (typeof Array.isArray === 'function') {    /* ie8及以下不支持*/
@@ -733,58 +757,12 @@ function isArray(value) {
         return Array.isArray(value);
     } else {
 
-        return Object.prototype.toString.call(value) === '[Object Array]';  /* instanceof不能跨帧*/
+        return Object.prototype.toString.call(value) === '[Object Array]';
     }
 }
 ```
 
-### *原生js*深复制（仅针对原始类型、数组和最基本的对象，以及他们的组合）
-```javascript
-/**
- * 深复制
- * @param {Object|Array|Undefined|Null|Boolean|Number|String} obj - 深复制参数
- * @returns {Object|Array|Undefined|Null|Boolean|Number|String}
- */
-function deepCopy(obj) {
-    var i, newObj;
-
-    if (typeof obj !== 'object' || obj === null) {
-
-        return obj;
-    }
-
-    newObj = Object.prototype.toString.call(obj) === '[object Array]' ? [] : {};
-    
-    for (i in obj) {
-        newObj[i] = arguments.callee(obj[i]);
-    }
-
-    return newObj;
-}
-```
-
-### *原生js*对象合二为一（改变第一个参数）
-```javascript
-function extend(target, options) {
-    var copy, name;
-
-    for (name in options) {
-        copy = options[name];
-
-        if (Object.prototype.toString.call(copy) === '[object Array]') {
-            target[name] = arguments.callee([], copy);
-        } else if (Object.prototype.toString.call(copy) === '[object Object]') {
-            target[name] = arguments.callee(target[name] ? target[name] : {}, copy);
-        } else {
-            target[name] = options[name];
-        }
-    }
-
-    return target;
-}
-```
-
-### *原生js*从字符串中获取绝对路径
+### *原生JS*从字符串中获取绝对路径
 ```javascript
 function getAbsoluteUrl(url) {
     var domA;
@@ -801,7 +779,7 @@ function getAbsoluteUrl(url) {
 }
 ```
 
-### *原生js*判断事件在浏览器是否存在
+### *原生JS*判断事件在浏览器是否存在
 ```javascript
 /**
  * 判断DOM节点是否支持某事件
@@ -847,13 +825,13 @@ function isEventSupported(eventName, element) {
 }
 ```
 
-### *原生js*用整数进行小数的四则运算（避免浮点数运算误差）
+### *原生JS*用整数进行小数的四则运算（避免浮点数运算误差）
 ```javascript
 var fourOperations = {
     add: function (arg1, arg2) {    /* 加*/
-        var r1, r2, m, c, cm,
-            int1 = Number(arg1.toString().replace('.', '')),
-            int2 = Number(arg2.toString().replace('.', ''));
+        var int1 = Number(arg1.toString().replace('.', '')),
+            int2 = Number(arg2.toString().replace('.', '')),
+            r1, r2, m, c, cm;
 
         try {
             r1 = arg1.toString().split('.')[1].length;
@@ -920,7 +898,7 @@ var fourOperations = {
 };
 ```
 
-### *原生js*用请求图片作log统计
+### *原生JS*用请求图片作log统计
 ```javascript
 var sendLog = (function () {
     if (typeof Date.now !== 'function') {
@@ -962,7 +940,7 @@ var sendLog = (function () {
 sendLog('统计url');
 ```
 
-### *原生js*绑定、解绑事件
+### *原生JS*绑定、解绑事件
 1. 绑定事件
 
     ```javascript
@@ -1002,15 +980,15 @@ sendLog('统计url');
     }
     ```
 
-- `addEventListener`与`removeEventListener`是高级浏览器都有的方法（ie8-不支持），必须一一对应具体的handle和布尔值，才可以解绑。
-- `attachEvent`与`detachEvent`是ie特有方法，必须一一对应具体的handle，才可以解绑。
+- `addEventListener`与`removeEventListener`是高级浏览器都有的方法（ie8-不支持），必须一一对应具体的**handle**和**布尔值**进行解绑。
+- `attachEvent`与`detachEvent`是ie特有方法，必须一一对应具体的**handle**进行解绑。
 - `on+type`是所有浏览器都支持，用赋值覆盖解绑。
-- jQuery的`on`与`off`，不用一一对应某个handle：当写具体handle时解绑那个具体handle；不写默认解绑所有对象下某事件的方法。
+- jQuery的`on`与`off`：当写具体handle时解绑具体handle；不写handle时默认解绑对象下某事件的所有方法；还可以对事件添加namespace。
 
-### *原生js*、jQuery或Zepto获取事件对象引用、目标元素引用
+### *原生JS*、jQuery或Zepto获取事件对象引用、目标元素引用
 >ie8-的DOM0事件（直接on+type）没有传递**事件对象**到**事件处理函数**中，要额外的`window.event`对象进行相关操作。
 
-1. *原生js*
+1. *原生JS*
 
     ```javascript
     function getEvent(event) {
@@ -1035,10 +1013,10 @@ sendLog('统计url');
     });
     ```
 
-### *原生js*、jQuery或Zepto阻止冒泡和阻止浏览器默认行为
+### *原生JS*、jQuery或Zepto阻止冒泡和阻止浏览器默认行为
 1. 阻止冒泡
 
-    1. *原生js*
+    1. *原生JS*
     
         ```javascript
         function stopBubble(e) {
@@ -1058,7 +1036,7 @@ sendLog('统计url');
         ```
 2. 阻止默认行为
 
-    1. *原生js*
+    1. *原生JS*
     
         ```javascript
         function stopDefault(e) {
@@ -1080,7 +1058,7 @@ sendLog('统计url');
         ```
 3. 阻止冒泡&阻止默认行为
 
-    1. *原生js*
+    1. *原生JS*
 
         ```javascript
         function returnFalse(e) {
@@ -1104,8 +1082,8 @@ sendLog('统计url');
         });
         ```
 
-### *原生js*、jQuery或Zepto实现判断按下具体某键值
-1. *原生js*
+### *原生JS*、jQuery或Zepto实现判断按下具体某键值
+1. *原生JS*
 
     ```javascript
     function checkKeyCode(event) {
@@ -1140,7 +1118,7 @@ sendLog('统计url');
     });
     ```
 
-### *原生js*输入框光标位置的获取和设置
+### *原生JS*输入框光标位置的获取和设置
 ```javascript
 var cursorPosition = {
     /**
@@ -1173,6 +1151,7 @@ var cursorPosition = {
 
         return {start: start, select: selLen};
     },
+
     /**
      * 设置光标起始位置和选中长度
      * @param {Object} dom - 标签input或textarea的DOM对象
@@ -1239,7 +1218,7 @@ console.log(cursorPosition.set(输入框dom, 起始位置, 选中长度));
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/L3k46dy3/)
 
-### *原生js*阻止嵌入滚动条冒泡“橡皮筋效果”（iOS）
+### *原生JS*阻止嵌入滚动条冒泡“橡皮筋效果”（iOS）
 ```html
 <style>
     .bounce {
@@ -1300,7 +1279,7 @@ console.log(cursorPosition.set(输入框dom, 起始位置, 选中长度));
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/hbadqyew/)
 >参考[ScrollFix](https://github.com/joelambert/ScrollFix)。
 
-### *原生js*获取滚动轴宽度（或高度）
+### *原生JS*获取滚动轴宽度（或高度）
 ```javascript
 function getScrollBarWidth() {
     if (typeof arguments.callee.barWidth !== 'undefined') {
@@ -1322,12 +1301,12 @@ function getScrollBarWidth() {
 }
 ```
 
-### *原生js*防抖函数
+### *原生JS*防抖函数
 ```javascript
 /**
  * 函数连续调用时，间隔时间必须大于或等于wait，func才会执行
  * @param {Function} func - 传入函数
- * @param {Number} wait - 表示时间窗口的间隔
+ * @param {Number} wait - 函数触发的最小间隔
  * @param {Boolean} immediate - 设置为ture时，调用触发于开始边界而不是结束边界
  * @returns {Function} - 返回客户调用函数
  */
@@ -1390,12 +1369,12 @@ $(window).on('scroll', a);
 ```
 >来自[underscore](https://github.com/jashkenas/underscore)。
 
-### *原生js*节流函数
+### *原生JS*节流函数
 ```javascript
 /**
  * 函数连续调用时，func在wait时间内，执行次数不得高于1次
  * @param {Function} func - 传入函数
- * @param {Number} wait - 表示时间窗口的间隔
+ * @param {Number} wait - 函数触发的最小间隔
  * @param {Object} options - 如果想忽略开始边界上的调用，传入{leading: false}；如果想忽略结尾边界上的调用，传入{trailing: false}
  * @returns {Function} - 返回客户调用函数
  */
@@ -1468,7 +1447,7 @@ $(window).on('scroll', a);
 ```
 >来自[underscore](https://github.com/jashkenas/underscore)。
 
-### *原生js*`Array.prototype.map`的**Polyfill**
+### *原生JS*`Array.prototype.map`的**Polyfill**
 ```javascript
 if (!Array.prototype.map) {
     Array.prototype.map = function (callback, thisArg) {
@@ -1525,6 +1504,7 @@ if (!Array.prototype.map) {
     };
 }
 ```
+>来自[MDN:Array.prototype.map](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map#Compatibility)。
 
 ----
 ## jQuery（或Zepto）方法
@@ -1875,12 +1855,17 @@ if (!Array.prototype.map) {
     </script>
     ```
 
-> Zepto没有`deferred`的对象、没有`outerHeight`方法。
+> Zepto默认没有`deferred`的对象、没有`outerHeight`方法。
 
 ### jQuery或Zepto获取`HTTP response header`信息
 ```javascript
+/**
+ * 获取HTTP response header信息
+ * @param {String} [requestName] - 协议头字段名；若不传值，则返回完整HTTP头
+ * @returns {String|Boolean} text - HTTP头信息 或 '' 或 false
+ */
 function getResponseHeaders(requestName) {
-    var text;
+    var text = '';
 
     $.ajax({
         type: 'HEAD',
@@ -1894,11 +1879,13 @@ function getResponseHeaders(requestName) {
 
                 if (requestName) {
                     requestName += ': ';
+
                     headerArr = responseHeaders.split(/[\r\n]+/);
 
                     for (i = 0; i < headerArr.length; i++) {
                         if (headerArr[i].indexOf(requestName) === 0) {
                             text = headerArr[i].slice(requestName.length);
+
                             break;
                         }
                     }
@@ -1906,7 +1893,9 @@ function getResponseHeaders(requestName) {
                     text = responseHeaders;
                 }
             } else {
-                alert('获取头信息: ' + data);
+                text = false;
+
+                console.log('获取头信息错误: ' + data);
             }
         }
     });
@@ -1915,7 +1904,7 @@ function getResponseHeaders(requestName) {
 }
 ```
 
-### jQuery修复html标签`placeholder`属性无效
+### jQuery修复HTML标签`placeholder`属性无效
 ```javascript
 function fixPlaceholder($dom) {
     $dom = $dom || $('input, textarea');
@@ -2461,7 +2450,7 @@ function fixPlaceholder($dom) {
     ```
     [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/mvv9wxnw/)
 
-### jQuery或Zepto hover展示内容并且可跨越到内容
+### jQuery或Zepto hover展示内容并且可跨越间隙到内容
 ```html
 <div class="j-box">
     <div class="j-trigger">
@@ -2496,3 +2485,69 @@ function fixPlaceholder($dom) {
 </script>
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/zs6a7aco/)
+
+### jQuery或Zepto启动、暂停CSS动画
+```html
+<style>
+    .dom.z-hover {
+        animation: func 1s infinite;
+    }
+    @keyframes func {
+
+    }
+</style>
+
+<div class="dom j-dom-1">...</div>
+<div class="dom j-dom-2">...</div>
+
+<script>
+    /**
+     * hover触发animation
+     * @constructor
+     * @param {String} selector - 选择器
+     * @param {String} hoverClass - 类名
+     */
+    function AnimationHover(selector, hoverClass) {
+        if (typeof Date.now !== 'function') {
+            Date.now = function () {
+                return new Date().getTime();
+            };
+        }
+
+        var _isStop = false, /* 停止动画flag*/
+            _namespace = Date.now(), /* 事件命名空间*/
+            _init = function (selector, hoverClass) {
+                $(document).on('mouseenter' + '.' + _namespace, selector, function () {
+                    $(this).addClass(hoverClass);
+
+                    _isStop = false;
+                }).on('mouseleave' + '.' + _namespace, selector, function () {
+                    _isStop = true;
+                }).on('animationiteration' + '.' + _namespace, selector, function () {
+                    if (_isStop) {
+                        $(this).removeClass(hoverClass);
+
+                        _isStop = false;
+                    }
+                });
+            };
+
+        _init(selector, hoverClass);
+
+        this.stop = function () {
+            $(selector).removeClass(hoverClass);
+
+            $(document).off('mouseenter' + '.' + _namespace + ' ' + 'mouseleave' + '.' + _namespace + ' ' + 'animationiteration' + '.' + _namespace, selector);
+        }
+    }
+
+
+    /* 使用测试*/
+    var a = new AnimationHover('.j-dom-1', 'z-hover');
+    var b = new AnimationHover('.j-dom-2', 'z-hover');
+
+    //a.stop;
+    //b.stop;
+</script>
+```
+[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/Lukonj4s/)
