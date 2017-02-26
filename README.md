@@ -1,7 +1,7 @@
 ## 网站前端
 
->1. 本仓库内容是本人亲自测试得出的可执行经验，并非所有可能性的系统总结。
->2. 本仓库参照标准：**ECMAScript 5**、**CSS3**、**HTML5**。
+>1. 本repository内容是本人亲自测试得出的可执行经验，并非所有可能性的系统总结。
+>2. 本repository参照标准：**ECMAScript 5**、**CSS3**、**HTML5**。
 
 1. [js学习笔记](./网站前端/js学习笔记)
 2. js方法积累
@@ -18,7 +18,8 @@
     1. [gulpfile.js](./网站前端/gulp使用/tools/gulpfile.js)（雪碧图的模板：[pc.handlebars](./网站前端/gulp使用/tools/pc.handlebars)、[wap.handlebars](./网站前端/gulp使用/tools/wap.handlebars)）
     2. [package.json](./网站前端/gulp使用/tools/package.json)
 6. [ie6积累](./网站前端/ie6积累)
-7. 基础知识
+7. [前端概念](./网站前端/前端概念)
+8. 基础知识
 
     1. [Scss使用](./网站前端/Scss使用)
     2. [弹性盒子flex](./网站前端/html+css学习笔记/弹性盒子.md)
