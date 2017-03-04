@@ -1417,7 +1417,7 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
 
         `<a href="#" onclick="func();return false;">...</a>`
 2. 渐进增强：先完成基本通用功能，再追加额外功能。
-3. 向后兼容：确保老版本浏览器基本可用，使之虽不能支持某些功能，但仍能基本访问。
+3. 向前兼容：确保老版本浏览器基本可用，使之虽不能支持某些功能，但仍能基本访问。
 
     1. **能力检测：`if(func){func();}`**。
     2. 怪癖检测：`try-catch`。
