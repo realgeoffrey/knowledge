@@ -1509,170 +1509,6 @@ if (!Array.prototype.map) {
 ----
 ## jQuery（或Zepto）方法
 
-### jQuery或Zepto图片延时加载
-```html
-<img src="默认图地址" data-src="真实图地址" data-error="真实图错误后的默认图地址" class="j-img-1">
-<img src="默认图地址" data-src-user="真实图地址" data-error-user="真实图错误后的默认图地址" class="j-img-2">
-
-<script>
-    /**
-     * 图片延时加载
-     * @constructor
-     * @param {String} className - 触发的类名
-     * @param {String} [dataSrc = 'data-src'] - img标签上存放“真实地址”的属性
-     * @param {Function} func - 图片加载成功后回调函数，this和形参为图片DOM
-     * @param {String} [dataError = 'data-error'] - img标签上存放“真实地址加载失败后显示的地址”的属性
-     * @param {Function} errorFunc - 图片加载失败后回调函数，this和形参为图片DOM
-     */
-    function ImgLazyLoad(className, dataSrc, func, dataError, errorFunc) {
-        if (typeof Date.now !== 'function') {
-            Date.now = function () {
-                return new Date().getTime();
-            };
-        }
-
-        var _timeoutId,
-            _namespace = Date.now(), /* 事件命名空间*/
-            _lazyLoad = function (domArr, className, dataSrc, func, dataError, errorFunc) { /* 图片延时加载*/
-                dataSrc = dataSrc || 'data-src';
-                dataError = dataError || 'data-error';
-
-                $.each(domArr, function (index, value) {
-                    var $this = $(value);
-
-                    var srcReal = $this.attr(dataSrc),
-                        srcError = $this.attr(dataError),
-                        newImg = new Image();
-
-                    if (srcReal) {
-                        newImg.src = srcReal;
-
-                        newImg.onerror = function () {
-                            if (srcError) {
-                                $this.attr('src', srcError)
-                                    .removeAttr(dataError);
-                            }
-
-                            $this.removeClass(className);
-
-                            if (typeof errorFunc === 'function') {
-                                errorFunc.call(value, value);
-                            }
-
-                            /* 防止内存泄露*/
-                            newImg.onload = null;
-                            newImg.onerror = null;
-                            newImg = null;
-                        };
-
-                        if (newImg.complete) {    /* 缓存加载*/
-                            $this.attr('src', srcReal)
-                                .removeAttr(dataSrc)
-                                .removeClass(className);
-
-                            if (typeof func === 'function') {
-                                func.call(value, value);
-                            }
-
-                            /* 防止内存泄露*/
-                            newImg.onerror = null;
-                            newImg = null;
-                        } else {
-                            newImg.onload = function () {   /* 新加载*/
-                                $this.attr('src', srcReal)
-                                    .removeAttr(dataSrc)
-                                    .removeClass(className);
-
-                                if (typeof func === 'function') {
-                                    func.call(value, value);
-                                }
-
-                                /* 防止内存泄露*/
-                                newImg.onload = null;
-                                newImg.onerror = null;
-                                newImg = null;
-                            };
-                        }
-                    } else {
-                        if (srcError) {
-                            $this.attr('src', srcError)
-                                .removeAttr(dataError);
-                        }
-
-                        $this.removeClass(className);
-
-                        if (typeof errorFunc === 'function') {
-                            errorFunc.call(value, value);
-                        }
-
-                        /* 防止内存泄露*/
-                        newImg = null;
-                    }
-                });
-            },
-            _getImgArr = function (className, offset) { /* 获取屏幕内dom数组*/
-                var $all = $('.' + className),
-                    screenTop = $(window).scrollTop(),
-                    screenBottom = screenTop + $(window).height(),
-                    domArr = [];
-
-                if (typeof offset !== 'number') {
-                    offset = 50;
-                }
-
-                $all.each(function (index, element) {
-                    var elemTop = $(element).offset().top,
-                        elemBottom = elemTop + $(element).height(); /* jQuery可以用outerHeight*/
-
-                    if (elemTop <= screenBottom + offset && elemBottom >= screenTop - offset) {  /* 节点顶部在屏幕底部以上 && 节点底部在屏幕顶部以下*/
-                        domArr.push(element);
-                    }
-                });
-
-                return domArr;
-            },
-            _run = function (className, func) {    /* 触发*/
-                clearTimeout(_timeoutId);
-                _timeoutId = setTimeout(function () {
-                    _lazyLoad(_getImgArr(className), className, dataSrc, func, dataError, errorFunc);
-                }, 200);
-            },
-            _init = function (className, func) {
-                _run(className, func);
-
-                $(window).on('scroll' + '.' + _namespace, function () {
-                    _run(className, func);
-                });
-            };
-
-        this.stop = function () {    /* 解绑事件绑定*/
-            $(window).off('scroll' + '.' + _namespace);
-        };
-
-        _init(className, func);
-    }
-
-    /* 使用测试*/
-    var a = new ImgLazyLoad('j-img-1'),
-        b = new ImgLazyLoad(
-            'j-img-2',
-            'data-src-user',
-            function (e) {
-                console.log('成功', this, this === e);
-            },
-            'data-error-user',
-            function (e) {
-                console.log('失败', this, this === e);
-            }
-        );
-
-    //a.stop();
-    //b.stop();
-</script>
-```
-[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/j9dkuwwv/)
-
-
 ### jQuery或Zepto滚动加载
 1. 以**放置在底部的节点与屏幕的相对距离**作为是否滚动到底部的判断：
 
@@ -1856,6 +1692,169 @@ if (!Array.prototype.map) {
     ```
 
 > Zepto默认没有`deferred`的对象、没有`outerHeight`方法。
+
+### jQuery或Zepto图片延时加载
+```html
+<img src="默认图地址" data-src="真实图地址" data-error="真实图错误后的默认图地址" class="j-img-1">
+<img src="默认图地址" data-src-user="真实图地址" data-error-user="真实图错误后的默认图地址" class="j-img-2">
+
+<script>
+    /**
+     * 图片延时加载
+     * @constructor
+     * @param {String} className - 触发的类名
+     * @param {String} [dataSrc = 'data-src'] - img标签上存放“真实地址”的属性
+     * @param {Function} func - 图片加载成功后回调函数，this和形参为图片DOM
+     * @param {String} [dataError = 'data-error'] - img标签上存放“真实地址加载失败后显示的地址”的属性
+     * @param {Function} errorFunc - 图片加载失败后回调函数，this和形参为图片DOM
+     */
+    function ImgLazyLoad(className, dataSrc, func, dataError, errorFunc) {
+        if (typeof Date.now !== 'function') {
+            Date.now = function () {
+                return new Date().getTime();
+            };
+        }
+
+        var _timeoutId,
+            _namespace = Date.now(), /* 事件命名空间*/
+            _lazyLoad = function (domArr, className, dataSrc, func, dataError, errorFunc) { /* 图片延时加载*/
+                dataSrc = dataSrc || 'data-src';
+                dataError = dataError || 'data-error';
+
+                $.each(domArr, function (index, value) {
+                    var $this = $(value);
+
+                    var srcReal = $this.attr(dataSrc),
+                        srcError = $this.attr(dataError),
+                        newImg = new Image();
+
+                    if (srcReal) {
+                        newImg.src = srcReal;
+
+                        newImg.onerror = function () {
+                            if (srcError) {
+                                $this.attr('src', srcError)
+                                    .removeAttr(dataError);
+                            }
+
+                            $this.removeClass(className);
+
+                            if (typeof errorFunc === 'function') {
+                                errorFunc.call(value, value);
+                            }
+
+                            /* 防止内存泄露*/
+                            newImg.onload = null;
+                            newImg.onerror = null;
+                            newImg = null;
+                        };
+
+                        if (newImg.complete) {    /* 缓存加载*/
+                            $this.attr('src', srcReal)
+                                .removeAttr(dataSrc)
+                                .removeClass(className);
+
+                            if (typeof func === 'function') {
+                                func.call(value, value);
+                            }
+
+                            /* 防止内存泄露*/
+                            newImg.onerror = null;
+                            newImg = null;
+                        } else {
+                            newImg.onload = function () {   /* 新加载*/
+                                $this.attr('src', srcReal)
+                                    .removeAttr(dataSrc)
+                                    .removeClass(className);
+
+                                if (typeof func === 'function') {
+                                    func.call(value, value);
+                                }
+
+                                /* 防止内存泄露*/
+                                newImg.onload = null;
+                                newImg.onerror = null;
+                                newImg = null;
+                            };
+                        }
+                    } else {
+                        if (srcError) {
+                            $this.attr('src', srcError)
+                                .removeAttr(dataError);
+                        }
+
+                        $this.removeClass(className);
+
+                        if (typeof errorFunc === 'function') {
+                            errorFunc.call(value, value);
+                        }
+
+                        /* 防止内存泄露*/
+                        newImg = null;
+                    }
+                });
+            },
+            _getImgArr = function (className, offset) { /* 获取屏幕内dom数组*/
+                var $all = $('.' + className),
+                    screenTop = $(window).scrollTop(),
+                    screenBottom = screenTop + $(window).height(),
+                    domArr = [];
+
+                if (typeof offset !== 'number') {
+                    offset = 50;
+                }
+
+                $all.each(function (index, element) {
+                    var elemTop = $(element).offset().top,
+                        elemBottom = elemTop + $(element).height(); /* jQuery可以用outerHeight*/
+
+                    if (elemTop <= screenBottom + offset && elemBottom >= screenTop - offset) {  /* 节点顶部在屏幕底部以上 && 节点底部在屏幕顶部以下*/
+                        domArr.push(element);
+                    }
+                });
+
+                return domArr;
+            },
+            _run = function (className, func) {    /* 触发*/
+                clearTimeout(_timeoutId);
+                _timeoutId = setTimeout(function () {
+                    _lazyLoad(_getImgArr(className), className, dataSrc, func, dataError, errorFunc);
+                }, 200);
+            },
+            _init = function (className, func) {
+                _run(className, func);
+
+                $(window).on('scroll' + '.' + _namespace, function () {
+                    _run(className, func);
+                });
+            };
+
+        this.stop = function () {    /* 解绑事件绑定*/
+            $(window).off('scroll' + '.' + _namespace);
+        };
+
+        _init(className, func);
+    }
+
+    /* 使用测试*/
+    var a = new ImgLazyLoad('j-img-1'),
+        b = new ImgLazyLoad(
+            'j-img-2',
+            'data-src-user',
+            function (e) {
+                console.log('成功', this, this === e);
+            },
+            'data-error-user',
+            function (e) {
+                console.log('失败', this, this === e);
+            }
+        );
+
+    //a.stop();
+    //b.stop();
+</script>
+```
+[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/j9dkuwwv/)
 
 ### jQuery或Zepto获取`HTTP response header`信息
 ```javascript

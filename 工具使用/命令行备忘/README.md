@@ -22,3 +22,8 @@ nvm list
 nvm uninstall v旧版本号
 ```
 >需重装Node.js模块包。
+
+### 远程拷贝文件
+```bash
+scp -P 端口号 远程用户名@远程地址:远程地址路径 本地存放路径
+```

@@ -104,3 +104,10 @@
     ```bash
     .idea
     ```
+
+### 恢复内容
+1. 未提交的内容清空、恢复
+
+    ```bash
+    git reset --hard HEAD
+    ```
