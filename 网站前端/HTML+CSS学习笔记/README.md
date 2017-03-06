@@ -1827,7 +1827,7 @@ ul {
         >使用自适应结构，比如：[自适应宽度布局](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#自适应宽度布局)。
     3. 弹性图片：`img {max-width: 100%;}`
 
-### 响应式页面解决方案：使用rem单位+媒体查询
+### 响应式页面解决方案：使用rem+媒体查询
 >rem：相对于根元素的字体大小的单位。rem单位转换为具体px值：**rem乘于html的font-size像素**。
 
 1. 媒体查询设置html的font-size，把要做成响应式的内容转换为rem单位。
