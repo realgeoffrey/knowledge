@@ -2,16 +2,6 @@
 
 ## 原生JS方法
 
-### *原生JS*`Date.now`的**Polyfill**
-```javascript
-if (typeof Date.now !== 'function') {
-    Date.now = function () {
-        return new Date().getTime();
-    };
-}
-```
->`Date.now()`相对于`new Date().getTime()`及其他方式，可以避免生成不必要的`Date`对象，更高效。
-
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript
 /**
@@ -48,41 +38,6 @@ var a = new SetInterval(function () {
 
 //a.stop();
 ```
-
-### *原生JS*`requestAnimationFrame`和`cancelAnimationFrame`的**Polyfill**
-```javascript
-(function () {
-    var lastTime = 0,
-        vendors = ['ms', 'moz', 'webkit', 'o'],
-        x;
-
-    for (x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
-    }
-
-    if (!window.requestAnimationFrame) {
-        window.requestAnimationFrame = function (callback, element) {
-            var currTime = new Date().getTime(),
-                timeToCall = Math.max(0, 16 - (currTime - lastTime)),
-                id = window.setTimeout(function () {
-                    callback(currTime + timeToCall);
-                }, timeToCall);
-
-            lastTime = currTime + timeToCall;
-
-            return id;
-        };
-    }
-
-    if (!window.cancelAnimationFrame) {
-        window.cancelAnimationFrame = function (id) {
-            clearTimeout(id);
-        };
-    }
-}());
-```
->来自[rAF.js](https://gist.github.com/paulirish/1579671)。
 
 ### *原生JS*`requestAnimationFrame`的递归
 ```javascript
@@ -1447,6 +1402,53 @@ $(window).on('scroll', a);
 ```
 >来自[underscore](https://github.com/jashkenas/underscore)。
 
+## Polyfill
+
+### *原生JS*`Date.now`的**Polyfill**
+```javascript
+if (typeof Date.now !== 'function') {
+    Date.now = function () {
+        return new Date().getTime();
+    };
+}
+```
+>`Date.now()`相对于`new Date().getTime()`及其他方式，可以避免生成不必要的`Date`对象，更高效。
+
+### *原生JS*`requestAnimationFrame`和`cancelAnimationFrame`的**Polyfill**
+```javascript
+(function () {
+    var lastTime = 0,
+        vendors = ['ms', 'moz', 'webkit', 'o'],
+        x;
+
+    for (x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+    }
+
+    if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = function (callback, element) {
+            var currTime = new Date().getTime(),
+                timeToCall = Math.max(0, 16 - (currTime - lastTime)),
+                id = window.setTimeout(function () {
+                    callback(currTime + timeToCall);
+                }, timeToCall);
+
+            lastTime = currTime + timeToCall;
+
+            return id;
+        };
+    }
+
+    if (!window.cancelAnimationFrame) {
+        window.cancelAnimationFrame = function (id) {
+            clearTimeout(id);
+        };
+    }
+}());
+```
+>来自[rAF.js](https://gist.github.com/paulirish/1579671)。
+
 ### *原生JS*`Array.prototype.map`的**Polyfill**
 ```javascript
 if (!Array.prototype.map) {
@@ -1505,6 +1507,55 @@ if (!Array.prototype.map) {
 }
 ```
 >来自[MDN:Array.prototype.map](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map#Compatibility)。
+
+### *原生JS*`Object.create`的**Polyfill**
+```javascript
+if (typeof Object.create !== 'function') {
+    // Production steps of ECMA-262, Edition 5, 15.2.3.5
+    // Reference: http://es5.github.io/#x15.2.3.5
+    Object.create = (function () {
+        //为了节省内存，使用一个共享的构造器
+        function Temp() {}
+
+        // 使用 Object.prototype.hasOwnProperty 更安全的引用
+        var hasOwn = Object.prototype.hasOwnProperty;
+
+        return function (O) {
+            // 1. 如果 O 不是 Object 或 null，抛出一个 TypeError 异常。
+            if (typeof O != 'object') {
+                throw TypeError('Object prototype may only be an Object or null');
+            }
+
+            // 2. 使创建的一个新的对象为 obj ，就和通过
+            //    new Object() 表达式创建一个新对象一样，
+            //    Object是标准内置的构造器名
+            // 3. 设置 obj 的内部属性 [[Prototype]] 为 O。
+            Temp.prototype = O;
+            var obj = new Temp();
+            Temp.prototype = null; // 不要保持一个 O 的杂散引用（a stray reference）...
+
+            // 4. 如果存在参数 Properties ，而不是 undefined ，
+            //    那么就把参数的自身属性添加到 obj 上，就像调用
+            //    携带obj ，Properties两个参数的标准内置函数
+            //    Object.defineProperties() 一样。
+            if (arguments.length > 1) {
+                // Object.defineProperties does ToObject on its first argument.
+                var Properties = Object(arguments[1]);
+
+                for (var prop in Properties) {
+                    if (hasOwn.call(Properties, prop)) {
+                        obj[prop] = Properties[prop];
+                    }
+                }
+            }
+
+            // 5. 返回 obj
+            return obj;
+        };
+    })();
+}
+```
+>来自[MDN:Object.create](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill)。
 
 ----
 ## jQuery（或Zepto）方法

@@ -185,19 +185,6 @@
 
         `文档滚动高度 === 0`
 
-### 数组的值传递
-对于数组`arr`：
-
-1. 清空数组
-
-    1. `arr = [];   /* 不改变原始数组（新赋值一个空数组）*/`
-    2. `arr.length = 0; /* 改变原始数组*/`
-    3. `arr.splice(0, arr.length);  /* 改变原始数组*/`
-2. 操作数组形参，不改变数组实参
-
-    1. 浅复制：`arr = arr.slice(0);`
-    2. 深复制：[代码实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)。
-
 ### JS代码风格规范（coding style guide）
 1. 声明
 
@@ -357,25 +344,23 @@
         ```
 8. 注释规范
 
-    1. 单行注释
-
-        `//`后不空格
+    1. 单行注释：`//`后不空格
 
         - 使用场景：
 
             1. 代码上方独占一行，缩进与备注内容一致，注释前必须空一行。
-            2. 代码尾部，至少一个缩进（若注释太长则必须挪到代码上方）。
+            2. 代码尾部（至少一个缩进）。
             3. 被注释的大段代码。
-    2. 多行注释
+    2. 多行注释：`/*`和`*`后空一格
 
-        `/*`和`*`后空一格
-
-        - 代码上方独占多行，缩进与备注内容一致，注释前必须空一行。
         - 使用场景：
 
-            1. 难以理解的代码。
-            2. 可能被误认为错误的代码。
-            3. 浏览器特性hack。
+            1. 代码上方独占多行，缩进与备注内容一致，注释前必须空一行。
+            2. 作用：
+
+                1. 难以理解的代码。
+                2. 可能被误认为错误的代码。
+                3. 浏览器特性hack。
     3. 函数注释规范（使用部分[JSDoc](http://usejsdoc.org/)）
 
         ```javascript
@@ -413,6 +398,38 @@
     13. 建构函数的函数名，采用首字母大写；其他函数名，一律首字母小写。
     14. 不要使用自增（++）和自减（--）运算符，用+=和-=代替。
     15. 总是使用大括号表示区块。
+10. 用户体验
+
+    1. 平稳退化：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
+
+        1. 为JS代码预留出退路（a标签添加属性链接，用JS事件绑定去拦截浏览器默认行为）
+
+            `<a href="真实地址" class="j-func">...</a>`
+
+        2. ~~伪协议`javascript:`~~
+
+            `<a href="javascript: func();">...</a>`
+
+        3. ~~内嵌事件处理函数~~
+
+            `<a href="#" onclick="func();return false;">...</a>`
+    2. 渐进增强：先完成基本通用功能，再追加额外功能。
+    3. 向前兼容：确保老版本浏览器基本可用，使之虽不能支持某些功能，但仍能基本访问。
+
+        1. **能力检测：`if(func){func();}`**（最正确方式）。
+        2. 怪癖检测：`try-catch`。
+        3. 浏览器嗅探技术（用户代理检测）。
+    4. 资源分离：把样式表和脚本分离出HTML。
+
+        1. 使用外部资源。
+        2. 不在HTML上用事件处理函数。
+        3. 对只为DOM增添的内容，转移到外部资源中动态创建。
+    5. 性能提升。
+
+        1. 减少访问DOM（搜索结果保存在变量中）。
+        2. 减少外链请求数量（合并JS、CSS、图片）。
+        3. 压缩资源。
+        4. 脚本放置在`</body>`前。
 
 ### 编程实践（programming practices）
 1. UI层的松耦合
@@ -591,15 +608,15 @@
 >2. wap端有`touchstart`、`touchmove`、`touchend`、`touchcancel`等`touch`一系列事件。
 >3. Zepto用`touch`一系列事件封装了`tap`事件。
 
-- 点透现象：
+1. 点透现象：
 
     使用Zepto的`tap`事件绑定（或直接使用`touchstart`绑定）后，若此元素在触摸事件发生后离开原始位置（CSS或JS方式），底下同一位置正好有一个DOM元素绑定了`click`事件或有一个a标签，则会出现“点透”bug（触发了底下元素的点击事件）。
-- 原因：
+2. 原因：
 
     wap端触摸事件顺序：`touchstart`->`touchmove`->`touchend`->`click`，触摸一瞬间就触发`touchstart`（触摸结束后瞬间触发Zepto封装的`tap`事件），触摸结束后300ms才触发`click`事件。
 
     >有可能已经不存在此bug：被浏览器取消`click`事件的延时，或Zepto改变了`tap`事件实现。
-- 解决方法：
+3. 解决方法：
 
     1. 最佳实践：
 
@@ -620,41 +637,6 @@
 
     一个函数无法在间隔时间内连续执行，当上一次函数执行后过了规定的间隔时间后才能进行下一次该函数的调用。
     >可用`requestAnimationFrame`代替*时间设置为一帧的节流函数*：`throttle(func, 16) `。
-
-### jQuery或Zepto相关
-1. 判断是否加载成功，不成功则执行载入本地文件
-
-    ```html
-    <script>
-        window.jQuery || document.write('<script src="本地地址"><\/script>');
-    </script>
-    ```
-2. 当变量是jQuery或Zepto对象是，可以用`$`作为开头命名，利于与普通变量区别
-
-    ```javascript
-    var a = 1;
-    var $a = $('a');
-    ```
-3. 选择器
-    1. `$('子','父') === $('父').find('子')`
-
-        找到所有父级，若子级在此父级后面，则选择。
-    2. ~~`$('父 子')`~~（效率低）
-
-        找到所有子级，然后向前找出有父级的，则选择。
-        >与CSS相同的查询方式。
-4. 选择器选择到空内容
-
-    无论选择器选取的内容是否为空，都返回数组，所以`if($(...)) {}`永远成立。因此用以下方法：
-
-    1. `if($(...).length > 0) {}    /* 若无则为0*/`
-    2. `if($(...)[0]) {}   /* 若无则为undefined*/`
-5. `focus`方法
-
-    1. 直接调用，光标停留在文本开头或上一次光标停留的地方。
-    2. 先清空文本再`focus`然后再添加文本，光标停留在文本结尾。
-    
-    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/zep4cr3p/)
 
 ### 跨域请求
 >浏览器同源策略限制
@@ -720,32 +702,34 @@
     >ie10+支持。
 
     若服务端配置允许了某些（或所有）域名，就可以进跨域请求（前端不需要进行额外工作）。
-5. 父窗口改变iframe的hash，iframe通过监听hash变化的`hashchange`事件获取父窗口信息
+5. 其他比较绕的方法
 
-    >ie8+支持。若只改变hash值，页面不会重新刷新。
-
-    ```javascript
-    //父窗口改变iframe的hash值
-    document.getElementById('new-iframe').src = '除了hash值，url不变（父级与iframe不需要同源）';
-
-    //iframe窗口监听hash变化，以hash变化当做信息的传递
-    window.onhashchange = function(){
-        var message = window.location.hash;
-        //...
-    };
-    ```
-6. 通过监听`window.name`传递信息
-
-    >同会话（tab窗口）前后跳转的页面都可以读取和设置同一个`window.name`值。
-
-    1. 父窗口打开一个子窗口，载入一个不同源的网页，该网页将信息写入window.name属性；
-    2. 子窗口跳回一个与主窗口同域的网址；
-    3. 主窗口可以读取子窗口的window.name值作为信息的传递。
+    1. 父窗口改变iframe的hash，iframe通过监听hash变化的`hashchange`事件获取父窗口信息
+    
+        >ie8+支持。若只改变hash值，页面不会重新刷新。
+    
+        ```javascript
+        //父窗口改变iframe的hash值
+        document.getElementById('new-iframe').src = '除了hash值，url不变（父级与iframe不需要同源）';
+    
+        //iframe窗口监听hash变化，以hash变化当做信息的传递
+        window.onhashchange = function(){
+            var message = window.location.hash;
+            //...
+        };
+        ```
+    2. 通过监听`window.name`传递信息
+    
+        >同会话（tab窗口）前后跳转的页面都可以读取和设置同一个`window.name`值。
+    
+        1. 父窗口打开一个子窗口，载入一个不同源的网页，该网页将信息写入window.name属性；
+        2. 子窗口跳回一个与主窗口同域的网址；
+        3. 主窗口可以读取子窗口的window.name值作为信息的传递。
 
 ### 深复制（拷贝）实现思路
 >参考[深入剖析JavaScript的深复制](http://jerryzou.com/posts/dive-into-deep-clone-in-javascript/)。
 
-1. 递归赋值
+1. **递归赋值**（最全面方式）
 2. 针对**仅能够被json直接表示的数据结构（对象、数组、数值、字符串、布尔值、null）**
 
     `JSON.parse(JSON.stringify(obj));`
@@ -755,14 +739,79 @@
 
 >深复制要处理的坑：循环引用、各种引用类型。
 
+### 数组的值传递
+对于数组`arr`：
+
+1. 清空数组
+
+    1. `arr = [];   /* 不改变原始数组（新赋值一个空数组）*/`
+    2. `arr.length = 0; /* 改变原始数组*/`
+    3. `arr.splice(0, arr.length);  /* 改变原始数组*/`
+2. 操作数组形参，不改变数组实参
+
+    1. 浅复制：`arr = arr.slice(0);`
+    2. 深复制：[代码实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)。
+
+### jQuery或Zepto相关
+1. 当变量是jQuery或Zepto对象是，可以用`$`作为开头命名，利于与普通变量区别
+
+    ```javascript
+    var a = 1;
+    var $a = $('a');
+    ```
+2. 选择器
+    1. `$('子','父') === $('父').find('子')`
+
+        找到所有父级，若子级在此父级后面，则选择。
+    2. ~~`$('父 子')`~~（效率低）
+
+        找到所有子级，然后向前找出有父级的，则选择。
+        >与CSS相同的查询方式。
+3. 选择器选择到空内容
+
+    无论选择器选取的内容是否为空，都返回数组，所以`if($(...)) {}`永远成立。因此用以下方法：
+
+    1. `if($(...).length > 0) {}    /* 若无则为0*/`
+    2. `if($(...)[0]) {}   /* 若无则为undefined*/`
+4. `on`绑定效率
+
+    >e.g. `$(eventHandler).on(event, selector, func);`
+
+    1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的内容，成为**eventHandler**。有且仅有这些eventHandler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的eventHandler处理DOM（比如删除类名）也不会使绑定内容失效（除非删除）；在eventHandler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
+    2. 绑定的eventHandler距离selector越近，效率越高。因此虽然把selector都绑定在`$(document)`上能够避免增删节点对事件绑定造成的影响，但确是低效的。
+5. 判断是否加载成功，不成功则执行载入本地文件
+
+    ```html
+    <script>
+        window.jQuery || document.write('<script src="本地地址"><\/script>');
+    </script>
+    ```
+6. `focus`方法
+
+    1. 直接调用，光标停留在文本开头或上一次光标停留的地方。
+    2. 先清空文本再`focus`然后再添加文本，光标停留在文本结尾。
+
+    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/zep4cr3p/)
+7. [`deferred`](http://api.jquery.com/category/deferred-object/)
+
+    >参考[阮一峰：jQuery的deferred对象详解](http://www.ruanyifeng.com/blog/2011/08/a_detailed_explanation_of_jquery_deferred_object.html)、[阮一峰：jQuery.Deferred对象](http://javascript.ruanyifeng.com/jquery/deferred.html)。
+
+    1. `Promise对象`是`Deferred对象`的子集。相对于`Deferred对象`，`Promise对象`无法改变执行状态。
+
+        `Promise对象`：
+
+        1. 开放**与改变执行状态无关的方法**：`always`、`catch`、`done`、`fail`、`pipe`、`progress`、`promise`、`state`、`then`
+        2. 屏蔽**与改变执行状态有关的方法**：`notify`、`notifyWith`、`reject`、`rejectWith`、`resolve`、`resolveWith`
+    2. `$.ajax`返回`Promise对象`；允许把所有jQuery对象设置为`Promise对象`（如动画方法后接`.promise().done(方法)`）。
+
 ----
 ## 功能用法
 
 ### 判断类型
 1. `Object.prototype.toString.apply(值);  /* 或call*/`
 
-    - 没有跨帧问题。
-    - 放入**内置对象**，返回`'[object 构造函数的名称]'`的字符串
+    1. 没有跨帧问题。
+    2. 放入**内置对象**，返回`'[object 构造函数的名称]'`的字符串
 
         >特例：自定义类型返回`'[object Object]'`，*undefined*、*null*返回对应名字。
 
@@ -792,8 +841,8 @@
         >`if (typeof 变量 !== 'undefined' && Object.prototype.toString.call(变量) === '[object 某]') {}`
 2. `typeof 值`
 
-    - 没有跨帧问题。
-    - 返回一个表示值类型的字符串。
+    1. 没有跨帧问题。
+    2. 返回一个表示值类型的字符串。
     
         1. 字符串 -> `'string'`
         2. 布尔型 -> `'boolean'`
@@ -808,7 +857,7 @@
 
 3. `对象 instanceof 构造函数`
 
-    - 不能跨帧（iframe、window.open）。
+    1. 不能跨帧（iframe、window.open）。
 
         >跨帧：假设在一个浏览器的帧（frame A）里的一个对象传入到另外一个帧（frame B）中，两个帧都定义了一个相同构造函数APerson、BPerson，则：
         >
@@ -816,16 +865,16 @@
         >frameAPersonInstance instanceof frameAPerson; //true
         >frameAPersonInstance instanceof frameBPerson; //false
         >```
-    - 判断是否是对象的构造函数（判断某个构造函数的prototype属性所指向的对象是否存在于另外一个要检测对象的原型链上）。
-    - 不仅检测对象本身，还检测至原型链。如`new Number() instanceof Object`返回true。
-    - **检测自定义类型的唯一方法。**
+    2. 判断是否是对象的构造函数（判断某个构造函数的prototype属性所指向的对象是否存在于另外一个要检测对象的原型链上）。
+    3. 不仅检测对象本身，还检测至原型链。如`new Number() instanceof Object`返回true。
+    4. **检测自定义类型的唯一方法。**
 4. `属性 in 对象`
 
-    - 仅判断属性是否存在检测的对象上，不会去读取属性值。
-    - 检测至原型链。
+    1. 仅判断属性是否存在检测的对象上，不会去读取属性值。
+    2. 检测至原型链。
 
-    >- `对象.hasOwnProperty(属性)`仅检查在当前实例对象，不检测其原型链。
-    >- ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
+    >1. `对象.hasOwnProperty(属性)`仅检查在当前实例对象，不检测其原型链。
+    >2. ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
 
 ### 循环遍历
 >1. `break`应用在循环（while、do-while、for、for-in）和switch。
@@ -892,6 +941,8 @@
     ```
 
 ### Web Storage、cookie、session
+>前端基本仅使用Web Storage；cookie仅用于服务端判定登录状态。
+
 1. Web Storage（`localStorage`、`sessionStorage`）
 
     1. 客户端保存，不参与和服务器的通信。
@@ -960,10 +1011,8 @@
 
 >隐身模式策略：（大多数浏览器的策略）存储API仍然可用，并且看起来功能齐全，只是无法真正储存（比如分配储存空间为0）。
 
-### 自执行匿名函数
->匿名函数，也称为**拉姆达（λ，lambda）函数**。
-
-1. `(function () {/* code*/}());    /* 推荐*/`
+### 自执行匿名函数（拉姆达，λ，lambda）
+1. `(function () {/* code*/}());`（推荐方式）
 2. `(function () {/* code*/})();`
 
 >1. `function`关键字当作一个**函数声明**的开始，函数声明的后面不能跟圆括号；
@@ -1192,6 +1241,9 @@ for (var i = 0; i < 3; i++) {
         [用setTimeout模拟setInterval](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用settimeout模拟setinterval)，可以提高性能（上一次执行完毕间隔时间后再执行下一次，而不是固定间隔时间都尝试执行），并且可以确保每次*定时器处理程序*执行间隔一定大于（或等于）设置的间隔时间。
 2. 重绘函数`requestAnimationFrame`
 
+    >1. 高级浏览器才有定义此方法，因此需要[Polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe和cancelanimationframe的polyfill)。
+    >2. 类似`setInterval`实现[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
+
     1. 浏览器重绘之前（大部分浏览器是1秒钟60帧，也就是16.67ms进行一帧重绘）调用一次。
     2. 替代*执行时机无法保证的`setTimeout`或`setInterval`*进行动画操作，提升动画性能：
 
@@ -1199,24 +1251,31 @@ for (var i = 0; i < 3; i++) {
         2. 仅仅绘制用户可见的动画。这意味着没把CPU或电池寿命浪费在绘制处于背景标签，最小化窗口，或者页面隐藏区域的动画上。
         3. 当浏览器准备好绘制时（空闲时），才绘制一帧，此时没有等待中的帧。意味着其绘制动画不可能出现多个排队的回调函数，或者阻塞浏览器。因此动画更平滑，CPU和电池使用被进一步优化。
 
-    >1. 高级浏览器才有定义此方法，因此需要[Polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe和cancelanimationframe的polyfill)。
-    >2. 类似`setInterval`实现[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
-
-### jQuery的[`deferred`](http://api.jquery.com/category/deferred-object/)
->参考[阮一峰：jQuery的deferred对象详解](http://www.ruanyifeng.com/blog/2011/08/a_detailed_explanation_of_jquery_deferred_object.html)、[阮一峰：jQuery.Deferred对象](http://javascript.ruanyifeng.com/jquery/deferred.html)。
-
-jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准实现。
-
-1. `Promise对象`是`Deferred对象`的子集。相对于`Deferred对象`，`Promise对象`无法改变执行状态。
-
-    `Promise对象`：
-
-    1. 开放**与改变执行状态无关的方法**：`always`、`catch`、`done`、`fail`、`pipe`、`progress`、`promise`、`state`、`then`
-    2. 屏蔽**与改变执行状态有关的方法**：`notify`、`notifyWith`、`reject`、`rejectWith`、`resolve`、`resolveWith`
-2. `$.ajax`返回`Promise对象`；允许把所有jQuery对象设置为`Promise对象`（如动画方法后接`.promise().done(方法)`）。
-
 ----
 ## 性能原理
+
+### 引用类型与基本类型的变量传递
+1. 只能给引用类型动态地添加属性和方法，不能给基本类型添加。
+2. JS的变量传递都是**值传递**，都是把变量中存储的值复制一份给另一个变量。
+
+    1. 基本类型的复制
+
+        把变量的值复制到新变量分配的位置上，两个变量可以参与任何操作而不会互相影响。
+    2. 引用类型的复制
+
+        引用类型的变量保存的是指向该对象内容的指针，复制给新变量指针后，两个变量实际上引用同一对象，改变其中一个引用对象中的属性，会影响另一个。但是如果给其中一个引用对象赋值（不是操作属性），因为值引用改变了引用地址，所以两个变量不再保存同一个指针。
+
+    >所有函数的参数都是按值来传递的。基本类型值的传递和基本类型变量复制一致（采用在栈内新建值），引用类型值的传递和引用类型变量的复制一致（栈内存放的是指针，指向堆中同一对象）。
+3. 引用类型的**浅、深复制（拷贝）**
+
+    1. 浅复制
+
+        1. 拷贝对象A时，对象B将拷贝A的所有字段。若字段是引用类型（内存地址），B将拷贝地址；若字段是基本类型，B将复制其值。
+        2. 缺点是：如果改变了对象B（或A）所指向的内存地址存储的值，同时也改变了对象A（或B）指向这个地址的存储的值。
+    2. 深复制
+
+        1. 完全拷贝所有数据。
+        2. 优点是：B与A不会相互依赖（A，B完全脱离关联）；缺点是：拷贝的速度更慢，代价更大。
 
 ### 函数
 1. 每个函数都是一个`Function`对象，像普通对象一样拥有**属性**和**方法**。
@@ -1259,8 +1318,8 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
         >console.log(typeof func2);  /* undefined*/
         >```
 
-    >- 通过函数声明和函数表达式定义的函数只会被解析一次；而构造函数定义的函数在每次构造函数被调用，函数体字符串都要被解析一次。
-    >- 不推荐使用Function构造函数创建函数，因为它需要的函数体作为字符串可能会阻止一些JS引擎优化，也会引起其他问题。
+    >1. 通过函数声明和函数表达式定义的函数只会被解析一次；而构造函数定义的函数在每次构造函数被调用，函数体字符串都要被解析一次。
+    >2. 不推荐使用Function构造函数创建函数，因为它需要的函数体作为字符串可能会阻止一些JS引擎优化，也会引起其他问题。
 4. 实例化（new）一个构造函数
 
     `new`得到的对象拥有构造函数内用`this`定义的属性（或方法）以及原型链上的属性（或方法），在构造函数内`var`的变量和`function`无法被这个对象使用，只能在构造函数里使用（类似私有变量）。
@@ -1369,7 +1428,127 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
     ```
 3. 通过**原型链**实现**继承**。
 
-    继承：通过**将一个类型的实例赋值给另一个构造函数的原型**实现。
+### 继承
+1. 继承原理
+
+    1. **将一个构造函数的实例（父类）赋值给另一个构造函数的原型（子类）**。
+    2. 在子类构造函数内部调用父类构造函数。
+
+    >Object的实例是所有函数的默认原型。因此，所有自定义类型都会继承默认方法：
+    >`hasOwnProperty`、`isPrototypeOf`、`propertyIsEnumerable`、`toLocaleString`、`toString`、`valueOf`。
+2. 继承方式
+
+    1. 原型式继承
+
+        `Object.create`（[Polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsobjectcreate的polyfill)）
+
+        >问题：包含引用类似值的属性，始终会共享给原型与所有实例（浅复制）。
+    2. **寄生组合式继承**（最理想方式）
+
+        通过借用构造函数来继承**属性**（在子类构造函数内部调用父类构造函数）；通过原型链的混成形式来继承**方法**。
+
+        ```javascript
+        /* 父类定义：*/
+        function Father(fatherPara) {
+            /* 父类属性*/
+            this.fatherPrimitive = fatherPara;
+            this.fatherReference = ['father1', 2, [{4: true}, undefined, null]];
+        }
+        
+        /* 父类方法*/
+        Father.prototype.fatherFun = function () {
+            console.log(this.fatherPrimitive, this.fatherReference);
+        };
+        
+        
+        /* 子类定义：*/
+        function Son(sonPara1, sonPara2) {
+            /* 子类继承父类属性*/
+            Father.call(this, sonPara1);
+        
+            /* 子类属性*/
+            this.sonPrimitive = sonPara2;
+            this.sonReference = ['son1', 2, [{4: true}, undefined, null]];
+        }
+        
+        /* 子类继承父类方法*/
+        (function (subType, superType) {
+            var prototype = Object.create(superType.prototype);
+            Object.defineProperty(prototype, 'constructor', {value: subType});
+            subType.prototype = prototype;
+        }(Son, Father));
+        
+        /* 子类方法*/
+        Son.prototype.sonFun = function () {
+            console.log(this.sonPrimitive, this.sonReference);
+        };
+        
+        
+        /* 使用测试*/
+        var instance1 = new Father('父para');
+        var instance2 = new Son('子para1', '子para2');
+        console.log(instance1, instance2);
+        ```
+
+        >“子类继承父类方法”可以改为不使用`Object.create`和`Object.defineProperty`的方式：
+        >
+        >```javascript
+        >(function (subType, superType) {
+        >    function _object(o) {
+        >        function F() {}
+        >        F.prototype = o;
+        >        return new F();
+        >    }
+        >
+        >    var prototype = _object(superType.prototype);
+        >    prototype.constructor = subType;
+        >    subType.prototype = prototype;
+        >}(Son, Father));
+        >```
+
+### 闭包
+1. 当函数内部定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数被返回（寿命终结）之后。
+2. 闭包是一种特殊的对象。它由两部分构成：**函数**、创建该函数的**环境**（链式作用域）。
+3. 闭包的创建依赖于函数（函数是唯一拥有自身作用域的结构）。闭包通常用来创建私有变量或方法，使得这些内容不被外部随意访问，同时又可以通过指定的闭包函数接口来操作（将函数内部和外部连接起来）。
+
+- 产生效果：
+    1. 可以操作函数内部的私有内容（特权方法）。
+    2. 让被操作的私有内容始终保持在内存中不被垃圾回收。
+    3. 占用较多的内存。
+
+### 垃圾回收
+>垃圾回收器会按照固定的时间间隔（或代码执行中预定的时间）周期性地执行，找出不再继续使用的变量，然后释放其占用的内存。
+
+垃圾回收器必须跟踪并判断变量是否有用，对于不再有用的变量打上标记，以备将来回收。
+
+1. **标记清除（mark-and-sweep）**（现代浏览器使用方式）
+
+    垃圾回收器在运行时给存储在内存中的所有变量加上标记；然后，去掉环境中的变量以及被环境中变量引用的变量的标记；最后，对那些带标记的值进行释放。
+2. 引用计数（reference counting）
+
+    跟踪记录每个值被引用的次数，被引用一次加1，引用取消就减1，当引用次数为0时，则说明没有办法再访问这个值了，当垃圾回收器下次运行时，释放引用次数为0的值所占空间。
+
+    >可能产生一个严重的问题：循环引用，引用次数永远不会是0。
+
+>用`变量 = null;`等方法，让变量成为零引用，从而进行清除元素、垃圾回收（导致内存泄露的情况除外）。
+
+### 内存泄漏
+> 内存泄露是指计算机内存逐渐丢失。当某个程序总是无法释放内存时，就会出现内存泄露。JS有内存回收机制（垃圾回收）。
+
+1. 使用chrome的**Profiles**和**Timeline**面板来查看页面占用内存使用和变化。
+2. 内存泄漏的原因以及防止建议：
+
+    1. 全局变量不会被垃圾回收。
+    2. 被闭包引用的变量不会被垃圾回收。
+    3. DOM清空或删除时，事件未清除导致内存泄漏：删除DOM的时候，先移除事件绑定。
+    4. 被遗忘的计数器或回调函数：不使用时及时清除。
+    5. 子元素存在引用引起的内存泄漏：
+
+        ![内存泄漏图](./images/memory-leak-1.gif)
+
+        1. 黄色是指直接被 JS变量所引用，在内存里。
+        2. 红色是指间接被 JS变量所引用，如上图，refB 被 refA 间接引用，导致即使 refB 变量被清空，也是不会被回收的。
+        3. 子元素 refB 由于 parentNode 的间接引用，只要它不被删除，它所有的父元素（图中红色部分）都不会被删除。
 
 ### 自动插入分号机制（Automatic Semicolon Insertion，ASI）
 1. ASI机制不是说在解析过程中解析器自动把分号添加到代码中，而是说解析器除了分号还会以换行为基础按一定的规则作为断句（EOC）的依据，从而保证解析的正确性。
@@ -1415,129 +1594,6 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
 5. 加载图片等外部文件；
 6. 页面加载完毕 -> 完成后执行`window.onload();`。
 
-### JS性能
-1. 平稳退化：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
-
-    1. 为JS代码预留出退路（a标签添加属性链接，用JS事件绑定去拦截浏览器默认行为）
-
-        `<a href="真实地址" class="j-func">...</a>`
-
-    2. ~~伪协议`javascript:`~~
-
-        `<a href="javascript: func();">...</a>`
-
-    3. ~~内嵌事件处理函数~~
-
-        `<a href="#" onclick="func();return false;">...</a>`
-2. 渐进增强：先完成基本通用功能，再追加额外功能。
-3. 向前兼容：确保老版本浏览器基本可用，使之虽不能支持某些功能，但仍能基本访问。
-
-    1. **能力检测：`if(func){func();}`**。
-    2. 怪癖检测：`try-catch`。
-    3. 浏览器嗅探技术（用户代理检测）。
-4. 资源分离：把样式表和脚本分离出HTML。
-
-    1. 使用外部资源。
-    2. 不在HTML上用事件处理函数。
-    3. 对只为DOM增添的内容，转移到外部资源中动态创建。
-5. 性能提升。
-
-    1. 减少访问DOM（搜索结果保存在变量中）。
-    2. 减少外链请求数量（合并JS、CSS、图片）。
-    3. 压缩资源。
-    4. 脚本放置在`</body>`前。
-
-### 闭包
-1. 当函数内部定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数被返回（寿命终结）之后。
-2. 闭包是一种特殊的对象。它由两部分构成：**函数**、创建该函数的**环境**（链式作用域）。
-3. 闭包的创建依赖于函数（函数是唯一拥有自身作用域的结构）。闭包通常用来创建私有变量或方法，使得这些内容不被外部随意访问，同时又可以通过指定的闭包函数接口来操作（将函数内部和外部连接起来）。
-
-- 产生效果：
-    1. 可以操作函数内部的私有内容（特权方法）。
-    2. 让被操作的私有内容始终保持在内存中不被垃圾回收。
-    3. 占用较多的内存。
-
-### 垃圾回收
->垃圾回收器会按照固定的时间间隔（或代码执行中预定的时间）周期性地执行，找出不再继续使用的变量，然后释放其占用的内存。
-
-垃圾回收器必须跟踪并判断变量是否有用，对于不再有用的变量打上标记，以备将来回收。
-
-1. **标记清除（mark-and-sweep）**
-
-    垃圾回收器在运行时给存储在内存中的所有变量加上标记；然后，去掉环境中的变量以及被环境中变量引用的变量的标记；最后，对那些带标记的值进行释放。
-    >从2012年起，所有现代浏览器都使用了标记-清除垃圾回收算法。
-2. 引用计数（reference counting）
-
-    跟踪记录每个值被引用的次数，被引用一次加1，引用取消就减1，当引用次数为0时，则说明没有办法再访问这个值了，当垃圾回收器下次运行时，释放引用次数为0的值所占空间。
-
-    >可能产生一个严重的问题：循环引用，引用次数永远不会是0。
-
->用`变量 = null;`等方法，让变量成为零引用，从而进行清除元素、垃圾回收（导致内存泄露的情况除外）。
-
-### 内存泄漏
-> 内存泄露是指计算机内存逐渐丢失。当某个程序总是无法释放内存时，就会出现内存泄露。JS有内存回收机制（垃圾回收）。
-
-1. 使用chrome的**Profiles**和**Timeline**面板来查看页面占用内存使用和变化。
-2. 内存泄漏的原因以及防止建议：
-
-    1. 全局变量不会被垃圾回收。
-    2. 被闭包引用的变量不会被垃圾回收。
-    3. DOM清空或删除时，事件未清除导致内存泄漏：删除DOM的时候，先移除事件绑定。
-    4. 子元素存在引用引起的内存泄漏：
-
-        ![内存泄漏图](./images/memory-leak-1.gif)
-
-        1. 黄色是指直接被 JS变量所引用，在内存里。
-        2. 红色是指间接被 JS变量所引用，如上图，refB 被 refA 间接引用，导致即使 refB 变量被清空，也是不会被回收的。
-        3. 子元素 refB 由于 parentNode 的间接引用，只要它不被删除，它所有的父元素（图中红色部分）都不会被删除。
-    5. 被遗忘的计数器或回调函数：不使用时及时清除。
-
-### 排版引擎与JS引擎
-1. 排版引擎（layout engine）
-
-    也称为浏览器内核（web browser engine）、页面渲染引擎（rendering engine）或样板引擎，是一种软件组件，负责获取标记式内容（如HTML、XML以及图像文件等）、整理信息（如CSS、XSL），并将排版后的内容输出至显示屏或打印机。
-
-    所有网页浏览器、电子邮件客户端以及其他需要根据表示性的标记语言来显示内容的应用程序，都需要排版引擎。
-
-    >1. IE：Trident。
-    >2. Chrome：前WebKit，现Blink。
-    >3. Firefox：Gecko。
-    >4. Safari：WebKit。
-    >5. Opera：前Presto，现Blink。
-    >6. Edge：EdgeHTML。
-2. JS引擎
-
-    一个专门处理JS脚本的虚拟机，一般会附带在网页浏览器中。
-
-    >1. JScript：ie8-，ASP。
-    >2. Chakra：ie9+，Edge。
-    >3. V8：Chrome，Opera，Nodejs，MongoDB。
-    >4. SpiderMonkey：Firefox。
-    >5. Nitro：Safari。
-
-### 引用类型与基本类型的变量传递
-1. 只能给引用类型动态地添加属性和方法，不能给基本类型添加。
-2. JS的变量传递都是**值传递**，都是把变量中存储的值复制一份给另一个变量。
-
-    1. 基本类型的复制
-
-        把变量的值复制到新变量分配的位置上，两个变量可以参与任何操作而不会互相影响。
-    2. 引用类型的复制
-
-        引用类型的变量保存的是指向该对象内容的指针，复制给新变量指针后，两个变量实际上引用同一对象，改变其中一个引用对象中的属性，会影响另一个。但是如果给其中一个引用对象赋值（不是操作属性），因为值引用改变了引用地址，所以两个变量不再保存同一个指针。
-
-    >所有函数的参数都是按值来传递的。基本类型值的传递和基本类型变量复制一致（采用在栈内新建值），引用类型值的传递和引用类型变量的复制一致（栈内存放的是指针，指向堆中同一对象）。
-3. 引用类型的**浅、深复制（拷贝）**
-
-    1. 浅复制
-
-        1. 拷贝对象A时，对象B将拷贝A的所有字段。若字段是引用类型（内存地址），B将拷贝地址；若字段是基本类型，B将复制其值。
-        2. 缺点是：如果改变了对象B（或A）所指向的内存地址存储的值，同时也改变了对象A（或B）指向这个地址的存储的值。
-    2. 深复制
-
-        1. 完全拷贝所有数据。
-        2. 优点是：B与A不会相互依赖（A，B完全脱离关联）；缺点是：拷贝的速度更慢，代价更大。
-
 ### 错误处理机制
 1. 原生错误类型
 
@@ -1579,8 +1635,8 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
 
 3. 处理代码中抛出的error
 
-    - 当JS出现错误时，JS引擎就会根据JS调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或者**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，而firefix会显示在错误控制台中）显示错误信息给访问者，可以用`window.onerror`进行自定义操作。
-    - 在某个**JS block**（`<script>`标签或`try-catch`的`try`语句块）内，第一个错误触发后，当前JS block后面的代码会被自动忽略，不再执行，其他的JS block内代码不被影响。
+    >1. 当JS出现错误时，JS引擎就会根据JS调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或者**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，而firefix会显示在错误控制台中）显示错误信息给访问者，可以用`window.onerror`进行自定义操作。
+    >2. 在某个**JS block**（`<script>`标签或`try-catch`的`try`语句块）内，第一个错误触发后，当前JS block后面的代码会被自动忽略，不再执行，其他的JS block内代码不被影响。
 
     1. `try-catch-finally`
 
@@ -1612,8 +1668,8 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
         ```
     3. 图像的`onerror`事件
 
-        - 只要图像的src属性中的URL不能返回可以被识别的图像格式，就会触发图像的`onerror`事件。
-        - 错误不会提交到`window.onerror`。
+        >1. 只要图像的src属性中的URL不能返回可以被识别的图像格式，就会触发图像的`onerror`事件。
+        >2. 错误不会提交到`window.onerror`。
 
         1. `<img>`标签的`onerror`事件
 
@@ -1634,7 +1690,7 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
 
         >与window对象的onerror事件处理函数不同，Image实例对象或img标签的onerror事件没有任何参数。
 
-    - 使用策略
+    - 运用策略
 
         1. 非客户端页面
 
@@ -1651,8 +1707,25 @@ jQuery根据[CommonJS promise/A](http://wiki.commonjs.org/wiki/Promises/A)标准
 
         >捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
 
-### jQuery或Zepto的`.on()`绑定效率
->e.g. `$(eventHandler).on(event, selector, func);`
+### 排版引擎与JS引擎
+1. 排版引擎（layout engine）
 
-1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的内容，成为**eventHandler**。有且仅有这些eventHandler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的eventHandler处理DOM（比如删除类名）也不会使绑定内容失效（除非删除）；在eventHandler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
-2. 绑定的eventHandler距离selector越近，效率越高。因此虽然把selector都绑定在`$(document)`上能够避免增删节点对事件绑定造成的影响，但确是低效的。
+    也称为浏览器内核（web browser engine）、页面渲染引擎（rendering engine）或样板引擎，是一种软件组件，负责获取标记式内容（如HTML、XML以及图像文件等）、整理信息（如CSS、XSL），并将排版后的内容输出至显示屏或打印机。
+
+    所有网页浏览器、电子邮件客户端以及其他需要根据表示性的标记语言来显示内容的应用程序，都需要排版引擎。
+
+    >1. IE：Trident。
+    >2. Chrome：前WebKit，现Blink。
+    >3. Firefox：Gecko。
+    >4. Safari：WebKit。
+    >5. Opera：前Presto，现Blink。
+    >6. Edge：EdgeHTML。
+2. JS引擎
+
+    一个专门处理JS脚本的虚拟机，一般会附带在网页浏览器中。
+
+    >1. JScript：ie8-，ASP。
+    >2. Chakra：ie9+，Edge。
+    >3. V8：Chrome，Opera，Nodejs，MongoDB。
+    >4. SpiderMonkey：Firefox。
+    >5. Nitro：Safari。
