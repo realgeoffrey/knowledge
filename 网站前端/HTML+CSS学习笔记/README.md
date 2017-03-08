@@ -4,20 +4,28 @@
 
 ### 限定布局宽度，让内容决定布局高度
 
+### `z-index`用于控制设置了absolute、relative或fixed定位的元素
+1. 应该只给有堆叠关系的节点设置此属性，而不要试图通过设定个别元素的z-index来确保元素不重叠。
+2. 尽量在页面中不要使`z-index`的数值大于4，否则就要考虑是否过度使用此属性。
+
+### `word-spacing`
+对有空白字符包裹的非空白字符产生效果。
+
 ### `word-break`
 单词内断字换行。
 
 1. ~~默认~~
 
-    若此行放不下则整个单词换行，若下行也放不下则溢出（保持单词不断词）。
+    若此行放不下则整个单词换行，若下行也放不下则溢出（保持单词不断字）。
 2. ~~`word-break: break-all;`~~
 
-    若此行放不下则直接断词，不会尝试整个单词换行。
+    若此行放不下则直接断字，不会尝试整个单词换行。
 3. `word-wrap: break-word;`
 
-    若此行放不下则整个单词先换行，若下行也放不下才断词。
+    若此行放不下则整个单词先换行，若下行也放不下才断字。
 
->对于用户输入或不确定长度的内容，建议都加上`word-wrap: break-word;`，避免内容宽度溢出（或者直接放在`body`上让所有内容继承）。
+>1. 对于用户输入或不确定长度的内容，建议都加上`word-wrap: break-word;`，避免内容宽度溢出。
+>2. 或直接在`body`上设置，让所有内容继承。
 
 ### 用CSS创造三角形、梯形
 ```css
@@ -65,7 +73,7 @@
     }
     ```
 
-### 单行文本和多行文本超出宽度显示省略号
+### 单行或多行文本超出宽度则显示省略号
 1. 单行
 
     ```scss
@@ -92,6 +100,8 @@
         -webkit-box-orient: vertical;
         -webkit-line-clamp: $line;
     }
+ 
+    //rem模式
     @mixin multi_ellipsis_rem($line-height, $line) {
         line-height: rem($line-height);
         height: rem($line-height * $line);  //或max-height: rem($line-height * $line);
@@ -175,168 +185,6 @@
 
     （待续）
 
-### 移动端半像素
-不可以使用`border: 0.5px`，因为浏览器会把数值换算成0或者1。
-
-1. 整个边框0.5px
-
-    ```scss
-    div {
-        width: 宽度;
-        position: relative;
-
-        &:before {
-            position: absolute;
-            top: 0;
-            left: 0;
-            content: "";
-            width: 200%;
-            height: 200%;
-            border: 1px solid 颜色;
-            transform: scale(.5);
-            transform-origin: 0 0;
-            box-sizing: border-box;
-        }
-    }
-    ```
-2. 某一边0.5px
-
-    ```scss
-    div {
-        width: 100px;
-        position: relative;
-
-        &:before {
-            position: absolute;
-            top: 0;
-            left: 0;
-            content: "";
-            width: 100%;
-            height: 1px;
-            border-top: 1px solid 颜色;
-            transform: scaleY(.5);
-            transform-origin: 0 0;
-            box-sizing: border-box;
-        }
-    }
-    ```
-    
-[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/3wbf62xj/)
-
-### wap页面自适应图片
-要求：图片根据浏览器窗口变化而宽高同时等比例变化，不使用`img`标签（只有内容图片才使用img标签）。
-
-1. *横向、纵向百分比的`padding`（和`margin`）值都是以父元素的`width`为基础，`height`是以父元素的`height`为基础*
-
-    ```css
-    自适应图片 {
-        height: 0;
-        width: 宽%;
-        padding-bottom: 高%;
-        background-size: 100%;
-        background: url(单图) 0 0 no-repeat;
-    }
-    ```
-
-    >缺点：只能用于空标签
-2. 宽高都用rem
-    1. 单图
-
-        ```css
-        自适应图片 {
-            width: 宽rem;
-            height: 高rem;
-            background-size: 100%;
-            background: url(单图) center center no-repeat;
-        }
-        ```
-    2. 雪碧图
-
-        ```css
-        自适应图片 {
-            width: 宽rem;
-            height: 高rem;
-            background-size: 雪碧图宽rem;
-            background: url(雪碧图) 0 -纵轴rem no-repeat;
-        }
-        ```
-        >`background-position`用`rem`会出现换算小数导致定位偏离问题，改用以下百分比可以解决偏离问题。
-3. 宽高都用rem并且雪碧图并且`background-position`用百分比
-
-    >百分比公式：
-    >   - `background-position-x = 小图横坐标px / ( 大图宽度px - 小图宽度px ) * 100%`
-    >   - `background-position-y = 小图纵坐标px / ( 大图高度px - 小图高度px ) * 100%`
-    >   - 可以用预处理语言计算：
-    >
-    >       ```scss
-    >       @function rem($px) {
-    >           @return $px / 20 + rem;
-    >       }
-    >       @function position-one($positon, $singleSize, $spritesSize) {
-    >           @if $positon == 0 {
-    >               @return 0;
-    >           } @else {
-    >               @return percentage($positon / ($spritesSize - $singleSize));
-    >           }
-    >       }
-    >       /* x轴排列雪碧图*/
-    >       @mixin sprites-x($x: 0, $width: 单图固定宽度或0, $fullWidth: 合并图宽度) {
-    >           background-image: url(图片);
-    >           background-position: position-one($x, $width, $fullWidth) 0;
-    >           background-size: rem($fullWidth) auto;
-    >           background-repeat: no-repeat;
-    >       }
-    >       /*/x轴排列雪碧图*/
-    >       /* y轴排列雪碧图*/
-    >       @mixin sprites-y($y: 0, $height: 单图固定高度或0, $fullHeight: 合并图高度) {
-    >           background-image: url(图片);
-    >           background-position: 0 position-one($y, $height, $fullHeight);
-    >           background-size: auto rem($fullHeight);
-    >           background-repeat: no-repeat;
-    >       }
-    >       /*/y轴排列雪碧图*/
-    >       /* x+y轴排列且等大雪碧图（参数：单图宽、高、x轴图片数量、y轴图片数量、图片间距）*/
-    >       @mixin sprites-xy($width, $height, $x, $y, $gap: 2) {
-    >           width: rem($width);
-    >           height: rem($height);
-    >           background-image: url(图片前缀#{$width}x#{$height}.png);
-    >           background-size: rem(($width + $gap)*$x - $gap) rem(($height + $gap)*$y - $gap);
-    >           background-repeat: no-repeat;
-    >
-    >           //$i：横轴；$j：纵轴
-    >           @for $j from 1 through $y {
-    >               @for $i from 1 through $x {
-    >                   &.i-#{$j}-#{$i} {
-    >                       background-position: position-one(($width + $gap)*($i - 1), $width, ($width + $gap)*$x - $gap) position-one(($height + $gap)*($j - 1), $height, ($height + $gap)*$y - $gap);
-    >                   }
-    >               }
-    >           }
-    >       }
-    >       /*/x+y轴排列且等大雪碧图*/
-    >       ```
-
-    1. **rem宽高（最佳情况）**
-
-        ```css
-        自适应图片 {
-            width: 宽rem;
-            height: 高rem;
-            background-size: 雪碧图宽rem;
-            background: url(雪碧图) 计算出x轴的百分比 计算出y轴的百分比 no-repeat;
-        }
-        ```
-    2. *百分比宽高*
-
-        ```css
-        自适应图片 {
-            height: 0;
-            width: 宽%;
-            padding-bottom: 高%;
-            background-size: 雪碧图宽/单图宽度*100%;
-            background: url(雪碧图) 计算出x轴的百分比 计算出y轴的百分比 no-repeat;
-        }
-        ```
-
 ### `table`
 1. table属性为`table-layout: auto;/*默认*/`
 
@@ -418,8 +266,8 @@
 ### margin合并
 1. W3C定义：在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
 
-    - 毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开。
-    - 普通流：除**浮动（float）**、**绝对定位（absolute、fixed）**外的代码。
+    1. 毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开。
+    2. 普通流：除**浮动（float）**、**绝对定位（absolute、fixed）**外的代码。
 2. 产生独立的BFC结构可避免margin合并
 
 >ie6、7触发haslayout会影响margin合并的发生。
@@ -440,18 +288,11 @@
 
 >ie6、7不支持BFC，但是有haslayout。
 
-### `word-spacing`
-对有空白字符包裹的非空白字符产生效果。
-
-### `z-index`用于控制设置了absolute、relative或fixed定位的元素
-1. 应该只给有堆叠关系的节点设置此属性，而不要试图通过设定个别元素的z-index来确保元素不重叠。
-2. 尽量在页面中不要使`z-index`的数值大于4，否则就要考虑是否过度使用此属性。
-
 ### CSS的小数、百分比
 1. 浏览器会把小数以及百分比换算成整数的单位（px）
 
-    - 四舍五入：ie8、ie9、chrome、firefox。
-    - 直接向下取整：ie7、safari。
+    1. 四舍五入：ie8、ie9、chrome、firefox。
+    2. 直接向下取整：ie7、safari。
 2. 多个子节点浮动的总宽度接近100%会表现成100%
 
     根据[Bootstrap's Grid system](http://getbootstrap.com/css/#grid)的标准，设置百分比宽度时，用百分比小数点后第六位的四舍五入值可以兼容大多数浏览器：
@@ -479,15 +320,53 @@
     2. 内容填色的图片用`width: 100%;`。
     3. 内容的间隙多设置一些`padding`，再用`负margin`中和。
 
-### 滚动条
-1. 若`overflow-x`和`overflow-y`相同，则等同于`overflow`。
-2. 若不同，且其中一个值为`visible`，另一个为`hidden/scroll/auto`，则`visible`重置为`auto`。
-3. 默认滚动条均来自`html`标签，而不是body标签。因此，除去默认滚动条应在`html`上设置overflow值。
-4. JS获取文档滚动高度为：
+### 移动端半像素
+不要使用`border: 0.5px`，因为浏览器会把数值换算成0或者1。
 
-    1. `document.body.scrollTop || document.documentElement.scrollTop`
-    2. jQuery：`$(window).scrollTop()`或`$(document).scrollTop()`；Zepto：`$(window).scrollTop()`
-5. 滚动条会占用容器的可用高度或宽度。
+1. 整个边框0.5px
+
+    ```scss
+    div {
+        width: 宽度;
+        position: relative;
+
+        &:before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            content: "";
+            width: 200%;
+            height: 200%;
+            border: 1px solid 颜色;
+            transform: scale(.5);
+            transform-origin: 0 0;
+            box-sizing: border-box;
+        }
+    }
+    ```
+2. 某一边0.5px
+
+    ```scss
+    div {
+        width: 100px;
+        position: relative;
+
+        &:before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            content: "";
+            width: 100%;
+            height: 1px;
+            border-top: 1px solid 颜色;
+            transform: scaleY(.5);
+            transform-origin: 0 0;
+            box-sizing: border-box;
+        }
+    }
+    ```
+    
+[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/3wbf62xj/)
 
 ### `line-height`
 1. 单行文本情况下：
@@ -498,8 +377,8 @@
 
     **内容区域（content area） + 行间距（vertical spacing） = 行高（line-height）**
 
-    >   - 内容区域（鼠标指示出的高度）：只与字号（font-size）和font-family有关。
-    >   - 行间距：摇摆不定，可以为负值，仅为达成以上等式而变化。
+    >1. 内容区域（鼠标指示出的高度）：只与字号（font-size）和font-family有关。
+    >2. 行间距：摇摆不定，可以为负值，仅为达成以上等式而变化。
 
 >ie6以及其他渲染有误的浏览器不能用line-height控制图片与文字的对齐位置（可以使用[垂直居中](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#垂直居中)）。
 
@@ -519,6 +398,136 @@
     ```
 3. 要谨慎给img设置背景（比如内容图片或者头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS方法积累/实用方法#jquery或zepto图片延时加载)），因为当img是透明图的时候，会展示背景的内容。
 
+### img标签的圆形、边框
+1. 圆形+边框
+
+    1. pc
+
+        直接在img标签上设置`border`和`border-radius`。
+    2. wap
+
+        在img标签上设置`border-radius`，并且在父级标签嵌套一层设置`border`和`border-radius`。
+2. 圆形（无边框）
+
+    - pc、wap
+
+        直接在img标签上设置`border-radius`。
+
+### wap页面自适应图片
+要求：图片根据浏览器窗口变化而宽高同时等比例变化，不使用`img`标签（只有内容图片才使用img标签）。
+
+1. *横向、纵向百分比的`padding`（和`margin`）值都是以父元素的`width`为基础，`height`是以父元素的`height`为基础*
+
+    ```css
+    自适应图片 {
+        height: 0;
+        width: 宽%;
+        padding-bottom: 高%;
+        background-size: 100%;
+        background: url(单图) 0 0 no-repeat;
+    }
+    ```
+
+    >缺点：只能用于空标签
+2. 宽高都用rem
+    1. 单图
+
+        ```css
+        自适应图片 {
+            width: 宽rem;
+            height: 高rem;
+            background-size: 100%;
+            background: url(单图) center center no-repeat;
+        }
+        ```
+    2. 雪碧图
+
+        ```css
+        自适应图片 {
+            width: 宽rem;
+            height: 高rem;
+            background-size: 雪碧图宽rem;
+            background: url(雪碧图) 0 -纵轴rem no-repeat;
+        }
+        ```
+        >`background-position`用`rem`会出现换算小数导致定位偏离问题，改用以下百分比可以解决偏离问题。
+3. 宽高都用rem并且雪碧图并且`background-position`用百分比
+
+    >1. 百分比公式：
+    >
+    >   1. `background-position-x = 小图横坐标px / ( 大图宽度px - 小图宽度px ) * 100%`
+    >   2. `background-position-y = 小图纵坐标px / ( 大图高度px - 小图高度px ) * 100%`
+    >2. 可以用预处理语言计算：
+    >
+    >   ```scss
+    >   @function rem($px) {
+    >       @return $px / 20 + rem;
+    >   }
+    >   @function position-one($positon, $singleSize, $spritesSize) {
+    >       @if $positon == 0 {
+    >           @return 0;
+    >       } @else {
+    >           @return percentage($positon / ($spritesSize - $singleSize));
+    >       }
+    >   }
+    >   /* x轴排列雪碧图*/
+    >   @mixin sprites-x($x: 0, $width: 单图固定宽度或0, $fullWidth: 合并图宽度) {
+    >       background-image: url(图片);
+    >       background-position: position-one($x, $width, $fullWidth) 0;
+    >       background-size: rem($fullWidth) auto;
+    >       background-repeat: no-repeat;
+    >   }
+    >   /*/x轴排列雪碧图*/
+    >   /* y轴排列雪碧图*/
+    >   @mixin sprites-y($y: 0, $height: 单图固定高度或0, $fullHeight: 合并图高度) {
+    >       background-image: url(图片);
+    >       background-position: 0 position-one($y, $height, $fullHeight);
+    >       background-size: auto rem($fullHeight);
+    >       background-repeat: no-repeat;
+    >   }
+    >   /*/y轴排列雪碧图*/
+    >   /* x+y轴排列且等大雪碧图（参数：单图宽、高、x轴图片数量、y轴图片数量、图片间距）*/
+    >   @mixin sprites-xy($width, $height, $x, $y, $gap: 2) {
+    >       width: rem($width);
+    >       height: rem($height);
+    >       background-image: url(图片前缀#{$width}x#{$height}.png);
+    >       background-size: rem(($width + $gap)*$x - $gap) rem(($height + $gap)*$y - $gap);
+    >       background-repeat: no-repeat;
+    >
+    >       //$i：横轴；$j：纵轴
+    >       @for $j from 1 through $y {
+    >           @for $i from 1 through $x {
+    >               &.i-#{$j}-#{$i} {
+    >                   background-position: position-one(($width + $gap)*($i - 1), $width, ($width + $gap)*$x - $gap) position-one(($height + $gap)*($j - 1), $height, ($height + $gap)*$y - $gap);
+    >               }
+    >           }
+    >       }
+    >   }
+    >   /*/x+y轴排列且等大雪碧图*/
+    >   ```
+
+    1. **rem宽高（最佳方式）**
+
+        ```css
+        自适应图片 {
+            width: 宽rem;
+            height: 高rem;
+            background-size: 雪碧图宽rem;
+            background: url(雪碧图) 计算出x轴的百分比 计算出y轴的百分比 no-repeat;
+        }
+        ```
+    2. *百分比宽高*
+
+        ```css
+        自适应图片 {
+            height: 0;
+            width: 宽%;
+            padding-bottom: 高%;
+            background-size: 雪碧图宽/单图宽度*100%;
+            background: url(雪碧图) 计算出x轴的百分比 计算出y轴的百分比 no-repeat;
+        }
+        ```
+
 ### 多列等高
 ```css
 .father {
@@ -529,30 +538,6 @@
     margin-bottom: -9999px;
 }
 ```
-
-### 实现hover去除左右间隔效果
-图片法：hover之后本身的背景被替换，前一个兄弟的背景被覆盖
-
-```scss
-ul {
-    overflow: hidden;
-
-    li {
-        @include left;
-        margin-left: -1px;
-
-        a {
-            background: url(宽度根据li的margin-left、高度根据a的高度决定的border样式图片) 100% center no-repeat;
-            display: block;
-
-            &:hover {
-                background: 背景色;
-            }
-        }
-    }
-}
-```
-> 可以用`box-shadow`设置单边的间隔。
 
 ### 3D按钮
 ```scss
@@ -587,6 +572,17 @@ ul {
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/fd4qon26/)
 > 参考：[Buttons](https://github.com/alexwolfe/Buttons)。
+
+### 滚动条
+1. 若`overflow-x`和`overflow-y`相同，则等同于`overflow`；若不同，且其中一个值为`visible`，另一个为`hidden/scroll/auto`，则`visible`重置为`auto`。
+2. 默认滚动条均来自`html`标签（而不是body标签）
+
+    因此，除去默认滚动条应在`html`上设置overflow值。
+3. JS获取文档滚动高度为：
+
+    1. `document.body.scrollTop || document.documentElement.scrollTop`
+    2. jQuery：`$(window).scrollTop()`或`$(document).scrollTop()`；Zepto：`$(window).scrollTop()`
+4. 滚动条会占用容器的可用高度或宽度。
 
 ### 滚动条样式
 1. `WebKit`：
@@ -628,121 +624,6 @@ ul {
 
 >参考：[链接1（翻译）](http://alfred-sun.github.io/blog/2014/12/24/scrollbar-customized-with-css-style/)、[链接2（原文）](https://css-tricks.com/custom-scrollbars-in-webkit/)。
 
-### 动画性能
->1. 为了视觉上连贯，浏览器对每一帧画面的渲染工作需要在16毫秒（1秒 / 60 = 16.66毫秒）之内完成。
->2. 实际上，在渲染某一帧画面的同时，浏览器还有一些流程工作要做（比如渲染队列的管理、渲染线程与其他线程之间的切换等）。
->3. 因此一次渲染增加的前端代码工作，需要控制在10毫秒之内完成（保证渲染工作+前端任务在16毫秒内完成），才能达到流畅的视觉效果，否则页面的渲染就会出现卡顿（帧率下降，一帧时间延长）。
-
-1. CSS3动画性能最好、消耗最低的属性（只触发composite）：
-
-    1. 位置：`transform: translate(xpx, ypx);`
-    2. 缩放：`transform: scale(x, y);`
-    3. 旋转：`transform: rotate(xdeg);`
-    4. 倾斜：`transform: skew(xdeg,ydeg);`
-    5. 透明：`opacity: x;`
-2. 像素渲染流水线：
-
-    `JS/CSS` -> `Style（计算样式）` >> `Layout（布局）` -> `Paint（绘制）` -> `Composite（渲染层合并）`
-
-    >（布局、绘制、渲染层合并）改变前一个步骤需要后面一个步骤也做出处理，所以若能够仅处理越后面的步骤，对性能耗费则越少。
-
-    1. `JS/CSS`：
-
-        使用JS或CSS Animations、Transitions、Web Animation API来实现视觉变化效果。
-    2. `Style`：
-
-        根据CSS选择器，对每个DOM匹配对应的CSS样式。
-    3. `Layout`：
-
-        具体计算每个DOM最终在屏幕上显示的大小和位置。web页面中元素的布局是相对的，因此一个元素的布局发生变化，会联动地引发其他元素的布局发生变化。
-    4. `Paint`：
-
-        填充像素的过程。包括绘制文字、颜色、图像、边框和阴影等，也就是DOM所有的可视效果。一般来说，这个绘制过程是在多个层上完成。
-    5. `Composite`：
-
-        在每个层上完成绘制过程之后，浏览器会将所有层按照合理的顺序合并成一个图层，然后显示在屏幕上。
-3. 创建Layer（层），交由GPU处理：
-
-    >GPU（图形处理器）是与处理和绘制图形相关的硬件，专为执行复杂的数学和几何计算而设计的，可以让CPU从图形处理的任务中解放出来，从而执行其他更多的系统任务。
-
-    1. 强制普通元素提升到单独的渲染层：
-
-        1. `will-change: ;`（高级浏览器）。
-        2. `transform: translateZ(0);`（hack加速法）。
-    2. 自带单独渲染层的元素：
-
-        1. 使用加速视频解码的`<video>`元素。
-        2. `<iframe>`元素。
-        3. Flash等插件。
-4. reflow和repaint产生卡顿：
-
-    1. reflow（重排）：
-
-        某个元素上执行动画时，浏览器需要每一帧都检测是否有元素受到影响，并调整他们的大小、位置，通常这种调整都是联动的。
-    2. repaint（重绘）：
-
-        浏览器还需要监听元素的外观变化，通常是背景色、阴影、边框等可视元素，并进行重绘。
-    3. composite：
-
-        每次reflow、repaint后浏览器还需要渲染层合并再输出到屏幕上。
-
-    >1. repaint（或paint）单独消耗的性能最大。
-    >2. reflow的成本比repaint的成本高得多。因为一个结点的reflow很有可能导致子结点、甚至父点以及同级结点的reflow，并且产生reflow一般也要进行repaint。
-    >3. 那些容易忽略的**能引起布局改变的样式修改**，它们可能不产生动画，但当浏览器需要重新进行样式的计算和布局时，会产生reflow和repaint，这将产生高昂的性能代价并引起跳帧。
-5. JS动画（命令式）比CSS动画（说明式）更消耗资源，浏览器会对CSS动画自动进行优化。
-6. 滚动会触发高频率重新渲染，scroll事件的处理函数也会被高频率触发。
-7. [优化渲染性能](https://developers.google.com/web/fundamentals/performance/rendering/)：
-
-    1. 优化JS的执行效率
-
-        1. 对于动画效果的实现，避免使用`setTimeout`或`setInterval`，建议使用`requestAnimationFrame`（或[velocity动画库](https://github.com/julianshapiro/velocity)）。
-        2. 把耗时长的JS代码放到`Web Workers`中去做（如果这些计算工作不会涉及DOM元素的存取）。
-        3. 把DOM元素的更新划分为多个小任务，分别在多个帧中去完成。
-    2. 降低样式计算的范围和复杂度
-
-        1. 降低样式选择器的复杂度（使用基于class的方式，比如[BEM](https://en.bem.info/methodology/css/)）。
-        2. 减少需要执行样式计算的元素的个数。
-    3. 避免大规模、复杂的布局与重排
-
-        1. 避免强制同步布局事件的发生
-
-            为了避免触发不必要的布局过程，应该首先批量读取元素样式属性（浏览器将直接返回上一帧的样式属性值），然后再对样式属性进行写操作。
-        2. 避免快速连续的布局
-
-            使用先读后写的原则。
-    4. 简化绘制的复杂度、减小绘制区域
-    5. 优先使用渲染层合并属性、控制层数量
-
-        1. 只使用`transform/opacity`来实现动画效果。
-        2. 用`will-change/translateZ`属性把动画元素提升到单独的渲染层中。
-        3. 避免滥用渲染层提升（更多的渲染层需要更多的内存和更复杂的管理）。
-    6. 对用户输入、滚动事件进行[函数防抖](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS学习笔记#函数防抖函数节流)处理
-
-        1. 避免使用运行时间过长的事件处理函数，它们会阻塞页面的滚动渲染。
-        2. 避免在事件处理函数中修改样式属性。
-        3. 对事件处理函数去抖动，存储事件对象的值，然后在requestAnimationFrame回调函数中修改样式属性。
-8. 动画调优的策略与技巧：
-
-    1. 尽可能地为产生动画的元素设置`fixed`或`absolute`。
-    2. 阴影渐显动画尽量用伪类的opacity来实现。
-    3. 使用3D硬件加速提升动画性能时，最好给元素增加一个z-index属性，人为干扰复合层的排序，可以有效减少chrome创建不必要的复合层，提升渲染性能，移动端优化效果尤为明显。
-    4. 使用Chrome Timeline工具检查。
-    5. 保证帧率平稳（避免跳帧）
-
-        1. 不在连续的动画过程中做高耗时的操作（如大面积重绘、重排、复杂JS执行）。
-        2. 若高耗时操作无法避免，则尝试化解，比如：
-
-            1. 将高耗时操作放在动画开始或结尾处。
-            2. 将高耗时操作分摊至动画的每一帧中处理。
-    6. 针对硬件加速渲染通道的优化
-
-        1. 合理划分层，动静分离，可避免大面积重绘。
-        2. 使用分层优化动画时，需要留意内存消耗情况（使用Chrome Devtools监测）。
-    7. 低性能设备（Android）优先调试。
-
-        1. 除了**CSS3翻转属性**与**内嵌滚动条**同时出现无法解决，其他样式问题都可以像处理ie6问题一样通过真机试验出解决方案。
-        2. 有些低版本机型会有类似ie6的CSS问题，包括**CSS3的厂商前缀（`-webkit-`等）**、**层级关系（`z-index`）**，并且要更注意**动画性能（渲染层产生）**。
-
 ----
 ## HTML + CSS
 
@@ -776,8 +657,8 @@ ul {
     </div>
     ```
 
-    >- DOM结构不能颠倒，需要中间结构放最后;
-    >- 节点上能设定`clear: both;`。
+    >1. DOM结构不能颠倒，需要中间结构放最后;
+    >2. 节点上能设定`clear: both;`。
 2. 中间内容自适应，两边固定（中间内容最先加载）
 
     >所谓的“双飞翼布局”。
@@ -817,8 +698,8 @@ ul {
     </div>
     ```
 
-    >- DOM结构不能颠倒，需要中间结构放最前;
-    >- 节点上能设定`clear: both;`。
+    >1. DOM结构不能颠倒，需要中间结构放最前;
+    >2. 节点上能设定`clear: both;`。
 3. 中间与两边内容都自适应
 
     ```html
@@ -846,10 +727,10 @@ ul {
     </div>
     ```
 
-    >- DOM结构不能颠倒，需要中间结构放最后;
-    >- 节点上能设定`clear: both;`;
-    >- 完全由内容决定布局；
-    >- 第一块内容要给第二块内容留下足够空间，否则第二块放不下会整个换行；第一块+第二块要给第三块留下足够空间，否则第三块放不下会整个换行。
+    >1. DOM结构不能颠倒，需要中间结构放最后;
+    >2. 节点上能设定`clear: both;`;
+    >3. 完全由内容决定布局；
+    >4. 第一块内容要给第二块内容留下足够空间，否则第二块放不下会整个换行；第一块+第二块要给第三块留下足够空间，否则第三块放不下会整个换行。
 
 ### 垂直居中
 1. 图标和文字并排垂直居中
@@ -1131,10 +1012,10 @@ ul {
     ```
     [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/c1pz8mow/)
     
-### 内容居中
+### 水平居中
 1. 内容宽度可变
     
-    用`text-align: center;`控制`inline-block`内容居中。
+    用`text-align: center;`控制`inline-block`水平居中。
     ```html
     <style>
         .outer_1 {
@@ -1380,6 +1261,30 @@ ul {
 ```
 >无法出现`...`效果。
 
+### 实现hover去除左右间隔效果
+图片法：hover之后本身的背景被替换，前一个兄弟的背景被覆盖
+
+```scss
+ul {
+    overflow: hidden;
+
+    li {
+        @include left;
+        margin-left: -1px;
+
+        a {
+            background: url(宽度根据li的margin-left、高度根据a的高度决定的border样式图片) 100% center no-repeat;
+            display: block;
+
+            &:hover {
+                background: 背景色;
+            }
+        }
+    }
+}
+```
+> 可以用`box-shadow`设置单边的间隔。
+
 ### 实现hover之后底部border替换父级border
 1. 用`relative`控制
 
@@ -1563,21 +1468,6 @@ ul {
 
 >有些插件效果不能支持`html,body {height: 100%;}`。
 
-### img标签的圆形、边框
-1. 圆形+边框
-
-    1. pc
-
-        直接在img标签上设置`border`和`border-radius`。
-    2. wap
-
-        在img标签上设置`border-radius`，并且在父级标签嵌套一层设置`border`和`border-radius`。
-2. 圆形（无边框）
-
-    - pc、wap
-
-        直接在img标签上设置`border-radius`。
-
 ### CSS3的`animation`使用
 > 动画进行到一半取消动画（去除了相关类）或者替换动画，会导致节点突兀地回到初始位置。
 
@@ -1641,10 +1531,10 @@ ul {
 ```
 
 ### 横竖屏切换
->- 翻转效果的节点，如果要增加内嵌滚动条，不能在此节点上增加`border-radius`，否者滚动条横竖轴颠倒。
->- 部分Android系统（或低端机）对内嵌的滚动条（`overflow: hidden/auto`）支持不佳，尤其增加了翻转效果后，设置的滚动条（甚至`overflow: hidden;`）会导致更多样式问题。除了去除内嵌滚动条的`border-radius`，还可以尝试给兄弟节点设置`z-index`。部分性能较差的webview对CSS3支持非常有限，无法做到**翻转+内嵌滚动条**（内嵌滚动条横竖轴颠倒）。
+>1. 翻转效果的节点，如果要增加内嵌滚动条，不能在此节点上增加`border-radius`，否者滚动条横竖轴颠倒。
+>2. 部分Android系统（或低端机）对内嵌的滚动条（`overflow: hidden/auto`）支持不佳，尤其增加了翻转效果后，设置的滚动条（甚至`overflow: hidden;`）会导致更多样式问题。除了去除内嵌滚动条的`border-radius`，还可以尝试给兄弟节点设置`z-index`。部分性能较差的webview对CSS3支持非常有限，无法做到**翻转+内嵌滚动条**（内嵌滚动条横竖轴颠倒）。
 >
->   使用按钮（控制翻页或JS滚动）代替内嵌滚动条；或使用`touchmove`实现滑动页面。
+>- 其他解决方案：使用按钮（控制翻页或JS滚动）代替内嵌滚动条；使用`touchmove`实现滑动页面。
 
 1. 媒体查询控制横竖屏添加翻转类
 
@@ -1663,7 +1553,7 @@ ul {
 2. 用JS方法控制：[模拟手机翻转](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto模拟手机翻转使页面都以横屏展示)。
 3. 翻转使用的媒体查询：
 
-    要求：①页面没有滚动条，内容都在一屏视窗内；②设计稿只有一份，但要适应各种分辨率机型。
+    要求：页面没有滚动条，内容都在一屏视窗内；设计稿只有一份，但要适应各种分辨率机型。
 
     ```scss
     @function rem($px) {
@@ -1793,6 +1683,8 @@ ul {
         });
     </script>
     ```
+    
+简单情况下，页面添加`document.body.addEventListener('touchstart', function () {}, true);`即可。
 >`a,button,input,textarea {-webkit-tap-highlight-color: rgba( , , , );}`是触碰到按钮时给按钮盖上一层颜色，而不是改变按钮自身样式。
 
 ### 繁星效果纯CSS实现
@@ -1813,14 +1705,14 @@ ul {
 ### 自适应、布局的问题，都可以用[`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex)优雅解决
 
 ### 响应式设计
-- 媒体查询方式
+1. 媒体查询方式
     1. CSS属性：
 
         `@media (min-width: 360px) and (max-width: 640px) {...}`
     2. HTML标签：
 
         `<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
-- 响应式设计三大要素
+2. 响应式设计三大要素
     1. 媒体查询
     2. 流式布局：节点用百分比或rem
         
@@ -1910,13 +1802,128 @@ ul {
     不要把超出内容区域的绝对定位设置在`body`直接子级，而是设置在`body`下拥有`overflow: hidden;width: 100%;/* 默认*/`的父级下。
 2. ~~用大背景模式~~
 
+### 动画性能
+>1. 为了视觉上连贯，浏览器对每一帧画面的渲染工作需要在16毫秒（1秒 / 60 = 16.66毫秒）之内完成。
+>2. 实际上，在渲染某一帧画面的同时，浏览器还有一些流程工作要做（比如渲染队列的管理、渲染线程与其他线程之间的切换等）。
+>3. 因此一次渲染增加的前端代码工作，需要控制在10毫秒之内完成（保证渲染工作+前端任务在16毫秒内完成），才能达到流畅的视觉效果，否则页面的渲染就会出现卡顿（帧率下降，一帧时间延长）。
+
+1. CSS3动画性能最好、消耗最低的属性（只触发composite）：
+
+    1. 位置：`transform: translate(xpx, ypx);`
+    2. 缩放：`transform: scale(x, y);`
+    3. 旋转：`transform: rotate(xdeg);`
+    4. 倾斜：`transform: skew(xdeg,ydeg);`
+    5. 透明：`opacity: x;`
+2. 像素渲染流水线：
+
+    `JS/CSS` -> `Style（计算样式）` >> `Layout（布局）` -> `Paint（绘制）` -> `Composite（渲染层合并）`
+
+    >（布局、绘制、渲染层合并）改变前一个步骤需要后面一个步骤也做出处理，所以若能够仅处理越后面的步骤，对性能耗费则越少。
+
+    1. `JS/CSS`：
+
+        使用JS或CSS Animations、Transitions、Web Animation API来实现视觉变化效果。
+    2. `Style`：
+
+        根据CSS选择器，对每个DOM匹配对应的CSS样式。
+    3. `Layout`：
+
+        具体计算每个DOM最终在屏幕上显示的大小和位置。web页面中元素的布局是相对的，因此一个元素的布局发生变化，会联动地引发其他元素的布局发生变化。
+    4. `Paint`：
+
+        填充像素的过程。包括绘制文字、颜色、图像、边框和阴影等，也就是DOM所有的可视效果。一般来说，这个绘制过程是在多个层上完成。
+    5. `Composite`：
+
+        在每个层上完成绘制过程之后，浏览器会将所有层按照合理的顺序合并成一个图层，然后显示在屏幕上。
+3. 创建Layer（层），交由GPU处理：
+
+    >GPU（图形处理器）是与处理和绘制图形相关的硬件，专为执行复杂的数学和几何计算而设计的，可以让CPU从图形处理的任务中解放出来，从而执行其他更多的系统任务。
+
+    1. 强制普通元素提升到单独的渲染层：
+
+        1. `will-change: ;`（高级浏览器）。
+        2. `transform: translateZ(0);`（hack加速法）。
+    2. 自带单独渲染层的元素：
+
+        1. 使用加速视频解码的`<video>`元素。
+        2. `<iframe>`元素。
+        3. Flash等插件。
+4. reflow和repaint产生卡顿：
+
+    1. reflow（重排）：
+
+        某个元素上执行动画时，浏览器需要每一帧都检测是否有元素受到影响，并调整他们的大小、位置，通常这种调整都是联动的。
+    2. repaint（重绘）：
+
+        浏览器还需要监听元素的外观变化，通常是背景色、阴影、边框等可视元素，并进行重绘。
+    3. composite：
+
+        每次reflow、repaint后浏览器还需要渲染层合并再输出到屏幕上。
+
+    >1. repaint（或paint）单独消耗的性能最大。
+    >2. reflow的成本比repaint的成本高得多。因为一个结点的reflow很有可能导致子结点、甚至父点以及同级结点的reflow，并且产生reflow一般也要进行repaint。
+    >3. 那些容易忽略的**能引起布局改变的样式修改**，它们可能不产生动画，但当浏览器需要重新进行样式的计算和布局时，会产生reflow和repaint，这将产生高昂的性能代价并引起跳帧。
+5. JS动画（命令式）比CSS动画（说明式）更消耗资源，浏览器会对CSS动画自动进行优化。
+6. 滚动会触发高频率重新渲染，scroll事件的处理函数也会被高频率触发。
+7. [优化渲染性能](https://developers.google.com/web/fundamentals/performance/rendering/)：
+
+    1. 优化JS的执行效率
+
+        1. 对于动画效果的实现，避免使用`setTimeout`或`setInterval`，建议使用`requestAnimationFrame`（或[velocity动画库](https://github.com/julianshapiro/velocity)）。
+        2. 把耗时长的JS代码放到`Web Workers`中去做（如果这些计算工作不会涉及DOM元素的存取）。
+        3. 把DOM元素的更新划分为多个小任务，分别在多个帧中去完成。
+    2. 降低样式计算的范围和复杂度
+
+        1. 降低样式选择器的复杂度（使用基于class的方式，比如[BEM](https://en.bem.info/methodology/css/)）。
+        2. 减少需要执行样式计算的元素的个数。
+    3. 避免大规模、复杂的布局与重排
+
+        1. 避免强制同步布局事件的发生
+
+            为了避免触发不必要的布局过程，应该首先批量读取元素样式属性（浏览器将直接返回上一帧的样式属性值），然后再对样式属性进行写操作。
+        2. 避免快速连续的布局
+
+            使用先读后写的原则。
+    4. 简化绘制的复杂度、减小绘制区域
+    5. 优先使用渲染层合并属性、控制层数量
+
+        1. 只使用`transform/opacity`来实现动画效果。
+        2. 用`will-change/translateZ`属性把动画元素提升到单独的渲染层中。
+        3. 避免滥用渲染层提升（更多的渲染层需要更多的内存和更复杂的管理）。
+    6. 对用户输入、滚动事件进行[函数防抖](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS学习笔记#函数防抖函数节流)处理
+
+        1. 避免使用运行时间过长的事件处理函数，它们会阻塞页面的滚动渲染。
+        2. 避免在事件处理函数中修改样式属性。
+        3. 对事件处理函数去抖动，存储事件对象的值，然后在requestAnimationFrame回调函数中修改样式属性。
+8. 动画调优的策略与技巧：
+
+    1. 尽可能地为产生动画的元素设置`fixed`或`absolute`。
+    2. 阴影渐显动画尽量用伪类的opacity来实现。
+    3. 使用3D硬件加速提升动画性能时，最好给元素增加一个z-index属性，人为干扰复合层的排序，可以有效减少chrome创建不必要的复合层，提升渲染性能，移动端优化效果尤为明显。
+    4. 使用Chrome Timeline工具检查。
+    5. 保证帧率平稳（避免跳帧）
+
+        1. 不在连续的动画过程中做高耗时的操作（如大面积重绘、重排、复杂JS执行）。
+        2. 若高耗时操作无法避免，则尝试化解，比如：
+
+            1. 将高耗时操作放在动画开始或结尾处。
+            2. 将高耗时操作分摊至动画的每一帧中处理。
+    6. 针对硬件加速渲染通道的优化
+
+        1. 合理划分层，动静分离，可避免大面积重绘。
+        2. 使用分层优化动画时，需要留意内存消耗情况（使用Chrome Devtools监测）。
+    7. 低性能设备（Android）优先调试。
+
+        1. 除了**CSS3翻转属性**与**内嵌滚动条**同时出现无法解决，其他样式问题都可以像处理ie6问题一样通过真机试验出解决方案。
+        2. 有些低版本机型会有类似ie6的CSS问题，包括**CSS3的厂商前缀（`-webkit-`等）**、**层级关系（`z-index`）**，并且要更注意**动画性能（渲染层产生）**。
+
 ### 经验技巧
-- 命名间隔
+1. 命名间隔
 
     1. HTML的class和id：`-`。
     2. 图片命名：`_`。
     3. JS的变量和函数：驼峰命名法（构造函数：大驼峰命名法）。
-- 引号使用
+2. 引号使用
 
     1. HTML标签（以及内部属性）、CSS样式（如`content`、`font-family`、`quotes`）：
 
@@ -1924,7 +1931,7 @@ ul {
     2. JS代码：
 
         单引号`'`
-- CSS分类命名规范
+3. CSS分类命名规范
 
     1. 布局`.g-`（grid）
     
@@ -1949,7 +1956,7 @@ ul {
     >- 皮肤`.s-`（skin）
     >
     >   把皮肤型的样式抽离出来。
-- 经验
+4. 经验
 
     1. 标签语义化。
 
@@ -1962,7 +1969,7 @@ ul {
     4. 移动端大部分是webkit内核浏览器，因此可以使用较新的技术，如CSS3；pc端要考虑适配到ie6。
     5. JS用变量保存下已经使用过的DOM对象。
     6. 有些移动端（其实就是Android的各奇葩机型）页面的点击按钮，需要制作大一些，否者虽然看上去点击到了，但是不会触发JS效果。
-- 《高性能网站建设指南》自我总结
+5. 《高性能网站建设指南》自我总结
 
     1. 减少HTTP请求，图片以及外链资源的优化，包括压缩与整合，服务器开启g-zip等（不要压缩图片与PDF，因为它们本身已经被压缩，再压缩可能会增加文件大小；压缩都耗费CPU）。
     2. 图片的处理，包括压缩、大banner切分成多个小图、[小图合并成雪碧图](https://realgeoffrey.github.io/applets/sprites/index.html)、[图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)。
@@ -1995,7 +2002,7 @@ ul {
     2. `<template></template>`
     3. `<textarea style="display:none;"></textarea>`
 7. wap页面或支持伪类的浏览器，能用`:before/after`的就不要添加标签。
-8. 开关按钮
+8. 单选、多选按钮开关自定义样式
 
     用`input:checked + 兄弟节点`（`<input type="radio">`或`<input type="checkbox">`）操作选项选中与否的不同样式；可以隐藏`input`元素，用自定义样式来制作单选框、复选框。完全代替JS。
-9. Android2.3出现渲染问题可以在渲染错误的节点上添加position: relative;（类似ie6的haslayout）。
+9. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
