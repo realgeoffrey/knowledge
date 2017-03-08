@@ -72,28 +72,37 @@ function extend(target, options) {
 ```
 >可以使用jQuery的`$.extend(对象1, 对象2)`完全替代。
 
-### *原生JS*深复制（仅针对原始类型、数组和最基本的对象，以及他们的组合）
+### *原生JS*深复制
 ```javascript
 /**
- * 深复制
- * @param {Object|Array|Undefined|Null|Boolean|Number|String} obj - 深复制参数
- * @returns {Object|Array|Undefined|Null|Boolean|Number|String}
+ * 深复制，仅针对数组或对象，值可以是基本类型、数组、基本对象，方法（不复制方法内属性）
+ * @param {Object|Array} obj - 被深复制的内容
+ * @returns {Object|Array} - 深复制后的内容
  */
 function deepCopy(obj) {
-    var i, newObj;
+    if (Object.prototype.toString.call(obj) !== '[object Array]' && Object.prototype.toString.call(obj) !== '[object Object]') {
 
-    if (typeof obj !== 'object' || obj === null) {
+        return obj
+    } else {
 
-        return obj;
+        return (function (paraObj) {
+            var newObj, i;
+
+            if (typeof paraObj !== 'object' || paraObj === null) {
+
+                return paraObj;
+            }
+
+            newObj = Object.prototype.toString.call(paraObj) === '[object Array]' ? [] : {};
+
+            for (i in paraObj) {
+                newObj[i] = arguments.callee(paraObj[i]);
+            }
+
+            return newObj;
+        }(obj));
     }
-
-    newObj = Object.prototype.toString.call(obj) === '[object Array]' ? [] : {};
-
-    for (i in obj) {
-        newObj[i] = arguments.callee(obj[i]);
-    }
-
-    return newObj;
 }
 ```
->可以使用jQuery的`$.extend(true, {}, 被复制对象)`完全替代。
+>1. 可以使用jQuery的`$.extend(true, {}, 被复制对象)`完全替代。
+>2. 可以使用lodash的`_.cloneDeep(被复制对象)`完全替代。
