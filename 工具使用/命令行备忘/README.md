@@ -24,17 +24,22 @@ nvm uninstall v旧版本号
 >需重装Node.js模块包。
 
 ### 其他命令
-1. ssh登录
+1. ping地址测试
+
+    ```bash
+    ping IP地址
+    ```
+2. ssh登录
 
     ```bash
     ssh 用户名@地址 -p 端口号
     ```
-2. 远程拷贝文件
+3. 远程拷贝文件
 
     ```bash
     scp -P 端口号 远程用户名@远程地址:远程地址路径 本地存放路径
     ```
-3. 改密码
+4. 改密码
 
     ```bash
     passwd
