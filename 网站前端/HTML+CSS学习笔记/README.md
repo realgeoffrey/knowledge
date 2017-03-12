@@ -4,11 +4,31 @@
 
 ### 限定布局宽度，让内容决定布局高度
 
-### `z-index`用于控制设置了absolute、relative或fixed定位的元素
->`z-index`会创建一个堆叠的上下文（Stacking Contexts）。
+### 层叠上下文（stacking context）
+> 参考：[张鑫旭：深入理解CSS中的层叠上下文和层叠顺序](http://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)。
 
-1. 应该只给有堆叠关系的节点设置此属性，而不要试图通过设定个别元素的z-index来确保元素不重叠。
-2. 尽量在页面中不要使`z-index`的数值大于4，否则就要考虑是否过度使用此属性。
+1. 满足以下任意条件则形成层叠上下文：
+
+    1. 根元素 (`HTML`)。
+    2. `z-index`属性值不为~~`auto`~~的`position: relative/absolute;`定位元素。
+    3. `position: fixed;`（仅限Chrome，其他浏览器遵循需要`z-index`为数值）。
+    4. `z-index`属性值不为~~`auto`~~的`flex`项（父元素`display: flex/inline-flex;`）。
+    5. `opacity`属性值`< 1`的元素。
+    6. `transform`属性值不为~~`none`~~的元素。
+    7. `mix-blend-mode`属性值不为~~`normal`~~的元素。
+    8. `filter`属性值不为~~`none`~~的元素。
+    9. `perspective`属性值不为~~`none`~~的元素。
+    10. `isolation`属性值为`isolate`的元素。
+    11. `will-change`属性值指定任意CSS属性（即便没有直接指定这些属性的值）。
+    12. `-webkit-overflow-scrolling`属性值为`touch`的元素。
+2. 层叠顺序（stacking order）
+
+    1. 每个层叠上下文完全独立于兄弟元素，当处理层叠时只考虑子元素（`z-index`值只在父级层叠上下文中有意义）。
+    2. 2个元素的层叠顺序，由各自祖先元素中拥有共同**层叠上下文父级**的层叠顺序决定（`z-index: auto;`不形成层叠上下文）。
+3. `z-index`使用注意
+
+    1. 应该只给堆叠在一起的节点设置此属性。
+    2. 尽量在页面中不要使`z-index`的数值`> 4`，否则就要考虑是否过度使用此属性。
 
 ### `word-spacing`
 对有空白字符包裹的非空白字符产生效果。
@@ -1852,11 +1872,11 @@ ul {
         3. Flash等混合插件。
     3. 其他提升至单独层的方法：
 
-        1. 3D或透视变换（perspective transform）CSS属性
-        2. 对自己的opacity做CSS动画或使用一个动画变换的元素。
+        1. `transform`3D或`perspective`。
+        2. 对自己的`opacity`做CSS动画或使用一个动画变换的元素。
         3. 拥有加速CSS过滤器的元素。
-        4. 元素有一个包含复合层的后代节点（换句话说，就是一个元素拥有一个子元素，该子元素在自己的层里）。
-        5. 如果有一个元素，它的兄弟元素在层中渲染，而这个兄弟元素的z-index比较小，那么这个元素（不管是不是应用了硬件加速样式）也会被放到层中。
+        4. 元素有一个包含层的后代节点（换句话说，就是一个元素拥有一个子元素，该子元素在自己的层里）。
+        5. 如果有一个元素，它的兄弟元素在层中渲染，而这个兄弟元素的`z-index`比较小，那么这个元素（不管是不是应用了硬件加速样式）也会被放到层中。
 
     >**GraphicsLayer**（层）与**The stacking context**（层叠上下文）不同概念。
 4. reflow和repaint产生卡顿：
@@ -1923,7 +1943,7 @@ ul {
 
     1. 尽可能地为产生动画的元素设置`fixed`或`absolute`。
     2. 阴影渐显动画尽量用伪类的opacity来实现。
-    3. 使用3D硬件加速提升动画性能时，最好给元素增加一个z-index属性，人为干扰层（GraphicsLayer）排序，可以有效减少chrome创建不必要的层，提升渲染性能，移动端优化效果尤为明显。
+    3. 使用3D硬件加速提升动画性能时，最好给元素增加一个z-index属性（改变层叠上下文的顺序），人为干扰层（GraphicsLayer）排序，可以有效减少chrome创建不必要的层，提升渲染性能，移动端优化效果尤为明显。
     4. 追查性能问题的时候打开**Layer Borders**选项；使用Chrome Timeline工具检查。
     5. 保证帧率平稳（避免跳帧）
 
@@ -1939,7 +1959,7 @@ ul {
     7. 低性能设备（Android）优先调试。
 
         1. 除了**CSS3翻转属性**与**内嵌滚动条**同时出现无法解决，其他样式问题都可以像处理ie6问题一样通过真机试验出解决方案。
-        2. 有些低版本机型会有类似ie6的CSS问题，包括**CSS3的厂商前缀（`-webkit-`等）**、**层级关系（`z-index`）**，并且要更注意**动画性能（层产生）**。
+        2. 有些低版本机型会有类似ie6的CSS问题，包括**CSS3的厂商前缀（`-webkit-`等）**、**层叠关系（`z-index`）**，并且要更注意**动画性能（层产生）**。
 
 ### 经验技巧
 1. 命名间隔
