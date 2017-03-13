@@ -96,7 +96,7 @@
     sudo /etc/init.d/vboxadd setup
     ```
 
-	>打开svn，重启vagrant，输入`vagrant up`让其下载更新，即可重新挂载共享文件夹。
+	>打开SVN，重启vagrant，输入`vagrant up`让其下载更新，即可重新挂载共享文件夹。
 	
 9. 要配置团队使用的一样的环境：
 
