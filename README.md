@@ -38,5 +38,5 @@
 1. [WAMP环境配置（Windows）](./环境安装、配置/WAMP环境配置（Windows）)
 2. [LAMP环境配置（CentOS7.0）](./环境安装、配置/LAMP环境配置（CentOS7.0）)
 3. [Laravel框架配置+LNMP环境配置（Ubuntu15.04）](./环境安装、配置/Laravel框架配置+LNMP环境配置（Ubuntu15.04）)
-4. [svn环境配置（CentOS）](./环境安装、配置/svn环境配置（CentOS）)
+4. [SVN环境配置（CentOS）](./环境安装、配置/SVN环境配置（CentOS）)
 5. [Vagrant环境配置](./环境安装、配置/Vagrant环境配置)

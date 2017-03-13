@@ -255,10 +255,10 @@
 
 		先安装JDK：可以下载安装，也可以在“软件中心”输入JDK，点击“显示不常用项”，安装完毕后安装下载linux版本webstorm/phpstorm，解压出软件，根据安装文档打开bin路径，然后执行./的sh脚本文件。
 		
-	6. 安装rapid svn
+	6. 安装rapid SVN
 
 		图形界面：
-		在“软件中心”搜索并下载rapid svn，选择checkout（签出），url填写局域网http地址，目标目录填写本地存放地址。
+		在“软件中心”搜索并下载rapid SVN，选择checkout（签出），url填写局域网http地址，目标目录填写本地存放地址。
 		增加：文件右键->Add
 		删除：文件右键->删除
 		提交：文件或总的文件夹选择commit
@@ -269,7 +269,7 @@
 
 	7. 安装meld diff
 
-		在“软件中心”搜索安装meld diff，并在rapid svn中配置此软件：svn->查看->首选项->程序选项卡 “diff tool”填入①meld ②%1 %2。
+		在“软件中心”搜索安装meld diff，并在rapid SVN中配置此软件：svn->查看->首选项->程序选项卡 “diff tool”填入①meld ②%1 %2。
 		
 	8. 安装服务器搜索工具xunsearch
 
