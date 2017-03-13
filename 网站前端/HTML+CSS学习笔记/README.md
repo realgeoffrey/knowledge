@@ -2013,21 +2013,21 @@ ul {
     4. 移动端大部分是webkit内核浏览器，因此可以使用较新的技术，如CSS3；pc端要考虑适配到ie6。
     5. JS用变量保存下已经使用过的DOM对象。
     6. 有些移动端（其实就是Android的各奇葩机型）页面的点击按钮，需要制作大一些，否者虽然看上去点击到了，但是不会触发JS效果。
-5. 《高性能网站建设指南》自我总结
 
-    1. 减少HTTP请求，图片以及外链资源的优化，包括压缩与整合，服务器开启g-zip等（不要压缩图片与PDF，因为它们本身已经被压缩，再压缩可能会增加文件大小；压缩都耗费CPU）。
-    2. 图片的处理，包括压缩、大banner切分成多个小图、[小图合并成雪碧图](https://realgeoffrey.github.io/applets/sprites/index.html)、[图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)。
-    3. 不要缩小放大图片（使用原始大小展现）。
-    4. 使用内容发布网络CDN。
-    5. 添加Expires报头（设置网页在浏览器中缓存过期时间）；配置ETags报头（用来验证浏览器缓存和原服务器上内容是否一致）。
-    6. 浏览器为了避免当样式变化时重绘页面中的元素，会阻塞页面内容的逐步呈现，样式表之前的内容和JS脚本之后的内容都会因为这些文件的下载而阻塞呈现。
-    7. 不要使用~~`@import`~~，只用`<link>`。
-    8. 避免~~CSS表达式（CSS expression）~~。
-    9. 虽然内联CSS和JS比外部文件快，但只有外部的才可能被浏览器缓存。
-    10. 减少DNS查找，设置合适的TTL值。
-    11. 避免重定向（`http://a.com/folder`会重定向到`http://a.com/folder/`，但根目录`http://a.com`不会发生重定向）。
-    12. 使Ajax可缓存（服务端的CDN缓存，可用jQuery的$.Ajax的cash属性设置为false，或url加时间戳，来避免缓存）。
-    13. 避免使用不可缓存且是外部HTTP请求的iFrame。
+### 《高性能网站建设指南》自我总结
+1. 减少HTTP请求，图片以及外链资源的优化，包括压缩与整合，服务器开启g-zip等（不要压缩图片与PDF，因为它们本身已经被压缩，再压缩可能会增加文件大小；压缩都耗费CPU）。
+2. 图片的处理，包括压缩、大banner切分成多个小图、[小图合并成雪碧图](https://realgeoffrey.github.io/applets/sprites/index.html)、[图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)。
+3. 不要缩小放大图片（使用原始大小展现）。
+4. 使用CDN（Content Delivery Network，内容发布网络）。
+5. 添加Expires报头（设置网页在浏览器中缓存过期时间）；配置ETags报头（用来验证浏览器缓存和原服务器上内容是否一致）。
+6. 浏览器为了避免当样式变化时重绘页面中的元素，会阻塞页面内容的逐步呈现，样式表之前的内容和JS脚本之后的内容都会因为这些文件的下载而阻塞呈现。
+7. 不要使用~~`@import`~~，只用`<link>`。
+8. 避免~~CSS表达式（CSS expression）~~。
+9. 虽然内联CSS和JS比外部文件快，但只有外部的才可能被浏览器缓存。
+10. 减少DNS查找，设置合适的TTL值。
+11. 避免重定向（`http://a.com/folder`会重定向到`http://a.com/folder/`，但根目录`http://a.com`不会发生重定向）。
+12. 使Ajax可缓存（服务端的CDN缓存，可用jQuery的$.Ajax的cash属性设置为false，或url加时间戳，来避免缓存）。
+13. 避免使用不可缓存且是外部HTTP请求的iFrame。
 
 ### 注意点
 1. a标签的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（包括`#`和`javascript: void(0);`）都会打开新页面。
