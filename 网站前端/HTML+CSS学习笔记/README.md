@@ -4,6 +4,89 @@
 
 ### 限定布局宽度，让内容决定布局高度
 
+### CSS选择器
+1. 权重
+
+    1. 优先级（从低到高）：
+
+        >低等级的权重值叠加再多，也无法大于高等级的权重值（一个[反例](http://www.zhangxinxu.com/wordpress/2012/08/256-class-selector-beat-id-selector/)）。
+
+        1. **1级**：
+
+            元素选择器（type selectors）、伪元素选择器（pseudo-elements）。
+        2. **2级**：
+
+            类选择器（class selectors）、属性选择器（attribute selectors）、伪类选择器（pseudo-classes）。
+        3. **3级**：
+
+            ID选择器（ID selectors）。
+        4. **4级**
+
+            内嵌样式（标签的`style`属性值）。
+        5. **5级**
+
+            `!important`。
+
+        - 不改变权重：
+
+            `*`、关系符号（`,`、` `、`>`、`+`、`~`）、`:not()`。
+    2. 原则：
+
+        1. 元素应用属性值规则：
+
+            1. 应用**权重大的**。
+            2. 权重相等，应用**文档顺序最后的**（外联和内联也按文档顺序排列）。
+
+            - 不影响应用：
+
+                1. ~~元素在文档的位置、选择器间的距离。~~
+
+                    >e.g. `body h1`与`html h1`权重相同，仅取决于样式顺序。
+                2. ~~样式相对于元素的位置。~~
+
+                    >e.g.
+                    >```html
+                    ><style>
+                    >    /*权重相同，仅取决于样式顺序*/
+                    >    .a p {color: red;}
+                    >    .b p {color: blue;}
+                    ></style>
+                    >
+                    ><div class="a">
+                    >    <div class="b">
+                    >        <p>.a -> .b -> p:blue</p>
+                    >    </div>
+                    ></div>
+                    ><div class="b">
+                    >    <div class="a">
+                    >        <p>.b -> .a -> p:blue</p>
+                    >    </div>
+                    ></div>
+                    >```
+        2. 优先级基于形式，而不是结果。
+
+            >e.g. `[id=foo]`依然是属性选择器优先级（2级），而不是~~ID选择器优先级（3级）~~。
+2. 性能
+
+    >CSS选择器对性能的影响源于**浏览器匹配选择器和文档元素时所消耗的时间**。
+
+    1. 样式系统**从右向左**进行规则匹配
+
+        1. 只要当前选择符的左边还有其他选择符，样式系统就会继续向左移动，直到找到和规则匹配的元素或因为不匹配而退出。
+        2. 选择器最右边的选择符是决定效率的**关键选择器**，越具体的关键选择器，其性能越高。
+    2. 效率（从高到低）
+
+        1. ID选择器
+        2. 类选择器
+        3. 元素选择器
+        4. 毗邻元素选择器（`+`）
+        5. 子元素选择器（`>`）
+        6. 后代元素选择器（` `）
+        7. 通配符选择器（`*`）
+        8. 属性选择器
+        9. 伪类选择器、伪元素选择器
+3. [类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#选择器类型)
+
 ### 层叠上下文（stacking context）
 > 参考：[张鑫旭：深入理解CSS中的层叠上下文和层叠顺序](http://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)。
 
@@ -2010,13 +2093,11 @@ ul {
         >2. h1~h5标签不要根据其字体大小的不同来使用，应该根据页面内的重要程度来使用（SEO）。
     2. 减少层级嵌套，合理嵌套，行内元素不要嵌套块级元素（如a标签不嵌套div）。
     3. 用父节点的class去管理子节点（如父`ul`设定class，而子`li`不设定class）。
-    4. 移动端大部分是webkit内核浏览器，因此可以使用较新的技术，如CSS3；pc端要考虑适配到ie6。
-    5. JS用变量保存下已经使用过的DOM对象。
-    6. 有些移动端（其实就是Android的各奇葩机型）页面的点击按钮，需要制作大一些，否者虽然看上去点击到了，但是不会触发JS效果。
+    4. 有些移动端（其实就是Android的各奇葩机型）页面的点击按钮，需要制作大一些，否者虽然看上去点击到了，但是不会触发JS效果。
 
 ### 《高性能网站建设指南》自我总结
 1. 减少HTTP请求，图片以及外链资源的优化，包括压缩与整合，服务器开启g-zip等（不要压缩图片与PDF，因为它们本身已经被压缩，再压缩可能会增加文件大小；压缩都耗费CPU）。
-2. 图片的处理，包括压缩、大banner切分成多个小图、[小图合并成雪碧图](https://realgeoffrey.github.io/applets/sprites/index.html)、[图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)。
+2. 图片的处理，包括压缩、大banner切分成多个小图、[小图合并成雪碧图](https://realgeoffrey.github.io/applets/sprites/index.html)、[图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)、Base64、WebP。
 3. 不要缩小放大图片（使用原始大小展现）。
 4. 使用CDN（Content Delivery Network，内容发布网络）。
 5. 添加Expires报头（设置网页在浏览器中缓存过期时间）；配置ETags报头（用来验证浏览器缓存和原服务器上内容是否一致）。
