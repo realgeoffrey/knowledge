@@ -896,16 +896,15 @@ sendLog('统计url');
 ```
 
 ### *原生JS*绑定、解绑事件
-1. 绑定事件
-
-    ```javascript
+```javascript
+var eventUtil = {
     /**
      * 绑定事件
      * @param {Object} dom - DOM对象
      * @param {String} type - 事件名
      * @param {Function} handle - 处理函数
      */
-    function addEvent(dom, type, handle) {
+    addHandler: function (dom, type, handle) {
         if (typeof dom.addEventListener === 'function') {   /* DOM2级，除ie6~8外的高级浏览器*/
             dom.addEventListener(type, handle, false);
         } else if (typeof dom.attachEvent === 'function') { /* 所有ie浏览器*/
@@ -913,18 +912,15 @@ sendLog('统计url');
         } else {    /* DOM0级，最早期的浏览器都支持*/
             dom['on' + type] = handle;
         }
-    }
-    ```
-2. 解绑事件
+    },
 
-    ```javascript
     /**
      * 解绑事件
      * @param {Object} dom - DOM对象
      * @param {String} type - 事件名
      * @param {Function} handle - 处理函数
      */
-    function removeEvent(dom, type, handle) {
+    removeHandler: function (dom, type, handle) {
         if (typeof dom.removeEventListener === 'function') {
             dom.removeEventListener(type, handle, false);
         } else if (typeof dom.detachEvent === 'function') {
@@ -933,12 +929,13 @@ sendLog('统计url');
             dom['on' + type] = null;
         }
     }
-    ```
+};
+```
 
-- `addEventListener`与`removeEventListener`是高级浏览器都有的方法（ie8-不支持），必须一一对应具体的**handle**和**布尔值**进行解绑。
-- `attachEvent`与`detachEvent`是ie特有方法，必须一一对应具体的**handle**进行解绑。
-- `on+type`是所有浏览器都支持，用赋值覆盖解绑。
-- jQuery的`on`与`off`：当写具体handle时解绑具体handle；不写handle时默认解绑对象下某事件的所有方法；还可以对事件添加namespace。
+>1. `addEventListener`与`removeEventListener`是高级浏览器都有的方法（ie8-不支持），必须一一对应具体的**handle**和**布尔值**进行解绑。
+>2. `attachEvent`与`detachEvent`是ie特有方法，必须一一对应具体的**handle**进行解绑。
+>3. `on+type`是所有浏览器都支持，用赋值覆盖解绑。
+>4. jQuery的`on`（或`one`）与`off`：当写具体handle时解绑具体handle；不写handle时默认解绑对象下某事件的所有方法；还可以对事件添加namespace。
 
 ### *原生JS*、jQuery或Zepto获取事件对象引用、目标元素引用
 >ie8-的DOM0事件（直接on+type）没有传递**事件对象**到**事件处理函数**中，要额外的`window.event`对象进行相关操作。

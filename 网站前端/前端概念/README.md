@@ -90,6 +90,8 @@
 
         <entity-body>
         ```
+
+        >[状态码、状态描述](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http状态码http-status-code)。
 2. HTTP流程简单概括：
 
     1. 获取域名的IP地址
