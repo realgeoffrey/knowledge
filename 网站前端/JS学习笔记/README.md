@@ -753,6 +753,71 @@
     1. 浅复制：`arr = arr.slice(0);`
     2. 深复制：[代码实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)。
 
+### JS与jQuery的事件绑定
+>1. 以点击事件`click`为例。
+>2. `dom`代表DOM元素对象，`$dom`代表jQuery元素对象。
+>3. `funcAttr`、`func0`、`funcIe`、`func2`为已经定义的方法。
+
+1. JS原生
+
+    >参考[JavaScript 事件绑定机制](http://www.cnblog.me/2016/05/08/javascript-event-binding/)、[理解Javascript中的事件绑定与事件委托](https://segmentfault.com/a/1190000006667581)。
+
+    1. HTML事件处理
+
+        `<div onclick="funcAttr()"></div>`（不能同个事件监听多个处理程序）
+
+        - 移除或修改绑定事件：
+
+            1. 事件处理程序设置为空方法或修改方法：
+
+                `funcAttr = function () {};`、`funcAttr = function () {/* 修改方法*/};`
+            2. 移除或修改DOM元素的事件绑定属性：
+
+                `dom.removeAttribute('onclick');`、`dom.setAttribute('onclick', '(function () {/* 修改方法*/} ())');`
+    2. DOM0级事件处理
+
+        >本质上，DOM0级事件处理等于HTML事件处理。
+
+        `dom.onclick = func0;`（不能同个事件监听多个处理程序）
+
+        - 移除或修改绑定事件：
+
+            `dom.onclick = null;`、`dom.onclick = function () {/* 修改方法*/};`
+    3. IE事件处理
+
+        `dom.attachEvent('onclick', funcIe);`（可监听多个，需要参数完全对应才能解绑定）
+
+        - 移除绑定事件：
+
+            `dom.detachEvent('onclick', funcIe);`
+    4. DOM2级事件处理
+
+        >ie8-不兼容DOM2级事件处理。
+
+        `dom.addEventListener('click', func2, false);`（可监听多个，需要参数完全对应才能解绑定）
+
+        - 移除绑定事件：
+
+            `dom.removeEventListener('click', func2, false);`
+
+    - [兼容各浏览器的绑定、解绑事件](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS方法积累/实用方法#原生js绑定解绑事件)
+2. jQuery
+
+    >来自[jQuery:Events](http://api.jquery.com/category/events/)。
+
+    1. `on`（`one`类似）
+
+        - 移除绑定事件：
+
+            `off`
+    2. 一系列`on`的事件绑定快捷方法:
+
+        `click`、`dblclick`、`contextmenu`、`keydown`、`keyup`、`keypress`、`mousedown`、`mouseup`、`mousemove`、`mouseenter`、`mouseleave`、`mouseover`、`mouseout`、`hover`、`blur`、`focus`、`focusin`、`focusout`、`select`、`change`、`submit`、`ready`、`resize`、`scroll`
+    3. 由`on`和`off`实现的：（废除或不建议）
+
+        1. 绑定：~~`bind`~~、~~`live`~~、~~`delegate`~~
+        2. 解绑：~~`unbind`~~、~~`die`~~、~~`undelegate`~~
+
 ### jQuery或Zepto相关
 1. 当变量是jQuery或Zepto对象是，可以用`$`作为开头命名，利于与普通变量区别
 
