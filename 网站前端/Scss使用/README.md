@@ -1,6 +1,8 @@
-# Scss使用（part of [it](http://sass-lang.com/documentation/file.SASS_REFERENCE.html#css_extensions)）
->1. 推荐使用傻瓜式前端预处理器语言图形编译工具：[Koala](http://koala-app.com/index-zh.html)。
->2. 或者使用gulp（[gulp-sass](https://github.com/dlmanning/gulp-sass)）等构建工具。
+# Scss使用
+>1. 使用傻瓜式前端预处理器语言图形编译工具：[Koala](http://koala-app.com/index-zh.html)。
+>2. 使用gulp（[gulp-sass](https://github.com/dlmanning/gulp-sass)）等构建工具。
+
+>来自[Sass](http://sass-lang.com/documentation/file.SASS_REFERENCE.html#css_extensions)。
 
 1. `变量`、`方法`和`引用`必须在使用前定义，`继承`不需要提前定义；声明相同内容不会报错，只会用最后一次声明覆盖之前声明。
 
