@@ -1399,6 +1399,53 @@ $(window).on('scroll', a);
 ```
 >来自[underscore](https://github.com/jashkenas/underscore)。
 
+### *原生JS*不同进制数转换
+```javascript
+/**
+ * 不同进制（2至36进制）换算
+ * @param {String} operand - 转换数（二进制仅使用0~1、八进制仅使用0~7、十进制仅使用0~9、十六进制仅使用0~9和a~f，等）
+ * @param {Number} fromRadix - 转换数的进制数
+ * @param {Number} toRadix - 结果的进制数
+ * @returns {String} - 转换后的数值，或错误信息
+ */
+function numConvert(operand, fromRadix, toRadix) {
+    var myself = arguments.callee;
+
+    if (typeof myself.toDecimal !== 'function' || typeof myself.fromDecimal !== 'function') {
+        myself.toDecimal = function (str, radix) {  /* 其他进制转化为十进制*/
+
+            return parseInt(str, radix);
+        };
+
+        myself.fromDecimal = function (num, radix) {    /* 十进制转化为其他进制*/
+
+            return num.toString(radix);
+        };
+    }
+
+    if (fromRadix > 36 || fromRadix < 2 || toRadix > 36 || toRadix < 2) {    /* 仅支持2至36进制*/
+
+        return '进制数只能在2至36之间';
+    } else {
+
+        if (fromRadix === 10) {
+            operand = parseInt(operand, 10);
+        } else {
+            operand = myself.toDecimal(operand, fromRadix);
+        }
+        operand = myself.fromDecimal(operand, toRadix);
+
+        if (isNaN(operand)) {
+
+            return '操作数与进制数不匹配';
+        } else {
+
+            return operand;
+        }
+    }
+}
+```
+
 ## Polyfill
 
 ### *原生JS*`Date.now`的**Polyfill**
