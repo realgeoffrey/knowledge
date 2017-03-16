@@ -20,7 +20,7 @@
     **分而治之**
     1. JS模块化方案：
 
-        AMD/CommonJS/UMD/ES6 Module
+        CommonJS/AMD/CMD/ES6 Module/UMD
     2. CSS模块化方案：
 
         sass/less/stylus等预处理器的import、mixin特性支持实现。
