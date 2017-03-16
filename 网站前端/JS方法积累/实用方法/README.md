@@ -1404,9 +1404,9 @@ $(window).on('scroll', a);
 /**
  * 不同进制（2至36进制）换算
  * @param {String} operand - 转换数（二进制仅使用0~1、八进制仅使用0~7、十进制仅使用0~9、十六进制仅使用0~9和a~f，等）
- * @param {Number} fromRadix - 转换数的进制数
+ * @param {Number} fromRadix - 转换数的进制数（2~36）
  * @param {Number} toRadix - 结果的进制数
- * @returns {String} - 转换后的数值，或错误信息
+ * @returns {String|Boolean|Number} - 转换后的数值；进制数不在2~36：false；操作数与进制数不匹配：NaN
  */
 function numConvert(operand, fromRadix, toRadix) {
     var myself = arguments.callee;
@@ -1425,7 +1425,9 @@ function numConvert(operand, fromRadix, toRadix) {
 
     if (fromRadix > 36 || fromRadix < 2 || toRadix > 36 || toRadix < 2) {    /* 仅支持2至36进制*/
 
-        return '进制数只能在2至36之间';
+        console.log('进制数只能在2至36之间');
+
+        return false;
     } else {
 
         if (fromRadix === 10) {
@@ -1433,15 +1435,8 @@ function numConvert(operand, fromRadix, toRadix) {
         } else {
             operand = myself.toDecimal(operand, fromRadix);
         }
-        operand = myself.fromDecimal(operand, toRadix);
 
-        if (isNaN(operand)) {
-
-            return '操作数与进制数不匹配';
-        } else {
-
-            return operand;
-        }
+        return myself.fromDecimal(operand, toRadix);
     }
 }
 ```
