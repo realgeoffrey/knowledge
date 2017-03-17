@@ -1441,6 +1441,15 @@ function numConvert(operand, fromRadix, toRadix) {
 }
 ```
 
+### *原生JS*`验证邮箱有效性
+```javascript
+function validateEmail(email) {
+
+    return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
+}
+```
+>来自[stackoverflow:Validate email address in JavaScript?](http://stackoverflow.com/questions/46155/validate-email-address-in-javascript#answer-46181)。
+
 ## Polyfill
 
 ### *原生JS*`Date.now`的**Polyfill**
