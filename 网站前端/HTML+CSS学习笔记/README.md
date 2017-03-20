@@ -88,7 +88,7 @@
 3. [类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#选择器类型)
 
 ### 层叠上下文（stacking context）
-> 参考：[张鑫旭：深入理解CSS中的层叠上下文和层叠顺序](http://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)。
+>参考：[张鑫旭：深入理解CSS中的层叠上下文和层叠顺序](http://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)。
 
 1. 满足以下任意条件则形成层叠上下文：
 
@@ -151,12 +151,12 @@
     width: 20px;
 }
 ```
-> 两个同样大小的三角形，第二个设置为背景色并且覆盖到第一个上面，可以模拟箭头**>**。
+>两个同样大小的三角形，第二个设置为背景色并且覆盖到第一个上面，可以模拟箭头`>`。
 
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/17v1cchL/)
 
 ### 清除浮动：
-1. 在父级设置
+1. 在父级添加
 
     ```scss
     @mixin clearfix {
@@ -169,14 +169,18 @@
         }
     }
     ```
-2. 截断不影响时，在父级设置
+2. 触发父级BFC
 
-    ```css
-    .father {
-        overflow: hidden;
-        _width: 100%;
-    }
-    ```
+    1. 截断不影响时
+
+        ```css
+        .father {
+            overflow: hidden;
+            _width: 100%;
+        }
+        ```
+    2. 父级设置`float: left/right;`
+    3. 父级设置`position: absolute/fixed;`
 
 ### 单行或多行文本超出宽度则显示省略号
 1. 单行
@@ -194,7 +198,7 @@
 2. 多行
 
     ```scss
-    @mixin multi_ellipsis($line-height, $line) {
+    @mixin multi-ellipsis($line-height, $line) {
         line-height: $line-height;
         height: $line-height * $line;
         display: block;
@@ -207,7 +211,7 @@
     }
  
     //rem模式
-    @mixin multi_ellipsis_rem($line-height, $line) {
+    @mixin multi-ellipsis-rem($line-height, $line) {
         line-height: rem($line-height);
         height: rem($line-height * $line);  //或max-height: rem($line-height * $line);
         display: block;
@@ -372,7 +376,7 @@
 1. W3C定义：在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
 
     1. 毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开。
-    2. 普通流：除**浮动（float）**、**绝对定位（absolute、fixed）**外的代码。
+    2. 普通流：除`float: left/right`、`positon: absolute/fixed`外的代码。
 2. 产生独立的BFC结构可避免margin合并
 
 >ie6、7触发haslayout会影响margin合并的发生。
@@ -494,7 +498,7 @@
 2. img标签没有src属性或src属性为空隐藏
 
     ```css
-    img[src=''] {   /* ie8+*/
+    img[src=""] {   /* ie8+*/
         visibility: hidden; /* 属性为空隐藏*/
     }
     img:not([src]) {    /* ie9+*/
@@ -533,7 +537,7 @@
     }
     ```
 
-    >缺点：只能用于空标签
+    >缺点：只能用于空标签。
 2. 宽高都用rem
     1. 单图
 
@@ -676,7 +680,7 @@
 }
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/fd4qon26/)
-> 参考：[Buttons](https://github.com/alexwolfe/Buttons)。
+>参考：[Buttons](https://github.com/alexwolfe/Buttons)。
 
 ### 滚动条
 1. 若`overflow-x`和`overflow-y`相同，则等同于`overflow`；若不同，且其中一个值为`visible`，另一个为`hidden/scroll/auto`，则`visible`重置为`auto`。
@@ -1388,7 +1392,7 @@ ul {
     }
 }
 ```
-> 可以用`box-shadow`设置单边的间隔。
+>可以用`box-shadow`设置单边的间隔。
 
 ### 实现hover之后底部border替换父级border
 1. 用`relative`控制
@@ -1574,7 +1578,7 @@ ul {
 >有些插件效果不能支持`html,body {height: 100%;}`。
 
 ### CSS3的`animation`使用
-> 动画进行到一半取消动画（去除了相关类）或者替换动画，会导致节点突兀地回到初始位置。
+>动画进行到一半取消动画（去除了相关类）或者替换动画，会导致节点突兀地回到初始位置。
 
 1. 纯CSS触发（如`:hover`）
     ```css
@@ -2094,6 +2098,11 @@ ul {
     2. 减少层级嵌套，合理嵌套，行内元素不要嵌套块级元素（如a标签不嵌套div）。
     3. 用父节点的class去管理子节点（如父`ul`设定class，而子`li`不设定class）。
     4. 有些移动端（其实就是Android的各奇葩机型）页面的点击按钮，需要制作大一些，否者虽然看上去点击到了，但是不会触发JS效果。
+5. CSS编码规范
+
+    绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/css.md#css编码规范)。
+
+    >可以设置为IDE的**Reformat Code**的排版样式。
 
 ### 《高性能网站建设指南》自我总结
 1. 减少HTTP请求，图片以及外链资源的优化，包括压缩与整合，服务器开启g-zip等（不要压缩图片与PDF，因为它们本身已经被压缩，再压缩可能会增加文件大小；压缩都耗费CPU）。

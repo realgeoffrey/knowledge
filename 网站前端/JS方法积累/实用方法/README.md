@@ -1246,7 +1246,7 @@ function getScrollBarWidth() {
  * 函数连续调用时，间隔时间必须大于或等于wait，func才会执行
  * @param {Function} func - 传入函数
  * @param {Number} wait - 函数触发的最小间隔
- * @param {Boolean} immediate - 设置为ture时，调用触发于开始边界而不是结束边界
+ * @param {Boolean} [immediate] - 设置为ture时，调用触发于开始边界而不是结束边界
  * @returns {Function} - 返回客户调用函数
  */
 function debounce(func, wait, immediate) {
@@ -1314,7 +1314,7 @@ $(window).on('scroll', a);
  * 函数连续调用时，func在wait时间内，执行次数不得高于1次
  * @param {Function} func - 传入函数
  * @param {Number} wait - 函数触发的最小间隔
- * @param {Object} options - 如果想忽略开始边界上的调用，传入{leading: false}；如果想忽略结尾边界上的调用，传入{trailing: false}
+ * @param {Object} [options] - 如果想忽略开始边界上的调用，传入{leading: false}；如果想忽略结尾边界上的调用，传入{trailing: false}
  * @returns {Function} - 返回客户调用函数
  */
 function throttle(func, wait, options) {

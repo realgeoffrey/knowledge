@@ -5,16 +5,16 @@
     ```shell
     sudo yum install subversion
     ```
-
 2. 创建仓库
 
 	建立文件夹后执行
+
 	```shell
     svnadmin create /home/svn/one
     svnadmin create /home/svn/two
     ```
 	“*/home/svn/two*” 、“*/home/svn/one*” 为所创建仓库的2个路径。
-	
+
 3. 配置仓库
 
 	针对每个仓库单独配置，分别修改每个仓库conf目录下面的三个配置文件（**authz**、**passwd**、**svnserve.conf**）
@@ -33,9 +33,9 @@
         @admin = rw
         *  =
         ```
+
 		>前面是配置一个用户组admin 有成员user1,user2两个；
 		>后面开始配置目录权限，设置admin组（前面加@符号）的权限为读写权限，其他成员没有权限（* = ）
-	
 	2. 修改**passwd**文件，设置访问当前仓库的用户和密码
 
 		```shell
@@ -45,10 +45,10 @@
 		user1  = 123456
 		user2  = 123456
 		```
-	
 	3. 修改**svnserve.conf**文件，开启权限控制等功能
 
 		找到第一个常规选项[general]，把前面是一个#号的去掉#号，如下是我的demo仓库配置内容
+
 		```text
 		[general]
 		### These options control access to the repository for unauthenticated
@@ -83,7 +83,6 @@
 		```
 
 		>所有的行都必须顶格，否则报错。
-	
 4. 启动和关闭服务
 
 	1. 启动服务
@@ -92,26 +91,27 @@
         svnserve -d -r /home/svn
         ```
 		要在SVN根目录下，这样SVN下的多个仓库都可以根据 *svn://ip地址/仓库名* 来进行SVN。
+
 		>不要用sudo权限启动服务，否则无法commit。
 		>若无法进行写权限：解决方法：停止SVN服务：`killall svnserve`，在创建版本库的用户下启动`svn ： svnserve -d -r /home/svn`
-		
 	2. 停止服务
 
 	    ```shell
         killall svnserve
         ```
-
 5. 访问仓库项目
 
 	我们有两个代码仓库 */home/svn/one、/home/svn/two* ，用`svnserve -d -r /home/svn`启动服务后，可以在通过以下地址访问两个项目：
+
 	`svn://ip地址/one, svn://ip地址/two`
-	
 6. SVN客户端操作
 
     ```shell
     svn checkout svn://ip地址/one	/var/www/abc/
     ```
+
 	输入user1或user2的账户名和密码
+
 	```shell
     svn add /var/www/abc/*
     svn delete /var/www/abc/某文件
