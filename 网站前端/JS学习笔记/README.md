@@ -317,31 +317,44 @@
         ```
     6. 对象的属性、方法，与变量、方法命名规则相同。
     7. 若属性、变量、方法在表示其是私有的，可在之前加一个下划线`_`作为区分。
-7. 使用直接量
+7. 使用字面量代替构造函数（普通函数）
 
-    1. 对象直接量
+    >好处：
+    >1. 代码更少。
+    >2. 不需要构造函数的“作用域解析”（scope resolution），提高性能。
+    >3. 构造函数可以接收参数，返回的实例不可控、易混淆，字面量简单不出错。
 
-        用直接量代替`Object`构造函数：
+    1. 对象
 
         ```javascript
         /* 不提倡的构造函数写法*/
         var a = new Object();
         a.attr1 = '...';
 
-        /* 提倡的直接量*/
+        /* 提倡的字面量写法*/
         var b = {attr1: '...'};
         ```
-    2. 数组直接量
-
-        用直接量代替`Array`构造函数：
+    2. 数组
 
         ```javascript
         /* 不提倡的构造函数写法*/
         var arr1 = new Array('a', 'b');
 
-        /* 提倡的直接量*/
+        /* 提倡的字面量写法*/
         var arr2 = ['a', 'b'];
         ```
+        ```
+    3. 字符串
+
+        ```javascript
+        /* 不提倡的构造函数写法*/
+        var str1 = new String('a');
+
+        /* 提倡的字面量写法*/
+        var str2 = 'a'';
+        ```
+
+    - 其他数据类型
 8. 注释规范
 
     1. 单行注释：`//`后不空格
@@ -752,6 +765,61 @@
 
     1. 浅复制：`arr = arr.slice(0);`
     2. 深复制：[代码实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)。
+
+### 数据创建方式
+1. 对象
+
+    ```javascript
+    //对象字面量
+    var obj1 = {a: 'b'};
+
+    //构造函数实例化。对象包装器：如果参数是null或undefined，将会创建并返回一个空对象；否则，将返回一个与给定值对应类型的对象。
+    var obj2 = new Object();    //{}
+    var obj3 = new Object(1);    //等价于 new Number(1)
+    var obj4 = new Object(true);    //等价于 new Boolean(true)
+    var obj5 = new Object('str');    //等价于 new String('str')
+    var obj6 = new Object({a: 'b'});    //{a: 'b'}
+
+    //普通函数（与new的方式结果一致）
+    var obj7 = Object();
+    ```
+2. 数组
+
+    ```javascript
+    //数组字面量
+    var arr1 = [2, 3];  //[2, 3]
+
+    //构造函数实例化
+    var arr2 = new Array(); //[]
+    var arr3 = new Array(2);    //[undefined, undefined]
+    var arr4 = new Array(2, 3); //[2, 3]
+
+    //普通函数（与new的方式结果一致）
+    var arr5 = Array(); //[]
+    var arr6 = Array(2);    //[undefined, undefined]
+    var arr7 = Array(2, 3); //[2, 3]
+    ```
+3. 字符串
+
+    ```javascript
+    //字符串字面量
+    var str1 = 'string';
+
+    //普通函数
+    var str2 = String('string');
+
+    //构造函数实例化
+    var str3 = new String('string');
+
+
+    console.log(typeof str1, str1 instanceof String); //string false
+    console.log(typeof str2, str2 instanceof String); //string false
+    console.log(typeof str3, str3 instanceof String); //object true
+
+    console.log(str1 === str2, str2 === str3);   //true false
+    ```
+
+- 其他数据类型，也有字面量方式和构造函数（普通函数）方式。
 
 ### JS与jQuery的事件绑定
 >1. 以点击事件`click`为例。
