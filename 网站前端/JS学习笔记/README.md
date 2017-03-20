@@ -393,7 +393,6 @@
             return result;
         }
         ```
-
 9. [JS编程风格总结](http://www.ruanyifeng.com/blog/2012/04/javascript_programming_style.html)（programming style）
 
     1. 表示区块起首的大括号，不要另起一行。
@@ -411,7 +410,12 @@
     13. 建构函数的函数名，采用首字母大写；其他函数名，一律首字母小写。
     14. 不要使用自增（++）和自减（--）运算符，用+=和-=代替。
     15. 总是使用大括号表示区块。
-10. 用户体验
+10. JS编码规范
+
+    绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/javascript.md#javascript编码规范)。
+
+    >可以设置为IDE的**Reformat Code**的排版样式。
+11. 用户体验
 
     1. 平稳退化：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
 

@@ -156,7 +156,7 @@
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/17v1cchL/)
 
 ### 清除浮动：
-1. 在父级设置
+1. 在父级添加
 
     ```scss
     @mixin clearfix {
@@ -169,14 +169,18 @@
         }
     }
     ```
-2. 截断不影响时，在父级设置
+2. 触发父级BFC
 
-    ```css
-    .father {
-        overflow: hidden;
-        _width: 100%;
-    }
-    ```
+    1. 截断不影响时
+
+        ```css
+        .father {
+            overflow: hidden;
+            _width: 100%;
+        }
+        ```
+    2. 父级设置`float: left/right;`
+    3. 父级设置`position: absolute/fixed;`
 
 ### 单行或多行文本超出宽度则显示省略号
 1. 单行
@@ -194,7 +198,7 @@
 2. 多行
 
     ```scss
-    @mixin multi_ellipsis($line-height, $line) {
+    @mixin multi-ellipsis($line-height, $line) {
         line-height: $line-height;
         height: $line-height * $line;
         display: block;
@@ -207,7 +211,7 @@
     }
  
     //rem模式
-    @mixin multi_ellipsis_rem($line-height, $line) {
+    @mixin multi-ellipsis-rem($line-height, $line) {
         line-height: rem($line-height);
         height: rem($line-height * $line);  //或max-height: rem($line-height * $line);
         display: block;
@@ -2094,6 +2098,11 @@ ul {
     2. 减少层级嵌套，合理嵌套，行内元素不要嵌套块级元素（如a标签不嵌套div）。
     3. 用父节点的class去管理子节点（如父`ul`设定class，而子`li`不设定class）。
     4. 有些移动端（其实就是Android的各奇葩机型）页面的点击按钮，需要制作大一些，否者虽然看上去点击到了，但是不会触发JS效果。
+5. CSS编码规范
+
+    绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/css.md#css编码规范)。
+
+    >可以设置为IDE的**Reformat Code**的排版样式。
 
 ### 《高性能网站建设指南》自我总结
 1. 减少HTTP请求，图片以及外链资源的优化，包括压缩与整合，服务器开启g-zip等（不要压缩图片与PDF，因为它们本身已经被压缩，再压缩可能会增加文件大小；压缩都耗费CPU）。
