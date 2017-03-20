@@ -64,7 +64,6 @@
 		>在www文件内新建123.me文件夹。
 
         ![WAMP图](./images/4.png)
-		
 	2. 打开 *C:\WINDOWS\system32\drivers\etc* 下的 **hosts**，增加代码：
 		```text
 		127.0.0.1 www.123.me
