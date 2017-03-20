@@ -758,7 +758,7 @@
 >2. `dom`代表DOM元素对象，`$dom`代表jQuery元素对象。
 >3. `funcAttr`、`func0`、`funcIe`、`func2`为已经定义的方法。
 
-1. JS原生
+1. 原生JS
 
     >参考[JavaScript 事件绑定机制](http://www.cnblog.me/2016/05/08/javascript-event-binding/)、[理解Javascript中的事件绑定与事件委托](https://segmentfault.com/a/1190000006667581)。
 
@@ -943,34 +943,121 @@
     >2. ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
 
 ### 循环遍历
->1. `break`应用在循环（while、do-while、for、for-in）和switch。
->2. `continue`应用在循环。
->3. `$.each/obj.each`跳出循环用`return true`（功能类似于`continue`）和`return false`（功能类似于`break`）。
+>1. `continue`应用在循环（while、do-while、for、for-in），表示跳过当次循环；`break`应用在循环和switch，表示跳出整个循环。
+>2. `forEach`、`map`、`filter`、`some`、`every`无法中止循环（`return`只结束回调函数）。
+>3. `$.each/$dom.each`跳出循环用`return true`（功能类似于`continue`）和`return false`（功能类似于`break`）。
 
-1. `for-in`JS原生语法
+>`obj`为对象实例，`arr`为数组实例，$dom为jQuery对象。
 
-    ```javascript
-    /* obj为数组或对象，i为数组下标或对象属性名*/
-    for (var i in obj) {
+1. 原生JS
 
-    }
-    ```
-2. `$.each()`jQuery方法
+    1. `while`或`do-while`
 
-    ```javascript
-    /* obj为数组或对象（原生或jQuery对象），index为数组下标或对象名，element为值（不是jQuery对象，是DOM对象，与this相同）*/
-    $.each(obj, function (index, element) {
+        ```javascript
+        while (跳出判断) {
 
-    });
-    ```
-3. `obj.each()`jQuery方法
+        }
+        ```
 
-    ```javascript
-    /* obj为jQuery对象，index为从0开始的下标，element为值（不是jQuery对象，是DOM对象，与this相同）*/
-    obj.each(function (index, element) {
+        ```javascript
+        do {
 
-    });
-    ```
+        } while (跳出判断);
+        ```
+    2. `for`
+
+        ```javascript
+        for (执行一次; 跳出判断; 每执行一次后执行) {
+
+        }
+        ```
+    3. `for-in`
+
+        ```javascript
+        /* i为数组当前项的索引或对象当前项的属性名*/
+        for (var i in obj或arr) {
+
+        }
+        ```
+    4. Array方法
+
+        1. `Array.prototype.forEach`
+
+            对数组的每个元素执行一次提供的函数。
+
+            ```javascript
+            /* element为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为undefined*/
+            arr.forEach(function(element, index, array) {
+
+            }, thisArg);
+            ```
+        2. `Array.prototype.map`
+
+            创建一个新数组，其结果是该数组中的每个元素调用一个提供的函数。
+
+            ```javascript
+            /* element为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为新数组*/
+            arr.map(function(element, index, array) {
+
+                /* return true;元素保留；return false;元素不保留*/
+            }, thisArg);
+            ```
+        3. `Array.prototype.filter`
+
+            使用指定的函数测试所有元素，并创建一个包含所有通过测试的元素的新数组。
+
+            ```javascript
+            /* element为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为新数组*/
+            arr.filter(function(element, index, array) {
+
+                /* return true;元素保留；return false;元素不保留*/
+            }, thisArg);
+            ```
+        4. `Array.prototype.some`
+
+            测试数组中的某些元素是否通过了指定函数的测试。
+
+            ```javascript
+            /* element为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为true（一个回调函数返回true）；false（回调函数没有一个返回true）*/
+            arr.some(function(element, index, array) {
+
+            }, thisArg);
+            ```
+        5. `Array.prototype.every`
+
+            测试数组的所有元素是否都通过了指定函数的测试。
+
+            ```javascript
+            /* element为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为false（一个回调函数返回false）；true（回调函数没有一个返回false）*/
+            arr.every(function(element, index, array) {
+
+            }, thisArg);
+            ```
+    5. `Object.keys`
+2. jQuery
+
+    1. `$.each`
+
+        ```javascript
+        /* index为数组当前项的索引或对象当前项的属性名或jQuery对象的索引，element为当前项的值（不是jQuery对象，是DOM对象，与this相同）*/
+        $.each(obj或arr或$dom, function (index, element) {
+
+        });
+        ```
+    2. `$dom.each`
+
+        ```javascript
+        /* index为jQuery对象的索引，element为当前项的值（不是jQuery对象，是DOM对象，与this相同）*/
+        $dom.each(function (index, element) {
+
+        });
+        ```
+    3. `$.grep`
+
+        类似`Array.prototype.filter`
+3. ES6的其他方法
+
+    1. `for-of`
 
 ### 判断对象、方法是否定义
 1. 判断对象方法是否可以执行
@@ -1078,11 +1165,38 @@
 >隐身模式策略：（大多数浏览器的策略）存储API仍然可用，并且看起来功能齐全，只是无法真正储存（比如分配储存空间为0）。
 
 ### 自执行匿名函数（拉姆达，λ，lambda）
+立即调用的函数表达式。
+
 1. `(function () {/* code*/}());`（推荐方式）
 2. `(function () {/* code*/})();`
 
 >1. `function`关键字当作一个**函数声明**的开始，函数声明的后面不能跟圆括号；
 >2. 将函数声明包含在圆括号中，表示**函数表达式**，函数表达式的后面可以跟圆括号，表示执行此函数。
+
+- 其他写法（不推荐）
+
+    ```javascript
+    (function () {}());
+    (function () {})();
+    [function () {}()];
+
+    ~function () {}();
+    !function () {}();
+    +function () {}();
+    -function () {}();
+
+    delete function () {}();
+    typeof function () {}();
+    void function () {}();
+    new function () {}();
+    new function () {};
+
+    var f = function () {}();
+
+    1, function () {}();
+    1 ^ function () {}();
+    1 > function () {}();
+    ```
 
 ```javascript
 //传值进自执行匿名函数可以避免闭包导致无法记录变量值的问题
