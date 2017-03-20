@@ -704,19 +704,6 @@ document.getElementById('...').addEventListener('touchend', function (e) {
 /* 还要处理浏览器默认点击事件（如a标签）*/
 ```
 
-### *原生JS*判断是否是数组
-```javascript
-function isArray(value) {
-    if (typeof Array.isArray === 'function') {    /* ie8及以下不支持*/
-
-        return Array.isArray(value);
-    } else {
-
-        return Object.prototype.toString.call(value) === '[Object Array]';
-    }
-}
-```
-
 ### *原生JS*从字符串中获取绝对路径
 ```javascript
 function getAbsoluteUrl(url) {
@@ -1604,6 +1591,16 @@ if (typeof Object.create !== 'function') {
 }
 ```
 >来自[MDN:Object.create](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill)。
+
+### *原生JS*`Array.isArray`的**Polyfill**
+```javascript
+if (!Array.isArray) {
+    Array.isArray = function (arg) {
+        return Object.prototype.toString.call(arg) === '[object Array]';
+    };
+}
+```
+>来自[MDN:Array.isArray](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray#Polyfill)。
 
 ----
 ## jQuery（或Zepto）方法
