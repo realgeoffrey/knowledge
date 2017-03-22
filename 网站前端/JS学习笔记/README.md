@@ -1562,23 +1562,23 @@ for (var i = 0; i < 3; i++) {
 
     >相对于单全局变量，构造函数更加灵活，可以生成多个对象进行互相独立的操作。
 
-    - `new`一个构造函数做的事情
+    - `new`一个构造函数执行的步骤
 
-        e.g. `var myObj = new Func();`
+        e.g. `var newObj = new Func(para);`
 
-        1. 创建一个空对象obj
+        1. 创建一个空对象（假设为obj）：
 
             `var obj = {};`
-        2. 设置该对象的构造函数为原型的constructor
-
-            `obj.constructor = Func.prototype.constructor;`
-        3. 设置obj的__proto__为原型
+        2. 设置obj的`__proto__`为构造函数的原型：
 
             `obj.__proto__ = Func.prototype;`
-        4. 使用obj作为上下文调用构造函数（把obj赋值给上下文this）
+        3. 使用obj作为上下文调用构造函数，并传入参数：
 
-            `var ret = Func.call(obj);`
-        5. 如果构造函数返回的是this或者不返回，那么ret赋值给myObj，否则以构造函数return的内容赋值给myObj。
+            `Func.call(obj, para);`
+        4. newObj赋值
+
+            1. 若Func返回**引用类型**，则这个引用类型的值赋值给newObj。
+            2. 若Func返回基本类型或返回this或无返回，则obj赋值给newObj。
 5. 函数调用类型
     
     1. 函数调用`alert();`或`(function () {}())`（立即执行函数）
@@ -1875,7 +1875,10 @@ for (var i = 0; i < 3; i++) {
     ![事件流图](./images/event-flow-1.png)
 
     1. 先**捕获**。
-    2. 抵达目标，进行事件监听器处理（可以设置不再冒泡）。
+    2. 抵达目标
+
+        1. 进行事件监听器处理（可以设置不再冒泡或不执行浏览器默认行为）。
+        2. 执行浏览器默认行为（如a标签跳转）。
     3. 再**冒泡**。
 
     >ie10-的DOM事件流只有冒泡，没有~~捕获~~。
@@ -1992,43 +1995,3 @@ for (var i = 0; i < 3; i++) {
                 >仅能获取原始error的`message`信息，无法获取`line`等其他信息，因此还是必须前端在回调函数中嵌套`try-catch`
 
         >捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
-
-### 浏览器的主要组件
-![浏览器主要组件图](./images/browser-components-1.png)
-
-1. 用户界面
-
-    包括地址栏、前进/后退按钮、书签菜单等。除了浏览器主窗口显示的您请求的页面外，其他显示的各个部分都属于用户界面。
-2. 浏览器引擎
-
-    在用户界面和呈现引擎之间传送指令。
-3. 渲染引擎
-
-    也称为浏览器内核（web browser engine）、排版引擎（layout engine）或样板引擎，是一种软件组件，负责获取标记式内容（如HTML、XML以及图像文件等）、整理信息（如CSS、XSL），并将排版后的内容输出至显示屏或打印机。
-
-    所有网页浏览器、电子邮件客户端以及其他需要根据表示性的标记语言来显示内容的应用程序，都需要排版引擎。
-
-    >1. IE：Trident。
-    >2. Chrome：前WebKit，现Blink。
-    >3. Firefox：Gecko。
-    >4. Safari：WebKit。
-    >5. Opera：前Presto，现Blink。
-    >6. Edge：EdgeHTML。
-4. 网络
-
-    用于网络调用，比如 HTTP 请求。其接口与平台无关，并为所有平台提供底层实现。
-5. 用户界面后端
-
-    用于绘制基本的窗口小部件，比如组合框和窗口。其公开了与平台无关的通用接口，而在底层使用操作系统的用户界面方法。
-6. JavaScript 解释器
-
-    一个专门处理JS脚本的虚拟机，一般会附带在网页浏览器中。
-
-    >1. JScript：ie8-，ASP。
-    >2. Chakra：ie9+，Edge。
-    >3. V8：Chrome，Opera，Nodejs，MongoDB。
-    >4. SpiderMonkey：Firefox。
-    >5. Nitro：Safari。
-7. 数据存储
-
-    这是持久层。浏览器需要在硬盘上保存各种数据，例如 Cookie。新的 HTML 规范 (HTML5) 定义了“网络数据库”，这是一个完整（但是轻便）的浏览器内数据库。
