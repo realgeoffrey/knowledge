@@ -1934,7 +1934,7 @@ ul {
         使用JS或CSS Animations、Transitions、Web Animation API来实现视觉变化效果。
     2. `Style`：
 
-        根据CSS选择器，对每个DOM匹配对应的CSS样式。
+        根据CSS选择器，生成完整的CSSOM。
     3. `Layout`：
 
         具体计算每个DOM最终在屏幕上显示的大小和位置。web页面中元素的布局是相对的，因此一个元素的布局发生变化，会联动地引发其他元素的布局发生变化。
