@@ -649,7 +649,11 @@
 
 1. `document.domain`相同则可以文档间互相操作
 
-    把不同文档的`document.domain`设置为一致的值（仅允许设置为上一级域），即可双向通信、互相操作：对`iframe`、`window.open`的新窗口、`Cookie`起作用（`LocalStorage`和`IndexDB`只能通过`postMessage`通信）。
+    >文档间：文档与`iframe`、文档与`window.open`的新窗口。
+
+    把不同文档的`document.domain`设置为一致的值（仅允许设置为上一级域），即可双向通信、互相操作。
+
+    >`Cookie`可以直接操作；`LocalStorage`、`IndexDB`只能通过`postMessage`通信。
 
     1. 与iframe通信：
 
@@ -669,9 +673,11 @@
         //新打开窗口调用父窗口的window对象
         var father = window.opener;
         ```
-2. `postMessage`跨文档通信
+2. `postMessage`文档间通信
 
-    >ie8、ie9仅支持`iframe`，ie10+支持。不实行同源政策。
+    >文档间：文档与`iframe`、文档与`window.open`的新窗口。
+
+    >ie8、ie9仅支持与`iframe`，ie10+支持与`iframe`、`window.open`的新窗口。不实行同源政策。
 
     ```javascript
     //发送方
