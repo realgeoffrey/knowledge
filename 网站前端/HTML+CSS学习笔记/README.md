@@ -384,8 +384,8 @@
 ### BFC（Block Formatting Context）块级格式上下文
 1. W3C定义：
 
-    1. 浮动元素和绝对定位元素，非块级盒子的块级容器（例如 inline-blocks、table-cells、和table-captions），以及overflow值不为“visiable”的块级盒子，都会为他们的内容创建新的块级格式化上下文。
-    2. 在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由他们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
+    1. 浮动元素和绝对定位元素，非块级盒子的块级容器（例如 inline-blocks、table-cells、和table-captions），以及overflow值不为“visiable”的块级盒子，都会为它们的内容创建新的块级格式化上下文。
+    2. 在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由它们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
     3. 在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘（border-left）（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
 2. BFC是一个独立的布局环境，可以理解为一个箱子，箱子里面物品的摆放不受外界的影响，并且每个BFC都遵守同一套布局规则。
 3. 对容器添加以下CSS属性使其成为独立的BFC
@@ -564,8 +564,8 @@
 
     >1. 百分比公式：
     >
-    >   1. `background-position-x = 小图横坐标px / ( 大图宽度px - 小图宽度px ) * 100%`
-    >   2. `background-position-y = 小图纵坐标px / ( 大图高度px - 小图高度px ) * 100%`
+    >   - `background-position-x = 小图横坐标px / ( 大图宽度px - 小图宽度px ) * 100%`
+    >   - `background-position-y = 小图纵坐标px / ( 大图高度px - 小图高度px ) * 100%`
     >2. 可以用预处理语言计算：
     >
     >   ```scss
@@ -1907,6 +1907,19 @@ ul {
 }
 ```
 
+### 移动端适配总结
+1. 一份PSD设计稿、或多份具体的响应式PSD设计稿。
+2. 宽屏：按比例放大项、或增加项数量。
+3. meta标签的viewport值方案。
+4. 响应式设计三大要素：媒体查询、流式布局、弹性图片。
+5. [不同PPI使用不同分辨率图片](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#不同ppi的设备使用不同分辨率的图片)。
+6. 文字大小边界：font-size设置最大、最小值。
+7. [半像素处理](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#移动端半像素)。
+8. [rem+@media方案](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#响应式页面解决方案使用rem媒体查询)。
+9. [雪碧图使用百分比background-position](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#wap页面自适应图片)
+10. [自适应宽度布局](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#自适应宽度布局)（[flex解决自适应问题](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#flex优雅解决布局自适应问题)）。
+11. 是否[横竖屏翻转显示](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#横竖屏切换)（特殊单屏应用，如游戏）。
+
 ### 富文本
 1. 富文本内容除了要检测用户输入标签的闭合性，还要注意**不要用`li`标签嵌套富文本**，因为代码中如果有单独的`li`（没有嵌套`ol`或`ul`），就会“升级”到跟祖先级li同级的内容。
 
@@ -1993,7 +2006,7 @@ ul {
 
     1. reflow（重排）：
 
-        某个元素上执行动画时，浏览器需要每一帧都检测是否有元素受到影响，并调整他们的大小、位置，通常这种调整都是联动的。
+        某个元素上执行动画时，浏览器需要每一帧都检测是否有元素受到影响，并调整它们的大小、位置，通常这种调整都是联动的。
     2. repaint（重绘）：
 
         浏览器还需要监听元素的外观变化，通常是背景色、阴影、边框等可视元素，并进行重绘。
