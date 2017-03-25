@@ -982,7 +982,7 @@
         7. **`null`** -> **`'object'`**
 
         >1. 因为`typeof null`返回`'object'`，因此typeof不能判断是否是引用类型。
-        >2. ie8-的DOM节点的方法返回不是~~`function`~~，而是`object`，因此只能用`方法名 in DOM`检测DOM是否拥有某方法。
+        >2. ie8-的DOM节点的方法返回不是~~function~~，而是`object`，因此只能用`方法名 in DOM`检测DOM是否拥有某方法。
 
 3. `对象 instanceof 构造函数`
 
