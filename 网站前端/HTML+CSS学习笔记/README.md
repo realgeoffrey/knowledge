@@ -93,14 +93,14 @@
 1. 满足以下任意条件则形成层叠上下文：
 
     1. 根元素 (`HTML`)。
-    2. `z-index`属性值不为~~`auto`~~的`position: relative/absolute;`定位元素。
+    2. `z-index`属性值不为~~auto~~的`position: relative/absolute;`定位元素。
     3. `position: fixed;`（仅限Chrome，其他浏览器遵循需要`z-index`为数值）。
-    4. `z-index`属性值不为~~`auto`~~的`flex`项（父元素`display: flex/inline-flex;`）。
+    4. `z-index`属性值不为~~auto~~的`flex`项（父元素`display: flex/inline-flex;`）。
     5. `opacity`属性值`< 1`的元素。
-    6. `transform`属性值不为~~`none`~~的元素。
-    7. `mix-blend-mode`属性值不为~~`normal`~~的元素。
-    8. `filter`属性值不为~~`none`~~的元素。
-    9. `perspective`属性值不为~~`none`~~的元素。
+    6. `transform`属性值不为~~none~~的元素。
+    7. `mix-blend-mode`属性值不为~~normal~~的元素。
+    8. `filter`属性值不为~~none~~的元素。
+    9. `perspective`属性值不为~~none~~的元素。
     10. `isolation`属性值为`isolate`的元素。
     11. `will-change`属性值指定任意CSS属性（即便没有直接指定这些属性的值）。
     12. `-webkit-overflow-scrolling`属性值为`touch`的元素。
@@ -1811,7 +1811,16 @@ ul {
 ----
 ## 经验总结
 
-### 自适应、布局的问题，都可以用[`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex)优雅解决
+### [`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex)优雅解决布局、自适应问题
+1. 不使用flex导致不方便处理的问题：
+
+    1. 栅格系统
+    2. [自适应宽度布局](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#自适应宽度布局)
+    3. [垂直居中](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#垂直居中)
+    4. [水平居中](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#水平居中)
+    5. [页面高度不够时，footer依然置于页面最底部](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#页面高度不够时footer依然置于页面最底部)
+    6. [多列等高](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#多列等高)
+2. flex具体解决方案：[solved-by-flexbox](https://hufan-akari.github.io/solved-by-flexbox/)。
 
 ### 响应式设计
 1. 媒体查询方式
@@ -1823,7 +1832,7 @@ ul {
         `<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
 2. 响应式设计三大要素
     1. 媒体查询
-    2. 流式布局：节点用百分比或rem
+    2. 流式布局：节点用百分比或rem或flex
         
         >使用自适应结构，比如：[自适应宽度布局](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#自适应宽度布局)。
     3. 弹性图片：`img {max-width: 100%;}`
@@ -2106,7 +2115,7 @@ ul {
 4. 使用CDN（Content Delivery Network，内容发布网络）。
 5. 添加Expires报头（设置网页在浏览器中缓存过期时间）；配置ETags报头（用来验证浏览器缓存和原服务器上内容是否一致）。
 6. 浏览器为了避免当样式变化时重绘页面中的元素，会阻塞页面内容的逐步呈现，样式表之前的内容和JS脚本之后的内容都会因为这些文件的下载而阻塞呈现。
-7. 不要使用~~`@import`~~，只用`<link>`。
+7. 不要使用~~@import~~，只用`<link>`。
 8. 避免~~CSS表达式（CSS expression）~~。
 9. 虽然内联CSS和JS比外部文件快，但只有外部的才可能被浏览器缓存。
 10. 减少DNS查找，设置合适的TTL值。
