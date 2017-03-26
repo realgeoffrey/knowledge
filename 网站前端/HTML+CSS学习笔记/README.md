@@ -356,12 +356,6 @@
 </table>
 ```
 
-### 使元素强制表现为`block`的CSS设置
-1. `float: left/right;`
-2. `position: absolute/fixed;`
-
->意味着有以上CSS属性的内联标签可以当做块级标签使用。
-
 ### 块级元素的width
 1. `width: auto;`：
 
@@ -371,6 +365,12 @@
 2. `width: 100%;`：
 
     父级的px为自己的px。
+
+### 使元素强制表现为`block`的CSS设置
+1. `float: left/right;`
+2. `position: absolute/fixed;`
+
+>意味着有以上CSS属性的内联标签可以当做块级标签使用。
 
 ### margin合并
 1. W3C定义：在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
@@ -731,7 +731,7 @@
     7. `scrollbar-track-color: 颜色;`：立体滚动条背景颜色。
     8. `scrollbar-base-color: 颜色;`：滚动条的基色。
 
->参考：[链接1（翻译）](http://alfred-sun.github.io/blog/2014/12/24/scrollbar-customized-with-css-style/)、[链接2（原文）](https://css-tricks.com/custom-scrollbars-in-webkit/)。
+>参考：[CSS自定义浏览器滚动条样式](http://alfred-sun.github.io/blog/2014/12/24/scrollbar-customized-with-css-style/)。
 
 ----
 ## HTML + CSS
@@ -1793,8 +1793,7 @@ ul {
     </script>
     ```
     
-简单情况下，页面添加`document.body.addEventListener('touchstart', function () {}, true);`即可。
->`a,button,input,textarea {-webkit-tap-highlight-color: rgba( , , , );}`是触碰到按钮时给按钮盖上一层颜色，而不是改变按钮自身样式。
+- 正常情况下，页面添加`document.body.addEventListener('touchstart', function () {}, true);`即可满足大部分浏览器。
 
 ### 繁星效果纯CSS实现
 1. 纯色背景
@@ -1921,11 +1920,9 @@ ul {
 11. 是否[横竖屏翻转显示](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#横竖屏切换)（特殊单屏应用，如游戏）。
 
 ### 富文本
-1. 富文本内容除了要检测用户输入标签的闭合性，还要注意**不要用`li`标签嵌套富文本**，因为代码中如果有单独的`li`（没有嵌套`ol`或`ul`），就会“升级”到跟祖先级li同级的内容。
-
-2. 部分富文本会用标签`em`、`ol`、`ul`来表示**斜体**、**有序序列**、**无序序列**，因此如果用CSS重置了以上标签后，要在富文本内重载开启它们的默认效果。
-
-3. 部分富文本还会在`table`标签上使用`cellspacing`、`border`、`bordercolor`属性来设置表格，又因为设置了`border: 0;`的表格标签无法重载开启以上属性作用，所以CSS重置时不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性。
+1. 富文本内容除了要检测用户输入标签的闭合性，还要注意不要用~~li标签嵌套富文本~~，因为代码中如果有单独的`li`（没有嵌套`ol`或`ul`），就会“升级”到跟祖先级li同级的内容。
+2. 部分富文本会用标签`em`、`ol`、`ul`来表示**斜体**、**有序序列**、**无序序列**，因此如果用CSS重置了以上标签后，要在[富文本内重载开启它们的默认效果](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L61-L77)。
+3. 部分富文本还会在`table`标签上使用`cellspacing`、`border`、`bordercolor`属性来设置表格，又因为设置了`border: 0;`的表格标签无法重载开启以上属性作用，所以CSS重置时[不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L26-L27)。
 
 ### 超出内容区域的内容
 1. 用绝对定位把内容设置在外部
@@ -2136,7 +2133,7 @@ ul {
 12. 使Ajax可缓存（服务端的CDN缓存，可用jQuery的$.Ajax的cash属性设置为false，或url加时间戳，来避免缓存）。
 13. 避免使用不可缓存且是外部HTTP请求的iFrame。
 
-### 注意点
+### Tips
 1. a标签的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（包括`#`和`javascript: void(0);`）都会打开新页面。
 2. `absolute`元素用`top: 0; bottom: 0; left: 0; right: 0; _height: 100%; _width: 100%;`可以拉伸至父容器的高宽。
 3. 没有设置宽度的`float`元素，其宽度等于子节点宽度：主流浏览器等于最外层子节点宽度，ie6等于所有子节点中最大的宽度。

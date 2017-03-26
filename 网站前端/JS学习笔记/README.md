@@ -814,7 +814,154 @@
     console.log(str1 === str2, str2 === str3);   //true false
     ```
 
-- 其他数据类型，也有字面量方式和构造函数（普通函数）方式。
+- 其他数据类型，也有字面量方式和构造函数（或普通函数）方式。
+
+### 动态添加样式、脚本
+1. 动态添加样式
+
+    1. 添加`style`标签
+
+        ```javascript
+        var newStyle = document.createElement('style');
+
+        newStyle.type = 'text/css';
+
+        if (newStyle.styleSheet) {    //for ie
+            newStyle.styleSheet.cssText = 'CSS代码';
+        } else {
+            newStyle.appendChild(document.createTextNode('CSS代码'));
+        }
+
+        document.getElementsByTagName('head')[0].appendChild(newStyle);
+        ```
+    2. 添加`link`标签
+
+        ```javascript
+        var newLink = document.createElement('link');
+
+        newLink.rel = 'styleSheet';
+        newLink.type = 'text/css';
+
+        newLink.href = 'CSS文件地址';
+
+        document.getElementsByTagName('head')[0].appendChild(newLink);
+        ```
+    3. 添加内嵌样式
+
+        ```javascript
+        var oneDom = document.getElementById('节点id');
+
+        oneDom.style.cssText += '; CSS代码'
+        ```
+
+    >CSS代码，例如 `div {background-color: yellow;}`。
+2. 动态添加脚本
+
+    1. 异步
+
+        1. 直接`document.write`
+
+            ```javascript
+            document.write('<script src="JS文件地址"><\/script>');
+            ```
+        2. 动态改变已有的`script`标签的`src`属性
+
+            ```html
+            <script type="text/javascript" id="节点id"></script>
+
+            <script>
+                document.getElementById('节点id').src = 'JS文件地址';
+            </script>
+            ```
+        3. 动态创建`script`标签
+
+            ```javascript
+            var newScript = document.createElement('script'),
+                appendPlace = document.body || document.getElementsByTagName('HEAD').item(0);
+
+            newScript.type = 'text/javascript';
+
+            newScript.src = 'JS文件地址';
+
+            appendPlace.appendChild(newScript);
+            ```
+    2. 同步
+
+        1. 添加JS代码
+
+            ```javascript
+            var newScript = document.createElement('script'),
+                appendPlace = document.body || document.getElementsByTagName('HEAD').item(0);
+
+            newScript.type = 'text/javascript';
+
+            try {
+                newScript.appendChild(document.createTextNode('JS代码'));
+            }
+            catch (e) {
+                newScript.text = 'JS代码';  /* ie8及以下，Safari老版本*/
+            }
+
+            appendPlace.appendChild(newScript);
+            ```
+        2. 添加`script`标签
+
+            ```javascript
+            /**
+             * 同步加载JS脚本
+             * @param {String} url - JS文件的相对路径或绝对路径
+             * @returns {Boolean} - 是否加载成功
+             */
+            function syncLoadJS(url) {
+                var xmlHttp,
+                    appendPlace,
+                    newScript;
+
+                if (window.ActiveXObject) { /* ie*/
+                    try {
+                        xmlHttp = new ActiveXObject('Msxml2.XMLHTTP');
+                    }
+                    catch (e) {
+                        xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
+                    }
+                } else if (window.XMLHttpRequest) {
+                    xmlHttp = new XMLHttpRequest();
+                }
+
+                xmlHttp.open('GET', url, false);    /* 采用同步加载*/
+                xmlHttp.send(null); /* 发送同步请求，如果浏览器为Chrome或Opera，必须发布后才能运行，不然会报错*/
+
+                /* 4代表数据发送完毕*/
+                if (xmlHttp.readyState == 4) {
+                    /* 0为访问的本地，200到300代表访问服务器成功，304代表没做修改访问的是缓存*/
+                    if ((xmlHttp.status >= 200 && xmlHttp.status < 300) || xmlHttp.status == 0 || xmlHttp.status == 304) {
+                        newScript = document.createElement('script');
+                        appendPlace = document.body || document.getElementsByTagName('HEAD').item(0);
+
+                        newScript.type = 'text/javascript';
+
+                        try {
+                            newScript.appendChild(document.createTextNode(xmlHttp.responseText));
+                        }
+                        catch (e) {
+                            newScript.text = xmlHttp.responseText;
+                        }
+
+                        appendPlace.appendChild(newScript);
+
+                        return true;
+                    }
+                    else {
+
+                        return false;
+                    }
+                }
+                else {
+
+                    return false;
+                }
+            }
+            ```
 
 ### JS与jQuery的事件绑定
 >1. 以点击事件`click`为例。
@@ -1157,7 +1304,8 @@
     ```
 
 ### Web Storage、cookie、session
->前端基本仅使用Web Storage；cookie仅用于服务端判定登录状态。
+>1. 前端基本仅使用Web Storage；cookie仅用于服务端判定登录状态。
+>2. 浏览器数据存储方式：Cookie、Web Storage、manifest、IndexedDB。
 
 1. Web Storage（`localStorage`、`sessionStorage`）
 
@@ -1195,7 +1343,7 @@
             console.log(sessionStorage.getItem(key));
         }
         ```
-    6. `localStorage`、`sessionStorage`区别
+    6. 区别
 
         1. `localStorage`
 
@@ -1230,215 +1378,70 @@
 ### 自执行匿名函数（拉姆达，λ，lambda）
 立即调用的函数表达式。
 
-1. `(function () {/* code*/}());`（推荐方式）
-2. `(function () {/* code*/})();`
+1. 写法：
 
->1. `function`关键字当作一个**函数声明**的开始，函数声明的后面不能跟圆括号；
->2. 将函数声明包含在圆括号中，表示**函数表达式**，函数表达式的后面可以跟圆括号，表示执行此函数。
+    1. `(function () {/* code*/}());`（推荐方式）
+    2. `(function () {/* code*/})();`
 
-- 其他写法（不推荐）
+    >1. `function`关键字当作一个**函数声明**的开始，函数声明的后面不能跟圆括号；
+    >2. 将函数声明包含在圆括号中，表示**函数表达式**，函数表达式的后面可以跟圆括号，表示执行此函数。
+
+    - 其他写法（不推荐方式）
+
+        ```javascript
+        (function () {}());
+        (function () {})();
+        [function () {}()];
+
+        ~function () {}();
+        !function () {}();
+        +function () {}();
+        -function () {}();
+
+        delete function () {}();
+        typeof function () {}();
+        void function () {}();
+        new function () {}();
+        new function () {};
+
+        var f = function () {}();
+
+        1, function () {}();
+        1 ^ function () {}();
+        1 > function () {}();
+        ```
+2. 传值进自执行匿名函数可以避免闭包导致无法记录变量值的问题：
 
     ```javascript
-    (function () {}());
-    (function () {})();
-    [function () {}()];
+    for (var i = 0; i < 3; i++) {
+        //匿名函数
+        (function (i) {
+            $.ajax({
+                url: 'url1',
+                dataType: 'json',
+                data: {}
+            }).done(function (data) {
+                console.log(i); //结果是传入进匿名函数的形参
+            });
+        }(i));
+    }
 
-    ~function () {}();
-    !function () {}();
-    +function () {}();
-    -function () {}();
-
-    delete function () {}();
-    typeof function () {}();
-    void function () {}();
-    new function () {}();
-    new function () {};
-
-    var f = function () {}();
-
-    1, function () {}();
-    1 ^ function () {}();
-    1 > function () {}();
-    ```
-
-传值进自执行匿名函数可以避免闭包导致无法记录变量值的问题：
-```javascript
-for (var i = 0; i < 3; i++) {
-    //匿名函数
-    (function (i) {
+    for (var i = 0; i < 3; i++) {
+        //不用匿名函数
         $.ajax({
             url: 'url1',
             dataType: 'json',
             data: {}
         }).done(function (data) {
-            console.log(i); //结果是传入进匿名函数的形参
+            console.log(i); //每个结果都是固定的最后一个值
         });
-    }(i));
-}
-
-for (var i = 0; i < 3; i++) {
-    //不用匿名函数
-    $.ajax({
-        url: 'url1',
-        dataType: 'json',
-        data: {}
-    }).done(function (data) {
-        console.log(i); //每个结果都是固定的最后一个值
-    });
-}
-```
-
-### 动态添加样式、脚本
-1. 动态添加样式
-
-    1. 添加`style`标签
-
-        ```javascript
-        var newStyle = document.createElement('style');
-
-        newStyle.type = 'text/css';
-
-        if (newStyle.styleSheet) {    //for ie
-            newStyle.styleSheet.cssText = 'CSS代码';
-        } else {
-            newStyle.appendChild(document.createTextNode('CSS代码'));
-        }
-
-        document.getElementsByTagName('head')[0].appendChild(newStyle);
-        ```
-    2. 添加`link`标签
-
-        ```javascript
-        var newLink = document.createElement('link');
-
-        newLink.rel = 'styleSheet';
-        newLink.type = 'text/css';
-
-        newLink.href = 'CSS文件地址';
-
-        document.getElementsByTagName('head')[0].appendChild(newLink);
-        ```
-    3. 添加内嵌样式
-
-        ```javascript
-        var oneDom = document.getElementById('节点id');
-
-        oneDom.style.cssText += '; CSS代码'
-        ```
-
-    >CSS代码，例如 `div {background-color: yellow;}`。
-2. 动态添加脚本
-
-    1. 异步
-
-        1. 直接`document.write`
-
-            ```javascript
-            document.write('<script src="JS文件地址"><\/script>');
-            ```
-        2. 动态改变已有的`script`标签的`src`属性
-
-            ```html
-            <script type="text/javascript" id="节点id"></script>
-
-            <script>
-                document.getElementById('节点id').src = 'JS文件地址';
-            </script>
-            ```
-        3. 动态创建`script`标签
-
-            ```javascript
-            var newScript = document.createElement('script'),
-                appendPlace = document.body || document.getElementsByTagName('HEAD').item(0);
-
-            newScript.type = 'text/javascript';
-
-            newScript.src = 'JS文件地址';
-
-            appendPlace.appendChild(newScript);
-            ```
-    2. 同步
-
-        1. 添加JS代码
-
-            ```javascript
-            var newScript = document.createElement('script'),
-                appendPlace = document.body || document.getElementsByTagName('HEAD').item(0);
-
-            newScript.type = 'text/javascript';
-
-            try {
-                newScript.appendChild(document.createTextNode('JS代码'));
-            }
-            catch (e) {
-                newScript.text = 'JS代码';  /* ie8及以下，Safari老版本*/
-            }
-
-            appendPlace.appendChild(newScript);
-            ```
-        2. 添加`script`标签
-
-            ```javascript
-            /**
-             * 同步加载JS脚本
-             * @param {String} url - JS文件的相对路径或绝对路径
-             * @returns {Boolean} - 是否加载成功
-             */
-            function syncLoadJS(url) {
-                var xmlHttp,
-                    appendPlace,
-                    newScript;
-
-                if (window.ActiveXObject) { /* ie*/
-                    try {
-                        xmlHttp = new ActiveXObject('Msxml2.XMLHTTP');
-                    }
-                    catch (e) {
-                        xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
-                    }
-                } else if (window.XMLHttpRequest) {
-                    xmlHttp = new XMLHttpRequest();
-                }
-
-                xmlHttp.open('GET', url, false);    /* 采用同步加载*/
-                xmlHttp.send(null); /* 发送同步请求，如果浏览器为Chrome或Opera，必须发布后才能运行，不然会报错*/
-
-                /* 4代表数据发送完毕*/
-                if (xmlHttp.readyState == 4) {
-                    /* 0为访问的本地，200到300代表访问服务器成功，304代表没做修改访问的是缓存*/
-                    if ((xmlHttp.status >= 200 && xmlHttp.status < 300) || xmlHttp.status == 0 || xmlHttp.status == 304) {
-                        newScript = document.createElement('script');
-                        appendPlace = document.body || document.getElementsByTagName('HEAD').item(0);
-
-                        newScript.type = 'text/javascript';
-
-                        try {
-                            newScript.appendChild(document.createTextNode(xmlHttp.responseText));
-                        }
-                        catch (e) {
-                            newScript.text = xmlHttp.responseText;
-                        }
-
-                        appendPlace.appendChild(newScript);
-
-                        return true;
-                    }
-                    else {
-
-                        return false;
-                    }
-                }
-                else {
-
-                    return false;
-                }
-            }
-            ```
+    }
+    ```
 
 ### 拼接字符串
 长字符串拼接使用`Array.prototype.join()`，而不使用`+`
 
-1. `.join()`性能好，推荐：
+1. `.join()`性能好，推荐方式：
 
     ```javascript
     var arr = [],
@@ -1450,7 +1453,7 @@ for (var i = 0; i < 3; i++) {
 
     $('body').text(arr.join(''));
     ```
-2. ~~`+`性能差，不推荐~~：
+2. ~~`+`性能差，不推荐方式~~：
 
     ```javascript
     var text = '',
@@ -1463,89 +1466,83 @@ for (var i = 0; i < 3; i++) {
     $('body').text(text);
     ```
 
-### 事件循环（event loop）
->参考[阮一峰：再谈Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)、[彻底理解同步、异步和事件循环(Event Loop)](https://segmentfault.com/a/1190000004322358)。
-1. JS的主线程是单线程
+### 错误处理机制
+>1. 当JS出现错误时，JS引擎就会根据JS调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或者**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，而firefix会显示在错误控制台中）显示错误信息给访问者，可以用`window.onerror`进行自定义操作。
+>2. 在某个**JS block**（`<script>`标签或`try-catch`的`try`语句块）内，第一个错误触发后，当前JS block后面的代码会被自动忽略，不再执行，其他的JS block内代码不被影响。
 
-    1. 原因：
+1. [原生错误类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#原生错误类型)
+2. 处理代码中抛出的错误
 
-        1. JS设计初衷是为了与用户互动、操作DOM等简单操作。
-        2. 单线程提高效率。
-        3. 多线程会带来复杂的同步问题。
-    2. 结果：
+    1. `try-catch-finally`
 
-        1. 程序在执行时必须排队，且一个程序不能中断另一个程序的执行。
-        2. 没有任何代码是立即执行的，但一旦进程空闲则尽快执行。
-    3. 弥补单线程计算量太大、事件耗时太久影响浏览器体验：
+        1. `try`必须跟`catch`或`finally`或`catch + finally`同时出现。
+        2. 如果有`catch`，一旦`try`中抛出错误以后就先执行`catch`中的代码，然后执行`finally`中的代码；
+        3. 如果没有`catch`，`try`中的代码抛出错误后，就会先执行`finally`中的语句，然后将`try`中抛出的错误继续往上抛。
+        4. 如果`try`中代码是以`return`、`continue`或`break`终止的，必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
+        5. 在`catch`中接收的错误，不会再向上提交给浏览器。
+    2. `window.onerror`
 
-        1. 产生Web Worker标准，允许在后台创建多个线程，但完全受主线程控制，且不能操作DOM。
-        2. 还有其他工作线程，分别处理：AJAX、DOM事件、定时器、读写文件。
-2. 任务类型
+        1. 没有通过`try-catch`处理的错误都会触发`window`对象的`onerror`。
+        2. 用方法赋值给`window.onerror`后，但凡这个window中有JS错误出现，则会调用此方法。
+        3. onerror方法会传入3个参数（至少），分别是**错误信息提示**、**javascript产生错误的document url**和**错误出现的行号**。
+        4. 若方法返回`true`，浏览器不再显示错误信息；若返回`false`，浏览器还是会提示错误信息：
 
-    1. 同步任务（synchronous）：
+        ```javascript
+        /**
+         * window错误处理
+         * @param {String} msg - 错误信息提示
+         * @param {String} url - 错误出现url
+         * @param {Number} line - 错误出现行号
+         * @returns {Boolean} - true：不显示错误信息|false：显示
+         */
+        window.onerror = function (msg, url, line) {
+            /* code*/
 
-        在主线程上排队执行的任务。
-    2. 异步任务（asynchronous）：
+            return true;    /* 浏览器不再显示错误信息*/
+        };
+        ```
+    3. 图像的`onerror`事件
 
-        先挂起到对应的工作线程等待结果；有结果后，发起通知进入“任务队列”（或“消息队列”）；“执行栈”读取并执行“任务队列”的通知对应的回调函数。
-3. 运行机制：
+        >1. 只要图像的src属性中的URL不能返回可以被识别的图像格式，就会触发图像的`onerror`事件。
+        >2. 错误不会提交到`window.onerror`。
 
-    1. 所有同步任务都在主线程上执行，形成一个“执行栈”（execution context stack），只有前一个任务执行完毕，才能执行后一个任务。
-    2. 主线程之外，还存在一个“任务队列”（task queue）。只要异步任务有了运行结果，就在“任务队列”之中放置一个通知。
-    3. 一旦“执行栈”中的所有同步任务执行完毕，系统就会读取“任务队列”，把**一个**通知对应的回调函数加入执行栈，开始执行。
-    4. 主线程不断重复上面的第三步。
+        1. `<img>`标签的`onerror`事件
 
-### 定时器`setInterval`、`setTimeout` && 重绘函数`requestAnimationFrame`
-1. 定时器
+            ```html
+            <img src="错误地址" onerror="func();">
+            ```
+        2. `Image`实例的属性
 
-    定时器触发会把*定时器处理程序*插入**等待执行队列**最后面。
+            ```javascript
+            var img = new Image();
 
-    1. `setInterval`：
+            img.onerror = function () {
+                /* code*/
+            };
 
-        1. 同一个被setInterval执行的函数只能插入一个*定时器处理程序*到**等待执行队列**。
-        2. setInterval是每隔时间去尝试执行函数，不关注上一次是何时执行。
-        3. 若setInterval触发时已经有它的*定时器处理程序*在**等待执行队列**中，则忽略此次触发。直到没有它的*定时器处理程序*在**等待执行队列**后才可以再次插入到**等待执行队列**（正在执行的不算在**等待执行队列**）。
-        4. 相邻的2次*定时器处理程序*可能小于或大于（或等于）设定的间隔时间。无法确定*定时器处理程序*什么时候执行。
-    2. `setTimeout`:
+            img.src = '错误地址';
+            ```
 
-        [用setTimeout模拟setInterval](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用settimeout模拟setinterval)，可以提高性能（上一次执行完毕间隔时间后再执行下一次，而不是固定间隔时间都尝试执行），并且可以确保每次*定时器处理程序*执行间隔一定大于（或等于）设置的间隔时间。
-2. 重绘函数`requestAnimationFrame`
+        >与window对象的onerror事件处理函数不同，Image实例对象或img标签的onerror事件没有任何参数。
+2. 运用策略
 
-    >1. 高级浏览器才有定义此方法，因此需要[Polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe和cancelanimationframe的polyfill)。
-    >2. 类似`setInterval`实现[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
+    1. 非客户端页面
 
-    1. 浏览器重绘之前（大部分浏览器是1秒钟60帧，也就是16.67ms进行一帧重绘）调用一次。
-    2. 替代执行时机无法保证的`setTimeout`和`setInterval`进行动画操作，提升动画性能：
+        仅需在加载JS之前配置好`window.onerror`。
+    2. 客户端内嵌页面
 
-        1. 把每一帧中的所有DOM操作集中起来，在一次重绘或回流中完成动画，并且重绘或回流的时间间隔紧随浏览器的刷新频率。
-        2. 仅仅绘制用户可见的动画。这意味着没把CPU或电池寿命浪费在绘制处于背景标签，最小化窗口，或者页面隐藏区域的动画上。
-        3. 当浏览器准备好绘制时（空闲时），才绘制一帧，此时没有等待中的帧。意味着其绘制动画不可能出现多个排队的回调函数，或者阻塞浏览器。因此动画更平滑，CPU和电池使用被进一步优化。
+        1. 同样也需要在加载JS之前配置好`window.onerror`，来处理页面内错误。
+        2. 客户端回调函数嵌套一层`try-catch`以提供**哪个方法发生错误等额外信息**。
+
+            因为客户端调用前端的方法是直接通过函数运行JS代码，抛出错误时`window.onerror`传入的参数仅有第一个`message`参数（`file`、`line`以及其他参数都没有），所以必须在给客户端调用的JS方法中嵌套`try-catch`并且抛出能标识出所调用方法名字等信息。
+        3. （可选）又因为要避免**JS代码还未加载完毕客户端就调用回调函数**，需在客户端调用前端JS回调函数的时候嵌套一层`try-catch`，在`catch`中提供调用哪个方法的信息。
+
+            >仅能获取原始error的`message`信息，无法获取`line`等其他信息，因此还是必须前端在回调函数中嵌套`try-catch`
+
+    >捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
 
 ----
 ## 性能原理
-
-### 引用类型与基本类型的变量传递
-1. 只能给引用类型动态地添加属性和方法，不能给基本类型添加。
-2. JS的变量传递都是**值传递**，都是把变量中存储的值复制一份给另一个变量。
-
-    1. 基本类型的复制
-
-        把变量的值复制到新变量分配的位置上，两个变量可以参与任何操作而不会互相影响。
-    2. 引用类型的复制
-
-        引用类型的变量保存的是指向该对象内容的指针，复制给新变量指针后，两个变量实际上引用同一对象，改变其中一个引用对象中的属性，会影响另一个。但是如果给其中一个引用对象赋值（不是操作属性），因为值引用改变了引用地址，所以两个变量不再保存同一个指针。
-
-    >所有函数的参数都是按值来传递的。基本类型值的传递和基本类型变量复制一致（采用在栈内新建值），引用类型值的传递和引用类型变量的复制一致（栈内存放的是指针，指向堆中同一对象）。
-3. 引用类型的**浅、深复制（拷贝）**
-
-    1. 浅复制
-
-        1. 拷贝对象A时，对象B将拷贝A的所有字段。若字段是引用类型（内存地址），B将拷贝地址；若字段是基本类型，B将复制其值。
-        2. 缺点是：如果改变了对象B（或A）所指向的内存地址存储的值，同时也改变了对象A（或B）指向这个地址的存储的值。
-    2. 深复制
-
-        1. 完全拷贝所有数据。
-        2. 优点是：B与A不会相互依赖（A，B完全脱离关联）；缺点是：拷贝的速度更慢，代价更大。
 
 ### 函数
 1. 每个函数都是一个`Function`对象，像普通对象一样拥有**属性**和**方法**。
@@ -1805,8 +1802,8 @@ for (var i = 0; i < 3; i++) {
     3. 占用较多的内存。
 
 ### 内存机制
-1. JS自动完成内存分配、[回收](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS学习笔记#垃圾回收)。
-2. 变量在内存中的存储
+1. JS自动完成内存分配、[回收](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/前端概念#垃圾回收)。
+2. [变量](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#js数据类型)在内存中的存储
 
     1. 栈内存（stack）：
 
@@ -1819,7 +1816,26 @@ for (var i = 0; i < 3; i++) {
 
         1. 变量标识、基本数据类型、引用数据类型的地址，均保存在栈内存。变量标识指向基本类型、引用类型的地址。
         2. 引用数据类型，保存在堆内存。
-3. 存储步骤举例
+3. 变量的值传递
+
+    1. JS的变量都是**值传递**。
+
+        变量指向的值复制给另一个变量去指向。
+    2. 函数的参数也都是值传递。
+
+        基本类型值的传递和基本类型变量复制一致（采用在栈内新建值），引用类型值的传递和引用类型变量的复制一致。
+
+    - 引用类型的**浅、深复制（拷贝）**
+
+        1. 浅复制
+
+            1. 拷贝对象A时，对象B将拷贝A的所有字段。若字段是引用类型（内存地址），B将拷贝地址；若字段是基本类型，B将复制其值。
+            2. 缺点是：如果改变了对象B（或A）所指向的内存地址存储的值，同时也改变了对象A（或B）指向这个地址的存储的值。
+        2. 深复制
+
+            1. 完全拷贝所有数据。
+            2. 优点是：B与A不会相互依赖（A，B完全脱离关联）；缺点是：拷贝的速度更慢，代价更大。
+4. 存储、值传递步骤举例
 
     e.g.
 
@@ -1874,37 +1890,6 @@ for (var i = 0; i < 3; i++) {
         2. 红色是指间接被 JS变量所引用，如上图，refB 被 refA 间接引用，导致即使 refB 变量被清空，也是不会被回收的。
         3. 子元素 refB 由于 parentNode 的间接引用，只要它不被删除，它所有的父元素（图中红色部分）都不会被删除。
 
-### 垃圾回收
->垃圾回收器会按照固定的时间间隔（或代码执行中预定的时间）周期性地执行，找出不再继续使用的变量，然后释放其占用的内存。
-
-垃圾回收器必须跟踪并判断变量是否有用，对于不再有用的变量打上标记，以备将来回收。
-
-1. **标记清除（mark-and-sweep）**（现代浏览器使用方式）
-
-    垃圾回收器在运行时给存储在内存中的所有变量加上标记；然后，去掉环境中的变量以及被环境中变量引用的变量的标记；最后，对那些带标记的值进行释放。
-2. 引用计数（reference counting）
-
-    跟踪记录每个值被引用的次数，被引用一次加1，引用取消就减1，当引用次数为0时，则说明没有办法再访问这个值了，当垃圾回收器下次运行时，释放引用次数为0的值所占空间。
-
-    >可能产生一个严重的问题：循环引用，引用次数永远不会是0。
-
->用`变量 = null;`等方法，让变量成为零引用，从而进行清除元素、垃圾回收（导致内存泄露的情况除外）。
-
-### 自动插入分号机制（Automatic Semicolon Insertion，ASI）
-1. ASI机制不是说在解析过程中解析器自动把分号添加到代码中，而是说解析器除了分号还会以换行为基础按一定的规则作为断句（EOC）的依据，从而保证解析的正确性。
-2. 解析器会尽量将新行并入当前行，当且仅当符合ASI规则时才会将新行视为独立的语句：
-
-    1. `;`空语句
-    2. `var`语句
-    3. 表达式语句（一定会产生一个值）
-    4. `do-while`语句（不是`while`）
-    5. `continue`语句
-    6. `break`语句
-    7. `return`语句
-    8. `throw`语句
-
->前置分号策略：只要对行首字符进行token判断是否为：`[` `(` `+` `-` `/`五个符号之一，就在其前面增加分号。
-
 ### `==`与`!=`进行的强制类型转换步骤
 1. 首先看运算数有没有`NaN`，如果存在`NaN`，一律返回`false`。
 2. 再看运算数有没有`布尔值`，有布尔就将布尔转换为`数字`（`false`是`0`，`true`是`1`）。
@@ -1920,7 +1905,7 @@ for (var i = 0; i < 3; i++) {
 
 ### `Boolean()`转换
 | 数据类型 | 转换为true的值 | 转换为false的值 |
-| ------------- | ------------- | ------------- |
+| :--- | :--- | :--- |
 | Boolean | `true` | `false` |
 | String | 任何非空字符串 | `''` |
 | Number | 任何非零数值（包括无穷大） | `0、-0、+0和NaN` |
@@ -1969,115 +1954,60 @@ for (var i = 0; i < 3; i++) {
 
     >ie10-的DOM事件流只有冒泡，没有~~捕获~~。
 
-### 错误处理机制
-1. 原生错误类型
+### 事件循环（event loop）
+>参考[阮一峰：再谈Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)、[彻底理解同步、异步和事件循环(Event Loop)](https://segmentfault.com/a/1190000004322358)。
+1. JS的主线程是单线程
 
-    1. SyntaxError
+    1. 原因：
 
-        解析代码发生语法错误时抛出。
-    2. ReferenceError
+        1. JS设计初衷是为了与用户互动、操作DOM等简单操作。
+        2. 单线程提高效率。
+        3. 多线程会带来复杂的同步问题。
+    2. 结果：
 
-        引用不存在的变量时抛出；另一种触发场景是，将一个值分配给无法分配的对象，比如对函数的运行结果或者this赋值。
-    3. RangeError
+        1. 程序在执行时必须排队，且一个程序不能中断另一个程序的执行。
+        2. 没有任何代码是立即执行的，但一旦进程空闲则尽快执行。
+    3. 弥补单线程计算量太大、事件耗时太久影响浏览器体验：
 
-        数值超出相应范围时抛出。
+        1. 产生Web Worker标准，允许在后台创建多个线程，但完全受主线程控制，且不能操作DOM。
+        2. 还有其他工作线程，分别处理：AJAX、DOM事件、定时器、读写文件。
+2. 任务类型
 
-        主要有几种情况，一是数组长度为负数，二是Number对象的方法参数超出范围，以及函数堆栈超过最大值。
-    4. TypeError
+    1. 同步任务（synchronous）：
 
-        变量或参数不是预期类型时抛出。
+        在主线程上排队执行的任务。
+    2. 异步任务（asynchronous）：
 
-        比如，对字符串、布尔值、数值等原始类型的值使用new命令，就会抛出这种错误，因为new命令的参数应该是一个构造函数。
-    5. URIError
+        先挂起到对应的工作线程等待结果；有结果后，发起通知进入“任务队列”（或“消息队列”）；“执行栈”读取并执行“任务队列”的通知对应的回调函数。
+3. 运行机制：
 
-        URI相关函数的参数不正确时抛出。
+    1. 所有同步任务都在主线程上执行，形成一个“执行栈”（execution context stack），只有前一个任务执行完毕，才能执行后一个任务。
+    2. 主线程之外，还存在一个“任务队列”（task queue）。只要异步任务有了运行结果，就在“任务队列”之中放置一个通知。
+    3. 一旦“执行栈”中的所有同步任务执行完毕，系统就会读取“任务队列”，把**一个**通知对应的回调函数加入执行栈，开始执行。
+    4. 主线程不断重复上面的第三步。
 
-        主要涉及`encodeURI()`、`decodeURI()`、`encodeURIComponent()`、`decodeURIComponent()`、`escape()`和`unescape()`这六个函数。
-    6. ~~EvalError~~
+### 定时器`setInterval`、`setTimeout` && 重绘函数`requestAnimationFrame`
+1. 定时器
 
-       使用`eval()`函数发生异常时抛出。
+    定时器触发会把*定时器处理程序*插入**等待执行队列**最后面。
 
-       >该错误类型已经不再在ES5中出现了，只是为了保证与以前代码兼容，才继续保留。
+    1. `setInterval`：
 
-    >浏览器不会抛出`Error`类型的错误，所以如果捕获到`Error`类型的错误，可以确定这个异常是用户代码抛出的。浏览器默认只会抛出Error的6个派生类型错误。
+        1. 同一个被setInterval执行的函数只能插入一个*定时器处理程序*到**等待执行队列**。
+        2. setInterval是每隔时间去尝试执行函数，不关注上一次是何时执行。
+        3. 若setInterval触发时已经有它的*定时器处理程序*在**等待执行队列**中，则忽略此次触发。直到没有它的*定时器处理程序*在**等待执行队列**后才可以再次插入到**等待执行队列**（正在执行的不算在**等待执行队列**）。
+        4. 相邻的2次*定时器处理程序*可能小于或大于（或等于）设定的间隔时间。无法确定*定时器处理程序*什么时候执行。
+    2. `setTimeout`:
 
-2. Error对象属性
+        [用setTimeout模拟setInterval](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用settimeout模拟setinterval)，可以提高性能（上一次执行完毕间隔时间后再执行下一次，而不是固定间隔时间都尝试执行），并且可以确保每次*定时器处理程序*执行间隔一定大于（或等于）设置的间隔时间。
+2. 重绘函数`requestAnimationFrame`
 
-    Error实例对象有两个基本的属性`message`和`name`。
-    >`message`用来表示异常的详细信息；`name`指的的是Error对象的构造函数。
+    >1. 高级浏览器才有定义此方法，因此需要[Polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe和cancelanimationframe的polyfill)。
+    >2. 类似`setInterval`实现[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
 
-    此外，不同的JS引擎对Error还各自提供了一些扩展属性。
+    1. 浏览器重绘之前（大部分浏览器是1秒钟60帧，也就是16.67ms进行一帧重绘）调用一次。
+    2. 替代执行时机无法保证的`setTimeout`和`setInterval`进行动画操作，提升动画性能：
 
-3. 处理代码中抛出的error
-
-    >1. 当JS出现错误时，JS引擎就会根据JS调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或者**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，而firefix会显示在错误控制台中）显示错误信息给访问者，可以用`window.onerror`进行自定义操作。
-    >2. 在某个**JS block**（`<script>`标签或`try-catch`的`try`语句块）内，第一个错误触发后，当前JS block后面的代码会被自动忽略，不再执行，其他的JS block内代码不被影响。
-
-    1. `try-catch-finally`
-
-        1. `try`必须跟`catch`或`finally`或`catch + finally`同时出现。
-        2. 如果有`catch`，一旦`try`中抛出错误以后就先执行`catch`中的代码，然后执行`finally`中的代码；
-        3. 如果没有`catch`，`try`中的代码抛出错误后，就会先执行`finally`中的语句，然后将`try`中抛出的错误继续往上抛。
-        4. 如果`try`中代码是以`return`、`continue`或`break`终止的，必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
-        5. 在`catch`中接收的错误，不会再向上提交给浏览器。
-    2. `window.onerror`
-
-        1. 没有通过`try-catch`处理的错误都会触发`window`对象的`onerror`。
-        2. 用方法赋值给`window.onerror`后，但凡这个window中有JS错误出现，则会调用此方法。
-        3. onerror方法会传入3个参数（至少），分别是**错误信息提示**、**javascript产生错误的document url**和**错误出现的行号**。
-        4. 若方法返回`true`，浏览器不再显示错误信息；若返回`false`，浏览器还是会提示错误信息：
-
-        ```javascript
-        /**
-         * window错误处理
-         * @param {String} msg - 错误信息提示
-         * @param {String} url - 错误出现url
-         * @param {Number} line - 错误出现行号
-         * @returns {Boolean} - true：不显示错误信息|false：显示
-         */
-        window.onerror = function (msg, url, line) {
-            /* code*/
-
-            return true;    /* 浏览器不再显示错误信息*/
-        };
-        ```
-    3. 图像的`onerror`事件
-
-        >1. 只要图像的src属性中的URL不能返回可以被识别的图像格式，就会触发图像的`onerror`事件。
-        >2. 错误不会提交到`window.onerror`。
-
-        1. `<img>`标签的`onerror`事件
-
-            ```html
-            <img src="错误地址" onerror="func();">
-            ```
-        2. `Image`实例的属性
-
-            ```javascript
-            var img = new Image();
-
-            img.onerror = function () {
-                /* code*/
-            };
-
-            img.src = '错误地址';
-            ```
-
-        >与window对象的onerror事件处理函数不同，Image实例对象或img标签的onerror事件没有任何参数。
-
-    - 运用策略
-
-        1. 非客户端页面
-
-            仅需在加载JS之前配置好`window.onerror`。
-        2. 客户端内嵌页面
-
-            1. 同样也需要在加载JS之前配置好`window.onerror`，来处理页面内错误。
-            2. 客户端回调函数嵌套一层`try-catch`以提供**哪个方法发生错误等额外信息**。
-
-                因为客户端调用前端的方法是直接通过函数运行JS代码，抛出错误时`window.onerror`传入的参数仅有第一个`message`参数（`file`、`line`以及其他参数都没有），所以必须在给客户端调用的JS方法中嵌套`try-catch`并且抛出能标识出所调用方法名字等信息。
-            3. （可选）又因为要避免**JS代码还未加载完毕客户端就调用回调函数**，需在客户端调用前端JS回调函数的时候嵌套一层`try-catch`，在`catch`中提供调用哪个方法的信息。
-
-                >仅能获取原始error的`message`信息，无法获取`line`等其他信息，因此还是必须前端在回调函数中嵌套`try-catch`
-
-        >捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
+        1. 把每一帧中的所有DOM操作集中起来，在一次重绘或回流中完成动画，并且重绘或回流的时间间隔紧随浏览器的刷新频率。
+        2. 仅仅绘制用户可见的动画。这意味着没把CPU或电池寿命浪费在绘制处于背景标签，最小化窗口，或者页面隐藏区域的动画上。
+        3. 当浏览器准备好绘制时（空闲时），才绘制一帧，此时没有等待中的帧。意味着其绘制动画不可能出现多个排队的回调函数，或者阻塞浏览器。因此动画更平滑，CPU和电池使用被进一步优化。
