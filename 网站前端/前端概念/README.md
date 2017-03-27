@@ -130,35 +130,37 @@
             5. JS代码性能优化。
 
 ### HTTP协议
->HTTP（HyperText Transfer Protocol，超文本传输协议）默认端口号80、无状态、以ASCII码传输。
+HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-server协议，处于整个网络传输的最上层的应用层（网络传输的其他层次：传输层、网络层、链路层）。默认端口号80、无状态（cookie弥补）、以ASCII码传输。
 
-1. HTTP报文组成：
+1. HTTP报文组成
 
-    1. request
-
-        请求行 请求头 请求消息主体
+    1. request：
 
         ```http
-        <method> <request-URL> <version>
-        <headers>
+        <method> <request-URL> <version>                //请求行
+        <headers>                                       //请求头
 
-        <entity-body>
+        <entity-body>                                   //请求消息主体
         ```
-    2. response
 
-        状态行 响应头 响应正文
+        >[请求方法](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http请求方法http-request-methods)。
+    2. response：
 
         ```http
-        <version> <status code> <status description>
-        <headers>
+        <version> <status code> <status description>    //状态行
+        <headers>                                       //响应头
 
-        <entity-body>
+        <entity-body>                                   //响应正文
         ```
 
-        >[状态码、状态描述](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http状态码http-status-code)。
-2. HTTP流程简单概括：
+        >[状态码、状态描述](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http状态码http-status-codes)。
+
+    >[HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http头http-headers)。
+2. HTTP流程（精简版）：
 
     1. 获取域名的IP地址
+
+        >IP协议，网络层协议，解决网络路由和寻址。
 
         1. 搜索浏览器自身DNS缓存。
         2. 若缓存没找到或者已失效，搜索操作系统DNS缓存。
@@ -172,11 +174,23 @@
             >  2. 操作系统内核把结果返回浏览器。
     2. 建立TCP／IP连接
 
+        >TCP协议，传输层协议，提供可靠的传递数据包。
+
         - 发起HTTP“三次握手”（验证客户端），试图建立TCP／IP链接：
 
             首先客户端向服务端发SYN（同步请求），然后服务端回复SYN+ACK（同步请求应答），最后客户端回复ACK确认。
 
-        >关闭TCP链接要“四次挥手”。
+            >关闭TCP链接要“四次挥手”。
+        - 短连接、长连接
+
+            >参考[HTTP长连接和短连接](http://www.cnblogs.com/0201zcr/p/4694945.html)。
+
+            1. 短连接：
+
+                浏览器和服务器每进行一次HTTP操作，就建立一次连接，任务结束后就中断连接。
+            2. 长连接：
+
+                客户端和服务器之间用于传输HTTP数据的TCP连接短期不会关闭，如果客户端再次访问这个服务器上的网页，会继续使用这一条已经建立的连接。
     3. 浏览器发送请求，服务器发送数据
 
         1. 建立TCP／IP成功后，浏览器即可向服务器发送HTTP请求。

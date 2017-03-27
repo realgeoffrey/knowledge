@@ -435,7 +435,7 @@
         2. 减少外链请求数量（合并JS、CSS、图片）。
         3. 压缩资源。
         4. 脚本放置在`</body>`前。
-    6. 从URL输入之后就开始考虑[性能优化](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/前端概念#页面载入解析步骤)，这是一个工程问题。
+    6. 从URL输入之后就开始考虑[性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#页面载入解析步骤)，这是一个工程问题。
 
 ### 编程实践（programming practices）
 1. UI层的松耦合
@@ -628,9 +628,9 @@
 
         1. 使用缓动动画，过度300ms延迟。
         2. 中间增加一层接受这个点透事件，然后去除此层。
-        3. 使用[模拟点击事件](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS方法积累/实用方法#原生js移动端模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)代替`click`。
+        3. 使用[模拟点击事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js移动端模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)代替`click`。
 
-### [函数防抖](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS方法积累/实用方法#原生js防抖函数)、[函数节流](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS方法积累/实用方法#原生js节流函数)
+### [函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js防抖函数)、[函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js节流函数)
 >都是用来控制某个函数在一定时间内执行多少次的技巧。
 
 1. 防抖（Debounce）
@@ -1010,7 +1010,7 @@
 
             `dom.removeEventListener('click', func2, false);`
 
-    - [兼容各浏览器的绑定、解绑事件](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS方法积累/实用方法#原生js绑定解绑事件)
+    - [兼容各浏览器的绑定、解绑事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js绑定解绑事件)
 2. jQuery
 
     >来自[jQuery:Events](http://api.jquery.com/category/events/)。
@@ -1802,7 +1802,7 @@
     3. 占用较多的内存。
 
 ### 内存机制
-1. JS自动完成内存分配、[回收](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/前端概念#垃圾回收)。
+1. JS自动完成内存分配、[回收](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#垃圾回收)。
 2. [变量](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#js数据类型)在内存中的存储
 
     1. 栈内存（stack）：
