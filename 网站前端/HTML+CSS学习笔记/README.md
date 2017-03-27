@@ -489,7 +489,7 @@
     >1. 内容区域（鼠标指示出的高度）：只与字号（font-size）和font-family有关。
     >2. 行间距：摇摆不定，可以为负值，仅为达成以上等式而变化。
 
->ie6以及其他渲染有误的浏览器不能用line-height控制图片与文字的对齐位置（可以使用[垂直居中](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#垂直居中)）。
+>ie6以及其他渲染有误的浏览器不能用line-height控制图片与文字的对齐位置（可以使用[垂直居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#垂直居中)）。
 
 ### img标签的src属性
 >当img标签的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
@@ -505,7 +505,7 @@
         visibility: hidden; /* 属性不存在隐藏*/
     }
     ```
-3. 要谨慎给img设置背景（比如内容图片或者头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS方法积累/实用方法#jquery或zepto图片延时加载)），因为当img是透明图的时候，会展示背景的内容。
+3. 要谨慎给img设置背景（比如内容图片或者头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)），因为当img是透明图的时候，会展示背景的内容。
 
 ### img标签的圆形、边框
 1. 圆形+边框
@@ -1627,7 +1627,7 @@ ul {
         });
     </script>
     ```
-3. [监听动画结束事件，在结束时候再去除动画](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS方法积累/实用方法#jquery或zepto启动暂停css动画)
+3. [监听动画结束事件，在结束时候再去除动画](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto启动暂停css动画)
 
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/Lukonj4s/)
 
@@ -1814,11 +1814,11 @@ ul {
 1. 不使用flex导致不方便处理的问题：
 
     1. 栅格系统
-    2. [自适应宽度布局](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#自适应宽度布局)
-    3. [垂直居中](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#垂直居中)
-    4. [水平居中](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#水平居中)
-    5. [页面高度不够时，footer依然置于页面最底部](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#页面高度不够时footer依然置于页面最底部)
-    6. [多列等高](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#多列等高)
+    2. [自适应宽度布局](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#自适应宽度布局)
+    3. [垂直居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#垂直居中)
+    4. [水平居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#水平居中)
+    5. [页面高度不够时，footer依然置于页面最底部](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#页面高度不够时footer依然置于页面最底部)
+    6. [多列等高](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#多列等高)
 2. flex具体解决方案：[solved-by-flexbox](https://hufan-akari.github.io/solved-by-flexbox/)。
 
 ### 响应式设计
@@ -1833,7 +1833,7 @@ ul {
     1. 媒体查询
     2. 流式布局：节点用百分比或rem或flex
         
-        >使用自适应结构，比如：[自适应宽度布局](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#自适应宽度布局)。
+        >使用自适应结构，比如：[自适应宽度布局](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#自适应宽度布局)。
     3. 弹性图片：`img {max-width: 100%;}`
 
 ### 响应式页面解决方案：使用rem+媒体查询
@@ -1911,13 +1911,13 @@ ul {
 2. 宽屏：按比例放大项、或增加项数量。
 3. meta标签的viewport值方案。
 4. 响应式设计三大要素：媒体查询、流式布局、弹性图片。
-5. [不同PPI使用不同分辨率图片](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#不同ppi的设备使用不同分辨率的图片)。
+5. [不同PPI使用不同分辨率图片](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#不同ppi的设备使用不同分辨率的图片)。
 6. 文字大小边界：font-size设置最大、最小值。
-7. [半像素处理](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#移动端半像素)。
-8. [rem+@media方案](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#响应式页面解决方案使用rem媒体查询)。
-9. [雪碧图使用百分比background-position](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#wap页面自适应图片)
-10. [自适应宽度布局](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#自适应宽度布局)（[flex解决自适应问题](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#flex优雅解决布局自适应问题)）。
-11. 是否[横竖屏翻转显示](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#横竖屏切换)（特殊单屏应用，如游戏）。
+7. [半像素处理](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#移动端半像素)。
+8. [rem+@media方案](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#响应式页面解决方案使用rem媒体查询)。
+9. [雪碧图使用百分比background-position](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#wap页面自适应图片)
+10. [自适应宽度布局](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#自适应宽度布局)（[flex解决自适应问题](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#flex优雅解决布局自适应问题)）。
+11. 是否[横竖屏翻转显示](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#横竖屏切换)（特殊单屏应用，如游戏）。
 
 ### 富文本
 1. 富文本内容除了要检测用户输入标签的闭合性，还要注意不要用~~li标签嵌套富文本~~，因为代码中如果有单独的`li`（没有嵌套`ol`或`ul`），就会“升级”到跟祖先级li同级的内容。
@@ -2024,7 +2024,7 @@ ul {
         4. 不在连续的动画过程中做高耗时的操作（如大面积重绘、重排、复杂JS计算）。
     2. 缩小样式计算的范围和降低复杂度
 
-        1. 降低样式选择器的复杂度、提升[选择器性能](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/HTML+CSS学习笔记#css选择器)（甚至使用基于class的方式，比如[BEM](https://en.bem.info/methodology/css/)）。
+        1. 降低样式选择器的复杂度、提升[选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)（甚至使用基于class的方式，比如[BEM](https://en.bem.info/methodology/css/)）。
         2. 减少需要执行样式计算的元素的个数。
     3. 避免大规模、复杂的布局与重排
 
@@ -2046,7 +2046,7 @@ ul {
         2. 用`will-change/translateZ`属性把动画元素提升到单独的层中。
         3. 避免滥用层提升（更多的层需要更多的内存和更复杂的管理）。
         4. 使用3D硬件加速提升动画性能时，最好给元素增加一个`z-index`属性（改变层叠上下文的顺序），人为干扰层排序，可以有效减少chrome创建不必要的层，提升渲染性能。
-    6. 对用户输入、滚动事件进行[函数防抖](https://github.com/realgeoffrey/knowledge/tree/master/网站前端/JS学习笔记#函数防抖函数节流)处理
+    6. 对用户输入、滚动事件进行[函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)处理
 
         >滚动会触发高频率重新渲染，scroll事件的处理函数也会被高频率触发。
 
