@@ -758,7 +758,7 @@
     3. `arr.splice(0, arr.length);  /* 改变原始数组*/`
 2. 操作数组形参，不改变数组实参
 
-    1. 浅复制：`arr = arr.slice(0);`
+    1. 浅复制：`arr = arr.slice(0);`或`arr = arr.concat();`或一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)。
     2. 深复制：[代码实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)。
 
 ### 数据创建方式
