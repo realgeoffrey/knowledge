@@ -411,6 +411,111 @@ function shuffle(arr) {
 }
 ```
 
+----
+## 其他算法
+
+### 数组去重
+>来自[JavaScript 数组去重](https://github.com/hanzichi/underscore-analysis/issues/9)。
+
+1. 定义一个空数组变量，遍历需要去重的数组：若项的值不存在新数组中，则放入新数组；若已经存在，则丢弃。重复的项取最前的放入新数组。
+
+    时间复杂度：O(n^2)。
+
+    1. 使用`Array.prototype.indexOf`、`Array.prototype.filter`
+
+        ```javascript
+        function uniqueArr(arr) {
+
+            return arr.filter(function (item, index, array) {
+
+                return array.indexOf(item) === index;
+            });
+        }
+        ```
+    2. 不使用`Array.prototype.indexOf`、`Array.prototype.filter`
+
+        ```javascript
+        function uniqueArr(arr) {
+            var newArr = [],
+                i, j, iLen, jLen, item;
+
+            for (i = 0, iLen = arr.length; i < iLen; i++) {
+                item = arr[i];
+
+                for (j = 0, jLen = newArr.length; j < jLen; j++) {
+                    if (newArr[j] === item) {
+                        break;
+                    }
+                }
+
+                if (j === jLen) {
+                    newArr.push(item);
+                }
+            }
+
+            return newArr;
+        }
+        ```
+2. 定义一个空数组变量，遍历需要去重的数组：若项的值在原数组中唯一，则放入新数组；若不唯一，丢弃并继续向后遍历。重复的项取最后的放入新数组。
+
+    时间复杂度：O(n^2)。
+
+    ```javascript
+    function uniqueArr(array) {
+        var newArray = [],
+            i, j, len;
+
+        for (i = 0, len = array.length; i < len; i++) {
+            for (j = i + 1; j < len; j++) {
+                if (array[i] === array[j]) {    //如果发现相同元素，则i自增并且进入下一个数的循环比较
+                    i++;
+                    j = i;
+                }
+            }
+
+            newArray.push(array[i]);
+        }
+
+        return newArray;
+    }
+    ```
+3. 先排序原始数组（需要额外排序算法，否则只能处理Number型数据），第一项加入，之后每个项对比前一个项：若不同，则加入；若相同，则丢弃。
+
+    时间复杂度：O(n) + 数组排序。
+
+    ```javascript
+    function uniqueArr(arr) {
+
+        return arr.concat().sort().filter(function (item, index, array) {
+
+            return !index || item != array[index - 1];  //排序后：第一项一定加入；第二项之后与前一项对比，不同则加入
+        });
+    }
+    ```
+4. 用对象（哈希表）去重（只能处理Number型数据）。
+
+    时间复杂度：O(n)。
+
+    ```javascript
+    function uniqueArr(arr) {
+        var obj = {};
+
+        return arr.filter(function (item) {
+
+            return obj.hasOwnProperty(item) ? false : (obj[item] = true);
+        });
+    }
+    ```
+5. ES6的`Array.from`、`Set`
+
+    ```javascript
+    function uniqueArr(arr) {
+
+        return Array.from(new Set(arr));
+    }
+    ```
+
+----
 ## 算法思路
 
 ### 无缝轮播
