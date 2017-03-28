@@ -461,22 +461,22 @@ function shuffle(arr) {
     时间复杂度：O(n^2)。
 
     ```javascript
-    function uniqueArr(array) {
-        var newArray = [],
+    function uniqueArr(arr) {
+        var newArr = [],
             i, j, len;
 
-        for (i = 0, len = array.length; i < len; i++) {
+        for (i = 0, len = arr.length; i < len; i++) {
             for (j = i + 1; j < len; j++) {
-                if (array[i] === array[j]) {    //如果发现相同元素，则i自增并且进入下一个数的循环比较
+                if (arr[i] === arr[j]) {    //如果发现相同元素，则i自增并且进入下一个数的循环比较
                     i++;
                     j = i;
                 }
             }
 
-            newArray.push(array[i]);
+            newArr.push(arr[i]);
         }
 
-        return newArray;
+        return newArr;
     }
     ```
 3. 先排序原始数组（需要额外排序算法，否则只能处理Number型数据），第一项加入，之后每个项对比前一个项：若不同，则加入；若相同，则丢弃。
@@ -514,6 +514,79 @@ function shuffle(arr) {
         return Array.from(new Set(arr));
     }
     ```
+
+### 声明某长度并设定值的数组
+e.g. 声明arr：长度为n，值为下标（或某固定值）
+
+1. 直接创建并循环赋值
+
+    1. 字面量
+
+        ```javascript
+        var n = 55;
+
+        var arr = [],
+            i;
+
+        for (i = 0; i < n; i++) {
+            arr[i] = i;
+        }
+        ```
+    2. `Array`构造函数：
+
+        ```javascript
+        var n = 55;
+
+        var arr = new Array(n),
+            i, len;
+
+        for (i = 0, len = arr.length; i < len; i++) {
+            arr[i] = i;
+        }
+        ```
+2. `Array.prototype.map`赋值
+
+    1. `Array`：
+
+        ```javascript
+        var n = 55;
+
+        var arr = Array.apply(null, new Array(n)).map(function (item, index) {
+
+            return index;
+        });
+        ```
+    2. `Array`、`join`、`split`：
+
+        ```javascript
+        var n = 55;
+
+        var arr = new Array(n + 1).join().split('').map(function (item, index) {
+
+            return index;
+        });
+        ```
+    3. `Object.keys`、`Array`、`toString`、`split`：
+
+        ```javascript
+        var n = 55;
+
+        var arr = Object.keys(new Array(n + 1).toString().split('')).map(function (item, index) {
+
+            return index;
+        });
+        ```
+3. ES6的`Array.from`
+
+    ```javascript
+    var n = 55;
+
+    var arr = Array.from({length: n}, function (value, index) {
+
+        return index;
+    });
+    ```
+4. 纯手打字面量（性能最好方式）
 
 ----
 ## 算法思路
