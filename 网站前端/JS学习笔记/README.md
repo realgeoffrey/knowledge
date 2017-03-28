@@ -2011,3 +2011,28 @@
         1. 把每一帧中的所有DOM操作集中起来，在一次重绘或回流中完成动画，并且重绘或回流的时间间隔紧随浏览器的刷新频率。
         2. 仅仅绘制用户可见的动画。这意味着没把CPU或电池寿命浪费在绘制处于背景标签，最小化窗口，或者页面隐藏区域的动画上。
         3. 当浏览器准备好绘制时（空闲时），才绘制一帧，此时没有等待中的帧。意味着其绘制动画不可能出现多个排队的回调函数，或者阻塞浏览器。因此动画更平滑，CPU和电池使用被进一步优化。
+
+### 数组的空位（hole）
+>来自[阮一峰：数组的空位](http://javascript.ruanyifeng.com/grammar/array.html#toc6)、[阮一峰：数组的空位（ES6）](http://es6.ruanyifeng.com/#docs/array#数组的空位)。
+1. 数组的空位：数组的某一个位置没有任何值
+
+    1. 空位是可以读取的，返回`undefined`。
+    2. 空位不是~~undefined~~，空位没有任何值。一个位置的值等于`undefined`，依然有值。
+    3. 使用`delete`删除一个数组成员，会形成空位，并且不会影响`length`属性。
+
+    ```javascript
+    [, , ,][0];                             //undefined
+    0 in [undefined, undefined, undefined]; //true
+    0 in Array.apply(null, new Array(3));   //true（密集数组：没有空位的数组）
+    0 in new Array(3);                      //false（稀疏数组：有空位的数组）
+    0 in [, , ,];                           //false
+    ```
+
+    >1. `new Array(数量)`（或`Array(数量)`）返回的是有空位的稀疏数组。
+    >2. `Array.apply(null, new Array(数量));`返回的是没有空位的密集数组。
+    >3. 若数组最后一个元素后面有逗号，并不会产生空位，而是忽略这个逗号：`[1, ].length === 1`。
+3. ES5大多数情况下会忽略空位：
+
+    1. `forEach`、`filter`、`every`、`some`的回调函数会跳过空位；`map`的回调函数会跳过空位，但返回值保留空位。
+    2. `join`、`toString`将`空位`、`undefined`、`null`处理成空字符串`''`。
+4. ES6明确将空位转为`undefined`。
