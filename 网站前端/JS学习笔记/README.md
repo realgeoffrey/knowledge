@@ -711,7 +711,7 @@
     >ie10+支持。
 
     若服务端配置允许了某些（或所有）域名，就可以进跨域请求（前端不需要进行额外工作）。
-5. 其他比较绕的方法
+5. 其他方式
 
     1. 父窗口改变iframe的hash，iframe通过监听hash变化的`hashchange`事件获取父窗口信息
     
@@ -734,6 +734,11 @@
         1. 父窗口打开一个子窗口，载入一个不同源的网页，该网页将信息写入window.name属性；
         2. 子窗口跳回一个与主窗口同域的网址；
         3. 主窗口可以读取子窗口的window.name值作为信息的传递。
+    3. 图片地址
+
+        只能发送GET请求，无法访问服务器的响应文本。只能浏览器向服务器单向通信。
+
+        >常用来[统计](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用请求图片作log统计)。
 
 ### 深复制（拷贝）实现思路
 >参考[深入剖析JavaScript的深复制](http://jerryzou.com/posts/dive-into-deep-clone-in-javascript/)。
