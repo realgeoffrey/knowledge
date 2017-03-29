@@ -1560,7 +1560,7 @@ xhr.onreadystatechange = function () {  //或DOM2级、ie事件绑定方式
         //xhr = null;
     }
 };
-xhr.open(请求类型, URL[, 是否异步, 用户名, 密码]);
+xhr.open(请求类型, URL[, 是否异步[, 用户名[, 密码]]]);
 xhr.setRequestHeader(头, 值);
 xhr.send(null);
 ```

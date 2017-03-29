@@ -362,7 +362,7 @@ function heapSort(arr) {
     var len = arr.length,
         i;
 
-    arr = arr.slice(0); /* 浅复制*/
+    arr = arr.slice(); /* 浅复制*/
 
     for (i = Math.floor(len / 2) - 1; i >= 0; i--) {    /* i的初始值为堆的最后一个父节点，然后顺序往上操作其他父节点*/
         _maxHeapify(i, len);
@@ -381,9 +381,9 @@ function heapSort(arr) {
 >1. 循环进行：最大堆调整，移除在顶端的最大元素。
 >2. 通常堆是通过一维数组来实现的。在数组起始位置为0的情形中：
 >
->   - 父节点i的左子节点在位置(2*i+1);
->   - 父节点i的右子节点在位置(2*i+2);
->   - 子节点i的父节点在位置floor((i-1)/2);
+>    - 父节点i的左子节点在位置(2*i+1);
+>    - 父节点i的右子节点在位置(2*i+2);
+>    - 子节点i的父节点在位置floor((i-1)/2);
 
 ### 洗牌算法
 ```javascript
@@ -396,7 +396,7 @@ function shuffle(arr) {
     var len = arr.length,
         lastOne, randomOne, temp;
 
-    arr = arr.slice(0); /* 浅复制*/
+    arr = arr.slice(); /* 浅复制*/
 
     for (lastOne = len; lastOne > 0; lastOne--) {
         randomOne = Math.floor(Math.random() * lastOne);    /* lastOne长度内随机一个位置*/

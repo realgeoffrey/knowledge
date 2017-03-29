@@ -14,19 +14,19 @@
 	>
 	>1. 进入root模式：
 	>
-	>	`su root`
+	>	 `su root`
 	>2. 添加 */etc/sudoers* 文件的写权限：
 	>
-	>   `chmod u+w /etc/sudoers`
+	>    `chmod u+w /etc/sudoers`
 	>3. 编辑 */etc/sudoers* 文件：
 	>
-	>   `vim /etc/sudoers`
+	>    `vim /etc/sudoers`
 	>
-	>   找到这一行：**root ALL=(ALL) ALL**在下面添加：
-	>   `用户名 ALL=(ALL) ALL`
+	>    找到这一行：**root ALL=(ALL) ALL**在下面添加：
+	>    `用户名 ALL=(ALL) ALL`
 	>4. 撤销文件的写权限：
 	>
-	>   `chmod u-w /etc/sudoers`
+	>    `chmod u-w /etc/sudoers`
 2. 安装环境
 
 	安装**apache，php**：
