@@ -211,7 +211,7 @@ function mergeSort(arr) {
             return arr;
         }
 
-        var mid = parseInt(len / 2),
+        var mid = parseInt(len / 2, 10),
             _left = arr.slice(0, mid),
             _right = arr.slice(mid);
 
@@ -292,7 +292,7 @@ function radixSort(arr) {
             str = arr[j] + '';  /* 排序元素字符串化（可以使用字符串的length属性）*/
 
             if (str.length >= i) {
-                k = parseInt(str[str.length - i]);  /* e.g. 元素：'1234'.length=4，位数：百位数 i=3，'1234'[1]=2 => k=2 所以百位数上2的数字放入bucket[2]*/
+                k = parseInt(str[str.length - i], 10);  /* e.g. 元素：'1234'.length=4，位数：百位数 i=3，'1234'[1]=2 => k=2 所以百位数上2的数字放入bucket[2]*/
                 bucket[k].push(arr[j]);
             } else {    /* 元素的最高位小于位数都放入第一个桶内*/
                 bucket[0].push(arr[j]);
@@ -362,7 +362,7 @@ function heapSort(arr) {
     var len = arr.length,
         i;
 
-    arr = arr.slice(0); /* 不改变实参*/
+    arr = arr.slice(0); /* 浅复制*/
 
     for (i = Math.floor(len / 2) - 1; i >= 0; i--) {    /* i的初始值为堆的最后一个父节点，然后顺序往上操作其他父节点*/
         _maxHeapify(i, len);
@@ -396,7 +396,7 @@ function shuffle(arr) {
     var len = arr.length,
         lastOne, randomOne, temp;
 
-    arr = arr.slice(0);
+    arr = arr.slice(0); /* 浅复制*/
 
     for (lastOne = len; lastOne > 0; lastOne--) {
         randomOne = Math.floor(Math.random() * lastOne);    /* lastOne长度内随机一个位置*/

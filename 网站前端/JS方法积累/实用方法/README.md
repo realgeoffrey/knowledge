@@ -413,6 +413,83 @@ function getAbsoluteUrl(url) {
 }
 ```
 
+### *原生JS*获取URL相关信息
+```javascript
+/**
+ * 获取URL相关信息
+ * @param {String} [url = window.location.href] - URL
+ * @returns {Object} location - 包括href、protocol、hostname、port、pathname、search、searchObj、hash的对象
+ */
+function getLocation(url) {
+    url = url || window.location.href;
+
+    /* 为了方便阅读*/
+    var _protocol = /^(?:([A-Za-z]+):)?/.source,
+        _slash = /(?:\/*)/.source,
+        _hostname = /([0-9A-Za-z.\-]+)/.source,
+        _port = /(?::(\d+))?/.source,
+        _pathname = /(\/[^?#]*)?/.source,
+        _search = /(?:\?([^#]*))?/.source,
+        _hash = /(?:#(.*))?$/.source;
+
+    var regex = new RegExp(_protocol + _slash + _hostname + _port + _pathname + _search + _hash, 'g'),
+        regexArr = regex.exec(url),
+        keyArr = ['href', 'protocol', 'hostname', 'port', 'pathname', 'search', 'hash'],
+        location = {'searchObj': {}},
+        search, searchArr, i, len, searchItem;
+
+    keyArr.forEach(function (item, index) {
+        location[item] = regexArr[index] || '';
+    });
+
+    search = location['search'];
+
+    searchArr = search.split('&');
+
+    for (i = 0, len = searchArr.length; i < len; i++) {
+        if (searchArr[i] !== '') {
+            searchItem = searchArr[i].split('=');
+            location['searchObj'][searchItem[0]] = searchItem[1];
+        }
+    }
+
+    return location;
+}
+```
+>参考[用正则表达式分析 URL](http://harttle.com/2016/02/23/javascript-regular-expressions.html)。
+
+### *原生JS*在URL末尾添加查询名值对
+```javascript
+/**
+ * 在URL末尾添加search名值对
+ * @param {String} url - URL
+ * @param {String} name - 名
+ * @param {String} value - 值
+ * @returns {String} - 添加完毕的URL
+ */
+function addUrlSearch(url, name, value) {
+    if (!name || !value) {
+
+        return url;
+    }
+
+    var hashIndex = url.indexOf('#') !== -1 ? url.indexOf('#') : url.length,
+        newUrl = url.slice(0, hashIndex),
+        hash = url.slice(hashIndex),
+        searchIndex = newUrl.indexOf('?');
+
+    if (searchIndex === -1) {
+        newUrl += '?';
+    } else if (searchIndex !== newUrl.length - 1) {
+        newUrl += '&';
+    }
+
+    newUrl += encodeURIComponent(name) + '=' + encodeURIComponent(value) + hash;
+
+    return newUrl;
+}
+```
+
 ### *原生JS*用请求图片作log统计
 ```javascript
 var sendLog = (function () {
@@ -457,39 +534,39 @@ sendLog('统计url');
 
 ### *原生JS*比较版本号大小（纯数字）
 ```javascript
-    /**
-     * 比较版本号大小（纯数字）
-     * @param {Number|String} version - 比较数1
-     * @param {Number|String} base - 比较数2
-     * @param {String} [separator = '.'] - 版本分隔符
-     * @returns {String} flag - '=' 或 '>' 或 '<'
-     */
-    function versionCompare(version, base, separator) {
-        separator = separator || '.';
+/**
+ * 比较版本号大小（纯数字）
+ * @param {Number|String} version - 比较数1
+ * @param {Number|String} base - 比较数2
+ * @param {String} [separator = '.'] - 版本分隔符
+ * @returns {String} flag - '=' 或 '>' 或 '<'
+ */
+function versionCompare(version, base, separator) {
+    separator = separator || '.';
 
-        var arr1 = version.toString().split(separator),
-            arr2 = base.toString().split(separator),
-            length = arr1.length > arr2.length ? arr1.length : arr2.length,
-            flag = '=',
-            i;
+    var arr1 = version.toString().split(separator),
+        arr2 = base.toString().split(separator),
+        length = arr1.length > arr2.length ? arr1.length : arr2.length,
+        flag = '=',
+        i;
 
-        for (i = 0; i < length; i++) {
-            arr1[i] = arr1[i] || '0';
-            arr2[i] = arr2[i] || '0';
+    for (i = 0; i < length; i++) {
+        arr1[i] = arr1[i] || '0';
+        arr2[i] = arr2[i] || '0';
 
-            if (arr1[i] !== arr2[i]) {  /* 两值不同*/
-                flag = parseInt(arr1[i]) < parseInt(arr2[i]) ? '<' : '>';
+        if (arr1[i] !== arr2[i]) {  /* 两值不同*/
+            flag = parseInt(arr1[i], 10) < parseInt(arr2[i], 10) ? '<' : '>';
 
-                break;
-            }
+            break;
         }
-
-        return flag;
     }
 
+    return flag;
+}
 
-    /* 使用测试*/
-    console.log(versionCompare('1.1.10', '1.2'));
+
+/* 使用测试*/
+console.log(versionCompare('1.1.10', '1.2'));
 ```
 
 ### *原生JS*判断检索内容是否在被检索内容的分隔符间
@@ -1103,7 +1180,7 @@ var cursorPosition = {
             end, ieSel;
 
         /* 初始化start*/
-        start = parseInt(start);
+        start = parseInt(start, 10);
         if (!start) {
             start = 0;
         } else if (start > valueLen) {
@@ -1111,7 +1188,7 @@ var cursorPosition = {
         }
 
         /* 初始化len*/
-        len = parseInt(len);
+        len = parseInt(len, 10);
         if (!len) {
             len = 0;
         }
@@ -1428,7 +1505,7 @@ function numConvert(operand, fromRadix, toRadix) {
 }
 ```
 
-### *原生JS*`验证邮箱有效性
+### *原生JS*验证邮箱有效性
 ```javascript
 function validateEmail(email) {
 
@@ -1437,7 +1514,7 @@ function validateEmail(email) {
 ```
 >来自[stackoverflow:Validate email address in JavaScript?](http://stackoverflow.com/questions/46155/validate-email-address-in-javascript#answer-46181)。
 
-### *原生JS*`创建兼容的XHR对象
+### *原生JS*创建兼容的XHR对象
 ```javascript
 function createXHR() {
     if (typeof XMLHttpRequest !== 'undefined') {    //ie7+和其他浏览器
@@ -1674,7 +1751,7 @@ if (!Array.isArray) {
                 var $load = $('.j-load'),
                     newNext = 0;
 
-                next = parseInt(next);
+                next = parseInt(next, 10);
 
                 if (next !== -1 && $load.length >= 1) {
                     if ($load.attr('data-status') === 'ready' && next !== 0) {
@@ -1765,7 +1842,7 @@ if (!Array.isArray) {
                 var $load = $('.j-load'),
                     newNext = 0;
 
-                next = parseInt(next);
+                next = parseInt(next, 10);
 
                 if (next !== -1 && $load.length >= 1) {
                     if ($load.attr('data-status') === 'ready' && next !== 0) {
@@ -2279,8 +2356,8 @@ function fixPlaceholder($dom) {
         var namespace = Date.now(), /* 事件命名空间*/
             $target = $(target),
             startOffset = $target.offset().top,
-            targetMarginTop = parseInt($target.css('margin-top')) || 0,
-            prevMarginBottom = parseInt($target.prev().css('margin-bottom')) || 0,
+            targetMarginTop = parseInt($target.css('margin-top'), 10) || 0,
+            prevMarginBottom = parseInt($target.prev().css('margin-bottom'), 10) || 0,
             defaultMarginTop = Math.max(targetMarginTop, prevMarginBottom),
             maxMarginTop = $(dependent).height() - $(father).height() + defaultMarginTop; /* jQuery可以用outerHeight*/
 

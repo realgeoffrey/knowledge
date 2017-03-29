@@ -123,10 +123,10 @@
 ### 正则函数
 1. RegExp对象的方法
 
-    1. `regexp.test(str)`
+    1. `regexp.test(str)`：
 
         判断正则表达式与指定的字符串是否匹配。返回`true`或`false`。
-    2. `regexp.exec(str)`
+    2. `regexp.exec(str)`：
 
         指定的一段字符串执行搜索匹配操作。返回`数组`或者`null`。
 
@@ -155,9 +155,17 @@
         >| `regexp.global` | 是否使用了`g`标记 | `true` |
         >| `regexp.multiline` | 是否使用了`m`标记 | `false` |
         >| `regexp.source` | 正则模式的字符串 | `quick\s(brown).+?(jumps)` |
+    3. 正则表达式的`source`属性：
+
+        当前正则表达式对象的模式文本的字符串，该字符串不会包含正则字面量两边的斜杠以及任何标志字符，并会自动添加字符串的`\`转义（基本仅对`\`、`"`、`'`转义）。
+
+        ```javascript
+        /\w/g.source === '\\w';                     //true
+        new RegExp('\\w', 'g').source === '\\w';    //true
+        ```
 2. String对象的方法
 
-    1. `str.match(regexp)`
+    1. `str.match(regexp)`：
 
         当字符串匹配到正则表达式时，方法返回`匹配项`，否则返回`null`。
 
@@ -166,10 +174,10 @@
         1. 如果正则表达式没有`g`标志，返回和`regexp.exec(str)`相同的结果的`数组`（包含匹配的字符串、捕获项，还拥有`index`和`input`属性）。
 
         2. 如果正则表达式包含`g`标志，返回一个`包含所有匹配结果的数组`。
-    2. `str.search(regexp)`
+    2. `str.search(regexp)`：
 
         判断字符串对象与一个正则表达式是否匹配，返回`正则表达式在字符串中首次匹配项的索引`，否则返回`-1`。
-    3. `str.replace(regexp|substr, newSubStr|function[, flags])`
+    3. `str.replace(regexp|substr, newSubStr|function[, flags])`：
 
         方法使用一个替换值（replacement）替换掉一个匹配模式（pattern）在原字符串中某些或所有的匹配项，并返回替换后的`字符串`（不改变调用的字符串对象）。
 
@@ -203,7 +211,7 @@
             | `arguments[1]`~`arguments[n]` | 若replace()方法的第一个参数是一个RegExp对象，则代表第n个捕获匹配项的内容。 |
             | 倒数第二个参数 | 匹配到的子字符串在原字符串中的偏移量。 |
             | 倒数第一个参数 | 被匹配的原字符串。 |
-    4. `str.split([separator][, limit])`
+    4. `str.split([separator][, limit])`：
 
         以separator为间隔，把字符串分割成一个字符串`数组`。
 
