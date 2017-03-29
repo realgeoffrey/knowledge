@@ -396,6 +396,65 @@ function addFavorite(url, title) {  /* url必须带有协议头*/
 addFavorite(window.location.href, '收藏名字');
 ```
 
+### *原生JS*从字符串中获取绝对路径
+```javascript
+function getAbsoluteUrl(url) {
+    var domA;
+
+    if (typeof url === 'undefined') {
+
+        return document.location.href;
+    } else {
+        domA = document.createElement('a');
+        domA.href = url;
+
+        return domA.href;
+    }
+}
+```
+
+### *原生JS*用请求图片作log统计
+```javascript
+var sendLog = (function () {
+    if (typeof Date.now !== 'function') {
+        Date.now = function () {
+            return new Date().getTime();
+        };
+    }
+
+    var _unique = (function () {    /* 产生唯一标识*/
+        var time = Date.now() + '_',
+            i = 0;
+
+        return function () {
+            return time + (i++);
+        }
+    }());
+
+    var run = function (url) {
+        var data = window['imgLogData'] || (window['imgLogData'] = {}),
+            img = new Image(),
+            uid = _unique();
+
+        data[uid] = img;    /* 防止img被垃圾处理*/
+
+        img.onload = img.onerror = function () {    /* 成功或失败后销毁对象*/
+            img.onload = img.onerror = null;
+            img = null;
+            delete data[uid];
+        };
+
+        img.src = url + '&_cache=' + uid;   /* 发送统计内容*/
+    };
+
+    return run;
+}());
+
+
+/* 使用测试*/
+sendLog('统计url');
+```
+
 ### *原生JS*比较版本号大小（纯数字）
 ```javascript
     /**
@@ -704,23 +763,6 @@ document.getElementById('...').addEventListener('touchend', function (e) {
 /* 还要处理浏览器默认点击事件（如a标签）*/
 ```
 
-### *原生JS*从字符串中获取绝对路径
-```javascript
-function getAbsoluteUrl(url) {
-    var domA;
-
-    if (typeof url === 'undefined') {
-
-        return document.location.href;
-    } else {
-        domA = document.createElement('a');
-        domA.href = url;
-
-        return domA.href;
-    }
-}
-```
-
 ### *原生JS*判断事件在浏览器是否存在
 ```javascript
 /**
@@ -838,48 +880,6 @@ var fourOperations = {
         return (Number(arg1.toString().replace('.', '')) / Number(arg2.toString().replace('.', ''))) * Math.pow(10, r2 - r1);
     }
 };
-```
-
-### *原生JS*用请求图片作log统计
-```javascript
-var sendLog = (function () {
-    if (typeof Date.now !== 'function') {
-        Date.now = function () {
-            return new Date().getTime();
-        };
-    }
-
-    var _unique = (function () {    /* 产生唯一标识*/
-        var time = Date.now() + '_',
-            i = 0;
-
-        return function () {
-            return time + (i++);
-        }
-    }());
-
-    var run = function (url) {
-        var data = window['imgLogData'] || (window['imgLogData'] = {}),
-            img = new Image(),
-            uid = _unique();
-
-        data[uid] = img;    /* 防止img被垃圾处理*/
-
-        img.onload = img.onerror = function () {    /* 成功或失败后销毁对象*/
-            img.onload = img.onerror = null;
-            img = null;
-            delete data[uid];
-        };
-
-        img.src = url + '&_cache=' + uid;   /* 发送统计内容*/
-    };
-
-    return run;
-}());
-
-
-/* 使用测试*/
-sendLog('统计url');
 ```
 
 ### *原生JS*绑定、解绑事件
@@ -1437,6 +1437,58 @@ function validateEmail(email) {
 ```
 >来自[stackoverflow:Validate email address in JavaScript?](http://stackoverflow.com/questions/46155/validate-email-address-in-javascript#answer-46181)。
 
+### *原生JS*`创建兼容的XHR对象
+```javascript
+function createXHR() {
+    if (typeof XMLHttpRequest !== 'undefined') {    //ie7+和其他浏览器
+
+        return new XMLHttpRequest();
+    } else if (typeof ActiveXObject !== 'undefined') {
+        if (typeof arguments.callee.activeXString !== 'string') {
+            var versions = ['MSXML2.XMLHttp.6.0', 'MSXML2.XMLHttp.3.0', 'MSXML2.XMLHttp'],
+                i, len;
+
+            for (i = 0, len = versions.length; i < len; i++) {
+                try {
+                    new ActiveXObject(versions[i]);
+                    arguments.callee.activeXString = versions[i];
+                    break;
+                } catch (e) {
+                    //跳过
+                }
+            }
+        }
+
+        return new ActiveXObject(arguments.callee.activeXString);   //返回ActiveXObject对象
+    } else {//全部不支持，抛出错误
+        throw new Error('don\'t support XMLHttpRequest');
+    }
+}
+
+
+/* 使用测试*/
+var xhr = createXHR();
+
+xhr.onreadystatechange = function () {  //或DOM2级、ie事件绑定方式
+    console.log(xhr.getResponseHeader(头), xhr.getAllResponseHeaders());
+
+    if (xhr.readyState === 4) {
+        if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
+            console.log(xhr.responseText);
+        } else {
+            console.log('请求失败：' + xhr.status);
+        }
+
+        //xhr.abort();
+        //xhr = null;
+    }
+};
+xhr.open(请求类型, URL[, 是否异步, 用户名, 密码]);
+xhr.setRequestHeader(头, 值);
+xhr.send(null);
+```
+
+----
 ## Polyfill
 
 ### *原生JS*`Date.now`的**Polyfill**
