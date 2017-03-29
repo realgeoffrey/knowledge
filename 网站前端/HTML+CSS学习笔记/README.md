@@ -564,56 +564,56 @@
 
     >1. 百分比公式：
     >
-    >   - `background-position-x = 小图横坐标px / ( 大图宽度px - 小图宽度px ) * 100%`
-    >   - `background-position-y = 小图纵坐标px / ( 大图高度px - 小图高度px ) * 100%`
+    >    - `background-position-x = 小图横坐标px / ( 大图宽度px - 小图宽度px ) * 100%`
+    >    - `background-position-y = 小图纵坐标px / ( 大图高度px - 小图高度px ) * 100%`
     >2. 可以用预处理语言计算：
     >
-    >   ```scss
-    >   @function rem($px) {
-    >       @return $px / 20 + rem;
-    >   }
-    >   @function position-one($positon, $singleSize, $spritesSize) {
-    >       @if $positon == 0 {
-    >           @return 0;
-    >       } @else {
-    >           @return percentage($positon / ($spritesSize - $singleSize));
-    >       }
-    >   }
-    >   /* x轴排列雪碧图*/
-    >   @mixin sprites-x($x: 0, $width: 单图固定宽度或0, $fullWidth: 合并图宽度) {
-    >       background-image: url(图片);
-    >       background-position: position-one($x, $width, $fullWidth) 0;
-    >       background-size: rem($fullWidth) auto;
-    >       background-repeat: no-repeat;
-    >   }
-    >   /*/x轴排列雪碧图*/
-    >   /* y轴排列雪碧图*/
-    >   @mixin sprites-y($y: 0, $height: 单图固定高度或0, $fullHeight: 合并图高度) {
-    >       background-image: url(图片);
-    >       background-position: 0 position-one($y, $height, $fullHeight);
-    >       background-size: auto rem($fullHeight);
-    >       background-repeat: no-repeat;
-    >   }
-    >   /*/y轴排列雪碧图*/
-    >   /* x+y轴排列且等大雪碧图（参数：单图宽、高、x轴图片数量、y轴图片数量、图片间距）*/
-    >   @mixin sprites-xy($width, $height, $x, $y, $gap: 2) {
-    >       width: rem($width);
-    >       height: rem($height);
-    >       background-image: url(图片前缀#{$width}x#{$height}.png);
-    >       background-size: rem(($width + $gap)*$x - $gap) rem(($height + $gap)*$y - $gap);
-    >       background-repeat: no-repeat;
+    >    ```scss
+    >    @function rem($px) {
+    >        @return $px / 20 + rem;
+    >    }
+    >    @function position-one($positon, $singleSize, $spritesSize) {
+    >        @if $positon == 0 {
+    >            @return 0;
+    >        } @else {
+    >            @return percentage($positon / ($spritesSize - $singleSize));
+    >        }
+    >    }
+    >    /* x轴排列雪碧图*/
+    >    @mixin sprites-x($x: 0, $width: 单图固定宽度或0, $fullWidth: 合并图宽度) {
+    >        background-image: url(图片);
+    >        background-position: position-one($x, $width, $fullWidth) 0;
+    >        background-size: rem($fullWidth) auto;
+    >        background-repeat: no-repeat;
+    >    }
+    >    /*/x轴排列雪碧图*/
+    >    /* y轴排列雪碧图*/
+    >    @mixin sprites-y($y: 0, $height: 单图固定高度或0, $fullHeight: 合并图高度) {
+    >        background-image: url(图片);
+    >        background-position: 0 position-one($y, $height, $fullHeight);
+    >        background-size: auto rem($fullHeight);
+    >        background-repeat: no-repeat;
+    >    }
+    >    /*/y轴排列雪碧图*/
+    >    /* x+y轴排列且等大雪碧图（参数：单图宽、高、x轴图片数量、y轴图片数量、图片间距）*/
+    >    @mixin sprites-xy($width, $height, $x, $y, $gap: 2) {
+    >        width: rem($width);
+    >        height: rem($height);
+    >        background-image: url(图片前缀#{$width}x#{$height}.png);
+    >        background-size: rem(($width + $gap)*$x - $gap) rem(($height + $gap)*$y - $gap);
+    >        background-repeat: no-repeat;
     >
-    >       //$i：横轴；$j：纵轴
-    >       @for $j from 1 through $y {
-    >           @for $i from 1 through $x {
-    >               &.i-#{$j}-#{$i} {
-    >                   background-position: position-one(($width + $gap)*($i - 1), $width, ($width + $gap)*$x - $gap) position-one(($height + $gap)*($j - 1), $height, ($height + $gap)*$y - $gap);
-    >               }
-    >           }
-    >       }
-    >   }
-    >   /*/x+y轴排列且等大雪碧图*/
-    >   ```
+    >        //$i：横轴；$j：纵轴
+    >        @for $j from 1 through $y {
+    >            @for $i from 1 through $x {
+    >                &.i-#{$j}-#{$i} {
+    >                    background-position: position-one(($width + $gap)*($i - 1), $width, ($width + $gap)*$x - $gap) position-one(($height + $gap)*($j - 1), $height, ($height + $gap)*$y - $gap);
+    >                }
+    >            }
+    >        }
+    >    }
+    >    /*/x+y轴排列且等大雪碧图*/
+    >    ```
 
     1. **rem宽高（最佳方式）**
 
@@ -1853,11 +1853,11 @@ ul {
         >1. 整个页面都是用rem进行制作。
         >2. 用scss预处理语言换算px->rem
         >
-        >   ```scss
-        >   @function rem($px) {
-        >       @return $px / 20 + rem;
-        >   }
-        >   ```
+        >    ```scss
+        >    @function rem($px) {
+        >        @return $px / 20 + rem;
+        >    }
+        >    ```
     2. *不需要使用CSS预处理语言*
 
         1. 正常完成切图（只能用320px设计稿），用px作为单位。
@@ -2100,7 +2100,7 @@ ul {
         
     >- 皮肤`.s-`（skin）
     >
-    >   把皮肤型的样式抽离出来。
+    >    把皮肤型的样式抽离出来。
 4. 经验
 
     1. 标签语义化。

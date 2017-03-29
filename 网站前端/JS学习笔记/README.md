@@ -763,7 +763,7 @@
     3. `arr.splice(0, arr.length);  /* 改变原始数组*/`
 2. 操作数组形参，不改变数组实参
 
-    1. 浅复制：`arr = arr.slice(0);`或`arr = arr.concat();`或一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)。
+    1. 浅复制：`arr = arr.slice();`或`arr = arr.concat();`或一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)。
     2. 深复制：[代码实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)。
 
 ### 数据创建方式
@@ -1762,11 +1762,7 @@
         }
         
         /* 子类继承父类方法*/
-        (function (subType, superType) {
-            var prototype = Object.create(superType.prototype);
-            Object.defineProperty(prototype, 'constructor', {value: subType});
-            subType.prototype = prototype;
-        }(Son, Father));
+        Son.prototype = Object.create(Father.prototype, {constructor: {value: Son}});
         
         /* 子类方法*/
         Son.prototype.sonFun = function () {
@@ -1780,7 +1776,7 @@
         console.log(instance1, instance2);
         ```
 
-        >“子类继承父类方法”可以改为不使用`Object.create`和`Object.defineProperty`的方式：
+        >“子类继承父类方法”可以改为不使用`Object.create`的方式：
         >
         >```javascript
         >(function (subType, superType) {
@@ -2024,6 +2020,7 @@
     1. 空位是可以读取的，返回`undefined`。
     2. 空位不是~~undefined~~，空位没有任何值。一个位置的值等于`undefined`，依然有值。
     3. 使用`delete`删除一个数组成员，会形成空位，并且不会影响`length`属性。
+    4. 给一个数组的`length`属性赋予大于其长度的值，新创建的项都是空位。
 
     ```javascript
     [, , ,][0];                             //undefined
@@ -2038,6 +2035,6 @@
     >3. 若数组最后一个元素后面有逗号，并不会产生空位，而是忽略这个逗号：`[1, ].length === 1`。
 3. ES5大多数情况下会忽略空位：
 
-    1. `forEach`、`filter`、`every`、`some`的回调函数会跳过空位；`map`的回调函数会跳过空位，但返回值保留空位。
+    1. `forEach`、`filter`、`every`、`some`、`find`、`findIndex`、`reduce`、`reduceRight`等遍历方法的回调函数会跳过空位；`map`的回调函数会跳过空位，但返回值保留空位。
     2. `join`、`toString`将`空位`、`undefined`、`null`处理成空字符串`''`。
 4. ES6明确将空位转为`undefined`。
