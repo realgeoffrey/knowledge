@@ -769,10 +769,10 @@
     var obj1 = {a: 'b'};
 
     //构造函数实例化。对象包装器：如果参数是null或undefined，将会创建并返回一个空对象；否则，将返回一个与给定值对应类型的对象。
-    var obj2 = new Object();    //{}
-    var obj3 = new Object(1);    //等价于 new Number(1)
-    var obj4 = new Object(true);    //等价于 new Boolean(true)
-    var obj5 = new Object('str');    //等价于 new String('str')
+    var obj2 = new Object();            //{}
+    var obj3 = new Object(1);           //等价于 new Number(1)
+    var obj4 = new Object(true);        //等价于 new Boolean(true)
+    var obj5 = new Object('str');       //等价于 new String('str')
     var obj6 = new Object({a: 'b'});    //{a: 'b'}
 
     //普通函数（与new的方式结果一致）
@@ -782,17 +782,17 @@
 
     ```javascript
     //数组字面量
-    var arr1 = [2, 3];  //[2, 3]
+    var arr1 = [2, 3];          //[2, 3]
 
     //构造函数实例化
-    var arr2 = new Array(); //[]
+    var arr2 = new Array();     //[]
     var arr3 = new Array(2);    //[undefined, undefined]
     var arr4 = new Array(2, 3); //[2, 3]
 
     //普通函数（与new的方式结果一致）
-    var arr5 = Array(); //[]
-    var arr6 = Array(2);    //[undefined, undefined]
-    var arr7 = Array(2, 3); //[2, 3]
+    var arr5 = Array();         //[]
+    var arr6 = Array(2);        //[undefined, undefined]
+    var arr7 = Array(2, 3);     //[2, 3]
     ```
 3. 字符串
 
@@ -807,11 +807,11 @@
     var str3 = new String('string');
 
 
-    console.log(typeof str1, str1 instanceof String); //string false
-    console.log(typeof str2, str2 instanceof String); //string false
-    console.log(typeof str3, str3 instanceof String); //object true
+    console.log(typeof str1, str1 instanceof String);   //string false
+    console.log(typeof str2, str2 instanceof String);   //string false
+    console.log(typeof str3, str3 instanceof String);   //object true
 
-    console.log(str1 === str2, str2 === str3);   //true false
+    console.log(str1 === str2, str2 === str3);          //true false
     ```
 
 - 其他数据类型，也有字面量方式和构造函数（或普通函数）方式。
@@ -1196,8 +1196,8 @@
             对数组的每个元素执行一次提供的函数。
 
             ```javascript
-            /* element为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为undefined*/
-            arr.forEach(function(element, index, array) {
+            /* item为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为undefined*/
+            arr.forEach(function(item, index, array) {
 
             }, thisArg);
             ```
@@ -1206,8 +1206,8 @@
             创建一个新数组，其结果是该数组中的每个元素调用一个提供的函数。
 
             ```javascript
-            /* element为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为新数组*/
-            arr.map(function(element, index, array) {
+            /* item为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为新数组*/
+            arr.map(function(item, index, array) {
 
                 /* return true;元素保留；return false;元素不保留*/
             }, thisArg);
@@ -1217,8 +1217,8 @@
             使用指定的函数测试所有元素，并创建一个包含所有通过测试的元素的新数组。
 
             ```javascript
-            /* element为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为新数组*/
-            arr.filter(function(element, index, array) {
+            /* item为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为新数组*/
+            arr.filter(function(item, index, array) {
 
                 /* return true;元素保留；return false;元素不保留*/
             }, thisArg);
@@ -1228,8 +1228,8 @@
             测试数组中的某些元素是否通过了指定函数的测试。
 
             ```javascript
-            /* element为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为true（一个回调函数返回true）；false（回调函数没有一个返回true）*/
-            arr.some(function(element, index, array) {
+            /* item为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为true（一个回调函数返回true）；false（回调函数没有一个返回true）*/
+            arr.some(function(item, index, array) {
 
             }, thisArg);
             ```
@@ -1238,8 +1238,8 @@
             测试数组的所有元素是否都通过了指定函数的测试。
 
             ```javascript
-            /* element为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为false（一个回调函数返回false）；true（回调函数没有一个返回false）*/
-            arr.every(function(element, index, array) {
+            /* item为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为false（一个回调函数返回false）；true（回调函数没有一个返回false）*/
+            arr.every(function(item, index, array) {
 
             }, thisArg);
             ```
@@ -1249,16 +1249,16 @@
     1. `$.each`
 
         ```javascript
-        /* index为数组当前项的索引或对象当前项的属性名或jQuery对象的索引，element为当前项的值（不是jQuery对象，是DOM对象，与this相同）*/
-        $.each(obj或arr或$dom, function (index, element) {
+        /* index为数组当前项的索引或对象当前项的属性名或jQuery对象的索引，item为当前项的值（不是jQuery对象，是DOM对象，与this相同）*/
+        $.each(obj或arr或$dom, function (index, item) {
 
         });
         ```
     2. `$dom.each`
 
         ```javascript
-        /* index为jQuery对象的索引，element为当前项的值（不是jQuery对象，是DOM对象，与this相同）*/
-        $dom.each(function (index, element) {
+        /* index为jQuery对象的索引，item为当前项的值（不是jQuery对象，是DOM对象，与this相同）*/
+        $dom.each(function (index, item) {
 
         });
         ```
@@ -1581,8 +1581,8 @@
         >
         >func1();
         >
-        >console.log(typeof func1);  /* function*/
-        >console.log(typeof func2);  /* undefined*/
+        >console.log(typeof func1);     /* function*/
+        >console.log(typeof func2);     /* undefined*/
         >```
 
     >1. 通过函数声明和函数表达式定义的函数只会被解析一次；而构造函数定义的函数在每次构造函数被调用，函数体字符串都要被解析一次。
