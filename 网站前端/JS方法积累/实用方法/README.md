@@ -602,6 +602,11 @@ function isKeyInStr(key, str, separator) {
 ```
 
 ### *原生JS*选取范围内随机值
+>注意：
+>
+>1. 检查不同语言原始返回的随机值两边端点开闭情况——不同的开闭区间影响最终算法。
+>2. 获取到的每个整数的概率是否均等——用向下取整代替四舍五入可以使概率均等。
+
 ```javascript
 /**
  * 选取范围内随机值
@@ -619,6 +624,29 @@ function randomFrom(minimum, maximum) {
     }
 
     return Math.floor(Math.random() * (maximum - minimum + 1) + minimum);
+}
+```
+>`Math.random()`返回`[0, 1)`。假设返回的值的开闭区间改变：
+>
+>1. 如果返回的是：`(0, 1)`，则返回`Math.floor(Math.random() * (maximum - minimum + 2) + minimum - 1);`。
+>2. 如果返回的是：`(0, 1]`，则返回`Math.floor(Math.random() * (maximum - minimum + 1) + minimum - 1);`。
+>3. 如果返回的是：`[0, 1]`，则返回`Math.floor(Math.random() * (maximum - minimum) + minimum);`。
+
+### *原生JS*产生随机数
+```javascript
+/**
+ * 随机数产生
+ * @param {Number} length - 随机数长度
+ * @param {String} [charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'] - 随机数的字符
+ * @returns {String} - 随机数
+ */
+function random(length, charset) {
+    charset = charset || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+    return Array.apply(0, new Array(length)).map(function () {
+
+        return charset.charAt(Math.floor(Math.random() * charset.length));
+    }).join('');
 }
 ```
 
@@ -1466,7 +1494,7 @@ $(window).on('scroll', a);
 ### *原生JS*不同进制数转换
 ```javascript
 /**
- * 不同进制（2至36进制）换算
+ * 不同进制（2至36进制）换算（10个阿拉伯数字+26个字母）
  * @param {String} operand - 转换数（二进制仅使用0~1、八进制仅使用0~7、十进制仅使用0~9、十六进制仅使用0~9和a~f，等）
  * @param {Number} fromRadix - 转换数的进制数（2~36）
  * @param {Number} toRadix - 结果的进制数
