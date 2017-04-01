@@ -14,13 +14,13 @@ function insertionSort(arr) {
         i, tmp, j;
 
     for (i = 1; i < len; i++) { /* 逐个取出*/
-        tmp = arr[i];   /* 被向前对比的一个元素*/
+        tmp = arr[i];   //被向前对比的一个元素
 
         for (j = i; j > 0 && arr[j - 1] > tmp; j--) {   /* 向前逐个对比*/
-            arr[j] = arr[j - 1];    /* 前面的值向后移*/
+            arr[j] = arr[j - 1];    //前面的值向后移
         }
 
-        arr[j] = tmp;   /* 被对比的元素插入替代位置*/
+        arr[j] = tmp;   //被对比的元素插入替代位置
     }
 
     return arr;
@@ -149,14 +149,14 @@ function combSort(arr) {
         return false;
     }
 
-    var shrink_factor = 0.8,    /* 递减率*/
+    var shrink_factor = 0.8,    //递减率
         gap = arr.length,
         swapped = 1,
         i, temp;
 
     while (gap > 1 || swapped) {    /* 未完成排序*/
         if (gap > 1){
-            gap = Math.floor(gap * shrink_factor);  /* 更新间距*/
+            gap = Math.floor(gap * shrink_factor);  //更新间距
         }
 
         swapped = 0;
@@ -167,7 +167,7 @@ function combSort(arr) {
                 arr[i] = arr[i + gap];
                 arr[i + gap] = temp;
 
-                swapped = 1;    /* 进行过交换，因此还未排序好*/
+                swapped = 1;    //进行过交换，因此还未排序好
             }
         }
     }
@@ -285,21 +285,21 @@ function radixSort(arr) {
         }
     }
 
-    loop = (max + '').length;   /* 获取最高值的位数*/
+    loop = (max + '').length;   //获取最高值的位数
 
     for (i = 1; i <= loop; i++) {   /* 对每一个位数进行一次排序*/
         for (j = 0; j < len; j++) { /* 排序元素放入对应桶里*/
-            str = arr[j] + '';  /* 排序元素字符串化（可以使用字符串的length属性）*/
+            str = arr[j] + '';  //排序元素字符串化（可以使用字符串的length属性）
 
             if (str.length >= i) {
-                k = parseInt(str[str.length - i], 10);  /* e.g. 元素：'1234'.length=4，位数：百位数 i=3，'1234'[1]=2 => k=2 所以百位数上2的数字放入bucket[2]*/
+                k = parseInt(str[str.length - i], 10);  //e.g. 元素：'1234'.length=4，位数：百位数 i=3，'1234'[1]=2 => k=2 所以百位数上2的数字放入bucket[2]
                 bucket[k].push(arr[j]);
             } else {    /* 元素的最高位小于位数都放入第一个桶内*/
                 bucket[0].push(arr[j]);
             }
         }
 
-        arr = [];   /* 清空数组*/
+        arr = [];   //清空数组
 
         for (j = 0; j < 10; j++) {  /* 把每个桶内数组放回原始数组中（桶内不排序）*/
             t = bucket[j].length;
@@ -342,7 +342,7 @@ function heapSort(arr) {
      * @returns undefined
      */
     function _maxHeapify(dad, end) {
-        var son = dad * 2 + 1;  /* 父节点的左子节点位置*/
+        var son = dad * 2 + 1;  //父节点的左子节点位置
 
         if (son >= end) {   /* 子节点超出范围*/
 
@@ -354,7 +354,7 @@ function heapSort(arr) {
         }
 
         if (arr[dad] <= arr[son]) {
-            _swap(dad, son); /* 保证父节点大于子节点*/
+            _swap(dad, son); //保证父节点大于子节点
             arguments.callee(son, end);
         }
     }
@@ -362,7 +362,7 @@ function heapSort(arr) {
     var len = arr.length,
         i;
 
-    arr = arr.slice(); /* 浅复制*/
+    arr = arr.slice(); //浅复制
 
     for (i = Math.floor(len / 2) - 1; i >= 0; i--) {    /* i的初始值为堆的最后一个父节点，然后顺序往上操作其他父节点*/
         _maxHeapify(i, len);
@@ -393,18 +393,18 @@ function shuffle(arr) {
         return false;
     }
 
-    var len = arr.length,
-        lastOne, randomOne, temp;
+    var i, len, swapIndex, temp;
 
-    arr = arr.slice(); /* 浅复制*/
+    arr = arr.slice();  //浅复制
 
-    for (lastOne = len; lastOne > 0; lastOne--) {
-        randomOne = Math.floor(Math.random() * lastOne);    /* lastOne长度内随机一个位置*/
+    for (i = 0, len = arr.length; i < len; i++) {
+        //i位置的数和[i, len-1]位置的数调换，保证每个数在任一位置的概率相同
+        swapIndex = Math.floor(Math.random() * (len - i) + i);
 
         /* 元素交换*/
-        temp = arr[lastOne];
-        arr[lastOne] = arr[randomOne];
-        arr[randomOne] = temp;
+        temp = arr[swapIndex];
+        arr[swapIndex] = arr[i];
+        arr[i] = temp;
     }
 
     return arr;

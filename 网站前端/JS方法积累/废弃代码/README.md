@@ -1,7 +1,5 @@
 # JS方法积累——废弃代码
 
-明显已经不会再使用，但是不忍心删除的代码……
-
 ### *原生JS*多异步返回后才执行总回调函数（利用jQuery或Zepto的`$.ajax`）
 ```javascript
 /**
@@ -30,12 +28,13 @@ function multiCallback(func, url) {
                     dataType: 'json',
                     data: {}
                     /*,
-                    //Zepto默认没有deferred的对象，用参数模式代替
-                    success: function (data) {
-                        handle.result[url] = data;
-                        handle.count++;
-                        handle();
-                    }*/
+                     //Zepto默认没有deferred的对象，用参数模式代替
+                     success: function (data) {
+                         handle.result[url] = data;
+                         handle.count++;
+                         handle();
+                     }
+                    */
                 }).done(function (data) {
                     handle.result[url] = data;
                     handle.count++;

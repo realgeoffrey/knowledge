@@ -3,7 +3,7 @@
 ## 技巧经验
 
 ### 易错点 or Tips
-1. `var a = b = 1;   /* b没有var的声明*/`
+1. `var a = b = 1;/* b没有var的声明*/`
 
     在局部作用域中用如上写法，第二个以后的变量自动变成没有var定义的状态，意味着如果之前没有声明，那么就转化为全局变量的声明。
 2. `var a = a || {};`
@@ -32,12 +32,12 @@
     >
     >1. `var a = typeof b !== 'undefined' && b !== null ? b : {};`
     >2. `if (typeof c !== 'undefined' && c !== null) {}`
-3. `if(var a = 1, b = 2, c = 3, false){ /* 不执行*/}`
+3. `if(var a = 1, b = 2, c = 3, false){/* 不执行*/}`
 
     逗号操作符`,`对每个操作对象求值（从左至右），然后返回最后一个操作对象的值。
 
     >`var`语句中的逗号不是逗号操作符，因为它不是存在于一个表达式中。尽管从实际效果来看，那个逗号同逗号运算符的表现很相似。但确切地说，它是`var`语句中的一个特殊符号，用于把多个变量声明结合成一个。
-4. `var a = [10, 20, 30, 40][1, 2, 3];   /* 40*/`
+4. `var a = [10, 20, 30, 40][1, 2, 3];/* 40*/`
 
     1. `[10, 20, 30, 40]`被解析为数组；
     2. `[1, 2, 3]`被解析为属性调用，逗号操作符取最后一个值为结果。
@@ -71,8 +71,8 @@
 8. `eval`中直接执行`function`声明无效，必须用引号把`function`声明包裹起来才有效（尽量不用`eval`）
 
     ```javascript
-    eval(function a() {});  /* 返回function a() {}，但是没有声明*/
-    eval('function b() {}');    /* 返回undefined，声明成功*/
+    eval(function a() {});      //返回function a() {}，但是没有声明
+    eval('function b() {}');    //返回undefined，声明成功
     ```
 
     >1. `if()`中的代码对于`function`的声明就是用`eval`带入方法当做参数，因此虽然返回true，但是方法没有被声明。
@@ -197,11 +197,11 @@
         >var a = 1;
         >
         >(function () {
-        >    console.log(a);    /* undefined*/
+        >    console.log(a);    //undefined
         >
         >    var a = 2;
         >
-        >    console.log(a);    /* 2*/
+        >    console.log(a);    //2
         >})();
         >
         >//等效于：
@@ -209,11 +209,11 @@
         >
         >(function () {
         >    var a;
-        >    console.log(a);    /* undefined*/
+        >    console.log(a);    //undefined
         >
         >    a = 2;
         >
-        >    console.log(a);    /* 2*/
+        >    console.log(a);    //2
         >})();
 
         声明变量是它所在上下文环境的不可配置属性（non-configurable property），非声明变量是可配置的（例如非声明变量可以被`delete`）。
@@ -239,22 +239,22 @@
         >```javascript
         >var a1 = 1;
         >function a1() {}
-        >console.log(a1);    /* 1*/
+        >console.log(a1);    //1
         >
         >
         >function b2() {}
         >var b2 = 1;
-        >console.log(b2);    /* 1*/
+        >console.log(b2);    //1
         >
         >
         >var c3;
         >function c3() {}
-        >console.log(c3);    /* function*/
+        >console.log(c3);    //function
         >
         >
         >function d4() {}
         >var d4;
-        >console.log(d4);    /* function*/
+        >console.log(d4);    //function
         >```
 
     >建议：先声明再使用。把函数声明紧接着放在变量声明之后。
@@ -264,7 +264,7 @@
     可用于全局，也可以用于局部（如函数内）。
 
     >不推荐用在全局作用域中，因为当有JS文件合并时，一个文件的全局严格模式会导致整个文件都是严格模式。
-    >全局可以用`(function(){'use strict'; /* 执行内容*/}());`匿名函数方式使用。
+    >全局可以用`(function(){'use strict';/* 执行内容*/}());`匿名函数方式使用。
 3. 全等`===`（不全等`!==`）与等号`==`（不等`!=`）区别
 
     1. 当比较的两个值的类型不同时，`==`和`!=`都会强制类型转换，再进行转换后值的比较；
@@ -287,8 +287,8 @@
     3. 常量用大写字母和下划线分割，如`MAX_COUNT`。
     4. 构造函数用大驼峰命名法（Pascal Case），首字母大写（以非动词开头），单词首字母大写：
 
-        1. `var a = new Person();    /* 构造函数*/`
-        2. `var b = getPerson();    /* 普通函数*/`
+        1. `var a = new Person();/* 构造函数*/`
+        2. `var b = getPerson();/* 普通函数*/`
 
         >这样对于首字母大写的函数即可认定为构造函数，否则为普通函数。
     5. 不要用多行的字符串写法
@@ -508,7 +508,7 @@
             }
 
             /* 公开的内容*/
-            this.para = _arr;   /* 形参*/
+            this.para = _arr;   //形参
             this.para_1 = {b: '公开的变量para_1（每个实例不共享）'};
             this.func_1 = function () {
                 console.log('公开的业务逻辑func_1（每个实例不共享）');
@@ -540,7 +540,7 @@
                 }
 
                 /* 公开的内容*/
-                this.para = _arr;   /* 形参*/
+                this.para = _arr;   //形参
                 this.para_1 = {b: '公开的变量para_1（每个实例不共享）'};
                 this.func_1 = function () {
                     console.log('公开的业务逻辑func_1（每个实例不共享）');
@@ -697,7 +697,7 @@
     jQuery在`ajax`方法中封装了`jsonp`功能：
 
     ```javascript
-    jQuery.ajax({
+    $.ajax({
         url: '接口地址',
         dataType: 'jsonp',
         jsonp: '与服务端约定的支持jsonp方法',  //前端唯一需要额外添加的内容
@@ -758,9 +758,9 @@
 
 1. 清空数组
 
-    1. `arr = [];   /* 不改变原始数组（新赋值一个空数组）*/`
-    2. `arr.length = 0; /* 改变原始数组*/`
-    3. `arr.splice(0, arr.length);  /* 改变原始数组*/`
+    1. `arr = [];/* 不改变原始数组（新赋值一个空数组）*/`
+    2. `arr.length = 0;/* 改变原始数组*/`
+    3. `arr.splice(0, arr.length);/* 改变原始数组*/`
 2. 操作数组形参，不改变数组实参
 
     1. 浅复制：`arr = arr.slice();`或`arr = arr.concat();`或一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)。
@@ -820,153 +820,6 @@
     ```
 
 - 其他数据类型，也有字面量方式和构造函数（或普通函数）方式。
-
-### 动态添加样式、脚本
-1. 动态添加样式
-
-    1. 添加`style`标签
-
-        ```javascript
-        var newStyle = document.createElement('style');
-
-        newStyle.type = 'text/css';
-
-        if (newStyle.styleSheet) {    //for ie
-            newStyle.styleSheet.cssText = 'CSS代码';
-        } else {
-            newStyle.appendChild(document.createTextNode('CSS代码'));
-        }
-
-        document.getElementsByTagName('head')[0].appendChild(newStyle);
-        ```
-    2. 添加`link`标签
-
-        ```javascript
-        var newLink = document.createElement('link');
-
-        newLink.rel = 'styleSheet';
-        newLink.type = 'text/css';
-
-        newLink.href = 'CSS文件地址';
-
-        document.getElementsByTagName('head')[0].appendChild(newLink);
-        ```
-    3. 添加内嵌样式
-
-        ```javascript
-        var oneDom = document.getElementById('节点id');
-
-        oneDom.style.cssText += '; CSS代码'
-        ```
-
-    >CSS代码，例如 `div {background-color: yellow;}`。
-2. 动态添加脚本
-
-    1. 异步
-
-        1. 直接`document.write`
-
-            ```javascript
-            document.write('<script src="JS文件地址"><\/script>');
-            ```
-        2. 动态改变已有的`script`标签的`src`属性
-
-            ```html
-            <script type="text/javascript" id="节点id"></script>
-
-            <script>
-                document.getElementById('节点id').src = 'JS文件地址';
-            </script>
-            ```
-        3. 动态创建`script`标签
-
-            ```javascript
-            var newScript = document.createElement('script'),
-                appendPlace = document.body || document.getElementsByTagName('HEAD').item(0);
-
-            newScript.type = 'text/javascript';
-
-            newScript.src = 'JS文件地址';
-
-            appendPlace.appendChild(newScript);
-            ```
-    2. 同步
-
-        1. 添加JS代码
-
-            ```javascript
-            var newScript = document.createElement('script'),
-                appendPlace = document.body || document.getElementsByTagName('HEAD').item(0);
-
-            newScript.type = 'text/javascript';
-
-            try {
-                newScript.appendChild(document.createTextNode('JS代码'));
-            }
-            catch (e) {
-                newScript.text = 'JS代码';  /* ie8及以下，Safari老版本*/
-            }
-
-            appendPlace.appendChild(newScript);
-            ```
-        2. 添加`script`标签
-
-            ```javascript
-            /**
-             * 同步加载JS脚本
-             * @param {String} url - JS文件的相对路径或绝对路径
-             * @returns {Boolean} - 是否加载成功
-             */
-            function syncLoadJS(url) {
-                var xmlHttp,
-                    appendPlace,
-                    newScript;
-
-                if (window.ActiveXObject) { /* ie*/
-                    try {
-                        xmlHttp = new ActiveXObject('Msxml2.XMLHTTP');
-                    }
-                    catch (e) {
-                        xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
-                    }
-                } else if (window.XMLHttpRequest) {
-                    xmlHttp = new XMLHttpRequest();
-                }
-
-                xmlHttp.open('GET', url, false);    /* 采用同步加载*/
-                xmlHttp.send(null); /* 发送同步请求，如果浏览器为Chrome或Opera，必须发布后才能运行，不然会报错*/
-
-                /* 4代表数据发送完毕*/
-                if (xmlHttp.readyState == 4) {
-                    /* 0为访问的本地，200到300代表访问服务器成功，304代表没做修改访问的是缓存*/
-                    if ((xmlHttp.status >= 200 && xmlHttp.status < 300) || xmlHttp.status == 0 || xmlHttp.status == 304) {
-                        newScript = document.createElement('script');
-                        appendPlace = document.body || document.getElementsByTagName('HEAD').item(0);
-
-                        newScript.type = 'text/javascript';
-
-                        try {
-                            newScript.appendChild(document.createTextNode(xmlHttp.responseText));
-                        }
-                        catch (e) {
-                            newScript.text = xmlHttp.responseText;
-                        }
-
-                        appendPlace.appendChild(newScript);
-
-                        return true;
-                    }
-                    else {
-
-                        return false;
-                    }
-                }
-                else {
-
-                    return false;
-                }
-            }
-            ```
 
 ### JS与jQuery的事件绑定
 >1. 以点击事件`click`为例。
@@ -1052,8 +905,8 @@
 
     无论选择器选取的内容是否为空，都返回数组，所以`if($(...)) {}`永远成立。因此用以下方法：
 
-    1. `if($(...).length > 0) {}    /* 若无则为0*/`
-    2. `if($(...)[0]) {}   /* 若无则为undefined*/`
+    1. `if($(...).length > 0) {}//若无则为0`
+    2. `if($(...)[0]) {}//若无则为undefined`
 4. `on`绑定效率
 
     >e.g. `$(eventHandler).on(event, selector, func);`
@@ -1089,7 +942,7 @@
 ## 功能用法
 
 ### 判断类型
-1. `Object.prototype.toString.apply(值);  /* 或call*/`
+1. `Object.prototype.toString.apply(值);`或`call`
 
     1. 没有跨帧问题。
     2. 放入**内置对象**，返回`'[object 构造函数的名称]'`的字符串
@@ -1322,32 +1175,7 @@
     4. 单个对象数据大小5M+。
     5. 拥有方便的api
 
-        调用`localStorage`、`sessionStorage`对象会为每个源创建独立的`Storage`对象，每个对象都拥有：`setItem`、`getItem`、`removeItem`、`clear`、`key`方法，`length`属性。
-        
-        ```javascript
-        /* 以sessionStorage为例，localStorage有完全相同的API*/
- 
-        /* setItem：设置或更新键值对（可以直接用“.”和“[]”操作）*/
-        sessionStorage.setItem('key1', 'value1');
-        sessionStorage.key2 = 'value2'; /* 或 sessionStorage['key2'] = 'value2';*/
-
-        /* getItem：获取值（可以直接用“.”和“[]”操作）*/
-        var value1 = sessionStorage.getItem('key1');
-        var value2 = sessionStorage.key2;   /* 或 var value2 = sessionStorage['key2']*/
-
-        /* removeItem：删除键值对*/
-        sessionStorage.removeItem('key1');
-
-        /* clear：清空所有的键值对*/
-        sessionStorage.clear();
-
-        /* length：（只读）数据项数量*/
-        /* key：返回存储对象第n个数据项的键名*/
-        for (var i = 0, key; i < sessionStorage.length; i++) {
-            key = sessionStorage.key(i);
-            console.log(sessionStorage.getItem(key));
-        }
-        ```
+        调用`localStorage`、`sessionStorage`对象会为每个源（每个tab）创建独立的`Storage`对象，每个对象都拥有：`setItem`、`getItem`、`removeItem`、`clear`、`key`方法，`length`属性。
     6. 区别
 
         1. `localStorage`
@@ -1456,7 +1284,7 @@
         arr[i] = '字符串' + i + '字符串';
     }
 
-    $('body').text(arr.join(''));
+    return arr.join('');
     ```
 2. ~~`+`性能差，不推荐方式~~：
 
@@ -1468,7 +1296,7 @@
         text = text + '字符串' + i + '字符串';
     }
 
-    $('body').text(text);
+    return text;
     ```
 
 ### 错误处理机制
@@ -1503,7 +1331,7 @@
         window.onerror = function (msg, url, line) {
             /* code*/
 
-            return true;    /* 浏览器不再显示错误信息*/
+            return true;    //浏览器不再显示错误信息
         };
         ```
     3. 图像的`onerror`事件
@@ -1580,14 +1408,14 @@
         >例：
         >```javascript
         >var func1 = function func2() {
-        >   console.log(typeof func1);  /* function*/
-        >   console.log(typeof func2);  /* function*/
+        >   console.log(typeof func1);  //function
+        >   console.log(typeof func2);  //function
         >};
         >
         >func1();
         >
-        >console.log(typeof func1);     /* function*/
-        >console.log(typeof func2);     /* undefined*/
+        >console.log(typeof func1);     //function
+        >console.log(typeof func2);     //undefined
         >```
 
     >1. 通过函数声明和函数表达式定义的函数只会被解析一次；而构造函数定义的函数在每次构造函数被调用，函数体字符串都要被解析一次。
@@ -1643,14 +1471,14 @@
     }
     
     /* ①方法没有对象调用（包括立即执行函数，并且与作用域无关），this代表全局对象Global（window）*/
-    test(); /* 1|1|1*/
+    test();                 //1|1|1
     
     
     /* ②函数作为某个对象的方法调用，this指向上级对象*/
     var obj = {};
     obj.x = 2;
     obj.func = test;
-    obj.func(); /* 2|1|1*/
+    obj.func();             //2|1|1
     
     
     /* ③作为构造函数生成一个新对象，this指向这个新实例对象*/
@@ -1662,12 +1490,12 @@
             return this.x;
         }
     }
-    var obj3 = new Test2(); /* 4|1|1*/
+    var obj3 = new Test2(); //4|1|1
     
     
     /* ④apply或call调用，传入对象代替this调用*/
     var obj2 = {x: 3};
-    obj.func.call(obj2);    /* 3|1|1*/
+    obj.func.call(obj2);    //3|1|1
     ```
 
 ### 原型
@@ -1841,13 +1669,14 @@
     e.g.
 
     ```javascript
-    var a = 'test1';
-    var b = {'key': 'test1'};
-    var c = a;
-    c = 'test2';
-    var d = b;
-    d['key'] = 'test2';
+    var a = 'test1';            //i
+    var b = {'key': 'test1'};   //ii
+    var c = a;                  //iii
+    c = 'test2';                //iv
+    var d = b;                  //v
+    d['key'] = 'test2';         //vi
     ```
+
     1. `var a = 'test1';`步骤：
 
         1. 声明a，查找栈内存中是否存在a，不存在则创建，不管是已存在还是新创建的a，都指向undefined。
