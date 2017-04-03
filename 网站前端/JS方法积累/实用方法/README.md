@@ -513,7 +513,7 @@ var sendLog = (function () {
             img = new Image(),
             uid = _unique();
 
-        data[uid] = img;    /* 防止img被垃圾处理*/
+        data[uid] = img;    //防止img被垃圾处理
 
         img.onload = img.onerror = function () {    /* 成功或失败后销毁对象*/
             img.onload = img.onerror = null;
@@ -521,7 +521,7 @@ var sendLog = (function () {
             delete data[uid];
         };
 
-        img.src = url + '&_cache=' + uid;   /* 发送统计内容*/
+        img.src = url + '&_cache=' + uid;   //发送统计内容
     };
 
     return run;
@@ -665,14 +665,14 @@ var format = {
     },
     date: function (date, fmt) {    /* 格式化日期*/
         var o = {
-                'M+': date.getMonth() + 1, /* 月*/
-                'd+': date.getDate(), /* 日*/
-                'h+': date.getHours() % 12 === 0 ? 12 : date.getHours() % 12, /* 12小时制*/
-                'H+': date.getHours(), /* 24小时制*/
-                'm+': date.getMinutes(), /* 分*/
-                's+': date.getSeconds(), /* 秒*/
-                'q+': Math.floor((date.getMonth() + 3) / 3), /* 季度*/
-                'S': date.getMilliseconds() /* 毫秒*/
+                'M+': date.getMonth() + 1, //月
+                'd+': date.getDate(), //日
+                'h+': date.getHours() % 12 === 0 ? 12 : date.getHours() % 12, //12小时制
+                'H+': date.getHours(), //24小时制
+                'm+': date.getMinutes(), //分
+                's+': date.getSeconds(), //秒
+                'q+': Math.floor((date.getMonth() + 3) / 3), //季度
+                'S': date.getMilliseconds() //毫秒
             },
             week = {
                 /* [{E:'一'},{EE:'周一'},{EEE+:'星期一'}]*/
@@ -1148,7 +1148,7 @@ var eventUtil = {
     
 
     /* 使用测试*/
-    addEvent(document.getElementById('test'), 'keydown', checkKeyCode);  /* 上面绑定事件*/
+    addEvent(document.getElementById('test'), 'keydown', checkKeyCode);  //上面绑定事件
     ```
 2. jQuery或Zepto
 
@@ -1157,7 +1157,7 @@ var eventUtil = {
         if (e.which === 13) {   /* 查询键值表 例:13->换行*/
             /* 具体操作...*/
     
-            return false;   /* 取消默认行为*/
+            return false;   //取消默认行为
         }
     });
     ```
@@ -1171,8 +1171,8 @@ var cursorPosition = {
      * @returns {Object} - {光标起始位置,选中长度}
      */
     get: function (dom) {
-        var start = 0, /* 光标起始位置*/
-            selLen = 0, /* 光标选中长度*/
+        var start = 0, //光标起始位置
+            selLen = 0, //光标选中长度
             sel, ieSel;
 
         if ('selectionStart' in dom) {
@@ -1286,9 +1286,9 @@ console.log(cursorPosition.set(输入框dom, 起始位置, 选中长度));
 <script>
     var ScrollBounce = function (dom) {
         var _bounce = function () {
-            var startTopScroll = dom.scrollTop, /* 滚动高度*/
-                domHeight = dom.offsetHeight, /* 占据高度*/
-                contentHeight = dom.scrollHeight; /* 内容高度（占据高度+可滚动最大高度）*/
+            var startTopScroll = dom.scrollTop, //滚动高度
+                domHeight = dom.offsetHeight, //占据高度
+                contentHeight = dom.scrollHeight; //内容高度（占据高度+可滚动最大高度
 
             /*
              * 在触摸开始时，如果发现滚动区域已经处于极限状态时，就手工设置 scrollTop 的值，
@@ -1592,6 +1592,153 @@ xhr.open(请求类型, URL[, 是否异步[, 用户名[, 密码]]]);
 xhr.setRequestHeader(头, 值);
 xhr.send(null);
 ```
+
+### *原生JS*动态添加样式、脚本
+1. 动态添加样式
+
+    1. 添加`style`标签
+
+        ```javascript
+        var newStyle = document.createElement('style');
+
+        newStyle.type = 'text/css';
+
+        if (newStyle.styleSheet) {    //for ie
+            newStyle.styleSheet.cssText = 'CSS代码';
+        } else {
+            newStyle.appendChild(document.createTextNode('CSS代码'));
+        }
+
+        document.getElementsByTagName('head')[0].appendChild(newStyle);
+        ```
+    2. 添加`link`标签
+
+        ```javascript
+        var newLink = document.createElement('link');
+
+        newLink.rel = 'styleSheet';
+        newLink.type = 'text/css';
+
+        newLink.href = 'CSS文件地址';
+
+        document.getElementsByTagName('head')[0].appendChild(newLink);
+        ```
+    3. 添加内嵌样式
+
+        ```javascript
+        var oneDom = document.getElementById('节点id');
+
+        oneDom.style.cssText += '; CSS代码'
+        ```
+
+    >CSS代码，例如 `div {background-color: yellow;}`。
+2. 动态添加脚本
+
+    1. 异步
+
+        1. 直接`document.write`
+
+            ```javascript
+            document.write('<script src="JS文件地址"><\/script>');
+            ```
+        2. 动态改变已有的`script`标签的`src`属性
+
+            ```html
+            <script type="text/javascript" id="节点id"></script>
+
+            <script>
+                document.getElementById('节点id').src = 'JS文件地址';
+            </script>
+            ```
+        3. 动态创建`script`标签
+
+            ```javascript
+            var newScript = document.createElement('script'),
+                appendPlace = document.body || document.getElementsByTagName('HEAD').item(0);
+
+            newScript.type = 'text/javascript';
+
+            newScript.src = 'JS文件地址';
+
+            appendPlace.appendChild(newScript);
+            ```
+    2. 同步
+
+        1. 添加JS代码
+
+            ```javascript
+            var newScript = document.createElement('script'),
+                appendPlace = document.body || document.getElementsByTagName('HEAD').item(0);
+
+            newScript.type = 'text/javascript';
+
+            try {
+                newScript.appendChild(document.createTextNode('JS代码'));
+            }
+            catch (e) {
+                newScript.text = 'JS代码';  //ie8及以下，Safari老版本
+            }
+
+            appendPlace.appendChild(newScript);
+            ```
+        2. 添加`script`标签
+
+            ```javascript
+            /**
+             * 同步加载JS脚本
+             * @param {String} url - JS文件的相对路径或绝对路径
+             * @returns {Boolean} - 是否加载成功
+             */
+            function syncLoadJS(url) {
+                var xmlHttp,
+                    appendPlace,
+                    newScript;
+
+                if (window.ActiveXObject) { /* ie*/
+                    try {
+                        xmlHttp = new ActiveXObject('Msxml2.XMLHTTP');
+                    }
+                    catch (e) {
+                        xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
+                    }
+                } else if (window.XMLHttpRequest) {
+                    xmlHttp = new XMLHttpRequest();
+                }
+
+                xmlHttp.open('GET', url, false);    //采用同步加载
+                xmlHttp.send(null); //发送同步请求，如果浏览器为Chrome或Opera，必须发布后才能运行，不然会报错
+
+                /* 4代表数据发送完毕*/
+                if (xmlHttp.readyState == 4) {
+                    /* 0为访问的本地，200到300代表访问服务器成功，304代表没做修改访问的是缓存*/
+                    if ((xmlHttp.status >= 200 && xmlHttp.status < 300) || xmlHttp.status == 0 || xmlHttp.status == 304) {
+                        newScript = document.createElement('script');
+                        appendPlace = document.body || document.getElementsByTagName('HEAD').item(0);
+
+                        newScript.type = 'text/javascript';
+
+                        try {
+                            newScript.appendChild(document.createTextNode(xmlHttp.responseText));
+                        }
+                        catch (e) {
+                            newScript.text = xmlHttp.responseText;
+                        }
+
+                        appendPlace.appendChild(newScript);
+
+                        return true;
+                    }
+                    else {
+
+                        return false;
+                    }
+                }
+                else {
+
+                    return false;
+                }
+            }
+            ```
 
 ----
 ## Polyfill
@@ -1944,7 +2091,7 @@ if (!Array.isArray) {
     </script>
     ```
 
-> Zepto默认没有`deferred`的对象、没有`outerHeight`方法。
+>Zepto默认没有`deferred`的对象、没有`outerHeight`方法。
 
 ### jQuery或Zepto图片延时加载
 ```html
@@ -2265,7 +2412,7 @@ function fixPlaceholder($dom) {
 
             p {
                 display: inline-block;
-                max-width: rem(460);    /* box-sizing:border-box*/
+                max-width: rem(460);    /*box-sizing: border-box;*/
                 min-width: rem(166);
                 padding: rem(29) rem(30);
                 line-height: rem(40);
@@ -2353,162 +2500,164 @@ function fixPlaceholder($dom) {
 </script>
 ```
 
-### jQuery或Zepto节点跟随屏幕滚动（`margin-top`）
-```html
-<div class="clearfix">
-    <div class="father">
-        可有可无的、带margin或不带margin的节点
-        <div class="target">target内容</div>
-        可有可无的、带margin或不带margin的节点，ie6、7下可能需要触发hasLayout
+### jQuery或Zepto节点跟随屏幕滚动
+1. `margin-top`：
+
+    ```html
+    <div class="clearfix">
+        <div class="father">
+            可有可无的、带margin或不带margin的节点
+            <div class="target">target内容</div>
+            可有可无的、带margin或不带margin的节点，ie6、7下可能需要触发hasLayout
+        </div>
+        <div class="dependent">
+            父级的兄弟节点
+        </div>
     </div>
-    <div class="dependent">
-        父级的兄弟节点
-    </div>
-</div>
 
-<script>
-    /**
-     * 跟随屏幕滚动（margin-top变化）
-     * @constructor
-     * @param {String} target - 目标节点
-     * @param {String} father - 目标节点的父级节点
-     * @param {String} dependent - 目标节点的父级节点的兄弟参照物（跟随不超过此参照物）
-     */
-    function FollowMarginTop(target, father, dependent) {
-        if (typeof Date.now !== 'function') {
-            Date.now = function () {
-                return new Date().getTime();
-            };
-        }
-
-        var namespace = Date.now(), /* 事件命名空间*/
-            $target = $(target),
-            startOffset = $target.offset().top,
-            targetMarginTop = parseInt($target.css('margin-top'), 10) || 0,
-            prevMarginBottom = parseInt($target.prev().css('margin-bottom'), 10) || 0,
-            defaultMarginTop = Math.max(targetMarginTop, prevMarginBottom),
-            maxMarginTop = $(dependent).height() - $(father).height() + defaultMarginTop; /* jQuery可以用outerHeight*/
-
-        $(window).on('scroll' + '.' + namespace, function () {
-            var marginTop = $(window).scrollTop() - startOffset + defaultMarginTop;
-
-            if (marginTop > defaultMarginTop) {
-                if (marginTop > maxMarginTop) {
-                    marginTop = maxMarginTop;
-                }
-            } else {
-                marginTop = defaultMarginTop;
+    <script>
+        /**
+         * 跟随屏幕滚动（margin-top变化）
+         * @constructor
+         * @param {String} target - 目标节点
+         * @param {String} father - 目标节点的父级节点
+         * @param {String} dependent - 目标节点的父级节点的兄弟参照物（跟随不超过此参照物）
+         */
+        function FollowMarginTop(target, father, dependent) {
+            if (typeof Date.now !== 'function') {
+                Date.now = function () {
+                    return new Date().getTime();
+                };
             }
 
-            $target.css({'margin-top': marginTop});
-        });
+            var namespace = Date.now(), /* 事件命名空间*/
+                $target = $(target),
+                startOffset = $target.offset().top,
+                targetMarginTop = parseInt($target.css('margin-top'), 10) || 0,
+                prevMarginBottom = parseInt($target.prev().css('margin-bottom'), 10) || 0,
+                defaultMarginTop = Math.max(targetMarginTop, prevMarginBottom),
+                maxMarginTop = $(dependent).height() - $(father).height() + defaultMarginTop; //Query可以用outerHeight
 
-        this.stop = function () {
-            $target.css({'margin-top': targetMarginTop});
-            $(window).off('scroll' + '.' + namespace);
-        };
-    }
+            $(window).on('scroll' + '.' + namespace, function () {
+                var marginTop = $(window).scrollTop() - startOffset + defaultMarginTop;
 
-
-    /* 使用测试*/
-    var a = new FollowMarginTop('.target', '.father', '.dependent');
-
-    //a.stop();
-</script>
-```
-[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/gc45ehdb/)
-
-### jQuery或Zepto节点跟随屏幕滚动（`fixed`）
-```html
-<style>
-    .z-affix-top {
-        width: 宽度;
-        position: fixed;
-        left: ;
-        margin-left: ;
-        top: ;
-    }
-    .z-affix-bottom {
-        width: 宽度;
-        position: absolute;
-        left: ;
-    }
-</style>
-
-<script>
-    /**
-     * 跟随屏幕滚动（fixed）
-     * @constructor
-     * @param {Object} $target - 跟屏目标的jQuery对象
-     * @param {Number} topOffset - 触发添加topClass的距文档顶部的距离
-     * @param {String} topClass - 跟随屏幕的类，要规定节点的宽度、位置（fixed）
-     * @param {Number} [bottomOffset = 0] - 触发添加bottomClass的距文档底部的距离
-     * @param {String} [bottomClass = ''] - 触底的类，要规定节点的宽度、位置（absolute），top由代码计算获得
-     */
-    function FollowFixed($target, topOffset, topClass, bottomOffset, bottomClass) {
-        if (typeof Date.now !== 'function') {
-            Date.now = function () {
-                return new Date().getTime();
-            };
-        }
-
-        var _namespace = Date.now(), //事件命名空间
-            _isIE = function (num) {    //判断ie版本
-                var dom = document.createElement('b');
-
-                dom.innerHTML = '<!--[if IE ' + num + ']><i></i><![endif]-->';
-
-                return dom.getElementsByTagName('i').length;
-            },
-            _followFixed = function () {
-                var scollTop = $(window).scrollTop(),
-                    documentHeight = $(document).height(),
-                    targetHeight = $target.height();   //jQuery可以用outerHeight
-
-                if (scollTop >= topOffset) {    //滚动距离超过topOffset
-                    if (!$target.hasClass(bottomClass)) {   //没有添加bottomClass
-                        if (documentHeight - ($target.offset().top + targetHeight) > bottomOffset) {    //节点底部距离文档底部距离 > bottomOffet
-                            $target.removeClass(bottomClass).addClass(topClass)
-                                .removeAttr('style');
-                        } else if (bottomClass) {   //超过bottomOffet,并且bottomClass存在
-                            $target.removeClass(topClass).addClass(bottomClass)
-                                .css('top', documentHeight - $target.offsetParent().offset().top - targetHeight - bottomOffset);
-                        }
-                    } else {    //添加了bottomClass
-                        if (scollTop < $target.offset().top) {  //滚动小于节点
-                            $target.removeClass(bottomClass).addClass(topClass)
-                                .removeAttr('style');
-                        }
+                if (marginTop > defaultMarginTop) {
+                    if (marginTop > maxMarginTop) {
+                        marginTop = maxMarginTop;
                     }
                 } else {
-                    $target.removeClass(topClass + ' ' + bottomClass)
-                        .removeAttr('style');
+                    marginTop = defaultMarginTop;
                 }
+
+                $target.css({'margin-top': marginTop});
+            });
+
+            this.stop = function () {
+                $target.css({'margin-top': targetMarginTop});
+                $(window).off('scroll' + '.' + namespace);
             };
-
-        if (!_isIE(6)) {
-            bottomOffset = bottomOffset || 0;
-            bottomClass = bottomClass || '';
-
-            _followFixed();
-
-            $(window).on('scroll' + '.' + _namespace, _followFixed);
         }
 
-        this.stop = function () {
-            $target.removeClass(topClass + ' ' + bottomClass);
-            $(window).off('scroll' + '.' + _namespace);
-        };
-    }
+
+        /* 使用测试*/
+        var a = new FollowMarginTop('.target', '.father', '.dependent');
+
+        //a.stop();
+    </script>
+    ```
+    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/gc45ehdb/)
+2. `fixed`：
+
+    ```html
+    <style>
+        .z-affix-top {
+            width: 宽度;
+            position: fixed;
+            left: ;
+            margin-left: ;
+            top: ;
+        }
+        .z-affix-bottom {
+            width: 宽度;
+            position: absolute;
+            left: ;
+        }
+    </style>
+
+    <script>
+        /**
+         * 跟随屏幕滚动（fixed）
+         * @constructor
+         * @param {Object} $target - 跟屏目标的jQuery对象
+         * @param {Number} topOffset - 触发添加topClass的距文档顶部的距离
+         * @param {String} topClass - 跟随屏幕的类，要规定节点的宽度、位置（fixed）
+         * @param {Number} [bottomOffset = 0] - 触发添加bottomClass的距文档底部的距离
+         * @param {String} [bottomClass = ''] - 触底的类，要规定节点的宽度、位置（absolute），top由代码计算获得
+         */
+        function FollowFixed($target, topOffset, topClass, bottomOffset, bottomClass) {
+            if (typeof Date.now !== 'function') {
+                Date.now = function () {
+                    return new Date().getTime();
+                };
+            }
+
+            var _namespace = Date.now(), //事件命名空间
+                _isIE = function (num) {    //判断ie版本
+                    var dom = document.createElement('b');
+
+                    dom.innerHTML = '<!--[if IE ' + num + ']><i></i><![endif]-->';
+
+                    return dom.getElementsByTagName('i').length;
+                },
+                _followFixed = function () {
+                    var scollTop = $(window).scrollTop(),
+                        documentHeight = $(document).height(),
+                        targetHeight = $target.height();   //jQuery可以用outerHeight
+
+                    if (scollTop >= topOffset) {    //滚动距离超过topOffset
+                        if (!$target.hasClass(bottomClass)) {   //没有添加bottomClass
+                            if (documentHeight - ($target.offset().top + targetHeight) > bottomOffset) {    //节点底部距离文档底部距离 > bottomOffet
+                                $target.removeClass(bottomClass).addClass(topClass)
+                                    .removeAttr('style');
+                            } else if (bottomClass) {   //超过bottomOffet,并且bottomClass存在
+                                $target.removeClass(topClass).addClass(bottomClass)
+                                    .css('top', documentHeight - $target.offsetParent().offset().top - targetHeight - bottomOffset);
+                            }
+                        } else {    //添加了bottomClass
+                            if (scollTop < $target.offset().top) {  //滚动小于节点
+                                $target.removeClass(bottomClass).addClass(topClass)
+                                    .removeAttr('style');
+                            }
+                        }
+                    } else {
+                        $target.removeClass(topClass + ' ' + bottomClass)
+                            .removeAttr('style');
+                    }
+                };
+
+            if (!_isIE(6)) {
+                bottomOffset = bottomOffset || 0;
+                bottomClass = bottomClass || '';
+
+                _followFixed();
+
+                $(window).on('scroll' + '.' + _namespace, _followFixed);
+            }
+
+            this.stop = function () {
+                $target.removeClass(topClass + ' ' + bottomClass);
+                $(window).off('scroll' + '.' + _namespace);
+            };
+        }
 
 
-    /* 使用测试*/
-    var a = new FollowFixed($('.target'), $('.target').offset().top, 'z-affix-top', 200, 'z-affix-bottom');
+        /* 使用测试*/
+        var a = new FollowFixed($('.target'), $('.target').offset().top, 'z-affix-top', 200, 'z-affix-bottom');
 
-    //a.stop();
-</script>
-```
-[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/v69fr64x/)
+        //a.stop();
+    </script>
+    ```
+    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/v69fr64x/)
 
 ### jQuery或Zepto模拟手机翻转（使页面都以“横屏”展示）
 ```html
@@ -2609,7 +2758,7 @@ function fixPlaceholder($dom) {
     //a.stop();
 </script>
 ```
-> 如果对不是全屏的节点使用翻转函数，需要给节点设置`width: 宽度 !important;height: auto !important;`。
+>如果对不是全屏的节点使用翻转函数，需要给节点设置：`width: 宽度 !important;height: auto !important;`。
 
 ### jQuery或Zepto点击指定区域以外执行函数
 1. jQuery
@@ -2766,8 +2915,8 @@ function fixPlaceholder($dom) {
             };
         }
 
-        var _isStop = false, /* 停止动画flag*/
-            _namespace = Date.now(), /* 事件命名空间*/
+        var _isStop = false, //停止动画flag
+            _namespace = Date.now(), //事件命名空间
             _init = function (selector, hoverClass) {
                 $(document).on('mouseenter' + '.' + _namespace, selector, function () {
                     $(this).addClass(hoverClass);

@@ -47,7 +47,7 @@
                     >e.g.
                     >```html
                     ><style>
-                    >    /*权重相同，仅取决于样式顺序*/
+                    >    /* 权重相同，仅取决于样式顺序*/
                     >    .a p {color: red;}
                     >    .b p {color: blue;}
                     ></style>
@@ -295,7 +295,7 @@
     （待续）
 
 ### `table`
-1. table属性为`table-layout: auto;/*默认*/`
+1. table属性为`table-layout: auto;/* 默认*/`
 
     在`td`或`th`上设置宽度无效，各项宽度取决于内容宽度。
 2. table属性为`table-layout: fixed;`
@@ -857,7 +857,7 @@
                         padding-right: 100px;
                         _zoom: 1;
 
-                        /*height、line-height、width、截断*/
+                        /* height、line-height、width、截断*/
                     }
                     .ico_r_1 i {
                         position: absolute;
@@ -884,7 +884,7 @@
                         padding-right: 100px;
                         _zoom: 1;
 
-                        /*height、line-height、width、截断*/
+                        /* height、line-height、width、截断*/
                     }
                     .ico_r_2 i {
                         position: absolute;
@@ -911,7 +911,7 @@
                         padding-right: 100px;
                         _zoom: 1;
 
-                        /*height、line-height、width、截断*/
+                        /* height、line-height、width、截断*/
                     }
                     .ico_r_3 i {
                         position: absolute;
@@ -945,7 +945,7 @@
                         overflow: hidden;
                         text-overflow: ellipsis;
 
-                        /*height、line-height*/
+                        /* height、line-height*/
                     }
                     .ico_l_1 i {
                         width: 100px;
@@ -981,7 +981,7 @@
                         overflow: hidden;
                         text-overflow: ellipsis;
 
-                        /*height、line-height*/
+                        /* height、line-height*/
                     }
                     .ico_l_2 i {
                         width: 100px;
@@ -994,7 +994,7 @@
                     }
                 </style>
  
-                <div style="text-align: center;font-size: 0;/*width、height、其他位置设置*/">
+                <div style="text-align: center;font-size: 0;/* width、height、其他位置设置*/">
                     <div class="ico_l_2">
                         <i>5</i>
                         S-水平居中，图标前置-E
@@ -1019,7 +1019,7 @@
                         overflow: hidden;
                         text-overflow: ellipsis;
 
-                        /*height、line-height*/
+                        /* height、line-height*/
                     }
                     .ico_l_3 i {
                         position: absolute;
@@ -1032,7 +1032,7 @@
                     }
                 </style>
  
-                <div style="text-align: right;font-size: 0;/*width、height、其他位置设置*/">
+                <div style="text-align: right;font-size: 0;/* width、height、其他位置设置*/">
                     <div class="ico_l_3">
                         <i>6</i>
                         S-水平居右，图标前置-E
@@ -1057,7 +1057,7 @@
                     overflow: hidden;
                     text-overflow: ellipsis;
 
-                    /*height、line-height*/
+                    /* height、line-height*/
                 }
                 .ico_l_r i.i-l {
                     position: absolute;
@@ -1079,7 +1079,7 @@
                 }
             </style>
 
-            <div style="text-align: right;font-size: 0;/*width、height、其他位置设置*/">
+            <div style="text-align: right;font-size: 0;/* width、height、其他位置设置*/">
                 <div class="ico_l_r">
                     <i class="i-l">7</i>
                     S-水平居中，图标前置+图标后置-E
@@ -1108,7 +1108,7 @@
         span { /* 必须是内联元素*/
            display: inline-block;
            vertical-align: middle;
-           /*font-size覆盖父级的字体*/
+           /* font-size覆盖父级的字体*/
         }
         img {
            vertical-align: middle;
@@ -1349,7 +1349,7 @@
     .test {
         height: 高度;
         line-height: 高度;
-        /* white-space: nowrap; */
+        /*white-space: nowrap; */
         text-overflow: ellipsis;
         overflow: hidden;
     }
