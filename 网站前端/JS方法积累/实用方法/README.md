@@ -1740,6 +1740,17 @@ xhr.send(null);
             }
             ```
 
+### *原生JS*单词首字母大写
+```javascript
+function upperCaseWord(str) {
+
+    return str.replace(/\b[a-zA-Z]/g, function (match) {
+
+        return match.toUpperCase();
+    });
+}
+```
+
 ----
 ## Polyfill
 
