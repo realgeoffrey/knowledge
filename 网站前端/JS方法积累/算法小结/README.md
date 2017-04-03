@@ -515,6 +515,79 @@ function shuffle(arr) {
     }
     ```
 
+### 数组删去某值
+时间复杂度：O(n)。
+
+1. 仅使用赋值操作：
+
+    ```javascript
+    function reduceArr(arr, delValue) {
+        arr = arr.slice();
+
+        var delCount = 0,
+            i, len;
+
+        for (i = 0, len = arr.length; i < len; i++) {
+            if (arr[i] === delValue) {
+                delCount++;
+            } else if (delCount !== 0) {
+                arr[i - delCount] = arr[i];
+            }
+        }
+
+        arr.length = len - delCount;
+
+        return arr;
+    }
+    ```
+2. 使用`Array.prototype.splice`：
+
+    ```javascript
+    function reduceArr(arr, delValue) {
+        arr = arr.slice();
+
+        var i, len;
+
+        for (i = 0, len = arr.length; i < len; i++) {
+            if (arr[i] === delValue) {
+                arr.splice(i, 1);
+                i--;
+            }
+        }
+
+        return arr;
+    }
+    ```
+3. 使用新数组保存：
+
+    ```javascript
+    function reduceArr(arr, delValue) {
+        var newArr = [],
+            i, len;
+
+        for (i = 0, len = arr.length; i < len; i++) {
+            if (arr[i] !== delValue) {
+                newArr.push(arr[i]);
+            }
+        }
+
+        return newArr;
+    }
+    ```
+4. 使用`Array.prototype.filter`（数组空位不遍历）：
+
+    ```javascript
+    function reduceArr(arr, delValue) {
+
+        return arr.filter(function (value) {
+            if (value !== delValue) {
+
+                return true;
+            }
+        });
+    }
+    ```
+
 ### 声明某长度并设定值的数组
 e.g. 声明arr：长度为n，值为下标（或某固定值）
 
