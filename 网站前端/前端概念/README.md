@@ -355,3 +355,29 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
     8. `throw`语句
 
 >前置分号策略：只要对行首字符进行token判断是否为：`[` `(` `+` `-` `/`五个符号之一，就在其前面增加分号。
+
+### 前端相关的细节
+1. 静态资源使用额外域名（domain hash）的原因
+
+    1. cookie free
+
+        cookie是同源（且同路径），不同域名可以避免~~某些静态资源携带不必要的cookie而占用带宽~~。
+    2. 浏览器对同一域名有HTTP并发数限制
+
+        1. 客户端：PC端口数量有限（65536个）、线程切换开销大。
+        2. 服务端：服务器的负载、并发接收限制。
+    3. 动静分离，静态资源方便做CDN
+
+        将网站静态资源（HTML、JS、CSS、图片、字体等）与后台应用（API）分开部署。
+
+        1. 缺点：
+
+            1. 需要处理[跨域请求](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#跨域请求)。
+            2. 不利于SEO。
+            3. 开发量大。
+        2. 优点
+
+            1. cookie free和HTTP并发限制的需要。
+            2. API更加便利、易维护。
+            3. 前后端分离开发。
+            4. 减轻API服务端压力。
