@@ -96,7 +96,7 @@
 
         >服务端对HTTP请求的优化。
 
-        1. 服务器开启g-zip。
+        1. 服务器开启gzip。
         2. 使用CDN。
         3. 对资源进行缓存：请求头添加Expires、Etags等。
         4. 减少DNS查找，设置合适的TTL值，避免重定向。
@@ -381,3 +381,61 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
             2. API更加便利、易维护。
             3. 前后端分离开发。
             4. 减轻API服务端压力。
+2. 安全漏洞攻击
+
+    1. XSS
+
+        跨站脚本（Cross-site scripting，XSS）是恶意代码注入网页的安全漏洞攻击。利用用户对指定网站的信任。
+
+        1. 攻击方式
+
+            >所有可输入的地方，若没有对输入数据进行处理的话，则都存在XSS漏洞。
+
+            - 通过巧妙的方法注入恶意指令代码（HTML、JS或Java，VBScript，ActiveX，Flash）到网页内容，使用户加载并执行恶意程序。
+
+                攻击成功后，能够：盗取用户Cookie、破坏页面结构、重定向到其它地址等。
+        2. 防御措施：
+
+            1. 过滤用户输入（白名单）。
+            2. HTTPOnly
+
+                Cookie设置为HTTPOnly不能在客户端使用~~document.cookie~~访问。
+            3. 过滤技术：浏览器的XSS Auditor、W3的Content-Security-Policy。
+            >flash的安全沙盒机制配置跨域传输：crossdomian.xml
+    2. CSRF
+
+        跨站请求伪造（Cross-site request forgery，CSRF）是挟制用户在已登录的网页上执行非本意操作的安全漏洞攻击。利用网站对用户网页浏览器的信任。
+
+        1. 攻击方式
+
+            - 当用户已经得到目标网站的认可后，对目标网站进行请求操作。
+
+                攻击成功后，能够：进行所有目标网站的请求操作。
+        2. 防御措施
+
+            1. 检查HTTP请求的Referer字段
+
+                Referer：标明请求来源地址。
+            2. 添加校验token
+
+                操作请求需要提供额外的**不保存在浏览器上、保存在表单中**的随机校验码。可以放进请求参数、或自定义HTTP请求头。
+            3. 请求操作要求输入实时生成的验证码。
+    3. Hash Collision DoS
+
+        >参考[HASH COLLISION DOS 问题](http://coolshell.cn/articles/6424.html)。
+
+        Hash碰撞的拒绝式服务攻击（Hash Collision DoS）是对服务器进行恶意负载的安全漏洞攻击。
+
+        1. 攻击方式
+
+            >1. Hash：把任意长度的输入，通过散列算法，输出固定长度的散列值。
+            >2. Hash Collision DoS：利用各语言Hash算法的“非随机性”，制造出无数value不同、key相同的数据，让Hash表成为一张单向链表，而导致整个网站的运行性能下降。
+
+            - 找到hash算法漏洞，不断提交服务器请求导致无数hash碰撞，进而形成单向链表。
+
+                攻击成功后，能够：hash堆积、查询缓慢、服务器CPU高负荷、服务器内存溢出。
+        2. 防御措施
+
+            1. 升级hash算法。
+            2. 限制POST参数个数和请求长度。
+            3. 防火墙检测异常请求。

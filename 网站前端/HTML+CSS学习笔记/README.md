@@ -88,7 +88,7 @@
 3. [类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#选择器类型)
 
 ### 层叠上下文（stacking context）
->参考：[张鑫旭：深入理解CSS中的层叠上下文和层叠顺序](http://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)。
+>参考[张鑫旭：深入理解CSS中的层叠上下文和层叠顺序](http://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)。
 
 1. 满足以下任意条件则形成层叠上下文：
 
@@ -680,7 +680,7 @@
 }
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/fd4qon26/)
->参考：[Buttons](https://github.com/alexwolfe/Buttons)。
+>参考[Buttons](https://github.com/alexwolfe/Buttons)。
 
 ### 滚动条
 1. 若`overflow-x`和`overflow-y`相同，则等同于`overflow`；若不同，且其中一个值为`visible`，另一个为`hidden/scroll/auto`，则`visible`重置为`auto`。
@@ -694,6 +694,8 @@
 4. 滚动条会占用容器的可用高度或宽度。
 
 ### 滚动条样式
+>参考[CSS自定义浏览器滚动条样式](http://alfred-sun.github.io/blog/2014/12/24/scrollbar-customized-with-css-style/)。
+
 1. `WebKit`：
 
     1. `::-webkit-scrollbar`：滚动条整体部分，可以设置`宽度`。
@@ -730,8 +732,6 @@
     6. `scrollbar-darkshadow-color: 颜色;`：立体滚动条外阴影的颜色。
     7. `scrollbar-track-color: 颜色;`：立体滚动条背景颜色。
     8. `scrollbar-base-color: 颜色;`：滚动条的基色。
-
->参考：[CSS自定义浏览器滚动条样式](http://alfred-sun.github.io/blog/2014/12/24/scrollbar-customized-with-css-style/)。
 
 ----
 ## HTML + CSS
@@ -1370,145 +1370,147 @@
 ```
 >无法出现`...`效果。
 
-### 实现hover去除左右间隔效果
-图片法：hover之后本身的背景被替换，前一个兄弟的背景被覆盖
+### 实现hover之后具体效果
+1. 去除左右间隔效果
 
-```scss
-ul {
-    overflow: hidden;
-
-    li {
-        @include left;
-        margin-left: -1px;
-
-        a {
-            background: url(宽度根据li的margin-left、高度根据a的高度决定的border样式图片) 100% center no-repeat;
-            display: block;
-
-            &:hover {
-                background: 背景色;
-            }
-        }
-    }
-}
-```
->可以用`box-shadow`设置单边的间隔。
-
-### 实现hover之后底部border替换父级border
-1. 用`relative`控制
+    图片法：hover之后本身的背景被替换，前一个兄弟的背景被覆盖
 
     ```scss
     ul {
-        height: 高度1;
-        border-bottom: 高度2 solid 颜色1;
-        *zoom: 1;
-        /* 不能overflow: hidden;*/
+        overflow: hidden;
 
-        &:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
         li {
-            width:;
-
-            height: 高度1;
-            float: left;
-            _display: inline;
-        }
-        a {
-            display: block;
-            height: （高度1+高度2）;
-            _position: relative;
-            _bottom: -高度2;
-            /* 不能有background*/
-
-            &.hover,
-            &:hover {
-                height: （高度1+高度2-高度3）;
-                border-bottom: 高度3 solid 颜色2;
-            }
-        }
-    }
-    ```
-2. 用`absolute`控制
-
-    ```scss
-    ul {
-        height: 高度1;
-        border-bottom: 高度2 solid 颜色1;
-        *zoom: 1;
-        /* 能够overflow: hidden;*/
-
-        &:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-        li {
-            width: 宽度;
-
-            height: 高度1;
-            float: left;
-            _display: inline;
+            @include left;
+            margin-left: -1px;
 
             a {
-                width: 宽度;
+                background: url(宽度根据li的margin-left、高度根据a的高度决定的border样式图片) 100% center no-repeat;
+                display: block;
 
-                position: absolute;
-                height: 高度1;
-                /* 可以使用background*/
-
-                &.hover,
                 &:hover {
-                    height: （高度1+高度2-高度3）;
-                    border-bottom: 高度3 solid 颜色2;
+                    background: 背景色;
                 }
             }
         }
     }
     ```
-3. 用`margin`控制
+    >可以用`box-shadow`设置单边的间隔。
+2. 底部border替换父级border
 
-    ```scss
-    ul {
-        height: 高度1;
-        border-bottom: 高度2 solid 颜色1;
-        *zoom: 1;
-        /* 不能overflow: hidden;*/
+    1. 用`relative`控制
 
-        &:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-        li {
-            width:;
+        ```scss
+        ul {
+            height: 高度1;
+            border-bottom: 高度2 solid 颜色1;
+            *zoom: 1;
+            /* 不能overflow: hidden;*/
 
-            height: （高度1+高度2）;
-            float: left;
-            _display: inline;
+            &:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+            li {
+                width:;
 
+                height: 高度1;
+                float: left;
+                _display: inline;
+            }
             a {
                 display: block;
                 height: （高度1+高度2）;
-                margin-bottom: -高度2;
                 _position: relative;
+                _bottom: -高度2;
                 /* 不能有background*/
 
                 &.hover,
                 &:hover {
                     height: （高度1+高度2-高度3）;
-                    _height: （高度1+高度2）;
                     border-bottom: 高度3 solid 颜色2;
                 }
             }
         }
+        ```
+    2. 用`absolute`控制
 
-    }
-    ```
-    
-[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/3tw4mx7v/)
+        ```scss
+        ul {
+            height: 高度1;
+            border-bottom: 高度2 solid 颜色1;
+            *zoom: 1;
+            /* 能够overflow: hidden;*/
+
+            &:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+            li {
+                width: 宽度;
+
+                height: 高度1;
+                float: left;
+                _display: inline;
+
+                a {
+                    width: 宽度;
+
+                    position: absolute;
+                    height: 高度1;
+                    /* 可以使用background*/
+
+                    &.hover,
+                    &:hover {
+                        height: （高度1+高度2-高度3）;
+                        border-bottom: 高度3 solid 颜色2;
+                    }
+                }
+            }
+        }
+        ```
+    3. 用`margin`控制
+
+        ```scss
+        ul {
+            height: 高度1;
+            border-bottom: 高度2 solid 颜色1;
+            *zoom: 1;
+            /* 不能overflow: hidden;*/
+
+            &:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+            li {
+                width:;
+
+                height: （高度1+高度2）;
+                float: left;
+                _display: inline;
+
+                a {
+                    display: block;
+                    height: （高度1+高度2）;
+                    margin-bottom: -高度2;
+                    _position: relative;
+                    /* 不能有background*/
+
+                    &.hover,
+                    &:hover {
+                        height: （高度1+高度2-高度3）;
+                        _height: （高度1+高度2）;
+                        border-bottom: 高度3 solid 颜色2;
+                    }
+                }
+            }
+
+        }
+        ```
+
+    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/3tw4mx7v/)
 
 ### 页面高度不够时，footer依然置于页面最底部
 1. 兼容大部分情况
@@ -1810,6 +1812,28 @@ ul {
 ----
 ## 经验总结
 
+### Tips
+1. a标签的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（包括`#`和`javascript: void(0);`）都会打开新页面。
+2. `absolute`元素用`top: 0; bottom: 0; left: 0; right: 0; _height: 100%; _width: 100%;`可以拉伸至父容器的高宽。
+3. 没有设置宽度的`float`元素，其宽度等于子节点宽度：主流浏览器等于最外层子节点宽度，ie6等于所有子节点中最大的宽度。
+4. `inline`或`inline-block`节点标签前可能导致其父级的宽度变大（其实是内联标签前面会有间隙，若拥有`font-size`之后便会有高度撑开），通过以下办法解决：
+
+    1. 把`inline`节点设置为`block`。
+    2. 给父级节点设置`font-size: 0;`（可用此方法排查是否是空格造成的）。
+5. 页面是按照顺序加载资源，当且仅当有使用需求时才会去加载外部资源。
+
+    已加载完成的CSS文件内有多个url请求（background），但仅在页面节点要引用某个url请求时（无论节点是否隐藏），才会去请求这个资源，而不是在加载CSS文件时就加载外部资源。
+6. 使用动态DOM加载，代替内容的`display: none;`（有渲染）：
+
+    1. `<script type="text/template"></script>`
+    2. `<template></template>`
+    3. `<textarea style="display:none;"></textarea>`
+7. wap页面或支持伪类的浏览器，能用`:before/after`的就不要添加标签。
+8. 单选、多选按钮开关自定义样式
+
+    用`input:checked + 兄弟节点`（`<input type="radio">`或`<input type="checkbox">`）操作选项选中与否的不同样式；可以隐藏`input`元素，用自定义样式来制作单选框、复选框。完全代替JS。
+9. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
+
 ### [`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex)优雅解决布局、自适应问题
 1. 不使用flex导致不方便处理的问题：
 
@@ -2094,7 +2118,7 @@ ul {
     
         同一批内容的不同样式（比如仅背景不同的几个按钮），可以用`.i-1`、`.i-2`区分样式。
         >如果在模块上，可以使用**选择器扩展**而不加前缀`.i-`，比如`.m-xxx`扩展内容`.m-xxx-1`、`.m-xxx .btn`扩展内容`.m-xxx .btn-1`。
-    6. JS功能`.j-`（javascript）
+    6. JS功能`.j-`（JS）
     
         仅作为JS锚点使用，不添加任何CSS样式。
         
@@ -2133,24 +2157,13 @@ ul {
 12. 使Ajax可缓存（服务端的CDN缓存，可用jQuery的$.Ajax的cash属性设置为false，或url加时间戳，来避免缓存）。
 13. 避免使用不可缓存且是外部HTTP请求的iFrame。
 
-### Tips
-1. a标签的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（包括`#`和`javascript: void(0);`）都会打开新页面。
-2. `absolute`元素用`top: 0; bottom: 0; left: 0; right: 0; _height: 100%; _width: 100%;`可以拉伸至父容器的高宽。
-3. 没有设置宽度的`float`元素，其宽度等于子节点宽度：主流浏览器等于最外层子节点宽度，ie6等于所有子节点中最大的宽度。
-4. `inline`或`inline-block`节点标签前可能导致其父级的宽度变大（其实是内联标签前面会有间隙，若拥有`font-size`之后便会有高度撑开），通过以下办法解决：
+### 性能优化总结
+>来自[张云龙：前端工程与性能优化](https://github.com/fouber/blog/issues/3)。
 
-    1. 把`inline`节点设置为`block`。
-    2. 给父级节点设置`font-size: 0;`（可用此方法排查是否是空格造成的）。
-5. 页面是按照顺序加载资源，当且仅当有使用需求时才会去加载外部资源。
-
-    已加载完成的CSS文件内有多个url请求（background），但仅在页面节点要引用某个url请求时（无论节点是否隐藏），才会去请求这个资源，而不是在加载CSS文件时就加载外部资源。
-6. 使用动态DOM加载，代替内容的`display: none;`（有渲染）：
-
-    1. `<script type="text/template"></script>`
-    2. `<template></template>`
-    3. `<textarea style="display:none;"></textarea>`
-7. wap页面或支持伪类的浏览器，能用`:before/after`的就不要添加标签。
-8. 单选、多选按钮开关自定义样式
-
-    用`input:checked + 兄弟节点`（`<input type="radio">`或`<input type="checkbox">`）操作选项选中与否的不同样式；可以隐藏`input`元素，用自定义样式来制作单选框、复选框。完全代替JS。
-9. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
+| 优化方向 | 优化手段 |
+| :--- | :--- |
+| 请求数量 | 合并脚本和样式表，CSS Sprites，拆分初始化负载，划分主域 |
+| 请求带宽 | 开启gzip，精简JS，移除重复脚本，图像优化 |
+| 缓存利用 | 使用CDN，使用外部JS和CSS，添加Expires头，减少DNS查找，配置ETag，使AJAX可缓存 |
+| 页面结构 | 将样式表放在顶部，将脚本放在底部，尽早刷新文档的输出 |
+| 代码校验 | 避免CSS表达式，避免重定向 |

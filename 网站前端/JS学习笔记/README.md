@@ -165,7 +165,7 @@
         以上`&&`结合。
 
 ### 滚动定位
-> 也可以给底部（或顶部）放置一个标记节点，当**这个节点的顶部在容器底部以上（或这个节点的底部在容器顶部以下）**时为滚动到底部（或顶部）。
+>也可以给底部（或顶部）放置一个标记节点，当这个节点的顶部在容器底部以上（或这个节点的底部在容器顶部以下）时为滚动到底部（或顶部）。
 
 1. DOM节点
 
@@ -187,6 +187,61 @@
     2. 滚动到顶部：
 
         `文档滚动高度 === 0`
+
+### 数据创建方式
+1. 对象
+
+    ```javascript
+    //对象字面量
+    var obj1 = {a: 'b'};
+
+    //构造函数实例化。对象包装器：如果参数是null或undefined，将会创建并返回一个空对象；否则，将返回一个与给定值对应类型的对象。
+    var obj2 = new Object();            //{}
+    var obj3 = new Object(1);           //等价于 new Number(1)
+    var obj4 = new Object(true);        //等价于 new Boolean(true)
+    var obj5 = new Object('str');       //等价于 new String('str')
+    var obj6 = new Object({a: 'b'});    //{a: 'b'}
+
+    //普通函数（与new的方式结果一致）
+    var obj7 = Object();
+    ```
+2. 数组
+
+    ```javascript
+    //数组字面量
+    var arr1 = [2, 3];          //[2, 3]
+
+    //构造函数实例化
+    var arr2 = new Array();     //[]
+    var arr3 = new Array(2);    //[undefined, undefined]
+    var arr4 = new Array(2, 3); //[2, 3]
+
+    //普通函数（与new的方式结果一致）
+    var arr5 = Array();         //[]
+    var arr6 = Array(2);        //[undefined, undefined]
+    var arr7 = Array(2, 3);     //[2, 3]
+    ```
+3. 字符串
+
+    ```javascript
+    //字符串字面量
+    var str1 = 'string';
+
+    //普通函数
+    var str2 = String('string');
+
+    //构造函数实例化
+    var str3 = new String('string');
+
+
+    console.log(typeof str1, str1 instanceof String);   //string false
+    console.log(typeof str2, str2 instanceof String);   //string false
+    console.log(typeof str3, str3 instanceof String);   //object true
+
+    console.log(str1 === str2, str2 === str3);          //true false
+    ```
+
+- 其他数据类型，也有字面量方式和构造函数（或普通函数）方式。
 
 ### JS代码风格规范（coding style guide）
 1. 声明
@@ -307,7 +362,7 @@
         ```
     6. 对象的属性、方法，与变量、方法命名规则相同。
     7. 若属性、变量、方法在表示其是私有的，可在开头加一个下划线`_`作为区分。
-6. 使用字面量代替构造函数（普通函数）
+6. 使用字面量代替构造函数（普通函数）的[数据创建方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#数据创建方式)
 
     >好处：
     >1. 代码更少。
@@ -384,7 +439,9 @@
             return result;
         }
         ```
-8. [JS编程风格总结](http://www.ruanyifeng.com/blog/2012/04/javascript_programming_style.html)（programming style）
+8. JS编程风格总结（programming style）
+
+    >参考[阮一峰：JavaScript 编程风格](http://javascript.ruanyifeng.com/grammar/style.html)。
 
     1. 表示区块起首的大括号，不要另起一行。
     2. 调用函数的时候，函数名与左括号之间没有空格。
@@ -399,8 +456,8 @@
     11. 避免使用全局变量；*如果不得不使用，用大写字母表示变量名。*
     12. 不要使用`new`命令，改用`Object.create()`命令。
     13. 建构函数的函数名，采用首字母大写；其他函数名，一律首字母小写。
-    14. 不要使用自增（`++`）和自减（`--`）运算符，用`+=`和`-=`代替。
-    15. 总是使用大括号表示区块。
+    14. 不要使用自增（`++`）和自减（`--`）运算符，用`+= 1`和`-= 1`代替。
+    15. 总是使用大括号表示区块（不省略大括号）。
 9. JS编码规范
 
     绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/javascript.md#javascript编码规范)。
@@ -768,61 +825,6 @@
 
     1. 浅复制：`arr = arr.slice();`或`arr = arr.concat();`或一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)。
     2. 深复制：[代码实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)。
-
-### 数据创建方式
-1. 对象
-
-    ```javascript
-    //对象字面量
-    var obj1 = {a: 'b'};
-
-    //构造函数实例化。对象包装器：如果参数是null或undefined，将会创建并返回一个空对象；否则，将返回一个与给定值对应类型的对象。
-    var obj2 = new Object();            //{}
-    var obj3 = new Object(1);           //等价于 new Number(1)
-    var obj4 = new Object(true);        //等价于 new Boolean(true)
-    var obj5 = new Object('str');       //等价于 new String('str')
-    var obj6 = new Object({a: 'b'});    //{a: 'b'}
-
-    //普通函数（与new的方式结果一致）
-    var obj7 = Object();
-    ```
-2. 数组
-
-    ```javascript
-    //数组字面量
-    var arr1 = [2, 3];          //[2, 3]
-
-    //构造函数实例化
-    var arr2 = new Array();     //[]
-    var arr3 = new Array(2);    //[undefined, undefined]
-    var arr4 = new Array(2, 3); //[2, 3]
-
-    //普通函数（与new的方式结果一致）
-    var arr5 = Array();         //[]
-    var arr6 = Array(2);        //[undefined, undefined]
-    var arr7 = Array(2, 3);     //[2, 3]
-    ```
-3. 字符串
-
-    ```javascript
-    //字符串字面量
-    var str1 = 'string';
-
-    //普通函数
-    var str2 = String('string');
-
-    //构造函数实例化
-    var str3 = new String('string');
-
-
-    console.log(typeof str1, str1 instanceof String);   //string false
-    console.log(typeof str2, str2 instanceof String);   //string false
-    console.log(typeof str3, str3 instanceof String);   //object true
-
-    console.log(str1 === str2, str2 === str3);          //true false
-    ```
-
-- 其他数据类型，也有字面量方式和构造函数（或普通函数）方式。
 
 ### JS与jQuery的事件绑定
 >1. 以点击事件`click`为例。
@@ -1197,7 +1199,7 @@
     2. 字符串形式。不能包含任何**逗号**、**分号**或**空格**（可使用`encodeURIComponent`编码，再用`decodeURIComponent`解码）。
     3. 所有浏览器都支持。
     4. 单域名下，cookie保存的数据不超过4k，数量（最少）20个。
-    5. 源生的cookie接口不友好，需要程序员自己封装[操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js操作cookie)。
+    5. 源生的cookie接口不友好，需要程序员[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js操作cookie)。
     6. 同源且同路径共享。
     7. 默认（存储在内存）关闭浏览器后失效，设置失效时间（存储在硬盘）则到期后失效。
     8. 应用场景：服务端确定两次请求是否来自于同一个客户端，从而能够确认和保持用户的登录状态（无状态的HTTP协议上记录稳定的状态信息）。
@@ -1216,13 +1218,12 @@
 
 1. 写法：
 
-    1. `(function () {/* code*/}());`（推荐方式）
-    2. `(function () {/* code*/})();`
-
     >1. `function`关键字当作一个**函数声明**的开始，函数声明的后面不能跟圆括号；
     >2. 将函数声明包含在圆括号中，表示**函数表达式**，函数表达式的后面可以跟圆括号，表示执行此函数。
 
-    - 其他写法（不推荐方式）
+    1. `(function () {/* code*/}());`（推荐方式）
+    2. `(function () {/* code*/})();`
+    3. 其他写法（不推荐方式）
 
         ```javascript
         (function () {}());
@@ -1275,7 +1276,7 @@
     ```
 
 ### 拼接字符串
-长字符串拼接使用`Array.prototype.join()`，而不使用`+`
+长字符串拼接使用`Array.prototype.join()`，而不使用`+`。
 
 1. `.join()`性能好，推荐方式：
 
@@ -1724,7 +1725,7 @@
         3. 子元素 refB 由于 parentNode 的间接引用，只要它不被删除，它所有的父元素（图中红色部分）都不会被删除。
 
 ### 数据类型转换
->参考：[阮一峰：数据类型转换](http://javascript.ruanyifeng.com/grammar/conversion.html)。
+>参考[阮一峰：数据类型转换](http://javascript.ruanyifeng.com/grammar/conversion.html)。
 
 1. 强制转换
 
@@ -1876,6 +1877,7 @@
 
 ### 事件循环（event loop）
 >参考[阮一峰：再谈Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)、[彻底理解同步、异步和事件循环(Event Loop)](https://segmentfault.com/a/1190000004322358)。
+
 1. JS的主线程是单线程
 
     1. 原因：
@@ -1934,6 +1936,7 @@
 
 ### 数组的空位（hole）
 >来自[阮一峰：数组的空位](http://javascript.ruanyifeng.com/grammar/array.html#toc6)、[阮一峰：数组的空位（ES6）](http://es6.ruanyifeng.com/#docs/array#数组的空位)。
+
 1. 数组的空位：数组的某一个位置没有任何值
 
     1. 空位是可以读取的，返回`undefined`。
