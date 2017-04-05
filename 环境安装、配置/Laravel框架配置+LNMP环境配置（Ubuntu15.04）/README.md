@@ -203,12 +203,12 @@
 	在配置文件中，加入：
 
 	```text
-	gzip on;//开启Gzip
+	gzip on;//开启gzip
 	gzip_min_length 1k;//不压缩临界值
 	gzip_buffers 4 16k;//缓存
 	gzip_comp_level 2;//压缩级别1~10
 	gzip_types text/html application/x-javascript text/css application/xml  text/javascript;//压缩文件类型
-	gzip_disable "MSIE [1-6]\.";//ie对Gzip不友好支持，禁止对ie压缩
+	gzip_disable "MSIE [1-6]\.";//ie对gzip不友好支持，禁止对ie压缩
 	```
 10. 安装软件
 
