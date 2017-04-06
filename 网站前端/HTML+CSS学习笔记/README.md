@@ -85,6 +85,7 @@
         7. 通配符选择器（`*`）
         8. 属性选择器
         9. 伪类选择器、伪元素选择器
+    3. 避免使用 ~~@import~~，只用`<link>`标签；避免使用~~CSS表达式（CSS expression）~~。
 3. [类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#选择器类型)
 
 ### 层叠上下文（stacking context）
@@ -1643,7 +1644,7 @@
 
 ### 横竖屏切换
 >1. 翻转效果的节点，如果要增加内嵌滚动条，不能在此节点上增加`border-radius`，否者滚动条横竖轴颠倒。
->2. 部分Android系统（或低端机）对内嵌的滚动条（`overflow: hidden/auto`）支持不佳，尤其增加了翻转效果后，设置的滚动条（甚至`overflow: hidden;`）会导致更多样式问题。除了去除内嵌滚动条的`border-radius`，还可以尝试给兄弟节点设置`z-index`。部分性能较差的webview对CSS3支持非常有限，无法做到**翻转+内嵌滚动条**（内嵌滚动条横竖轴颠倒）。
+>2. 部分Android系统（或低端机）对内嵌的滚动条（`overflow: hidden/auto`）支持不佳，尤其增加了翻转效果后，设置的滚动条（甚至`overflow: hidden;`）会导致更多样式问题。除了去除内嵌滚动条的`border-radius`，还可以尝试给兄弟节点设置`z-index`。部分硬件较差的webview对CSS3支持非常有限，无法做到**翻转+内嵌滚动条**（内嵌滚动条横竖轴颠倒）。
 >
 >- 其他解决方案：使用按钮（控制翻页或JS滚动）代替内嵌滚动条；使用`touchmove`实现滑动页面。
 
@@ -1833,6 +1834,10 @@
 
     用`input:checked + 兄弟节点`（`<input type="radio">`或`<input type="checkbox">`）操作选项选中与否的不同样式；可以隐藏`input`元素，用自定义样式来制作单选框、复选框。完全代替JS。
 9. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
+10. 避免
+
+    1. 避免~~放大、缩小图片~~，使用原始大小展现。
+    2. 避免使用不可缓存且增加额外HTTP请求的~~iframe~~标签。
 
 ### [`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex)优雅解决布局、自适应问题
 1. 不使用flex导致不方便处理的问题：
@@ -1954,19 +1959,19 @@
     不要把超出内容区域的绝对定位设置在`body`直接子级，而是设置在`body`下拥有`overflow: hidden;width: 100%;/* 默认*/`的父级下。
 2. ~~用大背景模式~~
 
-### 动画性能
->1. 为了视觉上连贯，浏览器对每一帧画面的渲染工作需要在16毫秒（1秒 / 60 = 16.66毫秒）之内完成。
->2. 实际上，在渲染某一帧画面的同时，浏览器还有一些流程工作要做（比如渲染队列的管理、渲染线程与其他线程之间的切换等）。
+### 渲染性能（rendering performance）
+>1. 为了视觉上连贯，浏览器对每一帧画面的渲染工作需要在16毫秒（1秒 / 60 ~= 16.66毫秒）之内完成。
+>2. 在渲染某一帧画面同时，浏览器还有一些流程工作要做（比如渲染队列的管理、渲染线程与其他线程之间的切换等）。
 >3. 因此一次渲染增加的前端代码工作，需要控制在10毫秒之内完成（保证渲染工作+前端任务在16毫秒内完成），才能达到流畅的视觉效果，否则页面的渲染就会出现卡顿（帧率下降，一帧时间延长）。
 
-1. CSS3动画性能最好、消耗最低的属性（只触发composite）：
+1. 动画性能最好、消耗最低的属性（只触发composite）：
 
     1. 位置：`transform: translate(xpx, ypx);`
     2. 缩放：`transform: scale(x, y);`
     3. 旋转：`transform: rotate(xdeg);`
     4. 倾斜：`transform: skew(xdeg,ydeg);`
     5. 透明：`opacity: x;`
-2. 像素渲染流水线：
+2. 像素渲染管道：
 
     `JS/CSS` -> `Style（计算样式）` >> `Layout（布局）` -> `Paint（绘制）` -> `Composite（渲染层合并）`
 
@@ -2038,7 +2043,9 @@
 
     >1. reflow的成本比repaint的成本高得多。因为一个结点的reflow很有可能导致子结点、甚至父点以及同级结点的reflow，并且产生reflow一般也要进行repaint。
     >2. 那些容易忽略的**能引起布局改变的样式修改**，它们可能不产生动画，但当浏览器需要重新进行样式的计算和布局时，会产生reflow和repaint，这将产生高昂的性能代价并引起跳帧。
-6. [优化渲染性能](https://developers.google.com/web/fundamentals/performance/rendering/)：
+6. 优化渲染性能：
+
+    >参考[渲染性能](https://developers.google.com/web/fundamentals/performance/rendering/)。
 
     1. 优化JS的执行效率
 
@@ -2084,7 +2091,7 @@
     3. 低性能设备（Android）优先调试。
 
         1. 除了**CSS3翻转属性**与**内嵌滚动条**同时出现无法解决，其他样式问题都可以像处理ie6问题一样通过真机试验出解决方案。
-        2. 有些低版本机型会有类似ie6的CSS问题，包括**CSS3的厂商前缀（`-webkit-`等）**、**层叠关系（`z-index`）**，并且要更注意**动画性能（层产生）**。
+        2. 有些低版本机型会有类似ie6的CSS问题，包括**CSS3的厂商前缀（`-webkit-`等）**、**层叠关系（`z-index`）**，并且要更注意**渲染性能（层产生）**。
 
 ### 经验技巧
 1. 命名间隔
@@ -2141,29 +2148,3 @@
     绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/css.md#css编码规范)。
 
     >可以设置为IDE的**Reformat Code**的排版样式。
-
-### 《高性能网站建设指南》自我总结
-1. 减少HTTP请求，图片以及外链资源的优化，包括压缩与整合，服务器开启g-zip等（不要压缩图片与PDF，因为它们本身已经被压缩，再压缩可能会增加文件大小；压缩都耗费CPU）。
-2. 图片的处理，包括压缩、大banner切分成多个小图、[小图合并成雪碧图](https://realgeoffrey.github.io/applets/sprites/index.html)、[图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)、Base64、WebP。
-3. 不要缩小放大图片（使用原始大小展现）。
-4. 使用CDN（Content Delivery Network，内容发布网络）。
-5. 添加Expires报头（设置网页在浏览器中缓存过期时间）；配置ETags报头（用来验证浏览器缓存和原服务器上内容是否一致）。
-6. 浏览器为了避免当样式变化时重绘页面中的元素，会阻塞页面内容的逐步呈现，样式表之前的内容和JS脚本之后的内容都会因为这些文件的下载而阻塞呈现。
-7. 不要使用`@import`，只用`<link>`标签。
-8. 避免~~CSS表达式（CSS expression）~~。
-9. 虽然内联CSS和JS比外部文件快，但只有外部的才可能被浏览器缓存。
-10. 减少DNS查找，设置合适的TTL值。
-11. 避免重定向（`http://a.com/folder`会重定向到`http://a.com/folder/`，但根目录`http://a.com`不会发生重定向）。
-12. 使Ajax可缓存（服务端的CDN缓存，可用jQuery的$.Ajax的cash属性设置为false，或url加时间戳，来避免缓存）。
-13. 避免使用不可缓存且是外部HTTP请求的iFrame。
-
-### 性能优化总结
->来自[张云龙：前端工程与性能优化](https://github.com/fouber/blog/issues/3)。
-
-| 优化方向 | 优化手段 |
-| :--- | :--- |
-| 请求数量 | 合并脚本和样式表，CSS Sprites，拆分初始化负载，划分主域 |
-| 请求带宽 | 开启gzip，精简JS，移除重复脚本，图像优化 |
-| 缓存利用 | 使用CDN，使用外部JS和CSS，添加Expires头，减少DNS查找，配置ETag，使AJAX可缓存 |
-| 页面结构 | 将样式表放在顶部，将脚本放在底部，尽早刷新文档的输出 |
-| 代码校验 | 避免CSS表达式，避免重定向 |
