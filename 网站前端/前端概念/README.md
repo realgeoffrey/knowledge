@@ -65,98 +65,10 @@
     2. 缓存相关的浏览器缓存利用，缓存更新、缓存共享、非覆盖式发布等方案；
     3. 复杂的BigRender、BigPipe、Quickling、PageCache等技术。
 
-### 页面载入解析步骤
->参考[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)。
-
-1. 页面载入解析步骤
-
-    ![页面解析步骤图](./images/load-html-1.png)
-
-    1. 增量式生成一个文档对象模型（DOM），解析页面内容（HTML标签）。
-    2. 加载DOM中所有CSS，生成一个CSS对象模型（CSSOM），描述对页面内容如何设置样式。
-
-        - 加载CSS和构造完整的CSSOM之前，**阻塞渲染**（Render Tree渲染被暂停）。
-    3. 加载DOM中所有JS，对DOM和CSSOM进行访问和更改。
-
-        1. HTML中出现JS，**阻塞解析**（DOM构造被暂停）。
-        2. 下载脚本或内嵌脚本不用下载。
-        3. 等待所有CSS被提取并且CSSOM被构造完毕。
-        4. CSSOM被构造完毕后，执行脚本，访问和更改DOM和CSSOM。
-        5. DOM构造继续进行。
-    4. DOM和CSSOM构造完成后，进行渲染流水线：
-
-        Render Tree（渲染树） >> Layout（布局）-> Paint（绘制） -> Composite（渲染层合并）。
-
-        >一定要等待外链资源加载完毕（包括加载失败）才可以继续构建DOM或CSSOM。
-
-    >无论阻塞渲染还是阻塞解析，资源文件会不间断按顺序加载。
-2. 从输入URL到页面完成的优化
-
-    1. 输入URL：
-
-        >服务端对HTTP请求的优化。
-
-        1. 服务器开启gzip。
-        2. 使用CDN。
-        3. 对资源进行缓存：请求头添加Expires、Etags等。
-        4. 减少DNS查找，设置合适的TTL值，避免重定向。
-    2. 载入页面：
-
-        >前端对CRP（Critical Rendering Path，关键呈现路径，优先显示与当前用户操作有关的内容）、代码性能的优化。
-
-        1. 优化CRP：
-
-            1. 减少关键资源
-
-                首屏资源合并，非首屏资源异步加载。
-            2. 最小化字节
-
-                压缩，雪碧图等。
-
-                >单个大文件需要多次与服务器往返来获取。
-            3. 缩短CRP长度
-
-                CSS放在HTML顶部，JS放在HTML底部。
-        2. 技术上优化：
-
-            1. 单页应用程序。
-            2. 首屏直接加载资源，非首屏延迟加载。
-
-                1. 图片延迟加载。
-                2. 内容ajax加载。
-                3. 功能文件按需加载。
-            3. CSS选择器优化。
-            4. HTML标签减少层级嵌套。
-            5. JS代码性能优化。
-
 ### HTTP协议
 HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-server协议，处于整个网络传输的最上层的应用层（网络传输的其他层次：传输层、网络层、链路层）。默认端口号80、无状态（cookie弥补）、以ASCII码传输。
 
-1. HTTP报文组成
-
-    1. request：
-
-        ```http
-        <method> <request-URL> <version>                //请求行
-        <headers>                                       //请求头
-
-        <entity-body>                                   //请求消息主体
-        ```
-
-        >[请求方法](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http请求方法http-request-methods)。
-    2. response：
-
-        ```http
-        <version> <status code> <status description>    //状态行
-        <headers>                                       //响应头
-
-        <entity-body>                                   //响应正文
-        ```
-
-        >[状态码、状态描述](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http状态码http-status-codes)。
-
-    >[HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http头http-headers)。
-2. HTTP流程（精简版）：
+1. HTTP流程（精简版）：
 
     1. 获取域名的IP地址
 
@@ -190,6 +102,8 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
                 浏览器和服务器每进行一次HTTP操作，就建立一次连接，任务结束后就中断连接。
             2. 长连接：
 
+                >HTTP请求头包含：`Connection: Keep-Alive`。
+
                 客户端和服务器之间用于传输HTTP数据的TCP连接短期不会关闭，如果客户端再次访问这个服务器上的网页，会继续使用这一条已经建立的连接。
     3. 浏览器发送请求，服务器发送数据
 
@@ -201,6 +115,54 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
     5. 展示
 
         根据拿到的资源对页面进行渲染，最终呈现完整的页面。
+2. HTTP报文组成
+
+    1. request：
+
+        ```http
+        <method> <request-URL> <version>                //请求行
+        <headers>                                       //请求头
+
+        <entity-body>                                   //请求消息主体
+        ```
+
+        >[请求方法](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http请求方法http-request-methods)。
+    2. response：
+
+        ```http
+        <version> <status code> <status description>    //状态行
+        <headers>                                       //响应头
+
+        <entity-body>                                   //响应正文
+        ```
+
+        >[状态码、状态描述](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http状态码http-status-codes)。
+
+    >[HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http头http-headers)。
+
+### 页面载入解析步骤
+>参考[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)。
+
+![页面解析步骤图](./images/load-html-1.png)
+
+1. 增量式生成一个文档对象模型（DOM），解析页面内容（HTML标签）。
+2. 加载DOM中所有CSS，生成一个CSS对象模型（CSSOM），描述对页面内容如何设置样式。
+
+    - 加载CSS和构造完整的CSSOM之前，**阻塞渲染**（Render Tree渲染被暂停）。
+3. 加载DOM中所有JS，对DOM和CSSOM进行访问和更改。
+
+    1. HTML中出现JS，**阻塞解析**（DOM构造被暂停）。
+    2. 下载脚本或内嵌脚本不用下载。
+    3. 等待所有CSS被提取并且CSSOM被构造完毕。
+    4. CSSOM被构造完毕后，执行脚本，访问和更改DOM和CSSOM。
+    5. DOM构造继续进行。
+4. DOM和CSSOM构造完成后，进行渲染流水线：
+
+    Render Tree（渲染树） >> Layout（布局）-> Paint（绘制） -> Composite（渲染层合并）。
+
+    >一定要等待外链资源加载完毕（包括加载失败）才可以继续构建DOM或CSSOM。
+
+>无论阻塞渲染还是阻塞解析，资源文件会不间断按顺序加载。
 
 ### 浏览器缓存
 >参考[浏览器缓存知识小结及应用](http://www.cnblogs.com/lyzg/p/5125934.html)。
@@ -308,7 +270,7 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
                 | 前进、后退 | 有效 | 有效 |
                 | 刷新 | **无效** | 有效 |
                 | 强制刷新 | **无效** | **无效** |
-2. 其他缓存机制（不建议）
+2. 其他缓存机制（不建议方式）
 
     1. HTML的`meta`标签设置缓存情况：
 
@@ -356,86 +318,155 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
 
 >前置分号策略：只要对行首字符进行token判断是否为：`[` `(` `+` `-` `/`五个符号之一，就在其前面增加分号。
 
-### 前端相关的细节
-1. 静态资源使用额外域名（domain hash）的原因
+### 静态资源使用额外域名（domain hash）的原因
+1. cookie free
 
-    1. cookie free
+    cookie是同源（且同路径），不同域名可以避免~~某些静态资源携带不必要的cookie而占用带宽~~。
+2. 浏览器对同一域名有HTTP并发数限制
 
-        cookie是同源（且同路径），不同域名可以避免~~某些静态资源携带不必要的cookie而占用带宽~~。
-    2. 浏览器对同一域名有HTTP并发数限制
+    1. 客户端：PC端口数量有限（65536个）、线程切换开销大。
+    2. 服务端：服务器的负载、并发接收限制。
+3. 动静分离，静态资源方便做CDN
 
-        1. 客户端：PC端口数量有限（65536个）、线程切换开销大。
-        2. 服务端：服务器的负载、并发接收限制。
-    3. 动静分离，静态资源方便做CDN
+    将网站静态资源（HTML、JS、CSS、图片、字体等）与后台应用（API）分开部署。
 
-        将网站静态资源（HTML、JS、CSS、图片、字体等）与后台应用（API）分开部署。
+    1. 缺点：
 
-        1. 缺点：
+        1. 需要处理[跨域请求](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#跨域请求)。
+        2. 不利于SEO。
+        3. 开发量大。
+    2. 优点
 
-            1. 需要处理[跨域请求](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#跨域请求)。
-            2. 不利于SEO。
-            3. 开发量大。
-        2. 优点
+        1. cookie free和HTTP并发限制的需要。
+        2. API更加便利、易维护。
+        3. 前后端分离开发。
+        4. 减轻API服务端压力。
 
-            1. cookie free和HTTP并发限制的需要。
-            2. API更加便利、易维护。
-            3. 前后端分离开发。
-            4. 减轻API服务端压力。
-2. 安全漏洞攻击
+### 安全漏洞攻击
+1. XSS
 
-    1. XSS
+    跨站脚本（Cross-site scripting，XSS）是恶意代码注入网页的安全漏洞攻击。利用用户对指定网站的信任。
 
-        跨站脚本（Cross-site scripting，XSS）是恶意代码注入网页的安全漏洞攻击。利用用户对指定网站的信任。
+    1. 攻击方式
 
-        1. 攻击方式
+        >所有可输入的地方，若没有对输入数据进行处理的话，则都存在XSS漏洞。
 
-            >所有可输入的地方，若没有对输入数据进行处理的话，则都存在XSS漏洞。
+        - 通过巧妙的方法注入恶意指令代码（HTML、JS或Java，VBScript，ActiveX，Flash）到网页内容，使用户加载并执行恶意程序。
 
-            - 通过巧妙的方法注入恶意指令代码（HTML、JS或Java，VBScript，ActiveX，Flash）到网页内容，使用户加载并执行恶意程序。
+            攻击成功后，能够：盗取用户Cookie、破坏页面结构、重定向到其它地址等。
+    2. 防御措施：
 
-                攻击成功后，能够：盗取用户Cookie、破坏页面结构、重定向到其它地址等。
-        2. 防御措施：
+        1. 过滤用户输入（白名单）。
+        2. HTTPOnly
 
-            1. 过滤用户输入（白名单）。
-            2. HTTPOnly
+            Cookie设置为HTTPOnly不能在客户端使用~~document.cookie~~访问。
+        3. 过滤技术：浏览器的XSS Auditor、W3的Content-Security-Policy。
+        >flash的安全沙盒机制配置跨域传输：crossdomian.xml
+2. CSRF
 
-                Cookie设置为HTTPOnly不能在客户端使用~~document.cookie~~访问。
-            3. 过滤技术：浏览器的XSS Auditor、W3的Content-Security-Policy。
-            >flash的安全沙盒机制配置跨域传输：crossdomian.xml
-    2. CSRF
+    跨站请求伪造（Cross-site request forgery，CSRF）是挟制用户在已登录的网页上执行非本意操作的安全漏洞攻击。利用网站对用户网页浏览器的信任。
 
-        跨站请求伪造（Cross-site request forgery，CSRF）是挟制用户在已登录的网页上执行非本意操作的安全漏洞攻击。利用网站对用户网页浏览器的信任。
+    1. 攻击方式
 
-        1. 攻击方式
+        - 当用户已经得到目标网站的认可后，对目标网站进行请求操作。
 
-            - 当用户已经得到目标网站的认可后，对目标网站进行请求操作。
+            攻击成功后，能够：进行所有目标网站的请求操作。
+    2. 防御措施
 
-                攻击成功后，能够：进行所有目标网站的请求操作。
-        2. 防御措施
+        1. 检查HTTP请求的Referer字段
 
-            1. 检查HTTP请求的Referer字段
+            Referer：标明请求来源地址。
+        2. 添加校验token
 
-                Referer：标明请求来源地址。
-            2. 添加校验token
+            操作请求需要提供额外的**不保存在浏览器上、保存在表单中**的随机校验码。可以放进请求参数、或自定义HTTP请求头。
+        3. 请求操作要求输入实时生成的验证码。
+3. Hash Collision DoS
 
-                操作请求需要提供额外的**不保存在浏览器上、保存在表单中**的随机校验码。可以放进请求参数、或自定义HTTP请求头。
-            3. 请求操作要求输入实时生成的验证码。
-    3. Hash Collision DoS
+    >参考[HASH COLLISION DOS 问题](http://coolshell.cn/articles/6424.html)。
 
-        >参考[HASH COLLISION DOS 问题](http://coolshell.cn/articles/6424.html)。
+    Hash碰撞的拒绝式服务攻击（Hash Collision DoS）是对服务器进行恶意负载的安全漏洞攻击。
 
-        Hash碰撞的拒绝式服务攻击（Hash Collision DoS）是对服务器进行恶意负载的安全漏洞攻击。
+    1. 攻击方式
 
-        1. 攻击方式
+        >1. Hash：把任意长度的输入，通过散列算法，输出固定长度的散列值。
+        >2. Hash Collision DoS：利用各语言Hash算法的“非随机性”，制造出无数value不同、key相同的数据，让Hash表成为一张单向链表，而导致整个网站的运行性能下降。
 
-            >1. Hash：把任意长度的输入，通过散列算法，输出固定长度的散列值。
-            >2. Hash Collision DoS：利用各语言Hash算法的“非随机性”，制造出无数value不同、key相同的数据，让Hash表成为一张单向链表，而导致整个网站的运行性能下降。
+        - 找到hash算法漏洞，不断提交服务器请求导致无数hash碰撞，进而形成单向链表。
 
-            - 找到hash算法漏洞，不断提交服务器请求导致无数hash碰撞，进而形成单向链表。
+            攻击成功后，能够：hash堆积、查询缓慢、服务器CPU高负荷、服务器内存溢出。
+    2. 防御措施
 
-                攻击成功后，能够：hash堆积、查询缓慢、服务器CPU高负荷、服务器内存溢出。
-        2. 防御措施
+        1. 升级hash算法。
+        2. 限制POST参数个数和请求长度。
+        3. 防火墙检测异常请求。
 
-            1. 升级hash算法。
-            2. 限制POST参数个数和请求长度。
-            3. 防火墙检测异常请求。
+### 前端性能优化
+1. 优化原则与指南
+
+    >来自[张云龙：前端工程与性能优化](https://github.com/fouber/blog/issues/3)。
+
+    | 优化方向 | 优化手段 |
+    | :--- | :--- |
+    | 请求数量 | 合并脚本和样式表，雪碧图，拆分初始化负载，划分主域 |
+    | 请求带宽 | 开启gzip，精简JS，移除重复脚本，图像优化 |
+    | 缓存利用 | 使用CDN，使用外部JS和CSS，添加Expires头，配置ETag，减少DNS查找，使AJAX可缓存 |
+    | 页面结构 | 将样式表放在顶部，将脚本放在底部，尽早刷新文档的输出 |
+    | 代码校验 | 避免CSS表达式，避免重定向 |
+2. 从输入URL到页面完成的具体优化：
+
+    >性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#前端工程化)问题。
+
+    1. [URL输入](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#http协议)：
+
+        >服务端对HTTP请求的优化。
+
+        1. 服务器开启gzip。
+        2. 使用CDN。
+        3. 对资源进行缓存：
+
+            1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
+            2. 使用[缓存相关的HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#浏览器缓存)：Expires、Cache-Control、ETag/If-None-Match、Last-Modified/If-Modified-Since。
+        4. 减少DNS查找，设置合适的TTL值，避免重定向。
+        5. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#静态资源使用额外域名domain-hash的原因)。
+        6. [非覆盖式发布](https://github.com/fouber/blog/issues/6)。
+    2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#页面载入解析步骤)：
+
+        >前端对具体代码性能、CRP（Critical Rendering Path，关键呈现路径，优先显示与当前用户操作有关的内容）的优化。
+
+        1. 优化CRP：
+
+            1. 减少关键资源：
+
+                1. 首屏资源合并。
+                2. 非首屏资源延迟异步加载：
+
+                    1. 增量加载资源：
+
+                        1. [图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)。
+                        2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto滚动加载)）。
+                        3. 功能文件按需加载。
+                    2. 使AJAX可缓存。
+                3. [预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
+            2. 最小化字节：
+
+                1. 压缩资源、去除重复资源。
+                2. 图片优化
+
+                    压缩、大图切小图、小图合并雪碧图、Base64、WebP。
+                >单个大文件需要多次与服务器往返来获取。
+            3. 缩短CRP长度：
+
+                CSS放在HTML顶部，JS放在HTML底部。
+        2. 技术上优化：
+
+            1. CSS性能：
+
+                1. [CSS选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
+                2. [渲染性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)。
+            2. JS代码性能优化：
+
+                1. 使用性能好的代码方式（若：字面量创建数据、减少访问DOM、[定时器取舍](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器setintervalsettimeout--重绘函数requestanimationframe)等）。
+                2. [闭包合理使用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包)。
+                3. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)。
+                4. [函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)。
+            3. 使用单页应用等技术。

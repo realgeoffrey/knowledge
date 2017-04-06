@@ -826,6 +826,49 @@
     1. 浅复制：`arr = arr.slice();`或`arr = arr.concat();`或一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)。
     2. 深复制：[代码实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)。
 
+### 预加载
+1. JS预加载
+
+    ```javascript
+    //主要使用
+    var img = new Image();  //或document.createElement('img');
+
+    img.src = '图片地址';
+
+    img.onerror = function () {
+        console.log('加载失败');
+    };
+
+    if (img.complete) {
+        console.log('缓存');
+    } else {
+        img.onload = function () {
+            console.log('新加载');
+        };
+    }
+    ```
+2. `link`标签预加载
+
+    1. `<link rel="dns-prefetch" href="域名">`
+
+        解析DNS。
+    2. `<link rel="preconnect" href="域名">`
+
+        解析DNS，建立TCP握手连接、TLS协议。
+    3. `<link rel="prefetch" href="资源">`
+
+        （低优先级）请求、下载、缓存资源。
+    4. `<link rel="subresource" href="资源">`
+
+        （高优先级）请求、下载、缓存资源。
+    5. `<link rel="prerender"  href="域名">`
+
+        就像在后台打开了一个隐藏的tab，下载域名的所有资源、创建DOM、渲染页面、执行JS等等。
+    6. `<link rel="preload" href="资源">`
+
+        请求、下载、缓存资源。
+3. CSS背景图片预加载。
+
 ### JS与jQuery的事件绑定
 >1. 以点击事件`click`为例。
 >2. `dom`代表DOM元素对象，`$dom`代表jQuery元素对象。
@@ -1928,7 +1971,7 @@
     >2. 类似`setInterval`实现[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
 
     1. 浏览器重绘之前（大部分浏览器是1秒钟60帧，也就是16.67ms进行一帧重绘）调用一次。
-    2. 替代执行时机无法保证的`setTimeout`和`setInterval`进行动画操作，提升动画性能：
+    2. 替代执行时机无法保证的`setTimeout`和`setInterval`进行动画操作，提升渲染性能：
 
         1. 把每一帧中的所有DOM操作集中起来，在一次重绘或回流中完成动画，并且重绘或回流的时间间隔紧随浏览器的刷新频率。
         2. 仅仅绘制用户可见的动画。这意味着没把CPU或电池寿命浪费在绘制处于背景标签，最小化窗口，或者页面隐藏区域的动画上。
