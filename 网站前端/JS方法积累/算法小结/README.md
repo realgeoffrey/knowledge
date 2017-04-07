@@ -1,26 +1,31 @@
 # JS方法积累——算法小结（*原生JS*）
 
+>- 鉴别arr是否是数组：
+>
+>    ```javascript
+>    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是数组*/
+>
+>        return false;
+>    }
+>    ```
+
 ## 排序算法
 
 ### 插入排序
 ```javascript
 function insertionSort(arr) {
-    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
+    arr = arr.slice();  //浅复制
 
-        return false;
-    }
+    var i, len, tmp, j;
 
-    var len = arr.length,
-        i, tmp, j;
+    for (i = 1, len = arr.length; i < len; i++) { /* 逐个取出与前面元素对比（前面元素已经排序）*/
+        tmp = arr[i];   //对比元素
 
-    for (i = 1; i < len; i++) { /* 逐个取出*/
-        tmp = arr[i];   //被向前对比的一个元素
-
-        for (j = i; j > 0 && arr[j - 1] > tmp; j--) {   /* 向前逐个对比*/
-            arr[j] = arr[j - 1];    //前面的值向后移
+        for (j = i - 1; j >= 0 && arr[j] > tmp; j--) {   /* 向前逐个对比*/
+            arr[j + 1] = arr[j];    //若前面的值大于对比元素，则向后移一位
         }
 
-        arr[j] = tmp;   //被对比的元素插入替代位置
+        arr[j + 1] = tmp;   //对比元素插入替代位置
     }
 
     return arr;
@@ -28,23 +33,16 @@ function insertionSort(arr) {
 ```
 >思路：
 >
->1. 从第一个元素开始，该元素可以认为已经被排序
->2. 取出下一个元素，在已经排序的元素序列中从后向前扫描
->3. 如果该元素（已排序）大于新元素，将该元素移到下一位置
->4. 重复步骤3，直到找到已排序的元素小于或者等于新元素的位置
->5. 将新元素插入到该位置后
->6. 重复步骤2~5
+>- 顺序遍历元素（第一个元素默认已排序）：
+    - 取出对比元素，逐个遍历与前面排序元素对比：
+        1. 若排序元素大于对比元素，将排序元素向后移一位。
+        2. 否则将对比元素插入到该位置下一位置。
 
 ![插入排序图](./images/insertion-sort-1.gif)
 
 ### 希尔排序
 ```javascript
 function shellSort(arr) {
-    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
-
-        return false;
-    }
-
     var len = arr.length,
         gap, i, j, temp;
 
@@ -73,11 +71,6 @@ function shellSort(arr) {
 ### 冒泡排序
 ```javascript
 function bubbleSort(arr) {
-    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
-
-        return false;
-    }
-
     var len = arr.length,
         i, j, temp;
 
@@ -106,11 +99,6 @@ function bubbleSort(arr) {
 ### 快速排序
 ```javascript
 function quickSort(arr) {
-    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
-
-        return false;
-    }
-
     var len = arr.length,
         left = [],
         right = [],
@@ -144,11 +132,6 @@ function quickSort(arr) {
 ### 梳排序
 ```javascript
 function combSort(arr) {
-    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
-
-        return false;
-    }
-
     var shrink_factor = 0.8,    //递减率
         gap = arr.length,
         swapped = 1,
@@ -184,11 +167,6 @@ function combSort(arr) {
 ### 归并排序
 ```javascript
 function mergeSort(arr) {
-    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
-
-        return false;
-    }
-
     function _merge(left, right) {   /* 合并2个已经分别排序好的数组*/
         var final = [];
 
@@ -230,11 +208,6 @@ function mergeSort(arr) {
 ### 选择排序
 ```javascript
 function selectionSort(arr) {
-    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
-
-        return false;
-    }
-
     var len = arr.length,
         i, j, min, temp;
 
@@ -265,11 +238,6 @@ function selectionSort(arr) {
 ### 基数排序
 ```javascript
 function radixSort(arr) {
-    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
-
-        return false;
-    }
-
     var bucket = [],
         len = arr.length,
         max = arr[0],
@@ -323,11 +291,6 @@ function radixSort(arr) {
 ### 堆排序
 ```javascript
 function heapSort(arr) {
-    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
-
-        return false;
-    }
-
     function _swap(i, j) {   /* 替换数组内位置*/
         var tmp = arr[i];
 
@@ -388,11 +351,6 @@ function heapSort(arr) {
 ### 洗牌算法
 ```javascript
 function shuffle(arr) {
-    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是array*/
-
-        return false;
-    }
-
     var i, len, swapIndex, temp;
 
     arr = arr.slice();  //浅复制
@@ -410,6 +368,79 @@ function shuffle(arr) {
     return arr;
 }
 ```
+
+----
+## 搜索算法
+
+### 二分搜索
+时间复杂度：O(log n)。
+
+1. 循环：
+
+    空间复杂度：O(1)。
+
+    ```javascript
+    function binarySearch(arr, searchVal, leftIndex, rightIndex) {
+        if (typeof leftIndex === 'undefined' || typeof rightIndex === 'undefined') {
+            leftIndex = 0;
+            rightIndex = arr.length - 1;
+        }
+
+        var mid;
+
+        while (leftIndex <= rightIndex) {
+            mid = Math.floor((leftIndex + rightIndex) / 2);
+
+            if (searchVal < arr[mid]) { /* 目标小于中间数，在小的一堆找*/
+                rightIndex = mid - 1;
+            } else if (searchVal > arr[mid]) {  /* 目标大于中间数，在大的一堆找*/
+                leftIndex = mid + 1;
+            } else {    /* 找到*/
+
+                return mid;
+            }
+        }
+
+        /* 不存在*/
+        return -1;
+    }
+    ```
+2. 递归：
+
+    空间复杂度：O(log n)。
+
+    ```javascript
+    function binarySearch(arr, searchVal, leftIndex, rightIndex) {
+        if (typeof leftIndex === 'undefined' || typeof rightIndex === 'undefined') {
+            leftIndex = 0;
+            rightIndex = arr.length - 1;
+        }
+
+        var mid = Math.floor((rightIndex + leftIndex) / 2);
+
+        if (leftIndex > rightIndex) {   /* 不存在*/
+
+            return -1;
+        }
+
+        if (searchVal < arr[mid]) { /* 目标小于中间数，在小的一堆找*/
+
+            return arguments.callee(arr, searchVal, leftIndex, mid - 1);
+        } else if (searchVal > arr[mid]) {  /* 目标大于中间数，在大的一堆找*/
+
+            return arguments.callee(arr, searchVal, mid + 1, rightIndex);
+        } else {    /* 找到*/
+
+            return mid;
+        }
+    }
+    ```
+>思路：
+>
+>1. 在有序数组中查找某一特定元素的搜索算法，每一次比较都使搜索范围缩小一半。
+>2. 搜索过程从数组的中间元素开始，如果中间元素正好是要查找的元素，则搜索过程结束；
+>3. 如果某一特定元素大于或者小于中间元素，则在数组大于或小于中间元素的那一半中查找，并且也从中间元素开始比较。
+>4. 如果在某一步骤数组为空，则代表找不到。
 
 ----
 ## 其他算法
