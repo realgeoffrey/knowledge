@@ -3,12 +3,15 @@
 >1. 本repository内容是本人亲自测试得出的可执行经验，并非所有可能性的系统总结。
 >2. 本repository参照标准：**ECMAScript 5**、**CSS3**、**HTML5**。
 
-1. [JS学习笔记](./网站前端/JS学习笔记/README.md)
-2. JS方法积累
+1. JS
 
-    1. [JS实用方法](./网站前端/JS方法积累/实用方法/README.md)
-    2. [JS算法小结](./网站前端/JS方法积累/算法小结/README.md)
-3. [HTML+CSS学习笔记](./网站前端/HTML+CSS学习笔记/README.md)
+    1. [JS学习笔记](./网站前端/JS学习笔记/README.md)
+    2. JS方法积累
+
+        1. [JS实用方法](./网站前端/JS方法积累/实用方法/README.md)
+        2. [JS算法小结](./网站前端/JS方法积累/算法小结/README.md)
+2. [HTML+CSS学习笔记](./网站前端/HTML+CSS学习笔记/README.md)
+3. [前端概念](./网站前端/前端概念/README.md)
 4. [gulp使用](./网站前端/gulp使用/README.md)
 
     1. [gulpfile.js](./网站前端/gulp使用/tools/gulpfile.js)（雪碧图的模板：[pc.handlebars](./网站前端/gulp使用/tools/pc.handlebars)、[wap.handlebars](./网站前端/gulp使用/tools/wap.handlebars)）
@@ -17,15 +20,14 @@
         
     1. [cssReset.scss](./网站前端/初始化模板/cssReset.scss)
     2. [.html](./网站前端/初始化模板/html.html)
-6. [前端概念](./网站前端/前端概念/README.md)
-7. [兼容至ie6](./网站前端/兼容至ie6/README.md)
-8. 基础知识
+6. [兼容至ie6](./网站前端/兼容至ie6/README.md)
+7. 基础知识
 
-    1. [Scss使用](./网站前端/Scss使用/README.md)
-    2. [弹性盒子flex](./网站前端/HTML+CSS学习笔记/弹性盒子.md)
-    3. [原生JS宽高](./网站前端/JS学习笔记/原生JS宽高.md)
-    4. [JS正则表达式](./网站前端/JS正则表达式/README.md)
-    5. [基础概念](./网站前端/前端概念/基础概念.md)
+    1. [基础概念](./网站前端/前端概念/基础概念.md)
+    2. [Scss使用](./网站前端/Scss使用/README.md)
+    3. [弹性盒子flex](./网站前端/HTML+CSS学习笔记/弹性盒子.md)
+    4. [原生JS宽高](./网站前端/JS学习笔记/原生JS宽高.md)
+    5. [JS正则表达式](./网站前端/JS正则表达式/README.md)
 >1. [废弃代码](./网站前端/JS方法积累/废弃代码/README.md)
 >2. [工具对比](./网站前端/前端概念/工具对比.md)
 
