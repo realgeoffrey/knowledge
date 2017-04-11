@@ -5,6 +5,8 @@
 ### 前端涉及内容
 ![前端涉及内容图](./images/fe-tech-1.png)
 
+>更详细线路图：[developer-roadmap](https://github.com/kamranahmedse/developer-roadmap#-front-end-roadmap)。
+
 ### 前端工程化
 >参考[张云龙：前端工程——基础篇](https://github.com/fouber/blog/issues/10)。
 
