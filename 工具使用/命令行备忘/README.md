@@ -14,6 +14,7 @@
 
 ### [NVM](https://github.com/creationix/nvm)更新Node.js版本
 ```bash
+nvm list-remote
 nvm install v新版本号
 nvm use v新版本号
 nvm alias default v新版本号

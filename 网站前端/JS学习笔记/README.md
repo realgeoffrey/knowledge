@@ -490,13 +490,12 @@
         1. 使用外部资源。
         2. 不在HTML上用事件处理函数。
         3. 对只为DOM增添的内容，转移到外部资源中动态创建。
-    5. 性能提升。
+    5. [从URL输入之后](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#页面载入解析步骤)就开始考虑性能优化。
 
-        1. 减少访问DOM（搜索结果保存在变量中）。
-        2. 减少外链请求数量（合并JS、CSS、图片）。
-        3. 压缩资源。
-        4. 脚本放置在`</body>`前。
-    6. 从URL输入之后就开始考虑[性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#页面载入解析步骤)，这是一个工程问题。
+        >- 避免~~微优化~~：
+        >
+        >    1. 即时编译（Just In Time Compile）：JS引擎会在JS运行过程中一点一点地重新编译代码，从而使代码运行更快。
+        >    2. 微优化（micro-optimizations）：尝试写出认为会让浏览器稍微更快速运行的代码
 
 ### 编程实践（programming practices）
 1. UI层的松耦合
@@ -1753,7 +1752,7 @@
 ### 内存泄漏
 > 内存泄露是指计算机内存逐渐丢失。当某个程序总是无法释放内存时，就会出现内存泄露。JS有内存回收机制（垃圾回收）。
 
-1. 使用chrome的**Profiles**和**Timeline**面板来查看页面占用内存使用和变化。
+1. 使用chrome的[Timeline](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/timeline-tool)和Profiles面板来查看页面占用内存使用和变化。
 2. 内存泄漏的原因以及防止建议：
 
     1. 全局变量不会被垃圾回收。
@@ -1953,7 +1952,7 @@
     4. 主线程不断重复上面的第三步。
 
 ### 定时器`setInterval`、`setTimeout` && 重绘函数`requestAnimationFrame`
-1. 定时器
+1. 定时器`setInterval`、`setTimeout`（不适合制作动画）
 
     定时器触发会把*定时器处理程序*插入**等待执行队列**最后面。
 
@@ -1966,10 +1965,9 @@
     2. `setTimeout`:
 
         [用setTimeout模拟setInterval](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用settimeout模拟setinterval)，可以提高性能（上一次执行完毕间隔时间后再执行下一次，而不是固定间隔时间都尝试执行），并且可以确保每次*定时器处理程序*执行间隔一定大于（或等于）设置的间隔时间。
-2. 重绘函数`requestAnimationFrame`
+2. 重绘函数`requestAnimationFrame`（适合制作动画）
 
-    >1. 高级浏览器才有定义此方法，因此需要[Polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe和cancelanimationframe的polyfill)。
-    >2. 类似`setInterval`实现[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
+    >requestAnimationFrame扩展：[Polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe和cancelanimationframe的polyfill)、[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
 
     1. 浏览器重绘之前（大部分浏览器是1秒钟60帧，也就是16.67ms进行一帧重绘）调用一次。
     2. 替代执行时机无法保证的`setTimeout`和`setInterval`进行动画操作，提升渲染性能：

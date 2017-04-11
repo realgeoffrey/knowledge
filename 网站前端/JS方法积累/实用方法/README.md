@@ -2512,72 +2512,7 @@ function fixPlaceholder($dom) {
 ```
 
 ### jQuery或Zepto节点跟随屏幕滚动
-1. `margin-top`：
-
-    ```html
-    <div class="clearfix">
-        <div class="father">
-            可有可无的、带margin或不带margin的节点
-            <div class="target">target内容</div>
-            可有可无的、带margin或不带margin的节点，ie6、7下可能需要触发hasLayout
-        </div>
-        <div class="dependent">
-            父级的兄弟节点
-        </div>
-    </div>
-
-    <script>
-        /**
-         * 跟随屏幕滚动（margin-top变化）
-         * @constructor
-         * @param {String} target - 目标节点
-         * @param {String} father - 目标节点的父级节点
-         * @param {String} dependent - 目标节点的父级节点的兄弟参照物（跟随不超过此参照物）
-         */
-        function FollowMarginTop(target, father, dependent) {
-            if (typeof Date.now !== 'function') {
-                Date.now = function () {
-                    return new Date().getTime();
-                };
-            }
-
-            var namespace = Date.now(), /* 事件命名空间*/
-                $target = $(target),
-                startOffset = $target.offset().top,
-                targetMarginTop = parseInt($target.css('margin-top'), 10) || 0,
-                prevMarginBottom = parseInt($target.prev().css('margin-bottom'), 10) || 0,
-                defaultMarginTop = Math.max(targetMarginTop, prevMarginBottom),
-                maxMarginTop = $(dependent).height() - $(father).height() + defaultMarginTop; //Query可以用outerHeight
-
-            $(window).on('scroll' + '.' + namespace, function () {
-                var marginTop = $(window).scrollTop() - startOffset + defaultMarginTop;
-
-                if (marginTop > defaultMarginTop) {
-                    if (marginTop > maxMarginTop) {
-                        marginTop = maxMarginTop;
-                    }
-                } else {
-                    marginTop = defaultMarginTop;
-                }
-
-                $target.css({'margin-top': marginTop});
-            });
-
-            this.stop = function () {
-                $target.css({'margin-top': targetMarginTop});
-                $(window).off('scroll' + '.' + namespace);
-            };
-        }
-
-
-        /* 使用测试*/
-        var a = new FollowMarginTop('.target', '.father', '.dependent');
-
-        //a.stop();
-    </script>
-    ```
-    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/gc45ehdb/)
-2. `fixed`：
+1. `fixed`：
 
     ```html
     <style>
@@ -2669,6 +2604,71 @@ function fixPlaceholder($dom) {
     </script>
     ```
     [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/v69fr64x/)
+2. `margin-top`：
+
+    ```html
+    <div class="clearfix">
+        <div class="father">
+            可有可无的、带margin或不带margin的节点
+            <div class="target">target内容</div>
+            可有可无的、带margin或不带margin的节点，ie6、7下可能需要触发hasLayout
+        </div>
+        <div class="dependent">
+            父级的兄弟节点
+        </div>
+    </div>
+
+    <script>
+        /**
+         * 跟随屏幕滚动（margin-top变化）
+         * @constructor
+         * @param {String} target - 目标节点
+         * @param {String} father - 目标节点的父级节点
+         * @param {String} dependent - 目标节点的父级节点的兄弟参照物（跟随不超过此参照物）
+         */
+        function FollowMarginTop(target, father, dependent) {
+            if (typeof Date.now !== 'function') {
+                Date.now = function () {
+                    return new Date().getTime();
+                };
+            }
+
+            var namespace = Date.now(), /* 事件命名空间*/
+                $target = $(target),
+                startOffset = $target.offset().top,
+                targetMarginTop = parseInt($target.css('margin-top'), 10) || 0,
+                prevMarginBottom = parseInt($target.prev().css('margin-bottom'), 10) || 0,
+                defaultMarginTop = Math.max(targetMarginTop, prevMarginBottom),
+                maxMarginTop = $(dependent).height() - $(father).height() + defaultMarginTop; //Query可以用outerHeight
+
+            $(window).on('scroll' + '.' + namespace, function () {
+                var marginTop = $(window).scrollTop() - startOffset + defaultMarginTop;
+
+                if (marginTop > defaultMarginTop) {
+                    if (marginTop > maxMarginTop) {
+                        marginTop = maxMarginTop;
+                    }
+                } else {
+                    marginTop = defaultMarginTop;
+                }
+
+                $target.css({'margin-top': marginTop});
+            });
+
+            this.stop = function () {
+                $target.css({'margin-top': targetMarginTop});
+                $(window).off('scroll' + '.' + namespace);
+            };
+        }
+
+
+        /* 使用测试*/
+        var a = new FollowMarginTop('.target', '.father', '.dependent');
+
+        //a.stop();
+    </script>
+    ```
+    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/gc45ehdb/)
 
 ### jQuery或Zepto模拟手机翻转（使页面都以“横屏”展示）
 ```html

@@ -15,7 +15,8 @@
 >4. 线性时间：
 >
 >    一个被称为线性时间或`Ο(n)`时间的算法，表示此算法解题所需时间与输入资料的大小成线性比例。
->5. 鉴别arr是否是数组：
+>5. [数据结构](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#数据结构data-structure)
+>6. 鉴别arr是否是数组：
 >
 >    ```javascript
 >    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是数组*/

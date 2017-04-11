@@ -5,7 +5,7 @@
 ### 前端涉及内容
 ![前端涉及内容图](./images/fe-tech-1.png)
 
->更详细线路图：[developer-roadmap](https://github.com/kamranahmedse/developer-roadmap#-front-end-roadmap)。
+>更详细线路图：[developer-roadmap](https://github.com/kamranahmedse/developer-roadmap/blob/master/README.md#-front-end-roadmap)。
 
 ### 前端工程化
 >参考[张云龙：前端工程——基础篇](https://github.com/fouber/blog/issues/10)。
@@ -150,7 +150,7 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
 1. 增量式生成一个文档对象模型（DOM），解析页面内容（HTML标签）。
 2. 加载DOM中所有CSS，生成一个CSS对象模型（CSSOM），描述对页面内容如何设置样式。
 
-    - 加载CSS和构造完整的CSSOM之前，**阻塞渲染**（Render Tree渲染被暂停）。
+    加载CSS并构造完整的CSSOM之前，**阻塞渲染**（Render Tree渲染被暂停）。
 3. 加载DOM中所有JS，对DOM和CSSOM进行访问和更改。
 
     1. HTML中出现JS，**阻塞解析**（DOM构造被暂停）。
@@ -158,11 +158,13 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
     3. 等待所有CSS被提取并且CSSOM被构造完毕。
     4. CSSOM被构造完毕后，执行脚本，访问和更改DOM和CSSOM。
     5. DOM构造继续进行。
-4. DOM和CSSOM构造完成后，进行渲染流水线：
+4. DOM（parse HTML）和CSSOM（recalculate style）构造完成后，进行渲染：
 
-    Render Tree（渲染树） >> Layout（布局）-> Paint（绘制） -> Composite（渲染层合并）。
+    Render Tree（渲染树）：Layout -> Paint -> Composite
 
-    >一定要等待外链资源加载完毕（包括加载失败）才可以继续构建DOM或CSSOM。
+    >1. 一定要等待外链资源加载完毕（包括加载失败）才可以继续构建DOM或CSSOM。
+    >2. 只有可见的元素才会进入渲染树。
+    >3. DOM不存在伪元素（CSSOM中才有定义），伪元素存在render tree中。
 
 >无论阻塞渲染还是阻塞解析，资源文件会不间断按顺序加载。
 
@@ -403,7 +405,21 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
         3. 防火墙检测异常请求。
 
 ### 前端性能优化
-1. 优化原则与指南
+1. 网络应用的生命期建议：
+
+    1. load
+
+        1000ms内完成CRP。
+    2. idle
+
+        进行50ms内的空闲时期预加载，包括图片、多媒体文件、后续内容（如评论）。
+    3. animations
+
+        保证16ms/f的浏览器渲染时间。
+    4. response
+
+        100ms内对用户的操作做出响应。
+2. 优化原则与指南
 
     >来自[张云龙：前端工程与性能优化](https://github.com/fouber/blog/issues/3)。
 
@@ -414,13 +430,13 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
     | 缓存利用 | 使用CDN，使用外部JS和CSS，添加Expires头，配置ETag，减少DNS查找，使AJAX可缓存 |
     | 页面结构 | 将样式表放在顶部，将脚本放在底部，尽早刷新文档的输出 |
     | 代码校验 | 避免CSS表达式，避免重定向 |
-2. 从输入URL到页面完成的具体优化：
+3. 从输入URL到页面完成的具体优化：
 
     >性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#前端工程化)问题。
 
     1. [URL输入](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#http协议)：
 
-        >服务端对HTTP请求的优化。
+        服务端对HTTP请求、资源发布、服务器设置的优化。
 
         1. 服务器开启gzip。
         2. 使用CDN。
@@ -433,7 +449,7 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
         6. [非覆盖式发布](https://github.com/fouber/blog/issues/6)。
     2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#页面载入解析步骤)：
 
-        >前端对具体代码性能、CRP（Critical Rendering Path，关键呈现路径，优先显示与当前用户操作有关的内容）的优化。
+        前端对具体代码性能、CRP（Critical Rendering Path，关键呈现路径，优先显示与当前用户操作有关的内容）的优化。
 
         1. 优化CRP：
 

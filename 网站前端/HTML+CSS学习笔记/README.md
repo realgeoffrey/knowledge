@@ -1960,41 +1960,57 @@
 2. ~~用大背景模式~~
 
 ### 渲染性能（rendering performance）
->1. 为了视觉上连贯，浏览器对每一帧画面的渲染工作需要在16毫秒（1秒 / 60 ~= 16.66毫秒）之内完成。
->2. 在渲染某一帧画面同时，浏览器还有一些流程工作要做（比如渲染队列的管理、渲染线程与其他线程之间的切换等）。
->3. 因此一次渲染增加的前端代码工作，需要控制在10毫秒之内完成（保证渲染工作+前端任务在16毫秒内完成），才能达到流畅的视觉效果，否则页面的渲染就会出现卡顿（帧率下降，一帧时间延长）。
+>1. 为了视觉上连贯，浏览器对每一帧画面的所有工作需要在16ms（1000ms / 60f ~= 16.66ms/f）内完成。
+>2. 在渲染一帧画面同时，浏览器还有一些流程工作要做（比如渲染队列的管理、渲染线程与其他线程之间的切换等）。因此一次花费在像素渲染管道（JS->Style->render tree）的时间需要控制在10至12ms内完成，再余出4至6ms进行其他流程工作。
+>3. 因此一帧画面理想的耗时为：`16ms = 3~4ms的JS代码 + 7~8ms的渲染工作 + 4~6ms的其他流程工作`。
 
-1. 动画性能最好、消耗最低的属性（只触发composite）：
+1. 像素渲染管道：
 
-    1. 位置：`transform: translate(xpx, ypx);`
-    2. 缩放：`transform: scale(x, y);`
-    3. 旋转：`transform: rotate(xdeg);`
-    4. 倾斜：`transform: skew(xdeg,ydeg);`
-    5. 透明：`opacity: x;`
-2. 像素渲染管道：
+    `CSS/JS` -> `Style（计算样式）` >> `Render Tree（渲染树）`：`Layout（布局）` -> `Paint（绘制）` -> `Composite（渲染层合并）`
 
-    `JS/CSS` -> `Style（计算样式）` >> `Layout（布局）` -> `Paint（绘制）` -> `Composite（渲染层合并）`
+    >Render Tree：改变前一个步骤需要后一个步骤也做出处理，所以若能够仅处理越后面的步骤，对性能耗费越少。
 
-    >（布局、绘制、渲染层合并）改变前一个步骤需要后面一个步骤也做出处理，所以若能够仅处理越后面的步骤，对性能耗费则越少。
+    1. `CSS/JS`：
 
-    1. `JS/CSS`：
+        使用CSS（动画：`animation-@keyframes`、`transition`）或JS或Web Animation API来实现视觉变化效果。
 
-        使用JS或CSS Animations、Transitions、Web Animation API来实现视觉变化效果。
-
-        >JS动画（命令式）比CSS动画（说明式）更消耗资源，浏览器会对CSS动画自动进行优化。
+        >JS动画（命令式）比CSS动画（说明式）消耗多一些资源，浏览器会对CSS动画自动进行优化。
     2. `Style`：
 
         根据CSS选择器，生成完整的CSSOM。
     3. `Layout`：
 
-        具体计算每个DOM最终在屏幕上显示的大小和位置。web页面中元素的布局是相对的，因此一个元素的布局发生变化，会联动地引发其他元素的布局发生变化。
+        具体计算每个节点最终在屏幕上显示的大小和位置。
     4. `Paint`：
 
-        填充像素的过程。包括绘制文字、颜色、图像、边框和阴影等，也就是DOM所有的可视效果。一般来说，这个绘制过程是在多个层上完成。
+        >耗费性能最大的工作。
+
+        填充像素的过程。包括绘制文字、颜色、图像、边框和阴影等，也就是DOM所有的可视效果。一般来说，这个绘制过程是在多个层（composite layers）上完成。
     5. `Composite`：
 
-        在每个层（GraphicsLayer）上完成绘制过程之后，浏览器会将所有层按照合理的顺序合并成一个图层，然后显示在屏幕上。
-3. 创建[GraphicsLayer](https://www.html5rocks.com/zh/tutorials/speed/layers/)（层、渲染层、复合层），交由GPU处理：
+        在每个层（composite layers）上完成绘制过程后，浏览器会将所有层按照合理的顺序合并成一个图层，然后显示在屏幕上。
+2. reflow和repaint产生卡顿：
+
+    >CSS属性触发reflow、repaint、composite的情况：[CSS Triggers](https://csstriggers.com/)。
+
+    1. reflow（重排）：
+
+        某个元素上执行动画时，浏览器需要每一帧都检测是否有元素受到影响，并调整它们的大小、位置，通常这种调整都是联动的。
+
+        1. 当遇到reflow问题时，考虑调整JS代码书写。
+        2. 触发一个元素layout改变，几乎总是导致整个DOM都要reflow。
+    2. repaint（重绘）：
+
+        浏览器还需要监听元素的外观变化，通常是背景色、阴影、边框等可视元素，并进行repaint。
+
+        1. 当遇到repaint问题时，对于仅改变composite属性的元素，考虑单独提升到一个层（composite layers）中。
+        2. 浏览器不会始终repaint整个层（composite layers），而是尝试智能地repaint DOM中失效的部分。
+    3. composite：
+
+        每次reflow、repaint后浏览器还需要层合并再输出到屏幕上。
+
+    >那些容易忽略的**能引起布局改变的样式修改**，它们可能不产生动画，但当浏览器需要重新进行样式的计算和布局时，会产生reflow和repaint。
+3. 创建[composite layers](https://www.html5rocks.com/zh/tutorials/speed/layers/)（层、渲染层、复合层），交由GPU处理：
 
     >GPU（图形处理器）是与处理和绘制图形相关的硬件，专为执行复杂的数学和几何计算而设计的，可以让CPU从图形处理的任务中解放出来，从而执行其他更多的系统任务。
 
@@ -2005,78 +2021,86 @@
     2. 自带单独层的元素：
 
         1. 使用加速视频解码的`<video>`元素。
-        2. 拥有 3D (WebGL) 上下文或加速的 2D 上下文的`<canvas>`元素。
+        2. 拥有3D（WebGL）上下文或加速的2D上下文的`<canvas>`元素。
         3. Flash等混合插件。
     3. 其他提升至单独层的方法：
 
-        1. `transform`3D或`perspective`。
-        2. 对自己的`opacity`做CSS动画或使用一个动画变换的元素。
-        3. 拥有加速CSS过滤器的元素。
-        4. 元素有一个包含层的后代节点（换句话说，就是一个元素拥有一个子元素，该子元素在自己的层里）。
-        5. 如果有一个元素，它的兄弟元素在层中渲染，而这个兄弟元素的`z-index`比较小，那么这个元素（不管是不是应用了硬件加速样式）也会被放到层中。
-4. DOM转变成屏幕图像步骤：
+        1. `transform 3D`或`perspective`。
+        2. 如果有一个元素，它的兄弟元素在层中渲染，而这个兄弟元素的`z-index`比较小，那么这个元素（不管是不是应用了硬件加速样式）也会被放到层中。
+        3. 对自己的`opacity`做CSS动画或使用一个动画变换的元素。
+        4. 拥有加速CSS过滤器的元素。
+        5. 元素有一个包含层的后代节点（换句话说，就是一个元素拥有一个子元素，该子元素在自己的层里）。
 
-    1. 首次创建帧：
+    >有时，虽然提升元素，却仍需要repaint工作：浏览器将两个需要绘制的区域联合在一起，而这可能导致整个屏幕repaint。
+4. 动画性能最好、消耗最低的属性（必须自身元素已提升至单独层）：
 
-        1. 获取DOM并将其分割为多个层；
-        2. 将每个层独立绘制于位图中；
-        3. 将层作为纹理上传至GPU；
-        4. 复合多个层来生成最终的屏幕图像。
-    2. 之后出现的帧：
+    对于以下属性修改，若元素自身被提升至单独层，则仅触发composite，否则触发paint->composite。
 
-        1. 如果某些特定CSS属性变化，并不需要发生重绘。Chrome可以使用早已作为纹理而存在于GPU中的层来重新复合，但会使用不同的复合属性。
-        2. 如果层的部分失效，它会被重绘并且重新上传。如果它的内容保持不变但是复合属性发生变化，Chrome可以让层保留在GPU中，并通过重新复合来生成一个新的帧。
-5. reflow和repaint产生卡顿：
-
-    >CSS属性触发重绘、重排、层合并：[CSS Triggers](https://csstriggers.com/)。
-
-    1. reflow（重排）：
-
-        某个元素上执行动画时，浏览器需要每一帧都检测是否有元素受到影响，并调整它们的大小、位置，通常这种调整都是联动的。
-    2. repaint（重绘）：
-
-        浏览器还需要监听元素的外观变化，通常是背景色、阴影、边框等可视元素，并进行重绘。
-        >Chrome并不会始终重绘整个层，它会尝试智能的去重绘DOM中失效的部分。
-    3. composite：
-
-        每次reflow、repaint后浏览器还需要层合并再输出到屏幕上。
-
-    >1. reflow的成本比repaint的成本高得多。因为一个结点的reflow很有可能导致子结点、甚至父点以及同级结点的reflow，并且产生reflow一般也要进行repaint。
-    >2. 那些容易忽略的**能引起布局改变的样式修改**，它们可能不产生动画，但当浏览器需要重新进行样式的计算和布局时，会产生reflow和repaint，这将产生高昂的性能代价并引起跳帧。
-6. 优化渲染性能：
+    1. 位置：`transform: translate(xpx, ypx);`
+    2. 缩放：`transform: scale(x, y);`
+    3. 旋转：`transform: rotate(xdeg);`
+    4. 倾斜：`transform: skew(xdeg,ydeg);`
+    5. 透明：`opacity: x;`
+5. 优化渲染性能：
 
     >参考[渲染性能](https://developers.google.com/web/fundamentals/performance/rendering/)。
 
     1. 优化JS的执行效率
 
-        1. 对于动画效果的实现，建议使用`requestAnimationFrame`（或[velocity动画库](https://github.com/julianshapiro/velocity)），避免使用~~setTimeout、setInterval~~。
-        2. 把耗时长的JS代码放到`Web Workers`中去做。
-        3. 把DOM元素的更新划分为多个小任务，分别在多个帧中去完成。
-        4. 不在连续的动画过程中做高耗时的操作（如大面积重绘、重排、复杂JS计算）。
+        1. 把DOM元素的操作划分成多个小任务，分别在多个帧中去完成。
+        2. 不在连续的动画过程中做高耗时的操作（如大面积reflow、repaint、复杂JS计算）。
+        3. 对于动画效果的实现，建议使用`requestAnimationFrame`（或[velocity动画库](https://github.com/julianshapiro/velocity)），避免使用~~setTimeout、setInterval~~。
+        4. 把耗时长的JS代码放到`Web Workers`中去做。
+        5. 用操作class替代操作style。
     2. 缩小样式计算的范围和降低复杂度
 
         1. 降低样式选择器的复杂度、提升[选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)（甚至使用基于class的方式，比如[BEM](https://en.bem.info/methodology/css/)）。
-        2. 减少需要执行样式计算的元素的个数。
-    3. 避免大规模、复杂的布局与重排
+        2. 减少需要执行样式计算的元素的个数（随着元素递增而计算量线性递增）。
+    3. 避免大规模、复杂的布局与reflow
 
-        1. 使用[`flexbox`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#弹性盒子)布局。
-        2. 避免强制同步布局
+        1. 避免强制同步布局
 
-            先读后写原则——先批量读取元素样式属性（浏览器将直接返回上一帧的样式属性值），后再对样式属性进行写操作。
-        3. 避免快速连续的布局
+            >强制同步布局（forced synchronous layouts）：使用JS强制浏览器提前执行layout。
 
-            不要一条一条间断修改样式，最好只改变class去改变样式，或一次性把样式修改完。
-        4. 使用离线DOM操作样式完毕，再添加或者替换到文档中；把文档中要操作的DOM设置为`display: none;`再操作样式，操作完毕后恢复复显示。
-        5. `position: absollute/fixed;`的元素重排开销较小。
+            实行**先读后写**原则：先批量读取元素样式属性（返回上一帧的样式属性值），后再对样式属性、类名等进行写操作。
+
+            >e.g.
+            >
+            >```javascript
+            >/* bad：强制同步布局，可能产生布局抖动*/
+            >dom.forEach(function (elem) {
+            >    if (window.scrollY < 200) { //计算读取layout
+            >        elem.style.opacity = 0.5;   //JS写入样式
+            >    }
+            >});
+            >
+            >/* good：先读后写*/
+            >if (window.scrollY < 200) { //计算读取layout
+            >    /* 批量JS写入样式*/
+            >    dom.forEach(function (elem) {
+            >        elem.style.opacity = 0.5;
+            >    });
+            >}
+            >```
+        2. 避免布局抖动
+
+            >布局抖动（layout thrashing）：快速多次进行强制同步布局。
+        3. 使用离线DOM操作样式完毕，再添加或者替换到文档中；把文档中要操作的DOM设置为`display: none;`再操作样式，操作完毕后恢复复显示。
+        4. `position: absollute/fixed;`的元素reflow开销较小。
+        5. 使用[`flexbox`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#弹性盒子)布局。
     4. 简化绘制的复杂度、减小绘制区域
 
         合理划分层，动静分离，可避免大面积重绘。
-    5. 优先使用层（GraphicsLayer）来统一操作动画，控制层数量
+    5. 优先使用层（composite layers）来统一操作动画，并控制层数量
+
+        如果元素仅改变composite，那么将其提升至单独的层。
 
         1. 只使用`transform/opacity`来实现动画效果。
         2. 用`will-change/translateZ`属性把动画元素提升到单独的层中。
-        3. 避免滥用层提升（更多的层需要更多的内存和更复杂的管理）。
+        3. 避免滥用层提升、避免创建过多层（更多的层需要更多的内存和更复杂的管理）。
         4. 使用3D硬件加速提升动画性能时，最好给元素增加一个`z-index`属性（改变层叠上下文的顺序），人为干扰层排序，可以有效减少chrome创建不必要的层，提升渲染性能。
+
+            >如果有一个元素，它的兄弟元素在层中渲染，而这个兄弟元素的`z-index`比较小，那么这个元素（不管是不是应用了硬件加速样式）也会被放到层中。
     6. 对用户输入、滚动事件进行[函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)处理
 
         >滚动会触发高频率重新渲染，scroll事件的处理函数也会被高频率触发。
@@ -2084,11 +2108,12 @@
         1. 避免使用运行时间过长的事件处理函数，它们会阻塞页面的滚动渲染。
         2. 避免在事件处理函数中修改样式属性。
         3. 对事件处理函数去抖动，存储事件对象的值，然后在requestAnimationFrame回调函数中修改样式属性。
-7. 经验：
+6. 经验：
 
-    1. 追查性能问题的时候打开**Layer Borders**选项；使用Chrome Timeline工具检查。
-    2. 使用分层优化动画时，需要留意内存消耗情况，使用Chrome Timeline工具监测。
-    3. 低性能设备（Android）优先调试。
+    1. 追查性能问题、优化动画的时候：
+        1. 打开**Layer Borders**、**Paint Flashing**选项；
+        2. 使用Chrome [Timeline](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/timeline-tool)工具检查。
+    2. 低性能设备（Android）优先调试。
 
         1. 除了**CSS3翻转属性**与**内嵌滚动条**同时出现无法解决，其他样式问题都可以像处理ie6问题一样通过真机试验出解决方案。
         2. 有些低版本机型会有类似ie6的CSS问题，包括**CSS3的厂商前缀（`-webkit-`等）**、**层叠关系（`z-index`）**，并且要更注意**渲染性能（层产生）**。

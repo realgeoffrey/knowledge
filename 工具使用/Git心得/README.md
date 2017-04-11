@@ -59,7 +59,9 @@
         ```
         >当处理太多commits时候容易造成冲突。
 
-    >1. [GitLab](https://about.gitlab.com/)默认设置**master**分支是**protected**状态，无法`git push --force`。可以在Gitlab设置里面通过：*project* > *Settings* > *Protected branches* > *Developers can push*或*UNPROTECT*，打开权限（强烈不建议长期开启）。
+    >1. [GitLab](https://about.gitlab.com/)默认设置**master**分支是**protected**状态，无法`git push --force`。
+    >
+    >    可以在Gitlab设置里面通过：*project* > *Settings* > *Protected branches* > *Developers can push*或*UNPROTECT*，打开权限（强烈不建议长期开启）。
     >2. [Github](https://github.com)默认是允许`git push --force`。
 2. 仅在Git项目中选择下载某些文件夹或文件
 
@@ -92,7 +94,7 @@
     `git clone 仓库地址 --depth 数字`
 
 ### 设置git全局忽略文件
-1. 打开**.gitconfig**文件，添加
+1. 打开 **.gitconfig**文件，添加
 
     ```bash
     [core]
