@@ -15,11 +15,12 @@ var imagemin = require('gulp-imagemin'), /* imagemin*/
     uglify = require('gulp-uglify'), /* js压缩*/
     spritesmith = require('gulp.spritesmith'), /* 生成雪碧图&样式表*/
     fontmin = require('gulp-fontmin'), /* 字体子集化*/
+    babel = require('gulp-babel'), /* 转换编译*/
     browserSync = require('browser-sync').create(), /* 浏览器同步测试工具*/
     gulp = require('gulp');
 
 /* 图片压缩*/
-gulp.task('doImage', function () {
+gulp.task('runImage', function () {
     gulp.src(['../images/dev/**'])
         .pipe(
             imagemin([
@@ -33,7 +34,7 @@ gulp.task('doImage', function () {
 });
 
 /* css：[合并]、压缩、添加厂商前缀、重命名、添加timestamp、source map*/
-gulp.task('doCss', function () {
+gulp.task('runCss', function () {
     gulp.src(['../css/dev/**/*.css'])
         .pipe(sourcemaps.init())
         //.pipe(concat('all.css'))
@@ -51,7 +52,7 @@ gulp.task('doCss', function () {
 });
 
 /* scss：转译压缩css、添加厂商前缀、添加timestamp、source map*/
-gulp.task('doScss', function () {
+gulp.task('runScss', function () {
     gulp.src(['../scss/dev/**/*.scss'])
         .pipe(sourcemaps.init())
         .pipe(
@@ -64,7 +65,7 @@ gulp.task('doScss', function () {
 });
 
 /* js：[合并]、压缩、重命名、source map*/
-gulp.task('doJs', function () {
+gulp.task('runJs', function () {
     gulp.src(['../js/dev/**/*.js'])
         .pipe(sourcemaps.init())
         //.pipe(concat('all.js'))
@@ -78,7 +79,7 @@ gulp.task('doJs', function () {
 });
 
 /* 多图 -> 雪碧图 + 样式表*/
-gulp.task('doSprites', function () {
+gulp.task('runSprites', function () {
     /* pc版*/
     gulp.src('../sprites/dev/*')
         .pipe(spritesmith({
@@ -103,7 +104,7 @@ gulp.task('doSprites', function () {
 });
 
 /* ttf -> 多个兼容字体 + 样式表*/
-gulp.task('doFont', function (cb) {
+gulp.task('runFont', function (cb) {
     var buffers = [];
 
     gulp.src(['../font/dev/*.html'])    /* 传入需要提取字体的页面，没有页面则所有字*/
@@ -119,24 +120,37 @@ gulp.task('doFont', function (cb) {
         });
 });
 
+/* ES6 -> ES5*/
+gulp.task('runBabel', function () {
+    gulp.src(['../babel/dev/**/*.js'])
+        .pipe(sourcemaps.init())
+        .pipe(babel({
+            presets: ['../../tools/node_modules/babel-preset-es2015'] /* 打包了ES6的特性*/
+        }))
+        //.pipe(concat('all.js'))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('../babel/release/'));
+});
+
 /* default*/
-gulp.task('default', ['doImage', 'doCss', 'doScss', 'doJs', 'doSprites', 'doFont']);
+gulp.task('default', ['runImage', 'runCss', 'runScss', 'runJs', 'runSprites', 'runFont', 'runBabel']);
 
 /* 监视文件，自动执行*/
 gulp.task('watch', function () {
-    gulp.watch(['../images/dev/**'], ['doImage']);
-    gulp.watch(['../css/dev/**/*.css'], ['doCss']);
-    gulp.watch(['../scss/dev/**/*.scss'], ['doScss']);
-    gulp.watch(['../js/dev/**/*.js'], ['doJs']);
-    gulp.watch(['../sprites/dev/**'], ['doSprites']);
-    gulp.watch(['../font/dev/**'], ['doFont']);
+    gulp.watch(['../images/dev/**'], ['runImage']);
+    gulp.watch(['../css/dev/**/*.css'], ['runCss']);
+    gulp.watch(['../scss/dev/**/*.scss'], ['runScss']);
+    gulp.watch(['../js/dev/**/*.js'], ['runJs']);
+    gulp.watch(['../sprites/dev/**'], ['runSprites']);
+    gulp.watch(['../font/dev/**'], ['runFont']);
+    gulp.watch(['../babel/dev/**/*.js'], ['runBabel']);
 });
 
 /* 监听代理服务器*/
 gulp.task('browserSync', function () {
     browserSync.init({
-        proxy: 'localhost'  /* 服务器*/
-        //server: '../../www/' /* 相对地址*/
+        //proxy: 'localhost'  /* 服务器*/
+        server: '../../www/' /* 相对地址*/
     });
     gulp.watch([
         '../../www/**/*.html',
