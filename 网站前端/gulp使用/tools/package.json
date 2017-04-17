@@ -3,6 +3,7 @@
     "autoprefixer": "^6.7.7",
     "browser-sync": "^2.18.8",
     "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
     "gulp-concat": "^2.6.1",
     "gulp-cssnano": "^2.1.2",
     "gulp-fontmin": "^0.7.4",
@@ -19,5 +20,8 @@
     "imagemin-optipng": "^5.2.1",
     "imagemin-pngquant": "^5.0.0",
     "imagemin-svgo": "^5.2.1"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "^6.24.1"
   }
 }
