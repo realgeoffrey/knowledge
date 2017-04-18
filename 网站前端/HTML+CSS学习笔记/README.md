@@ -187,8 +187,8 @@
 1. 单行
 
     ```scss
-    @mixin ellipsis($boolen: true) {
-        @if $boolen == true {
+    @mixin ellipsis($boolean: true) {
+        @if $boolean == true {
             _width: 100%;
         }
         white-space: nowrap;
@@ -738,7 +738,7 @@
 ## HTML + CSS
 
 ### 自适应宽度布局
->`float`节点：可以填补于**之后节点**的水平`margin`内（`padding`内不可以）；不可以填补于*之前节点*的水平`margin`内。
+>`float`节点：可以填补在**之后节点**的水平`margin`内（`padding`内不可以）；不可以填补在*之前节点*的水平`margin`内。
 
 1. 中间内容自适应，两边固定（中间内容最后加载）
 
@@ -1894,7 +1894,8 @@
         3. 把CSS内需要响应式内容的px值，除以**在320px宽度下的html的font-szie值**（320px宽度时设置为10px方便计算），单位改为rem。
 
         >仅需要把要响应式布局的内容进行转变
-2. *用JS根据是否是苹果设备进行判断：若是苹果设备则viewport设置为0.5，html的font-size设置为2倍；若非苹果设备则viewport设置为1，html的font-size设置为1倍*
+2. *用JS根据浏览器宽度的改变修改html的font-size，页面总宽度固定为某rem。所有页面元素都要用百分比+rem*
+3. *用JS根据是否是苹果设备进行判断：若是苹果设备则viewport设置为0.5，html的font-size设置为2倍；若非苹果设备则viewport设置为1，html的font-size设置为1倍*
 
     ```javascript
     var fontSize = 10;
@@ -1910,7 +1911,6 @@
     ```
 
     >因为html的font-size是用JS写死的，而且viewport会变化，所以所有页面元素都要用百分比+rem。
-3. *用JS根据浏览器宽度的改变修改html的font-size，页面总宽度固定为某rem。所有页面元素都要用百分比+rem*
 
 ### 不同PPI的设备使用不同分辨率的图片
 >1. x1、x2、x3不同分辨率的图片放大倍数是**1倍、2倍、3倍**。
@@ -2050,7 +2050,7 @@
         1. 把DOM元素的操作划分成多个小任务，分别在多个帧中去完成。
         2. 不在连续的动画过程中做高耗时的操作（如大面积reflow、repaint、复杂JS计算）。
         3. 对于动画效果的实现，建议使用`requestAnimationFrame`（或[velocity动画库](https://github.com/julianshapiro/velocity)），避免使用~~setTimeout、setInterval~~。
-        4. 把耗时长的JS代码放到`Web Workers`中去做。
+        4. 把耗时长的JS代码放到`Web Worker`中去做。
         5. 用操作class替代操作style。
     2. 缩小样式计算的范围和降低复杂度
 

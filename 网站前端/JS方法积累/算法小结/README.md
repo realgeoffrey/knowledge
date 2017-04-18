@@ -121,21 +121,21 @@ function quickSort(arr) {
     arr = arr.slice();  //浅复制
 
     var len = arr.length,
-        i, middle, left, right;
+        i, middle, leftArr, rightArr;
 
     if (len <= 1) { /* 递归边界条件*/
 
         return arr;
     } else {
-        for (i = 1, middle = [arr[0]], left = [], right = []; i < len; i++) {   /* 以0索引元素为“基准”*/
-            if (arr[i] < middle[0]) {   /* 小于基准的元素放左数组*/
-                left.push(arr[i]);
+        for (i = 1, middle = arr[0], leftArr = [], rightArr = []; i < len; i++) {   /* 以0索引元素为“基准”*/
+            if (arr[i] < middle) {   /* 小于基准的元素放左数组*/
+                leftArr.push(arr[i]);
             } else {       /* 大于等于基准的元素放右数组*/
-                right.push(arr[i]);
+                rightArr.push(arr[i]);
             }
         }
 
-        return arguments.callee(left).concat(middle.concat(arguments.callee(right)));   //顺序合并左、中、右数组
+        return arguments.callee(leftArr).concat([middle].concat(arguments.callee(rightArr)));   //顺序合并左、中、右数组
     }
 }
 ```
@@ -459,24 +459,21 @@ function countingSort(arr) {
 1. 循环：
 
     ```javascript
-    function binarySearch(arr, searchVal, leftIndex, rightIndex) {
-        if (typeof leftIndex === 'undefined' || typeof rightIndex === 'undefined') {
-            leftIndex = 0;
-            rightIndex = arr.length - 1;
-        }
-
-        var middle;
+    function binarySearch(arr, searchVal) {
+        var leftIndex = 0,
+            rightIndex = arr.length - 1,
+            middleIndex;
 
         while (leftIndex <= rightIndex) {
-            middle = Math.floor((leftIndex + rightIndex) / 2);
+            middleIndex = Math.floor((leftIndex + rightIndex) / 2);
 
-            if (searchVal < arr[middle]) { /* 目标小于中间数，在小的一堆找*/
-                rightIndex = middle - 1;
-            } else if (searchVal > arr[middle]) {  /* 目标大于中间数，在大的一堆找*/
-                leftIndex = middle + 1;
+            if (searchVal < arr[middleIndex]) { /* 目标小于中间数，在小的一堆找*/
+                rightIndex = middleIndex - 1;
+            } else if (searchVal > arr[middleIndex]) {  /* 目标大于中间数，在大的一堆找*/
+                leftIndex = middleIndex + 1;
             } else {    /* 找到*/
 
-                return middle;
+                return middleIndex;
             }
         }
 

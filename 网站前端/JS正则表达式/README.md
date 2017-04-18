@@ -17,7 +17,7 @@
         ```javascript
         new RegExp('\\\\', 'gimuy');    //要对两个“\”都进行转义
 
-        new RegExp(/\\/, 'gimuy');  //需要对“\”进行转义
+        new RegExp(/\\/, 'gimuy');      //需要对“\”进行转义
         ```
 
         运行JS脚本时编译（runtime compilation），传参数情况下才使用。
@@ -112,13 +112,13 @@
         | `x{一个正整数,}` | 前面的模式x的连续出现至少n次时匹配。 |
         | `x{一个正整数,一个正整数}` | 前面的模式x的连续出现至少n次，至多m次时匹配。 |
         | `x*?`、`x+?`、`x??`、`x{n}?`、`x{n,}?`、`x{n,m}?` | 惰性模式，只进行最小限度的匹配（默认贪婪模式）。 |
-        | `x|y` | 匹配x或y。 |
+        | `x\|y` | 匹配x或y。 |
         | `x(?=y)` | 只有当x后面紧跟着y时，才匹配x。 |
         | `x(?!y)` | 只有当x后面不是紧跟着y时，才匹配x。 |
 
         >贪婪模式：趋向于最大长度匹配。
 
-    >正则表达式测试：[测试模拟1](http://www.regexpal.com/)、[测试模拟2](http://regexr.com/)、[图像解释](https://regexper.com/)。
+    >正则表达式测试：[测试模拟](http://regexr.com/)、[图像解释](https://regexper.com/)。
 
 ### 正则函数
 1. RegExp对象的方法
@@ -136,7 +136,7 @@
         >
         >```javasscript
         >var regexp = /quick\s(brown).+?(jumps)/ig;
-        >var arr = re.exec('The Quick Brown Fox Jumps Over The Lazy Dog');
+        >var arr = regexp.exec('The Quick Brown Fox Jumps Over The Lazy Dog');
         >```
         >
         >产生的结果：

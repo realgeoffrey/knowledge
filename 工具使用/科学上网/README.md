@@ -44,6 +44,7 @@
     ./shadowsocks-go.sh uninstall
     ```
 
+---
 ## IKEV2(IKEV1)的VPN
 >来自[quericy:one-key-ikev2-vpn](https://github.com/quericy/one-key-ikev2-vpn)。
 
@@ -143,7 +144,7 @@
     3. 检查iptables配置。
 
 ---
-## 通过docker安装shadowsocks服务器和VPN服务器（最方便快捷）
+## 通过docker安装shadowsocks服务器和VPN服务器（最快捷方式）
 >[docker](https://www.docker.com/)建议Linux内核在3.0以上。[Bandwagon](https://bwh1.net/)内核只有2.6，无法使用docker。
 
 1. 安装、启动docker

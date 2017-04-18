@@ -43,6 +43,7 @@ function multiCallback(func, url) {
             }(arguments[i]));
         }
     } else {
+
         return false;
     }
 }

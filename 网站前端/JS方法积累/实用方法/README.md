@@ -425,7 +425,7 @@ function getLocation(url) {
 
     /* 为了方便阅读*/
     var _protocol = /^(?:([A-Za-z]+):)?/.source,
-        _slash = /(?:\/*)/.source,
+        _slash = /\/*/.source,
         _hostname = /([0-9A-Za-z.\-]+)/.source,
         _port = /(?::(\d+))?/.source,
         _pathname = /(\/[^?#]*)?/.source,
@@ -643,7 +643,7 @@ function randomFrom(minimum, maximum) {
 function random(length, charset) {
     charset = charset || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-    return Array.apply(0, new Array(length)).map(function () {
+    return Array.apply(null, new Array(length)).map(function () {
 
         return charset.charAt(Math.floor(Math.random() * charset.length));
     }).join('');

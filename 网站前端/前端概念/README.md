@@ -107,6 +107,9 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
                 >HTTP请求头包含：`Connection: Keep-Alive`。
 
                 客户端和服务器之间用于传输HTTP数据的TCP连接短期不会关闭，如果客户端再次访问这个服务器上的网页，会继续使用这一条已经建立的连接。
+            3. 持久连接：
+
+                websocket
     3. 浏览器发送请求，服务器发送数据
 
         1. 建立TCP／IP成功后，浏览器即可向服务器发送HTTP请求。
@@ -148,17 +151,18 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
 ![页面解析步骤图](./images/load-html-1.png)
 
 1. 增量式生成一个文档对象模型（DOM），解析页面内容（HTML标签）。
-2. 加载DOM中所有CSS，生成一个CSS对象模型（CSSOM），描述对页面内容如何设置样式。
 
-    加载CSS并构造完整的CSSOM之前，**阻塞渲染**（Render Tree渲染被暂停）。
-3. 加载DOM中所有JS，对DOM和CSSOM进行访问和更改。
+    1. 加载DOM中所有CSS，生成一个CSS对象模型（CSSOM），描述对页面内容如何设置样式。
 
-    1. HTML中出现JS，**阻塞解析**（DOM构造被暂停）。
-    2. 下载脚本或内嵌脚本不用下载。
-    3. 等待所有CSS被提取并且CSSOM被构造完毕。
-    4. CSSOM被构造完毕后，执行脚本，访问和更改DOM和CSSOM。
-    5. DOM构造继续进行。
-4. DOM（parse HTML）和CSSOM（recalculate style）构造完成后，进行渲染：
+        加载CSS并构造完整的CSSOM之前，**阻塞渲染**（Render Tree渲染被暂停）。
+    2. 加载DOM中所有JS，对DOM和CSSOM进行访问和更改。
+
+        1. HTML中出现JS，**阻塞解析**（DOM构造被暂停）。
+        2. 下载脚本或内嵌脚本不用下载。
+        3. 等待所有CSS被提取并且CSSOM被构造完毕。
+        4. CSSOM被构造完毕后，执行脚本，访问和更改DOM和CSSOM。
+        5. DOM构造继续进行。
+2. DOM（parse HTML）和CSSOM（recalculate style）构造完成后，进行渲染：
 
     Render Tree（渲染树）：Layout -> Paint -> Composite
 
@@ -364,7 +368,7 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
         2. HTTPOnly
 
             Cookie设置为HTTPOnly不能在客户端使用~~document.cookie~~访问。
-        3. 过滤技术：浏览器的XSS Auditor、W3的Content-Security-Policy。
+        3. 过滤技术：浏览器的XSS Auditor、W3C的Content-Security-Policy。
         >flash的安全沙盒机制配置跨域传输：crossdomian.xml
 2. CSRF
 
@@ -427,7 +431,7 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
     | :--- | :--- |
     | 请求数量 | 合并脚本和样式表，雪碧图，拆分初始化负载，划分主域 |
     | 请求带宽 | 开启gzip，精简JS，移除重复脚本，图像优化 |
-    | 缓存利用 | 使用CDN，使用外部JS和CSS，添加Expires头，配置ETag，减少DNS查找，使AJAX可缓存 |
+    | 缓存利用 | 使用CDN，使用外部JS和CSS，HTTP头添加缓存相关内容，减少DNS查找，使AJAX可缓存 |
     | 页面结构 | 将样式表放在顶部，将脚本放在底部，尽早刷新文档的输出 |
     | 代码校验 | 避免CSS表达式，避免重定向 |
 3. 从输入URL到页面完成的具体优化：
@@ -451,31 +455,7 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
 
         前端对具体代码性能、CRP（Critical Rendering Path，关键呈现路径，优先显示与当前用户操作有关的内容）的优化。
 
-        1. 优化CRP：
-
-            1. 减少关键资源：
-
-                1. 首屏资源合并。
-                2. 非首屏资源延迟异步加载：
-
-                    1. 增量加载资源：
-
-                        1. [图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)。
-                        2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto滚动加载)）。
-                        3. 功能文件按需加载。
-                    2. 使AJAX可缓存。
-                3. [预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-            2. 最小化字节：
-
-                1. 压缩资源、去除重复资源。
-                2. 图片优化
-
-                    压缩、大图切小图、小图合并雪碧图、Base64、WebP。
-                >单个大文件需要多次与服务器往返来获取。
-            3. 缩短CRP长度：
-
-                CSS放在HTML顶部，JS放在HTML底部。
-        2. 技术上优化：
+        1. 技术上优化：
 
             1. CSS性能：
 
@@ -487,4 +467,27 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
                 2. [闭包合理使用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包)。
                 3. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)。
                 4. [函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)。
-            3. 使用单页应用等技术。
+        2. 优化CRP：
+
+            1. 减少关键资源：
+
+                1. 资源合并。
+                2. 非首屏资源延迟异步加载：
+
+                    1. 增量加载资源：
+
+                        1. [图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)。
+                        2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto滚动加载)）。
+                        3. 功能文件按需加载。
+                    2. 使AJAX可缓存。
+                3. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
+            2. 最小化字节：
+
+                1. 压缩资源、去除重复资源。
+                2. 图片优化
+
+                    压缩、大图切小图、小图合并雪碧图、Base64、WebP。
+                >单个大文件需要多次与服务器往返来获取。
+            3. 缩短CRP长度：
+
+                CSS放在HTML顶部，JS放在HTML底部。

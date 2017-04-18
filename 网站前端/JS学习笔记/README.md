@@ -82,7 +82,7 @@
     >2. `setTimeout`与`setInterval`中第一个参数若使用字符串，也是使用`eval`把字符串转化为代码。
 10. `if`、`for`以及`while`之类的判断语句中用赋值操作
 
-    （大部分是误用）赋值的内容Boolen后为假会导致条件判断为假：`if(a = false){/* 不执行*/}`。
+    （大部分是误用）赋值的内容Boolean后为假会导致条件判断为假：`if(a = false){/* 不执行*/}`。
     >判断语句内只判断整体返回值是`true`还是`false`，与里面执行内容无关（尽管对其语法有所限制）。
 11. 获取数组中最大最小值：`Math.min.apply(null, [1, 2, 3]);/* 1*/`、`Math.max.apply(null, [1, 2, 3]);/* 3*/`。
 
@@ -196,7 +196,7 @@
     //对象字面量
     var obj1 = {a: 'b'};
 
-    //构造函数实例化。对象包装器：如果参数是null或undefined，将会创建并返回一个空对象；否则，将返回一个与给定值对应类型的对象。
+    //构造函数实例化。对象包装器：若参数是null或undefined，将会创建并返回一个空对象；否则，将返回一个与给定值对应类型的对象
     var obj2 = new Object();            //{}
     var obj3 = new Object(1);           //等价于 new Number(1)
     var obj4 = new Object(true);        //等价于 new Boolean(true)
@@ -214,25 +214,25 @@
 
     //构造函数实例化
     var arr2 = new Array();     //[]
-    var arr3 = new Array(2);    //[undefined, undefined]
+    var arr3 = new Array(2);    //[undefined, undefined]（空位）
     var arr4 = new Array(2, 3); //[2, 3]
 
     //普通函数（与new的方式结果一致）
     var arr5 = Array();         //[]
-    var arr6 = Array(2);        //[undefined, undefined]
+    var arr6 = Array(2);        //[undefined, undefined]（空位）
     var arr7 = Array(2, 3);     //[2, 3]
     ```
 3. 字符串
 
     ```javascript
     //字符串字面量
-    var str1 = 'string';
+    var str1 = 'string';                //'string'
 
     //普通函数
-    var str2 = String('string');
+    var str2 = String('string');        //'string'
 
     //构造函数实例化
-    var str3 = new String('string');
+    var str3 = new String('string');    //包装对象
 
 
     console.log(typeof str1, str1 instanceof String);   //string false
@@ -450,13 +450,13 @@
     4. 所有其他语法元素与左括号之间，都有一个空格。
     5. 不要省略句末的分号。
     6. 不要使用`with`语句。
-    7. 不要使用“相等”（`==`）运算符，只使用“严格相等”（`===`）运算符（同理仅适用`!==`，不使用`!=`）。
+    7. 不要使用“相等”（`==`）运算符，只使用“严格相等”（`===`）运算符（同理仅使用`!==`，不使用`!=`）。
     8. 不要将不同目的的语句，合并成一行。
     9. 所有变量声明都放在函数的头部。
     10. 所有函数都在使用之前定义。
     11. 避免使用全局变量；*如果不得不使用，用大写字母表示变量名。*
     12. 不要使用`new`命令，改用`Object.create()`命令。
-    13. 建构函数的函数名，采用首字母大写；其他函数名，一律首字母小写。
+    13. 构造函数的函数名，采用首字母大写；其他函数名，一律首字母小写。
     14. 不要使用自增（`++`）和自减（`--`）运算符，用`+= 1`和`-= 1`代替。
     15. 总是使用大括号表示区块（不省略大括号）。
 9. JS编码规范
@@ -502,7 +502,7 @@
 
     1. 不要~~用JS修改CSS样式~~，JS只修改class（任何时刻，CSS中的样式都可以修改，而不必更新JS）。
 
-        >特例：根据页面重新定位，可以用JS设定定位置（如`top`、`bottom`等）。
+        >特例：根据页面重新定位，可以用JS设定位置（如`top`、`bottom`等）。
     2. 将HTML从JS中抽离，避免增加跟踪文本和结构性问题的复杂度。可以使用模板引擎，如[handlebars.js](https://github.com/wycats/handlebars.js)。
 2. 避免使用全局变量
 
@@ -547,7 +547,7 @@
     1. 普通版：
 
         ```javascript
-        var oneConstructor = function () {
+        var OneConstructor = function () {
             /* 私有的内容*/
             var _para = {a: '私有的变量_para'},
                 _func = function () {
@@ -578,7 +578,7 @@
     2. 拥有原型链内容（所有实例都共享）：
 
         ```javascript
-        var oneConstructor = (function () {
+        var OneConstructor = (function () {
             /* 私有的内容*/
             var _para = {a: '私有的变量_para'},
                 _func = function () {
@@ -681,14 +681,12 @@
     >有可能已经不存在此bug：被浏览器取消`click`事件的延时，或Zepto改变了`tap`事件实现。
 3. 解决方法：
 
-    1. 最佳实践：
+    1. 使用[fastclick.js](https://github.com/ftlabs/fastclick)消除`click`的延时（最佳方式）
 
-        使用[fastclick.js](https://github.com/ftlabs/fastclick)（消除`click`的延时）后用`click`代替全部`tap`事件，这样pc端和wap端都可以一致用`click`事件并且不会出现wap端点透bug。
-    2. 其他方法：
-
-        1. 使用缓动动画，过度300ms延迟。
-        2. 中间增加一层接受这个点透事件，然后去除此层。
-        3. 使用[模拟点击事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js移动端模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)代替`click`。
+        用`click`代替全部`tap`事件，这样pc端和wap端都可以一致用`click`事件并且不会出现wap端点透bug。
+    2. 使用缓动动画，过度300ms延迟。
+    3. 中间增加一层接受这个点透事件，然后去除此层。
+    4. 使用[模拟点击事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js移动端模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)代替`click`。
 
 ### [函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js防抖函数)、[函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js节流函数)
 >都是用来控制某个函数在一定时间内执行多少次的技巧。
@@ -955,7 +953,7 @@
 
     1. `if($(...).length > 0) {}//若无则为0`
     2. `if($(...)[0]) {}//若无则为undefined`
-4. `on`绑定效率
+4. `on`绑定效率（事件代理、事件委托）
 
     >e.g. `$(eventHandler).on(event, selector, func);`
 
@@ -990,7 +988,7 @@
 ## 功能用法
 
 ### 判断类型
-1. `Object.prototype.toString.apply(值);`或`call`
+1. `Object.prototype.toString.call(值);`或`apply`
 
     1. 没有跨帧问题。
     2. 放入**内置对象**，返回`'[object 构造函数的名称]'`的字符串
@@ -1063,7 +1061,7 @@
 >2. `forEach`、`map`、`filter`、`some`、`every`无法中止循环（`return`只结束回调函数）。
 >3. `$.each/$dom.each`跳出循环用`return true`（功能类似于`continue`）和`return false`（功能类似于`break`）。
 
->`obj`为对象实例，`arr`为数组实例，$dom为jQuery对象。
+>`obj`为对象实例，`arr`为数组实例，`$dom`为jQuery对象。
 
 1. 原生JS
 
@@ -1295,26 +1293,18 @@
     ```javascript
     for (var i = 0; i < 3; i++) {
         //匿名函数
-        (function (i) {
-            $.ajax({
-                url: 'url1',
-                dataType: 'json',
-                data: {}
-            }).done(function (data) {
-                console.log(i); //结果是传入进匿名函数的形参
-            });
+        (function (para) {
+            setTimeout(function () {
+                console.log(para); //结果是传入进匿名函数的形参
+            }, 0);
         }(i));
     }
 
     for (var i = 0; i < 3; i++) {
         //不用匿名函数
-        $.ajax({
-            url: 'url1',
-            dataType: 'json',
-            data: {}
-        }).done(function (data) {
+        setTimeout(function () {
             console.log(i); //每个结果都是固定的最后一个值
-        });
+        }, 0);
     }
     ```
 
@@ -1636,7 +1626,7 @@
             this.sonReference = ['son1', 2, [{4: true}, undefined, null]];
         }
         
-        /* 子类继承父类方法*/
+        /* 子类继承父类原型链*/
         Son.prototype = Object.create(Father.prototype, {constructor: {value: Son}});
         
         /* 子类方法*/
