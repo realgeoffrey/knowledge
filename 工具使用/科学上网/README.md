@@ -123,7 +123,7 @@
         ipsec status  #查看状态
         ipsec --help  #查看帮助
         ```
-    2. 添加**/usr/local/sbin/ipsec start**到自启动脚本文件中(如rc.local等)
+    2. 添加 **/usr/local/sbin/ipsec start**到自启动脚本文件中(如rc.local等)
 
         ```bash
         vi /etc/rc.d/rc.local

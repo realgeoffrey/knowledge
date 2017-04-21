@@ -269,7 +269,7 @@
 	6. 安装rapid SVN
 
 		图形界面：
-		在“软件中心”搜索并下载rapid SVN，选择checkout（签出），url填写局域网http地址，目标目录填写本地存放地址。
+		在“软件中心”搜索并下载rapid SVN，选择checkout（签出），url填写局域网HTTP地址，目标目录填写本地存放地址。
 		增加：文件右键->Add
 		删除：文件右键->删除
 		提交：文件或总的文件夹选择commit

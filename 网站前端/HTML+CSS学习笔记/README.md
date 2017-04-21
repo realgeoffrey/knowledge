@@ -511,19 +511,19 @@
 ### img标签的圆形、边框
 1. 圆形+边框
 
-    1. pc
+    1. PC
 
         直接在img标签上设置`border`和`border-radius`。
-    2. wap
+    2. WAP
 
         在img标签上设置`border-radius`，并且在父级标签嵌套一层设置`border`和`border-radius`。
 2. 圆形（无边框）
 
-    - pc、wap
+    - PC、WAP
 
         直接在img标签上设置`border-radius`。
 
-### wap页面自适应图片
+### WAP页面自适应图片
 要求：图片根据浏览器窗口变化而宽高同时等比例变化，不使用`img`标签（只有内容图片才使用img标签）。
 
 1. *横向、纵向百分比的`padding`（和`margin`）值都是以父元素的`width`为基础，`height`是以父元素的`height`为基础*
@@ -1770,7 +1770,7 @@
     }
     ```
 
-### 移动端制作类似pc端的`:active`效果（或`:hover`）
+### 移动端制作类似PC端的`:active`效果（或`:hover`）
 1. Android系统的浏览器大部分直接使用CSS伪类即可。
 2. iOS系统的浏览器要添加以下代码触发使CSS伪类生效：
 
@@ -1829,7 +1829,7 @@
     1. `<script type="text/template"></script>`
     2. `<template></template>`
     3. `<textarea style="display:none;"></textarea>`
-7. wap页面或支持伪类的浏览器，能用`:before/after`的就不要添加标签。
+7. WAP页面或支持伪类的浏览器，能用`:before/after`的就不要添加标签。
 8. 单选、多选按钮开关自定义样式
 
     用`input:checked + 兄弟节点`（`<input type="radio">`或`<input type="checkbox">`）操作选项选中与否的不同样式；可以隐藏`input`元素，用自定义样式来制作单选框、复选框。完全代替JS。

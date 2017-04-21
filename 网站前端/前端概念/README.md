@@ -125,7 +125,7 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
     1. request：
 
         ```http
-        <method> <request-URL> <version>                //请求行
+        <method> <request-URI> <version>                //请求行
         <headers>                                       //请求头
 
         <entity-body>                                   //请求消息主体
@@ -135,13 +135,13 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
     2. response：
 
         ```http
-        <version> <status code> <status description>    //状态行
+        <version> <status code> <reason phrase>    //状态行
         <headers>                                       //响应头
 
         <entity-body>                                   //响应正文
         ```
 
-        >[状态码、状态描述](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http状态码http-status-codes)。
+        >[状态码、原因短语](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http状态码http-status-codes)。
 
     >[HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http头http-headers)。
 
@@ -177,9 +177,11 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
 
 1. HTTP协议定义的缓存机制
 
+    >只缓存GET请求。
+
     1. 强缓存（本地缓存）
 
-        浏览器加载资源时，先根据这个资源之前响应头的`Cache-Control`、`Expires`判断它是否命中强缓存（判断是否到了过期时间）。
+        浏览器加载资源时，先根据这个资源之前响应头的`Expires`、`Cache-Control`判断它是否命中强缓存（判断是否到了过期时间）。
 
         1. 命中状态码：
 
@@ -190,7 +192,7 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
 
             1. `Expires`：
 
-                绝对时间。http1.0提出。
+                绝对时间。HTTP1.0提出。
 
                 1. 浏览器第一次跟服务器请求一个资源，服务器在返回这个资源的同时，会返回一系列响应头。
 
@@ -202,7 +204,7 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
                     2. 若没有命中缓存，发请求到服务器，响应头更新这个资源的Expires。
             2. `Cache-Control`：
 
-                相对时间。http1.1提出。
+                相对时间。HTTP1.1提出。
 
                 1. 浏览器第一次跟服务器请求一个资源，服务器在返回这个资源的同时，会返回一系列响应头。
 
@@ -216,7 +218,7 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
         >建议：[配置超长时间的本地缓存；采用内容摘要（MD5）作为缓存更新依据](https://github.com/fouber/blog/issues/6)。
     2. 协商缓存
 
-        若没有命中强缓存，浏览器发送一个请求到服务器，根据这个资源的`ETag/If-None-Match`、`Last-Modified/If-Modified-Since`判断它是否命中协商缓存（判断缓存资源和服务端资源是否一致）。
+        若没有命中强缓存，浏览器发送一个请求到服务器，根据这个资源的`If-Modified-Since`（`Last-Modified`）、`If-None-Match`（`ETag`）判断它是否命中协商缓存（判断缓存资源和服务端资源是否一致）。
 
         1. 命中状态码：
 
@@ -407,6 +409,21 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
         1. 升级hash算法。
         2. 限制POST参数个数和请求长度。
         3. 防火墙检测异常请求。
+4. 其他攻击
+
+    1. DNS攻击
+
+        使域名指往不正确的IP地址。
+
+        1. 攻击方式
+
+            1. 针对DNS服务器：DDOS攻击。
+            2. 针对用户：DNS欺骗或劫持（访问恶意DNS服务器）、DNS缓存服务器投毒或污染、本机劫持（hosts文件篡改、本机DNS劫持、SPI链注入、DHO插件）。
+        2. 防御措施
+
+            1. 使用安全的DNS服务器。
+            2. VPN或域名远程解析。
+            3. 查杀病毒，清空DNS缓存。
 
 ### 前端性能优化
 1. 网络应用的生命期建议：
@@ -447,13 +464,13 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
         3. 对资源进行缓存：
 
             1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
-            2. 使用[缓存相关的HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#浏览器缓存)：Expires、Cache-Control、ETag/If-None-Match、Last-Modified/If-Modified-Since。
+            2. 使用[缓存相关的HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#浏览器缓存)：Expires、Cache-Control、Last-Modified/If-Modified-Since、ETag/If-None-Match。
         4. 减少DNS查找，设置合适的TTL值，避免重定向。
         5. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#静态资源使用额外域名domain-hash的原因)。
         6. [非覆盖式发布](https://github.com/fouber/blog/issues/6)。
     2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#页面载入解析步骤)：
 
-        前端对具体代码性能、CRP（Critical Rendering Path，关键呈现路径，优先显示与当前用户操作有关的内容）的优化。
+        前端对具体代码性能、CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）的优化。
 
         1. 技术上优化：
 
@@ -471,19 +488,19 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
 
             1. 减少关键资源：
 
-                1. 资源合并。
+                1. 资源合并、重复资源去除。
                 2. 非首屏资源延迟异步加载：
 
                     1. 增量加载资源：
 
                         1. [图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)。
                         2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto滚动加载)）。
-                        3. 功能文件按需加载。
-                    2. 使AJAX可缓存。
+                        3. 功能文件按需加载（模块化、组件化）。
+                    2. 使AJAX可缓存（当用GET方式时添加缓存响应头）。
                 3. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
             2. 最小化字节：
 
-                1. 压缩资源、去除重复资源。
+                1. 压缩资源。
                 2. 图片优化
 
                     压缩、大图切小图、小图合并雪碧图、Base64、WebP。

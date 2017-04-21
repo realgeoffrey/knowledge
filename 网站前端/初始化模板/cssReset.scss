@@ -41,7 +41,7 @@ button:-moz-focusring,[type="button"]:-moz-focusring,[type="reset"]:-moz-focusri
 [type="search"]::-webkit-search-cancel-button,[type="search"]::-webkit-search-decoration {-webkit-appearance:none;}
 body {word-wrap:break-word;}
 
-/* -wap*/
+/* -WAP*/
 a {-webkit-text-decoration-skip:objects;}
 audio:not([controls]) {display:none;height:0;}
 button,html [type="button"],[type="reset"],[type="submit"] {-webkit-appearance:button;}
@@ -56,7 +56,7 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
 
 /*-webkit-touch-callout:none;不触发系统菜单*/
 /*-webkit-user-select:none;不被选择*/
-/*/-wap*/
+/*/-WAP*/
 
 /* -富文本需重载*/
 .富文本类 em {
@@ -250,7 +250,7 @@ a:hover {
 }
 /*/全局*/
 
-/* wap媒体查询（320px~640px），最大width:32rem;*/
+/* WAP媒体查询（320px~640px），最大width:32rem;*/
 @media (max-width: 351px) {
     html {font-size: 10px;}
 }
@@ -284,8 +284,8 @@ a:hover {
 @media (min-width: 640px) {
     html {font-size: 20px;}
 }
-/*/wap媒体查询*/
-/* pc媒体查询（980px~1920px），最大width:49rem;*/
+/*/WAP媒体查询*/
+/* PC媒体查询（980px~1920px），最大width:49rem;*/
 @media (max-width: 1028px) {
     html {font-size: 20px;}
 }
@@ -346,7 +346,7 @@ a:hover {
 @media (min-width: 1911px) {
     html {font-size: 39px;}
 }
-/*/pc媒体查询*/
+/*/PC媒体查询*/
 
 /* 布局*/
 .full-bg {

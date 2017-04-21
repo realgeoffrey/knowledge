@@ -110,50 +110,6 @@ function animateTo(endX, endY, time) {
 >使用[velocity动画库](https://github.com/julianshapiro/velocity)（[中文文档](http://www.mrfront.com/docs/velocity.js/)）做所有的动画（包括JS和CSS）才是最简单且性能最佳的选择。
 >比如滚动到某位置：`$('html').velocity('scroll', {offset: y轴像素, duration: 毫秒});`。
 
-### *原生JS*移动端获取触屏滚动距离(可改写为鼠标拖拽功能)
-```javascript
-function touchMoveAct(dom) {
-    var beginX,
-        beginY;
-
-    function _touchStart(e) {
-        beginX = e.touches[0].clientX;
-        beginY = e.touches[0].clientY;
-
-        dom.addEventListener('touchmove', _touchMove, false);
-    }
-
-    function _touchMove(e) {
-        e.stopPropagation();
-        e.preventDefault();
-
-        var offsetX = e.touches[0].clientX - beginX,
-            offsetY = e.touches[0].clientY - beginY;
-
-        beginX = e.touches[0].clientX;
-        beginY = e.touches[0].clientY;
-
-        _movFuc(this, offsetX, offsetY);
-    }
-
-    function _movFuc(dom, x, y) {
-        console.log(x, y);
-        /* do sth...*/
-    }
-
-    dom.addEventListener('touchstart', _touchStart, false);
-
-    dom.addEventListener('touchend', function () {
-        dom.removeEventListener('touchmove', _touchMove, false);
-    }, false);
-}
-
-
-/* 使用测试*/
-touchMoveAct(document.getElementById('test'));
-```
->可以用`mousedown`、`mousemove`代替`touchstart`、`touchmove`来改写成鼠标拖拽。
-
 ### *原生JS*判断浏览器userAgent（`window.navigator`）
 ```javascript
 function SnifBrowser() {
@@ -997,10 +953,10 @@ var eventUtil = {
      * @param {Function} handle - 处理函数
      */
     addHandler: function (dom, type, handle) {
-        if (typeof dom.addEventListener === 'function') {   /* DOM2级，除ie6~8外的高级浏览器*/
+        if (typeof dom.addEventListener === 'function') {   /* DOM2级，除ie8-外的高级浏览器*/
             dom.addEventListener(type, handle, false);
         } else if (typeof dom.attachEvent === 'function') { /* 所有ie浏览器*/
-            dom.attachEvent('on' + type, handle);
+            dom.attachEvent('on' + type, handle.bind(dom));
         } else {    /* DOM0级，最早期的浏览器都支持*/
             dom['on' + type] = handle;
         }
@@ -1016,7 +972,7 @@ var eventUtil = {
         if (typeof dom.removeEventListener === 'function') {
             dom.removeEventListener(type, handle, false);
         } else if (typeof dom.detachEvent === 'function') {
-            dom.detachEvent('on' + type, handle);
+            dom.detachEvent('on' + type, handle.bind(dom));
         } else {
             dom['on' + type] = null;
         }
@@ -1028,34 +984,6 @@ var eventUtil = {
 >2. `attachEvent`与`detachEvent`是ie特有方法，必须一一对应具体的**handle**进行解绑。
 >3. `on+type`是所有浏览器都支持，用赋值覆盖解绑。
 >4. jQuery的`on`（或`one`）与`off`：当写具体handle时解绑具体handle；不写handle时默认解绑对象下某事件的所有方法；还可以对事件添加namespace。
-
-### *原生JS*、jQuery或Zepto获取事件对象引用、目标元素引用
->ie8-的DOM0事件（直接on+type）没有传递**事件对象**到**事件处理函数**中，要额外的`window.event`对象进行相关操作。
-
-1. *原生JS*
-
-    ```javascript
-    function getEvent(event) {
-        return event || window.event;
-    }
- 
-    function getTarget(event) {
-        if (event && event.target) {
-    
-            return event.target;
-        } else {
-    
-            return window.event.srcElement;
-        }
-    }
-    ```
-2. jQuery或Zepto
-
-    ```javascript
-    $('...').on('...', function (e) {
-        /* 可以直接使用事件对象引用e和目标引用e.target*/
-    });
-    ```
 
 ### *原生JS*、jQuery或Zepto阻止冒泡和阻止浏览器默认行为
 1. 阻止冒泡
@@ -1089,8 +1017,6 @@ var eventUtil = {
             } else {
                 window.event.returnValue = false;
             }
-     
-            return false;
         }
         ```
     2. jQuery或Zepto
@@ -1113,8 +1039,6 @@ var eventUtil = {
                 window.event.cancelBubble = true;
                 window.event.returnValue = false;
             }
-     
-            return false;
         }
         ```
     2. jQuery或Zepto
@@ -1130,18 +1054,20 @@ var eventUtil = {
 1. *原生JS*
 
     ```javascript
-    function checkKeyCode(event) {
-        var e = event || window.event,
-            keyCode = e.charCode || e.keyCode;  /* 获取键值*/
+    function checkKeyCode(e) {
+        var event = e || window.event,
+            keyCode = event.charCode || event.keyCode;  /* 获取键值*/
     
         if (keyCode === 13) {   /* 查询键值表 例:13->换行*/
             /* 具体操作...*/
     
-            /* 取消默认行为*/
-            if (window.event) {
-                window.event.returnValue = false;
+            /* 阻止冒泡&阻止默认行为*/
+            if (e && e.stopPropagation) {
+                e.stopPropagation();
+                e.preventDefault();
             } else {
-                event.preventDefault();
+                window.event.cancelBubble = true;
+                window.event.returnValue = false;
             }
         }
     }
@@ -1157,9 +1083,201 @@ var eventUtil = {
         if (e.which === 13) {   /* 查询键值表 例:13->换行*/
             /* 具体操作...*/
     
-            return false;   //取消默认行为
+            return false;   //阻止冒泡&阻止默认行为
         }
     });
+    ```
+
+### *原生JS*拖拽和放下
+1. PC版的鼠标事件
+
+    ```javascript
+    function Drag(dom, parentDom) {
+        var maxX = parentDom.offsetWidth - dom.offsetWidth,
+            maxY = parentDom.offsetHeight - dom.offsetHeight,
+            domX, domY, beginX, beginY;
+
+        /* 绑定事件*/
+        function _addHandler(dom, type, handle) {
+            if (typeof dom.addEventListener === 'function') {
+                dom.addEventListener(type, handle, false);
+            } else if (typeof dom.attachEvent === 'function') {
+                dom.attachEvent('on' + type, handle.bind(dom));
+            } else {
+                dom['on' + type] = handle;
+            }
+        }
+
+        /* 解绑事件*/
+        function _removeHandler(dom, type, handle) {
+            if (typeof dom.removeEventListener === 'function') {
+                dom.removeEventListener(type, handle, false);
+            } else if (typeof dom.detachEvent === 'function') {
+                dom.detachEvent('on' + type, handle.bind(dom));
+            } else {
+                dom['on' + type] = null;
+            }
+        }
+
+        /* 阻止冒泡&阻止默认行为*/
+        function _returnFalse(e) {
+            if (e && e.stopPropagation) {
+                e.stopPropagation();
+                e.preventDefault();
+            } else {
+                window.event.cancelBubble = true;
+                window.event.returnValue = false;
+            }
+        }
+
+        /* 拖拽开始*/
+        function actBegin(e) {
+            e = e || window.event;
+
+            domX = dom.offsetLeft;
+            domY = dom.offsetTop;
+
+            beginX = e.clientX;
+            beginY = e.clientY;
+
+            _addHandler(parentDom, 'mousemove', actMove);
+
+            _returnFalse(e); //阻止冒泡、阻止默认行为
+        }
+
+        /* 拖拽移动*/
+        function actMove(e) {
+            e = e || window.event;
+
+            var finalX = e.clientX - beginX + domX,
+                finalY = e.clientY - beginY + domY;
+
+            if (finalX > maxX) {
+                finalX = maxX;
+            } else if (finalX < 0) {
+                finalX = 0;
+            }
+            if (finalY > maxY) {
+                finalY = maxY;
+            } else if (finalY < 0) {
+                finalY = 0;
+            }
+
+            /* 具体移动（使用left、top）*/
+            //requestAnimationFrame(function () {
+                dom.style.left = finalX + 'px';
+                dom.style.top = finalY + 'px';
+            //});
+
+            _returnFalse(e); //阻止冒泡、阻止默认行为
+        }
+
+        /* 拖拽取消*/
+        function cancel(e) {
+            _removeHandler(parentDom, 'mousemove', actMove);
+
+            _returnFalse(e); //阻止冒泡、阻止默认行为
+        }
+
+        /* 绑定事件*/
+        _addHandler(dom, 'mousedown', actBegin);
+        _addHandler(parentDom, 'mouseup', cancel);
+        _addHandler(parentDom, 'mouseleave', cancel);
+
+        this.stop = function () {
+            _removeHandler(dom, 'mousedown', actBegin);
+            _removeHandler(parentDom, 'mouseup', cancel);
+            _removeHandler(parentDom, 'mouseleave', cancel);
+            _removeHandler(parentDom, 'mousemove', actMove);
+        };
+    }
+
+
+    /* 使用测试*/
+    var dom = document.getElementById('j-rect');
+    var action = new Drag(dom, dom.offsetParent);
+
+    //action.stop();
+    ```
+    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/7t25cm5t/)
+2. WAP版的touch事件
+
+    ```javascript
+    function Drag(dom, parentDom) {
+        var maxX = parentDom.offsetWidth - dom.offsetWidth,
+            maxY = parentDom.offsetHeight - dom.offsetHeight,
+            domX, domY, beginX, beginY;
+
+        /* 拖拽开始*/
+        function actBegin(e) {
+            domX = dom.offsetLeft;
+            domY = dom.offsetTop;
+
+            beginX = e.touches[0].pageX;
+            beginY = e.touches[0].pageY;
+
+            parentDom.addEventListener('touchmove', actMove, false);
+
+            /* 阻止冒泡、阻止默认行为*/
+            e.stopPropagation();
+            e.preventDefault();
+        }
+
+        /* 拖拽移动*/
+        function actMove(e) {
+            var finalX = e.touches[0].pageX - beginX + domX,
+                finalY = e.touches[0].pageY - beginY + domY;
+
+            if (finalX > maxX) {
+                finalX = maxX;
+            } else if (finalX < 0) {
+                finalX = 0;
+            }
+            if (finalY > maxY) {
+                finalY = maxY;
+            } else if (finalY < 0) {
+                finalY = 0;
+            }
+
+            /* 具体移动（使用left、top）*/
+            requestAnimationFrame(function () {
+                dom.style.left = finalX + 'px';
+                dom.style.top = finalY + 'px';
+            });
+
+            /* 阻止冒泡、阻止默认行为*/
+            e.stopPropagation();
+            e.preventDefault();
+        }
+
+        /* 拖拽取消*/
+        function cancel(e) {
+            parentDom.removeEventListener('touchmove', actMove, false);
+
+            /* 阻止冒泡、阻止默认行为*/
+            e.stopPropagation();
+            e.preventDefault();
+        }
+
+        /* 绑定事件*/
+        dom.addEventListener('touchstart', actBegin, false);
+        parentDom.addEventListener('touchend', cancel, false);
+        parentDom.addEventListener('touchcancel', cancel, false);
+
+        this.stop = function () {
+            dom.removeEventListener('touchstart', actBegin, false);
+            parentDom.removeEventListener('touchend', cancel, false);
+            parentDom.removeEventListener('touchcancel', cancel, false);
+            parentDom.removeEventListener('touchmove', actMove, false);
+        };
+    }
+
+
+    /* 使用测试*/
+    var dom = document.getElementById('j-rect');
+    var action = new Drag(dom, dom.offsetParent);
+
+    //action.stop();
     ```
 
 ### *原生JS*输入框光标位置的获取和设置

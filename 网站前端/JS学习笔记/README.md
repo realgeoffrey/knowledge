@@ -48,7 +48,7 @@
     大括号视为代码块，没有返回值。需要给大括号加上小括号，表明为一个值：`({a: 'b'}) + 1;/* [object Object]1*/`。
 6. HTML5的`audio`标签的自动播放属性`autoplay`
 
-    wap端的部分浏览器无法自动播放，可以设置触屏的时候开始播放：
+    WAP端的部分浏览器无法自动播放，可以设置触屏的时候开始播放：
 
     ```html
     <audio src="1.mp3" controls="controls" autoplay="autoplay" id="audio">
@@ -666,9 +666,9 @@
     >};
     >```
 
-### wap端点透bug
->1. pc端没有`touch`一系列事件。
->2. wap端有`touchstart`、`touchmove`、`touchend`、`touchcancel`等`touch`一系列事件。
+### WAP端点透bug
+>1. PC端没有`touch`一系列事件。
+>2. WAP端有`touchstart`、`touchmove`、`touchend`、`touchcancel`等`touch`一系列事件。
 >3. Zepto用`touch`一系列事件封装了`tap`事件。
 
 1. 点透现象：
@@ -676,14 +676,14 @@
     使用Zepto的`tap`事件绑定（或直接使用`touchstart`绑定）后，若此元素在触摸事件发生后离开原始位置（CSS或JS方式），底下同一位置正好有一个DOM元素绑定了`click`事件或有一个a标签，则会出现“点透”bug（触发了底下元素的点击事件）。
 2. 原因：
 
-    wap端触摸事件顺序：`touchstart`->`touchmove`->`touchend`->`click`，触摸一瞬间就触发`touchstart`（触摸结束后瞬间触发Zepto封装的`tap`事件），触摸结束后300ms才触发`click`事件。
+    WAP端触摸事件顺序：`touchstart`->`touchmove`->`touchend`->`click`，触摸一瞬间就触发`touchstart`（触摸结束后瞬间触发Zepto封装的`tap`事件），触摸结束后300ms才触发`click`事件。
 
     >有可能已经不存在此bug：被浏览器取消`click`事件的延时，或Zepto改变了`tap`事件实现。
 3. 解决方法：
 
     1. 使用[fastclick.js](https://github.com/ftlabs/fastclick)消除`click`的延时（最佳方式）
 
-        用`click`代替全部`tap`事件，这样pc端和wap端都可以一致用`click`事件并且不会出现wap端点透bug。
+        用`click`代替全部`tap`事件，这样PC端和WAP端都可以一致用`click`事件并且不会出现WAP端点透bug。
     2. 使用缓动动画，过度300ms延迟。
     3. 中间增加一层接受这个点透事件，然后去除此层。
     4. 使用[模拟点击事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js移动端模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)代替`click`。
@@ -1236,7 +1236,7 @@
             3. 应用场景：需要拆分成多个子页面的填写数据。
 2. `cookie`：
 
-    1. 客户端保存，始终在http请求中携带（亲测chrome显示有些请求没有携带cookie，为何？），服务端接受和操作客户端cookie。
+    1. 客户端保存，始终在HTTP请求中携带（亲测chrome显示有些请求没有携带cookie，为何？），服务端接受和操作客户端cookie。
     2. 字符串形式。不能包含任何**逗号**、**分号**或**空格**（可使用`encodeURIComponent`编码，再用`decodeURIComponent`解码）。
     3. 所有浏览器都支持。
     4. 单域名下，cookie保存的数据不超过4k，数量（最少）20个。

@@ -80,7 +80,7 @@ gulp.task('runJs', function () {
 
 /* 多图 -> 雪碧图 + 样式表*/
 gulp.task('runSprites', function () {
-    /* pc版*/
+    /* PC版*/
     gulp.src('../sprites/dev/*')
         .pipe(spritesmith({
             padding: 2, /* 合并图间距*/
@@ -91,7 +91,7 @@ gulp.task('runSprites', function () {
         }))
         .pipe(gulp.dest('../sprites/release/'));
 
-    /* wap版（rem+%）*/
+    /* WAP版（rem+%）*/
     gulp.src('../sprites/dev/*')
         .pipe(spritesmith({
             padding: 2,
