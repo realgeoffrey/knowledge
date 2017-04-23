@@ -67,84 +67,6 @@
     2. 缓存相关的浏览器缓存利用，缓存更新、缓存共享、非覆盖式发布等方案；
     3. 复杂的BigRender、BigPipe、Quickling、PageCache等技术。
 
-### HTTP协议
-HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-server协议，处于整个网络传输的最上层的应用层（网络传输的其他层次：传输层、网络层、链路层）。默认端口号80、无状态（cookie弥补）、以ASCII码传输。
-
-1. HTTP流程（精简版）：
-
-    1. 获取域名的IP地址
-
-        >IP协议，网络层协议，解决网络路由和寻址。
-
-        1. 搜索浏览器自身DNS缓存。
-        2. 若缓存没找到或者已失效，搜索操作系统DNS缓存。
-        3. 若没找到，读取本地HOST文件。
-        4. 若没找到，发起一个DNS的系统调用。
-
-            >1. 宽带运营商服务器查看本身缓存。
-            >2. 若没找到，运营商服务器发起一个迭代DNS解析的请求。
-            >
-            >    1. 运营商服务器把结果返回给用户操作系统内核（以上只要成功获取IP地址，每一层都会缓存在自己的系统内以便调用）。
-            >    2. 操作系统内核把结果返回浏览器。
-    2. 建立TCP／IP连接
-
-        >TCP协议，传输层协议，提供可靠的传递数据包。
-
-        - 发起HTTP“三次握手”（验证客户端），试图建立TCP／IP链接：
-
-            首先客户端向服务端发SYN（同步请求），然后服务端回复SYN+ACK（同步请求应答），最后客户端回复ACK确认。
-
-            >关闭TCP链接要“四次挥手”。
-        - 短连接、长连接
-
-            >参考[HTTP长连接和短连接](http://www.cnblogs.com/0201zcr/p/4694945.html)。
-
-            1. 短连接：
-
-                浏览器和服务器每进行一次HTTP操作，就建立一次连接，任务结束后就中断连接。
-            2. 长连接：
-
-                >HTTP请求头包含：`Connection: Keep-Alive`。
-
-                客户端和服务器之间用于传输HTTP数据的TCP连接短期不会关闭，如果客户端再次访问这个服务器上的网页，会继续使用这一条已经建立的连接。
-            3. 持久连接：
-
-                websocket
-    3. 浏览器发送请求，服务器发送数据
-
-        1. 建立TCP／IP成功后，浏览器即可向服务器发送HTTP请求。
-        2. 服务器端接受到了这个请求，根据路径参数、经过后端处理之后，把结果的数据返回浏览器。
-    4. 获取所有资源
-
-        若获取的是HTML代码资源，里面的JS、CSS、图片也都必须通过一个个以上完整的HTTP请求步骤进行交通。
-    5. 展示
-
-        根据拿到的资源对页面进行渲染，最终呈现完整的页面。
-2. HTTP报文组成
-
-    1. request：
-
-        ```http
-        <method> <request-URI> <version>                //请求行
-        <headers>                                       //请求头
-
-        <entity-body>                                   //请求消息主体
-        ```
-
-        >[请求方法](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http请求方法http-request-methods)。
-    2. response：
-
-        ```http
-        <version> <status code> <reason phrase>    //状态行
-        <headers>                                       //响应头
-
-        <entity-body>                                   //响应正文
-        ```
-
-        >[状态码、原因短语](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http状态码http-status-codes)。
-
-    >[HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#http头http-headers)。
-
 ### 页面载入解析步骤
 >参考[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)。
 
@@ -175,7 +97,7 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
 ### 浏览器缓存
 >参考[浏览器缓存知识小结及应用](http://www.cnblogs.com/lyzg/p/5125934.html)。
 
-1. HTTP协议定义的缓存机制
+1. HTTP定义的缓存机制
 
     >只缓存GET请求。
 
@@ -192,7 +114,7 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
 
             1. `Expires`：
 
-                绝对时间。HTTP1.0提出。
+                绝对时间。HTTP/1.0提出。
 
                 1. 浏览器第一次跟服务器请求一个资源，服务器在返回这个资源的同时，会返回一系列响应头。
 
@@ -204,7 +126,7 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
                     2. 若没有命中缓存，发请求到服务器，响应头更新这个资源的Expires。
             2. `Cache-Control`：
 
-                相对时间。HTTP1.1提出。
+                相对时间。HTTP/1.1提出。
 
                 1. 浏览器第一次跟服务器请求一个资源，服务器在返回这个资源的同时，会返回一系列响应头。
 
@@ -355,7 +277,7 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
 ### 安全漏洞攻击
 1. XSS
 
-    跨站脚本（Cross-site scripting，XSS）是恶意代码注入网页的安全漏洞攻击。利用用户对指定网站的信任。
+    跨站脚本（Cross-Site Scripting，XSS）是恶意代码注入网页的安全漏洞攻击。利用用户对指定网站的信任。
 
     1. 攻击方式
 
@@ -367,14 +289,15 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
     2. 防御措施：
 
         1. 过滤用户输入（白名单）。
-        2. HTTPOnly
+        2. HttpOnly
 
-            Cookie设置为HTTPOnly不能在客户端使用~~document.cookie~~访问。
+            Cookie设置为HttpOnly不能在客户端使用~~document.cookie~~访问。
         3. 过滤技术：浏览器的XSS Auditor、W3C的Content-Security-Policy。
+
         >flash的安全沙盒机制配置跨域传输：crossdomian.xml
 2. CSRF
 
-    跨站请求伪造（Cross-site request forgery，CSRF）是挟制用户在已登录的网页上执行非本意操作的安全漏洞攻击。利用网站对用户网页浏览器的信任。
+    跨站请求伪造（Cross-Site Request Forgery，CSRF）是挟制用户在已登录的网页上执行非本意操作的安全漏洞攻击。利用网站对用户网页浏览器的信任。
 
     1. 攻击方式
 
@@ -385,31 +308,12 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
 
         1. 检查HTTP请求的Referer字段
 
-            Referer：标明请求来源地址。
+            Referer：请求来源地址。
         2. 添加校验token
 
             操作请求需要提供额外的**不保存在浏览器上、保存在表单中**的随机校验码。可以放进请求参数、或自定义HTTP请求头。
         3. 请求操作要求输入实时生成的验证码。
-3. Hash Collision DoS
-
-    >参考[HASH COLLISION DOS 问题](http://coolshell.cn/articles/6424.html)。
-
-    Hash碰撞的拒绝式服务攻击（Hash Collision DoS）是对服务器进行恶意负载的安全漏洞攻击。
-
-    1. 攻击方式
-
-        >1. Hash：把任意长度的输入，通过散列算法，输出固定长度的散列值。
-        >2. Hash Collision DoS：利用各语言Hash算法的“非随机性”，制造出无数value不同、key相同的数据，让Hash表成为一张单向链表，而导致整个网站的运行性能下降。
-
-        - 找到hash算法漏洞，不断提交服务器请求导致无数hash碰撞，进而形成单向链表。
-
-            攻击成功后，能够：hash堆积、查询缓慢、服务器CPU高负荷、服务器内存溢出。
-    2. 防御措施
-
-        1. 升级hash算法。
-        2. 限制POST参数个数和请求长度。
-        3. 防火墙检测异常请求。
-4. 其他攻击
+3. 其他攻击
 
     1. DNS攻击
 
@@ -417,13 +321,92 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
 
         1. 攻击方式
 
-            1. 针对DNS服务器：DDOS攻击。
+            1. 针对DNS服务器：DDoS攻击。
             2. 针对用户：DNS欺骗或劫持（访问恶意DNS服务器）、DNS缓存服务器投毒或污染、本机劫持（hosts文件篡改、本机DNS劫持、SPI链注入、DHO插件）。
         2. 防御措施
 
             1. 使用安全的DNS服务器。
             2. VPN或域名远程解析。
             3. 查杀病毒，清空DNS缓存。
+    2. SQL注入（SQL Injection）
+
+        运行非法的SQL。
+    3. OS命令注入攻击（OS Command Injection）
+
+        通过Web应用，执行非法的操作系统命令。
+    4. HTTP头部注入攻击（HTTP Header Injection）
+
+        通过在响应头部字段内插入换行，添加任意响应头部或主体。
+    5. 邮件头部注入攻击（Mail Header Injection）
+
+        向邮件头部To或Subject内任意添加非法内容，可对任意邮件地址发送广告邮件或病毒邮件。
+    6. 目录遍历攻击（Directory Traversal，Path Traversal）
+
+        对本无意公开的文件目录，通过非法截断其目录路径后，达成访问目的。
+    7. 远程文件包含漏洞（Remote File Inclusion）
+
+        当部分脚本内容需要从其他文件读入时，利用指定外部服务器的URL充当依赖文件，让脚本读取之后，就可运行任意脚本。
+    8. 强制浏览（Forced Browsing）
+
+        从安置在Web服务器的公开目录下的文件中，浏览那些原本非自愿公开的文件。
+    9. 不正确的错误消息处理（Error Handling Vulnerability）
+
+        Web应用的错误信息内包含对攻击者有用的信息。
+    10. 开放重定向（Open Redirect）
+
+        假如指定的重定向URL到某个具有恶意的Web网站，那么用户就会被诱导至那个Web网站。
+    11. 会话劫持（Session Hijack）
+
+        通过某种手段拿到了用户的会话ID，并非法使用此会话ID伪装成用户。
+    12. 会话固定攻击（Session Fixation）
+
+        强制用户使用攻击者指定的会话ID。
+    13. 点击劫持（ClickJacking）、界面伪装（UI Redressing）
+
+        利用透明的按钮或链接做成陷阱，覆盖在Web页面上。然后诱使用户在不知情的情况下，点击那个链接访问内容。
+    14. 密码破解（Password Cracking）
+
+        1. 穷举法（Brute-force Attack，暴力破解法）
+
+            对所有密钥集合构成的密钥空间（Keyspace）进行穷举。即，用所有可行的候选密码对目标的密码系统试错。
+        2. 字典攻击
+
+            利用事先收集好的候选密码（经过各种组合方式后存入字典），枚举字典中的密码。
+
+            >如生日日期数值化。
+
+        - 一种安全的服务端存储密码方式：
+
+            先利用给密码加盐（salt）的方式增加额外信息，再使用散列（hash）函数计算出散列值后保存。
+
+            >加盐：由服务器随机生成的一个字符串，保证长度足够长，且是真正随机生成。然后把它和密码字符串相连接（前后都可以）生成散列值。当两个用户使用了同一个密码时，由于随机生成的salt值不同，对应的散列值也将不同。这样一来，很大程度上减少了密码特征，攻击者也就很难利用自己手中的密码特征库进行破解。
+    15. DoS攻击（Denial of Service attack）、服务停止攻击或拒绝服务攻击
+
+        运行中的服务呈停止状态的攻击。
+
+        1. 集中利用访问请求造成资源过载。
+
+            DDoS（Distributed Denial of Service attack）利用多台计算机发起Dos攻击。
+        2. 通过攻击安全漏洞使服务停止。
+    16. Hash Collision DoS
+
+        >参考[HASH COLLISION DOS 问题](http://coolshell.cn/articles/6424.html)。
+
+        Hash碰撞的拒绝式服务攻击（Hash Collision DoS）是对服务器进行恶意负载的安全漏洞攻击。
+
+        1. 攻击方式
+
+            >1. Hash：把任意长度的输入，通过散列算法，输出固定长度的散列值。
+            >2. Hash Collision DoS：利用各语言Hash算法的“非随机性”，制造出无数value不同、key相同的数据，让Hash表成为一张单向链表，而导致整个网站的运行性能下降。
+
+            - 找到hash算法漏洞，不断提交服务器请求导致无数hash碰撞，进而形成单向链表。
+
+                攻击成功后，能够：hash堆积、查询缓慢、服务器CPU高负荷、服务器内存溢出。
+        2. 防御措施
+
+            1. 升级hash算法。
+            2. 限制POST参数个数和请求长度。
+            3. 防火墙检测异常请求。
 
 ### 前端性能优化
 1. 网络应用的生命期建议：
@@ -455,7 +438,7 @@ HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-ser
 
     >性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#前端工程化)问题。
 
-    1. [URL输入](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#http协议)：
+    1. URL输入：
 
         服务端对HTTP请求、资源发布、服务器设置的优化。
 

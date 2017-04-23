@@ -216,121 +216,159 @@ function detectIE() {
 ### *原生JS*操作cookie
 ```javascript
 var cookieFuc = {
-        /**
-         * 读取一个cookie
-         * @param {String} sKey - cookie名
-         * @returns {String|Null} - cookie值 或 null
-         */
-        getItem: function (sKey) {
 
-            return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
-        },
+    /**
+     * 读取一个cookie的值
+     * @param {String} key - 名
+     * @returns {String|Null} - 值 或 null
+     */
+    getItem: function (key) {
+        if (!key) {
 
-        /**
-         * 创建或覆盖一个cookie
-         * @param {String} sKey - cookie名
-         * @param {String} sValue - cookie值
-         * @param {Number|Date|String|Infinity} [vEnd] - cookie过期时间。默认关闭浏览器后过期
-         * @param {String} [sPath] - cookie路径。默认为当前文档位置的路径
-         * @param {String} [sDomain] - cookie域名。默认为当前文档位置的路径的域名部分
-         * @param {Boolean} [bSecure] - cookie是否“仅通过https协议传输”。默认否
-         * @returns {Boolean} - 操作成功或失败
-         */
-        setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
-            if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) {
+            return null;
+        } else {
 
-                return false;
-            }
+            return decodeURIComponent(document.cookie.replace(new RegExp('(?:(?:^|.*;)\\s*' + encodeURIComponent(key).replace(/[\-\.\+\*]/g, '\\$&') + '\\s*\\=\\s*([^;]*).*$)|^.*$'), '$1')) || null;
+        }
+    },
 
-            var sExpires = "";
+    /**
+     * 新建或更新一个cookie
+     * @param {String} key - 名
+     * @param {String} value - 值
+     * @param {Number|Date|String|Infinity} [deadline] - 过期时间。默认为关闭浏览器后过期
+     * @param {String} [path] - 路径。默认为当前文档位置的路径
+     * @param {String} [domain] - 域名。默认为当前文档位置的路径的域名部分
+     * @param {Boolean} [secure] - 是否“仅通过https协议传输”。默认为否
+     * @returns {Boolean} - 操作成功或失败
+     */
+    setItem: function (key, value, deadline, path, domain, secure) {
+        if (!key || /^(?:expires|max\-age|path|domain|secure)$/i.test(key)) {
 
-            if (vEnd) {
-                switch (vEnd.constructor) {
+            return false;
+        } else {
+            var expires = '';
+
+            if (deadline) {
+                switch (deadline.constructor) {
                     case Number:
-                        sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+                        expires = deadline === Infinity ? '; expires=Fri, 31 Dec 9999 23:59:59 GMT' : '; max-age=' + deadline;
                         break;
                     case String:
-                        sExpires = "; expires=" + vEnd;
+                        expires = '; expires=' + deadline;
                         break;
                     case Date:
-                        sExpires = "; expires=" + vEnd.toUTCString();
+                        expires = '; expires=' + deadline.toUTCString();
                         break;
                 }
             }
 
-            document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+            document.cookie = encodeURIComponent(key) + '=' + encodeURIComponent(value) + expires + (domain ? '; domain=' + domain : '') + (path ? '; path=' + path : '') + (secure ? '; secure' : '');
 
             return true;
-        },
+        }
+    },
 
-        /**
-         * 删除一个cookie
-         * @param {String} sKey - cookie名
-         * @param {String} [sPath] - cookie路径。默认为当前文档位置的路径
-         * @param {String} [sDomain] - cookie域名。默认为当前文档位置的路径的域名部分
-         * @returns {Boolean} - 操作成功或失败
-         */
-        removeItem: function (sKey, sPath, sDomain) {
-            if (!sKey || !this.hasItem(sKey)) {
+    /**
+     * 删除一个cookie
+     * @param {String} key - 名
+     * @param {String} [path] - 路径。默认为当前文档位置的路径
+     * @param {String} [domain] - 域名。默认为当前文档位置的路径的域名部分
+     * @returns {Boolean} - 操作成功或失败
+     */
+    removeItem: function (key, path, domain) {
+        if (!key || !this.hasItem(key)) {
 
-                return false;
-            }
-
-            document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + ( sDomain ? "; domain=" + sDomain : "") + ( sPath ? "; path=" + sPath : "");
+            return false;
+        } else {
+            document.cookie = encodeURIComponent(key) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT' + ( domain ? '; domain=' + domain : '') + ( path ? '; path=' + path : '');
 
             return true;
-        },
+        }
+    },
 
-        /**
-         * 检查一个cookie是否存在
-         * @param {String} sKey - cookie名
-         * @returns {Boolean} - 存在与否
-         */
-        hasItem: function (sKey) {
+    /**
+     * 检查一个cookie是否存在
+     * @param {String} key - 名
+     * @returns {Boolean} - 存在与否
+     */
+    hasItem: function (key) {
+        if (!key) {
 
-            return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
-        },
+            return false;
+        } else {
 
-        /**
-         * 返回cookie名字的数组
-         * @returns {Array} - cookie名字的数组 或 []
-         */
-        listItems: function () {
-            if (document.cookie === '') {
+            return (new RegExp('(?:^|;\\s*)' + encodeURIComponent(key).replace(/[\-\.\+\*]/g, '\\$&') + '\\s*\\=')).test(document.cookie);
+        }
+    },
 
-                return [];
+    /**
+     * 返回cookie名字的数组
+     * @returns {Array} - 名的数组 或 []
+     */
+    listItems: function () {
+        if (document.cookie === '') {
+
+            return [];
+        } else {
+            var keys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, '').split(/\s*(?:\=[^;]*)?;\s*/),
+                i, len;
+
+            for (i = 0, len = keys.length; i < len; i++) {
+                keys[i] = decodeURIComponent(keys[i]);
             }
 
-            var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
+            return keys;
+        }
+    },
 
-            for (var nIdx = 0; nIdx < aKeys.length; nIdx++) {
-                aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]);
-            }
+    /**
+     * 清空所有cookie
+     * @returns {Boolean} - 操作成功或失败
+     */
+    clear: function () {
+        if (document.cookie === '') {
 
-            return aKeys;
-        },
+            return false;
+        } else {
+            var keys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, '').split(/\s*(?:\=[^;]*)?;\s*/),
+                i, len;
 
-        /**
-         * 清空所有cookie
-         * @returns {Boolean} - 操作成功或失败
-         */
-        clear: function () {
-            if (document.cookie === '') {
-
-                return false;
-            }
-
-            var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
-
-            for (var nIdx = 0; nIdx < aKeys.length; nIdx++) {
-                this.removeItem(decodeURIComponent(aKeys[nIdx]));
+            for (i = 0, len = keys.length; i < len; i++) {
+                this.removeItem(decodeURIComponent(keys[i]));
             }
 
             return true;
         }
-    };
+    }
+};
 ```
 >参考[MDN:cookie](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie#一个小框架：一个完整支持unicode的cookie读取写入器)。
+
+>简单判断是否存在某cookie：
+>
+>```javascript
+>function hasCookie(checkKey) {
+>    checkKey = checkKey.toString();
+>
+>    var cookieArr = document.cookie.split('; '),
+>        i, len, tempArr, key, value;
+>
+>    for (i = 0, len = cookieArr.length; i < len; i++) {
+>        tempArr = cookieArr[i].split('=');
+>        key = tempArr.shift();
+>        value = tempArr.join('=');
+>
+>        if (key === checkKey) {
+>            /* 操作value*/
+>
+>            return true;
+>        }
+>    }
+>
+>    return false;
+>}
+>```
 
 ### *原生JS*加入收藏夹
 ```javascript
@@ -946,6 +984,7 @@ var fourOperations = {
 ### *原生JS*绑定、解绑事件
 ```javascript
 var eventUtil = {
+
     /**
      * 绑定事件
      * @param {Object} dom - DOM对象
@@ -1283,6 +1322,7 @@ var eventUtil = {
 ### *原生JS*输入框光标位置的获取和设置
 ```javascript
 var cursorPosition = {
+
     /**
      * 获取光标位置和选中长度
      * @param {Object} dom - 标签input或textarea的DOM对象
