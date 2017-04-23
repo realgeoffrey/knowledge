@@ -1209,11 +1209,11 @@
 
 ### Web Storage、cookie、session
 >1. 前端基本仅使用Web Storage；cookie仅用于服务端判定登录状态。
->2. 浏览器数据存储方式：Cookie、Web Storage、manifest、IndexedDB。
+>2. 浏览器数据存储方式：Cookie、Web Storage、IndexedDB、Web SQL、Manifest、Service Workers。
 
 1. Web Storage（`localStorage`、`sessionStorage`）
 
-    1. 客户端保存，不参与和服务器的通信。
+    1. 客户端保存，不参与服务器通信。
     2. 对象形式。
     3. 除了ie6、ie7外其他浏览器都支持（ie及FF需在web服务器里运行）。
 
@@ -1231,28 +1231,35 @@
             3. 应用场景：所有需要长期本地存储的数据。
         2. `sessionStorage`
 
-            1. 同源且同会话（tab窗口）下共享。
-            2. 会话级别存储。跳转页面为同源后仍旧有效（不同tab不共通），关闭浏览器后被清除（重新加载tab或关闭tab后恢复，值对任然存在）。
-            3. 应用场景：需要拆分成多个子页面的填写数据。
+            1. 同源且同会话（tab窗口）共享。
+            2. 会话级别存储。跳转页面为同源后仍旧有效（不同tab不共通），关闭浏览器后被清除（重新加载或关闭后恢复，任然存在）。
+            3. 应用场景：需要拆分成多个子页面分别存储的数据。
 2. `cookie`：
 
-    1. 客户端保存，始终在HTTP请求中携带（亲测chrome显示有些请求没有携带cookie，为何？），服务端接受和操作客户端cookie。
-    2. 字符串形式。不能包含任何**逗号**、**分号**或**空格**（可使用`encodeURIComponent`编码，再用`decodeURIComponent`解码）。
+    1. 客户端保存，始终在HTTP请求中携带（同源且同路径），明文传递，服务端接收、操作客户端cookie。
+    2. 字符串形式：`名1=值1[; 名2=值2]`。不能包含任何`,`、`;`、` `（使用`encodeURIComponent`、`decodeURIComponent`）。
     3. 所有浏览器都支持。
-    4. 单域名下，cookie保存的数据不超过4k，数量（最少）20个。
+    4. 单域名内，cookie保存的数据不超过4k，数量（最少）20个。
     5. 源生的cookie接口不友好，需要程序员[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js操作cookie)。
+
+        - JS的`document.cookie`：
+
+            1. 新建或更新cookie等同于服务端`Set-Cookie`响应头：一次设置一条cookie的`名=值[; expires=绝对时间][; max-age=相对时间][; domain=域名][; path=路径][; secure]`。
+
+                >`Set-Cookie`额外可以设置`[; HttpOnly]`属性。
+            2. 读取cookie等同于客户端`Cookie`请求头：展示所有cookie的`名1=值1[; 名2=值2]`（无法查看其他信息）。
     6. 同源且同路径共享。
     7. 默认（存储在内存）关闭浏览器后失效，设置失效时间（存储在硬盘）则到期后失效。
-    8. 应用场景：服务端确定两次请求是否来自于同一个客户端，从而能够确认和保持用户的登录状态（无状态的HTTP协议上记录稳定的状态信息）。
+    8. 应用场景：服务端确定两次请求是否来自于同一个客户端，从而能够确认和保持用户的登录状态（无状态的HTTP中的用户识别、状态管理）。
 
     >僵尸cookie（[Zombie Cookie](https://en.wikipedia.org/wiki/Zombie_cookie)）是指那些删不掉的，删掉会自动重建的cookie。僵尸cookie是依赖于其他的本地存储方法，如flash的share object、html5的local storages等，当用户删除cookie后，自动从其他本地存储里读取出cookie的备份，并重新种植。
 3. `session`：
 
     1. 服务端保存。
     2. 对象形式。
-    3. 无状态值（无状态的HTTP协议），需要借助本地cookie进行配合。
+    3. 与本地cookie配合进行用户识别、状态管理。
 
->隐身模式策略：（大多数浏览器的策略）存储API仍然可用，并且看起来功能齐全，只是无法真正储存（比如分配储存空间为0）。
+>隐身模式策略：存储API仍然可用，并且看起来功能齐全，只是无法真正储存（比如分配储存空间为0）。
 
 ### 自执行匿名函数（拉姆达，λ，lambda）
 立即调用的函数表达式。
