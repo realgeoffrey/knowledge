@@ -1,6 +1,6 @@
 # ideSettings
 
-There are **webstorm** and **phpstorm** settings. I exported `.jar` to make sure settings in my workplace and my PC are the same.
+There are **webstorm** and **phpstorm** settings. I exported `.jar` to make sure settings in my workplace and my PCs are the same.
 
 - You should choose the **Scheme** of my name -- *Geoffrey* in preferences in "**Code Style**" and "**Colors & Fonts**".
 - There are two types of keymap in "**Keymap**" named *MyMac* for Mac and *MyWindows* for Windows.

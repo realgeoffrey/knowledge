@@ -2,8 +2,6 @@
 
 ## CSS
 
-### 限定布局宽度，让内容决定布局高度
-
 ### CSS选择器
 1. 权重
 
@@ -405,7 +403,8 @@
     2. 直接向下取整：ie7、safari。
 2. 多个子节点浮动的总宽度接近100%会表现成100%
 
-    根据[Bootstrap's Grid system](http://getbootstrap.com/css/#grid)的标准，设置百分比宽度时，用百分比小数点后第六位的四舍五入值可以兼容大多数浏览器：
+    设置百分比宽度时，用百分比小数点后第六位的四舍五入值可以兼容大多数浏览器：
+
     ```css
     .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12 {
         float: left;
@@ -426,57 +425,64 @@
     ```
 3. 使用`rem`，因为换算成`px`而四舍五入或向下取整可能导致切图问题的解决方案：
 
-    1. 切图四周多给2px透明距离。
+    1. 切图四周多给2px透明距离（切图宽度/最小宽度*1px，多少倍就多少px）。
     2. 内容填色的图片用`width: 100%;`。
     3. 内容的间隙多设置一些`padding`，再用`负margin`中和。
 
-### 移动端半像素
-不要使用`border: 0.5px`，因为浏览器会把数值换算成0或者1。
+### WAP端半像素
+不要使用`border: 0.5px`，因为浏览器会把数值换算成0或1。
 
-1. 整个边框0.5px
+1. `scale`缩小一半
 
-    ```scss
-    div {
-        width: 宽度;
-        position: relative;
+    1. 整个边框0.5px
 
-        &:before {
-            position: absolute;
-            top: 0;
-            left: 0;
-            content: "";
-            width: 200%;
-            height: 200%;
-            border: 1px solid 颜色;
-            transform: scale(.5);
-            transform-origin: 0 0;
-            box-sizing: border-box;
+        ```scss
+        div {
+            width: 宽度;
+            position: relative;
+
+            &:before {
+                position: absolute;
+                top: 0;
+                left: 0;
+                content: "";
+                width: 200%;
+                height: 200%;
+                border: 1px solid 颜色;
+                transform: scale(.5);
+                transform-origin: 0 0;
+                box-sizing: border-box;
+            }
         }
-    }
-    ```
-2. 某一边0.5px
+        ```
+    2. 某一边0.5px
 
-    ```scss
-    div {
-        width: 100px;
-        position: relative;
+        ```scss
+        div {
+            width: 100px;
+            position: relative;
 
-        &:before {
-            position: absolute;
-            top: 0;
-            left: 0;
-            content: "";
-            width: 100%;
-            height: 1px;
-            border-top: 1px solid 颜色;
-            transform: scaleY(.5);
-            transform-origin: 0 0;
-            box-sizing: border-box;
+            &:before {
+                position: absolute;
+                top: 0;
+                left: 0;
+                content: "";
+                width: 100%;
+                height: 1px;
+                border-top: 1px solid 颜色;
+                transform: scaleY(.5);
+                transform-origin: 0 0;
+                box-sizing: border-box;
+            }
         }
-    }
-    ```
-    
-[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/3wbf62xj/)
+        ```
+
+    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/3wbf62xj/)
+2. `<meta>的viewport`设置为0.5（缩放），切图用2倍大小（3倍切图就对应0.333333的viewport）。
+
+    >仅适用于iOS。Android机型太复杂，bug永无止境。
+3. `border-image`2像素图片，一半透明、一半目标颜色。
+4. `box-shadow`。
 
 ### `line-height`
 1. 单行文本情况下：
@@ -506,24 +512,24 @@
         visibility: hidden; /* 属性不存在隐藏*/
     }
     ```
-3. 要谨慎给img设置背景（比如内容图片或者头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)），因为当img是透明图的时候，会展示背景的内容。
+3. 要谨慎给img设置背景（比如内容图片或头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)），因为当img是透明图的时候，会展示背景的内容。
 
 ### img标签的圆形、边框
 1. 圆形+边框
 
-    1. PC
+    1. PC端
 
         直接在img标签上设置`border`和`border-radius`。
-    2. WAP
+    2. WAP端
 
         在img标签上设置`border-radius`，并且在父级标签嵌套一层设置`border`和`border-radius`。
 2. 圆形（无边框）
 
-    - PC、WAP
+    - PC端、WAP端
 
         直接在img标签上设置`border-radius`。
 
-### WAP页面自适应图片
+### WAP端页面自适应图片
 要求：图片根据浏览器窗口变化而宽高同时等比例变化，不使用`img`标签（只有内容图片才使用img标签）。
 
 1. *横向、纵向百分比的`padding`（和`margin`）值都是以父元素的`width`为基础，`height`是以父元素的`height`为基础*
@@ -570,8 +576,16 @@
     >2. 可以用预处理语言计算：
     >
     >    ```scss
-    >    @function rem($px) {
-    >        @return $px / 20 + rem;
+    >    @function rem($px, $base-font-size: 20px) {
+    >        @if unitless($px) {
+    >            @return rem($px + 0px);
+    >        }
+    >        @if unit($px) != "px" {
+    >            @error "rem()的参数单位必须是px或不带单位";
+    >        }
+    >
+    >        //$base-font-size：切图时设计稿宽度对应的媒体查询中html的font-size
+    >        @return $px / $base-font-size + rem;
     >    }
     >    @function position-one($positon, $singleSize, $spritesSize) {
     >        @if $positon == 0 {
@@ -1581,7 +1595,7 @@
 >有些插件效果不能支持`html,body {height: 100%;}`。
 
 ### CSS3的`animation`使用
->动画进行到一半取消动画（去除了相关类）或者替换动画，会导致节点突兀地回到初始位置。
+>动画进行到一半取消动画（去除了相关类）或替换动画，会导致节点突兀地回到初始位置。
 
 1. 纯CSS触发（如`:hover`）
     ```css
@@ -1770,7 +1784,7 @@
     }
     ```
 
-### 移动端制作类似PC端的`:active`效果（或`:hover`）
+### WAP端制作类似PC端的`:active`效果（或`:hover`）
 1. Android系统的浏览器大部分直接使用CSS伪类即可。
 2. iOS系统的浏览器要添加以下代码触发使CSS伪类生效：
 
@@ -1814,30 +1828,42 @@
 ## 经验总结
 
 ### Tips
-1. a标签的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（包括`#`和`javascript: void(0);`）都会打开新页面。
-2. `absolute`元素用`top: 0; bottom: 0; left: 0; right: 0; _height: 100%; _width: 100%;`可以拉伸至父容器的高宽。
-3. 没有设置宽度的`float`元素，其宽度等于子节点宽度：主流浏览器等于最外层子节点宽度，ie6等于所有子节点中最大的宽度。
-4. `inline`或`inline-block`节点标签前可能导致其父级的宽度变大（其实是内联标签前面会有间隙，若拥有`font-size`之后便会有高度撑开），通过以下办法解决：
+1. 限定布局宽度，让内容决定布局高度
+2. a标签的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（包括`#`和`javascript: void(0);`）都会打开新页面。
+3. `absolute`元素用`top: 0; bottom: 0; left: 0; right: 0; _height: 100%; _width: 100%;`可以拉伸至父容器的高宽。
+4. 没有设置宽度的`float`元素，其宽度等于子节点宽度：主流浏览器等于最外层子节点宽度，ie6等于所有子节点中最大的宽度。
+5. `inline`或`inline-block`节点标签前可能导致其父级的宽度变大（其实是内联标签前面会有间隙，若拥有`font-size`之后便会有高度撑开），通过以下办法解决：
 
     1. 把`inline`节点设置为`block`。
     2. 给父级节点设置`font-size: 0;`（可用此方法排查是否是空格造成的）。
-5. 页面是按照顺序加载资源，当且仅当有使用需求时才会去加载外部资源。
+6. 页面是按照顺序加载资源，当且仅当有使用需求时才会去加载外部资源。
 
     已加载完成的CSS文件内有多个url请求（background），但仅在页面节点要引用某个url请求时（无论节点是否隐藏），才会去请求这个资源，而不是在加载CSS文件时就加载外部资源。
-6. 使用动态DOM加载，代替内容的`display: none;`（有渲染）：
+7. 使用动态DOM加载，代替内容的`display: none;`（有渲染）：
 
     1. `<script type="text/template"></script>`
     2. `<template></template>`
     3. `<textarea style="display:none;"></textarea>`
-7. WAP页面或支持伪类的浏览器，能用`:before/after`的就不要添加标签。
-8. 单选、多选按钮开关自定义样式
+8. WAP端页面或支持伪类的浏览器，能用`:before/after`的就不要添加标签。
+9. 单选、多选按钮开关自定义样式
 
     用`input:checked + 兄弟节点`（`<input type="radio">`或`<input type="checkbox">`）操作选项选中与否的不同样式；可以隐藏`input`元素，用自定义样式来制作单选框、复选框。完全代替JS。
-9. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
-10. 避免
+10. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
+11. 避免
 
     1. 避免~~放大、缩小图片~~，使用原始大小展现。
     2. 避免使用不可缓存且增加额外HTTP请求的~~iframe~~标签。
+12. 富文本
+
+    1. 富文本内容除了要检测用户输入标签的闭合性，还要注意不要用~~li标签嵌套富文本~~，因为代码中如果有单独的`li`（没有嵌套`ol`或`ul`），就会“升级”到跟祖先级li同级的内容。
+    2. 部分富文本会用标签`em`、`ol`、`ul`来表示**斜体**、**有序序列**、**无序序列**，因此如果用CSS重置了以上标签后，要在[富文本内重载开启它们的默认效果](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L61-L77)。
+    3. 部分富文本还会在`table`标签上使用`cellspacing`、`border`、`bordercolor`属性来设置表格，又因为设置了`border: 0;`的表格标签无法重载开启以上属性作用，所以CSS重置时[不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L26-L27)。
+13. 超出内容区域的内容
+
+    1. 用绝对定位把内容设置在外部
+
+        不要把超出内容区域的绝对定位设置在`body`直接子级，而是设置在`body`下拥有`overflow: hidden;width: 100%;/* 默认*/`的父级下。
+    2. ~~大背景模式~~
 
 ### [`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex)优雅解决布局、自适应问题
 1. 不使用flex导致不方便处理的问题：
@@ -1849,115 +1875,6 @@
     5. [页面高度不够时，footer依然置于页面最底部](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#页面高度不够时footer依然置于页面最底部)
     6. [多列等高](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#多列等高)
 2. flex具体解决方案：[solved-by-flexbox](https://hufan-akari.github.io/solved-by-flexbox/)。
-
-### 响应式设计
-1. 媒体查询方式
-    1. CSS属性：
-
-        `@media (min-width: 360px) and (max-width: 640px) {...}`
-    2. HTML标签：
-
-        `<link rel="stylesheet" type="text/css" media="(min-width: 360px) and (max-width: 640px)" href="...">`
-2. 响应式设计三大要素
-    1. 媒体查询
-    2. 流式布局：节点用百分比或rem或flex
-        
-        >使用自适应结构，比如：[自适应宽度布局](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#自适应宽度布局)。
-    3. 弹性图片：`img {max-width: 100%;}`
-
-### 响应式页面解决方案：使用rem+媒体查询
->rem：相对于根元素的字体大小的单位。rem单位转换为具体px值：**rem乘于html的font-size像素**。
-
-1. 媒体查询设置html的font-size，把要做成响应式的内容转换为rem单位。
-
-    >假设页面按照320px宽度来制作。
-
-    1. 最优解：需要使用CSS预处理语言（SCSS）
-
-        1. 正常完成切图（可以用大于等于320px设计稿），大小值用**设计稿的px带入下面方法生成的rem值**。
-        2. 媒体查询仅设置html的不同页面宽度下的font-size值。
-        3. 调用的方法返回：**设计稿的px**除以**在320px宽度下的html的font-szie值**再除以**设计稿相对于320px放大倍数（一般是2x或者3x）**。
-        4. 用预处理语言生成为CSS文件，其中所有单位都为`rem`。
-
-        >1. 整个页面都是用rem进行制作。
-        >2. 用scss预处理语言换算px->rem
-        >
-        >    ```scss
-        >    @function rem($px) {
-        >        @return $px / 20 + rem;
-        >    }
-        >    ```
-    2. *不需要使用CSS预处理语言*
-
-        1. 正常完成切图（只能用320px设计稿），用px作为单位。
-        2. 媒体查询仅设置html的不同情况下的font-size值。
-        3. 把CSS内需要响应式内容的px值，除以**在320px宽度下的html的font-szie值**（320px宽度时设置为10px方便计算），单位改为rem。
-
-        >仅需要把要响应式布局的内容进行转变
-2. *用JS根据浏览器宽度的改变修改html的font-size，页面总宽度固定为某rem。所有页面元素都要用百分比+rem*
-3. *用JS根据是否是苹果设备进行判断：若是苹果设备则viewport设置为0.5，html的font-size设置为2倍；若非苹果设备则viewport设置为1，html的font-size设置为1倍*
-
-    ```javascript
-    var fontSize = 10;
-
-    /* 实现根据iOS和Android不同设备设置不同的viewport*/
-    if ((/iphone|ipad|ipod/i).test(navigator.appVersion) && window.devicePixelRatio >= 2) {
-        document.getElementById('j-viewport').content = 'width=device-width, initial-scale=0.5, user-scalable=no, minimum-scale=0.5, maximum-scale=0.5';
-        document.documentElement.style.fontSize = 2 * fontSize + 'px';
-    } else {
-        document.getElementById('j-viewport').content = 'width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1, maximum-scale=1';
-        document.documentElement.style.fontSize = fontSize + 'px';
-    }
-    ```
-
-    >因为html的font-size是用JS写死的，而且viewport会变化，所以所有页面元素都要用百分比+rem。
-
-### 不同PPI的设备使用不同分辨率的图片
->1. x1、x2、x3不同分辨率的图片放大倍数是**1倍、2倍、3倍**。
->2. 如果图片是雪碧图，则其间距也要是和放大倍数一致，x1、x2、x3分别间距是**2px、4px、6px**。
->3. `background-size`、`background-position`设置为最低分辨率时的值（单位用`px`、`rem`、`百分比`都可以）。
-
-```scss
-@mixin image($url) {
-    background-image: url($url + "_x1.png");
-
-    @media (min-resolution: 2dppx) {
-        background-image: url($url + "_x2.png");
-    }
-
-    @media (min-resolution: 3dppx) {
-        background-image: url($url + "_x3.png");
-    }
-}
-
-.img {
-    @include image("去除后缀的图片地址");
-}
-```
-
-### 移动端适配总结
-1. 一份PSD设计稿、或多份具体的响应式PSD设计稿。
-2. 宽屏：按比例放大项、或增加项数量。
-3. meta标签的viewport值方案。
-4. 响应式设计三大要素：媒体查询、流式布局、弹性图片。
-5. [不同PPI使用不同分辨率图片](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#不同ppi的设备使用不同分辨率的图片)。
-6. 文字大小边界：font-size设置最大、最小值。
-7. [半像素处理](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#移动端半像素)。
-8. [rem+@media方案](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#响应式页面解决方案使用rem媒体查询)。
-9. [雪碧图使用百分比background-position](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#wap页面自适应图片)
-10. [自适应宽度布局](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#自适应宽度布局)（[flex解决自适应问题](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#flex优雅解决布局自适应问题)）。
-11. 是否[横竖屏翻转显示](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#横竖屏切换)（特殊单屏应用，如游戏）。
-
-### 富文本
-1. 富文本内容除了要检测用户输入标签的闭合性，还要注意不要用~~li标签嵌套富文本~~，因为代码中如果有单独的`li`（没有嵌套`ol`或`ul`），就会“升级”到跟祖先级li同级的内容。
-2. 部分富文本会用标签`em`、`ol`、`ul`来表示**斜体**、**有序序列**、**无序序列**，因此如果用CSS重置了以上标签后，要在[富文本内重载开启它们的默认效果](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L61-L77)。
-3. 部分富文本还会在`table`标签上使用`cellspacing`、`border`、`bordercolor`属性来设置表格，又因为设置了`border: 0;`的表格标签无法重载开启以上属性作用，所以CSS重置时[不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L26-L27)。
-
-### 超出内容区域的内容
-1. 用绝对定位把内容设置在外部
-
-    不要把超出内容区域的绝对定位设置在`body`直接子级，而是设置在`body`下拥有`overflow: hidden;width: 100%;/* 默认*/`的父级下。
-2. ~~用大背景模式~~
 
 ### 渲染性能（rendering performance）
 >1. 为了视觉上连贯，浏览器对每一帧画面的所有工作需要在16ms（1000ms / 60f ~= 16.66ms/f）内完成。
@@ -2085,7 +2002,7 @@
         2. 避免布局抖动
 
             >布局抖动（layout thrashing）：快速多次进行强制同步布局。
-        3. 使用离线DOM操作样式完毕，再添加或者替换到文档中；把文档中要操作的DOM设置为`display: none;`再操作样式，操作完毕后恢复复显示。
+        3. 使用离线DOM操作样式完毕，再添加或替换到文档中；把文档中要操作的DOM设置为`display: none;`再操作样式，操作完毕后恢复复显示。
         4. `position: absollute/fixed;`的元素reflow开销较小。
         5. 使用[`flexbox`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#弹性盒子)布局。
     4. 简化绘制的复杂度、减小绘制区域
@@ -2167,7 +2084,7 @@
         >2. h1~h5标签不要根据其字体大小的不同来使用，应该根据页面内的重要程度来使用（SEO）。
     2. 减少层级嵌套，合理嵌套，行内元素不要嵌套块级元素（如a标签不嵌套div）。
     3. 用父节点的class去管理子节点（如父`ul`设定class，而子`li`不设定class）。
-    4. 有些移动端（其实就是Android的各奇葩机型）页面的点击按钮，需要制作大一些，否者虽然看上去点击到了，但是不会触发JS效果。
+    4. 有些WAP端（其实就是Android的各奇葩机型）页面的点击按钮，需要制作大一些，否者虽然看上去点击到了，但是不会触发JS效果。
 5. CSS编码规范
 
     绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/css.md#css编码规范)。

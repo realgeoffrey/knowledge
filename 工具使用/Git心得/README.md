@@ -65,7 +65,7 @@
     >2. [Github](https://github.com)默认是允许`git push --force`。
 2. 仅在Git项目中选择下载某些文件夹或文件
 
-    >Git1.7.0以后加入了**Sparse Checkout模式**，允许Check Out指定文件或者文件夹。但是只能选择一次（？），如果要更改选择的文件夹或文件，必须全部重新操作。
+    >Git1.7.0以后加入了**Sparse Checkout模式**，允许Check Out指定文件或文件夹。但是只能选择一次（？），如果要更改选择的文件夹或文件，必须全部重新操作。
 
     1. 在空白文件夹内，创建空的本地仓库，然后将远程仓库地址加入到项目的**.git/config**文件中：
 
@@ -78,7 +78,7 @@
         ```bash
         git config core.sparsecheckout true
         ```
-    3. 选择需要单独克隆的文件或者文件夹，写入**.git/info/sparse-checkout**文件：
+    3. 选择需要单独克隆的文件或文件夹，写入**.git/info/sparse-checkout**文件：
 
         ```bash
         echo 'images' >> .git/info/sparse-checkout # 所有包括有 images 的文件夹或文件（如/xxx/xxx/images/*、/images/*、images）

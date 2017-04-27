@@ -11,7 +11,7 @@
     1. `document.body`或`DOM`的`.offsetWidth` = ` 可视部分宽度 ＋ padding左右宽度 + border左右宽度`。
     2. `document.body`或`DOM`的`.offsetLeft`
 
-        >相对于`offsetParent`(祖先节点有定位或者body)。
+        >相对于`offsetParent`(祖先节点有定位或body)。
 
         1. ie6/7：
 

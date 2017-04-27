@@ -837,7 +837,7 @@ function isObjEmpty(obj) {
 }
 ```
 
-### *原生JS*移动端模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）
+### *原生JS*触摸屏模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）
 ```javascript
 /* 不要绑定click事件，用touchstart和touchend模拟，以消除“延时300毫秒后才触发”的问题*/
 
@@ -1128,7 +1128,7 @@ var eventUtil = {
     ```
 
 ### *原生JS*拖拽和放下
-1. PC版的鼠标事件
+1. PC端的鼠标事件
 
     ```javascript
     function Drag(dom, parentDom) {
@@ -1239,7 +1239,7 @@ var eventUtil = {
     //action.stop();
     ```
     [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/7t25cm5t/)
-2. WAP版的touch事件
+2. WAP端的touch事件
 
     ```javascript
     function Drag(dom, parentDom) {
@@ -2937,7 +2937,7 @@ function fixPlaceholder($dom) {
      * 点击指定区域以外执行函数（一次性）
      * @param {Object} $dom - jQuery节点
      * @param {Function} callback - 回调函数
-     * @param {Number} [limit] - 自动失效时间，若没有传或者传0则不会自动失效
+     * @param {Number} [limit] - 自动失效时间，若没有传或传0则不会自动失效
      * @param {String|Number} [namespace = Date.now()] - 事件命名空间
      */
     function beyongOneAct($dom, callback, limit, namespace) {

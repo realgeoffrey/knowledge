@@ -249,7 +249,7 @@
 
     1. 变量声明
 
-        无论语句在何处，无论是否会真正执行到，所有的`var`语句的**声明**都提前到作用域（函数内部或者全局）顶部执行（hoisting），但是具体**赋值**不会被提前。
+        无论语句在何处，无论是否会真正执行到，所有的`var`语句的**声明**都提前到作用域（函数内部或全局）顶部执行（hoisting），但是具体**赋值**不会被提前。
 
         >e.g.
         >```javascript
@@ -673,27 +673,32 @@
 
 1. 点透现象：
 
-    使用Zepto的`tap`事件绑定（或直接使用`touchstart`绑定）后，若此元素在触摸事件发生后离开原始位置（CSS或JS方式），底下同一位置正好有一个DOM元素绑定了`click`事件或有一个a标签，则会出现“点透”bug（触发了底下元素的点击事件）。
-2. 原因：
+    使用Zepto的`tap`事件绑定（或直接使用`touchstart`绑定）后，若此元素在触摸事件发生后离开原始位置（CSS或JS），底下同一位置正好有一个DOM元素绑定了`click`事件或有一个a标签，则会出现“点透”bug（触发了底下元素的点击事件）。
+2. 原因
+
+    >历史原因：WAP端增加快速双击缩放和恢复功能。由于当用户一次点击屏幕之后，浏览器并不能立刻判断用户是单击还是双击操作。因此，就等待300ms，以判断用户是否再次点击了屏幕。
 
     WAP端触摸事件顺序：`touchstart`->`touchmove`->`touchend`->`click`，触摸一瞬间就触发`touchstart`（触摸结束后瞬间触发Zepto封装的`tap`事件），触摸结束后300ms才触发`click`事件。
-
-    >有可能已经不存在此bug：被浏览器取消`click`事件的延时，或Zepto改变了`tap`事件实现。
 3. 解决方法：
 
     1. 使用[fastclick.js](https://github.com/ftlabs/fastclick)消除`click`的延时（最佳方式）
 
         用`click`代替全部`tap`事件，这样PC端和WAP端都可以一致用`click`事件并且不会出现WAP端点透bug。
-    2. 使用缓动动画，过度300ms延迟。
-    3. 中间增加一层接受这个点透事件，然后去除此层。
-    4. 使用[模拟点击事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js移动端模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)代替`click`。
+
+        >fastclick.js原理：在检测到touchend事件时，通过DOM自定义事件立即触发一个模拟click事件，并阻止浏览器在300ms之后真正触发的click事件。
+    2. 禁用缩放，设置`<meta name="viewport" content="initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">`。
+    3. 布局viewport小于等于可视viewport则浏览器禁用双击缩放，设置`<meta name="viewport" content="width=device-width">`。
+    4. CSS属性`touch-action: manipulation`仅允许在元素上进行触屏操作的平移、缩放，忽略~~双击~~。
+    5. 使用缓动动画，过度300ms延迟。
+    6. 中间增加一层接受这个点透事件，然后去除此层。
+    7. 使用[模拟点击事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)代替`click`。
 
 ### [函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js防抖函数)、[函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js节流函数)
 >都是用来控制某个函数在一定时间内执行多少次的技巧。
 
 1. 防抖（Debounce）
 
-    一个函数被调用后，在间隔时间内没有再次被调用才执行（或者一调用就执行，在间隔时间内没有再次被调用才可以进行下一次执行）；若在间隔时间内再次被调用，则刷新等待时间并且继续等待间隔时间结束后才执行。
+    一个函数被调用后，在间隔时间内没有再次被调用才执行（或一调用就执行，在间隔时间内没有再次被调用才可以进行下一次执行）；若在间隔时间内再次被调用，则刷新等待时间并且继续等待间隔时间结束后才执行。
 2. 节流（Throttle）
 
     一个函数无法在间隔时间内连续执行，当上一次函数执行后过了规定的间隔时间后才能进行下一次该函数的调用。
@@ -739,7 +744,7 @@
 
     ```javascript
     //发送方
-    目标window对象.postMessage(message, '目标源地址或者*');
+    目标window对象.postMessage(message, '目标源地址或*');
 
     //监听的文档
     window.addEventListener('message', function(e) {
@@ -1344,7 +1349,7 @@
     ```
 
 ### 错误处理机制
->1. 当JS出现错误时，JS引擎就会根据JS调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或者**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，而firefix会显示在错误控制台中）显示错误信息给访问者，可以用`window.onerror`进行自定义操作。
+>1. 当JS出现错误时，JS引擎就会根据JS调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，而firefix会显示在错误控制台中）显示错误信息给访问者，可以用`window.onerror`进行自定义操作。
 >2. 在某个**JS block**（`<script>`标签或`try-catch`的`try`语句块）内，第一个错误触发后，当前JS block后面的代码会被自动忽略，不再执行，其他的JS block内代码不被影响。
 
 1. [原生错误类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#原生错误类型)
@@ -1970,8 +1975,8 @@
     2. 替代执行时机无法保证的`setTimeout`和`setInterval`进行动画操作，提升渲染性能：
 
         1. 把每一帧中的所有DOM操作集中起来，在一次重绘或回流中完成动画，并且重绘或回流的时间间隔紧随浏览器的刷新频率。
-        2. 仅仅绘制用户可见的动画。这意味着没把CPU或电池寿命浪费在绘制处于背景标签，最小化窗口，或者页面隐藏区域的动画上。
-        3. 当浏览器准备好绘制时（空闲时），才绘制一帧，此时没有等待中的帧。意味着其绘制动画不可能出现多个排队的回调函数，或者阻塞浏览器。因此动画更平滑，CPU和电池使用被进一步优化。
+        2. 仅仅绘制用户可见的动画。这意味着没把CPU或电池寿命浪费在绘制处于背景标签，最小化窗口，或页面隐藏区域的动画上。
+        3. 当浏览器准备好绘制时（空闲时），才绘制一帧，此时没有等待中的帧。意味着其绘制动画不可能出现多个排队的回调函数，或阻塞浏览器。因此动画更平滑，CPU和电池使用被进一步优化。
 
 ### 数组的空位（hole）
 >来自[阮一峰：数组的空位](http://javascript.ruanyifeng.com/grammar/array.html#toc6)、[阮一峰：数组的空位（ES6）](http://es6.ruanyifeng.com/#docs/array#数组的空位)。
