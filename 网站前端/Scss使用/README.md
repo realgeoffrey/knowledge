@@ -7,7 +7,6 @@
     2. 使用gulp（[gulp-sass](https://github.com/dlmanning/gulp-sass)）等构建工具。
 
 1. `变量`、`方法`和`引用`必须在使用前定义，`继承`不需要提前定义；声明相同内容不会报错，只会用最后一次声明覆盖之前声明。
-
 2. 变量以`$`开头
 
     1. 正常使用
@@ -32,8 +31,8 @@
             font: #{$font-size}/#{$line-height} sans-serif;
         }
         ```
-    变量有命名空间：全局、局部。
 
+    变量有命名空间：全局、局部。
 3. 嵌套，引用父级`&`
 
     1. 正常使用
@@ -71,7 +70,6 @@
             }
         }
         ```
-
 4. `@include`引入`@mixin`
 
     1. 不带参数
@@ -105,7 +103,6 @@
             @include c(#fff, 10px);
         }
         ```
-
     3. 参数数量不定
 
         ```scss
@@ -117,7 +114,29 @@
             @include d(0 4px 5px #666, 2px 6px 10px #999);
         }
         ```
+    4. 使用`&`
 
+        ```scss
+        @mixin d($para) {
+            font-size: $para;
+
+            [data-dpr="2"] & {
+                font-size: $para * 2;
+            }
+        }
+
+        a {
+            @include d(10px);
+        }
+        /*
+        a {
+            font-size: 10px
+        }
+        [data-dpr="2"] a {
+            font-size: 20px
+        }
+        */
+        ```
 5. 继承`@extend`
 
     查找所有满足`@extend`后的**选择器**的内容，把此选择器替换成使用继承的选择器。
@@ -147,13 +166,11 @@
             @extend %name;
         }
         ```
-
 6. 引入文件`@import`
 
     ```scss
     @import "../css/1";
     ```
-
 7. 算术`+` `-` `*` `/`
 
     ```scss
@@ -162,7 +179,6 @@
         font-size: (20px / 2);
     }
     ```
-
 8. 注释
 
     ```scss
@@ -170,7 +186,6 @@
     /* 出现在.css*/
     ```
     >有中文注释时，要在scss文件顶部增加`@charset "utf-8";`，否则编译报错。
-
 9. 方法`@function`
 
     ```scss
@@ -182,5 +197,20 @@
         font-size: func(10);
     }
     ```
+10. `unit()`返回单位
 
-10. `@if` `@for` `@each` `@while`...
+    ```scss
+    unit(100);                      //=> ""
+    unit(100px);                    //=> "px"
+    unit(3em);                      //=> "em"
+    unit(3rem);                     //=> "rem"
+    unit(3vw);                      //=> "vw"
+    unit(3vh);                      //=> "vh"
+    ```
+11. `unitless()`是否没有单位
+
+    ```scss
+    unitless(100);      //=> true
+    unitless(100px);    //=> false
+    ```
+12. `@if` `@for` `@each` `@while`

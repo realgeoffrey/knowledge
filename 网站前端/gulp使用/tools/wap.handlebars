@@ -1,7 +1,15 @@
 @charset "utf-8";
 
-@function rem($px) {
-    @return $px / 20 + rem;
+@function rem($px, $base-font-size: 20px) {
+    @if unitless($px) {
+        @return rem($px + 0px);
+    }
+    @if unit($px) != "px" {
+        @error "rem()的参数单位必须是px或不带单位";
+    }
+
+    //$base-font-size：切图时设计稿宽度对应的媒体查询中html的font-size
+    @return $px / $base-font-size + rem;
 }
 
 {{#extend "scss"}}
