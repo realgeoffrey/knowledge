@@ -1022,7 +1022,7 @@ var eventUtil = {
 >1. `addEventListener`与`removeEventListener`是高级浏览器都有的方法（ie8-不支持），必须一一对应具体的**handle**和**布尔值**进行解绑。
 >2. `attachEvent`与`detachEvent`是ie特有方法，必须一一对应具体的**handle**进行解绑。
 >3. `on+type`是所有浏览器都支持，用赋值覆盖解绑。
->4. jQuery的`on`（或`one`）与`off`：当写具体handle时解绑具体handle；不写handle时默认解绑对象下某事件的所有方法；还可以对事件添加namespace。
+>4. jQuery的`on`与`off`：当写具体handle时解绑具体handle；不写handle时默认解绑对象下某事件的所有方法；还可以对事件添加namespace。
 
 ### *原生JS*、jQuery或Zepto阻止冒泡和阻止浏览器默认行为
 1. 阻止冒泡
@@ -1176,7 +1176,7 @@ var eventUtil = {
             domX = dom.offsetLeft;
             domY = dom.offsetTop;
 
-            beginX = e.clientX;
+            beginX = e.clientX; //或e.pageX/Y（ie不兼容）
             beginY = e.clientY;
 
             _addHandler(parentDom, 'mousemove', actMove);
@@ -2424,6 +2424,8 @@ if (!Array.isArray) {
 </script>
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/j9dkuwwv/)
+
+>滚动事件代理可以代理在要`window`或监控图片加载的滚动节点上。
 
 ### jQuery或Zepto获取`HTTP response header`信息
 ```javascript

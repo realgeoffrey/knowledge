@@ -1,6 +1,6 @@
 # Google搜索技巧
 
-1. 使用`http://www.google.com/ncr`（no country redirect）当做搜索入口
+1. 使用`https://www.google.com/ncr`（no country redirect）当做搜索入口
 
     >默认情况下，会重定向到访问ip的本地Google域名
 
