@@ -17,7 +17,9 @@
 3. [前端概念](./网站前端/前端概念/README.md)
 4. [gulp使用](./网站前端/gulp使用/README.md)
 
-    1. [gulpfile.js](./网站前端/gulp使用/tools/gulpfile.js)（雪碧图的模板：[pc.handlebars](./网站前端/gulp使用/tools/pc.handlebars)、[wap.handlebars](./网站前端/gulp使用/tools/wap.handlebars)）
+    1. [gulpfile.js](./网站前端/gulp使用/tools/gulpfile.js)
+
+        雪碧图的模板：[pc.handlebars](./网站前端/gulp使用/tools/pc.handlebars)、[wap.handlebars](./网站前端/gulp使用/tools/wap.handlebars)
     2. [package.json](./网站前端/gulp使用/tools/package.json)
 5. 初始化模板
         
