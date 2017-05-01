@@ -478,13 +478,72 @@
         ```
 
     [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/3wbf62xj/)
-2. `<meta>的viewport`设置为0.5（缩放），切图用2倍大小（3倍切图就对应0.333333的viewport）。
+2. `<meta>的viewport`缩放为`1/DPR`，切图用DPR倍大小（媒体查询方案或JS方案）。
 
     >仅适用于iOS。Android机型太复杂，bug永无止境。
 3. `border-image`2像素图片，一半透明、一半目标颜色。
 4. `box-shadow`。
 
+### `em`、`%`
+1. `em`单位：
+
+    相对于节点自己的font-size的倍数（先计算出自己的font-size最终值）。
+
+    >若font-size的单位为`em`，用从父级继承的font-size值乘以倍数。
+
+    ```css
+    .father {
+        font-size: 10px;
+    }
+    .son {
+        font-size: 2em; /*20px：继承的font-size * 2*/
+        padding: 2em;   /*40px：自己的font-size * 2*/
+    }
+    ```
+2. `%`单位：
+
+    >包含块（containing block）：不能简单地理解成是父元素。若是`static/relative`元素，包含块是其父元素；若是`absolute`元素，包含块是离它最近的`relative/absolute/fixed`的祖先元素；若是`fixed`素，包含块是视口（viewport）。
+
+    1. 乘以包含块的`width`：
+
+        `margin`、`padding`、`left`、`right`、`width`、`max-width`、`min-width`、`text-indent`
+    2. 乘以包含块的`height`：
+
+        `top`、`bottom`、`height`、`max-height`、`min-height`
+    3. 乘以元素的`font-size`：
+
+        `line-height`
+    4. 乘以继承的`font-size`：
+
+        `font-size`
+    5. 乘以元素的`line-height`：
+
+        `vertical-align`
+    6. 乘以自身的`width/height`：
+
+        `border-radius`、`background-size`、`translate`、`transform-origin`、`zoom`、`clip-path`
+    7. `background-position`：
+
+        百分比值会同时应用于元素和图像。
+
+        >e.g. 50% 50% 会把图片的（50%, 50%）这一点与框的（50%, 50%）处对齐，相当于设置了center center。同理0% 0%相当于left top，100% 100%相当于right bottom。
+    8. 自身是`position: absolute`：
+
+        离它最近的`relative/absolute/fixed`的祖先元素；若没有，则相对于视口。
+    9. 自身是`position: fixed`：
+
+        相对于视口。
+
+    >如果某个元素设置了百分比的属性，则后代元素继承的是计算后的具体px值。
+
 ### `line-height`
+- 值的不同情况：无单位数字、带单位值、百分比、`normal`
+
+    其中的`em`、`%`、`无单位数字`，都是相对于元素自身最终的font-size值的倍数。
+
+    1. `em`和`%`是计算出具体px再向后继承（子节点的line-height=父级给的px）。
+    2. `无单位数字`是直接继承系数，子节点会分别计算（子节点的line-height=数字，再继续和自身font-size相乘）。
+
 1. 单行文本情况下：
 
     1. 内联元素的高度由`line-height`决定。
