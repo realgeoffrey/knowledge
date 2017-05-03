@@ -1988,6 +1988,12 @@
     2. `setTimeout`:
 
         [用setTimeout模拟setInterval](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用settimeout模拟setinterval)，可以提高性能（上一次执行完毕间隔时间后再执行下一次，而不是固定间隔时间都尝试执行），并且可以确保每次*定时器处理程序*执行间隔一定大于（或等于）设置的间隔时间。
+
+    - `setImmediate`：
+
+        >仅ie10支持。
+
+        等价于`setTimeout(func, 0)`。
 2. 重绘函数`requestAnimationFrame`（适合制作动画）
 
     >requestAnimationFrame扩展：[Polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe和cancelanimationframe的polyfill)、[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
