@@ -1355,12 +1355,33 @@
 >2. 在某个**JS block**（`<script>`标签或`try-catch`的`try`语句块）内，第一个错误触发后，当前JS block后面的代码会被自动忽略，不再执行，其他的JS block内代码不被影响。
 
 1. [原生错误类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#原生错误类型)
-2. 处理代码中抛出的错误
+2. 自定义错误
+
+    ```javascript
+    function MyError(message) {
+        Error.call(this);
+
+        this.message = message || '默认信息';
+        this.name = 'MyError';
+    }
+
+    MyError.prototype = Object.create(Error.prototype, {constructor: {value: 'MyError'}});
+    ```
+3. 手动抛出错误
+
+    ```javascript
+    throw 'Error';              //抛出字符串
+    throw 100;                  //抛出数值
+    throw true;                 //抛出布尔值
+    throw {message: 'Error'};   //抛出对象
+    throw new Error('Error');   //抛出Error类型错误
+    ```
+4. 处理代码中抛出的错误
 
     1. `try-catch-finally`
 
         1. `try`必须跟`catch`或`finally`或`catch + finally`同时出现。
-        2. 如果有`catch`，一旦`try`中抛出错误以后就先执行`catch`中的代码，然后执行`finally`中的代码；
+        2. 如果有`catch`，一旦`try`中抛出错误以后就先执行`catch`中的代码，然后执行`finally`中的代码。
         3. 如果没有`catch`，`try`中的代码抛出错误后，就会先执行`finally`中的语句，然后将`try`中抛出的错误继续往上抛。
         4. 如果`try`中代码是以`return`、`continue`或`break`终止的，必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
         5. 在`catch`中接收的错误，不会再向上提交给浏览器。
@@ -1368,8 +1389,8 @@
 
         1. 没有通过`try-catch`处理的错误都会触发`window`对象的`onerror`。
         2. 用方法赋值给`window.onerror`后，但凡这个window中有JS错误出现，则会调用此方法。
-        3. onerror方法会传入3个参数（至少），分别是**错误信息提示**、**javascript产生错误的document url**和**错误出现的行号**。
-        4. 若方法返回`true`，浏览器不再显示错误信息；若返回`false`，浏览器还是会提示错误信息：
+        3. onerror方法会传入3个参数（至少），分别是**message**、**fileName**、**lineNumber**。
+        4. 若方法返回`true`，浏览器不再显示错误信息；若返回`false`，浏览器还是会提示错误信息。
 
         ```javascript
         /**
@@ -1408,20 +1429,18 @@
             ```
 
         >与window对象的onerror事件处理函数不同，Image实例对象或img标签的onerror事件没有任何参数。
-2. 运用策略
+5. 运用策略
 
     1. 非客户端页面
 
         仅需在加载JS之前配置好`window.onerror`。
     2. 客户端内嵌页面
 
-        1. 同样也需要在加载JS之前配置好`window.onerror`，来处理页面内错误。
-        2. 客户端回调函数嵌套一层`try-catch`以提供**哪个方法发生错误等额外信息**。
+        1. 在加载JS之前配置好`window.onerror`。
+        2. 客户端回调函数嵌套一层`try-catch`，提示**哪个方法发生错误等额外信息**。
 
-            因为客户端调用前端的方法是直接通过函数运行JS代码，抛出错误时`window.onerror`传入的参数仅有第一个`message`参数（`file`、`line`以及其他参数都没有），所以必须在给客户端调用的JS方法中嵌套`try-catch`并且抛出能标识出所调用方法名字等信息。
-        3. （可选）又因为要避免**JS代码还未加载完毕客户端就调用回调函数**，需在客户端调用前端JS回调函数的时候嵌套一层`try-catch`，在`catch`中提供调用哪个方法的信息。
-
-            >仅能获取原始error的`message`信息，无法获取`line`等其他信息，因此还是必须前端在回调函数中嵌套`try-catch`
+            >因为客户端调用前端的方法是直接通过函数运行JS代码，抛出错误时`window.onerror`传入的参数仅有第一个`message`参数。
+        3. （可选）为了避免**JS代码还未加载完毕客户端就调用回调函数**，需在客户端调用前端JS时嵌套一层`try-catch`（服务端代码中添加），提示**哪个方法发生错误等额外信息**。
 
     >捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
 
