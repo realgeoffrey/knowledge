@@ -1638,6 +1638,8 @@
         ```javascript
         /* 父类定义：*/
         function Father(fatherPara) {
+            /* 私有属性用let；静态私有属性用const*/
+
             /* 父类属性*/
             this.fatherPrimitive = fatherPara;
             this.fatherReference = ['father1', 2, [{4: true}, undefined, null]];
