@@ -84,6 +84,18 @@
         3. 等待所有CSS被提取并且CSSOM被构造完毕。
         4. CSSOM被构造完毕后，执行脚本，访问和更改DOM和CSSOM。
         5. DOM构造继续进行。
+
+        >`<script>`执行：
+        >
+        >    1. 没有`defer`或`async`：立即加载并执行（同步），阻塞解析。
+        >    2. `defer`：异步加载，在DOM解析完成后、`DOMContentLoaded`触发前执行，顺序执行。
+        >
+        >        >多个`defer`脚本不一定按照顺序执行，也不一定会在`DOMContentLoaded`事件触发前执行，因此最好只包含一个延迟脚本。
+        >    3. `async`：异步加载，加载完马上执行。
+        >
+        >        乱序执行，仅适用于不考虑依赖、不操作DOM的脚本。
+        >
+        >    ![JS脚本加载图](./images/js-load-1.png)
 2. DOM（parse HTML）和CSSOM（recalculate style）构造完成后，进行渲染：
 
     Render Tree（渲染树）：Layout -> Paint -> Composite
