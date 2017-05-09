@@ -982,6 +982,47 @@ var fourOperations = {
 };
 ```
 
+### *原生JS*科学计数法转换为数字
+```javascript
+function eToString(number) {
+    number = number.toString(10);
+
+    var regex = /^(\d)(?:\.(\d*))?[eE]([+-]?)(\d+)$/,   //科学计数法
+        regexArr = regex.exec(number);
+
+    if (regexArr === null) {
+
+        return number;
+    } else {
+        var dotLength = regexArr[2].length, //小数位数
+            multiple = regexArr[4], //10进制位数
+            gap = Math.abs(multiple - dotLength),
+            tempArr = [],
+            i, ruslut;
+
+        if (regexArr[3] !== '-') {  /* 大于1*/
+            if (multiple >= dotLength) {    /* 没有小数*/
+                for (i = 0; i < gap; i++) {
+                    tempArr.push('0');
+                }
+
+                ruslut = regexArr[1] + regexArr[2] + tempArr.join('');
+            } else {  /* 有小数*/
+                ruslut = regexArr[1] + regexArr[2].substr(0, multiple) + '.' + regexArr[2].substr(multiple);
+            }
+        } else { /* 小于1*/
+            for (i = 0; i < multiple - 1; i++) {
+                tempArr.push('0');
+            }
+
+            ruslut = '0.' + tempArr.join('') + regexArr[1] + regexArr[2];
+        }
+    }
+
+    return ruslut;
+}
+```
+
 ### *原生JS*绑定、解绑事件
 ```javascript
 var eventUtil = {
@@ -1903,7 +1944,7 @@ xhr.send(null);
 ```javascript
 function upperCaseWord(str) {
 
-    return str.replace(/\b[a-zA-Z]/g, function (match) {
+    return str.replace(/\b[a-zA-Z]/, function (match) {
 
         return match.toUpperCase();
     });
