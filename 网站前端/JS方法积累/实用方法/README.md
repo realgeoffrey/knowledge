@@ -908,6 +908,52 @@ function isEventSupported(eventName, element) {
 }
 ```
 
+### *原生JS*科学计数法转换成字符串的数字
+```javascript
+function eToString(number) {
+    number = number.toString(10);
+
+    var regex = /^(\d)(?:\.(\d*))?[eE]([+-]?)(\d+)$/,   //科学计数法
+        regexArr = regex.exec(number);
+
+    if (regexArr === null) {
+
+        return number;
+    } else {
+        var dotNumber = regexArr[2] ? regexArr[2] : '',
+            dotLength = dotNumber.length, //小数位数
+            multiple = regexArr[4], //10进制位数
+            gap = Math.abs(multiple - dotLength),
+            tempArr = [],
+            i, result;
+
+        if (regexArr[3] !== '-') {  /* 大于1*/
+            if (multiple >= dotLength) {    /* 没有小数*/
+                for (i = 0; i < gap; i++) {
+                    tempArr.push('0');
+                }
+
+                result = regexArr[1] + dotNumber + tempArr.join('');
+            } else {  /* 有小数*/
+                result = regexArr[1] + dotNumber.substr(0, multiple) + '.' + dotNumber.substr(multiple);
+            }
+        } else { /* 小于1*/
+            if (multiple === '0') {
+                result = regexArr[1] + dotNumber;
+            } else {
+                for (i = 0; i < multiple - 1; i++) {
+                    tempArr.push('0');
+                }
+
+                result = '0.' + tempArr.join('') + regexArr[1] + dotNumber;
+            }
+        }
+    }
+
+    return result;
+}
+```
+
 ### *原生JS*用整数进行小数的四则运算（避免浮点数运算误差）
 ```javascript
 var fourOperations = {
@@ -982,45 +1028,81 @@ var fourOperations = {
 };
 ```
 
-### *原生JS*科学计数法转换为数字
+### *原生JS*大数加减法（不考虑小数和负数）
 ```javascript
-function eToString(number) {
-    number = number.toString(10);
+var overRangeOperations = {
+    add: function (arg1, arg2) {    /* 加*/
+        /* 需要把科学计数法转化为字符串的数字*/
+        arg1 = arg1.toString(10).split('');
+        arg2 = arg2.toString(10).split('');
 
-    var regex = /^(\d)(?:\.(\d*))?[eE]([+-]?)(\d+)$/,   //科学计数法
-        regexArr = regex.exec(number);
+        var carry = 0,  //进位
+            result = [],
+            temp;
 
-    if (regexArr === null) {
-
-        return number;
-    } else {
-        var dotLength = regexArr[2].length, //小数位数
-            multiple = regexArr[4], //10进制位数
-            gap = Math.abs(multiple - dotLength),
-            tempArr = [],
-            i, ruslut;
-
-        if (regexArr[3] !== '-') {  /* 大于1*/
-            if (multiple >= dotLength) {    /* 没有小数*/
-                for (i = 0; i < gap; i++) {
-                    tempArr.push('0');
-                }
-
-                ruslut = regexArr[1] + regexArr[2] + tempArr.join('');
-            } else {  /* 有小数*/
-                ruslut = regexArr[1] + regexArr[2].substr(0, multiple) + '.' + regexArr[2].substr(multiple);
-            }
-        } else { /* 小于1*/
-            for (i = 0; i < multiple - 1; i++) {
-                tempArr.push('0');
-            }
-
-            ruslut = '0.' + tempArr.join('') + regexArr[1] + regexArr[2];
+        while (arg1.length || arg2.length || carry) {
+            temp = parseInt(arg1.pop() || 0, 10) + parseInt(arg2.pop() || 0, 10) + carry;
+            result.unshift(temp % 10);
+            carry = Math.floor(temp / 10);
         }
-    }
 
-    return ruslut;
-}
+        return result.join('');
+    },
+
+    sub: function (arg1, arg2) {    /* 减*/
+        /* 需要把科学计数法转化为字符串的数字*/
+        arg1 = arg1.toString(10).split('');
+        arg2 = arg2.toString(10).split('');
+
+        var isArg2Bigger, // 标记arg2是否大于arg1
+            result = [],
+            i, len, temp;
+
+        (function () {  /* 确保大数减小数*/
+            isArg2Bigger = arg1.length < arg2.length;
+
+            if (arg1.length === arg2.length) {
+                for (i = 0, len = arg1.length; i < len; i++) {
+                    if (arg1[i] === arg2[i]) {
+                        continue;
+                    }
+
+                    isArg2Bigger = arg1[i] < arg2[i];
+
+                    break;
+                }
+            }
+
+            if (isArg2Bigger) {
+                temp = arg1;
+                arg1 = arg2;
+                arg2 = temp;
+            }
+        }());
+
+        while (arg1.length) {
+            temp = parseInt(arg1.pop(), 10) - parseInt(arg2.pop() || 0, 10);
+
+            if (temp >= 0) {
+                result.unshift(temp);
+            } else {
+                result.unshift(temp + 10);
+
+                arg1[arg1.length - 1] -= 1; //由于arg1一定大于等于arg2，所以不存在arg1[i-1]为undefined的情况
+            }
+        }
+
+        result = result.join('').replace(/^0*/, '');    //去掉前面的0
+
+        if (result === '') {
+            result = 0;
+        } else {
+            result = (isArg2Bigger ? '-' : '') + result;
+        }
+
+        return result;
+    }
+};
 ```
 
 ### *原生JS*绑定、解绑事件
