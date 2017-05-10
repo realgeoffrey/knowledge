@@ -1,7 +1,10 @@
 ## 网站前端
 
->1. 本repository内容是本人亲自测试得出的可执行经验，并非所有可能性的系统总结。
->2. 本repository参照标准：**ECMAScript 5**、**CSS3**、**HTML5**。
+>本repository内容：
+>
+>    1. 本人亲自测试得出的可执行经验，并非所有可能性的系统总结。
+>    2. 参照标准：**ECMAScript 5**（部分ECMAScript 6）、**CSS3**、**HTML5**。
+>    3. 含义：兼容ie8+包括ie8；兼容ie8-：包括ie8。
 
 1. JS
 

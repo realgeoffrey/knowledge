@@ -145,7 +145,7 @@
 
         ```scss
         .clearfix {
-            zoom: 1;
+            *zoom: 1;
         }
         .clearfix:after {
             content: '';
