@@ -173,10 +173,18 @@
     ```
 7. 算术`+` `-` `*` `/`
 
+    >`/`需要用小括号包围运算（在`@return`最外层不用）。
+
     ```scss
+    @function func() {
+        @return 20px / 2;
+    }
     a {
-        color: #123 + #abc;
-        font-size: (20px / 2);
+        color: #112233 + #aabbcc;   //#bbddff
+        font-size: 20 + px;         //20px
+        width: (20px / 2);          //10px
+        height: func();             //10px
+        line-height: (20px / 2px);  //10
     }
     ```
 8. 注释

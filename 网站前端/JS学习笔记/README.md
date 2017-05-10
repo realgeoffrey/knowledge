@@ -830,7 +830,7 @@
     2. 深复制：[代码实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)。
 
 ### 预加载
-1. JS预加载
+1. JS预加载图片
 
     ```javascript
     //主要使用
@@ -850,6 +850,18 @@
         };
     }
     ```
+
+    >判断JS、CSS文件是否加载完毕：
+    >
+    >    1. JS
+    >
+    >        1. 监听文件的`load`事件，触发则加载完成。
+    >        2. 监听JS文件的`readystatechange`事件，当文件的`readyState`值为`loaded/complete`则JS加载完成。
+    >    2. CSS
+    >
+    >        1. 监听文件的`load`事件，触发则加载完成。
+    >        2. 轮询CSS文件的`cssRules`属性是否存在，当存在则CSS加载完成。
+    >        3. 写一个特殊样式，轮询判断这个样式是否出现，来判断CSS加载完成。
 2. `link`标签预加载
 
     1. `<link rel="dns-prefetch" href="域名">`
@@ -964,7 +976,7 @@
 
     >e.g. `$(eventHandler).on(event, selector, func);`
 
-    1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的应用逻辑，成为**eventHandler**。有且仅有这些eventHandler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的eventHandler处理DOM（比如删除类名）也不会使绑定内容失效（除非删除）；在eventHandler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
+    1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的应用逻辑，成为**eventHandler**。有且仅有这些eventHandler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的eventHandler处理DOM（如删除类名）也不会使绑定内容失效（除非删除）；在eventHandler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
     2. 绑定的eventHandler距离selector越近，效率越高。因此虽然把selector都绑定在`$(document)`上能够避免增删节点对事件绑定造成的影响，但确是低效的。
 5. 判断是否加载成功，不成功则执行载入本地文件
 
@@ -1094,67 +1106,44 @@
         ```
     3. `for-in`
 
+        遍历对象所有的可枚举属性。
+
         ```javascript
         /* i为数组当前项的索引或对象当前项的属性名*/
         for (var i in obj或arr) {
 
         }
         ```
-    4. Array方法
+    4. `for-of`
 
-        1. `Array.prototype.forEach`
+        迭代出任何拥有`[Symbol.iterator]`属性的collection对象的每个元素。
+
+        ```javascript
+        /* i为迭代对象的属性值*/
+        for (var i of 可迭代对象) {
+
+        }
+        ```
+    5. Array方法
+
+        参数均为：`回调函数(当前值, 索引, 数组整体)[, this替代]`。
+
+        1. `Array.prototype.forEach()`
 
             对数组的每个元素执行一次提供的函数。
+        2. `Array.prototype.map()`
 
-            ```javascript
-            /* item为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为undefined*/
-            arr.forEach(function(item, index, array) {
+            数组中的每个元素调用提供的函数，组成新的数组。
+        3. `Array.prototype.filter()`
 
-            }, thisArg);
-            ```
-        2. `Array.prototype.map`
+            使用提供的函数测试所有元素，并创建包含所有通过测试的元素的新数组。
+        4. `Array.prototype.every()`
 
-            原数组中的每个元素调用一个提供的函数，返回值组成的数组。
+            测试数组中是否所有元素都通过提供的函数。
+        5. `Array.prototype.some()`
 
-            ```javascript
-            /* item为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为新数组*/
-            arr.map(function(item, index, array) {
-
-                /* return的值为新数组的项*/
-            }, thisArg);
-            ```
-        3. `Array.prototype.filter`
-
-            使用指定的函数测试所有元素，并创建一个包含所有通过测试的元素的新数组。
-
-            ```javascript
-            /* item为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为新数组*/
-            arr.filter(function(item, index, array) {
-
-                /* return true;元素保留；return false;元素不保留*/
-            }, thisArg);
-            ```
-        4. `Array.prototype.some`
-
-            测试数组中的某些元素是否通过了指定函数的测试。
-
-            ```javascript
-            /* item为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为true（一个回调函数返回true）；false（回调函数没有一个返回true）*/
-            arr.some(function(item, index, array) {
-
-            }, thisArg);
-            ```
-        5. `Array.prototype.every`
-
-            测试数组的所有元素是否都通过了指定函数的测试。
-
-            ```javascript
-            /* item为数组当前项的值，index为数组当前项的索引，array为arr，thisArg为回调函数中的this。返回值为false（一个回调函数返回false）；true（回调函数没有一个返回false）*/
-            arr.every(function(item, index, array) {
-
-            }, thisArg);
-            ```
-    5. `Object.keys`
+            测试数组中是否有一个元素通过提供的函数。
+    6. `Object.entries`、`Object.values`、`Object.keys`、`Object.getOwnPropertyNames`、`Object.getOwnPropertySymbols`
 2. jQuery
 
     1. `$.each`
@@ -1176,9 +1165,6 @@
     3. `$.grep`
 
         类似`Array.prototype.filter`
-3. ES6的其他方法
-
-    1. `for-of`
 
 ### 判断对象、方法是否定义
 1. 判断对象方法是否可以执行
@@ -1266,7 +1252,7 @@
     2. 对象形式。
     3. 与本地cookie配合进行用户识别、状态管理。
 
->隐身模式策略：存储API仍然可用，并且看起来功能齐全，只是无法真正储存（比如分配储存空间为0）。
+>隐身模式策略：存储API仍然可用，并且看起来功能齐全，只是无法真正储存（如分配储存空间为0）。
 
 ### 自执行匿名函数（拉姆达，λ，lambda）
 立即调用的函数表达式。
@@ -1913,7 +1899,7 @@
     1. 如果expr1能转换成false（`Boolean(expr1)`）则返回expr1，否则返回expr2。
     2. 在Boolean环境（如if的条件判断）中使用时，两个操作结果都为true时返回true，否则返回false。
 
-### DOM加载步骤、jQuery文档`ready`事件和JS的`onload`事件顺序
+### DOM加载步骤、jQuery文档`ready`事件和JS的`load`事件顺序
 1. 解析Html结构；
 2. 加载外部脚本和样式表文件；
 3. 解析并执行脚本代码；

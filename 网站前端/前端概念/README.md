@@ -63,8 +63,8 @@
     前端应用没有安装过程，其所需程序资源都部署在远程服务器，用户使用浏览器访问不同的页面来加载不同的资源，随着页面访问的增加，渐进式的将整个程序下载到本地运行，“增量下载”是前端在工程上有别于客户端GUI软件的根本原因。
 2. 由“增量”原则引申出的前端优化技巧几乎成为了**性能优化**的核心：
 
-    1. 加载相关的按需加载、延迟加载、预加载、请求合并等策略；
-    2. 缓存相关的浏览器缓存利用，缓存更新、缓存共享、非覆盖式发布等方案；
+    1. 加载相关：按需加载、延迟加载、预加载、请求合并等策略。
+    2. 缓存相关：缓存更新、缓存共享、非覆盖式发布等方案。
     3. 复杂的BigRender、BigPipe、Quickling、PageCache等技术。
 
 ### 页面载入解析步骤
@@ -107,113 +107,7 @@
 >无论阻塞渲染还是阻塞解析，资源文件会不间断按顺序加载。
 
 ### 浏览器缓存
->参考[浏览器缓存知识小结及应用](http://www.cnblogs.com/lyzg/p/5125934.html)。
-
-1. HTTP定义的缓存机制
-
-    >只缓存GET请求。
-
-    1. 强缓存（本地缓存）
-
-        浏览器加载资源时，先根据这个资源之前响应头的`Expires`、`Cache-Control`判断它是否命中强缓存（判断是否到了过期时间）。
-
-        1. 命中状态码：
-
-            `200 OK (from 某某 cache)`
-        2. 利用之前HTTP response header返回的`Expires`和`Cache-Control`
-
-            >`Cache-Control`的优先级高于`Expires`。
-
-            1. `Expires`：
-
-                绝对时间。HTTP/1.0提出。
-
-                1. 浏览器第一次跟服务器请求一个资源，服务器在返回这个资源的同时，会返回一系列响应头。
-
-                    Expires响应头表示资源过期的绝对时间。
-                2. 浏览器在接收到这个资源后，会把这个资源连同所有响应头一起缓存下来。
-                3. 浏览器再请求这个资源时，先从缓存中寻找。找到这个资源后，拿出它的Expires跟当前的请求时间进行对比：
-
-                    1. 若请求时间在Expires之前，命中缓存（还要考虑`Cache-Control`），从本地缓存中读取资源，不会发请求到服务器。
-                    2. 若没有命中缓存，发请求到服务器，响应头更新这个资源的Expires。
-            2. `Cache-Control`：
-
-                相对时间。HTTP/1.1提出。
-
-                1. 浏览器第一次跟服务器请求一个资源，服务器在返回这个资源的同时，会返回一系列响应头。
-
-                    Cache-Control响应头表示（相对于请求发起时间的）资源过期的相对时间。
-                2. 浏览器在接收到这个资源后，会把这个资源连同所有响应头一起缓存下来。
-                3. 浏览器再请求这个资源时，先从缓存中寻找。找到这个资源后，根据它请求时间和Cache-Control设定的有效期，计算出一个资源过期时间，再拿这个过期时间跟当前的请求时间进行对比：
-
-                    1. 若请求时间在过期时间之前，命中缓存（还要考虑`Expires`），从本地缓存中读取资源，不会发请求到服务器。
-                    2. 若没有命中缓存，发请求到服务器，响应头更新这个资源的Cache-Control。
-
-        >建议：[配置超长时间的本地缓存；采用内容摘要（MD5）作为缓存更新依据](https://github.com/fouber/blog/issues/6)。
-    2. 协商缓存
-
-        若没有命中强缓存，浏览器发送一个请求到服务器，根据这个资源的`If-Modified-Since`（`Last-Modified`）、`If-None-Match`（`ETag`）判断它是否命中协商缓存（判断缓存资源和服务端资源是否一致）。
-
-        1. 命中状态码：
-
-            `304 Not Modified`
-        2. 利用之前HTTP response header返回的`Last-Modified`、`ETag`与HTTP request head发起的`If-Modified-Since`、`If-None-Match`
-
-            >`ETag/If-None-Match`的优先级高于`Last-Modified/If-Modified-Since`。
-
-            1. `Last-Modified`与`If-Modified-Since`：
-
-                绝对时间。服务器时间。秒级。
-
-                1. 浏览器第一次跟服务器请求一个资源，服务器在返回这个资源的同时，会返回一系列响应头。
-
-                    Last-Modified响应头表示这个资源在服务器上的最后修改时间。
-                2. 浏览器在接收到这个资源后，会把这个资源连同所有响应头一起缓存下来。
-                3. 浏览器再请求这个资源时，带上If-Modified-Since请求头（Last-Modified的值）。
-                4. 服务器收到资源请求时，拿If-Modified-Since和资源在服务器上最后修改时间进行对比：
-
-                    1. 若没有变化，命中缓存（还要考虑`ETag/If-None-Match`），返回304 Not Modified，但不返回资源内容。浏览器从本地缓存中读取资源。
-                    2. 若没有命中缓存，则返回资源内容，响应头更新这个资源的Last-Modified。
-            2. `ETag`与`If-None-Match`：
-
-                1. 浏览器第一次跟服务器请求一个资源，服务器在返回这个资源的同时，会返回一系列响应头。
-
-                    ETag响应头表示这个资源在服务器上的唯一标识字符串，只要资源有变化这个串就改变。
-                2. 浏览器在接收到这个资源后，会把这个资源连同所有响应头一起缓存下来。
-                3. 浏览器再请求这个资源时，带上If-None-Match请求头（ETag的值）。
-                4. 服务器收到资源请求时，拿If-None-Match和资源在服务器上生成新的ETag进行对比：
-
-                    1. 若值相同，命中缓存（还要考虑`Last-Modified/If-Modified-Since`），返回304 Not Modified，但不返回资源内容。浏览器从本地缓存中读取资源。（由于ETag重新生成过，）响应头更新这个资源的ETag。
-                    2. 若没有命中缓存，则返回资源内容，响应头更新这个资源的ETag。
-
-                >1. 分布式部署，多台机器的Last-Modified必须保持一致。
-                >2. 分布式系统尽量关闭ETag(每台机器生成的ETag都会不一样）。
-
-            - 产生`ETag`的必要性
-
-                1. 某些文件也许会周期性的更改，但是他的内容并不改变（仅仅改变的修改时间），这时不希望客户端认为这个文件被修改了，而重新GET。
-                2. 某些文件修改非常频繁，比如在1秒的时间内进行修改，If-Modified-Since能检查到的粒度是秒级的，这种修改无法判断（或说UNIX记录MTIME只能精确到秒）。
-                3. 某些服务器不能精确的得到文件的最后修改时间。
-
-    - 联系：
-
-        1. 相同：
-
-            1. 如果命中，都是从客户端缓存中加载资源，而不是从服务器加载资源数据。
-            2. 只有GET请求会被缓存，POST请求不会。
-        2. 区别：
-
-            1. 强缓存不发请求到服务器，协商缓存会发请求到服务器。
-            2. 用户行为影响缓存使用情况
-
-                | 用户操作 | 强缓存 | 协商缓存 |
-                | :--- | :---: | :---: |
-                | 地址栏回车 | 有效 | 有效 |
-                | 页面链接跳转 | 有效 | 有效 |
-                | 新开窗口 | 有效 | 有效 |
-                | 前进、后退 | 有效 | 有效 |
-                | 刷新 | **无效** | 有效 |
-                | 强制刷新 | **无效** | **无效** |
+1. [HTTP定义的缓存机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)
 2. 其他缓存机制（不建议方式）
 
     1. HTML的`meta`标签设置缓存情况：
@@ -459,7 +353,7 @@
         3. 对资源进行缓存：
 
             1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
-            2. 使用[缓存相关的HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#浏览器缓存)：Expires、Cache-Control、Last-Modified/If-Modified-Since、ETag/If-None-Match。
+            2. 使用[缓存相关的HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：Expires、Cache-Control、Last-Modified/If-Modified-Since、ETag/If-None-Match。
         4. 减少DNS查找，设置合适的TTL值，避免重定向。
         5. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#静态资源使用额外域名domain-hash的原因)。
         6. [非覆盖式发布](https://github.com/fouber/blog/issues/6)。

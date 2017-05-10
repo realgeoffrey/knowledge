@@ -108,7 +108,7 @@ function animateTo(endX, endY, time) {
 }
 ```
 >使用[velocity动画库](https://github.com/julianshapiro/velocity)（[中文文档](http://www.mrfront.com/docs/velocity.js/)）做所有的动画（包括JS和CSS）才是最简单且性能最佳的选择。
->比如滚动到某位置：`$('html').velocity('scroll', {offset: y轴像素, duration: 毫秒});`。
+>如滚动到某位置：`$('html').velocity('scroll', {offset: y轴像素, duration: 毫秒});`。
 
 ### *原生JS*判断浏览器userAgent（`window.navigator`）
 ```javascript
@@ -853,7 +853,7 @@ document.getElementById('...').addEventListener('touchend', function (e) {
         end_y = e.changedTouches[0].clientY;
 
     if (Math.abs(end_x - start_x) > 5 || Math.abs(end_y - start_y) > 5) {
-        /* 触发滑动事件要做的事情（比如什么都不做）*/
+        /* 触发滑动事件要做的事情（如什么都不做）*/
     } else {
         /* 触发点击事件要做的事情*/
     }

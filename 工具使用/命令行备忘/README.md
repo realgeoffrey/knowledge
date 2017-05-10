@@ -4,12 +4,12 @@
 1. MD5
 
     ```bash
-    md5sum 文件
+    md5 文件  #或md5sum
     ```
 2. SHA1
 
     ```bash
-    sha1sum 文件
+    shasum 文件  #或sha1sum
     ```
 
 ### [NVM](https://github.com/creationix/nvm)更新Node.js版本

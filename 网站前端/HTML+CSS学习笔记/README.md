@@ -430,7 +430,7 @@
         visibility: hidden; /* 属性不存在隐藏*/
     }
     ```
-3. 要谨慎给img设置背景（比如内容图片或头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)），因为当img是透明图的时候，会展示背景的内容。
+3. 要谨慎给img设置背景（如内容图片或头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)），因为当img是透明图的时候，会展示背景的内容。
 
 ### img标签的圆形、边框
 1. 圆形+边框
@@ -1212,7 +1212,7 @@
 
 ### 渲染性能（rendering performance）
 >1. 为了视觉上连贯，浏览器对每一帧画面的所有工作需要在16ms（1000ms / 60f ~= 16.66ms/f）内完成。
->2. 在渲染一帧画面同时，浏览器还有一些流程工作要做（比如渲染队列的管理、渲染线程与其他线程之间的切换等）。因此一次花费在像素渲染管道（JS->Style->render tree）的时间需要控制在10至12ms内完成，再余出4至6ms进行其他流程工作。
+>2. 在渲染一帧画面同时，浏览器还有一些流程工作要做（如渲染队列的管理、渲染线程与其他线程之间的切换等）。因此一次花费在像素渲染管道（JS->Style->render tree）的时间需要控制在10至12ms内完成，再余出4至6ms进行其他流程工作。
 >3. 因此一帧画面理想的耗时为：`16ms = 3~4ms的JS代码 + 7~8ms的渲染工作 + 4~6ms的其他流程工作`。
 
 1. 像素渲染管道：
@@ -1305,7 +1305,7 @@
         5. 用操作class替代操作style。
     2. 缩小样式计算的范围和降低复杂度
 
-        1. 降低样式选择器的复杂度、提升[选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)（甚至使用基于class的方式，比如[BEM](https://en.bem.info/methodology/css/)）。
+        1. 降低样式选择器的复杂度、提升[选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)（甚至使用基于class的方式，如[BEM](https://en.bem.info/methodology/css/)）。
         2. 减少需要执行样式计算的元素的个数（随着元素递增而计算量线性递增）。
     3. 避免大规模、复杂的布局与reflow
 
@@ -1399,8 +1399,9 @@
         为状态类样式加入前缀，统一标识，方便识别，只作为后代选择器使用（如`.z-hover`或`.z-active`）。
     5. 样式区分`.i-`（icon）
     
-        同一批内容的不同样式（比如仅背景不同的几个按钮），可以用`.i-1`、`.i-2`区分样式。
-        >如果在模块上，可以使用**选择器扩展**而不加前缀`.i-`，比如`.m-xxx`扩展内容`.m-xxx-1`、`.m-xxx .btn`扩展内容`.m-xxx .btn-1`。
+        同一批内容的不同样式（如仅背景不同的几个按钮），可以用`.i-1`、`.i-2`区分样式。
+
+        >如果在模块上，可以使用**选择器扩展**而不加前缀`.i-`，如`.m-xxx`扩展内容`.m-xxx-1`、`.m-xxx .btn`扩展内容`.m-xxx .btn-1`。
     6. JS功能`.j-`（JS）
     
         仅作为JS锚点使用，不添加任何CSS样式。
