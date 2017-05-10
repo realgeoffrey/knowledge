@@ -414,7 +414,7 @@
     >1. 内容区域（鼠标指示出的高度）：只与字号（font-size）和font-family有关。
     >2. 行间距：摇摆不定，可以为负值，仅为达成以上等式而变化。
 
->ie6以及其他渲染有误的浏览器不能用line-height控制图片与文字的对齐位置（可以使用[垂直居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#垂直居中)）。
+>ie6以及部分浏览器不能用line-height控制图片与文字的对齐位置，使用其他垂直居中方式。
 
 ### img标签的src属性
 >当img标签的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
@@ -624,6 +624,242 @@
 ----
 ## HTML + CSS
 
+### 水平居中、垂直居中
+1. 水平居中
+
+    1. 内容宽度确定
+
+        ```css
+        .son {
+            width: 宽度;
+            margin: 0 auto;
+        }
+        ```
+    2. 内容宽度不确定
+
+        1. 子级`display: table; margin: 0 auto;`。
+
+            >兼容ie8+。
+
+            ```css
+            .son {
+                display: table;
+                margin: 0 auto;
+            }
+            ```
+        2. 父级`position: relative;`，子级`position: absolute; left: 50%; transform: translateX(-50%);`。
+
+            >兼容ie9+。
+
+            ```scss
+            .father {
+                position: relative;
+
+                .son {
+                    position: absolute;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    -ms-transform: translateX(-50%);
+                }
+            }
+            ```
+        3. 父级`display: flex; justify-content: center;`；或父级`display: flex;`，子级`margin: 0 auto;`。
+
+            >兼容ie11+。
+
+            ```scss
+            .father {
+                display: flex;
+                justify-content: center;
+            }
+            /* 或*/
+            .father {
+                display: flex;
+
+                .son {
+                    margin: 0 auto;
+                }
+            }
+            ```
+        4. 父级`text-align: center;`，子级`display: inline-block;`。
+
+            ```scss
+            .father {
+                text-align: center;
+                font-size: 0;
+
+                .son {
+                    display: inline-block;
+                    *display: inline;
+                    *zoom: 1;
+
+                    font-size: ;
+                }
+            }
+            ```
+2. 垂直居中
+
+    1. 内容高度确定
+
+        父级`position: relative;`，子级`position: absolute; top: 50%; margin-top: 负一半高度;`。
+    2. 内容高度不确定
+
+        1. 父级`display: table-cell; vertical-align: middle;`，子级`display: inline-block;`。
+
+            ```scss
+            .father { /* （为兼容低版本ie）不能是float或absolute，可以在外嵌套float或absolute*/
+                display: table-cell;
+                vertical-align: middle;
+
+                /* ie6/7需要：height/font-size = 1.14*/
+                *height: 114px;
+                *font-size: 100px;
+
+                .son {  /* （为兼容低版本ie）必须是内联元素*/
+                    display: inline-block;
+                    *display: inline;
+                    *zoom: 1;
+                    /*vertical-align: middle;*/
+                }
+            }
+            ```
+
+            [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/c1pz8mow/)
+        2. 父级`position: relative;`，子级`position: absolute; top: 50%; transform: translateY(-50%);`。
+
+            >兼容ie9+。
+
+            ```scss
+            .father {
+                position: relative;
+
+                .son {
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    -ms-transform: translateY(-50%);
+                }
+            }
+            ```
+        3. 父级`display: flex; align-items: center;`。
+
+            >兼容ie11+。
+
+            ```scss
+            .father {
+                display: flex;
+                align-items: center;
+            }
+            ```
+        4. 辅助参考元素`display: inline-block; vertical-align: middle; height: 100%;`，子级`display: inline-block; vertical-align: middle;`。
+
+            1. 伪元素：
+
+                >兼容ie8+。
+
+                ```scss
+                .father {
+                    font-size: 0;
+
+                    &:before {
+                        content: "";
+                        display: inline-block;
+                        vertical-align: middle;
+                        height: 100%;
+                    }
+                    .son {
+                        display: inline-block;
+                        vertical-align: middle;
+
+                        font-size: ;
+                    }
+                }
+                ```
+            2. 额外元素：
+
+                ```html
+                <style>
+                    .father {
+                        font-size: 0;
+                    }
+                    span {
+                        display: inline-block;
+                        *display: inline;
+                        *zoom: 1;
+                        vertical-align: middle;
+                        height: 100%;
+                    }
+                    .son {
+                        display: inline-block;
+                        *display: inline;
+                        *zoom: 1;
+                        vertical-align: middle;
+
+                        font-size: ;
+                    }
+                </style>
+
+                <div class="father">
+                    <span></span>
+                    <div class="son"></div>
+                </div>
+                ```
+3. 水平、垂直居中
+
+    1. 内容高度、宽度确定
+
+        父级`position: relative;`，子级`position: absolute; top: 50%; left: 50%; margin-top: 负一半高度; margin-left: 负一半宽度;`。
+    2. 内容高度、宽度不确定
+
+        1. 父级`display: table-cell; text-align: center; vertical-align: middle;`，子级`display: inline-block;`。
+
+            ```scss
+            .father {
+                display: table-cell;
+                text-align: center;
+                vertical-align: middle;
+
+                /* ie6/7需要：height/font-size = 1.14*/
+                *height: 114px;
+                *font-size: 100px;
+
+                .son {
+                    display: inline-block;
+                    *display: inline;
+                    *zoom: 1;
+                    /*vertical-align: middle;*/
+                }
+            }
+            ```
+        2. 父级`position: relative;`，子级`position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);`。
+
+            >兼容ie9+。
+
+            ```scss
+            .father {
+                position: relative;
+
+                .son {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    -ms-transform: translate(-50%, -50%);
+                }
+            }
+            ```
+        3. 父级`display: flex; justify-content: center; align-items: center;`。
+
+            >兼容ie11+。
+
+            ```css
+            .father {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            ```
+
 ### 自适应宽度布局
 >`float`节点：可以填补在**之后节点**的水平`margin`内（`padding`内不可以）；不可以填补在*之前节点*的水平`margin`内。
 
@@ -729,333 +965,6 @@
     >3. 完全由内容决定布局；
     >4. 第一块内容要给第二块内容留下足够空间，否则第二块放不下会整个换行；第一块+第二块要给第三块留下足够空间，否则第三块放不下会整个换行。
 
-### 垂直居中
-1. 图标和文字并排垂直居中
-
-    1. 图标设置为`absolute`，用`margin-left`调整水平位置（没有设置`left`或`right`，则在文档流所在的水平位置开始定位，并且不在文档流中），用`top`和`margin-top`调整垂直位置。
-
-        1. 图标后置
-        
-            1. 水平居左
-            
-                ```html
-                <style>
-                    .ico_r_1 {
-                        position: relative;
-                        padding-right: 100px;
-                        _zoom: 1;
-
-                        /* height、line-height、width、截断*/
-                    }
-                    .ico_r_1 i {
-                        position: absolute;
-                        width: 100px;
-                        height: 20px;
-                        top: 50%;
-                        margin-top: -10px;
-                        background-color: red;
-                    }
-                </style>
- 
-                <div class="ico_r_1">
-                    S-水平居左，图标后置-E
-                    <i>1</i>
-                </div>
-                ```        
-            2. 水平居中
-            
-                ```html
-                <style>
-                    .ico_r_2 {
-                        text-align: center;
-                        position: relative;
-                        padding-right: 100px;
-                        _zoom: 1;
-
-                        /* height、line-height、width、截断*/
-                    }
-                    .ico_r_2 i {
-                        position: absolute;
-                        width: 100px;
-                        height: 20px;
-                        top: 50%;
-                        margin-top: -10px;
-                        background-color: red;
-                    }
-                </style>
- 
-                <div class="ico_r_2">
-                    S-水平居中，图标后置-E
-                    <i>2</i>
-                </div>
-                ```
-            3. 水平居右
-            
-                ```html
-                <style>
-                    .ico_r_3 {
-                        text-align: right;
-                        position: relative;
-                        padding-right: 100px;
-                        _zoom: 1;
-
-                        /* height、line-height、width、截断*/
-                    }
-                    .ico_r_3 i {
-                        position: absolute;
-                        width: 100px;
-                        height: 20px;
-                        top: 50%;
-                        margin-top: -10px;
-                        background-color: red;
-                    }
-                </style>
- 
-                <div class="ico_r_3">
-                    S-水平居右，图标后置-E
-                    <i>3</i>
-                </div>
-                ```
-        2. 图标前置
-
-            1. 水平居左
-            
-                ```html
-                <style>
-                    .ico_l_1 {
-                        position: relative;
-                        padding-left: 100px;
-                        _zoom: 1;
-
-                        max-width: 文字宽度;
-                        _width: 文字宽度;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-
-                        /* height、line-height*/
-                    }
-                    .ico_l_1 i {
-                        width: 100px;
-                        height: 20px;
-                        position: absolute;
-                        top: 50%;
-                        margin-top: -10px;
-                        margin-left: -100px;
-                        background-color: red;
-                    }
-                </style>
- 
-                <div class="ico_l_1">
-                    <i>4</i>
-                    S-水平居左，图标前置-E
-                </div>
-                ```
-            2. 水平居中
-            
-                ```html
-                <style>
-                    .ico_l_2 {
-                        display: inline-block;
-                        *display: inline;
-                        *zoom: 1;
-                        position: relative;
-                        padding-left: 100px;
-                        font-size: ;
-
-                        max-width: 文字宽度;
-                        _width: 文字宽度;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-
-                        /* height、line-height*/
-                    }
-                    .ico_l_2 i {
-                        width: 100px;
-                        height: 20px;
-                        position: absolute;
-                        top: 50%;
-                        margin-top: -10px;
-                        left: 0;
-                        background-color: red;
-                    }
-                </style>
- 
-                <div style="text-align: center;font-size: 0;/* width、height、其他位置设置*/">
-                    <div class="ico_l_2">
-                        <i>5</i>
-                        S-水平居中，图标前置-E
-                    </div>
-                </div>
-                ```
-            3. 水平居右
-            
-                ```html
-                <style>
-                    .ico_l_3 {
-                        display: inline-block;
-                        *display: inline;
-                        *zoom: 1;
-                        position: relative;
-                        padding-left: 100px;
-                        font-size: ;
-
-                        max-width: 文字宽度;
-                        _width: 文字宽度;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-
-                        /* height、line-height*/
-                    }
-                    .ico_l_3 i {
-                        position: absolute;
-                        width: 100px;
-                        height: 20px;
-                        top: 50%;
-                        margin-top: -10px;
-                        left: 0;
-                        background-color: red;
-                    }
-                </style>
- 
-                <div style="text-align: right;font-size: 0;/* width、height、其他位置设置*/">
-                    <div class="ico_l_3">
-                        <i>6</i>
-                        S-水平居右，图标前置-E
-                    </div>
-                </div>
-                ```    
-        3. 图标前置+图标后置，水平居中
-
-            ```html
-            <style>
-                .ico_l_r {
-                    display: inline-block;
-                    *display: inline;
-                    *zoom: 1;
-                    position: relative;
-                    padding: 0 100px;
-                    font-size: ;
-
-                    max-width: 文字宽度;
-                    _width: 文字宽度;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-
-                    /* height、line-height*/
-                }
-                .ico_l_r i.i-l {
-                    position: absolute;
-                    width: 100px;
-                    height: 20px;
-                    top: 50%;
-                    margin-top: -10px;
-                    left: 0;
-                    background-color: red;
-                }
-                .ico_l_r i.i-r {
-                    position: absolute;
-                    width: 100px;
-                    height: 20px;
-                    top: 50%;
-                    margin-top: -10px;
-                    right: 0;
-                    background-color: red;
-                }
-            </style>
-
-            <div style="text-align: right;font-size: 0;/* width、height、其他位置设置*/">
-                <div class="ico_l_r">
-                    <i class="i-l">7</i>
-                    S-水平居中，图标前置+图标后置-E
-                    <i class="i-r">7</i>
-                </div>
-            </div>
-            ```
-
-        [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/4z8r51or/)
-    2. ~~图标设置为`inline-block`，再用`vertical-align`微调。~~
-
-        `vertical-align`在不同浏览器表现太不一致，垂直方向无法获得真正居中效果。
-        
-    3. 使用`float`。
-2. 不确定高度的垂直居中
-
-    ```html
-    <style type="text/css">
-        .box { /* 此层不能是float或absolute，可以在此层外嵌套的设置为float或absolute*/
-           display: table-cell;
-           height: 114px; /* height/font-size = 1.14*/
-           *font-size: 100px;
-           vertical-align: middle; /* 无继承性*/
-           text-align: center; /* 有继承性*/
-        }
-        span { /* 必须是内联元素*/
-           display: inline-block;
-           vertical-align: middle;
-           /* font-size覆盖父级的字体*/
-        }
-        img {
-           vertical-align: middle;
-        }
-    </style>
-
-    <div class="box">
-        <img src=""> or <span>...</span>
-    </div>
-    ```
-    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/c1pz8mow/)
-    
-### 水平居中
-1. 内容宽度可变
-    
-    用`text-align: center;`控制`inline-block`水平居中。
-    ```html
-    <style>
-        .outer_1 {
-            text-align: center;
-            font-size: 0;
-        }
-        .outer_1 li {
-            display: inline-block;
-            *display: inline;
-            zoom: 1;
-         
-            font-size: ;
-        }
-    </style>
-
-    <ul class="outer_1">
-        <li>...</li>
-        <li>...</li>
-        <li>...</li>
-    </ul>
-    ```
-2. 内容宽度固定
-
-    ```html
-    <style>
-        .outer_2 {
-            width: 总宽度;
-            margin: 0 auto;
-        }
-        .outer_2 li {
-            float: left;
-            _display: inline;
-            width: 单个宽度;
-        }
-    </style>
-
-    <ul class="outer_2 clearfix">
-        <li>...</li>
-        <li>...</li>
-        <li>...</li>
-    </ul>
-    ```
-
 ### 等宽文字
 >要做到不同字数的一行文字等宽。
 
@@ -1066,7 +975,7 @@
         i {
             display: inline-block;
             *display: inline;
-            zoom: 1;
+            *zoom: 1;
             width: 1em;
         }
     </style>
@@ -1296,10 +1205,9 @@
 
     1. 栅格系统
     2. [自适应宽度布局](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#自适应宽度布局)
-    3. [垂直居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#垂直居中)
-    4. [水平居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#水平居中)
-    5. [页面高度不够时，footer依然置于页面最底部](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#页面高度不够时footer依然置于页面最底部)
-    6. [多列等高](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#多列等高)
+    3. [水平居中、垂直居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#水平居中垂直居中)
+    4. [页面高度不够时，footer依然置于页面最底部](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#页面高度不够时footer依然置于页面最底部)
+    5. [多列等高](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#多列等高)
 2. flex具体解决方案：[solved-by-flexbox](https://hufan-akari.github.io/solved-by-flexbox/)。
 
 ### 渲染性能（rendering performance）
