@@ -115,6 +115,6 @@
 	```shell
     svn add /var/www/abc/*
     svn delete /var/www/abc/某文件
-    svn commit -m"信息" /var/www/abc/*
+    svn commit -m "信息" /var/www/abc/*
     svn update [-r 版本号] /var/www/abc
     ```

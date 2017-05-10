@@ -162,7 +162,7 @@
 
     >e.g. `a:hover .class{}`
 
-	- 先要设置`a:hover{}`触发`:hover`时候的重绘(或重排)效果（可以用`zoom: 1`），再添加`a:hover`之后的派生选择器CSS效果，比如显示／隐藏。
+	- 先要设置`a:hover{}`触发`:hover`时候的重绘(或重排)效果（可以用`zoom: 1`），再添加`a:hover`之后的派生选择器CSS效果，如显示/隐藏。
 
 	>ie6用CSS控制子项根据父项`a:hover`的显示隐藏，仅作用于一些文本效果，因此还是要用JS的方式替代此种效果：mouseenter时候添加一个类，类控制CSS来操作子项内容的显示隐藏；mouseleave时候去除此类。
 24. ie6的`:hover`的某些CSS属性值会导致高度变化，其实是触发了**haslayout**，可以设置CSS属性使`:hover`之前就已经haslayout。
@@ -206,7 +206,7 @@
 		};
 	}
 	```
-28. ie6下当子节点的宽度超过父节点设置的宽度时，会产生奇怪的样式效果，比如仅设置`padding-top`而会把`padding-bottom`也设置一样的值：
+28. ie6下当子节点的宽度超过父节点设置的宽度时，会产生奇怪的样式效果，如仅设置`padding-top`而会把`padding-bottom`也设置一样的值：
 
     - 计算好子节点不要超过父节点宽度。
 29. ie6下[qrcode.js](https://github.com/davidshimjs/qrcodejs)要先把节点展示出来才能够调用方法产生效果，调用完之后再隐藏节点不会有影响（ie6下是用table模拟效果）。
@@ -215,7 +215,7 @@
 	1. 此文字的节点设置`width固定值`。
 	2. `white-space: nowrap`强制文本不换行。
 31. ie6的`负margin`有些情况需要多设置一些，因为可能出现子节点内容超过设定值的情况。
-32. ie6的某些兄弟间节点间（比如img和其他`inline-block`节点）因为出现比如`overflow: hidden`造成相对于基线会有对齐问题：
+32. ie6的某些兄弟间节点间（如img和其他`inline-block`节点）因为出现如`overflow: hidden`造成相对于基线会有对齐问题：
 
 	1. `vertical: top; margin-top: 某px;`
 	2. 只对ie6进行hack操作，`_vertical-align: baseline; _margin-top: 某px;`或`_vertical-align: -某px;`。

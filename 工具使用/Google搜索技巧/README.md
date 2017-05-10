@@ -12,7 +12,7 @@
 
         搜索输入框里，所有的空格都被理解为加号+。
 
-        过分常用的、单独存在没有意义的词汇往往被忽略掉，比如冠词“a”、“the”；介词“of”、“in”、“on”、“at”、“to”；连词“and”、“or”、“but”；从属连词“that”、“which”、“when”；代词“my”、“his”、“them”等等。
+        过分常用的、单独存在没有意义的词汇往往被忽略掉，如冠词“a”、“the”；介词“of”、“in”、“on”、“at”、“to”；连词“and”、“or”、“but”；从属连词“that”、“which”、“when”；代词“my”、“his”、“them”等等。
         >如果你输入的是`purpose of education`，那么返回的搜索结果里既有“purpose”存在，也有“education”存在，但不一定有“purpose of education”存在。
     2. `""`
 

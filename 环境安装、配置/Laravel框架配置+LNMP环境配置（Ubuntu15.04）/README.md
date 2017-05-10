@@ -154,7 +154,9 @@
 
     激活虚拟主机配置：
     ```shell
-    sudo a2ensite abc.com	或sudo a2ensite 192.168.20.111
+    sudo a2ensite abc.com
+    #或
+    sudo a2ensite 192.168.20.111
     ```
 
     注销虚拟主机配置：
