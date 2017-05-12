@@ -3,13 +3,15 @@
 ## 技巧经验
 
 ### 易错点 or Tips
-1. `var a = b = 1;/* b没有var的声明*/`
+1. `var a = b = c = 1;/* b、c没有var的声明*/`
 
-    在局部作用域中用如上写法，第二个以后的变量自动变成没有var定义的状态，意味着如果之前没有声明，那么就转化为全局变量的声明。
+    第二个以后的变量表示没有~~var~~的赋值。
+
+    等价于：`var a = 1;b = 1;c = 1;`。
 2. `var a = a || {};`
 
-    1. 先声明提前`var a;`；
-    2. 接着右侧的表达式`a || {}`先执行：根据规则先判断a的值是否为真，如果a为真，则返回a；如果a不为真，则返回后面的{}；
+    1. 声明提前`var a;`。
+    2. 右侧的表达式`a || {}`先执行：根据规则先判断a的值是否为真，如果a为真，则返回a；如果a不为真，则返回{}。
     3. 最后再将结果赋值给`a`。
 
     等价于：
@@ -36,7 +38,7 @@
 
     逗号操作符`,`对每个操作对象求值（从左至右），然后返回最后一个操作对象的值。
 
-    >`var`语句中的逗号不是逗号操作符，因为它不是存在于一个表达式中。尽管从实际效果来看，那个逗号同逗号运算符的表现很相似。但确切地说，它是`var`语句中的一个特殊符号，用于把多个变量声明结合成一个。
+    >`var`语句中的逗号不是逗号操作符，因为它不存在于一个表达式中。尽管从实际效果来看，那个逗号同逗号运算符的表现很相似。但它是`var`语句中的一个特殊符号，用于把多个变量声明结合成一个。
 4. `var a = [10, 20, 30, 40][1, 2, 3];/* 40*/`
 
     1. `[10, 20, 30, 40]`被解析为数组；
@@ -46,32 +48,16 @@
 5. `{a: 'b'} + 1;/* 1*/`
 
     大括号视为代码块，没有返回值。需要给大括号加上小括号，表明为一个值：`({a: 'b'}) + 1;/* [object Object]1*/`。
-6. HTML5的`audio`标签的自动播放属性`autoplay`
-
-    WAP端的部分浏览器无法自动播放，可以设置触屏的时候开始播放：
-
-    ```html
-    <audio src="1.mp3" controls="controls" autoplay="autoplay" id="audio">
-        您的浏览器不支持 audio 标签
-    </audio>
-
-    <script>
-        window.ontouchstart = function () {
-            document.getElementById('audio').play();
-
-            window.ontouchstart = null;
-        }
-    </script>
-    ```
-7. 浮点数的计算
+6. 浮点数的计算
 
     浮点数值计算会产生舍入误差，因此永远不要用条件语句判断某个特定浮点数值，也不要用JS进行复杂的计算。
     >避免浮点数运算误差函数：[用整数进行小数的四则运算](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用整数进行小数的四则运算避免浮点数运算误差)。
-8. 判断DOM是否支持某属性
+7. 判断DOM是否支持某属性
 
     若要判定一个属性是否被DOM所支持，新建一个DOM来判断：`if('属性' in document.creatElement('某标签')){...}`。
-    >在DOM中随意添加一个属性（DOM所没有的也可以），`此属性 in 此DOM`永远为真，不可以判断是否此DOM存在此属性（或方法）。
-9. `eval`中直接执行`function`声明无效，必须用引号把`function`声明包裹起来才有效（尽量不用`eval`）
+
+    >在DOM中随意添加一个属性，`此属性 in 此DOM`永远为真，不可以判断是否此DOM存在此属性（或方法）。
+8. `eval`中直接执行`function`声明无效，必须用引号把`function`声明包裹起来才有效（尽量不用`eval`）
 
     ```javascript
     eval(function a() {});      //返回function a() {}，但是没有声明
@@ -80,43 +66,56 @@
 
     >1. `if()`中的代码对于`function`的声明就是用`eval`带入方法当做参数，因此虽然返回true，但是方法没有被声明。
     >2. `setTimeout`与`setInterval`中第一个参数若使用字符串，也是使用`eval`把字符串转化为代码。
-10. `if`、`for`以及`while`之类的判断语句中用赋值操作
+9. `if`、`for`以及`while`之类的判断语句中用赋值操作
 
     （大部分是误用）赋值的内容Boolean后为假会导致条件判断为假：`if(a = false){/* 不执行*/}`。
     >判断语句内只判断整体返回值是`true`还是`false`，与里面执行内容无关（尽管对其语法有所限制）。
-11. 获取数组中最大最小值：`Math.min.apply(null, [1, 2, 3]);/* 1*/`、`Math.max.apply(null, [1, 2, 3]);/* 3*/`。
+10. 获取数组中最大最小值：`Math.min.apply(null, [1, 2, 3]);/* 1*/`、`Math.max.apply(null, [1, 2, 3]);/* 3*/`。
 
-### JS和jQuery（Zepto）获取的位置信息（纵轴为例）
+### JS和jQuery（或Zepto）获取的位置信息（纵轴为例）
 1. DOM节点
 
     > `dom`为JS对象，`$dom`为jQuery（或Zepto）对象。
 
     1. 节点高度：
 
-        1. 高度+padding：
+        1. height+padding：
 
-            `dom.clientHeight` 或 `$dom.innerHeight()`
-        2. 高度+padding+border：
+            `dom.clientHeight`
 
-            `dom.offsetHeight` 或 `$dom.outerHeight()`
+            或
+
+            `$dom.innerHeight()`
+        2. height+padding+border：
+
+            `dom.offsetHeight`
+
+            或
+
+            `$dom.outerHeight()`
     2. 节点内容高度：
 
         `dom.scrollHeight`
     3. 节点内滚动距离：
 
-        `dom.scrollTop` 或 `$dom.scrollTop()`
-    4. 节点顶部距离屏幕顶部：
-
-        `dom.getBoundingClientRect().top - document.documentElement.clientTop`
+        `dom.scrollTop`
 
         或
 
-        `$dom.offset().top - $(window).scrollTop()`
+        `$dom.scrollTop()`
+    4. 节点顶部相对屏幕顶部距离：
 
-        > 节点底部距离屏幕顶部：`dom.getBoundingClientRect().bottom`。
-    5. 节点顶部距离文档顶部：
+        `dom.getBoundingClientRect().top`
 
-        `dom.getBoundingClientRect().top - document.documentElement.clientTop + (document.body.scrollTop || document.documentElement.scrollTop)`
+        或
+
+        `$dom.offset().top + document.documentElement.clientTop - $(window).scrollTop()`
+
+        >1. `dom.getBoundingClientRect().top`：dom的顶部相对视口顶部距离。
+        >2. `document.documentElement.clientTop`：`<html>`的`border-top-width`数值。
+    5. 节点顶部相对文档顶部距离（不包括~~文档的border~~）：
+
+        `dom.getBoundingClientRect().top + (document.body.scrollTop || document.documentElement.scrollTop) - document.documentElement.clientTop`
 
         或
 
@@ -132,15 +131,23 @@
         `$(window).height()`
     2. 文档内容高度：
 
-        `document.body.scrollHeight` 或 `$(document).height()`
+        `document.body.scrollHeight`
+
+        或
+
+        `$(document).height()`
     3. 文档滚动高度：
 
-        `document.body.scrollTop || document.documentElement.scrollTop` 或 `$(window).scrollTop()`
+        `document.body.scrollTop || document.documentElement.scrollTop`
+
+        或
+
+        `$(window).scrollTop()`
 
 >Zepto没有`innerHeight`和`outerHeight`，改为`height`。
 
 ### 节点与屏幕距离关系
-1. jQuery或Zepto
+1. jQuery（或Zepto）
 
     1. 节点**顶部**在**屏幕底部**以上
 
@@ -153,7 +160,13 @@
         以上`&&`结合。
 2. 原生JS
 
-    > 屏幕高度 = `window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight` 或 `$(window).height()`。
+    >- 屏幕高度：
+    >
+    >    `window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight`
+    >
+    >    或
+    >
+    >    `$(window).height()`
 
     1. 节点**顶部**在**屏幕底部**以上
 
@@ -178,9 +191,27 @@
         `dom.scrollTop === 0`
 2. 文档
 
-    >1. 屏幕高度 = `window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight` 或 `$(window).height()`
-    >2. 文档滚动高度 = `document.body.scrollTop || document.documentElement.scrollTop` 或 `$(window).scrollTop()`
-    >3. 文档内容高度 = `document.body.scrollHeight` 或 `$(document).height()`
+    >1. 屏幕高度:
+    >
+    >    `window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight`
+    >
+    >    或
+    >
+    >    `$(window).height()`
+    >2. 文档滚动高度：
+    >
+    >    `document.body.scrollTop || document.documentElement.scrollTop`
+    >
+    >    或
+    >
+    >    `$(window).scrollTop()`
+    >3. 文档内容高度：
+    >
+    >    `document.body.scrollHeight`
+    >
+    >    或
+    >
+    >    `$(document).height()`
 
     1. 滚动到底部：
 
@@ -275,7 +306,7 @@
         >    console.log(a);    //2
         >})();
 
-        声明变量是它所在上下文环境的不可配置属性（non-configurable property），非声明变量是可配置的（例如非声明变量可以被`delete`）。
+        声明变量是它所在上下文环境的不可配置属性（non-configurable property），非声明变量是可配置的（如非声明变量可以被`delete`）。
 
         >建议：总是把所有变量声明都放在函数顶部，而不是散落在各个角落。
 
@@ -693,6 +724,34 @@
     6. 中间增加一层接受这个点透事件，然后去除此层。
     7. 使用[模拟点击事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)代替`click`。
 
+### WAP端制作类似PC端的`:active`效果（或`:hover`）
+1. Android系统的浏览器大部分直接使用CSS伪类即可。
+2. iOS系统的浏览器要添加以下代码触发使CSS伪类生效：
+
+    ```javascript
+    document.body.addEventListener('touchstart', function () {}, true);
+    ```
+3. ~~JS添加类的方法模拟~~：
+
+    ```html
+    <style>
+        .d:active,
+        .d.active { }
+    </style>
+
+    <script type="text/javascript">
+        var selector = '.a,.b .c,.d';   /* 选择器字符串*/
+
+        $(document.body).on('touchstart', selector, function () {
+            $(this).addClass('active');
+        }).on('touchmove touchend touchcancel', selector, function () {
+            $(this).removeClass('active');
+        });
+    </script>
+    ```
+
+- 添加`document.body.addEventListener('touchstart', function () {}, true);`即可满足大部分浏览器使用伪类。
+
 ### [函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js防抖函数)、[函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js节流函数)
 >都是用来控制某个函数在一定时间内执行多少次的技巧。
 
@@ -755,7 +814,7 @@
 
     >只支持**GET**请求。
 
-    网页通过添加一个`<script>`元素，向服务器发起文档请求（不受同源政策限制）；服务器收到请求后，将数据放在一个指定名字的回调函数里传回网页直接执行。
+    网页通过添加一个`<script>`，向服务器发起文档请求（不受同源政策限制）；服务器收到请求后，将数据放在一个指定名字的回调函数里传回网页直接执行。
 
     jQuery在`ajax`方法中封装了`jsonp`功能：
 
@@ -1770,13 +1829,13 @@
     2. 被闭包引用的变量不会被垃圾回收。
     3. DOM清空或删除时，事件绑定未清除导致内存泄漏（删除DOM前，先移除事件绑定）。
     4. 被遗忘的计数器或回调函数：不使用时及时清除。
-    5. 子元素存在引用引起的内存泄漏：
+    5. 后代元素存在引用引起的内存泄漏：
 
         ![内存泄漏图](./images/memory-leak-1.gif)
 
-        1. 黄色是指直接被 JS变量所引用，在内存里。
-        2. 红色是指间接被 JS变量所引用，如上图，refB 被 refA 间接引用，导致即使 refB 变量被清空，也是不会被回收的。
-        3. 子元素 refB 由于 parentNode 的间接引用，只要它不被删除，它所有的父元素（图中红色部分）都不会被删除。
+        1. 黄色是指直接被JS变量所引用，在内存里。
+        2. 红色是指间接被JS变量所引用，refB被refA间接引用，导致即使refB变量被清空，也是不会被回收的。
+        3. 子元素refB由于parentNode的间接引用，只要它不被删除，它所有的父元素（图中红色部分）都不会被删除。
 
 ### 数据类型转换
 >参考[阮一峰：数据类型转换](http://javascript.ruanyifeng.com/grammar/conversion.html)。

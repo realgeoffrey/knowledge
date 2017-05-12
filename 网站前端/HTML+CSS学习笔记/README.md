@@ -91,7 +91,7 @@
 
 1. 满足以下任意条件则形成层叠上下文：
 
-    1. 根元素 (`HTML`)。
+    1. 根元素`<html>`。
     2. `z-index`属性值不为~~auto~~的`position: relative/absolute;`定位元素。
     3. `position: fixed;`（仅限Chrome，其他浏览器遵循需要`z-index`为数值）。
     4. `z-index`属性值不为~~auto~~的`flex`项（父元素`display: flex/inline-flex;`）。
@@ -105,31 +105,68 @@
     12. `-webkit-overflow-scrolling`属性值为`touch`的元素。
 2. 层叠顺序（stacking order）
 
-    1. 每个层叠上下文完全独立于兄弟元素，当处理层叠时只考虑子元素（`z-index`值只在父级层叠上下文中有意义）。
-    2. 2个元素的层叠顺序，由各自祖先元素中拥有共同**层叠上下文父级**的层叠顺序决定（`z-index: auto;`不形成层叠上下文）。
+    >`z-index: auto;`不形成层叠上下文。
+
+    1. 比较2个元素的层叠顺序，由各自上溯至（可以是元素自身）拥有共同**层叠上下文父级**的元素的层叠顺序决定。
+    2. 层叠上下文独立于兄弟元素，当处理层叠时只考虑后代元素（`z-index`值只在祖先元素的层叠上下文中有意义）。
 3. `z-index`使用注意
 
     1. 应该只给堆叠在一起的节点设置此属性。
     2. 尽量在页面中不要使`z-index`的数值`> 4`，否则就要考虑是否过度使用此属性。
 
-### `word-spacing`
-对有空白字符包裹的非空白字符产生效果。
+### 几个类似的换行属性
+1. `word-break`
 
-### `word-break`
-单词内断字换行。
+    单词内换行。
 
-1. ~~默认~~
+    1. `normal`（默认）
 
-    若此行放不下则整个单词换行，若下行也放不下则溢出（保持单词不断字）。
-2. ~~`word-break: break-all;`~~
+        若此行放不下则整个单词换行，若下行也放不下则溢出（保持单词不断字）。
+    2. `break-all`
 
-    若此行放不下则直接断字，不会尝试整个单词换行。
-3. `word-wrap: break-word;`
+        若此行放不下则直接断字。
+2. `word-wrap`或`overflow-wrap`
 
-    若此行放不下则整个单词先换行，若下行也放不下才断字。
+    单词内换行。
 
->1. 对于用户输入或不确定长度的内容，建议都加上`word-wrap: break-word;`，避免内容宽度溢出。
->2. 或直接在`body`上设置，让所有内容继承。
+    1. `normal`（默认）
+
+        表示在正常的单词结束处换行。
+    2. `break-word`
+
+        若此行放不下则整个单词先换行，若下行也放不下才断字。
+
+    >1. 对于用户输入或不确定长度的内容，建议都加上`word-wrap: break-word;`，避免内容宽度溢出。
+    >2. 或直接在`<body>`上设置，让所有内容继承。
+3. `white-space`
+
+    处理空白和内容换行。
+
+    | 值 | 空格和制表符 | 换行符和`<br>` | 到达宽度极限 |
+    | :--- | :--- | :--- | :--- |
+    | `normal`（默认） | 连续的合并为一个 | 当做空格 | 换行 |
+    | `nowrap` | 连续的合并为一个 | 当做空格 | 不换行 |
+    | `pre` | 保留 | 换行 | 不换行 |
+    | `pre-wrap` | 保留 | 换行 | 换行 |
+    | `pre-line` | 连续的合并为一个 | 换行 | 换行 |
+4. `word-spacing`
+
+    空白字符包裹的非空白字符的间距。
+5. `letter-spacing`
+
+    字符的间距。
+6. `text-overflow`
+
+    溢出的样式。
+
+    1. `clip`（默认）
+
+        截断文本。
+    2. `ellipsis`
+
+        省略号。
+
+    >需要和`overflow: hidden;`、`white-space: nowrap;`配合产生溢出。
 
 ### 清除浮动：
 1. 在父级添加
@@ -158,69 +195,26 @@
     2. 父级设置`float: left/right;`
     3. 父级设置`position: absolute/fixed;`
 
-### `table`
-1. table属性为`table-layout: auto;/* 默认*/`
+### `table-layout`
+1. `auto`（默认）
 
-    在`td`或`th`上设置宽度无效，各项宽度取决于内容宽度。
-2. table属性为`table-layout: fixed;`
+    在`<td>`或`<th>`上设置宽度无效，各项宽度取决于内容宽度。
+2. `fixed`
 
-    1. 可以设置`td`或`th`宽度，没有设置宽度的所有项平分父级余下的宽度。
+    >整个表格在首行被下载后就被解析和渲染。更快完成渲染，性能更优。
+
+    1. 可以设置`<td>`或`<th>`宽度，没有设置宽度的所有项平分父级余下的宽度。
     2. 第一行宽度决定所有行宽度。
 
->默认各项内容垂直居中，用`vertical-align`调节垂直对齐（各项为`table-cell`）。
+>`<table>`（`display: table;`）各`<td>`或`<td>`项（`display: table-cell;`）默认内容垂直居中，用`vertical-align`调节垂直对齐。
 
-```html
-<style>
-    table {
-        width: 宽度;
-        table-layout: fixed;
-    }
-    td, th {
-        word-wrap: break-word;
-        /*vertical-align: top;*/
-    }
-    .i-1 {
-        width: 固定宽度1;
-    }
-    .i-2 {
-        /*width: auto;*/
-    }
-    .i-3 {
-        width: 固定宽度3;
-    }
-    .i-4 {
-        /*width: auto;*/
-    }
-</style>
+### 块级元素的`width`
+1. `auto`（默认）：
 
-<table>
-    <tbody>
-    <tr>
-        <td class="i-1">
-            固定宽度 内容1
-        </td>
-        <th class="i-2">
-            平分余下宽度 内容2
-        </th>
-        <td class="i-3">
-            固定宽度 内容3
-        </td>
-        <td class="i-4">
-            平分余下宽度 内容4
-        </td>
-    </tr>
-    ...
-    </tbody>
-</table>
-```
-
-### 块级元素的width
-1. `width: auto;`：
-
-    默认值，换算具体值为：**本元素width = 父级width - 本元素（margin + padding + border）水平值**。
+    换算具体值为：**本元素width = 父级width - 本元素（margin + padding + border）水平值**。
 
     >当块级width为默认的auto时，设置负的水平margin会使width增加。
-2. `width: 100%;`：
+2. `100%`：
 
     父级的px为自己的px。
 
@@ -230,11 +224,11 @@
 
 >意味着有以上CSS属性的内联标签可以当做块级标签使用。
 
-### margin合并
+### `margin`合并
 1. W3C定义：在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
 
     1. 毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开。
-    2. 普通流：除`float: left/right`、`positon: absolute/fixed`外的代码。
+    2. 普通流：除`float: left/right`、`positon: absolute/fixed`外的内容。
 2. 产生独立的BFC结构可避免margin合并
 
 >ie6、7触发haslayout会影响margin合并的发生。
@@ -242,10 +236,10 @@
 ### BFC（Block Formatting Context）块级格式上下文
 1. W3C定义：
 
-    1. 浮动元素和绝对定位元素，非块级盒子的块级容器（例如 inline-blocks、table-cells、和table-captions），以及overflow值不为“visiable”的块级盒子，都会为它们的内容创建新的块级格式化上下文。
+    1. 浮动元素、绝对定位元素、非块级盒子的块级容器（如`inline-blocks`、`table-cells`、`table-captions`）、`overflow`值不为“visiable”的块级盒子，都会为它们的内容创建新的块级格式化上下文。
     2. 在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由它们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
     3. 在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘（border-left）（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
-2. BFC是一个独立的布局环境，可以理解为一个箱子，箱子里面物品的摆放不受外界的影响，并且每个BFC都遵守同一套布局规则。
+2. BFC是一个独立的布局环境，可以理解为一个箱子，箱子里面物品的摆放不受外界的影响，且每个BFC都遵守同一套布局规则。
 3. 对容器添加以下CSS属性使其成为独立的BFC
 
     1. `float: left / right;`
@@ -337,7 +331,7 @@
         ```
 
     [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/3wbf62xj/)
-2. `<meta>的viewport`缩放为`1/DPR`，切图用DPR倍大小（媒体查询方案或JS方案）。
+2. `<meta>的viewport`缩放为`1/DPR`，切图用DPR倍大小（CSS媒体查询方案或JS方案）。
 
     >仅适用于iOS。Android机型太复杂，bug永无止境。
 3. `border-image`2像素图片，一半透明、一半目标颜色。
@@ -361,7 +355,7 @@
     ```
 2. `%`单位：
 
-    >包含块（containing block）：不能简单地理解成是父元素。若是`static/relative`元素，包含块是其父元素；若是`absolute`元素，包含块是离它最近的`relative/absolute/fixed`的祖先元素；若是`fixed`素，包含块是视口（viewport）。
+    >包含块（containing block）：不能简单地理解成是父元素。若是`position: static/relative;`元素，包含块是其父元素；若是`position: absolute;`元素，包含块是离它最近的`position: relative/absolute/fixed;`的祖先元素；若是`position: fixed;`元素，包含块是视口（viewport）。
 
     1. 乘以包含块的`width`：
 
@@ -386,10 +380,10 @@
         百分比值会同时应用于元素和图像。
 
         >e.g. 50% 50% 会把图片的（50%, 50%）这一点与框的（50%, 50%）处对齐，相当于设置了center center。同理0% 0%相当于left top，100% 100%相当于right bottom。
-    8. 自身是`position: absolute`：
+    8. 自身是`position: absolute;`：
 
-        离它最近的`relative/absolute/fixed`的祖先元素；若没有，则相对于视口。
-    9. 自身是`position: fixed`：
+        离它最近的`positon: relative/absolute/fixed;`的祖先元素；若没有，则相对于视口。
+    9. 自身是`position: fixed;`：
 
         相对于视口。
 
@@ -411,16 +405,17 @@
 
     **内容区域（content area） + 行间距（vertical spacing） = 行高（line-height）**
 
-    >1. 内容区域（鼠标指示出的高度）：只与字号（font-size）和font-family有关。
+    >1. 内容区域（鼠标选中后的高度）：只与`font-size`、`font-family`有关。
     >2. 行间距：摇摆不定，可以为负值，仅为达成以上等式而变化。
 
 >ie6以及部分浏览器不能用line-height控制图片与文字的对齐位置，使用其他垂直居中方式。
 
-### img标签的src属性
->当img标签的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
+### `<img>`的`src`属性
+>当`<img>`的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
 
-1. 不要用**空的img标签加上背景来用作默认图**，必须用其他标签来代替。
-2. img标签没有src属性或src属性为空隐藏
+1. 不要用**空的`<img>`加上背景来用作默认图**，必须用其他标签来代替。
+2. 要谨慎给`<img>`设置背景（如内容图片或头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)前的默认图），因为当图片是透明图的时候，会出现背景。
+3. `<img>`没有`src`属性或`src`属性为空隐藏
 
     ```css
     img[src=""] {   /* ie8+*/
@@ -430,67 +425,40 @@
         visibility: hidden; /* 属性不存在隐藏*/
     }
     ```
-3. 要谨慎给img设置背景（如内容图片或头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)），因为当img是透明图的时候，会展示背景的内容。
 
-### img标签的圆形、边框
-1. 圆形+边框
+### `<img>`的圆角、边框
+1. 圆角+边框
 
     1. PC端
 
-        直接在img标签上设置`border`和`border-radius`。
+        直接在`<img>`上设置`border-radius`、`border`。
     2. WAP端
 
-        在img标签上设置`border-radius`，并且在父级标签嵌套一层设置`border`和`border-radius`。
-2. 圆形（无边框）
+        在`<img>`上设置`border-radius`，并嵌套一层父级标签设置`border-radius`、`border`。
+2. 圆角
 
     - PC端、WAP端
 
-        直接在img标签上设置`border-radius`。
+        直接在`<img>`上设置`border-radius`。
 
 ### WAP端页面自适应图片
-要求：图片根据浏览器窗口变化而宽高同时等比例变化，不使用`img`标签（只有内容图片才使用img标签）。
+>要求：图片根据浏览器窗口变化而宽高同时等比例变化，不使用`<img>`（只有内容图片才使用`<img>`）。
 
-1. *横向、纵向百分比的`padding`（和`margin`）值都是以父元素的`width`为基础，`height`是以父元素的`height`为基础*
+1. 宽高都用rem且雪碧图且`background-position`用百分比（最佳方式）：
 
     ```css
     自适应图片 {
-        height: 0;
-        width: 宽%;
-        padding-bottom: 高%;
-        background-size: 100%;
-        background: url(单图) 0 0 no-repeat;
+        width: 宽rem;
+        height: 高rem;
+        background-size: 雪碧图宽rem;
+        background: url(雪碧图) 计算出x轴的百分比 计算出y轴的百分比 no-repeat;
     }
     ```
 
-    >缺点：只能用于空标签。
-2. 宽高都用rem
-    1. 单图
-
-        ```css
-        自适应图片 {
-            width: 宽rem;
-            height: 高rem;
-            background-size: 100%;
-            background: url(单图) center center no-repeat;
-        }
-        ```
-    2. 雪碧图
-
-        ```css
-        自适应图片 {
-            width: 宽rem;
-            height: 高rem;
-            background-size: 雪碧图宽rem;
-            background: url(雪碧图) 0 -纵轴rem no-repeat;
-        }
-        ```
-        >`background-position`用`rem`会出现换算小数导致定位偏离问题，改用以下百分比可以解决偏离问题。
-3. 宽高都用rem并且雪碧图并且`background-position`用百分比
-
     >1. 百分比公式：
     >
-    >    - `background-position-x = 小图横坐标px / ( 大图宽度px - 小图宽度px ) * 100%`
-    >    - `background-position-y = 小图纵坐标px / ( 大图高度px - 小图高度px ) * 100%`
+    >    1. `background-position-x = 小图横坐标px / ( 大图宽度px - 小图宽度px ) * 100%`
+    >    2. `background-position-y = 小图纵坐标px / ( 大图高度px - 小图高度px ) * 100%`
     >2. 可以用预处理语言计算：
     >
     >    ```scss
@@ -547,18 +515,46 @@
     >    }
     >    /*/x+y轴排列且等大雪碧图*/
     >    ```
+2. 其他方式：
 
-    1. **rem宽高（最佳方式）**
+    1. 横向、纵向百分比的`padding`值都是以父元素的`width`为基础，`height`是以父元素的`height`为基础
 
         ```css
         自适应图片 {
-            width: 宽rem;
-            height: 高rem;
-            background-size: 雪碧图宽rem;
-            background: url(雪碧图) 计算出x轴的百分比 计算出y轴的百分比 no-repeat;
+            height: 0;
+            width: 宽%;
+            padding-bottom: 高%;
+            background-size: 100%;
+            background: url(单图) 0 0 no-repeat;
         }
         ```
-    2. *百分比宽高*
+
+        >缺点：只能用于空标签。
+    2. 宽高都用rem
+
+        1. 单图
+
+            ```css
+            自适应图片 {
+                width: 宽rem;
+                height: 高rem;
+                background-size: 100%;
+                background: url(单图) center center no-repeat;
+            }
+            ```
+        2. 雪碧图
+
+            ```css
+            自适应图片 {
+                width: 宽rem;
+                height: 高rem;
+                background-size: 雪碧图宽rem;
+                background: url(雪碧图) 0 -纵轴rem no-repeat;
+            }
+            ```
+
+            >`background-position`用`rem`会出现换算小数导致定位偏离问题，改用以下百分比可以解决偏离问题。
+    3. 百分比宽高且雪碧图且`background-position`用百分比
 
         ```css
         自适应图片 {
@@ -570,11 +566,39 @@
         }
         ```
 
+### 横竖屏切换
+>1. 翻转效果的节点，如果要增加内嵌滚动条，不能在此节点上增加`border-radius`，否者滚动条横竖轴颠倒。
+>2. 部分Android系统（或低端机）对内嵌的滚动条（`overflow: hidden/auto;`）支持不佳，尤其增加了翻转效果后，设置的滚动条（甚至`overflow: hidden;`）会导致更多样式问题。除了去除内嵌滚动条的`border-radius`，还可以尝试给兄弟节点设置`z-index`。部分硬件较差的webview对CSS3支持非常有限，无法做到**翻转+内嵌滚动条**（内嵌滚动条横竖轴颠倒）。
+>
+>- 其他解决方案：使用按钮（控制翻页或JS滚动）代替内嵌滚动条；使用`touchmove`实现滑动页面。
+
+1. 媒体查询控制横竖屏添加翻转类
+
+    ```css
+    @media (orientation: portrait) {
+        .dom {
+            transform: rotate(90deg);
+        }
+    }
+    @media (orientation: landscape) {
+        .dom {
+
+        }
+    }
+    ```
+2. 翻转使用的媒体查询：
+
+    >要求：页面没有滚动条，内容都在一屏视口内；设计稿只有一份，但要适应各种分辨率机型。
+
+    1. 因为浏览器都有头尾栏，所以要额外扩展横竖屏的媒体查询范围（大、小两方面都要扩展）。
+    2. 竖屏（`orientation: portrait`）根据`width`，横屏（`orientation: landscape`）根据`height`。
+3. 用JS方法控制：[模拟手机翻转](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto模拟手机翻转使页面都以横屏展示)。
+
 ### 滚动条
 1. 若`overflow-x`和`overflow-y`相同，则等同于`overflow`；若不同，且其中一个值为`visible`，另一个为`hidden/scroll/auto`，则`visible`重置为`auto`。
-2. 默认滚动条均来自`html`标签（而不是body标签）
+2. 默认滚动条均来自`<html>`（而不是`<body>`）
 
-    因此，除去默认滚动条应在`html`上设置overflow值。
+    因此，除去默认滚动条应在`<html>`上设置`overflow`值。
 3. JS获取文档滚动高度为：
 
     1. `document.body.scrollTop || document.documentElement.scrollTop`
@@ -595,21 +619,22 @@
     7. `::-webkit-scrollbar-corner`：横竖滚动条相交的边角，可以设置`背景`、`圆角`。
     8. `::-webkit-resizer`：定义右下角拖动缩放节点高宽的内容。
 
-    一般只需要设置：
-    ```scss
-    &::-webkit-scrollbar {
-        width: 6px;
-    }
-    &::-webkit-scrollbar-track {
-        border-radius: 3px;
-        background-color: #dac3a2;
-    }
-    &::-webkit-scrollbar-thumb {
-        border-radius: 3px;
-        background-color: #ffe7c6;
-        box-shadow: inset 0 0 0 1px #dac3a2;
-    }
-    ```
+    - 一般只需要设置：
+
+        ```scss
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+        &::-webkit-scrollbar-track {
+            border-radius: 3px;
+            background-color: #dac3a2;
+        }
+        &::-webkit-scrollbar-thumb {
+            border-radius: 3px;
+            background-color: #ffe7c6;
+            box-shadow: inset 0 0 0 1px #dac3a2;
+        }
+        ```
 2. `ie`：
 
     1. `scrollbar-arrow-color: 颜色;`：三角箭头的颜色。
@@ -623,6 +648,47 @@
 
 ----
 ## HTML + CSS
+
+### 等宽文字
+>不同字数的一行文字等宽。
+
+1. 用`inline-block`标签填补间隙
+
+    ```html
+    <style type="text/css">
+        i {
+            display: inline-block;
+            *display: inline;
+            *zoom: 1;
+            width: 1em;
+        }
+    </style>
+    
+    <p>文字文字</p>
+    <p>文<i></i><i></i>字</p>
+    ```
+2. 用`&ensp;`（字体宽度1/2em）、`&emsp;`（字体宽度1em）填补间隙。
+    
+    ```html
+    <p>三个字</p>
+    <p>两&emsp;个</p>
+    
+    <p>四个字的</p>
+    <p>三&ensp;个&ensp;字</p>
+    ```
+    
+[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/zdh8oxrt/)
+
+### 禁用`<a>`的鼠标、键盘事件
+1. `pointer-events: none;`穿透`<a>`的鼠标事件（包括点击和hover等，因为点击不到所以JS事件也不会触发）。
+2. 不设置`href`属性，可以忽略键盘索引（tab键无法切换到）。
+
+```html
+<a style="pointer-events: none;">禁用鼠标和键盘的链接</a>
+```
+
+----
+## 经验总结
 
 ### 水平居中、垂直居中
 1. 水平居中
@@ -861,7 +927,7 @@
             ```
 
 ### 自适应宽度布局
->`float`节点：可以填补在**之后节点**的水平`margin`内（`padding`内不可以）；不可以填补在*之前节点*的水平`margin`内。
+>`float`节点：可以填补在**之后节点**的水平`margin`内（`padding`内不可以）；不可以填补在**之前节点**的水平`margin`内。
 
 1. 中间内容自适应，两边固定（中间内容最后加载）
 
@@ -965,255 +1031,20 @@
     >3. 完全由内容决定布局；
     >4. 第一块内容要给第二块内容留下足够空间，否则第二块放不下会整个换行；第一块+第二块要给第三块留下足够空间，否则第三块放不下会整个换行。
 
-### 等宽文字
->要做到不同字数的一行文字等宽。
-
-1. 用`inline-block`标签填补间隙
-
-    ```html
-    <style type="text/css">
-        i {
-            display: inline-block;
-            *display: inline;
-            *zoom: 1;
-            width: 1em;
-        }
-    </style>
-    
-    <p>文字文字</p>
-    <p>文<i></i><i></i>字</p>
-    ```
-2. 用`&ensp;`（字体宽度1/2em）、`&emsp;`（字体宽度1em）填补间隙。
-    
-    ```html
-    <p>三个字</p>
-    <p>两&emsp;个</p>
-    
-    <p>四个字的</p>
-    <p>三&ensp;个&ensp;字</p>
-    ```
-    
-[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/zdh8oxrt/)
-
-### 禁用`a`标签鼠标、键盘事件
-1. `pointer-events: none;`穿透`a`标签的鼠标事件（包括点击和hover等，因为点击不到所以JS事件也不会触发）。
-2. 不设置`href`属性，可以忽略键盘索引（tab键无法切换到）。
-
-```html
-<a style="pointer-events: none;">禁用鼠标和键盘的链接</a>
-```
-
-### 横竖屏切换
->1. 翻转效果的节点，如果要增加内嵌滚动条，不能在此节点上增加`border-radius`，否者滚动条横竖轴颠倒。
->2. 部分Android系统（或低端机）对内嵌的滚动条（`overflow: hidden/auto`）支持不佳，尤其增加了翻转效果后，设置的滚动条（甚至`overflow: hidden;`）会导致更多样式问题。除了去除内嵌滚动条的`border-radius`，还可以尝试给兄弟节点设置`z-index`。部分硬件较差的webview对CSS3支持非常有限，无法做到**翻转+内嵌滚动条**（内嵌滚动条横竖轴颠倒）。
->
->- 其他解决方案：使用按钮（控制翻页或JS滚动）代替内嵌滚动条；使用`touchmove`实现滑动页面。
-
-1. 媒体查询控制横竖屏添加翻转类
-
-    ```css
-    @media (orientation: portrait) {
-        .dom {
-            transform: rotate(90deg);
-        }
-    }
-    @media (orientation: landscape) {
-        .dom {
-
-        }
-    }
-    ```
-2. 用JS方法控制：[模拟手机翻转](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto模拟手机翻转使页面都以横屏展示)。
-3. 翻转使用的媒体查询：
-
-    要求：页面没有滚动条，内容都在一屏视窗内；设计稿只有一份，但要适应各种分辨率机型。
-
-    ```scss
-    @function rem($px) {
-        @return $px / 23 + rem;
-    }
-
-    /* 当竖屏时用屏幕宽度来判断*/
-    @media (max-width: 351px) and (orientation: portrait) {
-        html {font-size: 10px;}
-    }
-    @media (min-width: 352px) and (max-width: 383px) and (orientation: portrait) {
-        html {font-size: 11px;}
-    }
-    @media (min-width: 384px) and (max-width: 415px) and (orientation: portrait) {
-        html {font-size: 12px;}
-    }
-    @media (min-width: 416px) and (max-width: 447px) and (orientation: portrait) {
-        html {font-size: 13px;}
-    }
-    @media (min-width: 448px) and (max-width: 479px) and (orientation: portrait) {
-        html {font-size: 14px;}
-    }
-    @media (min-width: 480px) and (max-width: 511px) and (orientation: portrait) {
-        html {font-size: 15px;}
-    }
-    @media (min-width: 512px) and (max-width: 543px) and (orientation: portrait) {
-        html {font-size: 16px;}
-    }
-    @media (min-width: 544px) and (max-width: 575px) and (orientation: portrait) {
-        html {font-size: 17px;}
-    }
-    @media (min-width: 576px) and (max-width: 607px) and (orientation: portrait) {
-        html {font-size: 18px;}
-    }
-    @media (min-width: 608px) and (max-width: 639px) and (orientation: portrait) {
-        html {font-size: 19px;}
-    }
-    @media (min-width: 640px) and (max-width: 671px) and (orientation: portrait) {
-        html {font-size: 20px;}
-    }
-    @media (min-width: 672px) and (max-width: 703px) and (orientation: portrait) {
-        html {font-size: 21px;}
-    }
-    @media (min-width: 704px) and (max-width: 735px) and (orientation: portrait) {
-        html {font-size: 22px;}
-    }
-    @media (min-width: 736px) and (max-width: 767px) and (orientation: portrait) {
-        html {font-size: 23px;}
-    }
-    @media (min-width: 768px) and (orientation: portrait) {
-        html {font-size: 24px;}
-    }
-
-    /* 当横屏时用屏幕高度来判断*/
-    @media (max-height: 223px) and (orientation: landscape) {
-        html {font-size: 6px;}
-    }
-    @media (min-height: 224px) and (max-height: 255px) and (orientation: landscape) {
-        html {font-size: 7px;}
-    }
-    @media (min-height: 256px) and (max-height: 287px) and (orientation: landscape) {
-        html {font-size: 8px;}
-    }
-    @media (min-height: 288px) and (max-height: 319px) and (orientation: landscape) {
-        html {font-size: 9px;}
-    }
-    @media (min-height: 320px) and (max-height: 351px) and (orientation: landscape) {
-        html {font-size: 10px;}
-    }
-    @media (min-height: 352px) and (max-height: 383px) and (orientation: landscape) {
-        html {font-size: 11px;}
-    }
-    @media (min-height: 384px) and (max-height: 415px) and (orientation: landscape) {
-        html {font-size: 12px;}
-    }
-    @media (min-height: 416px) and (max-height: 447px) and (orientation: landscape) {
-        html {font-size: 13px;}
-    }
-    @media (min-height: 448px) and (max-height: 479px) and (orientation: landscape) {
-        html {font-size: 14px;}
-    }
-    @media (min-height: 480px) and (max-height: 511px) and (orientation: landscape) {
-        html {font-size: 15px;}
-    }
-    @media (min-height: 512px) and (max-height: 543px) and (orientation: landscape) {
-        html {font-size: 16px;}
-    }
-    @media (min-height: 544px) and (max-height: 575px) and (orientation: landscape) {
-        html {font-size: 17px;}
-    }
-    @media (min-height: 576px) and (max-height: 607px) and (orientation: landscape) {
-        html {font-size: 18px;}
-    }
-    @media (min-height: 608px) and (max-height: 639px) and (orientation: landscape) {
-        html {font-size: 19px;}
-    }
-    @media (min-height: 640px) and (max-height: 671px) and (orientation: landscape) {
-        html {font-size: 20px;}
-    }
-    @media (min-height: 672px) and (orientation: landscape) {
-        html {font-size: 21px;}
-    }
-    ```
-
-### WAP端制作类似PC端的`:active`效果（或`:hover`）
-1. Android系统的浏览器大部分直接使用CSS伪类即可。
-2. iOS系统的浏览器要添加以下代码触发使CSS伪类生效：
-
-    ```javascript
-    document.body.addEventListener('touchstart', function () {}, true);
-    ```
-3. ~~JS添加类的方法替代~~：
-
-    ```html
-    <style>
-        .d:active,
-        .d.active { }
-    </style>
-
-    <script type="text/javascript">
-        var selector = '.a,.b .c,.d';   /* 选择器字符串*/
-
-        $(document.body).on('touchstart', selector, function () {
-            $(this).addClass('active');
-        }).on('touchmove touchend touchcancel', selector, function () {
-            $(this).removeClass('active');
-        });
-    </script>
-    ```
-    
-- 正常情况下，页面添加`document.body.addEventListener('touchstart', function () {}, true);`即可满足大部分浏览器。
-
-----
-## 经验总结
-
-### Tips
-1. 限定布局宽度，让内容决定布局高度
-2. a标签的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（包括`#`和`javascript: void(0);`）都会打开新页面。
-3. `absolute`元素用`top: 0; bottom: 0; left: 0; right: 0; _height: 100%; _width: 100%;`可以拉伸至父容器的高宽。
-4. 没有设置宽度的`float`元素，其宽度等于子节点宽度：主流浏览器等于最外层子节点宽度，ie6等于所有子节点中最大的宽度。
-5. `inline`或`inline-block`节点标签前可能导致其父级的宽度变大（其实是内联标签前面会有间隙，若拥有`font-size`之后便会有高度撑开），通过以下办法解决：
-
-    1. 把`inline`节点设置为`block`。
-    2. 给父级节点设置`font-size: 0;`（可用此方法排查是否是空格造成的）。
-6. 页面是按照顺序加载资源，当且仅当有使用需求时才会去加载外部资源。
-
-    已加载完成的CSS文件内有多个url请求（background），但仅在页面节点要引用某个url请求时（无论节点是否隐藏），才会去请求这个资源，而不是在加载CSS文件时就加载外部资源。
-7. 使用动态DOM加载，代替内容的`display: none;`（免去构建复杂的DOM）：
-
-    1. `<script type="text/template"></script>`
-    2. `<template></template>`
-    3. `<textarea style="display:none;"></textarea>`
-8. WAP端页面或支持伪类的浏览器，能用`:before/after`的就不要添加标签。
-9. 单选、多选按钮开关自定义样式
-
-    用`input:checked + 兄弟节点`（`<input type="radio">`或`<input type="checkbox">`）操作选项选中与否的不同样式；可以隐藏`input`元素，用自定义样式来制作单选框、复选框。完全代替JS。
-10. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
-11. 避免
-
-    1. 避免~~放大、缩小图片~~，使用原始大小展现。
-    2. 避免使用不可缓存且增加额外HTTP请求的~~iframe~~标签。
-12. 富文本
-
-    1. 富文本内容除了要检测用户输入标签的闭合性，还要注意不要用~~li标签嵌套富文本~~，因为代码中如果有单独的`li`（没有嵌套`ol`或`ul`），就会“升级”到跟祖先级li同级的内容。
-    2. 部分富文本会用标签`em`、`ol`、`ul`来表示**斜体**、**有序序列**、**无序序列**，因此如果用CSS重置了以上标签后，要在[富文本内重载开启它们的默认效果](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L61-L77)。
-    3. 部分富文本还会在`table`标签上使用`cellspacing`、`border`、`bordercolor`属性来设置表格，又因为设置了`border: 0;`的表格标签无法重载开启以上属性作用，所以CSS重置时[不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L26-L27)。
-13. 超出内容区域的内容
-
-    1. 用绝对定位把内容设置在外部
-
-        不要把超出内容区域的绝对定位设置在`body`直接子级，而是设置在`body`下拥有`overflow: hidden;width: 100%;/* 默认*/`的父级下。
-    2. ~~大背景模式~~
-
 ### [`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex)优雅解决布局、自适应问题
 1. 不使用flex导致不方便处理的问题：
 
     1. 栅格系统
     2. [自适应宽度布局](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#自适应宽度布局)
     3. [水平居中、垂直居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#水平居中垂直居中)
-    4. [页面高度不够时，footer依然置于页面最底部](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#页面高度不够时footer依然置于页面最底部)
+    4. [粘性页脚](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#粘性页脚)
     5. [多列等高](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#多列等高)
 2. flex具体解决方案：[solved-by-flexbox](https://hufan-akari.github.io/solved-by-flexbox/)。
 
 ### 渲染性能（rendering performance）
 >1. 为了视觉上连贯，浏览器对每一帧画面的所有工作需要在16ms（1000ms / 60f ~= 16.66ms/f）内完成。
->2. 在渲染一帧画面同时，浏览器还有一些流程工作要做（如渲染队列的管理、渲染线程与其他线程之间的切换等）。因此一次花费在像素渲染管道（JS->Style->render tree）的时间需要控制在10至12ms内完成，再余出4至6ms进行其他流程工作。
->3. 因此一帧画面理想的耗时为：`16ms = 3~4ms的JS代码 + 7~8ms的渲染工作 + 4~6ms的其他流程工作`。
+>2. 渲染画面时，浏览器需要进行一些流程工作：渲染队列的管理、渲染线程与其他线程之间的切换等。因此一帧中花费在像素渲染管道（JS->Style->render tree）的时间要控制在10至12ms内，再余出4至6ms进行其他流程工作。
+>3. 一帧画面理想的耗时为：`16ms = 3~4ms的JS代码 + 7~8ms的渲染工作 + 4~6ms的流程工作`。
 
 1. 像素渲染管道：
 
@@ -1236,53 +1067,53 @@
 
         >耗费性能最大的工作。
 
-        填充像素的过程。包括绘制文字、颜色、图像、边框和阴影等，也就是DOM所有的可视效果。一般来说，这个绘制过程是在多个层（composite layers）上完成。
+        填充像素的过程。包括绘制文字、颜色、图像、边框、阴影等，也就是DOM所有的可视效果。一般来说，这个绘制过程是在多个层（composite layers）上完成。
     5. `Composite`：
 
-        在每个层（composite layers）上完成绘制过程后，浏览器会将所有层按照合理的顺序合并成一个图层，然后显示在屏幕上。
-2. reflow和repaint产生卡顿：
+        在每个层（composite layers）上完成绘制过程后，浏览器会将所有层按照合理的顺序合并成一个图层再显示。
+2. `reflow`、`repaint`：
 
     >CSS属性触发reflow、repaint、composite的情况：[CSS Triggers](https://csstriggers.com/)。
 
-    1. reflow（重排）：
+    1. `reflow`（重排）：
 
         某个元素上执行动画时，浏览器需要每一帧都检测是否有元素受到影响，并调整它们的大小、位置，通常这种调整都是联动的。
 
         1. 当遇到reflow问题时，考虑调整JS代码书写。
         2. 触发一个元素layout改变，几乎总是导致整个DOM都要reflow。
-    2. repaint（重绘）：
+    2. `repaint`（重绘）：
 
         浏览器还需要监听元素的外观变化，通常是背景色、阴影、边框等可视元素，并进行repaint。
 
         1. 当遇到repaint问题时，对于仅改变composite属性的元素，考虑单独提升到一个层（composite layers）中。
-        2. 浏览器不会始终repaint整个层（composite layers），而是尝试智能地repaint DOM中失效的部分。
-    3. composite：
+        2. 浏览器不会始终repaint整个层（composite layers），而是智能地对DOM中失效的部分进行repaint。
+    3. `composite`：
 
         每次reflow、repaint后浏览器还需要层合并再输出到屏幕上。
 
-    >那些容易忽略的**能引起布局改变的样式修改**，它们可能不产生动画，但当浏览器需要重新进行样式的计算和布局时，会产生reflow和repaint。
-3. 创建[composite layers](https://www.html5rocks.com/zh/tutorials/speed/layers/)（层、渲染层、复合层），交由GPU处理：
+    >那些容易忽略的**能引起布局改变的样式修改**，它们可能不产生动画，但当浏览器需要重新进行样式的计算和布局时，依然会产生reflow和repaint。
+3. 创建composite layers（层、渲染层、复合层），交由GPU处理：
 
     >GPU（图形处理器）是与处理和绘制图形相关的硬件，专为执行复杂的数学和几何计算而设计的，可以让CPU从图形处理的任务中解放出来，从而执行其他更多的系统任务。
 
     1. 强制普通元素提升到单独层的方法：
 
         1. `will-change: ;`（高级浏览器，最佳方式）。
-        2. `transform: translateZ(0);`（hack加速法）。
+        2. `transform: translateZ(0);`（hack方式）。
     2. 自带单独层的元素：
 
         1. 使用加速视频解码的`<video>`元素。
         2. 拥有3D（WebGL）上下文或加速的2D上下文的`<canvas>`元素。
-        3. Flash等混合插件。
+        3. `flash`等混合插件。
     3. 其他提升至单独层的方法：
 
         1. `transform 3D`或`perspective`。
         2. 如果有一个元素，它的兄弟元素在层中渲染，而这个兄弟元素的`z-index`比较小，那么这个元素（不管是不是应用了硬件加速样式）也会被放到层中。
         3. 对自己的`opacity`做CSS动画或使用一个动画变换的元素。
         4. 拥有加速CSS过滤器的元素。
-        5. 元素有一个包含层的后代节点（换句话说，就是一个元素拥有一个子元素，该子元素在自己的层里）。
+        5. 元素有一个包含层的后代节点（换句话说，就是一个元素拥有一个后代元素，该后代元素在自己的层里）。
 
-    >有时，虽然提升元素，却仍需要repaint工作：浏览器将两个需要绘制的区域联合在一起，而这可能导致整个屏幕repaint。
+    >有时，虽然提升元素，却仍需要repaint。
 4. 动画性能最好、消耗最低的属性（必须自身元素已提升至单独层）：
 
     对于以下属性修改，若元素自身被提升至单独层，则仅触发composite，否则触发paint->composite。
@@ -1302,18 +1133,18 @@
         2. 不在连续的动画过程中做高耗时的操作（如大面积reflow、repaint、复杂JS计算）。
         3. 对于动画效果的实现，建议使用`requestAnimationFrame`（或[velocity动画库](https://github.com/julianshapiro/velocity)），避免使用~~setTimeout、setInterval~~。
         4. 把耗时长的JS代码放到`Web Worker`中去做。
-        5. 用操作class替代操作style。
+        5. 用操作class替代~~直接操作CSS属性~~。
     2. 缩小样式计算的范围和降低复杂度
 
         1. 降低样式选择器的复杂度、提升[选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)（甚至使用基于class的方式，如[BEM](https://en.bem.info/methodology/css/)）。
         2. 减少需要执行样式计算的元素的个数（随着元素递增而计算量线性递增）。
-    3. 避免大规模、复杂的布局与reflow
+    3. 避免大规模、复杂的layout与reflow
 
         1. 避免强制同步布局
 
             >强制同步布局（forced synchronous layouts）：使用JS强制浏览器提前执行layout。
 
-            实行**先读后写**原则：先批量读取元素样式属性（返回上一帧的样式属性值），后再对样式属性、类名等进行写操作。
+            实行**先读后写**原则：先批量读取元素样式属性（返回上一帧的值），再对样式属性、类名等进行写操作。
 
             >e.g.
             >
@@ -1358,7 +1189,7 @@
 
         1. 避免使用运行时间过长的事件处理函数，它们会阻塞页面的滚动渲染。
         2. 避免在事件处理函数中修改样式属性。
-        3. 对事件处理函数去抖动，存储事件对象的值，然后在requestAnimationFrame回调函数中修改样式属性。
+        3. 对事件处理函数去抖动，存储事件对象的值，然后在`requestAnimationFrame`回调函数中修改样式属性。
 6. 经验：
 
     1. 追查性能问题、优化动画的时候：
@@ -1366,7 +1197,7 @@
         2. 使用Chrome [Timeline](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/timeline-tool)工具检查。
     2. 低性能设备（Android）优先调试。
 
-        1. 除了**CSS3翻转属性**与**内嵌滚动条**同时出现无法解决，其他样式问题都可以像处理ie6问题一样通过真机试验出解决方案。
+        1. （除了**CSS3翻转属性**与**内嵌滚动条**同时出现无法解决）样式问题都可以像处理ie6问题一样通过真机试验出解决方案。
         2. 有些低版本机型会有类似ie6的CSS问题，包括**CSS3的厂商前缀（`-webkit-`等）**、**层叠关系（`z-index`）**，并且要更注意**渲染性能（层产生）**。
 
 ### 经验技巧
@@ -1419,11 +1250,51 @@
         2. 有利于SEO：爬虫依赖于标签来确定上下文和各个关键字的权重。
         3. 方便其他设备解析（如屏幕阅读器、盲人阅读器、移动设备）以特殊方式渲染网页。
         4. 便于团队开发和维护，更具可读性、减少差异化。
-    2. 减少层级嵌套，合理嵌套，行内元素不要嵌套块级元素（如a标签不嵌套div）。
-    3. 用父节点的class去管理子节点（如父`ul`设定class，而子`li`不设定class）。
-    4. 有些WAP端（其实就是Android的各奇葩机型）页面的点击按钮，需要制作大一些，否者虽然看上去点击到了，但是不会触发JS效果。
+    2. 合理减少层级嵌套，行内元素不要嵌套块级元素（如`<a>`不嵌套`<div>`）。
+    3. 用父节点的class去管理子节点。
+    4. 有些WAP端（如Android各奇葩机型）页面的点击按钮制作大一些，否者难以点击触发JS效果。
 5. CSS编码规范
 
     绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/css.md#css编码规范)。
 
     >可以设置为IDE的**Reformat Code**的排版样式。
+
+### Tips
+1. 限定布局宽度，让内容决定布局高度
+2. `<a>`的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（包括`#`和`javascript: void(0);`）都会打开新页面。
+3. 没有设置宽度的`float`元素，其宽度等于子节点宽度：
+
+    1. 主流浏览器等于最外层子节点宽度。
+    2. ie6等于所有子节点中最大的宽度。
+4. `inline`、`inline-block`节点标签前可能有空隙（其实是内联标签前面的空白符，若拥有`font-size`之后便会有高宽），通过以下办法解决：
+
+    1. 把`inline`、`inline-block`节点设置为`block`。
+    2. 给父级节点设置`font-size: 0;`（可用此方法排查是否是空格造成的）。
+5. 页面是按照顺序加载资源，当且仅当有使用需求时才会去加载外部资源。
+
+    已加载完成的CSS文件内有多个url请求（`background`），但仅在页面节点要引用某个url请求时（无论节点是否隐藏），才会去请求这个资源，而不是在加载CSS文件时就加载外部资源。
+6. 使用动态DOM加载，代替内容的`display: none;`（免去构建复杂的DOM）：
+
+    1. `<script type="text/template"></script>`
+    2. `<template></template>`
+    3. `<textarea style="display:none;"></textarea>`
+7. WAP端页面或支持伪类的浏览器，能用`:before/after`的就不要添加标签。
+8. 单选`<input type="radio">`、多选`<input type="checkbox">`按钮开关自定义样式
+
+    用`input:checked + 兄弟节点`操作选项选中与否的不同样式；可以隐藏`<input>`，点击在`<label>`上改变`<input>`的`:checked`状态（`<label>`的`for`绑定`<input>`的`id`），用自定义样式来制作单选框、复选框。避免使用JS。
+9. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
+10. 避免
+
+    1. 避免~~放大、缩小图片~~，使用原始大小展现。
+    2. 避免使用不可缓存且增加额外HTTP请求的 ~~<iframe>~~。
+11. 富文本
+
+    1. 富文本内容除了要检测用户输入标签的闭合性，还要注意不要用`<li>`嵌套富文本，因为代码中如果有单独的`<li>`（没有嵌套`<ol>`或`<ul>`），就会“越级”到跟祖先级`<li>`同级的内容。
+    2. 部分富文本会用标签`<em>`、`<ol>`、`<ul>`来表示**斜体**、**有序序列**、**无序序列**，因此如果用CSS重置了以上标签后，要在[富文本内重载开启它们的默认效果](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L61-L77)。
+    3. 部分富文本会在`<table>`上使用`cellspacing`、`border`、`bordercolor`属性设置表格，又因为设置了`border: 0;`的表格无法重载开启以上属性作用，所以CSS重置时[不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L26-L27)。
+12. 超出内容区域的内容
+
+    1. 用绝对定位把内容设置在外部
+
+        不要把超出内容区域的绝对定位设置在`<body>`直接子级，而是设置在`<body>`下拥有`overflow: hidden;`的父级下。
+    2. ~~大背景模式~~
