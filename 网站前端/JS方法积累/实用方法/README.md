@@ -604,27 +604,27 @@ function isKeyInStr(key, str, separator) {
 ```javascript
 /**
  * 选取范围内随机值
- * @param {Number} minimum - 下限（或上限）
- * @param {Number} maximum - 上限（或下限）
+ * @param {Number} min - 下限（或上限）
+ * @param {Number} max - 上限（或下限）
  * @returns {Number} - 上下限区间内的随机值
  */
-function randomFrom(minimum, maximum) {
+function randomFrom(min, max) {
     var medium;
 
-    if (minimum > maximum) {
-        medium = minimum;
-        minimum = maximum;
-        maximum = medium;
+    if (min > max) {
+        medium = min;
+        min = max;
+        max = medium;
     }
 
-    return Math.floor(Math.random() * (maximum - minimum + 1) + minimum);
+    return Math.floor(Math.random() * (max - min + 1) + min);
 }
 ```
 >`Math.random()`返回`[0, 1)`。假设返回的值的开闭区间改变：
 >
->1. 如果返回的是：`(0, 1)`，则返回`Math.floor(Math.random() * (maximum - minimum + 2) + minimum - 1);`。
->2. 如果返回的是：`(0, 1]`，则返回`Math.floor(Math.random() * (maximum - minimum + 1) + minimum - 1);`。
->3. 如果返回的是：`[0, 1]`，则返回`Math.floor(Math.random() * (maximum - minimum) + minimum);`。
+>1. 如果返回的是：`(0, 1)`，则返回`Math.floor(Math.random() * (max - min + 2) + min - 1);`。
+>2. 如果返回的是：`(0, 1]`，则返回`Math.floor(Math.random() * (max - min + 1) + min - 1);`。
+>3. 如果返回的是：`[0, 1]`，则返回`Math.floor(Math.random() * (max - min) + min);`。
 
 ### *原生JS*产生随机数
 ```javascript
@@ -1913,7 +1913,7 @@ xhr.send(null);
         oneDom.style.cssText += '; CSS代码'
         ```
 
-    >CSS代码，例如 `div {background-color: yellow;}`。
+    >CSS代码，如 `div {background-color: yellow;}`。
 2. 动态添加脚本
 
     1. 异步
