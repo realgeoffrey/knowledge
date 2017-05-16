@@ -1119,7 +1119,7 @@ var eventUtil = {
         if (typeof dom.addEventListener === 'function') {   /* DOM2级，除ie8-外的高级浏览器*/
             dom.addEventListener(type, handle, false);
         } else if (typeof dom.attachEvent === 'function') { /* 所有ie浏览器*/
-            dom.attachEvent('on' + type, handle.bind(dom));
+            dom.attachEvent('on' + type, handle);   //注意传入的参数和this的兼容
         } else {    /* DOM0级，最早期的浏览器都支持*/
             dom['on' + type] = handle;
         }
@@ -1135,18 +1135,13 @@ var eventUtil = {
         if (typeof dom.removeEventListener === 'function') {
             dom.removeEventListener(type, handle, false);
         } else if (typeof dom.detachEvent === 'function') {
-            dom.detachEvent('on' + type, handle.bind(dom));
+            dom.detachEvent('on' + type, handle);   //注意传入的参数和this的兼容
         } else {
             dom['on' + type] = null;
         }
     }
 };
 ```
-
->1. `addEventListener`与`removeEventListener`是高级浏览器都有的方法（ie8-不支持），必须一一对应具体的**handle**和**布尔值**进行解绑。
->2. `attachEvent`与`detachEvent`是ie特有方法，必须一一对应具体的**handle**进行解绑。
->3. `on+type`是所有浏览器都支持，用赋值覆盖解绑。
->4. jQuery的`on`与`off`：当写具体handle时解绑具体handle；不写handle时默认解绑对象下某事件的所有方法；还可以对事件添加namespace。
 
 ### *原生JS*、jQuery或Zepto阻止冒泡和阻止浏览器默认行为
 1. 阻止冒泡
@@ -1189,7 +1184,7 @@ var eventUtil = {
             e.preventDefault();
         });
         ```
-3. 阻止冒泡&阻止默认行为
+3. 阻止冒泡 && 阻止默认行为
 
     1. *原生JS*
 
@@ -1265,7 +1260,7 @@ var eventUtil = {
             if (typeof dom.addEventListener === 'function') {
                 dom.addEventListener(type, handle, false);
             } else if (typeof dom.attachEvent === 'function') {
-                dom.attachEvent('on' + type, handle.bind(dom));
+                dom.attachEvent('on' + type, handle);
             } else {
                 dom['on' + type] = handle;
             }
@@ -1276,7 +1271,7 @@ var eventUtil = {
             if (typeof dom.removeEventListener === 'function') {
                 dom.removeEventListener(type, handle, false);
             } else if (typeof dom.detachEvent === 'function') {
-                dom.detachEvent('on' + type, handle.bind(dom));
+                dom.detachEvent('on' + type, handle);
             } else {
                 dom['on' + type] = null;
             }
@@ -1767,7 +1762,7 @@ function throttle(func, wait, options) {
 /* 使用测试*/
 var a = throttle(function () {
     console.log(1);
-}, 300);
+}, 1000);
 
 $(window).on('scroll', a);
 ```
@@ -2033,10 +2028,10 @@ function upperCaseWord(str) {
 }
 ```
 
-----
+---
 ## Polyfill
 
-### *原生JS*`Date.now`的**Polyfill**
+### *原生JS*`Date.now`的Polyfill
 ```javascript
 if (typeof Date.now !== 'function') {
     Date.now = function () {
@@ -2046,7 +2041,7 @@ if (typeof Date.now !== 'function') {
 ```
 >`Date.now()`相对于`new Date().getTime()`及其他方式，可以避免生成不必要的`Date`对象，更高效。
 
-### *原生JS*`requestAnimationFrame`和`cancelAnimationFrame`的**Polyfill**
+### *原生JS*`requestAnimationFrame`和`cancelAnimationFrame`的Polyfill
 ```javascript
 (function () {
     var lastTime = 0,
@@ -2081,7 +2076,7 @@ if (typeof Date.now !== 'function') {
 ```
 >来自[rAF.js](https://gist.github.com/paulirish/1579671)。
 
-### *原生JS*`Array.prototype.map`的**Polyfill**
+### *原生JS*`Array.prototype.map`的Polyfill
 ```javascript
 if (!Array.prototype.map) {
     Array.prototype.map = function (callback, thisArg) {
@@ -2140,7 +2135,7 @@ if (!Array.prototype.map) {
 ```
 >来自[MDN:Array.prototype.map](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map#Compatibility)。
 
-### *原生JS*`Object.create`的**Polyfill**
+### *原生JS*`Object.create`的Polyfill
 ```javascript
 if (typeof Object.create !== 'function') {
     // Production steps of ECMA-262, Edition 5, 15.2.3.5
@@ -2189,7 +2184,7 @@ if (typeof Object.create !== 'function') {
 ```
 >来自[MDN:Object.create](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill)。
 
-### *原生JS*`Array.isArray`的**Polyfill**
+### *原生JS*`Array.isArray`的Polyfill
 ```javascript
 if (!Array.isArray) {
     Array.isArray = function (arg) {
@@ -2199,7 +2194,37 @@ if (!Array.isArray) {
 ```
 >来自[MDN:Array.isArray](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray#Polyfill)。
 
-----
+### *原生JS*`Function.prototype.bind`的Polyfill
+```javascript
+if (!Function.prototype.bind) {
+    Function.prototype.bind = function (oThis) {
+        if (typeof this !== 'function') {
+            // closest thing possible to the ECMAScript 5
+            // internal IsCallable function
+            throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
+        }
+
+        var aArgs = Array.prototype.slice.call(arguments, 1),
+            fToBind = this,
+            fNOP = function () {
+            },
+            fBound = function () {
+                return fToBind.apply(this instanceof fNOP
+                        ? this
+                        : oThis || this,
+                    aArgs.concat(Array.prototype.slice.call(arguments)));
+            };
+
+        fNOP.prototype = this.prototype;
+        fBound.prototype = new fNOP();
+
+        return fBound;
+    };
+}
+```
+>来自[MDN:Function.prototype.bind](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind#Compatibility)。
+
+---
 ## jQuery（或Zepto）方法
 
 ### jQuery或Zepto滚动加载

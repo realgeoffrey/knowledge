@@ -310,5 +310,5 @@
 		“系统设置”->“网络”，添加一个接口为“VPN”、连接类型为“点到点隧道协议（PPTP）”的连接；VPN网关、用户名、密码设置正确后，高级设置里选开“使用点到点加密”、选开“发送PPP回响包”。保存之后会新增一个vpn连接，成功选择vpn连接成功后，会在连接图标上出现一把锁。
 	11. 
         >安卓环境配置
-	    >   *JDK->Genymotion->android sdk->IDE->ndk*
+	    >   *JDK->Genymotion->Android sdk->IDE->ndk*
 		>>  ubuntu环境下genymotion模拟器兼容性差、死机无法使用，因此放弃在ubuntu下进行的安卓开发
