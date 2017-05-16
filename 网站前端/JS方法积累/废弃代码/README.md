@@ -75,32 +75,24 @@ function extend(target, options) {
 ### *原生JS*深复制
 ```javascript
 /**
- * 深复制，仅针对数组或对象，值可以是基本类型、数组、基本对象，方法（不复制方法内属性）
+ * 深复制，仅针对数组或对象，值可以是基本数据类型、数组、基本对象、方法（不复制方法内属性）
  * @param {Object|Array} obj - 被深复制的内容
  * @returns {Object|Array} - 深复制后的内容
  */
 function deepCopy(obj) {
-    if (Object.prototype.toString.call(obj) !== '[object Array]' && Object.prototype.toString.call(obj) !== '[object Object]') {
+    var newObj, i;
 
-        return obj
+    if (typeof obj !== 'object' || obj === null) {
+
+        return obj;
     } else {
+        newObj = Object.prototype.toString.call(obj) === '[object Array]' ? [] : {};
 
-        return (function (paraObj) {
-            var newObj, i;
+        for (i in obj) {
+            newObj[i] = arguments.callee(obj[i]);
+        }
 
-            if (typeof paraObj !== 'object' || paraObj === null) {
-
-                return paraObj;
-            }
-
-            newObj = Object.prototype.toString.call(paraObj) === '[object Array]' ? [] : {};
-
-            for (i in paraObj) {
-                newObj[i] = arguments.callee(paraObj[i]);
-            }
-
-            return newObj;
-        }(obj));
+        return newObj;
     }
 }
 ```

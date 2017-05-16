@@ -43,7 +43,7 @@ HTTP调试工具。
 
         ![Charles图](./images/12.png)
 
-    ios或android的配置：
+    iOS或Android的配置：
 
     ![Charles图](./images/13.png)
 

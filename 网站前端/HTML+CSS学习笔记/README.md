@@ -646,7 +646,7 @@
     7. `scrollbar-track-color: 颜色;`：立体滚动条背景颜色。
     8. `scrollbar-base-color: 颜色;`：滚动条的基色。
 
-----
+---
 ## HTML + CSS
 
 ### 等宽文字
@@ -687,7 +687,7 @@
 <a style="pointer-events: none;">禁用鼠标和键盘的链接</a>
 ```
 
-----
+---
 ## 经验总结
 
 ### 水平居中、垂直居中
@@ -1194,7 +1194,7 @@
 
     1. 追查性能问题、优化动画的时候：
         1. 打开**Layer Borders**、**Paint Flashing**选项；
-        2. 使用Chrome [Timeline](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/timeline-tool)工具检查。
+        2. 使用Chrome [Performance](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/timeline-tool)工具检查。
     2. 低性能设备（Android）优先调试。
 
         1. （除了**CSS3翻转属性**与**内嵌滚动条**同时出现无法解决）样式问题都可以像处理ie6问题一样通过真机试验出解决方案。
