@@ -891,6 +891,58 @@
     }
     ```
 
+### Hybrid APP相关
+>1. 相对于Native APP的高成本、原生体验，Hybrid APP具有低成本、高效率、跨平台等特性，能够不依赖Native的发包更新。
+>2. Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、JS进行业务开发。
+
+1. Native提供给Hybrid宿主环境
+
+    1. 互相调用
+
+        1. Native提供功能：NativeUI组件、Header组件、消息类组件、通讯录、系统设备信息读取接口、H5与Native的互相跳转、支付、分享等。
+        2. Native调用前端JS方法；前端通过调用JS方法或跳转请求调用Native提供的接口。
+    2. 资源访问机制
+
+        1. 以`file`方式访问Native内部资源。
+        2. 以`url`方式访问线上资源。
+        3. 增量替换机制（避免发包更新）
+
+            1. Native本地下载、解压线上的打包资源，再替换旧资源。
+            2. ~~manifest~~。
+        4. URL限定，跨域问题的解决方案。
+    3. 身份验证机制
+
+        Native创建WebView时根据客户端登录情况写入cookie，访问线上资源时候根据cookie验证身份。
+    4. Hybrid开发测试
+
+        1. 提供**切换成线上资源请求方式**的功能，用代理工具代理成本地资源。
+        2. Chrome的Remote devices调试。
+2. Hybrid的前端处理
+
+    1. WebView环境兼容性：
+
+        1. CSS、HTML
+
+            >除[样式适配](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#wap端适配总结)外。
+
+            1. 添加厂商前缀（如`-webkit-`）。
+            2. 布局有问题的机型额外调试。
+            3. `<video>`、`<audio>`、`<iframe>`调试。
+        2. JS
+
+            兼容性判断（能力检测等）。
+    2. 与Native配合方式：
+
+        1. Native注入全局方法至WebView的`window`，调用则触发Native行为。
+        2. 捕获跳转请求（`document.location.href`或`<a>`），触发Native行为。
+
+            >客户端可以捕获、拦截任何内容（如`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
+
+        - 前端提供Native调用的全局回调函数。
+
+            >判断多个回调函数顺序：带id触发Native行为，Native调用回调函数时携带之前的id。
+    3. 根据前端的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在Hybrid遇到的bug。
+
 ### Tips
 1. `var a = b = c = 1;/* b、c没有var的声明*/`
 
@@ -1034,7 +1086,7 @@
     >2. ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
 
 ### 跨域请求
->浏览器同源策略（协议、端口、域名，必须完全相同才能够访问资源）限制：
+>浏览器同源策略（协议、端口、域名，必须完全相同才能够在脚本中发起请求）限制：
 >
 >    1. 不能通过AJAX去请求不同源中的内容。
 >    2. 不同源的文档间（文档与`<iframe>`、文档与`window.open()`的新窗口）不能进行JS交互操作：DOM无法获取（可以获取window对象，但无法进一步获取相应的属性、方法）；`Cookie`、`LocalStorage`、`IndexDB`无法读取。
@@ -1097,6 +1149,8 @@
     >ie10+支持。
 
     若服务端配置允许了某些（或所有）域名，就可以进跨域请求（前端不需要进行额外工作，仅需浏览器支持即可）。
+
+    >浏览器需要先使用`OPTIONS`方法发起一个预检请求，从而获知服务端是否允许该跨域请求。
 5. 其他方式
 
     1. 父窗口改变`<iframe>`的hash，`<iframe>`通过监听hash变化的`hashchange`事件获取父窗口信息
