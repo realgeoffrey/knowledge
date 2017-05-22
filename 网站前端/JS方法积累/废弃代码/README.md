@@ -98,3 +98,51 @@ function deepCopy(obj) {
 ```
 >1. 可以使用jQuery的`$.extend(true, {}, 被复制对象)`完全替代。
 >2. 可以使用lodash的`_.cloneDeep(被复制对象)`完全替代。
+
+### *原生JS*通过类名获取DOM
+```javascript
+/**
+ * 通过类名获取一组元素
+ * @param {String} className - 类名
+ * @param {Object} [parentDom = document] - 父级DOM
+ * @returns {Array} - 类名匹配的DOM数组
+ */
+function getElementsByClassName(className, parentDom) {
+    parentDom = parentDom || document;
+
+    className = className.replace(/(^\s+)|(\s+$)/g, ''); //去除前后空格
+
+    if (document.getElementsByClassName) {  /* ie9+*/
+
+        return parentDom.getElementsByClassName(className);
+    } else if (document.querySelectorAll) { /* ie8+*/
+
+        className = '.' + className.split(/\s+/).join('.');
+
+        return parentDom.querySelectorAll(className);
+    } else {
+        var doms = parentDom.getElementsByTagName('*'),
+            nameArr = className.split(/\s+/),
+            nameLen = nameArr.length,
+            domArr = [],
+            i, len, j, regex;
+
+        for (i = 0, len = doms.length; i < len; i++) {  /* 遍历所有标签*/
+            for (j = 0; j < nameLen; j++) { /* 遍历类名*/
+                regex = new RegExp('\\b' + nameArr[j] + '\\b');
+
+                if (!regex.test(doms[i].className)) {
+                    break;
+                }
+            }
+
+            if (j >= nameLen) {
+                domArr.push(doms[i]);
+            }
+        }
+
+        return domArr;
+    }
+}
+```
+>可以使用jQuery的`$('.类名')`完全替代。
