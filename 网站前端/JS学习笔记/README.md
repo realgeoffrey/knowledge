@@ -933,8 +933,10 @@
             兼容性判断（能力检测等）。
     2. 与Native配合方式：
 
-        1. Native注入全局方法至WebView的`window`，调用则触发Native行为。
-        2. 捕获跳转请求（`document.location.href`或`<a>`），触发Native行为。
+        >都是以**字符串**的形式交互。
+
+        1. Native注入全局方法至WebView的`window`（JS伪协议方式：`javascript: 代码`），前端调用则触发Native行为。
+        2. 拦截跳转请求（`document.location.href`或`<a>`），触发Native行为。
 
             >客户端可以捕获、拦截任何内容（如`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
 
