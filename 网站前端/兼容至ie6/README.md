@@ -30,6 +30,8 @@
         >上面2种一起写，可以覆盖所有浏览器（包括非ie浏览器）。
     3. JS判断：
 
+        >策略：`navigator.userAgent`正则匹配（浏览器嗅探技术）、HTML条件注释法、怪癖检测（`try-catch`）。
+
         1. [HTML条件注释法判断ie6、7、8、9版本](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断ie6789版本)。
         2. [用户代理判断ie所有版本](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断ie所有版本)。
 

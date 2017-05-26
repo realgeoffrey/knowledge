@@ -912,7 +912,9 @@
         4. URL限定，跨域问题的解决方案。
     3. 身份验证机制
 
-        Native创建WebView时根据客户端登录情况写入cookie，访问线上资源时候根据cookie验证身份。
+        >客户端注入方式：JS伪协议方式`javascript: 代码`。
+
+        Native创建WebView时，根据客户端登录情况注入跟登录有关的cookie（session_id）。
     4. Hybrid开发测试
 
         1. 提供**切换成线上资源请求方式**的功能，用代理工具代理成本地资源。
@@ -935,10 +937,12 @@
 
         >都是以**字符串**的形式交互。
 
-        1. Native注入全局方法至WebView的`window`（JS伪协议方式：`javascript: 代码`），前端调用则触发Native行为。
-        2. 拦截跳转请求（`document.location.href`或`<a>`），触发Native行为。
+        1. 桥协议：Native注入全局方法至WebView的`window`，前端调用则触发Native行为。
 
-            >客户端可以捕获、拦截任何内容（如`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
+            >客户端注入方式：JS伪协议方式`javascript: 代码`。
+        2. 自定义Scheme：拦截跳转请求（`document.location.href`或`<a>`），触发Native行为。
+
+            >客户端可以捕获、拦截任何行为（如`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
 
         - 前端提供Native调用的全局回调函数。
 
@@ -1095,7 +1099,7 @@
 
 1. `document.domain`相同则可以文档间互相操作
 
-    把不同文档的`document.domain`设置为一致的值（仅允许设置为上一级域），即可双向通信、互相操作（`Cookie`可以直接操作；`LocalStorage`、`IndexDB`只能通过`postMessage`通信）。
+    把不同文档的`document.domain`设置为一致的值（仅允许设置为上一级域），即可双向通信、互相操作（`cookie`可以直接操作；`localStorage`、`IndexDB`只能通过`postMessage`通信）。
 
     1. 与`<iframe>`通信：
 
@@ -1182,7 +1186,7 @@
 
         >常用来[统计](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用请求图片作log统计)。
 
-### Web Storage、cookie、session
+### Web Storage && cookie
 >1. 前端基本仅使用Web Storage；cookie仅用于服务端判定登录状态。
 >2. 浏览器数据存储方式：Cookie、Web Storage、IndexedDB、Web SQL、Manifest、Service Workers。
 
@@ -1225,14 +1229,9 @@
             2. 读取cookie等同于客户端`Cookie`请求头：展示所有cookie的`名1=值1[; 名2=值2]`（无法查看其他信息）。
     6. 同源且同路径共享。
     7. 默认（存储在内存）关闭浏览器后失效，设置失效时间（存储在硬盘）则到期后失效。
-    8. 应用场景：服务端确定两次请求是否来自于同一个客户端，从而能够确认和保持用户的登录状态（无状态的HTTP中的用户识别、状态管理）。
+    8. 应用场景：服务端确定请求是否来自于同一个客户端（cookie与服务端session配合），从而能够确认、保持用户的登录状态（无状态的HTTP中的用户识别、状态管理）。
 
     >僵尸cookie（[Zombie Cookie](https://en.wikipedia.org/wiki/Zombie_cookie)）是指那些删不掉的，删掉会自动重建的cookie。僵尸cookie是依赖于其他的本地存储方法，如flash的share object、html5的local storages等，当用户删除cookie后，自动从其他本地存储里读取出cookie的备份，并重新种植。
-3. `session`：
-
-    1. 服务端保存。
-    2. 对象形式。
-    3. 与本地cookie配合进行用户识别、状态管理。
 
 >隐身模式策略：存储API仍然可用，并且看起来功能齐全，只是无法真正储存（如分配储存空间为0）。
 
