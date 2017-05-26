@@ -58,7 +58,7 @@
         mysql> exit
         ```
 
-		再次登入时候用命令：`mysql –uroot –p密码`
+		再次登录时候用命令：`mysql –uroot –p密码`
 	4. 安装依赖软件：
 
         ```shell

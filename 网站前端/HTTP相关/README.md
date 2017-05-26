@@ -464,7 +464,7 @@
         `200 OK (from 某某 cache)`
     2. 利用之前HTTP response header返回的`Expires`和`Cache-Control`
 
-        >`Cache-Control`的优先级高于`Expires`。
+        >`Cache-Control`的优先级高于`Expires`（当服务器同时使用时，忽略~~Expires~~）。
 
         1. `Expires`：
 
@@ -501,7 +501,7 @@
         `304 Not Modified`
     2. 利用之前HTTP response header返回的`Last-Modified`、`ETag`与HTTP request head发起的`If-Modified-Since`、`If-None-Match`
 
-        >`ETag/If-None-Match`的优先级高于`Last-Modified/If-Modified-Since`。
+        >`ETag/If-None-Match`的优先级高于`Last-Modified/If-Modified-Since`（当服务器同时使用时，先判断If-None-Match。若中协议缓存，再判断If-Modified-Since；若没有中，不再判断）。
 
         1. `Last-Modified`与`If-Modified-Since`：
 
@@ -516,6 +516,8 @@
 
                 1. 若没有变化，命中缓存（还要考虑`ETag/If-None-Match`），返回304 Not Modified，但不返回资源内容。浏览器从本地缓存中读取资源。
                 2. 若没有命中缓存，则返回资源内容，响应头更新这个资源的Last-Modified。
+
+            >分布式部署，多台机器的Last-Modified必须保持一致。
         2. `ETag`与`If-None-Match`：
 
             1. 浏览器第一次跟服务器请求一个资源，服务器在返回这个资源的同时，会返回一系列响应头。
@@ -527,15 +529,19 @@
 
                 1. 若值相同，命中缓存（还要考虑`Last-Modified/If-Modified-Since`），返回304 Not Modified，但不返回资源内容。浏览器从本地缓存中读取资源。（由于ETag重新生成过，）响应头更新这个资源的ETag。
                 2. 若没有命中缓存，则返回资源内容，响应头更新这个资源的ETag。
+    3. 使用选择
 
-            >1. 分布式部署，多台机器的Last-Modified必须保持一致。
-            >2. 分布式系统尽量关闭ETag(每台机器生成的ETag都会不一样）。
+        - `ETag`的缺陷
 
-        - 产生`ETag`的必要性
+            1. 分布式系统尽量关闭ETag（每台机器生成的ETag都会不一样）。
+            2. 修改文件之后生成ETag需要消耗服务器性能。
+        - `ETag`的必要性
 
-            1. 某些文件也许会周期性的更改，但是他的内容并不改变（仅仅改变的修改时间），这时不希望客户端认为这个文件被修改了，而重新GET。
-            2. 某些文件修改非常频繁，如在1秒的时间内进行修改，If-Modified-Since能检查到的粒度是秒级的，这种修改无法判断（或说UNIX记录MTIME只能精确到秒）。
-            3. 某些服务器不能精确的得到文件的最后修改时间。
+            1. 某些文件会周期性地更改，但内容并不改变（仅改变修改时间），这时不希望客户端认为文件被修改了，而导致重新GET。
+            2. 某些文件修改非常频繁（如在1秒的时间内进行修改），If-Modified-Since能检查到的粒度是秒级的，这种修改无法判断（或说UNIX记录MTIME只能精确到秒）。
+            3. 某些服务器不能精确地得到文件最后修改时间。
+
+        因此具体某个资源只需运用ETag或Last-Modified的两者之一。
 
 - 联系：
 
@@ -622,6 +628,25 @@
     2. 持久连接。
 5. HTTP/2.0
 6. WebDAV
+
+### 服务端验证用户状态
+HTTP是无状态协议，通过session-cookie、token判断客户端的用户状态。
+
+1. session-cookie
+
+    1. session（会话）
+
+        服务器为了保存客户端状态，给每个客户端分配不同的“身份标识”（保存在服务器，过期后销毁），客户端发请求时需要携带该标识。
+
+        >session的运作通过session_id进行，session_id通常会保存在客户端的cookie中。
+    2. cookie
+
+        服务器生成，发送给客户端保存。cookie携带session_id（可以经过加密），能够匹配服务端的session。
+2. token（令牌）
+
+    >最简单的token组成：uid（用户唯一的身份标识）、time（当前时间的时间戳）、sign（加盐后哈希）。
+
+    认证用户，授权APP。针对APP与服务端的无状态API。与session-cookie方式没有直接关系、可一起使用、不冲突。
 
 ### 其他网络概念
 1. URI、URL

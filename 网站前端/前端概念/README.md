@@ -114,36 +114,103 @@
         <html manifest=".manifest文件/.appcache文件">
         ```
 
-### 垃圾回收
->垃圾回收器会按照固定的时间间隔（或代码执行中预定的时间）周期性地执行，找出不再继续使用的变量，然后释放其占用的内存。
+### 前端“增量”原则
+1. “增量”原则：
 
-垃圾回收器必须跟踪并判断变量是否有用，对于不再有用的变量打上标记，以备将来回收。
+    >“增量下载”是前端在工程上有别于客户端GUI软件的根本原因。
 
-1. **标记清除（mark-and-sweep）**（现代浏览器使用方式）
+    前端应用没有安装过程，其所需程序资源都部署在远程服务器，用户使用浏览器访问不同的页面来加载不同的资源，随着页面访问的增加，渐进式地将整个程序下载到本地运行。
+2. 由“增量”原则引申出的前端优化技巧几乎成为了**性能优化**的核心：
 
-    垃圾回收器在运行时给存储在内存中的所有变量加上标记；然后，去掉环境中的变量以及被环境中变量引用的变量的标记；最后，对那些带标记的值进行释放。
-2. 引用计数（reference counting）
+    1. 加载相关：延迟加载、AJAX加载、按需加载、预加载、请求合并压缩等策略。
+    2. 缓存相关：缓存更新、缓存共享、非覆盖式发布等方案。
+    3. 复杂的BigRender、BigPipe、Quickling、PageCache等技术。
 
-    跟踪记录每个值被引用的次数，被引用一次加1，引用取消就减1，当引用次数为0时，则说明没有办法再访问这个值了，当垃圾回收器下次运行时，释放引用次数为0的值所占空间。
+### 网站性能优化
+1. 网络应用的生命期建议：
 
-    >可能产生一个严重的问题：循环引用，引用次数永远不会是0。
+    1. load
 
->用`变量 = null;`等方法，让变量成为零引用，从而进行清除元素、垃圾回收（导致内存泄露的情况除外）。
+        1000ms内完成CRP。
+    2. idle
 
-### 自动插入分号机制（Automatic Semicolon Insertion，ASI）
-1. ASI机制不是说在解析过程中解析器自动把分号添加到代码中，而是说解析器除了分号还会以换行为基础按一定的规则作为断句（EOC）的依据，从而保证解析的正确性。
-2. 解析器会尽量将新行并入当前行，当且仅当符合ASI规则时才会将新行视为独立的语句：
+        进行50ms内的空闲时期预加载，包括图片、多媒体文件、后续内容（如评论）。
+    3. animations
 
-    1. `;`空语句
-    2. `var`语句
-    3. 表达式语句（一定会产生一个值）
-    4. `do-while`语句（不是`while`）
-    5. `continue`语句
-    6. `break`语句
-    7. `return`语句
-    8. `throw`语句
+        保证16ms/f的浏览器渲染时间。
+    4. response
 
->前置分号策略：只要判断行首字符为：`[` `(` `+` `-` `/`之一，就在其前面增加分号。
+        100ms内对用户的操作做出响应。
+2. 优化原则与指南
+
+    >来自[张云龙：前端工程与性能优化](https://github.com/fouber/blog/issues/3)。
+
+    | 优化方向 | 优化手段 |
+    | :--- | :--- |
+    | 请求数量 | 合并脚本和样式表，雪碧图，拆分初始化负载，划分主域 |
+    | 请求带宽 | 开启gzip，资源压缩、去重，图像优化 |
+    | 缓存利用 | 使用CDN，使用外部JS和CSS，HTTP头添加缓存相关内容，减少DNS查找，使AJAX可缓存 |
+    | 页面结构 | 将样式表放在顶部、脚本放在底部，尽快完成文档渲染 |
+    | 代码校验 | 避免CSS表达式，避免重定向 |
+3. 从输入URL到页面完成的具体优化：
+
+    >性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#前端工程化)问题。
+
+    1. URL输入：
+
+        服务端对HTTP请求、资源发布和缓存、服务器配置的优化。
+
+        1. 服务器开启gzip。
+
+            >前端查看Response头是否有：`Content-Encoding:gzip`。
+        2. 使用CDN。
+        3. 对资源进行缓存：
+
+            1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
+            2. 使用[缓存相关的HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：Expires、Cache-Control、Last-Modified/If-Modified-Since、ETag/If-None-Match。
+        4. 减少DNS查找，设置合适的TTL值，避免重定向。
+        5. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#静态资源使用额外域名domain-hash的原因)。
+        6. [非覆盖式发布](https://github.com/fouber/blog/issues/6)。
+    2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#页面载入解析步骤)：
+
+        前端对具体代码性能、CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）的优化。
+
+        1. 技术上优化：
+
+            1. CSS性能：
+
+                1. [CSS选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
+                2. [渲染性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)。
+            2. JS代码性能优化：
+
+                1. 使用性能好的代码方式（如：字面量创建数据、减少访问DOM、[定时器取舍](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)等）。
+                2. [闭包合理使用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)。
+                3. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)。
+                4. [函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)。
+        2. 优化CRP：
+
+            1. 减少关键资源：
+
+                1. 资源合并、去重。
+                2. 非首屏资源延迟异步加载：
+
+                    1. 增量加载资源：
+
+                        1. [图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)。
+                        2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto滚动加载)）。
+                        3. 功能文件按需加载（模块化、组件化）。
+                    2. 使AJAX可缓存（当用GET方式时添加缓存响应头）。
+                3. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
+            2. 最小化字节：
+
+                1. 压缩资源。
+                2. 图片优化
+
+                    压缩、大图切小图、小图合并雪碧图、Base64、WebP。
+                >单个大文件需要多次与服务器往返来获取。
+            3. 缩短CRP长度：
+
+                CSS放在HTML顶部，JS放在HTML底部。
 
 ### 静态资源使用额外域名（domain hash）的原因
 1. cookie free
@@ -180,13 +247,13 @@
 
         - 通过巧妙的方法注入恶意指令代码（HTML、JS或Java，VBScript，ActiveX，Flash）到网页内容，使用户加载并执行恶意程序。
 
-            攻击成功后，能够：盗取用户Cookie、破坏页面结构、重定向到其它地址等。
+            攻击成功后，能够：盗取用户cookie、破坏页面结构、重定向到其它地址等。
     2. 防御措施：
 
         1. 过滤用户输入（白名单）。
         2. HttpOnly
 
-            Cookie设置为HttpOnly不能在客户端使用~~document.cookie~~访问。
+            cookie设置为HttpOnly不能在客户端使用~~document.cookie~~访问。
         3. 过滤技术：浏览器的XSS Auditor、W3C的Content-Security-Policy。
 
         >flash的安全沙盒机制配置跨域传输：crossdomian.xml
@@ -313,99 +380,33 @@
     1. 服务端生成图片，前端根据图片发送请求给服务端验证。
     2. ~~前端生成并验证~~。
 
-### 前端“增量”原则
-1. “增量”原则：
-    >“增量下载”是前端在工程上有别于客户端GUI软件的根本原因。
+### 垃圾回收
+>垃圾回收器会按照固定的时间间隔（或代码执行中预定的时间）周期性地执行，找出不再继续使用的变量，然后释放其占用的内存。
 
-    前端应用没有安装过程，其所需程序资源都部署在远程服务器，用户使用浏览器访问不同的页面来加载不同的资源，随着页面访问的增加，渐进式地将整个程序下载到本地运行。
-2. 由“增量”原则引申出的前端优化技巧几乎成为了**性能优化**的核心：
+垃圾回收器必须跟踪并判断变量是否有用，对于不再有用的变量打上标记，以备将来回收。
 
-    1. 加载相关：延迟加载、AJAX加载、按需加载、预加载、请求合并压缩等策略。
-    2. 缓存相关：缓存更新、缓存共享、非覆盖式发布等方案。
-    3. 复杂的BigRender、BigPipe、Quickling、PageCache等技术。
+1. **标记清除（mark-and-sweep）**（现代浏览器使用方式）
 
-### 网站性能优化
-1. 网络应用的生命期建议：
+    垃圾回收器在运行时给存储在内存中的所有变量加上标记；然后，去掉环境中的变量以及被环境中变量引用的变量的标记；最后，对那些带标记的值进行释放。
+2. 引用计数（reference counting）
 
-    1. load
+    跟踪记录每个值被引用的次数，被引用一次加1，引用取消就减1，当引用次数为0时，则说明没有办法再访问这个值了，当垃圾回收器下次运行时，释放引用次数为0的值所占空间。
 
-        1000ms内完成CRP。
-    2. idle
+    >可能产生一个严重的问题：循环引用，引用次数永远不会是0。
 
-        进行50ms内的空闲时期预加载，包括图片、多媒体文件、后续内容（如评论）。
-    3. animations
+>用`变量 = null;`等方法，让变量成为零引用，从而进行清除元素、垃圾回收（导致内存泄露的情况除外）。
 
-        保证16ms/f的浏览器渲染时间。
-    4. response
+### 自动插入分号机制（Automatic Semicolon Insertion，ASI）
+1. ASI机制不是说在解析过程中解析器自动把分号添加到代码中，而是说解析器除了分号还会以换行为基础按一定的规则作为断句（EOC）的依据，从而保证解析的正确性。
+2. 解析器会尽量将新行并入当前行，当且仅当符合ASI规则时才会将新行视为独立的语句：
 
-        100ms内对用户的操作做出响应。
-2. 优化原则与指南
+    1. `;`空语句
+    2. `var`语句
+    3. 表达式语句（一定会产生一个值）
+    4. `do-while`语句（不是`while`）
+    5. `continue`语句
+    6. `break`语句
+    7. `return`语句
+    8. `throw`语句
 
-    >来自[张云龙：前端工程与性能优化](https://github.com/fouber/blog/issues/3)。
-
-    | 优化方向 | 优化手段 |
-    | :--- | :--- |
-    | 请求数量 | 合并脚本和样式表，雪碧图，拆分初始化负载，划分主域 |
-    | 请求带宽 | 开启gzip，资源压缩、去重，图像优化 |
-    | 缓存利用 | 使用CDN，使用外部JS和CSS，HTTP头添加缓存相关内容，减少DNS查找，使AJAX可缓存 |
-    | 页面结构 | 将样式表放在顶部、脚本放在底部，尽快完成文档渲染 |
-    | 代码校验 | 避免CSS表达式，避免重定向 |
-3. 从输入URL到页面完成的具体优化：
-
-    >性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#前端工程化)问题。
-
-    1. URL输入：
-
-        服务端对HTTP请求、资源发布和缓存、服务器配置的优化。
-
-        1. 服务器开启gzip。
-
-            >前端查看Response头是否有：`Content-Encoding:gzip`。
-        2. 使用CDN。
-        3. 对资源进行缓存：
-
-            1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
-            2. 使用[缓存相关的HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：Expires、Cache-Control、Last-Modified/If-Modified-Since、ETag/If-None-Match。
-        4. 减少DNS查找，设置合适的TTL值，避免重定向。
-        5. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#静态资源使用额外域名domain-hash的原因)。
-        6. [非覆盖式发布](https://github.com/fouber/blog/issues/6)。
-    2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#页面载入解析步骤)：
-
-        前端对具体代码性能、CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）的优化。
-
-        1. 技术上优化：
-
-            1. CSS性能：
-
-                1. [CSS选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
-                2. [渲染性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)。
-            2. JS代码性能优化：
-
-                1. 使用性能好的代码方式（如：字面量创建数据、减少访问DOM、[定时器取舍](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)等）。
-                2. [闭包合理使用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)。
-                3. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)。
-                4. [函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)。
-        2. 优化CRP：
-
-            1. 减少关键资源：
-
-                1. 资源合并、去重。
-                2. 非首屏资源延迟异步加载：
-
-                    1. 增量加载资源：
-
-                        1. [图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)。
-                        2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto滚动加载)）。
-                        3. 功能文件按需加载（模块化、组件化）。
-                    2. 使AJAX可缓存（当用GET方式时添加缓存响应头）。
-                3. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-            2. 最小化字节：
-
-                1. 压缩资源。
-                2. 图片优化
-
-                    压缩、大图切小图、小图合并雪碧图、Base64、WebP。
-                >单个大文件需要多次与服务器往返来获取。
-            3. 缩短CRP长度：
-
-                CSS放在HTML顶部，JS放在HTML底部。
+>前置分号策略：只要判断行首字符为：`[` `(` `+` `-` `/`之一，就在其前面增加分号。
