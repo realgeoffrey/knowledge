@@ -1059,13 +1059,14 @@
     1. 没有跨帧问题。
     2. 返回一个表示值类型的字符串。
 
-        1. 字符串 -> `'string'`
+        1. 字符型 -> `'string'`
         2. 布尔型 -> `'boolean'`
         3. 数值型 -> `'number'`
-        4. `undefined` -> `'undefined'`
-        5. 函数 -> `'function'`
-        6. 引用型 -> `'object'`
-        7. **`null`** -> **`'object'`**
+        4. Symbol型 -> `'symbol'`
+        5. `undefined` -> `'undefined'`
+        6. 函数 -> `'function'`
+        7. 引用对象型 -> `'object'`
+        8. **`null`** -> **`'object'`**
 
         >1. 因为`typeof null`返回`'object'`，因此typeof不能判断是否是引用数据类型。
         >2. ie8-的DOM节点的方法返回不是~~function~~，而是`object`，因此只能用`方法名 in DOM`检测DOM是否拥有某方法。

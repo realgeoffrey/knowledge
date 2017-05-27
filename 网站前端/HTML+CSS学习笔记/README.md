@@ -14,7 +14,7 @@
             元素选择器（type selectors）、伪元素选择器（pseudo-elements）。
         2. **2级**：
 
-            类选择器（class selectors）、属性选择器（attribute selectors）、伪类选择器（pseudo-classes）。
+            类选择器（class selectors）、伪类选择器（pseudo-classes）、属性选择器（attribute selectors）。
         3. **3级**：
 
             ID选择器（ID selectors）。
