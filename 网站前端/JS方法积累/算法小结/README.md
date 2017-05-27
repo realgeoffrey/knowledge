@@ -135,7 +135,7 @@ function quickSort(arr) {
             }
         }
 
-        return arguments.callee(leftArr).concat([middle].concat(arguments.callee(rightArr)));   //顺序合并左、中、右数组
+        return arguments.callee(leftArr).concat([middle], arguments.callee(rightArr));   //顺序合并左、中、右数组
     }
 }
 ```
