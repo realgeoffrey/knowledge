@@ -97,7 +97,7 @@ function animateTo(endX, endY, time) {
     clearInterval(myself.setIntervalId);
 
     myself.setIntervalId = setInterval(function () {
-        i++;
+        i += 1;
 
         window.scrollTo((scrollToX - scrollFromX) / time * i + scrollFromX, (scrollToY - scrollFromY) / time * i + scrollFromY);
 
@@ -498,7 +498,9 @@ var sendLog = (function () {
             i = 0;
 
         return function () {
-            return time + (i++);
+            i += 1;
+
+            return time + i - 1;
         }
     }());
 
@@ -2028,6 +2030,55 @@ function upperCaseWord(str) {
 }
 ```
 
+### *原生JS*展示页面帧数
+```javascript
+/**
+ * 展示fps
+ * @constructor
+ * @param {Object} [dom] - 展示的DOM
+ */
+function ShowFPS(dom) {
+    var self = this;
+
+    var fps = 0,
+        before = Date.now(),
+        now,
+        show = function (fps) {
+            dom.innerHTML = 'fps: ' + fps;
+        };
+
+    if (!dom) {
+        dom = document.createElement('span');
+        dom.style.position = 'fixed';
+        document.getElementsByTagName('body')[0].appendChild(dom);
+    }
+
+    self.id = requestAnimationFrame(function () {
+        now = Date.now();
+
+        if (now - before >= 1000) {
+            before = now;
+            show(fps);
+            fps = 0;
+        } else {
+            fps += 1;
+        }
+
+        self.id = requestAnimationFrame(arguments.callee);
+    });
+
+    self.stop = function () {
+        cancelAnimationFrame(self.id);
+    };
+}
+
+
+/* 使用测试*/
+var a = new ShowFPS();
+
+//a.stop();
+```
+
 ---
 ## Polyfill
 
@@ -2183,8 +2234,9 @@ if (!Array.prototype.map) {
                 // 返回值添加到新数组A中.
                 A[k] = mappedValue;
             }
+
             // k自增1
-            k++;
+            k += 1;
         }
 
         // 8. 返回新数组A
@@ -2563,6 +2615,7 @@ if (!String.prototype.trim) {
 
         _init(className, func);
     }
+
 
     /* 使用测试*/
     var a = new ImgLazyLoad('j-img-1'),
