@@ -31,13 +31,13 @@ function multiCallback(func, url) {
                      //Zepto默认没有deferred的对象，用参数模式代替
                      success: function (data) {
                          handle.result[url] = data;
-                         handle.count++;
+                         handle.count += 1;
                          handle();
                      }
                     */
                 }).done(function (data) {
                     handle.result[url] = data;
-                    handle.count++;
+                    handle.count += 1;
                     handle();
                 });
             }(arguments[i]));

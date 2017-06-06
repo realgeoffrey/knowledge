@@ -377,7 +377,7 @@ function heapSort(arr) {
                 return;
             } else {
                 if (sonIndex + 1 <= endIndex && arr[sonIndex] < arr[sonIndex + 1]) { /* 若有右子节点，选择两个子节点中较大的*/
-                    sonIndex++;  //父节点的右子节点位置
+                    sonIndex += 1;  //父节点的右子节点位置
                 }
 
                 if (arr[dadIndex] <= arr[sonIndex]) {
@@ -577,7 +577,7 @@ function countingSort(arr) {
         for (i = 0; i < len; i++) {
             for (j = i + 1; j < len; j++) {
                 if (arr[i] === arr[j]) {    //如果发现相同元素，则i自增并且进入下一个数的循环比较
-                    i++;
+                    i += 1;
                     j = i;
                 }
             }
@@ -635,7 +635,7 @@ function countingSort(arr) {
 
         for (i = 0, len = arr.length; i < len; i++) {
             if (arr[i] === delValue) {
-                delCount++;
+                delCount += 1;
             } else if (delCount !== 0) {
                 arr[i - delCount] = arr[i];
             }
