@@ -174,11 +174,11 @@
     2. `if($(...)[0]) {}    /* 若无则为undefined*/`
 4. `on`绑定效率（事件代理、事件委托）
 
-    >事件代理：把原本需要绑定的事件委托给祖先元素，让祖先元素担当事件监听的职务。原理：DOM元素的事件冒泡。好处：可以提高性能。
+    >事件代理：把原本需要绑定的事件委托给祖先元素，让祖先元素担当事件监听的职务。原理：DOM元素的事件冒泡。好处：提高性能，避免~~批量绑定~~。
 
     >e.g. `$(eventHandler).on(event, selector, func);`
 
-    1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的应用逻辑，成为**eventHandler**。有且仅有这些eventHandler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的eventHandler处理DOM（如删除类名）也不会使绑定内容失效（除非删除）；在eventHandler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
+    1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的应用逻辑**func**，成为**eventHandler**。有且仅有这些eventHandler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的eventHandler处理DOM（如删除类名）也不会使绑定内容失效（除非删除）；在eventHandler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
     2. 绑定的eventHandler距离selector越近，效率越高。因此虽然把selector都绑定在`$(document)`上能够避免增删节点对事件绑定造成的影响，但效率下降。
 5. 判断是否加载成功，不成功则执行载入本地文件
 
@@ -243,7 +243,7 @@
             `dom.onclick = null;`、`dom.onclick = function () {/* 修改方法*/};`
     3. IE事件处理
 
-        `dom.attachEvent('onclick', funcIe);`（可监听多个，需要参数完全对应才能解绑定）
+        `dom.attachEvent('onclick', funcIe);`（可监听多个，需参数完全对应才能解绑定；无法解绑匿名函数）
 
         - 移除绑定事件：
 
@@ -252,7 +252,7 @@
 
         >ie8-不兼容DOM2级事件处理。
 
-        `dom.addEventListener('click', func2, false);`（可监听多个，需要参数完全对应才能解绑定）
+        `dom.addEventListener('click', func2, false);`（可监听多个，需参数完全对应才能解绑定；无法解绑匿名函数）
 
         - 移除绑定事件：
 
@@ -424,7 +424,7 @@
             };
         };
         ```
-    2. 拥有原型链内容（所有实例都共享）：
+    2. 修改构造函数的原型对象（所有实例都共享）：
 
         ```javascript
         var OneConstructor = (function () {
@@ -456,11 +456,11 @@
                 };
             }
 
-            /* 原型链上，每个实例共享*/
+            /* 构造函数的原型对象上，每个实例共享*/
             Constructor.prototype = {
-                para_2: {c: '公开的变量para_2（在原型链上，每个实例共享）'},
+                para_2: {c: '公开的变量para_2（每个实例共享）'},
                 func_2: function () {
-                    console.log('公开的业务逻辑func_2（在原型链上，每个实例共享）');
+                    console.log('公开的业务逻辑func_2（每个实例共享）');
                 }
             };
 
@@ -518,7 +518,7 @@
 ### JS代码风格规范（coding style guide）
 1. 声明
 
-    1. 变量声明
+    1. 变量声明（`var`）
 
         无论语句在何处，无论是否会真正执行到，所有的`var`语句的**声明**都提升到作用域（函数内部或全局）顶部执行（hoisting），但具体**赋值**不会被提前。
 
@@ -607,8 +607,6 @@
 
         1. `var a = new Person();   /* 构造函数*/`
         2. `var b = getPerson();    /* 普通函数*/`
-
-        >这样对于首字母大写的函数即可认定为构造函数，否则为普通函数。
     5. 不要用多行的字符串写法
 
         ```javascript
@@ -740,7 +738,7 @@
     11. 不要使用`new`命令，改用`Object.create()`命令。
     12. 构造函数的函数名，采用首字母大写；其他函数名，一律首字母小写。
     13. 不要使用自增（`++`）和自减（`--`）运算符，用`+= 1`和`-= 1`代替。
-    14. 总是使用大括号表示区块（不省略大括号）。
+    14. 不省略大括号。
 10. JS编码规范
 
     绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/javascript.md#javascript编码规范)。
@@ -766,13 +764,13 @@
 
         1. 能力检测：`if(func){func();}`（最适当方式）。
         2. 怪癖检测：`try-catch`。
-        3. 浏览器嗅探技术（用户代理检测）。
+        3. 浏览器嗅探技术（用户代理`navigator.userAgent`检测）。
     4. 资源分离：把样式表、脚本分离出HTML。
 
         1. 使用外部资源。
         2. 不在HTML内嵌事件处理函数。
         3. 对只为DOM增添的内容，转移到外部资源中动态创建。
-    5. [从URL输入之后](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#页面载入解析步骤)就开始考虑性能优化。
+    5. 性能优化[从URL输入之后](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#页面载入解析步骤)就开始考虑。
 
         >避免~~微优化~~：
         >
@@ -782,13 +780,13 @@
 ### 编程实践（programming practices）
 1. UI层的松耦合
 
-    1. 不要~~用JS修改CSS样式~~，JS只修改class（任何时刻，CSS中的样式都可以修改，而不必更新JS）。
+    1. 不要~~用JS修改CSS样式~~，JS仅修改class（任何时刻，CSS中的样式都可以修改，而不必更新JS）。
 
         >特例：根据页面重新定位，可以用JS设定位置（如`top`、`left`等）。
     2. 将HTML从JS中抽离，避免增加跟踪文本和结构性问题的复杂度。可以使用模板引擎，如[handlebars.js](https://github.com/wycats/handlebars.js)。
 2. 避免使用全局变量
 
-    >任何来自函数外的数据都应当以参数形式传递进函数：将函数与其外部环境隔离开来。
+    >任何来自函数外的数据都应当以参数形式传进函数：将函数与其外部环境隔离开。
 
     1. 单全局变量
 
@@ -799,8 +797,7 @@
 
         ```javascript
         (function (win) {
-            'use strict';
-            /* 严格模式可以避免创建全局变量*/
+            'use strict';   //严格模式可以避免创建全局变量
 
             var doc = win.document;
             /* 代码*/
@@ -824,7 +821,7 @@
     配置数据：URL、展示内容、重复的值、设置、任何可能发生变更的值。
 
 ### [函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js防抖函数)、[函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js节流函数)
->都是用来控制某个函数在一定时间内执行多少次的技巧。
+>都是用来限制某个函数在一定时间内执行次数的技巧。
 
 1. 防抖（debounce）
 
@@ -905,7 +902,7 @@
 
         1. 以`file`方式访问Native内部资源。
         2. 以`url`方式访问线上资源。
-        3. 增量替换机制（避免发包更新）
+        3. 增量替换机制（不必随发包更新）
 
             1. Native本地下载、解压线上的打包资源，再替换旧资源。
             2. ~~manifest~~。
@@ -914,7 +911,7 @@
 
         >客户端注入方式：JS伪协议方式`javascript: 代码`。
 
-        Native创建WebView时，根据客户端登录情况注入跟登录有关的cookie（session_id）。
+        Native创建WebView时，根据客户端登录情况注入跟登录有关的cookie（session_id）或token。
     4. Hybrid开发测试
 
         1. 提供**切换成线上资源请求方式**的功能，用代理工具代理成本地资源。
@@ -981,30 +978,35 @@
     >
     >1. `var a = typeof b !== 'undefined' && b !== null ? b : {};`
     >2. `if (typeof c !== 'undefined' && c !== null) {}`
-3. `if(var a = 1, b = 2, c = 3, false){/* 不执行*/}`
+3. `if`、`while`之类的判断语句中用赋值操作
+
+    （大部分是误用）赋值的内容Boolean后为假会导致条件判断为假：`if(a = false){/* 不执行*/}`。
+
+    >判断语句内只判断整体返回值是`true`还是`false`，与里面执行内容无关（尽管对其语法有所限制）。
+4. `if(var a = 1, b = 2, c = 3, false){/* 不执行*/}`
 
     逗号操作符`,`对每个操作对象求值（从左至右），然后返回最后一个操作对象的值。
 
     >`var`语句中的逗号不是逗号操作符，因为它不存在于一个表达式中。尽管从实际效果来看，那个逗号同逗号运算符的表现很相似。但它是`var`语句中的一个特殊符号，用于把多个变量声明结合成一个。
-4. `var a = [10, 20, 30, 40][1, 2, 3];/* 40*/`
+5. `var a = [10, 20, 30, 40][1, 2, 3];/* 40*/`
 
     1. `[10, 20, 30, 40]`被解析为数组；
     2. `[1, 2, 3]`被解析为属性调用，逗号操作符取最后一个值为结果。
 
     因此结果为数组`[10, 20, 30, 40]`的`[3]`属性值：`40`。
-5. `{a: 'b'} + 1;/* 1*/`
+6. `{a: 'b'} + 1;/* 1*/`
 
     大括号视为代码块，没有返回值。需要给大括号加上小括号，表明为一个值：`({a: 'b'}) + 1;/* [object Object]1*/`。
-6. 浮点数的计算
+7. 浮点数的计算
 
     浮点数值计算会产生舍入误差，因此永远不要用条件语句判断某个特定浮点数值，也不要用JS进行复杂的计算。
     >避免浮点数运算误差函数：[用整数进行小数的四则运算](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用整数进行小数的四则运算避免浮点数运算误差)。
-7. 判断DOM是否支持某属性
+8. 判断DOM是否支持某属性
 
-    若要判定一个属性是否被DOM所支持，新建一个DOM来判断：`if('属性' in document.creatElement('某标签')){...}`。
+    若要判定一个属性是否被DOM所支持，新建一个DOM来判断：`if('属性' in document.createElement('某标签')){...}`。
 
     >在DOM中随意添加一个属性，`此属性 in 此DOM`永远为真，不可以判断是否此DOM存在此属性（或方法）。
-8. `eval`中直接执行`function`声明无效，必须用引号把`function`声明包裹起来才有效（尽量不用`eval`）
+9. `eval`中直接执行`function`声明无效，必须用引号把`function`声明包裹起来才有效（尽量不用`eval`）
 
     ```javascript
     eval(function a() {});      //返回function a() {}，但没有声明
@@ -1013,10 +1015,6 @@
 
     >1. `if()`中的代码对于`function`的声明就是用`eval`带入方法做参数，因此虽然返回true，但方法没有被声明。
     >2. `setTimeout`与`setInterval`中第一个参数若使用字符串，也是使用`eval`把字符串转化为代码。
-9. `if`、`while`之类的判断语句中用赋值操作
-
-    （大部分是误用）赋值的内容Boolean后为假会导致条件判断为假：`if(a = false){/* 不执行*/}`。
-    >判断语句内只判断整体返回值是`true`还是`false`，与里面执行内容无关（尽管对其语法有所限制）。
 10. 获取数组中最大最小值：`Math.min.apply(null, [1, 2, 3]);/* 1*/`、`Math.max.apply(null, [1, 2, 3]);/* 3*/`。
 
 ---
@@ -1028,28 +1026,28 @@
     1. 没有跨帧问题。
     2. 放入**内置对象**，返回`'[object 构造函数的名称]'`的字符串
 
-        >特例：自定义类型返回`'[object Object]'`，*undefined*、*null*返回对应名字。
+        >特例：自定义类型返回`'[object Object]'`，`undefined`、`null`返回对应名字。
 
-        1. `undefined` 或 不填 -> `'[object Undefined]'`
-        2. `null` -> `'[object Null]'`
-        3. 自定义类型实例 -> `'[object Object]'`
+        1. 自定义类型实例 -> `'[object Object]'`
+        2. `undefined` 或 不填 -> `'[object Undefined]'`
+        3. `null` -> `'[object Null]'`
         4. `{}` -> `'[object Object]'`
         5. `[]` -> `'[object Array]'`
         6. `function(){}`（包括匿名函数） -> `'[object Function]'`
-        7. 数字 -> `'[object Number]'`
-        8. 字符串 -> `'[object String]'`
-        9. 布尔型对象 -> `'[object Boolean]'`
-        10. Date对象 -> `'[object Date]'`
-        11. RegExp对象 -> `'[object RegExp]'`
-        12. arguments对象 -> `'[object Arguments]'`
-        13. Error对象 -> `'[object Error]'`
-        14. Math对象 -> `'[object Math]'`
-        15. window对象 -> `'[object global]'`
-        16. document对象 -> `'[object HTMLDocument]'`
-        17. JSON对象 -> `'[object JSON]'`
-        18. Map对象 -> `'[object Map]'`
-        19. console对象 -> `'[object Console]'`
-        20. Audio对象 -> `'[object HTMLAudioElement]'`
+        7. Number实例 -> `'[object Number]'`
+        8. String实例 -> `'[object String]'`
+        9. Boolean实例 -> `'[object Boolean]'`
+        10. Date实例 -> `'[object Date]'`
+        11. RegExp实例 -> `'[object RegExp]'`
+        12. Error实例 -> `'[object Error]'`
+        13. Map实例 -> `'[object Map]'`
+        14. Audio实例 -> `'[object HTMLAudioElement]'`
+        15. Image实例 -> `'[object HTMLImageElement]'`
+        16. `window` -> `'[object Window]'`
+        17. `document` -> `'[object HTMLDocument]'`
+        18. `arguments` -> `'[object Arguments]'`
+        19. `Math` -> `'[object Math]'`
+        20. `JSON` -> `'[object JSON]'`
 
         >- 对于没有声明的变量，直接使用此行代码会报**引用不存在变量**的错误，因此需要：
         >
@@ -1066,7 +1064,7 @@
         5. `undefined` -> `'undefined'`
         6. 函数 -> `'function'`
         7. 引用对象型 -> `'object'`
-        8. **`null`** -> **`'object'`**
+        8. `null` -> `'object'`
 
         >1. 因为`typeof null`返回`'object'`，因此typeof不能判断是否是引用数据类型。
         >2. ie8-的DOM节点的方法返回不是~~function~~，而是`object`，因此只能用`方法名 in DOM`检测DOM是否拥有某方法。
@@ -1075,14 +1073,15 @@
 
     1. 不能跨帧（`<iframe>`、`window.open()`的新窗口）。
 
-        >- 跨帧：浏览器的帧（frame）里的对象传入到另一个帧中，两个帧都定义了相同的构造函数：
-        >
-        >    ```javascript
-        >    A实例 instanceof A构造函数; //true
-        >    A实例 instanceof B构造函数; //false
-        >    ```
-    2. 判断是否是对象的构造函数（判断某个构造函数的`prototype`属性所指向的对象是否存在于另外一个要检测对象的原型链上）。
-    3. 不仅检测对象本身，还检测至原型链。如`new Number() instanceof Object`返回true。
+        >```javascript
+        >/* 跨帧：浏览器的帧（frame）里的对象传入到另一个帧中，两个帧都定义了相同的构造函数*/
+        >A实例 instanceof A构造函数; //true
+        >A实例 instanceof B构造函数; //false
+        >```
+    2. 判断`构造函数.prototype`是否存在于对象的原型链上。
+    3. 不仅检测对象本身，还检测至原型链。
+
+        >e.g. `new Number() instanceof Object;  /* true*/`。
     4. **检测自定义类型的唯一方法。**
 4. `属性 in 对象`
 
@@ -1096,7 +1095,7 @@
 >浏览器同源策略（协议、端口、域名，必须完全相同才能够在脚本中发起请求）限制：
 >
 >    1. 不能通过AJAX去请求不同源中的内容。
->    2. 不同源的文档间（文档与`<iframe>`、文档与`window.open()`的新窗口）不能进行JS交互操作：DOM无法获取（可以获取window对象，但无法进一步获取相应的属性、方法）；`Cookie`、`LocalStorage`、`IndexDB`无法读取。
+>    2. 不同源的文档间（文档与`<iframe>`、文档与`window.open()`的新窗口）不能进行JS交互操作：DOM无法获取（可以获取window对象，但无法进一步获取相应的属性、方法）；`cookie`、`Web Storage`、`IndexDB`无法读取。
 
 1. `document.domain`相同则可以文档间互相操作
 
@@ -1188,8 +1187,8 @@
         >常用来[统计](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用请求图片作log统计)。
 
 ### Web Storage && cookie
->1. 前端基本仅使用Web Storage；cookie仅用于服务端判定登录状态。
->2. 浏览器数据存储方式：Cookie、Web Storage、IndexedDB、Web SQL、Manifest、Service Workers。
+>1. 因为HTTP请求都会携带cookie，因此cookie最好仅用于服务端判定状态。
+>2. 浏览器数据存储方式：cookie、Web Storage、IndexedDB、Web SQL、Manifest、Service Workers。
 
 1. Web Storage（`localStorage`、`sessionStorage`）
 
@@ -1214,9 +1213,9 @@
             1. 同源且同会话（tab窗口）共享。
             2. 会话级别存储。跳转页面为同源后仍旧有效（不同tab不共通），关闭浏览器后被清除（重新加载或关闭后恢复，任然存在）。
             3. 应用场景：需要拆分成多个子页面分别存储的数据。
-2. `cookie`：
+2. cookie：
 
-    1. 客户端保存，始终在HTTP请求中携带（同源且同路径），明文传递，服务端接收、操作客户端cookie。
+    1. 客户端保存，始终在HTTP请求中携带（同源同路径），明文传递，服务端接收、操作客户端cookie。
     2. 字符串形式：`名1=值1[; 名2=值2]`。不能包含任何`,`、`;`、` `（使用`encodeURIComponent`、`decodeURIComponent`）。
     3. 所有浏览器都支持。
     4. 单域名内，cookie保存的数据不超过4k，数量（最少）20个。
@@ -1230,14 +1229,14 @@
             2. 读取cookie等同于客户端`Cookie`请求头：展示所有cookie的`名1=值1[; 名2=值2]`（无法查看其他信息）。
     6. 同源且同路径共享。
     7. 默认（存储在内存）关闭浏览器后失效，设置失效时间（存储在硬盘）则到期后失效。
-    8. 应用场景：服务端确定请求是否来自于同一个客户端（cookie与服务端session配合），从而能够确认、保持用户的登录状态（无状态的HTTP中的用户识别、状态管理）。
+    8. 应用场景：服务端确定请求是否来自于同一个客户端（cookie与服务端session配合），以确认、保持用户状态。
 
-    >僵尸cookie（[Zombie Cookie](https://en.wikipedia.org/wiki/Zombie_cookie)）是指那些删不掉的，删掉会自动重建的cookie。僵尸cookie是依赖于其他的本地存储方法，如flash的share object、html5的local storages等，当用户删除cookie后，自动从其他本地存储里读取出cookie的备份，并重新种植。
+    >僵尸cookie（[zombie cookie](https://en.wikipedia.org/wiki/Zombie_cookie)）是指那些删不掉的，删掉会自动重建的cookie。僵尸cookie是依赖于其他的本地存储方法，如flash的share object、HTML5的local storages等，当用户删除cookie后，自动从其他本地存储里读取出cookie的备份，并重新种植。
 
 >隐身模式策略：存储API仍然可用，并且看起来功能齐全，只是无法真正储存（如分配储存空间为0）。
 
 ### 错误处理机制
->1. 当JS出现错误时，JS引擎会根据JS调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式（IE以黄色三角图案显示在左下角，firefix会显示在错误控制台中）显示错误信息，可以用`window.onerror`进行自定义操作。
+>1. 当JS出现错误时，JS引擎会根据JS调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式显示错误信息，可以用`window.onerror`进行自定义操作。
 >2. 在某个**JS block**（`<script>`或`try-catch`的`try`语句块）内，第一个错误触发后，当前JS block后面的代码会被自动忽略，不再执行，其他的JS block内代码不被影响。
 
 1. [原生错误类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#原生错误类型)
@@ -1298,6 +1297,7 @@
 
         >1. 只要图像的src属性中的URL不能返回能被识别的图像格式，就会触发图像的`error`事件。
         >2. 错误不会提交到~~window.onerror~~。
+        >3. `Image`实例或`<img>`的`error`事件没有任何参数。
 
         1. `<img>`的`error`事件
 
@@ -1315,8 +1315,6 @@
 
             img.src = '错误地址';
             ```
-
-        >与`window`的`error`事件处理函数不同，`Image`实例对象或`<img>`的`error`事件没有任何参数。
 5. 运用策略
 
     1. 非客户端页面
@@ -1352,18 +1350,6 @@
         };
     }
     ```
-
-    >判断JS、CSS文件是否加载完毕：
-    >
-    >    1. JS
-    >
-    >        1. 监听文件的`load`事件，触发则加载完成。
-    >        2. 监听JS文件的`readystatechange`事件，当文件的`readyState`值为`loaded/complete`则JS加载完成。
-    >    2. CSS
-    >
-    >        1. 监听文件的`load`事件，触发则加载完成。
-    >        2. 轮询CSS文件的`cssRules`属性是否存在，当存在则CSS加载完成。
-    >        3. 写一个特殊样式，轮询判断这个样式是否出现，来判断CSS加载完成。
 2. `link`标签预加载
 
     1. `<link rel="dns-prefetch" href="域名">`
@@ -1427,7 +1413,7 @@
         ```
     4. `for-of`
 
-        迭代出任何拥有`[Symbol.iterator]`属性的collection对象的每个元素。
+        遍历可迭代对象的每个元素。
 
         ```javascript
         /* i为迭代对象的属性值*/
@@ -1534,7 +1520,7 @@
 
         `var 名字 = new Function([多个参数, ]函数体字符串);`
 
-        直接调用`Function`（不使用`new`操作符）的效果与调用构造函数一样，最明显的区别就是`this`变成`window`对象。
+        >直接调用`Function`（不使用`new`操作符）的效果与调用构造函数一样，区别是`this`指向`window`。
     2. 函数声明（函数语句）
 
         `function 名字(多个参数) {/* 函数体*/};`
@@ -1557,10 +1543,10 @@
         >    ```
 
     >1. 通过**函数声明**、**函数表达式**创建的函数，在加载脚本时和其他代码一起解析；通过**构造函数**定义的函数，在构造函数被执行时才解析函数体字符串。
-    >2. 不推荐通过~~构造函数~~创建函数，因为它需要的函数体作为字符串可能会阻止一些JS引擎优化，也会引起其他问题。
+    >2. 不推荐通过~~构造函数~~创建函数，因为作为字符串的函数体可能会阻止一些JS引擎优化，也会引起其他问题。
 4. 实例化（new）一个构造函数
 
-    `new`得到的对象拥有构造函数内用`this`定义的属性（或方法）以及原型链上的属性（或方法），在构造函数内`var`的变量和`function`无法被这个对象使用，只能在构造函数里使用（类似私有变量）。
+    `new`得到的实例对象，拥有构造函数内用`this`定义的属性和方法，且拥有构造函数的原型对象上的属性和方法（因为实例的`[[Prototype]]`指向`构造函数.prototype`）；在构造函数内`var`的变量和`function`无法被这个对象使用，只能在构造函数里使用（类似私有变量）。
 
     >相对于单全局变量，构造函数更加灵活，可以生成多个对象进行互相独立的操作。
 
@@ -1571,9 +1557,12 @@
         1. 创建一个空对象（假设为obj）：
 
             `var obj = {};`
-        2. 设置obj的`__proto__`为构造函数的原型：
+        2. 设置obj的`[[Prototype]]`指向构造函数的原型对象：
 
-            `obj.__proto__ = Func.prototype;`
+            `obj.__proto__ = Func.prototype;`或`Object.setPrototypeOf(obj, Func.prototype);`
+
+        >第一、二步骤也可以用`var obj = Object.create(Func.prototype);`代替。
+
         3. 使用obj作为上下文调用构造函数，并传入参数：
 
             `Func.call(obj, para);`
@@ -1664,20 +1653,23 @@
     3. 占用较多的内存。
 
 ### 原型
-1. 构造函数、原型、实例
+1. 构造函数、原型对象、实例、原型链
 
     1. 只有函数有`prototype`属性，指向函数的原型对象。
 
         互相连接：函数拥有`prototype`属性指向其原型对象，原型对象拥有`constructor`属性指向函数。
 
-        >构造函数通过`prototype`为实例存储要共享的属性和方法，也可设置`prototype`指向其他对象来继承该对象。
+        >构造函数通过`prototype`为实例存储要共享的属性和方法，可设置`prototype`指向其他对象来继承其他对象。
     2. 当构造函数实例化（`new`），该实例拥有`[[Prototype]]`属性，指向**构造函数的原型对象**。
 
-        >访问对象的`[[Prototype]]`属性：`对象.__proto__`（非标准）或`Object.getPrototypeOf/setPrototypeOf(对象)`。
+        >访问对象的`[[Prototype]]`属性：`对象.__proto__`（非标准）、`Object.getPrototypeOf/setPrototypeOf(对象)`。
     
         1. 连接存在于**实例**与**构造函数的原型对象**之间，而不直接存在于~~实例与构造函数~~之间。
         2. 内置构造函数的原型上有各种方法和属性，实例对象通过原型链进行调用。
     3. 每个引用数据类型都有`[[Prototype]]`属性，指向自己的构造函数的`prototype`。
+
+        >每个引用数据类型都显式或隐式由某个构造函数创建。
+    4. 不断向上的`[[Prototype]]`属性，构成了原型链。
 
         原型链终点是`null`，倒数第二是`Object.prototype`。
 
@@ -1830,9 +1822,8 @@
             2. [深复制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#深复制拷贝实现思路)。
 4. 存储、值传递步骤举例
 
-    e.g.
-
     ```javascript
+    /* e.g.*/
     var a = 'test1';            //i
     var b = {'key': 'test1'};   //ii
     var c = a;                  //iii
@@ -1880,7 +1871,7 @@
 >深复制要处理的坑：循环引用、各种引用数据类型。
 
 ### 内存泄漏
-> 内存泄露：计算机内存逐渐丢失。当某个程序总是无法释放内存时，出现内存泄露。JS有内存回收机制（[垃圾回收](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#垃圾回收)）。
+> 内存泄露：计算机内存逐渐丢失。当某个程序总是无法释放内存时，出现内存泄露。
 
 1. 全局变量不会被垃圾回收。
 2. 被闭包引用的变量不会被垃圾回收。
@@ -2030,7 +2021,7 @@
         2. 没有任何代码是立即执行的，但一旦进程空闲则尽快执行。
     3. 弥补单线程计算量太大、事件耗时太久影响浏览器体验：
 
-        1. 产生**Web Worker**标准，允许在后台创建多个线程，但完全受主线程控制，且不能~~操作DOM~~。
+        1. 新增**Web Worker**标准，允许在后台创建多个线程，但完全受主线程控制，且不能~~操作DOM~~。
         2. 还有其他工作线程（异步），分别处理：**AJAX**、**DOM事件**、**定时器**、**读写文件**。
 2. 任务类型
 

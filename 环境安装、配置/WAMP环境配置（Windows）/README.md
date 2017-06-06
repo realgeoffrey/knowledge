@@ -12,7 +12,7 @@
 	程序安装好并启动，右击系统托盘中WampServer图标，选择 **language->chinese** 。
 3. 配置 www 目录
 
-	进入程序所在的文件夹，找到 *..\wamp\Scripts* 下的 **config.inc.php**，文本打开并找到`$wwwDir`（默认为安装目录的 www 文件夹），修改为自定义位置`$wwwDir = 'E:/www;'`，如图：
+	进入程序所在的文件夹，找到 *..\wamp\Scripts* 下的 **config.inc.php**，文本打开并找到`$wwwDir`（默认为安装目录的 www 文件夹），修改为自定义位置`$wwwDir = 'E:/www'`，如图：
 
 	![WAMP图](./images/1.png)
 	
@@ -25,9 +25,16 @@
 	>请先确保系统中存在此文件夹。
 4. 配置 Apache Web 服务器
 
-	设置主目录：左击系统托盘中的WampServer，选择 **Apache->httpd.conf** 配置文件。找到`DocumentRoot`，设置为`DocumentRoot "E:/www"`；找到`<Directory "${INSTALL_DIR}/www/">`，设置为`<Directory "E:/www/">`：
+	1. 设置主目录
 
-	![WAMP图](./images/2.png)
+	    左击系统托盘中的WampServer，选择 **Apache->httpd.conf** 配置文件。找到`DocumentRoot`，设置为`DocumentRoot "E:/www"`；找到`<Directory "${INSTALL_DIR}/www/">`，设置为`<Directory "E:/www/">`：
+
+	    ![WAMP图](./images/2.png)
+	2. 启动
+
+        若Apache没有启动，则左击系统托盘中的WampServer，选择 **Apache->Service administration->安装服务**再选择**启动/继续服务**：
+
+        ![WAMP图](./images/5.png)
 5. 配置 PHP 解释器
 
     左击系统托盘中的WampServer，选择 **PHP->PHP 设置** ，依次点击下图右边所示的那些允许启用的项（设置完一个后等待服务器完全重启再进行下一个设置），不同系统服务可能不同。

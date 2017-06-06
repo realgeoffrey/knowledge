@@ -1,4 +1,4 @@
-var imagemin = require('gulp-imagemin'), //imagemin
+const imagemin = require('gulp-imagemin'), //imagemin
     svgo = require('imagemin-svgo'), //svg压缩
     gifsicle = require('imagemin-gifsicle'), //gif压缩
     jpegtran = require('imagemin-jpegtran'), //jpg压缩
@@ -6,8 +6,8 @@ var imagemin = require('gulp-imagemin'), //imagemin
     optipng = require('imagemin-optipng'), //png压缩
     sourcemaps = require('gulp-sourcemaps'), //source map
     concat = require('gulp-concat'), //合并文件
-    nano = require('gulp-cssnano'), //css压缩
-    postcss = require('gulp-postcss'), //css工具
+    cssnano = require('gulp-cssnano'), //css压缩
+    postcss = require('gulp-postcss'), //css单解析工具
     autoprefixer = require('autoprefixer'), //添加css厂家前缀
     px2rem = require('postcss-px2rem'), //px转rem
     rename = require('gulp-rename'), //重命名
@@ -17,11 +17,13 @@ var imagemin = require('gulp-imagemin'), //imagemin
     fontmin = require('gulp-fontmin'), //字体子集化
     uglify = require('gulp-uglify'), //js压缩
     babel = require('gulp-babel'), //转换编译
-    browserSync = require('browser-sync').create(), //浏览器同步测试工具
+    env = require('babel-preset-env'),    //babel环境预设
+    browserSync = require('browser-sync').create('forGulp'), //浏览器同步测试工具
+    del = require('del'), //删除文件（夹）
     gulp = require('gulp');
 
 /* 图片压缩*/
-gulp.task('runImage', function () {
+gulp.task('runImage', () => {
     gulp.src(['../images/dev/**'])
         .pipe(
             imagemin([
@@ -36,25 +38,31 @@ gulp.task('runImage', function () {
 
 
 /* css：[合并]、压缩、添加厂商前缀、重命名、添加timestamp、source map*/
-gulp.task('runCss', function () {
+gulp.task('runCss', () => {
     gulp.src(['../css/dev/**/*.css'])
         .pipe(sourcemaps.init())
         //.pipe(concat('all.css'))
-        .pipe(nano({
-            discardUnused: false,
-            zindex: false,
-            reduceIdents: false,
-            mergeIdents: false
+        .pipe(cssnano({
+            discardUnused: false,   //去除未使用的CSS内容
+            zindex: false,  //重新排序z-index
+            reduceIdents: false,    //重命名@keyframes
+            mergeIdents: false  //合并相同规则但不同命名的@keyframes
         }))
         .pipe(postcss([autoprefixer()]))
-        .pipe(rename({suffix: '.min'}))
+        .pipe(rename({
+            //dirname: 'css/rename',  //路径
+            //basename: 'file',  //原本名字
+            //prefix: 'pre-', //basename的前缀
+            suffix: '.min' //basename的后缀
+            //extname: '.scss'  //扩展名
+        }))
         .pipe(makeUrlVer({useDate: true}))  //不被gulp-sourcemaps支持
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('../css/release/'));
 });
 
 /* scss：转译压缩css、添加厂商前缀、添加timestamp、source map*/
-gulp.task('runScss', function () {
+gulp.task('runScss', () => {
     gulp.src(['../scss/dev/**/*.scss'])
         .pipe(sourcemaps.init())
         .pipe(
@@ -74,7 +82,7 @@ gulp.task('runScss', function () {
  * 对结尾带有“px”的注释，转化为[data-dpr="1~3"] 对象{px值}
  * 对结尾带有“no”的注释，不进行转换
  */
-gulp.task('runPx2rem', function () {
+gulp.task('runPx2rem', () => {
     gulp.src(['../px2rem/dev/**/*.css'])
         .pipe(postcss([px2rem({
             remUnit: 20,    //px->rem除以的数
@@ -85,7 +93,7 @@ gulp.task('runPx2rem', function () {
 });
 
 /* 多图 -> 雪碧图 + 样式表*/
-gulp.task('runSprites', function () {
+gulp.task('runSprites', () => {
     /* PC端*/
     gulp.src('../sprites/dev/*')
         .pipe(spritesmith({
@@ -109,16 +117,17 @@ gulp.task('runSprites', function () {
         .pipe(gulp.dest('../sprites/release/'));
 });
 
+
 /* ttf -> 多个兼容字体 + 样式表*/
-gulp.task('runFont', function (cb) {
-    var buffers = [];
+gulp.task('runFont', cb => {
+    const buffers = [];
 
     gulp.src(['../font/dev/*.html'])    /* 传入需要提取字体的页面，没有页面则所有字*/
-        .on('data', function (file) {
+        .on('data', file => {
             buffers.push(file.contents);
         })
-        .on('end', function () {
-            var text = Buffer.concat(buffers).toString('utf-8');
+        .on('end', () => {
+            const text = Buffer.concat(buffers).toString('utf-8');
             gulp.src(['../font/dev/*.ttf']) //只能传入ttf类型
                 .pipe(fontmin({text: text}))
                 .pipe(gulp.dest('../font/release/'))
@@ -128,25 +137,31 @@ gulp.task('runFont', function (cb) {
 
 
 /* js：[合并]、压缩、重命名、source map*/
-gulp.task('runJs', function () {
+gulp.task('runJs', () => {
     gulp.src(['../js/dev/**/*.js'])
         .pipe(sourcemaps.init())
         //.pipe(concat('all.js'))
         .pipe(uglify({
-            mangle: true, //是否混淆变量名
-            compress: true  //是否完全压缩
+            mangle: true, //混淆变量名
+            ie8: false  //支持IE8
         }))
-        .pipe(rename({suffix: '.min'}))
+        .pipe(rename({
+            //dirname: 'js/rename',  //路径
+            //basename: 'file',  //原本名字
+            //prefix: 'pre-', //basename的前缀
+            suffix: '.min' //basename的后缀
+            //extname: '.ts'  //扩展名
+        }))
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('../js/release/'));
 });
 
 /* ES6 -> ES5*/
-gulp.task('runBabel', function () {
+gulp.task('runBabel', () => {
     gulp.src(['../babel/dev/**/*.js'])
         .pipe(sourcemaps.init())
         .pipe(babel({
-            presets: ['../../tools/node_modules/babel-preset-es2015'] //打包了ES6的特性
+            presets: [env] //打包了ES6的特性
         }))
         //.pipe(concat('all.js'))
         .pipe(sourcemaps.write('.'))
@@ -159,7 +174,7 @@ gulp.task('default', ['runImage', 'runCss', 'runScss', 'runPx2rem', 'runSprites'
 
 
 /* 监视文件，自动执行*/
-gulp.task('watch', function () {
+gulp.task('watch', () => {
     gulp.watch(['../images/dev/**'], ['runImage']);
     gulp.watch(['../css/dev/**/*.css'], ['runCss']);
     gulp.watch(['../scss/dev/**/*.scss'], ['runScss']);
@@ -172,15 +187,41 @@ gulp.task('watch', function () {
 
 
 /* 监听代理服务器*/
-gulp.task('browserSync', function () {
+gulp.task('browserSync', () => {
     browserSync.init({
-        //proxy: 'localhost'  //服务器
-        server: '../../www/' //相对地址
+        ui: {
+            port: 3001  //UI端口号
+        },
+        port: 3000, //端口号
+        //proxy: { //服务器
+        //    target: 'localhost'
+        //},
+        server: {   //相对地址
+            baseDir: '../../www/'
+        }
     });
+
     gulp.watch([
         '../../www/**/*.html',
         '../../www/**/js/**/*.js',
         '../../www/**/css/**/*.css',
         '../../www/**/images/**'
     ]).on('change', browserSync.reload);    //刷新浏览器
+});
+
+
+/* 删除文件（夹）*/
+gulp.task('delRelease', () => {
+    del([
+        '../images/release/**', '!../images/release',
+        '../css/release/**', '!../css/release',
+        '../scss/release/**', '!../scss/release',
+        '../px2rem/release/**', '!../px2rem/release',
+        '../sprites/release/**', '!../sprites/release',
+        '../font/release/**', '!../font/release',
+        '../js/release/**', '!../js/release',
+        '../babel/release/**', '!../babel/release'
+    ], {force: true}).then(paths => {
+        console.log('已经删除的文件或文件夹:\n', paths.join('\n'));
+    });
 });

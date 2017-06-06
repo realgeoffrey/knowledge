@@ -12,17 +12,33 @@
     shasum 文件  #或sha1sum
     ```
 
-### [NVM](https://github.com/creationix/nvm)更新Node.js版本
-```bash
-nvm list-remote
-nvm install v新版本号
-nvm use v新版本号
-nvm alias default v新版本号
+### nvm更新Node.js版本
+1. macOS或Linux的[nvm](https://github.com/creationix/nvm)：
 
-nvm list
-nvm uninstall v旧版本号
-```
->需重装Node.js模块包。
+    ```bash
+    nvm list-remote
+    nvm install v新版本号
+    nvm use v新版本号
+    nvm alias default v新版本号
+
+    nvm list
+    nvm uninstall v旧版本号
+    ```
+2. Windows的[nvm-windows](https://github.com/coreybutler/nvm-windows)：
+
+    ```bash
+    nvm node_mirror https://npm.taobao.org/mirrors/node/    #设置node源：
+    nvm npm_mirror https://npm.taobao.org/mirrors/npm/      #设置npm源：
+
+    nvm list available
+    nvm install v新版本号
+    nvm use v新版本号
+
+    nvm list
+    nvm uninstall v旧版本号
+    ```
+
+>切换版本之后需重装Node.js模块包。
 
 ### 其他命令
 1. ping地址测试

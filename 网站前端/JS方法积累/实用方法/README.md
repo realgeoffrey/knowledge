@@ -611,22 +611,22 @@ function isKeyInStr(key, str, separator) {
  * @returns {Number} - 上下限区间内的随机值
  */
 function randomFrom(min, max) {
-    var medium;
+    var temp;
 
     if (min > max) {
-        medium = min;
+        temp = min;
         min = max;
-        max = medium;
+        max = temp;
     }
 
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 ```
->`Math.random()`返回`[0, 1)`。假设返回的值的开闭区间改变：
+>`Math.random()`返回`[0,1)`。假设返回的值的开闭区间改变：
 >
->1. 如果返回的是：`(0, 1)`，则返回`Math.floor(Math.random() * (max - min + 2) + min - 1);`。
->2. 如果返回的是：`(0, 1]`，则返回`Math.floor(Math.random() * (max - min + 1) + min - 1);`。
->3. 如果返回的是：`[0, 1]`，则返回`Math.floor(Math.random() * (max - min) + min);`。
+>1. 如果返回的是：`(0,1)`，则返回`Math.floor(Math.random() * (max - min + 2) + min - 1);`。
+>2. 如果返回的是：`(0,1]`，则返回`Math.floor(Math.random() * (max - min + 1) + min - 1);`。
+>3. 如果返回的是：`[0,1]`，则返回`Math.floor(Math.random() * (max - min) + min);`。
 
 ### *原生JS*产生随机数
 ```javascript
@@ -2050,6 +2050,7 @@ function ShowFPS(dom) {
     if (!dom) {
         dom = document.createElement('span');
         dom.style.position = 'fixed';
+        dom.style.top = '0';
         document.getElementsByTagName('body')[0].appendChild(dom);
     }
 

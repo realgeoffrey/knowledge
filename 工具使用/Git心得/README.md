@@ -37,6 +37,36 @@
     ```
     >如果已经克隆过的仓库，仅需要修改`.git/config`文件夹内的`url`仓库地址即可。
 
+### 设置gitconfig
+1. 用户名和邮箱
+
+    1. 全局设置
+
+        ```bash
+        git config --global user.email 邮箱
+        git config --global user.name 用户名
+        ```
+    2. 为具体项目设置
+
+        ```bash
+        cd 进入某个git仓库
+        git config user.email 邮箱
+        git config user.name 用户名
+        ```
+2. 全局忽略文件
+
+    1. 添加忽略文件
+
+        ```bash
+        git config --global core.excludesfile ~/.gitignoreglobal
+        ```
+    2. 打开添加的文件.gitignoreglobal，填写要全局忽略的文件（夹）
+
+        e.g.
+        ```bash
+        .idea
+        ```
+
 ### 减少Git项目下载大小
 1. 处理版本中已push的commits
 
@@ -94,20 +124,6 @@
 3. 减少克隆深度
 
     `git clone 仓库地址 --depth 数字`
-
-### 设置git全局忽略文件
-1. 打开 **.gitconfig**文件，添加
-
-    ```bash
-    [core]
-	excludesfile = 忽略文件地址，如.gitignoreglobal
-    ```
-2. 打开添加的文件地址，填写要全局忽略的文件（夹）
-
-    e.g.
-    ```bash
-    .idea
-    ```
 
 ### 恢复内容
 1. 未提交的内容清空、恢复
