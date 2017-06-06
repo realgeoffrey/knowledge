@@ -579,7 +579,22 @@
             | 刷新 | **无效** | 有效 |
             | 强制刷新 | **无效** | **无效** |
 
-### HTTP长连接、WebSocket
+### 基于HTTP的功能追加的技术或协议
+1. AJAX
+
+    异步加载，局部更新。
+2. Comet
+
+    延迟响应。
+3. SPDY
+4. WebSocket
+
+    1. 服务器可以主动推送。
+    2. 持久连接。
+5. HTTP/2.0
+6. WebDAV
+
+### HTTP长连接、WebSocket、HTTP/2.0
 >短连接：每一个HTTP请求都要建立单独的TCP连接，然后断开。
 
 1. 持久连接（HTTP Persistent Connections，HTTP keep-alive，HTTP connection reuse）
@@ -599,6 +614,22 @@
     3. 头部信息小，减少通信量。
 
     >BrowserSync利用WebSocket，当监控的文件MD5发生变化时，向客户端发送刷新页面指令。
+3. HTTP/2.0
+
+    >主要基于SPDY协议演变而来。
+
+    与HTTP/1.1完全语义兼容，进一步减少网络延迟:
+
+    1. 多路复用（multiplexing）
+
+        >流（stream）、帧（frame）。
+
+        允许同时通过单一的连接发起多重请求-响应。
+    2. 二进制分帧
+
+        在应用层（HTTP/2）和传输层（TCP/UDP）间增加一个二进制分帧层。
+    3. 头部压缩（header compression）。
+    4. 服务端推送（server push）。
 
 ### HTTPS
 1. HTTP不足
@@ -629,21 +660,6 @@
 
     1. SSL处理速度变慢：通信速度降低、消耗大量CPU和内存。
     2. 证书需要购买。
-
-### 基于HTTP的功能追加的技术或协议
-1. AJAX
-
-    异步加载，局部更新。
-2. Comet
-
-    延迟响应。
-3. SPDY
-4. WebSocket
-
-    1. 服务器可以主动推送。
-    2. 持久连接。
-5. HTTP/2.0
-6. WebDAV
 
 ### 服务端验证用户状态
 HTTP是无状态协议，通过session-cookie、token判断客户端的用户状态。
@@ -730,4 +746,4 @@ HTTP是无状态协议，通过session-cookie、token判断客户端的用户状
         | 协议头部字节数 | 20字节。 | 8字节。 |
         | 传输速度 | 慢（需要建立连接、保证可靠性、有序性） | 快 |
 
-    在注重性能、传输速度且不需要重传的应用（如视频电话、即时通讯），会选择使用UDP。其他情况，when in doubt, use tcp。
+    在注重性能、传输速度且不需要重传的应用（如视频电话、即时通讯），会选择使用UDP。其他情况，when in doubt, use TCP。

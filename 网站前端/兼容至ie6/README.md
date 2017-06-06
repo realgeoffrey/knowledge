@@ -131,7 +131,7 @@
 
         <script>
             ue.gototop({
-                relative: $('.content_wrapper'),	// 相对定位的对象
+                relative: $('.content-wrapper'),	// 相对定位的对象
                 target: $('#j-sidenav'),	// gototop对象，必须设置具体width
                 top/bottom: 270,	// 距离顶部或底部的高度
                 left/right: 25,	// 距离相对定位对象的距离

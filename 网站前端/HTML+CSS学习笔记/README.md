@@ -688,6 +688,11 @@
 <a style="pointer-events: none;">禁用鼠标和键盘的链接</a>
 ```
 
+### 插件避免被其他样式污染方法
+1. 与页面不同的样式命名。
+2. shadow DOM。
+3. `<iframe>`。
+
 ---
 ## 经验总结
 
@@ -934,12 +939,12 @@
 
     ```html
     <style type="text/css">
-        .float_l {
+        .float-l {
             float: left;
             _display: inline;
             width: 左边块宽度;
         }
-        .float_r {
+        .float-r {
             float: right;
             _display: inline;
             width: 右边块宽度;
@@ -951,8 +956,8 @@
     </style>
 
     <div class="clearfix">
-        <div class="float_l">左边内容</div>
-        <div class="float_r">右边内容</div>
+        <div class="float-l">左边内容</div>
+        <div class="float-r">右边内容</div>
         <div class="middle">中间内容</div>
     </div>
     ```
@@ -965,36 +970,36 @@
 
     ```html
     <style type="text/css">
-        .main_out,
-        .float_l,
-        .float_r {
+        .main-out,
+        .float-l,
+        .float-r {
             float: left;
             _display: inline;
         }
-        .middle_out {
+        .middle-out {
             width: 100%;
         }
-        .middle_in {
+        .middle-in {
             margin: 0 大于等于右边块宽度 0 大于等于左边块宽度;
         }
-        .float_l {
+        .float-l {
             width: 左边块宽度;
             margin-left: -100%;
         }
-        .float_r {
+        .float-r {
             width: 右边块宽度;
             margin-left: -左边块宽度;
         }
     </style>
 
     <div class="clearfix">
-        <div class="middle_out">
-            <div class="middle_in">
+        <div class="middle-out">
+            <div class="middle-in">
                 中间内容
             </div>
         </div>
-        <div class="float_l">左边内容</div>
-        <div class="float_r">右边内容</div>
+        <div class="float-l">左边内容</div>
+        <div class="float-r">右边内容</div>
     </div>
     ```
 
@@ -1004,11 +1009,11 @@
 
     ```html
     <style type="text/css">
-        .float_l {
+        .float-l {
             float: left;
             _display: inline;
         }
-        .float_r {
+        .float-r {
             float: right;
             _display: inline;
         }
@@ -1021,8 +1026,8 @@
     </style>
 
     <div class="clearfix">
-        <div class="float_l">左边内容</div>
-        <div class="float_r">右边内容（没有足够空间则整体换行）</div>
+        <div class="float-l">左边内容</div>
+        <div class="float-r">右边内容（没有足够空间则整体换行）</div>
         <div class="middle">中间内容（没有足够空间则整体换行）</div>
     </div>
     ```

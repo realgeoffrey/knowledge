@@ -95,6 +95,18 @@
 
 >无论阻塞渲染还是阻塞解析，资源文件会不间断按顺序加载。
 
+- 判断JS、CSS文件是否加载完毕：
+
+    1. JS
+
+        1. 监听文件的`load`事件，触发则加载完成。
+        2. 监听JS文件的`readystatechange`事件，当文件的`readyState`值为`loaded/complete`则JS加载完成。
+    2. CSS
+
+        1. 监听文件的`load`事件，触发则加载完成。
+        2. 轮询CSS文件的`cssRules`属性是否存在，当存在则CSS加载完成。
+        3. 写一个特殊样式，轮询判断这个样式是否出现，来判断CSS加载完成。
+
 ### 浏览器缓存
 1. [HTTP定义的缓存机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)
 2. 其他缓存机制（不建议方式）
@@ -151,29 +163,7 @@
 
         前端对具体代码性能、CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）的优化。
 
-        1. 技术上优化：
-
-            1. CSS性能：
-
-                1. [CSS选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
-                2. [渲染性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)
-
-                    1. 减少重绘和重排。
-                    2. 合理触发GPU加速。
-                    3. 尽量仅使用`opacity`、`transform: translate/scale/rotate/skew`动画。
-            2. JS代码性能优化：
-
-                1. 使用性能好的代码方式
-
-                    1. 字面量创建数据。
-                    2. 缓存DOM的选择、缓存列表.length。
-                    3. [闭包合理使用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)。
-                    4. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)。
-                2. 尽量使用事件代理，避免批量绑定事件。
-                3. [定时器取舍，合理使用重绘函数代替](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)。
-                4. 高频事件（如`scroll`、`mousemove`、`touchmove`）使用[函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)，避免在高频事件中进行运行时间长的代码。
-                5. 使用`Web Worker`处理复杂的计算。
-        2. 优化CRP：
+        1. 优化CRP：
 
             1. 减少关键资源、减少HTTP请求：
 
@@ -202,6 +192,28 @@
             3. 缩短CRP长度：
 
                 CSS放在HTML顶部，JS放在HTML底部。
+        2. 技术上优化：
+
+            1. CSS性能：
+
+                1. [CSS选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
+                2. [渲染性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)
+
+                    1. 减少重绘和重排。
+                    2. 动画合理触发GPU加速。
+                    3. 尽量仅使用`opacity`、`transform: translate/scale/rotate/skew`处理动画。
+            2. JS代码性能优化：
+
+                1. 使用性能好的代码方式
+
+                    1. 字面量创建数据。
+                    2. 缓存DOM的选择、缓存列表.length。
+                    3. [闭包合理使用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)。
+                    4. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)。
+                2. 尽量使用事件代理，避免批量绑定事件。
+                3. [定时器取舍，合理使用重绘函数代替](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)。
+                4. 高频事件（如`scroll`、`mousemove`、`touchmove`）使用[函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)，避免在高频事件中进行运行时间长的代码。
+                5. 使用`Web Worker`处理复杂的计算。
 2. 网络应用的生命期建议：
 
     1. load
