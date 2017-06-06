@@ -54,7 +54,7 @@
             1. 配置超长时间的本地缓存 —— 节省带宽，提高性能
             2. 采用内容摘要（MD5）作为缓存更新依据 —— 精确的缓存控制
             3. 静态资源CDN部署 —— 优化网络请求
-            4. 资源发布路径实现非覆盖式发布 —— 平滑升级
+            4. 非覆盖式更新资源 —— 平滑升级
 
 ### 页面载入解析步骤
 >参考[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)。
@@ -123,11 +123,86 @@
 2. 由“增量”原则引申出的前端优化技巧几乎成为了**性能优化**的核心：
 
     1. 加载相关：延迟加载、AJAX加载、按需加载、预加载、请求合并压缩等策略。
-    2. 缓存相关：缓存更新、缓存共享、非覆盖式发布等方案。
+    2. 缓存相关：缓存更新、缓存共享、非覆盖式更新资源等方案。
     3. 复杂的BigRender、BigPipe、Quickling、PageCache等技术。
 
 ### 网站性能优化
-1. 网络应用的生命期建议：
+1. 从输入URL到页面完成的具体优化：
+
+    >性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#前端工程化)问题。
+
+    1. URL输入：
+
+        服务端对HTTP请求、资源发布和缓存、服务器配置的优化。
+
+        1. 服务器开启gzip。
+
+            >前端查看Response头是否有：`Content-Encoding:gzip`。
+        2. 减少DNS查找，设置合适的TTL值，避免重定向。
+        3. 使用CDN。
+        4. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#静态资源使用额外域名domain-hash的原因)，减少cookie。
+        5. 对资源进行缓存：
+
+            1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
+            2. 使用[缓存相关的HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：`Expires`、`Cache-Control`、`Last-Modified/If-Modified-Since`、`ETag/If-None-Match`。
+            3. 配置超长时间的本地缓存，采用内容摘要（MD5）作为缓存更新依据。
+        6. [非覆盖式更新资源](https://github.com/fouber/blog/issues/6)。
+    2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#页面载入解析步骤)：
+
+        前端对具体代码性能、CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）的优化。
+
+        1. 技术上优化：
+
+            1. CSS性能：
+
+                1. [CSS选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
+                2. [渲染性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)
+
+                    1. 减少重绘和重排。
+                    2. 合理触发GPU加速。
+                    3. 尽量仅使用`opacity`、`transform: translate/scale/rotate/skew`动画。
+            2. JS代码性能优化：
+
+                1. 使用性能好的代码方式
+
+                    1. 字面量创建数据。
+                    2. 缓存DOM的选择、缓存列表.length。
+                    3. [闭包合理使用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)。
+                    4. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)。
+                2. 尽量使用事件代理，避免批量绑定事件。
+                3. [定时器取舍，合理使用重绘函数代替](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)。
+                4. 高频事件（如`scroll`、`mousemove`、`touchmove`）使用[函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)，避免在高频事件中进行运行时间长的代码。
+                5. 使用`Web Worker`处理复杂的计算。
+        2. 优化CRP：
+
+            1. 减少关键资源、减少HTTP请求：
+
+                1. 资源合并、去重。
+                2. 非首屏资源延迟异步加载：
+
+                    1. 增量加载资源：
+
+                        1. [图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)。
+                        2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto滚动加载)）。
+                        3. 功能文件按需加载（模块化、组件化）。
+                    2. 使AJAX可缓存（当用GET方式时添加缓存响应头）。
+                3. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
+                4. 第三方资源异步加载。
+                5. 避免使用空链接（依旧会请求）。
+            2. 最小化字节：
+
+                1. 压缩资源。
+                2. 图片优化
+
+                    1. 压缩。
+                    2. 小图合并雪碧图。
+
+                        >大图切小图：单个大文件需要多次HTTP请求获取。
+                    3. 合理使用Base64、使用WebP、使用`srcset`属性。
+            3. 缩短CRP长度：
+
+                CSS放在HTML顶部，JS放在HTML底部。
+2. 网络应用的生命期建议：
 
     1. load
 
@@ -141,76 +216,8 @@
     4. response
 
         100ms内对用户的操作做出响应。
-2. 优化原则与指南
 
-    >来自[张云龙：前端工程与性能优化](https://github.com/fouber/blog/issues/3)。
-
-    | 优化方向 | 优化手段 |
-    | :--- | :--- |
-    | 请求数量 | 合并脚本和样式表，雪碧图，拆分初始化负载，划分主域 |
-    | 请求带宽 | 开启gzip，资源压缩、去重，图像优化 |
-    | 缓存利用 | 使用CDN，使用外部JS和CSS，HTTP头添加缓存相关内容，减少DNS查找，使AJAX可缓存 |
-    | 页面结构 | 将样式表放在顶部、脚本放在底部，尽快完成文档渲染 |
-    | 代码校验 | 避免CSS表达式，避免重定向 |
-3. 从输入URL到页面完成的具体优化：
-
-    >性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#前端工程化)问题。
-
-    1. URL输入：
-
-        服务端对HTTP请求、资源发布和缓存、服务器配置的优化。
-
-        1. 服务器开启gzip。
-
-            >前端查看Response头是否有：`Content-Encoding:gzip`。
-        2. 使用CDN。
-        3. 对资源进行缓存：
-
-            1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
-            2. 使用[缓存相关的HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：Expires、Cache-Control、Last-Modified/If-Modified-Since、ETag/If-None-Match。
-        4. 减少DNS查找，设置合适的TTL值，避免重定向。
-        5. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#静态资源使用额外域名domain-hash的原因)。
-        6. [非覆盖式发布](https://github.com/fouber/blog/issues/6)。
-    2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#页面载入解析步骤)：
-
-        前端对具体代码性能、CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）的优化。
-
-        1. 技术上优化：
-
-            1. CSS性能：
-
-                1. [CSS选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
-                2. [渲染性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)。
-            2. JS代码性能优化：
-
-                1. 使用性能好的代码方式（如：字面量创建数据、减少访问DOM、[定时器取舍](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)等）。
-                2. [闭包合理使用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)。
-                3. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)。
-                4. [函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)。
-        2. 优化CRP：
-
-            1. 减少关键资源：
-
-                1. 资源合并、去重。
-                2. 非首屏资源延迟异步加载：
-
-                    1. 增量加载资源：
-
-                        1. [图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto图片延时加载)。
-                        2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery或zepto滚动加载)）。
-                        3. 功能文件按需加载（模块化、组件化）。
-                    2. 使AJAX可缓存（当用GET方式时添加缓存响应头）。
-                3. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-            2. 最小化字节：
-
-                1. 压缩资源。
-                2. 图片优化
-
-                    压缩、大图切小图、小图合并雪碧图、Base64、WebP。
-                >单个大文件需要多次与服务器往返来获取。
-            3. 缩短CRP长度：
-
-                CSS放在HTML顶部，JS放在HTML底部。
+>优先优化对性能影响大的部分。
 
 ### 静态资源使用额外域名（domain hash）的原因
 1. cookie free
