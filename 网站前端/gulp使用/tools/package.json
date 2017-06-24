@@ -1,26 +1,30 @@
 {
   "dependencies": {
-    "autoprefixer": "^6.7.7",
-    "babel-preset-es2015": "^6.24.1",
-    "browser-sync": "^2.18.8",
+    "autoprefixer": "^7.1.1",
+    "babel-preset-env": "^1.5.2",
+    "browser-sync": "^2.18.12",
+    "del": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-concat": "^2.6.1",
     "gulp-cssnano": "^2.1.2",
     "gulp-fontmin": "^0.7.4",
-    "gulp-imagemin": "^3.2.0",
+    "gulp-imagemin": "^3.3.0",
     "gulp-make-css-url-version": "^0.0.13",
-    "gulp-postcss": "^6.4.0",
+    "gulp-postcss": "^7.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.0",
-    "gulp-uglify": "^2.1.2",
-    "gulp.spritesmith": "^6.4.0",
+    "gulp-uglify": "^3.0.0",
+    "gulp.spritesmith": "^6.5.0",
     "imagemin-gifsicle": "^5.1.0",
     "imagemin-jpegtran": "^5.0.2",
     "imagemin-optipng": "^5.2.1",
-    "imagemin-pngquant": "^5.0.0",
-    "imagemin-svgo": "^5.2.1",
+    "imagemin-pngquant": "^5.0.1",
+    "imagemin-svgo": "^5.2.2",
     "postcss-px2rem": "^0.3.0"
+  },
+  "scripts": {
+    "runGulp": "gulp"
   }
 }
