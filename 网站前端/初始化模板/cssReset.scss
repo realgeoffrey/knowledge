@@ -8,7 +8,7 @@ h1,h2,h3,h4,h5,h6 {font-size:100%;font-weight:500;}
 a,ins {text-decoration:none;}
 a {background-color:transparent;}
 a:active,a:hover {outline-width:0;}
-audio,canvas,video,progress {display:inline-block;*display:inline;*zoom:1;}
+audio,canvas,video,progress {display:inline-block;}
 article,aside,details,figcaption,figure,footer,header,menu,nav,section,iframe,main {display:block;}
 summary {display:list-item;}
 template,[hidden] {display:none;}
@@ -60,177 +60,153 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
 
 /* -富文本需重载*/
 .富文本类 em {
-    font-style: italic;
+  font-style: italic;
 }
 .富文本类 ol {
-    list-style-type: decimal;
-    list-style-position: inside;
+  list-style-type: decimal;
+  list-style-position: inside;
 }
 .富文本类 ul {
-    list-style-type: disc;
-    list-style-position: inside;
+  list-style-type: disc;
+  list-style-position: inside;
 }
 .富文本类 table {
-    table-layout: fixed;
-    text-align: center;
+  table-layout: fixed;
+  text-align: center;
 }
 /*/-富文本需重载*/
 /*/CSS reset*/
 
 /* scss的@mixin、@function*/
-@mixin inline-block($width:false, $height:false) {
-    @if $width != false {
-        width: $width;
-    }
-    @if $height != false {
-        height: $height;
-    }
-    display: inline-block;
-    *display: inline;
-    *zoom: 1;
-}
-@mixin left {
-    float: left;
-    _display: inline;
-}
-@mixin right {
-    float: right;
-    _display: inline;
-}
 @mixin clearfix {
-    *zoom: 1;
 
-    &:after {
-        content: "";
-        display: table;
-        clear: both;
-    }
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
 }
 @mixin bfc {
-    *zoom: 1;
 
-    &:before,
-    &:after {
-        content: "";
-        display: table;
-    }
+  &:before,
+  &:after {
+    content: "";
+    display: table;
+  }
 }
-@mixin ellipsis($boolean: true) {
-    @if $boolean == true {
-        _width: 100%;
-    }
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+@mixin ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 @mixin multi-ellipsis($line-height, $line) {
-    line-height: $line-height;
-    height: $line-height * $line;
-    display: block;
-    display: -webkit-box;
-    *display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: $line;
+  line-height: $line-height;
+  height: $line-height * $line;
+  display: block;
+  display: -webkit-box;
+  *display: block; /* todo test*/
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $line;
 }
 @mixin img-bg {
-    background: url(背景图大) 颜色 center center no-repeat;
-    background-image: url(背景图小)\9;
-    background-size: contain;
+  background: url(背景图大) 颜色 center center no-repeat;
+  background-image: url(背景图小)\9;
+  background-size: contain;
 }
 /* -x+y轴排列且等大雪碧图（参数：单图宽、高、x轴图片数量、y轴图片数量、图片间距）*/
 @mixin sprites-xy($width, $height, $x, $y, $gap: 2) {
-    width: #{$width}px;
-    height: #{$height}px;
-    background-image: url(图片前缀_#{$width}x#{$height}.png);
-    background-repeat: no-repeat;
+  width: #{$width}px;
+  height: #{$height}px;
+  background-image: url(图片前缀_#{$width}x#{$height}.png);
+  background-repeat: no-repeat;
 
-    //$i：横轴；$j：纵轴
-    @for $j from 1 through $y {
-        @for $i from 1 through $x {
-            &.i-#{$j}-#{$i} {
-                background-position: #{-($width + $gap)*($i - 1)}px #{-($height + $gap)*($j - 1)}px;
-            }
-        }
+  //$i：横轴；$j：纵轴
+  @for $j from 1 through $y {
+    @for $i from 1 through $x {
+      &.i-#{$j}-#{$i} {
+        background-position: #{-($width + $gap)*($i - 1)}px #{-($height + $gap)*($j - 1)}px;
+      }
     }
+  }
 }
 /*/-x+y轴排列且等大雪碧图*/
 /* -不同分辨率图片*/
 @mixin image($url) {
-    background-image: url($url + "@1.png");
+  background-image: url($url + "@1.png");
 
-    @media (min-resolution: 2dppx) {
-        background-image: url($url + "@2.png");
-    }
+  @media (min-resolution: 2dppx) {
+    background-image: url($url + "@2.png");
+  }
 
-    @media (min-resolution: 3dppx) {
-        background-image: url($url + "@3.png");
-    }
+  @media (min-resolution: 3dppx) {
+    background-image: url($url + "@3.png");
+  }
 }
 /*/-不同分辨率图片*/
 /* -rem*/
 @function rem($px, $base-font-size: 20px) {
-    @if unitless($px) {
-        @return rem($px + 0px);
-    }
-    @if unit($px) != "px" {
-        @error "rem()的参数单位必须是px或不带单位";
-    }
+  @if unitless($px) {
+    @return rem($px + 0px);
+  }
+  @if unit($px) != "px" {
+    @error "rem()的参数单位必须是px或不带单位";
+  }
 
-    //$base-font-size：切图时设计稿宽度对应的媒体查询中html的font-size
-    @return $px / $base-font-size + rem;
+  //$base-font-size：切图时设计稿宽度对应的媒体查询中html的font-size
+  @return $px / $base-font-size + rem;
 }
 @mixin multi-ellipsis-rem($line-height, $line) {
-    line-height: rem($line-height);
-    //max-height: rem($line-height * $line);
-    height: rem($line-height * $line);
-    display: block;
-    display: -webkit-box;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: $line;
+  line-height: rem($line-height);
+  //max-height: rem($line-height * $line);
+  height: rem($line-height * $line);
+  display: block;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $line;
 }
 @function position-one($positon, $singleSize, $spritesSize) {
-    @if $positon == 0 {
-        @return 0;
-    } @else {
-        @return percentage($positon / ($spritesSize - $singleSize));
-    }
+  @if $positon == 0 {
+    @return 0;
+  } @else {
+    @return percentage($positon / ($spritesSize - $singleSize));
+  }
 }
 /* --x轴排列雪碧图*/
 @mixin sprites-x($x: 0, $width: 单图固定宽度或0, $fullWidth: 合并图宽度) {
-    background-image: url(图片);
-    background-position: position-one($x, $width, $fullWidth) 0;
-    background-size: rem($fullWidth) auto;
-    background-repeat: no-repeat;
+  background-image: url(图片);
+  background-position: position-one($x, $width, $fullWidth) 0;
+  background-size: rem($fullWidth) auto;
+  background-repeat: no-repeat;
 }
 /*/--x轴排列雪碧图*/
 /* --y轴排列雪碧图*/
 @mixin sprites-y($y: 0, $height: 单图固定高度或0, $fullHeight: 合并图高度) {
-    background-image: url(图片);
-    background-position: 0 position-one($y, $height, $fullHeight);
-    background-size: auto rem($fullHeight);
-    background-repeat: no-repeat;
+  background-image: url(图片);
+  background-position: 0 position-one($y, $height, $fullHeight);
+  background-size: auto rem($fullHeight);
+  background-repeat: no-repeat;
 }
 /*/--y轴排列雪碧图*/
 /* --x+y轴排列且等大雪碧图（参数：单图宽、高、x轴图片数量、y轴图片数量、图片间距）*/
 @mixin sprites-xy($width, $height, $x, $y, $gap: 2) {
-    width: rem($width);
-    height: rem($height);
-    background-image: url(图片前缀_#{$width}x#{$height}.png);
-    background-size: rem(($width + $gap)*$x - $gap) rem(($height + $gap)*$y - $gap);
-    background-repeat: no-repeat;
+  width: rem($width);
+  height: rem($height);
+  background-image: url(图片前缀_#{$width}x#{$height}.png);
+  background-size: rem(($width + $gap)*$x - $gap) rem(($height + $gap)*$y - $gap);
+  background-repeat: no-repeat;
 
-    //$i：横轴；$j：纵轴
-    @for $j from 1 through $y {
-        @for $i from 1 through $x {
-            &.i-#{$j}-#{$i} {
-                background-position: position-one(($width + $gap)*($i - 1), $width, ($width + $gap)*$x - $gap) position-one(($height + $gap)*($j - 1), $height, ($height + $gap)*$y - $gap);
-            }
-        }
+  //$i：横轴；$j：纵轴
+  @for $j from 1 through $y {
+    @for $i from 1 through $x {
+      &.i-#{$j}-#{$i} {
+        background-position: position-one(($width + $gap)*($i - 1), $width, ($width + $gap)*$x - $gap) position-one(($height + $gap)*($j - 1), $height, ($height + $gap)*$y - $gap);
+      }
     }
+  }
 }
 /*/--x+y轴排列且等大雪碧图*/
 /*/-rem*/
@@ -238,234 +214,230 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
 
 /* 全局*/
 html, body {
-    /*height: 100%;*/
-}
-html {
-    _overflow-x: hidden;
+  /*height: 100%;*/
 }
 body {
-    background-color: #fff;
-    color: #333;
-    min-width: 最小宽度;
-    position: relative;
-    @include bfc;
+  background-color: #fff;
+  color: #333;
+  min-width: 最小宽度;
+  position: relative;
+  @include bfc;
 }
 a {
-    color: #333;
+  color: #333;
 }
 a:hover {
-    text-decoration: none;
+  text-decoration: none;
 }
 /*/全局*/
 
 /* WAP端媒体查询（320px~640px），单行最大width:32rem*/
 @media (max-width: 351px) {
-    html {font-size: 10px;}
+  html {font-size: 10px;}
 }
 @media (min-width: 352px) and (max-width: 383px) {
-    html {font-size: 11px;}
+  html {font-size: 11px;}
 }
 @media (min-width: 384px) and (max-width: 415px) {
-    html {font-size: 12px;}
+  html {font-size: 12px;}
 }
 @media (min-width: 416px) and (max-width: 447px) {
-    html {font-size: 13px;}
+  html {font-size: 13px;}
 }
 @media (min-width: 448px) and (max-width: 479px) {
-    html {font-size: 14px;}
+  html {font-size: 14px;}
 }
 @media (min-width: 480px) and (max-width: 511px) {
-    html {font-size: 15px;}
+  html {font-size: 15px;}
 }
 @media (min-width: 512px) and (max-width: 543px) {
-    html {font-size: 16px;}
+  html {font-size: 16px;}
 }
 @media (min-width: 544px) and (max-width: 575px) {
-    html {font-size: 17px;}
+  html {font-size: 17px;}
 }
 @media (min-width: 576px) and (max-width: 607px) {
-    html {font-size: 18px;}
+  html {font-size: 18px;}
 }
 @media (min-width: 608px) and (max-width: 639px) {
-    html {font-size: 19px;}
+  html {font-size: 19px;}
 }
 @media (min-width: 640px) {
-    html {font-size: 20px;}
+  html {font-size: 20px;}
 }
 /*/WAP端媒体查询*/
 /* PC端媒体查询（960px~2560px），单行最大width:32rem*/
 @media (max-width: 991px) {
-    html {font-size: 30px;}
+  html {font-size: 30px;}
 }
 @media (min-width: 992px) and (max-width: 1023px) {
-    html {font-size: 31px;}
+  html {font-size: 31px;}
 }
 @media (min-width: 1024px) and (max-width: 1055px) {
-    html {font-size: 32px;}
+  html {font-size: 32px;}
 }
 @media (min-width: 1056px) and (max-width: 1087px) {
-    html {font-size: 33px;}
+  html {font-size: 33px;}
 }
 @media (min-width: 1088px) and (max-width: 1119px) {
-    html {font-size: 34px;}
+  html {font-size: 34px;}
 }
 @media (min-width: 1120px) and (max-width: 1151px) {
-    html {font-size: 35px;}
+  html {font-size: 35px;}
 }
 @media (min-width: 1152px) and (max-width: 1183px) {
-    html {font-size: 36px;}
+  html {font-size: 36px;}
 }
 @media (min-width: 1184px) and (max-width: 1215px) {
-    html {font-size: 37px;}
+  html {font-size: 37px;}
 }
 @media (min-width: 1216px) and (max-width: 1247px) {
-    html {font-size: 38px;}
+  html {font-size: 38px;}
 }
 @media (min-width: 1248px) and (max-width: 1279px) {
-    html {font-size: 39px;}
+  html {font-size: 39px;}
 }
 @media (min-width: 1280px) and (max-width: 1311px) {
-    html {font-size: 40px;}
+  html {font-size: 40px;}
 }
 @media (min-width: 1312px) and (max-width: 1343px) {
-    html {font-size: 41px;}
+  html {font-size: 41px;}
 }
 @media (min-width: 1344px) and (max-width: 1375px) {
-    html {font-size: 42px;}
+  html {font-size: 42px;}
 }
 @media (min-width: 1376px) and (max-width: 1407px) {
-    html {font-size: 43px;}
+  html {font-size: 43px;}
 }
 @media (min-width: 1408px) and (max-width: 1439px) {
-    html {font-size: 44px;}
+  html {font-size: 44px;}
 }
 @media (min-width: 1440px) and (max-width: 1471px) {
-    html {font-size: 45px;}
+  html {font-size: 45px;}
 }
 @media (min-width: 1472px) and (max-width: 1503px) {
-    html {font-size: 46px;}
+  html {font-size: 46px;}
 }
 @media (min-width: 1504px) and (max-width: 1535px) {
-    html {font-size: 47px;}
+  html {font-size: 47px;}
 }
 @media (min-width: 1536px) and (max-width: 1567px) {
-    html {font-size: 48px;}
+  html {font-size: 48px;}
 }
 @media (min-width: 1568px) and (max-width: 1599px) {
-    html {font-size: 49px;}
+  html {font-size: 49px;}
 }
 @media (min-width: 1600px) and (max-width: 1631px) {
-    html {font-size: 50px;}
+  html {font-size: 50px;}
 }
 @media (min-width: 1632px) and (max-width: 1663px) {
-    html {font-size: 51px;}
+  html {font-size: 51px;}
 }
 @media (min-width: 1664px) and (max-width: 1695px) {
-    html {font-size: 52px;}
+  html {font-size: 52px;}
 }
 @media (min-width: 1696px) and (max-width: 1727px) {
-    html {font-size: 53px;}
+  html {font-size: 53px;}
 }
 @media (min-width: 1728px) and (max-width: 1759px) {
-    html {font-size: 54px;}
+  html {font-size: 54px;}
 }
 @media (min-width: 1760px) and (max-width: 1791px) {
-    html {font-size: 55px;}
+  html {font-size: 55px;}
 }
 @media (min-width: 1792px) and (max-width: 1823px) {
-    html {font-size: 56px;}
+  html {font-size: 56px;}
 }
 @media (min-width: 1824px) and (max-width: 1855px) {
-    html {font-size: 57px;}
+  html {font-size: 57px;}
 }
 @media (min-width: 1856px) and (max-width: 1887px) {
-    html {font-size: 58px;}
+  html {font-size: 58px;}
 }
 @media (min-width: 1888px) and (max-width: 1919px) {
-    html {font-size: 59px;}
+  html {font-size: 59px;}
 }
 @media (min-width: 1920px) and (max-width: 1951px) {
-    html {font-size: 60px;}
+  html {font-size: 60px;}
 }
 @media (min-width: 1952px) and (max-width: 1983px) {
-    html {font-size: 61px;}
+  html {font-size: 61px;}
 }
 @media (min-width: 1984px) and (max-width: 2015px) {
-    html {font-size: 62px;}
+  html {font-size: 62px;}
 }
 @media (min-width: 2016px) and (max-width: 2047px) {
-    html {font-size: 63px;}
+  html {font-size: 63px;}
 }
 @media (min-width: 2048px) and (max-width: 2079px) {
-    html {font-size: 64px;}
+  html {font-size: 64px;}
 }
 @media (min-width: 2080px) and (max-width: 2111px) {
-    html {font-size: 65px;}
+  html {font-size: 65px;}
 }
 @media (min-width: 2112px) and (max-width: 2143px) {
-    html {font-size: 66px;}
+  html {font-size: 66px;}
 }
 @media (min-width: 2144px) and (max-width: 2175px) {
-    html {font-size: 67px;}
+  html {font-size: 67px;}
 }
 @media (min-width: 2176px) and (max-width: 2207px) {
-    html {font-size: 68px;}
+  html {font-size: 68px;}
 }
 @media (min-width: 2208px) and (max-width: 2239px) {
-    html {font-size: 69px;}
+  html {font-size: 69px;}
 }
 @media (min-width: 2240px) and (max-width: 2271px) {
-    html {font-size: 70px;}
+  html {font-size: 70px;}
 }
 @media (min-width: 2272px) and (max-width: 2303px) {
-    html {font-size: 71px;}
+  html {font-size: 71px;}
 }
 @media (min-width: 2304px) and (max-width: 2335px) {
-    html {font-size: 72px;}
+  html {font-size: 72px;}
 }
 @media (min-width: 2336px) and (max-width: 2367px) {
-    html {font-size: 73px;}
+  html {font-size: 73px;}
 }
 @media (min-width: 2368px) and (max-width: 2399px) {
-    html {font-size: 74px;}
+  html {font-size: 74px;}
 }
 @media (min-width: 2400px) and (max-width: 2431px) {
-    html {font-size: 75px;}
+  html {font-size: 75px;}
 }
 @media (min-width: 2432px) and (max-width: 2463px) {
-    html {font-size: 76px;}
+  html {font-size: 76px;}
 }
 @media (min-width: 2464px) and (max-width: 2495px) {
-    html {font-size: 77px;}
+  html {font-size: 77px;}
 }
 @media (min-width: 2496px) and (max-width: 2527px) {
-    html {font-size: 78px;}
+  html {font-size: 78px;}
 }
 @media (min-width: 2528px) and (max-width: 2559px) {
-    html {font-size: 79px;}
+  html {font-size: 79px;}
 }
 @media (min-width: 2560px) {
-    html {font-size: 80px;}
+  html {font-size: 80px;}
 }
 /*/PC端媒体查询*/
 
 /* 布局*/
 .m-full-bg {
-    background: center top no-repeat;
-    min-width: 最小宽度;
-    _width: 100%;
-    overflow: hidden;
+  background: center top no-repeat;
+  min-width: 最小宽度;
+  overflow: hidden;
 
-    .full-wrap {
-        width: 最小宽度;
-        margin: 0 auto;
-        position: relative;
+  .full-wrap {
+    width: 最小宽度;
+    margin: 0 auto;
+    position: relative;
 
-        &:before,
-        &:after {
-            content: "";
-            display: table;
-        }
+    &:before,
+    &:after {
+      content: "";
+      display: table;
     }
+  }
 }
 /*/布局*/
