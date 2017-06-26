@@ -63,3 +63,8 @@
     ```bash
     passwd
     ```
+5. 指令在PATH变量的路径
+
+    ```bash
+    which 指令
+    ```

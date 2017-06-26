@@ -88,6 +88,8 @@
         # git rebase --skip    # （当无法使用--continue）出现冲突时丢弃commit，会造成内容丢失（慎重使用）
         # 编辑commit信息
         git push origin HEAD --force    # 强制提交到远程版本库
+
+        # 其他用户需要 git remote 然后 git pull origin master
         ```
         >当处理太多commits时候容易造成冲突。
 
