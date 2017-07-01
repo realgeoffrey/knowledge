@@ -649,58 +649,60 @@ function random(length, charset) {
 ### *原生JS*格式化文件属性（大小、日期）
 ```javascript
 var format = {
-    fileSize: function (bytes) {    /* 格式化文件大小*/
-        if (bytes === 0) {
-            return '0';
-        }
-        var rate = 1024,
-            units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
-            exponent = Math.floor(Math.log(bytes) / Math.log(rate));
+  fileSize: function (bytes) {    /* 格式化文件大小*/
+    if (bytes === 0) {
 
-        return (bytes / Math.pow(rate, exponent)).toPrecision(3) + units[exponent];
-    },
-    date: function (date, fmt) {    /* 格式化日期*/
-        var o = {
-                'M+': date.getMonth() + 1, //月
-                'd+': date.getDate(), //日
-                'h+': date.getHours() % 12 === 0 ? 12 : date.getHours() % 12, //12小时制
-                'H+': date.getHours(), //24小时制
-                'm+': date.getMinutes(), //分
-                's+': date.getSeconds(), //秒
-                'q+': Math.floor((date.getMonth() + 3) / 3), //季度
-                'S': date.getMilliseconds() //毫秒
-            },
-            week = {
-                /* [{E:'一'},{EE:'周一'},{EEE+:'星期一'}]*/
-                '0': '一',
-                '1': '二',
-                '2': '三',
-                '3': '四',
-                '4': '五',
-                '5': '六',
-                '6': '日'
-            },
-            i;
-
-        if (/(y+)/.test(fmt)) {
-            fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
-        }
-        if (/(E+)/.test(fmt)) {
-            fmt = fmt.replace(RegExp.$1, ((RegExp.$1.length > 1) ? (RegExp.$1.length > 2 ? '星期' : '周') : "") + week[date.getDay() + ""]);
-        }
-        for (i in o) {
-            if (new RegExp('(' + i + ')').test(fmt)) {
-                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[i]) : (('00' + o[i]).substr(("" + o[i]).length)));
-            }
-        }
-
-        return fmt;
+      return '0';
     }
+    var rate = 1024,
+      units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+      exponent = Math.floor(Math.log(bytes) / Math.log(rate));
+
+    return (bytes / Math.pow(rate, exponent)).toPrecision(3) + units[exponent];
+  },
+  date: function (dateObj, fmt) {    /* 格式化日期*/
+    var o = {
+        'q+': Math.floor((dateObj.getMonth() + 3) / 3), //季度
+        'M+': dateObj.getMonth() + 1, //月
+        'd+': dateObj.getDate(), //日
+        'h+': dateObj.getHours() % 12 === 0 ? 12 : dateObj.getHours() % 12, //12小时制
+        'H+': dateObj.getHours(), //24小时制
+        'm+': dateObj.getMinutes(), //分
+        's+': dateObj.getSeconds(), //秒
+        'S': dateObj.getMilliseconds(), //毫秒
+      },
+      week = {
+        '0': '一',
+        '1': '二',
+        '2': '三',
+        '3': '四',
+        '4': '五',
+        '5': '六',
+        '6': '日',
+      },
+      i;
+
+    /* [{y:'7'},{yy:'17'},{yyy+:'017'},{yyyy+:'2017'}]*/
+    if (/(y+)/.test(fmt)) {
+      fmt = fmt.replace(RegExp.$1, (dateObj.getFullYear() + '').substring(4 - RegExp.$1.length));
+    }
+    /* [{E:'一'},{EE:'周一'},{EEE+:'星期一'}]*/
+    if (/(E+)/.test(fmt)) {
+      fmt = fmt.replace(RegExp.$1, ((RegExp.$1.length > 1) ? (RegExp.$1.length > 2 ? '星期' : '周') : '') + week[dateObj.getDay() + '']);
+    }
+    for (i in o) {
+      if (new RegExp('(' + i + ')').test(fmt)) {
+        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[i]) : (('00' + o[i]).substr(('' + o[i]).length)));
+      }
+    }
+
+    return fmt;
+  },
 };
 
 
 /* 使用测试*/
-var a = format.date(new Date(Date.parse('Wed, 09 Aug 1995 00:00:00 GMT')),'yyyy-MM-dd HH:mm:ss');
+var a = format.date(new Date(), 'yyyy-MM-dd HH:mm:ss S毫秒 EEE 季度q');
 ```
 
 ### *原生JS*倒计时显示
