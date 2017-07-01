@@ -19,6 +19,7 @@
 
         雪碧图的模板：[pc.handlebars](./网站前端/gulp使用/tools/pc.handlebars)、[wap.handlebars](./网站前端/gulp使用/tools/wap.handlebars)
     2. [package.json](./网站前端/gulp使用/tools/package.json)
+    3. [.eslintrc.js](./网站前端/gulp使用/tools/.eslintrc.js)
 5. 初始化模板
         
     1. [cssReset.scss](./网站前端/初始化模板/cssReset.scss)

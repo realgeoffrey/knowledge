@@ -1,37 +1,37 @@
 @charset "utf-8";
 
 @function rem($px, $base-font-size: 20px) {
-    @if unitless($px) {
-        @return rem($px + 0px);
-    }
-    @if unit($px) != "px" {
-        @error "rem()的参数单位必须是px或不带单位";
-    }
+  @if unitless($px) {
+    @return rem($px + 0px);
+  }
+  @if unit($px) != "px" {
+    @error "rem()的参数单位必须是px或不带单位";
+  }
 
-    //$base-font-size：切图时设计稿宽度对应的媒体查询中html的font-size
-    @return $px / $base-font-size + rem;
+  //$base-font-size：切图时设计稿宽度对应的媒体查询中html的font-size
+  @return $px / $base-font-size + rem;
 }
 
 {{#extend "scss"}}
-    {{#content "sprites"}}
+  {{#content "sprites"}}
 
 // 图片类内@include
-        {{#each sprites}}
+    {{#each sprites}}
 @mixin sprites_{{name}} {
-    background-position: {{#if offset_x}}{{offset_x}}/({{width}}-{{total_width}})*100%{{else}}0{{/if}} {{#if offset_y}}{{offset_y}}/({{height}}-{{total_height}})*100%{{else}}0{{/if}};
-    width: rem({{width}});
-    height: rem({{height}});
-    @extend %sprites_img;
+  background-position: {{#if offset_x}}{{offset_x}}/({{width}}-{{total_width}})*100%{{else}}0{{/if}} {{#if offset_y}}{{offset_y}}/({{height}}-{{total_height}})*100%{{else}}0{{/if}};
+  width: rem({{width}});
+  height: rem({{height}});
+  @extend %sprites_img;
 }
-        {{/each}}
-    {{/content}}
+    {{/each}}
+  {{/content}}
 
-    {{#content "spritesheet"}}
+  {{#content "spritesheet"}}
 
 %sprites_img {
-    background-image: url({{{spritesheet.escaped_image}}});
-    background-size: rem({{spritesheet.width}}) rem({{spritesheet.height}});
-    background-repeat: no-repeat;
+  background-image: url({{{spritesheet.escaped_image}}});
+  background-size: rem({{spritesheet.width}}) rem({{spritesheet.height}});
+  background-repeat: no-repeat;
 }
-    {{/content}}
+  {{/content}}
 {{/extend}}

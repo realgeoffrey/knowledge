@@ -12,3 +12,4 @@
 
     1. [pc.handlebars](tools/pc.handlebars)
     2. [wap.handlebars](tools/wap.handlebars)
+5. [.eslintrc.js](tools/.eslintrc.js) is for ESLint.
