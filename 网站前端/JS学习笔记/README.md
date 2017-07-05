@@ -193,7 +193,7 @@
     2. 先清空文本再`focus`然后再添加文本，光标停留在文本结尾。
 
     [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/zep4cr3p/)
-7. [`$.fn.deferred()`](http://api.jquery.com/category/deferred-object/)
+7. [`$.Deferred()`](http://api.jquery.com/category/deferred-object/)
 
     >参考[阮一峰：jQuery的deferred对象详解](http://www.ruanyifeng.com/blog/2011/08/a_detailed_explanation_of_jquery_deferred_object.html)、[阮一峰：jQuery.Deferred对象](http://javascript.ruanyifeng.com/jquery/deferred.html)。
 
