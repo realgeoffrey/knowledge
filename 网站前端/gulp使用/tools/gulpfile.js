@@ -228,11 +228,12 @@ gulp.task('browserSync', () => {
   });
 
   gulp.watch([
-    '!../../www/**/node_modules/',
     '../../www/**/*.html',
     '../../www/**/js/**/*.js',
     '../../www/**/css/**/*.css',
     '../../www/**/images/**',
+
+    '!../../www/**/node_modules/**'
   ]).on('change', browserSync.reload);    //刷新浏览器
 });
 

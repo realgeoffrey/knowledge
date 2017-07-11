@@ -89,7 +89,7 @@
         # 编辑commit信息
         git push origin HEAD --force    # 强制提交到远程版本库
 
-        # 其他用户需要 git remote 然后 git pull origin master
+        # 其他用户需要 git remote 然后 git pull --rebase
         ```
         >当处理太多commits时候容易造成冲突。
 
