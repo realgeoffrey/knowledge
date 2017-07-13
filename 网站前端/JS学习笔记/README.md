@@ -202,10 +202,10 @@
         1. 状态改变：`.reject()`、`.rejectWith()`、`.resolve()`、`.rejectWith()`。
         2. 触发行为
 
-            1. 继续向下传递状态：`.done()`、`.fail()`、`.always()`
-            2. 向下传递回调函数的`return`内容：`.then()`、`.catch()`
-        3. 改变为Promise对象：`.promise()`
-        4. 且判断：`jQuery.when()`
+            1. 继续向下传递状态：`.done()`、`.fail()`、`.always()`。
+            2. 向下传递回调函数的`return`内容：`.then()`、`.catch()`。
+        3. 改变为Promise对象：`.promise()`。
+        4. 且判断：`jQuery.when()`。
     2. `Promise对象`是`Deferred对象`的子集。
 
         1. 相对于`Deferred对象`，`Promise对象`无法改变执行状态：

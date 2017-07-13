@@ -48,7 +48,8 @@ function multiCallback(func, url) {
     }
 }
 ```
->可以使用jQuery的`$.when($.ajax()...).done(成功后方法)`完全替代。
+>1. 可以使用Promise对象实现。
+>2. 可以使用jQuery的Deferred对象`$.when($.ajax()...).done(成功后方法)`完全替代。
 
 ### *原生JS*对象合二为一（改变第一个参数）
 ```javascript
