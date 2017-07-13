@@ -193,21 +193,33 @@
     2. 先清空文本再`focus`然后再添加文本，光标停留在文本结尾。
 
     [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/zep4cr3p/)
-7. [`$.Deferred()`](http://api.jquery.com/category/deferred-object/)
+7. [jQuery的Deferred对象](http://api.jquery.com/category/deferred-object/)
 
     >参考[阮一峰：jQuery的deferred对象详解](http://www.ruanyifeng.com/blog/2011/08/a_detailed_explanation_of_jquery_deferred_object.html)、[阮一峰：jQuery.Deferred对象](http://javascript.ruanyifeng.com/jquery/deferred.html)。
 
-    1. `Promise对象`是`Deferred对象`的子集。
-    2. 相对于`Deferred对象`，`Promise对象`无法改变执行状态：
+    1. 当deferred对象状态改变后，根据相应的状态触发回调
 
-        1. 开放**与改变执行状态无关的方法**：
+        1. 状态改变：`.reject()`、`.rejectWith()`、`.resolve()`、`.rejectWith()`。
+        2. 触发行为
 
-            `always`、`catch`、`done`、`fail`、`pipe`、`progress`、`promise`、`state`、`then`
-        2. 屏蔽**与改变执行状态有关的方法**：
+            1. 继续向下传递状态：`.done()`、`.fail()`、`.always()`
+            2. 向下传递回调函数的`return`内容：`.then()`、`.catch()`
+        3. 改变为Promise对象：`.promise()`
+        4. 且判断：`jQuery.when()`
+    2. `Promise对象`是`Deferred对象`的子集。
 
-            `notify`、`notifyWith`、`reject`、`rejectWith`、`resolve`、`resolveWith`
-    3. `$.ajax`返回`Promise对象`。
-    4. 允许把所有jQuery对象设置为`Promise对象`（如动画方法后接`.promise().done(方法)`）。
+        1. 相对于`Deferred对象`，`Promise对象`无法改变执行状态：
+
+            1. 屏蔽~~与改变执行状态有关的方法~~：
+
+                `reject`、`rejectWith`、`resolve`、`resolveWith`、`notify`、`notifyWith`
+            2. 开放**与改变执行状态无关的方法**：
+
+                `always`、`catch`、`done`、`fail`、`progress`、`promise`、`state`、`then`
+        2. `$.ajax`返回`Promise对象`。
+        3. 允许把所有jQuery对象设置为`Promise对象`（如动画方法后接`.promise().done(方法)`）。
+
+    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/ts50dmpa/)
 
 ---
 ## 事件相关
