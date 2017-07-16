@@ -141,7 +141,7 @@
 ### 网站性能优化
 1. 从输入URL到页面完成的具体优化：
 
-    >性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#前端工程化)问题。
+    >性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#前端工程化)问题。
 
     1. URL输入：
 
@@ -152,14 +152,14 @@
             >前端查看Response头是否有：`Content-Encoding:gzip`。
         2. 减少DNS查找，设置合适的TTL值，避免重定向。
         3. 使用CDN。
-        4. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#静态资源使用额外域名domain-hash的原因)，减少cookie。
+        4. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#静态资源使用额外域名domain-hash的原因)，减少cookie。
         5. 对资源进行缓存：
 
             1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
             2. 使用[缓存相关的HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：`Expires`、`Cache-Control`、`Last-Modified/If-Modified-Since`、`ETag/If-None-Match`。
             3. 配置超长时间的本地缓存，采用内容摘要（MD5）作为缓存更新依据。
         6. [非覆盖式更新资源](https://github.com/fouber/blog/issues/6)。
-    2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/README.md#页面载入解析步骤)：
+    2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面载入解析步骤)：
 
         前端对具体代码性能、CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）的优化。
 

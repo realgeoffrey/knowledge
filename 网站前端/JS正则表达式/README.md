@@ -26,7 +26,7 @@
 
         运行JS脚本时编译（runtime compilation），传参数情况下才使用。
 
-        >使用字符串字面量时，需要[字符串字面量的转义](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#js特殊字符)。
+        >使用字符串字面量时，需要[字符串字面量的转义](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#js特殊字符)。
 2. 标志（修饰符）
 
     1. `g`：

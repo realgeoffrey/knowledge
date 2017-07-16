@@ -52,9 +52,12 @@
 	左击系统托盘中的WampServer，选择 **phpMyAdmin** 。默认用户为`root`，密码为空。
 7. 配置 虚拟主机
 	1. 文本打开 *...wamp\bin\apache\Apache2.4.23\conf\extra* 下的 **httpd-vhosts**，配置localhost虚拟主机，把原内容修改成如下：
+
+	    >我想把测试内容放在*www/demo文件夹*中，其他内容可以放在*www/其他文件夹*中。
+
 		```text
         <VirtualHost *:80>
-            DocumentRoot E:/www
+            DocumentRoot E:/www/demo
             ServerName localhost
         </VirtualHost>
 		```
@@ -62,21 +65,30 @@
 		在默认配置后面添加新的虚拟主机：
 		```text
         <VirtualHost *:80>
-            DocumentRoot E:/www/123.me
-            ServerName www.123.me
+            DocumentRoot E:/www/demo/123.me
             ServerAlias 123.me
         </VirtualHost>
 		```
 		
-		>在www文件内新建123.me文件夹。
+		>在www文件内新建demo文件夹，再在demo文件夹内新建123.me文件夹。
 
         ![WAMP图](./images/4.png)
 	2. 打开 *C:\WINDOWS\system32\drivers\etc* 下的 **hosts**，增加代码：
+
 		```text
-		127.0.0.1 www.123.me
 		127.0.0.1 123.me
 		```
 	3. 重启Apache，虚拟主机配置成功。
-8. 后续
+8. 在APACHE服务器上的访问方式上去除index.php
+
+    在项目代码的根目录中新建`.htaccess`文件，添加：
+
+    ```text
+    RewriteEngine on
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ index.php/$1 [L]
+    ```
+9. 后续
 
 	升级chrome之后导致出现 Aestan Tray Menu 找不到有效路径问题，查看 `..\wamp` 下的 **wampmanager.ini** 和 **wampmanager.conf**，把里面所有chrome浏览器错误路径修改为现在正确路径，再关闭wamp，重启即解决问题。

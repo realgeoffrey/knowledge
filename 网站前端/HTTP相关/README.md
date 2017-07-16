@@ -129,7 +129,7 @@
     ```
 
 ### HTTP请求方法（HTTP request methods）
->来自[MDN:HTTP 请求方法](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Methods)。
+>来自[MDN：HTTP 请求方法](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Methods)。
 
 1. GET
 
@@ -384,7 +384,7 @@
     不区分大小写的属性名后跟一个冒号，再紧跟它的值（不必换行）组成，以`回车（CR）换行（LF）`符号序列结尾。值前面的空格会被忽略掉。自定义专用消息头可通过`X-`前缀来添加（废弃）。
 3. 类型
 
-    >具体内容：[MDN:HTTP Headers](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers)、[rfc4229](https://tools.ietf.org/html/rfc4229)。
+    >具体内容：[MDN：HTTP 消息头](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers)、[rfc4229](https://tools.ietf.org/html/rfc4229)。
 
     1. 通用头部字段（general）
 
@@ -586,50 +586,12 @@
 2. Comet
 
     延迟响应。
-3. SPDY
-4. WebSocket
+3. WebSocket
 
     1. 服务器可以主动推送。
     2. 持久连接。
-5. HTTP/2.0
-6. WebDAV
-
-### HTTP长连接、WebSocket、HTTP/2.0
->短连接：每一个HTTP请求都要建立单独的TCP连接，然后断开。
-
-1. 持久连接（HTTP Persistent Connections，HTTP keep-alive，HTTP connection reuse）
-
-    只要任意一端没有明确提出断开连接，则保持TCP连接状态，可以完成多个HTTP请求。单个客户端与服务器和代理服务器之间不应该维持超过2个持久连接。
-
-    1. HTTP/1.1所有的连接默认是持久连接。
-    2. HTTP/1.0设置：`Connection:Keep-Alive`。
-
-    >持久连接的管线化（pipelining）：将多个HTTP请求整批提交，不用等待响应就直接发送下一个请求。
-2. WebSocket
-
-    新的全双工通讯协议。在HTTP建立之后，再进行一次握手后创建连接。
-
-    1. 保持持久连接状态。
-    2. 服务端能够主动推送。
-    3. 头部信息小，减少通信量。
-
-    >BrowserSync利用WebSocket，当监控的文件MD5发生变化时，向客户端发送刷新页面指令。
-3. HTTP/2.0
-
-    >主要基于SPDY协议演变而来。
-
-    与HTTP/1.1完全语义兼容，进一步减少网络延迟:
-
-    1. 多路复用（multiplexing）
-
-        >流（stream）、帧（frame）。
-
-        允许同时通过单一的连接发起多重请求-响应。
-    2. 二进制分帧
-
-        在应用层（HTTP/2）和传输层（TCP/UDP）间增加一个二进制分帧层。
-    3. 头部压缩（header compression）。
-    4. 服务端推送（server push）。
+4. SPDY或HTTP/2
+5. WebDAV
 
 ### HTTPS
 1. HTTP不足
@@ -660,6 +622,44 @@
 
     1. SSL处理速度变慢：通信速度降低、消耗大量CPU和内存。
     2. 证书需要购买。
+
+### HTTP长连接、WebSocket、HTTP/2
+>短连接：每一个HTTP请求都要建立单独的TCP连接，然后断开。
+
+1. 持久连接（HTTP Persistent Connections，HTTP keep-alive，HTTP connection reuse）
+
+    只要任意一端没有明确提出断开连接，则保持TCP连接状态，可以完成多个HTTP请求。单个客户端与服务器和代理服务器之间不应该维持超过2个持久连接。
+
+    1. HTTP/1.1所有的连接默认是持久连接。
+    2. HTTP/1.0设置：`Connection:Keep-Alive`。
+
+    >持久连接的管线化（pipelining）：将多个HTTP请求整批提交，但服务端必须按照顺序整批返回。
+2. WebSocket
+
+    新的全双工通讯协议。在HTTP建立之后，再进行一次握手后创建连接。
+
+    1. 保持持久连接状态。
+    2. 服务端能够主动推送。
+    3. 头部信息小，减少通信量。
+
+    >BrowserSync利用WebSocket，当监控的文件MD5发生变化时，向客户端发送刷新页面指令。
+3. HTTP/2
+
+    >主要基于SPDY协议演变而来。
+
+    与HTTP/1.1完全语义兼容，进一步减少网络延迟：
+
+    1. 二进制分帧
+
+        在应用层（HTTP/2）和传输层（TCP/UDP）间增加一个二进制分帧层。
+    2. 多路复用（multiplexing）
+
+        >流（stream）、帧（frame）。
+
+        允许通过单一连接（TCP）建立双向字节流。
+    3. 数据流优先级。
+    4. 头部压缩（header compression）。
+    5. 服务端推送（server push）。
 
 ### 服务端验证用户状态
 HTTP是无状态协议，通过session-cookie、token判断客户端的用户状态。

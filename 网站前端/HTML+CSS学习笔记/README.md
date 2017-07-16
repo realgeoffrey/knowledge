@@ -85,7 +85,7 @@
         9. 伪类选择器、伪元素选择器
     3. 避免使用 ~~@import~~，只用`<link>`标签；避免使用~~CSS表达式（CSS expression）~~。
     4. 移除空CSS规则、合理使用`display`、不滥用`float`、不滥用Web字体。
-3. [类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端概念/基础概念.md#选择器类型)
+3. [类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#选择器类型)
 
 ### 层叠上下文（stacking context）
 >参考[张鑫旭：深入理解CSS中的层叠上下文和层叠顺序](http://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)。
@@ -335,8 +335,9 @@
 2. `<meta>的viewport`缩放为`1/DPR`，切图用DPR倍大小（CSS媒体查询方案或JS方案）。
 
     >仅适用于iOS。Android机型太复杂，bug永无止境。
-3. `border-image`2像素图片，一半透明、一半目标颜色。
+3. `border-image/background-image`2像素图片，一半透明、一半目标颜色。
 4. `box-shadow`。
+5. PostCSS的[postcss-write-svg](https://github.com/jonathantneal/postcss-write-svg)。
 
 ### `em`、`%`
 1. `em`单位：

@@ -646,7 +646,7 @@ function random(length, charset) {
 }
 ```
 
-### *原生JS*格式化文件属性（大小、日期）
+### *原生JS*格式化文件大小
 ```javascript
 var format = {
   fileSize: function (bytes) {    /* 格式化文件大小*/
@@ -659,163 +659,12 @@ var format = {
       exponent = Math.floor(Math.log(bytes) / Math.log(rate));
 
     return (bytes / Math.pow(rate, exponent)).toPrecision(3) + units[exponent];
-  },
-  date: function (dateObj, fmt) {    /* 格式化日期*/
-    var o = {
-        'q+': Math.floor((dateObj.getMonth() + 3) / 3), //季度
-        'M+': dateObj.getMonth() + 1, //月
-        'd+': dateObj.getDate(), //日
-        'h+': dateObj.getHours() % 12 === 0 ? 12 : dateObj.getHours() % 12, //12小时制
-        'H+': dateObj.getHours(), //24小时制
-        'm+': dateObj.getMinutes(), //分
-        's+': dateObj.getSeconds(), //秒
-        'S': dateObj.getMilliseconds(), //毫秒
-      },
-      week = {
-        '0': '一',
-        '1': '二',
-        '2': '三',
-        '3': '四',
-        '4': '五',
-        '5': '六',
-        '6': '日',
-      },
-      i;
-
-    /* [{y:'7'},{yy:'17'},{yyy+:'017'},{yyyy+:'2017'}]*/
-    if (/(y+)/.test(fmt)) {
-      fmt = fmt.replace(RegExp.$1, (dateObj.getFullYear() + '').substring(4 - RegExp.$1.length));
-    }
-    /* [{E:'一'},{EE:'周一'},{EEE+:'星期一'}]*/
-    if (/(E+)/.test(fmt)) {
-      fmt = fmt.replace(RegExp.$1, ((RegExp.$1.length > 1) ? (RegExp.$1.length > 2 ? '星期' : '周') : '') + week[dateObj.getDay() + '']);
-    }
-    for (i in o) {
-      if (new RegExp('(' + i + ')').test(fmt)) {
-        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[i]) : (('00' + o[i]).substr(('' + o[i]).length)));
-      }
-    }
-
-    return fmt;
-  },
+  }
 };
 
 
 /* 使用测试*/
-var a = format.date(new Date(), 'yyyy-MM-dd HH:mm:ss S毫秒 EEE 季度q');
-```
-
-### *原生JS*倒计时显示
-```javascript
-/**
- * 显示倒计时
- * @constructor
- * @param {Number} deadline - 到期的时间戳
- * @param {String} [id] - 输出节点id
- * @param {Function} [func] - 到点后的回调函数
- * @param {String} [dType = ' '] - “天”后面的文字
- * @param {String} [hType = ' '] - “时”后面的文字
- * @param {String} [mType = ' '] - “分”后面的文字
- * @param {String} [sType = ' '] - “秒”后面的文字
- */
-function CountDown(deadline, id, func, dType, hType, mType, sType) {
-    if (typeof Date.now !== 'function') {
-        Date.now = function () {
-            return new Date().getTime();
-        };
-    }
-
-    var _dTypeSend = (typeof dType !== 'undefined') && dType !== '',
-        _hTypeSend = (typeof hType !== 'undefined') && hType !== '',
-        _mTypeSend = (typeof mType !== 'undefined') && mType !== '',
-        _sTypeSend = (typeof sType !== 'undefined') && sType !== '',
-        _hasDom = !!document.getElementById(id),
-        _formatNum = function (number) {    /* 格式化数字格式*/
-            if (number < 10) {
-                return '0' + number;
-            } else {
-                return number.toString();
-            }
-        },
-        _SetInterval = function (func, millisecond) {  /* 周期执行*/
-            var _setIntervalId;
-
-            if (typeof func === 'function') {
-                _setIntervalId = setTimeout(function () {
-                    _setIntervalId = setTimeout(arguments.callee, millisecond);
-
-                    func();
-                }, millisecond);
-            }
-
-            this.stop = function () {
-                clearTimeout(_setIntervalId);
-            };
-        },
-        _print = function (time) {  /* 输出*/
-            var day = _formatNum(Math.floor((time / (24 * 60 * 60)))),
-                hour = _formatNum(Math.floor((time / (60 * 60)) % 24)),
-                minute = _formatNum(Math.floor((time / 60) % 60)),
-                second = _formatNum(time % 60),
-                text;
-
-            if (day !== '00' || _dTypeSend) {
-                text = day + dType + hour + hType + minute + mType + second + sType;
-            } else if (hour !== '00' || _hTypeSend) {
-                text = hour + hType + minute + mType + second + sType;
-            } else if (minute !== '00' || _mTypeSend) {
-                text = minute + mType + second + sType;
-            } else {
-                text = second + sType;
-            }
-
-            if (_hasDom) {
-                document.getElementById(id).innerHTML = text;
-            } else {
-                console.log(text);
-            }
-        };
-
-    if (!_dTypeSend) {
-        dType = ' ';
-    }
-    if (!_hTypeSend) {
-        hType = ' ';
-    }
-    if (!_mTypeSend) {
-        mType = ' ';
-    }
-    if (!_sTypeSend) {
-        sType = '';
-    }
-
-    /* 初始化时就输出一遍*/
-    _print(Math.round((deadline - Date.now()) / 1000));
-
-    var obj = new _SetInterval(function () {
-        var time = Math.round((deadline - Date.now()) / 1000);
-
-        if (time < 0) {
-            obj.stop();
-            if (typeof func === 'function') {
-                func();
-            }
-            return;
-        }
-
-        _print(time);
-    }, 1000);
-
-    this.stop = obj.stop;
-}
-
-
-/* 使用测试*/
-var a = new CountDown(Date.now() + 500000, 'test1', function () {
-    console.log('完成');
-}, '', '时', '分', '秒');
-
-//a.stop();
+var a = format.fileSize(数字);
 ```
 
 ### *原生JS*判断对象是否为空

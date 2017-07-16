@@ -1,6 +1,47 @@
 # Git心得
 
->除了基本GIT操作外的操作。
+### 基本操作
+1. 未提交的内容清空、恢复
+
+    ```bash
+    git reset --hard HEAD
+    ```
+2. 拉取远程并修剪本地
+
+    ```bash
+    git fetch -fp
+    ```
+3. 推送（新建）远程分支
+
+    ```bash
+    git push origin 分支名 # 新建本地分支（不需要提交commit即可创建远程分支）
+    ```
+4. tag
+
+    ```bash
+    git tag              # 列出现有标签
+
+    git tag 名字          # 新建标签
+    git push origin 名字  # 推送一个本地新建标签
+    git push --tags      # 推送所有本地新建标签
+
+    git tag -d 名字       # 删除本地tag
+    ```
+5. stash
+
+    ```bash
+    git stash                     # 往堆栈推送一个新的储藏，并且恢复修改过的被追踪的文件
+
+    git stash list                # 查看所有储藏
+
+    git stash apply               # 应用最后一个储藏
+    git stash apply stash@{数字}  # 应用指定的一个储藏
+
+    git stash drop                # 删除最后一个储藏
+    git stash drop stash@{数字}   # 删除指定的一个储藏
+
+    git stash pop                 # 应用最后一个储藏，删除最后一个储藏
+    ```
 
 ### 如何在一台电脑中使用2（多个）个Github账号的SSH keys
 
@@ -127,9 +168,200 @@
 
     `git clone 仓库地址 --depth 数字`
 
-### 恢复内容
-1. 未提交的内容清空、恢复
+### [git-flow](https://github.com/nvie/gitflow)使用
+1. 初始化：
 
     ```bash
-    git reset --hard HEAD
+    git flow init -fd
     ```
+2. 开发新需求：
+
+    ```bash
+    git flow feature start “需求名” [“develop的SHA”]
+    # 基于“develop的SHA”或最新develop，在本地创建并切换至“feature/需求名”分支
+
+
+    推送具体需求的commits到远程“feature/需求名”
+
+
+    git flow feature finish “需求名”
+    # “feature/需求名”合并至本地develop分支（本地必须先pull feature/需求名、develop分支，解决冲突，否则成功无法执行命令）
+    # 删除本地“feature/需求名”分支，切换至develop分支
+    # 可能删除远程的“feature/需求名”分支（根据git-flow版本不同）
+
+
+    git checkout develop
+    git push origin develop
+    # 推送至远程develop分支
+    ```
+
+    >可以分别开发多个需求，再一起发布（release）。
+3. 发布版本：
+
+    ```bash
+    git flow release start “版本号” [“develop的SHA”]
+    # 基于“develop的SHA”或最新develop，在本地创建并切换至“release/版本号”分支
+
+
+    推送需要改动的commits到远程“release/版本号”
+    # 更新package.json版本号
+    # 更新CHANGELOG.md
+    # 修复发版前临时发现的问题
+
+
+    git flow release finish “版本号”
+    #tag描述：
+    2017-07-18
+
+    - 重构 某功能 by @wushi
+    - 修复 某功能 by @yangjiu
+    - 更新 某功能 by @sunba
+    - 修改 某功能 by @qianqi
+    - 优化 某功能 by @zhaoliu
+    - 新增 某功能 by @wangwu
+    - 下线 某功能 by @lisi
+    - 移除 某功能 by @zhangsan
+    - 上线 某功能 by @名字
+    # “release/版本号”合并至本地develop分支、本地master分支（本地必须先pull release/版本号、release分支、master分支，解决冲突，否则成功无法执行命令）
+    # 新建本地“版本号”tag
+    # 删除本地“release/版本号”分支，切换至develop分支
+    # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）
+
+
+    git checkout develop
+    git push origin develop
+    # 推送至远程develop分支
+
+
+    git checkout master
+    git push origin master
+    # 推送至远程master分支
+
+
+    git push --tags
+    # 推送至远程tag
+    ```
+4. 线上bug修复：
+
+    >类似于release。
+
+    ```bash
+    git flow hotfix start “版本号” [“master的SHA”]
+    # 基于“master的SHA”或最新master，在本地创建并切换至“hotfix/版本号”分支
+
+
+    推送具体需求的commits到远程“hotfix/版本号”
+
+
+    git flow hotfix finish “版本号”
+    #tag描述：
+    2017-07-18
+
+    - 修复 某功能 by @名字
+    # “hotfix/版本号”合并至本地master分支、本地develop分支
+    # 新建本地“版本号”tag
+    # 删除本地“release/版本号”分支，切换至develop分支
+    # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）
+
+
+    git checkout develop
+    git push origin develop
+    # 推送至远程develop分支
+
+
+    git checkout master
+    git push origin master
+    # 推送至远程master分支
+
+
+    git push --tags
+    # 推送至远程tag
+    ```
+
+>e.g. CHANGELOG.md
+>
+>```text
+># Change Log
+>
+>## [1.0.1] - 2017-07-16
+>
+>- 重构 某功能 by @wushi
+>- 修复 某功能 by @yangjiu
+>- 更新 某功能 by @sunba
+>- 修改 某功能 by @qianqi
+>- 优化 某功能 by @zhaoliu
+>- 新增 某功能 by @wangwu
+>- 下线 某功能 by @lisi
+>- 移除 某功能 by @zhangsan
+>
+>## [1.0.0] - 2017-06-08
+>
+>- 上线 某功能 by @zhengfeijie
+>```
+
+### commit message格式
+>仅限于用在commit message，不得用在change log。
+
+```text
+<type>: <subject>
+
+<description>   # 可选
+
+<extra>         # 可选
+```
+
+>任何一行都不得超过72个字符（或100个字符），避免自动换行影响美观。
+
+1. **\<type\>**
+
+    用于说明commit的类别。
+
+    1. `feat`：新功能（feature）。
+    2. `fix`：修补bug。
+    3. `docs`：文档（documentation）。
+    4. `style`： 格式（不影响代码运行的变动）。
+    5. `refactor`：重构（即不是新增功能，也不是修改bug的代码变动）。
+    6. `test`：增加测试。
+    7. `chore`：构建过程或辅助工具的变动。
+    8. `revert`：撤销之前的commit。
+
+        >e.g.
+        >
+        >```text
+        >revert: feat: add 'graphiteWidth' option
+        >
+        >This reverts commit 667ecc1654a317a13331b17617d973392f415f02.
+        >```
+2. **\<subject\>**
+
+    commit的简短描述。
+
+    - 以动词开头，使用第一人称现在时。
+
+        >比如change，而不是~~changed~~或~~changes~~。
+    - 第一个字母小写。
+    - 结尾不加句号。
+3. **\<description\>**
+
+    commit的详细描述。
+
+    - 使用第一人称现在时。
+4. **\<extra\>**
+
+    1. 不兼容变动
+
+        以`BREAKING CHANGE`开头的内容。
+    2. 关闭issue
+
+        `Closes #1, #2`。
+
+>e.g.
+>
+>```text
+>feat: 添加了分享功能
+>
+>给页面添加了分享功能
+>
+>- 添加分享到微博的功能
+>- 添加分享到微信的功能
+>```
