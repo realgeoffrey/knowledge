@@ -238,7 +238,7 @@
     # 推送至远程master分支
 
 
-    git push --tags
+    git push origin “版本号”
     # 推送至远程tag
     ```
 4. 线上bug修复：
@@ -274,7 +274,7 @@
     # 推送至远程master分支
 
 
-    git push --tags
+    git push origin “版本号”
     # 推送至远程tag
     ```
 
