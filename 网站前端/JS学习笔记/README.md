@@ -399,6 +399,22 @@
 
 - 添加`document.body.addEventListener('touchstart', function () {}, true);`即可满足大部分浏览器使用伪类。
 
+### wap播放
+>html的默认标签
+
+1. 使用`autoplay`却无法自动播放
+
+    ```javascript
+    window.ontouchstart = function () {
+     document.getElementById('audio或video').play()
+    
+     window.ontouchstart = null
+    }
+    ```
+2. 播放视频时自动全屏
+
+    在`<video>`添加`webkit-playsinline playsinline x5-video-player-type="h5"`属性，避免自动全屏播放。
+
 ---
 ## 编程技巧
 
@@ -1107,10 +1123,14 @@
     >2. ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
 
 ### 跨域请求
->浏览器同源策略（协议、端口、域名，必须完全相同才能够在脚本中发起请求）限制：
+>- 浏览器同源策略（协议、端口、域名，必须完全相同才能够在脚本中发起请求）限制：
 >
->    1. 不能通过AJAX去请求不同源中的内容。
->    2. 不同源的文档间（文档与`<iframe>`、文档与`window.open()`的新窗口）不能进行JS交互操作：DOM无法获取（可以获取window对象，但无法进一步获取相应的属性、方法）；`cookie`、`Web Storage`、`IndexDB`无法读取。
+>    1. 不能通过AJAX去请求不同源中的内容（低版本）。
+>
+>        高级浏览器会直接进行CORS处理。
+>    2. 不同源的文档间（文档与`<iframe>`、文档与`window.open()`的新窗口）不能进行JS交互操作。
+>
+>        可以获取window对象，但无法进一步获取相应的属性、方法；无法获取DOM、`cookie`、`Web Storage`、`IndexDB`。
 
 1. `document.domain`相同则可以文档间互相操作
 
@@ -1165,13 +1185,18 @@
         }
     })
     ```
-4. CORS（服务端需要设置）
+4. CORS（cross-origin resource sharing，跨域资源共享）
 
     >ie10+支持。
 
-    若服务端配置允许了某些（或所有）域名，就可以进跨域请求（前端不需要进行额外工作，仅需浏览器支持即可）。
+    若服务端配置允许了某些（或所有）域名，就可以进跨域响应；前端不需要进行额外工作，仅需浏览器支持。
 
     >浏览器需要先使用`OPTIONS`方法发起一个预检请求，从而获知服务端是否允许该跨域请求。
+
+    浏览器一旦发现AJAX/fetch请求跨源，就会自动添加一些附加的头信息，有时还会多出一次附加的请求，但用户不会有感觉。
+
+    1. 简单请求
+    2. 非简单请求
 5. 其他方式
 
     1. 父窗口改变`<iframe>`的hash，`<iframe>`通过监听hash变化的`hashchange`事件获取父窗口信息

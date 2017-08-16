@@ -59,6 +59,9 @@
         <VirtualHost *:80>
             DocumentRoot E:/www/demo
             ServerName localhost
+            <Directory  "E:/www/demo/">   
+                Require all granted   
+            </Directory>
         </VirtualHost>
 		```
 		 

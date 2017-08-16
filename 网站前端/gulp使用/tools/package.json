@@ -15,7 +15,7 @@
     "gulp-postcss": "^7.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^3.1.0",
-    "gulp-sourcemaps": "^2.6.0",
+    "gulp-sourcemaps": "^2.6.1",
     "gulp-uglify": "^3.0.0",
     "gulp.spritesmith": "^6.5.0",
     "imagemin-gifsicle": "^5.1.0",
@@ -28,7 +28,7 @@
   "devDependencies": {
     "babel-eslint": "^7.2.2",
     "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-html": "^3.0.0",
+    "eslint-plugin-html": "^3.2.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "^3.5.0",

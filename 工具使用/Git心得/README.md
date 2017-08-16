@@ -1,33 +1,86 @@
 # Git心得
 
 ### 基本操作
-1. 未提交的内容清空、恢复
+1. 撤销未push内容
 
-    ```bash
-    git reset --hard HEAD
-    ```
-2. 拉取远程并修剪本地
+    1. 版本控制内的内容
+    
+        1. 清除未`git commit`的内容（包括已经或还未`git add`的文件）
+        
+            ```bash
+            git reset --hard HEAD           # 恢复版本控制内的全部文件
+            ```
+        2. 撤销已`git commit`的请求
+        
+            ```bash
+            git log                         # 选择要退回的commit_id
+            git reset “commit_id”           # 撤销commit请求，但不清除文件内容
+            ```
+        3. 撤销`git commit` + 恢复版本控制内的全部文件
+        
+            ```bash
+            git log                         # 选择要退回的commit_id
+            git reset --hard “commit_id”    # git reset “commit_id” + git reset --hard HEAD
+            ```
+    2. 清除所有不在版本控制内的内容（如.idea、node_modules）
+    
+        ```bash
+        git clean -xdf
+        ```
+2. 删除远程版本库的commit
+
+    >慎重，无法恢复。
+
+    1. 取消**至**第一个commit之后的任意commit：
+
+        ```bash
+        git reset --hard HEAD~数字     # 取消当前版本之前的N次提交
+        git push origin HEAD --force   # 强制提交到远程版本库，从而删除之前的N次提交数据
+        ```
+        >最多能取消至第二条commit；要删除第一条commit，不如先删除仓库再创建仓库。
+    2. 操作第一个commit之后的任意commit：
+
+        ```bash
+        git rebase -i --root master    # 选择commit处理状态，用s或f向上合并
+        # git rebase --abort           # 取消所有rebase操作
+        # git rebase --continue        # 出现冲突时候能够合并继续处理
+        # git rebase --skip            # （当无法使用--continue）出现冲突时丢弃commit，会造成内容丢失（慎重使用）
+        # 编辑commit信息
+        
+        git push origin HEAD --force   # 强制提交到远程版本库
+
+        # 其他用户需要 git remote 然后 git pull --rebase
+        ```
+        >当处理太多commits时候容易造成冲突。
+
+    >1. [GitLab](https://about.gitlab.com/)默认设置**master**分支是**protected**状态，无法`git push --force`。
+    >
+    >    可以在Gitlab设置里面通过：*project* > *Settings* > *Protected branches* > *Developers can push*或*UNPROTECT*，打开权限（强烈不建议长期开启）。
+    >2. Github默认允许`git push --force`。
+3. 更新远程仓库引用
 
     ```bash
     git fetch -fp
     ```
-3. 推送（新建）远程分支
+4. 推送（新建）远程分支
 
     ```bash
     git push origin 分支名 # 新建本地分支（不需要提交commit即可创建远程分支）
     ```
-4. tag
+5. tag
 
     ```bash
-    git tag              # 列出现有标签
+    git tag                          # 列出现有标签
 
-    git tag 名字          # 新建标签
-    git push origin 名字  # 推送一个本地新建标签
-    git push --tags      # 推送所有本地新建标签
+    git tag 名字                      # 新建标签
+    git push origin 名字              # 推送一个本地新建标签
+    git push --tags                  # 推送所有本地新建标签
 
-    git tag -d 名字       # 删除本地tag
+    git tag -d 名字                   # 删除本地tag
+
+    git push origin :refs/tags/名字   # 删除远程tag
     ```
-5. stash
+6. stash
 
     ```bash
     git stash                     # 往堆栈推送一个新的储藏，并且恢复修改过的被追踪的文件
@@ -109,36 +162,7 @@
         ```
 
 ### 减少Git项目下载大小
-1. 处理版本中已push的commits
-
-    >慎重，无法恢复。
-
-    1. 取消**至**第一个commit之后的任意commit：
-
-        ```bash
-        git reset --hard HEAD~数字      # 取消当前版本之前的N次提交
-        git push origin HEAD --force    # 强制提交到远程版本库，从而删除之前的N次提交数据
-        ```
-        >最多能取消至第二条commit；要删除第一条commit，不如先删除仓库再创建仓库。
-    2. 操作第一个commit之后的任意commit：
-
-        ```bash
-        git rebase -i --root master     # 选择commit处理状态，用s或f向上合并
-        # git rebase --abort    # 取消所有rebase操作
-        # git rebase --continue    # 出现冲突时候能够合并继续处理
-        # git rebase --skip    # （当无法使用--continue）出现冲突时丢弃commit，会造成内容丢失（慎重使用）
-        # 编辑commit信息
-        git push origin HEAD --force    # 强制提交到远程版本库
-
-        # 其他用户需要 git remote 然后 git pull --rebase
-        ```
-        >当处理太多commits时候容易造成冲突。
-
-    >1. [GitLab](https://about.gitlab.com/)默认设置**master**分支是**protected**状态，无法`git push --force`。
-    >
-    >    可以在Gitlab设置里面通过：*project* > *Settings* > *Protected branches* > *Developers can push*或*UNPROTECT*，打开权限（强烈不建议长期开启）。
-    >2. Github默认允许`git push --force`。
-2. 仅在Git项目中选择下载某些文件夹或文件
+1. 仅在Git项目中选择下载某些文件夹或文件
 
     >Git1.7.0以后加入了**Sparse Checkout模式**，允许Check Out指定文件或文件夹。但是只能选择一次（？），如果要更改选择的文件夹或文件，必须全部重新操作。
 
@@ -164,7 +188,7 @@
         ```bash
         git pull origin master
         ```
-3. 减少克隆深度
+2. 减少克隆深度
 
     `git clone 仓库地址 --depth 数字`
 

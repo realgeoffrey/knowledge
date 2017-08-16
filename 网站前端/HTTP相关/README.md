@@ -405,6 +405,7 @@
 
         | 请求头部字段名 | 说明 |
         | :--- | :--- |
+        | Origin | 请求源 |
         | Accept | 用户代理可处理的媒体类型 |
         | Accept-Charset | 优先的字符集 |
         | Accept-Encoding | 优先的内容编码 |
