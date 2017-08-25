@@ -348,25 +348,27 @@ var cookieFuc = {
 >简单判断是否存在某cookie：
 >
 >```javascript
->function hasCookie(checkKey) {
->    checkKey = checkKey.toString();
+>function hasCookie (checkKey) {
+>  checkKey = checkKey.toString()
 >
->    var cookieArr = document.cookie.split('; '),
->        i, len, tempArr, key, value;
+>  var cookieArr = document.cookie.split('; '),
+>    tempArr, key, value
 >
->    for (i = 0, len = cookieArr.length; i < len; i++) {
->        tempArr = cookieArr[i].split('=');
->        key = tempArr.shift();
->        value = tempArr.join('=');
+>  for (var i = 0, len = cookieArr.length; i < len; i++) {
+>    if (cookieArr[i] !== '') {
+>      tempArr = cookieArr[i].split('=')
+>      key = tempArr.shift()
+>      value = tempArr.join('=')
 >
->        if (key === checkKey) {
->            /* 操作value*/
+>      if (key === checkKey) {
+>        /* 操作value*/
 >
->            return true;
->        }
+>        return true
+>      }
 >    }
+>  }
 >
->    return false;
+>  return false
 >}
 >```
 
@@ -414,43 +416,82 @@ function getAbsoluteUrl(url) {
  * @param {String} [url = window.location.href] - URL
  * @returns {Object} location - 包括href、protocol、hostname、port、pathname、search、searchObj、hash的对象
  */
-function getLocation(url) {
-    url = url || window.location.href;
+function getLocation (url) {
+  url = url || window.location.href
 
-    /* 为了方便阅读*/
-    var _protocol = /^(?:([A-Za-z]+):)?/.source,
-        _slash = /\/*/.source,
-        _hostname = /([0-9A-Za-z.\-]+)/.source,
-        _port = /(?::(\d+))?/.source,
-        _pathname = /(\/[^?#]*)?/.source,
-        _search = /(?:\?([^#]*))?/.source,
-        _hash = /(?:#(.*))?$/.source;
+  /* 为了方便阅读*/
+  var _protocol = /^(?:([A-Za-z]+):)?/.source,
+    _slash = /\/*/.source,
+    _hostname = /([0-9A-Za-z.\-]+)/.source,
+    _port = /(?::(\d+))?/.source,
+    _pathname = /(\/[^?#]*)?/.source,
+    _search = /(?:\?([^#]*))?/.source,
+    _hash = /(?:#(.*))?$/.source
 
-    var regex = new RegExp(_protocol + _slash + _hostname + _port + _pathname + _search + _hash, 'g'),
-        regexArr = regex.exec(url),
-        keyArr = ['href', 'protocol', 'hostname', 'port', 'pathname', 'search', 'hash'],
-        location = {'searchObj': {}},
-        search, searchArr, i, len, searchItem;
+  var regex = new RegExp(_protocol + _slash + _hostname + _port + _pathname + _search + _hash, 'g'),
+    regexArr = regex.exec(url),
+    keyArr = ['href', 'protocol', 'hostname', 'port', 'pathname', 'search', 'hash'],
+    location = { 'searchObj': {} },
+    search, searchArr, searchItem, key, value
 
-    keyArr.forEach(function (item, index) {
-        location[item] = regexArr[index] || '';
-    });
+  keyArr.forEach(function (item, index) {
+    location[item] = regexArr[index] || ''
+  })
 
-    search = location['search'];
+  search = location['search']
 
-    searchArr = search.split('&');
+  searchArr = search.split('&')
 
-    for (i = 0, len = searchArr.length; i < len; i++) {
-        if (searchArr[i] !== '') {
-            searchItem = searchArr[i].split('=');
-            location['searchObj'][searchItem[0]] = searchItem[1];
-        }
+  for (var i = 0, len = searchArr.length; i < len; i++) {
+    if (searchArr[i] !== '') {
+      searchItem = searchArr[i].split('=')
+      key = searchItem.shift()
+      value = searchItem.join('=')
+      location['searchObj'][key] = value
     }
+  }
 
-    return location;
+  return location
 }
 ```
 >参考[用正则表达式分析 URL](http://harttle.com/2016/02/23/javascript-regular-expressions.html)。
+
+>获取某search值：
+>
+>```javascript
+>/**
+> * 获取某search值
+> * @param {String} checkKey - search的key
+> * @param {String} [search = window.location.search] - search总字符串
+> * @returns {String|Boolean} - search的value 或 不存在false
+> */
+>function getSearchValue (checkKey, search) {
+>  checkKey = checkKey.toString()
+>  search = search || window.location.search
+>
+>  if (search.slice(0, 1) === '?') {
+>    search = search.slice(1)
+>  }
+>
+>  var searchArr = search.split('&'),
+>    tempArr, key, value
+>
+>  for (var i = 0, len = searchArr.length; i < len; i++) {
+>    if (searchArr[i] !== '') {
+>      tempArr = searchArr[i].split('=')
+>      key = tempArr.shift()
+>      value = tempArr.join('=')
+>
+>      if (key === checkKey) {
+>
+>        return value
+>      }
+>    }
+>  }
+>
+>  return false
+>}
+>```
 
 ### *原生JS*在URL末尾添加查询名值对
 ```javascript
@@ -1929,6 +1970,35 @@ function ShowFPS(dom) {
 var a = new ShowFPS();
 
 //a.stop();
+```
+
+### *原生JS*获取星座
+```javascript
+/**
+ * 获取星座
+ * @param {String|Number} birthday - 年月日（8位，如'19900220'或19900220） 或 空字符串
+ * @returns {String} constellation - 星座 或 空字符串
+ */
+function getConstellation (birthday) {
+  birthday = birthday.toString()
+
+  var constellation = ''
+
+  if (birthday && birthday.length === 8) {
+    var month = birthday.slice(4, 6)
+    var day = birthday.slice(6, 8)
+    var conStr = '魔羯水瓶双鱼白羊金牛双子巨蟹狮子处女天秤天蝎射手魔羯'
+    var dayArr = [20, 19, 21, 20, 21, 22, 23, 23, 23, 24, 23, 22]
+
+    constellation = conStr.substr(month * 2 - (day < dayArr[month - 1] ? 2 : 0), 2)
+
+    if (constellation) {
+      constellation += '座'
+    }
+  }
+
+  return constellation
+}
 ```
 
 ---

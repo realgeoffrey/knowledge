@@ -49,6 +49,45 @@ var a = format.date(new Date(), 'yyyy-MM-dd HH:mm:ss S毫秒 EEE 季度q');
 ```
 >可以使用[moment](https://github.com/moment/moment/)格式化时间，完全替代。
 
+### *原生JS*获取年龄
+```javascript
+/**
+ * 获取年龄
+ * @param {String|Number} birthday - 年月日（8位，如'19900220'或19900220） 或 空字符串
+ * @returns {String} age - 年龄 或 空字符串
+ */
+function getAge (birthday) {
+  birthday = birthday.toString()
+
+  var age = 0
+
+  if (birthday && birthday.length === 8) {
+    var now = new Date()
+    var nowYear = now.getFullYear()
+    var nowMonth = now.getMonth() + 1
+    var nowDay = now.getDate()
+
+    if (nowMonth < 10) {
+      nowMonth = '0' + nowMonth
+    }
+    if (nowDay < 10) {
+      nowDay = '0' + nowDay
+    }
+
+    age = Math.floor((parseInt('' + nowYear + nowMonth + nowDay, 10) - parseInt(birthday, 10)) / 10000)
+  }
+
+  if (age > 0) {
+    age = age.toString()
+  } else {
+    age = ''
+  }
+
+  return age
+}
+```
+>可以使用[moment](https://github.com/moment/moment/)格式化时间，完全替代。
+
 ### *原生JS*倒计时显示
 ```javascript
 /**
