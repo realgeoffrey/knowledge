@@ -74,6 +74,8 @@
 
 	2. ~~JS方法~~：
 
+        >内部插件。
+        
         ``` html
         <!--[if IE 6]>
         <script src="js/pngfilter.js"></script>
@@ -124,7 +126,9 @@
 17. ie6不支持`position: fixed;`，需使用JS组建：
 
     1. 用JS插件
-
+        
+        >内部插件。
+        
         ``` html
         <script src="js/jquery.js"></script>
         <script src="js/ks.gototop.js"></script><!-- 依赖jQuery-->
@@ -183,7 +187,7 @@
             *zoom: 1;
 	        ```
 
-	    2. 高级浏览器
+	    2. 现代浏览器
 
 	        `opacity: 0.5;`
 	2. 仅仅背景透明，不影响子项内容：
@@ -197,19 +201,19 @@
 
 	        >- `startColorStr`是起色点，`endColorStr`是终色点（用于渐变色），两个值相同则单色；
 	        >- 值为十六进制数，前两位表示alpha通道值（透明），后六位为RGB值。
-	    2. ie9+及高级浏览器
+	    2. ie9+
 
 	        1. `background: rgba(0, 0, 0, .5);`
 	        2. 使用gif透明图（IE下较小的24位PNG图透明时引起的内存泄漏）。
 28. ie6/7/8/9没有console方法（执行会报错），可用alert替代：
 
 	```javascript
-	if(typeof console === 'undefined' || typeof console.log === 'undefined') {
-		console = {};
-		console.log = function(msg){
-			alert(msg);
-		};
-	}
+    if (typeof console === 'undefined' || typeof console.log === 'undefined') {
+      console = {}
+      console.log = function (msg) {
+        alert(msg)
+      }
+    }
 	```
 29. ie6下当子节点的宽度超过父节点设置的宽度时，会产生奇怪的样式效果，如仅设置`padding-top`而会把`padding-bottom`也设置一样的值：
 
@@ -227,7 +231,7 @@
 34. ie6下的`absolute/float`节点在页面重新渲染时，可能出现`margin-left`、`maring-top`的渲染问题，导致位置发生变化：
 
 	- 用`padding`、`margin-right`、`margin-bottom`替代。
-35. ie6下调用的`function`在还未加载到的地方，因为兼容性差，会导致调用不成功的错误，受加载速度影响，其他高级浏览器不会出现类似情况。
+35. ie6下调用的`function`在还未加载到的地方，因为兼容性差，会导致调用不成功的错误，受加载速度影响，现代浏览器不会出现类似情况。
 36. ie6下，父级为`float`，其子级要根据内容宽度自适应：
 
     - ~~子级为`display: block;`，若要设置`height`就必须要设置`width`，否者会导致子级铺满父级。~~

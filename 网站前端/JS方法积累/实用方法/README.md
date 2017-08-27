@@ -715,7 +715,7 @@ function isObjEmpty(obj) {
 
     if (obj !== Object(obj)) {  /* 参数不是对象*/
         throw new TypeError('参数不是对象');
-    } else if (typeof Object.keys === 'function') { /* ie9+及高级浏览器支持*/
+    } else if (typeof Object.keys === 'function') { /* ie9+*/
 
         return Object.keys(obj).length === 0;
     } else {
@@ -1010,7 +1010,7 @@ var eventUtil = {
      * @param {Function} handle - 处理函数
      */
     addHandler: function (dom, type, handle) {
-        if (typeof dom.addEventListener === 'function') {   /* DOM2级，除ie8-外的高级浏览器*/
+        if (typeof dom.addEventListener === 'function') {   /* DOM2级，除ie8-*/
             dom.addEventListener(type, handle, false);
         } else if (typeof dom.attachEvent === 'function') { /* 所有ie浏览器*/
             dom.attachEvent('on' + type, handle);   //注意传入的参数和this的兼容

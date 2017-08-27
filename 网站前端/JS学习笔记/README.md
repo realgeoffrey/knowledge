@@ -1123,16 +1123,36 @@
     >2. ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
 
 ### 跨域请求
->- 浏览器同源策略（协议、端口、域名，必须完全相同才能够在脚本中发起请求）限制：
+>- 浏览器同源策略（协议、域名、端口，必须完全相同才能够在脚本中发起请求）限制：
 >
->    1. 不能通过AJAX去请求不同源中的内容（低版本）。
+>    1. 不能通过AJAX去请求不同源中的内容（低版本浏览器不会发起跨域请求，直接拒绝）。
 >
->        高级浏览器会直接进行CORS处理。
+>        现代浏览器会进行CORS处理，发起请求并与服务器协商（特例：有些浏览器不允许从HTTPS跨域访问HTTP，这些浏览器在请求还未发出的时候就会拦截请求）。
 >    2. 不同源的文档间（文档与`<iframe>`、文档与`window.open()`的新窗口）不能进行JS交互操作。
 >
->        可以获取window对象，但无法进一步获取相应的属性、方法；无法获取DOM、`cookie`、`Web Storage`、`IndexDB`。
+>        1. 可以获取window对象，但无法进一步获取相应的属性、方法。
+>        2. 无法获取DOM、`cookie`、`Web Storage`、`IndexDB`。
 
-1. `document.domain`相同则可以文档间互相操作
+1. [CORS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#corscross-origin-resource-sharing跨域资源共享)
+2. jsonp（服务端需要设置）
+
+    >只支持**GET**请求。
+
+    网页通过添加一个`<script>`，向服务器发起文档请求（不受同源政策限制）；服务器收到请求后，将数据放在一个指定名字的回调函数里传回网页直接执行。
+
+    jQuery在`ajax`方法中封装了`jsonp`功能：
+
+    ```javascript
+    $.ajax({
+        url: '接口地址',
+        dataType: 'jsonp',
+        jsonp: '与服务端约定的支持jsonp方法',  //前端唯一需要额外添加的内容
+        success: function(data) {
+            //data为跨域请求获得的服务端返回数据
+        }
+    })
+    ```
+3. `document.domain`相同则可以文档间互相操作
 
     把不同文档的`document.domain`设置为一致的值（仅允许设置为上一级域），即可双向通信、互相操作（`cookie`可以直接操作；`localStorage`、`IndexDB`只能通过`postMessage`通信）。
 
@@ -1154,7 +1174,7 @@
         //新打开窗口调用父窗口的window对象
         var father = window.opener;
         ```
-2. `postMessage`文档间通信
+4. `postMessage`文档间通信
 
     >ie8、ie9仅支持与`<iframe>`，ie10+支持与`<iframe>`、`window.open()`的新窗口。不实行同源政策。
 
@@ -1167,36 +1187,6 @@
       console.log(e);
     },false);
     ```
-3. jsonp（服务端需要设置）
-
-    >只支持**GET**请求。
-
-    网页通过添加一个`<script>`，向服务器发起文档请求（不受同源政策限制）；服务器收到请求后，将数据放在一个指定名字的回调函数里传回网页直接执行。
-
-    jQuery在`ajax`方法中封装了`jsonp`功能：
-
-    ```javascript
-    $.ajax({
-        url: '接口地址',
-        dataType: 'jsonp',
-        jsonp: '与服务端约定的支持jsonp方法',  //前端唯一需要额外添加的内容
-        success: function(data) {
-            //data为跨域请求获得的服务端返回数据
-        }
-    })
-    ```
-4. CORS（cross-origin resource sharing，跨域资源共享）
-
-    >ie10+支持。
-
-    若服务端配置允许了某些（或所有）域名，就可以进跨域响应；前端不需要进行额外工作，仅需浏览器支持。
-
-    >浏览器需要先使用`OPTIONS`方法发起一个预检请求，从而获知服务端是否允许该跨域请求。
-
-    浏览器一旦发现AJAX/fetch请求跨源，就会自动添加一些附加的头信息，有时还会多出一次附加的请求，但用户不会有感觉。
-
-    1. 简单请求
-    2. 非简单请求
 5. 其他方式
 
     1. 父窗口改变`<iframe>`的hash，`<iframe>`通过监听hash变化的`hashchange`事件获取父窗口信息
