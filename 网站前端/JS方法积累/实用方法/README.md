@@ -110,55 +110,72 @@ function animateTo(endX, endY, time) {
 >使用[velocity动画库](https://github.com/julianshapiro/velocity)（[中文文档](http://www.mrfront.com/docs/velocity.js/)）做所有的动画（包括JS和CSS）才是最简单且性能最佳的选择。
 >如滚动到某位置：`$('html').velocity('scroll', {offset: y轴像素, duration: 毫秒});`。
 
-### *原生JS*判断浏览器userAgent（`window.navigator`）
+### *原生JS*判断浏览器所在系统
 ```javascript
-function SnifBrowser() {
-    var self = this;
+function detectOS (ua, pf) {
+  ua = ua || window.navigator.userAgent
+  pf = window.navigator.platform
 
-    self.isWebkit = false;
-    self.isSafari = false;
-    self.isIOS = false;
-    self.isIpad = false;
-    self.isIphone = false;
-    self.isAndroid = false;
-    self.isMobile = false;
-    self.isWechat = false;
-    self.device = '';
-    self.version = '';
-    self.standalone = '';
+  var os = ''
 
-    var _init = function () {
-        var navigator = window.navigator,
-            userAgent = navigator.userAgent,
-            ios = userAgent.match(/(iPad|iPhone|iPod)[^;]*;.+OS\s([\d_\.]+)/),
-            android = userAgent.match(/(Android)[\s|\/]([\d\.]+)/);
+  if (/iPhone|iPad|iPod|iOS/.test(ua)) {
+    os = 'iOS'
+  } else if (/Android/.test(ua)) {
+    os = 'Android'
+  } else if (/\bWindows Phone/.test(ua)) {
+    os = 'Windows Phone'
+  } else {
+    if (pf === 'Mac68K' || pf === 'MacPPC' || pf === 'Macintosh' || pf === 'MacIntel') {
+      os = 'macOS'
+    } else if (pf === 'Win32' || pf === 'Windows') {
+      if (/Windows NT 5.0/.test(ua) || /Windows 2000/.test(ua)) {
+        os = 'Win2000'
+      } else if (/Windows NT 5.1/.test(ua) || /Windows XP/.test(ua)) {
+        os = 'WinXP'
+      } else if (/Windows NT 5.2/.test(ua) || /Windows 2003/.test(ua)) {
+        os = 'Win2003'
+      } else if (/Windows NT 6.0/.test(ua) || /Windows Vista/.test(ua)) {
+        os = 'WinVista'
+      } else if (/Windows NT 6.1/.test(ua) || /Windows 7/.test(ua)) {
+        os = 'Win7'
+      } else if (/Windows NT 10.0/.test(ua) || /Windows 10/.test(ua)) {
+        os = 'Win10'
+      } else {
+        os = 'Windows'
+      }
+    } else if (pf === 'X11') {
+      os = 'Unix'
+    } else if (/Linux/.test(pf)) {
+      os = 'Linux'
+    }
+  }
 
-        self.isWebkit = /WebKit\/[\d.]+/i.test(userAgent);
-        self.isSafari = ios ? (navigator.standalone ? self.isWebkit : (/Safari/i.test(userAgent) && !/CriOS/i.test(userAgent) && !/MQQBrowser/i.test(userAgent))) : false;
-
-        if (ios) {
-            self.device = ios[1];
-            self.version = ios[2].replace(/_/g, '.');
-            self.isIOS = (/iphone|ipad|ipod/i).test(navigator.appVersion);
-            self.isIpad = userAgent.match(/iPad/i) || false;
-            self.isIphone = userAgent.match(/iPhone/i) || false;
-        } else if (android) {
-            self.device = android[1];
-            self.version = android[2];
-            self.isAndroid = (/android/i).test(navigator.appVersion);
-        }
-
-        self.isMobile = self.isAndroid || self.isIOS;
-        self.standalone = navigator.standalone || false;
-        self.isWechat = userAgent.indexOf('MicroMessenger') >= 0;
-    };
-
-    _init();
+  return os
 }
+```
 
+### *原生JS*返回用户所在移动平台
+```javascript
+// 返回用户所在平台（微信、QQ、微博、QQ空间）
+function platform (ua) {
+  ua = ua || window.navigator.userAgent
 
-/* 使用测试*/
-var a = new SnifBrowser();
+  var platForm
+
+  if (/MicroMessenger/.test(ua)) {
+    platForm = 'weixin'
+  } else if (/QQ\//.test(ua)) {
+    platForm = 'qq'
+  } else if (/\bWeibo|__weibo__\d/.test(ua)) {
+    platForm = 'weibo'
+  } else if (/Qzone\//.test(ua)) {
+    platForm = 'qzone'
+  } else {
+    platForm = 'other'
+  }
+
+  return platForm
+}
 ```
 
 ### *原生JS*判断ie6、7、8、9版本
