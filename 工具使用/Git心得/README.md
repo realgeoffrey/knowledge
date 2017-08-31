@@ -57,17 +57,32 @@
     >
     >    可以在Gitlab设置里面通过：*project* > *Settings* > *Protected branches* > *Developers can push*或*UNPROTECT*，打开权限（强烈不建议长期开启）。
     >2. Github默认允许`git push --force`。
-3. 更新远程仓库引用
+3. 合并
+
+    ```bash
+    # 其他分支更新至最新内容
+    git checkout 其他分支
+    git pull origin 其他分支
+    
+    # 把其他分支内容合并至收集改动分支
+    git checkout 收集改动分支
+    git merge 其他分支
+    # if未产生冲突，则自动commit了合并的内容
+    # if产生冲突，则手动解决：'<<<<<<< HEAD'至'======='为收集改动分支内容；'======='至'>>>>>>> 其他分支'为其他分支内容
+    
+    git push origin 收集改动分支  # 若冲突了需要：解决冲突 -> add -> commit
+    ```
+4. 更新远程仓库引用
 
     ```bash
     git fetch -fp
     ```
-4. 推送（新建）远程分支
+5. 推送（新建）远程分支
 
     ```bash
     git push origin 分支名 # 新建本地分支（不需要提交commit即可创建远程分支）
     ```
-5. tag
+6. tag
 
     ```bash
     git tag                          # 列出现有标签
@@ -80,7 +95,7 @@
 
     git push origin :refs/tags/名字   # 删除远程tag
     ```
-6. stash
+7. stash
 
     ```bash
     git stash                     # 往堆栈推送一个新的储藏，并且恢复修改过的被追踪的文件

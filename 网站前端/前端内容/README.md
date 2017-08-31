@@ -56,44 +56,58 @@
             3. 静态资源CDN部署 —— 优化网络请求
             4. 非覆盖式更新资源 —— 平滑升级
 
-### 页面载入解析步骤
->参考[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)。
+### 页面加载解析步骤
+1. DOM构造解析步骤
 
-![页面解析步骤图](./images/load-html-1.png)
+    >参考[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)。
+    
+    ![页面解析步骤图](./images/load-html-1.png)
+    
+    1. 增量式生成一个文档对象模型（DOM），解析页面内容（HTML标签）。
+    
+        1. 加载DOM中所有CSS，生成一个CSS对象模型（CSSOM），描述对页面内容如何设置样式。
+    
+            加载CSS并构造完整的CSSOM之前，**阻塞渲染**（Render Tree渲染被暂停）。
+        2. 加载DOM中所有JS，对DOM和CSSOM进行访问和更改。
+    
+            1. HTML中出现JS，**阻塞解析**（DOM构造被暂停）。
+            2. 下载脚本或内嵌脚本不用下载。
+            3. 等待所有CSS被提取且CSSOM被构造完毕。
+            4. 执行脚本，访问、更改DOM和CSSOM。
+            5. DOM构造继续进行。
+    
+            >`<script>`执行：
+            >
+            >    1. 没有`defer`或`async`：立即加载并执行（同步），阻塞解析。
+            >    2. `defer`：异步加载，在DOM解析完成后、`DOMContentLoaded`触发前执行，顺序执行。
+            >
+            >        >多个`defer`脚本不一定按照顺序执行，也不一定会在`DOMContentLoaded`事件触发前执行，因此最好只包含一个延迟脚本。
+            >    3. `async`：异步加载，加载完马上执行。
+            >
+            >        乱序执行，仅适用于不考虑依赖、不操作DOM的脚本。
+            >
+            >    ![JS脚本加载图](./images/js-load-1.png)
+    2. DOM（parse HTML）和CSSOM（recalculate style）构造完成后，进行渲染：
+    
+        Render Tree（渲染树）：Layout -> Paint -> Composite
+    
+        >1. 一定要等待外链资源加载完毕（包括加载失败）才可以继续构建DOM或CSSOM。
+        >2. 只有可见的元素才会进入渲染树。
+        >3. DOM不存在伪元素（CSSOM中才有定义），伪元素存在render tree中。
+    
+    >无论阻塞渲染还是阻塞解析，资源文件会不间断按顺序加载。
+2. 事件完成顺序
 
-1. 增量式生成一个文档对象模型（DOM），解析页面内容（HTML标签）。
-
-    1. 加载DOM中所有CSS，生成一个CSS对象模型（CSSOM），描述对页面内容如何设置样式。
-
-        加载CSS并构造完整的CSSOM之前，**阻塞渲染**（Render Tree渲染被暂停）。
-    2. 加载DOM中所有JS，对DOM和CSSOM进行访问和更改。
-
-        1. HTML中出现JS，**阻塞解析**（DOM构造被暂停）。
-        2. 下载脚本或内嵌脚本不用下载。
-        3. 等待所有CSS被提取且CSSOM被构造完毕。
-        4. 执行脚本，访问、更改DOM和CSSOM。
-        5. DOM构造继续进行。
-
-        >`<script>`执行：
-        >
-        >    1. 没有`defer`或`async`：立即加载并执行（同步），阻塞解析。
-        >    2. `defer`：异步加载，在DOM解析完成后、`DOMContentLoaded`触发前执行，顺序执行。
-        >
-        >        >多个`defer`脚本不一定按照顺序执行，也不一定会在`DOMContentLoaded`事件触发前执行，因此最好只包含一个延迟脚本。
-        >    3. `async`：异步加载，加载完马上执行。
-        >
-        >        乱序执行，仅适用于不考虑依赖、不操作DOM的脚本。
-        >
-        >    ![JS脚本加载图](./images/js-load-1.png)
-2. DOM（parse HTML）和CSSOM（recalculate style）构造完成后，进行渲染：
-
-    Render Tree（渲染树）：Layout -> Paint -> Composite
-
-    >1. 一定要等待外链资源加载完毕（包括加载失败）才可以继续构建DOM或CSSOM。
-    >2. 只有可见的元素才会进入渲染树。
-    >3. DOM不存在伪元素（CSSOM中才有定义），伪元素存在render tree中。
-
->无论阻塞渲染还是阻塞解析，资源文件会不间断按顺序加载。
+    1. 解析DOM；
+    2. 加载外部JS（和CSS）；
+    3. （CSSOM先构造完毕）解析并执行JS；
+    4. 构造DOM完毕；
+        
+        完毕后触发：JS的`document.addEventListener('DOMContentLoaded', function(){}, false)` 或 jQuery的`$(document).ready(function(){})`。
+    5. 加载图片、媒体资源等外部文件；
+    6. 资源加载完毕。
+    
+        完毕后触发：JS的`window.addEventListener('load', function(){}, false)`。
 
 - 判断JS、CSS文件是否加载完毕：
 
@@ -159,7 +173,7 @@
             2. 使用[缓存相关的HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：`Expires`、`Cache-Control`、`Last-Modified/If-Modified-Since`、`ETag/If-None-Match`。
             3. 配置超长时间的本地缓存，采用内容摘要（MD5）作为缓存更新依据。
         6. [非覆盖式更新资源](https://github.com/fouber/blog/issues/6)。
-    2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面载入解析步骤)：
+    2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面加载解析步骤)：
 
         前端对具体代码性能、CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）的优化。
 

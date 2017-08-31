@@ -340,80 +340,111 @@
 
     >ie10-的DOM事件流只有冒泡，没有~~捕获~~。
 
-### jQuery的`文档的ready`事件、原生JS的`window的load`事件顺序
-1. 解析DOM。
-2. 加载外部JS、CSS。
-3. 解析并执行JS。
-4. 构造DOM完毕后执行：jQuery的`$(document).ready(function(){});`。
-5. 加载图片、媒体资源等外部文件。
-6. 资源加载完毕后执行：`window.onload();`。
+### WAP端相关
+1. WAP端点透bug
 
-### WAP端点透bug
->1. PC端没有~~touch~~事件。
->2. WAP端有`touchstart`、`touchmove`、`touchend`、`touchcancel`等`touch`事件。
->3. Zepto用`touch`一系列事件封装了`tap`事件。
+    >1. PC端没有~~touch~~事件。
+    >2. WAP端有`touchstart`、`touchmove`、`touchend`、`touchcancel`等`touch`事件。
+    >3. Zepto用`touch`一系列事件封装了`tap`事件。
 
-1. 点透现象：
+    1. 点透现象：
 
-    使用Zepto的`tap`事件绑定（或原生`touchstart`绑定）后，若此元素在触摸事件发生后离开原始位置（CSS或JS），同一位置正好有一个DOM元素绑定了`click`事件或`<a>`，则会出现“点透”bug（触发底下元素的`click`事件）。
-2. 原因
+        使用Zepto的`tap`事件绑定（或原生`touchstart`绑定）后，若此元素在触摸事件发生后离开原始位置（CSS或JS），同一位置正好有一个DOM元素绑定了`click`事件或`<a>`，则会出现“点透”bug（触发底下元素的`click`事件）。
+    2. 原因
 
-    >历史原因：WAP端增加快速双击缩放和恢复功能。由于当用户一次点击屏幕之后，浏览器并不能立刻判断用户是单击还是双击操作。因此，就等待300ms左右，以判断用户是否再次点击了屏幕。
+        >历史原因：WAP端增加快速双击缩放和恢复功能。由于当用户一次点击屏幕之后，浏览器并不能立刻判断用户是单击还是双击操作。因此，就等待300ms左右，以判断用户是否再次点击了屏幕。
 
-    WAP端触摸事件顺序：`touchstart`->`touchmove`->`touchend`->`click`，触摸一瞬间触发`touchstart`，触摸结束后触发Zepto封装的`tap`事件，触摸结束后300ms左右触发`click`事件。
-3. 解决方法：
+        WAP端触摸事件顺序：`touchstart`->`touchmove`->`touchend`->`click`，触摸一瞬间触发`touchstart`，触摸结束后触发Zepto封装的`tap`事件，触摸结束后300ms左右触发`click`事件。
+    3. 解决方法：
 
-    1. 使用[fastclick.js](https://github.com/ftlabs/fastclick)消除`click`的延时（最佳方式）
+        1. 使用[fastclick.js](https://github.com/ftlabs/fastclick)消除`click`的延时（最佳方式）
 
-        用`click`代替全部`tap`事件，这样PC端和WAP端都可以一致用`click`事件且不会出现WAP端点透bug。
+            用`click`代替全部`tap`事件，这样PC端和WAP端都可以一致用`click`事件且不会出现WAP端点透bug。
 
-        >fastclick.js原理：在检测到`touchend`事件时，通过DOM自定义事件立即触发一个模拟`click`事件，并阻止浏览器在300ms之后真正触发的`click`事件。
-    2. 禁用缩放，设置`<meta name="viewport" content="initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">`。
-    3. 布局viewport小于等于可视viewport则浏览器禁用双击缩放，设置`<meta name="viewport" content="width=device-width, initial-scale=1.0">`。
-    4. CSS属性`touch-action: manipulation;`仅允许在元素上进行触屏操作的平移、缩放，忽略~~双击~~。
-    5. 使用缓动动画，过度300ms延迟。
-    6. 中间增加一层接受这个点透事件，然后去除此层。
-    7. [模拟点击事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)代替`click`。
+            >fastclick.js原理：在检测到`touchend`事件时，通过DOM自定义事件立即触发一个模拟`click`事件，并阻止浏览器在300ms之后真正触发的`click`事件。
+        2. 禁用缩放，设置`<meta name="viewport" content="initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">`。
+        3. 布局viewport小于等于可视viewport则浏览器禁用双击缩放，设置`<meta name="viewport" content="width=device-width, initial-scale=1.0">`。
+        4. CSS属性`touch-action: manipulation;`仅允许在元素上进行触屏操作的平移、缩放，忽略~~双击~~。
+        5. 使用缓动动画，过度300ms延迟。
+        6. 中间增加一层接受这个点透事件，然后去除此层。
+        7. [模拟点击事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)代替`click`。
+2. WAP端使用`:active`
 
-### WAP端使用`:active`
-1. Android系统的浏览器大部分直接使用CSS伪类即可。
-2. iOS系统的浏览器要添加：`document.body.addEventListener('touchstart', function () {}, true);`。
-3. ~~JS添加类的方法模拟~~：
+    1. Android系统的浏览器大部分直接使用CSS伪类即可。
+    2. iOS系统的浏览器要添加：`document.body.addEventListener('touchstart', function () {}, true);`。
+    3. ~~JS添加类的方法模拟~~：
 
-    ```html
-    <style>
-        .d:active,
-        .d.active { }
-    </style>
+        ```html
+        <style>
+            .d:active,
+            .d.active { }
+        </style>
 
-    <script type="text/javascript">
-        var selector = '.a,.b .c,.d';   /* 选择器字符串*/
+        <script type="text/javascript">
+            var selector = '.a,.b .c,.d';   /* 选择器字符串*/
 
-        $(document.body).on('touchstart', selector, function () {
-            $(this).addClass('active');
-        }).on('touchmove touchend touchcancel', selector, function () {
-            $(this).removeClass('active');
-        });
-    </script>
-    ```
+            $(document.body).on('touchstart', selector, function () {
+                $(this).addClass('active');
+            }).on('touchmove touchend touchcancel', selector, function () {
+                $(this).removeClass('active');
+            });
+        </script>
+        ```
 
-- 添加`document.body.addEventListener('touchstart', function () {}, true);`即可满足大部分浏览器使用伪类。
+    - 添加`document.body.addEventListener('touchstart', function () {}, true);`即可满足大部分浏览器使用伪类。
+3. WAP端播放
 
-### wap播放
->html的默认标签
+    1. 自动播放
 
-1. 使用`autoplay`却无法自动播放
+        >`<video>`、`<audio>`同理。
 
-    ```javascript
-    window.ontouchstart = function () {
-     document.getElementById('audio或video').play()
-    
-     window.ontouchstart = null
-    }
-    ```
-2. 播放视频时自动全屏
+        ```html
+        <!-- 因为兼容性，故不使用`autoplay`属性，用JS代码模拟 -->
+        <video id="j-video">
+          您的浏览器不支持 video 标签
+        </video>
 
-    在`<video>`添加`webkit-playsinline playsinline x5-video-player-type="h5"`属性，避免自动全屏播放。
+        <script>
+          var video = document.getElementById('j-video')
+
+          document.addEventListener('DOMContentLoaded', function () {
+            video.setAttribute('src', '视频地址')
+            video.play()
+          }, false)
+
+          window.ontouchstart = function () {
+            video.play()
+            window.ontouchstart = null
+          }
+        </script>
+        ```
+    2. 内嵌播放
+
+        ```html
+        <!-- 因为全屏播放完video会白屏，故可以在自己或父级添加封面图片背景 -->
+        <video id="j-video"
+               webkit-playsinline
+               playsinline
+               x5-video-player-type="h5">
+          您的浏览器不支持 video 标签
+        </video>
+
+        <script>
+          var video = document.getElementById('j-video')
+
+          // QQ浏览器去除 x5-video-player-type 属性
+          if (/QQBrowser/.test(window.navigator.userAgent)) {
+            video.removeAttribute('x5-video-player-type')
+          }
+        </script>
+        ```
+    3. 自定义播放按钮
+
+    - 无法解决：
+
+        1. 改变全屏播放方向问题（调用客户端控件）
+
+            `x5-video-orientation="landscape或portraint"`、`x5-video-player-fullscreen="true"`DOM属性无法解决。
 
 ---
 ## 编程技巧
@@ -798,7 +829,7 @@
         1. 使用外部资源。
         2. 不在HTML内嵌事件处理函数。
         3. 对只为DOM增添的内容，转移到外部资源中动态创建。
-    5. 性能优化[从URL输入之后](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面载入解析步骤)就开始考虑。
+    5. 性能优化[从URL输入之后](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面加载解析步骤)就开始考虑。
 
         >避免~~微优化~~：
         >
