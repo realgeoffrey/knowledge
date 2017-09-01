@@ -214,7 +214,7 @@ gulp.task('browserSync', () => {
     },
     port: 3000, // 端口号
     proxy: { // 服务器
-      target: 'localhost'
+      target: 'localhost/demo'
     }
     //    server: {   //相对地址
     //        baseDir: '../../www/demo/'

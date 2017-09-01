@@ -83,7 +83,7 @@
         7. 通配符选择器（`*`）
         8. 属性选择器
         9. 伪类选择器、伪元素选择器
-    3. 避免使用 ~~@import~~，只用`<link>`标签；避免使用~~CSS表达式（CSS expression）~~。
+    3. 避免使用 ~~@import~~，只用`<link>`；避免使用~~CSS表达式（CSS expression）~~。
     4. 移除空CSS规则、合理使用`display`、不滥用`float`、不滥用Web字体。
 3. [类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#选择器类型)
 
@@ -654,7 +654,7 @@
 ### 等宽文字
 >不同字数的一行文字等宽。
 
-1. 用`inline-block`标签填补间隙
+1. 用`inline-block`的元素填补间隙
 
     ```html
     <style type="text/css">
@@ -1273,7 +1273,7 @@
 
     1. 主流浏览器等于最外层子节点宽度。
     2. ie6等于所有子节点中最大的宽度。
-4. `inline`、`inline-block`节点标签前可能有空隙（其实是内联标签前面的空白符，若拥有`font-size`之后便会有高宽），通过以下办法解决：
+4. `inline`、`inline-block`的元素前可能有空隙（其实是内联标签前面的空白符，若拥有`font-size`之后便会有高宽），通过以下办法解决：
 
     1. 把`inline`、`inline-block`节点设置为`block`。
     2. 给父级节点设置`font-size: 0;`（可用此方法排查是否是空格造成的）。
@@ -1297,7 +1297,7 @@
 11. 富文本
 
     1. 富文本内容除了要检测用户输入标签的闭合性，还要注意不要用`<li>`嵌套富文本，因为代码中如果有单独的`<li>`（没有嵌套`<ol>`或`<ul>`），就会“越级”到跟祖先级`<li>`同级的内容。
-    2. 部分富文本会用标签`<em>`、`<ol>`、`<ul>`来表示**斜体**、**有序序列**、**无序序列**，因此如果用CSS重置了以上标签后，要在[富文本内重载开启它们的默认效果](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L61-L77)。
+    2. 部分富文本会用`<em>`、`<ol>`、`<ul>`来表示**斜体**、**有序序列**、**无序序列**，因此如果用CSS重置了以上标签后，要在[富文本内重载开启它们的默认效果](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L61-L77)。
     3. 部分富文本会在`<table>`上使用`cellspacing`、`border`、`bordercolor`属性设置表格，又因为设置了`border: 0;`的表格无法重载开启以上属性作用，所以CSS重置时[不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L26-L27)。
 12. 超出内容区域的内容
 

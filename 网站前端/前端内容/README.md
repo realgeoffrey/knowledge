@@ -125,7 +125,7 @@
 1. [HTTP定义的缓存机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)
 2. 其他缓存机制（不建议方式）
 
-    1. HTML的`meta`标签设置缓存情况：
+    1. HTML的`<meta>`设置缓存情况：
 
         e.g. 设置不缓存：
 
@@ -134,7 +134,7 @@
         <meta http-equiv="cache-control" content="no-cache">
         <meta http-equiv="expires" content="0">
         ```
-    2. html标签属性`manifest`应用程序缓存：
+    2. `<html>`的`manifest`应用程序缓存：
 
         ```html
         <html manifest=".manifest文件/.appcache文件">
@@ -499,21 +499,6 @@
 
 >用`变量 = null;`等方法，让变量成为零引用，从而进行清除元素、垃圾回收（导致内存泄露的情况除外）。
 
-### 自动插入分号机制（Automatic Semicolon Insertion，ASI）
-1. ASI机制不是说在解析过程中解析器自动把分号添加到代码中，而是说解析器除了分号还会以换行为基础按一定的规则作为断句（EOC）的依据，从而保证解析的正确性。
-2. 解析器会尽量将新行并入当前行，当且仅当符合ASI规则时才会将新行视为独立的语句：
-
-    1. `;`空语句
-    2. `var`语句
-    3. 表达式语句（一定会产生一个值）
-    4. `do-while`语句（不是`while`）
-    5. `continue`语句
-    6. `break`语句
-    7. `return`语句
-    8. `throw`语句
-
->前置分号策略：只要判断行首字符为：`[` `(` `+` `-` `/` `` ` ``之一，就在其前面增加分号。
-
 ### 前端与服务端配合方式
 1. 并行（优先）：
 
@@ -523,3 +508,18 @@
 2. 串行：
 
     服务端比前端提前一个版本，交付的内容包括API+文档。
+
+### JavaScript范围
+>ECMAScript是JavaScript的标准，狭义地说JavaScript是指ECMAScript。浏览器、Node.js都是JavaScript的运行环境。
+
+1. 浏览器（web应用）的JavaScript包括：
+
+    1. ECMAScript：描述该语言的语法和基本对象。
+    2. Web API：
+
+        1. 文档对象模型（DOM）：描述处理网页内容的方法和接口。
+        2. 浏览器对象模型（BOM）：描述与浏览器进行交互的方法和接口。
+2. Node.js的JavaScript包括：
+
+    1. ECMAScript：描述该语言的语法和基本对象。
+    2. 操作系统的API：提供与运行环境、操作系统互动的工具库。

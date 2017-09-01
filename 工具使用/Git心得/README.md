@@ -31,25 +31,34 @@
 
     >慎重，无法恢复。
 
-    1. 取消**至**第一个commit之后的任意commit：
+    1. `reset`
+
+        向前逐个删除commit（除了第一个commit）。
 
         ```bash
         git reset --hard HEAD~数字     # 取消当前版本之前的N次提交
-        git push origin HEAD --force   # 强制提交到远程版本库，从而删除之前的N次提交数据
+        git push origin HEAD --force   # 强制提交到远程版本库
+
+        # 若删除的是其他用户已经拉取的commit，则会变成其他用户本地的commit
         ```
+
         >最多能取消至第二条commit；要删除第一条commit，不如先删除仓库再创建仓库。
-    2. 操作第一个commit之后的任意commit：
+    2. `rebase`
+
+        操作任意commit。
 
         ```bash
-        git rebase -i --root master    # 选择commit处理状态，用s或f向上合并
+        git rebase -i --root master    # 选择commit处理状态
+        # 编辑commit信息
+
         # git rebase --abort           # 取消所有rebase操作
         # git rebase --continue        # 出现冲突时候能够合并继续处理
         # git rebase --skip            # （当无法使用--continue）出现冲突时丢弃commit，会造成内容丢失（慎重使用）
-        # 编辑commit信息
-        
+
         git push origin HEAD --force   # 强制提交到远程版本库
 
-        # 其他用户需要 git remote 然后 git pull --rebase
+        # 其他用户需要
+        git pull --rebase
         ```
         >当处理太多commits时候容易造成冲突。
 

@@ -394,34 +394,65 @@
     - 添加`document.body.addEventListener('touchstart', function () {}, true);`即可满足大部分浏览器使用伪类。
 3. WAP端播放
 
-    1. 自动播放
+    >大部分`<video>`、`<audio>`同理。
 
-        >`<video>`、`<audio>`同理。
+    1. 播放事件
+
+        >参考[MDN：媒体相关事件](https://developer.mozilla.org/zh-CN/docs/Web/Guide/Events/Media_events)。
+
+        1. 正在播放
+
+            `timeupdate`事件：当媒体的`currentTime`属性改变（拉动进度或播放中）。
+        2. 开始播放
+
+            1. `play`事件：初次播放、暂停后恢复。
+            2. `playing`事件：初次播放、暂停后恢复、结束后自动开始（`loop`属性模式）。
+        3. 暂停播放
+
+            `pause`事件
+        4. 完成一轮播放
+
+            >因为`loop`属性模式无法触发`ended`事件，又`timeupdate`事件触发时间不确定、无法和`媒体.duration`取等判断成功，故无法在`loop`属性模式中判定。
+
+            （非`loop`属性模式下的）`ended`事件（伴随`pause`事件）。
+    2. 自动播放
+
+        1. JS代码模拟
+
+            >因为兼容性，故不使用`autoplay`属性模式，用JS代码模拟。
+
+            ```html
+            <video id="j-video">
+              您的浏览器不支持 video 标签
+            </video>
+
+            <script>
+              var video = document.getElementById('j-video')
+
+              document.addEventListener('DOMContentLoaded', function () {
+                video.setAttribute('src', '视频地址')
+                video.play()
+              }, false)
+
+              // 根据需求选用
+              window.ontouchstart = function () {
+                video.play()
+                window.ontouchstart = null
+              }
+            </script>
+            ```
+        2. `autoplay`属性模式
+    3. 循环播放
+
+        1. JS代码模拟
+
+            `ended`事件中触发`媒体.play()`。
+        2. `loop`属性模式
+    4. 内嵌播放
+
+        >因为全屏播放完`<video>`会白屏，故可以在父级添加封面图片背景。
 
         ```html
-        <!-- 因为兼容性，故不使用`autoplay`属性，用JS代码模拟 -->
-        <video id="j-video">
-          您的浏览器不支持 video 标签
-        </video>
-
-        <script>
-          var video = document.getElementById('j-video')
-
-          document.addEventListener('DOMContentLoaded', function () {
-            video.setAttribute('src', '视频地址')
-            video.play()
-          }, false)
-
-          window.ontouchstart = function () {
-            video.play()
-            window.ontouchstart = null
-          }
-        </script>
-        ```
-    2. 内嵌播放
-
-        ```html
-        <!-- 因为全屏播放完video会白屏，故可以在自己或父级添加封面图片背景 -->
         <video id="j-video"
                webkit-playsinline
                playsinline
@@ -438,13 +469,113 @@
           }
         </script>
         ```
-    3. 自定义播放按钮
+    5. 播放控件（内嵌播放）
 
-    - 无法解决：
+        1. `controls`属性模式
+        2. JS代码模拟
 
-        1. 改变全屏播放方向问题（调用客户端控件）
+            >因为无法兼容至所有浏览器，故不推荐。
 
-            `x5-video-orientation="landscape或portraint"`、`x5-video-player-fullscreen="true"`DOM属性无法解决。
+            ```html
+            <style>
+              .video-wrap {
+                position: relative;
+                width: 320px;
+                height: 500px;
+                background: red;
+              }
+              .video-wrap video {
+                max-width: 100%;
+                max-height: 100%;
+              }
+              .icon {
+                position: absolute;
+                top: 0;
+                width: 100%;
+                height: 50%;
+                background: yellow;
+              }
+            </style>
+
+            <div id="j-video-wrap" class="video-wrap">
+              <video id="j-video"
+                     webkit-playsinline
+                     playsinline
+                     x5-video-player-type="h5"
+                     style="width: 1px;height: 1px;">
+                您的浏览器不支持 video 标签
+              </video>
+
+              <div id="j-start-icon" class="icon">
+                封面图（初始点击）
+              </div>
+              <div id="j-play-icon" class="icon" style="pointer-events: none;display: none;">
+                播放按钮
+              </div>
+            </div>
+
+            <script>
+             var video = document.getElementById('j-video')
+             var start = document.getElementById('j-start-icon')
+             var play = document.getElementById('j-play-icon')
+
+             if (/QQBrowser/.test(window.navigator.userAgent)) { // QQ浏览器去除 x5-video-player-type 属性
+               video.removeAttribute('x5-video-player-type')
+             }
+
+             function touchstartFunc () {
+               start.style.display = 'none'
+               video.setAttribute('src', '视频地址')
+               video.removeAttribute('style')
+               video.play()
+
+               setTimeout(function () {
+                 /* 点击播放 */
+                 document.getElementById('j-video-wrap').addEventListener('touchstart', function () {
+                   if (video.paused) { // 播放
+                     video.play()
+                     play.style.display = 'none'
+                   } else {  // 暂停
+                     video.pause()
+                     play.style.display = 'block'
+                   }
+                 }, false)
+
+                 /* 视频播放结束 */
+                 video.addEventListener('ended', function () {
+                   // video.play()
+                   play.style.display = 'block'
+                 }, false)
+
+                 start.removeEventListener('touchstart', touchstartFunc, false)
+               }, 0)
+             }
+
+             start.addEventListener('touchstart', touchstartFunc, false)
+            </script>
+            ```
+
+        >[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/Lko8u1ku/)
+
+    - 无法操作客户端自定义播放控件：
+
+        1. 一般手机有两种播放方式：
+
+            1. 全屏模式
+            2. 内联模式（浏览器支持其中一种）：
+
+                1. `webkit-playsinline playsinline`内联模式。
+                2. `x5-video-player-type="h5"`在底部的全屏内联模式（同层播放）。
+        2. 无法操作全屏模式
+
+            1. 无法改变全屏播放方向以及控件内容
+
+                DOM属性`x5-video-orientation="landscape或portraint"`、`x5-video-player-fullscreen="true"`无法解决。
+            2. 有些浏览器在全屏模式中，不触发任何video事件
+
+                >无法自定义loading。
+        3. 关闭`controls`模式，部分浏览器依然出现播放按钮
+        4. 无法控制内联模式类型（内联模式/在底部的全屏内联模式）
 
 ---
 ## 编程技巧
@@ -1078,6 +1209,12 @@
     >1. `if()`中的代码对于`function`的声明就是用`eval`带入方法做参数，因此虽然返回true，但方法没有被声明。
     >2. `setTimeout`与`setInterval`中第一个参数若使用字符串，也是使用`eval`把字符串转化为代码。
 10. 获取数组中最大最小值：`Math.min.apply(null, [1, 2, 3]);/* 1*/`、`Math.max.apply(null, [1, 2, 3]);/* 3*/`。
+11. 设置CSS属性
+
+    使用`cssText`返回CSS的实际文本（ie8-返回时不包含最后一个`;`）。
+
+    1. 添加：`dom.style.cssText += '; 样式: 属性; 样式: 属性'`
+    2. 替换：`dom.style.cssText = '样式: 属性; 样式: 属性'`
 
 ---
 ## 功能归纳
@@ -1300,7 +1437,9 @@
 >1. 当JS出现错误时，JS引擎会根据JS调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式显示错误信息，可以用`window.onerror`进行自定义操作。
 >2. 在某个**JS block**（`<script>`或`try-catch`的`try`语句块）内，第一个错误触发后，当前JS block后面的代码会被自动忽略，不再执行，其他的JS block内代码不被影响。
 
-1. [原生错误类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#原生错误类型)
+1. 原生错误类型
+
+    >来自[MDN:Error](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Error)。
 2. 自定义错误
 
     ```javascript
@@ -1411,7 +1550,7 @@
         };
     }
     ```
-2. `link`标签预加载
+2. `<link>`预加载
 
     1. `<link rel="dns-prefetch" href="域名">`
 

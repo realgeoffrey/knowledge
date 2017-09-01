@@ -819,6 +819,8 @@ function isEventSupported(eventName, element) {
 }
 ```
 
+>更全面的性能监听：[stats.js](https://github.com/mrdoob/stats.js/)。
+
 ### *原生JS*科学计数法转换成字符串的数字
 ```javascript
 function eToString(number) {
@@ -1521,7 +1523,7 @@ function getScrollBarWidth() {
 
     var dom = document.createElement('div');
 
-    dom.style.cssText = 'overflow:scroll;width:100px;height:100px;';
+    dom.style.cssText = 'overflow: scroll; width: 100px; height: 100px;';
 
     document.body.appendChild(dom);
 
@@ -1784,22 +1786,25 @@ xhr.send(null);
 ### *原生JS*动态添加样式、脚本
 1. 动态添加样式
 
-    1. 添加`style`标签
+    1. 添加`<style>`
 
         ```javascript
         var newStyle = document.createElement('style');
 
         newStyle.type = 'text/css';
 
-        if (newStyle.styleSheet) {    //for ie
-            newStyle.styleSheet.cssText = 'CSS代码';
-        } else {
+        try {
             newStyle.appendChild(document.createTextNode('CSS代码'));
+        }
+        catch (e) {
+            newStyle.styleSheet.cssText = 'CSS代码';  //ie
         }
 
         document.getElementsByTagName('head')[0].appendChild(newStyle);
         ```
-    2. 添加`link`标签
+    2. 添加`<link>`
+
+        >必须将`<link>`添加到`<head>`，才能保证在所有浏览器中的行为一致。
 
         ```javascript
         var newLink = document.createElement('link');
@@ -1829,7 +1834,7 @@ xhr.send(null);
             ```javascript
             document.write('<script src="JS文件地址"><\/script>');
             ```
-        2. 动态改变已有的`script`标签的`src`属性
+        2. 动态改变已存在的`<script>`的`src`属性
 
             ```html
             <script type="text/javascript" id="节点id"></script>
@@ -1838,11 +1843,11 @@ xhr.send(null);
                 document.getElementById('节点id').src = 'JS文件地址';
             </script>
             ```
-        3. 动态创建`script`标签
+        3. 动态创建`<script>`
 
             ```javascript
             var newScript = document.createElement('script'),
-                appendPlace = document.body || document.getElementsByTagName('HEAD').item(0);
+                appendPlace = document.body || document.getElementsByTagName('head')[0];
 
             newScript.type = 'text/javascript';
 
@@ -1856,7 +1861,7 @@ xhr.send(null);
 
             ```javascript
             var newScript = document.createElement('script'),
-                appendPlace = document.body || document.getElementsByTagName('HEAD').item(0);
+                appendPlace = document.body || document.getElementsByTagName('head')[0];
 
             newScript.type = 'text/javascript';
 
@@ -1864,12 +1869,12 @@ xhr.send(null);
                 newScript.appendChild(document.createTextNode('JS代码'));
             }
             catch (e) {
-                newScript.text = 'JS代码';  //ie8及以下，Safari老版本
+                newScript.text = 'JS代码';  //ie8-，Safari老版本
             }
 
             appendPlace.appendChild(newScript);
             ```
-        2. 添加`script`标签
+        2. 添加`<script>`
 
             ```javascript
             /**
@@ -1901,7 +1906,7 @@ xhr.send(null);
                     /* 0为访问的本地，200到300代表访问服务器成功，304代表没做修改访问的是缓存*/
                     if ((xmlHttp.status >= 200 && xmlHttp.status < 300) || xmlHttp.status == 0 || xmlHttp.status == 304) {
                         newScript = document.createElement('script');
-                        appendPlace = document.body || document.getElementsByTagName('HEAD').item(0);
+                        appendPlace = document.body || document.getElementsByTagName('head')[0];
 
                         newScript.type = 'text/javascript';
 
@@ -2069,35 +2074,21 @@ if (typeof Date.now !== 'function') {
 ### *原生JS*`Object.create`的Polyfill
 ```javascript
 if (typeof Object.create !== 'function') {
-    // Production steps of ECMA-262, Edition 5, 15.2.3.5
-    // Reference: http://es5.github.io/#x15.2.3.5
     Object.create = (function () {
-        //为了节省内存，使用一个共享的构造器
         function Temp() {}
 
-        // 使用 Object.prototype.hasOwnProperty 更安全的引用
         var hasOwn = Object.prototype.hasOwnProperty;
 
         return function (O) {
-            // 1. 如果 O 不是 Object 或 null，抛出一个 TypeError 异常。
             if (typeof O != 'object') {
                 throw TypeError('Object prototype may only be an Object or null');
             }
 
-            // 2. 使创建的一个新的对象为 obj ，就和通过
-            //    new Object() 表达式创建一个新对象一样，
-            //    Object是标准内置的构造器名
-            // 3. 设置 obj 的内部属性 [[Prototype]] 为 O。
             Temp.prototype = O;
             var obj = new Temp();
             Temp.prototype = null; // 不要保持一个 O 的杂散引用（a stray reference）...
 
-            // 4. 如果存在参数 Properties ，而不是 undefined ，
-            //    那么就把参数的自身属性添加到 obj 上，就像调用
-            //    携带obj ，Properties两个参数的标准内置函数
-            //    Object.defineProperties() 一样。
             if (arguments.length > 1) {
-                // Object.defineProperties does ToObject on its first argument.
                 var Properties = Object(arguments[1]);
 
                 for (var prop in Properties) {
@@ -2107,7 +2098,6 @@ if (typeof Object.create !== 'function') {
                 }
             }
 
-            // 5. 返回 obj
             return obj;
         };
     })();
@@ -2135,50 +2125,37 @@ if (!Array.prototype.map) {
             throw new TypeError(' this is null or not defined');
         }
 
-        // 1. 将O赋值为调用map方法的数组.
         var O = Object(this);
 
-        // 2.将len赋值为数组O的长度.
         var len = O.length >>> 0;
 
-        // 3.如果callback不是函数,则抛出TypeError异常.
         if (Object.prototype.toString.call(callback) != '[object Function]') {
             throw new TypeError(callback + ' is not a function');
         }
 
-        // 4. 如果参数thisArg有值,则将T赋值为thisArg;否则T为undefined.
         if (thisArg) {
             T = thisArg;
         }
 
-        // 5. 创建新数组A,长度为原数组O长度len
         A = new Array(len);
 
-        // 6. 将k赋值为0
         k = 0;
 
-        // 7. 当 k < len 时,执行循环.
         while (k < len) {
             var kValue, mappedValue;
 
-            //遍历O,k为原数组索引
             if (k in O) {
 
-                //kValue为索引k对应的值.
                 kValue = O[k];
 
-                // 执行callback,this指向T,参数有三个.分别是kValue:值,k:索引,O:原数组.
                 mappedValue = callback.call(T, kValue, k, O);
 
-                // 返回值添加到新数组A中.
                 A[k] = mappedValue;
             }
 
-            // k自增1
             k += 1;
         }
 
-        // 8. 返回新数组A
         return A;
     };
 }
@@ -2190,8 +2167,6 @@ if (!Array.prototype.map) {
 if (!Function.prototype.bind) {
     Function.prototype.bind = function (oThis) {
         if (typeof this !== 'function') {
-            // closest thing possible to the ECMAScript 5
-            // internal IsCallable function
             throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
         }
 

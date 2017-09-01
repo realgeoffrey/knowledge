@@ -665,34 +665,34 @@
 ### CORS（cross-origin resource sharing，跨域资源共享）
 >ie10+支持。
 
-若服务端配置允许了某些或所有域名，就可以进跨域响应；前端不需要进行额外工作，现代浏览器自动完成交互。
+- 若服务端配置允许了某些或所有域名，就可以进跨域响应；前端不需要进行额外工作，现代浏览器自动完成交互：
 
-- 现代浏览器一旦发现AJAX（或`fetch`）请求跨源，会自动添加一些附加的头信息（如`Origin`），有时还会多出一次附加的请求（非简单请求的`OPTIONS`请求），但用户不会有感觉。
+    现代浏览器一旦发现AJAX（或`fetch`）请求跨源，会自动添加一些附加的头信息（如`Origin`），有时还会多出一次附加的请求（非简单请求的`OPTIONS`请求），但用户不会有感觉。
 
-    1. 简单请求（simple request）
+1. 简单请求（simple request）
 
-        >- 同时满足以下两个条件为简单请求，否则为非简单请求：
-        >
-        >    1. 请求方法：`HEAD`或`GET`或`POST`。
-        >    2. 头信息仅包含：`Accept`、`Accept-Language`、`Content-Language`、`Content-Type`仅限于`application/x-www-form-urlencoded`或`multipart/form-data`或`text/plain`、等。
+    >- 同时满足以下两个条件为简单请求，否则为非简单请求：
+    >
+    >    1. 请求方法：`HEAD`或`GET`或`POST`。
+    >    2. 头信息仅包含：`Accept`、`Accept-Language`、`Content-Language`、`Content-Type`仅限于`application/x-www-form-urlencoded`或`multipart/form-data`或`text/plain`、等。
 
-        - 流程：
+    - 流程：
 
-            1. 请求头需要：`Origin`（来自的域）；
-            2. 响应头返回：`Access-Control-Allow-Origin`（值为`Origin`的值或`*`表明接受跨域请求）、`Access-Control-Allow-Credentials`、`Access-Control-Expose-Headers`、`Content-Type`。
+        1. 请求头需要：`Origin`（来自的域）；
+        2. 响应头返回：`Access-Control-Allow-Origin`（值为`Origin`的值或`*`表明接受跨域请求）、`Access-Control-Allow-Credentials`、`Access-Control-Expose-Headers`、`Content-Type`。
 
-                若`Origin`指定的源不在许可范围内，服务器会返回一个正常的HTTP响应，但没有任何CORS相关的头信息字段。浏览器就会认定为跨域错误，被XMLHttpRequest对象的onerror回调函数捕获。
-    2. 非简单请求（not-so-simple request）
+            若`Origin`指定的源不在许可范围内，服务器会返回一个正常的HTTP响应，但没有任何CORS相关的头信息字段。浏览器就会认定为跨域错误，被XMLHttpRequest对象的onerror回调函数捕获。
+2. 非简单请求（not-so-simple request）
 
-        - 流程：
+    - 流程：
 
-            1. 浏览器判断是非简单请求，自动发出`OPTIONS`方法的预检请求，获知服务端是否允许该跨域请求；
+        1. 浏览器判断是非简单请求，自动发出`OPTIONS`方法的预检请求，获知服务端是否允许该跨域请求；
 
-                请求头需要：`Origin`（来自的域）、`Access-Control-Request-Method`（需要进行跨域的请求方法）、`Access-Control-Request-Headers`（将实际请求所携带的头部字段告诉服务器）。
-            2. 响应头返回：`Access-Control-Allow-Origin`（值为`Origin`的值或`*`表明接受跨域请求）、`Access-Control-Allow-Methods`（服务器支持的所有跨域请求的方法）、`Access-Control-Allow-Headers`、`Access-Control-Allow-Credentials`、`Access-Control-Max-Age`；
+            请求头需要：`Origin`（来自的域）、`Access-Control-Request-Method`（需要进行跨域的请求方法）、`Access-Control-Request-Headers`（将实际请求所携带的头部字段告诉服务器）。
+        2. 响应头返回：`Access-Control-Allow-Origin`（值为`Origin`的值或`*`表明接受跨域请求）、`Access-Control-Allow-Methods`（服务器支持的所有跨域请求的方法）、`Access-Control-Allow-Headers`、`Access-Control-Allow-Credentials`、`Access-Control-Max-Age`；
 
-                若服务器否定了预检请求，服务器会返回一个正常的HTTP响应，但没有任何CORS相关的头信息字段。浏览器就会认定为跨域错误，被XMLHttpRequest对象的onerror回调函数捕获。
-            3. 一旦服务器通过预检请求，之后的每次跨域请求都与简单请求一致。
+            若服务器否定了预检请求，服务器会返回一个正常的HTTP响应，但没有任何CORS相关的头信息字段。浏览器就会认定为跨域错误，被XMLHttpRequest对象的onerror回调函数捕获。
+        3. 一旦服务器通过预检请求，之后的每次跨域请求都与简单请求一致。
 
 ### 服务端验证用户状态
 HTTP是无状态协议，通过session-cookie、token判断客户端的用户状态。
