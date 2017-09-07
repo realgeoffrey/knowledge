@@ -109,6 +109,8 @@
 
         以上`&&`结合。
 
+    - `IntersectionObserver`判断节点和父级（或视口）相交程度。
+
 ### 滚动定位
 >也可以给底部（或顶部）放置一个标记节点，当这个节点的顶部在容器底部以上（或这个节点的底部在容器顶部以下）时为滚动到底部（或顶部）。
 
@@ -2245,17 +2247,17 @@
 
     定时器触发后，会把**定时器处理程序（回调函数）**插入至等待执行的**任务队列**最后面。
 
-    1. `setInterval`：
+    1. `setInterval`、`clearInterval`：
 
         1. 同一个被setInterval执行的函数只能插入一个**定时器处理程序**到**任务队列**。
         2. setInterval是间隔时间去尝试执行函数，不关注上一次是何时执行。
         3. 若setInterval触发时已有它的**定时器处理程序**在**任务队列**中，则忽略此次触发。直到没有它的**定时器处理程序**在**任务队列**后才可以再次插入（正在执行的不算在**任务队列**中）。
         4. 相邻的2次**定时器处理程序**可能小于或大于（或等于）设定的间隔时间。无法确定**定时器处理程序**何时执行。
-    2. `setTimeout`:
+    2. `setTimeout`、`clearTimeout`:
 
         [用setTimeout模拟setInterval](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用settimeout模拟setinterval)，可以提高性能（上一次执行完毕间隔时间后再执行下一次，而不是固定间隔时间都尝试执行），并且可以确保每次**定时器处理程序**执行间隔一定大于（或等于）设置的间隔时间。
 
-    - `setImmediate`：
+    - `setImmediate`、`clearImmediate`：
 
         >仅ie10支持。
 
@@ -2270,6 +2272,10 @@
         1. 把每一帧中的所有DOM操作集中起来，在一次重绘或重排中完成动画，且时间间隔紧随浏览器的刷新频率。
         2. 仅仅绘制用户可见的动画。这意味着没把CPU或电池寿命浪费在绘制处于背景标签，最小化窗口，或页面隐藏区域的动画上。
         3. 当浏览器准备好绘制时（空闲时），才绘制一帧，此时没有等待中的帧。意味着其绘制动画不可能出现多个排队的回调函数，或阻塞浏览器。因此动画更平滑，CPU和电池使用被进一步优化。
+
+- 空闲函数（`requestIdleCallback`、`cancelIdleCallback`）
+
+    在浏览器空闲时期依次调用函数。
 
 ### 数组的空位（hole）
 >来自[阮一峰：数组的空位](http://javascript.ruanyifeng.com/grammar/array.html#toc6)、[阮一峰：数组的空位（ES6）](http://es6.ruanyifeng.com/#docs/array#数组的空位)。

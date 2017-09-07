@@ -50,7 +50,7 @@
 
         1. `package.json`（`npm install`）
 
-            >`主版本号.次版本号.补丁号`
+            >`主版本号.次版本号.补丁号`，详细定义查看[Semantic](http://semver.org/lang/zh-CN/)。
 
             安装时自动选择相对最新版本号。
 
