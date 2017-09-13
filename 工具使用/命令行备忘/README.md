@@ -56,3 +56,10 @@
 
     export 变量=值    # 设置变量
     ```
+10. 查看本机IP
+
+    ```bash
+    ipconfig    # Windows系统
+
+    ifconfig    # macOS系统，查看en0后的inet数据
+    ```

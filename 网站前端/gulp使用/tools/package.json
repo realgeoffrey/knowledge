@@ -1,12 +1,12 @@
 {
   "dependencies": {
     "autoprefixer": "^7.1.1",
+    "babel-core": "^6.26.0",
     "babel-preset-env": "^1.5.2",
     "browser-sync": "^2.18.12",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.0",
-    "babel-core": "^6.26.0",
     "gulp-concat": "^2.6.1",
     "gulp-cssnano": "^2.1.2",
     "gulp-eslint": "^4.0.0",

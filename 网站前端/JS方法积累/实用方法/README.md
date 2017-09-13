@@ -160,21 +160,21 @@ function detectOS (ua, pf) {
 function platform (ua) {
   ua = ua || window.navigator.userAgent
 
-  var platForm
+  var platform
 
   if (/MicroMessenger/.test(ua)) {
-    platForm = 'weixin'
+    platform = 'weixin'
   } else if (/QQ\//.test(ua)) {
-    platForm = 'qq'
+    platform = 'qq'
   } else if (/\bWeibo|__weibo__\d/.test(ua)) {
-    platForm = 'weibo'
+    platform = 'weibo'
   } else if (/Qzone\//.test(ua)) {
-    platForm = 'qzone'
+    platform = 'qzone'
   } else {
-    platForm = 'other'
+    platform = 'other'
   }
 
-  return platForm
+  return platform
 }
 ```
 
