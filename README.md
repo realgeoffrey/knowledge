@@ -52,8 +52,9 @@
 2. [命令行备忘](./工具使用/命令行备忘/README.md)
 3. [IDE设置](./工具使用/IDE设置/README.md)
 4. [Charles使用](./工具使用/Charles使用/README.md)
-5. [科学上网](./工具使用/科学上网/README.md)
-6. [Google搜索技巧](./工具使用/Google搜索技巧/README.md)
+5. [whistle使用](./工具使用/whistle使用/README.md)
+6. [科学上网](./工具使用/科学上网/README.md)
+7. [Google搜索技巧](./工具使用/Google搜索技巧/README.md)
 
 ## 环境安装、配置
 1. [nginx+PHP配置（macOS）](./环境安装、配置/nginx+PHP配置（macOS）/README.md)
