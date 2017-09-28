@@ -66,31 +66,46 @@
             ```
         2. `vi /usr/local/etc/nginx/servers/域名.conf`：
 
-            ```test
-            server {
-                listen       80;
-                server_name  域名;
+            1. 虚拟主机
 
-                root 文件夹路径;
-                location / {
-                    index index.php index.html;
-                    try_files $uri $uri/ /index.php?$query_string;
-                    #autoindex on;
-                }
+                ```text
+                server {
+                    listen       80;
+                    server_name  域名1;
 
-                error_page   500 502 503 504  /50x.html;
-                location = /50x.html {
-                    root   html;
-                }
+                    root 文件夹路径;
+                    location / {
+                        index index.php index.html;
+                        try_files $uri $uri/ /index.php?$query_string;
+                        #autoindex on;
+                    }
 
-                location ~ \.php$ {
-                    fastcgi_pass   127.0.0.1:9000;
-                    fastcgi_index  index.php;
-                    fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-                    include        fastcgi_params;
+                    error_page   500 502 503 504  /50x.html;
+                    location = /50x.html {
+                        root   html;
+                    }
+
+                    location ~ \.php$ {
+                        fastcgi_pass   127.0.0.1:9000;
+                        fastcgi_index  index.php;
+                        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+                        include        fastcgi_params;
+                    }
                 }
-            }
-            ```
+                ```
+            2. 端口映射
+
+                ```text
+                server {
+                    listen       80;
+                    server_name  域名2;
+
+                    location / {
+                          proxy_pass http://域名3:端口号;
+                    }
+
+                }
+                ```
     2. 启动nginx
 
         1. 检查脚本

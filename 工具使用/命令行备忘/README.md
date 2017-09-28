@@ -31,11 +31,11 @@
 6. 打开文件（夹）
 
     ```bash
-    open 路径/文件  # Mac
+    open 路径/文件  # macOS
     ```
 7. hosts文件位置
 
-    1. Mac、Linux：**/etc/hosts**
+    1. macOS、Linux：**/etc/hosts**
     2. Windows：**C:\Windows\System32\drivers\etc\hosts**
 8. 验证文件的数字签名
 

@@ -16,4 +16,4 @@
 
 - For all, I use this for global:
 
-    `npm install cnpm nrm gulp eslint babel-eslint eslint-config-standard eslint-plugin-html eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-standard -g`
+    `npm install cnpm nrm gulp whistle eslint babel-eslint eslint-config-standard eslint-plugin-html eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-standard -g`
