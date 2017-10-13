@@ -270,7 +270,7 @@
     - 下线 某功能 by @lisi
     - 移除 某功能 by @zhangsan
     - 上线 某功能 by @名字
-    # “release/版本号”合并至本地develop分支、本地master分支（本地必须先pull release/版本号、release分支、master分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
+    # “release/版本号”合并至本地develop分支、本地master分支（本地必须先pull release/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
     # 新建本地“版本号”tag
     # 删除本地“release/版本号”分支，切换至develop分支
     # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）
@@ -306,7 +306,7 @@
     2017-07-18
 
     - 修复 某功能 by @名字
-    # “hotfix/版本号”合并至本地master分支、本地develop分支
+    # “hotfix/版本号”合并至本地master分支、本地develop分支（本地必须先pull hotfix/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
     # 新建本地“版本号”tag
     # 删除本地“release/版本号”分支，切换至develop分支
     # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）
