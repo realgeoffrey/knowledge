@@ -10,9 +10,11 @@
     nvm alias default v新版本号
 
     nvm list
-    nvm uninstall v旧版本号
+    nvm uninstall v旧版本号     # 如果无法删除，可以去目录删除 /Users/用户名/.nvm/versions/node/v版本
     ```
 2. Windows的[nvm-windows](https://github.com/coreybutler/nvm-windows)：
+
+    >安装nvm-windows时，需要删除原本安装在电脑上的Node.js。
 
     ```bash
     nvm node_mirror https://npm.taobao.org/mirrors/node/    #设置node源：
@@ -23,10 +25,10 @@
     nvm use v新版本号
 
     nvm list
-    nvm uninstall v旧版本号
+    nvm uninstall v旧版本号     # 还可以再去目录中删除 C:\Users\用户名\AppData\Roaming\nvm\v版本
     ```
 
->切换版本之后需重装Node.js模块包。
+>切换版本之后需重装Node.js的全局模块包。
 
 ### npm
 1. 命令
@@ -40,6 +42,9 @@
     3. 发布
 
         `npm publish`
+    4. 升级npm自己
+
+        `npm install -g npm`
 2. 安装包
 
     1. 作用域

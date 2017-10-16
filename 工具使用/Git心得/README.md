@@ -37,6 +37,7 @@
 
         ```bash
         git reset --hard HEAD~数字     # 取消当前版本之前的N次提交
+        # 如果需要，可以重新 git merge 其他分支
         git push origin HEAD --force   # 强制提交到远程版本库
 
         # 若删除的是其他用户已经拉取的commit，则会变成其他用户本地的commit
@@ -48,7 +49,7 @@
         操作任意commit。
 
         ```bash
-        git rebase -i --root master    # 选择commit处理状态
+        git rebase -i --root 分支名    # 选择commit处理状态
         # 编辑commit信息
 
         # git rebase --abort           # 取消所有rebase操作
@@ -64,7 +65,7 @@
 
     >1. [GitLab](https://about.gitlab.com/)默认设置**master**分支是**protected**状态，无法`git push --force`。
     >
-    >    可以在Gitlab设置里面通过：*project* > *Settings* > *Protected branches* > *Developers can push*或*UNPROTECT*，打开权限（强烈不建议长期开启）。
+    >    可以在Gitlab设置里面通过：*project* > *Settings* > *Repository* > *Protected branches* > *Unprotect*，打开权限（强烈不建议长期开启）。
     >2. Github默认允许`git push --force`。
 3. 合并
 
@@ -89,7 +90,7 @@
 5. 推送（新建）远程分支
 
     ```bash
-    git push origin 分支名 # 新建本地分支（不需要提交commit即可创建远程分支）
+    git push origin 分支名 # 新建远程分支（不需要提交commit即可创建远程分支）
     ```
 6. tag
 
@@ -97,8 +98,8 @@
     git tag                          # 列出现有标签
 
     git tag 名字                      # 新建标签
-    git push origin 名字              # 推送一个本地新建标签
-    git push --tags                  # 推送所有本地新建标签
+    git push origin 名字              # 推送一个本地新建标签至远程
+    git push --tags                  # 推送所有本地新建标签至远程
 
     git tag -d 名字                   # 删除本地tag
 
@@ -210,7 +211,7 @@
     4. 仅对设置过的内容进行所有git操作：
 
         ```bash
-        git pull origin master
+        git pull origin 分支名
         ```
 2. 减少克隆深度
 
@@ -243,11 +244,11 @@
     # 推送至远程develop分支
     ```
 
-    >可以分别开发多个需求，再一起发布（release）。
+    >可以分别开发多个需求，再一起发布（release），把已经存在的release分支合并develop分支。
 3. 发布版本：
 
     ```bash
-    git flow release start “版本号” [“develop的SHA”]
+    git flow release start “版本号” [“develop的SHA”]    # 若要把已经完成的feature内容添加到已存在的release分支，仅需要release分支合并develop分支，而不需要release start
     # 基于“develop的SHA”或最新develop，在本地创建并切换至“release/版本号”分支
 
 

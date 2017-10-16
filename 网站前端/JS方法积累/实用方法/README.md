@@ -510,6 +510,19 @@ function getLocation (url) {
 >}
 >```
 
+>拼接接口url时，可以在api字符串最后添加`?`并且加上一些固定不变的search参数，在使用url时候都以`&参数=值`的形式添加额外参数：
+>
+>>`xxx/xxx?&a=1`可以正常解析
+>
+>```javascript
+>const api1 = 'xxx/xxx?'
+>const api2 = 'xxx/xxx?v=1.0'
+>
+>// 使用时
+>url1 = api1 + '&a=1' + '&b=2' + '&c=3'
+>url2 = api2 + '&a=1' + '&b=2' + '&c=3'
+>```
+
 ### *原生JS*在URL末尾添加查询名值对
 ```javascript
 /**
@@ -2764,36 +2777,74 @@ function fixPlaceholder($dom) {
 
 ### jQuery或Zepto全选、取消全选
 ```html
-所有：
-<input type="checkbox" name="all">
+<div id="j-form">
+  <label for="all">
+    <input id="all" type="checkbox" name="all">
+    全选
+  </label>
 
-单个：
-<input type="checkbox" name="ones">
-<input type="checkbox" name="ones">
-<input type="checkbox" name="ones">
-...
+  <br>
+
+  <label for="1">
+    <input id="1" type="checkbox" name="ones" value="1">
+    1
+  </label>
+  <label for="2">
+    <input id="2" type="checkbox" name="ones" value="2">
+    2
+  </label>
+  <label for="3">
+    <input id="3" type="checkbox" name="ones" value="3">
+    3
+  </label>
+  <label for="a">
+    <input id="a" type="checkbox" name="ones" value="a">
+    a
+  </label>
+  <label for="b">
+    <input id="b" type="checkbox" name="ones" value="b">
+    b
+  </label>
+</div>
+
+<a href="#" id="j-submit">提交</a>
 
 <script>
-    var $allInput = $('[name="all"]'),
-        $oneInput = $('[name="ones"]');
-    
-    $allInput.on('click', function () {
-        $oneInput.prop('checked', this.checked);
-    });
-    
-    $oneInput.on('click', function () {
-        var flag = true;
-    
-        $oneInput.each(function () {
-            if (!this.checked) {
-                flag = false;
-    
-                return false;
-            }
-        });
-    
-        $allInput.prop('checked', flag);
-    });
+  var $allInput = $('#j-form').find('[name="all"]')
+  var $oneInput = $('#j-form').find('[name="ones"]')
+
+  $allInput.on('click', function () {
+    $oneInput.prop('checked', this.checked)
+  })
+
+  $oneInput.on('click', function () {
+    var flag = true
+
+    $oneInput.each(function () {
+      if (!this.checked) {
+        flag = false
+
+        return false
+      }
+    })
+
+    $allInput.prop('checked', flag)
+  })
+
+  // 提交
+  $('#j-submit').on('click', function () {
+    var arr = []
+
+    $('#j-form').find('[name="ones"]').each(function (index, item) {
+      if (item.checked) {
+        arr.push($(item).val())
+      }
+    })
+
+    var data = arr.join(',')
+
+    console.log(data)
+  })
 </script>
 ```
 

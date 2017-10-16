@@ -15,4 +15,3 @@ module.exports = {
     'max-len': [1, 120]
   }
 }
-// npm install eslint babel-eslint eslint-config-standard eslint-plugin-html eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-standard -g

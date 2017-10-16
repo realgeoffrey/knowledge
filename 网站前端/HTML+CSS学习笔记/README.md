@@ -1265,6 +1265,16 @@
     绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/css.md#css编码规范)。
 
     >可以设置为IDE的**Reformat Code**的排版样式。
+6. CSS注释方式
+
+    除了普通注释外，还可以把注释内容放在根元素的伪元素中：
+
+    ```css
+    :root:before {
+      content: "author: 重构; design: 设计师; update: 更新时间;";
+      display: none;
+    }
+    ```
 
 ### Tips
 1. 限定布局宽度，让内容决定布局高度

@@ -1,6 +1,6 @@
 # gulp使用
 
-1. Node's package for gulp: [package.json](tools/package.json)
+1. Node's package for gulp(local): [package.json](tools/package.json)
 
     >1. By using gulp for the first time, error always occurred because of the bad network when we installed plug-ins.
     >2. If shit happened, we should have to uninstall then install the problem plug-ins.
@@ -14,6 +14,12 @@
     2. [wap.handlebars](tools/wap.handlebars)
 5. [.eslintrc.js](tools/.eslintrc.js) is for ESLint.
 
-- For all, I use this for global:
+### For global
+1. General:
 
-    `npm install cnpm nrm gulp whistle eslint babel-eslint eslint-config-standard eslint-plugin-html eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-standard -g`
+    `npm install cnpm nrm gulp whistle nodemon -g`
+
+    >Sometimes cnpm will mike a mistake, so that maybe we should use npm instead.
+2. For eslint:
+
+    `npm install eslint babel-eslint eslint-config-standard eslint-plugin-html eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-standard -g`
