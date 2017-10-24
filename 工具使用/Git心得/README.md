@@ -248,7 +248,7 @@
 3. 发布版本：
 
     ```bash
-    git flow release start “版本号” [“develop的SHA”]    # 若要把已经完成的feature内容添加到已存在的release分支，仅需要release分支合并develop分支，而不需要release start
+    git flow release start “版本号” [“develop的SHA”]    # 若要把已经完成的feature内容添加到已存在的release分支，仅需release分支合并develop分支（git checkout “release/版本号”; git merge develop），而不需要release start
     # 基于“develop的SHA”或最新develop，在本地创建并切换至“release/版本号”分支
 
 
