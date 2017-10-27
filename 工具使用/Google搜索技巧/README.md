@@ -18,7 +18,7 @@
 
         返回“完整匹配”的结果（已支持处理**utf-8**大字符集了，所以，即便输入的时候使用的是全角字符，也照样能够正确处理）。
 
-        >例：如果想要找含有“purpose of education”这个词组的文章，那么必须输入`"purpose of education"`。
+        >e.g. 如果想要找含有“purpose of education”这个词组的文章，那么必须输入`"purpose of education"`。
     3. `-`
 
         搜索结果中不出现某字段。减号-前必须是空格，后面必须紧跟字符。

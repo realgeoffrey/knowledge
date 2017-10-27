@@ -157,6 +157,7 @@
 1. 当变量是jQuery对象时，可用`$`作为开头命名，利于与普通变量区别
 
     ```javascript
+    // e.g.
     var num = 1;
     var dom = $('div').get();
     var $dom = $('div');
@@ -801,6 +802,8 @@
         2. `var b = getPerson();    /* 普通函数*/`
     5. 不要用多行的字符串写法
 
+        e.g.
+
         ```javascript
         /* 不提倡的多行写法*/
         var a = 'abc\
@@ -821,6 +824,8 @@
 
     1. 对象
 
+        e.g.
+
         ```javascript
         /* 不提倡的构造函数写法*/
         var a1 = new Object();
@@ -832,6 +837,8 @@
         ```
     2. 数组
 
+        e.g.
+
         ```javascript
         /* 不提倡的构造函数写法*/
         var arr1 = new Array('a', 'b');
@@ -840,6 +847,8 @@
         var arr2 = ['a', 'b'];
         ```
     3. 字符串
+
+        e.g.
 
         ```javascript
         /* 不提倡的构造函数写法*/
@@ -854,6 +863,8 @@
 
     1. `.join()`性能好（推荐方式）：
 
+        e.g.
+
         ```javascript
         var arr = [],
             i;
@@ -865,6 +876,8 @@
         return arr.join('');
         ```
     2. `+`性能差（不推荐方式）：
+
+        e.g.
 
         ```javascript
         var text = '',
@@ -1062,6 +1075,8 @@
     1 > function () {}();
     ```
 2. 传值进自执行匿名函数可以避免闭包导致无法记录变量值的问题：
+
+    e.g.
 
     ```javascript
     for (var i = 0; i < 3; i++) {
@@ -1732,6 +1747,8 @@
 
         >- 命名函数表达式：`var 名字1 = function 名字2() {};`，其中函数名`名字2`只能在函数体内部使用：
         >
+        >    e.g.
+        >
         >    ```javascript
         >    var func1 = function func2() {
         >       console.log(typeof func1);  //function
@@ -1788,6 +1805,8 @@
         `this`：传入的对象
 
     - `this`——调用函数的那个对象
+
+        e.g.
 
         ```javascript
         var x = 'global';
@@ -1874,6 +1893,8 @@
     4. 不断向上的`[[Prototype]]`属性，构成了原型链。
 
         原型链终点是`null`，倒数第二是`Object.prototype`。
+
+    e.g.
 
     ```javascript
     var A = function () {};
@@ -2025,7 +2046,7 @@
 4. 存储、值传递步骤举例
 
     ```javascript
-    /* e.g.*/
+    // e.g.
     var a = 'test1';            //i
     var b = {'key': 'test1'};   //ii
     var c = a;                  //iii
@@ -2096,6 +2117,8 @@
 
         1. 基本数据类型：
 
+            e.g.
+
             ```javascript
             Number('123');      //123
             Number('123a');     //NaN
@@ -2117,6 +2140,8 @@
         2. 引用数据类型：
 
             若参数是**单个数值的数组**、**空数组**、**单个数值为undefined的数组**，则返回`数值`、`0`、`0`；否则返回`NaN`。
+
+            e.g.
 
             ```javascript
             Number([5]);            //5
@@ -2146,6 +2171,7 @@
             若是数组，则返回该数组的字符串形式；否则返回一个类型字符串。
 
             ```javascript
+            // e.g.
             String([1, 2, 3]);  //'1,2,3'
             String({a: 1});     //'[object Object]''
             ```
@@ -2174,9 +2200,8 @@
         3. 对非布尔值类型的数据求布尔值。
         4. 对非数值类型的数据使用一元运算符（`+`、`-`）
 
-            e.g.
-
             ```javascript
+            // e.g.
             'a' + + 'a'         // 'a' + (+ 'a') -> 'a' + NaN -> 'aNaN'
             + '123';            // 123
             - [123];            // -123
@@ -2313,6 +2338,7 @@
     4. 给一个数组的`length`属性赋予大于其长度的值，新创建的项都是空位。
 
     ```javascript
+    // e.g.
     [, , ,][0];                             //undefined
     0 in [undefined, undefined, undefined]; //true
     0 in Array.apply(null, new Array(3));   //true（密集数组：没有空位的数组）

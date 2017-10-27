@@ -141,9 +141,8 @@
 
         如果成功匹配，返回一个数组，并且更新正则表达式对象的属性。返回的数组包括匹配的字符串作为第一个元素，紧接着多个元素对应被捕获的字符串，数组还额外拥有`index`和`input`属性。
 
-        >例：
-        >
         >```javasscript
+        >// e.g.
         >var regexp = /quick\s(brown).+?(jumps)/ig;
         >var arr = regexp.exec('The Quick Brown Fox Jumps Over The Lazy Dog');
         >```
@@ -169,6 +168,7 @@
         当前正则表达式对象的模式文本的字符串，该字符串不会包含正则字面量两边的斜杠以及任何标志字符，并会自动添加字符串的`\`转义（基本仅对`\`、`"`、`'`转义）。
 
         ```javascript
+        // e.g.
         /\w/g.source === '\\w';                     //true
         new RegExp('\\w', 'g').source === '\\w';    //true
         ```
@@ -204,7 +204,7 @@
             | `$'` | 插入当前匹配的子串右边的内容。 |
             | `$n` | 若第一个参数是RegExp对象，并且n是个十进制的数字，则插入第n个捕获匹配项的内容。 |
 
-            >例：`str.replace(regexp, '$$ $& $1');`，特殊字符就是替换字符串的一部分。
+            >e.g. `str.replace(regexp, '$$ $& $1');`，特殊字符就是替换字符串的一部分。
 
         2. 使用函数作为参数
 

@@ -42,10 +42,11 @@
         
     1. [cssReset.scss](./网站前端/初始化模板/cssReset.scss)
     2. [.html](./网站前端/初始化模板/html.html)
-9. 废弃内容:thumbsdown:
 
-    1. [兼容至ie6](./网站前端/兼容至ie6/README.md)
-    2. [废弃代码](./网站前端/JS方法积累/废弃代码/README.md)
+>1. 废弃内容:thumbsdown:
+>
+>    1. [兼容至ie6](./网站前端/兼容至ie6/README.md)
+>    2. [废弃代码](./网站前端/JS方法积累/废弃代码/README.md)
 
 ## 工具使用
 1. [Git心得](./工具使用/Git心得/README.md)
@@ -55,6 +56,8 @@
 5. [whistle使用](./工具使用/whistle使用/README.md)
 6. [科学上网](./工具使用/科学上网/README.md)
 7. [Google搜索技巧](./工具使用/Google搜索技巧/README.md)
+
+>1. [iOS使用](./工具使用/iOS使用/README.md)
 
 ## 环境安装、配置
 1. [nginx+PHP配置（macOS）](./环境安装、配置/nginx+PHP配置（macOS）/README.md)

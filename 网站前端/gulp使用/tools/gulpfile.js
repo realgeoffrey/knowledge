@@ -76,7 +76,7 @@ gulp.task('runScss', () => {
     .pipe(gulp.dest('../scss/release/'))
 })
 
-/*
+/**
  * px -> rem
  * 对所有没有注释的px转换为rem
  * 对结尾带有“px”的注释，转化为[data-dpr="1~3"] 对象{px值}

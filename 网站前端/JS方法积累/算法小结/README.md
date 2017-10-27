@@ -364,7 +364,7 @@ function heapSort(arr) {
             arr[a] = arr[b];
             arr[b] = temp;
         },
-        /*
+        /**
          * （前提：子节点已经是最大堆）使父节点为最大堆，使得父节点以下的子节点（所有后裔）永远小于各自的父节点
          * @param {Number} dadIndex 父节点索引
          * @param {Number} endIndex 调整到的最末尾索引

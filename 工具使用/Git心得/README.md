@@ -182,6 +182,7 @@
     2. 打开添加的文件.gitignoreglobal，填写要全局忽略的文件（夹）
 
         e.g.
+
         ```bash
         .idea
         ```
