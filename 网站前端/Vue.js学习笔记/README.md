@@ -622,6 +622,14 @@
         6. 高级异步组件。
         7. 递归组件。
         8. 循环组件。
+6. 过渡
+
+    在插入、更新或移除DOM时，提供多种不同方式的应用过渡效果。
+
+    >1. 在 CSS 过渡和动画中自动应用 class
+    >2. 可以配合使用第三方 CSS 动画库，如 Animate.css
+    >3. 在过渡钩子函数中使用 JavaScript 直接操作 DOM
+    >4. 可以配合使用第三方 JavaScript 动画库，如 Velocity.js
 
 ### vue-router
 >使用Charles代理到本地dev环境（map remote），要保证被代理和代理的路径相同，才能让路由正确。

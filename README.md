@@ -42,6 +42,7 @@
         
     1. [cssReset.scss](./网站前端/初始化模板/cssReset.scss)
     2. [.html](./网站前端/初始化模板/html.html)
+9. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
 
 >1. 废弃内容:thumbsdown:
 >
