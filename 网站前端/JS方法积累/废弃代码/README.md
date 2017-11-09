@@ -250,7 +250,7 @@ function multiCallback(func, url) {
     }
 }
 ```
->1. 可以使用Promise对象实现。
+>1. 可以使用Promise对象或`async-await`方法实现。
 >2. 可以使用jQuery的Deferred对象`$.when($.ajax()...).done(成功后方法)`完全替代。
 
 ### *原生JS*对象合二为一（改变第一个参数）

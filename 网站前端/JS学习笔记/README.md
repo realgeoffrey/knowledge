@@ -1482,6 +1482,8 @@
 
     1. `try-catch-finally`
 
+        >`try`内的作用域不为内部异步操作保留：`try {setTimeout(function () {err}, 0)} catch (e) {}`，`catch`不会捕获异步操作中的错误。
+
         1. 必须`try-catch`或`try-finally`或`try-catch-finally`同时出现。
         2. 如果有`catch`，一旦`try`中抛出错误以后就先执行`catch`中的代码，然后执行`finally`中的代码。
         3. 如果没有`catch`，`try`中的代码抛出错误后，先执行`finally`中的语句，然后将`try`中抛出的错误往上抛。
@@ -1489,7 +1491,7 @@
         5. 在`catch`中接收的错误，不会再向上提交给浏览器。
     2. `window.onerror`
 
-        1. 没有通过`try-catch`处理的错误都会触发`window`的`error`事件。
+        1. 没有经过`try-catch`处理的错误都会触发`window`的`error`事件。
         2. 用方法赋值给`window.onerror`后，但凡这个window中有JS错误出现，则会调用此方法。
         3. `window.onerror`方法会传入多个参数：`message`、`fileName`、`lineNumber`、`columnNumber`、`errorObject`。
         4. 若方法返回`true`，浏览器不再显示错误信息；若返回`false`，浏览器还是会提示错误信息。

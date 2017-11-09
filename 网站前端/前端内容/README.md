@@ -23,7 +23,7 @@
     >提升维护效率。
 
     **分而治之**
-    1. JS模块化方案：
+    1. [JS模块化方案](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#js模块化方案)：
 
         CommonJS/AMD/CMD/ES6 Module/UMD
     2. CSS模块化方案：
@@ -523,3 +523,8 @@
 
     1. ECMAScript：描述该语言的语法和基本对象。
     2. 操作系统的API：提供与运行环境、操作系统互动的工具库。
+
+### JS模块化方案
+>参考[关于AMD,CMD,CommonJS及UMD规范](http://blog.gejiawen.com/2015/11/03/what-is-amd-cmd-commonjs-umd/)、[JS模块规范（CommonJS,AMD,CMD,ES6）](https://my.oschina.net/tongjh/blog/836721)。
+
+![JS模块化方案图](./images/js-module-1.png)
