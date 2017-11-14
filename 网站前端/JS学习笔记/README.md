@@ -2261,7 +2261,9 @@
     2. 在Boolean环境（如if的条件判断）中使用：两个操作结果都为true时返回true，否则返回false。
 
 ### 事件循环（event loop）
->参考[阮一峰：再谈Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)、[彻底理解同步、异步和事件循环(Event Loop)](https://segmentfault.com/a/1190000004322358)。
+>参考[阮一峰：再谈Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)、[Help, I’m stuck in an event-loop.](https://vimeo.com/96425312)、[Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)。
+
+>不是在ECMAScript没有定义，而是在[HTML Standard](https://html.spec.whatwg.org/#event-loops)中定义。
 
 1. JS的主线程是单线程
 
@@ -2275,8 +2277,10 @@
         2. 没有任何代码是立即执行的，但一旦进程空闲则尽快执行。
     3. 弥补单线程计算量太大、事件耗时太久影响浏览器体验：
 
-        1. 新增**Web Worker**标准，允许在后台创建多个线程，但完全受主线程控制，且不能~~操作DOM~~。
-        2. 还有其他工作线程（异步），分别处理：**AJAX**、**DOM事件**、**定时器**、**读写文件**。
+        1. 新增**Web Worker**标准，但不能~~操作DOM~~，完全受主线程控制。
+        2. 多个异步线程分别处理：**网络请求**、**定时器**、**读写文件**、**I/O设备事件**、**页面渲染**等。
+
+            >DOM的变动（尤其是涉及页面重新渲染的部分），通常不会立即执行，而是每16毫秒执行一次。
 2. 任务类型
 
     1. 同步任务（synchronous）：
@@ -2284,20 +2288,71 @@
         在主线程上排队执行的任务。
     2. 异步任务（asynchronous）：
 
-        先挂起到对应的工作线程等待结果；有结果后，发起通知进入“任务队列”（或“消息队列”）；“执行栈”读取并执行“任务队列”的通知对应的回调函数。
-3. 运行机制：
+        1. 先挂起到（对应种类的）工作线程等待结果，主线程不会因此阻塞；有结果后，发起通知进入（对应种类的）“任务队列”（task queue或“消息队列”）；“执行栈”（execution context stack）为空后会读取并执行“任务队列”的通知对应的回调函数。
 
-    1. 所有同步任务都在主线程上执行，形成一个“执行栈”（execution context stack），只有前一个任务执行完毕，才能执行后一个任务。
-    2. 主线程之外，还存在一个“任务队列”（task queue）。只要异步任务有了运行结果，就在“任务队列”之中放置一个通知。
-    3. 一旦“执行栈”中的所有同步任务执行完毕，系统就会读取“任务队列”，把**一个**通知对应的回调函数加入执行栈，开始执行。
-    4. 主线程不断重复上面的第三步。
+            >相同类型的异步工作线程是串行工作；不同类型的异步工作线程互不影响执行。
+        2. 异步任务分为两种类型：macrotask（task）、microtask（job）
+
+            1. macrotask一般包括:
+
+                1. `I/O`
+
+                    监听的事件。
+                2. `requestAnimationFrame`
+                3. `新的<script>`
+                4. `setTimeout`、`setInterval`、`setImmediate`
+
+                    在当前“任务队列”的尾部，添加事件。
+                5. `AJAX`
+            2. microtask一般包括:
+
+                1. `process.nextTick`
+
+                    在当前“执行栈”的尾部——读取"任务队列"之前，添加事件。
+                2. `async-await`（只有`await`才是异步）
+                3. `Promise`（`Promise.then/catch/all/race`）
+
+                    >`new Promise`和`Prmise.resolve/reject`都是直接执行。
+                4. `MutationObserver`
+            >- macrotask和microtast选择
+            >
+            >    如果想让一个任务立即执行，就把它设置为microtask，除此之外都用macrotask。因为虽然JS是异步非阻塞，但在一个事件循环中，microtask的执行方式基本上是用同步的。
+
+            - macrotask、microtask的事件循环运行机制：
+
+                1. 检查macrotask队列
+
+                    1. 选择最早加入的任务X，设置为“目前运行的任务”并进入“执行栈”；如果macrotask队列为空，跳到第4步；
+
+                        >最初时刻：“执行栈”为空，`<script>`作为第一个macrotask被运行。
+                    2. “执行栈”运行任务X（运行对应的回调函数）；
+                    3. 设置“目前运行的任务”为`null`，从macrotask队列中移除任务X；
+                    4. 跳出macrotask队列、进行浏览器渲染。
+                2. 浏览器渲染；
+                3. 检查microtask队列：
+
+                    1. 选择最早加入的任务a，设置为“目前运行的任务”并进入“执行栈”；如果microtask队列为空，跳到第5步；
+                    2. “执行栈”运行任务a（运行对应的回调函数）；
+                    3. 设置“目前运行的任务”为`null`，从microtask队列中移除任务a；
+                    4. 跳到第1步（检查下一个最早加入的microtask任务）；
+                    5. 跳出microtask队列、进行检查macrotask队列。
+3. JS的事件循环运行机制：
+
+    1. “执行栈”进行：
+
+        1. 所有同步任务都在主线程上执行，形成一个“执行栈”，串行执行直到“执行栈”为空（只有前一个任务执行完毕，才能执行后一个任务）。
+        2. 主线程之外，还存在“任务队列”。“执行栈”遇到异步任务则把其挂起到异步线程，只要异步线程有了运行结果，就在“任务队列”之中放置通知。
+    2. 一旦“执行栈”中的所有同步任务执行完毕，系统就会（按照macrotask、microtask的事件循环运行机制）读取“任务队列”，把**一个**通知对应的回调函数加入执行栈。跳回步骤1（“执行栈”又有内容可以执行）。
+
+    ![事件循环图](./images/event-loop-1.png)
+4. 由于异步函数是立刻返回，异步事务中发生的错误是无法通过`try-catch`来捕捉。
 
 ### 定时器 && 重绘函数
 1. 定时器（`setInterval`、`setTimeout`）
 
     >不适合制作动画。
 
-    定时器触发后，会把**定时器处理程序（回调函数）**插入至等待执行的**任务队列**最后面。
+    定时器触发后，会把**定时器处理程序（回调函数）**插入至等待执行的**任务队列**最后面。`setInterval`和`setTimeout`的内部运行机制完全一致。
 
     1. `setInterval`、`clearInterval`：
 
@@ -2328,6 +2383,9 @@
 - 空闲函数（`requestIdleCallback`、`cancelIdleCallback`）
 
     在浏览器空闲时期依次调用函数。
+
+    >1. 只有当前帧的运行时间小于16.66ms时，回调函数才会执行。否则，就推迟到下一帧，如果下一帧也没有空闲时间，就推迟到下下一帧，以此类推。
+    >2. 第二个参数表示指定的毫秒数。如果在指定的这段时间之内，每一帧都没有空闲时间，那么回调函数将会强制执行。
 
 ### 数组的空位（hole）
 >来自[阮一峰：数组的空位](http://javascript.ruanyifeng.com/grammar/array.html#toc6)、[阮一峰：数组的空位（ES6）](http://es6.ruanyifeng.com/#docs/array#数组的空位)。

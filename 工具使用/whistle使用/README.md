@@ -43,7 +43,9 @@
         URL js://E:\xx\test\test.js
         URL css://E:\xx\test\test.css
         ```
-    5. 在页面**开头**或**末尾**注入HTML内容（可以注入`<script>`、`<link>`）
+    5. 在响应的body**开头**或**末尾**注入HTML内容（可以注入`<script>`、`<link>`）
+
+        >因为是插入至响应的body，因此URL要具体到某一个html文件才行，否则会导致所有请求都添加一遍HTML内容。
 
         1. 开头
 

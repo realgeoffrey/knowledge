@@ -2,6 +2,9 @@ module.exports = {
   root: true,
   parser: 'babel-eslint',
   extends: 'standard',
+  globals: {
+    //    '$': false
+  },
   plugins: [
     'html'
   ],
@@ -12,6 +15,7 @@ module.exports = {
     'no-console': 0,
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
 
-    'max-len': [1, 120]
+    'semi': ['error', 'always'],
+    'max-len': [1, 150]
   }
-}
+};

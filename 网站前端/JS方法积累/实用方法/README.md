@@ -1,5 +1,7 @@
 # JS方法积累——实用方法
 
+>大部分情况下，jQuery内容适用于Zepto。
+
 ## 原生JS方法
 
 ### *原生JS*用`setTimeout`模拟`setInterval`
@@ -1069,7 +1071,7 @@ var eventUtil = {
 };
 ```
 
-### *原生JS*、jQuery或Zepto阻止冒泡和阻止浏览器默认行为
+### *原生JS*、jQuery阻止冒泡和阻止浏览器默认行为
 1. 阻止冒泡
 
     1. *原生JS*
@@ -1083,7 +1085,7 @@ var eventUtil = {
             }
         }
         ```
-    2. jQuery或Zepto
+    2. jQuery
     
         ```javascript
         $('...').on('...', function (e) {
@@ -1103,7 +1105,7 @@ var eventUtil = {
             }
         }
         ```
-    2. jQuery或Zepto
+    2. jQuery
     
         ```javascript
         $('...').on('...', function (e) {
@@ -1125,7 +1127,7 @@ var eventUtil = {
             }
         }
         ```
-    2. jQuery或Zepto
+    2. jQuery
 
         ```javascript
         $('...').on('...', function () {
@@ -1134,7 +1136,7 @@ var eventUtil = {
         });
         ```
 
-### *原生JS*、jQuery或Zepto实现判断按下具体某键值
+### *原生JS*、jQuery实现判断按下具体某键值
 1. *原生JS*
 
     ```javascript
@@ -1160,7 +1162,7 @@ var eventUtil = {
     /* 使用测试*/
     addEvent(document.getElementById('test'), 'keydown', checkKeyCode);  //上面绑定事件
     ```
-2. jQuery或Zepto
+2. jQuery
 
     ```javascript
     $(输入框选择器).on('keydown', function (e) {
@@ -2214,9 +2216,9 @@ if (!String.prototype.trim) {
 >来自[MDN:String.prototype.trim](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/Trim#兼容旧环境)。
 
 ---
-## jQuery（或Zepto）方法
+## jQuery方法
 
-### jQuery或Zepto滚动加载
+### jQuery滚动加载
 1. 以**放置在底部的节点与屏幕的相对距离**作为是否滚动到底部的判断：
 
     ```html
@@ -2400,7 +2402,7 @@ if (!String.prototype.trim) {
 
 >Zepto默认没有`deferred`的对象、没有`outerHeight`方法。
 
-### jQuery或Zepto图片延时加载
+### jQuery图片延时加载
 ```html
 <img src="默认图地址" data-src="真实图地址" data-error="真实图错误后的默认图地址" class="j-img-1">
 <img src="默认图地址" data-src-user="真实图地址" data-error-user="真实图错误后的默认图地址" class="j-img-2">
@@ -2566,7 +2568,7 @@ if (!String.prototype.trim) {
 
 >滚动事件代理可以代理在要`window`或监控图片加载的滚动节点上。
 
-### jQuery或Zepto获取`HTTP response header`信息
+### jQuery获取`HTTP response header`信息
 ```javascript
 /**
  * 获取HTTP response header信息
@@ -2640,7 +2642,7 @@ function fixPlaceholder($dom) {
 }
 ```
 
-### jQuery或Zepto弹出toast
+### jQuery弹出toast
 1. jQuery
 
     ```html
@@ -2775,7 +2777,7 @@ function fixPlaceholder($dom) {
     </script>
     ```
 
-### jQuery或Zepto全选、取消全选
+### jQuery全选、取消全选
 ```html
 <div id="j-form">
   <label for="all">
@@ -2848,7 +2850,7 @@ function fixPlaceholder($dom) {
 </script>
 ```
 
-### jQuery或Zepto节点跟随屏幕滚动
+### jQuery节点跟随屏幕滚动
 1. `fixed`：
 
     ```html
@@ -3007,7 +3009,7 @@ function fixPlaceholder($dom) {
     ```
     [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/gc45ehdb/)
 
-### jQuery或Zepto模拟手机翻转（使页面都以“横屏”展示）
+### jQuery模拟手机翻转（使页面都以“横屏”展示）
 ```html
 <style>
     .dom {
@@ -3108,7 +3110,7 @@ function fixPlaceholder($dom) {
 ```
 >如果对不是全屏的节点使用翻转函数，需要给节点设置：`width: 宽度 !important;height: auto !important;`。
 
-### jQuery或Zepto点击指定区域以外执行函数
+### jQuery点击指定区域以外执行函数
 1. jQuery
 
     ```javascript
@@ -3199,7 +3201,7 @@ function fixPlaceholder($dom) {
     ```
     [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/mvv9wxnw/)
 
-### jQuery或Zepto hover展示内容并且可跨越间隙到内容
+### jQuery hover展示内容并且可跨越间隙到内容
 ```html
 <div class="j-box">
     <div class="j-trigger">
@@ -3235,7 +3237,7 @@ function fixPlaceholder($dom) {
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/zs6a7aco/)
 
-### jQuery或Zepto启动、暂停CSS动画
+### jQuery启动、暂停CSS动画
 ```html
 <style>
     .dom.z-hover {

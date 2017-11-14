@@ -202,7 +202,7 @@ var a = new CountDown(Date.now() + 500000, 'test1', function () {
 ```
 >可以使用[moment](https://github.com/moment/moment/)格式化时间。
 
-### *原生JS*多异步返回后才执行总回调函数（利用jQuery或Zepto的`$.ajax`）
+### *原生JS*多异步返回后才执行总回调函数（利用jQuery的`$.ajax`）
 ```javascript
 /**
  * 异步函数都成功返回后，执行func

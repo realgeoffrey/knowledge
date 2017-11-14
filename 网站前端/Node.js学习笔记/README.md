@@ -30,6 +30,14 @@
 
 >切换版本之后需重装Node.js的全局模块包。
 
+### Node.js的运行机制:
+1. V8引擎解析JS脚本。
+2. 解析后的代码，调用Node API。
+3. [libuv](https://github.com/libuv/libuv)负责Node API的执行。将不同的任务分配给不同的线程，形成一个Event Loop（事件循环），以异步的方式将任务的执行结果返回给V8引擎。
+4. V8引擎再将结果返回给用户。
+
+![Node.js的事件循环](./images/nodejs-system-1.png)
+
 ### npm
 1. 命令
 
