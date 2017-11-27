@@ -85,6 +85,10 @@
             >    3. `async`：异步加载，加载完马上执行。
             >
             >        乱序执行，仅适用于不考虑依赖、不操作DOM的脚本。
+            >    4. 模块化属性（在JS内部`import`的同级资源是并行、依赖资源是串行）：
+            >
+            >        1. `type="module"`：与`defer`相同。
+            >        2. `type="module" async`：与`async`相同。
             >
             >    ![JS脚本加载图](./images/js-load-1.png)
     2. DOM（parse HTML）和CSSOM（recalculate style）构造完成后，进行渲染：
@@ -527,6 +531,9 @@
     2. 操作系统的API：提供与运行环境、操作系统互动的工具库。
 
 ### JS模块化方案
->参考[关于AMD,CMD,CommonJS及UMD规范](http://blog.gejiawen.com/2015/11/03/what-is-amd-cmd-commonjs-umd/)、[JS模块规范（CommonJS,AMD,CMD,ES6）](https://my.oschina.net/tongjh/blog/836721)。
+>参考[关于AMD,CMD,CommonJS及UMD规范](http://blog.gejiawen.com/2015/11/03/what-is-amd-cmd-commonjs-umd/)。
 
 ![JS模块化方案图](./images/js-module-1.png)
+
+1. [CommonJS规范](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Node.js学习笔记/README.md#commonjs规范)。
+2. [ES6 Module](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#ecmascript-2015es6新增)的14。

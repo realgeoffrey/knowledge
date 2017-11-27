@@ -31,6 +31,8 @@
 5. [Vue.js学习笔记](./网站前端/Vue.js学习笔记/README.md)
 6. [Node.js学习笔记](./网站前端/Node.js学习笔记/README.md)
 
+    >[我安装的全局仓库](./网站前端/Node.js学习笔记/我安装的全局仓库.md)
+
     1. [gulp使用](./网站前端/gulp使用/README.md)
 
         1. [gulpfile.js](./网站前端/gulp使用/tools/gulpfile.js)
@@ -44,7 +46,7 @@
     2. [.html](./网站前端/初始化模板/html.html)
 8. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
 
->1. 废弃内容:thumbsdown:
+>- 废弃内容:thumbsdown:
 >
 >    1. [兼容至ie6](./网站前端/兼容至ie6/README.md)
 >    2. [废弃代码](./网站前端/JS方法积累/废弃代码/README.md)
@@ -53,6 +55,8 @@
 1. [Git心得](./工具使用/Git心得/README.md)
 2. [命令行备忘](./工具使用/命令行备忘/README.md)
 3. [IDE设置](./工具使用/IDE设置/README.md)
+
+    [phpstorm.jar](./工具使用/IDE设置/phpstorm_11.30.jar)、[webstorm.jar](./工具使用/IDE设置/webstorm_08.22.jar)、[.editorconfig](./工具使用/IDE设置/.editorconfig)
 4. [Charles使用](./工具使用/Charles使用/README.md)
 5. [whistle使用](./工具使用/whistle使用/README.md)
 6. [科学上网](./工具使用/科学上网/README.md)

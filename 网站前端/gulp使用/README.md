@@ -13,13 +13,3 @@
     1. [pc.handlebars](tools/pc.handlebars)
     2. [wap.handlebars](tools/wap.handlebars)
 5. [.eslintrc.js](tools/.eslintrc.js) is for ESLint.
-
-### For global
-1. General:
-
-    `npm install cnpm nrm gulp whistle nodemon -g`
-
-    >Sometimes cnpm will mike a mistake, so that maybe we should use npm instead.
-2. For eslint:
-
-    `npm install eslint babel-eslint eslint-config-standard eslint-plugin-html eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-standard -g`
