@@ -253,24 +253,30 @@
 - 改变安装包的顺序会影响安装包的内容和依赖。
 
 ### CommonJS规范
->参考[阮一峰：require() 源码解读](http://www.ruanyifeng.com/blog/2015/05/require.html)、[阮一峰：CommonJS规范](http://javascript.ruanyifeng.com/nodejs/module.html)。
+>参考[阮一峰：require() 源码解读](http://www.ruanyifeng.com/blog/2015/05/require.html)、[CommonJS 详细介绍](https://neveryu.github.io/2017/03/07/commonjs/)、[阮一峰：JavaScript 模块的循环加载](http://www.ruanyifeng.com/blog/2015/11/circular-dependency.html)。
 
 - 概述
 
-    1. 模块的加载实质上是：注入`exports`、`require`、`module`三个全局变量；执行模块的源码；将模块的`exports`变量的值输出。
-    2. 每个文件就是一个模块，有自己的作用域，不会污染全局作用域。在一个文件里定义的变量、函数、类，都是私有的，对其他文件不可见。
-    3. 模块加载的顺序，按照其在代码中出现的顺序。
-    4. 运行时加载。
-    5. 引入的是值的**拷贝**，不会动态更新，可以改写。
-    6. 加载原理
+    1. 模块的加载步骤：
 
-        1. `require`第一次加载某脚本，执行整个脚本，在内存生成一个缓存对象（`{id:'...',exports:{...},...}`）。无论加载多少次，仅在第一次加载时运行，除非手动清除系统缓存。
-        2. 使用到模块时拷贝模块缓存对象的`exports`属性值。
-        3. 一旦出现某个模块被“循环加载”，就只输出已经执行的部分，还未执行的部分不会输出。
+        1. 注入`exports`、`require`、`module`三个全局变量；
+        2. 执行模块的源码：
+
+            1. `require`第一次加载某模块，执行整个脚本，在内存生成一个缓存对象：
+
+                `{ id: '...', exports: {...}, ... }`
+            3. 无论加载多少次，仅在第一次加载时运行，除非手动清除系统缓存。
+            3. x模块执行时出现`require(y)`则进入y模块代码中执行，执行完毕后再回到x模块继续向下执行。
+            4. 一旦出现“循环加载”，则被循环的模块对象的`exports`仅保存已经执行过的代码部分，还未执行的部分等到代码返回到此模块第一次被引用时执行（此时再去改变`exports`）。
+        3. 将模块的`exports`值输出至缓存，以供其他模块`require`获取（或“循环加载”时，部分已经执行产生的`exports`供其他模块`require`获取）。
+    2. 运行时进行模块加载。
+    3. 每个文件就是一个模块，有自己单独作用域，不污染全局作用域。
+    4. 模块加载的顺序：按照其在代码中出现的顺序、引用则嵌套加载。
+    5. `require(x模块)`返回内存中x模块的`module.exports`指向的值，可以重新赋值和属性改写（属性改写会改变x模块的缓存值，所有`require(x模块)`都会共享）。
 
 1. `require(X)`
 
-    加载模块。读取并执行一个JS文件，返回该模块的`exports`对象。
+    加载模块。读取并执行一个JS文件（`.js`后缀可以省略），返回该模块的`exports`值。
 
     1. 如果 X 以`/`、`./`或`../`开头
 
@@ -320,7 +326,12 @@
     >    3. 都找不到则抛出`not found`。
 2. `exports`
 
-    向其添加属性作为模块输出的内容。也允许`module.exports = 变量`输出（`exports = 变量`报错）。
+    模块提供使用的`exports`值。
+
+    - 允许用两种方式赋值：
+
+        1. `module.exports = 值`（`exports = 变量`报错）
+        2. `module.exports.属性 = 值`
 
     >`exports === module.exports`。
 3. `module`

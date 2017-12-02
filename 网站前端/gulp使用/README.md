@@ -1,5 +1,7 @@
 # gulp使用
 
+>stream building tools.
+
 1. Node's package for gulp(local): [package.json](tools/package.json)
 
     >1. By using gulp for the first time, error always occurred because of the bad network when we installed plug-ins.

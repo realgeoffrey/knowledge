@@ -43,11 +43,11 @@
     2. babel使用
 
         [.babelrc](./网站前端/babel使用/.babelrc)
-
+    3. [webpack使用](./网站前端/webpack使用/README.md)
 7. 初始化模板
         
     1. [cssReset.scss](./网站前端/初始化模板/cssReset.scss)
-    2. [.html](./网站前端/初始化模板/html.html)
+    2. [init.html](./网站前端/初始化模板/init.html)
 8. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
 
 >- 废弃内容:thumbsdown:
@@ -60,13 +60,15 @@
 2. [命令行备忘](./工具使用/命令行备忘/README.md)
 3. [IDE设置](./工具使用/IDE设置/README.md)
 
-    [phpstorm.jar](./工具使用/IDE设置/phpstorm_11.30.jar)、[webstorm.jar](./工具使用/IDE设置/webstorm_08.22.jar)、[.editorconfig](./工具使用/IDE设置/.editorconfig)
+    1. [phpstorm.jar](./工具使用/IDE设置/phpstorm_11.30.jar)
+    2. [webstorm.jar](./工具使用/IDE设置/webstorm_08.22.jar)
+    3. [.editorconfig](./工具使用/IDE设置/.editorconfig)
 4. [Charles使用](./工具使用/Charles使用/README.md)
 5. [whistle使用](./工具使用/whistle使用/README.md)
 6. [科学上网](./工具使用/科学上网/README.md)
 7. [Google搜索技巧](./工具使用/Google搜索技巧/README.md)
 
->1. [iOS使用](./工具使用/iOS使用/README.md)
+>[iOS使用](./工具使用/iOS使用/README.md)
 
 ## 环境安装、配置
 1. [nginx+PHP配置（macOS）](./环境安装、配置/nginx+PHP配置（macOS）/README.md)
