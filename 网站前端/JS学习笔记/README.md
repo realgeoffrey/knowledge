@@ -711,6 +711,8 @@
 ### JS代码风格规范（coding style guide）
 1. 声明
 
+    >因为[JS的预编译](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#js的预编译)。
+
     1. 变量声明（`var`）
 
         无论语句在何处，无论是否会真正执行到，所有的`var`语句的**声明**都提升到作用域（函数内部或全局）顶部执行（hoisting），但具体**赋值**不会被提前。
@@ -1718,6 +1720,56 @@
 
 ---
 ## 性能原理
+
+### JS的预编译
+>参考[JavaScript - 预编译](http://www.jianshu.com/p/a91cddc5c705)。
+
+1. JS是一门脚本语言，不经过~~编译~~而直接运行，但运行前先进行预编译。
+2. JS的预编译是以代码块`<script></script>`为范围，即每遇到一个代码块都会进行：**预编译 -> 执行**。
+3. 预编译：在内存中开辟一块空间，用来存放**变量**和**函数**。
+
+    为使用`var`声明的变量、使用`function`声明的函数在内存中开辟一块空间，用来存放两者声明（不会赋值，所有变量的值都是`undefined`、函数内容会被预编译）；
+
+    >`const/let`不允许同名声明。
+
+    - 在预编译时，`function`的优先级比`var`高：
+
+        1. 在预编译阶段，同时声明同一名称的函数和变量（顺序不限），会被声明为函数。
+        2. 在执行阶段，如果变量有赋值，则这个名称会重新赋值给变量。
+
+        >e.g.
+        >
+        >```javascript
+        >// 预编译阶段a1/b2为函数，运行时a1/b2赋值成为变量
+        >console.log(a1);        // function a1
+        >var a1 = 1;
+        >function a1() {}
+        >console.log(a1);        // 1
+        >
+        >console.log(b2);        // function b2
+        >function b2() {}
+        >var b2 = 1;
+        >console.log(b2);        // 1
+        >
+        >
+        >// 预编译阶段c3/d4为函数，运行时没有赋值
+        >console.log(c3);        // function c3
+        >var c3;
+        >function c3() {}
+        >console.log(c3);        // function c3
+        >
+        >console.log(d4);        // function d4
+        >function d4() {}
+        >var d4;
+        >console.log(d4);        // function d4
+        >
+        >
+        >// 预编译阶段e5为变量，运行时被赋值给匿名函数
+        >console.log(e5);        // undefined
+        >var e5 = function () {};
+        >console.log(e5);        // function 匿名
+        >```
+4. 变量赋值是在JS执行阶段（运行时）进行的。
 
 ### 函数
 >函数是唯一拥有自身作用域的结构。
