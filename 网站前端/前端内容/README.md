@@ -71,7 +71,7 @@
         2. 加载DOM中所有JS，对DOM和CSSOM进行访问和更改。
     
             1. HTML中出现JS，**阻塞解析**（DOM构造被暂停）。
-            2. 下载脚本或内嵌脚本不用下载。
+            2. 下载外部脚本或内嵌脚本不用下载。
             3. 等待所有CSS被提取且CSSOM被构造完毕。
             4. 执行脚本，访问、更改DOM和CSSOM。
             5. DOM构造继续进行。
@@ -103,13 +103,15 @@
 2. 事件完成顺序
 
     1. 解析DOM；
-    2. 加载外部JS（和CSS）；
-    3. （CSSOM先构造完毕）解析并执行JS；
-    4. 构造DOM完毕；
+    2. 执行同步的JS和CSS
+
+        1. 加载外部JS（和CSS）；
+        2. （CSSOM先构造完毕）解析并执行JS；
+    3. 构造DOM完毕（同步的JS会暂停DOM解析，CSSOM的构建会暂停JS执行）；
         
         完毕后触发：JS的`document.addEventListener('DOMContentLoaded', function(){}, false)` 或 jQuery的`$(document).ready(function(){})`。
-    5. 加载图片、媒体资源等外部文件；
-    6. 资源加载完毕。
+    4. 加载图片、媒体资源等外部文件；
+    5. 资源加载完毕。
     
         完毕后触发：JS的`window.addEventListener('load', function(){}, false)`。
 
@@ -167,14 +169,14 @@
 
         1. 服务器开启gzip。
 
-            >前端查看Response头是否有：`Content-Encoding:gzip`。
+            >前端查看Response头是否有：`Content-Encoding: gzip`。
         2. 减少DNS查找，设置合适的TTL值，避免重定向。
         3. 使用CDN。
         4. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#静态资源使用额外域名domain-hash的原因)，减少cookie。
         5. 对资源进行缓存：
 
             1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
-            2. 使用[缓存相关的HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：`Expires`、`Cache-Control`、`Last-Modified/If-Modified-Since`、`ETag/If-None-Match`。
+            2. 使用[缓存相关HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since` `ETag/If-None-Match`。
             3. 配置超长时间的本地缓存，采用内容摘要（MD5）作为缓存更新依据。
         6. [非覆盖式更新资源](https://github.com/fouber/blog/issues/6)。
     2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面加载解析步骤)：
@@ -193,10 +195,10 @@
                         1. [图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载)。
                         2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery滚动加载)）。
                         3. 功能文件按需加载（模块化、组件化）。
-                    2. 使AJAX可缓存（当用GET方式时添加缓存响应头）。
+                    2. 使AJAX可缓存（当用GET方式时添加缓存HTTP头：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since`）。
                 3. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-                4. 第三方资源异步加载。
-                5. 避免使用空链接（依旧会请求）。
+                4. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）。
+                5. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
             2. 最小化字节：
 
                 1. 压缩资源。
@@ -217,21 +219,32 @@
                 1. [CSS选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
                 2. [渲染性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)
 
-                    1. 减少重绘和重排。
-                    2. 动画合理触发GPU加速。
-                    3. 尽量仅使用`opacity`、`transform: translate/scale/rotate/skew`处理动画。
+                    1. 样式缩小计算范围、降低复杂度。
+                    2. 减少重绘和重排。
+                    3. 动画合理触发GPU加速。
+                    4. 尽量仅使用`opacity`、`transform: translate/scale/rotate/skew`处理动画。
             2. JS代码性能优化：
 
-                1. 使用性能好的代码方式
+                1. 使用性能好的代码方式（微优化）
 
-                    1. 字面量创建数据。
+                    1. 字面量创建数据，而不是构造函数。
                     2. 缓存DOM的选择、缓存列表.length。
                     3. [闭包合理使用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)。
                     4. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)。
+                    5. 长字符串拼接使用`Array.prototype.join()`，而不使用`+`。
                 2. 尽量使用事件代理，避免批量绑定事件。
                 3. [定时器取舍，合理使用重绘函数代替](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)。
                 4. 高频事件（如`scroll`、`mousemove`、`touchmove`）使用[函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)，避免在高频事件中进行运行时间长的代码。
-                5. 使用`Web Worker`处理复杂的计算。
+                5. 避免强制同步布局、避免布局抖动。
+                6. 使用`Web Worker`处理复杂的计算。
+                7. 正则表达式尽可能准确地匹配目标字符串，以减少不必要的回溯。
+            3. HTML：
+
+                1. 减少层级嵌套。
+                2. 在拥有`target="_blank"`的`<a>`中添加`rel="noopener"`。
+
+>优先优化对性能影响大、导致瓶颈的部分。
+
 2. 网络应用的生命期建议：
 
     1. load
@@ -246,8 +259,6 @@
     4. response
 
         100ms内对用户的操作做出响应。
-
->优先优化对性能影响大的部分。
 
 ### 静态资源使用额外域名（domain hash）的原因
 1. cookie free
@@ -518,6 +529,8 @@
 ### JavaScript范围
 >ECMAScript是JavaScript的标准，狭义地说JavaScript是指ECMAScript。浏览器、Node.js都是JavaScript的运行环境。
 
+JavaScript ＝ ECMAScript + 宿主环境提供的API。
+
 1. 浏览器（web应用）的JavaScript包括：
 
     1. ECMAScript：描述该语言的语法和基本对象。
@@ -528,7 +541,12 @@
 2. Node.js的JavaScript包括：
 
     1. ECMAScript：描述该语言的语法和基本对象。
-    2. 操作系统的API：提供与运行环境、操作系统互动的工具库。
+    2. 操作系统的API：
+
+        1. 操作系统（OS）。
+        2. 文件系统（file）。
+        3. 网络系统（net）。
+        4. 数据库（database）。
 
 ### JS模块化方案
 >参考[关于AMD,CMD,CommonJS及UMD规范](http://blog.gejiawen.com/2015/11/03/what-is-amd-cmd-commonjs-umd/)。

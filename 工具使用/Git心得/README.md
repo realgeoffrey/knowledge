@@ -65,7 +65,7 @@
 
     >1. [GitLab](https://about.gitlab.com/)默认设置**master**分支是**protected**状态，无法`git push --force`。
     >
-    >    可以在Gitlab设置里面通过：*project* > *Settings* > *Repository* > *Protected branches* > *Unprotect*，打开权限（强烈不建议长期开启）。
+    >    可以在Gitlab设置里面通过：*project* > *Settings* > *Repository* > *Protected branches* > *Unprotect*，打开权限（不建议长期开启）。
     >2. Github默认允许`git push --force`。
 3. 合并
 

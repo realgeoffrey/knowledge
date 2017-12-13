@@ -181,6 +181,8 @@ function platform (ua) {
 ```
 
 ### *原生JS*判断ie6、7、8、9版本
+>HTML条件注释法仅支持ie9-。
+
 ```javascript
 /**
  * 判断ie6、7、8、9版本

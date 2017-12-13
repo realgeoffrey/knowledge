@@ -1,6 +1,6 @@
 # gulp使用
 
->stream building tools.
+>gulp: stream building tools.
 
 1. Node's package for gulp(local): [package.json](tools/package.json)
 

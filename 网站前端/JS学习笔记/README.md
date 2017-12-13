@@ -235,7 +235,7 @@
 
     >参考[JavaScript 事件绑定机制](http://www.cnblog.me/2016/05/08/javascript-event-binding/)、[理解Javascript中的事件绑定与事件委托](https://segmentfault.com/a/1190000006667581)。
 
-    1. HTML事件处理
+    1. HTML事件处理（冒泡）
 
         `<div onclick="funcAttr()"></div>`（不能同个事件监听多个处理程序）
 
@@ -247,7 +247,7 @@
             2. 移除或修改DOM元素的事件绑定属性：
 
                 `dom.removeAttribute('onclick');`、`dom.setAttribute('onclick', '(function () {/* 修改方法*/} ())');`
-    2. DOM0级事件处理
+    2. DOM0级事件处理（冒泡）
 
         >本质上，DOM0级事件处理等于HTML事件处理。
 
@@ -256,14 +256,14 @@
         - 移除或修改绑定事件：
 
             `dom.onclick = null;`、`dom.onclick = function () {/* 修改方法*/};`
-    3. IE事件处理
+    3. IE事件处理（冒泡）
 
         `dom.attachEvent('onclick', funcIe);`（可监听多个，需参数完全对应才能解绑定；无法解绑匿名函数）
 
         - 移除绑定事件：
 
             `dom.detachEvent('onclick', funcIe);`
-    4. DOM2级事件处理
+    4. DOM2级事件处理（冒泡、捕获）
 
         >ie8-不兼容DOM2级事件处理。
 
@@ -274,7 +274,7 @@
             `dom.removeEventListener('click', func2, false);`
 
     - [兼容各浏览器的绑定、解绑事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js绑定解绑事件)
-2. jQuery
+2. jQuery（冒泡）
 
     >来自[jQuery:Events](http://api.jquery.com/category/events/)。
 
@@ -334,12 +334,13 @@
 
     ![事件流图](./images/event-flow-1.png)
 
-    1. 先**捕获**。
+    1. 先按**捕获**顺序依次执行节点注册**捕获**的事件。
     2. 抵达目标
 
-        1. 进行事件监听器处理（可以设置不再冒泡或不执行浏览器默认行为）。
-        2. 执行浏览器默认行为（如`<a>`跳转）。
-    3. 再**冒泡**。
+        依据注册顺序执行事件监听器，分为捕获、冒泡两种抵达类型，其中浏览器默认行为是冒泡抵达类型。
+
+        >可设置不再冒泡或不执行浏览器默认行为。
+    3. 再按**冒泡**顺序依次执行节点注册**冒泡**的事件。
 
     >ie10-的DOM事件流只有冒泡，没有~~捕获~~。
 
@@ -979,10 +980,11 @@
         3. 对只为DOM增添的内容，转移到外部资源中动态创建。
     5. 性能优化[从URL输入之后](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面加载解析步骤)就开始考虑。
 
-        >避免~~微优化~~：
-        >
-        >    1. 即时编译（Just In Time Compile）：JS引擎会在JS运行过程中逐渐重新编译代码，使代码运行更快。
-        >    2. 微优化（micro-optimizations）：尝试写出认为会让浏览器稍微更快速运行的代码。
+        1. 关于“性能”的写法建议，更多的是一种编程习惯（微优化）：写出更易读、性能更好的代码。
+        2. 在解决页面性能瓶颈时，要从URL输入之后就进行[网站性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#网站性能优化)；避免在处理网页瓶颈时进行~~微优化~~。
+
+            >1. 即时编译（Just In Time Compile）：JS引擎会在JS运行过程中逐渐重新编译代码，使代码运行更快。
+            >2. 微优化（micro-optimizations）：尝试写出认为会让浏览器稍微更快速运行的代码或调用更快的方法。
 
 ### 编程实践（programming practices）
 1. UI层的松耦合
@@ -1028,7 +1030,7 @@
     配置数据：URL、展示内容、重复的值、设置、任何可能发生变更的值。
 5. 代码调试方式
 
-    `console`（`alert`）、`debugger`、DevTool的Sources断点（配合SourceMap）。
+    `console`（`alert`）、DevTool的Sources断点（配合SourceMap）、`debugger`。
 
 ### [函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js防抖函数)、[函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js节流函数)
 >都是用来限制某个函数在一定时间内执行次数的技巧。
@@ -1101,7 +1103,7 @@
     ```
 
 ### Hybrid APP相关
->1. 相对于Native APP的高成本、原生体验，Hybrid APP具有低成本、高效率、跨平台等特性，能够不依赖Native的发包更新。
+>1. 相对于Native APP的高成本、原生体验，Hybrid APP具有低成本、高效率、跨平台等特性，不依赖Native发包更新。
 >2. Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、JS进行业务开发。
 
 1. Native提供给Hybrid宿主环境
@@ -1159,12 +1161,10 @@
     3. 根据前端的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在Hybrid遇到的bug。
 
 ### Tips
-1. `var a = b = c = 1;/* b、c没有var的声明*/`
+1. `var a = b = c = 1;/* b、c没有var的声明。等价于：var a = 1; b = 1; c = 1; */`
 
     第二个以后的变量表示没有~~var~~的赋值。
-
-    等价于：`var a = 1;b = 1;c = 1;`。
-2. `var a = a || {};`
+2. `var a = a || {};`执行顺序：
 
     1. 声明提前`var a;`。
     2. 右侧的表达式`a || {}`先执行：根据规则先判断a的值是否为真，如果a为真，则返回a；如果a不为真，则返回{}。
@@ -1190,35 +1190,36 @@
     >
     >1. `var a = typeof b !== 'undefined' && b !== null ? b : {};`
     >2. `if (typeof c !== 'undefined' && c !== null) {}`
-3. `if`、`while`之类的判断语句中用赋值操作
+3. `if`、`while`之类的判断语句中用赋值操作：
 
     （大部分是误用）赋值的内容Boolean后为假会导致条件判断为假：`if(a = false){/* 不执行*/}`。
 
     >判断语句内只判断整体返回值是`true`还是`false`，与里面执行内容无关（尽管对其语法有所限制）。
-4. `if(var a = 1, b = 2, c = 3, false){/* 不执行*/}`
+4. `if(var a = 1, b = 2, c = 3, false){/* 不执行*/}`：
 
     逗号操作符`,`对每个操作对象求值（从左至右），然后返回最后一个操作对象的值。
 
     >`var`语句中的逗号不是逗号操作符，因为它不存在于一个表达式中。尽管从实际效果来看，那个逗号同逗号运算符的表现很相似。但它是`var`语句中的一个特殊符号，用于把多个变量声明结合成一个。
-5. `var a = [10, 20, 30, 40][1, 2, 3];/* 40*/`
+5. `var a = [10, 20, 30, 40][1, 2, 3];/* 40*/`：
 
     1. `[10, 20, 30, 40]`被解析为数组；
     2. `[1, 2, 3]`被解析为属性调用，逗号操作符取最后一个值为结果。
 
     因此结果为数组`[10, 20, 30, 40]`的`[3]`属性值：`40`。
-6. `{a: 'b'} + 1;/* 1*/`
+6. `{a: 'b'} + 1;/* 1*/`：
 
     大括号视为代码块，没有返回值。需要给大括号加上小括号，表明为一个值：`({a: 'b'}) + 1;/* [object Object]1*/`。
-7. 浮点数的计算
+7. 浮点数的计算：
 
     浮点数值计算会产生舍入误差，因此永远不要用条件语句判断某个特定浮点数值，也不要用JS进行复杂的计算。
+
     >避免浮点数运算误差函数：[用整数进行小数的四则运算](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用整数进行小数的四则运算避免浮点数运算误差)。
-8. 判断DOM是否支持某属性
+8. 判断DOM是否支持某属性：
 
     若要判定一个属性是否被DOM所支持，新建一个DOM来判断：`if('属性' in document.createElement('某标签')){...}`。
 
     >在DOM中随意添加一个属性，`此属性 in 此DOM`永远为真，不可以判断是否此DOM存在此属性（或方法）。
-9. `eval`中直接执行`function`声明无效，必须用引号把`function`声明包裹起来才有效（尽量不用`eval`）
+9. `eval`中直接执行`function`声明无效，必须用引号把`function`声明包裹起来才有效（尽量不用`eval`）：
 
     ```javascript
     eval(function a() {});      //返回function a() {}，但没有声明
@@ -1228,12 +1229,16 @@
     >1. `if()`中的代码对于`function`的声明就是用`eval`带入方法做参数，因此虽然返回true，但方法没有被声明。
     >2. `setTimeout`与`setInterval`中第一个参数若使用字符串，也是使用`eval`把字符串转化为代码。
 10. 获取数组中最大最小值：`Math.min.apply(null, [1, 2, 3]);/* 1*/`、`Math.max.apply(null, [1, 2, 3]);/* 3*/`。
-11. 设置CSS属性
+11. 设置CSS属性：
 
     使用`cssText`返回CSS的实际文本（ie8-返回时不包含最后一个`;`）。
 
     1. 添加：`dom.style.cssText += '; 样式: 属性; 样式: 属性'`
     2. 替换：`dom.style.cssText = '样式: 属性; 样式: 属性'`
+12. 异步加载第三方资源方法：
+
+    1. `<script>`添加`defer/async`属性。
+    2. [动态创建或修改`<script>`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js动态添加样式脚本)。
 
 ---
 ## 功能归纳
@@ -1436,7 +1441,7 @@
     2. 字符串形式：`名1=值1[; 名2=值2]`。不能包含任何`,`、`;`、` `（使用`encodeURIComponent`、`decodeURIComponent`）。
     3. 所有浏览器都支持。
     4. 单域名内，cookie保存的数据不超过4k，数量（最少）20个。
-    5. 源生的cookie接口不友好，需要程序员[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js操作cookie)。
+    5. 源生的cookie接口不友好，需要自己[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js操作cookie)。
 
         - JS的`document.cookie`：
 
@@ -2150,17 +2155,22 @@
 ### 内存泄漏
 > 内存泄露：计算机内存逐渐丢失。当某个程序总是无法释放内存时，出现内存泄露。
 
-1. 全局变量不会被垃圾回收。
-2. 被闭包引用的变量不会被垃圾回收。
-3. DOM清空或删除时，事件绑定未清除导致内存泄漏（删除DOM前，先移除事件绑定）。
-4. 被遗忘的计数器或回调函数：不使用时及时清除。
-5. 后代元素存在引用引起的内存泄漏：
+- 不是内存泄漏，只是不会被垃圾回收：
+
+    1. 全局变量不会被垃圾回收：合理创建全局变量。
+    2. 被闭包引用的变量不会被垃圾回收：合理使用闭包。
+    3. 被遗忘的计数器或回调函数：不使用时及时清除。
+
+1. DOM清空或删除时，事件绑定未清除导致内存泄漏：删除DOM前，先移除事件绑定。
+2. 后代元素存在引用引起的内存泄漏：指向DOM的变量，在DOM删除后要设置为`null`。
 
     ![内存泄漏图](./images/memory-leak-1.gif)
 
     1. 黄色是指直接被JS变量所引用，在内存里。
     2. 红色是指间接被JS变量所引用，refB被refA间接引用，导致即使refB变量被清空，也是不会被回收的。
     3. 子元素refB由于parentNode的间接引用，只要它不被删除，它所有的父元素（图中红色部分）都不会被删除。
+
+>随着JS引擎的更新，原来会导致内存泄漏的bug已经慢慢被修复，因此写代码时不太需要注意内存泄漏问题（误）。
 
 ### 数据类型转换
 >参考[阮一峰：数据类型转换](http://javascript.ruanyifeng.com/grammar/conversion.html)、[ecma-262等于比较](https://www.ecma-international.org/ecma-262/#sec-abstract-equality-comparison)。
@@ -2425,7 +2435,9 @@
 
     >[Polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe和cancelanimationframe的polyfill)、[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
 
-    1. 浏览器重绘之前（大部分浏览器是1秒钟60帧，也就是16.67ms进行一帧重绘）调用一次。
+    1. 浏览器重绘之前，进行一次：发起通知进入“任务队列”，等待“执行栈”调用。
+
+        大部分浏览器是1秒钟60帧，也就是16.67ms进行一帧重绘。
     2. 替代执行时机无法保证的`setTimeout`、`setInterval`进行动画操作，提升渲染性能：
 
         1. 把每一帧中的所有DOM操作集中起来，在一次重绘或重排中完成动画，且时间间隔紧随浏览器的刷新频率。
@@ -2437,7 +2449,7 @@
     在浏览器空闲时期依次调用函数。
 
     >1. 只有当前帧的运行时间小于16.66ms时，回调函数才会执行。否则，就推迟到下一帧，如果下一帧也没有空闲时间，就推迟到下下一帧，以此类推。
-    >2. 第二个参数表示指定的毫秒数。如果在指定的这段时间之内，每一帧都没有空闲时间，那么回调函数将会强制执行。
+    >2. 第二个参数表示指定的毫秒数。若在指定的这段时间之内，每一帧都没有空闲时间，那么回调函数将会强制执行。
 
 ### 数组的空位（hole）
 >来自[阮一峰：数组的空位](http://javascript.ruanyifeng.com/grammar/array.html#toc6)、[阮一峰：数组的空位（ES6）](http://es6.ruanyifeng.com/#docs/array#数组的空位)。
