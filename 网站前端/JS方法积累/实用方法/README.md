@@ -112,7 +112,7 @@ function animateTo(endX, endY, time) {
 >使用[velocity动画库](https://github.com/julianshapiro/velocity)（[中文文档](http://www.mrfront.com/docs/velocity.js/)）做所有的动画（包括JS和CSS）才是最简单且性能最佳的选择。
 >如滚动到某位置：`$('html').velocity('scroll', {offset: y轴像素, duration: 毫秒});`。
 
-### *原生JS*判断浏览器所在系统
+### *原生JS*判断所在系统
 ```javascript
 function detectOS (ua, pf) {
   ua = ua || window.navigator.userAgent
@@ -156,9 +156,9 @@ function detectOS (ua, pf) {
 }
 ```
 
-### *原生JS*返回用户所在移动平台
+### *原生JS*判断移动平台
 ```javascript
-// 返回用户所在平台（微信、QQ、微博、QQ空间）
+// 判断移动平台（微信、QQ、微博、QQ空间）
 function platform (ua) {
   ua = ua || window.navigator.userAgent
 
@@ -1800,49 +1800,8 @@ xhr.setRequestHeader(头, 值);
 xhr.send(null);
 ```
 
-### *原生JS*动态添加样式、脚本
-1. 动态添加样式
-
-    1. 添加`<style>`
-
-        ```javascript
-        var newStyle = document.createElement('style');
-
-        newStyle.type = 'text/css';
-
-        try {
-            newStyle.appendChild(document.createTextNode('CSS代码'));
-        }
-        catch (e) {
-            newStyle.styleSheet.cssText = 'CSS代码';  //ie
-        }
-
-        document.getElementsByTagName('head')[0].appendChild(newStyle);
-        ```
-    2. 添加`<link>`
-
-        >必须将`<link>`添加到`<head>`，才能保证在所有浏览器中的行为一致。
-
-        ```javascript
-        var newLink = document.createElement('link');
-
-        newLink.rel = 'styleSheet';
-        newLink.type = 'text/css';
-
-        newLink.href = 'CSS文件地址';
-
-        document.getElementsByTagName('head')[0].appendChild(newLink);
-        ```
-    3. 添加内嵌样式
-
-        ```javascript
-        var oneDom = document.getElementById('节点id');
-
-        oneDom.style.cssText += '; CSS代码'
-        ```
-
-    >CSS代码，如 `div {background-color: yellow;}`。
-2. 动态添加脚本
+### *原生JS*动态添加脚本、样式
+1. 动态添加脚本
 
     1. 异步
 
@@ -1872,6 +1831,8 @@ xhr.send(null);
 
             appendPlace.appendChild(newScript);
             ```
+
+        >异步加载第三方资源可在`<script>`添加`defer`或`async`属性。
     2. 同步
 
         1. 添加JS代码
@@ -1949,6 +1910,47 @@ xhr.send(null);
                 }
             }
             ```
+2. 动态添加样式
+
+    1. 添加`<style>`
+
+        ```javascript
+        var newStyle = document.createElement('style');
+
+        newStyle.type = 'text/css';
+
+        try {
+            newStyle.appendChild(document.createTextNode('CSS代码'));
+        }
+        catch (e) {
+            newStyle.styleSheet.cssText = 'CSS代码';  //ie
+        }
+
+        document.getElementsByTagName('head')[0].appendChild(newStyle);
+        ```
+    2. 添加`<link>`
+
+        >必须将`<link>`添加到`<head>`，才能保证在所有浏览器中的行为一致。
+
+        ```javascript
+        var newLink = document.createElement('link');
+
+        newLink.rel = 'styleSheet';
+        newLink.type = 'text/css';
+
+        newLink.href = 'CSS文件地址';
+
+        document.getElementsByTagName('head')[0].appendChild(newLink);
+        ```
+    3. 添加内嵌样式
+
+        ```javascript
+        var oneDom = document.getElementById('节点id');
+
+        oneDom.style.cssText += '; CSS代码'
+        ```
+
+    >CSS代码，如 `div {background-color: yellow;}`。
 
 ### *原生JS*单词首字母大写
 ```javascript

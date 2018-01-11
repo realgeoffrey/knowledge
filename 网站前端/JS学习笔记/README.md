@@ -1235,10 +1235,6 @@
 
     1. 添加：`dom.style.cssText += '; 样式: 属性; 样式: 属性'`
     2. 替换：`dom.style.cssText = '样式: 属性; 样式: 属性'`
-12. 异步加载第三方资源方法：
-
-    1. `<script>`添加`defer/async`属性。
-    2. [动态创建或修改`<script>`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js动态添加样式脚本)。
 
 ---
 ## 功能归纳

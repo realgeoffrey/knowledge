@@ -62,7 +62,7 @@
 2. [命令行备忘](./工具使用/命令行备忘/README.md)
 3. [IDE设置](./工具使用/IDE设置/README.md)
 
-    1. [phpstorm.jar](./工具使用/IDE设置/phpstorm_11.30.jar)
+    1. [phpstorm.jar](./工具使用/IDE设置/phpstorm_01.11.jar)
     2. [webstorm.jar](./工具使用/IDE设置/webstorm_08.22.jar)
     3. [.editorconfig](./工具使用/IDE设置/.editorconfig)
 4. [Charles使用](./工具使用/Charles使用/README.md)

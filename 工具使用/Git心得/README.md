@@ -13,14 +13,14 @@
         2. 撤销已`git commit`的请求
         
             ```bash
-            git log                         # 选择要退回的commit_id
-            git reset “commit_id”           # 撤销commit请求，但不清除文件内容
+            git log                         # 获取要退回的SHA
+            git reset “SHA”                 # 撤销commit请求，但不清除文件内容
             ```
         3. 撤销`git commit` + 恢复版本控制内的全部文件
         
             ```bash
-            git log                         # 选择要退回的commit_id
-            git reset --hard “commit_id”    # git reset “commit_id” + git reset --hard HEAD
+            git log                         # 获取要退回的SHA
+            git reset --hard “SHA”          # git reset “SHA” + git reset --hard HEAD
             ```
     2. 清除所有不在版本控制内的内容（如.idea、node_modules）
     
@@ -36,9 +36,9 @@
         向前逐个删除commit（除了第一个commit）。
 
         ```bash
-        git reset --hard HEAD~数字     # 取消当前版本之前的N次提交
+        git reset --hard HEAD~“数字”      # 取消当前版本之前的N次提交
         # 如果需要，可以重新 git merge 其他分支
-        git push origin HEAD --force   # 强制提交到远程版本库
+        git push origin HEAD --force    # 强制提交到远程版本库
 
         # 若删除的是其他用户已经拉取的commit，则会变成其他用户本地的commit
         ```
@@ -49,7 +49,7 @@
         操作任意commit。
 
         ```bash
-        git rebase -i --root 分支名    # 选择commit处理状态
+        git rebase -i --root “分支名”  # 选择commit处理状态
         # 编辑commit信息
 
         # git rebase --abort           # 取消所有rebase操作
@@ -71,16 +71,16 @@
 
     ```bash
     # 其他分支更新至最新内容
-    git checkout 其他分支
-    git pull origin 其他分支
+    git checkout “其他分支”
+    git pull origin “其他分支”
     
     # 把其他分支内容合并至收集改动分支
-    git checkout 收集改动分支
-    git merge 其他分支
+    git checkout “收集改动分支”
+    git merge “其他分支”
     # if未产生冲突，则自动commit了合并的内容
     # if产生冲突，则手动解决：'<<<<<<< HEAD'至'======='为收集改动分支内容；'======='至'>>>>>>> 其他分支'为其他分支内容
     
-    git push origin 收集改动分支  # 若冲突了需要：解决冲突 -> add -> commit
+    git push origin “收集改动分支”    # 若冲突了需要：解决冲突 -> add -> commit
     ```
 4. 更新远程仓库引用
 
@@ -90,35 +90,40 @@
 5. 推送（新建）远程分支
 
     ```bash
-    git push origin 分支名 # 新建远程分支（不需要提交commit即可创建远程分支）
+    git push origin “分支名”   # 新建远程分支（不需要提交commit即可创建远程分支）
     ```
 6. tag
 
     ```bash
-    git tag                          # 列出现有标签
+    git tag [-l “完整内容或*”]       # 列出现有（本地+远程）标签
 
-    git tag 名字                      # 新建标签
-    git push origin 名字              # 推送一个本地新建标签至远程
-    git push --tags                  # 推送所有本地新建标签至远程
+    git show “名字”                   # 查看tag详细信息
 
-    git tag -d 名字                   # 删除本地tag
+    git tag “名字” [“SHA”]            # 新建轻量级标签（没有SHA则最新commit）
+    git tag “名字” -a [“SHA”]         # 新建含附注标签，打开文本编辑器编写tag信息（没有SHA则最新commit）
+    git tag “名字” -m “信息” [“SHA”]    # 新建含附注标签（没有SHA则最新commit）
 
-    git push origin :refs/tags/名字   # 删除远程tag
+    git push origin “名字”            # 推送一个本地新建标签至远程
+    git push --tags                     # 推送所有本地新建标签至远程
+
+    git tag -d “名字”                 # 删除本地tag
+
+    git push origin :refs/tags/“名字” # 删除远程tag
     ```
 7. stash
 
     ```bash
-    git stash                     # 往堆栈推送一个新的储藏，并且恢复修改过的被追踪的文件
+    git stash                       # 往堆栈推送一个新的储藏，并且恢复修改过的被追踪的文件
 
-    git stash list                # 查看所有储藏
+    git stash list                  # 查看所有储藏
 
-    git stash apply               # 应用最后一个储藏
-    git stash apply stash@{数字}  # 应用指定的一个储藏
+    git stash apply                 # 应用最后一个储藏
+    git stash apply stash@{“数字”}    # 应用指定的一个储藏
 
-    git stash drop                # 删除最后一个储藏
-    git stash drop stash@{数字}   # 删除指定的一个储藏
+    git stash drop                  # 删除最后一个储藏
+    git stash drop stash@{“数字”}     # 删除指定的一个储藏
 
-    git stash pop                 # 应用最后一个储藏，删除最后一个储藏
+    git stash pop                   # 应用最后一个储藏，删除最后一个储藏
     ```
 
 ### 如何在一台电脑中使用2（多个）个Github账号的SSH keys
@@ -128,7 +133,7 @@
 1. 生产多对的**SSH keys**，并放入 **.ssh文件夹**：
 
     ```bash
-    ssh-keygen -f '地址/名字'
+    ssh-keygen -f “地址/名字”
     ```
 2. 为不同账户地址设置对应的SSH key路径：
 
@@ -137,12 +142,12 @@
     Host 账户1.github.com
     	HostName github.com
     	User git
-    	IdentityFile ~/.ssh/键1
+    	IdentityFile ~/.ssh/“键1”
 
     Host 账户2.github.com
     	HostName github.com
     	User git
-    	IdentityFile ~/.ssh/键2
+    	IdentityFile ~/.ssh/“键2”
     ```
 3. 克隆仓库时修改**仓库地址**：
 
@@ -162,15 +167,15 @@
     1. 全局设置
 
         ```bash
-        git config --global user.email 邮箱
-        git config --global user.name 用户名
+        git config --global user.email “邮箱”
+        git config --global user.name “用户名”
         ```
     2. 为具体项目设置
 
         ```bash
         cd 进入某个git仓库
-        git config user.email 邮箱
-        git config user.name 用户名
+        git config user.email “邮箱”
+        git config user.name “用户名”
         ```
 2. 全局忽略文件
 
@@ -196,7 +201,7 @@
 
         ```bash
         git init
-        git remote add -f origin 仓库地址
+        git remote add -f origin “仓库地址”
         ```
     2. 设置git允许使用**Sparse Checkout模式**：
 
@@ -206,17 +211,17 @@
     3. 选择需要单独克隆的文件或文件夹，写入 **.git/info/sparse-checkout**文件：
 
         ```bash
-        echo 'images' >> .git/info/sparse-checkout # 所有包括有 images 的文件夹或文件（如/xxx/xxx/images/*、/images/*、images）
+        echo 'images' >> .git/info/sparse-checkout      # 所有包括有 images 的文件夹或文件（如/xxx/xxx/images/*、/images/*、images）
         echo 'js/release' >> .git/info/sparse-checkout
         ```
     4. 仅对设置过的内容进行所有git操作：
 
         ```bash
-        git pull origin 分支名
+        git pull origin “分支名”
         ```
 2. 减少克隆深度
 
-    `git clone 仓库地址 --depth 数字`
+    `git clone “仓库地址” --depth “数字”`
 
 ### [git-flow](https://github.com/nvie/gitflow)使用
 1. 初始化：
@@ -355,9 +360,9 @@
 ```text
 <type>: <subject>
 
-<description>   # 可选
+<description>       # 可选
 
-<extra>         # 可选
+<extra>             # 可选
 ```
 
 >任何一行都不得超过72个字符（或100个字符），避免自动换行影响美观。

@@ -514,6 +514,15 @@
 
 >用`变量 = null;`等方法，让变量成为零引用，从而进行清除元素、垃圾回收（导致内存泄露的情况除外）。
 
+### 兼容特殊浏览器、PC与WAP加载不同资源的方案
+1. 不同页面URL入口。
+2. 引入资源前，根据UA判断是否加载特殊资源。
+
+    >1. 引入资源：[同步/异步加载资源](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js动态添加脚本样式)
+    >2. UA判断：[判断所在系统](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断所在系统)、[判断移动平台](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断移动平台)、[判断ie所有版本](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断ie所有版本)
+3. 把特殊资源打包进总体代码，再根据UA判断引入。
+4. 服务端根据HTTP请求的UA判断输出不同页面加载不同资源。
+
 ### 前端与服务端配合方式
 1. 并行（优先）：
 
