@@ -1,11 +1,14 @@
 # 前端概念
 
-从本质上讲，所有Web应用都是一种运行在网页浏览器中的软件，这些软件的GUI（Graphical User Interface，图形用户界面）即为前端。
-
 ### 前端涉及内容
-![前端涉及内容图](./images/fe-tech-1.png)
+![前端涉及内容图1](./images/fe-tech-1.png)
 
 >更详细线路图：[developer-roadmap](https://github.com/kamranahmedse/developer-roadmap/blob/master/README.md#-front-end-roadmap)。
+
+1. 从本质上讲，所有Web应用都是一种运行在网页浏览器中的软件，这些软件的GUI（Graphical User Interface，图形用户界面）即为前端。
+2. 服务端Node与各种终端的涌现，让前端进入了大前端范畴，这时的前端，已远远不只是浏览器端的页面实现技术，而是后端服务与人机界面的连接器。
+
+    ![前端涉及内容图2](./images/fe-tech-2.png)
 
 ### 前端工程化
 >参考[张云龙：前端工程——基础篇](https://github.com/fouber/blog/issues/10)。
@@ -521,7 +524,7 @@
     >1. 引入资源：[同步/异步加载资源](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js动态添加脚本样式)
     >2. UA判断：[判断所在系统](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断所在系统)、[判断移动平台](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断移动平台)、[判断ie所有版本](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断ie所有版本)
 3. 把特殊资源打包进总体代码，再根据UA判断引入。
-4. 服务端根据HTTP请求的UA判断输出不同页面加载不同资源。
+4. 服务端根据HTTP请求的UA判断输出不同页面加载不同资源（BFF层）。
 
 ### 前端与服务端配合方式
 1. 并行（优先）：
@@ -533,10 +536,10 @@
 
     服务端比前端提前一个版本，交付的内容包括API+文档。
 
-- API文档确定的字段，就算为空，也必须按照文档要求返回``或`[]`或`{}`，不允许返回内容丢失字段。
+- API文档确定的字段，就算为空，也必须按照文档要求返回` `或`[]`或`{}`，不允许返回内容丢失字段。
 
 ### JavaScript范围
->ECMAScript是JavaScript的标准，狭义地说JavaScript是指ECMAScript。浏览器、Node.js都是JavaScript的运行环境。
+>ECMAScript是JavaScript的标准，狭义的JavaScript指ECMAScript。浏览器、Node.js都是JavaScript的运行环境。
 
 JavaScript ＝ ECMAScript + 宿主环境提供的API。
 
