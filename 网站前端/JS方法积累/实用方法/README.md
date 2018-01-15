@@ -2219,6 +2219,38 @@ if (!String.prototype.trim) {
 ```
 >来自[MDN:String.prototype.trim](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/Trim#兼容旧环境)。
 
+### *原生JS*`Number.isNaN`的Polyfill
+```javascript
+Number.isNaN = Number.isNaN || function (value) {
+  return typeof value === 'number' && isNaN(value);
+};
+```
+>来自[MDN:Number.isNaN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN#Polyfill)。
+
+### *原生JS*`Number.isFinite`的Polyfill
+```javascript
+Number.isFinite = Number.isFinite || function (value) {
+  return typeof value === 'number' && isFinite(value);
+};
+```
+>来自[MDN:Number.isFinite](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite#Polyfill)。
+
+### *原生JS*`Number.isInteger`的Polyfill
+```javascript
+Number.isInteger = Number.isInteger || function (value) {
+  return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
+};
+```
+>来自[MDN:Number.isInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill)。
+
+### *原生JS*`Number.isSafeInteger`的Polyfill
+```javascript
+Number.isSafeInteger = Number.isSafeInteger || function (value) {
+  return Number.isInteger(value) && Math.abs(value) <= Number.MAX_SAFE_INTEGER;
+};
+```
+>来自[MDN:Number.isSafeInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isSafeInteger#Polyfill)。
+
 ---
 ## jQuery方法
 

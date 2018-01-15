@@ -37,7 +37,11 @@
 
         ```bash
         git reset --hard HEAD~“数字”      # 取消当前版本之前的N次提交
+        # 或
+        git reset --hard “SHA”          # 取消至某SHA
+
         # 如果需要，可以重新 git merge 其他分支
+
         git push origin HEAD --force    # 强制提交到远程版本库
 
         # 若删除的是其他用户已经拉取的commit，则会变成其他用户本地的commit
@@ -87,11 +91,39 @@
     ```bash
     git fetch -fp
     ```
-5. 推送（新建）远程分支
+5. branch
 
-    ```bash
-    git push origin “分支名”   # 新建远程分支（不需要提交commit即可创建远程分支）
-    ```
+    1. 本地新建分支
+
+        ```bash
+        git branch “分支名”
+        ```
+    2. 推送（新建）远程分支
+
+        ```bash
+        git push origin “分支名”   # 新建远程分支（不需要提交commit即可创建远程分支）
+        ```
+    3. 切换分支
+
+        ```bash
+        git checkout “分支名”
+        ```
+    4. 删除分支
+
+        ```bash
+        git branch -d “分支名”     # 删除本地分支
+
+        git push origin :“分支名”  # 删除远程分支（不需要先删除本地分支）
+        ```
+    5. 重命名分支
+
+        >在原分支基础上新建本地分支，再推送至远程，然后删除原分支。
+
+        ```bash
+        git branch -m “原分支名” “新分支名” # 删除本地原分支，新建本地新分支
+
+        # 要推送至远程，依然需要推送（新建）远程分支、删除远程分支
+        ```
 6. tag
 
     ```bash

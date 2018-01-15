@@ -203,12 +203,63 @@
     1. 当deferred对象状态改变后，根据相应的状态触发回调
 
         1. 状态改变：`.reject()`、`.rejectWith()`、`.resolve()`、`.rejectWith()`。
-        2. 触发行为
+        2. 触发的行为
 
-            1. 继续向下传递状态：`.done()`、`.fail()`、`.always()`。
+            1. 向下传递调用方法的对象本身：`.done()`、`.fail()`、`.always()`。
+
+                >Deferred对象调用则返回Deferred对象；Promise对象调用则返回Promise对象。
+
+                ```javascript
+                var deferred = $.Deferred()
+                  .done(function (msg) {
+                    console.log('resolve', msg);
+                  })
+                  .fail(function (msg) {
+                    console.error('reject', msg);
+                  })
+                  .always(function (msg) {
+                    console.log('always', msg);
+                  });
+
+                //deferred.resolve('信息');   // 执行done，再执行always
+                //deferred.reject('信息');    // 执行fail，再执行always
+                ```
             2. 向下传递回调函数的`return`内容：`.then()`、`.catch()`。
+
+                >返回为Promise对象。
+
+                ```javascript
+                var deferred = $.Deferred();
+                var promise = deferred
+                  .then(function () {
+                    return 'resolve';
+                  }, function () {
+                    return 'reject';
+                  });
+
+                promise
+                  .done(function (msg) {
+                    console.log('resolve', msg);
+                  })
+                  .fail(function (msg) {
+                    console.error('reject', msg);
+                  })
+                  .always(function (msg) {
+                    console.log('always', msg);
+                  });
+
+                //deferred.resolve('信息');
+                //deferred.reject('信息');
+                ```
+            3. 且判断：`jQuery.when(Deferred对象或其他值)`。
+
+                若传入的不是Deferred对象，则当做立即执行Deferred对象的`resolve(其他值)`。
+
+                >返回为Promise对象。
         3. 改变为Promise对象：`.promise()`。
-        4. 且判断：`jQuery.when()`。
+
+            >返回为Promise对象。
+
     2. `Promise对象`是`Deferred对象`的子集。
 
         1. 相对于`Deferred对象`，`Promise对象`无法改变执行状态：
