@@ -1,5 +1,11 @@
 # Node.js学习笔记
 
+## 目录
+1. [nvm更新Node.js版本](#nvm更新nodejs版本)
+1. [Node.js的运行机制](#nodejs的运行机制)
+1. [npm](#npm)
+1. [CommonJS规范](#commonjs规范)
+
 ### nvm更新Node.js版本
 1. macOS或Linux的[nvm](https://github.com/creationix/nvm)：
 
@@ -30,7 +36,7 @@
 
 >切换版本之后需重装Node.js的全局模块包。
 
-### Node.js的运行机制:
+### Node.js的运行机制
 1. V8引擎解析JS脚本。
 2. 解析后的代码，调用Node API。
 3. [libuv](https://github.com/libuv/libuv)负责Node API的执行。将不同的任务分配给不同的线程，形成一个Event Loop（事件循环），以异步的方式将任务的执行结果返回给V8引擎。

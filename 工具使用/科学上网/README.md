@@ -1,16 +1,36 @@
 # 科学上网
 
+## 目录
+1. [Shadowsocks](#shadowsocks)
+
+    1. [客户端使用](#客户端使用)
+    1. [服务端安装](#服务端安装)
+1. [IKEV2(IKEV1)的VPN](#ikev2ikev1的vpn)
+
+    1. [客户端使用](#客户端使用)
+    1. [服务端安装](#服务端安装)
+1. [通过docker安装shadowsocks服务器和VPN服务器（最快捷方式）](#通过docker安装shadowsocks服务器和vpn服务器最快捷方式)
+
 ## Shadowsocks
 
 ### 客户端使用
+
+>客户端安装：[Windows](https://github.com/shadowsocks/shadowsocks-windows)、[macOS](https://github.com/shadowsocks/ShadowsocksX-NG)。
+
 1. 系统代理：默认代理系统所有网络流量。
 
     1. PAC模式：按照PAC（代理自动配置）列表决定：直接连接，或走Shadowsocks代理。
     2. 全局模式：所有访问请求都走Shadowsocks代理。
     3. 手动模式：监听特定端口号的请求。
-2. 关闭系统代理（手动模式）：配置了**SOCKS5**或**HTTP**代理（默认代理服务器为`127.0.0.1:1080`）的才走Shadowsocks代理，如chrome的[SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega)插件或qq等可以使用SOCKS5或HTTP代理的软件。
-3. PAC：代理自动配置，一般使用[gfwlist](https://github.com/gfwlist/gfwlist)列表。
-4. 允许来自局域网的连接（windows）：同局域网下，其他设备填写好代理的主机ip和端口号，就可以走其他主机的Shadowsocks代理。
+2. 关闭系统代理（手动模式）：
+
+    配置了**SOCKS5**或**HTTP**代理（默认代理服务器为`127.0.0.1:1080`）的才走Shadowsocks代理，如chrome的[SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega)插件或qq等可以使用SOCKS5或HTTP代理的软件。
+3. PAC：
+
+    代理自动配置，一般使用[gfwlist](https://github.com/gfwlist/gfwlist)列表。
+4. 允许来自局域网的连接（windows）：
+
+    同局域网下，其他设备填写好代理的主机ip和端口号（可以用Charles代理），就可以走代理主机的Shadowsocks代理。
 
 >SwitchyOmega配置备份文件：
 >

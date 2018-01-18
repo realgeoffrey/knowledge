@@ -1,5 +1,77 @@
 # JS方法积累——实用方法
 
+## 目录
+1. [原生JS方法](#原生js方法)
+
+    1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
+    1. [`requestAnimationFrame`的递归](#原生jsrequestanimationframe的递归)
+    1. [实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`](#原生js实现类似jquery的htmlbodyanimatescrollleft-像素-scrolltop-像素-毫秒)
+    1. 根据UA判断
+
+        1. [判断所在系统](#原生js判断所在系统)
+        1. [判断移动平台](#原生js判断移动平台)
+        1. [判断ie6、7、8、9版本](#原生js判断ie6789版本)
+        1. [判断ie所有版本](#原生js判断ie所有版本)
+    1. [操作cookie](#原生js操作cookie)
+    1. [加入收藏夹](#原生js加入收藏夹)
+    1. [从字符串中获取绝对路径](#原生js从字符串中获取绝对路径)
+    1. [获取URL相关信息](#原生js获取url相关信息)
+    1. [在URL末尾添加查询名值对](#原生js在url末尾添加查询名值对)
+    1. [用请求图片作log统计](#原生js用请求图片作log统计)
+    1. [比较版本号大小（纯数字）](#原生js比较版本号大小纯数字)
+    1. [判断检索内容是否在被检索内容的分隔符间](#原生js判断检索内容是否在被检索内容的分隔符间)
+    1. [选取范围内随机值](#原生js选取范围内随机值)
+    1. [产生随机数](#原生js产生随机数)
+    1. [格式化文件大小](#原生js格式化文件大小)
+    1. [判断对象是否为空](#原生js判断对象是否为空)
+    1. [触摸屏模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）](#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)
+    1. [判断事件在浏览器是否存在](#原生js判断事件在浏览器是否存在)
+    1. [科学计数法转换成字符串的数字](#原生js科学计数法转换成字符串的数字)
+    1. [用整数进行小数的四则运算（避免浮点数运算误差）](#原生js用整数进行小数的四则运算避免浮点数运算误差)
+    1. [大数加减法（不考虑小数和负数）](#原生js大数加减法不考虑小数和负数)
+    1. [绑定、解绑事件](#原生js绑定解绑事件)
+    1. [阻止冒泡和阻止浏览器默认行为](#原生jsjquery阻止冒泡和阻止浏览器默认行为)
+    1. [实现判断按下具体某键值](#原生jsjquery实现判断按下具体某键值)
+    1. [拖拽和放下](#原生js拖拽和放下)
+    1. [输入框光标位置的获取和设置](#原生js输入框光标位置的获取和设置)
+    1. [阻止嵌入滚动条冒泡“橡皮筋效果”（iOS）](#原生js阻止嵌入滚动条冒泡橡皮筋效果ios)
+    1. [获取滚动轴宽度（或高度）](#原生js获取滚动轴宽度或高度)
+    1. [防抖函数](#原生js防抖函数)
+    1. [节流函数](#原生js节流函数)
+    1. [不同进制数转换](#原生js不同进制数转换)
+    1. [验证邮箱有效性](#原生js验证邮箱有效性)
+    1. [创建兼容的XHR对象](#原生js创建兼容的xhr对象)
+    1. [动态添加脚本、样式](#原生js动态添加脚本样式)
+    1. [单词首字母大写](#原生js单词首字母大写)
+    1. [展示页面帧数](#原生js展示页面帧数)
+    1. [获取星座](#原生js获取星座)
+1. [Polyfill](#polyfill)
+
+    1. [`requestAnimationFrame`和`cancelAnimationFrame`](#原生jsrequestanimationframe和cancelanimationframe的polyfill)
+    1. [`Date.now`](#原生jsdatenow的polyfill)
+    1. [`Object.create`](#原生jsobjectcreate的polyfill)
+    1. [`Array.isArray`](#原生jsarrayisarray的polyfill)
+    1. [`Array.prototype.map`](#原生jsarrayprototypemap的polyfill)
+    1. [`Function.prototype.bind`](#原生jsfunctionprototypebind的polyfill)
+    1. [`String.prototype.trim`](#原生jsstringprototypetrim的polyfill)
+    1. [`Number.isNaN`](#原生jsnumberisnan的polyfill)
+    1. [`Number.isFinite`](#原生jsnumberisfinite的polyfill)
+    1. [`Number.isInteger`](#原生jsnumberisinteger的polyfill)
+    1. [`Number.isSafeInteger`](#原生jsnumberissafeinteger的polyfill)
+1. [jQuery方法](#jquery方法)
+
+    1. [滚动加载](#jquery滚动加载)
+    1. [图片延时加载](#jquery图片延时加载)
+    1. [获取`HTTP response header`信息](#jquery获取http-response-header信息)
+    1. [修复HTML标签`placeholder`属性无效](#jquery修复html标签placeholder属性无效)
+    1. [弹出toast](#jquery弹出toast)
+    1. [全选、取消全选](#jquery全选取消全选)
+    1. [节点跟随屏幕滚动](#jquery节点跟随屏幕滚动)
+    1. [模拟手机翻转（使页面都以“横屏”展示）](#jquery模拟手机翻转使页面都以横屏展示)
+    1. [点击指定区域以外执行函数](#jquery点击指定区域以外执行函数)
+    1. [hover展示内容并且可跨越间隙到内容](#jquery-hover展示内容并且可跨越间隙到内容)
+    1. [启动、暂停CSS动画](#jquery启动暂停css动画)
+
 >大部分情况下，jQuery内容适用于Zepto。
 
 ## 原生JS方法
@@ -1748,6 +1820,8 @@ function validateEmail(email) {
 }
 ```
 >来自[stackoverflow:Validate email address in JavaScript?](http://stackoverflow.com/questions/46155/validate-email-address-in-javascript#answer-46181)。
+
+听说，不存在可以判断世界任何一个有效邮箱的正则。
 
 ### *原生JS*创建兼容的XHR对象
 ```javascript

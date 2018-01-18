@@ -1,4 +1,51 @@
 # JS学习笔记
+
+## 目录
+1. [DOM操作](#dom操作)
+
+    1. [获取位置信息](#获取位置信息)
+    1. [节点与视口距离关系](#节点与视口距离关系)
+    1. [滚动定位](#滚动定位)
+    1. [jQuery相关](#jquery相关)
+1. [事件相关](#事件相关)
+
+    1. [事件绑定](#事件绑定)
+    1. [事件流（event flow）](#事件流event-flow)
+    1. [WAP端相关](#wap端相关)
+1. [编程技巧](#编程技巧)
+
+    1. [函数模板](#函数模板)
+    1. [JS代码风格规范（coding style guide）](#js代码风格规范coding-style-guide)
+    1. [编程实践（programming practices）](#编程实践programming-practices)
+    1. [函数防抖、函数节流](#函数防抖函数节流)
+    1. [自执行匿名函数（拉姆达，λ，lambda）](#自执行匿名函数拉姆达λlambda)
+    1. [Hybrid APP相关](#hybrid-app相关)
+    1. [Tips](#tips)
+1. [功能归纳](#功能归纳)
+
+    1. [判断数据类型](#判断数据类型)
+    1. [跨域请求](#跨域请求)
+    1. [Web Storage && cookie](#web-storage--cookie)
+    1. [错误处理机制](#错误处理机制)
+    1. [预加载](#预加载)
+    1. [循环遍历](#循环遍历)
+    1. [判断对象、方法是否定义](#判断对象方法是否定义)
+1. [性能原理](#性能原理)
+
+    1. [JS的预编译](#js的预编译)
+    1. [函数](#函数)
+    1. [闭包（closure）](#闭包closure)
+    1. [原型](#原型)
+    1. [继承](#继承)
+    1. [内存机制](#内存机制)
+    1. [深复制（拷贝）实现思路](#深复制拷贝实现思路)
+    1. [内存泄漏](#内存泄漏)
+    1. [数据类型转换](#数据类型转换)
+    1. [`||`和`&&`](#和)
+    1. [事件循环（event loop）](#事件循环event-loop)
+    1. [定时器 && 重绘函数](#定时器--重绘函数)
+    1. [数组的空位（hole）](#数组的空位hole)
+
 >1. `dom`为JS对象，`$dom`为jQuery（或Zepto）对象。
 >2. 大部分情况下，jQuery内容适用于Zepto。
 
@@ -612,25 +659,29 @@
 
         >[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/Lko8u1ku/)
 
-    - 无法操作客户端自定义播放控件：
+    - 播放视频问题：
 
-        1. 一般手机有两种播放方式：
+        1. 无法操作客户端自定义播放控件：
 
-            1. 全屏模式
-            2. 内联模式（浏览器支持其中一种）：
+            1. 一般手机有两种播放方式：
 
-                1. `webkit-playsinline playsinline`内联模式。
-                2. `x5-video-player-type="h5"`在底部的全屏内联模式（同层播放）。
-        2. 无法操作全屏模式
+                1. 全屏模式
+                2. 内联模式（浏览器支持其中一种）：
 
-            1. 无法改变全屏播放方向以及控件内容
+                    1. `webkit-playsinline playsinline`内联模式。
+                    2. `x5-video-player-type="h5"`在底部的全屏内联模式（同层播放）。
+            2. 无法操作全屏模式
 
-                DOM属性`x5-video-orientation="landscape或portraint"`、`x5-video-player-fullscreen="true"`无法解决。
-            2. 有些浏览器在全屏模式中，不触发任何video事件
+                1. 无法改变全屏播放方向以及控件内容
 
-                >无法自定义loading。
-        3. 关闭`controls`模式，部分浏览器依然出现播放按钮
-        4. 无法控制内联模式类型（内联模式/在底部的全屏内联模式）
+                    DOM属性`x5-video-orientation="landscape或portraint"`、`x5-video-player-fullscreen="true"`无法解决。
+                2. 有些浏览器在全屏模式中，不触发任何video事件
+
+                    >无法自定义loading。
+            3. 关闭`controls`模式，部分浏览器依然出现播放按钮
+            4. 无法控制内联模式类型（内联模式/在底部的全屏内联模式）
+
+        2. Android机型播放了`<video>`，会把视频的层级放到最高，暂时没有直接解决方法。
 
 ---
 ## 编程技巧

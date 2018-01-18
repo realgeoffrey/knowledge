@@ -1,5 +1,13 @@
 # Git心得
 
+## 目录
+1. [基本操作](#基本操作)
+1. [git-flow使用](#git-flow使用)
+1. [commit message格式](#commit-message格式)
+1. [如何在一台电脑中使用2（多个）个Github账号的SSH keys](#如何在一台电脑中使用2多个个github账号的ssh-keys)
+1. [设置gitconfig](#设置gitconfig)
+1. [减少Git项目下载大小](#减少git项目下载大小)
+
 ### 基本操作
 1. 撤销未push内容
 
@@ -157,103 +165,6 @@
 
     git stash pop                   # 应用最后一个储藏，删除最后一个储藏
     ```
-
-### 如何在一台电脑中使用2（多个）个Github账号的SSH keys
-
->在github网站中：不同账户无法使用相同的**SSH key**。
-
-1. 生产多对的**SSH keys**，并放入 **.ssh文件夹**：
-
-    ```bash
-    ssh-keygen -f “地址/名字”
-    ```
-2. 为不同账户地址设置对应的SSH key路径：
-
-    **~/.ssh/config**文件添加
-    ```bash
-    Host 账户1.github.com
-    	HostName github.com
-    	User git
-    	IdentityFile ~/.ssh/“键1”
-
-    Host 账户2.github.com
-    	HostName github.com
-    	User git
-    	IdentityFile ~/.ssh/“键2”
-    ```
-3. 克隆仓库时修改**仓库地址**：
-
-    `git@github.com:账户/仓库.git` -> `git@账户.github.com:账户/仓库.git`
-    ```bash
-    #进入文件夹1
-    git clone git@账户1.github.com:账户1/仓库.git
-
-    #进入文件夹2
-    git clone git@账户2.github.com:账户2/仓库.git
-    ```
-    >如果已经克隆过的仓库，仅需要修改`.git/config`文件夹内的`url`仓库地址即可。
-
-### 设置gitconfig
-1. 用户名和邮箱
-
-    1. 全局设置
-
-        ```bash
-        git config --global user.email “邮箱”
-        git config --global user.name “用户名”
-        ```
-    2. 为具体项目设置
-
-        ```bash
-        cd 进入某个git仓库
-        git config user.email “邮箱”
-        git config user.name “用户名”
-        ```
-2. 全局忽略文件
-
-    1. 添加忽略文件
-
-        ```bash
-        git config --global core.excludesfile ~/.gitignoreglobal
-        ```
-    2. 打开添加的文件.gitignoreglobal，填写要全局忽略的文件（夹）
-
-        e.g.
-
-        ```bash
-        .idea
-        ```
-
-### 减少Git项目下载大小
-1. 仅在Git项目中选择下载某些文件夹或文件
-
-    >Git1.7.0以后加入了**Sparse Checkout模式**，允许Check Out指定文件或文件夹。但是只能选择一次（？），如果要更改选择的文件夹或文件，必须全部重新操作。
-
-    1. 在空白文件夹内，创建空的本地仓库，然后将远程仓库地址加入到项目的**.git/config**文件中：
-
-        ```bash
-        git init
-        git remote add -f origin “仓库地址”
-        ```
-    2. 设置git允许使用**Sparse Checkout模式**：
-
-        ```bash
-        git config core.sparsecheckout true
-        ```
-    3. 选择需要单独克隆的文件或文件夹，写入 **.git/info/sparse-checkout**文件：
-
-        ```bash
-        echo 'images' >> .git/info/sparse-checkout      # 所有包括有 images 的文件夹或文件（如/xxx/xxx/images/*、/images/*、images）
-        echo 'js/release' >> .git/info/sparse-checkout
-        ```
-    4. 仅对设置过的内容进行所有git操作：
-
-        ```bash
-        git pull origin “分支名”
-        ```
-2. 减少克隆深度
-
-    `git clone “仓库地址” --depth “数字”`
 
 ### [git-flow](https://github.com/nvie/gitflow)使用
 1. 初始化：
@@ -452,3 +363,100 @@
 >- 添加分享到微博的功能
 >- 添加分享到微信的功能
 >```
+
+### 如何在一台电脑中使用2（多个）个Github账号的SSH keys
+
+>在github网站中：不同账户无法使用相同的**SSH key**。
+
+1. 生产多对的**SSH keys**，并放入 **.ssh文件夹**：
+
+    ```bash
+    ssh-keygen -f “地址/名字”
+    ```
+2. 为不同账户地址设置对应的SSH key路径：
+
+    **~/.ssh/config**文件添加
+    ```bash
+    Host 账户1.github.com
+    	HostName github.com
+    	User git
+    	IdentityFile ~/.ssh/“键1”
+
+    Host 账户2.github.com
+    	HostName github.com
+    	User git
+    	IdentityFile ~/.ssh/“键2”
+    ```
+3. 克隆仓库时修改**仓库地址**：
+
+    `git@github.com:账户/仓库.git` -> `git@账户.github.com:账户/仓库.git`
+    ```bash
+    #进入文件夹1
+    git clone git@账户1.github.com:账户1/仓库.git
+
+    #进入文件夹2
+    git clone git@账户2.github.com:账户2/仓库.git
+    ```
+    >如果已经克隆过的仓库，仅需要修改`.git/config`文件夹内的`url`仓库地址即可。
+
+### 设置gitconfig
+1. 用户名和邮箱
+
+    1. 全局设置
+
+        ```bash
+        git config --global user.email “邮箱”
+        git config --global user.name “用户名”
+        ```
+    2. 为具体项目设置
+
+        ```bash
+        cd 进入某个git仓库
+        git config user.email “邮箱”
+        git config user.name “用户名”
+        ```
+2. 全局忽略文件
+
+    1. 添加忽略文件
+
+        ```bash
+        git config --global core.excludesfile ~/.gitignoreglobal
+        ```
+    2. 打开添加的文件.gitignoreglobal，填写要全局忽略的文件（夹）
+
+        e.g.
+
+        ```bash
+        .idea
+        ```
+
+### 减少Git项目下载大小
+1. 仅在Git项目中选择下载某些文件夹或文件
+
+    >Git1.7.0以后加入了**Sparse Checkout模式**，允许Check Out指定文件或文件夹。但是只能选择一次（？），如果要更改选择的文件夹或文件，必须全部重新操作。
+
+    1. 在空白文件夹内，创建空的本地仓库，然后将远程仓库地址加入到项目的**.git/config**文件中：
+
+        ```bash
+        git init
+        git remote add -f origin “仓库地址”
+        ```
+    2. 设置git允许使用**Sparse Checkout模式**：
+
+        ```bash
+        git config core.sparsecheckout true
+        ```
+    3. 选择需要单独克隆的文件或文件夹，写入 **.git/info/sparse-checkout**文件：
+
+        ```bash
+        echo 'images' >> .git/info/sparse-checkout      # 所有包括有 images 的文件夹或文件（如/xxx/xxx/images/*、/images/*、images）
+        echo 'js/release' >> .git/info/sparse-checkout
+        ```
+    4. 仅对设置过的内容进行所有git操作：
+
+        ```bash
+        git pull origin “分支名”
+        ```
+2. 减少克隆深度
+
+    `git clone “仓库地址” --depth “数字”`

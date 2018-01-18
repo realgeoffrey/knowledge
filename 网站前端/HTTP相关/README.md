@@ -1,4 +1,21 @@
 # HTTP相关
+
+## 目录
+1. [TCP/IP协议族](#tcpip协议族)
+1. [TCP的三次握手、四次挥手](#tcp的三次握手四次挥手)
+1. [输入URL后的HTTP流程](#输入url后的http流程)
+1. [HTTP报文组成](#http报文组成)
+1. [HTTP请求方法（HTTP request methods）](#http请求方法http-request-methods)
+1. [HTTP状态码（HTTP status codes）](#http状态码http-status-codes)
+1. [HTTP头（HTTP headers）](#http头http-headers)
+1. [HTTP缓存](#http缓存)
+1. [基于HTTP的功能追加的技术或协议](#基于http的功能追加的技术或协议)
+1. [HTTPS](#https)
+1. [HTTP长连接、WebSocket、HTTP/2](#http长连接websockethttp2)
+1. [CORS（cross-origin resource sharing，跨域资源共享）](#corscross-origin-resource-sharing跨域资源共享)
+1. [服务端验证用户状态](#服务端验证用户状态)
+1. [其他网络概念](#其他网络概念)
+
 >1. HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-server协议。默认端口号80、无状态（cookie弥补）、以ASCII码传输。
 >2. 使用HTTP时，必定是一端担任客户端角色，另一端担任服务器端角色。虽然客户端和服务器端的角色可能会互换，但一条通信路线中角色是确定的。请求由客户端开始。
 
