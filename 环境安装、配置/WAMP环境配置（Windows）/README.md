@@ -114,7 +114,7 @@
 
         ```test
         <VirtualHost *:80>
-            ServerName http://域名1
+            ServerName 域名1
             ProxyPass / http://域名2:端口/
         </VirtualHost>
         ```

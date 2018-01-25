@@ -6,6 +6,9 @@
     1. [获取位置信息](#获取位置信息)
     1. [节点与视口距离关系](#节点与视口距离关系)
     1. [滚动定位](#滚动定位)
+    1. [DOM相对位置](#dom相对位置)
+    1. [`Node`与`Element`](#node与element)
+    1. [`attribute`与`property`](#attribute与property)
     1. [jQuery相关](#jquery相关)
 1. [事件相关](#事件相关)
 
@@ -19,7 +22,7 @@
     1. [编程实践（programming practices）](#编程实践programming-practices)
     1. [函数防抖、函数节流](#函数防抖函数节流)
     1. [自执行匿名函数（拉姆达，λ，lambda）](#自执行匿名函数拉姆达λlambda)
-    1. [Hybrid APP相关](#hybrid-app相关)
+    1. [Hybrid App相关](#hybrid-app相关)
     1. [Tips](#tips)
 1. [功能归纳](#功能归纳)
 
@@ -200,6 +203,99 @@
 
         `文档滚动高度 === 0`
 
+### DOM相对位置
+1. DOM点击事件的定位（原生）
+
+    1. PC端`MouseEvent`
+
+        `e.`（`e`为传入事件处理函数的第一个参数）或`window.event.`：
+
+        1. `pageX/Y`（ie8-不支持）
+
+            距离整个DOM。
+        2. `clientX/Y`
+
+            距离浏览器窗口。
+        3. `screenX/Y`
+
+            距离屏幕。
+        4. `offsetX/Y`
+
+            距离目标元素自身填充边界。
+        5. `movementX/Y`（ie、Safari不支持）
+
+            （仅针对`mousemove`事件）相对于上一帧鼠标移动距离。
+        6. `x/y`
+
+            等价于`clientX/Y`。
+    2. WAP端`TouchEvent`
+
+        `e.touches[0].`（`e`为传入事件处理函数的第一个参数）：
+
+        1. `pageX/Y`
+        2. `clientX/Y`
+        3. `screenX/Y`
+2. 相对偏移（jQuery）
+
+    1. `$dom.offset()`
+
+        返回：相对于文档的距离（可以设置）。
+    2. `$dom.position()`
+
+        返回：相对于**距离该元素最近的且被定位过的祖先元素**的距离。
+    3. `$dom.offsetParent()`
+
+        返回：相对于**距离该元素最近的且被定位过的祖先元素**的jQuery对象。
+    4. `$dom.scrollLeft/Top()`
+
+        返回：当前滚动条的位置（可以设置）。
+
+### `Node`与`Element`
+
+- Node根据`nodeType`属性区分节点类型：
+
+    1. `1 === Node.ELEMENT_NODE`
+
+        `Element`
+
+        >`Element`继承了`Node`。
+    2. `3 === Node.TEXT_NODE`
+
+        `Element`的`文本`或`属性`
+    3. `7 === Node.PROCESSING_INSTRUCTION_NODE`
+    4. `8 === Node.COMMENT_NODE`
+
+        注释
+    5. `9 === Node.DOCUMENT_NODE`
+
+        `document`
+    6. `10 === Node.DOCUMENT_TYPE_NODE`
+
+        文档类型节点，如`<!DOCTYPE html>`
+    7. `11 === Node.DOCUMENT_FRAGMENT_NODE`
+
+        `DocumentFragment`
+- [判断是否为`Node`、是否为`Element`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断是否为node是否为element)
+
+### `attribute`与`property`
+- 在HTML标签里定义标签的`attributes`，一旦浏览器解析后，所有DOM节点会被创建成对象，每个DOM对象就拥有`properties`，因此：
+
+    1. `attributes`：是HTML标签的属性。
+
+        >`dom.attributes`能展示此DOM对象的所有`attribute`。
+    2. `properties`：是DOM对象的属性。
+- 当一个DOM节点为某个HTML标签所创建时，其大多数`properties`与对应`attributes`拥有相同或相近的名字，并不是一对一的关系：
+
+    1. 有几个`property`是直接反映`attribute`（`rel`、`id`），而有一些则用稍微不同的名字也直接映射（`htmlFor`映射`for`，`className`映射`class`）
+
+        获取该`property`即等于读取其对应的`attribute`值，而设置该`property`即为`attribute`赋值。
+    2. 很多`property`所映射的`attribute`是带有**限制**或**变动**的（`src`、`href`、`disabled`、`multiple`）
+
+        1. `type`的值被限制在已知值（即`<input>`的合法类型，如：`text`、`password`）。
+        2. `value`（`property`）并不会映射`value`（`attribute`），而是`<input>`的当前值。
+
+            当用户手动更改输入框的值，`value`（`property`）会反映该改变；`value`（`attribute`）还是原始值，也就是`defaultChecked`（`property`）。
+
 ### jQuery相关
 1. 当变量是jQuery对象时，可用`$`作为开头命名，利于与普通变量区别
 
@@ -224,103 +320,105 @@
     2. `if($(...)[0]) {}    /* 若无则为undefined*/`
 4. `on`绑定效率（事件代理、事件委托）
 
-    >事件代理：把原本需要绑定的事件委托给祖先元素，让祖先元素担当事件监听的职务。原理：DOM元素的事件冒泡。好处：提高性能，避免~~批量绑定~~。
+    >1. 事件代理：把原本需要绑定的事件委托给祖先元素，让祖先元素担当事件监听的职务。
+    >
+    >    1. 原理：DOM元素的事件冒泡。
+    >    2. 好处：提高性能，避免~~批量绑定~~。
+    >2. `paste`、`reset`不支持事件代理，仅能够直接绑定；事件代理不能用于SVG。
 
     >e.g. `$(eventHandler).on(event, selector, func);`
 
-    1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的应用逻辑**func**，成为**eventHandler**。有且仅有这些eventHandler绑定成功；之后动态生成的也满足条件的对象不再安装；对已生效的eventHandler处理DOM（如删除类名）也不会使绑定内容失效（除非删除）；在eventHandler内动态增删的**selector**都可以由条件判定是否生效绑定内容。
-    2. 绑定的eventHandler距离selector越近，效率越高。因此虽然把selector都绑定在`$(document)`上能够避免增删节点对事件绑定造成的影响，但效率下降。
-5. 判断是否加载成功，不成功则执行载入本地文件
+    1. 确定绑定内容：
+
+        1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的应用逻辑**func**，成为**eventHandler**；
+        2. 有且仅有这些eventHandler绑定成功；之后动态生成的且满足条件的DOM不再安装；对已生效的eventHandler操作DOM（如增删类名）不会使绑定内容失效（除非删除DOM或解绑事件）；
+        3. 在eventHandler内动态增删的**selector**都可以由条件判定是否生效绑定内容（因为事件是绑定在eventHandler上，而不是selector上）。
+    2. 绑定的eventHandler距离selector越近，效率越高。因此虽然把selector都绑定在`$(document)`上能够避免增删节点对事件绑定造成的影响，但效率会下降。
+
+        >每次触发事件，jQuery会比较从目标元素（`target`）到eventHandler路径中每一个元素上所有该类型的事件（冒泡）。
+5. 判断是否加载成功，不成功则加载其他文件地址
 
     ```html
     <script>
-        window.jQuery || document.write('<script src="本地地址"><\/script>');
+        window.jQuery || document.write('<script src="其他文件地址"><\/script>');
     </script>
     ```
-6. `$.fn.focus()`
+6. `$dom.focus()`
 
     1. 直接调用，光标停留在文本开头或上一次光标停留的地方。
     2. 先清空文本再`focus`然后再添加文本，光标停留在文本结尾。
 
     [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/zep4cr3p/)
-7. [jQuery的Deferred对象](http://api.jquery.com/category/deferred-object/)
+7. 判断一个标签的动态属性（DOM对象的`property`）
 
-    >参考[阮一峰：jQuery的deferred对象详解](http://www.ruanyifeng.com/blog/2011/08/a_detailed_explanation_of_jquery_deferred_object.html)、[阮一峰：jQuery.Deferred对象](http://javascript.ruanyifeng.com/jquery/deferred.html)。
+    >以`<input>`的`checked`为例，类似的特性还有`selected`、`disabled`、`value`等，但是每个`attribute-property`映射关系略有差别，参考[`attribute`与`property`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#attribute与property)。
 
-    1. 当deferred对象状态改变后，根据相应的状态触发回调
+    ```html
+    <input type="checkbox" checked="checked" id="j-input">
 
-        1. 状态改变：`.reject()`、`.rejectWith()`、`.resolve()`、`.rejectWith()`。
-        2. 触发的行为
+    <script>
+      var $dom = $('#j-input');
+      var dom = $dom.get(0);
 
-            1. 向下传递调用方法的对象本身：`.done()`、`.fail()`、`.always()`。
+      // ①
+      // 共通的值，存储在jQuery内部
+      // 获取：真实效果的值
+      // 设置：可以改变页面上显示效果、不会改变HTML上属性的值
+      dom.checked; // 设置 dom.checked = true/false
+      $dom.prop('checked'); // 设置 $dom.prop('checked', true/false);
 
-                >Deferred对象调用则返回Deferred对象；Promise对象调用则返回Promise对象。
+      // ②
+      // 获取：HTML上属性的值
+      // 设置：若没有使用①设置值，则可以控制①结果、可以改变页面上显示效果；
+      //    若使用①设置过，则仅设置HTML上属性的值、不会真的改变显示效果
+      $dom.attr('checked'); // 设置 $dom.attr('checked', true/false);
 
-                ```javascript
-                var deferred = $.Deferred()
-                  .done(function (msg) {
-                    console.log('resolve', msg);
-                  })
-                  .fail(function (msg) {
-                    console.error('reject', msg);
-                  })
-                  .always(function (msg) {
-                    console.log('always', msg);
-                  });
+      // ③
+      // 获取：HTML上属性的值
+      // 设置：若没有使用①设置值，则可以仅把关闭设置为打开、无法把打开设置为关闭；
+      //    若使用①设置过，则仅设置HTML上属性的值、不会真的改变显示效果
+      dom.getAttribute('checked'); // 设置 dom.setAttribute('checked', 值)
+    </script>
+    ```
 
-                //deferred.resolve('信息');   // 执行done，再执行always
-                //deferred.reject('信息');    // 执行fail，再执行always
-                ```
-            2. 向下传递回调函数的`return`内容：`.then()`、`.catch()`。
+    - 若要判断、获取或设置，建议仅使用：
 
-                >返回为Promise对象。
+        1. 判断、获取：`dom.checked`，设置：`dom.checked = true/false`。
+        2. 判断、获取：`$dom.prop('checked')`，设置：`$dom.prop('checked', true/false)`。
+        3. 判断、获取：`$dom.is(':checked')`。
+8. `$dom.data()`仅在第一次使用后（获取或设置）获取HTML上的值或设置到jQuery内部（不会改变HTML上属性的值），之后不再因为HTML改变而改变，也无法修改HTML上属性的值。
 
-                ```javascript
-                var deferred = $.Deferred();
-                var promise = deferred
-                  .then(function () {
-                    return 'resolve';
-                  }, function () {
-                    return 'reject';
-                  });
+    `$dom.removeData()`删除绑定的数据后，再使用`$dom.data()`则重新获取HTML上的值或设置到jQuery内部。
 
-                promise
-                  .done(function (msg) {
-                    console.log('resolve', msg);
-                  })
-                  .fail(function (msg) {
-                    console.error('reject', msg);
-                  })
-                  .always(function (msg) {
-                    console.log('always', msg);
-                  });
+    >因为`<object>`、`<embed>`、`<applet>`不能绑定数据，所以它们不能使用`.data()`。
+9. jQuery操作CSS样式：
 
-                //deferred.resolve('信息');
-                //deferred.reject('信息');
-                ```
-            3. 且判断：`jQuery.when(Deferred对象或其他值)`。
+    1. 设置大部分CSS样式时，不写单位默认为`px`，并对于`px`单位的样式可以设置相对值`'+=数字'`或`'-=数字'`：
 
-                若传入的不是Deferred对象，则当做立即执行Deferred对象的`resolve(其他值)`。
+        `.css()`、`.width()`、`.height()`、`.animate()`。
 
-                >返回为Promise对象。
-        3. 改变为Promise对象：`.promise()`。
+        >`jQuery.cssNumber`保存着没有默认单位的属性名，可设置为`false`尝试添加默认单位。
+    2. 获得样式时，都是换算成`px`（若可以换算）。
 
-            >返回为Promise对象。
+        >1. `.height/innerHeight/outerHeight()`返回`数字`。
+        >2. `.css('height')`返回带`px`的`字符串`。
+10. `$.proxy()`和原生`Function.prototype.bind`类似，返回一个确定了`this`（和参数）的新方法
 
-    2. `Promise对象`是`Deferred对象`的子集。
+    >新方法的参数填补在原函数去除已设置形参的后面（与`Function.prototype.bind`一致）。
 
-        1. 相对于`Deferred对象`，`Promise对象`无法改变执行状态：
+    额外的，jQuery确保即使绑定的函数经过`$.proxy()`处理，依然可以用原先的函数来正确地取消绑定。
 
-            1. 屏蔽~~与改变执行状态有关的方法~~：
+    ```javascript
+    // e.g.
+    var obj = {
+      test: function () {
+        console.log(this);
+        $('#test').off('click', obj.test);  // 可以解绑$.proxy(obj, 'test')
+      }
+    };
 
-                `reject`、`rejectWith`、`resolve`、`resolveWith`、`notify`、`notifyWith`
-            2. 开放**与改变执行状态无关的方法**：
-
-                `always`、`catch`、`done`、`fail`、`progress`、`promise`、`state`、`then`
-        2. `$.ajax`返回`Promise对象`。
-        3. 允许把所有jQuery对象设置为`Promise对象`（如动画方法后接`.promise().done(方法)`）。
-
-    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/ts50dmpa/)
+    $('#test').on('click', $.proxy(obj, 'test'));
+    ```
 
 ---
 ## 事件相关
@@ -378,6 +476,8 @@
 
     1. `on`（`one`类似）
 
+        >jQuery的事件系统需要DOM元素能够通过元素的属性附加数据，使事件可以被跟踪和传递。因为`<object>`、`<embed>`、`<applet>`不能绑定数据，所以它们不能进行jQuery的事件绑定。
+
         - 移除绑定事件：
 
             `off`
@@ -418,6 +518,9 @@
         1. 写具体**handle**时解绑具体**handle**。
         2. 不写**handle**时解绑对象下某事件的所有方法。
         3. 还可以对事件添加**namespace**。
+        4. 若要移除元素上所有的代理事件，而不移除任何非代理事件，使用特殊值`'**'`。
+
+            e.g. `$dom.off('click', '**');   // 解绑$dom代理到子节点的click事件，但不解绑$dom自己的click事件`
 
 ### 事件流（event flow）
 1. 类型：
@@ -428,6 +531,8 @@
     2. 冒泡（bubbling）：
 
         从目标元素到外层元素的过程。
+
+        >`load`、`scroll`、`error`不会冒泡。
 2. DOM标准事件流触发顺序：
 
     ![事件流图](./images/event-flow-1.png)
@@ -1023,10 +1128,13 @@
          * @param {Object|String|Boolean|Function|Array} param2 - 参数描述
          * @param {*} [param3] - 可选参数
          * @param [param4 = 'default'] - 可选参数拥有默认值
-         * @param {...Number} param5 - 可重复使用参数
+         * @param {Object} param5 - 对象
+         * @param {Object|String|Boolean|Function|Array} param5.param5_1 - 对象的属性描述
+         * @param {...Number} param6 - 可重复使用参数
          * @returns {Object|Undefined} result - 参数描述
          */
-        function func(param1, param2, param3, param4, param5) {
+        function func(param1, param2, param3, param4, param5, param6) {
+            //param5.param5_1
 
             return result;
         }
@@ -1147,7 +1255,7 @@
     >可用`requestAnimationFrame(func)`代替间隔时间设置为一帧的节流函数：`throttle(func, 16) `。
 
 ### 自执行匿名函数（拉姆达，λ，lambda）
-立即调用的函数表达式。
+立即调用的函数表达式（IIFE，Immediately Invoked Function Expression）。
 
 1. 写法：
 
@@ -1204,8 +1312,8 @@
     }
     ```
 
-### Hybrid APP相关
->1. 相对于Native APP的高成本、原生体验，Hybrid APP具有低成本、高效率、跨平台等特性，不依赖Native发包更新。
+### Hybrid App相关
+>1. 相对于Native App的高成本、原生体验，Hybrid App具有低成本、高效率、跨平台等特性，不依赖Native发包更新。
 >2. Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、JS进行业务开发。
 
 1. Native提供给Hybrid宿主环境
@@ -1248,19 +1356,63 @@
             兼容性判断（能力检测等）。
     2. 与Native配合方式：
 
-        >都是以**字符串**的形式交互。
+        >1. 都是以**字符串**的形式交互。
+        >2. iOS、Android的WebView无法判断是否安装了其他App。
 
         1. 桥协议：Native注入全局方法至WebView的`window`，前端调用则触发Native行为。
 
             >客户端注入方式：JS伪协议方式`javascript: 代码`。
-        2. 自定义Scheme：拦截跳转请求（`document.location.href`或`<a>`），触发Native行为。
+        2. 自定义Scheme：拦截跳转（`<iframe>`设置`src`、点击`<a>`、`document.location.href`），触发Native行为。
 
-            >客户端可以捕获、拦截任何行为（如`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
+            >1. 客户端可以捕获、拦截任何行为（如`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
+            >2. 有些App会设置允许跳转的其他App的白名单或黑名单，如微信白名单。
 
-        - 前端提供Native调用的全局回调函数。
+            1. iOS8-
+
+                ```javascript
+                var iframe = document.createElement('iframe');
+                iframe.src = '自定义 URL scheme';
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+                setTimeout(function () {
+                  document.body.removeChild(iframe);
+                }, 3000);
+                location.href = '下载地址';
+                ```
+            2. iOS9+
+
+                >`<iframe>`无效。
+
+                ```javascript
+                location.href = '自定义 URL scheme';
+                setTimeout(function () {
+                  location.href = '下载地址';
+                }, 250);
+                setTimeout(function () {
+                  location.reload();
+                }, 1000);
+                ```
+            3. Android
+
+                ```javascript
+                location.href = '自定义 URL scheme';
+                var start = Date.now();
+                setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）
+                  if (Date.now() - start < 3100) {  // 还在这个页面，认为没有安装App
+                    location.href = '下载地址';
+                  }
+                }, 3000);
+                ```
+        3. iOS9+的Universal links，可以从底层打开其他App客户端（跳过App的白名单）
+
+            >需要两套域名配置、iOS设置等其他端配合。
+
+        - 提供Native调用的全局回调函数。
 
             >判断多个回调函数顺序：带id触发Native行为，Native调用回调函数时携带之前的id。
     3. 根据前端的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在Hybrid遇到的bug。
+
+        对于App内不方便查看的信息，可以发送需要查看的信息、再抓包的方式进行调试。
 
 ### Tips
 1. `var a = b = c = 1;/* b、c没有var的声明。等价于：var a = 1; b = 1; c = 1; */`
@@ -1337,6 +1489,23 @@
 
     1. 添加：`dom.style.cssText += '; 样式: 属性; 样式: 属性'`
     2. 替换：`dom.style.cssText = '样式: 属性; 样式: 属性'`
+12. 关闭、刷新前触发事件`beforeunload`：
+
+    1. PC：若事件处理函数返回为`真`，则试图弹出对话框让用户选择是否继续操作。
+    2. Android：可以执行事件函数但不会弹出对话框。
+    3. iOS：无效。
+
+    ```javascript
+    window.onbeforeunload = function (e) {
+      // do sth.
+
+      var msg = needConfirm ? '信息' : '';
+
+      (e || window.event).returnValue = msg;
+
+      return msg;
+    };
+    ```
 
 ---
 ## 功能归纳
@@ -1437,6 +1606,7 @@
         url: '接口地址',
         dataType: 'jsonp',
         jsonp: '与服务端约定的支持jsonp方法',  //前端唯一需要额外添加的内容
+        data: {},
         success: function(data) {
             //data为跨域请求获得的服务端返回数据
         }
@@ -1566,13 +1736,12 @@
 
     ```javascript
     function MyError(message) {
-        Error.call(this);
-
+        this.stack = (Error.call(this, message)).stack;
         this.message = message || '默认信息';
         this.name = 'MyError';
     }
 
-    MyError.prototype = Object.create(Error.prototype, {constructor: {value: 'MyError'}});
+    MyError.prototype = Object.create(Error.prototype, {constructor: {value: MyError}});
     ```
 3. 手动抛出错误
 
@@ -1595,6 +1764,8 @@
         4. 如果`try`中代码是以`return`、`continue`或`break`终止的，必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
         5. 在`catch`中接收的错误，不会再向上提交给浏览器。
     2. `window.onerror`
+
+        >jQuery不建议`on`等方式绑定`window`的`error`事件，只通过`window.onerror`定义。
 
         1. 没有经过`try-catch`处理的错误都会触发`window`的`error`事件。
         2. 用方法赋值给`window.onerror`后，但凡这个window中有JS错误出现，则会调用此方法。
@@ -1653,6 +1824,8 @@
         3. （可选）为了避免**JS代码还未加载完毕客户端就调用回调函数**，需在客户端调用前端JS时嵌套一层`try-catch`（服务端代码中添加），提示**哪个方法发生错误等额外信息**。
 
     >捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
+
+    - 对于打包压缩的JS，可以用sourcemap进行还原定位错误位置，并且可以把sourcemap放在仅允许特殊IP访问的地方以限制外网人员查看。
 
 ### 预加载
 1. JS预加载图片
@@ -2260,6 +2433,8 @@
     3. 被遗忘的计数器或回调函数：不使用时及时清除。
 
 1. DOM清空或删除时，事件绑定未清除导致内存泄漏：删除DOM前，先移除事件绑定。
+
+    >jQuery的`empty`和`remove`会移除元素内部的一切，包括绑定的事件及与该元素相关的jQuery数据（data、promise等所有数据）；`detach`则保留所有jQuery数据。
 2. 后代元素存在引用引起的内存泄漏：指向DOM的变量，在DOM删除后要设置为`null`。
 
     ![内存泄漏图](./images/memory-leak-1.gif)

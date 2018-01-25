@@ -250,6 +250,7 @@
 42. ie6/7的`document.getElementById`会获取`name`属性匹配的节点（如表单节点或其他节点）：
 
     - 不要让节点的`name`属性与其他节点ID相同。
+43. ie6/7/8/9的节点在flash上可能需要添加`background`才可以点击到。
 
 ---
 ## haslayout

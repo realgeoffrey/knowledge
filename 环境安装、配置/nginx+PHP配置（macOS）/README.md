@@ -69,6 +69,8 @@
             1. 虚拟主机
 
                 ```text
+                // /usr/local/etc/nginx/servers/域名1.conf
+
                 server {
                     listen       80;
                     server_name  域名1;
@@ -96,6 +98,8 @@
             2. 端口映射
 
                 ```text
+                // /usr/local/etc/nginx/servers/域名2.conf
+
                 server {
                     listen       80;
                     server_name  域名2;

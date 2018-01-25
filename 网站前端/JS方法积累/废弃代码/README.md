@@ -106,110 +106,124 @@ function getAge (birthday) {
 /**
  * 显示倒计时
  * @constructor
- * @param {Number} deadline - 到期的时间戳
- * @param {String} [id] - 输出节点id
- * @param {Function} [func] - 到点后的回调函数
- * @param {String} [dType = ' '] - “天”后面的文字
- * @param {String} [hType = ' '] - “时”后面的文字
- * @param {String} [mType = ' '] - “分”后面的文字
- * @param {String} [sType = ' '] - “秒”后面的文字
+ * @param {Object} data
+ * @param {Number} data.deadline - 到期的时间戳
+ * @param {Object} [data.dom] - 输出节点，若不是节点则console.log输出
+ * @param {Function} [data.callback] - 到点后的回调函数
+ * @param {Number} [data.leftSec = 0] - 提前到期的秒数
+ * @param {Boolean} [data.completeZero = false] - 是否个位数补全0
+ * @param {String} [data.dType = ' '] - “天”后面的文字
+ * @param {String} [data.hType = ' '] - “时”后面的文字
+ * @param {String} [data.mType = ' '] - “分”后面的文字
+ * @param {String} [data.sType = ' '] - “秒”后面的文字
  */
-function CountDown(deadline, id, func, dType, hType, mType, sType) {
-    if (typeof Date.now !== 'function') {
-        Date.now = function () {
-            return new Date().getTime();
-        };
+function CountDown(data) {
+  if (typeof Date.now !== 'function') {
+    Date.now = function () {
+      return new Date().getTime();
+    };
+  }
+
+  var _dTypeSend = (typeof data.dType !== 'undefined') && data.dType !== '',
+    _hTypeSend = (typeof data.hType !== 'undefined') && data.hType !== '',
+    _mTypeSend = (typeof data.mType !== 'undefined') && data.mType !== '',
+    _sTypeSend = (typeof data.sType !== 'undefined') && data.sType !== '',
+    _isElement = (function isElement(o) {  /* 是否为Element */
+      return typeof HTMLElement === 'object' ? o instanceof HTMLElement : !!o && typeof o === 'object' && o !== null && o.nodeType === 1 && typeof o.nodeName === 'string';
+    }(data.dom)),
+    _formatNum = function (number) {    /* 格式化数字格式*/
+      if (number < 10 && data.completeZero) {
+        return '0' + number;
+      } else {
+        return number.toString();
+      }
+    },
+    _SetInterval = function (func, millisecond) {  /* 周期执行*/
+      var _setIntervalId;
+
+      if (typeof func === 'function') {
+        _setIntervalId = setTimeout(function () {
+          _setIntervalId = setTimeout(arguments.callee, millisecond);
+
+          func();
+        }, millisecond);
+      }
+
+      this.stop = function () {
+        clearTimeout(_setIntervalId);
+      };
+    },
+    _print = function (time) {  /* 输出*/
+      var day = _formatNum(Math.floor((time / (24 * 60 * 60)))),
+        hour = _formatNum(Math.floor((time / (60 * 60)) % 24)),
+        minute = _formatNum(Math.floor((time / 60) % 60)),
+        second = _formatNum(time % 60),
+        text;
+
+      if (day != 0 || _dTypeSend) {
+        text = day + data.dType + hour + data.hType + minute + data.mType + second + data.sType;
+      } else if (hour != 0 || _hTypeSend) {
+        text = hour + data.hType + minute + data.mType + second + data.sType;
+      } else if (minute != 0 || _mTypeSend) {
+        text = minute + data.mType + second + data.sType;
+      } else {
+        text = second + data.sType;
+      }
+
+      if (_isElement) {
+        data.dom.innerHTML = text;
+      } else {
+        console.log(text);
+      }
+    };
+
+  if (!_dTypeSend) {
+    data.dType = ' ';
+  }
+  if (!_hTypeSend) {
+    data.hType = ' ';
+  }
+  if (!_mTypeSend) {
+    data.mType = ' ';
+  }
+  if (!_sTypeSend) {
+    data.sType = '';
+  }
+
+  /* 初始化时就输出一遍*/
+  _print(Math.round((data.deadline - Date.now()) / 1000));
+
+  var obj = new _SetInterval(function () {
+    var time = Math.round((data.deadline - Date.now()) / 1000);
+
+    if (time < (data.leftSec || 0)) {
+      obj.stop();
+      if (typeof data.callback === 'function') {
+        data.callback();
+      }
+      return;
     }
 
-    var _dTypeSend = (typeof dType !== 'undefined') && dType !== '',
-        _hTypeSend = (typeof hType !== 'undefined') && hType !== '',
-        _mTypeSend = (typeof mType !== 'undefined') && mType !== '',
-        _sTypeSend = (typeof sType !== 'undefined') && sType !== '',
-        _hasDom = !!document.getElementById(id),
-        _formatNum = function (number) {    /* 格式化数字格式*/
-            if (number < 10) {
-                return '0' + number;
-            } else {
-                return number.toString();
-            }
-        },
-        _SetInterval = function (func, millisecond) {  /* 周期执行*/
-            var _setIntervalId;
+    _print(time);
+  }, 1000);
 
-            if (typeof func === 'function') {
-                _setIntervalId = setTimeout(function () {
-                    _setIntervalId = setTimeout(arguments.callee, millisecond);
-
-                    func();
-                }, millisecond);
-            }
-
-            this.stop = function () {
-                clearTimeout(_setIntervalId);
-            };
-        },
-        _print = function (time) {  /* 输出*/
-            var day = _formatNum(Math.floor((time / (24 * 60 * 60)))),
-                hour = _formatNum(Math.floor((time / (60 * 60)) % 24)),
-                minute = _formatNum(Math.floor((time / 60) % 60)),
-                second = _formatNum(time % 60),
-                text;
-
-            if (day !== '00' || _dTypeSend) {
-                text = day + dType + hour + hType + minute + mType + second + sType;
-            } else if (hour !== '00' || _hTypeSend) {
-                text = hour + hType + minute + mType + second + sType;
-            } else if (minute !== '00' || _mTypeSend) {
-                text = minute + mType + second + sType;
-            } else {
-                text = second + sType;
-            }
-
-            if (_hasDom) {
-                document.getElementById(id).innerHTML = text;
-            } else {
-                console.log(text);
-            }
-        };
-
-    if (!_dTypeSend) {
-        dType = ' ';
-    }
-    if (!_hTypeSend) {
-        hType = ' ';
-    }
-    if (!_mTypeSend) {
-        mType = ' ';
-    }
-    if (!_sTypeSend) {
-        sType = '';
-    }
-
-    /* 初始化时就输出一遍*/
-    _print(Math.round((deadline - Date.now()) / 1000));
-
-    var obj = new _SetInterval(function () {
-        var time = Math.round((deadline - Date.now()) / 1000);
-
-        if (time < 0) {
-            obj.stop();
-            if (typeof func === 'function') {
-                func();
-            }
-            return;
-        }
-
-        _print(time);
-    }, 1000);
-
-    this.stop = obj.stop;
+  this.stop = obj.stop;
 }
 
-
 /* 使用测试*/
-var a = new CountDown(Date.now() + 500000, 'test1', function () {
+var a = new CountDown({
+  deadline: Date.now() + 10000,
+  dom: document.getElementById('j-test'),
+  callback: function () {
     console.log('完成');
-}, '', '时', '分', '秒');
+  },
+  leftSec: 1,
+  completeZero: false,
+  dType: '',
+  hType: '小时',
+  mType: '分',
+  sType: '秒'
+});
 
 //a.stop();
 ```
