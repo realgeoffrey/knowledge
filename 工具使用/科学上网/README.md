@@ -1,42 +1,41 @@
 # 科学上网
 
 ## 目录
-1. [Shadowsocks](#shadowsocks)
+1. [服务端安装](#服务端安装)
 
-    1. [客户端使用](#客户端使用)
-    1. [服务端安装](#服务端安装)
-1. [IKEV2(IKEV1)的VPN](#ikev2ikev1的vpn)
+    1. [通过docker安装Shadowsocks、Cisco IPSec（IPSec Xauth PSK）服务器（最快捷方式）](#通过docker安装shadowsockscisco-ipsecipsec-xauth-psk服务器最快捷方式)
+    1. [Shadowsocks](#shadowsocks服务端安装)
+    1. [IKEv2（IKEv1）](#ikev2ikev1服务端安装)
+1. [客户端配置](#客户端配置)
 
-    1. [客户端使用](#客户端使用)
-    1. [服务端安装](#服务端安装)
-1. [通过docker安装shadowsocks服务器和VPN服务器（最快捷方式）](#通过docker安装shadowsocks服务器和vpn服务器最快捷方式)
+    1. [Shadowsocks](#shadowsocks客户端配置)
+    1. [IKEv2（IKEv1）](#ikev2ikev1客户端配置)
+    1. [Cisco IPSec（IPSec Xauth PSK）](#cisco-ipsecipsec-xauth-psk客户端配置)
 
-## Shadowsocks
+## 服务端安装
 
-### 客户端使用
+### 通过docker安装Shadowsocks、Cisco IPSec（IPSec Xauth PSK）服务器（最快捷方式）
+>[docker](https://www.docker.com/)建议Linux内核在3.0以上。[Bandwagon](https://bwh1.net/)内核只有2.6，无法使用docker；[vultr](https://my.vultr.com/)可以使用docker。
 
->客户端安装：[Windows](https://github.com/shadowsocks/shadowsocks-windows)、[macOS](https://github.com/shadowsocks/ShadowsocksX-NG)。
+1. 安装、启动docker
 
-1. 系统代理：默认代理系统所有网络流量。
+    ```bash
+    curl -fsSL https://get.docker.com/ | sh #安装。或用官网安装方式
 
-    1. PAC模式：按照PAC（代理自动配置）列表决定：直接连接，或走Shadowsocks代理。
-    2. 全局模式：所有访问请求都走Shadowsocks代理。
-    3. 手动模式：监听特定端口号的请求。
-2. 关闭系统代理（手动模式）：
+    service docker start    #启动
+    ```
+2. shadowsocks
 
-    配置了**SOCKS5**或**HTTP**代理（默认代理服务器为`127.0.0.1:1080`）的才走Shadowsocks代理，如chrome的[SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega)插件或qq等可以使用SOCKS5或HTTP代理的软件。
-3. PAC：
+    ```bash
+    docker run -d -p 服务端口号:8888 imlonghao/shadowsocks-go -p 8888 -k 密码 -m aes-256-cfb -t 60
+    ```
+3. Cisco IPSec（IPSec Xauth PSK）
 
-    代理自动配置，一般使用[gfwlist](https://github.com/gfwlist/gfwlist)列表。
-4. 允许来自局域网的连接（windows）：
+    ```bash
+    docker run -d -p 500:500/udp -p 4500:4500/udp -p 1701:1701/udp -e VPN_USER=账户名称 -e VPN_PASSWORD=密码 -e VPN_PSK=密钥 --privileged philplckthun/strongswan
+    ```
 
-    同局域网下，其他设备填写好代理的主机ip和端口号（可以用Charles代理），就可以走代理主机的Shadowsocks代理。
-
->SwitchyOmega配置备份文件：
->
->[https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/科学上网/OmegaOptions.bak](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/科学上网/OmegaOptions.bak)
-
-### 服务端安装
+### Shadowsocks服务端安装
 >来自[teddysun:shadowsocks_install](https://github.com/teddysun/shadowsocks_install#shadowsocks-gosh)。
 
 1. 在Linux服务器（CentOS，Debian，Ubuntu）安装[shadowsocks-go](https://github.com/shadowsocks/shadowsocks-go)。
@@ -64,23 +63,9 @@
     ./shadowsocks-go.sh uninstall
     ```
 
----
-## IKEV2(IKEV1)的VPN
+### IKEv2（IKEv1）服务端安装
 >来自[quericy:one-key-ikev2-vpn](https://github.com/quericy/one-key-ikev2-vpn)。
 
-### 客户端使用
-1. 选择VPN (IKEv2)或VPN (IKEv1)模式。
-2. **服务器地址**和证书保持一致（取决于签发证书ca.cert.pem时使用的是ip还是域名）。
-3. **远程ID**和服务器地址一致。
-4. **本地ID**不填。
-5. **鉴定设置**为用户名。**用户名**和**密码**根据服务器设置填写。
-
-    1. 若服务器使用**SSL证书**，则客户端不需要导入证书。
-    2. 若服务器使用**自签名证书**，则客户端必须导入证书
-
-        把服务端证书ca.cert.pem改名为**ca.cert.per**，客户端导入并选择**始终信任此证书**。
-
-### 服务端安装
 >除了第一个vps类型选择、倒数第二个独立ip使用SNAT规则，其他都可以简单使用默认。
 
 1. 下载、运行脚本
@@ -92,21 +77,29 @@
     bash one-key-ikev2.sh
     ```
 2. 输入配置
-    1. 选择**vps类型**：1：Xen、KVM，2：OpenVZ。
-    2. 设置**ip**：服务器ip，绑定的域名（默认服务器ip）。
-    3. 选择**证书类型**：yes：证书颁发机构签发的SSL证书，no：生成自签名证书（默认生成自签名证书）。
+    1. 选择**vps类型**：
 
-        1. 证书颁发机构签发的SSL证书
+        1. Xen、KVM
+        2. OpenVZ
+    2. 设置**ip**：
 
-            未测试
-        2. 生成自签名证书
+        服务器ip，绑定的域名（默认服务器ip）。
+    3. 选择**证书类型**：
+
+        1. yes：证书颁发机构签发的SSL证书
+
+            （未测试）
+        2. no：生成自签名证书（默认生成自签名证书）
 
             选择默认的Country（C）、Organization（O）、Common Name（CN）。
     4. 设置**pkcs12证书的密码**（默认为空）。
     5. 选择是否使用**SNAT规则**（默认不使用）
 
         独立ip的vps才可以使用SNAT，可提升防火墙对数据包的处理速度。若服务器网络设置了NAT（如AWS的弹性ip机制），则填写网卡连接接口的ip地址。
-    6. 选择**防火墙配置**：yes：firewall，no：iptables（默认no：iptables）。
+    6. 选择**防火墙配置**：
+
+        1. yes：firewall
+        2. no：iptables（默认）。
 3. 配置用户名、密码、密钥
 
     1. 默认用户名、密码、密钥将以绿字显示，可根据提示自行修改，多用户则在配置文件中按格式一行一个（多用户时用户名不能使用%any）
@@ -166,32 +159,107 @@
     3. 检查iptables配置。
 
 ---
-## 通过docker安装shadowsocks服务器和VPN服务器（最快捷方式）
->[docker](https://www.docker.com/)建议Linux内核在3.0以上。[Bandwagon](https://bwh1.net/)内核只有2.6，无法使用docker。
+## 客户端配置
 
-1. 安装、启动docker
+### Shadowsocks客户端配置
 
-    ```bash
-    curl -fsSL https://get.docker.com/ | sh #安装。或用官网安装方式
+>客户端安装：[macOS](https://github.com/shadowsocks/ShadowsocksX-NG)、[Windows](https://github.com/shadowsocks/shadowsocks-windows)。
 
-    service docker start    #启动
-    ```
-2. shadowsocks
+1. macOS
 
-    ```bash
-    docker run -d -p 服务端口号:8888 imlonghao/shadowsocks-go -p 8888 -k 密码 -m aes-256-cfb -t 60
-    ```
+    ![shadowsocks图](./images/shadowsocks-1.png)
 
-3. VPN
+    1. PAC自动模式：
 
-    1. IPsec(Cisco)
+        监听特定端口的请求（默认代理端口`1080`），再按照PAC（代理自动配置）列表决定是否使用Shadowsocks代理。
+    2. 全局模式：
 
-        ```bash
-        docker run -d -p 500:500/udp -p 4500:4500/udp -p 1701:1701/udp -e VPN_USER=账户名称 -e VPN_PASSWORD=密码 -e VPN_PSK=密钥 --privileged philplckthun/strongswan
-        ```
-    2.  PPTP
+        走系统代理（系统层面的默认代理）的所有请求都走Shadowsocks代理。
+    3. 手动模式：
 
-        ```bash
-        docker run -d --privileged -p 1723:1723 -v /etc/ppp/chap-secrets:/etc/ppp/chap-secrets mobtitude/vpn-pptp
-        /etc/ppp/chap-secrets: 账户 * 密码 *
-        ```
+        监听特定端口号的请求（默认代理端口`1080`），都走Shadowsocks代理。
+2. Windows
+
+    ![shadowsocks图](./images/shadowsocks-2.png)
+
+    1. 开启软件：
+
+        监听特定端口号的请求（默认代理端口`1080`），都走Shadowsocks代理。
+    2. 启动系统代理（全局模式）：
+
+        走系统代理（系统层面的默认代理）的所有请求都走Shadowsocks代理。
+    3. PAC：
+
+        代理自动配置，一般使用[gfwlist](https://github.com/gfwlist/gfwlist)列表。
+    4. 允许来自局域网的连接：
+
+        同局域网下，其他设备设置HTTP代理为主机ip和端口号（可以用Charles），则走代理主机的Shadowsocks代理。
+
+- Chrome插件[SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega)，能够对Chrome发出的所有请求都进行代理配置。
+
+    >SwitchyOmega配置备份文件：
+    >
+    >[https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/科学上网/OmegaOptions.bak](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/科学上网/OmegaOptions.bak)
+
+### IKEv2（IKEv1）客户端配置
+1. iOS
+
+    >设置->通用->VPN
+
+    1. 类型：IKEv2。
+    2. 服务器地址：和证书保持一致。
+    3. 远程ID：和服务器地址一致。
+    4. 本地ID：（不填）。
+    5. 鉴定
+
+        1. 用户鉴定：用户名。
+        2. 用户名：服务端设置的值。
+        3. 密码：服务端设置的值。
+    6. 证书
+
+        1. 若服务器使用**SSL证书**，则客户端不需要导入证书。
+        2. 若服务器使用**自签名证书**，则客户端必须导入证书。
+
+            客户端用Safari导入ca.cert.cer并选择**始终信任此证书**。
+2. macOS
+
+    >系统偏好设置->网络
+
+    1. 接口：VPN。
+    2. VPN类型：IKEv2。
+    3. 服务器地址：和证书保持一致。
+    3. 远程ID：和服务器地址一致。
+    4. 本地ID：（不填）。
+    5. 鉴定设置
+
+        1. 用户名。
+        2. 用户名：服务端设置的值。
+        3. 密码：服务端设置的值。
+    6. 证书
+
+        1. 若服务器使用**SSL证书**，则客户端不需要导入证书。
+        2. 若服务器使用**自签名证书**，则客户端必须导入证书。
+
+            客户端添加ca.cert.cer后，进入“钥匙串访问”把证书设置为“始终信任”。
+3. Windows
+
+    1. 设置新的连接或网络->连接到工作区->使用我的Internet连接（VPN）。
+    2. Internet地址：和证书保持一致。
+    3. 创建好后右键属性->设置VPN类型
+
+        ![IKEv2图](./images/IKEv2-1.png)
+    4. 用户名：服务端设置的值。
+    5. 密码：服务端设置的值。
+    6. 证书
+
+        1. 若服务器使用**SSL证书**，则客户端不需要导入证书。
+        2. 若服务器使用**自签名证书**，则客户端必须导入证书。
+
+            1. 搜索`mmc.exe`，打开控制台
+            2. 文件->添加/删除管理单元
+
+                选择“证书”添加。
+            3. 证书->受信任的根证书颁发机构->证书，右键->所有任务->导入，选择ca.cert.cer导入成功。
+
+### Cisco IPSec（IPSec Xauth PSK）客户端配置
+>参考[配置 IPSec/Xauth VPN 客户端](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-xauth-zh.md)

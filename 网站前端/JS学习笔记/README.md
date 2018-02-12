@@ -1240,7 +1240,8 @@
     配置数据：URL、展示内容、重复的值、设置、任何可能发生变更的值。
 5. 代码调试方式
 
-    `console`（`alert`）、DevTool的Sources断点（配合SourceMap）、`debugger`。
+    1. JS：`console.log`（`alert`）、`console.trace`
+    2. DevTool额外：Sources断点（`debugger`、配合SourceMap）
 
 ### [函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js防抖函数)、[函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js节流函数)
 >都是用来限制某个函数在一定时间内执行次数的技巧。

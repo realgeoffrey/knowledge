@@ -69,7 +69,7 @@
             1. 虚拟主机
 
                 ```text
-                // /usr/local/etc/nginx/servers/域名1.conf
+                # /usr/local/etc/nginx/servers/域名1.conf
 
                 server {
                     listen       80;
@@ -79,7 +79,7 @@
                     location / {
                         index index.php index.html;
                         try_files $uri $uri/ /index.php?$query_string;
-                        #autoindex on;
+                        autoindex on;
                     }
 
                     error_page   500 502 503 504  /50x.html;
@@ -95,10 +95,10 @@
                     }
                 }
                 ```
-            2. 端口映射
+            2. 代理转发
 
                 ```text
-                // /usr/local/etc/nginx/servers/域名2.conf
+                # /usr/local/etc/nginx/servers/域名2.conf
 
                 server {
                     listen       80;
@@ -124,7 +124,7 @@
             >    `sudo nginx -s reload`
             >2. 关闭
             >
-            >    `sudo nginx -s quit`
+            >    `sudo nginx -s stop`或`sudo nginx -s quit`
 4. 绑定hosts
 
     `vi /etc/hosts`：`127.0.0.1 域名`

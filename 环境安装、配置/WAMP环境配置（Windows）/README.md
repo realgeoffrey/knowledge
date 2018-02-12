@@ -12,7 +12,7 @@
 	程序安装好并启动，右击系统托盘中WampServer图标，选择：**language->chinese**。
 3. 配置 www 目录
 
-	1. 进入程序所在的文件夹，找到 *..\wamp\scripts* 下的 **config.inc.php**：
+	1. 进入程序所在的文件夹，找到 *路径\wamp\scripts* 下的 **config.inc.php**：
 
 	    文本打开并找到`$wwwDir`（默认为安装目录的 www 文件夹），修改为自定义位置`$wwwDir = 'E:/www'`，如图：
 
@@ -99,7 +99,7 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^(.*)$ index.php/$1 [L]
     ```
-9. 开启端口映射
+9. 开启代理转发
 
     1. 左击系统托盘中的WampServer，选择 **Apache->httpd.conf** 配置文件:
 
@@ -120,4 +120,4 @@
         ```
 10. 后续
 
-	升级chrome之后导致出现 Aestan Tray Menu 找不到有效路径问题，查看 `..\wamp` 下的 **wampmanager.ini** 和 **wampmanager.conf**，把里面所有chrome浏览器错误路径修改为现在正确路径，再关闭wamp，重启即解决问题。
+	升级chrome之后导致出现 Aestan Tray Menu 找不到有效路径问题，查看 `路径\wamp` 下的 **wampmanager.ini** 和 **wampmanager.conf**，把里面所有chrome浏览器错误路径修改为现在正确路径，再关闭wamp，重启即解决问题。
