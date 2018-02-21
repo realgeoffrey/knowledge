@@ -78,7 +78,9 @@
                     >e.g. `body h1`与`html h1`权重相同，仅取决于样式顺序。
                 2. ~~样式相对于元素的位置。~~
 
-                    >e.g.
+                    ><details>
+                    ><summary>e.g.</summary>
+                    >
                     >```html
                     ><style>
                     >    /* 权重相同，仅取决于样式顺序*/
@@ -97,6 +99,7 @@
                     >    </div>
                     ></div>
                     >```
+                    ></details>
         2. 优先级基于形式，而不是结果。
 
             >e.g. `[id=foo]`依然是属性选择器优先级（2级），而不是~~ID选择器优先级（3级）~~。
@@ -108,6 +111,8 @@
 
         1. 只要当前选择符的左边还有其他选择符，样式系统就会继续向左移动，直到找到和规则匹配的元素或因为不匹配而退出。
         2. 选择器最右边的选择符是决定效率的**关键选择器**，越具体的关键选择器，其性能越高。
+
+        >从右向左解析的[原因](https://stackoverflow.com/questions/5797014/why-do-browsers-match-css-selectors-from-right-to-left)：更快地判断出某选择器不匹配某DOM，从而更高效匹配完所有内容。
     2. 效率（从高到低）
 
         1. ID选择器
@@ -268,37 +273,42 @@
     2. 普通流：除`float: left/right`、`positon: absolute/fixed`外的内容。
 2. 产生独立的BFC结构可避免margin合并
 
->ie6、7触发haslayout会影响margin合并的发生。
+>ie6、7触发[haslayout](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/兼容至ie6/README.md#haslayout)会影响margin合并的发生。
 
 ### BFC（Block Formatting Context）块级格式上下文
-1. W3C定义：
 
+- <details>
+
+    <summary>W3C定义</summary>
+    
     1. 浮动元素、绝对定位元素、非块级盒子的块级容器（如`inline-blocks`、`table-cells`、`table-captions`）、`overflow`值不为“visiable”的块级盒子，都会为它们的内容创建新的块级格式化上下文。
     2. 在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由它们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
     3. 在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘（border-left）（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
-2. BFC是一个独立的布局环境，可以理解为一个箱子，箱子里物品的摆放不受外界影响，且每个BFC都遵守同一套布局规则。
-3. 对容器添加以下CSS属性使其成为独立的BFC
+    </details>
+
+1. BFC是一个独立的布局环境，可以理解为一个箱子，箱子里物品的摆放不受外界影响，且每个BFC都遵守同一套布局规则。
+2. 对容器添加以下CSS属性使其成为独立的BFC
 
     1. `float: left / right;`
     2. `overflow: hidden / auto / scroll;`
     3. `display: inline-block / table-cell / table-caption / flex / inline-flex;`
     4. `position: absolute / fixed;`
 
->ie6、7不支持BFC，但是有haslayout。
+>ie6、7不支持BFC，但是有[haslayout](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/兼容至ie6/README.md#haslayout)。
 
 ### CSS的小数、百分比
 1. 浏览器会把小数以及百分比换算成整数的单位（px）
 
-    1. 四舍五入：ie8、ie9、chrome、firefox。
+    1. 四舍五入：ie8、ie9、Chrome、Firefox。
     2. 直接向下取整：ie7、safari。
 2. 多个子节点浮动的总宽度接近100%会表现成100%
 
-    设置百分比宽度时，用百分比小数点后第六位的四舍五入值可以兼容大多数浏览器：
+    <details>
+    <summary>设置百分比宽度时，用百分比小数点后<strong>六位</strong>的四舍五入值可以兼容大多数浏览器</summary>
 
     ```css
     .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12 {
         float: left;
-        _display: inline;
     }
     .col-1 {width: 8.333333%;}
     .col-2 {width: 16.666667%;}
@@ -313,6 +323,7 @@
     .col-11 {width: 91.666667%;}
     .col-12 {width: 100%;}
     ```
+    </details>
 3. 使用`rem`，因为换算成`px`而四舍五入或向下取整可能导致切图问题的解决方案：
 
     1. 切图四周多给2px透明距离（切图宽度/最小宽度*1px，多少倍就多少px）。
@@ -380,21 +391,27 @@
 
     相对于节点自己的font-size的倍数（先计算出自己的font-size最终值）。
 
-    >若font-size的单位为`em`，用从父级继承的font-size值乘以倍数。
-
-    ```css
-    // e.g.
-    .father {
-        font-size: 10px;
-    }
-    .son {
-        font-size: 2em; /*20px：继承的font-size * 2*/
-        padding: 2em;   /*40px：自己的font-size * 2*/
-    }
-    ```
+    ><details>
+    ><summary>若font-size的单位为<code>em</code>，用从父级继承的font-size值乘以倍数</summary>
+    >
+    >e.g.
+    >```css
+    >.father {
+    >    font-size: 10px;
+    >}
+    >.son {
+    >    font-size: 2em; /*20px：继承的font-size * 2*/
+    >    padding: 2em;   /*40px：自己的font-size * 2*/
+    >}
+    >```
+    ></details>
 2. `%`单位：
 
-    >包含块（containing block）：不能简单地理解成是父元素。若是`position: static/relative;`元素，包含块是其父元素；若是`position: absolute;`元素，包含块是离它最近的`position: relative/absolute/fixed;`的祖先元素；若是`position: fixed;`元素，包含块是视口（viewport）。
+    ><details>
+    ><summary>包含块（containing block）</summary>
+    >
+    >不能简单地理解成是父元素。若是`position: static/relative;`元素，包含块是其父元素；若是`position: absolute;`元素，包含块是离它最近的`position: relative/absolute/fixed;`的祖先元素；若是`position: fixed;`元素，包含块是视口（viewport）。
+    ></details>
 
     1. 乘以包含块的`width`：
 
@@ -418,7 +435,13 @@
 
         百分比值会同时应用于元素和图像。
 
-        >e.g. 50% 50% 会把图片的（50%, 50%）这一点与框的（50%, 50%）处对齐，相当于设置了center center。同理0% 0%相当于left top，100% 100%相当于right bottom。
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >1. `50% 50%`会把图片的（50%, 50%）这一点与框的（50%, 50%）处对齐，相当于设置了`center center`。
+        >2. `0% 0%`相当于`left top`。
+        >3. `100% 100%`相当于`right bottom`。
+        ></details>
     8. 自身是`position: absolute;`：
 
         离它最近的`positon: relative/absolute/fixed;`的祖先元素；若没有，则相对于视口。
@@ -494,6 +517,9 @@
     }
     ```
 
+    ><details>
+    ><summary>技术细节</summary>
+    >
     >1. 百分比公式：
     >
     >    1. `background-position-x = 小图横坐标px / ( 大图宽度px - 小图宽度px ) * 100%`
@@ -554,6 +580,7 @@
     >    }
     >    /*/x+y轴排列且等大雪碧图*/
     >    ```
+    ></details>
 2. 其他方式：
 
     1. 横向、纵向百分比的`padding`值都是以父元素的`width`为基础，`height`是以父元素的`height`为基础
@@ -1190,7 +1217,8 @@
 
             实行**先读后写**原则：先批量读取元素样式属性（返回上一帧的值），再对样式属性、类名等进行写操作。
 
-            >e.g.
+            ><details>
+            ><summary>e.g.</summary>
             >
             >```javascript
             >/* bad：强制同步布局，可能产生布局抖动*/
@@ -1208,6 +1236,7 @@
             >    });
             >}
             >```
+            ></details>
         2. 避免布局抖动
 
             >布局抖动（layout thrashing）：快速多次进行强制同步布局。
@@ -1224,7 +1253,7 @@
         1. 只使用`transform/opacity`来实现动画效果。
         2. 用`will-change/translateZ`属性把动画元素提升到单独的层中。
         3. 避免滥用层提升、避免创建过多层（更多的层需要更多的内存和更复杂的管理）。
-        4. 使用3D硬件加速提升动画性能时，最好给元素增加一个`z-index`属性（改变层叠上下文的顺序），人为干扰层排序，可以有效减少chrome创建不必要的层，提升渲染性能。
+        4. 使用3D硬件加速提升动画性能时，最好给元素增加一个`z-index`属性（改变层叠上下文的顺序），人为干扰层排序，可以有效减少Chrome创建不必要的层，提升渲染性能。
 
             >如果有一个元素，它的兄弟元素在层中渲染，而这个兄弟元素的`z-index`比较小，那么这个元素（不管是不是应用了硬件加速样式）也会被放到层中。
     6. 对用户输入、滚动事件进行[函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)处理

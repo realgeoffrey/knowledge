@@ -26,6 +26,9 @@
 
     1. [无缝轮播](#无缝轮播)
 
+><details>
+><summary>概念</summary>
+>
 >1. 稳定性：
 >
 >    稳定排序算法会让原本有相等键值的纪录维持相对次序。
@@ -50,6 +53,7 @@
 >        return false;
 >    }
 >    ```
+></details>
 
 ## 排序算法
 >部分排序算法演示：[visualgo](https://visualgo.net/sorting)。
@@ -726,7 +730,7 @@ function countingSort(arr) {
 >时间复杂度：O(n)。
 
 ### 声明某长度并设定值的数组
-e.g. 声明arr：长度为n，值为下标（或某固定值）
+>e.g. 声明arr：长度为n，值为下标（或某固定值）
 
 1. 直接创建并循环赋值
 

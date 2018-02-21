@@ -49,8 +49,12 @@
     1. [定时器 && 重绘函数](#定时器--重绘函数)
     1. [数组的空位（hole）](#数组的空位hole)
 
+><details>
+><summary>约定</summary>
+>
 >1. `dom`为JS对象，`$dom`为jQuery（或Zepto）对象。
 >2. 大部分情况下，jQuery内容适用于Zepto。
+></details>
 
 ## DOM操作
 >以纵轴为例。
@@ -92,8 +96,7 @@
 
         `$dom.offset().top + document.documentElement.clientTop - $(window).scrollTop()`
 
-        >1. `dom.getBoundingClientRect().top`：dom的顶部相对视口顶部距离。
-        >2. `document.documentElement.clientTop`：`<html>`的`border-top-width`数值。
+        >`document.documentElement.clientTop`：`<html>`的`border-top-width`数值。
     5. 节点顶部相对文档顶部距离（不包括~~文档的border~~）：
 
         `dom.getBoundingClientRect().top + (document.body.scrollTop || document.documentElement.scrollTop) - document.documentElement.clientTop`
@@ -125,7 +128,8 @@
 
         `$(window).scrollTop()`
 
->Zepto没有`innerHeight`和`outerHeight`，改为`height`。
+>1. 还可以使用`IntersectionObserver`对象获取节点与其祖先节点或视口距离。
+>2. Zepto没有`innerHeight`和`outerHeight`，改为`height`。
 
 ### 节点与视口距离关系
 1. jQuery
@@ -141,13 +145,15 @@
         以上`&&`结合。
 2. 原生JS
 
-    >- 视口高度：
+    ><details>
+    ><summary>视口高度</summary>
     >
-    >    `window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight`
+    >`window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight`
     >
-    >    或
+    >或
     >
-    >    `$(window).height()`
+    >`$(window).height()`
+    ></details>
 
     1. 节点**顶部**在**视口底部**以上
 
@@ -174,6 +180,9 @@
         `dom.scrollTop === 0`
 2. 文档
 
+    ><details>
+    ><summary>视口高度、文档滚动高度、文档内容高度</summary>
+    >
     >1. 视口高度:
     >
     >    `window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight`
@@ -195,6 +204,7 @@
     >    或
     >
     >    `$(document).height()`
+    ></details>
 
     1. 滚动到底部：
 
@@ -406,8 +416,9 @@
 
     >新方法的参数填补在原函数去除已设置形参的后面（与`Function.prototype.bind`一致）。
 
-    额外的，jQuery确保即使绑定的函数经过`$.proxy()`处理，依然可以用原先的函数来正确地取消绑定。
-
+    <details>
+    <summary>额外的，jQuery确保即使绑定的函数经过<code>$.proxy()</code>处理，依然可以用原先的函数来正确地取消绑定</summary>
+    
     ```javascript
     // e.g.
     var obj = {
@@ -416,16 +427,22 @@
         $('#test').off('click', obj.test);  // 可以解绑$.proxy(obj, 'test')
       }
     };
-
+    
     $('#test').on('click', $.proxy(obj, 'test'));
     ```
+    </details>
 
 ---
 ## 事件相关
 
 ### 事件绑定
+
+><details>
+><summary>约定</summary>
+>
 >1. 以点击事件`click`为例。
 >2. `funcAttr`、`func0`、`funcIe`、`func2`为已经定义的方法。
+></details>
 
 1. 原生JS
 
@@ -435,40 +452,48 @@
 
         `<div onclick="funcAttr()"></div>`（不能同个事件监听多个处理程序）
 
-        - 移除或修改绑定事件：
+        <details>
+        <summary>移除或修改绑定事件</summary>
 
-            1. 事件处理程序设置为空方法或修改方法：
+        1. 事件处理程序设置为空方法或修改方法：
 
-                `funcAttr = function () {};`、`funcAttr = function () {/* 修改方法*/};`
-            2. 移除或修改DOM元素的事件绑定属性：
+            `funcAttr = function () {};`、`funcAttr = function () {/* 修改方法*/};`
+        2. 移除或修改DOM元素的事件绑定属性：
 
-                `dom.removeAttribute('onclick');`、`dom.setAttribute('onclick', '(function () {/* 修改方法*/} ())');`
+            `dom.removeAttribute('onclick');`、`dom.setAttribute('onclick', '(function () {/* 修改方法*/} ())');`
+        </details>
     2. DOM0级事件处理（冒泡）
 
         >本质上，DOM0级事件处理等于HTML事件处理。
 
         `dom.onclick = func0;`（不能同个事件监听多个处理程序）
 
-        - 移除或修改绑定事件：
-
-            `dom.onclick = null;`、`dom.onclick = function () {/* 修改方法*/};`
+        <details>
+        <summary>移除或修改绑定事件</summary>
+        
+        `dom.onclick = null;`、`dom.onclick = function () {/* 修改方法*/};`
+        </details>
     3. IE事件处理（冒泡）
 
         `dom.attachEvent('onclick', funcIe);`（可监听多个，需参数完全对应才能解绑定；无法解绑匿名函数）
-
-        - 移除绑定事件：
-
-            `dom.detachEvent('onclick', funcIe);`
+        
+        <details>
+        <summary>移除绑定事件</summary>
+        
+        `dom.detachEvent('onclick', funcIe);`
+        </details>
     4. DOM2级事件处理（冒泡、捕获）
 
         >ie8-不兼容DOM2级事件处理。
 
         `dom.addEventListener('click', func2, false);`（可监听多个，需参数完全对应才能解绑定；无法解绑匿名函数）
 
-        - 移除绑定事件：
-
-            `dom.removeEventListener('click', func2, false);`
-
+        <details>
+        <summary>移除绑定事件</summary>
+        
+        `dom.removeEventListener('click', func2, false);`
+        </details>
+        
     - [兼容各浏览器的绑定、解绑事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js绑定解绑事件)
 2. jQuery（冒泡）
 
@@ -478,40 +503,49 @@
 
         >jQuery的事件系统需要DOM元素能够通过元素的属性附加数据，使事件可以被跟踪和传递。因为`<object>`、`<embed>`、`<applet>`不能绑定数据，所以它们不能进行jQuery的事件绑定。
 
-        - 移除绑定事件：
-
-            `off`
-    2. 一系列`on`的事件绑定快捷方法:
-
-        `click`、`dblclick`、`contextmenu`、`keydown`、`keyup`、`keypress`、`mousedown`、`mouseup`、`mousemove`、`mouseenter`、`mouseleave`、`mouseover`、`mouseout`、`hover`、`blur`、`focus`、`focusin`、`focusout`、`select`、`change`、`submit`、`ready`、`resize`、`scroll`
-    3. 由`on`或`off`实现的：（废除或不建议）
-
-        1. 绑定：~~`bind`~~、~~`live`~~、~~`delegate`~~
-        2. 解绑：~~`unbind`~~、~~`die`~~、~~`undelegate`~~
+        <details>
+        <summary>移除绑定事件</summary>
+        
+        `off`
+        </details>
+    2. <details>
+    
+        <summary>其他</summary>
+    
+        1. 一系列`on`的事件绑定快捷方法:
+    
+            `click`、`dblclick`、`contextmenu`、`keydown`、`keyup`、`keypress`、`mousedown`、`mouseup`、`mousemove`、`mouseenter`、`mouseleave`、`mouseover`、`mouseout`、`hover`、`blur`、`focus`、`focusin`、`focusout`、`select`、`change`、`submit`、`ready`、`resize`、`scroll`
+        2. 由`on`或`off`实现的：（废除或不建议）
+    
+            1. 绑定：~~`bind`~~、~~`live`~~、~~`delegate`~~
+            2. 解绑：~~`unbind`~~、~~`die`~~、~~`undelegate`~~
+        </details>
 
 - 移除绑定：
 
     1. HTML事件处理和`on+type`，用赋值覆盖解绑。
     2. `attachEvent/detachEvent`，必须一一对应具体的**handle**进行解绑。**handle**是匿名函数无法解绑。
 
-        >ie的**handle**中`this`指向`window`的兼容方式：
+        ><details>
+        ><summary>ie的<strong>handle</strong>中<code>this</code>指向<code>window</code>的兼容方式</summary>
         >
-        >    1. 处理**handle**（传入方法不改变）
+        >1. 处理**handle**（传入方法不改变）
         >
-        >        `function () {funcIe.apply(dom, arguments);}`（无法解绑）。
-        >    2. 修改`funcIe`
+        >    `function () {funcIe.apply(dom, arguments);}`（无法解绑）。
+        >2. 修改`funcIe`
         >
-        >        1. `funcIe.bind(dom)`（需要`bind`的[polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsfunctionprototypebind的polyfill)）。
-        >        2. 使用`window.event`定义~~this~~
+        >    1. `funcIe.bind(dom)`（需要`bind`的[polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsfunctionprototypebind的polyfill)）。
+        >    2. 使用`window.event`定义~~this~~
         >
-        >            ```javascript
-        >            function funcIe(e) {
-        >                e = e || window.event;                 //事件处理对象
-        >                var _this = e.srcElement || e.target;  //触发的DOM
+        >        ```javascript
+        >        function funcIe(e) {
+        >            e = e || window.event;                 //事件处理对象
+        >            var _this = e.srcElement || e.target;  //触发的DOM
         >
-        >                /* funcIe代码*/
-        >            }
-        >            ```
+        >            /* funcIe代码*/
+        >        }
+        >        ```
+        ></details>
     3. `addEventListener/removeEventListener`，必须一一对应具体的**handle**、**布尔值**进行解绑。**handle**是匿名函数无法解绑。
     4. jQuery的`on/off`（以及其他绑定解绑方法）：
 
@@ -579,8 +613,10 @@
 
     1. Android系统的浏览器大部分直接使用CSS伪类即可。
     2. iOS系统的浏览器要添加：`document.body.addEventListener('touchstart', function () {}, true);`。
-    3. ~~JS添加类的方法模拟~~：
-
+    3. <details>
+    
+        <summary><del>JS添加类的方法模拟</del></summary>
+        
         ```html
         <style>
             .d:active,
@@ -597,7 +633,8 @@
             });
         </script>
         ```
-
+        </details>
+        
     - 添加`document.body.addEventListener('touchstart', function () {}, true);`即可满足大部分浏览器使用伪类。
 3. WAP端播放
 
@@ -679,7 +716,9 @@
     5. 播放控件（内嵌播放）
 
         1. `controls`属性模式
-        2. JS代码模拟
+        2. <details>
+        
+            <summary><del>JS代码模拟</del></summary>
 
             >因为无法兼容至所有浏览器，故不推荐。
 
@@ -761,9 +800,8 @@
              start.addEventListener('touchstart', touchstartFunc, false)
             </script>
             ```
-
-        >[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/Lko8u1ku/)
-
+            >[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/Lko8u1ku/)
+            </details>
     - 播放视频问题：
 
         1. 无法操作客户端自定义播放控件：
@@ -925,7 +963,8 @@
 
         无论语句在何处，无论是否会真正执行到，所有的`var`语句的**声明**都提升到作用域（函数内部或全局）顶部执行（hoisting），但具体**赋值**不会被提前。
 
-        >e.g.
+        ><details>
+        ><summary>e.g.</summary>
         >
         >```javascript
         >(function () {
@@ -941,6 +980,8 @@
         >    a = 2;
         >    console.log(a);    //2
         >})();
+        >```
+        ></details>
 
         1. 声明变量是所在上下文环境的不可配置属性；非声明变量是可配置的。
         2. 相同作用域中，对同一个变量进行多次声明，则忽略第一次之后的声明（会执行变量赋值）。
@@ -960,7 +1001,9 @@
         1. 变量仅声明不赋值：被赋值为函数。
         2. 变量赋值：被赋值为变量。
 
-        >e.g.
+        ><details>
+        ><summary>e.g.</summary>
+        >
         >```javascript
         >var a1 = 1;
         >function a1() {}
@@ -978,6 +1021,7 @@
         >var d4;
         >console.log(d4);    //function
         >```
+        ></details>
 
     >建议：先声明再使用；把函数声明紧接着放在变量声明之后。
 
@@ -1012,17 +1056,20 @@
         2. `var b = getPerson();    /* 普通函数*/`
     5. 不要用多行的字符串写法
 
-        e.g.
-
-        ```javascript
-        /* 不提倡的多行写法*/
-        var a = 'abc\
-        def';
-
-        /* 一般写法*/
-        var b = 'abc' +
-            'def';
-        ```
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```javascript
+        >/* 不提倡的多行写法*/
+        >var a = 'abc\
+        >def';
+        >
+        >
+        >/* 一般写法*/
+        >var b = 'abc' +
+        >    'def';
+        >```
+        ></details>
     6. 对象的属性、方法，与变量、方法命名规则相同。
     7. 若属性、变量、方法在表示其是私有的，可在开头加一个下划线`_`作为区分。
 6. 使用字面量代替构造函数（普通函数）的[数据创建方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#数据创建方式)
@@ -1042,6 +1089,7 @@
         a.attr1 = '...';
         var a2 = new Object({attr1: '...'});
 
+
         /* 提倡的字面量写法*/
         var b = {attr1: '...'};
         ```
@@ -1052,6 +1100,7 @@
         ```javascript
         /* 不提倡的构造函数写法*/
         var arr1 = new Array('a', 'b');
+
 
         /* 提倡的字面量写法*/
         var arr2 = ['a', 'b'];
@@ -1064,6 +1113,7 @@
         /* 不提倡的构造函数写法*/
         var str1 = new String('a');
 
+
         /* 提倡的字面量写法*/
         var str2 = 'a';
         ```
@@ -1071,10 +1121,11 @@
     - 其他数据类型
 7. 长字符串拼接使用`Array.prototype.join()`，而不使用`+`
 
-    1. `.join()`性能好（推荐方式）：
+    1. `.join()`性能好（推荐方式）
 
-        e.g.
-
+        <details>
+        <summary>e.g.</summary>
+        
         ```javascript
         var arr = [],
             i;
@@ -1085,9 +1136,11 @@
 
         return arr.join('');
         ```
-    2. `+`性能差（不推荐方式）：
+        </details>
+    2. `+`性能差（不推荐方式）
 
-        e.g.
+        <details>
+        <summary>e.g.</summary>
 
         ```javascript
         var text = '',
@@ -1099,6 +1152,7 @@
 
         return text;
         ```
+        </details>
 8. 注释规范
 
     1. 单行注释：`//`后不空格
@@ -1164,7 +1218,7 @@
     >可以设置为IDE的**Reformat Code**的排版样式。
 11. 用户体验
 
-    1. 平稳退化：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
+    1. 平稳退化（优雅降级）：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
 
         1. 为JS代码预留出退路（`<a>`添加属性链接，用JS事件绑定去拦截浏览器默认行为）
 
@@ -1289,29 +1343,31 @@
     1 ^ function () {}();
     1 > function () {}();
     ```
-2. 传值进自执行匿名函数可以避免闭包导致无法记录变量值的问题：
+2. 传值进自执行匿名函数可以避免闭包导致无法记录变量值的问题
 
-    e.g.
-
-    ```javascript
-    for (var i = 0; i < 3; i++) {
-
-        //匿名函数
-        (function (para) {
-            setTimeout(function () {
-                console.log(para);  //结果是传入进匿名函数的形参
-            }, 0);
-        }(i));
-    }
-
-    for (var i = 0; i < 3; i++) {
-
-        //不用匿名函数
-        setTimeout(function () {
-            console.log(i);         //每个结果都是固定的最后一个值（闭包作用）
-        }, 0);
-    }
-    ```
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```javascript
+    >for (var i = 0; i < 3; i++) {
+    >
+    >    //匿名函数
+    >    (function (para) {
+    >        setTimeout(function () {
+    >            console.log(para);  //结果是传入进匿名函数的形参
+    >        }, 0);
+    >    }(i));
+    >}
+    >
+    >for (var i = 0; i < 3; i++) {
+    >
+    >    //不用匿名函数
+    >    setTimeout(function () {
+    >        console.log(i);         //每个结果都是固定的最后一个值（闭包作用）
+    >    }, 0);
+    >}
+    >```
+    ></details>
 
 ### Hybrid App相关
 >1. 相对于Native App的高成本、原生体验，Hybrid App具有低成本、高效率、跨平台等特性，不依赖Native发包更新。
@@ -1421,11 +1477,9 @@
     第二个以后的变量表示没有~~var~~的赋值。
 2. `var a = a || {};`执行顺序：
 
-    1. 声明提前`var a;`。
-    2. 右侧的表达式`a || {}`先执行：根据规则先判断a的值是否为真，如果a为真，则返回a；如果a不为真，则返回{}。
-    3. 最后再将结果赋值给`a`。
-
-    等价于：
+    <details>
+    <summary>等价于</summary>
+    
     ```javascript
     /* 不是形参情况*/
     var a;
@@ -1434,6 +1488,7 @@
         a = {};
     }
 
+
     /* 形参情况*/
     function func(b) {
         if (b === 0 || b === "" || b === false || b === null || b === undefined) {
@@ -1441,10 +1496,18 @@
         }
     }
     ```
-    >`var a = b || {};`与`if (c) {}`会因为b或c没有定义而报错，可以用`typeof`来使代码健壮：
+    </details>
+    
+    1. 声明提前`var a;`。
+    2. 右侧的表达式`a || {}`先执行：根据规则先判断a的值是否为真，如果a为真，则返回a；如果a不为真，则返回{}。
+    3. 最后再将结果赋值给`a`。
+    
+    ><details>
+    ><summary><code>var a = b || {};</code>与<code>if (c) {}</code>会因为b或c没有定义而报错，可以用<code>typeof</code>来使代码健壮</summary>
     >
     >1. `var a = typeof b !== 'undefined' && b !== null ? b : {};`
     >2. `if (typeof c !== 'undefined' && c !== null) {}`
+    ></details>
 3. `if`、`while`之类的判断语句中用赋值操作：
 
     （大部分是误用）赋值的内容Boolean后为假会导致条件判断为假：`if(a = false){/* 不执行*/}`。
@@ -1540,9 +1603,11 @@
         19. `Math` -> `'[object Math]'`
         20. `JSON` -> `'[object JSON]'`
 
-        >- 对于没有声明的变量，直接使用此行代码会报**引用不存在变量**的错误，因此需要：
+        ><details>
+        ><summary>对于没有声明的变量，直接使用会报<strong>引用不存在变量</strong>的错误，可以用<code>typeof</code>来使代码健壮</summary>
         >
-        >    `if (typeof 变量 !== 'undefined' && Object.prototype.toString.call(变量) === '[object 某]') {}`
+        >`if (typeof 变量 !== 'undefined' && Object.prototype.toString.call(变量) === '[object 某]') {}`
+        ></details>
 2. `typeof 值`
 
     1. 没有跨帧问题。
@@ -1583,15 +1648,18 @@
     >2. ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
 
 ### 跨域请求
->- 浏览器同源策略（协议、域名、端口，必须完全相同才能够在脚本中发起请求）限制：
+
+><details>
+><summary>浏览器同源策略（协议、域名、端口，必须完全相同才能够在脚本中发起请求）限制</summary>
 >
->    1. 不能通过AJAX去请求不同源中的内容（低版本浏览器不会发起跨域请求，直接拒绝）。
+>1. 不能通过AJAX或其他方式去请求不同源中的内容（低版本浏览器不会发起跨域请求，直接拒绝）。
 >
->        现代浏览器会进行CORS处理，发起请求并与服务器协商（特例：有些浏览器不允许从HTTPS跨域访问HTTP，这些浏览器在请求还未发出的时候就会拦截请求）。
->    2. 不同源的文档间（文档与`<iframe>`、文档与`window.open()`的新窗口）不能进行JS交互操作。
+>    现代浏览器会进行CORS处理，发起请求并与服务器协商（特例：有些浏览器不允许从HTTPS跨域访问HTTP，这些浏览器在请求还未发出的时候就会拦截请求）。
+>2. 不同源的文档间（文档与`<iframe>`、文档与`window.open()`的新窗口）不能进行JS交互操作。
 >
->        1. 可以获取window对象，但无法进一步获取相应的属性、方法。
->        2. 无法获取DOM、`cookie`、`Web Storage`、`IndexDB`。
+>    1. 可以获取window对象，但无法进一步获取相应的属性、方法。
+>    2. 无法获取DOM、`cookie`、`Web Storage`、`IndexDB`。
+></details>
 
 1. [CORS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#corscross-origin-resource-sharing跨域资源共享)
 2. jsonp（服务端需要设置）
@@ -1600,19 +1668,21 @@
 
     网页通过添加一个`<script>`，向服务器发起文档请求（不受同源政策限制）；服务器收到请求后，将数据放在一个指定名字的回调函数里传回网页直接执行。
 
-    jQuery在`ajax`方法中封装了`jsonp`功能：
-
-    ```javascript
-    $.ajax({
-        url: '接口地址',
-        dataType: 'jsonp',
-        jsonp: '与服务端约定的支持jsonp方法',  //前端唯一需要额外添加的内容
-        data: {},
-        success: function(data) {
-            //data为跨域请求获得的服务端返回数据
-        }
-    })
-    ```
+    ><details>
+    ><summary>jQuery在<code>ajax</code>方法中封装了<code>jsonp</code>功能</summary>
+    >
+    >```javascript
+    >$.ajax({
+    >    url: '接口地址',
+    >    dataType: 'jsonp',
+    >    jsonp: '与服务端约定的支持jsonp方法',  //前端唯一需要额外添加的内容
+    >    data: {},
+    >    success: function(data) {
+    >        //data为跨域请求获得的服务端返回数据
+    >    }
+    >})
+    >```
+    ></details>
 3. `document.domain`相同则可以文档间互相操作
 
     把不同文档的`document.domain`设置为一致的值（仅允许设置为上一级域），即可双向通信、互相操作（`cookie`可以直接操作；`localStorage`、`IndexDB`只能通过`postMessage`通信）。
@@ -1622,7 +1692,8 @@
         ```javascript
         //父窗口调用iframe的window对象
         var newIframe = document.getElementById('new-iframe').contentWindow;    //或：window.frames[0]
-
+        
+        
         //iframe调用父窗口的window对象
         var father = parent;
         ```
@@ -1631,7 +1702,8 @@
         ```javascript
         //父窗口调用新打开窗口的window对象
         var newWin = window.open('某URL');
-
+        
+        
         //新打开窗口调用父窗口的window对象
         var father = window.opener;
         ```
@@ -1642,7 +1714,8 @@
     ```javascript
     //发送方
     目标window对象.postMessage(message, '目标源地址或*');
-
+    
+    
     //监听的文档
     window.addEventListener('message', function(e) {
       console.log(e);
@@ -1657,7 +1730,8 @@
         ```javascript
         //父窗口改变iframe的hash值
         document.getElementById('new-iframe').src = '除了hash值，url不变（父级与iframe不需要同源）';
-    
+        
+        
         //iframe窗口监听hash变化，以hash变化当做信息的传递
         window.onhashchange = function(){
             var message = window.location.hash;
@@ -1722,7 +1796,10 @@
     7. 默认（存储在内存）关闭浏览器后失效，设置失效时间（存储在硬盘）则到期后失效。
     8. 应用场景：服务端确定请求是否来自于同一个客户端（cookie与服务端session配合），以确认、保持用户状态。
 
-    >僵尸cookie（[zombie cookie](https://en.wikipedia.org/wiki/Zombie_cookie)）是指那些删不掉的，删掉会自动重建的cookie。僵尸cookie是依赖于其他的本地存储方法，如flash的share object、HTML5的local storages等，当用户删除cookie后，自动从其他本地存储里读取出cookie的备份，并重新种植。
+    ><details>
+    ><summary>僵尸cookie（<a href="https://en.wikipedia.org/wiki/Zombie_cookie">zombie cookie</a>）</summary>
+    >是指那些删不掉的，删掉会自动重建的cookie。僵尸cookie是依赖于其他的本地存储方法，如flash的share object、HTML5的local storages等，当用户删除cookie后，自动从其他本地存储里读取出cookie的备份，并重新种植。
+    ></details>
 
 >隐身模式策略：存储API仍然可用，并且看起来功能齐全，只是无法真正储存（如分配储存空间为0）。
 
@@ -1871,7 +1948,11 @@
 3. CSS背景图片预加载。
 
 ### 循环遍历
+><details>
+><summary>约定</summary>
+>
 >`obj`为对象实例，`arr`为数组实例。
+></details>
 
 >1. `continue`应用在循环（`while`、`do-while`、`for`、`for-in`、`for-of`），表示跳过当次循环；`break`应用在循环、`switch`，表示跳出整个循环。
 >2. `forEach`、`map`、`filter`、`some`、`every`无法中止循环（`return`只结束回调函数）。
@@ -1879,7 +1960,9 @@
 
 1. 原生JS
 
-    1. `while`、`do-while`
+    1. <details>
+    
+        <summary><code>while</code>、<code>do-while</code></summary>
 
         ```javascript
         while (跳出判断) {
@@ -1892,33 +1975,43 @@
 
         } while (跳出判断);
         ```
-    2. `for`
+        </details>
+    2. <details>
+    
+        <summary><code>for</code></summary>
 
         ```javascript
         for (执行一次; 跳出判断; 每执行一次后执行) {
 
         }
         ```
-    3. `for-in`
+        </details>
+    3. <details>
+    
+        <summary><code>for-in</code></summary>
 
         遍历对象所有的可枚举属性。
-
+        
         ```javascript
         /* i为数组当前项的索引或对象当前项的属性名*/
         for (var i in obj或arr) {
 
         }
         ```
-    4. `for-of`
+        </details>
+    4. <details>
+    
+        <summary><code>for-of</code></summary>
 
         遍历可迭代对象的每个元素。
-
+        
         ```javascript
         /* i为迭代对象的属性值*/
         for (var i of 可迭代对象) {
 
         }
         ```
+        </details>
     5. Array方法
 
         参数均为：`回调函数(当前值, 索引, 数组整体)[, this替代]`。
@@ -1941,7 +2034,9 @@
     6. `Object.entries`、`Object.values`、`Object.keys`、`Object.getOwnPropertyNames`、`Object.getOwnPropertySymbols`
 2. jQuery
 
-    1. `$.each`
+    1. <details>
+    
+        <summary><code>$.each</code></summary>
 
         ```javascript
         /* index为数组当前项的索引或对象当前项的属性名或jQuery对象的索引，item为当前项的值（不是jQuery对象，是DOM对象，与this相同）*/
@@ -1949,7 +2044,10 @@
 
         });
         ```
-    2. `$dom.each`
+        </details>
+    2. <details>
+    
+        <summary><code>$dom.each</code></summary>
 
         ```javascript
         /* index为jQuery对象的索引，item为当前项的值（不是jQuery对象，是DOM对象，与this相同）*/
@@ -2014,7 +2112,8 @@
         1. 在预编译阶段，同时声明同一名称的函数和变量（顺序不限），会被声明为函数。
         2. 在执行阶段，如果变量有赋值，则这个名称会重新赋值给变量。
 
-        >e.g.
+        ><details>
+        ><summary>e.g.</summary>
         >
         >```javascript
         >// 预编译阶段a1/b2为函数，运行时a1/b2赋值成为变量
@@ -2046,6 +2145,7 @@
         >var e5 = function () {};
         >console.log(e5);        // function 匿名
         >```
+        ></details>
 4. 变量赋值是在JS执行阶段（运行时）进行的。
 
 ### 函数
@@ -2076,21 +2176,23 @@
 
         `var 名字 = function(多个参数) {/* 函数体*/};`
 
-        >- 命名函数表达式：`var 名字1 = function 名字2() {};`，其中函数名`名字2`只能在函数体内部使用：
+        >命名函数表达式：`var 名字1 = function 名字2() {};`，其中函数名`名字2`只能在函数体内部使用。
         >
-        >    e.g.
+        ><details>
+        ><summary>e.g.</summary>
         >
-        >    ```javascript
-        >    var func1 = function func2() {
-        >       console.log(typeof func1);  //function
-        >       console.log(typeof func2);  //function
-        >    };
+        > ```javascript
+        > var func1 = function func2() {
+        >    console.log(typeof func1);  //function
+        >    console.log(typeof func2);  //function
+        > };
         >
-        >    func1();
+        > func1();
         >
-        >    console.log(typeof func1);     //function
-        >    console.log(typeof func2);     //undefined
-        >    ```
+        > console.log(typeof func1);     //function
+        > console.log(typeof func2);     //undefined
+        > ```
+        ></details>
 
     >1. 通过**函数声明**、**函数表达式**创建的函数，在加载脚本时和其他代码一起解析；通过**构造函数**定义的函数，在构造函数被执行时才解析函数体字符串。
     >2. 不推荐通过~~构造函数~~创建函数，因为作为字符串的函数体可能会阻止一些JS引擎优化，也会引起其他问题。
@@ -2137,7 +2239,8 @@
 
     - `this`——调用函数的那个对象
 
-        e.g.
+        <details>
+        <summary>e.g.</summary>
 
         ```javascript
         var x = 'global';
@@ -2192,6 +2295,7 @@
         var obj4 = {x: 4};
         obj2.func.call(obj4);   //4|global|global
         ```
+        </details>
 
 ### 闭包（closure）
 1. 当函数内部定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数执行完毕（寿命终结）之后。
@@ -2225,7 +2329,9 @@
 
         原型链终点是`null`，倒数第二是`Object.prototype`。
 
-    e.g.
+
+    <details>
+    <summary>e.g.</summary>
 
     ```javascript
     var A = function () {};
@@ -2239,6 +2345,7 @@
     console.log(a.__proto__.__proto__ === Object.prototype);
     console.log(a.__proto__.__proto__.__proto__ === null);
     ```
+    </details>
 2. 如果重写原型的值（不是添加），可以给原型添加`constructor`属性并指向**构造函数**
     
     ```Javascript
@@ -2538,14 +2645,17 @@
         3. 对非布尔值类型的数据求布尔值。
         4. 对非数值类型的数据使用一元运算符（`+`、`-`）
 
+            <details>
+            <summary>e.g.</summary>
+            
             ```javascript
-            // e.g.
             'a' + + 'a'         // 'a' + (+ 'a') -> 'a' + NaN -> 'aNaN'
             + '123';            // 123
             - [123];            // -123
             1 + undefined       // NaN
             '1' + undefined     // '1undefined'
             ```
+            </details>
     2. 行为：
 
         预期什么类型的值，就调用该类型的转换函数。
@@ -2735,14 +2845,17 @@
     3. 使用`delete`删除一个数组成员，会形成空位，并且不会影响`length`属性。
     4. 给一个数组的`length`属性赋予大于其长度的值，新创建的项都是空位。
 
+    <details>
+    <summary>e.g.</summary>
+    
     ```javascript
-    // e.g.
     [, , ,][0];                             //undefined
     0 in [undefined, undefined, undefined]; //true
     0 in Array.apply(null, new Array(3));   //true（密集数组：没有空位的数组）
     0 in new Array(3);                      //false（稀疏数组：有空位的数组）
     0 in [, , ,];                           //false
     ```
+    </details>
 
     >1. `new Array(数量)`（或`Array(数量)`）返回的是有空位的稀疏数组。
     >2. `Array.apply(null, new Array(数量));`返回的是没有空位的密集数组。

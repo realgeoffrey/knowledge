@@ -27,11 +27,11 @@
     nvm npm_mirror https://npm.taobao.org/mirrors/npm/      #设置npm源：
 
     nvm list available
-    nvm install v新版本号
-    nvm use v新版本号
+    nvm install 新版本号
+    nvm use 新版本号
 
     nvm list
-    nvm uninstall v旧版本号     # 还可以再去目录中删除 C:\Users\用户名\AppData\Roaming\nvm\v版本
+    nvm uninstall 旧版本号     # 还可以再去目录中删除 C:\Users\用户名\AppData\Roaming\nvm\v版本
     ```
 
 >切换版本之后需重装Node.js的全局模块包。
@@ -264,11 +264,11 @@
 - 概述
 
     1. 执行阶段（运行时）进行模块加载。
-    2. 每个文件就是一个模块，有自己单独作用域，不污染全局作用域，必须`exports`才能输出给其他模块。
+    2. 有自己单独作用域，不污染全局作用域，必须`module.exports`才能输出给其他模块。
 
         >不推荐`window.属性`。
-    3. `exports`和`require`能够在任何位置使用（包括块级作用域）。
-    4. 模块的加载步骤：
+    3. `module.exports`和`require`能够在任何位置使用（包括块级作用域）。
+    4. 模块的加载逻辑：
 
         1. 模块加载的顺序：按照其在代码中出现的顺序、引用则嵌套加载。
         2. 注入`exports`、`require`、`module`三个全局变量。
@@ -277,76 +277,111 @@
             1. `require`第一次加载某模块，执行整个脚本，在内存生成一个缓存对象：
 
                 `{ id: '...', exports: {...}, ... }`
-            3. 无论加载多少次，仅在第一次加载时运行，除非手动清除系统缓存。
-            3. x模块执行时出现`require(y)`则进入y模块代码中执行，执行完毕后再回到x模块继续向下执行。
-            4. 一旦出现“循环加载”，则被循环的模块对象的`exports`仅保存已经执行过的代码部分，然后因为`require(其他模块)`进入其他模块代码中执行，还未执行的部分等到代码返回原模块时继续执行（此时再去改变`exports`）。
+            2. a模块执行时出现`require(b)`则进入b模块代码中执行，执行完毕后再回到a模块继续向下执行。
+            3. 无论加载多少次，仅在第一次加载时运行，之后再被引用则直接返回已导出内容。
+
+                >除非手动清除系统缓存。
+            4. “循环加载”
+                
+                <details>
+                <summary>引用之前已经被引用过的模块b，会直接返回模块b已导出的内容，而不会再进入模块b内执行</summary>
+
+                e.g.
+                
+                ```javascript
+                // 按①②③④⑤⑥的顺序执行
+
+
+                // 入口
+                ... // ①
+                require('a模块'); // ②③④⑤执行后，②⑤导出a模块的内容2
+                ... // ⑥
+
+
+                // a模块
+                ... // ②
+                require('b模块'); // ③④执行后，③④导出b模块的内容
+                ... // ⑤
+
+
+                // b模块
+                ... // ③
+                require('a模块'); // ②导出a模块的内容1（因为a模块已经被引用过，所以直接使用a已经导出的内容，而不继续执行a的剩余代码）
+                ... // ④
+                ```
+                </details>
         4. 将模块的`exports`值输出至缓存，以供其他模块`require`获取（或“循环加载”时，部分已经执行产生的`exports`供其他模块引用）。
-        5. 若被`require`的模块没有`exports`，则仅执行一遍模块代码，不输出内容。
-    5. `require(x模块)`返回内存中x模块的`module.exports`指向的值，可以重新赋值和属性改写（属性改写会改变x模块的缓存值，所有`require(x模块)`都会共享）。
+        5. 若被`require`的模块没有`exports`，则仅执行一遍模块代码，返回`{}`。
+    5. `require(a模块)`返回内存中a模块的`module.exports`指向的值，可以重新赋值和属性改写（属性改写会改变a模块的缓存值，所有`require(a模块)`都会共享）。
     6. CommonJS是一个单对象输出、单对象加载的模型：
 
         1. 所有要输出的对象统统挂载在`module.exports`上，然后暴露给外界。
         2. 通过`require`加载别的模块，`require`的返回值就是模块暴露的对象。
-1. `require(X)`
-
-    加载模块。读取并执行一个JS文件（`.js`后缀可以省略），返回该模块的`exports`值。
-
-    1. 如果 X 以`/`、`./`或`../`开头
-
-        1. 根据 X 所在的父模块，确定 X 的绝对路径。
-        2. 将 X 当成**文件**，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。
-
-            `X`、`X.js`、`X.json`、`X.node`
-        3. 将 X 当成**目录**，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。
-
-            `X/package.json（main字段）`、`X/index.js`、`X/index.json`、`X/index.node`
-    2. 如果 X 是内置模块，返回该模块，不再继续执行。
-
-        >e.g. `require('http')`
-    3. 如果 X 不带路径且不是内置模版
-
-        >当作安装在本地的模块。
-
-        1. 根据 X 所在的父模块，确定 X 可能的安装目录。
-        2. 依次在每个目录中，将 X 当成**文件**或**目录**加载。
-    4. 抛出`not found`。
-
-    >e.g.
-    >
-    >- 在`/home/ry/projects/foo.js`执行了`require('bar')`：
-    >
-    >    1. 属于不带路径情况，判断不是内置模块，当作安装在本地的模块进行搜索；
-    >    2. 依次搜索每一个目录：
-    >
-    >        ```text
-    >        /home/ry/projects/node_modules/
-    >        /home/ry/node_modules/
-    >        /home/node_modules/
-    >        /node_modules/
-    >        ```
-    >
-    >        1. 搜索时，先将`bar`当作文件名，依次在`某某/node_modules/`尝试加载下面文件：
-    >
-    >            `bar`、`bar.js`、`bar.json`、`bar.node`
-    >        2. 如果都不成功，说明`bar`可能是目录名，依次在`某某/node_modules/`尝试加载下面文件：
-    >
-    >            ```text
-    >            bar/package.json（main字段）
-    >            bar/index.js
-    >            bar/index.json
-    >            bar/index.node
-    >            ```
-    >    3. 都找不到则抛出`not found`。
-2. `exports`
+1. `module.exports`
 
     模块提供使用的`exports`值。
 
-    - 允许用两种方式赋值：
+    - 允许用两种方式为导出赋值：
 
-        1. `module.exports = 值`（`exports = 变量`报错）
+        1. `module.exports = 值`
         2. `module.exports.属性 = 值`
 
-    >`exports === module.exports`。
+        >1. `exports`指向`module.exports`（`exports === module.exports`）。
+        >2. 若`exports = 值`或`module.exports = 值`则切断了`exports`与`module.exports`的连接，`exports`将没有导出效果。
+2. `require(X)`
+
+    加载模块。读取并执行一个JS文件（`.js`后缀可以省略），返回该模块的`exports`值（没有导出内容则为`{}`）。
+
+    - 查找逻辑：
+
+        1. 如果 X 以`/`、`./`或`../`开头
+
+            1. 根据 X 所在的父模块，确定 X 的绝对路径。
+            2. 将 X 当成**文件**，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。
+
+                `X`、`X.js`、`X.json`、`X.node`
+            3. 将 X 当成**目录**，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。
+
+                `X/package.json（main字段）`、`X/index.js`、`X/index.json`、`X/index.node`
+        2. 如果 X 是内置模块，返回该模块，不再继续执行。
+
+            >e.g. `require('http')`
+        3. 如果 X 不带路径且不是内置模版
+
+            >当作安装在本地的模块。
+
+            1. 根据 X 所在的父模块，确定 X 可能的安装目录。
+            2. 依次在每个目录中，将 X 当成**文件**或**目录**加载。
+        4. 抛出`not found`。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >- 在`/home/ry/projects/foo.js`执行了`require('bar')`：
+        >
+        >    1. 属于不带路径情况，判断不是内置模块，当作安装在本地的模块进行搜索；
+        >    2. 依次搜索每一个目录：
+        >
+        >        ```text
+        >        /home/ry/projects/node_modules/
+        >        /home/ry/node_modules/
+        >        /home/node_modules/
+        >        /node_modules/
+        >        ```
+        >
+        >        1. 搜索时，先将`bar`当作文件名，依次在`某某/node_modules/`尝试加载下面文件：
+        >
+        >            `bar`、`bar.js`、`bar.json`、`bar.node`
+        >        2. 如果都不成功，说明`bar`可能是目录名，依次在`某某/node_modules/`尝试加载下面文件：
+        >
+        >            ```text
+        >            bar/package.json（main字段）
+        >            bar/index.js
+        >            bar/index.json
+        >            bar/index.node
+        >            ```
+        >    3. 都找不到则抛出`not found`。
+        ></details>
 3. `module`
 
     - 当前模块对象。拥有以下属性：

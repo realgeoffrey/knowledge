@@ -70,7 +70,8 @@
 
         >外部链接的地址最好使用外网CDN，不要使用本地服务器地址。
 
-        >e.g.
+        ><details>
+        ><summary>e.g.</summary>
         >
         >```html
         ><!--在Values中写入vconsole-->
@@ -89,6 +90,7 @@
         ><!--在Values中写入HTML内容-->
         ><p>这是whistle插入内容</p>
         >```
+        ></details>
     6. log信息
 
         >开启后会阻止把错误信息输入到vconsole和eruda。

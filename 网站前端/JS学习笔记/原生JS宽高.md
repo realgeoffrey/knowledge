@@ -16,7 +16,7 @@
         1. ie6/7：
 
             `.offsetLeft` = `当前元素的margin左宽度 + offsetParent的(padding左宽度)`。
-        2. ie8/9/10、chrome：
+        2. ie8/9/10、Chrome：
 
             `.offsetLeft` = `当前元素的margin左宽度 + offsetParent的(padding左宽度 + margin左宽度 + border左宽度)`。
         3. Firefox：

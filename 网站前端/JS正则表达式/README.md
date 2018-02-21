@@ -146,8 +146,10 @@
 
         如果成功匹配，返回一个数组，并且更新正则表达式对象的属性。返回的数组包括匹配的字符串作为第一个元素，紧接着多个元素对应被捕获的字符串，数组还额外拥有`index`和`input`属性。
 
+        ><details>
+        ><summary>e.g.</summary>
+        >
         >```javasscript
-        >// e.g.
         >var regexp = /quick\s(brown).+?(jumps)/ig;
         >var arr = regexp.exec('The Quick Brown Fox Jumps Over The Lazy Dog');
         >```
@@ -168,15 +170,19 @@
         >| `regexp.global` | 是否使用了`g`标记 | `true` |
         >| `regexp.multiline` | 是否使用了`m`标记 | `false` |
         >| `regexp.source` | 正则模式的字符串 | `quick\s(brown).+?(jumps)` |
+        ></details>
     3. 正则表达式的`source`属性：
 
         当前正则表达式对象的模式文本的字符串，该字符串不会包含正则字面量两边的斜杠以及任何标志字符，并会自动添加字符串的`\`转义（基本仅对`\`、`"`、`'`转义）。
 
+        <details>
+        <summary>e.g.</summary>
+        
         ```javascript
-        // e.g.
         /\w/g.source === '\\w';                     //true
         new RegExp('\\w', 'g').source === '\\w';    //true
         ```
+        </details>
 2. String对象的方法
 
     1. `str.match(regexp)`：
@@ -215,7 +221,7 @@
 
             当匹配执行后，该函数就会执行，函数的返回值作为替换字符串。
 
-            >如果第一个参数是正则表达式，并且其为全局匹配模式，那么这个方法将被多次调用，每次匹配都会被调用。
+            >若第一个参数是正则表达式且为全局匹配模式，则这个方法将被多次调用、每次匹配都会被调用。
 
             函数参数为：
 
@@ -229,6 +235,5 @@
 
         以separator为间隔，把字符串分割成一个字符串`数组`。
 
-        `separator`：可以是一个字符串或正则表达式，指定用来分割。 如果忽略参数，则返回整个字符串的数组形式;如果是一个空字符串，则返回单字符组成的数组。
-
-        `limit`：一个整数，限定返回的分割片段数量。
+        1. `separator`：可以是一个字符串或正则表达式，指定用来分割。 如果忽略参数，则返回整个字符串的数组形式;如果是一个空字符串，则返回单字符组成的数组。
+        2. `limit`：一个整数，限定返回的分割片段数量。

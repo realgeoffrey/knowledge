@@ -95,21 +95,22 @@
             4. 执行脚本，访问、更改DOM和CSSOM。
             5. DOM构造继续进行。
     
-            >`<script>`执行：
+            ><details>
+            ><summary><code><script></code>的加载、执行</summary>
             >
-            >    1. 没有`defer`或`async`：立即加载并执行（同步），阻塞解析。
-            >    2. `defer`：异步加载，在DOM解析完成后、`DOMContentLoaded`触发前执行，顺序执行。
+            >1. 没有`defer`或`async`：立即加载并执行（同步），阻塞解析。
+            >2. `defer`：异步加载，在DOM解析完成后、`DOMContentLoaded`触发前执行，顺序执行。
             >
-            >        >多个`defer`脚本不一定按照顺序执行，也不一定会在`DOMContentLoaded`事件触发前执行，因此最好只包含一个延迟脚本。
-            >    3. `async`：异步加载，加载完马上执行。
+            >    >多个`defer`脚本不一定按照顺序执行，也不一定会在`DOMContentLoaded`事件触发前执行，因此最好只包含一个延迟脚本。
+            >3. `async`：异步加载，加载完马上执行。
             >
-            >        乱序执行，仅适用于不考虑依赖、不操作DOM的脚本。
-            >    4. 模块化属性（在JS内部`import`的同级资源是并行、依赖资源是串行）：
+            >    乱序执行，仅适用于不考虑依赖、不操作DOM的脚本。
+            >4. 模块化属性（在JS内部`import`的同级资源是并行、依赖资源是串行）：
             >
-            >        1. `type="module"`：与`defer`相同。
-            >        2. `type="module" async`：与`async`相同。
+            >    1. `type="module"`：与`defer`相同。
+            >    2. `type="module" async`：与`async`相同。
             >
-            >    ![JS脚本加载图](./images/js-load-1.png)
+            >![JS脚本加载图](./images/js-load-1.png)
     2. DOM（parse HTML）和CSSOM（recalculate style）构造完成后，进行渲染：
     
         Render Tree（渲染树）：Layout -> Paint -> Composite
@@ -411,7 +412,11 @@
 
             先利用给密码加盐（salt）的方式增加额外信息，再使用散列（hash）函数计算出散列值后保存。
 
-            >加盐：由服务器随机生成的一个字符串，保证长度足够长，且是真正随机生成。然后把它和密码字符串相连接（前后都可以）生成散列值。当两个用户使用了同一个密码时，由于随机生成的salt值不同，对应的散列值也将不同。这样一来，很大程度上减少了密码特征，攻击者也就很难利用自己手中的密码特征库进行破解。
+            ><details>
+            ><summary>加盐</summary>
+            >
+            >由服务器随机生成的一个字符串，保证长度足够长，且是真正随机生成。然后把它和密码字符串相连接（前后都可以）生成散列值。当两个用户使用了同一个密码时，由于随机生成的salt值不同，对应的散列值也将不同。这样一来，很大程度上减少了密码特征，攻击者也就很难利用自己手中的密码特征库进行破解。
+            ></details>
     15. DoS攻击（Denial of Service attack）、服务停止攻击或拒绝服务攻击
 
         运行中的服务呈停止状态的攻击。

@@ -43,11 +43,13 @@
         1. [HTML条件注释法判断ie6、7、8、9版本](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断ie6789版本)。
         2. [用户代理判断ie所有版本](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断ie所有版本)。
 
-    >图片类型选择：
+    ><details>
+    ><summary>图片类型选择png-24</summary>
     >
     >1. 用gulp压缩图片后，图片在ie6~8表现出的颜色会改变，因此不要把背景切入图中，最好用透明的切图。
     >2. **png-24透明图**和**png-24不透明图**或**png-8不透明图**压缩后的文件大小相差不大，因此可以都使用**png-24透明图**切图后再用gulp压缩。
     >3. png24透明图增加透明区域对文件大小增加很小，因此切图时不必特意限制纯透明区域大小。
+    ></details>
 2. ie6/7替换写法：
 
 	1. `float`：
@@ -82,17 +84,19 @@
 
 	2. ~~JS方法~~：
 
-        >内部插件。
-        
-        ``` html
-        <!--[if IE 6]>
-        <script src="js/pngfilter.js"></script>
-        <script>
-            DD_belatedPNG.fix('.j-png');
-        </script>
-        <![endif]-->
-        ```
+        ><details>
+        ><summary>内部插件</summary>
+        >
+        >``` html
+        ><!--[if IE 6]>
+        ><script src="js/pngfilter.js"></script>
+        ><script>
+        >    DD_belatedPNG.fix('.j-png');
+        ></script>
+        ><![endif]-->
+        >```
         >插件bug：用div透明背景图覆盖出圆角效果会单边缩短1px，要给背景图左右多出1px背景(JS的bug)。
+        ></details>
 6. ie6不支持`max-height`、`min-height`、`max-width`、`min-width`：
 
 	- 用`_height/_width`等于固定值适量代替。
@@ -116,7 +120,7 @@
 	- `border`写在`td`或`td > *`中。
 12. ie6的`width`、`height`、`line-height`写在`<td>`上时，内容超过后设置的限制无效：
 
-	1. 在父级`<table>`上设置`table-layout: layout:fixed;`，并在第一个`<tr>`的各个子级`<td>`或`<th>`上设置宽度，就能为整个表固定各项目宽度。
+	1. 在父级`<table>`上设置`table-layout: fixed;`，并在第一个`<tr>`的各个子级`<td>`或`<th>`上设置宽度，就能为整个表固定各项目宽度。
 	2. `width`、`height`、`line-height`不设置在`<td>`上，设置在`<td>`的子级。
 13. ie6的`<table>`、`<tr>`、`<td>`，用JS增加有背景色的class无效：
 
@@ -124,45 +128,47 @@
 14. ie6下`<tr>`没有`:hover`效果：
 
 	1. 用JS制作（mouseenter、mouseleave）。
-	2. 不处理。优雅降级（优先完成全部功能，再针对浏览器测试和修复）。
+	2. 不处理。平稳退化（优先完成全部功能，再针对浏览器测试和修复）。
 15. ie6浮动元素的中间有注释会导致出现重复字符：
 
 	- 删除浮动元素内的注释。
 16. ie6不能使用**多类选择器**（不能连写class或id，e.g. `.a.b`、`.a#b`、`#a#b`），会自动忽略前面的选择器而仅剩下最后一个class或id。
 
-    - 用`_`CSS属性hack，对ie6中优雅降级。
+    - 用`_`CSS属性hack，对ie6中平稳退化。
 17. ie6不支持`position: fixed;`，需使用JS组建：
 
-    1. 用JS插件
+    1. 平稳退化。用`position: absolute;`模拟。
+    2. 用JS插件：
         
-        >内部插件。
-        
-        ``` html
-        <script src="js/jquery.js"></script>
-        <script src="js/ks.gototop.js"></script><!-- 依赖jQuery-->
-
-        <script>
-            ue.gototop({
-                relative: $('.content-wrapper'),	// 相对定位的对象
-                target: $('#j-sidenav'),	// gototop对象，必须设置具体width
-                top/bottom: 270,	// 距离顶部或底部的高度
-                left/right: 25,	// 距离相对定位对象的距离
-                scrollTop: 123, 	// y轴滚动条滚动到这个位置显示gototop对象 默认0
-                fade: false,	// 是否开启针对ie6取消渐隐渐现 默认开启
-                btn: $('#btn'),	// 到达scrollTop位置以内会隐藏
-                onscroll: function(){	// 滚动页面回调函数
-                }
-            });
-        </script>
-        ```
-    2. 优雅降级。用`position: absolute;`模拟。
+        ><details>
+        ><summary>内部插件</summary>
+        >
+        >``` html
+        ><script src="js/jquery.js"></script>
+        ><script src="js/ks.gototop.js"></script><!-- 依赖jQuery-->
+        >
+        ><script>
+        >    ue.gototop({
+        >        relative: $('.content-wrapper'),	// 相对定位的对象
+        >        target: $('#j-sidenav'),	// gototop对象，必须设置具体width
+        >        top/bottom: 270,	// 距离顶部或底部的高度
+        >        left/right: 25,	// 距离相对定位对象的距离
+        >        scrollTop: 123, 	// y轴滚动条滚动到这个位置显示gototop对象 默认0
+        >        fade: false,	// 是否开启针对ie6取消渐隐渐现 默认开启
+        >        btn: $('#btn'),	// 到达scrollTop位置以内会隐藏
+        >        onscroll: function(){	// 滚动页面回调函数
+        >        }
+        >    });
+        ></script>
+        >```
+        >></details>
 18. ie6的`<input>`有很多CSS问题，尽量不要设置复杂的CSS效果在`<input>`上：
 
 	- `<input>`设`display: block;`会跟父级上下有1px间距，用`float`解决。
 19. ie6/7不支持`:focus`：
 
 	1. 用JS制作，又因为`<input>`问题多，在`<input>`外嵌套一层`<div>`，对其进行CSS样式修改。
-	2. 优雅降级。
+	2. 平稳退化。
 20. ie6/7的子节点脱离文档流后，父节点要截断子节点内容，必须使父节点也脱离文档流：
 
 	1. 若要用`overflow: hidden;`作用于`position: relative/absolute;`的子节点，必须父级也设置`position: relative/absolute;`。
@@ -179,7 +185,7 @@
 
     >e.g. `a:hover .class{}`
 
-	- 先要设置`a:hover{}`触发`:hover`时候的重绘(或重排)效果（可以用`zoom: 1`），再添加`a:hover`之后的派生选择器CSS效果，如显示/隐藏。
+	- 先要设置`a:hover{}`触发`:hover`时候的重绘（或重排）效果（可以用`zoom: 1;`），再添加`a:hover`之后的派生选择器CSS效果，如显示/隐藏。
 
 	>ie6用CSS控制子项根据父项`a:hover`的显示隐藏，仅作用于一些文本效果，因此还是要用JS的方式替代此种效果：mouseenter时候添加一个类，类控制CSS来操作子项内容的显示隐藏；mouseleave时候去除此类。
 25. ie6的`:hover`的某些CSS属性值会导致高度变化，其实是触发了**haslayout**，可以设置CSS属性使`:hover`之前就已经haslayout。
@@ -212,7 +218,7 @@
 	    2. ie9+
 
 	        1. `background: rgba(0, 0, 0, .5);`
-	        2. 使用gif透明图（IE下较小的24位PNG图透明时引起的内存泄漏）。
+	        2. 使用gif透明图（ie的24位PNG图透明时引起的内存泄漏）。
 28. ie6/7/8/9没有console方法（执行会报错），可用alert替代：
 
 	```javascript
@@ -232,7 +238,7 @@
 	1. 此文字的节点设置`width固定值`。
 	2. `white-space: nowrap;`强制文本不换行。
 32. ie6的`负margin`有些情况需要多设置一些，因为可能出现子节点内容超过设定值的情况。
-33. ie6的某些兄弟间节点间（如img和其他`inline-block`节点）因为出现如`overflow: hidden;`造成相对于基线会有对齐问题：
+33. ie6的某些兄弟间节点间（如`<img>`和其他`inline`或`inline-block`节点）因为出现如`overflow: hidden;`造成相对于基线会有对齐问题：
 
 	1. `vertical: top; margin-top: 某px;`
 	2. 只对ie6进行hack操作，`_vertical-align: baseline; _margin-top: 某px;`或`_vertical-align: -某px;`。

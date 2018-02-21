@@ -120,4 +120,4 @@
         ```
 10. 后续
 
-	升级chrome之后导致出现 Aestan Tray Menu 找不到有效路径问题，查看 `路径\wamp` 下的 **wampmanager.ini** 和 **wampmanager.conf**，把里面所有chrome浏览器错误路径修改为现在正确路径，再关闭wamp，重启即解决问题。
+	升级Chrome之后导致出现 Aestan Tray Menu 找不到有效路径问题，查看 `路径\wamp` 下的 **wampmanager.ini** 和 **wampmanager.conf**，把里面所有chrome浏览器错误路径修改为现在正确路径，再关闭wamp，重启即解决问题。

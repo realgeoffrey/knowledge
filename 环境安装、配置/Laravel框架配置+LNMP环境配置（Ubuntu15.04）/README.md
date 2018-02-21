@@ -264,7 +264,7 @@
 
 		可以把以上代码（删除sudo）写入 */etc/rc.local* 中开机启动。
 
-		安装并配置chrome插件switchysharp :socks V5 127.0.0.1 本地端口号。
+		安装并配置Chrome插件switchysharp :socks V5 127.0.0.1 本地端口号。
 	5. 安装webstorm/phpstorm
 
 		先安装JDK：可以下载安装，也可以在“软件中心”输入JDK，点击“显示不常用项”，安装完毕后安装下载linux版本webstorm/phpstorm，解压出软件，根据安装文档打开bin路径，然后执行./的sh脚本文件。

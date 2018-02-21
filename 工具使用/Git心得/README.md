@@ -15,24 +15,24 @@
     
         1. 清除未`git commit`的内容（包括已经或还未`git add`的文件）
         
-            ```bash
+            ```git
             git reset --hard HEAD           # 恢复版本控制内的全部文件
             ```
         2. 撤销已`git commit`的请求
         
-            ```bash
+            ```git
             git log                         # 获取要退回的SHA
             git reset “SHA”                 # 撤销commit请求，但不清除文件内容
             ```
         3. 撤销`git commit` + 恢复版本控制内的全部文件
         
-            ```bash
+            ```git
             git log                         # 获取要退回的SHA
             git reset --hard “SHA”          # git reset “SHA” + git reset --hard HEAD
             ```
     2. 清除所有不在版本控制内的内容（如.idea、node_modules）
     
-        ```bash
+        ```git
         git clean -xdf
         ```
 2. 操作（删除、合并、修改描述）远程版本库的commit
@@ -43,7 +43,7 @@
 
         向前逐个删除commit（除了第一个commit）。
 
-        ```bash
+        ```git
         git reset --hard HEAD~“数字”      # 取消当前版本之前的N次提交
         # 或
         git reset --hard “SHA”          # 取消至某SHA
@@ -60,7 +60,7 @@
 
         操作任意commit。
 
-        ```bash
+        ```git
         git rebase -i --root “分支名”  # 选择commit处理状态
         # 编辑commit信息
 
@@ -73,15 +73,20 @@
         # 其他用户需要
         git pull --rebase
         ```
+        
         >当处理太多commits时候容易造成冲突。
 
+    ><details>
+    ><summary>不同项目对<code>git push --force</code>限制不同</summary>
+    >
     >1. [GitLab](https://about.gitlab.com/)默认设置**master**分支是**protected**状态，无法`git push --force`。
     >
     >    可以在Gitlab设置里面通过：*project* > *Settings* > *Repository* > *Protected branches* > *Unprotect*，打开权限（不建议长期开启）。
     >2. Github默认允许`git push --force`。
+    ></details>
 3. 合并
 
-    ```bash
+    ```git
     # 其他分支更新至最新内容
     git checkout “其他分支”
     git pull origin “其他分支”
@@ -96,29 +101,29 @@
     ```
 4. 更新远程仓库引用
 
-    ```bash
+    ```git
     git fetch -fp
     ```
 5. branch
 
     1. 本地新建分支
 
-        ```bash
+        ```git
         git branch “分支名”
         ```
     2. 推送（新建）远程分支
 
-        ```bash
+        ```git
         git push origin “分支名”   # 新建远程分支（不需要提交commit即可创建远程分支）
         ```
     3. 切换分支
 
-        ```bash
+        ```git
         git checkout “分支名”
         ```
     4. 删除分支
 
-        ```bash
+        ```git
         git branch -d “分支名”     # 删除本地分支
 
         git push origin :“分支名”  # 删除远程分支（不需要先删除本地分支）
@@ -127,14 +132,14 @@
 
         >在原分支基础上新建本地分支，再推送至远程，然后删除原分支。
 
-        ```bash
+        ```git
         git branch -m “原分支名” “新分支名” # 删除本地原分支，新建本地新分支
 
         # 要推送至远程，依然需要推送（新建）远程分支、删除远程分支
         ```
 6. tag
 
-    ```bash
+    ```git
     git tag [-l “完整内容或*”]       # 列出现有（本地+远程）标签
 
     git show “名字”                   # 查看tag详细信息
@@ -152,7 +157,7 @@
     ```
 7. stash
 
-    ```bash
+    ```git
     git stash                       # 往堆栈推送一个新的储藏，并且恢复修改过的被追踪的文件
 
     git stash list                  # 查看所有储藏
@@ -169,12 +174,12 @@
 ### [git-flow](https://github.com/nvie/gitflow)使用
 1. 初始化：
 
-    ```bash
+    ```git
     git flow init -fd
     ```
 2. 开发新需求：
 
-    ```bash
+    ```git
     git flow feature start “需求名” [“develop的SHA”]
     # 基于“develop的SHA”或最新develop，在本地创建并切换至“feature/需求名”分支
 
@@ -196,7 +201,7 @@
     >可以分别开发多个需求，再一起发布（release），把已经存在的release分支合并develop分支。
 3. 发布版本：
 
-    ```bash
+    ```git
     git flow release start “版本号” [“develop的SHA”]    # 若要把已经完成的feature内容添加到已存在的release分支，仅需release分支合并develop分支（git checkout “release/版本号”; git merge develop），而不需要release start
     # 基于“develop的SHA”或最新develop，在本地创建并切换至“release/版本号”分支
 
@@ -243,7 +248,7 @@
 
     >类似于release。
 
-    ```bash
+    ```git
     git flow hotfix start “版本号” [“master的SHA”]
     # 基于“master的SHA”或最新master，在本地创建并切换至“hotfix/版本号”分支
 
@@ -276,8 +281,10 @@
     # 推送至远程tag
     ```
 
->e.g. CHANGELOG.md
+><details>
+><summary>CHANGELOG.md</summary>
 >
+>e.g. 
 >```text
 ># Change Log
 >
@@ -296,6 +303,7 @@
 >
 >- 上线 某功能 by @zhengfeijie
 >```
+></details>
 
 ### commit message格式
 >仅限于用在commit message，不得用在change log。
@@ -323,13 +331,15 @@
     7. `chore`：构建过程或辅助工具的变动。
     8. `revert`：撤销之前的commit。
 
-        >e.g.
+        ><details>
+        ><summary>e.g.</summary>
         >
         >```text
         >revert: feat: add 'graphiteWidth' option
         >
         >This reverts commit 667ecc1654a317a13331b17617d973392f415f02.
         >```
+        ></details>
 2. **\<subject\>**
 
     commit的简短描述。
@@ -353,7 +363,8 @@
 
         `Closes #1, #2`。
 
->e.g.
+><details>
+><summary>e.g.</summary>
 >
 >```text
 >feat: 添加了分享功能
@@ -363,6 +374,7 @@
 >- 添加分享到微博的功能
 >- 添加分享到微信的功能
 >```
+></details>
 
 ### 如何在一台电脑中使用2（多个）个Github账号的SSH keys
 
@@ -376,7 +388,7 @@
 2. 为不同账户地址设置对应的SSH key路径：
 
     **~/.ssh/config**文件添加
-    ```bash
+    ```text
     Host 账户1.github.com
     	HostName github.com
     	User git
@@ -390,7 +402,7 @@
 3. 克隆仓库时修改**仓库地址**：
 
     `git@github.com:账户/仓库.git` -> `git@账户.github.com:账户/仓库.git`
-    ```bash
+    ```git
     #进入文件夹1
     git clone git@账户1.github.com:账户1/仓库.git
 
@@ -404,13 +416,13 @@
 
     1. 全局设置
 
-        ```bash
+        ```git
         git config --global user.email “邮箱”
         git config --global user.name “用户名”
         ```
     2. 为具体项目设置
 
-        ```bash
+        ```git
         cd 进入某个git仓库
         git config user.email “邮箱”
         git config user.name “用户名”
@@ -419,14 +431,14 @@
 
     1. 添加忽略文件
 
-        ```bash
+        ```git
         git config --global core.excludesfile ~/.gitignoreglobal
         ```
     2. 打开添加的文件.gitignoreglobal，填写要全局忽略的文件（夹）
 
         e.g.
 
-        ```bash
+        ```text
         .idea
         ```
 
@@ -437,13 +449,13 @@
 
     1. 在空白文件夹内，创建空的本地仓库，然后将远程仓库地址加入到项目的**.git/config**文件中：
 
-        ```bash
+        ```git
         git init
         git remote add -f origin “仓库地址”
         ```
     2. 设置git允许使用**Sparse Checkout模式**：
 
-        ```bash
+        ```git
         git config core.sparsecheckout true
         ```
     3. 选择需要单独克隆的文件或文件夹，写入 **.git/info/sparse-checkout**文件：
@@ -454,7 +466,7 @@
         ```
     4. 仅对设置过的内容进行所有git操作：
 
-        ```bash
+        ```git
         git pull origin “分支名”
         ```
 2. 减少克隆深度

@@ -1,5 +1,11 @@
 # Vue.js学习笔记
 
+## 目录
+1. [Vue官方教材](#vue官方教材)
+1. [vue-cli与nuxt.js](#vue-cli与nuxtjs)
+1. [vue-router](#vue-router)
+1. [jQuery与Vue.js对比](#jquery与vuejs对比)
+
 ### [Vue官方教材](https://cn.vuejs.org/v2/guide/)
 1. 单向数据流（实现双向绑定效果），响应式
 
@@ -19,7 +25,8 @@
             2. 数组赋值。
             3. 插值：`Vue.set(数组/对象, 索引/键, 新值)`：
 
-                e.g.
+                <details>
+                <summary>e.g.</summary>
 
                 ```javascript
                 const vm = new Vue({
@@ -32,6 +39,7 @@
 
                 Vue.set(vm.a, 'age', 27)
                 ```
+                </details>
             4. 改变数组长度：`数组.splice(新长度)`。
         2. 无法检测数组变动：
 
@@ -51,8 +59,9 @@
 
     1. 支持JS表达式（单个），不支持~~语句~~、~~流控制~~。
 
-        e.g.
-
+        <details>
+        <summary>e.g.</summary>
+        
         ```html
         <!-- 可行 -->
         {{ number + 1 }}
@@ -71,6 +80,7 @@
         {{ message; 1 + 1 }}
         -->
         ```
+        </details>
     2. 只能访问部分全局变量（白名单）；不允许访问自定义的全局变量（引入的其他库变量仅在JS代码中使用）。
     3. 作用域在所属Vue实例（组件也是Vue实例）中。
     4. `slot="字符串"`、`<slot name="字符串">`用于父级向子组件插入内容。
@@ -158,7 +168,8 @@
                 4. 多重值
         3. 传递给子组件DOM属性的值类型
 
-            e.g.
+            <details>
+            <summary>e.g.</summary>
 
             ```html
             <!-- 传递字符串 -->
@@ -170,9 +181,11 @@
             <my-component v-bind:some-prop="'1'">传递表达式：'1'（String）</my-component>
             <my-component v-bind:some-prop="a">传递表达式：a（变量是什么类型就是什么类型）</my-component>
             ```
+            </details>
         4. 若不带参数的`v-bind="表达式"`，则绑定表达式的所有属性到DOM。
 
-            e.g.
+            <details>
+            <summary>e.g.</summary>
 
             ```html
             <div id="test">
@@ -192,6 +205,7 @@
               })
             </script>
             ```
+            </details>
     5. `v-on`事件监听
 
         `v-on:`缩写`@`。
@@ -214,7 +228,8 @@
 
             >- 可同时使用，但改变顺序会产生不同效果。
             >
-            >    e.g.
+            >    <details>
+            >    <summary>e.g.</summary>
             >
             >    ```html
             >    <!-- Alt + C -->
@@ -229,9 +244,11 @@
             >    <!-- 只会阻止元素上的点击 -->
             >    <div v-on:click.self.prevent="doThat">...</div>
             >    ```
+            >    </details>
         2. `$event`原生DOM事件的变量，仅能由HTML传入
 
-            e.g.
+            <details>
+            <summary>e.g.</summary>
 
             ```html
             <div id="test">
@@ -249,6 +266,7 @@
               })
             </script>
             ```
+            </details>
         3. 自定义事件
         
             仅定义在子组件引用上，只能由子组件内部`$emit`触发，然后调用父级方法，再通过改变父级属性去改变子组件的`props`或置换组件。
@@ -312,7 +330,8 @@
         使用在`v-on`、`v-bind`、`v-module`后添加。
     10. `|`过滤器，参数带入函数运行出结果（支持过滤器串联）
 
-        e.g.
+        <details>
+        <summary>e.g.</summary>
 
         ```html
         <div id="test">
@@ -337,6 +356,7 @@
           })
         </script>
         ```
+        </details>
     11. `v-show`
 
         总是渲染出DOM，根据值切换`display`值。
@@ -492,7 +512,8 @@
             1. 仅能使用短横线隔开式（把大/小驼峰式用`-`隔开单词代替）。
             2. 在JS字符串模版、`.vue`组件，可以使用额外方式：
 
-                e.g.
+                <details>
+                <summary>e.g.</summary>
 
                 ```html
                 <!-- HTML必须是短横线隔开式 -->
@@ -517,6 +538,7 @@
                  })
                  </script>
                 ```
+                </details>
     4. 使用组件：
 
         1. `<组件名></组件名>`
@@ -525,7 +547,7 @@
         2. `<标签 is="组件名"></标签>`
         3.  动态组件：`<component v-bind:is="表达式"></component>`
         
-            ```javascript
+            ```html
             <div id="test">
               <component v-bind:is="current1"></component>
               <component v-bind:is="current2"></component>
@@ -635,7 +657,11 @@
         8. 循环组件。
 6. 过渡&动画
 
-### vue-router
+### [vue-cli](https://github.com/vuejs/vue-cli)与[nuxt.js](https://github.com/nuxt/nuxt.js)
+1. vue-cli：快速构建Vue应用的脚手架，可以手动配置所有安装模块。
+2. nuxt：基于Vue的通用应用框架，通过自带的`nuxt.config.js`统一配置安装模块。
+
+### [vue-router](https://github.com/vuejs/vue-router)
 >使用Charles代理到本地dev环境（map remote），要保证被代理和代理的路径相同，才能让路由正确。
 
 ### jQuery与Vue.js对比
@@ -643,17 +669,17 @@
 
     1. jQuery
 
-        （旧时代到现在）相对于原生JS，更好的API，兼容性极好的DOM、AJAX操作。
-    1. Vue.js
+        （旧时代到现在）相对于原生JS，更好的API，兼容性极好的DOM、AJAX操作。面向网页元素编程。
+    2. Vue.js
 
-        实现MVVM的数据双向绑定，实现自己的组件系统。
+        实现MVVM的数据双向绑定，实现自己的组件系统。面向数据编程。
 2. 优劣势对比
 
     1. jQuery
 
         1. 兼容性好，兼容基本所有当今浏览器；出现早，学习、使用成本低。
-        2. 程序员关注DOM，频繁操作DOM；代码量较多且不好维护，当页面需求变化之后代码改动难度大。
+        2. 程序员关注DOM，频繁操作DOM；代码量较多且不好维护、扩展，当页面需求变化之后代码改动难度大。
     2. Vue.js
 
-        1. 程序员关注数据，DOM的操作交给框架；代码清晰，利于维护；有自己的组件系统。
+        1. 程序员关注数据，DOM的操作交给框架；代码清晰、强制规范，利于维护；有自己的组件系统。
         2. 不兼容旧版本浏览器；需要一些学习成本。

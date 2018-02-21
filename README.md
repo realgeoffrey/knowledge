@@ -1,12 +1,21 @@
 # knowledge
 
-## 网站前端
+><details>
+><summary>约定</summary>
+>
+>1. 仓库定位：个人学习心得笔记
+>2. 个别含义
+>
+>    1. `+`、`-`含义
+>
+>        兼容ie8+：包括ie8以及高于ie8的ie浏览器；兼容ie8-：包括ie8以及低于ie8的ie浏览器。
+>    2. 变量命名含义
+>
+>        1. `dom`为JS对象，`$dom`为jQuery（或Zepto）对象。
+>        2. `obj`为对象，`arr`为数组。
+></details>
 
->本repository内容为学习笔记：
->
->- `+`、`-`含义
->
->    兼容ie8+：包括ie8；兼容ie8-：包括ie8。
+## 网站前端
 
 1. JS
 
@@ -62,7 +71,7 @@
 2. [命令行备忘](./工具使用/命令行备忘/README.md)
 3. [IDE设置](./工具使用/IDE设置/README.md)
 
-    1. [phpstorm.jar](./工具使用/IDE设置/phpstorm_02.09.jar)
+    1. [phpstorm.jar](./工具使用/IDE设置/phpstorm_03.01.jar)
     2. [webstorm.jar](./工具使用/IDE设置/webstorm_08.22.jar)
     3. [.editorconfig](./工具使用/IDE设置/.editorconfig)
 4. [Charles使用](./工具使用/Charles使用/README.md)

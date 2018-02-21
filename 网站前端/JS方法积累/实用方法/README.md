@@ -3,188 +3,93 @@
 ## 目录
 1. [原生JS方法](#原生js方法)
 
-    1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
-    1. [`requestAnimationFrame`的递归](#原生jsrequestanimationframe的递归)
-    1. [实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`](#原生js实现类似jquery的htmlbodyanimatescrollleft-像素-scrolltop-像素-毫秒)
     1. 根据UA判断
 
         1. [判断所在系统](#原生js判断所在系统)
         1. [判断移动平台](#原生js判断移动平台)
         1. [判断ie6、7、8、9版本](#原生js判断ie6789版本)
         1. [判断ie所有版本](#原生js判断ie所有版本)
-    1. [操作cookie](#原生js操作cookie)
-    1. [加入收藏夹](#原生js加入收藏夹)
-    1. [从字符串中获取绝对路径](#原生js从字符串中获取绝对路径)
-    1. [获取URL相关信息](#原生js获取url相关信息)
-    1. [在URL末尾添加查询名值对](#原生js在url末尾添加查询名值对)
-    1. [用请求图片作log统计](#原生js用请求图片作log统计)
-    1. [比较版本号大小（纯数字）](#原生js比较版本号大小纯数字)
-    1. [判断检索内容是否在被检索内容的分隔符间](#原生js判断检索内容是否在被检索内容的分隔符间)
-    1. [选取范围内随机值](#原生js选取范围内随机值)
-    1. [产生随机数](#原生js产生随机数)
-    1. [格式化文件大小](#原生js格式化文件大小)
-    1. [判断是否为`Node`、是否为`Element`](#原生js判断是否为node是否为element)
-    1. [判断对象是否为空](#原生js判断对象是否为空)
-    1. [触摸屏模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）](#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)
-    1. [判断事件在浏览器是否存在](#原生js判断事件在浏览器是否存在)
-    1. [科学计数法转换成字符串的数字](#原生js科学计数法转换成字符串的数字)
-    1. [用整数进行小数的四则运算（避免浮点数运算误差）](#原生js用整数进行小数的四则运算避免浮点数运算误差)
-    1. [大数加减法（不考虑小数和负数）](#原生js大数加减法不考虑小数和负数)
-    1. [绑定、解绑事件](#原生js绑定解绑事件)
-    1. [阻止冒泡和阻止浏览器默认行为](#原生jsjquery阻止冒泡和阻止浏览器默认行为)
-    1. [实现判断按下具体某键值](#原生jsjquery实现判断按下具体某键值)
-    1. [拖拽和放下](#原生js拖拽和放下)
-    1. [输入框光标位置的获取和设置](#原生js输入框光标位置的获取和设置)
-    1. [阻止嵌入滚动条冒泡“橡皮筋效果”（iOS）](#原生js阻止嵌入滚动条冒泡橡皮筋效果ios)
-    1. [获取滚动轴宽度（或高度）](#原生js获取滚动轴宽度或高度)
-    1. [防抖函数](#原生js防抖函数)
-    1. [节流函数](#原生js节流函数)
-    1. [不同进制数转换](#原生js不同进制数转换)
-    1. [验证邮箱有效性](#原生js验证邮箱有效性)
-    1. [创建兼容的XHR对象](#原生js创建兼容的xhr对象)
-    1. [动态添加脚本、样式](#原生js动态添加脚本样式)
-    1. [单词首字母大写](#原生js单词首字母大写)
-    1. [展示页面帧数](#原生js展示页面帧数)
-    1. [获取星座](#原生js获取星座)
-    1. [分割数组](#原生js分割数组)
-1. [Polyfill](#polyfill)
-
-    1. [`requestAnimationFrame`和`cancelAnimationFrame`](#原生jsrequestanimationframe和cancelanimationframe的polyfill)
-    1. [`Date.now`](#原生jsdatenow的polyfill)
-    1. [`Object.create`](#原生jsobjectcreate的polyfill)
-    1. [`Array.isArray`](#原生jsarrayisarray的polyfill)
-    1. [`Array.prototype.map`](#原生jsarrayprototypemap的polyfill)
-    1. [`Function.prototype.bind`](#原生jsfunctionprototypebind的polyfill)
-    1. [`String.prototype.trim`](#原生jsstringprototypetrim的polyfill)
-    1. [`Number.isNaN`](#原生jsnumberisnan的polyfill)
-    1. [`Number.isFinite`](#原生jsnumberisfinite的polyfill)
-    1. [`Number.isInteger`](#原生jsnumberisinteger的polyfill)
-    1. [`Number.isSafeInteger`](#原生jsnumberissafeinteger的polyfill)
+    1. `key-value`操作
+    
+        1. [操作cookie](#原生js操作cookie)
+        1. [获取URL相关信息](#原生js获取url相关信息)
+        1. [在URL末尾添加查询名值对](#原生js在url末尾添加查询名值对)
+    1. 事件相关
+    
+        1. [绑定、解绑事件](#原生js绑定解绑事件)
+        1. [阻止冒泡和阻止浏览器默认行为](#原生jsjquery阻止冒泡和阻止浏览器默认行为)
+        1. [实现判断按下具体某键值](#原生jsjquery实现判断按下具体某键值)
+        1. [拖拽和放下](#原生js拖拽和放下)
+        1. [触摸屏模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）](#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)        
+        1. [判断事件在浏览器是否存在](#原生js判断事件在浏览器是否存在)
+    1. 数字计算
+    
+        1. [科学计数法转换成字符串的数字](#原生js科学计数法转换成字符串的数字)
+        1. [用整数进行小数的四则运算（避免浮点数运算误差）](#原生js用整数进行小数的四则运算避免浮点数运算误差)
+        1. [大数加减法（不考虑小数和负数）](#原生js大数加减法不考虑小数和负数)
+        1. [不同进制数转换](#原生js不同进制数转换)
+        1. [选取范围内随机值](#原生js选取范围内随机值)
+    1. 功能
+    
+        1. [实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`](#原生js实现类似jquery的htmlbodyanimatescrollleft-像素-scrolltop-像素-毫秒)
+        1. [用请求图片作log统计](#原生js用请求图片作log统计)
+        1. [比较版本号大小（纯数字）](#原生js比较版本号大小纯数字)
+        1. [判断检索内容是否在被检索内容的分隔符间](#原生js判断检索内容是否在被检索内容的分隔符间)
+        1. [产生随机数](#原生js产生随机数)
+        1. [格式化文件大小](#原生js格式化文件大小)
+        1. [判断是否为`Node`、是否为`Element`](#原生js判断是否为node是否为element)
+        1. [判断对象是否为空](#原生js判断对象是否为空)
+        1. [输入框光标位置的获取和设置](#原生js输入框光标位置的获取和设置)
+        1. [阻止嵌入滚动条冒泡“橡皮筋效果”（iOS）](#原生js阻止嵌入滚动条冒泡橡皮筋效果ios)
+        1. [获取滚动轴宽度（或高度）](#原生js获取滚动轴宽度或高度)
+        1. [防抖函数](#原生js防抖函数)
+        1. [节流函数](#原生js节流函数)
+        1. [验证邮箱有效性](#原生js验证邮箱有效性)
+        1. [创建兼容的XHR对象](#原生js创建兼容的xhr对象)
+        1. [动态添加脚本、样式](#原生js动态添加脚本样式)
+        1. [单词首字母大写](#原生js单词首字母大写)
+        1. [展示页面帧数](#原生js展示页面帧数)
+        1. [获取星座](#原生js获取星座)
+        1. [分割数组](#原生js分割数组)
+        1. [加入收藏夹](#原生js加入收藏夹)
+        1. [从字符串中获取绝对路径](#原生js从字符串中获取绝对路径)
+    1. 兼容性
+    
+        1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
+        1. [`requestAnimationFrame`的递归](#原生jsrequestanimationframe的递归)   
+        1. [Polyfill](#polyfill)
+        
+            1. [`requestAnimationFrame`和`cancelAnimationFrame`](#原生jsrequestanimationframe和cancelanimationframe的polyfill)
+            1. [`Date.now`](#原生jsdatenow的polyfill)
+            1. [`Object.create`](#原生jsobjectcreate的polyfill)
+            1. [`Array.isArray`](#原生jsarrayisarray的polyfill)
+            1. [`Array.prototype.map`](#原生jsarrayprototypemap的polyfill)
+            1. [`Function.prototype.bind`](#原生jsfunctionprototypebind的polyfill)
+            1. [`String.prototype.trim`](#原生jsstringprototypetrim的polyfill)
+            1. [`String.prototype.repeat`](#原生jsstringprototyperepeat的polyfill)
+            1. [`Number.isNaN`](#原生jsnumberisnan的polyfill)
+            1. [`Number.isFinite`](#原生jsnumberisfinite的polyfill)
+            1. [`Number.isInteger`](#原生jsnumberisinteger的polyfill)
+            1. [`Number.isSafeInteger`](#原生jsnumberissafeinteger的polyfill)
 1. [jQuery方法](#jquery方法)
 
-    1. [滚动加载](#jquery滚动加载)
-    1. [图片延时加载](#jquery图片延时加载)
-    1. [获取`HTTP response header`信息](#jquery获取http-response-header信息)
-    1. [修复HTML标签`placeholder`属性无效](#jquery修复html标签placeholder属性无效)
+    1. 延迟异步加载
+        
+        1. [滚动加载](#jquery滚动加载)
+        1. [图片延时加载](#jquery图片延时加载)
+    1. [节点跟随屏幕滚动](#jquery节点跟随屏幕滚动)      
     1. [弹出toast](#jquery弹出toast)
     1. [全选、取消全选](#jquery全选取消全选)
-    1. [节点跟随屏幕滚动](#jquery节点跟随屏幕滚动)
-    1. [模拟手机翻转（使页面都以“横屏”展示）](#jquery模拟手机翻转使页面都以横屏展示)
     1. [点击指定区域以外执行函数](#jquery点击指定区域以外执行函数)
     1. [hover展示内容并且可跨越间隙到内容](#jquery-hover展示内容并且可跨越间隙到内容)
     1. [启动、暂停CSS动画](#jquery启动暂停css动画)
+    1. [获取`HTTP response header`信息](#jquery获取http-response-header信息)
+    1. [修复HTML标签`placeholder`属性无效](#jquery修复html标签placeholder属性无效)
+    1. [模拟手机翻转（使页面都以“横屏”展示）](#jquery模拟手机翻转使页面都以横屏展示)
 
->大部分情况下，jQuery内容适用于Zepto。
+    >大部分情况下，jQuery内容适用于Zepto。
 
 ## 原生JS方法
-
-### *原生JS*用`setTimeout`模拟`setInterval`
-```javascript
-/**
- * 用setTimeout模拟setInterval
- * @constructor
- * @param {Function} func - 循环执行函数
- * @param {Number} millisecond - 间隔毫秒
- */
-function SetInterval(func, millisecond) {
-    var _setIntervalId;
-
-    if (typeof func === 'function') {
-        _setIntervalId = setTimeout(function () {
-            _setIntervalId = setTimeout(arguments.callee, millisecond);
-
-            func();
-        }, millisecond);
-    }
-
-    this.stop = function () {
-        clearTimeout(_setIntervalId);
-    };
-}
-
-
-/* 使用测试*/
-var a = new SetInterval(function () {
-    console.log(1);
-
-    if (...) {
-        a.stop();
-    }
-}, 1000);
-
-//a.stop();
-```
-
-### *原生JS*`requestAnimationFrame`的递归
-```javascript
-/**
- * 每一帧都执行一次func
- * @constructor
- * @param {Function} func - 执行的函数
- */
-function RepeatRAF(func) {
-    var _repeatRAFId;
-
-    if (typeof func === 'function') {
-        _repeatRAFId = requestAnimationFrame(function () {
-            _repeatRAFId = requestAnimationFrame(arguments.callee);
-
-            func();
-        });
-    }
-
-    this.stop = function () {
-        cancelAnimationFrame(_repeatRAFId);
-    };
-}
-
-
-/* 使用测试*/
-var a = new RepeatRAF(function () {
-    console.log(1);
-
-    if (...) {
-        a.stop();
-    }
-});
-
-//a.stop();
-```
-
-### *原生JS*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
-```javascript
-/**
- * 滚动到x、y轴指定位置
- * @param {Number} endX - 到达x轴像素
- * @param {Number} endY - 到达y轴像素
- * @param {Number} time - 所用毫秒
- */
-function animateTo(endX, endY, time) {
-    var scrollFromX = document.body.scrollLeft || document.documentElement.scrollLeft,
-        scrollFromY = document.body.scrollTop || document.documentElement.scrollTop,
-        scrollToX = endX > document.documentElement.scrollWidth ? document.documentElement.scrollWidth : endX,
-        scrollToY = endY > document.documentElement.scrollHeight ? document.documentElement.scrollHeight : endY,
-        i = 0,
-        runEvery = 5,
-        myself = arguments.callee;
-
-    time /= runEvery;
-
-    clearInterval(myself.setIntervalId);
-
-    myself.setIntervalId = setInterval(function () {
-        i += 1;
-
-        window.scrollTo((scrollToX - scrollFromX) / time * i + scrollFromX, (scrollToY - scrollFromY) / time * i + scrollFromY);
-
-        if (i >= time) {
-            clearInterval(myself.setIntervalId);
-        }
-    }, runEvery);
-}
-```
->使用[velocity动画库](https://github.com/julianshapiro/velocity)（[中文文档](http://www.mrfront.com/docs/velocity.js/)）做所有的动画（包括JS和CSS）才是最简单且性能最佳的选择。
->如滚动到某位置：`$('html').velocity('scroll', {offset: y轴像素, duration: 毫秒});`。
 
 ### *原生JS*判断所在系统
 ```javascript
@@ -467,43 +372,6 @@ var cookieFuc = {
 >}
 >```
 
-### *原生JS*加入收藏夹
-```javascript
-function addFavorite(url, title) {  /* url必须带有协议头*/
-    if (window.external && 'addFavorite' in window.external) {
-        window.external.addFavorite(url, title);
-    } else if (window.sidebar && window.sidebar.addPanel) {
-        window.sidebar.addPanel(url, title);
-    } else if (window.opera && window.print) {
-        this.title = title;
-        return true;
-    } else {
-        alert('加入收藏失败，请使用 ' + (navigator.userAgent.toLowerCase().indexOf('mac') !== -1 ? 'Command/Cmd' : 'Ctrl') + ' + D 进行添加。');
-    }
-}
-
-
-/* 使用测试*/
-addFavorite(window.location.href, '收藏名字');
-```
-
-### *原生JS*从字符串中获取绝对路径
-```javascript
-function getAbsoluteUrl(url) {
-    var domA;
-
-    if (typeof url === 'undefined') {
-
-        return document.location.href;
-    } else {
-        domA = document.createElement('a');
-        domA.href = url;
-
-        return domA.href;
-    }
-}
-```
-
 ### *原生JS*获取URL相关信息
 ```javascript
 /**
@@ -631,496 +499,6 @@ function addUrlSearch(url, name, value) {
 
     return newUrl;
 }
-```
-
-### *原生JS*用请求图片作log统计
-```javascript
-var sendLog = (function () {
-    if (typeof Date.now !== 'function') {
-        Date.now = function () {
-            return new Date().getTime();
-        };
-    }
-
-    var _unique = (function () {    /* 产生唯一标识*/
-        var time = Date.now() + '_',
-            i = 0;
-
-        return function () {
-            i += 1;
-
-            return time + i - 1;
-        }
-    }());
-
-    var run = function (url) {
-        var data = window['imgLogData'] || (window['imgLogData'] = {}),
-            img = new Image(),
-            uid = _unique();
-
-        data[uid] = img;    //防止img被垃圾处理
-
-        img.onload = img.onerror = function () {    /* 成功或失败后销毁对象*/
-            img.onload = img.onerror = null;
-            img = null;
-            delete data[uid];
-        };
-
-        img.src = url + '&_cache=' + uid;   //发送统计内容
-    };
-
-    return run;
-}());
-
-
-/* 使用测试*/
-sendLog('统计url');
-```
-
-### *原生JS*比较版本号大小（纯数字）
-```javascript
-/**
- * 比较版本号大小（纯数字）
- * @param {Number|String} version - 比较数1
- * @param {Number|String} base - 比较数2
- * @param {String} [separator = '.'] - 版本分隔符
- * @returns {String} flag - '=' 或 '>' 或 '<'
- */
-function versionCompare(version, base, separator) {
-    separator = separator || '.';
-
-    var arr1 = version.toString().split(separator),
-        arr2 = base.toString().split(separator),
-        length = arr1.length > arr2.length ? arr1.length : arr2.length,
-        flag = '=',
-        i;
-
-    for (i = 0; i < length; i++) {
-        arr1[i] = arr1[i] || '0';
-        arr2[i] = arr2[i] || '0';
-
-        if (arr1[i] !== arr2[i]) {  /* 两值不同*/
-            flag = parseInt(arr1[i], 10) < parseInt(arr2[i], 10) ? '<' : '>';
-
-            break;
-        }
-    }
-
-    return flag;
-}
-
-
-/* 使用测试*/
-console.log(versionCompare('1.1.10', '1.2'));
-```
-
-### *原生JS*判断检索内容是否在被检索内容的分隔符间
-```javascript
-/**
- * 判断key是否存在以separator分割的str当中
- * @param {Number|String} key - 检索内容
- * @param {Number|String} str - 被检索内容
- * @param {String} [separator = '|'] - str的分隔符
- * @returns {Boolean} flag
- */
-function isKeyInStr(key, str, separator) {
-    separator = separator || '|';
-
-    var flag = false,
-        strArr, i;
-
-    key = key.toString();
-    str = str.toString();
-
-    strArr = str.split(separator);
-
-    for (i = 0; i < strArr.length; i++) {
-        if (key === strArr[i]) {
-            flag = true;
-            
-            break;
-        }
-    }
-
-    return flag;
-}
-```
-
-### *原生JS*选取范围内随机值
->注意：
->
->1. 检查不同语言原始返回的随机值两边端点开闭情况——不同的开闭区间影响最终算法。
->2. 获取到的每个整数的概率是否均等——用向下取整代替四舍五入可以使概率均等。
-
-```javascript
-/**
- * 选取范围内随机值
- * @param {Number} min - 下限（或上限）
- * @param {Number} max - 上限（或下限）
- * @returns {Number} - 上下限区间内的随机值
- */
-function randomFrom(min, max) {
-    var temp;
-
-    if (min > max) {
-        temp = min;
-        min = max;
-        max = temp;
-    }
-
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
-```
->`Math.random()`返回`[0,1)`。假设返回的值的开闭区间改变：
->
->1. 如果返回的是：`(0,1)`，则返回`Math.floor(Math.random() * (max - min + 2) + min - 1);`。
->2. 如果返回的是：`(0,1]`，则返回`Math.floor(Math.random() * (max - min + 1) + min - 1);`。
->3. 如果返回的是：`[0,1]`，则返回`Math.floor(Math.random() * (max - min) + min);`。
-
-### *原生JS*产生随机数
-```javascript
-/**
- * 随机数产生
- * @param {Number} length - 随机数长度
- * @param {String} [charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'] - 随机数的字符
- * @returns {String} - 随机数
- */
-function random(length, charset) {
-    charset = charset || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-    return Array.apply(null, new Array(length)).map(function () {
-
-        return charset.charAt(Math.floor(Math.random() * charset.length));
-    }).join('');
-}
-```
-
-### *原生JS*格式化文件大小
-```javascript
-var format = {
-  fileSize: function (bytes) {    /* 格式化文件大小*/
-    if (bytes === 0) {
-
-      return '0';
-    }
-    var rate = 1024,
-      units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
-      exponent = Math.floor(Math.log(bytes) / Math.log(rate));
-
-    return (bytes / Math.pow(rate, exponent)).toPrecision(3) + units[exponent];
-  }
-};
-
-
-/* 使用测试*/
-var a = format.fileSize(数字);
-```
-
-### *原生JS*判断是否为`Node`、是否为`Element`
-```javascript
-// 判断是否为Node
-function isNode(o) {
-  return typeof Node === 'object' ? o instanceof Node : !!o && typeof o === 'object' && typeof o.nodeType === 'number' && typeof o.nodeName === 'string';
-}
-
-// 判断是否为Element
-function isElement(o) {
-  return typeof HTMLElement === 'object' ? o instanceof HTMLElement : !!o && typeof o === 'object' && o !== null && o.nodeType === 1 && typeof o.nodeName === 'string';
-}
-```
-
-### *原生JS*判断对象是否为空
-```javascript
-function isObjEmpty(obj) {
-    var i;
-
-    if (obj !== Object(obj)) {  /* 参数不是对象*/
-        throw new TypeError('参数不是对象');
-    } else if (typeof Object.keys === 'function') { /* ie9+*/
-
-        return Object.keys(obj).length === 0;
-    } else {
-        for (i in obj) {
-            if (obj.hasOwnProperty(i)) {
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-}
-```
-
-### *原生JS*触摸屏模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）
-```javascript
-/* 不要绑定click事件，用touchstart和touchend模拟，以消除“延时300毫秒后才触发”的问题*/
-
-var start_x, start_y;
-
-document.getElementById('...').addEventListener('touchstart', function (e) {
-    start_x = e.changedTouches[0].clientX;
-    start_y = e.changedTouches[0].clientY;
-}, false);
-
-document.getElementById('...').addEventListener('touchend', function (e) {
-    var end_x = e.changedTouches[0].clientX,
-        end_y = e.changedTouches[0].clientY;
-
-    if (Math.abs(end_x - start_x) > 5 || Math.abs(end_y - start_y) > 5) {
-        /* 触发滑动事件要做的事情（如什么都不做）*/
-    } else {
-        /* 触发点击事件要做的事情*/
-    }
-}, false);
-
-/* 还要处理浏览器默认点击事件（如a标签）*/
-```
-
-### *原生JS*判断事件在浏览器是否存在
-```javascript
-/**
- * 判断DOM节点是否支持某事件
- * @param {String} eventName - 事件名
- * @param {Object} [element] - DOM的Document对象
- * @returns {Boolean} isSupported
- */
-function isEventSupported(eventName, element) {
-    var tagNames = {
-            'select': 'input',
-            'change': 'input',
-            'submit': 'form',
-            'reset': 'form',
-            'error': 'img',
-            'load': 'img',
-            'abort': 'img'
-        },
-        isSupported;
-
-    element = element || document.createElement(tagNames[eventName] || 'div');
-    eventName = 'on' + eventName;
-
-    isSupported = eventName in element;
-
-    if (!isSupported) {
-        if (!element.setAttribute) {    /* 若节点没有setAttribute方法，则改用div节点进行测试*/
-            element = document.createElement('div');
-        }
-        if (element.setAttribute && element.removeAttribute) {
-            element.setAttribute(eventName, '');
-            isSupported = typeof element[eventName] === 'function';
-
-            if (element[eventName] !== undefined) { /* 内存回收*/
-                element[eventName] = undefined;
-            }
-            element.removeAttribute(eventName); /* 内存回收*/
-        }
-    }
-
-    element = null; /* 内存回收*/
-
-    return isSupported;
-}
-```
-
->更全面的性能监听：[stats.js](https://github.com/mrdoob/stats.js/)。
-
-### *原生JS*科学计数法转换成字符串的数字
-```javascript
-function eToString(number) {
-    number = number.toString(10);
-
-    var regex = /^(\d)(?:\.(\d*))?[eE]([+-]?)(\d+)$/,   //科学计数法
-        regexArr = regex.exec(number);
-
-    if (regexArr === null) {
-
-        return number;
-    } else {
-        var dotNumber = regexArr[2] ? regexArr[2] : '',
-            dotLength = dotNumber.length, //小数位数
-            multiple = regexArr[4], //10进制位数
-            gap = Math.abs(multiple - dotLength),
-            tempArr = [],
-            i, result;
-
-        if (regexArr[3] !== '-') {  /* 大于1*/
-            if (multiple >= dotLength) {    /* 没有小数*/
-                for (i = 0; i < gap; i++) {
-                    tempArr.push('0');
-                }
-
-                result = regexArr[1] + dotNumber + tempArr.join('');
-            } else {  /* 有小数*/
-                result = regexArr[1] + dotNumber.substr(0, multiple) + '.' + dotNumber.substr(multiple);
-            }
-        } else { /* 小于1*/
-            if (multiple === '0') {
-                result = regexArr[1] + dotNumber;
-            } else {
-                for (i = 0; i < multiple - 1; i++) {
-                    tempArr.push('0');
-                }
-
-                result = '0.' + tempArr.join('') + regexArr[1] + dotNumber;
-            }
-        }
-    }
-
-    return result;
-}
-```
-
-### *原生JS*用整数进行小数的四则运算（避免浮点数运算误差）
-```javascript
-var fourOperations = {
-    add: function (arg1, arg2) {    /* 加*/
-        var int1 = parseInt(arg1.toString().replace('.', ''), 10),
-            int2 = parseInt(arg2.toString().replace('.', ''), 10),
-            dotLength1, dotLength2, gap, gapMultiple, multiple;
-
-        try {
-            dotLength1 = arg1.toString().split('.')[1].length;
-        } catch (e) {
-            dotLength1 = 0;
-        }
-        try {
-            dotLength2 = arg2.toString().split('.')[1].length;
-        } catch (e) {
-            dotLength2 = 0;
-        }
-
-        gap = Math.abs(dotLength1 - dotLength2);
-
-        if (gap > 0) {
-            gapMultiple = Math.pow(10, gap);
-
-            if (dotLength1 < dotLength2) {
-                int1 = int1 * gapMultiple;
-            } else {
-                int2 = int2 * gapMultiple;
-            }
-        }
-
-        multiple = Math.pow(10, Math.max(dotLength1, dotLength2));
-
-        return (int1 + int2) / multiple;
-    },
-    sub: function (arg1, arg2) {    /* 减*/
-
-        return this.add(arg1, -arg2);
-    },
-    mul: function (arg1, arg2) {    /* 乘*/
-        var multiple;
-
-        try {
-            multiple = arg1.toString().split('.')[1].length;
-        } catch (e) {
-            multiple = 0;
-        }
-        try {
-            multiple = multiple + arg2.toString().split('.')[1].length;
-        } catch (e) {
-
-        }
-
-        return parseInt(arg1.toString().replace('.', ''), 10) * parseInt(arg2.toString().replace('.', ''), 10) / Math.pow(10, multiple);
-    },
-    div: function (arg1, arg2) {    /* 除*/
-        var dotLength1, dotLength2;
-
-        try {
-            dotLength1 = arg1.toString().split('.')[1].length;
-        } catch (e) {
-            dotLength1 = 0;
-        }
-        try {
-            dotLength2 = arg2.toString().split('.')[1].length;
-        } catch (e) {
-            dotLength2 = 0;
-        }
-
-        return parseInt(arg1.toString().replace('.', ''), 10) / parseInt(arg2.toString().replace('.', ''), 10) * Math.pow(10, dotLength2 - dotLength1);
-    }
-};
-```
->类似[number-precision](https://github.com/nefe/number-precision)。
-
-### *原生JS*大数加减法（不考虑小数和负数）
-```javascript
-var overRangeOperations = {
-    add: function (arg1, arg2) {    /* 加*/
-        /* 需要把科学计数法转化为字符串的数字*/
-        arg1 = arg1.toString(10).split('');
-        arg2 = arg2.toString(10).split('');
-
-        var carry = 0,  //进位
-            result = [],
-            temp;
-
-        while (arg1.length || arg2.length || carry) {
-            temp = parseInt(arg1.pop() || 0, 10) + parseInt(arg2.pop() || 0, 10) + carry;
-            result.unshift(temp % 10);
-            carry = Math.floor(temp / 10);
-        }
-
-        return result.join('');
-    },
-
-    sub: function (arg1, arg2) {    /* 减*/
-        /* 需要把科学计数法转化为字符串的数字*/
-        arg1 = arg1.toString(10).split('');
-        arg2 = arg2.toString(10).split('');
-
-        var isArg2Bigger, // 标记arg2是否大于arg1
-            result = [],
-            i, len, temp;
-
-        (function () {  /* 确保大数减小数*/
-            isArg2Bigger = arg1.length < arg2.length;
-
-            if (arg1.length === arg2.length) {
-                for (i = 0, len = arg1.length; i < len; i++) {
-                    if (arg1[i] === arg2[i]) {
-                        continue;
-                    }
-
-                    isArg2Bigger = arg1[i] < arg2[i];
-
-                    break;
-                }
-            }
-
-            if (isArg2Bigger) {
-                temp = arg1;
-                arg1 = arg2;
-                arg2 = temp;
-            }
-        }());
-
-        while (arg1.length) {
-            temp = parseInt(arg1.pop(), 10) - parseInt(arg2.pop() || 0, 10);
-
-            if (temp >= 0) {
-                result.unshift(temp);
-            } else {
-                result.unshift(temp + 10);
-
-                arg1[arg1.length - 1] -= 1; //由于arg1一定大于等于arg2，所以不存在arg1[i-1]为undefined的情况
-            }
-        }
-
-        result = result.join('').replace(/^0*/, '');    //去掉前面的0
-
-        if (result === '') {
-            result = 0;
-        } else {
-            result = (isArg2Bigger ? '-' : '') + result;
-        }
-
-        return result;
-    }
-};
 ```
 
 ### *原生JS*绑定、解绑事件
@@ -1456,6 +834,574 @@ var eventUtil = {
 
     //action.stop();
     ```
+    
+
+### *原生JS*触摸屏模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）
+```javascript
+/* 不要绑定click事件，用touchstart和touchend模拟，以消除“延时300毫秒后才触发”的问题*/
+
+var start_x, start_y;
+
+document.getElementById('...').addEventListener('touchstart', function (e) {
+    start_x = e.changedTouches[0].clientX;
+    start_y = e.changedTouches[0].clientY;
+}, false);
+
+document.getElementById('...').addEventListener('touchend', function (e) {
+    var end_x = e.changedTouches[0].clientX,
+        end_y = e.changedTouches[0].clientY;
+
+    if (Math.abs(end_x - start_x) > 5 || Math.abs(end_y - start_y) > 5) {
+        /* 触发滑动事件要做的事情（如什么都不做）*/
+    } else {
+        /* 触发点击事件要做的事情*/
+    }
+}, false);
+
+/* 还要处理浏览器默认点击事件（如a标签）*/
+```
+
+### *原生JS*判断事件在浏览器是否存在
+```javascript
+/**
+ * 判断DOM节点是否支持某事件
+ * @param {String} eventName - 事件名
+ * @param {Object} [element] - DOM的Document对象
+ * @returns {Boolean} isSupported
+ */
+function isEventSupported(eventName, element) {
+    var tagNames = {
+            'select': 'input',
+            'change': 'input',
+            'submit': 'form',
+            'reset': 'form',
+            'error': 'img',
+            'load': 'img',
+            'abort': 'img'
+        },
+        isSupported;
+
+    element = element || document.createElement(tagNames[eventName] || 'div');
+    eventName = 'on' + eventName;
+
+    isSupported = eventName in element;
+
+    if (!isSupported) {
+        if (!element.setAttribute) {    /* 若节点没有setAttribute方法，则改用div节点进行测试*/
+            element = document.createElement('div');
+        }
+        if (element.setAttribute && element.removeAttribute) {
+            element.setAttribute(eventName, '');
+            isSupported = typeof element[eventName] === 'function';
+
+            if (element[eventName] !== undefined) { /* 内存回收*/
+                element[eventName] = undefined;
+            }
+            element.removeAttribute(eventName); /* 内存回收*/
+        }
+    }
+
+    element = null; /* 内存回收*/
+
+    return isSupported;
+}
+```
+
+>更全面的性能监听：[stats.js](https://github.com/mrdoob/stats.js/)。
+
+### *原生JS*科学计数法转换成字符串的数字
+```javascript
+function eToString(number) {
+    number = number.toString(10);
+
+    var regex = /^(\d)(?:\.(\d*))?[eE]([+-]?)(\d+)$/,   //科学计数法
+        regexArr = regex.exec(number);
+
+    if (regexArr === null) {
+
+        return number;
+    } else {
+        var dotNumber = regexArr[2] ? regexArr[2] : '',
+            dotLength = dotNumber.length, //小数位数
+            multiple = regexArr[4], //10进制位数
+            gap = Math.abs(multiple - dotLength),
+            tempArr = [],
+            i, result;
+
+        if (regexArr[3] !== '-') {  /* 大于1*/
+            if (multiple >= dotLength) {    /* 没有小数*/
+                for (i = 0; i < gap; i++) {
+                    tempArr.push('0');
+                }
+
+                result = regexArr[1] + dotNumber + tempArr.join('');
+            } else {  /* 有小数*/
+                result = regexArr[1] + dotNumber.substr(0, multiple) + '.' + dotNumber.substr(multiple);
+            }
+        } else { /* 小于1*/
+            if (multiple === '0') {
+                result = regexArr[1] + dotNumber;
+            } else {
+                for (i = 0; i < multiple - 1; i++) {
+                    tempArr.push('0');
+                }
+
+                result = '0.' + tempArr.join('') + regexArr[1] + dotNumber;
+            }
+        }
+    }
+
+    return result;
+}
+```
+
+### *原生JS*用整数进行小数的四则运算（避免浮点数运算误差）
+```javascript
+var fourOperations = {
+    add: function (arg1, arg2) {    /* 加*/
+        var int1 = parseInt(arg1.toString().replace('.', ''), 10),
+            int2 = parseInt(arg2.toString().replace('.', ''), 10),
+            dotLength1, dotLength2, gap, gapMultiple, multiple;
+
+        try {
+            dotLength1 = arg1.toString().split('.')[1].length;
+        } catch (e) {
+            dotLength1 = 0;
+        }
+        try {
+            dotLength2 = arg2.toString().split('.')[1].length;
+        } catch (e) {
+            dotLength2 = 0;
+        }
+
+        gap = Math.abs(dotLength1 - dotLength2);
+
+        if (gap > 0) {
+            gapMultiple = Math.pow(10, gap);
+
+            if (dotLength1 < dotLength2) {
+                int1 = int1 * gapMultiple;
+            } else {
+                int2 = int2 * gapMultiple;
+            }
+        }
+
+        multiple = Math.pow(10, Math.max(dotLength1, dotLength2));
+
+        return (int1 + int2) / multiple;
+    },
+    sub: function (arg1, arg2) {    /* 减*/
+
+        return this.add(arg1, -arg2);
+    },
+    mul: function (arg1, arg2) {    /* 乘*/
+        var multiple;
+
+        try {
+            multiple = arg1.toString().split('.')[1].length;
+        } catch (e) {
+            multiple = 0;
+        }
+        try {
+            multiple = multiple + arg2.toString().split('.')[1].length;
+        } catch (e) {
+
+        }
+
+        return parseInt(arg1.toString().replace('.', ''), 10) * parseInt(arg2.toString().replace('.', ''), 10) / Math.pow(10, multiple);
+    },
+    div: function (arg1, arg2) {    /* 除*/
+        var dotLength1, dotLength2;
+
+        try {
+            dotLength1 = arg1.toString().split('.')[1].length;
+        } catch (e) {
+            dotLength1 = 0;
+        }
+        try {
+            dotLength2 = arg2.toString().split('.')[1].length;
+        } catch (e) {
+            dotLength2 = 0;
+        }
+
+        return parseInt(arg1.toString().replace('.', ''), 10) / parseInt(arg2.toString().replace('.', ''), 10) * Math.pow(10, dotLength2 - dotLength1);
+    }
+};
+```
+>类似[number-precision](https://github.com/nefe/number-precision)。
+
+### *原生JS*大数加减法（不考虑小数和负数）
+```javascript
+var overRangeOperations = {
+    add: function (arg1, arg2) {    /* 加*/
+        /* 需要把科学计数法转化为字符串的数字*/
+        arg1 = arg1.toString(10).split('');
+        arg2 = arg2.toString(10).split('');
+
+        var carry = 0,  //进位
+            result = [],
+            temp;
+
+        while (arg1.length || arg2.length || carry) {
+            temp = parseInt(arg1.pop() || 0, 10) + parseInt(arg2.pop() || 0, 10) + carry;
+            result.unshift(temp % 10);
+            carry = Math.floor(temp / 10);
+        }
+
+        return result.join('');
+    },
+
+    sub: function (arg1, arg2) {    /* 减*/
+        /* 需要把科学计数法转化为字符串的数字*/
+        arg1 = arg1.toString(10).split('');
+        arg2 = arg2.toString(10).split('');
+
+        var isArg2Bigger, // 标记arg2是否大于arg1
+            result = [],
+            i, len, temp;
+
+        (function () {  /* 确保大数减小数*/
+            isArg2Bigger = arg1.length < arg2.length;
+
+            if (arg1.length === arg2.length) {
+                for (i = 0, len = arg1.length; i < len; i++) {
+                    if (arg1[i] === arg2[i]) {
+                        continue;
+                    }
+
+                    isArg2Bigger = arg1[i] < arg2[i];
+
+                    break;
+                }
+            }
+
+            if (isArg2Bigger) {
+                temp = arg1;
+                arg1 = arg2;
+                arg2 = temp;
+            }
+        }());
+
+        while (arg1.length) {
+            temp = parseInt(arg1.pop(), 10) - parseInt(arg2.pop() || 0, 10);
+
+            if (temp >= 0) {
+                result.unshift(temp);
+            } else {
+                result.unshift(temp + 10);
+
+                arg1[arg1.length - 1] -= 1; //由于arg1一定大于等于arg2，所以不存在arg1[i-1]为undefined的情况
+            }
+        }
+
+        result = result.join('').replace(/^0*/, '');    //去掉前面的0
+
+        if (result === '') {
+            result = 0;
+        } else {
+            result = (isArg2Bigger ? '-' : '') + result;
+        }
+
+        return result;
+    }
+};
+```
+
+### *原生JS*不同进制数转换
+```javascript
+/**
+ * 不同进制（2至36进制）换算（10个阿拉伯数字+26个字母）
+ * @param {String} operand - 转换数（二进制仅使用0~1、八进制仅使用0~7、十进制仅使用0~9、十六进制仅使用0~9和a~f，等）
+ * @param {Number} fromRadix - 转换数的进制数（2~36）
+ * @param {Number} toRadix - 结果的进制数
+ * @returns {String|Boolean|Number} - 转换后的数值；进制数不在2~36：false；操作数与进制数不匹配：NaN
+ */
+function numConvert(operand, fromRadix, toRadix) {
+    var myself = arguments.callee;
+
+    if (typeof myself.toDecimal !== 'function' || typeof myself.fromDecimal !== 'function') {
+        myself.toDecimal = function (str, radix) {  /* 其他进制转化为十进制*/
+
+            return parseInt(str, radix);
+        };
+
+        myself.fromDecimal = function (num, radix) {    /* 十进制转化为其他进制*/
+
+            return num.toString(radix);
+        };
+    }
+
+    if (fromRadix > 36 || fromRadix < 2 || toRadix > 36 || toRadix < 2) {    /* 仅支持2至36进制*/
+
+        console.log('进制数只能在2至36之间');
+
+        return false;
+    } else {
+
+        if (fromRadix === 10) {
+            operand = parseInt(operand, 10);
+        } else {
+            operand = myself.toDecimal(operand, fromRadix);
+        }
+
+        return myself.fromDecimal(operand, toRadix);
+    }
+}
+```
+
+### *原生JS*选取范围内随机值
+>注意：
+>
+>1. 检查不同语言原始返回的随机值两边端点开闭情况——不同的开闭区间影响最终算法。
+>2. 获取到的每个整数的概率是否均等——用向下取整代替四舍五入可以使概率均等。
+
+```javascript
+/**
+ * 选取范围内随机值
+ * @param {Number} min - 下限（或上限）
+ * @param {Number} max - 上限（或下限）
+ * @returns {Number} - 上下限区间内的随机值
+ */
+function randomFrom(min, max) {
+    var temp;
+
+    if (min > max) {
+        temp = min;
+        min = max;
+        max = temp;
+    }
+
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+```
+>`Math.random()`返回`[0,1)`。假设返回的值的开闭区间改变：
+>
+>1. 如果返回的是：`(0,1)`，则返回`Math.floor(Math.random() * (max - min + 2) + min - 1);`。
+>2. 如果返回的是：`(0,1]`，则返回`Math.floor(Math.random() * (max - min + 1) + min - 1);`。
+>3. 如果返回的是：`[0,1]`，则返回`Math.floor(Math.random() * (max - min) + min);`。
+
+### *原生JS*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
+```javascript
+/**
+ * 滚动到x、y轴指定位置
+ * @param {Number} endX - 到达x轴像素
+ * @param {Number} endY - 到达y轴像素
+ * @param {Number} time - 所用毫秒
+ */
+function animateTo(endX, endY, time) {
+    var scrollFromX = document.body.scrollLeft || document.documentElement.scrollLeft,
+        scrollFromY = document.body.scrollTop || document.documentElement.scrollTop,
+        scrollToX = endX > document.documentElement.scrollWidth ? document.documentElement.scrollWidth : endX,
+        scrollToY = endY > document.documentElement.scrollHeight ? document.documentElement.scrollHeight : endY,
+        i = 0,
+        runEvery = 5,
+        myself = arguments.callee;
+
+    time /= runEvery;
+
+    clearInterval(myself.setIntervalId);
+
+    myself.setIntervalId = setInterval(function () {
+        i += 1;
+
+        window.scrollTo((scrollToX - scrollFromX) / time * i + scrollFromX, (scrollToY - scrollFromY) / time * i + scrollFromY);
+
+        if (i >= time) {
+            clearInterval(myself.setIntervalId);
+        }
+    }, runEvery);
+}
+```
+>使用[velocity动画库](https://github.com/julianshapiro/velocity)（[中文文档](http://www.mrfront.com/docs/velocity.js/)）做所有的动画（包括JS和CSS）才是最简单且性能最佳的选择。
+>如滚动到某位置：`$('html').velocity('scroll', {offset: y轴像素, duration: 毫秒});`。
+
+### *原生JS*用请求图片作log统计
+```javascript
+var sendLog = (function () {
+    if (typeof Date.now !== 'function') {
+        Date.now = function () {
+            return new Date().getTime();
+        };
+    }
+
+    var _unique = (function () {    /* 产生唯一标识*/
+        var time = Date.now() + '_',
+            i = 0;
+
+        return function () {
+            i += 1;
+
+            return time + i - 1;
+        }
+    }());
+
+    var run = function (url) {
+        var data = window['imgLogData'] || (window['imgLogData'] = {}),
+            img = new Image(),
+            uid = _unique();
+
+        data[uid] = img;    //防止img被垃圾处理
+
+        img.onload = img.onerror = function () {    /* 成功或失败后销毁对象*/
+            img.onload = img.onerror = null;
+            img = null;
+            delete data[uid];
+        };
+
+        img.src = url + '&_cache=' + uid;   //发送统计内容
+    };
+
+    return run;
+}());
+
+
+/* 使用测试*/
+sendLog('统计url');
+```
+
+### *原生JS*比较版本号大小（纯数字）
+```javascript
+/**
+ * 比较版本号大小（纯数字）
+ * @param {Number|String} version - 比较数1
+ * @param {Number|String} base - 比较数2
+ * @param {String} [separator = '.'] - 版本分隔符
+ * @returns {String} flag - '=' 或 '>' 或 '<'
+ */
+function versionCompare(version, base, separator) {
+    separator = separator || '.';
+
+    var arr1 = version.toString().split(separator),
+        arr2 = base.toString().split(separator),
+        length = arr1.length > arr2.length ? arr1.length : arr2.length,
+        flag = '=',
+        i;
+
+    for (i = 0; i < length; i++) {
+        arr1[i] = arr1[i] || '0';
+        arr2[i] = arr2[i] || '0';
+
+        if (arr1[i] !== arr2[i]) {  /* 两值不同*/
+            flag = parseInt(arr1[i], 10) < parseInt(arr2[i], 10) ? '<' : '>';
+
+            break;
+        }
+    }
+
+    return flag;
+}
+
+
+/* 使用测试*/
+console.log(versionCompare('1.1.10', '1.2'));
+```
+
+### *原生JS*判断检索内容是否在被检索内容的分隔符间
+```javascript
+/**
+ * 判断key是否存在以separator分割的str当中
+ * @param {Number|String} key - 检索内容
+ * @param {Number|String} str - 被检索内容
+ * @param {String} [separator = '|'] - str的分隔符
+ * @returns {Boolean} flag
+ */
+function isKeyInStr(key, str, separator) {
+    separator = separator || '|';
+
+    var flag = false,
+        strArr, i;
+
+    key = key.toString();
+    str = str.toString();
+
+    strArr = str.split(separator);
+
+    for (i = 0; i < strArr.length; i++) {
+        if (key === strArr[i]) {
+            flag = true;
+            
+            break;
+        }
+    }
+
+    return flag;
+}
+```
+
+### *原生JS*产生随机数
+```javascript
+/**
+ * 随机数产生
+ * @param {Number} length - 随机数长度
+ * @param {String} [charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'] - 随机数的字符
+ * @returns {String} - 随机数
+ */
+function random(length, charset) {
+    charset = charset || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+    return Array.apply(null, new Array(length)).map(function () {
+
+        return charset.charAt(Math.floor(Math.random() * charset.length));
+    }).join('');
+}
+```
+
+### *原生JS*格式化文件大小
+```javascript
+var format = {
+  fileSize: function (bytes) {    /* 格式化文件大小*/
+    if (bytes === 0) {
+
+      return '0';
+    }
+    var rate = 1024,
+      units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+      exponent = Math.floor(Math.log(bytes) / Math.log(rate));
+
+    return (bytes / Math.pow(rate, exponent)).toPrecision(3) + units[exponent];
+  }
+};
+
+
+/* 使用测试*/
+var a = format.fileSize(数字);
+```
+
+### *原生JS*判断是否为`Node`、是否为`Element`
+```javascript
+// 判断是否为Node
+function isNode(o) {
+  return typeof Node === 'object' ? o instanceof Node : !!o && typeof o === 'object' && typeof o.nodeType === 'number' && typeof o.nodeName === 'string';
+}
+
+// 判断是否为Element
+function isElement(o) {
+  return typeof HTMLElement === 'object' ? o instanceof HTMLElement : !!o && typeof o === 'object' && o !== null && o.nodeType === 1 && typeof o.nodeName === 'string';
+}
+```
+
+### *原生JS*判断对象是否为空
+```javascript
+function isObjEmpty(obj) {
+    var i;
+
+    if (obj !== Object(obj)) {  /* 参数不是对象*/
+        throw new TypeError('参数不是对象');
+    } else if (typeof Object.keys === 'function') { /* ie9+*/
+
+        return Object.keys(obj).length === 0;
+    } else {
+        for (i in obj) {
+            if (obj.hasOwnProperty(i)) {
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+```
 
 ### *原生JS*输入框光标位置的获取和设置
 ```javascript
@@ -1787,48 +1733,6 @@ $(window).on('scroll', a);
 ```
 >来自[underscore](https://github.com/jashkenas/underscore)。
 
-### *原生JS*不同进制数转换
-```javascript
-/**
- * 不同进制（2至36进制）换算（10个阿拉伯数字+26个字母）
- * @param {String} operand - 转换数（二进制仅使用0~1、八进制仅使用0~7、十进制仅使用0~9、十六进制仅使用0~9和a~f，等）
- * @param {Number} fromRadix - 转换数的进制数（2~36）
- * @param {Number} toRadix - 结果的进制数
- * @returns {String|Boolean|Number} - 转换后的数值；进制数不在2~36：false；操作数与进制数不匹配：NaN
- */
-function numConvert(operand, fromRadix, toRadix) {
-    var myself = arguments.callee;
-
-    if (typeof myself.toDecimal !== 'function' || typeof myself.fromDecimal !== 'function') {
-        myself.toDecimal = function (str, radix) {  /* 其他进制转化为十进制*/
-
-            return parseInt(str, radix);
-        };
-
-        myself.fromDecimal = function (num, radix) {    /* 十进制转化为其他进制*/
-
-            return num.toString(radix);
-        };
-    }
-
-    if (fromRadix > 36 || fromRadix < 2 || toRadix > 36 || toRadix < 2) {    /* 仅支持2至36进制*/
-
-        console.log('进制数只能在2至36之间');
-
-        return false;
-    } else {
-
-        if (fromRadix === 10) {
-            operand = parseInt(operand, 10);
-        } else {
-            operand = myself.toDecimal(operand, fromRadix);
-        }
-
-        return myself.fromDecimal(operand, toRadix);
-    }
-}
-```
-
 ### *原生JS*验证邮箱有效性
 ```javascript
 function validateEmail(email) {
@@ -1838,7 +1742,7 @@ function validateEmail(email) {
 ```
 >来自[stackoverflow:Validate email address in JavaScript?](http://stackoverflow.com/questions/46155/validate-email-address-in-javascript#answer-46181)。
 
-听说，不存在可以判断世界任何一个有效邮箱的正则。
+不存在可以判断世界任何一个有效邮箱的正则。
 
 ### *原生JS*创建兼容的XHR对象
 ```javascript
@@ -2160,6 +2064,116 @@ function divideArr(arr, divisor) {
 }
 ```
 
+### *原生JS*加入收藏夹
+```javascript
+function addFavorite(url, title) {  /* url必须带有协议头*/
+    if (window.external && 'addFavorite' in window.external) {
+        window.external.addFavorite(url, title);
+    } else if (window.sidebar && window.sidebar.addPanel) {
+        window.sidebar.addPanel(url, title);
+    } else if (window.opera && window.print) {
+        this.title = title;
+        return true;
+    } else {
+        alert('加入收藏失败，请使用 ' + (navigator.userAgent.toLowerCase().indexOf('mac') !== -1 ? 'Command/Cmd' : 'Ctrl') + ' + D 进行添加。');
+    }
+}
+
+
+/* 使用测试*/
+addFavorite(window.location.href, '收藏名字');
+```
+
+### *原生JS*从字符串中获取绝对路径
+```javascript
+function getAbsoluteUrl(url) {
+    var domA;
+
+    if (typeof url === 'undefined') {
+
+        return document.location.href;
+    } else {
+        domA = document.createElement('a');
+        domA.href = url;
+
+        return domA.href;
+    }
+}
+```
+
+### *原生JS*用`setTimeout`模拟`setInterval`
+```javascript
+/**
+ * 用setTimeout模拟setInterval
+ * @constructor
+ * @param {Function} func - 循环执行函数
+ * @param {Number} millisecond - 间隔毫秒
+ */
+function SetInterval(func, millisecond) {
+    var _setIntervalId;
+
+    if (typeof func === 'function') {
+        _setIntervalId = setTimeout(function () {
+            _setIntervalId = setTimeout(arguments.callee, millisecond);
+
+            func();
+        }, millisecond);
+    }
+
+    this.stop = function () {
+        clearTimeout(_setIntervalId);
+    };
+}
+
+
+/* 使用测试*/
+var a = new SetInterval(function () {
+    console.log(1);
+
+    if (...) {
+        a.stop();
+    }
+}, 1000);
+
+//a.stop();
+```
+
+### *原生JS*`requestAnimationFrame`的递归
+```javascript
+/**
+ * 每一帧都执行一次func
+ * @constructor
+ * @param {Function} func - 执行的函数
+ */
+function RepeatRAF(func) {
+    var _repeatRAFId;
+
+    if (typeof func === 'function') {
+        _repeatRAFId = requestAnimationFrame(function () {
+            _repeatRAFId = requestAnimationFrame(arguments.callee);
+
+            func();
+        });
+    }
+
+    this.stop = function () {
+        cancelAnimationFrame(_repeatRAFId);
+    };
+}
+
+
+/* 使用测试*/
+var a = new RepeatRAF(function () {
+    console.log(1);
+
+    if (...) {
+        a.stop();
+    }
+});
+
+//a.stop();
+```
+
 ---
 ## Polyfill
 
@@ -2336,6 +2350,51 @@ if (!String.prototype.trim) {
 }
 ```
 >来自[MDN:String.prototype.trim](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/Trim#兼容旧环境)。
+
+### *原生JS*`String.prototype.repeat`的Polyfill
+```javascript
+if (!String.prototype.repeat) {
+  String.prototype.repeat = function (count) {
+    'use strict';
+    if (this == null) {
+      throw new TypeError('can\'t convert ' + this + ' to object');
+    }
+    var str = '' + this;
+    count = +count;
+    if (count != count) {
+      count = 0;
+    }
+    if (count < 0) {
+      throw new RangeError('repeat count must be non-negative');
+    }
+    if (count == Infinity) {
+      throw new RangeError('repeat count must be less than infinity');
+    }
+    count = Math.floor(count);
+    if (str.length == 0 || count == 0) {
+      return '';
+    }
+    // 确保 count 是一个 31 位的整数。这样我们就可以使用如下优化的算法。
+    // 当前（2014年8月），绝大多数浏览器都不能支持 1 << 28 长的字符串，所以：
+    if (str.length * count >= 1 << 28) {
+      throw new RangeError('repeat count must not overflow maximum string size');
+    }
+    var rpt = '';
+    for (; ;) {
+      if ((count & 1) == 1) {
+        rpt += str;
+      }
+      count >>>= 1;
+      if (count == 0) {
+        break;
+      }
+      str += str;
+    }
+    return rpt;
+  };
+}
+```
+>来自[MDN:String.prototype.repeat](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/repeat#填充)。
 
 ### *原生JS*`Number.isNaN`的Polyfill
 ```javascript
@@ -2722,79 +2781,172 @@ Number.isSafeInteger = Number.isSafeInteger || function (value) {
 
 >滚动事件代理可以代理在要`window`或监控图片加载的滚动节点上。
 
-### jQuery获取`HTTP response header`信息
-```javascript
-/**
- * 获取HTTP response header信息
- * @param {String} [requestName] - 协议头字段名；若不传值，则返回完整HTTP头
- * @returns {String|Boolean} text - HTTP头信息 或 '' 或 false
- */
-function getResponseHeaders(requestName) {
-    var text = '';
+### jQuery节点跟随屏幕滚动
+1. `fixed`：
 
-    $.ajax({
-        type: 'HEAD',
-        url: document.location.href,
-        async: false,
-        complete: function (xhr, data) {
-            var responseHeaders, headerArr, i;
-
-            if (data !== 'error' && data !== 'timeout' && data !== 'parsererror') {
-                responseHeaders = xhr.getAllResponseHeaders();
-
-                if (requestName) {
-                    requestName += ': ';
-
-                    headerArr = responseHeaders.split(/[\r\n]+/);
-
-                    for (i = 0; i < headerArr.length; i++) {
-                        if (headerArr[i].indexOf(requestName) === 0) {
-                            text = headerArr[i].slice(requestName.length);
-
-                            break;
-                        }
-                    }
-                } else {
-                    text = responseHeaders;
-                }
-            } else {
-                text = false;
-
-                console.log('获取头信息错误: ' + data);
-            }
+    ```html
+    <style>
+        .z-affix-top {
+            width: 宽度;
+            position: fixed;
+            left: ;
+            margin-left: ;
+            top: ;
         }
-    });
+        .z-affix-bottom {
+            width: 宽度;
+            position: absolute;
+            left: ;
+        }
+    </style>
 
-    return text;
-}
-```
+    <script>
+        /**
+         * 跟随屏幕滚动（fixed）
+         * @constructor
+         * @param {Object} $target - 跟屏目标的jQuery对象
+         * @param {Number} topOffset - 触发添加topClass的距文档顶部的距离
+         * @param {String} topClass - 跟随屏幕的类，要规定节点的宽度、位置（fixed）
+         * @param {Number} [bottomOffset = 0] - 触发添加bottomClass的距文档底部的距离
+         * @param {String} [bottomClass = ''] - 触底的类，要规定节点的宽度、位置（absolute），top由代码计算获得
+         */
+        function FollowFixed($target, topOffset, topClass, bottomOffset, bottomClass) {
+          if (typeof Date.now !== 'function') {
+            Date.now = function () {
+              return new Date().getTime();
+            };
+          }
+        
+          var _namespace = Date.now(), //事件命名空间
+            _isIE = function (num) {    //判断ie版本
+              var dom = document.createElement('b');
+        
+              dom.innerHTML = '<!--[if IE ' + num + ']><i></i><![endif]-->';
+        
+              return dom.getElementsByTagName('i').length;
+            },
+            _followFixed = function () {
+              var scollTop = $(window).scrollTop(),
+                documentHeight = $(document).height(),
+                targetHeight = $target.height();   //jQuery可以用outerHeight
+        
+              if (scollTop >= topOffset) {    //滚动距离超过topOffset
+                if (!$target.hasClass(bottomClass)) {   //没有添加bottomClass
+                  if (documentHeight - ($target.offset().top + targetHeight) > bottomOffset) {    //节点底部距离文档底部距离 > bottomOffet
+                    requestAnimationFrame(function () {
+                      $target.removeClass(bottomClass).addClass(topClass)
+                        .removeAttr('style');
+                    });
+                  } else if (bottomClass) {   //超过bottomOffet,并且bottomClass存在
+                    requestAnimationFrame(function () {
+                      $target.removeClass(topClass).addClass(bottomClass)
+                        .css('top', documentHeight - $target.offsetParent().offset().top - targetHeight - bottomOffset);
+                    });
+                  }
+                } else {    //添加了bottomClass
+                  if (scollTop < $target.offset().top) {  //滚动小于节点
+                    requestAnimationFrame(function () {
+                      $target.removeClass(bottomClass).addClass(topClass)
+                        .removeAttr('style');
+                    });
+                  }
+                }
+              } else {
+                requestAnimationFrame(function () {
+                  $target.removeClass(topClass + ' ' + bottomClass)
+                    .removeAttr('style');
+                });
+              }
+            };
+        
+          if (!_isIE(6)) {
+            bottomOffset = bottomOffset || 0;
+            bottomClass = bottomClass || '';
+        
+            _followFixed();
+        
+            $(window).on('scroll' + '.' + _namespace, _followFixed);
+          }
+        
+          this.stop = function () {
+            $target.removeClass(topClass + ' ' + bottomClass);
+            $(window).off('scroll' + '.' + _namespace);
+          };
+        }
+        
+        /* 使用测试*/
+        var a = new FollowFixed($('.target'), $('.target').offset().top, 'z-affix-top', 200, 'z-affix-bottom');
+        
+        //a.stop();
+    </script>
+    ```
+    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/v69fr64x/)
+2. `margin-top`：
 
-### jQuery修复HTML标签`placeholder`属性无效
-```javascript
-function fixPlaceholder($dom) {
-    $dom = $dom || $('input, textarea');
+    ```html
+    <div class="clearfix">
+        <div class="father">
+            可有可无的、带margin或不带margin的节点
+            <div class="target">target内容</div>
+            可有可无的、带margin或不带margin的节点，ie6、7下可能需要触发hasLayout
+        </div>
+        <div class="dependent">
+            父级的兄弟节点
+        </div>
+    </div>
 
-    if (!('placeholder' in document.createElement('input'))) {
-        $dom.each(function (index, element) {
-            var placeText = $(element).attr('placeholder');
-
-            if ($(element).val() === '') {
-                $(element).val(placeText);
+    <script>
+        /**
+         * 跟随屏幕滚动（margin-top变化）
+         * @constructor
+         * @param {String} target - 目标节点
+         * @param {String} father - 目标节点的父级节点
+         * @param {String} dependent - 目标节点的父级节点的兄弟参照物（跟随不超过此参照物）
+         */
+        function FollowMarginTop(target, father, dependent) {
+          if (typeof Date.now !== 'function') {
+            Date.now = function () {
+              return new Date().getTime();
+            };
+          }
+        
+          var namespace = Date.now(), /* 事件命名空间*/
+            $target = $(target),
+            startOffset = $target.offset().top,
+            targetMarginTop = parseInt($target.css('margin-top'), 10) || 0,
+            prevMarginBottom = parseInt($target.prev().css('margin-bottom'), 10) || 0,
+            defaultMarginTop = Math.max(targetMarginTop, prevMarginBottom),
+            maxMarginTop = $(dependent).height() - $(father).height() + defaultMarginTop; //Query可以用outerHeight
+        
+          $(window).on('scroll' + '.' + namespace, function () {
+            var marginTop = $(window).scrollTop() - startOffset + defaultMarginTop;
+        
+            if (marginTop > defaultMarginTop) {
+              if (marginTop > maxMarginTop) {
+                marginTop = maxMarginTop;
+              }
+            } else {
+              marginTop = defaultMarginTop;
             }
-
-            $(this).on('focus', function () {
-                if ($(this).val() === placeText) {
-                    $(this).val('');
-                }
-            }).on('blur', function () {
-                if ($(this).val() === '') {
-                    $(this).val(placeText);
-                }
+        
+            requestAnimationFrame(function () {
+              $target.css({ 'margin-top': marginTop });
             });
-        });
-    }
-}
-```
+          });
+        
+          this.stop = function () {
+            $target.css({ 'margin-top': targetMarginTop });
+            $(window).off('scroll' + '.' + namespace);
+          };
+        }
+        
+        /* 使用测试*/
+        var a = new FollowMarginTop('.target', '.father', '.dependent');
+        
+        //a.stop();
+    </script>
+    ```
+    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/gc45ehdb/)
 
 ### jQuery弹出toast
 1. jQuery
@@ -3004,266 +3156,6 @@ function fixPlaceholder($dom) {
 </script>
 ```
 
-### jQuery节点跟随屏幕滚动
-1. `fixed`：
-
-    ```html
-    <style>
-        .z-affix-top {
-            width: 宽度;
-            position: fixed;
-            left: ;
-            margin-left: ;
-            top: ;
-        }
-        .z-affix-bottom {
-            width: 宽度;
-            position: absolute;
-            left: ;
-        }
-    </style>
-
-    <script>
-        /**
-         * 跟随屏幕滚动（fixed）
-         * @constructor
-         * @param {Object} $target - 跟屏目标的jQuery对象
-         * @param {Number} topOffset - 触发添加topClass的距文档顶部的距离
-         * @param {String} topClass - 跟随屏幕的类，要规定节点的宽度、位置（fixed）
-         * @param {Number} [bottomOffset = 0] - 触发添加bottomClass的距文档底部的距离
-         * @param {String} [bottomClass = ''] - 触底的类，要规定节点的宽度、位置（absolute），top由代码计算获得
-         */
-        function FollowFixed($target, topOffset, topClass, bottomOffset, bottomClass) {
-            if (typeof Date.now !== 'function') {
-                Date.now = function () {
-                    return new Date().getTime();
-                };
-            }
-
-            var _namespace = Date.now(), //事件命名空间
-                _isIE = function (num) {    //判断ie版本
-                    var dom = document.createElement('b');
-
-                    dom.innerHTML = '<!--[if IE ' + num + ']><i></i><![endif]-->';
-
-                    return dom.getElementsByTagName('i').length;
-                },
-                _followFixed = function () {
-                    var scollTop = $(window).scrollTop(),
-                        documentHeight = $(document).height(),
-                        targetHeight = $target.height();   //jQuery可以用outerHeight
-
-                    if (scollTop >= topOffset) {    //滚动距离超过topOffset
-                        if (!$target.hasClass(bottomClass)) {   //没有添加bottomClass
-                            if (documentHeight - ($target.offset().top + targetHeight) > bottomOffset) {    //节点底部距离文档底部距离 > bottomOffet
-                                $target.removeClass(bottomClass).addClass(topClass)
-                                    .removeAttr('style');
-                            } else if (bottomClass) {   //超过bottomOffet,并且bottomClass存在
-                                $target.removeClass(topClass).addClass(bottomClass)
-                                    .css('top', documentHeight - $target.offsetParent().offset().top - targetHeight - bottomOffset);
-                            }
-                        } else {    //添加了bottomClass
-                            if (scollTop < $target.offset().top) {  //滚动小于节点
-                                $target.removeClass(bottomClass).addClass(topClass)
-                                    .removeAttr('style');
-                            }
-                        }
-                    } else {
-                        $target.removeClass(topClass + ' ' + bottomClass)
-                            .removeAttr('style');
-                    }
-                };
-
-            if (!_isIE(6)) {
-                bottomOffset = bottomOffset || 0;
-                bottomClass = bottomClass || '';
-
-                _followFixed();
-
-                $(window).on('scroll' + '.' + _namespace, _followFixed);
-            }
-
-            this.stop = function () {
-                $target.removeClass(topClass + ' ' + bottomClass);
-                $(window).off('scroll' + '.' + _namespace);
-            };
-        }
-
-
-        /* 使用测试*/
-        var a = new FollowFixed($('.target'), $('.target').offset().top, 'z-affix-top', 200, 'z-affix-bottom');
-
-        //a.stop();
-    </script>
-    ```
-    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/v69fr64x/)
-2. `margin-top`：
-
-    ```html
-    <div class="clearfix">
-        <div class="father">
-            可有可无的、带margin或不带margin的节点
-            <div class="target">target内容</div>
-            可有可无的、带margin或不带margin的节点，ie6、7下可能需要触发hasLayout
-        </div>
-        <div class="dependent">
-            父级的兄弟节点
-        </div>
-    </div>
-
-    <script>
-        /**
-         * 跟随屏幕滚动（margin-top变化）
-         * @constructor
-         * @param {String} target - 目标节点
-         * @param {String} father - 目标节点的父级节点
-         * @param {String} dependent - 目标节点的父级节点的兄弟参照物（跟随不超过此参照物）
-         */
-        function FollowMarginTop(target, father, dependent) {
-            if (typeof Date.now !== 'function') {
-                Date.now = function () {
-                    return new Date().getTime();
-                };
-            }
-
-            var namespace = Date.now(), /* 事件命名空间*/
-                $target = $(target),
-                startOffset = $target.offset().top,
-                targetMarginTop = parseInt($target.css('margin-top'), 10) || 0,
-                prevMarginBottom = parseInt($target.prev().css('margin-bottom'), 10) || 0,
-                defaultMarginTop = Math.max(targetMarginTop, prevMarginBottom),
-                maxMarginTop = $(dependent).height() - $(father).height() + defaultMarginTop; //Query可以用outerHeight
-
-            $(window).on('scroll' + '.' + namespace, function () {
-                var marginTop = $(window).scrollTop() - startOffset + defaultMarginTop;
-
-                if (marginTop > defaultMarginTop) {
-                    if (marginTop > maxMarginTop) {
-                        marginTop = maxMarginTop;
-                    }
-                } else {
-                    marginTop = defaultMarginTop;
-                }
-
-                $target.css({'margin-top': marginTop});
-            });
-
-            this.stop = function () {
-                $target.css({'margin-top': targetMarginTop});
-                $(window).off('scroll' + '.' + namespace);
-            };
-        }
-
-
-        /* 使用测试*/
-        var a = new FollowMarginTop('.target', '.father', '.dependent');
-
-        //a.stop();
-    </script>
-    ```
-    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/gc45ehdb/)
-
-### jQuery模拟手机翻转（使页面都以“横屏”展示）
-```html
-<style>
-    .dom {
-        position: fixed;
-        top: 0;
-        left: 0;
-    }
-    .z-reversal {
-        top: 50%;
-        left: 50%;
-        /*margin: 0;*/
-        -webkit-transform: translate(-50%, -50%) rotate(90deg);
-        transform: translate(-50%, -50%) rotate(90deg);
-    }
-</style>
-
-<div class="dom" id="j-dom-1">...</div>
-<div class="dom" id="j-dom-2">...</div>
-
-<script type="text/javascript">
-    /**
-     * 横屏展示
-     * @constructor
-     * @param {String} selector - 选择器
-     * @param {String} className - 翻转类
-     */
-    var ReversalAct = function (selector, className) {
-        if (typeof Date.now !== 'function') {
-            Date.now = function () {
-                return new Date().getTime();
-            };
-        }
-
-        var _setTimeoutId1 = '',
-            _setTimeoutId2 = '',
-            _namespace = Date.now(),
-            _resizeEvent = 'onorientationchange' in window ? 'orientationchange' : 'resize',
-            _portraitFunc = function (selector, className) {    /* 屏幕高度>宽度（竖屏），增加“顺时针翻转90度的类”*/
-                var $dom = $(selector);
-
-                if ($(window).height() > $(window).width()) {
-                    $dom.addClass(className);
-                } else {
-                    $dom.removeClass(className);
-                }
-            },
-            _resizeFunc = function (selector) {   /* 设置高宽的值（边长较长的一边设置为宽度，较短的设置为高度）*/
-                var wHeight = $(window).height(),
-                    wWidth = $(window).width(),
-                    i;
-
-                if (wHeight > wWidth) {
-                    i = wHeight;
-                    wHeight = wWidth;
-                    wWidth = i;
-                }
-
-                $(selector).css({'width': wWidth + 'px', 'height': wHeight + 'px'});
-            },
-            _bindEvent = function (selector, className) {
-                $(window).on('resize' + '.' + _namespace, function () {
-                    clearTimeout(_setTimeoutId2);
-
-                    _setTimeoutId2 = setTimeout(function () {
-                        _resizeFunc(selector);
-                    }, 500);
-                }).on(_resizeEvent + '.' + _namespace, function () {
-                    clearTimeout(_setTimeoutId1);
-
-                    _setTimeoutId1 = setTimeout(function () {
-                        _portraitFunc(selector, className);
-                    }, 500);
-                });
-            },
-            _init = function (selector, className) {
-                _bindEvent(selector, className);
-                _resizeFunc(selector);
-                _portraitFunc(selector, className);
-            };
-
-        _init(selector, className);
-
-        this.stop = function () {
-            $(window).off('resize' + '.' + _namespace)
-                .off(_resizeEvent + '.' + _namespace);
-
-            $(selector).removeClass(className)
-                .removeAttr('style');
-        };
-    };
-
-
-    /* 使用测试*/
-    var a = new ReversalAct('#j-dom-1, #j-dom-2', 'z-reversal');
-
-    //a.stop();
-</script>
-```
->如果对不是全屏的节点使用翻转函数，需要给节点设置：`width: 宽度 !important;height: auto !important;`。
-
 ### jQuery点击指定区域以外执行函数
 1. jQuery
 
@@ -3456,3 +3348,178 @@ function fixPlaceholder($dom) {
 </script>
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/Lukonj4s/)
+
+### jQuery获取`HTTP response header`信息
+```javascript
+/**
+ * 获取HTTP response header信息
+ * @param {String} [requestName] - 协议头字段名；若不传值，则返回完整HTTP头
+ * @returns {String|Boolean} text - HTTP头信息 或 '' 或 false
+ */
+function getResponseHeaders(requestName) {
+    var text = '';
+
+    $.ajax({
+        type: 'HEAD',
+        url: document.location.href,
+        async: false,
+        complete: function (xhr, data) {
+            var responseHeaders, headerArr, i;
+
+            if (data !== 'error' && data !== 'timeout' && data !== 'parsererror') {
+                responseHeaders = xhr.getAllResponseHeaders();
+
+                if (requestName) {
+                    requestName += ': ';
+
+                    headerArr = responseHeaders.split(/[\r\n]+/);
+
+                    for (i = 0; i < headerArr.length; i++) {
+                        if (headerArr[i].indexOf(requestName) === 0) {
+                            text = headerArr[i].slice(requestName.length);
+
+                            break;
+                        }
+                    }
+                } else {
+                    text = responseHeaders;
+                }
+            } else {
+                text = false;
+
+                console.log('获取头信息错误: ' + data);
+            }
+        }
+    });
+
+    return text;
+}
+```
+
+### jQuery修复HTML标签`placeholder`属性无效
+```javascript
+function fixPlaceholder($dom) {
+    $dom = $dom || $('input, textarea');
+
+    if (!('placeholder' in document.createElement('input'))) {
+        $dom.each(function (index, element) {
+            var placeText = $(element).attr('placeholder');
+
+            if ($(element).val() === '') {
+                $(element).val(placeText);
+            }
+
+            $(this).on('focus', function () {
+                if ($(this).val() === placeText) {
+                    $(this).val('');
+                }
+            }).on('blur', function () {
+                if ($(this).val() === '') {
+                    $(this).val(placeText);
+                }
+            });
+        });
+    }
+}
+```
+
+### jQuery模拟手机翻转（使页面都以“横屏”展示）
+```html
+<style>
+    .dom {
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+    .z-reversal {
+        top: 50%;
+        left: 50%;
+        /*margin: 0;*/
+        -webkit-transform: translate(-50%, -50%) rotate(90deg);
+        transform: translate(-50%, -50%) rotate(90deg);
+    }
+</style>
+
+<div class="dom" id="j-dom-1">...</div>
+<div class="dom" id="j-dom-2">...</div>
+
+<script type="text/javascript">
+    /**
+     * 横屏展示
+     * @constructor
+     * @param {String} selector - 选择器
+     * @param {String} className - 翻转类
+     */
+    var ReversalAct = function (selector, className) {
+        if (typeof Date.now !== 'function') {
+            Date.now = function () {
+                return new Date().getTime();
+            };
+        }
+
+        var _setTimeoutId1 = '',
+            _setTimeoutId2 = '',
+            _namespace = Date.now(),
+            _resizeEvent = 'onorientationchange' in window ? 'orientationchange' : 'resize',
+            _portraitFunc = function (selector, className) {    /* 屏幕高度>宽度（竖屏），增加“顺时针翻转90度的类”*/
+                var $dom = $(selector);
+
+                if ($(window).height() > $(window).width()) {
+                    $dom.addClass(className);
+                } else {
+                    $dom.removeClass(className);
+                }
+            },
+            _resizeFunc = function (selector) {   /* 设置高宽的值（边长较长的一边设置为宽度，较短的设置为高度）*/
+                var wHeight = $(window).height(),
+                    wWidth = $(window).width(),
+                    i;
+
+                if (wHeight > wWidth) {
+                    i = wHeight;
+                    wHeight = wWidth;
+                    wWidth = i;
+                }
+
+                $(selector).css({'width': wWidth + 'px', 'height': wHeight + 'px'});
+            },
+            _bindEvent = function (selector, className) {
+                $(window).on('resize' + '.' + _namespace, function () {
+                    clearTimeout(_setTimeoutId2);
+
+                    _setTimeoutId2 = setTimeout(function () {
+                        _resizeFunc(selector);
+                    }, 500);
+                }).on(_resizeEvent + '.' + _namespace, function () {
+                    clearTimeout(_setTimeoutId1);
+
+                    _setTimeoutId1 = setTimeout(function () {
+                        _portraitFunc(selector, className);
+                    }, 500);
+                });
+            },
+            _init = function (selector, className) {
+                _bindEvent(selector, className);
+                _resizeFunc(selector);
+                _portraitFunc(selector, className);
+            };
+
+        _init(selector, className);
+
+        this.stop = function () {
+            $(window).off('resize' + '.' + _namespace)
+                .off(_resizeEvent + '.' + _namespace);
+
+            $(selector).removeClass(className)
+                .removeAttr('style');
+        };
+    };
+
+
+    /* 使用测试*/
+    var a = new ReversalAct('#j-dom-1, #j-dom-2', 'z-reversal');
+
+    //a.stop();
+</script>
+```
+>如果对不是全屏的节点使用翻转函数，需要给节点设置：`width: 宽度 !important;height: auto !important;`。
