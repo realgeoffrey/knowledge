@@ -16,7 +16,7 @@
     nvm alias default v新版本号
 
     nvm list
-    nvm uninstall v旧版本号     # 如果无法删除，可以去目录删除 /Users/用户名/.nvm/versions/node/v版本
+    nvm uninstall v旧版本号     # 如果无法删除，用管理员权限按要求设置文件夹权限，还可以去目录删除 /Users/用户名/.nvm/versions/node/v版本
     ```
 2. Windows的[nvm-windows](https://github.com/coreybutler/nvm-windows)：
 

@@ -29,14 +29,17 @@
         1. [大数加减法（不考虑小数和负数）](#原生js大数加减法不考虑小数和负数)
         1. [不同进制数转换](#原生js不同进制数转换)
         1. [选取范围内随机值](#原生js选取范围内随机值)
+    1. 字符串操作
+    
+        1. [转化为Unicode、反转字符串](#原生js转化为unicode反转字符串)
+        1. [产生随机数](#原生js产生随机数)
+        1. [比较版本号大小（纯数字）](#原生js比较版本号大小纯数字)
+        1. [判断检索内容是否在被检索内容的分隔符间](#原生js判断检索内容是否在被检索内容的分隔符间)
+        1. [格式化文件大小](#原生js格式化文件大小)
     1. 功能
     
         1. [实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`](#原生js实现类似jquery的htmlbodyanimatescrollleft-像素-scrolltop-像素-毫秒)
         1. [用请求图片作log统计](#原生js用请求图片作log统计)
-        1. [比较版本号大小（纯数字）](#原生js比较版本号大小纯数字)
-        1. [判断检索内容是否在被检索内容的分隔符间](#原生js判断检索内容是否在被检索内容的分隔符间)
-        1. [产生随机数](#原生js产生随机数)
-        1. [格式化文件大小](#原生js格式化文件大小)
         1. [判断是否为`Node`、是否为`Element`](#原生js判断是否为node是否为element)
         1. [判断对象是否为空](#原生js判断对象是否为空)
         1. [输入框光标位置的获取和设置](#原生js输入框光标位置的获取和设置)
@@ -1180,6 +1183,153 @@ function randomFrom(min, max) {
 >2. 如果返回的是：`(0,1]`，则返回`Math.floor(Math.random() * (max - min + 1) + min - 1);`。
 >3. 如果返回的是：`[0,1]`，则返回`Math.floor(Math.random() * (max - min) + min);`。
 
+### *原生JS*转化为Unicode、反转字符串
+```javascript
+const hanldeWords = {
+
+  // 转化为Unicode
+  toUnicode(words) {
+    const arr = [];
+
+    for (let i = 0; i < words.length; i++) {
+      const unicode = words.charCodeAt(i).toString(16);
+      arr[i] = '\\u' + '0'.repeat(4 - unicode.length) + unicode; // 单个Unicode：\u+4位16进制数；一个字可能不止一个Unicode，如💩
+    }
+
+    return arr.join('');
+  },
+
+  // 反转字符串
+  reverseWords(words) {
+    return Array.from(words).reverse().join('');
+  }
+};
+
+
+/* 使用测试*/
+console.log(hanldeWords.toUnicode('💩©'));
+console.log(hanldeWords.reverseWords('💩©'));
+```
+
+### *原生JS*产生随机数
+```javascript
+/**
+ * 随机数产生
+ * @param {Number} length - 随机数长度
+ * @param {String} [charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'] - 随机数的字符
+ * @returns {String} - 随机数
+ */
+function random(length, charset) {
+    charset = charset || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+    return Array.apply(null, new Array(length)).map(function () {
+
+        return charset.charAt(Math.floor(Math.random() * charset.length));
+    }).join('');
+}
+```
+
+### *原生JS*比较版本号大小（纯数字）
+```javascript
+/**
+ * 比较版本号大小（纯数字）
+ * @param {Number|String} version - 比较数1
+ * @param {Number|String} base - 比较数2
+ * @param {String} [separator = '.'] - 版本分隔符
+ * @returns {String} flag - '=' 或 '>' 或 '<'
+ */
+function versionCompare(version, base, separator) {
+    separator = separator || '.';
+
+    var arr1 = version.toString().split(separator),
+        arr2 = base.toString().split(separator),
+        length = arr1.length > arr2.length ? arr1.length : arr2.length,
+        flag = '=',
+        i;
+
+    for (i = 0; i < length; i++) {
+        arr1[i] = arr1[i] || '0';
+        arr2[i] = arr2[i] || '0';
+
+        if (arr1[i] !== arr2[i]) {  /* 两值不同*/
+            flag = parseInt(arr1[i], 10) < parseInt(arr2[i], 10) ? '<' : '>';
+
+            break;
+        }
+    }
+
+    return flag;
+}
+
+
+/* 使用测试*/
+console.log(versionCompare('1.1.10', '1.2'));
+```
+
+### *原生JS*判断检索内容是否在被检索内容的分隔符间
+```javascript
+/**
+ * 判断key是否存在以separator分割的str当中
+ * @param {Number|String} key - 检索内容
+ * @param {Number|String} str - 被检索内容
+ * @param {String} [separator = '|'] - str的分隔符
+ * @returns {Boolean} flag
+ */
+function isKeyInStr(key, str, separator) {
+    separator = separator || '|';
+
+    var flag = false,
+        strArr, i;
+
+    key = key.toString();
+    str = str.toString();
+
+    strArr = str.split(separator);
+
+    for (i = 0; i < strArr.length; i++) {
+        if (key === strArr[i]) {
+            flag = true;
+            
+            break;
+        }
+    }
+
+    return flag;
+}
+```
+
+### *原生JS*格式化文件大小
+```javascript
+var format = {
+  fileSize: function (bytes) {    /* 格式化文件大小*/
+    if (bytes === 0) {
+
+      return '0';
+    }
+    var rate = 1024,
+      units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+      exponent = Math.floor(Math.log(bytes) / Math.log(rate));
+
+    return (bytes / Math.pow(rate, exponent)).toPrecision(3) + units[exponent];
+  }
+};
+
+
+/* 使用测试*/
+var a = format.fileSize(数字);
+```
+
+### *原生JS*单词首字母大写
+```javascript
+function upperCaseWord(str) {
+
+    return str.replace(/\b[a-zA-Z]/g, function (match) {
+
+        return match.toUpperCase();
+    });
+}
+```
+
 ### *原生JS*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
 ```javascript
 /**
@@ -1257,114 +1407,6 @@ var sendLog = (function () {
 
 /* 使用测试*/
 sendLog('统计url');
-```
-
-### *原生JS*比较版本号大小（纯数字）
-```javascript
-/**
- * 比较版本号大小（纯数字）
- * @param {Number|String} version - 比较数1
- * @param {Number|String} base - 比较数2
- * @param {String} [separator = '.'] - 版本分隔符
- * @returns {String} flag - '=' 或 '>' 或 '<'
- */
-function versionCompare(version, base, separator) {
-    separator = separator || '.';
-
-    var arr1 = version.toString().split(separator),
-        arr2 = base.toString().split(separator),
-        length = arr1.length > arr2.length ? arr1.length : arr2.length,
-        flag = '=',
-        i;
-
-    for (i = 0; i < length; i++) {
-        arr1[i] = arr1[i] || '0';
-        arr2[i] = arr2[i] || '0';
-
-        if (arr1[i] !== arr2[i]) {  /* 两值不同*/
-            flag = parseInt(arr1[i], 10) < parseInt(arr2[i], 10) ? '<' : '>';
-
-            break;
-        }
-    }
-
-    return flag;
-}
-
-
-/* 使用测试*/
-console.log(versionCompare('1.1.10', '1.2'));
-```
-
-### *原生JS*判断检索内容是否在被检索内容的分隔符间
-```javascript
-/**
- * 判断key是否存在以separator分割的str当中
- * @param {Number|String} key - 检索内容
- * @param {Number|String} str - 被检索内容
- * @param {String} [separator = '|'] - str的分隔符
- * @returns {Boolean} flag
- */
-function isKeyInStr(key, str, separator) {
-    separator = separator || '|';
-
-    var flag = false,
-        strArr, i;
-
-    key = key.toString();
-    str = str.toString();
-
-    strArr = str.split(separator);
-
-    for (i = 0; i < strArr.length; i++) {
-        if (key === strArr[i]) {
-            flag = true;
-            
-            break;
-        }
-    }
-
-    return flag;
-}
-```
-
-### *原生JS*产生随机数
-```javascript
-/**
- * 随机数产生
- * @param {Number} length - 随机数长度
- * @param {String} [charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'] - 随机数的字符
- * @returns {String} - 随机数
- */
-function random(length, charset) {
-    charset = charset || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-    return Array.apply(null, new Array(length)).map(function () {
-
-        return charset.charAt(Math.floor(Math.random() * charset.length));
-    }).join('');
-}
-```
-
-### *原生JS*格式化文件大小
-```javascript
-var format = {
-  fileSize: function (bytes) {    /* 格式化文件大小*/
-    if (bytes === 0) {
-
-      return '0';
-    }
-    var rate = 1024,
-      units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
-      exponent = Math.floor(Math.log(bytes) / Math.log(rate));
-
-    return (bytes / Math.pow(rate, exponent)).toPrecision(3) + units[exponent];
-  }
-};
-
-
-/* 使用测试*/
-var a = format.fileSize(数字);
 ```
 
 ### *原生JS*判断是否为`Node`、是否为`Element`
@@ -1946,17 +1988,6 @@ xhr.send(null);
         ```
 
     >CSS代码，如 `div {background-color: yellow;}`。
-
-### *原生JS*单词首字母大写
-```javascript
-function upperCaseWord(str) {
-
-    return str.replace(/\b[a-zA-Z]/g, function (match) {
-
-        return match.toUpperCase();
-    });
-}
-```
 
 ### *原生JS*展示页面帧数
 ```javascript

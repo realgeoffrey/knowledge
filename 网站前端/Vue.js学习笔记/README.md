@@ -66,7 +66,7 @@
         <!-- 可行 -->
         {{ number + 1 }}
         {{ ok ? 'YES' : 'NO' }}
-        {{ message.split('').reverse().join('') }}
+        {{ Array.from(words).reverse().join('') }}
         <div v-bind:id="'list-' + id"></div>
 
         <!--
@@ -658,8 +658,12 @@
 6. 过渡&动画
 
 ### [vue-cli](https://github.com/vuejs/vue-cli)与[nuxt.js](https://github.com/nuxt/nuxt.js)
-1. vue-cli：快速构建Vue应用的脚手架，可以手动配置所有安装模块。
-2. nuxt：基于Vue的通用应用框架，通过自带的`nuxt.config.js`统一配置安装模块。
+1. vue-cli：
+
+    快速构建Vue应用的脚手架，可以使用Vue官方或第三方模板来进行Vue应用的配置，一般包括webpack等工具的配置。
+2. nuxt：
+
+    基于Vue的通用应用框架，把webpack、vue-loader、vuex、vue-router等工具整合在一起，并通过自带的`nuxt.config.js`统一配置，不需要对每个工具进行单独配置。内置了SSR解决方案。
 
 ### [vue-router](https://github.com/vuejs/vue-router)
 >使用Charles代理到本地dev环境（map remote），要保证被代理和代理的路径相同，才能让路由正确。
