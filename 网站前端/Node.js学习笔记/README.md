@@ -85,13 +85,18 @@
             `npm logout`
     2. 查看信息
 
-        1. 查看模块信息
+        1. 查看模块官方信息
 
             `npm info [<@scope>/]<pkg>[@<version>] [<field>[.subfield]...]`
-        2. 查看安装的模块和依赖
+        2. 查看已安装的模块和依赖
 
             `npm list [[<@scope>/]<pkg> ...]`
-        3. 查看、添加、删除仓库标签的最后版本
+            
+            >若仅查看原始依赖`npm list --depth 0`
+        3. 查看已安装模块是否需要升级
+
+            `npm outdated [[<@scope>/]<pkg> ...]`
+        4. 查看、添加、删除仓库标签的最后版本
 
             >每个标签仅保留最后一个版本；latest标签无法删除。
 
@@ -146,10 +151,7 @@
 
                 1. 本地：在本地被`require`引入后使用。
                 2. 全局：在命令行中使用，或被全局命令引用。
-        2. 查看已安装模块是否需要升级
-
-            `npm outdated [[<@scope>/]<pkg> ...]`
-        3. 升级
+        2. 升级
 
             `npm update [-g] [<pkg>...]`
 
@@ -158,15 +160,15 @@
             - 升级npm自己
 
                 `npm install -g npm`
-        4. 卸载
+        3. 卸载
 
             `npm uninstall [<@scope>/]<pkg>[@<version>]... [--save-prod|--save-dev|--save-optional] [--no-save]`
-        5. 重装npm
+        4. 重装npm
 
             `curl -L https://www.npmjs.org/install.sh | sh`
 
             >若还是无法使用npm，建议重装Node.js。
-        6. 验证缓存（垃圾收集不需要的数据、验证缓存的完整性）
+        5. 验证缓存（垃圾收集不需要的数据、验证缓存的完整性）
 
             `npm cache verify`
 
@@ -175,7 +177,7 @@
             >    `npm cache clean -f`
     4. 执行脚本
 
-        `npm run “package.json中scripts字段的命令”`
+        `npm run “package.json中scripts字段的命令” -- “添加脚本后面的参数”`
 2. `package.json`字段
 
     1. `dependencies`

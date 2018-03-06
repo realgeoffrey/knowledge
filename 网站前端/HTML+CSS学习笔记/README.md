@@ -1330,7 +1330,7 @@
 
     绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/css.md#css编码规范)。
 
-    >可以设置为IDE的**Reformat Code**的排版样式。
+    >可以设置为IDEs的**Reformat Code**的排版样式。
 6. CSS注释方式
 
     除了普通注释外，还可以把注释内容放在根元素的伪元素中：

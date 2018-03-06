@@ -25,7 +25,7 @@ const gulp = require('gulp');
 
 /* 图片压缩 */
 gulp.task('runImage', () => {
-  gulp.src(['../images/dev/**'])
+  gulp.src(['./images/dev/**'])
     .pipe(
       imagemin([
         svgo(),
@@ -34,12 +34,12 @@ gulp.task('runImage', () => {
         pngquant({ speed: 1 }),
         optipng({ optimizationLevel: 7 })
       ]))
-    .pipe(gulp.dest('../images/release/'));
+    .pipe(gulp.dest('./images/release/'));
 });
 
 /* css：[合并]、压缩、添加厂商前缀、重命名、添加timestamp、source map */
 gulp.task('runCss', () => {
-  gulp.src(['../css/dev/**/*.css'])
+  gulp.src(['./css/dev/**/*.css'])
     .pipe(sourcemaps.init())
     // .pipe(concat('all.css'))
     .pipe(cssnano({
@@ -58,12 +58,12 @@ gulp.task('runCss', () => {
     }))
     .pipe(makeUrlVer({ useDate: true })) // 不被gulp-sourcemaps支持
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('../css/release/'));
+    .pipe(gulp.dest('./css/release/'));
 });
 
 /* scss：转译压缩css、添加厂商前缀、添加timestamp、source map */
 gulp.task('runScss', () => {
-  gulp.src(['../scss/dev/**/*.scss'])
+  gulp.src(['./scss/dev/**/*.scss'])
     .pipe(sourcemaps.init())
     .pipe(
       sass({
@@ -73,7 +73,7 @@ gulp.task('runScss', () => {
     .pipe(postcss([autoprefixer()]))
     .pipe(makeUrlVer({ useDate: true })) // 不被gulp-sourcemaps支持
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('../scss/release/'));
+    .pipe(gulp.dest('./scss/release/'));
 });
 
 /**
@@ -83,19 +83,19 @@ gulp.task('runScss', () => {
  * 对结尾带有“no”的注释，不进行转换
  */
 gulp.task('runPx2rem', () => {
-  gulp.src(['../px2rem/dev/**/*.css'])
+  gulp.src(['./px2rem/dev/**/*.css'])
     .pipe(postcss([px2rem({
       remUnit: 20, // px->rem除以的数
       baseDpr: 1, // /*px*/转换前值的DPR
       remPrecision: 6 // 小数精确位数
     })]))
-    .pipe(gulp.dest('../px2rem/release/'));
+    .pipe(gulp.dest('./px2rem/release/'));
 });
 
 /* 多图 -> 雪碧图 + 样式表 */
 gulp.task('runSprites', () => {
   /* PC端 */
-  gulp.src('../sprites/dev/*')
+  gulp.src('./sprites/dev/*')
     .pipe(spritesmith({
       padding: 2, // 合并图间距
       algorithm: 'top-down', // 排列方式 ['binary-tree' | 'top-down' | 'left-right' | 'diagonal' | 'alt-diagonal']
@@ -103,10 +103,10 @@ gulp.task('runSprites', () => {
       cssTemplate: 'pc.handlebars', // 渲染输出css的模板文件
       cssName: 'sprites_pc.css' // 输出合并后样式（后缀为[.css | .sass | .scss | .less | .styl/.stylus | .json]）
     }))
-    .pipe(gulp.dest('../sprites/release/'));
+    .pipe(gulp.dest('./sprites/release/'));
 
   /* WAP端（rem+%） */
-  gulp.src('../sprites/dev/*')
+  gulp.src('./sprites/dev/*')
     .pipe(spritesmith({
       padding: 2,
       algorithm: 'top-down',
@@ -114,29 +114,29 @@ gulp.task('runSprites', () => {
       cssTemplate: 'wap.handlebars',
       cssName: 'sprites_wap.scss'
     }))
-    .pipe(gulp.dest('../sprites/release/'));
+    .pipe(gulp.dest('./sprites/release/'));
 });
 
 /* ttf -> 多个兼容字体 + 样式表 */
 gulp.task('runFont', cb => {
   const buffers = [];
 
-  gulp.src(['../font/dev/*.html']) /* 传入需要提取字体的页面，没有页面则所有字 */
+  gulp.src(['./font/dev/*.html']) /* 传入需要提取字体的页面，没有页面则所有字 */
     .on('data', file => {
       buffers.push(file.contents);
     })
     .on('end', () => {
       const text = Buffer.concat(buffers).toString('utf-8');
-      gulp.src(['../font/dev/*.ttf']) // 只能传入ttf类型
+      gulp.src(['./font/dev/*.ttf']) // 只能传入ttf类型
         .pipe(fontmin({ text: text }))
-        .pipe(gulp.dest('../font/release/'))
+        .pipe(gulp.dest('./font/release/'))
         .on('end', cb);
     });
 });
 
 /* js：[合并]、压缩、重命名、source map */
 gulp.task('runJs', () => {
-  gulp.src(['../js/dev/**/*.js'])
+  gulp.src(['./js/dev/**/*.js'])
     .pipe(sourcemaps.init())
     // .pipe(concat('all.js'))
     .pipe(uglify({
@@ -151,24 +151,24 @@ gulp.task('runJs', () => {
       // extname: '.ts'  // 扩展名
     }))
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('../js/release/'));
+    .pipe(gulp.dest('./js/release/'));
 });
 
 /* ES6 -> ES5 */
 gulp.task('runBabel', () => {
-  gulp.src(['../babel/dev/**/*.js'])
+  gulp.src(['./babel/dev/**/*.js'])
     .pipe(sourcemaps.init())
     .pipe(babel({
       presets: [env] // 打包了ES6的特性
     }))
     // .pipe(concat('all.js'))
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('../babel/release/'));
+    .pipe(gulp.dest('./babel/release/'));
 });
 
 /* ESLint */
 gulp.task('runEslint', () => {
-  gulp.src(['../eslint/dev/**/*.js', '../eslint/dev/**/*.html'])
+  gulp.src(['./eslint/dev/**/*.js', './eslint/dev/**/*.html', './eslint/dev/**/*.vue'])
     .pipe(eslint({
       configFile: './.eslintrc.js',
       fix: true
@@ -177,7 +177,7 @@ gulp.task('runEslint', () => {
       console.log(`${result.filePath} -> ${result.warningCount} Warnings, ${result.errorCount} Errors.`);
     }))
     .pipe(eslint.format())
-    .pipe(gulp.dest('../eslint/release/'));
+    .pipe(gulp.dest('./eslint/release/'));
 });
 
 /* default */
@@ -193,17 +193,17 @@ gulp.task('default', [
   'runEslint'
 ]);
 
-/* 监视文件，自动执行 */
+/* 监视文件，自动执行（只能针对已经存在的文件修改，在文件夹增加的内容不会触发） */
 gulp.task('watch', () => {
-  gulp.watch(['../images/dev/**'], ['runImage']);
-  gulp.watch(['../css/dev/**/*.css'], ['runCss']);
-  gulp.watch(['../scss/dev/**/*.scss'], ['runScss']);
-  gulp.watch(['../px2rem/dev/**/*.css'], ['runPx2rem']);
-  gulp.watch(['../sprites/dev/**'], ['runSprites']);
-  gulp.watch(['../font/dev/**'], ['runFont']);
-  gulp.watch(['../js/dev/**/*.js'], ['runJs']);
-  gulp.watch(['../babel/dev/**/*.js'], ['runBabel']);
-  gulp.watch(['../eslint/dev/**/*.js', '../eslint/dev/**/*.html'], ['runEslint']);
+  gulp.watch(['./images/dev/**'], ['runImage']);
+  gulp.watch(['./css/dev/**/*.css'], ['runCss']);
+  gulp.watch(['./scss/dev/**/*.scss'], ['runScss']);
+  gulp.watch(['./px2rem/dev/**/*.css'], ['runPx2rem']);
+  gulp.watch(['./sprites/dev/**'], ['runSprites']);
+  gulp.watch(['./font/dev/**'], ['runFont']);
+  gulp.watch(['./js/dev/**/*.js'], ['runJs']);
+  gulp.watch(['./babel/dev/**/*.js'], ['runBabel']);
+  gulp.watch(['./eslint/dev/**/*.js', './eslint/dev/**/*.html'], ['runEslint']);
 });
 
 /* 监听代理服务器 */
@@ -217,32 +217,33 @@ gulp.task('browserSync', () => {
       target: 'localhost/demo'
     }
     //    server: {   //相对地址
-    //        baseDir: '../../www/demo/'
+    //      baseDir: '../www/demo/',
+    //      directory: true
     //    }
   });
 
   gulp.watch([
-    '../../www/demo/**/*.html',
-    '../../www/demo/**/js/**/*.js',
-    '../../www/demo/**/css/**/*.css',
-    '../../www/demo/**/images/**',
-
-    '!../../www/demo/**/node_modules/**'
+    '../www/demo/123.me/*.html'
+    //    '../../www/demo/**/*.html',
+    //    '../../www/demo/**/js/**/*.js',
+    //    '../../www/demo/**/css/**/*.css',
+    //    '../../www/demo/**/images/**',
+    //    '!../../www/demo/**/node_modules/**'
   ]).on('change', browserSync.reload); // 刷新浏览器
 });
 
 /* 删除文件（夹） */
 gulp.task('delRelease', () => {
   del([
-    '../images/release/**/*',
-    '../css/release/**/*',
-    '../scss/release/**/*',
-    '../px2rem/release/**/*',
-    '../sprites/release/**/*',
-    '../font/release/**/*',
-    '../js/release/**/*',
-    '../babel/release/**/*',
-    '../eslint/release/**/*'
+    './images/release/**/*',
+    './css/release/**/*',
+    './scss/release/**/*',
+    './px2rem/release/**/*',
+    './sprites/release/**/*',
+    './font/release/**/*',
+    './js/release/**/*',
+    './babel/release/**/*',
+    './eslint/release/**/*'
   ], { force: true }).then(paths => {
     console.log('已经删除的文件或文件夹:\r\n', paths.join('\r\n'));
   });

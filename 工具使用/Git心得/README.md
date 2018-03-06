@@ -6,6 +6,7 @@
 1. [commit message格式](#commit-message格式)
 1. [如何在一台电脑中使用2（多个）个Github账号的SSH keys](#如何在一台电脑中使用2多个个github账号的ssh-keys)
 1. [设置gitconfig](#设置gitconfig)
+1. [.gitkeep文件](#gitkeep文件)
 1. [减少Git项目下载大小](#减少git项目下载大小)
 
 ### 基本操作
@@ -441,6 +442,11 @@
         ```text
         .idea
         ```
+
+### .gitkeep文件
+>因为Git不跟踪空文件夹，所以项目中的空文件夹都无法进入Git版本控制。
+
+由社区带头，把`.gitkeep`空白文件放在需要上传的空文件夹内并加入版本控制，使“空文件夹”也能被Git版本追踪。
 
 ### 减少Git项目下载大小
 1. 仅在Git项目中选择下载某些文件夹或文件

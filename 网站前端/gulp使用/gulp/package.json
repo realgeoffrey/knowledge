@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "autoprefixer": "7",
+    "autoprefixer": "8",
     "babel-core": "6",
     "babel-preset-env": "1",
     "browser-sync": "2",
@@ -28,14 +28,14 @@
   },
   "devDependencies": {
     "babel-eslint": "8",
-    "eslint-config-standard": "10",
+    "eslint-config-standard": "11",
     "eslint-plugin-html": "4",
     "eslint-plugin-import": "2",
-    "eslint-plugin-node": "5",
+    "eslint-plugin-node": "6",
     "eslint-plugin-promise": "3",
     "eslint-plugin-standard": "3"
   },
   "scripts": {
-    "runGulp": "gulp"
+    "gulp": "gulp"
   }
 }

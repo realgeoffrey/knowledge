@@ -24,6 +24,8 @@
             user 用户名 组名;
             worker_processes  1;
 
+            error_log  /tmp/nginx_error.log;
+
             events {
                 worker_connections  1024;
             }
@@ -32,7 +34,6 @@
                 include       mime.types;
                 default_type  application/octet-stream;
 
-                error_log  /tmp/nginx_error.log;
                 sendfile        on;
 
                 keepalive_timeout  65;
@@ -41,23 +42,17 @@
                     listen       80;
                     server_name  localhost;
 
-                    root 文件夹路径;
                     location / {
-                        index index.php index.html;
-                        try_files $uri $uri/ /index.php?$query_string;
+                        root 文件夹路径;     # 如/Users/Geoffrey/www
+                        index index.php index.html index.htm;
+                        try_files $uri $uri/ /index.html;
+                        #try_files $uri $uri/ /index.php?$query_string;
                         autoindex on;
                     }
 
                     error_page   500 502 503 504  /50x.html;
                     location = /50x.html {
                         root   html;
-                    }
-
-                    location ~ \.php$ {
-                        fastcgi_pass   127.0.0.1:9000;
-                        fastcgi_index  index.php;
-                        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-                        include        fastcgi_params;
                     }
                 }
 
@@ -75,23 +70,8 @@
                     listen       80;
                     server_name  域名1;
 
-                    root 文件夹路径;
                     location / {
-                        index index.php index.html;
-                        try_files $uri $uri/ /index.php?$query_string;
-                        autoindex on;
-                    }
-
-                    error_page   500 502 503 504  /50x.html;
-                    location = /50x.html {
-                        root   html;
-                    }
-
-                    location ~ \.php$ {
-                        fastcgi_pass   127.0.0.1:9000;
-                        fastcgi_index  index.php;
-                        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-                        include        fastcgi_params;
+                        root 文件夹路径;     # 如/Users/Geoffrey/www/demo/dev.me
                     }
                 }
                 ```
@@ -105,7 +85,7 @@
                     server_name  域名2;
 
                     location / {
-                          proxy_pass http://域名3:端口号;
+                        proxy_pass http://域名3:端口号;
                     }
 
                 }

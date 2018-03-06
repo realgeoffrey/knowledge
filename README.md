@@ -13,6 +13,7 @@
 >
 >        1. `dom`为JS对象，`$dom`为jQuery（或Zepto）对象。
 >        2. `obj`为对象，`arr`为数组。
+>    3. 默认仅针对浏览器环境的内容
 ></details>
 
 ## 网站前端
@@ -25,14 +26,18 @@
         1. [JS实用方法](./网站前端/JS方法积累/实用方法/README.md)
         2. [JS算法小结](./网站前端/JS方法积累/算法小结/README.md)
     3. [JS正则表达式](./网站前端/JS正则表达式/README.md)
-    >1. [原生JS宽高](./网站前端/JS学习笔记/原生JS宽高.md)
 2. HTML+CSS
 
     1. [HTML+CSS学习笔记](./网站前端/HTML+CSS学习笔记/README.md)
     2. [响应式相关](./网站前端/HTML+CSS学习笔记/响应式相关.md)
-    3. [弹性盒子flex](./网站前端/HTML+CSS学习笔记/弹性盒子.md)
+
+    ><details>
+    ><summary>其他</summary>
+    >
     >1. [实现具体业务](./网站前端/HTML+CSS学习笔记/实现具体业务.md)
-    >2. [Scss使用](./网站前端/Scss使用/README.md)
+    >2. [弹性盒子flex](./网站前端/HTML+CSS学习笔记/弹性盒子.md)
+    >3. [Scss使用](./网站前端/Scss使用/README.md)
+    ></details>
 3. 前端内容
 
     1. [前端概念](./网站前端/前端内容/README.md)
@@ -42,38 +47,47 @@
 5. [Vue.js学习笔记](./网站前端/Vue.js学习笔记/README.md)
 6. [Node.js学习笔记](./网站前端/Node.js学习笔记/README.md)
 
+    <details>
+    <summary>Node工具使用</summary>
+    
     >[我安装的全局仓库](./网站前端/Node.js学习笔记/我安装的全局仓库.md)
 
     1. [gulp使用](./网站前端/gulp使用/README.md)
 
-        1. [gulpfile.js](./网站前端/gulp使用/tools/gulpfile.js)
+        1. [gulpfile.js](./网站前端/gulp使用/gulp/gulpfile.js)
 
-            雪碧图的模板：[pc.handlebars](./网站前端/gulp使用/tools/pc.handlebars)、[wap.handlebars](./网站前端/gulp使用/tools/wap.handlebars)
-        2. [package.json](./网站前端/gulp使用/tools/package.json)
-        3. [.eslintrc.js](./网站前端/gulp使用/tools/.eslintrc.js)
-    2. babel使用
-
-        [.babelrc](./网站前端/babel使用/.babelrc)
+            雪碧图的模板：[pc.handlebars](./网站前端/gulp使用/gulp/pc.handlebars)、[wap.handlebars](./网站前端/gulp使用/gulp/wap.handlebars)
+        2. [package.json](./网站前端/gulp使用/gulp/package.json)
+        3. [.eslintrc.js](./网站前端/gulp使用/gulp/.eslintrc.js)
+        4. [.babelrc](./网站前端/gulp使用/gulp/.babelrc)
+        5. [.editorconfig](./网站前端/gulp使用/gulp/.editorconfig)
+    2. [ESLint配置方式](./网站前端/ESLint配置方式/README.md)
     3. [webpack使用](./网站前端/webpack使用/README.md)
+    </details>
 7. 初始化模板
         
     1. [cssReset.scss](./网站前端/初始化模板/cssReset.scss)
     2. [init.html](./网站前端/初始化模板/init.html)
 8. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
 
->- 废弃内容:thumbsdown:
+><details>
+><summary>废弃内容:thumbsdown:</summary>
 >
->    1. [兼容至ie6](./网站前端/兼容至ie6/README.md)
->    2. [废弃代码](./网站前端/JS方法积累/废弃代码/README.md)
+>1. [兼容至ie6](./网站前端/兼容至ie6/README.md)
+>2. [废弃代码](./网站前端/JS方法积累/废弃代码/README.md)
+>3. [原生JS宽高](./网站前端/JS学习笔记/原生JS宽高.md)
+></details>
 
 ## 工具使用
 1. [Git心得](./工具使用/Git心得/README.md)
 2. [命令行备忘](./工具使用/命令行备忘/README.md)
-3. [IDE设置](./工具使用/IDE设置/README.md)
+3. <details>
 
-    1. [phpstorm.jar](./工具使用/IDE设置/phpstorm_03.01.jar)
-    2. [webstorm.jar](./工具使用/IDE设置/webstorm_08.22.jar)
-    3. [.editorconfig](./工具使用/IDE设置/.editorconfig)
+   <summary><a href="./工具使用/IDEs设置/README.md">IDEs设置</a></summary>
+
+    1. [phpstorm.jar](./工具使用/IDEs设置/phpstorm_03.29.jar)
+    2. [webstorm.jar](./工具使用/IDEs设置/webstorm_08.22.jar)
+    </details>
 4. [Charles使用](./工具使用/Charles使用/README.md)
 5. [whistle使用](./工具使用/whistle使用/README.md)
 6. [科学上网](./工具使用/科学上网/README.md)

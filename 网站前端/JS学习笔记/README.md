@@ -296,7 +296,7 @@
     2. `properties`：是DOM对象的属性。
 - 当一个DOM节点为某个HTML标签所创建时，其大多数`properties`与对应`attributes`拥有相同或相近的名字，并不是一对一的关系：
 
-    1. 有几个`property`是直接反映`attribute`（`rel`、`id`），而有一些则用稍微不同的名字也直接映射（`htmlFor`映射`for`，`className`映射`class`）
+    1. 有几个`property`是直接反映`attribute`（`rel`、`id`），而有一些则用稍微不同的名字也直接映射（`htmlFor`映射`for`，`className`映射`class`，`dataset`映射`data-`集合）
 
         获取该`property`即等于读取其对应的`attribute`值，而设置该`property`即为`attribute`赋值。
     2. 很多`property`所映射的`attribute`是带有**限制**或**变动**的（`src`、`href`、`disabled`、`multiple`）
@@ -1215,7 +1215,7 @@
 
     绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/javascript.md#javascript编码规范)。
 
-    >可以设置为IDE的**Reformat Code**的排版样式。
+    >可以设置为IDEs的**Reformat Code**的排版样式。
 11. 用户体验
 
     1. 平稳退化（优雅降级）：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
@@ -1434,6 +1434,7 @@
                 setTimeout(function () {
                   document.body.removeChild(iframe);
                 }, 3000);
+				
                 location.href = '下载地址';
                 ```
             2. iOS9+
@@ -1442,6 +1443,7 @@
 
                 ```javascript
                 location.href = '自定义 URL scheme';
+				
                 setTimeout(function () {
                   location.href = '下载地址';
                 }, 250);
@@ -1452,7 +1454,8 @@
             3. Android
 
                 ```javascript
-                location.href = '自定义 URL scheme';
+                location.href = '自定义 URL scheme';	  // 也可以用iframe
+				
                 var start = Date.now();
                 setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）
                   if (Date.now() - start < 3100) {  // 还在这个页面，认为没有安装App
@@ -1460,9 +1463,11 @@
                   }
                 }, 3000);
                 ```
-        3. iOS9+的Universal links，可以从底层打开其他App客户端（跳过App的白名单）
+        3. iOS9+的Universal links（通用链接），可以从底层打开其他App客户端（跳过App的白名单，但还是可以用其他方式阻止通用链接打开App）
 
-            >需要两套域名配置、iOS设置等其他端配合。
+            >需要HTTPS域名配置、iOS设置等其他端配合。
+
+            >参考：[通用链接（Universal Links）的使用详解](http://www.hangge.com/blog/cache/detail_1554.html)、[Universal Link 前端部署采坑记](http://awhisper.github.io/2017/09/02/universallink/)、[Support Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html#//apple_ref/doc/uid/TP40016308-CH12-SW2)。
 
         - 提供Native调用的全局回调函数。
 
@@ -2225,11 +2230,11 @@
 5. 函数调用类型
     
     1. 直接函数调用（如`alert();`）、立即调用的函数表达式（如`(function () {}());`）
+    
+        `this`：全局对象`window`（与在什么作用域无关）
+    2. 对象的方法调用（如`obj.func();`）
         
-        `this`：全局对象`window`
-    2. 对象的方法调用（如`console.log();`）
-        
-        `this`：上级对象
+        `this`：上级对象（调用的`obj`）
     3. 构造函数实例化（如`new RegExp();`）
     
         `this`：新实例对象
@@ -2237,7 +2242,7 @@
     
         `this`：传入的对象
 
-    - `this`——调用函数的那个对象
+    - 总结：`this`——调用函数的那个对象
 
         <details>
         <summary>e.g.</summary>
@@ -2540,16 +2545,31 @@
     2. 被闭包引用的变量不会被垃圾回收：合理使用闭包。
     3. 被遗忘的计数器或回调函数：不使用时及时清除。
 
-1. DOM清空或删除时，事件绑定未清除导致内存泄漏：删除DOM前，先移除事件绑定。
+1. DOM清空或删除时事件绑定未清除，引起的内存泄漏：删除DOM前，先移除事件绑定。
 
     >jQuery的`empty`和`remove`会移除元素内部的一切，包括绑定的事件及与该元素相关的jQuery数据（data、promise等所有数据）；`detach`则保留所有jQuery数据。
-2. 后代元素存在引用引起的内存泄漏：指向DOM的变量，在DOM删除后要设置为`null`。
+2. <details>
+
+    <summary>元素引用，引起的内存泄漏：指向DOM（包括后代）的变量，删除DOM后要设为<code>null</code>。</summary>
 
     ![内存泄漏图](./images/memory-leak-1.gif)
 
+    ```javascript
+    var refA = document.getElementById('refA');
+    var refB = document.getElementById('refB');
+    document.body.removeChild(refA);  // 尽管删除了，但DOM#refA不能GC回收，因为存在变量refA对它的引用
+
+    refA = null;  // 将变量refA对DOM#refA引用释放，但因为子元素的间接引用，还是无法回收DOM#refA
+
+    // 变量refB对DOM#refA的间接引用(变量refB引用了DOM#refB，而DOM#refB属于DOM#refA)
+
+    refB = null;  // 将变量refB对DOM#refB的引用释放，DOM#refA和DOM#refB就可以被GC回收
+    ```
+
     1. 黄色是指直接被JS变量所引用，在内存里。
-    2. 红色是指间接被JS变量所引用，refB被refA间接引用，导致即使refB变量被清空，也是不会被回收的。
-    3. 子元素refB由于parentNode的间接引用，只要它不被删除，它所有的父元素（图中红色部分）都不会被删除。
+    2. 红色是指间接被JS变量所引用，DOM#refA被DOM#refB间接引用，因此即使变量refA被清空，也没DOM被回收。
+    3. DOM#refB由于属于parentNode，只要引用它的变量不释放，它所有的父元素（图中红色部分）都不会被删除。
+    </details>
 
 >随着JS引擎的更新，原来会导致内存泄漏的bug已经慢慢被修复，因此写代码时不太需要注意内存泄漏问题（误）。
 
