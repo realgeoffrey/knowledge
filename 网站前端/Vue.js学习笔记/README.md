@@ -8,6 +8,7 @@
 1. [nuxt.js](#nuxtjs)
 1. [jQuery与Vue.js对比](#jquery与vuejs对比)
 
+---
 ### [vue](https://github.com/vuejs/vue)
 1. 单向数据流（实现双向绑定效果），响应式
 
@@ -742,7 +743,160 @@
     在底层的实现上，Vue将模板编译成虚拟DOM渲染函数。结合响应系统，Vue能够智能地计算出最少需要重新渲染多少组件，并把DOM操作次数减到最少。
 
 ### [vue-router](https://github.com/vuejs/vue-router)
->使用Charles代理到本地dev环境（map remote），要保证被代理和代理的路径相同，才能让路由正确。
+1. 初始化
+
+    ```javascript
+    new Vue({
+      router: new VueRouter({
+        mode: 'hash或history或abstract',    // 默认hash模式
+        base: '/...基路径/',           // 仅在history模式下，设置应用的基路径
+        routes: [
+          // 普通路由
+          {
+            path: '路由参数',       // 除了path，其他都是可选
+            component: 组件,
+            name: '路由名',
+            redirect: 路由参数,     // 重定向（URL变化）
+            alias: 路由参数,        // 别名（URL不变化）
+            props: 布尔或对象或函数, // 传参进组件。布尔值决定$route.params是否被设置为组件属性；对象或函数则传入具体属性
+            beforeEnter: 方法,
+            meta: '额外信息参数',
+            caseSensitive: 布尔值,       // 匹配规则是否大小写敏感？(默认值：false)
+            pathToRegexpOptions: 对象,   // 编译正则的选项
+          },
+
+          // 动态路由
+          {
+            path: ':动态路由',
+            component: 组件
+          },
+
+          // 命名视图
+          {
+            path: '路由参数',
+            components: {
+              'default': 组件,
+              '视图名1': 组件,
+            }
+          },
+
+          // 嵌套路由（可以嵌套所有类型的路由）
+          {
+            path: '路由参数',
+            component: 组件,
+            children: [
+              路由配置,
+            ]
+          },
+        ],
+        linkActiveClass: 'router-link-active',              // 激活<router-link>的CSS类名
+        linkExactActiveClass: 'router-link-exact-active',   // 精确激活<router-link>的CSS类名
+        scrollBehavior: 方法,
+        parseQuery/stringifyQuery: 方法,
+        fallback: 方法,
+      }),
+      ...
+    })
+    ```
+2. 内置组件
+
+    1. `<router-link>`：导航
+
+        1. `to`：目标地址
+        2. `replace`：（默认`false`）是否使用`replace`替换~~push~~
+        3. `tag`：（默认`a`）生成其他标签名
+        4. `append`：（默认`false`）是否是相对路径
+        5. `exact`：（默认`false`）：是否精确激活
+        6. `event`：（默认`'click'`）：触发导航的事件
+        7. `active-class`：（默认`'router-link-active'`）：链接激活时使用的CSS类名
+        8. `exact-active-class`：（默认`'router-link-exact-active'`）：被精确匹配的时候应该激活的CSS类名
+    2. `<router-view>`：渲染路由匹配的组件（可嵌套）
+
+        `name`：（默认`'default'`）命名视图的名字
+3. 注入后在组件中增加
+
+    1. `$router`：路由器实例对象
+
+        1. `app`：Vue根实例
+        2. `mode`：路由模式
+        3. `currentRoute`：`$route`
+        4. `beforeEach/beforeResolve/afterEach(方法)`：导航守卫
+        5. `go(数字)`
+        6. `back()`
+        7. `forward()`
+        8. `push(路由字符串或对象[, 完成回调函数[, 失败回调函数]])`
+        9. `replace(路由字符串或对象[, 完成回调函数[, 失败回调函数]])`
+        10. `getMatchedComponents(location?)`
+        11. `resolve(location, current?, append?)`
+        12. `addRoutes(routes)`
+        13. `onReady(callback, [errorCallback])`
+        14. `onError(callback)`
+    2. `$route`：当前激活的路由的状态信息
+
+        1. `path`：绝对路径
+        2. `params`：动态路由的路由参数对象
+        3. `query`：查询参数对象
+        4. `hash`：hash值
+        5. `matched`：匹配到的路由数组
+        6. `fullPath`：完整路径
+        7. `name`：路由名称
+        8. `redirectedFrom`：若存在重定向，则为重定向来源的路由名字
+
+        - <details>
+
+            <summary>检测路由变化，可以在组件中<code>watch</code>注入的<code>$route</code>或使用额外的钩子（导航守卫）</summary>
+
+            ```javascript
+            watch: {
+              '$route' (to, from) {
+                // 对路由变化作出响应...
+              }
+            }
+            ```
+            </details>
+    3. 增加钩子：`beforeRouteEnter`、`beforeRouteUpdate`、`beforeRouteLeave`
+4. 导航守卫
+
+    ><details>
+    ><summary>守卫接收三个参数<code>to, from, next</code></summary>
+    >
+    >1. `to`：即将进入的目标`$route`
+    >2. `from`：正在离开的`$route`
+    >3. `next`：`resolve`方法
+    ></details>
+
+    1. 全局（通过router对象）
+
+        1. `router.beforeEach((to, from, next) => {})`
+        2. `router.beforeResolve((to, from, next) => {})`
+        3. `router.afterEach((to, from) => {})`
+    2. 路由配置中
+
+        `beforeEnter (to, from, next) {}`
+    3. 组件内新增钩子
+
+        1. `beforeRouteEnter (to, from, next) {}`
+        2. `beforeRouteUpdate (to, from, next) {}`
+        3. `beforeRouteLeave (to, from, next) {}`
+
+    - 完整的导航解析流程
+
+        1. 导航被触发；
+        2. 在失活的组件里调用`beforeRouteLeave`守卫；
+        3. 调用全局的`beforeEach`守卫；
+        4. 在重用的组件里调用`beforeRouteUpdate`守卫；
+        5. 在路由配置里调用`beforeEnter`；
+        6. 解析异步路由组件；
+        7. 在被激活的组件里调用`beforeRouteEnter`；
+        8. 调用全局的`beforeResolve`守卫；
+        9. 导航被确认；
+        10. 调用全局的`afterEach`钩子；
+        11. 触发DOM更新；
+        12. 用创建好的实例调用`beforeRouteEnter`中的`next`回调函数。
+4. 注意
+
+    1. 组件最大限度复用：路由切换时，若两个路由都渲染同个组件，则不会销毁重建，而是直接复用，因此被复用的组件的生命周期钩子不会再被调用。
+    2. 匹配优先级：有时候，同一个路径可以匹配多个路由，此时，匹配的优先级就按照路由的定义顺序：谁先定义的，谁的优先级就最高。
 
 ### [vuex](https://github.com/vuejs/vuex)
 >store的概念：vuex提供的容器，state的集合。

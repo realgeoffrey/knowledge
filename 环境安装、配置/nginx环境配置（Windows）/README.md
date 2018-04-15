@@ -22,6 +22,8 @@
 
             sendfile        on;
 
+            server_names_hash_bucket_size   64;
+
             keepalive_timeout   65;
 
             server {

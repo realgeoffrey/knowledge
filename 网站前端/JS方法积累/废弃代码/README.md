@@ -14,7 +14,22 @@
         1. [对象合二为一（改变第一个参数）](#原生js对象合二为一改变第一个参数)
         1. [深复制](#原生js深复制)
         1. [通过类名获取DOM](#原生js通过类名获取dom)
+1. [Polyfill](#polyfill)
 
+    1. [`requestAnimationFrame`和`cancelAnimationFrame`](#原生jsrequestanimationframe和cancelanimationframe的polyfill)
+    1. [`Date.now`](#原生jsdatenow的polyfill)
+    1. [`Object.create`](#原生jsobjectcreate的polyfill)
+    1. [`Array.isArray`](#原生jsarrayisarray的polyfill)
+    1. [`Array.prototype.map`](#原生jsarrayprototypemap的polyfill)
+    1. [`Function.prototype.bind`](#原生jsfunctionprototypebind的polyfill)
+    1. [`String.prototype.trim`](#原生jsstringprototypetrim的polyfill)
+    1. [`String.prototype.repeat`](#原生jsstringprototyperepeat的polyfill)
+    1. [`Number.isNaN`](#原生jsnumberisnan的polyfill)
+    1. [`Number.isFinite`](#原生jsnumberisfinite的polyfill)
+    1. [`Number.isInteger`](#原生jsnumberisinteger的polyfill)
+    1. [`Number.isSafeInteger`](#原生jsnumberissafeinteger的polyfill)
+
+---
 ## 原生JS方法
 
 ### *原生JS*格式化日期
@@ -380,3 +395,257 @@ function getElementsByClassName(className, parentDom) {
 }
 ```
 >可以使用jQuery的`$('.类名')`完全替代。
+
+---
+## Polyfill
+
+### *原生JS*`requestAnimationFrame`和`cancelAnimationFrame`的Polyfill
+```javascript
+(function () {
+    var lastTime = 0,
+        vendors = ['ms', 'moz', 'webkit', 'o'],
+        x;
+
+    for (x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+    }
+
+    if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = function (callback, element) {
+            var currTime = new Date().getTime(),
+                timeToCall = Math.max(0, 16 - (currTime - lastTime)),
+                id = window.setTimeout(function () {
+                    callback(currTime + timeToCall);
+                }, timeToCall);
+
+            lastTime = currTime + timeToCall;
+
+            return id;
+        };
+    }
+
+    if (!window.cancelAnimationFrame) {
+        window.cancelAnimationFrame = function (id) {
+            clearTimeout(id);
+        };
+    }
+}());
+```
+>来自[rAF.js](https://gist.github.com/paulirish/1579671)。
+
+### *原生JS*`Date.now`的Polyfill
+```javascript
+if (typeof Date.now !== 'function') {
+    Date.now = function () {
+        return new Date().getTime();
+    };
+}
+```
+>`Date.now()`相对于`new Date().getTime()`及其他方式，可以避免生成不必要的`Date`对象，更高效。
+
+### *原生JS*`Object.create`的Polyfill
+```javascript
+if (typeof Object.create !== 'function') {
+    Object.create = (function () {
+        function Temp() {}
+
+        var hasOwn = Object.prototype.hasOwnProperty;
+
+        return function (O) {
+            if (typeof O != 'object') {
+                throw TypeError('Object prototype may only be an Object or null');
+            }
+
+            Temp.prototype = O;
+            var obj = new Temp();
+            Temp.prototype = null; // 不要保持一个 O 的杂散引用（a stray reference）...
+
+            if (arguments.length > 1) {
+                var Properties = Object(arguments[1]);
+
+                for (var prop in Properties) {
+                    if (hasOwn.call(Properties, prop)) {
+                        obj[prop] = Properties[prop];
+                    }
+                }
+            }
+
+            return obj;
+        };
+    })();
+}
+```
+>来自[MDN:Object.create](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill)。
+
+### *原生JS*`Array.isArray`的Polyfill
+```javascript
+if (!Array.isArray) {
+    Array.isArray = function (arg) {
+        return Object.prototype.toString.call(arg) === '[object Array]';
+    };
+}
+```
+>来自[MDN:Array.isArray](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray#Polyfill)。
+
+### *原生JS*`Array.prototype.map`的Polyfill
+```javascript
+if (!Array.prototype.map) {
+    Array.prototype.map = function (callback, thisArg) {
+        var T, A, k;
+
+        if (this == null) {
+            throw new TypeError(' this is null or not defined');
+        }
+
+        var O = Object(this);
+
+        var len = O.length >>> 0;
+
+        if (Object.prototype.toString.call(callback) != '[object Function]') {
+            throw new TypeError(callback + ' is not a function');
+        }
+
+        if (thisArg) {
+            T = thisArg;
+        }
+
+        A = new Array(len);
+
+        k = 0;
+
+        while (k < len) {
+            var kValue, mappedValue;
+
+            if (k in O) {
+
+                kValue = O[k];
+
+                mappedValue = callback.call(T, kValue, k, O);
+
+                A[k] = mappedValue;
+            }
+
+            k += 1;
+        }
+
+        return A;
+    };
+}
+```
+>来自[MDN:Array.prototype.map](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map#Compatibility)。
+
+### *原生JS*`Function.prototype.bind`的Polyfill
+```javascript
+if (!Function.prototype.bind) {
+    Function.prototype.bind = function (oThis) {
+        if (typeof this !== 'function') {
+            throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
+        }
+
+        var aArgs = Array.prototype.slice.call(arguments, 1),
+            fToBind = this,
+            fNOP = function () {
+            },
+            fBound = function () {
+                return fToBind.apply(this instanceof fNOP
+                        ? this
+                        : oThis || this,
+                    aArgs.concat(Array.prototype.slice.call(arguments)));
+            };
+
+        fNOP.prototype = this.prototype;
+        fBound.prototype = new fNOP();
+
+        return fBound;
+    };
+}
+```
+>来自[MDN:Function.prototype.bind](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind#Compatibility)。
+
+### *原生JS*`String.prototype.trim`的Polyfill
+```javascript
+if (!String.prototype.trim) {
+    String.prototype.trim = function () {
+        return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+    };
+}
+```
+>来自[MDN:String.prototype.trim](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/Trim#兼容旧环境)。
+
+### *原生JS*`String.prototype.repeat`的Polyfill
+```javascript
+if (!String.prototype.repeat) {
+  String.prototype.repeat = function (count) {
+    'use strict';
+    if (this == null) {
+      throw new TypeError('can\'t convert ' + this + ' to object');
+    }
+    var str = '' + this;
+    count = +count;
+    if (count != count) {
+      count = 0;
+    }
+    if (count < 0) {
+      throw new RangeError('repeat count must be non-negative');
+    }
+    if (count == Infinity) {
+      throw new RangeError('repeat count must be less than infinity');
+    }
+    count = Math.floor(count);
+    if (str.length == 0 || count == 0) {
+      return '';
+    }
+    // 确保 count 是一个 31 位的整数。这样我们就可以使用如下优化的算法。
+    // 当前（2014年8月），绝大多数浏览器都不能支持 1 << 28 长的字符串，所以：
+    if (str.length * count >= 1 << 28) {
+      throw new RangeError('repeat count must not overflow maximum string size');
+    }
+    var rpt = '';
+    for (; ;) {
+      if ((count & 1) == 1) {
+        rpt += str;
+      }
+      count >>>= 1;
+      if (count == 0) {
+        break;
+      }
+      str += str;
+    }
+    return rpt;
+  };
+}
+```
+>来自[MDN:String.prototype.repeat](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/repeat#填充)。
+
+### *原生JS*`Number.isNaN`的Polyfill
+```javascript
+Number.isNaN = Number.isNaN || function (value) {
+  return typeof value === 'number' && isNaN(value);
+};
+```
+>来自[MDN:Number.isNaN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN#Polyfill)。
+
+### *原生JS*`Number.isFinite`的Polyfill
+```javascript
+Number.isFinite = Number.isFinite || function (value) {
+  return typeof value === 'number' && isFinite(value);
+};
+```
+>来自[MDN:Number.isFinite](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite#Polyfill)。
+
+### *原生JS*`Number.isInteger`的Polyfill
+```javascript
+Number.isInteger = Number.isInteger || function (value) {
+  return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
+};
+```
+>来自[MDN:Number.isInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill)。
+
+### *原生JS*`Number.isSafeInteger`的Polyfill
+```javascript
+Number.isSafeInteger = Number.isSafeInteger || function (value) {
+  return Number.isInteger(value) && Math.abs(value) <= Number.MAX_SAFE_INTEGER;
+};
+```
+>来自[MDN:Number.isSafeInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isSafeInteger#Polyfill)。

@@ -6,6 +6,7 @@
 1. [npm](#npm)
 1. [CommonJS规范](#commonjs规范)
 
+---
 ### nvm更新Node.js版本
 1. macOS或Linux的[nvm](https://github.com/creationix/nvm)：
 

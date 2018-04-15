@@ -7,6 +7,7 @@
 1. [haslayout](#haslayout)
 1. [ie6的bug调试](#ie6的bug调试)
 
+---
 ### 兼容ie的手段
 1. 根据不同的ie版本进行操作（hack）
 

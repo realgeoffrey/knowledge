@@ -56,6 +56,7 @@
 >2. 大部分情况下，jQuery内容适用于Zepto。
 ></details>
 
+---
 ## DOM操作
 >以纵轴为例。
 
@@ -534,7 +535,7 @@
         >    `function () {funcIe.apply(dom, arguments);}`（无法解绑）。
         >2. 修改`funcIe`
         >
-        >    1. `funcIe.bind(dom)`（需要`bind`的[polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsfunctionprototypebind的polyfill)）。
+        >    1. `funcIe.bind(dom)`（需要`bind`的[polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生jsfunctionprototypebind的polyfill)）。
         >    2. 使用`window.event`定义~~this~~
         >
         >        ```javascript
@@ -1474,7 +1475,25 @@
             >判断多个回调函数顺序：带id触发Native行为，Native调用回调函数时携带之前的id。
     3. 根据前端的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在Hybrid遇到的bug。
 
-        对于App内不方便查看的信息，可以发送需要查看的信息、再抓包的方式进行调试。
+        1. 对于App内不方便查看的信息，可以发送需要查看的信息、再抓包的方式进行调试。
+        2. 可以用一些隐蔽的手势触发log信息展示。
+        
+            <details>
+            <summary>e.g.</summary>
+            
+            ```javascript
+            var consolelogi = 0;
+            
+            document.addEventListener('touchstart', function () {
+                if (event.touches.length >= 4) {    // 4个触发点以上
+                    consolelogi += 1;
+                    if (consolelogi >= 2) {    // 2次以上触发
+                        // 展示隐藏的调试信息
+                    }
+                }
+            }, false);
+            ```
+            </details>
 
 ### Tips
 1. `var a = b = c = 1;/* b、c没有var的声明。等价于：var a = 1; b = 1; c = 1; */`
@@ -1655,19 +1674,18 @@
 ### 跨域请求
 
 ><details>
-><summary>浏览器同源策略（协议、域名、端口，必须完全相同才能够在脚本中发起请求）限制</summary>
+><summary>浏览器同源策略（协议、域名、端口，必须完全相同）限制</summary>
 >
->1. 不能通过AJAX或其他方式去请求不同源中的内容（低版本浏览器不会发起跨域请求，直接拒绝）。
+>- 当一个资源从非同源中请求资源时，资源会发起一个跨域HTTP请求。出于安全原因，**浏览器**限制：从**脚本**内发起的跨源HTTP请求 或 拦截跨域HTTP响应。
 >
->    现代浏览器会进行CORS处理，发起请求并与服务器协商（特例：有些浏览器不允许从HTTPS跨域访问HTTP，这些浏览器在请求还未发出的时候就会拦截请求）。
->2. 不同源的文档间（文档与`<iframe>`、文档与`window.open()`的新窗口）不能进行JS交互操作。
->
->    1. 可以获取window对象，但无法进一步获取相应的属性、方法。
->    2. 无法获取DOM、`cookie`、`Web Storage`、`IndexDB`。
+>1. 跨域请求（AJAX、Fetch或其他方式）不一定是浏览器限制了发起跨站请求，也可能是跨站请求可以正常发起，但返回结果被浏览器拦截。
+>2. 现代浏览器会进行CORS处理，发起请求并与服务器协商（特例：有些浏览器不允许从HTTPS跨域访问HTTP，在请求还未发出时就拦截请求）。低版本浏览器可能不会发起跨域请求，直接拒绝发起请求。
 ></details>
 
-1. [CORS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#corscross-origin-resource-sharing跨域资源共享)
-2. jsonp（服务端需要设置）
+1. [CORS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#corscross-origin-resource-sharing跨域资源共享)（服务端需要支持）
+
+    >ie9-的jQuery的非jsonp的ajax跨域，要添加`jQuery.support.cors = true`。
+2. jsonp（服务端需要支持）
 
     >只支持**GET**请求。
 
@@ -1688,6 +1706,14 @@
     >})
     >```
     ></details>
+
+><details>
+><summary>不同源的文档间（文档与<code><iframe></code>、文档与<code>window.open()</code>的新窗口）不能进行JS交互操作</summary>
+>
+>1. 可以获取window对象，但无法进一步获取相应的属性、方法。
+>2. 无法获取DOM、`cookie`、`Web Storage`、`IndexDB`。
+></details>
+
 3. `document.domain`相同则可以文档间互相操作
 
     把不同文档的`document.domain`设置为一致的值（仅允许设置为上一级域），即可双向通信、互相操作（`cookie`可以直接操作；`localStorage`、`IndexDB`只能通过`postMessage`通信）。
@@ -2441,7 +2467,7 @@
         >```
     2. 原型式继承
 
-        `Object.create`（[Polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsobjectcreate的polyfill)）
+        `Object.create`
 
         >问题：包含引用类似值的属性，始终会共享给原型与所有实例（浅复制）。
 
@@ -2837,7 +2863,7 @@
         等价于`setTimeout(func, 0)`。
 2. 重绘函数（`requestAnimationFrame`）
 
-    >[Polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe和cancelanimationframe的polyfill)、[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
+    >[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
 
     1. 浏览器重绘之前，进行一次：发起通知进入“任务队列”，等待“执行栈”调用。
 

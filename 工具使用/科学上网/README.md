@@ -12,6 +12,7 @@
     1. [IKEv2（IKEv1）](#ikev2ikev1客户端配置)
     1. [Cisco IPSec（IPSec Xauth PSK）](#cisco-ipsecipsec-xauth-psk客户端配置)
 
+---
 ## 服务端安装
 
 ### 通过docker安装Shadowsocks、Cisco IPSec（IPSec Xauth PSK）服务器（最快捷方式）

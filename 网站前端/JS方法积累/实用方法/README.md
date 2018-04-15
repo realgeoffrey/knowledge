@@ -45,8 +45,6 @@
         1. [输入框光标位置的获取和设置](#原生js输入框光标位置的获取和设置)
         1. [阻止嵌入滚动条冒泡“橡皮筋效果”（iOS）](#原生js阻止嵌入滚动条冒泡橡皮筋效果ios)
         1. [获取滚动轴宽度（或高度）](#原生js获取滚动轴宽度或高度)
-        1. [防抖函数](#原生js防抖函数)
-        1. [节流函数](#原生js节流函数)
         1. [验证邮箱有效性](#原生js验证邮箱有效性)
         1. [创建兼容的XHR对象](#原生js创建兼容的xhr对象)
         1. [动态添加脚本、样式](#原生js动态添加脚本样式)
@@ -56,31 +54,19 @@
         1. [分割数组](#原生js分割数组)
         1. [加入收藏夹](#原生js加入收藏夹)
         1. [从字符串中获取绝对路径](#原生js从字符串中获取绝对路径)
-    1. 兼容性
-    
+    1. 提升性能
+
+        1. [防抖函数](#原生js防抖函数)
+        1. [节流函数](#原生js节流函数)
         1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
-        1. [`requestAnimationFrame`的递归](#原生jsrequestanimationframe的递归)   
-        1. [Polyfill](#polyfill)
-        
-            1. [`requestAnimationFrame`和`cancelAnimationFrame`](#原生jsrequestanimationframe和cancelanimationframe的polyfill)
-            1. [`Date.now`](#原生jsdatenow的polyfill)
-            1. [`Object.create`](#原生jsobjectcreate的polyfill)
-            1. [`Array.isArray`](#原生jsarrayisarray的polyfill)
-            1. [`Array.prototype.map`](#原生jsarrayprototypemap的polyfill)
-            1. [`Function.prototype.bind`](#原生jsfunctionprototypebind的polyfill)
-            1. [`String.prototype.trim`](#原生jsstringprototypetrim的polyfill)
-            1. [`String.prototype.repeat`](#原生jsstringprototyperepeat的polyfill)
-            1. [`Number.isNaN`](#原生jsnumberisnan的polyfill)
-            1. [`Number.isFinite`](#原生jsnumberisfinite的polyfill)
-            1. [`Number.isInteger`](#原生jsnumberisinteger的polyfill)
-            1. [`Number.isSafeInteger`](#原生jsnumberissafeinteger的polyfill)
+        1. [`requestAnimationFrame`的递归](#原生jsrequestanimationframe的递归)
 1. [jQuery方法](#jquery方法)
 
     1. 延迟异步加载
         
         1. [滚动加载](#jquery滚动加载)
         1. [图片延时加载](#jquery图片延时加载)
-    1. [节点跟随屏幕滚动](#jquery节点跟随屏幕滚动)      
+    1. [节点跟随屏幕滚动](#jquery节点跟随屏幕滚动)
     1. [弹出toast](#jquery弹出toast)
     1. [全选、取消全选](#jquery全选取消全选)
     1. [点击指定区域以外执行函数](#jquery点击指定区域以外执行函数)
@@ -92,6 +78,7 @@
 
     >大部分情况下，jQuery内容适用于Zepto。
 
+---
 ## 原生JS方法
 
 ### *原生JS*判断所在系统
@@ -1629,152 +1616,6 @@ function getScrollBarWidth() {
 }
 ```
 
-### *原生JS*防抖函数
-```javascript
-/**
- * 函数连续调用时，间隔时间必须大于或等于wait，func才会执行
- * @param {Function} func - 传入函数
- * @param {Number} wait - 函数触发的最小间隔
- * @param {Boolean} [immediate] - 设置为ture时，调用触发于开始边界而不是结束边界
- * @returns {Function} - 返回客户调用函数
- */
-function debounce(func, wait, immediate) {
-    if (typeof Date.now !== 'function') {
-        Date.now = function () {
-            return new Date().getTime();
-        };
-    }
-
-    var timeout, args, context, timestamp, result;
-
-    var later = function () {
-        //据上一次触发时间间隔
-        var last = Date.now() - timestamp;
-
-        //上次被包装函数被调用时间间隔last小于设定时间间隔wait
-        if (last < wait && last >= 0) {
-            timeout = setTimeout(later, wait - last);
-        } else {
-            timeout = null;
-
-            //如果设定为immediate===true，因为开始边界已经调用过了此处无需调用
-            if (!immediate) {
-                result = func.apply(context, args);
-
-                if (!timeout) {
-                    context = args = null;
-                }
-            }
-        }
-    };
-
-    return function () {
-        context = this;
-        args = arguments;
-        timestamp = Date.now();
-
-        var callNow = immediate && !timeout;
-
-        if (!timeout) {
-            timeout = setTimeout(later, wait);
-        }
-        if (callNow) {
-            result = func.apply(context, args);
-            context = args = null;
-        }
-
-        return result;
-    };
-}
-
-
-/* 使用测试*/
-var a = debounce(function () {
-    console.log(1);
-}, 1000);
-
-$(window).on('scroll', a);
-```
->来自[underscore](https://github.com/jashkenas/underscore)。
-
-### *原生JS*节流函数
-```javascript
-/**
- * 函数连续调用时，func在wait时间内，执行次数不得高于1次
- * @param {Function} func - 传入函数
- * @param {Number} wait - 函数触发的最小间隔
- * @param {Object} [options] - 如果想忽略开始边界上的调用，传入{leading: false}；如果想忽略结尾边界上的调用，传入{trailing: false}
- * @returns {Function} - 返回客户调用函数
- */
-function throttle(func, wait, options) {
-    if (typeof Date.now !== 'function') {
-        Date.now = function () {
-            return new Date().getTime();
-        };
-    }
-
-    var context, args, result;
-    var timeout = null;
-    var previous = 0;   //上次执行时间点
-
-    if (!options) {
-        options = {};
-    }
-
-    //延迟执行函数
-    var later = function () {
-        //若设定了开始边界不执行选项，上次执行时间始终为0
-        previous = options.leading === false ? 0 : Date.now();
-        timeout = null;
-        result = func.apply(context, args);
-        if (!timeout) {
-            context = args = null;
-        }
-    };
-
-    return function () {
-        var now = Date.now();
-
-        //首次执行时，如果设定了开始边界不执行选项，将上次执行时间设定为当前时间。
-        if (!previous && options.leading === false) {
-            previous = now;
-        }
-
-        //延迟执行时间间隔
-        var remaining = wait - (now - previous);
-
-        context = this;
-
-        args = arguments;
-
-        //延迟时间间隔remaining小于等于0，表示上次执行至此所间隔时间已经超过一个时间窗口 || remaining大于时间窗口wait，表示客户端系统时间被调整过
-        if (remaining <= 0 || remaining > wait) {
-            if (timeout) {
-                clearTimeout(timeout);
-                timeout = null;
-            }
-            previous = now;
-            result = func.apply(context, args);
-            if (!timeout) {
-                context = args = null;
-            }
-        } else if (!timeout && options.trailing !== false) { //如果延迟执行不存在，且没有设定结尾边界不执行选项
-            timeout = setTimeout(later, remaining);
-        }
-        return result;
-    };
-}
-
-
-/* 使用测试*/
-var a = throttle(function () {
-    console.log(1);
-}, 1000);
-
-$(window).on('scroll', a);
-```
->来自[underscore](https://github.com/jashkenas/underscore)。
-
 ### *原生JS*验证邮箱有效性
 ```javascript
 function validateEmail(email) {
@@ -2132,6 +1973,152 @@ function getAbsoluteUrl(url) {
 }
 ```
 
+### *原生JS*防抖函数
+```javascript
+/**
+ * 函数连续调用时，间隔时间必须大于或等于wait，func才会执行
+ * @param {Function} func - 传入函数
+ * @param {Number} wait - 函数触发的最小间隔
+ * @param {Boolean} [immediate] - 设置为ture时，调用触发于开始边界而不是结束边界
+ * @returns {Function} - 返回客户调用函数
+ */
+function debounce(func, wait, immediate) {
+    if (typeof Date.now !== 'function') {
+        Date.now = function () {
+            return new Date().getTime();
+        };
+    }
+
+    var timeout, args, context, timestamp, result;
+
+    var later = function () {
+        //据上一次触发时间间隔
+        var last = Date.now() - timestamp;
+
+        //上次被包装函数被调用时间间隔last小于设定时间间隔wait
+        if (last < wait && last >= 0) {
+            timeout = setTimeout(later, wait - last);
+        } else {
+            timeout = null;
+
+            //如果设定为immediate===true，因为开始边界已经调用过了此处无需调用
+            if (!immediate) {
+                result = func.apply(context, args);
+
+                if (!timeout) {
+                    context = args = null;
+                }
+            }
+        }
+    };
+
+    return function () {
+        context = this;
+        args = arguments;
+        timestamp = Date.now();
+
+        var callNow = immediate && !timeout;
+
+        if (!timeout) {
+            timeout = setTimeout(later, wait);
+        }
+        if (callNow) {
+            result = func.apply(context, args);
+            context = args = null;
+        }
+
+        return result;
+    };
+}
+
+
+/* 使用测试*/
+var a = debounce(function () {
+    console.log(1);
+}, 1000);
+
+$(window).on('scroll', a);
+```
+>来自[underscore](https://github.com/jashkenas/underscore)。
+
+### *原生JS*节流函数
+```javascript
+/**
+ * 函数连续调用时，func在wait时间内，执行次数不得高于1次
+ * @param {Function} func - 传入函数
+ * @param {Number} wait - 函数触发的最小间隔
+ * @param {Object} [options] - 如果想忽略开始边界上的调用，传入{leading: false}；如果想忽略结尾边界上的调用，传入{trailing: false}
+ * @returns {Function} - 返回客户调用函数
+ */
+function throttle(func, wait, options) {
+    if (typeof Date.now !== 'function') {
+        Date.now = function () {
+            return new Date().getTime();
+        };
+    }
+
+    var context, args, result;
+    var timeout = null;
+    var previous = 0;   //上次执行时间点
+
+    if (!options) {
+        options = {};
+    }
+
+    //延迟执行函数
+    var later = function () {
+        //若设定了开始边界不执行选项，上次执行时间始终为0
+        previous = options.leading === false ? 0 : Date.now();
+        timeout = null;
+        result = func.apply(context, args);
+        if (!timeout) {
+            context = args = null;
+        }
+    };
+
+    return function () {
+        var now = Date.now();
+
+        //首次执行时，如果设定了开始边界不执行选项，将上次执行时间设定为当前时间。
+        if (!previous && options.leading === false) {
+            previous = now;
+        }
+
+        //延迟执行时间间隔
+        var remaining = wait - (now - previous);
+
+        context = this;
+
+        args = arguments;
+
+        //延迟时间间隔remaining小于等于0，表示上次执行至此所间隔时间已经超过一个时间窗口 || remaining大于时间窗口wait，表示客户端系统时间被调整过
+        if (remaining <= 0 || remaining > wait) {
+            if (timeout) {
+                clearTimeout(timeout);
+                timeout = null;
+            }
+            previous = now;
+            result = func.apply(context, args);
+            if (!timeout) {
+                context = args = null;
+            }
+        } else if (!timeout && options.trailing !== false) { //如果延迟执行不存在，且没有设定结尾边界不执行选项
+            timeout = setTimeout(later, remaining);
+        }
+        return result;
+    };
+}
+
+
+/* 使用测试*/
+var a = throttle(function () {
+    console.log(1);
+}, 1000);
+
+$(window).on('scroll', a);
+```
+>来自[underscore](https://github.com/jashkenas/underscore)。
+
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript
 /**
@@ -2204,260 +2191,6 @@ var a = new RepeatRAF(function () {
 
 //a.stop();
 ```
-
----
-## Polyfill
-
-### *原生JS*`requestAnimationFrame`和`cancelAnimationFrame`的Polyfill
-```javascript
-(function () {
-    var lastTime = 0,
-        vendors = ['ms', 'moz', 'webkit', 'o'],
-        x;
-
-    for (x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
-    }
-
-    if (!window.requestAnimationFrame) {
-        window.requestAnimationFrame = function (callback, element) {
-            var currTime = new Date().getTime(),
-                timeToCall = Math.max(0, 16 - (currTime - lastTime)),
-                id = window.setTimeout(function () {
-                    callback(currTime + timeToCall);
-                }, timeToCall);
-
-            lastTime = currTime + timeToCall;
-
-            return id;
-        };
-    }
-
-    if (!window.cancelAnimationFrame) {
-        window.cancelAnimationFrame = function (id) {
-            clearTimeout(id);
-        };
-    }
-}());
-```
->来自[rAF.js](https://gist.github.com/paulirish/1579671)。
-
-### *原生JS*`Date.now`的Polyfill
-```javascript
-if (typeof Date.now !== 'function') {
-    Date.now = function () {
-        return new Date().getTime();
-    };
-}
-```
->`Date.now()`相对于`new Date().getTime()`及其他方式，可以避免生成不必要的`Date`对象，更高效。
-
-### *原生JS*`Object.create`的Polyfill
-```javascript
-if (typeof Object.create !== 'function') {
-    Object.create = (function () {
-        function Temp() {}
-
-        var hasOwn = Object.prototype.hasOwnProperty;
-
-        return function (O) {
-            if (typeof O != 'object') {
-                throw TypeError('Object prototype may only be an Object or null');
-            }
-
-            Temp.prototype = O;
-            var obj = new Temp();
-            Temp.prototype = null; // 不要保持一个 O 的杂散引用（a stray reference）...
-
-            if (arguments.length > 1) {
-                var Properties = Object(arguments[1]);
-
-                for (var prop in Properties) {
-                    if (hasOwn.call(Properties, prop)) {
-                        obj[prop] = Properties[prop];
-                    }
-                }
-            }
-
-            return obj;
-        };
-    })();
-}
-```
->来自[MDN:Object.create](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill)。
-
-### *原生JS*`Array.isArray`的Polyfill
-```javascript
-if (!Array.isArray) {
-    Array.isArray = function (arg) {
-        return Object.prototype.toString.call(arg) === '[object Array]';
-    };
-}
-```
->来自[MDN:Array.isArray](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray#Polyfill)。
-
-### *原生JS*`Array.prototype.map`的Polyfill
-```javascript
-if (!Array.prototype.map) {
-    Array.prototype.map = function (callback, thisArg) {
-        var T, A, k;
-
-        if (this == null) {
-            throw new TypeError(' this is null or not defined');
-        }
-
-        var O = Object(this);
-
-        var len = O.length >>> 0;
-
-        if (Object.prototype.toString.call(callback) != '[object Function]') {
-            throw new TypeError(callback + ' is not a function');
-        }
-
-        if (thisArg) {
-            T = thisArg;
-        }
-
-        A = new Array(len);
-
-        k = 0;
-
-        while (k < len) {
-            var kValue, mappedValue;
-
-            if (k in O) {
-
-                kValue = O[k];
-
-                mappedValue = callback.call(T, kValue, k, O);
-
-                A[k] = mappedValue;
-            }
-
-            k += 1;
-        }
-
-        return A;
-    };
-}
-```
->来自[MDN:Array.prototype.map](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map#Compatibility)。
-
-### *原生JS*`Function.prototype.bind`的Polyfill
-```javascript
-if (!Function.prototype.bind) {
-    Function.prototype.bind = function (oThis) {
-        if (typeof this !== 'function') {
-            throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
-        }
-
-        var aArgs = Array.prototype.slice.call(arguments, 1),
-            fToBind = this,
-            fNOP = function () {
-            },
-            fBound = function () {
-                return fToBind.apply(this instanceof fNOP
-                        ? this
-                        : oThis || this,
-                    aArgs.concat(Array.prototype.slice.call(arguments)));
-            };
-
-        fNOP.prototype = this.prototype;
-        fBound.prototype = new fNOP();
-
-        return fBound;
-    };
-}
-```
->来自[MDN:Function.prototype.bind](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind#Compatibility)。
-
-### *原生JS*`String.prototype.trim`的Polyfill
-```javascript
-if (!String.prototype.trim) {
-    String.prototype.trim = function () {
-        return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
-    };
-}
-```
->来自[MDN:String.prototype.trim](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/Trim#兼容旧环境)。
-
-### *原生JS*`String.prototype.repeat`的Polyfill
-```javascript
-if (!String.prototype.repeat) {
-  String.prototype.repeat = function (count) {
-    'use strict';
-    if (this == null) {
-      throw new TypeError('can\'t convert ' + this + ' to object');
-    }
-    var str = '' + this;
-    count = +count;
-    if (count != count) {
-      count = 0;
-    }
-    if (count < 0) {
-      throw new RangeError('repeat count must be non-negative');
-    }
-    if (count == Infinity) {
-      throw new RangeError('repeat count must be less than infinity');
-    }
-    count = Math.floor(count);
-    if (str.length == 0 || count == 0) {
-      return '';
-    }
-    // 确保 count 是一个 31 位的整数。这样我们就可以使用如下优化的算法。
-    // 当前（2014年8月），绝大多数浏览器都不能支持 1 << 28 长的字符串，所以：
-    if (str.length * count >= 1 << 28) {
-      throw new RangeError('repeat count must not overflow maximum string size');
-    }
-    var rpt = '';
-    for (; ;) {
-      if ((count & 1) == 1) {
-        rpt += str;
-      }
-      count >>>= 1;
-      if (count == 0) {
-        break;
-      }
-      str += str;
-    }
-    return rpt;
-  };
-}
-```
->来自[MDN:String.prototype.repeat](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/repeat#填充)。
-
-### *原生JS*`Number.isNaN`的Polyfill
-```javascript
-Number.isNaN = Number.isNaN || function (value) {
-  return typeof value === 'number' && isNaN(value);
-};
-```
->来自[MDN:Number.isNaN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN#Polyfill)。
-
-### *原生JS*`Number.isFinite`的Polyfill
-```javascript
-Number.isFinite = Number.isFinite || function (value) {
-  return typeof value === 'number' && isFinite(value);
-};
-```
->来自[MDN:Number.isFinite](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite#Polyfill)。
-
-### *原生JS*`Number.isInteger`的Polyfill
-```javascript
-Number.isInteger = Number.isInteger || function (value) {
-  return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
-};
-```
->来自[MDN:Number.isInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill)。
-
-### *原生JS*`Number.isSafeInteger`的Polyfill
-```javascript
-Number.isSafeInteger = Number.isSafeInteger || function (value) {
-  return Number.isInteger(value) && Math.abs(value) <= Number.MAX_SAFE_INTEGER;
-};
-```
->来自[MDN:Number.isSafeInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isSafeInteger#Polyfill)。
 
 ---
 ## jQuery方法

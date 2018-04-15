@@ -16,6 +16,7 @@
 1. [JavaScript范围](#javascript范围)
 1. [JS模块化方案](#js模块化方案)
 
+---
 ### 前端涉及内容
 ![前端涉及内容图1](./images/fe-tech-1.png)
 

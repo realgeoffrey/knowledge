@@ -19,6 +19,7 @@
 >1. HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-server协议。默认端口号80、无状态（cookie弥补）、以ASCII码传输。
 >2. 使用HTTP时，必定是一端担任客户端角色，另一端担任服务器端角色。虽然客户端和服务器端的角色可能会互换，但一条通信路线中角色是确定的。请求由客户端开始。
 
+---
 ### TCP/IP协议族
 与互联网相关联的协议集合总称。
 
@@ -733,40 +734,67 @@
     5. 服务端推送（server push）。
 
 ### CORS（cross-origin resource sharing，跨域资源共享）
->ie10+支持。
+>参考[跨域资源共享 CORS 详解](http://www.ruanyifeng.com/blog/2016/04/cors.html)。
 
-- 若服务端配置允许了某些或所有域名，就可以进跨域响应；前端不需要进行额外工作，现代浏览器自动完成交互：
+- 若服务端配置允许了某些或所有域名，就可以跨域响应；前端不需要进行额外工作，现代浏览器自动完成交互：
 
-    现代浏览器一旦发现AJAX或`fetch`或其他方式请求跨源（与请求的数据格式无关），会自动添加一些附加的头信息（如`Origin`），有时还会多出一次附加的请求（非简单请求的`OPTIONS`请求）。
+    >ie10+支持。
 
+    现代浏览器一旦发现`XMLHttpRequest`或`fetch`或其他方式请求跨源，会自动添加一些附加的头信息（如`Origin`），有时还会多出一次附加的请求（非简单请求的`OPTIONS`请求）。
+
+><details>
+><summary>简单/非简单请求区分</summary>
+>
+>- 同时满足以下两个条件为简单请求，否则为非简单请求：
+>
+>    1. 请求方法：
+>
+>         `HEAD`或`GET`或`POST`。
+>    2. 请求头仅包含（浏览器自动添加的其他请求头也可以是简单请求）：
+>
+>         1. `Accept`
+>         2. `Accept-Language`
+>         3. `Content-Language`
+>         4. `Content-Type`仅限于`application/x-www-form-urlencoded`或`multipart/form-data`或`text/plain`
+></details>
+    
 1. 简单请求（simple request）
 
-    ><details>
-    ><summary>区分</summary>
-    >
-    >- 同时满足以下两个条件为简单请求，否则为非简单请求：
-    >
-    >    1. 请求方法：`HEAD`或`GET`或`POST`。
-    >    2. 头信息仅包含：`Accept`、`Accept-Language`、`Content-Language`、`Content-Type`仅限于`application/x-www-form-urlencoded`或`multipart/form-data`或`text/plain`、等。
-    ></details>
-    
-    - 流程：
+    1. HTTP请求：
 
-        1. 请求头需要：`Origin`（来自的域）；
-        2. 响应头返回：`Access-Control-Allow-Origin`（值为`Origin`的值或`*`表明接受跨域请求）、`Access-Control-Allow-Credentials`、`Access-Control-Expose-Headers`、`Content-Type`。
+        请求头需要：`Origin`（来自的域）。
+    2. 响应：
 
-            若`Origin`指定的源不在许可范围内，服务器会返回一个正常的HTTP响应，但没有任何CORS相关的头信息字段。浏览器就会认定为跨域错误，被XMLHttpRequest对象的onerror回调函数捕获。
+        1. 允许跨域，则响应头包含：
+
+            1. `Access-Control-Allow-Origin`：值为请求头`Origin`的值或`*`，表明接受跨域请求
+            2. `Access-Control-Allow-Credentials`：（可选）是否允许发送Cookie（`XMLHttpRequest`要设置`withCredentials`为`true`，浏览器才会发送）
+            3. `Access-Control-Expose-Headers`：（可选）CORS请求时，`XMLHttpRequest`只能拿到6个基本字段（`Cache-Control`、`Content-Language`、`Content-Type`、`Expires`、`Last-Modified`、`Pragma`），若需要其他字段，需在此指定
+        2. 不允许跨域：
+        
+            若`Origin`指定的源不在许可范围内，服务器会返回一个正常的HTTP响应（状态码200，并可以返回正确数据），但没有任何CORS相关的头信息字段。浏览器根据响应头没有包含~~Access-Control-Allow-Origin~~则认定为跨域错误（被`XMLHttpRequest`的`onerror`回调函数捕获）。
 2. 非简单请求（not-so-simple request）
 
-    - 流程：
+    >非简单请求是那种对服务器有特殊要求的请求。先发起的预检请求可以避免跨域请求对服务器数据产生未预期的副作用；得到服务端允许后，浏览器才会发送正式的跨域请求（与简单请求一致）。
 
-        1. 浏览器判断是非简单请求，自动发出`OPTIONS`方法的预检请求，获知服务端是否允许该跨域请求；
+    1. 预检请求
 
-            请求头需要：`Origin`（来自的域）、`Access-Control-Request-Method`（需要进行跨域的请求方法）、`Access-Control-Request-Headers`（将实际请求所携带的头部字段告诉服务器）。
-        2. 响应头返回：`Access-Control-Allow-Origin`（值为`Origin`的值或`*`表明接受跨域请求）、`Access-Control-Allow-Methods`（服务器支持的所有跨域请求的方法）、`Access-Control-Allow-Headers`、`Access-Control-Allow-Credentials`、`Access-Control-Max-Age`；
+        1. 浏览器判断为非简单请求，自动发出`OPTIONS`方法的HTTP请求：
 
-            若服务器否定了预检请求，服务器会返回一个正常的HTTP响应，但没有任何CORS相关的头信息字段。浏览器就会认定为跨域错误，被XMLHttpRequest对象的onerror回调函数捕获。
-        3. 一旦服务器通过预检请求，之后的每次跨域请求都与简单请求一致。
+            请求头需要：`Origin`（来自的域）、`Access-Control-Request-Method`（需要进行跨域的请求方法）、`Access-Control-Request-Headers`（需要额外发送的头信息字段）。
+        2. 响应：
+
+            1. 允许跨域，则响应头包含：
+
+                1. `Access-Control-Allow-Origin`：值为请求头`Origin`的值或`*`，表明接受跨域请求
+                2. `Access-Control-Allow-Methods`：服务器支持的所有跨域请求的请求方法
+                3. `Access-Control-Allow-Headers`：（若HTTP请求头有`Access-Control-Request-Headers`则必须）服务器支持的所有跨域请求的请求头字段
+                4. `Access-Control-Allow-Credentials`：（可选）是否允许发送Cookie（`XMLHttpRequest`要设置`withCredentials`为`true`，浏览器才会发送）
+                5. `Access-Control-Max-Age`：（可选）本次预检请求的有效期，单位秒
+            2. 不允许跨域：
+
+                若服务器否定了预检请求，服务器会返回一个正常的HTTP响应，但没有任何CORS相关的头信息字段。浏览器根据响应没有包含相关响应头则认定为跨域错误（被`XMLHttpRequest`的`onerror`回调函数捕获）。
+    2. 一旦服务器通过预检请求，之后的每次跨域请求都与简单请求一致。
 
 ### 服务端验证用户状态
 HTTP是无状态协议，通过session-cookie、token判断客户端的用户状态。
