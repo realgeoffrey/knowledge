@@ -84,7 +84,7 @@
                     >
                     >```html
                     ><style>
-                    >    /* 权重相同，仅取决于样式顺序*/
+                    >    /* 权重相同，仅取决于样式顺序 */
                     >    .a p {color: red;}
                     >    .b p {color: blue;}
                     ></style>
@@ -158,30 +158,30 @@
     2. 尽量在页面中不要使`z-index`的数值`> 4`，否则就要考虑是否过度使用此属性。
 
 ### 几个类似的换行属性
-1. `word-break`
+1. 单词内断字
 
-    单词内换行。
-
-    1. `normal`（默认）
-
-        若此行放不下则整个单词换行，若下行也放不下则溢出（保持单词不断字）。
-    2. `break-all`
-
-        若此行放不下则直接断字。
-2. `word-wrap`或`overflow-wrap`
-
-    单词内换行。
-
-    1. `normal`（默认）
-
-        表示在正常的单词结束处换行。
-    2. `break-word`
-
-        若此行放不下则整个单词先换行，若下行也放不下才断字。
-
+    >默认效果：若此行放不下则整个单词换行，若下行也放不下则溢出（保持单词不断字）。
+    
+    1. `word-break`
+    
+        1. `normal`（默认）
+    
+            默认效果。
+        2. `break-all`
+    
+            若此行放不下则直接断字。
+    2. `word-wrap`或`overflow-wrap`
+    
+        1. `normal`（默认）
+    
+            默认效果。
+        2. `break-word`
+    
+            若此行放不下则整个单词先换行，若下行也放不下才断字。
+    
     >1. 对于用户输入或不确定长度的内容，建议都加上`word-wrap: break-word;`，避免内容宽度溢出。
-    >2. 或直接在`<body>`上设置，让所有内容继承。
-3. `white-space`
+    >2. 或直接在`<body>`上设置，让所有内容继承（ie10-使用`word-wrap: break-word;`会导致无法出现`text-overflow`的溢出效果，因此ie10-不要在body上全局添加）。
+2. `white-space`
 
     处理空白和内容换行。
 
@@ -192,13 +192,7 @@
     | `pre` | 保留 | 换行 | 不换行 |
     | `pre-wrap` | 保留 | 换行 | 换行 |
     | `pre-line` | 连续的合并为一个 | 换行 | 换行 |
-4. `word-spacing`
-
-    空白字符包裹的非空白字符的间距。
-5. `letter-spacing`
-
-    字符的间距。
-6. `text-overflow`
+3. `text-overflow`
 
     溢出的样式。
 
@@ -210,6 +204,12 @@
         省略号。
 
     >需要和`overflow: hidden;`、`white-space: nowrap;`配合产生溢出。
+4. `word-spacing`
+
+    空白字符包裹的非空白字符的间距。
+5. `letter-spacing`
+
+    字符的间距。
 
 ### 清除浮动
 1. 在父级添加
@@ -401,8 +401,8 @@
     >    font-size: 10px;
     >}
     >.son {
-    >    font-size: 2em; /*20px：继承的font-size * 2*/
-    >    padding: 2em;   /*40px：自己的font-size * 2*/
+    >    font-size: 2em; /* 20px：继承的font-size * 2 */
+    >    padding: 2em;   /* 40px：自己的font-size * 2 */
     >}
     >```
     ></details>
@@ -481,11 +481,11 @@
 3. `<img>`没有`src`属性或`src`属性为空隐藏
 
     ```css
-    img[src=""] {   /* ie8+*/
-        visibility: hidden; /* 属性为空隐藏*/
+    img[src=""] {   /* ie8+ */
+        visibility: hidden; /* 属性为空隐藏 */
     }
-    img:not([src]) {    /* ie9+*/
-        visibility: hidden; /* 属性不存在隐藏*/
+    img:not([src]) {    /* ie9+ */
+        visibility: hidden; /* 属性不存在隐藏 */
     }
     ```
 
@@ -536,7 +536,7 @@
     >            @error "rem()的参数单位必须是px或不带单位";
     >        }
     >
-    >        //$base-font-size：切图时设计稿宽度对应的媒体查询中html的font-size
+    >        // $base-font-size：切图时设计稿宽度对应的媒体查询中html的font-size
     >        @return $px / $base-font-size + rem;
     >    }
     >    @function position-one($positon, $singleSize, $spritesSize) {
@@ -570,7 +570,7 @@
     >        background-size: rem(($width + $gap)*$x - $gap) rem(($height + $gap)*$y - $gap);
     >        background-repeat: no-repeat;
     >
-    >        //$i：横轴；$j：纵轴
+    >        // $i：横轴；$j：纵轴
     >        @for $j from 1 through $y {
     >            @for $i from 1 through $x {
     >                &.i-#{$j}-#{$i} {
@@ -810,7 +810,7 @@
                 display: flex;
                 justify-content: center;
             }
-            /* 或*/
+            /* 或 */
             .father {
                 display: flex;
 
@@ -845,15 +845,15 @@
         1. 父级`display: table-cell; vertical-align: middle;`，子级`display: inline-block;`。
 
             ```scss
-            .father { /* （为兼容低版本ie）不能是float或absolute，可以在外嵌套float或absolute*/
+            .father { /* （为兼容低版本ie）不能是float或absolute，可以在外嵌套float或absolute */
                 display: table-cell;
                 vertical-align: middle;
 
-                /* ie6/7需要：height/font-size = 1.14*/
+                /* ie6/7需要：height/font-size = 1.14 */
                 *height: 114px;
                 *font-size: 100px;
 
-                .son {  /* （为兼容低版本ie）必须是内联元素*/
+                .son {  /* （为兼容低版本ie）必须是内联元素 */
                     display: inline-block;
                     *display: inline;
                     *zoom: 1;
@@ -957,7 +957,7 @@
                 text-align: center;
                 vertical-align: middle;
 
-                /* ie6/7需要：height/font-size = 1.14*/
+                /* ie6/7需要：height/font-size = 1.14 */
                 *height: 114px;
                 *font-size: 100px;
 
@@ -1114,9 +1114,14 @@
 2. flex具体解决方案：[solved-by-flexbox](https://hufan-akari.github.io/solved-by-flexbox/)。
 
 ### 渲染性能（rendering performance）
+
+><details>
+><summary>每一帧耗时</summary>
+>
 >1. 为了视觉上连贯，浏览器对每一帧画面的所有工作需要在16ms（1000ms / 60f ~= 16.66ms/f）内完成。
->2. 渲染画面时，浏览器需要进行一些流程工作：渲染队列的管理、渲染线程与其他线程之间的切换等。因此一帧中花费在像素渲染管道（JS->Style->render tree）的时间要控制在10至12ms内，再余出4至6ms进行其他流程工作。
->3. 一帧画面理想的耗时为：`16ms = 3~4ms的JS代码 + 7~8ms的渲染工作 + 4~6ms的流程工作`。
+>2. 渲染画面时，浏览器需要进行一些流程工作：渲染队列的管理、渲染线程与其他线程之间的切换等。因此一帧中花费在像素渲染管道（JS->Style->render tree）的时间要控制在10至12ms内，再余出4至6ms进行流程工作。
+>3. 一帧画面理想的耗时组合为：`16ms = 3~4ms的JS代码 + 7~8ms的渲染工作 + 4~6ms的流程工作`。
+></details>
 
 1. 像素渲染管道：
 
@@ -1222,16 +1227,16 @@
             ><summary>e.g.</summary>
             >
             >```javascript
-            >/* bad：强制同步布局，可能产生布局抖动*/
+            >/* bad：强制同步布局，可能产生布局抖动 */
             >dom.forEach(function (elem) {
-            >    if (window.scrollY < 200) { //计算读取layout
-            >        elem.style.opacity = 0.5;   //JS写入样式
+            >    if (window.scrollY < 200) { // 计算读取layout
+            >        elem.style.opacity = 0.5;   // JS写入样式
             >    }
             >});
             >
-            >/* good：先读后写*/
-            >if (window.scrollY < 200) { //计算读取layout
-            >    /* 批量JS写入样式*/
+            >/* good：先读后写 */
+            >if (window.scrollY < 200) { // 计算读取layout
+            >    /* 批量JS写入样式 */
             >    dom.forEach(function (elem) {
             >        elem.style.opacity = 0.5;
             >    });
@@ -1372,17 +1377,58 @@
 10. 单选`<input type="radio">`、多选`<input type="checkbox">`按钮开关自定义样式：
 
     用`input:checked + 兄弟节点`操作选项选中与否的不同样式；可以隐藏`<input>`，点击在`<label>`上改变`<input>`的`:checked`状态（`<label>`的`for`绑定`<input>`的`id`），用自定义样式来制作单选框、复选框。避免使用JS。
-11. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
-12. 避免：
+11. 输入框仅输入数字的：
+
+    1. `<input type="number" pattern="[0-9]*" onchange="处理函数">`
+    2. <details>
+    
+        <summary>处理函数（jQuery）</summary>
+        
+        ```javascript
+        $(输入框).on('change', function () {
+            const $this = $(this);
+            let val = $this.val();
+
+            val = parseFloat(val.split('.').slice(0, 2).join('.'));  // 去除多余的小数点（type="text"才有用）
+
+            if (Number.isNaN(val)) {    // 去除无效输入
+                val = 默认值;
+            } else {    // 处理最小最大值
+                val = Math.max(Math.min(val, 最大值), 最小值);
+            }
+
+            if (val.toString().split('.')[1] && val.toString().split('.')[1].length > 小数位数) {  // 保留小数位数
+                val = val.toFixed(小数位数);
+            }
+
+            $this.val(val);
+        });
+        ```
+        </details>
+12. `<datalist>`为`<input>`的输入值添加建议（`<input>`的`list`绑定`<datalist>`的`id`）
+
+    <details>
+    <summary>e.g.</summary>
+    
+    ```html
+    <input list="标记"/>
+    <datalist id="标记">
+      <option value="建议值1">
+      <option value="建议值2">
+    </datalist>
+    ```
+    </details>
+13. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
+14. 避免：
 
     1. 避免~~放大、缩小图片~~，使用原始大小展现。
     2. 避免使用不可缓存且增加额外HTTP请求的 ~~<iframe>~~。
-13. 富文本：
+15. 富文本：
 
     1. 富文本内容除了要检测用户输入标签的闭合性，还要注意不要用`<li>`嵌套富文本，因为代码中如果有单独的`<li>`（没有嵌套`<ol>`或`<ul>`），就会“越级”到跟祖先级`<li>`同级的内容。
     2. 部分富文本会用`<em>`、`<ol>`、`<ul>`来表示**斜体**、**有序序列**、**无序序列**，因此如果用CSS重置了以上标签后，要在[富文本内重载开启它们的默认效果](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L61-L77)。
     3. 部分富文本会在`<table>`上使用`cellspacing`、`border`、`bordercolor`属性设置表格，又因为设置了`border: 0;`的表格无法重载开启以上属性作用，所以CSS重置时[不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L26-L27)。
-14. 超出内容区域的内容：
+16. 超出内容区域的内容：
 
     1. 用绝对定位把内容设置在外部
 

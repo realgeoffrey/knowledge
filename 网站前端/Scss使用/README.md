@@ -1,4 +1,4 @@
-# Scss使用
+### Scss使用
 >来自[Sass](http://sass-lang.com/documentation/file.SASS_REFERENCE.html#css_extensions)。
 
 - 预编译工具
@@ -180,18 +180,18 @@
         @return 20px / 2;
     }
     a {
-        color: #112233 + #aabbcc;   //#bbddff
-        font-size: 20 + px;         //20px
-        width: (20px / 2);          //10px
-        height: func();             //10px
-        line-height: (20px / 2px);  //10
+        color: #112233 + #aabbcc;   // #bbddff
+        font-size: 20 + px;         // 20px
+        width: (20px / 2);          // 10px
+        height: func();             // 10px
+        line-height: (20px / 2px);  // 10
     }
     ```
 8. 注释
 
     ```scss
     // 不出现在.css
-    /* 出现在.css*/
+    /* 出现在.css */
     ```
     >有中文注释时，要在scss文件顶部增加`@charset "utf-8";`，否则编译报错。
 9. 方法`@function`
@@ -208,17 +208,17 @@
 10. `unit()`返回单位
 
     ```scss
-    unit(100);                      //=> ""
-    unit(100px);                    //=> "px"
-    unit(3em);                      //=> "em"
-    unit(3rem);                     //=> "rem"
-    unit(3vw);                      //=> "vw"
-    unit(3vh);                      //=> "vh"
+    unit(100);                      // => ""
+    unit(100px);                    // => "px"
+    unit(3em);                      // => "em"
+    unit(3rem);                     // => "rem"
+    unit(3vw);                      // => "vw"
+    unit(3vh);                      // => "vh"
     ```
 11. `unitless()`是否没有单位
 
     ```scss
-    unitless(100);      //=> true
-    unitless(100px);    //=> false
+    unitless(100);      // => true
+    unitless(100px);    // => false
     ```
 12. `@if` `@for` `@each` `@while`

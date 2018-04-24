@@ -1,4 +1,4 @@
-# LAMP环境配置（CentOS7.0）
+### LAMP环境配置（CentOS7.0）
 
 1. 新增用户
 

@@ -238,7 +238,7 @@
             （仅针对`mousemove`事件）相对于上一帧鼠标移动距离。
         6. `x/y`
 
-            等价于`clientX/Y`。
+            等价于：`clientX/Y`。
     2. WAP端`TouchEvent`
 
         `e.touches[0].`（`e`为传入事件处理函数的第一个参数）：
@@ -327,8 +327,8 @@
 
     选择器选取的内容返回数组（空内容返回`[]`），所以`if($(...)) {}`永远成立。因此用以下方法：
 
-    1. `if($(...).length > 0) {}    /* 若无则为0*/`
-    2. `if($(...)[0]) {}    /* 若无则为undefined*/`
+    1. `if($(...).length > 0) {}    // 若无则为0`
+    2. `if($(...)[0]) {}    // 若无则为undefined`
 4. `on`绑定效率（事件代理、事件委托）
 
     >1. 事件代理：把原本需要绑定的事件委托给祖先元素，让祖先元素担当事件监听的职务。
@@ -413,7 +413,7 @@
 
         >1. `.height/innerHeight/outerHeight()`返回`数字`。
         >2. `.css('height')`返回带`px`的`字符串`。
-10. `$.proxy()`和原生`Function.prototype.bind`类似，返回一个确定了`this`（和参数）的新方法
+10. `$.proxy()`和原生JS的`Function.prototype.bind`类似，返回一个确定了`this`（和参数）的新方法
 
     >新方法的参数填补在原函数去除已设置形参的后面（与`Function.prototype.bind`一致）。
 
@@ -458,10 +458,10 @@
 
         1. 事件处理程序设置为空方法或修改方法：
 
-            `funcAttr = function () {};`、`funcAttr = function () {/* 修改方法*/};`
+            `funcAttr = function () {};`、`funcAttr = function () {/* 修改方法 */};`
         2. 移除或修改DOM元素的事件绑定属性：
 
-            `dom.removeAttribute('onclick');`、`dom.setAttribute('onclick', '(function () {/* 修改方法*/} ())');`
+            `dom.removeAttribute('onclick');`、`dom.setAttribute('onclick', '(function () {/* 修改方法 */} ())');`
         </details>
     2. DOM0级事件处理（冒泡）
 
@@ -472,7 +472,7 @@
         <details>
         <summary>移除或修改绑定事件</summary>
         
-        `dom.onclick = null;`、`dom.onclick = function () {/* 修改方法*/};`
+        `dom.onclick = null;`、`dom.onclick = function () {/* 修改方法 */};`
         </details>
     3. IE事件处理（冒泡）
 
@@ -540,10 +540,10 @@
         >
         >        ```javascript
         >        function funcIe(e) {
-        >            e = e || window.event;                 //事件处理对象
-        >            var _this = e.srcElement || e.target;  //触发的DOM
+        >            e = e || window.event;                 // 事件处理对象
+        >            var _this = e.srcElement || e.target;  // 触发的DOM
         >
-        >            /* funcIe代码*/
+        >            /* funcIe代码 */
         >        }
         >        ```
         ></details>
@@ -556,6 +556,27 @@
         4. 若要移除元素上所有的代理事件，而不移除任何非代理事件，使用特殊值`'**'`。
 
             e.g. `$dom.off('click', '**');   // 解绑$dom代理到子节点的click事件，但不解绑$dom自己的click事件`
+- JS的自定义事件
+
+    1. 原生JS：
+
+        ```javascript
+        // 创建自定义事件
+        var event = new Event('事件名');   // 新
+        // 或：var event = document.createEvent('Event'); event.initEvent('事件名', true, true);   // 旧
+
+        // 监听自定义事件
+        dom.addEventListener('事件名', function (e) { ... }, false);
+
+        // 触发
+        dom.dispatchEvent(event);
+        ```
+    2. `jQuery`：
+
+        ```javascript
+        $('选择器').on('自定义事件', function () {});
+        $('选择器').trigger('自定义事件');
+        ```
 
 ### 事件流（event flow）
 1. 类型：
@@ -591,7 +612,7 @@
 
     1. 点透现象：
 
-        使用Zepto的`tap`事件绑定（或原生`touchstart`绑定）后，若此元素在触摸事件发生后离开原始位置（CSS或JS），同一位置正好有一个DOM元素绑定了`click`事件或`<a>`，则会出现“点透”bug（触发底下元素的`click`事件）。
+        使用Zepto的`tap`事件绑定（或原生JS的`touchstart`绑定）后，若此元素在触摸事件发生后离开原始位置（CSS或JS），同一位置正好有一个DOM元素绑定了`click`事件或`<a>`，则会出现“点透”bug（触发底下元素的`click`事件）。
     2. 原因
 
         >历史原因：WAP端增加快速双击缩放和恢复功能。由于当用户一次点击屏幕之后，浏览器并不能立刻判断用户是单击还是双击操作。因此，就等待300ms左右，以判断用户是否再次点击了屏幕。
@@ -625,7 +646,7 @@
         </style>
 
         <script type="text/javascript">
-            var selector = '.a,.b .c,.d';   /* 选择器字符串*/
+            var selector = '.a,.b .c,.d';   /* 选择器字符串 */
 
             $(document.body).on('touchstart', selector, function () {
                 $(this).addClass('active');
@@ -837,15 +858,15 @@
 
         ```javascript
         var OneConstructor = function () {
-            /* 私有的内容*/
+            /* 私有的内容 */
             var _para = {a: '私有的变量_para'},
                 _func = function () {
                     console.log('私有的业务逻辑_func', _para);
                 },
-                _bindEvent = function () {  /* 绑定事件*/
+                _bindEvent = function () {  /* 绑定事件 */
 
                 },
-                _init = function () {   /* 初始化*/
+                _init = function () {   /* 初始化 */
                     _func();
                     _bindEvent();
                 };
@@ -856,8 +877,8 @@
                 _arr.push(arguments[_i]);
             }
 
-            /* 公开的内容*/
-            this.para = _arr;   //形参
+            /* 公开的内容 */
+            this.para = _arr;   // 形参
             this.para_1 = {b: '公开的变量para_1（每个实例不共享）'};
             this.func_1 = function () {
                 console.log('公开的业务逻辑func_1（每个实例不共享）');
@@ -868,15 +889,15 @@
 
         ```javascript
         var OneConstructor = (function () {
-            /* 私有的内容*/
+            /* 私有的内容 */
             var _para = {a: '私有的变量_para'},
                 _func = function () {
                     console.log('私有的业务逻辑_func', _para);
                 },
-                _bindEvent = function () {  /* 绑定事件*/
+                _bindEvent = function () {  /* 绑定事件 */
 
                 },
-                _init = function () {   /* 初始化*/
+                _init = function () {   /* 初始化 */
                     _func();
                     _bindEvent();
                 };
@@ -888,15 +909,15 @@
                     _arr.push(arguments[_i]);
                 }
 
-                /* 公开的内容*/
-                this.para = _arr;   //形参
+                /* 公开的内容 */
+                this.para = _arr;   // 形参
                 this.para_1 = {b: '公开的变量para_1（每个实例不共享）'};
                 this.func_1 = function () {
                     console.log('公开的业务逻辑func_1（每个实例不共享）');
                 };
             }
 
-            /* 构造函数的原型对象上，每个实例共享*/
+            /* 构造函数的原型对象上，每个实例共享 */
             Constructor.prototype = {
                 para_2: {c: '公开的变量para_2（每个实例共享）'},
                 func_2: function () {
@@ -904,10 +925,10 @@
                 }
             };
 
-            /* 原型对象添加constructor属性*/
+            /* 原型对象添加constructor属性 */
             if (typeof Object.defineProperty === 'function') {
 
-                /* 使属性：不可以改变描述符、不可以删除、不可以枚举、不可以被赋值运算符改变*/
+                /* 使属性：不可以改变描述符、不可以删除、不可以枚举、不可以被赋值运算符改变 */
                 Object.defineProperty(Constructor.prototype, 'constructor', {
                     value: Constructor
                 });
@@ -922,20 +943,20 @@
 
     ```javascript
     var singletonObj = (function () {
-        /* 私有变量和私有方法，无法直接访问，只能由return的对象字面量访问*/
+        /* 私有变量和私有方法，无法直接访问，只能由return的对象字面量访问 */
         var _para = {a: '私有变量'},
             _func = function () {
                 console.log('私有方法');
             };
 
-        /* 单例模式，可以访问私有内容*/
+        /* 单例模式，可以访问私有内容 */
         return {
-            get: function () {  /* 特权方法*/
+            get: function () {  /* 特权方法 */
                 _func();
 
                 return _para;
             },
-            set: function (para) {  /* 特权方法*/
+            set: function (para) {  /* 特权方法 */
                 _func();
 
                 _para = para;
@@ -962,24 +983,24 @@
 
     1. 变量声明（`var`）
 
-        无论语句在何处，无论是否会真正执行到，所有的`var`语句的**声明**都提升到作用域（函数内部或全局）顶部执行（hoisting），但具体**赋值**不会被提前。
+        无论语句在何处，无论是否会真正执行到，所有的`var`语句的**声明**都提升到作用域（函数体内或全局）顶部执行（hoisting），但具体**赋值**不会被提前。
 
         ><details>
         ><summary>e.g.</summary>
         >
         >```javascript
         >(function () {
-        >    console.log(a);    //undefined
+        >    console.log(a);    // undefined
         >    var a = 2;
-        >    console.log(a);    //2
+        >    console.log(a);    // 2
         >})();
         >
-        >//等价于：
+        >// 等价于：
         >(function () {
         >    var a;
-        >    console.log(a);    //undefined
+        >    console.log(a);    // undefined
         >    a = 2;
-        >    console.log(a);    //2
+        >    console.log(a);    // 2
         >})();
         >```
         ></details>
@@ -1008,19 +1029,19 @@
         >```javascript
         >var a1 = 1;
         >function a1() {}
-        >console.log(a1);    //1
+        >console.log(a1);    // 1
         >
         >function b2() {}
         >var b2 = 1;
-        >console.log(b2);    //1
+        >console.log(b2);    // 1
         >
         >var c3;
         >function c3() {}
-        >console.log(c3);    //function
+        >console.log(c3);    // function
         >
         >function d4() {}
         >var d4;
-        >console.log(d4);    //function
+        >console.log(d4);    // function
         >```
         ></details>
 
@@ -1028,10 +1049,10 @@
 
 2. 严格模式`use strict`
 
-    可用于全局，也可以用于局部（函数内）。
+    可用于全局，也可以用于局部（函数体内）。
 
     >1. 不推荐在全局作用域中使用，因为当有JS文件合并时，一个文件的全局严格模式会导致整个文件都是严格模式。
-    >2. 可以用`(function(){'use strict';/* 执行内容*/}());`匿名函数方式使用严格模式。
+    >2. 可以用`(function(){'use strict';/* 执行内容 */}());`匿名函数方式使用严格模式。
 3. 全等`===`（不全等`!==`）与等号`==`（不等`!=`）区别
 
     1. 当比较的两个值的类型不同时，`==`和`!=`都会强制[类型转换](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#数据类型转换)，再进行转换后值的比较。
@@ -1053,20 +1074,20 @@
     3. 常量用大写字母和下划线分割，如`MAX_COUNT`。
     4. 构造函数用大驼峰命名法（Pascal Case），首字母大写（以非动词开头），单词首字母大写：
 
-        1. `var a = new Person();   /* 构造函数*/`
-        2. `var b = getPerson();    /* 普通函数*/`
+        1. `var a = new Person();   // 构造函数`
+        2. `var b = getPerson();    // 普通函数`
     5. 不要用多行的字符串写法
 
         ><details>
         ><summary>e.g.</summary>
         >
         >```javascript
-        >/* 不提倡的多行写法*/
+        >/* 不提倡的多行写法 */
         >var a = 'abc\
         >def';
         >
         >
-        >/* 一般写法*/
+        >/* 一般写法 */
         >var b = 'abc' +
         >    'def';
         >```
@@ -1085,13 +1106,13 @@
         e.g.
 
         ```javascript
-        /* 不提倡的构造函数写法*/
+        /* 不提倡的构造函数写法 */
         var a1 = new Object();
         a.attr1 = '...';
         var a2 = new Object({attr1: '...'});
 
 
-        /* 提倡的字面量写法*/
+        /* 提倡的字面量写法 */
         var b = {attr1: '...'};
         ```
     2. 数组
@@ -1099,11 +1120,11 @@
         e.g.
 
         ```javascript
-        /* 不提倡的构造函数写法*/
+        /* 不提倡的构造函数写法 */
         var arr1 = new Array('a', 'b');
 
 
-        /* 提倡的字面量写法*/
+        /* 提倡的字面量写法 */
         var arr2 = ['a', 'b'];
         ```
     3. 字符串
@@ -1111,11 +1132,11 @@
         e.g.
 
         ```javascript
-        /* 不提倡的构造函数写法*/
+        /* 不提倡的构造函数写法 */
         var str1 = new String('a');
 
 
-        /* 提倡的字面量写法*/
+        /* 提倡的字面量写法 */
         var str2 = 'a';
         ```
 
@@ -1189,7 +1210,7 @@
          * @returns {Object|Undefined} result - 参数描述
          */
         function func(param1, param2, param3, param4, param5, param6) {
-            //param5.param5_1
+            // param5.param5_1
 
             return result;
         }
@@ -1271,10 +1292,10 @@
 
         ```javascript
         (function (win) {
-            'use strict';   //严格模式可以避免创建全局变量
+            'use strict';   // 严格模式可以避免创建全局变量
 
             var doc = win.document;
-            /* 代码*/
+            /* 代码 */
         }(window));
         ```
 3. 事件处理
@@ -1283,13 +1304,6 @@
     2. 不要分发事件：
 
         让事件处理函数成为接触到`event`对象的唯一函数，在event进入应用逻辑前完成用户相关操作（包括阻止默认事件或阻止冒泡等）。
-
-    - JS的自定义事件建议直接使用jQuery：
-
-        ```javascript
-        $('选择器').on('自定义事件', function () {});
-        $('选择器').trigger('自定义事件');
-        ```
 4. 将配置数据从代码中分离
 
     配置数据：URL、展示内容、重复的值、设置、任何可能发生变更的值。
@@ -1319,12 +1333,12 @@
     >2. 将函数声明包含在圆括号中，表示**函数表达式**，函数表达式的后面可以跟圆括号，表示执行此函数。
 
     ```javascript
-    /* 推荐方式*/
+    /* 推荐方式 */
     (function () {}());
     (function () {})();
 
 
-    /* 不推荐方式*/
+    /* 不推荐方式 */
     [function () {}()];
 
     ~function () {}();
@@ -1352,19 +1366,19 @@
     >```javascript
     >for (var i = 0; i < 3; i++) {
     >
-    >    //匿名函数
+    >    // 匿名函数
     >    (function (para) {
     >        setTimeout(function () {
-    >            console.log(para);  //结果是传入进匿名函数的形参
+    >            console.log(para);  // 结果是传入进匿名函数的形参
     >        }, 0);
     >    }(i));
     >}
     >
     >for (var i = 0; i < 3; i++) {
     >
-    >    //不用匿名函数
+    >    // 不用匿名函数
     >    setTimeout(function () {
-    >        console.log(i);         //每个结果都是固定的最后一个值（闭包作用）
+    >        console.log(i);         // 每个结果都是固定的最后一个值（闭包作用）
     >    }, 0);
     >}
     >```
@@ -1419,7 +1433,8 @@
 
         1. 桥协议：Native注入全局方法至WebView的`window`，前端调用则触发Native行为。
 
-            >客户端注入方式：JS伪协议方式`javascript: 代码`。
+            >1. 客户端注入方式：JS伪协议方式`javascript: 代码`。
+            >2. 注入JS代码可以在创建WebView之前（native code）或之后（全局变量JS注入）。
         2. 自定义Scheme：拦截跳转（`<iframe>`设置`src`、点击`<a>`、`document.location.href`），触发Native行为。
 
             >1. 客户端可以捕获、拦截任何行为（如`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
@@ -1502,10 +1517,10 @@
 2. `var a = a || {};`执行顺序：
 
     <details>
-    <summary>等价于</summary>
+    <summary>等价于：</summary>
     
     ```javascript
-    /* 不是形参情况*/
+    /* 不是形参情况 */
     var a;
 
     if (a === 0 || a === "" || a === false || a === null || a === undefined) {
@@ -1513,7 +1528,7 @@
     }
 
 
-    /* 形参情况*/
+    /* 形参情况 */
     function func(b) {
         if (b === 0 || b === "" || b === false || b === null || b === undefined) {
             b = {};
@@ -1534,23 +1549,23 @@
     ></details>
 3. `if`、`while`之类的判断语句中用赋值操作：
 
-    （大部分是误用）赋值的内容Boolean后为假会导致条件判断为假：`if(a = false){/* 不执行*/}`。
+    （大部分是误用）赋值的内容Boolean后为假会导致条件判断为假：`if(a = false){/* 不执行 */}`。
 
     >判断语句内只判断整体返回值是`true`还是`false`，与里面执行内容无关（尽管对其语法有所限制）。
-4. `if(var a = 1, b = 2, c = 3, false){/* 不执行*/}`：
+4. `if(var a = 1, b = 2, c = 3, false){/* 不执行 */}`：
 
     逗号操作符`,`对每个操作对象求值（从左至右），然后返回最后一个操作对象的值。
 
     >`var`语句中的逗号不是逗号操作符，因为它不存在于一个表达式中。尽管从实际效果来看，那个逗号同逗号运算符的表现很相似。但它是`var`语句中的一个特殊符号，用于把多个变量声明结合成一个。
-5. `var a = [10, 20, 30, 40][1, 2, 3];/* 40*/`：
+5. `var a = [10, 20, 30, 40][1, 2, 3];  // 40`：
 
     1. `[10, 20, 30, 40]`被解析为数组；
     2. `[1, 2, 3]`被解析为属性调用，逗号操作符取最后一个值为结果。
 
     因此结果为数组`[10, 20, 30, 40]`的`[3]`属性值：`40`。
-6. `{a: 'b'} + 1;/* 1*/`：
+6. `{a: 'b'} + 1;   // 1`：
 
-    大括号视为代码块，没有返回值。需要给大括号加上小括号，表明为一个值：`({a: 'b'}) + 1;/* [object Object]1*/`。
+    大括号视为代码块，没有返回值。需要给大括号加上小括号，表明为一个值：`({a: 'b'}) + 1;  // [object Object]1`。
 7. 浮点数的计算：
 
     浮点数值计算会产生舍入误差，因此永远不要用条件语句判断某个特定浮点数值，也不要用JS进行复杂的计算。
@@ -1564,13 +1579,16 @@
 9. `eval`中直接执行`function`声明无效，必须用引号把`function`声明包裹起来才有效（尽量不用`eval`）：
 
     ```javascript
-    eval(function a() {});      //返回function a() {}，但没有声明
-    eval('function b() {}');    //返回undefined，声明成功
+    eval(function a() {});      // 返回function a() {}，但没有声明
+    eval('function b() {}');    // 返回undefined，声明成功
     ```
 
     >1. `if()`中的代码对于`function`的声明就是用`eval`带入方法做参数，因此虽然返回true，但方法没有被声明。
     >2. `setTimeout`与`setInterval`中第一个参数若使用字符串，也是使用`eval`把字符串转化为代码。
-10. 获取数组中最大最小值：`Math.min.apply(null, [1, 2, 3]);/* 1*/`、`Math.max.apply(null, [1, 2, 3]);/* 3*/`。
+10. 获取数组中最大最小值：
+
+    1. `Math.min(...[1, 2, 3])`或`Math.min.apply(null, [1, 2, 3])`
+    2. `Math.max(...[1, 2, 3])`或`Math.max.apply(null, [1, 2, 3])`
 11. 设置CSS属性：
 
     使用`cssText`返回CSS的实际文本（ie8-返回时不包含最后一个`;`）。
@@ -1654,14 +1672,14 @@
     1. 不能跨帧（`<iframe>`、`window.open()`的新窗口）。
 
         >```javascript
-        >/* 跨帧：浏览器的帧（frame）里的对象传入到另一个帧中，两个帧都定义了相同的构造函数*/
-        >A实例 instanceof A构造函数; //true
-        >A实例 instanceof B构造函数; //false
+        >/* 跨帧：浏览器的帧（frame）里的对象传入到另一个帧中，两个帧都定义了相同的构造函数 */
+        >A实例 instanceof A构造函数; // true
+        >A实例 instanceof B构造函数; // false
         >```
     2. 判断`构造函数.prototype`是否存在于对象的原型链上。
     3. 不仅检测对象本身，还检测至原型链。
 
-        >e.g. `new Number() instanceof Object;  /* true*/`。
+        >e.g. `new Number() instanceof Object;  /* true */`。
     4. **检测自定义类型的唯一方法。**
 4. `属性 in 对象`
 
@@ -1678,13 +1696,13 @@
 >
 >- 当一个资源从非同源中请求资源时，资源会发起一个跨域HTTP请求。出于安全原因，**浏览器**限制：从**脚本**内发起的跨源HTTP请求 或 拦截跨域HTTP响应。
 >
->1. 跨域请求（AJAX、Fetch或其他方式）不一定是浏览器限制了发起跨站请求，也可能是跨站请求可以正常发起，但返回结果被浏览器拦截。
+>1. 跨域请求（XMLHttpRequest、Fetch等）不一定是浏览器限制了发起跨站请求，也可能是跨站请求可以正常发起，但返回结果被浏览器拦截。
 >2. 现代浏览器会进行CORS处理，发起请求并与服务器协商（特例：有些浏览器不允许从HTTPS跨域访问HTTP，在请求还未发出时就拦截请求）。低版本浏览器可能不会发起跨域请求，直接拒绝发起请求。
 ></details>
 
 1. [CORS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#corscross-origin-resource-sharing跨域资源共享)（服务端需要支持）
 
-    >ie9-的jQuery的非jsonp的ajax跨域，要添加`jQuery.support.cors = true`。
+    >ie9-的jQuery的非jsonp的AJAX跨域，要添加`jQuery.support.cors = true`。
 2. jsonp（服务端需要支持）
 
     >只支持**GET**请求。
@@ -1692,16 +1710,16 @@
     网页通过添加一个`<script>`，向服务器发起文档请求（不受同源政策限制）；服务器收到请求后，将数据放在一个指定名字的回调函数里传回网页直接执行。
 
     ><details>
-    ><summary>jQuery在<code>ajax</code>方法中封装了<code>jsonp</code>功能</summary>
+    ><summary>jQuery在它的<code>AJAX</code>方法中封装了<code>jsonp</code>功能</summary>
     >
     >```javascript
     >$.ajax({
     >    url: '接口地址',
     >    dataType: 'jsonp',
-    >    jsonp: '与服务端约定的支持jsonp方法',  //前端唯一需要额外添加的内容
+    >    jsonp: '与服务端约定的支持jsonp方法',  // 前端唯一需要额外添加的内容
     >    data: {},
     >    success: function(data) {
-    >        //data为跨域请求获得的服务端返回数据
+    >        // data为跨域请求获得的服务端返回数据
     >    }
     >})
     >```
@@ -1721,21 +1739,21 @@
     1. 与`<iframe>`通信：
 
         ```javascript
-        //父窗口调用iframe的window对象
-        var newIframe = document.getElementById('new-iframe').contentWindow;    //或：window.frames[0]
+        // 父窗口调用iframe的window对象
+        var newIframe = document.getElementById('new-iframe').contentWindow;    // 或：window.frames[0]
         
         
-        //iframe调用父窗口的window对象
+        // iframe调用父窗口的window对象
         var father = parent;
         ```
     2. 与`window.open()`的新窗口通信：
 
         ```javascript
-        //父窗口调用新打开窗口的window对象
+        // 父窗口调用新打开窗口的window对象
         var newWin = window.open('某URL');
         
         
-        //新打开窗口调用父窗口的window对象
+        // 新打开窗口调用父窗口的window对象
         var father = window.opener;
         ```
 4. `postMessage`文档间通信
@@ -1743,11 +1761,11 @@
     >ie8、ie9仅支持与`<iframe>`，ie10+支持与`<iframe>`、`window.open()`的新窗口。不实行同源政策。
 
     ```javascript
-    //发送方
+    // 发送方
     目标window对象.postMessage(message, '目标源地址或*');
     
     
-    //监听的文档
+    // 监听的文档
     window.addEventListener('message', function(e) {
       console.log(e);
     },false);
@@ -1759,14 +1777,14 @@
         >ie8+支持。若只改变hash值，页面不会重新刷新。
     
         ```javascript
-        //父窗口改变iframe的hash值
+        // 父窗口改变iframe的hash值
         document.getElementById('new-iframe').src = '除了hash值，url不变（父级与iframe不需要同源）';
         
         
-        //iframe窗口监听hash变化，以hash变化当做信息的传递
+        // iframe窗口监听hash变化，以hash变化当做信息的传递
         window.onhashchange = function(){
             var message = window.location.hash;
-            //...
+            // ...
         };
         ```
     2. 通过监听`window.name`传递信息
@@ -1811,7 +1829,10 @@
             3. 应用场景：需要拆分成多个子页面分别存储的数据。
 2. cookie：
 
-    1. 客户端保存，始终在HTTP请求中携带（同源同路径），明文传递，服务端接收、操作客户端cookie。
+    1. 客户端保存（JS添加或响应头设置），始终在HTTP请求中携带（同源同路径），明文传递，服务端接收、操作客户端cookie。
+    
+        >1. cookie中的`domain`默认为当前域名，可设置为父域名或当前域名，不能设置为其他域名（设置失效）。
+        >2. 当前域名可以访问`domain`为当前域名或父域名的cookie；浏览器发起HTTP请求时会向请求地址发送与请求域名相同或是其父域名的cookie。
     2. 字符串形式：`名1=值1[; 名2=值2]`。不能包含任何`,`、`;`、` `（使用`encodeURIComponent`、`decodeURIComponent`）。
     3. 所有浏览器都支持。
     4. 单域名内，cookie保存的数据不超过4k，数量（最少）20个。
@@ -1855,11 +1876,11 @@
 3. 手动抛出错误
 
     ```javascript
-    throw 'Error';                  //抛出字符串
-    throw 100;                      //抛出数值
-    throw true;                     //抛出布尔值
-    throw {message: 'An Error'};    //抛出对象
-    throw new Error('An Error');    //抛出Error类型错误
+    throw 'Error';                  // 抛出字符串
+    throw 100;                      // 抛出数值
+    throw true;                     // 抛出布尔值
+    throw {message: 'An Error'};    // 抛出对象
+    throw new Error('An Error');    // 抛出Error类型错误
     ```
 4. 处理代码中抛出的错误
 
@@ -1892,9 +1913,9 @@
          * @returns {Boolean} - true：不显示错误信息|false：显示
          */
         window.onerror = function (msg, url, line, column, error) {
-            /* code*/
+            /* code */
 
-            return true;    //浏览器不再显示错误信息
+            return true;    // 浏览器不再显示错误信息
         };
         ```
     3. 图像的`onerror`事件
@@ -1911,10 +1932,10 @@
         2. `Image`实例的属性
 
             ```javascript
-            var img = new Image();  //或document.createElement('img');
+            var img = new Image();  // 或document.createElement('img');
 
             img.onerror = function () {
-                /* code*/
+                /* code */
             };
 
             img.src = '错误地址';
@@ -1940,7 +1961,7 @@
 1. JS预加载图片
 
     ```javascript
-    var img = new Image();  //或document.createElement('img');
+    var img = new Image();  // 或document.createElement('img');
 
     img.src = '图片地址';
 
@@ -1987,7 +2008,7 @@
 
 >1. `continue`应用在循环（`while`、`do-while`、`for`、`for-in`、`for-of`），表示跳过当次循环；`break`应用在循环、`switch`，表示跳出整个循环。
 >2. `forEach`、`map`、`filter`、`some`、`every`无法中止循环（`return`只结束回调函数）。
->3. `$.each/$dom.each`跳出循环用`return true`（功能等价于`continue`）、`return false`（功能等价于`break`）。
+>3. `$.each/$dom.each`跳出循环用`return true`（功能等价于：`continue`）、`return false`（功能等价于：`break`）。
 
 1. 原生JS
 
@@ -2021,10 +2042,10 @@
     
         <summary><code>for-in</code></summary>
 
-        遍历对象所有的可枚举属性。
+        遍历对象自身和继承的可枚举属性。
         
         ```javascript
-        /* i为数组当前项的索引或对象当前项的属性名*/
+        /* i为数组当前项的索引或对象当前项的属性名 */
         for (var i in obj或arr) {
 
         }
@@ -2037,7 +2058,7 @@
         遍历可迭代对象的每个元素。
         
         ```javascript
-        /* i为迭代对象的属性值*/
+        /* i为迭代对象的属性值 */
         for (var i of 可迭代对象) {
 
         }
@@ -2070,7 +2091,7 @@
         <summary><code>$.each</code></summary>
 
         ```javascript
-        /* index为数组当前项的索引或对象当前项的属性名或jQuery对象的索引，item为当前项的值（不是jQuery对象，是DOM对象，与this相同）*/
+        /* index为数组当前项的索引或对象当前项的属性名或jQuery对象的索引，item为当前项的值（不是jQuery对象，是DOM对象，与this相同） */
         $.each(obj或arr或$dom, function (index, item) {
 
         });
@@ -2081,7 +2102,7 @@
         <summary><code>$dom.each</code></summary>
 
         ```javascript
-        /* index为jQuery对象的索引，item为当前项的值（不是jQuery对象，是DOM对象，与this相同）*/
+        /* index为jQuery对象的索引，item为当前项的值（不是jQuery对象，是DOM对象，与this相同） */
         $dom.each(function (index, item) {
 
         });
@@ -2094,33 +2115,33 @@
 1. 判断对象方法是否可以执行
 
     ```javascript
-    /* 对象已经定义 && 对象不等于null && 对象方法存在*/
+    /* 对象已经定义 && 对象不等于null && 对象方法存在 */
     if (typeof obj !== 'undefined' && obj !== null && typeof obj.func === 'function') {
-        /* 对象方法已定义 可执行*/
+        /* 对象方法已定义 可执行 */
     }
     ```
 2. 判断全局对象方法是否可以执行
 
     ```javascript
-    /* window的子对象存在 && 对象方法存在*/
+    /* window的子对象存在 && 对象方法存在 */
     if (window.obj && typeof window.obj.func === 'function') {
-        /* 对象方法已定义 可执行*/
+        /* 对象方法已定义 可执行 */
     }
     ```
 3. 判断是否需要重新定义
 
     ```javascript
-    /* 对象不存在 || 对象等于null || 对象方法不存在*/
+    /* 对象不存在 || 对象等于null || 对象方法不存在 */
     if (typeof obj === 'undefined' || obj === null || typeof obj.func !== 'function') {
-        /* 对象或对象方法没有定义 需重新定义*/
+        /* 对象或对象方法没有定义 需重新定义 */
     }
     ```
 4. 变量已定义
 
     ```javascript
-    /* 变量已定义 && 变量不等于null*/
+    /* 变量已定义 && 变量不等于null */
     if (typeof a !== 'undefined' && a !== null) {
-        /* 对象已定义 可操作*/
+        /* 对象已定义 可操作 */
     }
     ```
 
@@ -2184,11 +2205,16 @@
 
 1. 每个函数都是一个`Function`对象，像普通对象一样拥有**属性**和**方法**。
 
-    1. 函数默认有`length`（希望接收的命名参数个数）、`prototype`属性。
-    2. 函数内的`arguments.callee`是一个指针：其指向拥有`arguments`对象的函数（函数自身）。
-    3. `函数对象.caller`：保存调用当前函数的函数（嵌套的外一层函数）的引用。
-    4. 函数内的`arguments.caller`（值为`undefined`，仅为分清`arguments.caller`和`函数对象.caller`）。
-    5. 函数继承的`toLocaleString`、`toString`、`valueOf`的返回值为：**经过浏览器处理过的函数代码（因浏览器而异）**。
+    1. 函数拥有
+    
+        1. `length`：希望接收的命名参数个数（计数到`默认参数`或`剩余参数`之前的参数）
+        2. `name`：函数名
+        3. `prototype`：（函数独有）指向函数的原型对象
+    2. ES6不推荐使用（部分情况下导致报错）：
+    
+        1. 函数体内的`arguments.callee`是一个指针：其指向拥有`arguments`对象的函数（函数自身）。
+        2. `函数对象.caller`：保存调用当前函数的函数（嵌套的外一层函数）的引用。
+        3. 函数体内的`arguments.caller`（值为`undefined`，仅为分清`arguments.caller`和`函数对象.caller`）。
 2. 函数总有返回值。
 
     1. 执行函数：默认返回`undefined`。
@@ -2202,10 +2228,10 @@
         >直接调用`Function`（不使用`new`操作符）的效果与调用构造函数一样，区别是`this`指向`window`。
     2. 函数声明（函数语句）
 
-        `function 名字(多个参数) {/* 函数体*/};`
+        `function 名字(多个参数) {/* 函数体 */};`
     3. 函数表达式（function expression）
 
-        `var 名字 = function(多个参数) {/* 函数体*/};`
+        `var 名字 = function(多个参数) {/* 函数体 */};`
 
         >命名函数表达式：`var 名字1 = function 名字2() {};`，其中函数名`名字2`只能在函数体内部使用。
         >
@@ -2214,14 +2240,14 @@
         >
         > ```javascript
         > var func1 = function func2() {
-        >    console.log(typeof func1);  //function
-        >    console.log(typeof func2);  //function
+        >    console.log(typeof func1);  // function
+        >    console.log(typeof func2);  // function
         > };
         >
         > func1();
         >
-        > console.log(typeof func1);     //function
-        > console.log(typeof func2);     //undefined
+        > console.log(typeof func1);     // function
+        > console.log(typeof func2);     // undefined
         > ```
         ></details>
 
@@ -2229,7 +2255,7 @@
     >2. 不推荐通过~~构造函数~~创建函数，因为作为字符串的函数体可能会阻止一些JS引擎优化，也会引起其他问题。
 4. 实例化（new）一个构造函数
 
-    `new`得到的实例对象，拥有构造函数内用`this`定义的属性和方法，且拥有构造函数的原型对象上的属性和方法（因为实例的`[[Prototype]]`指向`构造函数.prototype`）；在构造函数内`var`的变量和`function`无法被这个对象使用，只能在构造函数里使用（类似私有变量）。
+    `new`得到的实例对象，拥有构造函数体内使用`this`定义的属性和方法，且拥有构造函数的原型对象上的属性和方法（因为实例的`[[Prototype]]`指向`构造函数.prototype`）；在构造函数体内`var`的变量和`function`无法被这个对象使用，只能在构造函数里使用（类似私有变量）。
 
     >相对于单全局变量，构造函数更加灵活，可以生成多个对象进行互相独立的操作。
 
@@ -2285,8 +2311,8 @@
             }
         }
 
-        /* window：方法没有对象调用（直接函数调用、立即调用的函数表达式，且与作用域无关）*/
-        test();                 //global|global|global
+        /* window：方法没有对象调用（直接函数调用、立即调用的函数表达式，且与作用域无关） */
+        test();                 // global|global|global
 
         var obj1 = {
             x: 1,
@@ -2299,17 +2325,17 @@
                 };
             }
         };
-        (obj1.test()());        //global|1
+        (obj1.test()());        // global|1
 
 
-        /* 上级对象：函数作为某个对象的方法调用*/
+        /* 上级对象：函数作为某个对象的方法调用 */
         var obj2 = {};
         obj2.x = 2;
         obj2.func = test;
-        obj2.func();            //2|global|global
+        obj2.func();            // 2|global|global
 
 
-        /* 新实例对象：构造函数*/
+        /* 新实例对象：构造函数 */
         function Test() {
             this.x = 3;
             console.log(this.x + '|' + _test() + '|' + (function () {return this.x;}()));
@@ -2319,23 +2345,65 @@
                 return this.x;
             }
         }
-        var obj3 = new Test();  //3|global|global
+        var obj3 = new Test();  // 3|global|global
 
 
-        /* 传入的指定对象：apply或call调用*/
+        /* 传入的指定对象：apply或call调用 */
         var obj4 = {x: 4};
-        obj2.func.call(obj4);   //4|global|global
+        obj2.func.call(obj4);   // 4|global|global
         ```
         </details>
+6. 参数
+
+    1. 参数变量在函数体内是默认声明的（传递进函数体），所以不能在函数体内用`let`或`const`再次声明同名参数（`var`可以）。
+    2. 使用**参数默认值**时的特殊情况：
+
+        1. 参数默认值在每次调用时都重新计算表达式的值（惰性求值），默认值是运行时执行而不是~~定义时执行~~。
+        2. 调用函数时，所有参数会形成一个单独作用域（context）进行初始化，初始化结束则作用域消失。此作用域中的参数进行类似`let`定义，因此函数不能有同名参数。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```javascript
+            >function f1(y1 = x1) {     // 形成短暂的单独作用域，x1没有定义，向父级作用域取值，取不到则报错
+            >  let x1 = 'x1'
+            >  console.log(y1)
+            >}
+            >f1()                       // ReferenceError: x1 is not defined
+            >
+            >
+            >let x2 = 'outer x2'
+            >function f2(y2 = x2) {     // 形成短暂的单独作用域，x2没有定义，向父级作用域取值
+            >  let x2 = 'x2'
+            >  console.log(y2)
+            >}
+            >f2()                       // 'outer x2'
+            >
+            >
+            >let x3 = 'outer x3'
+            >function f3(x3, y3 = x3) { // 形成短暂的单独作用域，x3是传参定义的值，不向父级作用域取值
+            >  console.log(y3)
+            >}
+            >f3()                       // undefined
+            >f3(3)                      // 3
+            >
+            >
+            >let x4 = 'outer x4'
+            >function f4(x4 = x4) {     // 形成短暂的单独作用域，实际执行类似let x = x，暂时性死区导致报错
+            >
+            >}
+            >f4()                       // ReferenceError: x is not defined
+            >```
+            >></details>
 
 ### 闭包（closure）
-1. 当函数内部定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数执行完毕（寿命终结）之后。
-2. 闭包：能够读取其他函数内部变量的函数。由两部分构成：**函数**、**上下文环境**（链式作用域）。
+1. 当函数体内定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数执行完毕（寿命终结）之后。
+2. 闭包：能够读取其他函数体内变量的函数。由两部分构成：**函数**、**上下文环境**（链式作用域）。
 3. 闭包通常用来创建私有变量或方法，使得这些内容不被外部访问，同时又可以通过指定的闭包函数访问。
 
 - 产生效果：
 
-    1. 可以操作函数内部的私有内容（特权方法）。
+    1. 可以操作函数体内的私有内容（特权方法）。
     2. 让被操作的私有内容始终保持在内存中不被垃圾回收。
     3. 占用较多的内存。
 
@@ -2359,7 +2427,6 @@
     4. 不断向上的`[[Prototype]]`属性，构成了原型链。
 
         原型链终点是`null`，倒数第二是`Object.prototype`。
-
 
     <details>
     <summary>e.g.</summary>
@@ -2388,7 +2455,7 @@
 
     if (typeof Object.defineProperty === 'function') {
 
-        //使属性：不可以改变描述符、不可以删除、不可以枚举、不可以被赋值运算符改变
+        // 使属性：不可以改变描述符、不可以删除、不可以枚举、不可以被赋值运算符改变
         Object.defineProperty(A.prototype, 'constructor', {
             value: A
         });
@@ -2401,50 +2468,50 @@
 ### 继承
 1. 继承原理
 
-    1. 在子类构造函数内部调用父类构造函数。
+    1. 在子类构造函数体内调用父类构造函数。
     2. **将一个构造函数的实例（父类）赋值给另一个构造函数的原型（子类）**。
 2. 继承方式
 
     1. **寄生组合式继承**（最理想方式）
 
-        通过借用构造函数来继承**属性**（在子类构造函数内部调用父类构造函数）；通过原型链的混成形式来继承**方法**。
+        通过借用构造函数来继承**属性**（在子类构造函数体内调用父类构造函数）；通过原型链的混成形式来继承**方法**。
 
         ```javascript
-        /* 父类定义：*/
+        /* 父类定义： */
         function Father(fatherPara) {
-            /* 私有属性用let；静态私有属性用const*/
+            /* 私有属性用let；静态私有属性用const */
 
-            /* 父类属性*/
+            /* 父类属性 */
             this.fatherPrimitive = fatherPara;
             this.fatherReference = ['father1', 2, [{4: true}, undefined, null]];
         }
         
-        /* 父类方法*/
+        /* 父类方法 */
         Father.prototype.fatherFun = function () {
             console.log(this.fatherPrimitive, this.fatherReference);
         };
         
         
-        /* 子类定义：*/
+        /* 子类定义： */
         function Son(sonPara1, sonPara2) {
-            /* 子类继承父类属性*/
+            /* 子类继承父类属性 */
             Father.call(this, sonPara1);
         
-            /* 子类属性*/
+            /* 子类属性 */
             this.sonPrimitive = sonPara2;
             this.sonReference = ['son1', 2, [{4: true}, undefined, null]];
         }
         
-        /* 子类继承父类原型链*/
+        /* 子类继承父类原型链 */
         Son.prototype = Object.create(Father.prototype, {constructor: {value: Son}});
         
-        /* 子类方法*/
+        /* 子类方法 */
         Son.prototype.sonFun = function () {
             console.log(this.sonPrimitive, this.sonReference);
         };
         
         
-        /* 使用测试*/
+        /* 使用测试 */
         var instance1 = new Father('父para');
         var instance2 = new Son('子para1', '子para2');
         console.log(instance1, instance2);
@@ -2489,15 +2556,14 @@
 
     变量（包括函数的参数）都是**值传递**（变量指向的值复制给另一个变量去指向）。
 
-
     1. 引用数据类型的浅复制
 
-        1. 拷贝对象A时，对象B将拷贝A的所有字段。若字段是引用数据类型（内存地址），B将拷贝地址；若字段是基本数据类型，B将复制其值。
+        1. 复制对象A时，对象B将复制A的所有字段。若字段是引用数据类型（内存地址），B将复制地址；若字段是基本数据类型，B将复制其值。
         2. 缺点：如果改变了对象B（或A）所指向的内存地址所存储的值，同时也改变了对象A（或B）指向这个地址所存储的值。
     2. 引用数据类型的深复制
 
-        1. 新开辟一个内存空间，完全拷贝所有数据至新的空间，新对象指向这个新空间的地址（原对象不变化）。
-        2. 优点：B与A不会相互依赖（A，B完全脱离关联）；缺点：拷贝的速度更慢，代价更大。
+        1. 新开辟一个内存空间，完全复制所有数据至新的空间，新对象指向这个新空间的地址（原对象不变化）。
+        2. 优点：B与A不会相互依赖（A，B完全脱离关联）；缺点：复制的速度更慢，代价更大。
 
     - 数组的值传递
 
@@ -2505,23 +2571,29 @@
 
         1. 清空数组
 
-            1. `arr = [];/* 不改变原始数组（新赋值一个空数组）*/`
-            2. `arr.length = 0;/* 改变原始数组*/`
-            3. `arr.splice(0, arr.length);/* 改变原始数组*/`
+            1. `arr = [];   // 不改变原始数组（新赋值一个空数组）`
+            2. `arr.length = 0; // 改变原始数组`
+            3. `arr.splice(0, arr.length);  // 改变原始数组`
         2. 操作数组形参，不改变数组实参
 
-            1. 浅复制：`arr = arr.slice();`或`arr = arr.concat();`或一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)赋值。
+            1. 浅复制：
+                
+                1. `arr = [...arr]`
+                2. `[...arr] = arr`
+                3. `arr = arr.slice()`
+                4. `arr = arr.concat()`
+                5. 一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)赋值
             2. [深复制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#深复制拷贝实现思路)。
 4. 存储、值传递步骤举例
 
     ```javascript
     // e.g.
-    var a = 'test1';            //i
-    var b = {'key': 'test1'};   //ii
-    var c = a;                  //iii
-    c = 'test2';                //iv
-    var d = b;                  //v
-    d['key'] = 'test2';         //vi
+    var a = 'test1';            // i
+    var b = {'key': 'test1'};   // ii
+    var c = a;                  // iii
+    c = 'test2';                // iv
+    var d = b;                  // v
+    d['key'] = 'test2';         // vi
     ```
 
     1. `var a = 'test1';`步骤：
@@ -2611,20 +2683,20 @@
             e.g.
 
             ```javascript
-            Number('123');      //123
-            Number('123a');     //NaN
-            Number('');         //0
+            Number('123');      // 123
+            Number('123a');     // NaN
+            Number('');         // 0
 
-            Number(true);       //1
-            Number(false);      //0
+            Number(true);       // 1
+            Number(false);      // 0
 
-            Number();           //0
+            Number();           // 0
 
-            Number(undefined);  //NaN
+            Number(undefined);  // NaN
 
-            Number(null);       //0
+            Number(null);       // 0
 
-            Number(Symbol());   //抛出TypeError错误
+            Number(Symbol());   // 抛出TypeError错误
             ```
 
             >`parseInt`与`Number`均忽略字符串前后的不可见字符。`parseInt`从前向后逐个解析字符，只要开头有数字则返回数值；`Number`判断只要有一个字符无法转成数值，则返回`NaN`。
@@ -2635,12 +2707,12 @@
             e.g.
 
             ```javascript
-            Number([5]);            //5
-            Number([]);             //0
-            Number([undefined]);    //0
+            Number([5]);            // 5
+            Number([]);             // 0
+            Number([undefined]);    // 0
 
-            Number([1, 2, 3]);      //NaN
-            Number({});             //NaN
+            Number([1, 2, 3]);      // NaN
+            Number({});             // NaN
             ```
 
             - `Number(对象)`具体规则：
@@ -2663,8 +2735,8 @@
 
             ```javascript
             // e.g.
-            String([1, 2, 3]);  //'1,2,3'
-            String({a: 1});     //'[object Object]''
+            String([1, 2, 3]);  // '1,2,3'
+            String({a: 1});     // '[object Object]''
             ```
 
             - `String(对象)`具体规则：
@@ -2860,7 +2932,7 @@
 
         >仅ie10支持。
 
-        等价于`setTimeout(func, 0)`。
+        等价于：`setTimeout(func, 0)`。
 2. 重绘函数（`requestAnimationFrame`）
 
     >[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
@@ -2895,11 +2967,11 @@
     <summary>e.g.</summary>
     
     ```javascript
-    [, , ,][0];                             //undefined
-    0 in [undefined, undefined, undefined]; //true
-    0 in Array.apply(null, new Array(3));   //true（密集数组：没有空位的数组）
-    0 in new Array(3);                      //false（稀疏数组：有空位的数组）
-    0 in [, , ,];                           //false
+    [, , ,][0];                             // undefined
+    0 in [undefined, undefined, undefined]; // true
+    0 in Array.apply(null, new Array(3));   // true（密集数组：没有空位的数组）
+    0 in new Array(3);                      // false（稀疏数组：有空位的数组）
+    0 in [, , ,];                           // false
     ```
     </details>
 

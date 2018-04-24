@@ -1,4 +1,4 @@
-# nginx+PHP配置（macOS）
+### nginx+PHP配置（macOS）
 
 >用户名 = Geoffrey；所在组 = staff。
 

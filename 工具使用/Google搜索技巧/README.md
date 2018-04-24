@@ -1,4 +1,4 @@
-# Google搜索技巧
+### Google搜索技巧
 
 1. 使用`https://www.google.com/ncr`（no country redirect）当做搜索入口
 

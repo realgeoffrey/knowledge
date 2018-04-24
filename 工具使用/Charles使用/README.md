@@ -1,4 +1,4 @@
-# [Charles](https://www.charlesproxy.com/)使用
+### [Charles](https://www.charlesproxy.com/)使用
 
 HTTP调试工具：通过将Charles设置成**系统的网络访问代理服务器**，使得所有的网络访问请求都通过它来完成，从而实现网络封包的截取和分析。
 
@@ -91,7 +91,7 @@ HTTP调试工具：通过将Charles设置成**系统的网络访问代理服务�
 
 	Charles能够截断发送请求前（篡改Request）和响应后（篡改Response），修改request和response的所有信息。
 
-	场景：ajax发送请求，我们需要测试接口的各种边界情况，如出错、超时等表现，Charles的断点+随意篡改，非常方便测试，右键选择“BreakPoints”，开启断点：
+	场景：发送HTTP请求，我们需要测试接口的各种边界情况，如出错、超时等表现，Charles的断点+随意篡改，非常方便测试，右键选择“BreakPoints”，开启断点：
 
 	![Charles图](./images/19.png)
 

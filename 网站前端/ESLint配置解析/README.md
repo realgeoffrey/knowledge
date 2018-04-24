@@ -1,6 +1,6 @@
-# ESLint配置方式
+### ESLint配置解析
 
-```js
+```javascript
 /*
  * ESLint 配置文件优先级：
  * .eslintrc.js(输出一个配置对象)

@@ -39,7 +39,7 @@ button:-moz-focusring,[type="button"]:-moz-focusring,[type="reset"]:-moz-focusri
 [type="number"]::-webkit-inner-spin-button,[type="number"]::-webkit-outer-spin-button {height:auto;}
 [type="search"] {-webkit-appearance:textfield;outline-offset:-2px;}
 [type="search"]::-webkit-search-cancel-button,[type="search"]::-webkit-search-decoration {-webkit-appearance:none;}
-body {word-wrap:break-word;}
+body {/*word-wrap:break-word;*/}
 
 /* -WAP端*/
 a {-webkit-text-decoration-skip:objects;}
@@ -121,7 +121,7 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
   background-image: url(图片前缀_#{$width}x#{$height}.png);
   background-repeat: no-repeat;
 
-  //$i：横轴；$j：纵轴
+  // $i：横轴；$j：纵轴
   @for $j from 1 through $y {
     @for $i from 1 through $x {
       &.i-#{$j}-#{$i} {
@@ -153,12 +153,12 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
     @error "rem()的参数单位必须是px或不带单位";
   }
 
-  //$base-font-size：切图时设计稿宽度对应的媒体查询中html的font-size
+  // $base-font-size：切图时设计稿宽度对应的媒体查询中html的font-size
   @return $px / $base-font-size + rem;
 }
 @mixin multi-ellipsis-rem($line-height, $line) {
   line-height: rem($line-height);
-  //max-height: rem($line-height * $line);
+  // max-height: rem($line-height * $line);
   height: rem($line-height * $line);
   display: block;
   display: -webkit-box;
@@ -198,7 +198,7 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
   background-size: rem(($width + $gap)*$x - $gap) rem(($height + $gap)*$y - $gap);
   background-repeat: no-repeat;
 
-  //$i：横轴；$j：纵轴
+  // $i：横轴；$j：纵轴
   @for $j from 1 through $y {
     @for $i from 1 through $x {
       &.i-#{$j}-#{$i} {

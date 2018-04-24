@@ -1,4 +1,4 @@
-# JS方法积累——算法小结（*原生JS*）
+# JS算法小结（*原生JS*）
 
 ## 目录
 1. [排序算法](#排序算法)
@@ -21,6 +21,7 @@
 
     1. [数组去重](#数组去重)
     1. [数组删去某值](#数组删去某值)
+    1. [数组的某项插入某位置](#数组的某项插入某位置)
     1. [声明某长度并设定值的数组](#声明某长度并设定值的数组)
 1. [算法思路](#算法思路)
 
@@ -48,7 +49,7 @@
 >6. 鉴别arr是否是数组：
 >
 >    ```javascript
->    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是数组*/
+>    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是数组 */
 >
 >        return false;
 >    }
@@ -64,13 +65,13 @@
 function shuffle(arr) {
     var i, len, swapIndex, temp;
 
-    arr = arr.slice();  //浅复制
+    arr = arr.slice();  // 浅复制
 
     for (i = 0, len = arr.length; i < len; i++) {
-        //i位置的数和[i, len-1]位置的数调换，保证每个数在任一位置的概率相同
+        // i位置的数和[i, len-1]位置的数调换，保证每个数在任一位置的概率相同
         swapIndex = Math.floor(Math.random() * (len - i) + i);
 
-        /* 元素交换*/
+        /* 元素交换 */
         temp = arr[swapIndex];
         arr[swapIndex] = arr[i];
         arr[i] = temp;
@@ -84,18 +85,18 @@ function shuffle(arr) {
 ### 插入排序
 ```javascript
 function insertionSort(arr) {
-    arr = arr.slice();  //浅复制
+    arr = arr.slice();  // 浅复制
 
     var i, len, temp, j;
 
-    for (i = 1, len = arr.length; i < len; i++) { /* 逐个取出与前面元素对比（前面元素已经排序）*/
-        temp = arr[i];   //对比元素
+    for (i = 1, len = arr.length; i < len; i++) { /* 逐个取出与前面元素对比（前面元素已经排序） */
+        temp = arr[i];   // 对比元素
 
-        for (j = i - 1; j >= 0 && arr[j] > temp; j--) {   /* 向前逐个对比*/
-            arr[j + 1] = arr[j];    //若前面元素大于对比元素，则前面元素向后移一位
+        for (j = i - 1; j >= 0 && arr[j] > temp; j--) {   /* 向前逐个对比 */
+            arr[j + 1] = arr[j];    // 若前面元素大于对比元素，则前面元素向后移一位
         }
 
-        arr[j + 1] = temp;   //对比元素插入空位
+        arr[j + 1] = temp;   // 对比元素插入空位
     }
 
     return arr;
@@ -116,14 +117,14 @@ function insertionSort(arr) {
 ### 冒泡排序
 ```javascript
 function bubbleSort(arr) {
-    arr = arr.slice();  //浅复制
+    arr = arr.slice();  // 浅复制
 
     var len = arr.length,
         i, j, temp;
 
-    for (i = 0; i < len - 1; i++) { /* 一共比较趟数*/
-        for (j = 0; j < len - i - 1; j++) { /* 每一趟比较的次数（已置底的不需要比较）*/
-            if (arr[j] > arr[j + 1]) {    /* 相邻的元素大的放后面*/
+    for (i = 0; i < len - 1; i++) { /* 一共比较趟数 */
+        for (j = 0; j < len - i - 1; j++) { /* 每一趟比较的次数（已置底的不需要比较） */
+            if (arr[j] > arr[j + 1]) {    /* 相邻的元素大的放后面 */
                 temp = arr[j];
                 arr[j] = arr[j + 1];
                 arr[j + 1] = temp;
@@ -149,24 +150,24 @@ function bubbleSort(arr) {
 ### 快速排序
 ```javascript
 function quickSort(arr) {
-    arr = arr.slice();  //浅复制
+    arr = arr.slice();  // 浅复制
 
     var len = arr.length,
         i, middle, leftArr, rightArr;
 
-    if (len <= 1) { /* 递归边界条件*/
+    if (len <= 1) { /* 递归边界条件 */
 
         return arr;
     } else {
-        for (i = 1, middle = arr[0], leftArr = [], rightArr = []; i < len; i++) {   /* 以0索引元素为“基准”*/
-            if (arr[i] < middle) {   /* 小于基准的元素放左数组*/
+        for (i = 1, middle = arr[0], leftArr = [], rightArr = []; i < len; i++) {   /* 以0索引元素为“基准” */
+            if (arr[i] < middle) {   /* 小于基准的元素放左数组 */
                 leftArr.push(arr[i]);
-            } else {       /* 大于等于基准的元素放右数组*/
+            } else {       /* 大于等于基准的元素放右数组 */
                 rightArr.push(arr[i]);
             }
         }
 
-        return arguments.callee(leftArr).concat([middle], arguments.callee(rightArr));   //顺序合并左、中、右数组
+        return arguments.callee(leftArr).concat([middle], arguments.callee(rightArr));   // 顺序合并左、中、右数组
     }
 }
 ```
@@ -184,13 +185,13 @@ function quickSort(arr) {
 ### 希尔排序
 ```javascript
 function shellSort(arr) {
-    arr = arr.slice();  //浅复制
+    arr = arr.slice();  // 浅复制
 
     var len = arr.length,
         gap, i, j, temp;
 
-    for (gap = Math.floor(len / 2); gap > 0; gap = Math.floor(gap / 2)) {   /* 不断分割成越来越大的区域进行插入排序*/
-        for (i = gap; i < len; i++) {   /* 间隔为gap索引元素的插入排序*/
+    for (gap = Math.floor(len / 2); gap > 0; gap = Math.floor(gap / 2)) {   /* 不断分割成越来越大的区域进行插入排序 */
+        for (i = gap; i < len; i++) {   /* 间隔为gap索引元素的插入排序 */
             temp = arr[i];
 
             for (j = i - gap; j >= 0 && arr[j] > temp; j -= gap) {
@@ -214,15 +215,15 @@ function shellSort(arr) {
 ### 梳排序
 ```javascript
 function combSort(arr) {
-    arr = arr.slice();  //浅复制
+    arr = arr.slice();  // 浅复制
 
-    var SHRINK_FACTOR = 0.8,    //递减率
+    var SHRINK_FACTOR = 0.8,    // 递减率
         len = arr.length,
         gap, swapped, i, temp;
 
     for (gap = len, swapped = true; gap > 1 || swapped; ) {
         if (gap > 1) {
-            gap = Math.floor(gap * SHRINK_FACTOR);  //间距递减
+            gap = Math.floor(gap * SHRINK_FACTOR);  // 间距递减
         }
 
         swapped = false;
@@ -233,7 +234,7 @@ function combSort(arr) {
                 arr[i] = arr[i + gap];
                 arr[i + gap] = temp;
 
-                swapped = true; //进行过交换，因此还未排序好
+                swapped = true; // 进行过交换，因此还未排序好
             }
         }
     }
@@ -255,12 +256,12 @@ function combSort(arr) {
 ### 归并排序
 ```javascript
 function mergeSort(arr) {
-    arr = arr.slice();  //浅复制
+    arr = arr.slice();  // 浅复制
 
-    var _merge = function (arrA, arrB) { /* 合并2个已经分别排序好的数组*/
+    var _merge = function (arrA, arrB) { /* 合并2个已经分别排序好的数组 */
             var newArr = [];
 
-            /* 对比2个数组第一个元素，小的元素加入新数组并从原数组删去，直到至少一个数组为空*/
+            /* 对比2个数组第一个元素，小的元素加入新数组并从原数组删去，直到至少一个数组为空 */
             while (arrA.length && arrB.length) {
                 if (arrA[0] < arrB[0]) {
                     newArr.push(arrA.shift());
@@ -269,12 +270,12 @@ function mergeSort(arr) {
                 }
             }
 
-            return newArr.concat(arrA.concat(arrB));    //顺序合并newArr、arrA、arrB数组
+            return newArr.concat(arrA.concat(arrB));    // 顺序合并newArr、arrA、arrB数组
         },
         len = arr.length,
         midIndex, left, right;
 
-    if (len <= 1) {  /* 递归边界条件*/
+    if (len <= 1) {  /* 递归边界条件 */
 
         return arr;
     } else {
@@ -299,7 +300,7 @@ function mergeSort(arr) {
 ### 选择排序
 ```javascript
 function selectionSort(arr) {
-    arr = arr.slice();  //浅复制
+    arr = arr.slice();  // 浅复制
 
     var len = arr.length,
         i, j, minIndex, temp;
@@ -307,7 +308,7 @@ function selectionSort(arr) {
     for (i = 0; i < len - 1; i++) {
         minIndex = i;
 
-        for (j = i + 1; j < len; j++) {  /* 找出最小的元素*/
+        for (j = i + 1; j < len; j++) {  /* 找出最小的元素 */
             if (arr[minIndex] > arr[j]) {
                 minIndex = j;
             }
@@ -333,38 +334,38 @@ function selectionSort(arr) {
 ### 基数排序
 ```javascript
 function radixSort(arr) {
-    arr = arr.slice();  //浅复制
+    arr = arr.slice();  // 浅复制
 
     var len = arr.length,
         i, bucket, max, maxLen, str, j, num, k, kLen;
 
-    for (i = 0, bucket = []; i < 10; i++) { /* 创建十个空桶（十进制），每一位数循环先放入再倒出清空*/
+    for (i = 0, bucket = []; i < 10; i++) { /* 创建十个空桶（十进制），每一位数循环先放入再倒出清空 */
         bucket[i] = [];
     }
 
-    for (i = 1, max = arr[0]; i < len; i++) {   /* 获取元素最大值*/
+    for (i = 1, max = arr[0]; i < len; i++) {   /* 获取元素最大值 */
         if (arr[i] > max) {
             max = arr[i];
         }
     }
 
-    maxLen = max.toString(10).length;   //获取最大值元素的位数
+    maxLen = max.toString(10).length;   // 获取最大值元素的位数
 
-    for (i = 1; i <= maxLen; i++) { /* LSD：从最低位（个位）到最高位，对每一个位数进行一次排序*/
-        for (j = 0; j < len; j++) { /* 元素放入对应桶里*/
+    for (i = 1; i <= maxLen; i++) { /* LSD：从最低位（个位）到最高位，对每一个位数进行一次排序 */
+        for (j = 0; j < len; j++) { /* 元素放入对应桶里 */
             str = arr[j].toString(10);
 
-            if (str.length >= i) {  /* 根据数字第i位上的数字放置对应的桶。e.g. i=1：个位数字放置相应桶；i=2：十位数字放置相应桶*/
-                num = parseInt(str[str.length - i], 10);    //获取i位置上的数字（i=1：个位；i=2：十位；i=3：百位...）
+            if (str.length >= i) {  /* 根据数字第i位上的数字放置对应的桶。e.g. i=1：个位数字放置相应桶；i=2：十位数字放置相应桶 */
+                num = parseInt(str[str.length - i], 10);    // 获取i位置上的数字（i=1：个位；i=2：十位；i=3：百位...）
                 bucket[num].push(arr[j]);
-            } else {    /* 元素小于位数都放入第一个桶内（已经排序好的元素）；第一个桶还有放第i位是0的数，会在之后更高位被排序*/
+            } else {    /* 元素小于位数都放入第一个桶内（已经排序好的元素）；第一个桶还有放第i位是0的数，会在之后更高位被排序 */
                 bucket[0].push(arr[j]);
             }
         }
 
-        arr = [];   //清空数组以便从桶中接收排序好的数组
+        arr = [];   // 清空数组以便从桶中接收排序好的数组
 
-        for (j = 0; j < 10; j++) {  /* 把每个桶内数组放回原始数组中（桶内不排序）*/
+        for (j = 0; j < 10; j++) {  /* 把每个桶内数组放回原始数组中（桶内不排序） */
             for (k = 0, kLen = bucket[j].length; k < kLen; k++) {
                 arr.push(bucket[j][k]);
             }
@@ -387,9 +388,9 @@ function radixSort(arr) {
 ### 堆排序
 ```javascript
 function heapSort(arr) {
-    arr = arr.slice(); //浅复制
+    arr = arr.slice(); // 浅复制
 
-    var _swap = function (a, b) {    /* 替换数组内位置*/
+    var _swap = function (a, b) {    /* 替换数组内位置 */
             var temp = arr[a];
 
             arr[a] = arr[b];
@@ -401,31 +402,31 @@ function heapSort(arr) {
          * @param {Number} endIndex 调整到的最末尾索引
          */
         _maxHeapify = function (dadIndex, endIndex) {
-            var sonIndex = dadIndex * 2 + 1;  //父节点的左子节点位置
+            var sonIndex = dadIndex * 2 + 1;  // 父节点的左子节点位置
 
-            if (sonIndex > endIndex) {   /* 递归边界条件：子节点超出范围*/
+            if (sonIndex > endIndex) {   /* 递归边界条件：子节点超出范围 */
 
                 return;
             } else {
-                if (sonIndex + 1 <= endIndex && arr[sonIndex] < arr[sonIndex + 1]) { /* 若有右子节点，选择两个子节点中较大的*/
-                    sonIndex += 1;  //父节点的右子节点位置
+                if (sonIndex + 1 <= endIndex && arr[sonIndex] < arr[sonIndex + 1]) { /* 若有右子节点，选择两个子节点中较大的 */
+                    sonIndex += 1;  // 父节点的右子节点位置
                 }
 
                 if (arr[dadIndex] <= arr[sonIndex]) {
-                    _swap(dadIndex, sonIndex);    //保证父节点大于子节点
-                    arguments.callee(sonIndex, endIndex); //因为子节点变化，所以递归一遍原本是最大堆的子节点
+                    _swap(dadIndex, sonIndex);    // 保证父节点大于子节点
+                    arguments.callee(sonIndex, endIndex); // 因为子节点变化，所以递归一遍原本是最大堆的子节点
                 }
             }
         },
         len = arr.length,
         i;
 
-    for (i = Math.floor(len / 2) - 1; i >= 0; i--) {  /* i的初始值为堆的最后一个父节点*/
+    for (i = Math.floor(len / 2) - 1; i >= 0; i--) {  /* i的初始值为堆的最后一个父节点 */
         _maxHeapify(i, len - 1);
     }
 
-    for (i = len - 1; i > 0; i--) { /* 把已达成的最大堆的首元素放到末尾，并重新进行减少长度的最大堆排序*/
-        /* 原本已经是最大堆，替换首元素之后需要执行一次最大堆函数，就再次成为为最大堆*/
+    for (i = len - 1; i > 0; i--) { /* 把已达成的最大堆的首元素放到末尾，并重新进行减少长度的最大堆排序 */
+        /* 原本已经是最大堆，替换首元素之后需要执行一次最大堆函数，就再次成为为最大堆 */
         _swap(0, i);
         _maxHeapify(0, i - 1);
     }
@@ -457,16 +458,16 @@ function countingSort(arr) {
         newArr = [],
         i, j, k;
 
-    for (i = 0; i < len; i++) { /* 元素值x出现次数->countArr[x]*/
+    for (i = 0; i < len; i++) { /* 元素值x出现次数->countArr[x] */
         countArr[arr[i]] = countArr[arr[i]] ? countArr[arr[i]] + 1 : 1;
     }
 
-    for (j = min; j < max; j++) {   /* 元素值x出现次数+值小于x元素出现计数累积->countArr[x]*/
+    for (j = min; j < max; j++) {   /* 元素值x出现次数+值小于x元素出现计数累积->countArr[x] */
         countArr[j + 1] = (countArr[j + 1] || 0) + (countArr[j] || 0);
     }
 
-    for (k = len - 1; k >= 0; countArr[arr[k]]--, k--) {    /* 反向填充*/
-        newArr[countArr[arr[k]] - 1] = arr[k];  //newArr[位置]=arr数据
+    for (k = len - 1; k >= 0; countArr[arr[k]]--, k--) {    /* 反向填充 */
+        newArr[countArr[arr[k]] - 1] = arr[k];  // newArr[位置]=arr数据
     }
 
     return newArr;
@@ -498,17 +499,17 @@ function countingSort(arr) {
         while (leftIndex <= rightIndex) {
             middleIndex = Math.floor((leftIndex + rightIndex) / 2);
 
-            if (searchVal < arr[middleIndex]) { /* 目标小于中间数，在小的一堆找*/
+            if (searchVal < arr[middleIndex]) { /* 目标小于中间数，在小的一堆找 */
                 rightIndex = middleIndex - 1;
-            } else if (searchVal > arr[middleIndex]) {  /* 目标大于中间数，在大的一堆找*/
+            } else if (searchVal > arr[middleIndex]) {  /* 目标大于中间数，在大的一堆找 */
                 leftIndex = middleIndex + 1;
-            } else {    /* 找到*/
+            } else {    /* 找到 */
 
                 return middleIndex;
             }
         }
 
-        /* 不存在*/
+        /* 不存在 */
         return -1;
     }
     ```
@@ -524,17 +525,17 @@ function countingSort(arr) {
 
         var middle = Math.floor((rightIndex + leftIndex) / 2);
 
-        if (leftIndex > rightIndex) {   /* 递归边界条件：不存在*/
+        if (leftIndex > rightIndex) {   /* 递归边界条件：不存在 */
 
             return -1;
         } else {
-            if (searchVal < arr[middle]) { /* 目标小于中间数，在小的一堆找*/
+            if (searchVal < arr[middle]) { /* 目标小于中间数，在小的一堆找 */
 
                 return arguments.callee(arr, searchVal, leftIndex, middle - 1);
-            } else if (searchVal > arr[middle]) {  /* 目标大于中间数，在大的一堆找*/
+            } else if (searchVal > arr[middle]) {  /* 目标大于中间数，在大的一堆找 */
 
                 return arguments.callee(arr, searchVal, middle + 1, rightIndex);
-            } else {    /* 递归边界条件：找到*/
+            } else {    /* 递归边界条件：找到 */
 
                 return middle;
             }
@@ -574,7 +575,7 @@ function countingSort(arr) {
             });
         }
         ```
-    2. 不使用`Array.prototype.indexOf`、`Array.prototype.filter`
+    2. 不使用~~Array.prototype.indexOf~~、~~Array.prototype.filter~~
 
         ```javascript
         function uniqueArr(arr) {
@@ -611,7 +612,7 @@ function countingSort(arr) {
 
         for (i = 0; i < len; i++) {
             for (j = i + 1; j < len; j++) {
-                if (arr[i] === arr[j]) {    //如果发现相同元素，则i自增并且进入下一个数的循环比较
+                if (arr[i] === arr[j]) {    // 如果发现相同元素，则i自增并且进入下一个数的循环比较
                     i += 1;
                     j = i;
                 }
@@ -631,7 +632,7 @@ function countingSort(arr) {
 
         return arr.concat().sort().filter(function (item, index, array) {
 
-            return !index || item != array[index - 1];  //排序后：第一项一定加入；第二项之后与前一项对比，不同则加入
+            return !index || item != array[index - 1];  // 排序后：第一项一定加入；第二项之后与前一项对比，不同则加入
         });
     }
     ```
@@ -649,12 +650,13 @@ function countingSort(arr) {
     }
     ```
     >时间复杂度：O(n)。
-5. ES6的`Array.from`、`Set`
+5. ES6的`Set`
 
     ```javascript
     function uniqueArr(arr) {
 
         return Array.from(new Set(arr));
+        // 或：return [...new Set(arr)];
     }
     ```
 
@@ -729,6 +731,38 @@ function countingSort(arr) {
     }
     ```
 >时间复杂度：O(n)。
+
+### 数组的某项插入某位置
+```javascript
+/**
+ * 移动数组的项，从一个位置插入至另一个位置（不是调换位置）
+ * @param {Object} - 传入的参数
+ * @param {Array} arr - 数组
+ * @param {Number} from - 原数组起始位置
+ * @param {Number} to - 原数组插入位置
+ * @param {Boolean} [isLeft = false] - 是否插入左边（默认插入右边）
+ * @returns {Array} arr - 调换位置的数组
+ */
+function switchArr ({ arr, from, to, isLeft = false }) {
+  arr = arr.slice()
+
+  if (isLeft) {
+    if (from < to - 1) {
+      arr.splice(to - 1, 0, ...arr.splice(from, 1))
+    } else if (from >= to + 1) {
+      arr.splice(to, 0, ...arr.splice(from, 1))
+    }
+  } else {
+    if (from > to + 1) {
+      arr.splice(to + 1, 0, ...arr.splice(from, 1))
+    } else if (from < to) {
+      arr.splice(to, 0, ...arr.splice(from, 1))
+    }
+  }
+
+  return arr
+}
+```
 
 ### 声明某长度并设定值的数组
 >e.g. 声明arr：长度为n，值为下标（或某固定值）

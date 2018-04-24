@@ -51,7 +51,7 @@
 
     1. 应用层：DNS（Domain Name System，域名系统）
 
-        提供域名到IP地址之间的解析服务：通过域名查找IP地址、逆向通过IP地址反查域名。
+        提供**域名**到**IP地址**之间的解析服务：通过域名查找IP地址、逆向通过IP地址反查域名。
 
         >计算机可以被赋予IP地址、主机名、域名。同一个服务器上的多个域名，使用DNS服务解析域名为同一个IP地址，因此在发送HTTP请求时，必须设置`Host`头部为指定主机名或域名的URI。
     2. 传输层：TCP（Transmission Control Protocol，传输控制协议）
@@ -139,18 +139,18 @@
 1. request：
 
     ```http
-    <method> <request-URI> <version>        //请求行
-    <headers>                               //请求头
-                                            //空行（CR+LF）
-    <entity-body>                           //请求消息主体
+    <method> <request-URI> <version>        // 请求行
+    <headers>                               // 请求头
+                                            // 空行（CR+LF）
+    <entity-body>                           // 请求消息主体
     ```
 2. response：
 
     ```http
-    <version> <status code> <reason phrase> //状态行
-    <headers>                               //响应头
-                                            //空行（CR+LF）
-    <entity-body>                           //响应正文
+    <version> <status code> <reason phrase> // 状态行
+    <headers>                               // 响应头
+                                            // 空行（CR+LF）
+    <entity-body>                           // 响应正文
     ```
 
 ><details>
@@ -269,7 +269,7 @@
         服务器已接受请求，但尚未处理。正如它可能被拒绝一样，最终该请求可能会也可能不会被执行。在异步操作的场合下，没有比发送这个状态码更方便的做法了。
     4. 203 Non-Authoritative Information
 
-        服务器已成功处理了请求，但返回的实体头部元信息不是在原始服务器上有效的确定集合，而是来自本地或第三方的拷贝。当前的信息可能是原始版本的子集或超集。
+        服务器已成功处理了请求，但返回的实体头部元信息不是在原始服务器上有效的确定集合，而是来自本地或第三方的复制。当前的信息可能是原始版本的子集或超集。
     5. **204 No Content**
 
         服务器成功处理了请求，但不需要返回任何实体内容，并且希望返回更新了的元信息。响应可能通过实体头部的形式，返回新的或更新后的元信息。如果存在这些头部信息，则应当与所请求的变量相呼应。始终以消息头后的第一个空行结尾。
@@ -740,7 +740,7 @@
 
     >ie10+支持。
 
-    现代浏览器一旦发现`XMLHttpRequest`或`fetch`或其他方式请求跨源，会自动添加一些附加的头信息（如`Origin`），有时还会多出一次附加的请求（非简单请求的`OPTIONS`请求）。
+    现代浏览器一旦发现`XMLHttpRequest`或`fetch`等请求跨源，会自动添加一些附加的头信息（如`Origin`），有时还会多出一次附加的请求（非简单请求的`OPTIONS`请求）。
 
 ><details>
 ><summary>简单/非简单请求区分</summary>
@@ -855,9 +855,9 @@ HTTP是无状态协议，通过session-cookie、token判断客户端的用户状
     3. 隧道
 
         在相隔甚远的客户端和服务器两者之间进行中转，使双方保持安全连接的应用程序。
-4. CDN（Content delivery network，Content distribution network，内容分发网络）
+4. CDN（Content Delivery Network，内容分发网络）
 
-    在不同的地点创建缓存代理服务器，通过负载均衡技术、最优节点选择，将用户的请求重定向到最合适的缓存代理服务器，减少源站的压力、提升加载速度。
+    在不同的地点创建缓存代理服务器，通过负载均衡技术、最优节点选择，将用户的请求重定向到最合适的缓存代理服务器（缓存整个HTTP请求-响应），减少源站的压力、提升加载速度。
 
     >回源：当有用户访问某一个URL的时候，如果被解析到的那个CDN节点没有缓存响应的内容，或者是缓存已经到期，就会回源站去获取。
 5. UDP（User Data Protocol，用户数据报协议）

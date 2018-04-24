@@ -1,4 +1,4 @@
-# JS方法积累——实用方法
+# JS实用方法
 
 ## 目录
 1. [原生JS方法](#原生js方法)
@@ -31,7 +31,7 @@
         1. [选取范围内随机值](#原生js选取范围内随机值)
     1. 字符串操作
     
-        1. [转化为Unicode、反转字符串](#原生js转化为unicode反转字符串)
+        1. [转化为Unicode、反转字符串、字符串长度](#原生js转化为unicode反转字符串字符串长度)
         1. [产生随机数](#原生js产生随机数)
         1. [比较版本号大小（纯数字）](#原生js比较版本号大小纯数字)
         1. [判断检索内容是否在被检索内容的分隔符间](#原生js判断检索内容是否在被检索内容的分隔符间)
@@ -54,6 +54,7 @@
         1. [分割数组](#原生js分割数组)
         1. [加入收藏夹](#原生js加入收藏夹)
         1. [从字符串中获取绝对路径](#原生js从字符串中获取绝对路径)
+        1. [格式化接口返回的数据](#原生js格式化接口返回的数据)
     1. 提升性能
 
         1. [防抖函数](#原生js防抖函数)
@@ -179,7 +180,7 @@ function detectIE() {
     var msie = ua.indexOf('MSIE ');
     if (msie > 0) {
 
-        /* ie10- 返回版本号*/
+        /* ie10- 返回版本号 */
         return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
     }
 
@@ -187,18 +188,18 @@ function detectIE() {
     if (trident > 0) {
         var rv = ua.indexOf('rv:');
 
-        /* ie11 返回版本号*/
+        /* ie11 返回版本号 */
         return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
     }
 
     var edge = ua.indexOf('Edge/');
     if (edge > 0) {
 
-        /* Edge(ie 12+) 返回版本号*/
+        /* Edge(ie 12+) 返回版本号 */
         return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
     }
 
-    /* 其他浏览器 返回false*/
+    /* 其他浏览器 返回false */
     return false;
 }
 ```
@@ -351,7 +352,7 @@ var cookieFuc = {
 >      value = tempArr.join('=')
 >
 >      if (key === checkKey) {
->        /* 操作value*/
+>        /* 操作value */
 >
 >        return true
 >      }
@@ -372,7 +373,7 @@ var cookieFuc = {
 function getLocation (url) {
   url = url || window.location.href
 
-  /* 为了方便阅读*/
+  /* 为了方便阅读 */
   var _protocol = /^(?:([A-Za-z]+):)?/.source,
     _slash = /\/*/.source,
     _hostname = /([0-9A-Za-z.\-]+)/.source,
@@ -502,11 +503,11 @@ var eventUtil = {
      * @param {Function} handle - 处理函数
      */
     addHandler: function (dom, type, handle) {
-        if (typeof dom.addEventListener === 'function') {   /* DOM2级，除ie8-*/
+        if (typeof dom.addEventListener === 'function') {   /* DOM2级，除ie8- */
             dom.addEventListener(type, handle, false);
-        } else if (typeof dom.attachEvent === 'function') { /* 所有ie浏览器*/
-            dom.attachEvent('on' + type, handle);   //注意传入的参数和this的兼容
-        } else {    /* DOM0级，最早期的浏览器都支持*/
+        } else if (typeof dom.attachEvent === 'function') { /* 所有ie浏览器 */
+            dom.attachEvent('on' + type, handle);   // 注意传入的参数和this的兼容
+        } else {    /* DOM0级，最早期的浏览器都支持 */
             dom['on' + type] = handle;
         }
     },
@@ -521,7 +522,7 @@ var eventUtil = {
         if (typeof dom.removeEventListener === 'function') {
             dom.removeEventListener(type, handle, false);
         } else if (typeof dom.detachEvent === 'function') {
-            dom.detachEvent('on' + type, handle);   //注意传入的参数和this的兼容
+            dom.detachEvent('on' + type, handle);   // 注意传入的参数和this的兼容
         } else {
             dom['on' + type] = null;
         }
@@ -601,12 +602,12 @@ var eventUtil = {
     ```javascript
     function checkKeyCode(e) {
         var event = e || window.event,
-            keyCode = event.charCode || event.keyCode;  /* 获取键值*/
+            keyCode = event.charCode || event.keyCode;  /* 获取键值 */
     
-        if (keyCode === 13) {   /* 查询键值表 例:13->换行*/
-            /* 具体操作...*/
+        if (keyCode === 13) {   /* 查询键值表 例:13->换行 */
+            /* 具体操作... */
     
-            /* 阻止冒泡&阻止默认行为*/
+            /* 阻止冒泡&阻止默认行为 */
             if (e && e.stopPropagation) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -618,17 +619,17 @@ var eventUtil = {
     }
     
 
-    /* 使用测试*/
-    addEvent(document.getElementById('test'), 'keydown', checkKeyCode);  //上面绑定事件
+    /* 使用测试 */
+    addEvent(document.getElementById('test'), 'keydown', checkKeyCode);  // 上面绑定事件
     ```
 2. jQuery
 
     ```javascript
     $(输入框选择器).on('keydown', function (e) {
-        if (e.which === 13) {   /* 查询键值表 例:13->换行*/
-            /* 具体操作...*/
+        if (e.which === 13) {   /* 查询键值表 例:13->换行 */
+            /* 具体操作... */
     
-            return false;   //阻止冒泡&阻止默认行为
+            return false;   // 阻止冒泡&阻止默认行为
         }
     });
     ```
@@ -642,7 +643,7 @@ var eventUtil = {
             maxY = parentDom.offsetHeight - dom.offsetHeight,
             domX, domY, beginX, beginY;
 
-        /* 绑定事件*/
+        /* 绑定事件 */
         function _addHandler(dom, type, handle) {
             if (typeof dom.addEventListener === 'function') {
                 dom.addEventListener(type, handle, false);
@@ -653,7 +654,7 @@ var eventUtil = {
             }
         }
 
-        /* 解绑事件*/
+        /* 解绑事件 */
         function _removeHandler(dom, type, handle) {
             if (typeof dom.removeEventListener === 'function') {
                 dom.removeEventListener(type, handle, false);
@@ -664,7 +665,7 @@ var eventUtil = {
             }
         }
 
-        /* 阻止冒泡&阻止默认行为*/
+        /* 阻止冒泡&阻止默认行为 */
         function _returnFalse(e) {
             if (e && e.stopPropagation) {
                 e.stopPropagation();
@@ -675,22 +676,22 @@ var eventUtil = {
             }
         }
 
-        /* 拖拽开始*/
+        /* 拖拽开始 */
         function actBegin(e) {
             e = e || window.event;
 
             domX = dom.offsetLeft;
             domY = dom.offsetTop;
 
-            beginX = e.clientX; //或e.pageX/Y（ie不兼容）
+            beginX = e.clientX; // 或e.pageX/Y（ie不兼容）
             beginY = e.clientY;
 
             _addHandler(parentDom, 'mousemove', actMove);
 
-            _returnFalse(e); //阻止冒泡、阻止默认行为
+            _returnFalse(e); // 阻止冒泡、阻止默认行为
         }
 
-        /* 拖拽移动*/
+        /* 拖拽移动 */
         function actMove(e) {
             e = e || window.event;
 
@@ -708,23 +709,23 @@ var eventUtil = {
                 finalY = 0;
             }
 
-            /* 具体移动（使用left、top）*/
-            //requestAnimationFrame(function () {
+            /* 具体移动（使用left、top） */
+            // requestAnimationFrame(function () {
                 dom.style.left = finalX + 'px';
                 dom.style.top = finalY + 'px';
-            //});
+            // });
 
-            _returnFalse(e); //阻止冒泡、阻止默认行为
+            _returnFalse(e); // 阻止冒泡、阻止默认行为
         }
 
-        /* 拖拽取消*/
+        /* 拖拽取消 */
         function cancel(e) {
             _removeHandler(parentDom, 'mousemove', actMove);
 
-            _returnFalse(e); //阻止冒泡、阻止默认行为
+            _returnFalse(e); // 阻止冒泡、阻止默认行为
         }
 
-        /* 绑定事件*/
+        /* 绑定事件 */
         _addHandler(dom, 'mousedown', actBegin);
         _addHandler(parentDom, 'mouseup', cancel);
         _addHandler(parentDom, 'mouseleave', cancel);
@@ -738,11 +739,11 @@ var eventUtil = {
     }
 
 
-    /* 使用测试*/
+    /* 使用测试 */
     var dom = document.getElementById('j-rect');
     var action = new Drag(dom, dom.offsetParent);
 
-    //action.stop();
+    // action.stop();
     ```
     [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/7t25cm5t/)
 2. WAP端的touch事件
@@ -753,7 +754,7 @@ var eventUtil = {
             maxY = parentDom.offsetHeight - dom.offsetHeight,
             domX, domY, beginX, beginY;
 
-        /* 拖拽开始*/
+        /* 拖拽开始 */
         function actBegin(e) {
             domX = dom.offsetLeft;
             domY = dom.offsetTop;
@@ -763,12 +764,12 @@ var eventUtil = {
 
             parentDom.addEventListener('touchmove', actMove, false);
 
-            /* 阻止冒泡、阻止默认行为*/
+            /* 阻止冒泡、阻止默认行为 */
             e.stopPropagation();
             e.preventDefault();
         }
 
-        /* 拖拽移动*/
+        /* 拖拽移动 */
         function actMove(e) {
             var finalX = e.touches[0].pageX - beginX + domX,
                 finalY = e.touches[0].pageY - beginY + domY;
@@ -784,27 +785,27 @@ var eventUtil = {
                 finalY = 0;
             }
 
-            /* 具体移动（使用left、top）*/
+            /* 具体移动（使用left、top） */
             requestAnimationFrame(function () {
                 dom.style.left = finalX + 'px';
                 dom.style.top = finalY + 'px';
             });
 
-            /* 阻止冒泡、阻止默认行为*/
+            /* 阻止冒泡、阻止默认行为 */
             e.stopPropagation();
             e.preventDefault();
         }
 
-        /* 拖拽取消*/
+        /* 拖拽取消 */
         function cancel(e) {
             parentDom.removeEventListener('touchmove', actMove, false);
 
-            /* 阻止冒泡、阻止默认行为*/
+            /* 阻止冒泡、阻止默认行为 */
             e.stopPropagation();
             e.preventDefault();
         }
 
-        /* 绑定事件*/
+        /* 绑定事件 */
         dom.addEventListener('touchstart', actBegin, false);
         parentDom.addEventListener('touchend', cancel, false);
         parentDom.addEventListener('touchcancel', cancel, false);
@@ -818,17 +819,16 @@ var eventUtil = {
     }
 
 
-    /* 使用测试*/
+    /* 使用测试 */
     var dom = document.getElementById('j-rect');
     var action = new Drag(dom, dom.offsetParent);
 
-    //action.stop();
+    // action.stop();
     ```
-    
 
 ### *原生JS*触摸屏模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）
 ```javascript
-/* 不要绑定click事件，用touchstart和touchend模拟，以消除“延时300毫秒后才触发”的问题*/
+/* 不要绑定click事件，用touchstart和touchend模拟，以消除“延时300毫秒后才触发”的问题 */
 
 var start_x, start_y;
 
@@ -842,13 +842,13 @@ document.getElementById('...').addEventListener('touchend', function (e) {
         end_y = e.changedTouches[0].clientY;
 
     if (Math.abs(end_x - start_x) > 5 || Math.abs(end_y - start_y) > 5) {
-        /* 触发滑动事件要做的事情（如什么都不做）*/
+        /* 触发滑动事件要做的事情（如什么都不做） */
     } else {
-        /* 触发点击事件要做的事情*/
+        /* 触发点击事件要做的事情 */
     }
 }, false);
 
-/* 还要处理浏览器默认点击事件（如a标签）*/
+/* 还要处理浏览器默认点击事件（如a标签） */
 ```
 
 ### *原生JS*判断事件在浏览器是否存在
@@ -877,21 +877,21 @@ function isEventSupported(eventName, element) {
     isSupported = eventName in element;
 
     if (!isSupported) {
-        if (!element.setAttribute) {    /* 若节点没有setAttribute方法，则改用div节点进行测试*/
+        if (!element.setAttribute) {    /* 若节点没有setAttribute方法，则改用div节点进行测试 */
             element = document.createElement('div');
         }
         if (element.setAttribute && element.removeAttribute) {
             element.setAttribute(eventName, '');
             isSupported = typeof element[eventName] === 'function';
 
-            if (element[eventName] !== undefined) { /* 内存回收*/
+            if (element[eventName] !== undefined) { /* 内存回收 */
                 element[eventName] = undefined;
             }
-            element.removeAttribute(eventName); /* 内存回收*/
+            element.removeAttribute(eventName); /* 内存回收 */
         }
     }
 
-    element = null; /* 内存回收*/
+    element = null; /* 内存回收 */
 
     return isSupported;
 }
@@ -904,7 +904,7 @@ function isEventSupported(eventName, element) {
 function eToString(number) {
     number = number.toString(10);
 
-    var regex = /^(\d)(?:\.(\d*))?[eE]([+-]?)(\d+)$/,   //科学计数法
+    var regex = /^(\d)(?:\.(\d*))?[eE]([+-]?)(\d+)$/,   // 科学计数法
         regexArr = regex.exec(number);
 
     if (regexArr === null) {
@@ -912,23 +912,23 @@ function eToString(number) {
         return number;
     } else {
         var dotNumber = regexArr[2] ? regexArr[2] : '',
-            dotLength = dotNumber.length, //小数位数
-            multiple = regexArr[4], //10进制位数
+            dotLength = dotNumber.length, // 小数位数
+            multiple = regexArr[4], // 10进制位数
             gap = Math.abs(multiple - dotLength),
             tempArr = [],
             i, result;
 
-        if (regexArr[3] !== '-') {  /* 大于1*/
-            if (multiple >= dotLength) {    /* 没有小数*/
+        if (regexArr[3] !== '-') {  /* 大于1 */
+            if (multiple >= dotLength) {    /* 没有小数 */
                 for (i = 0; i < gap; i++) {
                     tempArr.push('0');
                 }
 
                 result = regexArr[1] + dotNumber + tempArr.join('');
-            } else {  /* 有小数*/
+            } else {  /* 有小数 */
                 result = regexArr[1] + dotNumber.substr(0, multiple) + '.' + dotNumber.substr(multiple);
             }
-        } else { /* 小于1*/
+        } else { /* 小于1 */
             if (multiple === '0') {
                 result = regexArr[1] + dotNumber;
             } else {
@@ -948,7 +948,7 @@ function eToString(number) {
 ### *原生JS*用整数进行小数的四则运算（避免浮点数运算误差）
 ```javascript
 var fourOperations = {
-    add: function (arg1, arg2) {    /* 加*/
+    add: function (arg1, arg2) {    /* 加 */
         var int1 = parseInt(arg1.toString().replace('.', ''), 10),
             int2 = parseInt(arg2.toString().replace('.', ''), 10),
             dotLength1, dotLength2, gap, gapMultiple, multiple;
@@ -980,11 +980,11 @@ var fourOperations = {
 
         return (int1 + int2) / multiple;
     },
-    sub: function (arg1, arg2) {    /* 减*/
+    sub: function (arg1, arg2) {    /* 减 */
 
         return this.add(arg1, -arg2);
     },
-    mul: function (arg1, arg2) {    /* 乘*/
+    mul: function (arg1, arg2) {    /* 乘 */
         var multiple;
 
         try {
@@ -1000,7 +1000,7 @@ var fourOperations = {
 
         return parseInt(arg1.toString().replace('.', ''), 10) * parseInt(arg2.toString().replace('.', ''), 10) / Math.pow(10, multiple);
     },
-    div: function (arg1, arg2) {    /* 除*/
+    div: function (arg1, arg2) {    /* 除 */
         var dotLength1, dotLength2;
 
         try {
@@ -1023,12 +1023,12 @@ var fourOperations = {
 ### *原生JS*大数加减法（不考虑小数和负数）
 ```javascript
 var overRangeOperations = {
-    add: function (arg1, arg2) {    /* 加*/
-        /* 需要把科学计数法转化为字符串的数字*/
+    add: function (arg1, arg2) {    /* 加 */
+        /* 需要把科学计数法转化为字符串的数字 */
         arg1 = arg1.toString(10).split('');
         arg2 = arg2.toString(10).split('');
 
-        var carry = 0,  //进位
+        var carry = 0,  // 进位
             result = [],
             temp;
 
@@ -1041,8 +1041,8 @@ var overRangeOperations = {
         return result.join('');
     },
 
-    sub: function (arg1, arg2) {    /* 减*/
-        /* 需要把科学计数法转化为字符串的数字*/
+    sub: function (arg1, arg2) {    /* 减 */
+        /* 需要把科学计数法转化为字符串的数字 */
         arg1 = arg1.toString(10).split('');
         arg2 = arg2.toString(10).split('');
 
@@ -1050,7 +1050,7 @@ var overRangeOperations = {
             result = [],
             i, len, temp;
 
-        (function () {  /* 确保大数减小数*/
+        (function () {  /* 确保大数减小数 */
             isArg2Bigger = arg1.length < arg2.length;
 
             if (arg1.length === arg2.length) {
@@ -1080,11 +1080,11 @@ var overRangeOperations = {
             } else {
                 result.unshift(temp + 10);
 
-                arg1[arg1.length - 1] -= 1; //由于arg1一定大于等于arg2，所以不存在arg1[i-1]为undefined的情况
+                arg1[arg1.length - 1] -= 1; // 由于arg1一定大于等于arg2，所以不存在arg1[i-1]为undefined的情况
             }
         }
 
-        result = result.join('').replace(/^0*/, '');    //去掉前面的0
+        result = result.join('').replace(/^0*/, '');    // 去掉前面的0
 
         if (result === '') {
             result = 0;
@@ -1110,18 +1110,18 @@ function numConvert(operand, fromRadix, toRadix) {
     var myself = arguments.callee;
 
     if (typeof myself.toDecimal !== 'function' || typeof myself.fromDecimal !== 'function') {
-        myself.toDecimal = function (str, radix) {  /* 其他进制转化为十进制*/
+        myself.toDecimal = function (str, radix) {  /* 其他进制转化为十进制 */
 
             return parseInt(str, radix);
         };
 
-        myself.fromDecimal = function (num, radix) {    /* 十进制转化为其他进制*/
+        myself.fromDecimal = function (num, radix) {    /* 十进制转化为其他进制 */
 
             return num.toString(radix);
         };
     }
 
-    if (fromRadix > 36 || fromRadix < 2 || toRadix > 36 || toRadix < 2) {    /* 仅支持2至36进制*/
+    if (fromRadix > 36 || fromRadix < 2 || toRadix > 36 || toRadix < 2) {    /* 仅支持2至36进制 */
 
         console.log('进制数只能在2至36之间');
 
@@ -1170,7 +1170,9 @@ function randomFrom(min, max) {
 >2. 如果返回的是：`(0,1]`，则返回`Math.floor(Math.random() * (max - min + 1) + min - 1);`。
 >3. 如果返回的是：`[0,1]`，则返回`Math.floor(Math.random() * (max - min) + min);`。
 
-### *原生JS*转化为Unicode、反转字符串
+### *原生JS*转化为Unicode、反转字符串、字符串长度
+>注意Unicode码点大于`\uFFFF`的字符。
+
 ```javascript
 const hanldeWords = {
 
@@ -1189,13 +1191,24 @@ const hanldeWords = {
   // 反转字符串
   reverseWords(words) {
     return Array.from(words).reverse().join('');
+    
+    // 或：return [...words].reverse().join('');
+  },
+  
+  // 字符串长度
+  codePointLength(words) {
+    const result = words.match(/[\s\S]/gu);
+    return result ? result.length : 0;
+    
+    // 或：return [...words].length;
   }
 };
 
 
-/* 使用测试*/
+/* 使用测试 */
 console.log(hanldeWords.toUnicode('💩©'));
 console.log(hanldeWords.reverseWords('💩©'));
+console.log(hanldeWords.codePointLength('💩©'));
 ```
 
 ### *原生JS*产生随机数
@@ -1238,7 +1251,7 @@ function versionCompare(version, base, separator) {
         arr1[i] = arr1[i] || '0';
         arr2[i] = arr2[i] || '0';
 
-        if (arr1[i] !== arr2[i]) {  /* 两值不同*/
+        if (arr1[i] !== arr2[i]) {  /* 两值不同 */
             flag = parseInt(arr1[i], 10) < parseInt(arr2[i], 10) ? '<' : '>';
 
             break;
@@ -1249,7 +1262,7 @@ function versionCompare(version, base, separator) {
 }
 
 
-/* 使用测试*/
+/* 使用测试 */
 console.log(versionCompare('1.1.10', '1.2'));
 ```
 
@@ -1288,7 +1301,7 @@ function isKeyInStr(key, str, separator) {
 ### *原生JS*格式化文件大小
 ```javascript
 var format = {
-  fileSize: function (bytes) {    /* 格式化文件大小*/
+  fileSize: function (bytes) {    /* 格式化文件大小 */
     if (bytes === 0) {
 
       return '0';
@@ -1302,7 +1315,7 @@ var format = {
 };
 
 
-/* 使用测试*/
+/* 使用测试 */
 var a = format.fileSize(数字);
 ```
 
@@ -1361,7 +1374,7 @@ var sendLog = (function () {
         };
     }
 
-    var _unique = (function () {    /* 产生唯一标识*/
+    var _unique = (function () {    /* 产生唯一标识 */
         var time = Date.now() + '_',
             i = 0;
 
@@ -1377,22 +1390,22 @@ var sendLog = (function () {
             img = new Image(),
             uid = _unique();
 
-        data[uid] = img;    //防止img被垃圾处理
+        data[uid] = img;    // 防止img被垃圾处理
 
-        img.onload = img.onerror = function () {    /* 成功或失败后销毁对象*/
+        img.onload = img.onerror = function () {    /* 成功或失败后销毁对象 */
             img.onload = img.onerror = null;
             img = null;
             delete data[uid];
         };
 
-        img.src = url + '&_cache=' + uid;   //发送统计内容
+        img.src = url + '&_cache=' + uid;   // 发送统计内容
     };
 
     return run;
 }());
 
 
-/* 使用测试*/
+/* 使用测试 */
 sendLog('统计url');
 ```
 
@@ -1412,16 +1425,14 @@ function isElement(o) {
 ### *原生JS*判断对象是否为空
 ```javascript
 function isObjEmpty(obj) {
-    var i;
-
-    if (obj !== Object(obj)) {  /* 参数不是对象*/
+    if (obj !== Object(obj)) {  /* 参数不是对象 */
         throw new TypeError('参数不是对象');
-    } else if (typeof Object.keys === 'function') { /* ie9+*/
+    } else if (typeof Object.keys === 'function') { /* ie9+ */
 
         return Object.keys(obj).length === 0;
     } else {
-        for (i in obj) {
-            if (obj.hasOwnProperty(i)) {
+        for (var one in obj) {
+            if (obj.hasOwnProperty(one)) {
 
                 return false;
             }
@@ -1442,14 +1453,14 @@ var cursorPosition = {
      * @returns {Object} - {光标起始位置,选中长度}
      */
     get: function (dom) {
-        var start = 0, //光标起始位置
-            selLen = 0, //光标选中长度
+        var start = 0,  // 光标起始位置
+            selLen = 0, // 光标选中长度
             sel, ieSel;
 
         if ('selectionStart' in dom) {
             start = dom.selectionStart;
             selLen = dom.selectionEnd - start;
-        } else if (document.selection) {    /* ie*/
+        } else if (document.selection) {    /* ie */
             sel = document.selection.createRange();
             selLen = sel.text.length;
 
@@ -1478,7 +1489,7 @@ var cursorPosition = {
         var valueLen = dom.value.length,
             end, ieSel;
 
-        /* 初始化start*/
+        /* 初始化start */
         start = parseInt(start, 10);
         if (!start) {
             start = 0;
@@ -1486,13 +1497,13 @@ var cursorPosition = {
             start = valueLen;
         }
 
-        /* 初始化len*/
+        /* 初始化len */
         len = parseInt(len, 10);
         if (!len) {
             len = 0;
         }
 
-        /* 初始化end*/
+        /* 初始化end */
         end = start + len;
         if (end > valueLen) {
             end = valueLen;
@@ -1502,7 +1513,7 @@ var cursorPosition = {
             if (dom.setSelectionRange) {
                 dom.setSelectionRange(start, end);
                 dom.focus();
-            } else {    /* ie*/
+            } else {    /* ie */
                 ieSel = dom.createTextRange();
                 ieSel.moveStart('character', -valueLen);
                 ieSel.moveEnd('character', -valueLen);
@@ -1513,7 +1524,7 @@ var cursorPosition = {
         } else {
             if (dom.setSelectionRange) {
                 dom.focus();
-            } else {    /* ie*/
+            } else {    /* ie */
                 ieSel = dom.createTextRange();
                 ieSel.select();
             }
@@ -1524,7 +1535,7 @@ var cursorPosition = {
 };
 
 
-/* 使用测试*/
+/* 使用测试 */
 $(输入框选择器).on('mouseup keyup', function () {
     console.log(cursorPosition.get(this));
 });
@@ -1557,9 +1568,9 @@ console.log(cursorPosition.set(输入框dom, 起始位置, 选中长度));
 <script>
     var ScrollBounce = function (dom) {
         var _bounce = function () {
-            var startTopScroll = dom.scrollTop, //滚动高度
-                domHeight = dom.offsetHeight, //占据高度
-                contentHeight = dom.scrollHeight; //内容高度（占据高度+可滚动最大高度
+            var startTopScroll = dom.scrollTop, // 滚动高度
+                domHeight = dom.offsetHeight, // 占据高度
+                contentHeight = dom.scrollHeight; // 内容高度（占据高度+可滚动最大高度
 
             /*
              * 在触摸开始时，如果发现滚动区域已经处于极限状态时，就手工设置 scrollTop 的值，
@@ -1575,7 +1586,7 @@ console.log(cursorPosition.set(输入框dom, 起始位置, 选中长度));
 
         this.stop = function () {};
 
-        if ((/iphone|ipad|ipod/i).test(navigator.userAgent)) {  /* 仅iOS设备支持“橡皮筋效果”*/
+        if ((/iphone|ipad|ipod/i).test(navigator.userAgent)) {  /* 仅iOS设备支持“橡皮筋效果” */
             dom.addEventListener('touchstart', _bounce, false);
 
             this.stop = function () {
@@ -1585,10 +1596,10 @@ console.log(cursorPosition.set(输入框dom, 起始位置, 选中长度));
     };
 
 
-    /* 使用测试*/
+    /* 使用测试 */
     var a = new ScrollBounce(document.getElementById('j-bounce'));
 
-    //a.stop();
+    // a.stop();
 </script>
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/hbadqyew/)
@@ -1630,7 +1641,7 @@ function validateEmail(email) {
 ### *原生JS*创建兼容的XHR对象
 ```javascript
 function createXHR() {
-    if (typeof XMLHttpRequest !== 'undefined') {    //ie7+和其他浏览器
+    if (typeof XMLHttpRequest !== 'undefined') {    // ie7+和其他浏览器
 
         return new XMLHttpRequest();
     } else if (typeof ActiveXObject !== 'undefined') {
@@ -1644,22 +1655,22 @@ function createXHR() {
                     arguments.callee.activeXString = versions[i];
                     break;
                 } catch (e) {
-                    //跳过
+                    // 跳过
                 }
             }
         }
 
-        return new ActiveXObject(arguments.callee.activeXString);   //返回ActiveXObject对象
-    } else {//全部不支持，抛出错误
+        return new ActiveXObject(arguments.callee.activeXString);   // 返回ActiveXObject对象
+    } else {// 全部不支持，抛出错误
         throw new Error('don\'t support XMLHttpRequest');
     }
 }
 
 
-/* 使用测试*/
+/* 使用测试 */
 var xhr = createXHR();
 
-xhr.onreadystatechange = function () {  //或DOM2级、ie事件绑定方式
+xhr.onreadystatechange = function () {  // 或DOM2级、ie事件绑定方式
     console.log(xhr.getResponseHeader(头), xhr.getAllResponseHeaders());
 
     if (xhr.readyState === 4) {
@@ -1669,8 +1680,8 @@ xhr.onreadystatechange = function () {  //或DOM2级、ie事件绑定方式
             console.log('请求失败：' + xhr.status);
         }
 
-        //xhr.abort();
-        //xhr = null;
+        // xhr.abort();
+        // xhr = null;
     }
 };
 xhr.open(请求类型, URL[, 是否异步[, 用户名[, 密码]]]);
@@ -1725,7 +1736,7 @@ xhr.send(null);
                 newScript.appendChild(document.createTextNode('JS代码'));
             }
             catch (e) {
-                newScript.text = 'JS代码';  //ie8-，Safari老版本
+                newScript.text = 'JS代码';  // ie8-，Safari老版本
             }
 
             appendPlace.appendChild(newScript);
@@ -1743,7 +1754,7 @@ xhr.send(null);
                     appendPlace,
                     newScript;
 
-                if (window.ActiveXObject) { /* ie*/
+                if (window.ActiveXObject) { /* ie */
                     try {
                         xmlHttp = new ActiveXObject('Msxml2.XMLHTTP');
                     }
@@ -1754,12 +1765,12 @@ xhr.send(null);
                     xmlHttp = new XMLHttpRequest();
                 }
 
-                xmlHttp.open('GET', url, false);    //采用同步加载
-                xmlHttp.send(null); //发送同步请求，如果浏览器为Chrome或Opera，必须发布后才能运行，不然会报错
+                xmlHttp.open('GET', url, false);    // 采用同步加载
+                xmlHttp.send(null); // 发送同步请求，如果浏览器为Chrome或Opera，必须发布后才能运行，不然会报错
 
-                /* 4代表数据发送完毕*/
+                /* 4代表数据发送完毕 */
                 if (xmlHttp.readyState == 4) {
-                    /* 0为访问的本地，200到300代表访问服务器成功，304代表没做修改访问的是缓存*/
+                    /* 0为访问的本地，200到300代表访问服务器成功，304代表没做修改访问的是缓存 */
                     if ((xmlHttp.status >= 200 && xmlHttp.status < 300) || xmlHttp.status == 0 || xmlHttp.status == 304) {
                         newScript = document.createElement('script');
                         appendPlace = document.body || document.getElementsByTagName('head')[0];
@@ -1801,7 +1812,7 @@ xhr.send(null);
             newStyle.appendChild(document.createTextNode('CSS代码'));
         }
         catch (e) {
-            newStyle.styleSheet.cssText = 'CSS代码';  //ie
+            newStyle.styleSheet.cssText = 'CSS代码';  // ie
         }
 
         document.getElementsByTagName('head')[0].appendChild(newStyle);
@@ -1874,10 +1885,10 @@ function ShowFPS(dom) {
 }
 
 
-/* 使用测试*/
+/* 使用测试 */
 var a = new ShowFPS();
 
-//a.stop();
+// a.stop();
 ```
 
 ### *原生JS*获取星座
@@ -1938,7 +1949,7 @@ function divideArr(arr, divisor) {
 
 ### *原生JS*加入收藏夹
 ```javascript
-function addFavorite(url, title) {  /* url必须带有协议头*/
+function addFavorite(url, title) {  /* url必须带有协议头 */
     if (window.external && 'addFavorite' in window.external) {
         window.external.addFavorite(url, title);
     } else if (window.sidebar && window.sidebar.addPanel) {
@@ -1952,7 +1963,7 @@ function addFavorite(url, title) {  /* url必须带有协议头*/
 }
 
 
-/* 使用测试*/
+/* 使用测试 */
 addFavorite(window.location.href, '收藏名字');
 ```
 
@@ -1973,6 +1984,112 @@ function getAbsoluteUrl(url) {
 }
 ```
 
+### *原生JS*格式化接口返回的数据
+1. 格式化数组
+
+    ```javascript
+    /*
+     * （针对接口返回）格式化数组。不是数组则返回[]；是数组则每项都添加键-值默认值
+     * @param {Array} list - 要处理的数组
+     * @param {Object} [params] - 要添加的键-值的对象。键是要添加的键，值是添加键的默认值
+     * @returns {Array} newList - 处理好的数组
+     */
+    function formatArr (list, params = {}) {
+      // 是否是空对象
+      const isObjEmpty = (obj) => {
+        if (obj !== Object(obj)) {  /* 参数不是对象 */
+          throw new TypeError('参数不是对象');
+        } else if (typeof Object.keys === 'function') { /* ie9+ */
+          return Object.keys(obj).length === 0;
+        } else {
+          for (let one in obj) {
+            if (obj.hasOwnProperty(one)) {
+              return false;
+            }
+          }
+    
+          return true;
+        }
+      };
+    
+      let newList = [];
+    
+      if (Array.isArray(list)) {
+        if (isObjEmpty(params)) {
+          newList = list;
+        } else {  // 需要添加键-值
+          newList = list.map((item) => {
+            for (let one of Object.entries(params)) {
+              if (typeof item[one[0]] === 'undefined') {  // 没有判断null
+                item[one[0]] = one[1] || '';
+              }
+            }
+    
+            return item;
+          });
+        }
+      }
+    
+      return newList;
+    }
+    
+    
+    /* 使用测试 */
+    formatArr(
+      [{}, { 参数1: '有值' }],
+      { '参数1': '默认值1', '参数2': true, '参数3': { a: 1 } }
+    );
+    ```
+2. 格式化对象
+
+    ```javascript
+    /*
+     * （针对接口返回）格式化对象。不是对象则返回params；是对象则添加键-值默认值
+     * @param {Object} obj - 要处理的对象
+     * @param {Object} [params] - 要添加的键-值的对象。键是要添加的键，值是添加键的默认值
+     * @returns {Object} obj - 处理好的对象
+     */
+    function formatObj (obj = {}, params = {}) {
+      // 是否是空对象
+      const isObjEmpty = (obj) => {
+        if (obj !== Object(obj)) {  /* 参数不是对象 */
+          throw new TypeError('参数不是对象');
+        } else if (typeof Object.keys === 'function') { /* ie9+ */
+          return Object.keys(obj).length === 0;
+        } else {
+          for (let one in obj) {
+            if (obj.hasOwnProperty(one)) {
+              return false;
+            }
+          }
+    
+          return true;
+        }
+      };
+    
+      if (Object.prototype.toString.call(obj) === '[object Object]') {
+        if (!isObjEmpty(params)) {  // 需要添加键-值
+          for (let one of Object.entries(params)) {
+            if (typeof obj[one[0]] === 'undefined') { // 没有判断null
+              obj[one[0]] = one[1] || '';
+            }
+          }
+        }
+      } else {
+        obj = params;
+      }
+    
+      return obj;
+    }
+    
+    
+    /* 使用测试 */
+    formatObj(
+      { '参数1': '有值' },
+      { '参数1': '默认值1', '参数2': true, '参数3': { a: 1 } }
+    );
+    ```
+
 ### *原生JS*防抖函数
 ```javascript
 /**
@@ -1992,16 +2109,16 @@ function debounce(func, wait, immediate) {
     var timeout, args, context, timestamp, result;
 
     var later = function () {
-        //据上一次触发时间间隔
+        // 据上一次触发时间间隔
         var last = Date.now() - timestamp;
 
-        //上次被包装函数被调用时间间隔last小于设定时间间隔wait
+        // 上次被包装函数被调用时间间隔last小于设定时间间隔wait
         if (last < wait && last >= 0) {
             timeout = setTimeout(later, wait - last);
         } else {
             timeout = null;
 
-            //如果设定为immediate===true，因为开始边界已经调用过了此处无需调用
+            // 如果设定为immediate===true，因为开始边界已经调用过了此处无需调用
             if (!immediate) {
                 result = func.apply(context, args);
 
@@ -2032,7 +2149,7 @@ function debounce(func, wait, immediate) {
 }
 
 
-/* 使用测试*/
+/* 使用测试 */
 var a = debounce(function () {
     console.log(1);
 }, 1000);
@@ -2059,15 +2176,15 @@ function throttle(func, wait, options) {
 
     var context, args, result;
     var timeout = null;
-    var previous = 0;   //上次执行时间点
+    var previous = 0;   // 上次执行时间点
 
     if (!options) {
         options = {};
     }
 
-    //延迟执行函数
+    // 延迟执行函数
     var later = function () {
-        //若设定了开始边界不执行选项，上次执行时间始终为0
+        // 若设定了开始边界不执行选项，上次执行时间始终为0
         previous = options.leading === false ? 0 : Date.now();
         timeout = null;
         result = func.apply(context, args);
@@ -2079,19 +2196,19 @@ function throttle(func, wait, options) {
     return function () {
         var now = Date.now();
 
-        //首次执行时，如果设定了开始边界不执行选项，将上次执行时间设定为当前时间。
+        // 首次执行时，如果设定了开始边界不执行选项，将上次执行时间设定为当前时间。
         if (!previous && options.leading === false) {
             previous = now;
         }
 
-        //延迟执行时间间隔
+        // 延迟执行时间间隔
         var remaining = wait - (now - previous);
 
         context = this;
 
         args = arguments;
 
-        //延迟时间间隔remaining小于等于0，表示上次执行至此所间隔时间已经超过一个时间窗口 || remaining大于时间窗口wait，表示客户端系统时间被调整过
+        // 延迟时间间隔remaining小于等于0，表示上次执行至此所间隔时间已经超过一个时间窗口 || remaining大于时间窗口wait，表示客户端系统时间被调整过
         if (remaining <= 0 || remaining > wait) {
             if (timeout) {
                 clearTimeout(timeout);
@@ -2102,7 +2219,7 @@ function throttle(func, wait, options) {
             if (!timeout) {
                 context = args = null;
             }
-        } else if (!timeout && options.trailing !== false) { //如果延迟执行不存在，且没有设定结尾边界不执行选项
+        } else if (!timeout && options.trailing !== false) { // 如果延迟执行不存在，且没有设定结尾边界不执行选项
             timeout = setTimeout(later, remaining);
         }
         return result;
@@ -2110,7 +2227,7 @@ function throttle(func, wait, options) {
 }
 
 
-/* 使用测试*/
+/* 使用测试 */
 var a = throttle(function () {
     console.log(1);
 }, 1000);
@@ -2144,7 +2261,7 @@ function SetInterval(func, millisecond) {
 }
 
 
-/* 使用测试*/
+/* 使用测试 */
 var a = new SetInterval(function () {
     console.log(1);
 
@@ -2153,7 +2270,7 @@ var a = new SetInterval(function () {
     }
 }, 1000);
 
-//a.stop();
+// a.stop();
 ```
 
 ### *原生JS*`requestAnimationFrame`的递归
@@ -2180,7 +2297,7 @@ function RepeatRAF(func) {
 }
 
 
-/* 使用测试*/
+/* 使用测试 */
 var a = new RepeatRAF(function () {
     console.log(1);
 
@@ -2189,7 +2306,7 @@ var a = new RepeatRAF(function () {
     }
 });
 
-//a.stop();
+// a.stop();
 ```
 
 ---
@@ -2207,8 +2324,8 @@ var a = new RepeatRAF(function () {
 
     <script>
         var scrollLoadObj = {
-            namespace: '', /*事件命名空间*/
-            loadMore: function (next) { /*加载逻辑*/
+            namespace: '', /*事件命名空间 */
+            loadMore: function (next) { /*加载逻辑 */
                 var $load = $('.j-load'),
                     newNext = 0;
 
@@ -2225,8 +2342,8 @@ var a = new RepeatRAF(function () {
                                 id: next
                             }
                         }).done(function (data) {
-                            /* 删除重复内容*/
-                            /* 其他具体操作*/
+                            /* 删除重复内容 */
+                            /* 其他具体操作 */
 
                             newNext = data.next;
 
@@ -2236,9 +2353,9 @@ var a = new RepeatRAF(function () {
                         }).always(function () {
                             $load.attr('data-status', 'ready');
 
-                            if (/* 某条件*/) {   /* 不再加载*/
+                            if (/* 某条件 */) {   /* 不再加载 */
                                 $(window).off('scroll' + '.' + scrollLoadObj.namespace);
-                                /*$load.hide();*/
+                                /* $load.hide(); */
                             } else {
                                 scrollLoadObj.autoLoadMore(newNext);
                             }
@@ -2246,10 +2363,10 @@ var a = new RepeatRAF(function () {
                     }
                 } else {
                     $(window).off('scroll' + '.' + scrollLoadObj.namespace);
-                    /*$load.hide();*/
+                    /* $load.hide(); */
                 }
             },
-            autoLoadMore: function (next) { /* 若html小于视窗则触发加载*/
+            autoLoadMore: function (next) { /* 若html小于视窗则触发加载 */
                 if ($('html').outerHeight(true) <= $(window).height()) {
                     scrollLoadObj.loadMore(next);
                 }
@@ -2273,7 +2390,7 @@ var a = new RepeatRAF(function () {
                         clearTimeout(scrollSetTimeoutId);
 
                         scrollSetTimeoutId = setTimeout(function () {
-                            if ($load.offset().top <= $(window).scrollTop() + $(window).height()) {  /* 节点顶部在屏幕底部以上*/
+                            if ($load.offset().top <= $(window).scrollTop() + $(window).height()) {  /* 节点顶部在屏幕底部以上 */
                                 scrollLoadObj.loadMore($load.attr('data-next'));
                             }
                         }, 200);
@@ -2283,7 +2400,7 @@ var a = new RepeatRAF(function () {
         };
 
 
-        /* 使用测试*/
+        /* 使用测试 */
         scrollLoadObj.init();
     </script>
     ```
@@ -2298,8 +2415,8 @@ var a = new RepeatRAF(function () {
 
     <script type="text/javascript">
         var scrollLoadObj = {
-            namespace: '', /*事件命名空间*/
-            loadMore: function (next) { /*加载逻辑*/
+            namespace: '', /* 事件命名空间 */
+            loadMore: function (next) { /* 加载逻辑 */
                 var $load = $('.j-load'),
                     newNext = 0;
 
@@ -2316,8 +2433,8 @@ var a = new RepeatRAF(function () {
                                 id: next
                             }
                         }).done(function (data) {
-                            /* 删除重复内容*/
-                            /* 其他具体操作*/
+                            /* 删除重复内容 */
+                            /* 其他具体操作 */
 
                             newNext = data.next;
 
@@ -2327,7 +2444,7 @@ var a = new RepeatRAF(function () {
                         }).always(function () {
                             $load.attr('data-status', 'ready');
 
-                            if (/* 某条件*/) {   /* 不再加载*/
+                            if (/* 某条件 */) {   /* 不再加载 */
                                 $(window).off('scroll' + '.' + scrollLoadObj.namespace);
                             } else {
                                 scrollLoadObj.autoLoadMore(newNext);
@@ -2338,7 +2455,7 @@ var a = new RepeatRAF(function () {
                     $(window).off('scroll' + '.' + scrollLoadObj.namespace);
                 }
             },
-            autoLoadMore: function (next) { /* 若html小于视窗则触发加载*/
+            autoLoadMore: function (next) { /* 若html小于视窗则触发加载 */
                 if ($('html').outerHeight(true) <= $(window).height()) {
                     scrollLoadObj.loadMore(next);
                 }
@@ -2362,7 +2479,7 @@ var a = new RepeatRAF(function () {
                         clearTimeout(scrollSetTimeoutId);
 
                         scrollSetTimeoutId = setTimeout(function () {
-                            if ($(window).height() + $(window).scrollTop() >= $(document).height()) {  /* 文档滚动到底部*/
+                            if ($(window).height() + $(window).scrollTop() >= $(document).height()) {  /* 文档滚动到底部 */
                                 scrollLoadObj.loadMore($load.attr('data-next'));
                             }
                         }, 200);
@@ -2372,7 +2489,7 @@ var a = new RepeatRAF(function () {
         };
 
 
-        /* 使用测试*/
+        /* 使用测试 */
         scrollLoadObj.init();
     </script>
     ```
@@ -2402,8 +2519,8 @@ var a = new RepeatRAF(function () {
         }
 
         var _timeoutId,
-            _namespace = Date.now(), /* 事件命名空间*/
-            _lazyLoad = function (domArr, className, dataSrc, func, dataError, errorFunc) { /* 图片延时加载*/
+            _namespace = Date.now(), /* 事件命名空间 */
+            _lazyLoad = function (domArr, className, dataSrc, func, dataError, errorFunc) { /* 图片延时加载 */
                 dataSrc = dataSrc || 'data-src';
                 dataError = dataError || 'data-error';
 
@@ -2429,13 +2546,13 @@ var a = new RepeatRAF(function () {
                                 errorFunc.call(value, value);
                             }
 
-                            /* 防止内存泄露*/
+                            /* 防止内存泄露 */
                             newImg.onload = null;
                             newImg.onerror = null;
                             newImg = null;
                         };
 
-                        if (newImg.complete) {    /* 缓存加载*/
+                        if (newImg.complete) {    /* 缓存加载 */
                             $this.attr('src', srcReal)
                                 .removeAttr(dataSrc)
                                 .removeClass(className);
@@ -2444,11 +2561,11 @@ var a = new RepeatRAF(function () {
                                 func.call(value, value);
                             }
 
-                            /* 防止内存泄露*/
+                            /* 防止内存泄露 */
                             newImg.onerror = null;
                             newImg = null;
                         } else {
-                            newImg.onload = function () {   /* 新加载*/
+                            newImg.onload = function () {   /* 新加载 */
                                 $this.attr('src', srcReal)
                                     .removeAttr(dataSrc)
                                     .removeClass(className);
@@ -2457,7 +2574,7 @@ var a = new RepeatRAF(function () {
                                     func.call(value, value);
                                 }
 
-                                /* 防止内存泄露*/
+                                /* 防止内存泄露 */
                                 newImg.onload = null;
                                 newImg.onerror = null;
                                 newImg = null;
@@ -2475,12 +2592,12 @@ var a = new RepeatRAF(function () {
                             errorFunc.call(value, value);
                         }
 
-                        /* 防止内存泄露*/
+                        /* 防止内存泄露 */
                         newImg = null;
                     }
                 });
             },
-            _getImgArr = function (className, offset) { /* 获取屏幕内dom数组*/
+            _getImgArr = function (className, offset) { /* 获取屏幕内dom数组 */
                 var $all = $('.' + className),
                     screenTop = $(window).scrollTop(),
                     screenBottom = screenTop + $(window).height(),
@@ -2492,16 +2609,16 @@ var a = new RepeatRAF(function () {
 
                 $all.each(function (index, element) {
                     var elemTop = $(element).offset().top,
-                        elemBottom = elemTop + $(element).height(); /* jQuery可以用outerHeight*/
+                        elemBottom = elemTop + $(element).height(); /* jQuery可以用outerHeight */
 
-                    if (elemTop <= screenBottom + offset && elemBottom >= screenTop - offset) {  /* 节点顶部在屏幕底部以上 && 节点底部在屏幕顶部以下*/
+                    if (elemTop <= screenBottom + offset && elemBottom >= screenTop - offset) {  /* 节点顶部在屏幕底部以上 && 节点底部在屏幕顶部以下 */
                         domArr.push(element);
                     }
                 });
 
                 return domArr;
             },
-            _run = function (className, func) {    /* 触发*/
+            _run = function (className, func) {    /* 触发 */
                 clearTimeout(_timeoutId);
                 _timeoutId = setTimeout(function () {
                     _lazyLoad(_getImgArr(className), className, dataSrc, func, dataError, errorFunc);
@@ -2515,7 +2632,7 @@ var a = new RepeatRAF(function () {
                 });
             };
 
-        this.stop = function () {    /* 解绑事件绑定*/
+        this.stop = function () {    /* 解绑事件绑定 */
             $(window).off('scroll' + '.' + _namespace);
         };
 
@@ -2523,7 +2640,7 @@ var a = new RepeatRAF(function () {
     }
 
 
-    /* 使用测试*/
+    /* 使用测试 */
     var a = new ImgLazyLoad('j-img-1'),
         b = new ImgLazyLoad(
             'j-img-2',
@@ -2537,8 +2654,8 @@ var a = new RepeatRAF(function () {
             }
         );
 
-    //a.stop();
-    //b.stop();
+    // a.stop();
+    // b.stop();
 </script>
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/j9dkuwwv/)
@@ -2581,8 +2698,8 @@ var a = new RepeatRAF(function () {
             };
           }
         
-          var _namespace = Date.now(), //事件命名空间
-            _isIE = function (num) {    //判断ie版本
+          var _namespace = Date.now(),  // 事件命名空间
+            _isIE = function (num) {    // 判断ie版本
               var dom = document.createElement('b');
         
               dom.innerHTML = '<!--[if IE ' + num + ']><i></i><![endif]-->';
@@ -2592,23 +2709,23 @@ var a = new RepeatRAF(function () {
             _followFixed = function () {
               var scollTop = $(window).scrollTop(),
                 documentHeight = $(document).height(),
-                targetHeight = $target.height();   //jQuery可以用outerHeight
+                targetHeight = $target.height();   // jQuery可以用outerHeight
         
-              if (scollTop >= topOffset) {    //滚动距离超过topOffset
-                if (!$target.hasClass(bottomClass)) {   //没有添加bottomClass
-                  if (documentHeight - ($target.offset().top + targetHeight) > bottomOffset) {    //节点底部距离文档底部距离 > bottomOffet
+              if (scollTop >= topOffset) {    // 滚动距离超过topOffset
+                if (!$target.hasClass(bottomClass)) {   // 没有添加bottomClass
+                  if (documentHeight - ($target.offset().top + targetHeight) > bottomOffset) {    // 节点底部距离文档底部距离 > bottomOffet
                     requestAnimationFrame(function () {
                       $target.removeClass(bottomClass).addClass(topClass)
                         .removeAttr('style');
                     });
-                  } else if (bottomClass) {   //超过bottomOffet,并且bottomClass存在
+                  } else if (bottomClass) {   // 超过bottomOffet,并且bottomClass存在
                     requestAnimationFrame(function () {
                       $target.removeClass(topClass).addClass(bottomClass)
                         .css('top', documentHeight - $target.offsetParent().offset().top - targetHeight - bottomOffset);
                     });
                   }
-                } else {    //添加了bottomClass
-                  if (scollTop < $target.offset().top) {  //滚动小于节点
+                } else {    // 添加了bottomClass
+                  if (scollTop < $target.offset().top) {  // 滚动小于节点
                     requestAnimationFrame(function () {
                       $target.removeClass(bottomClass).addClass(topClass)
                         .removeAttr('style');
@@ -2638,10 +2755,11 @@ var a = new RepeatRAF(function () {
           };
         }
         
-        /* 使用测试*/
+        
+        /* 使用测试 */
         var a = new FollowFixed($('.target'), $('.target').offset().top, 'z-affix-top', 200, 'z-affix-bottom');
         
-        //a.stop();
+        // a.stop();
     </script>
     ```
     [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/v69fr64x/)
@@ -2674,13 +2792,13 @@ var a = new RepeatRAF(function () {
             };
           }
         
-          var namespace = Date.now(), /* 事件命名空间*/
+          var namespace = Date.now(), /* 事件命名空间 */
             $target = $(target),
             startOffset = $target.offset().top,
             targetMarginTop = parseInt($target.css('margin-top'), 10) || 0,
             prevMarginBottom = parseInt($target.prev().css('margin-bottom'), 10) || 0,
             defaultMarginTop = Math.max(targetMarginTop, prevMarginBottom),
-            maxMarginTop = $(dependent).height() - $(father).height() + defaultMarginTop; //Query可以用outerHeight
+            maxMarginTop = $(dependent).height() - $(father).height() + defaultMarginTop; // jQuery可以用outerHeight
         
           $(window).on('scroll' + '.' + namespace, function () {
             var marginTop = $(window).scrollTop() - startOffset + defaultMarginTop;
@@ -2704,10 +2822,11 @@ var a = new RepeatRAF(function () {
           };
         }
         
-        /* 使用测试*/
+        
+        /* 使用测试 */
         var a = new FollowMarginTop('.target', '.father', '.dependent');
         
-        //a.stop();
+        // a.stop();
     </script>
     ```
     [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/gc45ehdb/)
@@ -2774,7 +2893,7 @@ var a = new RepeatRAF(function () {
         }
 
 
-        /* 使用测试*/
+        /* 使用测试 */
         alertToast('<span style="color: red;">red</span>', '哈哈');
     </script>
     ```
@@ -2842,8 +2961,8 @@ var a = new RepeatRAF(function () {
         }
      
 
-        /* 使用测试*/
-       alertToast('<span style="color: red;">red</span>', '哈哈');
+        /* 使用测试 */
+        alertToast('<span style="color: red;">red</span>', '哈哈');
     </script>
     ```
 
@@ -2947,7 +3066,7 @@ var a = new RepeatRAF(function () {
         }
 
         $(document).on('click.' + namespace, function (e) {
-            if (!$dom.is(e.target) && $dom.has(e.target).length === 0) {    /* 点击不在指定区域内*/
+            if (!$dom.is(e.target) && $dom.has(e.target).length === 0) {    /* 点击不在指定区域内 */
                 $(document).off('click.' + namespace);
 
                 if (typeof callback === 'function') {
@@ -2958,7 +3077,7 @@ var a = new RepeatRAF(function () {
     }
 
 
-    /* 使用测试*/
+    /* 使用测试 */
     beyongOneAct($('.dom1,#dom2'), function () {
         console.log('点击区域外');
     }, 1000);
@@ -2993,7 +3112,7 @@ var a = new RepeatRAF(function () {
                 }
             }
 
-            if (!withinArea) {    /* 点击不在指定区域内*/
+            if (!withinArea) {    /* 点击不在指定区域内 */
                 $(document.body).off('click.' + namespace);
 
                 if (typeof callback === 'function') {
@@ -3004,7 +3123,7 @@ var a = new RepeatRAF(function () {
     }
 
 
-    /* 使用测试*/
+    /* 使用测试 */
     beyongOneAct($('.dom1,#dom2'), function () {
         console.log('点击区域外');
     }, 1000);
@@ -3075,8 +3194,8 @@ var a = new RepeatRAF(function () {
             };
         }
 
-        var _isStop = false, //停止动画flag
-            _namespace = Date.now(), //事件命名空间
+        var _isStop = false, // 停止动画flag
+            _namespace = Date.now(), // 事件命名空间
             _init = function (selector, hoverClass) {
                 $(document).on('mouseenter' + '.' + _namespace, selector, function () {
                     $(this).addClass(hoverClass);
@@ -3103,12 +3222,12 @@ var a = new RepeatRAF(function () {
     }
 
 
-    /* 使用测试*/
+    /* 使用测试 */
     var a = new AnimationHover('.j-dom-1', 'z-hover');
     var b = new AnimationHover('.j-dom-2', 'z-hover');
 
-    //a.stop;
-    //b.stop;
+    // a.stop;
+    // b.stop;
 </script>
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/Lukonj4s/)
@@ -3225,7 +3344,7 @@ function fixPlaceholder($dom) {
             _setTimeoutId2 = '',
             _namespace = Date.now(),
             _resizeEvent = 'onorientationchange' in window ? 'orientationchange' : 'resize',
-            _portraitFunc = function (selector, className) {    /* 屏幕高度>宽度（竖屏），增加“顺时针翻转90度的类”*/
+            _portraitFunc = function (selector, className) {    /* 屏幕高度>宽度（竖屏），增加“顺时针翻转90度的类” */
                 var $dom = $(selector);
 
                 if ($(window).height() > $(window).width()) {
@@ -3234,7 +3353,7 @@ function fixPlaceholder($dom) {
                     $dom.removeClass(className);
                 }
             },
-            _resizeFunc = function (selector) {   /* 设置高宽的值（边长较长的一边设置为宽度，较短的设置为高度）*/
+            _resizeFunc = function (selector) {   /* 设置高宽的值（边长较长的一边设置为宽度，较短的设置为高度） */
                 var wHeight = $(window).height(),
                     wWidth = $(window).width(),
                     i;
@@ -3280,10 +3399,10 @@ function fixPlaceholder($dom) {
     };
 
 
-    /* 使用测试*/
+    /* 使用测试 */
     var a = new ReversalAct('#j-dom-1, #j-dom-2', 'z-reversal');
 
-    //a.stop();
+    // a.stop();
 </script>
 ```
 >如果对不是全屏的节点使用翻转函数，需要给节点设置：`width: 宽度 !important;height: auto !important;`。

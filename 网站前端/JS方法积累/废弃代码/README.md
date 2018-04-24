@@ -1,4 +1,4 @@
-# JS方法积累——废弃代码
+# JS废弃代码
 
 ## 目录
 1. [原生JS方法](#原生js方法)
@@ -35,16 +35,16 @@
 ### *原生JS*格式化日期
 ```javascript
 var format = {
-  date: function (dateObj, fmt) {    /* 格式化日期*/
+  date: function (dateObj, fmt) {    /* 格式化日期 */
     var o = {
-        'q+': Math.floor((dateObj.getMonth() + 3) / 3), //季度
-        'M+': dateObj.getMonth() + 1, //月
-        'd+': dateObj.getDate(), //日
-        'h+': dateObj.getHours() % 12 === 0 ? 12 : dateObj.getHours() % 12, //12小时制
-        'H+': dateObj.getHours(), //24小时制
-        'm+': dateObj.getMinutes(), //分
-        's+': dateObj.getSeconds(), //秒
-        'S': dateObj.getMilliseconds(), //毫秒
+        'q+': Math.floor((dateObj.getMonth() + 3) / 3), // 季度
+        'M+': dateObj.getMonth() + 1, // 月
+        'd+': dateObj.getDate(), // 日
+        'h+': dateObj.getHours() % 12 === 0 ? 12 : dateObj.getHours() % 12, // 12小时制
+        'H+': dateObj.getHours(), // 24小时制
+        'm+': dateObj.getMinutes(), // 分
+        's+': dateObj.getSeconds(), // 秒
+        'S': dateObj.getMilliseconds(), // 毫秒
       },
       week = {
         '0': '一',
@@ -57,11 +57,11 @@ var format = {
       },
       i;
 
-    /* [{y:'7'},{yy:'17'},{yyy+:'017'},{yyyy+:'2017'}]*/
+    /* [{y:'7'},{yy:'17'},{yyy+:'017'},{yyyy+:'2017'}] */
     if (/(y+)/.test(fmt)) {
       fmt = fmt.replace(RegExp.$1, (dateObj.getFullYear() + '').substring(4 - RegExp.$1.length));
     }
-    /* [{E:'一'},{EE:'周一'},{EEE+:'星期一'}]*/
+    /* [{E:'一'},{EE:'周一'},{EEE+:'星期一'}] */
     if (/(E+)/.test(fmt)) {
       fmt = fmt.replace(RegExp.$1, ((RegExp.$1.length > 1) ? (RegExp.$1.length > 2 ? '星期' : '周') : '') + week[dateObj.getDay() + '']);
     }
@@ -76,7 +76,7 @@ var format = {
 };
 
 
-/* 使用测试*/
+/* 使用测试 */
 var a = format.date(new Date(), 'yyyy-MM-dd HH:mm:ss S毫秒 EEE 季度q');
 ```
 >可以使用[moment](https://github.com/moment/moment/)格式化时间，完全替代。
@@ -136,65 +136,59 @@ function getAge (birthday) {
  * @param {String} [data.mType = ' '] - “分”后面的文字
  * @param {String} [data.sType = ' '] - “秒”后面的文字
  */
-function CountDown(data) {
-  if (typeof Date.now !== 'function') {
-    Date.now = function () {
-      return new Date().getTime();
+function CountDown (data) {
+  const _dTypeSend = (typeof data.dType !== 'undefined') && data.dType !== '';
+  const _hTypeSend = (typeof data.hType !== 'undefined') && data.hType !== '';
+  const _mTypeSend = (typeof data.mType !== 'undefined') && data.mType !== '';
+  const _sTypeSend = (typeof data.sType !== 'undefined') && data.sType !== '';
+  const _isElement = ((o) => {  /* 是否为Element */
+    return typeof HTMLElement === 'object' ? o instanceof HTMLElement : !!o && typeof o === 'object' && o !== null && o.nodeType === 1 && typeof o.nodeName === 'string';
+  })(data.dom);
+  const _formatNum = (number) => {    /* 格式化数字格式 */
+    if (number < 10 && data.completeZero) {
+      return '0' + number;
+    } else {
+      return number.toString();
+    }
+  };
+  const _SetInterval = function (func, millisecond) {  /* 周期执行 */
+    let _setIntervalId;
+
+    if (typeof func === 'function') {
+      _setIntervalId = setTimeout(function self () {
+        _setIntervalId = setTimeout(self, millisecond);
+
+        func();
+      }, millisecond);
+    }
+
+    this.stop = () => {
+      clearTimeout(_setIntervalId);
     };
-  }
+  };
+  const _print = (time) => {  /* 输出 */
+    const day = _formatNum(Math.floor((time / (24 * 60 * 60))));
+    const hour = _formatNum(Math.floor((time / (60 * 60)) % 24));
+    const minute = _formatNum(Math.floor((time / 60) % 60));
+    const second = _formatNum(time % 60);
+    let text;
 
-  var _dTypeSend = (typeof data.dType !== 'undefined') && data.dType !== '',
-    _hTypeSend = (typeof data.hType !== 'undefined') && data.hType !== '',
-    _mTypeSend = (typeof data.mType !== 'undefined') && data.mType !== '',
-    _sTypeSend = (typeof data.sType !== 'undefined') && data.sType !== '',
-    _isElement = (function isElement(o) {  /* 是否为Element */
-      return typeof HTMLElement === 'object' ? o instanceof HTMLElement : !!o && typeof o === 'object' && o !== null && o.nodeType === 1 && typeof o.nodeName === 'string';
-    }(data.dom)),
-    _formatNum = function (number) {    /* 格式化数字格式*/
-      if (number < 10 && data.completeZero) {
-        return '0' + number;
-      } else {
-        return number.toString();
-      }
-    },
-    _SetInterval = function (func, millisecond) {  /* 周期执行*/
-      var _setIntervalId;
+    if (day != 0 || _dTypeSend) {
+      text = day + data.dType + hour + data.hType + minute + data.mType + second + data.sType;
+    } else if (hour != 0 || _hTypeSend) {
+      text = hour + data.hType + minute + data.mType + second + data.sType;
+    } else if (minute != 0 || _mTypeSend) {
+      text = minute + data.mType + second + data.sType;
+    } else {
+      text = second + data.sType;
+    }
 
-      if (typeof func === 'function') {
-        _setIntervalId = setTimeout(function () {
-          _setIntervalId = setTimeout(arguments.callee, millisecond);
-
-          func();
-        }, millisecond);
-      }
-
-      this.stop = function () {
-        clearTimeout(_setIntervalId);
-      };
-    },
-    _print = function (time) {  /* 输出*/
-      var day = _formatNum(Math.floor((time / (24 * 60 * 60)))),
-        hour = _formatNum(Math.floor((time / (60 * 60)) % 24)),
-        minute = _formatNum(Math.floor((time / 60) % 60)),
-        second = _formatNum(time % 60),
-        text;
-
-      if (day != 0 || _dTypeSend) {
-        text = day + data.dType + hour + data.hType + minute + data.mType + second + data.sType;
-      } else if (hour != 0 || _hTypeSend) {
-        text = hour + data.hType + minute + data.mType + second + data.sType;
-      } else if (minute != 0 || _mTypeSend) {
-        text = minute + data.mType + second + data.sType;
-      } else {
-        text = second + data.sType;
-      }
-
-      if (_isElement) {
-        data.dom.innerHTML = text;
-      } else {
-        console.log(text);
-      }
-    };
+    if (_isElement) {
+      data.dom.innerHTML = text;
+    } else {
+      console.log(text);
+    }
+  };
 
   if (!_dTypeSend) {
     data.dType = ' ';
@@ -209,11 +203,11 @@ function CountDown(data) {
     data.sType = '';
   }
 
-  /* 初始化时就输出一遍*/
+  /* 初始化时就输出一遍 */
   _print(Math.round((data.deadline - Date.now()) / 1000));
 
-  var obj = new _SetInterval(function () {
-    var time = Math.round((data.deadline - Date.now()) / 1000);
+  const obj = new _SetInterval(() => {
+    const time = Math.round((data.deadline - Date.now()) / 1000);
 
     if (time < (data.leftSec || 0)) {
       obj.stop();
@@ -229,7 +223,8 @@ function CountDown(data) {
   this.stop = obj.stop;
 }
 
-/* 使用测试*/
+
+/* 使用测试 */
 var a = new CountDown({
   deadline: Date.now() + 10000,
   dom: document.getElementById('j-test'),
@@ -244,7 +239,7 @@ var a = new CountDown({
   sType: '秒'
 });
 
-//a.stop();
+// a.stop();
 ```
 >可以使用[moment](https://github.com/moment/moment/)格式化时间。
 
@@ -253,7 +248,7 @@ var a = new CountDown({
 /**
  * 异步函数都成功返回后，执行func
  * @param {Function} func
- * @param {...String} url - ajax请求的地址
+ * @param {...String} url - AJAX请求的地址
  */
 function multiCallback(func, url) {
     if (typeof func === 'function' && arguments.length >= 2) {
@@ -276,7 +271,7 @@ function multiCallback(func, url) {
                     dataType: 'json',
                     data: {}
                     /*,
-                     //Zepto默认没有deferred的对象，用参数模式代替
+                     // Zepto默认没有deferred的对象，用参数模式代替
                      success: function (data) {
                          handle.result[url] = data;
                          handle.count += 1;
@@ -324,26 +319,58 @@ function extend(target, options) {
 ### *原生JS*深复制
 ```javascript
 /**
- * 深复制，仅针对数组或对象，值可以是基本数据类型、数组、基本对象、方法（不复制方法内属性）
- * @param {Object|Array} obj - 被深复制的内容
- * @returns {Object|Array} - 深复制后的内容
+ * 深复制。针对：基本数据类型、数组、基本对象、正则对象、方法（方法的属性不再深复制）
+ * @param {*} obj - 被深复制的内容
+ * @returns {*} - 深复制后的内容
  */
-function deepCopy(obj) {
-    var newObj, i;
-
-    if (typeof obj !== 'object' || obj === null) {
-
-        return obj;
-    } else {
-        newObj = Object.prototype.toString.call(obj) === '[object Array]' ? [] : {};
-
-        for (i in obj) {
-            newObj[i] = arguments.callee(obj[i]);
-        }
-
-        return newObj;
+function deepCopy (obj) {
+  if (typeof obj === 'function') {  // Function
+    const newFunc = eval('(' + obj.toString() + ')');
+    for (let key in obj) {
+      newFunc[key] = obj[key]; // 避免“调用栈溢出”，方法的属性不再深复制
     }
+
+    return newFunc;
+  } else if (typeof obj !== 'object' || obj === null) { // 基本数据类型
+
+    return obj;
+  } else if (Object.prototype.toString.call(obj) === '[object RegExp]') { // RegExp
+    const g = obj.global ? 'g' : '';
+    const m = obj.multiline ? 'm' : '';
+    const i = obj.ignoreCase ? 'i' : '';
+
+    return new RegExp(obj.source, g + i + m);
+  } else if (Array.isArray(obj)) {  // Array
+
+    return obj.map(() => deepCopy(obj));  // 多层深复制，容易产生“调用栈溢出”
+  } else {  // Object
+    const newObj = {};
+    for (let key in obj) {
+      newObj[key] = deepCopy(obj[key]); // 多层深复制，容易产生“调用栈溢出”
+    }
+
+    return newObj;
+  }
 }
+
+
+/* 使用测试 */
+var a = {
+  b: [],
+  c: null,
+  d: undefined,
+  e: Symbol('e'),
+  f: {},
+  g: {
+    h1: function () {},
+    h2: function h () {}
+  },
+  i: /g/gim
+};
+a.g.h1.j = [1, 2];
+
+var b = deepCopy(a);
+console.log(b);
 ```
 >1. 可以使用jQuery的`$.extend(true, {}, 被复制对象)`完全替代。
 >2. 可以使用lodash的`_.cloneDeep(被复制对象)`完全替代。
@@ -359,12 +386,12 @@ function deepCopy(obj) {
 function getElementsByClassName(className, parentDom) {
     parentDom = parentDom || document;
 
-    className = className.replace(/(^\s+)|(\s+$)/g, ''); //去除前后空格
+    className = className.replace(/(^\s+)|(\s+$)/g, ''); // 去除前后空格
 
-    if (document.getElementsByClassName) {  /* ie9+*/
+    if (document.getElementsByClassName) {  /* ie9+ */
 
         return parentDom.getElementsByClassName(className);
-    } else if (document.querySelectorAll) { /* ie8+*/
+    } else if (document.querySelectorAll) { /* ie8+ */
 
         className = '.' + className.split(/\s+/).join('.');
 
@@ -376,8 +403,8 @@ function getElementsByClassName(className, parentDom) {
             domArr = [],
             i, len, j, regex;
 
-        for (i = 0, len = doms.length; i < len; i++) {  /* 遍历所有标签*/
-            for (j = 0; j < nameLen; j++) { /* 遍历类名*/
+        for (i = 0, len = doms.length; i < len; i++) {  /* 遍历所有标签 */
+            for (j = 0; j < nameLen; j++) { /* 遍历类名 */
                 regex = new RegExp('\\b' + nameArr[j] + '\\b');
 
                 if (!regex.test(doms[i].className)) {

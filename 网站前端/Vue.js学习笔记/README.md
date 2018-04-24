@@ -10,39 +10,7 @@
 
 ---
 ### [vue](https://github.com/vuejs/vue)
-1. 单向数据流（实现双向绑定效果），响应式
-
-    编写的代码不关注底层逻辑，只关注用**单向数据流**实现的**双向绑定**效果。
-
-    1. 重用DOM（尽量在已存在的DOM上做修改，而不是移除DOM再新建DOM）
-
-        1. 当没有`key`属性或`key`属性相同时：最大化重用DOM。
-        2. 切换的DOM的`key`属性不同：不重用DOM。
-    2. Vue实例代理`data`、`methods`、`computed`、`props`的属性内容，可以直接修改或调用；也有以`$`开头的Vue实例属性（如`$el`、`$data`、`$watch`）。
-
-        只有已经被代理的内容是响应的（Vue实例被创建时的`data`、`computed`），值的改变（可能）会触发视图的重新渲染。
-
-        1. 导致视图更新：
-
-            1. 数组的某些mutator方法：`push`、`pop`、`unshift`、`shift`、`reverse`、`sort`、`splice`
-            2. 数组赋值
-            3. 插值：`Vue.set(数组/对象, 索引/键, 新值)`
-        2. 无法检测数组变动：
-
-            1. 直接数组索引赋值。
-
-                >导致视图更新的替代方法：`Vue.set(vm.items, index, value)`或`vm.items.splice(index, 1, value)`。
-            2. 直接修改数组长度。
-
-                >导致视图更新的替代方法：`vm.items.splice(newLength)`。
-            3. 数组的最新mutator方法：`copyWithin`、`fill`
-    3. 外层慎用~~箭头函数~~，`this`的指向无法按预期指向Vue实例。
-    4. 因为HTML不区分大小写，所以大/小驼峰式命名的JS内容，在HTML使用时要转换为相应的短横线隔开式。
-
-        不受限制、不需要转换：JS字符串模版、`.vue`组件。
-
-        >JS字符串模版：`<script type="text/x-template">`、JS内联模板字符串。
-2. 模板插值
+1. 模板插值
 
     1. 支持JS表达式（单个），不支持~~语句~~、~~流控制~~。
 
@@ -54,7 +22,7 @@
         {{ number + 1 }}
         {{ ok ? 'YES' : 'NO' }}
         {{ Array.from(words).reverse().join('') }}
-        <div v-bind:id="'list-' + id"></div>
+        <div :id="'list-' + id"></div>
 
         <!--
         是语句，不是表达式
@@ -72,7 +40,7 @@
     3. 作用域在所属Vue实例范围内。
     4. `slot="字符串"`、`<slot name="字符串">`用于父级向子组件插入内容。
     5. 所有渲染结果不包含`<template>`
-3. 指令
+2. 指令
 
     指令（Directives）是带有`v-`前缀的DOM的特殊属性。
 
@@ -85,7 +53,7 @@
     3. `v-for="值/(值, 键)/(值, 键, 索引) in/of JS表达式/整数"`
 
         ><details>
-        ><summary>处于同一节点时，<code>v-for</code>比<code>v-if</code>优先级更高：意味着<code>v-if</code>将分别重复运行于每个<code>v-for</code>循环中</summary>
+        ><summary>处于同一节点时，<code>v-for</code>比<code>v-if</code>优先级更高（<code>v-if</code>将分别重复运行于每个<code>v-for</code>循环中）</summary>
         >
         >```html
         ><!-- e.g. -->
@@ -105,7 +73,7 @@
             </div>
             ```
 
-            >没有提供`key`属性：若数据项的顺序被改变，Vue将不会移动DOM元素来匹配数据项的顺序，而是简单复用每个元素，确保渲染内容正确。
+            >没有提供`key`属性：若数据项的顺序被改变，Vue将不会移动DOM来匹配数据项的顺序，而是简单复用每个DOM，确保渲染内容正确。
     4. `v-bind`绑定DOM属性与JS表达式的结果。
 
         >此DOM属性随表达式最终值改变而改变，直接修改此DOM属性值不改变表达式的值。
@@ -121,7 +89,7 @@
             
             `<my-component :foo.sync="bar"></my-component>`
         
-            等价于
+            等价于：
             
             `<my-component :foo="bar" @update:foo="val => bar = val"></my-component>`
             
@@ -130,7 +98,7 @@
                 ```javascript
                 Vue.component('myComponent', {
                   props: ['foo'],
-                  template: '<p v-on:click="doIt">{{foo}}</p>',
+                  template: '<p @click="doIt">{{foo}}</p>',
                   methods: {
                     doIt () {
                       this.$emit('update:foo', 'new value') // 触发父级事件，父级事件改变值，再传入子组件
@@ -143,19 +111,19 @@
         
             1. 绑定`class`
     
-                1. `v-bind:class="{class名: Vue属性[, class名: Vue属性]}"`
-                2. `v-bind:class="Vue属性对象"`
-                3. `v-bind:class="[Vue属性[, Vue属性]]"`
-                4. `v-bind:class="[Vue属性 ? Vue属性 : ''[, Vue属性]]"`
-                5. `v-bind:class="[{class名: Vue属性}[, Vue属性]]"`
+                1. `:class="{class名: Vue属性[, class名: Vue属性]}"`
+                2. `:class="Vue属性对象"`
+                3. `:class="[Vue属性[, Vue属性]]"`
+                4. `:class="[Vue属性 ? Vue属性 : ''[, Vue属性]]"`
+                5. `:class="[{class名: Vue属性}[, Vue属性]]"`
             2. 绑定`style`
     
                 >1. 自动添加样式前缀。
                 >2. CSS属性名可以用驼峰式（camelCase）或短横线分隔（kebab-case，需用单引号包裹）命名。
     
-                1. `v-bind:style="{css属性: Vue属性[, css属性: Vue属性]}"`
-                2. `v-bind:style="Vue属性对象"`
-                3. `v-bind:style="[Vue属性[, Vue属性]]"`
+                1. `:style="{css属性: Vue属性[, css属性: Vue属性]}"`
+                2. `:style="Vue属性对象"`
+                3. `:style="[Vue属性[, Vue属性]]"`
                 4. 多重值
         3. 传递给子组件DOM属性的值类型
 
@@ -168,9 +136,9 @@
             <my-component some-prop="a">传递字符串'a'</my-component>
 
             <!-- 传递表达式的值 -->
-            <my-component v-bind:some-prop="1">传递表达式：1（Number）</my-component>
-            <my-component v-bind:some-prop="'1'">传递表达式：'1'（String）</my-component>
-            <my-component v-bind:some-prop="a">传递表达式：a（变量是什么类型就是什么类型）</my-component>
+            <my-component :some-prop="1">传递表达式：1（Number）</my-component>
+            <my-component :some-prop="'1'">传递表达式：'1'（String）</my-component>
+            <my-component :some-prop="a">传递表达式：a（变量是什么类型就是什么类型）</my-component>
             ```
             </details>
         4. 若不带参数的`v-bind="表达式"`，则绑定表达式的所有属性到DOM。
@@ -203,8 +171,8 @@
 
         1. 事件修饰符：
 
-            1. `.stop`（阻止冒泡）、`.prevent`（阻止默认行为）、`.capture`（捕获事件流）、`.self`（只当事件在该元素本身而不是子元素触发时才触发）、`.once`（事件将只触发一次）
-            2. `.enter`、`.tab`、`.delete`、`.esc`、`.space`、`.up`、`.down`、`.left`、`.right`、`.数字键值`、[KeyboardEvent.key的段横线形式](https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/key/Key_Values)
+            1. `.stop`（阻止冒泡）、`.prevent`（阻止默认行为）、`.capture`（捕获事件流）、`.self`（只当事件在该元素本身而不是子元素触发时才触发）、`.once`（事件将只触发一次）、`.passive`（滚动事件的默认滚动行为将立即触发，而不等待~~scroll~~事件完成）
+            2. `.enter`、`.tab`、`.delete`、`.esc`、`.space`、`.up`、`.down`、`.left`、`.right`、`.数字键值`、[KeyboardEvent.key的短横线形式](https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/key/Key_Values)
 
                 键盘。
             3. `.left`、`.right`、`.middle`
@@ -229,11 +197,11 @@
             >    <!-- Ctrl + Click -->
             >    <div @click.ctrl="doSomething">...</div>
             >
-            >    <!-- 会阻止所有的点击 -->
-            >    <div v-on:click.prevent.self="doThat">...</div>
+            >    <!-- 会阻止所有点击的默认行为，该元素点击触发doThat -->
+            >    <div @click.prevent.self="doThat">...</div>
             >
-            >    <!-- 只会阻止元素上的点击 -->
-            >    <div v-on:click.self.prevent="doThat">...</div>
+            >    <!-- 只会阻止该元素点击的默认行为，该元素点击触发doThat -->
+            >    <div @click.self.prevent="doThat">...</div>
             >    ```
             >    </details>
         2. `$event`原生DOM事件的变量，仅能由HTML传入
@@ -243,7 +211,7 @@
 
             ```html
             <div id="test">
-              <a href="#" v-on:click="a($event)">click</a>
+              <a href="#" @click="a($event)">click</a>
             </div>
 
             <script>
@@ -260,14 +228,14 @@
             </details>
         3. 自定义事件
         
-            仅定义在父组件对子组件的引用上，只能由子组件内部`$emit`触发，然后调用父级方法，再通过改变父级属性去改变子组件的`props`或置换组件。
+            仅定义在父组件对子组件的引用上，只能由子组件内部`$emit`触发，然后触发父级方法，再通过改变父级属性去改变子组件的`props`（或置换组件）。
     6. `v-model`表单
 
         >忽略表单元素上的`value`、`checked`、`selected`等初始值，而仅通过Vue实例赋值。
 
         1. 表单修饰符：
         
-            `.lazy`（在`change`而不是`input`事件触发）、`.number`（输入值转为`Number`类型）、`.trim`（过滤首尾空格）
+            `.lazy`（`change`而不是~~input~~事件触发）、`.number`（输入值转为`Number`类型）、`.trim`（过滤首尾空格）
         2. 仅针对部分元素：`<input>`、`<textarea>`、`<select>`、组件
         3. <details>
         
@@ -277,23 +245,23 @@
 
                 `<input v-model="bar">`
 
-                等价于
+                等价于：
 
-                `<input v-bind:value="bar" v-on:input="bar = $event.target.value">`
+                `<input :value="bar" @input="bar = $event.target.value">`
             2. 组件
 
                 `<my-input v-model="bar"></my-input>`
 
-                等价于（默认：属性绑定为`value`、事件绑定为`input`）
+                等价于（默认：属性绑定为`value`、事件绑定为`input`）：
 
-                `<my-input v-bind:value="bar" v-on:input="bar = arguments[0]"></my-input>`
+                `<my-input :value="bar" @input="bar = arguments[0]"></my-input>`
 
                 - 若要达到效果（双向数据绑定），还需要在组件中添加：
 
                     ```javascript
                     Vue.component('myInput', {
                       props: ['value'],
-                      template: '<input v-bind:value="value" v-on:input="updateValue($event)">',
+                      template: '<input :value="value" @input="updateValue($event)">',
                       methods: {
                         updateValue (e) {
                           this.$emit('input', e.target.value) // 触发父级事件，父级事件改变值，再传入子组件
@@ -308,9 +276,9 @@
             2. 若是`type="checkbox"`，则为`true/false`；
             3. 若要获得Vue实例的动态属性值：
 
-                1. 用`v-bind:value="表达式"`；
-                2. 若`type="checkbox"`，则用`v-bind:true-value="表达式" v-bind:false-value="表达式"`。
-    7. `v-once`一次性插值，不再双向绑定数据
+                1. 用`:value="表达式"`；
+                2. 若`type="checkbox"`，则用`:true-value="表达式" :false-value="表达式"`。
+    7. `v-once`一次性插值，不再~~双向绑定~~
     8. `v-html`输入真正HTML
 
         >- 与其他插值（如模板插值）的区别：
@@ -356,7 +324,7 @@
         总是渲染出DOM，根据值切换`display`值。
 
         >不支持`<template>`、不支持`v-else`。
-4. Vue实例的属性：
+3. Vue实例的属性：
 
     `new Vue(对象)`
 
@@ -421,14 +389,14 @@
         
         ![vue生命周期](./images/vue-lifecycle-1.png)
         </details>
-    9. `mixins`（数组，单项为Vue属性对象）：混合
+    9. `mixins`（数组，每一项为Vue属性对象）：混合
 
         1. 当组件和混合对象含有同名选项时，这些选项将以恰当的方式混合。
         2. 混合对象的**钩子**将在组件自身钩子之前调用。
         3. 值为对象的选项（例如`methods`、`components`、`directives`），将被混合为同一个对象；两个对象键名冲突时，取组件对象的键值对。
 
         - `Vue.mixin`全局注册混合对象，将会影响所有之后创建的（之前的不受影响）Vue实例，包括第三方模板。
-5. 组件
+4. 组件
 
     >所有Vue组件同时也都是Vue实例。
 
@@ -441,11 +409,11 @@
                 `template`的字符串模板内容为本组件作用域；父级添加的DOM（包括引用子组件）为父级作用域。
             - 内容分发
 
-                使用`<slot>`可在子组件内部插入父级引入的内容（`slot="字符串"`）。
+                子组件使用`<slot>`在内部插入父级引入的内容（`slot="字符串"`）。
 
                 1. 默认
 
-                    1. 模板中没有`name`属性的`<slot>`，匹配父级中去除所有`slot="字符串"`引用的内容（没有`slot`或值为空的DOM）。
+                    1. 模板中没有`name`属性的`<slot>`，匹配父级中去除所有`slot="字符串"`引用的内容（没有`slot`或`slot`值为空的DOM）。
                     2. 模板中`<slot>`的DOM内容，仅当没有父级匹配时显示。
                 2. 具名
 
@@ -455,12 +423,12 @@
 
                     1. 父级引用子组件元素内部的内容为：
 
-                        `<template slot-scope="临时变量">{{临时变量.组件属性}}</template>`
+                        `<标签或组件名 slot-scope="临时变量">{{临时变量.组件属性}}</标签或组件名>`
 
                         >`<template>`使用`slot-scope`属性时，不要同时使用`v-if`。
                     2. 组件模板：
 
-                        `<slot 组件属性="字符串">`或`<slot v-bind:组件属性="表达式">`
+                        `<slot 组件属性="字符串">`或`<slot :组件属性="表达式">`
         2. `props`
 
             接受父级传递内容。
@@ -506,39 +474,6 @@
                 }
             })
             ```
-        
-        <details>
-        <summary>e.g.</summary>
-        
-        ```javascript
-        // 全局注册组件，全局可用
-        Vue.component('myComponent', {
-          props: ['foo'],
-          template: '<p v-on:click="doIt">{{foo}}</p>',
-          methods: {
-            doIt() {
-            
-            }
-          }
-        })
-        
- 
-        // 局部注册组件，仅在此Vue实例中可用
-        new Vue({
-          components: {
-            myComponent: {
-              props: ['foo'],
-              template: '<p v-on:click="doIt">{{foo}}</p>',
-              methods: {
-                doIt() {
-                
-                }
-              }
-            }
-          }
-        });
-        ```
-        </details>
     3. 组件命名：
     
         >W3C规定的组件命名要求：小写，且包含一个`-`。
@@ -570,9 +505,9 @@
                  // 注册的组件
                  new Vue({
                    components: {
-                     'kebab-cased-component': { /* ... */ },
-                     camelCasedComponent: { /* ... */ },
-                     PascalCasedComponent: { /* ... */ }
+                     'kebab-cased-component': {},
+                     camelCasedComponent: {},
+                     PascalCasedComponent: {}
                    }
                  })
                  </script>
@@ -584,12 +519,12 @@
 
             >不会导致渲染出错的方式：JS字符串模版、`.vue`组件。
         2. `<有效标签 is="组件名"></有效标签>`
-        3.  动态组件：`<component v-bind:is="表达式"></component>`
+        3.  动态组件：`<component :is="表达式"></component>`
         
             ```html
             <div id="test">
-              <component v-bind:is="current1"></component>
-              <component v-bind:is="current2"></component>
+              <component :is="current1"></component>
+              <component :is="current2"></component>
             </div>
 
             <script>
@@ -610,9 +545,11 @@
             - `<keep-alive>`包裹，保留它的状态或避免重新渲染。
     5. 通信
 
+        >组件（Vue实例）有自己独立的作用域，虽然可以访问到互相依赖关系（`$parent`、`$children`），但是不建议（不允许）通过依赖获取、修改数据。
+
         1. 父子组件间的通信
 
-            >组件（Vue实例）有自己独立的作用域，虽然可以访问到互相依赖关系（`$parent`、`$children`），但是不建议（不允许）通过依赖获取、修改数据。
+            父-`props`->子：传入属性值；子-`$emit`->父：触发外部环境事件；外部事件再改变传进组件的`props`值。
 
             1. 父->子：通过`props`向下传递初始化数据给子组件实例（不出现在DOM中）
             
@@ -654,13 +591,11 @@
                     </details>
                 >注意避免**引用数据类型**导致的子组件改变父级。
             2. 子->父：通过`$emit`向上传递事件、参数
-            
-                >触发外部环境传进组件的`props`值，达成单向数据流实现双向绑定。
 
-                1. 在父级引用子组件处添加`v-on:自定义事件1="父方法"`监听；
+                1. 在父级引用子组件处添加`@自定义事件1="父方法"`监听；
                 
                     >若`自定义事件1`是原生事件，可以添加`.native`修饰符，监听组件根元素的原生事件（不再接收子组件的 ~~$emit~~）。
-                2. 在子组件方法内添加`this.$emit('自定义事件1', 参数)`向上传递。
+                2. 在子组件方法体内添加`this.$emit('自定义事件1', 参数)`向上传递。
         2. 非父子组件通信
 
             1. 在简单的场景下，可以使用一个空的Vue实例作为中央事件总线。
@@ -672,9 +607,9 @@
                 bus.$emit('事件名', 传参)
  
                 // 在组件 B 创建的钩子中监听事件
-                bus.$on('事件名', function (para) {/* ... */})
+                bus.$on('事件名', function (para) {})
                 ```
-            2. 或专门状态管理模式，如[vuex](https://github.com/vuejs/vuex)。
+            2. 或专门状态管理模式，如[vuex](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#vuex)。
         - 组件的API来自三部分
 
             `<my-component :子属性="父属性" @父事件="父方法"><标签 slot="名字">内容分发</标签></my-component>`
@@ -701,8 +636,8 @@
         6. 高级异步组件。
         7. 递归组件。
         8. 循环组件。
-6. 过渡&动画
-7. 插件
+5. 过渡&动画
+6. 插件
 
     ```javascript
     // 插件是.js文件，应当有一个公开的install方法
@@ -738,9 +673,45 @@
     // 在其他地方使用
     Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册相同插件，届时只会注册一次该插件。
     ```
+7. 特性
+
+    1. 重用DOM（尽量在已存在的DOM上做修改，而不是移除DOM再新建DOM）
+
+        1. 当没有`key`属性或`key`属性相同时：最大化重用DOM。
+        2. 切换的DOM的`key`属性不同：不重用DOM。
+    2. Vue实例代理`data`、`methods`、`computed`、`props`的属性内容，可以直接修改或调用；也有以`$`开头的Vue实例属性（如`$el`、`$data`、`$watch`）。
+
+        只有已经被代理的内容是响应的（Vue实例被创建时的`data`、`computed`），值的改变（可能）会触发视图的重新渲染。
+
+        1. 导致视图更新：
+
+            1. 数组的某些mutator方法：`push`、`pop`、`unshift`、`shift`、`reverse`、`sort`、`splice`
+            2. 数组赋值
+            3. 插值：`Vue.set(数组/对象, 索引/键, 新值)`
+        2. 无法检测数组变动：
+
+            1. 直接数组索引赋值。
+
+                >导致视图更新的替代方法：`Vue.set(vm.items, index, value)`或`vm.items.splice(index, 1, value)`。
+            2. 直接修改数组长度。
+
+                >导致视图更新的替代方法：`vm.items.splice(newLength)`。
+            3. 数组的最新mutator方法：`copyWithin`、`fill`
+    3. 外层慎用~~箭头函数~~，`this`的指向无法按预期指向Vue实例。
+    4. 因为HTML不区分大小写，所以大/小驼峰式命名的JS内容，在HTML使用时要转换为相应的短横线隔开式。
+
+        不受限制、不需要转换：JS字符串模版、`.vue`组件。
+
+        >JS字符串模版：`<script type="text/x-template">`、JS内联模板字符串。
 8. 虚拟DOM
 
     在底层的实现上，Vue将模板编译成虚拟DOM渲染函数。结合响应系统，Vue能够智能地计算出最少需要重新渲染多少组件，并把DOM操作次数减到最少。
+9. 双向绑定
+
+    1. `Object.defineProperty`
+    
+        数据劫持。
+    2. 事件监听
 
 ### [vue-router](https://github.com/vuejs/vue-router)
 1. 初始化
@@ -909,22 +880,74 @@
 
     1. `state`
 
-        状态。仅能在mutation方法内改变state。
+        状态（仅能在mutation方法体内改变state）。
 
-        1. 最好提前初始化所需的state。
-        2. 需要在对象上添加新属性使用`Vue.set(对象, '新属性名', 值)`。
-        3. 直接用`=`进行新对象替换老对象。
+        1. 最好提前初始化所需的state（初始化的任何位置都可以被劫持而更新）。
+        2. 直接用`=`进行已初始化的state属性更新。
+        3. 需要在state或state.对象上添加新属性：
+        
+            1. `Vue.set(state或state.对象, '新属性名', 值)`
+            2. `state.对象 = { ...state.对象, '新属性名': 值 }`
 
-        - 辅助函数
-
-            `mapState`：返回对象，可用于`computed`属性的简写
+        - <details>
+        
+            <summary><code>mapState</code></summary>
+        
+            返回对象，用于组件`computed`属性的简写。
+            
+            ```javascript
+            // 组件中
+            import { mapState } from 'vuex'
+            ...
+            
+            computed: {
+              ...mapState({
+                // 不需要使用vue组件this
+                data1: state => state.state1,  // 等价于：data1: 'state1'
+            
+                // 需要使用vue组件this
+                data2 (state) {
+                  return state.state2 + this.组件属性
+                }
+              }),
+              // 或
+              ...mapState([ // computed使用与state属性相同名字可用数组
+                'state1',
+                'state2'
+              ])
+            },
+            ```
+            </details>
     2. `getters`
 
-        根据方法返回值的依赖而改变的类似state的值（类似vue的`computed`）。仅能在自己的getter中改变值。
+        >类似vue实例的`computed`。
+        
+        根据方法返回值的依赖而改变的类似state的值（仅能在自己的getter中改变值）。
 
-        - 辅助函数
-
-            `mapGetters`
+        - <details>
+        
+            <summary><code>mapGetters</code></summary>
+        
+            返回对象，用于组件`computed`属性的简写。
+            
+            ```javascript
+            // 组件中
+            import { mapGetters } from 'vuex'
+            ...
+            
+            computed: {
+              ...mapGetters({
+                data1: 'getters1',
+                data2: 'getters2',
+              }),
+              // 或
+              ...mapGetters([ // computed使用与getters属性相同名字可用数组
+                'getters1',
+                'getters2'
+              ])
+            },
+            ```
+            </details>
     3. `mutations`
 
         改变state的唯一方式。
@@ -932,50 +955,120 @@
         1. 通过store调用`commit('mutation方法名'[, 参数])`触发。
         2. 必须是同步函数。
 
-        - 辅助函数
-
-            `mapMutations`
+        - <details>
+        
+            <summary><code>mapMutations</code></summary>
+        
+            返回对象，用于组件`methods`方法的简写。
+            
+            ```javascript
+            // 组件中
+            import { mapMutations } from 'vuex'
+            ...
+            
+            methods: {
+              ...mapMutations({
+                method1: 'mutate1',
+                method2: 'mutate2',
+              }),
+              // 或
+              ...mapMutations([ // methods使用与mutations方法相同名字可用数组
+                'mutate1',
+                'mutate2'
+              ])
+            },
+            ```
+            </details>
     4. `actions`
 
-        仅commit mutation，而不直接改变~~state~~。
+        仅触发mutations，而不直接改变~~state~~。
 
         1. 通过store调用`dispatch('action方法名'[, 参数])`触发。
         2. 可以进行异步操作。
+        3. 第一个参数包含：`state`、`rootState`、`getters`、`rootGetters`、`commit`、`dispatch`
+        
+        - <details>
+        
+            <summary><code>mapActions</code></summary>
+        
+            返回对象，用于组件`methods`方法的简写。
+            
+            ```javascript
+            // 组件中
+            import { mapActions } from 'vuex'
+            ...
+            
+            methods: {
+              ...mapActions({
+                method1: 'act1',
+                method2: 'act2',
+              }),
+              // 或
+              ...mapActions([ // methods使用与actions方法相同名字可用数组
+                'act1',
+                'act2'
+              ])
+            },
+            ```
+            </details>
 
     ><details>
     >
-    ><summary>e.g.</summary>
+    ><summary>非模块模式使用vuex</summary>
     >
     >```javascript
-    >const store = new Vuex.Store({
+    >import Vue from 'vue'
+    >import Vuex from 'vuex'
+    >
+    >Vue.use(Vuex) // 注入
+    >
+    >export default new Vuex.Store({
     >  state: { // 暴露的state数据
     >    state1: 0,
     >    state2: 0
     >  },
     >
     >  getters: { // 暴露的state计算数据
-    >    state3: (state, getters) => { // 第一个参数是state对象，第二个参数是getters对象（只读）
-    >      return state.state1;
+    >    getters1: (state, getters) => { // 第一个参数是state对象，第二个参数是getters对象（只读）
+    >      return state.state1
     >    },
-    >    state4: (state, getters) => {
-    >      return state.state2 + getters['state3'];
+    >    getters2: (state, getters) => {
+    >      return state.state2 + getters['getters1']
+    >    },
+    >    getters3: (state, getters) => { // 成员可以返回方法，若返回方法则不缓存，每次都需要调用执行
+    >      return () => state.state1 * 2
     >    }
     >  },
     >
     >  mutations: {  // 暴露的改变state的方法
     >    mutate1 (state, 参数) { // 第一个参数是state对象，第二个参数是commit调用方法的第二个参数
     >      // 仅同步操作
-    >      state.state1++;
+    >      state.state1++
     >    }
     >  },
     >
-    >  actions: {  // 暴露的触发mutations的方法
-    >    act1 (context, 参数) {  // 第一个参数是Vuex.Store实例对象（只读），第二个参数是dispatch调用方法的第二个参数
-    >      // 可异步操作，也可以返回Promise对象
-    >      context.commit('mutate1');
+    >  actions: {  // 暴露的触发mutations的方法（可异步操作，也可返回Promise对象，也可使用async-await，还可触发其他actions）
+    >    act1 (context, 参数) {  // 第一个参数是类似Vuex.Store实例对象（只读），第二个参数是dispatch调用方法的第二个参数
+    >      return new Promise((resolve, reject) => {
+    >        setTimeout(() => {
+    >          context.commit('mutate1', 参数)
+    >          resolve()
+    >        }, 0)
+    >      })
+    >    },
+    >    async act2 (context) {
+    >      await context.dispatch('act1', 123)  // 等待 act1 完成
     >    }
     >  }
     >})
+    >
+    >
+    >// new Vue({ store: 上面导出的内容 })的实例中通过this.$store访问Vuex实例
+    >this.$store.state.state1            // 输出state
+    >this.$store.getters['getters1']     // 输出getters
+    >this.$store.getters['getters3']()   // 输出getters方法的值
+    >this.$store.commit('mutate1', 参数)  // 触发mutations
+    >this.$store.dispatch('act1', 参数)   // 触发actions
     >```
     ></details>
 2. 模块方式

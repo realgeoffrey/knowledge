@@ -5,6 +5,8 @@
 1. [Node.js的运行机制](#nodejs的运行机制)
 1. [npm](#npm)
 1. [CommonJS规范](#commonjs规范)
+1. [Node.js原生模块](#nodejs原生模块)
+1. [Node.js全局变量](#nodejs全局变量)
 
 ---
 ### nvm更新Node.js版本
@@ -264,6 +266,8 @@
 ### CommonJS规范
 >参考[阮一峰：require() 源码解读](http://www.ruanyifeng.com/blog/2015/05/require.html)、[CommonJS 详细介绍](https://neveryu.github.io/2017/03/07/commonjs/)、[阮一峰：JavaScript 模块的循环加载](http://www.ruanyifeng.com/blog/2015/11/circular-dependency.html)。
 
+一个模块就是一个Node.js文件。
+
 - 概述
 
     1. 执行阶段（运行时）进行模块加载。
@@ -337,6 +341,12 @@
 
     - 查找逻辑：
 
+        <details>
+        <summary>示例图</summary>
+
+        ![Node.js的require流程](./images/nodejs-require-1.jpg)
+        </details>
+
         1. 如果 X 以`/`、`./`或`../`开头
 
             1. 根据 X 所在的父模块，确定 X 的绝对路径。
@@ -398,3 +408,42 @@
         7. `module.paths`：返回一个数组，模块文件默认搜索目录（`某某/node_modules/`）。
 
     >所有模块都是Node内部`Module`构建函数的实例。
+
+### Node.js原生模块
+>核心模块定义在[源代码的lib/目录](https://github.com/nodejs/node/tree/master/lib)。
+
+1. `util`：提供常用函数的集合，用于弥补核心JavaScript 的功能 过于精简的不足。
+2. `fs`：文件操作API，异步、同步两种版本。
+3. `http`：HTTP请求相关API。
+4. `url`：解析URL。
+5. `child_process`：创建子进程。
+6. 工具模块
+
+    1. `os`：基本的系统操作函数。
+    2. `path`：处理文件路径的小工具。
+    3. `net`：用于底层的网络通信小工具，包含创建服务器/客户端的方法。
+    4. `dns`：解析域名。
+    5. `domain`：简化异步代码的异常处理，可以捕捉处理`try-catch`无法捕捉的异常。
+6. `events`
+
+### Node.js全局变量
+Node.js的全局对象`global`是全局变量的宿主。
+
+1. 仅在模块内有效
+
+    1. `exports`
+    2. `module`
+    3. `require`
+    4. `__filename`：当前正在执行的脚本所在位置的绝对路径+文件名。
+    5. `__dirname`：当前正在执行的脚本所在位置的绝对路径。
+2. `process`：描述当前Node.js进程状态的对象，提供了一个与操作系统的简单接口。
+3. `Buffer`
+4. `setImmediate`、`clearImmediate`
+5. <details>
+
+    <summary>其他全局变量（类似于浏览器的全局对象<code>window</code>所包含的全局变量）</summary>
+
+    1. `setTimeout`、`clearTimeout`、`setInterval`、`clearInterval`
+    2. `console`
+    3. `URL`、`URLSearchParams`
+    </details>
