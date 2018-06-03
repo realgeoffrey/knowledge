@@ -588,7 +588,7 @@ JavaScript ＝ ECMAScript + 宿主环境提供的API。
 ![JS模块化方案图](./images/js-module-1.png)
 
 1. [CommonJS规范](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Node.js学习笔记/README.md#commonjs规范)。
-2. [ES6 Module](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#ecmascript-2015es6新增)的14。
+2. [ES6 Module](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#ecmascript-2015es6新增)的15。
 3. [UMD规范](https://github.com/umdjs/umd)的简单示例：
 
     ```javascript

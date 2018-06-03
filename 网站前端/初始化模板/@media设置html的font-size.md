@@ -1,5 +1,5 @@
 ```css
-/* WAP端媒体查询（320px~640px），单行最大width:32rem*/
+/* WAP端媒体查询（320px~640px），单行最大width:32rem */
 @media (max-width: 351px) {
   html {font-size: 10px;}
 }
@@ -33,8 +33,8 @@
 @media (min-width: 640px) {
   html {font-size: 20px;}
 }
-/*/WAP端媒体查询*/
-/* PC端媒体查询（960px~2560px），单行最大width:32rem*/
+/* /WAP端媒体查询 */
+/* PC端媒体查询（960px~2560px），单行最大width:32rem */
 @media (max-width: 991px) {
   html {font-size: 30px;}
 }
@@ -188,7 +188,7 @@
 @media (min-width: 2560px) {
   html {font-size: 80px;}
 }
-/*/PC端媒体查询*/
+/* /PC端媒体查询 */
 ```
 
 >可以使用vm/vh方案完全代替。

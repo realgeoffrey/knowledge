@@ -292,9 +292,11 @@
     2. **301 Moved Permanently**
 
         被请求的资源已永久移动到新位置，并且将来任何对此资源的引用都应该使用本响应返回的若干个URI之一。
-    3. **302 Found**
+    3. **302 Moved Temporarily**或**302 Found**
 
         被请求的资源临时从不同的URI响应请求。
+
+        >[Chrome在302重定向的时候对原请求产生2次请求](http://www.cnblogs.com/lyzg/p/6237841.html)
     4. **303 See Other**
 
         被请求的资源临时从不同的URI响应请求，且客户端应当把POST转化为GET方式访问那个资源。

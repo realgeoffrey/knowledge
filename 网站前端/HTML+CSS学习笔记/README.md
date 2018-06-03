@@ -27,6 +27,7 @@
     1. [等宽文字](#等宽文字)
     1. [禁用`<a>`的鼠标、键盘事件](#禁用a的鼠标键盘事件)
     1. [插件避免被其他样式污染方法](#插件避免被其他样式污染方法)
+    1. [网页图标favicon的兼容写法](#网页图标favicon的兼容写法)
 1. [经验总结](#经验总结)
 
     1. [水平居中、垂直居中](#水平居中垂直居中)
@@ -755,9 +756,20 @@
 ```
 
 ### 插件避免被其他样式污染方法
-1. 与页面不同的样式命名。
-2. shadow DOM。
-3. `<iframe>`。
+1. 与页面不同的样式命名
+2. shadow DOM
+3. `<iframe>`
+
+### 网页图标favicon的兼容写法
+```html
+<link rel="apple-touch-icon" sizes="180x180" href="favicon-180x180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="mask-icon" href="favicon.svg" color="#fff">
+
+<!--<link rel="manifest" href="/images/manifest.json">-->
+<!--<meta name="msapplication-config" content="/images/browserconfig.xml">-->
+```
 
 ---
 ## 经验总结
