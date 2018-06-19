@@ -373,6 +373,9 @@
     8. 生命周期钩子
 
         1. `beforeCreate`
+        
+        >实例的`data`创建在`beforeCreate`之后、`created`之前。
+        
         2. `created`
         3. `beforeMount`
         4. `mounted`
