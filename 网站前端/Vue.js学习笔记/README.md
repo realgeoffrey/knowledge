@@ -10,6 +10,14 @@
 
 ---
 ### [vue](https://github.com/vuejs/vue)
+- 心得
+
+    1. 针对不在vue视图内出现的变量：
+    
+        >组件的多个实例会共用模块内、组件外的变量（闭包），组件内部的数据则互相独立（类似于`new`实例）。
+        
+        1. 若是常量，则可以放在组件外，用`const` + 大写和下划线组成。
+        2. 若是会变化的量，则必须放在组件内（`data`或`computed`）。
 1. 模板插值
 
     1. 支持JS表达式（单个），不支持~~语句~~、~~流控制~~。
@@ -368,13 +376,18 @@
     >要用到的数据必须添加初始值（在`data`或`computed`中定义）。
 
     5. `watch`（对象）：被watch的`data`或`computed`属性改变而执行（必须是`data`或`computed`的属性）
+    
+        可以设置`immediate`（侦听开始后立即调用一次）和`deep`参数。
+    
+    >执行顺序是：`data`->`computed`->`watch`。
+    
     6. `filters`（对象）：过滤器方法
     7. `components`（对象）：局部注册组件（仅在此Vue实例中可用）
     8. 生命周期钩子
 
         1. `beforeCreate`
         
-        >实例的`data`创建在`beforeCreate`之后、`created`之前。
+        >实例的`data`（、`computed`、`watch`等实例内容）的创建，是在`beforeCreate`之后、`created`之前。
         
         2. `created`
         3. `beforeMount`
@@ -561,7 +574,7 @@
                 1. `props`是单向传递的：当父级的属性变化时，将传导给子组件，不会反过来
                 
                     每次父组件更新时，子组件的所有prop都会更新为最新值。
-                2. 不应该在子组件内部改变`props`，而应该用`props`去初始化组件内的局部变量（`computed`或`data`）
+                2. 不应该在子组件内部改变`props`，而应该用`props`去初始化组件内的局部变量（`computed`或`data`）,或`watch`传进来的`props`而做一些函数
 
                     <details>
                     <summary>e.g.</summary>
@@ -575,6 +588,11 @@
                         computed: {
                           son() {
                             return this.father
+                          }
+                        },
+                        watch: {
+                          father(data) {
+                            console.log(data)
                           }
                         },
                         template: '<div>{{son}}</div>'

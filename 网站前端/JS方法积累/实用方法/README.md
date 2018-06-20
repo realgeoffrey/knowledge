@@ -55,6 +55,7 @@
         1. [加入收藏夹](#原生js加入收藏夹)
         1. [从字符串中获取绝对路径](#原生js从字符串中获取绝对路径)
         1. [格式化接口返回的数据](#原生js格式化接口返回的数据)
+        1. [根据滚动方向执行函数](#原生js根据滚动方向执行函数)
     1. 提升性能
 
         1. [防抖函数](#原生js防抖函数)
@@ -419,26 +420,22 @@ function getLocation (url) {
 > * @param {String} [search = window.location.search] - search总字符串
 > * @returns {String|Boolean} - search的value 或 不存在false
 > */
->function getSearchValue (checkKey, search) {
+>function getSearchValue (checkKey, search = window.location.search) {
 >  checkKey = checkKey.toString()
->  search = search || window.location.search
 >
 >  if (search.slice(0, 1) === '?') {
 >    search = search.slice(1)
 >  }
 >
->  var searchArr = search.split('&'),
->    tempArr, key, value
->
->  for (var i = 0, len = searchArr.length; i < len; i++) {
+>  for (let i = 0, searchArr = search.split('&'), len = searchArr.length; i < len; i++) {
 >    if (searchArr[i] !== '') {
->      tempArr = searchArr[i].split('=')
->      key = tempArr.shift()
->      value = tempArr.join('=')
+>      const tempArr = searchArr[i].split('=')
+>      const key = tempArr.shift()
+>      const value = tempArr.join('=')
 >
 >      if (key === checkKey) {
 >
->        return value
+>        return decodeURIComponent(value)
 >      }
 >    }
 >  }
@@ -1991,7 +1988,7 @@ function getAbsoluteUrl(url) {
     /*
      * （针对接口返回）格式化数组。不是数组则返回[]；是数组则每项都添加键-值默认值
      * @param {Array} list - 要处理的数组
-     * @param {Object} [params] - 要添加的键-值的对象。键是要添加的键，值是添加键的默认值
+     * @param {Object} [params = {}] - 要添加的键-值的对象。键是要添加的键，值是添加键的默认值
      * @returns {Array} newList - 处理好的数组
      */
     function formatArr (list, params = {}) {
@@ -2046,7 +2043,7 @@ function getAbsoluteUrl(url) {
     /*
      * （针对接口返回）格式化对象。不是对象则返回params；是对象则添加键-值默认值
      * @param {Object} obj - 要处理的对象
-     * @param {Object} [params] - 要添加的键-值的对象。键是要添加的键，值是添加键的默认值
+     * @param {Object} [params = {}] - 要添加的键-值的对象。键是要添加的键，值是添加键的默认值
      * @returns {Object} obj - 处理好的对象
      */
     function formatObj (obj = {}, params = {}) {
@@ -2089,6 +2086,81 @@ function getAbsoluteUrl(url) {
       { '参数1': '默认值1', '参数2': true, '参数3': { a: 1 } }
     );
     ```
+
+### *原生JS*根据滚动方向执行函数
+```javascript
+/**
+ * 根据滚动方向直行对应
+ * @constructor
+ * @param {object} [dom = window] - 监听滚动的DOM
+ * @param {Function} [up] - 向上滚动的回调
+ * @param {Function} [down] - 向下滚动的回调
+ * @param {Function} [left] - 向左滚动的回调
+ * @param {Function} [right] - 向右滚动的回调
+ */
+function ScrollDirection ({dom = window, up = () => {}, down = () => {}, left = () => {}, right = () => {}} = {}) {
+  let beforeV // 垂直滚动高度
+  let beforeH // 水平滚动高度
+  if (dom === window) {
+    beforeV = document.body.scrollTop || document.documentElement.scrollTop
+    beforeH = document.body.scrollLeft || document.documentElement.scrollLeft
+  } else {
+    beforeV = dom.scrollTop
+    beforeH = dom.scrollLeft
+  }
+
+  const handleScroll = () => {
+    let afterV  // 垂直滚动高度
+    let afterH  // 水平滚动高度
+    if (dom === window) {
+      afterV = document.body.scrollTop || document.documentElement.scrollTop
+      afterH = document.body.scrollLeft || document.documentElement.scrollLeft
+    } else {
+      afterV = dom.scrollTop
+      afterH = dom.scrollLeft
+    }
+
+    const gapV = afterV - beforeV
+    const gapH = afterH - beforeH
+
+    if (gapV > 0) {
+      down()
+    } else if (gapV < 0) {
+      up()
+    }
+
+    if (gapH > 0) {
+      right()
+    } else if (gapH < 0) {
+      left()
+    }
+
+    beforeV = afterV
+    beforeH = afterH
+  }
+
+  dom.addEventListener('scroll', handleScroll, false)
+
+  this.stop = () => {
+    dom.removeEventListener('scroll', handleScroll, false)
+  }
+}
+
+
+/* 使用测试 */
+var a = new ScrollDirection({
+  up: () => {console.log('up')},
+  down: () => {console.log('down')},
+  left: () => {console.log('left')},
+  right: () => {console.log('right')}
+})
+var b = new ScrollDirection({
+  dom: document.getElementById('j-div'), up: () => {console.log('dom up')}, down: () => {console.log('dom down')}
+})
+
+// a.stop()
+// b.stop()
+```
 
 ### *原生JS*防抖函数
 ```javascript
