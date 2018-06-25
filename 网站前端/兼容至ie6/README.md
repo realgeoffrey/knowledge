@@ -119,7 +119,7 @@
 	- 仅支持`<a>`且`href`属性要赋值
 
 	    `<a href="#"></a>`
-10. ie6查看的网页文件若文件编码不是**utf-8**会乱码（若出现除ie6外都无错误，并且提示的错误位置排查后没有错误的，需要检查编码格式）：
+10. ie6查看的网页文件若文件编码不是**utf-8**会乱码（若出现除了ie6之外都无错误，并且提示的错误位置排查后没有错误的，需要检查编码格式）：
 
 	- 无论HTML/CSS/JS文件都要手动转化为**utf-8**。
 11. ie6的`<tr>`、`<tbody>`不支持`border`：
@@ -307,19 +307,19 @@ haslayout是ie6/7的一个私有概念，它决定了元素**如何对其内容�
         1. `float: left/right;`
         2. `display: inline-block;`
         3. `position: absolute;`
-        4. `width: 除auto外任何值;`
-        5. `height: 除auto外任何值;`
-        6. `zoom: 除normal外任何值;`
+        4. `width: 除了auto之外任何值;`
+        5. `height: 除了auto之外任何值;`
+        6. `zoom: 除了normal之外任何值;`
         7. `writing-mode: tb-rl;`
     2. ie7独有
 
         1. `min-height: 任意值;`
         2. `min-width: 任意值;`
-        3. `max-height: 除none 外任意值;`
-        4. `max-width: 除none 外任意值;`
-        5. `overflow: 除visible外任意值，仅用于块级元素;`
-        6. `overflow-x: 除visible 外任意值，仅用于块级元素;`
-        7. `overflow-y: 除visible 外任意值，仅用于块级元素;`
+        3. `max-height: 除了none之外任意值;`
+        4. `max-width: 除了none之外任意值;`
+        5. `overflow: 除了visible之外任意值，仅用于块级元素;`
+        6. `overflow-x: 除了visible之外任意值，仅用于块级元素;`
+        7. `overflow-y: 除了visible之外任意值，仅用于块级元素;`
         8. `position: fixed;`
 
 >一个“layout元素”只可能是一个**默认就拥有 layout 的元素**或一个**通过设置某些 CSS 属性得到 layout的元素**。

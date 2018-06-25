@@ -87,7 +87,7 @@
   //全局安装的ESLint只能使用全局安装的插件
   //本地安装的ESLint不仅可以使用本地安装的插件还可以使用全局安装的插件
   //plugin与extend的区别：extend提供的是eslint现有规则的一系列预设
-  //而plugin则提供了除预设之外的自定义规则，当你在eslint的规则里找不到合适的的时候
+  //而plugin则提供除了预设之外的自定义规则，当你在eslint的规则里找不到合适的的时候
   //就可以借用插件来实现了
   "plugins": [
     "eslint-plugin-airbnb",

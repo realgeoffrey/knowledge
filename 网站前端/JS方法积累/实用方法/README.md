@@ -1985,7 +1985,7 @@ function getAbsoluteUrl(url) {
 1. 格式化数组
 
     ```javascript
-    /*
+    /**
      * （针对接口返回）格式化数组。不是数组则返回[]；是数组则每项都添加键-值默认值
      * @param {Array} list - 要处理的数组
      * @param {Object} [params = {}] - 要添加的键-值的对象。键是要添加的键，值是添加键的默认值
@@ -2040,7 +2040,7 @@ function getAbsoluteUrl(url) {
 2. 格式化对象
 
     ```javascript
-    /*
+    /**
      * （针对接口返回）格式化对象。不是对象则返回params；是对象则添加键-值默认值
      * @param {Object} obj - 要处理的对象
      * @param {Object} [params = {}] - 要添加的键-值的对象。键是要添加的键，值是添加键的默认值

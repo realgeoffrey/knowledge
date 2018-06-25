@@ -1,3 +1,4 @@
+const gulp = require('gulp')
 const imagemin = require('gulp-imagemin') // imagemin
 const svgo = require('imagemin-svgo') // svg压缩
 const gifsicle = require('imagemin-gifsicle') // gif压缩
@@ -9,8 +10,8 @@ const sourcemaps = require('gulp-sourcemaps') // source map
 const cssnano = require('gulp-cssnano') // css压缩
 const postcss = require('gulp-postcss') // css单解析工具
 const autoprefixer = require('autoprefixer') // 添加css厂家前缀
-const px2rem = require('postcss-px2rem') // px转rem
 const rename = require('gulp-rename') // 重命名
+const px2rem = require('postcss-px2rem') // px转rem
 const makeUrlVer = require('gulp-make-css-url-version') // css添加时间戳
 const sass = require('gulp-sass') // 编译sass
 const spritesmith = require('gulp.spritesmith') // 生成雪碧图&样式表
@@ -19,9 +20,9 @@ const uglify = require('gulp-uglify') // js压缩
 const babel = require('gulp-babel') // 转换编译
 const env = require('babel-preset-env') // babel环境预设
 const eslint = require('gulp-eslint') // babel环境预设
+const htmlmin = require('gulp-htmlmin') // html压缩
 const browserSync = require('browser-sync').create('forGulp') // 浏览器同步测试工具
 const del = require('del') // 删除文件（夹）
-const gulp = require('gulp')
 
 /* 图片压缩 */
 gulp.task('runImage', () => {
@@ -180,6 +181,18 @@ gulp.task('runEslint', () => {
     .pipe(gulp.dest('./eslint/release/'))
 })
 
+/* html：压缩 */
+gulp.task('runHtml', () => {
+  gulp.src(['./html/dev/**/*.html'])
+    .pipe(htmlmin({
+      collapseWhitespace: true,
+      minifyCSS: true,
+      minifyJS: true,
+      removeComments: true
+    }))
+    .pipe(gulp.dest('./html/release/'))
+})
+
 /* default */
 gulp.task('default', [
   'runImage',
@@ -190,7 +203,8 @@ gulp.task('default', [
   'runFont',
   'runJs',
   'runBabel',
-  'runEslint'
+  'runEslint',
+  'runHtml'
 ])
 
 /* 监视文件，自动执行（只能针对已经存在的文件修改，在文件夹增加的内容不会触发） */
@@ -203,7 +217,8 @@ gulp.task('watch', () => {
   gulp.watch(['./font/dev/**'], ['runFont'])
   gulp.watch(['./js/dev/**/*.js'], ['runJs'])
   gulp.watch(['./babel/dev/**/*.js'], ['runBabel'])
-  gulp.watch(['./eslint/dev/**/*.js', './eslint/dev/**/*.html'], ['runEslint'])
+  gulp.watch(['./eslint/dev/**/*.js', './eslint/dev/**/*.html', './eslint/dev/**/*.vue'], ['runEslint'])
+  gulp.watch(['./html/dev/**/*.html'], ['runHtml'])
 })
 
 /* 监听代理服务器 */
@@ -243,7 +258,8 @@ gulp.task('delRelease', () => {
     './font/release/**/*',
     './js/release/**/*',
     './babel/release/**/*',
-    './eslint/release/**/*'
+    './eslint/release/**/*',
+    './html/release/**/*'
   ], { force: true }).then(paths => {
     console.log('已经删除的文件或文件夹:\r\n', paths.join('\r\n'))
   })

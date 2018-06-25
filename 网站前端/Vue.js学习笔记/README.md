@@ -90,31 +90,34 @@
 
         1. 绑定修饰符：
 
-            <details>
-            <summary><code>.sync</code></summary>
+            1. <details>
             
-            >仅为语法糖
+                <summary><code>.sync</code></summary>
+                
+                >仅为语法糖
+                
+                `<my-component :foo.sync="bar"></my-component>`
             
-            `<my-component :foo.sync="bar"></my-component>`
-        
-            等价于：
-            
-            `<my-component :foo="bar" @update:foo="val => bar = val"></my-component>`
-            
-            - 若要达到效果（同步更新bar），还需要在组件中添加：
-            
-                ```javascript
-                Vue.component('myComponent', {
-                  props: ['foo'],
-                  template: '<p @click="doIt">{{foo}}</p>',
-                  methods: {
-                    doIt () {
-                      this.$emit('update:foo', 'new value') // 触发父级事件，父级事件改变值，再传入子组件
-                    }
-                  }
-                })
-                ```
-            </details>
+                等价于：
+                
+                `<my-component :foo="bar" @update:foo="val => bar = val"></my-component>`
+                
+                - 若要达到效果（同步更新bar），还需要在组件中添加：
+                
+                    ```javascript
+                    Vue.component('myComponent', {
+                      props: ['foo'],
+                      template: '<p @click="doIt">{{foo}}</p>',
+                      methods: {
+                        doIt () {
+                          this.$emit('update:foo', 'new value') // 触发父级事件，父级事件改变值，再传入子组件
+                        }
+                      }
+                    })
+                    ```
+                </details>
+            2. `.prop`（绑定到DOM的`property`而不是HTML标签的 ~~`attribute`~~）
+            3. `.camel`（小驼峰式camelCase转换为大驼峰式PascalCase）
         2. 特殊的DOM属性：
         
             1. 绑定`class`
@@ -287,18 +290,30 @@
                 1. 用`:value="表达式"`；
                 2. 若`type="checkbox"`，则用`:true-value="表达式" :false-value="表达式"`。
     7. `v-once`一次性插值，不再~~双向绑定~~
-    8. `v-html`输入真正HTML
+    8. `v-text`等价于`{{  }}`
+    9. `v-html`输入真正HTML
 
-        >- 与其他插值（如模板插值）的区别：
+        ><details>
+        ><summary>与其他插值（如模板插值）的区别</summary>
         >
-        >    1. `v-html`是`innerHTML`。
-        >    2. 其他是`innerText`。
-    9. `.`修饰符
+        >1. `v-html`：`innerHTML`。
+        >2. `v-text`、`{{ }}`及其他插值：`innerText`。
+        ></details>
+    10. `v-pre`不编译
+    
+        >e.g. `<p v-pre>{{ 不编译 }}</p>`
+    11. `v-show`
+
+        总是渲染出DOM，根据值切换`display`值。
+
+        >不支持`<template>`、不支持`v-else`。
+    12. `v-cloak`指令保持在元素上直到关联实例结束编译
+    13. `.`修饰符
 
         >用于指出一个指令应该以特殊方式绑定。
 
         使用在`v-on`、`v-bind`、`v-module`后添加。
-    10. `|`使用filters过滤器，参数带入函数运行出结果（支持过滤器串联）
+    14. `|`使用filters过滤器，参数带入函数运行出结果（支持过滤器串联）
 
         <details>
         <summary>e.g.</summary>
@@ -327,11 +342,6 @@
         </script>
         ```
         </details>
-    11. `v-show`
-
-        总是渲染出DOM，根据值切换`display`值。
-
-        >不支持`<template>`、不支持`v-else`。
 3. Vue实例的属性：
 
     `new Vue(对象)`

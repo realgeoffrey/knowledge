@@ -219,7 +219,7 @@
 
     1. PC端`MouseEvent`
 
-        `e.`（`e`为传入事件处理函数的第一个参数）或`window.event.`：
+        `e.`（`e`为传入事件处理程序的第一个参数）或`window.event.`：
 
         1. `pageX/Y`（ie8-不支持）
 
@@ -241,7 +241,7 @@
             等价于：`clientX/Y`。
     2. WAP端`TouchEvent`
 
-        `e.touches[0].`（`e`为传入事件处理函数的第一个参数）：
+        `e.touches[0].`（`e`为传入事件处理程序的第一个参数）：
 
         1. `pageX/Y`
         2. `clientX/Y`
@@ -437,7 +437,8 @@
 ## 事件相关
 
 >1. 事件：用户或浏览器执行某种动作，如`click`、`load`。
->2. 事件处理程序：当某个事件触发之后响应的函数。
+>2. 事件处理程序（事件处理函数、事件监听器）：当某个事件触发之后响应的函数。
+>3. 事件对象：触发DOM事件产生的对象，包含与事件有关的所有信息。
 
 ### 事件绑定
 
@@ -452,7 +453,7 @@
 
     >参考[JavaScript 事件绑定机制](http://www.cnblog.me/2016/05/08/javascript-event-binding/)、[理解Javascript中的事件绑定与事件委托](https://segmentfault.com/a/1190000006667581)。
 
-    1. HTML事件处理（冒泡）
+    1. HTML事件处理程序（冒泡）
 
         `<div onclick="funcAttr()"></div>`（不能同个事件监听多个处理程序）
 
@@ -466,9 +467,10 @@
 
             `dom.removeAttribute('onclick');`、`dom.setAttribute('onclick', '(function () {/* 修改方法 */} ())');`
         </details>
-    2. DOM0级事件处理（冒泡）
 
-        >本质上，DOM0级事件处理等于HTML事件处理。
+    >本质上，DOM0级事件处理程序等于HTML事件处理程序。因此可以互相覆盖、移除绑定的事件处理程序。
+
+    2. DOM0级事件处理程序（冒泡）
 
         `dom.onclick = func0;`（不能同个事件监听多个处理程序）
 
@@ -477,20 +479,20 @@
         
         `dom.onclick = null;`、`dom.onclick = function () {/* 修改方法 */};`
         </details>
-    3. IE事件处理（冒泡）
+    3. IE事件处理程序（冒泡）
 
-        `dom.attachEvent('onclick', funcIe);`（可监听多个，需参数完全对应才能解绑定；无法解绑匿名函数）
+        `dom.attachEvent('onclick', funcIe);`（可监听多个，按绑定顺序的逆序触发；需参数完全对应才能解绑定；无法解绑匿名函数）
         
         <details>
         <summary>移除绑定事件</summary>
         
         `dom.detachEvent('onclick', funcIe);`
         </details>
-    4. DOM2级事件处理（冒泡、捕获）
+    4. DOM2级事件处理程序（冒泡、捕获）
 
-        >ie8-不兼容DOM2级事件处理。
+        >ie8-不兼容。
 
-        `dom.addEventListener('click', func2, false);`（可监听多个，需参数完全对应才能解绑定；无法解绑匿名函数）
+        `dom.addEventListener('click', func2, false);`（可监听多个，按绑定顺序触发，需参数完全对应才能解绑定；无法解绑匿名函数）
 
         <details>
         <summary>移除绑定事件</summary>
@@ -527,7 +529,7 @@
 
 - 移除绑定：
 
-    1. HTML事件处理和`on+type`，用赋值覆盖解绑。
+    1. HTML事件处理程序、DOM0级事件处理程序，用赋值覆盖解绑。
     2. `attachEvent/detachEvent`，必须一一对应具体的**handle**进行解绑。**handle**是匿名函数无法解绑。
 
         ><details>
@@ -543,7 +545,7 @@
         >
         >        ```javascript
         >        function funcIe(e) {
-        >            e = e || window.event;                 // 事件处理对象
+        >            e = e || window.event;                 // 事件对象
         >            var _this = e.srcElement || e.target;  // 触发的DOM
         >
         >            /* funcIe代码 */
@@ -599,7 +601,9 @@
     1. 先按**捕获**顺序依次执行节点注册**捕获**的事件。
     2. 抵达目标
 
-        依据注册顺序执行事件处理程序，分为捕获、冒泡两种抵达类型，其中浏览器默认行为是冒泡抵达类型（在捕获、冒泡的事件处理程序执行之后才执行默认行为）。可设置不再冒泡或不执行浏览器默认行为。
+        1. 依据注册顺序执行事件处理程序，分为捕获、冒泡两种抵达类型。浏览器默认行为是冒泡抵达类型（在捕获、冒泡的事件处理程序执行之后才执行默认行为）。
+        2. 可设置不再冒泡或不执行浏览器默认行为。
+        3. 建议仅在**需要在事件到达目标之前截获它的情况**才设置捕获的事件处理程序。
 
         >DOM2规范要求：实际的目标不接收~~捕获~~事件，仅接收冒泡事件。但浏览器的实现却都让实际目标接收捕获和冒泡事件。
     3. 再按**冒泡**顺序依次执行节点注册**冒泡**的事件。
@@ -609,7 +613,7 @@
 ### WAP端相关
 1. WAP端点透bug
 
-    >1. PC端没有~~touch~~事件。
+    >1. PC端没有 ~~`touch`~~ 事件。
     >2. WAP端有`touchstart`、`touchmove`、`touchend`、`touchcancel`等`touch`事件。
     >3. Zepto用`touch`一系列事件封装了`tap`事件。
 
@@ -671,7 +675,7 @@
 
         1. 正在播放
 
-            `timeupdate`事件：当媒体的`currentTime`属性改变（拉动进度或播放中）。
+            `timeupdate`事件：当`媒体.currentTime`改变（拉动进度或播放中）。
         2. 开始播放
 
             1. `play`事件：初次播放、暂停后恢复。
@@ -684,11 +688,13 @@
             >因为`loop`属性模式无法触发`ended`事件，又`timeupdate`事件触发时间不确定、无法和`媒体.duration`取等判断成功，故无法在`loop`属性模式中判定。
 
             （非`loop`属性模式下的）`ended`事件（伴随`pause`事件）。
+        
+        - 建议只用`timeupdate`和`ended`事件处理需求。
+        
+        >各机型/浏览器对视频事件、API的处理不同，甚至某些Android机型会要求：只有触发在视频区域内的事件才可执行视频的API。
     2. 自动播放
 
         1. JS代码模拟
-
-            >因为兼容性，故不使用`autoplay`属性模式，用JS代码模拟。
 
             ```html
             <video id="j-video">
@@ -710,7 +716,9 @@
               }
             </script>
             ```
-        2. `autoplay`属性模式
+        2. ~~`autoplay`~~ 属性模式
+        
+            >兼容性差。
     3. 循环播放
 
         1. JS代码模拟
@@ -745,7 +753,7 @@
         
             <summary><del>JS代码模拟</del></summary>
 
-            >因为无法兼容至所有浏览器，故不推荐。
+            >兼容性差。
 
             ```html
             <style>
@@ -837,7 +845,11 @@
                 2. 内联模式（浏览器支持其中一种）：
 
                     1. `webkit-playsinline playsinline`内联模式。
+                    
+                        >针对iOS的UC或QQ浏览器，可以添加[iphone-inline-video](https://github.com/bfred-it/iphone-inline-video)。
                     2. `x5-video-player-type="h5"`在底部的全屏内联模式（同层播放）。
+                    
+                        >[Android的腾讯x5内核APP](https://x5.tencent.com/tbs/guide/video.html)特有。
             2. 无法操作全屏模式
 
                 1. 无法改变全屏播放方向以及控件内容
@@ -848,7 +860,6 @@
                     >无法自定义loading。
             3. 关闭`controls`模式，部分浏览器依然出现播放按钮
             4. 无法控制内联模式类型（内联模式/在底部的全屏内联模式）
-
         2. Android机型播放了`<video>`，会把视频的层级放到最高，暂时没有直接解决方法。
 
 ---
@@ -1253,7 +1264,7 @@
 
             `<a href="javascript: func();">...</a>`
 
-        3. ~~内嵌事件处理函数~~
+        3. ~~内嵌事件处理程序~~
 
             `<a href="#" onclick="func();return false;">...</a>`
     2. 渐进增强：先完成基本通用功能，再追加额外功能。
@@ -1265,7 +1276,7 @@
     4. 资源分离：把样式表、脚本分离出HTML。
 
         1. 使用外部资源。
-        2. 不在HTML内嵌事件处理函数。
+        2. 不在HTML内嵌事件处理程序。
         3. 对只为DOM增添的内容，转移到外部资源中动态创建。
     5. 性能优化[从URL输入之后](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面加载解析步骤)就开始考虑。
 
@@ -1301,12 +1312,12 @@
             /* 代码 */
         }(window));
         ```
-3. 事件处理
+3. 事件处理程序
 
-    1. 把事件处理（与用户行为相关的代码）与应用逻辑（与应用相关的功能性代码）隔离开。
+    1. 把事件逻辑（与用户行为相关的代码）与应用逻辑（与应用相关的功能性代码）隔离开。
     2. 不要分发事件：
 
-        让事件处理函数成为接触到`event`对象的唯一函数，在event进入应用逻辑前完成用户相关操作（包括阻止默认事件或阻止冒泡等）。
+        让事件处理程序成为接触到`event`对象的唯一函数，在event进入应用逻辑前完成用户相关操作（包括阻止默认事件或阻止冒泡等）。
 4. 将配置数据从代码中分离
 
     配置数据：URL、展示内容、重复的值、设置、任何可能发生变更的值。
@@ -1330,6 +1341,8 @@
 
 ### 自执行匿名函数（拉姆达，λ，lambda）
 立即调用的函数表达式（IIFE，Immediately Invoked Function Expression）。
+
+>ES6拥有了块级作用域之后，不再需要~~自执行匿名函数~~。
 
 1. 写法：
 
@@ -1369,7 +1382,13 @@
     >
     >```javascript
     >for (var i = 0; i < 3; i++) {
+    >    // 不用匿名函数
+    >    setTimeout(function () {
+    >        console.log(i);         // 每个结果都是固定的最后一个值（闭包作用）
+    >    }, 0);
+    >}
     >
+    >for (var i = 0; i < 3; i++) {
     >    // 匿名函数
     >    (function (para) {
     >        setTimeout(function () {
@@ -1379,10 +1398,10 @@
     >}
     >
     >for (var i = 0; i < 3; i++) {
-    >
-    >    // 不用匿名函数
+    >    // ES6的块级作用域
+    >    let num = i;
     >    setTimeout(function () {
-    >        console.log(i);         // 每个结果都是固定的最后一个值（闭包作用）
+    >        console.log(num);       // 结果是1 2 3
     >    }, 0);
     >}
     >```
@@ -1422,7 +1441,7 @@
 
         1. CSS、HTML
 
-            >除[样式适配](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#wap端适配总结)外。
+            >除了[样式适配](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#wap端适配总结)之外。
 
             1. 添加厂商前缀（如`-webkit-`）。
             2. 布局有问题的机型额外调试。
@@ -1432,11 +1451,15 @@
             兼容性判断（能力检测等）。
     2. 与Native配合方式：
 
-        >1. 都是以**字符串**的形式交互。
+        >1. 都是以**字符串**（数据用JSON字符串）的形式交互，向客户端传递：
+        >
+        >    1. 全局的方法名->客户端调用`方法名(JSON数据)`
+        >    2. 匿名函数->客户端调用`(匿名函数(JSON数据))`
         >2. iOS、Android的WebView无法判断是否安装了其他App。
         >3. 可以通过`查看注入的全局方法`或`客户端调用回调函数`来判定H5页面是否在具体App内打开。
+        >4. **桥协议**仅在APP内部起作用；**Scheme**是系统层面，所以可以额外针对跨APP起作用（如分享去其他APP）；iOS的**通用链接**可以认为是高级的Scheme。
 
-        1. 桥协议：Native注入全局方法至WebView的`window`，前端调用则触发Native行为。
+        1. 桥协议：Native注入全局方法至WebView的`window`，前端调用则客户端拦截后触发Native行为。
 
             >1. 客户端注入方式：JS伪协议方式`javascript: 代码`。
             >2. 注入JS代码可以在创建WebView之前（native code）或之后（全局变量JS注入）。
@@ -1446,6 +1469,7 @@
             >1. 客户端可以捕获、拦截任何行为（如`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
             >2. 有些App会设置允许跳转的其他App的白名单或黑名单，如微信白名单。
             >3. 除了增加回调函数且被客户端调用，否则无法判定是否在此App内部。
+            >4. 跨APP使用Scheme，Scheme后面的字符串产生的行为仅目的APP能理解。
 
             1. iOS8-
 
@@ -1491,8 +1515,7 @@
             >需要HTTPS域名配置、iOS设置等其他端配合。
 
             >参考：[通用链接（Universal Links）的使用详解](http://www.hangge.com/blog/cache/detail_1554.html)、[Universal Link 前端部署采坑记](http://awhisper.github.io/2017/09/02/universallink/)、[Support Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html#//apple_ref/doc/uid/TP40016308-CH12-SW2)。
-
-        - 提供Native调用的全局回调函数。
+        - 前端提供Native调用的全局回调函数（或匿名函数）。
 
             >判断多个回调函数顺序：带id触发Native行为，Native调用回调函数时携带之前的id。
     3. 根据前端的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在Hybrid遇到的bug。
@@ -1604,7 +1627,7 @@
     2. 替换：`dom.style.cssText = '样式: 属性; 样式: 属性'`
 12. 关闭、刷新前触发事件`beforeunload`：
 
-    1. PC：若事件处理函数返回为`真`，则试图弹出对话框让用户选择是否继续操作。
+    1. PC：若事件处理程序返回为`真`，则试图弹出对话框让用户选择是否继续操作。
     2. Android：可以执行事件函数但不会弹出对话框。
     3. iOS：无效。
 
@@ -1631,27 +1654,47 @@
 
         >特例：自定义类型返回`'[object Object]'`，`undefined`、`null`返回对应名字。
 
-        1. 自定义类型实例 -> `'[object Object]'`
-        2. `undefined` 或 不填 -> `'[object Undefined]'`
-        3. `null` -> `'[object Null]'`
-        4. Object实例 -> `'[object Object]'`
-        5. Array实例 -> `'[object Array]'`
-        6. Function实例 -> `'[object Function]'`
-        7. Number实例 -> `'[object Number]'`
-        8. String实例 -> `'[object String]'`
-        9. Boolean实例 -> `'[object Boolean]'`
-        10. Date实例 -> `'[object Date]'`
-        11. RegExp实例 -> `'[object RegExp]'`
-        12. Error实例 -> `'[object Error]'`
-        13. Map实例 -> `'[object Map]'`
-        14. Audio实例 -> `'[object HTMLAudioElement]'`
-        15. Image实例 -> `'[object HTMLImageElement]'`
-        16. `window` -> `'[object Window]'`
-        17. `document` -> `'[object HTMLDocument]'`
-        18. `arguments` -> `'[object Arguments]'`
-        19. `Math` -> `'[object Math]'`
-        20. `JSON` -> `'[object JSON]'`
-
+        1. `undefined` 或 不填 -> `'[object Undefined]'`
+        2. `null` -> `'[object Null]'`
+        3. Boolean实例 -> `'[object Boolean]'`
+        4. Number实例 -> `'[object Number]'`
+        5. String实例 -> `'[object String]'`
+        6. Symbol实例 -> `'[object Symbol]'`
+        7. Object实例 -> `'[object Object]'`
+        8. 自定义类型实例 -> `'[object Object]'`
+        9. Array实例 -> `'[object Array]'`
+        10. Function实例 -> `'[object Function]'`
+        11. Date实例 -> `'[object Date]'`
+        12. RegExp实例 -> `'[object RegExp]'`
+        13. <details>
+                
+            <summary>Error类型实例 -> <code>'[object Error]'</code></summary>
+            
+            Error、EvalError、RangeError、ReferenceError、SyntaxError、TypeError、URIError
+            </details>
+        14. Map实例 -> `'[object Map]'`
+        15. Set实例 -> `'[object Set]'`
+        16. WeakMap实例 -> `'[object WeakMap]'`
+        17. WeakSet实例 -> `'[object WeakSet]'`
+        18. Audio实例 -> `'[object HTMLAudioElement]'`
+        19. Image实例 -> `'[object HTMLImageElement]'`
+        20. Promise实例 -> `'[object Promise]'`
+        21. 生成器实例 -> `'[object GeneratorFunction]'`
+        22. `window` -> `'[object Window]'`
+        23. `document` -> `'[object HTMLDocument]'`
+        24. `arguments` -> `'[object Arguments]'`
+        25. `Math` -> `'[object Math]'`
+        26. `JSON` -> `'[object JSON]'`
+        27. `WebAssembly` -> `'[object WebAssembly]'`
+        28. <details>
+        
+            <summary>TypedArray实例 -> <code>'[object 构造函数名]'</code></summary>
+            
+            Int8Array、Uint8Array、Uint8ClampedArray、Int16Array、Uint16Array、Int32Array、Uint32Array、Float32Array、Float64Array
+            </details>
+        29. ArrayBuffer实例 -> `'[object ArrayBuffer]'`
+        30. DataView实例 -> `'[object DataView]'`
+        
         ><details>
         ><summary>对于没有声明的变量，直接使用会报<strong>引用不存在变量</strong>的错误，可以用<code>typeof</code>来使代码健壮</summary>
         >
@@ -1872,13 +1915,17 @@
 2. 自定义错误
 
     ```javascript
+    // ES5
     function MyError(message) {
         this.stack = (Error.call(this, message)).stack;
         this.message = message || '默认信息';
         this.name = 'MyError';
     }
-
     MyError.prototype = Object.create(Error.prototype, {constructor: {value: MyError}});
+
+    
+    // ES6的class-extends
+    class MyError extends Error{}
     ```
 3. 手动抛出错误
 
@@ -1893,13 +1940,13 @@
 
     1. `try-catch-finally`
 
-        >`try`内的作用域不为内部异步操作保留：`try {setTimeout(function () {err}, 0)} catch (e) {}`，`catch`不会捕获异步操作中的错误。
-
         1. 必须`try-catch`或`try-finally`或`try-catch-finally`同时出现。
         2. 如果有`catch`，一旦`try`中抛出错误以后就先执行`catch`中的代码，然后执行`finally`中的代码。
         3. 如果没有`catch`，`try`中的代码抛出错误后，先执行`finally`中的语句，然后将`try`中抛出的错误往上抛。
         4. 如果`try`中代码是以`return`、`continue`或`break`终止的，必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
         5. 在`catch`中接收的错误，不会再向上提交给浏览器。
+
+        >`try`内的作用域不为内部异步操作保留：`try {setTimeout(() => {错误语法}, 0)} catch (e) {}`不会捕获异步操作中的错误（同理，在`Promise`或`async-await`等语法中的异步错误也无法被捕获）。可以在异步回调内部再包一层`try-catch`。
     2. `window.onerror`
 
         >jQuery不建议`on`等方式绑定`window`的`error`事件，只通过`window.onerror`定义。
@@ -2066,7 +2113,7 @@
         
         ```javascript
         /* i为迭代对象的属性值 */
-        for (var i of 可迭代对象) {
+        for (let i of 可迭代对象) {
 
         }
         ```
@@ -2360,12 +2407,12 @@
         obj2.func.call(obj4);   // 4|global|global
         ```
         </details>
-6. 参数
+6. <a name="函数-参数"></a>参数
 
     1. 参数变量在函数体内是默认声明的（传递进函数体），所以不能在函数体内用`let`或`const`再次声明同名参数（`var`可以）。
     2. 使用**参数默认值**时的特殊情况：
 
-        1. 参数默认值在每次调用时都重新计算表达式的值（惰性求值），默认值是运行时执行而不是~~定义时执行~~。
+        1. 调用函数时，根据传参为`undefined`或不传，才进行参数默认值的表达式值计算（惰性求值），默认值是运行时执行而不是~~定义时执行~~（若默认值是调用其他函数，则当且仅当传参为`undefined`或不传参时才执行其他函数）。
         2. 调用函数时，所有参数会形成一个单独作用域（context）进行初始化，初始化结束则作用域消失。此作用域中的参数进行类似`let`定义，因此函数不能有同名参数。
 
             ><details>
@@ -2402,6 +2449,11 @@
             >f4()                       // ReferenceError: x is not defined
             >```
             >></details>
+        3. 不能~~在参数默认值中调用函数体内的方法~~（参数默认值总是被首先执行，而函数体内的函数声明之后生效）。
+    3. 建议参数都用对象形式传递，且形参设置为解构赋值+默认参数。
+    
+        >e.g. `function func ({ para1 = 'default', para2 } = {}) {}`
+    4. 参数的数量有限制，比如有些JS引擎限制在2^16。
 
 ### 闭包（closure）
 1. 当函数体内定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数执行完毕（寿命终结）之后。
@@ -2433,7 +2485,7 @@
         >每个引用数据类型都显式或隐式由某个构造函数创建。
     4. 不断向上的`[[Prototype]]`属性，构成了原型链。
 
-        >访问一个引用类型的属性：若这个属性在对象自身中不存在，则向上查找其`[[Prototype]]`指向的对象；若依然找不到，则继续向上查找（其`[[Prototype]]`指向的对象的）`[[Prototype]]`指向的对象，直到原型终点。
+        >访问一个引用数据类型的属性：若这个属性在对象自身中不存在，则向上查找其`[[Prototype]]`指向的对象；若依然找不到，则继续向上查找（其`[[Prototype]]`指向的对象的）`[[Prototype]]`指向的对象，直到原型终点。
         
         原型链终点是`null`，倒数第二是`Object.prototype`。
 
@@ -2627,8 +2679,8 @@
 
             1. 浅复制：
                 
-                1. `arr = [...arr]`
-                2. `[...arr] = arr`
+                1. `arr = [...arr]`（ES6的展开元素）
+                2. `[...arr] = arr`（ES6的解构赋值的剩余参数）
                 3. `arr = arr.slice()`
                 4. `arr = arr.concat()`
                 5. 一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)赋值
@@ -2925,7 +2977,7 @@
                 2. `async-await`（只有`await`才是异步）
                 3. `Promise`（`Promise.then/catch/all/race`）
 
-                    >`new Promise`和`Prmise.resolve/reject`都是直接执行的同步任务。
+                    >`new Promise(回调)`的回调和`Prmise.resolve()/reject()`都是直接执行的同步任务。
                 4. `MutationObserver`
             >- macrotask和microtast选择
             >

@@ -20,7 +20,7 @@
 ### 前端涉及内容
 ![前端涉及内容图1](./images/fe-tech-1.png)
 
->更详细线路图：[developer-roadmap](https://github.com/kamranahmedse/developer-roadmap/blob/master/README.md#-front-end-roadmap)。
+>更详细线路图：[Frontend Roadmap](https://github.com/kamranahmedse/developer-roadmap/blob/master/readme.md#-frontend-roadmap)。
 
 1. 从本质上讲，所有Web应用都是一种运行在网页浏览器中的软件，这些软件的GUI（Graphical User Interface，图形用户界面）即为前端。
 2. 服务端Node与各种终端的涌现，让前端进入了大前端范畴，这时的前端，已远远不只是浏览器端的页面实现技术，而是后端服务与人机界面的连接器。
@@ -588,7 +588,7 @@ JavaScript ＝ ECMAScript + 宿主环境提供的API。
 ![JS模块化方案图](./images/js-module-1.png)
 
 1. [CommonJS规范](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Node.js学习笔记/README.md#commonjs规范)。
-2. [ES6 Module](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#ecmascript-2015es6新增)的15。
+2. [ES6 Module](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#es6-module)。
 3. [UMD规范](https://github.com/umdjs/umd)的简单示例：
 
     ```javascript
