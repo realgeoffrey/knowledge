@@ -147,8 +147,8 @@
                     1. `--force`、`-f`：强制重新安装。
 
                         >当目录中已经存在指定模块，默认将不会重新安装。或删除`node_modules`目录再重新安装。
-                    2. `--save`、`-S`：安装信息保存到`package.json`的`dependencies`。
-                    3. `--save-dev`、`-D`：安装信息保存到`package.json`的`devDependencies`。
+                    2. `--save`、`-S`：安装信息保存到`package.json`的`dependencies`（执行时依赖插件）。
+                    3. `--save-dev`、`-D`：安装信息保存到`package.json`的`devDependencies`（开发时依赖插件）。
                     4. `--save-optional`、`-O`：安装信息保存到`package.json`的`optionalDependencies`。
             2. 作用域
 
@@ -216,6 +216,8 @@
     7. `scripts`
 
         可执行脚本，用`npm run 脚本名`执行。
+
+        - `pre脚本名`会在执行`脚本名`之前自动执行。
     8. `repository`
 
         仓库远程版本控制，可以是github等。

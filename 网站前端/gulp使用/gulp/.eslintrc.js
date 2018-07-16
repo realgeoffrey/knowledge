@@ -27,6 +27,7 @@ module.exports = {
     // 'indent': [2, 4],
     // 'semi': [2, 'always'],
 
+    'vue/max-attributes-per-line': 0,
     'vue/attributes-order': 0,
     'vue/order-in-components': 0
   }

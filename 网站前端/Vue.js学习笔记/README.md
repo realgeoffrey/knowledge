@@ -18,6 +18,9 @@
         
         1. 若是常量，则可以放在组件外，用`const` + 大写和下划线组成。
         2. 若是会变化的量，则必须放在组件内（`data`或`computed`）。
+    2. 注意内存泄漏
+    
+        在vue实例内部`new`的其他实例或DOM，应放在`data`内进行掌控，当使用完毕后引导垃圾回收。
 1. 模板插值
 
     1. 支持JS表达式（单个），不支持~~语句~~、~~流控制~~。
@@ -342,6 +345,49 @@
         </script>
         ```
         </details>
+    15. 自定义指令（在钩子函数中进行业务）
+    
+        `v-自定义指令名`或`v-自定义指令名="表达式"`
+    
+        1. 全局注册
+        
+            ```javascript
+            // 在全局的模板内使用
+            Vue.directive('自定义指令名', 钩子对象)
+            ```
+        2. 局部注册
+        
+            ```javascript
+            new Vue({
+              // 在局部的模板内使用
+              directives: {
+                自定义指令名: 钩子对象,
+              }
+            })
+            ```
+        
+        ><details>
+        ><summary><code>钩子对象</code></summary>
+        >
+        >```javascript
+        >{
+        >  // 只调用一次，指令第一次绑定到元素时调用。在这里可以进行一次性的初始化设置
+        >  bind (el, binding, vnode) {},
+        >
+        >  // 被绑定元素插入父节点时调用 (仅保证父节点存在，但不一定已被插入文档中)
+        >  inserted (el, binding, vnode) {},
+        >
+        >  // 所在组件的 VNode 更新时调用，但是可能发生在其子 VNode 更新之前。指令的值可能发生了改变，也可能没有。但是你可以通过比较更新前后的值来忽略不必要的模板更新 (详细的钩子函数参数见下)
+        >  update (el, binding, vnode, oldVnode) {},
+        >
+        >  // 指令所在组件的 VNode 及其子 VNode 全部更新后调用
+        >  componentUpdated (el, binding, vnode, oldVnode) {},
+        >
+        >  // 只调用一次，指令与元素解绑时调用
+        >  unbind (el, binding, vnode) {}
+        >}
+        >```
+        ></details>
 3. Vue实例的属性：
 
     `new Vue(对象)`
@@ -405,8 +451,14 @@
         5. `beforeUpdate`
         6. `updated`
         7. `activated`
+            
+            >`<keep-alive>`组件特有。
         8. `deactivated`
+        
+            >`<keep-alive>`组件特有。
         9. `beforeDestroy`
+        
+            >可将大部分内存清理工作放在`beforeDestroy`。
         10. `destroyed`
         11. `errorCaptured`
         
@@ -760,7 +812,7 @@
             name: '路由名',
             redirect: 路由参数,     // 重定向（URL变化）
             alias: 路由参数,        // 别名（URL不变化）
-            props: 布尔或对象或函数, // 传参进组件。布尔值决定$route.params是否被设置为组件属性；对象或函数则传入具体属性
+            props: 布尔或对象或函数, // 传参进组件（布尔值决定$route.params是否被设置为组件属性；对象或函数则传入具体属性）。针对components要再嵌套一层对象
             beforeEnter: 方法,
             meta: '额外信息参数',
             caseSensitive: 布尔值,       // 匹配规则是否大小写敏感？(默认值：false)
@@ -779,6 +831,10 @@
             components: {
               'default': 组件,
               '视图名1': 组件,
+            },
+            props: {
+              'default': 布尔或对象或函数,
+              '视图名1': 布尔或对象或函数
             }
           },
 
