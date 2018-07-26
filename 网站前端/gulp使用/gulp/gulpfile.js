@@ -261,6 +261,10 @@ gulp.task('delRelease', () => {
     './eslint/release/**/*',
     './html/release/**/*'
   ], { force: true }).then(paths => {
-    console.log('已经删除的文件或文件夹:\r\n', paths.join('\r\n'))
+    if (paths.length > 0) {
+      console.log('已经删除的文件或文件夹:\r\n', paths.join('\r\n'))
+    } else {
+      console.log('没有删除任何内容')
+    }
   })
 })

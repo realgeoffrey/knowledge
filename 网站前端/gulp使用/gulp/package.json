@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "autoprefixer": "8",
+    "autoprefixer": "9",
     "babel-core": "6",
     "babel-preset-env": "1",
     "browser-sync": "2",
@@ -23,8 +23,8 @@
     "imagemin-gifsicle": "5",
     "imagemin-jpegtran": "5",
     "imagemin-optipng": "5",
-    "imagemin-pngquant": "5",
-    "imagemin-svgo": "6",
+    "imagemin-pngquant": "6",
+    "imagemin-svgo": "7",
     "postcss-px2rem": "0"
   },
   "devDependencies": {
@@ -32,7 +32,7 @@
     "eslint-config-standard": "11",
     "eslint-plugin-html": "4",
     "eslint-plugin-import": "2",
-    "eslint-plugin-node": "6",
+    "eslint-plugin-node": "7",
     "eslint-plugin-promise": "3",
     "eslint-plugin-standard": "3"
   },
