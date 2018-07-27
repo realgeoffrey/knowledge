@@ -80,22 +80,22 @@
 1. DOM构造解析步骤
 
     >参考[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)。
-    
+
     ![页面解析步骤图](./images/load-html-1.png)
-    
+
     1. 增量式生成一个文档对象模型（DOM），解析页面内容（HTML标签）。
-    
+
         1. 加载DOM中所有CSS，生成一个CSS对象模型（CSSOM），描述对页面内容如何设置样式。
-    
+
             加载CSS并构造完整的CSSOM之前，**阻塞渲染**（Render Tree渲染被暂停）。
         2. 加载DOM中所有JS，对DOM和CSSOM进行访问和更改。
-    
+
             1. HTML中出现JS，**阻塞解析**（DOM构造被暂停）。
             2. 下载外部脚本或内嵌脚本不用下载。
             3. 等待所有CSS被提取且CSSOM被构造完毕。
             4. 执行脚本，访问、更改DOM和CSSOM。
             5. DOM构造继续进行。
-    
+
             ><details>
             ><summary><code><script></code>的加载、执行</summary>
             >
@@ -113,13 +113,13 @@
             >
             >![JS脚本加载图](./images/js-load-1.png)
     2. DOM（parse HTML）和CSSOM（recalculate style）构造完成后，进行渲染：
-    
+
         Render Tree（渲染树）：Layout -> Paint -> Composite
-    
+
         >1. 一定要等待外链资源加载完毕（包括加载失败）才可以继续构建DOM或CSSOM。
         >2. 只有可见的元素才会进入渲染树。
         >3. DOM不存在伪元素（CSSOM中才有定义），伪元素存在render tree中。
-    
+
     >无论阻塞渲染还是阻塞解析，资源文件会不间断按顺序加载。
 2. 事件完成顺序
 
@@ -129,11 +129,11 @@
         1. 加载外部JS（和CSS）；
         2. （CSSOM先构造完毕）解析并执行JS；
     3. 构造DOM完毕（同步的JS会暂停DOM解析，CSSOM的构建会暂停JS执行）；
-        
+
         完毕后触发：JS的`document.addEventListener('DOMContentLoaded', function(){}, false)` 或 jQuery的`$(document).ready(function(){})`。
     4. 加载图片、媒体资源等外部文件；
     5. 资源加载完毕。
-    
+
         完毕后触发：JS的`window.addEventListener('load', function(){}, false)`。
 
 - 判断JS、CSS文件是否加载完毕：
@@ -287,7 +287,7 @@
     cookie是同源（且同路径），不同域名可以避免~~某些静态资源携带不必要的cookie而占用带宽~~。
 2. 浏览器对同一域名有HTTP并发数限制
 
-    1. 客户端：PC端口数量有限（65536个）、线程切换开销大。
+    1. 客户端：PC端口号数量有限（65536个）、线程切换开销大。
     2. 服务端：服务器的负载、并发接收限制。
 3. 动静分离，静态资源方便做CDN
 
@@ -607,7 +607,7 @@ JavaScript ＝ ECMAScript + 宿主环境提供的API。
         }
     }(typeof self !== 'undefined' ? self : this, function (b) {
         // Use b in some fashion.
-    
+
         // Just return a value to define the module export.
         // This example returns an object, but the module
         // can return a function as the exported value.

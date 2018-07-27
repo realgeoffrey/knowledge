@@ -3,7 +3,7 @@
 >[官网](http://www.wampserver.com)下载。本文使用版本 **Wampserver 3.0.6 64 bit x64** ，其中包括Apache 2.4.23、PHP 5.6.25/7.0.10、MySQL 5.7.14、PhpMyAdmin 4.6.4、Adminer 4.2.5、PhpSysInfo 3.2.5。
 >
 >win7以上系统可以安装最新版，xp只能安装2.2e及更低版本。
-	
+
 1. 安装
 
 	安装接近尾声时会提示选择程序打开的**浏览器**和**文本编辑器**。
@@ -14,13 +14,13 @@
 
 	1. 进入程序所在的文件夹，找到 *路径\wamp\scripts* 下的 **config.inc.php**：
 
-	    文本打开并找到`$wwwDir`（默认为安装目录的 www 文件夹），修改为自定义位置`$wwwDir = 'E:/www'`，如图：
+	    文本打开并找到`$wwwDir`（默认：安装目录的 www 文件夹），修改为自定义位置`$wwwDir = 'E:/www'`，如图：
 
 	    ![WAMP图](./images/1.png)
-	
+
 	    >注意：Windows 里的文件夹为`E:\www`，这里的是 `E:/www`，斜杠方向有区别。
 	2. 保存文件，退出Wamp再次进入即可生效。
-	
+
 	    左击系统托盘中的WampServer，选择 **www 目录** 菜单项后就会打开设置好的目录。
 
 	    >请先确保系统中存在此文件夹。
@@ -55,7 +55,7 @@
 
 	左击系统托盘中的WampServer，选择 **phpMyAdmin** 。
 
-	>默认用户为`root`，密码为空。
+	>默认：用户为`root`、密码为空。
 7. 配置 虚拟主机
 	1. 左击系统托盘中的WampServer，选择 **Apache->httpd-vhosts.conf** 配置文件：
 
@@ -79,7 +79,7 @@
                 ServerAlias 123.me
             </VirtualHost>
             ```
-		
+
 		    >在www文件内新建demo文件夹，再在demo文件夹内新建123.me文件夹。
 
         ![WAMP图](./images/4.png)
@@ -115,7 +115,7 @@
         ```test
         <VirtualHost *:80>
             ServerName 域名1
-            ProxyPass / http://域名2:端口/
+            ProxyPass / http://域名2:端口号/
         </VirtualHost>
         ```
 10. 后续

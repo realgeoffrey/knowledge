@@ -49,7 +49,7 @@
     ```
 
     >1. 密码：自己设定（默认：teddysun.com）
-    >2. 服务器端口：自己设定（默认：8989）
+    >2. 服务器端口号：自己设定（默认：8989）
 2. 查看状态
 
     ```bash
@@ -67,7 +67,7 @@
 ### IKEv2（IKEv1）服务端安装
 >来自[quericy:one-key-ikev2-vpn](https://github.com/quericy/one-key-ikev2-vpn)。
 
->除了第一个vps类型选择、倒数第二个独立ip使用SNAT规则，其他都可以简单使用默认。
+>除了第一个vps类型选择、倒数第二个独立IP使用SNAT规则，其他都可以简单使用默认。
 
 1. 下载、运行脚本
 
@@ -82,21 +82,21 @@
 
         1. Xen、KVM
         2. OpenVZ
-    2. 设置**ip**：
+    2. 设置**IP**：
 
-        服务器ip，绑定的域名（默认服务器ip）。
+        服务器IP，绑定的域名（默认：服务器IP）。
     3. 选择**证书类型**：
 
         1. yes：证书颁发机构签发的SSL证书
 
             （未测试）
-        2. no：生成自签名证书（默认生成自签名证书）
+        2. no：生成自签名证书（默认：生成自签名证书）
 
             选择默认的Country（C）、Organization（O）、Common Name（CN）。
-    4. 设置**pkcs12证书的密码**（默认为空）。
-    5. 选择是否使用**SNAT规则**（默认不使用）
+    4. 设置**pkcs12证书的密码**（默认：空）。
+    5. 选择是否使用**SNAT规则**（默认：不使用）
 
-        独立ip的vps才可以使用SNAT，可提升防火墙对数据包的处理速度。若服务器网络设置了NAT（如AWS的弹性ip机制），则填写网卡连接接口的ip地址。
+        独立IP的vps才可以使用SNAT，可提升防火墙对数据包的处理速度。若服务器网络设置了NAT（如AWS的弹性IP机制），则填写网卡连接接口的IP地址。
     6. 选择**防火墙配置**：
 
         1. yes：firewall
@@ -120,14 +120,14 @@
     1. 将提示信息中生成的证书文件**ca.cert.pem**复制到客户端，修改后缀名为**ca.cert.cer**后导入。
 
         远程复制：
-        
+
         ```bash
         scp -P 端口号 服务器名@服务器地址:/root/my_key/ca.cert.pem 本地存放路径
         ```
     2. 设备使用Ikev1无需导入证书，而是需要在连接时输入密钥（PSK）。
 5. ipsec启动问题
 
-    服务器重启后默认ipsec不会自启动。
+    服务器重启后ipsec不会自启动。
 
     1. 命令需要手动开启，
 
@@ -173,20 +173,20 @@
 
     1. PAC自动模式：
 
-        监听特定端口的请求（默认代理端口`1080`），再按照PAC（代理自动配置）列表决定是否使用Shadowsocks代理。
+        监听特定端口号的请求（默认代理端口号：`1080`），再按照PAC（代理自动配置）列表决定是否使用Shadowsocks代理。
     2. 全局模式：
 
         走系统代理（系统层面的默认代理）的所有请求都走Shadowsocks代理。
     3. 手动模式：
 
-        监听特定端口号的请求（默认代理端口`1080`），都走Shadowsocks代理。
+        监听特定端口号的请求（默认代理端口号：`1080`），都走Shadowsocks代理。
 2. Windows
 
     ![shadowsocks图](./images/shadowsocks-2.png)
 
     1. 开启软件：
 
-        监听特定端口号的请求（默认代理端口`1080`），都走Shadowsocks代理。
+        监听特定端口号的请求（默认代理端口号：`1080`），都走Shadowsocks代理。
     2. 启动系统代理（全局模式）：
 
         走系统代理（系统层面的默认代理）的所有请求都走Shadowsocks代理。
@@ -195,7 +195,7 @@
         代理自动配置，一般使用[gfwlist](https://github.com/gfwlist/gfwlist)列表。
     4. 允许来自局域网的连接：
 
-        同局域网下，其他设备设置HTTP代理为主机ip和端口号（可以用Charles），则走代理主机的Shadowsocks代理。
+        同局域网下，其他设备设置HTTP代理为主机IP和端口号（可以用Charles），则走代理主机的Shadowsocks代理。
 
 - Chrome插件[SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega)，能够对Chrome发出的所有请求都进行代理配置。
 

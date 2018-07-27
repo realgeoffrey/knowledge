@@ -4,12 +4,12 @@
 1. [原生JS方法](#原生js方法)
 
     1. 可用[moment](https://github.com/moment/moment/)代替
-    
+
         1. [格式化日期](#原生js格式化日期)
         1. [获取年龄](#原生js获取年龄)
         1. [倒计时显示](#原生js倒计时显示)
     1. 可用[jquery](https://github.com/jquery/jquery)或ES6或其他库代替
-    
+
         1. [多异步返回后才执行总回调函数（利用jQuery的`$.ajax`）](#原生js多异步返回后才执行总回调函数利用jquery的ajax)
         1. [对象合二为一（改变第一个参数）](#原生js对象合二为一改变第一个参数)
         1. [深复制](#原生js深复制)
@@ -121,127 +121,253 @@ function getAge (birthday) {
 >可以使用[moment](https://github.com/moment/moment/)格式化时间，完全替代。
 
 ### *原生JS*倒计时显示
-```javascript
-/**
- * 显示倒计时
- * @constructor
- * @param {Object} data
- * @param {Number} data.deadline - 到期的时间戳
- * @param {Object} [data.dom] - 输出节点，若不是节点则console.log输出
- * @param {Function} [data.callback] - 到点后的回调函数
- * @param {Number} [data.leftSec = 0] - 提前到期的秒数
- * @param {Boolean} [data.completeZero = false] - 是否个位数补全0
- * @param {String} [data.dType = ' '] - “天”后面的文字
- * @param {String} [data.hType = ' '] - “时”后面的文字
- * @param {String} [data.mType = ' '] - “分”后面的文字
- * @param {String} [data.sType = ' '] - “秒”后面的文字
- */
-function CountDown (data) {
-  const _dTypeSend = (typeof data.dType !== 'undefined') && data.dType !== '';
-  const _hTypeSend = (typeof data.hType !== 'undefined') && data.hType !== '';
-  const _mTypeSend = (typeof data.mType !== 'undefined') && data.mType !== '';
-  const _sTypeSend = (typeof data.sType !== 'undefined') && data.sType !== '';
-  const _isElement = ((o) => {  /* 是否为Element */
-    return typeof HTMLElement === 'object' ? o instanceof HTMLElement : !!o && typeof o === 'object' && o !== null && o.nodeType === 1 && typeof o.nodeName === 'string';
-  })(data.dom);
-  const _formatNum = (number) => {    /* 格式化数字格式 */
-    if (number < 10 && data.completeZero) {
-      return '0' + number;
-    } else {
-      return number.toString();
-    }
-  };
-  const _SetInterval = function (func, millisecond) {  /* 周期执行 */
-    let _setIntervalId;
+1. 统一输出
 
-    if (typeof func === 'function') {
-      _setIntervalId = setTimeout(function self () {
-        _setIntervalId = setTimeout(self, millisecond);
+    ```javascript
+    /**
+     * 显示倒计时，统一输出
+     * @constructor
+     * @param {Object} data
+     * @param {Number} data.deadline - 到期的时间戳
+     * @param {Object} [data.dom] - 输出节点，若不是节点则console.log输出
+     * @param {Function} [data.callback] - 到点后的回调函数
+     * @param {Number} [data.leftSec = 0] - 提前到期的秒数
+     * @param {Boolean} [data.completeZero = false] - 是否个位数补全0
+     * @param {String} [data.dType = ' '] - “天”后面的文字
+     * @param {String} [data.hType = ' '] - “时”后面的文字
+     * @param {String} [data.mType = ' '] - “分”后面的文字
+     * @param {String} [data.sType = ' '] - “秒”后面的文字
+     */
+    function CountDown (data) {
+      const _dTypeSend = (typeof data.dType !== 'undefined') && data.dType !== ''
+      const _hTypeSend = (typeof data.hType !== 'undefined') && data.hType !== ''
+      const _mTypeSend = (typeof data.mType !== 'undefined') && data.mType !== ''
+      const _sTypeSend = (typeof data.sType !== 'undefined') && data.sType !== ''
+      const _isElement = ((o) => {  /* 是否为Element */
+        return typeof HTMLElement === 'object' ? o instanceof HTMLElement : !!o && typeof o === 'object' && o !== null && o.nodeType === 1 && typeof o.nodeName === 'string'
+      })(data.dom)
 
-        func();
-      }, millisecond);
-    }
-
-    this.stop = () => {
-      clearTimeout(_setIntervalId);
-    };
-  };
-  const _print = (time) => {  /* 输出 */
-    const day = _formatNum(Math.floor((time / (24 * 60 * 60))));
-    const hour = _formatNum(Math.floor((time / (60 * 60)) % 24));
-    const minute = _formatNum(Math.floor((time / 60) % 60));
-    const second = _formatNum(time % 60);
-    let text;
-
-    if (day != 0 || _dTypeSend) {
-      text = day + data.dType + hour + data.hType + minute + data.mType + second + data.sType;
-    } else if (hour != 0 || _hTypeSend) {
-      text = hour + data.hType + minute + data.mType + second + data.sType;
-    } else if (minute != 0 || _mTypeSend) {
-      text = minute + data.mType + second + data.sType;
-    } else {
-      text = second + data.sType;
-    }
-
-    if (_isElement) {
-      data.dom.innerHTML = text;
-    } else {
-      console.log(text);
-    }
-  };
-
-  if (!_dTypeSend) {
-    data.dType = ' ';
-  }
-  if (!_hTypeSend) {
-    data.hType = ' ';
-  }
-  if (!_mTypeSend) {
-    data.mType = ' ';
-  }
-  if (!_sTypeSend) {
-    data.sType = '';
-  }
-
-  /* 初始化时就输出一遍 */
-  _print(Math.round((data.deadline - Date.now()) / 1000));
-
-  const obj = new _SetInterval(() => {
-    const time = Math.round((data.deadline - Date.now()) / 1000);
-
-    if (time < (data.leftSec || 0)) {
-      obj.stop();
-      if (typeof data.callback === 'function') {
-        data.callback();
+      const _formatNum = (number) => {    /* 格式化数字格式 */
+        if (number < 10 && data.completeZero) {
+          return '0' + number
+        } else {
+          return number.toString()
+        }
       }
-      return;
+
+      const _SetInterval = function (func, millisecond) {  /* 周期执行 */
+        let _setIntervalId
+
+        if (typeof func === 'function') {
+          _setIntervalId = setTimeout(function self () {
+            _setIntervalId = setTimeout(self, millisecond)
+
+            func()
+          }, millisecond)
+        }
+
+        this.stop = () => {
+          clearTimeout(_setIntervalId)
+        }
+      }
+
+      const _print = (time) => {  /* 输出 */
+        const day = _formatNum(Math.floor((time / (24 * 60 * 60))))
+        const hour = _formatNum(Math.floor((time / (60 * 60)) % 24))
+        const minute = _formatNum(Math.floor((time / 60) % 60))
+        const second = _formatNum(time % 60)
+        let text
+
+        if (day != 0 || _dTypeSend) {
+          text = day + data.dType + hour + data.hType + minute + data.mType + second + data.sType
+        } else if (hour != 0 || _hTypeSend) {
+          text = hour + data.hType + minute + data.mType + second + data.sType
+        } else if (minute != 0 || _mTypeSend) {
+          text = minute + data.mType + second + data.sType
+        } else {
+          text = second + data.sType
+        }
+
+        if (_isElement) {
+          data.dom.innerHTML = text
+        } else {
+          console.log(text)
+        }
+      }
+
+      if (!_dTypeSend) {
+        data.dType = ' '
+      }
+      if (!_hTypeSend) {
+        data.hType = ' '
+      }
+      if (!_mTypeSend) {
+        data.mType = ' '
+      }
+      if (!_sTypeSend) {
+        data.sType = ''
+      }
+
+      /* 初始化时就输出一遍 */
+      _print(Math.round((data.deadline - Date.now()) / 1000))
+
+      const obj = new _SetInterval(() => {
+        const time = Math.round((data.deadline - Date.now()) / 1000)
+
+        if (time < (data.leftSec || 0)) {
+          obj.stop()
+          if (typeof data.callback === 'function') {
+            data.callback()
+          }
+          return
+        }
+
+        _print(time)
+      }, 1000)
+
+      this.stop = obj.stop
     }
 
-    _print(time);
-  }, 1000);
 
-  this.stop = obj.stop;
-}
+    /* 使用测试 */
+    var a = new CountDown({
+      deadline: Date.now() + 10000,
+      dom: document.getElementById('j-test'),
+      callback: () => {
+        console.log('完成')
+      },
+      leftSec: 1,
+      completeZero: false,
+      dType: '',
+      hType: '小时',
+      mType: '分',
+      sType: '秒'
+    })
+
+    // a.stop();
+    ```
+2. 分开输出
+
+    ```javascript
+    /**
+     * 显示倒计时，单独输出每一个位数（秒个位、秒十位、分个位、分十位、时个位、时十位、天）
+     * @constructor
+     * @param {Number} deadline - 到期的时间戳
+     * @param {Function} [callback] - 到点后的回调函数
+     * @param {Array} [DOMList] - 展示的DOM集合，前7个项有效（若存在，则从最小的时间开始展示；若不存在，则console.log）
+     */
+    function CountDown ({ deadline, callback = () => {}, DOMList = [] } = {}) {
+      /* 周期执行 */
+      const SetInterval = function (func, millisecond) {
+        let setIntervalId
+
+        if (typeof func === 'function') {
+          setIntervalId = setTimeout(function self () {
+            setIntervalId = setTimeout(self, millisecond)
+
+            func()
+          }, millisecond)
+        }
+
+        this.stop = () => {
+          clearTimeout(setIntervalId)
+        }
+      }
+
+      /* 秒数->天、时、分、秒 */
+      const formatSeconds = (seconds) => {
+        const secondArr = (seconds % 60).toString().split('')
+        const secondObj = {
+          second0: secondArr.pop(), // 秒的个位数
+          second00: secondArr.pop() || '0'  // 秒的十位数
+        }
+
+        const minuteArr = (Math.floor(seconds / 60) % 60).toString().split('')
+        const minuteObj = {
+          minute0: minuteArr.pop(), // 分的个位数
+          minute00: minuteArr.pop() || '0'  // 分的十位数
+        }
+
+        const hourArr = (Math.floor(seconds / 3600) % 24).toString().split('')
+        const hourObj = {
+          hour0: hourArr.pop(), // 时的个位数
+          hour00: hourArr.pop() || '0'  // 时的十位数
+        }
+
+        const dayObj = {
+          day: (Math.floor(seconds / (3600 * 24))).toString() // 天的所有
+        }
+
+        return { ...secondObj, ...minuteObj, ...hourObj, ...dayObj }
+      }
+
+      const timeMapDom = [ // 映射 DOM和时间 的顺序
+        'second0',  // 第一个DOM -> 'second0'
+        'second00',
+        'minute0',
+        'minute00',
+        'hour0',
+        'hour00',
+        'day'
+      ]
+
+      /* 输出 */
+      const print = (time) => {
+        const timeObj = formatSeconds(time)
+
+        if (DOMList.length > 0) {
+          DOMList.map((value, index) => { // 仅输出有给DOM展示的内容，多余的时间丢弃
+            requestAnimationFrame(() => {
+              value.innerText = timeObj[timeMapDom[index]]
+            })
+          })
+        } else {
+          console.log(timeObj)
+        }
+      }
+
+      // 初始化时就输出一遍
+      print(Math.round((deadline - Date.now()) / 1000))
+
+      // 每秒输出一遍
+      const obj = new SetInterval(() => {
+        const time = Math.round((deadline - Date.now()) / 1000)
+
+        if (time < 0) {
+          obj.stop()
+          if (typeof callback === 'function') {
+            callback()
+          }
+        } else {
+          print(time)
+        }
+      }, 1000)
+
+      this.stop = obj.stop
+    }
 
 
-/* 使用测试 */
-var a = new CountDown({
-  deadline: Date.now() + 10000,
-  dom: document.getElementById('j-test'),
-  callback: function () {
-    console.log('完成');
-  },
-  leftSec: 1,
-  completeZero: false,
-  dType: '',
-  hType: '小时',
-  mType: '分',
-  sType: '秒'
-});
+    /* 使用测试 */
+    var a = new CountDown({
+      deadline: Date.now() + 10000,
+      callback: function () {
+        console.log('完成')
+      },
+      DOMList: [
+        document.getElementById('j-7'),
+        document.getElementById('j-6'),
+        document.getElementById('j-5'),
+        document.getElementById('j-4'),
+        document.getElementById('j-3'),
+        document.getElementById('j-2'),
+        document.getElementById('j-1')
+      ].slice(0, Math.floor(Math.random() * 8))  // 0~7
+    })
 
-// a.stop();
-```
->可以使用[moment](https://github.com/moment/moment/)格式化时间。
+    // a.stop();
+    ```
+
+>可以使用[moment](https://github.com/moment/moment/)或[date-fns](https://github.com/date-fns/date-fns)格式化时间。
 
 ### *原生JS*多异步返回后才执行总回调函数（利用jQuery的`$.ajax`）
 ```javascript
@@ -271,7 +397,7 @@ function multiCallback(func, url) {
                     dataType: 'json',
                     data: {}
                     /*,
-                     // Zepto默认没有deferred的对象，用参数模式代替
+                     // Zepto默认：没有deferred的对象，用参数模式代替
                      success: function (data) {
                          handle.result[url] = data;
                          handle.count += 1;

@@ -2,10 +2,8 @@
 
 1. 使用`https://www.google.com/ncr`（no country redirect）当做搜索入口
 
-    >默认情况下，会重定向到访问ip的本地Google域名
-
+    >若不使用以上链接，则默认会重定向到访问IP的本地Google域名
 2. 使用英文搜索
-
 3. 基本技巧（选）
 
     1. `+`

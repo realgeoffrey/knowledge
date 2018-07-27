@@ -404,7 +404,7 @@
     >因为`<object>`、`<embed>`、`<applet>`不能绑定数据，所以它们不能使用`.data()`。
 9. jQuery操作CSS样式：
 
-    1. 设置大部分CSS样式时，不写单位默认为`px`，并对于`px`单位的样式可以设置相对值`'+=数字'`或`'-=数字'`：
+    1. 设置大部分CSS样式时，不写单位默认：`px`；对于`px`单位的样式可以设置相对值`'+=数字'`或`'-=数字'`：
 
         `.css()`、`.width()`、`.height()`、`.animate()`。
 
@@ -419,7 +419,7 @@
 
     <details>
     <summary>额外的，jQuery确保即使绑定的函数经过<code>$.proxy()</code>处理，依然可以用原先的函数来正确地取消绑定</summary>
-    
+
     ```javascript
     // e.g.
     var obj = {
@@ -428,7 +428,7 @@
         $('#test').off('click', obj.test);  // 可以解绑$.proxy(obj, 'test')
       }
     };
-    
+
     $('#test').on('click', $.proxy(obj, 'test'));
     ```
     </details>
@@ -476,16 +476,16 @@
 
         <details>
         <summary>移除或修改绑定事件</summary>
-        
+
         `dom.onclick = null;`、`dom.onclick = function () {/* 修改方法 */};`
         </details>
     3. IE事件处理程序（冒泡）
 
         `dom.attachEvent('onclick', funcIe);`（可监听多个，按绑定顺序的逆序触发；需参数完全对应才能解绑定；无法解绑匿名函数）
-        
+
         <details>
         <summary>移除绑定事件</summary>
-        
+
         `dom.detachEvent('onclick', funcIe);`
         </details>
     4. DOM2级事件处理程序（冒泡、捕获）
@@ -496,10 +496,10 @@
 
         <details>
         <summary>移除绑定事件</summary>
-        
+
         `dom.removeEventListener('click', func2, false);`
         </details>
-        
+
     - [兼容各浏览器的绑定、解绑事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js绑定解绑事件)
 2. jQuery（冒泡）
 
@@ -511,18 +511,18 @@
 
         <details>
         <summary>移除绑定事件</summary>
-        
+
         `off`
         </details>
     2. <details>
-    
+
         <summary>其他</summary>
-    
+
         1. 一系列`on`的事件绑定快捷方法:
-    
+
             `click`、`dblclick`、`contextmenu`、`keydown`、`keyup`、`keypress`、`mousedown`、`mouseup`、`mousemove`、`mouseenter`、`mouseleave`、`mouseover`、`mouseout`、`hover`、`blur`、`focus`、`focusin`、`focusout`、`select`、`change`、`submit`、`ready`、`resize`、`scroll`
         2. 由`on`或`off`实现的：（废除或不建议）
-    
+
             1. 绑定：~~`bind`~~、~~`live`~~、~~`delegate`~~
             2. 解绑：~~`unbind`~~、~~`die`~~、~~`undelegate`~~
         </details>
@@ -601,7 +601,7 @@
     1. 先按**捕获**顺序依次执行节点注册**捕获**的事件。
     2. 抵达目标
 
-        1. 依据注册顺序执行事件处理程序，分为捕获、冒泡两种抵达类型。浏览器默认行为是冒泡抵达类型（在捕获、冒泡的事件处理程序执行之后才执行默认行为）。
+        1. 依据注册顺序执行事件处理程序，分为捕获、冒泡两种抵达类型。浏览器默认行为：冒泡抵达类型（在捕获、冒泡的事件处理程序执行之后才执行默认行为）。
         2. 可设置不再冒泡或不执行浏览器默认行为。
         3. 建议仅在**需要在事件到达目标之前截获它的情况**才设置捕获的事件处理程序。
 
@@ -643,9 +643,9 @@
     1. Android系统的浏览器大部分直接使用CSS伪类即可。
     2. iOS系统的浏览器要添加：`document.body.addEventListener('touchstart', function () {}, true);`。
     3. <details>
-    
+
         <summary><del>JS添加类的方法模拟</del></summary>
-        
+
         ```html
         <style>
             .d:active,
@@ -663,7 +663,7 @@
         </script>
         ```
         </details>
-        
+
     - 添加`document.body.addEventListener('touchstart', function () {}, true);`即可满足大部分浏览器使用伪类。
 3. WAP端播放
 
@@ -688,9 +688,9 @@
             >因为`loop`属性模式无法触发`ended`事件，又`timeupdate`事件触发时间不确定、无法和`媒体.duration`取等判断成功，故无法在`loop`属性模式中判定。
 
             （非`loop`属性模式下的）`ended`事件（伴随`pause`事件）。
-        
+
         - 建议只用`timeupdate`和`ended`事件处理需求。
-        
+
         >各机型/浏览器对视频事件、API的处理不同，甚至某些Android机型会要求：只有触发在视频区域内的事件才可执行视频的API。
     2. 自动播放
 
@@ -717,7 +717,7 @@
             </script>
             ```
         2. ~~`autoplay`~~ 属性模式
-        
+
             >兼容性差。
     3. 循环播放
 
@@ -750,7 +750,7 @@
 
         1. `controls`属性模式
         2. <details>
-        
+
             <summary><del>JS代码模拟</del></summary>
 
             >兼容性差。
@@ -845,10 +845,10 @@
                 2. 内联模式（浏览器支持其中一种）：
 
                     1. `webkit-playsinline playsinline`内联模式。
-                    
+
                         >针对iOS的UC或QQ浏览器，可以添加[iphone-inline-video](https://github.com/bfred-it/iphone-inline-video)。
                     2. `x5-video-player-type="h5"`在底部的全屏内联模式（同层播放）。
-                    
+
                         >[Android的腾讯x5内核APP](https://x5.tencent.com/tbs/guide/video.html)特有。
             2. 无法操作全屏模式
 
@@ -1161,7 +1161,7 @@
 
         <details>
         <summary>e.g.</summary>
-        
+
         ```javascript
         var arr = [],
             i;
@@ -1259,11 +1259,9 @@
         1. 为JS代码预留出退路（`<a>`添加属性链接，用JS事件绑定去拦截浏览器默认行为）
 
             `<a href="真实地址" class="j-func">...</a>`
-
         2. ~~伪协议`javascript:`~~
 
             `<a href="javascript: func();">...</a>`
-
         3. ~~内嵌事件处理程序~~
 
             `<a href="#" onclick="func();return false;">...</a>`
@@ -1481,7 +1479,7 @@
                 setTimeout(function () {
                   document.body.removeChild(iframe);
                 }, 3000);
-				
+
                 location.href = '下载地址';
                 ```
             2. iOS9+
@@ -1490,7 +1488,7 @@
 
                 ```javascript
                 location.href = '自定义 URL scheme';
-				
+
                 setTimeout(function () {
                   location.href = '下载地址';
                 }, 250);
@@ -1502,7 +1500,7 @@
 
                 ```javascript
                 location.href = '自定义 URL scheme';	  // 也可以用iframe
-				
+
                 var start = Date.now();
                 setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）
                   if (Date.now() - start < 3100) {  // 还在这个页面，认为没有安装App
@@ -1522,13 +1520,13 @@
 
         1. 对于App内不方便查看的信息，可以发送需要查看的信息、再抓包的方式进行调试。
         2. 可以用一些隐蔽的手势触发log信息展示。
-        
+
             <details>
             <summary>e.g.</summary>
-            
+
             ```javascript
             var consolelogi = 0;
-            
+
             document.addEventListener('touchstart', function () {
                 if (event.touches.length >= 4) {    // 4个触发点以上
                     consolelogi += 1;
@@ -1548,7 +1546,7 @@
 
     <details>
     <summary>等价于：</summary>
-    
+
     ```javascript
     /* 不是传参情况 */
     var a;
@@ -1566,11 +1564,11 @@
     }
     ```
     </details>
-    
+
     1. 声明提前`var a;`。
     2. 右侧的表达式`a || {}`先执行：根据规则先判断a的值是否为真，如果a为真，则返回a；如果a不为真，则返回{}。
     3. 最后再将结果赋值给`a`。
-    
+
     ><details>
     ><summary><code>var a = b || {};</code>与<code>if (c) {}</code>会因为b或c没有定义而报错，可以用<code>typeof</code>来使代码健壮</summary>
     >
@@ -1642,6 +1640,19 @@
       return msg;
     };
     ```
+13. 页面的id值会动态地成为`window`的属性（全局变量），值为这个id所在的Element，除非`window`已存在这个属性名。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```html
+    ><div id="j-dom"></div>
+    >
+    ><script>
+    >  document.getElementById('j-dom') === window['j-dom']  // 当window原本没有j-dom属性时成立
+    ></script>
+    >```
+    ></details>
 
 ---
 ## 功能归纳
@@ -1667,9 +1678,9 @@
         11. Date实例 -> `'[object Date]'`
         12. RegExp实例 -> `'[object RegExp]'`
         13. <details>
-                
+
             <summary>Error类型实例 -> <code>'[object Error]'</code></summary>
-            
+
             Error、EvalError、RangeError、ReferenceError、SyntaxError、TypeError、URIError
             </details>
         14. Map实例 -> `'[object Map]'`
@@ -1687,14 +1698,14 @@
         26. `JSON` -> `'[object JSON]'`
         27. `WebAssembly` -> `'[object WebAssembly]'`
         28. <details>
-        
+
             <summary>TypedArray实例 -> <code>'[object 构造函数名]'</code></summary>
-            
+
             Int8Array、Uint8Array、Uint8ClampedArray、Int16Array、Uint16Array、Int32Array、Uint32Array、Float32Array、Float64Array
             </details>
         29. ArrayBuffer实例 -> `'[object ArrayBuffer]'`
         30. DataView实例 -> `'[object DataView]'`
-        
+
         ><details>
         ><summary>对于没有声明的变量，直接使用会报<strong>引用不存在变量</strong>的错误，可以用<code>typeof</code>来使代码健壮</summary>
         >
@@ -1742,7 +1753,7 @@
 ### 跨域请求
 
 ><details>
-><summary>浏览器同源策略（协议、域名、端口，必须完全相同）限制</summary>
+><summary>浏览器同源策略（协议、域名、端口号，必须完全相同）限制</summary>
 >
 >- 当一个资源从非同源中请求资源时，资源会发起一个跨域HTTP请求。出于安全原因，**浏览器**限制：从**脚本**内发起的跨源HTTP请求 或 拦截跨域HTTP响应。
 >
@@ -1791,8 +1802,8 @@
         ```javascript
         // 父窗口调用iframe的window对象
         var newIframe = document.getElementById('new-iframe').contentWindow;    // 或：window.frames[0]
-        
-        
+
+
         // iframe调用父窗口的window对象
         var father = parent;
         ```
@@ -1801,8 +1812,8 @@
         ```javascript
         // 父窗口调用新打开窗口的window对象
         var newWin = window.open('某URL');
-        
-        
+
+
         // 新打开窗口调用父窗口的window对象
         var father = window.opener;
         ```
@@ -1813,8 +1824,8 @@
     ```javascript
     // 发送方
     目标window对象.postMessage(message, '目标源地址或*');
-    
-    
+
+
     // 监听的文档
     window.addEventListener('message', function(e) {
       console.log(e);
@@ -1823,14 +1834,14 @@
 5. 其他方式
 
     1. 父窗口改变`<iframe>`的hash，`<iframe>`通过监听hash变化的`hashchange`事件获取父窗口信息
-    
+
         >ie8+支持。若只改变hash值，页面不会重新刷新。
-    
+
         ```javascript
         // 父窗口改变iframe的hash值
         document.getElementById('new-iframe').src = '除了hash值，url不变（父级与iframe不需要同源）';
-        
-        
+
+
         // iframe窗口监听hash变化，以hash变化当做信息的传递
         window.onhashchange = function(){
             var message = window.location.hash;
@@ -1838,9 +1849,9 @@
         };
         ```
     2. 通过监听`window.name`传递信息
-    
+
         >同会话（tab窗口）前后跳转的页面都可以读取、设置同一个`window.name`值。
-    
+
         1. 父窗口打开一个子窗口，载入一个不同源的网页，该网页将信息写入`window.name`属性。
         2. 子窗口跳回一个与主窗口同域的网址（文档间访问`window.name`遵循同源策略）。
         3. 主窗口可以读取子窗口的`window.name`值作为信息的传递。
@@ -1857,7 +1868,7 @@
 1. Web Storage（`localStorage`、`sessionStorage`）
 
     1. 客户端保存，不参与服务器通信。
-    2. 对象形式。
+    2. 对象形式，键-值的值都会转换为字符串（若不是字符串则它的`toString`方法）。
     3. ie8+支持（ie及FF需在web服务器里运行）。
 
         >ie6/7可以用它们独有的`UserData`代替使用。
@@ -1880,8 +1891,8 @@
 2. cookie：
 
     1. 客户端保存（JS添加或响应头设置），始终在HTTP请求中携带（同源同路径），明文传递，服务端接收、操作客户端cookie。
-    
-        >1. cookie中的`domain`默认为当前域名，可设置为父域名或当前域名，不能设置为其他域名（设置失效）。
+
+        >1. cookie中的`domain`（默认：当前域名），可设置为父域名或当前域名，不能设置为其他域名（设置失效）。
         >2. 当前域名可以访问`domain`为当前域名或父域名的cookie；浏览器发起HTTP请求时会向请求地址发送与请求域名相同或是其父域名的cookie。
     2. 字符串形式：`名1=值1[; 名2=值2]`。不能包含任何`,`、`;`、` `（使用`encodeURIComponent`、`decodeURIComponent`）。
     3. 所有浏览器都支持。
@@ -1895,7 +1906,7 @@
                 >`Set-Cookie`额外可以设置`[; HttpOnly]`属性。
             2. 读取cookie等同于客户端`Cookie`请求头：展示所有cookie的`名1=值1[; 名2=值2]`（无法查看其他信息）。
     6. 同源且同路径共享。
-    7. 默认（存储在内存）关闭浏览器后失效，设置失效时间（存储在硬盘）则到期后失效。
+    7. 默认：关闭浏览器后失效（存储在内存）；设置失效时间则到期后失效（存储在硬盘）。
     8. 应用场景：服务端确定请求是否来自于同一个客户端（cookie与服务端session配合），以确认、保持用户状态。
 
     ><details>
@@ -1923,7 +1934,7 @@
     }
     MyError.prototype = Object.create(Error.prototype, {constructor: {value: MyError}});
 
-    
+
     // ES6的class-extends
     class MyError extends Error{}
     ```
@@ -2067,7 +2078,7 @@
 1. 原生JS
 
     1. <details>
-    
+
         <summary><code>while</code>、<code>do-while</code></summary>
 
         ```javascript
@@ -2083,7 +2094,7 @@
         ```
         </details>
     2. <details>
-    
+
         <summary><code>for</code></summary>
 
         ```javascript
@@ -2093,11 +2104,11 @@
         ```
         </details>
     3. <details>
-    
+
         <summary><code>for-in</code></summary>
 
         遍历对象自身和继承的可枚举属性。
-        
+
         ```javascript
         /* i为数组当前项的索引或对象当前项的属性名 */
         for (var i in obj或arr) {
@@ -2106,11 +2117,11 @@
         ```
         </details>
     4. <details>
-    
+
         <summary><code>for-of</code></summary>
 
         遍历可迭代对象的每个元素。
-        
+
         ```javascript
         /* i为迭代对象的属性值 */
         for (let i of 可迭代对象) {
@@ -2141,7 +2152,7 @@
 2. jQuery
 
     1. <details>
-    
+
         <summary><code>$.each</code></summary>
 
         ```javascript
@@ -2152,7 +2163,7 @@
         ```
         </details>
     2. <details>
-    
+
         <summary><code>$dom.each</code></summary>
 
         ```javascript
@@ -2260,12 +2271,12 @@
 1. 每个函数都是一个`Function`对象，像普通对象一样拥有**属性**和**方法**。
 
     1. 函数拥有
-    
+
         1. `length`：希望接收的命名参数个数（计数到`默认参数`或`剩余参数`之前的参数）
         2. `name`：函数名
         3. `prototype`：（函数独有）指向函数的原型对象
     2. ES6不推荐使用（部分情况下导致报错）：
-    
+
         1. 函数体内的`arguments.callee`是一个指针：其指向拥有`arguments`对象的函数（函数自身）。
         2. `函数对象.caller`：保存调用当前函数的函数（嵌套的外一层函数）的引用。
         3. 函数体内的`arguments.caller`（值为`undefined`，仅为分清`arguments.caller`和`函数对象.caller`）。
@@ -2334,18 +2345,18 @@
             1. 若Func返回**引用数据类型**，则这个引用数据类型的值赋值给newObj。
             2. 若Func返回基本数据类型或返回this或无返回，则obj赋值给newObj。
 5. 函数调用类型
-    
+
     1. 直接函数调用（如`alert();`）、立即调用的函数表达式（如`(function () {}());`）
-    
+
         `this`：全局对象`window`（与在什么作用域无关）
     2. 对象的方法调用（如`obj.func();`）
-        
+
         `this`：上级对象（调用的`obj`）
     3. 构造函数实例化（如`new RegExp();`）
-    
+
         `this`：新实例对象
     4. 间接调用（`alert.call(传入的对象);`或`apply`）
-    
+
         `this`：传入的对象
 
     - 总结：`this`——调用函数的那个对象
@@ -2451,7 +2462,7 @@
             >></details>
         3. 不能~~在参数默认值中调用函数体内的方法~~（参数默认值总是被首先执行，而函数体内的函数声明之后生效）。
     3. 建议参数都用对象形式传递，且形参设置为解构赋值+默认参数。
-    
+
         >e.g. `function func ({ para1 = 'default', para2 } = {}) {}`
     4. 参数的数量有限制，比如有些JS引擎限制在2^16。
 
@@ -2477,7 +2488,7 @@
     2. 当构造函数实例化（`new`），该实例拥有`[[Prototype]]`属性，指向**构造函数的原型对象**。
 
         >访问对象的`[[Prototype]]`属性：`对象.__proto__`（非标准）、`Object.getPrototypeOf/setPrototypeOf(对象)`。
-    
+
         1. 连接存在于**实例**与**构造函数的原型对象**之间，而不直接存在于~~实例与构造函数~~之间。
         2. 内置构造函数的原型上有各种方法和属性，实例对象通过原型链进行调用。
     3. 每个引用数据类型都有`[[Prototype]]`属性，指向`自己的构造函数.prototype`（原型对象）。
@@ -2486,7 +2497,7 @@
     4. 不断向上的`[[Prototype]]`属性，构成了原型链。
 
         >访问一个引用数据类型的属性：若这个属性在对象自身中不存在，则向上查找其`[[Prototype]]`指向的对象；若依然找不到，则继续向上查找（其`[[Prototype]]`指向的对象的）`[[Prototype]]`指向的对象，直到原型终点。
-        
+
         原型链终点是`null`，倒数第二是`Object.prototype`。
 
     <details>
@@ -2512,7 +2523,7 @@
     ```
     </details>
 2. 如果重写原型的值（不是添加），可以给原型添加`constructor`属性并指向**构造函数**
-    
+
     ```Javascript
     var A = function () {};
 
@@ -2545,7 +2556,7 @@
     1. ES6：`class-extends`
 
         **能够继承原生构造函数**：先新建父类的实例对象`this`，然后再用子类的构造函数修饰`this`，使得父类的所有行为都可以继承。
-    
+
         ```javascript
         class Father {
           constructor (...args) {   // 可省略
@@ -2554,13 +2565,13 @@
 
            父类方法 () {}
         }
-        
+
         class Son extends Father {
           constructor (...args) {   // 可省略
             super(...args)
             // this.
           }
-        
+
           子类方法 () {}
         }
 
@@ -2586,20 +2597,20 @@
             /* 父类属性 */
             this.父类属性 = fatherPara;
         }
-        
+
         /* 父类原型链 */
         Father.prototype.父类原型链方法 = function () {};
-        
-        
+
+
         /* 子类定义： */
         function Son(sonPara1, sonPara2) {
             /* 子类继承父类属性 */
             Father.call(this, sonPara1);
-        
+
             /* 子类属性 */
             this.子类属性 = sonPara2;
         }
-        
+
         /* 子类继承父类原型链 */
         Son.prototype = new Father();
         Son.prototype.constructor = Son;
@@ -2609,7 +2620,7 @@
 
         /* 子类原型链 */
         Son.prototype.子类原型链方法 = function () {};
-        
+
 
         /* 使用测试 */
         Son.prototype.__proto__ === Father.prototype    // true
@@ -2678,7 +2689,7 @@
         2. 改变传入函数的数组，不改变数组实参
 
             1. 浅复制：
-                
+
                 1. `arr = [...arr]`（ES6的展开元素）
                 2. `[...arr] = arr`（ES6的解构赋值的剩余参数）
                 3. `arr = arr.slice()`
@@ -2866,7 +2877,7 @@
 
             <details>
             <summary>e.g.</summary>
-            
+
             ```javascript
             'a' + + 'a'         // 'a' + (+ 'a') -> 'a' + NaN -> 'aNaN'
             + '123';            // 123
@@ -3073,7 +3084,7 @@
 
     <details>
     <summary>e.g.</summary>
-    
+
     ```javascript
     [, , ,][0];                             // undefined
     0 in [undefined, undefined, undefined]; // true

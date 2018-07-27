@@ -24,11 +24,14 @@ module.exports = {
     'no-console': 0,
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
     'max-len': [1, { 'code': 150 }],
-    // 'indent': [2, 4],
-    // 'semi': [2, 'always'],
 
+    'vue/attribute-hyphenation': 0,
     'vue/max-attributes-per-line': 0,
     'vue/attributes-order': 0,
     'vue/order-in-components': 0
+
+    // 'semi': [2, 'always'],
+    // 'indent': [2, 4],
+    // 'vue/html-indent': [2, 4]
   }
 }

@@ -90,7 +90,7 @@
 	    ```shell
         svnserve -d -r /home/svn
         ```
-		要在SVN根目录下，这样SVN下的多个仓库都可以根据 *svn://ip地址/仓库名* 来进行SVN。
+		要在SVN根目录下，这样SVN下的多个仓库都可以根据 *svn://IP地址/仓库名* 来进行SVN。
 
 		>不要用sudo权限启动服务，否则无法commit。
 		>若无法进行写权限：解决方法：停止SVN服务：`killall svnserve`，在创建版本库的用户下启动`svn ： svnserve -d -r /home/svn`
@@ -103,11 +103,11 @@
 
 	我们有两个代码仓库 */home/svn/one、/home/svn/two* ，用`svnserve -d -r /home/svn`启动服务后，可以在通过以下地址访问两个项目：
 
-	`svn://ip地址/one, svn://ip地址/two`
+	`svn://IP地址/one, svn://IP地址/two`
 6. SVN客户端操作
 
     ```shell
-    svn checkout svn://ip地址/one	/var/www/abc/
+    svn checkout svn://IP地址/one	/var/www/abc/
     ```
 
 	输入user1或user2的账户名和密码

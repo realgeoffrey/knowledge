@@ -108,9 +108,9 @@
 	>	}
 	>}
 	>```
-	
-	若要换端口，仅需修改虚拟机配置的端口号（listen 端口号）
-	
+
+	若要换端口号，仅需修改虚拟机配置的端口号（`listen 端口号`）
+
 	删除备份文件default~(有修改的话都需要删除备份文件)：
 
     ```shell
@@ -177,7 +177,7 @@
     sudo a2enmod rewrite
     ```
 
-    若要换端口，①需要修改虚拟机配置的端口号，②在 */etc/apache2/ports.conf* 中修改默认端口号，或额外添加一个Listen 端口号（这样可以达到用一个服务器配置不同端口号）。
+    若要换端口号，①需要修改虚拟机配置的端口号，②在 */etc/apache2/ports.conf* 中修改默认端口号，或额外添加一个Listen 端口号（这样可以达到用一个服务器配置不同端口号）。
 8. 修改服务器上传文件大小
 
 	1. 修改php上传文件大小限制
@@ -221,7 +221,7 @@
         ```
 
 		用于被远程连接，windows安装xshell程序可以远程连接安装了openssh-server的主机。
-	2. 
+	2.
 	    >desktop版设置共享文件夹（安装完毕之后可以删除安装盘和增强功能安装包）：
 	    >
 		>    1. 虚拟机为linux（desktop）：
@@ -244,22 +244,22 @@
 		>	     在“软件中心”安装Virtual Box，配置安装xp镜像iso。
 		>	     安装“增强功能”（虚拟机中双击我的电脑中virtul box图标或在视窗下选择“设备”->“安装增强功能”）；安装完毕后在视窗下选择“设备”->“共享文件夹”，分配好共享路径（勾选“自动挂载”）；最后在虚拟机中映射路径 (注意文件名不要有空格号)。
 		>    3. 虚拟机为linux(server)暂无好的解决办法
-		
-	3. 
+
+	3.
 	    >安装less编辑器
 		>   `sudo apt-get install node-less`
-		
+
 		>>  转换less为css：
 		>>  `lessc 地址file.less > 地址file.css`
 	4. 安装shadowsocks客户端
 
 		下载linux版本shadowsocks-go版本并解压：
 		<http://shadowsocks.org/en/download/clients.html>
-		
+
 		右键选择shadowsocks属性，在“权限”选项卡选中“允许作为程序执行文件”，运行客户端：
 
 		```shell
-        sudo 路径/shadowsocks -k="密钥" -l=本地端口 -m="aes-256-cfb加密方式" -p=服务器端口 -s="服务器地址"
+        sudo 路径/shadowsocks -k="密钥" -l=本地端口号 -m="aes-256-cfb加密方式" -p=服务器端口号 -s="服务器地址"
         ```
 
 		可以把以上代码（删除sudo）写入 */etc/rc.local* 中开机启动。
@@ -292,7 +292,7 @@
         ```
 
 		>若安装失败，查看setup.log纠错后再执行脚本一遍
-		
+
 		安装运行完成后（可以删除下载的安装文件夹），执行：
 
 		```shell
@@ -308,7 +308,7 @@
 	10. 设置vpn
 
 		“系统设置”->“网络”，添加一个接口为“VPN”、连接类型为“点到点隧道协议（PPTP）”的连接；VPN网关、用户名、密码设置正确后，高级设置里选开“使用点到点加密”、选开“发送PPP回响包”。保存之后会新增一个vpn连接，成功选择vpn连接成功后，会在连接图标上出现一把锁。
-	11. 
+	11.
         >安卓环境配置
 	    >   *JDK->Genymotion->Android sdk->IDE->ndk*
 		>>  ubuntu环境下genymotion模拟器兼容性差、死机无法使用，因此放弃在ubuntu下进行的安卓开发

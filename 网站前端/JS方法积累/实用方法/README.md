@@ -10,34 +10,34 @@
         1. [判断ie6、7、8、9版本](#原生js判断ie6789版本)
         1. [判断ie所有版本](#原生js判断ie所有版本)
     1. `key-value`操作
-    
+
         1. [操作cookie](#原生js操作cookie)
         1. [获取URL相关信息](#原生js获取url相关信息)
         1. [在URL末尾添加查询名值对](#原生js在url末尾添加查询名值对)
     1. 事件相关
-    
+
         1. [绑定、解绑事件](#原生js绑定解绑事件)
         1. [阻止冒泡和阻止浏览器默认行为](#原生jsjquery阻止冒泡和阻止浏览器默认行为)
         1. [实现判断按下具体某键值](#原生jsjquery实现判断按下具体某键值)
         1. [拖拽和放下](#原生js拖拽和放下)
-        1. [触摸屏模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）](#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)        
+        1. [触摸屏模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）](#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)
         1. [判断事件在浏览器是否存在](#原生js判断事件在浏览器是否存在)
     1. 数字计算
-    
+
         1. [科学计数法转换成字符串的数字](#原生js科学计数法转换成字符串的数字)
         1. [用整数进行小数的四则运算（避免浮点数运算误差）](#原生js用整数进行小数的四则运算避免浮点数运算误差)
         1. [大数加减法（不考虑小数和负数）](#原生js大数加减法不考虑小数和负数)
         1. [不同进制数转换](#原生js不同进制数转换)
         1. [选取范围内随机值](#原生js选取范围内随机值)
     1. 字符串操作
-    
+
         1. [转化为Unicode、反转字符串、字符串长度](#原生js转化为unicode反转字符串字符串长度)
         1. [产生随机数](#原生js产生随机数)
         1. [比较版本号大小（纯数字）](#原生js比较版本号大小纯数字)
         1. [判断检索内容是否在被检索内容的分隔符间](#原生js判断检索内容是否在被检索内容的分隔符间)
         1. [格式化文件大小](#原生js格式化文件大小)
     1. 功能
-    
+
         1. [实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`](#原生js实现类似jquery的htmlbodyanimatescrollleft-像素-scrolltop-像素-毫秒)
         1. [用请求图片作log统计](#原生js用请求图片作log统计)
         1. [判断是否为`Node`、是否为`Element`](#原生js判断是否为node是否为element)
@@ -65,7 +65,7 @@
 1. [jQuery方法](#jquery方法)
 
     1. 延迟异步加载
-        
+
         1. [滚动加载](#jquery滚动加载)
         1. [图片延时加载](#jquery图片延时加载)
     1. [节点跟随屏幕滚动](#jquery节点跟随屏幕滚动)
@@ -228,10 +228,10 @@ var cookieFuc = {
      * 新建或更新一个cookie
      * @param {String} key - 名
      * @param {String} value - 值
-     * @param {Number|Date|String|Infinity} [deadline] - 过期时间。默认为关闭浏览器后过期
-     * @param {String} [path] - 路径。默认为当前文档位置的路径
-     * @param {String} [domain] - 域名。默认为当前文档位置的路径的域名部分
-     * @param {Boolean} [secure] - 是否“仅通过https协议传输”。默认为否
+     * @param {Number|Date|String|Infinity} [deadline] - 过期时间。默认：关闭浏览器后过期
+     * @param {String} [path] - 路径。默认：当前文档位置的路径
+     * @param {String} [domain] - 域名。默认：当前文档位置的路径的域名部分
+     * @param {Boolean} [secure] - 是否“仅通过https协议传输”。默认：否
      * @returns {Boolean} - 操作成功或失败
      */
     setItem: function (key, value, deadline, path, domain, secure) {
@@ -264,8 +264,8 @@ var cookieFuc = {
     /**
      * 删除一个cookie
      * @param {String} key - 名
-     * @param {String} [path] - 路径。默认为当前文档位置的路径
-     * @param {String} [domain] - 域名。默认为当前文档位置的路径的域名部分
+     * @param {String} [path] - 路径。默认：当前文档位置的路径
+     * @param {String} [domain] - 域名。默认：当前文档位置的路径的域名部分
      * @returns {Boolean} - 操作成功或失败
      */
     removeItem: function (key, path, domain) {
@@ -531,7 +531,7 @@ var eventUtil = {
 1. 阻止冒泡
 
     1. *原生JS*
-    
+
         ```javascript
         function stopBubble(e) {
             if (e && e.stopPropagation) {
@@ -542,7 +542,7 @@ var eventUtil = {
         }
         ```
     2. jQuery
-    
+
         ```javascript
         $('...').on('...', function (e) {
             e.stopPropagation();
@@ -551,7 +551,7 @@ var eventUtil = {
 2. 阻止默认行为
 
     1. *原生JS*
-    
+
         ```javascript
         function stopDefault(e) {
             if (e && e.preventDefault) {
@@ -562,7 +562,7 @@ var eventUtil = {
         }
         ```
     2. jQuery
-    
+
         ```javascript
         $('...').on('...', function (e) {
             e.preventDefault();
@@ -587,7 +587,7 @@ var eventUtil = {
 
         ```javascript
         $('...').on('...', function () {
-     
+
             return false;
         });
         // 或简写：$('...').on('...', false);
@@ -600,10 +600,10 @@ var eventUtil = {
     function checkKeyCode(e) {
         var event = e || window.event,
             keyCode = event.charCode || event.keyCode;  /* 获取键值 */
-    
+
         if (keyCode === 13) {   /* 查询键值表 例:13->换行 */
             /* 具体操作... */
-    
+
             /* 阻止冒泡&阻止默认行为 */
             if (e && e.stopPropagation) {
                 e.stopPropagation();
@@ -614,7 +614,7 @@ var eventUtil = {
             }
         }
     }
-    
+
 
     /* 使用测试 */
     addEvent(document.getElementById('test'), 'keydown', checkKeyCode);  // 上面绑定事件
@@ -625,7 +625,7 @@ var eventUtil = {
     $(输入框选择器).on('keydown', function (e) {
         if (e.which === 13) {   /* 查询键值表 例:13->换行 */
             /* 具体操作... */
-    
+
             return false;   // 阻止冒泡&阻止默认行为
         }
     });
@@ -1188,15 +1188,15 @@ const hanldeWords = {
   // 反转字符串
   reverseWords(words) {
     return Array.from(words).reverse().join('');
-    
+
     // 或：return [...words].reverse().join('');
   },
-  
+
   // 字符串长度
   codePointLength(words) {
     const result = words.match(/[\s\S]/gu);
     return result ? result.length : 0;
-    
+
     // 或：return [...words].length;
   }
 };
@@ -1286,7 +1286,7 @@ function isKeyInStr(key, str, separator) {
     for (i = 0; i < strArr.length; i++) {
         if (key === strArr[i]) {
             flag = true;
-            
+
             break;
         }
     }
@@ -2004,13 +2004,13 @@ function getAbsoluteUrl(url) {
               return false;
             }
           }
-    
+
           return true;
         }
       };
-    
+
       let newList = [];
-    
+
       if (Array.isArray(list)) {
         if (isObjEmpty(params)) {
           newList = list;
@@ -2021,16 +2021,16 @@ function getAbsoluteUrl(url) {
                 item[one[0]] = one[1] || '';
               }
             }
-    
+
             return item;
           });
         }
       }
-    
+
       return newList;
     }
-    
-    
+
+
     /* 使用测试 */
     formatArr(
       [{}, { 参数1: '有值' }],
@@ -2059,11 +2059,11 @@ function getAbsoluteUrl(url) {
               return false;
             }
           }
-    
+
           return true;
         }
       };
-    
+
       if (Object.prototype.toString.call(obj) === '[object Object]') {
         if (!isObjEmpty(params)) {  // 需要添加键-值
           for (let one of Object.entries(params)) {
@@ -2075,11 +2075,11 @@ function getAbsoluteUrl(url) {
       } else {
         obj = params;
       }
-    
+
       return obj;
     }
-    
-    
+
+
     /* 使用测试 */
     formatObj(
       { '参数1': '有值' },
@@ -2566,7 +2566,7 @@ var a = new RepeatRAF(function () {
     </script>
     ```
 
->Zepto默认没有`deferred`的对象、没有`outerHeight`方法。
+>Zepto默认：没有`deferred`的对象、没有`outerHeight`方法。
 
 ### jQuery图片延时加载
 ```html
@@ -2769,20 +2769,20 @@ var a = new RepeatRAF(function () {
               return new Date().getTime();
             };
           }
-        
+
           var _namespace = Date.now(),  // 事件命名空间
             _isIE = function (num) {    // 判断ie版本
               var dom = document.createElement('b');
-        
+
               dom.innerHTML = '<!--[if IE ' + num + ']><i></i><![endif]-->';
-        
+
               return dom.getElementsByTagName('i').length;
             },
             _followFixed = function () {
               var scollTop = $(window).scrollTop(),
                 documentHeight = $(document).height(),
                 targetHeight = $target.height();   // jQuery可以用outerHeight
-        
+
               if (scollTop >= topOffset) {    // 滚动距离超过topOffset
                 if (!$target.hasClass(bottomClass)) {   // 没有添加bottomClass
                   if (documentHeight - ($target.offset().top + targetHeight) > bottomOffset) {    // 节点底部距离文档底部距离 > bottomOffet
@@ -2811,26 +2811,26 @@ var a = new RepeatRAF(function () {
                 });
               }
             };
-        
+
           if (!_isIE(6)) {
             bottomOffset = bottomOffset || 0;
             bottomClass = bottomClass || '';
-        
+
             _followFixed();
-        
+
             $(window).on('scroll' + '.' + _namespace, _followFixed);
           }
-        
+
           this.stop = function () {
             $target.removeClass(topClass + ' ' + bottomClass);
             $(window).off('scroll' + '.' + _namespace);
           };
         }
-        
-        
+
+
         /* 使用测试 */
         var a = new FollowFixed($('.target'), $('.target').offset().top, 'z-affix-top', 200, 'z-affix-bottom');
-        
+
         // a.stop();
     </script>
     ```
@@ -2863,7 +2863,7 @@ var a = new RepeatRAF(function () {
               return new Date().getTime();
             };
           }
-        
+
           var namespace = Date.now(), /* 事件命名空间 */
             $target = $(target),
             startOffset = $target.offset().top,
@@ -2871,10 +2871,10 @@ var a = new RepeatRAF(function () {
             prevMarginBottom = parseInt($target.prev().css('margin-bottom'), 10) || 0,
             defaultMarginTop = Math.max(targetMarginTop, prevMarginBottom),
             maxMarginTop = $(dependent).height() - $(father).height() + defaultMarginTop; // jQuery可以用outerHeight
-        
+
           $(window).on('scroll' + '.' + namespace, function () {
             var marginTop = $(window).scrollTop() - startOffset + defaultMarginTop;
-        
+
             if (marginTop > defaultMarginTop) {
               if (marginTop > maxMarginTop) {
                 marginTop = maxMarginTop;
@@ -2882,22 +2882,22 @@ var a = new RepeatRAF(function () {
             } else {
               marginTop = defaultMarginTop;
             }
-        
+
             requestAnimationFrame(function () {
               $target.css({ 'margin-top': marginTop });
             });
           });
-        
+
           this.stop = function () {
             $target.css({ 'margin-top': targetMarginTop });
             $(window).off('scroll' + '.' + namespace);
           };
         }
-        
-        
+
+
         /* 使用测试 */
         var a = new FollowMarginTop('.target', '.father', '.dependent');
-        
+
         // a.stop();
     </script>
     ```
@@ -2938,19 +2938,19 @@ var a = new RepeatRAF(function () {
             if ($('.j-pop-toast').length === 0) {
                 $('body').append('<div class="j-pop-toast 样式类" style="display: none;"><p></p></div>');
             }
-    
+
             var $toast = $('.j-pop-toast'),
                 $text = $toast.children('p'),
                 self = arguments.callee,
                 textArr = [],
                 i, text;
-    
+
             clearTimeout(self.setTimeoutId);
-    
+
             for (i = 0; i < arguments.length; i++) {
                 textArr.push(arguments[i]);
             }
-    
+
             text = textArr.join('<br>');
 
             $text.html(text);
@@ -3006,32 +3006,32 @@ var a = new RepeatRAF(function () {
             if ($('.j-pop-toast').length === 0) {
                 $('body').append('<div class="j-pop-toast z-hidden 样式类"><p></p></div>');
             }
-    
+
             var $toast = $('.j-pop-toast'),
                 $text = $toast.children('p'),
                 self = arguments.callee,
                 textArr = [],
                 i, text;
-    
+
             clearTimeout(self.setTimeoutId);
-    
+
             for (i = 0; i < arguments.length; i++) {
                 textArr.push(arguments[i]);
             }
-    
+
             text = textArr.join('<br>');
-    
+
             $text.html(text);
 
             setTimeout(function () {
                 $toast.removeClass('z-hidden');
             }, 0);
-    
+
             self.setTimeoutId = setTimeout(function () {
                 $toast.addClass('z-hidden');
             }, 2500);
         }
-     
+
 
         /* 使用测试 */
         alertToast('<span style="color: red;">red</span>', '哈哈');
@@ -3208,7 +3208,7 @@ var a = new RepeatRAF(function () {
     <div class="j-trigger">
         hover
     </div>
-    
+
     <div class="j-bullet" style="display: none;">
         展示内容
     </div>

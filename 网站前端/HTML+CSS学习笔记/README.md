@@ -162,24 +162,24 @@
 1. 单词内断字
 
     >默认效果：若此行放不下则整个单词换行，若下行也放不下则溢出（保持单词不断字）。
-    
+
     1. `word-break`
-    
+
         1. `normal`（默认）
-    
+
             默认效果。
         2. `break-all`
-    
+
             若此行放不下则直接断字。
     2. `word-wrap`或`overflow-wrap`
-    
+
         1. `normal`（默认）
-    
+
             默认效果。
         2. `break-word`
-    
+
             若此行放不下则整个单词先换行，若下行也放不下才断字。
-    
+
     >1. 对于用户输入或不确定长度的内容，建议都加上`word-wrap: break-word;`，避免内容宽度溢出。
     >2. 或直接在`<body>`上设置，让所有内容继承（ie10-使用`word-wrap: break-word;`会导致无法出现`text-overflow`的溢出效果，因此ie10-不要在body上全局添加）。
 2. `white-space`
@@ -282,7 +282,7 @@
 - <details>
 
     <summary>W3C定义</summary>
-    
+
     1. 浮动元素、绝对定位元素、非块级盒子的块级容器（如`inline-blocks`、`table-cells`、`table-captions`）、`overflow`值不为“visiable”的块级盒子，都会为它们的内容创建新的块级格式化上下文。
     2. 在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由它们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
     3. 在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘（border-left）（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
@@ -731,20 +731,20 @@
             width: 1em;
         }
     </style>
-    
+
     <p>文字文字</p>
     <p>文<i></i><i></i>字</p>
     ```
 2. 用`&ensp;`（字体宽度1/2em）、`&emsp;`（字体宽度1em）填补间隙。
-    
+
     ```html
     <p>三个字</p>
     <p>两&emsp;个</p>
-    
+
     <p>四个字的</p>
     <p>三&ensp;个&ensp;字</p>
     ```
-    
+
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/zdh8oxrt/)
 
 ### 禁用`<a>`的鼠标、键盘事件
@@ -1143,9 +1143,15 @@
 
     1. `CSS/JS`：
 
-        使用CSS（动画：`animation-@keyframes`、`transition`）或JS或Web Animation API来实现视觉变化效果。
+        使用CSS（动画：`animation-@keyframes`、`transition`）或JS或Web Animation API，实现视觉变化效果。
 
-        >JS动画（命令式）比CSS动画（说明式）消耗多一些资源，浏览器会对CSS动画自动进行优化。
+        >1. JS动画（命令式）比CSS动画（说明式）消耗多一些资源，浏览器会对CSS动画自动进行优化。
+        >
+        >    1. CSS的`animation`相关事件：
+        >
+        >        `animationstart`、`animationend`、`animationcancel`、`animationiteration`
+        >    1. CSS的`transition`相关事件：`transitionend`
+        >2. 动画其实就是按某种顺序、**平滑**地修改样式：如颜色、大小、间距、`transform`等。
     2. `Style`：
 
         根据CSS选择器，生成完整的CSSOM。
@@ -1308,26 +1314,26 @@
 3. CSS分类命名规范
 
     1. 布局`.g-`（grid）
-    
+
         将页面分割为几个大块的布局，一般来说是页面最外层的类名。
     2. 模块`.m-`（module）
-    
+
         可重复使用的较大的整体。
     3. 元件`.u-`（unit）
-    
+
         不可再分的较为小巧的个体，通常被重复用于各种模块中。
     4. 状态`.z-`（zhuangtai）
-    
+
         为状态类样式加入前缀，统一标识，方便识别，只作为后代选择器使用（如`.z-hover`或`.z-active`）。
     5. 样式区分`.i-`（icon）
-    
+
         同一批内容的不同样式（如仅背景不同的几个按钮），可以用`.i-1`、`.i-2`区分样式。
 
         >如果在模块上，可以使用**选择器扩展**而不加前缀`.i-`，如`.m-xxx`扩展内容`.m-xxx-1`、`.m-xxx .btn`扩展内容`.m-xxx .btn-1`。
     6. JS功能`.j-`（JS）
-    
+
         仅作为JS锚点使用，不添加任何CSS样式。
-        
+
     >- 皮肤`.s-`（skin）
     >
     >    把皮肤型的样式抽离出来。
@@ -1363,11 +1369,28 @@
 ### Tips
 1. 限定布局宽度，让内容决定布局高度。
 2. `<a>`的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（包括`#`和`javascript: void(0);`）都会打开新页面。
-3. 在拥有`target="_blank"`的`<a>`中添加`rel="noopener"`。
+3. 在拥有`target="_blank"`的`<a>`中添加`rel="noopener"`或`rel="noreferrer"`。
 
-    >1. `target="_blank"`打开新页面，新页面将与原页面在同一个进程上运行，若执行开销大的JS，会互相影响性能。
-    >2. `target="_blank"`打开的新页面可以通过`window.opener`访问原窗口对象，并使用`window.opener.location = ''`将原页面导航至不同的网址。
-    >3. 没有`target="_blank"`属性的新打开的页面和原页面不存在关系。
+    >没有`target="_blank"`属性的新打开的页面和原页面不存在关系。
+
+    1. 没有添加额外的`rel`属性：
+
+        1. 新页面将与原页面在同一个进程上运行，若执行开销大的JS，会互相影响性能。
+        2. 新页面可以通过`window.opener`访问原窗口对象，并使用`window.opener.location = ''`将改变原页面导航。
+
+        ><details>
+        ><summary>chrome任务管理器展示：<code>target="_blank"</code>但未设置<code>rel</code></summary>
+        >
+        >![chrome任务管理器图](./images/chrome-task-1.png)
+        ></details>
+    2. 添加额外的`rel`属性：
+
+        1. `rel="noopener"`：
+
+            不在一个进程、且`window.opener`返回`null`。
+        2. `rel="noreferrer"`（不限于`target="_blank"`）：
+
+            （不在一个进程、且`window.opener`返回`null`，）http请求不发送`Referer`（`document.referrer`返回`''`）。
 4. 404和5xx错误需要制作页面。
 5. 没有设置宽度的`float`元素，其宽度等于子节点宽度：
 
@@ -1393,9 +1416,9 @@
 
     1. `<input type="number" pattern="[0-9]*" onchange="处理函数">`
     2. <details>
-    
+
         <summary>处理函数（jQuery）</summary>
-        
+
         ```javascript
         $(输入框).on('change', function () {
             const $this = $(this);
@@ -1421,7 +1444,7 @@
 
     <details>
     <summary>e.g.</summary>
-    
+
     ```html
     <input list="标记"/>
     <datalist id="标记">

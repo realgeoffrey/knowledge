@@ -31,7 +31,7 @@
             <!--[if IE 8]>
             ie8
             <![endif]-->
- 
+
             <!--[if gte IE 8]>
             ie8、ie9
             <![endif]-->
@@ -146,7 +146,7 @@
 
     1. 平稳退化。用`position: absolute;`模拟。
     2. 用JS插件：
-        
+
         ><details>
         ><summary>内部插件</summary>
         >
@@ -160,8 +160,8 @@
         >        target: $('#j-sidenav'),	// gototop对象，必须设置具体width
         >        top/bottom: 270,	// 距离顶部或底部的高度
         >        left/right: 25,	// 距离相对定位对象的距离
-        >        scrollTop: 123, 	// y轴滚动条滚动到这个位置显示gototop对象 默认0
-        >        fade: false,	// 是否开启针对ie6取消渐隐渐现 默认开启
+        >        scrollTop: 123, 	// y轴滚动条滚动到这个位置显示gototop对象，默认：0
+        >        fade: false,	// 是否开启针对ie6取消渐隐渐现，默认：开启
         >        btn: $('#btn'),	// 到达scrollTop位置以内会隐藏
         >        onscroll: function(){	// 滚动页面回调函数
         >        }
@@ -204,7 +204,7 @@
 	    1. ie6/7
 
 	        ```css
-	        filter: alpha(opacity=50); 
+	        filter: alpha(opacity=50);
             *zoom: 1;
 	        ```
 

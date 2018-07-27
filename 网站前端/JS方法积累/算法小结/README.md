@@ -740,7 +740,7 @@ function countingSort(arr) {
  * @param {Array} arr - 数组
  * @param {Number} from - 原数组起始位置
  * @param {Number} to - 原数组插入位置
- * @param {Boolean} [isLeft = false] - 是否插入左边（默认插入右边）
+ * @param {Boolean} [isLeft = false] - 是否插入左边（默认：插入右边）
  * @returns {Array} arr - 调换位置的数组
  */
 function switchArr ({ arr, from, to, isLeft = false }) {

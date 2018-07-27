@@ -15,8 +15,9 @@
 1. [CORS（cross-origin resource sharing，跨域资源共享）](#corscross-origin-resource-sharing跨域资源共享)
 1. [服务端验证用户状态](#服务端验证用户状态)
 1. [其他网络概念](#其他网络概念)
+1. [特殊的IP地址](#特殊的ip地址)
 
->1. HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-server协议。默认端口号80、无状态（cookie弥补）、以ASCII码传输。
+>1. HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-server协议。默认端口号`80`、无状态（cookie弥补）、以ASCII码传输。
 >2. 使用HTTP时，必定是一端担任客户端角色，另一端担任服务器端角色。虽然客户端和服务器端的角色可能会互换，但一条通信路线中角色是确定的。请求由客户端开始。
 
 ---
@@ -108,7 +109,7 @@
 ><summary>设计原因</summary>
 >
 >1. 三次握手原因：为了防止已失效的连接请求报文段突然又传送到服务端，让服务端误判后单方面建立连接。
->    
+>
 >    1. client早先发出的连接请求报文段并没有丢失，而是在某个网络结点长时间滞留，以致延误到client连接释放以后的某个时间才到达server；
 >    2. 本来这是一个早已失效的报文段，但server收到此失效的连接请求报文段后，误认为是client发出的一个新的连接请求，于是就向client发出确认报文段，同意建立连接。
 >
@@ -165,7 +166,7 @@
 >    Host: a.com
 >    Content-Length: 465
 >    Pragma: no-cache
->    
+>
 >    info=****
 >    ```
 >2. response
@@ -178,7 +179,7 @@
 >    Content-Length: 979
 >    Cache-Control: max-age=0
 >    Proxy-Connection: Close
->    
+>
 >    {"errno":0,"errmsg":"","data":{""}}****
 >    ```
 ></details>
@@ -521,7 +522,7 @@
     2. 端到端（end-to-end）
 
         会转发给请求、响应对应的最终接收目标，且必须保存在由缓存生成的响应中。
-        
+
         除了上面8个。
 
 ### HTTP缓存
@@ -603,7 +604,7 @@
 
                 1. 若值相同，命中缓存（还要考虑`Last-Modified/If-Modified-Since`），返回`304 Not Modified`，但不返回资源内容。浏览器从本地缓存中读取资源。
                 2. 若没有命中缓存，则返回资源内容，根据响应头更新这个资源的ETag。
-    
+
     - 使用选择
 
         - `ETag`的缺陷
@@ -680,15 +681,15 @@
             >
             >它需要两个密钥，一个是公开密钥，另一个是私有密钥；一个用作加密，另一个则用作解密。使用其中一个密钥把明文加密后所得的密文，只能用相对应的另一个密钥才能解密得到原本的明文；甚至连最初用来加密的密钥也不能用作解密。虽然两个密钥在数学上相关，但如果知道了其中一个，并不能凭此计算出另外一个；因此其中一个可以公开，称为公钥，任意向外发布；不公开的密钥为私钥，必须由用户自行严格秘密保管，绝不通过任何途径向任何人提供，也不会透露给要通信的另一方，即使他被信任。
             ></details>
-        
+
         - 加密保证 = 对称密钥加密 + 非对称加密
-        
+
             1. （建立TCP/IP连接、验证完证书有效性、获得服务器的公开密钥）
             2. 客户端传给服务器：使用公开密钥加密信息“后续会话采用对称加密的算法和密钥”；
             3. 服务器收到信息后，使用私有密钥提取出客户端提供的对称加密的算法和密钥，返回客户端：同意使用此对称密钥加密；
             4. 后续两者之间信息的传输就可以使用对称加密的方式。
     2. 认证：公开密钥的证书。
-    
+
         由发布机构CA保证。
     3. 完整：附加MAC（Message Authentication Code）报文摘要判断是否遭到篡改。
 
@@ -759,7 +760,7 @@
 >         3. `Content-Language`
 >         4. `Content-Type`仅限于`application/x-www-form-urlencoded`或`multipart/form-data`或`text/plain`
 ></details>
-    
+
 1. 简单请求（simple request）
 
     1. HTTP请求：
@@ -773,7 +774,7 @@
             2. `Access-Control-Allow-Credentials`：（可选）是否允许发送Cookie（`XMLHttpRequest`要设置`withCredentials`为`true`，浏览器才会发送）
             3. `Access-Control-Expose-Headers`：（可选）CORS请求时，`XMLHttpRequest`只能拿到6个基本字段（`Cache-Control`、`Content-Language`、`Content-Type`、`Expires`、`Last-Modified`、`Pragma`），若需要其他字段，需在此指定
         2. 不允许跨域：
-        
+
             若`Origin`指定的源不在许可范围内，服务器会返回一个正常的HTTP响应（状态码200，并可以返回正确数据），但没有任何CORS相关的头信息字段。浏览器根据响应头没有包含~~Access-Control-Allow-Origin~~则认定为跨域错误（被`XMLHttpRequest`的`onerror`回调函数捕获）。
 2. 非简单请求（not-so-simple request）
 
@@ -886,3 +887,21 @@ HTTP是无状态协议，通过session-cookie、token判断客户端的用户状
         | 传输速度 | 慢（需要建立连接、保证可靠性、有序性） | 快 |
 
     在注重性能、传输速度且不需要重传的应用（如视频电话、即时通讯），会选择使用UDP。其他情况，when in doubt, use TCP。
+
+### 特殊的IP地址
+1. `127.x.x.x`
+
+    本地环回地址，主要用于测试或网络管理/路由更新，比物理接口稳定。
+
+    - `127.0.0.1`
+
+        只要使用这个地址发送数据，则数据包不会出现在网络传输过程中。
+2. `10.x.x.x`、`172.16.x.x～172.31.x.x`、`192.168.x.x`
+
+    私网地址，不与外网相连。
+3. `255.255.255.255`
+
+    广播地址（向网关获取本机IP地址）。
+4. `0.0.0.0`
+
+    源IP地址，发生在当设备启动时但又不知道自己IP地址的情况下。路由表中无法查询的包都将送至全零网络的路由。

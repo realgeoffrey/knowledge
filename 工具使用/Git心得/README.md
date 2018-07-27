@@ -14,26 +14,26 @@
 1. 撤销未push内容
 
     1. 版本控制内的内容
-    
+
         1. 清除未`git commit`的内容（包括已经或还未`git add`的文件）
-        
+
             ```git
             git reset --hard HEAD           # 恢复版本控制内的全部文件
             ```
         2. 撤销已`git commit`的请求
-        
+
             ```git
             git log                         # 获取要退回的SHA
             git reset “SHA”                 # 撤销commit请求，但不清除文件内容
             ```
         3. 撤销`git commit` + 恢复版本控制内的全部文件
-        
+
             ```git
             git log                         # 获取要退回的SHA
             git reset --hard “SHA”          # git reset “SHA” + git reset --hard HEAD
             ```
     2. 清除所有不在版本控制内的内容（如.idea、node_modules）
-    
+
         ```git
         git clean -xdf
         ```
@@ -75,13 +75,13 @@
         # 其他用户需要
         git pull --rebase
         ```
-        
+
         >当处理太多commits时候容易造成冲突。
 
     ><details>
     ><summary>不同项目对<code>git push --force</code>限制不同</summary>
     >
-    >1. [GitLab](https://about.gitlab.com/)默认设置**master**分支是**protected**状态，无法`git push --force`。
+    >1. [GitLab](https://about.gitlab.com/)默认**master**分支是**protected**状态，无法`git push --force`。
     >
     >    可以在Gitlab设置里面通过：*project* > *Settings* > *Repository* > *Protected branches* > *Unprotect*，打开权限（不建议长期开启）。
     >2. Github默认允许`git push --force`。
@@ -92,13 +92,13 @@
     # 其他分支更新至最新内容
     git checkout “其他分支”
     git pull origin “其他分支”
-    
+
     # 把其他分支内容合并至收集改动分支
     git checkout “收集改动分支”
     git merge “其他分支”
     # if未产生冲突，则自动commit了合并的内容
     # if产生冲突，则手动解决：'<<<<<<< HEAD'至'======='为收集改动分支内容；'======='至'>>>>>>> 其他分支'为其他分支内容
-    
+
     git push origin “收集改动分支”    # 若冲突了需要：解决冲突 -> add -> commit
     ```
 4. 更新远程仓库引用
@@ -286,7 +286,7 @@
 ><details>
 ><summary>CHANGELOG.md</summary>
 >
->e.g. 
+>e.g.
 >```text
 ># Change Log
 >

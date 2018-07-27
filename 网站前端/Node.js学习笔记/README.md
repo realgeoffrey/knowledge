@@ -45,7 +45,7 @@
 3. [libuv](https://github.com/libuv/libuv)负责Node API的执行。将不同的任务分配给不同的线程，形成一个Event Loop（事件循环），以异步的方式将任务的执行结果返回给V8引擎。
 4. V8引擎再将结果返回给用户。
 
-![Node.js的事件循环](./images/nodejs-system-1.png)
+![Node.js的事件循环图](./images/nodejs-system-1.png)
 
 ### npm
 1. 命令
@@ -70,11 +70,11 @@
                 ```
 
                 >初始化信息会存放在`~/.npmrc`文件里。
-        3. 发布
+        3. 发布（默认：发布至**latest**标签）
 
             `npm publish [--tag <tag>]`
 
-            >默认发布至**latest**标签。除了latest，其他标签都不会默认被安装。最后推送的latest版本会显示在npm官网。
+            >除了latest，其他标签都不会默认被安装。最后推送的latest版本会显示在npm官网。
         4. “下线”
 
             >`npm unpublish [<@scope>/]<pkg>[@<version>]`只能下线24小时内发布的版本。
@@ -94,7 +94,7 @@
         2. 查看已安装的模块和依赖
 
             `npm list [[<@scope>/]<pkg> ...]`
-            
+
             >若仅查看原始依赖`npm list --depth 0`
         3. 查看已安装模块是否需要升级
 
@@ -146,7 +146,7 @@
 
                     1. `--force`、`-f`：强制重新安装。
 
-                        >当目录中已经存在指定模块，默认将不会重新安装。或删除`node_modules`目录再重新安装。
+                        >当目录中已经存在指定模块，默认：不会重新安装已经安装的模块。或删除`node_modules`目录再重新安装。
                     2. `--save`、`-S`：安装信息保存到`package.json`的`dependencies`（执行时依赖插件）。
                     3. `--save-dev`、`-D`：安装信息保存到`package.json`的`devDependencies`（开发时依赖插件）。
                     4. `--save-optional`、`-O`：安装信息保存到`package.json`的`optionalDependencies`。
@@ -212,7 +212,7 @@
         描述，也作为在npm官网被搜索的内容。
     6. `main`
 
-        代码入口，默认`index.js`。
+        代码入口，默认：`index.js`。
     7. `scripts`
 
         可执行脚本，用`npm run 脚本名`执行。
@@ -246,10 +246,10 @@
 3. 包的制作-使用
 
     1. 制作：
-    
+
         按照[CommonJS规范](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Node.js学习笔记/README.md#commonjs规范)编写代码。
     2. 使用：
-    
+
         1. 在Node.js环境下使用（`require`）
 
             >如`vue-cli`。
@@ -273,7 +273,7 @@
 - 概述
 
     1. 执行阶段（运行时）进行模块加载：确定模块的依赖关系、输入和输出的变量。
-    
+
         `module.exports`和`require`能够在任何位置使用（包括块级作用域）。
     2. 有自己单独作用域，不污染全局作用域，必须`module.exports`才能输出给其他模块。
 
@@ -292,12 +292,12 @@
 
                 >除非手动清除系统缓存。
             4. “循环加载”（circular dependency）
-                
+
                 <details>
                 <summary>引用之前已经被引用过的模块b，会直接返回模块b已导出的内容，而不会再进入模块b内执行</summary>
 
                 e.g.
-                
+
                 ```javascript
                 // 按①②③④⑤⑥的顺序执行
 
@@ -323,7 +323,7 @@
         4. 将模块的`exports`值输出至缓存，以供其他模块`require`获取（或“循环加载”时，部分已经执行产生的`exports`供其他模块引用）。
         5. 若被`require`的模块没有`exports`，则仅执行一遍模块代码，返回`{}`。
     4. `require(a模块)`返回内存中a模块的`module.exports`指向的值，可以重新赋值和属性改写（重新赋值将不再使用模块引用；属性改写会改变a模块的缓存值，所有`require(a模块)`都会共享）。
-    
+
         输出的模块内容是一个被复制的值，这个值缓存起来以便引用模块使用。引用只是使用这个缓存起来的内容。
     5. CommonJS是一个单对象输出、单对象加载的模型：
 
@@ -343,14 +343,14 @@
 2. `require(X)`
 
     加载模块。读取并执行一个JS文件（`.js`后缀可以省略），返回该模块的`exports`值（没有导出内容则为`{}`）。
-    
+
     - <details>
-        
+
         <summary>查找逻辑</summary>
 
         - 示例图
 
-            ![Node.js的require流程](./images/nodejs-require-1.jpg)
+            ![Node.js的require流程图](./images/nodejs-require-1.jpg)
 
         1. 如果 X 以`/`、`./`或`../`开头
 
@@ -400,7 +400,7 @@
         >            ```
         >    3. 都找不到则抛出`not found`。
         ></details>
-        
+
         </details>
 3. `module`
 
