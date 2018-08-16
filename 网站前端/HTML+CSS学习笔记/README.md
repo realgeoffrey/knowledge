@@ -1376,7 +1376,7 @@
     1. 没有添加额外的`rel`属性：
 
         1. 新页面将与原页面在同一个进程上运行，若执行开销大的JS，会互相影响性能。
-        2. 新页面可以通过`window.opener`访问原窗口对象，并使用`window.opener.location = ''`将改变原页面导航。
+        2. 新页面可以通过`window.opener`访问原窗口对象，并使用`window.opener.location`改变原页面导航。
 
         ><details>
         ><summary>chrome任务管理器展示：<code>target="_blank"</code>但未设置<code>rel</code></summary>

@@ -54,6 +54,7 @@
         1. [分割数组](#原生js分割数组)
         1. [加入收藏夹](#原生js加入收藏夹)
         1. [从字符串中获取绝对路径](#原生js从字符串中获取绝对路径)
+        1. [不传递请求头的Referrer进行跳转](#原生js不传递请求头的referrer进行跳转)
         1. [格式化接口返回的数据](#原生js格式化接口返回的数据)
         1. [根据滚动方向执行函数](#原生js根据滚动方向执行函数)
     1. 提升性能
@@ -126,10 +127,11 @@ function detectOS (ua, pf) {
   return os
 }
 ```
+>判断是WAP或PC：`if (/AppleWebKit.*Mobile/.test(window.navigator.userAgent)) { /* WAP */ } else { /* PC */ }`
 
 ### *原生JS*判断移动平台
 ```javascript
-// 判断移动平台（微信、QQ、微博、QQ空间）
+// 判断移动平台（微信、QQ、微博、QQ空间、UC浏览器）
 function platform (ua) {
   ua = ua || window.navigator.userAgent
 
@@ -143,6 +145,8 @@ function platform (ua) {
     platform = 'weibo'
   } else if (/Qzone\//.test(ua)) {
     platform = 'qzone'
+  } else if (/UCBrowser/.test(ua)) {
+    platform = 'uc'
   } else {
     platform = 'other'
   }
@@ -1971,13 +1975,33 @@ function getAbsoluteUrl(url) {
 
     if (typeof url === 'undefined') {
 
-        return document.location.href;
+        return window.location.href;
     } else {
         domA = document.createElement('a');
         domA.href = url;
 
         return domA.href;
     }
+}
+```
+
+### *原生JS*不传递请求头的Referrer进行跳转
+>注意：内容安全策略（Content-Security-Policy，CSP）的`script-src`会限制脚本运行；非用户操作的打开新窗口也会受到浏览器的限制（`window.open`）。因此以下代码不靠谱。
+
+```javascript
+// 不发送referrer的当前页面跳转
+function noreferrerOpen (link) {
+  const iframe = document.createElement('iframe')
+  iframe.style.display = 'none'
+  iframe.src = `javascript: "<script>top.location.replace('${link}')<\/script>"`
+  document.body.appendChild(iframe)
+}
+
+
+// 不发送referrer的新窗口打开
+function noreferrerOpenNew (fullLink) {  // 需要完整URL
+  // 此时只能父级向子级通信；若父级修改子级的location，则父子重新建立连接且子级有referrer
+  return window.open(`javascript: window.name`, `<script>location.replace('${fullLink}')<\/script>`)
 }
 ```
 
@@ -3316,7 +3340,7 @@ function getResponseHeaders(requestName) {
 
     $.ajax({
         type: 'HEAD',
-        url: document.location.href,
+        url: window.location.href,
         async: false,
         complete: function (xhr, data) {
             var responseHeaders, headerArr, i;
