@@ -19,7 +19,7 @@
     1. [JS学习笔记](./网站前端/JS学习笔记/README.md)
     2. [JS实用方法](./网站前端/JS方法积累/实用方法/README.md)
     3. [JS算法小结](./网站前端/JS方法积累/算法小结/README.md)
-        
+
     ><details>
     ><summary>其他</summary>
     >
@@ -41,7 +41,7 @@
 
     1. [前端概念](./网站前端/前端内容/README.md)
     2. [标准库文档](./网站前端/前端内容/标准库文档.md)
-    
+
     ><details>
     ><summary>其他</summary>
     >
@@ -52,12 +52,13 @@
 6. <details>
 
     <summary><a href="./网站前端/Node.js学习笔记/README.md">Node.js学习笔记</a></summary>
-    
+
     >[我安装的全局仓库](./网站前端/Node.js学习笔记/我安装的全局仓库.md)
 
     1. [gulp使用](./网站前端/gulp使用/README.md)
-    2. [ESLint配置解析](./网站前端/ESLint配置解析/README.md)
-    3. [webpack学习笔记](./网站前端/webpack学习笔记/README.md)
+    2. [webpack学习笔记](./网站前端/webpack学习笔记/README.md)
+    3. [Babel学习笔记](./网站前端/Babel学习笔记/README.md)
+    4. [ESLint配置解析](./网站前端/ESLint配置解析/README.md)
     </details>
 7. <details>
 
@@ -70,7 +71,7 @@
 9. <details>
 
     <summary>废弃内容:thumbsdown:</summary>
-    
+
     1. [兼容至ie6](./网站前端/兼容至ie6/README.md)
     2. [JS废弃代码](./网站前端/JS方法积累/废弃代码/README.md)
     3. [原生JS宽高](./网站前端/JS学习笔记/原生JS宽高.md)

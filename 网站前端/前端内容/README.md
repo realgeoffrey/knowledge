@@ -23,7 +23,7 @@
 >更详细线路图：[Frontend Roadmap](https://github.com/kamranahmedse/developer-roadmap/blob/master/readme.md#-frontend-roadmap)。
 
 1. 从本质上讲，所有Web应用都是一种运行在网页浏览器中的软件，这些软件的GUI（Graphical User Interface，图形用户界面）即为前端。
-2. 服务端Node与各种终端的涌现，让前端进入了大前端范畴，这时的前端，已远远不只是浏览器端的页面实现技术，而是后端服务与人机界面的连接器。
+2. 服务端Node.js与各种终端的涌现，让前端进入了大前端范畴，这时的前端，已远远不只是浏览器端的页面实现技术，而是后端服务与人机界面的连接器。
 
     ![前端涉及内容图2](./images/fe-tech-2.png)
 
@@ -150,7 +150,7 @@
 
 ### 浏览器缓存
 1. [HTTP定义的缓存机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)
-2. 其他缓存机制（不建议方式）
+2. 其他缓存机制（不建议）
 
     1. HTML的`<meta>`设置缓存情况：
 

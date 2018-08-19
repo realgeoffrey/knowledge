@@ -1,11 +1,14 @@
 module.exports = {
   root: true,
-  parserOptions: {
-    'parser': 'babel-eslint'
-  },
+  parser: 'babel-eslint',
   env: {
     browser: true,
-    node: true
+    node: true,
+    es6: true,
+    jquery: true
+  },
+  globals: {
+    // 'xla': false
   },
   extends: [
     'standard'
@@ -15,9 +18,6 @@ module.exports = {
     'html'  // eslint-plugin-html
     // 'vue'   // eslint-plugin-vue
   ],
-  globals: {
-    // '$': false
-  },
   rules: {  // 0 === 'off'; 1 === 'warn'; 2 === 'error'
     'no-multi-spaces': [2, { ignoreEOLComments: true }],
     'no-trailing-spaces': [2, { skipBlankLines: true }],

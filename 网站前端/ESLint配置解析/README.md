@@ -1,4 +1,5 @@
 ### ESLint配置解析
+>来自[ESLint文档](http://eslint.cn/docs/user-guide/configuring)。
 
 ```javascript
 /*
@@ -23,13 +24,13 @@
   //3.如果在前两步发现有root：true的配置，停止在父级目录中寻找.eslintrc
   //4.如果以上步骤都没有找到，则回退到用户主目录~/.eslintrc中自定义的默认配置
   "root": true,
-  
+
   //ESLint默认使用Espree作为其解析器
   //同时babel-eslint也是用得最多的解析器
   "parser": "babel-eslint",
 
   //parser解析代码时的参数
-  "parserOption": {
+  "parserOptions": {
     //指定要使用的ECMAScript版本，默认值5
     "ecmaVersion": 5,
     //设置为script(默认)或module（如果你的代码是ECMAScript模块)
@@ -73,7 +74,7 @@
     //extends属性值为，plugin：包名/配置名称
   //4.一个指向配置文件的相对路径或绝对路径
   //5.字符串eslint：all，启用当前安装的ESLint中所有的核心规则
-    //该配置不推荐在产品中使用，因为它随着ESLint版本进行更改。使用的话，请自己承担风险
+    //该配置不建议在产品中使用，因为它随着ESLint版本进行更改。使用的话，请自己承担风险
   "extends": [
     "eslint:recommended",
     "standard",
@@ -81,7 +82,7 @@
     "./node_modules/coding-standard/.eslintrc-es6",
     "eslint:all"
   ],
-  
+
   //ESLint支持使用第三方插件
   //在使用插件之前，你必须使用npm安装它
   //全局安装的ESLint只能使用全局安装的插件
@@ -94,7 +95,7 @@
     //插件名称可以省略eslint-plugin-前缀
     "react"
   ],
-  
+
   //指定环境为我们提供了预置的全局变量
   //对于那些我们自定义的全局变量，可以用globals指定
   //设置每个变量等于true允许变量被重写，或false不允许被重写

@@ -4,7 +4,7 @@
 
 1. <details>
 
-    <summary>Node's package for gulp(local): <a href="./gulp/package.json">package.json</a></summary>
+    <summary>Node.js' package for gulp(local): <a href="./gulp/package.json">package.json</a></summary>
 
     1. `npm run gulp`
     2. `npm run gulp -- browserSync`
@@ -16,7 +16,7 @@
     >3. If shit happened, we should have to uninstall then install the problem plug-ins.
     </summary>
 2. Gulp settings for tasks: [gulpfile.js](gulp/gulpfile.js)
-    
+
     >[BrowserSync](https://www.browsersync.io/) is working with AJAX. Blocking AJAX will stop browserSync, such as [Mock.js](https://github.com/nuysoft/Mock).
 3. Do not `watch` too many files(such as *node_modules* folder), to avoid checking too many files so that the watch task will take huge time.
 4. [.eslintrc.js](gulp/.eslintrc.js) is for ESLint.

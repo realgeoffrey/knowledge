@@ -41,8 +41,8 @@
 
 ### Node.js的运行机制
 1. V8引擎解析JS脚本。
-2. 解析后的代码，调用Node API。
-3. [libuv](https://github.com/libuv/libuv)负责Node API的执行。将不同的任务分配给不同的线程，形成一个Event Loop（事件循环），以异步的方式将任务的执行结果返回给V8引擎。
+2. 解析后的代码，调用Node.js的API。
+3. [libuv](https://github.com/libuv/libuv)负责Node.js的API的执行。将不同的任务分配给不同的线程，形成一个Event Loop（事件循环），以异步的方式将任务的执行结果返回给V8引擎。
 4. V8引擎再将结果返回给用户。
 
 ![Node.js的事件循环图](./images/nodejs-system-1.png)
@@ -277,7 +277,7 @@
         `module.exports`和`require`能够在任何位置使用（包括块级作用域）。
     2. 有自己单独作用域，不污染全局作用域，必须`module.exports`才能输出给其他模块。
 
-        >不推荐`window.属性`。
+        >不建议`window.属性`。
     3. 模块的加载逻辑：
 
         1. 模块加载的顺序：按照其在代码中出现的顺序、引用则嵌套加载。
@@ -414,7 +414,7 @@
         6. `module.exports`：表示模块对外输出的值。
         7. `module.paths`：返回一个数组，模块文件默认搜索目录（`某某/node_modules/`）。
 
-    >所有模块都是Node内部`Module`构建函数的实例。
+    >所有模块都是Node.js内部`Module`构建函数的实例。
 
 ### Node.js原生模块
 >核心模块定义在[源代码的lib/目录](https://github.com/nodejs/node/tree/master/lib)。

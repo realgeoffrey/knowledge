@@ -24,21 +24,21 @@
 4. 概念
 
     1. chunk
-    
+
         （中间过程的）代码块，块的名字在`entry`设置，数字是id。
-        
+
         >每次修改一个模块时，webpack会生成两部分：`manifest.json`（新的编译hash和所有的待更新chunks目录）；更新后的chunks（.js）。
     2. vendor
-    
+
         >使用`SplitChunksPlugin`进行自动化选择某些资源避免重复依赖。
-        
+
         独立于经常改动的业务代码，额外提取出chunk成为单独的bundle用于用户缓存。每次构建时都需要进行构建。
     3. dll
-    
+
         >`DLLPlugin`和`DLLReferencePlugin`配合设置动态链接库（还需要在html中插入），指定资源避免重复依赖。
-        
+
         独立于经常改动的业务代码，额外提取出chunk成为单独的bundle用于用户缓存（只有修改了dll引用的内容才需再次构建dll）。
-    
+
         ><details>
         ><summary>dll作为所有入口的共用内容，也可作为“桥”的作用</summary>
         >
@@ -47,9 +47,9 @@
         ></details>
 
     >vendor和dll二选一即可。
-    
+
     4. bundle
-    
+
         多个chunk的最终合并产出物。
 
 ### `webpack.config.js`
@@ -64,7 +64,7 @@
     利用websocket实现，websocket-server识别到html、css和js的改变，就向websocket-client发送一个消息，websocket-client判断如果是html和css就操作dom，实现局部刷新，如果是js就整体刷新。
 3. 插件`DefinePlugin`在构建结束后向项目代码中注入变量：`new webpack.DefinePlugin({键-值})`
 
-    若项目代码中要使用的Node的环境变量，建议都用此方式注入后再使用，而不要直接使用由webpack额外处理的Node环境变量。
+    若项目代码中要使用的Node.js的环境变量，建议都用此方式注入后再使用，而不要直接使用由webpack额外处理的Node.js环境变量。
 4. 可以导出数组，分别进行配置，串行执行多个webpack任务（如前后端同构任务）
 
     ```javascript

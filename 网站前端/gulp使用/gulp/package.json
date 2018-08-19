@@ -14,7 +14,7 @@
     "gulp-htmlmin": "4",
     "gulp-imagemin": "4",
     "gulp-make-css-url-version": "0",
-    "gulp-postcss": "7",
+    "gulp-postcss": "8",
     "gulp-rename": "1",
     "gulp-sass": "4",
     "gulp-sourcemaps": "2",
@@ -33,7 +33,7 @@
     "eslint-plugin-html": "4",
     "eslint-plugin-import": "2",
     "eslint-plugin-node": "7",
-    "eslint-plugin-promise": "3",
+    "eslint-plugin-promise": "4",
     "eslint-plugin-standard": "3"
   },
   "scripts": {

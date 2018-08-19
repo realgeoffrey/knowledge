@@ -1066,7 +1066,7 @@
 
     可用于全局，也可以用于局部（函数体内）。
 
-    >1. 不推荐在全局作用域中使用，因为当有JS文件合并时，一个文件的全局严格模式会导致整个文件都是严格模式。
+    >1. 不建议在全局作用域中使用，因为当有JS文件合并时，一个文件的全局严格模式会导致整个文件都是严格模式。
     >2. 可以用`(function(){'use strict';/* 执行内容 */}());`匿名函数方式使用严格模式。
 3. 全等`===`（不全等`!==`）与等号`==`（不等`!=`）区别
 
@@ -1174,7 +1174,7 @@
         return arr.join('');
         ```
         </details>
-    2. `+`性能差（不推荐方式）
+    2. `+`性能差（不建议）
 
         <details>
         <summary>e.g.</summary>
@@ -1354,7 +1354,7 @@
     (function () {})();
 
 
-    /* 不推荐方式 */
+    /* 不建议方式 */
     [function () {}()];
 
     ~function () {}();
@@ -1506,7 +1506,7 @@
             3. Android
 
                 ```javascript
-                location.href = '自定义URL Scheme';	  // 也可以用iframe
+                location.href = '自定义URL Scheme';	  // 也可以用`<iframe>`
 
                 var start = Date.now();
                 setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）
@@ -1667,6 +1667,11 @@
     ></script>
     >```
     ></details>
+14. （非打开新窗口的）页面回退
+
+    >若是新打开的窗口（`target="_blank"`），则会出现`document.referrer`有值，但`history.back()`已回退到底。
+
+    `if (document.referrer !== '') { history.back() } else { /* 回退到底的其他行为 */ }`
 
 ---
 ## 功能归纳
@@ -1814,11 +1819,11 @@
     1. 与`<iframe>`通信：
 
         ```javascript
-        // 父窗口调用iframe的window对象
+        // 父窗口调用`<iframe>`的window对象
         var newIframe = document.getElementById('new-iframe').contentWindow;    // 或：window.frames[0]
 
 
-        // iframe调用父窗口的window对象
+        // `<iframe>`调用父窗口的window对象
         var father = parent;
         ```
     2. 与`window.open()`的新窗口通信：
@@ -1852,11 +1857,11 @@
         >ie8+支持。若只改变hash值，页面不会重新刷新。
 
         ```javascript
-        // 父窗口改变iframe的hash值
-        document.getElementById('new-iframe').src = '除了hash值，url不变（父级与iframe不需要同源）';
+        // 父窗口改变`<iframe>`的hash值
+        document.getElementById('new-iframe').src = '除了hash值，url不变（父级与`<iframe>`不需要同源）';
 
 
-        // iframe窗口监听hash变化，以hash变化当做信息的传递
+        // `<iframe>`窗口监听hash变化，以hash变化当做信息的传递
         window.onhashchange = function(){
             var message = window.location.hash;
             // ...
@@ -2296,7 +2301,7 @@
         1. `length`：希望接收的命名参数个数（计数到`默认参数`或`剩余参数`之前的参数）
         2. `name`：函数名
         3. `prototype`：（函数独有）指向函数的原型对象
-    2. ES6不推荐使用（部分情况下导致报错）：
+    2. ES6不建议使用（部分情况下导致报错）：
 
         1. 函数体内的`arguments.callee`是一个指针：其指向拥有`arguments`对象的函数（函数自身）。
         2. `函数对象.caller`：保存调用当前函数的函数（嵌套的外一层函数）的引用。
@@ -2338,7 +2343,7 @@
         ></details>
 
     >1. 通过**函数声明**、**函数表达式**创建的函数，在加载脚本时和其他代码一起解析；通过**构造函数**定义的函数，在构造函数被执行时才解析函数体字符串。
-    >2. 不推荐通过~~构造函数~~创建函数，因为作为字符串的函数体可能会阻止一些JS引擎优化，也会引起其他问题。
+    >2. 不建议通过~~构造函数~~创建函数，因为作为字符串的函数体可能会阻止一些JS引擎优化，也会引起其他问题。
 4. 实例化（new）一个构造函数
 
     `new`得到的实例对象，拥有构造函数体内使用`this`定义的属性和方法，且拥有构造函数的原型对象上的属性和方法（因为实例的`[[Prototype]]`指向`构造函数.prototype`）；在构造函数体内`var`的变量和`function`无法被这个对象使用，只能在构造函数里使用（类似私有变量）。
