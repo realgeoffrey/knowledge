@@ -1373,7 +1373,7 @@
 
     >没有`target="_blank"`属性的新打开的页面和原页面不存在关系。
 
-    1. 没有添加额外的`rel`属性：
+    1. 没有添加额外的`rel`属性的开启新窗口：
 
         1. 新页面将与原页面在同一个进程上运行，若执行开销大的JS，会互相影响性能。
         2. 新页面可以通过`window.opener`访问原窗口对象，并使用`window.opener.location`改变原页面导航。
@@ -1385,9 +1385,9 @@
         ></details>
     2. 添加额外的`rel`属性：
 
-        1. `rel="noopener"`：
+        1. `rel="noopener"`的新窗口：
 
-            不在一个进程、且`window.opener`返回`null`。
+            与原页面不在同一个进程、且`window.opener`返回`null`。
         2. `rel="noreferrer"`（不限于`target="_blank"`）：
 
             （不在一个进程、且`window.opener`返回`null`，）http请求不发送`Referer`（`document.referrer`返回`''`）。

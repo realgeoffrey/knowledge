@@ -1986,7 +1986,8 @@ function getAbsoluteUrl(url) {
 ```
 
 ### *原生JS*不传递请求头的Referrer进行跳转
->注意：内容安全策略（Content-Security-Policy，CSP）的`script-src`会限制脚本运行；非用户操作的打开新窗口也会受到浏览器的限制（`window.open`）。因此以下代码不靠谱。
+>1. 注意：内容安全策略（Content-Security-Policy，CSP）的`script-src`会限制脚本运行；非用户操作的打开新窗口也会受到浏览器的限制（`window.open`）。因此以下代码不靠谱。
+>2. 建议使用`<a>`中添加`rel="noreferrer"`来替代。
 
 ```javascript
 // 不发送referrer的当前页面跳转
