@@ -18,7 +18,6 @@ const spritesmith = require('gulp.spritesmith') // 生成雪碧图&样式表
 const fontmin = require('gulp-fontmin') // 字体子集化
 const uglify = require('gulp-uglify') // js压缩
 const babel = require('gulp-babel') // 转换编译
-const env = require('babel-preset-env') // babel环境预设
 const eslint = require('gulp-eslint') // babel环境预设
 const htmlmin = require('gulp-htmlmin') // html压缩
 const browserSync = require('browser-sync').create('forGulp') // 浏览器同步测试工具
@@ -159,9 +158,7 @@ gulp.task('runJs', () => {
 gulp.task('runBabel', () => {
   gulp.src(['./babel/dev/**/*.js'])
     .pipe(sourcemaps.init())
-    .pipe(babel({
-      presets: [env] // 打包了ES6的特性
-    }))
+    .pipe(babel())
     // .pipe(concat('all.js'))
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('./babel/release/'))

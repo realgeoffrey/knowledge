@@ -1693,7 +1693,7 @@ xhr.send(null);
 ### *原生JS*动态添加脚本、样式
 1. 动态添加脚本
 
-    1. 异步
+    1. 异步（JS文件地址）
 
         1. 直接`document.write`
 
@@ -1722,84 +1722,88 @@ xhr.send(null);
             appendPlace.appendChild(newScript);
             ```
 
+            >动态创建的`<script>`默认是`async`（可以手动设置`dom.async = false`）。
+
         >异步加载第三方资源可在`<script>`添加`defer`或`async`属性。
-    2. 同步
+    2. 同步（JS代码文本）
 
-        1. 添加JS代码
+        ```javascript
+        var newScript = document.createElement('script')
+        var appendPlace = document.body || document.getElementsByTagName('head')[0]
 
-            ```javascript
-            var newScript = document.createElement('script'),
-                appendPlace = document.body || document.getElementsByTagName('head')[0];
+        newScript.type = 'text/javascript'
 
-            newScript.type = 'text/javascript';
+        try {
+            newScript.appendChild(document.createTextNode('JS代码文本'))
+        } catch (e) {
+            newScript.text = 'JS代码文本'  // ie8-，Safari老版本
+        }
 
-            try {
-                newScript.appendChild(document.createTextNode('JS代码'));
-            }
-            catch (e) {
-                newScript.text = 'JS代码';  // ie8-，Safari老版本
-            }
+        appendPlace.appendChild(newScript)  // 开始同步执行`JS代码文本`
 
-            appendPlace.appendChild(newScript);
-            ```
-        2. 添加`<script>`
+        // 上面代码同步执行完毕再执行下面的代码
+        ```
 
-            ```javascript
-            /**
-             * 同步加载JS脚本
-             * @param {String} url - JS文件的相对路径或绝对路径
-             * @returns {Boolean} - 是否加载成功
-             */
-            function syncLoadJS(url) {
-                var xmlHttp,
-                    appendPlace,
-                    newScript;
-
-                if (window.ActiveXObject) { /* ie */
-                    try {
-                        xmlHttp = new ActiveXObject('Msxml2.XMLHTTP');
-                    }
-                    catch (e) {
-                        xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
-                    }
-                } else if (window.XMLHttpRequest) {
-                    xmlHttp = new XMLHttpRequest();
-                }
-
-                xmlHttp.open('GET', url, false);    // 采用同步加载
-                xmlHttp.send(null); // 发送同步请求，如果浏览器为Chrome或Opera，必须发布后才能运行，不然会报错
-
-                /* 4代表数据发送完毕 */
-                if (xmlHttp.readyState == 4) {
-                    /* 0为访问的本地，200到300代表访问服务器成功，304代表没做修改访问的是缓存 */
-                    if ((xmlHttp.status >= 200 && xmlHttp.status < 300) || xmlHttp.status == 0 || xmlHttp.status == 304) {
-                        newScript = document.createElement('script');
-                        appendPlace = document.body || document.getElementsByTagName('head')[0];
-
-                        newScript.type = 'text/javascript';
-
-                        try {
-                            newScript.appendChild(document.createTextNode(xmlHttp.responseText));
-                        }
-                        catch (e) {
-                            newScript.text = xmlHttp.responseText;
-                        }
-
-                        appendPlace.appendChild(newScript);
-
-                        return true;
-                    }
-                    else {
-
-                        return false;
-                    }
-                }
-                else {
-
-                    return false;
-                }
-            }
-            ```
+        ><details>
+        ><summary>通过<code>XMLHttpRequest</code>的同步请求获得JS代码文本</summary>
+        >
+        >```javascript
+        >/**
+        > * 同步加载JS脚本
+        > * @param {String} url - JS文件的相对路径或绝对路径
+        > * @returns {Boolean} - 是否加载成功
+        > */
+        >function syncLoadJS(url) {
+        >    var xmlHttp,
+        >        appendPlace,
+        >        newScript;
+        >
+        >    if (window.ActiveXObject) { /* ie */
+        >        try {
+        >            xmlHttp = new ActiveXObject('Msxml2.XMLHTTP');
+        >        }
+        >        catch (e) {
+        >            xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
+        >        }
+        >    } else if (window.XMLHttpRequest) {
+        >        xmlHttp = new XMLHttpRequest();
+        >    }
+        >
+        >    xmlHttp.open('GET', url, false);    // 采用同步加载
+        >    xmlHttp.send(null); // 发送同步请求，如果浏览器为Chrome或Opera，必须发布后才能运行，不然会报错
+        >
+        >    /* 4代表数据发送完毕 */
+        >    if (xmlHttp.readyState == 4) {
+        >        /* 0为访问的本地，200到300代表访问服务器成功，304代表没做修改访问的是缓存 */
+        >        if ((xmlHttp.status >= 200 && xmlHttp.status < 300) || xmlHttp.status == 0 || xmlHttp.status == 304) {
+        >            newScript = document.createElement('script');
+        >            appendPlace = document.body || document.getElementsByTagName('head')[0];
+        >
+        >            newScript.type = 'text/javascript';
+        >
+        >            try {
+        >                newScript.appendChild(document.createTextNode(xmlHttp.responseText));
+        >            }
+        >            catch (e) {
+        >                newScript.text = xmlHttp.responseText;
+        >            }
+        >
+        >            appendPlace.appendChild(newScript);
+        >
+        >            return true;
+        >        }
+        >        else {
+        >
+        >            return false;
+        >        }
+        >    }
+        >    else {
+        >
+        >        return false;
+        >    }
+        >}
+        >```
+        ></details>
 2. 动态添加样式
 
     1. 添加`<style>`
@@ -1810,10 +1814,10 @@ xhr.send(null);
         newStyle.type = 'text/css';
 
         try {
-            newStyle.appendChild(document.createTextNode('CSS代码'));
+            newStyle.appendChild(document.createTextNode('CSS代码文本'));
         }
         catch (e) {
-            newStyle.styleSheet.cssText = 'CSS代码';  // ie
+            newStyle.styleSheet.cssText = 'CSS代码文本';  // ie
         }
 
         document.getElementsByTagName('head')[0].appendChild(newStyle);
@@ -1837,10 +1841,10 @@ xhr.send(null);
         ```javascript
         var oneDom = document.getElementById('节点id');
 
-        oneDom.style.cssText += '; CSS代码'
+        oneDom.style.cssText += '; CSS代码文本'
         ```
 
-    >CSS代码，如 `div {background-color: yellow;}`。
+    >CSS代码文本，如 `div {background-color: yellow;}`。
 
 ### *原生JS*展示页面帧数
 ```javascript

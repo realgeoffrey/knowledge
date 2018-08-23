@@ -309,7 +309,7 @@
             当用户手动更改输入框的值，`value`（`property`）会反映该改变；`value`（`attribute`）还是原始值，也就是`defaultChecked`（`property`）。
 
 ### jQuery相关
-1. 当变量是jQuery对象时，可用`$`作为开头命名，利于与普通变量区别
+1. 当变量是jQuery对象时，可用`$`作为开头命名，利于与普通变量区分
 
     ```javascript
     // e.g.
@@ -1068,7 +1068,7 @@
 
     >1. 不建议在全局作用域中使用，因为当有JS文件合并时，一个文件的全局严格模式会导致整个文件都是严格模式。
     >2. 可以用`(function(){'use strict';/* 执行内容 */}());`匿名函数方式使用严格模式。
-3. 全等`===`（不全等`!==`）与等号`==`（不等`!=`）区别
+3. 全等`===`（不全等`!==`）与等号`==`（不等`!=`）的区别
 
     1. 当比较的两个值的类型不同时，`==`和`!=`都会强制[类型转换](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#数据类型转换)，再进行转换后值的比较。
     2. 用`===`和`!==`则不会转换，若类型不同则直接返回`false`（`switch`语句比较值是全等模式比较）。
@@ -1461,7 +1461,7 @@
         1. `桥协议`：Native注入全局方法至WebView的`window`，前端调用则客户端拦截后触发Native行为。
 
             >1. 客户端注入方式：javascript伪协议方式`javascript: 代码`。
-            >2. 注入JS代码可以在创建WebView之前（native code）或之后（全局变量JS注入）。
+            >2. 注入JS代码可以在创建WebView之前（`[native code]`）或之后（全局变量JS注入）。
             >3. 若注入的方法为`undefined`，则认为不在此App内部。
         2. `自定义URL Scheme`：拦截跳转（`<iframe>`或`<img>`设置`src`、点击`<a>`、`window.location.href`），触发Native行为。
 
