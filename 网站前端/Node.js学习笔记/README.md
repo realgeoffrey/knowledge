@@ -180,7 +180,8 @@
             >    `npm cache clean -f`
     4. 执行脚本
 
-        `npm run “package.json中scripts字段的命令” -- “添加脚本后面的参数”`
+        1. `npm run “package.json中scripts字段的命令” -- “添加脚本后面的参数”`
+        2. [npx](https://github.com/zkat/npx)
 2. `package.json`字段
 
     1. `dependencies`

@@ -1,6 +1,8 @@
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
+  parserOptions: {
+    parser: 'babel-eslint'
+  },
   env: {
     browser: true,
     node: true,
@@ -25,7 +27,6 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
     'max-len': [1, { 'code': 150 }],
 
-    'vue/attribute-hyphenation': 0,
     'vue/max-attributes-per-line': 0,
     'vue/attributes-order': 0,
     'vue/order-in-components': 0

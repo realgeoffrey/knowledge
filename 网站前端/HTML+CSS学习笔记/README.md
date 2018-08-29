@@ -1305,10 +1305,12 @@
     3. JS的变量和函数：驼峰命名法（构造函数：大驼峰命名法）。
 2. 引号使用
 
-    1. HTML标签（以及内部属性）、CSS样式（如`content`、`font-family`、`quotes`）：
+    1. HTML标签的`attribute`的值、CSS样式属性的值（如`content`、`font-family`、`quotes`）：
+
+        >除了有空格之外，都允许不加引号。建议：HTML标签的`attribute`的值都添加，CSS样式属性的值都不添加。
 
         双引号`"`
-    2. JS代码：
+    2. JS代码的字符串：
 
         单引号`'`
 3. CSS分类命名规范
