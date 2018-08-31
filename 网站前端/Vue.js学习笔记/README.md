@@ -202,7 +202,7 @@
     1. 事件修饰符：
 
         1. `.stop`（阻止冒泡）、`.prevent`（阻止默认行为）、`.capture`（捕获事件流）、`.self`（只当事件在该元素本身而不是子元素触发时才触发）、`.once`（事件将只触发一次）、`.passive`（滚动事件的默认滚动行为将立即触发，而不等待~~scroll~~事件完成）
-        2. `.enter`、`.tab`、`.delete`、`.esc`、`.space`、`.up`、`.down`、`.left`、`.right`、`.数字键值`、[KeyboardEvent.key的短横线形式](https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/key/Key_Values)
+        2. `.enter`、`.tab`、`.delete`、`.esc`、`.space`、`.up`、`.down`、`.left`、`.right`、`.数字键值`、[KeyboardEvent.key的短横线形式](https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/key/Key_Values)、`Vue.config.keyCodes`自定义的键位别名
 
             键盘。
         3. `.left`、`.right`、`.middle`
@@ -463,7 +463,7 @@
 
     可以设置`immediate`（侦听开始后立即调用一次）和`deep`参数。
 
->执行顺序是：（`props`->）`data`->`computed`->`watch`。
+>执行顺序是：（`props` -> ）`data` -> `computed` -> `watch`。
 
 6. `filters`（对象）：过滤器方法
 
@@ -511,7 +511,10 @@
 
         `methods`、`components`、`directives`等，合并为同一个对象；对象内部键名冲突时（如`methods`都有某同名方法），使用组件对象的内容、丢弃mixin的内容。
 
-    - `Vue.mixin`全局注册混入对象，将会影响所有之后创建的（之前的不受影响）Vue实例，包括第三方模板。
+    - 作用域：
+
+        1. `Vue.mixin`全局注册混入对象，将会影响之后创建的（之前的不受影响）Vue实例，包括第三方模板。
+        2. 组件局部的混入，仅在本组件内起作用，对子组件无效。
 
 - 官方推荐的顺序：[组件/实例的选项的顺序](https://cn.vuejs.org/v2/style-guide/#组件-实例的选项的顺序-推荐)
 
@@ -693,9 +696,9 @@
             2. 不应该 ~~在子组件内部改变`props`~~（只能`$emit`到父级再由父级传`props`进子组件来改变）。
 
                 1. 仅展示：直接在模板引用`props`。
-                2. 一次性传值（仅首次传值有效，后续传值无法修改`data`）：`props`->`data`。
-                3. 每次对传值内容进行修改后使用：`props`->`computed`。
-                4. 每次根据传值内容进行其他逻辑：`props`->`watch`。
+                2. 一次性传值（仅首次传值有效，后续传值无法修改`data`）：`props` -> `data`。
+                3. 每次对传值内容进行修改后使用：`props` -> `computed`。
+                4. 每次根据传值内容进行其他逻辑：`props` -> `watch`。
 
                 <details>
                 <summary>e.g.</summary>
@@ -776,7 +779,7 @@
 
 ### 单文件组件
 1. （有导出的）组件内部可以直接引用自身组件（小心无止境的循环引用）
-2. 大部分都用局部注册。
+2. 大部分都用局部注册。除非是大范围的统一功能，才用全局方式，才用插件方式。
 3. 单文件组件的局部样式
 
     1. `scoped`（[vue-loader的Scoped CSS](https://vue-loader.vuejs.org/zh/guide/scoped-css.html)）
@@ -1476,7 +1479,22 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 1. 任何放置在public文件夹的静态资源都会被简单的复制，而不经过~~webpack~~。需要通过**绝对路径**来引用。
 
     >1. 绝对路径：`/images/foo.png`、`http://xxx`
-    >2. URL以`.`、`~`、`@`开头，被认为是相对路径，作为一个模块请求被webpack解析。
+    >2. 相对路径：以`.`、`~`、`@`开头。作为一个模块请求被webpack解析。
+2. [环境变量](https://cli.vuejs.org/zh/guide/mode-and-env.html)
+
+    1. 构建时：根据命令额外加载环境变量文件
+
+        >构建时，Node.js环境中的`process.env`都会加入（但没有`BASE_URL`）。
+
+        1. 所有情况 加载 `.env`
+        2. `vue-cli-service serve` 加载 `.env.development`
+        3. `vue-cli-service build` 加载 `.env.production`
+    2. 客户端页面：自动添加环境变量文件中以`VUE_APP_`开头的环境变量
+
+        >除了`VUE_APP_`开头的环境变量之外，还有`NODE_ENV`和`BASE_URL`会自动添加到客户端页面。
+
+        1. 在.js访问：`process.env.VUE_APP_名字/NODE_ENV/BASE_URL`
+        2. 在public的.html访问：`<%= VUE_APP_名字/NODE_ENV/BASE_URL %>`
 
 ### [nuxt.js](https://github.com/nuxt/nuxt.js)
 基于Vue的通用应用框架，把webpack、babel、vue-server-renderer、vue-router、vuex、vue-meta等工具整合在一起，并通过自带的`nuxt.config.js`统一配置，不需要对每个工具进行单独配置。
@@ -1763,7 +1781,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
             </details>
     8. `middleware`：中间件目录
 
-        JS文件。路由跳转之后，在页面渲染之前运行自定义函数。执行顺序：`nuxt.config.js`->`layouts`->`pages`。
+        JS文件。路由跳转之后，在页面渲染之前运行自定义函数。执行顺序：`nuxt.config.js` -> `layouts` -> `pages`。
 
         >可以做权限、UA等判断后执行跳转或其他行为。
 

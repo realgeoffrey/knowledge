@@ -625,7 +625,7 @@
 
         >历史原因：WAP端增加快速双击缩放和恢复功能。由于当用户一次点击屏幕之后，浏览器并不能立刻判断用户是单击还是双击操作。因此，就等待300ms左右，以判断用户是否再次点击了屏幕。
 
-        WAP端触摸事件顺序：`touchstart`->`touchmove`->`touchend`->`click`，触摸一瞬间触发`touchstart`，触摸结束后触发Zepto封装的`tap`事件，触摸结束后300ms左右触发`click`事件。
+        WAP端触摸事件顺序：`touchstart` -> `touchmove` -> `touchend` -> `click`，触摸一瞬间触发`touchstart`，触摸结束后触发Zepto封装的`tap`事件，触摸结束后300ms左右触发`click`事件。
     3. 解决方法：
 
         1. 使用[fastclick.js](https://github.com/ftlabs/fastclick)消除`click`的延时（最佳方式）
@@ -2703,26 +2703,40 @@
         1. 新开辟一个内存空间，完全复制所有数据至新的空间，新对象指向这个新空间的地址（原对象不变化）。
         2. 优点：B与A不会相互依赖（A，B完全脱离关联）；缺点：复制的速度更慢，代价更大。
 
-    - 数组的值传递
+    - 数组（对象）的值传递
 
-        >对于数组`arr`。
+        >对于数组`arr`或对象`obj`。
 
-        1. 清空数组
+        1. 清空数组（对象）
 
-            1. `arr = [];   // 不改变原始数组（新赋值一个空数组）`
-            2. `arr.length = 0; // 改变原始数组`
-            3. `arr.splice(0, arr.length);  // 改变原始数组`
-        2. 改变传入函数的数组，不改变数组实参
+            1. 不改变原始数组（对象）
+
+                `arr = []   // （新赋值一个空数组）`
+
+                >对象：`obj = {}   // （新赋值一个空对象）`
+            2. 改变原始数组（对象）
+
+                `arr.length = 0`或`arr.splice(0, arr.length)`
+
+                >对象：遍历属性并`delete`
+        2. 改变传入函数的数组（对象），但不改变实参
 
             1. 浅复制：
 
                 1. `arr = [...arr]`（ES6的展开元素）
+
+                    >对象：`obj = {...obj}`
                 2. `[...arr] = arr`（ES6的解构赋值的剩余参数）
-                3. `arr = arr.slice()`
-                4. `arr = arr.concat()`
-                5. 一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)赋值
+
+                    >对象：`({...obj} = obj)`
+                3. `arr = arr.slice()`或`arr = arr.concat()`
+
+                    >对象：`obj = Object.assign({}, obj)`（不建议用 ~~`obj = Object.create(obj)`~~）
+                4. 一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)赋值
             2. [深复制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#深复制拷贝实现思路)。
-4. 存储、值传递步骤举例
+4. <details>
+
+    <summary>存储、值传递步骤举例</summary>
 
     ```javascript
     // e.g.
@@ -2758,6 +2772,7 @@
 
         1. 在栈内存中查找d，找不到则抛出错误，找到d则通过其所指向url_b找到堆内存中的{'key': 'test1'}。
         2. 修改堆内存中的{'key': 'test1'}为{'key': 'test2'}。
+    </details>
 
 ### 深复制（拷贝）实现思路
 >参考[深入剖析JavaScript的深复制](http://jerryzou.com/posts/dive-into-deep-clone-in-javascript/)。
@@ -2766,9 +2781,6 @@
 2. 针对**仅能够被json直接表示的数据结构（对象、数组、数值、字符串、布尔值、null）**：
 
     `JSON.parse(JSON.stringify(obj));`
-3. 使用原型继承（单向不改变值）：
-
-    `Object.create(obj)`
 
 >深复制要处理的坑：循环引用、各种引用数据类型。
 
