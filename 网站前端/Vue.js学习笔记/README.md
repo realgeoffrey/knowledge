@@ -349,6 +349,7 @@
     </div>
 
     <script>
+      // 局部
       const vm = new Vue({
         el: '#test',
         data: {
@@ -363,6 +364,10 @@
           }
         }
       })
+
+
+      // 全局
+      Vue.filter('a', function (e) {})
     </script>
     ```
     </details>
@@ -513,8 +518,8 @@
 
     - 作用域：
 
-        1. `Vue.mixin`全局注册混入对象，将会影响之后创建的（之前的不受影响）Vue实例，包括第三方模板。
-        2. 组件局部的混入，仅在本组件内起作用，对子组件无效。
+        1. 全局：`Vue.mixin`全局注册，将会影响之后创建的（之前的不受影响）Vue实例，包括第三方模板。
+        2. 局部：组件局部注册，仅在本组件内起作用，对子组件无效。
 
 - 官方推荐的顺序：[组件/实例的选项的顺序](https://cn.vuejs.org/v2/style-guide/#组件-实例的选项的顺序-推荐)
 
@@ -817,7 +822,7 @@
       },
       mounted () {
         // 新建一个Vue实例
-        const OtherVue = Vue.extend(Other)  // 先定义
+        const OtherVue = Vue.extend(Other)  // 创建Vue子类，继续创建Vue实例需要再`new`创建好的子类
         this.dom = new OtherVue({  // 后定义，类似于mixin的合并逻辑（钩子：先定义执行->后定义执行；非钩子：后定义执行、先定义忽略）
           store,  // 共享store
           router, // 共享router

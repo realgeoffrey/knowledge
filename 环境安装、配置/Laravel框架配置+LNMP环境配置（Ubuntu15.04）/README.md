@@ -246,7 +246,7 @@
 		>    3. 虚拟机为linux(server)暂无好的解决办法
 
 	3.
-	    >安装less编辑器
+	    >安装less预处理器
 		>   `sudo apt-get install node-less`
 
 		>>  转换less为css：

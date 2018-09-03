@@ -18,7 +18,7 @@
 
         1. [绑定、解绑事件](#原生js绑定解绑事件)
         1. [阻止冒泡和阻止浏览器默认行为](#原生jsjquery阻止冒泡和阻止浏览器默认行为)
-        1. [实现判断按下具体某键值](#原生jsjquery实现判断按下具体某键值)
+        1. [实现判断按下具体某按键](#原生jsjquery实现判断按下具体某按键)
         1. [拖拽和放下](#原生js拖拽和放下)
         1. [触摸屏模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）](#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)
         1. [判断事件在浏览器是否存在](#原生js判断事件在浏览器是否存在)
@@ -597,43 +597,85 @@ var eventUtil = {
         // 或简写：$('...').on('...', false);
         ```
 
-### *原生JS*、jQuery实现判断按下具体某键值
-1. *原生JS*
+### *原生JS*、jQuery实现判断按下具体某按键
+1. `KeyboardEvent.key`
 
-    ```javascript
-    function checkKeyCode(e) {
-        var event = e || window.event,
-            keyCode = event.charCode || event.keyCode;  /* 获取键值 */
+    >[MDN:KeyboardEvent.key](https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/key/Key_Values)、[W3C:KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)。
 
-        if (keyCode === 13) {   /* 查询键值表 例:13->换行 */
-            /* 具体操作... */
+    1. *原生JS*
 
-            /* 阻止冒泡&阻止默认行为 */
-            if (e && e.stopPropagation) {
-                e.stopPropagation();
-                e.preventDefault();
-            } else {
-                window.event.cancelBubble = true;
-                window.event.returnValue = false;
+        ```javascript
+        function checkKey(e) {
+            var event = e || window.event,
+                key = event.key;
+
+            if (key === 'Enter') {   /* 查询键值表 例：'Enter'->换行 */
+                /* 具体操作... */
+
+                /* 阻止冒泡&阻止默认行为 */
+                if (e && e.stopPropagation) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                } else {
+                    window.event.cancelBubble = true;
+                    window.event.returnValue = false;
+                }
             }
         }
-    }
 
 
-    /* 使用测试 */
-    addEvent(document.getElementById('test'), 'keydown', checkKeyCode);  // 上面绑定事件
-    ```
-2. jQuery
+        /* 使用测试 */
+        addEvent(document.getElementById('test'), 'keydown', checkKey);  // 上面绑定事件
+        ```
+    2. jQuery
 
-    ```javascript
-    $(输入框选择器).on('keydown', function (e) {
-        if (e.which === 13) {   /* 查询键值表 例:13->换行 */
-            /* 具体操作... */
+        ```javascript
+        $(输入框选择器).on('keydown', function (e) {
+            if (e.key === 'Enter') {   /* 查询键值表 例：'Enter'->换行 */
+                /* 具体操作... */
 
-            return false;   // 阻止冒泡&阻止默认行为
+                return false;   // 阻止冒泡&阻止默认行为
+            }
+        });
+        ```
+2. ~~`KeyboardEvent.which/keyCode/charCode`~~（废弃）
+
+    1. *原生JS*
+
+        ```javascript
+        function checkKeyCode(e) {
+            var event = e || window.event,
+                keyCode = event.keyCode || event.charCode;  /* 获取键值 */
+
+            if (keyCode === 13) {   /* 查询键值表 例：13->换行 */
+                /* 具体操作... */
+
+                /* 阻止冒泡&阻止默认行为 */
+                if (e && e.stopPropagation) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                } else {
+                    window.event.cancelBubble = true;
+                    window.event.returnValue = false;
+                }
+            }
         }
-    });
-    ```
+
+
+        /* 使用测试 */
+        addEvent(document.getElementById('test'), 'keydown', checkKeyCode);  // 上面绑定事件
+        ```
+    2. jQuery
+
+        ```javascript
+        $(输入框选择器).on('keydown', function (e) {
+            if (e.which === 13) {   /* 查询键值表 例：13->换行 */
+                /* 具体操作... */
+
+                return false;   // 阻止冒泡&阻止默认行为
+            }
+        });
+        ```
 
 ### *原生JS*拖拽和放下
 1. PC端的鼠标事件

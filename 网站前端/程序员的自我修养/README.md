@@ -599,7 +599,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 
 1. 解析（parsing）
 
-    原始代码->Token->AST。
+    `原始代码`（先转化为`Token`，再）转化为`AST`。
 
     1. 词法分析（lexical analysis）
 
@@ -608,59 +608,59 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 
         接收之前生成的Token，转换成AST。
 
-    <details>
-    <summary>e.g. </summary>
-
-    1. 原始代码（lisp）：
-
-        `(add 2 (subtract 4 2))`
-    2. 生成的Token：
-
-        ```javascript
-        [
-          { type: 'paren',  value: '('        },
-          { type: 'name',   value: 'add'      },
-          { type: 'number', value: '2'        },
-          { type: 'paren',  value: '('        },
-          { type: 'name',   value: 'subtract' },
-          { type: 'number', value: '4'        },
-          { type: 'number', value: '2'        },
-          { type: 'paren',  value: ')'        },
-          { type: 'paren',  value: ')'        }
-        ]
-        ```
-    3. 生成的AST：
-
-        ```javascript
-        {
-          type: 'Program',
-          body: [{
-            type: 'CallExpression',
-            name: 'add',
-            params: [
-              {
-                type: 'NumberLiteral',
-                value: '2'
-              },
-              {
-                type: 'CallExpression',
-                name: 'subtract',
-                params: [
-                  {
-                    type: 'NumberLiteral',
-                    value: '4'
-                  },
-                  {
-                    type: 'NumberLiteral',
-                    value: '2'
-                  }
-                ]
-              }
-            ]
-          }]
-        }
-        ```
-    </details>
+    ><details>
+    ><summary>e.g. lisp代码->Token->AST</summary>
+    >
+    >1. 原始代码（lisp）：
+    >
+    >    `(add 2 (subtract 4 2))`
+    >2. 生成的Token：
+    >
+    >    ```javascript
+    >    [
+    >      { type: 'paren',  value: '('        },
+    >      { type: 'name',   value: 'add'      },
+    >      { type: 'number', value: '2'        },
+    >      { type: 'paren',  value: '('        },
+    >      { type: 'name',   value: 'subtract' },
+    >      { type: 'number', value: '4'        },
+    >      { type: 'number', value: '2'        },
+    >      { type: 'paren',  value: ')'        },
+    >      { type: 'paren',  value: ')'        }
+    >    ]
+    >    ```
+    >3. 生成的AST：
+    >
+    >    ```javascript
+    >    {
+    >      type: 'Program',
+    >      body: [{
+    >        type: 'CallExpression',
+    >        name: 'add',
+    >        params: [
+    >          {
+    >            type: 'NumberLiteral',
+    >            value: '2'
+    >          },
+    >          {
+    >            type: 'CallExpression',
+    >            name: 'subtract',
+    >            params: [
+    >              {
+    >                type: 'NumberLiteral',
+    >                value: '4'
+    >              },
+    >              {
+    >                type: 'NumberLiteral',
+    >                value: '2'
+    >              }
+    >            ]
+    >          }
+    >        ]
+    >      }]
+    >    }
+    >    ```
+    ></details>
 2. 转换（transformation）
 
     >让它能做到编译器期望它做到的事情。

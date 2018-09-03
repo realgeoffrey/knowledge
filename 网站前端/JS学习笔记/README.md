@@ -2778,11 +2778,11 @@
 >参考[深入剖析JavaScript的深复制](http://jerryzou.com/posts/dive-into-deep-clone-in-javascript/)。
 
 1. [递归赋值](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)（最全面方式）
+
+    >深复制要处理的坑：循环引用、各种引用数据类型。
 2. 针对**仅能够被json直接表示的数据结构（对象、数组、数值、字符串、布尔值、null）**：
 
     `JSON.parse(JSON.stringify(obj));`
-
->深复制要处理的坑：循环引用、各种引用数据类型。
 
 ### 内存泄漏
 > 内存泄露：计算机内存逐渐丢失。当某个程序总是无法释放内存时，出现内存泄露。
