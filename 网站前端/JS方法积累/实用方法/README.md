@@ -676,6 +676,7 @@ var eventUtil = {
             }
         });
         ```
+>可参考[keycode.info](http://keycode.info/)。
 
 ### *原生JS*拖拽和放下
 1. PC端的鼠标事件

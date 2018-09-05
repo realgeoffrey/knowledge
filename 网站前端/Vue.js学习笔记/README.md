@@ -375,22 +375,19 @@
 
     `v-自定义指令名`或`v-自定义指令名="表达式"`
 
-    1. 全局
+    ```javascript
+    // 局部
+    new Vue({
+      // 在局部的模板内使用
+      directives: {
+        自定义指令名: 钩子对象,
+      }
+    })
 
-        ```javascript
-        // 在全局的模板内使用
-        Vue.directive('自定义指令名', 钩子对象)
-        ```
-    2. 局部
 
-        ```javascript
-        new Vue({
-          // 在局部的模板内使用
-          directives: {
-            自定义指令名: 钩子对象,
-          }
-        })
-        ```
+    // 全局
+    Vue.directive('自定义指令名', 钩子对象)
+    ```
 
     ><details>
     ><summary><code>钩子对象</code></summary>
@@ -518,8 +515,8 @@
 
     - 作用域：
 
-        1. 全局：`Vue.mixin`全局注册，将会影响之后创建的（之前的不受影响）Vue实例，包括第三方模板。
-        2. 局部：组件局部注册，仅在本组件内起作用，对子组件无效。
+        1. 局部：组件局部注册，仅在本组件内起作用，对子组件无效。
+        2. 全局：`Vue.mixin`全局注册，将会影响之后创建的（之前的不受影响）Vue实例，包括第三方模板。
 
 - 官方推荐的顺序：[组件/实例的选项的顺序](https://cn.vuejs.org/v2/style-guide/#组件-实例的选项的顺序-推荐)
 
@@ -537,15 +534,16 @@
 
             子组件使用`<slot>`在内部插入父级引入的内容（`slot="字符串"`）。
 
-            1. 默认
+            1. 默认插槽
 
                 1. 模板中没有`name`属性的`<slot>`，匹配父级中去除所有`slot="字符串"`引用的内容（没有`slot`或`slot`值为空的DOM）。
                 2. 模板中`<slot>`的DOM内容，仅当没有父级匹配时显示。
-            2. 具名
+            2. 具名插槽
 
                 1. 父级引用子组件，在元素内部添加的标签的DOM属性`slot="字符串"`；
                 2. 组件模板：`<slot name="字符串">`。
-            3. 作用域插槽
+
+            - 作用域插槽
 
                 1. 子组件的模板：
 
@@ -597,19 +595,18 @@
 
     >要确保在初始化Vue实例之前注册了组件。
 
-    1. 全局
+    ```javascript
+    // 局部
+    new Vue({
+        components: {
+            '组件元素名': 对象 // 仅在此Vue实例中可用
+        }
+    })
 
-        `Vue.component('组件元素名', 对象)`
-    2. 局部
 
-        ```javascript
-        // Vue实例
-        new Vue({
-            components: {
-                '组件元素名': 对象 // 仅在此Vue实例中可用
-            }
-        })
-        ```
+    // 全局
+    Vue.component('组件元素名', 对象)
+    ```
 3. 组件命名：
 
     >W3C规定的组件命名要求：小写，且包含一个`-`。
@@ -789,7 +786,9 @@
 
     1. `scoped`（[vue-loader的Scoped CSS](https://vue-loader.vuejs.org/zh/guide/scoped-css.html)）
 
-        1. 使用`scoped`的**单文件组件**内所有Element、**其引用的子组件的根节点**，都会添加自定义`attributes`（如`data-v-2185bf6b`）；非Vue内部生成的节点（手动添加）不会添加自定义`attributes`。
+        1. 使用`scoped`的**单文件组件**内所有Element（包括**其引用的子组件**），都会添加自定义`attributes`（如`data-v-2185bf6b`）；非Vue内部生成的节点（手动添加）不会添加自定义`attributes`。
+
+            若已添加`scoped`的子组件也添加`scoped`，则增加一份子组件的自定义`attributes`。
         2. `scoped`方式引用整个样式文件：
 
             1. 局部：`<style scoped src="@/assets/文件名.css"></style>`
