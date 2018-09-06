@@ -7,7 +7,7 @@
 
    <summary><a href="./IDEs设置/README.md">IDEs设置</a></summary>
 
-    [phpstorm.jar](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/IDEs设置/phpstorm_09.04.jar)
+    [phpstorm.jar](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/IDEs设置/phpstorm_09.06.jar)
     </details>
 4. [Charles使用](./Charles使用/README.md)
 5. [whistle使用](./whistle使用/README.md)

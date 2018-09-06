@@ -418,12 +418,16 @@
 `new Vue(对象)`
 
 1. `el`（字符串）：选择器
+
+    >限制：只在由`new`创建的Vue实例中。
 2. `methods`（对象）：可调用方法
 
     >`new`methods里的方法，方法体内的`this`指向这个实例，而非Vue实例。建议不要在methods中添加构造函数，而改用`import`方式引入构造函数。
 3. `data`（对象或方法）：数据
 
-    >组件的`data`是方法且返回一个数据对象。
+    >限制：组件的`data`是方法且返回一个数据对象。
+
+    以`_`或`$`开头的属性不会被Vue实例代理，但可以使用例如`vm.$data._property`的方式访问这些属性。
 4. `computed`（对象）：依赖其他值（`props`、`data`、`computed`）的改变而执行，最后`return`值
 
     <details>
@@ -1057,7 +1061,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
             >导致视图更新的替代方法：`vm.items.splice(newLength)`。
         3. 数组的最新mutator方法：`copyWithin`、`fill`
-3. 外层慎用~~箭头函数~~，`this`的指向无法按预期指向Vue实例。
+3. Vue实例的属性和Vue实例的属性的属性，慎用~~箭头函数~~，`this`的指向无法按预期指向Vue实例。
 4. 因为HTML不区分大小写，所以大/小驼峰式命名的JS内容，在HTML使用时要转换为相应的短横线隔开式。
 
     不受限制、不需要转换：JS字符串模版、`.vue`组件。
