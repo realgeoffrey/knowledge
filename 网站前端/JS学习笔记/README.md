@@ -2344,13 +2344,15 @@
 
     >1. 通过**函数声明**、**函数表达式**创建的函数，在加载脚本时和其他代码一起解析；通过**构造函数**定义的函数，在构造函数被执行时才解析函数体字符串。
     >2. 不建议通过~~构造函数~~创建函数，因为作为字符串的函数体可能会阻止一些JS引擎优化，也会引起其他问题。
-4. 实例化（new）一个构造函数
+4. 实例化（`new`）一个构造函数
 
     `new`得到的实例对象，拥有构造函数体内使用`this`定义的属性和方法，且拥有构造函数的原型对象上的属性和方法（因为实例的`[[Prototype]]`指向`构造函数.prototype`）；在构造函数体内`var`的变量和`function`无法被这个对象使用，只能在构造函数里使用（类似私有变量）。
 
     >相对于单全局变量，构造函数更加灵活，可以生成多个对象进行互相独立的操作。
 
-    - `new`一个构造函数执行的步骤
+    - <details>
+
+        <summary><code>new</code>一个构造函数执行的步骤</summary>
 
         e.g. `var newObj = new Func(para);`
 
@@ -2370,6 +2372,11 @@
 
             1. 若Func返回**引用数据类型**，则这个引用数据类型的值赋值给newObj。
             2. 若Func返回基本数据类型或返回this或无返回，则obj赋值给newObj。
+        </details>
+
+    >1. `new Func`等价于：`new Func()`。
+    >2. `new Obj().func()`等价于：`(new Obj()).func()`（先新建实例，再调用实例的原型链）。
+    >3. `new Obj.func()`等价于：`new (Obj.func)()`、`new (Obj.func)`、`new Obj.func`（新建实例）。
 5. 函数调用类型
 
     1. 直接函数调用（如`alert();`）、立即调用的函数表达式（如`(function () {}());`）
@@ -2569,11 +2576,11 @@
     ```
 3. 通过**原型链**实现**继承**
 
-- 纯粹的空对象（没有继承`Object.prototype`的空对象）：
+- 纯粹的空对象（没有继承`Object.prototype`的空对象，原子空对象）：
 
-    `Object.create(null)`
+    `Object.create(null)`或`Object.setPrototypeOf({}, null)`
 
-    >`var obj = {}`等价于：`var obj = Object.create(Object.prototype)`
+    >`{}`等价于：`Object.create(Object.prototype)`
 
 ### 继承
 1. 继承原理

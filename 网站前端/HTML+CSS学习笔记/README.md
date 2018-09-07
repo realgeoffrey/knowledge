@@ -71,40 +71,65 @@
         1. 元素应用属性值规则：
 
             1. 应用**权重大的**。
-            2. 权重相等，应用**文档顺序最后的**（外联和内联也按文档顺序排列）。
+            2. 权重相等，应用**文档顺序最后的**（外联与内联之间也按文档顺序排列）。
 
             - 不影响应用：
 
                 1. ~~元素在文档的位置、选择器间的距离。~~
-
-                    >e.g. `body h1`与`html h1`权重相同，仅取决于样式顺序。
-                2. ~~样式相对于元素的位置。~~
 
                     ><details>
                     ><summary>e.g.</summary>
                     >
                     >```html
                     ><style>
-                    >    /* 权重相同，仅取决于样式顺序 */
+                    >    /* 权重相同，仅取决于样式的文档顺序 */
                     >    .a p {color: red;}
                     >    .b p {color: blue;}
+                    >
+                    >    /* `body h1`与`html h1`权重相同，仅取决于样式的文档顺序 */
                     ></style>
                     >
                     ><div class="a">
                     >    <div class="b">
-                    >        <p>.a -> .b -> p:blue</p>
+                    >        <p>.a -> .b -> p(blue)</p>
                     >    </div>
                     ></div>
                     ><div class="b">
                     >    <div class="a">
-                    >        <p>.b -> .a -> p:blue</p>
+                    >        <p>.b -> .a -> p(blue)</p>
                     >    </div>
                     ></div>
                     >```
                     ></details>
+                2. ~~样式相对于元素的位置。~~
+
+                    >无视样式距离元素的相对位置（外联与内联），仅取决于样式与样式之间的文档顺序。
         2. 优先级基于形式，而不是结果。
 
             >e.g. `[id=foo]`依然是属性选择器优先级（2级），而不是~~ID选择器优先级（3级）~~。
+        3. 继承祖先元素的样式，优先级永远低于目标元素。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```html
+            ><style>
+            >  #parent {
+            >    color: red !important;
+            >  }
+            >  .son {
+            >    color: blue
+            >  }
+            ></style>
+            >
+            ><div id="parent">
+            >  parent(red)
+            >  <div class="son">
+            >    son(blue)
+            >  </div>
+            ></div>
+            >```
+            ></details>
 2. 性能
 
     >CSS选择器对性能的影响源于**浏览器匹配选择器和文档元素时所消耗的时间**。
