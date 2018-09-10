@@ -85,7 +85,7 @@ gulp.task('runScss', () => {
 gulp.task('runPx2rem', () => {
   gulp.src(['./px2rem/dev/**/*.css'])
     .pipe(postcss([px2rem({
-      remUnit: 20, // px->rem除以的数
+      remUnit: 20, // px -> rem除以的数
       baseDpr: 1, // /*px*/转换前值的DPR
       remPrecision: 6 // 小数精确位数
     })]))

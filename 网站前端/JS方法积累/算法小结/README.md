@@ -458,11 +458,11 @@ function countingSort(arr) {
         newArr = [],
         i, j, k;
 
-    for (i = 0; i < len; i++) { /* 元素值x出现次数->countArr[x] */
+    for (i = 0; i < len; i++) { /* 元素值x出现次数 -> countArr[x] */
         countArr[arr[i]] = countArr[arr[i]] ? countArr[arr[i]] + 1 : 1;
     }
 
-    for (j = min; j < max; j++) {   /* 元素值x出现次数+值小于x元素出现计数累积->countArr[x] */
+    for (j = min; j < max; j++) {   /* 元素值x出现次数+值小于x元素出现计数累积 -> countArr[x] */
         countArr[j + 1] = (countArr[j + 1] || 0) + (countArr[j] || 0);
     }
 

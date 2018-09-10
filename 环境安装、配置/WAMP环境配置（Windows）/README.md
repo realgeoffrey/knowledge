@@ -9,7 +9,7 @@
 	安装接近尾声时会提示选择程序打开的**浏览器**和**文本编辑器**。
 2. 调整语言
 
-	程序安装好并启动，右击系统托盘中WampServer图标，选择：**language->chinese**。
+	程序安装好并启动，右击系统托盘中WampServer图标，选择：**language -> chinese**。
 3. 配置 www 目录
 
 	1. 进入程序所在的文件夹，找到 *路径\wamp\scripts* 下的 **config.inc.php**：
@@ -28,7 +28,7 @@
 
 	1. 设置主目录
 
-	    左击系统托盘中的WampServer，选择 **Apache->httpd.conf** 配置文件：
+	    左击系统托盘中的WampServer，选择 **Apache -> httpd.conf** 配置文件：
 
 	    1. 找到`DocumentRoot`，设置为`DocumentRoot "E:/www"`。
 	    2. 找到`<Directory "${INSTALL_DIR}/www/">`，设置为`<Directory "E:/www/">`。
@@ -36,12 +36,12 @@
 	    ![WAMP图](./images/2.png)
 	2. 启动
 
-        若Apache没有启动，则左击系统托盘中的WampServer：选择 **Apache->Service administration->安装服务**再选择**启动/继续服务**：
+        若Apache没有启动，则左击系统托盘中的WampServer：选择 **Apache -> Service administration -> 安装服务**再选择**启动/继续服务**：
 
         ![WAMP图](./images/5.png)
 5. 配置 PHP 解释器
 
-    左击系统托盘中的WampServer，选择 **PHP->PHP 设置** ，依次点击下图右边所示的那些允许启用的项（设置完一个后等待服务器完全重启再进行下一个设置），不同系统服务可能不同。
+    左击系统托盘中的WampServer，选择 **PHP -> PHP 设置** ，依次点击下图右边所示的那些允许启用的项（设置完一个后等待服务器完全重启再进行下一个设置），不同系统服务可能不同。
 
     1. **date.timezone** 设置为`Asia/Shanghai`
     2. **max_execution_time** 设置为`120`
@@ -57,7 +57,7 @@
 
 	>默认：用户为`root`、密码为空。
 7. 配置 虚拟主机
-	1. 左击系统托盘中的WampServer，选择 **Apache->httpd-vhosts.conf** 配置文件：
+	1. 左击系统托盘中的WampServer，选择 **Apache -> httpd-vhosts.conf** 配置文件：
 
         1. 配置localhost虚拟主机：
 
@@ -101,7 +101,7 @@
     ```
 9. 开启代理转发
 
-    1. 左击系统托盘中的WampServer，选择 **Apache->httpd.conf** 配置文件:
+    1. 左击系统托盘中的WampServer，选择 **Apache -> httpd.conf** 配置文件:
 
         1. 找到`LoadModule proxy_module modules/mod_proxy.so`，去除注释。
         2. 找到`LoadModule proxy_http_module modules/mod_proxy_http.so`，去除注释。
@@ -110,7 +110,7 @@
     2. 配置打开Apache模块的**proxy_http_module**、**proxy_module**：
 
         ![WAMP图](./images/7.png)
-    3. 左击系统托盘中的WampServer，选择 **Apache->httpd-vhosts.conf** 配置文件，添加：
+    3. 左击系统托盘中的WampServer，选择 **Apache -> httpd-vhosts.conf** 配置文件，添加：
 
         ```test
         <VirtualHost *:80>

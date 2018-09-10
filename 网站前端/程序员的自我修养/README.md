@@ -609,7 +609,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
         接收之前生成的Token，转换成AST。
 
     ><details>
-    ><summary>e.g. lisp代码->Token->AST</summary>
+    ><summary>e.g. lisp代码 -> Token -> AST</summary>
     >
     >1. 原始代码（lisp）：
     >

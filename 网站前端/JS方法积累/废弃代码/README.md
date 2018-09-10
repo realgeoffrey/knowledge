@@ -274,7 +274,7 @@ function getAge (birthday) {
         }
       }
 
-      /* 秒数->天、时、分、秒 */
+      /* 秒数 -> 天、时、分、秒 */
       const formatSeconds = (seconds) => {
         const secondArr = (seconds % 60).toString().split('')
         const secondObj = {

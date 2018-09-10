@@ -609,7 +609,7 @@ var eventUtil = {
             var event = e || window.event,
                 key = event.key;
 
-            if (key === 'Enter') {   /* 查询键值表 例：'Enter'->换行 */
+            if (key === 'Enter') {   /* 查询键值表 例：'Enter' -> 换行 */
                 /* 具体操作... */
 
                 /* 阻止冒泡&阻止默认行为 */
@@ -631,7 +631,7 @@ var eventUtil = {
 
         ```javascript
         $(输入框选择器).on('keydown', function (e) {
-            if (e.key === 'Enter') {   /* 查询键值表 例：'Enter'->换行 */
+            if (e.key === 'Enter') {   /* 查询键值表 例：'Enter' -> 换行 */
                 /* 具体操作... */
 
                 return false;   // 阻止冒泡&阻止默认行为
@@ -647,7 +647,7 @@ var eventUtil = {
             var event = e || window.event,
                 keyCode = event.keyCode || event.charCode;  /* 获取键值 */
 
-            if (keyCode === 13) {   /* 查询键值表 例：13->换行 */
+            if (keyCode === 13) {   /* 查询键值表 例：13 -> 换行 */
                 /* 具体操作... */
 
                 /* 阻止冒泡&阻止默认行为 */
@@ -669,7 +669,7 @@ var eventUtil = {
 
         ```javascript
         $(输入框选择器).on('keydown', function (e) {
-            if (e.which === 13) {   /* 查询键值表 例：13->换行 */
+            if (e.which === 13) {   /* 查询键值表 例：13 -> 换行 */
                 /* 具体操作... */
 
                 return false;   // 阻止冒泡&阻止默认行为

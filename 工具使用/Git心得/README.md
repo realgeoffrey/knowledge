@@ -2,8 +2,9 @@
 
 ## 目录
 1. [基本操作](#基本操作)
+1. [Zen-like commit messages（Angular）格式](#zen-like-commit-messagesangular格式)
+1. [命令生成commit message && change log](#命令生成commit-message--change-log)
 1. [git-flow使用](#git-flow使用)
-1. [commit message格式](#commit-message格式)
 1. [如何在一台电脑中使用2（多个）个Github账号的SSH keys](#如何在一台电脑中使用2多个个github账号的ssh-keys)
 1. [设置gitconfig](#设置gitconfig)
 1. [.gitkeep文件](#gitkeep文件)
@@ -55,10 +56,13 @@
         git push origin HEAD --force    # 强制提交到远程版本库
 
         # 若删除的是其他用户已经拉取的commit，则会变成其他用户本地的commit
+        # 若删除的是其他用户还未拉取的commit，则其他用户不会有感知
         ```
 
         >最多能取消至第二条commit；要删除第一条commit，不如先删除仓库再创建仓库。
     2. `rebase`
+
+        >破坏所有commit，其他用户必须`git pull --rebase`。
 
         操作任意commit。
 
@@ -173,156 +177,33 @@
     git stash pop                   # 应用最后一个储藏，删除最后一个储藏
     ```
 
-### [git-flow](https://github.com/nvie/gitflow)使用
-1. 初始化：
-
-    ```git
-    git flow init -fd
-    ```
-2. 开发新需求：
-
-    ```git
-    git flow feature start “需求名” [“develop的SHA”]
-    # 基于“develop的SHA”或最新develop，在本地创建并切换至“feature/需求名”分支
-
-
-    推送具体需求的commits到远程“feature/需求名”
-
-
-    git flow feature finish “需求名”
-    # “feature/需求名”合并至本地develop分支（本地必须先pull feature/需求名、develop分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
-    # 删除本地“feature/需求名”分支，切换至develop分支
-    # 可能删除远程的“feature/需求名”分支（根据git-flow版本不同）
-
-
-    git checkout develop
-    git push origin develop
-    # 推送至远程develop分支
-    ```
-
-    >可以分别开发多个需求，再一起发布（release），把已经存在的release分支合并develop分支。
-3. 发布版本：
-
-    ```git
-    git flow release start “版本号” [“develop的SHA”]    # 若要把已经完成的feature内容添加到已存在的release分支，仅需release分支合并develop分支（git checkout “release/版本号”; git merge develop），而不需要release start
-    # 基于“develop的SHA”或最新develop，在本地创建并切换至“release/版本号”分支
-
-
-    推送需要改动的commits到远程“release/版本号”
-    # 更新package.json版本号
-    # 更新CHANGELOG.md
-    # 修复发版前临时发现的问题
-
-
-    git flow release finish “版本号”
-    #tag描述：
-    2017-07-18
-
-    - 重构 某功能 by @wushi
-    - 修复 某功能 by @yangjiu
-    - 更新 某功能 by @sunba
-    - 修改 某功能 by @qianqi
-    - 优化 某功能 by @zhaoliu
-    - 新增 某功能 by @wangwu
-    - 下线 某功能 by @lisi
-    - 移除 某功能 by @zhangsan
-    - 上线 某功能 by @名字
-    # “release/版本号”合并至本地develop分支、本地master分支（本地必须先pull release/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
-    # 新建本地“版本号”tag
-    # 删除本地“release/版本号”分支，切换至develop分支
-    # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）
-
-
-    git checkout develop
-    git push origin develop
-    # 推送至远程develop分支
-
-
-    git checkout master
-    git push origin master
-    # 推送至远程master分支
-
-
-    git push origin “版本号”
-    # 推送至远程tag
-    ```
-4. 线上bug修复：
-
-    >类似于release。
-
-    ```git
-    git flow hotfix start “版本号” [“master的SHA”]
-    # 基于“master的SHA”或最新master，在本地创建并切换至“hotfix/版本号”分支
-
-
-    推送具体需求的commits到远程“hotfix/版本号”
-
-
-    git flow hotfix finish “版本号”
-    #tag描述：
-    2017-07-18
-
-    - 修复 某功能 by @名字
-    # “hotfix/版本号”合并至本地master分支、本地develop分支（本地必须先pull hotfix/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
-    # 新建本地“版本号”tag
-    # 删除本地“release/版本号”分支，切换至develop分支
-    # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）
-
-
-    git checkout develop
-    git push origin develop
-    # 推送至远程develop分支
-
-
-    git checkout master
-    git push origin master
-    # 推送至远程master分支
-
-
-    git push origin “版本号”
-    # 推送至远程tag
-    ```
-
-><details>
-><summary>CHANGELOG.md</summary>
->
->e.g.
->```text
-># Change Log
->
->## [1.0.1] - 2017-07-16
->
->- 重构 某功能 by @wushi
->- 修复 某功能 by @yangjiu
->- 更新 某功能 by @sunba
->- 修改 某功能 by @qianqi
->- 优化 某功能 by @zhaoliu
->- 新增 某功能 by @wangwu
->- 下线 某功能 by @lisi
->- 移除 某功能 by @zhangsan
->
->## [1.0.0] - 2017-06-08
->
->- 上线 某功能 by @zhengfeijie
->```
-></details>
-
-### commit message格式
->仅限于用在commit message，不得用在change log。
-
+### Zen-like commit messages（Angular）格式
 ```text
-<type>: <subject>
+<type>(<scope>): <subject>
 
 <description>       # 可选
 
 <extra>             # 可选
 ```
 
+<details>
+<summary>e.g.</summary>
+
+```text
+feat(details): 添加了分享功能
+
+给页面添加了分享功能
+
+- 添加分享到微博的功能
+- 添加分享到微信的功能
+```
+</details>
+
 >任何一行都不得超过72个字符（或100个字符），避免自动换行影响美观。
 
 1. **\<type\>**
 
-    用于说明commit的类别。
+    commit的类别。
 
     1. `feat`：新功能（feature）。
     2. `fix`：修补bug。
@@ -342,21 +223,24 @@
         >This reverts commit 667ecc1654a317a13331b17617d973392f415f02.
         >```
         ></details>
-2. **\<subject\>**
+2. **\<scope\>**
+
+    commit影响的范围，即简要说明修改会涉及的部分。
+3. **\<subject\>**
 
     commit的简短描述。
 
-    - 以动词开头，使用第一人称现在时。
+    1. 以动词开头，使用第一人称现在时
 
-        >比如change，而不是~~changed~~或~~changes~~。
-    - 第一个字母小写。
-    - 结尾不加句号。
-3. **\<description\>**
+        >e.g. 是`change`，而不是~~changed~~或~~changes~~。
+    2. 第一个字母小写
+    3. 结尾不加~~句号~~
+4. **\<description\>**
 
     commit的详细描述。
 
-    - 使用第一人称现在时。
-4. **\<extra\>**
+    1. 使用第一人称现在时
+5. **\<extra\>**
 
     1. 不兼容变动
 
@@ -365,17 +249,168 @@
 
         `Closes #1, #2`。
 
+### 命令生成commit message && change log
+1. Zen-like commit messages（Angular）
+
+    1. 安装[cz-cli](https://github.com/commitizen/cz-cli)
+
+        `npm install -g commitizen`
+    2. 设置Commitizen-friendly的仓库
+
+        1. 全局
+
+            >可能需要：`npm install -g cz-conventional-changelog`。
+
+            `echo '{ "path": "cz-conventional-changelog" }' > ~/.czrc`
+        2. 局部（Node.js仓库）
+
+            >需要`package.json`：`npm init --yes`。
+
+            `commitizen init cz-conventional-changelog --save-dev --save-exact --force`
+    3. 使用`git cz`代替`git commit`
+
+        出现Zen-like的提交信息选择。
+2. change log
+
+    >若commit message符合上面的规范，才有效。
+
+    1. 安装[conventional-changelog-cli](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-cli)
+
+        `npm install -g conventional-changelog-cli`
+    2. 生成change log
+
+        >生成tag间的新内容。
+
+        `conventional-changelog -p angular -i CHANGELOG.md -s`
+
+        >如果[修改了.git/config的仓库地址](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Git心得/README.md#如何在一台电脑中使用2多个个github账号的ssh-keys)，需要替换生成好的change log文件的仓库地址。
+
+### [git-flow](https://github.com/nvie/gitflow)使用
+1. 初始化：
+
+    ```git
+    git flow init -fd   # 整个项目声明一次即可
+    ```
+2. 开发新需求：
+
+    ```git
+    git flow feature start “需求名” [“develop的SHA”]
+    # 基于“develop的SHA”或最新develop，在本地创建并切换至“feature/需求名”分支
+
+    推送具体需求的commits到远程“feature/需求名”
+
+    git flow feature finish “需求名”
+    # “feature/需求名”合并至本地develop分支（本地必须先pull feature/需求名、develop分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
+    # 删除本地“feature/需求名”分支，切换至develop分支
+    # 可能删除远程的“feature/需求名”分支（根据git-flow版本不同）
+
+    git checkout develop
+    git push origin develop
+    # 推送至远程develop分支
+    ```
+
+    >可以分别开发多个需求，再一起发布（release），把已经存在的release分支合并develop分支。
+3. 发布版本：
+
+    ```git
+    git flow release start “版本号” [“develop的SHA”]    # 若要把已经完成的feature内容添加到已存在的release分支，仅需release分支合并develop分支（git checkout “release/版本号”; git merge develop），而不需要release start
+    # 基于“develop的SHA”或最新develop，在本地创建并切换至“release/版本号”分支
+
+    推送需要改动的commits到远程“release/版本号”
+    # 更新package.json版本号
+    # 更新change log（手写或命令生成）
+    # 修复发版前临时发现的问题
+
+    git flow release finish “版本号”
+    # tag描述（手写或复制change log）
+    # “release/版本号”合并至本地develop分支、本地master分支（本地必须先pull release/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
+    # 新建本地“版本号”tag
+    # 删除本地“release/版本号”分支，切换至develop分支
+    # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）
+
+    git checkout develop
+    git push origin develop
+    # 推送至远程develop分支
+
+    git checkout master
+    git push origin master
+    # 推送至远程master分支
+
+    git push origin “版本号”
+    # 推送至远程tag
+    ```
+4. 线上bug修复：
+
+    >类似于release。
+
+    ```git
+    git flow hotfix start “版本号” [“master的SHA”]
+    # 基于“master的SHA”或最新master，在本地创建并切换至“hotfix/版本号”分支
+
+    推送具体需求的commits到远程“hotfix/版本号”
+    # 更新package.json版本号
+    # 更新change log（手写或命令生成）
+    # 修复发版前临时发现的问题
+
+    git flow hotfix finish “版本号”
+    # tag描述（手写或复制change log）
+    # “hotfix/版本号”合并至本地master分支、本地develop分支（本地必须先pull hotfix/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
+    # 新建本地“版本号”tag
+    # 删除本地“release/版本号”分支，切换至develop分支
+    # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）
+
+    git checkout develop
+    git push origin develop
+    # 推送至远程develop分支
+
+    git checkout master
+    git push origin master
+    # 推送至远程master分支
+
+    git push origin “版本号”
+    # 推送至远程tag
+    ```
+
 ><details>
-><summary>e.g.</summary>
+><summary>e.g. 手写change log、tag描述</summary>
 >
->```text
->feat: 添加了分享功能
+>1. change log
 >
->给页面添加了分享功能
+>    ```text
+>    # Change Log
 >
->- 添加分享到微博的功能
->- 添加分享到微信的功能
->```
+>    ## [1.0.1] - 2017-07-16
+>
+>    - 重构 某功能 by @wushi
+>    - 修复 某功能 by @yangjiu
+>    - 更新 某功能 by @sunba
+>    - 修改 某功能 by @qianqi
+>    - 优化 某功能 by @zhaoliu
+>    - 新增 某功能 by @wangwu
+>    - 下线 某功能 by @lisi
+>    - 移除 某功能 by @zhangsan
+>
+>    ## [1.0.0] - 2017-06-08
+>
+>    - 上线 某功能 by @zhengfeijie
+>    ```
+>2. tag描述
+>
+>    ```text
+>    2017-07-18
+>
+>    - 重构 某功能 by @wushi
+>    - 修复 某功能 by @yangjiu
+>    - 更新 某功能 by @sunba
+>    - 修改 某功能 by @qianqi
+>    - 优化 某功能 by @zhaoliu
+>    - 新增 某功能 by @wangwu
+>    - 下线 某功能 by @lisi
+>    - 移除 某功能 by @zhangsan
+>    - 上线 某功能 by @名字
+>    ```
+>
+>建议都用[命令生成](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Git心得/README.md#命令生成commit-message--change-log)（commit message -> change log -> tag描述）
 ></details>
 
 ### 如何在一台电脑中使用2（多个）个Github账号的SSH keys

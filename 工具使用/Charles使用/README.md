@@ -119,7 +119,7 @@ HTTP调试工具：通过将Charles设置成**系统的网络访问代理服务�
 
     1. 电脑安装证书
 
-        1. 在 **Help->SSL Proxying->Install Charles Root Certificate**安装证书；
+        1. 在 **Help -> SSL Proxying -> Install Charles Root Certificate**安装证书；
         2. 去系统设置信任此证书：
 
             1. macOS：在**钥匙串访问**中双击设置信任

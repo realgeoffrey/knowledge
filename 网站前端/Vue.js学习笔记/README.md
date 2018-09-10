@@ -697,9 +697,9 @@
 
     1. 父子组件间的通信
 
-        父-`props`->子：传入属性值；子-`$emit`->父：触发外部环境事件；外部事件再改变传进组件的`props`值。
+        父-`props` -> 子：传入属性值；子-`$emit` -> 父：触发外部环境事件；外部事件再改变传进组件的`props`值。
 
-        1. 父->子：通过`props`向下传递初始化数据给子组件实例（不出现在DOM中）
+        1. 父 -> 子：通过`props`向下传递初始化数据给子组件实例（不出现在DOM中）
 
             >添加在DOM上而不在`props`声明，则仅添加到子组件最外层的DOM属性，不传入子组件。其中`class`和`style`属性会合并，其他属性会覆盖。
 
@@ -743,7 +743,7 @@
                 </details>
 
             >注意避免**引用数据类型**导致的子组件改变父级。
-        2. 子->父：通过`$emit`向上传递事件、参数
+        2. 子 -> 父：通过`$emit`向上传递事件、参数
 
             1. 在父级引用子组件处添加`@自定义事件1="父方法"`监听；
 
@@ -833,7 +833,7 @@
       mounted () {
         // 新建一个Vue实例
         const OtherVue = Vue.extend(Other)  // 创建Vue子类，继续创建Vue实例需要再`new`创建好的子类
-        this.dom = new OtherVue({  // 后定义，类似于mixin的合并逻辑（钩子：先定义执行->后定义执行；非钩子：后定义执行、先定义忽略）
+        this.dom = new OtherVue({  // 后定义，类似于mixin的合并逻辑（钩子：先定义执行 -> 后定义执行；非钩子：后定义执行、先定义忽略）
           store,  // 共享store
           router, // 共享router
           created () {  // 合并。先定义的钩子先执行，后定义的钩子后执行
@@ -1622,7 +1622,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
             </details>
     6. `store`：状态目录
 
-        >若`store`目录存在，则：引入`vuex`->增加`vuex`至vendor->设置Vue根实例的`store`属性。
+        >若`store`目录存在，则：引入`vuex` -> 增加`vuex`至vendor -> 设置Vue根实例的`store`属性。
 
         1. 创建
 
