@@ -440,7 +440,8 @@ function extend(target, options) {
     return target;
 }
 ```
->可以使用jQuery的`$.extend(对象1, 对象2)`完全替代。
+>1. 可以使用jQuery的`$.extend(对象1, 对象2)`完全替代。
+>2. 可以使用[deepmerge](https://github.com/KyleAMathews/deepmerge)完全替代。
 
 ### *原生JS*深复制
 ```javascript

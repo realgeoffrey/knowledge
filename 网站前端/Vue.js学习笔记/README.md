@@ -11,13 +11,14 @@
     1. [过渡/动画](#过渡动画)
     1. [插件](#插件)
     1. [特性](#特性)
-    1. [虚拟DOM](#虚拟dom)
-    1. [双向绑定](#双向绑定)
+    1. [响应式系统](#响应式系统)
+    1. [虚拟DOM系统](#虚拟dom系统)
 1. [vue-router](#vue-router)
 1. [vuex](#vuex)
 1. [vue-cli](#vue-cli)
 1. [nuxt](#nuxt)
 1. [jQuery与Vue.js对比](#jquery与vuejs对比)
+1. [其他概念](#其他概念)
 
 ---
 ## [vue](https://github.com/vuejs/vue)
@@ -234,22 +235,23 @@
         >    <div @click.self.prevent="doThat">...</div>
         >    ```
         >    </details>
-    2. `$event`原生DOM事件的变量，仅能由HTML传入
+    2. `$event`原生DOM事件的变量，仅能由HTML内联传入
 
         <details>
         <summary>e.g.</summary>
 
         ```html
         <div id="test">
-          <a href="#" @click="a($event)">click</a>
+          <a href="#" @click="a($event)">click（第一个）</a>
+          <a href="#" @click="a(1, $event)">click（第二个）</a>
         </div>
 
         <script>
           const vm = new Vue({
             el: '#test',
             methods: {
-              a: function (e) {
-                console.log(e)
+              a: function (e1, e2) {
+                console.log(e1, e2)
               }
             }
           })
@@ -258,7 +260,7 @@
         </details>
     3. 自定义事件
 
-        仅定义在父组件对子组件的引用上，只能由子组件内部`$emit`触发，然后触发父级方法，再通过改变父级属性去改变子组件的`props`（或置换组件）。
+        仅定义在父组件对子组件的引用上，只能由子组件内部`vm.$emit`触发，然后触发父级方法，再通过改变父级属性去改变子组件的`props`（或置换组件）。
     4. 支持不带参数绑定（值为**事件-监听器**的键-值的对象）
 
         >不支持修饰符。
@@ -309,7 +311,7 @@
 
         1. DOM的`value`属性的值；
         2. 若是`type="checkbox"`，则为`true/false`；
-        3. 若要获得Vue实例的动态属性值：
+        3. 若要获得Vue实例的动态属性值，则：
 
             1. 用`:value="表达式"`；
             2. 若`type="checkbox"`，则用`:true-value="表达式" :false-value="表达式"`。
@@ -332,12 +334,16 @@
 
     >不支持`<template>`、不支持`v-else`。
 12. `v-cloak`指令保持在元素上直到关联实例结束编译
+
+    与CSS一起使用时，在编译完成前使用样式，编译完成后去除样式。
 13. `.`修饰符
 
     >用于指出一个指令应该以特殊方式绑定。
 
     使用在`v-on`、`v-bind`、`v-module`后添加。
 14. `|`使用filters过滤器，参数带入函数运行出结果（支持过滤器串联）
+
+    可以在`{{ }}`和`v-bind`中使用（其他如 ~~`v-html`~~ 无效）。
 
     <details>
     <summary>e.g.</summary>
@@ -346,6 +352,7 @@
     <div id="test">
       <p>{{ 1 | a | b }}</p>    <!-- 3 -->
       <p>{{ num | a | b }}</p>  <!-- 5 -->
+      <p :title="num | a | b"/>  <!-- 5 -->
     </div>
 
     <script>
@@ -368,6 +375,7 @@
 
       // 全局
       Vue.filter('a', function (e) {})
+      Vue.filter('b', function (e) {})
     </script>
     ```
     </details>
@@ -412,7 +420,48 @@
     >```
     ></details>
 
-- 官方推荐的顺序：[元素特性的顺序](https://cn.vuejs.org/v2/style-guide/#元素特性的顺序-推荐)
+- <details>
+
+    <summary>官方推荐的顺序：<a href="https://cn.vuejs.org/v2/style-guide/#元素特性的顺序-推荐">元素特性的顺序</a></summary>
+
+    1. 定义（提供组件的选项）
+
+        - `is`
+    2. 列表渲染（创建多个变化的相同元素）
+
+        - `v-for`
+    3. 条件渲染（元素是否渲染/显示）
+
+        - `v-if`
+        - `v-else-if`
+        - `v-else`
+        - `v-show`
+        - `v-cloak`
+    4. 渲染方式（改变元素的渲染方式）
+
+        - `v-pre`
+        - `v-once`
+    5. 全局感知（需要超越组件的知识）
+
+        - `id`
+    6. 唯一的特性（需要唯一值的特性）
+
+        - `ref`
+        - `key`
+        - `slot`
+        - `slot-scope`
+    7. 双向绑定（把绑定和事件结合起来）
+
+        - `v-model`
+    8. 其它特性（所有普通的绑定或未绑定的特性）
+    9. 事件（组件事件监听器）
+
+        - `v-on`
+    10. 内容（覆写元素的内容）
+
+        - `v-html`
+        - `v-text`
+    </details>
 
 ### Vue实例的属性
 `new Vue(对象)`
@@ -422,12 +471,14 @@
     >限制：只在由`new`创建的Vue实例中。
 2. `methods`（对象）：可调用方法
 
-    >`new`methods里的方法，方法体内的`this`指向这个实例，而非Vue实例。建议不要在methods中添加构造函数，而改用`import`方式引入构造函数。
+    >`new`methods里的方法，方法体内的`this`指向这个实例，而非~~Vue实例~~。建议不要在methods中添加构造函数，而改用`import`方式引入构造函数。
 3. `data`（对象或方法）：数据
 
     >限制：组件的`data`是方法且返回一个数据对象。
 
-    以`_`或`$`开头的属性不会被Vue实例代理，但可以使用例如`vm.$data._property`的方式访问这些属性。
+    以`_`或`$`开头的属性不会被Vue实例代理，但可以使用`vm.$data`访问（e.g. `vm.$data._property`）。
+
+    >Vue内置的属性、API方法会以`_`或`$`开头，因此若看到不带这些前缀的Vue实例的属性时，则一般可认为是Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性）。
 4. `computed`（对象）：依赖其他值（`props`、`data`、`computed`）的改变而执行，最后`return`值
 
     <details>
@@ -469,11 +520,13 @@
 
     可以设置`immediate`（侦听开始后立即调用一次）和`deep`参数。
 
+    >还可以用`vm.$watch`来观察属性改变。
+
 >执行顺序是：（`props` -> ）`data` -> `computed` -> `watch`。
 
 6. `filters`（对象）：过滤器方法
 
-    >因为不是Vue实例代理属性，所以可以和Vue实例代理（`props`、`data`、`computed`、`methods`）的属性同名。
+    >因为不会被Vue实例代理，所以可以和Vue实例代理的属性同名（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性`）。
 7. `components`（对象）：局部注册组件（仅在此Vue实例中可用）
 8. 生命周期钩子
 
@@ -529,7 +582,66 @@
         1. 局部：组件局部注册，仅在本组件内起作用，对子组件无效。
         2. 全局：`Vue.mixin`全局注册，将会影响之后创建的（之前的不受影响）Vue实例，包括第三方模板。
 
-- 官方推荐的顺序：[组件/实例的选项的顺序](https://cn.vuejs.org/v2/style-guide/#组件-实例的选项的顺序-推荐)
+- <details>
+
+    <summary>官方推荐的顺序：<a href="https://cn.vuejs.org/v2/style-guide/#组件-实例的选项的顺序-推荐">组件/实例的选项的顺序</a></summary>
+
+    1. 副作用（触发组件外的影响）
+
+        - `el`
+    2. 全局感知（要求组件以外的知识）
+
+        - `name`
+        - `parent`
+    3. 组件类型（更改组件的类型）
+
+        - `functional`
+    4. 模板修改器（改变模板的编译方式）
+
+        - `delimiters`
+        - `comments`
+    5. 模板依赖（模板内使用的资源）
+
+        - `components`
+        - `directives`
+        - `filters`
+    6. 组合（向选项里合并属性）
+
+        - `extends`
+        - `mixins`
+    7. 接口（组件的接口）
+
+        - `inheritAttrs`
+        - `model`
+        - `props/propsData`
+    8. 本地状态（本地的响应式属性）
+
+        - `data`
+        - `computed`
+    9. 事件（通过响应式事件触发的回调）
+
+        - `watch`
+        - 生命周期钩子（按照它们被调用的顺序）
+
+            - `beforeCreate`
+            - `created`
+            - `beforeMount`
+            - `mounted`
+            - `beforeUpdate`
+            - `updated`
+            - `activated`
+            - `deactivated`
+            - `beforeDestroy`
+            - `destroyed`
+            - `errorCaptured`
+    10. 非响应式的属性（不依赖响应系统的实例属性）
+
+        - `methods`
+    11. 渲染（组件输出的声明式描述）
+
+        - `template/render`
+        - `renderError`
+    </details>
 
 ### 组件
 >所有Vue组件同时也都是Vue实例。
@@ -600,6 +712,7 @@
         >1. `v-for`循环的每个实例都调用创建一份。
         >2. 仅执行一次，父组件传进来的props改变也不再触发执行。
     4. `model`（对象，包含`prop`、`event`）：修改`v-model`默认使用的属性和事件
+    5. `name`（字符串）
 
     - 其他与Vue实例的属性相同（除了一些根级特有的选项）
 2. 注册组件方式：
@@ -693,20 +806,20 @@
         `<keep-alive>组件</keep-alive>`，会缓存不活动的组件实例，而不是销毁、重建。当组件在其内被切换时，组件的`activated`、`deactivated`被对应执行。
 5. 通信
 
-    >组件（Vue实例）有自己独立的作用域，虽然可以访问到互相依赖关系（`$parent`、`$children`），但是不建议（不允许）通过依赖获取、修改数据。
+    >组件（Vue实例）有自己独立的作用域，虽然可以访问到互相依赖关系（`vm.$parent`、`vm.$children`），但是不建议（不允许）通过依赖获取、修改数据。
 
     1. 父子组件间的通信
 
-        父-`props` -> 子：传入属性值；子-`$emit` -> 父：触发外部环境事件；外部事件再改变传进组件的`props`值。
+        父-`props` -> 子：传入属性值；子-`vm.$emit` -> 父：触发外部环境事件；外部事件再改变传进组件的`props`值。
 
         1. 父 -> 子：通过`props`向下传递初始化数据给子组件实例（不出现在DOM中）
 
-            >添加在DOM上而不在`props`声明，则仅添加到子组件最外层的DOM属性，不传入子组件。其中`class`和`style`属性会合并，其他属性会覆盖。
+            >（当`inheritAttrs`默认`true`时，）添加在DOM上而不在`props`的声明，则仅添加到子组件最外层的DOM属性，不传入子组件。其中`class`和`style`属性会合并，其他属性会覆盖。
 
             1. `props`是单向传递的：当父级的属性变化时，将传导给子组件，不会反过来
 
                 每次父组件更新时，子组件的所有prop都会更新为最新值。
-            2. 不应该 ~~在子组件内部改变`props`~~（只能`$emit`到父级再由父级传`props`进子组件来改变）。
+            2. 不应该 ~~在子组件内部改变`props`~~（只能`vm.$emit`到父级再由父级传`props`进子组件来改变）。
 
                 1. 仅展示：直接在模板引用`props`。
                 2. 一次性传值（仅首次传值有效，后续传值无法修改`data`）：`props` -> `data`。
@@ -743,18 +856,22 @@
                 </details>
 
             >注意避免**引用数据类型**导致的子组件改变父级。
-        2. 子 -> 父：通过`$emit`向上传递事件、参数
+
+            - 还可以通过`provide/inject`从父级向所有子孙后代传递数据。
+        2. 子 -> 父：通过`vm.$emit`向上传递事件、参数
+
+            >`vm.$listeners`能获得父级的所有能够从子级向上传递的事件。
 
             1. 在父级引用子组件处添加`@自定义事件1="父方法"`监听；
 
-                >若`自定义事件1`是原生事件，可以添加`.native`修饰符，监听组件根元素的原生事件（不再接收子组件的 ~~$emit~~）。
-            2. 在子组件方法体内添加`this.$emit('自定义事件1', 参数)`向上传递。
+                >若`自定义事件1`是原生事件，可以添加`.native`修饰符，监听组件根元素的原生事件（不再接收子组件的 ~~`vm.$emit`~~）。
+            2. 在子组件方法体内添加`vm.$emit('自定义事件1', 参数)`向上传递。
     2. 非父子组件通信
 
         1. 在简单的场景下，可以使用一个空的Vue实例作为中央事件总线。
 
             ```javascript
-            const bus = new Vue()   // $emit只能向自己的Vue实例发送触发事件通知
+            const bus = new Vue()   // vm.$emit只能向自己的Vue实例发送触发事件通知
 
             // 触发组件 A 中的事件
             bus.$emit('事件名', 传参)
@@ -1050,9 +1167,9 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
     1. 当没有`key`属性或`key`属性相同时（重复的`key`可能造成渲染错误）：最大化重用DOM。
     2. 切换的DOM的`key`属性不同：不重用DOM。
-2. Vue实例代理`props`、`data`、`computed`、`methods`的属性内容（在内部可以`this.名字`访问），可以直接修改或调用，**所有属性名字都不能重复**；也有以`$`开头的Vue实例属性（如`$el`、`$data`、`$watch`）。
+2. Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性），在内部`vm.名字`访问，可以直接修改或调用，**所有属性名字都不能重复**；也有以`$`开头的Vue实例属性（如`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
 
-    只有已经被代理的内容是响应的（Vue实例被创建时的`props`、`data`、`computed`），值的改变（可能）会触发视图的重新渲染。
+    只有已经被代理的内容是响应的（Vue实例被创建时传入的属性），值的改变（可能）会触发视图的重新渲染。
 
     1. 导致视图更新：
 
@@ -1068,29 +1185,35 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
             >导致视图更新的替代方法：`vm.items.splice(newLength)`。
         3. 数组的最新mutator方法：`copyWithin`、`fill`
-3. Vue实例的属性和Vue实例的属性的属性，慎用~~箭头函数~~，因为`this`的指向无法按预期指向Vue实例。
+3. **Vue实例的属性**和**Vue实例的属性的属性**，慎用~~箭头函数~~，因为`this`的指向无法按预期指向Vue实例。
 4. 因为HTML不区分大小写，所以大/小驼峰式命名的JS内容，在HTML使用时要转换为相应的短横线隔开式。
 
     不受限制、不需要转换：JS字符串模版、`.vue`组件。
 
     >JS字符串模版：`<script type="text/x-template">`、JS内联模板字符串。
 
-### 虚拟DOM
+### 响应式系统
+1. 当把对象传给Vue实例的`data`时，Vue将遍历此对象所有的属性，并使用`Object.defineProperty`把这些属性全部转为`getter/setter`（访问器属性）。
+
+    - `Object.defineProperty`
+
+        >类似的：`Object.defineProperties`。
+
+        数据劫持，直接修改数据触发、或事件监听触发。
+2. 每个组件实例都有相应的`watcher`实例对象，它会在组件渲染的过程中把属性记录为依赖，之后当依赖项的`setter`被调用时，会通知`watcher`重新计算，从而致使它关联的组件得以更新（虚拟DOM系统）。
+
+![vue响应式系统图](./images/vue-reactivity-1.png)
+
+### 虚拟DOM系统
 >Vue.js参考[snabbdom](https://github.com/snabbdom/snabbdom)的虚拟DOM实现。
 
-在底层的实现上，Vue将模板编译成虚拟DOM渲染函数。结合响应系统，Vue能够智能地计算出最少需要重新渲染多少组件，并把DOM操作次数减到最少。
+在底层的实现上，Vue将模板编译成虚拟DOM渲染函数。结合响应式系统，Vue能够智能地计算出最少需要重新渲染多少组件，并把DOM操作次数减到最少。
 
 ><details>
 ><summary>双向绑定的辩证思考：<a href="https://medium.com/@hayavuk/why-virtual-dom-is-slower-2d9b964b4c9e">Why Virtual DOM is slower</a></summary>
 >
 >根据定义，**虚拟DOM** 比 **精细地直接更新DOM（`innerHTML`）** 更慢。虚拟DOM是执行DOM更新的一种折衷方式、一种权衡，尽管没有提升性能，但带来很多好处，可以提升开发人员的开发效率。
 ></details>
-
-### 双向绑定
-1. `Object.defineProperty`或`Object.defineProperties`
-
-    数据劫持。
-2. 事件监听
 
 ---
 ### [vue-router](https://github.com/vuejs/vue-router)
@@ -1109,7 +1232,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
             name: '路由名',
             redirect: 路由参数,     // 重定向（URL变化）
             alias: 路由参数,        // 别名（URL不变化）
-            props: 布尔或对象或函数, // 传参进组件（布尔值决定$route.params是否被设置为组件属性；对象或函数则传入具体属性）。针对components要再嵌套一层对象
+            props: 布尔或对象或函数, // 传参进组件（布尔值决定vm.$route.params是否被设置为组件属性；对象或函数则传入具体属性）。针对components要再嵌套一层对象
             beforeEnter: 方法,
             meta: '额外信息参数',
             caseSensitive: 布尔值,       // 匹配规则是否大小写敏感（默认：false）
@@ -1488,7 +1611,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
                     2. 添加`{ root: true }`至第三参数，表示针对根vuex：`commit('mutation方法名', 参数, { root: true })`、`dispatch('action方法名', 参数, { root: true })`
     2. 动态注册`registerModule`、动态卸载`unregisterModule`
 
-- 若在`new`Vue实例时，把（已经`Vue.use(Vuex)`的）Vuex.Store实例通过`store`属性注入，则子组件内就能通过`this.$store`访问此Vuex实例。
+- 若在`new`Vue实例时，把（已经`Vue.use(Vuex)`的）Vuex.Store实例通过`store`属性注入，则子组件内就能通过`vm.$store`访问此Vuex实例。
 
 >- 建议的业务结构：
 >
@@ -1520,9 +1643,9 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         2. 在public的.html访问：`<%= VUE_APP_名字/NODE_ENV/BASE_URL %>`
 
 ### [nuxt](https://github.com/nuxt/nuxt.js)
-基于Vue的通用应用框架，把webpack、babel、vue-server-renderer、vue-router、vuex、vue-meta等工具整合在一起，并通过自带的`nuxt.config.js`统一配置，不需要对每个工具进行单独配置。
+基于Vue的通用应用框架（SPA或SSR），把webpack、babel、vue-server-renderer、vue-router、vuex、vue-meta等工具整合在一起，并通过自带的`nuxt.config.js`统一配置，不需要对每个工具进行单独配置。
 
->框架内的Vue组件都是以**Vue单文件组件**的形式，每一个`pages`目录下的组件都是一个页面。
+>框架内的Vue组件都是以**Vue单文件组件**的形式，每一个`pages`目录下的组件都是一个页面路由。
 
 1. 目录结构
 
@@ -1562,7 +1685,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
         默认使用webpack的vue-loader、file-loader、url-loader加载器进行编译的资源，如`脚本（js、jsx、tsx、coffee）`、`样式（css、scss、sass、less）`、`模版（html、tpl）`、`JSON`、`图片`、`字体`文件。
 
-        - 引用方式：组件中HTML引用、ES6引用`~/assets/`
+        - 引用方式：组件中HTML、ES6引用`~/assets/`
 
         >对于不需要编译的静态资源可以放在`static`目录。
     3. `static`：静态资源目录
@@ -1575,34 +1698,22 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         Vue单文件组件。提供给项目中所有组件使用。
 
         - 引用方式：组件中ES6引用`~/components/`
-
-            <details>
-            <summary>任意组件引用<code>components</code>目录下组件的方式</summary>
-
-            ```html
-            <template>
-              <div>
-                ...
-                <other-component/>
-                ...
-              </div>
-            </template>
-
-            <script>
-              import OtherComponent from '~/components/OtherComponent.vue';
-
-              export default {
-                components: {
-                  OtherComponent
-                },
-                ...
-              };
-            </script>
-            ```
-            </details>
     5. `plugins`：Vue插件目录
 
         JS文件。在Vue根应用的实例化前需要运行的Vue插件（Vue添加全局功能）。
+
+        ><details>
+        ><summary>除了原始Vue插件的制作方式，还可以用inject</summary>
+        >
+        >e.g.
+        >
+        >```javascript
+        >// plugins/stat-plugin.js
+        >export default (context, inject) => {
+        >  inject('stat', () => {})  // 在Vue实例创建`$stat`方法
+        >}
+        >```
+        ></details>
 
         - 引用方式：`nuxt.config.js`中加入`plugins`属性
 
@@ -1728,7 +1839,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         2. 使用
 
             <details>
-            <summary>创建并自动设置Vue根实例的<code>store</code>属性后，即可在组件的实例内使用<code>$store</code></summary>
+            <summary>创建并自动设置Vue根实例的<code>store</code>属性后，即可在组件的实例内使用<code>vm.$store</code>。引入所有<code>store</code>文件夹内的<code>.js</code>（<code>index.js</code>是非模块方式引入，其他文件均为模块方式引入）。</summary>
 
             ```html
             <!--
@@ -1777,6 +1888,8 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
         Vue单文件组件。扩展默认布局（`default.vue`、`error.vue`）或新增自定义布局，在布局文件中添加`<nuxt/>`指定页面主体内容。
 
+        >可添加供所有页面使用的**通用组件**（**静态**的自定义通用内容添加在根目录的`app.html`）。
+
         - 引用方式：`pages`目录下组件中加入`layout`属性
 
             <details>
@@ -1787,6 +1900,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
             <template>
               <div>
                 ...
+                <通用组件/>
                 <nuxt/>
                 ...
               </div>
@@ -2025,15 +2139,17 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
     3. 动态嵌套路由：动态的父级嵌套动态的子级
 
     - 在组件中使用`<nuxt-link>`进行路由跳转（与vue-router的`<router-link>`一致）
-4. <details>
+4. 视图
 
-    <summary>视图</summary>
-
-    1. `layouts`布局目录
+    1. `layouts`布局目录（可添加供所有页面使用的**通用组件**）
     2. `nuxt.config.js`的`head`属性
     3. 定制HTML模板
 
-        在根目录添加`app.html`，可在其中添加任意静态自定义内容
+        在根目录添加`app.html`，可添加供所有页面使用的**静态**的自定义通用内容。
+
+        <details>
+
+        <summary><code>app.html</code></summary>
 
         ```html
         <!DOCTYPE html>
@@ -2043,14 +2159,19 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
           </head>
           <body {{ BODY_ATTRS }}>
             {{ APP }}
+            其他自定义HTML内容
           </body>
         </html>
         ```
-    </summary>
+        </details>
 5. 命令
 
     1. `nuxt`：以开发模式启动一个基于vue-server-renderer的服务器
+
+        >添加`--spa`以SPA的方式打开服务，`fetch`、`asyncData`在客户端请求（因此所有请求都会在客户端发起），否则`fetch`、`asyncData`会在服务端请求。
     2. `nuxt build`：利用webpack编译应用，压缩JS、CSS（发布用）
+
+        创建所有路由的`.html`文件，且这些`.html`都完全一致，加载时根据vue-router进行路由计算（可以刷新的SPA）。
     3. `nuxt start`：以生产模式启动一个基于vue-server-renderer的服务器（依赖`nuxt build`生成的资源）
     4. `nuxt generate`：生成静态化文件，用于静态页面发布
 
@@ -2084,3 +2205,11 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
         1. 程序员关注数据，DOM的操作交给框架；代码清晰、强制规范，利于维护；有自己的组件系统。
         2. 不兼容旧版本浏览器；需要一些学习成本。
+
+### 其他概念
+
+1. 高阶组件（higher order component，HOC）
+
+    >来自[react：高阶组件](https://react.docschina.org/docs/higher-order-components.html)。
+
+    react中对组件逻辑进行重用的高级技术。高阶组件是一个函数，且该函数接受一个组件作为参数，并返回一个新的组件。对比组件将props属性转变成UI，高阶组件则是将一个组件转换成另一个新组件。

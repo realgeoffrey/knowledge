@@ -184,6 +184,8 @@
     4. 执行脚本
 
         1. `npm run “package.json中scripts字段的命令” -- “添加脚本后面的参数”`
+
+            >非`-`开头的参数可以忽略`--`而传递。e.g. `npm run gulp runCss`等价于：`npm run gulp -- runCss`
         2. [npx](https://github.com/zkat/npx)
 2. `package.json`字段
 
@@ -246,6 +248,9 @@
     12. `homepage`
 
         主页。
+    13. `private`
+
+        设置为`true`，则无法`npm publish`，用于避免不小心公开项目。
     14. 其他
 3. 包的制作-使用
 
@@ -352,9 +357,7 @@
 
         <summary>查找逻辑</summary>
 
-        - 示例图
-
-            ![Node.js的require流程图](./images/nodejs-require-1.jpg)
+        ![Node.js的require流程图](./images/nodejs-require-1.jpg)
 
         1. 如果 X 以`/`、`./`或`../`开头
 
@@ -368,7 +371,7 @@
         2. 如果 X 是内置模块，返回该模块，不再继续执行。
 
             >e.g. `require('http')`
-        3. 如果 X 不带路径且不是内置模版
+        3. 如果 X 不带路径且不是内置模块
 
             >当作安装在本地的模块。
 

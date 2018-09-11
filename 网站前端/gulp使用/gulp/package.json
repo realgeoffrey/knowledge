@@ -1,17 +1,16 @@
 {
   "dependencies": {
     "autoprefixer": "9",
-    "babel-core": "6",
-    "babel-preset-env": "1",
+    "@babel/core": "7",
     "browser-sync": "2",
     "del": "3",
     "gulp": "3",
-    "gulp-babel": "7",
+    "gulp-babel": "8",
     "gulp-concat": "2",
     "gulp-cssnano": "2",
     "gulp-eslint": "5",
     "gulp-fontmin": "0",
-    "gulp-htmlmin": "4",
+    "gulp-htmlmin": "5",
     "gulp-imagemin": "4",
     "gulp-make-css-url-version": "0",
     "gulp-postcss": "8",
@@ -28,13 +27,15 @@
     "postcss-px2rem": "0"
   },
   "devDependencies": {
-    "babel-eslint": "8",
-    "eslint-config-standard": "11",
+    "@babel/preset-env": "7",
+    "babel-eslint": "9",
+    "eslint-config-standard": "12",
     "eslint-plugin-html": "4",
     "eslint-plugin-import": "2",
     "eslint-plugin-node": "7",
     "eslint-plugin-promise": "4",
-    "eslint-plugin-standard": "3"
+    "eslint-plugin-standard": "4",
+    "eslint-plugin-vue": "4"
   },
   "scripts": {
     "gulp": "gulp"

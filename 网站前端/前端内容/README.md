@@ -322,6 +322,8 @@
     2. 防御措施：
 
         1. 过滤用户输入（白名单）。
+
+            >e.g. [js-xss](https://github.com/leizongmin/js-xss)
         2. HttpOnly
 
             cookie设置为HttpOnly不能在客户端使用~~document.cookie~~访问。

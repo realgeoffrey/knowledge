@@ -224,7 +224,7 @@
 
         1. `pageX/Y`（ie8-不支持）
 
-            距离整个DOM。
+            距离文档的左边缘/上边缘。
         2. `clientX/Y`
 
             距离浏览器窗口。
@@ -592,9 +592,9 @@
         从外层元素到目标元素的过程，
     2. 冒泡（bubbling）：
 
-        从目标元素到外层元素的过程。
+        >事件都有`bubbles`属性，判断是否冒泡。W3定义的[DOM-Level-3-Events](https://www.w3.org/TR/DOM-Level-3-Events/)可查冒泡情况：；[media相关事件](https://html.spec.whatwg.org/multipage/media.html#mediaevents)均不冒泡。
 
-        >`load`、`scroll`、`error`不会冒泡。
+        从目标元素到外层元素的过程。
 2. DOM标准事件流触发顺序：
 
     ![事件流图](./images/event-flow-1.png)
@@ -3040,7 +3040,9 @@
                 1. `process.nextTick`
 
                     在当前“执行栈”的尾部——读取"任务队列"之前，添加事件。
-                2. `async-await`（只有`await`才是异步）
+                2. `async-await`（只有`await`是异步）
+
+                    >`await`后若是方法则同步执行该方法，执行结果交给`await`后才是microtask（无论结果如何）。
                 3. `Promise`（`Promise.then/catch/all/race`）
 
                     >`new Promise(回调)`的回调和`Prmise.resolve()/reject()`都是直接执行的同步任务。

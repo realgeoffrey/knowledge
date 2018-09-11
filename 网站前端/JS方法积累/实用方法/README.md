@@ -43,7 +43,7 @@
         1. [判断是否为`Node`、是否为`Element`](#原生js判断是否为node是否为element)
         1. [判断对象是否为空](#原生js判断对象是否为空)
         1. [输入框光标位置的获取和设置](#原生js输入框光标位置的获取和设置)
-        1. [阻止嵌入滚动条冒泡“橡皮筋效果”（iOS）](#原生js阻止嵌入滚动条冒泡橡皮筋效果ios)
+        1. [针对WAP的阻止滚动冒泡（仅DOM）](#原生js针对wap的阻止滚动冒泡仅dom)
         1. [获取滚动轴宽度（或高度）](#原生js获取滚动轴宽度或高度)
         1. [验证邮箱有效性](#原生js验证邮箱有效性)
         1. [创建兼容的XHR对象](#原生js创建兼容的xhr对象)
@@ -340,6 +340,8 @@ var cookieFuc = {
 };
 ```
 >参考[MDN:cookie](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie#一个小框架：一个完整支持unicode的cookie读取写入器)。
+
+>可以使用[js-cookie](https://github.com/js-cookie/js-cookie)完全替代。
 
 >简单判断是否存在某cookie：
 >
@@ -1588,12 +1590,15 @@ console.log(cursorPosition.set(输入框dom, 起始位置, 选中长度));
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/L3k46dy3/)
 
-### *原生JS*阻止嵌入滚动条冒泡“橡皮筋效果”（iOS）
+### *原生JS*针对WAP的阻止滚动冒泡（仅DOM）
+>1. 因为`scroll`事件不会冒泡，所以`stopPropagation`、`preventDefault`无法达到效果。
+>2. iOS可以在DOM滚动到顶部或底部时，通过`-webkit-overflow-scrolling: touch;`继续触发“橡皮筋效果”。
+
 ```html
 <style>
     .bounce {
         overflow-y: scroll;
-        -webkit-overflow-scrolling: touch;
+        -webkit-overflow-scrolling: touch;  /* 增加DOM的回弹效果（iOS） */
 
         height: 固定高度;
     }
@@ -1610,40 +1615,36 @@ console.log(cursorPosition.set(输入框dom, 起始位置, 选中长度));
 </div>
 
 <script>
-    var ScrollBounce = function (dom) {
-        var _bounce = function () {
-            var startTopScroll = dom.scrollTop, // 滚动高度
-                domHeight = dom.offsetHeight, // 占据高度
-                contentHeight = dom.scrollHeight; // 内容高度（占据高度+可滚动最大高度
+const ScrollStopPropagation = function (dom) {
+  const _stopPropagation = function () {
+    const startTopScroll = dom.scrollTop  // 滚动高度
+    const domHeight = dom.offsetHeight  // 占据高度
+    const contentHeight = dom.scrollHeight  // 内容高度（占据高度+可滚动最大高度
 
-            /*
-             * 在触摸开始时，如果发现滚动区域已经处于极限状态时，就手工设置 scrollTop 的值，
-             * 将滚动内容向边缘方向偏移 1px（这实际上改变了滚动区域的极限状态），
-             * 从而诱使浏览器对滚动区块使用橡皮筋效果，而不会把触摸事件向上传播到 DOM 树（引起整页滚动）。
-             */
-            if (startTopScroll <= 0) {
-                dom.scrollTop = 1;
-            } else if (startTopScroll + domHeight >= contentHeight) {
-                dom.scrollTop = contentHeight - domHeight - 1;
-            }
-        };
+    /*
+     * 在触摸开始时，如果发现滚动区域已经处于极限状态时，就手工设置 scrollTop 的值，
+     * 将滚动内容向边缘方向偏移 1px（这实际上改变了滚动区域的极限状态），
+     * 从而诱使浏览器对滚动区块使用橡皮筋效果，而不会把触摸事件向上传播到 DOM 树（引起整页滚动）。
+     */
+    if (startTopScroll <= 0) {
+      dom.scrollTop = 1
+    } else if (startTopScroll + domHeight >= contentHeight) {
+      dom.scrollTop = contentHeight - domHeight - 1
+    }
+  }
 
-        this.stop = function () {};
+  dom.addEventListener('touchstart', _stopPropagation, false)
 
-        if ((/iphone|ipad|ipod/i).test(navigator.userAgent)) {  /* 仅iOS设备支持“橡皮筋效果” */
-            dom.addEventListener('touchstart', _bounce, false);
+  this.stop = () => {
+    dom.removeEventListener('touchstart', _stopPropagation, false)
+  }
+}
 
-            this.stop = function () {
-                dom.removeEventListener('touchstart', _bounce, false);
-            };
-        }
-    };
+/* 使用测试 */
+const a = new ScrollStopPropagation(document.getElementById('j-bounce'))
 
 
-    /* 使用测试 */
-    var a = new ScrollBounce(document.getElementById('j-bounce'));
-
-    // a.stop();
+// a.stop()
 </script>
 ```
 [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/hbadqyew/)
