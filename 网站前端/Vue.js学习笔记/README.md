@@ -1703,14 +1703,15 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         JS文件。在Vue根应用的实例化前需要运行的Vue插件（Vue添加全局功能）。
 
         ><details>
-        ><summary>除了原始Vue插件的制作方式，还可以用inject</summary>
+        ><summary>除了Vue原本就有的<code>Vue.use(<a href="https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#插件">插件</a>)</code>，还可用nuxt特有的<code>export default 方法</code>（操作context、inject）</summary>
         >
         >e.g.
         >
         >```javascript
         >// plugins/stat-plugin.js
         >export default (context, inject) => {
-        >  inject('stat', () => {})  // 在Vue实例创建`$stat`方法
+        >  // 在Vue实例、组件、store的actions/mutations，创建`$stat`方法
+        >  inject('stat', () => {})
         >}
         >```
         ></details>
@@ -1991,6 +1992,8 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         4. `env`
 
             配置（客户端和服务端）环境变量。
+
+            >因为是服务端渲染，所以`process.env`在客户端只返回空对象，需要明确环境变量名才可以在客户端展示（e.g. `process.env.某`）。
         5. `generate`
 
             配置每个动态路由的参数，依据这些路由配置生成对应目录结构的HTML。

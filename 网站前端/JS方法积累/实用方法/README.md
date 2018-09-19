@@ -36,6 +36,7 @@
         1. [比较版本号大小（纯数字）](#原生js比较版本号大小纯数字)
         1. [判断检索内容是否在被检索内容的分隔符间](#原生js判断检索内容是否在被检索内容的分隔符间)
         1. [格式化文件大小](#原生js格式化文件大小)
+        1. [字符串匹配、替换](#原生js字符串匹配替换)
     1. 功能
 
         1. [实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`](#原生js实现类似jquery的htmlbodyanimatescrollleft-像素-scrolltop-像素-毫秒)
@@ -1374,6 +1375,21 @@ function upperCaseWord(str) {
         return match.toUpperCase();
     });
 }
+```
+
+### *原生JS*字符串匹配、替换
+```javascript
+/**
+* 字符串匹配后替换
+*/
+function matchWords (key, sentence, prefix = '', suffix = '', keyReplace = key) {
+const keyReformat = key.replace(/([()[\]{}\\/^$|?*+.])/g, '\\$1')
+return sentence.replace(new RegExp(keyReformat, 'g'), `${prefix}${keyReplace}${suffix}`)
+}
+
+
+/* 使用测试 */
+console.log(matchWords('`(` `)` `[` `]` `{` `}` `\\` `/` `^` `$` `|` `?` `*` `+` `.`', '`(` `)` `[` `]` `{` `}` `\\` `/` `^` `$` `|` `?` `*` `+` `.`'))
 ```
 
 ### *原生JS*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`

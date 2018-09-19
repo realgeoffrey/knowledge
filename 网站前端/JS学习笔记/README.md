@@ -180,6 +180,7 @@
     2. 内容滚动到顶部：
 
         `dom.scrollTop === 0`
+    >[`dom.scrollIntoView`](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/scrollIntoView)：节点滚到视口。
 2. 文档
 
     ><details>
@@ -1323,7 +1324,7 @@
 5. 代码调试方式
 
     1. JS：`console.log`（`alert`）、`console.trace`
-    2. PC端的DevTool：Sources断点（`debugger`、配合SourceMap）
+    2. PC端的DevTool：Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）
     3. WAP端使用页面模拟调试，如[vConsole](https://github.com/Tencent/vConsole)、[eruda](https://github.com/liriliri/eruda)
 
 ### [函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js防抖函数)、[函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js节流函数)
