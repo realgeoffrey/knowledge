@@ -1993,7 +1993,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
             配置（客户端和服务端）环境变量。
 
-            >因为是服务端渲染，所以`process.env`在客户端只返回空对象，需要明确环境变量名才可以在客户端展示（e.g. `process.env.某`）。
+            >（不同于vue-cli，）`process.env`在客户端只返回空对象，需要明确环境变量名才可以在客户端展示（e.g. `process.env.某`）。
         5. `generate`
 
             配置每个动态路由的参数，依据这些路由配置生成对应目录结构的HTML。

@@ -105,6 +105,19 @@
 
     git push origin “收集改动分支”    # 若冲突了需要：解决冲突 -> add -> commit
     ```
+
+    1. 快进模式（fast-forward）
+
+        >默认。
+
+        `git merge “其他分支”`
+
+        Git默认使用Fast forward模式，删除“其他分支”后，会丢掉分支信息。
+    2. 普通模式（no fast-forward）
+
+        `git merge “其他分支” --no-ff -m "commit信息"`
+
+        合并时生成一个新的commit，包含“其他分支”相对本分支所有的commits修改内容（可以用于统一review）。
 4. 更新远程仓库引用
 
     ```git
@@ -126,6 +139,8 @@
 
         ```git
         git checkout “分支名”
+
+        git checkout -b “分支名”   # 新建并切换至新分支
         ```
     4. 删除分支
 
@@ -250,6 +265,8 @@ feat(details): 添加了分享功能
         `Closes #1, #2`。
 
 ### 命令生成commit message && changelog
+>仅是用命令生成commit message或changelog，和手写的并无区别，没有额外进行其他操作。
+
 1. Zen-like commit messages（Angular）
 
     1. 安装[cz-cli](https://github.com/commitizen/cz-cli)
@@ -300,7 +317,7 @@ feat(details): 添加了分享功能
     推送具体需求的commits到远程“feature/需求名”
 
     git flow feature finish “需求名”
-    # “feature/需求名”合并至本地develop分支（本地必须先pull feature/需求名、develop分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
+    # “feature/需求名”合并（--no-ff）至本地develop分支（本地必须先pull feature/需求名、develop分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
     # 删除本地“feature/需求名”分支，切换至develop分支
     # 可能删除远程的“feature/需求名”分支（根据git-flow版本不同）
 
@@ -323,7 +340,7 @@ feat(details): 添加了分享功能
 
     git flow release finish “版本号”
     # tag描述（手写或复制changelog）
-    # “release/版本号”合并至本地develop分支、本地master分支（本地必须先pull release/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
+    # “release/版本号”合并（--no-ff）至本地develop分支、本地master分支（本地必须先pull release/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
     # 新建本地“版本号”tag
     # 删除本地“release/版本号”分支，切换至develop分支
     # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）
@@ -354,7 +371,7 @@ feat(details): 添加了分享功能
 
     git flow hotfix finish “版本号”
     # tag描述（手写或复制changelog）
-    # “hotfix/版本号”合并至本地master分支、本地develop分支（本地必须先pull hotfix/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
+    # “hotfix/版本号”合并（--no-ff）至本地master分支、本地develop分支（本地必须先pull hotfix/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
     # 新建本地“版本号”tag
     # 删除本地“release/版本号”分支，切换至develop分支
     # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）
@@ -370,6 +387,8 @@ feat(details): 添加了分享功能
     git push origin “版本号”
     # 推送至远程tag
     ```
+
+>git-flow的所有`finish`操作都是用`--no-ff`方式合并。
 
 ><details>
 ><summary>e.g. 手写changelog、tag描述</summary>
