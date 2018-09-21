@@ -25,6 +25,8 @@
     1. [声明某长度并设定值的数组](#声明某长度并设定值的数组)
 1. [算法思路](#算法思路)
 
+    1. [sleep](#sleep)
+    1. [任务队列链式调用](#任务队列链式调用)
     1. [无缝轮播](#无缝轮播)
 
 ><details>
@@ -839,11 +841,97 @@ function switchArr ({ arr, from, to, isLeft = false }) {
 ---
 ## 算法思路
 
+### sleep
+1. 要求：
+
+    延时一段时间之后执行剩余代码。
+2. 实现方式
+
+    1. `async-await`、`Promise`、`setTimeout`
+
+        ```javascript
+        function sleep (ms) {
+          return new Promise((resolve) => setTimeout(resolve, ms))
+        }
+
+        async function demo () {
+          // 使用
+          console.time(1)
+          await sleep(1000) // 延时执行
+          console.timeEnd(1)
+          console.time(2)
+          await sleep(1000) // 延时执行
+          console.timeEnd(2)
+        }
+
+        demo()
+        ```
+    2. `Promise`、`setTimeout`
+
+        ```javascript
+        function sleep (ms) {
+          return new Promise((resolve) => setTimeout(resolve, ms))
+        }
+
+        // 使用
+        console.time(1)
+        sleep(1000).then(() => {    // 延时执行
+          console.timeEnd(1)
+          console.time(2)
+          sleep(1000).then(() => {  // 延时执行
+            console.timeEnd(2)
+          })
+        })
+        ```
+    3. `setTimeout`
+
+        ```javascript
+        // 使用
+        console.time(1)
+        setTimeout(() => {  // 延时执行
+          console.timeEnd(1)
+          console.time(2)
+          setTimeout(() => {  // 延时执行
+            console.timeEnd(2)
+          }, 1000)
+        }, 1000)
+        ```
+
+    4. <details>
+
+        <summary><del><code>setTimeout</code>占用主线程（阻塞、卡死线程）</del></summary>
+
+        ```javascript
+        function sleep (ms) {
+          ms += new Date().getTime()
+          while (new Date() < ms) {}
+        }
+
+        // 使用
+        console.time(1)
+        sleep(1000) // 延时执行
+        console.timeEnd(1)
+        console.time(2)
+        sleep(1000) // 延时执行
+        console.timeEnd(2)
+        ```
+        </details>
+
+### 任务队列链式调用
+1. 要求：
+
+    任务队列，可以链式调用、可以取消前一个任务。
+2. 实现方式
+
+    ```javascript
+
+    ```
+
 ### 无缝轮播
 1. 要求：
 
     一共有`n`数量的项（**1**,**2**,**3**,...,**n**），中间展示内容有`i`数量的项，左右（或上下）分别展示待轮播有`m`数量的项（轮播到任何项都可以看见左右`m`数量的项），可以无缝向左右（或上下）轮播。
-2. 核心思路：
+2. 实现方式：
 
     1. 方法1：
 

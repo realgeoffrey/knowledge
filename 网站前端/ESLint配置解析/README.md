@@ -132,3 +132,10 @@
   }
 }
 ```
+
+- 目标文件内的注释开关
+
+    1. 取消之后所有内容的eslint判断：`/* eslint-disable */`
+    2. 开启之后所有内容的eslint判断：`/* eslint-enable */`
+    3. 取消当前行的eslint判断：`// eslint-disable-line`
+    4. 取消下一行的eslint判断：`// eslint-disable-next-line`

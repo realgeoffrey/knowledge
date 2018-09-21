@@ -419,7 +419,36 @@
     >}
     >```
     ></details>
+16. 特殊attribute
 
+    1. `key`
+
+        重用DOM（尽量在已存在的DOM上做修改、保持原DOM尽量不变化，而不是~~移除再新建DOM或移动DOM~~）
+
+        >针对：相同标签名的DOM切换展示。
+
+        1. 当没有`key`属性或`key`属性相同时（重复的`key`可能造成渲染错误）：最大化重用DOM。
+        2. 切换的DOM的`key`属性不同：不重用DOM。
+    2. `ref`
+
+        被用来给原生DOM元素或子组件注册引用信息。引用信息注册在`vm.$refs`对象上。
+
+        >1. 初始渲染时无法访问。
+        >2. `vm.$refs`不是响应式的，因此不应该在`template`或`computed`做数据绑定。
+
+        1. 添加在原生DOM：指向DOM元素
+
+            >代替原生JS获取DOM，如 ~~`document.getElementById`~~。
+        2. 添加在子组件：指向子组件实例。
+    3. `slot`
+
+        父级向子组件引入内容。
+    4. `slot-scope`
+
+        父级使用子组件字符串的作用域名字。
+    5. `is`
+
+        有效标签或动态组件。
 - <details>
 
     <summary>官方推荐的顺序：<a href="https://cn.vuejs.org/v2/style-guide/#元素特性的顺序-推荐">元素特性的顺序</a></summary>
@@ -525,6 +554,8 @@
 >执行顺序是：（`props` -> ）`data` -> `computed` -> `watch`。
 
 6. `filters`（对象）：过滤器方法
+
+    方法内部没有代理 ~~`this`~~ 到Vue实例。
 
     >因为不会被Vue实例代理，所以可以和Vue实例代理的属性同名（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性`）。
 7. `components`（对象）：局部注册组件（仅在此Vue实例中可用）
@@ -1107,7 +1138,7 @@
         8. `mode`：（当有子元素切换时，）控制进入/离开的过渡顺序（`'out-in'`：先离开后进入；`'in-out'`：先进入后离开。默认：同时进行）
     4. `<transition>`内嵌的子元素切换：
 
-        1. 若是**原生**子元素用`v-if`（`v-else`、`v-else-if`）作为切换，则必须在这些子元素上添加`key`属性。
+        1. 若是**原生DOM**子元素用`v-if`（`v-else`、`v-else-if`）作为切换，则必须在这些子元素上添加`key`属性。
         2. 若是**组件**子元素，则不需要额外添加 ~~`key`~~ 属性。
 
             1. 用`v-if`（`v-else`、`v-else-if`）作为切换。
@@ -1161,13 +1192,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 ```
 
 ### 特性
-1. 重用DOM（尽量在已存在的DOM上做修改、保持原DOM尽量不变化，而不是~~移除再新建DOM或移动DOM~~）
-
-    >针对：相同标签名的DOM切换展示。
-
-    1. 当没有`key`属性或`key`属性相同时（重复的`key`可能造成渲染错误）：最大化重用DOM。
-    2. 切换的DOM的`key`属性不同：不重用DOM。
-2. Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性），在内部`vm.名字`访问，可以直接修改或调用，**所有属性名字都不能重复**；也有以`$`开头的Vue实例属性（如`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
+1. Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性），在内部`vm.名字`访问，可以直接修改或调用，**所有属性名字都不能重复**；也有以`$`开头的Vue实例属性（如`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
 
     只有已经被代理的内容是响应的（Vue实例被创建时传入的属性），值的改变（可能）会触发视图的重新渲染。
 
@@ -1185,8 +1210,8 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
             >导致视图更新的替代方法：`vm.items.splice(newLength)`。
         3. 数组的最新mutator方法：`copyWithin`、`fill`
-3. **Vue实例的属性**和**Vue实例的属性的属性**，慎用~~箭头函数~~，因为`this`的指向无法按预期指向Vue实例。
-4. 因为HTML不区分大小写，所以大/小驼峰式命名的JS内容，在HTML使用时要转换为相应的短横线隔开式。
+2. **Vue实例的属性**和**Vue实例的属性的属性**，慎用~~箭头函数~~，因为`this`的指向无法按预期指向Vue实例。
+3. 因为HTML不区分大小写，所以大/小驼峰式命名的JS内容，在HTML使用时要转换为相应的短横线隔开式。
 
     不受限制、不需要转换：JS字符串模版、`.vue`组件。
 

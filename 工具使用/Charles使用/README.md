@@ -106,7 +106,7 @@ HTTP调试工具：通过将Charles设置成**系统的网络访问代理服务�
 	![Charles图](./images/22.png)
 11. 重复发送请求
 
-	repeat功能对于前端的价值是不需要刷新页面，只需要repeat请求，还可以进行压力测试。
+	repeat功能不需要刷新页面，只需要repeat请求，还可以进行压力测试。
 
 	**repeat**重复发送一次请求；**repeat Advances**可以自定义重复次数和重复间隔。
 

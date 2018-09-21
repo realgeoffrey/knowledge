@@ -217,7 +217,7 @@
         `文档滚动高度 === 0`
 
 ### DOM相对位置
-1. DOM点击事件的定位（原生）
+1. DOM点击事件的定位（原生JS）
 
     1. PC端`MouseEvent`
 
@@ -851,7 +851,7 @@
                         >针对iOS的UC或QQ浏览器，可以添加[iphone-inline-video](https://github.com/bfred-it/iphone-inline-video)。
                     2. `x5-video-player-type="h5"`在底部的全屏内联模式（同层播放）。
 
-                        >[Android的腾讯x5内核APP](https://x5.tencent.com/tbs/guide/video.html)特有。
+                        >[Android的腾讯x5内核App](https://x5.tencent.com/tbs/guide/video.html)特有。
             2. 无法操作全屏模式
 
                 1. 无法改变全屏播放方向以及控件内容
@@ -1408,24 +1408,24 @@
     ></details>
 
 ### Hybrid App相关
->1. 相对于Native App的高成本、原生体验，Hybrid App具有低成本、高效率、跨平台等特性，不依赖Native发包更新。
+>1. 相对于Native App的高成本、原生体验，Hybrid App具有低成本、高效率、跨平台、不依赖Native发包更新等特性。
 >2. Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、JS进行业务开发。
 
 1. Native提供给Hybrid宿主环境
 
-    1. 互相调用
-
-        1. Native提供功能：NativeUI组件、Header组件、消息类组件、通讯录、系统设备信息读取接口、H5与Native的互相跳转、支付、分享等。
-        2. Native调用前端JS方法；前端通过调用JS方法或跳转请求调用Native提供的接口。
+    1. 互相调用：Native调用WebView的JS方法；WebView调用`桥协议`或触发`自定义URL Scheme`。
     2. 资源访问机制
 
         1. 以`file`方式访问Native内部资源。
         2. 以`url`方式访问线上资源。
-        3. 增量替换机制（不必随发包更新）
+        3. 增量替换机制（不依赖发包更新）
 
             1. Native本地下载、解压线上的打包资源，再替换旧资源。
             2. ~~manifest~~。
-        4. URL限定，跨域问题的解决方案。
+        4. URL限定，限制访问、跨域问题的解决方案
+
+            1. 可以限制WebView的能发起的请求内容。
+            2. 可以代替WebView进行会触发跨域的AJAX请求。
     3. 身份验证机制
 
         >客户端注入方式：javascript伪协议方式`javascript: 代码`。
@@ -1437,29 +1437,32 @@
         2. Chrome的Remote devices调试。
 2. Hybrid的前端处理
 
-    1. WebView环境兼容性：
+    ><details>
+    ><summary>WebView环境兼容性</summary>
+    >
+    >1. CSS、HTML
+    >
+    >    >除了[样式适配](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#wap端适配总结)之外。
+    >
+    >    1. 添加厂商前缀（如`-webkit-`）。
+    >    2. 布局有问题的机型额外调试。
+    >    3. `<video>`、`<audio>`、`<iframe>`调试。
+    >2. JS
+    >
+    >    兼容性判断（能力检测等）。
+    ></details>
 
-        1. CSS、HTML
-
-            >除了[样式适配](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#wap端适配总结)之外。
-
-            1. 添加厂商前缀（如`-webkit-`）。
-            2. 布局有问题的机型额外调试。
-            3. `<video>`、`<audio>`、`<iframe>`调试。
-        2. JS
-
-            兼容性判断（能力检测等）。
-    2. 与Native配合方式：
+    1. 与Native配合方式：
 
         >1. 都是以**字符串**（数据用JSON字符串）的形式交互，向客户端传递：
         >
         >    1. 全局的方法名 -> 客户端调用`方法名(JSON数据)`
         >    2. 匿名函数 -> 客户端调用`(匿名函数(JSON数据))`
-        >2. iOS、Android的WebView无法判断是否安装了其他App。
+        >2. WebView无法判断是否安装了其他App。
         >3. 可以通过`查看注入的全局方法`或`客户端调用回调函数`来判定H5页面是否在具体App内打开。
-        >4. `桥协议`仅在APP内部起作用；`自定义URL Scheme`是系统层面，所以可以额外针对跨APP起作用（如分享去其他APP）；iOS的**通用链接**可以认为是高级的`自定义URL Scheme`。
+        >4. `桥协议`仅在App内部起作用；`自定义URL Scheme`是系统层面，所以可以额外针对跨App起作用（如分享去其他App）；iOS的**通用链接**可以认为是高级的`自定义URL Scheme`。
 
-        1. `桥协议`：Native注入全局方法至WebView的`window`，前端调用则客户端拦截后触发Native行为。
+        1. `桥协议`：Native注入全局方法至WebView的`window`，WebView调用则客户端拦截后触发Native行为。
 
             >1. 客户端注入方式：javascript伪协议方式`javascript: 代码`。
             >2. 注入JS代码可以在创建WebView之前（`[native code]`）或之后（全局变量JS注入）。
@@ -1469,13 +1472,13 @@
             ><details>
             ><summary><code>URL Scheme</code></summary>
             >
-            >是iOS和Android提供给开发者的一种WAP唤醒原生APP方式。Android应用在mainfest中注册自己的Scheme；iOS应用在APP属性中配置。典型的URL Scheme：`myscheme://my.hostxxxxxxx`。
+            >是iOS和Android提供给开发者的一种WAP唤醒Native App方式。Android应用在mainfest中注册自己的Scheme；iOS应用在App属性中配置。典型的URL Scheme：`myscheme://my.hostxxxxxxx`。
             ></details>
 
             >1. 客户端可以捕获、拦截任何行为（如`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
             >2. 有些App会设置允许跳转的其他App的白名单或黑名单，如微信白名单。
             >3. 除了增加回调函数且被客户端调用，否则无法判定是否在此App内部。
-            >4. 跨APP使用`自定义URL Scheme`，其后面的字符串要产生的行为仅目的APP能理解。
+            >4. 跨App使用`自定义URL Scheme`，其后面的字符串要产生的行为仅目的App能理解。
 
             1. iOS8-
 
@@ -1521,10 +1524,11 @@
             >需要HTTPS域名配置、iOS设置等其他端配合。
 
             >参考：[通用链接（Universal Links）的使用详解](http://www.hangge.com/blog/cache/detail_1554.html)、[Universal Link 前端部署采坑记](http://awhisper.github.io/2017/09/02/universallink/)、[Support Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html#//apple_ref/doc/uid/TP40016308-CH12-SW2)。
-        - 前端提供Native调用的全局回调函数（或匿名函数）。
+
+        - WebView提供Native调用的全局回调函数（或匿名函数）。
 
             >判断多个回调函数顺序：带id触发Native行为，Native调用回调函数时携带之前的id。
-    3. 根据前端的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在Hybrid遇到的bug。
+    3. 根据WebView的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在Hybrid遇到的bug。
 
         1. 对于App内不方便查看的信息，可以发送需要查看的信息、再抓包的方式进行调试。
         2. 可以用一些隐蔽的手势触发log信息展示。
@@ -1545,6 +1549,10 @@
             }, false);
             ```
             </details>
+    4. 分享到其他App
+
+        1. 通过JS触发Native App之间的切换分享（自己Native内可用桥协议，任意App均要起作用只能用Scheme）。
+        2. 带分享信息参数去访问其他App提供的分享URL。
 
 ### Tips
 1. `var a = b = c = 1;/* b、c没有var的声明。等价于：var a = 1; b = 1; c = 1; */`
@@ -2035,8 +2043,8 @@
         1. 在加载JS之前配置好`window.onerror`。
         2. 客户端回调函数嵌套一层`try-catch`，提示**哪个方法发生错误等额外信息**。
 
-            >因为客户端调用前端的方法是直接通过函数运行JS代码，抛出错误时`window.onerror`传入的参数仅有第一个`message`参数。
-        3. （可选）为了避免**JS代码还未加载完毕客户端就调用回调函数**，需在客户端调用前端JS时嵌套一层`try-catch`（服务端代码中添加），提示**哪个方法发生错误等额外信息**。
+            >因为Native调用WebView的方法是直接通过函数运行JS代码，抛出错误时`window.onerror`传入的参数仅有第一个`message`参数。
+        3. （可选）为了避免**JS代码还未加载完毕客户端就调用回调函数**，需在Native调用JS代码时嵌套一层`try-catch`（服务端代码中添加），提示**哪个方法发生错误等额外信息**。
 
     >捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
 

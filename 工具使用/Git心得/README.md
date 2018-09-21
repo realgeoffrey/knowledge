@@ -1,6 +1,7 @@
 # Git心得
 
 ## 目录
+1. [git的文件状态](#git的文件状态)
 1. [基本操作](#基本操作)
 1. [Zen-like commit messages（Angular）格式](#zen-like-commit-messagesangular格式)
 1. [命令生成commit message && changelog](#命令生成commit-message--changelog)
@@ -11,29 +12,59 @@
 1. [减少Git项目下载大小](#减少git项目下载大小)
 
 ---
+### git的文件状态
+1. `untracked`
+
+    未跟踪（文件未加入git库，不在版本控制内）。
+2. 已跟踪
+
+    1. `unmodify`
+
+        未修改。版本库中的文件快照与文件完全一致。
+
+        1. 若被修改, 则成为modified文件；
+        2. 若使用`git rm `，则移出版本库, 成为untracked文件（或删除文件）。
+    2. `modified`
+
+        已修改。
+
+        1. 若使用`git add`，则成为staged文件；
+        2. 若使用`git checkout`，则丢弃修改，成为unmodify文件。
+    3. `staged`
+
+        暂存。
+
+        1. 若使用`git commit`，则将修改同步到库中，这时库中的文件和本地文件又变为一致，成为unmodify文件；
+        2. 若使用`git reset HEAD`，则取消暂存, 成为modified文件。
+
+![git的文件状态变化图](./images/git-lifecycle-1.png)
+
 ### 基本操作
 1. 撤销未push内容
 
-    1. 版本控制内的内容
+    1. 恢复untracked的文件（版本控制内的文件）
 
-        1. 清除未`git commit`的内容（包括已经或还未`git add`的文件）
+        ```git
+        git checkout -- “文件名或.”
+        ```
+    2. 清除`git add`的内容
 
-            ```git
-            git reset --hard HEAD           # 恢复版本控制内的全部文件
-            ```
-        2. 撤销已`git commit`的请求
+        ```git
+        git reset HEAD [“文件名”]          # 不修改文件、使已修改文件恢复到状态unstaged或untracked
 
-            ```git
-            git log                         # 获取要退回的SHA
-            git reset “SHA”                 # 撤销commit请求，但不清除文件内容
-            ```
-        3. 撤销`git commit` + 恢复版本控制内的全部文件
+        git reset --hard HEAD [“文件名”]   # 恢复unstaged或git add（committed）的文件，untracked不恢复
+        ```
+    3. 撤销`git commit`的请求
 
-            ```git
-            git log                         # 获取要退回的SHA
-            git reset --hard “SHA”          # git reset “SHA” + git reset --hard HEAD
-            ```
-    2. 清除所有不在版本控制内的内容（如.idea、node_modules）
+        ```git
+        git log                         # 获取要退回的SHA
+
+
+        git reset “SHA”                 # 撤销commit请求（恢复commit的文件），不修改文件、使已修改文件恢复到untracked
+
+        git reset --hard “SHA”          # 撤销commit请求（恢复commit的文件），恢复git add的全部文件（untracked不恢复）
+        ```
+    4. 清除所有不在版本控制内的内容（如.idea、node_modules）
 
         ```git
         git clean -xdf
@@ -51,7 +82,7 @@
         # 或
         git reset --hard “SHA”          # 取消至某SHA
 
-        # 如果需要，可以重新 git merge 其他分支
+        # 如果需要，可以新增commit
 
         git push origin HEAD --force    # 强制提交到远程版本库
 
@@ -92,38 +123,73 @@
     ></details>
 3. 合并
 
-    ```git
-    # 其他分支更新至最新内容
-    git checkout “其他分支”
-    git pull origin “其他分支”
+    1. `merge`
 
-    # 把其他分支内容合并至收集改动分支
-    git checkout “收集改动分支”
-    git merge “其他分支”
-    # if未产生冲突，则自动commit了合并的内容
-    # if产生冲突，则手动解决：'<<<<<<< HEAD'至'======='为收集改动分支内容；'======='至'>>>>>>> 其他分支'为其他分支内容
+        ```git
+        # 其他分支更新至最新内容
+        git checkout “其他分支”
+        git pull origin “其他分支”
 
-    git push origin “收集改动分支”    # 若冲突了需要：解决冲突 -> add -> commit
-    ```
+        # 把其他分支内容合并至收集改动分支
+        git checkout “收集改动分支”
+        git merge “其他分支”
+        # if两分支没有分叉（相同或父子关系），不产生额外commit
+        # if有分叉且未产生冲突，则自动新增一个合并commit
+        # if产生冲突
+        #   则手动解决（`<<<<<<< HEAD`至`=======`为收集改动分支内容；`=======`至`>>>>>>> 其他分支`为其他分支内容）；
+        #   或使用`git mergetool`半自动化解决。
+        #   修改完毕后需要add -> commit
+        # if产生冲突，可以使用`git merge --abort`取消本次合并，退回合并前文件状态
 
-    1. 快进模式（fast-forward）
+        git push origin “收集改动分支”
+        ```
 
-        >默认。
+        1. 快进模式（fast-forward）
 
-        `git merge “其他分支”`
+            >默认。
 
-        Git默认使用Fast forward模式，删除“其他分支”后，会丢掉分支信息。
-    2. 普通模式（no fast-forward）
+            `git merge “其他分支”`
 
-        `git merge “其他分支” --no-ff -m "commit信息"`
+            Git默认使用Fast forward模式，删除“其他分支”后，会丢掉分支信息。
+        2. 普通模式（no fast-forward）
 
-        合并时生成一个新的commit，包含“其他分支”相对本分支所有的commits修改内容（可以用于统一review）。
-4. 更新远程仓库引用
+            `git merge “其他分支” --no-ff -m "commit信息"`
+
+            合并时生成一个新的commit（没有分叉也会生成），包含“其他分支”相对本分支所有的commits修改内容（可以用于统一review）。
+    2. `rebase`
+
+        ```git
+        git rebase “其他分支”       # 把其他分支的commit当做祖先commit，本身分支的commit紧随其后
+        # if产生冲突，则需要对本分支每一个commit冲突进行处理，
+        #   修改冲突文件 -> add（不要commit） -> git rebase --continue
+        ```
+4. 解决冲突
+
+    1. 冲突标记：git会在冲突时，标记两个分支对同一个地方的修改
+
+        1. `<<<<<<< HEAD`至`=======`为收集改动分支内容；
+        2. `=======`至`>>>>>>> 其他分支`为其他分支内容。
+
+        ><details>
+        ><summary>e.g. </summary>
+        >
+        >```text
+        ><<<<<<< HEAD
+        >本分支修改的内容
+        >=======
+        >其他分支修改的内容
+        >>>>>>>> develop
+        >```
+        ></details>
+    2. 解决冲突：冲突只是把两个分支修改内容合并一起并且增加标记，无论是否修改内容（甚至可以保持标记），都以`git add 修改的文件`表示解决冲突
+
+        正常情况下，人工合并两个修改，并删除冲突标记。
+5. 更新远程仓库引用
 
     ```git
     git fetch -fp
     ```
-5. branch
+6. branch
 
     1. 本地新建分支
 
@@ -154,14 +220,14 @@
         >在原分支基础上新建本地分支，再推送至远程，然后删除原分支。
 
         ```git
-        git branch -m “原分支名” “新分支名” # 删除本地原分支，新建本地新分支
+        git branch -m “原分支名” “新分支名”     # 删除本地原分支，新建本地新分支
 
         # 要推送至远程，依然需要推送（新建）远程分支、删除远程分支
         ```
-6. tag
+7. tag
 
     ```git
-    git tag [-l “完整内容或*”]       # 列出现有（本地+远程）标签
+    git tag [-l “完整内容或*”]           # 列出现有（本地+远程）标签
 
     git show “名字”                   # 查看tag详细信息
 
@@ -170,13 +236,13 @@
     git tag “名字” -m “信息” [“SHA”]    # 新建含附注标签（没有SHA则最新commit）
 
     git push origin “名字”            # 推送一个本地新建标签至远程
-    git push --tags                     # 推送所有本地新建标签至远程
+    git push --tags                 # 推送所有本地新建标签至远程
 
     git tag -d “名字”                 # 删除本地tag
 
     git push origin :refs/tags/“名字” # 删除远程tag
     ```
-7. stash
+8. stash
 
     ```git
     git stash                       # 往堆栈推送一个新的储藏，并且恢复修改过的被追踪的文件
@@ -317,7 +383,8 @@ feat(details): 添加了分享功能
     推送具体需求的commits到远程“feature/需求名”
 
     git flow feature finish “需求名”
-    # “feature/需求名”合并（--no-ff）至本地develop分支（本地必须先pull feature/需求名、develop分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
+    # “feature/需求名”合并（--no-ff）至本地develop分支
+    #   （本地必须先pull feature/需求名、develop分支，解决冲突，git flow执行merge操作，否则无法执行命令）
     # 删除本地“feature/需求名”分支，切换至develop分支
     # 可能删除远程的“feature/需求名”分支（根据git-flow版本不同）
 
@@ -330,7 +397,7 @@ feat(details): 添加了分享功能
 3. 发布版本：
 
     ```git
-    git flow release start “版本号” [“develop的SHA”]    # 若要把已经完成的feature内容添加到已存在的release分支，仅需release分支合并develop分支（git checkout “release/版本号”; git merge develop），而不需要release start
+    git flow release start “版本号” [“develop的SHA”]
     # 基于“develop的SHA”或最新develop，在本地创建并切换至“release/版本号”分支
 
     推送需要改动的commits到远程“release/版本号”
@@ -340,7 +407,8 @@ feat(details): 添加了分享功能
 
     git flow release finish “版本号”
     # tag描述（手写或复制changelog）
-    # “release/版本号”合并（--no-ff）至本地develop分支、本地master分支（本地必须先pull release/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
+    # “release/版本号”合并（--no-ff）至本地develop分支、本地master分支
+    #   （本地必须先pull release/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则无法执行命令）
     # 新建本地“版本号”tag
     # 删除本地“release/版本号”分支，切换至develop分支
     # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）
@@ -356,6 +424,8 @@ feat(details): 添加了分享功能
     git push origin “版本号”
     # 推送至远程tag
     ```
+
+    >若要把已经完成的feature内容添加到已存在的release分支，仅需release分支合并develop分支（`git checkout “release/版本号”; git merge develop`），而不需要release start
 4. 线上bug修复：
 
     >类似于release。
@@ -371,7 +441,8 @@ feat(details): 添加了分享功能
 
     git flow hotfix finish “版本号”
     # tag描述（手写或复制changelog）
-    # “hotfix/版本号”合并（--no-ff）至本地master分支、本地develop分支（本地必须先pull hotfix/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则成功无法执行命令）
+    # “hotfix/版本号”合并（--no-ff）至本地master分支、本地develop分支
+    #   （本地必须先pull hotfix/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则无法执行命令）
     # 新建本地“版本号”tag
     # 删除本地“release/版本号”分支，切换至develop分支
     # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）
@@ -429,7 +500,7 @@ feat(details): 添加了分享功能
 >    - 上线 某功能 by @名字
 >    ```
 >
->建议都用[命令生成](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Git心得/README.md#命令生成commit-message--change-log)（commit message -> changelog -> tag描述）
+>建议都用[命令生成](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Git心得/README.md#zen-like-commit-messagesangular格式)（commit message -> changelog -> tag描述）
 ></details>
 
 ### 如何在一台电脑中使用2（多个）个Github账号的SSH keys
@@ -492,11 +563,13 @@ feat(details): 添加了分享功能
         ```
     2. 打开添加的文件.gitignoreglobal，填写要全局忽略的文件（夹）
 
-        e.g.
-
-        ```text
-        .idea
-        ```
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```text
+        >.idea
+        >```
+        ></details>
 
 ### .gitkeep文件
 >因为Git不跟踪空文件夹，所以项目中的空文件夹都无法进入Git版本控制。
@@ -522,7 +595,9 @@ feat(details): 添加了分享功能
     3. 选择需要单独克隆的文件或文件夹，写入 **.git/info/sparse-checkout**文件：
 
         ```bash
-        echo 'images' >> .git/info/sparse-checkout      # 所有包括有 images 的文件夹或文件（如/xxx/xxx/images/*、/images/*、images）
+        # 所有包括有 images 的文件夹或文件（如/xxx/xxx/images/*、/images/*、images）
+        echo 'images' >> .git/info/sparse-checkout
+
         echo 'js/release' >> .git/info/sparse-checkout
         ```
     4. 仅对设置过的内容进行所有git操作：
