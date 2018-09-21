@@ -736,7 +736,6 @@ function countingSort(arr) {
 ```javascript
 /**
  * 移动数组的项，从一个位置插入至另一个位置（不是调换位置）
- * @param {Object} - 传入的参数
  * @param {Array} arr - 数组
  * @param {Number} from - 原数组起始位置
  * @param {Number} to - 原数组插入位置

@@ -11,7 +11,7 @@
         1. [判断ie所有版本](#原生js判断ie所有版本)
     1. `key-value`操作
 
-        1. [操作cookie](#原生js操作cookie)
+        1. [判断是否存在某cookie](#原生js判断是否存在某cookie)
         1. [获取URL相关信息](#原生js获取url相关信息)
         1. [在URL末尾添加查询名值对](#原生js在url末尾添加查询名值对)
     1. 事件相关
@@ -210,166 +210,32 @@ function detectIE() {
 }
 ```
 
-### *原生JS*操作cookie
+### *原生JS*判断是否存在某cookie
 ```javascript
-var cookieFuc = {
+function hasCookie (checkKey) {
+  checkKey = checkKey.toString()
 
-    /**
-     * 读取一个cookie的值
-     * @param {String} key - 名
-     * @returns {String|Null} - 值 或 null
-     */
-    getItem: function (key) {
-        if (!key) {
+  var cookieArr = document.cookie.split('; '),
+    tempArr, key, value
 
-            return null;
-        } else {
+  for (var i = 0, len = cookieArr.length; i < len; i++) {
+    if (cookieArr[i] !== '') {
+      tempArr = cookieArr[i].split('=')
+      key = tempArr.shift()
+      value = tempArr.join('=')
 
-            return decodeURIComponent(document.cookie.replace(new RegExp('(?:(?:^|.*;)\\s*' + encodeURIComponent(key).replace(/[\-\.\+\*]/g, '\\$&') + '\\s*\\=\\s*([^;]*).*$)|^.*$'), '$1')) || null;
-        }
-    },
+      if (key === checkKey) {
+        /* 操作value */
 
-    /**
-     * 新建或更新一个cookie
-     * @param {String} key - 名
-     * @param {String} value - 值
-     * @param {Number|Date|String|Infinity} [deadline] - 过期时间。默认：关闭浏览器后过期
-     * @param {String} [path] - 路径。默认：当前文档位置的路径
-     * @param {String} [domain] - 域名。默认：当前文档位置的路径的域名部分
-     * @param {Boolean} [secure] - 是否“仅通过https协议传输”。默认：否
-     * @returns {Boolean} - 操作成功或失败
-     */
-    setItem: function (key, value, deadline, path, domain, secure) {
-        if (!key || /^(?:expires|max\-age|path|domain|secure)$/i.test(key)) {
-
-            return false;
-        } else {
-            var expires = '';
-
-            if (deadline) {
-                switch (deadline.constructor) {
-                    case Number:
-                        expires = deadline === Infinity ? '; expires=Fri, 31 Dec 9999 23:59:59 GMT' : '; max-age=' + deadline;
-                        break;
-                    case String:
-                        expires = '; expires=' + deadline;
-                        break;
-                    case Date:
-                        expires = '; expires=' + deadline.toUTCString();
-                        break;
-                }
-            }
-
-            document.cookie = encodeURIComponent(key) + '=' + encodeURIComponent(value) + expires + (domain ? '; domain=' + domain : '') + (path ? '; path=' + path : '') + (secure ? '; secure' : '');
-
-            return true;
-        }
-    },
-
-    /**
-     * 删除一个cookie
-     * @param {String} key - 名
-     * @param {String} [path] - 路径。默认：当前文档位置的路径
-     * @param {String} [domain] - 域名。默认：当前文档位置的路径的域名部分
-     * @returns {Boolean} - 操作成功或失败
-     */
-    removeItem: function (key, path, domain) {
-        if (!key || !this.hasItem(key)) {
-
-            return false;
-        } else {
-            document.cookie = encodeURIComponent(key) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT' + ( domain ? '; domain=' + domain : '') + ( path ? '; path=' + path : '');
-
-            return true;
-        }
-    },
-
-    /**
-     * 检查一个cookie是否存在
-     * @param {String} key - 名
-     * @returns {Boolean} - 存在与否
-     */
-    hasItem: function (key) {
-        if (!key) {
-
-            return false;
-        } else {
-
-            return (new RegExp('(?:^|;\\s*)' + encodeURIComponent(key).replace(/[\-\.\+\*]/g, '\\$&') + '\\s*\\=')).test(document.cookie);
-        }
-    },
-
-    /**
-     * 返回cookie名字的数组
-     * @returns {Array} - 名的数组 或 []
-     */
-    listItems: function () {
-        if (document.cookie === '') {
-
-            return [];
-        } else {
-            var keys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, '').split(/\s*(?:\=[^;]*)?;\s*/),
-                i, len;
-
-            for (i = 0, len = keys.length; i < len; i++) {
-                keys[i] = decodeURIComponent(keys[i]);
-            }
-
-            return keys;
-        }
-    },
-
-    /**
-     * 清空所有cookie
-     * @returns {Boolean} - 操作成功或失败
-     */
-    clear: function () {
-        if (document.cookie === '') {
-
-            return false;
-        } else {
-            var keys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, '').split(/\s*(?:\=[^;]*)?;\s*/),
-                i, len;
-
-            for (i = 0, len = keys.length; i < len; i++) {
-                this.removeItem(decodeURIComponent(keys[i]));
-            }
-
-            return true;
-        }
+        return true
+      }
     }
-};
+  }
+
+  return false
+}
 ```
->参考[MDN:cookie](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie#一个小框架：一个完整支持unicode的cookie读取写入器)。
-
->可以使用[js-cookie](https://github.com/js-cookie/js-cookie)完全替代。
-
->简单判断是否存在某cookie：
->
->```javascript
->function hasCookie (checkKey) {
->  checkKey = checkKey.toString()
->
->  var cookieArr = document.cookie.split('; '),
->    tempArr, key, value
->
->  for (var i = 0, len = cookieArr.length; i < len; i++) {
->    if (cookieArr[i] !== '') {
->      tempArr = cookieArr[i].split('=')
->      key = tempArr.shift()
->      value = tempArr.join('=')
->
->      if (key === checkKey) {
->        /* 操作value */
->
->        return true
->      }
->    }
->  }
->
->  return false
->}
->```
+>全面操作cookie：[js操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js操作cookie)。
 
 ### *原生JS*获取URL相关信息
 ```javascript
@@ -1380,16 +1246,32 @@ function upperCaseWord(str) {
 ### *原生JS*字符串匹配、替换
 ```javascript
 /**
-* 字符串匹配后替换
-*/
-function matchWords (key, sentence, prefix = '', suffix = '', keyReplace = key) {
-const keyReformat = key.replace(/([()[\]{}\\/^$|?*+.])/g, '\\$1')
-return sentence.replace(new RegExp(keyReformat, 'g'), `${prefix}${keyReplace}${suffix}`)
+ * 字符串匹配并替换一个字符串
+ * @param {String} key - 被匹配内容
+ * @param {String} sentence - 原始字符串
+ * @param {String} prefix - 匹配处增加的前缀
+ * @param {String} suffix - 匹配处增加的后缀
+ * @param {String} [keyReplace = key] - 替换内容
+ * @returns {String} - 匹配后的字符串
+ */
+function highlightWords ({ key, sentence, prefix = '', suffix = '', keyReplace = key }) {
+  // 把需要匹配的字符串里`正则表达式需要转义的特殊字符`（除去原本在字符串中作为转义的`\`）前添加`\\`
+  const keyReformat = key.replace(/([()[\]{}\\/^$|?*+.])/g, '\\$1')
+
+  const regexp = new RegExp(keyReformat, 'g')
+
+  return sentence.replace(regexp, `${prefix + keyReplace + suffix}`)
 }
 
 
 /* 使用测试 */
-console.log(matchWords('`(` `)` `[` `]` `{` `}` `\\` `/` `^` `$` `|` `?` `*` `+` `.`', '`(` `)` `[` `]` `{` `}` `\\` `/` `^` `$` `|` `?` `*` `+` `.`'))
+highlightWords({
+  key: 'abc',
+  sentence: 'abc123aabbccabc123',
+  prefix: '<span style="color: red;">',
+  suffix: '</span>',
+  keyReplace: '被选中'
+})
 ```
 
 ### *原生JS*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`

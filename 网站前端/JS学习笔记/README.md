@@ -1917,7 +1917,7 @@
     2. 字符串形式：`名1=值1[; 名2=值2]`。不能包含任何`,`、`;`、` `（使用`encodeURIComponent`、`decodeURIComponent`）。
     3. 所有浏览器都支持。
     4. 单域名内，cookie保存的数据不超过4k，数量（最少）20个。
-    5. 源生的cookie接口不友好，需要自己[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js操作cookie)。
+    5. 源生的cookie接口不友好，需要自己[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js操作cookie)。
 
         - JS的`document.cookie`：
 

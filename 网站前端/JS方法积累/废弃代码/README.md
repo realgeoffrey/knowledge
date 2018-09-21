@@ -14,6 +14,9 @@
         1. [对象合二为一（改变第一个参数）](#原生js对象合二为一改变第一个参数)
         1. [深复制](#原生js深复制)
         1. [通过类名获取DOM](#原生js通过类名获取dom)
+    1. 可用[js-cookie](https://github.com/js-cookie/js-cookie)代替
+
+        1. [操作cookie](#原生js操作cookie)
 1. [Polyfill](#polyfill)
 
     1. [`requestAnimationFrame`和`cancelAnimationFrame`](#原生jsrequestanimationframe和cancelanimationframe的polyfill)
@@ -549,6 +552,140 @@ function getElementsByClassName(className, parentDom) {
 }
 ```
 >可以使用jQuery的`$('.类名')`完全替代。
+
+### *原生JS*操作cookie
+```javascript
+var cookieFuc = {
+
+    /**
+     * 读取一个cookie的值
+     * @param {String} key - 名
+     * @returns {String|Null} - 值 或 null
+     */
+    getItem: function (key) {
+        if (!key) {
+
+            return null;
+        } else {
+
+            return decodeURIComponent(document.cookie.replace(new RegExp('(?:(?:^|.*;)\\s*' + encodeURIComponent(key).replace(/[\-\.\+\*]/g, '\\$&') + '\\s*\\=\\s*([^;]*).*$)|^.*$'), '$1')) || null;
+        }
+    },
+
+    /**
+     * 新建或更新一个cookie
+     * @param {String} key - 名
+     * @param {String} value - 值
+     * @param {Number|Date|String|Infinity} [deadline] - 过期时间。默认：关闭浏览器后过期
+     * @param {String} [path] - 路径。默认：当前文档位置的路径
+     * @param {String} [domain] - 域名。默认：当前文档位置的路径的域名部分
+     * @param {Boolean} [secure] - 是否“仅通过https协议传输”。默认：否
+     * @returns {Boolean} - 操作成功或失败
+     */
+    setItem: function (key, value, deadline, path, domain, secure) {
+        if (!key || /^(?:expires|max\-age|path|domain|secure)$/i.test(key)) {
+
+            return false;
+        } else {
+            var expires = '';
+
+            if (deadline) {
+                switch (deadline.constructor) {
+                    case Number:
+                        expires = deadline === Infinity ? '; expires=Fri, 31 Dec 9999 23:59:59 GMT' : '; max-age=' + deadline;
+                        break;
+                    case String:
+                        expires = '; expires=' + deadline;
+                        break;
+                    case Date:
+                        expires = '; expires=' + deadline.toUTCString();
+                        break;
+                }
+            }
+
+            document.cookie = encodeURIComponent(key) + '=' + encodeURIComponent(value) + expires + (domain ? '; domain=' + domain : '') + (path ? '; path=' + path : '') + (secure ? '; secure' : '');
+
+            return true;
+        }
+    },
+
+    /**
+     * 删除一个cookie
+     * @param {String} key - 名
+     * @param {String} [path] - 路径。默认：当前文档位置的路径
+     * @param {String} [domain] - 域名。默认：当前文档位置的路径的域名部分
+     * @returns {Boolean} - 操作成功或失败
+     */
+    removeItem: function (key, path, domain) {
+        if (!key || !this.hasItem(key)) {
+
+            return false;
+        } else {
+            document.cookie = encodeURIComponent(key) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT' + ( domain ? '; domain=' + domain : '') + ( path ? '; path=' + path : '');
+
+            return true;
+        }
+    },
+
+    /**
+     * 检查一个cookie是否存在
+     * @param {String} key - 名
+     * @returns {Boolean} - 存在与否
+     */
+    hasItem: function (key) {
+        if (!key) {
+
+            return false;
+        } else {
+
+            return (new RegExp('(?:^|;\\s*)' + encodeURIComponent(key).replace(/[\-\.\+\*]/g, '\\$&') + '\\s*\\=')).test(document.cookie);
+        }
+    },
+
+    /**
+     * 返回cookie名字的数组
+     * @returns {Array} - 名的数组 或 []
+     */
+    listItems: function () {
+        if (document.cookie === '') {
+
+            return [];
+        } else {
+            var keys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, '').split(/\s*(?:\=[^;]*)?;\s*/),
+                i, len;
+
+            for (i = 0, len = keys.length; i < len; i++) {
+                keys[i] = decodeURIComponent(keys[i]);
+            }
+
+            return keys;
+        }
+    },
+
+    /**
+     * 清空所有cookie
+     * @returns {Boolean} - 操作成功或失败
+     */
+    clear: function () {
+        if (document.cookie === '') {
+
+            return false;
+        } else {
+            var keys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, '').split(/\s*(?:\=[^;]*)?;\s*/),
+                i, len;
+
+            for (i = 0, len = keys.length; i < len; i++) {
+                this.removeItem(decodeURIComponent(keys[i]));
+            }
+
+            return true;
+        }
+    }
+};
+```
+>参考[MDN:cookie](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie#一个小框架：一个完整支持unicode的cookie读取写入器)。
+
+>可以使用[js-cookie](https://github.com/js-cookie/js-cookie)完全替代。
 
 ---
 ## Polyfill
