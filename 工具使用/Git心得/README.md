@@ -382,9 +382,9 @@ feat(details): 添加了分享功能
 
     推送具体需求的commits到远程“feature/需求名”
 
+    # （本地必须先pull feature/需求名、develop分支，解决冲突，git flow执行merge操作，否则无法执行命令）
     git flow feature finish “需求名”
     # “feature/需求名”合并（--no-ff）至本地develop分支
-    #   （本地必须先pull feature/需求名、develop分支，解决冲突，git flow执行merge操作，否则无法执行命令）
     # 删除本地“feature/需求名”分支，切换至develop分支
     # 可能删除远程的“feature/需求名”分支（根据git-flow版本不同）
 
@@ -405,10 +405,10 @@ feat(details): 添加了分享功能
     # 更新changelog（手写或命令生成）
     # 修复发版前临时发现的问题
 
+    # （本地必须先pull release/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则无法执行命令）
     git flow release finish “版本号”
     # tag描述（手写或复制changelog）
     # “release/版本号”合并（--no-ff）至本地develop分支、本地master分支
-    #   （本地必须先pull release/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则无法执行命令）
     # 新建本地“版本号”tag
     # 删除本地“release/版本号”分支，切换至develop分支
     # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）
@@ -439,10 +439,10 @@ feat(details): 添加了分享功能
     # 更新changelog（手写或命令生成）
     # 修复发版前临时发现的问题
 
+    # （本地必须先pull hotfix/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则无法执行命令）
     git flow hotfix finish “版本号”
     # tag描述（手写或复制changelog）
     # “hotfix/版本号”合并（--no-ff）至本地master分支、本地develop分支
-    #   （本地必须先pull hotfix/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则无法执行命令）
     # 新建本地“版本号”tag
     # 删除本地“release/版本号”分支，切换至develop分支
     # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）

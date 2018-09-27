@@ -2026,7 +2026,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
             配置HTML的头部信息。
 
-            >`vmid`为`<meta>`的唯一的标识编号，用于覆盖父组件相同标签。
+            >`hid`为`<meta>`的唯一的标识编号，用于覆盖父组件相同标签。
         7. `loading`
 
             配置加载组件。

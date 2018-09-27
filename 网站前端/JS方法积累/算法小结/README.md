@@ -845,7 +845,7 @@ function switchArr ({ arr, from, to, isLeft = false }) {
 1. 要求：
 
     延时一段时间之后执行剩余代码。
-2. 实现方式
+2. 实现方式：
 
     1. `async-await`、`Promise`、`setTimeout`
 
@@ -921,10 +921,66 @@ function switchArr ({ arr, from, to, isLeft = false }) {
 1. 要求：
 
     任务队列，可以链式调用、可以取消前一个任务。
-2. 实现方式
+2. 实现方式：
 
     ```javascript
+    const obj = {
+      taskQueue: [],  // 存放执行队列
+      print (text) {  // 真的执行
+        console.log(text)
+      },
+      setTimeoutId: 0, // 保证链式调用在最后一个调用后才真的执行
+      execute () {  // 尝试执行
+        clearTimeout(this.setTimeoutId)
+        this.setTimeoutId = setTimeout(async () => {
+          while (this.taskQueue.length > 0) {
+            await this.taskQueue.shift().func()
+          }
+        }, 0)
 
+        return this
+      },
+
+      do (msg = 'do sth.') { // 普通行为（可被cancel）
+        this.taskQueue.push({ type: 'do', msg, func: () => { this.print(msg) } })
+
+        return this.execute()
+      },
+      sleep (ms = 1000) { // 使后面的链式休眠后再执行（可被cancel）
+        this.taskQueue.push({
+          type: 'sleep',
+          msg: ms,
+          func: () => new Promise((resolve) => {
+            this.print(`sleep:${ms}ms`)
+            setTimeout(() => resolve(), ms)
+          })
+        })
+
+        return this.execute()
+      },
+      cancel () { // 取消前一个链式的执行
+        if (this.taskQueue.length > 0) {
+          const task = this.taskQueue[this.taskQueue.length - 1]
+
+          if (task.type !== 'cancel') {
+            this.taskQueue.pop()
+            this.taskQueue.push({ type: 'cancel', func: () => { this.print(`\`${task.type}(${task.msg})\` was cancel`) } })
+          } else {
+            this.taskQueue.push({ type: 'cancel', func: () => { this.print('canceled nothing') } })
+          }
+        } else {
+          this.taskQueue.push({ type: 'cancel', func: () => { this.print('canceled nothing') } })
+        }
+
+        return this.execute()
+      }
+    }
+
+
+    /* 测试 */
+    // obj.do('你好').cancel()
+    // obj.cancel().do('hello').sleep(1000).do('yo ho')
+    obj.sleep(1000).sleep(2000).cancel().cancel().do('他好').cancel().sleep(1000).sleep(1000).do('我好').do('我好')
     ```
 
 ### 无缝轮播

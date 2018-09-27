@@ -49,19 +49,19 @@
     1. MD5
 
         ```bash
-        md5 “文件”  # 或md5sum
+        md5 “文件”        # 或md5sum
         ```
     2. SHA1
 
         ```bash
-        shasum “文件”  # 或sha1sum
+        shasum “文件”     # 或sha1sum
         ```
 9. 查看设置环境变量
 
     ```bash
-    echo $“变量”        # 查看变量
+    echo $“变量”          # 查看变量
 
-    export “变量”=“值”    # 设置变量
+    export “变量”=“值”     # 设置变量
     ```
 10. 查看本机IP
 
