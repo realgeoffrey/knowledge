@@ -359,7 +359,7 @@
     使用在`v-on`、`v-bind`、`v-module`后添加。
 14. `|`使用filters过滤器，参数带入函数运行出结果（支持过滤器串联）
 
-    可以在`{{ }}`和`v-bind`中使用（其他如 ~~`v-html`~~ 无效）。
+    仅可以在`{{ }}`和`v-bind`中使用（其他如 ~~`v-html`~~ 无效、无法在Vue实例中使用）。
 
     <details>
     <summary>e.g.</summary>
@@ -516,7 +516,10 @@
     >限制：只在由`new`创建的Vue实例中。
 2. `methods`（对象）：可调用方法
 
-    >`new`methods里的方法，方法体内的`this`指向这个实例，而非~~Vue实例~~。建议不要在methods中添加构造函数，而改用`import`方式引入构造函数。
+    >1. `new`methods里的方法，方法体内的`this`指向这个实例，而非~~Vue实例~~。建议不要在methods中添加构造函数，而改用`import`方式引入构造函数。
+    >2. template的每次改变，都会导致vnode重新渲染（vnode在differ之后的nextTick才会真的在DOM中重新渲染），也会导致没有缓存值的methods重新调用
+    >
+    >    若在`template`里调用`methods`中的方法从而双向绑定了数据（因为template最终是成为render函数，且每一次的数据改变都会导致整个组件的vnode重新渲染，其他方式的数据都有缓存，而调用`methods`的值没有缓存），则数据由调用`methods`而双向绑定的值，会随着任意模板数据改变而重新执行求值。
 3. `data`（对象或方法）：数据
 
     >限制：组件的`data`是方法且返回一个数据对象。
