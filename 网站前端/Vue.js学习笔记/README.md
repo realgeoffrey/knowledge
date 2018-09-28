@@ -34,6 +34,22 @@
 
         1. 在Vue实例内部`new`的其他实例或DOM，应放在`data`内进行掌控，当使用完毕后引导垃圾回收。
         2. 在Vue实例内部手动绑定的事件（`addEventListener`）、计时器、http连接、以及任何需要手动关闭的内容，需要在`beforeDestroy`前手动清除（`destroyed`仅自动清除Vue自己定义、绑定的内容）。
+    3. 请求异步数据的业务结构：
+
+        1. 独立的API模块专门进行请求数据异步
+        2. 在view层触发异步请求（页面创建钩子触发、或用户交互触发）
+
+            1. 使用vuex（建议方式）：
+
+                1. 在view层使用store的`dispatch`发起；
+                2. 在store模块内引入异步API模块，在actions内请求异步数据；
+                3. 返回的数据保存位置：
+
+                    1. （一般情况下，）保存在store的`state`，供所有组件使用。
+                    2. 当且仅当数据仅是某组件单独使用时（不需要共享数据），保存在Vue组件实例的`data`。
+            2. 不使用vuex、直接在view层引入API模块：
+
+                返回的数据保存在Vue组件实例的`data`。
 
 ### 模板插值
 1. 支持JS表达式（单个），不支持~~语句~~、~~流控制~~。
@@ -451,7 +467,7 @@
         有效标签或动态组件。
 - <details>
 
-    <summary>官方推荐的顺序：<a href="https://cn.vuejs.org/v2/style-guide/#元素特性的顺序-推荐">元素特性的顺序</a></summary>
+    <summary>官方建议的顺序：<a href="https://cn.vuejs.org/v2/style-guide/#元素特性的顺序-推荐">元素特性的顺序</a></summary>
 
     1. 定义（提供组件的选项）
 
@@ -615,7 +631,7 @@
 
 - <details>
 
-    <summary>官方推荐的顺序：<a href="https://cn.vuejs.org/v2/style-guide/#组件-实例的选项的顺序-推荐">组件/实例的选项的顺序</a></summary>
+    <summary>官方建议的顺序：<a href="https://cn.vuejs.org/v2/style-guide/#组件-实例的选项的顺序-推荐">组件/实例的选项的顺序</a></summary>
 
     1. 副作用（触发组件外的影响）
 
@@ -691,7 +707,7 @@
             1. 默认插槽
 
                 1. 模板中没有`name`属性的`<slot>`，匹配父级中去除所有`slot="字符串"`引用的内容（没有`slot`或`slot`值为空的DOM）。
-                2. 模板中`<slot>`的DOM内容，仅当没有父级匹配时显示。
+                2. 模板中`<slot>`的DOM内容，当且仅当没有父级匹配时显示。
             2. 具名插槽
 
                 1. 父级引用子组件，在元素内部添加的标签的DOM属性`slot="字符串"`；
@@ -722,7 +738,7 @@
 
                     1. `type`：原生构造器、或`null`、或原生构造器的数组
                     2. `required`：是否必须（默认：`false`）
-                    3. `default`：基本数据类型的值；对象或数组必须从工厂函数返回默认值（仅当没有传入时才使用或调用）
+                    3. `default`：基本数据类型的值；对象或数组必须从工厂函数返回默认值（当且仅当没有传入时才使用或调用）
 
                     >`required`和`default`二选一。
 
@@ -1010,7 +1026,7 @@
     ```
     </details>
 
-- 推荐的文件名命名方式：
+- 建议的文件名命名方式：
 
     1. 两个及以上单词
     2. 大驼峰式（PascalCase）或短横线隔开式（kebab-case）
@@ -1106,7 +1122,7 @@
         5. `css`：是否使用CSS过渡/动画的class（默认：`true`。若`false`，则只触发过渡钩子）
         6. 过渡钩子事件：
 
-            >推荐对于仅使用JS过渡的`<transition>`添加`:css="false"`。
+            >建议对于仅使用JS过渡的`<transition>`添加`:css="false"`。
 
             1. 进入过程
 
@@ -1637,12 +1653,6 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
     2. 动态注册`registerModule`、动态卸载`unregisterModule`
 
 - 若在`new`Vue实例时，把（已经`Vue.use(Vuex)`的）Vuex.Store实例通过`store`属性注入，则子组件内就能通过`vm.$store`访问此Vuex实例。
-
->- 建议的业务结构：
->
->    1. 在view层（页面.vue）触发`dispatch`（页面创建钩子触发或用户交互触发）。
->    2. 在store模块内引入异步API模块，在actions内请求异步数据。
->    3. 独立的API模块专门进行请求数据异步。
 
 ### [vue-cli](https://github.com/vuejs/vue-cli)
 快速构建Vue应用的脚手架，可以使用Vue官方或第三方模板来进行Vue应用的配置，主要包括webpack等工具的配置。
