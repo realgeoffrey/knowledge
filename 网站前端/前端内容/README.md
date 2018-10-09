@@ -143,7 +143,7 @@
     1. JS
 
         1. 监听文件的`load`事件，触发则加载完成。
-        2. 监听JS文件的`readystatechange`事件，当文件的`readyState`值为`loaded/complete`则JS加载完成。
+        2. 监听JS文件的`readystatechange`事件（大部分浏览器只有`document`能够触发），当文件的`readyState`值为`loaded/complete`则JS加载完成。
     2. CSS
 
         1. 监听文件的`load`事件，触发则加载完成。

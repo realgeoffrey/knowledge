@@ -1074,7 +1074,8 @@
     1. 当比较的两个值的类型不同时，`==`和`!=`都会强制[类型转换](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#数据类型转换)，再进行转换后值的比较。
     2. 用`===`和`!==`则不会转换，若类型不同则直接返回`false`（`switch`语句比较值是全等模式比较）。
 
-    >建议：都用`===`或`!==`进行比较。
+    >1. 建议：都用`===`或`!==`进行比较。
+    >2. `>=`等价于：`== || >`；`<=`等价于：`== || <`。
 4. 三元运算符应当仅仅用在条件赋值语句中，而不要作为`if`语句的替代：
 
     1. `var a = condition ? '1' : '2';`
@@ -1326,6 +1327,47 @@
     1. JS：`console.log`（`alert`）、`console.trace`
     2. PC端的DevTool：Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）
     3. WAP端使用页面模拟调试，如[vConsole](https://github.com/Tencent/vConsole)、[eruda](https://github.com/liriliri/eruda)
+    4. 上线的页面中藏着某些“后门”调试（如对各种操作开启`console`）
+
+        1. PC端可以在URL中判断某些特定的`search`值，以开启调试模式。
+
+            >e.g. `xxx?debug=1`开启
+        2. WAP端可以用一些隐蔽的手势触发log信息展示。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```javascript
+            >let consolelogi = 0
+            >
+            >function wapConsole () {
+            >  if (event.touches.length >= 4) {    // 4个触发点以上
+            >    consolelogi += 1
+            >
+            >    if (consolelogi >= 2) {    // 2次以上触发
+            >      // 展示隐藏的调试信息
+            >      const newScript = document.createElement('script')
+            >      const appendPlace = document.body || document.getElementsByTagName('head')[0]
+            >
+            >      newScript.onload = function () {
+            >        new VConsole()
+            >        newScript.onload = null
+            >      }
+            >
+            >      newScript.type = 'text/javascript'
+            >
+            >      newScript.src = '//unpkg.com/vconsole'
+            >
+            >      appendPlace.appendChild(newScript)
+            >
+            >      document.removeEventListener('touchstart', wapConsole, false)
+            >    }
+            >  }
+            >}
+            >
+            >document.addEventListener('touchstart', wapConsole, false)
+            >```
+            ></details>
 
 ### [函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js防抖函数)、[函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js节流函数)
 >都是用来限制某个函数在一定时间内执行次数的技巧。

@@ -332,7 +332,7 @@
             1. 用`:value="表达式"`；
             2. 若`type="checkbox"`，则用`:true-value="表达式" :false-value="表达式"`。
 7. `v-once`一次性插值，不再~~双向绑定~~
-8. `v-text`等价于`{{  }}`
+8. `v-text`等价于：`{{  }}`
 9. `v-html`输入真正HTML
 
     ><details>

@@ -1639,6 +1639,8 @@ xhr.send(null);
 
         1. 直接`document.write`
 
+            >因为`document.write`需要向文档流中写入内容，因此在关闭（已加载）的文档上调用`document.write`会自动调用`document.open`，这将清空该文档的内容。
+
             ```javascript
             document.write('<script src="JS文件地址"><\/script>');
             ```
