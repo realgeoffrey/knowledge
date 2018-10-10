@@ -17,6 +17,10 @@
     1. 可用[js-cookie](https://github.com/js-cookie/js-cookie)代替
 
         1. [操作cookie](#原生js操作cookie)
+    1. 可用[lodash](https://github.com/lodash/lodash)或[underscore](https://github.com/jashkenas/underscore)代替
+
+        1. [防抖函数](#原生js防抖函数)
+        1. [节流函数](#原生js节流函数)
 1. [Polyfill](#polyfill)
 
     1. [`requestAnimationFrame`和`cancelAnimationFrame`](#原生jsrequestanimationframe和cancelanimationframe的polyfill)
@@ -421,7 +425,7 @@ function multiCallback(func, url) {
 }
 ```
 >1. 可以使用Promise对象或`async-await`方法实现。
->2. 可以使用jQuery的Deferred对象`$.when($.ajax()...).done(成功后方法)`完全替代。
+>2. 可以使用jQuery的Deferred对象`$.when($.ajax()...).done(成功后方法)`，完全替代。
 
 ### *原生JS*对象合二为一（改变第一个参数）
 ```javascript
@@ -443,8 +447,8 @@ function extend(target, options) {
     return target;
 }
 ```
->1. 可以使用jQuery的`$.extend(对象1, 对象2)`完全替代。
->2. 可以使用[deepmerge](https://github.com/KyleAMathews/deepmerge)完全替代。
+>1. 可以使用jQuery的`$.extend(对象1, 对象2)`，完全替代。
+>2. 可以使用[deepmerge](https://github.com/KyleAMathews/deepmerge)，完全替代。
 
 ### *原生JS*深复制
 ```javascript
@@ -502,8 +506,8 @@ a.g.h1.j = [1, 2];
 var b = deepCopy(a);
 console.log(b);
 ```
->1. 可以使用jQuery的`$.extend(true, {}, 被复制对象)`完全替代。
->2. 可以使用lodash的`_.cloneDeep(被复制对象)`完全替代。
+>1. 可以使用jQuery的`$.extend(true, {}, 被复制对象)`，完全替代。
+>2. 可以使用lodash的`_.cloneDeep(被复制对象)`，完全替代。
 
 ### *原生JS*通过类名获取DOM
 ```javascript
@@ -551,7 +555,7 @@ function getElementsByClassName(className, parentDom) {
     }
 }
 ```
->可以使用jQuery的`$('.类名')`完全替代。
+>可以使用jQuery的`$('.类名')`，完全替代。
 
 ### *原生JS*操作cookie
 ```javascript
@@ -685,12 +689,165 @@ var cookieFuc = {
 ```
 >参考[MDN:cookie](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie#一个小框架：一个完整支持unicode的cookie读取写入器)。
 
->可以使用[js-cookie](https://github.com/js-cookie/js-cookie)完全替代。
+>可以使用[js-cookie](https://github.com/js-cookie/js-cookie)，完全替代。
+
+### *原生JS*防抖函数
+>来自[underscore](https://github.com/jashkenas/underscore)。
+
+```javascript
+/**
+ * 函数连续调用时，间隔时间必须大于或等于wait，func才会执行
+ * @param {Function} func - 传入函数
+ * @param {Number} wait - 函数触发的最小间隔
+ * @param {Boolean} [immediate] - 设置为ture时，调用触发于开始边界而不是结束边界
+ * @returns {Function} - 返回客户调用函数
+ */
+function debounce(func, wait, immediate) {
+    if (typeof Date.now !== 'function') {
+        Date.now = function () {
+            return new Date().getTime();
+        };
+    }
+
+    var timeout, args, context, timestamp, result;
+
+    var later = function () {
+        // 据上一次触发时间间隔
+        var last = Date.now() - timestamp;
+
+        // 上次被包装函数被调用时间间隔last小于设定时间间隔wait
+        if (last < wait && last >= 0) {
+            timeout = setTimeout(later, wait - last);
+        } else {
+            timeout = null;
+
+            // 如果设定为immediate===true，因为开始边界已经调用过了此处无需调用
+            if (!immediate) {
+                result = func.apply(context, args);
+
+                if (!timeout) {
+                    context = args = null;
+                }
+            }
+        }
+    };
+
+    return function () {
+        context = this;
+        args = arguments;
+        timestamp = Date.now();
+
+        var callNow = immediate && !timeout;
+
+        if (!timeout) {
+            timeout = setTimeout(later, wait);
+        }
+        if (callNow) {
+            result = func.apply(context, args);
+            context = args = null;
+        }
+
+        return result;
+    };
+}
+
+
+/* 使用测试 */
+var a = debounce(function () {  // 不要使用箭头函数，因为实现代码中有用`apply`
+    console.log(1);
+}, 1000);
+
+$(window).on('scroll', a);
+```
+>可以使用[lodash](https://github.com/lodash/lodash)或[underscore](https://github.com/jashkenas/underscore)，完全替代。
+
+### *原生JS*节流函数
+>来自[underscore](https://github.com/jashkenas/underscore)。
+
+```javascript
+/**
+ * 函数连续调用时，func在wait时间内，执行次数不得高于1次
+ * @param {Function} func - 传入函数
+ * @param {Number} wait - 函数触发的最小间隔
+ * @param {Object} [options] - 如果想忽略开始边界上的调用，传入{leading: false}；如果想忽略结尾边界上的调用，传入{trailing: false}
+ * @returns {Function} - 返回客户调用函数
+ */
+function throttle(func, wait, options) {
+    if (typeof Date.now !== 'function') {
+        Date.now = function () {
+            return new Date().getTime();
+        };
+    }
+
+    var context, args, result;
+    var timeout = null;
+    var previous = 0;   // 上次执行时间点
+
+    if (!options) {
+        options = {};
+    }
+
+    // 延迟执行函数
+    var later = function () {
+        // 若设定了开始边界不执行选项，上次执行时间始终为0
+        previous = options.leading === false ? 0 : Date.now();
+        timeout = null;
+        result = func.apply(context, args);
+        if (!timeout) {
+            context = args = null;
+        }
+    };
+
+    return function () {
+        var now = Date.now();
+
+        // 首次执行时，如果设定了开始边界不执行选项，将上次执行时间设定为当前时间。
+        if (!previous && options.leading === false) {
+            previous = now;
+        }
+
+        // 延迟执行时间间隔
+        var remaining = wait - (now - previous);
+
+        context = this;
+
+        args = arguments;
+
+        // 延迟时间间隔remaining小于等于0，表示上次执行至此所间隔时间已经超过一个时间窗口 || remaining大于时间窗口wait，表示客户端系统时间被调整过
+        if (remaining <= 0 || remaining > wait) {
+            if (timeout) {
+                clearTimeout(timeout);
+                timeout = null;
+            }
+            previous = now;
+            result = func.apply(context, args);
+            if (!timeout) {
+                context = args = null;
+            }
+        } else if (!timeout && options.trailing !== false) { // 如果延迟执行不存在，且没有设定结尾边界不执行选项
+            timeout = setTimeout(later, remaining);
+        }
+        return result;
+    };
+}
+
+
+/* 使用测试 */
+var a = throttle(function () {  // 不要使用箭头函数，因为实现代码中有用`apply`
+    console.log(1);
+}, 1000);
+
+$(window).on('scroll', a);
+```
+
+>可以使用[lodash](https://github.com/lodash/lodash)或[underscore](https://github.com/jashkenas/underscore)，完全替代。
 
 ---
 ## Polyfill
 
 ### *原生JS*`requestAnimationFrame`和`cancelAnimationFrame`的Polyfill
+>来自[rAF.js](https://gist.github.com/paulirish/1579671)。
+
 ```javascript
 (function () {
     var lastTime = 0,
@@ -723,7 +880,6 @@ var cookieFuc = {
     }
 }());
 ```
->来自[rAF.js](https://gist.github.com/paulirish/1579671)。
 
 ### *原生JS*`Date.now`的Polyfill
 ```javascript
@@ -736,6 +892,8 @@ if (typeof Date.now !== 'function') {
 >`Date.now()`相对于`new Date().getTime()`及其他方式，可以避免生成不必要的`Date`对象，更高效。
 
 ### *原生JS*`Object.create`的Polyfill
+>来自[MDN:Object.create](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill)。
+
 ```javascript
 if (typeof Object.create !== 'function') {
     Object.create = (function () {
@@ -767,9 +925,10 @@ if (typeof Object.create !== 'function') {
     })();
 }
 ```
->来自[MDN:Object.create](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill)。
 
 ### *原生JS*`Array.isArray`的Polyfill
+>来自[MDN:Array.isArray](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray#Polyfill)。
+
 ```javascript
 if (!Array.isArray) {
     Array.isArray = function (arg) {
@@ -777,9 +936,10 @@ if (!Array.isArray) {
     };
 }
 ```
->来自[MDN:Array.isArray](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray#Polyfill)。
 
 ### *原生JS*`Array.prototype.map`的Polyfill
+>来自[MDN:Array.prototype.map](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map#Compatibility)。
+
 ```javascript
 if (!Array.prototype.map) {
     Array.prototype.map = function (callback, thisArg) {
@@ -824,9 +984,10 @@ if (!Array.prototype.map) {
     };
 }
 ```
->来自[MDN:Array.prototype.map](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map#Compatibility)。
 
 ### *原生JS*`Function.prototype.bind`的Polyfill
+>来自[MDN:Function.prototype.bind](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind#Compatibility)。
+
 ```javascript
 if (!Function.prototype.bind) {
     Function.prototype.bind = function (oThis) {
@@ -852,9 +1013,10 @@ if (!Function.prototype.bind) {
     };
 }
 ```
->来自[MDN:Function.prototype.bind](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind#Compatibility)。
 
 ### *原生JS*`String.prototype.trim`的Polyfill
+>来自[MDN:String.prototype.trim](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/Trim#兼容旧环境)。
+
 ```javascript
 if (!String.prototype.trim) {
     String.prototype.trim = function () {
@@ -862,9 +1024,10 @@ if (!String.prototype.trim) {
     };
 }
 ```
->来自[MDN:String.prototype.trim](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/Trim#兼容旧环境)。
 
 ### *原生JS*`String.prototype.repeat`的Polyfill
+>来自[MDN:String.prototype.repeat](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/repeat#填充)。
+
 ```javascript
 if (!String.prototype.repeat) {
   String.prototype.repeat = function (count) {
@@ -907,36 +1070,39 @@ if (!String.prototype.repeat) {
   };
 }
 ```
->来自[MDN:String.prototype.repeat](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/repeat#填充)。
 
 ### *原生JS*`Number.isNaN`的Polyfill
+>来自[MDN:Number.isNaN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN#Polyfill)。
+
 ```javascript
 Number.isNaN = Number.isNaN || function (value) {
   return typeof value === 'number' && isNaN(value);
 };
 ```
->来自[MDN:Number.isNaN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN#Polyfill)。
 
 ### *原生JS*`Number.isFinite`的Polyfill
+>来自[MDN:Number.isFinite](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite#Polyfill)。
+
 ```javascript
 Number.isFinite = Number.isFinite || function (value) {
   return typeof value === 'number' && isFinite(value);
 };
 ```
->来自[MDN:Number.isFinite](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite#Polyfill)。
 
 ### *原生JS*`Number.isInteger`的Polyfill
+>来自[MDN:Number.isInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill)。
+
 ```javascript
 Number.isInteger = Number.isInteger || function (value) {
   return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
 };
 ```
->来自[MDN:Number.isInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill)。
 
 ### *原生JS*`Number.isSafeInteger`的Polyfill
+>来自[MDN:Number.isSafeInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isSafeInteger#Polyfill)。
+
 ```javascript
 Number.isSafeInteger = Number.isSafeInteger || function (value) {
   return Number.isInteger(value) && Math.abs(value) <= Number.MAX_SAFE_INTEGER;
 };
 ```
->来自[MDN:Number.isSafeInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isSafeInteger#Polyfill)。

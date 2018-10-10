@@ -352,7 +352,7 @@
 ### 直出、同构、预渲染
 >这里的**渲染**是指：根据JS、CSS文件解析构造DOM达到最终页面效果的过程。
 
-1. 直出（server-side rendering，服务器端渲染）
+1. 直出（server-side rendering，SSR，服务端渲染）
 
     Web后端渲染并输出内容（相对于：客户端AJAX请求数据并渲染DOM），代替客户端耗费渲染性能。
 
@@ -365,7 +365,12 @@
 2. 同构（isomorphic javascript）
 
     Web前端与Web后端（直出端）使用同一套代码方案（JavaScript）。
-3. 预渲染（prerendering，构建时预加载）
+
+    >同构的代码要注意在服务端环境（Node.js）和浏览器环境是使用同一套代码，必须要做兼容处理，如：
+    >
+    >    1. 在Node.js环境不能出现DOM、BOM、`window`操作，而变成操作`global`。
+    >    2. 在Vue中某些钩子专门针对单一的环境，不要把操作浏览器环境的代码放在两端都会执行的钩子中。
+3. 预>渲染（prerendering，构建时预加载）
 
     >多针对无动态数据的页面。
 

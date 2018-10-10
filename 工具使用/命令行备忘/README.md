@@ -55,6 +55,7 @@
 
         ```bash
         shasum “文件”     # 或sha1sum
+        # 使用特定算法：`-a, --algorithm   1 (default), 224, 256, 384, 512, 512224, 512256`
         ```
 9. 查看设置环境变量
 
@@ -111,3 +112,8 @@
 
         kill “PID”
         ```
+14. brew（macOS）更新
+
+    ```bash
+    brew update && brew upgrade && brew cask upgrade
+    ```

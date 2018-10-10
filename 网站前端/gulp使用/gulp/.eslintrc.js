@@ -21,6 +21,7 @@ module.exports = {
     // 'vue'   // eslint-plugin-vue
   ],
   rules: {  // 0 === 'off'; 1 === 'warn'; 2 === 'error'
+    'no-new': 0,  // 允许单独使用`new 构造函数()`，而不赋值
     'no-multi-spaces': [2, { ignoreEOLComments: true }],  // 忽略行尾注释前的多个空格
     'no-trailing-spaces': [2, { skipBlankLines: true }],  // 允许在空行使用空白符
     'no-console': 0,  // 允许console

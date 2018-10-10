@@ -1369,7 +1369,7 @@
             >```
             ></details>
 
-### [函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js防抖函数)、[函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js节流函数)
+### 函数防抖、函数节流
 >都是用来限制某个函数在一定时间内执行次数的技巧。
 
 1. 防抖（debounce）
@@ -1378,8 +1378,6 @@
 2. 节流（throttle）
 
     一个函数无法在间隔时间内连续执行，当上一次函数执行后过了间隔时间后才能进行下一次该函数的调用。
-
-    >可用`requestAnimationFrame(func)`代替间隔时间设置为一帧的节流函数：`throttle(func, 16) `。
 
 ### 自执行匿名函数（拉姆达，λ，lambda）
 立即调用的函数表达式（IIFE，Immediately Invoked Function Expression）。

@@ -60,8 +60,6 @@
         1. [根据滚动方向执行函数](#原生js根据滚动方向执行函数)
     1. 提升性能
 
-        1. [防抖函数](#原生js防抖函数)
-        1. [节流函数](#原生js节流函数)
         1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
         1. [`requestAnimationFrame`的递归](#原生jsrequestanimationframe的递归)
 1. [jQuery方法](#jquery方法)
@@ -1571,15 +1569,16 @@ function getScrollBarWidth() {
 ```
 
 ### *原生JS*验证邮箱有效性
+>来自[stackoverflow:Validate email address in JavaScript?](http://stackoverflow.com/questions/46155/validate-email-address-in-javascript#answer-46181)。
+
 ```javascript
 function validateEmail(email) {
 
     return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
 }
 ```
->来自[stackoverflow:Validate email address in JavaScript?](http://stackoverflow.com/questions/46155/validate-email-address-in-javascript#answer-46181)。
 
-不存在可以判断世界任何一个有效邮箱的正则。
+>不存在可以判断世界任何一个有效邮箱的正则。
 
 ### *原生JS*创建兼容的XHR对象
 ```javascript
@@ -2134,152 +2133,6 @@ var b = new ScrollDirection({
 // a.stop()
 // b.stop()
 ```
-
-### *原生JS*防抖函数
-```javascript
-/**
- * 函数连续调用时，间隔时间必须大于或等于wait，func才会执行
- * @param {Function} func - 传入函数
- * @param {Number} wait - 函数触发的最小间隔
- * @param {Boolean} [immediate] - 设置为ture时，调用触发于开始边界而不是结束边界
- * @returns {Function} - 返回客户调用函数
- */
-function debounce(func, wait, immediate) {
-    if (typeof Date.now !== 'function') {
-        Date.now = function () {
-            return new Date().getTime();
-        };
-    }
-
-    var timeout, args, context, timestamp, result;
-
-    var later = function () {
-        // 据上一次触发时间间隔
-        var last = Date.now() - timestamp;
-
-        // 上次被包装函数被调用时间间隔last小于设定时间间隔wait
-        if (last < wait && last >= 0) {
-            timeout = setTimeout(later, wait - last);
-        } else {
-            timeout = null;
-
-            // 如果设定为immediate===true，因为开始边界已经调用过了此处无需调用
-            if (!immediate) {
-                result = func.apply(context, args);
-
-                if (!timeout) {
-                    context = args = null;
-                }
-            }
-        }
-    };
-
-    return function () {
-        context = this;
-        args = arguments;
-        timestamp = Date.now();
-
-        var callNow = immediate && !timeout;
-
-        if (!timeout) {
-            timeout = setTimeout(later, wait);
-        }
-        if (callNow) {
-            result = func.apply(context, args);
-            context = args = null;
-        }
-
-        return result;
-    };
-}
-
-
-/* 使用测试 */
-var a = debounce(function () {
-    console.log(1);
-}, 1000);
-
-$(window).on('scroll', a);
-```
->来自[underscore](https://github.com/jashkenas/underscore)。
-
-### *原生JS*节流函数
-```javascript
-/**
- * 函数连续调用时，func在wait时间内，执行次数不得高于1次
- * @param {Function} func - 传入函数
- * @param {Number} wait - 函数触发的最小间隔
- * @param {Object} [options] - 如果想忽略开始边界上的调用，传入{leading: false}；如果想忽略结尾边界上的调用，传入{trailing: false}
- * @returns {Function} - 返回客户调用函数
- */
-function throttle(func, wait, options) {
-    if (typeof Date.now !== 'function') {
-        Date.now = function () {
-            return new Date().getTime();
-        };
-    }
-
-    var context, args, result;
-    var timeout = null;
-    var previous = 0;   // 上次执行时间点
-
-    if (!options) {
-        options = {};
-    }
-
-    // 延迟执行函数
-    var later = function () {
-        // 若设定了开始边界不执行选项，上次执行时间始终为0
-        previous = options.leading === false ? 0 : Date.now();
-        timeout = null;
-        result = func.apply(context, args);
-        if (!timeout) {
-            context = args = null;
-        }
-    };
-
-    return function () {
-        var now = Date.now();
-
-        // 首次执行时，如果设定了开始边界不执行选项，将上次执行时间设定为当前时间。
-        if (!previous && options.leading === false) {
-            previous = now;
-        }
-
-        // 延迟执行时间间隔
-        var remaining = wait - (now - previous);
-
-        context = this;
-
-        args = arguments;
-
-        // 延迟时间间隔remaining小于等于0，表示上次执行至此所间隔时间已经超过一个时间窗口 || remaining大于时间窗口wait，表示客户端系统时间被调整过
-        if (remaining <= 0 || remaining > wait) {
-            if (timeout) {
-                clearTimeout(timeout);
-                timeout = null;
-            }
-            previous = now;
-            result = func.apply(context, args);
-            if (!timeout) {
-                context = args = null;
-            }
-        } else if (!timeout && options.trailing !== false) { // 如果延迟执行不存在，且没有设定结尾边界不执行选项
-            timeout = setTimeout(later, remaining);
-        }
-        return result;
-    };
-}
-
-
-/* 使用测试 */
-var a = throttle(function () {
-    console.log(1);
-}, 1000);
-
-$(window).on('scroll', a);
-```
->来自[underscore](https://github.com/jashkenas/underscore)。
 
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript

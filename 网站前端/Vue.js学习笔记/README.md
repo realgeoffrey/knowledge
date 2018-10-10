@@ -13,6 +13,7 @@
     1. [特性](#特性)
     1. [响应式系统](#响应式系统)
     1. [虚拟DOM系统](#虚拟dom系统)
+    1. [例子](#例子)
 1. [vue-router](#vue-router)
 1. [vuex](#vuex)
 1. [vue-cli](#vue-cli)
@@ -1259,6 +1260,36 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 >根据定义，**虚拟DOM** 比 **精细地直接更新DOM（`innerHTML`）** 更慢。虚拟DOM是执行DOM更新的一种折衷方式、一种权衡，尽管没有提升性能，但带来很多好处，可以提升开发人员的开发效率。
 ></details>
 
+### 例子
+1. 使用debounce或throttle
+
+    ```vue
+    <template>
+      <div>
+        <input type="text" @input="handleInput" v-model="msg">
+        {{ msg }}
+      </div>
+    </template>
+
+    <script>
+    import debounce from 'lodash.debounce'  // 或：import throttle from 'lodash.throttle'
+
+    export default {
+      data () {
+        return {
+          msg: ''
+        }
+      },
+      methods: {
+        // 不要使用箭头函数，因为实现代码中有用`call/apply`
+        handleInput1: debounce(() => {  // 或：throttle
+          console.log(this)
+        }, 500)
+      }
+    }
+    </script>
+    ```
+
 ---
 ### [vue-router](https://github.com/vuejs/vue-router)
 1. 初始化
@@ -1324,7 +1355,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
     1. `<router-link>`：导航
 
         1. `to`：目标地址
-        2. `replace`：（默认：`false`）是否使用`replace`替换~~push~~
+        2. `replace`：（默认：`false`）是否使用`replace`替换`push`
         3. `tag`：（默认：`a`）生成其他标签名
         4. `append`：（默认：`false`）是否是相对路径
         5. `exact`：（默认：`false`）：是否精确激活
@@ -1347,6 +1378,9 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         7. `forward()`
         8. `push(路由字符串或对象[, 完成回调函数[, 失败回调函数]])`
         9. `replace(路由字符串或对象[, 完成回调函数[, 失败回调函数]])`
+
+        >若`push/replace`仅修改`search`值（或`history`模式的`hash`值），则不会改变路由也不刷新页面。如：`vm.$router.push/replace('?a=xx')`。
+
         10. `getMatchedComponents(location?)`
         11. `resolve(location, current?, append?)`
         12. `addRoutes(routes)`
@@ -1880,20 +1914,21 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
             <details>
             <summary>创建并自动设置Vue根实例的<code>store</code>属性后，即可在组件的实例内使用<code>vm.$store</code>。引入所有<code>store</code>文件夹内的<code>.js</code>（<code>index.js</code>是非模块方式引入，其他文件均为模块方式引入）。</summary>
 
-            ```html
+            ```vue
             <!--
             .vue组件中使用实例的$store：
+
             1. 根vuex
-            this.$store.state.状态数据、
-            this.$store.getters['状态计算数据']、
-            this.$store.commit('mutation名', 第二个参数)、
-            this.$store.dispatch('action名', 第二个参数)
+              this.$store.state.状态数据、
+              this.$store.getters['状态计算数据']、
+              this.$store.commit('mutation名', 第二个参数)、
+              this.$store.dispatch('action名', 第二个参数)
 
             2. 模块vuex
-            this.$store.state.模块名.状态数据、
-            this.$store.getters['模块名/状态计算数据']、
-            this.$store.commit('模块名/mutation名', 第二个参数)、
-            this.$store.dispatch('模块名/action名', 第二个参数)
+              this.$store.state.模块名.状态数据、
+              this.$store.getters['模块名/状态计算数据']、
+              this.$store.commit('模块名/mutation名', 第二个参数)、
+              this.$store.dispatch('模块名/action名', 第二个参数)
             -->
             <template>
               <button @click="func1">{{ $store.state.counter1 }}</button>
@@ -1934,7 +1969,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
             <details>
             <summary><code>pages</code>目录下组件引用<code>layouts</code>目录下布局的方式</summary>
 
-            ```html
+            ```vue
             <!-- layouts/布局文件名.vue -->
             <template>
               <div>
@@ -2219,7 +2254,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
     >增加`-h`参数查看nuxt命令可带参数。
 6. 输出至生产环境的方案
 
-    1. SSR：服务器渲染（与开发模式的SSR相同）。
+    1. SSR：服务端渲染（与开发模式的SSR相同）。
     2. 静态化页面
 
         1. 针对`动态路由`要设置服务器重定向至`index.html`，用`history`路由模式。
