@@ -341,7 +341,7 @@ function radixSort(arr) {
     var len = arr.length,
         i, bucket, max, maxLen, str, j, num, k, kLen;
 
-    for (i = 0, bucket = []; i < 10; i++) { /* 创建十个空桶（十进制），每一位数循环先放入再倒出清空 */
+    for (i = 0, bucket = []; i < 10; i++) { /* 创建十个空桶（10进制），每一位数循环先放入再倒出清空 */
         bucket[i] = [];
     }
 

@@ -35,27 +35,44 @@
     ```bash
     which “指令”
     ```
-6. 打开文件（夹）
+6. （macOS）打开文件（夹）
 
     ```bash
-    open “路径/文件”  # macOS
+    open “路径/文件”
     ```
 7. hosts文件位置
 
-    1. macOS、Linux：**/etc/hosts**
-    2. Windows：**C:\Windows\System32\drivers\etc\hosts**
+    1. macOS、Linux
+
+        `/etc/hosts`
+    2. Windows
+
+        `C:\Windows\System32\drivers\etc\hosts`
 8. 验证文件的数字签名
 
     1. MD5
 
         ```bash
-        md5 “文件”        # 或md5sum
+        # macOS
+        md5 “文件”
+        md5 -s “字符串”    # 或`echo -n “字符串” | md5`
+
+        # Windows
+        md5sum.exe “文件”
+        echo -n “字符串” | md5sum.exe
         ```
-    2. SHA1
+    2. SHA
 
         ```bash
-        shasum “文件”     # 或sha1sum
+        # macOS
+        shasum “文件”
+        echo -n “字符串” | shasum
         # 使用特定算法：`-a, --algorithm   1 (default), 224, 256, 384, 512, 512224, 512256`
+
+        # Windows
+        sha1sum.exe “文件”
+        echo -n “字符串” | sha1sum.exe
+        # 使用特定算法：`sha224sum.exe sha256sum.exe sha384sum.exe sha512sum.exe`
         ```
 9. 查看设置环境变量
 
@@ -67,9 +84,11 @@
 10. 查看本机IP
 
     ```bash
-    ipconfig    # Windows系统
+    # macOS
+    ifconfig    # 查看`en0 的 inet`
 
-    ifconfig    # macOS系统，查看en0后的inet数据
+    # Windows
+    ipconfig    # 查看`以太网适配器 本地连接 的 IPv4 地址`
     ```
 11. 执行文件
 
@@ -80,7 +99,7 @@
 
     . 路径名/文件名.sh
     ```
-12. 开机自动运行的脚本（Unix-like）
+12. （Unix-like）开机自动运行的脚本
 
     ```bash
     # macOS
@@ -93,7 +112,14 @@
     ```
 13. 查看端口占用，杀掉进程
 
-    1.  Windows（需要在cmd.exe进行）
+    1. macOS
+
+        ```bash
+        lsof -i :“端口号”
+
+        kill “PID”
+        ```
+    2.  Windows（需要在cmd.exe进行）
 
         ```bash
         netstat -aon | findstr “端口号”  # 获得某端口号的任务PID
@@ -105,14 +131,7 @@
         # 或`taskkill /F /T /IM “任务名”`
         # 或去任务管理器结束进程（打开进程->查看->选择列的PID）
         ```
-    2. macOS
-
-        ```bash
-        lsof -i :“端口号”
-
-        kill “PID”
-        ```
-14. brew（macOS）更新
+14. （macOS）brew更新
 
     ```bash
     brew update && brew upgrade && brew cask upgrade

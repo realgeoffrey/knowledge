@@ -1730,8 +1730,12 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
         1. `asyncData`
 
+            >可在客户端或服务端渲染时调用。
+
             页面组件被初始化前调用（组件还未创建，无法使用`this`引用组件实例）。`return`的数据与`data`方法返回的数据合并后返回当前页面组件。
         2. `fetch`
+
+            >可在客户端或服务端渲染时调用。
 
             在渲染页面前填充状态（store）的数据。
         3. `head`

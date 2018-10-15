@@ -27,7 +27,7 @@
         1. [科学计数法转换成字符串的数字](#原生js科学计数法转换成字符串的数字)
         1. [用整数进行小数的四则运算（避免浮点数运算误差）](#原生js用整数进行小数的四则运算避免浮点数运算误差)
         1. [大数加减法（不考虑小数和负数）](#原生js大数加减法不考虑小数和负数)
-        1. [不同进制数转换](#原生js不同进制数转换)
+        1. [不同进制数互相转换](#原生js不同进制数互相转换)
         1. [选取范围内随机值](#原生js选取范围内随机值)
     1. 字符串操作
 
@@ -1008,11 +1008,11 @@ var overRangeOperations = {
 };
 ```
 
-### *原生JS*不同进制数转换
+### *原生JS*不同进制数互相转换
 ```javascript
 /**
  * 不同进制（2至36进制）换算（10个阿拉伯数字+26个字母）
- * @param {String} operand - 转换数（二进制仅使用0~1、八进制仅使用0~7、十进制仅使用0~9、十六进制仅使用0~9和a~f，等）
+ * @param {String} operand - 转换数（2进制仅使用0~1、8进制仅使用0~7、10进制仅使用0~9、16进制仅使用0~9和a~f，等）
  * @param {Number} fromRadix - 转换数的进制数（2~36）
  * @param {Number} toRadix - 结果的进制数
  * @returns {String|Boolean|Number} - 转换后的数值；进制数不在2~36：false；操作数与进制数不匹配：NaN
@@ -1021,12 +1021,12 @@ function numConvert(operand, fromRadix, toRadix) {
     var myself = arguments.callee;
 
     if (typeof myself.toDecimal !== 'function' || typeof myself.fromDecimal !== 'function') {
-        myself.toDecimal = function (str, radix) {  /* 其他进制转化为十进制 */
+        myself.toDecimal = function (str, radix) {  /* 其他进制转化为10进制 */
 
             return parseInt(str, radix);
         };
 
-        myself.fromDecimal = function (num, radix) {    /* 十进制转化为其他进制 */
+        myself.fromDecimal = function (num, radix) {    /* 10进制转化为其他进制 */
 
             return num.toString(radix);
         };
