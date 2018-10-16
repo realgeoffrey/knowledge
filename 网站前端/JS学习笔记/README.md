@@ -1325,6 +1325,8 @@
 5. 代码调试方式
 
     1. JS：`console.log`（`alert`）、`console.trace`
+
+        >（Value below was evaluated just now.）`console`引用类型的数据，在点击开来查看的瞬间才去取引用类型的快照（意味着可以console之后再修改展示内容），打开之后不再关联。
     2. PC端的DevTool：Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）
     3. WAP端使用页面模拟调试，如[vConsole](https://github.com/Tencent/vConsole)、[eruda](https://github.com/liriliri/eruda)
     4. 上线的页面中藏着某些“后门”调试（如对各种操作开启`console`）

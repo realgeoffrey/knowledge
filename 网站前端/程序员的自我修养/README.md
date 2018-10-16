@@ -27,6 +27,7 @@
     1. [抽象语法树（abstract syntax tree，AST）](#抽象语法树abstract-syntax-treeast)
 1. [编译器原理](#编译器原理)
 1. [MD5 && SHA](#md5--sha)
+1. [前端与服务端配合方式](#前端与服务端配合方式)
 
 ---
 ### 数据结构（data structure）
@@ -681,19 +682,100 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
     根据最终的AST或之前的Token输出新的代码。
 
 ### MD5 && SHA
->1. 不同系统、不同编程语言对MD5或SHA实现的逻辑相同（对同一个内容，用不同实现的MD5或SHA得出结果相同）。
+>1. 不同系统、不同编程语言对MD5或SHA实现的逻辑相同（对同一内容，用不同实现的MD5或SHA得出结果相同）。
 >2. 用不同的行分隔符（`\n`、`\r`、`\r\n`）打开同一个文本文件，会造成MD5或SHA输出结果不同。
 
 1. MD5（message-digest dlgorithm，消息摘要算法）
 
     输入不定长度信息，输出固定长度128-bits（32位16进制数，`Math.pow(2,128) === Math.pow(16,32)`）的算法。
 
-    >1. 1996年后被证实存在弱点，可以被破解。2004年，被证实无法防止碰撞（collision）。因此不适用于安全性认证。
-    >2. 因其普遍、稳定、快速的特点，仍广泛应用于普通数据的错误检查领域。例如：为文件传输提供一定的可靠性检查。
+    >1. 可被破解、无法防止碰撞（collision），因此不适用于安全性认证。
+    >2. 因其普遍、稳定、快速的特点，仍广泛应用于普通数据的错误检查领域。如：文件传输的可靠性检查。
 2. SHA（secure hash algorithm，安全散列算法）
 
     输入不定长度信息，（根据算法不同）输出（不同）固定长度的算法。
 
-    >安全、破解难度大：SHA-3、SHA-2。
+    >安全、破解难度大：SHA-2、SHA-3。
 
 >[MD5以及各SHA家族对比](https://zh.wikipedia.org/wiki/SHA家族#SHA函数对比)
+
+### 前端与服务端配合方式
+1. 开发方式
+
+    1. 并行（优先）：
+
+        1. 先与服务端对接预期API，服务端产出API文档；
+        2. 前端根据文档通过Mock方式开发（或服务端先提供Mock数据的API）；
+        3. 当服务端API开发完毕后再用真实API加入前端页面（仅关闭Mock即可）。
+    2. 串行：
+
+        服务端比前端提前一个版本，交付的内容包括API+文档。
+2. 分页的游标管理
+
+    1. 普通情况，游标由前端（或客户端）管理。
+    2. 若快速变动的数据（如推荐）、或要根据用户操作而快速改变的数据（如已推送给某用户的不再推送给ta、用户标记不喜欢的相关类型不再推送给ta），则游标由服务端管理。
+
+        服务端用Redis等内存管理方式记录用户的ID，前端只需要每次请求相同接口就可从服务端返回分页数据。
+3. 服务端文档要求
+
+    API文档确定的字段，就算为空，也必须按照文档要求返回` `或`[]`或`{}`，不允许返回内容丢失字段。
+4. 扁平化的需要
+
+    不同接口、但类别相同的数据，都按照相同的结构约定数据模式。
+
+    ><details>
+    ><summary>前端可以进行数据扁平化，把不同接口返回的数据都根据类别按照hash的方式存放在各自类别的store，并再保存一份记录顺序的数据</summary>
+    >
+    >```javascript
+    >const store = {}  // 扁平化保存
+    >
+    >store.category1 = {}  // 类别1的store
+    >store.category1.all = {}  // 存放类别1的元数据（元数据：完整的单项数据，用唯一的id进行hash索引）
+    >store.category1.order = []  // 存放类别1的展示顺序（保存接口返回的数组id顺序）
+    >store.category1.flattenData = (data) => { // 扁平化数据：把单项数据合并至all
+    >  store.category1.all[data.id] = Object.assign({}, store.category1.all[data.id], data)
+    >}
+    >
+    >store.category2 = {}
+    >store.category2.all = {}
+    >store.category2.order = []
+    >store.category2.flattenData = (data) => {
+    >  store.category2.all[data.id] = Object.assign({}, store.category2.all[data.id], data)
+    >}
+    >
+    >// 处理请求来的数据
+    >function handleData (arr) {
+    >  arr.forEach((data) => {
+    >    store.category1.flattenData(data.category1)   // 把元数据合并至all
+    >    store.category1.order.push(data.category1.id) // 把顺序加入到order
+    >
+    >    store.category2.flattenData(data.category2)
+    >    store.category2.order.push(data.category2.id)
+    >  })
+    >
+    >  console.log(JSON.parse(JSON.stringify(store)))  // 打印
+    >}
+    >
+    >
+    >// 第一次接口返回的数组，包含多种种类别数据
+    >const data1 = [
+    >  { category1: { id: '1', data: 'category1第一个数据' }, category2: { id: 'a', data: 'category2第I个数据' } },
+    >  { category1: { id: '20', data: 'category1第二个数据' }, category2: { id: 'b', data: 'category2第II个数据' } },
+    >  { category1: { id: '300', data: 'category1第三个数据' }, category2: { id: 'c', data: 'category2第III个数据' } },
+    >  { category1: { id: '4000', data: 'category1第四个数据' }, category2: { id: 'd', data: 'category2第IV个数据' } }
+    >]
+    >handleData(data1)
+    >
+    >// 第二次接口返回的数组，包含多种种类别数据
+    >const data2 = [
+    >  { category1: { id: '5000', data: 'category1第五个数据' }, category2: { id: 'E', data: 'category2第V个数据' } },
+    >  { category1: { id: '600', data: 'category1第六个数据' }, category2: { id: 'F', data: 'category2第VI个数据' } },
+    >  { category1: { id: '70', data: 'category1第七个数据' }, category2: { id: 'G', data: 'category2第VII个数据' } },
+    >  { category1: { id: '8', data: 'category1第八个数据' }, category2: { id: 'H', data: 'category2第VIII个数据' } },
+    >  { category1: { id: '1', data: 'category1的覆盖内容' }, category2: { id: 'a', data: 'category2的覆盖内容' } }
+    >]
+    >handleData(data2)
+    >
+    >console.log('接口获得的数据都进行扁平化处理；在对应类别的store按照id获取、覆盖数据，再保存一份存放顺序的数组')
+    >```
+    ></details>

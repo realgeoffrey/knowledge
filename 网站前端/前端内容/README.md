@@ -12,7 +12,6 @@
 1. [JS压缩细节](#js压缩细节)
 1. [垃圾回收](#垃圾回收)
 1. [兼容特殊浏览器、PC与WAP加载不同资源的方案](#兼容特殊浏览器pc与wap加载不同资源的方案)
-1. [前端与服务端配合方式](#前端与服务端配合方式)
 1. [JavaScript范围](#javascript范围)
 1. [JS模块化方案](#js模块化方案)
 
@@ -551,27 +550,6 @@
     >2. UA判断：[判断所在系统](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断所在系统)、[判断移动平台](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断移动平台)、[判断ie所有版本](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断ie所有版本)
 3. 把特殊资源打包进总体代码，再根据UA判断引入。
 4. 服务端根据HTTP请求的UA判断输出不同页面加载不同资源（BFF层）。
-
-### 前端与服务端配合方式
-1. 开发方式
-
-    1. 并行（优先）：
-
-        1. 先与服务端对接预期API，服务端产出API文档；
-        2. 前端根据文档通过Mock方式开发（或服务端先提供Mock数据的API）；
-        3. 当服务端API开发完毕后再用真实API加入前端页面（仅关闭Mock即可）。
-    2. 串行：
-
-        服务端比前端提前一个版本，交付的内容包括API+文档。
-2. 分页的游标管理
-
-    1. 普通情况，游标由前端（或客户端）管理。
-    2. 若快速变动的数据（如推荐）、或要根据用户操作而快速改变的数据（如已推送给某用户的不再推送给ta、用户标记不喜欢的相关类型不再推送给ta），则游标由服务端管理。
-
-        服务端用Redis等内存管理方式记录用户的ID，前端只需要每次请求相同接口就可从服务端返回分页数据。
-3. 服务端文档要求
-
-    API文档确定的字段，就算为空，也必须按照文档要求返回` `或`[]`或`{}`，不允许返回内容丢失字段。
 
 ### JavaScript范围
 >ECMAScript是JavaScript的标准，狭义的JavaScript指ECMAScript。浏览器、Node.js都是JavaScript的运行环境。
