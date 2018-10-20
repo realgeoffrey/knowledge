@@ -51,6 +51,10 @@
             2. 不使用vuex、直接在view层引入API模块：
 
                 返回的数据保存在Vue组件实例的`data`。
+    4. 项目内文件的命名：
+
+        1. 图片文件用：`_`；（除了.vue）其他所有文件用：`-`
+        2. .vue用：大驼峰式（PascalCase）或`-`短横线隔开式（kebab-case）
 
 ### 模板插值
 1. 支持JS表达式（单个），不支持~~语句~~、~~流控制~~。
@@ -167,7 +171,7 @@
         2. 绑定`style`
 
             >1. 自动添加样式前缀。
-            >2. CSS属性名可以用小驼峰式（camelCase）或短横线隔开式（kebab-case，需用单引号包裹）命名。
+            >2. CSS属性名可以用小驼峰式（camelCase）或`-`短横线隔开式（kebab-case，需用单引号包裹）命名。
 
             1. `:style="{css属性: Vue属性[, css属性: Vue属性]}"`
             2. `:style="Vue属性对象"`
@@ -788,17 +792,17 @@
 
     1. JS注册组件或`props`：
 
-        短横线隔开式（kebab-case）、小驼峰式（camelCase）、大驼峰式（PascalCase）。
+        `-`短横线隔开式（kebab-case）、小驼峰式（camelCase）、大驼峰式（PascalCase）。
     2. HTML中：
 
-        1. 仅能使用短横线隔开式（把大/小驼峰式用`-`隔开并小写单词代替）
+        1. 仅能使用`-`短横线隔开式（把大/小驼峰式用`-`隔开并小写单词代替）
         2. 在JS字符串模版、`.vue`组件，可以使用额外方式
 
             <details>
             <summary>e.g.</summary>
 
             ```html
-            <!-- HTML必须是短横线隔开式 -->
+            <!-- HTML必须是`-`短横线隔开式 -->
             1. <kebab-cased-component/>
             2. <camel-cased-component/>
             3. <pascal-cased-component/>
@@ -1033,8 +1037,9 @@
 - 建议的文件名命名方式：
 
     1. 两个及以上单词
-    2. 大驼峰式（PascalCase）或短横线隔开式（kebab-case）
+    2. 大驼峰式（PascalCase）或`-`短横线隔开式（kebab-case）
 
+        >选择一种方式后，应该在项目中始终仅使用这种方式，不要在同一个项目中混用两种命名方式。
 ### 过渡/动画
 >此处描述的“帧”是`requestAnimationFrame`（在浏览器下一次重绘之前执行），而不是~~Vue的`nextTick`~~（在Vue控制的DOM下次更新循环结束之后执行）。
 
@@ -1231,7 +1236,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
             >导致视图更新的替代方法：`vm.items.splice(newLength)`。
         3. 数组的最新mutator方法：`copyWithin`、`fill`
 2. **Vue实例的属性**和**Vue实例的属性的属性**，慎用~~箭头函数~~，因为`this`的指向无法按预期指向Vue实例。
-3. 因为HTML不区分大小写，所以大/小驼峰式命名的JS内容，在HTML使用时要转换为相应的短横线隔开式。
+3. 因为HTML不区分大小写，所以大/小驼峰式命名的JS内容，在HTML使用时要转换为相应的`-`短横线隔开式。
 
     不受限制、不需要转换：JS字符串模版、`.vue`组件。
 
