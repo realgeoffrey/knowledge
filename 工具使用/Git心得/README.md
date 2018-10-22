@@ -570,6 +570,13 @@ feat(details): 添加了分享功能
         >.idea
         >```
         ></details>
+3. 开启对文件名大小写敏感
+
+    >默认文件名大小写不敏感。
+
+    ```git
+    git config --global core.ignorecase false
+    ```
 
 ### .gitkeep文件
 >因为Git不跟踪空文件夹，所以项目中的空文件夹都无法进入Git版本控制。

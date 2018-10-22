@@ -753,7 +753,9 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
     >  }
     >}
     >
+    >
     >// 相同省略：users的store
+    >
     >
     >// 请求articles.hot的数据。返回的数据包含多种类别数据（articles、users）
     >function handleData (arr, category) {  // 处理数据

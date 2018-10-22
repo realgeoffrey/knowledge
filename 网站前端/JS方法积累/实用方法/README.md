@@ -1796,40 +1796,48 @@ xhr.send(null);
  * @constructor
  * @param {Object} [dom] - 展示的DOM
  */
-function ShowFPS(dom) {
-    var self = this;
+function ShowFPS (dom) {
+  let fps = 0
+  let before = Date.now()
+  let now
+  const show = function (fps) {
+    dom.innerHTML = 'fps: ' + fps
+  }
 
-    var fps = 0,
-        before = Date.now(),
-        now,
-        show = function (fps) {
-            dom.innerHTML = 'fps: ' + fps;
-        };
+  let father
+  if (!dom) {
+    dom = document.createElement('span')
+    dom.style.cssText = 'position: fixed; top: 0px; background: white; color: black; z-index: 1;'
 
-    if (!dom) {
-        dom = document.createElement('span');
-        dom.style.position = 'fixed';
-        dom.style.top = '0';
-        document.getElementsByTagName('body')[0].appendChild(dom);
+    father = document.getElementsByTagName('body')[0]
+    father.appendChild(dom)
+  }
+
+  const self = this
+
+  this.id = requestAnimationFrame(function repeatShow () {
+    now = Date.now()
+
+    if (now - before >= 1000) {
+      before = now
+      show(fps)
+      fps = 0
+    } else {
+      fps += 1
     }
 
-    self.id = requestAnimationFrame(function () {
-        now = Date.now();
+    self.id = requestAnimationFrame(repeatShow)
+  })
 
-        if (now - before >= 1000) {
-            before = now;
-            show(fps);
-            fps = 0;
-        } else {
-            fps += 1;
-        }
+  this.stop = () => {
+    cancelAnimationFrame(this.id)
 
-        self.id = requestAnimationFrame(arguments.callee);
-    });
-
-    self.stop = function () {
-        cancelAnimationFrame(self.id);
-    };
+    if (father) {
+      father.removeChild(dom)
+    } else {
+      dom.innerHTML = ''
+    }
+  }
 }
 
 

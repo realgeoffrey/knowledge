@@ -1731,22 +1731,26 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         Vue单文件组件。目录中的`.vue`文件自动生成对应的路由配置和页面。
 
         <details>
-        <summary><code>pages</code>目录下组件新增几个方法（其他目录下无效）</summary>
+        <summary><code>pages</code>目录下组件新增几个属性（其他目录下无效）</summary>
 
-        1. `asyncData`
+        1. `asyncData`（拥有上下文）
 
             >可在客户端或服务端渲染时调用。
 
             页面组件被初始化前调用（组件还未创建，无法使用`this`引用组件实例）。`return`的数据与`data`方法返回的数据合并后返回当前页面组件。
-        2. `fetch`
+        2. `fetch`（拥有上下文）
 
             >可在客户端或服务端渲染时调用。
 
-            在渲染页面前填充状态（store）的数据。
+            页面组件被初始化前调用（组件还未创建，无法使用`this`引用组件实例）。在渲染页面前操作状态（store）。
+
+        >1. 调用时间在vue原本钩子调用之前：`asyncData`->`fetch`->vue原本钩子（`beforeCreate`->`props->data->computed->watch`->`created`...）。
+        >2. `asyncData`、`fetch`若未返回完成状态的Promise，则不会向下执行之后的钩子（页面渲染失败、不输出页面，可以设置未完成和失败状态的组件或行为）。
+
         3. `head`
 
-            覆盖`nuxt.config.js`的`head`属性。
-        4. `layout`
+            添加、覆盖`nuxt.config.js`的`head`属性。`this`指向本组件vue实例。
+        4. `layout`（拥有上下文）
 
             引用`layout`目录的布局文件。
         5. `middleware`
@@ -1781,7 +1785,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         - 引用方式：组件中ES6引用`~/components/`
     5. `plugins`：Vue插件目录
 
-        JS文件。在Vue根应用的实例化前需要运行的Vue插件（Vue添加全局功能）。
+        JS文件（可注入`Vue`，拥有上下文）。在Vue根应用的实例化前需要运行的Vue插件（Vue添加全局功能，仅执行一次）。
 
         ><details>
         ><summary>除了Vue原本就有的<code>Vue.use(<a href="https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#插件">插件</a>)</code>，还可用nuxt特有的<code>export default 方法</code>（操作context、inject）</summary>
@@ -2001,7 +2005,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
             </details>
     8. `middleware`：中间件目录
 
-        JS文件。路由跳转之后，在页面渲染之前运行自定义函数。执行顺序：`nuxt.config.js` -> `layouts` -> `pages`。
+        JS文件（拥有上下文）。路由跳转之后，在页面渲染之前运行自定义函数。执行顺序：`nuxt.config.js` -> `layouts` -> `pages`。
 
         >可以做权限、UA等判断后执行跳转或其他行为。
 
@@ -2081,9 +2085,11 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
             配置每个动态路由的参数，依据这些路由配置生成对应目录结构的HTML。
         6. `head`
 
-            配置HTML的头部信息。
+            >`hid`为`<meta>`的唯一的标识编号，用于覆盖父组件相同标签（vue-meta中默认是`vmid`）。
 
-            >`hid`为`<meta>`的唯一的标识编号，用于覆盖父组件相同标签。
+            配置HTML的公共静态内容，可在`pages`内重置。
+
+            >来自[vue-meta](https://github.com/declandewet/vue-meta)，可以设置多种内容，包括CSS文件、JS文件、style内容等。
         7. `loading`
 
             配置加载组件。
@@ -2147,7 +2153,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         18. `watchers`
         </details>
 
-    >10. 根目录中创建自定义文件夹，放置JS模块，提供给其他文件引用
+    >10. 根目录中创建自定义文件夹，放置JS模块，提供给其他文件引用（如：`api`存放接口请求、`utils`存放通用方法）
     >11. `.nuxt`：nuxt构建过程资源目录（不要修改、加入.gitignore）
 
     ><details>
@@ -2159,7 +2165,8 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
     >
     >- 默认的`srcDir`等于`rootDir`
     ></details>
-2. 流程
+2. 上下文：[nuxt: Context](https://nuxtjs.org/api/context)
+3. 流程
 
     <details>
     <summary>流程图</summary>
@@ -2168,7 +2175,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
     </details>
 
     Vue组件的生命周期钩子中，仅有`beforeCreate`、`created`在客户端和服务端均被调用，其他钩子仅在客户端被调用。
-3. 路由
+4. 路由
 
     依据`pages`目录结构和文件自动生成`vue-router`模块的路由配置；在`nuxt.config.js`的`generate`和`router`属性中修改默认路由配置。
 
@@ -2224,7 +2231,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
     3. 动态嵌套路由：动态的父级嵌套动态的子级
 
     - 在组件中使用`<nuxt-link>`进行路由跳转（与vue-router的`<router-link>`一致）
-4. 视图
+5. 视图
 
     1. `layouts`布局目录（可添加供所有页面使用的**通用组件**）
     2. `nuxt.config.js`的`head`属性
@@ -2249,7 +2256,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         </html>
         ```
         </details>
-5. 命令
+6. 命令
 
     1. `nuxt`：以开发模式启动一个基于vue-server-renderer的服务器
 
@@ -2261,7 +2268,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
     4. `nuxt generate`：生成静态化文件，用于静态页面发布
 
     >增加`-h`参数查看nuxt命令可带参数。
-6. 输出至生产环境的方案
+7. 输出至生产环境的方案
 
     1. SSR：服务端渲染（与开发模式的SSR相同）。
     2. 静态化页面
