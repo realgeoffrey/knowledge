@@ -1324,7 +1324,15 @@
     配置数据：URL、展示内容、重复的值、设置、任何可能发生变更的值。
 5. 代码调试方式
 
-    1. JS：`console.log`（`alert`）、`console.trace`
+    1. JS：
+
+        1. 展示：`console.log`、`console.info`、`console.warn`、`console.error`（`alert`）
+        2. 调用栈：`console.trace`
+        3. 更好的展示：
+
+            1. 缩进：`console.groupCollapsed或console.group`至`console.groupEnd`
+            2. 表格：`console.table`
+        4. 执行时间：`console.time`至`console.timeEnd`
 
         >（Value below was evaluated just now.）`console`引用类型的数据，在点击开来查看的瞬间才去取引用类型的快照（意味着可以console之后再修改展示内容），打开之后不再关联。
     2. PC端的DevTool：Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）

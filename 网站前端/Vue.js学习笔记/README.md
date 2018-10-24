@@ -965,7 +965,16 @@
 ### 单文件组件
 1. （有导出的）组件内部可以直接引用自身组件（小心无止境的循环引用）
 2. 大部分都用局部注册。除非是大范围的统一功能，才用全局方式，才用插件方式。
-3. 单文件组件的局部样式
+3. 样式引入，全局起作用
+
+    1. 在多个组件多次引入同一个CSS文件，最终只会引入一次（在任意地方引入，会导致所有页面都使用此CSS文件）：
+
+        >或以下两种方式混合都使用，也仅引入同一个CSS文件一次。
+
+        1. `<script>import '@/assets/文件名.css'</script>`
+        2. `<style src="@/assets/文件名.css">`
+    2. 在`public/index.html`中添加静态样式
+4. 单文件组件的局部样式
 
     1. `scoped`（[vue-loader的Scoped CSS](https://vue-loader.vuejs.org/zh/guide/scoped-css.html)）
 
@@ -978,11 +987,11 @@
             2. ~~全局~~
 
                 1. `<script>import '@/assets/文件名.css'</script>`
-                1. `<style scoped>@import "../assets/文件名.css";</style>`
+                2. `<style scoped>@import "../assets/文件名.css";</style>`（无法识别`@`；全局起作用）
     2. `module`（[vue-loader的CSS Modules](https://vue-loader.vuejs.org/zh/guide/css-modules.html)）
 
         在`<style>`添加`module`，即在Vue实例内加入`$style`对象，访问单文件组件内`<style module>`的选择器。
-4. <details>
+5. <details>
 
     <summary><del>可以在组件内部（或Vue实例内部）或外部，再创建另一个Vue实例，并且可以互相通信</del></summary>
 
@@ -1745,7 +1754,10 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
             页面组件被初始化前调用（组件还未创建，无法使用`this`引用组件实例）。在渲染页面前操作状态（store）。
 
         >1. 调用时间在vue原本钩子调用之前：`asyncData`->`fetch`->vue原本钩子（`beforeCreate`->`props->data->computed->watch`->`created`...）。
-        >2. `asyncData`、`fetch`若未返回完成状态的Promise，则不会向下执行之后的钩子（页面渲染失败、不输出页面，可以设置未完成和失败状态的组件或行为）。
+        >2. `asyncData`、`fetch`若未返回完成状态的Promise（方法体内`return new Promise((resolve, reject) => {...})`），则不会向下执行之后的钩子（页面渲染失败、不输出页面，可以设置未完成和失败状态的组件或行为）。
+        >
+        >    若要使用`redirect`，不要再运行`reject`
+        >3. 把页面展示所必须的请求放在`asyncData`、`fetch`，并返回Promise来控制完成后才继续执行代码，这样之后代码需要的异步数据就可以放心使用（否则可能store的数据还未初始化）。
 
         3. `head`
 
@@ -2174,7 +2186,9 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
     ![nuxt流程图](./images/nuxt-1.png)
     </details>
 
-    Vue组件的生命周期钩子中，仅有`beforeCreate`、`created`在客户端和服务端均被调用，其他钩子仅在客户端被调用。
+    1. 页面加载时，先进行Vue+vue router+vuex的初始化，再加载`plugins`至Vue实例；随后在路由初始化以及每次路由切换时进行`middleware`运行；最后进行页面的`asyncData`->`fetch`，然后进行组件的vue原本钩子（`beforeCreate`->`props->data->computed->watch`->`created`...）。
+    2. 服务端渲染进行步骤至`created`（包括）。
+    3. Vue组件的生命周期钩子中，仅有`beforeCreate`、`created`在客户端和服务端均被调用，其他钩子仅在客户端被调用。
 4. 路由
 
     依据`pages`目录结构和文件自动生成`vue-router`模块的路由配置；在`nuxt.config.js`的`generate`和`router`属性中修改默认路由配置。
@@ -2256,7 +2270,10 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         </html>
         ```
         </details>
-6. 命令
+6. 样式
+
+    使用JS的import引入，否则用style的src引入会导致重复引入（Vue已经解决的问题）。
+7. 命令
 
     1. `nuxt`：以开发模式启动一个基于vue-server-renderer的服务器
 
@@ -2268,7 +2285,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
     4. `nuxt generate`：生成静态化文件，用于静态页面发布
 
     >增加`-h`参数查看nuxt命令可带参数。
-7. 输出至生产环境的方案
+8. 输出至生产环境的方案
 
     1. SSR：服务端渲染（与开发模式的SSR相同）。
     2. 静态化页面
