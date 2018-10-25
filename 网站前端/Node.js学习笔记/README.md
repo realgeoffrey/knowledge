@@ -74,7 +74,8 @@
 
             `npm publish [--tag <tag>]`
 
-            >除了latest，其他标签都不会默认被安装。最后推送的latest版本会显示在npm官网。
+            >1. 除了latest，其他标签都不会默认被安装。最后推送的latest版本会显示在npm官网。
+            >2. 注意设置源为npm的网站（https://registry.npmjs.org/）才可以推送到npm。
         4. “下线”
 
             >`npm unpublish [<@scope>/]<pkg>[@<version>]`只能下线24小时内发布的版本。
@@ -112,6 +113,8 @@
             npm dist-tag rm <pkg> <tag>
             ```
     3. 安装
+
+        > 改变安装包的顺序会影响安装包的内容和依赖。
 
         1. 安装包
 
@@ -161,6 +164,8 @@
 
             `npm update [-g] [<pkg>...]`
 
+            升级成功会把升级版本号自动写入`package.json`。
+
             >只更新顶层模块，而不更新依赖的依赖。可以使用`npm --depth 9999 update`更新依赖的依赖。
 
             - 升级npm自己
@@ -181,6 +186,13 @@
             > - 除非回收磁盘空间，否则不要使用以下清空npm缓存
             >
             >    `npm cache clean -f`
+
+        - `package-lock.json`
+
+            更新成功（`npm update`）或第一次安装（`npm install`）时生成，用以记录当前状态下实际安装的各个npm包的具体来源和版本号。在存在此文件的根目录进行`npm install`，会按照完全相同的依赖关系进行安装。
+
+            >1. 若使用lock机制，则应该将`package-lock.json`提交到版本控制。
+            >2. 若不使用lock机制，则应该把`package-lock=false`加入`.npmrc`，并把`.npmrc`提交到版本控制。
     4. 执行脚本
 
         1. `npm run “package.json中scripts字段的命令” -- “添加脚本后面的参数”`
@@ -268,11 +280,12 @@
             2. 直接制作可兼容在浏览器环境运行的代码。
 
             >如`Vue.js`。
-4. 作用域的包
+    - 作用域的包
 
-    `@scope/project-name`
+        `@scope/project-name`
+4. `.npmrc`
 
-- 改变安装包的顺序会影响安装包的内容和依赖。
+    npm的配置文件。
 
 >项目中使用某个开源库时，要考虑它的License和文件大小（若使用webpack打包，则可以使用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)进行分析）。
 

@@ -580,6 +580,9 @@ JavaScript ＝ ECMAScript + 宿主环境提供的API。
 
 1. [CommonJS规范](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Node.js学习笔记/README.md#commonjs规范)。
 2. [ES6 Module](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#es6-module)。
+
+>在webpack打包时，可以在JS文件中混用`require`和`export`，但是不能 ~~混用`import`和`module.exports`~~。最好统一为某一种规范去使用，不要混用。
+
 3. [UMD规范](https://github.com/umdjs/umd)的简单示例：
 
     ```javascript
@@ -605,3 +608,5 @@ JavaScript ＝ ECMAScript + 宿主环境提供的API。
         return {};
     }));
     ```
+
+    >可以设置webpack的[`output.libraryTarget`](https://webpack.docschina.org/configuration/output/#output-librarytarget)为`'umd'`自动导出UMD规范的代码。

@@ -707,7 +707,7 @@
               var video = document.getElementById('j-video')
 
               document.addEventListener('DOMContentLoaded', function () {
-                video.setAttribute('src', '视频地址')
+                video.setAttribute('src', '视频地址')   // 代替preload="none"
                 video.play()
               }, false)
 
@@ -806,7 +806,7 @@
 
              function touchstartFunc () {
                start.style.display = 'none'
-               video.setAttribute('src', '视频地址')
+               video.setAttribute('src', '视频地址')    // 代替preload="none"
                video.removeAttribute('style')
                video.play()
 
@@ -2556,7 +2556,7 @@
     3. 建议参数都用对象形式传递，且形参设置为解构赋值+默认参数。
 
         >e.g. `function func ({ para1 = 'default', para2 } = {}) {}`
-    4. 参数的数量有限制，比如有些JS引擎限制在2^16。
+    4. 参数的数量有限制，比如有些JS引擎限制在`Math.pow(2, 16)`。
 
 ### 闭包（closure）
 1. 当函数体内定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数执行完毕（寿命终结）之后。
