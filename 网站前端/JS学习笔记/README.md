@@ -1569,6 +1569,25 @@
                   }
                 }, 3000);
                 ```
+
+            ><details>
+            ><summary>（在微信及其他APP中）使用应用宝<strong>下载/打开</strong>其他APP</summary>
+            >
+            >>参考:[关于微信中直接调起 Native App 的调研报告](https://blog.csdn.net/lixuepeng_001/article/details/78043418)。
+            >
+            >应用宝在微信中可能可以更好识别是否安装了其他APP，从而可以在应用宝页面选择打开其他APP，而不仅仅是下载。
+            >
+            >- 拼接应用宝下载/打开其他APP的链接：
+            >
+            >    1. 应用宝主链接：`https://a.app.qq.com/o/simple.jsp?`
+            >    2. 跳转参数（search值，在`?`后面，用`&`分割）:
+            >
+            >        1. 包名：`pkgname=` + `com.xx.xxx`
+            >        2. 其他APP内打开路径（可选）：`android_schema=` + `自定义URL Scheme://具体跳转路径`
+            >        3. 渠道包链接（可选）：`ckey=` + `CK1234567890123`
+            >
+            >    最终链接：`https://a.app.qq.com/o/simple.jsp?pkgname=com.xx.xxx&android_schema=xxxx://xx`
+            >></details>
         3. iOS9+的Universal links（通用链接），可以从底层打开其他App客户端，跳过白名单（微信已禁用）
 
             >需要HTTPS域名配置、iOS设置等其他端配合。
