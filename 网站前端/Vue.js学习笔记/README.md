@@ -965,33 +965,40 @@
 ### 单文件组件
 1. （有导出的）组件内部可以直接引用自身组件（小心无止境的循环引用）
 2. 大部分都用局部注册。除非是大范围的统一功能，才用全局方式，才用插件方式。
-3. 样式引入，全局起作用
+3. 样式引入
 
-    1. 在多个组件多次引入同一个CSS文件，最终只会引入一次（在任意地方引入，会导致所有页面都使用此CSS文件）：
+    1. 全局起作用（在任意地方引入样式，导致所有页面都使用样式）
 
-        >或以下两种方式混合都使用，也仅引入同一个CSS文件一次。
+        1. 在任意地方引入CSS文件（非 ~~`scoped`~~）
 
-        1. `<script>import '@/assets/文件名.css'</script>`
-        2. `<style src="@/assets/文件名.css">`
-    2. 在`public/index.html`中添加静态样式
-4. 单文件组件的局部样式
+            >在多个组件多次引入同一个CSS文件（允许同时使用JS和CSS两种方式混合引入），最终只会引入同一个CSS文件一次。
 
-    1. `scoped`（[vue-loader的Scoped CSS](https://vue-loader.vuejs.org/zh/guide/scoped-css.html)）
+            1. `<script>import '@/assets/文件名.css'</script>`
+            2. `<style src="@/assets/文件名.css"/>`
+        2. 在任意地方引入没有 ~~`scoped`~~ 的`<style>`：
 
-        1. 使用`scoped`的**单文件组件**内所有Element（包括**其引用的子组件**），都会添加自定义`attributes`（如`data-v-2185bf6b`）；非Vue内部生成的节点（手动添加）不会添加自定义`attributes`。
+            `<style>样式内容</style>`
+        3. 在`public/index.html`中添加静态样式
+    2. 局部样式
 
-            若已添加`scoped`的子组件也添加`scoped`，则增加一份子组件的自定义`attributes`。
-        2. `scoped`方式引用整个样式文件：
+        1. `scoped`（[vue-loader的Scoped CSS](https://vue-loader.vuejs.org/zh/guide/scoped-css.html)）
 
-            1. 局部：`<style scoped src="@/assets/文件名.css"></style>`
-            2. ~~全局~~
+            1. `scoped`方式引用整个样式文件：
 
-                1. `<script>import '@/assets/文件名.css'</script>`
-                2. `<style scoped>@import "../assets/文件名.css";</style>`（无法识别`@`；全局起作用）
-    2. `module`（[vue-loader的CSS Modules](https://vue-loader.vuejs.org/zh/guide/css-modules.html)）
+                `<style scoped src="@/assets/文件名.css"/>`
 
-        在`<style>`添加`module`，即在Vue实例内加入`$style`对象，访问单文件组件内`<style module>`的选择器。
-5. <details>
+                >~~全局起作用、无法识别`@`~~：`<style scoped>@import "../assets/文件名.css";</style>`
+            2. `scoped`的`<style>`：
+
+                `<style scoped>样式内容</style>`
+
+            - 使用`scoped`的**单文件组件**内所有Element（包括**其引用的子组件**），都会添加自定义`attributes`（如`data-v-2185bf6b`）；非Vue内部生成的节点（手动添加）不会添加自定义`attributes`。
+
+                若已添加`scoped`的子组件也添加`scoped`，则增加一份子组件的自定义`attributes`。
+        2. `module`（[vue-loader的CSS Modules](https://vue-loader.vuejs.org/zh/guide/css-modules.html)）
+
+            在`<style>`添加`module`，即在Vue实例内加入`$style`对象，访问单文件组件内`<style module>`的选择器。
+4. <details>
 
     <summary><del>可以在组件内部（或Vue实例内部）或外部，再创建另一个Vue实例，并且可以互相通信</del></summary>
 
@@ -1043,12 +1050,24 @@
     ```
     </details>
 
-- 建议的文件名命名方式：
+- 官方建议的单文件组件命名：
 
-    1. 两个及以上单词
-    2. 大驼峰式（PascalCase）或`-`短横线隔开式（kebab-case）
+    1. 通用
 
-        >选择一种方式后，应该在项目中始终仅使用这种方式，不要在同一个项目中混用两种命名方式。
+        1. 两个及以上单词
+        2. 大驼峰式（PascalCase）或`-`短横线隔开式（kebab-case）
+
+            >选择一种方式后，应该在项目中始终仅使用这种方式，不要在同一个项目中混用两种命名方式。
+    2. 基础组件名（以`Base`、`App`、`V`开头）
+
+        应用特定样式和约定的基础组件（展示类的、无逻辑的、无状态的组件，绝对不包括~~全局状态，如vuex~~），以一个特定的前缀开头，比如`Base`、`App`、`V`。
+    3. 单例组件名（以`The`开头）
+
+        只应该拥有单个活跃实例的组件应该以`The`前缀命名，以示其唯一性。每个页面最多使用一次，不接收~~props~~。
+    4. 紧密耦合的组件名（以完整父组件名开头）
+
+        和父组件紧密耦合的子组件应该以父组件名作为前缀命名。
+
 ### 过渡/动画
 >此处描述的“帧”是`requestAnimationFrame`（在浏览器下一次重绘之前执行），而不是~~Vue的`nextTick`~~（在Vue控制的DOM下次更新循环结束之后执行）。
 
@@ -1252,7 +1271,8 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         1. 数组的某些mutator方法：`push`、`pop`、`unshift`、`shift`、`reverse`、`sort`、`splice`
         2. 对象/数组赋值
 
-            >可以使用`Object.assign`扩展原对象或原数组。
+            >1. 可以使用`Object.assign`扩展原对象或原数组。
+            >2. 空对象/空数组赋值`[]`/`{}`也是一次重新赋值操作。
         3. 插新值：`Vue.set(数组/对象, 索引/键, 新值)`
         4. 删旧值：`Vue.delete(数组/对象, 索引/键)`
     2. 无法检测对象/数组变动：
@@ -1807,7 +1827,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         - 引用方式：组件中ES6引用`~/components/`
     5. `plugins`：Vue插件目录
 
-        JS文件（可注入`Vue`，拥有上下文）。在Vue根应用的实例化前需要运行的Vue插件（Vue添加全局功能，仅执行一次）。
+        JS文件（可注入`Vue`，拥有上下文）。在Vue根应用的实例化前需要运行的Vue插件（Vue添加全局功能，仅执行一次。切换路由之后不再执行）。
 
         ><details>
         ><summary>除了Vue原本就有的<code>Vue.use(<a href="https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#插件">插件</a>)</code>，还可用nuxt特有的<code>export default 方法</code>（操作context、inject）</summary>
@@ -2282,7 +2302,20 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         </details>
 6. 样式
 
-    使用JS的import引入，否则用style的src引入会导致重复引入（Vue已经解决的问题）。
+    1. `<style src="@/assets/文件名.css"/>`多处引入会导致重复引入。
+
+        >Vue在多个组件多次引入同一个CSS文件（允许同时使用JS和CSS两种方式混合引入），最终只会引入同一个CSS文件一次。
+    2. 样式加载规则：
+
+        1. nuxt的开发模式：pages引入的样式会在vue router路由抵达时按需加载，vue router路由切换时依旧保留之前已加载过的样式。
+        2. nuxt的发布模式：提前统一加载所有全局样式，而不是路由抵达时才加载。
+
+        >Vue提前统一加载所有全局样式，而不是路由抵达时才加载：在任意地方引入样式，导致所有页面都使用样式。
+
+    - 策略：
+
+        1. （除了使用`scoped`的`<style>`之外）在单独使用样式的pages中，仅用`<script>import '@/assets/文件名.css'</script>`，不用 ~~`<style src="@/assets/文件名.css"/>`~~
+        2. 共用的样式加入`nuxt.config.js`的`css`
 7. 命令
 
     1. `nuxt`：以开发模式启动一个基于vue-server-renderer的服务器
@@ -2292,7 +2325,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
         创建所有路由的`.html`文件，且这些`.html`都完全一致，加载时根据vue-router进行路由计算（可以刷新的SPA）。
 
-        >不会自动tree shaking，但是会去除注释掉的内容。
+        >vue相关资源不会自动tree shaking，但是会去除注释掉的内容（开发模式不会去除）；额外引用的文件会tree shaking+去除注释。
     3. `nuxt start`：以生产模式启动一个基于vue-server-renderer的服务器（依赖`nuxt build`生成的资源）
     4. `nuxt generate`：生成静态化文件，用于静态页面发布
 
