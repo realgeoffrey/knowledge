@@ -1448,7 +1448,7 @@
     >}
     >
     >for (var i = 0; i < 3; i++) {
-    >    // ES6的块级作用域
+    >    // ES6的块级作用域（ES6拥有了块级作用域之后，不再需要~~自执行匿名函数~~）
     >    let num = i;
     >    setTimeout(function () {
     >        console.log(num);       // 结果是1 2 3
@@ -1456,6 +1456,10 @@
     >}
     >```
     ></details>
+3. 可以添加函数名：`(function 内部名字 () { console.log(内部名字); 错误 }())`
+
+    1. 用于在执行栈中标记匿名函数的函数名
+    2. 可以在匿名函数内部引用匿名函数本身
 
 ### Hybrid App相关
 >1. 相对于Native App的高成本、原生体验，Hybrid App具有低成本、高效率、跨平台、不依赖Native发包更新等特性。
@@ -2425,29 +2429,32 @@
         `function 名字(多个参数) {/* 函数体 */};`
     3. 函数表达式（function expression）
 
-        `var 名字 = function(多个参数) {/* 函数体 */};`
-
-        >命名函数表达式：`var 名字 = function 内部名字 () {};`，其中函数名`内部名字`只能在函数体内部使用。
-        >
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        > ```javascript
-        > var func1 = function func2() {
-        >    console.log(typeof func1);  // function
-        >    console.log(typeof func2);  // function
-        > };
-        >
-        > func1();
-        >
-        > console.log(typeof func1);     // function
-        > console.log(typeof func2);     // undefined
-        > ```
-        ></details>
+        `var 名字 = function(多个参数) {/* 函数体 */};`（变量赋值为`匿名函数`或`箭头函数`）
 
     >1. 通过**函数声明**、**函数表达式**创建的函数，在加载脚本时和其他代码一起解析；通过**构造函数**定义的函数，在构造函数被执行时才解析函数体字符串。
     >2. 不建议通过~~构造函数~~创建函数，因为作为字符串的函数体可能会阻止一些JS引擎优化，也会引起其他问题。
-4. 实例化（`new`）一个构造函数
+4. 匿名函数、[箭头函数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#箭头函数)
+
+    只能提供给其他变量引用、或自执行。
+
+    ><details>
+    ><summary>匿名函数：可以添加仅在匿名函数内部才能使用的函数名字，主要用于在执行栈中标记匿名函数的函数名（主要针对：自执行匿名函数），而不只是显示<code>anonymous</code></summary>
+    >
+    >e.g.
+    >
+    > ```javascript
+    > var func1 = function func2() { // 其中函数名`func2`只能在函数体内部使用。
+    >    console.log(typeof func1);  // function
+    >    console.log(typeof func2);  // function
+    > };
+    >
+    > func1();
+    >
+    > console.log(typeof func1);     // function
+    > console.log(typeof func2);     // undefined
+    > ```
+    ></details>
+5. 实例化（`new`）一个构造函数
 
     `new`得到的实例对象，拥有构造函数体内使用`this`定义的属性和方法，且拥有构造函数的原型对象上的属性和方法（因为实例的`[[Prototype]]`指向`构造函数.prototype`）；在构造函数体内`var`的变量和`function`无法被这个对象使用，只能在构造函数里使用（类似私有变量）。
 
@@ -2480,7 +2487,7 @@
     >1. `new Func`等价于：`new Func()`。
     >2. `new Obj().func()`等价于：`(new Obj()).func()`（先新建实例，再调用实例的原型链）。
     >3. `new Obj.func()`等价于：`new (Obj.func)()`、`new (Obj.func)`、`new Obj.func`（新建实例）。
-5. 函数调用类型
+6. 函数调用类型
 
     1. 直接函数调用（如`alert();`）、立即调用的函数表达式（如`(function () {}());`）
 
@@ -2554,7 +2561,7 @@
         obj2.func.call(obj4);   // 4|global|global
         ```
         </details>
-6. <a name="函数-参数"></a>参数
+7. <a name="函数-参数"></a>参数
 
     1. 参数变量在函数体内是默认声明的（传递进函数体），所以不能在函数体内用`let`或`const`再次声明同名参数（`var`可以）。
     2. 使用**参数默认值**时的特殊情况：

@@ -514,6 +514,9 @@
         visibility: hidden; /* 属性不存在隐藏 */
     }
     ```
+4. 设置`<img>`中[可替换元素](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Replaced_element)的位置、拉升：`object-position`、`object-fit`。
+
+    >类似于针对背景图的位置、拉升：`background-position`、`background-size`（`background-repeat: no-repeat`）。
 
 ### `<img>`的圆角、边框
 1. 圆角+边框

@@ -352,7 +352,19 @@
             操作请求需要提供额外的**不保存在浏览器上、保存在页面表单中**的随机校验码。可以放进请求参数、或自定义HTTP请求头。
 3. 其他攻击
 
-    1. DNS攻击
+    1. 注入型劫持
+
+        通过在正常的网页中注入广告代码（JS代码、`<iframe>`、其他标签等），实现页面弹窗提醒或者底部广告等。
+
+        1. 攻击方式
+
+            运营商劫持。
+        2. 防御措施
+
+            全链路HTTPS（若使用CDN，则必须CDN是HTTPS、回源也是HTTPS）。
+
+            >额外增加劫持难度：前端还可以用[子资源完整性（SRI）](https://developer.mozilla.org/zh-CN/docs/Web/Security/子资源完整性)验证加载文件的数字签名。
+    2. DNS攻击
 
         使域名指往不正确的IP地址。
 
@@ -365,43 +377,43 @@
             1. 使用安全的DNS服务器。
             2. VPN或域名远程解析。
             3. 查杀病毒，清空DNS缓存。
-    2. SQL注入（SQL Injection）
+    3. SQL注入（SQL Injection）
 
         运行非法的SQL。
-    3. OS命令注入攻击（OS Command Injection）
+    4. OS命令注入攻击（OS Command Injection）
 
         通过Web应用，执行非法的操作系统命令。
-    4. HTTP头部注入攻击（HTTP Header Injection）
+    5. HTTP头部注入攻击（HTTP Header Injection）
 
         通过在响应头部字段内插入换行，添加任意响应头部或主体。
-    5. 邮件头部注入攻击（Mail Header Injection）
+    6. 邮件头部注入攻击（Mail Header Injection）
 
         向邮件头部To或Subject内任意添加非法内容，可对任意邮件地址发送广告邮件或病毒邮件。
-    6. 目录遍历攻击（Directory Traversal，Path Traversal）
+    7. 目录遍历攻击（Directory Traversal，Path Traversal）
 
         对本无意公开的文件目录，通过非法截断其目录路径后，达成访问目的。
-    7. 远程文件包含漏洞（Remote File Inclusion）
+    8. 远程文件包含漏洞（Remote File Inclusion）
 
         当部分脚本内容需要从其他文件读入时，利用指定外部服务器的URL充当依赖文件，让脚本读取之后，就可运行任意脚本。
-    8. 强制浏览（Forced Browsing）
+    9. 强制浏览（Forced Browsing）
 
         从安置在Web服务器的公开目录下的文件中，浏览那些原本非自愿公开的文件。
-    9. 不正确的错误消息处理（Error Handling Vulnerability）
+    10. 不正确的错误消息处理（Error Handling Vulnerability）
 
         Web应用的错误信息内包含对攻击者有用的信息。
-    10. 开放重定向（Open Redirect）
+    11. 开放重定向（Open Redirect）
 
         假如指定的重定向URL到某个具有恶意的Web网站，那么用户就会被诱导至那个Web网站。
-    11. 会话劫持（Session Hijack）
+    12. 会话劫持（Session Hijack）
 
         通过某种手段拿到了用户的会话ID，并非法使用此会话ID伪装成用户。
-    12. 会话固定攻击（Session Fixation）
+    13. 会话固定攻击（Session Fixation）
 
         强制用户使用攻击者指定的会话ID。
-    13. 点击劫持（ClickJacking）、界面伪装（UI Redressing）
+    14. 点击劫持（ClickJacking）、界面伪装（UI Redressing）
 
         利用透明的按钮或链接做成陷阱，覆盖在Web页面上。然后诱使用户在不知情的情况下，点击那个链接访问内容。
-    14. 密码破解（Password Cracking）
+    15. 密码破解（Password Cracking）
 
         1. 穷举法（Brute-force Attack，暴力破解法）
 
@@ -421,7 +433,7 @@
             >
             >由服务器随机生成的一个字符串，保证长度足够长，且是真正随机生成。然后把它和密码字符串相连接（前后都可以）生成散列值。当两个用户使用了同一个密码时，由于随机生成的salt值不同，对应的散列值也将不同。这样一来，很大程度上减少了密码特征，攻击者也就很难利用自己手中的密码特征库进行破解。
             ></details>
-    15. DoS攻击（Denial of Service attack）、服务停止攻击或拒绝服务攻击
+    16. DoS攻击（Denial of Service attack）、服务停止攻击或拒绝服务攻击
 
         运行中的服务呈停止状态的攻击。
 
@@ -429,7 +441,7 @@
 
             DDoS（Distributed Denial of Service attack）利用多台计算机发起Dos攻击。
         2. 通过攻击安全漏洞使服务停止。
-    16. Hash Collision DoS
+    17. Hash Collision DoS
 
         >参考[HASH COLLISION DOS 问题](http://coolshell.cn/articles/6424.html)。
 

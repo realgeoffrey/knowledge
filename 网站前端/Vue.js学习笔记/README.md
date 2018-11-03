@@ -1512,7 +1512,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
     1. 通过store的`state.state名`获取。
     2. 响应规则
 
-        1. 最好提前初始化所需的state（初始化的任何位置都可以被劫持而更新）。
+        1. 最好提前初始化所需的state（初始化的任何位置都被`Object.defineProperty`处理过，能够响应式更新）。
         2. 直接用`=`进行已初始化的state属性更新。
         3. 需要在state或`state.对象`上添加新属性：
 
