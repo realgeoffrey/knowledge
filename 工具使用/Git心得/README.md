@@ -380,7 +380,7 @@ feat(details): 添加了分享功能
     git flow feature start “需求名” [“develop的SHA”]
     # 基于“develop的SHA”或最新develop，在本地创建并切换至“feature/需求名”分支
 
-    推送具体需求的commits到远程“feature/需求名”
+    推送具体需求的commits到本地或远程“feature/需求名”
 
     # （本地必须先pull feature/需求名、develop分支，解决冲突，git flow执行merge操作，否则无法执行命令）
     git flow feature finish “需求名”
@@ -400,7 +400,7 @@ feat(details): 添加了分享功能
     git flow release start “版本号” [“develop的SHA”]
     # 基于“develop的SHA”或最新develop，在本地创建并切换至“release/版本号”分支
 
-    推送需要改动的commits到远程“release/版本号”
+    推送需要改动的commits到本地或远程“release/版本号”
     # 更新package.json版本号
     # 更新changelog（手写或命令生成）
     # 修复发版前临时发现的问题
@@ -434,7 +434,7 @@ feat(details): 添加了分享功能
     git flow hotfix start “版本号” [“master的SHA”]
     # 基于“master的SHA”或最新master，在本地创建并切换至“hotfix/版本号”分支
 
-    推送具体需求的commits到远程“hotfix/版本号”
+    推送具体需求的commits到本地或远程“hotfix/版本号”
     # 更新package.json版本号
     # 更新changelog（手写或命令生成）
     # 修复发版前临时发现的问题

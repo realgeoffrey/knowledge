@@ -361,7 +361,7 @@
     1. 直接调用，光标停留在文本开头或上一次光标停留的地方。
     2. 先清空文本再`focus`然后再添加文本，光标停留在文本结尾。
 
-    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/zep4cr3p/)
+    [JSFiddle demo](https://jsfiddle.net/realgeoffrey/zep4cr3p/)
 7. 判断一个标签的动态属性（DOM对象的`property`）
 
     >以`<input>`的`checked`为例，类似的特性还有`selected`、`disabled`、`value`等，但是每个`attribute-property`映射关系略有差别，参考[`attribute`与`property`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#attribute与property)。
@@ -835,7 +835,7 @@
              start.addEventListener('touchstart', touchstartFunc, false)
             </script>
             ```
-            >[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/Lko8u1ku/)
+            >[JSFiddle demo](https://jsfiddle.net/realgeoffrey/Lko8u1ku/)
             </details>
     - 播放视频问题：
 
@@ -863,6 +863,9 @@
             3. 关闭`controls`模式，部分浏览器依然出现播放按钮
             4. 无法控制内联模式类型（内联模式/在底部的全屏内联模式）
         2. Android机型播放了`<video>`，会把视频的层级放到最高，暂时没有直接解决方法。
+        3. 打开全屏会触发window的`scroll`事件。
+
+            此时的屏幕可能高宽发生切换，页面内的DOM位置信息可能没有变化（如`getBoundingClientRect`还是在原界面的值，屏幕高宽却变了）。
 
 ---
 ## 编程技巧
@@ -1567,7 +1570,7 @@
                 location.href = '自定义URL Scheme';	  // 也可以用`<iframe>`
 
                 var start = Date.now();
-                setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）
+                setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）（切换后台，定时器执行时间会变慢）
                   if (Date.now() - start < 3100) {  // 还在这个页面，认为没有安装App
                     location.href = '下载地址';
                   }
@@ -2168,6 +2171,8 @@
         };
     }
     ```
+
+    >vue的某个懒加载库：[vue-lazyload](https://github.com/hilongjw/vue-lazyload)。
 2. `<link>`预加载
 
     1. `<link rel="dns-prefetch" href="域名">`

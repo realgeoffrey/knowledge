@@ -33,7 +33,7 @@ module.exports = {
     /* 重载vue */
     'vue/max-attributes-per-line': 0, // 标签每行最多的属性
     'vue/attributes-order': 0,  // 标签的属性顺序
-    'vue/order-in-components': 0  // Vue实例属性顺序
+    'vue/order-in-components': 1  // Vue实例属性顺序
 
     /* 不在vue预设内 */
     // （eslint-plugin-vue v5.0.0+）强制template内组件使用的命名方式（默认：都可以；'PascalCase'；'kebab-case'）

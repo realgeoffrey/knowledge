@@ -71,7 +71,7 @@
         2. [大公司的静态资源优化方案](https://github.com/fouber/blog/issues/6)：
 
             1. 配置超长时间的本地缓存 —— 节省带宽，提高性能
-            2. 采用内容摘要（MD5）作为缓存更新依据 —— 精确的缓存控制
+            2. 采用文件的数字签名（如MD5）作为缓存更新依据 —— 精确的缓存控制
             3. 静态资源CDN部署 —— 优化网络请求
             4. 非覆盖式更新资源 —— 平滑升级
 
@@ -199,7 +199,7 @@
 
             1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
             2. 使用[缓存相关HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since` `ETag/If-None-Match`。
-            3. 配置超长时间的本地缓存，采用内容摘要（MD5）作为缓存更新依据。
+            3. 配置超长时间的本地缓存，采用文件的数字签名（如MD5）作为缓存更新依据。
         6. [非覆盖式更新资源](https://github.com/fouber/blog/issues/6)。
     2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面加载解析步骤)：
 
@@ -215,11 +215,11 @@
                     1. 增量加载资源：
 
                         1. [图片的延迟加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载)。
-                        2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery滚动加载)）。
+                        2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery滚动加载)、IntersectionObserver）。
                         3. 功能文件按需加载（模块化、组件化）。
                     2. 使AJAX可缓存（当用GET方式时添加缓存HTTP头：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since`）。
                 3. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-                4. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）。
+                4. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）、第三方资源使用统一的CDN服务和设置[`<link>`预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
                 5. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
             2. 最小化字节：
 
@@ -230,7 +230,10 @@
                     2. 小图合并雪碧图。
 
                         >大图切小图：单个大文件需要多次HTTP请求获取。
-                    3. 合理使用Base64、使用WebP、使用`srcset`属性。
+                    3. 合理使用Base64、WebP、`srcset`属性。
+
+                        >1. 服务端（或CDN）处理图片资源，提供返回多种图片类型的接口（如[七牛](https://developer.qiniu.com/dora/manual/3683/img-directions-for-use)）。
+                        >2. [判断浏览器是否支持WebP](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断是否支持webp)，对不同浏览器请求不同的图片类型。
             3. 缩短CRP长度：
 
                 CSS放在HTML顶部，JS放在HTML底部。
@@ -265,7 +268,25 @@
                 1. 减少层级嵌套。
                 2. 在拥有`target="_blank"`的`<a>`中添加`rel="noopener"`。
 
->优先优化对性能影响大、导致瓶颈的部分。
+><details>
+><summary>优先优化对性能影响大、导致瓶颈的部分</summary>
+>
+>1. 打开各种分析工具，根据建议逐条对照修改
+>
+>    1. DevTool的Audits
+>    2. 分析网站：
+>
+>        1. google的性能分析[PageSpeed Insights](https://developers.google.com/speed/pagespeed/insights/)
+>        2. W3C
+>
+>            1. [标签验证](https://validator.w3.org/)
+>            2. [CSS验证](https://jigsaw.w3.org/css-validator/validator.html.zh-cn)
+>            3. [链接测试](https://validator.w3.org/checklink)
+>        3. [性能测试](https://www.webpagetest.org/)
+>        4. [性能测试](https://gtmetrix.com/)
+>
+>2. 根据DevTool的Performance查询运行时导致帧数过高的代码。
+></details>
 
 2. 网络应用的生命期建议：
 
@@ -361,7 +382,7 @@
             运营商劫持。
         2. 防御措施
 
-            全链路HTTPS（若使用CDN，则必须CDN是HTTPS、回源也是HTTPS）。
+            全链路HTTPS（若使用CDN，则必须CDN请求和回源都是HTTPS）。
 
             >额外增加劫持难度：前端还可以用[子资源完整性（SRI）](https://developer.mozilla.org/zh-CN/docs/Web/Security/子资源完整性)验证加载文件的数字签名。
     2. DNS攻击

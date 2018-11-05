@@ -405,7 +405,7 @@
         }
         ```
 
-    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/3wbf62xj/)
+    [JSFiddle demo](https://jsfiddle.net/realgeoffrey/3wbf62xj/)
 2. `<meta>的viewport`缩放为`1/DPR`，切图用DPR倍大小（CSS媒体查询方案或JS方案）。
 
     >仅适用于iOS。Android机型太复杂，bug永无止境。
@@ -773,7 +773,7 @@
     <p>三&ensp;个&ensp;字</p>
     ```
 
-[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/zdh8oxrt/)
+[JSFiddle demo](https://jsfiddle.net/realgeoffrey/zdh8oxrt/)
 
 ### 禁用`<a>`的鼠标、键盘事件
 1. `pointer-events: none;`穿透`<a>`的鼠标事件（包括点击和hover等，因为点击不到所以JS事件也不会触发）。
@@ -902,7 +902,7 @@
             }
             ```
 
-            [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/c1pz8mow/)
+            [JSFiddle demo](https://jsfiddle.net/realgeoffrey/c1pz8mow/)
         2. 父级`position: relative;`，子级`position: absolute; top: 50%; transform: translateY(-50%);`。
 
             >兼容ie9+。

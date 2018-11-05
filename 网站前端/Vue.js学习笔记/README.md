@@ -1588,6 +1588,8 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
     1. 通过store调用`commit('mutation方法名'[, 参数])`或`commit({ type: 'mutation方法名'[, 参数的项: 值] })`触发。
     2. 必须是同步函数。
+
+        >返回的内容无效，使用时不会有返回值。
     3. 改变state使其保持与视图的响应和[Vue的响应式系统](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#响应式系统)一致。
 
     - <details>
@@ -1621,6 +1623,8 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
     1. 通过store调用`dispatch('action方法名'[, 参数])`或`dispatch({ type: 'action方法名'[, 参数的项: 值] })`触发。
     2. 可以进行异步操作。
+
+        >可以返回任何内容，包括Promise。
     3. 第一个参数对象包含：`state`、`getters`、`commit`、`dispatch`（，模块模式还有：`rootState`、`rootGetters`）。
 
     - <details>
@@ -1783,6 +1787,29 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
             页面组件被初始化前调用（组件还未创建，无法使用`this`引用组件实例）。在渲染页面前操作状态（store）。
 
+            ><details>
+            ><summary>实现fetch跳转到错误页面，错误页面能正常跳回</summary>
+            >
+            >```javascript
+            >// 某页面
+            >export default {
+            >  fetch ({ route, redirect }) {
+            >    return new Promise((resolve, reject) => {
+            >      // 某些原因触发重定向
+            >      redirect(302, '/error', { 'errorfrom': route.fullPath })
+            >
+            >      resolve()
+            >    })
+            >  }
+            >}
+            >
+            >
+            >// 错误页面操作
+            >this.$router.replace(this.$route.query.errorfrom)   // 刷新或回退
+            >this.$router.replace('/')                           // 返回首页
+            >```
+            ></details>
+
         >1. 调用时间在vue原本钩子调用之前：`asyncData`->`fetch`->vue原本钩子（`beforeCreate`->`props->data->computed->watch`->`created`...）。
         >2. `asyncData`、`fetch`若未返回完成状态的Promise（方法体内`return new Promise((resolve, reject) => {...})`），则不会向下执行之后的钩子（页面渲染失败、不输出页面，可以设置未完成和失败状态的组件或行为）。
         >
@@ -1820,6 +1847,8 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         不需要webpack编译的静态资源。该目录下的文件会映射至项目根路径。
 
         - 引用方式：组件中HTML引用`/`
+
+        >生产环境不允许随便用第三方CDN，可以把不打包的资源放到`static`从而放到自己服务器里去引用。
     4. `components`：组件目录
 
         Vue单文件组件。提供给项目中所有组件使用。

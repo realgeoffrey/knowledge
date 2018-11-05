@@ -566,7 +566,7 @@
                 1. 若请求时间在过期时间之前，命中缓存，返回`200 OK (from 某某 cache)`，从本地缓存中读取资源，不会发请求到服务器。
                 2. 若没有命中缓存，发请求到服务器，根据响应头更新这个资源的Cache-Control。
 
-    >建议：[配置超长时间的本地缓存；采用内容摘要（MD5）作为缓存更新依据](https://github.com/fouber/blog/issues/6)。
+    >建议：[配置超长时间的本地缓存；采用文件的数字签名（如MD5）作为缓存更新依据](https://github.com/fouber/blog/issues/6)。
 2. 协商缓存
 
     若没有命中强缓存，浏览器发送一个请求到服务器，服务端根据这个资源的`If-Modified-Since`（`Last-Modified`）、`If-None-Match`（`ETag`）判断它是否命中协商缓存（判断缓存资源和服务端资源是否一致）。

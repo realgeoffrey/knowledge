@@ -58,6 +58,7 @@
         1. [不传递请求头的Referrer进行跳转](#原生js不传递请求头的referrer进行跳转)
         1. [格式化接口返回的数据](#原生js格式化接口返回的数据)
         1. [根据滚动方向执行函数](#原生js根据滚动方向执行函数)
+        1. [判断是否支持WebP](#原生js判断是否支持webp)
     1. 提升性能
 
         1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
@@ -656,7 +657,7 @@ var eventUtil = {
 
     // action.stop();
     ```
-    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/7t25cm5t/)
+    [JSFiddle demo](https://jsfiddle.net/realgeoffrey/7t25cm5t/)
 2. WAP端的touch事件
 
     ```javascript
@@ -1484,7 +1485,7 @@ $(输入框选择器).on('mouseup keyup', function () {
 
 console.log(cursorPosition.set(输入框dom, 起始位置, 选中长度));
 ```
-[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/L3k46dy3/)
+[JSFiddle demo](https://jsfiddle.net/realgeoffrey/L3k46dy3/)
 
 ### *原生JS*针对WAP的阻止滚动冒泡（仅DOM）
 >1. 因为`scroll`事件不会冒泡，所以`stopPropagation`、`preventDefault`无法达到效果。
@@ -1543,7 +1544,7 @@ const a = new ScrollStopPropagation(document.getElementById('j-bounce'))
 // a.stop()
 </script>
 ```
-[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/hbadqyew/)
+[JSFiddle demo](https://jsfiddle.net/realgeoffrey/hbadqyew/)
 >参考[ScrollFix](https://github.com/joelambert/ScrollFix)。
 
 ### *原生JS*获取滚动轴宽度（或高度）
@@ -2142,6 +2143,51 @@ var b = new ScrollDirection({
 // b.stop()
 ```
 
+### *原生JS*判断是否支持WebP
+1. 同步判断
+
+    ```javascript
+    function checkWebp () {
+      try {
+        return (document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') === 0)
+      } catch (err) {
+        return false
+      }
+    }
+    ```
+
+    [CodePen demo](https://codepen.io/realgeoffrey/pen/zMxadK)
+2. 异步判断
+
+    ```javascript
+    // 'feature' can be one of 'lossy', 'lossless', 'alpha' or 'animation'.
+    // 'callback(feature, result)' will be passed back the detection result (in an asynchronous way!)
+    function checkWebpFeature (feature, callback) {
+      const kTestImages = {
+        lossy: 'UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA',
+        lossless: 'UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==',
+        alpha: 'UklGRkoAAABXRUJQVlA4WAoAAAAQAAAAAAAAAAAAQUxQSAwAAAARBxAR/Q9ERP8DAABWUDggGAAAABQBAJ0BKgEAAQAAAP4AAA3AAP7mtQAAAA==',
+        animation: 'UklGRlIAAABXRUJQVlA4WAoAAAASAAAAAAAAAAAAQU5JTQYAAAD/////AABBTk1GJgAAAAAAAAAAAAAAAAAAAGQAAABWUDhMDQAAAC8AAAAQBxAREYiI/gcA'
+      }
+
+      const img = new Image()
+      img.onload = function () {
+        const result = (img.width > 0) && (img.height > 0)
+        callback(feature, result)
+      }
+      img.onerror = function () {
+        callback(feature, false)
+      }
+      img.src = 'data:image/webp;base64,' + kTestImages[feature]
+    }
+
+
+    /* 使用测试 */
+    checkWebpFeature('lossless', function (feature, result) {
+      console.log(result) // true or false
+    })
+    ```
+
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript
 /**
@@ -2564,7 +2610,7 @@ var a = new RepeatRAF(function () {
     // b.stop();
 </script>
 ```
-[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/j9dkuwwv/)
+[JSFiddle demo](https://jsfiddle.net/realgeoffrey/j9dkuwwv/)
 
 >滚动事件代理可以代理在要`window`或监控图片加载的滚动节点上。
 
@@ -2668,7 +2714,7 @@ var a = new RepeatRAF(function () {
         // a.stop();
     </script>
     ```
-    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/v69fr64x/)
+    [JSFiddle demo](https://jsfiddle.net/realgeoffrey/v69fr64x/)
 2. `margin-top`：
 
     ```html
@@ -2735,7 +2781,7 @@ var a = new RepeatRAF(function () {
         // a.stop();
     </script>
     ```
-    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/gc45ehdb/)
+    [JSFiddle demo](https://jsfiddle.net/realgeoffrey/gc45ehdb/)
 
 ### jQuery弹出toast
 1. jQuery
@@ -2988,7 +3034,7 @@ var a = new RepeatRAF(function () {
         console.log('点击区域外');
     }, 1000);
     ```
-    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/enyxz9a6/)
+    [JSFiddle demo](https://jsfiddle.net/realgeoffrey/enyxz9a6/)
 2. Zepto
 
     ```javascript
@@ -3034,7 +3080,7 @@ var a = new RepeatRAF(function () {
         console.log('点击区域外');
     }, 1000);
     ```
-    [JSFiddle Demo](https://jsfiddle.net/realgeoffrey/mvv9wxnw/)
+    [JSFiddle demo](https://jsfiddle.net/realgeoffrey/mvv9wxnw/)
 
 ### jQuery hover展示内容并且可跨越间隙到内容
 ```html
@@ -3070,7 +3116,7 @@ var a = new RepeatRAF(function () {
     });
 </script>
 ```
-[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/zs6a7aco/)
+[JSFiddle demo](https://jsfiddle.net/realgeoffrey/zs6a7aco/)
 
 ### jQuery启动、暂停CSS动画
 ```html
@@ -3136,7 +3182,7 @@ var a = new RepeatRAF(function () {
     // b.stop;
 </script>
 ```
-[JSFiddle Demo](https://jsfiddle.net/realgeoffrey/Lukonj4s/)
+[JSFiddle demo](https://jsfiddle.net/realgeoffrey/Lukonj4s/)
 
 ### jQuery获取`HTTP response header`信息
 ```javascript
