@@ -1637,6 +1637,8 @@ xhr.send(null);
 
     1. 异步（JS文件地址）
 
+        >动态创建的、有`src`属性的`<script>`默认是`async`（可以手动设置`dom.async = false`）。
+
         1. 直接`document.write`
 
             >因为`document.write`需要向文档流中写入内容，因此在关闭（已加载）的文档上调用`document.write`会自动调用`document.open`，这将清空该文档的内容。
@@ -1657,7 +1659,7 @@ xhr.send(null);
 
             ```javascript
             var newScript = document.createElement('script'),
-                appendPlace = document.body || document.getElementsByTagName('head')[0];
+                appendPlace = document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0];
 
             newScript.type = 'text/javascript';
 
@@ -1666,14 +1668,14 @@ xhr.send(null);
             appendPlace.appendChild(newScript);
             ```
 
-            >动态创建的`<script>`默认是`async`（可以手动设置`dom.async = false`）。
-
         >异步加载第三方资源可在`<script>`添加`defer`或`async`属性。
     2. 同步（JS代码文本）
 
+        >动态创建的、没有`src`属性的、通过`text`属性设置JS代码文本的`<script>`，添加后的脚本被马上执行（可以认为是当前脚本一部分，但实际不是，作用域不同；这个也是jQuery的ajax加载执行外部JS脚本的方式）。
+
         ```javascript
         var newScript = document.createElement('script')
-        var appendPlace = document.body || document.getElementsByTagName('head')[0]
+        var appendPlace = document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]
 
         newScript.type = 'text/javascript'
 
@@ -1683,7 +1685,7 @@ xhr.send(null);
             newScript.text = 'JS代码文本'  // ie8-，Safari老版本
         }
 
-        appendPlace.appendChild(newScript)  // 开始同步执行`JS代码文本`
+        appendPlace.appendChild(newScript)  // 开始同步执行`JS代码文本`（新建一个独立作用域）
 
         // 上面代码同步执行完毕再执行下面的代码
         ```
@@ -1721,7 +1723,7 @@ xhr.send(null);
         >        /* 0为访问的本地，200到300代表访问服务器成功，304代表没做修改访问的是缓存 */
         >        if ((xmlHttp.status >= 200 && xmlHttp.status < 300) || xmlHttp.status == 0 || xmlHttp.status == 304) {
         >            newScript = document.createElement('script');
-        >            appendPlace = document.body || document.getElementsByTagName('head')[0];
+        >            appendPlace = document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0];
         >
         >            newScript.type = 'text/javascript';
         >
@@ -1764,7 +1766,7 @@ xhr.send(null);
             newStyle.styleSheet.cssText = 'CSS代码文本';  // ie
         }
 
-        document.getElementsByTagName('head')[0].appendChild(newStyle);
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(newStyle);
         ```
     2. 添加`<link>`
 
@@ -1778,7 +1780,7 @@ xhr.send(null);
 
         newLink.href = 'CSS文件地址';
 
-        document.getElementsByTagName('head')[0].appendChild(newLink);
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(newLink);
         ```
     3. 添加内嵌样式
 
@@ -1810,7 +1812,7 @@ function ShowFPS (dom) {
     dom = document.createElement('span')
     dom.style.cssText = 'position: fixed; top: 0px; background: white; color: black; z-index: 1;'
 
-    father = document.getElementsByTagName('body')[0]
+    father = document.getElementsByTagName('body')[0] || document.getElementsByTagName('head')[0]
     father.appendChild(dom)
   }
 
@@ -1951,7 +1953,7 @@ function noreferrerOpen (link) {
   const iframe = document.createElement('iframe')
   iframe.style.display = 'none'
   iframe.src = `javascript: "<script>top.location.replace('${link}')<\/script>"`
-  document.body.appendChild(iframe)
+  document.getElementsByTagName('body')[0].appendChild(iframe)
 }
 
 

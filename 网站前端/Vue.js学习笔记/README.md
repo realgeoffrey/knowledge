@@ -1796,17 +1796,18 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
             >  fetch ({ route, redirect }) {
             >    return new Promise((resolve, reject) => {
             >      // 某些原因触发重定向
-            >      redirect(302, '/error', { 'errorfrom': route.fullPath })
+            >      redirect(302, '/错误页面路由', { '指定query': route.fullPath })
             >
-            >      resolve()
+            >      // resolve() // 没有重定向需要添加resolve()
             >    })
             >  }
             >}
             >
             >
             >// 错误页面操作
-            >this.$router.replace(this.$route.query.errorfrom)   // 刷新或回退
-            >this.$router.replace('/')                           // 返回首页
+            >this.$router.replace(this.$route.query.指定query || '/')    // 刷新
+            >this.$router.back()                                        // 回退
+            >this.$router.replace('/')                                  // 返回首页
             >```
             ></details>
 

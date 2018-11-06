@@ -282,8 +282,7 @@
 >            1. [标签验证](https://validator.w3.org/)
 >            2. [CSS验证](https://jigsaw.w3.org/css-validator/validator.html.zh-cn)
 >            3. [链接测试](https://validator.w3.org/checklink)
->        3. [性能测试](https://www.webpagetest.org/)
->        4. [性能测试](https://gtmetrix.com/)
+>        3. [性能测试](https://gtmetrix.com/)
 >
 >2. 根据DevTool的Performance查询运行时导致帧数过高的代码。
 ></details>

@@ -1360,7 +1360,7 @@
             >    if (consolelogi >= 2) {    // 2次以上触发
             >      // 展示隐藏的调试信息
             >      const newScript = document.createElement('script')
-            >      const appendPlace = document.body || document.getElementsByTagName('head')[0]
+            >      const appendPlace = document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]
             >
             >      newScript.onload = function () {
             >        eruda.init()   // new VConsole()
@@ -1782,6 +1782,12 @@
     2. `encodeURI`
 
         转义除了以下字符之外的所有字符：`字母` `数字` `(` `)` `.` `!` `~` `*` `'` `-` `_` `;` `,` `/` `?` `:` `@` `&` `=` `+` `$` `#`
+15. `document.documentElement`与`document.body`
+
+    ```javascript
+    document.getElementsByTagName('html')[0] === document.documentElement
+    document.getElementsByTagName('body')[0] === document.body
+    ```
 
 ---
 ## 功能归纳
@@ -3124,6 +3130,8 @@
     3. 弥补单线程计算量太大、事件耗时太久影响浏览器体验：
 
         1. 新增**Web Worker**标准，但不能~~操作DOM~~，完全受主线程控制。
+
+            >在浏览器tab没有被激活时（inactive），计时器间隔的最小值会提升、进程执行会变慢。用Web Worker不会受浏览器是否激活的影响。
         2. 多个异步线程分别处理：**网络请求**、**定时器**、**读写文件**、**I/O设备事件**、**页面渲染**等。
 
             >DOM的变动（尤其是涉及页面重新渲染的部分），通常不会立即执行，而是每16毫秒执行一次。
