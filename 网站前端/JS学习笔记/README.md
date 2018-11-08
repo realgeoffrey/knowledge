@@ -284,7 +284,7 @@
         `document`
     6. `10 === Node.DOCUMENT_TYPE_NODE`
 
-        文档类型节点，如`<!DOCTYPE html>`
+        文档类型节点，如：`<!DOCTYPE html>`
     7. `11 === Node.DOCUMENT_FRAGMENT_NODE`
 
         `DocumentFragment`
@@ -344,7 +344,7 @@
     1. 确定绑定内容：
 
         1. 执行`on`方法的时刻，把所有满足条件的DOM对象安装指定的应用逻辑**func**，成为**eventHandler**；
-        2. 有且仅有这些eventHandler绑定成功；之后动态生成的且满足条件的DOM不再安装；对已生效的eventHandler操作DOM（如增删类名）不会使绑定内容失效（除非删除DOM或解绑事件）；
+        2. 有且仅有这些eventHandler绑定成功；之后动态生成的且满足条件的DOM不再安装；对已生效的eventHandler操作DOM（如：增删类名）不会使绑定内容失效（除非删除DOM或解绑事件）；
         3. 在eventHandler内动态增删的**selector**都可以由条件判定是否生效绑定内容（因为事件是绑定在eventHandler上，而不是selector上）。
     2. 绑定的eventHandler距离selector越近，效率越高。因此虽然把selector都绑定在`$(document)`上能够避免增删节点对事件绑定造成的影响，但效率会下降。
 
@@ -438,7 +438,7 @@
 ---
 ## 事件相关
 
->1. 事件：用户或浏览器执行某种动作，如`click`、`load`。
+>1. 事件：用户或浏览器执行某种动作，如：`click`、`load`。
 >2. 事件处理程序（事件处理函数、事件监听器）：当某个事件触发之后响应的函数。
 >3. 事件对象：触发DOM事件产生的对象，包含与事件有关的所有信息。
 
@@ -865,7 +865,7 @@
         2. Android机型播放了`<video>`，会把视频的层级放到最高，暂时没有直接解决方法。
         3. 打开全屏会触发window的`scroll`事件。
 
-            此时的屏幕可能高宽发生切换，页面内的DOM位置信息可能没有变化（如`getBoundingClientRect`还是在原界面的值，屏幕高宽却变了）。
+            此时的屏幕可能高宽发生切换，页面内的DOM位置信息可能没有变化（如：`getBoundingClientRect`还是在原界面的值，屏幕高宽却变了）。
 
 ---
 ## 编程技巧
@@ -1031,7 +1031,7 @@
     2. 函数声明
 
         1. 也会被JS引擎提前到作用域顶部声明，因此代码中函数的调用可以出现在函数声明之前。
-        2. 函数声明不应当出现在~~语句块~~内（如条件语句），语句块的函数也会提前声明，导致语义不清容易出错。
+        2. 函数声明不应当出现在~~语句块~~内（如：条件语句），语句块的函数也会提前声明，导致语义不清容易出错。
     3. 函数表达式（Function expressions）声明
 
         必须先声明：`var a = function(){...};`才可以使用，声明会被提前，但赋值不会被提前。
@@ -1091,7 +1091,7 @@
         1. `can`、`has`、`is`开头的返回值是布尔型。
         2. `get`开头的返回是非布尔型。
         3. `set`开头的执行保存动作。
-    3. 常量用大写字母和下划线分割，如`MAX_COUNT`。
+    3. 常量用大写字母和下划线分割，如：`MAX_COUNT`。
     4. 构造函数用大驼峰命名法（Pascal Case），首字母大写（以非动词开头），单词首字母大写：
 
         1. `var a = new Person();   // 构造函数`
@@ -1295,8 +1295,8 @@
 
     1. 不要~~用JS修改CSS样式~~，JS仅修改class（任何时刻，CSS中的样式都可以修改，而不必更新JS）。
 
-        >特例：根据页面重新定位，可以用JS设定位置（如`top`、`left`等）。
-    2. 将HTML从JS中抽离，避免增加跟踪文本和结构性问题的复杂度。可以使用模板引擎，如[handlebars.js](https://github.com/wycats/handlebars.js)。
+        >特例：根据页面重新定位，可以用JS设定位置（如：`top`、`left`等）。
+    2. 将HTML从JS中抽离，避免增加跟踪文本和结构性问题的复杂度。可以使用模板引擎，如：[handlebars.js](https://github.com/wycats/handlebars.js)。
 2. 避免使用全局变量
 
     >任何来自函数外的数据都应当以参数形式传进函数：将函数与其外部环境隔离开。
@@ -1339,8 +1339,8 @@
 
         >（Value below was evaluated just now.）`console`引用类型的数据，在点击开来查看的瞬间才去取引用类型的快照（意味着可以console之后再修改展示内容），打开之后不再关联。
     2. PC端的DevTool：Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）
-    3. WAP端使用页面模拟调试，如[eruda](https://github.com/liriliri/eruda)、[vConsole](https://github.com/Tencent/vConsole)
-    4. 上线的页面中藏着某些“后门”调试（如对各种操作开启`console`）
+    3. WAP端使用页面模拟调试，如：[eruda](https://github.com/liriliri/eruda)、[vConsole](https://github.com/Tencent/vConsole)
+    4. 上线的页面中藏着某些“后门”调试（如：隐蔽操作开启`console`）
 
         1. PC端可以在URL中判断某些特定的`search`值，以开启调试模式。
 
@@ -1360,14 +1360,14 @@
             >    if (consolelogi >= 2) {    // 2次以上触发
             >      // 展示隐藏的调试信息
             >      const newScript = document.createElement('script')
-            >      const appendPlace = document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]
+            >      const appendPlace = document.getElementsByTagName('body')[0] || document.getElementsByTagName('head')[0]
             >
-            >      newScript.onload = function () {
+            >      newScript.onload = function () { // 只能保证加载完成，但不能判断是否执行
             >        eruda.init()   // new VConsole()
             >        newScript.onload = null
             >      }
             >
-            >      newScript.type = 'text/javascript'
+            >      // onerror表示加载失败
             >
             >      newScript.src = '//unpkg.com/eruda'    // '//unpkg.com/vconsole'
             >
@@ -1501,7 +1501,7 @@
     >
     >    >除了[样式适配](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#wap端适配总结)之外。
     >
-    >    1. 添加厂商前缀（如`-webkit-`）。
+    >    1. 添加厂商前缀（如：`-webkit-`）。
     >    2. 布局有问题的机型额外调试。
     >    3. `<video>`、`<audio>`、`<iframe>`调试。
     >2. JS
@@ -1517,7 +1517,7 @@
         >    2. 匿名函数 -> 客户端调用`(匿名函数(JSON数据))`
         >2. WebView无法判断是否安装了其他App。
         >3. 可以通过`查看注入的全局方法`或`客户端调用回调函数`来判定H5页面是否在具体App内打开。
-        >4. `桥协议`仅在App内部起作用；`自定义URL Scheme`是系统层面，所以可以额外针对跨App起作用（如分享去其他App）；iOS的**通用链接**可以认为是高级的`自定义URL Scheme`。
+        >4. `桥协议`仅在App内部起作用；`自定义URL Scheme`是系统层面，所以可以额外针对跨App起作用（如：分享去其他App）；iOS的**通用链接**可以认为是高级的`自定义URL Scheme`。
 
         1. `桥协议`：Native注入全局方法至WebView的`window`，WebView调用则客户端拦截后触发Native行为。
 
@@ -1532,8 +1532,8 @@
             >是iOS和Android提供给开发者的一种WAP唤醒Native App方式。Android应用在mainfest中注册自己的Scheme；iOS应用在App属性中配置。典型的URL Scheme：`myscheme://my.hostxxxxxxx`。
             ></details>
 
-            >1. 客户端可以捕获、拦截任何行为（如`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
-            >2. 有些App会设置允许跳转的其他App的白名单或黑名单，如微信白名单。
+            >1. 客户端可以捕获、拦截任何行为（如：`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
+            >2. 有些App会设置允许跳转的其他App的白名单或黑名单，如：微信白名单。
             >3. 除了增加回调函数且被客户端调用，否则无法判定是否在此App内部。
             >4. 跨App使用`自定义URL Scheme`，其后面的字符串要产生的行为仅目的App能理解。
 
@@ -1570,7 +1570,7 @@
                 location.href = '自定义URL Scheme';	  // 也可以用`<iframe>`
 
                 var start = Date.now();
-                setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）（切换后台，定时器执行时间会变慢）
+                setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）（浏览器非激活时，定时器执行时间会变慢，所以会大于定时器时间之后才执行定时器内回调）
                   if (Date.now() - start < 3100) {  // 还在这个页面，认为没有安装App
                     location.href = '下载地址';
                   }
@@ -1782,13 +1782,24 @@
     2. `encodeURI`
 
         转义除了以下字符之外的所有字符：`字母` `数字` `(` `)` `.` `!` `~` `*` `'` `-` `_` `;` `,` `/` `?` `:` `@` `&` `=` `+` `$` `#`
-15. `document.documentElement`与`document.body`
+15. `document.documentElement`、`document.body`、`document.head`
 
     ```javascript
     document.getElementsByTagName('html')[0] === document.documentElement
     document.getElementsByTagName('body')[0] === document.body
+    document.getElementsByTagName('head')[0] === document.head
     ```
+16. 当一个`<script>`被执行时，在它之前的标签可以访问，但在它之后的标签无法访问（还不存在、未被解析到）
 
+    ```html
+    <!-- document、document.documentElement、document.head 出现 -->
+    <html>
+      <head></head>
+      <body> <!-- document.body出现 -->
+        某id的DOM <!-- 某id的DOM出现 -->
+      </body>
+    </html>
+    ```
 ---
 ## 功能归纳
 
@@ -2046,10 +2057,10 @@
 
     ><details>
     ><summary>僵尸cookie（<a href="https://en.wikipedia.org/wiki/Zombie_cookie">zombie cookie</a>）</summary>
-    >是指那些删不掉的，删掉会自动重建的cookie。僵尸cookie是依赖于其他的本地存储方法，如flash的share object、HTML5的local storages等，当用户删除cookie后，自动从其他本地存储里读取出cookie的备份，并重新种植。
+    >是指那些删不掉的，删掉会自动重建的cookie。僵尸cookie是依赖于其他的本地存储方法（如：flash的share object、HTML5的local storages等），当用户删除cookie后，自动从其他本地存储里读取出cookie的备份，并重新种植。
     ></details>
 
->隐身模式策略：存储API仍然可用，并且看起来功能齐全，只是无法真正储存（如分配储存空间为0）。
+>隐身模式策略：存储API仍然可用，并且看起来功能齐全，只是无法真正储存（如：分配储存空间为0）。
 
 ### 错误处理机制
 >1. 当JS出现错误时，JS引擎会根据JS调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式显示错误信息，可以用`window.onerror`进行自定义操作。
@@ -2500,13 +2511,13 @@
     >3. `new Obj.func()`等价于：`new (Obj.func)()`、`new (Obj.func)`、`new Obj.func`（新建实例）。
 6. 函数调用类型
 
-    1. 直接函数调用（如`alert();`）、立即调用的函数表达式（如`(function () {}());`）
+    1. 直接函数调用（如：`alert();`）、立即调用的函数表达式（如：`(function () {}());`）
 
         `this`：全局对象`window`（与在什么作用域无关）
-    2. 对象的方法调用（如`obj.func();`）
+    2. 对象的方法调用（如：`obj.func();`）
 
         `this`：上级对象（调用的`obj`）
-    3. 构造函数实例化（如`new RegExp();`）
+    3. 构造函数实例化（如：`new RegExp();`）
 
         `this`：新实例对象
     4. 间接调用（`alert.call(传入的对象);`或`apply`）
@@ -2618,7 +2629,7 @@
     3. 建议参数都用对象形式传递，且形参设置为解构赋值+默认参数。
 
         >e.g. `function func ({ para1 = 'default', para2 } = {}) {}`
-    4. 参数的数量有限制，比如有些JS引擎限制在`Math.pow(2, 16)`。
+    4. 参数的数量有限制，如：有些JS引擎限制在`Math.pow(2, 16)`。
 
 ### 闭包（closure）
 1. 当函数体内定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数执行完毕（寿命终结）之后。
@@ -3106,11 +3117,11 @@
 1. `expr1 || expr2`：
 
     1. 赋值操作：如果expr1能转换成true（`Boolean(expr1)`）则返回expr1，否则返回expr2。
-    2. 在Boolean环境（如if的条件判断）中使用：两个操作结果中只要有一个为true，返回true；二者操作结果都为false时返回false。
+    2. 在Boolean环境（如：if的条件判断）中使用：两个操作结果中只要有一个为true，返回true；二者操作结果都为false时返回false。
 2. `expr1 && expr2`：
 
     1. 赋值操作：如果expr1能转换成false（`Boolean(expr1)`）则返回expr1，否则返回expr2。
-    2. 在Boolean环境（如if的条件判断）中使用：两个操作结果都为true时返回true，否则返回false。
+    2. 在Boolean环境（如：if的条件判断）中使用：两个操作结果都为true时返回true，否则返回false。
 
 ### 事件循环（event loop）
 >参考[阮一峰：再谈Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)、[Help, I’m stuck in an event-loop.](https://vimeo.com/96425312)、[Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)。

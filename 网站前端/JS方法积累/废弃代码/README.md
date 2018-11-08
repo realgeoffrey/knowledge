@@ -92,7 +92,7 @@ var a = format.date(new Date(), 'yyyy-MM-dd HH:mm:ss S毫秒 EEE 季度q');
 ```javascript
 /**
  * 获取年龄
- * @param {String|Number} birthday - 年月日（8位，如'19900220'或19900220） 或 空字符串
+ * @param {String|Number} birthday - 年月日（8位，如：'19900220'或19900220） 或 空字符串
  * @returns {String} age - 年龄 或 空字符串
  */
 function getAge (birthday) {

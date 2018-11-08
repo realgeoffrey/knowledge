@@ -273,13 +273,13 @@
 
         1. 在Node.js环境下使用（`require`）
 
-            >如`vue-cli`。
+            >如：`vue-cli`。
         2. 在浏览器环境下使用
 
             1. 用打包工具（`webpack`、`browserify`、`rollup`）打包成能够在浏览器运行的JS代码。
             2. 直接制作可兼容在浏览器环境运行的代码。
 
-            >如`Vue.js`。
+            >如：`Vue.js`。
     - 作用域的包
 
         `@scope/project-name`

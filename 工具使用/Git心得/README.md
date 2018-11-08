@@ -64,7 +64,7 @@
 
         git reset --hard “SHA”          # 撤销commit请求（恢复commit的文件），恢复git add的全部文件（untracked不恢复）
         ```
-    4. 清除所有不在版本控制内的内容（如.idea、node_modules）
+    4. 清除所有不在版本控制内的内容（如：.idea、node_modules）
 
         ```git
         git clean -xdf
@@ -602,7 +602,7 @@ feat(details): 添加了分享功能
     3. 选择需要单独克隆的文件或文件夹，写入 **.git/info/sparse-checkout**文件：
 
         ```bash
-        # 所有包括有 images 的文件夹或文件（如/xxx/xxx/images/*、/images/*、images）
+        # 所有包括有 images 的文件夹或文件（如：/xxx/xxx/images/*、/images/*、images）
         echo 'images' >> .git/info/sparse-checkout
 
         echo 'js/release' >> .git/info/sparse-checkout

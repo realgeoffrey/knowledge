@@ -62,7 +62,7 @@
         1. 配置localhost虚拟主机：
 
             ```text
-            # 把原文件内容修改成如下
+            # 把原文件内容修改成：
             <VirtualHost *:80>
                 DocumentRoot E:/www
                 ServerName localhost

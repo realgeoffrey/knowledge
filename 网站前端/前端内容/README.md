@@ -31,7 +31,7 @@
 
 1. 第一阶段：库/框架选型
 
-    >提升开发效率。（使用自动化工具也能够提升开发效率，如浏览器自动刷新、IDEs）
+    >提升开发效率。（使用自动化工具也能够提升开发效率，如：浏览器自动刷新、IDEs）
 2. 第二阶段：简单构建优化
 
     >提升运行性能。
@@ -71,7 +71,7 @@
         2. [大公司的静态资源优化方案](https://github.com/fouber/blog/issues/6)：
 
             1. 配置超长时间的本地缓存 —— 节省带宽，提高性能
-            2. 采用文件的数字签名（如MD5）作为缓存更新依据 —— 精确的缓存控制
+            2. 采用文件的数字签名（如：MD5）作为缓存更新依据 —— 精确的缓存控制
             3. 静态资源CDN部署 —— 优化网络请求
             4. 非覆盖式更新资源 —— 平滑升级
 
@@ -82,7 +82,7 @@
 
     ![页面解析步骤图](./images/load-html-1.png)
 
-    1. 增量式生成一个文档对象模型（DOM），解析页面内容（HTML标签）。
+    1. 增量式生成一个文档对象模型（DOM），解析页面内容（`document`）。
 
         1. 加载DOM中所有CSS，生成一个CSS对象模型（CSSOM），描述对页面内容如何设置样式。
 
@@ -113,6 +113,13 @@
             >    2. `type="module" async`：与`async`相同。
             >
             >![JS脚本加载图](./images/js-load-1.png)
+            >
+            >- 按从上到下顺序解析页面内容，针对`<script>`（包括动态创建和修改`src`）：
+            >
+            >    1. 按文档顺序执行**原本就存在的**没有`defer`或`async`的`<script>`。
+            >    2. （与上面的顺序无关，可交叉进行）按动态添加的时序（与位置无关）执行**动态加载的**没有`defer`或`async`的`<script>`；
+            >    3. 添加`defer`或`async`的`<script>`或修改`<script>`的`src`，（无论是原本就存在的、还是动态加载的）异步加载、不确定顺序执行。
+            ></details>
     2. DOM（parse HTML）和CSSOM（recalculate style）构造完成后，进行渲染：
 
         Render Tree（渲染树）：Layout -> Paint -> Composite
@@ -199,7 +206,7 @@
 
             1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
             2. 使用[缓存相关HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since` `ETag/If-None-Match`。
-            3. 配置超长时间的本地缓存，采用文件的数字签名（如MD5）作为缓存更新依据。
+            3. 配置超长时间的本地缓存，采用文件的数字签名（如：MD5）作为缓存更新依据。
         6. [非覆盖式更新资源](https://github.com/fouber/blog/issues/6)。
     2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面加载解析步骤)：
 
@@ -232,7 +239,7 @@
                         >大图切小图：单个大文件需要多次HTTP请求获取。
                     3. 合理使用Base64、WebP、`srcset`属性。
 
-                        >1. 服务端（或CDN）处理图片资源，提供返回多种图片类型的接口（如[七牛](https://developer.qiniu.com/dora/manual/3683/img-directions-for-use)）。
+                        >1. 服务端（或CDN）处理图片资源，提供返回多种图片类型的接口（如：[七牛](https://developer.qiniu.com/dora/manual/3683/img-directions-for-use)）。
                         >2. [判断浏览器是否支持WebP](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断是否支持webp)，对不同浏览器请求不同的图片类型。
             3. 缩短CRP长度：
 
@@ -259,7 +266,7 @@
                     5. 长字符串拼接使用`Array.prototype.join()`，而不使用`+`。
                 2. 尽量使用事件代理，避免批量绑定事件。
                 3. [定时器取舍，合理使用重绘函数代替](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)。
-                4. 高频事件（如`scroll`、`mousemove`、`touchmove`）使用[函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)，避免在高频事件中进行运行时间长的代码。
+                4. 高频事件（如：`scroll`、`mousemove`、`touchmove`）使用[函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)，避免在高频事件中进行运行时间长的代码。
                 5. 避免强制同步布局、避免布局抖动。
                 6. 使用`Web Worker`处理复杂的计算。
                 7. 正则表达式尽可能准确地匹配目标字符串，以减少不必要的回溯。
@@ -294,7 +301,7 @@
         1000ms内完成CRP。
     2. idle
 
-        进行50ms内的空闲时期预加载，包括图片、多媒体文件、后续内容（如评论）。
+        进行50ms内的空闲时期预加载，包括图片、多媒体文件、后续内容（如：评论）。
     3. animations
 
         保证16ms/f的浏览器渲染时间。
@@ -442,7 +449,7 @@
 
             利用事先收集好的候选密码（经过各种组合方式后存入字典），枚举字典中的密码。
 
-            >如生日日期数值化。
+            >如：生日日期数值化。
 
         - 一种安全的服务端存储密码方式：
 
@@ -526,7 +533,7 @@
         对于`!(a>=b)`，若转换后`a<b`得到更短的代码，则转换。
 4. 去除没用的声明
 
-    1. 去除重复的指示性字符串，如`"use strict"`。
+    1. 去除重复的指示性字符串，如：`"use strict"`。
     2. 去除没有使用的函数参数。
     3. 去除函数表达式的函数名（如果没有引用）。
     4. 去除没用的块语句。

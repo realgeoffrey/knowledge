@@ -65,7 +65,7 @@
 3. 插件`DefinePlugin`在构建结束后向项目代码中注入变量：`new webpack.DefinePlugin({键-值})`
 
     若项目代码中要使用的Node.js的环境变量，建议都用此方式注入后再使用，而不要直接使用由webpack额外处理的Node.js环境变量。
-4. 可以导出数组，分别进行配置，串行执行多个webpack任务（如前后端同构任务）
+4. 可以导出数组，分别进行配置，串行执行多个webpack任务（如：前后端同构任务）
 
     ```javascript
     module.exports = [配置1, 配置2]

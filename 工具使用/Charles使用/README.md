@@ -113,7 +113,7 @@ Ctrl/commad + f调出。
 
 Charles能够截断发送请求前（篡改Request）和响应后（篡改Response），修改request和response的所有信息。
 
-场景：发送HTTP请求，我们需要测试接口的各种边界情况，如出错、超时等表现，Charles的断点+随意篡改，非常方便测试，右键选择“BreakPoints”，开启断点：
+场景：发送HTTP请求，我们需要测试接口的各种边界情况（如：出错、超时等表现），Charles的断点+随意篡改，非常方便测试，右键选择“BreakPoints”，开启断点：
 
 ![Charles图](./images/19.png)
 

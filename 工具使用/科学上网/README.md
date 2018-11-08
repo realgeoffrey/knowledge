@@ -96,7 +96,7 @@
     4. 设置**pkcs12证书的密码**（默认：空）。
     5. 选择是否使用**SNAT规则**（默认：不使用）
 
-        独立IP的vps才可以使用SNAT，可提升防火墙对数据包的处理速度。若服务器网络设置了NAT（如AWS的弹性IP机制），则填写网卡连接接口的IP地址。
+        独立IP的vps才可以使用SNAT，可提升防火墙对数据包的处理速度。若服务器网络设置了NAT（如：AWS的弹性IP机制），则填写网卡连接接口的IP地址。
     6. 选择**防火墙配置**：
 
         1. yes：firewall
@@ -140,7 +140,7 @@
         ipsec status  #查看状态
         ipsec --help  #查看帮助
         ```
-    2. 添加 **/usr/local/sbin/ipsec start**到自启动脚本文件中（如rc.local等）
+    2. 添加 **/usr/local/sbin/ipsec start**到自启动脚本文件中（如：rc.local等）
 
         ```bash
         vi /etc/rc.d/rc.local

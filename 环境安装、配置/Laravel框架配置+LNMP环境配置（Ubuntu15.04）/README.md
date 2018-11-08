@@ -138,7 +138,7 @@
 	有问题可以查看nginx错误日志 */var/log/nginx* ，或查看laravel错误日志 *mylaravel.com/app/storage/logs/laravel.log*
 7. *可选：用apache2配置虚拟主机*
 
-    配置虚拟机文件：打开目录 */etc/apache2/sites-available/* ，新建虚拟主机配置文件：命名为域名.conf（如abc.com.conf或192.168.20.111..conf），添加内容：
+    配置虚拟机文件：打开目录 */etc/apache2/sites-available/* ，新建虚拟主机配置文件：命名为域名.conf（如：abc.com.conf或192.168.20.111..conf），添加内容：
 
     ```text
     <VirtualHost *:8080>

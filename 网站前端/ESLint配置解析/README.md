@@ -66,10 +66,10 @@
   //数组中每个配置项继承它前面的配置
   //可选的配置项如下
   //1.字符串eslint：recommended，该配置项启用一系列核心规则，这些规则报告一些常见问题，即在(规则页面)中打勾的规则
-  //2.一个可以输出配置对象的可共享配置包，如eslint-config-standard
+  //2.一个可以输出配置对象的可共享配置包，如：eslint-config-standard
     //可共享配置包是一个导出配置对象的简单的npm包，包名称以eslint-config-开头，使用前要安装
     //extends属性值可以省略包名的前缀eslint-config-
-  //3.一个输出配置规则的插件包，如eslint-plugin-react
+  //3.一个输出配置规则的插件包，如：eslint-plugin-react
     //一些插件也可以输出一个或多个命名的配置
     //extends属性值为，plugin：包名/配置名称
   //4.一个指向配置文件的相对路径或绝对路径

@@ -754,13 +754,13 @@ document.getElementById('...').addEventListener('touchend', function (e) {
         end_y = e.changedTouches[0].clientY;
 
     if (Math.abs(end_x - start_x) > 5 || Math.abs(end_y - start_y) > 5) {
-        /* 触发滑动事件要做的事情（如什么都不做） */
+        /* 触发滑动事件要做的事情（如：什么都不做） */
     } else {
         /* 触发点击事件要做的事情 */
     }
 }, false);
 
-/* 还要处理浏览器默认点击事件（如a标签） */
+/* 还要处理浏览器默认点击事件（如：`<a>`） */
 ```
 
 ### *原生JS*判断事件在浏览器是否存在
@@ -1094,7 +1094,7 @@ const hanldeWords = {
 
     for (let i = 0; i < words.length; i++) {
       const unicode = words.charCodeAt(i).toString(16);
-      arr[i] = '\\u' + '0'.repeat(4 - unicode.length) + unicode; // 单个Unicode：\u+4位16进制数；一个字可能不止一个Unicode，如💩
+      arr[i] = '\\u' + '0'.repeat(4 - unicode.length) + unicode; // 单个Unicode：\u+4位16进制数；一个字可能不止一个Unicode，如：💩
     }
 
     return arr.join('');
@@ -1306,7 +1306,7 @@ function animateTo(endX, endY, time) {
 }
 ```
 >使用[velocity动画库](https://github.com/julianshapiro/velocity)（[中文文档](http://www.mrfront.com/docs/velocity.js/)）做所有的动画（包括JS和CSS）才是最简单且性能最佳的选择。
->如滚动到某位置：`$('html').velocity('scroll', {offset: y轴像素, duration: 毫秒});`。
+>如：滚动到某位置`$('html').velocity('scroll', {offset: y轴像素, duration: 毫秒});`。
 
 ### *原生JS*用请求图片作log统计
 ```javascript
@@ -1637,16 +1637,21 @@ xhr.send(null);
 
     1. 异步（JS文件地址）
 
-        >动态创建的、有`src`属性的`<script>`默认是`async`（可以手动设置`dom.async = false`）。
+        1. 动态创建`<script>`
 
-        1. 直接`document.write`
-
-            >因为`document.write`需要向文档流中写入内容，因此在关闭（已加载）的文档上调用`document.write`会自动调用`document.open`，这将清空该文档的内容。
+            >默认是`async`（可以手动设置`newScript.async = false`）；没有`async`时按动态添加的时序（与位置无关）执行。
 
             ```javascript
-            document.write('<script src="JS文件地址"><\/script>');
+            const newScript = document.createElement('script')
+            const appendPlace = document.getElementsByTagName('body')[0] || document.getElementsByTagName('head')[0]
+
+            newScript.src = 'JS文件地址'
+
+            appendPlace.appendChild(newScript)
             ```
-        2. 动态改变已存在的`<script>`的`src`属性
+        2. 改变已存在的`<script>`的`src`属性
+
+            >效果类似于`async`。
 
             ```html
             <script type="text/javascript" id="节点id"></script>
@@ -1655,29 +1660,20 @@ xhr.send(null);
                 document.getElementById('节点id').src = 'JS文件地址';
             </script>
             ```
-        3. 动态创建`<script>`
+        3. 直接`document.write`
+
+            >因为`document.write`需要向文档流中写入内容，因此在关闭（已加载）的文档上调用`document.write`会自动调用`document.open`，这将清空该文档的内容。
 
             ```javascript
-            var newScript = document.createElement('script'),
-                appendPlace = document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0];
-
-            newScript.type = 'text/javascript';
-
-            newScript.src = 'JS文件地址';
-
-            appendPlace.appendChild(newScript);
+            document.write('<script src="JS文件地址"><\/script>');
             ```
-
-        >异步加载第三方资源可在`<script>`添加`defer`或`async`属性。
     2. 同步（JS代码文本）
 
         >动态创建的、没有`src`属性的、通过`text`属性设置JS代码文本的`<script>`，添加后的脚本被马上执行（可以认为是当前脚本一部分，但实际不是，作用域不同；这个也是jQuery的ajax加载执行外部JS脚本的方式）。
 
         ```javascript
         var newScript = document.createElement('script')
-        var appendPlace = document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]
-
-        newScript.type = 'text/javascript'
+        var appendPlace = document.getElementsByTagName('body')[0] || document.getElementsByTagName('head')[0]
 
         try {
             newScript.appendChild(document.createTextNode('JS代码文本'))
@@ -1723,9 +1719,7 @@ xhr.send(null);
         >        /* 0为访问的本地，200到300代表访问服务器成功，304代表没做修改访问的是缓存 */
         >        if ((xmlHttp.status >= 200 && xmlHttp.status < 300) || xmlHttp.status == 0 || xmlHttp.status == 304) {
         >            newScript = document.createElement('script');
-        >            appendPlace = document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0];
-        >
-        >            newScript.type = 'text/javascript';
+        >            appendPlace = document.getElementsByTagName('body')[0] || document.getElementsByTagName('head')[0];
         >
         >            try {
         >                newScript.appendChild(document.createTextNode(xmlHttp.responseText));
@@ -1766,7 +1760,7 @@ xhr.send(null);
             newStyle.styleSheet.cssText = 'CSS代码文本';  // ie
         }
 
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(newStyle);
+        document.getElementsByTagName('head')[0].appendChild(newStyle);
         ```
     2. 添加`<link>`
 
@@ -1780,7 +1774,7 @@ xhr.send(null);
 
         newLink.href = 'CSS文件地址';
 
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(newLink);
+        document.getElementsByTagName('head')[0].appendChild(newLink);
         ```
     3. 添加内嵌样式
 
@@ -1790,7 +1784,7 @@ xhr.send(null);
         oneDom.style.cssText += '; CSS代码文本'
         ```
 
-    >CSS代码文本，如 `div {background-color: yellow;}`。
+    >CSS代码文本，如：`div {background-color: yellow;}`。
 
 ### *原生JS*展示页面帧数
 ```javascript
@@ -1854,7 +1848,7 @@ var a = new ShowFPS();
 ```javascript
 /**
  * 获取星座
- * @param {String|Number} birthday - 年月日（8位，如'19900220'或19900220） 或 空字符串
+ * @param {String|Number} birthday - 年月日（8位，如：'19900220'或19900220） 或 空字符串
  * @returns {String} constellation - 星座 或 空字符串
  */
 function getConstellation (birthday) {
@@ -1885,7 +1879,7 @@ function getConstellation (birthday) {
  * 分割数组，并以嵌套数组形式返回
  * @param {Array} arr - 数组
  * @param {Number} [divisor = 1] - 分割除数
- * @returns {Array} newArr - 比如返回：[[0, 1, 2], [3, 4, 5], [6]]
+ * @returns {Array} newArr - 如：[[0, 1, 2], [3, 4, 5], [6]]
  */
 function divideArr(arr, divisor) {
     divisor = divisor || 1;

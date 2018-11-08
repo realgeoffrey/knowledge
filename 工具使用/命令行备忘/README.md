@@ -106,7 +106,7 @@
     vi ~/.bash_profile  # bash
     vi ~/.zshrc         # zsh
 
-    # 比如可以把定义环境变量放在里面：export NODE_ENV=development
+    # 如：可以把定义环境变量放在里面`export NODE_ENV=development`
 
     # source 脚本   # 当前运行一遍
     ```

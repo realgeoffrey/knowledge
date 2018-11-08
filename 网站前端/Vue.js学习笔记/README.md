@@ -341,7 +341,7 @@
 9. `v-html`输入真正HTML
 
     ><details>
-    ><summary>与其他插值（如模板插值）的区别</summary>
+    ><summary>与其他插值（如：模板插值）的区别</summary>
     >
     >1. `v-html`：`innerHTML`。
     >2. `v-text`、`{{ }}`及其他插值：`innerText`。
@@ -364,7 +364,7 @@
     使用在`v-on`、`v-bind`、`v-module`后添加。
 14. `|`使用filters过滤器，参数带入函数运行出结果（支持过滤器串联）
 
-    仅可以在`{{ }}`和`v-bind`中使用（其他如 ~~`v-html`~~ 无效、无法在Vue实例中使用）。
+    仅可以在`{{ }}`和`v-bind`中使用（其他如：~~`v-html`~~ 无效、无法在Vue实例中使用）。
 
     <details>
     <summary>e.g.</summary>
@@ -459,7 +459,7 @@
 
         1. 添加在原生DOM：指向DOM元素
 
-            >代替原生JS获取DOM，如 ~~`document.getElementById`~~。
+            >代替原生JS获取DOM，如：~~`document.getElementById`~~。
         2. 添加在子组件：指向子组件实例。
     3. `slot`
 
@@ -630,7 +630,7 @@
     1. 钩子函数都会调用：混入对象的钩子优先调用，组件自身的钩子之后调用。
     2. 非钩子函数属性，若有同名内容，则合并之后，组件自身内容覆盖mixin：
 
-        `methods`、`components`、`directives`等，合并为同一个对象；对象内部键名冲突时（如`methods`都有某同名方法），使用组件对象的内容、丢弃mixin的内容。
+        `methods`、`components`、`directives`等，合并为同一个对象；对象内部键名冲突时（如：`methods`都有某同名方法），使用组件对象的内容、丢弃mixin的内容。
 
     - 作用域：
 
@@ -934,7 +934,7 @@
             // 在组件 B 创建的钩子中监听事件
             bus.$on('事件名', function (para) {})
             ```
-        2. 或专门状态管理模式，如[vuex](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#vuex)。
+        2. 或专门状态管理模式，如：[vuex](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#vuex)。
     - 组件的API来自三部分
 
         `<my-component :子属性="父属性" @父事件="父方法"><标签 slot="名字">内容分发</标签></my-component>`
@@ -992,7 +992,7 @@
 
                 `<style scoped>样式内容</style>`
 
-            - 使用`scoped`的**单文件组件**内所有Element（包括**其引用的子组件**），都会添加自定义`attributes`（如`data-v-2185bf6b`）；非Vue内部生成的节点（手动添加）不会添加自定义`attributes`。
+            - 使用`scoped`的**单文件组件**内所有Element（包括**其引用的子组件**），都会添加自定义`attributes`（如：`data-v-2185bf6b`）；非Vue内部生成的节点（手动添加）不会添加自定义`attributes`。
 
                 若已添加`scoped`的子组件也添加`scoped`，则增加一份子组件的自定义`attributes`。
         2. `module`（[vue-loader的CSS Modules](https://vue-loader.vuejs.org/zh/guide/css-modules.html)）
@@ -1060,7 +1060,7 @@
             >选择一种方式后，应该在项目中始终仅使用这种方式，不要在同一个项目中混用两种命名方式。
     2. 基础组件名（以`Base`、`App`、`V`开头）
 
-        应用特定样式和约定的基础组件（展示类的、无逻辑的、无状态的组件，绝对不包括~~全局状态，如vuex~~），以一个特定的前缀开头，比如`Base`、`App`、`V`。
+        应用特定样式和约定的基础组件（展示类的、无逻辑的、无状态的组件，绝对不包括~~全局状态，如：vuex~~），以一个特定的前缀开头，如：`Base`、`App`、`V`。
     3. 单例组件名（以`The`开头）
 
         只应该拥有单个活跃实例的组件应该以`The`前缀命名，以示其唯一性。每个页面最多使用一次，不接收~~props~~。
@@ -1073,8 +1073,8 @@
 
 - 插入、更新、移除DOM时，提供过渡/动画的操作
 
-    1. 在CSS过渡/动画中自动应用class（可配合使用第三方CSS动画库，如[animate.css](https://github.com/daneden/animate.css)）
-    2. 在过渡钩子函数中使用JS直接操作DOM（可配合使用第三方JS动画库，如[velocity](https://github.com/julianshapiro/velocity)）
+    1. 在CSS过渡/动画中自动应用class（可配合使用第三方CSS动画库，如：[animate.css](https://github.com/daneden/animate.css)）
+    2. 在过渡钩子函数中使用JS直接操作DOM（可配合使用第三方JS动画库，如：[velocity](https://github.com/julianshapiro/velocity)）
 
 1. `<transition>`（仅针对第一个子元素）
 
@@ -1144,7 +1144,7 @@
             </details>
         2. 自定义过渡/动画的类名
 
-            >优先级高于普通的类名，主要用于和第三方CSS动画库配合，如[animate.css](https://github.com/daneden/animate.css)。
+            >优先级高于普通的类名，主要用于和第三方CSS动画库配合，如：[animate.css](https://github.com/daneden/animate.css)。
 
             1. `enter-class`
             2. `enter-active-class`
@@ -1245,7 +1245,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 ```
 
 ### 特性
-1. Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性），在内部`vm.名字`访问，可以直接使用，**所有属性名字都不能重复**（filters不属于同一类）；也有以`$`开头的Vue实例属性（如`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
+1. Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性），在内部`vm.名字`访问，可以直接使用，**所有属性名字都不能重复**（filters不属于同一类）；也有以`$`开头的Vue实例属性（如：`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
 
     只有已经被代理的内容是响应的（Vue实例被创建时传入的属性），值的改变（可能）会触发视图的重新渲染。
 2. **Vue实例的属性**和**Vue实例的属性的属性**，慎用~~箭头函数~~，因为`this`的指向无法按预期指向Vue实例。
@@ -1838,7 +1838,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
         </details>
     2. `assets`：待编译资源目录
 
-        默认使用webpack的vue-loader、file-loader、url-loader加载器进行编译的资源，如`脚本（js、jsx、tsx、coffee）`、`样式（css、scss、sass、less）`、`模版（html、tpl）`、`JSON`、`图片`、`字体`文件。
+        默认使用webpack的vue-loader、file-loader、url-loader加载器进行编译的资源，如：`脚本（js、jsx、tsx、coffee）`、`样式（css、scss、sass、less）`、`模版（html、tpl）`、`JSON`、`图片`、`字体`文件。
 
         - 引用方式：组件中HTML、ES6引用`~/assets/`
 

@@ -308,7 +308,7 @@
 
     <summary>W3C定义</summary>
 
-    1. 浮动元素、绝对定位元素、非块级盒子的块级容器（如`inline-blocks`、`table-cells`、`table-captions`）、`overflow`值不为“visiable”的块级盒子，都会为它们的内容创建新的块级格式化上下文。
+    1. 浮动元素、绝对定位元素、非块级盒子的块级容器（如：`inline-blocks`、`table-cells`、`table-captions`）、`overflow`值不为“visiable”的块级盒子，都会为它们的内容创建新的块级格式化上下文。
     2. 在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由它们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
     3. 在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘（border-left）（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
     </details>
@@ -503,7 +503,7 @@
 >当`<img>`的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
 
 1. 不要用**空的`<img>`加上背景来用作默认图**，必须用其他标签来代替。
-2. 要谨慎给`<img>`设置背景（如内容图片或头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载)前的默认图），因为当图片是透明图的时候，会出现背景。
+2. 要谨慎给`<img>`设置背景（如：内容图片或头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载)前的默认图），因为当图片是透明图的时候，会出现背景。
 3. `<img>`没有`src`属性或`src`属性为空隐藏
 
     ```css
@@ -1179,7 +1179,7 @@
         >
         >        `animationstart`、`animationend`、`animationcancel`、`animationiteration`
         >    1. CSS的`transition`相关事件：`transitionend`
-        >2. 动画其实就是按某种顺序、**平滑**地修改样式：如颜色、大小、间距、`transform`等。
+        >2. 动画其实就是按某种顺序、**平滑**地修改样式：如：颜色、大小、间距、`transform`等。
     2. `Style`：
 
         根据CSS选择器，生成完整的CSSOM。
@@ -1253,13 +1253,13 @@
     1. 优化JS的执行效率
 
         1. 把DOM元素的操作划分成多个小任务，分别在多个帧中去完成。
-        2. 不在连续的动画过程中做高耗时的操作（如大面积reflow、repaint、复杂JS计算）。
+        2. 不在连续的动画过程中做高耗时的操作（如：大面积reflow、repaint、复杂JS计算）。
         3. 对于动画效果的实现，建议使用`requestAnimationFrame`（或[velocity动画库](https://github.com/julianshapiro/velocity)），避免使用~~setTimeout、setInterval~~。
         4. 把耗时长的JS代码放到`Web Worker`中去做。
         5. 用操作class替代~~直接操作CSS属性~~。
     2. 缩小样式计算的范围和降低复杂度
 
-        1. 降低样式选择器的复杂度、提升[选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)（甚至使用基于class的方式，如[BEM](https://en.bem.info/methodology/css/)）。
+        1. 降低样式选择器的复杂度、提升[选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)（甚至使用基于class的方式，如：[BEM](https://en.bem.info/methodology/css/)）。
         2. 减少需要执行样式计算的元素的个数（随着元素递增而计算量线性递增）。
     3. 避免大规模、复杂的layout与reflow
 
@@ -1341,7 +1341,7 @@
             >页面文件（如：nuxt的pages）：按照路由访问命名（习惯用`-`）。
 2. 引号使用
 
-    1. HTML标签的`attribute`的值、CSS样式属性的值（如`content`、`font-family`、`quotes`）：
+    1. HTML标签的`attribute`的值、CSS样式属性的值（如：`content`、`font-family`、`quotes`）：
 
         >除了有空格之外，都允许不加引号。建议：HTML标签的`attribute`的值都添加，CSS样式属性的值都不添加。
 
@@ -1362,12 +1362,12 @@
         不可再分的较为小巧的个体，通常被重复用于各种模块中。
     4. 状态`.z-`（zhuangtai）
 
-        为状态类样式加入前缀，统一标识，方便识别，只作为后代选择器使用（如`.z-hover`或`.z-active`）。
+        为状态类样式加入前缀，统一标识，方便识别，只作为后代选择器使用（如：`.z-hover`或`.z-active`）。
     5. 样式区分`.i-`（icon）
 
-        同一批内容的不同样式（如仅背景不同的几个按钮），可以用`.i-1`、`.i-2`区分样式。
+        同一批内容的不同样式（如：仅背景不同的几个按钮），可以用`.i-1`、`.i-2`区分样式。
 
-        >如果在模块上，可以使用**选择器扩展**而不加前缀`.i-`，如`.m-xxx`扩展内容`.m-xxx-1`、`.m-xxx .btn`扩展内容`.m-xxx .btn-1`。
+        >如果在模块上，可以使用**选择器扩展**而不加前缀`.i-`，如：`.m-xxx`扩展内容`.m-xxx-1`、`.m-xxx .btn`扩展内容`.m-xxx .btn-1`。
     6. JS功能`.j-`（JS）
 
         仅作为JS锚点使用，不添加任何CSS样式。
@@ -1383,11 +1383,11 @@
 
         1. 去掉或丢失样式能够让页面呈现出清晰的结构。
         2. 有利于SEO：爬虫依赖于标签来确定上下文和各个关键字的权重。
-        3. 方便其他设备解析（如屏幕阅读器、盲人阅读器、移动设备）以特殊方式渲染网页。
+        3. 方便其他设备解析（如：屏幕阅读器、盲人阅读器、移动设备）以特殊方式渲染网页。
         4. 便于团队开发和维护，更具可读性、减少差异化。
-    2. 合理减少层级嵌套，行内元素不要嵌套块级元素（如`<a>`不嵌套`<div>`）。
+    2. 合理减少层级嵌套，行内元素不要嵌套块级元素（如：`<a>`不嵌套`<div>`）。
     3. 用父节点的class去管理子节点。
-    4. 有些WAP端（如Android各奇葩机型）页面的点击按钮制作大一些，否者难以点击触发JS效果。
+    4. 有些WAP端（如：Android各奇葩机型）页面的点击按钮制作大一些，否者难以点击触发JS效果。
 5. CSS编码规范
 
     绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/css.md#css编码规范)。
