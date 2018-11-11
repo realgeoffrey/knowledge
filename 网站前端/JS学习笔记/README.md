@@ -2128,7 +2128,12 @@
 
             return true;    // 浏览器不再显示错误信息
         };
+
+
+        // window.addEventListener('error', (event) => {})  // 错误信息都在event中；无法设置：浏览器不再显示错误信息
         ```
+
+        >未捕获的Promise的失败，不会触发 ~~`window`的`error`事件~~，仅会触发`window`的`unhandledrejection`事件。
     3. 图像的`onerror`事件
 
         >1. 只要图像的src属性中的URL不能返回能被识别的图像格式，就会触发图像的`error`事件。

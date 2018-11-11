@@ -28,6 +28,7 @@
 1. [编译器原理](#编译器原理)
 1. [MD5 && SHA](#md5--sha)
 1. [前端与服务端配合细节](#前端与服务端配合细节)
+1. [JSON](#json)
 
 ---
 ### 数据结构（data structure）
@@ -814,3 +815,95 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
     2. 静默失败（针对增量加载的信息，如：滚动加载）
 
         不提示用户失败，当用户再次触发时再次请求（减少用户挫败感）。
+
+### JSON
+
+>- 从结构上看，所有的数据（data）最终都可以分解成三种类型：
+>
+>    1. 标量（scalar）
+>
+>        单独的字符串（`String`）或数字（`Number`）或其他值（`Boolean`、`Null`等）。
+>    2. 序列（sequence）
+>
+>        >又称为：数组（array）、列表（list）。
+>
+>        若干个相关的数据按照一定顺序排序在一起。
+>    3. 映射（mapping）
+>
+>        >又称为：散列（hash）、字典（dictionary）
+>
+>        名值对。
+
+1. JSON（JavaScript Object Notation）是一种数据交换格式
+
+    1. 定义明确简单
+
+        易于人阅读和编写、也易于机器解析和生成。
+    2. 采用完全独立于语言的文本格式
+
+        能够跨编程语言传输数据。
+
+        >因为传递的是文本格式，所以无法传递byte类型数据（二进制文件，如：图片）。
+2. JSON的数据类型
+
+    >来自[www.json.org](https://www.json.org/json-zh.html)
+
+    >作者-道格拉斯·克罗克福特（Douglas Crockford）-设计的JSON实际上是JavaScript的一个子集，并且声称JSON的规格永远不必升级，因为该规定的都规定了。
+
+    1. `Object`
+
+        ![JSON的对象](./images/json-object.gif)
+
+        >注意：键名必须使用双引号`"`；不能增加额外的逗号`,`。
+    2. `Array`
+
+        ![JSON的数组](./images/json-array.gif)
+
+        >注意：不能增加额外的逗号`,`。
+    3. `String`
+
+        ![JSON的字符串](./images/json-string.gif)
+
+        >注意：字符串必须使用双引号`"`。
+    4. `Number`
+
+        ![JSON的数字](./images/json-number.gif)
+
+        >注意：必须是十进制；浮点数不能省略小数点前的`0`（错误：~~`.1`~~；正确：`0.1`）。
+    5. `true`、`false`、 `null`
+
+        >不支持JS的其他基本数据类型：~~`Undefined`~~、~~`Symbol`~~。
+
+    - 以上数据类型在`键值`的任意组合、嵌套
+
+        ![JSON的值](./images/json-value.gif)
+
+    - 间隔区域可添加任意数量的空白` `
+
+    - 字符集必须是UTF-8
+3. [JS使用JSON](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#json)
+4. JSON的发展
+
+    1. [JSON Schema](https://json-schema.org/)
+    2. [MessagePack](https://msgpack.org/)
+
+- <details>
+
+    <summary>JSON与XML的对比</summary>
+
+    1. XML（Extensible Markup Language，可扩展标记语言）
+
+        在JSON出现之前，大家一直用XML来传递数据。
+
+        因为XML是一种纯文本格式，所以它适合在网络上交换数据。XML本身不算复杂，但是，加上DTD、XSD、XPath、XSLT等一大堆复杂的规范以后……即使你努力钻研几个月，也未必搞得清楚XML的规范。
+    2. JSON出现
+
+        终于，在2002年的一天，道格拉斯·克罗克福特（Douglas Crockford）发明了JSON这种超轻量级的数据交换格式。
+
+        由于JSON非常简单，很快就风靡Web世界，并且成为ECMA标准。几乎所有编程语言都有解析JSON的库，而在JavaScript中，我们可以直接使用JSON，因为JavaScript内置了JSON的解析。
+
+    - 现在
+
+        1. JSON和XML都是数据交换语言，完全独立于任何程序语言的文本格式。
+        2. JSON的存在是典型的20%功能解决80%需求。为什么不要XML？因为里面80%的功能你不需要，等你需要的时候你就明白，这事只能XML干，JSON不行。
+    </details>
