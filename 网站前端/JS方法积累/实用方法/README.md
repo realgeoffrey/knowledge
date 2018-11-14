@@ -132,13 +132,11 @@ function detectOS (ua, pf) {
 ### *原生JS*判断移动平台
 ```javascript
 // 判断移动平台（微信、QQ、微博、QQ空间、UC浏览器）
-function platform (ua) {
-  ua = ua || window.navigator.userAgent
-
-  var platform
+function platform (ua = window.navigator.userAgent) {
+  let platform
 
   if (/MicroMessenger/.test(ua)) {
-    platform = 'weixin'
+    platform = 'wx'
   } else if (/QQ\//.test(ua)) {
     platform = 'qq'
   } else if (/\bWeibo|__weibo__\d/.test(ua)) {

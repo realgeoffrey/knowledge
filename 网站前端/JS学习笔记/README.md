@@ -1577,26 +1577,28 @@
                 }, 3000);
                 ```
 
-            ><details>
-            ><summary>（在微信及其他APP中）使用应用宝<strong>下载/打开</strong>其他APP</summary>
+            >1. <details>
             >
-            >>参考:[关于微信中直接调起 Native App 的调研报告](https://blog.csdn.net/lixuepeng_001/article/details/78043418)。
+            >    <summary>（在微信及其他APP中）使用应用宝<strong>下载/打开</strong>其他APP</summary>
             >
-            >应用宝在微信中可能可以更好识别是否安装了其他APP，从而可以在应用宝页面选择打开其他APP，而不仅仅是下载。
+            >    >参考:[关于微信中直接调起 Native App 的调研报告](https://blog.csdn.net/lixuepeng_001/article/details/78043418)。
             >
-            >- 拼接应用宝下载/打开其他APP的链接：
+            >    应用宝在微信中可能可以更好识别是否安装了其他APP，从而可以在应用宝页面选择打开其他APP，而不仅仅是下载。
             >
-            >    1. 应用宝主链接：`https://a.app.qq.com/o/simple.jsp?`
-            >    2. 跳转参数（search值，在`?`后面，用`&`分割）:
+            >    - 拼接应用宝下载/打开其他APP的链接：
             >
-            >        1. 包名：`pkgname=` + `com.xx.xxx`
-            >        2. 其他APP内打开路径（可选）：`android_schema=` + `自定义URL Scheme://具体跳转路径`
+            >        1. 应用宝主链接：`https://a.app.qq.com/o/simple.jsp?`
+            >        2. 跳转参数（search值，在`?`后面，用`&`分割）:
             >
-            >            >若有一些特殊字符，可以用`encodeURIComponent`转义。
-            >        3. 渠道包链接（可选）：`ckey=` + `CK1234567890123`
+            >            1. 包名：`pkgname=` + `com.xx.xxx`
+            >            2. 其他APP内打开路径（可选）：`android_schema=` + `自定义URL Scheme://具体跳转路径`
             >
-            >    最终链接：`https://a.app.qq.com/o/simple.jsp?pkgname=com.xx.xxx&android_schema=xxxx://xx`
-            >></details>
+            >                >若有一些特殊字符，可以用`encodeURIComponent`转义。
+            >            3. 渠道包链接（可选）：`ckey=` + `CK1234567890123`
+            >
+            >        最终链接：`https://a.app.qq.com/o/simple.jsp?pkgname=com.xx.xxx&android_schema=xxxx://xx`
+            >    </details>
+            >2. 微信分享在部分系统（低于微信客户端Android6.2）使用~~pushState~~导致签名失败，可查询[官方文档](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115)；又因为一般是异步加载、配置微信的设置，所以要等待微信第三方文件和接口完成后才能够配置成功（才能够设置成功）。
         3. iOS9+的Universal links（通用链接），可以从底层打开其他App客户端，跳过白名单（微信已禁用）
 
             >需要HTTPS域名配置、iOS设置等其他端配合。
@@ -1800,6 +1802,15 @@
       </body>
     </html>
     ```
+17. 判断浏览器标签是否在激活状态
+
+    1. `document.hidden`：当前文档是否被隐藏
+    2. `document.visibilityState`：当前文档的可见情况（`'visible'`、`'hidden'`、`'prerender'`、`'unloaded'`）
+    3. `document`的`visibilitychange`事件：当前文档切换**隐藏/显示**时触发
+
+        >`window`的`focus/blur`事件：当前文档**获得焦点/失去焦点**时触发（并不意味着被浏览器标签是否被隐藏）
+    4. `document.hasFocus()`：当前文档是否获得焦点
+
 ---
 ## 功能归纳
 
