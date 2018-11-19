@@ -1769,11 +1769,12 @@
     ></script>
     >```
     ></details>
-13. （非打开新窗口的）页面回退
-
-    >若是新打开的窗口（`target="_blank"`），则会出现`document.referrer`有值，但`history.back()`已回退到底。
+13. （非打开新窗口的、非`history.pushState/replaceState`改变路由的）页面回退
 
     `if (document.referrer !== '') { history.back() } else { /* 回退到底的其他行为 */ }`
+
+    >1. 若是新打开的窗口（`target="_blank"`），则会出现`document.referrer`有值，但`history.back()`已回退到底。
+    >2. 若是`history.pushState/replaceState`改变路由，则不改变`document.referrer`（可能初始`document.referrer === ''`）。
 14. 使用`encodeURIComponent/decodeURIComponent`，不使用 ~~`encodeURI/decodeURI`~~
 
     >`encodeURIComponent`与`encodeURI`都是对URI（统一资源标识符）进行编码。因为 ~~`encodeURI`~~ 无法产生能适用于HTTP GET/POST请求的URI（没转义`&` `=`等），所以不使用。
