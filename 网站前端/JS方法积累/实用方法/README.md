@@ -279,7 +279,7 @@ function getLocation (url) {
   return location
 }
 ```
->参考[用正则表达式分析 URL](http://harttle.com/2016/02/23/javascript-regular-expressions.html)。
+>参考：[用正则表达式分析 URL](http://harttle.com/2016/02/23/javascript-regular-expressions.html)。
 
 >获取某search值：
 >
@@ -373,7 +373,7 @@ var eventUtil = {
         if (typeof dom.addEventListener === 'function') {   /* DOM2级，除ie8- */
             dom.addEventListener(type, handle, false);
         } else if (typeof dom.attachEvent === 'function') { /* 所有ie浏览器 */
-            dom.attachEvent('on' + type, handle);   // 注意传入的参数和this的兼容
+            dom.attachEvent('on' + type, handle);   // 注意：传入的参数和this的兼容
         } else {    /* DOM0级，最早期的浏览器都支持 */
             dom['on' + type] = handle;
         }
@@ -389,7 +389,7 @@ var eventUtil = {
         if (typeof dom.removeEventListener === 'function') {
             dom.removeEventListener(type, handle, false);
         } else if (typeof dom.detachEvent === 'function') {
-            dom.detachEvent('on' + type, handle);   // 注意传入的参数和this的兼容
+            dom.detachEvent('on' + type, handle);   // 注意：传入的参数和this的兼容
         } else {
             dom['on' + type] = null;
         }
@@ -542,7 +542,7 @@ var eventUtil = {
             }
         });
         ```
->可参考[keycode.info](http://keycode.info/)。
+>线上查询：[keycode.info](http://keycode.info/)。
 
 ### *原生JS*拖拽和放下
 1. PC端的鼠标事件
@@ -1081,7 +1081,7 @@ function randomFrom(min, max) {
 >3. 如果返回的是：`[0,1]`，则返回`Math.floor(Math.random() * (max - min) + min);`。
 
 ### *原生JS*转化为Unicode、反转字符串、字符串长度
->注意Unicode码点大于`\uFFFF`的字符。
+>注意：Unicode码点大于`\uFFFF`的字符。
 
 ```javascript
 const hanldeWords = {
@@ -1568,7 +1568,7 @@ function getScrollBarWidth() {
 ```
 
 ### *原生JS*验证邮箱有效性
->来自[stackoverflow:Validate email address in JavaScript?](http://stackoverflow.com/questions/46155/validate-email-address-in-javascript#answer-46181)。
+>来自：[stackoverflow:Validate email address in JavaScript?](http://stackoverflow.com/questions/46155/validate-email-address-in-javascript#answer-46181)。
 
 ```javascript
 function validateEmail(email) {

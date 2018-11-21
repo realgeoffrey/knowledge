@@ -27,7 +27,7 @@
     ![前端涉及内容图2](./images/fe-tech-2.png)
 
 ### 前端工程化
->参考[张云龙：前端工程——基础篇](https://github.com/fouber/blog/issues/10)。
+>参考：[张云龙：前端工程——基础篇](https://github.com/fouber/blog/issues/10)。
 
 1. 第一阶段：库/框架选型
 
@@ -78,7 +78,7 @@
 ### 页面加载解析步骤
 1. DOM构造解析步骤
 
-    >参考[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)。
+    >参考：[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)。
 
     ![页面解析步骤图](./images/load-html-1.png)
 
@@ -470,7 +470,7 @@
         2. 通过攻击安全漏洞使服务停止。
     17. Hash Collision DoS
 
-        >参考[HASH COLLISION DOS 问题](http://coolshell.cn/articles/6424.html)。
+        >参考：[HASH COLLISION DOS 问题](http://coolshell.cn/articles/6424.html)。
 
         Hash碰撞的拒绝式服务攻击（Hash Collision DoS）是对服务器进行恶意负载。
 
@@ -496,7 +496,7 @@
     2. ~~前端生成并验证~~。
 
 ### JS压缩细节
->来自[Javascript代码压缩细节](http://div.io/topic/447)。
+>来自：[Javascript代码压缩细节](http://div.io/topic/447)。
 
 试着生成新的代码，对比后输出最短的内容。
 
@@ -613,7 +613,7 @@ JavaScript ＝ ECMAScript + 宿主环境提供的API。
         4. 数据库（database）。
 
 ### JS模块化方案
->参考[关于AMD,CMD,CommonJS及UMD规范](http://blog.gejiawen.com/2015/11/03/what-is-amd-cmd-commonjs-umd/)。
+>参考：[关于AMD,CMD,CommonJS及UMD规范](http://blog.gejiawen.com/2015/11/03/what-is-amd-cmd-commonjs-umd/)。
 
 ![JS模块化方案图](./images/js-module-1.png)
 

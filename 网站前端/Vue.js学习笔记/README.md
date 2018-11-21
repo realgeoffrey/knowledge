@@ -14,6 +14,7 @@
     1. [响应式系统](#响应式系统)
     1. [虚拟DOM系统](#虚拟dom系统)
     1. [例子](#例子)
+    1. [SSR](#ssr)
 1. [vue-router](#vue-router)
 1. [vuex](#vuex)
 1. [vue-cli](#vue-cli)
@@ -910,7 +911,7 @@
                 ```
                 </details>
 
-            >注意避免**引用数据类型**导致的子组件改变父级。
+            >注意：避免**引用数据类型**导致的子组件改变父级。
 
             - 还可以通过`provide/inject`从父级向所有子孙后代传递数据。
         2. 子 -> 父：通过`vm.$emit`向上传递事件、参数
@@ -1241,7 +1242,7 @@ MyPlugin.install = function (Vue, options) { // 第一个参数是Vue构造器�
 
 
 // 在其他地方使用
-Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册相同插件，届时只会注册一次该插件。
+Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻止多次注册相同插件，届时只会注册一次该插件。
 ```
 
 ### 特性
@@ -1331,6 +1332,28 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
       }
     }
     </script>
+    ```
+
+### [SSR](https://ssr.vuejs.org/zh/)
+1. 若在`mounted`之前改变DOM，会导致DOM和VNODE不同而出问题。因此建议SSR的应用，不要在`mounted`之前进行修改能导致模板变化的数据。
+2. 接口依赖
+
+    e.g.
+
+    ```javascript
+    function apiFetch () {      // 所有接口都返回Promise。错误处理：每个接口、每个Promise.all/race后添加`.then/catch`
+      return Promise.all([      // 互不依赖的接口：apiA、apiB、apiC
+        apiA.then(() => {
+          return Promise.all([  // 依赖apiA的互不依赖的接口apiAA、apiAB、apiAC
+            apiAA,
+            apiAB,
+            apiAC
+          ])
+        }),
+        apiB,
+        apiC
+      ])
+    }
     ```
 
 ---
@@ -2161,7 +2184,7 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
             配置HTML的公共静态内容，可在`pages`内重置。
 
-            >来自[vue-meta](https://github.com/declandewet/vue-meta)，可以设置多种内容，包括CSS文件、JS文件、style内容等。
+            >来自：[vue-meta](https://github.com/declandewet/vue-meta)，可以设置多种内容，包括CSS文件、JS文件、style内容等。
         7. `loading`
 
             配置加载组件。
@@ -2394,6 +2417,6 @@ Vue.use(MyPlugin, { someOption: true })  // Vue.use会自动阻止多次注册�
 
 1. 高阶组件（higher order component，HOC）
 
-    >来自[react：高阶组件](https://react.docschina.org/docs/higher-order-components.html)。
+    >来自：[react：高阶组件](https://react.docschina.org/docs/higher-order-components.html)。
 
     react中对组件逻辑进行重用的高级技术。高阶组件是一个函数，且该函数接受一个组件作为参数，并返回一个新的组件。对比组件将props属性转变成UI，高阶组件则是将一个组件转换成另一个新组件。

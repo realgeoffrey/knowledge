@@ -1,5 +1,5 @@
 ### ESLint配置解析
->来自[ESLint文档](http://eslint.cn/docs/user-guide/configuring)。
+>来自：[ESLint文档](http://eslint.cn/docs/user-guide/configuring)。
 
 ```javascript
 /*

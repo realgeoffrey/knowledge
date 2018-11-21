@@ -265,7 +265,7 @@
         4. 持久性（durability）：已被提交的事务对数据库的修改应该永久保存在数据库中。
 
 ### bug调试方式
->参考[程序员新人怎样在复杂代码中找 bug？](https://www.zhihu.com/question/23019630/answer/23369396)。
+>参考：[程序员新人怎样在复杂代码中找 bug？](https://www.zhihu.com/question/23019630/answer/23369396)。
 
 1. 打断点、输出中间值、堆栈跟踪
 2. 优先解决可重现bug
@@ -357,6 +357,8 @@
 
 1. 直出（server-side rendering，SSR，服务端渲染）
 
+    >针对请求结果固定的页面。
+
     Web后端渲染并输出内容（相对于：客户端AJAX请求数据并渲染DOM），代替客户端耗费渲染性能。
 
     1. WebServer向CGI拉取数据，把数据连同前端文件一起返回，客户端进行页面渲染。
@@ -367,7 +369,8 @@
         >客户端不需要请求其他前端文件、客户端不需要运行时渲染。
 
     >1. 验证：“查看网页源代码”看是否有直出内容、或devTool的Network查看html请求的Response是否有直出内容。
-    >2. 容错：若直出内容不是必须的，增加请求失败后的容错（如：`try-catch`、`Promise`后的`catch`）。
+    >2. 容错：若直出内容不是必须的，增加请求失败后的容错（如：`try-catch`、`Promise`后的`then/catch`）。
+    >3. 选择：对必要的内容进行直出（SEO强相关、首屏资源）；在服务端请求越多接口、渲染越多、最终文件越大，输出给客户端时间就越久。
 2. 同构（isomorphic javascript）
 
     Web前端与Web后端（直出端）使用同一套代码方案（JavaScript）。
@@ -376,9 +379,9 @@
     >
     >    1. 在Node.js环境不能出现DOM、BOM、`window`操作，而变成操作`global`。
     >    2. 在Vue中某些钩子专门针对单一的环境，不要把操作浏览器环境的代码放在两端都会执行的钩子中。
-3. 预>渲染（prerendering，构建时预加载）
+3. 预渲染（prerendering，构建时预加载）
 
-    >多针对无动态数据的页面。
+    >针对无动态数据的静态页面。
 
     在前端代码构建时（利用Node.js插件等）就渲染好页面，不需要服务端或客户端渲染。
 
@@ -395,6 +398,7 @@
 >
 >    同构使用同一套代码。
 ></details>
+
 
 ### 测试驱动开发、行为驱动开发
 >单元测试（unit testing）：针对程序模块进行正确性检验的测试工作，隔离程序部件并证明这些单个部件是正确的。程序单元是应用的最小可测试部件。在面向过程编程中，一个单元就是单个程序、函数、过程等；在面向对象编程中，最小单元就是对象的方法。
@@ -548,7 +552,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 2. 非严格求值：参数的计算求值根据传入函数后的使用情况进行（惰性求值，在函数内有用到才求值）
 
 ### 云服务
->参考[有哪些通俗易懂的例子可以解释 IaaS、PaaS、SaaS 的区别？](https://www.zhihu.com/question/21641778)。
+>参考：[有哪些通俗易懂的例子可以解释 IaaS、PaaS、SaaS 的区别？](https://www.zhihu.com/question/21641778)。
 
 1. IaaS（Infrastructure as a Service，基础设施即服务）
 2. PaaS（Platform as a Service，平台即服务）
@@ -583,7 +587,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
     4. 若队列为空，表示整张图都检查过了——亦即图中没有欲搜索的目标。结束搜索并回传“找不到目标”。
 
 ### 抽象语法树（abstract syntax tree，AST）
->来自[Abstract Syntax Tree 抽象语法树简介](https://div.io/topic/1994)。
+>来自：[Abstract Syntax Tree 抽象语法树简介](https://div.io/topic/1994)。
 
 源代码的抽象语法结构的树状表现形式。
 
@@ -606,7 +610,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
             >e.g. 打包工具、不同模块化方案间转换、CoffeeScript/TypeScript/JSX转化为原生JS。
 
 ### 编译器原理
->来自[the-super-tiny-compiler](https://github.com/jamiebuilds/the-super-tiny-compiler)。
+>来自：[the-super-tiny-compiler](https://github.com/jamiebuilds/the-super-tiny-compiler)。
 
 （广义的）编译器：把一种语言代码转为另一种语言代码的程序。
 
@@ -849,7 +853,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
         >因为传递的是文本格式，所以无法传递byte类型数据（二进制文件，如：图片）。
 2. JSON的数据类型
 
-    >来自[www.json.org](https://www.json.org/json-zh.html)
+    >来自：[www.json.org](https://www.json.org/json-zh.html)。
 
     >作者-道格拉斯·克罗克福特（Douglas Crockford）-设计的JSON实际上是JavaScript的一个子集，并且声称JSON的规格永远不必升级，因为该规定的都规定了。
 

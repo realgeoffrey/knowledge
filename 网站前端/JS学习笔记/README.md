@@ -364,7 +364,7 @@
     [JSFiddle demo](https://jsfiddle.net/realgeoffrey/zep4cr3p/)
 7. 判断一个标签的动态属性（DOM对象的`property`）
 
-    >以`<input>`的`checked`为例，类似的特性还有`selected`、`disabled`、`value`等，但是每个`attribute-property`映射关系略有差别，参考[`attribute`与`property`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#attribute与property)。
+    >以`<input>`的`checked`为例，类似的特性还有`selected`、`disabled`、`value`等，但[每个`attribute-property`映射关系略有差别](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#attribute与property)。
 
     ```html
     <input type="checkbox" checked="checked" id="j-input">
@@ -453,7 +453,7 @@
 
 1. 原生JS
 
-    >参考[JavaScript 事件绑定机制](http://www.cnblog.me/2016/05/08/javascript-event-binding/)、[理解Javascript中的事件绑定与事件委托](https://segmentfault.com/a/1190000006667581)。
+    >参考：[JavaScript 事件绑定机制](http://www.cnblog.me/2016/05/08/javascript-event-binding/)、[理解Javascript中的事件绑定与事件委托](https://segmentfault.com/a/1190000006667581)。
 
     1. HTML事件处理程序（冒泡）
 
@@ -505,7 +505,7 @@
     - [兼容各浏览器的绑定、解绑事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js绑定解绑事件)
 2. jQuery（冒泡）
 
-    >来自[jQuery:Events](http://api.jquery.com/category/events/)。
+    >来自：[jQuery:Events](http://api.jquery.com/category/events/)。
 
     1. `on`（`one`类似）
 
@@ -673,7 +673,7 @@
 
     1. 播放事件
 
-        >参考[MDN：媒体相关事件](https://developer.mozilla.org/zh-CN/docs/Web/Guide/Events/Media_events)。
+        >参考：[MDN：媒体相关事件](https://developer.mozilla.org/zh-CN/docs/Web/Guide/Events/Media_events)。
 
         1. 正在播放
 
@@ -1237,7 +1237,7 @@
         ```
 9. JS编程风格总结（programming style）
 
-    >参考[阮一峰：JavaScript 编程风格](http://javascript.ruanyifeng.com/grammar/style.html)。
+    >参考：[阮一峰：JavaScript 编程风格](http://javascript.ruanyifeng.com/grammar/style.html)。
 
     1. 表示区块起首的大括号，不要另起一行。
     2. 调用函数的时候，函数名与左括号之间没有空格。
@@ -2080,7 +2080,7 @@
 
 1. 原生错误类型
 
-    >来自[MDN:Error](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Error)。
+    >来自：[MDN:Error](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Error)。
 2. 自定义错误
 
     ```javascript
@@ -2386,7 +2386,7 @@
 ## 性能原理
 
 ### JS的预编译
->参考[JavaScript - 预编译](http://www.jianshu.com/p/a91cddc5c705)。
+>参考：[JavaScript - 预编译](http://www.jianshu.com/p/a91cddc5c705)。
 
 1. JS是一门脚本语言，不经过~~编译~~而直接运行，但运行前先进行预编译。
 2. JS的预编译是以代码块`<script></script>`为范围，即每遇到一个代码块都会进行：**预编译 -> 执行**。
@@ -2939,7 +2939,7 @@
     </details>
 
 ### 深复制（拷贝）实现思路
->参考[深入剖析JavaScript的深复制](http://jerryzou.com/posts/dive-into-deep-clone-in-javascript/)。
+>参考：[深入剖析JavaScript的深复制](http://jerryzou.com/posts/dive-into-deep-clone-in-javascript/)。
 
 1. [递归赋值](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)（最全面方式）
 
@@ -2988,7 +2988,7 @@
 >随着JS引擎的更新，原来会导致内存泄漏的bug已经慢慢被修复，因此写代码时不太需要注意内存泄漏问题（误）。
 
 ### 数据类型转换
->参考[阮一峰：数据类型转换](http://javascript.ruanyifeng.com/grammar/conversion.html)、[ecma-262等于比较](https://www.ecma-international.org/ecma-262/#sec-abstract-equality-comparison)。
+>参考：[阮一峰：数据类型转换](http://javascript.ruanyifeng.com/grammar/conversion.html)、[ecma-262等于比较](https://www.ecma-international.org/ecma-262/#sec-abstract-equality-comparison)。
 
 1. 强制转换
 
@@ -3141,7 +3141,7 @@
     2. 在Boolean环境（如：if的条件判断）中使用：两个操作结果都为true时返回true，否则返回false。
 
 ### 事件循环（event loop）
->参考[阮一峰：再谈Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)、[Help, I’m stuck in an event-loop.](https://vimeo.com/96425312)、[Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)。
+>参考：[阮一峰：再谈Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)、[Help, I’m stuck in an event-loop.](https://vimeo.com/96425312)、[Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)。
 
 >不是在ECMAScript没有定义，而是在[HTML Standard](https://html.spec.whatwg.org/#event-loops)中定义。
 
@@ -3281,7 +3281,7 @@
     >2. 第二个参数表示指定的毫秒数。若在指定的这段时间之内，每一帧都没有空闲时间，那么回调函数将会强制执行。
 
 ### 数组的空位（hole）
->来自[阮一峰：数组的空位](http://javascript.ruanyifeng.com/grammar/array.html#toc6)、[阮一峰：数组的空位（ES6）](http://es6.ruanyifeng.com/#docs/array#数组的空位)。
+>来自：[阮一峰：数组的空位](http://javascript.ruanyifeng.com/grammar/array.html#toc6)、[阮一峰：数组的空位（ES6）](http://es6.ruanyifeng.com/#docs/array#数组的空位)。
 
 1. 数组的空位：数组的某一个位置没有任何值
 

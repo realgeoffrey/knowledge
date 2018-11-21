@@ -5,7 +5,7 @@
 
 ---
 ### Babel与polyfill的区别
->参考[Babel polyfill 知多少](https://zhuanlan.zhihu.com/p/29058936)。
+>参考：[Babel polyfill 知多少](https://zhuanlan.zhihu.com/p/29058936)。
 
 1. Babel：（构建时）转译**语法**
 

@@ -75,7 +75,7 @@
             `npm publish [--tag <tag>]`
 
             >1. 除了latest，其他标签都不会默认被安装。最后推送的latest版本会显示在npm官网。
-            >2. 注意设置源为npm的网站（https://registry.npmjs.org/）才可以推送到npm。
+            >2. 注意：设置源为npm的网站（https://registry.npmjs.org/）才可以推送到npm。
         4. “下线”
 
             >`npm unpublish [<@scope>/]<pkg>[@<version>]`只能下线24小时内发布的版本。
@@ -290,7 +290,7 @@
 >项目中使用某个开源库时，要考虑它的License和文件大小（若使用webpack打包，则可以使用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)进行分析）。
 
 ### CommonJS规范
->参考[阮一峰：require() 源码解读](http://www.ruanyifeng.com/blog/2015/05/require.html)、[CommonJS 详细介绍](https://neveryu.github.io/2017/03/07/commonjs/)、[阮一峰：JavaScript 模块的循环加载](http://www.ruanyifeng.com/blog/2015/11/circular-dependency.html)。
+>参考：[阮一峰：require() 源码解读](http://www.ruanyifeng.com/blog/2015/05/require.html)、[CommonJS 详细介绍](https://neveryu.github.io/2017/03/07/commonjs/)、[阮一峰：JavaScript 模块的循环加载](http://www.ruanyifeng.com/blog/2015/11/circular-dependency.html)。
 
 一个模块就是一个Node.js文件。
 

@@ -37,7 +37,7 @@
     ```
 
 ### Shadowsocks服务端安装
->来自[teddysun:shadowsocks_install](https://github.com/teddysun/shadowsocks_install#shadowsocks-gosh)。
+>来自：[teddysun:shadowsocks_install](https://github.com/teddysun/shadowsocks_install#shadowsocks-gosh)。
 
 1. 在Linux服务器（CentOS，Debian，Ubuntu）安装[shadowsocks-go](https://github.com/shadowsocks/shadowsocks-go)。
 
@@ -65,7 +65,7 @@
     ```
 
 ### IKEv2（IKEv1）服务端安装
->来自[quericy:one-key-ikev2-vpn](https://github.com/quericy/one-key-ikev2-vpn)。
+>来自：[quericy:one-key-ikev2-vpn](https://github.com/quericy/one-key-ikev2-vpn)。
 
 >除了第一个vps类型选择、倒数第二个独立IP使用SNAT规则，其他都可以简单使用默认。
 
@@ -264,4 +264,4 @@
             3. 证书 -> 受信任的根证书颁发机构 -> 证书，右键 -> 所有任务 -> 导入，选择ca.cert.cer导入成功。
 
 ### Cisco IPSec（IPSec Xauth PSK）客户端配置
->参考[配置 IPSec/Xauth VPN 客户端](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-xauth-zh.md)
+>参考：[配置 IPSec/Xauth VPN 客户端](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-xauth-zh.md)。

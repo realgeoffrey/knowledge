@@ -69,7 +69,7 @@
         2. MAC地址是指网卡所属的固定地址，基本不会变化。
 
 ### TCP的三次握手、四次挥手
->参考[简析TCP的三次握手与四次分手](http://www.jellythink.com/archives/705)。
+>参考：[简析TCP的三次握手与四次分手](http://www.jellythink.com/archives/705)。
 
 ![TCP三次握手和四次挥手图](./images/3.png)
 
@@ -185,7 +185,7 @@
 ></details>
 
 ### HTTP请求方法（HTTP request methods）
->来自[MDN：HTTP 请求方法](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Methods)。
+>来自：[MDN：HTTP 请求方法](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Methods)。
 
 1. GET
 
@@ -238,7 +238,7 @@
     | DELETE | 幂等 | 副作用 | 一般不携带 |
 
 ### HTTP状态码（HTTP status codes）
->来自[维基百科：HTTP状态码](https://zh.wikipedia.org/wiki/HTTP状态码)。
+>来自：[维基百科：HTTP状态码](https://zh.wikipedia.org/wiki/HTTP状态码)。
 
 用以表示服务器HTTP响应状态的3位数字代码。
 
@@ -526,7 +526,7 @@
         除了上面8个。
 
 ### HTTP缓存
->参考[浏览器缓存知识小结及应用](http://www.cnblogs.com/lyzg/p/5125934.html)。
+>参考：[浏览器缓存知识小结及应用](http://www.cnblogs.com/lyzg/p/5125934.html)。
 
 只缓存GET请求。
 
@@ -737,7 +737,7 @@
     5. 服务端推送（server push）。
 
 ### CORS（cross-origin resource sharing，跨域资源共享）
->参考[跨域资源共享 CORS 详解](http://www.ruanyifeng.com/blog/2016/04/cors.html)。
+>参考：[跨域资源共享 CORS 详解](http://www.ruanyifeng.com/blog/2016/04/cors.html)。
 
 - 若服务端配置允许了某些或所有域名，就可以跨域响应；前端不需要进行额外工作，现代浏览器自动完成交互：
 

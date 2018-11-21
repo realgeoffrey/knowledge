@@ -687,12 +687,12 @@ var cookieFuc = {
     }
 };
 ```
->参考[MDN:cookie](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie#一个小框架：一个完整支持unicode的cookie读取写入器)。
+>参考：[MDN:cookie](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie#一个小框架：一个完整支持unicode的cookie读取写入器)。
 
 >可以使用[js-cookie](https://github.com/js-cookie/js-cookie)，完全替代。
 
 ### *原生JS*防抖函数
->来自[underscore](https://github.com/jashkenas/underscore)。
+>来自：[underscore](https://github.com/jashkenas/underscore)。
 
 ```javascript
 /**
@@ -762,7 +762,7 @@ $(window).on('scroll', a);
 >可以使用[lodash](https://github.com/lodash/lodash)或[underscore](https://github.com/jashkenas/underscore)，完全替代。
 
 ### *原生JS*节流函数
->来自[underscore](https://github.com/jashkenas/underscore)。
+>来自：[underscore](https://github.com/jashkenas/underscore)。
 
 ```javascript
 /**
@@ -846,7 +846,7 @@ $(window).on('scroll', a);
 ## Polyfill
 
 ### *原生JS*`requestAnimationFrame`和`cancelAnimationFrame`的Polyfill
->来自[rAF.js](https://gist.github.com/paulirish/1579671)。
+>来自：[rAF.js](https://gist.github.com/paulirish/1579671)。
 
 ```javascript
 (function () {
@@ -892,7 +892,7 @@ if (typeof Date.now !== 'function') {
 >`Date.now()`相对于`new Date().getTime()`及其他方式，可以避免生成不必要的`Date`对象，更高效。
 
 ### *原生JS*`Object.create`的Polyfill
->来自[MDN:Object.create](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill)。
+>来自：[MDN:Object.create](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill)。
 
 ```javascript
 if (typeof Object.create !== 'function') {
@@ -927,7 +927,7 @@ if (typeof Object.create !== 'function') {
 ```
 
 ### *原生JS*`Array.isArray`的Polyfill
->来自[MDN:Array.isArray](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray#Polyfill)。
+>来自：[MDN:Array.isArray](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray#Polyfill)。
 
 ```javascript
 if (!Array.isArray) {
@@ -938,7 +938,7 @@ if (!Array.isArray) {
 ```
 
 ### *原生JS*`Array.prototype.map`的Polyfill
->来自[MDN:Array.prototype.map](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map#Compatibility)。
+>来自：[MDN:Array.prototype.map](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map#Compatibility)。
 
 ```javascript
 if (!Array.prototype.map) {
@@ -986,7 +986,7 @@ if (!Array.prototype.map) {
 ```
 
 ### *原生JS*`Function.prototype.bind`的Polyfill
->来自[MDN:Function.prototype.bind](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind#Compatibility)。
+>来自：[MDN:Function.prototype.bind](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind#Compatibility)。
 
 ```javascript
 if (!Function.prototype.bind) {
@@ -1015,7 +1015,7 @@ if (!Function.prototype.bind) {
 ```
 
 ### *原生JS*`String.prototype.trim`的Polyfill
->来自[MDN:String.prototype.trim](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/Trim#兼容旧环境)。
+>来自：[MDN:String.prototype.trim](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/Trim#兼容旧环境)。
 
 ```javascript
 if (!String.prototype.trim) {
@@ -1026,7 +1026,7 @@ if (!String.prototype.trim) {
 ```
 
 ### *原生JS*`String.prototype.repeat`的Polyfill
->来自[MDN:String.prototype.repeat](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/repeat#填充)。
+>来自：[MDN:String.prototype.repeat](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/repeat#填充)。
 
 ```javascript
 if (!String.prototype.repeat) {
@@ -1072,7 +1072,7 @@ if (!String.prototype.repeat) {
 ```
 
 ### *原生JS*`Number.isNaN`的Polyfill
->来自[MDN:Number.isNaN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN#Polyfill)。
+>来自：[MDN:Number.isNaN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN#Polyfill)。
 
 ```javascript
 Number.isNaN = Number.isNaN || function (value) {
@@ -1081,7 +1081,7 @@ Number.isNaN = Number.isNaN || function (value) {
 ```
 
 ### *原生JS*`Number.isFinite`的Polyfill
->来自[MDN:Number.isFinite](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite#Polyfill)。
+>来自：[MDN:Number.isFinite](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite#Polyfill)。
 
 ```javascript
 Number.isFinite = Number.isFinite || function (value) {
@@ -1090,7 +1090,7 @@ Number.isFinite = Number.isFinite || function (value) {
 ```
 
 ### *原生JS*`Number.isInteger`的Polyfill
->来自[MDN:Number.isInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill)。
+>来自：[MDN:Number.isInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill)。
 
 ```javascript
 Number.isInteger = Number.isInteger || function (value) {
@@ -1099,7 +1099,7 @@ Number.isInteger = Number.isInteger || function (value) {
 ```
 
 ### *原生JS*`Number.isSafeInteger`的Polyfill
->来自[MDN:Number.isSafeInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isSafeInteger#Polyfill)。
+>来自：[MDN:Number.isSafeInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isSafeInteger#Polyfill)。
 
 ```javascript
 Number.isSafeInteger = Number.isSafeInteger || function (value) {

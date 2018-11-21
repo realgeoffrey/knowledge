@@ -156,7 +156,7 @@
 3. [类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#选择器类型)
 
 ### 层叠上下文（stacking context）
->参考[张鑫旭：深入理解CSS中的层叠上下文和层叠顺序](http://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)。
+>参考：[张鑫旭：深入理解CSS中的层叠上下文和层叠顺序](http://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)。
 
 1. 满足以下任意条件则形成层叠上下文：
 
@@ -702,7 +702,7 @@
 4. 滚动条会占用容器的可用高度或宽度。
 
 ### 滚动条样式
->参考[CSS自定义浏览器滚动条样式](http://alfred-sun.github.io/blog/2014/12/24/scrollbar-customized-with-css-style/)。
+>参考：[CSS自定义浏览器滚动条样式](http://alfred-sun.github.io/blog/2014/12/24/scrollbar-customized-with-css-style/)。
 
 1. `WebKit`：
 
@@ -1248,7 +1248,7 @@
     5. 透明：`opacity: x;`
 5. 渲染性能优化方法：
 
-    >参考[渲染性能](https://developers.google.com/web/fundamentals/performance/rendering/)。
+    >参考：[渲染性能](https://developers.google.com/web/fundamentals/performance/rendering/)。
 
     1. 优化JS的执行效率
 

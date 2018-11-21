@@ -560,7 +560,7 @@ function countingSort(arr) {
 ## 其他算法
 
 ### 数组去重
->来自[JavaScript 数组去重](https://github.com/hanzichi/underscore-analysis/issues/9)。
+>来自：[JavaScript 数组去重](https://github.com/hanzichi/underscore-analysis/issues/9)。
 
 1. 定义一个空数组变量，遍历需要去重的数组：若项的值不存在新数组中，则放入新数组；若已经存在，则丢弃。
 
