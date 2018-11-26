@@ -32,7 +32,7 @@
 
         1. 若是常量，则可以放在组件外，用`const` + 大写和下划线组成。
         2. 若是会变化的量，则必须放在组件内（`data`或`computed`）。
-    2. 注意内存泄漏：
+    2. 注意内存泄漏（全局副作用）：
 
         1. 在Vue实例内部`new`的其他实例或DOM，应放在`data`内进行掌控，当使用完毕后引导垃圾回收。
         2. 在Vue实例内部手动绑定的事件（`addEventListener`）、计时器、http连接、以及任何需要手动关闭的内容，需要在`beforeDestroy`前手动清除（`destroyed`仅自动清除Vue自己定义、绑定的内容）。
@@ -1335,8 +1335,18 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     ```
 
 ### [SSR](https://ssr.vuejs.org/zh/)
-1. 若在`mounted`之前改变DOM，会导致DOM和VNODE不同而出问题。因此建议SSR的应用，不要在`mounted`之前进行修改能导致模板变化的数据。
-2. 接口依赖
+1. 若在`mounted`之前改变DOM，会导致“激活”时DOM和服务端传来的VNODE不同而出问题。
+
+    建议SSR的应用，不要在`mounted`之前进行能导致模板变化的数据修改。
+
+    >服务端默认禁用模板数据的响应式，因此在`mounted`之前改变的模板，仅会在客户端改变，导致“激活”时客户端DOM和服务端传来的VNODE不同。
+2. 服务端也会调用的钩子：`beforeCreate`、`created`
+
+    将全局副作用代码移动到服务端不会运行的生命周期钩子中（除了 ~~`beforeCreate`~~、~~`created`~~）
+
+>（nuxt）把直出内容放在`asyncData/fetch`；把客户端异步请求放在`mounted`；不使用 ~~`beforeCreate/created/beforeMount`~~
+
+3. 接口依赖
 
     e.g.
 
@@ -1838,7 +1848,10 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         >2. `asyncData`、`fetch`若未返回完成状态的Promise（方法体内`return new Promise((resolve, reject) => {...})`），则不会向下执行之后的钩子（页面渲染失败、不输出页面，可以设置未完成和失败状态的组件或行为）。
         >
         >    若要使用`redirect`，不要再运行`reject`
-        >3. 把页面展示所必须的请求放在`asyncData`、`fetch`，并返回Promise来控制完成后才继续执行代码，这样之后代码需要的异步数据就可以放心使用（否则可能store的数据还未初始化）。
+        >3. 最佳实践：
+        >
+        >    1. 把页面展示所必须的请求放在`asyncData`、`fetch`，并返回Promise来控制完成后才继续执行代码，这样之后代码需要的异步数据就可以放心使用（否则可能store的数据还未初始化）。
+        >    2. 把客户端的异步请求以及其他操作模板的行为都放在`mounted`及之后（否则可能导致“激活”时客户端DOM和服务端传来的VNODE不同而出问题）。
 
         3. `head`
 
@@ -1872,7 +1885,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         - 引用方式：组件中HTML引用`/`
 
-        >生产环境不允许随便用第三方CDN，可以把不打包的资源放到`static`从而放到自己服务器里去引用。
+        >生产环境不允许随便用第三方CDN，可以把不打包的资源放到`static`从而放到自己服务端里去引用。
     4. `components`：组件目录
 
         Vue单文件组件。提供给项目中所有组件使用。
@@ -2191,7 +2204,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         8. `loadingIndicator`
         9. `mode`
 
-            配置nuxt启动的服务器（开发模式、生产模式）是否使用SSR。使用SSR（默认）：`'universal'`；关闭SSR：`'spa'`。
+            配置nuxt启动的服务端（开发模式、生产模式）是否使用SSR。使用SSR（默认）：`'universal'`；关闭SSR：`'spa'`。
         10. `modules`
 
             配置需要添加的nuxt模块。
@@ -2290,7 +2303,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         ```
 
         ><details>
-        ><summary>针对动态路由进行静态化（<code>nuxt generate</code>），需要在服务器设置内部重定向</summary>
+        ><summary>针对动态路由进行静态化（<code>nuxt generate</code>），需要在服务端设置内部重定向</summary>
         >
         >1. nginx：
         >
@@ -2371,7 +2384,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         2. 共用的样式加入`nuxt.config.js`的`css`
 7. 命令
 
-    1. `nuxt`：以开发模式启动一个基于vue-server-renderer的服务器
+    1. `nuxt`：以开发模式启动一个基于vue-server-renderer的服务端
 
         >添加`--spa`以SPA的方式打开服务，`fetch`、`asyncData`在客户端请求（因此所有请求都会在客户端发起），否则`fetch`、`asyncData`会在服务端请求。
     2. `nuxt build`：利用webpack编译应用，压缩JS、CSS（发布用）
@@ -2379,7 +2392,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         创建所有路由的`.html`文件，且这些`.html`都完全一致，加载时根据vue-router进行路由计算（可以刷新的SPA）。
 
         >vue相关资源不会自动tree shaking，但是会去除注释掉的内容（开发模式不会去除）；额外引用的文件会tree shaking+去除注释。
-    3. `nuxt start`：以生产模式启动一个基于vue-server-renderer的服务器（依赖`nuxt build`生成的资源）
+    3. `nuxt start`：以生产模式启动一个基于vue-server-renderer的服务端（依赖`nuxt build`生成的资源）
     4. `nuxt generate`：生成静态化文件，用于静态页面发布
 
     >增加`-h`参数查看nuxt命令可带参数。
@@ -2388,10 +2401,10 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     1. SSR：服务端渲染（与开发模式的SSR相同）。
     2. 静态化页面
 
-        1. 针对`动态路由`要设置服务器重定向至`index.html`，用`history`路由模式。
-        2. 针对**无法修改服务器设置**或**本地文件打开形式的访问（`file://`）**，用`hash`路由模式。
+        1. 针对`动态路由`要设置服务端重定向至`index.html`，用`history`路由模式。
+        2. 针对**无法修改服务端设置**或**本地文件打开形式的访问（`file://`）**，用`hash`路由模式。
 
-            >服务器是否设置重定向都可行。
+            >服务端是否设置重定向都可行。
 
 ### jQuery与Vue.js对比
 1. 做的事情

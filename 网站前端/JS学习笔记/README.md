@@ -2313,7 +2313,17 @@
         5. `Array.prototype.some()`
 
             测试数组中是否有一个元素通过提供的函数。
-    6. `Object.entries`、`Object.values`、`Object.keys`、`Object.getOwnPropertyNames`、`Object.getOwnPropertySymbols`
+        6. `Array.prototype.find()`
+
+            查找数组中通过提供的函数的第一个元素。
+        7. `Array.prototype.findIndex()`
+
+            查找数组中通过提供的函数的第一个元素的索引。
+
+        >- 向后/向前对数组应用提供的函数，累计处理返回最后一个结果
+        >
+        >    1. `Array.prototype.reduce(回调函数(上一次调用返回的值, 当前值, 索引, 数组整体)[, 第一次调用回调函数的第一个参数])`
+        >    2. `Array.prototype.reduceRight(回调函数(上一次调用返回的值, 当前值, 索引, 数组整体)[, 第一次调用回调函数的第一个参数])`
 2. jQuery
 
     1. <details>
