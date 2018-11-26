@@ -19,6 +19,7 @@
         1. [绑定、解绑事件](#原生js绑定解绑事件)
         1. [阻止冒泡和阻止浏览器默认行为](#原生jsjquery阻止冒泡和阻止浏览器默认行为)
         1. [实现判断按下具体某按键](#原生jsjquery实现判断按下具体某按键)
+        1. [事件代理](#原生js事件代理)
         1. [拖拽和放下](#原生js拖拽和放下)
         1. [触摸屏模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）](#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)
         1. [判断事件在浏览器是否存在](#原生js判断事件在浏览器是否存在)
@@ -86,11 +87,14 @@
 
 ### *原生JS*判断所在系统
 ```javascript
-function detectOS (ua, pf) {
-  ua = ua || window.navigator.userAgent
-  pf = window.navigator.platform
-
-  var os = ''
+/**
+ * 判断所在系统
+ * @param {String} [ua = window.navigator.userAgent] - 用户代理
+ * @param {String} [pf = window.navigator.platform] - 系统平台类型
+ * @returns {String} os - 系统名：'iOS'|'Android'|'Windows Phone'|'macOS'|'Win2000'|'WinXP'|'Win2003'|'WinVista'|'Win7'|'Win10'|'Windows'|'Unix'|'Linux'
+ */
+function detectOS (ua = window.navigator.userAgent, pf = window.navigator.platform) {
+  let os = ''
 
   if (/iPhone|iPad|iPod|iOS/.test(ua)) {
     os = 'iOS'
@@ -543,6 +547,17 @@ var eventUtil = {
         });
         ```
 >线上查询：[keycode.info](http://keycode.info/)。
+
+### *原生JS*事件代理
+```javascript
+dom.addEventListener('事件名', function (e) {
+  const event = e || window.event
+  const target = event.target || event.srcElement // 兼容ie8-
+
+  // target为目标元素（捕获的终点、冒泡的起点）；可以用dom.matches(CSS选择器)判断是否是选择器
+  // 对target满足的元素进行操作
+})
+```
 
 ### *原生JS*拖拽和放下
 1. PC端的鼠标事件
@@ -2180,6 +2195,15 @@ var b = new ScrollDirection({
     checkWebpFeature('lossless', function (feature, result) {
       console.log(result) // true or false
     })
+    ```
+
+- 纯HTML方式
+
+    ```html
+    <picture>
+      <source srcset="WebP图片地址" type="image/webp">
+      <img src="非WebP图片地址">
+    </picture>
     ```
 
 ### *原生JS*用`setTimeout`模拟`setInterval`

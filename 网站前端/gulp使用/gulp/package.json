@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "autoprefixer": "9",
     "@babel/core": "7",
+    "autoprefixer": "9",
     "browser-sync": "2",
     "del": "3",
     "gulp": "3",
@@ -30,12 +30,12 @@
     "@babel/preset-env": "7",
     "babel-eslint": "10",
     "eslint-config-standard": "12",
-    "eslint-plugin-html": "4",
+    "eslint-plugin-html": "5",
     "eslint-plugin-import": "2",
-    "eslint-plugin-node": "7",
+    "eslint-plugin-node": "8",
     "eslint-plugin-promise": "4",
     "eslint-plugin-standard": "4",
-    "eslint-plugin-vue": "4"
+    "eslint-plugin-vue": "5"
   },
   "scripts": {
     "gulp": "gulp"

@@ -1406,7 +1406,7 @@
 
 ### Tips
 1. 限定布局宽度，让内容决定布局高度。
-2. `<a>`的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（包括`#`和`javascript: void(0);`）都会打开新页面。
+2. `<a>`的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（包括`#`和`javascript:`）都会打开新页面。
 3. 在拥有`target="_blank"`的`<a>`中添加`rel="noopener"`或`rel="noreferrer"`。
 
     >没有`target="_blank"`属性的新打开的页面和原页面不存在关系。
@@ -1429,28 +1429,37 @@
         2. `rel="noreferrer"`（不限于`target="_blank"`）：
 
             （不在一个进程、且`window.opener`返回`null`，）http请求不发送`Referer`（`document.referrer`返回`''`）。
-4. 404和5xx错误需要制作页面。
-5. 没有设置宽度的`float`元素，其宽度等于子节点宽度：
+4. （SEO）对不想宣传的链接，在`<a>`中添加`rel="nofollow"`。
+
+    ><details>
+    ><summary>告诉搜索引擎“不要跟踪此网页上的链接”或“不要跟踪此特定链接”</summary>
+    >
+    >1. 可以用于阻止在PR值高的网站上以留言等方式添加链接从而提高自身网站排名的行为，以改善搜索结果的质量，防止垃圾链接的蔓延。
+    >2. 网站站长也可对其网页中的付费链接使用nofollow来防止该链接降低搜索排名。
+    >3. 对一些重要度低的网页内容使用nofollow，还可以使搜索引擎以不同的优先级别来抓取网页内容。
+    ></details>
+5. 404和5xx错误需要制作页面。
+6. 没有设置宽度的`float`元素，其宽度等于子节点宽度：
 
     1. 主流浏览器等于最外层子节点宽度。
     2. ie6等于所有子节点中最大的宽度。
-6. `inline`、`inline-block`的元素前可能有空隙（其实是内联标签前面的空白符，若拥有`font-size`之后便会有高宽），通过以下办法解决：
+7. `inline`、`inline-block`的元素前可能有空隙（其实是内联标签前面的空白符，若拥有`font-size`之后便会有高宽），通过以下办法解决：
 
     1. 把`inline`、`inline-block`节点设置为`block`。
     2. 给父级节点设置`font-size: 0;`（可用此方法排查是否是空格造成的）。
-7. 页面是按照顺序加载资源，当且仅当有使用需求时才会去加载外部资源。
+8. 页面是按照顺序加载资源，当且仅当有使用需求时才会去加载外部资源。
 
     已加载完成的CSS文件内有多个url请求（`background`），但仅在页面节点要引用某个url请求时（无论节点是否隐藏），才会去请求这个资源，而不是在加载CSS文件时就加载外部资源。可以用于监控用户行为（当用户某些操作导致展示背景时加载外部资源——外部资源可以是上报接口）。
-8. 使用动态DOM加载，代替内容的`display: none;`（免去构建复杂的DOM）：
+9. 使用动态DOM加载，代替内容的`display: none;`（免去构建复杂的DOM）：
 
     1. `<script type="text/template"></script>`
     2. `<template></template>`
     3. `<textarea style="display:none;"></textarea>`
-9. WAP端页面或支持伪类的浏览器，能用`:before/after`的就不要添加标签。
-10. 单选`<input type="radio">`、多选`<input type="checkbox">`按钮开关自定义样式：
+10. WAP端页面或支持伪类的浏览器，能用`:before/after`的就不要添加标签。
+11. 单选`<input type="radio">`、多选`<input type="checkbox">`按钮开关自定义样式：
 
     用`input:checked + 兄弟节点`操作选项选中与否的不同样式；可以隐藏`<input>`，点击在`<label>`上改变`<input>`的`:checked`状态（`<label>`的`for`绑定`<input>`的`id`），用自定义样式来制作单选框、复选框。避免使用JS。
-11. 输入框仅输入数字的：
+12. 输入框仅输入数字的：
 
     1. `<input type="number" pattern="[0-9]*" onchange="处理函数">`
     2. <details>
@@ -1478,7 +1487,7 @@
         });
         ```
         </details>
-12. `<datalist>`为`<input>`的输入值添加建议（`<input>`的`list`绑定`<datalist>`的`id`）
+13. `<datalist>`为`<input>`的输入值添加建议（`<input>`的`list`绑定`<datalist>`的`id`）
 
     <details>
     <summary>e.g.</summary>
@@ -1491,20 +1500,20 @@
     </datalist>
     ```
     </details>
-13. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
-14. 避免：
+14. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
+15. 避免：
 
     1. 避免~~放大、缩小图片~~，使用原始大小展现。
     2. 避免使用不可缓存且增加额外HTTP请求的 ~~<iframe>~~。
-15. 富文本：
+16. 富文本：
 
     1. 富文本内容除了要检测用户输入标签的闭合性，还要注意不要用`<li>`嵌套富文本，因为代码中如果有单独的`<li>`（没有嵌套`<ol>`或`<ul>`），就会“越级”到跟祖先级`<li>`同级的内容。
     2. 部分富文本会用`<em>`、`<ol>`、`<ul>`来表示**斜体**、**有序序列**、**无序序列**，因此如果用CSS重置了以上标签后，要在[富文本内重载开启它们的默认效果](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L61-L77)。
     3. 部分富文本会在`<table>`上使用`cellspacing`、`border`、`bordercolor`属性设置表格，又因为设置了`border: 0;`的表格无法重载开启以上属性作用，所以CSS重置时[不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L26-L27)。
-16. 超出内容区域的内容：
+17. 超出内容区域的内容：
 
     1. 用绝对定位把内容设置在外部
 
         不要把超出内容区域的绝对定位设置在`<body>`直接子级，而是设置在`<body>`下拥有`overflow: hidden;`的父级下。
     2. ~~大背景模式~~
-17. `CSS.supports(CSS语句)`或`CSS.supports(CSS属性, 值)`判断浏览器是否支持一个给定CSS语句。
+18. `CSS.supports(CSS语句)`或`CSS.supports(CSS属性, 值)`判断浏览器是否支持一个给定CSS语句。

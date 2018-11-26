@@ -130,7 +130,7 @@
 
         `$(window).scrollTop()`
 
->1. 还可以使用`IntersectionObserver`对象获取节点与其祖先节点或视口距离。
+>1. 还可以使用[`IntersectionObserver`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#intersectionobserver)判断节点和视口（或祖先节点）相交程度。
 >2. Zepto没有`innerHeight`和`outerHeight`，改为`height`。
 
 ### 节点与视口距离关系
@@ -167,7 +167,7 @@
 
         以上`&&`结合。
 
-    - `IntersectionObserver`判断节点和父级（或视口）相交程度。
+    - [`IntersectionObserver`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#intersectionobserver)判断节点和视口（或祖先节点）相交程度。
 
 ### 滚动定位
 >也可以给底部（或顶部）放置一个标记节点，当这个节点的顶部在容器底部以上（或这个节点的底部在容器顶部以下）时为滚动到底部（或顶部）。
@@ -1265,6 +1265,8 @@
         1. 为JS代码预留出退路（`<a>`添加属性链接，用JS事件绑定去拦截浏览器默认行为）
 
             `<a href="真实地址" class="j-func">...</a>`
+
+            >`href="真实地址"`也是为了SEO。
         2. ~~javascript伪协议~~
 
             `<a href="javascript: func();">...</a>`
@@ -1287,7 +1289,7 @@
         1. 关于“性能”的写法建议，更多的是一种编程习惯（微优化）：写出更易读、性能更好的代码。
         2. 在解决页面性能瓶颈时，要从URL输入之后就进行[网站性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#网站性能优化)；避免在处理网页瓶颈时进行~~微优化~~。
 
-            >1. 即时编译（Just In Time Compile）：JS引擎会在JS运行过程中逐渐重新编译代码，使代码运行更快。
+            >1. 即时编译（just in time compile，JIT）：JS引擎会在JS运行过程中逐渐重新编译部分代码为机器码，使代码运行更快。
             >2. 微优化（micro-optimizations）：尝试写出认为会让浏览器稍微更快速运行的代码或调用更快的方法。
 
 ### 编程实践（programming practices）
@@ -1785,14 +1787,7 @@
     2. `encodeURI`
 
         转义除了以下字符之外的所有字符：`字母` `数字` `(` `)` `.` `!` `~` `*` `'` `-` `_` `;` `,` `/` `?` `:` `@` `&` `=` `+` `$` `#`
-15. `document.documentElement`、`document.body`、`document.head`
-
-    ```javascript
-    document.getElementsByTagName('html')[0] === document.documentElement
-    document.getElementsByTagName('body')[0] === document.body
-    document.getElementsByTagName('head')[0] === document.head
-    ```
-16. 当一个`<script>`被执行时，在它之前的标签可以访问，但在它之后的标签无法访问（还不存在、未被解析到）
+15. 当一个`<script>`被执行时，在它之前的标签可以访问，但在它之后的标签无法访问（还不存在、未被解析到）
 
     ```html
     <!-- document、document.documentElement、document.head 出现 -->
@@ -1803,7 +1798,7 @@
       </body>
     </html>
     ```
-17. 判断浏览器标签是否在激活状态
+16. 判断浏览器标签是否在激活状态
 
     1. `document.hidden`：当前文档是否被隐藏
     2. `document.visibilityState`：当前文档的可见情况（`'visible'`、`'hidden'`、`'prerender'`、`'unloaded'`）
@@ -1845,12 +1840,16 @@
         15. Set实例 -> `'[object Set]'`
         16. WeakMap实例 -> `'[object WeakMap]'`
         17. WeakSet实例 -> `'[object WeakSet]'`
-        18. Audio实例 -> `'[object HTMLAudioElement]'`
-        19. Image实例 -> `'[object HTMLImageElement]'`
-        20. Promise实例 -> `'[object Promise]'`
-        21. 生成器实例 -> `'[object GeneratorFunction]'`
-        22. `window` -> `'[object Window]'`
-        23. `document` -> `'[object HTMLDocument]'`
+        18. Promise实例 -> `'[object Promise]'`
+        19. 生成器实例 -> `'[object GeneratorFunction]'`
+        20. `window` -> `'[object Window]'`
+        21. `document` -> `'[object HTMLDocument]'`
+
+            >参考：[MDN：HTML 元素接口](https://developer.mozilla.org/zh-CN/docs/Web/API/Document_Object_Model#HTML_元素接口)。
+
+            继承`document`的各种DOM，返回`'[object HTML继承类Element]'`。
+        22. HTMLCollection实例（DOM集合） -> `'[object HTMLCollection]'`
+        23. NodeList实例（`DOM.childNodes`或`document.querySelectorAll`返回） -> `'[object NodeList]'`
         24. `arguments` -> `'[object Arguments]'`
         25. `Math` -> `'[object Math]'`
         26. `JSON` -> `'[object JSON]'`
@@ -2294,7 +2293,45 @@
         }
         ```
         </details>
+
+    ><details>
+    ><summary>若在<code>for-in/for-of</code>中改变了原对象/原数组，不会影响遍历的项和顺序，但直接使用原对象/原数组会展示修改后的值。</summary>
+    >
+    >e.g.
+    >
+    >```javascript
+    >let originObj = { a: 'aa', b: 'bb', c: 'cc' }
+    >for (let key in originObj) {
+    >  originObj = 1
+    >  console.log(key, originObj)  // 输出：`'a' 1`；`'b' 1`；`'c' 1`
+    >}
+    >// originObj 等于 1
+    >
+    >
+    >let originArr = ['a', 'b', 'c']
+    >for (let item of originArr) {
+    >  originArr = [1]
+    >  console.log(item, originArr) // 输出：`'a' [1]`；`'b' [1]`；`'c' [1]`
+    >}
+    >// originArr 等于 [1]
+    >```
+    ></details>
+
     5. Array方法
+
+        ><details>
+        ><summary>若在Array遍历的回调函数中改变了原数组，不会影响遍历函数中的<code>当前值, 索引, 数组整体</code>和原本遍历顺序，但直接使用原数组（不是回调函数内的参数）会展示修改后的数组。</summary>
+        >
+        >```javascript
+        >// e.g.
+        >let originArr = ['a', 'b', 'c']
+        >originArr.forEach((item, index, arr) => {   // 或其他所有Array.prototype.遍历方法
+        >  originArr = [item]
+        >  console.log(arr, originArr)   // 输出：`['a', 'b', 'c'] ['a']`；`['a', 'b', 'c'] ['b']`；`['a', 'b', 'c'] ['c']`
+        >})
+        >// originArr 等于 ['c']
+        >```
+        ></details>
 
         参数均为：`回调函数(当前值, 索引, 数组整体)[, this替代]`。
 

@@ -207,6 +207,8 @@
         git checkout “分支名”
 
         git checkout -b “分支名”   # 新建并切换至新分支
+
+        git checkout -b “分支名”   origin/“分支名”   # 从远程分支中，新建并切换至新分支
         ```
     4. 删除分支
 
@@ -401,9 +403,10 @@ feat(details): 添加了分享功能
     # 基于“develop的SHA”或最新develop，在本地创建并切换至“release/版本号”分支
 
     推送需要改动的commits到本地或远程“release/版本号”
-    # 更新package.json版本号
-    # 更新changelog（手写或命令生成）
-    # 修复发版前临时发现的问题
+    # （修复临时发现的问题）
+    # 确定改动完成改动后：
+    # 1. 更新package.json版本号
+    # 2. 更新changelog（手写或命令生成）
 
     # （本地必须先pull release/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则无法执行命令）
     git flow release finish “版本号”
@@ -435,9 +438,9 @@ feat(details): 添加了分享功能
     # 基于“master的SHA”或最新master，在本地创建并切换至“hotfix/版本号”分支
 
     推送具体需求的commits到本地或远程“hotfix/版本号”
-    # 更新package.json版本号
-    # 更新changelog（手写或命令生成）
-    # 修复发版前临时发现的问题
+    # 确定改动完成改动后：
+    # 1. 更新package.json版本号
+    # 2. 更新changelog（手写或命令生成）
 
     # （本地必须先pull hotfix/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则无法执行命令）
     git flow hotfix finish “版本号”
