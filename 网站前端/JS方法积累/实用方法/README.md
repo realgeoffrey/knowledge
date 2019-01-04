@@ -60,6 +60,7 @@
         1. [格式化接口返回的数据](#原生js格式化接口返回的数据)
         1. [根据滚动方向执行函数](#原生js根据滚动方向执行函数)
         1. [判断是否支持WebP](#原生js判断是否支持webp)
+        1. [DOM展示或消失执行方法（IntersectionObserver）](#原生jsdom展示或消失执行方法intersectionobserver)
     1. 提升性能
 
         1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
@@ -2205,6 +2206,56 @@ var b = new ScrollDirection({
       <img src="非WebP图片地址">
     </picture>
     ```
+
+### *原生JS*DOM展示或消失执行方法（IntersectionObserver）
+```javascript
+/**
+ * DOM展示或消失执行方法（IntersectionObserver）
+ * @constructor
+ * @param {Object} target - 观察的目标元素
+ * @param {Function} [show = () => {}] - 展示时调用
+ * @param {Function} [hide = () => {}] - 消失时调用
+ * @param {Number} [threshold = 0] - 交叉比例
+ * @param {Boolean} [once = false] - 是否仅执行一次，否则执行无数次（仅针对展示。若为true，则展示一次后，展示、消失方法均不再执行）
+ * @param {Object} [root = null] - 观察的相对物。null: viewport；祖先元素
+ */
+function DisplayDom ({ target, show = () => {}, hide = () => {}, threshold = 0, once = false, root = null } = {}) {
+  try {
+    const io = new window.IntersectionObserver(
+      (entries) => {
+        if (entries[0].intersectionRatio > threshold) { // 展示
+          show()
+
+          if (once) {
+            this.stop()
+          }
+        } else {  // 消失
+          hide()
+        }
+      },
+      { threshold: [Math.min(threshold, 1)], root }
+    )
+
+    io.observe(target)    // 开始观察
+
+    this.stop = () => {
+      io.disconnect()
+    }
+  } catch (error) {
+    console.error(error.message, `\n不支持IntersectionObserver，升级浏览器或代码使用polyfill: https://github.com/w3c/IntersectionObserver`)
+  }
+}
+
+
+/* 使用测试 */
+var a = new DisplayDom({
+  target: document.getElementById('asd'),
+  show: () => { console.log('show') },
+  hide: () => { console.log('hide') }
+})
+
+// a.stop()
+```
 
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript

@@ -97,7 +97,7 @@
     用于添加指令后的参数。
 2. `v-if`、`v-else`、`v-else-if`
 
-    DOM或组件判定为`false`，则完全销毁（组件会调用`destroyed`）；判定为`true`，则新建。除非使用`<keep-alive>`包裹。
+    DOM或组件判定为`false`，则完全销毁（组件会调用`destroyed`）；判定为`true`，则新建。除非使用`<keep-alive/>`包裹。
 3. `v-for="值/(值, 键)/(值, 键, 索引) in/of JS表达式/整数"`
 
     ><details>
@@ -453,6 +453,65 @@
     >}
     >```
     ></details>
+
+    ><details>
+    ><summary>e.g. 自定义指令的插件</summary>
+    >
+    >```javascript
+    >import Vue from 'vue'
+    >
+    >function DisplayDom ({ target, show = () => {}, hide = () => {}, threshold = 0, once = false, root = null } = {}) {
+    >  try {
+    >    const io = new window.IntersectionObserver(
+    >      (entries) => {
+    >        if (entries[0].intersectionRatio > threshold) { // 展示
+    >          show()
+    >
+    >          if (once) {
+    >            this.stop()
+    >          }
+    >        } else {  // 消失
+    >          hide()
+    >        }
+    >      },
+    >      { threshold: [Math.min(threshold, 1)], root }
+    >    )
+    >
+    >    io.observe(target)    // 开始观察
+    >
+    >    this.stop = () => {
+    >      io.disconnect()
+    >    }
+    >  } catch (error) {
+    >    console.error(error.message, `\n不支持IntersectionObserver，升级浏览器或代码使用polyfill: https://github.com/w3c/IntersectionObserver`)
+    >  }
+    >}
+    >
+    >const plugin = {
+    >  install (Vue) {
+    >    Vue.directive('observer', {  // v-observer.数字:once="{ show: ()=>{}, hide: ()=>{} }"
+    >      inserted (el, { value, arg, modifiers }) {
+    >        el.observer = new DisplayDom({
+    >          target: el,
+    >          show: typeof value === 'function' ? value : value.show,
+    >          hide: value.hide,
+    >          threshold: (arg / 100) || undefined,
+    >          once: modifiers.once,
+    >          root: value.dom
+    >        })
+    >      },
+    >      unbind (el) {
+    >        if (el.observer && typeof el.observer.stop === 'function') {
+    >          el.observer.stop()
+    >        }
+    >      }
+    >    })
+    >  }
+    >}
+    >
+    >Vue.use(plugin)
+    >```
+    ></details>
 16. 特殊attribute
 
     1. `key`
@@ -473,7 +532,7 @@
         1. 添加在原生DOM：指向DOM元素
 
             >代替原生JS获取DOM，如：~~`document.getElementById`~~。
-        2. 添加在子组件：指向子组件实例。
+        2. 添加在子组件：指向子组件Vue实例。
     3. `slot`
 
         父级向子组件引入内容。
@@ -532,20 +591,14 @@
 1. `el`（字符串）：选择器
 
     >限制：只在由`new`创建的Vue实例中。
-2. `methods`（对象）：可调用方法
-
-    >1. `new`methods里的方法，方法体内的`this`指向这个实例，而非~~Vue实例~~。建议不要在methods中添加构造函数，而改用`import`方式引入构造函数。
-    >2. template的每次改变，都会导致VNode重新渲染（VNode在differ之后的nextTick才会真的在DOM中重新渲染），也会导致没有缓存值的methods重新调用
-    >
-    >    若在`template`里调用`methods`中的方法从而双向绑定了数据（因为template最终是成为render函数，且每一次的数据改变都会导致整个组件的VNode重新渲染，其他方式的数据都有缓存，而调用`methods`的值没有缓存），则数据由调用`methods`而双向绑定的值，会随着任意模板数据改变而重新执行求值。
-3. `data`（对象或方法）：数据
+2. `data`（对象或方法）：数据
 
     >限制：组件的`data`是方法且返回一个数据对象。
 
     以`_`或`$`开头的属性不会被Vue实例代理，但可以使用`vm.$data`访问（e.g. `vm.$data._property`）。
 
     >Vue内置的属性、API方法会以`_`或`$`开头，因此若看到不带这些前缀的Vue实例的属性时，则一般可认为是Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性）。
-4. `computed`（对象）：依赖其他值（`props`、`data`、`computed`）的改变而执行，最后`return`值
+3. `computed`（对象）：依赖其他值（`props`、`data`、`computed`）的改变而执行，最后`return`值
 
     <details>
     <summary>默认：<code>get</code>（初始化时会调用一次）；显式设置：<code>set</code>（被赋值时执行）和<code>get</code></summary>
@@ -582,7 +635,7 @@
 
 >在（`props`、）`data`、`computed`先定义再使用，而不要对未使用过的变量进行`this.新变量名 = 值`。
 
-5. `watch`（对象）：被watch的（`props`或）`data`或`computed`属性改变而执行（必须是`props`或`data`或`computed`的属性）
+4. `watch`（对象）：被watch的（`props`或）`data`或`computed`属性改变而执行（必须是`props`或`data`或`computed`的属性）
 
     可以设置`immediate`（侦听开始后立即调用一次）和`deep`参数。
 
@@ -590,12 +643,51 @@
 
 >执行顺序是：（`props` -> ）`data` -> `computed` -> `watch`。
 
-6. `filters`（对象）：过滤器方法
+5. `filters`（对象）：过滤器方法
 
     方法内部没有代理 ~~`this`~~ 到Vue实例。
 
     >因为不会被Vue实例代理，所以可以和Vue实例代理的属性同名（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性`）。
-7. `components`（对象）：局部注册组件（仅在此Vue实例中可用）
+6. `components`（对象）：局部注册组件（仅在此Vue实例中可用）
+7. `methods`（对象）：可调用方法
+
+    >1. `new`methods里的方法，方法体内的`this`指向这个实例，而非~~Vue实例~~。建议不要在methods中添加构造函数，而改用`import`方式引入构造函数。
+    >2. template的每次改变，都会导致VNode重新渲染（VNode在differ之后的nextTick才会真的在DOM中重新渲染），也会导致没有缓存值的methods重新调用
+    >
+    >    若在`template`里调用`methods`中的方法从而双向绑定了数据（因为template最终是成为render函数，且每一次的数据改变都会导致整个组件的VNode重新渲染，其他方式的数据都有缓存，而调用`methods`的值没有缓存），则数据由调用`methods`而双向绑定的值，会随着任意模板数据改变而重新执行求值。
+
+><details>
+><summary><code>methods</code>、生命周期钩子都能使用<code>async-await</code></summary>
+>
+>e.g.
+>
+>```javascript
+>async mounted () {
+>  await this.login()
+>
+>  console.log('等待上面await的Promise完成或失败后才往下继续执行')
+>},
+>methods: {
+>  login () {
+>    return new Promise((resolve, reject) => {
+>      shouldLogin(err => {
+>        if (err) {
+>          reject(err)
+>        }
+>        resolve()
+>      })
+>    })
+>  },
+>
+>  async openQuestion () {
+>    await this.login()
+>
+>    console.log('等待上面await的Promise完成或失败后才往下继续执行')
+>  }
+>}
+>```
+></details>
+
 8. 生命周期钩子
 
     1. `beforeCreate`
@@ -619,10 +711,10 @@
         >不判断子组件是否更新完毕。若希望整个视图都渲染完毕，可以用`vm.$nextTick`。
     7. `activated`
 
-        >`<keep-alive>`组件特有，内部组件激活时在内部组件调用。
+        >`<keep-alive/>`组件特有，内部组件激活时在内部组件调用。
     8. `deactivated`
 
-        >`<keep-alive>`组件特有，内部组件停用时在内部组件调用。
+        >`<keep-alive/>`组件特有，内部组件停用时在内部组件调用。
     9. `beforeDestroy`
 
         >可将大部分内存清理工作放在`beforeDestroy`。
@@ -868,8 +960,8 @@
         </script>
         ```
 
-        - `<keep-alive>`包裹，保留它的状态或避免重新渲染。
-    4. `<keep-alive>`
+        - `<keep-alive/>`包裹，保留它的状态或避免重新渲染。
+    4. `<keep-alive/>`
 
         `<keep-alive>组件</keep-alive>`，会缓存不活动的组件实例，而不是销毁、重建。当组件在其内被切换时，组件的`activated`、`deactivated`被对应执行。
 5. 通信
@@ -955,7 +1047,12 @@
         1. `props`：允许外部环境传递数据给组件。
         2. `events`：允许从组件内触发外部环境的副作用。
         3. `slots`：允许外部环境将额外的内容组合在组件中。
+6. 内置组件
 
+    1. `<component/>`
+    2. `<transition/>`
+    3. `<transition-group/>`
+    4. `<keep-alive/>`
 - 杂项
 
     1. 父级引用组件时添加属性`ref="字符串"`，可以在Vue实例的`$refs`中访问。
@@ -1000,7 +1097,7 @@
 
                 `<style scoped src="@/assets/文件名.css"/>`
 
-                >~~全局起作用、无法识别`@`~~：`<style scoped>@import "../assets/文件名.css";</style>`
+                >~~全局起作用、无法识别`@`~~：`<style scoped>@import "../assets/文件名.css";</style>`。`<style>`内只能用相对路径，不能用`@/~`。
             2. `scoped`的`<style>`：
 
                 `<style scoped>样式内容</style>`
@@ -1089,17 +1186,17 @@
     1. 在CSS过渡/动画中自动应用class（可配合使用第三方CSS动画库，如：[animate.css](https://github.com/daneden/animate.css)）
     2. 在过渡钩子函数中使用JS直接操作DOM（可配合使用第三方JS动画库，如：[velocity](https://github.com/julianshapiro/velocity)）
 
-1. `<transition>`（仅针对第一个子元素）
+1. `<transition/>`（仅针对第一个子元素）
 
     >1. 过渡/动画效果仅加在第一个子元素上（子元素内部不会触发）。
-    >2. `<transition>`内仅能展示唯一一个子元素（多个元素用`<transition-group>`）。
-    >3. 不添加真实的DOM，只有逻辑（`<transition-group>`会添加真实的DOM）。
+    >2. `<transition/>`内仅能展示唯一一个子元素（多个元素用`<transition-group/>`）。
+    >3. 不添加真实的DOM，只有逻辑（`<transition-group/>`会添加真实的DOM）。
 
     提供给包裹的第一个子元素（任何DOM或组件）**进入/离开**的过渡/动画效果。
 
     1. 触发条件：
 
-        ①在`<transition>`内嵌套子元素，在子元素上进行以下操作；或②引用根节点是`<transition>`的组件，在父级引用上进行以下操作、或在此组件根节点`<transition>`内嵌套的子元素进行以下操作：
+        ①在`<transition/>`内嵌套子元素，在子元素上进行以下操作；或②引用根节点是`<transition/>`的组件，在父级引用上进行以下操作、或在此组件根节点`<transition/>`内嵌套的子元素进行以下操作：
 
         1. `v-if`（`v-else`、`v-else-if`）
         2. `v-show`
@@ -1107,10 +1204,10 @@
     2. 触发机制：
 
         1. 自动嗅探目标元素是否应用了CSS过渡/动画。若是，则在恰当的时机添加/删除CSS类名。
-        2. 若`<transition>`添加了过渡钩子，则这些钩子函数在恰当的时机被调用。
+        2. 若`<transition/>`添加了过渡钩子，则这些钩子函数在恰当的时机被调用。
 
         - 若以上都没有，则DOM操作在下一帧执行。
-    3. 特殊的props（在`<transition>`组件引用上添加）：
+    3. 特殊的props（在`<transition/>`组件引用上添加）：
 
         1. `name`：用于自动生成CSS过渡/动画类名的前缀（默认：`'v'`）
 
@@ -1172,7 +1269,7 @@
         5. `css`：是否使用CSS过渡/动画的class（默认：`true`。若`false`，则只触发过渡钩子）
         6. 过渡钩子事件：
 
-            >建议对于仅使用JS过渡的`<transition>`添加`:css="false"`。
+            >建议对于仅使用JS过渡的`<transition/>`添加`:css="false"`。
 
             1. 进入过程
 
@@ -1202,26 +1299,26 @@
                     3. `after-appear`
                     4. `appear-cancelled`
         8. `mode`：（当有子元素切换时，）控制进入/离开的过渡顺序（`'out-in'`：先离开后进入；`'in-out'`：先进入后离开。默认：同时进行）
-    4. `<transition>`内嵌的子元素切换：
+    4. `<transition/>`内嵌的子元素切换：
 
         1. 若是**原生DOM**子元素用`v-if`（`v-else`、`v-else-if`）作为切换，则必须在这些子元素上添加`key`属性。
         2. 若是**组件**子元素，则不需要额外添加 ~~`key`~~ 属性。
 
             1. 用`v-if`（`v-else`、`v-else-if`）作为切换。
             2. 用动态组件`<component :is="表达式"/>`进行切换。
-2. `<transition-group>`
+2. `<transition-group/>`
 
     >子元素必须添加`key`属性。
 
-    1. 触发条件、触发机制与`<transition>`类似。
-    2. 特殊的props（在`<transition-group>`组件引用上添加）：
+    1. 触发条件、触发机制与`<transition/>`类似。
+    2. 特殊的props（在`<transition-group/>`组件引用上添加）：
 
         1. `tag`：子级外层嵌套的标签名（默认：`'span'`）
         2. `move-class`：用于自动改变定位时引用的类名（默认：`name`属性的值 + `'-move'`）
 
-        - 除了 ~~`mode`~~ 无效之外，拥有与`<transition>`相同的props
+        - 除了 ~~`mode`~~ 无效之外，拥有与`<transition/>`相同的props
 
->自制可复用的过渡组件：把`<transition>`或`<transition-group>`作为根组件。
+>自制可复用的过渡组件：把`<transition/>`或`<transition-group/>`作为根组件。
 
 ### 插件（plugin）
 ```javascript
@@ -1375,7 +1472,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
     建议SSR的应用，不要在`mounted`之前进行能导致模板变化的数据修改。
 
-    >服务端默认禁用模板数据的响应式，因此响应式操作仅会在客户端进行。
+    >服务端默认禁用模板数据的响应式，因此响应式操作仅会在客户端进行。但是如`watch`的`immediate: true`的方法，在服务端也会执行，因此就需要`process.client/process.server`来判断是否允许服务端执行。
 2. 服务端也会调用的钩子：`beforeCreate`、`created`
 
     将全局副作用代码移动到服务端不会运行的生命周期钩子中（除了 ~~`beforeCreate`~~、~~`created`~~ 之外的其他钩子）
@@ -1454,8 +1551,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             ]
           },
         ],
-        linkActiveClass: 'router-link-active',              // 激活<router-link>的CSS类名
-        linkExactActiveClass: 'router-link-exact-active',   // 精确激活<router-link>的CSS类名
+        linkActiveClass: 'router-link-active',              // 激活<router-link/>的CSS类名
+        linkExactActiveClass: 'router-link-exact-active',   // 精确激活<router-link/>的CSS类名
         scrollBehavior: 方法,
         parseQuery/stringifyQuery: 方法,
         fallback: 方法,
@@ -1464,7 +1561,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     ```
 2. 内置组件
 
-    1. `<router-link>`：导航
+    1. `<router-link/>`：导航
 
         1. `to`：目标地址
         2. `replace`：（默认：`false`）是否使用`replace`替换`push`
@@ -1474,7 +1571,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         6. `event`：（默认：`'click'`）：触发导航的事件
         7. `active-class`：（默认：`'router-link-active'`）：链接激活时使用的CSS类名
         8. `exact-active-class`：（默认：`'router-link-exact-active'`）：被精确匹配的时候应该激活的CSS类名
-    2. `<router-view>`：渲染路由匹配的组件（可嵌套）
+    2. `<router-view/>`：渲染路由匹配的组件（可嵌套）
 
         `name`：（默认：`'default'`）命名视图的名字
 3. 注入后在组件中增加
@@ -1727,7 +1824,6 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         </details>
 
 ><details>
->
 ><summary>非模块模式使用vuex</summary>
 >
 >```javascript
@@ -1772,6 +1868,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 >    },
 >    async act2 (context) {
 >      await context.dispatch('act1', 123)  // 等待 act1 完成
+>
+>      console.log('act1完成后才往下继续执行')
 >    }
 >  }
 >})
@@ -1842,6 +1940,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
 1. 目录结构
 
+    >大部分新增的方法都可以用`async-await`。
+
     1. `pages`：页面目录
 
         Vue单文件组件。目录中的`.vue`文件自动生成对应的路由配置和页面。
@@ -1893,21 +1993,21 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         >    1. 把页面展示所必须的请求放在`asyncData/fetch`，并返回Promise来控制完成后才继续执行代码，这样之后代码需要的异步数据就可以放心使用（否则store的数据可能还未初始化，`undefined.属性`会报错）。
         >    2. 把客户端的异步请求以及其他操作模板的行为都放在`mounted`及之后（否则可能导致“客户端激活”时，客户端的虚拟DOM和服务端传来的DOM不同而出问题）。
 
-        3. `head`
+        3. `head`（`this`指向本组件vue实例）
 
-            添加、覆盖`nuxt.config.js`的`head`属性。`this`指向本组件vue实例。
+            添加、覆盖`nuxt.config.js`的`head`属性。
         4. `layout`（拥有上下文）
 
             引用`layout`目录的布局文件。
         5. `middleware`
 
-            引用`middleware`目录的中间件文件。
+            引用`middleware`目录的中间件JS文件。
         6. `scrollToTop`
 
             控制页面渲染前是否滚动至页面顶部。默认：`false`。
         7. `transition`
 
-            Vue的`<transition>`组件配置。
+            Vue的`<transition/>`组件配置。
         8. `validate`
 
             用于校验动态路由参数的有效性。`return false`则自动加载显示404错误页面。
@@ -1930,7 +2030,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         - 引用方式：组件中HTML引用`/`
 
-        >生产环境不允许随便用第三方CDN，可以把不打包的资源放到`static`从而放到自己服务端里去引用。
+        >生产环境不允许随便用第三方CDN，可以把不打包的资源放到`static`目录从而放到自己服务端里去引用。
     4. `components`：组件目录
 
         Vue单文件组件。提供给项目中所有组件使用。
@@ -1948,7 +2048,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         >```javascript
         >// plugins/stat-plugin.js
         >export default (context, inject) => {
-        >  // 在Vue实例、组件、store的actions/mutations，创建`$stat`方法
+        >  // 在Vue实例、组件、`pages`组件新增属性（`asyncData`、`fetch`、`layout`）的上下文.app、store的actions/mutations，创建`$stat`方法
         >  inject('stat', () => {})
         >}
         >```
@@ -2130,7 +2230,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         >可添加供所有页面使用的**通用组件**（**静态**的自定义通用内容添加在根目录的`app.html`）。
 
-        - 引用方式：`pages`目录下组件中加入`layout`属性
+        - 引用方式：`pages`组件中加入`layout`属性
 
             <details>
             <summary><code>pages</code>目录下组件引用<code>layouts</code>目录下布局的方式</summary>
@@ -2162,7 +2262,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         >可以做权限、UA等判断后执行跳转或其他行为。
 
-        - 引用方式：`nuxt.config.js`文件或`layouts`或`pages`目录下组件中加入`middleware`属性
+        - 引用方式：`nuxt.config.js`文件或`layouts`组件或`pages`组件中加入`middleware`属性
 
             <details>
             <summary><code>nuxt.config.js</code>文件或<code>layouts</code>或<code>pages</code>目录下组件引用<code>middleware</code>目录下中间件的方式</summary>
@@ -2244,7 +2344,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
             >`hid`为`<meta>`的唯一的标识编号，用于覆盖父组件相同标签（vue-meta中默认是`vmid`）。
 
-            配置HTML的公共静态内容，可在`pages`内重置。
+            配置HTML的公共静态内容，可在`pages`组件内重置。
 
             >来自：[vue-meta](https://github.com/declandewet/vue-meta)，可以设置多种内容，包括CSS文件、JS文件、style内容等。
         7. `loading`
@@ -2333,7 +2433,6 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     >11. `.nuxt`：nuxt构建过程资源目录（不要修改、加入.gitignore）
 
     ><details>
-    >
     ><summary>别名</summary>
     >
     >1. `srcDir`：`~`或`@`
@@ -2341,8 +2440,45 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     >
     >- 默认的`srcDir`等于`rootDir`
     ></details>
-2. 上下文：[nuxt: Context](https://nuxtjs.org/api/context)
-3. 流程
+2. <details>
+
+    <summary>上下文</summary>
+
+    >来自：[nuxt: 上下文对象](https://zh.nuxtjs.org/api/context/#上下文对象)。
+
+    上下文对象包括属性：
+
+    1. `app`
+    2. `route`
+    3. `store`
+    4. `params`
+    5. `query`
+    6. `redirect`
+    7. `error`
+    8. `env`
+    9. `isStatic`
+    10. `isDev`
+    11. `isHMR`
+    12. `req`
+    13. `res`
+    14. `nuxtState`
+    15. `beforeNuxtRender`
+    </details>
+3. 内置组件
+
+    1. `<nuxt/>`
+
+        仅在`layouts`组件中标识引入的`pages`组件。
+    2. `<nuxt-child/>`
+
+        仅在嵌套路由的`pages`组件中引入`pages`组件。
+    3. `<nuxt-link/>`
+
+        与`<router-link/>`一致。
+    4. `<no-ssr/>`
+
+        设置组件内部内容不在服务器渲染中呈现。
+4. 流程
 
     <details>
     <summary>流程图</summary>
@@ -2353,7 +2489,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     1. 页面加载时，先进行Vue+vue router+vuex的初始化，再加载`plugins`至Vue实例；随后在路由初始化以及每次路由切换时进行`middleware`运行；最后进行页面的`asyncData`->`fetch`，然后进行组件的vue原本钩子（`beforeCreate`->`props->data->computed->watch`->`created`...）。
     2. 服务端渲染进行步骤至`created`（包括）。
     3. Vue组件的生命周期钩子中，仅有`beforeCreate`、`created`在客户端和服务端均被调用（服务端渲染），其他钩子仅在客户端被调用。
-4. 路由
+5. 路由
 
     依据`pages`目录结构和文件自动生成`vue-router`模块的路由配置；在`nuxt.config.js`的`generate`和`router`属性中修改默认路由配置。
 
@@ -2395,23 +2531,23 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             }
             ```
             </details>
-    2. 嵌套路由：新增与`.vue`文件（父级）同名的文件夹存放子级，在父级内添加`<nuxt-child\>`展示子级
+    2. 嵌套路由：新增与`.vue`文件（父级）同名的文件夹存放子级，在父级内添加`<nuxt-child/>`展示子级
 
         >总是显示父级内容，其中`<nuxt-child/>`根据路由选择子级组件。
 
         ```text
         pages/
         --| users/
-        -----| _id.vue         # 若路由为/users/id动态值，则父级内容的<nuxt-child\>指向此组件
-        -----| index.vue       # 若路由为/users/，则父级内容的<nuxt-child\>指向此组件
+        -----| _id.vue         # 若路由为/users/id动态值，则父级内容的<nuxt-child/>指向此组件
+        -----| index.vue       # 若路由为/users/，则父级内容的<nuxt-child/>指向此组件
         --| users.vue          # 父级内容
         ```
     3. 动态嵌套路由：动态的父级嵌套动态的子级
 
-    - 在组件中使用`<nuxt-link>`进行路由跳转（与vue-router的`<router-link>`一致）
-5. 视图
+    - 在组件中使用`<nuxt-link/>`进行路由跳转（与vue-router的`<router-link/>`一致）
+6. 视图
 
-    1. `layouts`布局目录（可添加供所有页面使用的**通用组件**）
+    1. `layouts`组件（可添加供所有页面使用的**通用组件**）
     2. `nuxt.config.js`的`head`属性
     3. 定制HTML模板
 
@@ -2434,7 +2570,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         </html>
         ```
         </details>
-6. 样式
+7. 样式
 
     1. `<style src="@/assets/文件名.css"/>`多处引入会导致重复引入。
 
@@ -2450,7 +2586,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         1. （除了使用`scoped`的`<style>`之外）在单独使用样式的pages中，仅用`<script>import '@/assets/文件名.css'</script>`，不用 ~~`<style src="@/assets/文件名.css"/>`~~
         2. 共用的样式加入`nuxt.config.js`的`css`
-7. 命令
+8. 命令
 
     1. `nuxt`：以开发模式启动一个基于vue-server-renderer的服务端
 
@@ -2464,7 +2600,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     4. `nuxt generate`：生成静态化文件，用于静态页面发布
 
     >增加`-h`参数查看nuxt命令可带参数。
-8. 输出至生产环境的方案
+9. 输出至生产环境的方案
 
     1. SSR：服务端渲染（与开发模式的SSR相同）。
     2. 静态化页面
