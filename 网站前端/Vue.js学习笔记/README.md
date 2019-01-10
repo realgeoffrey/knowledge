@@ -105,8 +105,8 @@
     >
     >```html
     ><!-- e.g. -->
-    ><li v-for="todo in todos" v-if="!todo.isComplete">
-    >  {{ todo }} v-if在v-for循环的每一次都运行判断
+    ><li v-for="li in lis" v-if="!li.isComplete">
+    >  {{ li }} v-if在v-for循环的每一次都运行判断
     ></li>
     >```
     >

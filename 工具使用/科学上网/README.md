@@ -3,162 +3,165 @@
 ## 目录
 1. [服务端安装](#服务端安装)
 
-    1. [通过docker安装Shadowsocks、Cisco IPSec（IPSec Xauth PSK）服务器（最快捷方式）](#通过docker安装shadowsockscisco-ipsecipsec-xauth-psk服务器最快捷方式)
-    1. [Shadowsocks](#shadowsocks服务端安装)
-    1. [IKEv2（IKEv1）](#ikev2ikev1服务端安装)
+    1. [通过docker安装服务器：Shadowsocks、Cisco IPSec（IPSec Xauth PSK）](#通过docker安装服务器shadowsockscisco-ipsecipsec-xauth-psk)
+    1. [非docker环境安装服务器：Shadowsocks、IKEv2（IKEv1）](#非docker环境安装服务器shadowsocksikev2ikev1)
 1. [客户端配置](#客户端配置)
 
     1. [Shadowsocks](#shadowsocks客户端配置)
-    1. [IKEv2（IKEv1）](#ikev2ikev1客户端配置)
     1. [Cisco IPSec（IPSec Xauth PSK）](#cisco-ipsecipsec-xauth-psk客户端配置)
+    1. [IKEv2（IKEv1）](#ikev2ikev1客户端配置)
 
 ---
 ## 服务端安装
 
-### 通过docker安装Shadowsocks、Cisco IPSec（IPSec Xauth PSK）服务器（最快捷方式）
+>使用docker是最快捷的方式。
+
+### 通过docker安装服务器：Shadowsocks、Cisco IPSec（IPSec Xauth PSK）
 >[docker](https://www.docker.com/)建议Linux内核在3.0以上。[Bandwagon](https://bwh1.net/)内核只有2.6，无法使用docker；[vultr](https://my.vultr.com/)可以使用docker。
 
-1. 安装、启动docker
+- 安装、启动docker
 
     ```bash
     curl -fsSL https://get.docker.com/ | sh #安装。或用官网安装方式
 
     service docker start    #启动
     ```
-2. shadowsocks
+1. Shadowsocks服务端安装
 
     ```bash
     docker run -d -p 服务端口号:8888 imlonghao/shadowsocks-go -p 8888 -k 密码 -m aes-256-cfb -t 60
     ```
-3. Cisco IPSec（IPSec Xauth PSK）
+2. Cisco IPSec（IPSec Xauth PSK）服务端安装
 
     ```bash
     docker run -d -p 500:500/udp -p 4500:4500/udp -p 1701:1701/udp -e VPN_USER=账户名称 -e VPN_PASSWORD=密码 -e VPN_PSK=密钥 --privileged philplckthun/strongswan
     ```
 
-### Shadowsocks服务端安装
->来自：[teddysun:shadowsocks_install](https://github.com/teddysun/shadowsocks_install#shadowsocks-gosh)。
+### 非docker环境安装服务器：Shadowsocks、IKEv2（IKEv1）
+1. Shadowsocks服务端安装
 
-1. 在Linux服务器（CentOS，Debian，Ubuntu）安装[shadowsocks-go](https://github.com/shadowsocks/shadowsocks-go)。
+    >来自：[teddysun:shadowsocks_install](https://github.com/teddysun/shadowsocks_install#shadowsocks-gosh)。
 
-    ```bash
-    wget --no-check-certificate -O shadowsocks-go.sh https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks-go.sh
-
-    chmod +x shadowsocks-go.sh
-    ./shadowsocks-go.sh 2>&1 | tee shadowsocks-go.log
-    ```
-
-    >1. 密码：自己设定（默认：teddysun.com）
-    >2. 服务器端口号：自己设定（默认：8989）
-2. 查看状态
-
-    ```bash
-    /etc/init.d/shadowsocks start   #启动
-    /etc/init.d/shadowsocks stop    #停止
-    /etc/init.d/shadowsocks restart #重启
-    /etc/init.d/shadowsocks status  #状态
-    ```
-3. 卸载
-
-    ```bash
-    ./shadowsocks-go.sh uninstall
-    ```
-
-### IKEv2（IKEv1）服务端安装
->来自：[quericy:one-key-ikev2-vpn](https://github.com/quericy/one-key-ikev2-vpn)。
-
->除了第一个vps类型选择、倒数第二个独立IP使用SNAT规则，其他都可以简单使用默认。
-
-1. 下载、运行脚本
-
-    ```bash
-    wget --no-check-certificate https://raw.githubusercontent.com/quericy/one-key-ikev2-vpn/master/one-key-ikev2.sh
-
-    chmod +x one-key-ikev2.sh
-    bash one-key-ikev2.sh
-    ```
-2. 输入配置
-    1. 选择**vps类型**：
-
-        1. Xen、KVM
-        2. OpenVZ
-    2. 设置**IP**：
-
-        服务器IP，绑定的域名（默认：服务器IP）。
-    3. 选择**证书类型**：
-
-        1. yes：证书颁发机构签发的SSL证书
-
-            （未测试）
-        2. no：生成自签名证书（默认：生成自签名证书）
-
-            选择默认的Country（C）、Organization（O）、Common Name（CN）。
-    4. 设置**pkcs12证书的密码**（默认：空）。
-    5. 选择是否使用**SNAT规则**（默认：不使用）
-
-        独立IP的vps才可以使用SNAT，可提升防火墙对数据包的处理速度。若服务器网络设置了NAT（如：AWS的弹性IP机制），则填写网卡连接接口的IP地址。
-    6. 选择**防火墙配置**：
-
-        1. yes：firewall
-        2. no：iptables（默认）。
-3. 配置用户名、密码、密钥
-
-    1. 默认用户名、密码、密钥将以绿字显示，可根据提示自行修改，多用户则在配置文件中按格式一行一个（多用户时用户名不能使用%any）
+    1. 在Linux服务器（CentOS，Debian，Ubuntu）安装[shadowsocks-go](https://github.com/shadowsocks/shadowsocks-go)。
 
         ```bash
-        vi /usr/local/etc/ipsec.secrets
+        wget --no-check-certificate -O shadowsocks-go.sh https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks-go.sh
+
+        chmod +x shadowsocks-go.sh
+        ./shadowsocks-go.sh 2>&1 | tee shadowsocks-go.log
         ```
-    2. 保存并重启服务生效
+
+        >1. 密码：自己设定（默认：teddysun.com）
+        >2. 服务器端口号：自己设定（默认：8989）
+    2. 查看状态
 
         ```bash
-        ipsec restart
+        /etc/init.d/shadowsocks start   #启动
+        /etc/init.d/shadowsocks stop    #停止
+        /etc/init.d/shadowsocks restart #重启
+        /etc/init.d/shadowsocks status  #状态
         ```
-
-        >隔段时间需要人工重启一次。
-4. 客户端验证
-
-    1. 将提示信息中生成的证书文件**ca.cert.pem**复制到客户端，修改后缀名为**ca.cert.cer**后导入。
-
-        远程复制：
+    3. 卸载
 
         ```bash
-        scp -P 端口号 服务器名@服务器地址:/root/my_key/ca.cert.pem 本地存放路径
+        ./shadowsocks-go.sh uninstall
         ```
-    2. 设备使用Ikev1无需导入证书，而是需要在连接时输入密钥（PSK）。
-5. ipsec启动问题
+2. IKEv2（IKEv1）服务端安装
 
-    服务器重启后ipsec不会自启动。
+    >来自：[quericy:one-key-ikev2-vpn](https://github.com/quericy/one-key-ikev2-vpn)。
 
-    1. 命令需要手动开启，
+    >除了第一个vps类型选择、倒数第二个独立IP使用SNAT规则，其他都可以简单使用默认。
+
+    1. 下载、运行脚本
 
         ```bash
-        ipsec start   #启动服务
+        wget --no-check-certificate https://raw.githubusercontent.com/quericy/one-key-ikev2-vpn/master/one-key-ikev2.sh
 
-        ipsec stop    #关闭服务
-        ipsec restart #重启服务
-        ipsec reload  #重新读取
-        ipsec status  #查看状态
-        ipsec --help  #查看帮助
+        chmod +x one-key-ikev2.sh
+        bash one-key-ikev2.sh
         ```
-    2. 添加 **/usr/local/sbin/ipsec start**到自启动脚本文件中（如：rc.local等）
+    2. 输入配置
+        1. 选择**vps类型**：
 
-        ```bash
-        vi /etc/rc.d/rc.local
+            1. Xen、KVM
+            2. OpenVZ
+        2. 设置**IP**：
 
-        #添加
-        /usr/local/sbin/ipsec start
-        ```
-6. 卸载
+            服务器IP，绑定的域名（默认：服务器IP）。
+        3. 选择**证书类型**：
 
-    1. 卸载
+            1. yes：证书颁发机构签发的SSL证书
 
-        ```bash
-        cd ~/strongswan-5.5.1
+                （未测试）
+            2. no：生成自签名证书（默认：生成自签名证书）
 
-        make uninstall
-        ```
-    2. 删除脚本所在目录的相关文件（one-key-ikev2.sh、strongswan.tar.gz、strongswan文件夹、my_key文件夹）。
-    3. 检查iptables配置。
+                选择默认的Country（C）、Organization（O）、Common Name（CN）。
+        4. 设置**pkcs12证书的密码**（默认：空）。
+        5. 选择是否使用**SNAT规则**（默认：不使用）
+
+            独立IP的vps才可以使用SNAT，可提升防火墙对数据包的处理速度。若服务器网络设置了NAT（如：AWS的弹性IP机制），则填写网卡连接接口的IP地址。
+        6. 选择**防火墙配置**：
+
+            1. yes：firewall
+            2. no：iptables（默认）。
+    3. 配置用户名、密码、密钥
+
+        1. 默认用户名、密码、密钥将以绿字显示，可根据提示自行修改，多用户则在配置文件中按格式一行一个（多用户时用户名不能使用%any）
+
+            ```bash
+            vi /usr/local/etc/ipsec.secrets
+            ```
+        2. 保存并重启服务生效
+
+            ```bash
+            ipsec restart
+            ```
+
+            >隔段时间需要人工重启一次。
+    4. 客户端验证
+
+        1. 将提示信息中生成的证书文件**ca.cert.pem**复制到客户端，修改后缀名为**ca.cert.cer**后导入。
+
+            远程复制：
+
+            ```bash
+            scp -P 端口号 服务器名@服务器地址:/root/my_key/ca.cert.pem 本地存放路径
+            ```
+        2. 设备使用Ikev1无需导入证书，而是需要在连接时输入密钥（PSK）。
+    5. ipsec启动问题
+
+        服务器重启后ipsec不会自启动。
+
+        1. 命令需要手动开启，
+
+            ```bash
+            ipsec start   #启动服务
+
+            ipsec stop    #关闭服务
+            ipsec restart #重启服务
+            ipsec reload  #重新读取
+            ipsec status  #查看状态
+            ipsec --help  #查看帮助
+            ```
+        2. 添加 **/usr/local/sbin/ipsec start**到自启动脚本文件中（如：rc.local等）
+
+            ```bash
+            vi /etc/rc.d/rc.local
+
+            #添加
+            /usr/local/sbin/ipsec start
+            ```
+    6. 卸载
+
+        1. 卸载
+
+            ```bash
+            cd ~/strongswan-5.5.1
+
+            make uninstall
+            ```
+        2. 删除脚本所在目录的相关文件（one-key-ikev2.sh、strongswan.tar.gz、strongswan文件夹、my_key文件夹）。
+        3. 检查iptables配置。
 
 ---
 ## 客户端配置
@@ -202,6 +205,9 @@
     >SwitchyOmega配置备份文件：
     >
     >[https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/科学上网/OmegaOptions.bak](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/科学上网/OmegaOptions.bak)
+
+### Cisco IPSec（IPSec Xauth PSK）客户端配置
+>参考：[配置 IPSec/Xauth VPN 客户端](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-xauth-zh.md)。
 
 ### IKEv2（IKEv1）客户端配置
 1. iOS
@@ -262,6 +268,3 @@
 
                 选择“证书”添加。
             3. 证书 -> 受信任的根证书颁发机构 -> 证书，右键 -> 所有任务 -> 导入，选择ca.cert.cer导入成功。
-
-### Cisco IPSec（IPSec Xauth PSK）客户端配置
->参考：[配置 IPSec/Xauth VPN 客户端](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-xauth-zh.md)。

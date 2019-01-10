@@ -389,7 +389,7 @@
 ><details>
 ><summary>好处</summary>
 >
->1. 更好的搜索引擎优化（SEO，search engine optimization）
+>1. 更好的SEO
 >
 >    大部分搜索引擎在爬页面时不支持客户端渲染（JS）、或不支持客户端异步请求（AJAX）。
 >2. 更好的初始加载性能（内容到达时间，time-to-content）
