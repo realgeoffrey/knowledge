@@ -196,7 +196,7 @@
 
             >非`-`开头的参数可以忽略`--`而传递。e.g. `npm run gulp runCss`等价于：`npm run gulp -- runCss`
         2. [npx](https://github.com/zkat/npx)
-2. `package.json`字段
+2. [`package.json`](https://docs.npmjs.com/files/package.json)字段
 
     1. `dependencies`
 
@@ -228,6 +228,14 @@
     6. `main`
 
         代码入口，默认：`index.js`。
+        
+        >引用仓库的代码入口，不在引用链路内的仓库文件最终不会被使用到。
+        
+        - 其他非官方的代码入口（若不存在则退回`main`）：
+        
+            1. `module`：ES6 Module
+            2. `unpkg`：`<script>`引用（针对[unpkg.com](https://unpkg.com/)）
+            3. `jsdelivr`：`<script>`引用（针对[www.jsdelivr.com](https://www.jsdelivr.com/)）
     7. `scripts`
 
         可执行脚本，用`npm run 脚本名`执行。
@@ -260,7 +268,10 @@
     13. `private`
 
         设置为`true`，则无法`npm publish`，用于避免不小心公开项目。
-    14. 其他
+    14. `files`
+    
+        将仓库作为依赖项安装时要包含的路径、文件的数组。
+    15. 其他
 3. 包的制作-使用
 
     1. 制作：

@@ -6,6 +6,7 @@
 >    2. `man 命令`
 >    3. `info 命令`
 >    4. `whatis 命令`
+>    - [tldr](https://github.com/tldr-pages/tldr)
 
 ### 其他命令
 1. ping地址测试

@@ -28,11 +28,11 @@ gulp.task('runImage', () => {
   gulp.src(['./images/dev/**'])
     .pipe(
       imagemin([
-        svgo(),
         gifsicle({ optimizationLevel: 3 }),
         jpegtran({ progressive: true }),
-        pngquant({ speed: 1 }),
-        optipng({ optimizationLevel: 7 })
+        optipng({ optimizationLevel: 7 }),
+        pngquant({ speed: 1, strip: true }),
+        svgo()
       ]))
     .pipe(gulp.dest('./images/release/'))
 })

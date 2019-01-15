@@ -3,6 +3,7 @@
 ## 目录
 1. [总结](#总结)
 1. [`webpack.config.js`](#webpackconfigjs)
+1. [心得](#心得)
 
 ---
 ### 总结
@@ -70,3 +71,12 @@
     ```javascript
     module.exports = [配置1, 配置2]
     ```
+
+### 心得
+1. 引用仓库
+
+    1. 若引用仓库，则会按照仓库设置好的路径引用仓库文件。
+    2. 若引用仓库中某文件，则会按照该文件的引用链路去引用仓库文件。
+    3. 仓库中没有被引用到的文件不会打包进最终bundle。
+
+    >e.g. 可以用`import debounce from 'lodash/debounce'`代替`import { debounce } from 'lodash'`，这样最终打包的结果不会引用整个lodash，而只会引用debounce的引用链路文件（可以用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)分析并可视化构建后的打包文件进行对比）。

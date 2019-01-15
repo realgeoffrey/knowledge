@@ -1145,13 +1145,10 @@ console.log(hanldeWords.codePointLength('💩©'));
  * @param {String} [charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'] - 随机数的字符
  * @returns {String} - 随机数
  */
-function random(length, charset) {
-    charset = charset || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-    return Array.apply(null, new Array(length)).map(function () {
-
-        return charset.charAt(Math.floor(Math.random() * charset.length));
-    }).join('');
+function random (length, charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789') {
+  return Array.from({ length }, () => {
+    return charset.charAt(Math.floor(Math.random() * charset.length))
+  }).join('')
 }
 ```
 
@@ -1594,6 +1591,8 @@ function validateEmail(email) {
 ```
 
 >不存在可以判断世界任何一个有效邮箱的正则。
+
+>匹配中国大陆手机号码的正则表达式：[ChinaMobilePhoneNumberRegex](https://github.com/VincentSit/ChinaMobilePhoneNumberRegex)。
 
 ### *原生JS*创建兼容的XHR对象
 ```javascript
@@ -2219,11 +2218,12 @@ var b = new ScrollDirection({
  * @param {Boolean} [once = false] - 是否仅执行一次，否则执行无数次（仅针对展示。若为true，则展示一次后，展示、消失方法均不再执行）
  * @param {Object} [root = null] - 观察的相对物。null: viewport；祖先元素
  */
-function DisplayDom ({ target, show = () => {}, hide = () => {}, threshold = 0, once = false, root = null } = {}) {
+function DisplayDom ({ target, show = () => {}, hide = () => {}, threshold = 0.01, once = false, root = null } = {}) {
+  threshold = Math.max(Math.min(threshold, 1), 0.01)  // 取值在[0.01, 1]
   try {
     const io = new window.IntersectionObserver(
       (entries) => {
-        if (entries[0].intersectionRatio > threshold) { // 展示
+        if (entries[0].intersectionRatio >= threshold) { // 展示
           show()
 
           if (once) {
@@ -2233,7 +2233,7 @@ function DisplayDom ({ target, show = () => {}, hide = () => {}, threshold = 0, 
           hide()
         }
       },
-      { threshold: [Math.min(threshold, 1)], root }
+      { threshold: [threshold], root }
     )
 
     io.observe(target)    // 开始观察

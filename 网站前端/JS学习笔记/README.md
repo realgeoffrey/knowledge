@@ -5,7 +5,8 @@
 
     1. [获取位置信息](#获取位置信息)
     1. [节点与视口距离关系](#节点与视口距离关系)
-    1. [滚动定位](#滚动定位)
+    1. [判断滚动定位](#判断滚动定位)
+    1. [进行文档滚动](#进行文档滚动)
     1. [DOM相对位置](#dom相对位置)
     1. [`Node`与`Element`](#node与element)
     1. [`attribute`与`property`](#attribute与property)
@@ -169,7 +170,7 @@
 
     - [`IntersectionObserver`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#intersectionobserver)判断节点和视口（或祖先节点）相交程度。
 
-### 滚动定位
+### 判断滚动定位
 >也可以给底部（或顶部）放置一个标记节点，当这个节点的顶部在容器底部以上（或这个节点的底部在容器顶部以下）时为滚动到底部（或顶部）。
 
 1. DOM节点
@@ -180,7 +181,6 @@
     2. 内容滚动到顶部：
 
         `dom.scrollTop === 0`
-    >[`dom.scrollIntoView`](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/scrollIntoView)：节点滚到视口。
 2. 文档
 
     ><details>
@@ -215,6 +215,16 @@
     2. 滚动到顶部：
 
         `文档滚动高度 === 0`
+
+### 进行文档滚动
+1. 滚动到DOM进入视口：[`dom.scrollIntoView()`](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/scrollIntoView)
+2. #锚点
+3. `document.body.scrollTop = document.documentElement.scrollTop = 纵轴坐标`
+
+    >`document.body.scrollLeft = document.documentElement.scrollLeft = 横轴坐标`
+4. `window.scroll/scrollTo(横轴坐标, 纵轴坐标)`
+
+    >`window.scrollBy(相对横轴坐标, 相对纵轴坐标)`
 
 ### DOM相对位置
 1. DOM点击事件的定位（原生JS）
@@ -866,6 +876,7 @@
         3. 打开全屏会触发window的`scroll`事件。
 
             此时的屏幕可能高宽发生切换，页面内的DOM位置信息可能没有变化（如：`getBoundingClientRect`还是在原界面的值，屏幕高宽却变了）。
+        4. 播放（`.play()`）是异步行为。
 
 ---
 ## 编程技巧
@@ -1777,6 +1788,7 @@
 
     >1. 若是新打开的窗口（`target="_blank"`），则会出现`document.referrer`有值，但`history.back()`已回退到底。
     >2. 若是`history.pushState/replaceState`改变路由，则不改变`document.referrer`（可能初始`document.referrer === ''`）。
+    >3. 重新请求当前页面链接（如：`location.reload()`、或点击`<a href="当前页面链接">`），会导致`document.referrer === '当前页面链接'`。
 14. 使用`encodeURIComponent/decodeURIComponent`，不使用 ~~`encodeURI/decodeURI`~~
 
     >`encodeURIComponent`与`encodeURI`都是对URI（统一资源标识符）进行编码。因为 ~~`encodeURI`~~ 无法产生能适用于HTTP GET/POST请求的URI（没转义`&` `=`等），所以不使用。
