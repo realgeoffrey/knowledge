@@ -1,9 +1,10 @@
-# webpack学习笔记
+# [webpack](https://github.com/webpack/webpack)学习笔记
 
 ## 目录
 1. [总结](#总结)
 1. [`webpack.config.js`](#webpackconfigjs)
 1. [心得](#心得)
+1. [Rollup与webpack对比](#rollup与webpack对比)
 
 ---
 ### 总结
@@ -80,3 +81,15 @@
     3. 仓库中没有被引用到的文件不会打包进最终bundle。
 
     >e.g. 可以用`import debounce from 'lodash/debounce'`代替`import { debounce } from 'lodash'`，这样最终打包的结果不会引用整个lodash，而只会引用debounce的引用链路文件（可以用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)分析并可视化构建后的打包文件进行对比）。
+
+### [Rollup](https://github.com/rollup/rollup)与webpack对比
+1. Rollup：
+
+    1. 文件很小，几乎没多余代码；执行很快；可方便输出CommonJS、ES6 Module、IIFE（用于`<script>`引用）格式。
+    2. 必须用ES6 Module格式的代码才可以打包。
+2. webpack：
+
+    1. 拥有强大、全面的功能，更好的社区。
+    2. 在进行资源打包时会产生很多冗余的代码。
+
+- 总结：App级别的应用——webpack，JS库级别的应用——Rollup。

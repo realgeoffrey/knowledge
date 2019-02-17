@@ -59,7 +59,7 @@
                 server_name 域名1;
 
                 location / {
-                    root    '文件夹路径';    # 如：'E:\www\demo\dev.me'
+                    root    '文件夹路径';    # 如：'E:\www\dev.me'
                 }
             }
             ```

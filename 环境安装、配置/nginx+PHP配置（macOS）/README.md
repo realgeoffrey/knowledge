@@ -71,7 +71,7 @@
                     server_name  域名1;
 
                     location / {
-                        root 文件夹路径;     # 如：/Users/Geoffrey/www/demo/dev.me
+                        root 文件夹路径;     # 如：/Users/Geoffrey/www/dev.me
                     }
                 }
                 ```

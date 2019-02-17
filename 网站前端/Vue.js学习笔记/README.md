@@ -988,7 +988,7 @@
             2. 不应该 ~~在子组件内部改变`props`~~（只能`vm.$emit`到父级再由父级传`props`进子组件来改变）。
 
                 1. 仅展示：直接在模板引用`props`。
-                2. 一次性传值（仅首次传值有效，后续传值无法修改`data`）：`props` -> `data`。
+                2. 一次性传值（仅首次传值有效，后续传值无法修改`data`。故不推荐）：`props` -> `data`。
                 3. 每次对传值内容进行修改后使用：`props` -> `computed`。
                 4. 每次根据传值内容进行其他逻辑：`props` -> `watch`。
 
@@ -1002,7 +1002,7 @@
                     props: ['father'], // 可以直接用在子组件内展示
                     data () {
                       return {
-                        son1: this.father  // 仅接受首次传值，后续的props变化不再改变
+                        son1: this.father  // 仅接受首次传值，后续的props变化不再改变（不推荐）
                       }
                     },
                     computed: {
@@ -1024,6 +1024,50 @@
             >注意：避免**引用数据类型**导致的子组件改变父级。
 
             - 还可以通过`provide/inject`从父级向所有子孙后代传递数据。
+            
+            ><details>
+            ><summary>传递<code>Function</code>数据类型</summary>
+            >
+            >```vue
+            ><template>
+            >  <div>
+            >    <Son
+            >      :func-data="funcData"
+            >      :func-methods="funcMethods"
+            >    />
+            >  </div>
+            ></template>
+            >
+            ><script>
+            >import Son from '@/components/Son'
+            >
+            >function f () {
+            >  return '父级方法'
+            >}
+            >
+            >export default {
+            >  name: 'Father',
+            >  components: {
+            >    Son
+            >  },
+            >  data () {
+            >    return {
+            >      funcData () {
+            >        console.log(f())   // 传递给子组装件，f也是本组件方法
+            >        console.log(this)  // 不会bind本组件上下文，this指向null（若传递给子组件并在`methods`使用，会bind子组件的上下文）
+            >      }
+            >    }
+            >  },
+            >  methods: {
+            >    funcMethods () {
+            >      console.log(f())     // 传递给子组装件，f也是本组件方法
+            >      console.log(this)    // 会bind本组件上下文，this指向本组件（传递给子组件或其他bind都不改变this指向本组件）
+            >    }
+            >  }
+            >}
+            ></script>
+            >```
+            ></details>
         2. 子 -> 父：通过`vm.$emit`向上传递事件、参数
 
             >`vm.$listeners`能获得父级的所有能够从子级向上传递的事件。

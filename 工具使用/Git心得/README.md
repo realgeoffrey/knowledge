@@ -510,7 +510,7 @@ feat(details): 添加了分享功能
 
 >在github网站中：不同账户无法使用相同的**SSH key**。
 
-1. 生产多对的**SSH keys**，并放入 **.ssh文件夹**：
+1. 生产多对的**SSH keys**，并放入 **.ssh文件夹**（自动生成并放入`~/.ssh/`）：
 
     ```bash
     ssh-keygen -f “地址/名字”
