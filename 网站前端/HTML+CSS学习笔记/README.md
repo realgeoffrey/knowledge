@@ -22,12 +22,15 @@
     1. [横竖屏切换](#横竖屏切换)
     1. [滚动条](#滚动条)
     1. [滚动条样式](#滚动条样式)
+    1. [`@font-face`加入了字体后的使用方式](#font-face加入了字体后的使用方式)
+    1. [帧动画（逐帧动画、序列帧、序列帧动画）](#帧动画逐帧动画序列帧序列帧动画)
 1. [HTML + CSS](#html--css)
 
     1. [等宽文字](#等宽文字)
     1. [禁用`<a>`的鼠标、键盘事件](#禁用a的鼠标键盘事件)
     1. [插件避免被其他样式污染方式](#插件避免被其他样式污染方式)
     1. [网页图标favicon的兼容写法](#网页图标favicon的兼容写法)
+    1. [富文本编辑器](#富文本编辑器)
 1. [经验总结](#经验总结)
 
     1. [水平居中、垂直居中](#水平居中垂直居中)
@@ -742,6 +745,84 @@
     7. `scrollbar-track-color: 颜色;`：立体滚动条背景颜色。
     8. `scrollbar-base-color: 颜色;`：滚动条的基色。
 
+### `@font-face`加入了字体后的使用方式
+>使用[www.iconfont.cn](https://www.iconfont.cn/)方便生成字体图标，每个字体图标对应一个Unicode。
+
+1. CSS：
+
+    `content: "\16进制数";`
+2. HTML：
+
+    `&#x16进制数;`或`&#10进制数;`
+
+    >HTML的字符实体（character entity）：`&名字;`或`&#序号;`（序号：`x16进制数`或`10进制数`）。
+3. JS：
+
+    `dom.innerHTML =`
+
+    1. `'&#x16进制数;'`或`'&#10进制数;'`（都可省去`;`）；
+    2. `'\u4位16进制数'`或`'\u{16进制数}'`或`'\x2位16进制数'`或`'\3位8进制数'`。
+
+        >数字数量有限制：[Unicode](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#unicode)。
+
+### 帧动画（逐帧动画、序列帧、序列帧动画）
+`animation-timing-function`的`steps`（[缓动函数](https://developer.mozilla.org/zh-CN/docs/Web/CSS/animation-timing-function)）配合`@keyframes`改变雪碧图的`background-position/transform`。
+
+<details>
+<summary>e.g.</summary>
+
+```html
+<style>
+.sprite {
+  width: 300px;
+  height: 300px;
+  background-repeat: no-repeat;
+  background-image: url(spr.png);
+  animation: frame 333ms steps(20) both infinite;
+}
+@keyframes frame {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -6000px 0;
+  }
+}
+</style>
+
+<div class="sprite"></div>
+```
+
+```html
+<style>
+.sprite-wp {
+  width: 300px;
+  height: 300px;
+  overflow: hidden;
+}
+.sprite {
+  width: 6000px;
+  height: 300px;
+  will-change: transform;
+  background: url(spr.png) no-repeat center;
+  animation: frame 333ms steps(20) both infinite;
+}
+@keyframes frame {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-6000px);
+  }
+}
+</style>
+
+<div class="sprite-wp">
+  <div class="sprite"></div>
+</div>
+```
+</details>
+
 ---
 ## HTML + CSS
 
@@ -798,6 +879,47 @@
 <!--<link rel="manifest" href="/images/manifest.json">-->
 <!--<meta name="msapplication-config" content="/images/browserconfig.xml">-->
 ```
+
+### 富文本编辑器
+>富文本编辑器（rich text editor）：一种可内嵌于浏览器，所见即所得（what you see is what you get，WYSIWYG）的文本编辑器。
+
+1. 标签、样式注意
+
+    1. 除了要检测用户输入标签的闭合性之外，还要注意富文本编辑器的祖先元素不要用`<li>`嵌套。
+
+        因为代码中如果有单独的`<li>`（没有嵌套`<ol>`或`<ul>`），就会“越级”到跟祖先级`<li>`同级的内容。
+    2. 大部分富文本会用`<em>`、`<ol>`、`<ul>`等标签来表示**斜体**、**有序序列**、**无序序列**，因此如果用CSS重置了以上标签的样式后，要在[富文本内重载开启它们的默认效果](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L61-L77)（或定制效果）。
+    3. 大部分富文本会在`<table>`上使用`cellspacing`、`border`、`bordercolor`属性设置表格，又因为设置了`border: 0;`的表格无法重载开启以上属性作用，所以CSS重置时[不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L26-L27)。
+2. 实现方式：
+
+    1. 使用原生[`document.execCommand`](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/execCommand)操作`contenteditable="true"`的DOM文本选取覆盖的内容（或`document.designMode === 'on'`的整个文档、`某iframe.contentDocument.designMode = "on"`的整个`<iframe>`）。
+
+        >如：[pell](https://github.com/jaredreich/pell)。
+
+        大部分是添加`指定的几种标签`和`style`的方式进行编辑，因此只需定制富文本内指定的几种标签的样式。
+
+        - `document.execCommand`原生支持添加的标签：
+
+            1. `<b>`或`<strong>`
+            2. `<i>`或`<em>`
+            3. `<u>`
+            4. `<strike>`或`<s>`
+            5. `<pre>`、`<blockquote>`、`<h1>`~`<h6>`、`<p>`、等块级标签
+            6. `<ul>`、`<ol>`、`<li>`
+            7. `<img>`
+            8. `<a>`
+            9. `<hr>`
+            10. `<sub>`、`<sup>`
+            11. `<table>`
+            12. `<font>`
+            13. `<small>`、`<big>`
+
+            >若要插入其他标签、或修改HTML属性（`style`、`class`等）、或插入整个DOM，则可以用`document.execCommand('insertHTML', false, HTML内容)`。
+    2. 修改、插入DOM的方式模拟实现DOM的编辑。
+
+        >如：[quill](https://github.com/quilljs/quill)。
+
+        除了添加标签和`style`之外，还会额外添加`class`和DOM（需自定义样式）。
 
 ---
 ## 经验总结
@@ -1505,16 +1627,11 @@
 
     1. 避免~~放大、缩小图片~~，使用原始大小展现。
     2. 避免使用不可缓存且增加额外HTTP请求的 ~~<iframe>~~。
-16. 富文本：
-
-    1. 富文本内容除了要检测用户输入标签的闭合性，还要注意不要用`<li>`嵌套富文本，因为代码中如果有单独的`<li>`（没有嵌套`<ol>`或`<ul>`），就会“越级”到跟祖先级`<li>`同级的内容。
-    2. 部分富文本会用`<em>`、`<ol>`、`<ul>`来表示**斜体**、**有序序列**、**无序序列**，因此如果用CSS重置了以上标签后，要在[富文本内重载开启它们的默认效果](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L61-L77)。
-    3. 部分富文本会在`<table>`上使用`cellspacing`、`border`、`bordercolor`属性设置表格，又因为设置了`border: 0;`的表格无法重载开启以上属性作用，所以CSS重置时[不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L26-L27)。
-17. 超出内容区域的内容：
+16. 超出内容区域的内容：
 
     1. 用绝对定位把内容设置在外部
 
         不要把超出内容区域的绝对定位设置在`<body>`直接子级，而是设置在`<body>`下拥有`overflow: hidden;`的父级下。
     2. ~~大背景模式~~
-18. `CSS.supports(CSS语句)`或`CSS.supports(CSS属性, 值)`判断浏览器是否支持一个给定CSS语句。
-19. 切图时`<img>`外嵌套一层标签，好应对可能要在图片上添加东西的需求。
+17. `CSS.supports(CSS语句)`或`CSS.supports(CSS属性, 值)`判断浏览器是否支持一个给定CSS语句。
+18. 切图时`<img>`外嵌套一层标签，好应对可能要在图片上添加东西的需求。

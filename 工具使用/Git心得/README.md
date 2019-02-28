@@ -234,7 +234,7 @@
     git show “名字”                   # 查看tag详细信息
 
     git tag “名字” [“SHA”]            # 新建轻量级标签（没有SHA则最新commit）
-    git tag “名字” -a [“SHA”]         # 新建含附注标签，打开文本编辑器编写tag信息（没有SHA则最新commit）
+    git tag “名字” -a [“SHA”]         # 新建含附注标签，并编写tag信息（没有SHA则最新commit）
     git tag “名字” -m “信息” [“SHA”]    # 新建含附注标签（没有SHA则最新commit）
 
     git push origin “名字”            # 推送一个本地新建标签至远程
@@ -260,7 +260,7 @@
     git stash pop                   # 应用最后一个储藏，删除最后一个储藏
     ```
 
-### Zen-like commit messages（Angular）格式
+### [Zen-like commit messages（Angular）格式](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines)
 ```text
 <type>(<scope>): <subject>
 
@@ -344,8 +344,6 @@ feat(details): 添加了分享功能
 
         1. 全局
 
-            >可能需要：`npm install -g cz-conventional-changelog`。
-
             `echo '{ "path": "cz-conventional-changelog" }' > ~/.czrc`
         2. 局部（Node.js仓库）
 
@@ -374,25 +372,25 @@ feat(details): 添加了分享功能
 1. 初始化：
 
     ```git
-    git flow init -fd   # 整个项目声明一次即可
+    git flow init -fd   # （整个项目首次声明一次即可）
     ```
 2. 开发新需求：
 
     ```git
     git flow feature start “需求名” [“develop的SHA”]
-    # 基于“develop的SHA”或最新develop，在本地创建并切换至“feature/需求名”分支
+        # -> 基于“develop的SHA”或最新develop，在本地创建并切换至“feature/需求名”分支
 
-    推送具体需求的commits到本地或远程“feature/需求名”
+    提交具体需求的commits到本地或推送远程“feature/需求名”
 
-    # （本地必须先pull feature/需求名、develop分支，解决冲突，git flow执行merge操作，否则无法执行命令）
+    # 本地必须先pull feature/需求名、develop分支，解决冲突、merge，否则无法执行命令
     git flow feature finish “需求名”
-    # “feature/需求名”合并（--no-ff）至本地develop分支
-    # 删除本地“feature/需求名”分支，切换至develop分支
-    # 可能删除远程的“feature/需求名”分支（根据git-flow版本不同）
+        # -> “feature/需求名”合并（--no-ff）至本地develop分支
+        # -> 删除本地“feature/需求名”分支，切换至develop分支
+        # -> 可能删除远程的“feature/需求名”分支
 
     git checkout develop
     git push origin develop
-    # 推送至远程develop分支
+        # -> 推送至远程develop分支
     ```
 
     >可以分别开发多个需求，再一起发布（release），把已经存在的release分支合并develop分支。
@@ -400,32 +398,32 @@ feat(details): 添加了分享功能
 
     ```git
     git flow release start “版本号” [“develop的SHA”]
-    # 基于“develop的SHA”或最新develop，在本地创建并切换至“release/版本号”分支
+        # -> 基于“develop的SHA”或最新develop，在本地创建并切换至“release/版本号”分支
 
-    推送需要改动的commits到本地或远程“release/版本号”
-    # （修复临时发现的问题）
-    # 确定改动完成改动后：
-    # 1. 更新package.json版本号
-    # 2. 更新changelog（手写或命令生成）
+    提交需要改动的commits到本地或推送远程“release/版本号”
+        # 修复临时发现的问题（可选）
+        # 确定改动完成改动后：
+            # 1. 更新package.json版本号
+            # 2. 更新changelog（手写或命令生成）
 
-    # （本地必须先pull release/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则无法执行命令）
+    # 本地必须先pull release/版本号、develop分支、master分支，解决冲突、merge，否则无法执行命令
     git flow release finish “版本号”
-    # tag描述（手写或复制changelog）
-    # “release/版本号”合并（--no-ff）至本地develop分支、本地master分支
-    # 新建本地“版本号”tag
-    # 删除本地“release/版本号”分支，切换至develop分支
-    # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）
+        # tag描述（手写或复制changelog）
+        # -> “release/版本号”合并（--no-ff）至本地develop分支、本地master分支
+        # -> 新建本地“版本号”tag
+        # -> 删除本地“release/版本号”分支，切换至develop分支
+        # -> 可能删除远程的“release/版本号”分支
 
     git checkout develop
     git push origin develop
-    # 推送至远程develop分支
+        # -> 推送至远程develop分支
 
     git checkout master
     git push origin master
-    # 推送至远程master分支
+        # -> 推送至远程master分支
 
     git push origin “版本号”
-    # 推送至远程tag
+        # -> 推送至远程tag
     ```
 
     >若要把已经完成的feature内容添加到已存在的release分支，仅需release分支合并develop分支（`git checkout “release/版本号”; git merge develop`），而不需要release start
@@ -435,31 +433,31 @@ feat(details): 添加了分享功能
 
     ```git
     git flow hotfix start “版本号” [“master的SHA”]
-    # 基于“master的SHA”或最新master，在本地创建并切换至“hotfix/版本号”分支
+        # -> 基于“master的SHA”或最新master，在本地创建并切换至“hotfix/版本号”分支
 
-    推送具体需求的commits到本地或远程“hotfix/版本号”
-    # 确定改动完成改动后：
-    # 1. 更新package.json版本号
-    # 2. 更新changelog（手写或命令生成）
+    提交具体需求的commits到本地或推送远程“hotfix/版本号”
+        # 确定改动完成改动后：
+            # 1. 更新package.json版本号
+            # 2. 更新changelog（手写或命令生成）
 
-    # （本地必须先pull hotfix/版本号、develop分支、master分支，解决冲突，git flow执行merge操作，否则无法执行命令）
+    # 本地必须先pull hotfix/版本号、develop分支、master分支，解决冲突、merge，否则无法执行命令
     git flow hotfix finish “版本号”
-    # tag描述（手写或复制changelog）
-    # “hotfix/版本号”合并（--no-ff）至本地master分支、本地develop分支
-    # 新建本地“版本号”tag
-    # 删除本地“release/版本号”分支，切换至develop分支
-    # 可能删除远程的“release/版本号”分支（根据git-flow版本不同）
+        # tag描述（手写或复制changelog）
+        # -> “hotfix/版本号”合并（--no-ff）至本地master分支、本地develop分支
+        # -> 新建本地“版本号”tag
+        # -> 删除本地“release/版本号”分支，切换至develop分支
+        # -> 可能删除远程的“release/版本号”分支
 
     git checkout develop
     git push origin develop
-    # 推送至远程develop分支
+        # -> 推送至远程develop分支
 
     git checkout master
     git push origin master
-    # 推送至远程master分支
+        # -> 推送至远程master分支
 
     git push origin “版本号”
-    # 推送至远程tag
+        # -> 推送至远程tag
     ```
 
 >git-flow的所有`finish`操作都是用`--no-ff`方式合并。

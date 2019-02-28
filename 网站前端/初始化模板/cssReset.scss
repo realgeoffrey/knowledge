@@ -58,7 +58,7 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
 /* -webkit-user-select:none;不被选择 */
 /* /-WAP端 */
 
-/* -富文本需重载 */
+/* -富文本需重载上面的CSS reset */
 .富文本类 em {
   font-style: italic;
 }
@@ -74,7 +74,7 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
   table-layout: fixed;
   text-align: center;
 }
-/* /-富文本需重载 */
+/* /-富文本需重载上面的CSS reset */
 /* /CSS reset */
 
 /* scss的@mixin、@function */

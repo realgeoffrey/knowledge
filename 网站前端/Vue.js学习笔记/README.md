@@ -972,110 +972,114 @@
         `<keep-alive>组件</keep-alive>`，会缓存不活动的组件实例，而不是销毁、重建。当组件在其内被切换时，组件的`activated`、`deactivated`被对应执行。
 5. 通信
 
-    >组件（Vue实例）有自己独立的作用域，虽然可以访问到互相依赖关系（`vm.$parent`、`vm.$children`），但是不建议（不允许）通过依赖获取、修改数据。
+    >组件（Vue实例）有自己独立的作用域，虽然可以访问到互相依赖关系（`vm.$parent`、`vm.$children`、`vm.$refs`），但是不建议（不允许）通过依赖获取、修改数据。
 
     1. 父子组件间的通信
 
-        父-`props` -> 子：传入属性值；子-`vm.$emit` -> 父：触发外部环境事件；外部事件再改变传进组件的`props`值。
+        1. 父（`props`） -> 子：传入属性值；子（`vm.$emit`） -> 父：触发外部环境事件，外部事件再改变传进组件的`props`值。
 
-        1. 父 -> 子：通过`props`向下传递初始化数据给子组件实例（不出现在DOM中）
+            1. 父 -> 子：通过`props`向下传递初始化数据给子组件实例（不出现在DOM中）
 
-            >（当`inheritAttrs`默认`true`时，）添加在DOM上而不在`props`的声明，则仅添加到子组件最外层的DOM属性，不传入子组件。其中`class`和`style`属性会合并，其他属性会覆盖。
+                >（当`inheritAttrs`默认`true`时，）添加在DOM上而不在`props`的声明，则仅添加到子组件最外层的DOM属性，不传入子组件。其中`class`和`style`属性会合并，其他属性会覆盖。
 
-            1. `props`是单向传递的：当父级的属性变化时，将传导给子组件，不会反过来
+                1. `props`是单向传递的：当父级的属性变化时，将传导给子组件，不会反过来
 
-                每次父组件更新时，子组件的所有prop都会更新为最新值。
-            2. 不应该 ~~在子组件内部改变`props`~~（只能`vm.$emit`到父级再由父级传`props`进子组件来改变）。
+                    每次父组件更新时，子组件的所有prop都会更新为最新值。
+                2. 不应该 ~~在子组件内部改变`props`~~（只能`vm.$emit`到父级再由父级传`props`进子组件来改变）。
 
-                1. 仅展示：直接在模板引用`props`。
-                2. 一次性传值（仅首次传值有效，后续传值无法修改`data`。故不推荐）：`props` -> `data`。
-                3. 每次对传值内容进行修改后使用：`props` -> `computed`。
-                4. 每次根据传值内容进行其他逻辑：`props` -> `watch`。
+                    1. 仅展示：直接在模板引用`props`。
+                    2. 一次性传值（仅首次传值有效，后续传值无法修改`data`。故不推荐）：`props` -> `data`。
+                    3. 每次对传值内容进行修改后使用：`props` -> `computed`。
+                    4. 每次根据传值内容进行其他逻辑：`props` -> `watch`。
 
-                <details>
-                <summary>e.g.</summary>
+                    <details>
+                    <summary>e.g.</summary>
 
-                ```javascript
-                Vue.component(
-                  'myComponent',
-                  {
-                    props: ['father'], // 可以直接用在子组件内展示
-                    data () {
-                      return {
-                        son1: this.father  // 仅接受首次传值，后续的props变化不再改变（不推荐）
+                    ```javascript
+                    Vue.component(
+                      'myComponent',
+                      {
+                        props: ['father'], // 可以直接用在子组件内展示
+                        data () {
+                          return {
+                            son1: this.father  // 仅接受首次传值，后续的props变化不再改变（不推荐）
+                          }
+                        },
+                        computed: {
+                          son2() {
+                            return this.father // 每次对传值内容进行修改后使用
+                          }
+                        },
+                        watch: {
+                          father(data) { // 每次根据传值内容进行其他逻辑
+                            console.log(data)
+                          }
+                        },
+                        template: '<div>{{ father }}-{{ son1 }}- {{ son2 }}</div>'
                       }
-                    },
-                    computed: {
-                      son2() {
-                        return this.father // 每次对传值内容进行修改后使用
-                      }
-                    },
-                    watch: {
-                      father(data) { // 每次根据传值内容进行其他逻辑
-                        console.log(data)
-                      }
-                    },
-                    template: '<div>{{ father }}-{{ son1 }}- {{ son2 }}</div>'
-                  }
-                )
-                ```
-                </details>
+                    )
+                    ```
+                    </details>
 
-            >注意：避免**引用数据类型**导致的子组件改变父级。
+                >注意：避免**引用数据类型**导致的子组件改变父级。
 
-            - 还可以通过`provide/inject`从父级向所有子孙后代传递数据。
+                - 还可以通过`provide/inject`从父级向所有子孙后代传递数据。
 
-            ><details>
-            ><summary>传递<code>Function</code>数据类型</summary>
-            >
-            >```vue
-            ><template>
-            >  <div>
-            >    <Son
-            >      :func-data="funcData"
-            >      :func-methods="funcMethods"
-            >    />
-            >  </div>
-            ></template>
-            >
-            ><script>
-            >import Son from '@/components/Son'
-            >
-            >function f () {
-            >  return '父级方法'
-            >}
-            >
-            >export default {
-            >  name: 'Father',
-            >  components: {
-            >    Son
-            >  },
-            >  data () {
-            >    return {
-            >      funcData () {
-            >        console.log(f())   // 传递给子组装件，f也是本组件方法
-            >        console.log(this)  // 不会bind本组件上下文，this指向null（若传递给子组件并在`methods`使用，会bind子组件的上下文）
-            >      }
-            >    }
-            >  },
-            >  methods: {
-            >    funcMethods () {
-            >      console.log(f())     // 传递给子组装件，f也是本组件方法
-            >      console.log(this)    // 会bind本组件上下文，this指向本组件（传递给子组件或其他bind都不改变this指向本组件）
-            >    }
-            >  }
-            >}
-            ></script>
-            >```
-            ></details>
-        2. 子 -> 父：通过`vm.$emit`向上传递事件、参数
+                ><details>
+                ><summary>传递<code>Function</code>数据类型</summary>
+                >
+                >```vue
+                ><template>
+                >  <div>
+                >    <Son
+                >      :func-data="funcData"
+                >      :func-methods="funcMethods"
+                >    />
+                >  </div>
+                ></template>
+                >
+                ><script>
+                >import Son from '@/components/Son'
+                >
+                >function f () {
+                >  return '父级方法'
+                >}
+                >
+                >export default {
+                >  name: 'Father',
+                >  components: {
+                >    Son
+                >  },
+                >  data () {
+                >    return {
+                >      funcData () {
+                >        console.log(f())   // 传递给子组装件，f也是本组件方法
+                >        console.log(this)  // 不会bind本组件上下文，this指向null（若传递给子组件并在`methods`使用，会bind子组件的上下文）
+                >      }
+                >    }
+                >  },
+                >  methods: {
+                >    funcMethods () {
+                >      console.log(f())     // 传递给子组装件，f也是本组件方法
+                >      console.log(this)    // 会bind本组件上下文，this指向本组件（传递给子组件或其他bind都不改变this指向本组件）
+                >    }
+                >  }
+                >}
+                ></script>
+                >```
+                ></details>
+            2. 子 -> 父：通过`vm.$emit`向上传递事件、参数
 
-            >`vm.$listeners`能获得父级的所有能够从子级向上传递的事件。
+                >`vm.$listeners`能获得父级的所有能够从子级向上传递的事件。
 
-            1. 在父级引用子组件处添加`@自定义事件1="父方法"`监听；
+                1. 在父级引用子组件处添加`@自定义事件1="父方法"`监听；
 
-                >若`自定义事件1`是原生事件，可以添加`.native`修饰符，监听组件根元素的原生事件（不再接收子组件的 ~~`vm.$emit`~~）。
-            2. 在子组件方法体内添加`vm.$emit('自定义事件1', 参数)`向上传递。
+                    >若`自定义事件1`是原生事件，可以添加`.native`修饰符，监听组件根元素的原生事件（不再接收子组件的 ~~`vm.$emit`~~）。
+                2. 在子组件方法体内添加`vm.$emit('自定义事件1', 参数)`向上传递。
+        2. 父 -> 子：触发子组件的方法
+
+            1. 父级引用子组件通过`$refs`直接调用子组件的方法（`vm.$refs.子组件引用名.子组件的methods方法()`）。
+            2. 父级通过传递`props`，子组件`watch`而触发子组件方法（或其他方式让子组件能够`watch`而执行的方式，如：vuex）。
     2. 非父子组件通信
 
         1. 在简单的场景下，可以使用一个空的Vue实例作为中央事件总线。
@@ -1105,7 +1109,7 @@
     4. `<keep-alive/>`
 - 杂项
 
-    1. 父级引用组件时添加属性`ref="字符串"`，可以在Vue实例的`$refs`中访问。
+    1. 父级引用组件时添加属性`ref="字符串"`，可以在Vue实例的`$refs`中访问子组件。
     2. 内联模板：
 
         引用组件时，添加`inline-template`DOM属性。组件的内容当作模板，而不是分发内容。

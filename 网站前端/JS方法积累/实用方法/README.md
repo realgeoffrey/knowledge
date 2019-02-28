@@ -1033,36 +1033,21 @@ var overRangeOperations = {
  * @param {Number} toRadix - 结果的进制数
  * @returns {String|Boolean|Number} - 转换后的数值；进制数不在2~36：false；操作数与进制数不匹配：NaN
  */
-function numConvert(operand, fromRadix, toRadix) {
-    var myself = arguments.callee;
-
-    if (typeof myself.toDecimal !== 'function' || typeof myself.fromDecimal !== 'function') {
-        myself.toDecimal = function (str, radix) {  /* 其他进制转化为10进制 */
-
-            return parseInt(str, radix);
-        };
-
-        myself.fromDecimal = function (num, radix) {    /* 10进制转化为其他进制 */
-
-            return num.toString(radix);
-        };
-    }
-
-    if (fromRadix > 36 || fromRadix < 2 || toRadix > 36 || toRadix < 2) {    /* 仅支持2至36进制 */
-
-        console.log('进制数只能在2至36之间');
-
-        return false;
+function numConvert (operand, fromRadix, toRadix) {
+  if (fromRadix > 36 || fromRadix < 2 || toRadix > 36 || toRadix < 2) {    /* 仅支持2至36进制 */
+    console.log('进制数只能在2至36之间')
+    return false
+  } else {
+    // 先转化为10进制
+    if (fromRadix === 10) {
+      operand = parseInt(operand, 10)
     } else {
-
-        if (fromRadix === 10) {
-            operand = parseInt(operand, 10);
-        } else {
-            operand = myself.toDecimal(operand, fromRadix);
-        }
-
-        return myself.fromDecimal(operand, toRadix);
+      operand = parseInt(operand, fromRadix)  // 其他进制转化为10进制
     }
+
+    // 再由10进制转化为其他进制
+    return operand.toString(toRadix)
+  }
 }
 ```
 
