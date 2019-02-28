@@ -350,7 +350,7 @@
     ><summary>与其他插值（如：模板插值）的区别</summary>
     >
     >1. `v-html`：`innerHTML`。
-    >2. `v-text`、`{{ }}`及其他插值：`innerText`。
+    >2. `v-text`、`{{ }}`及其他插值：`innerText（或textContent）`。
     ></details>
 10. `v-pre`不编译
 
@@ -1024,7 +1024,7 @@
             >注意：避免**引用数据类型**导致的子组件改变父级。
 
             - 还可以通过`provide/inject`从父级向所有子孙后代传递数据。
-            
+
             ><details>
             ><summary>传递<code>Function</code>数据类型</summary>
             >
@@ -2043,7 +2043,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         >    1. 把页面展示所必须的请求放在`asyncData/fetch`，并返回Promise来控制完成后才继续执行代码，这样之后代码需要的异步数据就可以放心使用（否则store的数据可能还未初始化，`undefined.属性`会报错）。
         >    2. 把客户端的异步请求以及其他操作模板的行为都放在`mounted`及之后（否则可能导致“客户端激活”时，客户端的虚拟DOM和服务端传来的DOM不同而出问题）。
         >4. SSR的页面组件，可以在客户端用路由切换的方式在客户端触发`asyncData/fetch`（`vm.$router.方法()`、或`<nuxt-link/>`、`<router-link/>`）。
-        
+
         3. `head`（`this`指向本组件vue实例）
 
             >在非页面组件也完全有效，如：`components`（组件目录）、`layouts`（布局目录）。
@@ -2067,10 +2067,10 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         9. `watchQuery`
 
             1. （默认）search值修改时执行：
-                
+
                 `transition`、`middleware`、`layout`、`validate`
             2. 监听对应的参数字符串更改，search值修改时执行：
-            
+
                 `transition`、`middleware`、`layout`、`validate`、**`asyncData`**、**`fetch`**
         10. `loading`
         </details>
@@ -2435,7 +2435,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
             配置加载组件。
         12. `loadingIndicator`
-        
+
             配置内置加载器样式。
         13. `mode`
 
@@ -2683,22 +2683,22 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 8. 使用预处理器
 
     （nuxt内置依赖了[vue-loader](https://github.com/vuejs/vue-loader)，因此若安装了对应的依赖包后，则能够）在组件中的`<template>`、`<script>`、`<style>`通过`lang`属性使用各种预处理器。
-    
+
     <details>
     <summary>e.g.</summary>
-    
+
     ```vue
     <!-- pug pug-plain-loader -->
     <template lang="pug">
       h1.red Hello {{ name }}!
     </template>
-    
+
     <!-- coffeescript coffee-loader -->
     <script lang="coffee">
       export default data: ->
         { name: 'World' }
     </script>
-    
+
     <!-- node-sass sass-loader -->
     <style lang="sass">
       .red

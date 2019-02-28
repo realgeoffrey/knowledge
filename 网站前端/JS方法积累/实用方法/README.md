@@ -45,6 +45,7 @@
         1. [判断是否为`Node`、是否为`Element`](#原生js判断是否为node是否为element)
         1. [判断对象是否为空](#原生js判断对象是否为空)
         1. [输入框光标位置的获取和设置](#原生js输入框光标位置的获取和设置)
+        1. [文本选区覆盖某DOM的文本范围](#原生js文本选区覆盖某dom的文本范围)
         1. [针对WAP的阻止滚动冒泡（仅DOM）](#原生js针对wap的阻止滚动冒泡仅dom)
         1. [获取滚动轴宽度（或高度）](#原生js获取滚动轴宽度或高度)
         1. [验证邮箱有效性](#原生js验证邮箱有效性)
@@ -1497,6 +1498,27 @@ $(输入框选择器).on('mouseup keyup', function () {
 console.log(cursorPosition.set(输入框dom, 起始位置, 选中长度));
 ```
 [JSFiddle demo](https://jsfiddle.net/realgeoffrey/L3k46dy3/)
+
+### *原生JS*文本选区覆盖某DOM的文本范围
+```javascript
+/**
+ * 文本选区覆盖某DOM文本范围
+ * @param {Object} dom - DOM对象
+ * @returns {Boolean} 是否成功
+ */
+function selectElement (dom) {
+  if (window.getSelection && dom) {  // ie9+
+    let sel = window.getSelection()
+    sel.removeAllRanges()
+    let range = document.createRange()
+    range.selectNode(dom)
+    sel.addRange(range)
+    return true
+  } else {
+    return false
+  }
+}
+```
 
 ### *原生JS*针对WAP的阻止滚动冒泡（仅DOM）
 >1. 因为`scroll`事件不会冒泡，所以`stopPropagation`、`preventDefault`无法达到效果。
