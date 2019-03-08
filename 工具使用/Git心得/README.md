@@ -369,6 +369,8 @@ feat(details): 添加了分享功能
         >如果[修改了.git/config的仓库地址](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Git心得/README.md#如何在一台电脑中使用2多个个github账号的ssh-keys)，需要替换生成好的changelog文件的仓库地址。
 
 ### [git-flow](https://github.com/nvie/gitflow)使用
+>也可以用更加先进的[GitHub flow](https://guides.github.com/introduction/flow/)（多了一步Pull Request合并到主干分支）。
+
 1. 初始化：
 
     ```git

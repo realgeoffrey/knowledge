@@ -2432,7 +2432,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
             配置HTML的公共静态内容，可在`pages`组件内重置。
 
-            >来自：[vue-meta](https://github.com/declandewet/vue-meta)，可以设置多种内容，包括CSS文件、JS文件、style内容等。
+            >来自：[vue-meta](https://github.com/declandewet/vue-meta)，可以设置多种内容，包括CSS文件、JS文件、style内容等，可以设置`htmlAttrs`、`headAttrs`、`bodyAttrs`。
         9. `hooks`
         10. `ignore`、`ignorePrefix`
         11. `loading`

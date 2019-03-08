@@ -1752,23 +1752,33 @@
     2. 删除某个内嵌样式属性：`dom.style.某属性名 = ''`。
 
         >若赋值错误，则保持赋值前的值。
-11. 关闭、刷新前触发事件`beforeunload`：
+11. 文档或一个子资源正在被卸载（关闭、刷新）时先触发`beforeunload`、再触发`unload`：
 
-    1. PC：若事件处理程序返回为`真`，则试图弹出对话框让用户选择是否继续操作。
-    2. Android：可以执行事件函数但不会弹出对话框。
-    3. iOS：无效。
+    >关闭前异步发送数据：`navigator.sendBeacon(地址, 数据)`（`XMLHttpRequest`：异步会被忽略、同步影响体验）。
 
-    ```javascript
-    window.onbeforeunload = function (e) {
-      // do sth.
+    1. `beforeunload`(可取消默认行为)
 
-      var msg = needConfirm ? '信息' : '';
+        1. PC：若事件处理程序返回为`真`，则试图弹出对话框让用户选择是否继续操作。
+        2. Android：可以执行事件函数但不会弹出对话框。
+        3. iOS：无效。
 
-      (e || window.event).returnValue = msg;
+        ```javascript
+        window.onbeforeunload = function (e) {
+          // do sth.
 
-      return msg;
-    };
-    ```
+          var msg = needConfirm ? '信息' : '';
+
+          (e || window.event).returnValue = msg;
+
+          return msg;
+        };
+        ```
+    2. `unload`
+
+        1. 所有资源仍存在（图片、iframe等）
+        2. 对于终端用户所有资源均不可见
+        3. 界面交互无效（`window.open`、`alert`、`confirm`等）
+        4. 错误不会停止卸载文档的过程
 12. 页面的id值会动态地成为`window`的属性（全局变量），值为这个id所在的Element，除非`window`已存在这个属性名。
 
     ><details>

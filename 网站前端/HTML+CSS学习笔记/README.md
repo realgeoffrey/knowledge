@@ -892,7 +892,7 @@
     3. 大部分富文本会在`<table>`上使用`cellspacing`、`border`、`bordercolor`属性设置表格，又因为设置了`border: 0;`的表格无法重载开启以上属性作用，所以CSS重置时[不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L26-L27)。
 2. 实现方式：
 
-    1. 使用原生[`document.execCommand`](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/execCommand)操作`contenteditable="true"`的DOM文本选取覆盖的内容（或`document.designMode === 'on'`的整个文档、`某iframe.contentDocument.designMode = "on"`的整个`<iframe>`）。
+    1. 使用原生[`document.execCommand`](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/execCommand)操作`contenteditable="true"`的DOM文本选取覆盖的内容（或`document.designMode === 'on'`的整个文档、`某iframe.contentDocument.designMode === 'on'`的整个`<iframe>`）。
 
         >如：[pell](https://github.com/jaredreich/pell)。
 
@@ -1381,7 +1381,14 @@
         5. 用操作class替代~~直接操作CSS属性~~。
     2. 缩小样式计算的范围和降低复杂度
 
-        1. 降低样式选择器的复杂度、提升[选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)（甚至使用基于class的方式，如：[BEM](https://en.bem.info/methodology/css/)）。
+        1. 降低样式选择器的复杂度、提升[选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
+
+            ><details>
+            ><summary>可以使用基于class的方式，如：BEM</summary>
+            >
+            >1. `block-name__element-name--modifier-name--modifier-val`（[getbem.com](http://getbem.com/naming/)）
+            >2. `block-name__element-name_modifier-name_modifier-val`（[en.bem.info](https://en.bem.info/methodology/naming-convention/)）
+            ></details>
         2. 减少需要执行样式计算的元素的个数（随着元素递增而计算量线性递增）。
     3. 避免大规模、复杂的layout与reflow
 
@@ -1473,30 +1480,43 @@
         单引号`'`
 3. CSS分类命名规范
 
-    1. 布局`.g-`（grid）
+    1. BEM（以及变种）
 
-        将页面分割为几个大块的布局，一般来说是页面最外层的类名。
-    2. 模块`.m-`（module）
+        1. `block-name__element-name--modifier-name--modifier-val`
+        2. `is-状态`
 
-        可重复使用的较大的整体。
-    3. 元件`.u-`（unit）
+        >1. `--modifier`：仅包括多种外观的不同样式，如：size、type、color、font。
+        >2. `is-状态`：仅包括JS控制状态显示的不同样式，如：active、disabled、show。
+        >- `j-`：仅给JS使用的选择器，意味着不会有样式添加到这个选择器上。
+    2. <details>
 
-        不可再分的较为小巧的个体，通常被重复用于各种模块中。
-    4. 状态`.z-`（zhuangtai）
+        <summary><del>已过时的方案</del></summary>
 
-        为状态类样式加入前缀，统一标识，方便识别，只作为后代选择器使用（如：`.z-hover`或`.z-active`）。
-    5. 样式区分`.i-`（icon）
+        1. 布局`.g-`（grid）
 
-        同一批内容的不同样式（如：仅背景不同的几个按钮），可以用`.i-1`、`.i-2`区分样式。
+            将页面分割为几个大块的布局，一般来说是页面最外层的类名。
+        2. 模块`.m-`（module）
 
-        >如果在模块上，可以使用**选择器扩展**而不加前缀`.i-`，如：`.m-xxx`扩展内容`.m-xxx-1`、`.m-xxx .btn`扩展内容`.m-xxx .btn-1`。
-    6. JS功能`.j-`（JS）
+            可重复使用的较大的整体。
+        3. 元件`.u-`（unit）
 
-        仅作为JS锚点使用，不添加任何CSS样式。
+            不可再分的较为小巧的个体，通常被重复用于各种模块中。
+        4. 状态`.z-`（zhuangtai）
 
-    >- 皮肤`.s-`（skin）
-    >
-    >    把皮肤型的样式抽离出来。
+            为状态类样式加入前缀，统一标识，方便识别，只作为后代选择器使用（如：`.z-hover`或`.z-active`）。
+        5. 样式区分`.i-`（icon）
+
+            同一批内容的不同样式（如：仅背景不同的几个按钮），可以用`.i-1`、`.i-2`区分样式。
+
+            >如果在模块上，可以使用**选择器扩展**而不加前缀`.i-`，如：`.m-xxx`扩展内容`.m-xxx-1`、`.m-xxx .btn`扩展内容`.m-xxx .btn-1`。
+        6. JS功能`.j-`（JS）
+
+            仅作为JS锚点使用，不添加任何CSS样式。
+
+        >- 皮肤`.s-`（skin）
+        >
+        >    把皮肤型的样式抽离出来。
+    </details>
 4. 经验
 
     1. （标签）语义化：让机器可以读懂内容
