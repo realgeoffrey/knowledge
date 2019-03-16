@@ -1828,6 +1828,55 @@
 
         >`window`的`focus/blur`事件：当前文档**获得焦点/失去焦点**时触发（并不意味着被浏览器标签是否被隐藏）
     4. `document.hasFocus()`：当前文档是否获得焦点
+17. 处理多次引入同个全局对象的冲突
+
+    >参考：[jQuery的防冲突（noConflict）](https://github.com/jquery/jquery/blob/master/src/exports/global.js#L7-L25)。
+
+    1. 先备份全局对象到局部变量；
+    2. 再需要的时候把备份对象赋值回给全局。
+
+    <details>
+    <summary>e.g.</summary>
+
+    ```javascript
+    (() => {
+      // ①备份原先全局对象到局部变量，用于将来noConflict时覆盖
+      var backups = window.myGlobalVariable
+
+      var _myGlobalVariable = {} // 主要功能
+
+      // ②防冲突方法
+      // 全局对象回退至上一个版本（若上一个版本未定义，则等于undefined）
+      // 该方法返回当前版本
+      _myGlobalVariable.noConflict = function () {
+        if (window.myGlobalVariable === _myGlobalVariable) {
+          window.myGlobalVariable = backups
+        }
+
+        return _myGlobalVariable
+      }
+
+      // 定义完对象后写入全局对象
+      window.myGlobalVariable = _myGlobalVariable
+    })()
+
+
+    /* 使用测试 */
+    // 假设引入2次上面的.js文件（可以是不同版本或相同版本）
+
+    console.log(window.myGlobalVariable)            // 第二次引入的对象
+
+    var a = window.myGlobalVariable.noConflict()
+    console.log(a)                                  // 第二次引入的对象
+    console.log(window.myGlobalVariable)            // 第一次引入的对象
+
+    var b = window.myGlobalVariable.noConflict()
+    console.log(b)                                  // 第一次引入的对象
+    console.log(window.myGlobalVariable)            // undefined
+
+    console.log(a)                                  // 第二次引入的对象
+    ```
+    </details>
 
 ---
 ## 功能归纳
