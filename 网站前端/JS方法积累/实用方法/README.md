@@ -334,36 +334,93 @@ function getLocation (url) {
 >```
 
 ### *原生JS*在URL末尾添加查询名值对
-```javascript
-/**
- * 在URL末尾添加search名值对
- * @param {String} url - URL
- * @param {String} name - 名
- * @param {String} value - 值
- * @returns {String} - 添加完毕的URL
- */
-function addUrlSearch(url, name, value) {
-    if (!name || !value) {
+1. 单个添加（未处理同名）
 
-        return url;
+    ```javascript
+    /**
+     * 在URL末尾添加search名值对（未处理同名）
+     * @param {String} url - URL
+     * @param {String} name - 名
+     * @param {String} value - 值
+     * @returns {String} - 添加完毕的URL
+     */
+    function addUrlSearch(url, name, value) {
+        if (!name || !value) {
+
+            return url;
+        }
+
+        var hashIndex = url.indexOf('#') !== -1 ? url.indexOf('#') : url.length,
+            newUrl = url.slice(0, hashIndex),
+            hash = url.slice(hashIndex),
+            searchIndex = newUrl.indexOf('?');
+
+        if (searchIndex === -1) {
+            newUrl += '?';
+        } else if (searchIndex !== newUrl.length - 1) {
+            newUrl += '&';
+        }
+
+        newUrl += encodeURIComponent(name) + '=' + encodeURIComponent(value) + hash;
+
+        return newUrl;
     }
+    ```
+2. 批量添加
 
-    var hashIndex = url.indexOf('#') !== -1 ? url.indexOf('#') : url.length,
-        newUrl = url.slice(0, hashIndex),
-        hash = url.slice(hashIndex),
-        searchIndex = newUrl.indexOf('?');
+    ```javascript
+    /**
+     * 在URL末尾添加search名值对
+     * @param {String} [url = window.location.href] - URL
+     * @param {Object} searchObj - 新增的search名值对
+     * @returns {String} - 添加完毕的URL
+     */
+    function addUrlSearch (url = window.location.href, searchObj = {}) {
+      if (Object.keys(searchObj).length === 0) {  // 空对象不处理
+        return url
+      }
 
-    if (searchIndex === -1) {
-        newUrl += '?';
-    } else if (searchIndex !== newUrl.length - 1) {
-        newUrl += '&';
+      const hashIndex = url.indexOf('#') !== -1 ? url.indexOf('#') : url.length // # 所在的字符串位置索引
+      const newUrl = url.slice(0, hashIndex) // 去除hash后url
+      const searchIndex = newUrl.indexOf('?')  // ? 所在的字符串位置索引
+
+      // 把原始search值写入对象
+      const originalSearchObj = {}
+      if (searchIndex !== -1) {
+        const search = newUrl.slice(searchIndex + 1)  // search值（不包括 ?）
+
+        // 写入已存在search的键-值
+        const searchArr = search.split('&')
+        for (let i = 0, len = searchArr.length; i < len; i++) {
+          if (searchArr[i] !== '') {
+            const searchItem = searchArr[i].split('=')
+            const key = searchItem.shift()
+            const value = searchItem.join('=')
+            originalSearchObj[key] = value
+          }
+        }
+      }
+
+      // 合并原始search和新增search（新增会覆盖原始）
+      const newSearchObj = Object.assign({}, originalSearchObj, searchObj)
+
+      // 生成新的合并过后的search字符串
+      const newSearch = Object.entries(newSearchObj).map((val) => {
+        return val.join('=')
+      }).join('&')
+
+      const hash = url.slice(hashIndex)  // 原始hash
+
+      let originPath  // 原始 origin + pathname
+      if (searchIndex !== -1) {
+        originPath = newUrl.slice(0, searchIndex)
+      } else {
+        originPath = newUrl
+      }
+
+      return originPath + (newSearch ? `?${newSearch}` : '') + hash
     }
-
-    newUrl += encodeURIComponent(name) + '=' + encodeURIComponent(value) + hash;
-
-    return newUrl;
-}
-```
+    ```
 
 ### *原生JS*绑定、解绑事件
 ```javascript
