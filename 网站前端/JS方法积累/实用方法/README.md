@@ -619,6 +619,21 @@ dom.addEventListener('事件名', function (e) {
 ```
 
 ### *原生JS*拖拽和放下
+- 步骤：
+
+    1. 在DOM上绑定`mousedown`（或`touchstart`），执行：
+
+        1. 记录基础初始位置：初始鼠标（或touch点）位置、DOM自身位置
+        2. 在DOM上绑定`mousemove`（或`touchmove`）
+
+            1. 获取最终位置：`当前鼠标（或touch）位置 - 初始鼠标（或touch）位置 + DOM自身位置`
+            2. 把最终位置赋予DOM
+    2. 在DOM祖先上绑定`mouseup`、`mouseleave`（或`touchend`、`touchcancel`），执行：
+
+        在DOM上解绑`mousemove`（或`touchmove`）
+
+    >每一个事件处理，都可以加入阻止冒泡功能。
+
 1. PC端的鼠标事件
 
     ```javascript
