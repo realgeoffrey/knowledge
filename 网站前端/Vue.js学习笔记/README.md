@@ -639,6 +639,8 @@
     ```
     </details>
 
+    若`return`的内容不涉及Vue实例的响应式内容（非Vue实例的属性、或已经被`Object.freeze`处理而非响应式的Vue实例的属性），则`computed`的内容就不是响应式的（不进行Vue的响应式绑定处理）。
+
 >在（`props`、）`data`、`computed`先定义再使用，而不要对未使用过的变量进行`this.新变量名 = 值`。
 
 4. `watch`（对象）：被watch的（`props`或）`data`或`computed`属性改变而执行（必须是`props`或`data`或`computed`的属性）

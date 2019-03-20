@@ -71,7 +71,7 @@
     1. 延迟异步加载
 
         1. [滚动加载](#jquery滚动加载)
-        1. [图片延时加载](#jquery图片延时加载)
+        1. [图片延时加载（lazyload）](#jquery图片延时加载lazyload)
     1. [节点跟随屏幕滚动](#jquery节点跟随屏幕滚动)
     1. [弹出toast](#jquery弹出toast)
     1. [全选、取消全选](#jquery全选取消全选)
@@ -632,7 +632,7 @@ dom.addEventListener('事件名', function (e) {
 
         在DOM上解绑`mousemove`（或`touchmove`）
 
-    >每一个事件处理，都可以加入阻止冒泡功能。
+    >每一个事件处理，都可加入阻止冒泡。
 
 1. PC端的鼠标事件
 
@@ -2596,7 +2596,10 @@ var a = new RepeatRAF(function () {
 
 >Zepto默认：没有`deferred`的对象、没有`outerHeight`方法。
 
-### jQuery图片延时加载
+### jQuery图片延时加载（lazyload）
+>1. [lazysizes](https://github.com/aFarkas/lazysizes)
+>2. vue的某个懒加载库：[vue-lazyload](https://github.com/hilongjw/vue-lazyload)。
+
 ```html
 <img src="默认图地址" data-src="真实图地址" data-error="真实图错误后的默认图地址" class="j-img-1">
 <img src="默认图地址" data-src-user="真实图地址" data-error-user="真实图错误后的默认图地址" class="j-img-2">
@@ -2760,7 +2763,11 @@ var a = new RepeatRAF(function () {
 ```
 [JSFiddle demo](https://jsfiddle.net/realgeoffrey/j9dkuwwv/)
 
->滚动事件代理可以代理在要`window`或监控图片加载的滚动节点上。
+>滚动事件代理可以代理在`window`或监控图片加载的滚动节点上。
+>- SEO（lazyload大部分时候和SEO相违背）
+>
+>    1. 可以在lazyload的图片后面添加`<noscript><img src="真实地址" /></noscript>`来针对爬虫。
+>    2. Googlebot可以看到IntersectionObserver API滚动加载的内容（无法~~scroll~~、~~其他交互~~）。
 
 ### jQuery节点跟随屏幕滚动
 1. `fixed`：

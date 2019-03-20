@@ -234,11 +234,11 @@
     git show “名字”                   # 查看tag详细信息
 
     git tag “名字” [“SHA”]            # 新建轻量级标签（没有SHA则最新commit）
-    git tag “名字” -a [“SHA”]         # 新建含附注标签，并编写tag信息（没有SHA则最新commit）
-    git tag “名字” -m “信息” [“SHA”]    # 新建含附注标签（没有SHA则最新commit）
+    git tag “名字” -a [“SHA”]         # 新建含附注标签（打开编辑器）（没有SHA则最新commit）
+    git tag “名字” -m “信息” [“SHA”]  # 新建含附注标签（没有SHA则最新commit）
 
     git push origin “名字”            # 推送一个本地新建标签至远程
-    git push --tags                 # 推送所有本地新建标签至远程
+    git push --tags                   # 推送所有本地新建标签至远程
 
     git tag -d “名字”                 # 删除本地tag
 

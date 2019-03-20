@@ -166,7 +166,7 @@
     1. 根元素`<html>`。
     2. `z-index`属性值不为~~auto~~的`position: relative/absolute;`定位元素。
     3. `position: fixed;`（仅限Chrome，其他浏览器遵循需要`z-index`为数值）。
-    4. `z-index`属性值不为~~auto~~的`flex`项（父元素`display: flex/inline-flex;`）。
+    4. `z-index`属性值不为~~auto~~的`flex`子项（父元素`display: flex/inline-flex;`）。
     5. `opacity`属性值`< 1`的元素。
     6. `transform`属性值不为~~none~~的元素。
     7. `mix-blend-mode`属性值不为~~normal~~的元素。
@@ -294,7 +294,7 @@
 1. `float: left/right;`
 2. `position: absolute/fixed;`
 
->意味着有以上CSS属性的内联标签可以当做块级标签使用。
+>意味着有以上CSS属性的行内标签可以当做块级标签使用。
 
 ### `margin`合并
 1. W3C定义：在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
@@ -491,7 +491,7 @@
 
 1. 单行文本情况下：
 
-    1. 内联元素的高度由`line-height`决定。
+    1. 行内元素的高度由`line-height`决定。
     2. 块级元素的高度先由`height`决定，若没有设置`height`再由`line-height`决定（ie6是`line-height`优先决定）。
 2. 元素高度表现为：
 
@@ -506,7 +506,7 @@
 >当`<img>`的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
 
 1. 不要用**空的`<img>`加上背景来用作默认图**，必须用其他标签来代替。
-2. 要谨慎给`<img>`设置背景（如：内容图片或头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载)前的默认图），因为当图片是透明图的时候，会出现背景。
+2. 要谨慎给`<img>`设置背景（如：内容图片或头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载lazyload)前的默认图），因为当图片是透明图的时候，会出现背景。
 3. `<img>`没有`src`属性或`src`属性为空隐藏
 
     ```css
@@ -744,6 +744,8 @@
     6. `scrollbar-darkshadow-color: 颜色;`：立体滚动条外阴影的颜色。
     7. `scrollbar-track-color: 颜色;`：立体滚动条背景颜色。
     8. `scrollbar-base-color: 颜色;`：滚动条的基色。
+
+>设置`<input>`或`<textarea>`的`placeholder`的样式：`选择器::placeholder {}`（厂商前缀：`::-webkit-input-placeholder`、`::-ms-input-placeholder`）。
 
 ### `@font-face`加入了字体后的使用方式
 >使用[www.iconfont.cn](https://www.iconfont.cn/)方便生成字体图标，每个字体图标对应一个Unicode。
@@ -1015,7 +1017,7 @@
                 *height: 114px;
                 *font-size: 100px;
 
-                .son {  /* （为兼容低版本ie）必须是内联元素 */
+                .son {  /* （为兼容低版本ie）必须是行内元素 */
                     display: inline-block;
                     *display: inline;
                     *zoom: 1;
@@ -1585,7 +1587,7 @@
 
     1. 主流浏览器等于最外层子节点宽度。
     2. ie6等于所有子节点中最大的宽度。
-7. `inline`、`inline-block`的元素前可能有空隙（其实是内联标签前面的空白符，若拥有`font-size`之后便会有高宽），通过以下办法解决：
+7. `inline`、`inline-block`的元素前可能有空隙（其实是行内标签前面的空白符，若拥有`font-size`之后便会有高宽），通过以下办法解决：
 
     1. 把`inline`、`inline-block`节点设置为`block`。
     2. 给父级节点设置`font-size: 0;`（可用此方法排查是否是空格造成的）。
@@ -1655,3 +1657,9 @@
     2. ~~大背景模式~~
 17. `CSS.supports(CSS语句)`或`CSS.supports(CSS属性, 值)`判断浏览器是否支持一个给定CSS语句。
 18. 切图时`<img>`外嵌套一层标签，好应对可能要在图片上添加东西的需求。
+19. 没有 **背景内容（透明背景无效、局部背景只能在有背景处有效）、或文本、或其他内容（如：`<img>`、`<iframe>`等）** 承载的节点无法触发鼠标事件。
+
+    可以在全区域添加背景使鼠标事件有效。
+
+    1. 加透明背景：`background: rgba(0, 0, 0, .002)`（小于`0.002`的透明度无效）。
+    2. 加1x1像素的透明图：`background: url(1x1像素透明图地址) repeat;`。

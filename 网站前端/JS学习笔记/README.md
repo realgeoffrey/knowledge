@@ -2275,8 +2275,6 @@
         };
     }
     ```
-
-    >vue的某个懒加载库：[vue-lazyload](https://github.com/hilongjw/vue-lazyload)。
 2. `<link>`预加载
 
     1. `<link rel="dns-prefetch" href="域名">`

@@ -30,6 +30,7 @@
 1. [前端与服务端配合细节](#前端与服务端配合细节)
 1. [JSON](#json)
 1. [字体类型](#字体类型)
+1. [胶水语言（glue languages）](#胶水语言glue-languages)
 
 ---
 ### 数据结构（data structure）
@@ -950,3 +951,19 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
     3. 楷
     4. 行
     5. 草
+
+### 胶水语言（glue languages）
+能够通过操作系统调用其他语言的程序、获取并处理其执行的结果和输入输出的语言，都可以被称作胶水语言（通常是脚本语言）。一个系统由多种语言编写，把不同的语言编写的模块打包起来，最外层使用胶水语言调用这些封装好的包。
+
+- 胶水语言的例子:
+
+    1. Shell scripts（如 Unix shell、Windows PowerShell等）
+    2. Python
+    3. Ruby
+    4. Lua
+    5. Tcl
+    6. Perl
+    7. PHP
+    8. VBScript
+    9. JavaScript
+    10. JScript
