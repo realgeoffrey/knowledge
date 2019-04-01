@@ -1877,6 +1877,39 @@
     console.log(a)                                  // 第二次引入的对象
     ```
     </details>
+18. 对异步加载的功能，可以用`push`的方式处理异步加载问题
+
+    ```html
+    <script src="a.js" async></script><!-- 可以在任意地方异步插入 -->
+
+    <script>
+    window.a = window.a || []   // 要在插入数据之前执行
+
+    window.a.push({ i: 1 }) // 插入数据1
+    window.a.push({ ii: 2 }) // 插入数据2
+    </script>
+    ```
+
+    ```javascript
+    // a.js
+    (() => {
+      // 主要功能
+      const _a = {
+        push (val) {  // 添加要处理的数据：_a.push(数据)
+          console.log(val)
+        }
+      }
+
+      if (window.a instanceof Array) {  // 若是数组，则说明加载.js之前插入了数据，直接处理
+        for (let i = 0; i < window.a.length; i++) {
+          _a.push(window.a[i])
+        }
+      }
+
+      // 全局变量赋值
+      window.a = _a
+    })()
+    ```
 
 ---
 ## 功能归纳
@@ -3153,6 +3186,8 @@
                 2. 调用原对象自身的`toString`，若返回值是基本数据类型，则再使用`Number`，不再进行后续步骤；
                 3. 若以上返回都还是对象，报错。
     2. `String(参数)`
+
+        >与`` `${参数}` ``返回效果一致。
 
         1. 基本数据类型：
 

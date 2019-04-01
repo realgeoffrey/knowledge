@@ -351,6 +351,8 @@
     >
     >1. `v-html`：`innerHTML`。
     >2. `v-text`、`{{ }}`及其他插值：`innerText（或textContent）`。
+    >
+    >    >`innerText`与`textContent`区别：[MDN:textContent](https://developer.mozilla.org/zh-CN/docs/Web/API/Node/textContent#与innerText的区别)。
     ></details>
 10. `v-pre`不编译
 
@@ -2721,7 +2723,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
     1. `nuxt`：以开发模式启动一个基于vue-server-renderer的服务端
 
-        >添加`--spa`以SPA的方式打开服务，`fetch`、`asyncData`在客户端请求（因此所有请求都会在客户端发起），否则`fetch`、`asyncData`会在服务端请求。
+        >添加`--spa`以SPA的方式打开服务，`asyncData/fetch`在客户端请求（因此所有请求都会在客户端发起），否则`asyncData/fetch`会在服务端请求。
     2. `nuxt build`：利用webpack编译应用，压缩JS、CSS（发布用）
 
         创建所有路由的`.html`文件，且这些`.html`都完全一致，加载时根据vue-router进行路由计算（可以刷新的SPA）。

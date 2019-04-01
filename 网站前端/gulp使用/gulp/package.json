@@ -3,7 +3,7 @@
     "@babel/core": "7",
     "autoprefixer": "9",
     "browser-sync": "2",
-    "del": "3",
+    "del": "4",
     "gulp": "3",
     "gulp-babel": "8",
     "gulp-concat": "2",

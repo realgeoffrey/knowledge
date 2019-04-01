@@ -775,28 +775,6 @@
 
 ```html
 <style>
-.sprite {
-  width: 300px;
-  height: 300px;
-  background-repeat: no-repeat;
-  background-image: url(spr.png);
-  animation: frame 333ms steps(20) both infinite;
-}
-@keyframes frame {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: -6000px 0;
-  }
-}
-</style>
-
-<div class="sprite"></div>
-```
-
-```html
-<style>
 .sprite-wp {
   width: 300px;
   height: 300px;
@@ -810,6 +788,7 @@
   animation: frame 333ms steps(20) both infinite;
 }
 @keyframes frame {
+  /* 触发：composite */
   0% {
     transform: translateX(0);
   }
@@ -822,6 +801,29 @@
 <div class="sprite-wp">
   <div class="sprite"></div>
 </div>
+```
+
+```html
+<style>
+.sprite {
+  width: 300px;
+  height: 300px;
+  background-repeat: no-repeat;
+  background-image: url(spr.png);
+  animation: frame 333ms steps(20) both infinite;
+}
+@keyframes frame {
+  /* 触发：paint -> composite */
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -6000px 0;
+  }
+}
+</style>
+
+<div class="sprite"></div>
 ```
 </details>
 
@@ -1267,7 +1269,7 @@
     >3. 完全由内容决定布局；
     >4. 第一块内容要给第二块内容留下足够空间，否则第二块放不下会整个换行；第一块+第二块要给第三块留下足够空间，否则第三块放不下会整个换行。
 
-### [`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex)优雅解决布局、自适应问题
+### [`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex语法)优雅解决布局、自适应问题
 1. 不使用flex导致不方便处理的问题：
 
     1. 栅格系统
@@ -1275,7 +1277,7 @@
     3. [水平居中、垂直居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#水平居中垂直居中)
     4. [粘性页脚](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#粘性页脚)
     5. [多列等高](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#多列等高)
-2. flex具体解决方案：[solved-by-flexbox](https://hufan-akari.github.io/solved-by-flexbox/)。
+2. flex具体解决方案：[`flex`布局实践](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex布局实践)。
 
 ### 渲染性能（rendering performance）
 

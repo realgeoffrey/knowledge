@@ -818,6 +818,8 @@ HTTP是无状态协议，通过session-cookie、token判断客户端的用户状
 
     认证用户，授权App。针对App与服务端的无状态API。与session-cookie方式没有直接关系、可一起使用、不冲突。
 
+>从已经登录的客户端提取出登录信息（session_id或token），传递给其他客户端，再由其他客户端把登录信息注入cookie，就可以转移登录状态到其他客户端。
+
 ### 其他网络概念
 1. URI、URL
 

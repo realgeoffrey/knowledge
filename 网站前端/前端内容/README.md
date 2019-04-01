@@ -214,6 +214,8 @@
 
         前端对具体代码性能、CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）的优化。
 
+        >todo:DOMContentLoaded、First Contentful Paint、First Meaningful Paint、Onload
+
         1. 优化CRP：
 
             1. 减少关键资源、减少HTTP请求：
