@@ -62,6 +62,7 @@
         1. [根据滚动方向执行函数](#原生js根据滚动方向执行函数)
         1. [判断是否支持WebP](#原生js判断是否支持webp)
         1. [DOM展示或消失执行方法（IntersectionObserver）](#原生jsdom展示或消失执行方法intersectionobserver)
+        1. [执行方法的前/后进行开/关loading](#原生js执行方法的前后进行开关loading)
     1. 提升性能
 
         1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
@@ -105,7 +106,7 @@ function detectOS (ua = window.navigator.userAgent, pf = window.navigator.platfo
   } else if (/\bWindows Phone/.test(ua)) {
     os = 'Windows Phone'
   } else {
-    if (pf === 'Mac68K' || pf === 'MacPPC' || pf === 'Macintosh' || pf === 'MacIntel') {
+    if (pf === 'Mac68K' || pf === 'MacPPC' || pf === 'Macintosh' || pf === 'MacIntel') {    // pf.includes('Mac')
       os = 'macOS'
     } else if (pf === 'Win32' || pf === 'Windows') {
       if (/Windows NT 5.0/.test(ua) || /Windows 2000/.test(ua)) {
@@ -2334,6 +2335,31 @@ var a = new DisplayDom({
 })
 
 // a.stop()
+```
+
+### *原生JS*执行方法的前/后进行开/关loading
+```javascript
+async function loadingFetch (func) { // func：方法；若是Promise对象，则完成/失败后关闭loading，否则同步关闭loading
+  if (typeof func === 'function') {
+    console.log('loading 开始')  // 打开loading
+
+    try {await func()} catch (e) {}
+
+    console.log('loading 结束')  // 关闭loading
+  }
+}
+
+
+/* 使用测试 */
+// 1s后出发关闭loading
+loadingFetch(() => {
+  return new Promise((resolve, reject) => {
+    setTimeout(reject, 1000)
+  })
+})
+
+// 同步触发关闭loading
+loadingFetch(() => { console.log('同步方法') })
 ```
 
 ### *原生JS*用`setTimeout`模拟`setInterval`

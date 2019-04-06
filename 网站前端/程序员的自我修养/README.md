@@ -610,7 +610,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
             >e.g. UglifyJS2。
         3. 优化变更代码、改变代码结构使达到想要的结构。
 
-            >e.g. 打包工具、不同模块化方案间转换、CoffeeScript/TypeScript/JSX转化为原生JS。
+            >e.g. Babel、打包工具、不同模块化方案间转换、CoffeeScript/TypeScript/JSX转化为原生JS。
 
 ### 编译器原理
 >来自：[the-super-tiny-compiler](https://github.com/jamiebuilds/the-super-tiny-compiler)。

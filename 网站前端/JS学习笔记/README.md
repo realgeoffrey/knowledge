@@ -1741,17 +1741,30 @@
     2. `Math.max(...[1, 2, 3])`或`Math.max.apply(null, [1, 2, 3])`
 10. 设置CSS的内嵌样式：
 
-    `dom.style`返回一个对象，包含：此DOM的所有内嵌样式（没设置的属性的值默认：`''`）、`cssText`（所有有值的内嵌样式的文本）。
+    <details>
+    <summary><code>dom.style</code>返回一个<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/CSSStyleDeclaration">CSSStyleDeclaration 对象</a></summary>
+
+    1. 包含此DOM的所有内嵌样式（没设置的属性的值默认：`''`）。
+    2. 对象的`[[Prototype]]`属性指向的对象包含：
+
+        1. `cssText`（所有有值的内嵌样式的文本）
+        2. `getPropertyValue(CSS属性)`
+        3. `setProperty(CSS属性, CSS值[, 'important'])`
+        4. `removeProperty(CSS属性)`
+        5. `getPropertyPriority(CSS属性)`
+        6. `item(数字)`
+    </details>
 
     1. `cssText`（ie8-返回时不包含最后一个`;`）：
 
         1. 添加：`dom.style.cssText += '; 样式: 属性; 样式: 属性'`
         2. 替换：`dom.style.cssText = '样式: 属性; 样式: 属性'`
 
-        >若赋值错误，则去除无效样式、保留有效的赋值内容。
-    2. 删除某个内嵌样式属性：`dom.style.某属性名 = ''`。
+        >若赋值错误，则去除无效样式、保留有效的赋值内容。若有相同CSS属性名，则后面的覆盖前面。
+    2. 添加某个内嵌样式属性：`dom.style.某属性名 = '值'`或`dom.style.setProperty('某属性名','值')`。
+    3. 删除某个内嵌样式属性：`dom.style.某属性名 = ''`或`dom.style.setProperty('某属性名','')`或`dom.style.removeProperty('某属性名')`。
 
-        >若赋值错误，则保持赋值前的值。
+    >若赋值错误，则保持赋值前的值。
 11. 文档或一个子资源正在被卸载（关闭、刷新）时先触发`beforeunload`、再触发`unload`：
 
     >关闭前异步发送数据：`navigator.sendBeacon(地址, 数据)`（`XMLHttpRequest`：异步会被忽略、同步影响体验）。
@@ -2218,7 +2231,7 @@
         4. 如果`try`中代码是以`return`、`continue`或`break`终止的，必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
         5. 在`catch`中接收的错误，不会再向上提交给浏览器。
 
-        >`try`内的作用域不为内部异步操作保留：`try {setTimeout(() => {错误语法}, 0)} catch (e) {}`不会捕获异步操作中的错误（同理，在`Promise`或`async-await`等语法中的异步错误也无法被捕获）。可以在异步回调内部再包一层`try-catch`。
+        >`try`内的作用域不为内部异步操作保留：`try {setTimeout(() => {错误语法}, 0)} catch (e) {}`不会捕获异步操作中的错误（同理，在`Promise`或`async-await`等语法中的异步错误也无法被捕获，但可以捕获`await`的`reject`）。可以在异步回调内部再包一层`try-catch`。
     2. `window.onerror`
 
         >jQuery不建议`on`等方式绑定`window`的`error`事件，只通过`window.onerror`定义。
@@ -3203,6 +3216,7 @@
             ```javascript
             // e.g.
             String([1, 2, 3]);  // '1,2,3'
+            String([1, [2], [3, [4, [5, 6]]]]);  // '1,2,3,4,5,6'
             String({a: 1});     // '[object Object]''
             ```
 

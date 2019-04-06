@@ -169,20 +169,21 @@
 
         1. 绑定`class`
 
-            1. `:class="{class名: Vue属性[, class名: Vue属性]}"`
-            2. `:class="Vue属性对象"`
-            3. `:class="[Vue属性[, Vue属性]]"`
-            4. `:class="[Vue属性 ? Vue属性 : ''[, Vue属性]]"`
-            5. `:class="[{class名: Vue属性}[, Vue属性]]"`
+            1. `:class="'a b'"`：`class="a b"`
+            2. `:class="{ 'a': true, 'b': false }"`：`class="a"`
+            3. `:class="['a', 'b']"`：`class="a b"`
+            4. `:class="[{ 'a': true, 'b': false }, { 'c': true }, 'd', ['e']]"`：`class="a c d e"`
         2. 绑定`style`
 
             >1. 自动添加样式前缀。
             >2. CSS属性名可以用小驼峰式（camelCase）或`-`短横线隔开式（kebab-case，需用单引号包裹）命名。
 
-            1. `:style="{css属性: Vue属性[, css属性: Vue属性]}"`
-            2. `:style="Vue属性对象"`
-            3. `:style="[Vue属性[, Vue属性]]"`
-            4. 多重值
+            1. `:style="{ '属性名1': '属性值1', '属性名2': '属性值2' }"`
+            2. `:style="[{ '属性名1': '属性值1' }, { '属性名2': '属性值2', '属性名3': '属性值3' }]"`
+
+            - 多重值：渲染数组中最后一个被浏览器支持的值
+
+                e.g. `:style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"`
     3. 传递给子组件DOM属性的值类型
 
         <details>
@@ -1432,23 +1433,33 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         >类似的：`Object.defineProperties`。
 
         数据劫持，直接修改数据触发、或事件监听触发。
-    >针对确定不需要响应式变化的属性，可以用`Object.freeze`处理，就不会进行`Object.defineProperty`响应式处理。
+
+        - 针对数组，修改了数组的某些mutator方法，调用这些方法后也触发。
+    ><details>
+    ><summary>针对不需要响应式变化的属性，可以用<code>Object.freeze</code>处理，就不会进行<code>Object.defineProperty</code>响应式处理。</summary>
+    >
+    >- `a: Object.freeze({ b: 1 })`：
+    >
+    >    1. `a`是响应式的。
+    >    2. `a`指向的对象不是响应式的，无法通过`a.b = 2`去响应式修改。
+    >    3. 若`a = { b: 2 }`指向新的响应式对象，之后`a.b = 3`会响应式触发视图更新。
+    ></details>
 2. 每个组件实例都有相应的`watcher`实例对象，它会在组件渲染的过程中把属性记录为依赖，之后当依赖项的`setter`被调用时，会通知`watcher`重新计算，从而致使它关联的组件得以更新（[虚拟DOM系统](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#虚拟dom系统)）。
 3. 响应式操作Vue实例的`data`和vuex的store（原本已是响应式的值）
 
     1. 导致视图更新：
 
         1. 数组的某些mutator方法：`push`、`pop`、`unshift`、`shift`、`reverse`、`sort`、`splice`
-        2. 对象的属性赋值给任意类型的值（`=`）。
+        2. 对象的（已存在的、响应式的）属性赋值给任意类型的值（`=`）
 
             - 对象/数组：
 
                 1. 可以使用`Object.assign`或`...对象/数组`扩展原对象或原数组。
                 2. 空对象/空数组赋值（`= []`、`= {}`）也是一次重新赋值操作。
-        3. 对象/数组的插新值：`Vue.set(对象/数组, 键/索引, 新值)`
+        3. `Vue.set(对象/数组, 键/索引, 新值)`：对象/数组添加新属性或修改已有属性
 
             >或:`原对象 = Object.assign({}, 原对象, 新对象)`、`原对象 = { ...原对象, '新属性名': 值 }`。
-        4. 删旧值：`Vue.delete(对象/数组, 键/索引)`
+        4. `Vue.delete(对象/数组, 键/索引)`：对象/数组删除已有属性
     2. 无法检测对象/数组变动：
 
         >Vue不能检测到对象属性的新增或删除，因此添加`Vue.set/delete`。
@@ -1456,15 +1467,15 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         1. 对象的**新**属性赋值。
 
             >替代方法：`Vue.set(vm.items, 键, 新值)`
-        2. 数组索引赋值（原本就存在的索引和新增索引都不行）。
+        2. 数组
 
-            >替代方法：`Vue.set(vm.items, index, value)`或`vm.items.splice(index, 1, value)`
-        3. 直接修改数组长度。
+            2. 数组索引赋值（原本就存在的索引和新增索引都不行）。
 
-            >替代方法：`vm.items.splice(newLength)`
-        4. 数组的最新mutator方法：`copyWithin`、`fill`
+                >替代方法：`Vue.set(vm.items, index, value)`或`vm.items.splice(index, 1, value)`
+            3. 直接修改数组长度。
 
-![vue响应式系统图](./images/vue-reactivity-1.png)
+                >替代方法：`vm.items.splice(newLength)`
+            4. 数组的最新mutator方法：`copyWithin`、`fill`
 
 ### 虚拟DOM系统
 >Vue.js参考[snabbdom](https://github.com/snabbdom/snabbdom)的虚拟DOM实现。
@@ -1738,14 +1749,14 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         - 最好提前初始化所需的state（初始化的任何位置都被`Object.defineProperty`处理过，能够响应式更新）。
 
-        1. 数组的某些mutator方法：push、pop、unshift、shift、reverse、sort、splice
-        2. 对象的属性赋值给任意类型的值（`=`）。
-        3. 对象/数组添加新属性：
+        1. 数组的某些mutator方法：`push`、`pop`、`unshift`、`shift`、`reverse`、`sort`、`splice`
+        2. 对象的（已存在的、响应式的）属性赋值给任意类型的值（`=`）
+        3. 对象/数组添加新属性或修改已有属性：
 
             1. `Vue.set(state或state.对象, '新属性名', 值)`
             2. `state.对象 = Object.assign({}, state.对象, 新对象)`
             3. `state.对象 = { ...state.对象, '新属性名': 值 }`
-        4. 删旧值：Vue.delete(state或state.对象, 索引/键)
+        4. 对象/数组删除已有属性：Vue.delete(state或state.对象, 索引/键)
 
     - <details>
 
@@ -2723,7 +2734,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
     1. `nuxt`：以开发模式启动一个基于vue-server-renderer的服务端
 
-        >添加`--spa`以SPA的方式打开服务，`asyncData/fetch`在客户端请求（因此所有请求都会在客户端发起），否则`asyncData/fetch`会在服务端请求。
+        >1. 添加`--spa`：以SPA的方式打开服务，`asyncData/fetch`在客户端请求（因此所有请求都会在客户端发起），否则`asyncData/fetch`会在服务端请求。
+        >2. 添加`--port 端口号`：指定端口号。
     2. `nuxt build`：利用webpack编译应用，压缩JS、CSS（发布用）
 
         创建所有路由的`.html`文件，且这些`.html`都完全一致，加载时根据vue-router进行路由计算（可以刷新的SPA）。

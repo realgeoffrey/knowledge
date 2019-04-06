@@ -25,6 +25,7 @@ module.exports = {
     'no-new': 0,  // 允许单独使用`new 构造函数()`，而不赋值
     'no-multi-spaces': [2, { ignoreEOLComments: true }],  // 忽略行尾注释前的多个空格
     'no-trailing-spaces': [2, { skipBlankLines: true }],  // 允许在空行使用空白符
+    'prefer-promise-reject-errors': 1,  // 忽略要求使用 Error 对象作为 Promise 拒绝的原因
     'no-console': 0,  // 允许console
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0, // 是否禁止debugger
     'max-len': [1, { 'code': 150 }],  // 设置最大长度

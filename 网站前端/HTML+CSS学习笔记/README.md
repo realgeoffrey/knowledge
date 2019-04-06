@@ -6,27 +6,20 @@
     1. [CSS选择器](#css选择器)
     1. [层叠上下文（stacking context）](#层叠上下文stacking-context)
     1. [几个类似的换行属性](#几个类似的换行属性)
-    1. [清除浮动](#清除浮动)
     1. [`table-layout`](#table-layout)
     1. [块级元素的`width`](#块级元素的width)
     1. [使元素强制表现为`block`的CSS设置](#使元素强制表现为block的css设置)
     1. [`margin`合并](#margin合并)
     1. [BFC（Block Formatting Context）块级格式上下文](#bfcblock-formatting-context块级格式上下文)
     1. [CSS的小数、百分比](#css的小数百分比)
-    1. [WAP端半像素](#wap端半像素)
     1. [`em`、`%`](#em)
     1. [`line-height`](#line-height)
     1. [`<img>`的`src`属性](#img的src属性)
-    1. [`<img>`的圆角、边框](#img的圆角边框)
-    1. [WAP端页面自适应图片](#wap端页面自适应图片)
     1. [横竖屏切换](#横竖屏切换)
     1. [滚动条](#滚动条)
-    1. [滚动条样式](#滚动条样式)
     1. [`@font-face`加入了字体后的使用方式](#font-face加入了字体后的使用方式)
-    1. [帧动画（逐帧动画、序列帧、序列帧动画）](#帧动画逐帧动画序列帧序列帧动画)
 1. [HTML + CSS](#html--css)
 
-    1. [等宽文字](#等宽文字)
     1. [禁用`<a>`的鼠标、键盘事件](#禁用a的鼠标键盘事件)
     1. [插件避免被其他样式污染方式](#插件避免被其他样式污染方式)
     1. [网页图标favicon的兼容写法](#网页图标favicon的兼容写法)
@@ -233,39 +226,19 @@
         省略号。
 
     >需要和`overflow: hidden;`、`white-space: nowrap;`配合产生溢出。
-4. `word-spacing`
+4. `flex-wrap`
+
+    Flex容器内，一条主轴排不下的情况，如何换行。
+
+    1. `nowrap`（默认）：不换行。
+    2. `wrap`：换行，第一行在上方。
+    3. `wrap-reverse`：换行，第一行在下方。
+5. `word-spacing`
 
     空白字符包裹的非空白字符的间距。
-5. `letter-spacing`
+6. `letter-spacing`
 
     字符的间距。
-
-### 清除浮动
-1. 在父级添加
-
-    ```scss
-    @mixin clearfix {
-        *zoom: 1;
-
-        &:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-    }
-    ```
-2. 触发父级BFC
-
-    1. 截断不影响时
-
-        ```css
-        .father {
-            overflow: hidden;
-            _width: 100%;
-        }
-        ```
-    2. 父级设置`float: left/right;`
-    3. 父级设置`position: absolute/fixed;`
 
 ### `table-layout`
 1. `auto`（默认）
@@ -359,62 +332,6 @@
     1. 切图四周多给2px透明距离（切图宽度/最小宽度*1px，多少倍就多少px）。
     2. 内容填色的图片用`width: 100%;`。
     3. 内容的间隙多设置一些`padding`，再用`负margin`中和。
-
-### WAP端半像素
-不要使用`border: 0.5px`，因为浏览器会把数值换算成`0`或`1`。
-
-1. `scale`缩小一半
-
-    1. 整个边框0.5px
-
-        ```scss
-        div {
-            width: 宽度;
-            position: relative;
-
-            &:before {
-                position: absolute;
-                top: 0;
-                left: 0;
-                content: "";
-                width: 200%;
-                height: 200%;
-                border: 1px solid 颜色;
-                transform: scale(.5);
-                transform-origin: 0 0;
-                box-sizing: border-box;
-            }
-        }
-        ```
-    2. 某一边0.5px
-
-        ```scss
-        div {
-            width: 100px;
-            position: relative;
-
-            &:before {
-                position: absolute;
-                top: 0;
-                left: 0;
-                content: "";
-                width: 100%;
-                height: 1px;
-                border-top: 1px solid 颜色;
-                transform: scaleY(.5);
-                transform-origin: 0 0;
-                box-sizing: border-box;
-            }
-        }
-        ```
-
-    [JSFiddle demo](https://jsfiddle.net/realgeoffrey/3wbf62xj/)
-2. `<meta>的viewport`缩放为`1/DPR`，切图用DPR倍大小（CSS媒体查询方案或JS方案）。
-
-    >仅适用于iOS。Android机型太复杂，bug永无止境。
-3. `border-image/background-image`2像素图片，一半透明、一半目标颜色。
-4. `box-shadow`。
-5. PostCSS的[postcss-write-svg](https://github.com/jonathantneal/postcss-write-svg)。
 
 ### `em`、`%`
 1. `em`单位：
@@ -521,150 +438,6 @@
 
     >类似于针对背景图的位置、拉升：`background-position`、`background-size`（`background-repeat: no-repeat`）。
 
-### `<img>`的圆角、边框
-1. 圆角+边框
-
-    1. PC端
-
-        直接在`<img>`上设置`border-radius`、`border`。
-    2. WAP端
-
-        在`<img>`上设置`border-radius`，并嵌套一层父级标签设置`border-radius`、`border`。
-2. 圆角
-
-    - PC端、WAP端
-
-        直接在`<img>`上设置`border-radius`。
-
-### WAP端页面自适应图片
->要求：图片根据浏览器窗口变化而宽高同时等比例变化，不使用`<img>`（只有内容图片才使用`<img>`）。
-
-1. 宽高都用rem且雪碧图且`background-position`用百分比（最佳方式）：
-
-    ```css
-    自适应图片 {
-        width: 宽rem;
-        height: 高rem;
-        background-size: 雪碧图宽rem;
-        background: url(雪碧图) 计算出x轴的百分比 计算出y轴的百分比 no-repeat;
-    }
-    ```
-
-    ><details>
-    ><summary>技术细节</summary>
-    >
-    >1. 百分比公式：
-    >
-    >    1. `background-position-x = 小图横坐标px / ( 大图宽度px - 小图宽度px ) * 100%`
-    >    2. `background-position-y = 小图纵坐标px / ( 大图高度px - 小图高度px ) * 100%`
-    >2. 可以用预处理语言计算：
-    >
-    >    ```scss
-    >    @function rem($px, $base-font-size: 20px) {
-    >        @if unitless($px) {
-    >            @return rem($px + 0px);
-    >        }
-    >        @if unit($px) != "px" {
-    >            @error "rem()的参数单位必须是px或不带单位";
-    >        }
-    >
-    >        // $base-font-size：切图时设计稿宽度对应的媒体查询中html的font-size
-    >        @return $px / $base-font-size + rem;
-    >    }
-    >    @function position-one($positon, $singleSize, $spritesSize) {
-    >        @if $positon == 0 {
-    >            @return 0;
-    >        } @else {
-    >            @return percentage($positon / ($spritesSize - $singleSize));
-    >        }
-    >    }
-    >    /* x轴排列雪碧图*/
-    >    @mixin sprites-x($x: 0, $width: 单图固定宽度或0, $fullWidth: 合并图宽度) {
-    >        background-image: url(图片);
-    >        background-position: position-one($x, $width, $fullWidth) 0;
-    >        background-size: rem($fullWidth) auto;
-    >        background-repeat: no-repeat;
-    >    }
-    >    /*/x轴排列雪碧图*/
-    >    /* y轴排列雪碧图*/
-    >    @mixin sprites-y($y: 0, $height: 单图固定高度或0, $fullHeight: 合并图高度) {
-    >        background-image: url(图片);
-    >        background-position: 0 position-one($y, $height, $fullHeight);
-    >        background-size: auto rem($fullHeight);
-    >        background-repeat: no-repeat;
-    >    }
-    >    /*/y轴排列雪碧图*/
-    >    /* x+y轴排列且等大雪碧图（参数：单图宽、高、x轴图片数量、y轴图片数量、图片间距）*/
-    >    @mixin sprites-xy($width, $height, $x, $y, $gap: 2) {
-    >        width: rem($width);
-    >        height: rem($height);
-    >        background-image: url(图片前缀#{$width}x#{$height}.png);
-    >        background-size: rem(($width + $gap)*$x - $gap) rem(($height + $gap)*$y - $gap);
-    >        background-repeat: no-repeat;
-    >
-    >        // $i：横轴；$j：纵轴
-    >        @for $j from 1 through $y {
-    >            @for $i from 1 through $x {
-    >                &.i-#{$j}-#{$i} {
-    >                    background-position: position-one(($width + $gap)*($i - 1), $width, ($width + $gap)*$x - $gap) position-one(($height + $gap)*($j - 1), $height, ($height + $gap)*$y - $gap);
-    >                }
-    >            }
-    >        }
-    >    }
-    >    /*/x+y轴排列且等大雪碧图*/
-    >    ```
-    ></details>
-2. 其他方式：
-
-    1. 横向、纵向百分比的`padding`值都是以父元素的`width`为基础，`height`是以父元素的`height`为基础
-
-        ```css
-        自适应图片 {
-            height: 0;
-            width: 宽%;
-            padding-bottom: 高%;
-            background-size: 100%;
-            background: url(单图) 0 0 no-repeat;
-        }
-        ```
-
-        >缺点：只能用于空标签。
-    2. 宽高都用rem
-
-        1. 单图
-
-            ```css
-            自适应图片 {
-                width: 宽rem;
-                height: 高rem;
-                background-size: 100%;
-                background: url(单图) center center no-repeat;
-            }
-            ```
-        2. 雪碧图
-
-            ```css
-            自适应图片 {
-                width: 宽rem;
-                height: 高rem;
-                background-size: 雪碧图宽rem;
-                background: url(雪碧图) 0 -纵轴rem no-repeat;
-            }
-            ```
-
-            >`background-position`用`rem`会出现换算小数导致定位偏离问题，改用以下百分比可以解决偏离问题。
-    3. 百分比宽高且雪碧图且`background-position`用百分比
-
-        ```css
-        自适应图片 {
-            height: 0;
-            width: 宽%;
-            padding-bottom: 高%;
-            background-size: 雪碧图宽/单图宽度*100%;
-            background: url(雪碧图) 计算出x轴的百分比 计算出y轴的百分比 no-repeat;
-        }
-        ```
-
 ### 横竖屏切换
 >1. 翻转效果的节点，如果要增加内嵌滚动条，不能在此节点上增加`border-radius`，否者滚动条横竖轴颠倒。
 >2. 部分Android系统（或低端机）对内嵌的滚动条（`overflow: hidden/auto;`）支持不佳，尤其增加了翻转效果后，设置的滚动条（甚至`overflow: hidden;`）会导致更多样式问题。除了去除内嵌滚动条的`border-radius`，还可以尝试给兄弟节点设置`z-index`。部分硬件较差的WebView对CSS3支持非常有限，无法做到**翻转+内嵌滚动条**（内嵌滚动条横竖轴颠倒）。
@@ -704,49 +477,6 @@
     2. jQuery：`$(window).scrollTop()`或`$(document).scrollTop()`；Zepto：`$(window).scrollTop()`
 4. 滚动条会占用容器的可用高度或宽度。
 
-### 滚动条样式
->参考：[CSS自定义浏览器滚动条样式](http://alfred-sun.github.io/blog/2014/12/24/scrollbar-customized-with-css-style/)。
-
-1. `WebKit`：
-
-    1. `::-webkit-scrollbar`：滚动条整体部分，可以设置`宽度`。
-    2. `::-webkit-scrollbar-track`：滚动条轨道，可以设置`背景`、`圆角`。
-    3. `::-webkit-scrollbar-thumb`：滑块，可以设置`背景`、`圆角`、`阴影`。
-    4. `::-webkit-scrollbar-track-piece`：滚动条轨道上覆盖的一层轨道，可以设置`背景`、`圆角`。
-    5. `::-webkit-scrollbar-thumb:window-inactive`：浏览器未被选中时的滑块（也可以用于其他伪类）。
-    6. `::-webkit-scrollbar-button`：滚动条两端按钮，可以设置`背景`、`圆角`、`阴影`。
-    7. `::-webkit-scrollbar-corner`：横竖滚动条相交的边角，可以设置`背景`、`圆角`。
-    8. `::-webkit-resizer`：定义右下角拖动缩放节点高宽的内容。
-
-    - 一般只需要设置：
-
-        ```scss
-        &::-webkit-scrollbar {
-            width: 6px;
-        }
-        &::-webkit-scrollbar-track {
-            border-radius: 3px;
-            background-color: #dac3a2;
-        }
-        &::-webkit-scrollbar-thumb {
-            border-radius: 3px;
-            background-color: #ffe7c6;
-            box-shadow: inset 0 0 0 1px #dac3a2;
-        }
-        ```
-2. `ie`：
-
-    1. `scrollbar-arrow-color: 颜色;`：三角箭头的颜色。
-    2. `scrollbar-face-color: 颜色;`：立体滚动条的颜色（包括箭头部分的背景色）。
-    3. `scrollbar-3dlight-color: 颜色;`：立体滚动条亮边的颜色。
-    4. `scrollbar-highlight-color: 颜色;`：滚动条的高亮颜色（左阴影？）。
-    5. `scrollbar-shadow-color: 颜色;`：立体滚动条阴影的颜色。
-    6. `scrollbar-darkshadow-color: 颜色;`：立体滚动条外阴影的颜色。
-    7. `scrollbar-track-color: 颜色;`：立体滚动条背景颜色。
-    8. `scrollbar-base-color: 颜色;`：滚动条的基色。
-
->设置`<input>`或`<textarea>`的`placeholder`的样式：`选择器::placeholder {}`（厂商前缀：`::-webkit-input-placeholder`、`::-ms-input-placeholder`）。
-
 ### `@font-face`加入了字体后的使用方式
 >使用[www.iconfont.cn](https://www.iconfont.cn/)方便生成字体图标，每个字体图标对应一个Unicode。
 
@@ -767,98 +497,8 @@
 
         >数字数量有限制：[Unicode](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#unicode)。
 
-### 帧动画（逐帧动画、序列帧、序列帧动画）
-`animation-timing-function`的`steps`（[缓动函数](https://developer.mozilla.org/zh-CN/docs/Web/CSS/animation-timing-function)）配合`@keyframes`改变雪碧图的`background-position/transform`。
-
-<details>
-<summary>e.g.</summary>
-
-```html
-<style>
-.sprite-wp {
-  width: 300px;
-  height: 300px;
-  overflow: hidden;
-}
-.sprite {
-  width: 6000px;
-  height: 300px;
-  will-change: transform;
-  background: url(spr.png) no-repeat center;
-  animation: frame 333ms steps(20) both infinite;
-}
-@keyframes frame {
-  /* 触发：composite */
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-6000px);
-  }
-}
-</style>
-
-<div class="sprite-wp">
-  <div class="sprite"></div>
-</div>
-```
-
-```html
-<style>
-.sprite {
-  width: 300px;
-  height: 300px;
-  background-repeat: no-repeat;
-  background-image: url(spr.png);
-  animation: frame 333ms steps(20) both infinite;
-}
-@keyframes frame {
-  /* 触发：paint -> composite */
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: -6000px 0;
-  }
-}
-</style>
-
-<div class="sprite"></div>
-```
-</details>
-
 ---
 ## HTML + CSS
-
-### 等宽文字
->不同字数的一行文字等宽。
-
-1. 用`inline-block`的元素填补间隙
-
-    ```html
-    <style type="text/css">
-        i {
-            display: inline-block;
-            *display: inline;
-            *zoom: 1;
-            width: 1em;
-        }
-    </style>
-
-    <p>文字文字</p>
-    <p>文<i></i><i></i>字</p>
-    ```
-2. 用`&ensp;`（字体宽度1/2em）、`&emsp;`（字体宽度1em）填补间隙。
-
-    ```html
-    <p>三个字</p>
-    <p>两&emsp;个</p>
-
-    <p>四个字的</p>
-    <p>三&ensp;个&ensp;字</p>
-    ```
-
-[JSFiddle demo](https://jsfiddle.net/realgeoffrey/zdh8oxrt/)
 
 ### 禁用`<a>`的鼠标、键盘事件
 1. `pointer-events: none;`穿透`<a>`的鼠标事件（包括点击和hover等，因为点击不到所以JS事件也不会触发）。
@@ -967,7 +607,7 @@
                 }
             }
             ```
-        3. 父级`display: flex; justify-content: center;`；或父级`display: flex;`，子级`margin: 0 auto;`。
+        3. 父级`display: flex; justify-content: center;`；或父级`display: flex;`，单子级`margin: 0 auto;`。
 
             >兼容ie11+。
 
@@ -976,11 +616,13 @@
                 display: flex;
                 justify-content: center;
             }
+
             /* 或 */
+
             .father {
                 display: flex;
 
-                .son {
+                .son {  /* 单子级的margin左右占满父级 */
                     margin: 0 auto;
                 }
             }
@@ -1165,119 +807,122 @@
             ```
 
 ### 自适应宽度布局
->`float`节点：可以填补在**之后节点**的水平`margin`内（`padding`内不可以）；不可以填补在**之前节点**的水平`margin`内。
+1. [`flex`实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex布局实践)
+2. `float`
 
-1. 中间内容自适应，两边固定（中间内容最后加载）
+    >`float`节点：可以填补在**之后节点**的水平`margin`内（`padding`内不可以）；不可以填补在**之前节点**的水平`margin`内。
 
-    ```html
-    <style type="text/css">
-        .float-l {
-            float: left;
-            _display: inline;
-            width: 左边块宽度;
-        }
-        .float-r {
-            float: right;
-            _display: inline;
-            width: 右边块宽度;
-        }
-        .middle {
-            margin-left: 大于等于左边块宽度;
-            margin-right: 大于等于右边块宽度;
-        }
-    </style>
+    1. 中间内容自适应，两边固定（中间内容最后加载）
 
-    <div class="clearfix">
-        <div class="float-l">左边内容</div>
-        <div class="float-r">右边内容</div>
-        <div class="middle">中间内容</div>
-    </div>
-    ```
+        ```html
+        <style type="text/css">
+            .float-l {
+                float: left;
+                _display: inline;
+                width: 左边块宽度;
+            }
+            .float-r {
+                float: right;
+                _display: inline;
+                width: 右边块宽度;
+            }
+            .middle {
+                margin-left: 大于等于左边块宽度;
+                margin-right: 大于等于右边块宽度;
+            }
+        </style>
 
-    >1. DOM结构不能颠倒，需要中间结构放最后;
-    >2. 节点上能设定`clear: both;`。
-2. 中间内容自适应，两边固定（中间内容最先加载）
-
-    >所谓的“双飞翼布局”。
-
-    ```html
-    <style type="text/css">
-        .main-out,
-        .float-l,
-        .float-r {
-            float: left;
-            _display: inline;
-        }
-        .middle-out {
-            width: 100%;
-        }
-        .middle-in {
-            margin: 0 大于等于右边块宽度 0 大于等于左边块宽度;
-        }
-        .float-l {
-            width: 左边块宽度;
-            margin-left: -100%;
-        }
-        .float-r {
-            width: 右边块宽度;
-            margin-left: -左边块宽度;
-        }
-    </style>
-
-    <div class="clearfix">
-        <div class="middle-out">
-            <div class="middle-in">
-                中间内容
-            </div>
+        <div class="clearfix">
+            <div class="float-l">左边内容</div>
+            <div class="float-r">右边内容</div>
+            <div class="middle">中间内容</div>
         </div>
-        <div class="float-l">左边内容</div>
-        <div class="float-r">右边内容</div>
-    </div>
-    ```
+        ```
 
-    >1. DOM结构不能颠倒，需要中间结构放最前;
-    >2. 节点上能设定`clear: both;`。
-3. 中间与两边内容都自适应
+        >1. DOM结构不能颠倒，需要中间结构放最后;
+        >2. 节点上能设定`clear: both;`。
+    2. 中间内容自适应，两边固定（中间内容最先加载）
 
-    ```html
-    <style type="text/css">
-        .float-l {
-            float: left;
-            _display: inline;
-        }
-        .float-r {
-            float: right;
-            _display: inline;
-        }
-        .middle {
-            display: table-cell;
-            *display: inline-block;
-            width: 9999px;
-            *width: auto;
-        }
-    </style>
+        >所谓的“双飞翼布局”。
 
-    <div class="clearfix">
-        <div class="float-l">左边内容</div>
-        <div class="float-r">右边内容（没有足够空间则整体换行）</div>
-        <div class="middle">中间内容（没有足够空间则整体换行）</div>
-    </div>
-    ```
+        ```html
+        <style type="text/css">
+            .main-out,
+            .float-l,
+            .float-r {
+                float: left;
+                _display: inline;
+            }
+            .middle-out {
+                width: 100%;
+            }
+            .middle-in {
+                margin: 0 大于等于右边块宽度 0 大于等于左边块宽度;
+            }
+            .float-l {
+                width: 左边块宽度;
+                margin-left: -100%;
+            }
+            .float-r {
+                width: 右边块宽度;
+                margin-left: -左边块宽度;
+            }
+        </style>
 
-    >1. DOM结构不能颠倒，需要中间结构放最后;
-    >2. 节点上能设定`clear: both;`;
-    >3. 完全由内容决定布局；
-    >4. 第一块内容要给第二块内容留下足够空间，否则第二块放不下会整个换行；第一块+第二块要给第三块留下足够空间，否则第三块放不下会整个换行。
+        <div class="clearfix">
+            <div class="middle-out">
+                <div class="middle-in">
+                    中间内容
+                </div>
+            </div>
+            <div class="float-l">左边内容</div>
+            <div class="float-r">右边内容</div>
+        </div>
+        ```
+
+        >1. DOM结构不能颠倒，需要中间结构放最前;
+        >2. 节点上能设定`clear: both;`。
+    3. 中间与两边内容都自适应
+
+        ```html
+        <style type="text/css">
+            .float-l {
+                float: left;
+                _display: inline;
+            }
+            .float-r {
+                float: right;
+                _display: inline;
+            }
+            .middle {
+                display: table-cell;
+                *display: inline-block;
+                width: 9999px;
+                *width: auto;
+            }
+        </style>
+
+        <div class="clearfix">
+            <div class="float-l">左边内容</div>
+            <div class="float-r">右边内容（没有足够空间则整体换行）</div>
+            <div class="middle">中间内容（没有足够空间则整体换行）</div>
+        </div>
+        ```
+
+        >1. DOM结构不能颠倒，需要中间结构放最后;
+        >2. 节点上能设定`clear: both;`;
+        >3. 完全由内容决定布局；
+        >4. 第一块内容要给第二块内容留下足够空间，否则第二块放不下会整个换行；第一块+第二块要给第三块留下足够空间，否则第三块放不下会整个换行。
 
 ### [`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex语法)优雅解决布局、自适应问题
-1. 不使用flex导致不方便处理的问题：
+1. 不使用`flex`导致不方便处理的问题：
 
     1. 栅格系统
     2. [自适应宽度布局](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#自适应宽度布局)
     3. [水平居中、垂直居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#水平居中垂直居中)
     4. [粘性页脚](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#粘性页脚)
     5. [多列等高](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#多列等高)
-2. flex具体解决方案：[`flex`布局实践](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex布局实践)。
+2. `flex`具体解决方案：[`flex`布局实践](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex布局实践)。
 
 ### 渲染性能（rendering performance）
 
@@ -1427,7 +1072,7 @@
             >布局抖动（layout thrashing）：快速多次进行强制同步布局。
         3. 使用离线DOM操作样式完毕，再添加或替换到文档中；把文档中要操作的DOM设置为`display: none;`再操作样式，操作完毕后恢复复显示。
         4. `position: absollute/fixed;`的元素reflow开销较小。
-        5. 使用[`flexbox`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#弹性盒子)布局（对于相同数量的元素、视觉外观，flex布局的时间更少）。
+        5. 使用[`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#弹性盒子)布局（对于相同数量的元素、视觉外观，flex布局的时间更少）。
     4. 简化绘制的复杂度、减小绘制区域
 
         合理划分层，动静分离，可避免大面积重绘。
@@ -1482,7 +1127,7 @@
     2. JS代码的字符串：
 
         单引号`'`
-3. CSS分类命名规范
+3. CSS命名规范
 
     1. BEM（以及变种）
 
@@ -1491,7 +1136,8 @@
 
         >1. `--modifier`：仅包括多种外观的不同样式，如：size、type、color、font。
         >2. `is-状态`：仅包括JS控制状态显示的不同样式，如：active、disabled、show。
-        >- `j-`：仅给JS使用的选择器，意味着不会有样式添加到这个选择器上。
+
+        - `j-`：仅给JS使用的选择器，意味着不会有样式添加到这个选择器上。
     2. <details>
 
         <summary><del>已过时的方案</del></summary>
@@ -1658,6 +1304,8 @@
         不要把超出内容区域的绝对定位设置在`<body>`直接子级，而是设置在`<body>`下拥有`overflow: hidden;`的父级下。
     2. ~~大背景模式~~
 17. `CSS.supports(CSS语句)`或`CSS.supports(CSS属性, 值)`判断浏览器是否支持一个给定CSS语句。
+
+    >`CSS.supports('--变量名', '非空任意值')`可判断是否支持CSS变量。
 18. 切图时`<img>`外嵌套一层标签，好应对可能要在图片上添加东西的需求。
 19. 没有 **背景内容（透明背景无效、局部背景只能在有背景处有效）、或文本、或其他内容（如：`<img>`、`<iframe>`等）** 承载的节点无法触发鼠标事件。
 
