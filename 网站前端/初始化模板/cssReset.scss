@@ -79,7 +79,7 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
 /* /-富文本需重载上面的CSS reset */
 
 
-/* scss的@mixin、@function */
+/* SCSS的@mixin、@function */
 @mixin clearfix {
 
   &:after {
@@ -211,7 +211,7 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
 }
 /* /--x+y轴排列且等大雪碧图 */
 /* /-rem */
-/* /scss的@mixin、@function */
+/* /SCSS的@mixin、@function */
 
 /* 全局 */
 html, body {

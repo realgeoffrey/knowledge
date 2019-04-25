@@ -1138,6 +1138,8 @@
         >2. `is-状态`：仅包括JS控制状态显示的不同样式，如：active、disabled、show。
 
         - `j-`：仅给JS使用的选择器，意味着不会有样式添加到这个选择器上。
+
+        >其他CSS模块化理论：OOCSS、SMACSS。
     2. <details>
 
         <summary><del>已过时的方案</del></summary>

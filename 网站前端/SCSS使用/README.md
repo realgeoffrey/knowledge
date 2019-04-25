@@ -1,9 +1,9 @@
-### Scss使用
->来自：[Sass](http://sass-lang.com/documentation/file.SASS_REFERENCE.html#css_extensions)。
+### SCSS使用
+>来自：[Sass](https://www.sasscss.com/docs/)。
 
 - 预编译工具
 
-    1. 使用傻瓜式预处理器语言图形编译工具：[Koala](http://koala-app.com/index-zh.html)。
+    1. 使用傻瓜式CSS预处理器语言图形编译工具：[Koala](http://koala-app.com/index-zh.html)。
     2. 使用gulp（[gulp-sass](https://github.com/dlmanning/gulp-sass)）等构建工具。
 
 1. `变量`、`方法`和`引用`必须在使用前定义，`继承`不需要提前定义；声明相同内容不会报错，只会用最后一次声明覆盖之前声明。
@@ -193,7 +193,7 @@
     // 不出现在.css
     /* 出现在.css */
     ```
-    >有中文注释时，要在scss文件顶部增加`@charset "utf-8";`，否则编译报错。
+    >有中文注释时，要在.scss文件顶部增加`@charset "utf-8";`，否则编译报错。
 9. 方法`@function`
 
     ```scss

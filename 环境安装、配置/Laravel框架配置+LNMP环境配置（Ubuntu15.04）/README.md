@@ -246,10 +246,10 @@
 		>    3. 虚拟机为linux(server)暂无好的解决办法
 
 	3.
-	    >安装less预处理器
+	    >安装Less（CSS预处理器）
 		>   `sudo apt-get install node-less`
 
-		>>  转换less为css：
+		>>  转换.less为.css：
 		>>  `lessc 地址file.less > 地址file.css`
 	4. 安装shadowsocks客户端
 

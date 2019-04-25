@@ -43,7 +43,7 @@
     ><summary>其他</summary>
     >
     >1. [弹性盒子flex](./网站前端/HTML+CSS学习笔记/弹性盒子.md)
-    >2. [Scss使用](./网站前端/Scss使用/README.md)
+    >2. [SCSS使用](./网站前端/SCSS使用/README.md)
     ></details>
 3. 前端内容
 

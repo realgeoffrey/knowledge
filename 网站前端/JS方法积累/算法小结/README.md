@@ -977,7 +977,7 @@ function switchArr ({ arr, from, to, isLeft = false }) {
     }
 
 
-    /* 测试 */
+    /* 使用测试 */
     // obj.do('你好').cancel()
     // obj.cancel().do('hello').sleep(1000).do('yo ho')
     obj.sleep(1000).sleep(2000).cancel().cancel().do('他好').cancel().sleep(1000).sleep(1000).do('我好').do('我好')

@@ -13,7 +13,7 @@ const autoprefixer = require('autoprefixer') // 添加css厂家前缀
 const rename = require('gulp-rename') // 重命名
 const px2rem = require('postcss-px2rem') // px转rem
 const makeUrlVer = require('gulp-make-css-url-version') // css添加时间戳
-const sass = require('gulp-sass') // 编译sass
+const sass = require('gulp-sass') // 编译Sass
 const spritesmith = require('gulp.spritesmith') // 生成雪碧图&样式表
 const fontmin = require('gulp-fontmin') // 字体子集化
 const uglify = require('gulp-uglify') // js压缩
@@ -61,7 +61,7 @@ gulp.task('runCss', () => {
     .pipe(gulp.dest('./css/release/'))
 })
 
-/* scss：转译压缩css、添加厂商前缀、添加timestamp、source map */
+/* Sass：转译压缩css、添加厂商前缀、添加timestamp、source map */
 gulp.task('runScss', () => {
   gulp.src(['./scss/dev/**/*.scss'])
     .pipe(sourcemaps.init())

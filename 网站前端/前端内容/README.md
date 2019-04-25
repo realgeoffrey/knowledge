@@ -47,7 +47,7 @@
         CommonJS/AMD/CMD/ES6 Module/UMD
     2. CSS模块化方案：
 
-        sass/less/stylus等预处理器的import、mixin特性支持实现。
+        Sass/Less/Stylus等CSS预处理器的`import`、`mixin`特性支持实现。
 4. 第四阶段：前端工程化
 
     >优化部署、开发。
