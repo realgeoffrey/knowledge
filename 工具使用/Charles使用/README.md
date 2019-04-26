@@ -15,6 +15,8 @@
 1. [捕获记录控制](#捕获记录控制)
 1. [web界面](#web界面)
 
+>破解：<https://github.com/8enet/Charles-Crack>
+
 HTTP调试工具：通过将Charles设置成**系统的网络访问代理服务器**，使得所有的网络访问请求都通过它来完成，从而实现网络封包的截取和分析。
 
 >1. 需要安装同样位数的**java**，所有浏览器都可以使用Charles来截取请求，前提是必须关闭防火墙和关闭浏览器代理插件（或设置使用系统代理）。
@@ -26,7 +28,7 @@ HTTP调试工具：通过将Charles设置成**系统的网络访问代理服务�
 
 ![Charles图](./images/1.png)
 
->当你刷新页面的时候，只会在当前session中捕获请求。当关闭session后会导致已经在此session捕获的网站无法在其他session捕获，需要重新启动Charles或新建session。
+>当你刷新页面时，只会在当前session中捕获请求。当关闭session后会导致已经在此session捕获的网站无法在其他session捕获，需要重新启动Charles或新建session。
 
 ### 显示捕获列表方式
 1. Structure

@@ -6,3 +6,12 @@
 2. **Help -> Edit Custom VM Options** can change the memories for the IDE.
 
 >Chinese Language Pack：please go to [PhpStorm-Chinese](https://github.com/ewen0930/PhpStorm-Chinese) or [WebStorm-Chinese](https://github.com/ewen0930/WebStorm-Chinese).
+
+3. Terminal的vi乱码解决办法：
+
+    在Git安装目录下的etc目录下的bash.bashrc文件（如：`C:\Program Files\Git\etc\bash.bashrc`），最后一行添加：
+
+    ```text
+    export LANG="zh_CN.UTF-8"
+    export LC_ALL="zh_CN.UTF-8"
+    ```

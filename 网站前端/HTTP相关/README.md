@@ -11,6 +11,7 @@
 1. [HTTP缓存](#http缓存)
 1. [基于HTTP的功能追加的技术或协议](#基于http的功能追加的技术或协议)
 1. [HTTPS](#https)
+1. [HTTP严格传输安全（HTTP strict transport security，HSTS）](#http严格传输安全http-strict-transport-securityhsts)
 1. [HTTP长连接、WebSocket、HTTP/2](#http长连接websockethttp2)
 1. [CORS（cross-origin resource sharing，跨域资源共享）](#corscross-origin-resource-sharing跨域资源共享)
 1. [服务端验证用户状态](#服务端验证用户状态)
@@ -297,7 +298,7 @@
 
         被请求的资源临时从不同的URI响应请求。
 
-        >[Chrome在302重定向的时候对原请求产生2次请求](http://www.cnblogs.com/lyzg/p/6237841.html)
+        >[Chrome在302重定向时对原请求产生2次请求](http://www.cnblogs.com/lyzg/p/6237841.html)
     4. **303 See Other**
 
         被请求的资源临时从不同的URI响应请求，且客户端应当把POST转化为GET方式访问那个资源。
@@ -698,6 +699,29 @@
     1. SSL处理速度变慢：通信速度降低、消耗大量CPU和内存。
     2. 证书需要购买。
 
+### HTTP严格传输安全（HTTP strict transport security，HSTS）
+一套互联网安全策略机制，强制浏览器使用HTTPS与网站进行通信（避免：先发出HTTP请求再302重定向为HTTPS），以减少会话劫持风险。
+
+1. 必要性：HTTPS也不够安全
+
+    浏览器向网站发起一次HTTP请求，在得到一个要求重定向的响应后，发起一次302重定向的HTTPS请求并得到最终的响应内容。在HTTP请求时，容易受到中间人攻击。
+2. 开启HSTS方法：当客户端通过HTTPS发出请求时，在服务器返回的HTTP响应头中包含`Strict-Transport-Security`。
+
+    <details>
+    <summary><code>Strict-Transport-Security: max-age=秒数[; includeSubDomains][; preload]</code></summary>
+
+    1. `max-age`（必选参数）：代表HSTS过期时间。
+    2. `includeSubDomains`（可选参数）：若包含它，则意味着当前域名及其子域名均开启HSTS保护。
+    3. `preload`（可选参数）：只有域名已加入到HSTS preload list时才需要使用到它。
+    </details>
+3. 效果（在有效期内、或域名在HSTS preload list内）
+
+    1. 浏览器只能通过HTTPS发起相关域名（或包括子域名）的请求（若HTTP请求则会进行客户端内部307重定向为HTTPS请求）。
+    2. 若浏览器发现当前连接不安全（网站证书有错误等），则显示错误，用户无法选择继续访问。
+4. [HSTS preload list（浏览器预置HSTS域名列表）](https://github.com/chromium/hstspreload.org)，包含的域名硬编码进浏览器从而对这些域名默认开启HSTS保护。
+
+>可以在Chrome地址栏输入`chrome://net-internals/#hsts`查看HSTS包含的域名情况。
+
 ### HTTP长连接、WebSocket、HTTP/2
 >短连接：每一个HTTP请求都要建立单独的TCP连接，然后断开。
 
@@ -864,7 +888,9 @@ HTTP是无状态协议，通过session-cookie、token判断客户端的用户状
 
     在不同的地点创建缓存代理服务器，通过负载均衡技术、最优节点选择，将用户的请求重定向到最合适的缓存代理服务器（缓存整个HTTP请求-响应），减少源站的压力、提升加载速度。
 
-    >1. 回源：当有用户访问某一个URL的时候，如果被解析到的那个CDN节点没有缓存响应的内容，或者是缓存已经到期，就会回源站去获取。
+    >1. 回源：当有用户访问某一个URL时，如果被解析到的那个CDN节点没有缓存响应的内容、或缓存已经到期，就会回源站去获取。
+    >
+    >    CDN的地址后增加`?xx`，大部分情况当做一个新的资源，可用于强制回源（注意不要在代码中使用增加时间戳的CDN，否则每次都回源）。
     >2. 若使用HTTPS的CDN，回源也必须用HTTPS，全链路HTTPS堵死运营商劫持。
 5. UDP（User Data Protocol，用户数据报协议）
 

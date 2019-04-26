@@ -43,10 +43,10 @@
 
             1. 内容宽度 < 给定宽度
 
-                1. 无滚动轴：
+                1. 无滚动条：
 
                     `DOM.scrollWidth` = `DOM.clientWidth` = `给定宽度 + padding左右宽度`。
-                2. 有滚动轴：
+                2. 有滚动条：
 
                     `DOM.scrollWidth` = `内容宽度 + padding左右宽度`。
     2. `.scrollLeft`

@@ -429,21 +429,22 @@
 
     >新方法的参数填补在原函数去除已设置形参的后面（与`Function.prototype.bind`一致）。
 
-    <details>
-    <summary>额外的，jQuery确保即使绑定的函数经过<code>$.proxy()</code>处理，依然可以用原先的函数来正确地取消绑定</summary>
+    - 额外的，jQuery确保即使绑定的函数经过`$.proxy()`处理，依然可以用原先的函数来正确地取消绑定
 
-    ```javascript
-    // e.g.
-    var obj = {
-      test: function () {
-        console.log(this);
-        $('#test').off('click', obj.test);  // 可以解绑$.proxy(obj, 'test')
-      }
-    };
+        <details>
+        <summary>e.g.</summary>
 
-    $('#test').on('click', $.proxy(obj, 'test'));
-    ```
-    </details>
+        ```javascript
+        var obj = {
+          test: function () {
+            console.log(this);
+            $('#test').off('click', obj.test);  // 可以解绑$.proxy(obj, 'test')
+          }
+        };
+
+        $('#test').on('click', $.proxy(obj, 'test'));
+        ```
+        </details>
 
 ---
 ## 事件相关
@@ -611,7 +612,7 @@
     ![事件流图](./images/event-flow-1.png)
 
     1. 先按**捕获**顺序依次执行节点注册**捕获**的事件。
-    2. 抵达目标
+    2. 处于目标
 
         1. 依据注册顺序执行事件处理程序，分为捕获、冒泡两种抵达类型。浏览器默认行为：冒泡抵达类型（在捕获、冒泡的事件处理程序执行之后才执行默认行为）。
         2. 可设置不再冒泡或不执行浏览器默认行为。
@@ -1251,7 +1252,7 @@
     >参考：[阮一峰：JavaScript 编程风格](http://javascript.ruanyifeng.com/grammar/style.html)。
 
     1. 表示区块起首的大括号，不要另起一行。
-    2. 调用函数的时候，函数名与左括号之间没有空格。
+    2. 调用函数时，函数名与左括号之间没有空格。
     3. 所有其他语法元素与左括号之间，都有一个空格。
     4. 不要省略句末的分号。
     5. 不要使用`with`语句。
@@ -1483,7 +1484,10 @@
 
 1. Native提供给Hybrid宿主环境
 
-    1. 互相调用：Native调用WebView的JS方法；WebView调用`桥协议`或触发`自定义URL Scheme`。
+    1. 互相调用：
+
+        1. Native调用WebView的JS方法（`window.前端定义方法`）
+        2. WebView调用`桥协议`（`window.客户端定义方法`）、或触发`自定义URL Scheme`（`myscheme://客户端定义路径`）
     2. 资源访问机制
 
         1. 以`file`方式访问Native内部资源。
@@ -1491,14 +1495,12 @@
         3. 增量替换机制（不依赖发包更新）
 
             1. Native本地下载、解压线上的打包资源，再替换旧资源。
-            2. ~~manifest~~。
+            2. ~~manifest~~
         4. URL限定，限制访问、跨域问题的解决方案
 
             1. 可以限制WebView的能发起的请求内容。
             2. 可以代替WebView进行会触发跨域的AJAX请求。
     3. 身份验证机制
-
-        >客户端注入方式：javascript伪协议方式`javascript: 代码`。
 
         Native创建WebView时，根据客户端登录情况注入跟登录有关的cookie（session_id）或token。
     4. Hybrid开发测试
@@ -1526,17 +1528,17 @@
 
         >1. 都是以**字符串**（数据用JSON字符串）的形式交互，向客户端传递：
         >
-        >    1. 全局的方法名 -> 客户端调用`方法名(JSON数据)`
+        >    1. 全局的方法名 -> 客户端调用`window.方法名(JSON数据)`
         >    2. 匿名函数 -> 客户端调用`(匿名函数(JSON数据))`
         >2. WebView无法判断是否安装了其他App。
-        >3. 可以通过`查看注入的全局方法`或`客户端调用回调函数`来判定H5页面是否在具体App内打开。
+        >3. 可以通过`查看注入的全局方法`、或`客户端调用回调函数`（、或`navigator.userAgent`）来判定H5页面是否在具体App内打开。
         >4. `桥协议`仅在App内部起作用；`自定义URL Scheme`是系统层面，所以可以额外针对跨App起作用（如：分享去其他App）；iOS的**通用链接**可以认为是高级的`自定义URL Scheme`。
 
         1. `桥协议`：Native注入全局方法至WebView的`window`，WebView调用则客户端拦截后触发Native行为。
 
             >1. 客户端注入方式：javascript伪协议方式`javascript: 代码`。
             >2. 注入JS代码可以在创建WebView之前（`[native code]`）或之后（全局变量JS注入）。
-            >3. 若注入的方法为`undefined`，则认为不在此App内部。
+            >- 若注入的方法为`undefined`，则认为不在此App内部。
         2. `自定义URL Scheme`：拦截跳转（`<iframe>`或`<img>`设置`src`、点击`<a>`、`window.location.href`），触发Native行为。
 
             ><details>
@@ -1620,7 +1622,7 @@
 
         - WebView提供Native调用的全局回调函数（或匿名函数）。
 
-            >判断多个回调函数顺序：带id触发Native行为，Native调用回调函数时携带之前的id。
+        >接口设计可以带有“透传数据”：前端调用客户端方法时多传一个透传参数，之后客户端异步调用前端方法时带着这个参数的值。
     3. 根据WebView的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在Hybrid遇到的bug。
 
         1. 对于App内不方便查看的信息，可以发送需要查看的信息、再抓包的方式进行调试。
@@ -1846,7 +1848,7 @@
     >参考：[jQuery的防冲突（noConflict）](https://github.com/jquery/jquery/blob/master/src/exports/global.js#L7-L25)。
 
     1. 先备份全局对象到局部变量；
-    2. 再需要的时候把备份对象赋值回给全局。
+    2. 再需要时把备份对象赋值回给全局。
 
     <details>
     <summary>e.g.</summary>
@@ -1966,7 +1968,7 @@
 
             继承`document`的各种DOM，返回`'[object HTML继承类Element]'`。
         22. HTMLCollection实例（DOM集合） -> `'[object HTMLCollection]'`
-        23. NodeList实例（`DOM.childNodes`或`document.querySelectorAll`返回） -> `'[object NodeList]'`
+        23. NodeList实例（`DOM.childNodes`或`document.querySelectorAll`等返回） -> `'[object NodeList]'`
         24. `arguments` -> `'[object Arguments]'`
         25. `Math` -> `'[object Math]'`
         26. `JSON` -> `'[object JSON]'`
@@ -2149,7 +2151,8 @@
     4. 单个对象数据大小5M+。
     5. 拥有方便的api
 
-        调用`localStorage`、`sessionStorage`对象会为每个源（每个tab）创建独立的`Storage`对象，每个对象都拥有：`setItem`、`getItem`、`removeItem`、`clear`、`key`方法，`length`属性。
+        1. 调用`localStorage`、`sessionStorage`对象会为每个源（每个tab）创建独立的`Storage`对象，每个对象都拥有：`setItem`、`getItem`、`removeItem`、`clear`、`key`方法，`length`属性。
+        2. `window`的`storage`事件，会在其他tab的同源页面修改`localStorage`值时触发（增、删、改，`setItem`相同值时不触发）。
     6. 区别
 
         1. `localStorage`
@@ -2164,7 +2167,7 @@
             3. 应用场景：需要拆分成多个子页面分别存储的数据。
 2. cookie：
 
-    1. 客户端保存（JS添加或响应头设置），始终在HTTP请求中携带（同源同路径），明文传递，服务端接收、操作客户端cookie。
+    1. 客户端保存（JS添加或响应头设置），始终在HTTP请求中携带（同源同路径，或父域名、父路径），明文传递，服务端接收、操作客户端cookie。
 
         >1. cookie中的`domain`（默认：当前域名），可设置为父域名或当前域名，不能设置为其他域名（设置失效）。
         >2. 当前域名可以访问`domain`为当前域名或父域名的cookie；浏览器发起HTTP请求时会向请求地址发送与请求域名相同或是其父域名的cookie。
@@ -2173,12 +2176,14 @@
     4. 单域名内，cookie保存的数据不超过4k，数量（最少）20个。
     5. 源生的cookie接口不友好，需要自己[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js操作cookie)。
 
-        - JS的`document.cookie`：
+        1. JS的`document.cookie`：
 
             1. 新建或更新cookie等同于服务端`Set-Cookie`响应头：一次设置一条cookie的`名=值[; expires=绝对时间][; max-age=相对时间][; domain=域名][; path=路径][; secure]`。
 
                 >`Set-Cookie`额外可以设置`[; HttpOnly]`属性。
             2. 读取cookie等同于客户端`Cookie`请求头：展示所有cookie的`名1=值1[; 名2=值2]`（无法查看其他信息）。
+            3. 删除cookie项，需要`path`（路径）符合（默认是当前路由的path）。
+        2. 没有~~改变`cookie`的事件通知~~，只能轮询检测。
     6. 同源且同路径共享。
     7. 默认：关闭浏览器后失效（存储在内存）；设置失效时间则到期后失效（存储在硬盘）。
     8. 应用场景：服务端确定请求是否来自于同一个客户端（cookie与服务端session配合），以确认、保持用户状态。
@@ -3356,16 +3361,68 @@
                 1. `process.nextTick`
 
                     在当前“执行栈”的尾部——读取"任务队列"之前，添加事件。
-                2. `async-await`（只有`await`是异步）
-
-                    >`await`后若是方法则同步执行该方法，执行结果交给`await`后才是microtask（无论结果如何）。
-                3. `Promise`（`Promise.then/catch/all/race`）
+                2. `Promise`（`Promise.then/catch/all/race`）
 
                     >`new Promise(回调)`的回调和`Prmise.resolve()/reject()`都是直接执行的同步任务。
-                4. `MutationObserver`
-            >- macrotask和microtast选择
-            >
-            >    如果想让一个任务立即执行，就把它设置为microtask，除此之外都用macrotask。因为虽然JS是异步非阻塞，但在一个事件循环中，microtask的执行方式基本上是用同步的。
+                3. `async-await`（只有`await`是异步）
+
+                    >`await`后若是方法则同步执行该方法，执行结果交给`await`后才是microtask（无论结果如何）。
+
+                ><details>
+                ><summary>e.g.</summary>
+                >
+                >```javascript
+                >var obj = {
+                >  a () {
+                >    console.log('a')
+                >    return obj
+                >  },
+                >  b () {
+                >    console.log('b')
+                >  }
+                >}
+                >
+                >async function func2 () {
+                >  await // 同步执行，执行完无论未完成/完成/失败，都异步microtask执行后面代码
+                >    obj.a() // 同步
+                >      .b()  // 同步
+                >
+                >  console.log('d')  // 等待await完成（microtask）
+                >}
+                >
+                >func2()
+                >console.log('c')
+                >// =>a b c d
+                >```
+                >```javascript
+                >var obj = {
+                >  a () {
+                >    console.log('a')
+                >    return obj
+                >  },
+                >  b () {
+                >    console.log('b')
+                >    return Promise.resolve()
+                >  }
+                >}
+                >
+                >async function func1 () {
+                >  await // 同步执行，执行完无论未完成/完成/失败，都异步microtask执行后面代码
+                >    obj.a() // 同步
+                >      .b()  // 同步
+                >      .then(() => {console.log('then')}) // 异步microtask
+                >
+                >  console.log('d')  // 等待await完成（microtask）
+                >}
+                >
+                >func1()
+                >console.log('c')
+                >// =>a b c then d
+                >```
+                ></details>
+
+                4. `for-await-of`的方法体执行和迭代器遍历
+                5. `MutationObserver`
 
             - macrotask、microtask的事件循环运行机制：
 
@@ -3385,6 +3442,9 @@
                     3. 设置“目前运行的任务”为`null`，从microtask队列中移除任务a；
                     4. 跳到第1步（检查下一个最早加入的microtask任务）；
                     5. 跳出microtask队列、进行检查macrotask队列。
+            >- macrotask和microtast选择
+            >
+            >    如果想让一个任务立即执行，就把它设置为microtask，除此之外都用macrotask。因为虽然JS是异步非阻塞，但在一个事件循环中，microtask的执行方式基本上是用同步的。
 3. JS的事件循环运行机制：
 
     1. “执行栈”进行：
