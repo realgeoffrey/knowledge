@@ -2339,7 +2339,7 @@ var a = new DisplayDom({
 
 ### *原生JS*执行方法的前/后进行开/关loading
 ```javascript
-async function loadingFetch (func) { // func：方法；若是Promise对象，则完成/失败后关闭loading，否则同步关闭loading
+async function loadingFetch (func) { // func：方法；若方法返回Promise实例，则完成/失败后关闭loading，否则同步关闭loading
   if (typeof func === 'function') {
     console.log('loading 开始')  // 打开loading
 

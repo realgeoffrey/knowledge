@@ -534,6 +534,9 @@
         因为代码中如果有单独的`<li>`（没有嵌套`<ol>`或`<ul>`），就会“越级”到跟祖先级`<li>`同级的内容。
     2. 大部分富文本会用`<em>`、`<ol>`、`<ul>`等标签来表示**斜体**、**有序序列**、**无序序列**，因此如果用CSS重置了以上标签的样式后，要在[富文本内重载开启它们的默认效果](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L61-L77)（或定制效果）。
     3. 大部分富文本会在`<table>`上使用`cellspacing`、`border`、`bordercolor`属性设置表格，又因为设置了`border: 0;`的表格无法重载开启以上属性作用，所以CSS重置时[不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L26-L27)。
+    4. 整个块级元素修改，可用：`document.execCommand('formatBlock', false, <块级标签名>)`，再设置元素的样式。
+
+        >比如“小字体”的块级内容，就可以用`document.execCommand('formatBlock', false, <h6>)`，然后设置`h6`的小字体样式。
 2. 实现方式：
 
     1. 使用原生[`document.execCommand`](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/execCommand)操作`contenteditable="true"`的DOM文本选取覆盖的内容（或`document.designMode === 'on'`的整个文档、`某iframe.contentDocument.designMode === 'on'`的整个`<iframe>`）。
@@ -1211,9 +1214,9 @@
         2. 新页面可以通过`window.opener`访问原窗口对象，并使用`window.opener.location`改变原页面导航。
 
         ><details>
-        ><summary>chrome任务管理器展示：<code>target="_blank"</code>但未设置<code>rel</code></summary>
+        ><summary>Chrome任务管理器展示：<code>target="_blank"</code>但未设置<code>rel</code></summary>
         >
-        >![chrome任务管理器图](./images/chrome-task-1.png)
+        >![Chrome任务管理器图](./images/chrome-task-1.png)
         ></details>
     2. 添加额外的`rel`属性：
 

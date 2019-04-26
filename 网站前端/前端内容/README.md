@@ -90,11 +90,31 @@
         2. 加载DOM中所有JS，对DOM和CSSOM进行访问和更改。
 
             1. HTML中出现JS，**阻塞解析**（DOM构造被暂停）。
-            2. 下载外部脚本或内嵌脚本不用下载。
+            2. 下载外部脚本`src`或内嵌脚本不用下载。
             3. 等待所有CSS被提取且CSSOM被构造完毕。
 
-                >已经被提取的CSS（`<link>`、`style`），若再次修改或删除（或新添加），会再次影响CSSOM构造。
+                ><details>
+                ><summary>已经被提取的CSS（<code>&lt;link></code>、<code><style></code>、<code>style</code>内嵌样式），若再次修改或删除（或新添加），会再次影响CSSOM构造。</summary>
+                >
+                >以下代码可以实时在页面中编辑样式
+                >```html
+                ><style contenteditable style="display: block">
+                >  a {
+                >    color: red;
+                >  }
+                ></style>
+                >
+                ><a href="javascript:">a标签</a>
+                >```
+                ></details>
             4. 执行脚本，访问、更改DOM和CSSOM。
+
+                ><details>
+                ><summary>一个<code><script></code>最多执行一次。</summary>
+                >
+                >1. 已经执行过的脚本（`<script>`：外部脚本`src`或内嵌脚本），若再次修改或删除，不会再执行，也不会影响执行过的内容。已经执行过的脚本，若删除外部脚本`src`或删除内嵌脚本，之后再添加外部脚本`src`或添加内嵌脚本，也不会再次执行。
+                >2. 没有执行过内容的空脚本`<script></script>`，若添加外部脚本`src`或添加内嵌脚本，会执行一次。
+                ></details>
             5. DOM构造继续进行。
 
             ><details>

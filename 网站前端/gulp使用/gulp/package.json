@@ -32,7 +32,7 @@
     "eslint-config-standard": "12",
     "eslint-plugin-html": "5",
     "eslint-plugin-import": "2",
-    "eslint-plugin-node": "8",
+    "eslint-plugin-node": "9",
     "eslint-plugin-promise": "4",
     "eslint-plugin-standard": "4",
     "eslint-plugin-vue": "5"

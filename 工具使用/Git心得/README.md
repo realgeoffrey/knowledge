@@ -376,6 +376,25 @@ feat(details): 添加了分享功能
     ```git
     git flow init -fd   # （整个项目首次声明一次即可）
     ```
+
+    <details>
+    <summary>如果默认不符合要求，则手动配置输入</summary>
+
+    `git flow init -f`输入至`.git\config`文件：
+
+    ```text
+    [gitflow "branch"]
+    	master = master
+    	develop = develop
+    [gitflow "prefix"]
+    	feature = feature/
+    	bugfix = bugfix/
+    	release = release/
+    	hotfix = hotfix/
+    	support = support/
+    	versiontag =
+    ```
+    </details>
 2. 开发新需求：
 
     ```git

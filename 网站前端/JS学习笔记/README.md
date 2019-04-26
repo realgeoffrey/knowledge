@@ -1966,7 +1966,7 @@
 
             继承`document`的各种DOM，返回`'[object HTML继承类Element]'`。
         22. HTMLCollection实例（DOM集合） -> `'[object HTMLCollection]'`
-        23. NodeList实例（`DOM.childNodes`或`document.querySelectorAll`返回） -> `'[object NodeList]'`
+        23. NodeList实例（`DOM.childNodes`或`document.querySelectorAll`等返回） -> `'[object NodeList]'`
         24. `arguments` -> `'[object Arguments]'`
         25. `Math` -> `'[object Math]'`
         26. `JSON` -> `'[object JSON]'`
@@ -2149,7 +2149,8 @@
     4. 单个对象数据大小5M+。
     5. 拥有方便的api
 
-        调用`localStorage`、`sessionStorage`对象会为每个源（每个tab）创建独立的`Storage`对象，每个对象都拥有：`setItem`、`getItem`、`removeItem`、`clear`、`key`方法，`length`属性。
+        1. 调用`localStorage`、`sessionStorage`对象会为每个源（每个tab）创建独立的`Storage`对象，每个对象都拥有：`setItem`、`getItem`、`removeItem`、`clear`、`key`方法，`length`属性。
+        2. `window`的`storage`事件，会在其他tab的同源页面修改`localStorage`值时触发（增、删、改，`setItem`相同值时不触发）。
     6. 区别
 
         1. `localStorage`
@@ -2173,12 +2174,13 @@
     4. 单域名内，cookie保存的数据不超过4k，数量（最少）20个。
     5. 源生的cookie接口不友好，需要自己[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js操作cookie)。
 
-        - JS的`document.cookie`：
+        1. JS的`document.cookie`：
 
             1. 新建或更新cookie等同于服务端`Set-Cookie`响应头：一次设置一条cookie的`名=值[; expires=绝对时间][; max-age=相对时间][; domain=域名][; path=路径][; secure]`。
 
                 >`Set-Cookie`额外可以设置`[; HttpOnly]`属性。
             2. 读取cookie等同于客户端`Cookie`请求头：展示所有cookie的`名1=值1[; 名2=值2]`（无法查看其他信息）。
+        2. 没有~~改变`cookie`的事件通知~~，只能轮询检测。
     6. 同源且同路径共享。
     7. 默认：关闭浏览器后失效（存储在内存）；设置失效时间则到期后失效（存储在硬盘）。
     8. 应用场景：服务端确定请求是否来自于同一个客户端（cookie与服务端session配合），以确认、保持用户状态。
@@ -3356,16 +3358,68 @@
                 1. `process.nextTick`
 
                     在当前“执行栈”的尾部——读取"任务队列"之前，添加事件。
-                2. `async-await`（只有`await`是异步）
-
-                    >`await`后若是方法则同步执行该方法，执行结果交给`await`后才是microtask（无论结果如何）。
-                3. `Promise`（`Promise.then/catch/all/race`）
+                2. `Promise`（`Promise.then/catch/all/race`）
 
                     >`new Promise(回调)`的回调和`Prmise.resolve()/reject()`都是直接执行的同步任务。
-                4. `MutationObserver`
-            >- macrotask和microtast选择
-            >
-            >    如果想让一个任务立即执行，就把它设置为microtask，除此之外都用macrotask。因为虽然JS是异步非阻塞，但在一个事件循环中，microtask的执行方式基本上是用同步的。
+                3. `async-await`（只有`await`是异步）
+
+                    >`await`后若是方法则同步执行该方法，执行结果交给`await`后才是microtask（无论结果如何）。
+
+                ><details>
+                ><summary>e.g.</summary>
+                >
+                >```javascript
+                >var obj = {
+                >  a () {
+                >    console.log('a')
+                >    return obj
+                >  },
+                >  b () {
+                >    console.log('b')
+                >  }
+                >}
+                >
+                >async function func2 () {
+                >  await // 同步执行，执行完无论未完成/完成/失败，都异步microtask执行后面代码
+                >    obj.a() // 同步
+                >      .b()  // 同步
+                >
+                >  console.log('d')  // 等待await完成（microtask）
+                >}
+                >
+                >func2()
+                >console.log('c')
+                >// =>a b c d
+                >```
+                >```javascript
+                >var obj = {
+                >  a () {
+                >    console.log('a')
+                >    return obj
+                >  },
+                >  b () {
+                >    console.log('b')
+                >    return Promise.resolve()
+                >  }
+                >}
+                >
+                >async function func1 () {
+                >  await // 同步执行，执行完无论未完成/完成/失败，都异步microtask执行后面代码
+                >    obj.a() // 同步
+                >      .b()  // 同步
+                >      .then(() => {console.log('then')}) // 异步microtask
+                >
+                >  console.log('d')  // 等待await完成（microtask）
+                >}
+                >
+                >func1()
+                >console.log('c')
+                >// =>a b c then d
+                >```
+                ></details>
+
+                4. `for-await-of`的方法体执行和迭代器遍历
+                5. `MutationObserver`
 
             - macrotask、microtask的事件循环运行机制：
 
@@ -3385,6 +3439,9 @@
                     3. 设置“目前运行的任务”为`null`，从microtask队列中移除任务a；
                     4. 跳到第1步（检查下一个最早加入的microtask任务）；
                     5. 跳出microtask队列、进行检查macrotask队列。
+            >- macrotask和microtast选择
+            >
+            >    如果想让一个任务立即执行，就把它设置为microtask，除此之外都用macrotask。因为虽然JS是异步非阻塞，但在一个事件循环中，microtask的执行方式基本上是用同步的。
 3. JS的事件循环运行机制：
 
     1. “执行栈”进行：
