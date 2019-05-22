@@ -17,7 +17,7 @@
     1. [`<img>`的`src`属性](#img的src属性)
     1. [横竖屏切换](#横竖屏切换)
     1. [滚动条](#滚动条)
-    1. [`@font-face`加入了字体后的使用方式](#font-face加入了字体后的使用方式)
+    1. [`@font-face`](#font-face)
 1. [HTML + CSS](#html--css)
 
     1. [禁用`<a>`的鼠标、键盘事件](#禁用a的鼠标键盘事件)
@@ -147,6 +147,8 @@
         7. 通配符选择器（`*`）
         8. 属性选择器
         9. 伪类选择器、伪元素选择器
+
+        >尽量把`元素选择器`前面的`后代元素选择器`改成`子元素选择器`。因为可能有很多匹配的元素选择器，会向前查找过多而影响性能。但是`ID选择器`或`类选择器`前面的`子元素选择器`则无所谓，因为不会匹配太多选择器、不会向前查找太多次。
     3. 避免使用 ~~@import~~，只用`<link>`；避免使用~~CSS表达式（CSS expression）~~。
     4. 移除空CSS规则、合理使用`display`、不滥用`float`、不滥用Web字体。
 3. [类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#选择器类型)
@@ -303,7 +305,7 @@
 1. 浏览器会把小数以及百分比换算成整数的单位（px）
 
     1. 四舍五入：ie8、ie9、Chrome、Firefox。
-    2. 直接向下取整：ie7、safari。
+    2. 直接向下取整：ie7、Safari。
 2. 多个子节点浮动的总宽度接近100%会表现成100%
 
     <details>
@@ -423,7 +425,7 @@
 >当`<img>`的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
 
 1. 不要用**空的`<img>`加上背景来用作默认图**，必须用其他标签来代替。
-2. 要谨慎给`<img>`设置背景（如：内容图片或头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载lazyload)前的默认图），因为当图片是透明图的时候，会出现背景。
+2. 要谨慎给`<img>`设置背景（如：内容图片或头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载lazyload)前的默认图），因为当图片是透明图时，会出现背景。
 3. `<img>`没有`src`属性或`src`属性为空隐藏
 
     ```css
@@ -475,27 +477,39 @@
 
     1. `document.body.scrollTop || document.documentElement.scrollTop`
     2. jQuery：`$(window).scrollTop()`或`$(document).scrollTop()`；Zepto：`$(window).scrollTop()`
-4. 滚动条会占用容器的可用高度或宽度。
+4. 滚动条会占用容器的可用高度或宽度（[JS获取滚动轴宽度（或高度）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js获取滚动条宽度或高度)）。
 
-### `@font-face`加入了字体后的使用方式
->使用[www.iconfont.cn](https://www.iconfont.cn/)方便生成字体图标，每个字体图标对应一个Unicode。
+    >针对右边滚动条：（除了`<html>`的）DOM的滚动条，可以设置`margin-right: -某px;`（[`width: auto;`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#块级元素的width)）[使滚动条向右移动、移出此DOM容器（`padding-right: 某px;`可以产生与滚动条的间隔）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#滚动条在容器外部)。
 
-1. CSS：
+### `@font-face`
+>使用[www.iconfont.cn](https://www.iconfont.cn/)方便生成字体图标，每个字体图标对应一个Unicode（也可用现存文字已使用的Unicode作为字体图标的Unicode）。
 
-    `content: "\16进制数";`
-2. HTML：
+1. 加载
 
-    `&#x16进制数;`或`&#10进制数;`
+    1. `@font-face`的`src`中加载的字体地址受跨域的约束，若想跨域加载字体，则需设置CORS。
+    2. 加载字体时机：
 
-    >HTML的字符实体（character entity）：`&名字;`或`&#序号;`（序号：`x16进制数`或`10进制数`）。
-3. JS：
+        1. ie8：定义了`@font-face`，就会去下载字体，不论实际有没有应用该字体。
+        2. Firefox、ie9+：定义了`@font-face`&&页面有元素应用了该字体，就会去下载，不论该元素是否有文本内容。
+        3. Chrome、Safari：定义了`@font-face`&&页面有元素应用了该字体&&该元素有文本内容，才会去下载字体。
+2. 加入了字体后的使用方式
 
-    `dom.innerHTML =`
+    1. CSS：
 
-    1. `'&#x16进制数;'`或`'&#10进制数;'`（都可省去`;`）；
-    2. `'\u4位16进制数'`或`'\u{16进制数}'`或`'\x2位16进制数'`或`'\3位8进制数'`。
+        `content: "\16进制数";`
+    2. HTML：
 
-        >数字数量有限制：[Unicode](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#unicode)。
+        `&#x16进制数;`或`&#10进制数;`
+
+        >HTML的字符实体（character entity）：`&名字;`或`&#序号;`（序号：`x16进制数`或`10进制数`）。
+    3. JS：
+
+        `dom.innerHTML =`
+
+        1. `'&#x16进制数;'`或`'&#10进制数;'`（都可省去`;`）；
+        2. `'\u4位16进制数'`或`'\u{16进制数}'`或`'\x2位16进制数'`或`'\3位8进制数'`。
+
+            >数字数量有限制：[Unicode](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#unicode)。
 
 ---
 ## HTML + CSS
@@ -1098,7 +1112,7 @@
         3. 对事件处理程序去抖动（debounce），存储事件对象的值，然后在`requestAnimationFrame`回调函数中修改样式属性。
 6. 经验：
 
-    1. 追查性能问题、优化动画的时候：
+    1. 追查性能问题、优化动画时：
         1. 打开**Layer Borders**、**Paint Flashing**选项；
         2. 使用Chrome [Performance](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/timeline-tool)工具检查。
     2. 低性能设备（Android）优先调试。
@@ -1318,3 +1332,4 @@
 
     1. 加透明背景：`background: rgba(0, 0, 0, .002)`（小于`0.002`的透明度无效）。
     2. 加1x1像素的透明图：`background: url(1x1像素透明图地址) repeat;`。
+20. CSS的`content`不要放业务逻辑耦合的内容（如：`楼主`等业务逻辑词汇），可以放固定不变的交互逻辑的内容（如：`：`、`展开/收起`）。

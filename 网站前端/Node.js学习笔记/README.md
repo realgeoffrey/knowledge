@@ -167,7 +167,19 @@
 
             - 升级npm自己
 
-                `npm install -g npm`
+                1. macOS：`npm install -g npm`
+                2. Windows：
+
+                    >来自：[npm-windows-upgrade](https://github.com/felixrieseberg/npm-windows-upgrade)。
+
+                    1. 以管理员身份运行[PowerShell](https://github.com/powershell/powershell)（Windows 7 SP1以上的系统自带）
+                    2. 在PowerShell内执行
+
+                        ```shell
+                        Set-ExecutionPolicy Unrestricted -Scope CurrentUser -Force
+                        npm install -g npm-windows-upgrade
+                        npm-windows-upgrade
+                        ```
         3. 卸载
 
             `npm uninstall [<@scope>/]<pkg>[@<version>]... [--save-prod|--save-dev|--save-optional] [--no-save]`
@@ -228,11 +240,11 @@
     6. `main`
 
         代码入口，默认：`index.js`。
-        
+
         >引用仓库的代码入口，不在引用链路内的仓库文件最终不会被使用到。
-        
+
         - 其他非官方的代码入口（若不存在则退回`main`）：
-        
+
             1. `module`：ES6 Module
             2. `unpkg`：`<script>`引用（针对[unpkg.com](https://unpkg.com/)）
             3. `jsdelivr`：`<script>`引用（针对[www.jsdelivr.com](https://www.jsdelivr.com/)）
@@ -269,7 +281,7 @@
 
         设置为`true`，则无法`npm publish`，用于避免不小心公开项目。
     14. `files`
-    
+
         将仓库作为依赖项安装时要包含的路径、文件的数组。
     15. 其他
 3. 包的制作-使用
@@ -325,10 +337,10 @@
                 >除非手动清除系统缓存。
             4. “循环加载”（circular dependency）
 
-                <details>
-                <summary>引用之前已经被引用过的模块b，会直接返回模块b已导出的内容，而不会再进入模块b内执行</summary>
+                引用之前已经被引用过的模块b，会直接返回模块b已导出的内容，而不会再进入模块b内执行。
 
-                e.g.
+                <details>
+                <summary>e.g.</summary>
 
                 ```javascript
                 // 按①②③④⑤⑥的顺序执行

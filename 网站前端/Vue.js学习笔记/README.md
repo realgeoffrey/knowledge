@@ -1436,8 +1436,10 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         数据劫持，直接修改数据触发、或事件监听触发。
 
         - 针对数组，修改了数组的某些mutator方法，调用这些方法后也触发。
+    >针对不需要响应式变化的属性，可以用`Object.freeze`处理，就不会进行`Object.defineProperty`响应式处理。
+    >
     ><details>
-    ><summary>针对不需要响应式变化的属性，可以用<code>Object.freeze</code>处理，就不会进行<code>Object.defineProperty</code>响应式处理。</summary>
+    ><summary>e.g.</summary>
     >
     >- `a: Object.freeze({ b: 1 })`：
     >
@@ -1484,21 +1486,37 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 ><details>
 ><summary>约定</summary>
 >
->1. 虚拟节点 (virtual node，VNode)：
->
->    Vue通过建立一个VNode对真实DOM发生的变化保持追踪。
->2. 虚拟DOM（virtual DOM）：
->
->    由Vue组件树建立起来的整个<strong>VNode树</strong>。
+>1. 虚拟节点 (virtual node，VNode)：Vue通过建立一个VNode对真实DOM进行单向操作。
+>2. 虚拟DOM（virtual DOM）：由Vue组件树建立起来的整个**VNode树**。
 ></details>
 
-在底层的实现上，Vue将模板编译成虚拟DOM渲染函数。结合响应式系统，Vue能够智能地计算出最少需要重新渲染多少组件，并把DOM操作次数减到最少。
+- 在底层的实现上，Vue将模板编译成虚拟DOM渲染函数，虚拟DOM是对象实现的树形结构。
+
+    <details>
+    <summary>e.g.</summary>
+
+    ```javascript
+    // 虚拟DOM的伪代码
+    let domNode = {
+      tag: 'ul',
+      attributes: { id: 'myId' },
+      children: [
+        // where the LI's would go
+      ]
+    }
+    ```
+    </details>
+- 结合响应式系统，Vue能够智能地计算出最少需要重新渲染多少组件，并把DOM操作次数减到最少。
 
 ><details>
-><summary>双向绑定的辩证思考：<a href="https://medium.com/@hayavuk/why-virtual-dom-is-slower-2d9b964b4c9e">Why Virtual DOM is slower</a></summary>
+><summary>虚拟DOM系统的辩证思考：<a href="https://medium.com/@hayavuk/why-virtual-dom-is-slower-2d9b964b4c9e">Why Virtual DOM is slower</a></summary>
 >
->根据定义，**虚拟DOM** 比 **精细地直接更新DOM（`innerHTML`）** 更慢。虚拟DOM是执行DOM更新的一种折衷方式、一种权衡，尽管没有提升性能，但带来很多好处，可以提升开发人员的开发效率。
+>根据定义，**虚拟DOM** 比 **精细地直接更新DOM（`innerHTML`）** 更慢。虚拟DOM是执行DOM更新的一种折衷方式、一种权衡，尽管没有提升性能，但带来很多好处，可以提升开发人员的开发效率（提供了开发人员：“用数据驱动视图”代替“频繁操作DOM”的能力）。
 ></details>
+
+- （响应式系统和）虚拟DOM系统只能单向操作DOM结构。
+
+    若使用非Vue控制的方法直接修改DOM结构，无法~~反向对响应式系统和虚拟DOM系统起效果~~，将导致虚拟DOM系统与DOM结构不匹配。因此若使用了虚拟DOM系统，必须严格控制仅用此系统操作DOM结构。
 
 ### 例子
 1. 使用debounce或throttle
@@ -1531,12 +1549,12 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     ```
 
 ### [SSR](https://ssr.vuejs.org/zh/)
-1. 若在`mounted`之前改变DOM，会导致“客户端激活”（client-side hydration）时，客户端的虚拟DOM和服务端传来的DOM不同而出问题。
+1. 若在`mounted`之前改变DOM，会导致“客户端激活”（client-side hydration）时，客户端的虚拟DOM（从服务端渲染完毕传递来的JSON字符串，在客户端解析而成。如：nuxt的`window.__NUXT__`）和服务端传来的DOM（服务端渲染完毕传输来的HTML）不同而出问题。
 
     ><details>
     ><summary>客户端激活时</summary>
     >
-    >1. 在开发模式下，Vue将推断客户端生成的虚拟DOM（virtual DOM），是否与从服务器渲染的DOM结构（DOM structure）匹配。如果无法匹配，它将退出混合模式，丢弃现有的DOM并从头开始渲染。
+    >1. 在开发模式下，Vue将判断（从服务端渲染完毕传递来的JSON字符串，在客户端解析而成的）虚拟DOM（virtual DOM），是否与从服务端渲染完毕传输来的DOM结构（DOM structure）匹配。如果无法匹配，它将退出混合模式，丢弃现有的DOM并从头开始渲染。
     >2. 在生产模式下，此检测会被跳过，以避免性能损耗。
     ></details>
 
@@ -1640,7 +1658,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         5. `exact`：（默认：`false`）：是否精确激活
         6. `event`：（默认：`'click'`）：触发导航的事件
         7. `active-class`：（默认：`'router-link-active'`）：链接激活时使用的CSS类名
-        8. `exact-active-class`：（默认：`'router-link-exact-active'`）：被精确匹配的时候应该激活的CSS类名
+        8. `exact-active-class`：（默认：`'router-link-exact-active'`）：被精确匹配时应该激活的CSS类名
     2. `<router-view/>`：渲染路由匹配的组件（可嵌套）
 
         `name`：（默认：`'default'`）命名视图的名字
@@ -2117,20 +2135,19 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         JS文件（可注入`Vue`，拥有上下文）。在Vue根应用的实例化前需要运行的Vue插件（Vue添加全局功能，仅执行一次。切换路由之后不再执行）。
 
-        ><details>
-        ><summary>除了Vue原本就有的<code>Vue.use(<a href="https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#插件plugin">插件</a>)</code>，还可用nuxt特有的<code>export default 方法</code>（操作context、inject）</summary>
-        >
-        >e.g.
-        >
-        >```javascript
-        >// plugins/stat-plugin.js
-        >export default (context, inject) => {
-        >  // 在Vue实例、组件、`pages`组件新增属性（`asyncData`、`fetch`、`layout`）的上下文.app、store的actions/mutations，创建`$stat`方法
-        >  inject('stat', () => {})
-        >}
-        >```
-        ></details>
+        - 除了Vue原本就有的<code>Vue.use(<a href="https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#插件plugin">插件</a>)</code>，还可用nuxt特有的`export default 方法`（操作context、inject）
 
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```javascript
+            >// plugins/stat-plugin.js
+            >export default (context, inject) => {
+            >  // 在Vue实例、组件、`pages`组件新增属性（`asyncData`、`fetch`、`layout`）的上下文.app、store的actions/mutations，创建`$stat`方法
+            >  inject('stat', () => {})
+            >}
+            >```
+            ></details>
         - 引用方式：`nuxt.config.js`中加入`plugins`属性
 
             <details>

@@ -18,8 +18,8 @@
 
         1. [绑定、解绑事件](#原生js绑定解绑事件)
         1. [阻止冒泡和阻止浏览器默认行为](#原生jsjquery阻止冒泡和阻止浏览器默认行为)
-        1. [实现判断按下具体某按键](#原生jsjquery实现判断按下具体某按键)
         1. [事件代理](#原生js事件代理)
+        1. [实现判断按下具体某按键](#原生jsjquery实现判断按下具体某按键)
         1. [拖拽和放下](#原生js拖拽和放下)
         1. [触摸屏模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）](#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)
         1. [判断事件在浏览器是否存在](#原生js判断事件在浏览器是否存在)
@@ -47,7 +47,7 @@
         1. [输入框光标位置的获取和设置](#原生js输入框光标位置的获取和设置)
         1. [文本选区覆盖某DOM的文本范围](#原生js文本选区覆盖某dom的文本范围)
         1. [针对WAP的阻止滚动冒泡（仅DOM）](#原生js针对wap的阻止滚动冒泡仅dom)
-        1. [获取滚动轴宽度（或高度）](#原生js获取滚动轴宽度或高度)
+        1. [获取滚动条宽度（或高度）](#原生js获取滚动条宽度或高度)
         1. [验证邮箱有效性](#原生js验证邮箱有效性)
         1. [创建兼容的XHR对象](#原生js创建兼容的xhr对象)
         1. [动态添加脚本、样式](#原生js动态添加脚本样式)
@@ -527,6 +527,17 @@ var eventUtil = {
         // 或简写：$('...').on('...', false);
         ```
 
+### *原生JS*事件代理
+```javascript
+dom.addEventListener('事件名', function (e) {
+  const event = e || window.event
+  const target = event.target || event.srcElement // 兼容ie8-
+
+  // target为目标元素（捕获的终点、冒泡的起点）；可以用dom.matches(CSS选择器)判断是否是选择器
+  // 对target满足的元素进行操作
+})
+```
+
 ### *原生JS*、jQuery实现判断按下具体某按键
 1. `KeyboardEvent.key`
 
@@ -607,17 +618,6 @@ var eventUtil = {
         });
         ```
 >线上查询：[keycode.info](http://keycode.info/)。
-
-### *原生JS*事件代理
-```javascript
-dom.addEventListener('事件名', function (e) {
-  const event = e || window.event
-  const target = event.target || event.srcElement // 兼容ie8-
-
-  // target为目标元素（捕获的终点、冒泡的起点）；可以用dom.matches(CSS选择器)判断是否是选择器
-  // 对target满足的元素进行操作
-})
-```
 
 ### *原生JS*拖拽和放下
 - 步骤：
@@ -1638,7 +1638,7 @@ const a = new ScrollStopPropagation(document.getElementById('j-bounce'))
 [JSFiddle demo](https://jsfiddle.net/realgeoffrey/hbadqyew/)
 >参考[ScrollFix](https://github.com/joelambert/ScrollFix)。
 
-### *原生JS*获取滚动轴宽度（或高度）
+### *原生JS*获取滚动条宽度（或高度）
 ```javascript
 function getScrollBarWidth() {
     if (typeof arguments.callee.barWidth !== 'undefined') {
@@ -2790,10 +2790,6 @@ var a = new RepeatRAF(function () {
 [JSFiddle demo](https://jsfiddle.net/realgeoffrey/j9dkuwwv/)
 
 >滚动事件代理可以代理在`window`或监控图片加载的滚动节点上。
->- SEO（lazyload大部分时候和SEO相违背）
->
->    1. 可以在lazyload的图片后面添加`<noscript><img src="真实地址" /></noscript>`来针对爬虫。
->    2. Googlebot可以看到IntersectionObserver API滚动加载的内容（无法~~scroll~~、~~其他交互~~）。
 
 ### jQuery节点跟随屏幕滚动
 1. `fixed`：

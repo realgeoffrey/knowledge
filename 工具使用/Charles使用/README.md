@@ -28,7 +28,7 @@ HTTP调试工具：通过将Charles设置成**系统的网络访问代理服务�
 
 ![Charles图](./images/1.png)
 
->当你刷新页面的时候，只会在当前session中捕获请求。当关闭session后会导致已经在此session捕获的网站无法在其他session捕获，需要重新启动Charles或新建session。
+>当你刷新页面时，只会在当前session中捕获请求。当关闭session后会导致已经在此session捕获的网站无法在其他session捕获，需要重新启动Charles或新建session。
 
 ### 显示捕获列表方式
 1. Structure
