@@ -3,8 +3,8 @@
 ## 目录
 1. [服务端安装](#服务端安装)
 
-    1. [通过docker安装服务器：Shadowsocks、Cisco IPSec（IPSec Xauth PSK）](#通过docker安装服务器shadowsockscisco-ipsecipsec-xauth-psk)
-    1. [非docker环境安装服务器：Shadowsocks、IKEv2（IKEv1）](#非docker环境安装服务器shadowsocksikev2ikev1)
+    1. [通过Docker安装服务器：Shadowsocks、Cisco IPSec（IPSec Xauth PSK）](#通过docker安装服务器shadowsockscisco-ipsecipsec-xauth-psk)
+    1. [非Docker环境安装服务器：Shadowsocks、IKEv2（IKEv1）](#非docker环境安装服务器shadowsocksikev2ikev1)
 1. [客户端配置](#客户端配置)
 
     1. [Shadowsocks](#shadowsocks客户端配置)
@@ -14,30 +14,39 @@
 ---
 ## 服务端安装
 
->使用docker是最快捷的方式。
+>使用Docker是最快捷的方式。
 
-### 通过docker安装服务器：Shadowsocks、Cisco IPSec（IPSec Xauth PSK）
->[docker](https://www.docker.com/)建议Linux内核在3.0以上。[Bandwagon](https://bwh1.net/)内核只有2.6，无法使用docker；[vultr](https://my.vultr.com/)可以使用docker。
+### 通过Docker安装服务器：Shadowsocks、Cisco IPSec（IPSec Xauth PSK）
+>[Docker](https://www.docker.com/)建议Linux内核在3.0以上。[Bandwagon](https://bwh1.net/)内核只有2.6，无法使用Docker；[vultr](https://my.vultr.com/)可以使用Docker。
 
-- 安装、启动docker
+- 安装、启动Docker（若已安装Docker，不要再次安装/启动）
 
     ```bash
-    curl -fsSL https://get.docker.com/ | sh #安装。或用官网安装方式
+    curl -fsSL https://get.docker.com/ | sh # 安装。或用官网安装方式
 
-    service docker start    #启动
+    service docker start    # 启动
     ```
 1. Shadowsocks服务端安装
 
+    >来自：[Shadowsocks-libev Docker Image](https://github.com/shadowsocks/shadowsocks-libev/blob/master/docker/alpine/README.md#shadowsocks-libev-docker-image)。
+
     ```bash
-    docker run -d -p 服务端口号:8888 imlonghao/shadowsocks-go -p 8888 -k 密码 -m aes-256-cfb -t 60
+    docker pull shadowsocks/shadowsocks-libev
+
+    docker run -e PASSWORD=密码 -p 服务端口号:8388 -p 服务端口号:8388/udp -d shadowsocks/shadowsocks-libev  # 默认加密方式：aes-256-gcm
     ```
 2. Cisco IPSec（IPSec Xauth PSK）服务端安装
+
+    >来自：[docker-strongswan](https://github.com/kitten/docker-strongswan)。
 
     ```bash
     docker run -d -p 500:500/udp -p 4500:4500/udp -p 1701:1701/udp -e VPN_USER=账户名称 -e VPN_PASSWORD=密码 -e VPN_PSK=密钥 --privileged philplckthun/strongswan
     ```
 
-### 非docker环境安装服务器：Shadowsocks、IKEv2（IKEv1）
+### 非Docker环境安装服务器：Shadowsocks、IKEv2（IKEv1）
+<details>
+<summary>（推荐<a href="https://github.com/realgeoffrey/knowledge/blob/master/工具使用/科学上网/README.md#通过docker安装服务器shadowsockscisco-ipsecipsec-xauth-psk">通过Docker安装服务器</a>）</summary>
+
 1. Shadowsocks服务端安装
 
     >来自：[teddysun:shadowsocks_install](https://github.com/teddysun/shadowsocks_install#shadowsocks-gosh)。
@@ -56,10 +65,10 @@
     2. 查看状态
 
         ```bash
-        /etc/init.d/shadowsocks start   #启动
-        /etc/init.d/shadowsocks stop    #停止
-        /etc/init.d/shadowsocks restart #重启
-        /etc/init.d/shadowsocks status  #状态
+        /etc/init.d/shadowsocks start   # 启动
+        /etc/init.d/shadowsocks stop    # 停止
+        /etc/init.d/shadowsocks restart # 重启
+        /etc/init.d/shadowsocks status  # 状态
         ```
     3. 卸载
 
@@ -135,20 +144,20 @@
         1. 命令需要手动开启，
 
             ```bash
-            ipsec start   #启动服务
+            ipsec start   # 启动服务
 
-            ipsec stop    #关闭服务
-            ipsec restart #重启服务
-            ipsec reload  #重新读取
-            ipsec status  #查看状态
-            ipsec --help  #查看帮助
+            ipsec stop    # 关闭服务
+            ipsec restart # 重启服务
+            ipsec reload  # 重新读取
+            ipsec status  # 查看状态
+            ipsec --help  # 查看帮助
             ```
         2. 添加 **/usr/local/sbin/ipsec start**到自启动脚本文件中（如：rc.local等）
 
             ```bash
             vi /etc/rc.d/rc.local
 
-            #添加
+            # 添加
             /usr/local/sbin/ipsec start
             ```
     6. 卸载
@@ -162,6 +171,7 @@
             ```
         2. 删除脚本所在目录的相关文件（one-key-ikev2.sh、strongswan.tar.gz、strongswan文件夹、my_key文件夹）。
         3. 检查iptables配置。
+</details>
 
 ---
 ## 客户端配置
