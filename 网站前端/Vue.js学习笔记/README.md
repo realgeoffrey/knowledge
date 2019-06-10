@@ -23,6 +23,9 @@
 1. [其他概念](#其他概念)
 
 ---
+
+>约定：`vm`（ViewModel缩写）变量名表示：Vue实例。
+
 ## [vue](https://github.com/vuejs/vue)
 - 心得
 
@@ -162,6 +165,7 @@
                   }
                 })
                 ```
+            >不能和表达式一起使用，仅能绑定属性名：错误：~~`v-bind:title.sync="属性名 + '!'"`~~。
             </details>
         2. `.prop`（绑定到DOM的`property`而不是HTML标签的 ~~`attribute`~~）
         3. `.camel`（小驼峰式camelCase转换为大驼峰式PascalCase）
@@ -343,7 +347,10 @@
 
             1. 用`:value="表达式"`；
             2. 若`type="checkbox"`，则用`:true-value="表达式" :false-value="表达式"`。
-7. `v-once`一次性插值，不再~~双向绑定~~
+    >不能和表达式一起使用，仅能绑定属性名：错误：~~`v-model="属性名 + '!'"`~~。
+7. `v-once`只渲染元素和组件一次
+
+    随后的重新渲染，元素/组件及其所有的子节点将被视为静态内容并跳过。这可以用于优化更新性能。
 8. `v-text`等价于：`{{  }}`
 9. `v-html`输入真正HTML
 
@@ -663,9 +670,9 @@
 7. `methods`（对象）：可调用方法
 
     >1. `new`methods里的方法，方法体内的`this`指向这个实例，而非~~Vue实例~~。建议不要在methods中添加构造函数，而改用`import`方式引入构造函数。
-    >2. template的每次改变，都会导致VNode重新渲染（VNode在differ之后的nextTick才会真的在DOM中重新渲染），也会导致没有缓存值的methods重新调用
+    >2. template的每次改变，都会导致VNode重新渲染（VNode在differ之后的nextTick才会真的在DOM中重新渲染），也会导致没有缓存值的methods重新调用。
     >
-    >    若在`template`里调用`methods`中的方法从而双向绑定了数据（因为template最终是成为render函数，且每一次的数据改变都会导致整个组件的VNode重新渲染，其他方式的数据都有缓存，而调用`methods`的值没有缓存），则数据由调用`methods`而双向绑定的值，会随着任意模板数据改变而重新执行求值。
+    >    若在`template`里调用`methods`中的方法从而绑定了数据（因为template最终是成为render函数，且每一次的数据改变都会导致整个组件的VNode重新渲染，其他方式的数据都有缓存，而调用`methods`的值没有缓存），则数据由调用`methods`而绑定的值，会随着任意模板数据改变而重新执行求值。
 
 ><details>
 ><summary><code>methods</code>、生命周期钩子都能使用<code>async-await</code></summary>
@@ -1270,30 +1277,32 @@
 
     <summary><del>可以在组件内部（或Vue实例内部）或外部，再创建另一个Vue实例，并且可以互相通信</del></summary>
 
-    主要为了解决：要挂载到不在组件操作范围内的DOM（不建议、反模式）。
+    >不建议、反模式。
+
+    主要为了解决：要挂载到不在组件操作范围内的DOM、或组件外生成的DOM（如富文本内要嵌入Vue实例）。
 
     ```javascript
     // 某单文件组件One.vue
     import Vue from 'vue'
-    import store from '@/store'
-    import router from '@/router'
-    import Other from '@/components/Other.vue'
+    import store from '@/store'     // 若是nuxt，则直接使用实例上：vm.$store
+    import router from '@/router'   // 若是nuxt，则直接使用实例上：vm.$router
+    import OtherComponent from '@/components/Other.vue'
 
     export default {
       data () {
         return {
           text: '123',
-          dom: null
+          vm: null
         }
       },
       mounted () {
         // 新建一个Vue实例
-        const OtherVue = Vue.extend(Other)  // 创建Vue子类，继续创建Vue实例需要再`new`创建好的子类
-        this.dom = new OtherVue({  // 后定义，类似于mixin的合并逻辑（钩子：先定义执行 -> 后定义执行；非钩子：后定义执行、先定义忽略）
-          store,  // 共享store
-          router, // 共享router
-          created () {  // 合并。先定义的钩子先执行，后定义的钩子后执行
-            console.log('father created')
+        const OtherVue = Vue.extend(OtherComponent)  // 创建Vue子类，继续创建Vue实例需要再`new`创建好的子类
+        this.vm = new OtherVue({  // 后定义，类似于mixin的合并逻辑（钩子：先定义执行 -> 后定义执行；非钩子：后定义执行、先定义忽略）
+          store,  // 共享store。若是nuxt，则直接：store: this.$store
+          router, // 共享router。若是nuxt，则直接：router: this.$router
+          beforeDestroy () {    // 合并。先定义的钩子先执行，后定义的钩子后执行
+            this.$el.remove()   // 删除dom自己
           },
           methods: {  // 合并。若属性名相同则后定义的覆盖先定义的
             changeFatherText: () => {
@@ -1304,15 +1313,16 @@
             myText: () => {
               return this.text  // // this为当前的组件One.vue
             }
+          },
+          propsData: {
+            传入的props属性: 值
           }
-        }).$mount().$el
+        }).$mount()
 
-        document.getElementById('other').appendChild(this.dom)    // 要挂载到不在组件操作范围内的DOM（若要挂载到组件内，请在组件内的`<template>`进行）
+        document.getElementById('other').appendChild(this.vm.$el)
       },
       beforeDestroy () {
-        document.getElementById('other').removeChild(this.dom)
-
-        this.dom = null
+        this.vm.$destroy()
       }
     }
     ```
@@ -1589,7 +1599,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 >2. 虚拟DOM（virtual DOM）：由Vue组件树建立起来的整个**VNode树**。
 ></details>
 
-- 在底层的实现上，Vue将模板编译成虚拟DOM渲染函数，虚拟DOM是对象实现的树形结构。
+1. 在底层的实现上，Vue将模板编译成虚拟DOM渲染函数，虚拟DOM是对象实现的树形结构。
 
     <details>
     <summary>e.g.</summary>
@@ -1605,7 +1615,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     }
     ```
     </details>
-- 结合响应式系统，Vue能够智能地计算出最少需要重新渲染多少组件，并把DOM操作次数减到最少。
+2. 结合响应式系统，Vue能够智能地计算出最少需要重新渲染多少组件，并把DOM操作次数减到最少。
 
 ><details>
 ><summary>虚拟DOM系统的辩证思考：<a href="https://medium.com/@hayavuk/why-virtual-dom-is-slower-2d9b964b4c9e">Why Virtual DOM is slower</a></summary>
@@ -1613,7 +1623,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 >根据定义，**虚拟DOM** 比 **精细地直接更新DOM（`innerHTML`）** 更慢。虚拟DOM是执行DOM更新的一种折衷方式、一种权衡，尽管没有提升性能，但带来很多好处，可以提升开发人员的开发效率（提供了开发人员：“用数据驱动视图”代替“频繁操作DOM”的能力）。
 ></details>
 
-- （响应式系统和）虚拟DOM系统只能单向操作DOM结构。
+3. （响应式系统和）虚拟DOM系统只能单向操作DOM结构。
 
     若使用非Vue控制的方法直接修改DOM结构，无法~~反向对响应式系统和虚拟DOM系统起效果~~，将导致虚拟DOM系统与DOM结构不匹配。因此若使用了虚拟DOM系统，必须严格控制仅用此系统操作DOM结构。
 
@@ -2901,7 +2911,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         （旧时代到现在）相对于原生JS，更好的API，兼容性极好的DOM、AJAX操作。面向网页元素编程。
     2. Vue.js
 
-        实现MVVM的数据双向绑定，实现自己的组件系统。面向数据编程。
+        实现MVVM的vm和view的双向绑定（单向数据流），实现自己的组件系统。面向数据编程。
 2. 优劣势对比
 
     1. jQuery

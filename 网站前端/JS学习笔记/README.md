@@ -2708,65 +2708,106 @@
 
         `this`：传入的对象
 
-    - 总结：`this`——调用函数的那个对象
+    - 总结：
 
-        <details>
-        <summary>e.g.</summary>
+        1. `this`：调用函数的那个对象（与在什么作用域无关）。
 
-        ```javascript
-        var x = 'global';
+            <details>
+            <summary>e.g.</summary>
 
-        function test() {
-            console.log(this.x + '|' + _test() + '|' + (function () {return this.x;}()));
+            ```javascript
+            var x = 'global';
 
-            function _test() {
+            function test() {
+                console.log(this.x + '|' + _test() + '|' + (function () {return this.x;}()));
 
-                return this.x;
+                function _test() {
+
+                    return this.x;
+                }
             }
-        }
 
-        /* window：方法没有对象调用（直接函数调用、立即调用的函数表达式，且与作用域无关） */
-        test();                 // global|global|global
+            /* window：方法没有对象调用（直接函数调用、立即调用的函数表达式，且与作用域无关） */
+            test();                 // global|global|global
 
-        var obj1 = {
-            x: 1,
-            test: function () {
-                var that = this;
+            var obj1 = {
+                x: 1,
+                test: function () {
+                    var that = this;
 
-                return function () {
+                    return function () {
 
-                    console.log(this.x + '|' + that.x);
-                };
+                        console.log(this.x + '|' + that.x);
+                    };
+                }
+            };
+            (obj1.test()());        // global|1
+
+
+            /* 上级对象：函数作为某个对象的方法调用 */
+            var obj2 = {};
+            obj2.x = 2;
+            obj2.func = test;
+            obj2.func();            // 2|global|global
+
+
+            /* 新实例对象：构造函数 */
+            function Test() {
+                this.x = 3;
+                console.log(this.x + '|' + _test() + '|' + (function () {return this.x;}()));
+
+                function _test() {
+
+                    return this.x;
+                }
             }
-        };
-        (obj1.test()());        // global|1
+            var obj3 = new Test();  // 3|global|global
 
 
-        /* 上级对象：函数作为某个对象的方法调用 */
-        var obj2 = {};
-        obj2.x = 2;
-        obj2.func = test;
-        obj2.func();            // 2|global|global
+            /* 传入的指定对象：apply或call调用 */
+            var obj4 = {x: 4};
+            obj2.func.call(obj4);   // 4|global|global
+            ```
+            </details>
+        2. 无论函数赋值给任何变量或属性，执行函数时，其内部变量的作用域始终不变（闭包）。
 
+            <details>
+            <summary>e.g.</summary>
 
-        /* 新实例对象：构造函数 */
-        function Test() {
-            this.x = 3;
-            console.log(this.x + '|' + _test() + '|' + (function () {return this.x;}()));
+            ```javascript
+            var aa
 
-            function _test() {
+            function func () {
+              var count = 0
 
-                return this.x;
+              function _func () {
+                console.log(count++)
+                return _func
+              }
+
+              aa = _func
+              return _func
             }
-        }
-        var obj3 = new Test();  // 3|global|global
 
 
-        /* 传入的指定对象：apply或call调用 */
-        var obj4 = {x: 4};
-        obj2.func.call(obj4);   // 4|global|global
-        ```
-        </details>
+            var p = func()      // 返回_func
+
+            p() // => 0。返回_func
+
+            var bb = {
+              cc: aa()          // => 1。返回_func
+            }
+
+            window.dd = bb.cc() // => 2。返回_func
+
+            function E () {
+              this.funcE = window.dd()
+            }
+            var ee = new E()    // => 3。返回_func
+
+            ee.funcE()          // => 4。返回_func
+            ```
+            </details>
 7. <a name="函数-参数"></a>参数
 
     1. 参数变量在函数体内是默认声明的（传递进函数体），所以不能在函数体内用`let`或`const`再次声明同名参数（`var`可以）。
