@@ -246,44 +246,48 @@ function hasCookie (checkKey) {
 /**
  * 获取URL相关信息
  * @param {String} [url = window.location.href] - URL
- * @returns {Object} location - 包括href、protocol、hostname、port、pathname、search、searchObj、hash的对象
+ * @returns {Object} location - 包括href、protocol、hostname、port、pathname、search、searchObj、hash的对象。若不是合法URL，返回false
  */
 function getLocation (url) {
-  url = url || window.location.href
+  try {
+    url = url || window.location.href
 
-  /* 为了方便阅读 */
-  var _protocol = /^(?:([A-Za-z]+):)?/.source,
-    _slash = /\/*/.source,
-    _hostname = /([0-9A-Za-z.\-]+)/.source,
-    _port = /(?::(\d+))?/.source,
-    _pathname = /(\/[^?#]*)?/.source,
-    _search = /(?:\?([^#]*))?/.source,
-    _hash = /(?:#(.*))?$/.source
+    /* 为了方便阅读 */
+    var _protocol = /^(?:([A-Za-z]+):)?/.source,
+      _slash = /\/*/.source,
+      _hostname = /([0-9A-Za-z.-]+)/.source,
+      _port = /(?::(\d+))?/.source,
+      _pathname = /(\/[^?#]*)?/.source,
+      _search = /(?:\?([^#]*))?/.source,
+      _hash = /(?:#(.*))?$/.source
 
-  var regex = new RegExp(_protocol + _slash + _hostname + _port + _pathname + _search + _hash, 'g'),
-    regexArr = regex.exec(url),
-    keyArr = ['href', 'protocol', 'hostname', 'port', 'pathname', 'search', 'hash'],
-    location = { 'searchObj': {} },
-    search, searchArr, searchItem, key, value
+    var regex = new RegExp(_protocol + _slash + _hostname + _port + _pathname + _search + _hash, 'g'),
+      regexArr = regex.exec(url),
+      keyArr = ['href', 'protocol', 'hostname', 'port', 'pathname', 'search', 'hash'],
+      location = { 'searchObj': {} },
+      search, searchArr, searchItem, key, value
 
-  keyArr.forEach(function (item, index) {
-    location[item] = regexArr[index] || ''
-  })
+    keyArr.forEach(function (item, index) {
+      location[item] = regexArr[index] || ''
+    })
 
-  search = location['search']
+    search = location['search']
 
-  searchArr = search.split('&')
+    searchArr = search.split('&')
 
-  for (var i = 0, len = searchArr.length; i < len; i++) {
-    if (searchArr[i] !== '') {
-      searchItem = searchArr[i].split('=')
-      key = searchItem.shift()
-      value = searchItem.join('=')
-      location['searchObj'][key] = value
+    for (var i = 0, len = searchArr.length; i < len; i++) {
+      if (searchArr[i] !== '') {
+        searchItem = searchArr[i].split('=')
+        key = searchItem.shift()
+        value = searchItem.join('=')
+        location['searchObj'][key] = value
+      }
     }
-  }
 
-  return location
+    return location
+  } catch (e) {  // 不是合法URL
+    return false
+  }
 }
 ```
 >参考：[用正则表达式分析 URL](http://harttle.com/2016/02/23/javascript-regular-expressions.html)。
@@ -2285,6 +2289,8 @@ var b = new ScrollDirection({
       <img src="非WebP图片地址">
     </picture>
     ```
+
+    >`<img>`外嵌套一层`<picture>`，样式要注意，尤其是使用子元素选择器（`>`）时。如：`xx > img`时无法选中，需要`xx > picture > img`。
 
 ### *原生JS*DOM展示或消失执行方法（IntersectionObserver）
 ```javascript
