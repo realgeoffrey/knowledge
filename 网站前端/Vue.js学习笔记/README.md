@@ -298,7 +298,7 @@
         >不支持修饰符。
 
         e.g. `<button v-on="{ mousedown: doThis, mouseup: doThat }"/>`
-6. `v-model`表单
+6. `v-model`表单的双向绑定
 
     >忽略表单元素上的`value`、`checked`、`selected`等初始值，而仅通过Vue实例赋值。
 
@@ -670,9 +670,9 @@
 7. `methods`（对象）：可调用方法
 
     >1. `new`methods里的方法，方法体内的`this`指向这个实例，而非~~Vue实例~~。建议不要在methods中添加构造函数，而改用`import`方式引入构造函数。
-    >2. template的每次改变，都会导致VNode重新渲染（VNode在differ之后的nextTick才会真的在DOM中重新渲染），也会导致没有缓存值的methods重新调用。
+    >2. template的每次改变，都会导致VNode重新渲染，也会导致methods重新调用（无论methods使用的值是否变化）。
     >
-    >    若在`template`里调用`methods`中的方法从而绑定了数据（因为template最终是成为render函数，且每一次的数据改变都会导致整个组件的VNode重新渲染，其他方式的数据都有缓存，而调用`methods`的值没有缓存），则数据由调用`methods`而绑定的值，会随着任意模板数据改变而重新执行求值。
+    >    若在`template`里调用`methods`中的方法从而绑定了数据（因为template最终是成为render函数，且每一次的数据改变都会导致整个组件的VNode重新渲染（VNode在differ之后的nextTick才会真的在DOM中重新渲染），其他方式的数据都有缓存，而调用`methods`的值没有缓存），则数据由调用`methods`而绑定的值，会随着任意模板数据改变而重新执行求值（无论methods使用的值是否变化）。
 
 ><details>
 ><summary><code>methods</code>、生命周期钩子都能使用<code>async-await</code></summary>
@@ -1232,10 +1232,11 @@
         })
         ```
     4. 当组件中包含大量静态内容时，可以考虑使用`v-once`将渲染结果在组件注册的`template`字段里缓存起来。
-    5. 异步组件。
-    6. 高级异步组件。
-    7. 递归组件。
-    8. 循环组件。
+    5. 若组件内有多个`if-else`的展示逻辑，则尽量创建新的子组件，把每个子组件的逻辑放到子组件内部。
+    6. 异步组件。
+    7. 高级异步组件。
+    8. 递归组件。
+    9. 循环组件。
 
 ### 单文件组件
 1. （有导出的）组件内部可以直接引用自身组件（小心无止境的循环引用）
@@ -1595,17 +1596,23 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 ><details>
 ><summary>约定</summary>
 >
->1. 虚拟节点 (virtual node，VNode)：Vue通过建立一个VNode对真实DOM进行单向操作。
+>1. 虚拟节点 (virtual node，VNode)：Vue通过建立一个VNode反映真实DOM结构。
 >2. 虚拟DOM（virtual DOM）：由Vue组件树建立起来的整个**VNode树**。
 ></details>
 
-1. 在底层的实现上，Vue将模板编译成虚拟DOM渲染函数，虚拟DOM是对象实现的树形结构。
+- 一般算法实现步骤：
+
+    1. 用JS对象模拟DOM结构，生成虚拟DOM；
+    2. 比较前后两棵虚拟DOM的差异；
+    3. 把差异应用到真正的DOM结构。
+
+1. 在底层的实现上，Vue将模板编译成虚拟DOM渲染函数。
 
     <details>
     <summary>e.g.</summary>
 
     ```javascript
-    // 虚拟DOM的伪代码
+    // 虚拟DOM的伪代码（对象实现的树形结构）
     let domNode = {
       tag: 'ul',
       attributes: { id: 'myId' },
@@ -2538,7 +2545,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         配置webpack构建。
 
-        1. `.vendor`：
+        1. ~~`.vendor`~~（已废弃）：
 
             >若在多个页面内都引用了某插件，默认情况下，在应用打包发布时，这个插件会被打包到每一个页面对应的JS。
 
@@ -2700,6 +2707,11 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         允许监听自定义文件来重新启动服务器。
     27. `watchers`
+    28. `extractCSS`
+
+        使用`extract-css-chunks-webpack-plugin`将主块中的CSS提取到一个单独的CSS文件中（自动注入模板），该文件允许单独缓存文件。
+
+        >开发模式建议关闭，否则无法热更新样式：`extractCSS: process.env.NODE_ENV === 'production'`。
     </details>
 3. <details>
 
@@ -2911,7 +2923,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         （旧时代到现在）相对于原生JS，更好的API，兼容性极好的DOM、AJAX操作。面向网页元素编程。
     2. Vue.js
 
-        实现MVVM的vm和view的双向绑定（单向数据流），实现自己的组件系统。面向数据编程。
+        实现MVVM的vm和view的“双向绑定”（单向数据流），实现自己的组件系统。面向数据编程。
 2. 优劣势对比
 
     1. jQuery

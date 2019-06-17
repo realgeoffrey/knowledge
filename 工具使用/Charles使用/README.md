@@ -157,6 +157,8 @@ repeat功能不需要刷新页面，只需要repeat请求，还可以进行压�
     2. 移动设备安装证书
 
         移动设备设置好HTTP代码后，访问[chls.pro/ssl](chls.pro/ssl)下载证书并信任。
+
+        >Android系统在设置中搜索“证书”关键字。
 2. 设置需要针对的域名：
 
     设置**Proxy -> SSL Proxying Settings**，把需要抓包的`host+端口号443`添加进去。
