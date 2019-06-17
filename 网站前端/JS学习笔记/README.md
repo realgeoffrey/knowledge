@@ -8,6 +8,7 @@
     1. [判断滚动定位](#判断滚动定位)
     1. [进行文档滚动](#进行文档滚动)
     1. [DOM相对位置](#dom相对位置)
+    1. [DOM修改](#dom修改)
     1. [`Node`与`Element`](#node与element)
     1. [`attribute`与`property`](#attribute与property)
     1. [jQuery相关](#jquery相关)
@@ -272,6 +273,25 @@
     4. `$dom.scrollLeft/Top()`
 
         返回：当前滚动条的位置（可以设置）。
+
+### DOM修改
+1. 用HTML文本覆盖：
+
+    `dom.innerHTML/outerHTML/innerText/textContent = HTML文本`
+2. 用新的DOM插入或覆盖旧的DOM：
+
+    1. 插入：
+
+        `parentNode.append/prepend/appendChild(newDom)`、`parentNode.insertBefore(newDom, oldDom)`、`oldDom.before(newDom)`
+    2. 替换：
+
+        `oldDom.replaceWith(newDom)`、`parentNode.replaceChild(newDom, oldDom)`
+3. 删除DOM：
+
+    `parentNode.removeChild(oldDom)`、`oldDom.remove()`
+4. 创建DOM：
+
+    `document.createElement(标签名)`
 
 ### `Node`与`Element`
 
@@ -3399,7 +3419,7 @@
                 5. `AJAX`
             2. microtask一般包括:
 
-                1. `process.nextTick`
+                1. `process.nextTick`（Node.js）
 
                     在当前“执行栈”的尾部——读取"任务队列"之前，添加事件。
                 2. `Promise`（`Promise.then/catch/all/race`）
@@ -3486,6 +3506,10 @@
             >- macrotask和microtast选择
             >
             >    如果想让一个任务立即执行，就把它设置为microtask，除此之外都用macrotask。因为虽然JS是异步非阻塞，但在一个事件循环中，microtask的执行方式基本上是用同步的。
+    - 空闲任务（线程空闲时才会执行，优先级非常低）：
+
+        1. `requestIdleCallback`
+        2. `IntersectionObserver`
 3. JS的事件循环运行机制：
 
     1. “执行栈”进行：
