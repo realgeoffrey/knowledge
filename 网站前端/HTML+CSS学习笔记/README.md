@@ -15,9 +15,10 @@
     1. [`em`、`%`](#em)
     1. [`line-height`](#line-height)
     1. [`<img>`的`src`属性](#img的src属性)
-    1. [横竖屏切换](#横竖屏切换)
+    1. [横竖屏切换（模拟手机屏幕旋转）](#横竖屏切换模拟手机屏幕旋转)
     1. [滚动条](#滚动条)
     1. [`@font-face`](#font-face)
+    1. [`text-align: justify;`](#text-align-justify)
 1. [HTML + CSS](#html--css)
 
     1. [禁用`<a>`的鼠标、键盘事件](#禁用a的鼠标键盘事件)
@@ -440,13 +441,13 @@
 
     >类似于针对背景图的位置、拉升：`background-position`、`background-size`（`background-repeat: no-repeat`）。
 
-### 横竖屏切换
->1. 翻转效果的节点，如果要增加内嵌滚动条，不能在此节点上增加`border-radius`，否者滚动条横竖轴颠倒。
->2. 部分Android系统（或低端机）对内嵌的滚动条（`overflow: hidden/auto;`）支持不佳，尤其增加了翻转效果后，设置的滚动条（甚至`overflow: hidden;`）会导致更多样式问题。除了去除内嵌滚动条的`border-radius`，还可以尝试给兄弟节点设置`z-index`。部分硬件较差的WebView对CSS3支持非常有限，无法做到**翻转+内嵌滚动条**（内嵌滚动条横竖轴颠倒）。
+### 横竖屏切换（模拟手机屏幕旋转）
+>1. 旋转效果的节点，如果要增加内嵌滚动条，不能在此节点上增加`border-radius`，否者滚动条横竖轴颠倒。
+>2. 部分Android系统（或低端机）对内嵌的滚动条（`overflow: hidden/auto;`）支持不佳，尤其增加了旋转效果后，设置的滚动条（甚至`overflow: hidden;`）会导致更多样式问题。除了去除内嵌滚动条的`border-radius`，还可以尝试给兄弟节点设置`z-index`。部分硬件较差的WebView对CSS3支持非常有限，无法做到**旋转+内嵌滚动条**（内嵌滚动条横竖轴颠倒）。
 >
 >- 其他解决方案：使用按钮（控制翻页或JS滚动）代替内嵌滚动条；使用`touchmove`实现滑动页面。
 
-1. 媒体查询控制横竖屏添加翻转类
+1. 媒体查询控制横竖屏添加旋转属性
 
     ```css
     @media (orientation: portrait) {
@@ -460,13 +461,13 @@
         }
     }
     ```
-2. 翻转使用的媒体查询：
+2. 旋转使用的媒体查询：
 
     >要求：页面没有滚动条，内容都在一屏视口内；设计稿只有一份，但要适应各种分辨率机型。
 
     1. 因为浏览器都有头尾栏，所以要额外扩展横竖屏的媒体查询范围（大、小两方面都要扩展）。
     2. 竖屏（`orientation: portrait`）根据`width`，横屏（`orientation: landscape`）根据`height`。
-3. 用JS方法控制：[模拟手机翻转](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery模拟手机翻转使页面都以横屏展示)。
+3. 用JS方法控制：[模拟手机旋转](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery模拟手机旋转使页面都以横屏展示)。
 
 ### 滚动条
 1. 若`overflow-x`和`overflow-y`相同，则等同于`overflow`；若不同，且其中一个值为`visible`，另一个为`hidden/scroll/auto`，则`visible`重置为`auto`。
@@ -510,6 +511,15 @@
         2. `'\u4位16进制数'`或`'\u{16进制数}'`或`'\x2位16进制数'`或`'\3位8进制数'`。
 
             >数字数量有限制：[Unicode](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#unicode)。
+
+### `text-align: justify;`
+`text-align`：定义行内内容（例如文字）如何相对它的块父元素对齐。并不控制块元素自己的对齐，只控制它的行内内容的对齐。
+
+1. `text-align: justify;`：文字向两侧对齐，但对最后一行无效。
+2. `text-align-last`：文本中最后一行对齐规则。
+3. `text-align: justify-all;`：和`justify`一致，且最后一行也是文字向两侧对齐。
+
+>不建议中文的文章用这个属性值。建议用默认或者`text-align: start;`。
 
 ---
 ## HTML + CSS
@@ -556,12 +566,12 @@
     2. 内部可以嵌入`contenteditable="false"`的DOM：
 
         1. 不可编辑此嵌入DOM的文本。
-        2. 编辑器的删除功能不方便删除此嵌入DOM，需要额外实现删除此嵌入DOM功能。
+        2. 编辑器的删除功能不方便删除此嵌入DOM，需要额外实现删除此嵌入DOM功能（如：点击删除整个DOM）。
         3. 此嵌入DOM恢复原本逻辑交互（如：若是`<a>`，则可以跳转、hover变成鼠标手型）。
     3. 插入一个不可编辑卡片的方式：
 
         1. 插入一个`contenteditable="false"`的DOM。
-        2. 插入一个动态生成的`<img>`。
+        2. 插入一个动态生成的卡片样子的`<img>`。
 3. 实现方式：
 
     1. 使用原生[`document.execCommand`](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/execCommand)操作`contenteditable="true"`的DOM内容（或`document.designMode === 'on'`的整个文档、`某iframe.contentDocument.designMode === 'on'`的整个`<iframe>`）。
@@ -1131,7 +1141,7 @@
         2. 使用Chrome [Performance](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/timeline-tool)工具检查。
     2. 低性能设备（Android）优先调试。
 
-        1. （除了**CSS3翻转属性**与**内嵌滚动条**同时出现无法解决）样式问题都可以像处理ie6问题一样通过真机试验出解决方案。
+        1. （除了**CSS3旋转属性**与**内嵌滚动条**同时出现无法解决）样式问题都可以像处理ie6问题一样通过真机试验出解决方案。
         2. 有些低版本机型会有类似ie6的CSS问题，包括**CSS3的厂商前缀（`-webkit-`等）**、**层叠关系（`z-index`）**，并且要更注意**渲染性能（层产生）**。
 
 ### 经验技巧

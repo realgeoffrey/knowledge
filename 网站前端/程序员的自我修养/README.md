@@ -34,6 +34,8 @@
 
 ---
 ### 数据结构（data structure）
+>更详细的数据结构：[javascript-algorithms](https://github.com/trekhleb/javascript-algorithms)。
+
 计算机中存储、组织数据的方式；意味着接口或封装（一个数据结构可被视为两个函数之间的接口）。
 
 >1. `程序 = 数据结构 + 算法`：数据结构是为解决特定情况下的问题而设计的存储数据方式，算法是操作该数据结构的方法。

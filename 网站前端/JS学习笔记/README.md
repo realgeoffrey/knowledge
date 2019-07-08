@@ -598,22 +598,40 @@
 
     1. 原生JS：
 
-        ```javascript
-        // 创建自定义事件
-        var event = new Event('事件名');   // 新
-        // 或：var event = document.createEvent('Event'); event.initEvent('事件名', true, true);   // 旧
+        >来自：[MDN:CustomEvent](https://developer.mozilla.org/zh-CN/docs/Web/API/CustomEvent/CustomEvent)。
 
+        ```javascript
         // 监听自定义事件
-        dom.addEventListener('事件名', function (e) { ... }, false);
+        dom.addEventListener('事件名', function (e) {...}, false) // e.bubbles/cancelable/composed/detail
+
+        // 创建自定义事件
+        var event = new CustomEvent('事件名'[, 参数对象]) // 参数对象：bubbles、cancelable、composed、detail（自定义数据）
 
         // 触发
-        dom.dispatchEvent(event);
+        dom.dispatchEvent(event)
         ```
+
+        ><details>
+        ><summary>或<code>Event</code></summary>
+        >
+        >来自：[MDN:Event](https://developer.mozilla.org/zh-CN/docs/Web/API/Event/Event)。
+        >
+        >```javascript
+        >// 监听自定义事件
+        >dom.addEventListener('事件名', function (e) {...}, false) // e.bubbles/cancelable/composed
+        >
+        >// 创建自定义事件
+        >var event = new Event('事件名'[, 参数对象])       // 参数对象：bubbles、cancelable、composed。无法传递自定义数据
+        >
+        >// 触发
+        >dom.dispatchEvent(event)
+        >```
+        ></details>
     2. `jQuery`：
 
         ```javascript
-        $('选择器').on('自定义事件', function () {});
-        $('选择器').trigger('自定义事件');
+        $('选择器').on('自定义事件', function () {})
+        $('选择器').trigger('自定义事件')
         ```
 
 ### 事件流（event flow）
@@ -1834,7 +1852,7 @@
     >1. 若是新打开的窗口（`target="_blank"`），则会出现`document.referrer`有值，但`history.back()`已回退到底。
     >2. 若是`history.pushState/replaceState`改变路由，则不改变`document.referrer`（可能初始`document.referrer === ''`）。
     >3. 重新请求当前页面链接（如：`location.reload()`、或点击`<a href="当前页面链接">`），会导致`document.referrer === '当前页面链接'`。
-14. 使用`encodeURIComponent/decodeURIComponent`，不使用 ~~`encodeURI/decodeURI`~~
+14. 使用`encodeURIComponent/decodeURIComponent`，不使用 ~~`encodeURI/decodeURI`~~ 或 ~~`escape/unescape`（废弃）~~
 
     >`encodeURIComponent`与`encodeURI`都是对URI（统一资源标识符）进行编码。因为 ~~`encodeURI`~~ 无法产生能适用于HTTP GET/POST请求的URI（没转义`&` `=`等），所以不使用。
 
@@ -2118,14 +2136,12 @@
     >ie8、ie9仅支持与`<iframe>`，ie10+支持与`<iframe>`、`window.open()`的新窗口。不实行同源政策。
 
     ```javascript
-    // 发送方
-    目标window对象.postMessage(message, '目标源地址或*');
+    // 发送方（允许自己发给自己接受）
+    目标window对象.postMessage(信息内容, '目标源地址或*');
 
 
     // 监听的文档
-    window.addEventListener('message', function(e) {
-      console.log(e);
-    },false);
+    window.addEventListener('message', function(e) {...}, false) // e.data === 信息内容
     ```
 5. 其他方式
 
@@ -2713,6 +2729,25 @@
     >1. `new Func`等价于：`new Func()`。
     >2. `new Obj().func()`等价于：`(new Obj()).func()`（先新建实例，再调用实例的原型链）。
     >3. `new Obj.func()`等价于：`new (Obj.func)()`、`new (Obj.func)`、`new Obj.func`（新建实例）。
+
+    ><details>
+    ><summary>若构造函数返回值不是这个构造函数的实例时，则<code>new 构造函数() instanceof 构造函数 === false</code></summary>
+    >
+    >```javascript
+    >class Foo {
+    >  constructor () {
+    >    return Object.create(null)
+    >  }
+    >}
+    >console.log(new Foo() instanceof Foo)   // => false
+    >
+    >
+    >function Foo2 () {
+    >  return {}
+    >}
+    >console.log(new Foo2() instanceof Foo2) // => false
+    >```
+    ></details>
 6. 函数调用类型
 
     1. 直接函数调用（如：`alert();`）、立即调用的函数表达式（如：`(function () {}());`）
@@ -2748,7 +2783,7 @@
             }
 
             /* window：方法没有对象调用（直接函数调用、立即调用的函数表达式，且与作用域无关） */
-            test();                 // global|global|global
+            test();                 // => global|global|global
 
             var obj1 = {
                 x: 1,
@@ -2761,14 +2796,17 @@
                     };
                 }
             };
-            (obj1.test()());        // global|1
+            (obj1.test()());        // => global|1
+
+            var { test } = obj1;
+            (test()())              // => global|global
 
 
             /* 上级对象：函数作为某个对象的方法调用 */
             var obj2 = {};
             obj2.x = 2;
             obj2.func = test;
-            obj2.func();            // 2|global|global
+            obj2.func();            // => 2|global|global
 
 
             /* 新实例对象：构造函数 */
@@ -2781,12 +2819,12 @@
                     return this.x;
                 }
             }
-            var obj3 = new Test();  // 3|global|global
+            var obj3 = new Test();  // => 3|global|global
 
 
             /* 传入的指定对象：apply或call调用 */
             var obj4 = {x: 4};
-            obj2.func.call(obj4);   // 4|global|global
+            obj2.func.call(obj4);   // => 4|global|global
             ```
             </details>
         2. 无论函数赋值给任何变量或属性，执行函数时，其内部变量的作用域始终不变（闭包）。
@@ -2828,6 +2866,18 @@
             ee.funcE()          // => 4。返回_func
             ```
             </details>
+        >- 某些挂在`window`下的方法，内部实现有使用到`this`，且`this`需要指向特殊对象（如：必须指向`window`或`null`），因此当新建对象指向某方法时，注意this。
+        >
+        >    ```javascript
+        >    // e.g.
+        >    const a = {
+        >      b: window.open
+        >    }
+        >
+        >    a.b()           // 报错
+        >    a.b.call({})    // 报错
+        >    a.b.call(null)  // 正常
+        >    ```
 7. <a name="函数-参数"></a>参数
 
     1. 参数变量在函数体内是默认声明的（传递进函数体），所以不能在函数体内用`let`或`const`再次声明同名参数（`var`可以）。

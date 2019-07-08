@@ -81,7 +81,7 @@
     1. [启动、暂停CSS动画](#jquery启动暂停css动画)
     1. [获取`HTTP response header`信息](#jquery获取http-response-header信息)
     1. [修复HTML标签`placeholder`属性无效](#jquery修复html标签placeholder属性无效)
-    1. [模拟手机翻转（使页面都以“横屏”展示）](#jquery模拟手机翻转使页面都以横屏展示)
+    1. [模拟手机旋转（使页面都以“横屏”展示）](#jquery模拟手机旋转使页面都以横屏展示)
 
     >大部分情况下，jQuery内容适用于Zepto。
 
@@ -3441,7 +3441,7 @@ function fixPlaceholder($dom) {
 }
 ```
 
-### jQuery模拟手机翻转（使页面都以“横屏”展示）
+### jQuery模拟手机旋转（使页面都以“横屏”展示）
 ```html
 <style>
     .dom {
@@ -3466,7 +3466,7 @@ function fixPlaceholder($dom) {
      * 横屏展示
      * @constructor
      * @param {String} selector - 选择器
-     * @param {String} className - 翻转类
+     * @param {String} className - 旋转类
      */
     var ReversalAct = function (selector, className) {
         if (typeof Date.now !== 'function') {
@@ -3479,7 +3479,7 @@ function fixPlaceholder($dom) {
             _setTimeoutId2 = '',
             _namespace = Date.now(),
             _resizeEvent = 'onorientationchange' in window ? 'orientationchange' : 'resize',
-            _portraitFunc = function (selector, className) {    /* 屏幕高度>宽度（竖屏），增加“顺时针翻转90度的类” */
+            _portraitFunc = function (selector, className) {    /* 屏幕高度>宽度（竖屏），增加“顺时针旋转90度的类” */
                 var $dom = $(selector);
 
                 if ($(window).height() > $(window).width()) {
@@ -3540,4 +3540,4 @@ function fixPlaceholder($dom) {
     // a.stop();
 </script>
 ```
->如果对不是全屏的节点使用翻转函数，需要给节点设置：`width: 宽度 !important;height: auto !important;`。
+>如果对不是全屏的节点使用旋转函数，需要给节点设置：`width: 宽度 !important;height: auto !important;`。
