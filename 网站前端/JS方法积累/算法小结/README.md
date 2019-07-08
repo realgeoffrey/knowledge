@@ -59,6 +59,8 @@
 ></details>
 
 ---
+>更详细的算法：[javascript-algorithms](https://github.com/trekhleb/javascript-algorithms)。
+
 ## 排序算法
 >部分排序算法演示：[visualgo](https://visualgo.net/sorting)。
 

@@ -395,6 +395,9 @@ feat(details): 添加了分享功能
     	versiontag =
     ```
     </details>
+
+>所有`start`、`finish`之前，都要先把develop和master分支origin pull至最新远程分支。
+
 2. 开发新需求：
 
     ```git
@@ -402,6 +405,7 @@ feat(details): 添加了分享功能
         # -> 基于“develop的SHA”或最新develop，在本地创建并切换至“feature/需求名”分支
 
     提交具体需求的commits到本地或推送远程“feature/需求名”
+    # 必须满足“QA测试通过、同事review通过、依赖的接口上线完成、后台依赖数据配置完成”之后才可以继续进行下面操作
 
     # 本地必须先pull feature/需求名、develop分支，解决冲突、merge，否则无法执行命令
     git flow feature finish “需求名”
