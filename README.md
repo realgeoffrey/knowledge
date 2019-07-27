@@ -19,6 +19,9 @@
 >5. 名值对
 >
 >    键值/键名，key/value
+>6. 原型链（`[[Prototype]]`）
+>
+>    （非标准）`对象.__proto__`等价于：`Object.getPrototypeOf(对象)`或`Object.setPrototypeOf(对象, 原型对象)`
 ></details>
 
 ## 目录

@@ -1,11 +1,11 @@
 ### IDEs' Setting
 
-1. There are **phpstorm** and **webstorm** settings. I exported `.jar` to make sure settings in my workplace and my PCs are the same.
+1. There is **WebStorm** settings. I exported `.jar` to make sure settings in my workplace and my PCs are the same.
 
-    [phpstorm.jar](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/IDEs设置/phpstorm_07.17.jar)(webstorm can use too)
+    [webstorm.jar](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/IDEs设置/webstorm0731.jar)(PhpStorm can use too)
 2. **Help -> Edit Custom VM Options** can change the memories for the IDE.
 
->Chinese Language Pack：please go to [PhpStorm-Chinese](https://github.com/ewen0930/PhpStorm-Chinese) or [WebStorm-Chinese](https://github.com/ewen0930/WebStorm-Chinese).
+>Chinese Language Pack：please go to [WebStorm-Chinese](https://github.com/ewen0930/WebStorm-Chinese), [PhpStorm-Chinese](https://github.com/ewen0930/PhpStorm-Chinese), or [PyCharm-Chinese](https://github.com/ewen0930/PyCharm-Chinese).
 
 3. Terminal的vi乱码解决办法：
 
