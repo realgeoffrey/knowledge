@@ -73,7 +73,7 @@
 
         1. [滚动加载](#jquery滚动加载)
         1. [图片延时加载（lazyload）](#jquery图片延时加载lazyload)
-    1. [节点跟随屏幕滚动](#jquery节点跟随屏幕滚动)
+    1. [节点跟随屏幕滚动而相对静止](#jquery节点跟随屏幕滚动而相对静止)
     1. [弹出toast](#jquery弹出toast)
     1. [全选、取消全选](#jquery全选取消全选)
     1. [点击指定区域以外执行函数](#jquery点击指定区域以外执行函数)
@@ -749,7 +749,7 @@ dom.addEventListener('事件名', function (e) {
 
     // action.stop();
     ```
-    [JSFiddle demo](https://jsfiddle.net/realgeoffrey/7t25cm5t/)
+    [CodePen demo](https://codepen.io/realgeoffrey/pen/GVNPeN)
 2. WAP端的touch事件
 
     ```javascript
@@ -1559,7 +1559,7 @@ $(输入框选择器).on('mouseup keyup', function () {
 
 console.log(cursorPosition.set(输入框dom, 起始位置, 选中长度));
 ```
-[JSFiddle demo](https://jsfiddle.net/realgeoffrey/L3k46dy3/)
+[CodePen demo](https://codepen.io/realgeoffrey/pen/BXQvbZ)
 
 ### *原生JS*文本选区覆盖某DOM的文本范围
 ```javascript
@@ -1639,7 +1639,7 @@ const a = new ScrollStopPropagation(document.getElementById('j-bounce'))
 // a.stop()
 </script>
 ```
-[JSFiddle demo](https://jsfiddle.net/realgeoffrey/hbadqyew/)
+[CodePen demo](https://codepen.io/realgeoffrey/pen/oKYJOg)
 >参考[ScrollFix](https://github.com/joelambert/ScrollFix)。
 
 ### *原生JS*获取滚动条宽度（或高度）
@@ -2240,7 +2240,7 @@ var b = new ScrollDirection({
 1. 同步判断
 
     ```javascript
-    function checkWebp () {
+    function checkWebp () { // Firefox返回false但是却支持WebP…
       try {
         return (document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') === 0)
       } catch (err) {
@@ -2277,7 +2277,7 @@ var b = new ScrollDirection({
 
     /* 使用测试 */
     checkWebpFeature('lossless', function (feature, result) {
-      console.log(result) // true or false
+      console.log(result) // => true/false
     })
     ```
 
@@ -2793,11 +2793,11 @@ var a = new RepeatRAF(function () {
     // b.stop();
 </script>
 ```
-[JSFiddle demo](https://jsfiddle.net/realgeoffrey/j9dkuwwv/)
+[CodePen demo](https://codepen.io/realgeoffrey/pen/gVLZyg)
 
 >滚动事件代理可以代理在`window`或监控图片加载的滚动节点上。
 
-### jQuery节点跟随屏幕滚动
+### jQuery节点跟随屏幕滚动而相对静止
 1. `fixed`：
 
     ```html
@@ -2818,7 +2818,7 @@ var a = new RepeatRAF(function () {
 
     <script>
         /**
-         * 跟随屏幕滚动（fixed）
+         * 跟随屏幕滚动而相对静止（fixed），当到达底部某距离时“恢复”滚动
          * @constructor
          * @param {Object} $target - 跟屏目标的jQuery对象
          * @param {Number} topOffset - 触发添加topClass的距文档顶部的距离
@@ -2897,7 +2897,7 @@ var a = new RepeatRAF(function () {
         // a.stop();
     </script>
     ```
-    [JSFiddle demo](https://jsfiddle.net/realgeoffrey/v69fr64x/)
+    [CodePen demo](https://codepen.io/realgeoffrey/pen/LwbMKE)
 2. `margin-top`：
 
     ```html
@@ -2914,7 +2914,7 @@ var a = new RepeatRAF(function () {
 
     <script>
         /**
-         * 跟随屏幕滚动（margin-top变化）
+         * 跟随屏幕滚动而相对静止（margin-top变化）
          * @constructor
          * @param {String} target - 目标节点
          * @param {String} father - 目标节点的父级节点
@@ -2964,7 +2964,7 @@ var a = new RepeatRAF(function () {
         // a.stop();
     </script>
     ```
-    [JSFiddle demo](https://jsfiddle.net/realgeoffrey/gc45ehdb/)
+    [CodePen demo](https://codepen.io/realgeoffrey/pen/xvRmov)
 
 ### jQuery弹出toast
 1. jQuery
@@ -3213,14 +3213,25 @@ var a = new RepeatRAF(function () {
 
 
     /* 使用测试 */
-    beyongOneAct($('.dom1,#dom2'), function () {
+    beyongOneAct(
+      $('.dom1,#dom2'),
+      function () {
         console.log('点击区域外');
-    }, 1000);
+      },
+      1000
+    );
     ```
-    [JSFiddle demo](https://jsfiddle.net/realgeoffrey/enyxz9a6/)
+    [CodePen demo](https://codepen.io/realgeoffrey/pen/WVoLVM)
 2. Zepto
 
     ```javascript
+    /**
+     * 点击指定区域以外执行函数（一次性）
+     * @param {Object} $dom - jQuery节点
+     * @param {Function} callback - 回调函数
+     * @param {Number} [limit] - 自动失效时间，若没有传或传0则不会自动失效
+     * @param {String|Number} [namespace = Date.now()] - 事件命名空间
+     */
     function beyongOneAct($dom, callback, limit, namespace) {
         if (typeof Date.now !== 'function') {
             Date.now = function () {
@@ -3259,11 +3270,15 @@ var a = new RepeatRAF(function () {
 
 
     /* 使用测试 */
-    beyongOneAct($('.dom1,#dom2'), function () {
+    beyongOneAct(
+      $('.dom1,#dom2'),
+      function () {
         console.log('点击区域外');
-    }, 1000);
+      },
+      1000
+    );
     ```
-    [JSFiddle demo](https://jsfiddle.net/realgeoffrey/mvv9wxnw/)
+    [CodePen demo](https://codepen.io/realgeoffrey/pen/BXQMbq)
 
 ### jQuery hover展示内容并且可跨越间隙到内容
 ```html
@@ -3299,7 +3314,7 @@ var a = new RepeatRAF(function () {
     });
 </script>
 ```
-[JSFiddle demo](https://jsfiddle.net/realgeoffrey/zs6a7aco/)
+[CodePen demo](https://codepen.io/realgeoffrey/pen/QeGYPP)
 
 ### jQuery启动、暂停CSS动画
 ```html
@@ -3365,7 +3380,7 @@ var a = new RepeatRAF(function () {
     // b.stop;
 </script>
 ```
-[JSFiddle demo](https://jsfiddle.net/realgeoffrey/Lukonj4s/)
+[CodePen demo](https://codepen.io/realgeoffrey/pen/MNbZzB)
 
 ### jQuery获取`HTTP response header`信息
 ```javascript

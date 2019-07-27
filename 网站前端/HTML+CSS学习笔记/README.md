@@ -711,7 +711,7 @@
             }
             ```
 
-            [JSFiddle demo](https://jsfiddle.net/realgeoffrey/c1pz8mow/)
+            [CodePen demo](https://codepen.io/realgeoffrey/pen/RXoEyW)
         2. 父级`position: relative;`，子级`position: absolute; top: 50%; transform: translateY(-50%);`。
 
             >兼容ie9+。

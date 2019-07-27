@@ -391,7 +391,7 @@
     1. 直接调用，光标停留在文本开头或上一次光标停留的地方。
     2. 先清空文本再`focus`然后再添加文本，光标停留在文本结尾。
 
-    [JSFiddle demo](https://jsfiddle.net/realgeoffrey/zep4cr3p/)
+    [CodePen demo](https://codepen.io/realgeoffrey/pen/pMNqqV)
 7. 判断一个标签的动态属性（DOM对象的`property`）
 
     >以`<input>`的`checked`为例，类似的特性还有`selected`、`disabled`、`value`等，但[每个`attribute-property`映射关系略有差别](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#attribute与property)。
@@ -621,7 +621,7 @@
         >dom.addEventListener('事件名', function (e) {...}, false) // e.bubbles/cancelable/composed
         >
         >// 创建自定义事件
-        >var event = new Event('事件名'[, 参数对象])       // 参数对象：bubbles、cancelable、composed。无法传递自定义数据
+        >var event = new Event('事件名'[, 参数对象])    // 参数对象：bubbles、cancelable、composed。无法传递自定义数据
         >
         >// 触发
         >dom.dispatchEvent(event)
@@ -884,7 +884,7 @@
              start.addEventListener('touchstart', touchstartFunc, false)
             </script>
             ```
-            >[JSFiddle demo](https://jsfiddle.net/realgeoffrey/Lko8u1ku/)
+            >[CodePen demo](https://codepen.io/realgeoffrey/pen/mNOavr)
             </details>
     - 播放视频问题：
 
@@ -1489,7 +1489,7 @@
     >for (var i = 0; i < 3; i++) {
     >    // 不用匿名函数
     >    setTimeout(function () {
-    >        console.log(i);         // 每个结果都是固定的最后一个值（闭包作用）
+    >        console.log(i);         // => 3 => 3 => 3（闭包作用：每个结果都是固定的最后一个值）
     >    }, 0);
     >}
     >
@@ -1497,7 +1497,7 @@
     >    // 匿名函数
     >    (function (para) {
     >        setTimeout(function () {
-    >            console.log(para);  // 结果是传入进匿名函数的参数
+    >            console.log(para);  // => 0 => 1 => 2（结果是传入进匿名函数的参数）
     >        }, 0);
     >    }(i));
     >}
@@ -1506,7 +1506,7 @@
     >    // ES6的块级作用域（ES6拥有了块级作用域之后，不再需要~~自执行匿名函数~~）
     >    let num = i;
     >    setTimeout(function () {
-    >        console.log(num);       // 结果是1 2 3
+    >        console.log(num);       // => 0 => 1 => 2
     >    }, 0);
     >}
     >```
@@ -1740,22 +1740,22 @@
           }
         }
 
-        obj.func();     // obj
-        (0, obj.func)() // window
+        obj.func();     // => obj
+        (0, obj.func)() // => window
         // 返回最后一个操作对象的值，返回一个方法
         ```
     2. `if(var a = 1, b = 2, c = 3, false){/* 不执行 */}`：
 
         >`var`语句中的逗号不是逗号操作符，因为它不存在于一个表达式中。尽管从实际效果来看，那个逗号同逗号运算符的表现很相似。但它是`var`语句中的一个特殊符号，用于把多个变量声明结合成一个。
-    3. `var a = [10, 20, 30, 40][1, 2, 3];  // 40`：
+    3. `var a = [10, 20, 30, 40][1, 2, 3]; // => 40`：
 
         1. `[10, 20, 30, 40]`被解析为数组；
         2. `[1, 2, 3]`被解析为属性调用，逗号操作符取最后一个值为结果。
 
         因此结果为数组`[10, 20, 30, 40]`的`[3]`属性值：`40`。
-5. `{a: 'b'} + 1;   // 1`：
+5. `{a: 'b'} + 1; // => 1`：
 
-    大括号视为代码块，没有返回值。需要给大括号加上小括号，表明为一个值：`({a: 'b'}) + 1;  // [object Object]1`。
+    大括号视为代码块，没有返回值。需要给大括号加上小括号，表明为一个值：`({a: 'b'}) + 1; // => [object Object]1`。
 6. 浮点数的计算：
 
     浮点数值计算会产生舍入误差，因此永远不要用条件语句判断某个特定浮点数值，也不要用JS进行复杂的计算。
@@ -1769,8 +1769,8 @@
 8. `eval`中直接执行`function`声明无效，必须用引号把`function`声明包裹起来才有效（尽量不用`eval`）：
 
     ```javascript
-    eval(function a() {});      // 返回function a() {}，但没有声明
-    eval('function b() {}');    // 返回undefined，声明成功
+    eval(function a() {});   // => function a() {}（但没有声明）
+    eval('function b() {}'); // => undefined（声明成功）
     ```
 
     >1. `if()`中的代码对于`function`的声明就是用`eval`带入方法做参数，因此虽然返回true，但方法没有被声明。
@@ -2048,20 +2048,19 @@
 
         >```javascript
         >/* 跨帧：浏览器的帧（frame）里的对象传入到另一个帧中，两个帧都定义了相同的构造函数 */
-        >A实例 instanceof A构造函数; // true
-        >A实例 instanceof B构造函数; // false
+        >A实例 instanceof A构造函数; // => true
+        >A实例 instanceof B构造函数; // => false
         >```
-    2. 判断`构造函数.prototype`是否存在于对象的原型链上。
-    3. 不仅检测对象本身，还检测至原型链。
+    2. 判断`构造函数.prototype`是否存在于对象的整条原型链上。
 
-        >e.g. `new Number() instanceof Object;  /* true */`。
-    4. **检测自定义类型的唯一方法。**
-4. `属性 in 对象`
+        若`构造函数.prototype === 对象.__proto__/对象.__proto__.__proto__/.../Object.prototype`，则返回`true`。否则返回`false`。
+        >e.g. `new Number() instanceof Object; // => true`
+    3. **检测自定义类型的唯一方法。**
+4. `属性名 in 对象`
 
-    1. 仅判断属性是否存在检测的对象上，不读取属性值。
-    2. 检测至原型链。
+    仅判断对象或对象的整条原型链上是否拥有属性名，不读取属性值。
 
-    >1. `对象.hasOwnProperty(属性)`仅检查在当前实例对象，不检测其原型链。
+    >1. `对象.hasOwnProperty(属性名)`仅检查在当前实例对象，不检测其原型链。
     >2. ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
 
 ### 跨域请求
@@ -2459,7 +2458,7 @@
     >let originObj = { a: 'aa', b: 'bb', c: 'cc' }
     >for (let key in originObj) {
     >  originObj = 1
-    >  console.log(key, originObj)  // 输出：`'a' 1`；`'b' 1`；`'c' 1`
+    >  console.log(key, originObj)  // => 'a' 1 => 'b' 1 => 'c' 1
     >}
     >// originObj 等于 1
     >
@@ -2467,7 +2466,7 @@
     >let originArr = ['a', 'b', 'c']
     >for (let item of originArr) {
     >  originArr = [1]
-    >  console.log(item, originArr) // 输出：`'a' [1]`；`'b' [1]`；`'c' [1]`
+    >  console.log(item, originArr) // => 'a' [1] => 'b' [1] => 'c' [1]
     >}
     >// originArr 等于 [1]
     >```
@@ -2609,33 +2608,33 @@
         >
         >```javascript
         >// 预编译阶段a1/b2为函数，运行时a1/b2赋值成为变量
-        >console.log(a1);        // function a1
+        >console.log(a1);        // => ƒ a1() {}
         >var a1 = 1;
         >function a1() {}
-        >console.log(a1);        // 1
+        >console.log(a1);        // => 1
         >
-        >console.log(b2);        // function b2
+        >console.log(b2);        // => ƒ b2() {}
         >function b2() {}
         >var b2 = 1;
-        >console.log(b2);        // 1
+        >console.log(b2);        // => 1
         >
         >
         >// 预编译阶段c3/d4为函数，运行时没有赋值
-        >console.log(c3);        // function c3
+        >console.log(c3);        // => ƒ c3() {}
         >var c3;
         >function c3() {}
-        >console.log(c3);        // function c3
+        >console.log(c3);        // => ƒ c3() {}
         >
-        >console.log(d4);        // function d4
+        >console.log(d4);        // => ƒ c4() {}
         >function d4() {}
         >var d4;
-        >console.log(d4);        // function d4
+        >console.log(d4);        // => ƒ c4() {}
         >
         >
         >// 预编译阶段e5为变量，运行时被赋值给匿名函数
-        >console.log(e5);        // undefined
+        >console.log(e5);        // => undefined
         >var e5 = function () {};
-        >console.log(e5);        // function 匿名
+        >console.log(e5);        // => ƒ () {}（匿名函数）
         >```
         ></details>
 4. 变量赋值是在JS执行阶段（运行时）进行的。
@@ -2686,14 +2685,14 @@
     >
     > ```javascript
     > var func1 = function func2() { // 其中函数名`func2`只能在函数体内部使用。
-    >    console.log(typeof func1);  // function
-    >    console.log(typeof func2);  // function
+    >    console.log(typeof func1);  // => function
+    >    console.log(typeof func2);  // => function
     > };
     >
     > func1();
     >
-    > console.log(typeof func1);     // function
-    > console.log(typeof func2);     // undefined
+    > console.log(typeof func1);     // => function
+    > console.log(typeof func2);     // => undefined
     > ```
     ></details>
 5. 实例化（`new`）一个构造函数
@@ -2713,7 +2712,7 @@
             `var obj = {};`
         2. 设置obj的`[[Prototype]]`指向构造函数的原型对象：
 
-            `obj.__proto__ = Func.prototype;`或`Object.setPrototypeOf(obj, Func.prototype);`
+            `obj.__proto__ = Func.prototype;`（或`Object.setPrototypeOf(obj, Func.prototype);`）
 
         >第一、二步骤也可以用`var obj = Object.create(Func.prototype);`代替。
 
@@ -2727,7 +2726,7 @@
         </details>
 
     >1. `new Func`等价于：`new Func()`。
-    >2. `new Obj().func()`等价于：`(new Obj()).func()`（先新建实例，再调用实例的原型链）。
+    >2. `new Obj().func()`等价于：`(new Obj()).func()`（先新建实例，再调用实例的方法/原型链上方法）。
     >3. `new Obj.func()`等价于：`new (Obj.func)()`、`new (Obj.func)`、`new Obj.func`（新建实例）。
 
     ><details>
@@ -2894,7 +2893,7 @@
             >  let x1 = 'x1'
             >  console.log(y1)
             >}
-            >f1()                       // ReferenceError: x1 is not defined
+            >f1()                       // => ReferenceError: x1 is not defined
             >
             >
             >let x2 = 'outer x2'
@@ -2902,22 +2901,22 @@
             >  let x2 = 'x2'
             >  console.log(y2)
             >}
-            >f2()                       // 'outer x2'
+            >f2()                       // => 'outer x2'
             >
             >
             >let x3 = 'outer x3'
             >function f3(x3, y3 = x3) { // 形成短暂的单独作用域，x3是传参定义的值，不向父级作用域取值
             >  console.log(y3)
             >}
-            >f3()                       // undefined
-            >f3(3)                      // 3
+            >f3()                       // => undefined
+            >f3(3)                      // => 3
             >
             >
             >let x4 = 'outer x4'
             >function f4(x4 = x4) {     // 形成短暂的单独作用域，实际执行类似let x = x，暂时性死区导致报错
             >
             >}
-            >f4()                       // ReferenceError: x is not defined
+            >f4()                       // => ReferenceError: x is not defined
             >```
             >></details>
         3. 不能~~在参数默认值中调用函数体内的方法~~（参数默认值总是被首先执行，而函数体内的函数声明之后生效）。
@@ -2947,7 +2946,7 @@
         >构造函数通过`prototype`为实例存储要共享的属性和方法，可设置`prototype`指向其他对象来继承其他对象。
     2. 当构造函数实例化（`new`），该实例拥有`[[Prototype]]`属性，指向**构造函数的原型对象**。
 
-        >访问对象的`[[Prototype]]`属性：`对象.__proto__`（非标准）、`Object.getPrototypeOf/setPrototypeOf(对象)`。
+        >访问对象的`[[Prototype]]`属性：（非标准）`对象.__proto__`、`Object.getPrototypeOf(对象)/Object.setPrototypeOf(对象, 原型对象)`。
 
         1. 连接存在于**实例**与**构造函数的原型对象**之间，而不直接存在于~~实例与构造函数~~之间。
         2. 内置构造函数的原型上有各种方法和属性，实例对象通过原型链进行调用。
@@ -3013,7 +3012,7 @@
 1. 继承原理
 
     1. 子类继承父类属性：在子类构造函数体内调用父类构造函数。
-    2. 子类继承父类原型链 ：
+    2. 子类继承父类原型链：
 
         1. 将父类构造函数的实例赋值给子类构造函数的原型，或ES6`Son.prototype = Object.create(Father.prototype)`
         2. 使用ES6的`class-extends`则自动实现
@@ -3043,13 +3042,14 @@
 
 
         /* 使用测试 */
-        Son.prototype.__proto__ === Father.prototype    // true
-        Son.__proto__  === Father                       // true
+        Son.__proto__  === Father                       // => true
+        Son.prototype.__proto__ === Father.prototype    // => true
 
 
-        var instance1 = new Father('父para');
-        var instance2 = new Son('子para1', '子para2');
-        console.log(instance1, instance2);
+        var father1 = new Father('父para')
+        var son1 = new Son('子para1', '子para2')
+
+        son1.__proto__.__proto__ === father1.__proto__  // => true
         ```
     2. ES5模拟：寄生组合式继承
 
@@ -3089,13 +3089,14 @@
 
 
         /* 使用测试 */
-        Son.prototype.__proto__ === Father.prototype    // true
-        Son.__proto__  === Father                       // true
+        Son.__proto__  === Father;                      // => true
+        Son.prototype.__proto__ === Father.prototype;   // => true
 
 
-        var instance1 = new Father('父para');
-        var instance2 = new Son('子para1', '子para2');
-        console.log(instance1, instance2);
+        var father1 = new Father('父para');
+        var son1 = new Son('子para1', '子para2');
+
+        son1.__proto__.__proto__ === father1.__proto__  // => true
         ```
 
         ><details>
@@ -3277,20 +3278,20 @@
             e.g.
 
             ```javascript
-            Number('123');      // 123
-            Number('123a');     // NaN
-            Number('');         // 0
+            Number('123');      // => 123
+            Number('123a');     // => NaN
+            Number('');         // => 0
 
-            Number(true);       // 1
-            Number(false);      // 0
+            Number(true);       // => 1
+            Number(false);      // => 0
 
-            Number();           // 0
+            Number();           // => 0
 
-            Number(undefined);  // NaN
+            Number(undefined);  // => NaN
 
-            Number(null);       // 0
+            Number(null);       // => 0
 
-            Number(Symbol());   // 抛出TypeError错误
+            Number(Symbol());   // => Uncaught TypeError: Cannot convert a Symbol value to a number
             ```
 
             >`parseInt`与`Number`均忽略字符串前后的不可见字符。`parseInt`从前向后逐个解析字符，只要开头有数字则返回数值；`Number`判断只要有一个字符无法转成数值，则返回`NaN`。
@@ -3301,12 +3302,12 @@
             e.g.
 
             ```javascript
-            Number([5]);            // 5
-            Number([]);             // 0
-            Number([undefined]);    // 0
+            Number([5]);            // => 5
+            Number([]);             // => 0
+            Number([undefined]);    // => 0
 
-            Number([1, 2, 3]);      // NaN
-            Number({});             // NaN
+            Number([1, 2, 3]);      // => NaN
+            Number({});             // => NaN
             ```
 
             - `Number(对象)`具体规则：
@@ -3331,9 +3332,9 @@
 
             ```javascript
             // e.g.
-            String([1, 2, 3]);  // '1,2,3'
-            String([1, [2], [3, [4, [5, 6]]]]);  // '1,2,3,4,5,6'
-            String({a: 1});     // '[object Object]''
+            String([1, 2, 3]);                  // => '1,2,3'
+            String([1, [2], [3, [4, [5, 6]]]]); // => '1,2,3,4,5,6'
+            String({a: 1});                     // => '[object Object]''
             ```
 
             - `String(对象)`具体规则：
@@ -3364,11 +3365,11 @@
             <summary>e.g.</summary>
 
             ```javascript
-            'a' + + 'a'         // 'a' + (+ 'a') -> 'a' + NaN -> 'aNaN'
-            + '123';            // 123
-            - [123];            // -123
-            1 + undefined       // NaN
-            '1' + undefined     // '1undefined'
+            'a' + + 'a'         // => 'a' + (+ 'a') -> 'a' + NaN -> 'aNaN'
+            + '123';            // => 123
+            - [123];            // => -123
+            1 + undefined       // => NaN
+            '1' + undefined     // => '1undefined'
             ```
             </details>
     2. 行为：
@@ -3634,11 +3635,11 @@
     <summary>e.g.</summary>
 
     ```javascript
-    [, , ,][0];                             // undefined
-    0 in [undefined, undefined, undefined]; // true
-    0 in Array.apply(null, new Array(3));   // true（密集数组：没有空位的数组）
-    0 in new Array(3);                      // false（稀疏数组：有空位的数组）
-    0 in [, , ,];                           // false
+    [, , ,][0];                             // => undefined
+    0 in [undefined, undefined, undefined]; // => true
+    0 in Array.apply(null, new Array(3));   // => true（密集数组：没有空位的数组）
+    0 in new Array(3);                      // => false（稀疏数组：有空位的数组）
+    0 in [, , ,];                           // => false
     ```
     </details>
 

@@ -1,7 +1,7 @@
 # Git心得
 
 ## 目录
-1. [git的文件状态](#git的文件状态)
+1. [Git的文件状态](#git的文件状态)
 1. [基本操作](#基本操作)
 1. [Zen-like commit messages（Angular）格式](#zen-like-commit-messagesangular格式)
 1. [命令生成commit message && changelog](#命令生成commit-message--changelog)
@@ -12,10 +12,10 @@
 1. [减少Git项目下载大小](#减少git项目下载大小)
 
 ---
-### git的文件状态
+### Git的文件状态
 1. `untracked`
 
-    未跟踪（文件未加入git库，不在版本控制内）。
+    未跟踪（不在版本控制内）。
 2. 已跟踪
 
     1. `unmodify`
@@ -37,7 +37,7 @@
         1. 若使用`git commit`，则将修改同步到库中，这时库中的文件和本地文件又变为一致，成为unmodify文件；
         2. 若使用`git reset HEAD`，则取消暂存, 成为modified文件。
 
-![git的文件状态变化图](./images/git-lifecycle-1.png)
+![Git的文件状态变化图](./images/git-lifecycle-1.png)
 
 ### 基本操作
 1. 撤销未push内容
@@ -259,6 +259,35 @@
 
     git stash pop                   # 应用最后一个储藏，删除最后一个储藏
     ```
+9. submodule
+
+    1. 新增子模块
+
+        ```git
+        git submodule add “子模块仓库”     # 在仓库中加入子模块
+
+        推送 .gitmodules 和 子模块文件（夹） # 更改推到远程分支
+        ```
+    2. （克隆包含子模块的仓库，）拉取、更新子模块
+
+        ```git
+        git clone “包含子模块的仓库”
+
+        git submodule init                # 根据 .gitmodules 初始化
+
+        git submodule update --remote     # 拉取、更新子模块仓库
+        ```
+    3. 删除子模块
+
+        ```git
+        git rm --cached “子模块文件夹”
+
+        rm -rf “子模块文件夹”
+
+        编辑 .gitmodules，删除子模块信息
+
+        编辑 .git/config，删除子模块信息
+        ```
 
 ### [Zen-like commit messages（Angular）格式](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines)
 ```text
