@@ -1634,7 +1634,7 @@
             >
             >    <summary>（在微信及其他APP中）使用应用宝<strong>下载/打开</strong>其他APP</summary>
             >
-            >    >参考:[关于微信中直接调起 Native App 的调研报告](https://blog.csdn.net/lixuepeng_001/article/details/78043418)。
+            >    >参考：[关于微信中直接调起 Native App 的调研报告](https://blog.csdn.net/lixuepeng_001/article/details/78043418)。
             >
             >    应用宝在微信中可能可以更好识别是否安装了其他APP，从而可以在应用宝页面选择打开其他APP，而不仅仅是下载。
             >
