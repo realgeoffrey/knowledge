@@ -317,6 +317,7 @@
 >        3. [性能测试](https://gtmetrix.com/)
 >
 >2. 根据DevTool的Performance查询运行时导致帧数过高的代码。
+>3. 在客户端运行`window.performance`查询性能。
 ></details>
 
 2. 网络应用的生命期建议：

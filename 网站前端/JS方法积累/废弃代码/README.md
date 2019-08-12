@@ -3,12 +3,12 @@
 ## 目录
 1. [原生JS方法](#原生js方法)
 
-    1. 可用[moment](https://github.com/moment/moment/)代替
+    1. 可用[moment](https://github.com/moment/moment/)（或[dayjs](https://github.com/iamkun/dayjs)、[date-fns](https://github.com/date-fns/date-fns)）代替
 
         1. [格式化日期](#原生js格式化日期)
         1. [获取年龄](#原生js获取年龄)
         1. [倒计时显示](#原生js倒计时显示)
-    1. 可用[jquery](https://github.com/jquery/jquery)或ES6或其他库代替
+    1. 可用[lodash](https://github.com/lodash/lodash)、[jQuery](https://github.com/jquery/jquery)或ES6或其他库代替
 
         1. [多异步返回后才执行总回调函数（利用jQuery的`$.ajax`）](#原生js多异步返回后才执行总回调函数利用jquery的ajax)
         1. [对象合二为一（改变第一个参数）](#原生js对象合二为一改变第一个参数)
@@ -86,7 +86,7 @@ var format = {
 /* 使用测试 */
 var a = format.date(new Date(), 'yyyy-MM-dd HH:mm:ss S毫秒 EEE 季度q');
 ```
->可以使用[moment](https://github.com/moment/moment/)格式化时间，完全替代。
+>可以使用[moment](https://github.com/moment/moment/)（或[dayjs](https://github.com/iamkun/dayjs)、[date-fns](https://github.com/date-fns/date-fns)）格式化时间，完全替代。
 
 ### *原生JS*获取年龄
 ```javascript
@@ -125,7 +125,7 @@ function getAge (birthday) {
   return age
 }
 ```
->可以使用[moment](https://github.com/moment/moment/)格式化时间，完全替代。
+>可以使用[moment](https://github.com/moment/moment/)（或[dayjs](https://github.com/iamkun/dayjs)、[date-fns](https://github.com/date-fns/date-fns)）格式化时间，完全替代。
 
 ### *原生JS*倒计时显示
 1. 统一输出
@@ -373,8 +373,7 @@ function getAge (birthday) {
 
     // a.stop();
     ```
-
->可以使用[moment](https://github.com/moment/moment/)或[date-fns](https://github.com/date-fns/date-fns)格式化时间。
+>可以使用[moment](https://github.com/moment/moment/)（或[dayjs](https://github.com/iamkun/dayjs)、[date-fns](https://github.com/date-fns/date-fns)）格式化时间，完全替代。
 
 ### *原生JS*多异步返回后才执行总回调函数（利用jQuery的`$.ajax`）
 ```javascript
@@ -424,7 +423,7 @@ function multiCallback(func, url) {
     }
 }
 ```
->1. 可以使用`Promise`或`async-await`方法实现。
+>1. 可以使用`Promise.all`或`async-await`方法实现。
 >2. 可以使用jQuery的Deferred对象`$.when($.ajax()...).done(成功后方法)`，完全替代。
 
 ### *原生JS*对象合二为一（改变第一个参数）
@@ -447,8 +446,9 @@ function extend(target, options) {
     return target;
 }
 ```
->1. 可以使用jQuery的`$.extend(对象1, 对象2)`，完全替代。
+>1. 可以使用lodash的`_.assign(object, [sources])`（浅复制）、`_.merge(object, [sources])`（深复制），完全替代。
 >2. 可以使用[deepmerge](https://github.com/KyleAMathews/deepmerge)，完全替代。
+>3. 可以使用jQuery的`$.extend(对象1, 对象2)`，完全替代。
 
 ### *原生JS*深复制
 ```javascript
@@ -506,8 +506,8 @@ a.g.h1.j = [1, 2];
 var b = deepCopy(a);
 console.log(b);
 ```
->1. 可以使用jQuery的`$.extend(true, {}, 被复制对象)`，完全替代。
->2. 可以使用lodash的`_.cloneDeep(被复制对象)`，完全替代。
+>1. 可以使用lodash的`_.clone(value)`（浅复制）、`_.cloneDeep(value)`（深复制），完全替代。
+>2. 可以使用jQuery的`$.extend(true, {}, 被复制对象)`，完全替代。
 
 ### *原生JS*通过类名获取DOM
 ```javascript
@@ -558,6 +558,8 @@ function getElementsByClassName(className, parentDom) {
 >可以使用jQuery的`$('.类名')`，完全替代。
 
 ### *原生JS*操作cookie
+>参考：[MDN:cookie](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie#一个小框架：一个完整支持unicode的cookie读取写入器)。
+
 ```javascript
 var cookieFuc = {
 
@@ -687,8 +689,6 @@ var cookieFuc = {
     }
 };
 ```
->参考：[MDN:cookie](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie#一个小框架：一个完整支持unicode的cookie读取写入器)。
-
 >可以使用[js-cookie](https://github.com/js-cookie/js-cookie)，完全替代。
 
 ### *原生JS*防抖函数
@@ -759,7 +759,7 @@ var a = debounce(function () {  // 不要使用箭头函数，因为实现代码
 
 $(window).on('scroll', a);
 ```
->可以使用[lodash](https://github.com/lodash/lodash)或[underscore](https://github.com/jashkenas/underscore)，完全替代。
+>可以使用lodash的`_.debounce(func, [wait=0], [options={}])`，完全替代。
 
 ### *原生JS*节流函数
 >来自：[underscore](https://github.com/jashkenas/underscore)。
@@ -839,8 +839,7 @@ var a = throttle(function () {  // 不要使用箭头函数，因为实现代码
 
 $(window).on('scroll', a);
 ```
-
->可以使用[lodash](https://github.com/lodash/lodash)或[underscore](https://github.com/jashkenas/underscore)，完全替代。
+>可以使用lodash的`_.throttle(func, [wait=0], [options={}])`，完全替代。
 
 ---
 ## Polyfill

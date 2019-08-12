@@ -1970,6 +1970,24 @@ function getConstellation (birthday) {
 }
 ```
 
+>月份格式化为英文缩写：
+>
+>```javascript
+>/**
+> * 月份格式化
+> * @param {Number} month - 月份编号：0：1月、11：12月
+> * @returns {String} - 月份英文缩写
+> */
+>function monthFormat (month) {
+>  const monthArr = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.']
+>  return monthArr[month]
+>}
+>
+>
+>/* 使用测试 */
+>monthFormat(new Date().getMonth())
+>```
+
 ### *原生JS*分割数组
 ```javascript
 /**
