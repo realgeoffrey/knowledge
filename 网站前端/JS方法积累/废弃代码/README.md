@@ -721,7 +721,7 @@ function debounce(func, wait, immediate) {
         } else {
             timeout = null;
 
-            // 如果设定为immediate===true，因为开始边界已经调用过了此处无需调用
+            // 若设定为immediate===true，则因为开始边界已经调用过了此处无需调用
             if (!immediate) {
                 result = func.apply(context, args);
 
@@ -769,7 +769,7 @@ $(window).on('scroll', a);
  * 函数连续调用时，func在wait时间内，执行次数不得高于1次
  * @param {Function} func - 传入函数
  * @param {Number} wait - 函数触发的最小间隔
- * @param {Object} [options] - 如果想忽略开始边界上的调用，传入{leading: false}；如果想忽略结尾边界上的调用，传入{trailing: false}
+ * @param {Object} [options] - 若想忽略开始边界上的调用，则传入{leading: false}；若想忽略结尾边界上的调用，则传入{trailing: false}
  * @returns {Function} - 返回客户调用函数
  */
 function throttle(func, wait, options) {
@@ -801,7 +801,7 @@ function throttle(func, wait, options) {
     return function () {
         var now = Date.now();
 
-        // 首次执行时，如果设定了开始边界不执行选项，将上次执行时间设定为当前时间。
+        // 首次执行时，若设定了开始边界不执行选项，则将上次执行时间设定为当前时间。
         if (!previous && options.leading === false) {
             previous = now;
         }
@@ -824,7 +824,7 @@ function throttle(func, wait, options) {
             if (!timeout) {
                 context = args = null;
             }
-        } else if (!timeout && options.trailing !== false) { // 如果延迟执行不存在，且没有设定结尾边界不执行选项
+        } else if (!timeout && options.trailing !== false) { // 若延迟执行不存在、且没有设定结尾边界不执行选项
             timeout = setTimeout(later, remaining);
         }
         return result;

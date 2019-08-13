@@ -26,7 +26,7 @@
 
             keepalive_timeout   65;
 
-            proxy_connect_timeout 1s;   # 如果反向代理每次都很慢，则降低 服务器连接的超时时间
+            proxy_connect_timeout 1s;   # 若反向代理每次都很慢，则降低：服务器连接的超时时间
 
             server {
                 listen      80;

@@ -40,7 +40,12 @@
 ![Git的文件状态变化图](./images/git-lifecycle-1.png)
 
 ### 基本操作
-1. 撤销未push内容
+1. 获取提交历史（SHA-1校验、作者名字、作者电子邮件地址、提交时间、提交说明）
+
+    ```git
+    git log
+    ```
+2. 撤销未push内容
 
     1. 恢复untracked的文件（版本控制内的文件）
 
@@ -57,9 +62,6 @@
     3. 撤销`git commit`的请求
 
         ```git
-        git log                         # 获取要退回的SHA
-
-
         git reset “SHA”                 # 撤销commit请求（恢复commit的文件），不修改文件、使已修改文件恢复到untracked
 
         git reset --hard “SHA”          # 撤销commit请求（恢复commit的文件），恢复git add的全部文件（untracked不恢复）
@@ -69,7 +71,7 @@
         ```git
         git clean -xdf
         ```
-2. 操作（删除、合并、修改描述）远程版本库的commit
+3. 操作（删除、合并、修改描述）远程版本库的commit
 
     >慎重，无法恢复。
 
@@ -82,7 +84,7 @@
         # 或
         git reset --hard “SHA”          # 取消至某SHA
 
-        # 如果需要，可以新增commit
+        # 若需要，则可以新增commit
 
         git push origin HEAD --force    # 强制提交到远程版本库
 
@@ -121,7 +123,16 @@
     >    可以在Gitlab设置里面通过：*project* > *Settings* > *Repository* > *Protected branches* > *Unprotect*，打开权限（不建议长期开启）。
     >2. Github默认允许`git push --force`。
     ></details>
-3. 合并
+4. 回退
+
+    用一个新的commit提交去覆盖回退之前某一个commit提交的内容。
+
+    ```git
+    git revert “SHA”    # 可能产生冲突，需要解决冲突并`git add “冲突文件”`（-n 不自动产生commit）
+
+    git push
+    ```
+5. 合并
 
     1. `merge`
 
@@ -163,7 +174,7 @@
         # if产生冲突，则需要对本分支每一个commit冲突进行处理，
         #   修改冲突文件 -> add（不要commit） -> git rebase --continue
         ```
-4. 解决冲突
+6. 解决冲突
 
     1. 冲突标记：git会在冲突时，标记两个分支对同一个地方的修改
 
@@ -181,15 +192,15 @@
         >>>>>>>> develop
         >```
         ></details>
-    2. 解决冲突：冲突只是把两个分支修改内容合并一起并且增加标记，无论是否修改内容（甚至可以保持标记），都以`git add 修改的文件`表示解决冲突
+    2. 解决冲突：冲突只是把两个分支修改内容合并一起并且增加标记，无论是否修改内容（甚至可以保持标记），都以`git add “修改的文件”`表示解决冲突
 
         正常情况下，人工合并两个修改，并删除冲突标记。
-5. 更新远程仓库引用
+7. 更新远程仓库引用
 
     ```git
     git fetch -fp
     ```
-6. branch
+8. branch
 
     1. 本地新建分支
 
@@ -208,7 +219,7 @@
 
         git checkout -b “分支名”   # 新建并切换至新分支
 
-        git checkout -b “分支名”   origin/“分支名”   # 从远程分支中，新建并切换至新分支
+        git checkout -b “分支名” origin/“分支名”  # 从远程分支中，新建并切换至新分支
         ```
     4. 删除分支
 
@@ -226,12 +237,12 @@
 
         # 要推送至远程，依然需要推送（新建）远程分支、删除远程分支
         ```
-7. tag
+9. tag
 
     ```git
-    git tag [-l “完整内容或*”]           # 列出现有（本地+远程）标签
+    git tag [-l “完整内容或*”]          # 列出现有（本地+远程）标签
 
-    git show “名字”                   # 查看tag详细信息
+    git show “名字”                    # 查看tag详细信息
 
     git tag “名字” [“SHA”]            # 新建轻量级标签（没有SHA则最新commit）
     git tag “名字” -a [“SHA”]         # 新建含附注标签（打开编辑器）（没有SHA则最新commit）
@@ -244,7 +255,7 @@
 
     git push origin :refs/tags/“名字” # 删除远程tag
     ```
-8. stash
+10. stash
 
     ```git
     git stash                       # 往堆栈推送一个新的储藏，并且恢复修改过的被追踪的文件
@@ -259,25 +270,45 @@
 
     git stash pop                   # 应用最后一个储藏，删除最后一个储藏
     ```
-9. submodule
+11. submodule
 
     1. 新增子模块
 
         ```git
         git submodule add “子模块仓库”     # 在仓库中加入子模块
 
-        推送 .gitmodules 和 子模块文件（夹） # 更改推到远程分支
+        git submodule set-branch -b “分支名” “子模块目录”   # 设置子模块对应的远程分支名（默认为：default branch）
+
+        推送 .gitmodules 和 子模块文件（夹） # 更改推到远程分支（子模块文件包含了子模块指向的SHA）
         ```
-    2. （克隆包含子模块的仓库，）拉取、更新子模块
+    2. 拉取、更新子模块
 
         ```git
-        git clone “包含子模块的仓库”
+        git submodule init                  # 根据 .gitmodules 初始化
 
-        git submodule init                # 根据 .gitmodules 初始化
-
-        git submodule update --remote     # 拉取、更新子模块仓库
+        git submodule update                # 拉取、更新子模块仓库至 本地已保存的SHA
+        # 或
+        git submodule update --remote       # 拉取、更新子模块仓库至 远程分支（若未设置分支名，则default branch）下最新SHA（会改变子模块文件夹的SHA）
         ```
-    3. 删除子模块
+    3. 修改、推送子模块
+
+        ```git
+        # 0. 拉取、更新子模块
+        git submodule init
+        git submodule update [--remote]
+
+
+        # 1. 修改、推送子模块
+        cd “子模块目录”
+        git checkout -b “分支名” origin/“分支名”          # 从远程分支中，新建并切换至新分支
+        修改、git add “修改的文件”、git commit、git push    # 修改、推送子模块“分支名”
+
+
+        # 2. 推送包含子模块的仓库
+        cd “包含子模块的仓库”
+        git add “子模块目录”、git commit、git push         # 推送子模块指向新的SHA
+        ```
+    4. 删除子模块
 
         ```git
         git rm --cached “子模块文件夹”
@@ -317,24 +348,30 @@ feat(details): 添加了分享功能
 
     commit的类别。
 
-    1. `feat`：新功能（feature）。
+    1. `feat`：新功能。
     2. `fix`：修补bug。
-    3. `docs`：文档（documentation）。
-    4. `style`： 格式（不影响代码运行的变动）。
-    5. `refactor`：重构（即不是新增功能，也不是修改bug的代码变动）。
-    6. `test`：增加测试。
-    7. `chore`：构建过程或辅助工具的变动。
-    8. `revert`：撤销之前的commit。
+    3. `perf`：提升性能的改动。
+    4. `refactor`：重构（即不是新增功能，也不是修改bug的代码变动）。
+    5. `style`：格式化（不影响代码运行的变动，如：格式化代码）。
+    6. `docs`：文档（如：README.md）。
+    7. `test`：增加测试。
+    8. `chore`：构建过程或辅助工具的变动（如：package.json）。
 
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```text
-        >revert: feat: add 'graphiteWidth' option
-        >
-        >This reverts commit 667ecc1654a317a13331b17617d973392f415f02.
-        >```
-        ></details>
+    - 其他：
+
+        1. `build`：影响生成系统或外部依赖项的更改（如：gulp、broccoli、npm）。
+        2. `ci`：对ci配置文件和脚本的更改（如：travis、circle、browserstack、saucelabs）。
+        3. `revert`：撤销之前的commit。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```text
+            >revert: feat: add 'graphiteWidth' option
+            >
+            >This reverts commit 667ecc1654a317a13331b17617d973392f415f02.
+            >```
+            ></details>
 2. **\<scope\>**
 
     commit影响的范围，即简要说明修改会涉及的部分。
@@ -384,18 +421,18 @@ feat(details): 添加了分享功能
         出现Zen-like的提交信息选择。
 2. changelog
 
-    >若commit message符合上面的规范，才有效。
+    >若commit message符合上面规范才有效。
 
     1. 安装[conventional-changelog-cli](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-cli)
 
         `npm install -g conventional-changelog-cli`
     2. 生成
 
-        >生成tag间的新内容。
+        >生成tag间的新内容，仅包括commit message是：type为`feat/fix/perf`、或extra为`BREAKING CHANGE`。
 
         `conventional-changelog -p angular -i CHANGELOG.md -s`
 
-        >如果[修改了.git/config的仓库地址](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Git心得/README.md#如何在一台电脑中使用2多个个github账号的ssh-keys)，需要替换生成好的changelog文件的仓库地址。
+        >若[修改了.git/config的仓库地址](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Git心得/README.md#如何在一台电脑中使用2多个个github账号的ssh-keys)，则需要替换生成好的changelog文件的仓库地址。
 
 ### [git-flow](https://github.com/nvie/gitflow)使用
 >也可以用更加先进的[GitHub flow](https://guides.github.com/introduction/flow/)（多了一步Pull Request合并到主干分支）。
@@ -407,7 +444,7 @@ feat(details): 添加了分享功能
     ```
 
     <details>
-    <summary>如果默认不符合要求，则手动配置输入</summary>
+    <summary>若默认不符合要求，则手动配置输入</summary>
 
     `git flow init -f`输入至`.git\config`文件：
 
@@ -591,7 +628,7 @@ feat(details): 添加了分享功能
     #进入文件夹2
     git clone git@账户2.github.com:账户2/仓库.git
     ```
-    >如果已经克隆过的仓库，仅需要修改`.git/config`文件夹内的`url`仓库地址即可。
+    >若已经克隆过的仓库，则仅需要修改`.git/config`文件夹内的`url`仓库地址即可。
 
 ### 设置gitconfig
 1. 用户名和邮箱
@@ -641,7 +678,7 @@ feat(details): 添加了分享功能
 ### 减少Git项目下载大小
 1. 仅在Git项目中选择下载某些文件夹或文件
 
-    >Git1.7.0以后加入了**Sparse Checkout模式**，允许Check Out指定文件或文件夹。但是只能选择一次（？），如果要更改选择的文件夹或文件，必须全部重新操作。
+    >Git1.7.0以后加入了**Sparse Checkout模式**，允许Check Out指定文件或文件夹。但是只能选择一次（？），若要更改选择的文件夹或文件，则必须全部重新操作。
 
     1. 在空白文件夹内，创建空的本地仓库，然后将远程仓库地址加入到项目的**.git/config**文件中：
 

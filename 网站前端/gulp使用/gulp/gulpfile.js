@@ -226,16 +226,16 @@ gulp.task('browserSync', () => {
     },
     port: 3000, // 端口号
     proxy: { // 服务器
-      target: 'localhost/demo'
+      target: 'localhost'
     }
     //    server: {   // 相对地址
-    //      baseDir: '../www/demo/',
+    //      baseDir: '../www/',
     //      directory: true
     //    }
   })
 
   gulp.watch([
-    '../www/demo/123.me/*.html'
+    '../www/123.me/*.html'
     //    '../../www/demo/**/*.html',
     //    '../../www/demo/**/js/**/*.js',
     //    '../../www/demo/**/css/**/*.css',

@@ -19,7 +19,7 @@
     nvm alias default v新版本号
 
     nvm list
-    nvm uninstall v旧版本号     # 如果无法删除，用管理员权限按要求设置文件夹权限，还可以去目录删除 /Users/用户名/.nvm/versions/node/v版本
+    nvm uninstall v旧版本号     # 若无法删除，则用管理员权限按要求设置文件夹权限，还可以去目录删除 /Users/用户名/.nvm/versions/node/v版本
     ```
 2. Windows的[nvm-windows](https://github.com/coreybutler/nvm-windows)：
 
@@ -394,7 +394,7 @@
 
         ![Node.js的require流程图](./images/nodejs-require-1.jpg)
 
-        1. 如果 X 以`/`、`./`或`../`开头
+        1. 若 X 以`/`、`./`或`../`开头
 
             1. 根据 X 所在的父模块，确定 X 的绝对路径。
             2. 将 X 当成**文件**，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。
@@ -403,10 +403,10 @@
             3. 将 X 当成**目录**，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。
 
                 `X/package.json（main字段）`、`X/index.js`、`X/index.json`、`X/index.node`
-        2. 如果 X 是内置模块，返回该模块，不再继续执行。
+        2. 若 X 是内置模块，则返回该模块，不再继续执行。
 
             >e.g. `require('http')`
-        3. 如果 X 不带路径且不是内置模块
+        3. 若 X 不带路径且不是内置模块
 
             >当作安装在本地的模块。
 
@@ -432,7 +432,7 @@
         >        1. 搜索时，先将`bar`当作文件名，依次在`某某/node_modules/`尝试加载下面文件：
         >
         >            `bar`、`bar.js`、`bar.json`、`bar.node`
-        >        2. 如果都不成功，说明`bar`可能是目录名，依次在`某某/node_modules/`尝试加载下面文件：
+        >        2. 若都不成功，则说明`bar`可能是目录名，依次在`某某/node_modules/`尝试加载下面文件：
         >
         >            ```text
         >            bar/package.json（main字段）

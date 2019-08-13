@@ -17,7 +17,7 @@
         sudo php5enmod mcrypt
         ```
 
-		>如果升级了php5导致产生“permission denied”错误，打开 `/etc/php5/fpm/pool.d/www.conf` 更改第44行开始，把“；”去除，打开listen.owner和listen.group
+		>若升级了php5导致产生“permission denied”错误，则打开 `/etc/php5/fpm/pool.d/www.conf` 更改第44行开始，把“；”去除，打开listen.owner和listen.group
 	2. 安装**mysql-server**、**php5-mysql**
 
 		>desktop还可以安装：**mysql-client**、**mysql-workbench**

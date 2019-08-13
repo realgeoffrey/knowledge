@@ -305,8 +305,8 @@
 ### CSS的小数、百分比
 1. 浏览器会把小数以及百分比换算成整数的单位（px）
 
-    1. 四舍五入：ie8、ie9、Chrome、Firefox。
-    2. 直接向下取整：ie7、Safari。
+    1. 四舍五入：Firefox、ie8+。
+    2. 直接向下取整：Chrome、Safari、ie7。
 2. 多个子节点浮动的总宽度接近100%会表现成100%
 
     <details>
@@ -399,7 +399,7 @@
 
         相对于视口。
 
-    >如果某个元素设置了百分比的属性，则后代元素继承的是计算后的具体px值。
+    >若某个元素设置了百分比的属性，则后代元素继承的是计算后的具体px值。
 
 ### `line-height`
 - 值的不同情况：无单位数字、带单位值、百分比、`normal`
@@ -442,7 +442,7 @@
     >类似于针对背景图的位置、拉升：`background-position`、`background-size`（`background-repeat: no-repeat`）。
 
 ### 横竖屏切换（模拟手机屏幕旋转）
->1. 旋转效果的节点，如果要增加内嵌滚动条，不能在此节点上增加`border-radius`，否者滚动条横竖轴颠倒。
+>1. 旋转效果的节点，若要增加内嵌滚动条，则不能在此节点上增加`border-radius`，否者滚动条横竖轴颠倒。
 >2. 部分Android系统（或低端机）对内嵌的滚动条（`overflow: hidden/auto;`）支持不佳，尤其增加了旋转效果后，设置的滚动条（甚至`overflow: hidden;`）会导致更多样式问题。除了去除内嵌滚动条的`border-radius`，还可以尝试给兄弟节点设置`z-index`。部分硬件较差的WebView对CSS3支持非常有限，无法做到**旋转+内嵌滚动条**（内嵌滚动条横竖轴颠倒）。
 >
 >- 其他解决方案：使用按钮（控制翻页或JS滚动）代替内嵌滚动条；使用`touchmove`实现滑动页面。
@@ -513,7 +513,7 @@
             >数字数量有限制：[Unicode](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#unicode)。
 
 ### `text-align: justify;`
-`text-align`：定义行内内容（例如文字）如何相对它的块父元素对齐。并不控制块元素自己的对齐，只控制它的行内内容的对齐。
+`text-align`：定义行内内容（如：文字）如何相对它的块父元素对齐。并不控制块元素自己的对齐，只控制它的行内内容的对齐。
 
 1. `text-align: justify;`：文字向两侧对齐，但对最后一行无效。
 2. `text-align-last`：文本中最后一行对齐规则。
@@ -555,8 +555,8 @@
 
     1. 除了要检测用户输入标签的闭合性之外，还要注意富文本编辑器的祖先元素不要用`<li>`嵌套。
 
-        因为代码中如果有单独的`<li>`（没有嵌套`<ol>`或`<ul>`），就会“越级”到跟祖先级`<li>`同级的内容。
-    2. 大部分富文本会用`<em>`、`<ol>`、`<ul>`等标签来表示**斜体**、**有序序列**、**无序序列**，因此如果用CSS重置了以上标签的样式后，要在[富文本内重载开启它们的默认效果](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L61-L77)（或定制效果）。
+        因为代码中若有单独的`<li>`（没有嵌套`<ol>`或`<ul>`），则会“越级”到跟祖先级`<li>`同级的内容。
+    2. 大部分富文本会用`<em>`、`<ol>`、`<ul>`等标签来表示**斜体**、**有序序列**、**无序序列**，因此若用CSS重置了以上标签的样式后，则要在[富文本内重载开启它们的默认效果](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L61-L77)（或定制效果）。
     3. 大部分富文本会在`<table>`上使用`cellspacing`、`border`、`bordercolor`属性设置表格，又因为设置了`border: 0;`的表格无法重载开启以上属性作用，所以CSS重置时[不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L26-L27)。
 2. 针对`contenteditable="true"`的DOM内容：
 
@@ -622,33 +622,7 @@
         ```
     2. 内容宽度不确定
 
-        1. 子级`display: table; margin: 0 auto;`。
-
-            >兼容ie8+。
-
-            ```css
-            .son {
-                display: table;
-                margin: 0 auto;
-            }
-            ```
-        2. 父级`position: relative;`，子级`position: absolute; left: 50%; transform: translateX(-50%);`。
-
-            >兼容ie9+。
-
-            ```scss
-            .father {
-                position: relative;
-
-                .son {
-                    position: absolute;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    -ms-transform: translateX(-50%);
-                }
-            }
-            ```
-        3. 父级`display: flex; justify-content: center;`；或父级`display: flex;`，单子级`margin: 0 auto;`。
+        1. 父级`display: flex; justify-content: center;`；或父级`display: flex;`，单子级`margin: 0 auto;`。
 
             >兼容ie11+。
 
@@ -665,6 +639,32 @@
 
                 .son {  /* 单子级的margin左右占满父级 */
                     margin: 0 auto;
+                }
+            }
+            ```
+        2. 子级`display: table; margin: 0 auto;`。
+
+            >兼容ie8+。
+
+            ```css
+            .son {
+                display: table;
+                margin: 0 auto;
+            }
+            ```
+        3. 父级`position: relative;`，子级`position: absolute; left: 50%; transform: translateX(-50%);`。
+
+            >兼容ie9+。
+
+            ```scss
+            .father {
+                position: relative;
+
+                .son {
+                    position: absolute;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    -ms-transform: translateX(-50%);
                 }
             }
             ```
@@ -691,7 +691,17 @@
         父级`position: relative;`，子级`position: absolute; top: 50%; margin-top: 负一半高度;`。
     2. 内容高度不确定
 
-        1. 父级`display: table-cell; vertical-align: middle;`，子级`display: inline-block;`。
+        1. 父级`display: flex; align-items: center;`。
+
+            >兼容ie11+。
+
+            ```scss
+            .father {
+                display: flex;
+                align-items: center;
+            }
+            ```
+        2. 父级`display: table-cell; vertical-align: middle;`，子级`display: inline-block;`。
 
             ```scss
             .father { /* （为兼容低版本ie）不能是float或absolute，可以在外嵌套float或absolute */
@@ -712,7 +722,7 @@
             ```
 
             [CodePen demo](https://codepen.io/realgeoffrey/pen/RXoEyW)
-        2. 父级`position: relative;`，子级`position: absolute; top: 50%; transform: translateY(-50%);`。
+        3. 父级`position: relative;`，子级`position: absolute; top: 50%; transform: translateY(-50%);`。
 
             >兼容ie9+。
 
@@ -726,16 +736,6 @@
                     transform: translateY(-50%);
                     -ms-transform: translateY(-50%);
                 }
-            }
-            ```
-        3. 父级`display: flex; align-items: center;`。
-
-            >兼容ie11+。
-
-            ```scss
-            .father {
-                display: flex;
-                align-items: center;
             }
             ```
         4. 辅助参考元素`display: inline-block; vertical-align: middle; height: 100%;`，子级`display: inline-block; vertical-align: middle;`。
@@ -961,6 +961,8 @@
     1. 栅格系统
     2. [自适应宽度布局](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#自适应宽度布局)
     3. [水平居中、垂直居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#水平居中垂直居中)
+
+        >[图标和文字并排垂直水平居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#图标和文字并排垂直水平居中)
     4. [粘性页脚](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#粘性页脚)
     5. [多列等高](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#多列等高)
 2. `flex`具体解决方案：[`flex`布局实践](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex布局实践)。
@@ -1035,6 +1037,8 @@
 
         1. `will-change: ;`（现代浏览器，最佳方式）。
         2. `transform: translateZ(0);`（hack方式）。
+
+        >有些情况无法互相替代。
     2. 自带单独层的元素：
 
         1. 使用加速视频解码的`<video>`元素。
@@ -1043,7 +1047,7 @@
     3. 其他提升至单独层的方法：
 
         1. `transform 3D`或`perspective`。
-        2. 如果有一个元素，它的兄弟元素在层中渲染，而这个兄弟元素的`z-index`比较小，那么这个元素（不管是不是应用了硬件加速样式）也会被放到层中。
+        2. 若有一个元素，它的兄弟元素在层中渲染，而这个兄弟元素的`z-index`比较小，则这个元素（不管是不是应用了硬件加速样式）也会被放到层中。
         3. 对自己的`opacity`做CSS动画或使用一个动画变换的元素。
         4. 拥有加速CSS过滤器的元素。
         5. 元素有一个包含层的后代节点（换句话说，就是一个元素拥有一个后代元素，该后代元素在自己的层里）。
@@ -1119,14 +1123,14 @@
         合理划分层，动静分离，可避免大面积重绘。
     5. 优先使用层（composite layers）来统一操作动画，并控制层数量
 
-        如果元素仅改变composite，那么将其提升至单独的层。
+        若元素仅改变composite，则将其提升至单独的层。
 
         1. 只使用`transform/opacity`来实现动画效果。
         2. 用`will-change/translateZ`属性把动画元素提升到单独的层中。
         3. 避免滥用层提升、避免创建过多层（更多的层需要更多的内存和更复杂的管理）。
         4. 使用3D硬件加速提升动画性能时，最好给元素增加一个`z-index`属性（改变层叠上下文的顺序），人为干扰层排序，可以有效减少Chrome创建不必要的层，提升渲染性能。
 
-            >如果有一个元素，它的兄弟元素在层中渲染，而这个兄弟元素的`z-index`比较小，那么这个元素（不管是不是应用了硬件加速样式）也会被放到层中。
+            >若有一个元素，它的兄弟元素在层中渲染，而这个兄弟元素的`z-index`比较小，则这个元素（不管是不是应用了硬件加速样式）也会被放到层中。
     6. 对用户输入、滚动事件进行[函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)处理
 
         >滚动会触发高频率重新渲染，scroll事件的处理函数也会被高频率触发。
@@ -1201,7 +1205,7 @@
 
             同一批内容的不同样式（如：仅背景不同的几个按钮），可以用`.i-1`、`.i-2`区分样式。
 
-            >如果在模块上，可以使用**选择器扩展**而不加前缀`.i-`，如：`.m-xxx`扩展内容`.m-xxx-1`、`.m-xxx .btn`扩展内容`.m-xxx .btn-1`。
+            >若在模块上，则可以使用**选择器扩展**而不加前缀`.i-`，如：`.m-xxx`扩展内容`.m-xxx-1`、`.m-xxx .btn`扩展内容`.m-xxx .btn-1`。
         6. JS功能`.j-`（JS）
 
             仅作为JS锚点使用，不添加任何CSS样式。

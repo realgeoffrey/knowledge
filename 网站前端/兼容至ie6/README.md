@@ -249,7 +249,7 @@
 	1. 此文字的节点设置`width固定值`。
 	2. `white-space: nowrap;`强制文本不换行。
 32. ie6的`负margin`有些情况需要多设置一些，因为可能出现子节点内容超过设定值的情况。
-33. ie6的某些兄弟间节点间（如：`<img>`和其他`inline`或`inline-block`节点）因为出现如`overflow: hidden;`造成相对于基线会有对齐问题：
+33. ie6的某些兄弟间节点间（如：`<img>`和其他`inline`或`inline-block`节点）因为出现比如`overflow: hidden;`造成相对于基线会有对齐问题：
 
 	1. `vertical: top; margin-top: 某px;`
 	2. 只对ie6进行hack操作，`_vertical-align: baseline; _margin-top: 某px;`或`_vertical-align: -某px;`。

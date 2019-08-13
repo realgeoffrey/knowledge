@@ -3,12 +3,12 @@
 ## 目录
 1. [服务端安装](#服务端安装)
 
-    1. [通过Docker安装服务器：Shadowsocks、Cisco IPSec（IPSec Xauth PSK）](#通过docker安装服务器shadowsockscisco-ipsecipsec-xauth-psk)
+    1. [通过Docker安装服务器：Shadowsocks、Cisco IPSec（IPSec Xauth PSK）或IPsec/L2TP（L2TP/IPsec PSK）](#通过docker安装服务器shadowsockscisco-ipsecipsec-xauth-psk或ipsecl2tpl2tpipsec-psk)
     1. [非Docker环境安装服务器：Shadowsocks、IKEv2（IKEv1）](#非docker环境安装服务器shadowsocksikev2ikev1)
 1. [客户端配置](#客户端配置)
 
     1. [Shadowsocks](#shadowsocks客户端配置)
-    1. [Cisco IPSec（IPSec Xauth PSK）](#cisco-ipsecipsec-xauth-psk客户端配置)
+    1. [Cisco IPSec（IPSec Xauth PSK）或IPsec/L2TP（L2TP/IPsec PSK）](#cisco-ipsecipsec-xauth-psk或ipsecl2tpl2tpipsec-psk客户端配置)
     1. [IKEv2（IKEv1）](#ikev2ikev1客户端配置)
 
 ---
@@ -16,7 +16,7 @@
 
 >使用Docker是最快捷的方式。
 
-### 通过Docker安装服务器：Shadowsocks、Cisco IPSec（IPSec Xauth PSK）
+### 通过Docker安装服务器：Shadowsocks、Cisco IPSec（IPSec Xauth PSK）或IPsec/L2TP（L2TP/IPsec PSK）
 >[Docker](https://www.docker.com/)建议Linux内核在3.0以上。[Bandwagon](https://bwh1.net/)内核只有2.6，无法使用Docker；[vultr](https://my.vultr.com/)可以使用Docker。
 
 - 安装、启动Docker（若已安装Docker，不要再次安装/启动）
@@ -26,6 +26,23 @@
 
     service docker start    # 启动
     ```
+
+    - 启动、停止、重启、删除 容器实例
+
+        ```bash
+        docker ps                # 获取容器信息，包括ID（`-a`：显示所有的容器，包括未运行的）
+
+
+        docker start “容器ID”   # 启动容器
+
+        docker stop “容器ID”    # 停止容器（`-t=“时间 默认10”`：若超时未能关闭则强制kill）
+        # 或
+        docker kill “容器ID”    # 直接关闭容器
+
+        docker restart “容器ID” # 重启容器（无论容器是否已启动）
+
+        docker rm “容器ID”      # 删除容器
+        ```
 1. Shadowsocks服务端安装
 
     >来自：[Shadowsocks-libev Docker Image](https://github.com/shadowsocks/shadowsocks-libev/blob/master/docker/alpine/README.md#shadowsocks-libev-docker-image)。
@@ -33,15 +50,28 @@
     ```bash
     docker pull shadowsocks/shadowsocks-libev
 
-    docker run -e PASSWORD=密码 -p 服务端口号:8388 -p 服务端口号:8388/udp -d shadowsocks/shadowsocks-libev  # 默认加密方式：aes-256-gcm
+    docker run -e PASSWORD=密码 -p 服务端口号:8388 -p 服务端口号:8388/udp -d --restart always shadowsocks/shadowsocks-libev  # 默认加密方式：aes-256-gcm
     ```
-2. Cisco IPSec（IPSec Xauth PSK）服务端安装
+2. Cisco IPSec（IPSec Xauth PSK）或IPsec/L2TP（L2TP/IPsec PSK）服务端安装
 
-    >来自：[docker-strongswan](https://github.com/kitten/docker-strongswan)。
+    >来自：[docker-ipsec-vpn-server](https://github.com/hwdsl2/docker-ipsec-vpn-server)。
 
-    ```bash
-    docker run -d -p 500:500/udp -p 4500:4500/udp -p 1701:1701/udp -e VPN_USER=账户名称 -e VPN_PASSWORD=密码 -e VPN_PSK=密钥 --privileged philplckthun/strongswan
-    ```
+    1. 新建一个配置文件，包含：共享的密钥、帐户名称、密码。（帐户名称和密码可以设置多个）
+
+        >文件位置和文件名可任意。
+
+        ```text
+        VPN_IPSEC_PSK=共享的密钥
+        VPN_USER=帐户名称1 帐户名称2
+        VPN_PASSWORD=密码1 密码2
+        ```
+    2. 启动
+
+        ```bash
+        docker pull hwdsl2/ipsec-vpn-server
+
+        docker run --name ipsec-vpn-server --env-file “配置文件地址” --restart=always -p 500:500/udp -p 4500:4500/udp -d --privileged hwdsl2/ipsec-vpn-server
+        ```
 
 ### 非Docker环境安装服务器：Shadowsocks、IKEv2（IKEv1）
 <details>
@@ -216,8 +246,9 @@
     >
     >[https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/科学上网/OmegaOptions.bak](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/科学上网/OmegaOptions.bak)
 
-### Cisco IPSec（IPSec Xauth PSK）客户端配置
->参考：[配置 IPSec/Xauth VPN 客户端](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-xauth-zh.md)。
+### Cisco IPSec（IPSec Xauth PSK）或IPsec/L2TP（L2TP/IPsec PSK）客户端配置
+>1. 参考：[配置 IPSec/Xauth VPN 客户端](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-xauth-zh.md)。
+>2. 参考：[配置 IPsec/L2TP VPN 客户端](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-zh.md)。
 
 ### IKEv2（IKEv1）客户端配置
 1. iOS
