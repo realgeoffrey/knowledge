@@ -59,8 +59,10 @@
     >1. [基础知识](./网站前端/前端内容/基础知识.md)
     ></details>
 4. [Vue.js学习笔记](./网站前端/Vue.js学习笔记/README.md)
-5. [HTTP相关](./网站前端/HTTP相关/README.md)
-6. <details>
+5. [Typescript学习笔记](./网站前端/Typescript学习笔记/README.md)
+6. [React学习笔记](./网站前端/React学习笔记/README.md)
+7. [HTTP相关](./网站前端/HTTP相关/README.md)
+8. <details>
 
     <summary><a href="./网站前端/Node.js学习笔记/README.md">Node.js学习笔记</a></summary>
 
@@ -71,15 +73,15 @@
     3. [Babel学习笔记](./网站前端/Babel学习笔记/README.md)
     4. [ESLint配置解析](./网站前端/ESLint配置解析/README.md)
     </details>
-7. <details>
+9. <details>
 
     <summary>初始化模板</summary>
 
     1. [cssReset.scss](./网站前端/初始化模板/cssReset.scss)
     2. [init.html](./网站前端/初始化模板/init.html)
     </details>
-8. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
-9. <details>
+10. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
+11. <details>
 
     <summary>废弃内容:thumbsdown:</summary>
 

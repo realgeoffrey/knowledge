@@ -103,7 +103,7 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
 }
 @mixin multi-ellipsis($line-height, $line) {
   line-height: $line-height;
-  height: $line-height * $line;
+  height: $line-height * $line; // 或max-height: $line-height * $line; 非必须（用rem会因为小数点问题出现样式问题）
   display: block;
   display: -webkit-box;
   overflow: hidden;
@@ -160,8 +160,7 @@ html {-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border
 }
 @mixin multi-ellipsis-rem($line-height, $line) {
   line-height: rem($line-height);
-  // max-height: rem($line-height * $line);
-  height: rem($line-height * $line);
+  height: rem($line-height * $line); // 或max-height: rem($line-height * $line); 非必须（用rem会因为小数点问题出现样式问题）
   display: block;
   display: -webkit-box;
   overflow: hidden;

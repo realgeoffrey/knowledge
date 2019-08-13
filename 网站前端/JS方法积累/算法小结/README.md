@@ -36,7 +36,7 @@
 >
 >    稳定排序算法会让原本有相等键值的纪录维持相对次序。
 >
->    >如果一个排序算法是稳定的，当有两个相等键值的纪录R和S，且在原本的列表中R出现在S之前，在排序过的列表中R也将会是在S之前。
+>    >若一个排序算法是稳定的，则当有两个相等键值的纪录R和S，且在原本的列表中R出现在S之前，在排序过的列表中R也将会是在S之前。
 >2. 比较排序：
 >
 >    排序算法的一种，通过一个抽象的内容比较操作来确定两个元素中哪个应该放在序列前面。
@@ -141,7 +141,7 @@ function bubbleSort(arr) {
 ```
 >1. 思路：
 >
->    1. 比较相邻的元素：如果第一个比第二个大，就交换它们两个。
+>    1. 比较相邻的元素：若第一个比第二个大，则交换它们两个。
 >    2. 对每一对相邻元素作同样的比较，从开始第一对到结尾的最后一对。这步做完后，最后的元素会是最大的数。
 >    3. 针对所有的元素重复以上的步骤，除了已经置底的（遍历几次就有几个元素置底）。
 >    4. 持续每次对越来越少的元素重复上面的步骤，直到没有任何一对数字需要比较。
@@ -571,12 +571,8 @@ function countingSort(arr) {
     1. 使用`Array.prototype.indexOf`、`Array.prototype.filter`
 
         ```javascript
-        function uniqueArr(arr) {
-
-            return arr.filter(function (item, index, array) {
-
-                return array.indexOf(item) === index;
-            });
+        function uniqueArr (arr) {
+          return arr.filter((item, index, array) => array.indexOf(item) === index)
         }
         ```
     2. 不使用~~Array.prototype.indexOf~~、~~Array.prototype.filter~~
@@ -616,7 +612,7 @@ function countingSort(arr) {
 
         for (i = 0; i < len; i++) {
             for (j = i + 1; j < len; j++) {
-                if (arr[i] === arr[j]) {    // 如果发现相同元素，则i自增并且进入下一个数的循环比较
+                if (arr[i] === arr[j]) {    // 若发现相同元素，则i自增并且进入下一个数的循环比较
                     i += 1;
                     j = i;
                 }
@@ -632,25 +628,18 @@ function countingSort(arr) {
 3. 先排序原始数组（需要额外排序算法，否则只能处理Number型数据），第一项加入，之后每个项对比前一个项：若不同，则加入；若相同，则丢弃。
 
     ```javascript
-    function uniqueArr(arr) {
-
-        return arr.concat().sort().filter(function (item, index, array) {
-
-            return !index || item != array[index - 1];  // 排序后：第一项一定加入；第二项之后与前一项对比，不同则加入
-        });
+    function uniqueArr (arr) {
+      return arr.concat().sort().filter((item, index, array) => !index || item !== array[index - 1])
     }
     ```
     >时间复杂度：O(n) + 数组排序。
 4. 用对象（哈希表）去重（只能处理Number型数据）。
 
     ```javascript
-    function uniqueArr(arr) {
-        var obj = {};
+    function uniqueArr (arr) {
+      const obj = {}
 
-        return arr.filter(function (item) {
-
-            return obj.hasOwnProperty(item) ? false : (obj[item] = true);
-        });
+      return arr.filter((item) => obj.hasOwnProperty(item) ? false : (obj[item] = true))
     }
     ```
     >时间复杂度：O(n)。
@@ -658,7 +647,6 @@ function countingSort(arr) {
 
     ```javascript
     function uniqueArr(arr) {
-
         return Array.from(new Set(arr));
         // 或：return [...new Set(arr)];
     }
@@ -724,14 +712,8 @@ function countingSort(arr) {
 4. 使用`Array.prototype.filter`（数组空位不遍历）：
 
     ```javascript
-    function reduceArr(arr, delValue) {
-
-        return arr.filter(function (value) {
-            if (value !== delValue) {
-
-                return true;
-            }
-        });
+    function reduceArr (arr, delValue) {
+      return arr.filter((value) => value !== delValue)
     }
     ```
 >时间复杂度：O(n)。
@@ -801,42 +783,30 @@ function switchArr ({ arr, from, to, isLeft = false }) {
     1. `Array`：
 
         ```javascript
-        var n = 55;
+        var n = 55
 
-        var arr = Array.apply(null, new Array(n)).map(function (item, index) {
-
-            return index;
-        });
+        var arr = Array.apply(null, new Array(n)).map((item, index) => index)
         ```
     2. `Array`、`join`、`split`：
 
         ```javascript
-        var n = 55;
+        var n = 55
 
-        var arr = new Array(n + 1).join().split('').map(function (item, index) {
-
-            return index;
-        });
+        var arr = new Array(n + 1).join().split('').map((item, index) => index)
         ```
     3. `Object.keys`、`Array`、`toString`、`split`：
 
         ```javascript
-        var n = 55;
+        var n = 55
 
-        var arr = Object.keys(new Array(n + 1).toString().split('')).map(function (item, index) {
-
-            return index;
-        });
+        var arr = Object.keys(new Array(n + 1).toString().split('')).map((item, index) => index)
         ```
 3. ES6的`Array.from`
 
     ```javascript
-    var n = 55;
+    var n = 55
 
-    var arr = Array.from({length: n}, function (value, index) {
-
-        return index;
-    });
+    var arr = Array.from({ length: n }, (value, index) => index)
     ```
 4. 纯手打字面量（性能最好方式）
 

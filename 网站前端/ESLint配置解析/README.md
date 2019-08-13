@@ -13,16 +13,17 @@
  */
 
 /*
- * 你可以通过在项目根目录创建一个.eslintignore文件告诉ESLint去忽略特定的文件和目录
+ * 你可以通过在项目根目录创建一个.eslintignore文件告诉ESLint去忽略特定的文件和目录（忽略语法和.gitignore一致）
  * .eslintignore文件是一个纯文本文件，其中的每一行都是一个glob模式表明哪些路径应该忽略检测
+ * 可以直接用.gitignore文件作为eslint忽略的文件：--ignore-path .gitignore
  */
 
 {
   //Eslint检测配置文件步骤：
   //1.在要检测的文件同一目录里寻找.eslintrc.*和package.json
   //2.紧接着在父级目录里寻找，一直到文件系统的根目录
-  //3.如果在前两步发现有root：true的配置，停止在父级目录中寻找.eslintrc
-  //4.如果以上步骤都没有找到，则回退到用户主目录~/.eslintrc中自定义的默认配置
+  //3.若在前两步发现有root：true的配置，则停止在父级目录中寻找.eslintrc
+  //4.若以上步骤都没有找到，则回退到用户主目录~/.eslintrc中自定义的默认配置
   "root": true,
 
   //ESLint默认使用Espree作为其解析器
@@ -33,7 +34,7 @@
   "parserOptions": {
     //指定要使用的ECMAScript版本，默认值5
     "ecmaVersion": 5,
-    //设置为script(默认)或module（如果你的代码是ECMAScript模块)
+    //设置为script(默认)或module（若你的代码是ECMAScript模块)
     "sourceType": "script",
     //这是个对象，表示你想使用的额外的语言特性,所有选项默认都是false
     "ecmafeatures": {
@@ -57,7 +58,7 @@
     "commonjs": false,
     "mocha": true,
     "jquery": true,
-     //如果你想使用来自某个插件的环境时，确保在plugins数组里指定插件名
+     //若你想使用来自某个插件的环境时，则确保在plugins数组里指定插件名
      //格式为：插件名/环境名称（插件名不带前缀）
     "react/node": true
   },
@@ -112,7 +113,7 @@
     "eqeqeq": "warn",
     //你也可以使用对应的数字定义规则严重程度
     "curly": 2,
-    //如果某条规则有额外的选项，你可以使用数组字面量指定它们
+    //若某条规则有额外的选项，则可以使用数组字面量指定它们
     //选项可以是字符串，也可以是对象
     "quotes": ["error", "double"],
     "one-var": ["error", {
@@ -126,7 +127,7 @@
 
   //ESLint支持在配置文件添加共享设置
   //你可以添加settings对象到配置文件，它将提供给每一个将被执行的规则
-  //如果你想添加的自定义规则而且使它们可以访问到相同的信息，这将会很有用，并且很容易配置
+  //若你想添加的自定义规则而且使它们可以访问到相同的信息，则这将会很有用，并且很容易配置
   "settings": {
     "sharedData": "Hello"
   }

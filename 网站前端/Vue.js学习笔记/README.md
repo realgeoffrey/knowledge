@@ -102,6 +102,25 @@
 2. `v-if`、`v-else`、`v-else-if`
 
     DOM或组件判定为`false`，则完全销毁（组件会调用`destroyed`）；判定为`true`，则新建。除非使用`<keep-alive/>`包裹。
+
+    - 若切换的DOM或组件是相同的，则根据`key`属性是否相同判断是否复用（未设置`key`则也认为是相同）。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```vue
+        ><template v-if="loginType === 'username'">
+        >  <label>Username</label><!-- 复用 -->
+        >  <input placeholder='username' key='username'><!-- 不复用（仅复用相同key值的DOM） -->
+        >  <input placeholder='password'><!-- 复用 -->
+        ></template>
+        ><template v-else>
+        >  <label>Email</label><!-- 复用 -->
+        >  <input placeholder='address' key='email'><!-- 不复用 -->
+        >  <input placeholder='password'><!-- 复用 -->
+        ></template>
+        >```
+        ></details>
 3. `v-for="值/(值, 键)/(值, 键, 索引) in/of JS表达式/整数"`
 
     ><details>
@@ -120,15 +139,19 @@
     - 在组件中使用`v-for`时，必须添加`key`属性
     - 尽可能在使用`v-for`时提供`key`属性（除非输出的DOM非常简单，或刻意重用DOM以获取性能提升）
 
-        ```html
-        <!-- e.g. -->
-        <div v-for="(item, key) in items" :key="key">
-          <!-- 内容 -->
-        </div>
-        ```
-
-        >（相同标签名的DOM切换展示，）没有提供`key`属性：若数据项的顺序被改变，Vue将不会~~移动DOM来匹配数据项的顺序~~；而是保持原DOM尽量不变化，尽量仅修改DOM的属性和内部内容，以确保渲染正确。
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```html
+        ><div v-for="(item, key) in items" :key="item.id || key">
+        >  <!-- 内容 -->
+        ></div>
+        >```
+        ></details>
     - `v-for`子组件时，最好都用`props`传入参数，而不用~~全局数据（如：vuex）~~
+
+>（相同标签名的DOM或相同组件切换展示时，）没有提供`key`属性：若数据项的展示/顺序被改变，则Vue将不会~~销毁再新建DOM/移动DOM来匹配数据项的顺序~~，而是保持原DOM尽量不变化，尽量仅在原DOM上修改属性和内部内容，以确保渲染正确。
+
 4. `v-bind`绑定DOM属性与JS表达式的结果。
 
     >此DOM属性随表达式最终值改变而改变，直接修改此DOM属性值不改变表达式的值。
@@ -532,12 +555,42 @@
 
     1. `key`
 
-        重用DOM（尽量在已存在的DOM上做修改、保持原DOM尽量不变化，而不是~~移除再新建DOM或移动DOM~~）
+        <details>
+        <summary>决定是否重用DOM（保持原DOM尽量不变化，尽量仅在原DOM上修改属性和内部内容，而不是<del>销毁再新建DOM/移动DOM来匹配数据项的顺序</del>）</summary>
 
-        >针对：相同标签名的DOM切换展示。
+         - key的特殊属性主要用在Vue的虚拟DOM算法，在新旧nodes对比时辨识VNode。
 
-        1. 当没有`key`属性或`key`属性相同时（重复的`key`可能造成渲染错误）：最大化重用DOM。
+            1. 若不使用`key`，则Vue会使用一种最大限度减少动态元素并且尽可能的尝试修复/再利用相同类型元素的算法。
+            2. 使用`key`，它会基于`key`的变化重新排列元素顺序，并且会移除`key`不存在的元素。
+        </details>
+
+        >针对：有相同父元素的子元素必须有独特的`key`（重复的`key`会造成渲染错误）。相同标签名的DOM切换展示、或相同组件间切换展示。`v-for`、`v-if`、`<transition/>`、`<transition-group/>`。
+
+        1. 切换的DOM的没有`key`属性或`key`属性相同时：最大化重用DOM。
         2. 切换的DOM的`key`属性不同：不重用DOM。
+
+        - `key`的取值：
+
+            1. 不要用`v-for`生成的~~键或索引~~，因为重新渲染且项的顺序变化时会发生错误（每一个项的`key`都各自等于重新渲染之后的每一个项的`key`）。
+            2. 尽量不要用随机数（如：`Math.random()`），除了小概率会碰撞之外，框架无法优化性能。
+            3. 每项数据需要一个唯一值作为`key`（如：id），若原数据项没提供，则可在拉到数据时由前端额外加入。
+
+                <details>
+                <summary>e.g.</summary>
+
+                ```javascript
+                let localCounter = 1
+
+                function getLocalCounter () {
+                  return localCounter++
+                }
+
+
+                // 拉到的每个数据加入唯一id
+                const item1 = {}
+                item1._id = getLocalCounter()
+                ```
+                </details>
     2. `ref`
 
         被用来给原生DOM元素或子组件注册引用信息。引用信息注册在`vm.$refs`对象上。
@@ -619,7 +672,7 @@
     <details>
     <summary>默认：<code>get</code>（初始化时会调用一次）；显式设置：<code>set</code>（被赋值时执行）和<code>get</code></summary>
 
-    当没有设置`set`时，不能主动去设置`computed`的值（~~`this.计算属性 = 值`~~）；设置了`set`也不能改变自己的值（`set`函数里不能再循环设置自己的值）。
+    当未设置`set`时，不能主动去设置`computed`的值（~~`this.计算属性 = 值`~~）；设置了`set`也不能改变自己的值（`set`函数里不能再循环设置自己的值）。
 
     ```javascript
     // e.g.
@@ -1280,7 +1333,7 @@
 
     >不建议、反模式。
 
-    主要为了解决：要挂载到不在组件操作范围内的DOM、或组件外生成的DOM（如富文本内要嵌入Vue实例）。
+    主要为了解决：要挂载到不在组件操作范围内的DOM、或组件外生成的DOM（如：富文本内要嵌入Vue实例）。
 
     ```javascript
     // 某单文件组件One.vue
@@ -1656,9 +1709,44 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
       },
       methods: {
         // 不要使用箭头函数，因为实现代码中有用`call/apply`
-        handleInput1: debounce(function () {  // 或：throttle
+        handleInput: debounce(function () {  // 或：throttle
           console.log(this)
         }, 500)
+      }
+    }
+    </script>
+    ```
+
+    ```vue
+    <template>
+      <div>
+        <div ref="referenceDom" style="position: fixed;">参照物DOM</div>
+        ...
+        <div ref="actDom">滚动需要判定的DOM</div>
+        ...
+      </div>
+    </template>
+
+    <script>
+    import throttle from 'lodash.throttle'
+
+    export default {
+      data () {
+        return {
+          isTooHigh: false
+        }
+      },
+      mounted () {
+        window.addEventListener('scroll', this.scrollHandle)
+      },
+      beforeDestroy () {
+        window.removeEventListener('scroll', this.scrollHandle)
+      },
+      methods: {
+        // 不要使用箭头函数，因为实现代码中有用`call/apply`
+        scrollHandle: throttle(function () {
+          this.isTooHigh = this.$refs.actDom && this.$refs.actDom.getBoundingClientRect().bottom < this.$refs.referenceDom.offsetHeight
+        }, 400),
       }
     }
     </script>
@@ -1670,13 +1758,14 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     ><details>
     ><summary>客户端激活时</summary>
     >
-    >1. 在开发模式下，Vue将判断（从服务端渲染完毕传递来的JSON字符串，在客户端解析而成的）虚拟DOM（virtual DOM），是否与从服务端渲染完毕传输来的DOM结构（DOM structure）匹配。如果无法匹配，它将退出混合模式，丢弃现有的DOM并从头开始渲染。
+    >1. 在开发模式下，Vue将判断（从服务端渲染完毕传递来的JSON字符串，在客户端解析而成的）虚拟DOM（virtual DOM），是否与从服务端渲染完毕传输来的DOM结构（DOM structure）匹配。若无法匹配，则将退出混合模式，丢弃现有的DOM并从头开始渲染。
     >2. 在生产模式下，此检测会被跳过，以避免性能损耗。
+    >3. 重新渲染可能导致页面抖动、闪屏。
     ></details>
 
     建议SSR的应用，不要在`mounted`之前进行能导致模板变化的数据修改。
 
-    >服务端默认禁用模板数据的响应式，因此响应式操作仅会在客户端进行。但是如`watch`的`immediate: true`的方法，在服务端也会执行，因此就需要`process.client/process.server`来判断是否允许服务端执行。
+    >服务端默认禁用模板数据的响应式，因此响应式操作仅会在客户端进行。但是比如`watch`的`immediate: true`的方法，在服务端也会执行，因此就需要`process.client/process.server`来判断是否允许服务端执行。
 2. 服务端也会调用的钩子：`beforeCreate`、`created`
 
     将全局副作用代码移动到服务端不会运行的生命周期钩子中（除了 ~~`beforeCreate`~~、~~`created`~~ 之外的其他钩子）
@@ -2199,7 +2288,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         >
         >    1. 把页面展示所必须的请求放在`asyncData/fetch`，并返回Promise来控制完成后才继续执行代码，这样之后代码需要的异步数据就可以放心使用（否则store的数据可能还未初始化，`undefined.属性`会报错）。
         >    2. 把客户端的异步请求以及其他操作模板的行为都放在`mounted`及之后（否则可能导致“客户端激活”时，客户端的虚拟DOM和服务端传来的DOM不同而出问题）。
-        >4. SSR的页面组件，可以在客户端用路由切换的方式在客户端触发`asyncData/fetch`（`vm.$router.方法()`、或`<nuxt-link/>`、`<router-link/>`）。
+        >4. SSR的页面组件，可以在客户端用路由切换的方式在客户端触发`asyncData/fetch`（路由切换：`vm.$router.方法()`、或`<nuxt-link/>`、或`<router-link/>`）。
 
         3. `head`（`this`指向本组件vue实例）
 

@@ -1298,7 +1298,7 @@
     7. 不要将不同目的的语句，合并成一行。
     8. 所有变量声明都放在函数的头部。
     9. 所有函数都在使用之前定义。
-    10. 避免使用全局变量；*如果不得不使用，用大写字母表示变量名。*
+    10. 避免使用全局变量；*若不得不使用，则用大写字母表示变量名。*
     11. 不要使用`new`命令，改用`Object.create()`命令。
     12. 构造函数的函数名，采用首字母大写；其他函数名，一律首字母小写。
     13. 不要使用自增（`++`）和自减（`--`）运算符，用`+= 1`和`-= 1`代替。
@@ -1519,6 +1519,7 @@
 ### Hybrid App相关
 >1. 相对于Native App的高成本、原生体验，Hybrid App具有低成本、高效率、跨平台、不依赖Native发包更新等特性。
 >2. Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、JS进行业务开发。
+>3. 相对于Native App的流畅体验，Hybrid App瓶颈一般都卡在WebView实例初始化，会导致App卡顿、页面加载缓慢。
 
 1. Native提供给Hybrid宿主环境
 
@@ -1528,20 +1529,32 @@
         2. WebView调用`桥协议`（`window.客户端定义方法`）、或触发`自定义URL Scheme`（`myscheme://客户端定义路径`）
     2. 资源访问机制
 
-        1. 以`file`方式访问Native内部资源。
-        2. 以`url`方式访问线上资源。
+        1. 以本地协议`file`方式访问Native内部资源。
+
+            - 可以把前端要用的静态资源放到客户端本地（如：字体文件），本地页面通过类似`file:///android_asset/fonts/myFont.ttf`引用。
+        2. 以远程`url`方式访问线上资源。
         3. 增量替换机制（不依赖发包更新）
 
-            1. Native本地下载、解压线上的打包资源，再替换旧资源。
+            1. Native包内下载、解压线上的打包资源，再替换旧资源。
             2. ~~manifest~~
         4. URL限定，限制访问、跨域问题的解决方案
 
             1. 可以限制WebView的能发起的请求内容。
             2. 可以代替WebView进行会触发跨域的AJAX请求。
-    3. 身份验证机制
+    3. 页面在客户端内打开方式
+
+        1. 针对产品功能性页面：
+
+            用本地协议`file`方式打开客户端包内.html（.js、.css、图片等都在客户端包内）。
+
+            - `file`打开的页面直接发起请求可能会有跨域问题，可以用客户端接口代理的方式请求服务端数据。
+        2. 针对运营活动页面：
+
+            用远程`url`方式请求。
+    4. 身份验证机制
 
         Native创建WebView时，根据客户端登录情况注入跟登录有关的cookie（session_id）或token。
-    4. Hybrid开发测试
+    5. Hybrid开发测试
 
         1. 提供**切换成线上资源请求方式**的功能，用代理工具代理成本地资源。
         2. Chrome的Remote devices调试。
@@ -1571,6 +1584,7 @@
         >2. WebView无法判断是否安装了其他App。
         >3. 可以通过`查看注入的全局方法`、或`客户端调用回调函数`（、或`navigator.userAgent`）来判定H5页面是否在具体App内打开。
         >4. `桥协议`仅在App内部起作用；`自定义URL Scheme`是系统层面，所以可以额外针对跨App起作用（如：分享去其他App）；iOS的**通用链接**可以认为是高级的`自定义URL Scheme`。
+        >5. Native和WebView交互需要时间，对时效性很高的操作会有问题。
 
         1. `桥协议`：Native注入全局方法至WebView的`window`，WebView调用则客户端拦截后触发Native行为。
 
@@ -1582,7 +1596,7 @@
             ><details>
             ><summary><code>URL Scheme</code></summary>
             >
-            >是iOS和Android提供给开发者的一种WAP唤醒Native App方式。Android应用在mainfest中注册自己的Scheme；iOS应用在App属性中配置。典型的URL Scheme：`myscheme://my.hostxxxxxxx`。
+            >是iOS和Android提供给开发者的一种WAP唤醒Native App方式（客户端用DeepLink实现）。Android应用在mainfest中注册自己的Scheme；iOS应用在App属性中配置。典型的URL Scheme：`myscheme://my.hostxxxxxxx`。
             ></details>
 
             >1. 客户端可以捕获、拦截任何行为（如：`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
@@ -1623,7 +1637,7 @@
                 location.href = '自定义URL Scheme';	  // 也可以用`<iframe>`
 
                 var start = Date.now();
-                setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）（浏览器非激活时，定时器执行时间会变慢，所以会大于定时器时间之后才执行定时器内回调）
+                setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）（浏览器非激活时，定时器执行时间会变慢/主线程被占用，所以会大于定时器时间之后才执行定时器内回调）
                   if (Date.now() - start < 3100) {  // 还在这个页面，认为没有安装App
                     location.href = '下载地址';
                   }
@@ -1658,8 +1672,56 @@
 
             >参考：[通用链接（Universal Links）的使用详解](http://www.hangge.com/blog/cache/detail_1554.html)、[Universal Link 前端部署采坑记](http://awhisper.github.io/2017/09/02/universallink/)、[Support Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html#//apple_ref/doc/uid/TP40016308-CH12-SW2)。
 
-        - WebView提供Native调用的全局回调函数（或匿名函数）。
+        - WebView提供给Native调用的全局回调函数（或匿名函数）。
 
+            ><details>
+            ><summary>对于动态创建的全局回调函数，要注意同名覆盖问题</summary>
+            >
+            >e.g.
+            >
+            >```javascript
+            >let _localCounter = 1 // 同一个方法名快速请求时，可能 Date.now() 还没有变化
+            >
+            >export function invokeJSBridge (method, arg) {
+            >  return new Promise((resolve, reject) => {
+            >    if (typeof window.客户端定义方法 === 'function') {
+            >      let callbackName = `${method}CallbackName${Date.now()}`
+            >      if (window[callbackName]) {
+            >        callbackName = `${method}CallbackName${Date.now()}_${_localCounter}`
+            >        _localCounter += 1
+            >      }
+            >
+            >      window[callbackName] = (res) => {    // todo: 增加定时器去垃圾收集那些没有被客户端回调的方法
+            >        try {
+            >          resolve({ result: 'ok', data: JSON.parse(res) })
+            >        } catch (e) {
+            >          resolve({ result: 'error', data: res })
+            >        }
+            >        window[callbackName] = null
+            >      }
+            >
+            >      window.客户端定义方法( // 桥协议
+            >        method, // 方法名
+            >        JSON.stringify(arg || {}),  // 传参
+            >        callbackName  // 回调
+            >      )
+            >    } else {
+            >      reject(arg)
+            >    }
+            >  })
+            >}
+            >
+            >
+            >/* 使用测试 */
+            >invokeJSBridge('方法名', '参数')
+            >  .then((res) => {  // 是客户端、且调用成功&客户端执行回调
+            >    // 根据res处理客户端执行之后业务
+            >  })
+            >  .catch((res) => { // 不是客户端
+            >    // 非客户端业务
+            >  })
+            >```
+            ></details>
         >接口设计可以带有“透传数据”：前端调用客户端方法时多传一个透传参数，之后客户端异步调用前端方法时带着这个参数的值。
     3. 根据WebView的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在Hybrid遇到的bug。
 
@@ -1715,7 +1777,7 @@
     </details>
 
     1. 声明提前`var a;`。
-    2. 右侧的表达式`a || {}`先执行：根据规则先判断a的值是否为真，如果a为真，则返回a；如果a不为真，则返回{}。
+    2. 右侧的表达式`a || {}`先执行：根据规则先判断a的值是否为真，若a为真，则返回a；若a不为真，则返回{}。
     3. 最后再将结果赋值给`a`。
 
     ><details>
@@ -1779,10 +1841,10 @@
 
     1. `Math.min(...[1, 2, 3])`或`Math.min.apply(null, [1, 2, 3])`
     2. `Math.max(...[1, 2, 3])`或`Math.max.apply(null, [1, 2, 3])`
-10. 设置CSS的内嵌样式：
+10. 获取CSS的样式：
 
     <details>
-    <summary><code>dom.style</code>返回一个<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/CSSStyleDeclaration">CSSStyleDeclaration 对象</a></summary>
+    <summary><code>dom.style或window.getComputedStyle(dom[, 伪元素字符串])</code>返回一个<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/CSSStyleDeclaration">CSSStyleDeclaration对象</a></summary>
 
     1. 包含此DOM的所有内嵌样式（没设置的属性的值默认：`''`）。
     2. 对象的`[[Prototype]]`属性指向的对象包含：
@@ -1795,6 +1857,12 @@
         6. `item(数字)`
     </details>
 
+    1. `dom.style`
+    2. `window.getComputedStyle(dom[, 伪元素字符串])`
+11. 设置CSS的内嵌样式：
+
+    >`window.getComputedStyle(dom[, 伪元素字符串])`获取的是只读对象，不允许任何方式设置（包括 ~~`setProperty`~~）。
+
     1. `cssText`（ie8-返回时不包含最后一个`;`）：
 
         1. 添加：`dom.style.cssText += '; 样式: 属性; 样式: 属性'`
@@ -1805,7 +1873,7 @@
     3. 删除某个内嵌样式属性：`dom.style.某属性名 = ''`或`dom.style.setProperty('某属性名','')`或`dom.style.removeProperty('某属性名')`。
 
     >若赋值错误，则保持赋值前的值。
-11. 文档或一个子资源正在被卸载（关闭、刷新）时先触发`beforeunload`、再触发`unload`：
+12. 文档或一个子资源正在被卸载（关闭、刷新）时先触发`beforeunload`、再触发`unload`：
 
     >关闭前异步发送数据：`navigator.sendBeacon(地址, 数据)`（`XMLHttpRequest`：异步会被忽略、同步影响体验）。
 
@@ -1832,7 +1900,7 @@
         2. 对于终端用户所有资源均不可见
         3. 界面交互无效（`window.open`、`alert`、`confirm`等）
         4. 错误不会停止卸载文档的过程
-12. 页面的id值会动态地成为`window`的属性（全局变量），值为这个id所在的Element，除非`window`已存在这个属性名。
+13. 页面的id值会动态地成为`window`的属性（全局变量），值为这个id所在的Element，除非`window`已存在这个属性名。
 
     ><details>
     ><summary>e.g.</summary>
@@ -1845,14 +1913,14 @@
     ></script>
     >```
     ></details>
-13. （非打开新窗口的、非`history.pushState/replaceState`改变路由的）页面回退
+14. （非打开新窗口的、非`history.pushState/replaceState`改变路由的）页面回退
 
     `if (document.referrer !== '') { history.back() } else { /* 回退到底的其他行为 */ }`
 
     >1. 若是新打开的窗口（`target="_blank"`），则会出现`document.referrer`有值，但`history.back()`已回退到底。
     >2. 若是`history.pushState/replaceState`改变路由，则不改变`document.referrer`（可能初始`document.referrer === ''`）。
     >3. 重新请求当前页面链接（如：`location.reload()`、或点击`<a href="当前页面链接">`），会导致`document.referrer === '当前页面链接'`。
-14. 使用`encodeURIComponent/decodeURIComponent`，不使用 ~~`encodeURI/decodeURI`~~ 或 ~~`escape/unescape`（废弃）~~
+15. 使用`encodeURIComponent/decodeURIComponent`，不使用 ~~`encodeURI/decodeURI`~~ 或 ~~`escape/unescape`（废弃）~~
 
     >`encodeURIComponent`与`encodeURI`都是对URI（统一资源标识符）进行编码。因为 ~~`encodeURI`~~ 无法产生能适用于HTTP GET/POST请求的URI（没转义`&` `=`等），所以不使用。
 
@@ -1862,7 +1930,7 @@
     2. `encodeURI`
 
         转义除了以下字符之外的所有字符：`字母` `数字` `(` `)` `.` `!` `~` `*` `'` `-` `_` `;` `,` `/` `?` `:` `@` `&` `=` `+` `$` `#`
-15. 当一个`<script>`被执行时，在它之前的标签可以访问，但在它之后的标签无法访问（还不存在、未被解析到）
+16. 当一个`<script>`被执行时，在它之前的标签可以访问，但在它之后的标签无法访问（还不存在、未被解析到）
 
     ```html
     <!-- document、document.documentElement、document.head 出现 -->
@@ -1873,7 +1941,7 @@
       </body>
     </html>
     ```
-16. 判断浏览器标签是否在激活状态
+17. 判断浏览器标签是否在激活状态
 
     1. `document.hidden`：当前文档是否被隐藏
     2. `document.visibilityState`：当前文档的可见情况（`'visible'`、`'hidden'`、`'prerender'`、`'unloaded'`）
@@ -1881,7 +1949,7 @@
 
         >`window`的`focus/blur`事件：当前文档**获得焦点/失去焦点**时触发（并不意味着被浏览器标签是否被隐藏）
     4. `document.hasFocus()`：当前文档是否获得焦点
-17. 处理多次引入同个全局对象的冲突
+18. 处理多次引入同个全局对象的冲突
 
     >参考：[jQuery的防冲突（noConflict）](https://github.com/jquery/jquery/blob/master/src/exports/global.js#L7-L25)。
 
@@ -1899,10 +1967,10 @@
       var _myGlobalVariable = {} // 主要功能
 
       // ②防冲突方法
-      // 全局对象回退至上一个版本（若上一个版本未定义，则等于undefined）
+      // 全局对象回退至上一个版本（若上一个版本未定义，则回退至undefined）
       // 该方法返回当前版本
       _myGlobalVariable.noConflict = function () {
-        if (window.myGlobalVariable === _myGlobalVariable) {
+        if (window.myGlobalVariable === _myGlobalVariable) { // 若 全局对象 === 本地变量，则 回退原来的全局对象
           window.myGlobalVariable = backups
         }
 
@@ -1930,7 +1998,7 @@
     console.log(a)                                  // 第二次引入的对象
     ```
     </details>
-18. 对异步加载的功能，可以用`push`的方式处理异步加载问题
+19. 对异步加载的功能，可以用`push`的方式处理异步加载问题
 
     ```html
     <script src="a.js" async></script><!-- 可以在任意地方异步插入 -->
@@ -2231,7 +2299,7 @@
 >隐身模式策略：存储API仍然可用，并且看起来功能齐全，只是无法真正储存（如：分配储存空间为0）。
 
 ### 错误处理机制
->1. 当JS出现错误时，JS引擎会根据JS调用栈逐级寻找对应的`catch`，如果**没有找到相应的catch handler**或**catch handler本身又有error**或**又抛出新的error**，就会把这个error交给浏览器，浏览器会用各自不同的方式显示错误信息，可以用`window.onerror`进行自定义操作。
+>1. 当JS出现错误时，JS引擎会根据JS调用栈逐级寻找对应的`catch`，若**没有找到相应的catch handler**或**catch handler本身又有error**或**又抛出新的error**，则会把这个error交给浏览器，浏览器会用各自不同的方式显示错误信息，可以用`window.onerror`进行自定义操作。
 >2. 在某个**JS block**（`<script>`或`try-catch`的`try`语句块）内，第一个错误触发后，当前JS block后面的代码会被自动忽略，不再执行，其他的JS block内代码不被影响。
 
 1. 原生错误类型
@@ -2266,9 +2334,9 @@
     1. `try-catch-finally`
 
         1. 必须`try-catch`或`try-finally`或`try-catch-finally`同时出现。
-        2. 如果有`catch`，一旦`try`中抛出错误以后就先执行`catch`中的代码，然后执行`finally`中的代码。
-        3. 如果没有`catch`，`try`中的代码抛出错误后，先执行`finally`中的语句，然后将`try`中抛出的错误往上抛。
-        4. 如果`try`中代码是以`return`、`continue`或`break`终止的，必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
+        2. 若有`catch`，则一旦`try`中抛出错误以后就先执行`catch`中的代码，然后执行`finally`中的代码。
+        3. 若没有`catch`，`try`中的代码抛出错误后，则先执行`finally`中的语句，然后将`try`中抛出的错误往上抛。
+        4. 若`try`中代码是以`return`、`continue`或`break`终止的，则必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
         5. 在`catch`中接收的错误，不会再向上提交给浏览器。
 
         >`try`内的作用域不为内部异步操作保留：`try {setTimeout(() => {错误语法}, 0)} catch (e) {}`不会捕获异步操作中的错误（同理，在`Promise`或`async-await`等语法中的异步错误也无法被捕获，但可以捕获`await`的`reject`）。可以在异步回调内部再包一层`try-catch`。
@@ -2601,7 +2669,7 @@
     - 在预编译时，`function`的优先级比`var`高：
 
         1. 在预编译阶段，同时声明同一名称的函数和变量（顺序不限），会被声明为函数。
-        2. 在执行阶段，如果变量有赋值，则这个名称会重新赋值给变量。
+        2. 在执行阶段，若变量有赋值，则这个名称会重新赋值给变量。
 
         ><details>
         ><summary>e.g.</summary>
@@ -2981,7 +3049,7 @@
     console.log(a.__proto__.__proto__.__proto__ === null)
     ```
     </details>
-2. 如果重写原型的值（不是添加），可以给原型添加`constructor`属性并指向**构造函数**
+2. 若重写原型的值（不是添加），可以给原型添加`constructor`属性并指向**构造函数**
 
     ```Javascript
     var A = function () {};
@@ -3138,7 +3206,7 @@
     1. 引用数据类型的浅复制
 
         1. 复制对象A时，对象B将复制A的所有字段。若字段是引用数据类型（内存地址），B将复制地址；若字段是基本数据类型，B将复制其值。
-        2. 缺点：如果改变了对象B（或A）所指向的内存地址所存储的值，同时也改变了对象A（或B）指向这个地址所存储的值。
+        2. 缺点：若改变了对象B（或A）所指向的内存地址所存储的值，则同时也改变了对象A（或B）指向这个地址所存储的值。
     2. 引用数据类型的深复制
 
         1. 新开辟一个内存空间，完全复制所有数据至新的空间，新对象指向这个新空间的地址（原对象不变化）。
@@ -3406,7 +3474,7 @@
         3. 对方是`字符串`，直接比较；
         4. 其他返回`false`。
     4. 若运算数是`数字`与`对象`，则对象进行`ToPrimitive(对象, 'number')`，再比较；
-    5. 若运算数都是`对象`，则比较它们的`引用值`（如果两个运算数指向同一对象，那么返回`true`，否则`false`）；
+    5. 若运算数都是`对象`，则比较它们的`引用值`（若两个运算数指向同一对象，则返回`true`，否则`false`）；
     6. `null`与`undefined`不会进行类型转换, 但相等。
 
 >1. `ToPrimitive`：依次调用对象的`valueOf`、`toString`，将对象转化了基本数据类型。
@@ -3415,11 +3483,11 @@
 ### `||`和`&&`
 1. `expr1 || expr2`：
 
-    1. 赋值操作：如果expr1能转换成true（`Boolean(expr1)`）则返回expr1，否则返回expr2。
+    1. 赋值操作：若expr1能转换成true（`Boolean(expr1)`）则返回expr1，否则返回expr2。
     2. 在Boolean环境（如：if的条件判断）中使用：两个操作结果中只要有一个为true，返回true；二者操作结果都为false时返回false。
 2. `expr1 && expr2`：
 
-    1. 赋值操作：如果expr1能转换成false（`Boolean(expr1)`）则返回expr1，否则返回expr2。
+    1. 赋值操作：若expr1能转换成false（`Boolean(expr1)`）则返回expr1，否则返回expr2。
     2. 在Boolean环境（如：if的条件判断）中使用：两个操作结果都为true时返回true，否则返回false。
 
 ### 事件循环（event loop）
@@ -3540,7 +3608,7 @@
 
                 1. 检查macrotask队列
 
-                    1. 选择最早加入的任务X，设置为“目前运行的任务”并进入“执行栈”；如果macrotask队列为空，跳到第4步；
+                    1. 选择最早加入的任务X，设置为“目前运行的任务”并进入“执行栈”；若macrotask队列为空，则跳到第4步；
 
                         >最初时刻：“执行栈”为空，`<script>`作为第一个macrotask被运行。
                     2. “执行栈”运行任务X（运行对应的回调函数）；
@@ -3549,14 +3617,14 @@
                 2. 浏览器渲染；
                 3. 检查microtask队列：
 
-                    1. 选择最早加入的任务a，设置为“目前运行的任务”并进入“执行栈”；如果microtask队列为空，跳到第5步；
+                    1. 选择最早加入的任务a，设置为“目前运行的任务”并进入“执行栈”；若microtask队列为空，则跳到第5步；
                     2. “执行栈”运行任务a（运行对应的回调函数）；
                     3. 设置“目前运行的任务”为`null`，从microtask队列中移除任务a；
                     4. 跳到第1步（检查下一个最早加入的microtask任务）；
                     5. 跳出microtask队列、进行检查macrotask队列。
             >- macrotask和microtast选择
             >
-            >    如果想让一个任务立即执行，就把它设置为microtask，除此之外都用macrotask。因为虽然JS是异步非阻塞，但在一个事件循环中，microtask的执行方式基本上是用同步的。
+            >    若想让一个任务立即执行，则把它设置为microtask，除此之外都用macrotask。因为虽然JS是异步非阻塞，但在一个事件循环中，microtask的执行方式基本上是用同步的。
     - 空闲任务（线程空闲时才会执行，优先级非常低）：
 
         1. `requestIdleCallback`
@@ -3618,7 +3686,7 @@
 
     在浏览器空闲时期依次调用函数。
 
-    >1. 只有当前帧的运行时间小于16.66ms时，回调函数才会执行。否则，就推迟到下一帧，如果下一帧也没有空闲时间，就推迟到下下一帧，以此类推。
+    >1. 只有当前帧的运行时间小于16.66ms时，回调函数才会执行。否则，就推迟到下一帧，若下一帧也没有空闲时间，则推迟到下下一帧，以此类推。
     >2. 第二个参数表示指定的毫秒数。若在指定的这段时间之内，每一帧都没有空闲时间，那么回调函数将会强制执行。
 
 ### 数组的空位（hole）

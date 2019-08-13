@@ -249,9 +249,10 @@
                         2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery滚动加载)、[IntersectionObserver判断DOM可见再发起异步加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsdom展示或消失执行方法intersectionobserver)）。
                         3. 功能文件按需加载（模块化、组件化）。
                     2. 使AJAX可缓存（当用GET方式时添加缓存HTTP头：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since`）。
-                3. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-                4. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）、第三方资源使用统一的CDN服务和设置[`<link>`预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-                5. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
+                3. 使用缓存代替每次请求（localStorage、sessionStorage、cookie等）
+                4. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
+                5. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）、第三方资源使用统一的CDN服务和设置[`<link>`预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
+                6. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
             2. 最小化字节：
 
                 1. 压缩资源。
@@ -269,6 +270,10 @@
             3. 缩短CRP长度：
 
                 CSS放在HTML顶部，JS放在HTML底部。
+            4. 用户体验（减弱用户对加载时长的感知）：
+
+                1. 骨架屏
+                2. lazyload默认图
         2. 技术上优化：
 
             1. CSS性能：
@@ -561,7 +566,7 @@
 
     1. 去除重复的指示性字符串，如：`"use strict"`。
     2. 去除没有使用的函数参数。
-    3. 去除函数表达式的函数名（如果没有引用）。
+    3. 去除函数表达式的函数名（若未引用）。
     4. 去除没用的块语句。
     5. 去除没有使用的`break`。
     6. 去除没有引用的`label`。
@@ -583,11 +588,11 @@
 
     1. 去除没用的、空的`if/else`分支
     2. 尝试反转`if/else`分支，看看生成代码是否更短。
-    3. 如果`if`块里边仅有一个`if`语句，且`else`块为空，那么可以合并这两个`if`。
-    4. 如果`if`最后一个语句是跳出控制语句，那么可以把`else`块的内容提到`else`外边，然后去掉`else`。
-    5. 如果`if/else`里各仅有一条`return`语句，则可以合并这两句`return`。
-    6. 如果`if/else`里各仅有一条语句，则可以转换为三元运算符表达式。
-    7. 如果`if/else`其中一个块为空，另一个块仅有一条语句，则可以转化成`||/&&`表达式。
+    3. 若`if`块里边仅有一个`if`语句，且`else`块为空，则可以合并这两个`if`。
+    4. 若`if`最后一个语句是跳出控制语句，则可以把`else`块的内容提到`else`外边，然后去掉`else`。
+    5. 若`if/else`里各仅有一条`return`语句，则可以合并这两句`return`。
+    6. 若`if/else`里各仅有一条语句，则可以转换为三元运算符表达式。
+    7. 若`if/else`其中一个块为空，另一个块仅有一条语句，则可以转化成`||/&&`表达式。
 
 >[移动时代的前端加密](http://div.io/topic/1220)。
 

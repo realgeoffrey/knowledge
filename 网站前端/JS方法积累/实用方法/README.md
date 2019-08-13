@@ -373,6 +373,8 @@ function getLocation (url) {
     ```
 2. 批量添加
 
+    >对象转换为`a=1&b=2`：`Object.entries(对象).map((val) => val.join('=')).join('&')`。
+
     ```javascript
     /**
      * 在URL末尾添加search名值对
@@ -1155,9 +1157,9 @@ function randomFrom(min, max) {
 ```
 >`Math.random()`返回`[0,1)`。假设返回的值的开闭区间改变：
 >
->1. 如果返回的是：`(0,1)`，则返回`Math.floor(Math.random() * (max - min + 2) + min - 1);`。
->2. 如果返回的是：`(0,1]`，则返回`Math.floor(Math.random() * (max - min + 1) + min - 1);`。
->3. 如果返回的是：`[0,1]`，则返回`Math.floor(Math.random() * (max - min) + min);`。
+>1. 若返回的是：`(0,1)`，则返回`Math.floor(Math.random() * (max - min + 2) + min - 1);`。
+>2. 若返回的是：`(0,1]`，则返回`Math.floor(Math.random() * (max - min + 1) + min - 1);`。
+>3. 若返回的是：`[0,1]`，则返回`Math.floor(Math.random() * (max - min) + min);`。
 
 ### *原生JS*转化为Unicode、反转字符串、字符串长度
 >注意：Unicode码点大于`\uFFFF`的字符。
@@ -1614,7 +1616,7 @@ const ScrollStopPropagation = function (dom) {
     const contentHeight = dom.scrollHeight  // 内容高度（占据高度+可滚动最大高度
 
     /*
-     * 在触摸开始时，如果发现滚动区域已经处于极限状态时，就手工设置 scrollTop 的值，
+     * 在触摸开始时，若发现滚动区域已经处于极限状态时，则手工设置 scrollTop 的值，
      * 将滚动内容向边缘方向偏移 1px（这实际上改变了滚动区域的极限状态），
      * 从而诱使浏览器对滚动区块使用橡皮筋效果，而不会把触摸事件向上传播到 DOM 树（引起整页滚动）。
      */
@@ -1809,7 +1811,7 @@ xhr.send(null);
         >    }
         >
         >    xmlHttp.open('GET', url, false);    // 采用同步加载
-        >    xmlHttp.send(null); // 发送同步请求，如果浏览器为Chrome或Opera，必须发布后才能运行，不然会报错
+        >    xmlHttp.send(null); // 发送同步请求，若浏览器为Chrome或Opera，则必须发布后才能运行，不然会报错
         >
         >    /* 4代表数据发送完毕 */
         >    if (xmlHttp.readyState == 4) {
@@ -3573,4 +3575,4 @@ function fixPlaceholder($dom) {
     // a.stop();
 </script>
 ```
->如果对不是全屏的节点使用旋转函数，需要给节点设置：`width: 宽度 !important;height: auto !important;`。
+>若对不是全屏的节点使用旋转函数，则需要给节点设置：`width: 宽度 !important;height: auto !important;`。
