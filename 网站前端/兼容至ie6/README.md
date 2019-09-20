@@ -249,7 +249,7 @@
 	1. 此文字的节点设置`width固定值`。
 	2. `white-space: nowrap;`强制文本不换行。
 32. ie6的`负margin`有些情况需要多设置一些，因为可能出现子节点内容超过设定值的情况。
-33. ie6的某些兄弟间节点间（如：`<img>`和其他`inline`或`inline-block`节点）因为出现比如`overflow: hidden;`造成相对于基线会有对齐问题：
+33. ie6的某些兄弟节点间（如：`<img>`和其他`inline`或`inline-block`节点）因为出现如：`overflow: hidden;`造成相对于基线会有对齐问题：
 
 	1. `vertical: top; margin-top: 某px;`
 	2. 只对ie6进行hack操作，`_vertical-align: baseline; _margin-top: 某px;`或`_vertical-align: -某px;`。
@@ -332,5 +332,5 @@ haslayout是ie6/7的一个私有概念，它决定了元素**如何对其内容�
 
 ### ie6的bug调试
 1. 尝试在Chrome下重现该bug，若能重现，就先把Chrome里能重现的bug修复。确定Chrome里不重现、但是ie6有问题的，再继续下一步；
-2. 先尝试高版本ie，比如开发者工具还不错的ie9，可以断点、调用栈分析、控制台。若ie9里没问题，那就继续尝试ie8，一直定位到能重现该问题的最高版本的ie上。若不幸碰上仅出现在ie6的bug，再继续下一步；
+2. 先尝试高版本ie（如：开发者工具还不错的ie9），可以断点、调用栈分析、控制台。若ie9里没问题，那就继续尝试ie8，一直定位到能重现该问题的最高版本的ie上。若不幸碰上仅出现在ie6的bug，再继续下一步；
 3. ie6没有太好用的JS调试工具，一般就是**二分法**+`alert`的土法定位到出错行，加上耐心和时间，还有一点点运气。可以使用抓包工具辅助（Charles）；用虚拟机安装windows XP系统并且在ie6上安装IE6DevToolBar。
