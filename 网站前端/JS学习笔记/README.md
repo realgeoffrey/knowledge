@@ -171,6 +171,19 @@
 
     - [`IntersectionObserver`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#intersectionobserver)判断节点和视口（或祖先节点）相交程度。
 
+    ><details>
+    ><summary>某dom跟随屏幕滚动而相对静止</summary>
+    >
+    >1. 判断：要处理的节点顶部相对视口顶部距离（`dom.getBoundingClientRect().top`）。
+    >
+    >    1. 若≤0，则处理dom（具体实现：[节点跟随屏幕滚动而相对静止](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery节点跟随屏幕滚动而相对静止)）。
+    >    2. 若>0，则恢复dom的文档流。
+    >2. 从文档顶部到要处理的位置用`<div>`包裹，对这个额外包裹的`<div>`进行`IntersectionObserver`处理。
+    >
+    >    1. 若消失，则处理dom。
+    >    1. 若展示，则恢复dom的文档流。
+    ></details>
+
 ### 判断滚动定位
 >也可以给底部（或顶部）放置一个标记节点，当这个节点的顶部在容器底部以上（或这个节点的底部在容器顶部以下）时为滚动到底部（或顶部）。
 

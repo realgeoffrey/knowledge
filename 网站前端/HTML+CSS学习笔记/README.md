@@ -491,8 +491,37 @@
     2. 加载字体时机：
 
         1. ie8：定义了`@font-face`，就会去下载字体，不论实际有没有应用该字体。
-        2. Firefox、ie9+：定义了`@font-face`&&页面有元素应用了该字体，就会去下载，不论该元素是否有文本内容。
-        3. Chrome、Safari：定义了`@font-face`&&页面有元素应用了该字体&&该元素有文本内容，才会去下载字体。
+        2. Firefox、ie9+：定义了`@font-face` 且 页面有元素应用了该字体，就会去下载，不论该元素是否有文本内容。
+        3. Chrome、Safari：定义了`@font-face` 且 页面有元素应用了该字体 且 该元素有文本内容，才会去下载字体。
+    3. 兼容多种浏览器的兼容写法：
+
+        >参考：[iconfont：代码应用](https://www.iconfont.cn/help/detail?spm=a313x.7781069.1998910419.d8d11a391&helptype=code)。
+
+        ```html
+        <style>
+        @font-face {
+          font-family: "某字体族名";
+          src: url('iconfont.eot'); /* IE9 */
+          src: url('iconfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+          url('iconfont.woff') format('woff'),
+          url('iconfont.ttf') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
+          url('iconfont.svg#某字体族名') format('svg'); /* iOS 4.1- */
+        }
+
+        .iconfont {
+          font-family: "某字体族名" !important;
+        }
+        .icon-xx:before {
+          content: "\e625";
+        }
+        </style>
+
+
+        <!-- 使用 -->
+        <i class="iconfont">&#xe625;</i>
+        或
+        <i class="iconfont icon-xx"></i>
+        ```
 2. 加入了字体后的使用方式
 
     1. CSS：
@@ -562,7 +591,7 @@
 
     1. 整个块级元素修改，可用：`document.execCommand('formatBlock', false, '<块级标签名>')`，再设置元素的样式。
 
-        >比如“小字体”的块级内容，就可以用`document.execCommand('formatBlock', false, '<h6>')`，然后设置`h6`的小字体样式。
+        >如：“小字体”的块级内容，就可以用`document.execCommand('formatBlock', false, '<h6>')`，然后设置`h6`的小字体样式。
     2. 内部可以嵌入`contenteditable="false"`的DOM：
 
         1. 不可编辑此嵌入DOM的文本。
@@ -1147,6 +1176,7 @@
 
         1. （除了**CSS3旋转属性**与**内嵌滚动条**同时出现无法解决）样式问题都可以像处理ie6问题一样通过真机试验出解决方案。
         2. 有些低版本机型会有类似ie6的CSS问题，包括**CSS3的厂商前缀（`-webkit-`等）**、**层叠关系（`z-index`）**，并且要更注意**渲染性能（层产生）**。
+    3. 字体模糊或抖动、图像锯齿等，可以考虑交由GPU处理。
 
 ### 经验技巧
 1. 命名间隔

@@ -24,6 +24,7 @@
     1. [灰度发布、A/B测试](#灰度发布ab测试)
     1. [编程范式](#编程范式)
     1. [软编码、硬编码](#软编码硬编码)
+    1. [强、弱类型，静、动态类型](#强弱类型静动态类型)
     1. [递归、尾调用、尾递归](#递归尾调用尾递归)
     1. [柯里化（currying）](#柯里化currying)
     1. [求值策略（evaluation strategy）](#求值策略evaluation-strategy)
@@ -683,8 +684,8 @@
     2. 轮廓字体（outline font，描边字体）
 
         1. PostScript字体
-        2. TrueType字体
-        3. OpenType字体
+        2. TrueType字体（.ttf）
+        3. OpenType字体（.otf）
     3. 笔画字体（stroke-based font）
 2. 中国书法字体类型
 
@@ -693,6 +694,42 @@
     3. 楷
     4. 行
     5. 草
+
+><details>
+><summary>CSS的<code>font-family</code>：设置值时，在列表末尾应该添加至少一个通用字符族名。</summary>
+>
+>`font-family`会继承父级，但若子级设置了`font-family`就不再向上继承（覆盖），无论子级设置的字体是否全都不可用（不合法或未安装字体）。因此无论如何，都应该在设置字体时在列表末尾添加至少一个通用字符族名（否则按照浏览器默认字体处理）。如：`font-family: 字体族名, 通用字体族名;`。
+>
+>- CSS的通用字体族名：
+>
+>    1. `serif`
+>
+>        带衬线字体，笔画结尾有特殊的装饰线或衬线。
+>    2. `sans-serif`
+>
+>        无衬线字体，即笔画结尾是平滑的字体。
+>    3. `monospace`
+>
+>        等宽字体，即字体中每个字宽度相同。
+>    4. `cursive`
+>
+>        草书字体。这种字体有的有连笔，有的还有特殊的斜体效果。因为一般这种字体都有一点连笔效果，所以会给人一种手写的感觉。
+>    5. `fantasy`
+>
+>        主要是那些具有特殊艺术效果的字体。
+>    6. `system-ui`
+>
+>        从浏览器所处平台处获取的默认用户界面字体。
+>    7. `math`
+>
+>        针对显示数学相关字符的特殊样式问题而设计的字体：支持上标和下标、跨行括号、嵌套表达式和具有不同含义的 double struck glyph。
+>    8. `emoji`
+>
+>        专门用于呈现 Emoji 表情符号的字体。
+>    9. `fangsong`
+>
+>        一种汉字字体，介于宋体和楷体之间。这种字体常用于某些政府文件。
+></details>
 
 ---
 ## 程序设计思路、开发方式、行业术语
@@ -904,6 +941,64 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
         使用非CPU进行编码（如：显卡GPU、专用的DSP、FPGA、ASIC芯片等）。性能高，低码率下通常质量低于硬编码器，但部分产品在GPU硬件平台移植了优秀的软编码算法（如：X264）的，质量基本等同于软编码。
     </details>
 
+### 强、弱类型，静、动态类型
+>参考：[弱类型、强类型、动态类型、静态类型语言的区别是什么？](https://www.zhihu.com/question/19918532)。
+
+1. 强、弱类型
+
+    1. 强类型（strongly typed）
+
+        偏向于不容忍隐式类型转换。
+    2. 弱类型（weakly typed）
+
+        偏向于容忍隐式类型转换。
+2. 静、动态类型
+
+    1. 静态类型（statically typed）
+
+        在**编译时**进行类型检查。
+
+        - 显式、隐式的静态类型
+
+            1. 显式：类型是语言语法的一部分。
+            2. 隐式：类型通过编译时推导。
+    2. 动态类型（dynamically typed）
+
+        在**运行时**进行类型检查。
+
+![类型-2](./images/typed-2.png)
+
+><details>
+><summary>另一种理解方式</summary>
+>
+>- 前置基础概念
+>
+>    1. program errors
+>
+>        1. trapped errors：导致程序终止执行（如：除以0，Java中数组越界访问）
+>        2. untrapped errors：出错后继续执行，但可能出现任意行为（如：C里的缓冲区溢出、Jump到错误地址）
+>    2. forbidden behaviours
+>
+>        语言设计时可以定义：所有**untrapped errors**、某些trapped errors的行为。
+>    3. well behaved、ill behaved
+>
+>        1. well behaved：程序执行不可能出现forbidden behaviors。
+>        2. ill behaved：程序执行可能出现forbidden behaviors。
+>
+>![类型-1](./images/typed-1.jpg)
+>
+>1. 红色区域外：well behaved（type soundness）
+>2. 红色区域内：ill behaved
+>
+>3. 强类型：一种语言的所有程序都是灰色（well behaved）
+>4. 弱类型：一种语言的程序存在红色（ill behaved）
+>
+>5. 静态类型：编译时拒绝红色（ill behaved）的程序
+>6. 动态类型：运行时拒绝红色（ill behaved）的程序
+>
+>7. 所有程序都在黄框以外：类型安全
+></details>
+
 ### 递归、尾调用、尾递归
 >函数调用会在内存形成一个“调用帧”（call frame），保存调用位置和内部变量等信息。所有的调用帧形成一个“调用栈”（call stack）。
 
@@ -954,6 +1049,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 3. SaaS（Software as a Service，软件即服务）
 - BaaS（Backend as a Service，后端即服务）
 - FaaS（Function as a Service，函数即服务）
+- Serverless（无服务器架构）
 
 ### 树的遍历
 树的遍历（树的搜索）：一种图的遍历，指的是按照某种规则，不重复地访问某种树的所有节点的过程。

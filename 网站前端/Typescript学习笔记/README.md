@@ -6,6 +6,8 @@
 ---
 
 ### [Typescript](https://github.com/microsoft/TypeScript)
+>参考：[TypeScript 入门教程](https://github.com/xcatliu/typescript-tutorial)、[TypeScript使用手册](https://github.com/zhongsp/TypeScript)。
+
 TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持。
 
 1. 配置
@@ -21,57 +23,126 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         1. `boolean`
         2. `number`
         3. `string`
-        4. `undefined`
-        5. `null`
-        >`undefined`和`null`可以赋值给所有类型的变量（`undefined`和`null`是所有类型的子类型）。
+        4. `symbol`
+        5. `undefined`
+        6. `null`
+        >`undefined`和`null`可以赋值给所有类型的变量（除了`never`类型），`undefined`和`null`是所有类型的子类型（除了`never`类型）。
     2. `void`
 
         1. 仅允许赋值`undefined`或`null`。
         2. 表示没有任何返回值的函数。
     3. `never`
-    4. `any`
 
-        >未声明类型的被认为是`any`。
-    5. 对象类型
+        表示永不存在的值的类型（如：总是会抛出异常或根本就不会有返回值的函数表达式或箭头函数表达式的返回值类型；变量也可能是never类型，当它们被永不为真的类型保护所约束时）。
 
-        用接口定义。
-
-        1. 确定属性（`属性名: 数据类型`），对象不允许多于或少于约定的属性数量（若有任意属性时，则允许多定义属性）。
-        2. 可选属性（`属性名?: 数据类型`）。
-        3. 只读类型（`readonly 属性名: 数据类型`），创建对象时必须给此属性赋值，并且之后不能修改此属性。
-        4. 任意属性（`[任意名: string]: 数据类型`），确定属性、可选属性、只读属性的类型都必须是任意属性的类型的子集。
+        >`never`可以赋值给所有类型的变量（包括`undefined`和`null`），`never`是所有类型的子类型。
 
         ><details>
         ><summary>e.g.</summary>
         >
         >```typescript
-        >interface Person {
-        >  name: string
-        >  age: number
-        >
-        >  score?: number
-        >
-        >  readonly id: number
-        >
-        >  [x: string]: string | number
+        >// 返回never的函数必须存在无法达到的终点
+        >function error (message: string): never {
+        >  throw new Error(message)
         >}
         >
-        >let tom: Person = {
-        >  name: 'Tom',
-        >  age: 25,
-        >
-        >  id: 1,
-        >
-        >  xx: 22
+        >// 推断的返回值类型为never
+        >function fail () {
+        >  return error('Something failed')
         >}
         >
-        >tom.id = 2     // 报错，readonly
-        >tom.x = 'x'
-        >tom.xx = 'xx'
-        >tom.xxx = true // 报错，true不是string | number
+        >// 返回never的函数必须存在无法达到的终点
+        >function infiniteLoop (): never {
+        >  while (true) {
+        >  }
+        >}
+        >
+        >
+        >// 变量
+        >let x: never
+        >let y: number
+        >let z: undefined
+        >
+        >x = 123        // 报错，number 类型不能转为 never 类型
+        >x = undefined  // 报错，undefined 类型不能转为 never 类型
+        >x = (() => { throw new Error('exception')})() // never 类型可以赋值给 never 类型
+        >y = (() => { throw new Error('exception')})() // never 类型可以赋值给 number 类型
+        >z = (() => { throw new Error('exception')})() // never 类型可以赋值给 undefined 类型
         >```
         ></details>
-    6. 数组类型
+    4. `any`
+
+        >未声明类型的被认为是`any`。
+    5. `unknown`
+
+        对照于`any`、`unknown`是类型安全的。任何值都可以赋给`unknown`，但是当没有类型断言或基于控制流的类型细化时`unknown`不可以赋值给其它类型，除了它自己和`any`外。 同样地，在`unknown`没有被断言或细化到一个确切类型之前，是不允许在其上进行任何操作的。
+    6. `object`或`{}`
+
+        表示非原始类型（除了`boolean`、`number`、`string`、`symbol`、`undefined`、`null`之外的类型）。允许给它赋任意值和访问`Object.prototype`上的属性，但不能调用任意其他方法，即便它真的有这些方法。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >let obj1: object
+        >
+        >obj1 = []
+        >
+        >obj1.toString()  // 允许访问Object.prototype上的属性
+        >obj1.a()         // 报错，只允许使用Object.prototype上的属性
+        >obj1.length      // 报错，只允许使用Object.prototype上的属性
+        >
+        >
+        >let obj2: { a }
+        >
+        >obj2 = { a: () => {} }
+        >
+        >obj2.toString()  // 允许访问Object.prototype上的属性
+        >obj2.a()         // 允许访问定义的属性a
+        >obj2.length      // 报错，只允许使用Object.prototype上的属性
+        >```
+        ></details>
+    7. 对象类型
+
+        1. 用接口定义。
+
+            1. 确定属性（`属性名: 数据类型`），对象不允许多于或少于约定的属性数量（若有任意属性时，则允许多定义属性）。
+            2. 可选属性（`属性名?: 数据类型`）。
+            3. 只读类型（`readonly 属性名: 数据类型`），创建对象时必须给此属性赋值，并且之后不能修改此属性。
+
+                >作为变量使用用`const`，作为属性使用用`readonly`。
+            4. 任意属性（`[任意名: string]: 数据类型`），确定属性、可选属性、只读属性的类型都必须是任意属性的类型的子集。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```typescript
+            >interface Person {
+            >  name: string
+            >
+            >  score?: number
+            >
+            >  readonly id: number
+            >
+            >  [x: string]: string | number
+            >}
+            >
+            >let tom: Person = {
+            >  name: 'Tom',
+            >
+            >  id: 1,
+            >
+            >  xx: 22
+            >}
+            >
+            >tom.id = 2     // 报错，readonly
+            >tom.x = 'x'
+            >tom.xx = 'xx'
+            >tom.xxx = true // 报错，true不是string | number
+            >```
+            ></details>
+        2. `:{ 属性: 数据类型 }`
+    8. 数组类型
 
         1. `数据类型[]`
 
@@ -94,7 +165,29 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >let arr: NumberArray = [1, '1']
             >```
             ></details>
-    7. 函数类型
+        4. 元组
+
+            规定`数组`每一项的数据类型：
+
+            1. 直接赋值不能少于或多于约定长度。
+            2. 下标赋值或`push`等可以大于规定长度，但要用前面所有数据类型的联合类型。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```typescript
+            >let arr1: [string, number] = ['string', 1]
+            >arr1.push(2)
+            >arr1.push(true)                                  // 报错，只能添加联合类型
+            >
+            >let arr2: [string, number] = ['string', 1, '啊'] // 报错，直接赋值不能多于约定长度
+            >
+            >let arr3: [string, number] = ['string']          // 报错，直接赋值不能少于约定长度
+            >```
+            ></details>
+
+        >枚举被编译为.js是数组。
+    9. 函数类型
 
         1. 输入的参数、输出的结果都需要设置类型。
         2. 支持：函数声明、函数表达式。
@@ -171,7 +264,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >}
             >```
             ></details>
-    8. 内置对象类型
+    10. 内置对象类型
 
         1. 浏览器环境
 
@@ -197,11 +290,11 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
                 ><summary>e.g.</summary>
                 >
                 >```typescript
-                >function getLength (something: string | number): number {
-                >  console.log(something.toString())         // 访问此联合类型的所有类型里共有的属性/方法
-                >  console.log((<string>something).length)   // 类型断言
-                >  console.log(something.length)             // 报错，只能访问此联合类型的所有类型里共有的属性/方法
-                >  console.log((<boolean>something).length)  // 报错，只能断言成一个联合类型中存在的类型
+                >function getLength (something: string | number) {
+                >  something.toString();       // 访问此联合类型的所有类型里共有的属性/方法
+                >  (<string>something).length  // 类型断言
+                >  something.length;           // 报错，只能访问此联合类型的所有类型里共有的属性/方法
+                >  (<boolean>something).length // 报错，只能断言成一个联合类型中存在的类型
                 >}
                 >```
                 ></details>
@@ -329,13 +422,16 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >interface Light {
         >  lightOn (string): boolean
         >
-        >  lightOff ()
+        >  lightOff? ()
         >}
         >
-        >class Car1 implements Alarm {
-        >  alert (num) {
-        >    console.log('Car1 alert', num)
+        >class Car1 implements Light {
+        >  lightOn (str) {
+        >    console.log('Car1 light on', str)
+        >    return true
         >  }
+        >
+        >  x () {}
         >}
         >
         >class Car2 extends Car1 implements Alarm, Light {
@@ -351,6 +447,8 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >  lightOff () {
         >    console.log('Car2 light off')
         >  }
+        >
+        >  xx () {}
         >}
         >```
         ></details>
@@ -473,29 +571,11 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >handleEvent(document.getElementById('world'), 'dbclick') // 报错，event 不能为 'dbclick'
         >```
         ></details>
-7. 元组
-
-    规定`数组`每一项的数据类型：
-
-    1. 直接赋值不能少于或多于约定长度。
-    2. 下标赋值或`push`等可以大于规定长度，但要用前面所有数据类型的联合类型。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```typescript
-    >let arr1: [string, number] = ['string', 1]
-    >arr1.push(2)
-    >arr1.push(true)                                  // 报错，只能添加联合类型
-    >
-    >let arr2: [string, number] = ['string', 1, '啊'] // 报错，直接赋值不能多于约定长度
-    >
-    >let arr3: [string, number] = ['string']          // 报错，直接赋值不能少于约定长度
-    >```
-    ></details>
-8. 枚举
+7. 枚举
 
     用于取值被限定在一定范围内的场景。语义化、限制值的范围（只允许使用已定义的枚举名）。
+
+    >使用枚举类型可以为一组数值赋予友好的名字。
 
     1. 枚举成员的类型
 
@@ -660,7 +740,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >var directions2 = [0 /* Up */, 1 /* Down */, 2 /* Left */, 3 /* Right */];
             >```
             ></details>
-9. 泛型（Generics）
+8. 泛型（Generics）
 
     `<类型名>`
 
@@ -669,7 +749,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
     3. 泛型接口
     4. 泛型类
     5. 泛型参数的默认类型，`<类型名 = 数据类型>`
-10. 声明文件
+9. 声明文件
 
     `名字.d.ts`
 
@@ -734,6 +814,21 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
     2. 导出`export`
 
     - 引入第三方库声明文件（不需任何配置，引入就可声明成功），可搜索：<https://microsoft.github.io/TypeSearch/>
+10. `!`
+
+    表示从前面的表达式里移除 ~~`null`~~ 和 ~~`undefined`~~。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```typescript
+    >// 配置文件：compilerOptions.strictNullChecks: true
+    >let foo: string | undefined
+    >
+    >foo.length     // 报错， - 'foo' is possibly 'undefined'
+    >foo!.length
+    >```
+    ></details>
 11. 其他
 
     1. 已经定义好的属性的数据类型，除非有重载机制，否则不能在之后赋值的时候再次定义新的数据类型。只能用其他临时变量来定义保存。
