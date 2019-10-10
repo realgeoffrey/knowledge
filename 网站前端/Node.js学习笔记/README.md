@@ -26,8 +26,8 @@
     >安装nvm-windows时，需要删除原本安装在电脑上的Node.js。
 
     ```bash
-    nvm node_mirror https://npm.taobao.org/mirrors/node/    #设置node源：
-    nvm npm_mirror https://npm.taobao.org/mirrors/npm/      #设置npm源：
+    nvm node_mirror https://npm.taobao.org/mirrors/node/    # 设置node源
+    nvm npm_mirror https://npm.taobao.org/mirrors/npm/      # 设置npm源
 
     nvm list available
     nvm install 新版本号
@@ -38,6 +38,39 @@
     ```
 
 >切换版本之后需重装Node.js的全局模块包。
+
+### [n](https://github.com/tj/n)更新Node.js版本
+>不支持Windows。
+
+1. 安装
+
+    ```bash
+    npm install -g n
+
+    # 或：brew/curl
+    ```
+2. 切换版本
+
+    ```bash
+    # 安装最新的长期支持正式发布版本
+    n lts
+
+    # 安装最新正式发布版本
+    n latest
+
+    # 安装指定版本
+    n 新版本号
+
+
+    # 删除指定版本
+    n rm 旧版本号
+
+    # 删除当前版本之外的所有版本
+    n prune
+
+    # 删除当前版本安装的node和npm
+    n uninstall
+    ```
 
 ### Node.js的运行机制
 1. V8引擎解析JS脚本。

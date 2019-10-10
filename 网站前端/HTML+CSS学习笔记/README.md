@@ -4,6 +4,7 @@
 1. [CSS](#css)
 
     1. [CSS选择器](#css选择器)
+    1. [CSS继承](#css继承)
     1. [层叠上下文（stacking context）](#层叠上下文stacking-context)
     1. [几个类似的换行属性](#几个类似的换行属性)
     1. [`table-layout`](#table-layout)
@@ -153,6 +154,73 @@
     3. 避免使用 ~~@import~~，只用`<link>`；避免使用~~CSS表达式（CSS expression）~~。
     4. 移除空CSS规则、合理使用`display`、不滥用`float`、不滥用Web字体。
 3. [类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#选择器类型)
+
+### CSS继承
+>1. 初始值：该默认值由官方CSS规范定义（对于继承属性，初始值只能被用于没有指定值的根元素上；对于非继承属性，初始值可以被用于任意没有指定值的元素上）
+>2. user agent stylesheet：浏览器默认样式表，不同浏览器不同。
+>3. ~~user style sheets：用户自定义的CSS。~~
+>4. author style sheets：开发人员定义的CSS，内联样式（inline css）、内部样式（internal css，embedded css）、外部样式（external css）。
+
+1. 继承属性
+
+    若元素的一个继承属性没有指定值，则取父元素的同属性的计算值（computed value）。只有文档根元素取该属性的初始值（initial value）。
+
+    ><details>
+    ><summary>若子节点设置了某属性 且 没有语法错误（语法错误导致本行CSS设置无效），则任何情况都不会再使用父级继承属性——继承属性是在子级未设置此属性时才生效</summary>
+    >
+    >```html
+    ><style>
+    >  .father {
+    >    font-family: fantasy;
+    >  }
+    >  .son1 {
+    >    font-family: "存在/不存在字体"; /* 不会使用父级继承属性，尽管这个字体不存在 */
+    >  }
+    >  .son2 {
+    >    font-family: 语法错误导致本行CSS不生效 11; /* 语法错误，程序删除本行错误语句。继承父级 */
+    >  }
+    >  .son3 {
+    >    /* 继承父级 */
+    >  }
+    ></style>
+    >
+    ><div class="father">
+    >  father
+    >  <div class="son1">
+    >    son1，若设置了属性值，则不会使用父级继承属性，尽管这个字体不存在
+    >  </div>
+    >  <div class="son2">
+    >    son2，语法错误，程序删除本行错误语句。继承父级
+    >  </div>
+    >  <div class="son3">
+    >    son3，继承父级
+    >  </div>
+    ></div>
+    >```
+    ></details>
+2. 非继承属性
+
+    若元素的一个非继承属性没有指定值（user agent stylesheet也算已经指定值了），则取该属性的初始值。
+
+- 特殊CSS属性（值）：
+
+    1. `inherit`
+
+        将属性设置为其父元素对应属性的计算值（仅一层父级，不会再向上继承祖先级），可用于：`继承属性/非继承属性`。
+    2. `initial`
+
+        将属性设置为其初始值（初始值不是user agent stylesheet，初始值由官方CSS规范定义）。
+
+        >在继承属性上，初始值可能是意外的（因为是针对文档根元素）。应该使用`inherit/unset/revert`关键字代替。
+    3. `unset`
+
+        若该属性默认可继承，则值为`inherit`；否则值为`initial`。
+    4. `revert`
+
+        >CSS4。
+    5. `all: inherit/initial/unset/revert`
+
+        将该元素所有属性（除了 ~~`unicode-bidi`~~、~~`direction`~~）重置为：`inherit/initial/unset/revert`。
 
 ### 层叠上下文（stacking context）
 >参考：[张鑫旭：深入理解CSS中的层叠上下文和层叠顺序](http://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)。
@@ -565,6 +633,8 @@
 1. 与原页面不同的命名方式
 2. shadow DOM
 3. `<iframe>`
+
+    >注意：`<iframe>`的`scrolling="no"时其视口就是整个`<iframe>`高宽边界，因此其内部的`position: fixed;`定位不是以外层的浏览器viewport定位，而是以此`<iframe>`的边界来定位。
 
 ### 网页图标favicon的兼容写法
 ```html

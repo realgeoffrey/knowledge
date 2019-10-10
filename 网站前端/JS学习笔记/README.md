@@ -1571,6 +1571,8 @@
 
         1. 提供**切换成线上资源请求方式**的功能，用代理工具代理成本地资源。
         2. Chrome的Remote devices调试。
+
+            >若电脑Chrome识别不到手机webview，可以下载[Android Debug Bridge (adb)](https://developer.android.com/studio/releases/platform-tools.html?hl=zh-cn#downloads)并运行（进入文件夹后运行`adb.exe devices`）。
 2. Hybrid的前端处理
 
     ><details>
@@ -2442,7 +2444,17 @@
         };
     }
     ```
-2. `<link>`预加载
+2. CSS背景图片、`<img>`预加载。
+
+    1. CSS背景图片
+
+        当不触发页面渲染则不会加载，否则加载。
+
+        >如：`display: none;`不会加载；`opacity: 0;`或`visibility: hidden;`等，会加载。
+    2. `<img>`
+
+        无论CSS设置什么，都会加载。
+3. `<link>`预加载
 
     1. `<link rel="dns-prefetch" href="域名">`
 
@@ -2462,7 +2474,6 @@
     6. `<link rel="preload" href="资源">`
 
         请求、下载、缓存资源。
-3. CSS背景图片预加载。
 
 ### 循环遍历
 ><details>

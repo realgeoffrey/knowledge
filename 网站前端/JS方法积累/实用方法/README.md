@@ -88,6 +88,8 @@
 ---
 ## 原生JS方法
 
+>更全面判断所在系统、浏览器：[bowser](https://github.com/lancedikson/bowser)。
+
 ### *原生JS*判断所在系统
 ```javascript
 /**

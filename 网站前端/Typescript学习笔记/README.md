@@ -150,6 +150,27 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         2. 泛型`Array<数据类型>`
 
             >e.g. `let arr: Array<number | string> = [1, '1']`
+
+            - `ReadonlyArray<数据类型>`
+
+                与`Array<数据类型>`相似，只是把所有可变方法去掉了，因此可以确保数组创建后再也不能被修改。
+
+                ><details>
+                ><summary>e.g.</summary>
+                >
+                >```typescript
+                >let a: number[] = [1, 2, 3, 4]
+                >let ro: ReadonlyArray<number> = a
+                >
+                >ro[0] = 12      // 报错
+                >ro.push(5)      // 报错
+                >ro.length = 100 // 报错
+                >
+                >let b: number[] = ro    // 报错，ReadonlyArray赋值到一个普通数组也是不可以的
+                >let c: number[] = ro as number[]  // 允许，类型断言重写
+                >let d = ro as number[]  // 允许，ReadonlyArray赋值到一个类型推论为ReadonlyArray的数组
+                >```
+                ></details>
         3. 用接口定义
 
             用`任意属性`来定义索引和项。
@@ -462,33 +483,35 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
     `interface`
 
-    1. 定义`对象`、`数组`、`函数`的形状（Shape：数量和数据类型），还可以定义混合类型（一个对象同时作为函数和对象使用）。
+    1. 定义`对象`、`数组`、`函数`的形状（Shape：数量和数据类型）
 
-        ><details>
-        ><summary>e.g. 混合类型</summary>
-        >
-        >```typescript
-        >interface Counter {
-        >  (start: number): string
-        >
-        >  interval: number
-        >
-        >  reset (): void
-        >}
-        >
-        >function getCounter (): Counter {
-        >  let counter = <Counter>function (start: number) { }
-        >  counter.interval = 123
-        >  counter.reset = function () { }
-        >  return counter
-        >}
-        >
-        >let c = getCounter()
-        >c(10)            // 作为函数使用
-        >c.reset()        // 作为对象使用
-        >c.interval = 5.0 // 作为对象使用
-        >```
-        ></details>
+        - 还可以定义混合类型（一个对象同时作为函数和对象使用）。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```typescript
+            >interface Counter {
+            >  (start: number): string
+            >
+            >  interval: number
+            >
+            >  reset (): void
+            >}
+            >
+            >function getCounter (): Counter {
+            >  let counter = <Counter>function (start: number) { }
+            >  counter.interval = 123
+            >  counter.reset = function () { }
+            >  return counter
+            >}
+            >
+            >let c = getCounter()
+            >c(10)            // 作为函数使用
+            >c.reset()        // 作为对象使用
+            >c.interval = 5.0 // 作为对象使用
+            >```
+            ></details>
     2. 对`类`的一部分行为进行抽象（`类`实现`接口`）
 
     - 接口继承
