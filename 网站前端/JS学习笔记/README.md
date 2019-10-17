@@ -1570,9 +1570,9 @@
     5. Hybrid开发测试
 
         1. 提供**切换成线上资源请求方式**的功能，用代理工具代理成本地资源。
-        2. Chrome的Remote devices调试。
+        2. Chrome的Remote devices调试（<chrome://inspect/#devices>）。
 
-            >若电脑Chrome识别不到手机webview，可以下载[Android Debug Bridge (adb)](https://developer.android.com/studio/releases/platform-tools.html?hl=zh-cn#downloads)并运行（进入文件夹后运行`adb.exe devices`）。
+            >若电脑Chrome识别不到手机webview，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)并运行（进入文件夹后运行`adb.exe devices`或`./adb devices`连接手机设备）。
 2. Hybrid的前端处理
 
     ><details>
@@ -2425,55 +2425,65 @@
     - 对于打包压缩的JS，可以用sourcemap进行还原定位错误位置，并且可以把sourcemap放在仅允许特殊IP访问的地方以限制外网人员查看。
 
 ### 预加载
-1. JS预加载图片
+1. `<link>`预加载
 
-    ```javascript
-    var img = new Image();  // 或document.createElement('img');
+    1. `<link rel="preload" href="资源">`
 
-    img.src = '图片地址';
-
-    img.onerror = function () {
-        console.log('加载失败');
-    };
-
-    if (img.complete) {
-        console.log('缓存');
-    } else {
-        img.onload = function () {
-            console.log('新加载');
-        };
-    }
-    ```
-2. CSS背景图片、`<img>`预加载。
-
-    1. CSS背景图片
-
-        当不触发页面渲染则不会加载，否则加载。
-
-        >如：`display: none;`不会加载；`opacity: 0;`或`visibility: hidden;`等，会加载。
-    2. `<img>`
-
-        无论CSS设置什么，都会加载。
-3. `<link>`预加载
-
-    1. `<link rel="dns-prefetch" href="域名">`
-
-        解析DNS。
-    2. `<link rel="preconnect" href="域名">`
-
-        解析DNS，建立TCP握手连接、TLS协议。
-    3. `<link rel="prefetch" href="资源">`
-
-        （低优先级）请求、下载、缓存资源。
-    4. `<link rel="subresource" href="资源">`
-
-        （高优先级）请求、下载、缓存资源。
-    5. `<link rel="prerender"  href="域名">`
-
-        就像在后台打开了一个隐藏的tab，下载域名的所有资源、创建DOM、渲染页面、执行JS等等。
-    6. `<link rel="preload" href="资源">`
+        >高优先级、页面渲染前。
 
         请求、下载、缓存资源。
+    2. 兼容性较差：
+
+        1. `<link rel="prefetch" href="资源">`
+
+            >利用浏览器空闲时间去下载或预取用户在不久的将来可能访问的文档。
+
+            请求、下载、缓存资源。
+        2. `<link rel="subresource" href="资源">`
+
+            >最低优先级。
+
+            请求、下载、缓存资源。
+        3. `<link rel="prerender"  href="域名">`
+
+            就像在后台打开了一个隐藏的tab，下载域名的所有资源、创建DOM、渲染页面、执行JS等等。
+        4. `<link rel="dns-prefetch" href="域名">`
+
+            解析DNS。
+        5. `<link rel="preconnect" href="域名">`
+
+            解析DNS，建立TCP握手连接、TLS协议。
+2. 实现预加载图片
+
+    1. JS
+
+        ```javascript
+        var img = new Image();  // 或document.createElement('img');
+
+        img.src = '图片地址';
+
+        img.onerror = function () {
+            console.log('加载失败');
+        };
+
+        if (img.complete) {
+            console.log('缓存');
+        } else {
+            img.onload = function () {
+                console.log('新加载');
+            };
+        }
+        ```
+    2. CSS、HTML
+
+        1. `background-image`
+
+            当不触发页面渲染则不会加载，否则加载。
+
+            >如：`display: none;`不会加载；`opacity: 0;`或`visibility: hidden;`等，会加载。
+        2. `<img>`
+
+            无论CSS设置什么，都会加载。
 
 ### 循环遍历
 ><details>

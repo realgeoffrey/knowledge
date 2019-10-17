@@ -2276,10 +2276,11 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             >```javascript
             >// 某页面
             >export default {
-            >  fetch ({ route, redirect }) {
+            >  fetch ({ route, redirect, error }) {
             >    return new Promise((resolve, reject) => {
             >      // 某些原因触发重定向
-            >      redirect(302, '/错误页面路由', { '指定query': route.fullPath })
+            >      redirect(302, '/错误页面路由', { '指定query': route.fullPath }) // 浏览器路由会变化
+            >      // 或：error({ 'statusCode': '302', message: '错误信息' })      // 浏览器路由不会变化
             >
             >      // resolve() // 没有重定向需要添加resolve()
             >    })
@@ -2323,7 +2324,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             Vue的`<transition/>`组件配置。
         8. `validate`（拥有上下文）
 
-            用于校验动态路由参数的有效性。`return false`则自动加载显示404错误页面。
+            用于校验动态路由参数的有效性。`return false`则自动加载显示错误页面（加载layouts的error.vue，浏览器路由不会变化）。
         9. `watchQuery`
 
             1. （默认）search值修改时执行：
@@ -2544,7 +2545,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         Vue单文件组件。扩展默认布局（`default.vue`、`error.vue`）或新增自定义布局，在布局文件中添加`<nuxt/>`指定页面主体内容。
 
-        >可添加供所有页面使用的**通用组件**（**静态**的自定义通用内容添加在根目录的`app.html`）。
+        >1. 可添加供所有页面使用的**通用组件**（另外：**静态**的自定义通用内容添加在根目录的`app.html`）。
+        >2. layouts/error.vue被当做pages来使用（增加了/error的路由）：在layouts中创建了`error.vue`后，就不要 ~~在pages中创建`error.vue`~~。
 
         - 引用方式：`pages`组件中加入`layout`属性
 
@@ -2822,7 +2824,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
     >来自：[nuxt: 上下文对象](https://zh.nuxtjs.org/api/context/#上下文对象)。
 
-    上下文对象存在于nuxt的生命周期中（在`plugins`、`middleware`、pages的`asyncData/fetch/validate`、store的`actions`。不在vue的 ~~`vm`~~ 中），包括属性：
+    上下文对象存在于nuxt的生命周期中（在`plugins`、`middleware`、pages的`asyncData/fetch/validate`、store的`actions`。不在Vue的 ~~`vm`~~ 中），包含属性：
 
     1. `app`
     2. `route`
@@ -2830,7 +2832,13 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     4. `params`
     5. `query`
     6. `redirect`
+
+        浏览器路由会变化。（类似Vue的`vm.$router.push('/error')`）
+
+        >若`redirect('/error')`，则先判断pages的error.vue，再判断layouts的error.vue。
     7. `error`
+
+        跳转layouts的error.vue，浏览器路由不会变化。
     8. `env`
     9. `isStatic`
     10. `isDev`
@@ -2993,7 +3001,12 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     </style>
     ```
     </details>
-10. 命令
+10. 错误页面
+
+    在layouts中创建`error.vue`可作为：页面报错后自动跳转、或调用上下文对象的`error`跳转、或路由`/error`的页面。
+
+    >在layouts中创建了`error.vue`后，就不要 ~~在pages中创建`error.vue`~~。
+11. 命令
 
     1. `nuxt`：以开发模式启动一个基于vue-server-renderer的服务端
 
@@ -3008,7 +3021,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     4. `nuxt generate`：生成静态化文件，用于静态页面发布
 
     >增加`-h`参数查看nuxt命令可带参数。
-11. 输出至生产环境的方案
+12. 输出至生产环境的方案
 
     1. SSR：服务端渲染（与开发模式的SSR相同）。
     2. 静态化页面

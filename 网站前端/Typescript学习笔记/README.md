@@ -223,44 +223,44 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >// 函数声明
         >
         >// 可选参数
-        >function sum1 (x: number, y?: number): number {
+        >function sum1 (x: number, y?: number): string {
         >  if (y) {
-        >    return x
+        >    return x + ''
         >  } else {
-        >    return x + y
+        >    return x + y + ''
         >  }
         >}
         >
         >// 默认参数
-        >function sum2 (x: number, y: number = 1): number {
-        >  return x + y
+        >function sum2 (x: number, y: number = 1): string {
+        >  return x + y + ''
         >}
         >
         >// 剩余参数
-        >function sum3 (x: number, ...items: number[]): number {
-        >  return x + items.reduce((a, b) => a + b, 0)
+        >function sum3 (x: number, ...items: number[]): string {
+        >  return x + items.reduce((a, b) => a + b, 0) + ''
         >}
         >
         >
         >// 函数表达式
         >
         >// 类型推论
-        >let mySum1 = function (x: number, y: number): number {
-        >  return x + y
+        >let mySum1 = function (x: number, y: number): string {
+        >  return x + y + ''
         >}
         >
         >// 显式定义（不是类型推论）
-        >let mySum2: (x: number, y: number) => number = function (x: number, y: number): number {
-        >  return x + y
+        >let mySum2: (x: number, y: number) => string = function (x: number, y: number): string {
+        >  return x + y + ''
         >}
         >
         >// 接口
         >interface mySum {
-        >  (x: number, y: number): number
+        >  (x: number, y: number): string
         >}
         >let mySum3: mySum
-        >mySum3 = function (x, y) {
-        >  return x + y
+        >mySum3 = function (x, y) { // 或：mySum3 = function (x: number, y: number): string {
+        >  return x + y + ''
         >}
         >```
         ></details>
@@ -334,7 +334,30 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
         1. `public`（默认）：公有的，在任何地方都可以被访问。
         2. `private`：私有的，只能在声明的类中访问。（继承和实例化对象不能访问）
+
+            >若 ~~类的构造函数设置为`private`~~，则这个类不能实例化、也不能够被继承。
         3. `protected`：受保护的，只能在声明的类中、声明的继承子类中访问。（实例化对象不能访问）
+
+            ><details>
+            ><summary>若类的构造函数设置为<code>protected</code>，则这个类不能实例化，但继承的子级能够调用这个构造函数（<code>super()</code>）。</summary>
+            >
+            >e.g.
+            >
+            >```typescript
+            >class Person {
+            >  protected constructor () {}
+            >}
+            >
+            >class Employee extends Person {
+            >  constructor () {
+            >    super()
+            >  }
+            >}
+            >
+            >let john = new Person()     // 报错，Person的构造函数是protected，只能够被子类调用
+            >let howard = new Employee()
+            >```
+            ></details>
 
         ><details>
         ><summary>e.g.</summary>
@@ -399,7 +422,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         `abstract`定义抽象类、抽象方法。
 
         1. 抽象类不能实例化
-        2. 抽象方法**必须**被子类实现
+        2. 抽象方法**必须**被子类实现（抽象类自己不能定义自己的抽象方法的实现）
 
         ><details>
         ><summary>e.g.</summary>
@@ -447,7 +470,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >}
         >
         >class Car1 implements Light {
-        >  lightOn (str) {
+        >  public lightOn (str) {
         >    console.log('Car1 light on', str)
         >    return true
         >  }
@@ -460,7 +483,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >    console.log('Car2 alert', num)
         >  }
         >
-        >  lightOn (str) {
+        >  private lightOn (str) {
         >    console.log('Car2 light on', str)
         >    return true
         >  }
@@ -469,7 +492,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >    console.log('Car2 light off')
         >  }
         >
-        >  xx () {}
+        >  protected xx () {}
         >}
         >```
         ></details>
@@ -854,7 +877,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
     ></details>
 11. 其他
 
-    1. 已经定义好的属性的数据类型，除非有重载机制，否则不能在之后赋值的时候再次定义新的数据类型。只能用其他临时变量来定义保存。
+    1. 已经定义好的属性的数据类型，除非有重载机制，否则不能在之后赋值的时候再次定义新的数据类型。只能用其他临时变量来保存。
 
         ><details>
         ><summary>e.g.</summary>

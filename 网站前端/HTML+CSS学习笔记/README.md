@@ -437,16 +437,16 @@
     2. 乘以包含块的`height`：
 
         `top`、`bottom`、`height`、`max-height`、`min-height`
-    3. 乘以元素的`font-size`：
-
-        `line-height`
-    4. 乘以继承的`font-size`：
+    3. 乘以继承的`font-size`：
 
         `font-size`
-    5. 乘以元素的`line-height`：
+    4. 乘以节点自己的`font-size`：
+
+        `line-height`
+    5. 乘以节点自己的`line-height`：
 
         `vertical-align`
-    6. 乘以自身的`width/height`：
+    6. 乘以节点自己的`width/height`：
 
         `border-radius`、`background-size`、`translate`、`transform-origin`、`zoom`、`clip-path`
     7. `background-position`：
@@ -460,22 +460,24 @@
         >2. `0% 0%`相当于`left top`。
         >3. `100% 100%`相当于`right bottom`。
         ></details>
-    8. 自身是`position: absolute;`：
+    8. 节点自己是`position: absolute;`：
 
         离它最近的`positon: relative/absolute/fixed;`的祖先元素；若没有，则相对于视口。
-    9. 自身是`position: fixed;`：
+    9. 节点自己是`position: fixed;`：
 
         相对于视口。
 
-    >若某个元素设置了百分比的属性，则后代元素继承的是计算后的具体px值。
+    >若某个元素设置了百分比的属性，则后代元素继承的是这个元素计算后具体的px值。
 
 ### `line-height`
 - 值的不同情况：无单位数字、带单位值、百分比、`normal`
 
     其中的`em`、`%`、`无单位数字`，都是相对于元素自身最终的font-size值的倍数。
 
-    1. `em`和`%`是计算出具体px再向后继承（子节点的line-height=父级给的px）。
-    2. `无单位数字`是直接继承系数，子节点会分别计算（子节点的line-height=数字，再继续和自身font-size相乘）。
+    - `line-height`是继承属性：
+
+        1. `em`和`%`是计算出具体px再向后继承（其子节点的line-height=父级给的具体px）。
+        2. `无单位数字`是直接继承系数，其子节点会分别计算（子节点的line-height=父级给的无单位数字，再继续和自身font-size相乘）。
 
 1. 单行文本情况下：
 
