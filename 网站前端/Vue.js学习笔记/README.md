@@ -2321,7 +2321,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         7. `transition`
 
             Vue的`<transition/>`组件配置。
-        8. `validate`
+        8. `validate`（拥有上下文）
 
             用于校验动态路由参数的有效性。`return false`则自动加载显示404错误页面。
         9. `watchQuery`
@@ -2818,11 +2818,11 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     </details>
 3. <details>
 
-    <summary>上下文</summary>
+    <summary>上下文（nuxt特有）</summary>
 
     >来自：[nuxt: 上下文对象](https://zh.nuxtjs.org/api/context/#上下文对象)。
 
-    上下文对象包括属性：
+    上下文对象存在于nuxt的生命周期中（在`plugins`、`middleware`、pages的`asyncData/fetch/validate`、store的`actions`。不在vue的 ~~`vm`~~ 中），包括属性：
 
     1. `app`
     2. `route`
@@ -2837,8 +2837,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     11. `isHMR`
     12. `req`
     13. `res`
-    14. `nuxtState`
-    15. `beforeNuxtRender`
+    14. `beforeNuxtRender`
+    15. `from`
     </details>
 4. 内置组件
 
