@@ -24,7 +24,7 @@
 
 ---
 
->约定：`vm`（ViewModel缩写）变量名表示：Vue实例。
+>约定：`vm`（ViewModel）变量名表示：Vue实例。
 
 ## [vue](https://github.com/vuejs/vue)
 - 心得
@@ -38,7 +38,7 @@
     2. 注意内存泄漏（全局副作用）：
 
         1. 在Vue实例内部`new`的其他实例或DOM，应放在`data`内进行掌控，当使用完毕后引导垃圾回收。
-        2. 在Vue实例内部手动绑定的事件（`addEventListener`）、计时器、http连接、以及任何需要手动关闭的内容，需要在`beforeDestroy`前手动清除（`destroyed`仅自动清除Vue自己定义、绑定的内容）。
+        2. 在Vue实例内部手动绑定的事件（如：`addEventListener`）、计时器、http连接、以及任何需要手动关闭的内容，需要在`beforeDestroy`前手动清除（`destroyed`仅自动清除Vue自己定义、绑定的内容）。
     3. 请求异步数据的业务结构：
 
         1. 独立的API模块专门进行请求数据异步
@@ -46,7 +46,7 @@
 
             1. 使用vuex（建议方式）：
 
-                1. 在view层使用store的`dispatch`发起（模板响应式数据使用store的`state/getters`）；
+                1. 在view层使用store的`dispatch`发起（模板的响应式数据使用store的`state/getters`）；
                 2. 在store模块内引入异步API模块，在`actions`内请求异步数据，得到数据后`commit`改变`state`；
                 3. 返回的数据保存位置：
 
@@ -59,7 +59,7 @@
 
         1. 图片文件用：`_`；（除了.vue）其他所有文件用：`-`
         2. .vue组件用：大驼峰式（PascalCase）或`-`短横线隔开式（kebab-case）
-        3. 路由.vue组件用：按路由规范命名，如：`-`短横线隔开式（kebab-case）
+        3. 路由.vue组件用：按该网站当前已有的路由规范命名，如：`-`短横线隔开式（kebab-case）
 
 ### 模板插值
 1. 支持JS表达式（单个），不支持~~语句~~、~~流控制~~。
@@ -88,8 +88,15 @@
     </details>
 2. 只能访问部分全局变量（白名单）；不允许访问自定义的全局变量（引入的其他库变量仅在JS代码中使用）。
 3. 作用域在所属Vue实例范围内。
-4. `slot="字符串"`（父级）、`<slot name="字符串">`（子级），用于父级向子组件插入内容。
+
+    父级模板里的所有内容都是在父级作用域中编译的；子级模板里的所有内容都是在子级作用域中编译的。
+
+    >特例：父级通过`v-slot="临时变量"`去使用子级`<slot>`给定的属性对应的值。
+4. `v-slot`和`<slot>`
+
+    用于父级（`v-slot:名字`）向子组件（`<slot name="名字">`）插入内容。
 5. 所有渲染结果不包含`<template>`
+6. 注意直接用.html写模板在DOM上的，不能用大写字母命名组件。
 
 ### 指令 && 特殊attribute
 指令（directives）是带有`v-`前缀的DOM的特殊属性。
@@ -99,6 +106,12 @@
 1. `:`参数
 
     用于添加指令后的参数。
+
+    - `某指令:[表达式]`动态参数
+
+        由表达式计算的结果为最终`:`后跟的值。
+
+        >e.g. `v-bind:[表达式]='xx'`、`v-on:[表达式]='xx'`、`v-slot:[表达式]`。
 2. `v-if`、`v-else`、`v-else-if`
 
     DOM或组件判定为`false`，则完全销毁（组件会调用`destroyed`）；判定为`true`，则新建。除非使用`<keep-alive/>`包裹。
@@ -152,11 +165,9 @@
 
 >（相同标签名的DOM或相同组件切换展示时，）没有提供`key`属性：若数据项的展示/顺序被改变，则Vue将不会~~销毁再新建DOM/移动DOM来匹配数据项的顺序~~，而是保持原DOM尽量不变化，尽量仅在原DOM上修改属性和内部内容，以确保渲染正确。
 
-4. `v-bind`绑定DOM属性与JS表达式的结果。
+4. `v-bind`（`v-bind:xx`缩写：`:xx`）绑定DOM属性与JS表达式的结果
 
     >此DOM属性随表达式最终值改变而改变，直接修改此DOM属性值不改变表达式的值。
-
-    `v-bind:`缩写`:`。
 
     1. 绑定修饰符：
 
@@ -251,9 +262,7 @@
         </script>
         ```
         </details>
-5. `v-on`事件监听
-
-    `v-on:`缩写`@`。
+5. `v-on`（`v-on:xx`缩写：`@xx`）事件监听
 
     1. 事件修饰符：
 
@@ -321,7 +330,36 @@
         >不支持修饰符。
 
         e.g. `<button v-on="{ mousedown: doThis, mouseup: doThat }"/>`
-6. `v-model`表单的双向绑定
+6. `v-slot`（`v-slot:xx`缩写：`#xx`）插槽
+
+    只允许添加在引用的子组件和`template`上，且不能嵌套使用。子组件使用`<slot>`在内部插入父级引入的内容。
+
+    >若子组件没有包含`<slot name="某名字">`，则父组件引用子组件时的`v-slot:某名字"`的DOM会被抛弃。
+
+    1. 后备内容
+
+        1. 子组件中没有`name`属性或`name="default"`的`<slot>`，匹配父级中*去除所有包含`v-slot:名字`的DOM*的内容（即：匹配没有`v-slot`或`v-slot`值为空的DOM和内容）。
+
+            >`<slot>`默认`name`为：`default`。
+        2. 子组件中`<slot>`的DOM内容，当且仅当没有父级匹配时显示。
+    2. 具名插槽
+
+        父级引用子组件，在元素内部添加的标签的DOM属性`v-slot:名字`；会匹配子组件模板的`<slot name="名字">`。
+    3. 作用域插槽
+
+        父级引用子组件时，使用子组件`<slot>`上的属性对应的值（除了`name`属性）。
+
+        1. 子组件的模板：
+
+            `<slot 组件属性1="字符串" :组件属性2="表达式">`
+        2. 父级使用子组件`<slot>`上显性设置的属性对应值：
+
+            `<template/子组件 v-slot="临时变量">{{ 临时变量.组件属性1 }}{{ 临时变量.组件属性2 }}</template/子组件>`
+
+            （`临时变量 === { 组件属性1: '字符串'. 组件属性2: 表达式 }`）
+
+            >`临时变量`支持解构。
+7. `v-model`表单的双向绑定
 
     >忽略表单元素上的`value`、`checked`、`selected`等初始值，而仅通过Vue实例赋值。
 
@@ -371,11 +409,11 @@
             1. 用`:value="表达式"`；
             2. 若`type="checkbox"`，则用`:true-value="表达式" :false-value="表达式"`。
     >不能和表达式一起使用，仅能绑定属性名：错误：~~`v-model="属性名 + '!'"`~~。
-7. `v-once`只渲染元素和组件一次
+8. `v-once`只渲染元素和组件一次
 
     随后的重新渲染，元素/组件及其所有的子节点将被视为静态内容并跳过。这可以用于优化更新性能。
-8. `v-text`等价于：`{{  }}`
-9. `v-html`输入真正HTML
+9. `v-text`等价于：`{{  }}`
+10. `v-html`输入真正HTML
 
     ><details>
     ><summary>与其他插值（如：模板插值）的区别</summary>
@@ -385,23 +423,23 @@
     >
     >    >`innerText`与`textContent`区别：[MDN:textContent](https://developer.mozilla.org/zh-CN/docs/Web/API/Node/textContent#与innerText的区别)。
     ></details>
-10. `v-pre`不编译
+11. `v-pre`不编译
 
     >e.g. `<p v-pre>{{ 不编译 }}</p>`
-11. `v-show`
+12. `v-show`
 
     总是渲染出DOM，根据值切换`display`值。
 
     >不支持`<template>`、不支持`v-else`。
-12. `v-cloak`指令保持在元素上直到关联实例结束编译
+13. `v-cloak`指令保持在元素上直到关联实例结束编译
 
     与CSS一起使用时，在编译完成前使用样式，编译完成后去除样式。
-13. `.`修饰符
+14. `.`修饰符
 
     >用于指出一个指令应该以特殊方式绑定。
 
     使用在`v-on`、`v-bind`、`v-model`后添加。
-14. `|`使用filters过滤器，参数带入函数运行出结果（支持过滤器串联）
+15. `|`使用filters过滤器，参数带入函数运行出结果（支持过滤器串联）
 
     仅可以在`{{ }}`和`v-bind`中使用（其他如：~~`v-html`~~ 无效、无法在Vue实例中使用）。
 
@@ -439,7 +477,7 @@
     </script>
     ```
     </details>
-15. 自定义指令（在钩子函数中进行业务）
+16. 自定义指令（在钩子函数中进行业务）
 
     `v-自定义指令名`（或`v-自定义指令名="表达式"`、`v-自定义指令名:参数`、`v-自定义指令名.修饰符`）
 
@@ -491,67 +529,7 @@
     >}
     >```
     ></details>
-
-    ><details>
-    ><summary>e.g. 自定义指令的插件</summary>
-    >
-    >```javascript
-    >import Vue from 'vue'
-    >
-    >function DisplayDom ({ target, show = () => {}, hide = () => {}, threshold = 0.01, once = false, root = null } = {}) {
-    >  threshold = Math.max(Math.min(threshold, 1), 0.01)  // 取值在[0.01, 1]
-    >  try {
-    >    const io = new window.IntersectionObserver(
-    >      (entries) => {
-    >        if (entries[0].intersectionRatio >= threshold) { // 展示
-    >          show()
-    >
-    >          if (once) {
-    >            this.stop()
-    >          }
-    >        } else {  // 消失
-    >          hide()
-    >        }
-    >      },
-    >      { threshold: [threshold], root }
-    >    )
-    >
-    >    io.observe(target)    // 开始观察
-    >
-    >    this.stop = () => {
-    >      io.disconnect()
-    >    }
-    >  } catch (error) {
-    >    console.error(error.message, `\n不支持IntersectionObserver，升级浏览器或代码使用polyfill: https://github.com/w3c/IntersectionObserver`)
-    >  }
-    >}
-    >
-    >const plugin = {
-    >  install (Vue) {
-    >    Vue.directive('observer', {  // v-observer:数字.once="{ show: ()=>{}, hide: ()=>{} }"
-    >      inserted (el, { value, arg, modifiers }) {
-    >        el.observer = new DisplayDom({
-    >          target: el,
-    >          show: typeof value === 'function' ? value : value.show,
-    >          hide: value.hide,
-    >          threshold: (arg / 100) || undefined,
-    >          once: modifiers.once,
-    >          root: value.dom
-    >        })
-    >      },
-    >      unbind (el) {
-    >        if (el.observer && typeof el.observer.stop === 'function') {
-    >          el.observer.stop()
-    >        }
-    >      }
-    >    })
-    >  }
-    >}
-    >
-    >Vue.use(plugin)
-    >```
-    ></details>
-16. 特殊attribute
+17. 特殊attribute
 
     1. `key`
 
@@ -602,15 +580,15 @@
 
             >代替原生JS获取DOM，如：~~`document.getElementById`~~。
         2. 添加在子组件：指向子组件Vue实例。
-    3. `slot`
-
-        父级向子组件引入内容。
-    4. `slot-scope`
-
-        父级使用子组件字符串的作用域名字。
-    5. `is`
+    3. `is`
 
         有效标签或动态组件。
+    4. ~~`slot`~~（已废弃，用`v-slot`代替）
+
+        父级向子组件引入内容。
+    5. ~~`slot-scope`、`scope`~~（已废弃，用`v-slot`代替）
+
+        父级使用子组件字符串的作用域名字。
 - <details>
 
     <summary>官方建议的顺序：<a href="https://cn.vuejs.org/v2/style-guide/#元素特性的顺序-推荐">元素特性的顺序</a></summary>
@@ -639,8 +617,10 @@
 
         - `ref`
         - `key`
-        - `slot`
-        - `slot-scope`
+        - `v-slot`
+        - ~~`slot`~~
+        - ~~`slot-scope`~~
+        - ~~`scope`~~
     7. 双向绑定（把绑定和事件结合起来）
 
         - `v-model`
@@ -880,35 +860,6 @@
 1. 组件属性：
 
     1. `template`（字符串）：组件的字符串模板
-
-        - 作用域：
-
-            `template`的字符串模板内容为本组件作用域；父级添加的DOM（包括引用子组件）为父级作用域。
-        - 内容分发
-
-            子组件使用`<slot>`在内部插入父级引入的内容（`slot="字符串"`）。
-
-            1. 默认插槽
-
-                1. 模板中没有`name`属性的`<slot>`，匹配父级中去除所有`slot="字符串"`引用的内容（没有`slot`或`slot`值为空的DOM）。
-                2. 模板中`<slot>`的DOM内容，当且仅当没有父级匹配时显示。
-            2. 具名插槽
-
-                1. 父级引用子组件，在元素内部添加的标签的DOM属性`slot="字符串"`；
-                2. 组件模板：`<slot name="字符串">`。
-
-            - 作用域插槽
-
-                1. 子组件的模板：
-
-                    `<slot 组件属性="字符串">`或`<slot :组件属性="表达式">`
-                2. 父级引用子组件元素内部的内容：
-
-                    >`slot-scope`必须在一个父级`slot`定义（默认/具名），在`slot`内部DOM挂载`slot-scope`无效。
-
-                    `<标签或组件名 slot slot-scope="临时变量">{{临时变量.组件属性}}</标签或组件名>`
-
-                    >`<template>`使用`slot-scope`属性时，不要同时使用`v-if`。
     2. `props`（数组或对象）：接受父级传递内容
 
         1. 数组：接受的DOM属性名
@@ -1260,7 +1211,7 @@
         2. 或专门状态管理模式，如：[vuex](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#vuex)。
     - 组件的API来自三部分
 
-        `<my-component :子属性="父属性" @父事件="父方法"><标签 slot="名字">内容分发</标签></my-component>`
+        `<my-component :子属性="父属性" @父事件="父方法"><标签 v-slot:名字="临时变量">内容分发</标签></my-component>`
 
         1. `props`：允许外部环境传递数据给组件。
         2. `events`：允许从组件内触发外部环境的副作用。
@@ -1271,6 +1222,7 @@
     2. `<transition/>`
     3. `<transition-group/>`
     4. `<keep-alive/>`
+    5. `<slot/>`
 - 杂项
 
     1. 父级引用组件时添加属性`ref="字符串"`，可以在Vue实例的`$refs`中访问子组件。
@@ -1325,18 +1277,19 @@
 
                 若已添加`scoped`的子组件也添加`scoped`，则增加一份子组件的自定义`attributes`。
 
-                >深度作用选择器：若希望`scoped`样式中的一个选择器能够作用得“更深”（如：影响子组件），则可使用`>>>`或`/deep/`或`::v-deep`操作符：
-
-                    ```vue
-                    <style scoped>
-                      .a >>> .b { /* 等价于：`.a ::v-deep .b`或`.a /deep/ .b` */ }
-                      .c > .d {}
-
-                      // 编译为：
-                      .a[data-v-039c5b43] .b {}
-                      .c > .d[data-v-039c5b43] {}
-                    </style>
-                    ```
+                >深度作用选择器：若希望`scoped`样式中的一个选择器能够作用得“更深”（如：影响子组件），则可使用`>>>`或`/deep/`或`::v-deep`操作符。
+                >
+                >e.g.
+                >```vue
+                ><style scoped>
+                >  .a >>> .b { /* 等价于：`.a /deep/ .b`或`.a ::v-deep .b` */ }
+                >  .c > .d {}
+                >
+                >  // 编译为：
+                >  .a[data-v-039c5b43] .b {}
+                >  .c > .d[data-v-039c5b43] {}
+                ></style>
+                >```
         2. `module`（[vue-loader的CSS Modules](https://vue-loader.vuejs.org/zh/guide/css-modules.html)）
 
             在`<style>`添加`module`，即在Vue实例内加入`$style`对象，访问单文件组件内`<style module>`的选择器。
@@ -1558,20 +1511,16 @@
 ### 插件（plugin）
 ```javascript
 // 插件是.js文件，应当有一个公开的install方法
+const MyPlugin = {}
 MyPlugin.install = function (Vue, options) { // 第一个参数是Vue构造器，第二个参数是Vue.use时传入的可选参数对象
   // 1. 添加全局方法或属性
   Vue.myGlobalMethod = function () {
     // 逻辑...
   }
 
-  // 2. 添加全局资源
-  Vue.directive('my-directive', {
-    bind (el, binding, vnode, oldVnode) {
-      // 逻辑...
-    },
-  })
+  // 2. 添加全局资源（Vue.directive、Vue.filter、Vue.component）
 
-  // 3. 注入组件
+  // 3. 全局混入
   Vue.mixin({
     created: function () {
       // 逻辑...
@@ -1588,6 +1537,14 @@ MyPlugin.install = function (Vue, options) { // 第一个参数是Vue构造器�
 // 在其他地方使用
 Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻止多次注册相同插件，届时只会注册一次该插件。
 ```
+
+>- 制作插件供Vue项目使用：
+>
+>    1. 导出包含`install`的对象，这样项目`Vue.use(引入的包含install的对象)`就全局注册该插件。
+>    2. 也可导出具体的内容（如：组件、自定义指令），由项目选择：
+>
+>        1. 调用对应的全局API全局注册（如：`Vue.directive('自定义指令名', 导出的自定义指令对象)`）
+>        2. 在项目本地插件内局部注册（如：`directives: { '自定义指令名': 导出的自定义指令对象 }`）。
 
 ### 特性
 1. Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性），在内部`vm.名字`访问，可以直接使用，**所有属性名字都不能重复**（filters不属于同一类）；也有以`$`开头的Vue实例属性（如：`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
@@ -1982,7 +1939,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
     状态（仅能在mutation方法体内改变state）。
 
-    1. 通过store的`state.state名`获取。
+    1. 通过store的`state.state名`（或`state.module名.state名`）获取。
     2. 响应规则（和[Vue的响应式系统](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#响应式系统)一致）
 
         >约定：原对象、原数组、原属性均为已存在的、响应式的数据。
@@ -2033,7 +1990,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
     由state或其他getter派生的值。
 
-    1. 通过store的`getters['getter名']`获取。
+    1. 通过store的`getters['getter名']`（或`getters['module名/getter名']`）获取。
     2. 根据方法返回值的依赖而改变（仅能在自己的getter中改变值，不能在其他getter或mutations或actions改变值），store的计算属性。
     3. （就像Vue的`computed`一样，）getter的返回值会根据它的依赖被缓存起来，且只有当它的依赖值发生了改变才会被重新计算；若getter返回一个函数，每次都会去进行调用，而不会缓存结果。
 
@@ -2066,7 +2023,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
     改变state的唯一方式。
 
-    1. 通过store调用`commit('mutation方法名'[, 参数])`或`commit({ type: 'mutation方法名'[, 参数的项: 值] })`触发。
+    1. 通过store调用`commit('mutation方法名'[, 参数])`或`commit({ type: 'mutation方法名'[, 参数的项: 值] })`（或`commit('module名/mutation方法名'[, 参数])`或`commit({ type: 'module名/mutation方法名'[, 参数的项: 值] })`）触发。
     2. 必须是同步函数。
 
         >返回的内容无效，使用时不会有返回值。
@@ -2101,7 +2058,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
     仅触发mutations，而不直接改变~~state~~。
 
-    1. 通过store调用`dispatch('action方法名'[, 参数])`或`dispatch({ type: 'action方法名'[, 参数的项: 值] })`触发。
+    1. 通过store调用`dispatch('action方法名'[, 参数])`或`dispatch({ type: 'action方法名'[, 参数的项: 值] })`（或`dispatch('module名/action方法名'[, 参数])`或`dispatch({ type: 'module名/action方法名'[, 参数的项: 值] })`）触发。
     2. 可以进行异步操作。
 
         >可以返回任何内容，包括Promise。
@@ -2205,9 +2162,13 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         3. **（组件使用）** state需要增加路径：store的`state.模块路径.state名`获取。
         4. 命名空间`namespaced`（主要针对getters、mutations、actions）
 
+            >不使用`mapState`的直接使用states时，无论`namespaced`是`false/true`，都是相同的引用方式：`vm.$store.state.module名.state名`。
+
             1. `false`（默认）
 
                 **（组件使用）** getters、mutations、actions是注册在全局命名空间，与非模块方式调用相同；无法针对某个模块而使用`mapState/mapGetters/mapActions/mapMutations`的第一个参数或`createNamespacedHelpers`。
+
+                >此时若要用`mapState`，则只能：`...mapState({ 名字: state => state.module名.state名 })`
             2. `true`
 
                 **（组件使用）** getters、mutations、actions调用要在名称中增加路径：`模块路径/名称`；可以针对某个模块而使用`mapState/mapGetters/mapActions/mapMutations`的第一个参数或`createNamespacedHelpers`。

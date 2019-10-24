@@ -365,13 +365,16 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >```typescript
         >class Animal {
         >  public constructor (name, age, sex) {
+        >    // （默认值会在编译后的.js的构造函数最前面加上：）this.age = 100
+        >
         >    this.name = name
-        >    this.age = age
+        >    this.age = age // 类的只读属性在构造函数里初始化
         >    this.sex = sex
         >  }
         >
         >  public name: string
-        >  private readonly age: number
+        >  // 类的只读属性，必须在声明时默认赋值 或 在构造函数里初始化。
+        >  private readonly age: number = 100   // 类的只读属性在声明时默认赋值
         >  protected sex: boolean
         >
         >  public getName (): string {
@@ -417,7 +420,63 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >console.log(b.getSex())          // 报错，protected
         >```
         ></details>
-    2. 抽象类、抽象方法
+
+        - 参数属性
+
+            若在类的构造函数的**参数**上设置访问修饰符（`private/public/protected`），则在实例化时会用参数名新建一个实例属性/方法。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```typescript
+            >// A1和A2编译出的.js结果一致
+            >
+            >class A1 {
+            >  private a: string
+            >  protected readonly b: number
+            >
+            >  constructor (临时属性1: string, 临时属性2: number) {
+            >    this.a = 临时属性1
+            >    this.b = 临时属性2
+            >  }
+            >}
+            >
+            >class A2 {
+            >  constructor (private a: string, protected readonly b: number) { }
+            >}
+            >```
+            ></details>
+    2. `: typeof 类名`
+
+        取**类**的类型，而不是~~实例~~的类型，包含类的所有`静态属性/方法`和`构造函数`。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >class Greeter {
+        >  static staticGreeting = 'Hello, there'
+        >  greeting: string
+        >
+        >  greet () {
+        >    return Greeter.staticGreeting
+        >  }
+        >}
+        >​
+        >let greeter1: Greeter // 实例（实例属性/方法、类.prototype.属性/方法）
+        >greeter1 = new Greeter()
+        >console.log(greeter1.greet(), greeter1.greeting)
+        >​
+        >let greeterMaker: typeof Greeter  // 类（静态属性/方法、构造函数）
+        >greeterMaker = Greeter
+        >greeterMaker.staticGreeting = 'Hey there!'
+        >​
+        >let greeter2: Greeter
+        >greeter2 = new greeterMaker()
+        >console.log(greeter2.greet(), greeter2.greeting)
+        >```
+        ></details>
+    3. 抽象类、抽象方法
 
         `abstract`定义抽象类、抽象方法。
 
@@ -451,7 +510,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         ></details>
 
         >仅定义、不实现的方法都只有`()`、没有`{}`：`interface 中的方法`、`declare class 中的 方法`、`abstract class 中的 abstract 方法`。
-    3. 类实现接口
+    4. 类实现接口
 
         `implements`
 
@@ -718,7 +777,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             ></details>
     2. 常数枚举、外部枚举
 
-        与普通枚举的区别是：在编译阶段被删除、不能包含计算成员、若手动赋值则枚举值必须是数字。
+        与普通枚举的区别是：在编译阶段被删除、不能包含计算所得项、若手动赋值则枚举值必须是数字。
 
         1. 常数枚举（Const Enums）
 
