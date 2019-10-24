@@ -225,7 +225,9 @@
 ### 层叠上下文（stacking context）
 >参考：[张鑫旭：深入理解CSS中的层叠上下文和层叠顺序](http://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)。
 
-1. 满足以下任意条件则形成层叠上下文：
+1. 满足以下任意条件则形成**层叠上下文**：
+
+    >`z-index: auto;`不形成层叠上下文。
 
     1. 根元素`<html>`。
     2. `z-index`属性值不为~~auto~~的`position: relative/absolute;`定位元素。
@@ -233,18 +235,22 @@
     4. `z-index`属性值不为~~auto~~的`flex`子项（父元素`display: flex/inline-flex;`）。
     5. `opacity`属性值`< 1`的元素。
     6. `transform`属性值不为~~none~~的元素。
-    7. `mix-blend-mode`属性值不为~~normal~~的元素。
-    8. `filter`属性值不为~~none~~的元素。
-    9. `perspective`属性值不为~~none~~的元素。
-    10. `isolation`属性值为`isolate`的元素。
-    11. `will-change`属性值指定任意CSS属性（即便没有直接指定这些属性的值）。
-    12. `-webkit-overflow-scrolling`属性值为`touch`的元素。
+    7. `will-change`属性值指定任意CSS属性（即便没有直接指定这些属性的值）。
+    8. `-webkit-overflow-scrolling`属性值为`touch`的元素。
+    9. `filter`属性值不为~~none~~的元素。
+    10. `mix-blend-mode`属性值不为~~normal~~的元素。
+    11. `perspective`属性值不为~~none~~的元素。
+    12. `isolation`属性值为`isolate`的元素。
 2. 层叠顺序（stacking order）
 
-    >`z-index: auto;`不形成层叠上下文。
+    `z-index`
 
-    1. 比较2个元素的层叠顺序，由各自上溯至（可以是元素自身）拥有共同**层叠上下文父级**的元素的层叠顺序决定。
-    2. 层叠上下文独立于兄弟元素，当处理层叠时只考虑后代元素（`z-index`值只在祖先元素的层叠上下文中有意义）。
+    - 比较2个元素的层叠顺序：
+
+        1. 上溯找到此2个元素同时最接近的祖先元素；
+        2. 此祖先元素分别向2个元素搜索到的第一个**层叠上下文**元素进行对比层叠顺序（`z-index`）
+
+        >[CodePen demo](https://codepen.io/realgeoffrey/pen/oNNeNLJ)
 3. `z-index`使用注意
 
     1. 应该只给堆叠在一起的节点设置此属性。
@@ -1249,6 +1255,7 @@
         1. （除了**CSS3旋转属性**与**内嵌滚动条**同时出现无法解决）样式问题都可以像处理ie6问题一样通过真机试验出解决方案。
         2. 有些低版本机型会有类似ie6的CSS问题，包括**CSS3的厂商前缀（`-webkit-`等）**、**层叠关系（`z-index`）**，并且要更注意**渲染性能（层产生）**。
     3. 字体模糊或抖动、图像锯齿等，可以考虑交由GPU处理。
+    4. `transform: translate`进行非整数平移时，会产生模糊（注意百分比可能会计算成非整数）。
 
 ### 经验技巧
 1. 命名间隔
