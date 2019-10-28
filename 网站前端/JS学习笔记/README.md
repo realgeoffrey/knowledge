@@ -3403,6 +3403,8 @@
             Number(null);       // => 0
 
             Number(Symbol());   // => Uncaught TypeError: Cannot convert a Symbol value to a number
+
+            Number(11n);        // => 11
             ```
 
             >`parseInt`与`Number`均忽略字符串前后的不可见字符。`parseInt`从前向后逐个解析字符，只要开头有数字则返回数值；`Number`判断只要有一个字符无法转成数值，则返回`NaN`。
@@ -3434,9 +3436,15 @@
 
             1. 数值：转为相应的字符串。
             2. 字符串：原来的值。
-            3. 布尔值：`true`转为`'true'`，`false`转为`'false'`。
-            4. `undefined`：转为`'undefined'`。
-            5. `null`：转为`'null'`。
+            3. 布尔值：`String(true) // => 'true'`、`String(false) // => 'false'`。
+            4. `undefined`：`String(undefined) // => 'undefined'`。
+            5. `null`：`String(null) // => 'null'`。
+            6. `Symbol()`：
+
+                1. `String(Symbol())      // => 'Symbol()'`
+                2. `String(Symbol(1))     // => 'Symbol(1)'`
+                3. `String(Symbol('abc')) // => 'Symbol(abc)'`
+            7. Bigint：`String(1n) // => '1'`。
         2. 引用数据类型：
 
             若是数组，则返回该数组的字符串形式；否则返回一个类型字符串。
@@ -3500,6 +3508,8 @@
             除了~~加法运算符~~有可能把运算数转为字符串，其他运算符都会把运算数自动转成数值（包括一元运算符）。
 
         - `+`加法运算：
+
+            >`Symbol`不能进行~~加法运算~~；`Bigint`只能和 `Bigint`、字符串、对象 进行加法运算。
 
             1. 若运算数有对象，先`ToPrimitive(对象)`转换为的基本数据类型，再按照下面方式继续自动转换或运算出结果；
             2. 若运算数有字符串，则都转换为字符串（`String(基本数据类型)`）进行；
