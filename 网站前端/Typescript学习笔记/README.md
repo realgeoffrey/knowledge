@@ -24,8 +24,10 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         2. `number`
         3. `string`
         4. `symbol`
-        5. `undefined`
-        6. `null`
+        5. `bigint`
+        6. `undefined`
+        7. `null`
+
         >`undefined`和`null`可以赋值给所有类型的变量（除了`never`类型），`undefined`和`null`是所有类型的子类型（除了`never`类型）。
     2. `void`
 

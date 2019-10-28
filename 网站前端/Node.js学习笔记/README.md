@@ -103,21 +103,24 @@
                 ```
 
                 >初始化信息会存放在`~/.npmrc`文件里。
-        3. 发布（默认：发布至**latest**标签）
+        3. 调试开发
+
+            `npm link 本地模块`（`npm unlink 本地模块`）
+        4. 发布（默认：发布至**latest**标签）
 
             `npm publish [--tag <tag>]`
 
             >1. 除了latest，其他标签都不会默认被安装。最后推送的latest版本会显示在npm官网。
             >2. 注意：设置源为npm的网站（https://registry.npmjs.org/）才可以推送到npm。
-        4. “下线”
+        5. “下线”
 
             >`npm unpublish [<@scope>/]<pkg>[@<version>]`只能下线24小时内发布的版本。
 
             `npm deprecate <pkg>[@<version>] <message>`
-        5. 打印登录名
+        6. 打印登录名
 
             `npm whoami`
-        6. 登出
+        7. 登出
 
             `npm logout`
     2. 查看信息

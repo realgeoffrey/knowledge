@@ -1545,6 +1545,39 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 >
 >        1. 调用对应的全局API全局注册（如：`Vue.directive('自定义指令名', 导出的自定义指令对象)`）
 >        2. 在项目本地插件内局部注册（如：`directives: { '自定义指令名': 导出的自定义指令对象 }`）。
+>
+>    - 可以合起来导出：
+>
+>        ```javascript
+>        import 组件名字 from './路径/组件名字.vue'
+>
+>        组件名字.install = (Vue, options = {}) => {
+>          // 具体install注册组件的各种方式
+>        }
+>
+>        export default 组件名字
+>        ```
+>
+>        <details>
+>        <summary>不推荐</summary>
+>
+>        ```javascript
+>        import 组件名字 from './路径/组件名字.vue'
+>
+>        const plugin = {
+>          install (Vue, options = {}) {
+>            // 具体install注册组件的各种方式
+>          }
+>        }
+>
+>        // 会导致一些打包模式下出问题
+>        export {
+>          plugin as default,
+>
+>          组件名字
+>        }
+>        ```
+>        </details>
 
 ### 特性
 1. Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性），在内部`vm.名字`访问，可以直接使用，**所有属性名字都不能重复**（filters不属于同一类）；也有以`$`开头的Vue实例属性（如：`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
@@ -2166,12 +2199,12 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
             1. `false`（默认）
 
-                **（组件使用）** getters、mutations、actions是注册在全局命名空间，与非模块方式调用相同；无法针对某个模块而使用`mapState/mapGetters/mapActions/mapMutations`的第一个参数或`createNamespacedHelpers`。
+                **（组件使用）** getters、mutations、actions是注册在全局命名空间，与非模块方式调用相同；无法针对某个模块而使用`mapState/mapGetters/mapMutations/mapActions`的第一个参数或`createNamespacedHelpers`。
 
                 >此时若要用`mapState`，则只能：`...mapState({ 名字: state => state.module名.state名 })`
             2. `true`
 
-                **（组件使用）** getters、mutations、actions调用要在名称中增加路径：`模块路径/名称`；可以针对某个模块而使用`mapState/mapGetters/mapActions/mapMutations`的第一个参数或`createNamespacedHelpers`。
+                **（组件使用）** getters、mutations、actions调用要在名称中增加路径：`模块路径/名称`；可以针对某个模块而使用`mapState/mapGetters/mapMutations/mapActions`的第一个参数或`createNamespacedHelpers`。
 
                 - actions的定义内部
 

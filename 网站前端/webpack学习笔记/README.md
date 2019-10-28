@@ -59,7 +59,11 @@
     1. `entry`：定义整个编译过程的起点
     2. `output`：定义整个编译过程的终点
     3. `module`：加载器定义模块（文件）的处理方式
+
+        >`use`有顺序之分，数组逆序执行。
     4. `plugin`：插件对编译完成后的内容（加载器处理之后）进行二度加工
+
+        >每个plugin都会绑定各种webpack生命周期钩子进行执行plugin内某些具体内容，用户一般不用关注各plugins之间执行顺序。
     5. `resolve.alias`：定义路径的别名
 2. `webpack-dev-server`的热更新配置：`devServer.hot: true`（需要插件`new webpack.HotModuleReplacementPlugin()`配合）
 

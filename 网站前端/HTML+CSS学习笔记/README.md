@@ -230,7 +230,7 @@
     >`z-index: auto;`不形成层叠上下文。
 
     1. 根元素`<html>`。
-    2. `z-index`属性值不为~~auto~~的`position: relative/absolute;`定位元素。
+    2. **`z-index`属性值不为~~auto~~的`position: relative/absolute;`定位元素。**
     3. `position: fixed;`（仅限Chrome，其他浏览器遵循需要`z-index`为数值）。
     4. `z-index`属性值不为~~auto~~的`flex`子项（父元素`display: flex/inline-flex;`）。
     5. `opacity`属性值`< 1`的元素。
@@ -255,6 +255,46 @@
 
     1. 应该只给堆叠在一起的节点设置此属性。
     2. 尽量在页面中不要使`z-index`的数值`> 4`，否则就要考虑是否过度使用此属性。
+
+- 分层实践
+
+    不同层之间的层叠顺序已先确定，高`z-index`层内部所有内容均会遮盖低`z-index`层内部所有内容。层内部可以再继续分层。
+
+    ```html
+    <main class="main">
+      <section class="layer layer--1">
+        内部再进行z-index排序，不会影响外层.layer的排序（layer--1的内容永远会被layer--2层遮盖）
+      </section>
+      <section class="layer layer--2">
+        内部再进行z-index排序，不会影响外层.layer的排序（layer--1的内容永远会被layer--2层遮盖）
+      </section>
+    </main>
+    ```
+
+    ```scss
+    .main {
+      position: relative;
+      /* 高、宽 */
+    }
+    .layer {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+
+      pointer-events: none;     /* 父级容器鼠标事件穿透 */
+
+      > * {
+        pointer-events: auto;   /* 子级恢复 */
+      }
+
+      &.layer--1 {
+        z-index: 1;
+      }
+      &.layer--2 {
+        z-index: 2;
+      }
+    }
+    ```
 
 ### 几个类似的换行属性
 1. 单词内断字
@@ -1470,3 +1510,6 @@
     1. 加透明背景：`background: rgba(0, 0, 0, .002)`（小于`0.002`的透明度无效）。
     2. 加1x1像素的透明图：`background: url(1x1像素透明图地址) repeat;`。
 20. CSS的`content`不要放业务逻辑耦合的内容（如：`楼主`等业务逻辑词汇），可以放固定不变的交互逻辑的内容（如：`：`、`展开/收起`）。
+21. `border`分为上、右、下、左，每一块区域的`border-width`不为`0`时都是梯形（`width`或`height`为`0`时为三角形），`border-width`决定梯形（或三角形）的高。
+
+    某些边设为`border-width`不为`0`、`border-right-color`为`transparent`可以制造一些形状。
