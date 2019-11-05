@@ -19,13 +19,13 @@
     1. [WAP端相关](#wap端相关)
 1. [编程技巧](#编程技巧)
 
-    1. [函数模板](#函数模板)
     1. [JS代码风格规范（coding style guide）](#js代码风格规范coding-style-guide)
     1. [编程实践（programming practices）](#编程实践programming-practices)
     1. [函数防抖、函数节流](#函数防抖函数节流)
     1. [自执行匿名函数（拉姆达，λ，lambda）](#自执行匿名函数拉姆达λlambda)
     1. [Hybrid App相关](#hybrid-app相关)
     1. [Tips](#tips)
+    1. [函数模板](#函数模板)
 1. [功能归纳](#功能归纳)
 
     1. [判断数据类型](#判断数据类型)
@@ -35,22 +35,21 @@
     1. [预加载](#预加载)
     1. [循环遍历](#循环遍历)
     1. [判断对象、方法是否定义](#判断对象方法是否定义)
-    1. [javascript伪协议](#javascript伪协议)
+    1. [浏览器缓存](#浏览器缓存)
+    1. [JS压缩细节](#js压缩细节)
 1. [性能原理](#性能原理)
 
-    1. [JS的预编译](#js的预编译)
     1. [函数](#函数)
     1. [闭包（closure）](#闭包closure)
     1. [原型](#原型)
     1. [继承](#继承)
     1. [内存机制](#内存机制)
-    1. [深复制（拷贝）实现思路](#深复制拷贝实现思路)
     1. [内存泄漏](#内存泄漏)
+    1. [深复制（拷贝）实现思路](#深复制拷贝实现思路)
     1. [数据类型转换](#数据类型转换)
     1. [`||`和`&&`](#和)
     1. [事件循环（event loop）](#事件循环event-loop)
     1. [定时器 && 重绘函数](#定时器--重绘函数)
-    1. [数组的空位（hole）](#数组的空位hole)
 
 ><details>
 ><summary>约定</summary>
@@ -933,135 +932,10 @@
 ---
 ## 编程技巧
 
-### 函数模板
-1. 构造函数
-
-    1. 普通版：
-
-        ```javascript
-        var OneConstructor = function () {
-            /* 私有的内容 */
-            var _para = {a: '私有的变量_para'},
-                _func = function () {
-                    console.log('私有的业务逻辑_func', _para);
-                },
-                _bindEvent = function () {  /* 绑定事件 */
-
-                },
-                _init = function () {   /* 初始化 */
-                    _func();
-                    _bindEvent();
-                };
-
-            _init();
-
-            for (var _arr = [], _i = 0; _i < arguments.length; _i++) {
-                _arr.push(arguments[_i]);
-            }
-
-            /* 公开的内容 */
-            this.para = _arr;
-            this.para_1 = {b: '公开的变量para_1（每个实例不共享）'};
-            this.func_1 = function () {
-                console.log('公开的业务逻辑func_1（每个实例不共享）');
-            };
-        };
-        ```
-    2. 修改构造函数的原型对象（所有实例都共享）：
-
-        ```javascript
-        var OneConstructor = (function () {
-            /* 私有的内容 */
-            var _para = {a: '私有的变量_para'},
-                _func = function () {
-                    console.log('私有的业务逻辑_func', _para);
-                },
-                _bindEvent = function () {  /* 绑定事件 */
-
-                },
-                _init = function () {   /* 初始化 */
-                    _func();
-                    _bindEvent();
-                };
-
-            function Constructor() {
-                _init();
-
-                for (var _arr = [], _i = 0; _i < arguments.length; _i++) {
-                    _arr.push(arguments[_i]);
-                }
-
-                /* 公开的内容 */
-                this.para = _arr;
-                this.para_1 = {b: '公开的变量para_1（每个实例不共享）'};
-                this.func_1 = function () {
-                    console.log('公开的业务逻辑func_1（每个实例不共享）');
-                };
-            }
-
-            /* 构造函数的原型对象上，每个实例共享 */
-            Constructor.prototype = {
-                para_2: {c: '公开的变量para_2（每个实例共享）'},
-                func_2: function () {
-                    console.log('公开的业务逻辑func_2（每个实例共享）');
-                }
-            };
-
-            /* 原型对象添加constructor属性 */
-            if (typeof Object.defineProperty === 'function') {
-
-                /* 使属性：不可以改变描述符、不可以删除、不可以枚举、不可以被赋值运算符改变 */
-                Object.defineProperty(Constructor.prototype, 'constructor', {
-                    value: Constructor
-                });
-            } else {
-                Constructor.prototype.constructor = Constructor;
-            }
-
-            return Constructor;
-        }());
-        ```
-2. 模块模式（单例模式+私有变量和特权方法）
-
-    ```javascript
-    var singletonObj = (function () {
-        /* 私有变量和私有方法，无法直接访问，只能由return的对象字面量访问 */
-        var _para = {a: '私有变量'},
-            _func = function () {
-                console.log('私有方法');
-            };
-
-        /* 单例模式，可以访问私有内容 */
-        return {
-            get: function () {  /* 特权方法 */
-                _func();
-
-                return _para;
-            },
-            set: function (para) {  /* 特权方法 */
-                _func();
-
-                _para = para;
-            },
-            para: {b: '公开对象'},
-            func: function () {
-                console.log('公开方法');
-            }
-        }
-    }());
-    ```
-    >单例模式：
-    >```javascript
-    >var singletonObj = {
-    >   para: {},
-    >   func: function () {}
-    >};
-    >```
-
 ### JS代码风格规范（coding style guide）
 1. 声明
 
-    >因为[JS的预编译](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#js的预编译)。
+    >因为[JS的预编译](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#js的预编译)。
 
     1. 变量声明（`var`）
 
@@ -1404,7 +1278,9 @@
 
         >（Value below was evaluated just now.）`console`引用类型的数据，在点击开来查看的瞬间才去取引用类型的快照（意味着可以console之后再修改展示内容），打开之后不再关联。
     2. PC端的DevTool：Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）
-    3. WAP端使用页面模拟调试，如：[eruda](https://github.com/liriliri/eruda)、[vConsole](https://github.com/Tencent/vConsole)
+    3. WAP端调试推荐使用：Chrome的Remote devices调试（chrome://inspect/#devices）。
+
+        也可以使用页面模拟调试，如：[eruda](https://github.com/liriliri/eruda)、[vConsole](https://github.com/Tencent/vConsole)。
     4. 上线的页面中藏着某些“后门”调试（如：隐蔽操作开启`console`）
 
         1. PC端可以在URL中判断某些特定的`search`值，以开启调试模式。
@@ -2046,6 +1922,140 @@
       window.a = _a
     })()
     ```
+20. 兼容特殊浏览器、PC与WAP加载不同资源的方案
+
+    1. 不同页面URL入口。
+    2. 引入资源前，根据UA判断是否加载特殊资源。
+
+        >1. 引入资源：[同步/异步加载资源](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js动态添加脚本样式)
+        >2. UA判断：[判断所在系统](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断所在系统)、[判断移动平台](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断移动平台)、[判断ie所有版本](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断ie所有版本)
+    3. 把特殊资源打包进总体代码，再根据UA判断引入。
+    4. 服务端根据HTTP请求的UA判断输出不同页面加载不同资源（BFF层）。
+
+### 函数模板
+1. 构造函数
+
+    1. 普通版：
+
+        ```javascript
+        var OneConstructor = function () {
+            /* 私有的内容 */
+            var _para = {a: '私有的变量_para'},
+                _func = function () {
+                    console.log('私有的业务逻辑_func', _para);
+                },
+                _bindEvent = function () {  /* 绑定事件 */
+
+                },
+                _init = function () {   /* 初始化 */
+                    _func();
+                    _bindEvent();
+                };
+
+            _init();
+
+            for (var _arr = [], _i = 0; _i < arguments.length; _i++) {
+                _arr.push(arguments[_i]);
+            }
+
+            /* 公开的内容 */
+            this.para = _arr;
+            this.para_1 = {b: '公开的变量para_1（每个实例不共享）'};
+            this.func_1 = function () {
+                console.log('公开的业务逻辑func_1（每个实例不共享）');
+            };
+        };
+        ```
+    2. 修改构造函数的原型对象（所有实例都共享）：
+
+        ```javascript
+        var OneConstructor = (function () {
+            /* 私有的内容 */
+            var _para = {a: '私有的变量_para'},
+                _func = function () {
+                    console.log('私有的业务逻辑_func', _para);
+                },
+                _bindEvent = function () {  /* 绑定事件 */
+
+                },
+                _init = function () {   /* 初始化 */
+                    _func();
+                    _bindEvent();
+                };
+
+            function Constructor() {
+                _init();
+
+                for (var _arr = [], _i = 0; _i < arguments.length; _i++) {
+                    _arr.push(arguments[_i]);
+                }
+
+                /* 公开的内容 */
+                this.para = _arr;
+                this.para_1 = {b: '公开的变量para_1（每个实例不共享）'};
+                this.func_1 = function () {
+                    console.log('公开的业务逻辑func_1（每个实例不共享）');
+                };
+            }
+
+            /* 构造函数的原型对象上，每个实例共享 */
+            Constructor.prototype = {
+                para_2: {c: '公开的变量para_2（每个实例共享）'},
+                func_2: function () {
+                    console.log('公开的业务逻辑func_2（每个实例共享）');
+                }
+            };
+
+            /* 原型对象添加constructor属性 */
+            if (typeof Object.defineProperty === 'function') {
+
+                /* 使属性：不可以改变描述符、不可以删除、不可以枚举、不可以被赋值运算符改变 */
+                Object.defineProperty(Constructor.prototype, 'constructor', {
+                    value: Constructor
+                });
+            } else {
+                Constructor.prototype.constructor = Constructor;
+            }
+
+            return Constructor;
+        }());
+        ```
+2. 模块模式（单例模式+私有变量和特权方法）
+
+    ```javascript
+    var singletonObj = (function () {
+        /* 私有变量和私有方法，无法直接访问，只能由return的对象字面量访问 */
+        var _para = {a: '私有变量'},
+            _func = function () {
+                console.log('私有方法');
+            };
+
+        /* 单例模式，可以访问私有内容 */
+        return {
+            get: function () {  /* 特权方法 */
+                _func();
+
+                return _para;
+            },
+            set: function (para) {  /* 特权方法 */
+                _func();
+
+                _para = para;
+            },
+            para: {b: '公开对象'},
+            func: function () {
+                console.log('公开方法');
+            }
+        }
+    }());
+    ```
+    >单例模式：
+    >```javascript
+    >var singletonObj = {
+    >   para: {},
+    >   func: function () {}
+    >};
+    >```
 
 ---
 ## 功能归纳
@@ -2679,80 +2689,99 @@
     }
     ```
 
-### javascript伪协议
->伪协议（自定义协议）：操作系统提供支持的、为关联应用程序而使用的、在标准协议（`http`、`https`、`ftp`等）之外的，一种协议（`mailto`、`tel`、`file`、`data`、`自定义URL Scheme`等）。
+### 浏览器缓存
+1. [HTTP定义的缓存机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)
+2. 其他缓存机制（不建议）
 
-1. 由JS解释器运行，若最后一个执行结果（`;`分割执行语句）是`String`类型，则返回给当前页面替换原页面内容（允许任何HTML标签）
-2. 所有直接修改URL的地方都可使用，如：`<a>`、`<iframe>`、`<img>`的`src`属性，`window.location.href`，`window.open`
-3. 为了JS与HTML解耦合，尽量不要使用其进行JS逻辑
+    1. HTML的`<meta>`设置缓存情况：
+
+        e.g. 设置不缓存：
+
+        ```html
+        <meta http-equiv="pragma" content="no-cache">
+        <meta http-equiv="cache-control" content="no-cache">
+        <meta http-equiv="expires" content="0">
+        ```
+    2. `<html>`的`manifest`应用程序缓存：
+
+        ```html
+        <html manifest=".manifest文件/.appcache文件">
+        ```
+
+### JS压缩细节
+>来自：[Javascript代码压缩细节](http://div.io/topic/447)。
+
+试着生成新的代码，对比后输出最短的内容。
+
+1. 去除注释、多余的分隔符与空白符，标识符简写。
+2. 压缩表达式
+
+    1. 表达式预计算
+
+        将可预先计算的表达式替换成其计算结果，并比较原来表达式与生成后的结果的大小，取短的。
+    2. 优化`true/false`
+
+        1. `true`
+
+            1. 在`==/!=`运算 -> `1`
+            2. 其他运算 -> `!0`
+        2. `false`
+
+            1. 在`==/!=`运算 -> `0`
+            2. 其他运算 -> `!1`
+    3. 优化`&&/||`
+
+        1. `true && 表达式` -> `表达式`
+        2. `false && 表达式` -> `!1`
+        3. `true || 表达式` -> `!0`
+        4. `false || 表达式` -> `表达式`
+3. 缩短运算符
+
+    1. `===/!==`的两个操作数都是`String`类型或都是`Boolean`类型的，缩短成`==/!=`。
+    2. 缩短赋值表达式
+
+        对于类似`a = a + b`这样的赋值表达式（`+` `-` `*` `/` `%` `>>` `<<` `>>>` `|` `&` `^`），可以缩短成`a += b`。
+    3. `!`操作符的压缩
+
+        对于`!(a>=b)`，若转换后`a<b`得到更短的代码，则转换。
+4. 去除没用的声明
+
+    1. 去除重复的指示性字符串，如：`"use strict"`。
+    2. 去除没有使用的函数参数。
+    3. 去除函数表达式的函数名（若未引用）。
+    4. 去除没用的块语句。
+    5. 去除没有使用的`break`。
+    6. 去除没有引用的`label`。
+5. 压缩`while`
+
+    1. 去除根本不会执行的`while`（`while(false){}`）。
+    5. `while(true){}` -> `for(;;){}`
+6. `条件判断 ? 表达式1 : 表达式2`
+
+    1. 若`条件判断`有`!`，则去除`!`且调换表达式前后位置。
+    2. 若`条件判断`为常数，则直接缩短为某一个表达式。
+7. 压缩语句块
+
+    1. 连续的表达式语句合并成一个逗号表达式`,`。
+    2. 多个`var`声明可以压缩成一个`var`声明。
+    3. `return`之后的非变量声明、非函数声明可以去除。
+    4. 合并块末尾的`return`语句及其前边的多条表达式语句。
+8. 优化`if`
+
+    1. 去除没用的、空的`if/else`分支
+    2. 尝试反转`if/else`分支，看看生成代码是否更短。
+    3. 若`if`块里边仅有一个`if`语句，且`else`块为空，则可以合并这两个`if`。
+    4. 若`if`最后一个语句是跳出控制语句，则可以把`else`块的内容提到`else`外边，然后去掉`else`。
+    5. 若`if/else`里各仅有一条`return`语句，则可以合并这两句`return`。
+    6. 若`if/else`里各仅有一条语句，则可以转换为三元运算符表达式。
+    7. 若`if/else`其中一个块为空，另一个块仅有一条语句，则可以转化成`||/&&`表达式。
+
+>[移动时代的前端加密](http://div.io/topic/1220)。
 
 ---
 ## 性能原理
 
-### JS的预编译
->参考：[JavaScript - 预编译](http://www.jianshu.com/p/a91cddc5c705)。
-
-1. JS是一门脚本语言，不经过~~编译~~而直接运行，但运行前先进行预编译。
-2. JS的预编译是以代码块`<script></script>`为范围，即每遇到一个代码块都会进行：**预编译 -> 执行**。
-3. 预编译：在内存中开辟一块空间，用来存放**变量**和**函数**。
-
-    为使用`var`声明的变量、使用`function`声明的函数在内存中开辟一块空间，用来存放两者声明（不会赋值，所有变量的值都是`undefined`、函数内容会被预编译）；
-
-    >`const/let`不允许同名声明。
-
-    - 在预编译时，`function`的优先级比`var`高：
-
-        1. 在预编译阶段，同时声明同一名称的函数和变量（顺序不限），会被声明为函数。
-        2. 在执行阶段，若变量有赋值，则这个名称会重新赋值给变量。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```javascript
-        >// 预编译阶段a1/b2为函数，运行时a1/b2赋值成为变量
-        >console.log(a1);        // => ƒ a1() {}
-        >var a1 = 1;
-        >function a1() {}
-        >console.log(a1);        // => 1
-        >
-        >console.log(b2);        // => ƒ b2() {}
-        >function b2() {}
-        >var b2 = 1;
-        >console.log(b2);        // => 1
-        >
-        >
-        >// 预编译阶段c3/d4为函数，运行时没有赋值
-        >console.log(c3);        // => ƒ c3() {}
-        >var c3;
-        >function c3() {}
-        >console.log(c3);        // => ƒ c3() {}
-        >
-        >console.log(d4);        // => ƒ c4() {}
-        >function d4() {}
-        >var d4;
-        >console.log(d4);        // => ƒ c4() {}
-        >
-        >
-        >// 预编译阶段e5为变量，运行时被赋值给匿名函数
-        >console.log(e5);        // => undefined
-        >var e5 = function () {};
-        >console.log(e5);        // => ƒ () {}（匿名函数）
-        >```
-        ></details>
-4. 变量赋值是在JS执行阶段（运行时）进行的。
-
 ### 函数
-- 作用域
-
-    1. ES5
-
-        函数是唯一拥有自身作用域的结构（若`function`或ES6的`箭头函数`出现，则在父级作用域中新增一个子级作用域。父级不能访问子级作用域，子级能完全使用父级作用域）。
-
-        `全局作用域 -> 父级function作用域 -> 子级function作用域`
-    2. ES6
-
-        在ES5的基础上，增加块级作用域概念（[`let`、`const`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#letconst)）。
-
 1. 每个函数都是一个`Function`对象，像普通对象一样拥有**属性**和**方法**。
 
     1. 函数拥有
@@ -2858,7 +2887,64 @@
     >console.log(new Foo2() instanceof Foo2) // => false
     >```
     ></details>
-6. 函数调用类型
+6. 变量作用域
+
+    1. ES5
+
+        函数是唯一拥有自身作用域的结构（若`function`或ES6的`箭头函数`出现，则在父级作用域中新增一个子级作用域。父级不能访问子级作用域，子级能完全使用父级作用域）。
+
+        `全局作用域 -> 父级function作用域 -> 子级function作用域`
+    2. ES6
+
+        在ES5的基础上，增加块级作用域概念（[`let`、`const`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#letconst)）。
+7. <a name="函数-参数"></a>参数
+
+    1. 参数变量在函数体内是默认声明的（传递进函数体），所以不能在函数体内用`let`或`const`再次声明同名参数（`var`可以）。
+    2. 使用**参数默认值**时的特殊情况：
+
+        1. 调用函数时，根据传参为`undefined`或不传，才进行参数默认值的表达式值计算（惰性求值），默认值是运行时执行而不是~~定义时执行~~（若默认值是调用其他函数，则当且仅当传参为`undefined`或不传参时才执行其他函数）。
+        2. 调用函数时，所有参数会形成一个单独作用域（context）进行初始化，初始化结束则作用域消失。此作用域中的参数进行类似`let`定义，因此函数不能有同名参数。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```javascript
+            >function f1(y1 = x1) {     // 形成短暂的单独作用域，x1没有定义，向父级作用域取值，取不到则报错
+            >  let x1 = 'x1'
+            >  console.log(y1)
+            >}
+            >f1()                       // => ReferenceError: x1 is not defined
+            >
+            >
+            >let x2 = 'outer x2'
+            >function f2(y2 = x2) {     // 形成短暂的单独作用域，x2没有定义，向父级作用域取值
+            >  let x2 = 'x2'
+            >  console.log(y2)
+            >}
+            >f2()                       // => 'outer x2'
+            >
+            >
+            >let x3 = 'outer x3'
+            >function f3(x3, y3 = x3) { // 形成短暂的单独作用域，x3是传参定义的值，不向父级作用域取值
+            >  console.log(y3)
+            >}
+            >f3()                       // => undefined
+            >f3(3)                      // => 3
+            >
+            >
+            >let x4 = 'outer x4'
+            >function f4(x4 = x4) {     // 形成短暂的单独作用域，实际执行类似let x = x，暂时性死区导致报错
+            >
+            >}
+            >f4()                       // => ReferenceError: x is not defined
+            >```
+            >></details>
+        3. 不能~~在参数默认值中调用函数体内的方法~~（参数默认值总是被首先执行，而函数体内的函数声明之后生效）。
+    3. 建议参数都用对象形式传递，且形参设置为解构赋值+默认参数。
+
+        >e.g. `function func ({ para1 = 'default', para2 } = {}) {}`
+    4. 参数的数量有限制，如：有些JS引擎限制在`Math.pow(2, 16)`。
+8. 函数调用类型
 
     1. 直接函数调用（如：`alert();`）、立即调用的函数表达式（如：`(function () {}());`）
 
@@ -2875,7 +2961,7 @@
 
     - 总结：
 
-        1. `this`：调用函数的那个对象（与在什么作用域无关）。
+        1. `this`：调用函数的那个对象（与在什么作用域无关）；`this`的值：在函数被调用的时候才会指定。
 
             <details>
             <summary>e.g.</summary>
@@ -2937,7 +3023,7 @@
             obj2.func.call(obj4);   // => 4|global|global
             ```
             </details>
-        2. 无论函数赋值给任何变量或属性，执行函数时，其内部变量的作用域始终不变（闭包）。
+        2. `变量`的作用域和值：和调用函数的位置和时机无关（函数赋值给任何变量或属性也不改变变量的取值），由变量处在哪一个函数作用域（或块级作用域）唯一决定（考虑闭包）。
 
             <details>
             <summary>e.g.</summary>
@@ -2988,53 +3074,6 @@
         >    a.b.call({})    // 报错
         >    a.b.call(null)  // 正常
         >    ```
-7. <a name="函数-参数"></a>参数
-
-    1. 参数变量在函数体内是默认声明的（传递进函数体），所以不能在函数体内用`let`或`const`再次声明同名参数（`var`可以）。
-    2. 使用**参数默认值**时的特殊情况：
-
-        1. 调用函数时，根据传参为`undefined`或不传，才进行参数默认值的表达式值计算（惰性求值），默认值是运行时执行而不是~~定义时执行~~（若默认值是调用其他函数，则当且仅当传参为`undefined`或不传参时才执行其他函数）。
-        2. 调用函数时，所有参数会形成一个单独作用域（context）进行初始化，初始化结束则作用域消失。此作用域中的参数进行类似`let`定义，因此函数不能有同名参数。
-
-            ><details>
-            ><summary>e.g.</summary>
-            >
-            >```javascript
-            >function f1(y1 = x1) {     // 形成短暂的单独作用域，x1没有定义，向父级作用域取值，取不到则报错
-            >  let x1 = 'x1'
-            >  console.log(y1)
-            >}
-            >f1()                       // => ReferenceError: x1 is not defined
-            >
-            >
-            >let x2 = 'outer x2'
-            >function f2(y2 = x2) {     // 形成短暂的单独作用域，x2没有定义，向父级作用域取值
-            >  let x2 = 'x2'
-            >  console.log(y2)
-            >}
-            >f2()                       // => 'outer x2'
-            >
-            >
-            >let x3 = 'outer x3'
-            >function f3(x3, y3 = x3) { // 形成短暂的单独作用域，x3是传参定义的值，不向父级作用域取值
-            >  console.log(y3)
-            >}
-            >f3()                       // => undefined
-            >f3(3)                      // => 3
-            >
-            >
-            >let x4 = 'outer x4'
-            >function f4(x4 = x4) {     // 形成短暂的单独作用域，实际执行类似let x = x，暂时性死区导致报错
-            >
-            >}
-            >f4()                       // => ReferenceError: x is not defined
-            >```
-            >></details>
-        3. 不能~~在参数默认值中调用函数体内的方法~~（参数默认值总是被首先执行，而函数体内的函数声明之后生效）。
-    3. 建议参数都用对象形式传递，且形参设置为解构赋值+默认参数。
-
-        >e.g. `function func ({ para1 = 'default', para2 } = {}) {}`
-    4. 参数的数量有限制，如：有些JS引擎限制在`Math.pow(2, 16)`。
 
 ### 闭包（closure）
 1. 当函数体内定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数执行完毕（寿命终结）之后。
@@ -3229,7 +3268,7 @@
         ></details>
 
 ### 内存机制
-1. JS自动完成内存分配、[回收](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#垃圾回收)。
+1. JS自动完成内存分配、[回收](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#垃圾回收)。
 2. [变量](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#js数据类型)在内存中的存储
 
     1. 栈内存（stack）：
@@ -3328,18 +3367,6 @@
         2. 修改堆内存中的{'key': 'test1'}为{'key': 'test2'}。
     </details>
 
-### 深复制（拷贝）实现思路
->参考：[深入剖析JavaScript的深复制](http://jerryzou.com/posts/dive-into-deep-clone-in-javascript/)。
-
-1. [递归赋值](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)（最全面方式）
-
-    >深复制要处理的坑：循环引用、各种引用数据类型。
-2. 针对**仅能够被json直接表示的数据结构（对象、数组、数值、字符串、布尔值、null）**：
-
-    `JSON.parse(JSON.stringify(obj));`
-
->不考虑原型链。
-
 ### 内存泄漏
 > 内存泄露：计算机内存逐渐丢失。当某个程序总是无法释放内存时，出现内存泄露。
 
@@ -3376,6 +3403,18 @@
     </details>
 
 >随着JS引擎的更新，原来会导致内存泄漏的bug已经慢慢被修复，因此写代码时不太需要注意内存泄漏问题（误）。
+
+### 深复制（拷贝）实现思路
+>参考：[深入剖析JavaScript的深复制](http://jerryzou.com/posts/dive-into-deep-clone-in-javascript/)。
+
+1. [递归赋值](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)（最全面方式）
+
+    >深复制要处理的坑：循环引用、各种引用数据类型。
+2. 针对**仅能够被json直接表示的数据结构（对象、数组、数值、字符串、布尔值、null）**：
+
+    `JSON.parse(JSON.stringify(obj));`
+
+>不考虑原型链。
 
 ### 数据类型转换
 >参考：[阮一峰：数据类型转换](http://javascript.ruanyifeng.com/grammar/conversion.html)、[ecma-262等于比较](https://www.ecma-international.org/ecma-262/#sec-abstract-equality-comparison)。
@@ -3741,34 +3780,3 @@
 
     >1. 只有当前帧的运行时间小于16.66ms时，回调函数才会执行。否则，就推迟到下一帧，若下一帧也没有空闲时间，则推迟到下下一帧，以此类推。
     >2. 第二个参数表示指定的毫秒数。若在指定的这段时间之内，每一帧都没有空闲时间，那么回调函数将会强制执行。
-
-### 数组的空位（hole）
->来自：[阮一峰：数组的空位](http://javascript.ruanyifeng.com/grammar/array.html#toc6)、[阮一峰：数组的空位（ES6）](http://es6.ruanyifeng.com/#docs/array#数组的空位)。
-
-1. 数组的空位：数组的某一个位置没有任何值
-
-    1. 空位是可以读取的，返回`undefined`。
-    2. 空位不是~~undefined~~，空位没有任何值。一个位置的值等于`undefined`，依然有值。
-    3. 使用`delete`删除一个数组成员，会形成空位，并且不会影响`length`属性。
-    4. 给一个数组的`length`属性赋予大于其长度的值，新创建的项都是空位。
-
-    <details>
-    <summary>e.g.</summary>
-
-    ```javascript
-    [, , ,][0];                             // => undefined
-    0 in [undefined, undefined, undefined]; // => true
-    0 in Array.apply(null, new Array(3));   // => true（密集数组：没有空位的数组）
-    0 in new Array(3);                      // => false（稀疏数组：有空位的数组）
-    0 in [, , ,];                           // => false
-    ```
-    </details>
-
-    >1. `new Array(数量)`（或`Array(数量)`）返回的是有空位的稀疏数组。
-    >2. `Array.apply(null, new Array(数量));`返回的是没有空位的密集数组。
-    >3. 若数组最后一个元素后面有逗号，并不会产生空位，而是忽略这个逗号：`[1, ].length === 1`。
-3. ES5大多数情况下会忽略空位：
-
-    1. `forEach`、`filter`、`every`、`some`、`find`、`findIndex`、`reduce`、`reduceRight`等遍历方法的回调函数会跳过空位；`map`的回调函数会跳过空位，但返回值保留空位。
-    2. `join`、`toString`将`空位`、`undefined`、`null`处理成空字符串`''`。
-4. ES6明确将空位转为`undefined`。

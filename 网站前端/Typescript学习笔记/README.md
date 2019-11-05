@@ -234,7 +234,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >}
         >
         >// 默认参数
-        >function sum2 (x: number, y: number = 1): string {
+        >function sum2 (x: number = 1, y: number = 2): string { // 参数要使用默认参数：不传 或 传`undefined`
         >  return x + y + ''
         >}
         >

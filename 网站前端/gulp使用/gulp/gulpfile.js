@@ -16,7 +16,7 @@ const makeUrlVer = require('gulp-make-css-url-version') // css添加时间戳
 const sass = require('gulp-sass') // 编译Sass
 const spritesmith = require('gulp.spritesmith') // 生成雪碧图&样式表
 const fontmin = require('gulp-fontmin') // 字体子集化
-const uglify = require('gulp-uglify') // js压缩
+const terser = require('gulp-terser') // js压缩
 const babel = require('gulp-babel') // 转换编译
 const eslint = require('gulp-eslint') // babel环境预设
 const htmlmin = require('gulp-htmlmin') // html压缩
@@ -25,7 +25,7 @@ const del = require('del') // 删除文件（夹）
 
 /* 图片压缩 */
 gulp.task('runImage', () => {
-  gulp.src(['./images/dev/**'])
+  return gulp.src(['./images/dev/**'])
     .pipe(
       imagemin([
         gifsicle({ optimizationLevel: 3 }),
@@ -39,7 +39,7 @@ gulp.task('runImage', () => {
 
 /* css：[合并]、压缩、添加厂商前缀、重命名、添加timestamp、source map */
 gulp.task('runCss', () => {
-  gulp.src(['./css/dev/**/*.css'])
+  return gulp.src(['./css/dev/**/*.css'])
     .pipe(sourcemaps.init())
     // .pipe(concat('all.css'))
     .pipe(cssnano({
@@ -63,7 +63,7 @@ gulp.task('runCss', () => {
 
 /* Sass：转译压缩css、添加厂商前缀、添加timestamp、source map */
 gulp.task('runScss', () => {
-  gulp.src(['./scss/dev/**/*.scss'])
+  return gulp.src(['./scss/dev/**/*.scss'])
     .pipe(sourcemaps.init())
     .pipe(
       sass({
@@ -83,45 +83,48 @@ gulp.task('runScss', () => {
  * 对结尾带有“no”的注释，不进行转换
  */
 gulp.task('runPx2rem', () => {
-  gulp.src(['./px2rem/dev/**/*.css'])
-    .pipe(postcss([px2rem({
-      remUnit: 20, // px -> rem除以的数
-      baseDpr: 1, // /*px*/转换前值的DPR
-      remPrecision: 6 // 小数精确位数
-    })]))
+  return gulp.src(['./px2rem/dev/**/*.css'])
+    .pipe(postcss([
+      px2rem({
+        remUnit: 20, // px -> rem除以的数
+        baseDpr: 1, // /*px*/转换前值的DPR
+        remPrecision: 6 // 小数精确位数
+      })
+    ]))
     .pipe(gulp.dest('./px2rem/release/'))
 })
 
 /* 多图 -> 雪碧图 + 样式表 */
-gulp.task('runSprites', () => {
-  /* PC端 */
-  gulp.src('./sprites/dev/*')
-    .pipe(spritesmith({
-      padding: 2, // 合并图间距
-      algorithm: 'top-down', // 排列方式 ['binary-tree' | 'top-down' | 'left-right' | 'diagonal' | 'alt-diagonal']
-      imgName: 'sprites.png', // 输出合并后图片
-      cssTemplate: 'pc.handlebars', // 渲染输出css的模板文件
-      cssName: 'sprites_pc.css' // 输出合并后样式（后缀为[.css | .sass | .scss | .less | .styl/.stylus | .json]）
-    }))
-    .pipe(gulp.dest('./sprites/release/'))
-
-  /* WAP端（rem+%） */
-  gulp.src('./sprites/dev/*')
-    .pipe(spritesmith({
-      padding: 2,
-      algorithm: 'top-down',
-      imgName: 'sprites.png',
-      cssTemplate: 'wap.handlebars',
-      cssName: 'sprites_wap.scss'
-    }))
-    .pipe(gulp.dest('./sprites/release/'))
-})
+gulp.task('runSprites', gulp.parallel(
+  function runSpritesPC () {  /* PC端 */
+    return gulp.src('./sprites/dev/*')
+      .pipe(spritesmith({
+        padding: 2, // 合并图间距
+        algorithm: 'top-down', // 排列方式 ['binary-tree' | 'top-down' | 'left-right' | 'diagonal' | 'alt-diagonal']
+        imgName: 'sprites.png', // 输出合并后图片
+        cssTemplate: 'pc.handlebars', // 渲染输出css的模板文件
+        cssName: 'sprites_pc.css' // 输出合并后样式（后缀为[.css | .sass | .scss | .less | .styl/.stylus | .json]）
+      }))
+      .pipe(gulp.dest('./sprites/release/'))
+  },
+  function runSpritesWAP () {  /* WAP端（rem+%） */
+    return gulp.src('./sprites/dev/*')
+      .pipe(spritesmith({
+        padding: 2,
+        algorithm: 'top-down',
+        imgName: 'sprites.png',
+        cssTemplate: 'wap.handlebars',
+        cssName: 'sprites_wap.scss'
+      }))
+      .pipe(gulp.dest('./sprites/release/'))
+  }
+))
 
 /* ttf -> 多个兼容字体 + 样式表 */
 gulp.task('runFont', cb => {
   const buffers = []
 
-  gulp.src(['./font/dev/*.html']) /* 传入需要提取字体的页面，没有页面则所有字 */
+  return gulp.src(['./font/dev/*.html']) /* 传入需要提取字体的页面，没有页面则所有字 */
     .on('data', file => {
       buffers.push(file.contents)
     })
@@ -136,13 +139,10 @@ gulp.task('runFont', cb => {
 
 /* js：[合并]、压缩、重命名、source map */
 gulp.task('runJs', () => {
-  gulp.src(['./js/dev/**/*.js'])
+  return gulp.src(['./js/dev/**/*.js'])
     .pipe(sourcemaps.init())
     // .pipe(concat('all.js'))
-    .pipe(uglify({
-      mangle: true, // 混淆变量名
-      ie8: false // 支持IE8
-    }))
+    .pipe(terser())
     .pipe(rename({
       // dirname: 'js/rename',  // 路径
       // basename: 'file',  // 原本名字
@@ -156,7 +156,7 @@ gulp.task('runJs', () => {
 
 /* ES6 -> ES5 */
 gulp.task('runBabel', () => {
-  gulp.src(['./babel/dev/**/*.js'])
+  return gulp.src(['./babel/dev/**/*.js'])
     .pipe(sourcemaps.init())
     .pipe(babel())
     // .pipe(concat('all.js'))
@@ -166,7 +166,7 @@ gulp.task('runBabel', () => {
 
 /* ESLint */
 gulp.task('runEslint', () => {
-  gulp.src(['./eslint/dev/**/*.js', './eslint/dev/**/*.html', './eslint/dev/**/*.vue'])
+  return gulp.src(['./eslint/dev/**/*.js', './eslint/dev/**/*.html', './eslint/dev/**/*.vue'])
     .pipe(eslint({
       configFile: './.eslintrc.js',
       fix: true
@@ -180,18 +180,18 @@ gulp.task('runEslint', () => {
 
 /* html：压缩 */
 gulp.task('runHtml', () => {
-  gulp.src(['./html/dev/**/*.html'])
+  return gulp.src(['./html/dev/**/*.html'])
     .pipe(htmlmin({
       collapseWhitespace: true,
       minifyCSS: true,
-      minifyJS: true,
+      minifyJS: true, // uses UglifyJS（仅支持ES5，若JS有ES6内容则不压缩）
       removeComments: true
     }))
     .pipe(gulp.dest('./html/release/'))
 })
 
 /* default */
-gulp.task('default', [
+gulp.task('default', gulp.parallel(
   'runImage',
   'runCss',
   'runScss',
@@ -202,20 +202,20 @@ gulp.task('default', [
   'runBabel',
   'runEslint',
   'runHtml'
-])
+))
 
 /* 监视文件，自动执行（只能针对已经存在的文件修改，在文件夹增加的内容不会触发） */
 gulp.task('watch', () => {
-  gulp.watch(['./images/dev/**'], ['runImage'])
-  gulp.watch(['./css/dev/**/*.css'], ['runCss'])
-  gulp.watch(['./scss/dev/**/*.scss'], ['runScss'])
-  gulp.watch(['./px2rem/dev/**/*.css'], ['runPx2rem'])
-  gulp.watch(['./sprites/dev/**'], ['runSprites'])
-  gulp.watch(['./font/dev/**'], ['runFont'])
-  gulp.watch(['./js/dev/**/*.js'], ['runJs'])
-  gulp.watch(['./babel/dev/**/*.js'], ['runBabel'])
-  gulp.watch(['./eslint/dev/**/*.js', './eslint/dev/**/*.html', './eslint/dev/**/*.vue'], ['runEslint'])
-  gulp.watch(['./html/dev/**/*.html'], ['runHtml'])
+  gulp.watch(['./images/dev/**'], gulp.parallel('runImage'))
+  gulp.watch(['./css/dev/**/*.css'], gulp.parallel('runCss'))
+  gulp.watch(['./scss/dev/**/*.scss'], gulp.parallel('runScss'))
+  gulp.watch(['./px2rem/dev/**/*.css'], gulp.parallel('runPx2rem'))
+  gulp.watch(['./sprites/dev/**'], gulp.parallel('runSprites'))
+  gulp.watch(['./font/dev/**'], gulp.parallel('runFont'))
+  gulp.watch(['./js/dev/**/*.js'], gulp.parallel('runJs'))
+  gulp.watch(['./babel/dev/**/*.js'], gulp.parallel('runBabel'))
+  gulp.watch(['./eslint/dev/**/*.js', './eslint/dev/**/*.html', './eslint/dev/**/*.vue'], gulp.parallel('runEslint'))
+  gulp.watch(['./html/dev/**/*.html'], gulp.parallel('runHtml'))
 })
 
 /* 监听代理服务器 */
@@ -246,7 +246,7 @@ gulp.task('browserSync', () => {
 
 /* 删除文件（夹） */
 gulp.task('delRelease', () => {
-  del([
+  return del([
     './images/release/**/*',
     './css/release/**/*',
     './scss/release/**/*',

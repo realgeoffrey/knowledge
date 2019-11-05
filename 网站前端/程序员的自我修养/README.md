@@ -32,6 +32,7 @@
     1. [树的遍历](#树的遍历)
     1. [抽象语法树（abstract syntax tree，AST）](#抽象语法树abstract-syntax-treeast)
     1. [胶水语言（glue languages）](#胶水语言glue-languages)
+1. [Unicode](#unicode)
 
 ---
 ### 数据结构（data structure）
@@ -632,8 +633,7 @@
         ![JSON的值](./images/json-value.gif)
 
     - 间隔区域可添加任意数量的空白` `
-
-    - 字符集必须是UTF-8
+    - 字符集必须是Unicode的UTF-8
 3. [JS使用JSON](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#json)
 4. JSON的发展
 
@@ -1116,3 +1116,20 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
     8. VBScript
     9. JavaScript
     10. JScript
+
+---
+### Unicode
+Unicode：包含全世界所有字符的一个字符集（计算机只要支持这个字符集，就能显示所有的字符，再也不会有乱码）。从`0`开始，为每个符号指定一个编号，叫做“码点”（code point）。
+
+>Unicode和ASCII都是一种**字符集**；UTF-8是Unicode的一种**编码方式（Encoding Form）**。
+
+1. `\u` + `4位16进制数`
+2. `\u{16进制数}`
+3. `\x` + `2位16进制数`
+4. `\` + `3位8进制数`
+
+>若要求的位数不足，则前面补`0`。
+
+JS内部会自动将Unicode转为字符。
+
+>[字符转换为Unicode](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js转化为unicode反转字符串字符串长度)。
