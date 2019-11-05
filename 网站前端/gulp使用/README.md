@@ -26,3 +26,5 @@
 
     1. [pc.handlebars](gulp/pc.handlebars)
     2. [wap.handlebars](gulp/wap.handlebars)
+
+>When install error occurs, please try cnpm.

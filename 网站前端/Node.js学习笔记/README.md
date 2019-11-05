@@ -149,6 +149,12 @@
 
         > 改变安装包的顺序会影响安装包的内容和依赖。
 
+        - 手动安装npm自己
+
+            1. 在本地Node.js同目录下创建目录`node_modules\npm`；
+            2. 下载并解压<https://github.com/npm/cli/releases>至本地Node.js同目录下的`node_modules\npm`；
+            3. 拷贝`node_modules\npm\bin`下面的`npm`、`npm.cmd`（、`npx`、`npx.cmd`）到本地Node.js同目录下。
+
         1. 安装包
 
             自动选择范围内最后发布的版本，安装到本地或全局的`node_modules`。全局安装会额外创建系统命令。

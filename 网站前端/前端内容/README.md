@@ -3,17 +3,11 @@
 ## 目录
 1. [前端涉及内容](#前端涉及内容)
 1. [前端工程化](#前端工程化)
-1. [页面加载解析步骤](#页面加载解析步骤)
-1. [浏览器缓存](#浏览器缓存)
-1. [前端“增量”原则](#前端增量原则)
 1. [网站性能优化](#网站性能优化)
+1. [页面加载解析步骤](#页面加载解析步骤)
+1. [前端“增量”原则](#前端增量原则)
 1. [静态资源使用额外域名（domain hash）的原因](#静态资源使用额外域名domain-hash的原因)
 1. [安全漏洞攻击](#安全漏洞攻击)
-1. [JS压缩细节](#js压缩细节)
-1. [垃圾回收](#垃圾回收)
-1. [兼容特殊浏览器、PC与WAP加载不同资源的方案](#兼容特殊浏览器pc与wap加载不同资源的方案)
-1. [JavaScript范围](#javascript范围)
-1. [JS模块化方案](#js模块化方案)
 
 ---
 ### 前端涉及内容
@@ -42,7 +36,7 @@
     >提升维护效率。
 
     **分而治之**
-    1. [JS模块化方案](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#js模块化方案)：
+    1. [JS模块化方案](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#js模块化方案)：
 
         CommonJS/AMD/CMD/ES6 Module/UMD
     2. CSS模块化方案：
@@ -74,140 +68,6 @@
             2. 采用文件的数字签名（如：MD5）作为缓存更新依据 —— 精确的缓存控制
             3. 静态资源CDN部署 —— 优化网络请求
             4. 非覆盖式更新资源 —— 平滑升级
-
-### 页面加载解析步骤
-1. DOM构造解析步骤
-
-    >参考：[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)。
-
-    ![页面解析步骤图](./images/load-html-1.png)
-
-    1. 增量式生成一个文档对象模型（DOM），解析页面内容（`document`）。
-
-        1. 加载DOM中所有CSS，生成一个CSS对象模型（CSSOM），描述对页面内容如何设置样式。
-
-            加载CSS并构造完整的CSSOM之前，**阻塞渲染**（Render Tree渲染被暂停）。
-        2. 加载DOM中所有JS，对DOM和CSSOM进行访问和更改。
-
-            1. HTML中出现JS，**阻塞解析**（DOM构造被暂停）。
-            2. 下载外部脚本`src`或内嵌脚本不用下载。
-            3. 等待所有CSS被提取且CSSOM被构造完毕。
-
-                ><details>
-                ><summary>已经被提取的CSS（<code>&lt;link></code>、<code><style></code>、<code>style</code>内嵌样式），若再次修改或删除（或新添加），会再次影响CSSOM构造。</summary>
-                >
-                >以下代码可以实时在页面中编辑样式
-                >```html
-                ><style contenteditable style="display: block">
-                >  a {
-                >    color: red;
-                >  }
-                ></style>
-                >
-                ><a href="javascript:">a标签</a>
-                >```
-                ></details>
-            4. 执行脚本，访问、更改DOM和CSSOM。
-
-                ><details>
-                ><summary>一个<code><script></code>最多执行一次。</summary>
-                >
-                >1. 已经执行过的脚本（`<script>`：外部脚本`src`或内嵌脚本），若再次修改或删除，不会再执行，也不会影响执行过的内容。已经执行过的脚本，若删除外部脚本`src`或删除内嵌脚本，之后再添加外部脚本`src`或添加内嵌脚本，也不会再次执行。
-                >2. 没有执行过内容的空脚本`<script></script>`，若添加外部脚本`src`或添加内嵌脚本，会执行一次。
-                ></details>
-            5. DOM构造继续进行。
-
-            ><details>
-            ><summary><code><script></code>的加载、执行</summary>
-            >
-            >1. 没有`defer`或`async`：立即加载并执行（同步），阻塞解析。
-            >2. `defer`：异步加载，在DOM解析完成后、`DOMContentLoaded`触发前执行，顺序执行。
-            >
-            >    >多个`defer`脚本不一定按照顺序执行，也不一定会在`DOMContentLoaded`事件触发前执行，因此最好只包含一个延迟脚本。
-            >3. `async`：异步加载，加载完马上执行。
-            >
-            >    乱序执行，仅适用于不考虑依赖、不操作DOM的脚本。
-            >
-            >    >动态创建的`<script>`默认是`async`（可以手动设置`dom.async = false`）。
-            >4. 模块化属性（在JS内部`import`的同级资源是并行、依赖资源是串行）：
-            >
-            >    1. `type="module"`：与`defer`相同。
-            >    2. `type="module" async`：与`async`相同。
-            >
-            >![JS脚本加载图](./images/js-load-1.png)
-            >
-            >- 按从上到下顺序解析页面内容，针对`<script>`（包括动态创建和修改`src`）：
-            >
-            >    1. 按文档顺序执行**原本就存在的**没有`defer`或`async`的`<script>`。
-            >    2. （与上面的顺序无关，可交叉进行）按动态添加的时序（与位置无关）执行**动态加载的**没有`defer`或`async`的`<script>`；
-            >    3. 添加`defer`或`async`的`<script>`或修改`<script>`的`src`，（无论是原本就存在的、还是动态加载的）异步加载、不确定顺序执行。
-            ></details>
-    2. DOM（parse HTML）和CSSOM（recalculate style）构造完成后，进行渲染：
-
-        Render Tree（渲染树）：Layout -> Paint -> Composite
-
-        >1. 一定要等待外链资源加载完毕（包括加载失败）才可以继续构建DOM或CSSOM。
-        >2. 只有可见的元素才会进入渲染树。
-        >3. DOM不存在伪元素（CSSOM中才有定义），伪元素存在render tree中。
-
-    >无论阻塞渲染还是阻塞解析，资源文件会不间断按顺序加载。
-2. 事件完成顺序
-
-    1. 解析DOM；
-    2. 执行同步的JS和CSS
-
-        1. 加载外部JS（和CSS）；
-        2. （CSSOM先构造完毕）解析并执行JS；
-    3. 构造DOM完毕（同步的JS会暂停DOM解析，CSSOM的构建会暂停JS执行）；
-
-        完毕后触发：JS的`document.addEventListener('DOMContentLoaded', function(){}, false)` 或 jQuery的`$(document).ready(function(){})`。
-    4. 加载图片、媒体资源等外部文件；
-    5. 资源加载完毕。
-
-        完毕后触发：JS的`window.addEventListener('load', function(){}, false)`。
-
-- 判断JS、CSS文件是否加载完毕：
-
-    1. JS
-
-        1. 监听文件的`load`事件，触发则加载完成。
-        2. 监听JS文件的`readystatechange`事件（大部分浏览器只有`document`能够触发），当文件的`readyState`值为`loaded/complete`则JS加载完成。
-    2. CSS
-
-        1. 监听文件的`load`事件，触发则加载完成。
-        2. 轮询CSS文件的`cssRules`属性是否存在，当存在则CSS加载完成。
-        3. 写一个特殊样式，轮询判断这个样式是否出现，来判断CSS加载完成。
-
-### 浏览器缓存
-1. [HTTP定义的缓存机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)
-2. 其他缓存机制（不建议）
-
-    1. HTML的`<meta>`设置缓存情况：
-
-        e.g. 设置不缓存：
-
-        ```html
-        <meta http-equiv="pragma" content="no-cache">
-        <meta http-equiv="cache-control" content="no-cache">
-        <meta http-equiv="expires" content="0">
-        ```
-    2. `<html>`的`manifest`应用程序缓存：
-
-        ```html
-        <html manifest=".manifest文件/.appcache文件">
-        ```
-
-### 前端“增量”原则
-1. “增量”原则：
-
-    >“增量下载”是前端在工程上有别于客户端GUI软件的根本原因。
-
-    前端应用没有安装过程，其所需程序资源都部署在远程服务器，用户使用浏览器访问不同的页面来加载不同的资源，随着页面访问的增加，渐进式地将整个程序下载到本地运行。
-2. 由“增量”原则引申出的前端优化技巧几乎成为了**性能优化**的核心：
-
-    1. 加载相关：延迟加载、AJAX加载、按需加载、预加载、请求合并压缩等策略。
-    2. 缓存相关：缓存更新、缓存共享、非覆盖式更新资源等方案。
-    3. 复杂的BigRender、BigPipe、Quickling、PageCache等技术。
 
 ### 网站性能优化
 1. 从输入URL到页面完成的具体优化：
@@ -339,6 +199,121 @@
     4. response
 
         100ms内对用户的操作做出响应。
+
+### 页面加载解析步骤
+1. DOM构造解析步骤
+
+    >参考：[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)。
+
+    ![页面解析步骤图](./images/load-html-1.png)
+
+    1. 增量式生成一个文档对象模型（DOM），解析页面内容（`document`）。
+
+        1. 加载DOM中所有CSS，生成一个CSS对象模型（CSSOM），描述对页面内容如何设置样式。
+
+            加载CSS并构造完整的CSSOM之前，**阻塞渲染**（Render Tree渲染被暂停）。
+        2. 加载DOM中所有JS，对DOM和CSSOM进行访问和更改。
+
+            1. HTML中出现JS，**阻塞解析**（DOM构造被暂停）。
+            2. 下载外部脚本`src`或内嵌脚本不用下载。
+            3. 等待所有CSS被提取且CSSOM被构造完毕。
+
+                ><details>
+                ><summary>已经被提取的CSS（<code>&lt;link></code>、<code><style></code>、<code>style</code>内嵌样式），若再次修改或删除（或新添加），会再次影响CSSOM构造。</summary>
+                >
+                >以下代码可以实时在页面中编辑样式
+                >```html
+                ><style contenteditable style="display: block">
+                >  a {
+                >    color: red;
+                >  }
+                ></style>
+                >
+                ><a href="javascript:">a标签</a>
+                >```
+                ></details>
+            4. 执行脚本，访问、更改DOM和CSSOM。
+
+                ><details>
+                ><summary>一个<code><script></code>最多执行一次。</summary>
+                >
+                >1. 已经执行过的脚本（`<script>`：外部脚本`src`或内嵌脚本），若再次修改或删除，不会再执行，也不会影响执行过的内容。已经执行过的脚本，若删除外部脚本`src`或删除内嵌脚本，之后再添加外部脚本`src`或添加内嵌脚本，也不会再次执行。
+                >2. 没有执行过内容的空脚本`<script></script>`，若添加外部脚本`src`或添加内嵌脚本，会执行一次。
+                ></details>
+            5. DOM构造继续进行。
+
+            ><details>
+            ><summary><code><script></code>的加载、执行</summary>
+            >
+            >1. 没有`defer`或`async`：立即加载并执行（同步），阻塞解析。
+            >2. `defer`：异步加载，在DOM解析完成后、`DOMContentLoaded`触发前执行，顺序执行。
+            >
+            >    >多个`defer`脚本不一定按照顺序执行，也不一定会在`DOMContentLoaded`事件触发前执行，因此最好只包含一个延迟脚本。
+            >3. `async`：异步加载，加载完马上执行。
+            >
+            >    乱序执行，仅适用于不考虑依赖、不操作DOM的脚本。
+            >
+            >    >动态创建的`<script>`默认是`async`（可以手动设置`dom.async = false`）。
+            >4. 模块化属性（在JS内部`import`的同级资源是并行、依赖资源是串行）：
+            >
+            >    1. `type="module"`：与`defer`相同。
+            >    2. `type="module" async`：与`async`相同。
+            >
+            >![JS脚本加载图](./images/js-load-1.png)
+            >
+            >- 按从上到下顺序解析页面内容，针对`<script>`（包括动态创建和修改`src`）：
+            >
+            >    1. 按文档顺序执行**原本就存在的**没有`defer`或`async`的`<script>`。
+            >    2. （与上面的顺序无关，可交叉进行）按动态添加的时序（与位置无关）执行**动态加载的**没有`defer`或`async`的`<script>`；
+            >    3. 添加`defer`或`async`的`<script>`或修改`<script>`的`src`，（无论是原本就存在的、还是动态加载的）异步加载、不确定顺序执行。
+            ></details>
+    2. DOM（parse HTML）和CSSOM（recalculate style）构造完成后，进行渲染：
+
+        Render Tree（渲染树）：Layout -> Paint -> Composite
+
+        >1. 一定要等待外链资源加载完毕（包括加载失败）才可以继续构建DOM或CSSOM。
+        >2. 只有可见的元素才会进入渲染树。
+        >3. DOM不存在伪元素（CSSOM中才有定义），伪元素存在render tree中。
+
+    >无论阻塞渲染还是阻塞解析，资源文件会不间断按顺序加载。
+2. 事件完成顺序
+
+    1. 解析DOM；
+    2. 执行同步的JS和CSS
+
+        1. 加载外部JS（和CSS）；
+        2. （CSSOM先构造完毕）解析并执行JS；
+    3. 构造DOM完毕（同步的JS会暂停DOM解析，CSSOM的构建会暂停JS执行）；
+
+        完毕后触发：JS的`document.addEventListener('DOMContentLoaded', function(){}, false)` 或 jQuery的`$(document).ready(function(){})`。
+    4. 加载图片、媒体资源等外部文件；
+    5. 资源加载完毕。
+
+        完毕后触发：JS的`window.addEventListener('load', function(){}, false)`。
+
+- 判断JS、CSS文件是否加载完毕：
+
+    1. JS
+
+        1. 监听文件的`load`事件，触发则加载完成。
+        2. 监听JS文件的`readystatechange`事件（大部分浏览器只有`document`能够触发），当文件的`readyState`值为`loaded/complete`则JS加载完成。
+    2. CSS
+
+        1. 监听文件的`load`事件，触发则加载完成。
+        2. 轮询CSS文件的`cssRules`属性是否存在，当存在则CSS加载完成。
+        3. 写一个特殊样式，轮询判断这个样式是否出现，来判断CSS加载完成。
+
+### 前端“增量”原则
+1. “增量”原则：
+
+    >“增量下载”是前端在工程上有别于客户端GUI软件的根本原因。
+
+    前端应用没有安装过程，其所需程序资源都部署在远程服务器，用户使用浏览器访问不同的页面来加载不同的资源，随着页面访问的增加，渐进式地将整个程序下载到本地运行。
+2. 由“增量”原则引申出的前端优化技巧几乎成为了**性能优化**的核心：
+
+    1. 加载相关：延迟加载、AJAX加载、按需加载、预加载、请求合并压缩等策略。
+    2. 缓存相关：缓存更新、缓存共享、非覆盖式更新资源等方案。
+    3. 复杂的BigRender、BigPipe、Quickling、PageCache等技术。
 
 ### 静态资源使用额外域名（domain hash）的原因
 1. cookie free
@@ -525,158 +500,3 @@
 
     1. 服务端生成图片，前端根据图片发送请求给服务端验证。
     2. ~~前端生成并验证~~。
-
-### JS压缩细节
->来自：[Javascript代码压缩细节](http://div.io/topic/447)。
-
-试着生成新的代码，对比后输出最短的内容。
-
-1. 去除注释、多余的分隔符与空白符，标识符简写。
-2. 压缩表达式
-
-    1. 表达式预计算
-
-        将可预先计算的表达式替换成其计算结果，并比较原来表达式与生成后的结果的大小，取短的。
-    2. 优化`true/false`
-
-        1. `true`
-
-            1. 在`==/!=`运算 -> `1`
-            2. 其他运算 -> `!0`
-        2. `false`
-
-            1. 在`==/!=`运算 -> `0`
-            2. 其他运算 -> `!1`
-    3. 优化`&&/||`
-
-        1. `true && 表达式` -> `表达式`
-        2. `false && 表达式` -> `!1`
-        3. `true || 表达式` -> `!0`
-        4. `false || 表达式` -> `表达式`
-3. 缩短运算符
-
-    1. `===/!==`的两个操作数都是`String`类型或都是`Boolean`类型的，缩短成`==/!=`。
-    2. 缩短赋值表达式
-
-        对于类似`a = a + b`这样的赋值表达式（`+` `-` `*` `/` `%` `>>` `<<` `>>>` `|` `&` `^`），可以缩短成`a += b`。
-    3. `!`操作符的压缩
-
-        对于`!(a>=b)`，若转换后`a<b`得到更短的代码，则转换。
-4. 去除没用的声明
-
-    1. 去除重复的指示性字符串，如：`"use strict"`。
-    2. 去除没有使用的函数参数。
-    3. 去除函数表达式的函数名（若未引用）。
-    4. 去除没用的块语句。
-    5. 去除没有使用的`break`。
-    6. 去除没有引用的`label`。
-5. 压缩`while`
-
-    1. 去除根本不会执行的`while`（`while(false){}`）。
-    5. `while(true){}` -> `for(;;){}`
-6. `条件判断 ? 表达式1 : 表达式2`
-
-    1. 若`条件判断`有`!`，则去除`!`且调换表达式前后位置。
-    2. 若`条件判断`为常数，则直接缩短为某一个表达式。
-7. 压缩语句块
-
-    1. 连续的表达式语句合并成一个逗号表达式`,`。
-    2. 多个`var`声明可以压缩成一个`var`声明。
-    3. `return`之后的非变量声明、非函数声明可以去除。
-    4. 合并块末尾的`return`语句及其前边的多条表达式语句。
-8. 优化`if`
-
-    1. 去除没用的、空的`if/else`分支
-    2. 尝试反转`if/else`分支，看看生成代码是否更短。
-    3. 若`if`块里边仅有一个`if`语句，且`else`块为空，则可以合并这两个`if`。
-    4. 若`if`最后一个语句是跳出控制语句，则可以把`else`块的内容提到`else`外边，然后去掉`else`。
-    5. 若`if/else`里各仅有一条`return`语句，则可以合并这两句`return`。
-    6. 若`if/else`里各仅有一条语句，则可以转换为三元运算符表达式。
-    7. 若`if/else`其中一个块为空，另一个块仅有一条语句，则可以转化成`||/&&`表达式。
-
->[移动时代的前端加密](http://div.io/topic/1220)。
-
-### 垃圾回收
->垃圾回收器会按照固定的时间间隔（或代码执行中预定的时间）周期性地执行，找出不再继续使用的变量，然后释放其占用的内存。
-
-垃圾回收器必须跟踪并判断变量是否有用，对于不再有用的变量打上标记，以备将来回收。
-
-1. **标记清除（mark-and-sweep）**（现代浏览器使用方式）
-
-    垃圾回收器在运行时给存储在内存中的所有变量加上标记；然后，去掉环境中的变量以及被环境中变量引用的变量的标记；最后，对那些带标记的值进行释放。
-2. 引用计数（reference counting）
-
-    跟踪记录每个值被引用的次数，被引用一次加1，引用取消就减1，当引用次数为0时，则说明没有办法再访问这个值了，当垃圾回收器下次运行时，释放引用次数为0的值所占空间。
-
-    >可能产生一个严重的问题：循环引用，引用次数永远不会是0。
-
->用`变量 = null;`等方法，让变量成为零引用，从而进行清除元素、垃圾回收（导致内存泄露的情况除外）。
-
-### 兼容特殊浏览器、PC与WAP加载不同资源的方案
-1. 不同页面URL入口。
-2. 引入资源前，根据UA判断是否加载特殊资源。
-
-    >1. 引入资源：[同步/异步加载资源](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js动态添加脚本样式)
-    >2. UA判断：[判断所在系统](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断所在系统)、[判断移动平台](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断移动平台)、[判断ie所有版本](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断ie所有版本)
-3. 把特殊资源打包进总体代码，再根据UA判断引入。
-4. 服务端根据HTTP请求的UA判断输出不同页面加载不同资源（BFF层）。
-
-### JavaScript范围
->ECMAScript是JavaScript的标准，狭义的JavaScript指ECMAScript。浏览器、Node.js都是JavaScript的运行环境。
-
-JavaScript ＝ ECMAScript + 宿主环境提供的API。
-
-1. 浏览器（web应用）的JavaScript包括：
-
-    1. ECMAScript：描述该语言的语法和基本对象。
-    2. Web API：
-
-        1. 文档对象模型（DOM）：描述处理网页内容的方法和接口。
-        2. 浏览器对象模型（BOM）：描述与浏览器进行交互的方法和接口。
-2. Node.js的JavaScript包括：
-
-    1. ECMAScript：描述该语言的语法和基本对象。
-    2. 操作系统的API：
-
-        1. 操作系统（OS）。
-        2. 文件系统（file）。
-        3. 网络系统（net）。
-        4. 数据库（database）。
-
-### JS模块化方案
->参考：[关于AMD,CMD,CommonJS及UMD规范](http://blog.gejiawen.com/2015/11/03/what-is-amd-cmd-commonjs-umd/)。
-
-![JS模块化方案图](./images/js-module-1.png)
-
-1. [CommonJS规范](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Node.js学习笔记/README.md#commonjs规范)。
-2. [ES6 Module](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#es6-module)。
-
->在webpack打包时，可以在JS文件中混用`require`和`export`，但是不能 ~~混用`import`和`module.exports`~~。最好统一为某一种规范去使用，不要混用。
-
-3. [UMD规范](https://github.com/umdjs/umd)的简单示例：
-
-    ```javascript
-    (function (root, factory) {
-        if (typeof define === 'function' && define.amd) {
-            // AMD. Register as an anonymous module.
-            define(['b'], factory);
-        } else if (typeof module === 'object' && module.exports) {
-            // Node. Does not work with strict CommonJS, but
-            // only CommonJS-like environments that support module.exports,
-            // like Node.
-            module.exports = factory(require('b'));
-        } else {
-            // Browser globals (root is window)
-            root.returnExports = factory(root.b);
-        }
-    }(typeof self !== 'undefined' ? self : this, function (b) {
-        // Use b in some fashion.
-
-        // Just return a value to define the module export.
-        // This example returns an object, but the module
-        // can return a function as the exported value.
-        return {};
-    }));
-    ```
-
-    >可以设置webpack的[`output.libraryTarget`](https://webpack.docschina.org/configuration/output/#output-librarytarget)为`'umd'`自动导出UMD规范的代码。

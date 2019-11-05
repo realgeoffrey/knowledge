@@ -647,7 +647,11 @@
 
         `&#x16进制数;`或`&#10进制数;`
 
-        >HTML的字符实体（character entity）：`&名字;`或`&#序号;`（序号：`x16进制数`或`10进制数`）。
+        ><details>
+        ><summary>HTML的字符实体（character entity）：<code>&名字;</code>或<code>&#序号;</code>（序号：<code>x16进制数</code>或<code>10进制数</code>）</summary>
+        >
+        >用于显示保留字符（否则将被解释为HTML代码）和不可见字符。[官方实体清单](https://html.spec.whatwg.org/multipage/named-characters.html)。
+        ></details>
     3. JS：
 
         `dom.innerHTML =`
@@ -655,7 +659,7 @@
         1. `'&#x16进制数;'`或`'&#10进制数;'`（都可省去`;`）；
         2. `'\u4位16进制数'`或`'\u{16进制数}'`或`'\x2位16进制数'`或`'\3位8进制数'`。
 
-            >数字数量有限制：[Unicode](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#unicode)。
+            >数字数量有限制：[Unicode](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#unicode)。
 
 ### `text-align: justify;`
 `text-align`：定义行内内容（如：文字）如何相对它的块父元素对齐。并不控制块元素自己的对齐，只控制它的行内内容的对齐。
