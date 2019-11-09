@@ -285,11 +285,11 @@
         2. （CSSOM先构造完毕）解析并执行JS；
     3. 构造DOM完毕（同步的JS会暂停DOM解析，CSSOM的构建会暂停JS执行）；
 
-        完毕后触发：JS的`document.addEventListener('DOMContentLoaded', function(){}, false)` 或 jQuery的`$(document).ready(function(){})`。
+        完毕后触发：JS的`document.addEventListener('DOMContentLoaded', function () {}, false)` 或 jQuery的`$(document).ready(function () {})`。
     4. 加载图片、媒体资源等外部文件；
     5. 资源加载完毕。
 
-        完毕后触发：JS的`window.addEventListener('load', function(){}, false)`。
+        完毕后触发：JS的`window.addEventListener('load', function () {}, false)`。
 
 - 判断JS、CSS文件是否加载完毕：
 

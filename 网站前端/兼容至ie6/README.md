@@ -167,7 +167,7 @@
         >        scrollTop: 123, 	// y轴滚动条滚动到这个位置显示gototop对象，默认：0
         >        fade: false,	// 是否开启针对ie6取消渐隐渐现，默认：开启
         >        btn: $('#btn'),	// 到达scrollTop位置以内会隐藏
-        >        onscroll: function(){	// 滚动页面回调函数
+        >        onscroll: function () {	// 滚动页面回调函数
         >        }
         >    });
         ></script>

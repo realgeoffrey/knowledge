@@ -40,6 +40,7 @@
 1. [性能原理](#性能原理)
 
     1. [函数](#函数)
+    1. [`this`、变量](#this变量)
     1. [闭包（closure）](#闭包closure)
     1. [原型](#原型)
     1. [继承](#继承)
@@ -971,7 +972,7 @@
         2. 函数声明不应当出现在~~语句块~~内（如：条件语句），语句块的函数也会提前声明，导致语义不清容易出错。
     3. 函数表达式（Function expressions）声明
 
-        必须先声明：`var a = function(){...};`才可以使用，声明会被提前，但赋值不会被提前。
+        必须先声明：`var a = function () {...};`才可以使用，声明会被提前，但赋值不会被提前。
     4. 同名的变量声明和函数声明（不是函数表达式）
 
         同时声明的情况下（顺序不影响结果）：
@@ -1008,7 +1009,7 @@
     可用于全局，也可以用于局部（函数体内）。
 
     >1. 不建议在全局作用域中使用，因为当有JS文件合并时，一个文件的全局严格模式会导致整个文件都是严格模式。
-    >2. 可以用`(function(){'use strict';/* 执行内容 */}());`匿名函数方式使用严格模式。
+    >2. 可以用`(function () {'use strict';/* 执行内容 */}());`匿名函数方式使用严格模式。
 3. 全等`===`（不全等`!==`）与等号`==`（不等`!=`）的区别
 
     1. 当比较的两个值的类型不同时，`==`和`!=`都会强制[类型转换](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#数据类型转换)，再进行转换后值的比较。
@@ -1345,29 +1346,29 @@
 
     ```javascript
     /* 建议方式 */
-    (function () {}());
-    (function () {})();
-
+    ;(function () {}())
+    ;(function () {})()
+    ;(() => {})()       // 箭头函数
 
     /* 不建议方式 */
-    [function () {}()];
+    ;[function () {}()]
 
-    ~function () {}();
-    !function () {}();
-    +function () {}();
-    -function () {}();
+    ~function () {}()
+    !function () {}()
+    ;+function () {}()
+    ;-function () {}()
 
-    delete function () {}();
-    typeof function () {}();
-    void function () {}();
-    new function () {}();
-    new function () {};
+    delete function () {}()
+    typeof function () {}()
+    void function () {}()
+    new function () {}()
+    new function () {}
 
-    var f = function () {}();
+    var f = function () {}()
 
-    1, function () {}();
-    1 ^ function () {}();
-    1 > function () {}();
+    1, function () {}()
+    1 ^ function () {}()
+    1 > function () {}()
     ```
 2. 传值进自执行匿名函数可以避免闭包导致无法记录变量值的问题
 
@@ -2185,7 +2186,7 @@
     >    dataType: 'jsonp',
     >    jsonp: '与服务端约定的支持jsonp方法',  // 前端唯一需要额外添加的内容
     >    data: {},
-    >    success: function(data) {
+    >    success: function (data) {
     >        // data为跨域请求获得的服务端返回数据
     >    }
     >})
@@ -2233,7 +2234,7 @@
 
 
     // 监听的文档
-    window.addEventListener('message', function(e) {...}, false) // e.data === 信息内容
+    window.addEventListener('message', function (e) {...}, false) // e.data === 信息内容
     ```
 5. 其他方式
 
@@ -2247,7 +2248,7 @@
 
 
         // `<iframe>`窗口监听hash变化，以hash变化当做信息的传递
-        window.onhashchange = function(){
+        window.onhashchange = function () {
             var message = window.location.hash;
             // ...
         };
@@ -2807,10 +2808,10 @@
         >直接调用`Function`（不使用`new`操作符）的效果与调用构造函数一样，区别是`this`指向`window`。
     2. 函数声明（函数语句）
 
-        `function 名字(多个参数) {/* 函数体 */};`
+        `function 名字 (多个参数) {/* 函数体 */};`
     3. 函数表达式（function expression）
 
-        `var 名字 = function(多个参数) {/* 函数体 */};`（变量赋值为`匿名函数`或`箭头函数`）
+        `var 名字 = function (多个参数) {/* 函数体 */};`（变量赋值为`匿名函数`或`箭头函数`）
 
     >1. 通过**函数声明**、**函数表达式**创建的函数，在加载脚本时和其他代码一起解析；通过**构造函数**定义的函数，在构造函数被执行时才解析函数体字符串。
     >2. 不建议通过~~构造函数~~创建函数，因为作为字符串的函数体可能会阻止一些JS引擎优化，也会引起其他问题。
@@ -2944,136 +2945,170 @@
 
         >e.g. `function func ({ para1 = 'default', para2 } = {}) {}`
     4. 参数的数量有限制，如：有些JS引擎限制在`Math.pow(2, 16)`。
-8. 函数调用类型
 
-    1. 直接函数调用（如：`alert();`）、立即调用的函数表达式（如：`(function () {}());`）
+### `this`、变量
+1. `this`
 
-        `this`：全局对象`window`（与在什么作用域无关）
-    2. 对象的方法调用（如：`obj.func();`）
+    1. 非箭头函数
 
-        `this`：上级对象（调用的`obj`）
-    3. 构造函数实例化（如：`new RegExp();`）
+        `this`：调用函数的那个对象（与在什么作用域无关）；`this`的值：在函数被调用时才会指定。
 
-        `this`：新实例对象
-    4. 间接调用（`alert.call(传入的对象);`或`apply`）
+        1. 直接函数调用（如：`alert()`）、立即调用的函数表达式（如：`(function () {}())`）
 
-        `this`：传入的对象
+            `this`：全局对象`window`（与在什么作用域无关）
 
-    - 总结：
+            >严格模式：`undefined`
+        2. 对象的方法调用（如：`obj.func()`）
 
-        1. `this`：调用函数的那个对象（与在什么作用域无关）；`this`的值：在函数被调用的时候才会指定。
+            `this`：上级对象（调用的`obj`）
+        3. 构造函数实例化（如：`new RegExp()`）
 
-            <details>
-            <summary>e.g.</summary>
+            `this`：新实例对象
+        4. 间接调用（如：`alert.call/apply/bind(传入的对象)`）
 
-            ```javascript
-            var x = 'global';
+            `this`：传入的对象
 
-            function test() {
-                console.log(this.x + '|' + _test() + '|' + (function () {return this.x;}()));
+            >除了~~构造函数实例化~~，依然是：新实例对象。
 
-                function _test() {
+        <details>
+        <summary>e.g.</summary>
 
-                    return this.x;
-                }
+        ```javascript
+        var x = 'global';
+
+        function test() {
+            console.log(this.x + '|' + _test() + '|' + (function () {return this.x;}()));
+
+            function _test() {
+
+                return this.x;
             }
+        }
 
-            /* window：方法没有对象调用（直接函数调用、立即调用的函数表达式，且与作用域无关） */
-            test();                 // => global|global|global
+        /* window：方法没有对象调用（直接函数调用、立即调用的函数表达式，且与作用域无关） */
+        test();                 // => global|global|global
 
-            var obj1 = {
-                x: 1,
-                test: function () {
-                    var that = this;
+        var obj1 = {
+            x: 1,
+            test: function () {
+                var that = this;
 
-                    return function () {
+                return function () {
 
-                        console.log(this.x + '|' + that.x);
-                    };
-                }
-            };
-            (obj1.test()());        // => global|1
-
-            var { test } = obj1;
-            (test()())              // => global|global
-
-
-            /* 上级对象：函数作为某个对象的方法调用 */
-            var obj2 = {};
-            obj2.x = 2;
-            obj2.func = test;
-            obj2.func();            // => 2|global|global
-
-
-            /* 新实例对象：构造函数 */
-            function Test() {
-                this.x = 3;
-                console.log(this.x + '|' + _test() + '|' + (function () {return this.x;}()));
-
-                function _test() {
-
-                    return this.x;
-                }
+                    console.log(this.x + '|' + that.x);
+                };
             }
-            var obj3 = new Test();  // => 3|global|global
+        };
+        (obj1.test()());        // => global|1
+
+        var { test } = obj1;
+        (test()())              // => global|global
 
 
-            /* 传入的指定对象：apply或call调用 */
-            var obj4 = {x: 4};
-            obj2.func.call(obj4);   // => 4|global|global
-            ```
-            </details>
-        2. `变量`的作用域和值：和调用函数的位置和时机无关（函数赋值给任何变量或属性也不改变变量的取值），由变量处在哪一个函数作用域（或块级作用域）唯一决定（考虑闭包）。
+        /* 上级对象：函数作为某个对象的方法调用 */
+        var obj2 = {};
+        obj2.x = 2;
+        obj2.func = test;
+        obj2.func();            // => 2|global|global
 
-            <details>
-            <summary>e.g.</summary>
 
-            ```javascript
-            var aa
+        /* 新实例对象：构造函数 */
+        function Test() {
+            this.x = 3;
+            console.log(this.x + '|' + _test() + '|' + (function () {return this.x;}()));
 
-            function func () {
-              var count = 0
+            function _test() {
 
-              function _func () {
-                console.log(count++)
-                return _func
-              }
-
-              aa = _func
-              return _func
+                return this.x;
             }
+        }
+        var obj3 = new Test();  // => 3|global|global
 
 
-            var p = func()      // 返回_func
+        /* 传入的指定对象：apply或call调用 */
+        var obj4 = {x: 4};
+        obj2.func.call(obj4);   // => 4|global|global
+        ```
+        </details>
 
-            p() // => 0。返回_func
-
-            var bb = {
-              cc: aa()          // => 1。返回_func
-            }
-
-            window.dd = bb.cc() // => 2。返回_func
-
-            function E () {
-              this.funcE = window.dd()
-            }
-            var ee = new E()    // => 3。返回_func
-
-            ee.funcE()          // => 4。返回_func
-            ```
-            </details>
-        >- 某些挂在`window`下的方法，内部实现有使用到`this`，且`this`需要指向特殊对象（如：必须指向`window`或`null`），因此当新建对象指向某方法时，注意this。
+        ><details>
+        ><summary>某些挂在<code>window</code>下的方法，内部实现有使用到<code>this</code>，且<code>this</code>需要指向特殊对象（如：必须指向<code>window</code>或<code>null</code>），因此当新建对象指向某方法时，注意this。</summary>
         >
-        >    ```javascript
-        >    // e.g.
-        >    const a = {
-        >      b: window.open
-        >    }
+        >```javascript
+        >// e.g.
+        >const a = {
+        >  b: window.open
+        >}
         >
-        >    a.b()           // 报错
-        >    a.b.call({})    // 报错
-        >    a.b.call(null)  // 正常
-        >    ```
+        >a.b()           // 报错
+        >a.b.call({})    // 报错
+        >a.b.call(null)  // 正常
+        >```
+        ></details>
+    2. 箭头函数
+
+        不会创建自己的`this`，而使用封闭执行上下文最近的一个`this`值。`this`的值：在函数被调用时才会指定（此时才向上查找）。
+2. `变量`
+
+    >JS是词法作用域：词法作用域（静态作用域）是在声明定义时确定。关注函数在何处声明。词法作用域的函数中遇到既不是形参也不是函数内部定义的局部变量的变量时，去函数声明定义时的环境中查询。
+
+    作用域和值：与调用函数的位置（作用域）、时机无关（函数赋值给任何变量或属性也不改变变量的取值），由变量处在哪一个函数作用域（或块级作用域）唯一决定（考虑闭包）。
+
+    <details>
+    <summary>e.g.</summary>
+
+    ```javascript
+    var aa
+
+    function func () {
+      var count = 0
+
+      function _func () {
+        console.log(count++)
+        return _func
+      }
+
+      aa = _func
+      return _func
+    }
+
+
+    var p = func()      // 返回_func
+
+    p() // => 0。返回_func
+
+    var bb = {
+      cc: aa()          // => 1。返回_func
+    }
+
+    window.dd = bb.cc() // => 2。返回_func
+
+    function E () {
+      this.funcE = window.dd()
+    }
+    var ee = new E()    // => 3。返回_func
+
+    ee.funcE()          // => 4。返回_func
+    ```
+    </details>
+
+    <details>
+    <summary>e.g.</summary>
+
+    ```javascript
+    function foo () {
+      console.log(a)
+    }
+
+    function bar () {
+      var a = 3
+      foo()
+    }
+
+    var a = 2
+    bar() // => 2
+    ```
+    </details>
 
 ### 闭包（closure）
 1. 当函数体内定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数执行完毕（寿命终结）之后。
