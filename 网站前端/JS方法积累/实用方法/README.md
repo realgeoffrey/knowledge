@@ -32,7 +32,7 @@
         1. [选取范围内随机值](#原生js选取范围内随机值)
     1. 字符串操作
 
-        1. [转化为Unicode、反转字符串、字符串长度](#原生js转化为unicode反转字符串字符串长度)
+        1. [转化为Unicode、反转字符串、字符串长度、所占字节数](#原生js转化为unicode反转字符串字符串长度所占字节数)
         1. [产生随机数](#原生js产生随机数)
         1. [比较版本号大小（纯数字）](#原生js比较版本号大小纯数字)
         1. [判断检索内容是否在被检索内容的分隔符间](#原生js判断检索内容是否在被检索内容的分隔符间)
@@ -1163,46 +1163,124 @@ function randomFrom(min, max) {
 >2. 若返回的是：`(0,1]`，则返回`Math.floor(Math.random() * (max - min + 1) + min - 1);`。
 >3. 若返回的是：`[0,1]`，则返回`Math.floor(Math.random() * (max - min) + min);`。
 
-### *原生JS*转化为Unicode、反转字符串、字符串长度
->注意：Unicode码点大于`\uFFFF`的字符。
+### *原生JS*转化为Unicode、反转字符串、字符串长度、所占字节数
+>注意：Unicode码点大于`\uFFFF`（65535）的字符，如：`'💩'.codePointAt(0) // =>128169`
 
-```javascript
-const hanldeWords = {
+1. 转化为Unicode
 
-  // 转化为Unicode
-  toUnicode(words) {
-    const arr = [];
+    ```javascript
+    // 转化为Unicode
+    function toUnicode (words) {
+      const arr = []
 
-    for (let i = 0; i < words.length; i++) {
-      const unicode = words.charCodeAt(i).toString(16);
-      arr[i] = '\\u' + '0'.repeat(4 - unicode.length) + unicode; // 单个Unicode：\u+4位16进制数；一个字可能不止一个Unicode，如：💩
+      for (let i = 0; i < words.length; i++) {
+        const unicode = words.charCodeAt(i).toString(16)
+        arr[i] = '\\u' + '0'.repeat(4 - unicode.length) + unicode // 单个Unicode：\u+4位16进制数；一个字可能不止一个Unicode，如：💩
+      }
+
+      return arr.join('')
     }
 
-    return arr.join('');
-  },
 
-  // 反转字符串
-  reverseWords(words) {
-    return Array.from(words).reverse().join('');
+    /* 使用测试 */
+    console.log(toUnicode('💩'), toUnicode('哈'), toUnicode('©')) // => \ud83d\udca9 \u54c8 \u00a9
+    ```
+2. 反转字符串
 
-    // 或：return [...words].reverse().join('');
-  },
+    ```javascript
+    // 反转字符串
+    function reverseWords (words) {
+      return Array.from(words).reverse().join('')
 
-  // 字符串长度
-  codePointLength(words) {
-    const result = words.match(/[\s\S]/gu);
-    return result ? result.length : 0;
-
-    // 或：return [...words].length;
-  }
-};
+      // 或：return [...words].reverse().join('');
+    }
 
 
-/* 使用测试 */
-console.log(hanldeWords.toUnicode('💩©'));
-console.log(hanldeWords.reverseWords('💩©'));
-console.log(hanldeWords.codePointLength('💩©'));
-```
+    /* 使用测试 */
+    console.log(reverseWords('💩哈©')) // => ©哈💩
+    ```
+3. 字符串长度
+
+    ```javascript
+    // 字符串长度
+    function codePointLength (words) {
+      const result = words.match(/[\s\S]/gu)
+      return result ? result.length : 0
+
+      // 或：return [...words].length;
+    }
+
+
+    /* 使用测试 */
+    console.log(codePointLength('💩哈©'))  // => 3
+    ```
+4. 所占字节数
+
+    ```javascript
+    /**
+     * 所占字节数
+     *
+     * UTF-8 是一种可变长度的 Unicode 编码格式，使用一至四个字节为每个字符编码（Unicode在范围 D800-DFFF 中不存在任何字符）
+     * 000000 - 00007F(128个代码)      0zzzzzzz(00-7F)                             一个字节
+     * 000080 - 0007FF(1920个代码)     110yyyyy(C0-DF) 10zzzzzz(80-BF)             两个字节
+     * 000800 - 00D7FF
+     * 00E000 - 00FFFF(61440个代码)    1110xxxx(E0-EF) 10yyyyyy 10zzzzzz           三个字节
+     * 010000 - 10FFFF(1048576个代码)  11110www(F0-F7) 10xxxxxx 10yyyyyy 10zzzzzz  四个字节
+     * {@link https://zh.wikipedia.org/wiki/UTF-8}
+     *
+     * UTF-16 大部分使用两个字节编码，编码超出 65535 的使用四个字节
+     * 000000 - 00FFFF  两个字节
+     * 010000 - 10FFFF  四个字节
+     * {@link https://zh.wikipedia.org/wiki/UTF-16}
+     *
+     * GBK(ASCII的中文扩展) 除了0~126编号是1个字节之外，其他都2个字节
+     * {@link https://zh.wikipedia.org/wiki/汉字内码扩展规范}
+     *
+     * @param  {String} str
+     * @param  {String} [charset= 'gbk'] utf-8, utf-16
+     * @return {Number}
+     */
+    function sizeofByte (str, charset = 'gbk') {
+      let total = 0
+      let charCode
+
+      charset = charset.toLowerCase()
+
+      if (charset === 'utf-8' || charset === 'utf8') {
+        for (let i = 0, len = str.length; i < len; i++) {
+          charCode = str.charCodeAt(i)
+
+          if (charCode <= 0x007f) {
+            total += 1
+          } else if (charCode <= 0x07ff) {
+            total += 2
+          } else if (charCode <= 0xffff) {
+            total += 3
+          } else {
+            total += 4
+          }
+        }
+      } else if (charset === 'utf-16' || charset === 'utf16') {
+        for (let i = 0, len = str.length; i < len; i++) {
+          charCode = str.charCodeAt(i)
+
+          if (charCode <= 0xffff) {
+            total += 2
+          } else {
+            total += 4
+          }
+        }
+      } else {
+        total = str.replace(/[^\x00-\xff]/g, 'aa').length
+      }
+
+      return total
+    }
+
+
+    /* 使用测试 */
+    console.log(sizeofByte('💩'), sizeofByte('哈'), sizeofByte('©')) // => 4 2 1
+    ```
 
 ### *原生JS*产生随机数
 ```javascript
