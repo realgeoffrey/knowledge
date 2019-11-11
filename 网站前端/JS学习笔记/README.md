@@ -40,7 +40,7 @@
 1. [性能原理](#性能原理)
 
     1. [函数](#函数)
-    1. [`this`、变量](#this变量)
+    1. [变量、`this`](#变量this)
     1. [闭包（closure）](#闭包closure)
     1. [原型](#原型)
     1. [继承](#继承)
@@ -1932,6 +1932,9 @@
         >2. UA判断：[判断所在系统](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断所在系统)、[判断移动平台](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断移动平台)、[判断ie所有版本](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断ie所有版本)
     3. 把特殊资源打包进总体代码，再根据UA判断引入。
     4. 服务端根据HTTP请求的UA判断输出不同页面加载不同资源（BFF层）。
+21. 前端无法获取~~电脑文件系统中文件的绝对路径~~
+
+    `<input type="file">`只能获得`C:\fakepath\文件名.文件类型`。
 
 ### 函数模板
 1. 构造函数
@@ -2888,17 +2891,7 @@
     >console.log(new Foo2() instanceof Foo2) // => false
     >```
     ></details>
-6. 变量作用域
-
-    1. ES5
-
-        函数是唯一拥有自身作用域的结构（若`function`或ES6的`箭头函数`出现，则在父级作用域中新增一个子级作用域。父级不能访问子级作用域，子级能完全使用父级作用域）。
-
-        `全局作用域 -> 父级function作用域 -> 子级function作用域`
-    2. ES6
-
-        在ES5的基础上，增加块级作用域概念（[`let`、`const`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#letconst)）。
-7. <a name="函数-参数"></a>参数
+6. <a name="函数-参数"></a>参数
 
     1. 参数变量在函数体内是默认声明的（传递进函数体），所以不能在函数体内用`let`或`const`再次声明同名参数（`var`可以）。
     2. 使用**参数默认值**时的特殊情况：
@@ -2945,9 +2938,86 @@
 
         >e.g. `function func ({ para1 = 'default', para2 } = {}) {}`
     4. 参数的数量有限制，如：有些JS引擎限制在`Math.pow(2, 16)`。
+7. 变量作用域
 
-### `this`、变量
-1. `this`
+    因为JS采用的是[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)，所以函数的作用域（变量取值）在函数定义时决定，与函数在哪个作用域被调用无关。
+
+    1. ES5
+
+        函数声明是唯一拥有自身作用域的结构。
+
+        >1. 若`function`或ES6的`箭头函数`**声明**出现，则在父级作用域中新增一个子级作用域。父级不能访问子级作用域，子级能完全使用父级作用域。
+        >2. 函数在声明时已决定作用域，之后在任意作用域中被调用，都不会改变函数内部变量的取值（由函数声明处由内向外搜索变量）。
+    2. ES6
+
+        在ES5的基础上，增加块级作用域概念（[`let`、`const`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#letconst)）。
+
+### 变量、`this`
+1. `变量`
+
+    >JS是[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)。
+
+    作用域和值：与调用函数时所在的作用域、时机无关（函数赋值给任何变量或属性也不改变变量的取值）；由声明函数时，变量处在哪一个函数作用域（或块级作用域）唯一决定（考虑闭包）。
+
+    <details>
+    <summary>e.g.</summary>
+
+    ```javascript
+    var aa
+
+    function func () {
+      var count = 0
+
+      function _func () {
+        console.log(count++)
+        return _func
+      }
+
+      aa = _func
+      return _func
+    }
+
+
+    var p = func()      // 返回_func
+
+    p() // => 0。返回_func
+
+    var bb = {
+      cc: aa()          // => 1。返回_func
+    }
+
+    window.dd = bb.cc() // => 2。返回_func
+
+    function E () {
+      this.funcE = window.dd()
+    }
+    var ee = new E()    // => 3。返回_func
+
+    ee.funcE()          // => 4。返回_func
+    ```
+    </details>
+
+    <details>
+    <summary>e.g.</summary>
+
+    ```javascript
+    function foo () {
+      console.log(a)
+    }
+
+    function bar () {
+      var a = 2
+      foo()
+    }
+
+    var a = 1
+    bar() // => 1
+
+    // JS是词法作用域的流程：执行 foo 函数，先从 foo 函数内部查找是否有局部变量 value，如果没有，就根据书写的位置（声明位置），查找上面一层的代码，也就是 value 等于 1，所以结果会打印 1。
+    // 其他语言是动态作用域的流程：执行 foo 函数，依然是从 foo 函数内部查找是否有局部变量 value。如果没有，就从调用函数的作用域，也就是 bar 函数内部查找 value 变量，所以结果会打印 2。
+    ```
+    </details>
+2. `this`
 
     1. 非箭头函数
 
@@ -3047,68 +3117,7 @@
         ></details>
     2. 箭头函数
 
-        不会创建自己的`this`，而使用封闭执行上下文最近的一个`this`值。`this`的值：在函数被调用时才会指定（此时才向上查找）。
-2. `变量`
-
-    >JS是词法作用域：词法作用域（静态作用域）是在声明定义时确定。关注函数在何处声明。词法作用域的函数中遇到既不是形参也不是函数内部定义的局部变量的变量时，去函数声明定义时的环境中查询。
-
-    作用域和值：与调用函数的位置（作用域）、时机无关（函数赋值给任何变量或属性也不改变变量的取值），由变量处在哪一个函数作用域（或块级作用域）唯一决定（考虑闭包）。
-
-    <details>
-    <summary>e.g.</summary>
-
-    ```javascript
-    var aa
-
-    function func () {
-      var count = 0
-
-      function _func () {
-        console.log(count++)
-        return _func
-      }
-
-      aa = _func
-      return _func
-    }
-
-
-    var p = func()      // 返回_func
-
-    p() // => 0。返回_func
-
-    var bb = {
-      cc: aa()          // => 1。返回_func
-    }
-
-    window.dd = bb.cc() // => 2。返回_func
-
-    function E () {
-      this.funcE = window.dd()
-    }
-    var ee = new E()    // => 3。返回_func
-
-    ee.funcE()          // => 4。返回_func
-    ```
-    </details>
-
-    <details>
-    <summary>e.g.</summary>
-
-    ```javascript
-    function foo () {
-      console.log(a)
-    }
-
-    function bar () {
-      var a = 3
-      foo()
-    }
-
-    var a = 2
-    bar() // => 2
-    ```
-    </details>
+        不会创建自己的`this`，而使用封闭执行上下文最近的一个`this`值。`this`的值：在函数被调用时才会指定（向上查找）。
 
 ### 闭包（closure）
 1. 当函数体内定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数执行完毕（寿命终结）之后。
