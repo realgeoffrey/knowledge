@@ -63,6 +63,7 @@
         1. [判断是否支持WebP](#原生js判断是否支持webp)
         1. [DOM展示或消失执行方法（IntersectionObserver）](#原生jsdom展示或消失执行方法intersectionobserver)
         1. [执行方法的前/后进行开/关loading](#原生js执行方法的前后进行开关loading)
+        1. [点击下载](#原生js点击下载)
     1. 提升性能
 
         1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
@@ -1368,23 +1369,33 @@ function isKeyInStr(key, str, separator) {
 
 ### *原生JS*格式化文件大小
 ```javascript
-var format = {
-  fileSize: function (bytes) {    /* 格式化文件大小 */
-    if (bytes === 0) {
-
-      return '0';
-    }
-    var rate = 1024,
-      units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
-      exponent = Math.floor(Math.log(bytes) / Math.log(rate));
-
-    return (bytes / Math.pow(rate, exponent)).toPrecision(3) + units[exponent];
+/**
+ * 格式化文件大小
+ */
+function fileSize (bytes = 0) {
+  if (bytes === 0) {
+    return '0'
   }
-};
+
+  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] // 单位
+  const rate = 1024 // 换算关系
+  const exponent = Math.min( // 所在单位
+    Math.floor(Math.log(bytes) / Math.log(rate)),
+    units.length - 1
+  )
+  let value = bytes / (rate ** exponent)  // 值
+
+  // 精确位数
+  value = (exponent === 0 || value > 1000)
+    ? Math.round(value)
+    : value.toPrecision(3)
+
+  return value + units[exponent]  // 值 + 单位
+}
 
 
 /* 使用测试 */
-var a = format.fileSize(数字);
+fileSize(数字)
 ```
 
 ### *原生JS*单词首字母大写
@@ -2467,6 +2478,112 @@ loadingFetch(() => {
 // 同步触发关闭loading
 loadingFetch(() => { console.log('同步方法') })
 ```
+
+### *原生JS*点击下载
+1. `<a>`的`download`属性
+
+    >1. `download`指示浏览器下载URL而不是导航到它。
+    >2. 下载的文件需要与页面同源。
+    >3. 支持多种文件类型。
+
+    `<a href="文件地址" download="文件名.文件类型">点击若同源就下载，不同源还是导航跳转</a>`
+2. 下载文本
+
+    >Blob。代码生成文本内容再进行下载。
+
+    ```javascript
+    /**
+     * 下载文本
+     * @param {String} content - 保存的字符串内容
+     * @param {String} filename - 文件名（包括后缀）
+     */
+    function textDownload (content, filename) {
+      // 创建隐藏的可下载链接
+      const eleLink = document.createElement('a')
+      eleLink.download = filename
+      eleLink.style.display = 'none'
+
+      // 字符内容转变成Blob对象
+      const blob = new Blob([content])
+      // 创建URL对象
+      const url = URL.createObjectURL(blob)
+
+      eleLink.href = url
+
+      // 触发下载
+      document.body.appendChild(eleLink)
+      eleLink.click()
+      document.body.removeChild(eleLink)
+
+      // 释放URL对象
+      URL.revokeObjectURL(url)
+    }
+
+
+    /* 使用测试 */
+    textDownload('内容字符串', '文件名.文件类型')
+    ```
+3. 下载图片
+
+    >1. Canvas。仅支持：png/jpg/webp。
+    >2. 需要图片响应头包含正确的Access-Control-Allow-Origin值（CORS）。
+
+    ```javascript
+    /**
+     * 下载图片
+     * @param {String} imgSrc - 图片地址
+     * @param {String} [filename = 'image.png'] - 文件名（包括后缀）
+     */
+    function imageDownload (imgSrc, filename = 'image.png') {
+      let img = new Image()
+      img.onload = function () {
+        download(img)
+        img.onload = img.onerror = null
+        img = null
+      }
+      img.onerror = function () {
+        img.onload = img.onerror = null
+        img = null
+      }
+      img.crossOrigin = 'Anonymous'
+      img.src = imgSrc
+
+      // 下载逻辑
+      function download (domImg) {
+        // Canvas上绘制图像
+        const canvas = document.createElement('canvas')
+        canvas.width = domImg.naturalWidth
+        canvas.height = domImg.naturalHeight
+        const context = canvas.getContext('2d')
+        context.drawImage(domImg, 0, 0)
+
+        // 图片转base64地址
+        let base64
+        if (filename.endsWith('.png')) {
+          base64 = canvas.toDataURL('image/png')
+        } else if (filename.endsWith('.webp')) {
+          base64 = canvas.toDataURL('image/webp')
+        } else {
+          base64 = canvas.toDataURL('image/jpeg')
+        }
+
+        // 创建隐藏的可下载链接
+        const eleLink = document.createElement('a')
+        eleLink.download = filename
+        eleLink.style.display = 'none'
+        eleLink.href = base64
+
+        // 触发下载
+        document.body.appendChild(eleLink)
+        eleLink.click()
+        document.body.removeChild(eleLink)
+      }
+    }
+
+
+    /* 使用测试 */
+    imageDownload('图片地址', '图片文件名.文件类型')
+    ```
 
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript

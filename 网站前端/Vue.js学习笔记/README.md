@@ -94,7 +94,7 @@
     >特例：父级通过`v-slot="临时变量"`去使用子级`<slot>`给定的属性对应的值。
 4. `v-slot`和`<slot>`
 
-    用于父级（`v-slot:名字`）向子组件（`<slot name="名字">`）插入内容。
+    用于父级（`v-slot:某名字`）向子组件（`<slot name="某名字">`）插入内容。
 5. 所有渲染结果不包含`<template>`
 6. 注意直接用.html写模板在DOM上的，不能用大写字母命名组件。
 
@@ -338,13 +338,13 @@
 
     1. 后备内容
 
-        1. 子组件中没有`name`属性或`name="default"`的`<slot>`，匹配父级中*去除所有包含`v-slot:名字`的DOM*的内容（即：匹配没有`v-slot`或`v-slot`值为空的DOM和内容）。
+        1. 子组件中没有`name`属性或`name="default"`的`<slot>`，匹配父级中*去除所有包含`v-slot:某名字`的DOM*的内容（即：匹配没有`v-slot`或`v-slot`值为空的DOM和内容）。
 
             >`<slot>`默认`name`为：`default`。
         2. 子组件中`<slot>`的DOM内容，当且仅当没有父级匹配时显示。
     2. 具名插槽
 
-        父级引用子组件，在元素内部添加的标签的DOM属性`v-slot:名字`；会匹配子组件模板的`<slot name="名字">`。
+        父级引用子组件，在元素内部添加的标签的DOM属性`v-slot:某名字`；会匹配子组件模板的`<slot name="某名字">`。
     3. 作用域插槽
 
         父级引用子组件时，使用子组件`<slot>`上的属性对应的值（除了`name`属性）。
@@ -480,6 +480,12 @@
 16. 自定义指令（在钩子函数中进行业务）
 
     `v-自定义指令名`（或`v-自定义指令名="表达式"`、`v-自定义指令名:参数`、`v-自定义指令名.修饰符`）
+
+    ><details>
+    ><summary>同一个节点可以添加多个不同参数/修饰符的同一个自定义指令名</summary>
+    >
+    >e.g. `<div v-observer:10="{ show: xx }" v-observer:20="{ show: yy }" />`：添加2个独立的自定义指令。
+    ></details>
 
     ```javascript
     // 局部
@@ -1211,7 +1217,7 @@
         2. 或专门状态管理模式，如：[vuex](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#vuex)。
     - 组件的API来自三部分
 
-        `<my-component :子属性="父属性" @父事件="父方法"><标签 v-slot:名字="临时变量">内容分发</标签></my-component>`
+        `<my-component :子属性="父属性" @父事件="父方法"><标签 v-slot:某名字="临时变量">内容分发</标签></my-component>`
 
         1. `props`：允许外部环境传递数据给组件。
         2. `events`：允许从组件内触发外部环境的副作用。
@@ -2540,6 +2546,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         Vue单文件组件。扩展默认布局（`default.vue`、`error.vue`）或新增自定义布局，在布局文件中添加`<nuxt/>`指定页面主体内容。
 
         >1. 可添加供所有页面使用的**通用组件**（另外：**静态**的自定义通用内容添加在根目录的`app.html`）。
+        >
+        >    所有路径最后都会嵌套在`default.vue`内，设置了`layout`的也会再次嵌套，`error.vue`也会再次嵌套。
         >2. layouts/error.vue被当做pages来使用（增加了/error的路由）：在layouts中创建了`error.vue`后，就不要 ~~在pages中创建`error.vue`~~。
 
         - 引用方式：`pages`组件中加入`layout`属性
@@ -2920,6 +2928,11 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         -----| index.vue       # 若路由为/users/，则父级内容的<nuxt-child/>指向此组件
         --| users.vue          # 父级内容
         ```
+
+        - 父级、子级组件，根据`vm.$route.name`来判断在哪一个嵌套路由
+
+            1. 路由`/mine`或`/mine/`（没有 ~~`/mine/index`~~）：路由名字`mine`
+            2. 路由`/mine/post`或`/mine/post/`：路由名字`mine-post`
     3. 动态嵌套路由：动态的父级嵌套动态的子级
 
     - 在组件中使用`<nuxt-link/>`进行路由跳转（与vue-router的`<router-link/>`一致）
