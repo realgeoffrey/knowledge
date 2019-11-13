@@ -7,7 +7,6 @@
 1. [设计模式](#设计模式)
 1. [数据库](#数据库)
 1. [bug调试方式](#bug调试方式)
-1. [编译器原理](#编译器原理)
 1. [MD5 && SHA](#md5--sha)
 1. [前端与服务端配合细节](#前端与服务端配合细节)
 1. [JSON](#json)
@@ -17,7 +16,6 @@
     1. [平稳退化（优雅降级）、渐进增强](#平稳退化优雅降级渐进增强)
     1. [向前兼容、向后兼容](#向前兼容向后兼容)
     1. [自底向上、自顶向下](#自底向上自顶向下)
-    1. [JavaScript](#javascript)
     1. [MV*](#mv)
     1. [直出、同构、预渲染](#直出同构预渲染)
     1. [测试驱动开发、行为驱动开发](#测试驱动开发行为驱动开发)
@@ -34,6 +32,7 @@
     1. [胶水语言（glue languages）](#胶水语言glue-languages)
     1. [词法作用域、动态作用域](#词法作用域动态作用域)
 1. [Unicode](#unicode)
+1. [编译器原理](#编译器原理)
 
 ---
 ### 数据结构（data structure）
@@ -307,86 +306,6 @@
     虽然这样做有点不厚道，但是有时不得不这么做。有些bug找不到真正的root cause，但是又要在规定时间内解决，那么我们就可以治疗症状而不去找病因。
 
     >如：用`try-catch`掩盖一些奇怪的崩溃。不到万不得已不要这么干，未来可能会付出更大代价。
-
-### 编译器原理
->来自：[the-super-tiny-compiler](https://github.com/jamiebuilds/the-super-tiny-compiler)。
-
-（广义的）编译器：把一种语言代码转为另一种语言代码的程序。
-
-1. 解析（parsing）
-
-    `原始代码`（先转化为`Token`，再）转化为`AST`。
-
-    1. 词法分析（lexical analysis）
-
-        接收原始代码，分割成Token（一个数组，分割代码字符串的种类：数字、标签、标点符号、运算符，等）。
-    2. 语法分析（syntactic analysis）
-
-        接收之前生成的Token，转换成AST。
-
-    ><details>
-    ><summary>e.g. lisp代码 -> Token -> AST</summary>
-    >
-    >1. 原始代码（lisp）：
-    >
-    >    `(add 2 (subtract 4 2))`
-    >2. 生成的Token：
-    >
-    >    ```javascript
-    >    [
-    >      { type: 'paren',  value: '('        },
-    >      { type: 'name',   value: 'add'      },
-    >      { type: 'number', value: '2'        },
-    >      { type: 'paren',  value: '('        },
-    >      { type: 'name',   value: 'subtract' },
-    >      { type: 'number', value: '4'        },
-    >      { type: 'number', value: '2'        },
-    >      { type: 'paren',  value: ')'        },
-    >      { type: 'paren',  value: ')'        }
-    >    ]
-    >    ```
-    >3. 生成的AST：
-    >
-    >    ```javascript
-    >    {
-    >      type: 'Program',
-    >      body: [{
-    >        type: 'CallExpression',
-    >        name: 'add',
-    >        params: [
-    >          {
-    >            type: 'NumberLiteral',
-    >            value: '2'
-    >          },
-    >          {
-    >            type: 'CallExpression',
-    >            name: 'subtract',
-    >            params: [
-    >              {
-    >                type: 'NumberLiteral',
-    >                value: '4'
-    >              },
-    >              {
-    >                type: 'NumberLiteral',
-    >                value: '2'
-    >              }
-    >            ]
-    >          }
-    >        ]
-    >      }]
-    >    }
-    >    ```
-    ></details>
-2. 转换（transformation）
-
-    >让它能做到编译器期望它做到的事情。
-
-    遍历AST的所有节点，使用visitor中对应类型的处理函数，对不同类型的节点进行逻辑处理。
-3. 代码生成（code generation）
-
-    >可能会和转换有重叠。
-
-    根据最终的AST或之前的Token输出新的代码。
 
 ### MD5 && SHA
 >1. 不同系统、不同编程语言对MD5或SHA实现的逻辑相同（对同一内容，用不同实现的MD5或SHA得出结果相同）。
@@ -763,16 +682,6 @@
 
     将复杂的大问题分解为相对简单的小问题，找出每个问题的关键、重点所在，然后用精确的思维定性、定量地描述问题。
 
-### JavaScript
-1. 头等函数（first-class function）
-
-    一种编程语言被称为具有头等函数时，语言中的函数将会像任何其他变量一样被对待（如：函数可以作为参数传递给其他函数、可以作为返回值被返回、可以作为值赋值给变量）。
-2. 原型编程（prototype-based programming）
-
-    它的类（class）没有明确的定义，只是通过向其它的类中添加属性和方法来得到它，甚至偶尔使用空对象来创建类。
-
-    >JS的面向对象是基于原型的面向对象（the prototype-based OO）。
-
 ### MV*
 MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，主要是Model与View的数据传递流程不同。
 
@@ -1140,13 +1049,95 @@ Unicode：包含全世界所有字符的一个字符集（计算机只要支持�
 
 >Unicode和ASCII都是一种**字符集**；UTF-8是Unicode的一种**编码方式（Encoding Form）**。
 
-1. `\u` + `4位16进制数`
-2. `\u{16进制数}`
-3. `\x` + `2位16进制数`
-4. `\` + `3位8进制数`
+- JS的Unicode书写方式：
 
->若要求的位数不足，则前面补`0`。
+    1. `\u` + `4位16进制数`
+    2. `\u{16进制数}`
+    3. `\x` + `2位16进制数`
+    4. `\` + `3位8进制数`
 
-JS内部会自动将Unicode转为字符。
+    >若要求的位数不足，则前面补`0`。
 
->[字符串转换为Unicode、字符串所占字节数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js转化为unicode反转字符串字符串长度所占字节数)。
+    JS内部会自动将Unicode转为字符。
+
+    >[字符串转换为Unicode、字符串所占字节数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js转化为unicode反转字符串字符串长度所占字节数)。
+
+### 编译器原理
+>来自：[the-super-tiny-compiler](https://github.com/jamiebuilds/the-super-tiny-compiler)。
+
+（广义的）编译器：把一种语言代码转为另一种语言代码的程序。
+
+1. 解析（parsing）
+
+    `原始代码`（先转化为`Token`，再）转化为[`AST`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#抽象语法树abstract-syntax-treeast)。
+
+    1. 词法分析（lexical analysis）
+
+        接收原始代码，分割成Token（一个数组，分割代码字符串的种类：数字、标签、标点符号、运算符，等）。
+    2. 语法分析（syntactic analysis）
+
+        接收之前生成的Token，转换成AST。
+
+    ><details>
+    ><summary>e.g. lisp代码 -> Token -> AST</summary>
+    >
+    >1. 原始代码（lisp）：
+    >
+    >    `(add 2 (subtract 4 2))`
+    >2. 生成的Token：
+    >
+    >    ```javascript
+    >    [
+    >      { type: 'paren',  value: '('        },
+    >      { type: 'name',   value: 'add'      },
+    >      { type: 'number', value: '2'        },
+    >      { type: 'paren',  value: '('        },
+    >      { type: 'name',   value: 'subtract' },
+    >      { type: 'number', value: '4'        },
+    >      { type: 'number', value: '2'        },
+    >      { type: 'paren',  value: ')'        },
+    >      { type: 'paren',  value: ')'        }
+    >    ]
+    >    ```
+    >3. 生成的AST：
+    >
+    >    ```javascript
+    >    {
+    >      type: 'Program',
+    >      body: [{
+    >        type: 'CallExpression',
+    >        name: 'add',
+    >        params: [
+    >          {
+    >            type: 'NumberLiteral',
+    >            value: '2'
+    >          },
+    >          {
+    >            type: 'CallExpression',
+    >            name: 'subtract',
+    >            params: [
+    >              {
+    >                type: 'NumberLiteral',
+    >                value: '4'
+    >              },
+    >              {
+    >                type: 'NumberLiteral',
+    >                value: '2'
+    >              }
+    >            ]
+    >          }
+    >        ]
+    >      }]
+    >    }
+    >    ```
+    ></details>
+2. 转换（transformation）
+
+    >让它能做到编译器期望它做到的事情。
+
+    遍历AST的所有节点，使用visitor中对应类型的处理函数，对不同类型的节点进行逻辑处理。
+3. 代码生成（code generation）
+
+    >可能会和转换有重叠。
+
+    根据最终的AST或之前的Token输出新的代码。
