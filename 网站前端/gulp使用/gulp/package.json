@@ -35,7 +35,7 @@
     "eslint-plugin-node": "10",
     "eslint-plugin-promise": "4",
     "eslint-plugin-standard": "4",
-    "eslint-plugin-vue": "5"
+    "eslint-plugin-vue": "6"
   },
   "scripts": {
     "gulp": "gulp"

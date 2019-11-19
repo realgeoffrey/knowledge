@@ -33,11 +33,12 @@
     1. 字符串操作
 
         1. [转化为Unicode、反转字符串、字符串长度、所占字节数](#原生js转化为unicode反转字符串字符串长度所占字节数)
+        1. [字符串匹配、替换](#原生js字符串匹配替换)
+        1. [分割字符串](#原生js分割字符串)
         1. [产生随机数](#原生js产生随机数)
         1. [比较版本号大小（纯数字）](#原生js比较版本号大小纯数字)
         1. [判断检索内容是否在被检索内容的分隔符间](#原生js判断检索内容是否在被检索内容的分隔符间)
         1. [格式化文件大小](#原生js格式化文件大小)
-        1. [字符串匹配、替换](#原生js字符串匹配替换)
     1. 功能
 
         1. [实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`](#原生js实现类似jquery的htmlbodyanimatescrollleft-像素-scrolltop-像素-毫秒)
@@ -1221,7 +1222,7 @@ function randomFrom(min, max) {
     /**
      * 所占字节数
      *
-     * UTF-8 是一种可变长度的 Unicode 编码格式，使用一至四个字节为每个字符编码（Unicode在范围 D800-DFFF 中不存在任何字符）
+     * UTF-8 一种可变长度的Unicode编码格式，使用一至四个字节为每个字符编码（Unicode在范围 D800-DFFF 中不存在任何字符）
      * 000000 - 00007F(128个代码)      0zzzzzzz(00-7F)                             一个字节
      * 000080 - 0007FF(1920个代码)     110yyyyy(C0-DF) 10zzzzzz(80-BF)             两个字节
      * 000800 - 00D7FF
@@ -1229,12 +1230,12 @@ function randomFrom(min, max) {
      * 010000 - 10FFFF(1048576个代码)  11110www(F0-F7) 10xxxxxx 10yyyyyy 10zzzzzz  四个字节
      * {@link https://zh.wikipedia.org/wiki/UTF-8}
      *
-     * UTF-16 大部分使用两个字节编码，编码超出 65535 的使用四个字节
+     * UTF-16 编码65535以内使用两个字节编码，超出65535的使用四个字节（JS内部，字符储存格式是：UCS-2——UTF-16的子级）
      * 000000 - 00FFFF  两个字节
      * 010000 - 10FFFF  四个字节
      * {@link https://zh.wikipedia.org/wiki/UTF-16}
      *
-     * GBK(ASCII的中文扩展) 除了0~126编号是1个字节之外，其他都2个字节
+     * GBK(ASCII的中文扩展) 除了0~126编号是1个字节之外，其他都2个字节（超过65535会由2个字显示）
      * {@link https://zh.wikipedia.org/wiki/汉字内码扩展规范}
      *
      * @param  {String} str
@@ -1249,7 +1250,7 @@ function randomFrom(min, max) {
 
       if (charset === 'utf-8' || charset === 'utf8') {
         for (let i = 0, len = str.length; i < len; i++) {
-          charCode = str.charCodeAt(i)
+          charCode = str.codePointAt(i)
 
           if (charCode <= 0x007f) {
             total += 1
@@ -1259,16 +1260,18 @@ function randomFrom(min, max) {
             total += 3
           } else {
             total += 4
+            i++
           }
         }
       } else if (charset === 'utf-16' || charset === 'utf16') {
         for (let i = 0, len = str.length; i < len; i++) {
-          charCode = str.charCodeAt(i)
+          charCode = str.codePointAt(i)
 
           if (charCode <= 0xffff) {
             total += 2
           } else {
             total += 4
+            i++
           }
         }
       } else {
@@ -1282,6 +1285,64 @@ function randomFrom(min, max) {
     /* 使用测试 */
     console.log(sizeofByte('💩'), sizeofByte('哈'), sizeofByte('©')) // => 4 2 1
     ```
+
+### *原生JS*字符串匹配、替换
+```javascript
+/**
+ * 字符串匹配并替换一个字符串
+ * @param {String} key - 被匹配内容
+ * @param {String} sentence - 原始字符串
+ * @param {String} prefix - 匹配处增加的前缀
+ * @param {String} suffix - 匹配处增加的后缀
+ * @param {String} [keyReplace = key] - 替换内容
+ * @returns {String} - 匹配后的字符串
+ */
+function highlightWords ({ key, sentence, prefix = '', suffix = '', keyReplace = key }) {
+  // 把需要匹配的字符串里`正则表达式需要转义的特殊字符`（除去原本在字符串中作为转义的`\`）前添加`\\`
+  const keyReformat = key.replace(/([()[\]{}\\/^$|?*+.])/g, '\\$1')
+
+  const regexp = new RegExp(keyReformat, 'g')
+
+  return sentence.replace(regexp, `${prefix + keyReplace + suffix}`)
+}
+
+
+/* 使用测试 */
+highlightWords({
+  key: 'abc',
+  sentence: 'abc123aabbccabc123',
+  prefix: '<span style="color: red;">',
+  suffix: '</span>',
+  keyReplace: '被选中'
+})
+```
+
+### *原生JS*分割字符串
+```javascript
+/**
+ * 按单个字分割字符串（弥补String.prototype.split会分割65535以上的字为2个字）
+ * @param  {String} str
+ * @return {Array} resultArray - 分割字符串后的数组
+ */
+function split (str) {
+  const resultArray = []
+
+  for (let i = 0, len = str.length; i < len; i++) {
+    if (str.codePointAt(i) <= 0xffff) {
+      resultArray.push(str[i])
+    } else {
+      resultArray.push(str[i] + str[i + 1])
+      i++
+    }
+  }
+
+  return resultArray
+}
+
+
+/* 使用测试 */
+console.log(split('💩1a💩哈。.↑'))  // =>  ["💩", "1", "a", "💩", "哈", "。", ".", "↑"]
+```
 
 ### *原生JS*产生随机数
 ```javascript
@@ -1407,37 +1468,6 @@ function upperCaseWord(str) {
         return match.toUpperCase();
     });
 }
-```
-
-### *原生JS*字符串匹配、替换
-```javascript
-/**
- * 字符串匹配并替换一个字符串
- * @param {String} key - 被匹配内容
- * @param {String} sentence - 原始字符串
- * @param {String} prefix - 匹配处增加的前缀
- * @param {String} suffix - 匹配处增加的后缀
- * @param {String} [keyReplace = key] - 替换内容
- * @returns {String} - 匹配后的字符串
- */
-function highlightWords ({ key, sentence, prefix = '', suffix = '', keyReplace = key }) {
-  // 把需要匹配的字符串里`正则表达式需要转义的特殊字符`（除去原本在字符串中作为转义的`\`）前添加`\\`
-  const keyReformat = key.replace(/([()[\]{}\\/^$|?*+.])/g, '\\$1')
-
-  const regexp = new RegExp(keyReformat, 'g')
-
-  return sentence.replace(regexp, `${prefix + keyReplace + suffix}`)
-}
-
-
-/* 使用测试 */
-highlightWords({
-  key: 'abc',
-  sentence: 'abc123aabbccabc123',
-  prefix: '<span style="color: red;">',
-  suffix: '</span>',
-  keyReplace: '被选中'
-})
 ```
 
 ### *原生JS*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
@@ -2505,8 +2535,8 @@ loadingFetch(() => { console.log('同步方法') })
 
       // 字符内容转变成Blob对象
       const blob = new Blob([content])
-      // 创建URL对象
-      const url = URL.createObjectURL(blob)
+      // 创建Blob URL
+      const url = window.URL.createObjectURL(blob)
 
       eleLink.href = url
 
@@ -2515,8 +2545,8 @@ loadingFetch(() => { console.log('同步方法') })
       eleLink.click()
       document.body.removeChild(eleLink)
 
-      // 释放URL对象
-      URL.revokeObjectURL(url)
+      // 释放Blob URL
+      window.URL.revokeObjectURL(url)
     }
 
 
@@ -2557,7 +2587,7 @@ loadingFetch(() => { console.log('同步方法') })
         const context = canvas.getContext('2d')
         context.drawImage(domImg, 0, 0)
 
-        // 图片转base64地址
+        // 图片转Base64地址
         let base64
         if (filename.endsWith('.png')) {
           base64 = canvas.toDataURL('image/png')

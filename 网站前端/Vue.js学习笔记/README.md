@@ -352,6 +352,8 @@
         1. 子组件的模板：
 
             `<slot 组件属性1="字符串" :组件属性2="表达式">`
+
+            >`<slot>`内部是子组件的作用域，和在其上添加的属性内容无关。
         2. 父级使用子组件`<slot>`上显性设置的属性对应值：
 
             `<template/子组件 v-slot="临时变量">{{ 临时变量.组件属性1 }}{{ 临时变量.组件属性2 }}</template/子组件>`
@@ -692,9 +694,11 @@
 
 >在（`props`、）`data`、`computed`先定义再使用，而不要对未使用过的变量进行`this.新变量名 = 值`。
 
-4. `watch`（对象）：被watch的（`props`或）`data`或`computed`属性改变而执行（必须是`props`或`data`或`computed`的属性）
+4. `watch`（对象）：被watch的值改变而执行函数（观察的值必须是`props`或`data`或`computed`的属性）
 
-    可以设置`immediate`（侦听开始后立即调用一次）和`deep`参数。
+    1. 可以设置`immediate`参数（侦听开始后立即调用一次）
+    2. 可以设置`deep`参数（监听的对象的属性修改时调用一次，无论嵌套多深的属性，属性的属性也触发）
+    3. 键名可以是`属性1.子属性2`，来观察嵌套的属性值
 
     >还可以用`vm.$watch`来观察属性改变。
 
@@ -2578,7 +2582,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             </details>
     8. `middleware`：中间件目录
 
-        JS文件（拥有上下文）。路由跳转之后，在页面渲染之前运行自定义函数。执行顺序：`nuxt.config.js` -> `layouts` -> `pages`。
+        JS文件（拥有上下文）。路由跳转之后，在页面渲染之前运行自定义函数（在加载plugins之前引入，但仅在首次路由加载和每次路由切换时执行）。执行顺序：`nuxt.config.js` -> `layouts` -> `pages`。
 
         >可以做权限、UA等判断后执行跳转、修改store或其他行为。
 
@@ -2872,7 +2876,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     ![nuxt流程图](./images/nuxt-1.png)
     </details>
 
-    1. 页面加载时，先进行Vue+vue router+vuex的初始化，再加载`plugins`至Vue实例；随后在路由初始化以及每次路由切换时进行`middleware`运行；最后进行页面的`asyncData`->`fetch`，然后进行组件的vue原本钩子（`beforeCreate`->`props->data->computed->watch`->`created`...）。
+    1. 页面加载时，先进行Vue、vue router、vuex的初始化，再初始化`middleware`，最后初始化`plugins`至Vue实例；随后在首次路由加载和每次路由切换时进行`middleware`导出方法的运行；最后进行页面的`asyncData`->`fetch`，然后进行组件的vue原本钩子（`beforeCreate`->`props->data->computed->watch`->`created`...）。
     2. 服务端渲染进行步骤至`created`（包括）。
     3. Vue组件的生命周期钩子中，仅有`beforeCreate`、`created`在客户端和服务端均被调用（服务端渲染），其他钩子仅在客户端被调用。
 6. 路由
@@ -3019,15 +3023,34 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         >1. 添加`--spa`：以SPA的方式打开服务，`asyncData/fetch`在客户端执行（因此所有请求都会在客户端发起），否则`asyncData/fetch`会在服务端执行。
         >2. 添加`--port 端口号`：指定端口号。
-    2. `nuxt build`：利用webpack编译应用，压缩JS、CSS（发布用）
+    2. `nuxt build`：利用webpack编译应用，压缩JS、CSS（用于发布SSR或SPA）
 
-        创建所有路由的`.html`文件，且这些`.html`都完全一致，加载时根据vue-router进行路由计算（可以刷新的SPA）。
+        >`--spa`：创建所有路由的`.html`文件，且这些`.html`都完全一致，加载时根据vue-router进行路由计算（可以刷新的SPA）。
 
         >vue相关资源不会自动tree shaking，但是会去除注释掉的内容（开发模式不会去除）；额外引用的文件会tree shaking+去除注释。
     3. `nuxt start`：以生产模式启动一个基于vue-server-renderer的服务端（依赖`nuxt build`生成的资源）
-    4. `nuxt generate`：生成静态化文件，用于静态页面发布
+    4. `nuxt generate`：预渲染生成静态化文件（用于发布预渲染的静态页面）
 
-    >增加`-h`参数查看nuxt命令可带参数。
+        >创建所有路由的`.html`文件（去除动态路由），每个文件都是预渲染完成的不同页面。
+
+        会跑一遍nuxt的流程（Vue、vue router、vuex的初始化 -> middleware、plugins的初始化 -> middleware -> asyncData、fetch -> beforeCreate...created），生成静态化文件。
+    >增加`--help`参数查看nuxt命令可带参数。
+
+    - 部署发布
+
+        1. SSR
+
+            `nuxt build` -> `nuxt start`
+        2. 预渲染
+
+            `nuxt generate`
+
+            >1. 针对无动态数据的静态页面（没有服务端返回的动态数据）。
+            >2. 忽略动态路由。
+            >3. 构建时跑完一遍nuxt流程，所以客户端不会再进行~~asyncData、fetch~~的执行。
+        3. SPA
+
+            `nuxt build --spa`
 12. 输出至生产环境的方案
 
     1. SSR：服务端渲染（与开发模式的SSR相同）。
