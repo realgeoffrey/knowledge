@@ -112,7 +112,27 @@
                 >初始化信息会存放在`~/.npmrc`文件里。
         3. 调试开发
 
-            `npm link 本地模块`（`npm unlink 本地模块`）
+            `npm link`、`npm unlink`
+
+            1. 本地
+
+                1. 引用的仓库：`npm link 本地模块的路径`
+
+                    - 取消：
+
+                        引用的仓库：`npm unlink 模块名`
+            2. 全局
+
+                1. 本地模块：`npm link`
+
+                    - 取消：
+
+                        本地模块：`npm unlink`
+                2. 引用的仓库：`npm link 模块名`
+
+                    - 取消：
+
+                        引用的仓库：`npm unlink 模块名`
         4. 发布（默认：发布至**latest**标签）
 
             `npm publish [--tag <tag>]`

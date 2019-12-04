@@ -2498,7 +2498,7 @@ async function loadingFetch (func) { // func：方法；若方法返回Promise�
 
 
 /* 使用测试 */
-// 1s后出发关闭loading
+// 1s后触发关闭loading
 loadingFetch(() => {
   return new Promise((resolve, reject) => {
     setTimeout(reject, 1000)
