@@ -390,8 +390,8 @@
 1. W3C定义：在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
 
     1. 毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开。
-    2. 普通流：除了`float: left/right`、`positon: absolute/fixed`之外的内容。
-2. 产生独立的BFC结构可避免margin合并
+    2. 普通流：除了`float: left/right`、`positon: absolute/fixed`之外的内容，父级是`flex`的不是普通流。
+2. 产生独立的BFC结构可避免margin合并。
 
 >ie6、7触发[haslayout](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/兼容至ie6/README.md#haslayout)会影响margin合并的发生。
 
@@ -556,6 +556,8 @@
 4. 设置`<img>`中[可替换元素](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Replaced_element)的位置、拉升：`object-position`、`object-fit`。
 
     >类似于针对背景图的位置、拉升：`background-position`、`background-size`（`background-repeat: no-repeat`）。
+
+- （PC或WAP）保存的图片，与图片的`style`、节点属性等无关，仅与图片资源本身有关
 
 ### 横竖屏切换（模拟手机屏幕旋转）
 >1. 旋转效果的节点，若要增加内嵌滚动条，则不能在此节点上增加`border-radius`，否者滚动条横竖轴颠倒。
@@ -1300,6 +1302,14 @@
         2. 有些低版本机型会有类似ie6的CSS问题，包括**CSS3的厂商前缀（`-webkit-`等）**、**层叠关系（`z-index`）**，并且要更注意**渲染性能（层产生）**。
     3. 字体模糊或抖动、图像锯齿等，可以考虑交由GPU处理。
     4. `transform: translate`进行非整数平移时，会产生模糊（注意百分比可能会计算成非整数）。
+
+    - 因为某些原因（参考：[如何在 Windows 上享受更棒的字体渲染  | 实用技巧](https://sspai.com/post/52557)），`微软雅黑`等字体在Windows进行Hint处理会导致模糊、笔画高低不平。
+
+        前端解决方案（避免Hint导致以上问题）：替换字体、提升`font-size`、去除粗体。如：微软雅黑，≥17px的粗体，≥14的非粗体。
+
+        >Hint：Windows对于低分辨率屏幕下字体显示进行的特殊处理，当**屏幕分辨率过低**或**字太小**不足以显示所有文字细节时，Windows会启动Hint让文字变得更清晰。
+        >
+        >每个字体本身会带有一个GASP表，Windows的渲染引擎会根据这些GASP表来判断是否需要做处理。然而如果字体的GASP表不完善，就会让Hint误操作。
 
 ### 经验技巧
 1. 命名间隔

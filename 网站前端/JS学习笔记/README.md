@@ -740,6 +740,10 @@
         1. 正在播放
 
             `timeupdate`事件：当`媒体.currentTime`改变（拉动进度或播放中）。
+
+            >iOS手动设置`currentTime`值之后，当播放时，可能会回溯一段时间开始播放。
+            >
+            >e.g. `dom.currentTime = 10 // currentTime先被设置为10；若开始播放，则倒退至9.n开始播放`
         2. 开始播放
 
             1. `play`事件：初次播放、暂停后恢复。
@@ -753,7 +757,7 @@
 
             （非`loop`属性模式下的）`ended`事件（伴随`pause`事件）。
 
-        - 建议只用`timeupdate`和`ended`事件处理需求。
+        - 建议只用`timeupdate`、`ended`、`pause`事件处理需求。
 
         >各机型/浏览器对视频事件、API的处理不同，甚至某些Android机型会要求：只有触发在视频区域内的事件才可执行视频的API。
     2. 自动播放
@@ -1558,6 +1562,7 @@
             >        最终链接：`https://a.app.qq.com/o/simple.jsp?pkgname=com.xx.xxx&android_schema=xxxx://xx`
             >    </details>
             >2. 微信分享在部分系统（低于微信客户端Android6.2）使用~~pushState~~导致签名失败，可查询[官方文档](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115)；又因为一般是异步加载、配置微信的设置，所以要等待微信第三方文件和接口完成后才能够配置成功（才能够设置成功）。
+            >3. Android的微信可以用<http://debugx5.qq.com/>打开调试，可进行清除缓存等操作。
         3. iOS9+的Universal links（通用链接），可以从底层打开其他App客户端，跳过白名单（微信已禁用）
 
             >需要HTTPS域名配置、iOS设置等其他端配合。
@@ -2498,6 +2503,110 @@
         2. `<img>`
 
             无论CSS设置什么，都会加载。
+
+><details>
+><summary>e.g. 预加载字体、图片、音频、视频，并显示进度条</summary>
+>
+>```vue
+><template>
+>  <div>
+>    loading:{{ completedNumber }}/{{ resourceNumber }}
+>
+>    <!-- 字体 -->
+>    <font>0123456789</font>
+>
+>    <!-- 图片 -->
+>    <img
+>      v-for="img of imgArray"
+>      :key="img"
+>      :src="img"
+>      @load="loadHandler"
+>    >
+>
+>    <!-- 音频/视频 （loadeddata、loadedmetadata） -->
+>    <audio
+>      v-for="audio of audioArray"
+>      :key="audio"
+>      :src="audio"
+>      preload="auto"
+>      @loadedmetadata="loadHandler"
+>    />
+>    <video
+>       v-for="video of videoArray"
+>       :key="video"
+>       :src="video"
+>       preload="auto"
+>       @loadedmetadata="loadHandler"
+>     />
+>  </div>
+></template>
+>
+><script>
+>import img1 from '@/assets/images/图1.png'
+>import img2 from '@/assets/images/图2.png'
+>import img3 from '@/assets/images/图3.png'
+>import img4 from '@/assets/images/图4.png'
+>
+>export default {
+>  data () {
+>    return {
+>      imgArray: [
+>        img1,
+>        img2,
+>        img3,
+>        img4
+>      ],
+>
+>      audioArray: [
+>        '音频地址1',
+>        '音频地址2',
+>        '音频地址3'
+>      ],
+>
+>      videoArray: [
+>        '视频地址1',
+>        '视频地址2'
+>      ],
+>
+>      completedNumber: 0
+>    }
+>  },
+>  computed: {
+>    resourceNumber () {
+>      return this.imgArray.length + this.audioArray.length + this.videoArray.length + 1  // 1：字体
+>    }
+>  },
+>  mounted () {
+>    // 字体 加载完毕
+>    document.fonts.ready
+>      .finally(() => {
+>        this.completedNumber = this.completedNumber + 1
+>      })
+>  },
+>  methods: {
+>    // 图片、音频、视频 加载完毕
+>    loadHandler () {
+>      this.completedNumber = this.completedNumber + 1
+>    }
+>  }
+>}
+></script>
+>
+><style scoped>
+>  @font-face {
+>    font-family: "字体族名";
+>    src: url("~@/assets/font/字体族名.woff") format("woff");
+>  }
+>  font {
+>    font-family: 字体族名;
+>    visibility: hidden;
+>  }
+>  img, audio, video {
+>    display: none;
+>  }
+></style>
+>```
+></details>
 
 ### 循环遍历
 ><details>

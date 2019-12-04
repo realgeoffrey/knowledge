@@ -32,22 +32,27 @@
     ```
 
     >注意：本机（目录权限）和远程主机的权限（文件权限）。
-4. 改密码
+4. 同步文件
+
+    ```bash
+    rsync 来源文件 目的地
+    ```
+5. 改密码
 
     ```bash
     passwd
     ```
-5. 指令在PATH变量的路径
+6. 指令在PATH变量的路径
 
     ```bash
     which “指令”
     ```
-6. （macOS）打开文件（夹）
+7. （macOS）打开文件（夹）
 
     ```bash
     open “路径/文件”
     ```
-7. hosts文件位置
+8. hosts文件位置
 
     1. macOS、Linux
 
@@ -55,7 +60,7 @@
     2. Windows
 
         `C:\Windows\System32\drivers\etc\hosts`
-8. 验证文件的数字签名
+9. 验证文件的数字签名
 
     1. MD5
 
@@ -81,14 +86,14 @@
         echo -n “字符串” | sha1sum.exe
         # 使用特定算法：`sha224sum.exe sha256sum.exe sha384sum.exe sha512sum.exe`
         ```
-9. 查看设置环境变量
+10. 查看设置环境变量
 
     ```bash
     echo $“变量”          # 查看变量
 
     export “变量”=“值”     # 设置变量
     ```
-10. 查看本机IP
+11. 查看本机IP
 
     ```bash
     # macOS
@@ -97,7 +102,7 @@
     # Windows
     ipconfig    # 查看`以太网适配器 本地连接 的 IPv4 地址`
     ```
-11. 执行文件
+12. 执行文件
 
     >要对路径名/文件名中的`标点`和`空格`进行`\`转义。
 
@@ -106,7 +111,7 @@
 
     . 路径名/文件名.sh
     ```
-12. （Unix-like）开机自动运行的脚本
+13. （Unix-like）开机自动运行的脚本
 
     ```bash
     # macOS
@@ -117,7 +122,7 @@
 
     # source 脚本   # 当前运行一遍
     ```
-13. 查看端口占用，杀掉进程
+14. 查看端口占用，杀掉进程
 
     1. macOS
 
@@ -138,7 +143,7 @@
         # 或`taskkill /F /T /IM “任务名”`
         # 或去任务管理器结束进程（打开进程->查看->选择列的PID）
         ```
-14. （macOS）brew更新
+15. （macOS）brew更新
 
     ```bash
     brew update && brew upgrade && brew cask upgrade
