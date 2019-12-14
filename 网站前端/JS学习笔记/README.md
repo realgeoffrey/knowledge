@@ -21,6 +21,8 @@
 
     1. [JS代码风格规范（coding style guide）](#js代码风格规范coding-style-guide)
     1. [编程实践（programming practices）](#编程实践programming-practices)
+
+        1. [代码调试方式](#代码调试方式)
     1. [函数防抖、函数节流](#函数防抖函数节流)
     1. [自执行匿名函数（拉姆达，λ，lambda）](#自执行匿名函数拉姆达λlambda)
     1. [Hybrid App相关](#hybrid-app相关)
@@ -36,6 +38,7 @@
     1. [循环遍历](#循环遍历)
     1. [判断对象、方法是否定义](#判断对象方法是否定义)
     1. [浏览器缓存](#浏览器缓存)
+    1. [欺骗JS词法作用域](#欺骗js词法作用域)
     1. [JS压缩细节](#js压缩细节)
 1. [性能原理](#性能原理)
 
@@ -917,7 +920,7 @@
                         >针对iOS的UC或QQ浏览器，可以添加[iphone-inline-video](https://github.com/bfred-it/iphone-inline-video)。
                     2. `x5-video-player-type="h5"`在底部的全屏内联模式（同层播放）。
 
-                        >[Android的腾讯x5内核App](https://x5.tencent.com/tbs/guide/video.html)特有。
+                        >[Android的腾讯X5内核webview](https://x5.tencent.com/tbs/guide/video.html)特有。
             2. 无法操作全屏模式
 
                 1. 无法改变全屏播放方向以及控件内容
@@ -972,17 +975,34 @@
         >建议：总是把所有变量声明都放在函数顶部，而不是散落在各个角落。
     2. 函数声明
 
-        1. 也会被JS引擎提前到作用域顶部声明，因此代码中函数的调用可以出现在函数声明之前。
+        1. 也会被JS引擎提前到当前执行的作用域顶部声明，因此代码中函数的调用可以出现在函数声明之前。
         2. 函数声明不应当出现在~~语句块~~内（如：条件语句），语句块的函数也会提前声明，导致语义不清容易出错。
     3. 函数表达式（Function expressions）声明
 
         必须先声明：`var a = function () {...};`才可以使用，声明会被提前，但赋值不会被提前。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```javascript
+        >foo() // TypeError: foo is not a function
+        >bar() // ReferenceError: bar is not defined
+        >
+        >var foo = function bar () {}
+        >```
+        ></details>
     4. 同名的变量声明和函数声明（不是函数表达式）
 
         同时声明的情况下（顺序不影响结果）：
 
         1. 变量仅声明不赋值：被赋值为函数。
         2. 变量赋值：被赋值为变量。
+
+        - 原因：
+
+            1. 函数、变量都在编译时提升，变量的赋值在运行时进行。
+            2. 所有函数声明会提升到所有变量声明之前；
+            3. 可以重复声明，重复声明的变量`var`被忽略，重复声明的函数`funtion`会覆盖之前同名的函数声明。
 
         ><details>
         ><summary>e.g.</summary>
@@ -1269,64 +1289,81 @@
 4. 将配置数据从代码中分离
 
     配置数据：URL、展示内容、重复的值、设置、任何可能发生变更的值。
-5. 代码调试方式
 
-    1. JS：
+#### 代码调试方式
+1. JS：
 
-        1. 展示：`console.log`、`console.info`、`console.warn`、`console.error`（`alert`）
-        2. 调用栈：`console.trace`
-        3. 更好的展示：
+    1. 展示：`console.log`、`console.info`、`console.warn`、`console.error`（`alert`）
+    2. 调用栈：`console.trace`
+    3. 更好的展示：
 
-            1. 缩进：`console.groupCollapsed或console.group`至`console.groupEnd`
-            2. 表格：`console.table`
-        4. 执行时间：`console.time`至`console.timeEnd`
+        1. 缩进：`console.groupCollapsed或console.group`至`console.groupEnd`
+        2. 表格：`console.table`
+    4. 执行时间：`console.time`至`console.timeEnd`
 
-        >（Value below was evaluated just now.）`console`引用类型的数据，在点击开来查看的瞬间才去取引用类型的快照（意味着可以console之后再修改展示内容），打开之后不再关联。
-    2. PC端的DevTool：Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）
-    3. WAP端调试推荐使用：Chrome的Remote devices调试（chrome://inspect/#devices）。
+    >（Value below was evaluated just now.）`console`引用类型的数据，在点击开来查看的瞬间才去取引用类型的快照（意味着可以console之后再修改展示内容），打开之后不再关联。
+2. PC端
 
-        也可以使用页面模拟调试，如：[eruda](https://github.com/liriliri/eruda)、[vConsole](https://github.com/Tencent/vConsole)。
-    4. 上线的页面中藏着某些“后门”调试（如：隐蔽操作开启`console`）
+    DevTool：Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）
+3. WAP端
 
-        1. PC端可以在URL中判断某些特定的`search`值，以开启调试模式。
+    - 使用页面模拟调试，如：[eruda](https://github.com/liriliri/eruda)、[vConsole](https://github.com/Tencent/vConsole)。
 
-            >e.g. `xxx?debug=1`开启
-        2. WAP端可以用一些隐蔽的手势触发log信息展示。
+    1. Android
 
-            ><details>
-            ><summary>e.g.</summary>
-            >
-            >```javascript
-            >let consolelogi = 0
-            >
-            >function wapConsole () {
-            >  if (event.touches.length >= 4) {    // 4个触发点以上
-            >    consolelogi += 1
-            >
-            >    if (consolelogi >= 2) {    // 2次以上触发
-            >      // 展示隐藏的调试信息
-            >      const newScript = document.createElement('script')
-            >      const appendPlace = document.getElementsByTagName('body')[0] || document.getElementsByTagName('head')[0]
-            >
-            >      newScript.onload = function () { // 只能保证加载完成，但不能判断是否执行
-            >        eruda.init()   // new VConsole()
-            >        newScript.onload = null
-            >      }
-            >
-            >      // onerror表示加载失败
-            >
-            >      newScript.src = '//unpkg.com/eruda'    // '//unpkg.com/vconsole'
-            >
-            >      appendPlace.appendChild(newScript)
-            >
-            >      document.removeEventListener('touchstart', wapConsole, false)
-            >    }
-            >  }
-            >}
-            >
-            >document.addEventListener('touchstart', wapConsole, false)
-            >```
-            ></details>
+        PC端的Chrome的Remote devices（<chrome://inspect/#devices>）调试已开启调试功能的APP的webview。
+
+        - Android已开启调试功能的APP：
+
+            1. Chrome
+            2. 用<http://debugx5.qq.com/>打开TBS内核调试功能的[腾讯X5内核webview](https://x5.tencent.com/)（如：微信、QQ）
+            3. 开启调试功能的debug包APP
+        >若PC端的Chrome识别不到手机webview，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)并运行（进入文件夹后运行`adb.exe devices`或`./adb devices`连接手机设备）。
+    2. iOS
+
+        macOS的Safari可以调试Safari APP
+4. 对于App内不方便查看的信息，可以把需要查看的信息发送HTTP请求、再抓包的方式进行调试。
+5. 上线的页面中藏着某些“后门”调试（如：隐蔽操作开启`console`）
+
+    1. 可以在URL中判断某些特定的`search`值，以开启调试模式。
+
+        >e.g. `xxx?debug=1`开启
+    2. WAP端可以用一些隐蔽的手势触发log信息展示。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```javascript
+        >let consolelogId = 0
+        >
+        >function wapConsole () {
+        >  if (event.touches.length >= 4) {    // 4个触发点以上
+        >    consolelogId += 1
+        >
+        >    if (consolelogId >= 2) {    // 2次以上触发
+        >      // 展示隐藏的调试信息
+        >      const newScript = document.createElement('script')
+        >      const appendPlace = document.getElementsByTagName('body')[0] || document.getElementsByTagName('head')[0]
+        >
+        >      newScript.onload = function () { // 只能保证加载完成，但不能判断是否执行
+        >        eruda.init()   // new VConsole()
+        >        newScript.onload = null
+        >      }
+        >
+        >      // onerror表示加载失败
+        >
+        >      newScript.src = '//unpkg.com/eruda'    // '//unpkg.com/vconsole'
+        >
+        >      appendPlace.appendChild(newScript)
+        >
+        >      document.removeEventListener('touchstart', wapConsole, false)
+        >    }
+        >  }
+        >}
+        >
+        >document.addEventListener('touchstart', wapConsole, false)
+        >```
+        ></details>
 
 ### 函数防抖、函数节流
 >都是用来限制某个函数在一定时间内执行次数的技巧。
@@ -1451,9 +1488,6 @@
     5. Hybrid开发测试
 
         1. 提供**切换成线上资源请求方式**的功能，用代理工具代理成本地资源。
-        2. Chrome的Remote devices调试（<chrome://inspect/#devices>）。
-
-            >若电脑Chrome识别不到手机webview，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)并运行（进入文件夹后运行`adb.exe devices`或`./adb devices`连接手机设备）。
 2. Hybrid的前端处理
 
     ><details>
@@ -1562,7 +1596,7 @@
             >        最终链接：`https://a.app.qq.com/o/simple.jsp?pkgname=com.xx.xxx&android_schema=xxxx://xx`
             >    </details>
             >2. 微信分享在部分系统（低于微信客户端Android6.2）使用~~pushState~~导致签名失败，可查询[官方文档](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115)；又因为一般是异步加载、配置微信的设置，所以要等待微信第三方文件和接口完成后才能够配置成功（才能够设置成功）。
-            >3. Android的微信可以用<http://debugx5.qq.com/>打开调试，可进行清除缓存等操作。
+            >3. Android的微信、QQ等X5内核可以用<http://debugx5.qq.com/>打开调试，可进行清除缓存等操作。
         3. iOS9+的Universal links（通用链接），可以从底层打开其他App客户端，跳过白名单（微信已禁用）
 
             >需要HTTPS域名配置、iOS设置等其他端配合。
@@ -1620,27 +1654,8 @@
             >```
             ></details>
         >接口设计可以带有“透传数据”：前端调用客户端方法时多传一个透传参数，之后客户端异步调用前端方法时带着这个参数的值。
-    3. 根据WebView的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在Hybrid遇到的bug。
-
-        1. 对于App内不方便查看的信息，可以发送需要查看的信息、再抓包的方式进行调试。
-        2. 可以用一些隐蔽的手势触发log信息展示。
-
-            <details>
-            <summary>e.g.</summary>
-
-            ```javascript
-            var consolelogi = 0;
-
-            document.addEventListener('touchstart', function () {
-                if (event.touches.length >= 4) {    // 4个触发点以上
-                    consolelogi += 1;
-                    if (consolelogi >= 2) {    // 2次以上触发
-                        // 展示隐藏的调试信息
-                    }
-                }
-            }, false);
-            ```
-            </details>
+    2. 根据WebView的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在Hybrid遇到的bug。
+    3. 调试webview：[代码调试方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#代码调试方式)中针对移动端的部分。
     4. 分享到其他App
 
         1. 通过JS触发Native App之间的切换分享（自己Native内可用桥协议，任意App均要起作用只能用Scheme）。
@@ -1678,7 +1693,7 @@
     3. 最后再将结果赋值给`a`。
 
     ><details>
-    ><summary><code>var a = b || {};</code>与<code>if (c) {}</code>会因为b或c没有定义而报错，可以用<code>typeof</code>来使代码健壮</summary>
+    ><summary><code>var a = b || {};</code>与<code>if (c) {}</code>会因为b或c没有定义而报错<code>ReferenceError: b is not defined</code>，可以用<code>typeof</code>来使代码健壮</summary>
     >
     >1. `var a = typeof b !== 'undefined' && b !== null ? b : {};`
     >2. `if (typeof c !== 'undefined' && c !== null) {}`
@@ -1726,6 +1741,8 @@
 
     >在DOM中随意添加一个属性，`此属性 in 此DOM`永远为真，不可以判断是否此DOM存在此属性（或方法）。
 8. `eval`中直接执行`function`声明无效，必须用引号把`function`声明包裹起来才有效（尽量不用`eval`）：
+
+    >`eval`的参数是字符串。
 
     ```javascript
     eval(function a() {});   // => function a() {}（但没有声明）
@@ -2821,6 +2838,47 @@
         <html manifest=".manifest文件/.appcache文件">
         ```
 
+### 欺骗JS词法作用域
+
+通过`eval`、`with`，能在JS运行期修改或创建书写期就确定的词法作用域。
+
+>运行期修改或创建词法作用域，会导致JS无法进行JIT优化（当JS引擎遇到这些代码时，只能谨慎地不进行JIT优化，因此可能导致**所有**优化都失效）。且极度不安全，最好不要使用。
+
+1. `eval`
+
+    接受一个字符串作为参数，将其中的内容视为好像在书写时就存在于程序中这个位置的代码（用程序动态生成代码并运行，好像代码是写在这个位置一样）。
+
+    ```javascript
+    // e.g.
+    function foo (str, a) {
+      eval(str)         // 改变词法作用域
+      console.log(a, b)
+    }
+
+    var b = 2
+    foo('var b = 3', 1) // => 1 3
+    ```
+
+    - 类似的有：`setTimeout/setInterval`的第一个参数是字符串、`new Function`的最后一个字符串参数，都能动态生成代码，都能在运行期修改书写期的词法作用域。
+2. `with`
+
+    ```javascript
+    // e.g.
+    function foo (obj) {
+      with (obj) { // 为形参obj创建作用域
+        a = 2      // 作用域中查找变量a并赋值（若查找不到则向上查找，顶层也找不到则创建一个全局变量）
+      }
+    }
+
+    var o1 = { a: 1 }
+    foo(o1)
+    console.log(o1.a)    // => 2
+
+    var o2 = {}
+    foo(o2)
+    console.log(o2.a, a) // => undefined 2
+    ```
+
 ### JS压缩细节
 >来自：[Javascript代码压缩细节](http://div.io/topic/447)。
 
@@ -2913,20 +2971,29 @@
     2. 实例化（`new`）：默认返回`this`。
 3. 创建函数的方式：
 
-    1. 构造函数
+    1. 函数声明（函数语句）
+
+        `function 名字 (多个参数) {/* 函数体 */}`
+
+        >函数名绑定在所在作用域。
+
+    >若`function`（或箭头函数的`()`）是声明中的第一个词，则是函数声明，否则是函数表达式。
+
+    2. 函数表达式（function expression）
+
+        1. `var 名字 = function 内部名字 (多个参数) {/* 函数体 */}`（或`var 名字 = (多个参数) => {/* 函数体 */}`）
+        2. `(function 内部名字 (多个参数) {/* 函数体 */}())`（或`((多个参数) => {/* 函数体 */})()`）
+
+        >函数名绑定在函数表达式内部函数体中。
+
+    >1. 通过**函数声明**、**函数表达式**创建的函数，在加载脚本时和其他代码一起解析（编译时）；通过**构造函数**定义的函数，在构造函数被执行时（运行时）才解析函数体字符串。
+    >2. 不建议通过~~构造函数~~创建函数，因为作为字符串的函数体可能会阻止一些JS引擎优化，也会引起其他问题。
+
+    3. ~~构造函数~~
 
         `var 名字 = new Function([多个参数, ]函数体字符串);`
 
         >直接调用`Function`（不使用`new`操作符）的效果与调用构造函数一样，区别是`this`指向`window`。
-    2. 函数声明（函数语句）
-
-        `function 名字 (多个参数) {/* 函数体 */};`
-    3. 函数表达式（function expression）
-
-        `var 名字 = function (多个参数) {/* 函数体 */};`（变量赋值为`匿名函数`或`箭头函数`）
-
-    >1. 通过**函数声明**、**函数表达式**创建的函数，在加载脚本时和其他代码一起解析；通过**构造函数**定义的函数，在构造函数被执行时才解析函数体字符串。
-    >2. 不建议通过~~构造函数~~创建函数，因为作为字符串的函数体可能会阻止一些JS引擎优化，也会引起其他问题。
 4. 匿名函数、[箭头函数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#箭头函数)
 
     只能提供给其他变量引用、或自执行。
@@ -3047,26 +3114,38 @@
 
         >e.g. `function func ({ para1 = 'default', para2 } = {}) {}`
     4. 参数的数量有限制，如：有些JS引擎限制在`Math.pow(2, 16)`。
-7. 变量作用域
-
-    因为JS采用的是[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)，所以函数的作用域（变量取值）在函数定义时决定，与函数在哪个作用域被调用无关。
-
-    1. ES5
-
-        函数声明是唯一拥有自身作用域的结构。
-
-        >1. 若`function`或ES6的`箭头函数`**声明**出现，则在父级作用域中新增一个子级作用域。父级不能访问子级作用域，子级能完全使用父级作用域。
-        >2. 函数在声明时已决定作用域，之后在任意作用域中被调用，都不会改变函数内部变量的取值（由函数声明处由内向外搜索变量）。
-    2. ES6
-
-        在ES5的基础上，增加块级作用域概念（[`let`、`const`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#letconst)）。
+7. [变量、`this`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#变量this)的取值
 
 ### 变量、`this`
-1. `变量`
+1. `变量`（、`函数`）
 
     >JS是[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)。
 
-    作用域和值：与调用函数时所在的作用域、时机无关（函数赋值给任何变量或属性也不改变变量的取值）；由声明函数时，变量处在哪一个函数作用域（或块级作用域）唯一决定（考虑闭包）。
+    - 作用域和值：
+
+        1. <details>
+
+            <summary>由声明函数时，变量处在哪一个函数作用域（或块级作用域）唯一决定（考虑闭包）；</summary>
+
+            1. ES5
+
+                函数声明是唯一拥有自身作用域的结构。
+
+                >1. 若`function`或`箭头函数`**声明**出现，则在父级作用域中新增一个子级作用域。
+                >2. 父级不能访问子级作用域，子级能完全使用父级作用域。
+            2. ES6
+
+                在ES5的基础上，增加块级作用域概念（[`let`、`const`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#letconst)）。
+            </details>
+
+            >与~~调用函数时所在的作用域、时机、以何种方式被调用~~无关（函数赋值给任何变量或属性也不改变变量取值）。
+        2. 遍历嵌套作用域链，在当前执行的作用域开始（函数声明处），向上遍历查找直到全局作用域或找到；
+
+            >1. 对于`变量 = 值`赋值（LHS），若直到全局作用域也没查找到变量，则创建一个全局变量，用`值`赋值给这个新建的全局变量。
+            >2. 对于`变量`引用（RHS），若直到全局作用域也没查找到变量，则报错`ReferenceError: 变量 is not defined`。
+        3. 多层的嵌套作用域中，可以定义同名的标识符（变量、函数），遮蔽效应使内部的标识符“遮蔽”外部的标识符（若查找到第一个匹配的标识符则停止再向上查找）。
+
+            >`window.某变量`可以访问被同名变量`某变量`遮蔽的全局变量。
 
     <details>
     <summary>e.g.</summary>
@@ -3219,8 +3298,8 @@
         >  b: window.open
         >}
         >
-        >a.b()           // 报错
-        >a.b.call({})    // 报错
+        >a.b()           // TypeError: Illegal invocation
+        >a.b.call({})    // TypeError: Illegal invocation
         >a.b.call(null)  // 正常
         >```
         ></details>
@@ -3619,7 +3698,7 @@
 
                 1. 调用原对象自身的`valueOf`，若返回值是基本数据类型，则再使用`Number`，不再进行后续步骤；
                 2. 调用原对象自身的`toString`，若返回值是基本数据类型，则再使用`Number`，不再进行后续步骤；
-                3. 若以上返回都还是对象，报错。
+                3. 若以上返回都还是对象，报错`TypeError: Cannot convert object to primitive value`。
     2. `String(参数)`
 
         >与`` `${参数}` ``返回效果一致。
@@ -3652,7 +3731,7 @@
 
                 1. 调用原对象自身的`toString`，若返回值是基本数据类型，则再使用`String`，不再进行后续步骤；
                 2. 调用原对象自身的`valueOf`，若返回值是基本数据类型，则再使用`String`，不再进行后续步骤；
-                3. 若以上返回都还是对象，报错。
+                3. 若以上返回都还是对象，报错`TypeError: Cannot convert object to primitive value`。
     3. `Boolean(参数)`
 
         | 数据类型 | 转换为`true`的值 | 转换为`false`的值 |
