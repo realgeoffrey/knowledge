@@ -307,6 +307,8 @@
 
     >如：用`try-catch`掩盖一些奇怪的崩溃。不到万不得已不要这么干，未来可能会付出更大代价。
 
+- 前端的[代码调试方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#代码调试方式)
+
 ### MD5 && SHA
 >1. 不同系统、不同编程语言对MD5或SHA实现的逻辑相同（对同一内容，用不同实现的MD5或SHA得出结果相同）。
 >2. 用不同的行分隔符（`\n`、`\r`、`\r\n`）打开同一个文本文件，会造成MD5或SHA输出结果不同。
