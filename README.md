@@ -57,7 +57,7 @@
     1. [gulp使用](./网站前端/gulp使用/README.md)
     2. [webpack学习笔记](./网站前端/webpack学习笔记/README.md)
     3. [Babel学习笔记](./网站前端/Babel学习笔记/README.md)
-    4. [ESLint配置解析](./网站前端/ESLint配置解析/README.md)
+    4. [ESLint学习笔记](./网站前端/ESLint学习笔记/README.md)
     </details>
 9. <details>
 

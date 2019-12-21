@@ -390,7 +390,7 @@
 1. W3C定义：在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
 
     1. 毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开。
-    2. 普通流：除了`float: left/right`、`positon: absolute/fixed`之外的内容，父级是`flex`的不是普通流。
+    2. 普通流：除了`float: left/right`、`positon: absolute/fixed`之外的内容，父级是`flex`的节点不是普通流。
 2. 产生独立的BFC结构可避免margin合并。
 
 >ie6、7触发[haslayout](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/兼容至ie6/README.md#haslayout)会影响margin合并的发生。
@@ -557,7 +557,7 @@
 
     >类似于针对背景图的位置、拉升：`background-position`、`background-size`（`background-repeat: no-repeat`）。
 
-- （PC或WAP）保存的图片，与图片的`style`、节点属性等无关，仅与图片资源本身有关
+- （PC或WAP）下载保存的图片，与图片的`style`、节点属性等无关，仅与图片资源本身有关
 
 ### 横竖屏切换（模拟手机屏幕旋转）
 >1. 旋转效果的节点，若要增加内嵌滚动条，则不能在此节点上增加`border-radius`，否者滚动条横竖轴颠倒。
