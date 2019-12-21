@@ -26,6 +26,7 @@
     1. [函数防抖、函数节流](#函数防抖函数节流)
     1. [自执行匿名函数（拉姆达，λ，lambda）](#自执行匿名函数拉姆达λlambda)
     1. [Hybrid App相关](#hybrid-app相关)
+    1. [WAP端适配经验](#wap端适配经验)
     1. [Tips](#tips)
     1. [函数模板](#函数模板)
 1. [功能归纳](#功能归纳)
@@ -1440,6 +1441,13 @@
     >        console.log(num);       // => 0 => 1 => 2
     >    }, 0);
     >}
+    >
+    > // ES6的块级作用域（ES6拥有了块级作用域之后，不再需要~~自执行匿名函数~~）
+    >for (let i = 0; i < 3; i++) {
+    >    setTimeout(function () {
+    >        console.log(i);        // => 0 => 1 => 2
+    >    }, 0);
+    >}
     >```
     ></details>
 3. 可以添加函数名：`(function 内部名字 () { console.log(内部名字); 错误 }())`
@@ -1597,6 +1605,7 @@
             >    </details>
             >2. 微信分享在部分系统（低于微信客户端Android6.2）使用~~pushState~~导致签名失败，可查询[官方文档](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115)；又因为一般是异步加载、配置微信的设置，所以要等待微信第三方文件和接口完成后才能够配置成功（才能够设置成功）。
             >3. Android的微信、QQ等X5内核可以用<http://debugx5.qq.com/>打开调试，可进行清除缓存等操作。
+            >4. 在iOS微信webview长按没有 ~~`src`~~ 的`<img>`，可以截屏这个`<img>`所在位置。
         3. iOS9+的Universal links（通用链接），可以从底层打开其他App客户端，跳过白名单（微信已禁用）
 
             >需要HTTPS域名配置、iOS设置等其他端配合。
@@ -1660,6 +1669,9 @@
 
         1. 通过JS触发Native App之间的切换分享（自己Native内可用桥协议，任意App均要起作用只能用Scheme）。
         2. 带分享信息参数去访问其他App提供的分享URL。
+
+### WAP端适配经验
+// todo
 
 ### Tips
 1. `var a = b = c = 1;/* b、c没有var的声明。等价于：var a = 1; b = 1; c = 1; */`
@@ -2100,44 +2112,45 @@
         4. Number实例 -> `'[object Number]'`
         5. String实例 -> `'[object String]'`
         6. Symbol实例 -> `'[object Symbol]'`
-        7. Object实例 -> `'[object Object]'`
-        8. 自定义类型实例 -> `'[object Object]'`
-        9. Array实例 -> `'[object Array]'`
-        10. Function实例 -> `'[object Function]'`
-        11. Date实例 -> `'[object Date]'`
-        12. RegExp实例 -> `'[object RegExp]'`
-        13. <details>
+        7. BigInt实例 -> `'[object BigInt]'`
+        8. Object实例 -> `'[object Object]'`
+        9. 自定义类型实例 -> `'[object Object]'`
+        10. Array实例 -> `'[object Array]'`
+        11. Function实例 -> `'[object Function]'`
+        12. Date实例 -> `'[object Date]'`
+        13. RegExp实例 -> `'[object RegExp]'`
+        14. <details>
 
             <summary>Error类型实例 -> <code>'[object Error]'</code></summary>
 
             Error、EvalError、RangeError、ReferenceError、SyntaxError、TypeError、URIError
             </details>
-        14. Map实例 -> `'[object Map]'`
-        15. Set实例 -> `'[object Set]'`
-        16. WeakMap实例 -> `'[object WeakMap]'`
-        17. WeakSet实例 -> `'[object WeakSet]'`
-        18. Promise实例 -> `'[object Promise]'`
-        19. 生成器实例 -> `'[object GeneratorFunction]'`
-        20. `window` -> `'[object Window]'`
-        21. `document` -> `'[object HTMLDocument]'`
+        15. Map实例 -> `'[object Map]'`
+        16. Set实例 -> `'[object Set]'`
+        17. WeakMap实例 -> `'[object WeakMap]'`
+        18. WeakSet实例 -> `'[object WeakSet]'`
+        19. Promise实例 -> `'[object Promise]'`
+        20. 生成器实例 -> `'[object GeneratorFunction]'`
+        21. `window` -> `'[object Window]'`
+        22. `document` -> `'[object HTMLDocument]'`
 
             >参考：[MDN：HTML 元素接口](https://developer.mozilla.org/zh-CN/docs/Web/API/Document_Object_Model#HTML_元素接口)。
 
             继承`document`的各种DOM，返回`'[object HTML继承类Element]'`。
-        22. HTMLCollection实例（DOM集合） -> `'[object HTMLCollection]'`
-        23. NodeList实例（`DOM.childNodes`或`document.querySelectorAll`等返回） -> `'[object NodeList]'`
-        24. `arguments` -> `'[object Arguments]'`
-        25. `Math` -> `'[object Math]'`
-        26. `JSON` -> `'[object JSON]'`
-        27. `WebAssembly` -> `'[object WebAssembly]'`
-        28. <details>
+        23. HTMLCollection实例（DOM集合） -> `'[object HTMLCollection]'`
+        24. NodeList实例（`DOM.childNodes`或`document.querySelectorAll`等返回） -> `'[object NodeList]'`
+        25. `arguments` -> `'[object Arguments]'`
+        26. `Math` -> `'[object Math]'`
+        27. `JSON` -> `'[object JSON]'`
+        28. `WebAssembly` -> `'[object WebAssembly]'`
+        29. <details>
 
             <summary>TypedArray实例 -> <code>'[object 构造函数名]'</code></summary>
 
             Int8Array、Uint8Array、Uint8ClampedArray、Int16Array、Uint16Array、Int32Array、Uint32Array、Float32Array、Float64Array
             </details>
-        29. ArrayBuffer实例 -> `'[object ArrayBuffer]'`
-        30. DataView实例 -> `'[object DataView]'`
+        30. ArrayBuffer实例 -> `'[object ArrayBuffer]'`
+        31. DataView实例 -> `'[object DataView]'`
 
         ><details>
         ><summary>对于没有声明的变量，直接使用会报<strong>引用不存在变量</strong>的错误，可以用<code>typeof</code>来使代码健壮</summary>
@@ -2153,10 +2166,11 @@
         2. 布尔型 -> `'boolean'`
         3. 数值型 -> `'number'`
         4. Symbol型 -> `'symbol'`
-        5. `undefined` -> `'undefined'`
-        6. 函数 -> `'function'`
-        7. 引用对象型 -> `'object'`
-        8. `null` -> `'object'`
+        5. BigInt型 -> `'bigint'`
+        6. `undefined` -> `'undefined'`
+        7. 函数 -> `'function'`
+        8. 引用对象型 -> `'object'`
+        9. `null` -> `'object'`
 
         >1. 因为`typeof null`返回`'object'`，因此typeof不能判断是否是引用数据类型。
         >2. ie8-的DOM节点的方法返回不是~~function~~，而是`object`，因此只能用`方法名 in DOM`检测DOM是否拥有某方法。
@@ -3125,7 +3139,7 @@
 
         1. <details>
 
-            <summary>由声明函数时，变量处在哪一个函数作用域（或块级作用域）唯一决定（考虑闭包）；</summary>
+            <summary>由声明函数时，变量处在哪一个函数作用域（或块级作用域）唯一决定；</summary>
 
             1. ES5
 
@@ -3209,6 +3223,8 @@
 
     1. 非箭头函数
 
+        >`this`取值类似于[动态作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)。
+
         `this`：调用函数的那个对象（与在什么作用域无关）；`this`的值：在函数被调用时才会指定。
 
         1. 直接函数调用（如：`alert()`）、立即调用的函数表达式（如：`(function () {}())`）
@@ -3232,60 +3248,64 @@
         <summary>e.g.</summary>
 
         ```javascript
-        var x = 'global';
+        var x = 'global'
 
-        function test() {
-            console.log(this.x + '|' + _test() + '|' + (function () {return this.x;}()));
+        function windowTest () {
+          console.log(this.x + '|' + _test() + '|' + (function () {return this.x}()))
 
-            function _test() {
-
-                return this.x;
-            }
+          function _test () {
+            return this.x
+          }
         }
 
         /* window：方法没有对象调用（直接函数调用、立即调用的函数表达式，且与作用域无关） */
-        test();                 // => global|global|global
+        windowTest()                // => global|global|global
 
         var obj1 = {
-            x: 1,
-            test: function () {
-                var that = this;
+          x: 1,
+          test1: function () {
+            var that = this
 
-                return function () {
+            return function () {
 
-                    console.log(this.x + '|' + that.x);
-                };
+              console.log(this.x + '|' + that.x)
             }
-        };
-        (obj1.test()());        // => global|1
+          },
+          test2: function () {
+            console.log(this.x)
+          }
+        }
+        ;(obj1.test1()())           // => global|1
 
-        var { test } = obj1;
-        (test()())              // => global|global
+        var { test1 } = obj1
+        ;(test1()())                // => global|global
+        setTimeout(obj1.test1(), 0) // => global|1
+        setTimeout(obj1.test2, 0)   // => global
 
 
         /* 上级对象：函数作为某个对象的方法调用 */
-        var obj2 = {};
-        obj2.x = 2;
-        obj2.func = test;
-        obj2.func();            // => 2|global|global
+        var obj2 = {}
+        obj2.x = 2
+        obj2.func = windowTest
+        obj2.func()                 // => 2|global|global
 
 
         /* 新实例对象：构造函数 */
-        function Test() {
-            this.x = 3;
-            console.log(this.x + '|' + _test() + '|' + (function () {return this.x;}()));
+        function Test () {
+          this.x = 3
+          console.log(this.x + '|' + _test() + '|' + (function () {return this.x}()))
 
-            function _test() {
-
-                return this.x;
-            }
+          function _test () {
+            return this.x
+          }
         }
-        var obj3 = new Test();  // => 3|global|global
+
+        var obj3 = new Test()       // => 3|global|global
 
 
         /* 传入的指定对象：apply或call调用 */
-        var obj4 = {x: 4};
-        obj2.func.call(obj4);   // => 4|global|global
+        var obj4 = { x: 4 }
+        obj2.func.call(obj4)        // => 4|global|global
         ```
         </details>
 
@@ -3305,11 +3325,38 @@
         ></details>
     2. 箭头函数
 
-        不会创建自己的`this`，而使用封闭执行上下文最近的一个`this`值。`this`的值：在函数被调用时才会指定（向上查找）。
+        不会创建自己的`this`，根据[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)向上遍历查找直到非箭头函数定义的`this`或全局作用域；若找到`this`，则再根据非箭头函数的方式决定取值。
+
+        >看上去就像：使用封闭执行上下文最近的一个`this`值。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```javascript
+        >var a = {
+        >  foo: () => {     // 箭头函数
+        >    return () => {
+        >      console.log(this)
+        >    }
+        >  },
+        >  bar () {         // 非箭头函数（简写的方法）
+        >    return () => {
+        >      console.log(this)
+        >    }
+        >  }
+        >}
+        >
+        >a.foo()()     // window
+        >a.bar()()     // a
+        >
+        >var b = a.bar
+        >b()()         // window
+        >```
+        ></details>
 
 ### 闭包（closure）
 1. 当函数体内定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数执行完毕（寿命终结）之后。
-2. 闭包：能够读取其他函数体内变量的函数。由两部分构成：**函数**、**上下文环境**（链式作用域）。
+2. 无论通过何种手段将内部函数传递到它所在的词法作用域以外，函数都会持有对原始定义作用域的引用（函数记住并访问它原始所在的词法作用域），无论在何处执行这个函数都会使用闭包。
 3. 闭包通常用来创建私有变量或方法，使得这些内容不被外部访问，同时又可以通过指定的闭包函数访问。
 
 - 产生效果：
@@ -3715,7 +3762,7 @@
                 1. `String(Symbol())      // => 'Symbol()'`
                 2. `String(Symbol(1))     // => 'Symbol(1)'`
                 3. `String(Symbol('abc')) // => 'Symbol(abc)'`
-            7. Bigint：`String(1n) // => '1'`。
+            7. BigInt：`String(1n) // => '1'`。
         2. 引用数据类型：
 
             若是数组，则返回该数组的字符串形式；否则返回一个类型字符串。
@@ -3780,7 +3827,7 @@
 
         - `+`加法运算：
 
-            >`Symbol`不能进行~~加法运算~~；`Bigint`只能和 `Bigint`、字符串、对象 进行加法运算。
+            >`Symbol`不能进行~~加法运算~~；`BigInt`只能和 `BigInt`、字符串、对象 进行加法运算。
 
             1. 若运算数有对象，先`ToPrimitive(对象)`转换为的基本数据类型，再按照下面方式继续自动转换或运算出结果；
             2. 若运算数有字符串，则都转换为字符串（`String(基本数据类型)`）进行；

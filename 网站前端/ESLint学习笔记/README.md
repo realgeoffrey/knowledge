@@ -1,5 +1,14 @@
-### ESLint配置解析
+# ESLint学习笔记
+
+## 目录
+1. [ESLint配置解析](#eslint配置解析)
+1. [目标文件内的注释开关](#目标文件内的注释开关)
+
+---
+
 >来自：[ESLint文档](http://eslint.cn/docs/user-guide/configuring)。
+
+### ESLint配置解析
 
 ```javascript
 /*
@@ -134,10 +143,22 @@
 }
 ```
 
-- 目标文件内的注释开关
+### 目标文件内的注释开关
+1. 取消之后所有内容的eslint判断：
 
-    1. 取消之后所有内容的eslint判断：`/* eslint-disable */`
+    1. `/* eslint-disable */`
+    2. `/* eslint-disable 规则名1[, 规则名2] */`
 
-        - 开启之后所有内容的eslint判断：`/* eslint-enable */`
-    2. 取消当前行的eslint判断：`// eslint-disable-line`
-    3. 取消下一行的eslint判断：`// eslint-disable-next-line`
+- 开启之后所有内容的eslint判断：
+
+    1. `/* eslint-enable */`
+    2. `/* eslint-enable 规则名1[, 规则名2] */`
+
+2. 取消当前行的eslint判断：
+
+    1. `/* eslint-disable-line */` 或 `// eslint-disable-line`
+    2. `/* eslint-disable-line 规则名1[, 规则名2] */` 或 `// eslint-disable-line 规则名1[, 规则名2]`
+3. 取消下一行的eslint判断：
+
+    1. `/* eslint-disable-next-line */` 或 `// eslint-disable-next-line`
+    2. `/* eslint-disable-next-line 规则名1[, 规则名2] */` 或 `// eslint-disable-next-line 规则名1[, 规则名2]`

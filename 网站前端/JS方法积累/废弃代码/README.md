@@ -21,7 +21,9 @@
 
         1. [防抖函数](#原生js防抖函数)
         1. [节流函数](#原生js节流函数)
-1. [Polyfill](#polyfill)
+1. <details>
+
+    <summary><a href="#polyfill">Polyfill</a></summary>
 
     1. [`requestAnimationFrame`和`cancelAnimationFrame`](#原生jsrequestanimationframe和cancelanimationframe的polyfill)
     1. [`Date.now`](#原生jsdatenow的polyfill)
@@ -35,6 +37,7 @@
     1. [`Number.isFinite`](#原生jsnumberisfinite的polyfill)
     1. [`Number.isInteger`](#原生jsnumberisinteger的polyfill)
     1. [`Number.isSafeInteger`](#原生jsnumberissafeinteger的polyfill)
+    </details>
 
 ---
 ## 原生JS方法

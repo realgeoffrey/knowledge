@@ -199,8 +199,8 @@
             <summary>e.g.</summary>
 
             ```javascript
-            /\w/g.source === '\\w';                  // => true
-            new RegExp('\\w', 'g').source === '\\w'; // => true
+            /\w/g.source === '\\w';                  // true
+            new RegExp('\\w', 'g').source === '\\w'; // true
             ```
             </details>
         2. `flags`

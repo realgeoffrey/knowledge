@@ -4,7 +4,7 @@
 - 预编译工具
 
     1. 使用傻瓜式CSS预处理器语言图形编译工具：[Koala](http://koala-app.com/index-zh.html)。
-    2. 使用gulp（[gulp-sass](https://github.com/dlmanning/gulp-sass)）等构建工具。
+    2. 使用[node-sass](https://github.com/sass/node-sass)、[gulp-sass](https://github.com/dlmanning/gulp-sass)等构建工具。
 
 1. `变量`、`方法`和`引用`必须在使用前定义，`继承`不需要提前定义；声明相同内容不会报错，只会用最后一次声明覆盖之前声明。
 2. 变量以`$`开头
@@ -180,11 +180,11 @@
         @return 20px / 2;
     }
     a {
-        color: #112233 + #aabbcc;   // #bbddff
-        font-size: 20 + px;         // 20px
-        width: (20px / 2);          // 10px
-        height: func();             // 10px
-        line-height: (20px / 2px);  // 10
+        color: #112233 + #aabbcc;  // #bbddff
+        font-size: 20 + px;        // 20px
+        width: (20px / 2);         // 10px
+        height: func();            // 10px
+        line-height: (20px / 2px); // 10
     }
     ```
 8. 注释
@@ -208,17 +208,17 @@
 10. `unit()`返回单位
 
     ```scss
-    unit(100);                      // => ""
-    unit(100px);                    // => "px"
-    unit(3em);                      // => "em"
-    unit(3rem);                     // => "rem"
-    unit(3vw);                      // => "vw"
-    unit(3vh);                      // => "vh"
+    unit(100);       // ""
+    unit(100px);     // "px"
+    unit(3em);       // "em"
+    unit(3rem);      // "rem"
+    unit(3vw);       // "vw"
+    unit(3vh);       // "vh"
     ```
 11. `unitless()`是否没有单位
 
     ```scss
-    unitless(100);      // => true
-    unitless(100px);    // => false
+    unitless(100);   // true
+    unitless(100px); // false
     ```
 12. `@if` `@for` `@each` `@while`
