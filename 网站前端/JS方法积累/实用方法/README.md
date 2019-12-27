@@ -1166,7 +1166,7 @@ function randomFrom(min, max) {
 >3. 若返回的是：`[0,1]`，则返回`Math.floor(Math.random() * (max - min) + min);`。
 
 ### *原生JS*转化为Unicode、反转字符串、字符串长度、所占字节数
->注意：Unicode码点大于`\uFFFF`（65535）的字符，如：`'💩'.codePointAt(0) // =>128169`
+>注意：Unicode码点大于`\uFFFF`（65535）的字符，如：`'💩'.codePointAt(0) // 128169`
 
 1. 转化为Unicode
 

@@ -26,7 +26,6 @@
     1. [函数防抖、函数节流](#函数防抖函数节流)
     1. [自执行匿名函数（拉姆达，λ，lambda）](#自执行匿名函数拉姆达λlambda)
     1. [Hybrid App相关](#hybrid-app相关)
-    1. [WAP端适配经验](#wap端适配经验)
     1. [Tips](#tips)
     1. [函数模板](#函数模板)
 1. [功能归纳](#功能归纳)
@@ -1605,7 +1604,10 @@
             >    </details>
             >2. 微信分享在部分系统（低于微信客户端Android6.2）使用~~pushState~~导致签名失败，可查询[官方文档](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115)；又因为一般是异步加载、配置微信的设置，所以要等待微信第三方文件和接口完成后才能够配置成功（才能够设置成功）。
             >3. Android的微信、QQ等X5内核可以用<http://debugx5.qq.com/>打开调试，可进行清除缓存等操作。
-            >4. 在iOS微信webview长按没有 ~~`src`~~ 的`<img>`，可以截屏这个`<img>`所在位置。
+            >4. 长按没有 ~~`src`~~ 的`<img>`：
+            >
+            >    1. 在iOS微信webview，截屏这个`<img>`所在位置；
+            >    2. 其他情况，可能导致保存图片错误、或不能进行保存。
         3. iOS9+的Universal links（通用链接），可以从底层打开其他App客户端，跳过白名单（微信已禁用）
 
             >需要HTTPS域名配置、iOS设置等其他端配合。
@@ -1670,9 +1672,6 @@
         1. 通过JS触发Native App之间的切换分享（自己Native内可用桥协议，任意App均要起作用只能用Scheme）。
         2. 带分享信息参数去访问其他App提供的分享URL。
 
-### WAP端适配经验
-// todo
-
 ### Tips
 1. `var a = b = c = 1;/* b、c没有var的声明。等价于：var a = 1; b = 1; c = 1; */`
 
@@ -1726,22 +1725,22 @@
           }
         }
 
-        obj.func();     // => obj
-        (0, obj.func)() // => window
+        obj.func();     // obj
+        (0, obj.func)() // window
         // 返回最后一个操作对象的值，返回一个方法
         ```
     2. `if(var a = 1, b = 2, c = 3, false){/* 不执行 */}`：
 
         >`var`语句中的逗号不是逗号操作符，因为它不存在于一个表达式中。尽管从实际效果来看，那个逗号同逗号运算符的表现很相似。但它是`var`语句中的一个特殊符号，用于把多个变量声明结合成一个。
-    3. `var a = [10, 20, 30, 40][1, 2, 3]; // => 40`：
+    3. `var a = [10, 20, 30, 40][1, 2, 3]; // 40`：
 
         1. `[10, 20, 30, 40]`被解析为数组；
         2. `[1, 2, 3]`被解析为属性调用，逗号操作符取最后一个值为结果。
 
         因此结果为数组`[10, 20, 30, 40]`的`[3]`属性值：`40`。
-5. `{a: 'b'} + 1; // => 1`：
+5. `{a: 'b'} + 1; // 1`：
 
-    大括号视为代码块，没有返回值。需要给大括号加上小括号，表明为一个值：`({a: 'b'}) + 1; // => [object Object]1`。
+    大括号视为代码块，没有返回值。需要给大括号加上小括号，表明为一个值：`({a: 'b'}) + 1; // [object Object]1`。
 6. 浮点数的计算：
 
     浮点数值计算会产生舍入误差，因此永远不要用条件语句判断某个特定浮点数值，也不要用JS进行复杂的计算。
@@ -1757,8 +1756,8 @@
     >`eval`的参数是字符串。
 
     ```javascript
-    eval(function a() {});   // => function a() {}（但没有声明）
-    eval('function b() {}'); // => undefined（声明成功）
+    eval(function a() {});   // function a() {}（但没有声明）
+    eval('function b() {}'); // undefined（声明成功）
     ```
 
     >1. `if()`中的代码对于`function`的声明就是用`eval`带入方法做参数，因此虽然返回true，但方法没有被声明。
@@ -2108,11 +2107,11 @@
 
         1. `undefined` 或 不填 -> `'[object Undefined]'`
         2. `null` -> `'[object Null]'`
-        3. Boolean实例 -> `'[object Boolean]'`
-        4. Number实例 -> `'[object Number]'`
-        5. String实例 -> `'[object String]'`
-        6. Symbol实例 -> `'[object Symbol]'`
-        7. BigInt实例 -> `'[object BigInt]'`
+        3. Boolean实例（包括包装对象） -> `'[object Boolean]'`
+        4. Number实例（包括包装对象） -> `'[object Number]'`
+        5. String实例（包括包装对象） -> `'[object String]'`
+        6. Symbol实例（包括包装对象） -> `'[object Symbol]'`
+        7. BigInt实例（包括包装对象） -> `'[object BigInt]'`
         8. Object实例 -> `'[object Object]'`
         9. 自定义类型实例 -> `'[object Object]'`
         10. Array实例 -> `'[object Array]'`
@@ -2170,6 +2169,8 @@
         6. `undefined` -> `'undefined'`
         7. 函数 -> `'function'`
         8. 引用对象型 -> `'object'`
+
+            >所有包装对象都返回`'object'`。
         9. `null` -> `'object'`
 
         >1. 因为`typeof null`返回`'object'`，因此typeof不能判断是否是引用数据类型。
@@ -2177,17 +2178,19 @@
 
 3. `对象 instanceof 构造函数`
 
+    >可用`构造函数.prototype.isPrototypeOf(对象)`代替。
+
     1. 不能跨帧（`<iframe>`、`window.open()`的新窗口）。
 
         >```javascript
         >/* 跨帧：浏览器的帧（frame）里的对象传入到另一个帧中，两个帧都定义了相同的构造函数 */
-        >A实例 instanceof A构造函数; // => true
-        >A实例 instanceof B构造函数; // => false
+        >A实例 instanceof A构造函数; // true
+        >A实例 instanceof B构造函数; // false
         >```
     2. 判断`构造函数.prototype`是否存在于对象的整条原型链上。
 
         若`构造函数.prototype === 对象.__proto__/对象.__proto__.__proto__/.../Object.prototype`，则返回`true`。否则返回`false`。
-        >e.g. `new Number() instanceof Object; // => true`
+        >e.g. `new Number() instanceof Object; // true`
     3. **检测自定义类型的唯一方法。**
 4. `属性名 in 对象`
 
@@ -3097,7 +3100,7 @@
             >  let x1 = 'x1'
             >  console.log(y1)
             >}
-            >f1()                       // => ReferenceError: x1 is not defined
+            >f1()                       // ReferenceError: x1 is not defined
             >
             >
             >let x2 = 'outer x2'
@@ -3120,7 +3123,7 @@
             >function f4(x4 = x4) {     // 形成短暂的单独作用域，实际执行类似let x = x，暂时性死区导致报错
             >
             >}
-            >f4()                       // => ReferenceError: x is not defined
+            >f4()                       // ReferenceError: x is not defined
             >```
             >></details>
         3. 不能~~在参数默认值中调用函数体内的方法~~（参数默认值总是被首先执行，而函数体内的函数声明之后生效）。
@@ -3707,22 +3710,22 @@
             e.g.
 
             ```javascript
-            Number('123');      // => 123
-            Number('123a');     // => NaN
-            Number('');         // => 0
+            Number('123')       // 123
+            Number('123a')      // NaN
+            Number('')          // 0
 
-            Number(true);       // => 1
-            Number(false);      // => 0
+            Number(true)        // 1
+            Number(false)       // 0
 
-            Number();           // => 0
+            Number()            // 0
 
-            Number(undefined);  // => NaN
+            Number(undefined)   // NaN
 
-            Number(null);       // => 0
+            Number(null)        // 0
 
-            Number(Symbol());   // => Uncaught TypeError: Cannot convert a Symbol value to a number
+            Number(Symbol(123)) // Uncaught TypeError: Cannot convert a Symbol value to a number
 
-            Number(11n);        // => 11
+            Number(123n)        // 123
             ```
 
             >`parseInt`与`Number`均忽略字符串前后的不可见字符。`parseInt`从前向后逐个解析字符，只要开头有数字则返回数值；`Number`判断只要有一个字符无法转成数值，则返回`NaN`。
@@ -3733,12 +3736,12 @@
             e.g.
 
             ```javascript
-            Number([5]);            // => 5
-            Number([]);             // => 0
-            Number([undefined]);    // => 0
+            Number([5])             // 5
+            Number([])              // 0
+            Number([undefined])     // 0
 
-            Number([1, 2, 3]);      // => NaN
-            Number({});             // => NaN
+            Number([1, 2, 3])       // NaN
+            Number({})              // NaN
             ```
 
             - `Number(对象)`具体规则：
@@ -3752,26 +3755,43 @@
 
         1. 基本数据类型：
 
-            1. 数值：转为相应的字符串。
-            2. 字符串：原来的值。
-            3. 布尔值：`String(true) // => 'true'`、`String(false) // => 'false'`。
-            4. `undefined`：`String(undefined) // => 'undefined'`。
-            5. `null`：`String(null) // => 'null'`。
-            6. `Symbol()`：
+            1. 数值：
 
-                1. `String(Symbol())      // => 'Symbol()'`
-                2. `String(Symbol(1))     // => 'Symbol(1)'`
-                3. `String(Symbol('abc')) // => 'Symbol(abc)'`
-            7. BigInt：`String(1n) // => '1'`。
+                转为相应的字符串
+            2. 字符串：
+
+                原来的值
+            3. 布尔值：
+
+                ```javascript
+                String(true)        // 'true'
+                String(false)       // 'false'
+                ```
+            4. `undefined`：
+
+                `String(undefined)  // 'undefined'`
+            5. `null`：
+
+                `String(null)       // 'null'`
+            6. `Symbol`：
+
+                ```javascript
+                String(Symbol())    // 'Symbol()'
+                String(Symbol(1))   // 'Symbol(1)'
+                String(Symbol('a')) // 'Symbol(a)'
+                ```
+            7. `BigInt`：
+
+                `String(1n)         // '1'`
         2. 引用数据类型：
 
             若是数组，则返回该数组的字符串形式；否则返回一个类型字符串。
 
             ```javascript
             // e.g.
-            String([1, 2, 3]);                  // => '1,2,3'
-            String([1, [2], [3, [4, [5, 6]]]]); // => '1,2,3,4,5,6'
-            String({a: 1});                     // => '[object Object]''
+            String([1, 2, 3])                  // '1,2,3'
+            String([1, [2], [3, [4, [5, 6]]]]) // '1,2,3,4,5,6'
+            String({a: 1})                     // '[object Object]''
             ```
 
             - `String(对象)`具体规则：
@@ -3783,12 +3803,13 @@
 
         | 数据类型 | 转换为`true`的值 | 转换为`false`的值 |
         | :--- | :--- | :--- |
+        | Undefined | 无 | `undefined` |
         | Boolean | `true` | `false` |
-        | String | 任何非空字符串 | `''` |
-        | Number | 任何非零数值（包括无穷大） | `0`、`-0`、`+0`、`NaN` |
-        | Symbol | 任何Symbol类型值 | 无 |
-        | Object | 任何对象 | `null` |
-        | undefined |  | `undefined` |
+        | Number | 任何非零`Number`类型的值（包括无穷大） | `0`、`-0`、`+0`、`NaN` |
+        | String | 任何非空`String`类型的值 | `''` |
+        | Symbol | 任何`Symbol`类型的值 | 无 |
+        | BigInt | 任何非零`BigInt`类型的值 | `0n`、`-0n`、`+0n` |
+        | Object（引用数据类型） | 任何对象（包括包装对象） | `null` |
 2. 自动转换
 
     1. 触发情况：
@@ -3802,11 +3823,11 @@
             <summary>e.g.</summary>
 
             ```javascript
-            'a' + + 'a'         // => 'a' + (+ 'a') -> 'a' + NaN -> 'aNaN'
-            + '123';            // => 123
-            - [123];            // => -123
-            1 + undefined       // => NaN
-            '1' + undefined     // => '1undefined'
+            'a' + + 'a'         // 'a' + (+ 'a') -> 'a' + NaN -> 'aNaN'
+            + '123';            // 123
+            - [123];            // -123
+            1 + undefined       // NaN
+            '1' + undefined     // '1undefined'
             ```
             </details>
     2. 行为：
