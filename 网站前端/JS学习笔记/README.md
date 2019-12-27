@@ -2103,15 +2103,15 @@
     1. 没有跨帧问题。
     2. 放入**内置对象**，返回`'[object 构造函数的名称]'`的字符串
 
-        >特例：自定义类型返回`'[object Object]'`，`undefined`、`null`返回对应名字。
+        >特例：自定义类型返回`'[object Object]'`，`undefined/null`返回对应名字。
 
         1. `undefined` 或 不填 -> `'[object Undefined]'`
         2. `null` -> `'[object Null]'`
-        3. Boolean实例（包括包装对象） -> `'[object Boolean]'`
-        4. Number实例（包括包装对象） -> `'[object Number]'`
-        5. String实例（包括包装对象） -> `'[object String]'`
-        6. Symbol实例（包括包装对象） -> `'[object Symbol]'`
-        7. BigInt实例（包括包装对象） -> `'[object BigInt]'`
+        3. Boolean实例（包括基本包装类型） -> `'[object Boolean]'`
+        4. Number实例（包括基本包装类型） -> `'[object Number]'`
+        5. String实例（包括基本包装类型） -> `'[object String]'`
+        6. Symbol实例（包括基本包装类型） -> `'[object Symbol]'`
+        7. BigInt实例（包括基本包装类型） -> `'[object BigInt]'`
         8. Object实例 -> `'[object Object]'`
         9. 自定义类型实例 -> `'[object Object]'`
         10. Array实例 -> `'[object Array]'`
@@ -2170,7 +2170,7 @@
         7. 函数 -> `'function'`
         8. 引用对象型 -> `'object'`
 
-            >所有包装对象都返回`'object'`。
+            >所有基本包装类型都返回`'object'`。
         9. `null` -> `'object'`
 
         >1. 因为`typeof null`返回`'object'`，因此typeof不能判断是否是引用数据类型。
@@ -3232,12 +3232,12 @@
 
         1. 直接函数调用（如：`alert()`）、立即调用的函数表达式（如：`(function () {}())`）
 
-            `this`：全局对象`window`（与在什么作用域无关）
+            `this`：全局对象
 
             >严格模式：`undefined`
-        2. 对象的方法调用（如：`obj.func()`）
+        2. 对象的方法调用（如：`obj1.obj2.func()`）
 
-            `this`：上级对象（调用的`obj`）
+            `this`：最后一层对象（`obj2`）
         3. 构造函数实例化（如：`new RegExp()`）
 
             `this`：新实例对象
@@ -3245,7 +3245,18 @@
 
             `this`：传入的对象
 
-            >除了~~构造函数实例化~~，依然是：新实例对象。
+            >1. 在非严格模式，传入的值：
+            >
+            >    1. 若是引用数据类型，则传入什么给`this`，函数的`this`就是什么。
+            >    2. 若是基本数据类型
+            >
+            >        1. 则`this`成为那个值的基本包装类型（除了`undefined/null`之外）；
+            >        2. 若不传或传入`undefined/null`，则`this`为全局对象。
+            >2. 在严格模式，传入的值：
+            >
+            >    传入什么给`this`，函数的`this`就是什么。
+            >
+            >- `new (func.bind(值))()`的`this`是新实例对象，而不是~~传入的值~~。
 
         <details>
         <summary>e.g.</summary>
@@ -3328,7 +3339,7 @@
         ></details>
     2. 箭头函数
 
-        不会创建自己的`this`，根据[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)向上遍历查找直到非箭头函数定义的`this`或全局作用域；若找到`this`，则再根据非箭头函数的方式决定取值。
+        不会创建自己的`this`，根据[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)向上遍历查找直到非箭头函数定义的`this`或全局对象；若找到`this`，则再根据非箭头函数的方式决定取值。
 
         >看上去就像：使用封闭执行上下文最近的一个`this`值。
 
@@ -3337,23 +3348,39 @@
         >
         >```javascript
         >var a = {
-        >  foo: () => {     // 箭头函数
+        >  foo: () => { // 箭头函数
         >    return () => {
         >      console.log(this)
         >    }
         >  },
-        >  bar () {         // 非箭头函数（简写的方法）
+        >  bar () {     // 非箭头函数（简写的方法）
         >    return () => {
         >      console.log(this)
         >    }
         >  }
         >}
         >
-        >a.foo()()     // window
-        >a.bar()()     // a
+        >a.foo()()        // => 全局对象
+        >a.bar()()        // => a
         >
         >var b = a.bar
-        >b()()         // window
+        >b()()            // => 全局对象
+        >
+        >
+        >var foo1 = () => {console.log(this)}       // 箭头函数
+        >var foo2 = function () {console.log(this)} // 非箭头函数
+        >
+        >var obj2 = {
+        >  foo1: foo1,
+        >  foo2: foo2
+        >}
+        >
+        >var obj1 = {
+        >  obj2: obj2
+        >}
+        >
+        >obj1.obj2.foo1() // => 全局对象
+        >obj1.obj2.foo2() // => obj2
         >```
         ></details>
 
@@ -3809,7 +3836,7 @@
         | String | 任何非空`String`类型的值 | `''` |
         | Symbol | 任何`Symbol`类型的值 | 无 |
         | BigInt | 任何非零`BigInt`类型的值 | `0n`、`-0n`、`+0n` |
-        | Object（引用数据类型） | 任何对象（包括包装对象） | `null` |
+        | Object（引用数据类型） | 任何对象（包括基本包装类型） | `null` |
 2. 自动转换
 
     1. 触发情况：
