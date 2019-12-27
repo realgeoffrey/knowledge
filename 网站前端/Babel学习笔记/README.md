@@ -20,7 +20,7 @@
 
     1. （全局变量污染）添加内建类型（builtins）
 
-        >如：`Iterator`、`Generator`、`Set`、`Maps`、`Proxy`、`Reflect`、`Symbol`、`Promise`等全局对象。
+        >如：`Iterator`、`Generator`、`Set`、`Maps`、`Proxy`、`Reflect`、`Symbol`、`BigInt`、`Promise`等全局对象。
     2. （prototype污染）添加内建类型的原型方式
 
         >如：`Array.prototype.includes`、`String.prototype.padStart`、`Promise.prototype.finally`等。

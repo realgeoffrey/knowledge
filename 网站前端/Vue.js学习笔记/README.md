@@ -877,8 +877,8 @@
 
             - 验证方式：
 
-                1. 原生构造器（`String`、`Number`、`Boolean`、`Function`、`Object`、`Array`、`Symbol`）、或`null`（允许任何类型）
-                2. 原生构造器的数组
+                1. 原生构造器（`String`、`Number`、`Boolean`、`Function`、`Object`、`Array`）、或`Symbol`、`BigInt`、或`null`（允许任何类型）
+                2. 上面类型组成的数组
                 3. 对象
 
                     1. `type`：原生构造器、或`null`、或原生构造器的数组

@@ -502,9 +502,10 @@ var a = {
     h1: function () {},
     h2: function h () {}
   },
-  i: /g/gim
+  i: /g/gim,
+  j: 1n
 };
-a.g.h1.j = [1, 2];
+a.g.h1.k = [1, 2];
 
 var b = deepCopy(a);
 console.log(b);
