@@ -9,7 +9,7 @@
 	passwd 用户名
 	usermod -a -G root,apache 用户名
 	```
-	
+
 	>若无法使用**sudo**命令：
 	>
 	>1. 进入root模式：
@@ -35,7 +35,7 @@
 	sudo yum install httpd
 	sudo yum install php
 	```
-	
+
 	安装**mysql**：
 
 	1. CentOS 7的yum源中似乎没有正常安装mysql时的mysql-sever文件，需要去官网上下载
@@ -54,7 +54,7 @@
 
         ```shell
         mysql -uroot
-        mysql> set password for ‘root’@‘localhost’ = password('密码');
+        mysql> set password for 「root」@「localhost」 = password('密码');
         mysql> exit
         ```
 

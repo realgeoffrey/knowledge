@@ -84,7 +84,7 @@
     //extends属性值为，plugin：包名/配置名称
   //4.一个指向配置文件的相对路径或绝对路径
   //5.字符串eslint：all，启用当前安装的ESLint中所有的核心规则
-    //该配置不建议在产品中使用，因为它随着ESLint版本进行更改。使用的话，请自己承担风险
+    //该配置不推荐在产品中使用，因为它随着ESLint版本进行更改。使用的话，请自己承担风险
   "extends": [
     "eslint:recommended",
     "standard",

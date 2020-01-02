@@ -163,7 +163,7 @@ function quickSort(arr) {
 
         return arr;
     } else {
-        for (i = 1, middle = arr[0], leftArr = [], rightArr = []; i < len; i++) {   /* 以0索引元素为“基准” */
+        for (i = 1, middle = arr[0], leftArr = [], rightArr = []; i < len; i++) {   /* 以0索引元素为「基准」 */
             if (arr[i] < middle) {   /* 小于基准的元素放左数组 */
                 leftArr.push(arr[i]);
             } else {       /* 大于等于基准的元素放右数组 */
@@ -177,7 +177,7 @@ function quickSort(arr) {
 ```
 >1. 思路：
 >
->    1. 从数列中挑出一个“基准”（pivot）元素。
+>    1. 从数列中挑出一个「基准」（pivot）元素。
 >    2. 遍历其他元素，比基准值小的摆放在基准前面，比基准值大的摆在基准的后面（相同可以到放置任一边）。
 >    3. 递归地把前后两数组进行相同操作。
 >2. 不稳定、比较排序。

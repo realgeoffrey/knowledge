@@ -12,12 +12,12 @@
 1. ping地址测试
 
     ```bash
-    ping “IP地址”
+    ping 「IP地址」
     ```
 2. ssh登录
 
     ```bash
-    ssh “用户名@地址” -p “端口号”
+    ssh 「用户名@地址」 -p 「端口号」
     ```
 
     - 若某远程主机识别已更改，则需删除保存在本机的此IP所有秘钥（删除`known_hosts`保存某ip的秘钥）
@@ -28,7 +28,7 @@
 3. 远程复制文件
 
     ```bash
-    scp -P “端口号” “远程用户名@远程地址”:“远程地址路径” “本地存放路径”
+    scp -P 「端口号」 「远程用户名@远程地址」:「远程地址路径」 「本地存放路径」
     ```
 
     >注意：本机（目录权限）和远程主机的权限（文件权限）。
@@ -45,12 +45,12 @@
 6. 指令在PATH变量的路径
 
     ```bash
-    which “指令”
+    which 「指令」
     ```
 7. （macOS）打开文件（夹）
 
     ```bash
-    open “路径/文件”
+    open 「路径/文件」
     ```
 8. hosts文件位置
 
@@ -66,32 +66,32 @@
 
         ```bash
         # macOS
-        md5 “文件”
-        md5 -s “字符串”    # 或`echo -n “字符串” | md5`
+        md5 「文件」
+        md5 -s 「字符串」    # 或`echo -n 「字符串」 | md5`
 
         # Windows
-        md5sum.exe “文件”
-        echo -n “字符串” | md5sum.exe
+        md5sum.exe 「文件」
+        echo -n 「字符串」 | md5sum.exe
         ```
     2. SHA
 
         ```bash
         # macOS
-        shasum “文件”
-        echo -n “字符串” | shasum
+        shasum 「文件」
+        echo -n 「字符串」 | shasum
         # 使用特定算法：`-a, --algorithm   1 (default), 224, 256, 384, 512, 512224, 512256`
 
         # Windows
-        sha1sum.exe “文件”
-        echo -n “字符串” | sha1sum.exe
+        sha1sum.exe 「文件」
+        echo -n 「字符串」 | sha1sum.exe
         # 使用特定算法：`sha224sum.exe sha256sum.exe sha384sum.exe sha512sum.exe`
         ```
 10. 查看设置环境变量
 
     ```bash
-    echo $“变量”          # 查看变量
+    echo $「变量」          # 查看变量
 
-    export “变量”=“值”     # 设置变量
+    export 「变量」=「值」     # 设置变量
     ```
 11. 查看本机IP
 
@@ -127,20 +127,20 @@
     1. macOS
 
         ```bash
-        lsof -i :“端口号”
+        lsof -i :「端口号」
 
-        kill “PID”
+        kill 「PID」
         ```
     2.  Windows（需要在cmd.exe进行）
 
         ```bash
-        netstat -aon | findstr “端口号”  # 获得某端口号的任务PID
+        netstat -aon | findstr 「端口号」  # 获得某端口号的任务PID
 
-        tasklist | findstr “PID”          # 获得某PID的任务名
-        # 获得任务名之后可以再用`tasklist | findstr “任务名”`确认是否有多个子任务
+        tasklist | findstr 「PID」          # 获得某PID的任务名
+        # 获得任务名之后可以再用`tasklist | findstr 「任务名」`确认是否有多个子任务
 
-        taskkill /F /T /PID “PID”           # 需要杀死主进程，否则仅杀死的子进程会被主进程再次创建
-        # 或`taskkill /F /T /IM “任务名”`
+        taskkill /F /T /PID 「PID」           # 需要杀死主进程，否则仅杀死的子进程会被主进程再次创建
+        # 或`taskkill /F /T /IM 「任务名」`
         # 或去任务管理器结束进程（打开进程->查看->选择列的PID）
         ```
 15. （macOS）brew更新

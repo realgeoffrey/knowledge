@@ -10,13 +10,13 @@
 
         搜索输入框里，所有的空格都被理解为加号+。
 
-        过分常用的、单独存在没有意义的词汇往往被忽略掉，如：冠词“a”、“the”，介词“of”、“in”、“on”、“at”、“to”，连词“and”、“or”、“but”，从属连词“that”、“which”、“when”，代词“my”、“his”、“them”等。
-        >若你输入的是`purpose of education`，则返回的搜索结果里既有“purpose”存在，也有“education”存在，但不一定有“purpose of education”存在。
+        过分常用的、单独存在没有意义的词汇往往被忽略掉，如：冠词「a」、「the」，介词「of」、「in」、「on」、「at」、「to」，连词「and」、「or」、「but」，从属连词「that」、「which」、「when」，代词「my」、「his」、「them」等。
+        >若你输入的是`purpose of education`，则返回的搜索结果里既有「purpose」存在，也有「education」存在，但不一定有「purpose of education」存在。
     2. `""`
 
-        返回“完整匹配”的结果（已支持处理**utf-8**大字符集了，所以，即便输入时使用的是全角字符，也照样能够正确处理）。
+        返回「完整匹配」的结果（已支持处理**utf-8**大字符集了，所以，即便输入时使用的是全角字符，也照样能够正确处理）。
 
-        >e.g. 若想要找含有“purpose of education”这个词组的文章，则必须输入`"purpose of education"`。
+        >e.g. 若想要找含有「purpose of education」这个词组的文章，则必须输入`"purpose of education"`。
     3. `-`
 
         搜索结果中不出现某字段。减号-前必须是空格，后面必须紧跟字符。
@@ -37,4 +37,4 @@
         搜索查询词出现在**url**中。
 4. 定制搜索
 
-    自己的站点可以用Google推出的“co-op”服务（自定义搜索引擎）。其中最常用的功能之一就是可以指定Google搜索一个或若干个指定的网站。
+    自己的站点可以用Google推出的「co-op」服务（自定义搜索引擎）。其中最常用的功能之一就是可以指定Google搜索一个或若干个指定的网站。
