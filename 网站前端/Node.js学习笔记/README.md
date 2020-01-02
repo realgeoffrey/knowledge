@@ -139,7 +139,7 @@
 
             >1. 除了latest，其他标签都不会默认被安装。最后推送的latest版本会显示在npm官网。
             >2. 注意：设置源为npm的网站（https://registry.npmjs.org/）才可以推送到npm。
-        5. “下线”
+        5. 「下线」
 
             >`npm unpublish [<@scope>/]<pkg>[@<version>]`只能下线24小时内发布的版本。
 
@@ -273,7 +273,7 @@
             >2. 若不使用lock机制，则应该把`package-lock=false`加入`.npmrc`，并把`.npmrc`提交到版本控制。
     4. 执行脚本
 
-        1. `npm run “package.json中scripts字段的命令” -- “添加脚本后面的参数”`
+        1. `npm run 「package.json中scripts字段的命令」 -- 「添加脚本后面的参数」`
 
             >非`-`开头的参数可以忽略`--`而传递。e.g. `npm run gulp runCss`等价于：`npm run gulp -- runCss`
         2. [npx](https://github.com/zkat/npx)
@@ -390,7 +390,7 @@
         `module.exports`和`require`能够在任何位置使用（包括块级作用域）。
     2. 有自己单独作用域，不污染全局作用域，必须`module.exports`才能输出给其他模块。
 
-        >不建议`window.属性`。
+        >不推荐`window.属性`。
     3. 模块的加载逻辑：
 
         1. 模块加载的顺序：按照其在代码中出现的顺序、引用则嵌套加载。
@@ -404,7 +404,7 @@
             3. 无论加载多少次，仅在第一次加载时运行，之后再被引用则直接返回已导出内容。
 
                 >除非手动清除系统缓存。
-            4. “循环加载”（circular dependency）
+            4. 「循环加载」（circular dependency）
 
                 引用之前已经被引用过的模块b，会直接返回模块b已导出的内容，而不会再进入模块b内执行。
 
@@ -433,7 +433,7 @@
                 ... // ④
                 ```
                 </details>
-        4. 将模块的`exports`值输出至缓存，以供其他模块`require`获取（或“循环加载”时，部分已经执行产生的`exports`供其他模块引用）。
+        4. 将模块的`exports`值输出至缓存，以供其他模块`require`获取（或「循环加载」时，部分已经执行产生的`exports`供其他模块引用）。
         5. 若被`require`的模块没有`exports`，则仅执行一遍模块代码，返回`{}`。
     4. `require(a模块)`返回内存中a模块的`module.exports`指向的值，可以重新赋值和属性改写（重新赋值将不再使用模块引用；属性改写会改变a模块的缓存值，所有`require(a模块)`都会共享）。
 

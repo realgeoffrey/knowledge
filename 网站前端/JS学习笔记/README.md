@@ -570,7 +570,7 @@
         1. 一系列`on`的事件绑定快捷方法:
 
             `click`、`dblclick`、`contextmenu`、`keydown`、`keyup`、`keypress`、`mousedown`、`mouseup`、`mousemove`、`mouseenter`、`mouseleave`、`mouseover`、`mouseout`、`hover`、`blur`、`focus`、`focusin`、`focusout`、`select`、`change`、`submit`、`ready`、`resize`、`scroll`
-        2. 由`on`或`off`实现的：（废除或不建议）
+        2. 由`on`或`off`实现的：（废除或不推荐）
 
             1. 绑定：~~`bind`~~、~~`live`~~、~~`delegate`~~
             2. 解绑：~~`unbind`~~、~~`die`~~、~~`undelegate`~~
@@ -686,7 +686,7 @@
 
     1. 点透现象：
 
-        使用Zepto的`tap`事件绑定（或原生JS的`touchstart`绑定）后，若此元素在触摸事件发生后离开原始位置（CSS或JS），同一位置正好有一个DOM元素绑定了`click`事件或`<a>`，则会出现“点透”bug（触发底下元素的`click`事件）。
+        使用Zepto的`tap`事件绑定（或原生JS的`touchstart`绑定）后，若此元素在触摸事件发生后离开原始位置（CSS或JS），同一位置正好有一个DOM元素绑定了`click`事件或`<a>`，则会出现「点透」bug（触发底下元素的`click`事件）。
     2. 原因
 
         >历史原因：WAP端增加快速双击缩放和恢复功能。由于当用户一次点击屏幕之后，浏览器并不能立刻判断用户是单击还是双击操作。因此，就等待300ms左右，以判断用户是否再次点击了屏幕。
@@ -1032,7 +1032,7 @@
 
     可用于全局，也可以用于局部（函数体内）。
 
-    >1. 不建议在全局作用域中使用，因为当有JS文件合并时，一个文件的全局严格模式会导致整个文件都是严格模式。
+    >1. 不推荐在全局作用域中使用，因为当有JS文件合并时，一个文件的全局严格模式会导致整个文件都是严格模式。
     >2. 可以用`(function () {'use strict';/* 执行内容 */}());`匿名函数方式使用严格模式。
 3. 全等`===`（不全等`!==`）与等号`==`（不等`!=`）的区别
 
@@ -1080,7 +1080,7 @@
 
     >好处：
     >1. 代码更少。
-    >2. 不需要构造函数的“作用域解析”（scope resolution），提高性能。
+    >2. 不需要构造函数的「作用域解析」（scope resolution），提高性能。
     >3. 构造函数可以接收参数，返回的实例不可控、易混淆；字面量简单不出错。
 
     1. 对象
@@ -1141,7 +1141,7 @@
         return arr.join('');
         ```
         </details>
-    2. `+`性能差（不建议）
+    2. `+`性能差（不推荐）
 
         <details>
         <summary>e.g.</summary>
@@ -1206,7 +1206,7 @@
     3. 所有其他语法元素与左括号之间，都有一个空格。
     4. 不要省略句末的分号。
     5. 不要使用`with`语句。
-    6. 不要使用“相等”（`==`）运算符，只使用“严格相等”（`===`）运算符（同理仅使用`!==`，不使用`!=`）。
+    6. 不要使用「相等」（`==`）运算符，只使用「严格相等」（`===`）运算符（同理仅使用`!==`，不使用`!=`）。
     7. 不要将不同目的的语句，合并成一行。
     8. 所有变量声明都放在函数的头部。
     9. 所有函数都在使用之前定义。
@@ -1248,7 +1248,7 @@
         3. 对只为DOM增添的内容，转移到外部资源中动态创建。
     5. 性能优化[从URL输入之后](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面加载解析步骤)就开始考虑。
 
-        1. 关于“性能”的写法建议，更多的是一种编程习惯（微优化）：写出更易读、性能更好的代码。
+        1. 关于「性能」的写法建议，更多的是一种编程习惯（微优化）：写出更易读、性能更好的代码。
         2. 在解决页面性能瓶颈时，要从URL输入之后就进行[网站性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#网站性能优化)；避免在处理网页瓶颈时进行~~微优化~~。
 
             >1. 即时编译（just in time compile，JIT）：JS引擎会在JS运行过程中逐渐重新编译部分代码为机器码，使代码运行更快。
@@ -1323,7 +1323,7 @@
 
         macOS的Safari可以调试Safari APP
 4. 对于App内不方便查看的信息，可以把需要查看的信息发送HTTP请求、再抓包的方式进行调试。
-5. 上线的页面中藏着某些“后门”调试（如：隐蔽操作开启`console`）
+5. 上线的页面中藏着某些「后门」调试（如：隐蔽操作开启`console`）
 
     1. 可以在URL中判断某些特定的`search`值，以开启调试模式。
 
@@ -1391,7 +1391,7 @@
     ;(function () {})()
     ;(() => {})()       // 箭头函数
 
-    /* 不建议方式 */
+    /* 不推荐方式 */
     ;[function () {}()]
 
     ~function () {}()
@@ -1664,7 +1664,7 @@
             >  })
             >```
             ></details>
-        >接口设计可以带有“透传数据”：前端调用客户端方法时多传一个透传参数，之后客户端异步调用前端方法时带着这个参数的值。
+        >接口设计可以带有「透传数据」：前端调用客户端方法时多传一个透传参数，之后客户端异步调用前端方法时带着这个参数的值。
     2. 根据WebView的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在Hybrid遇到的bug。
     3. 调试webview：[代码调试方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#代码调试方式)中针对移动端的部分。
     4. 分享到其他App
@@ -2410,7 +2410,7 @@
         >`try`内的作用域不为内部异步操作保留：`try {setTimeout(() => {错误语法}, 0)} catch (e) {}`不会捕获异步操作中的错误（同理，在`Promise`或`async-await`等语法中的异步错误也无法被捕获，但可以捕获`await`的`reject`）。可以在异步回调内部再包一层`try-catch`。
     2. `window.onerror`
 
-        >jQuery不建议`on`等方式绑定`window`的`error`事件，只通过`window.onerror`定义。
+        >jQuery不推荐`on`等方式绑定`window`的`error`事件，只通过`window.onerror`定义。
 
         1. 没有经过`try-catch`处理的错误都会触发`window`的`error`事件。
         2. 用方法赋值给`window.onerror`后，但凡这个window中有JS错误出现，则会调用此方法。
@@ -2775,6 +2775,121 @@
         >
         >    1. `Array.prototype.reduce(回调函数(上一次调用返回的值, 当前值, 索引, 数组整体)[, 第一次调用回调函数的第一个参数])`
         >    2. `Array.prototype.reduceRight(回调函数(上一次调用返回的值, 当前值, 索引, 数组整体)[, 第一次调用回调函数的第一个参数])`
+
+    - 遍历对象的属性
+
+        `Object.entries/values/keys/getOwnPropertyNames/getOwnPropertySymbols`、`for-in`、`JSON.stringify`、`Reflect.ownKeys`可以获得属性描述（数据属性、访问器属性）。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```javascript
+        >const obj = {
+        >  a: 'obj\'s a',
+        >  [Symbol('b')]: 'obj\'s b'
+        >}
+        >Object.defineProperties(obj, {
+        >  c: {
+        >    value: 'obj\'s c',
+        >    enumerable: true
+        >  },
+        >  d: {
+        >    value: 'obj\'s d',
+        >    enumerable: false
+        >  },
+        >  [Symbol('e')]: {
+        >    value: 'obj\'s e',
+        >    enumerable: true
+        >  },
+        >  [Symbol('f')]: {
+        >    value: 'obj\'s f',
+        >    enumerable: false
+        >  }
+        >})
+        >
+        >const arr = ['arr\'s a']
+        >arr[Symbol('b')] = 'arr\'s b'
+        >Object.defineProperties(arr, {
+        >  c: {
+        >    value: 'arr\'s c',
+        >    enumerable: true
+        >  },
+        >  d: {
+        >    value: 'arr\'s d',
+        >    enumerable: false
+        >  },
+        >  [Symbol('e')]: {
+        >    value: 'arr\'s e',
+        >    enumerable: true
+        >  },
+        >  [Symbol('f')]: {
+        >    value: 'arr\'s f',
+        >    enumerable: false
+        >  }
+        >})
+        >
+        >
+        >// 输出：可枚举 && !属性名是Symbol类型
+        >console.info('\n for-in')
+        >for (const i in obj) {
+        >  console.log(i, obj[i])
+        >}
+        >for (const i in arr) {
+        >  console.log(i, arr[i])
+        >}
+        >
+        >console.info('\n Object.entries')
+        >console.log(Object.entries(obj))
+        >console.log(Object.entries(arr))
+        >
+        >console.info('\n Object.values')
+        >console.log(Object.values(obj))
+        >console.log(Object.values(arr))
+        >
+        >console.info('\n Object.keys')
+        >console.log(Object.keys(obj))
+        >console.log(Object.keys(arr))
+        >
+        >
+        >// 输出：(可枚举 || 不可枚举) && !属性名是Symbol类型
+        >console.info('\n Object.getOwnPropertyNames')
+        >console.log(Object.getOwnPropertyNames(obj))
+        >console.log(Object.getOwnPropertyNames(arr))
+        >
+        >
+        >// 输出：属性名是Symbol类型
+        >console.info('\n Object.getOwnPropertySymbols')
+        >console.log(Object.getOwnPropertySymbols(obj))
+        >console.log(Object.getOwnPropertySymbols(arr))
+        >
+        >
+        >console.info('\n JSON.stringify')
+        >// 输出：可枚举 && !属性名是Symbol类型
+        >console.log(JSON.stringify(obj))
+        >// 输出：数组的项（当做对象添加的属性不返回）
+        >console.log(JSON.stringify(arr))
+        >
+        >
+        >console.info('\n ...展开')
+        >// 输出：可枚举
+        >console.log({ ...obj })
+        >// 输出：数组的项（当做对象添加的属性不返回）
+        >console.log([...arr])
+        >
+        >
+        >// 输出：所有键名
+        >console.info('\n Reflect.ownKeys')
+        >console.log(Reflect.ownKeys(obj))
+        >console.log(Reflect.ownKeys(arr))
+        >
+        >
+        >console.info('\n Map数据类型的遍历')
+        >// 输出：Map的所有项
+        >for (const i of new Map([['a', 'Map\'s a'], [Symbol('b'), 'Map\'s b']])) {
+        >  console.log(i)
+        >}
+        >```
+        ></details>
 2. jQuery
 
     1. <details>
@@ -2838,7 +2953,7 @@
 
 ### 浏览器缓存
 1. [HTTP定义的缓存机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)
-2. 其他缓存机制（不建议）
+2. 其他缓存机制（不推荐）
 
     1. HTML的`<meta>`设置缓存情况：
 
@@ -2977,7 +3092,7 @@
         1. `length`：希望接收的命名参数个数（计数到`默认参数`或`剩余参数`之前的参数）
         2. `name`：函数名
         3. `prototype`：（函数独有）指向函数的原型对象
-    2. ES6不建议使用（部分情况下导致报错）：
+    2. ES6不推荐使用（部分情况下导致报错）：
 
         1. 函数体内的`arguments.callee`是一个指针：其指向拥有`arguments`对象的函数（函数自身）。
         2. `函数对象.caller`：保存调用当前函数的函数（嵌套的外一层函数）的引用。
@@ -3004,7 +3119,7 @@
         >函数名绑定在函数表达式内部函数体中。
 
     >1. 通过**函数声明**、**函数表达式**创建的函数，在加载脚本时和其他代码一起解析（编译时）；通过**构造函数**定义的函数，在构造函数被执行时（运行时）才解析函数体字符串。
-    >2. 不建议通过~~构造函数~~创建函数，因为作为字符串的函数体可能会阻止一些JS引擎优化，也会引起其他问题。
+    >2. 不推荐通过~~构造函数~~创建函数，因为作为字符串的函数体可能会阻止一些JS引擎优化，也会引起其他问题。
 
     3. ~~构造函数~~
 
@@ -3160,7 +3275,7 @@
 
             >1. 对于`变量 = 值`赋值（LHS），若直到全局作用域也没查找到变量，则创建一个全局变量，用`值`赋值给这个新建的全局变量。
             >2. 对于`变量`引用（RHS），若直到全局作用域也没查找到变量，则报错`ReferenceError: 变量 is not defined`。
-        3. 多层的嵌套作用域中，可以定义同名的标识符（变量、函数），遮蔽效应使内部的标识符“遮蔽”外部的标识符（若查找到第一个匹配的标识符则停止再向上查找）。
+        3. 多层的嵌套作用域中，可以定义同名的标识符（变量、函数），遮蔽效应使内部的标识符「遮蔽」外部的标识符（若查找到第一个匹配的标识符则停止再向上查找）。
 
             >`window.某变量`可以访问被同名变量`某变量`遮蔽的全局变量。
 
@@ -3559,7 +3674,7 @@
         ```
 
         ><details>
-        ><summary>“子类继承父类原型链”可改为的不使用<code>Object.create</code>方式</summary>
+        ><summary>「子类继承父类原型链」可改为的不使用<code>Object.create</code>方式</summary>
         >
         >```javascript
         >(function (subType, superType) {
@@ -3633,7 +3748,7 @@
                     >对象：`({...obj} = obj)`
                 3. `arr = arr.slice()`或`arr = arr.concat()`
 
-                    >对象：`obj = Object.assign({}, obj)`（不建议用 ~~`obj = Object.create(obj)`~~）
+                    >对象：`obj = Object.assign({}, obj)`（不推荐用 ~~`obj = Object.create(obj)`~~）
                 4. 一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)赋值
             2. [深复制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#深复制拷贝实现思路)。
 4. <details>
@@ -3939,7 +4054,7 @@
         在主线程上排队执行的任务。
     2. 异步任务（asynchronous）：
 
-        1. 先挂起到（对应种类的）工作线程等待结果，主线程不会因此阻塞；有结果后，发起通知进入（对应种类的）“任务队列”（task queue或“消息队列”）；“执行栈”（execution context stack）为空后会读取并执行“任务队列”的通知对应的回调函数。
+        1. 先挂起到（对应种类的）工作线程等待结果，主线程不会因此阻塞；有结果后，发起通知进入（对应种类的）「任务队列」（task queue或「消息队列」）；「执行栈」（execution context stack）为空后会读取并执行「任务队列」的通知对应的回调函数。
 
             >相同类型的异步工作线程是串行工作；不同类型的异步工作线程互不影响执行。
         2. 异步任务分为两种类型：macrotask（task）、microtask（job）
@@ -3953,13 +4068,13 @@
                 3. `新的<script>`
                 4. `setTimeout`、`setInterval`、`setImmediate`
 
-                    在当前“任务队列”的尾部，添加事件。
+                    在当前「任务队列」的尾部，添加事件。
                 5. `AJAX`
             2. microtask一般包括:
 
                 1. `process.nextTick`（Node.js）
 
-                    在当前“执行栈”的尾部——读取"任务队列"之前，添加事件。
+                    在当前「执行栈」的尾部——读取"任务队列"之前，添加事件。
                 2. `Promise`（`Promise.then/catch/all/race`）
 
                     >`new Promise(回调)`的回调和`Prmise.resolve()/reject()`都是直接执行的同步任务。
@@ -4027,18 +4142,18 @@
 
                 1. 检查macrotask队列
 
-                    1. 选择最早加入的任务X，设置为“目前运行的任务”并进入“执行栈”；若macrotask队列为空，则跳到第4步；
+                    1. 选择最早加入的任务X，设置为「目前运行的任务」并进入「执行栈」；若macrotask队列为空，则跳到第4步；
 
-                        >最初时刻：“执行栈”为空，`<script>`作为第一个macrotask被运行。
-                    2. “执行栈”运行任务X（运行对应的回调函数）；
-                    3. 设置“目前运行的任务”为`null`，从macrotask队列中移除任务X；
+                        >最初时刻：「执行栈」为空，`<script>`作为第一个macrotask被运行。
+                    2. 「执行栈」运行任务X（运行对应的回调函数）；
+                    3. 设置「目前运行的任务」为`null`，从macrotask队列中移除任务X；
                     4. 跳出macrotask队列、进行浏览器渲染。
                 2. 浏览器渲染；
                 3. 检查microtask队列：
 
-                    1. 选择最早加入的任务a，设置为“目前运行的任务”并进入“执行栈”；若microtask队列为空，则跳到第5步；
-                    2. “执行栈”运行任务a（运行对应的回调函数）；
-                    3. 设置“目前运行的任务”为`null`，从microtask队列中移除任务a；
+                    1. 选择最早加入的任务a，设置为「目前运行的任务」并进入「执行栈」；若microtask队列为空，则跳到第5步；
+                    2. 「执行栈」运行任务a（运行对应的回调函数）；
+                    3. 设置「目前运行的任务」为`null`，从microtask队列中移除任务a；
                     4. 跳到第1步（检查下一个最早加入的microtask任务）；
                     5. 跳出microtask队列、进行检查macrotask队列。
             >- macrotask和microtast选择
@@ -4050,11 +4165,11 @@
         2. `IntersectionObserver`
 3. JS的事件循环运行机制：
 
-    1. “执行栈”进行：
+    1. 「执行栈」进行：
 
-        1. 所有同步任务都在主线程上执行，形成一个“执行栈”，串行执行直到“执行栈”为空（只有前一个任务执行完毕，才能执行后一个任务）。
-        2. 主线程之外，还存在“任务队列”。“执行栈”遇到异步任务则把其挂起到异步线程，只要异步线程有了运行结果，就在“任务队列”之中放置通知。
-    2. 一旦“执行栈”中的所有同步任务执行完毕，系统就会（按照macrotask、microtask的事件循环运行机制）读取“任务队列”，把**一个**通知对应的回调函数加入执行栈。跳回步骤1（“执行栈”又有内容可以执行）。
+        1. 所有同步任务都在主线程上执行，形成一个「执行栈」，串行执行直到「执行栈」为空（只有前一个任务执行完毕，才能执行后一个任务）。
+        2. 主线程之外，还存在「任务队列」。「执行栈」遇到异步任务则把其挂起到异步线程，只要异步线程有了运行结果，就在「任务队列」之中放置通知。
+    2. 一旦「执行栈」中的所有同步任务执行完毕，系统就会（按照macrotask、microtask的事件循环运行机制）读取「任务队列」，把**一个**通知对应的回调函数加入执行栈。跳回步骤1（「执行栈」又有内容可以执行）。
 
     ![事件循环图](./images/event-loop-1.png)
 4. 由于异步函数是立刻返回，异步事务中发生的错误是无法通过`try-catch`来捕捉。
@@ -4092,7 +4207,7 @@
 
     >[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
 
-    1. 浏览器重绘之前，进行一次：发起通知进入“任务队列”，等待“执行栈”调用。
+    1. 浏览器重绘之前，进行一次：发起通知进入「任务队列」，等待「执行栈」调用。
 
         大部分浏览器是1秒钟60帧，也就是16.67ms进行一帧重绘。
     2. 替代执行时机无法保证的`setTimeout`、`setInterval`进行动画操作，提升渲染性能：

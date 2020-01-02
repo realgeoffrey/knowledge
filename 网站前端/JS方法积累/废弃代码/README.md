@@ -143,10 +143,10 @@ function getAge (birthday) {
      * @param {Function} [data.callback] - 到点后的回调函数
      * @param {Number} [data.leftSec = 0] - 提前到期的秒数
      * @param {Boolean} [data.completeZero = false] - 是否个位数补全0
-     * @param {String} [data.dType = ' '] - “天”后面的文字
-     * @param {String} [data.hType = ' '] - “时”后面的文字
-     * @param {String} [data.mType = ' '] - “分”后面的文字
-     * @param {String} [data.sType = ' '] - “秒”后面的文字
+     * @param {String} [data.dType = ' '] - 「天」后面的文字
+     * @param {String} [data.hType = ' '] - 「时」后面的文字
+     * @param {String} [data.mType = ' '] - 「分」后面的文字
+     * @param {String} [data.sType = ' '] - 「秒」后面的文字
      */
     function CountDown (data) {
       const _dTypeSend = (typeof data.dType !== 'undefined') && data.dType !== ''
@@ -464,7 +464,7 @@ function deepCopy (obj) {
   if (typeof obj === 'function') {  // Function
     const newFunc = eval('(' + obj.toString() + ')');
     for (let key in obj) {
-      newFunc[key] = obj[key]; // 避免“调用栈溢出”，方法的属性不再深复制
+      newFunc[key] = obj[key]; // 避免「调用栈溢出」，方法的属性不再深复制
     }
 
     return newFunc;
@@ -479,11 +479,11 @@ function deepCopy (obj) {
     return new RegExp(obj.source, g + i + m);
   } else if (Array.isArray(obj)) {  // Array
 
-    return obj.map(() => deepCopy(obj));  // 多层深复制，容易产生“调用栈溢出”
+    return obj.map(() => deepCopy(obj));  // 多层深复制，容易产生「调用栈溢出」
   } else {  // Object
     const newObj = {};
     for (let key in obj) {
-      newObj[key] = deepCopy(obj[key]); // 多层深复制，容易产生“调用栈溢出”
+      newObj[key] = deepCopy(obj[key]); // 多层深复制，容易产生「调用栈溢出」
     }
 
     return newObj;
@@ -589,7 +589,7 @@ var cookieFuc = {
      * @param {Number|Date|String|Infinity} [deadline] - 过期时间。默认：关闭浏览器后过期
      * @param {String} [path] - 路径。默认：当前文档位置的路径
      * @param {String} [domain] - 域名。默认：当前文档位置的路径的域名部分
-     * @param {Boolean} [secure] - 是否“仅通过https协议传输”。默认：否
+     * @param {Boolean} [secure] - 是否「仅通过https协议传输」。默认：否
      * @returns {Boolean} - 操作成功或失败
      */
     setItem: function (key, value, deadline, path, domain, secure) {

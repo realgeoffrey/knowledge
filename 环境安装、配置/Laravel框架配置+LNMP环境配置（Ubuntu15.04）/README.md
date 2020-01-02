@@ -17,7 +17,7 @@
         sudo php5enmod mcrypt
         ```
 
-		>若升级了php5导致产生“permission denied”错误，则打开 `/etc/php5/fpm/pool.d/www.conf` 更改第44行开始，把“；”去除，打开listen.owner和listen.group
+		>若升级了php5导致产生「permission denied」错误，则打开 `/etc/php5/fpm/pool.d/www.conf` 更改第44行开始，把「；」去除，打开listen.owner和listen.group
 	2. 安装**mysql-server**、**php5-mysql**
 
 		>desktop还可以安装：**mysql-client**、**mysql-workbench**
@@ -47,7 +47,7 @@
 	更改项目文件夹的所有权，把组设置为www-data所有：
 
     ```shell
-    sudo chown -R “用户名”:www-data "项目目录"
+    sudo chown -R 「用户名」:www-data "项目目录"
     ```
 
 	更改项目文件夹的权限（r=4 w=2 x=1 所有者、组、其他）：
@@ -60,7 +60,7 @@
     将下载的安装文件移动至 */usr/local/bin* ：
 
     ```shell
-    sudo mv “laravel地址” /usr/local/bin
+    sudo mv 「laravel地址」 /usr/local/bin
     cd /usr/local/bin
     sudo laravel new mylaravel.com
     ```
@@ -78,8 +78,8 @@
     要注意把下载下来的文档中app/storage/下的文件设置权限为组www-data可修改和访问，否则会有权限问题。每一次对app/storage下文件或文件夹进行修改（一般是新建），都要把内容修改所在组为www-data，这样才可以用浏览器访问得到storage下的文件，并且把权限改为775：
 
     ```shell
-    sudo chown –R “用户名”:www-data “地址前缀”/app/storage
-    sudo chmod –R 775 “地址前缀”/app/storage
+    sudo chown –R 「用户名」:www-data 「地址前缀」/app/storage
+    sudo chmod –R 775 「地址前缀」/app/storage
     ```
 6. 在服务器nginx配置虚拟主机：
 
@@ -226,7 +226,7 @@
 	    >
 		>    1. 虚拟机为linux（desktop）：
 		>
-		>        虚拟机运行期间，在虚拟机窗口选择“设备” -> “安装增强设备”，成功执行之后，关闭虚拟机，在虚拟机设置共享文件夹：
+		>        虚拟机运行期间，在虚拟机窗口选择「设备」 -> 「安装增强设备」，成功执行之后，关闭虚拟机，在虚拟机设置共享文件夹：
         >
 		>	     ![Laravel图](./images/1.png)
         >
@@ -237,12 +237,12 @@
 		>	     把挂载共享文件夹写入开机启动中：
 		>	     `sudo vim /etc/rc.local`
 		>
-		>    	在“exit 0”之前添加：
+		>    	在「exit 0」之前添加：
 		>	     `mount -t vboxsf "虚拟机设置的文件夹名称" "文件夹路径"`
 		>    2. 虚拟机为windows xp：
 		>
-		>	     在“软件中心”安装Virtual Box，配置安装xp镜像iso。
-		>	     安装“增强功能”（虚拟机中双击我的电脑中virtul box图标或在视窗下选择“设备” -> “安装增强功能”）；安装完毕后在视窗下选择“设备” -> “共享文件夹”，分配好共享路径（勾选“自动挂载”）；最后在虚拟机中映射路径 (注意：文件名不要有空格号)。
+		>	     在「软件中心」安装Virtual Box，配置安装xp镜像iso。
+		>	     安装「增强功能」（虚拟机中双击我的电脑中virtul box图标或在视窗下选择「设备」 -> 「安装增强功能」）；安装完毕后在视窗下选择「设备」 -> 「共享文件夹」，分配好共享路径（勾选「自动挂载」）；最后在虚拟机中映射路径 (注意：文件名不要有空格号)。
 		>    3. 虚拟机为linux(server)暂无好的解决办法
 
 	3.
@@ -256,7 +256,7 @@
 		下载linux版本shadowsocks-go版本并解压：
 		<http://shadowsocks.org/en/download/clients.html>
 
-		右键选择shadowsocks属性，在“权限”选项卡选中“允许作为程序执行文件”，运行客户端：
+		右键选择shadowsocks属性，在「权限」选项卡选中「允许作为程序执行文件」，运行客户端：
 
 		```shell
         sudo 路径/shadowsocks -k="密钥" -l=本地端口号 -m="aes-256-cfb加密方式" -p=服务器端口号 -s="服务器地址"
@@ -267,11 +267,11 @@
 		安装并配置Chrome插件switchysharp :socks V5 127.0.0.1 本地端口号。
 	5. 安装WebStorm/PhpStorm
 
-		先安装JDK：可以下载安装，也可以在“软件中心”输入JDK，点击“显示不常用项”，安装完毕后安装下载linux版本WebStorm/PhpStorm，解压出软件，根据安装文档打开bin路径，然后执行./的sh脚本文件。
+		先安装JDK：可以下载安装，也可以在「软件中心」输入JDK，点击「显示不常用项」，安装完毕后安装下载linux版本WebStorm/PhpStorm，解压出软件，根据安装文档打开bin路径，然后执行./的sh脚本文件。
 	6. 安装rapid SVN
 
 		图形界面：
-		在“软件中心”搜索并下载rapid SVN，选择checkout（签出），url填写局域网HTTP地址，目标目录填写本地存放地址。
+		在「软件中心」搜索并下载rapid SVN，选择checkout（签出），url填写局域网HTTP地址，目标目录填写本地存放地址。
 		增加：文件右键 -> Add
 		删除：文件右键 -> 删除
 		提交：文件或总的文件夹选择commit
@@ -281,7 +281,7 @@
         ```
 	7. 安装meld diff
 
-		在“软件中心”搜索安装meld diff，并在rapid SVN中配置此软件：svn -> 查看 -> 首选项 -> 程序选项卡 “diff tool”填入①meld ②%1 %2。
+		在「软件中心」搜索安装meld diff，并在rapid SVN中配置此软件：svn -> 查看 -> 首选项 -> 程序选项卡 「diff tool」填入①meld ②%1 %2。
 	8. 安装服务器搜索工具xunsearch
 
 		[xunsearch官网](http://www.xunsearch.com/)下载，并解压出文件夹，打开文件夹，运行脚本即可完成安装。
@@ -307,7 +307,7 @@
 	9. 安装groovy语言` sudo apt-get install groovy`
 	10. 设置vpn
 
-		“系统设置” -> “网络”，添加一个接口为“VPN”、连接类型为“点到点隧道协议（PPTP）”的连接；VPN网关、用户名、密码设置正确后，高级设置里选开“使用点到点加密”、选开“发送PPP回响包”。保存之后会新增一个vpn连接，成功选择vpn连接成功后，会在连接图标上出现一把锁。
+		「系统设置」 -> 「网络」，添加一个接口为「VPN」、连接类型为「点到点隧道协议（PPTP）」的连接；VPN网关、用户名、密码设置正确后，高级设置里选开「使用点到点加密」、选开「发送PPP回响包」。保存之后会新增一个vpn连接，成功选择vpn连接成功后，会在连接图标上出现一把锁。
 	11.
         >安卓环境配置
 	    >   *JDK -> Genymotion -> Android sdk -> IDE -> ndk*

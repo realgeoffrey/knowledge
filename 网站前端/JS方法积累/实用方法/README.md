@@ -21,7 +21,7 @@
         1. [事件代理](#原生js事件代理)
         1. [实现判断按下具体某按键](#原生jsjquery实现判断按下具体某按键)
         1. [拖拽和放下](#原生js拖拽和放下)
-        1. [触摸屏模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）](#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)
+        1. [触摸屏模拟点击事件（消除「延时300毫秒后才触发click事件」，使点击事件提前触发）](#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)
         1. [判断事件在浏览器是否存在](#原生js判断事件在浏览器是否存在)
     1. 数字计算
 
@@ -83,7 +83,7 @@
     1. [启动、暂停CSS动画](#jquery启动暂停css动画)
     1. [获取`HTTP response header`信息](#jquery获取http-response-header信息)
     1. [修复HTML标签`placeholder`属性无效](#jquery修复html标签placeholder属性无效)
-    1. [模拟手机旋转（使页面都以“横屏”展示）](#jquery模拟手机旋转使页面都以横屏展示)
+    1. [模拟手机旋转（使页面都以「横屏」展示）](#jquery模拟手机旋转使页面都以横屏展示)
 
     >大部分情况下，jQuery内容适用于Zepto。
 
@@ -836,9 +836,9 @@ dom.addEventListener('事件名', function (e) {
     // action.stop();
     ```
 
-### *原生JS*触摸屏模拟点击事件（消除“延时300毫秒后才触发click事件”，使点击事件提前触发）
+### *原生JS*触摸屏模拟点击事件（消除「延时300毫秒后才触发click事件」，使点击事件提前触发）
 ```javascript
-/* 不要绑定click事件，用touchstart和touchend模拟，以消除“延时300毫秒后才触发”的问题 */
+/* 不要绑定click事件，用touchstart和touchend模拟，以消除「延时300毫秒后才触发」的问题 */
 
 var start_x, start_y;
 
@@ -1707,7 +1707,7 @@ function selectElement (dom) {
 
 ### *原生JS*针对WAP的阻止滚动冒泡（仅DOM）
 >1. 因为`scroll`事件不会冒泡，所以`stopPropagation`、`preventDefault`无法达到效果。
->2. iOS可以在DOM滚动到顶部或底部时，通过`-webkit-overflow-scrolling: touch;`继续触发“橡皮筋效果”。
+>2. iOS可以在DOM滚动到顶部或底部时，通过`-webkit-overflow-scrolling: touch;`继续触发「橡皮筋效果」。
 
 ```html
 <style>
@@ -2888,9 +2888,9 @@ var a = new RepeatRAF(function () {
      * 图片延时加载
      * @constructor
      * @param {String} className - 触发的类名
-     * @param {String} [dataSrc = 'data-src'] - img标签上存放“真实地址”的属性
+     * @param {String} [dataSrc = 'data-src'] - img标签上存放「真实地址」的属性
      * @param {Function} func - 图片加载成功后回调函数，this和形参为图片DOM
-     * @param {String} [dataError = 'data-error'] - img标签上存放“真实地址加载失败后显示的地址”的属性
+     * @param {String} [dataError = 'data-error'] - img标签上存放「真实地址加载失败后显示的地址」的属性
      * @param {Function} errorFunc - 图片加载失败后回调函数，this和形参为图片DOM
      */
     function ImgLazyLoad(className, dataSrc, func, dataError, errorFunc) {
@@ -3065,7 +3065,7 @@ var a = new RepeatRAF(function () {
 
     <script>
         /**
-         * 跟随屏幕滚动而相对静止（fixed），当到达底部某距离时“恢复”滚动
+         * 跟随屏幕滚动而相对静止（fixed），当到达底部某距离时「恢复」滚动
          * @constructor
          * @param {Object} $target - 跟屏目标的jQuery对象
          * @param {Number} topOffset - 触发添加topClass的距文档顶部的距离
@@ -3703,7 +3703,7 @@ function fixPlaceholder($dom) {
 }
 ```
 
-### jQuery模拟手机旋转（使页面都以“横屏”展示）
+### jQuery模拟手机旋转（使页面都以「横屏」展示）
 ```html
 <style>
     .dom {
@@ -3741,7 +3741,7 @@ function fixPlaceholder($dom) {
             _setTimeoutId2 = '',
             _namespace = Date.now(),
             _resizeEvent = 'onorientationchange' in window ? 'orientationchange' : 'resize',
-            _portraitFunc = function (selector, className) {    /* 屏幕高度>宽度（竖屏），增加“顺时针旋转90度的类” */
+            _portraitFunc = function (selector, className) {    /* 屏幕高度>宽度（竖屏），增加「顺时针旋转90度的类」 */
                 var $dom = $(selector);
 
                 if ($(window).height() > $(window).width()) {

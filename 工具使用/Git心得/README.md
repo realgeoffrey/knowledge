@@ -51,21 +51,21 @@
     1. 恢复untracked的文件（版本控制内的文件）
 
         ```git
-        git checkout -- “文件名或.”
+        git checkout -- 「文件名或.」
         ```
     2. 清除`git add`的内容
 
         ```git
-        git reset HEAD [“文件名”]          # 不修改文件、使已修改文件恢复到状态unstaged或untracked
+        git reset HEAD [「文件名」]          # 不修改文件、使已修改文件恢复到状态unstaged或untracked
 
-        git reset --hard HEAD [“文件名”]   # 恢复unstaged或git add（committed）的文件，untracked不恢复
+        git reset --hard HEAD [「文件名」]   # 恢复unstaged或git add（committed）的文件，untracked不恢复
         ```
     3. 撤销`git commit`的请求
 
         ```git
-        git reset “SHA”                 # 撤销commit请求（恢复commit的文件），不修改文件、使已修改文件恢复到untracked
+        git reset 「SHA」                 # 撤销commit请求（恢复commit的文件），不修改文件、使已修改文件恢复到untracked
 
-        git reset --hard “SHA”          # 撤销commit请求（恢复commit的文件），恢复git add的全部文件（untracked不恢复）
+        git reset --hard 「SHA」          # 撤销commit请求（恢复commit的文件），恢复git add的全部文件（untracked不恢复）
         ```
     4. 清除所有不在版本控制内的内容（如：.idea、node_modules）
 
@@ -81,9 +81,9 @@
         向前逐个删除commit（除了第一个commit）。
 
         ```git
-        git reset --hard HEAD~“数字”      # 取消当前版本之前的N次提交
+        git reset --hard HEAD~「数字」      # 取消当前版本之前的N次提交
         # 或
-        git reset --hard “SHA”          # 取消至某SHA
+        git reset --hard 「SHA」          # 取消至某SHA
 
         # 若需要，则可以新增commit
 
@@ -101,7 +101,7 @@
         操作任意commit。
 
         ```git
-        git rebase -i --root “分支名”  # 选择commit处理状态
+        git rebase -i --root 「分支名」  # 选择commit处理状态
         # 编辑commit信息
 
         # git rebase --abort           # 取消所有rebase操作
@@ -121,7 +121,7 @@
     >
     >1. [GitLab](https://about.gitlab.com/)默认**master**分支是**protected**状态，无法`git push --force`。
     >
-    >    可以在Gitlab设置里面通过：*project* > *Settings* > *Repository* > *Protected branches* > *Unprotect*，打开权限（不建议长期开启）。
+    >    可以在Gitlab设置里面通过：*project* > *Settings* > *Repository* > *Protected branches* > *Unprotect*，打开权限（不推荐长期开启）。
     >2. Github默认允许`git push --force`。
     ></details>
 4. 回退
@@ -129,7 +129,7 @@
     用一个新的commit提交去覆盖回退之前某一个commit提交的内容。
 
     ```git
-    git revert “SHA”    # 可能产生冲突，需要解决冲突并`git add “冲突文件”`（-n 不自动产生commit）
+    git revert 「SHA」    # 可能产生冲突，需要解决冲突并`git add 「冲突文件」`（-n 不自动产生commit）
 
     git push
     ```
@@ -139,12 +139,12 @@
 
         ```git
         # 其他分支更新至最新内容
-        git checkout “其他分支”
-        git pull origin “其他分支”
+        git checkout 「其他分支」
+        git pull origin 「其他分支」
 
         # 把其他分支内容合并至收集改动分支
-        git checkout “收集改动分支”
-        git merge “其他分支”
+        git checkout 「收集改动分支」
+        git merge 「其他分支」
         # if两分支没有分叉（相同或父子关系），不产生额外commit
         # if有分叉且未产生冲突，则自动新增一个合并commit
         # if产生冲突
@@ -153,25 +153,25 @@
         #   修改完毕后需要add -> commit
         # if产生冲突，可以使用`git merge --abort`取消本次合并，退回合并前文件状态
 
-        git push origin “收集改动分支”
+        git push origin 「收集改动分支」
         ```
 
         1. 快进模式（fast-forward）
 
             >默认。
 
-            `git merge “其他分支”`
+            `git merge 「其他分支」`
 
-            Git默认使用Fast forward模式，删除“其他分支”后，会丢掉分支信息。
+            Git默认使用Fast forward模式，删除「其他分支」后，会丢掉分支信息。
         2. 普通模式（no fast-forward）
 
-            `git merge “其他分支” --no-ff -m "commit信息"`
+            `git merge 「其他分支」 --no-ff -m "commit信息"`
 
-            合并时生成一个新的commit（没有分叉也会生成），包含“其他分支”相对本分支所有的commits修改内容（可以用于统一review）。
+            合并时生成一个新的commit（没有分叉也会生成），包含「其他分支」相对本分支所有的commits修改内容（可以用于统一review）。
     2. `rebase`
 
         ```git
-        git rebase “其他分支”       # 把其他分支的commit当做祖先commit，本身分支的commit紧随其后
+        git rebase 「其他分支」       # 把其他分支的commit当做祖先commit，本身分支的commit紧随其后
         # if产生冲突，则需要对本分支每一个commit冲突进行处理，
         #   修改冲突文件 -> add（不要commit） -> git rebase --continue
         ```
@@ -193,7 +193,7 @@
         >>>>>>>> develop
         >```
         ></details>
-    2. 解决冲突：冲突只是把两个分支修改内容合并一起并且增加标记，无论是否修改内容（甚至可以保持标记），都以`git add “修改的文件”`表示解决冲突
+    2. 解决冲突：冲突只是把两个分支修改内容合并一起并且增加标记，无论是否修改内容（甚至可以保持标记），都以`git add 「修改的文件」`表示解决冲突
 
         正常情况下，人工合并两个修改，并删除冲突标记。
 7. 更新远程仓库引用
@@ -206,55 +206,55 @@
     1. 本地新建分支
 
         ```git
-        git branch “分支名”
+        git branch 「分支名」
         ```
     2. 推送（新建）远程分支
 
         ```git
-        git push origin “分支名”   # 新建远程分支（不需要提交commit即可创建远程分支）
+        git push origin 「分支名」   # 新建远程分支（不需要提交commit即可创建远程分支）
         ```
     3. 切换分支
 
         ```git
-        git checkout “分支名”
+        git checkout 「分支名」
 
-        git checkout -b “分支名”   # 新建并切换至新分支
+        git checkout -b 「分支名」   # 新建并切换至新分支
 
-        git checkout -b “分支名” origin/“分支名”  # 从远程分支中，新建并切换至新分支
+        git checkout -b 「分支名」 origin/「分支名」  # 从远程分支中，新建并切换至新分支
         ```
     4. 删除分支
 
         ```git
-        git branch -d “分支名”     # 删除本地分支
+        git branch -d 「分支名」     # 删除本地分支
 
-        git push origin :“分支名”  # 删除远程分支（不需要先删除本地分支）
+        git push origin :「分支名」  # 删除远程分支（不需要先删除本地分支）
         ```
     5. 重命名分支
 
         >在原分支基础上新建本地分支，再推送至远程，然后删除原分支。
 
         ```git
-        git branch -m “原分支名” “新分支名”     # 删除本地原分支，新建本地新分支
+        git branch -m 「原分支名」 「新分支名」     # 删除本地原分支，新建本地新分支
 
         # 要推送至远程，依然需要推送（新建）远程分支、删除远程分支
         ```
 9. tag
 
     ```git
-    git tag [-l “完整内容或*”]          # 列出现有（本地+远程）标签
+    git tag [-l 「完整内容或*」]          # 列出现有（本地+远程）标签
 
-    git show “名字”                    # 查看tag详细信息
+    git show 「名字」                    # 查看tag详细信息
 
-    git tag “名字” [“SHA”]            # 新建轻量级标签（没有SHA则最新commit）
-    git tag “名字” -a [“SHA”]         # 新建含附注标签（打开编辑器）（没有SHA则最新commit）
-    git tag “名字” -m “信息” [“SHA”]  # 新建含附注标签（没有SHA则最新commit）
+    git tag 「名字」 [「SHA」]            # 新建轻量级标签（没有SHA则最新commit）
+    git tag 「名字」 -a [「SHA」]         # 新建含附注标签（打开编辑器）（没有SHA则最新commit）
+    git tag 「名字」 -m 「信息」 [「SHA」]  # 新建含附注标签（没有SHA则最新commit）
 
-    git push origin “名字”            # 推送一个本地新建标签至远程
+    git push origin 「名字」            # 推送一个本地新建标签至远程
     git push --tags                   # 推送所有本地新建标签至远程
 
-    git tag -d “名字”                 # 删除本地tag
+    git tag -d 「名字」                 # 删除本地tag
 
-    git push origin :refs/tags/“名字” # 删除远程tag
+    git push origin :refs/tags/「名字」 # 删除远程tag
     ```
 10. stash
 
@@ -264,10 +264,10 @@
     git stash list                  # 查看所有储藏
 
     git stash apply                 # 应用最后一个储藏
-    git stash apply stash@{“数字”}    # 应用指定的一个储藏
+    git stash apply stash@{「数字」}    # 应用指定的一个储藏
 
     git stash drop                  # 删除最后一个储藏
-    git stash drop stash@{“数字”}     # 删除指定的一个储藏
+    git stash drop stash@{「数字」}     # 删除指定的一个储藏
 
     git stash pop                   # 应用最后一个储藏，删除最后一个储藏
     ```
@@ -276,9 +276,9 @@
     1. 新增子模块
 
         ```git
-        git submodule add “子模块仓库”     # 在仓库中加入子模块
+        git submodule add 「子模块仓库」     # 在仓库中加入子模块
 
-        git submodule set-branch -b “分支名” “子模块目录”   # 设置子模块对应的远程分支名（默认为：default branch）
+        git submodule set-branch -b 「分支名」 「子模块目录」   # 设置子模块对应的远程分支名（默认为：default branch）
 
         推送 .gitmodules 和 子模块文件（夹） # 更改推到远程分支（子模块文件包含了子模块指向的SHA）
         ```
@@ -300,21 +300,21 @@
 
 
         # 1. 修改、推送子模块
-        cd “子模块目录”
-        git checkout -b “分支名” origin/“分支名”          # 从远程分支中，新建并切换至新分支
-        修改、git add “修改的文件”、git commit、git push    # 修改、推送子模块“分支名”
+        cd 「子模块目录」
+        git checkout -b 「分支名」 origin/「分支名」          # 从远程分支中，新建并切换至新分支
+        修改、git add 「修改的文件」、git commit、git push    # 修改、推送子模块「分支名」
 
 
         # 2. 推送包含子模块的仓库
-        cd “包含子模块的仓库”
-        git add “子模块目录”、git commit、git push         # 推送子模块指向新的SHA
+        cd 「包含子模块的仓库」
+        git add 「子模块目录」、git commit、git push         # 推送子模块指向新的SHA
         ```
     4. 删除子模块
 
         ```git
-        git rm --cached “子模块文件夹”
+        git rm --cached 「子模块文件夹」
 
-        rm -rf “子模块文件夹”
+        rm -rf 「子模块文件夹」
 
         编辑 .gitmodules，删除子模块信息
 
@@ -468,17 +468,17 @@ feat(details): 添加了分享功能
 2. 开发新需求：
 
     ```git
-    git flow feature start “需求名” [“develop的SHA”]
-        # -> 基于“develop的SHA”或最新develop，在本地创建并切换至“feature/需求名”分支
+    git flow feature start 「需求名」 [「develop的SHA」]
+        # -> 基于「develop的SHA」或最新develop，在本地创建并切换至「feature/需求名」分支
 
-    提交具体需求的commits到本地或推送远程“feature/需求名”
-    # 必须满足“QA测试通过、同事review通过、依赖的接口上线完成、后台依赖数据配置完成”之后才可以继续进行下面操作
+    提交具体需求的commits到本地或推送远程「feature/需求名」
+    # 必须满足「QA测试通过、同事review通过、依赖的接口上线完成、后台依赖数据配置完成」之后才可以继续进行下面操作
 
     # 本地必须先pull feature/需求名、develop分支，解决冲突、merge，否则无法执行命令
-    git flow feature finish “需求名”
-        # -> “feature/需求名”合并（--no-ff）至本地develop分支
-        # -> 删除本地“feature/需求名”分支，切换至develop分支
-        # -> 可能删除远程的“feature/需求名”分支
+    git flow feature finish 「需求名」
+        # -> 「feature/需求名」合并（--no-ff）至本地develop分支
+        # -> 删除本地「feature/需求名」分支，切换至develop分支
+        # -> 可能删除远程的「feature/需求名」分支
 
     git checkout develop
     git push origin develop
@@ -489,22 +489,22 @@ feat(details): 添加了分享功能
 3. 发布版本：
 
     ```git
-    git flow release start “版本号” [“develop的SHA”]
-        # -> 基于“develop的SHA”或最新develop，在本地创建并切换至“release/版本号”分支
+    git flow release start 「版本号」 [「develop的SHA」]
+        # -> 基于「develop的SHA」或最新develop，在本地创建并切换至「release/版本号」分支
 
-    提交需要改动的commits到本地或推送远程“release/版本号”
+    提交需要改动的commits到本地或推送远程「release/版本号」
         # 修复临时发现的问题（可选）
         # 确定改动完成改动后：
             # 1. 更新package.json版本号
             # 2. 更新changelog（手写或命令生成）
 
     # 本地必须先pull release/版本号、develop分支、master分支，解决冲突、merge，否则无法执行命令
-    git flow release finish “版本号”
+    git flow release finish 「版本号」
         # tag描述（手写或复制changelog）
-        # -> “release/版本号”合并（--no-ff）至本地develop分支、本地master分支
-        # -> 新建本地“版本号”tag
-        # -> 删除本地“release/版本号”分支，切换至develop分支
-        # -> 可能删除远程的“release/版本号”分支
+        # -> 「release/版本号」合并（--no-ff）至本地develop分支、本地master分支
+        # -> 新建本地「版本号」tag
+        # -> 删除本地「release/版本号」分支，切换至develop分支
+        # -> 可能删除远程的「release/版本号」分支
 
     git checkout develop
     git push origin develop
@@ -514,31 +514,31 @@ feat(details): 添加了分享功能
     git push origin master
         # -> 推送至远程master分支
 
-    git push origin “版本号”
+    git push origin 「版本号」
         # -> 推送至远程tag
     ```
 
-    >若要把已经完成的feature内容添加到已存在的release分支，仅需release分支合并develop分支（`git checkout “release/版本号”; git merge develop`），而不需要release start
+    >若要把已经完成的feature内容添加到已存在的release分支，仅需release分支合并develop分支（`git checkout 「release/版本号」; git merge develop`），而不需要release start
 4. 线上bug修复：
 
     >类似于release。
 
     ```git
-    git flow hotfix start “版本号” [“master的SHA”]
-        # -> 基于“master的SHA”或最新master，在本地创建并切换至“hotfix/版本号”分支
+    git flow hotfix start 「版本号」 [「master的SHA」]
+        # -> 基于「master的SHA」或最新master，在本地创建并切换至「hotfix/版本号」分支
 
-    提交具体需求的commits到本地或推送远程“hotfix/版本号”
+    提交具体需求的commits到本地或推送远程「hotfix/版本号」
         # 确定改动完成改动后：
             # 1. 更新package.json版本号
             # 2. 更新changelog（手写或命令生成）
 
     # 本地必须先pull hotfix/版本号、develop分支、master分支，解决冲突、merge，否则无法执行命令
-    git flow hotfix finish “版本号”
+    git flow hotfix finish 「版本号」
         # tag描述（手写或复制changelog）
-        # -> “hotfix/版本号”合并（--no-ff）至本地master分支、本地develop分支
-        # -> 新建本地“版本号”tag
-        # -> 删除本地“release/版本号”分支，切换至develop分支
-        # -> 可能删除远程的“release/版本号”分支
+        # -> 「hotfix/版本号」合并（--no-ff）至本地master分支、本地develop分支
+        # -> 新建本地「版本号」tag
+        # -> 删除本地「release/版本号」分支，切换至develop分支
+        # -> 可能删除远程的「release/版本号」分支
 
     git checkout develop
     git push origin develop
@@ -548,7 +548,7 @@ feat(details): 添加了分享功能
     git push origin master
         # -> 推送至远程master分支
 
-    git push origin “版本号”
+    git push origin 「版本号」
         # -> 推送至远程tag
     ```
 
@@ -603,7 +603,7 @@ feat(details): 添加了分享功能
 1. 生产多对的**SSH keys**，并放入 **.ssh文件夹**（自动生成并放入`~/.ssh/`）：
 
     ```bash
-    ssh-keygen -f “地址/名字”
+    ssh-keygen -f 「地址/名字」
     ```
 2. 为不同账户地址设置对应的SSH key路径：
 
@@ -612,12 +612,12 @@ feat(details): 添加了分享功能
     Host 账户1.github.com
     	HostName github.com
     	User git
-    	IdentityFile ~/.ssh/“键1”
+    	IdentityFile ~/.ssh/「键1」
 
     Host 账户2.github.com
     	HostName github.com
     	User git
-    	IdentityFile ~/.ssh/“键2”
+    	IdentityFile ~/.ssh/「键2」
     ```
 3. 克隆仓库时修改**仓库地址**：
 
@@ -637,15 +637,15 @@ feat(details): 添加了分享功能
     1. 全局设置
 
         ```git
-        git config --global user.email “邮箱”
-        git config --global user.name “用户名”
+        git config --global user.email 「邮箱」
+        git config --global user.name 「用户名」
         ```
     2. 为具体项目设置
 
         ```git
         cd 进入某个git仓库
-        git config user.email “邮箱”
-        git config user.name “用户名”
+        git config user.email 「邮箱」
+        git config user.name 「用户名」
         ```
 2. 全局忽略文件
 
@@ -674,7 +674,7 @@ feat(details): 添加了分享功能
 ### .gitkeep文件
 >因为Git不跟踪空文件夹，所以项目中的空文件夹都无法进入Git版本控制。
 
-由社区带头，把`.gitkeep`空白文件放在需要上传的空文件夹内并加入版本控制，使“空文件夹”也能被Git版本追踪。
+由社区带头，把`.gitkeep`空白文件放在需要上传的空文件夹内并加入版本控制，使「空文件夹」也能被Git版本追踪。
 
 ### GitLab CI
 1. 设置中打开Pipelines
@@ -690,7 +690,7 @@ feat(details): 添加了分享功能
 
         ```git
         git init
-        git remote add -f origin “仓库地址”
+        git remote add -f origin 「仓库地址」
         ```
     2. 设置git允许使用**Sparse Checkout模式**：
 
@@ -708,8 +708,8 @@ feat(details): 添加了分享功能
     4. 仅对设置过的内容进行所有git操作：
 
         ```git
-        git pull origin “分支名”
+        git pull origin 「分支名」
         ```
 2. 减少克隆深度
 
-    `git clone “仓库地址” --depth “数字”`
+    `git clone 「仓库地址」 --depth 「数字」`

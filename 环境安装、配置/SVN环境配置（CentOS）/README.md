@@ -13,7 +13,7 @@
     svnadmin create /home/svn/one
     svnadmin create /home/svn/two
     ```
-	“*/home/svn/two*” 、“*/home/svn/one*” 为所创建仓库的2个路径。
+	「*/home/svn/two*」 、「*/home/svn/one*」 为所创建仓库的2个路径。
 
 3. 配置仓库
 

@@ -332,9 +332,12 @@
         e.g. `<button v-on="{ mousedown: doThis, mouseup: doThat }"/>`
 6. `v-slot`（`v-slot:xx`缩写：`#xx`）插槽
 
-    只允许添加在引用的子组件和`template`上，且不能嵌套使用。子组件使用`<slot>`在内部插入父级引入的内容。
+    只允许添加在`template`上（特例见下），且**不能~~嵌套~~使用**。子组件使用`<slot>`在内部插入父级引入的内容。
 
-    >若子组件没有包含`<slot name="某名字">`，则父组件引用子组件时的`v-slot:某名字"`的DOM会被抛弃。
+    >1. 只允许添加在`template`上的特例：被引用的子组件**只使用**默认插槽时，可以简写在引用的子组件上（若要使用多个插槽，则必须始终为所有的插槽使用完整的基于`<template>`的语法）。
+    >
+    >    e.g. `<子组件 v-slot:default>`、`<子组件 v-slot>`、`<子组件 #default>`
+    >2. 若子组件没有包含`<slot name="某名字">`，则父组件引用子组件时的`v-slot:某名字"`的DOM会被抛弃。
 
     1. 后备内容
 
@@ -354,13 +357,77 @@
             `<slot 组件属性1="字符串" :组件属性2="表达式">`
 
             >`<slot>`内部是子组件的作用域，和在其上添加的属性内容无关。
-        2. 父级使用子组件`<slot>`上显性设置的属性对应值：
+        2. 父级使用子组件`<slot>`上显性提供的属性对应值：
 
             `<template/子组件 v-slot="临时变量">{{ 临时变量.组件属性1 }}{{ 临时变量.组件属性2 }}</template/子组件>`
 
             （`临时变量 === { 组件属性1: '字符串'. 组件属性2: 表达式 }`）
 
             >`临时变量`支持解构。
+
+    <details>
+    <summary>e.g.</summary>
+
+    ```vue
+    // 父级
+    <template>
+      <div>
+        <!-- 特例：被引用的子组件只使用默认插槽 -->
+        <VSlotSon v-slot>父组件1</VSlotSon>
+        <VSlotSon v-slot:default>父组件2</VSlotSon>
+        <VSlotSon #default>父组件3</VSlotSon>
+
+        <VSlotSon>
+          <template v-slot:default>
+            default 父级内容
+          </template>
+          <template v-slot:other1>
+            other1 父级内容
+          </template>
+          <template v-slot:other2="sonData">
+            other2 父级使用子级显性提供的属性对应值：
+            {{ sonData.someData }}
+            {{ sonData.a }}
+            {{ sonData.b }}
+          </template>
+        </VSlotSon>
+      </div>
+    </template>
+
+    <script>
+    import VSlotSon from '@/components/VSlotSon.vue'
+
+    export default {
+      components: {
+        VSlotSon
+      }
+    }
+    </script>
+
+
+    // 子级
+    <template>
+      <div>
+        <slot>slot默认内容</slot>
+        <br>
+        <slot name="other1">other1 slot默认内容</slot>
+        <br>
+        <slot name="other2" :someData="obj" :a="obj.a" b="B!哈">other2 slot默认内容</slot>
+        <br>
+      </div>
+    </template>
+
+    <script>
+    export default {
+      data () {
+        return {
+          obj: { a: 'aaa', b: 'bbb' }
+        }
+      }
+    }
+    </script>
+    ```
+    </details>
 7. `v-model`表单的双向绑定
 
     >忽略表单元素上的`value`、`checked`、`selected`等初始值，而仅通过Vue实例赋值。
@@ -971,7 +1038,7 @@
     2. `<有效标签 is="组件名"/>`
     3.  动态组件：`<component :is="表达式"/>`
 
-        >~~`<component is="组件名字符串"/>`~~ 也可执行，只不过写死了某个组件，没有了“动态”的意义。
+        >~~`<component is="组件名字符串"/>`~~ 也可执行，只不过写死了某个组件，没有了「动态」的意义。
 
         ```html
         <div id="test">
@@ -999,7 +1066,7 @@
         `<keep-alive>组件</keep-alive>`，会缓存不活动的组件实例，而不是销毁、重建。当组件在其内被切换时，组件的`activated`、`deactivated`被对应执行。
 5. 通信
 
-    >组件（Vue实例）有自己独立的作用域，虽然可以访问到互相依赖关系（`vm.$parent`、`vm.$children`、`vm.$refs`），但是不建议（不允许）通过依赖获取、修改数据。
+    >组件（Vue实例）有自己独立的作用域，虽然可以访问到互相依赖关系（`vm.$parent`、`vm.$children`、`vm.$refs`），但是不推荐（不允许）通过依赖获取、修改数据。
 
     1. 父子组件间的通信
 
@@ -1106,7 +1173,7 @@
 
                 - 孙子 -> 父：
 
-                    1. 下面“非父子组件通信”的方式。
+                    1. 下面「非父子组件通信」的方式。
                     2. 由子组件一层层往上传递给父级。
 
                         <details>
@@ -1221,7 +1288,7 @@
         2. 或专门状态管理模式，如：[vuex](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#vuex)。
     - 组件的API来自三部分
 
-        `<my-component :子属性="父属性" @父事件="父方法"><标签 v-slot:某名字="临时变量">内容分发</标签></my-component>`
+        `<my-component :子属性="父属性" @父事件="父方法"><template v-slot:某名字="临时变量">插槽内容</template></my-component>`
 
         1. `props`：允许外部环境传递数据给组件。
         2. `events`：允许从组件内触发外部环境的副作用。
@@ -1287,7 +1354,7 @@
 
                 若已添加`scoped`的子组件也添加`scoped`，则增加一份子组件的自定义`attributes`。
 
-                >深度作用选择器：若希望`scoped`样式中的一个选择器能够作用得“更深”（如：影响子组件），则可使用`>>>`或`/deep/`或`::v-deep`操作符。
+                >深度作用选择器：若希望`scoped`样式中的一个选择器能够作用得「更深」（如：影响子组件），则可使用`>>>`或`/deep/`或`::v-deep`操作符（不支持预处理器，如：~~scss~~）。
                 >
                 >e.g.
                 >```vue
@@ -1307,7 +1374,7 @@
 
     <summary><del>可以在组件内部（或Vue实例内部）或外部，再创建另一个Vue实例，并且可以互相通信</del></summary>
 
-    >不建议、反模式。
+    >不推荐、反模式。
 
     主要为了解决：要挂载到不在组件操作范围内的DOM、或组件外生成的DOM（如：富文本内要嵌入Vue实例）。
 
@@ -1377,7 +1444,7 @@
         和父组件紧密耦合的子组件应该以父组件名作为前缀命名。
 
 ### 过渡/动画
->此处描述的“帧”是`requestAnimationFrame`（在浏览器下一次重绘之前执行），而不是~~Vue的`nextTick`~~（在Vue控制的DOM下次更新循环结束之后执行）。
+>此处描述的「帧」是`requestAnimationFrame`（在浏览器下一次重绘之前执行），而不是~~Vue的`nextTick`~~（在Vue控制的DOM下次更新循环结束之后执行）。
 
 - 插入、更新、移除DOM时，提供过渡/动画的操作
 
@@ -1698,7 +1765,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 ><details>
 ><summary>虚拟DOM系统的辩证思考：<a href="https://medium.com/@hayavuk/why-virtual-dom-is-slower-2d9b964b4c9e">Why Virtual DOM is slower</a></summary>
 >
->根据定义，**虚拟DOM** 比 **精细地直接更新DOM（`innerHTML`）** 更慢。虚拟DOM是执行DOM更新的一种折衷方式、一种权衡，尽管没有提升性能，但带来很多好处，可以提升开发人员的开发效率（提供了开发人员：“用数据驱动视图”代替“频繁操作DOM”的能力）。
+>根据定义，**虚拟DOM** 比 **精细地直接更新DOM（`innerHTML`）** 更慢。虚拟DOM是执行DOM更新的一种折衷方式、一种权衡，尽管没有提升性能，但带来很多好处，可以提升开发人员的开发效率（提供了开发人员：「用数据驱动视图」代替「频繁操作DOM」的能力）。
 ></details>
 
 3. （响应式系统和）虚拟DOM系统只能单向操作DOM结构。
@@ -1771,7 +1838,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     ```
 
 ### [SSR](https://ssr.vuejs.org/zh/)
-1. 若在`mounted`之前改变DOM，会导致“客户端激活”（client-side hydration）时，客户端的虚拟DOM（从服务端渲染完毕传递来的JSON字符串，在客户端解析而成。如：nuxt的`window.__NUXT__`）和服务端传来的DOM（服务端渲染完毕传输来的HTML）不同而出问题。
+1. 若在`mounted`之前改变DOM，会导致「客户端激活」（client-side hydration）时，客户端的虚拟DOM（从服务端渲染完毕传递来的JSON字符串，在客户端解析而成。如：nuxt的`window.__NUXT__`）和服务端传来的DOM（服务端渲染完毕传输来的HTML）不同而出问题。
 
     ><details>
     ><summary>客户端激活时</summary>
@@ -1784,6 +1851,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     建议SSR的应用，不要在`mounted`之前进行能导致模板变化的数据修改。
 
     >服务端默认禁用模板数据的响应式，因此响应式操作仅会在客户端进行。但是如：`watch`的`immediate: true`的方法，在服务端也会执行，因此就需要`process.client/process.server`来判断是否允许服务端执行。
+
+    >注意SSR与`v-html`中的有可能修改html的功能（比如：[lazysizes](https://github.com/aFarkas/lazysizes)会尽可能快地处理标记图片），会导致重新渲染。
 2. 服务端也会调用的钩子：`beforeCreate`、`created`
 
     将全局副作用代码移动到服务端不会运行的生命周期钩子中（除了 ~~`beforeCreate`~~、~~`created`~~ 之外的其他钩子）
@@ -1978,7 +2047,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 ### [vuex](https://github.com/vuejs/vuex)
 >store的概念：vuex提供的容器，state的集合。
 
-一个专为Vue.js应用程序开发的**状态管理模式**。采用集中式存储管理应用的所有组件的状态（仅一个实例对象就能负责保存整个应用的状态，“唯一数据源”），并以相应的规则保证状态以一种可预测的方式发生变化。vuex的状态存储是**响应式的**，若store中的状态发生变化，则有读取状态的组件（`computed`依赖状态或直接输出状态）也会相应地得到高效更新。
+一个专为Vue.js应用程序开发的**状态管理模式**。采用集中式存储管理应用的所有组件的状态（仅一个实例对象就能负责保存整个应用的状态，「唯一数据源」），并以相应的规则保证状态以一种可预测的方式发生变化。vuex的状态存储是**响应式的**，若store中的状态发生变化，则有读取状态的组件（`computed`依赖状态或直接输出状态）也会相应地得到高效更新。
 
 ![vuex流程图](./images/vuex-1.png)
 
@@ -2204,8 +2273,11 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         >模块vuex对根vuex均是只读。
 
-        1. getters的第三个参数`rootState`是根state、第四个参数`rootGetters`是根getters
-        2. actions的第一个参数`context`的：`rootState`属性是根state、`rootGetters`属性是根getters
+        1. getters的第三个参数`rootState`是根state、第四个参数`rootGetters`是根getters。
+        2. actions的第一个参数`context`的：`rootState`属性是根state、`rootGetters`属性是根getters。
+
+        >使用其他模块的信息：`rootState.模块名.state属性`、`rootGetters.模块名.getters属性`。
+
         3. **（组件使用）** state需要增加路径：store的`state.模块路径.state名`获取。
         4. 命名空间`namespaced`（主要针对getters、mutations、actions）
 
@@ -2223,7 +2295,10 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
                 - actions的定义内部
 
                     1. 默认的`commit`和`dispatch`只对本模块；
-                    2. 添加`{ root: true }`至第三参数，表示针对根vuex：`commit('mutation方法名', 参数, { root: true })`、`dispatch('action方法名', 参数, { root: true })`
+                    2. 添加`{ root: true }`至第三参数，表示针对根vuex：
+
+                        1. `commit('mutation方法名 或 模块名/mutation方法名', 参数, { root: true })`
+                        2. `dispatch('action方法名 或 模块名/action方法名', 参数, { root: true })`
     2. 动态注册`registerModule`、动态卸载`unregisterModule`
 
 - 若在`new`Vue实例时，把（已经`Vue.use(Vuex)`的）Vuex.Store实例通过`store`属性注入，则子组件内就能通过`vm.$store`访问此Vuex实例。
@@ -2310,7 +2385,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         >3. 最佳实践：
         >
         >    1. 把页面展示所必须的请求放在`asyncData/fetch`，并返回Promise来控制完成后才继续执行代码，这样之后代码需要的异步数据就可以放心使用（否则store的数据可能还未初始化，`undefined.属性`会报错）。
-        >    2. 把客户端的异步请求以及其他操作模板的行为都放在`mounted`及之后（否则可能导致“客户端激活”时，客户端的虚拟DOM和服务端传来的DOM不同而出问题）。
+        >    2. 把客户端的异步请求以及其他操作模板的行为都放在`mounted`及之后（否则可能导致「客户端激活」时，客户端的虚拟DOM和服务端传来的DOM不同而出问题）。
         >4. SSR的页面组件，可以在客户端用路由切换的方式在客户端触发`asyncData/fetch`（路由切换：`vm.$router.方法()`、或`<nuxt-link/>`、或`<router-link/>`）。
 
         3. `head`（`this`指向本组件vue实例）
@@ -2376,6 +2451,9 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             >export default (context, inject) => {
             >  // 在Vue实例、组件、`pages`组件新增属性（`asyncData`、`fetch`、`layout`）的上下文.app、store的actions/mutations，创建`$stat`方法
             >  inject('stat', () => {})
+            >
+            >  // 直接在context上新建属性（不推荐），之后所有用到context的地方都能使用这个属性
+            >  context.mydata = '值'
             >}
             >```
             ></details>
@@ -2859,6 +2937,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     13. `res`
     14. `beforeNuxtRender`
     15. `from`
+
+    >可以在context出现的地方给context添加新属性（不能修改上面列出的已经存在的属性），但不推荐这么做。若要在context添加属性，则最好仅在`plugins`统一给context添加属性。
     </details>
 4. 内置组件
 
@@ -3075,7 +3155,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         （旧时代到现在）相对于原生JS，更好的API，兼容性极好的DOM、AJAX操作。面向网页元素编程。
     2. Vue.js
 
-        实现MVVM的vm和view的“双向绑定”（单向数据流），实现自己的组件系统。面向数据编程。
+        实现MVVM的vm和view的「双向绑定」（单向数据流），实现自己的组件系统。面向数据编程。
 2. 优劣势对比
 
     1. jQuery

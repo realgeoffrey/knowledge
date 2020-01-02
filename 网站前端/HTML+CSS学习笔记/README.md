@@ -401,7 +401,7 @@
 
     <summary>W3C定义</summary>
 
-    1. 浮动元素、绝对定位元素、非块级盒子的块级容器（如：`inline-blocks`、`table-cells`、`table-captions`）、`overflow`值不为“visiable”的块级盒子，都会为它们的内容创建新的块级格式化上下文。
+    1. 浮动元素、绝对定位元素、非块级盒子的块级容器（如：`inline-blocks`、`table-cells`、`table-captions`）、`overflow`值不为「visiable」的块级盒子，都会为它们的内容创建新的块级格式化上下文。
     2. 在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由它们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
     3. 在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘（border-left）（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
     </details>
@@ -670,7 +670,7 @@
 2. `text-align-last`：文本中最后一行对齐规则。
 3. `text-align: justify-all;`：和`justify`一致，且最后一行也是文字向两侧对齐。
 
->不建议中文的文章用这个属性值。建议用默认或者`text-align: start;`。
+>不推荐中文的文章用这个属性值。建议用默认或者`text-align: start;`。
 
 ---
 ## HTML + CSS
@@ -708,14 +708,14 @@
 
     1. 除了要检测用户输入标签的闭合性之外，还要注意富文本编辑器的祖先元素不要用`<li>`嵌套。
 
-        因为代码中若有单独的`<li>`（没有嵌套`<ol>`或`<ul>`），则会“越级”到跟祖先级`<li>`同级的内容。
+        因为代码中若有单独的`<li>`（没有嵌套`<ol>`或`<ul>`），则会「越级」到跟祖先级`<li>`同级的内容。
     2. 大部分富文本会用`<em>`、`<ol>`、`<ul>`等标签来表示**斜体**、**有序序列**、**无序序列**，因此若用CSS重置了以上标签的样式后，则要在[富文本内重载开启它们的默认效果](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L61-L77)（或定制效果）。
     3. 大部分富文本会在`<table>`上使用`cellspacing`、`border`、`bordercolor`属性设置表格，又因为设置了`border: 0;`的表格无法重载开启以上属性作用，所以CSS重置时[不要重置`table,tbody,tfoot,thead,tr,th,td`的`border`属性](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/初始化模板/cssReset.scss#L26-L27)。
 2. 针对`contenteditable="true"`的DOM内容：
 
     1. 整个块级元素修改，可用：`document.execCommand('formatBlock', false, '<块级标签名>')`，再设置元素的样式。
 
-        >如：“小字体”的块级内容，就可以用`document.execCommand('formatBlock', false, '<h6>')`，然后设置`h6`的小字体样式。
+        >如：「小字体」的块级内容，就可以用`document.execCommand('formatBlock', false, '<h6>')`，然后设置`h6`的小字体样式。
     2. 内部可以嵌入`contenteditable="false"`的DOM：
 
         1. 不可编辑此嵌入DOM的文本。
@@ -1037,7 +1037,7 @@
         >2. 节点上能设定`clear: both;`。
     2. 中间内容自适应，两边固定（中间内容最先加载）
 
-        >所谓的“双飞翼布局”。
+        >所谓的「双飞翼布局」。
 
         ```html
         <style type="text/css">
@@ -1434,7 +1434,7 @@
 4. （SEO）对不想宣传的链接，在`<a>`中添加`rel="nofollow"`。
 
     ><details>
-    ><summary>告诉搜索引擎“不要跟踪此网页上的链接”或“不要跟踪此特定链接”</summary>
+    ><summary>告诉搜索引擎「不要跟踪此网页上的链接」或「不要跟踪此特定链接」</summary>
     >
     >1. 可以用于阻止在PR值高的网站上以留言等方式添加链接从而提高自身网站排名的行为，以改善搜索结果的质量，防止垃圾链接的蔓延。
     >2. 网站站长也可对其网页中的付费链接使用nofollow来防止该链接降低搜索排名。

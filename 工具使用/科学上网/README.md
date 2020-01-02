@@ -33,15 +33,15 @@
         docker ps                # 获取容器信息，包括ID（`-a`：显示所有的容器，包括未运行的）
 
 
-        docker start “容器ID”   # 启动容器
+        docker start 「容器ID」   # 启动容器
 
-        docker stop “容器ID”    # 停止容器（`-t=“时间 默认10”`：若超时未能关闭则强制kill）
+        docker stop 「容器ID」    # 停止容器（`-t=「时间 默认10」`：若超时未能关闭则强制kill）
         # 或
-        docker kill “容器ID”    # 直接关闭容器
+        docker kill 「容器ID」    # 直接关闭容器
 
-        docker restart “容器ID” # 重启容器（无论容器是否已启动）
+        docker restart 「容器ID」 # 重启容器（无论容器是否已启动）
 
-        docker rm “容器ID”      # 删除容器
+        docker rm 「容器ID」      # 删除容器
         ```
 1. Shadowsocks服务端安装
 
@@ -70,12 +70,12 @@
         ```bash
         docker pull hwdsl2/ipsec-vpn-server
 
-        docker run --name ipsec-vpn-server --env-file “配置文件地址” --restart=always -p 500:500/udp -p 4500:4500/udp -d --privileged hwdsl2/ipsec-vpn-server
+        docker run --name ipsec-vpn-server --env-file 「配置文件地址」 --restart=always -p 500:500/udp -p 4500:4500/udp -d --privileged hwdsl2/ipsec-vpn-server
         ```
 
 ### 非Docker环境安装服务器：Shadowsocks、IKEv2（IKEv1）
 <details>
-<summary>（推荐<a href="https://github.com/realgeoffrey/knowledge/blob/master/工具使用/科学上网/README.md#通过docker安装服务器shadowsockscisco-ipsecipsec-xauth-psk">通过Docker安装服务器</a>）</summary>
+<summary>（建议<a href="https://github.com/realgeoffrey/knowledge/blob/master/工具使用/科学上网/README.md#通过docker安装服务器shadowsockscisco-ipsecipsec-xauth-psk">通过Docker安装服务器</a>）</summary>
 
 1. Shadowsocks服务端安装
 
@@ -293,7 +293,7 @@
         1. 若服务器使用**SSL证书**，则客户端不需要导入证书。
         2. 若服务器使用**自签名证书**，则客户端必须导入证书。
 
-            客户端添加ca.cert.cer后，进入“钥匙串访问”把证书设置为“始终信任”。
+            客户端添加ca.cert.cer后，进入「钥匙串访问」把证书设置为「始终信任」。
 3. Windows
 
     1. 设置新的连接或网络 -> 连接到工作区 -> 使用我的Internet连接（VPN）。
@@ -311,5 +311,5 @@
             1. 搜索`mmc.exe`，打开控制台
             2. 文件 -> 添加/删除管理单元
 
-                选择“证书”添加。
+                选择「证书」添加。
             3. 证书 -> 受信任的根证书颁发机构 -> 证书，右键 -> 所有任务 -> 导入，选择ca.cert.cer导入成功。
