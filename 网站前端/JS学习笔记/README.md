@@ -31,11 +31,11 @@
 1. [功能归纳](#功能归纳)
 
     1. [判断数据类型](#判断数据类型)
+    1. [循环遍历](#循环遍历)
     1. [跨域请求](#跨域请求)
     1. [Web Storage && cookie](#web-storage--cookie)
     1. [错误处理机制](#错误处理机制)
     1. [预加载](#预加载)
-    1. [循环遍历](#循环遍历)
     1. [判断对象、方法是否定义](#判断对象方法是否定义)
     1. [浏览器缓存](#浏览器缓存)
     1. [欺骗JS词法作用域](#欺骗js词法作用域)
@@ -2144,7 +2144,7 @@
         28. `WebAssembly` -> `'[object WebAssembly]'`
         29. <details>
 
-            <summary>TypedArray实例 -> <code>'[object 构造函数名]'</code></summary>
+            <summary>「TypedArray」实例 -> <code>'[object 构造函数名]'</code></summary>
 
             Int8Array、Uint8Array、Uint8ClampedArray、Int16Array、Uint16Array、Int32Array、Uint32Array、Float32Array、Float64Array
             </details>
@@ -2187,17 +2187,289 @@
         >A实例 instanceof A构造函数; // true
         >A实例 instanceof B构造函数; // false
         >```
-    2. 判断`构造函数.prototype`是否存在于对象的整条原型链上。
+    2. 判断`构造函数.prototype`是否存在于对象的整条原型链（`[[Prototype]]`）上。
 
         若`构造函数.prototype === 对象.__proto__/对象.__proto__.__proto__/.../Object.prototype`，则返回`true`。否则返回`false`。
         >e.g. `new Number() instanceof Object; // true`
     3. **检测自定义类型的唯一方法。**
 4. `属性名 in 对象`
 
-    仅判断对象或对象的整条原型链上是否拥有属性名，不读取属性值。
+    判断对象或对象的整条原型链（`[[Prototype]]`）上是否拥有属性名，不读取属性值。
 
     >1. `对象.hasOwnProperty(属性名)`仅检查在当前实例对象，不检测其原型链。
     >2. ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
+
+### 循环遍历
+><details>
+><summary>约定</summary>
+>
+>`obj`为对象实例，`arr`为数组实例。
+></details>
+
+>1. `continue`应用在循环（`while`、`do-while`、`for`、`for-in`、`for-of`），表示跳过当次循环；`break`应用在循环、`switch`，表示跳出整个循环。
+>2. `forEach`、`map`、`filter`、`some`、`every`无法中止循环（`return`只结束回调函数）。
+>3. `$.each/$dom.each`跳出循环用`return true`（功能等价于：`continue`）、`return false`（功能等价于：`break`）。
+
+1. 原生JS
+
+    - 遍历对象的属性
+
+        `Object.entries/values/keys/getOwnPropertyNames/getOwnPropertySymbols`、`for-in`、`JSON.stringify`、`Reflect.ownKeys`可以获得属性描述（数据属性、访问器属性）。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```javascript
+        >const obj = {
+        >  a: 'obj\'s a',
+        >  [Symbol('b')]: 'obj\'s b'
+        >}
+        >Object.defineProperties(obj, {
+        >  c: {
+        >    value: 'obj\'s c',
+        >    enumerable: true
+        >  },
+        >  d: {
+        >    value: 'obj\'s d',
+        >    enumerable: false
+        >  },
+        >  [Symbol('e')]: {
+        >    value: 'obj\'s e',
+        >    enumerable: true
+        >  },
+        >  [Symbol('f')]: {
+        >    value: 'obj\'s f',
+        >    enumerable: false
+        >  }
+        >})
+        >
+        >const arr = ['arr\'s a']
+        >arr[Symbol('b')] = 'arr\'s b'
+        >Object.defineProperties(arr, {
+        >  c: {
+        >    value: 'arr\'s c',
+        >    enumerable: true
+        >  },
+        >  d: {
+        >    value: 'arr\'s d',
+        >    enumerable: false
+        >  },
+        >  [Symbol('e')]: {
+        >    value: 'arr\'s e',
+        >    enumerable: true
+        >  },
+        >  [Symbol('f')]: {
+        >    value: 'arr\'s f',
+        >    enumerable: false
+        >  }
+        >})
+        >
+        >
+        >// 输出：可枚举 && !属性名是Symbol类型
+        >console.info('\n for-in')  // for-in还会遍历整条原型链上的属性：可枚举 && !属性名是Symbol类型。
+        >for (const i in obj) {
+        >  console.log(i, obj[i])
+        >}
+        >for (const i in arr) {
+        >  console.log(i, arr[i])
+        >}
+        >
+        >console.info('\n Object.entries')
+        >console.log(Object.entries(obj))
+        >console.log(Object.entries(arr))
+        >
+        >console.info('\n Object.values')
+        >console.log(Object.values(obj))
+        >console.log(Object.values(arr))
+        >
+        >console.info('\n Object.keys')
+        >console.log(Object.keys(obj))
+        >console.log(Object.keys(arr))
+        >
+        >
+        >// 输出：(可枚举 || 不可枚举) && !属性名是Symbol类型
+        >console.info('\n Object.getOwnPropertyNames')
+        >console.log(Object.getOwnPropertyNames(obj))
+        >console.log(Object.getOwnPropertyNames(arr))
+        >
+        >
+        >// 输出：属性名是Symbol类型
+        >console.info('\n Object.getOwnPropertySymbols')
+        >console.log(Object.getOwnPropertySymbols(obj))
+        >console.log(Object.getOwnPropertySymbols(arr))
+        >
+        >
+        >console.info('\n JSON.stringify')
+        >// 输出：可枚举 && !属性名是Symbol类型
+        >console.log(JSON.stringify(obj))
+        >// 输出：数组的项（当做对象添加的属性不返回）
+        >console.log(JSON.stringify(arr))
+        >
+        >
+        >console.info('\n ...展开')
+        >// 输出：可枚举
+        >console.log({ ...obj })
+        >// 输出：数组的项（当做对象添加的属性不返回）
+        >console.log([...arr])
+        >
+        >
+        >// 输出：所有键名
+        >console.info('\n Reflect.ownKeys')
+        >console.log(Reflect.ownKeys(obj))
+        >console.log(Reflect.ownKeys(arr))
+        >
+        >
+        >console.info('\n Map数据类型的遍历')
+        >// 输出：Map的所有项
+        >for (const i of new Map([['a', 'Map\'s a'], [Symbol('b'), 'Map\'s b']])) {
+        >  console.log(i)
+        >}
+        >```
+        ></details>
+
+    1. <details>
+
+        <summary><code>while</code>、<code>do-while</code></summary>
+
+        ```javascript
+        while (跳出判断) {
+
+        }
+        ```
+
+        ```javascript
+        do {
+
+        } while (跳出判断);
+        ```
+        </details>
+    2. <details>
+
+        <summary><code>for</code></summary>
+
+        ```javascript
+        for (执行一次; 跳出判断; 每执行一次后执行) {
+
+        }
+        ```
+        </details>
+    3. <details>
+
+        <summary><code>for-in</code></summary>
+
+        遍历对象自身和整条原型链（`[[Prototype]]`）上的可枚举属性。
+
+        ```javascript
+        /* i为数组当前项的索引或对象当前项的属性名 */
+        for (var i in obj或arr) {
+
+        }
+        ```
+
+        >若在`for-in`中改变了原对象/原数组，则不会影响遍历的项和顺序，但直接使用原对象/原数组会展示修改后的值。
+        >
+        >```javascript
+        >// e.g.
+        >var originObj = { a: 'aa', b: 'bb' }
+        >for (let key in originObj) {
+        >  originObj.c = 'cc'
+        >  console.log(key, originObj)  // => 'a' 修改后对象 => 'b' 修改后对象
+        >}
+        >```
+        </details>
+    4. <details>
+
+        <summary><code>for-of</code></summary>
+
+        遍历可迭代对象自身的项。
+
+        ```javascript
+        /* i为迭代对象的属性值 */
+        for (let i of 可迭代对象) {
+
+        }
+        ```
+
+        >若在`for-of`中改变原数组，则会影响遍历的项和顺序。
+        >
+        >```javascript
+        >// e.g.
+        >var originArr = ['a', 'b', 'c']
+        >for (let item of originArr) {
+        >  originArr.pop()
+        >  console.log(item, originArr) // => 'a' ['a', 'b'] => 'b' ['a']
+        >}
+        >```
+        </details>
+    5. Array方法
+
+        ><details>
+        ><summary>若在Array遍历的回调函数中改变原数组，则会影响遍历的项和顺序。</summary>
+        >
+        >```javascript
+        >// e.g.
+        >var originArr = ['a', 'b', 'c']
+        >originArr.forEach((item, index, arr) => {   // 或其他所有Array.prototype.遍历方法
+        >  originArr.pop()
+        >  console.log(arr, originArr)   // => ['a', 'b'] ['a', 'b'] => ['a'] ['a']
+        >})
+        >```
+        ></details>
+
+        参数均为：`回调函数(当前值, 索引, 数组整体)[, this替代]`。
+
+        1. `Array.prototype.forEach()`
+
+            对数组的每个元素执行一次提供的函数。
+        2. `Array.prototype.map()`
+
+            数组中的每个元素调用提供的函数，组成新的数组。
+        3. `Array.prototype.filter()`
+
+            使用提供的函数测试所有元素，并创建包含所有通过测试的元素的新数组。
+        4. `Array.prototype.every()`
+
+            测试数组中是否所有元素都通过提供的函数。
+        5. `Array.prototype.some()`
+
+            测试数组中是否有一个元素通过提供的函数。
+        6. `Array.prototype.find()`
+
+            查找数组中通过提供的函数的第一个元素。
+        7. `Array.prototype.findIndex()`
+
+            查找数组中通过提供的函数的第一个元素的索引。
+
+        >- 向后/向前对数组应用提供的函数，累计处理返回最后一个结果
+        >
+        >    1. `Array.prototype.reduce(回调函数(上一次调用返回的值, 当前值, 索引, 数组整体)[, 第一次调用回调函数的第一个参数])`
+        >    2. `Array.prototype.reduceRight(回调函数(上一次调用返回的值, 当前值, 索引, 数组整体)[, 第一次调用回调函数的第一个参数])`
+2. jQuery
+
+    1. <details>
+
+        <summary><code>$.each</code></summary>
+
+        ```javascript
+        /* index为数组当前项的索引或对象当前项的属性名或jQuery对象的索引，item为当前项的值（不是jQuery对象，是DOM对象，与this相同） */
+        $.each(obj或arr或$dom, function (index, item) {
+
+        });
+        ```
+        </details>
+    2. <details>
+
+        <summary><code>$dom.each</code></summary>
+
+        ```javascript
+        /* index为jQuery对象的索引，item为当前项的值（不是jQuery对象，是DOM对象，与this相同） */
+        $dom.each(function (index, item) {
+
+        });
+        ```
+    3. `$.grep`
+
+        类似`Array.prototype.filter`
 
 ### 跨域请求
 
@@ -2642,281 +2914,6 @@
 >```
 ></details>
 
-### 循环遍历
-><details>
-><summary>约定</summary>
->
->`obj`为对象实例，`arr`为数组实例。
-></details>
-
->1. `continue`应用在循环（`while`、`do-while`、`for`、`for-in`、`for-of`），表示跳过当次循环；`break`应用在循环、`switch`，表示跳出整个循环。
->2. `forEach`、`map`、`filter`、`some`、`every`无法中止循环（`return`只结束回调函数）。
->3. `$.each/$dom.each`跳出循环用`return true`（功能等价于：`continue`）、`return false`（功能等价于：`break`）。
-
-1. 原生JS
-
-    1. <details>
-
-        <summary><code>while</code>、<code>do-while</code></summary>
-
-        ```javascript
-        while (跳出判断) {
-
-        }
-        ```
-
-        ```javascript
-        do {
-
-        } while (跳出判断);
-        ```
-        </details>
-    2. <details>
-
-        <summary><code>for</code></summary>
-
-        ```javascript
-        for (执行一次; 跳出判断; 每执行一次后执行) {
-
-        }
-        ```
-        </details>
-    3. <details>
-
-        <summary><code>for-in</code></summary>
-
-        遍历对象自身和继承的可枚举属性。
-
-        ```javascript
-        /* i为数组当前项的索引或对象当前项的属性名 */
-        for (var i in obj或arr) {
-
-        }
-        ```
-        </details>
-    4. <details>
-
-        <summary><code>for-of</code></summary>
-
-        遍历可迭代对象的每个元素。
-
-        ```javascript
-        /* i为迭代对象的属性值 */
-        for (let i of 可迭代对象) {
-
-        }
-        ```
-        </details>
-
-    ><details>
-    ><summary>若在<code>for-in/for-of</code>中改变了原对象/原数组，不会影响遍历的项和顺序，但直接使用原对象/原数组会展示修改后的值。</summary>
-    >
-    >e.g.
-    >
-    >```javascript
-    >let originObj = { a: 'aa', b: 'bb', c: 'cc' }
-    >for (let key in originObj) {
-    >  originObj = 1
-    >  console.log(key, originObj)  // => 'a' 1 => 'b' 1 => 'c' 1
-    >}
-    >// originObj 等于 1
-    >
-    >
-    >let originArr = ['a', 'b', 'c']
-    >for (let item of originArr) {
-    >  originArr = [1]
-    >  console.log(item, originArr) // => 'a' [1] => 'b' [1] => 'c' [1]
-    >}
-    >// originArr 等于 [1]
-    >```
-    ></details>
-
-    5. Array方法
-
-        ><details>
-        ><summary>若在Array遍历的回调函数中改变了原数组，不会影响遍历函数中的<code>当前值, 索引, 数组整体</code>和原本遍历顺序，但直接使用原数组（不是回调函数内的参数）会展示修改后的数组。</summary>
-        >
-        >```javascript
-        >// e.g.
-        >let originArr = ['a', 'b', 'c']
-        >originArr.forEach((item, index, arr) => {   // 或其他所有Array.prototype.遍历方法
-        >  originArr = [item]
-        >  console.log(arr, originArr)   // 输出：`['a', 'b', 'c'] ['a']`；`['a', 'b', 'c'] ['b']`；`['a', 'b', 'c'] ['c']`
-        >})
-        >// originArr 等于 ['c']
-        >```
-        ></details>
-
-        参数均为：`回调函数(当前值, 索引, 数组整体)[, this替代]`。
-
-        1. `Array.prototype.forEach()`
-
-            对数组的每个元素执行一次提供的函数。
-        2. `Array.prototype.map()`
-
-            数组中的每个元素调用提供的函数，组成新的数组。
-        3. `Array.prototype.filter()`
-
-            使用提供的函数测试所有元素，并创建包含所有通过测试的元素的新数组。
-        4. `Array.prototype.every()`
-
-            测试数组中是否所有元素都通过提供的函数。
-        5. `Array.prototype.some()`
-
-            测试数组中是否有一个元素通过提供的函数。
-        6. `Array.prototype.find()`
-
-            查找数组中通过提供的函数的第一个元素。
-        7. `Array.prototype.findIndex()`
-
-            查找数组中通过提供的函数的第一个元素的索引。
-
-        >- 向后/向前对数组应用提供的函数，累计处理返回最后一个结果
-        >
-        >    1. `Array.prototype.reduce(回调函数(上一次调用返回的值, 当前值, 索引, 数组整体)[, 第一次调用回调函数的第一个参数])`
-        >    2. `Array.prototype.reduceRight(回调函数(上一次调用返回的值, 当前值, 索引, 数组整体)[, 第一次调用回调函数的第一个参数])`
-
-    - 遍历对象的属性
-
-        `Object.entries/values/keys/getOwnPropertyNames/getOwnPropertySymbols`、`for-in`、`JSON.stringify`、`Reflect.ownKeys`可以获得属性描述（数据属性、访问器属性）。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```javascript
-        >const obj = {
-        >  a: 'obj\'s a',
-        >  [Symbol('b')]: 'obj\'s b'
-        >}
-        >Object.defineProperties(obj, {
-        >  c: {
-        >    value: 'obj\'s c',
-        >    enumerable: true
-        >  },
-        >  d: {
-        >    value: 'obj\'s d',
-        >    enumerable: false
-        >  },
-        >  [Symbol('e')]: {
-        >    value: 'obj\'s e',
-        >    enumerable: true
-        >  },
-        >  [Symbol('f')]: {
-        >    value: 'obj\'s f',
-        >    enumerable: false
-        >  }
-        >})
-        >
-        >const arr = ['arr\'s a']
-        >arr[Symbol('b')] = 'arr\'s b'
-        >Object.defineProperties(arr, {
-        >  c: {
-        >    value: 'arr\'s c',
-        >    enumerable: true
-        >  },
-        >  d: {
-        >    value: 'arr\'s d',
-        >    enumerable: false
-        >  },
-        >  [Symbol('e')]: {
-        >    value: 'arr\'s e',
-        >    enumerable: true
-        >  },
-        >  [Symbol('f')]: {
-        >    value: 'arr\'s f',
-        >    enumerable: false
-        >  }
-        >})
-        >
-        >
-        >// 输出：可枚举 && !属性名是Symbol类型
-        >console.info('\n for-in')
-        >for (const i in obj) {
-        >  console.log(i, obj[i])
-        >}
-        >for (const i in arr) {
-        >  console.log(i, arr[i])
-        >}
-        >
-        >console.info('\n Object.entries')
-        >console.log(Object.entries(obj))
-        >console.log(Object.entries(arr))
-        >
-        >console.info('\n Object.values')
-        >console.log(Object.values(obj))
-        >console.log(Object.values(arr))
-        >
-        >console.info('\n Object.keys')
-        >console.log(Object.keys(obj))
-        >console.log(Object.keys(arr))
-        >
-        >
-        >// 输出：(可枚举 || 不可枚举) && !属性名是Symbol类型
-        >console.info('\n Object.getOwnPropertyNames')
-        >console.log(Object.getOwnPropertyNames(obj))
-        >console.log(Object.getOwnPropertyNames(arr))
-        >
-        >
-        >// 输出：属性名是Symbol类型
-        >console.info('\n Object.getOwnPropertySymbols')
-        >console.log(Object.getOwnPropertySymbols(obj))
-        >console.log(Object.getOwnPropertySymbols(arr))
-        >
-        >
-        >console.info('\n JSON.stringify')
-        >// 输出：可枚举 && !属性名是Symbol类型
-        >console.log(JSON.stringify(obj))
-        >// 输出：数组的项（当做对象添加的属性不返回）
-        >console.log(JSON.stringify(arr))
-        >
-        >
-        >console.info('\n ...展开')
-        >// 输出：可枚举
-        >console.log({ ...obj })
-        >// 输出：数组的项（当做对象添加的属性不返回）
-        >console.log([...arr])
-        >
-        >
-        >// 输出：所有键名
-        >console.info('\n Reflect.ownKeys')
-        >console.log(Reflect.ownKeys(obj))
-        >console.log(Reflect.ownKeys(arr))
-        >
-        >
-        >console.info('\n Map数据类型的遍历')
-        >// 输出：Map的所有项
-        >for (const i of new Map([['a', 'Map\'s a'], [Symbol('b'), 'Map\'s b']])) {
-        >  console.log(i)
-        >}
-        >```
-        ></details>
-2. jQuery
-
-    1. <details>
-
-        <summary><code>$.each</code></summary>
-
-        ```javascript
-        /* index为数组当前项的索引或对象当前项的属性名或jQuery对象的索引，item为当前项的值（不是jQuery对象，是DOM对象，与this相同） */
-        $.each(obj或arr或$dom, function (index, item) {
-
-        });
-        ```
-        </details>
-    2. <details>
-
-        <summary><code>$dom.each</code></summary>
-
-        ```javascript
-        /* index为jQuery对象的索引，item为当前项的值（不是jQuery对象，是DOM对象，与this相同） */
-        $dom.each(function (index, item) {
-
-        });
-        ```
-    3. `$.grep`
-
-        类似`Array.prototype.filter`
-
 ### 判断对象、方法是否定义
 1. 判断对象方法是否可以执行
 
@@ -3151,7 +3148,8 @@
 
     `new`得到的实例对象，拥有构造函数体内使用`this`定义的属性和方法，且拥有构造函数的原型对象上的属性和方法（因为实例的`[[Prototype]]`指向`构造函数.prototype`）；在构造函数体内`var`的变量和`function`无法被这个对象使用，只能在构造函数里使用（类似私有变量）。
 
-    >相对于单全局变量，构造函数更加灵活，可以生成多个对象进行互相独立的操作。
+    >1. 相对于单全局变量，构造函数更加灵活，可以生成多个对象进行互相独立的操作。
+    >2. 构造函数，其实就是一个普通函数，没有任何特殊。
 
     - <details>
 
@@ -3353,25 +3351,27 @@
         2. 对象的方法调用（如：`obj1.obj2.func()`）
 
             `this`：最后一层对象（`obj2`）
-        3. 构造函数实例化（如：`new RegExp()`）
+        3. 间接调用（如：`alert.call/apply/bind(传入的值)`等[this替代](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#this替代)）
 
-            `this`：新实例对象
-        4. 间接调用（如：`alert.call/apply/bind(传入的对象)`）
+            `this`：传入的值
 
-            `this`：传入的对象
-
-            >1. 在非严格模式，传入的值：
+            >1. 非严格模式，传入的值：
             >
             >    1. 若是引用数据类型，则传入什么给`this`，函数的`this`就是什么。
             >    2. 若是基本数据类型
             >
             >        1. 则`this`成为那个值的基本包装类型（除了`undefined/null`之外）；
             >        2. 若不传或传入`undefined/null`，则`this`为全局对象。
-            >2. 在严格模式，传入的值：
+            >2. 严格模式，传入的值：
             >
             >    传入什么给`this`，函数的`this`就是什么。
-            >
-            >- `new (func.bind(值))()`的`this`是新实例对象，而不是~~传入的值~~。
+        4. 构造函数实例化（如：`new RegExp()`）
+
+            `this`：新实例对象
+
+            >`new (func.bind(传入的值))()`的`this`是新实例对象，而不是 ~~`bind`传入的值~~。
+
+        以上规则实施顺序（优先->其次）：构造函数实例化 -> 间接调用 -> 对象的方法调用 -> 直接函数调用。
 
         <details>
         <summary>e.g.</summary>
@@ -3454,7 +3454,7 @@
         ></details>
     2. 箭头函数
 
-        不会创建自己的`this`，根据[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)向上遍历查找直到非箭头函数定义的`this`或全局对象；若找到`this`，则再根据非箭头函数的方式决定取值。
+        不会创建自己的`this`（所以不会使用非箭头函数的规则），根据[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)向上遍历查找直到非箭头函数定义的`this`或全局对象；若找到`this`，则再根据非箭头函数的方式决定取值。
 
         >看上去就像：使用封闭执行上下文最近的一个`this`值。
 
@@ -3834,7 +3834,7 @@
 1. [递归赋值](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)（最全面方式）
 
     >深复制要处理的坑：循环引用、各种引用数据类型。
-2. 针对**仅能够被json直接表示的数据结构（对象、数组、数值、字符串、布尔值、null）**：
+2. 针对**仅能够被JSON直接表示的数据结构（对象、数组、数值、字符串、布尔值、null）**：
 
     `JSON.parse(JSON.stringify(obj));`
 
