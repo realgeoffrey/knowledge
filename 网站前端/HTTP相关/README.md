@@ -510,7 +510,7 @@
         | Content-Location | 替代对应资源的URI |
         | Content-MD5 | 实体主体的报文摘要 |
         | Content-Range | 实体主体的位置范围 |
-        | Content-Type | 实体主体的媒体类型（如：针对json，可以用：`application/octet-stream`二进制流数据文件下载、或`application/json`JSON数据格式） |
+        | Content-Type | 实体主体的媒体类型（如：针对JSON，可以用：`application/octet-stream`二进制流数据文件下载、或`application/json`JSON数据结构） |
         | Expires | 实体主体过期的日期时间 |
         | Last-Modified | 资源的最后修改日期时间 |
 4. 缓存、代理是否转发
