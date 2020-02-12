@@ -1,14 +1,25 @@
 # Node.js学习笔记
 
 ## 目录
-1. [nvm更新Node.js版本](#nvm更新nodejs版本)
-1. [Node.js的运行机制](#nodejs的运行机制)
-1. [npm](#npm)
-1. [CommonJS规范](#commonjs规范)
-1. [Node.js原生模块](#nodejs原生模块)
-1. [Node.js全局变量](#nodejs全局变量)
+1. [安装](#安装)
+
+    1. [nvm更新Node.js版本](#nvm更新nodejs版本)
+    1. [n更新Node.js版本](#n更新nodejs版本)
+1. [原理机制](#原理机制)
+
+    1. [npm](#npm)
+    1. [CommonJS规范](#commonjs规范)
+    1. [Node.js原生模块](#nodejs原生模块)
+    1. [Node.js全局变量](#nodejs全局变量)
+    1. [Node.js的运行机制](#nodejs的运行机制)
+    1. [特性](#特性)
+1. [其他](#其他)
+
+    1. [MongoDB](#mongodb)
 
 ---
+## 安装
+
 ### nvm更新Node.js版本
 1. macOS或Linux的[nvm](https://github.com/creationix/nvm)：
 
@@ -79,13 +90,8 @@
     n uninstall
     ```
 
-### Node.js的运行机制
-1. V8引擎解析JS脚本。
-2. 解析后的代码，调用Node.js的API。
-3. [libuv](https://github.com/libuv/libuv)负责Node.js的API的执行。将不同的任务分配给不同的线程，形成一个Event Loop（事件循环），以异步的方式将任务的执行结果返回给V8引擎。
-4. V8引擎再将结果返回给用户。
-
-![Node.js的事件循环图](./images/nodejs-system-1.png)
+---
+## 原理机制
 
 ### npm
 1. 命令
@@ -565,3 +571,58 @@ Node.js的全局对象`global`是全局变量的宿主。
     2. `console`
     3. `URL`、`URLSearchParams`
     </details>
+
+### Node.js的运行机制
+1. V8引擎解析JS脚本。
+2. 解析后的代码，调用Node.js的API。
+3. [libuv](https://github.com/libuv/libuv)负责Node.js的API的执行。将不同的任务分配给不同的线程，形成一个Event Loop（事件循环），以异步的方式将任务的执行结果返回给V8引擎。
+4. V8引擎再将结果返回给用户。
+
+![Node.js的事件循环图](./images/nodejs-system-1.png)
+
+### 特性
+1. 单线程
+
+    不为单个客户端连接创建一个新的线程，而仅仅使用单一线程支持所有客户端连接。通过非阻塞I/O和事件驱动机制，让Node.js程序宏观上并行。
+
+    1. 优点：没有线程创建、销毁的时间开销；不需维护多个线程耗费的内存，可同时处理更多的客户端连接；运行中的单线程CPU利用率饱和。
+    2. 缺点：若单一客户端连接造成线程的阻塞或奔溃，则影响所有客户端连接。
+
+    >Java、PHP或.NET等服务器语言，会为每一个客户端连接创建一个新的线程或使用协程。
+2. 非阻塞I/O
+
+    回调函数异步执行，通过事件循环检查已完成的I/O进行依次处理。
+
+    >I/O主要指由[libuv](https://github.com/libuv/libuv)支持的，与系统磁盘和网络之间的交互。
+3. 事件驱动
+
+    用事件驱动（事件循环）来完成服务器的任务调度。
+
+>1. Node.js开发应用程序：善于I/O（任务调度），不善于计算。如：长连接的实时交互应用程序。
+>2. Node.js服务器：没有根目录概念，没有web容器。URL通过顶层路由设计，呈递静态文件。
+
+---
+## 其他
+
+### [MongoDB](https://github.com/mongodb/mongo)
+
+- 比较适用的场景：
+
+    1. 数据模型比较简单。
+    2. 数据库性能要求较高，但不需要高度的数据一致性。
+    3. 给定的索引，容易查找；但不擅长筛选。
+    4. 灵活性强（较多横向扩展）。
+
+BSON
+
+- 命令
+
+    1. 启动服务器：`mongod`
+    2. 启动客户端：`mongo`
+
+- 工具
+
+    1. 数据库的图形界面管理工具：[Compass](https://www.mongodb.com/download-center/compass)
+    2. Node.js环境中对MongoDB数据库操作的封装：[mongoose](https://github.com/Automattic/mongoose)
+
+1. （不用特意新建collection）当第一个document插入时，collection就会被创建。

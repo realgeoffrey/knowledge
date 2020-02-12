@@ -404,7 +404,7 @@
     ```
 6. `$dom.focus()`
 
-    1. 直接调用，光标停留在文本开头或上一次光标停留的地方。
+    1. 直接调用，光标停留在文本开头或上一次光标停留的地方（Windows和macOS或不同浏览器效果不同）。
     2. 先清空文本再`focus`然后再添加文本，光标停留在文本结尾。
 
     [CodePen demo](https://codepen.io/realgeoffrey/pen/pMNqqV)
@@ -1252,6 +1252,8 @@
         2. 在解决页面性能瓶颈时，要从URL输入之后就进行[网站性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#网站性能优化)；避免在处理网页瓶颈时进行~~微优化~~。
 
             >1. 即时编译（just in time compile，JIT）：JS引擎会在JS运行过程中逐渐重新编译部分代码为机器码，使代码运行更快。
+            >
+            >    运行前编译（ahead of time，AOT）：将较高级别的编程语言或中间表示形式，编译为本机机器代码的行为，生成的二进制文件可以直接在本机上执行。
             >2. 微优化（micro-optimizations）：尝试写出认为会让浏览器稍微更快速运行的代码或调用更快的方法。
 
 ### 编程实践（programming practices）
@@ -1311,7 +1313,7 @@
 
     1. Android
 
-        PC端的Chrome的Remote devices（<chrome://inspect/#devices>）调试已开启调试功能的APP的webview。
+        PC端的Chrome的Remote devices（<chrome://inspect/#devices>）调试已开启调试功能的APP的webview（需要能够访问google，否则首次打开inspect页面会404）。
 
         - Android已开启调试功能的APP：
 
@@ -2107,15 +2109,15 @@
 
         1. `undefined` 或 不填 -> `'[object Undefined]'`
         2. `null` -> `'[object Null]'`
-        3. Boolean实例（包括基本包装类型） -> `'[object Boolean]'`
-        4. Number实例（包括基本包装类型） -> `'[object Number]'`
-        5. String实例（包括基本包装类型） -> `'[object String]'`
-        6. Symbol实例（包括基本包装类型） -> `'[object Symbol]'`
-        7. BigInt实例（包括基本包装类型） -> `'[object BigInt]'`
+        3. Boolean实例（包括：基本包装类型） -> `'[object Boolean]'`
+        4. Number实例（包括：基本包装类型） -> `'[object Number]'`
+        5. String实例（包括：基本包装类型） -> `'[object String]'`
+        6. Symbol实例（包括：基本包装类型） -> `'[object Symbol]'`
+        7. BigInt实例（包括：基本包装类型） -> `'[object BigInt]'`
         8. Object实例 -> `'[object Object]'`
         9. 自定义类型实例 -> `'[object Object]'`
         10. Array实例 -> `'[object Array]'`
-        11. Function实例 -> `'[object Function]'`
+        11. Function实例（包括：类） -> `'[object Function]'`
         12. Date实例 -> `'[object Date]'`
         13. RegExp实例 -> `'[object RegExp]'`
         14. <details>
@@ -2168,6 +2170,8 @@
         5. BigInt型 -> `'bigint'`
         6. `undefined` -> `'undefined'`
         7. 函数 -> `'function'`
+
+            >包括：类。
         8. 引用对象型 -> `'object'`
 
             >所有基本包装类型都返回`'object'`。
@@ -2176,20 +2180,20 @@
         >1. 因为`typeof null`返回`'object'`，因此typeof不能判断是否是引用数据类型。
         >2. ie8-的DOM节点的方法返回不是~~function~~，而是`object`，因此只能用`方法名 in DOM`检测DOM是否拥有某方法。
 
-3. `对象 instanceof 构造函数`
+3. `对象 instanceof 构造函数或类`
 
-    >可用`构造函数.prototype.isPrototypeOf(对象)`代替。
+    >可用`构造函数或类.prototype.isPrototypeOf(对象)`代替。
 
     1. 不能跨帧（`<iframe>`、`window.open()`的新窗口）。
 
         >```javascript
-        >/* 跨帧：浏览器的帧（frame）里的对象传入到另一个帧中，两个帧都定义了相同的构造函数 */
-        >A实例 instanceof A构造函数; // true
-        >A实例 instanceof B构造函数; // false
+        >/* 跨帧：浏览器的帧（frame）里的对象传入到另一个帧中，两个帧都定义了相同的构造函数或类 */
+        >A实例 instanceof A构造函数或类; // true
+        >A实例 instanceof B构造函数或类; // false
         >```
-    2. 判断`构造函数.prototype`是否存在于对象的整条原型链（`[[Prototype]]`）上。
+    2. 判断`构造函数或类.prototype`是否存在于对象的整条原型链（`[[Prototype]]`）上。
 
-        若`构造函数.prototype === 对象.__proto__/对象.__proto__.__proto__/.../Object.prototype`，则返回`true`。否则返回`false`。
+        若`构造函数或类.prototype === 对象.__proto__/对象.__proto__.__proto__/.../Object.prototype`，则返回`true`。否则返回`false`。
         >e.g. `new Number() instanceof Object; // true`
     3. **检测自定义类型的唯一方法。**
 4. `属性名 in 对象`
@@ -3246,6 +3250,19 @@
     4. 参数的数量有限制，如：有些JS引擎限制在`Math.pow(2, 16)`。
 7. [变量、`this`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#变量this)的取值
 
+- 设计函数的参数时，有2种方式：①多参数；②单参数是对象。
+
+    可选的参数最好设计成对象形式，方便将来扩展。
+
+    ```javascript
+    // 方便扩展
+    function func1 (必填1, 必填2, { 可选1 = '默认值1' } = {}) {}
+    function func2 ({ 必填1, 必填2, 可选1 = '默认值1' } = {}) {}
+
+    // 不方便扩展
+    function func3 (必填1, 必填2, 可选1 = '默认值1') {}
+    ```
+
 ### 变量、`this`
 1. `变量`（、`函数`）
 
@@ -4027,7 +4044,7 @@
 ### 事件循环（event loop）
 >参考：[阮一峰：再谈Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)、[Help, I’m stuck in an event-loop.](https://vimeo.com/96425312)、[Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)。
 
->不是在ECMAScript没有定义，而是在[HTML Standard](https://html.spec.whatwg.org/#event-loops)中定义。
+>不是在ECMAScript中定义，而是在[HTML Standard](https://html.spec.whatwg.org/#event-loops)中定义。
 
 1. JS的主线程是单线程
 
