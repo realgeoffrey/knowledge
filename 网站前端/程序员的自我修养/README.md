@@ -149,18 +149,24 @@
 ### 数据库
 1. 数据库类型
 
-    1. 关系型数据库
+    1. 关系型数据库（relational database management system，RDBMS）
 
         Oracle、MySQL
-    2. 非关系型数据库（NoSQL）
 
-        1. 键值存储数据库（key-value）
+        >database->table->row(column)。
+    2. 非关系型数据库（not only SQL，NoSQL）
 
-            Redis
-        2. 列存储数据库（column-oriented）
-        3. 面向文档数据库（document-oriented）
+        >数据存储不需要固定的模式，无需多余操作就可以横向扩展。
+
+        1. 面向文档数据库（document-oriented）
 
             MongoDB
+
+            >database->collection->document(field)。
+        2. 键值存储数据库（key-value）
+
+            Redis
+        3. 列存储数据库（column-oriented）
         4. 图形数据库（graph）
 2. 关系型数据库的范式
 
@@ -256,7 +262,7 @@
         4. 大表拆分
 
         >随着投入使用时间越久并且在维护阶段容易忽略数据库设计，数据库的结构会越复杂。因此在维护阶段也需要按照以上步骤进行数据库设计。
-5. 事务（transaction，数据库事务）
+4. 事务（transaction，数据库事务）
 
     数据库管理系统（DBMS）执行过程中的一个逻辑单位，由一个有限的数据库操作序列构成。
 
