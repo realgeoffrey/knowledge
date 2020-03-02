@@ -456,7 +456,7 @@
 
             `<my-input v-model="bar"/>`
 
-            等价于（默认：属性绑定为`value`、事件绑定为`input`）：
+            等价于（默认：属性绑定为`value`、事件绑定为`input`。可由组件属性`model`修改）：
 
             `<my-input :value="bar" @input="bar = arguments[0]"/>`
 

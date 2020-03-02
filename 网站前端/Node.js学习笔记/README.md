@@ -389,6 +389,8 @@
 
 一个模块就是一个Node.js文件。
 
+>主模块：通过命令行参数传递给Node.js以启动程序的模块，负责调度组成整个程序的其它模块完成工作。如：`node 文件名`、package.json的`main`。
+
 - 概述
 
     1. 执行阶段（运行时）进行模块加载：确定模块的依赖关系、输入和输出的变量。
@@ -548,7 +550,7 @@
     3. `net`：用于底层的网络通信小工具，包含创建服务器/客户端的方法。
     4. `dns`：解析域名。
     5. `domain`：简化异步代码的异常处理，可以捕捉处理`try-catch`无法捕捉的异常。
-6. `events`
+7. `events`
 
 ### Node.js全局变量
 Node.js的全局对象`global`是全局变量的宿主。
@@ -561,9 +563,10 @@ Node.js的全局对象`global`是全局变量的宿主。
     4. `__filename`：当前正在执行的脚本所在位置的绝对路径+文件名。
     5. `__dirname`：当前正在执行的脚本所在位置的绝对路径。
 2. `process`：描述当前Node.js进程状态的对象，提供了一个与操作系统的简单接口。
-3. `Buffer`
-4. `setImmediate`、`clearImmediate`
-5. <details>
+3. `Buffer`：二进制数据流。
+4. `Stream`：数据流（当内存中无法一次装下需要处理的数据时、或一边读取一边处理更加高效时，使用数据流）。
+5. `setImmediate`、`clearImmediate`
+6. <details>
 
     <summary>其他全局变量（类似于浏览器的全局对象<code>window</code>所包含的全局变量）</summary>
 
@@ -577,6 +580,8 @@ Node.js的全局对象`global`是全局变量的宿主。
 2. 解析后的代码，调用Node.js的API。
 3. [libuv](https://github.com/libuv/libuv)负责Node.js的API的执行。将不同的任务分配给不同的线程，形成一个Event Loop（事件循环），以异步的方式将任务的执行结果返回给V8引擎。
 4. V8引擎再将结果返回给用户。
+
+>JS本身的`throw-try-catch`异常处理机制并不会导致内存泄漏，也不会让程序的执行结果出乎意料，但Node.JS并不是存粹的JS。NodeJS里大量的API内部是用C/C++实现的，因此Node.JS程序的运行过程中，代码执行路径穿梭于JS引擎内部和外部，而JS的异常抛出机制可能会打断正常的代码执行流程，导致C/C++部分的代码表现异常，进而导致内存泄漏等问题。
 
 ![Node.js的事件循环图](./images/nodejs-system-1.png)
 

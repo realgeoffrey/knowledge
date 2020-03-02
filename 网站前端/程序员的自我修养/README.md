@@ -163,7 +163,7 @@
             MongoDB
 
             >database->collection->document(field)。
-        2. 键值存储数据库（key-value）
+        2. 键值存储数据库（键-值）
 
             Redis
         3. 列存储数据库（column-oriented）
@@ -514,7 +514,7 @@
 >
 >        >又称为：散列（hash）、字典（dictionary）
 >
->        名值对。
+>        键-值。
 
 1. JSON（JavaScript Object Notation）是一种数据交换格式
 
