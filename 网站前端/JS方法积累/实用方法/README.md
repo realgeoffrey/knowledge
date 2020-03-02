@@ -9,11 +9,11 @@
         1. [判断移动平台](#原生js判断移动平台)
         1. [判断ie6、7、8、9版本](#原生js判断ie6789版本)
         1. [判断ie所有版本](#原生js判断ie所有版本)
-    1. `key-value`操作
+    1. `键-值`操作
 
         1. [判断是否存在某cookie](#原生js判断是否存在某cookie)
         1. [获取URL相关信息](#原生js获取url相关信息)
-        1. [在URL末尾添加查询名值对](#原生js在url末尾添加查询名值对)
+        1. [在URL末尾添加查询键-值](#原生js在url末尾添加查询键-值)
     1. 事件相关
 
         1. [绑定、解绑事件](#原生js绑定解绑事件)
@@ -342,12 +342,12 @@ function getLocation (url) {
 >url2 = api2 + '&a=1' + '&b=2' + '&c=3'
 >```
 
-### *原生JS*在URL末尾添加查询名值对
+### *原生JS*在URL末尾添加查询键-值
 1. 单个添加（未处理同名）
 
     ```javascript
     /**
-     * 在URL末尾添加search名值对（未处理同名）
+     * 在URL末尾添加search键-值（未处理同名）
      * @param {String} url - URL
      * @param {String} name - 名
      * @param {String} value - 值
@@ -381,9 +381,9 @@ function getLocation (url) {
 
     ```javascript
     /**
-     * 在URL末尾添加search名值对
+     * 在URL末尾添加search键-值
      * @param {String} [url = window.location.href] - URL
-     * @param {Object} searchObj - 新增的search名值对
+     * @param {Object} searchObj - 新增的search键-值
      * @returns {String} - 添加完毕的URL
      */
     function addUrlSearch (url = window.location.href, searchObj = {}) {

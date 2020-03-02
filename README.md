@@ -9,19 +9,18 @@
 >    2. `ie8-`：包括ie8以及低于ie8的ie浏览器。
 >2. 变量命名含义
 >
->    1. `dom`：`Element`实例（或`document`、`Node`实例）；`$dom`：jQuery（或Zepto）对象包装的DOM元素。
->    2. `obj`：对象实例；`arr`：数组实例。
+>    1. `dom`：`Element`实例（或`document`、`Node`实例）
+>    2. `$dom`：jQuery（或Zepto）对象包装的DOM元素
+>    3. `obj`：对象实例
+>    4. `arr`：数组实例
 >3. 浏览器针对的系统环境
 >
 >    1. `PC`：针对桌面端制作的网页。
 >    2. `WAP`：针对移动端（手机浏览器或Hybrid）制作的页面。
 >4. 默认仅针对浏览器环境的内容。
->5. 名值对
+>5. 原型链（`[[Prototype]]`）
 >
->    键值/键名，key/value
->6. 原型链（`[[Prototype]]`）
->
->    （非标准）`对象.__proto__`等价于：`Object.getPrototypeOf(对象)`或`Object.setPrototypeOf(对象, 原型对象)`
+>    （非标准）`对象.__proto__`等价于：`Object.getPrototypeOf(对象)/Object.setPrototypeOf(对象, 原型对象)`
 ></details>
 
 ## 目录

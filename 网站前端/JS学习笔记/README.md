@@ -337,23 +337,66 @@
 - [判断是否为`Node`、是否为`Element`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断是否为node是否为element)
 
 ### `attribute`与`property`
-- 在HTML标签里定义标签的`attributes`，一旦浏览器解析后，所有DOM节点会被创建成对象，每个DOM对象就拥有`properties`，因此：
+1. 在HTML标签里定义标签的`attributes`，一旦浏览器解析后，所有DOM节点会被创建成对象，每个DOM对象就拥有`properties`，因此：
 
-    1. `attributes`：是HTML标签的属性。
+    1. `attributes`：HTML标签的属性（打开浏览器检查能够看见标签上的属性）。
 
-        >`dom.attributes`能展示此DOM对象的所有`attribute`。
-    2. `properties`：是DOM对象的属性。
-- 当一个DOM节点为某个HTML标签所创建时，其大多数`properties`与对应`attributes`拥有相同或相近的名字，并不是一对一的关系：
+        >1. `.attributes`展示此DOM对象的所有`attribute`
+        >2. `.getAttribute/setAttribute/removeAttribute/hasAttribute/toggleAttribute`操作`attribute`
+    2. `properties`：DOM对象的属性。
+2. 当一个DOM节点为某个HTML标签所创建时，其大多数`properties`与对应`attributes`拥有相同或相近的名字，但并非一对一的关系：
 
-    1. 有几个`property`是直接反映`attribute`（`rel`、`id`），而有一些则用稍微不同的名字也直接映射（`htmlFor`映射`for`，`className`映射`class`，`dataset`映射`data-`集合）
+    1. 某些`property`值等于`attribute`值，修改其中之一另一个也随之改变：
 
-        获取该`property`即等于读取其对应的`attribute`值，而设置该`property`即为`attribute`赋值。
-    2. 很多`property`所映射的`attribute`是带有**限制**或**变动**的（`src`、`href`、`disabled`、`multiple`）
+        1. 有几个`property`是直接反映`attribute`（`rel`、`id`）
+        2. 有一些用稍微不同的名字也是直接映射（`htmlFor`映射`for`，`className`映射`class`，`dataset`映射`data-`集合）
+    2. 很多`property`所映射的`attribute`是带有**限制**或**变动**
 
-        1. `type`的值被限制在已知值（即`<input>`的合法类型，如：`text`、`password`）。
-        2. `value`（`property`）并不会映射`value`（`attribute`），而是`<input>`的当前值。
+        1. `type`的值被限制在已知值（即`<input>`的合法类型，如：`text`、`checkbox`等）。
+        2. `href/src`的`property`值会计算出最终完整路由，它的`attribute`只是HTML标签上显示的路径。
+        3. 部分动态属性（如：`checked`、`selected`、`disabled`、`value`等）遵循下面规则：
 
-            当用户手动更改输入框的值，`value`（`property`）会反映该改变；`value`（`attribute`）还是原始值，也就是`defaultChecked`（`property`）。
+            1. 若没有设置`property`：页面展示跟随`attribute`，`property`值跟随`attribute`。
+            2. 若设置过`property`：页面展示跟随`property`，`property`与`attribute`值不互通。
+            - 操作页面展示，修改的是`property`，`attribute`不会随之变化。操作页面展示时，也就设置了`property`。
+
+- 判断一个标签的动态属性（DOM对象的`property`）
+
+    >以`<input>`的`checked`为例，类似的特性还有`selected`、`disabled`、`value`等。
+
+    ```html
+    <input type="checkbox" checked="checked" id="j-input">
+
+    <script>
+      var $dom = $('#j-input');
+      var dom = $dom.get(0);
+
+      // ①
+      // 共通的值，存储在jQuery内部
+      // 获取：真实效果的值
+      // 设置：可以改变页面上显示效果、不会改变HTML上属性的值
+      dom.checked; // 设置 dom.checked = true/false
+      $dom.prop('checked'); // 设置 $dom.prop('checked', true/false);
+
+      // ②
+      // 获取：HTML上属性的值
+      // 设置：若没有使用①设置值，则可以控制①结果、可以改变页面上显示效果；
+      //    若使用①设置过，则仅设置HTML上属性的值、不会真的改变显示效果
+      $dom.attr('checked'); // 设置 $dom.attr('checked', true/false);
+
+      // ③
+      // 获取：HTML上属性的值
+      // 设置：若没有使用①设置值，则可以仅把关闭设置为打开、无法把打开设置为关闭（removeAttribute可以关闭）；
+      //    若使用①设置过，则仅设置HTML上属性的值、不会真的改变显示效果
+      dom.getAttribute('checked'); // 设置 dom.setAttribute('checked', 值)
+    </script>
+    ```
+
+    - 若要判断、获取或设置，建议仅使用：
+
+        1. 判断、获取：`dom.checked`，设置：`dom.checked = true/false`。
+        2. 判断、获取：`$dom.prop('checked')`，设置：`$dom.prop('checked', true/false)`。
+        3. 判断、获取：`$dom.is(':checked')`。
 
 ### jQuery相关
 1. 当变量是jQuery对象时，可用`$`作为开头命名，利于与普通变量区分
@@ -408,49 +451,12 @@
     2. 先清空文本再`focus`然后再添加文本，光标停留在文本结尾。
 
     [CodePen demo](https://codepen.io/realgeoffrey/pen/pMNqqV)
-7. 判断一个标签的动态属性（DOM对象的`property`）
-
-    >以`<input>`的`checked`为例，类似的特性还有`selected`、`disabled`、`value`等，但[每个`attribute-property`映射关系略有差别](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#attribute与property)。
-
-    ```html
-    <input type="checkbox" checked="checked" id="j-input">
-
-    <script>
-      var $dom = $('#j-input');
-      var dom = $dom.get(0);
-
-      // ①
-      // 共通的值，存储在jQuery内部
-      // 获取：真实效果的值
-      // 设置：可以改变页面上显示效果、不会改变HTML上属性的值
-      dom.checked; // 设置 dom.checked = true/false
-      $dom.prop('checked'); // 设置 $dom.prop('checked', true/false);
-
-      // ②
-      // 获取：HTML上属性的值
-      // 设置：若没有使用①设置值，则可以控制①结果、可以改变页面上显示效果；
-      //    若使用①设置过，则仅设置HTML上属性的值、不会真的改变显示效果
-      $dom.attr('checked'); // 设置 $dom.attr('checked', true/false);
-
-      // ③
-      // 获取：HTML上属性的值
-      // 设置：若没有使用①设置值，则可以仅把关闭设置为打开、无法把打开设置为关闭；
-      //    若使用①设置过，则仅设置HTML上属性的值、不会真的改变显示效果
-      dom.getAttribute('checked'); // 设置 dom.setAttribute('checked', 值)
-    </script>
-    ```
-
-    - 若要判断、获取或设置，建议仅使用：
-
-        1. 判断、获取：`dom.checked`，设置：`dom.checked = true/false`。
-        2. 判断、获取：`$dom.prop('checked')`，设置：`$dom.prop('checked', true/false)`。
-        3. 判断、获取：`$dom.is(':checked')`。
-8. `$dom.data()`仅在第一次使用后（获取或设置）获取HTML上的值或设置到jQuery内部（不会改变HTML上属性的值），之后不再因为HTML改变而改变，也无法修改HTML上属性的值。
+7. `$dom.data()`仅在第一次使用后（获取或设置）获取HTML上的值或设置到jQuery内部（不会改变HTML上属性的值），之后不再因为HTML改变而改变，也无法修改HTML上属性的值。
 
     `$dom.removeData()`删除绑定的数据后，再使用`$dom.data()`则重新获取HTML上的值或设置到jQuery内部。
 
     >因为`<object>`、`<embed>`、`<applet>`不能绑定数据，所以它们不能使用`.data()`。
-9. jQuery操作CSS样式：
+8. jQuery操作CSS样式：
 
     1. 设置大部分CSS样式时，不写单位默认：`px`；对于`px`单位的样式可以设置相对值`'+=数字'`或`'-=数字'`：
 
@@ -461,7 +467,7 @@
 
         >1. `.height/innerHeight/outerHeight()`返回`数字`。
         >2. `.css('height')`返回带`px`的`字符串`。
-10. `$.proxy()`和原生JS的`Function.prototype.bind`类似，返回一个确定了`this`（和参数）的新方法
+9. `$.proxy()`和原生JS的`Function.prototype.bind`类似，返回一个确定了`this`（和参数）的新方法
 
     >新方法的参数填补在原函数去除已设置形参的后面（与`Function.prototype.bind`一致）。
 
@@ -2591,7 +2597,7 @@
 1. Web Storage（`localStorage`、`sessionStorage`）
 
     1. 客户端保存，不参与服务器通信。
-    2. 对象形式，键-值的值都会转换为字符串（若不是字符串则它的`toString`方法）。
+    2. 对象形式，键-值的内容都会转换为字符串（若不是字符串则它的`toString`方法）。
     3. ie8+支持（ie及FF需在web服务器里运行）。
 
         >ie6/7可以用它们独有的`UserData`代替使用。
@@ -2643,7 +2649,7 @@
 >隐身模式策略：存储API仍然可用，并且看起来功能齐全，只是无法真正储存（如：分配储存空间为0）。
 
 ### 错误处理机制
->1. 当JS出现错误时，JS引擎会根据JS调用栈逐级寻找对应的`catch`，若**没有找到相应的catch handler**或**catch handler本身又有error**或**又抛出新的error**，则会把这个error交给浏览器，浏览器会用各自不同的方式显示错误信息，可以用`window.onerror`进行自定义操作。
+>1. 当JS出现错误时，JS引擎会根据JS调用栈逐级寻找对应的`catch`，若**没有找到相应的catch handler**或**catch handler本身又有error**或**又抛出新的error**，则会把这个error交给浏览器，浏览器会用各自不同的方式显示错误信息，可以用`window`的`error`进行自定义操作。
 >2. 在某个**JS block**（`<script>`或`try-catch`的`try`语句块）内，第一个错误触发后，当前JS block后面的代码会被自动忽略，不再执行，其他的JS block内代码不被影响。
 
 1. 原生错误类型
@@ -2683,17 +2689,29 @@
         4. 若`try`中代码是以`return`、`continue`或`break`终止的，则必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
         5. 在`catch`中接收的错误，不会再向上提交给浏览器。
 
-        >`try`内的作用域不为内部异步操作保留：`try {setTimeout(() => {错误语法}, 0)} catch (e) {}`不会捕获异步操作中的错误（同理，在`Promise`或`async-await`等语法中的异步错误也无法被捕获，但可以捕获`await`的`reject`）。可以在异步回调内部再包一层`try-catch`。
-    2. `window.onerror`
-
-        >jQuery不推荐`on`等方式绑定`window`的`error`事件，只通过`window.onerror`定义。
+        >`try { setTimeout(() => { 错误 }, 0) } catch (e) {}`不会捕获异步操作中的错误（同理，在`Promise`或`async-await`等语法中的异步错误也无法被捕获，但可以捕获`await`的`reject`）。可以在异步回调内部再包一层`try-catch`。
+    2. `window`的`error`事件
 
         1. 没有经过`try-catch`处理的错误都会触发`window`的`error`事件。
-        2. 用方法赋值给`window.onerror`后，但凡这个window中有JS错误出现，则会调用此方法。
-        3. `window.onerror`方法会传入多个参数：`message`、`fileName`、`lineNumber`、`columnNumber`、`errorObject`。
-        4. 若方法返回`true`，浏览器不再显示错误信息；若返回`false`，浏览器还是会提示错误信息。
+        2. 传参
+
+            1. `window.onerror`方法会传入多个参数：`message`、`fileName`、`lineNumber`、`columnNumber`、`errorObject`。
+            2. `window.addEventListener('error', (event) => {})`只会传入一个参数。
+        3. 去掉控制台的异常显示
+
+            1. `window.onerror`，若方法返回`true`，则浏览器不再显示错误信息。
+            2. `window.addEventListener('error', (event) => {})`，若回调函数调用`event.preventDefault()`，则浏览器不再显示错误信息。
+
+        - 无法捕获：~~语法错误~~、~~静态资源异常~~、~~接口异常~~。
 
         ```javascript
+        window.addEventListener('error', (event) => {
+          /* code */
+
+          event.preventDefault() // 浏览器不再显示错误信息
+        })
+
+
         /**
          * window错误处理
          * @param {String} msg - 错误信息提示
@@ -2704,20 +2722,33 @@
          * @returns {Boolean} - true：不显示错误信息|false：显示
          */
         window.onerror = function (msg, url, line, column, error) {
-            /* code */
+          /* code */
 
-            return true;    // 浏览器不再显示错误信息
-        };
-
-
-        // window.addEventListener('error', (event) => {})  // 错误信息都在event中；无法设置：浏览器不再显示错误信息
+          return true            // 浏览器不再显示错误信息
+        }
         ```
+    3. `window`的`unhandledrejection`事件
 
-        >未捕获的Promise的失败，不会触发 ~~`window`的`error`事件~~，仅会触发`window`的`unhandledrejection`事件。
-    3. 图像的`onerror`事件
+        若失败的Promise实例未被处理，则触发`window`的`unhandledrejection`事件。
+
+        ```javascript
+        window.addEventListener('unhandledrejection', (event) => {
+          /* code */
+
+          event.preventDefault()  // 浏览器不再显示错误信息
+        })
+
+
+        window.onunhandledrejection = function (event) {
+          /* code */
+
+          event.preventDefault()  // 浏览器不再显示错误信息。或：return false
+        }
+        ```
+    4. 图像的`onerror`事件
 
         >1. 只要图像的src属性中的URL不能返回能被识别的图像格式，就会触发图像的`error`事件。
-        >2. 错误不会提交到~~window.onerror~~。
+        >2. 错误不会提交到 ~~`window`的`error`~~。
         >3. `Image`实例或`<img>`的`error`事件没有任何参数。
 
         1. `<img>`的`error`事件
@@ -2737,13 +2768,15 @@
             img.src = '错误地址';
             ```
 5. 运用策略
+    >1. `window`的`error`主要捕获预料之外的错误；`try-catch`则用来在可预见情况下监控特定的错误。两者结合使用更加高效。
+    >2. `window`的`unhandledrejection`主要捕获未被处理的 失败的Promise实例；`Promise.prototype.catch或then第二个参数`则用来在可预见情况下处理 失败的Promise实例。
 
     1. 非客户端页面
 
-        仅需在加载JS之前配置好`window.onerror`。
+        仅需在加载JS之前配置好`window`的`error`。
     2. 客户端内嵌页面
 
-        1. 在加载JS之前配置好`window.onerror`。
+        1. 在加载JS之前配置好`window`的`error`。
         2. 客户端回调函数嵌套一层`try-catch`，提示**哪个方法发生错误等额外信息**。
 
             >因为Native调用WebView的方法是直接通过函数运行JS代码，抛出错误时`window.onerror`传入的参数仅有第一个`message`参数。
@@ -4092,66 +4125,65 @@
                 1. `process.nextTick`（Node.js）
 
                     在当前「执行栈」的尾部——读取"任务队列"之前，添加事件。
-                2. `Promise`（`Promise.then/catch/all/race`）
+                2. `Promise`（`Promise.prototype.then/catch/finally(回调)`的回调）
 
-                    >`new Promise(回调)`的回调和`Prmise.resolve()/reject()`都是直接执行的同步任务。
+                    `new Promise(回调)`的回调、`Promise.all/race([回调])`的回调、`Promise.resolve/reject()`，都是同步任务。
                 3. `async-await`（只有`await`是异步）
 
-                    >`await`后若是方法则同步执行该方法，执行结果交给`await`后才是microtask（无论结果如何）。
+                    `await`后若是方法则同步执行该方法，执行结果交给`await`后才是microtask（无论结果如何）。
 
-                ><details>
-                ><summary>e.g.</summary>
-                >
-                >```javascript
-                >var obj = {
-                >  a () {
-                >    console.log('a')
-                >    return obj
-                >  },
-                >  b () {
-                >    console.log('b')
-                >  }
-                >}
-                >
-                >async function func2 () {
-                >  await // 同步执行，执行完无论未完成/完成/失败，都异步microtask执行后面代码
-                >    obj.a() // 同步
-                >      .b()  // 同步
-                >
-                >  console.log('d')  // 等待await完成（microtask）
-                >}
-                >
-                >func2()
-                >console.log('c')
-                >// =>a b c d
-                >```
-                >```javascript
-                >var obj = {
-                >  a () {
-                >    console.log('a')
-                >    return obj
-                >  },
-                >  b () {
-                >    console.log('b')
-                >    return Promise.resolve()
-                >  }
-                >}
-                >
-                >async function func1 () {
-                >  await // 同步执行，执行完无论未完成/完成/失败，都异步microtask执行后面代码
-                >    obj.a() // 同步
-                >      .b()  // 同步
-                >      .then(() => {console.log('then')}) // 异步microtask
-                >
-                >  console.log('d')  // 等待await完成（microtask）
-                >}
-                >
-                >func1()
-                >console.log('c')
-                >// =>a b c then d
-                >```
-                ></details>
-
+                    ><details>
+                    ><summary>e.g.</summary>
+                    >
+                    >```javascript
+                    >var obj = {
+                    >  a () {
+                    >    console.log('a')
+                    >    return obj
+                    >  },
+                    >  b () {
+                    >    console.log('b')
+                    >  }
+                    >}
+                    >
+                    >async function func2 () {
+                    >  await // 同步执行，执行完无论未完成/完成/失败，都异步microtask执行后面代码
+                    >    obj.a() // 同步
+                    >      .b()  // 同步
+                    >
+                    >  console.log('d')  // 等待await完成（microtask）
+                    >}
+                    >
+                    >func2()
+                    >console.log('c')
+                    >// =>a b c d
+                    >```
+                    >```javascript
+                    >var obj = {
+                    >  a () {
+                    >    console.log('a')
+                    >    return obj
+                    >  },
+                    >  b () {
+                    >    console.log('b')
+                    >    return Promise.resolve()
+                    >  }
+                    >}
+                    >
+                    >async function func1 () {
+                    >  await // 同步执行，执行完无论未完成/完成/失败，都异步microtask执行后面代码
+                    >    obj.a() // 同步
+                    >      .b()  // 同步
+                    >      .then(() => {console.log('then')}) // 异步microtask
+                    >
+                    >  console.log('d')  // 等待await完成（microtask）
+                    >}
+                    >
+                    >func1()
+                    >console.log('c')
+                    >// =>a b c then d
+                    >```
+                    ></details>
                 4. `for-await-of`的方法体执行和迭代器遍历
                 5. `MutationObserver`
 
@@ -4189,7 +4221,30 @@
     2. 一旦「执行栈」中的所有同步任务执行完毕，系统就会（按照macrotask、microtask的事件循环运行机制）读取「任务队列」，把**一个**通知对应的回调函数加入执行栈。跳回步骤1（「执行栈」又有内容可以执行）。
 
     ![事件循环图](./images/event-loop-1.png)
-4. 由于异步函数是立刻返回，异步事务中发生的错误是无法通过`try-catch`来捕捉。
+4. 由于异步函数是立刻返回，异步事务中发生的错误是无法通过外层的：`try-catch`、`Promise`、`async-await`来捕捉（但可以捕获`await`的`reject`）。
+
+    ```javascript
+    try {
+      Promise.resolve().then(() => { 错误 }) // 异步的无法捕获，错误会向全局抛
+    } catch (e) {}
+
+
+    new Promise((resolve, reject) => {
+      Promise.resolve().then(() => { 错误 }) // 异步的无法捕获，错误会向全局抛
+    })
+
+
+    async function func1 () {
+      Promise.resolve().then(() => { 错误 }) // 异步的无法捕获，错误会向全局抛
+    }
+
+
+    async function func2 () {
+      await Promise.resolve().then(() => { 错误 }) // 可以捕获
+    }
+    ```
+
+    - 解决办法：可以在异步回调内部再包一层`try-catch`。
 5. JS的异步编程方式：
 
     1. 回调函数
