@@ -13,6 +13,7 @@
     1. [Node.js全局变量](#nodejs全局变量)
     1. [Node.js的运行机制](#nodejs的运行机制)
     1. [特性](#特性)
+    1. [基础](#基础)
 1. [其他](#其他)
 
     1. [MongoDB](#mongodb)
@@ -23,7 +24,7 @@
 ### nvm更新Node.js版本
 1. macOS或Linux的[nvm](https://github.com/creationix/nvm)：
 
-    ```bash
+    ```shell
     nvm list-remote
     nvm install v新版本号
     nvm use v新版本号
@@ -36,7 +37,7 @@
 
     >安装nvm-windows时，需要删除原本安装在电脑上的Node.js。
 
-    ```bash
+    ```shell
     nvm node_mirror https://npm.taobao.org/mirrors/node/    # 设置node源
     nvm npm_mirror https://npm.taobao.org/mirrors/npm/      # 设置npm源
 
@@ -55,14 +56,14 @@
 
 1. 安装
 
-    ```bash
+    ```shell
     npm install -g n
 
     # 或：brew/curl
     ```
 2. 切换版本
 
-    ```bash
+    ```shell
     n ls
 
 
@@ -109,7 +110,7 @@
 
             - 修改初始化信息
 
-                ```bash
+                ```shell
                 npm set init.author.name "名字"
                 npm set init.author.email "邮箱"
                 npm set init.license "MIT"
@@ -173,7 +174,7 @@
 
             >每个标签仅保留最后一个版本；latest标签无法删除。
 
-            ```bash
+            ```shell
             npm dist-tag ls [<pkg>]
             npm dist-tag add <pkg>@<version> [<tag>]
             npm dist-tag rm <pkg> <tag>
@@ -605,6 +606,14 @@ Node.js的全局对象`global`是全局变量的宿主。
 
 >1. Node.js开发应用程序：善于I/O（任务调度），不善于计算。如：长连接的实时交互应用程序。
 >2. Node.js服务器：没有根目录概念，没有web容器。URL通过顶层路由设计，呈递静态文件。
+
+### 基础
+1. 调试方法：
+
+    1. 控制台输出`console`等。
+    2. 通过Chrome的<chrome://inspect/#devices>，监听Node.js程序运行`node --inspect 文件`，可以使用`debugger`等进行断点调试。
+
+        >[调试指南](https://nodejs.org/zh-cn/docs/guides/debugging-getting-started/)。
 
 ---
 ## 其他

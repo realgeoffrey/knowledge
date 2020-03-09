@@ -21,7 +21,7 @@
 
 - 安装、启动Docker（若已安装Docker，不要再次安装/启动）
 
-    ```bash
+    ```shell
     curl -fsSL https://get.docker.com/ | sh # 安装。或用官网安装方式
 
     service docker start    # 启动
@@ -29,7 +29,7 @@
 
     - 启动、停止、重启、删除 容器实例
 
-        ```bash
+        ```shell
         docker ps                # 获取容器信息，包括ID（`-a`：显示所有的容器，包括未运行的）
 
 
@@ -47,7 +47,7 @@
 
     >来自：[Shadowsocks-libev Docker Image](https://github.com/shadowsocks/shadowsocks-libev/blob/master/docker/alpine/README.md#shadowsocks-libev-docker-image)。
 
-    ```bash
+    ```shell
     docker pull shadowsocks/shadowsocks-libev
 
     docker run -e PASSWORD=密码 -p 服务端口号:8388 -p 服务端口号:8388/udp -d --restart always shadowsocks/shadowsocks-libev  # 默认加密方式：aes-256-gcm
@@ -67,7 +67,7 @@
         ```
     2. 启动
 
-        ```bash
+        ```shell
         docker pull hwdsl2/ipsec-vpn-server
 
         docker run --name ipsec-vpn-server --env-file 「配置文件地址」 --restart=always -p 500:500/udp -p 4500:4500/udp -d --privileged hwdsl2/ipsec-vpn-server
@@ -83,7 +83,7 @@
 
     1. 在Linux服务器（CentOS，Debian，Ubuntu）安装[shadowsocks-go](https://github.com/shadowsocks/shadowsocks-go)。
 
-        ```bash
+        ```shell
         wget --no-check-certificate -O shadowsocks-go.sh https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks-go.sh
 
         chmod +x shadowsocks-go.sh
@@ -94,7 +94,7 @@
         >2. 服务器端口号：自己设定（默认：8989）
     2. 查看状态
 
-        ```bash
+        ```shell
         /etc/init.d/shadowsocks start   # 启动
         /etc/init.d/shadowsocks stop    # 停止
         /etc/init.d/shadowsocks restart # 重启
@@ -102,7 +102,7 @@
         ```
     3. 卸载
 
-        ```bash
+        ```shell
         ./shadowsocks-go.sh uninstall
         ```
 2. IKEv2（IKEv1）服务端安装
@@ -113,7 +113,7 @@
 
     1. 下载、运行脚本
 
-        ```bash
+        ```shell
         wget --no-check-certificate https://raw.githubusercontent.com/quericy/one-key-ikev2-vpn/master/one-key-ikev2.sh
 
         chmod +x one-key-ikev2.sh
@@ -147,12 +147,12 @@
 
         1. 默认用户名、密码、密钥将以绿字显示，可根据提示自行修改，多用户则在配置文件中按格式一行一个（多用户时用户名不能使用%any）
 
-            ```bash
+            ```shell
             vi /usr/local/etc/ipsec.secrets
             ```
         2. 保存并重启服务生效
 
-            ```bash
+            ```shell
             ipsec restart
             ```
 
@@ -163,7 +163,7 @@
 
             远程复制：
 
-            ```bash
+            ```shell
             scp -P 端口号 服务器名@服务器地址:/root/my_key/ca.cert.pem 本地存放路径
             ```
         2. 设备使用Ikev1无需导入证书，而是需要在连接时输入密钥（PSK）。
@@ -173,7 +173,7 @@
 
         1. 命令需要手动开启，
 
-            ```bash
+            ```shell
             ipsec start   # 启动服务
 
             ipsec stop    # 关闭服务
@@ -184,7 +184,7 @@
             ```
         2. 添加 **/usr/local/sbin/ipsec start**到自启动脚本文件中（如：rc.local等）
 
-            ```bash
+            ```shell
             vi /etc/rc.d/rc.local
 
             # 添加
@@ -194,7 +194,7 @@
 
         1. 卸载
 
-            ```bash
+            ```shell
             cd ~/strongswan-5.5.1
 
             make uninstall
