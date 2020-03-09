@@ -602,7 +602,7 @@ feat(details): 添加了分享功能
 
 1. 生产多对的**SSH keys**，并放入 **.ssh文件夹**（自动生成并放入`~/.ssh/`）：
 
-    ```bash
+    ```shell
     ssh-keygen -f 「地址/名字」
     ```
 2. 为不同账户地址设置对应的SSH key路径：
@@ -677,6 +677,8 @@ feat(details): 添加了分享功能
 由社区带头，把`.gitkeep`空白文件放在需要上传的空文件夹内并加入版本控制，使「空文件夹」也能被Git版本追踪。
 
 ### GitLab CI
+>可阅读：[用 GitLab CI 进行持续集成](https://scarletsky.github.io/2016/07/29/use-gitlab-ci-for-continuous-integration/)。
+
 1. 设置中打开Pipelines
 2. 配置`.gitlab-ci`
 3. 服务器设置nginx的虚拟主机指向
@@ -699,7 +701,7 @@ feat(details): 添加了分享功能
         ```
     3. 选择需要单独克隆的文件或文件夹，写入 **.git/info/sparse-checkout**文件：
 
-        ```bash
+        ```shell
         # 所有包括有 images 的文件夹或文件（如：/xxx/xxx/images/*、/images/*、images）
         echo 'images' >> .git/info/sparse-checkout
 

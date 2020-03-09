@@ -797,7 +797,11 @@
         1. 允许跨域，则响应头包含：
 
             1. `Access-Control-Allow-Origin`：值为请求头`Origin`的值或`*`，表明接受跨域请求
-            2. `Access-Control-Allow-Credentials`：（可选）是否允许发送Cookie（`XMLHttpRequest`要设置`withCredentials`为`true`，浏览器才会发送）
+
+                >若`Access-Control-Allow-Credentials`为`true`，则`Access-Control-Allow-Origin`不能为`*`，需要是明确的、与请求网页一致的域名。
+            2. `Access-Control-Allow-Credentials`：（可选）是否允许发送Cookie
+
+                >`XMLHttpRequest`要设置`withCredentials`为`true`，浏览器才会发送。
             3. `Access-Control-Expose-Headers`：（可选）CORS请求时，`XMLHttpRequest`只能拿到6个基本字段（`Cache-Control`、`Content-Language`、`Content-Type`、`Expires`、`Last-Modified`、`Pragma`），若需要其他字段，需在此指定
         2. 不允许跨域：
 
@@ -816,9 +820,13 @@
             1. 允许跨域，则响应头包含：
 
                 1. `Access-Control-Allow-Origin`：值为请求头`Origin`的值或`*`，表明接受跨域请求
+
+                    >若`Access-Control-Allow-Credentials`为`true`，则`Access-Control-Allow-Origin`不能为`*`，需要是明确的、与请求网页一致的域名。
                 2. `Access-Control-Allow-Methods`：服务器支持的所有跨域请求的请求方法
-                3. `Access-Control-Allow-Headers`：（若HTTP请求头有`Access-Control-Request-Headers`则必须）服务器支持的所有跨域请求的请求头字段
-                4. `Access-Control-Allow-Credentials`：（可选）是否允许发送Cookie（`XMLHttpRequest`要设置`withCredentials`为`true`，浏览器才会发送）
+                3. `Access-Control-Allow-Headers`：（若HTTP请求头有`Access-Control-Request-Headers`则必须）服务器支持的所有跨域请求的请求头字段，以`,`分割
+                4. `Access-Control-Allow-Credentials`：（可选）是否允许发送Cookie
+
+                    >`XMLHttpRequest`要设置`withCredentials`为`true`，浏览器才会发送。
                 5. `Access-Control-Max-Age`：（可选）本次预检请求的有效期，单位秒
             2. 不允许跨域：
 

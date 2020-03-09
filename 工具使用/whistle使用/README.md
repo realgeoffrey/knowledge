@@ -2,7 +2,7 @@
 
 1. 启动
 
-    ```bash
+    ```shell
     whistle run     # 前台启动
     whistle start   # 后台启动
     whistle stop    # 后台停止
@@ -24,7 +24,7 @@
 
     1. 设置hosts、代理转发
 
-        ```bash
+        ```shell
         # 不带IP地址
         请求域名 指向域名
 
@@ -34,13 +34,13 @@
         ```
     2. 本地替换
 
-        ```bash
+        ```shell
         URL file:///User/username/test   # macOS、Linux
         URL file://E:\xx\test            # Windows的路径分隔符可以用 \ 或者 /
         ```
     4. 在页面**末尾**注入内容HTML、JS、CSS内容
 
-        ```bash
+        ```shell
         # macOS、Linux
         URL html:///User/xxx/test/test.html
         URL js:///User/xxx/test/test.js
@@ -57,12 +57,12 @@
 
         1. 开头
 
-            ```bash
+            ```shell
             URL resPrepend://{变量名}
             ```
         2. 末尾
 
-            ```bash
+            ```shell
             URL resAppend://{变量名}
             ```
 
@@ -97,12 +97,12 @@
 
         1. 获取页面的`console`和错误信息
 
-            ```bash
+            ```shell
             URL log://
             ```
         2. 加载完毕后运行脚本（并且获取页面的`console`和错误信息）
 
-            ```bash
+            ```shell
             # 在Values设置的'变量名'作为加载完成后输出的JS内容
             URL log://{变量名}
 
@@ -114,7 +114,7 @@
 
         >开启后会阻止把`console`输入到vconsole和eruda。
 
-        ```bash
+        ```shell
         域名 weinre://变量名
         ```
 

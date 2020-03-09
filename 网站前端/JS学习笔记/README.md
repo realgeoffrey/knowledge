@@ -346,15 +346,17 @@
     2. `properties`：DOM对象的属性。
 2. 当一个DOM节点为某个HTML标签所创建时，其大多数`properties`与对应`attributes`拥有相同或相近的名字，但并非一对一的关系：
 
+    >浏览器在加载页面之后会对页面中的标签进行解析，并生成与之相符的DOM对象，每个标签中都可能包含一些属性，如果这些属性是[标准属性](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Attributes)，那么解析生成的DOM对象中也会包含与之对应的属性。
+
     1. 某些`property`值等于`attribute`值，修改其中之一另一个也随之改变：
 
-        1. 有几个`property`是直接反映`attribute`（`rel`、`id`）
-        2. 有一些用稍微不同的名字也是直接映射（`htmlFor`映射`for`，`className`映射`class`，`dataset`映射`data-`集合）
+        1. 有几个`property`是直接反映`attribute`，如：`rel`、`id`
+        2. 有一些用稍微不同的名字也是直接映射，如：`htmlFor`映射`for`，`className`映射`class`，`dataset`映射`data-`集合
     2. 很多`property`所映射的`attribute`是带有**限制**或**变动**
 
         1. `type`的值被限制在已知值（即`<input>`的合法类型，如：`text`、`checkbox`等）。
         2. `href/src`的`property`值会计算出最终完整路由，它的`attribute`只是HTML标签上显示的路径。
-        3. 部分动态属性（如：`checked`、`selected`、`disabled`、`value`等）遵循下面规则：
+        3. 部分动态属性（如：`checked`、`selected`、`disabled`、`value`、`muted`等）遵循下面规则：
 
             1. 若没有设置`property`：页面展示跟随`attribute`，`property`值跟随`attribute`。
             2. 若设置过`property`：页面展示跟随`property`，`property`与`attribute`值不互通。
@@ -362,7 +364,7 @@
 
 - 判断一个标签的动态属性（DOM对象的`property`）
 
-    >以`<input>`的`checked`为例，类似的特性还有`selected`、`disabled`、`value`等。
+    >以`<input>`的`checked`为例，类似的特性还有`selected`、`disabled`、`value`、`muted`等。
 
     ```html
     <input type="checkbox" checked="checked" id="j-input">
@@ -1313,6 +1315,8 @@
 2. PC端
 
     DevTool：Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）
+
+    >通过Chrome的<chrome://inspect/#devices>，监听Node.js程序运行`node --inspect 文件`，可以使用`debugger`等进行断点调试。
 3. WAP端
 
     - 使用页面模拟调试，如：[eruda](https://github.com/liriliri/eruda)、[vConsole](https://github.com/Tencent/vConsole)。
@@ -2454,6 +2458,154 @@
         >
         >    1. `Array.prototype.reduce(回调函数(上一次调用返回的值, 当前值, 索引, 数组整体)[, 第一次调用回调函数的第一个参数])`
         >    2. `Array.prototype.reduceRight(回调函数(上一次调用返回的值, 当前值, 索引, 数组整体)[, 第一次调用回调函数的第一个参数])`
+
+        - 与`async-await`或`Promise`配合的异步Array方法：
+
+            Array遍历方法都是同步方法，直接加上`async-await`或`Promise`无法达到预期效果，只能通过改造来分步骤实现异步逻辑。
+
+            1. <details>
+
+                <summary><code>Array.prototype.map/filter/reduce/reduceRight</code>可以改造成异步循环逻辑</summary>
+
+                ```javascript
+                // Array.prototype.map
+                function mapAsync (arr = [], callback = () => {}) {  // 并行
+                  return Promise.all(arr.map((item, index) => callback(item, index, arr)))
+                }
+
+                // Array.prototype.filter
+                async function filterAsync (arr = [], callback = () => {}) {  // 并行
+                  const result = await mapAsync(arr, callback)
+                  return arr.filter((item, index) => result[index])
+                }
+
+                // Array.prototype.reduce/reduceRight
+                function reduceAsync (arr = [], callback = () => {}) {  // 并行
+                  return arr.reduce((accumulator, item, index) => callback(accumulator, item, index, arr), Promise.resolve(0))
+                }
+
+
+                /* 测试使用 */
+                function asyncFunc (ms = 1000) {  // 模拟异步操作
+                  return new Promise((resolve) => setTimeout(resolve, ms))
+                }
+
+                const a = await mapAsync([' map a', 'map b', 'map c'], async (item, index, arr) => {
+                  const result = await asyncFunc().then(() => item)  // 异步操作
+                  console.log(item, '完成') // 其他操作
+                  return result
+                })
+                console.log(a, 'mapAsync 完成')
+
+                const b = await filterAsync([true, false, true], async (item, index, arr) => {
+                  const result = await asyncFunc().then(() => item)  // 异步操作
+                  console.log(item, '完成') // 其他操作
+                  return result
+                })
+                console.log(b, 'filterAsync 完成')
+
+                const c = await reduceAsync([1, 2, 3], async (accumulator, item, index, arr) => {
+                  const result = await asyncFunc().then(async () => (await accumulator) + item) // 异步操作
+                  console.log(accumulator, item, result, '完成')  // 其他操作
+                  return result
+                })
+                console.log(c, 'reduceAsync 完成')
+                ```
+                </details>
+            2. <details>
+
+                <summary><code>Array.prototype.forEach/every/some/find/findIndex</code>只能用<code>for</code>等循环来实现异步循环逻辑</summary>
+
+                ```javascript
+                // Array.prototype.forEach
+                async function forEachAsync (arr = [], callback = () => {}) {  // 串行
+                  for (const [index, item] of Object.entries(arr)) {
+                    await callback(item, index, arr)
+                  }
+                }
+
+                // Array.prototype.every
+                async function everyAsync (arr = [], callback = () => {}) {  // 串行
+                  for (const [index, item] of Object.entries(arr)) {
+                    if (!await callback(item, index, arr)) {
+                      return false
+                    }
+                  }
+                  return true
+                }
+
+                // Array.prototype.some
+                async function someAsync (arr = [], callback = () => {}) {  // 串行
+                  for (const [index, item] of Object.entries(arr)) {
+                    if (await callback(item, index, arr)) {
+                      return true
+                    }
+                  }
+                  return false
+                }
+
+                // Array.prototype.find
+                async function findAsync (arr = [], callback = () => {}) {  // 串行
+                  for (const [index, item] of Object.entries(arr)) {
+                    if (await callback(item, index, arr)) {
+                      return item
+                    }
+                  }
+                  return undefined
+                }
+
+                // Array.prototype.findIndex
+                async function findIndexAsync (arr = [], callback = () => {}) {  // 串行
+                  for (const [index, item] of Object.entries(arr)) {
+                    if (await callback(item, index, arr)) {
+                      return index
+                    }
+                  }
+                  return -1
+                }
+
+
+                /* 测试使用 */
+                function asyncFunc (ms = 1000) {  // 模拟异步操作
+                  return new Promise((resolve) => setTimeout(resolve, ms))
+                }
+
+                await forEachAsync([1, 2, 3], async (item, index, arr) => {
+                  const result = await asyncFunc().then(() => item)  // 异步操作
+                  console.log(item, '完成') // 其他操作
+                  return result
+                })
+                console.log('forEachAsync 完成')
+
+                const d = await everyAsync([true, true, false, false], async (item, index, arr) => {
+                  const result = await asyncFunc().then(() => item)  // 异步操作
+                  console.log(item, '完成') // 其他操作
+                  return result
+                })
+                console.log(d, 'everyAsync 完成')
+
+                const e = await someAsync([false, false, true, true], async (item, index, arr) => {
+                  const result = await asyncFunc().then(() => item)  // 异步操作
+                  console.log(item, '完成') // 其他操作
+                  return result
+                })
+                console.log(e, 'someAsync 完成')
+
+                const f = await findAsync([false, false, true, true], async (item, index, arr) => {
+                  const result = await asyncFunc().then(() => item)  // 异步操作
+                  console.log(item, '完成') // 其他操作
+                  return result
+                })
+                console.log(f, 'findAsync 完成')
+
+                const g = await findIndexAsync([false, false, 5, true], async (item, index, arr) => {
+                  const result = await asyncFunc().then(() => item)  // 异步操作
+                  console.log(item, '完成') // 其他操作
+                  return result
+                })
+                console.log(g, 'findIndexAsync 完成')
+                ```
+                </details>
 2. jQuery
 
     1. <details>

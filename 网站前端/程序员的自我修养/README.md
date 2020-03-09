@@ -1052,7 +1052,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
             >e.g. ESLint、IDE。
         2. 代码混淆压缩。
 
-            >e.g. UglifyJS2。
+            >e.g. ES5的[UglifyJS2](https://github.com/mishoo/UglifyJS2)、ES6的[terser](https://github.com/terser/terser)。
         3. 优化变更代码、改变代码结构使达到想要的结构。
 
             >e.g. Babel、打包工具、不同模块化方案间转换、CoffeeScript/TypeScript/JSX转化为原生JS。

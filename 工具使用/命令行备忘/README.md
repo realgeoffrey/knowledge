@@ -11,45 +11,45 @@
 ### 其他命令
 1. ping地址测试
 
-    ```bash
+    ```shell
     ping 「IP地址」
     ```
 2. ssh登录
 
-    ```bash
+    ```shell
     ssh 「用户名@地址」 -p 「端口号」
     ```
 
     - 若某远程主机识别已更改，则需删除保存在本机的此IP所有秘钥（删除`known_hosts`保存某ip的秘钥）
 
-        ```bash
+        ```shell
         ssh-keygen -R <地址>
         ```
 3. 远程复制文件
 
-    ```bash
+    ```shell
     scp -P 「端口号」 「远程用户名@远程地址」:「远程地址路径」 「本地存放路径」
     ```
 
     >注意：本机（目录权限）和远程主机的权限（文件权限）。
 4. 同步文件
 
-    ```bash
+    ```shell
     rsync 来源文件 目的地
     ```
 5. 改密码
 
-    ```bash
+    ```shell
     passwd
     ```
 6. 指令在PATH变量的路径
 
-    ```bash
+    ```shell
     which 「指令」
     ```
 7. （macOS）打开文件（夹）
 
-    ```bash
+    ```shell
     open 「路径/文件」
     ```
 8. hosts文件位置
@@ -64,7 +64,7 @@
 
     1. MD5
 
-        ```bash
+        ```shell
         # macOS
         md5 「文件」
         md5 -s 「字符串」    # 或`echo -n 「字符串」 | md5`
@@ -75,7 +75,7 @@
         ```
     2. SHA
 
-        ```bash
+        ```shell
         # macOS
         shasum 「文件」
         echo -n 「字符串」 | shasum
@@ -88,14 +88,14 @@
         ```
 10. 查看设置环境变量
 
-    ```bash
+    ```shell
     echo $「变量」          # 查看变量
 
     export 「变量」=「值」     # 设置变量
     ```
 11. 查看本机IP
 
-    ```bash
+    ```shell
     # macOS
     ifconfig    # 查看`en0 的 inet`
 
@@ -106,14 +106,14 @@
 
     >要对路径名/文件名中的`标点`和`空格`进行`\`转义。
 
-    ```bash
+    ```shell
     ./文件名.sh
 
     . 路径名/文件名.sh
     ```
 13. （Unix-like）开机自动运行的脚本
 
-    ```bash
+    ```shell
     # macOS
     vi ~/.bash_profile  # bash
     vi ~/.zshrc         # zsh
@@ -126,14 +126,14 @@
 
     1. macOS
 
-        ```bash
+        ```shell
         lsof -i :「端口号」
 
         kill 「PID」
         ```
     2.  Windows（需要在cmd.exe进行）
 
-        ```bash
+        ```shell
         netstat -aon | findstr 「端口号」  # 获得某端口号的任务PID
 
         tasklist | findstr 「PID」          # 获得某PID的任务名
@@ -145,6 +145,6 @@
         ```
 15. （macOS）brew更新
 
-    ```bash
+    ```shell
     brew update && brew upgrade && brew cask upgrade
     ```
