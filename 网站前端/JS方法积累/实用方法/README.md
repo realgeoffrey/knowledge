@@ -3229,7 +3229,9 @@ var a = new RepeatRAF(function () {
             text-align: center;
 
             p {
-                @include inline-block;
+                display: inline-block;
+                *display: inline;
+                *zoom: 1;
                 max-width: 840px;
                 _width: 840px;
                 padding: 15px 30px;

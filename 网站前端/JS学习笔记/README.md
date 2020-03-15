@@ -296,6 +296,8 @@
     `dom.innerHTML/outerHTML/innerText/textContent = HTML文本`
 2. 用新的DOM插入或覆盖旧的DOM：
 
+    >若要被添加的DOM（newDom）已存在于页面上，则会移动该DOM到目标容器元素下。
+
     1. 插入：
 
         `parentNode.append/prepend/appendChild(newDom)`、`parentNode.insertBefore(newDom, oldDom)`、`oldDom.before(newDom)`
@@ -346,7 +348,7 @@
     2. `properties`：DOM对象的属性。
 2. 当一个DOM节点为某个HTML标签所创建时，其大多数`properties`与对应`attributes`拥有相同或相近的名字，但并非一对一的关系：
 
-    >浏览器在加载页面之后会对页面中的标签进行解析，并生成与之相符的DOM对象，每个标签中都可能包含一些属性，如果这些属性是[标准属性](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Attributes)，那么解析生成的DOM对象中也会包含与之对应的属性。
+    >浏览器在加载页面之后会对页面中的标签进行解析，并生成与之相符的DOM对象，每个标签中都可能包含一些属性。若这些属性是[标准属性](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Attributes)，则解析生成的DOM对象中也会包含与之对应的属性。
 
     1. 某些`property`值等于`attribute`值，修改其中之一另一个也随之改变：
 
@@ -1303,33 +1305,39 @@
 #### 代码调试方式
 1. JS：
 
-    1. 展示：`console.log`、`console.info`、`console.warn`、`console.error`（`alert`）
+    1. 展示：`console.log/info/warn/error`（`alert`）
+
+        >（Value below was evaluated just now.）`console`引用类型的数据，在点击开来查看的瞬间才去取引用类型的快照（意味着可以console之后再修改展示内容），打开之后不再关联。
+
+        - 更好的展示：
+
+            1. 缩进：`console.groupCollapsed/group`至`console.groupEnd`
+            2. 表格：`console.table`
     2. 调用栈：`console.trace`
-    3. 更好的展示：
-
-        1. 缩进：`console.groupCollapsed或console.group`至`console.groupEnd`
-        2. 表格：`console.table`
-    4. 执行时间：`console.time`至`console.timeEnd`
-
-    >（Value below was evaluated just now.）`console`引用类型的数据，在点击开来查看的瞬间才去取引用类型的快照（意味着可以console之后再修改展示内容），打开之后不再关联。
+    3. 执行时间：`console.time`至`console.timeEnd`
 2. PC端
 
-    DevTool：Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）
+    DevTool
 
-    >通过Chrome的<chrome://inspect/#devices>，监听Node.js程序运行`node --inspect 文件`，可以使用`debugger`等进行断点调试。
+    1. Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）。
+    2. Elements，右键标签可以Break On：子节点修改、attribute修改、Node移除。
+    3. 通过Chrome的<chrome://inspect/#devices>，监听Node.js程序运行`node --inspect 文件`，可以使用`debugger`等进行断点调试。
 3. WAP端
 
     - 使用页面模拟调试，如：[eruda](https://github.com/liriliri/eruda)、[vConsole](https://github.com/Tencent/vConsole)。
 
     1. Android
 
-        PC端的Chrome的Remote devices（<chrome://inspect/#devices>）调试已开启调试功能的APP的webview（需要能够访问google，否则首次打开inspect页面会404）。
+        PC端的Chrome的Remote devices（<chrome://inspect/#devices>）调试**Android已开启调试功能的APP**的webview（需要能够访问google，否则首次打开inspect页面会404）。
+
+        >借助DevTool是最佳方式。
 
         - Android已开启调试功能的APP：
 
             1. Chrome
-            2. 用<http://debugx5.qq.com/>打开TBS内核调试功能的[腾讯X5内核webview](https://x5.tencent.com/)（如：微信、QQ）
+            2. 用<http://debugx5.qq.com/>打开TBS内核调试功能的[腾讯X5内核webview](https://x5.tencent.com/)（如：Android的微信、QQ）
             3. 开启调试功能的debug包APP
+
         >若PC端的Chrome识别不到手机webview，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)并运行（进入文件夹后运行`adb.exe devices`或`./adb devices`连接手机设备）。
     2. iOS
 
@@ -4420,13 +4428,21 @@
         4. 相邻的2次**定时器处理程序**可能小于或大于（或等于）设定的间隔时间。无法确定**定时器处理程序**何时执行。
     2. `setTimeout`、`clearTimeout`:
 
-        [用setTimeout模拟setInterval](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用settimeout模拟setinterval)，可以提高性能（上一次执行完毕间隔时间后再执行下一次，而不是固定间隔时间都尝试执行），并且可以确保每次**定时器处理程序**执行间隔一定大于（或等于）设置的间隔时间。
+        [用setTimeout模拟setInterval](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用settimeout模拟setinterval)，可以提高性能（上一次执行完毕后延迟时间再执行下一次，而不是固定间隔时间都尝试执行），并且可以确保每次**定时器处理程序**执行间隔一定大于（或等于）设置的间隔时间。
 
     - `setImmediate`、`clearImmediate`：
 
         >仅ie10支持。
 
         等价于：`setTimeout(func, 0)`。
+
+    ><details>
+    ><summary><code>setInterval</code>、<code>setTimeout</code>有最短延迟时间、最长延迟时间</summary>
+    >
+    >1. 最短延迟时间大概是>4ms（从其他地方调用`setInterval`，或在嵌套函数达到特定深度时调用`setTimeout`）。
+    >2. 若处于未激活窗口，则最短延迟时间可能扩大到>1000ms。
+    >3. 有最大延迟时间，若延迟时间设置>`Math.pow(2, 31) - 1`ms，则延时溢出导致立即执行回调函数。
+    ></details>
 2. 重绘函数（`requestAnimationFrame`）
 
     >[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。

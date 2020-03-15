@@ -8,10 +8,10 @@
 1. [数据库](#数据库)
 1. [bug调试方式](#bug调试方式)
 1. [MD5 && SHA](#md5--sha)
-1. [前端与服务端配合细节](#前端与服务端配合细节)
-1. [JSON](#json)
-1. [字体类型](#字体类型)
-1. [程序设计思路、开发方式、行业术语](#程序设计思路开发方式行业术语)
+1. [Unicode](#unicode)
+1. [树的遍历](#树的遍历)
+1. [编译器原理](#编译器原理)
+1. [行业术语](#行业术语)
 
     1. [平稳退化（优雅降级）、渐进增强](#平稳退化优雅降级渐进增强)
     1. [向前兼容、向后兼容](#向前兼容向后兼容)
@@ -27,12 +27,9 @@
     1. [柯里化（currying）](#柯里化currying)
     1. [求值策略（evaluation strategy）](#求值策略evaluation-strategy)
     1. [云服务](#云服务)
-    1. [树的遍历](#树的遍历)
     1. [抽象语法树（abstract syntax tree，AST）](#抽象语法树abstract-syntax-treeast)
     1. [胶水语言（glue languages）](#胶水语言glue-languages)
     1. [词法作用域、动态作用域](#词法作用域动态作用域)
-1. [Unicode](#unicode)
-1. [编译器原理](#编译器原理)
 
 ---
 ### 数据结构（data structure）
@@ -321,7 +318,7 @@
 
 1. MD5（message-digest dlgorithm，消息摘要算法）
 
-    输入不定长度信息，输出固定长度128-bits（32位16进制数，`Math.pow(2,128) === Math.pow(16,32)`）的算法。
+    输入不定长度信息，输出固定长度128-bits（32位16进制数，`Math.pow(2, 128) === Math.pow(16, 32)`）的算法。
 
     >1. 可被破解、无法防止碰撞（collision），因此不适用于安全性认证。
     >2. 因其普遍、稳定、快速的特点，仍广泛应用于普通数据的错误检查领域。如：文件传输的可靠性检查。
@@ -333,335 +330,138 @@
 
 >[MD5以及各SHA家族对比](https://zh.wikipedia.org/wiki/SHA家族#SHA函数对比)
 
-### 前端与服务端配合细节
-1. 开发方式
+### Unicode
+Unicode：包含全世界所有字符的一个字符集（计算机只要支持这个字符集，就能显示所有的字符，再也不会有乱码）。从`0`开始，为每个符号指定一个编号，叫做「码点」（code point）。
 
-    1. 并行（优先）：
+>Unicode和ASCII都是一种**字符集**；UTF-8是Unicode的一种**编码方式（Encoding Form）**。
 
-        1. 先与服务端对接预期API，服务端产出API文档；
-        2. 前端根据文档通过Mock方式开发（或服务端先提供Mock数据的API）；
-        3. 当服务端API开发完毕后再用真实API加入前端页面（仅关闭Mock即可）。
-    2. 串行：
+- JS的Unicode书写方式：
 
-        服务端比前端提前一个版本，交付的内容包括API+文档。
-2. 分页加载、滚动加载
+    1. `\u` + `4位16进制数`
+    2. `\u{16进制数}`
+    3. `\x` + `2位16进制数`
+    4. `\` + `3位8进制数`
 
-    1. 分页加载，前端用`第几页`+`每页几项`发起请求，服务端（提前）返回`总量`给前端做判断一共有几页。
-    2. 滚动加载，用`游标`作为判断下一批请求内容的依据：
+    >若要求的位数不足，则前面补`0`。
 
-        - 分页的游标管理
+    JS内部会自动将Unicode转为字符。
 
-            1. 普通情况，游标由前端（或客户端）管理
+    >[字符串转换为Unicode、字符串所占字节数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js转化为unicode反转字符串字符串长度所占字节数)。
 
-                前端用`游标id`发起请求，服务端返回`新的游标id`给前端作为下一次请求。
-            2. 若快速变动的数据（如：推荐信息）、或要根据用户操作而快速改变的数据（如已推送给某用户的不再推送给ta、用户标记不喜欢的相关类型不再推送给ta），则游标由服务端管理。
+### 树的遍历
+树的遍历（树的搜索）：一种图的遍历，指的是按照某种规则，不重复地访问某种树的所有节点的过程。
 
-                服务端用Redis等内存管理方式记录用户的ID，前端只需要每次请求相同的无参数接口就可从服务端返回分页数据。
-    >- 若用分页加载的服务端接口实现滚动加载
+1. 深度优先搜索（depth-first search，DFS）：沿着树的深度遍历树的节点，尽可能深的搜索树的分支
+
+    1. 首先将根节点放入栈中。
+    2. 从栈中取出第一个节点，并检验它是否为目标。
+
+        1. 若找到目标，则结束搜寻并回传结果；
+        2. 否则将它某一个尚未检验过的直接子节点加入栈中。
+    3. 重复步骤2。
+    4. 若不存在未检测过的直接子节点。
+
+        1. 将上一级节点加入栈中。
+        2. 重复步骤2。
+    5. 重复步骤4。
+    6. 若栈为空，则表示整张图都检查过了——亦即图中没有欲搜寻的目标。结束搜寻并回传「找不到目标」。
+2. 广度优先搜索（breadth-first search，BFS，宽度优先搜索，横向优先搜索）：从根节点开始，沿着树的宽度遍历树的节点
+
+    1. 首先将根节点放入队列中。
+    2. 从队列中取出第一个节点，并检验它是否为目标。
+
+        1. 若找到目标，则结束搜索并回传结果；
+        2. 否则将它所有尚未检验过的直接子节点加入队列中。
+    3. 重复步骤2。
+    4. 若队列为空，表示整张图都检查过了——亦即图中没有欲搜索的目标。结束搜索并回传「找不到目标」。
+
+### 编译器原理
+>来自：[the-super-tiny-compiler](https://github.com/jamiebuilds/the-super-tiny-compiler)。
+
+（广义的）编译器：把一种语言代码转为另一种语言代码的程序。
+
+1. 解析（parsing）
+
+    `原始代码`（先转化为`Token`，再）转化为[`AST`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#抽象语法树abstract-syntax-treeast)。
+
+    1. 词法分析（lexical analysis）
+
+        接收原始代码，分割成Token（一个数组，分割代码字符串的种类：数字、标签、标点符号、运算符，等）。
+    2. 语法分析（syntactic analysis）
+
+        接收之前生成的Token，转换成AST。
+
+    ><details>
+    ><summary>e.g. lisp代码 -> Token -> AST</summary>
     >
-    >    1. 则可能出现请求到重复数据或略过数据的情况。（游标的，若没有管理好数据流，则也会出现重复数据或略过数据情况）。
-    >    2. 前端（或客户端）也可以模拟游标管理方式：暴露一个加载更多的无参数接口，在接口内部实现类似服务端的游标管理。
+    >1. 原始代码（lisp）：
     >
-    >        <details>
-    >        <summary>e.g.</summary>
+    >    `(add 2 (subtract 4 2))`
+    >2. 生成的Token：
     >
-    >        ```javascript
-    >        let arr = []    // 数据
-    >        const size = 10 // 每页数量
-    >        const total = 111 // 总量
+    >    ```javascript
+    >    [
+    >      { type: 'paren',  value: '('        },
+    >      { type: 'name',   value: 'add'      },
+    >      { type: 'number', value: '2'        },
+    >      { type: 'paren',  value: '('        },
+    >      { type: 'name',   value: 'subtract' },
+    >      { type: 'number', value: '4'        },
+    >      { type: 'number', value: '2'        },
+    >      { type: 'paren',  value: ')'        },
+    >      { type: 'paren',  value: ')'        }
+    >    ]
+    >    ```
+    >3. 生成的AST：
     >
-    >        function loadMore () {
-    >          if (arr.length < total) {
-    >            console.log('页数：', Math.ceil(arr.length / size) + 1)
-    >            // 页码：Math.ceil(arr.length / size) + 1；每页数量：size
-    >            // 用发起异步请求获取数据，数据插入arr
-    >            arr = arr.concat(1, 2, 3, 4, 5, 6, 7, 8, 9, 0)
-    >          } else {
-    >            // 已经加载所有内容
+    >    ```javascript
+    >    {
+    >      type: 'Program',
+    >      body: [{
+    >        type: 'CallExpression',
+    >        name: 'add',
+    >        params: [
+    >          {
+    >            type: 'NumberLiteral',
+    >            value: '2'
+    >          },
+    >          {
+    >            type: 'CallExpression',
+    >            name: 'subtract',
+    >            params: [
+    >              {
+    >                type: 'NumberLiteral',
+    >                value: '4'
+    >              },
+    >              {
+    >                type: 'NumberLiteral',
+    >                value: '2'
+    >              }
+    >            ]
     >          }
-    >          return arr
-    >        }
-    >
-    >        loadMore()  // 加载更多直接调用，不用管理状态
-    >        ```
-    >        </details>
-3. 服务端文档要求
-
-    API文档确定的字段，就算为空，也必须按照文档要求返回` `或`[]`或`{}`，不允许返回内容丢失字段。
-4. 扁平化的需要
-
-    不同接口、但类别相同的数据，都按照相同的结构约定数据格式（如：[normalizr](https://github.com/paularmstrong/normalizr)）。
-
-    ><details>
-    ><summary>前端可以进行数据扁平化，把不同接口返回的数据都根据类别按照hash的方式存放在各自类别的store，并再保存一份数组记录展示顺序（把数据库的hash保存的方式移植到前端也用hash保存）</summary>
-    >
-    >e.g. 一个接口返回的数据包括articles、users数据，进行扁平化
-    >
-    >```javascript
-    >// articles的store（内聚）
-    >const articles = {}  // articles的store
-    >articles.all = {}  // 存放articles的元数据（元数据：完整的单项数据，用唯一的id进行hash索引）
-    >articles.hot = {  // 存放articles的hot的展示顺序
-    >  sequence: [], // 元数据的id顺序
-    >  hasMore: true // 是否继续请求
-    >}
-    >articles.new = {  // 存放articles的new的展示顺序
-    >  sequence: [], // 元数据的id顺序
-    >  hasMore: true // 是否继续请求
-    >}
-    >articles.flattenData = (data) => { // 扁平化数据：把单项数据全部保存在同一个地方
-    >  articles.all[data.id] = Object.assign({}, articles.all[data.id], data)
-    >}
-    >articles.changeSequence = (data) => { // 写入某业务的展示顺序
-    >  const list = articles[data.category]
-    >
-    >  if (data.refresh) {
-    >    list.sequence = data.sequence
-    >  } else {
-    >    list.sequence = list.sequence.concat(data.sequence)
-    >  }
-    >}
-    >
-    >
-    >// 相同省略：users的store
-    >
-    >
-    >// 请求articles.hot的数据。返回的数据包含多种类别数据（articles、users）
-    >function handleData (arr, category) {  // 处理数据
-    >  articles.changeSequence({  // 写入hot的展示顺序
-    >    category: category,
-    >    refresh: false,
-    >    sequence: arr.map((data) => {
-    >      articles.flattenData(data.articles)   // 把元数据合并至articles
-    >      // users.flattenData(data.users)   // 把元数据合并至users
-    >
-    >      return data.articles.id  // 返回articles的id用于保存顺序
-    >    })
-    >  })
-    >
-    >  console.log(category, JSON.parse(JSON.stringify(articles)))  // 打印
-    >}
-    >
-    >// 针对articles.hot的第一次请求
-    >const data1 = [
-    >  { articles: { id: '1', data: 'articles第一个数据' }, users: { id: 'a', data: 'users第I个数据' } },
-    >  { articles: { id: '20', data: 'articles第二个数据' }, users: { id: 'b', data: 'users第II个数据' } },
-    >  { articles: { id: '300', data: 'articles第三个数据' }, users: { id: 'c', data: 'users第III个数据' } },
-    >  { articles: { id: '4000', data: 'articles第四个数据' }, users: { id: 'd', data: 'users第IV个数据' } }
-    >]
-    >handleData(data1, 'hot')
-    >
-    >// 针对articles.hot的第二次请求
-    >const data2 = [
-    >  { articles: { id: '5000', data: 'articles第五个数据' }, users: { id: 'E', data: 'users第V个数据' } },
-    >  { articles: { id: '600', data: 'articles第六个数据' }, users: { id: 'F', data: 'users第VI个数据' } },
-    >  { articles: { id: '70', data: 'articles第七个数据' }, users: { id: 'G', data: 'users第VII个数据' } },
-    >  { articles: { id: '8', data: 'articles第八个数据' }, users: { id: 'H', data: 'users第VIII个数据' } },
-    >  { articles: { id: '1', data: 'articles第一的覆盖内容' }, users: { id: 'a', data: 'users第I个的覆盖内容' } }
-    >]
-    >handleData(data2, 'hot')
-    >
-    >// 针对articles.new的第一次请求
-    >const data3 = [
-    >  { articles: { id: '5000', data: 'articles第五的覆盖内容' }, users: { id: 'E', data: 'users第V的覆盖内容' } },
-    >  { articles: { id: '8', data: 'articles第八的覆盖内容' }, users: { id: 'H', data: 'users第VIII的覆盖内容' } },
-    >  { articles: { id: '300', data: 'articles第三的覆盖内容' }, users: { id: 'c', data: 'users第III的覆盖内容' } },
-    >  { articles: { id: '20', data: 'articles第二的覆盖内容' }, users: { id: 'b', data: 'users第II的覆盖内容' } }
-    >]
-    >handleData(data3, 'new')
-    >
-    >console.log('接口获得的数据都进行扁平化处理；在对应类别的store按照id存取数据，再保存一份存放顺序的数组')
-    >```
+    >        ]
+    >      }]
+    >    }
+    >    ```
     ></details>
-5. 接口请求失败，不能帮用户静默再次请求
+2. 转换（transformation）
 
-    1. 提示用户（针对必要展示的信息）
+    >让它能做到编译器期望它做到的事情。
 
-        让用户认知网络错误（或其他错误）并且给用户操作重新加载的功能（如：跳转到网络出错或404页面）。
+    遍历AST的所有节点，使用visitor中对应类型的处理函数，对不同类型的节点进行逻辑处理。
+3. 代码生成（code generation）
 
-        >需要请求数据的应用都需要设计404和网络错误等容错页面。
-    2. 静默失败（针对增量加载的信息，如：滚动加载）
+    >可能会和转换有重叠。
 
-        不提示用户失败，当用户再次触发时再次请求（减少用户挫败感）。
-6. 不能把服务端返回的（错误）信息直接发送给用户看见，需要转换成用户能看得懂的语言。
-
-    ><details>
-    ><summary>也不能把前端错误信息发送给用户。若必须发送给用户错误信息，也需要转换成用户能看得懂的语言。</summary>
-    >
-    >e.g.
-    >
-    >```javascript
-    >try {
-    >  asd
-    >} catch (e) {
-    >  alert(e)  // 不可以把不经过翻译的错误信息发送给用户
-    >}
-    >```
-    ></details>
-
-### JSON
->- 从结构上看，所有的数据（data）最终都可以分解成三种类型：
->
->    1. 标量（scalar）
->
->        单独的字符串（`String`）或数字（`Number`）或其他值（`Boolean`、`Null`等）。
->    2. 序列（sequence）
->
->        >又称为：数组（array）、列表（list）。
->
->        若干个相关的数据按照一定顺序排序在一起。
->    3. 映射（mapping）
->
->        >又称为：散列（hash）、字典（dictionary）
->
->        键-值。
-
-1. JSON（JavaScript Object Notation）是一种数据交换格式
-
-    1. 定义明确简单
-
-        易于人阅读和编写、也易于机器解析和生成。
-    2. 采用完全独立于语言的文本格式
-
-        能够跨编程语言传输数据。
-
-        >因为传递的是文本格式，所以无法传递byte类型数据（二进制文件，如：图片）。
-2. JSON的数据类型
-
-    >来自：[www.json.org](https://www.json.org/json-zh.html)。
-
-    >作者-道格拉斯·克罗克福特（Douglas Crockford）-设计的JSON实际上是JavaScript的一个子集，并且声称JSON的规格永远不必升级，因为该规定的都规定了。
-
-    1. `Object`
-
-        ![JSON的对象](./images/json-object.gif)
-
-        >注意：键名必须使用双引号`"`；不能增加额外的逗号`,`。
-    2. `Array`
-
-        ![JSON的数组](./images/json-array.gif)
-
-        >注意：不能增加额外的逗号`,`。
-    3. `String`
-
-        ![JSON的字符串](./images/json-string.gif)
-
-        >注意：字符串必须使用双引号`"`。
-    4. `Number`
-
-        ![JSON的数字](./images/json-number.gif)
-
-        >注意：必须是十进制；浮点数不能省略小数点前的`0`（错误：~~`.1`~~；正确：`0.1`）。
-    5. `true`、`false`、 `null`
-
-    >不支持JS的其他基本数据类型：~~`Undefined`~~、~~`Symbol`~~、~~`BigInt`~~。
-
-    - 以上数据类型在`键值`的任意组合、嵌套
-
-        ![JSON的值](./images/json-value.gif)
-
-    - 间隔区域可添加任意数量的空白` `
-    - 字符集必须是Unicode的UTF-8
-3. [JS使用JSON](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#json)
-4. JSON的发展
-
-    1. [JSON Schema](https://json-schema.org/)
-    2. [MessagePack](https://msgpack.org/)
-    3. [JSON5](https://github.com/json5/json5)
-
-- <details>
-
-    <summary>JSON与XML的对比</summary>
-
-    1. XML（Extensible Markup Language，可扩展标记语言）
-
-        在JSON出现之前，大家一直用XML来传递数据。
-
-        因为XML是一种纯文本格式，所以它适合在网络上交换数据。XML本身不算复杂，但是，加上DTD、XSD、XPath、XSLT等一大堆复杂的规范以后……即使你努力钻研几个月，也未必搞得清楚XML的规范。
-    2. JSON出现
-
-        终于，在2002年的一天，道格拉斯·克罗克福特（Douglas Crockford）发明了JSON这种超轻量级的数据交换格式。
-
-        由于JSON非常简单，很快就风靡Web世界，并且成为ECMA标准。几乎所有编程语言都有解析JSON的库，而在JavaScript中，我们可以直接使用JSON，因为JavaScript内置了JSON的解析。
-
-    - 现在
-
-        1. JSON和XML都是数据交换语言，完全独立于任何程序语言的文本格式。
-        2. JSON的存在是典型的20%功能解决80%需求。为什么不要XML？因为里面80%的功能你不需要，等你需要时你就明白，这事只能XML干，JSON不行。
-    </details>
-
-### 字体类型
-- 按字体的展示特性
-
-    1. 是否有衬线
-
-        >衬线：字形笔画末端的装饰细节部分
-
-        1. 衬线体（serif）
-        2. 无衬线体（sans-serif）
-    2. 是否等宽
-
-        >等宽针对：大小写的英文字母。
-
-        1. 等宽字体（monospaced font）
-        2. 非等宽字体
-
-1. 计算机字体类型
-
-    1. 点阵字体（bitmap font）
-    2. 轮廓字体（outline font，描边字体）
-
-        1. PostScript字体
-        2. TrueType字体（.ttf）
-        3. OpenType字体（.otf）
-    3. 笔画字体（stroke-based font）
-2. 中国书法字体类型
-
-    1. 篆
-    2. 隶
-    3. 楷
-    4. 行
-    5. 草
-
-><details>
-><summary>CSS的<code>font-family</code>：设置值时，在列表末尾应该添加至少一个通用字符族名。</summary>
->
->`font-family`会继承父级，但若子级设置了`font-family`就不再向上继承（覆盖），无论子级设置的字体是否全都不可用（未找到字体）。因此无论如何，都应该在设置字体时在列表末尾添加至少一个通用字符族名（否则按照浏览器默认字体处理）。如：`font-family: 字体族名, 通用字体族名;`。
->
->- CSS的通用字体族名：
->
->    1. `serif`
->
->        带衬线字体，笔画结尾有特殊的装饰线或衬线。
->    2. `sans-serif`
->
->        无衬线字体，即笔画结尾是平滑的字体。
->    3. `monospace`
->
->        等宽字体，即字体中每个字宽度相同。
->    4. `cursive`
->
->        草书字体。这种字体有的有连笔，有的还有特殊的斜体效果。因为一般这种字体都有一点连笔效果，所以会给人一种手写的感觉。
->    5. `fantasy`
->
->        主要是那些具有特殊艺术效果的字体。
->    6. `system-ui`
->
->        从浏览器所处平台处获取的默认用户界面字体。
->    7. `math`
->
->        针对显示数学相关字符的特殊样式问题而设计的字体：支持上标和下标、跨行括号、嵌套表达式和具有不同含义的 double struck glyph。
->    8. `emoji`
->
->        专门用于呈现 Emoji 表情符号的字体。
->    9. `fangsong`
->
->        一种汉字字体，介于宋体和楷体之间。这种字体常用于某些政府文件。
-></details>
+    根据最终的AST或之前的Token输出新的代码。
 
 ---
-## 程序设计思路、开发方式、行业术语
->其他💻📖对开发人员有用的定律、理论、原则和模式：[hacker-laws-zh](https://github.com/nusr/hacker-laws-zh)。
+## 行业术语
+><details>
+><summary>其他💻📖对开发人员有用的定律、理论、原则和模式：<a href="https://github.com/nusr/hacker-laws-zh">hacker-laws-zh</a>。</summary>
+>
+>博主们无法做到的2个事情：[过早优化效应 (Premature Optimization Effect)](https://github.com/nusr/hacker-laws-zh#过早优化效应-premature-optimization-effect)、[你不需要它原则 (YAGNI)](https://github.com/nusr/hacker-laws-zh#你不需要它原则-yagni)？
+></details>
 
 1. 「架构」是对客观不足的妥协（硬件不足、网络太慢、开发资源有限等客观不足）；
 2. 「规范」是对主观不足的妥协（开发者水平参差不齐的主观不足）。
@@ -735,7 +535,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 
         >客户端不需要请求其他前端文件、客户端不需要运行时渲染。
 
-    >1. 验证：「查看网页源代码」看是否有直出内容、或devTool的Network查看html请求的Response是否有直出内容、或网页禁用JS后还能看到JS渲染的内容。
+    >1. 验证：「查看网页源代码」看是否有直出内容、或DevTool的Network查看html请求的Response是否有直出内容、或网页禁用JS后还能看到JS渲染的内容。
     >2. 容错：若直出内容不是必须的，增加请求失败后的容错（如：`try-catch`、`Promise`后的`then/catch`）。
     >3. 选择：对必要的内容进行直出（SEO强相关、首屏资源）；在服务端请求越多接口、渲染越多、最终文件越大，输出给客户端时间就越久。
 2. 同构（isomorphic javascript）
@@ -1007,33 +807,6 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 - FaaS（Function as a Service，函数即服务）
 - Serverless（无服务器架构）
 
-### 树的遍历
-树的遍历（树的搜索）：一种图的遍历，指的是按照某种规则，不重复地访问某种树的所有节点的过程。
-
-1. 深度优先搜索（depth-first search，DFS）：沿着树的深度遍历树的节点，尽可能深的搜索树的分支
-
-    1. 首先将根节点放入栈中。
-    2. 从栈中取出第一个节点，并检验它是否为目标。
-
-        1. 若找到目标，则结束搜寻并回传结果；
-        2. 否则将它某一个尚未检验过的直接子节点加入栈中。
-    3. 重复步骤2。
-    4. 若不存在未检测过的直接子节点。
-
-        1. 将上一级节点加入栈中。
-        2. 重复步骤2。
-    5. 重复步骤4。
-    6. 若栈为空，则表示整张图都检查过了——亦即图中没有欲搜寻的目标。结束搜寻并回传「找不到目标」。
-2. 广度优先搜索（breadth-first search，BFS，宽度优先搜索，横向优先搜索）：从根节点开始，沿着树的宽度遍历树的节点
-
-    1. 首先将根节点放入队列中。
-    2. 从队列中取出第一个节点，并检验它是否为目标。
-
-        1. 若找到目标，则结束搜索并回传结果；
-        2. 否则将它所有尚未检验过的直接子节点加入队列中。
-    3. 重复步骤2。
-    4. 若队列为空，表示整张图都检查过了——亦即图中没有欲搜索的目标。结束搜索并回传「找不到目标」。
-
 ### 抽象语法树（abstract syntax tree，AST）
 >来自：[Abstract Syntax Tree 抽象语法树简介](https://div.io/topic/1994)。
 
@@ -1088,102 +861,3 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
     2. 关注函数从何处调用，其作用域链是基于运行时的调用栈。
     3. 变量叫做动态变量。
     4. 函数中遇到*既不是形参也不是函数内部定义的局部变量*的变量时，到函数调用时的环境中查询（由函数调用处由内向外搜索变量）。
-
----
-### Unicode
-Unicode：包含全世界所有字符的一个字符集（计算机只要支持这个字符集，就能显示所有的字符，再也不会有乱码）。从`0`开始，为每个符号指定一个编号，叫做「码点」（code point）。
-
->Unicode和ASCII都是一种**字符集**；UTF-8是Unicode的一种**编码方式（Encoding Form）**。
-
-- JS的Unicode书写方式：
-
-    1. `\u` + `4位16进制数`
-    2. `\u{16进制数}`
-    3. `\x` + `2位16进制数`
-    4. `\` + `3位8进制数`
-
-    >若要求的位数不足，则前面补`0`。
-
-    JS内部会自动将Unicode转为字符。
-
-    >[字符串转换为Unicode、字符串所占字节数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js转化为unicode反转字符串字符串长度所占字节数)。
-
-### 编译器原理
->来自：[the-super-tiny-compiler](https://github.com/jamiebuilds/the-super-tiny-compiler)。
-
-（广义的）编译器：把一种语言代码转为另一种语言代码的程序。
-
-1. 解析（parsing）
-
-    `原始代码`（先转化为`Token`，再）转化为[`AST`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#抽象语法树abstract-syntax-treeast)。
-
-    1. 词法分析（lexical analysis）
-
-        接收原始代码，分割成Token（一个数组，分割代码字符串的种类：数字、标签、标点符号、运算符，等）。
-    2. 语法分析（syntactic analysis）
-
-        接收之前生成的Token，转换成AST。
-
-    ><details>
-    ><summary>e.g. lisp代码 -> Token -> AST</summary>
-    >
-    >1. 原始代码（lisp）：
-    >
-    >    `(add 2 (subtract 4 2))`
-    >2. 生成的Token：
-    >
-    >    ```javascript
-    >    [
-    >      { type: 'paren',  value: '('        },
-    >      { type: 'name',   value: 'add'      },
-    >      { type: 'number', value: '2'        },
-    >      { type: 'paren',  value: '('        },
-    >      { type: 'name',   value: 'subtract' },
-    >      { type: 'number', value: '4'        },
-    >      { type: 'number', value: '2'        },
-    >      { type: 'paren',  value: ')'        },
-    >      { type: 'paren',  value: ')'        }
-    >    ]
-    >    ```
-    >3. 生成的AST：
-    >
-    >    ```javascript
-    >    {
-    >      type: 'Program',
-    >      body: [{
-    >        type: 'CallExpression',
-    >        name: 'add',
-    >        params: [
-    >          {
-    >            type: 'NumberLiteral',
-    >            value: '2'
-    >          },
-    >          {
-    >            type: 'CallExpression',
-    >            name: 'subtract',
-    >            params: [
-    >              {
-    >                type: 'NumberLiteral',
-    >                value: '4'
-    >              },
-    >              {
-    >                type: 'NumberLiteral',
-    >                value: '2'
-    >              }
-    >            ]
-    >          }
-    >        ]
-    >      }]
-    >    }
-    >    ```
-    ></details>
-2. 转换（transformation）
-
-    >让它能做到编译器期望它做到的事情。
-
-    遍历AST的所有节点，使用visitor中对应类型的处理函数，对不同类型的节点进行逻辑处理。
-3. 代码生成（code generation）
-
-    >可能会和转换有重叠。
-
-    根据最终的AST或之前的Token输出新的代码。

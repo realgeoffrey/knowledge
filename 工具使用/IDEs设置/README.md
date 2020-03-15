@@ -2,7 +2,7 @@
 
 1. There is **WebStorm** settings. I exported `.jar` to make sure settings in my workplace and my PCs are the same.
 
-    [webstorm.jar](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/IDEs设置/webstorm1226.jar)(PhpStorm can use too)
+    [webstorm.jar](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/IDEs设置/webstorm0320.jar)(PhpStorm can use too)
 2. **Help -> Edit Custom VM Options** can change the memories for the IDE.
 
 >Chinese Language Pack：please go to [jetbrains-in-chinese](https://github.com/pingfangx/jetbrains-in-chinese) (or [WebStorm-Chinese](https://github.com/ewen0930/WebStorm-Chinese), [PhpStorm-Chinese](https://github.com/ewen0930/PhpStorm-Chinese), or [PyCharm-Chinese](https://github.com/ewen0930/PyCharm-Chinese)).

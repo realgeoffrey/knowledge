@@ -5,21 +5,23 @@
 
     1. [CSS选择器](#css选择器)
     1. [CSS继承](#css继承)
-    1. [层叠上下文（stacking context）](#层叠上下文stacking-context)
-    1. [几个类似的换行属性](#几个类似的换行属性)
-    1. [`table-layout`](#table-layout)
-    1. [块级元素的`width`](#块级元素的width)
-    1. [使元素强制表现为`block`的CSS设置](#使元素强制表现为block的css设置)
+    1. [CSS盒模型](#css盒模型)
     1. [`margin`合并](#margin合并)
     1. [BFC（Block Formatting Context）块级格式上下文](#bfcblock-formatting-context块级格式上下文)
+    1. [层叠上下文（stacking context）](#层叠上下文stacking-context)
+    1. [媒体查询](#媒体查询)
+    1. [块级元素的`width`](#块级元素的width)
+    1. [使元素强制表现为`block`的CSS设置](#使元素强制表现为block的css设置)
+    1. [几个类似的换行属性](#几个类似的换行属性)
     1. [CSS的小数、百分比](#css的小数百分比)
     1. [`em`、`%`](#em)
     1. [`line-height`](#line-height)
     1. [`<img>`的`src`属性](#img的src属性)
-    1. [横竖屏切换（模拟手机屏幕旋转）](#横竖屏切换模拟手机屏幕旋转)
     1. [滚动条](#滚动条)
     1. [`@font-face`](#font-face)
     1. [`text-align: justify;`](#text-align-justify)
+    1. [`table-layout`](#table-layout)
+    1. [横竖屏切换（模拟手机屏幕旋转）](#横竖屏切换模拟手机屏幕旋转)
 1. [HTML + CSS](#html--css)
 
     1. [禁用`<a>`的鼠标、键盘事件](#禁用a的鼠标键盘事件)
@@ -222,6 +224,57 @@
 
         将该元素所有属性（除了 ~~`unicode-bidi`~~、~~`direction`~~）重置为：`inherit/initial/unset/revert`。
 
+### CSS盒模型
+1. 每个元素都被表示为一个矩形的盒子，盒子有四个边：
+
+    外边距边（margin）、边框边（border）、内填充边（padding）、内容边（content）。
+2. `box-sizing`值：
+
+    >以宽度为例。
+
+    1. `content-box`（默认）
+
+        布局所占宽度 = width + padding左右 + border左右
+    2. `border-box`
+
+        布局所占宽度 = width = content + padding左右 + border左右
+    3. ~~`padding-box`~~
+
+        （废弃）
+3. [margin合并](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#margin合并)
+
+>ie低版本盒模型比较特殊。
+
+### `margin`合并
+1. W3C定义：在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
+
+    1. 毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开。
+    2. 普通流：除了`float: left/right`、`positon: absolute/fixed`之外的内容，父级是`flex`的节点不是普通流。
+2. 产生独立的BFC结构可避免margin合并。
+
+>ie6、7触发[haslayout](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/兼容至ie6/README.md#haslayout)会影响margin合并的发生。
+
+### BFC（Block Formatting Context）块级格式上下文
+
+- <details>
+
+    <summary>W3C定义</summary>
+
+    1. 浮动元素、绝对定位元素、非块级盒子的块级容器（如：`inline-blocks`、`table-cells`、`table-captions`）、`overflow`值不为「visiable」的块级盒子，都会为它们的内容创建新的块级格式化上下文。
+    2. 在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由它们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
+    3. 在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘（border-left）（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
+    </details>
+
+1. BFC是一个独立的布局环境，可以理解为一个箱子，箱子里物品的摆放不受外界影响，且每个BFC都遵守同一套布局规则。
+2. 对容器添加以下CSS属性使其成为独立的BFC
+
+    1. `float: left / right;`
+    2. `overflow: hidden / auto / scroll;`
+    3. `display: inline-block / table-cell / table-caption / flex / inline-flex;`
+    4. `position: absolute / fixed;`
+
+>ie6、7不支持BFC，但是有[haslayout](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/兼容至ie6/README.md#haslayout)。
+
 ### 层叠上下文（stacking context）
 >参考：[张鑫旭：深入理解CSS中的层叠上下文和层叠顺序](http://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)。
 
@@ -296,6 +349,41 @@
     }
     ```
 
+### 媒体查询
+>参考：[MDN：使用媒体查询](https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Media_queries)。
+
+1. CSS样式中`@media`、`@import`
+2. HTML标签中`<style>`、`<link>`、`<source>`等的`media`属性
+3. JS中`window.matchMedia`（返回`MediaQueryList`对象），`MediaQueryList`对象的`change`事件和`matches`等属性
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```javascript
+    >var mql = window.matchMedia('(prefers-color-scheme: dark)') // 深色方案
+    >
+    >mql.addEventListener('change', function () {
+    >  console.log(this.matches, this)
+    >})
+    >```
+    ></details>
+
+### 块级元素的`width`
+1. `auto`（默认）：
+
+    换算具体值为：**本元素width = 父级width - 本元素（margin + padding + border）水平值**。
+
+    >当块级width为默认的auto时，设置负的水平margin会使width增加。
+2. `100%`：
+
+    父级的px为自己的px。
+
+### 使元素强制表现为`block`的CSS设置
+1. `float: left/right;`
+2. `position: absolute/fixed;`
+
+>意味着有以上CSS属性的行内标签可以当做块级标签使用。
+
 ### 几个类似的换行属性
 1. 单词内断字
 
@@ -356,65 +444,6 @@
 6. `letter-spacing`
 
     字符的间距。
-
-### `table-layout`
-1. `auto`（默认）
-
-    在`<td>`或`<th>`上设置宽度无效，各项宽度取决于内容宽度。
-2. `fixed`
-
-    >整个表格在首行被下载后就被解析和渲染。更快完成渲染，性能更优。
-
-    1. 可以设置`<td>`或`<th>`宽度，没有设置宽度的所有项平分父级余下的宽度。
-    2. 第一行宽度决定所有行宽度。
-
->`<table>`（`display: table;`）各`<td>`或`<td>`项（`display: table-cell;`）默认内容垂直居中，用`vertical-align`调节垂直对齐。
-
-### 块级元素的`width`
-1. `auto`（默认）：
-
-    换算具体值为：**本元素width = 父级width - 本元素（margin + padding + border）水平值**。
-
-    >当块级width为默认的auto时，设置负的水平margin会使width增加。
-2. `100%`：
-
-    父级的px为自己的px。
-
-### 使元素强制表现为`block`的CSS设置
-1. `float: left/right;`
-2. `position: absolute/fixed;`
-
->意味着有以上CSS属性的行内标签可以当做块级标签使用。
-
-### `margin`合并
-1. W3C定义：在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
-
-    1. 毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开。
-    2. 普通流：除了`float: left/right`、`positon: absolute/fixed`之外的内容，父级是`flex`的节点不是普通流。
-2. 产生独立的BFC结构可避免margin合并。
-
->ie6、7触发[haslayout](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/兼容至ie6/README.md#haslayout)会影响margin合并的发生。
-
-### BFC（Block Formatting Context）块级格式上下文
-
-- <details>
-
-    <summary>W3C定义</summary>
-
-    1. 浮动元素、绝对定位元素、非块级盒子的块级容器（如：`inline-blocks`、`table-cells`、`table-captions`）、`overflow`值不为「visiable」的块级盒子，都会为它们的内容创建新的块级格式化上下文。
-    2. 在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由它们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
-    3. 在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘（border-left）（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
-    </details>
-
-1. BFC是一个独立的布局环境，可以理解为一个箱子，箱子里物品的摆放不受外界影响，且每个BFC都遵守同一套布局规则。
-2. 对容器添加以下CSS属性使其成为独立的BFC
-
-    1. `float: left / right;`
-    2. `overflow: hidden / auto / scroll;`
-    3. `display: inline-block / table-cell / table-caption / flex / inline-flex;`
-    4. `position: absolute / fixed;`
-
->ie6、7不支持BFC，但是有[haslayout](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/兼容至ie6/README.md#haslayout)。
 
 ### CSS的小数、百分比
 1. 浏览器会把小数以及百分比换算成整数的单位（px）
@@ -559,34 +588,6 @@
 
 - （PC或WAP）下载保存的图片，与图片的`style`、节点属性等无关，仅与图片资源本身有关
 
-### 横竖屏切换（模拟手机屏幕旋转）
->1. 旋转效果的节点，若要增加内嵌滚动条，则不能在此节点上增加`border-radius`，否者滚动条横竖轴颠倒。
->2. 部分Android系统（或低端机）对内嵌的滚动条（`overflow: hidden/auto;`）支持不佳，尤其增加了旋转效果后，设置的滚动条（甚至`overflow: hidden;`）会导致更多样式问题。除了去除内嵌滚动条的`border-radius`，还可以尝试给兄弟节点设置`z-index`。部分硬件较差的WebView对CSS3支持非常有限，无法做到**旋转+内嵌滚动条**（内嵌滚动条横竖轴颠倒）。
->
->- 其他解决方案：使用按钮（控制翻页或JS滚动）代替内嵌滚动条；使用`touchmove`实现滑动页面。
-
-1. 媒体查询控制横竖屏添加旋转属性
-
-    ```css
-    @media (orientation: portrait) {
-        .dom {
-            transform: rotate(90deg);
-        }
-    }
-    @media (orientation: landscape) {
-        .dom {
-
-        }
-    }
-    ```
-2. 旋转使用的媒体查询：
-
-    >要求：页面没有滚动条，内容都在一屏视口内；设计稿只有一份，但要适应各种分辨率机型。
-
-    1. 因为浏览器都有头尾栏，所以要额外扩展横竖屏的媒体查询范围（大、小两方面都要扩展）。
-    2. 竖屏（`orientation: portrait`）根据`width`，横屏（`orientation: landscape`）根据`height`。
-3. 用JS方法控制：[模拟手机旋转](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery模拟手机旋转使页面都以横屏展示)。
-
 ### 滚动条
 1. 若`overflow-x`和`overflow-y`相同，则等同于`overflow`；若不同，且其中一个值为`visible`，另一个为`hidden/scroll/auto`，则`visible`重置为`auto`。
 2. 默认滚动条均来自`<html>`（而不是`<body>`）
@@ -640,6 +641,42 @@
         或
         <i class="iconfont icon-xx"></i>
         ```
+
+        ><details>
+        ><summary><code>font-family</code>设置值时，在列表末尾应该添加至少一个通用字体族名。</summary>
+        >
+        >`font-family`会[继承](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css继承)父级，但若子级设置了`font-family`就不再向上继承（覆盖），无论子级设置的字体是否全都不可用（未找到字体）。因此无论如何，都应该在设置字体时在列表末尾添加至少一个通用字体族名（否则按照浏览器默认字体处理）。如：`font-family: 字体族名, 通用字体族名;`。
+        >
+        >- CSS的通用字体族名：
+        >
+        >    1. `serif`
+        >
+        >        带衬线字体，笔画结尾有特殊的装饰线或衬线。
+        >    2. `sans-serif`
+        >
+        >        无衬线字体，即笔画结尾是平滑的字体。
+        >    3. `monospace`
+        >
+        >        等宽字体，即字体中每个字宽度相同。
+        >    4. `cursive`
+        >
+        >        草书字体。这种字体有的有连笔，有的还有特殊的斜体效果。因为一般这种字体都有一点连笔效果，所以会给人一种手写的感觉。
+        >    5. `fantasy`
+        >
+        >        主要是那些具有特殊艺术效果的字体。
+        >    6. `system-ui`
+        >
+        >        从浏览器所处平台处获取的默认用户界面字体。
+        >    7. `math`
+        >
+        >        针对显示数学相关字符的特殊样式问题而设计的字体：支持上标和下标、跨行括号、嵌套表达式和具有不同含义的 double struck glyph。
+        >    8. `emoji`
+        >
+        >        专门用于呈现 Emoji 表情符号的字体。
+        >    9. `fangsong`
+        >
+        >        一种汉字字体，介于宋体和楷体之间。这种字体常用于某些政府文件。
+        ></details>
 2. 加入了字体后的使用方式
 
     1. CSS：
@@ -670,7 +707,48 @@
 2. `text-align-last`：文本中最后一行对齐规则。
 3. `text-align: justify-all;`：和`justify`一致，且最后一行也是文字向两侧对齐。
 
->不推荐中文的文章用这个属性值。建议用默认或者`text-align: start;`。
+>不推荐中文的文章用这个属性值，建议用默认或者`text-align: start;`；对固定的文本可以使用这个属性，达到设计稿效果。
+
+### `table-layout`
+1. `auto`（默认）
+
+    在`<td>`或`<th>`上设置宽度无效，各项宽度取决于内容宽度。
+2. `fixed`
+
+    >整个表格在首行被下载后就被解析和渲染。更快完成渲染，性能更优。
+
+    1. 可以设置`<td>`或`<th>`宽度，没有设置宽度的所有项平分父级余下的宽度。
+    2. 第一行宽度决定所有行宽度。
+
+>`<table>`（`display: table;`）各`<td>`或`<td>`项（`display: table-cell;`）默认内容垂直居中，用`vertical-align`调节垂直对齐。
+
+### 横竖屏切换（模拟手机屏幕旋转）
+>1. 旋转效果的节点，若要增加内嵌滚动条，则不能在此节点上增加`border-radius`，否者滚动条横竖轴颠倒。
+>2. 部分Android系统（或低端机）对内嵌的滚动条（`overflow: hidden/auto;`）支持不佳，尤其增加了旋转效果后，设置的滚动条（甚至`overflow: hidden;`）会导致更多样式问题。除了去除内嵌滚动条的`border-radius`，还可以尝试给兄弟节点设置`z-index`。部分硬件较差的WebView对CSS3支持非常有限，无法做到**旋转+内嵌滚动条**（内嵌滚动条横竖轴颠倒）。
+>
+>- 其他解决方案：使用按钮（控制翻页或JS滚动）代替内嵌滚动条；使用`touchmove`实现滑动页面。
+
+1. 媒体查询控制横竖屏添加旋转属性
+
+    ```css
+    @media (orientation: portrait) {
+        .dom {
+            transform: rotate(90deg);
+        }
+    }
+    @media (orientation: landscape) {
+        .dom {
+
+        }
+    }
+    ```
+2. 旋转使用的媒体查询：
+
+    >要求：页面没有滚动条，内容都在一屏视口内；设计稿只有一份，但要适应各种分辨率机型。
+
+    1. 因为浏览器都有头尾栏，所以要额外扩展横竖屏的媒体查询范围（大、小两方面都要扩展）。
+    2. 竖屏（`orientation: portrait`）根据`width`，横屏（`orientation: landscape`）根据`height`。
+3. 用JS方法控制：[模拟手机旋转](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery模拟手机旋转使页面都以横屏展示)。
 
 ---
 ## HTML + CSS
@@ -1527,3 +1605,4 @@
 21. `border`分为上、右、下、左，每一块区域的`border-width`不为`0`时都是梯形（`width`或`height`为`0`时为三角形），`border-width`决定梯形（或三角形）的高。
 
     某些边设为`border-width`不为`0`、`border-right-color`为`transparent`可以制造一些形状。
+22. 用`filter: drop-shadow`代替`box-shadow`
