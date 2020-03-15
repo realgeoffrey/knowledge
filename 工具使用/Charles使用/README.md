@@ -119,6 +119,8 @@ Ctrl/commad + f调出。
 
     ![Charles图](./images/12.png)
 
+    >把一个原html地址Map至新网址后，要注意新网址发起的资源请求也会是以原html域名发起，因此需要再配置原html域名下的`/*`Map至新网址（建议直接从源头就修改请求地址，这样就不用配置很多Map至网址）。
+
 ### 网速模拟功能
 
 ![Charles图](./images/17.png)

@@ -1840,10 +1840,12 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
     将VNode渲染成特定平台下真实DOM的函数。
 
-    1. `mount`
-    2. `patch`
+    1. `mount`（原本没有VNode）
+    2. `patch`（原本有VNode）
 
-        `Diff`。
+        相同类型的VNode才需要比较，不同类型直接完全替换；相同HTML标签才需要比较，不同标签直接完全替换。
+
+        1. `Diff`
 
 ### 例子
 1. <details>
