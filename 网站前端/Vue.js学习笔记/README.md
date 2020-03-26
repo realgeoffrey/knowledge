@@ -631,7 +631,7 @@
 
             1. 不要用`v-for`生成的~~键或索引~~，因为重新渲染且项的顺序变化时会发生错误（每一个项的`key`都各自等于重新渲染之后的每一个项的`key`）。
             2. 尽量不要用随机数（如：`Math.random()`），除了小概率会碰撞之外，框架无法优化性能。
-            3. 每项数据需要一个唯一值作为`key`（如：id），若原数据项没提供，则可在拉到数据时由前端额外加入。
+            3. 每项数据需要一个唯一值作为`key`（如：id），若原数据项没提供，则可在拉到数据时由前端额外加入。但是要对数据来源进行去重，避免渲染相同`key`导致报错。
 
                 <details>
                 <summary>e.g.</summary>
@@ -649,6 +649,7 @@
                 item1._id = getLocalCounter()
                 ```
                 </details>
+            4. `id + 键或索引`，能复用没有改变位置的DOM。
     2. `ref`
 
         被用来给原生DOM元素或子组件注册引用信息。引用信息注册在`vm.$refs`对象上。
@@ -874,6 +875,7 @@
 
         1. 局部：组件局部注册，仅在本组件内起作用，对子组件无效。
         2. 全局：`Vue.mixin`全局注册，将会影响之后创建的（之前的不受影响）Vue实例，包括第三方模板。
+10. `extends`（组件对象）：扩展、继承一个组件
 
 - <details>
 
@@ -1122,8 +1124,6 @@
 
                 >注意：避免**引用数据类型**导致的子组件改变父级。
 
-                - 还可以通过`provide/inject`从父级向所有子孙后代传递数据。
-
                 ><details>
                 ><summary>传递<code>Function</code>数据类型</summary>
                 >
@@ -1176,121 +1176,187 @@
                     >若`自定义事件1`是原生事件，可以添加`.native`修饰符，监听组件根元素的原生事件（不再接收子组件的 ~~`vm.$emit`~~）。
                 2. 在子组件方法体内添加`vm.$emit('自定义事件1', 参数)`向上传递。
 
-                - 孙子 -> 父：
+        >（不推荐）可以传递组件的Vue实例，提供给父级或子级调用。
 
-                    1. 下面「非父子组件通信」的方式。
-                    2. 由子组件一层层往上传递给父级。
-
-                        <details>
-                        <summary>e.g.</summary>
-
-                        1. 父级
-
-                            ```html
-                            <template>
-                              <Emit1
-                                @transmission="transmission"
-                              />
-                            </template>
-
-                            <script>
-                            import Emit1 from '@/components/Emit1'
-
-                            export default {
-                              name: 'Emit',
-                              components: {
-                                Emit1
-                              },
-                              methods: {
-                                transmission (...data) {
-                                  console.log('transmission', ...data)
-                                }
-                              }
-                            }
-                            </script>
-                            ```
-                        2. 中间传递的子级
-
-                            1. 新增方法名（传递参数列表）
-
-                                ```vue
-                                <template>
-                                  <Emit2
-                                    @transmission="transmission"
-                                  />
-                                </template>
-
-                                <script>
-                                import Emit2 from '@/components/Emit2'
-
-                                export default {
-                                  components: {
-                                    Emit2
-                                  },
-                                  methods: {
-                                    transmission (...data) {
-                                      this.$emit('transmission', ...data)   // 传递参数列表
-                                    }
-                                  }
-                                }
-                                </script>
-                                ```
-                            2. 不增加方法名（传递参数列表组成的数组）
-
-                                ```vue
-                                <template>
-                                  <div>
-                                    <!-- 不能用`...`展开元素，和Babel不兼容 -->
-
-                                    <Emit2
-                                      @transmission="$emit('transmission', Array.prototype.slice.call(arguments))"
-                                    />
-                                    <!-- 或 -->
-                                    <Emit2
-                                      @transmission="(...data) => $emit('transmission', data)"
-                                    />
-                                  </div>
-                                </template>
-
-                                <script>
-                                import Emit2 from '@/components/Emit2'
-
-                                export default {
-                                  components: {
-                                    Emit2
-                                  }
-                                }
-                                </script>
-                                ```
-                        3. 孙子组件
-
-                            ```vue
-                            <template>
-                              <a href="javascript:" @click="$emit('transmission', 1, [], {a:3})">
-                                Emit2按钮
-                              </a>
-                            </template>
-                            ```
-                        </details>
-                    3. 通过`provide/inject`从父级向所有子孙后代传递数据，传递父级的Vue实例（不推荐）。
         2. 父 -> 子：触发子组件的方法
 
             1. 父级引用子组件通过`$refs`直接调用子组件的方法（`vm.$refs.子组件引用名.子组件的methods方法()`）。
             2. 父级通过传递`props`，子组件`watch`而触发子组件方法（或其他方式让子组件能够`watch`而执行的方式，如：vuex）。
     2. 非父子组件通信
 
-        1. 在简单的场景下，可以使用一个空的Vue实例作为中央事件总线。
+        1. 通用
 
-            ```javascript
-            const bus = new Vue()   // vm.$emit只能向自己的Vue实例发送触发事件通知
+            1. 在简单的场景下，可以使用一个空的Vue实例作为中央事件总线。
 
-            // 触发组件 A 中的事件
-            bus.$emit('事件名', 传参)
+                ```javascript
+                const bus = new Vue()   // vm.$emit只能向自己的Vue实例发送触发事件通知
 
-            // 在组件 B 创建的钩子中监听事件
-            bus.$on('事件名', function (para) {})
-            ```
-        2. 或专门状态管理模式，如：[vuex](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#vuex)。
+                // 触发组件 A 中的事件
+                bus.$emit('事件名', 传参)
+
+                // 在组件 B 创建的钩子中监听事件
+                bus.$on('事件名', function (para) {})
+                ```
+            2. 或专门状态管理模式，如：[vuex](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#vuex)。
+        2. 祖孙组件间的通信
+
+            1. 通过`provide/inject`从祖辈向所有孙辈传递（不是响应式的，除非传递一个观察对象）数据
+
+                >（不推荐）可以传递组件的Vue实例，提供给祖辈或孙辈调用。
+            2. 祖（`props`） -> 孙：逐层往下传递
+            3. 孙（`vm.$emit`） -> 祖：逐层往上传递
+
+                <details>
+                <summary>e.g.</summary>
+
+                1. 祖辈
+
+                    ```html
+                    <template>
+                      <Emit1
+                        @transmission="transmission"
+                      />
+                    </template>
+
+                    <script>
+                    import Emit1 from '@/components/Emit1'
+
+                    export default {
+                      name: 'Emit',
+                      components: {
+                        Emit1
+                      },
+                      methods: {
+                        transmission (...data) {
+                          console.log('transmission', ...data)
+                        }
+                      }
+                    }
+                    </script>
+                    ```
+                2. 中间传递的子级
+
+                    1. 新增方法名（传递参数列表）
+
+                        ```vue
+                        <template>
+                          <Emit2
+                            @transmission="transmission"
+                          />
+                        </template>
+
+                        <script>
+                        import Emit2 from '@/components/Emit2'
+
+                        export default {
+                          components: {
+                            Emit2
+                          },
+                          methods: {
+                            transmission (...data) {
+                              this.$emit('transmission', ...data)   // 传递参数列表
+                            }
+                          }
+                        }
+                        </script>
+                        ```
+                    2. 不增加方法名（传递参数列表组成的数组）
+
+                        ```vue
+                        <template>
+                          <div>
+                            <!-- 不能用`...`展开元素，和Babel不兼容 -->
+
+                            <Emit2
+                              @transmission="$emit('transmission', Array.prototype.slice.call(arguments))"
+                            />
+                            <!-- 或 -->
+                            <Emit2
+                              @transmission="(...data) => $emit('transmission', data)"
+                            />
+                          </div>
+                        </template>
+
+                        <script>
+                        import Emit2 from '@/components/Emit2'
+
+                        export default {
+                          components: {
+                            Emit2
+                          }
+                        }
+                        </script>
+                        ```
+                3. 孙辈
+
+                    ```vue
+                    <template>
+                      <a href="javascript:" @click="$emit('transmission', 1, [], {a:3})">
+                        Emit2按钮
+                      </a>
+                    </template>
+                    ```
+                </details>
+            4. `v-slot`和`<slot>`：逐层插槽
+
+                <details>
+                <summary>e.g.</summary>
+
+                ```vue
+                // 祖辈
+                <template>
+                  <Son>
+                    <template v-slot:next="sonData">
+                      {{ sonData }}
+                      <br>
+                      祖辈信息
+                    </template>
+                  </Son>
+                </template>
+
+                <script>
+                import Son from '@/components/Son.vue'
+
+                export default {
+                  components: {
+                    Son
+                  }
+                }
+                </script>
+
+
+                // 中间子级 Son.vue
+                <template>
+                  <SonSon>
+                    <template v-slot:next="sonSonData">
+                      {{ sonSonData }}
+                      <br>
+                      <slot name="next" son1="son1" son2="son2" />
+                    </template>
+                  </SonSon>
+                </template>
+
+                <script>
+                import SonSon from '@/components/SonSon.vue'
+
+                export default {
+                  components: {
+                    SonSon
+                  }
+                }
+                </script>
+
+
+                // 孙辈 SonSon.vue
+                <template>
+                  <div>
+                    孙辈
+                    <br>
+                    <slot name="next" sonson1="sonson1" sonson2="sonson2" />
+                  </div>
+                </template>
+                ```
+                </details>
     - 组件的API来自三部分
 
         `<my-component :子属性="父属性" @父事件="父方法"><template v-slot:某名字="临时变量">插槽内容</template></my-component>`

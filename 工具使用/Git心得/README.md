@@ -130,6 +130,7 @@
 
     ```git
     git revert 「SHA」    # 可能产生冲突，需要解决冲突并`git add 「冲突文件」`（-n 不自动产生commit）
+    git revert 「合并的commit的SHA」 -m 1 # 回退merged commit，选择第1个parent保留（或`-m 2`选择第2个parent保留）
 
     git push
     ```

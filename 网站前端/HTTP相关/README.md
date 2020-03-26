@@ -1,6 +1,7 @@
 # HTTP相关
 
 ## 目录
+1. [HTTP特点](#http特点)
 1. [TCP/IP协议族](#tcpip协议族)
 1. [TCP的三次握手、四次挥手](#tcp的三次握手四次挥手)
 1. [输入URL后的HTTP流程](#输入url后的http流程)
@@ -12,16 +13,33 @@
 1. [基于HTTP的功能追加的技术或协议](#基于http的功能追加的技术或协议)
 1. [HTTPS](#https)
 1. [HTTP严格传输安全（HTTP strict transport security，HSTS）](#http严格传输安全http-strict-transport-securityhsts)
-1. [HTTP长连接、WebSocket、HTTP/2](#http长连接websockethttp2)
+1. [HTTP持久连接、WebSocket、HTTP/2](#http持久连接websockethttp2)
 1. [CORS（cross-origin resource sharing，跨域资源共享）](#corscross-origin-resource-sharing跨域资源共享)
 1. [服务端验证用户状态](#服务端验证用户状态)
 1. [其他网络概念](#其他网络概念)
 1. [特殊的IP地址](#特殊的ip地址)
 
->1. HTTP（HyperText Transfer Protocol，超文本传输协议）是一个client-server协议。默认端口号`80`、无状态（cookie弥补）、以ASCII码传输。
->2. 使用HTTP时，必定是一端担任客户端角色，另一端担任服务器端角色。虽然客户端和服务器端的角色可能会互换，但一条通信路线中角色是确定的。请求由客户端开始。
-
 ---
+### HTTP特点
+>HTTP（HyperText Transfer Protocol，超文本传输协议），默认端口号`80`、以ASCII码传输。
+
+1. 灵活可扩展
+
+    1. 语义上自由：只规定了基本格式，比如空格分隔单词，换行分隔字段，其他的各个部分都没有严格的语法限制。
+    2. 传输形式的多样性：允许传输任意类型的数据对象（`Content-Type`设置类型）。
+2. 可靠传输
+
+    基于TCP/IP。
+3. client-server协议
+
+    使用HTTP时，必定是一端担任客户端角色，另一端担任服务器端角色。虽然客户端和服务器端的角色可能会互换，但一条通信路线中角色是确定的。请求由客户端开始。
+4. 无状态（[cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#服务端验证用户状态)弥补）
+
+    通信过程不保存上下文信息，每次HTTP请求都是独立、无关的。
+5. 无连接、短连接（[持久连接](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http持久连接websockethttp2)弥补）
+
+    每次TCP连接只处理一个请求-响应。每一次完整的HTTP通信都要建立单独的TCP连接，服务器处理完客户的请求、并收到客户的应答后，即断开TCP连接。可以节省传输时间。
+
 ### TCP/IP协议族
 与互联网相关联的协议集合总称。
 
@@ -168,7 +186,7 @@
 >    Content-Length: 465
 >    Pragma: no-cache
 >
->    info=****
+>    {"info":""}
 >    ```
 >2. response
 >
@@ -181,38 +199,38 @@
 >    Cache-Control: max-age=0
 >    Proxy-Connection: Close
 >
->    {"errno":0,"errmsg":"","data":{""}}****
+>    {"errno":0,"errmsg":"","data":{""}}
 >    ```
 ></details>
 
 ### HTTP请求方法（HTTP request methods）
 >来自：[MDN：HTTP 请求方法](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Methods)。
 
-1. GET
+1. GET：通常用来获取资源
 
     向指定的资源发出「显示」请求。使用GET方法应该只用在读取数据，而不应当被用于产生「副作用」的操作中。
-2. POST
+2. POST：提交数据
 
     向指定资源提交数据，请求服务器进行处理（如：提交表单或上传文件）。数据被包含在请求本文中。这个请求可能会创建新的资源或修改现有资源，或二者皆有。
-3. PUT
+3. PUT：修改数据
 
     向指定资源位置上传最新内容（文件）。
-4. DELETE
+4. DELETE：删除资源（几乎用不到）
 
     请求删除指定资源位置的内容。
-5. HEAD
+5. HEAD：获取资源的元信息
 
     与GET方法一样，都是向服务器发出指定资源的请求。只不过服务器将不传回资源的本文部分。在不必传输全部内容的情况下，获取关于该资源的信息（HTTP响应头）。
-6. OPTIONS
+6. OPTIONS：列出可对资源实行的请求方法，用来跨域请求
 
     使服务器传回该资源所支持的所有HTTP请求方法。用「*」来代替资源名称，测试服务器功能是否正常运作。
-7. TRACE
+7. TRACE：追踪请求-响应的传输路径
 
     回显服务器收到的请求，主要用于测试或诊断。
-8. CONNECT
+8. CONNECT：建立连接隧道，用于代理服务器
 
     HTTP/1.1协议中预留给能够将连接改为管道方式的代理服务器。通常用于SSL加密服务器的链接（经由非加密的HTTP代理服务器）。
-9. PATCH
+9. PATCH：修改局部数据
 
     用于将局部修改应用到资源。
 10. ~~LINK~~
@@ -239,20 +257,20 @@
     | DELETE | 幂等 | 副作用 | 一般不携带 |
 
 ### HTTP状态码（HTTP status codes）
->来自：[维基百科：HTTP状态码](https://zh.wikipedia.org/wiki/HTTP状态码)。
+>来自：[维基百科：HTTP状态码](https://zh.wikipedia.org/wiki/HTTP状态码)、[MDN：HTTP 响应代码](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status)。
 
 用以表示服务器HTTP响应状态的3位数字代码。
 
-1. 1XX消息
+1. 1XX中间状态信息
 
     代表请求已被接受，需要继续处理；代表临时性、信息性的响应，只包含状态行和某些可选的响应头信息，始终以消息头后的第一个空行结尾；标示客户端应该采取的其他行动。
 
     1. 100 Continue
 
         客户端应当继续发送请求。这个临时响应是用来通知客户端它的部分请求已经被服务器接收，且仍未被拒绝。客户端应当继续发送请求的剩余部分，或若请求已经完成，则忽略这个响应。服务器必须在请求完成后向客户端发送一个最终响应。
-    2. 101 Switching Protocols
+    2. **101 Switching Protocols**
 
-        服务器已经理解了客户端的请求，并将通过Upgrade消息头通知客户端采用不同的协议来完成这个请求。在发送完这个响应最后的空行后，服务器将会切换到在Upgrade消息头中定义的那些协议。
+        服务器已经理解了客户端的请求，并将通过Upgrade消息头通知客户端采用不同的协议来完成这个请求。在发送完这个响应最后的空行后，服务器将会切换到在Upgrade消息头中定义的那些协议。如：HTTP升级为WebSocket。
     3. 102 Processing
 
         处理将被继续执行。
@@ -274,13 +292,13 @@
         服务器已成功处理了请求，但返回的实体头部元信息不是在原始服务器上有效的确定集合，而是来自本地或第三方的复制。当前的信息可能是原始版本的子集或超集。
     5. **204 No Content**
 
-        服务器成功处理了请求，但不需要返回任何实体内容，并且希望返回更新了的元信息。响应可能通过实体头部的形式，返回新的或更新后的元信息。若存在这些头部信息，则应当与所请求的变量相呼应。始终以消息头后的第一个空行结尾。
+        服务器成功处理了请求，但不需要返回任何实体内容，并且希望返回更新了的元信息（与200 OK相同，但没有响应实体）。始终以消息头后的第一个空行结尾。
     6. 205 Reset Content
 
         服务器成功处理了请求，且没有返回任何内容，并且要求请求者重置文档视图。该响应主要是被用于接受用户输入后，立即重置表单，以便用户能够轻松地开始另一次输入。始终以消息头后的第一个空行结尾。
     7. **206 Partial Content**
 
-        服务器已经成功处理了部分GET请求。
+        服务器已经成功处理了部分GET请求。分块下载、断点续传，会带上响应头`Content-Range`。
     8. 207 Multi-Status
 
         代表之后的消息体将是一个XML消息，并且可能依照之前子请求数量的不同，包含一系列独立的响应代码。
@@ -293,7 +311,7 @@
         被请求的资源有一系列可供选择的回馈信息，每个都有自己特定的地址和浏览器驱动的商议信息。用户或浏览器能够自行选择一个首选的地址进行重定向。
     2. **301 Moved Permanently**
 
-        被请求的资源已永久移动到新位置，并且将来任何对此资源的引用都应该使用本响应返回的若干个URI之一。
+        被请求的资源已永久移动到新位置，并且将来任何对此资源的引用都应该使用本响应返回的若干个URI之一。浏览器默认会做缓存优化，在第二次访问的时候自动访问重定向的那个地址。
     3. **302 Moved Temporarily**或**302 Found**
 
         被请求的资源临时从不同的URI响应请求。
@@ -304,7 +322,7 @@
         被请求的资源临时从不同的URI响应请求，且客户端应当把POST转化为GET方式访问那个资源。
     5. **304 Not Modified**
 
-        若客户端发送了一个带条件的GET请求且该请求已被允许，而文档的内容（自上次访问以来或根据请求的条件）并没有改变，则服务器应当返回这个状态码。始终以消息头后的第一个空行结尾。
+        协商缓存命中时会返回。始终以消息头后的第一个空行结尾。
     6. 305 Use Proxy
 
         被请求的资源必须通过指定的代理才能被访问。
@@ -320,7 +338,7 @@
 
     1. **400 Bad Request**
 
-        由于包含语法错误，当前请求无法被服务器理解。除非进行修改，否则客户端不应该重复提交这个请求。
+        当前请求无法被服务器理解。
     2. **401 Unauthorized**
 
         当前请求需要用户验证。
@@ -332,7 +350,7 @@
         服务器已经理解请求，但是拒绝执行它。
     5. **404 Not Found**
 
-        请求失败，请求所希望得到的资源未被在服务器上发现。
+        资源未找到。
     6. 405 Method Not Allowed
 
         请求行中指定的请求方法不能被用于请求相应的资源。
@@ -393,10 +411,16 @@
     25. 426 Upgrade Required
 
         客户端应当切换到TLS/1.0。
-    26. 449 Retry With
+    26. 429 Too Many Requests
+
+        客户端发送的请求过多。
+    27. 431 Request Header Fields Too Large
+
+        请求头的字段内容太大。
+    28. 449 Retry With
 
         由微软扩展，代表请求应当在执行完适当的操作后进行重试。
-    27. ~~451 Unavailable For Legal Reasons~~
+    29. ~~451 Unavailable For Legal Reasons~~
 
         （废弃）
 5. 5XX服务器错误
@@ -405,7 +429,7 @@
 
     1. **500 Internal Server Error**
 
-        服务器遇到了一个未曾预料的状况，导致了它无法完成对请求的处理。
+        服务器出错。
     2. 501 Not Implemented
 
         服务器不支持当前请求所需要的某个功能。
@@ -440,7 +464,7 @@
     添加附加信息、操作参数，用来准确描述正在获取的资源、发送端的行为。
 2. 结构：
 
-    不区分大小写的属性名后跟一个冒号，再紧跟它的值（不必换行）组成，以`回车（CR）换行（LF）`符号序列结尾。值的内容可以以`; `分割（`,`分割单词）。值前面的空格会被忽略掉。自定义专用消息头可通过`X-`前缀来添加（废弃）。
+    不区分大小写的属性名后跟一个冒号，再紧跟它的值（不换行）组成，以`回车（CR）换行（LF）`符号序列结尾。值的内容可以以`; `分割（`,`分割单词）。值前面的空格会被忽略掉。自定义专用消息头可通过`X-`前缀来添加（废弃）。
 3. 类型
 
     >具体内容：[MDN：HTTP 消息头](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers)、[rfc4229](https://tools.ietf.org/html/rfc4229)。
@@ -484,7 +508,7 @@
         | Max-Forwards | 最大传输逐跳数 |
         | Referer | 请求来源地址 |
         | User-Agent | HTTP客户端程序的信息 |
-        | Cookie | 客户端存在的cookie |
+        | Cookie | 客户端存在的cookie（一次可发送多个cookie） |
     3. 响应头部字段（response）
 
         | 响应头部字段名 | 说明 |
@@ -498,7 +522,7 @@
         | Retry-After | 对再次发起请求的时机要求 |
         | Server | HTTP服务器的安装信息 |
         | Vary | 代理服务器缓存的管理信息 |
-        | Set-Cookie | 服务端设置客户端cookie |
+        | Set-Cookie | 服务端设置客户端cookie（一次可发送多个cookie） |
     4. 实体头部字段（entity）
 
         | 实体头部字段名 | 说明 |
@@ -592,7 +616,7 @@
             3. 浏览器再请求这个资源时，带上If-Modified-Since请求头（Last-Modified的值）；
             4. 服务器收到资源请求时，拿If-Modified-Since和资源在服务器上最后修改时间进行对比：
 
-                1. 若没有变化，命中缓存（还要考虑`ETag/If-None-Match`），返回`304 Not Modified`，但不返回资源内容。浏览器从本地缓存中读取资源。
+                1. 若没有变化，命中缓存，返回`304 Not Modified`，但不返回资源内容。浏览器从本地缓存中读取资源。
                 2. 若没有命中缓存，则返回资源内容，根据响应头更新这个资源的Last-Modified。
 
             >分布式部署，多台机器的Last-Modified必须保持一致。
@@ -724,17 +748,16 @@
 
 >可以在Chrome地址栏输入`chrome://net-internals/#hsts`查看HSTS包含的域名情况。
 
-### HTTP长连接、WebSocket、HTTP/2
->短连接：每一个HTTP请求都要建立单独的TCP连接，然后断开。
-
-1. 持久连接（HTTP Persistent Connections，HTTP keep-alive，HTTP connection reuse）
+### HTTP持久连接、WebSocket、HTTP/2
+1. HTTP持久连接（HTTP长连接，HTTP Persistent Connections，HTTP keep-alive，HTTP connection reuse）
 
     只要任意一端没有明确提出断开连接，则保持TCP连接状态，可以完成多个HTTP请求。单个客户端与服务器和代理服务器之间不应该维持超过2个持久连接。
 
     1. HTTP/1.1所有的连接默认是持久连接。
     2. HTTP/1.0设置：`Connection: Keep-Alive`。
 
-    >持久连接的管线化（pipelining）：将多个HTTP请求整批提交，但服务端必须按照顺序整批返回。
+>持久连接的管线化（pipelining）：将多个HTTP请求整批提交，但服务端必须按照顺序整批返回。（非管线化：发送请求后，需要收到响应了才能发送下一个请求）
+
 2. WebSocket
 
     新的全双工通讯协议。在HTTP建立之后，再进行一次握手后创建连接。
@@ -845,7 +868,7 @@ HTTP是无状态协议，通过session-cookie、token判断客户端的用户状
         >session的运作通过session_id进行，session_id通常会保存在客户端的cookie中。
     2. cookie
 
-        服务器生成，发送给客户端保存。cookie携带session_id（可以经过加密），能够匹配服务端的session。
+        服务器生成，发送给客户端保存（`Set-Cookie`），再由客户端发送给服务器（`Cookie`）。cookie携带session_id（可以经过加密），能够匹配服务端的session。
 2. token（令牌）
 
     >最简单的token组成：uid（用户唯一的身份标识）、time（当前时间的时间戳）、sign（加盐后哈希）。
@@ -855,7 +878,7 @@ HTTP是无状态协议，通过session-cookie、token判断客户端的用户状
 >从已经登录的客户端提取出登录信息（session_id或token），传递给其他客户端，再由其他客户端把登录信息注入cookie，就可以转移登录状态到其他客户端。
 
 ### 其他网络概念
-1. URI、URL
+1. URI = URL + URN
 
     1. URI（Uniform Resource Identifier，统一资源标志符）
 
@@ -864,7 +887,11 @@ HTTP是无状态协议，通过session-cookie、token判断客户端的用户状
 
         提供找到一个资源的地址。
 
-        >URI的子集。
+    - URN（Uniform Resource Name，统一资源名称）
+
+        （已不推荐使用）
+
+    URI的结构：`scheme` `://` `user:passwd@` `host:port` `path` `?query` `#fragment`
 2. 协议（protocol）：
 
     计算机与网络设备要互相通信，双方就必须基于相同的方法，确定的规则就是协议。
