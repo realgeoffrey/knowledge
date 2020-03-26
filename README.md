@@ -42,7 +42,14 @@
     3. [实现具体业务](./网站前端/HTML+CSS学习笔记/实现具体业务.md)
     4. [弹性盒子flex](./网站前端/HTML+CSS学习笔记/弹性盒子.md)
 
-    >1. [SCSS使用](./网站前端/SCSS使用/README.md)
+    >1. <details>
+    >
+    >    <summary>初始化模板</summary>
+    >
+    >    1. [cssReset.scss](./网站前端/初始化模板/cssReset.scss)
+    >    2. [init.html](./网站前端/初始化模板/init.html)
+    >    </details>
+    >2. [SCSS使用](./网站前端/SCSS使用/README.md)
 4. [Vue.js学习笔记](./网站前端/Vue.js学习笔记/README.md)
 5. [Typescript学习笔记](./网站前端/Typescript学习笔记/README.md)
 6. [React学习笔记](./网站前端/React学习笔记/README.md)
@@ -58,15 +65,8 @@
     3. [Babel学习笔记](./网站前端/Babel学习笔记/README.md)
     4. [ESLint学习笔记](./网站前端/ESLint学习笔记/README.md)
     </details>
-9. <details>
-
-    <summary>初始化模板</summary>
-
-    1. [cssReset.scss](./网站前端/初始化模板/cssReset.scss)
-    2. [init.html](./网站前端/初始化模板/init.html)
-    </details>
-10. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
-11. <details>
+9. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
+10. <details>
 
     <summary>废弃内容:thumbsdown:</summary>
 

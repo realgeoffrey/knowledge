@@ -565,7 +565,7 @@
     >1. 内容区域（鼠标选中后的高度）：只与`font-size`、`font-family`有关。
     >2. 行间距：摇摆不定，可以为负值，仅为达成以上等式而变化。
 
->ie6以及部分浏览器不能用line-height控制图片与文字的对齐位置，使用其他垂直居中方式。
+>ie6以及部分浏览器不能用line-height控制图片与文字的对齐位置，使用其他垂直居中方式（如：使用`display: flex; align-items: center;`）。
 
 ### `<img>`的`src`属性
 >当`<img>`的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
@@ -1403,7 +1403,30 @@
         2. .vue组件文件：大驼峰式或`-`（且需要2个以上单词）。
 
             >页面文件（如：nuxt的pages）：按照路由访问命名（习惯用`-`）。
-2. 引号使用
+2. 大小写
+
+    1. CSS属性名和属性值：不区分大小写。
+
+        >`content`的属性值区分大小写。`font-family`的属性值不区分大小写。
+    2. CSS选择器：
+
+        1. 大部分不区分大小写；
+        2. `类选择器`、`ID选择器`、`自定义属性的属性选择器的属性值`区分大小写。
+    3. CSS变量：区分大小写。
+    4. HTML标签：不区分大小写。
+    5. HTML标签的属性名和属性值：
+
+        1. 属性名不区分大小写；
+
+            >自定义属性的属性名也不区分大小写。
+        2. 大部分属性值不区分大小写；
+        3. `class`、`id`、`value`、`自定义属性`等的属性值区分大小写。
+    6. JS相关：
+
+        1. `attribute`不区分大小写（`.attributes`、`.getAttribute/setAttribute/removeAttribute/hasAttribute/toggleAttribute`）
+        2. `property`的属性名是固定的，不因为`attributes`而改变。
+
+3. 引号使用
 
     1. HTML标签的`attribute`的值、CSS样式属性的值（如：`content`、`font-family`、`quotes`）：
 
@@ -1413,7 +1436,7 @@
     2. JS代码的字符串：
 
         单引号`'`
-3. CSS命名规范
+4. CSS命名规范
 
     1. BEM（以及变种）
 
@@ -1455,7 +1478,7 @@
         >
         >    把皮肤型的样式抽离出来。
     </details>
-4. 经验
+5. 经验
 
     1. （标签）语义化：让机器可以读懂内容
 
@@ -1468,12 +1491,12 @@
     2. 合理减少层级嵌套，行内元素不要嵌套块级元素（如：`<a>`不嵌套`<div>`）。
     3. 用父节点的class去管理子节点。
     4. 有些WAP端（如：Android各奇葩机型）页面的点击按钮制作大一些，否者难以点击触发JS效果。
-5. CSS编码规范
+6. CSS编码规范
 
     绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/css.md#css编码规范)。
 
     >可以设置为IDEs的**Reformat Code**的排版样式。
-6. CSS注释方式
+7. CSS注释方式
 
     除了普通注释之外，还可以把注释内容放在根元素的伪元素中：
 
@@ -1605,4 +1628,5 @@
 21. `border`分为上、右、下、左，每一块区域的`border-width`不为`0`时都是梯形（`width`或`height`为`0`时为三角形），`border-width`决定梯形（或三角形）的高。
 
     某些边设为`border-width`不为`0`、`border-right-color`为`transparent`可以制造一些形状。
-22. 用`filter: drop-shadow`代替`box-shadow`
+22. 用`filter: drop-shadow`（图像本身形状和alpha通道的阴影）代替`box-shadow`（盒阴影）
+23. 若在视口中**添加/删除**节点导致滚动条变化，则浏览器会尽量保持视口最顶部节点固定不变（从而瞬间改变滚动条位置以使视口顶部节点尽量保持不随滚动条变化而位移）

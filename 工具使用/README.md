@@ -13,5 +13,6 @@
 5. [whistle使用](./whistle使用/README.md)
 6. [科学上网](./科学上网/README.md)
 
->1. [Google搜索技巧](./Google搜索技巧/README.md)
->2. [iOS使用](./iOS使用/README.md)
+>1. [iOS使用](./iOS使用/README.md)
+>2. [Android调试](./Android调试/README.md)
+>3. [Google搜索技巧](./Google搜索技巧/README.md)

@@ -21,11 +21,13 @@
 
     1. [JS代码风格规范（coding style guide）](#js代码风格规范coding-style-guide)
     1. [编程实践（programming practices）](#编程实践programming-practices)
-
-        1. [代码调试方式](#代码调试方式)
+    1. [代码调试方式](#代码调试方式)
     1. [函数防抖、函数节流](#函数防抖函数节流)
     1. [自执行匿名函数（拉姆达，λ，lambda）](#自执行匿名函数拉姆达λlambda)
     1. [Hybrid App相关](#hybrid-app相关)
+
+        1. [Native提供给Hybrid宿主环境（WebView）](#native提供给hybrid宿主环境webview)
+        1. [Hybrid的前端处理](#hybrid的前端处理)
     1. [Tips](#tips)
     1. [函数模板](#函数模板)
 1. [功能归纳](#功能归纳)
@@ -1302,7 +1304,7 @@
 
     配置数据：URL、展示内容、重复的值、设置、任何可能发生变更的值。
 
-#### 代码调试方式
+### 代码调试方式
 1. JS：
 
     1. 展示：`console.log/info/warn/error`（`alert`）
@@ -1317,7 +1319,7 @@
     3. 执行时间：`console.time`至`console.timeEnd`
 2. PC端
 
-    DevTool
+    DevTools
 
     1. Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）。
     2. Elements，右键标签可以Break On：子节点修改、attribute修改、Node移除。
@@ -1330,7 +1332,7 @@
 
         PC端的Chrome的Remote devices（<chrome://inspect/#devices>）调试**Android已开启调试功能的APP**的webview（需要能够访问google，否则首次打开inspect页面会404）。
 
-        >借助DevTool是最佳方式。
+        >借助DevTools是最佳方式。
 
         - Android已开启调试功能的APP：
 
@@ -1479,87 +1481,88 @@
 >2. Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、JS进行业务开发。
 >3. 相对于Native App的流畅体验，Hybrid App瓶颈一般都卡在WebView实例初始化，会导致App卡顿、页面加载缓慢。
 
-1. Native提供给Hybrid宿主环境
+#### Native提供给Hybrid宿主环境（WebView）
+1. 互相调用：
 
-    1. 互相调用：
+    1. Native调用WebView的JS方法（`window.前端定义方法`）
+    2. WebView调用`桥协议`（`window.客户端定义方法`）、或触发`自定义URL Scheme`（`myscheme://客户端定义路径`）
+2. 资源访问机制
 
-        1. Native调用WebView的JS方法（`window.前端定义方法`）
-        2. WebView调用`桥协议`（`window.客户端定义方法`）、或触发`自定义URL Scheme`（`myscheme://客户端定义路径`）
-    2. 资源访问机制
+    1. 以本地协议`file`方式访问Native内部资源。
 
-        1. 以本地协议`file`方式访问Native内部资源。
+        - 可以把前端要用的静态资源放到客户端本地（如：字体文件），本地页面通过类似`file:///android_asset/fonts/myFont.ttf`引用。
+    2. 以远程`url`方式访问线上资源。
+    3. 增量替换机制（不依赖发包更新）
 
-            - 可以把前端要用的静态资源放到客户端本地（如：字体文件），本地页面通过类似`file:///android_asset/fonts/myFont.ttf`引用。
-        2. 以远程`url`方式访问线上资源。
-        3. 增量替换机制（不依赖发包更新）
+        1. Native包内下载、解压线上的打包资源，再替换旧资源。
+        2. ~~manifest~~
+    4. URL限定，限制访问、跨域问题的解决方案
 
-            1. Native包内下载、解压线上的打包资源，再替换旧资源。
-            2. ~~manifest~~
-        4. URL限定，限制访问、跨域问题的解决方案
+        1. 可以限制WebView的能发起的请求内容。
+        2. 可以代替WebView进行会触发跨域的AJAX请求。
+3. 页面在客户端内打开方式
 
-            1. 可以限制WebView的能发起的请求内容。
-            2. 可以代替WebView进行会触发跨域的AJAX请求。
-    3. 页面在客户端内打开方式
+    1. 针对产品功能性页面：
 
-        1. 针对产品功能性页面：
+        用本地协议`file`方式打开客户端包内.html（.js、.css、图片等都在客户端包内）。
 
-            用本地协议`file`方式打开客户端包内.html（.js、.css、图片等都在客户端包内）。
+        - `file`打开的页面直接发起请求可能会有跨域问题，可以用客户端接口代理的方式请求服务端数据。
+    2. 针对运营活动页面：
 
-            - `file`打开的页面直接发起请求可能会有跨域问题，可以用客户端接口代理的方式请求服务端数据。
-        2. 针对运营活动页面：
+        用远程`url`方式请求。
+4. 身份验证机制
 
-            用远程`url`方式请求。
-    4. 身份验证机制
+    Native创建WebView时，根据客户端登录情况注入跟登录有关的cookie（session_id）或token。
+5. Hybrid开发测试
 
-        Native创建WebView时，根据客户端登录情况注入跟登录有关的cookie（session_id）或token。
-    5. Hybrid开发测试
+    1. 提供**切换成线上资源请求方式**的功能，用代理工具代理成本地资源。
 
-        1. 提供**切换成线上资源请求方式**的功能，用代理工具代理成本地资源。
-2. Hybrid的前端处理
+#### Hybrid的前端处理
+><details>
+><summary>WebView环境兼容性</summary>
+>
+>1. CSS、HTML
+>
+>    >除了[样式适配](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#wap端适配总结)之外。
+>
+>    1. 添加厂商前缀（如：`-webkit-`）。
+>    2. 布局有问题的机型额外调试。
+>    3. `<video>`、`<audio>`、`<iframe>`调试。
+>2. JS
+>
+>    兼容性判断（能力检测等）。
+></details>
 
-    ><details>
-    ><summary>WebView环境兼容性</summary>
+1. 与Native配合方式：
+
+    >1. 都是以**字符串**（数据用JSON字符串）的形式交互，向客户端传递：
     >
-    >1. CSS、HTML
-    >
-    >    >除了[样式适配](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#wap端适配总结)之外。
-    >
-    >    1. 添加厂商前缀（如：`-webkit-`）。
-    >    2. 布局有问题的机型额外调试。
-    >    3. `<video>`、`<audio>`、`<iframe>`调试。
-    >2. JS
-    >
-    >    兼容性判断（能力检测等）。
-    ></details>
+    >    1. 全局的方法名 -> 客户端调用`window.方法名(JSON数据)`
+    >    2. 匿名函数 -> 客户端调用`(匿名函数(JSON数据))`
+    >2. WebView无法判断是否安装了其他App。
+    >3. 可以通过`查看注入的全局方法`、或`客户端调用回调函数`（、或`navigator.userAgent`）来判定H5页面是否在具体App内打开。
+    >4. `桥协议`仅在App内部起作用；`自定义URL Scheme`是系统层面，所以可以额外针对跨App起作用（如：分享去其他App）；iOS的**通用链接**可以认为是高级的`自定义URL Scheme`。
+    >5. Native和WebView交互需要时间，对时效性很高的操作会有问题。
 
-    1. 与Native配合方式：
+    1. `桥协议`：Native注入全局方法至WebView的`window`，WebView调用则客户端拦截后触发Native行为。
 
-        >1. 都是以**字符串**（数据用JSON字符串）的形式交互，向客户端传递：
+        >1. 客户端注入方式：javascript伪协议方式`javascript: 代码`。
+        >2. 注入JS代码可以在创建WebView之前（`[native code]`）或之后（全局变量JS注入）。
+        >- 若注入的方法为`undefined`，则认为不在此App内部。
+    2. `自定义URL Scheme`：拦截跳转（`<iframe>`或`<img>`设置`src`、点击`<a>`、`window.location.href`），触发Native行为。
+
+        ><details>
+        ><summary><code>URL Scheme</code></summary>
         >
-        >    1. 全局的方法名 -> 客户端调用`window.方法名(JSON数据)`
-        >    2. 匿名函数 -> 客户端调用`(匿名函数(JSON数据))`
-        >2. WebView无法判断是否安装了其他App。
-        >3. 可以通过`查看注入的全局方法`、或`客户端调用回调函数`（、或`navigator.userAgent`）来判定H5页面是否在具体App内打开。
-        >4. `桥协议`仅在App内部起作用；`自定义URL Scheme`是系统层面，所以可以额外针对跨App起作用（如：分享去其他App）；iOS的**通用链接**可以认为是高级的`自定义URL Scheme`。
-        >5. Native和WebView交互需要时间，对时效性很高的操作会有问题。
+        >是iOS和Android提供给开发者的一种WAP唤醒Native App方式（客户端用DeepLink实现）。Android应用在mainfest中注册自己的Scheme；iOS应用在App属性中配置。典型的URL Scheme：`myscheme://my.hostxxxxxxx`。
+        ></details>
 
-        1. `桥协议`：Native注入全局方法至WebView的`window`，WebView调用则客户端拦截后触发Native行为。
+        >1. 客户端可以捕获、拦截任何行为（如：`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
+        >2. 有些App会设置允许跳转的其他App的白名单或黑名单，如：微信白名单。
+        >3. 除了增加回调函数且被客户端调用，否则无法准确判定是否在此App内部。
+        >4. 跨App使用`自定义URL Scheme`，其后面的字符串要产生的行为仅目的App能理解。
 
-            >1. 客户端注入方式：javascript伪协议方式`javascript: 代码`。
-            >2. 注入JS代码可以在创建WebView之前（`[native code]`）或之后（全局变量JS注入）。
-            >- 若注入的方法为`undefined`，则认为不在此App内部。
-        2. `自定义URL Scheme`：拦截跳转（`<iframe>`或`<img>`设置`src`、点击`<a>`、`window.location.href`），触发Native行为。
-
-            ><details>
-            ><summary><code>URL Scheme</code></summary>
-            >
-            >是iOS和Android提供给开发者的一种WAP唤醒Native App方式（客户端用DeepLink实现）。Android应用在mainfest中注册自己的Scheme；iOS应用在App属性中配置。典型的URL Scheme：`myscheme://my.hostxxxxxxx`。
-            ></details>
-
-            >1. 客户端可以捕获、拦截任何行为（如：`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
-            >2. 有些App会设置允许跳转的其他App的白名单或黑名单，如：微信白名单。
-            >3. 除了增加回调函数且被客户端调用，否则无法判定是否在此App内部。
-            >4. 跨App使用`自定义URL Scheme`，其后面的字符串要产生的行为仅目的App能理解。
+        1. iOS
 
             1. iOS8-
 
@@ -1588,109 +1591,119 @@
                   location.reload();
                 }, 1000);
                 ```
-            3. Android
+            3. iOS9+的Universal links（通用链接），可以从底层打开其他App客户端，跳过白名单（微信已禁用）
 
-                ```javascript
-                location.href = '自定义URL Scheme';	  // 也可以用`<iframe>`
+                >需要HTTPS域名配置、iOS设置等其他端配合。
 
-                var start = Date.now();
-                setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）（浏览器非激活时，定时器执行时间会变慢/主线程被占用，所以会大于定时器时间之后才执行定时器内回调）
-                  if (Date.now() - start < 3100) {  // 还在这个页面，认为没有安装App
-                    location.href = '下载地址';
-                  }
-                }, 3000);
-                ```
+                >参考：[通用链接（Universal Links）的使用详解](http://www.hangge.com/blog/cache/detail_1554.html)、[Universal Link 前端部署采坑记](http://awhisper.github.io/2017/09/02/universallink/)、[Support Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html#//apple_ref/doc/uid/TP40016308-CH12-SW2)。
+        2. Android
 
-            >1. <details>
-            >
-            >    <summary>（在微信及其他APP中）使用应用宝<strong>下载/打开</strong>其他APP</summary>
-            >
-            >    >参考：[关于微信中直接调起 Native App 的调研报告](https://blog.csdn.net/lixuepeng_001/article/details/78043418)。
-            >
-            >    应用宝在微信中可能可以更好识别是否安装了其他APP，从而可以在应用宝页面选择打开其他APP，而不仅仅是下载。
-            >
-            >    - 拼接应用宝下载/打开其他APP的链接：
-            >
-            >        1. 应用宝主链接：`https://a.app.qq.com/o/simple.jsp?`
-            >        2. 跳转参数（search值，在`?`后面，用`&`分割）:
-            >
-            >            1. 包名：`pkgname=` + `com.xx.xxx`
-            >            2. 其他APP内打开路径（可选）：`android_schema=` + `自定义URL Scheme://具体跳转路径`
-            >
-            >                >若有一些特殊字符，可以用`encodeURIComponent`转义。
-            >            3. 渠道包链接（可选）：`ckey=` + `CK1234567890123`
-            >
-            >        最终链接：`https://a.app.qq.com/o/simple.jsp?pkgname=com.xx.xxx&android_schema=xxxx://xx`
-            >    </details>
-            >2. 微信分享在部分系统（低于微信客户端Android6.2）使用~~pushState~~导致签名失败，可查询[官方文档](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115)；又因为一般是异步加载、配置微信的设置，所以要等待微信第三方文件和接口完成后才能够配置成功（才能够设置成功）。
-            >3. Android的微信、QQ等X5内核可以用<http://debugx5.qq.com/>打开调试，可进行清除缓存等操作。
-            >4. 长按没有 ~~`src`~~ 的`<img>`：
-            >
-            >    1. 在iOS微信webview，截屏这个`<img>`所在位置；
-            >    2. 其他情况，可能导致保存图片错误、或不能进行保存。
-        3. iOS9+的Universal links（通用链接），可以从底层打开其他App客户端，跳过白名单（微信已禁用）
+            ```javascript
+            location.href = '自定义URL Scheme';	  // 也可以用`<iframe>`
 
-            >需要HTTPS域名配置、iOS设置等其他端配合。
+            var start = Date.now();
+            setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）（浏览器非激活时，定时器执行时间会变慢/主线程被占用，所以会大于定时器时间之后才执行定时器内回调）
+              if (Date.now() - start < 3100) {  // 还在这个页面，认为没有安装App
+                location.href = '下载地址';
+              }
+            }, 3000);
+            ```
 
-            >参考：[通用链接（Universal Links）的使用详解](http://www.hangge.com/blog/cache/detail_1554.html)、[Universal Link 前端部署采坑记](http://awhisper.github.io/2017/09/02/universallink/)、[Support Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html#//apple_ref/doc/uid/TP40016308-CH12-SW2)。
+        - 在WebView中通过应用宝页面**下载/打开**其他APP
 
-        - WebView提供给Native调用的全局回调函数（或匿名函数）。
+            >参考：[关于微信中直接调起 Native App 的调研报告](https://blog.csdn.net/lixuepeng_001/article/details/78043418)。
 
-            ><details>
-            ><summary>对于动态创建的全局回调函数，要注意同名覆盖问题</summary>
-            >
-            >e.g.
-            >
-            >```javascript
-            >let _localCounter = 1 // 同一个方法名快速请求时，可能 Date.now() 还没有变化
-            >
-            >export function invokeJSBridge (method, arg) {
-            >  return new Promise((resolve, reject) => {
-            >    if (typeof window.客户端定义方法 === 'function') {
-            >      let callbackName = `${method}CallbackName${Date.now()}`
-            >      if (window[callbackName]) {
-            >        callbackName = `${method}CallbackName${Date.now()}_${_localCounter}`
-            >        _localCounter += 1
-            >      }
-            >
-            >      window[callbackName] = (res) => {    // todo: 增加定时器去垃圾收集那些没有被客户端回调的方法
-            >        try {
-            >          resolve({ result: 'ok', data: JSON.parse(res) })
-            >        } catch (e) {
-            >          resolve({ result: 'error', data: res })
-            >        }
-            >        window[callbackName] = null
-            >      }
-            >
-            >      window.客户端定义方法( // 桥协议
-            >        method, // 方法名
-            >        JSON.stringify(arg || {}),  // 传参
-            >        callbackName  // 回调
-            >      )
-            >    } else {
-            >      reject(arg)
-            >    }
-            >  })
-            >}
-            >
-            >
-            >/* 使用测试 */
-            >invokeJSBridge('方法名', '参数')
-            >  .then((res) => {  // 是客户端、且调用成功&客户端执行回调
-            >    // 根据res处理客户端执行之后业务
-            >  })
-            >  .catch((res) => { // 不是客户端
-            >    // 非客户端业务
-            >  })
-            >```
-            ></details>
-        >接口设计可以带有「透传数据」：前端调用客户端方法时多传一个透传参数，之后客户端异步调用前端方法时带着这个参数的值。
-    2. 根据WebView的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在Hybrid遇到的bug。
-    3. 调试webview：[代码调试方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#代码调试方式)中针对移动端的部分。
-    4. 分享到其他App
+            1. iOS：应用宝页面支持跳转至目标APP的App Store
+            2. Android：应用宝页面支持下载/打开目标APP
 
-        1. 通过JS触发Native App之间的切换分享（自己Native内可用桥协议，任意App均要起作用只能用Scheme）。
-        2. 带分享信息参数去访问其他App提供的分享URL。
+                1. 在腾讯系APP中能识别是否安装了目标APP；在其他APP中无法判断。
+                2. 填写`android_schema`可以传递信息至目标APP：腾讯系APP打开目标APP后会带着信息；其他APP会先触发一次信息。
+                - 不用安装应用宝就支持打开目标APP功能；下载是去应用宝下载（会先要求安装应用宝APP）。
+
+            - 拼接应用宝下载/打开目标APP的链接：
+
+                1. 应用宝主链接：`https://a.app.qq.com/o/simple.jsp?`
+                2. 跳转参数（search值，在`?`后面，用`&`分割）:
+
+                    1. 包名：`pkgname=` + `com.xx.xxx`
+                    2. 渠道包链接（可选）：`ckey=` + `CK1234567890123`
+                    3. 目标APP内打开路径（可选）：`android_schema=` + `自定义URL Scheme://具体跳转路径`
+
+                        >若有一些特殊字符，则可以用`encodeURIComponent`转义属性名和属性值。
+
+                e.g. `https://a.app.qq.com/o/simple.jsp?pkgname=com.xx.xxx&ckey=xxxx&android_schema=xxxx://xx`
+
+        >1. 微信分享在部分系统（低于微信客户端Android6.2）使用~~pushState~~导致签名失败，可查询[官方文档](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115)；又因为一般是异步加载、配置微信的设置，所以要等待微信第三方文件和接口完成后才能够配置成功（才能够设置成功）。
+        >2. Android的微信、QQ等X5内核可以用<http://debugx5.qq.com/>打开调试，可进行清除缓存等操作。
+        >3. 长按没有 ~~`src`~~ 的`<img>`：
+        >
+        >    1. 在iOS微信webview，截屏这个`<img>`所在位置；
+        >    2. 其他情况，可能导致保存图片错误、或不能进行保存。
+    3. WebView提供给Native调用的全局回调函数（或匿名函数）。
+
+        ><details>
+        ><summary>对于动态创建的全局回调函数，要注意同名覆盖问题</summary>
+        >
+        >e.g.
+        >
+        >```javascript
+        >let _localCounter = 1 // 同一个方法名快速请求时，可能 Date.now() 还没有变化
+        >
+        >function invokeJSBridge (method, arg, { hasCallback = true }) {
+        >  return new Promise((resolve, reject) => {
+        >    if (typeof window.客户端定义方法 === 'function') {
+        >      let callbackName = ''
+        >
+        >      // 创建客户端回调
+        >      if (hasCallback) {
+        >        callbackName = `${method}CallbackName_${_localCounter}`
+        >        _localCounter += 1
+        >
+        >        window[callbackName] = (res) => {    // todo: 增加定时器去垃圾收集那些长时间未被客户端回调的方法
+        >          try {
+        >            resolve({ result: 'ok', data: JSON.parse(res) })
+        >          } catch (e) {
+        >            resolve({ result: 'error', data: res })
+        >          }
+        >          window[callbackName] = null
+        >        }
+        >      }
+        >
+        >      // 调用客户端方法
+        >      window.客户端定义方法( // 桥协议
+        >        method, // 方法名
+        >        JSON.stringify(arg || {}),  // 传参
+        >        callbackName  // 回调
+        >      )
+        >
+        >      // 无客户端回调时直接完成
+        >      if (!hasCallback) {
+        >        resolve({ result: 'ok', data: '' })
+        >      }
+        >    } else {
+        >      reject(arg)
+        >    }
+        >  })
+        >}
+        >
+        >
+        >/* 使用测试 */
+        >invokeJSBridge('方法名', '参数')
+        >  .then((res) => {  // 是客户端、且调用成功&&客户端执行回调
+        >    // 根据res处理客户端执行之后业务
+        >  })
+        >  .catch((res) => { // 不是客户端
+        >    // 非客户端业务
+        >  })
+        >```
+        ></details>
+    >接口设计可以带有「透传数据」：前端调用客户端方法时多传一个透传参数，之后客户端异步调用前端方法时带着这个参数的值。
+2. 根据WebView的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在Hybrid遇到的bug。
+3. 调试webview：[代码调试方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#代码调试方式)中针对移动端的部分。
+4. 分享到其他App
+
+    1. 通过JS触发Native App之间的切换分享（自己Native内可用桥协议，任意App均要起作用只能用Scheme）。
+    2. 带分享信息参数去访问目标App提供的分享URL。
 
 ### Tips
 1. `var a = b = c = 1;/* b、c没有var的声明。等价于：var a = 1; b = 1; c = 1; */`
@@ -1865,9 +1878,7 @@
     >1. 若是新打开的窗口（`target="_blank"`），则会出现`document.referrer`有值，但`history.back()`已回退到底。
     >2. 若是`history.pushState/replaceState`改变路由，则不改变`document.referrer`（可能初始`document.referrer === ''`）。
     >3. 重新请求当前页面链接（如：`location.reload()`、或点击`<a href="当前页面链接">`），会导致`document.referrer === '当前页面链接'`。
-15. 使用`encodeURIComponent/decodeURIComponent`，不使用 ~~`encodeURI/decodeURI`~~ 或 ~~`escape/unescape`（废弃）~~
-
-    >`encodeURIComponent`与`encodeURI`都是对URI（统一资源标识符）进行编码。因为 ~~`encodeURI`~~ 无法产生能适用于HTTP GET/POST请求的URI（没转义`&` `=`等），所以不使用。
+15. 使用`encodeURIComponent/decodeURIComponent`仅处理URI中的query属性名和属性值；使用`encodeURI/decodeURI`处理整个URI；不要使用 ~~`escape/unescape`~~（废弃）
 
     1. `encodeURIComponent`
 
@@ -2784,7 +2795,7 @@
 
         >1. cookie中的`domain`（默认：当前域名），可设置为父域名或当前域名，不能设置为其他域名（设置失效）。
         >2. 当前域名可以访问`domain`为当前域名或父域名的cookie；浏览器发起HTTP请求时会向请求地址发送与请求域名相同或是其父域名的cookie。
-    2. 字符串形式：`名1=值1[; 名2=值2]`。不能包含任何`,`、`;`、` `（使用`encodeURIComponent/decodeURIComponent`）。
+    2. 字符串形式：`名1=值1[; 名2=值2]`。不能包含任何`,`、`;`、` `（使用`encodeURIComponent/decodeURIComponent`处理属性名和属性值）。
     3. 所有浏览器都支持。
     4. 单域名内，cookie保存的数据不超过4k，数量（最少）20个。
     5. 源生的cookie接口不友好，需要自己[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js操作cookie)。
@@ -2833,11 +2844,11 @@
 3. 手动抛出错误
 
     ```javascript
-    throw 'Error';                  // 抛出字符串
-    throw 100;                      // 抛出数值
-    throw true;                     // 抛出布尔值
-    throw {message: 'An Error'};    // 抛出对象
-    throw new Error('An Error');    // 抛出Error类型错误
+    throw 'Error'                  // 抛出字符串
+    throw 100                      // 抛出数值
+    throw true                     // 抛出布尔值
+    throw { message: 'An Error' }  // 抛出对象
+    throw new Error('An Error')    // 抛出Error类型错误，参数是字符串
     ```
 4. 处理代码中抛出的错误
 

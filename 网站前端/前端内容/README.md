@@ -171,7 +171,11 @@
 >
 >1. 打开各种分析工具，根据建议逐条对照修改
 >
->    1. DevTool的Audits
+>    1. [lighthouse](https://github.com/GoogleChrome/lighthouse)
+>
+>        1. DevTools的Audits
+>        2. Chrome的扩展程序：[Lighthouse](https://chrome.google.com/webstore/detail/lighthouse/blipmdconlkpinefehnmjammfjpmpbjk)
+>        3. Node.js全局安装[lighthouse](https://www.npmjs.com/package/lighthouse)并执行`lighthouse 域名`
 >    2. 分析网站：
 >
 >        1. google的性能分析[PageSpeed Insights](https://developers.google.com/speed/pagespeed/insights/)
@@ -182,7 +186,7 @@
 >            3. [链接测试](https://validator.w3.org/checklink)
 >        3. [性能测试](https://gtmetrix.com/)
 >
->2. 根据DevTool的Performance查询运行时导致帧数过高的代码。
+>2. 根据DevTools的Performance查询运行时导致帧数过高的代码。
 >3. 在客户端运行`window.performance`查询性能。
 ></details>
 
@@ -278,7 +282,8 @@ todo
         >2. 只有可见的元素才会进入渲染树。
         >3. DOM不存在伪元素（CSSOM中才有定义），伪元素存在render tree中。
 
-    >无论阻塞渲染还是阻塞解析，资源文件会不间断按顺序加载。
+    >1. 无论阻塞渲染还是阻塞解析，资源文件会不间断按顺序加载。
+    >2. 若在DOM中删除`<style>`或`<link>`标签，则会马上改变CSSOM；若在DOM中删除`<script>`标签（无论是否还在加载外部脚本`src`），则不影响该脚本执行。
 2. 事件完成顺序
 
     1. 解析DOM；

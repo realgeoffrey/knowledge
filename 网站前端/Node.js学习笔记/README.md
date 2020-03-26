@@ -614,6 +614,7 @@ Node.js的全局对象`global`是全局变量的宿主。
     2. 通过Chrome的<chrome://inspect/#devices>，监听Node.js程序运行`node --inspect 文件`，可以使用`debugger`等进行断点调试。
 
         >[调试指南](https://nodejs.org/zh-cn/docs/guides/debugging-getting-started/)。
+    3. 安装[ndb](https://github.com/GoogleChromeLabs/ndb)调试。
 
 ---
 ## 其他
