@@ -102,7 +102,8 @@
             1. 减少关键资源、减少HTTP请求：
 
                 1. 资源合并、去重。
-                2. 非首屏资源延迟异步加载：
+                2. 首屏资源进行服务端渲染，不要在客户端异步加载并渲染。
+                3. 非首屏资源延迟异步加载：
 
                     1. 增量加载资源：
 
@@ -110,10 +111,10 @@
                         2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery滚动加载)、[IntersectionObserver判断DOM可见再发起异步加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsdom展示或消失执行方法intersectionobserver)）。
                         3. 功能文件按需加载（模块化、组件化）。
                     2. 使AJAX可缓存（当用GET方式时添加缓存HTTP头：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since`）。
-                3. 使用缓存代替每次请求（localStorage、sessionStorage、cookie等）
-                4. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-                5. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）、第三方资源使用统一的CDN服务和设置[`<link>`预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-                6. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
+                4. 使用缓存代替每次请求（localStorage、sessionStorage、cookie等）
+                5. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
+                6. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）、第三方资源使用统一的CDN服务和设置[`<link>`预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
+                7. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
             2. 最小化字节：
 
                 1. 压缩资源。
@@ -338,8 +339,7 @@ todo
     1. 缺点：
 
         1. 需要处理[跨域请求](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#跨域请求)。
-        2. 不利于SEO。
-        3. 开发量大。
+        2. 开发量大。
     2. 优点
 
         1. cookie free和HTTP并发限制的需要。

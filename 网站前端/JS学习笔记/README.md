@@ -1659,7 +1659,7 @@
         >        callbackName = `${method}CallbackName_${_localCounter}`
         >        _localCounter += 1
         >
-        >        window[callbackName] = (res) => {    // todo: 增加定时器去垃圾收集那些长时间未被客户端回调的方法
+        >        window[callbackName] = (res) => {    // todo: 增加定时器处理长时间未被客户端回调的方法
         >          try {
         >            resolve({ result: 'ok', data: JSON.parse(res) })
         >          } catch (e) {
