@@ -9,7 +9,11 @@
 1. [静态资源使用额外域名（domain hash）的原因](#静态资源使用额外域名domain-hash的原因)
 1. [安全漏洞攻击](#安全漏洞攻击)
 1. [前端与服务端配合细节](#前端与服务端配合细节)
+1. [Hybrid App相关](#hybrid-app相关)
 
+    1. [Native提供给Hybrid宿主环境（WebView）](#native提供给hybrid宿主环境webview)
+    1. [Hybrid的前端处理](#hybrid的前端处理)
+    1. [WebView性能](#webview性能)
 ---
 ### 前端涉及内容
 ![前端涉及内容图1](./images/fe-tech-1.png)
@@ -71,140 +75,147 @@
             4. 非覆盖式更新资源 —— 平滑升级
 
 ### 网站性能优化
-1. 从输入URL到页面完成的具体优化：
+>性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#前端工程化)问题。
 
-    >性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#前端工程化)问题。
+从输入URL到页面完成的具体优化。
 
-    1. URL输入：
+1. URL输入：
 
-        服务端对HTTP请求、资源发布和缓存、服务器配置的优化。
+    服务端对HTTP请求、资源发布和缓存、服务器配置的优化。
 
-        1. 服务器开启gzip。
+    1. 服务器开启gzip。
 
-            >前端查看Response头是否有：`Content-Encoding: gzip`。
-        2. 减少DNS查找，设置合适的TTL值，避免重定向。
-        3. 使用CDN。
-        4. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#静态资源使用额外域名domain-hash的原因)，减少cookie。
-        5. 对资源进行缓存：
+        >前端查看Response头是否有：`Content-Encoding: gzip`。
+    2. 减少DNS查找，设置合适的TTL值，避免重定向。
+    3. 使用CDN。
+    4. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#静态资源使用额外域名domain-hash的原因)，减少cookie。
+    5. 对资源进行缓存：
 
-            1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
-            2. 使用[缓存相关HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since` `ETag/If-None-Match`。
-            3. 配置超长时间的本地缓存，采用文件的数字签名（如：MD5）作为缓存更新依据。
-        6. [非覆盖式更新资源](https://github.com/fouber/blog/issues/6)。
-    2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面加载解析步骤)：
+        1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
+        2. 使用[缓存相关HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since` `ETag/If-None-Match`。
+        3. 配置超长时间的本地缓存，采用文件的数字签名（如：MD5）作为缓存更新依据。
+    6. [非覆盖式更新资源](https://github.com/fouber/blog/issues/6)。
+2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面加载解析步骤)：
 
-        前端对具体代码性能、CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）的优化。
+    前端对具体代码性能、CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）的优化。
 
-        >todo:DOMContentLoaded、First Contentful Paint、First Meaningful Paint、Onload
+    >todo:DOMContentLoaded、First Contentful Paint、First Meaningful Paint、Onload
 
-        1. 优化CRP：
+    1. 优化CRP：
 
-            1. 减少关键资源、减少HTTP请求：
+        1. 减少关键资源、减少HTTP请求：
 
-                1. 资源合并、去重。
-                2. 首屏资源进行服务端渲染，不要在客户端异步加载并渲染。
-                3. 非首屏资源延迟异步加载：
+            1. 资源合并、去重。
+            2. 首屏资源进行服务端渲染，不要在客户端异步加载并渲染。
+            3. 非首屏资源延迟异步加载：
 
-                    1. 增量加载资源：
+                1. 增量加载资源：
 
-                        1. [图片的延迟加载（lazyload）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载lazyload)。
-                        2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery滚动加载)、[IntersectionObserver判断DOM可见再发起异步加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsdom展示或消失执行方法intersectionobserver)）。
-                        3. 功能文件按需加载（模块化、组件化）。
-                    2. 使AJAX可缓存（当用GET方式时添加缓存HTTP头：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since`）。
-                4. 使用缓存代替每次请求（localStorage、sessionStorage、cookie等）
-                5. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-                6. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）、第三方资源使用统一的CDN服务和设置[`<link>`预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-                7. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
-            2. 最小化字节：
+                    1. [图片的延迟加载（lazyload）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载lazyload)。
+                    2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery滚动加载)、[IntersectionObserver判断DOM可见再发起异步加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsdom展示或消失执行方法intersectionobserver)）。
+                    3. 功能文件按需加载（模块化、组件化）。
+                2. 使AJAX可缓存（当用GET方式时添加缓存HTTP头：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since`）。
+            4. 使用缓存代替每次请求（localStorage、sessionStorage、cookie等）
+            5. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
+            6. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）、第三方资源使用统一的CDN服务和设置[`<link>`预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
+            7. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
+        2. 最小化字节：
 
-                1. 压缩资源。
-                2. 图片优化
+            1. 压缩资源。
+            2. 图片优化
 
-                    1. 压缩。
-                    2. 小图合并雪碧图。
+                1. 压缩。
+                2. 小图合并雪碧图。
 
-                        >大图切小图：单个大文件需要多次HTTP请求获取。
-                    3. 合理使用Base64、WebP、`srcset`属性。
+                    >大图切小图：单个大文件需要多次HTTP请求获取。
+                3. 合理使用Base64、WebP、`srcset`属性。
 
-                        >1. 服务端（或CDN）处理图片资源，提供返回多种图片类型的接口（如：[七牛](https://developer.qiniu.com/dora/manual/3683/img-directions-for-use)）。
-                        >2. [判断浏览器是否支持WebP](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断是否支持webp)，对不同浏览器请求不同的图片类型。
-                        >3. 用`<source>/<img>`的`type`、`srcset`、`sizes`、`media`等属性，让浏览器自动选择使用哪种资源（浏览器自动跳过不支持的资源）。
-            3. 缩短CRP长度：
+                    >1. 服务端（或CDN）处理图片资源，提供返回多种图片类型的接口（如：[七牛](https://developer.qiniu.com/dora/manual/3683/img-directions-for-use)）。
+                    >2. [判断浏览器是否支持WebP](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断是否支持webp)，对不同浏览器请求不同的图片类型。
+                    >3. 用`<source>/<img>`的`type`、`srcset`、`sizes`、`media`等属性，让浏览器自动选择使用哪种资源（浏览器自动跳过不支持的资源）。
+        3. 缩短CRP长度：
 
-                CSS放在HTML顶部，JS放在HTML底部。
-            4. 用户体验（减弱用户对加载时长的感知）：
+            CSS放在HTML顶部，JS放在HTML底部。
+        4. 用户体验（减弱用户对加载时长的感知）：
 
-                1. 骨架屏
-                2. lazyload默认图
-        2. 技术上优化：
+            1. 骨架屏
+            2. lazyload默认图
+    2. 技术上优化：
 
-            1. CSS性能：
+        1. CSS性能：
 
-                1. [CSS选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
-                2. [渲染性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)
+            1. [CSS选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
+            2. [渲染性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)
 
-                    1. 样式缩小计算范围、降低复杂度。
-                    2. 减少重绘和重排。
-                    3. 动画合理触发GPU加速。
-                    4. 尽量仅使用`opacity`、`transform: translate/scale/rotate/skew`处理动画。
-            2. JS代码性能优化：
+                1. 样式缩小计算范围、降低复杂度。
+                2. 减少重绘和重排。
+                3. 动画合理触发GPU加速。
+                4. 尽量仅使用`opacity`、`transform: translate/scale/rotate/skew`处理动画。
+        2. JS代码性能优化：
 
-                1. 使用性能好的代码方式（微优化）
+            1. 使用性能好的代码方式（微优化）
 
-                    1. 字面量创建数据，而不是构造函数。
-                    2. 缓存DOM的选择、缓存列表.length。
-                    3. [闭包合理使用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)。
-                    4. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)。
-                    5. 长字符串拼接使用`Array.prototype.join()`，而不使用`+`。
-                2. 尽量使用事件代理，避免批量绑定事件。
-                3. [定时器取舍，合理使用重绘函数代替](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)。
-                4. 高频事件（如：`scroll`、`mousemove`、`touchmove`）使用[函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)，避免在高频事件中进行运行时间长的代码。
-                5. 避免强制同步布局、避免布局抖动。
-                6. 使用`Web Worker`处理复杂的计算。
-                7. 正则表达式尽可能准确地匹配目标字符串，以减少不必要的回溯。
-            3. HTML：
+                1. 字面量创建数据，而不是构造函数。
+                2. 缓存DOM的选择、缓存列表.length。
+                3. [闭包合理使用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)。
+                4. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)。
+                5. 长字符串拼接使用`Array.prototype.join()`，而不使用`+`。
+            2. 尽量使用事件代理，避免批量绑定事件。
+            3. [定时器取舍，合理使用重绘函数代替](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)。
+            4. 高频事件（如：`scroll`、`mousemove`、`touchmove`）使用[函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)，避免在高频事件中进行运行时间长的代码。
+            5. 避免强制同步布局、避免布局抖动。
+            6. 使用`Web Worker`处理复杂的计算。
+            7. 正则表达式尽可能准确地匹配目标字符串，以减少不必要的回溯。
+        3. HTML：
 
-                1. 减少层级嵌套。
-                2. 在拥有`target="_blank"`的`<a>`中添加`rel="noopener"`。
+            1. 减少层级嵌套。
+            2. 在拥有`target="_blank"`的`<a>`中添加`rel="noopener"`。
 
-><details>
-><summary>优先优化对性能影响大、导致瓶颈的部分</summary>
+- [WebView优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#webview性能)：
+
+    配合客户端开发落地优化方案。
+
+>- <details>
 >
->1. 打开各种分析工具，根据建议逐条对照修改
+>    <summary>优先优化对性能影响大、导致瓶颈的部分</summary>
 >
->    1. [lighthouse](https://github.com/GoogleChrome/lighthouse)
+>    1. 打开各种分析工具，根据建议逐条对照修改
 >
->        1. DevTools的Audits
->        2. Chrome的扩展程序：[Lighthouse](https://chrome.google.com/webstore/detail/lighthouse/blipmdconlkpinefehnmjammfjpmpbjk)
->        3. Node.js全局安装[lighthouse](https://www.npmjs.com/package/lighthouse)并执行`lighthouse 域名`
->    2. 分析网站：
+>        1. [lighthouse](https://github.com/GoogleChrome/lighthouse)
 >
->        1. google的性能分析[PageSpeed Insights](https://developers.google.com/speed/pagespeed/insights/)
->        2. W3C
+>            1. DevTools的Audits
+>            2. Chrome的扩展程序：[Lighthouse](https://chrome.google.com/webstore/detail/lighthouse/blipmdconlkpinefehnmjammfjpmpbjk)
+>            3. Node.js全局安装[lighthouse](https://www.npmjs.com/package/lighthouse)并执行`lighthouse 域名`
+>        2. 分析网站：
 >
->            1. [标签验证](https://validator.w3.org/)
->            2. [CSS验证](https://jigsaw.w3.org/css-validator/validator.html.zh-cn)
->            3. [链接测试](https://validator.w3.org/checklink)
->        3. [性能测试](https://gtmetrix.com/)
+>            1. google的性能分析[PageSpeed Insights](https://developers.google.com/speed/pagespeed/insights/)
+>            2. W3C
 >
->2. 根据DevTools的Performance查询运行时导致帧数过高的代码。
->3. 在客户端运行`window.performance`查询性能。
-></details>
-
-2. 网络应用的生命期建议：
-
-    1. load
-
-        1000ms内完成CRP。
-    2. idle
-
-        进行50ms内的空闲时期预加载，包括图片、多媒体文件、后续内容（如：评论）。
-    3. animations
-
-        保证16ms/f的浏览器渲染时间。
-    4. response
-
-        100ms内对用户的操作做出响应。
+>                1. [标签验证](https://validator.w3.org/)
+>                2. [CSS验证](https://jigsaw.w3.org/css-validator/validator.html.zh-cn)
+>                3. [链接测试](https://validator.w3.org/checklink)
+>            3. [性能测试](https://gtmetrix.com/)
+>
+>    2. 根据DevTools的Performance查询运行时导致帧数过高的代码。
+>    3. 在客户端运行`window.performance`查询性能。
+>    </details>
+>- <details>
+>
+>    <summary>网络应用的生命期建议：</summary>
+>
+>    1. load
+>
+>        1000ms内完成CRP。
+>    2. idle
+>
+>        进行50ms内的空闲时期预加载，包括图片、多媒体文件、后续内容（如：评论）。
+>    3. animations
+>
+>        保证16ms/f的浏览器渲染时间。
+>    4. response
+>
+>        100ms内对用户的操作做出响应。
+>    </details>
 
 ### 页面加载解析步骤
 todo
@@ -674,3 +685,244 @@ todo
     >}
     >```
     ></details>
+
+---
+### Hybrid App相关
+
+#### Native提供给Hybrid宿主环境（WebView）
+Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、JS进行业务开发。
+
+1. 互相调用：
+
+    1. Native调用WebView的JS方法（`window.前端定义方法`）
+    2. WebView调用`桥协议`（`window.客户端定义方法`）、或触发`自定义URL Scheme`（`myscheme://客户端定义路径`）
+2. 资源访问机制
+
+    1. 以本地协议`file`方式访问Native内部资源。
+
+        - 可以把前端要用的静态资源放到客户端本地（如：字体文件），本地页面通过类似`file:///android_asset/fonts/myFont.ttf`引用。
+    2. 以远程`url`方式访问线上资源。
+    3. 增量替换机制（不依赖发包更新）
+
+        1. Native包内下载、解压线上的打包资源，再替换旧资源。
+        2. ~~manifest~~
+    4. URL限定，限制访问、跨域问题的解决方案
+
+        1. 可以限制WebView的能发起的请求内容。
+        2. 可以代替WebView进行会触发跨域的AJAX请求。
+3. 页面在客户端内打开方式
+
+    1. 针对产品功能性页面：
+
+        用本地协议`file`方式打开客户端包内.html（.js、.css、图片等都在客户端包内）。
+
+        - `file`打开的页面直接发起请求可能会有跨域问题，可以用客户端接口代理的方式请求服务端数据。
+    2. 针对运营活动页面：
+
+        用远程`url`方式请求。
+4. 身份验证机制
+
+    Native创建WebView时，根据客户端登录情况注入跟登录有关的cookie（session_id）或token。
+5. 开发测试
+
+    1. 提供**切换成线上资源请求方式**的功能，用代理工具代理成本地资源。
+
+#### Hybrid的前端处理
+1. 与Native配合方式：
+
+    >1. 都是以**字符串**（数据用JSON字符串）的形式交互，向客户端传递：
+    >
+    >    1. 全局的方法名 -> 客户端调用`window.方法名(JSON数据)`
+    >    2. 匿名函数 -> 客户端调用`(匿名函数(JSON数据))`
+    >2. WebView无法判断是否安装了其他App。
+    >3. 可以通过`查看注入的全局方法`、或`客户端调用回调函数`（、或`navigator.userAgent`）来判定H5页面是否在具体App内打开。
+    >4. `桥协议`仅在App内部起作用；`自定义URL Scheme`是系统层面，所以可以额外针对跨App起作用（如：分享去其他App）；iOS的**通用链接**可以认为是高级的`自定义URL Scheme`。
+    >5. Native和WebView交互需要时间，对时效性很高的操作会有问题。
+
+    1. `桥协议`：Native注入全局方法至WebView的`window`，WebView调用则客户端拦截后触发Native行为。
+
+        >1. 客户端注入方式：javascript伪协议方式`javascript: 代码`。
+        >2. 注入JS代码可以在创建WebView之前（`[native code]`）或之后（全局变量JS注入）。
+        >- 若注入的方法为`undefined`，则认为不在此App内部。
+    2. `自定义URL Scheme`：拦截跳转（`<iframe>`或`<img>`设置`src`、点击`<a>`、`window.location.href`），触发Native行为。
+
+        ><details>
+        ><summary><code>URL Scheme</code></summary>
+        >
+        >是iOS和Android提供给开发者的一种WAP唤醒Native App方式（客户端用DeepLink实现）。Android应用在mainfest中注册自己的Scheme；iOS应用在App属性中配置。典型的URL Scheme：`myscheme://my.hostxxxxxxx`。
+        ></details>
+
+        >1. 客户端可以捕获、拦截任何行为（如：`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
+        >2. 有些App会设置允许跳转的其他App的白名单或黑名单，如：微信白名单。
+        >3. 除了增加回调函数且被客户端调用，否则无法准确判定是否在此App内部。
+        >4. 跨App使用`自定义URL Scheme`，其后面的字符串要产生的行为仅目的App能理解。
+
+        1. iOS
+
+            1. iOS8-
+
+                ```javascript
+                var iframe = document.createElement('iframe');
+                iframe.src = '自定义URL Scheme';
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+                setTimeout(function () {
+                  document.body.removeChild(iframe);
+                }, 3000);
+
+                location.href = '下载地址';
+                ```
+            2. iOS9+
+
+                >`<iframe>`无效。
+
+                ```javascript
+                location.href = '自定义URL Scheme';
+
+                setTimeout(function () {
+                  location.href = '下载地址';
+                }, 250);
+                setTimeout(function () {
+                  location.reload();
+                }, 1000);
+                ```
+            3. iOS9+的Universal links（通用链接），可以从底层打开其他App客户端，跳过白名单（微信已禁用）
+
+                >需要HTTPS域名配置、iOS设置等其他端配合。
+
+                >参考：[通用链接（Universal Links）的使用详解](http://www.hangge.com/blog/cache/detail_1554.html)、[Universal Link 前端部署采坑记](http://awhisper.github.io/2017/09/02/universallink/)、[Support Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html#//apple_ref/doc/uid/TP40016308-CH12-SW2)。
+        2. Android
+
+            ```javascript
+            location.href = '自定义URL Scheme';	  // 也可以用`<iframe>`
+
+            var start = Date.now();
+            setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）（浏览器非激活时，定时器执行时间会变慢/主线程被占用，所以会大于定时器时间之后才执行定时器内回调）
+              if (Date.now() - start < 3100) {  // 还在这个页面，认为没有安装App
+                location.href = '下载地址';
+              }
+            }, 3000);
+            ```
+
+        - 在WebView中通过应用宝页面**下载/打开**其他APP
+
+            >参考：[关于微信中直接调起 Native App 的调研报告](https://blog.csdn.net/lixuepeng_001/article/details/78043418)。
+
+            1. iOS：应用宝页面支持跳转至目标APP的App Store
+            2. Android：应用宝页面支持下载/打开目标APP
+
+                1. 在腾讯系APP中能识别是否安装了目标APP；在其他APP中无法判断。
+                2. 填写`android_schema`可以传递信息至目标APP：腾讯系APP打开目标APP后会带着信息；其他APP会先触发一次信息。
+                - 不用安装应用宝就支持打开目标APP功能；下载是去应用宝下载（会先要求安装应用宝APP）。
+
+            - 拼接应用宝下载/打开目标APP的链接：
+
+                1. 应用宝主链接：`https://a.app.qq.com/o/simple.jsp?`
+                2. 跳转参数（search值，在`?`后面，用`&`分割）:
+
+                    1. 包名：`pkgname=` + `com.xx.xxx`
+                    2. 渠道包链接（可选）：`ckey=` + `CK1234567890123`
+                    3. 目标APP内打开路径（可选）：`android_schema=` + `自定义URL Scheme://具体跳转路径`
+
+                        >若有一些特殊字符，则可以用`encodeURIComponent`转义属性名和属性值。
+
+                e.g. `https://a.app.qq.com/o/simple.jsp?pkgname=com.xx.xxx&ckey=xxxx&android_schema=xxxx://xx`
+
+        >1. 微信分享在部分系统（低于微信客户端Android6.2）使用~~pushState~~导致签名失败，可查询[官方文档](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115)；又因为一般是异步加载、配置微信的设置，所以要等待微信第三方文件和接口完成后才能够配置成功（才能够设置成功）。
+        >2. Android的微信、QQ等X5内核可以用<http://debugx5.qq.com/>打开调试，可进行清除缓存等操作。
+        >3. 长按没有 ~~`src`~~ 的`<img>`：
+        >
+        >    1. 在iOS微信webview，截屏这个`<img>`所在位置；
+        >    2. 其他情况，可能导致保存图片错误、或不能进行保存。
+    3. WebView提供给Native调用的全局回调函数（或匿名函数）。
+
+        ><details>
+        ><summary>对于动态创建的全局回调函数，要注意同名覆盖问题</summary>
+        >
+        >e.g.
+        >
+        >```javascript
+        >let _localCounter = 1 // 同一个方法名快速请求时，可能 Date.now() 还没有变化
+        >
+        >function invokeJSBridge (method, arg, { hasCallback = true }) {
+        >  return new Promise((resolve, reject) => {
+        >    if (typeof window.客户端定义方法 === 'function') {
+        >      let callbackName = ''
+        >
+        >      // 创建客户端回调
+        >      if (hasCallback) {
+        >        callbackName = `${method}CallbackName_${_localCounter}`
+        >        _localCounter += 1
+        >
+        >        window[callbackName] = (res) => {    // todo: 增加定时器处理长时间未被客户端回调的方法
+        >          try {
+        >            resolve({ result: 'ok', data: JSON.parse(res) })
+        >          } catch (e) {
+        >            resolve({ result: 'error', data: res })
+        >          }
+        >          window[callbackName] = null
+        >        }
+        >      }
+        >
+        >      // 调用客户端方法
+        >      window.客户端定义方法( // 桥协议
+        >        method, // 方法名
+        >        JSON.stringify(arg || {}),  // 传参
+        >        callbackName  // 回调
+        >      )
+        >
+        >      // 无客户端回调时直接完成
+        >      if (!hasCallback) {
+        >        resolve({ result: 'ok', data: '' })
+        >      }
+        >    } else {
+        >      reject(arg)
+        >    }
+        >  })
+        >}
+        >
+        >
+        >/* 使用测试 */
+        >invokeJSBridge('方法名', '参数')
+        >  .then((res) => {  // 是客户端、且调用成功&&客户端执行回调
+        >    // 根据res处理客户端执行之后业务
+        >  })
+        >  .catch((res) => { // 不是客户端
+        >    // 非客户端业务
+        >  })
+        >```
+        ></details>
+    >接口设计可以带有「透传数据」：前端调用客户端方法时多传一个透传参数，之后客户端异步调用前端方法时带着这个参数的值。
+2. 根据WebView的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在Hybrid遇到的bug。
+3. 调试webview：[代码调试方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#代码调试方式)中针对移动端的部分。
+4. 分享到其他App
+
+    1. 通过JS触发Native App之间的切换分享（自己Native内可用桥协议，任意App均要起作用只能用Scheme）。
+    2. 带分享信息参数去访问目标App提供的分享URL。
+
+#### WebView性能
+>参考：[WebView性能、体验分析与优化](https://tech.meituan.com/2017/06/09/webviewperf.html)。
+
+1. 原生实现 VS. 页面实现
+
+    1. Native App
+
+        1. 高成本开发
+        2. 原生性能体验
+        3. 依赖发包更新
+    2. Hybrid App
+
+        1. 低成本开发、高效率、一套代码跨平台复用（因为就是输出页面）
+        2. 性能不及原生应用（因为要初始化WebView，[前端「增量」原则](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#前端增量原则)决定）
+        3. 不依赖Native发包更新（注意避免违反苹果的热更新条款）
+
+    ![原生实现 VS. 页面实现](./images/webview-1.png)
+2. WebView启动流程
+
+    ![WebView启动流程](./images/webview-2.png)
+
+    1. 相对于Native App的流畅体验，Hybrid App瓶颈一般都卡在WebView实例初始化，可能导致App卡顿、页面加载缓慢。
+
+        WebView的初始化、保持，占用较多内存。
+    2. 与浏览器不同，App中打开WebView的第一步并不是建立连接，而是启动浏览器内核。
+    3. 除了[网站性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#网站性能优化)之外，能提升体验的办法基本要让Native配合调整（页面能做的不多，主要靠客户端开发投入）。

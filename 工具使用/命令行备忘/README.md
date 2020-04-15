@@ -6,12 +6,27 @@
 >    2. `man 命令`
 >    3. `info 命令`
 >    4. `whatis 命令`
->    - [tldr](https://github.com/tldr-pages/tldr)
+>
+>    阅读英文文档时，英文水平是痛点，跳着看容易看不懂……
 
 #### ping地址测试
 ```shell
 ping 「地址」
 ```
+
+- IPv6相关
+
+    ```shell
+    nslookup -type=AAAA 「域名」
+
+    dig 「域名」 AAAA
+
+    # ping6 「域名」
+
+    # ping -6 「域名」
+
+    # curl -6 「资源」
+    ```
 
 #### ssh登录
 ```shell
@@ -109,7 +124,7 @@ export 「变量」=「值」   # 设置变量
 #### 查看本机IP
 ```shell
 # macOS、Linux
-ifconfig    # 查看`en0 的 inet`
+ifconfig    # 查看`en0`的`inet`（IPv4）或`inet6`（IPv6）
 
 # Windows
 ipconfig    # 查看`以太网适配器 本地连接 的 IPv4 地址`

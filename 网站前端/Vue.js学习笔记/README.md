@@ -487,6 +487,30 @@
 
     随后的重新渲染，元素/组件及其所有的子节点将被视为静态内容并跳过。这可以用于优化更新性能。
 9. `v-text`等价于：`{{  }}`
+
+    - 模板对`空格`、`HTML的字符实体`的不同输入有所不同输出
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```vue
+        ><template>
+        >  <div>
+        >    <span v-text="'&'"></span><!-- <span>&amp;</span> -->
+        >    <span v-text="'&nbsp;'"></span><!-- <span>&amp;nbsp;</span> -->
+        >    <span>{{ '&nbsp;' }}</span> <!-- <span> </span> -->
+        >    <span>{{ ' ' }}</span><!-- <span> </span> -->
+        >
+        >    <span>{{ '&nbsp;&nbsp;&nbsp;' }}</span><!-- <span> </span> -->
+        >    <span v-text="'   '"></span><!-- <span>   </span> -->
+        >    <span>{{ '   ' }}</span><!-- <span> </span> -->
+        >    &nbsp;&nbsp;&nbsp;<!-- 不存在 -->
+        >    1&nbsp;&nbsp;&nbsp;2<!-- 1 2 -->
+        >    1   2<!-- 1 2 -->
+        >  </div>
+        ></template>
+        >```
+        ></details>
 10. `v-html`输入真正HTML
 
     ><details>
