@@ -225,22 +225,27 @@ gulp.task('browserSync', () => {
       port: 3001 // UI端口号
     },
     port: 3000, // 端口号
-    proxy: { // 服务器
-      target: 'localhost'
+
+    // proxy: { // 服务器
+    //   target: 'localhost'
+    // },
+    server: {   // 相对地址
+      baseDir: './browserSync', // '../www/'
+      directory: true
     }
-    //    server: {   // 相对地址
-    //      baseDir: '../www/',
-    //      directory: true
-    //    }
   })
 
   gulp.watch([
-    '../www/123.me/*.html'
-    //    '../../www/demo/**/*.html',
-    //    '../../www/demo/**/js/**/*.js',
-    //    '../../www/demo/**/css/**/*.css',
-    //    '../../www/demo/**/images/**',
-    //    '!../../www/demo/**/node_modules/**'
+    'browserSync/**/*.html',
+    'browserSync/**/*.js',
+    'browserSync/**/*.css',
+    'browserSync/**/images/**',
+    '!browserSync/**/node_modules/**'
+    // '../../www/demo/**/*.html',
+    // '../../www/demo/**/js/**/*.js',
+    // '../../www/demo/**/css/**/*.css',
+    // '../../www/demo/**/images/**',
+    // '!../../www/demo/**/node_modules/**'
   ]).on('change', browserSync.reload) // 刷新浏览器
 })
 

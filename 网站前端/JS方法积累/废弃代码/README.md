@@ -21,6 +21,7 @@
 
         1. [防抖函数](#原生js防抖函数)
         1. [节流函数](#原生js节流函数)
+1. [函数模板](#函数模板)
 1. <details>
 
     <summary><a href="#polyfill">Polyfill</a></summary>
@@ -844,6 +845,132 @@ var a = throttle(function () {  // 不要使用箭头函数，因为实现代码
 $(window).on('scroll', a);
 ```
 >可以使用lodash的`_.throttle(func, [wait=0], [options={}])`，完全替代。
+
+---
+### 函数模板
+1. 构造函数
+
+    1. 普通版：
+
+        ```javascript
+        var OneConstructor = function () {
+            /* 私有的内容 */
+            var _para = {a: '私有的变量_para'},
+                _func = function () {
+                    console.log('私有的业务逻辑_func', _para);
+                },
+                _bindEvent = function () {  /* 绑定事件 */
+
+                },
+                _init = function () {   /* 初始化 */
+                    _func();
+                    _bindEvent();
+                };
+
+            _init();
+
+            for (var _arr = [], _i = 0; _i < arguments.length; _i++) {
+                _arr.push(arguments[_i]);
+            }
+
+            /* 公开的内容 */
+            this.para = _arr;
+            this.para_1 = {b: '公开的变量para_1（每个实例不共享）'};
+            this.func_1 = function () {
+                console.log('公开的业务逻辑func_1（每个实例不共享）');
+            };
+        };
+        ```
+    2. 修改构造函数的原型对象（所有实例都共享）：
+
+        ```javascript
+        var OneConstructor = (function () {
+            /* 私有的内容 */
+            var _para = {a: '私有的变量_para'},
+                _func = function () {
+                    console.log('私有的业务逻辑_func', _para);
+                },
+                _bindEvent = function () {  /* 绑定事件 */
+
+                },
+                _init = function () {   /* 初始化 */
+                    _func();
+                    _bindEvent();
+                };
+
+            function Constructor() {
+                _init();
+
+                for (var _arr = [], _i = 0; _i < arguments.length; _i++) {
+                    _arr.push(arguments[_i]);
+                }
+
+                /* 公开的内容 */
+                this.para = _arr;
+                this.para_1 = {b: '公开的变量para_1（每个实例不共享）'};
+                this.func_1 = function () {
+                    console.log('公开的业务逻辑func_1（每个实例不共享）');
+                };
+            }
+
+            /* 构造函数的原型对象上，每个实例共享 */
+            Constructor.prototype = {
+                para_2: {c: '公开的变量para_2（每个实例共享）'},
+                func_2: function () {
+                    console.log('公开的业务逻辑func_2（每个实例共享）');
+                }
+            };
+
+            /* 原型对象添加constructor属性 */
+            if (typeof Object.defineProperty === 'function') {
+
+                /* 使属性：不可以改变描述符、不可以删除、不可以枚举、不可以被赋值运算符改变 */
+                Object.defineProperty(Constructor.prototype, 'constructor', {
+                    value: Constructor
+                });
+            } else {
+                Constructor.prototype.constructor = Constructor;
+            }
+
+            return Constructor;
+        }());
+        ```
+2. 模块模式（单例模式+私有变量和特权方法）
+
+    ```javascript
+    var singletonObj = (function () {
+        /* 私有变量和私有方法，无法直接访问，只能由return的对象字面量访问 */
+        var _para = {a: '私有变量'},
+            _func = function () {
+                console.log('私有方法');
+            };
+
+        /* 单例模式，可以访问私有内容 */
+        return {
+            get: function () {  /* 特权方法 */
+                _func();
+
+                return _para;
+            },
+            set: function (para) {  /* 特权方法 */
+                _func();
+
+                _para = para;
+            },
+            para: {b: '公开对象'},
+            func: function () {
+                console.log('公开方法');
+            }
+        }
+    }());
+    ```
+    >单例模式：
+    >```javascript
+    >var singletonObj = {
+    >   para: {},
+    >   func: function () {}
+    >};
+    >```
 
 ---
 ## Polyfill

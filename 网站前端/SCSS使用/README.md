@@ -169,7 +169,8 @@
 6. 引入文件`@import`
 
     ```scss
-    @import "../css/1";
+    @import "../css/1.css";     // 写入 @import url(../css/1.css);
+    @import "../scss/1.scss";   // 写入 1.scss 文件内容
     ```
 7. 算术`+` `-` `*` `/`
 
