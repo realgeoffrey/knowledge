@@ -620,6 +620,7 @@ Node.js的全局对象`global`是全局变量的宿主。
 ## 其他
 
 ### [MongoDB](https://github.com/mongodb/mongo)
+BSON
 
 - 比较适用的场景：
 
@@ -628,12 +629,24 @@ Node.js的全局对象`global`是全局变量的宿主。
     3. 给定的索引，容易查找；但不擅长筛选。
     4. 灵活性强（较多横向扩展）。
 
-BSON
-
 - 命令
 
     1. 启动服务器：`mongod`
     2. 启动客户端：`mongo`
+
+        >查看数据库信息文档：[Databases and Collections](https://docs.mongodb.com/manual/core/databases-and-collections/)
+
+        <details>
+        <summary>e.g.</summary>
+
+        1. `show dbs`
+        2. `use 「数据库」`
+        3. `show collections`
+        4. `db.「collection名」.find({ 「字段名」: 「值」 })`
+        5. `db.「collection名」.find().count()`
+        6. `db.「collection名」.find().sort({ '_id': -1 })`
+        7. `db.「collection名」.find().sort({ '_id': 1 }).limit(2)`
+        </details>
 
 - 工具
 
