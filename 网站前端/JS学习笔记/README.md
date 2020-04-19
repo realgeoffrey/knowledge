@@ -1353,6 +1353,7 @@
 
     >1. `对象.hasOwnProperty(属性名)`仅检查在当前实例对象，不检测其原型链。
     >2. ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
+
 - DevTools的控制台执行`queryObjects(构造函数)`，返回当前执行环境的构造函数创建的所有实例。
 
 ### 循环遍历
@@ -1788,10 +1789,12 @@
 
 1. [CORS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#corscross-origin-resource-sharing跨域资源共享)（服务端需要支持）
 
-    >ie9-的jQuery的非jsonp的AJAX跨域，要添加`jQuery.support.cors = true`。
+    >1. 不受同源政策限制。
+    >2. ie9-的jQuery的非jsonp的AJAX跨域，要添加`jQuery.support.cors = true`。
 2. jsonp（服务端需要支持）
 
-    >只支持**GET**请求。
+    >1. 不受同源政策限制。
+    >2. 只支持**GET**请求。
 
     网页通过添加一个`<script>`，向服务器发起文档请求（不受同源政策限制）；服务器收到请求后，将数据放在一个指定名字的回调函数里传回网页直接执行。
 
@@ -1815,7 +1818,7 @@
 ><summary>不同源的文档间（文档与<code><iframe></code>、文档与<code>window.open()</code>的新窗口）不能进行JS交互操作</summary>
 >
 >1. 可以获取window对象，但无法进一步获取相应的属性、方法。
->2. 无法获取DOM、`cookie`、`Web Storage`、`IndexDB`。
+>2. 无法获取DOM、`cookie`、`Web Storage`、`IndexDB`。仅允许调用部分方法（白名单）。
 ></details>
 
 3. `document.domain`相同则可以文档间互相操作
@@ -1844,7 +1847,8 @@
         ```
 4. `postMessage`文档间通信
 
-    >ie8、ie9仅支持与`<iframe>`，ie10+支持与`<iframe>`、`window.open()`的新窗口。不实行同源政策。
+    >1. 不受同源政策限制。
+    >2. ie8、ie9仅支持与`<iframe>`，ie10+支持与`<iframe>`、`window.open()`的新窗口。
 
     ```javascript
     // 发送方（允许自己发给自己接受）
@@ -1858,11 +1862,12 @@
 
     1. 父窗口改变`<iframe>`的hash，`<iframe>`通过监听hash变化的`hashchange`事件获取父窗口信息
 
-        >ie8+支持。若只改变hash值，页面不会重新刷新。
+        >1. 不受同源政策限制。
+        >2. ie8+支持。若只改变hash值，页面不会重新刷新。
 
         ```javascript
         // 父窗口改变`<iframe>`的hash值
-        document.getElementById('new-iframe').src = '除了hash值，url不变（父级与`<iframe>`不需要同源）';
+        document.getElementById('new-iframe').src = '除了hash值，url不变';
 
 
         // `<iframe>`窗口监听hash变化，以hash变化当做信息的传递
@@ -1931,7 +1936,9 @@
             2. 读取cookie等同于客户端`Cookie`请求头：展示所有cookie的`名1=值1[; 名2=值2]`（无法查看其他信息）。
             3. 删除cookie项，需要`path`（路径）符合（默认是当前路由的path）。
         2. 没有~~改变`cookie`的事件通知~~，只能轮询检测。
-    6. 同源且同路径共享。
+    6. 同源同路径，或父域名、父路径 共享。
+
+        >子域名可以访问主域名的cookie。如：`a.b.c.com`可以获取`a.b.c.com`、`b.c.com`、`c.com`的cookie，但无法获取`d.a.b.c.com`或`d.com`的cookie。
     7. 默认：关闭浏览器后失效（存储在内存）；设置失效时间则到期后失效（存储在硬盘）。
     8. 应用场景：服务端确定请求是否来自于同一个客户端（cookie与服务端session配合），以确认、保持用户状态。
 
@@ -2079,6 +2086,9 @@
     >捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
 
     - 对于打包压缩的JS，可以用sourcemap进行还原定位错误位置，并且可以把sourcemap放在仅允许特殊IP访问的地方以限制外网人员查看。
+    - 尽量避免~~静默错误~~（`try-catch`的`catch`没有任何处理，也没有任何提示）
+
+        若添加`try-catch`捕获了错误，在`catch`中：要不然进行新的逻辑、要不然要把错误暴露出来。如：在`catch`中添加`console`或上报错误或其他方式能让开发者感知到出错了。
 
 ### 预加载
 1. `<link>`预加载

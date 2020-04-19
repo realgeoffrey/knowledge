@@ -41,10 +41,18 @@
 ![Git的文件状态变化图](./images/git-lifecycle-1.png)
 
 ### 基本操作
+>参考：[git-tips](https://github.com/521xueweihan/git-tips)。
+
 1. 获取提交历史（SHA-1校验、作者名字、作者电子邮件地址、提交时间、提交说明）
 
     ```git
     git log
+
+    git log --pretty=oneline --graph --decorate --all   # 展示简化的commit
+
+    git log --all --grep='「内容」' # 筛选符合「内容」的commit
+
+    git log 「分支1」 ^「分支2」       # 筛选「分支1」存在、但「分支2」不存在的commit（可以用HEAD指代当前分支）
     ```
 2. 撤销未push内容
 
@@ -68,6 +76,9 @@
         git reset --hard 「SHA」          # 撤销commit请求（恢复commit的文件），恢复git add的全部文件（untracked不恢复）
         ```
     4. 清除所有不在版本控制内的内容（如：.idea、node_modules）
+
+        >1. `git status --ignored`：查看包括忽略文件的所有信息。
+        >2. `git ls-files --others -i --exclude-standard`：展示忽略文件。
 
         ```git
         git clean -xdf
@@ -204,17 +215,24 @@
     ```
 8. branch
 
-    1. 本地新建分支
+    >`HEAD`是指向目前所在的分支的游标（或不指向分支时，是detached狀態）。
+
+    1. 查看分支
+
+        ```git
+        git branch -a
+        ```
+    2. 本地新建分支
 
         ```git
         git branch 「分支名」
         ```
-    2. 推送（新建）远程分支
+    3. 推送（新建）远程分支
 
         ```git
         git push origin 「分支名」   # 新建远程分支（不需要提交commit即可创建远程分支）
         ```
-    3. 切换分支
+    4. 切换分支
 
         ```git
         git checkout 「分支名」
@@ -223,14 +241,15 @@
 
         git checkout -b 「分支名」 origin/「分支名」  # 从远程分支中，新建并切换至新分支
         ```
-    4. 删除分支
+    5. 删除分支
 
         ```git
-        git branch -d 「分支名」     # 删除本地分支
+        git branch -d 「分支名」      # 删除本地分支
 
-        git push origin :「分支名」  # 删除远程分支（不需要先删除本地分支）
+        git push origin -d 「分支名」 # 删除远程分支（不需要先删除本地分支）
+        git push origin :「分支名」   # 删除远程分支（不需要先删除本地分支）
         ```
-    5. 重命名分支
+    6. 重命名分支
 
         >在原分支基础上新建本地分支，再推送至远程，然后删除原分支。
 
@@ -242,19 +261,20 @@
 9. tag
 
     ```git
-    git tag [-l 「完整内容或*」]          # 列出现有（本地+远程）标签
+    git tag [-l 「完整内容或*」] [-n]     # 列出现有（本地+远程）标签
 
     git show 「名字」                    # 查看tag详细信息
 
     git tag 「名字」 [「SHA」]            # 新建轻量级标签（没有SHA则最新commit）
     git tag 「名字」 -a [「SHA」]         # 新建含附注标签（打开编辑器）（没有SHA则最新commit）
-    git tag 「名字」 -m 「信息」 [「SHA」]  # 新建含附注标签（没有SHA则最新commit）
+    git tag 「名字」 -m 「信息」 [「SHA」]   # 新建含附注标签（没有SHA则最新commit）
 
     git push origin 「名字」            # 推送一个本地新建标签至远程
-    git push --tags                   # 推送所有本地新建标签至远程
+    git push origin --tags           # 推送所有本地新建标签至远程
 
     git tag -d 「名字」                 # 删除本地tag
 
+    git push origin -d tag 「名字」     # 删除远程tag
     git push origin :refs/tags/「名字」 # 删除远程tag
     ```
 10. stash
@@ -670,6 +690,13 @@ feat(details): 添加了分享功能
 
     ```git
     git config --global core.ignorecase false
+    ```
+
+- 展示所有`configs`、`alias`
+
+    ```git
+    git config --local --list   # 当前目录
+    git config --global --list  # 全局
     ```
 
 ### .gitkeep文件

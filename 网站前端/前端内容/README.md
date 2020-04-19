@@ -99,8 +99,6 @@
 
     前端对具体代码性能、CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）的优化。
 
-    >todo:DOMContentLoaded、First Contentful Paint、First Meaningful Paint、Onload
-
     1. 优化CRP：
 
         1. 减少关键资源、减少HTTP请求：
@@ -218,110 +216,120 @@
 >    </details>
 
 ### 页面加载解析步骤
-todo
+>参考：[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)、[浏览器的工作原理：新式网络浏览器幕后揭秘](https://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/#The_order_of_processing_scripts_and_style_sheets)。
 
-1. DOM构造解析步骤
+![页面解析步骤图](./images/load-html-1.png)
 
-    >参考：[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)。
+1. 解析HTML（parse HTML）
 
-    ![页面解析步骤图](./images/load-html-1.png)
+    对HTML进行从上到下解析：增量式生成一个文档对象模型（DOM构造），生成CSS对象模型（CSSOM）。
 
-    1. 增量式生成一个文档对象模型（DOM），解析页面内容（`document`）。
+    >1. 解析HTML基本严格按照HTML内容从上到下进行；
+    >2. 渲染引擎通过各种措施，尽可能快速解析HTML：
+    >
+    >    1. 异步脚本
+    >    2. 执行脚本时可能预解析剩下的HTML
+    >    3. 额外线程并行：网络操作、定时器、读写文件、I/O设备事件、页面渲染、等
+    >    4. 无论何时（包括：阻塞解析HTML、阻塞渲染 时），各种类型资源文件都会不间断按顺序并行加载
+    >3. 从上到下尽可能快地解析HTML时，进程会因为各种情况被阻塞：
+    >
+    >    1. JS会等待它之前的CSS构建完成之后才执行
+    >    2. JS执行完之前不会继续解析HTML
+    >    3. 下载中的CSS和JS都会阻止解析HTML（其他资源文件的下载不会影响解析HTML、渲染）
 
-        1. 加载DOM中所有CSS，生成一个CSS对象模型（CSSOM），描述对页面内容如何设置样式。
+    1. 加载DOM中所有CSS，生成CSSOM（recalculate style），描述对页面内容如何设置样式。
 
-            加载CSS并构造完整的CSSOM之前，**阻塞渲染**（Render Tree渲染被暂停）。
-        2. 加载DOM中所有JS，对DOM和CSSOM进行访问和更改。
+        1. 加载CSS并构造完整的CSSOM之前，**阻塞渲染**（Render Tree渲染被暂停）。
+        2. 一定要等待外链资源加载完毕（包括加载失败）才会继续解析HTML（构建DOM）。
 
-            1. HTML中出现JS，**阻塞解析**（DOM构造被暂停）。
-            2. 下载外部脚本`src`或内嵌脚本不用下载。
-            3. 等待所有CSS被提取且CSSOM被构造完毕。
+        ><details>
+        ><summary>已经被提取的CSS（<code>&lt;link></code>、<code><style></code>、<code>style</code>内嵌样式），若再次修改或删除（或新添加），会再次影响CSSOM构造。</summary>
+        >
+        >以下代码可以实时在页面中编辑样式
+        >```html
+        ><style contenteditable style="display: block">
+        >  a {
+        >    color: red;
+        >  }
+        ></style>
+        >
+        ><a href="javascript:">a标签</a>
+        >```
+        ></details>
+    2. 加载DOM中所有JS，对DOM和CSSOM进行访问和更改。
 
-                ><details>
-                ><summary>已经被提取的CSS（<code>&lt;link></code>、<code><style></code>、<code>style</code>内嵌样式），若再次修改或删除（或新添加），会再次影响CSSOM构造。</summary>
-                >
-                >以下代码可以实时在页面中编辑样式
-                >```html
-                ><style contenteditable style="display: block">
-                >  a {
-                >    color: red;
-                >  }
-                ></style>
-                >
-                ><a href="javascript:">a标签</a>
-                >```
-                ></details>
-            4. 执行脚本，访问、更改DOM和CSSOM。
+        1. 解析到JS，在脚本执行完之前，**阻塞解析HTML**（DOM构造被暂停）。
 
-                ><details>
-                ><summary>一个<code><script></code>最多执行一次。</summary>
-                >
-                >1. 已经执行过的脚本（`<script>`：外部脚本`src`或内嵌脚本），若再次修改或删除，不会再执行，也不会影响执行过的内容。已经执行过的脚本，若删除外部脚本`src`或删除内嵌脚本，之后再添加外部脚本`src`或添加内嵌脚本，也不会再次执行。
-                >2. 没有执行过内容的空脚本`<script></script>`，若添加外部脚本`src`或添加内嵌脚本，会执行一次。
-                ></details>
-            5. DOM构造继续进行。
+            >没有`defer`或`async`的`<script>`才会阻塞解析HTML；带有`defer`或`async`的`<script>`是异步加载的JS，不会阻塞解析HTML。
+        2. 下载外部脚本`src`或内嵌脚本不用下载。
+        3. 等待之前已经解析的所有CSS被提取且CSSOM被构造完毕。
+        4. 执行脚本，访问、更改DOM和CSSOM。
 
             ><details>
-            ><summary><code><script></code>的加载、执行</summary>
+            ><summary>一个<code><script></code>最多执行一次。</summary>
             >
-            >1. 没有`defer`或`async`：立即加载并执行（同步），阻塞解析。
-            >2. `defer`：异步加载，在DOM解析完成后、`DOMContentLoaded`触发前执行，顺序执行。
-            >
-            >    >多个`defer`脚本不一定按照顺序执行，也不一定会在`DOMContentLoaded`事件触发前执行，因此最好只包含一个延迟脚本。
-            >3. `async`：异步加载，加载完马上执行。
-            >
-            >    乱序执行，仅适用于不考虑依赖、不操作DOM的脚本。
-            >
-            >    >动态创建的`<script>`默认是`async`（可以手动设置`dom.async = false`）。
-            >4. 模块化属性（在JS内部`import`的同级资源是并行、依赖资源是串行）：
-            >
-            >    1. `type="module"`：与`defer`相同。
-            >    2. `type="module" async`：与`async`相同。
-            >
-            >![JS脚本加载图](./images/js-load-1.png)
-            >
-            >- 按从上到下顺序解析页面内容，针对`<script>`（包括动态创建和修改`src`）：
-            >
-            >    1. 按文档顺序执行**原本就存在的**没有`defer`或`async`的`<script>`。
-            >    2. （与上面的顺序无关，可交叉进行）按动态添加的时序（与位置无关）执行**动态加载的**没有`defer`或`async`的`<script>`；
-            >    3. 添加`defer`或`async`的`<script>`或修改`<script>`的`src`，（无论是原本就存在的、还是动态加载的）异步加载、不确定顺序执行。
+            >1. 已经执行过的脚本（`<script>`：外部脚本`src`或内嵌脚本），若再次修改或删除，不会再执行，也不会影响执行过的内容。已经执行过的脚本，若删除外部脚本`src`或删除内嵌脚本内容，之后再添加外部脚本`src`或添加内嵌脚本内容，也不会再次执行。
+            >2. 没有执行过内容的空脚本`<script></script>`，若添加外部脚本`src`或添加内嵌脚本，会执行一次。
             ></details>
-    2. DOM（parse HTML）和CSSOM（recalculate style）构造完成后，进行渲染：
+        5. 脚本执行完毕，继续 解析HTML、DOM构造。
 
-        Render Tree（渲染树）：Layout -> Paint -> Composite
+        ><details>
+        ><summary><code><script></code>的加载、执行</summary>
+        >
+        >1. 没有`defer`或`async`：立即加载并执行（同步），阻塞解析HTML。
+        >2. `defer`：异步加载，在DOM解析完成后、`DOMContentLoaded`触发前执行，顺序执行。
+        >
+        >    >多个`defer`脚本不一定按照顺序执行，也不一定会在`DOMContentLoaded`事件触发前执行，因此最好只包含一个延迟脚本。
+        >3. `async`：异步加载，加载完马上执行，不影响`DOMContentLoaded`触发时机。
+        >
+        >    乱序执行，仅适用于不考虑依赖、不操作DOM的脚本。
+        >
+        >    >动态创建的`<script>`默认是`async`（可以手动设置`dom.async = false`）。
+        >4. 模块化属性（在JS内部`import`的同级资源是并行、依赖资源是串行）：
+        >
+        >    1. `type="module"`：与`defer`相同。
+        >    2. `type="module" async`：与`async`相同。
+        >
+        >![JS脚本加载图](./images/js-load-1.png)
+        >
+        >- 按从上到下顺序解析页面内容，针对`<script>`（包括动态创建和修改`src`）：
+        >
+        >    1. 按文档顺序执行**原本就存在的**没有`defer`或`async`的`<script>`。
+        >    2. （与上面的顺序无关，可交叉进行）按动态添加的时序（与位置无关）执行**动态加载的**没有`defer`或`async`的`<script>`；
+        >    3. 添加`defer`或`async`的`<script>`或修改`<script>`的`src`，（无论是原本就存在的、还是动态加载的）异步加载、不确定顺序执行。
+        ></details>
 
-        >1. 一定要等待外链资源加载完毕（包括加载失败）才可以继续构建DOM或CSSOM。
-        >2. 只有可见的元素才会进入渲染树。
-        >3. DOM不存在伪元素（CSSOM中才有定义），伪元素存在render tree中。
+    >1. 事件完成顺序
+    >
+    >    1. 开始解析HTML；
+    >    2. （额外线程、并行）加载外部资源文件（CSS、JS、图片、媒体、等）；
+    >    3. 执行同步的JS和CSS
+    >
+    >        1. 加载外部JS（和CSS）；
+    >        2. （CSSOM先构造完毕）解析并执行JS；
+    >    4. 构造DOM完毕；
+    >
+    >        `构造DOM完毕` -> `<script>`的`defer`脚本执行完毕 -> `document`的`DOMContentLoaded`事件触发 或 jQuery的`$(document).ready(function () {})`执行回调
+    >    5. 解析HTML完成、且所有资源加载完毕（包括：`<img>`等资源文件、样式引用的`background`图片、异步加载的JS、动态加载的资源）。
+    >
+    >        完毕后触发：`window`的`load`事件。
+    >2. 判断JS、CSS文件是否加载完毕：
+    >
+    >    1. JS
+    >
+    >        1. 监听文件的`load`事件，触发则加载完成。
+    >        2. 监听JS文件的`readystatechange`事件（大部分浏览器只有`document`能够触发），当文件的`readyState`值为`loaded/complete`则JS加载完成。
+    >    2. CSS
+    >
+    >        1. 监听文件的`load`事件，触发则加载完成。
+    >        2. 轮询CSS文件的`cssRules`属性是否存在，当存在则CSS加载完成。
+    >        3. 写一个特殊样式，轮询判断这个样式是否出现，来判断CSS加载完成。
+2. DOM和CSSOM构造完成后（解析HTML完成），进行渲染：
 
-    >1. 无论阻塞渲染还是阻塞解析，资源文件会不间断按顺序加载。
-    >2. 若在DOM中删除`<style>`或`<link>`标签，则会马上改变CSSOM；若在DOM中删除`<script>`标签（无论是否还在加载外部脚本`src`），则不影响该脚本执行。
-2. 事件完成顺序
+    Render Tree（渲染树）：Layout -> Paint -> Composite
 
-    1. 解析DOM；
-    2. 执行同步的JS和CSS
-
-        1. 加载外部JS（和CSS）；
-        2. （CSSOM先构造完毕）解析并执行JS；
-    3. 构造DOM完毕（同步的JS会暂停DOM解析，CSSOM的构建会暂停JS执行）；
-
-        完毕后触发：JS的`document.addEventListener('DOMContentLoaded', function () {}, false)` 或 jQuery的`$(document).ready(function () {})`。
-    4. 加载图片、媒体资源等外部文件；
-    5. 资源加载完毕。
-
-        完毕后触发：JS的`window.addEventListener('load', function () {}, false)`。
-
-- 判断JS、CSS文件是否加载完毕：
-
-    1. JS
-
-        1. 监听文件的`load`事件，触发则加载完成。
-        2. 监听JS文件的`readystatechange`事件（大部分浏览器只有`document`能够触发），当文件的`readyState`值为`loaded/complete`则JS加载完成。
-    2. CSS
-
-        1. 监听文件的`load`事件，触发则加载完成。
-        2. 轮询CSS文件的`cssRules`属性是否存在，当存在则CSS加载完成。
-        3. 写一个特殊样式，轮询判断这个样式是否出现，来判断CSS加载完成。
+    >1. 只有可见的元素才会进入渲染树。
+    >2. DOM不存在伪元素（CSSOM中才有定义），伪元素存在render tree中。
 
 ### 前端「增量」原则
 1. 「增量」原则：
