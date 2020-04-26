@@ -1901,7 +1901,7 @@
 
         >ie6/7可以用它们独有的`UserData`代替使用。
     4. 单个对象数据大小5M+。
-    5. 拥有方便的api
+    5. 拥有方便的API
 
         1. 调用`localStorage`、`sessionStorage`对象会为每个源（每个tab）创建独立的`Storage`对象，每个对象都拥有：`setItem`、`getItem`、`removeItem`、`clear`、`key`方法，`length`属性。
         2. `window`的`storage`事件，会在其他tab的同源页面修改`localStorage`值时触发（增、删、改，`setItem`相同值时不触发）。

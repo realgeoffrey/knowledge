@@ -709,7 +709,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
     1. 以本地协议`file`方式访问Native内部资源。
 
         - 可以把前端要用的静态资源放到客户端本地（如：字体文件），本地页面通过类似`file:///android_asset/fonts/myFont.ttf`引用。
-    2. 以远程`url`方式访问线上资源。
+    2. 以远程`URL`方式访问线上资源（http/https）。
     3. 增量替换机制（不依赖发包更新）
 
         1. Native包内下载、解压线上的打包资源，再替换旧资源。
@@ -727,7 +727,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         - `file`打开的页面直接发起请求可能会有跨域问题，可以用客户端接口代理的方式请求服务端数据。
     2. 针对运营活动页面：
 
-        用远程`url`方式请求。
+        用远程`URL`方式请求。
 4. 身份验证机制
 
     Native创建WebView时，根据客户端登录情况注入跟登录有关的cookie（session_id）或token。
