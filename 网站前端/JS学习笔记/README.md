@@ -820,7 +820,9 @@
     3. DOM#refB由于属于parentNode，只要引用它的变量不释放，它所有的父元素（图中红色部分）都不会被删除。
     </details>
 
->随着JS引擎的更新，原来会导致内存泄漏的bug已经慢慢被修复，因此写代码时不太需要注意内存泄漏问题（误）。
+>随着JS引擎的更新，原来会导致内存泄漏的bug已经慢慢被修复，因此写代码时不太需要注意内存泄漏问题（误）；Node.js的内存泄漏比较严重、隐蔽、难根除。
+
+todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如何规避。`console.profile()和console.profileEnd()`
 
 ### 深复制（拷贝）实现思路
 >参考：[深入剖析JavaScript的深复制](http://jerryzou.com/posts/dive-into-deep-clone-in-javascript/)。

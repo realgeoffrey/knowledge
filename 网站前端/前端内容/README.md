@@ -194,8 +194,8 @@
 >                3. [链接测试](https://validator.w3.org/checklink)
 >            3. [性能测试](https://gtmetrix.com/)
 >
->    2. 根据DevTools的Performance查询运行时导致帧数过高的代码。
->    3. 在客户端运行`window.performance`查询性能。
+>    2. 在客户端运行[`window.performance`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#performance)查看页面从打开到加载完成的时间数据。
+>    3. 根据DevTools的Performance查询运行时导致**帧数**过高的代码。
 >    </details>
 >- <details>
 >

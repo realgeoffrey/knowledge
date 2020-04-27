@@ -2063,6 +2063,7 @@ var a = new ShowFPS();
 
 // a.stop();
 ```
+>类似效果；Chrome DevTools的Rendering中的FPS meter。
 
 ### *原生JS*获取星座
 ```javascript
