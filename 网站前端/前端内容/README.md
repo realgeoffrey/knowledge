@@ -4,7 +4,7 @@
 1. [前端涉及内容](#前端涉及内容)
 1. [前端工程化](#前端工程化)
 1. [网站性能优化](#网站性能优化)
-1. [页面加载解析步骤](#页面加载解析步骤)
+1. [页面解析、渲染步骤](#页面解析渲染步骤)
 1. [前端「增量」原则](#前端增量原则)
 1. [静态资源使用额外域名（domain hash）的原因](#静态资源使用额外域名domain-hash的原因)
 1. [安全漏洞攻击](#安全漏洞攻击)
@@ -65,7 +65,6 @@
 
         >静态资源加载的技术实现。
 
-        解决思路：
         1. 静态资源管理系统 = 资源表 + 资源加载框架
         2. [大公司的静态资源优化方案](https://github.com/fouber/blog/issues/6)：
 
@@ -77,7 +76,7 @@
 ### 网站性能优化
 >性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#前端工程化)问题。
 
-从输入URL到页面完成的具体优化。
+页面内容下载速度 -> 页面解析、渲染速度和流畅性 -> 用户交互流程性 的具体优化。
 
 1. URL输入：
 
@@ -95,79 +94,77 @@
         2. 使用[缓存相关HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since` `ETag/If-None-Match`。
         3. 配置超长时间的本地缓存，采用文件的数字签名（如：MD5）作为缓存更新依据。
     6. [非覆盖式更新资源](https://github.com/fouber/blog/issues/6)。
-2. [载入页面](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面加载解析步骤)：
+2. 载入页面时，优化CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）：
 
-    前端对具体代码性能、CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）的优化。
+    1. 减少关键资源、减少HTTP请求：
 
-    1. 优化CRP：
+        1. 资源合并、去重。
+        2. 首屏资源进行服务端渲染，不要在客户端异步加载并渲染。
+        3. 非首屏资源延迟异步加载：
 
-        1. 减少关键资源、减少HTTP请求：
+            1. 增量加载资源：
 
-            1. 资源合并、去重。
-            2. 首屏资源进行服务端渲染，不要在客户端异步加载并渲染。
-            3. 非首屏资源延迟异步加载：
+                1. [图片的延迟加载（lazyload）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载lazyload)。
+                2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery滚动加载)、[IntersectionObserver判断DOM可见再发起异步加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsdom展示或消失执行方法intersectionobserver)）。
+                3. 功能文件按需加载（模块化、组件化）。
+            2. 使AJAX可缓存（当用GET方式时添加缓存HTTP头：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since`）。
+        4. 使用缓存代替每次请求（localStorage、sessionStorage、cookie等）
+        5. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
+        6. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）、第三方资源使用统一的CDN服务和设置[`<link>`预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
+        7. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
+    2. 最小化字节：
 
-                1. 增量加载资源：
+        1. 压缩资源。
+        2. 图片优化
 
-                    1. [图片的延迟加载（lazyload）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载lazyload)。
-                    2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery滚动加载)、[IntersectionObserver判断DOM可见再发起异步加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsdom展示或消失执行方法intersectionobserver)）。
-                    3. 功能文件按需加载（模块化、组件化）。
-                2. 使AJAX可缓存（当用GET方式时添加缓存HTTP头：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since`）。
-            4. 使用缓存代替每次请求（localStorage、sessionStorage、cookie等）
-            5. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-            6. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）、第三方资源使用统一的CDN服务和设置[`<link>`预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-            7. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
-        2. 最小化字节：
+            1. 压缩。
+            2. 小图合并雪碧图。
 
-            1. 压缩资源。
-            2. 图片优化
+                >大图切小图：单个大文件需要多次HTTP请求获取。
+            3. 合理使用Base64、WebP、`srcset`属性。
 
-                1. 压缩。
-                2. 小图合并雪碧图。
+                >1. 服务端（或CDN）处理图片资源，提供返回多种图片类型的接口（如：[七牛](https://developer.qiniu.com/dora/manual/3683/img-directions-for-use)）。
+                >2. [判断浏览器是否支持WebP](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断是否支持webp)，对不同浏览器请求不同的图片类型。
+                >3. 用`<source>/<img>`的`type`、`srcset`、`sizes`、`media`等属性，让浏览器自动选择使用哪种资源（浏览器自动跳过不支持的资源）。
+    3. 缩短CRP长度：
 
-                    >大图切小图：单个大文件需要多次HTTP请求获取。
-                3. 合理使用Base64、WebP、`srcset`属性。
+        CSS放在HTML顶部，JS放在HTML底部。
+    4. 用户体验（减弱用户对加载时长的感知）：
 
-                    >1. 服务端（或CDN）处理图片资源，提供返回多种图片类型的接口（如：[七牛](https://developer.qiniu.com/dora/manual/3683/img-directions-for-use)）。
-                    >2. [判断浏览器是否支持WebP](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断是否支持webp)，对不同浏览器请求不同的图片类型。
-                    >3. 用`<source>/<img>`的`type`、`srcset`、`sizes`、`media`等属性，让浏览器自动选择使用哪种资源（浏览器自动跳过不支持的资源）。
-        3. 缩短CRP长度：
+        1. 骨架屏
+        2. lazyload默认图
+3. 载入页面后进行的[页面解析、渲染](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面解析渲染步骤)、线程执行性能：
 
-            CSS放在HTML顶部，JS放在HTML底部。
-        4. 用户体验（减弱用户对加载时长的感知）：
+    >大部分情况下的浏览器是单线程执行，因此最小化主线程的责任来确保渲染流畅和交互响应及时。
 
-            1. 骨架屏
-            2. lazyload默认图
-    2. 技术上优化：
+    1. CSS性能：
 
-        1. CSS性能：
+        1. [CSS选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
+        2. [渲染性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)
 
-            1. [CSS选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
-            2. [渲染性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)
+            1. 样式缩小计算范围、降低复杂度。
+            2. 减少重绘和重排。
+            3. 动画合理触发GPU加速。
+            4. 尽量仅使用`opacity`、`transform: translate/scale/rotate/skew`处理动画。
+    2. JS代码性能优化：
 
-                1. 样式缩小计算范围、降低复杂度。
-                2. 减少重绘和重排。
-                3. 动画合理触发GPU加速。
-                4. 尽量仅使用`opacity`、`transform: translate/scale/rotate/skew`处理动画。
-        2. JS代码性能优化：
+        1. 使用性能好的代码方式（微优化）
 
-            1. 使用性能好的代码方式（微优化）
+            1. 字面量创建数据，而不是构造函数。
+            2. 缓存DOM的选择、缓存列表.length。
+            3. [闭包合理使用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)。
+            4. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)。
+            5. 长字符串拼接使用`Array.prototype.join()`，而不使用`+`。
+        2. 尽量使用事件代理，避免批量绑定事件。
+        3. [定时器取舍，合理使用重绘函数代替](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)。
+        4. 高频事件（如：`scroll`、`mousemove`、`touchmove`）使用[函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)，避免在高频事件中进行运行时间长的代码。
+        5. 避免强制同步布局、避免布局抖动。
+        6. 使用`Web Worker`处理复杂的计算。
+        7. 正则表达式尽可能准确地匹配目标字符串，以减少不必要的回溯。
+    3. HTML：
 
-                1. 字面量创建数据，而不是构造函数。
-                2. 缓存DOM的选择、缓存列表.length。
-                3. [闭包合理使用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)。
-                4. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)。
-                5. 长字符串拼接使用`Array.prototype.join()`，而不使用`+`。
-            2. 尽量使用事件代理，避免批量绑定事件。
-            3. [定时器取舍，合理使用重绘函数代替](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)。
-            4. 高频事件（如：`scroll`、`mousemove`、`touchmove`）使用[函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)，避免在高频事件中进行运行时间长的代码。
-            5. 避免强制同步布局、避免布局抖动。
-            6. 使用`Web Worker`处理复杂的计算。
-            7. 正则表达式尽可能准确地匹配目标字符串，以减少不必要的回溯。
-        3. HTML：
-
-            1. 减少层级嵌套。
-            2. 在拥有`target="_blank"`的`<a>`中添加`rel="noopener"`。
+        1. 减少层级嵌套。
+        2. 在拥有`target="_blank"`的`<a>`中添加`rel="noopener"`。
 
 - [WebView优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#webview性能)：
 
@@ -177,7 +174,13 @@
 >
 >    <summary>优先优化对性能影响大、导致瓶颈的部分</summary>
 >
->    1. 打开各种分析工具，根据建议逐条对照修改
+>    1. 在客户端运行[`window.performance`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#performance)查看页面从打开到加载完成的时间数据。
+>    2. DevTools：
+>
+>        1. Performance查询运行时导致**帧数**过高的代码。
+>        2. Rendering、Layers查看CSS渲染情况。
+>        3. Memory、JavaScript Profiler、Performance monitor查询内存占用情况。
+>    3. 打开各种分析工具，根据建议逐条对照修改
 >
 >        1. [lighthouse](https://github.com/GoogleChrome/lighthouse)
 >
@@ -193,9 +196,6 @@
 >                2. [CSS验证](https://jigsaw.w3.org/css-validator/validator.html.zh-cn)
 >                3. [链接测试](https://validator.w3.org/checklink)
 >            3. [性能测试](https://gtmetrix.com/)
->
->    2. 在客户端运行[`window.performance`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#performance)查看页面从打开到加载完成的时间数据。
->    3. 根据DevTools的Performance查询运行时导致**帧数**过高的代码。
 >    </details>
 >- <details>
 >
@@ -215,32 +215,56 @@
 >        100ms内对用户的操作做出响应。
 >    </details>
 
-### 页面加载解析步骤
+### 页面解析、渲染步骤
 >参考：[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)、[浏览器的工作原理：新式网络浏览器幕后揭秘](https://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/#The_order_of_processing_scripts_and_style_sheets)。
 
 ![页面解析步骤图](./images/load-html-1.png)
 
+><details>
+><summary>约定</summary>
+>
+>1. 判断是否DOM构造：打印该DOM。
+>2. 判断是否完成新的渲染：查看页面显示的DOM结果（DOM结构和样式效果）。
+>3. 可以利用抓包工具（如：Charles），breakpoints静态资源来模拟加载缓慢或加载失败，从而判断是否会影响后面的解析或渲染。
+>4. 利用devTools的Network中的Waterfall判断资源加载的开始时间、是否并行。
+></details>
+
 1. 解析HTML（parse HTML）
 
-    对HTML进行从上到下解析：增量式生成一个文档对象模型（DOM构造），生成CSS对象模型（CSSOM）。
+    获取.html文件后，对文件进行从上到下解析：**增量式**生成一个文档对象模型（DOM构造）、生成CSS对象模型（CSSOM）。
 
-    >1. 解析HTML基本严格按照HTML内容从上到下进行；
-    >2. 渲染引擎通过各种措施，尽可能快速解析HTML：
+    ><details>
+    ><summary>总结</summary>
     >
-    >    1. 异步脚本
-    >    2. 执行脚本时可能预解析剩下的HTML
-    >    3. 额外线程并行：网络操作、定时器、读写文件、I/O设备事件、页面渲染、等
-    >    4. 无论何时（包括：阻塞解析HTML、阻塞渲染 时），各种类型资源文件都会不间断按顺序并行加载
+    >1. 解析HTML基本严格按照HTML内容从上到下进行。
+    >2. 渲染引擎通过各种线程并行的措施，尽可能快速解析HTML：
+    >
+    >    并行进行：DOM构造、生成CSSOM、渲染。
+    >
+    >    1. 异步脚本（`defer`或`async`的`<script>`）。
+    >    2. 执行脚本时可能预解析剩下的HTML。
+    >    3. 网络操作：无论何时（包括：阻塞解析HTML、阻塞渲染 时），预加载扫描仪不间断并行下载各种类型资源文件（按优先级和HTML顺序）。
     >3. 从上到下尽可能快地解析HTML时，进程会因为各种情况被阻塞：
     >
-    >    1. JS会等待它之前的CSS构建完成之后才执行
-    >    2. JS执行完之前不会继续解析HTML
-    >    3. 下载中的CSS和JS都会阻止解析HTML（其他资源文件的下载不会影响解析HTML、渲染）
+    >    1. JS会等待它之前的CSS生成CSSOM之后才执行。
+    >    2. JS执行完之前不会继续解析HTML。
+    >    3. 除了CSS和JS文件之外，其他资源文件的下载不会影响解析HTML
+    >
+    >        1. 解析到CSS且这个CSS文件在`<body>`中时，若该文件还在下载，则阻止解析HTML。
+    >        2. 解析到JS时，若该文件还在下载，则阻止解析HTML。
+    >
+    >        - 阻止解析期间，必须等待CSS和JS的外链资源加载完毕（包括加载失败）才会继续解析HTML。
+    ></details>
 
     1. 加载DOM中所有CSS，生成CSSOM（recalculate style），描述对页面内容如何设置样式。
 
-        1. 加载CSS并构造完整的CSSOM之前，**阻塞渲染**（Render Tree渲染被暂停）。
-        2. 一定要等待外链资源加载完毕（包括加载失败）才会继续解析HTML（构建DOM）。
+        1. 加载CSS并构造完成当前的CSSOM之前，**阻塞渲染**（Render Tree渲染被暂停）。
+        2. 解析到CSS且这个CSS文件在`<body>`中时，若该文件还在下载，则阻止解析HTML，直到下载完成（下载中的CSS文件若在`<head>`中，则不会阻止解析HTML）。
+
+        >异步添加的CSS（JS动态添加样式），不会阻塞渲染、不会阻止解析HTML。
+
+        3. 多个CSS文件可同时进行分析而后再生成CSSOM，也可对已经生成的CSSOM进行增删改查。
+        4. 构建生成CSSOM的速度非常快。
 
         ><details>
         ><summary>已经被提取的CSS（<code>&lt;link></code>、<code><style></code>、<code>style</code>内嵌样式），若再次修改或删除（或新添加），会再次影响CSSOM构造。</summary>
@@ -260,10 +284,10 @@
 
         1. 解析到JS，在脚本执行完之前，**阻塞解析HTML**（DOM构造被暂停）。
 
-            >没有`defer`或`async`的`<script>`才会阻塞解析HTML；带有`defer`或`async`的`<script>`是异步加载的JS，不会阻塞解析HTML。
-        2. 下载外部脚本`src`或内嵌脚本不用下载。
-        3. 等待之前已经解析的所有CSS被提取且CSSOM被构造完毕。
-        4. 执行脚本，访问、更改DOM和CSSOM。
+            >1. 解析到JS时，若该文件还在下载，则保持阻塞解析HTML，直到下载并执行完毕。
+            >2. 带有`defer`或`async`的`<script>`是异步加载的JS，不会阻塞解析HTML。
+        2. 等待之前已经解析的所有CSS被提取且CSSOM被构造完毕。
+        3. 执行脚本，访问、更改DOM和CSSOM。
 
             ><details>
             ><summary>一个<code><script></code>最多执行一次。</summary>
@@ -271,65 +295,36 @@
             >1. 已经执行过的脚本（`<script>`：外部脚本`src`或内嵌脚本），若再次修改或删除，不会再执行，也不会影响执行过的内容。已经执行过的脚本，若删除外部脚本`src`或删除内嵌脚本内容，之后再添加外部脚本`src`或添加内嵌脚本内容，也不会再次执行。
             >2. 没有执行过内容的空脚本`<script></script>`，若添加外部脚本`src`或添加内嵌脚本，会执行一次。
             ></details>
-        5. 脚本执行完毕，继续 解析HTML、DOM构造。
+        4. 脚本执行完毕，继续 解析HTML（DOM构造）。
 
-        ><details>
-        ><summary><code><script></code>的加载、执行</summary>
-        >
-        >1. 没有`defer`或`async`：立即加载并执行（同步），阻塞解析HTML。
-        >2. `defer`：异步加载，在DOM解析完成后、`DOMContentLoaded`触发前执行，顺序执行。
-        >
-        >    >多个`defer`脚本不一定按照顺序执行，也不一定会在`DOMContentLoaded`事件触发前执行，因此最好只包含一个延迟脚本。
-        >3. `async`：异步加载，加载完马上执行，不影响`DOMContentLoaded`触发时机。
-        >
-        >    乱序执行，仅适用于不考虑依赖、不操作DOM的脚本。
-        >
-        >    >动态创建的`<script>`默认是`async`（可以手动设置`dom.async = false`）。
-        >4. 模块化属性（在JS内部`import`的同级资源是并行、依赖资源是串行）：
-        >
-        >    1. `type="module"`：与`defer`相同。
-        >    2. `type="module" async`：与`async`相同。
-        >
-        >![JS脚本加载图](./images/js-load-1.png)
-        >
-        >- 按从上到下顺序解析页面内容，针对`<script>`（包括动态创建和修改`src`）：
-        >
-        >    1. 按文档顺序执行**原本就存在的**没有`defer`或`async`的`<script>`。
-        >    2. （与上面的顺序无关，可交叉进行）按动态添加的时序（与位置无关）执行**动态加载的**没有`defer`或`async`的`<script>`；
-        >    3. 添加`defer`或`async`的`<script>`或修改`<script>`的`src`，（无论是原本就存在的、还是动态加载的）异步加载、不确定顺序执行。
-        ></details>
+            >[`<script>`的加载和执行时机](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#script的加载和执行时机)。
 
-    >1. 事件完成顺序
-    >
-    >    1. 开始解析HTML；
-    >    2. （额外线程、并行）加载外部资源文件（CSS、JS、图片、媒体、等）；
-    >    3. 执行同步的JS和CSS
-    >
-    >        1. 加载外部JS（和CSS）；
-    >        2. （CSSOM先构造完毕）解析并执行JS；
-    >    4. 构造DOM完毕；
-    >
-    >        `构造DOM完毕` -> `<script>`的`defer`脚本执行完毕 -> `document`的`DOMContentLoaded`事件触发 或 jQuery的`$(document).ready(function () {})`执行回调
-    >    5. 解析HTML完成、且所有资源加载完毕（包括：`<img>`等资源文件、样式引用的`background`图片、异步加载的JS、动态加载的资源）。
-    >
-    >        完毕后触发：`window`的`load`事件。
-    >2. 判断JS、CSS文件是否加载完毕：
-    >
-    >    1. JS
-    >
-    >        1. 监听文件的`load`事件，触发则加载完成。
-    >        2. 监听JS文件的`readystatechange`事件（大部分浏览器只有`document`能够触发），当文件的`readyState`值为`loaded/complete`则JS加载完成。
-    >    2. CSS
-    >
-    >        1. 监听文件的`load`事件，触发则加载完成。
-    >        2. 轮询CSS文件的`cssRules`属性是否存在，当存在则CSS加载完成。
-    >        3. 写一个特殊样式，轮询判断这个样式是否出现，来判断CSS加载完成。
+    - 事件完成顺序
+
+        1. 开始解析HTML；
+        2. （额外线程、并行）加载外部资源文件（CSS、JS、图片、媒体、等）；
+        3. 执行同步的JS和CSS
+
+            1. 等待外部JS和CSS加载完毕；
+            2. CSSOM先构造完毕，再执行JS。
+        4. 构造DOM完毕；
+
+            `构造DOM完毕` -> `<script>`的`defer`脚本执行完毕 -> `document`的`DOMContentLoaded`事件触发 或 jQuery的`$(document).ready(function () {})`执行回调
+        5. 解析HTML完成、且所有资源加载完毕（包括：`<img>`等资源文件、样式引用的`background`图片、异步加载的JS、动态加载的资源）。
+
+            完毕后触发：`window`的`load`事件。
 2. DOM和CSSOM构造完成后（解析HTML完成），进行渲染：
 
     Render Tree（渲染树）：Layout -> Paint -> Composite
 
     >1. 只有可见的元素才会进入渲染树。
     >2. DOM不存在伪元素（CSSOM中才有定义），伪元素存在render tree中。
+
+    - 渲染在每一帧都会进行
+
+        >[渲染细节和性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)。
+
+        页面每一帧刷新时，会使用当前最新解析完成的DOM和CSSOM进行渲染。阶段性生成CSSOM完成之前（生成CSSOM进行时），会阻塞渲染。
 
 ### 前端「增量」原则
 1. 「增量」原则：
@@ -933,4 +928,4 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 
         WebView的初始化、保持，占用较多内存。
     2. 与浏览器不同，App中打开WebView的第一步并不是建立连接，而是启动浏览器内核。
-    3. 除了[网站性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#网站性能优化)之外，能提升体验的办法基本要让Native配合调整（页面能做的不多，主要靠客户端开发投入）。
+    3. 除了[网站性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#网站性能优化)之外，能提升体验的办法基本要让Native配合调整（页面能做的不多，主要靠客户端开发投入，具体方案可查看：[WebView性能、体验分析与优化](https://tech.meituan.com/2017/06/09/webviewperf.html)）。
