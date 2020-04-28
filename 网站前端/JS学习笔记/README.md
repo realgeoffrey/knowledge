@@ -1751,6 +1751,8 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
                 console.log(g, 'findIndexAsync 完成')
                 ```
                 </details>
+
+            >可以控制并发的库细节的库：[async](https://github.com/caolan/async)。
 2. jQuery
 
     1. <details>
@@ -2030,7 +2032,18 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
           return true            // 浏览器不再显示错误信息
         }
         ```
-    3. `window`的`unhandledrejection`事件
+    3. 资源加载错误的监听
+
+        可以监听各资源的错误情况，包括：`<script>`、`<link>`、`<img>`、媒体资源、等。
+
+        >`<iframe>`需要同源才能够监听事件。
+
+        ```javascript
+        window.addEventListener('error', function (event) { // 包含上面的：没有经过`try-catch`处理的错误都会触发`window`的`error`事件
+          // event.target 错误资源的DOM
+        }, true)    // 必须要捕获
+        ```
+    4. `window`的`unhandledrejection`事件
 
         若失败的Promise实例未被处理，则触发`window`的`unhandledrejection`事件。
 
@@ -2048,7 +2061,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
           event.preventDefault()  // 浏览器不再显示错误信息。或：return false
         }
         ```
-    4. 图像的`onerror`事件
+    5. 图像的`onerror`事件
 
         >1. 只要图像的src属性中的URL不能返回能被识别的图像格式，就会触发图像的`error`事件。
         >2. 错误不会提交到 ~~`window`的`error`~~。
@@ -2730,7 +2743,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
         1. 使用外部资源。
         2. 不在HTML内嵌：事件处理程序、javascript伪协议。
         3. 对只为DOM增添的内容，转移到外部资源中动态创建。
-    5. 性能优化[从URL输入之后](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面加载解析步骤)就开始考虑。
+    5. 性能优化[从URL输入之后](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面解析渲染步骤)就开始考虑。
 
         1. 关于「性能」的写法建议，更多的是一种编程习惯（微优化）：写出更易读、性能更好的代码。
         2. 在解决页面性能瓶颈时，要从URL输入之后就进行[网站性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#网站性能优化)；避免在处理网页瓶颈时进行~~微优化~~。

@@ -2,6 +2,9 @@
 
 1. [kubectl命令](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands)
 
+    1. 查看所有信息：
+
+        `kubectl get all -n 「namespace名字」`
     1. 查看所有命名空间：
 
         `kubectl get namespace`
@@ -17,7 +20,7 @@
         ```shell
         kubectl logs 「pod名字」 -n 「namespace名字」 -c 「container名字」  # 查看某一个pod内日志
         -f             # 流式传输日志
-        --tail 「数字」 # 最新n条信息
+        --tail 「数字」   # 最新n条信息
         ```
     3. 用可交互模式执行bash
 

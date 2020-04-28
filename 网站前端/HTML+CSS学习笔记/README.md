@@ -1239,6 +1239,9 @@
     5. `Composite`：
 
         在每个层（composite layers）上完成绘制过程后，浏览器会将所有层按照合理的顺序合并成一个图层再显示。
+
+>第一次确定节点的大小和位置是`Layout`，随后对节点大小和位置的重新计算是`reflow`。同理`Paint`与`repaint`。
+
 2. `reflow`、`repaint`：
 
     >CSS属性触发reflow、repaint、composite的情况：[CSS Triggers](https://csstriggers.com/)。
@@ -1260,7 +1263,7 @@
         每次reflow、repaint后浏览器还需要层合并再输出到屏幕上。
 
     >那些容易忽略的**能引起布局改变的样式修改**，它们可能不产生动画，但当浏览器需要重新进行样式的计算和布局时，依然会产生reflow和repaint。
-3. 创建composite layers（层、渲染层、复合层），交由GPU处理：
+3. 创建composite layers（层、渲染层、复合层），交由GPU处理（CPU不再处理）：
 
     >GPU（图形处理器）是与处理和绘制图形相关的硬件，专为执行复杂的数学和几何计算而设计的，可以让CPU从图形处理的任务中解放出来，从而执行其他更多的系统任务。
 
