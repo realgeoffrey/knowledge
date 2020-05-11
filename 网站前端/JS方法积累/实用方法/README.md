@@ -1368,32 +1368,29 @@ function random (length, charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr
  * @param {String} [separator = '.'] - 版本分隔符
  * @returns {String} flag - '=' 或 '>' 或 '<'
  */
-function versionCompare(version, base, separator) {
-    separator = separator || '.';
+function versionCompare (version, base, separator = '.') {
+  const arr1 = version.toString().split(separator)
+  const arr2 = base.toString().split(separator)
+  const length = arr1.length > arr2.length ? arr1.length : arr2.length
+  let flag = '='
 
-    var arr1 = version.toString().split(separator),
-        arr2 = base.toString().split(separator),
-        length = arr1.length > arr2.length ? arr1.length : arr2.length,
-        flag = '=',
-        i;
+  for (let i = 0; i < length; i++) {
+    arr1[i] = arr1[i] || '0'
+    arr2[i] = arr2[i] || '0'
 
-    for (i = 0; i < length; i++) {
-        arr1[i] = arr1[i] || '0';
-        arr2[i] = arr2[i] || '0';
+    if (arr1[i] !== arr2[i]) {  /* 两值不同 */
+      flag = parseInt(arr1[i], 10) < parseInt(arr2[i], 10) ? '<' : '>'
 
-        if (arr1[i] !== arr2[i]) {  /* 两值不同 */
-            flag = parseInt(arr1[i], 10) < parseInt(arr2[i], 10) ? '<' : '>';
-
-            break;
-        }
+      break
     }
+  }
 
-    return flag;
+  return flag
 }
 
 
 /* 使用测试 */
-console.log(versionCompare('1.1.10', '1.2'));
+console.log(versionCompare('1.1.10', '1.2'))  // => <
 ```
 
 ### *原生JS*判断检索内容是否在被检索内容的分隔符间
