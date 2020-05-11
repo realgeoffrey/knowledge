@@ -82,7 +82,7 @@
 
     服务端对HTTP请求、资源发布和缓存、服务器配置的优化。
 
-    1. 服务器开启gzip。
+    1. 服务器开启gzip（如：nginx）。
 
         >前端查看Response头是否有：`Content-Encoding: gzip`。
     2. 减少DNS查找，设置合适的TTL值，避免重定向。

@@ -147,7 +147,7 @@ Charles能够截断发送请求前（篡改Request）和响应后（篡改Respon
 
 repeat功能不需要刷新页面，只需要repeat请求，还可以进行压力测试。
 
-**repeat**重复发送一次请求；**repeat Advances**可以自定义重复次数和重复间隔。
+**repeat**重复发送一次请求；**repeat Advances**可以自定义重复次数和重复间隔（压测利器）。
 
 ![Charles图](./images/23.png)
 

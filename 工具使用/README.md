@@ -12,7 +12,8 @@
 4. [Charles使用](./Charles使用/README.md)
 5. [whistle使用](./whistle使用/README.md)
 6. [Kubernetes使用](./Kubernetes使用/README.md)
-7. [科学上网](./科学上网/README.md)
+7. [Redis使用](./Redis使用/README.md)
+8. [科学上网](./科学上网/README.md)
 
 >1. [iOS使用](./iOS使用/README.md)
 >2. [Android调试](./Android调试/README.md)
