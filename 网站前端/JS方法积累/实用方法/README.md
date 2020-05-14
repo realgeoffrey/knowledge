@@ -37,6 +37,7 @@
         1. [分割字符串](#原生js分割字符串)
         1. [产生随机数](#原生js产生随机数)
         1. [比较版本号大小（纯数字）](#原生js比较版本号大小纯数字)
+        1. [判断版本号是否在某个版本区间（纯数字）](#原生js判断版本号是否在某个版本区间纯数字)
         1. [判断检索内容是否在被检索内容的分隔符间](#原生js判断检索内容是否在被检索内容的分隔符间)
         1. [格式化文件大小](#原生js格式化文件大小)
     1. 功能
@@ -1391,6 +1392,60 @@ function versionCompare (version, base, separator = '.') {
 
 /* 使用测试 */
 console.log(versionCompare('1.1.10', '1.2'))  // => <
+```
+
+### *原生JS*判断版本号是否在某个版本区间（纯数字）
+```javascript
+/**
+ * 判断版本号是否在某个版本区间（纯数字）
+ * @param {Number|String} version - 判断的版本号
+ * @param {Number|String} base - 版本区间或版本（如：123 或 123- 或 -123 或 123-456）
+ * @param {String} [separator = '-'] - 版本区间
+ * @returns {Boolean} - 是否在区间
+ */
+function isVersionIncluded (version, base, separator = '-') {
+  debugger
+  version = String(version)
+  base = String(base)
+
+  if (version === base) {
+    return true
+  } else {
+    const vArr = base.split(separator)
+    if (vArr.length === 1) {
+      return false
+    } else {
+      version = parseInt(version)
+      if (vArr[0] === '') {
+        if (vArr[1] && version <= parseInt(vArr[1])) {
+          return true
+        }
+      } else if (vArr[1] === '') {
+        if (vArr[0] && version >= parseInt(vArr[0])) {
+          return true
+        }
+      } else {
+        if ((vArr[0] && version >= parseInt(vArr[0])) && (vArr[1] && version <= parseInt(vArr[1]))) {
+          return true
+        }
+      }
+    }
+  }
+
+  return false
+}
+
+
+/* 使用测试 */
+console.log(isVersionIncluded(123, '123'), '=> true')
+console.log(isVersionIncluded(123, '-22'), '=> false')
+console.log(isVersionIncluded(123, '-222'), '=> true')
+console.log(isVersionIncluded(123, '123-'), '=> true')
+console.log(isVersionIncluded(123, '124-'), '=> false')
+console.log(isVersionIncluded(123, '1-122'), '=> false')
+console.log(isVersionIncluded(123, '123-200'), '=> true')
+console.log(isVersionIncluded('asd', '123-200'), '=> false')
+console.log(isVersionIncluded('1', '5-6'), '=> false')
 ```
 
 ### *原生JS*判断检索内容是否在被检索内容的分隔符间
