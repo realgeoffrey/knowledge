@@ -707,9 +707,15 @@ feat(details): 添加了分享功能
 ### GitLab CI
 >可阅读：[用 GitLab CI 进行持续集成](https://scarletsky.github.io/2016/07/29/use-gitlab-ci-for-continuous-integration/)。
 
-1. 设置中打开Pipelines
-2. 配置`.gitlab-ci`
-3. 服务器设置nginx的虚拟主机指向
+1. 在服务器安装Runners，并在gitlab仓库内配置并开启相应Runners
+2. 在仓库根目录添加`.gitlab-ci.yml`并设置要在服务器运行的脚本、运行的时机：
+
+    >shell脚本。
+
+    1. build仓库代码、或开启的服务；
+    2. build完毕之后的程序，保存到docker镜像中（docker镜像保证多个地方拉取的内容一致），该docker镜像保存到服务器；
+    3. 利用docker镜像发布内容到CDN或k8s等。
+3. 推送内容到远程就会根据`.gitlab-ci.yml`设置要求进行对应服务器的对应操作
 
 ### 减少Git项目下载大小
 1. 仅在Git项目中选择下载某些文件夹或文件

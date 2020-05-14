@@ -241,76 +241,64 @@
     ```
 
 ### 变量、`this`
-1. `变量`（、`函数`）
+1. `变量`（[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)）
 
-    >JS是[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)。
+    1. <details>
 
-    - 作用域和值：
+        <summary>由声明函数时，变量处在哪一个函数作用域（或块级作用域）唯一决定；</summary>
 
-        1. <details>
+        1. ES5
 
-            <summary>由声明函数时，变量处在哪一个函数作用域（或块级作用域）唯一决定；</summary>
+            函数声明是唯一拥有自身作用域的结构。
 
-            1. ES5
+            >1. 若`function`或`箭头函数`**声明**出现，则在父级作用域中新增一个子级作用域。
+            >2. 父级不能访问子级作用域，子级能完全使用父级作用域。
+        2. ES6
 
-                函数声明是唯一拥有自身作用域的结构。
+            在ES5的基础上，增加块级作用域概念（[`let`、`const`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#letconst)）。
+        </details>
 
-                >1. 若`function`或`箭头函数`**声明**出现，则在父级作用域中新增一个子级作用域。
-                >2. 父级不能访问子级作用域，子级能完全使用父级作用域。
-            2. ES6
+        >与~~调用函数时所在的作用域、时机、以何种方式被调用~~无关（函数赋值给任何变量或属性也不改变变量取值）。
+    2. 遍历嵌套作用域链，在当前执行的作用域开始（函数声明处），向上遍历查找直到全局作用域或找到；
 
-                在ES5的基础上，增加块级作用域概念（[`let`、`const`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#letconst)）。
-            </details>
+        >1. 对于`变量 = 值`赋值（LHS），若直到全局作用域也没查找到变量，则创建一个全局变量，用`值`赋值给这个新建的全局变量。
+        >2. 对于`变量`引用（RHS），若直到全局作用域也没查找到变量，则报错`ReferenceError: 变量 is not defined`。
+    3. 多层的嵌套作用域中，可以定义同名的标识符（变量、函数），遮蔽效应使内部的标识符「遮蔽」外部的标识符（若查找到第一个匹配的标识符则停止再向上查找）。
 
-            >与~~调用函数时所在的作用域、时机、以何种方式被调用~~无关（函数赋值给任何变量或属性也不改变变量取值）。
-        2. 遍历嵌套作用域链，在当前执行的作用域开始（函数声明处），向上遍历查找直到全局作用域或找到；
+        >`window.某变量`可以访问被同名变量`某变量`遮蔽的全局变量。
 
-            >1. 对于`变量 = 值`赋值（LHS），若直到全局作用域也没查找到变量，则创建一个全局变量，用`值`赋值给这个新建的全局变量。
-            >2. 对于`变量`引用（RHS），若直到全局作用域也没查找到变量，则报错`ReferenceError: 变量 is not defined`。
-        3. 多层的嵌套作用域中，可以定义同名的标识符（变量、函数），遮蔽效应使内部的标识符「遮蔽」外部的标识符（若查找到第一个匹配的标识符则停止再向上查找）。
+    - <details>
 
-            >`window.某变量`可以访问被同名变量`某变量`遮蔽的全局变量。
+        <summary>产生<a href="https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure">闭包</a></summary>
 
-    <details>
-    <summary>e.g.</summary>
+        - 特例：`for、for-in、for-of(/* 块级作用域-父级 */){/* 块级作用域-子级 */}`
 
-    ```javascript
-    var aa
+            针对2个块级作用域，当闭包发生时（已经执行完毕，但异步任务返回父级作用域的变量）：
 
-    function func () {
-      var count = 0
+            1. 若父级作用域使用`var`创建的变量，则返回该变量最终值（与外部值相同）。
+            2. 若父级作用域使用`let`（~~`const`~~ 无法改变值）创建的变量，则返回每一次循环时变量的值（外部不存在该变量）。
 
-      function _func () {
-        console.log(count++)
-        return _func
-      }
-
-      aa = _func
-      return _func
-    }
-
-
-    var p = func()      // 返回_func
-
-    p() // => 0。返回_func
-
-    var bb = {
-      cc: aa()          // => 1。返回_func
-    }
-
-    window.dd = bb.cc() // => 2。返回_func
-
-    function E () {
-      this.funcE = window.dd()
-    }
-    var ee = new E()    // => 3。返回_func
-
-    ee.funcE()          // => 4。返回_func
-    ```
-    </details>
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```javascript
+            >for (let i = 1; setTimeout(() => { console.log('let i1:', i)}, 50), i < 3; i++) {  // => 1 => 2 => 3
+            >  setTimeout(() => {
+            >    console.log('let i2:', i)           // => 1 => 2
+            >  }, 1000)
+            >}
+            >
+            >for (var i = 1; setTimeout(() => { console.log('var i1:', i)}, 50), i < 3; i++) {  // => 3 => 3 => 3
+            >  setTimeout(() => {
+            >    console.log('var i2:', i)           // => 3 => 3
+            >  }, 1000)
+            >}
+            >```
+            ></details>
+        </details>
 
     <details>
-    <summary>e.g.</summary>
+    <summary>e.g. 词法作用域</summary>
 
     ```javascript
     function foo () {
@@ -329,7 +317,7 @@
     // 其他语言是动态作用域的流程：执行 foo 函数，依然是从 foo 函数内部查找是否有局部变量 value。如果没有，就从调用函数的作用域，也就是 bar 函数内部查找 value 变量，所以结果会打印 2。
     ```
     </details>
-2. `this`
+2. `this`（函数调用方式）
 
     1. 非箭头函数
 
@@ -494,6 +482,8 @@
         ></details>
 
 ### 闭包（closure）
+>因为JS是[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)，所以产生了闭包效果。
+
 1. 当函数体内定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数执行完毕（寿命终结）之后。
 2. 无论通过何种手段将内部函数传递到它所在的词法作用域以外，函数都会持有对原始定义作用域的引用（函数记住并访问它原始所在的词法作用域），无论在何处执行这个函数都会使用闭包。
 3. 闭包通常用来创建私有变量或方法，使得这些内容不被外部访问，同时又可以通过指定的闭包函数访问。
@@ -526,6 +516,12 @@
         >访问一个引用数据类型的属性：若这个属性在对象自身中不存在，则向上查找其`[[Prototype]]`指向的对象；若依然找不到，则继续向上查找（其`[[Prototype]]`指向的对象的）`[[Prototype]]`指向的对象，直到原型终点。
 
         原型链终点是`null`，倒数第二是`Object.prototype`。
+
+        ```javascript
+        Object或Function或任意函数.__proto_ === Function.prototype
+        Function.prototype.__proto__ === Object.prototype
+        Object.prototype.__proto__ === null
+        ```
 
     <details>
     <summary>e.g.</summary>
@@ -1942,7 +1938,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
         2. 没有~~改变`cookie`的事件通知~~，只能轮询检测。
     6. 同源同路径，或父域名、父路径 共享。
 
-        >子域名可以访问主域名的cookie。如：`a.b.c.com`可以获取`a.b.c.com`、`b.c.com`、`c.com`的cookie，但无法获取`d.a.b.c.com`或`d.com`的cookie。
+        >子域名可以访问（获取/修改/删除）主域名的cookie。如：`a.b.c.com`可以获取`a.b.c.com`、`b.c.com`、`c.com`的cookie，但无法获取`d.a.b.c.com`或`d.com`的cookie。
     7. 默认：关闭浏览器后失效（存储在内存）；设置失效时间则到期后失效（存储在硬盘）。
     8. 应用场景：服务端确定请求是否来自于同一个客户端（cookie与服务端session配合），以确认、保持用户状态。
 
@@ -2927,7 +2923,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
     >for (var i = 0; i < 3; i++) {
     >    // 不用匿名函数
     >    setTimeout(function () {
-    >        console.log(i);         // => 3 => 3 => 3（闭包作用：每个结果都是固定的最后一个值）
+    >        console.log(i);         // => 3 => 3 => 3（闭包作用：每个结果都同一个值）
     >    }, 0);
     >}
     >

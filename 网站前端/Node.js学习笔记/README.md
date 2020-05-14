@@ -14,9 +14,6 @@
     1. [Node.js的运行机制](#nodejs的运行机制)
     1. [特性](#特性)
     1. [基础](#基础)
-1. [其他](#其他)
-
-    1. [MongoDB](#mongodb)
 
 ---
 ## 安装
@@ -618,42 +615,16 @@ Node.js的全局对象`global`是全局变量的宿主。
 
         >[调试指南](https://nodejs.org/zh-cn/docs/guides/debugging-getting-started/)。
     3. 安装[ndb](https://github.com/GoogleChromeLabs/ndb)调试。
+2. 服务端开发注意点：
 
----
-## 其他
+    1. 相对于客户端，服务端要处理大量并发的请求。
 
-### [MongoDB](https://github.com/mongodb/mongo)
-BSON
+        >需要学习服务端的各种 高并发、数据库IO 解决方案。前端处理客户端问题无法接触到这些，需要重新踩服务端的坑。
 
-- 比较适用的场景：
+        虽然Node.js是单线程，但是各种异步的操作（如：数据库IO等）需要按照服务端的技术解决方案处理。
+    2. 基本数据库的使用，以及如何在Node.js中使用。
 
-    1. 数据模型比较简单。
-    2. 数据库性能要求较高，但不需要高度的数据一致性。
-    3. 给定的索引，容易查找；但不擅长筛选。
-    4. 灵活性强（较多横向扩展）。
+        如：MySQL、Redis、MongoDB、等。
+    3. 异常处理、错误报警
 
-- 命令
-
-    1. 启动服务器：`mongod`
-    2. 启动客户端：`mongo`
-
-        >查看数据库信息文档：[Databases and Collections](https://docs.mongodb.com/manual/core/databases-and-collections/)
-
-        <details>
-        <summary>e.g.</summary>
-
-        1. `show dbs`
-        2. `use 「数据库」`
-        3. `show collections`
-        4. `db.「collection名」.find({ 「字段名」: 「值」 })`
-        5. `db.「collection名」.find().count()`
-        6. `db.「collection名」.find().sort({ '_id': -1 })`
-        7. `db.「collection名」.find().sort({ '_id': 1 }).limit(2)`
-        </details>
-
-- 工具
-
-    1. 数据库的图形界面管理工具：[Compass](https://www.mongodb.com/download-center/compass)
-    2. Node.js环境中对MongoDB数据库操作的封装：[mongoose](https://github.com/Automattic/mongoose)
-
-1. （不用特意新建collection）当第一个document插入时，collection就会被创建。
+        对各种IO要进行异常处理（如：`try-catch`包裹所有IO代码），并需要把错误上报（打日志`console`或借助第三方监控）。
