@@ -80,20 +80,21 @@
 
 1. URL输入：
 
-    服务端对HTTP请求、资源发布和缓存、服务器配置的优化。
+    服务端（运维）对HTTP请求、资源发布和缓存、服务器配置的优化。
 
     1. 服务器开启gzip（如：nginx）。
 
         >前端查看Response头是否有：`Content-Encoding: gzip`。
-    2. 减少DNS查找，设置合适的TTL值，避免重定向。
-    3. 使用CDN。
-    4. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#静态资源使用额外域名domain-hash的原因)，减少cookie。
-    5. 对资源进行缓存：
+    2. 优先开启使用HTTP/2.0（代替HTTP/1.1、HTTP/1.0）
+    3. 减少DNS查找，设置合适的TTL值，避免重定向。
+    4. 使用CDN。
+    5. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#静态资源使用额外域名domain-hash的原因)，减少cookie。
+    6. 对资源进行缓存：
 
         1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
         2. 使用[缓存相关HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since` `ETag/If-None-Match`。
         3. 配置超长时间的本地缓存，采用文件的数字签名（如：MD5）作为缓存更新依据。
-    6. [非覆盖式更新资源](https://github.com/fouber/blog/issues/6)。
+    7. [非覆盖式更新资源](https://github.com/fouber/blog/issues/6)。
 2. 载入页面时，优化CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）：
 
     1. 减少关键资源、减少HTTP请求：

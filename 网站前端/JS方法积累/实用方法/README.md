@@ -104,7 +104,7 @@
 function detectOS (ua = window.navigator.userAgent, pf = window.navigator.platform) {
   let os = ''
 
-  if (/iPhone|iPad|iPod|iOS/.test(ua)) {
+  if (/iPhone|iPad|iPod|iOS/.test(ua)) {    // fixme:注意iOS13之后的iPad可能会判断为macOS
     os = 'iOS'
   } else if (/Android/.test(ua)) {
     os = 'Android'
@@ -1886,9 +1886,9 @@ function createXHR() {
 var xhr = createXHR();
 
 xhr.onreadystatechange = function () {  // 或DOM2级、ie事件绑定方式
-    console.log(xhr.getResponseHeader(头), xhr.getAllResponseHeaders());
-
     if (xhr.readyState === 4) {
+        console.log(xhr.getResponseHeader(某响应头), xhr.getAllResponseHeaders());
+
         if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
             console.log(xhr.responseText);
         } else {
@@ -1900,7 +1900,7 @@ xhr.onreadystatechange = function () {  // 或DOM2级、ie事件绑定方式
     }
 };
 xhr.open(请求类型, URL[, 是否异步[, 用户名[, 密码]]]);
-xhr.setRequestHeader(头, 值);
+xhr.setRequestHeader(某请求头, 值);
 xhr.send(null);
 ```
 

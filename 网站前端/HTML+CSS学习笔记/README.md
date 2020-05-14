@@ -1,6 +1,14 @@
 # HTML+CSS学习笔记
 
 ## 目录
+1. [经验总结](#经验总结)
+
+    1. [渲染性能（rendering performance）](#渲染性能rendering-performance)
+    1. [水平居中、垂直居中](#水平居中垂直居中)
+    1. [自适应宽度布局](#自适应宽度布局)
+    1. [`flex`优雅解决布局、自适应问题](#flex优雅解决布局自适应问题)
+    1. [经验技巧](#经验技巧)
+    1. [Tips](#tips)
 1. [CSS](#css)
 
     1. [CSS选择器](#css选择器)
@@ -28,14 +36,803 @@
     1. [插件避免被其他样式污染方式](#插件避免被其他样式污染方式)
     1. [网页图标favicon的兼容写法](#网页图标favicon的兼容写法)
     1. [富文本编辑器](#富文本编辑器)
-1. [经验总结](#经验总结)
 
-    1. [水平居中、垂直居中](#水平居中垂直居中)
-    1. [自适应宽度布局](#自适应宽度布局)
-    1. [`flex`优雅解决布局、自适应问题](#flex优雅解决布局自适应问题)
-    1. [渲染性能（rendering performance）](#渲染性能rendering-performance)
-    1. [经验技巧](#经验技巧)
-    1. [Tips](#tips)
+---
+## 经验总结
+
+### 渲染性能（rendering performance）
+
+><details>
+><summary>每一帧耗时</summary>
+>
+>1. 为了视觉上连贯，浏览器对每一帧画面的所有工作需要在16ms（1000ms / 60f ~= 16.66ms/f）内完成。
+>2. 渲染画面时，浏览器需要进行一些流程工作：渲染队列的管理、渲染线程与其他线程之间的切换等。因此一帧中花费在像素渲染管道（JS -> Style -> render tree）的时间要控制在10至12ms内，再余出4至6ms进行流程工作。
+>3. 一帧画面理想的耗时组合为：`16ms = 3~4ms的JS代码 + 7~8ms的渲染工作 + 4~6ms的流程工作`。
+></details>
+
+1. 像素渲染管道：
+
+    `CSS/JS` -> `Style（计算样式）` >> `Render Tree（渲染树）`：`Layout（布局）` -> `Paint（绘制）` -> `Composite（渲染层合并）`
+
+    >Render Tree：改变前一个步骤需要后一个步骤也做出处理，所以若能够仅处理越后面的步骤，对性能耗费越少。
+
+    1. `CSS/JS`：
+
+        使用CSS（动画：`animation-@keyframes`、`transition`）或JS或Web Animation API，实现视觉变化效果。
+
+        >1. JS动画（命令式）比CSS动画（说明式）消耗多一些资源，浏览器会对CSS动画自动进行优化。
+        >
+        >    1. CSS的`animation`相关事件：
+        >
+        >        `animationstart`、`animationend`、`animationcancel`、`animationiteration`
+        >    1. CSS的`transition`相关事件：`transitionend`
+        >2. 动画其实就是按某种顺序、**平滑**地修改样式：如：颜色、大小、间距、`transform`等。
+    2. `Style`：
+
+        根据CSS选择器，生成完整的CSSOM。
+    3. `Layout`：
+
+        具体计算每个节点最终在屏幕上显示的大小和位置。
+    4. `Paint`：
+
+        >耗费性能最大的工作。
+
+        填充像素的过程。包括绘制文字、颜色、图像、边框、阴影等，也就是DOM所有的可视效果。一般来说，这个绘制过程是在多个层（composite layers）上完成。
+    5. `Composite`：
+
+        在每个层（composite layers）上完成绘制过程后，浏览器会将所有层按照合理的顺序合并成一个图层再显示。
+
+>第一次确定节点的大小和位置是`Layout`，随后对节点大小和位置的重新计算是`reflow`。同理`Paint`与`repaint`。
+
+2. `reflow`、`repaint`：
+
+    >CSS属性触发reflow、repaint、composite的情况：[CSS Triggers](https://csstriggers.com/)。
+
+    1. `reflow`（重排）：
+
+        某个元素上执行动画时，浏览器需要每一帧都检测是否有元素受到影响，并调整它们的大小、位置，通常这种调整都是联动的。
+
+        1. 当遇到reflow问题时，考虑调整JS代码书写。
+        2. 触发一个元素layout改变，几乎总是导致整个DOM都要reflow。
+    2. `repaint`（重绘）：
+
+        浏览器还需要监听元素的外观变化，通常是背景色、阴影、边框等可视元素，并进行repaint。
+
+        1. 当遇到repaint问题时，对于仅改变composite属性的元素，考虑单独提升到一个层（composite layers）中。
+        2. 浏览器不会始终repaint整个层（composite layers），而是智能地对DOM中失效的部分进行repaint。
+    3. `composite`：
+
+        每次reflow、repaint后浏览器还需要层合并再输出到屏幕上。
+
+    >那些容易忽略的**能引起布局改变的样式修改**，它们可能不产生动画，但当浏览器需要重新进行样式的计算和布局时，依然会产生reflow和repaint。
+3. 创建composite layers（层、渲染层、复合层），交由GPU处理（CPU不再处理）：
+
+    >GPU（图形处理器）是与处理和绘制图形相关的硬件，专为执行复杂的数学和几何计算而设计的，可以让CPU从图形处理的任务中解放出来，从而执行其他更多的系统任务。
+
+    1. 强制普通元素提升到单独层的方法：
+
+        1. `will-change: ;`（现代浏览器，最佳方式）。
+        2. `transform: translateZ(0);`（hack方式）。
+
+        >有些情况无法互相替代。
+    2. 自带单独层的元素：
+
+        1. 使用加速视频解码的`<video>`元素。
+        2. 拥有3D（WebGL）上下文或加速的2D上下文的`<canvas>`元素。
+        3. `flash`等混合插件。
+    3. 其他提升至单独层的方法：
+
+        1. `transform 3D`或`perspective`。
+        2. 若有一个元素，它的兄弟元素在层中渲染，而这个兄弟元素的`z-index`比较小，则这个元素（不管是不是应用了硬件加速样式）也会被放到层中。
+        3. 对自己的`opacity`做CSS动画或使用一个动画变换的元素。
+        4. 拥有加速CSS过滤器的元素。
+        5. 元素有一个包含层的后代节点（换句话说，就是一个元素拥有一个后代元素，该后代元素在自己的层里）。
+
+    >有时，虽然提升元素，却仍需要repaint。
+4. 动画性能最好、消耗最低的属性（必须自身元素已提升至单独层）：
+
+    对于以下属性修改，若元素自身被提升至单独层，则仅触发composite，否则触发paint -> composite。
+
+    1. 位置：`transform: translate(xpx, ypx);`
+    2. 缩放：`transform: scale(x, y);`
+    3. 旋转：`transform: rotate(xdeg);`
+    4. 倾斜：`transform: skew(xdeg,ydeg);`
+    5. 透明：`opacity: x;`
+5. 渲染性能优化方法：
+
+    >参考：[渲染性能](https://developers.google.com/web/fundamentals/performance/rendering/)。
+
+    1. 优化JS的执行效率
+
+        1. 把DOM元素的操作划分成多个小任务，分别在多个帧中去完成。
+        2. 不在连续的动画过程中做高耗时的操作（如：大面积reflow、repaint、复杂JS计算）。
+        3. 对于动画效果的实现，建议使用`requestAnimationFrame`（或[velocity动画库](https://github.com/julianshapiro/velocity)），避免使用~~setTimeout、setInterval~~。
+        4. 把耗时长的JS代码放到`Web Worker`中去做。
+        5. 用操作class替代~~直接操作CSS属性~~。
+    2. 缩小样式计算的范围和降低复杂度
+
+        1. 降低样式选择器的复杂度、提升[选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
+
+            ><details>
+            ><summary>可以使用基于class的方式，如：BEM</summary>
+            >
+            >1. `block-name__element-name--modifier-name--modifier-val`（[getbem.com](http://getbem.com/naming/)）
+            >2. `block-name__element-name_modifier-name_modifier-val`（[en.bem.info](https://en.bem.info/methodology/naming-convention/)）
+            ></details>
+        2. 减少需要执行样式计算的元素的个数（随着元素递增而计算量线性递增）。
+    3. 避免大规模、复杂的layout与reflow
+
+        1. 避免强制同步布局
+
+            >强制同步布局（forced synchronous layouts）：使用JS强制浏览器提前执行layout。
+
+            实行**先读后写**原则：先批量读取元素样式属性（返回上一帧的值），再对样式属性、类名等进行写操作。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```javascript
+            >/* bad：强制同步布局，可能产生布局抖动 */
+            >dom.forEach(function (elem) {
+            >    if (window.scrollY < 200) { // 计算读取layout
+            >        elem.style.opacity = 0.5;   // JS写入样式
+            >    }
+            >});
+            >
+            >/* good：先读后写 */
+            >if (window.scrollY < 200) { // 计算读取layout
+            >    /* 批量JS写入样式 */
+            >    dom.forEach(function (elem) {
+            >        elem.style.opacity = 0.5;
+            >    });
+            >}
+            >```
+            ></details>
+        2. 避免布局抖动
+
+            >布局抖动（layout thrashing）：快速多次进行强制同步布局。
+        3. 使用离线DOM操作样式完毕，再添加或替换到文档中；把文档中要操作的DOM设置为`display: none;`再操作样式，操作完毕后恢复复显示。
+        4. `position: absollute/fixed;`的元素reflow开销较小。
+        5. 使用[`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#弹性盒子)布局（对于相同数量的元素、视觉外观，flex布局的时间更少）。
+    4. 简化绘制的复杂度、减小绘制区域
+
+        合理划分层，动静分离，可避免大面积重绘。
+    5. 优先使用层（composite layers）来统一操作动画，并控制层数量
+
+        若元素仅改变composite，则将其提升至单独的层。
+
+        1. 只使用`transform/opacity`来实现动画效果。
+        2. 用`will-change/translateZ`属性把动画元素提升到单独的层中。
+        3. 避免滥用层提升、避免创建过多层（更多的层需要更多的内存和更复杂的管理）。
+        4. 使用3D硬件加速提升动画性能时，最好给元素增加一个`z-index`属性（改变层叠上下文的顺序），人为干扰层排序，可以有效减少Chrome创建不必要的层，提升渲染性能。
+
+            >若有一个元素，它的兄弟元素在层中渲染，而这个兄弟元素的`z-index`比较小，则这个元素（不管是不是应用了硬件加速样式）也会被放到层中。
+    6. 对用户输入、滚动事件进行[函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)处理
+
+        >滚动会触发高频率重新渲染，scroll事件的处理函数也会被高频率触发。
+
+        1. 避免使用运行时间过长的事件处理程序，它们会阻塞页面的滚动渲染。
+        2. 避免在事件处理程序中修改样式属性。
+        3. 对事件处理程序去抖动（debounce），存储事件对象的值，然后在`requestAnimationFrame`回调函数中修改样式属性。
+6. 经验：
+
+    1. 追查性能问题、优化动画时：
+        1. 打开**Layer Borders**、**Paint Flashing**选项；
+        2. 使用Chrome [Performance](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/timeline-tool)工具检查。
+    2. 低性能设备（Android）优先调试。
+
+        1. （除了**CSS3旋转属性**与**内嵌滚动条**同时出现无法解决）样式问题都可以像处理ie6问题一样通过真机试验出解决方案。
+        2. 有些低版本机型会有类似ie6的CSS问题，包括**CSS3的厂商前缀（`-webkit-`等）**、**层叠关系（`z-index`）**，并且要更注意**渲染性能（层产生）**。
+    3. 字体模糊或抖动、图像锯齿等，可以考虑交由GPU处理。
+    4. `transform: translate`进行非整数平移时，会产生模糊（注意百分比可能会计算成非整数）。
+
+    - 因为某些原因（参考：[如何在 Windows 上享受更棒的字体渲染  | 实用技巧](https://sspai.com/post/52557)），`微软雅黑`等字体在Windows进行Hint处理会导致模糊、笔画高低不平。
+
+        前端解决方案（避免Hint导致以上问题）：替换字体、提升`font-size`、去除粗体。如：微软雅黑，≥17px的粗体，≥14的非粗体。
+
+        >Hint：Windows对于低分辨率屏幕下字体显示进行的特殊处理，当**屏幕分辨率过低**或**字太小**不足以显示所有文字细节时，Windows会启动Hint让文字变得更清晰。
+        >
+        >每个字体本身会带有一个GASP表，Windows的渲染引擎会根据这些GASP表来判断是否需要做处理。然而如果字体的GASP表不完善，就会让Hint误操作。
+
+### 水平居中、垂直居中
+1. 水平居中
+
+    1. 内容宽度确定
+
+        ```css
+        .son {
+            width: 宽度;
+            margin: 0 auto;
+        }
+        ```
+    2. 内容宽度不确定
+
+        1. 父级`display: flex; justify-content: center;`；或父级`display: flex;`，单子级`margin: 0 auto;`。
+
+            >兼容ie11+。
+
+            ```scss
+            .father {
+                display: flex;
+                justify-content: center;
+            }
+
+            /* 或 */
+
+            .father {
+                display: flex;
+
+                .son {  /* 单子级的margin左右占满父级 */
+                    margin: 0 auto;
+                }
+            }
+            ```
+        2. 子级`display: table; margin: 0 auto;`。
+
+            >兼容ie8+。
+
+            ```css
+            .son {
+                display: table;
+                margin: 0 auto;
+            }
+            ```
+        3. 父级`position: relative;`，子级`position: absolute; left: 50%; transform: translateX(-50%);`。
+
+            >兼容ie9+。
+
+            ```scss
+            .father {
+                position: relative;
+
+                .son {
+                    position: absolute;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    -ms-transform: translateX(-50%);
+                }
+            }
+            ```
+        4. 父级`text-align: center;`，子级`display: inline-block;`。
+
+            ```scss
+            .father {
+                text-align: center;
+                font-size: 0;
+
+                .son {
+                    display: inline-block;
+                    *display: inline;
+                    *zoom: 1;
+
+                    font-size: ;
+                }
+            }
+            ```
+2. 垂直居中
+
+    1. 内容高度确定
+
+        父级`position: relative;`，子级`position: absolute; top: 50%; margin-top: 负一半高度;`。
+    2. 内容高度不确定
+
+        1. 父级`display: flex; align-items: center;`。
+
+            >兼容ie11+。
+
+            ```scss
+            .father {
+                display: flex;
+                align-items: center;
+            }
+            ```
+        2. 父级`display: table-cell; vertical-align: middle;`，子级`display: inline-block;`。
+
+            ```scss
+            .father { /* （为兼容低版本ie）不能是float或absolute，可以在外嵌套float或absolute */
+                display: table-cell;
+                vertical-align: middle;
+
+                /* ie6/7需要：height/font-size = 1.14 */
+                *height: 114px;
+                *font-size: 100px;
+
+                .son {  /* （为兼容低版本ie）必须是行内元素 */
+                    display: inline-block;
+                    *display: inline;
+                    *zoom: 1;
+                    /*vertical-align: middle;*/
+                }
+            }
+            ```
+
+            [CodePen demo](https://codepen.io/realgeoffrey/pen/RXoEyW)
+        3. 父级`position: relative;`，子级`position: absolute; top: 50%; transform: translateY(-50%);`。
+
+            >兼容ie9+。
+
+            ```scss
+            .father {
+                position: relative;
+
+                .son {
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    -ms-transform: translateY(-50%);
+                }
+            }
+            ```
+        4. 辅助参考元素`display: inline-block; vertical-align: middle; height: 100%;`，子级`display: inline-block; vertical-align: middle;`。
+
+            1. 伪元素：
+
+                >兼容ie8+。
+
+                ```scss
+                .father {
+                    font-size: 0;
+
+                    &:before {
+                        content: "";
+                        display: inline-block;
+                        vertical-align: middle;
+                        height: 100%;
+                    }
+                    .son {
+                        display: inline-block;
+                        vertical-align: middle;
+
+                        font-size: ;
+                    }
+                }
+                ```
+            2. 额外元素：
+
+                ```html
+                <style>
+                    .father {
+                        font-size: 0;
+                    }
+                    span {
+                        display: inline-block;
+                        *display: inline;
+                        *zoom: 1;
+                        vertical-align: middle;
+                        height: 100%;
+                    }
+                    .son {
+                        display: inline-block;
+                        *display: inline;
+                        *zoom: 1;
+                        vertical-align: middle;
+
+                        font-size: ;
+                    }
+                </style>
+
+                <div class="father">
+                    <span></span>
+                    <div class="son"></div>
+                </div>
+                ```
+3. 水平、垂直居中
+
+    1. 内容高度、宽度确定
+
+        父级`position: relative;`，子级`position: absolute; top: 50%; left: 50%; margin-top: 负一半高度; margin-left: 负一半宽度;`。
+    2. 内容高度、宽度不确定
+
+        1. 父级`display: table-cell; text-align: center; vertical-align: middle;`，子级`display: inline-block;`。
+
+            ```scss
+            .father {
+                display: table-cell;
+                text-align: center;
+                vertical-align: middle;
+
+                /* ie6/7需要：height/font-size = 1.14 */
+                *height: 114px;
+                *font-size: 100px;
+
+                .son {
+                    display: inline-block;
+                    *display: inline;
+                    *zoom: 1;
+                    /*vertical-align: middle;*/
+                }
+            }
+            ```
+        2. 父级`position: relative;`，子级`position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);`。
+
+            >兼容ie9+。
+
+            ```scss
+            .father {
+                position: relative;
+
+                .son {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    -ms-transform: translate(-50%, -50%);
+                }
+            }
+            ```
+        3. 父级`display: flex; justify-content: center; align-items: center;`。
+
+            >兼容ie11+。
+
+            ```css
+            .father {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            ```
+
+### 自适应宽度布局
+1. [`flex`实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex布局实践)
+2. `float`
+
+    >`float`节点：可以填补在**之后节点**的水平`margin`内（`padding`内不可以）；不可以填补在**之前节点**的水平`margin`内。
+
+    1. 中间内容自适应，两边固定（中间内容最后加载）
+
+        ```html
+        <style type="text/css">
+            .float-l {
+                float: left;
+                _display: inline;
+                width: 左边块宽度;
+            }
+            .float-r {
+                float: right;
+                _display: inline;
+                width: 右边块宽度;
+            }
+            .middle {
+                margin-left: 大于等于左边块宽度;
+                margin-right: 大于等于右边块宽度;
+            }
+        </style>
+
+        <div class="clearfix">
+            <div class="float-l">左边内容</div>
+            <div class="float-r">右边内容</div>
+            <div class="middle">中间内容</div>
+        </div>
+        ```
+
+        >1. DOM结构不能颠倒，需要中间结构放最后;
+        >2. 节点上能设定`clear: both;`。
+    2. 中间内容自适应，两边固定（中间内容最先加载）
+
+        >所谓的「双飞翼布局」。
+
+        ```html
+        <style type="text/css">
+            .main-out,
+            .float-l,
+            .float-r {
+                float: left;
+                _display: inline;
+            }
+            .middle-out {
+                width: 100%;
+            }
+            .middle-in {
+                margin: 0 大于等于右边块宽度 0 大于等于左边块宽度;
+            }
+            .float-l {
+                width: 左边块宽度;
+                margin-left: -100%;
+            }
+            .float-r {
+                width: 右边块宽度;
+                margin-left: -左边块宽度;
+            }
+        </style>
+
+        <div class="clearfix">
+            <div class="middle-out">
+                <div class="middle-in">
+                    中间内容
+                </div>
+            </div>
+            <div class="float-l">左边内容</div>
+            <div class="float-r">右边内容</div>
+        </div>
+        ```
+
+        >1. DOM结构不能颠倒，需要中间结构放最前;
+        >2. 节点上能设定`clear: both;`。
+    3. 中间与两边内容都自适应
+
+        ```html
+        <style type="text/css">
+            .float-l {
+                float: left;
+                _display: inline;
+            }
+            .float-r {
+                float: right;
+                _display: inline;
+            }
+            .middle {
+                display: table-cell;
+                *display: inline-block;
+                width: 9999px;
+                *width: auto;
+            }
+        </style>
+
+        <div class="clearfix">
+            <div class="float-l">左边内容</div>
+            <div class="float-r">右边内容（没有足够空间则整体换行）</div>
+            <div class="middle">中间内容（没有足够空间则整体换行）</div>
+        </div>
+        ```
+
+        >1. DOM结构不能颠倒，需要中间结构放最后;
+        >2. 节点上能设定`clear: both;`;
+        >3. 完全由内容决定布局；
+        >4. 第一块内容要给第二块内容留下足够空间，否则第二块放不下会整个换行；第一块+第二块要给第三块留下足够空间，否则第三块放不下会整个换行。
+
+### [`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex语法)优雅解决布局、自适应问题
+1. 不使用`flex`导致不方便处理的问题：
+
+    1. 栅格系统
+    2. [自适应宽度布局](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#自适应宽度布局)
+    3. [水平居中、垂直居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#水平居中垂直居中)
+
+        >[图标和文字并排垂直水平居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#图标和文字并排垂直水平居中)
+    4. [粘性页脚](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#粘性页脚)
+    5. [多列等高](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#多列等高)
+2. `flex`具体解决方案：[`flex`布局实践](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex布局实践)。
+
+### 经验技巧
+1. 命名间隔
+
+    >`-`短横线隔开式（kebab-case）、小驼峰式（camelCase）、大驼峰式（PascalCase）、`_`。
+
+    1. HTML的class和id：`-`。
+    2. 图片命名：`_`。
+    3. 其他文件（除了.vue组件文件）：`-`。
+    4. JS相关：
+
+        1. JS的变量和函数：小驼峰式（构造函数：大驼峰式）。
+        2. .vue组件文件：大驼峰式或`-`（且需要2个以上单词）。
+
+            >页面文件（如：nuxt的pages）：按照路由访问命名（习惯用`-`）。
+2. 大小写
+
+    1. CSS属性名和属性值：不区分大小写。
+
+        >`content`的属性值区分大小写。`font-family`的属性值不区分大小写。
+    2. CSS选择器：
+
+        1. 大部分不区分大小写；
+        2. `类选择器`、`ID选择器`、`自定义属性的属性选择器的属性值`区分大小写。
+    3. CSS变量：区分大小写。
+    4. HTML标签：不区分大小写。
+    5. HTML标签的属性名和属性值：
+
+        1. 属性名不区分大小写；
+
+            >自定义属性的属性名也不区分大小写。
+        2. 大部分属性值不区分大小写；
+        3. `class`、`id`、`value`、`自定义属性`等的属性值区分大小写。
+    6. JS相关：
+
+        1. `attribute`不区分大小写（`.attributes`、`.getAttribute/setAttribute/removeAttribute/hasAttribute/toggleAttribute`）
+        2. `property`的属性名是固定的，不因为`attributes`而改变。
+
+3. 引号使用
+
+    1. HTML标签的`attribute`的值、CSS样式属性的值（如：`content`、`font-family`、`quotes`）：
+
+        >除了有空格之外，都允许不加引号。建议：HTML标签的`attribute`的值都添加，CSS样式属性的值都不添加。
+
+        双引号`"`
+    2. JS代码的字符串：
+
+        单引号`'`
+4. CSS命名规范
+
+    1. BEM（以及变种）
+
+        1. `block-name__element-name--modifier-name--modifier-val`
+        2. `is-状态`
+
+        >1. `--modifier`：仅包括多种外观的不同样式，如：size、type、color、font。
+        >2. `is-状态`：仅包括JS控制状态显示的不同样式，如：active、disabled、show。
+
+        - `j-`：仅给JS使用的选择器，意味着不会有样式添加到这个选择器上。
+
+        >其他CSS模块化理论：OOCSS、SMACSS。
+    2. <details>
+
+        <summary><del>已过时的方案</del></summary>
+
+        1. 布局`.g-`（grid）
+
+            将页面分割为几个大块的布局，一般来说是页面最外层的类名。
+        2. 模块`.m-`（module）
+
+            可重复使用的较大的整体。
+        3. 元件`.u-`（unit）
+
+            不可再分的较为小巧的个体，通常被重复用于各种模块中。
+        4. 状态`.z-`（zhuangtai）
+
+            为状态类样式加入前缀，统一标识，方便识别，只作为后代选择器使用（如：`.z-hover`或`.z-active`）。
+        5. 样式区分`.i-`（icon）
+
+            同一批内容的不同样式（如：仅背景不同的几个按钮），可以用`.i-1`、`.i-2`区分样式。
+
+            >若在模块上，则可以使用**选择器扩展**而不加前缀`.i-`，如：`.m-xxx`扩展内容`.m-xxx-1`、`.m-xxx .btn`扩展内容`.m-xxx .btn-1`。
+        6. JS功能`.j-`（JS）
+
+            仅作为JS锚点使用，不添加任何CSS样式。
+
+        >- 皮肤`.s-`（skin）
+        >
+        >    把皮肤型的样式抽离出来。
+    </details>
+5. 经验
+
+    1. （标签）语义化：让机器可以读懂内容
+
+        >先用纯HTML标签语义化结构，再加入CSS满足样式，最后加入交互。
+
+        1. 去掉或丢失样式能够让页面呈现出清晰的结构。
+        2. 有利于SEO（爬虫依赖于标签来确定上下文和各个关键字的权重）。
+        3. 方便其他设备解析（如：屏幕阅读器、盲人阅读器、移动设备）以特殊方式渲染网页。
+        4. 便于团队开发和维护，更具可读性、减少差异化。
+    2. 合理减少层级嵌套，行内元素不要嵌套块级元素（如：`<a>`不嵌套`<div>`）。
+    3. 用父节点的class去管理子节点。
+    4. 有些WAP端（如：Android各奇葩机型）页面的点击按钮制作大一些，否者难以点击触发JS效果。
+6. CSS编码规范
+
+    绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/css.md#css编码规范)。
+
+    >可以设置为IDEs的**Reformat Code**的排版样式。
+7. CSS注释方式
+
+    除了普通注释之外，还可以把注释内容放在根元素的伪元素中：
+
+    ```css
+    :root:before {
+      content: "author: 重构; design: 设计师; update: 更新时间;";
+      display: none;
+    }
+    ```
+
+### Tips
+1. 限定布局宽度，让内容决定布局高度。
+2. `<a>`的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（包括`#`和`javascript:`）都会打开新页面。
+3. 在拥有`target="_blank"`的`<a>`中添加`rel="noopener"`或`rel="noreferrer"`。
+
+    >没有`target="_blank"`属性的新打开的页面和原页面不存在关系。
+
+    1. 没有添加额外的`rel`属性的开启新窗口：
+
+        1. 新页面将与原页面在同一个进程上运行，若执行开销大的JS，会互相影响性能。
+        2. 新页面可以通过`window.opener`访问原窗口对象，并使用`window.opener.location`改变原页面导航。
+
+        ><details>
+        ><summary>Chrome任务管理器展示：<code>target="_blank"</code>但未设置<code>rel</code></summary>
+        >
+        >![Chrome任务管理器图](./images/chrome-task-1.png)
+        ></details>
+    2. 添加额外的`rel`属性：
+
+        1. `rel="noopener"`的新窗口：
+
+            与原页面不在同一个进程、且`window.opener`返回`null`。
+        2. `rel="noreferrer"`（不限于`target="_blank"`）：
+
+            （不在一个进程、且`window.opener`返回`null`，）http请求不发送`Referer`（`document.referrer`返回`''`）。
+4. （SEO）对不想宣传的链接，在`<a>`中添加`rel="nofollow"`。
+
+    ><details>
+    ><summary>告诉搜索引擎「不要跟踪此网页上的链接」或「不要跟踪此特定链接」</summary>
+    >
+    >1. 可以用于阻止在PR值高的网站上以留言等方式添加链接从而提高自身网站排名的行为，以改善搜索结果的质量，防止垃圾链接的蔓延。
+    >2. 网站站长也可对其网页中的付费链接使用nofollow来防止该链接降低搜索排名。
+    >3. 对一些重要度低的网页内容使用nofollow，还可以使搜索引擎以不同的优先级别来抓取网页内容。
+    ></details>
+5. 404和5xx错误需要制作页面。
+6. 没有设置宽度的`float`元素，其宽度等于子节点宽度：
+
+    1. 主流浏览器等于最外层子节点宽度。
+    2. ie6等于所有子节点中最大的宽度。
+7. `inline`、`inline-block`的元素前可能有空隙（其实是行内标签前面的空白符，若拥有`font-size`之后便会有高宽），通过以下办法解决：
+
+    1. 把`inline`、`inline-block`节点设置为`block`。
+    2. 给父级节点设置`font-size: 0;`（可用此方法排查是否是空格造成的）。
+8. 页面是按照顺序加载资源，当且仅当有使用需求时才会去加载外部资源。
+
+    已加载完成的CSS文件内有多个URL请求（`background`），但仅在页面节点要引用某个URL请求时（无论节点是否隐藏），才会去请求这个资源，而不是在加载CSS文件时就加载外部资源。可以用于监控用户行为（当用户某些操作导致展示背景时加载外部资源——外部资源可以是上报接口）。
+9. 使用动态DOM加载，代替内容的`display: none;`（免去构建复杂的DOM）：
+
+    1. `<script type="text/template"></script>`
+    2. `<template></template>`
+    3. `<textarea style="display:none;"></textarea>`
+10. WAP端页面或支持伪类的浏览器，能用`:before/after`的就不要添加标签（但是不要在`content`里加业务文字）。
+11. 单选`<input type="radio">`、多选`<input type="checkbox">`按钮开关自定义样式：
+
+    用`input:checked + 兄弟节点`操作选项选中与否的不同样式；可以隐藏`<input>`，点击在`<label>`上改变`<input>`的`:checked`状态（`<label>`的`for`绑定`<input>`的`id`），用自定义样式来制作单选框、复选框。避免使用JS。
+12. 输入框仅输入数字的：
+
+    1. `<input type="number" pattern="[0-9]*" onchange="处理函数">`
+    2. <details>
+
+        <summary>处理函数（jQuery）</summary>
+
+        ```javascript
+        $(输入框).on('change', function () {
+            const $this = $(this);
+            let val = $this.val();
+
+            val = parseFloat(val.split('.').slice(0, 2).join('.'));  // 去除多余的小数点（type="text"才有用）
+
+            if (Number.isNaN(val)) {    // 去除无效输入
+                val = 默认值;
+            } else {    // 处理最小最大值
+                val = Math.max(Math.min(val, 最大值), 最小值);
+            }
+
+            if (val.toString().split('.')[1] && val.toString().split('.')[1].length > 小数位数) {  // 保留小数位数
+                val = val.toFixed(小数位数);
+            }
+
+            $this.val(val);
+        });
+        ```
+        </details>
+13. `<datalist>`为`<input>`的输入值添加建议（`<input>`的`list`绑定`<datalist>`的`id`）
+
+    <details>
+    <summary>e.g.</summary>
+
+    ```html
+    <input list="标记"/>
+    <datalist id="标记">
+      <option value="建议值1">
+      <option value="建议值2">
+    </datalist>
+    ```
+    </details>
+14. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
+15. 避免：
+
+    1. 避免~~放大、缩小图片~~，使用原始大小展现。
+    2. 避免使用不可缓存且增加额外HTTP请求的 ~~<iframe>~~。
+16. 超出内容区域的内容：
+
+    1. 用绝对定位把内容设置在外部
+
+        不要把超出内容区域的绝对定位设置在`<body>`直接子级，而是设置在`<body>`下拥有`overflow: hidden;`的父级下。
+    2. ~~大背景模式~~
+17. `CSS.supports(CSS语句)`或`CSS.supports(CSS属性, 值)`判断浏览器是否支持一个给定CSS语句。
+
+    >`CSS.supports('--变量名', '非空任意值')`可判断是否支持CSS变量。
+18. 切图时`<img>`外嵌套一层标签，好应对可能要在图片上添加东西的需求。
+19. 没有 **背景内容（透明背景无效、局部背景只能在有背景处有效）、或文本、或其他内容（如：`<img>`、`<iframe>`等）** 承载的节点无法触发鼠标事件。
+
+    可以在全区域添加背景使鼠标事件有效。
+
+    1. 加透明背景：`background: rgba(0, 0, 0, .002)`（小于`0.002`的透明度无效）。
+    2. 加1x1像素的透明图：`background: url(1x1像素透明图地址) repeat;`。
+20. CSS的`content`不要放业务逻辑耦合的内容（如：`楼主`等业务逻辑词汇），可以放固定不变的交互逻辑的内容（如：`：`、`展开/收起`）。
+21. `border`分为上、右、下、左，每一块区域的`border-width`不为`0`时都是梯形（`width`或`height`为`0`时为三角形），`border-width`决定梯形（或三角形）的高。
+
+    某些边设为`border-width`不为`0`、`border-right-color`为`transparent`可以制造一些形状。
+22. 用`filter: drop-shadow`（图像本身形状和alpha通道的阴影）代替`box-shadow`（盒阴影）
+23. 若在视口中**添加/删除**节点导致滚动条变化，则浏览器会尽量保持视口最顶部节点固定不变（从而瞬间改变滚动条位置以使视口顶部节点尽量保持不随滚动条变化而位移）
 
 ---
 ## CSS
@@ -836,800 +1633,3 @@
         >如：[quill](https://github.com/quilljs/quill)。
 
         除了添加标签和`style`之外，还会额外添加`class`和DOM（需自定义样式）。
-
----
-## 经验总结
-
-### 水平居中、垂直居中
-1. 水平居中
-
-    1. 内容宽度确定
-
-        ```css
-        .son {
-            width: 宽度;
-            margin: 0 auto;
-        }
-        ```
-    2. 内容宽度不确定
-
-        1. 父级`display: flex; justify-content: center;`；或父级`display: flex;`，单子级`margin: 0 auto;`。
-
-            >兼容ie11+。
-
-            ```scss
-            .father {
-                display: flex;
-                justify-content: center;
-            }
-
-            /* 或 */
-
-            .father {
-                display: flex;
-
-                .son {  /* 单子级的margin左右占满父级 */
-                    margin: 0 auto;
-                }
-            }
-            ```
-        2. 子级`display: table; margin: 0 auto;`。
-
-            >兼容ie8+。
-
-            ```css
-            .son {
-                display: table;
-                margin: 0 auto;
-            }
-            ```
-        3. 父级`position: relative;`，子级`position: absolute; left: 50%; transform: translateX(-50%);`。
-
-            >兼容ie9+。
-
-            ```scss
-            .father {
-                position: relative;
-
-                .son {
-                    position: absolute;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    -ms-transform: translateX(-50%);
-                }
-            }
-            ```
-        4. 父级`text-align: center;`，子级`display: inline-block;`。
-
-            ```scss
-            .father {
-                text-align: center;
-                font-size: 0;
-
-                .son {
-                    display: inline-block;
-                    *display: inline;
-                    *zoom: 1;
-
-                    font-size: ;
-                }
-            }
-            ```
-2. 垂直居中
-
-    1. 内容高度确定
-
-        父级`position: relative;`，子级`position: absolute; top: 50%; margin-top: 负一半高度;`。
-    2. 内容高度不确定
-
-        1. 父级`display: flex; align-items: center;`。
-
-            >兼容ie11+。
-
-            ```scss
-            .father {
-                display: flex;
-                align-items: center;
-            }
-            ```
-        2. 父级`display: table-cell; vertical-align: middle;`，子级`display: inline-block;`。
-
-            ```scss
-            .father { /* （为兼容低版本ie）不能是float或absolute，可以在外嵌套float或absolute */
-                display: table-cell;
-                vertical-align: middle;
-
-                /* ie6/7需要：height/font-size = 1.14 */
-                *height: 114px;
-                *font-size: 100px;
-
-                .son {  /* （为兼容低版本ie）必须是行内元素 */
-                    display: inline-block;
-                    *display: inline;
-                    *zoom: 1;
-                    /*vertical-align: middle;*/
-                }
-            }
-            ```
-
-            [CodePen demo](https://codepen.io/realgeoffrey/pen/RXoEyW)
-        3. 父级`position: relative;`，子级`position: absolute; top: 50%; transform: translateY(-50%);`。
-
-            >兼容ie9+。
-
-            ```scss
-            .father {
-                position: relative;
-
-                .son {
-                    position: absolute;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    -ms-transform: translateY(-50%);
-                }
-            }
-            ```
-        4. 辅助参考元素`display: inline-block; vertical-align: middle; height: 100%;`，子级`display: inline-block; vertical-align: middle;`。
-
-            1. 伪元素：
-
-                >兼容ie8+。
-
-                ```scss
-                .father {
-                    font-size: 0;
-
-                    &:before {
-                        content: "";
-                        display: inline-block;
-                        vertical-align: middle;
-                        height: 100%;
-                    }
-                    .son {
-                        display: inline-block;
-                        vertical-align: middle;
-
-                        font-size: ;
-                    }
-                }
-                ```
-            2. 额外元素：
-
-                ```html
-                <style>
-                    .father {
-                        font-size: 0;
-                    }
-                    span {
-                        display: inline-block;
-                        *display: inline;
-                        *zoom: 1;
-                        vertical-align: middle;
-                        height: 100%;
-                    }
-                    .son {
-                        display: inline-block;
-                        *display: inline;
-                        *zoom: 1;
-                        vertical-align: middle;
-
-                        font-size: ;
-                    }
-                </style>
-
-                <div class="father">
-                    <span></span>
-                    <div class="son"></div>
-                </div>
-                ```
-3. 水平、垂直居中
-
-    1. 内容高度、宽度确定
-
-        父级`position: relative;`，子级`position: absolute; top: 50%; left: 50%; margin-top: 负一半高度; margin-left: 负一半宽度;`。
-    2. 内容高度、宽度不确定
-
-        1. 父级`display: table-cell; text-align: center; vertical-align: middle;`，子级`display: inline-block;`。
-
-            ```scss
-            .father {
-                display: table-cell;
-                text-align: center;
-                vertical-align: middle;
-
-                /* ie6/7需要：height/font-size = 1.14 */
-                *height: 114px;
-                *font-size: 100px;
-
-                .son {
-                    display: inline-block;
-                    *display: inline;
-                    *zoom: 1;
-                    /*vertical-align: middle;*/
-                }
-            }
-            ```
-        2. 父级`position: relative;`，子级`position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);`。
-
-            >兼容ie9+。
-
-            ```scss
-            .father {
-                position: relative;
-
-                .son {
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    -ms-transform: translate(-50%, -50%);
-                }
-            }
-            ```
-        3. 父级`display: flex; justify-content: center; align-items: center;`。
-
-            >兼容ie11+。
-
-            ```css
-            .father {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-            ```
-
-### 自适应宽度布局
-1. [`flex`实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex布局实践)
-2. `float`
-
-    >`float`节点：可以填补在**之后节点**的水平`margin`内（`padding`内不可以）；不可以填补在**之前节点**的水平`margin`内。
-
-    1. 中间内容自适应，两边固定（中间内容最后加载）
-
-        ```html
-        <style type="text/css">
-            .float-l {
-                float: left;
-                _display: inline;
-                width: 左边块宽度;
-            }
-            .float-r {
-                float: right;
-                _display: inline;
-                width: 右边块宽度;
-            }
-            .middle {
-                margin-left: 大于等于左边块宽度;
-                margin-right: 大于等于右边块宽度;
-            }
-        </style>
-
-        <div class="clearfix">
-            <div class="float-l">左边内容</div>
-            <div class="float-r">右边内容</div>
-            <div class="middle">中间内容</div>
-        </div>
-        ```
-
-        >1. DOM结构不能颠倒，需要中间结构放最后;
-        >2. 节点上能设定`clear: both;`。
-    2. 中间内容自适应，两边固定（中间内容最先加载）
-
-        >所谓的「双飞翼布局」。
-
-        ```html
-        <style type="text/css">
-            .main-out,
-            .float-l,
-            .float-r {
-                float: left;
-                _display: inline;
-            }
-            .middle-out {
-                width: 100%;
-            }
-            .middle-in {
-                margin: 0 大于等于右边块宽度 0 大于等于左边块宽度;
-            }
-            .float-l {
-                width: 左边块宽度;
-                margin-left: -100%;
-            }
-            .float-r {
-                width: 右边块宽度;
-                margin-left: -左边块宽度;
-            }
-        </style>
-
-        <div class="clearfix">
-            <div class="middle-out">
-                <div class="middle-in">
-                    中间内容
-                </div>
-            </div>
-            <div class="float-l">左边内容</div>
-            <div class="float-r">右边内容</div>
-        </div>
-        ```
-
-        >1. DOM结构不能颠倒，需要中间结构放最前;
-        >2. 节点上能设定`clear: both;`。
-    3. 中间与两边内容都自适应
-
-        ```html
-        <style type="text/css">
-            .float-l {
-                float: left;
-                _display: inline;
-            }
-            .float-r {
-                float: right;
-                _display: inline;
-            }
-            .middle {
-                display: table-cell;
-                *display: inline-block;
-                width: 9999px;
-                *width: auto;
-            }
-        </style>
-
-        <div class="clearfix">
-            <div class="float-l">左边内容</div>
-            <div class="float-r">右边内容（没有足够空间则整体换行）</div>
-            <div class="middle">中间内容（没有足够空间则整体换行）</div>
-        </div>
-        ```
-
-        >1. DOM结构不能颠倒，需要中间结构放最后;
-        >2. 节点上能设定`clear: both;`;
-        >3. 完全由内容决定布局；
-        >4. 第一块内容要给第二块内容留下足够空间，否则第二块放不下会整个换行；第一块+第二块要给第三块留下足够空间，否则第三块放不下会整个换行。
-
-### [`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex语法)优雅解决布局、自适应问题
-1. 不使用`flex`导致不方便处理的问题：
-
-    1. 栅格系统
-    2. [自适应宽度布局](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#自适应宽度布局)
-    3. [水平居中、垂直居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#水平居中垂直居中)
-
-        >[图标和文字并排垂直水平居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#图标和文字并排垂直水平居中)
-    4. [粘性页脚](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#粘性页脚)
-    5. [多列等高](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#多列等高)
-2. `flex`具体解决方案：[`flex`布局实践](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex布局实践)。
-
-### 渲染性能（rendering performance）
-
-><details>
-><summary>每一帧耗时</summary>
->
->1. 为了视觉上连贯，浏览器对每一帧画面的所有工作需要在16ms（1000ms / 60f ~= 16.66ms/f）内完成。
->2. 渲染画面时，浏览器需要进行一些流程工作：渲染队列的管理、渲染线程与其他线程之间的切换等。因此一帧中花费在像素渲染管道（JS -> Style -> render tree）的时间要控制在10至12ms内，再余出4至6ms进行流程工作。
->3. 一帧画面理想的耗时组合为：`16ms = 3~4ms的JS代码 + 7~8ms的渲染工作 + 4~6ms的流程工作`。
-></details>
-
-1. 像素渲染管道：
-
-    `CSS/JS` -> `Style（计算样式）` >> `Render Tree（渲染树）`：`Layout（布局）` -> `Paint（绘制）` -> `Composite（渲染层合并）`
-
-    >Render Tree：改变前一个步骤需要后一个步骤也做出处理，所以若能够仅处理越后面的步骤，对性能耗费越少。
-
-    1. `CSS/JS`：
-
-        使用CSS（动画：`animation-@keyframes`、`transition`）或JS或Web Animation API，实现视觉变化效果。
-
-        >1. JS动画（命令式）比CSS动画（说明式）消耗多一些资源，浏览器会对CSS动画自动进行优化。
-        >
-        >    1. CSS的`animation`相关事件：
-        >
-        >        `animationstart`、`animationend`、`animationcancel`、`animationiteration`
-        >    1. CSS的`transition`相关事件：`transitionend`
-        >2. 动画其实就是按某种顺序、**平滑**地修改样式：如：颜色、大小、间距、`transform`等。
-    2. `Style`：
-
-        根据CSS选择器，生成完整的CSSOM。
-    3. `Layout`：
-
-        具体计算每个节点最终在屏幕上显示的大小和位置。
-    4. `Paint`：
-
-        >耗费性能最大的工作。
-
-        填充像素的过程。包括绘制文字、颜色、图像、边框、阴影等，也就是DOM所有的可视效果。一般来说，这个绘制过程是在多个层（composite layers）上完成。
-    5. `Composite`：
-
-        在每个层（composite layers）上完成绘制过程后，浏览器会将所有层按照合理的顺序合并成一个图层再显示。
-
->第一次确定节点的大小和位置是`Layout`，随后对节点大小和位置的重新计算是`reflow`。同理`Paint`与`repaint`。
-
-2. `reflow`、`repaint`：
-
-    >CSS属性触发reflow、repaint、composite的情况：[CSS Triggers](https://csstriggers.com/)。
-
-    1. `reflow`（重排）：
-
-        某个元素上执行动画时，浏览器需要每一帧都检测是否有元素受到影响，并调整它们的大小、位置，通常这种调整都是联动的。
-
-        1. 当遇到reflow问题时，考虑调整JS代码书写。
-        2. 触发一个元素layout改变，几乎总是导致整个DOM都要reflow。
-    2. `repaint`（重绘）：
-
-        浏览器还需要监听元素的外观变化，通常是背景色、阴影、边框等可视元素，并进行repaint。
-
-        1. 当遇到repaint问题时，对于仅改变composite属性的元素，考虑单独提升到一个层（composite layers）中。
-        2. 浏览器不会始终repaint整个层（composite layers），而是智能地对DOM中失效的部分进行repaint。
-    3. `composite`：
-
-        每次reflow、repaint后浏览器还需要层合并再输出到屏幕上。
-
-    >那些容易忽略的**能引起布局改变的样式修改**，它们可能不产生动画，但当浏览器需要重新进行样式的计算和布局时，依然会产生reflow和repaint。
-3. 创建composite layers（层、渲染层、复合层），交由GPU处理（CPU不再处理）：
-
-    >GPU（图形处理器）是与处理和绘制图形相关的硬件，专为执行复杂的数学和几何计算而设计的，可以让CPU从图形处理的任务中解放出来，从而执行其他更多的系统任务。
-
-    1. 强制普通元素提升到单独层的方法：
-
-        1. `will-change: ;`（现代浏览器，最佳方式）。
-        2. `transform: translateZ(0);`（hack方式）。
-
-        >有些情况无法互相替代。
-    2. 自带单独层的元素：
-
-        1. 使用加速视频解码的`<video>`元素。
-        2. 拥有3D（WebGL）上下文或加速的2D上下文的`<canvas>`元素。
-        3. `flash`等混合插件。
-    3. 其他提升至单独层的方法：
-
-        1. `transform 3D`或`perspective`。
-        2. 若有一个元素，它的兄弟元素在层中渲染，而这个兄弟元素的`z-index`比较小，则这个元素（不管是不是应用了硬件加速样式）也会被放到层中。
-        3. 对自己的`opacity`做CSS动画或使用一个动画变换的元素。
-        4. 拥有加速CSS过滤器的元素。
-        5. 元素有一个包含层的后代节点（换句话说，就是一个元素拥有一个后代元素，该后代元素在自己的层里）。
-
-    >有时，虽然提升元素，却仍需要repaint。
-4. 动画性能最好、消耗最低的属性（必须自身元素已提升至单独层）：
-
-    对于以下属性修改，若元素自身被提升至单独层，则仅触发composite，否则触发paint -> composite。
-
-    1. 位置：`transform: translate(xpx, ypx);`
-    2. 缩放：`transform: scale(x, y);`
-    3. 旋转：`transform: rotate(xdeg);`
-    4. 倾斜：`transform: skew(xdeg,ydeg);`
-    5. 透明：`opacity: x;`
-5. 渲染性能优化方法：
-
-    >参考：[渲染性能](https://developers.google.com/web/fundamentals/performance/rendering/)。
-
-    1. 优化JS的执行效率
-
-        1. 把DOM元素的操作划分成多个小任务，分别在多个帧中去完成。
-        2. 不在连续的动画过程中做高耗时的操作（如：大面积reflow、repaint、复杂JS计算）。
-        3. 对于动画效果的实现，建议使用`requestAnimationFrame`（或[velocity动画库](https://github.com/julianshapiro/velocity)），避免使用~~setTimeout、setInterval~~。
-        4. 把耗时长的JS代码放到`Web Worker`中去做。
-        5. 用操作class替代~~直接操作CSS属性~~。
-    2. 缩小样式计算的范围和降低复杂度
-
-        1. 降低样式选择器的复杂度、提升[选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
-
-            ><details>
-            ><summary>可以使用基于class的方式，如：BEM</summary>
-            >
-            >1. `block-name__element-name--modifier-name--modifier-val`（[getbem.com](http://getbem.com/naming/)）
-            >2. `block-name__element-name_modifier-name_modifier-val`（[en.bem.info](https://en.bem.info/methodology/naming-convention/)）
-            ></details>
-        2. 减少需要执行样式计算的元素的个数（随着元素递增而计算量线性递增）。
-    3. 避免大规模、复杂的layout与reflow
-
-        1. 避免强制同步布局
-
-            >强制同步布局（forced synchronous layouts）：使用JS强制浏览器提前执行layout。
-
-            实行**先读后写**原则：先批量读取元素样式属性（返回上一帧的值），再对样式属性、类名等进行写操作。
-
-            ><details>
-            ><summary>e.g.</summary>
-            >
-            >```javascript
-            >/* bad：强制同步布局，可能产生布局抖动 */
-            >dom.forEach(function (elem) {
-            >    if (window.scrollY < 200) { // 计算读取layout
-            >        elem.style.opacity = 0.5;   // JS写入样式
-            >    }
-            >});
-            >
-            >/* good：先读后写 */
-            >if (window.scrollY < 200) { // 计算读取layout
-            >    /* 批量JS写入样式 */
-            >    dom.forEach(function (elem) {
-            >        elem.style.opacity = 0.5;
-            >    });
-            >}
-            >```
-            ></details>
-        2. 避免布局抖动
-
-            >布局抖动（layout thrashing）：快速多次进行强制同步布局。
-        3. 使用离线DOM操作样式完毕，再添加或替换到文档中；把文档中要操作的DOM设置为`display: none;`再操作样式，操作完毕后恢复复显示。
-        4. `position: absollute/fixed;`的元素reflow开销较小。
-        5. 使用[`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#弹性盒子)布局（对于相同数量的元素、视觉外观，flex布局的时间更少）。
-    4. 简化绘制的复杂度、减小绘制区域
-
-        合理划分层，动静分离，可避免大面积重绘。
-    5. 优先使用层（composite layers）来统一操作动画，并控制层数量
-
-        若元素仅改变composite，则将其提升至单独的层。
-
-        1. 只使用`transform/opacity`来实现动画效果。
-        2. 用`will-change/translateZ`属性把动画元素提升到单独的层中。
-        3. 避免滥用层提升、避免创建过多层（更多的层需要更多的内存和更复杂的管理）。
-        4. 使用3D硬件加速提升动画性能时，最好给元素增加一个`z-index`属性（改变层叠上下文的顺序），人为干扰层排序，可以有效减少Chrome创建不必要的层，提升渲染性能。
-
-            >若有一个元素，它的兄弟元素在层中渲染，而这个兄弟元素的`z-index`比较小，则这个元素（不管是不是应用了硬件加速样式）也会被放到层中。
-    6. 对用户输入、滚动事件进行[函数防抖](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)处理
-
-        >滚动会触发高频率重新渲染，scroll事件的处理函数也会被高频率触发。
-
-        1. 避免使用运行时间过长的事件处理程序，它们会阻塞页面的滚动渲染。
-        2. 避免在事件处理程序中修改样式属性。
-        3. 对事件处理程序去抖动（debounce），存储事件对象的值，然后在`requestAnimationFrame`回调函数中修改样式属性。
-6. 经验：
-
-    1. 追查性能问题、优化动画时：
-        1. 打开**Layer Borders**、**Paint Flashing**选项；
-        2. 使用Chrome [Performance](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/timeline-tool)工具检查。
-    2. 低性能设备（Android）优先调试。
-
-        1. （除了**CSS3旋转属性**与**内嵌滚动条**同时出现无法解决）样式问题都可以像处理ie6问题一样通过真机试验出解决方案。
-        2. 有些低版本机型会有类似ie6的CSS问题，包括**CSS3的厂商前缀（`-webkit-`等）**、**层叠关系（`z-index`）**，并且要更注意**渲染性能（层产生）**。
-    3. 字体模糊或抖动、图像锯齿等，可以考虑交由GPU处理。
-    4. `transform: translate`进行非整数平移时，会产生模糊（注意百分比可能会计算成非整数）。
-
-    - 因为某些原因（参考：[如何在 Windows 上享受更棒的字体渲染  | 实用技巧](https://sspai.com/post/52557)），`微软雅黑`等字体在Windows进行Hint处理会导致模糊、笔画高低不平。
-
-        前端解决方案（避免Hint导致以上问题）：替换字体、提升`font-size`、去除粗体。如：微软雅黑，≥17px的粗体，≥14的非粗体。
-
-        >Hint：Windows对于低分辨率屏幕下字体显示进行的特殊处理，当**屏幕分辨率过低**或**字太小**不足以显示所有文字细节时，Windows会启动Hint让文字变得更清晰。
-        >
-        >每个字体本身会带有一个GASP表，Windows的渲染引擎会根据这些GASP表来判断是否需要做处理。然而如果字体的GASP表不完善，就会让Hint误操作。
-
-### 经验技巧
-1. 命名间隔
-
-    >`-`短横线隔开式（kebab-case）、小驼峰式（camelCase）、大驼峰式（PascalCase）、`_`。
-
-    1. HTML的class和id：`-`。
-    2. 图片命名：`_`。
-    3. 其他文件（除了.vue组件文件）：`-`。
-    4. JS相关：
-
-        1. JS的变量和函数：小驼峰式（构造函数：大驼峰式）。
-        2. .vue组件文件：大驼峰式或`-`（且需要2个以上单词）。
-
-            >页面文件（如：nuxt的pages）：按照路由访问命名（习惯用`-`）。
-2. 大小写
-
-    1. CSS属性名和属性值：不区分大小写。
-
-        >`content`的属性值区分大小写。`font-family`的属性值不区分大小写。
-    2. CSS选择器：
-
-        1. 大部分不区分大小写；
-        2. `类选择器`、`ID选择器`、`自定义属性的属性选择器的属性值`区分大小写。
-    3. CSS变量：区分大小写。
-    4. HTML标签：不区分大小写。
-    5. HTML标签的属性名和属性值：
-
-        1. 属性名不区分大小写；
-
-            >自定义属性的属性名也不区分大小写。
-        2. 大部分属性值不区分大小写；
-        3. `class`、`id`、`value`、`自定义属性`等的属性值区分大小写。
-    6. JS相关：
-
-        1. `attribute`不区分大小写（`.attributes`、`.getAttribute/setAttribute/removeAttribute/hasAttribute/toggleAttribute`）
-        2. `property`的属性名是固定的，不因为`attributes`而改变。
-
-3. 引号使用
-
-    1. HTML标签的`attribute`的值、CSS样式属性的值（如：`content`、`font-family`、`quotes`）：
-
-        >除了有空格之外，都允许不加引号。建议：HTML标签的`attribute`的值都添加，CSS样式属性的值都不添加。
-
-        双引号`"`
-    2. JS代码的字符串：
-
-        单引号`'`
-4. CSS命名规范
-
-    1. BEM（以及变种）
-
-        1. `block-name__element-name--modifier-name--modifier-val`
-        2. `is-状态`
-
-        >1. `--modifier`：仅包括多种外观的不同样式，如：size、type、color、font。
-        >2. `is-状态`：仅包括JS控制状态显示的不同样式，如：active、disabled、show。
-
-        - `j-`：仅给JS使用的选择器，意味着不会有样式添加到这个选择器上。
-
-        >其他CSS模块化理论：OOCSS、SMACSS。
-    2. <details>
-
-        <summary><del>已过时的方案</del></summary>
-
-        1. 布局`.g-`（grid）
-
-            将页面分割为几个大块的布局，一般来说是页面最外层的类名。
-        2. 模块`.m-`（module）
-
-            可重复使用的较大的整体。
-        3. 元件`.u-`（unit）
-
-            不可再分的较为小巧的个体，通常被重复用于各种模块中。
-        4. 状态`.z-`（zhuangtai）
-
-            为状态类样式加入前缀，统一标识，方便识别，只作为后代选择器使用（如：`.z-hover`或`.z-active`）。
-        5. 样式区分`.i-`（icon）
-
-            同一批内容的不同样式（如：仅背景不同的几个按钮），可以用`.i-1`、`.i-2`区分样式。
-
-            >若在模块上，则可以使用**选择器扩展**而不加前缀`.i-`，如：`.m-xxx`扩展内容`.m-xxx-1`、`.m-xxx .btn`扩展内容`.m-xxx .btn-1`。
-        6. JS功能`.j-`（JS）
-
-            仅作为JS锚点使用，不添加任何CSS样式。
-
-        >- 皮肤`.s-`（skin）
-        >
-        >    把皮肤型的样式抽离出来。
-    </details>
-5. 经验
-
-    1. （标签）语义化：让机器可以读懂内容
-
-        >先用纯HTML标签语义化结构，再加入CSS满足样式，最后加入交互。
-
-        1. 去掉或丢失样式能够让页面呈现出清晰的结构。
-        2. 有利于SEO（爬虫依赖于标签来确定上下文和各个关键字的权重）。
-        3. 方便其他设备解析（如：屏幕阅读器、盲人阅读器、移动设备）以特殊方式渲染网页。
-        4. 便于团队开发和维护，更具可读性、减少差异化。
-    2. 合理减少层级嵌套，行内元素不要嵌套块级元素（如：`<a>`不嵌套`<div>`）。
-    3. 用父节点的class去管理子节点。
-    4. 有些WAP端（如：Android各奇葩机型）页面的点击按钮制作大一些，否者难以点击触发JS效果。
-6. CSS编码规范
-
-    绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/css.md#css编码规范)。
-
-    >可以设置为IDEs的**Reformat Code**的排版样式。
-7. CSS注释方式
-
-    除了普通注释之外，还可以把注释内容放在根元素的伪元素中：
-
-    ```css
-    :root:before {
-      content: "author: 重构; design: 设计师; update: 更新时间;";
-      display: none;
-    }
-    ```
-
-### Tips
-1. 限定布局宽度，让内容决定布局高度。
-2. `<a>`的属性`target="_blank"`，在一些浏览器中，无论`href`值是什么内容（包括`#`和`javascript:`）都会打开新页面。
-3. 在拥有`target="_blank"`的`<a>`中添加`rel="noopener"`或`rel="noreferrer"`。
-
-    >没有`target="_blank"`属性的新打开的页面和原页面不存在关系。
-
-    1. 没有添加额外的`rel`属性的开启新窗口：
-
-        1. 新页面将与原页面在同一个进程上运行，若执行开销大的JS，会互相影响性能。
-        2. 新页面可以通过`window.opener`访问原窗口对象，并使用`window.opener.location`改变原页面导航。
-
-        ><details>
-        ><summary>Chrome任务管理器展示：<code>target="_blank"</code>但未设置<code>rel</code></summary>
-        >
-        >![Chrome任务管理器图](./images/chrome-task-1.png)
-        ></details>
-    2. 添加额外的`rel`属性：
-
-        1. `rel="noopener"`的新窗口：
-
-            与原页面不在同一个进程、且`window.opener`返回`null`。
-        2. `rel="noreferrer"`（不限于`target="_blank"`）：
-
-            （不在一个进程、且`window.opener`返回`null`，）http请求不发送`Referer`（`document.referrer`返回`''`）。
-4. （SEO）对不想宣传的链接，在`<a>`中添加`rel="nofollow"`。
-
-    ><details>
-    ><summary>告诉搜索引擎「不要跟踪此网页上的链接」或「不要跟踪此特定链接」</summary>
-    >
-    >1. 可以用于阻止在PR值高的网站上以留言等方式添加链接从而提高自身网站排名的行为，以改善搜索结果的质量，防止垃圾链接的蔓延。
-    >2. 网站站长也可对其网页中的付费链接使用nofollow来防止该链接降低搜索排名。
-    >3. 对一些重要度低的网页内容使用nofollow，还可以使搜索引擎以不同的优先级别来抓取网页内容。
-    ></details>
-5. 404和5xx错误需要制作页面。
-6. 没有设置宽度的`float`元素，其宽度等于子节点宽度：
-
-    1. 主流浏览器等于最外层子节点宽度。
-    2. ie6等于所有子节点中最大的宽度。
-7. `inline`、`inline-block`的元素前可能有空隙（其实是行内标签前面的空白符，若拥有`font-size`之后便会有高宽），通过以下办法解决：
-
-    1. 把`inline`、`inline-block`节点设置为`block`。
-    2. 给父级节点设置`font-size: 0;`（可用此方法排查是否是空格造成的）。
-8. 页面是按照顺序加载资源，当且仅当有使用需求时才会去加载外部资源。
-
-    已加载完成的CSS文件内有多个URL请求（`background`），但仅在页面节点要引用某个URL请求时（无论节点是否隐藏），才会去请求这个资源，而不是在加载CSS文件时就加载外部资源。可以用于监控用户行为（当用户某些操作导致展示背景时加载外部资源——外部资源可以是上报接口）。
-9. 使用动态DOM加载，代替内容的`display: none;`（免去构建复杂的DOM）：
-
-    1. `<script type="text/template"></script>`
-    2. `<template></template>`
-    3. `<textarea style="display:none;"></textarea>`
-10. WAP端页面或支持伪类的浏览器，能用`:before/after`的就不要添加标签。
-11. 单选`<input type="radio">`、多选`<input type="checkbox">`按钮开关自定义样式：
-
-    用`input:checked + 兄弟节点`操作选项选中与否的不同样式；可以隐藏`<input>`，点击在`<label>`上改变`<input>`的`:checked`状态（`<label>`的`for`绑定`<input>`的`id`），用自定义样式来制作单选框、复选框。避免使用JS。
-12. 输入框仅输入数字的：
-
-    1. `<input type="number" pattern="[0-9]*" onchange="处理函数">`
-    2. <details>
-
-        <summary>处理函数（jQuery）</summary>
-
-        ```javascript
-        $(输入框).on('change', function () {
-            const $this = $(this);
-            let val = $this.val();
-
-            val = parseFloat(val.split('.').slice(0, 2).join('.'));  // 去除多余的小数点（type="text"才有用）
-
-            if (Number.isNaN(val)) {    // 去除无效输入
-                val = 默认值;
-            } else {    // 处理最小最大值
-                val = Math.max(Math.min(val, 最大值), 最小值);
-            }
-
-            if (val.toString().split('.')[1] && val.toString().split('.')[1].length > 小数位数) {  // 保留小数位数
-                val = val.toFixed(小数位数);
-            }
-
-            $this.val(val);
-        });
-        ```
-        </details>
-13. `<datalist>`为`<input>`的输入值添加建议（`<input>`的`list`绑定`<datalist>`的`id`）
-
-    <details>
-    <summary>e.g.</summary>
-
-    ```html
-    <input list="标记"/>
-    <datalist id="标记">
-      <option value="建议值1">
-      <option value="建议值2">
-    </datalist>
-    ```
-    </details>
-14. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
-15. 避免：
-
-    1. 避免~~放大、缩小图片~~，使用原始大小展现。
-    2. 避免使用不可缓存且增加额外HTTP请求的 ~~<iframe>~~。
-16. 超出内容区域的内容：
-
-    1. 用绝对定位把内容设置在外部
-
-        不要把超出内容区域的绝对定位设置在`<body>`直接子级，而是设置在`<body>`下拥有`overflow: hidden;`的父级下。
-    2. ~~大背景模式~~
-17. `CSS.supports(CSS语句)`或`CSS.supports(CSS属性, 值)`判断浏览器是否支持一个给定CSS语句。
-
-    >`CSS.supports('--变量名', '非空任意值')`可判断是否支持CSS变量。
-18. 切图时`<img>`外嵌套一层标签，好应对可能要在图片上添加东西的需求。
-19. 没有 **背景内容（透明背景无效、局部背景只能在有背景处有效）、或文本、或其他内容（如：`<img>`、`<iframe>`等）** 承载的节点无法触发鼠标事件。
-
-    可以在全区域添加背景使鼠标事件有效。
-
-    1. 加透明背景：`background: rgba(0, 0, 0, .002)`（小于`0.002`的透明度无效）。
-    2. 加1x1像素的透明图：`background: url(1x1像素透明图地址) repeat;`。
-20. CSS的`content`不要放业务逻辑耦合的内容（如：`楼主`等业务逻辑词汇），可以放固定不变的交互逻辑的内容（如：`：`、`展开/收起`）。
-21. `border`分为上、右、下、左，每一块区域的`border-width`不为`0`时都是梯形（`width`或`height`为`0`时为三角形），`border-width`决定梯形（或三角形）的高。
-
-    某些边设为`border-width`不为`0`、`border-right-color`为`transparent`可以制造一些形状。
-22. 用`filter: drop-shadow`（图像本身形状和alpha通道的阴影）代替`box-shadow`（盒阴影）
-23. 若在视口中**添加/删除**节点导致滚动条变化，则浏览器会尽量保持视口最顶部节点固定不变（从而瞬间改变滚动条位置以使视口顶部节点尽量保持不随滚动条变化而位移）

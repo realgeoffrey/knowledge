@@ -513,8 +513,8 @@
         | Accept-Encoding | 优先的内容编码 |
         | Accept-Language | 优先的语言（自然语言） |
         | TE | 优先的传输编码 |
-        | Authorization | 服务器要求客户端的认证信息 |
-        | Proxy-Authorization | 代理服务器要求客户端的认证信息 |
+        | Authorization | 服务器要求客户端的认证信息（令牌） |
+        | Proxy-Authorization | 代理服务器要求客户端的认证信息（令牌） |
         | Expect | 期待服务器的特定行为 |
         | From | 用户的电子邮箱地址 |
         | Host | 请求资源的主机名（必须添加） |
@@ -788,7 +788,14 @@
     >BrowserSync利用WebSocket，当监控的文件MD5发生变化时，向客户端发送刷新页面指令。
 3. HTTP/2
 
-    >主要基于SPDY协议演变而来。
+    ><details>
+    ><summary>主要基于SPDY协议演变而来</summary>
+    >
+    >主要区别：
+    >
+    >1. HTTP/2支持明文HTTP传输；SPDY强制使用HTTPS。
+    >2. HTTP/2消息头的压缩算法采用HPACK；SPDY采用DEFLATE。
+    ></details>
 
     与HTTP/1.1完全语义兼容，进一步减少网络延迟：
 
@@ -911,6 +918,8 @@ HTTP是无状态协议，通过session-cookie、token判断客户端的用户状
         （已不推荐使用）
 
     URI的结构：`scheme` `://` `user:passwd@` `host:port` `path` `?query` `#fragment`
+
+    >URL的锚点（`#fragment`）不会出现在HTTP请求中，因此可以避免中间人攻击。
 2. 协议（protocol）：
 
     计算机与网络设备要互相通信，双方就必须基于相同的方法，确定的规则就是协议。

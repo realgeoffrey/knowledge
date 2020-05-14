@@ -1,6 +1,5 @@
 ### [Kubernetes](https://github.com/kubernetes/kubernetes)使用
-
-1. [kubectl命令](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands)
+1. [`kubectl`命令](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands)
 
     1. 查看所有信息：
 
