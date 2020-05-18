@@ -267,35 +267,7 @@
 
         >`window.某变量`可以访问被同名变量`某变量`遮蔽的全局变量。
 
-    - <details>
-
-        <summary>产生<a href="https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure">闭包</a></summary>
-
-        - 特例：`for、for-in、for-of(/* 块级作用域-父级 */){/* 块级作用域-子级 */}`
-
-            针对2个块级作用域，当闭包发生时（已经执行完毕，但异步任务返回父级作用域的变量）：
-
-            1. 若父级作用域使用`var`创建的变量，则返回该变量最终值（与外部值相同）。
-            2. 若父级作用域使用`let`（~~`const`~~ 无法改变值）创建的变量，则返回每一次循环时变量的值（外部不存在该变量）。
-
-            ><details>
-            ><summary>e.g.</summary>
-            >
-            >```javascript
-            >for (let i = 1; setTimeout(() => { console.log('let i1:', i)}, 50), i < 3; i++) {  // => 1 => 2 => 3
-            >  setTimeout(() => {
-            >    console.log('let i2:', i)           // => 1 => 2
-            >  }, 1000)
-            >}
-            >
-            >for (var i = 1; setTimeout(() => { console.log('var i1:', i)}, 50), i < 3; i++) {  // => 3 => 3 => 3
-            >  setTimeout(() => {
-            >    console.log('var i2:', i)           // => 3 => 3
-            >  }, 1000)
-            >}
-            >```
-            ></details>
-        </details>
+    - 产生[闭包](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)
 
     <details>
     <summary>e.g. 词法作用域</summary>
