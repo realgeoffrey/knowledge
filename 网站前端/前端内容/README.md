@@ -371,18 +371,25 @@
 
         >所有可输入的地方，若没有对输入数据进行处理的话，则都存在XSS漏洞。
 
-        - 通过巧妙的方法注入恶意指令代码（HTML、JS或Java，VBScript，ActiveX，Flash）到网页内容，使用户加载并执行恶意程序。
+        - 通过巧妙的方法注入恶意指令代码（HTML、JS、Flash）到网页内容，使用户加载并执行恶意程序。
 
-            攻击成功后，能够：盗取用户cookie、破坏页面结构、重定向到其它地址等。
+            攻击成功后，能够：盗取用户cookie、破坏页面结构、重定向到其它地址、利用用户机器执行各种非客户意愿的行为（如：发起请求、向其他网站发起DDoS攻击）等。
     2. 防御措施：
 
-        1. 过滤用户输入（白名单）。
+        1. 过滤用户输入（白名单）
 
             >e.g. [js-xss](https://github.com/leizongmin/js-xss)
         2. HttpOnly
 
             cookie设置为HttpOnly不能在客户端使用~~document.cookie~~访问。
-        3. 过滤技术：浏览器的XSS Auditor、W3C的Content-Security-Policy。
+        3. `Content-Security-Policy`设置不允许加载白名单外的域名资源
+
+            1. HTTP响应头：
+
+                `Content-Security-Policy: 具体内容`
+            2. `.html`的`<meta>`
+
+                `<meta http-equiv="Content-Security-Policy" content="具体内容">`
 
         >flash的安全沙盒机制配置跨域传输：crossdomian.xml
 2. CSRF
@@ -405,7 +412,10 @@
 
             >token：判断用户当前的会话状态是否有效（短时效性）。
 
-            操作请求需要提供额外的**不保存在浏览器上、保存在页面表单中**的随机校验码。可以放进请求参数、或自定义HTTP请求头。
+            操作请求需要提供额外的**不保存在浏览器上、保存在页面表单中**的随机校验码。可以放进请求参数、或自定义HTTP请求头。保证用户必须实时在目标网站才能获取到校验token。
+        3. 验证码
+
+            保证用户必须和目标网站进行交互后才可以发起请求。
 3. 其他攻击
 
     1. 注入型劫持

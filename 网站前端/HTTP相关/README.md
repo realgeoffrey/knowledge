@@ -542,6 +542,7 @@
         | Server | HTTP服务器的安装信息 |
         | Vary | 代理服务器缓存的管理信息 |
         | Set-Cookie | 服务端设置客户端cookie（一次可发送多个cookie） |
+        | Content-Security-Policy | 控制用户代理在一个页面上可以加载使用的资源 |
     4. 实体头部字段（entity）
 
         | 实体头部字段名 | 说明 |

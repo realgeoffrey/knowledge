@@ -14,6 +14,9 @@
     1. [Node.js的运行机制](#nodejs的运行机制)
     1. [特性](#特性)
     1. [基础](#基础)
+1. [工具使用](#工具使用)
+
+    1. [Koa](#koa)
 
 ---
 ## 安装
@@ -647,3 +650,181 @@ Node.js的全局对象`global`是全局变量的宿主。
     3. 异常处理、错误报警
 
         对各种IO要进行异常处理（如：`try-catch`包裹所有IO代码），并需要把错误上报（打日志`console`或借助第三方监控）。
+
+---
+## 工具使用
+
+### [Koa](https://github.com/koajs/koa)
+1. 级联：中间件执行顺序，随着第二个参数`next`执行进入执行栈
+
+    ```javascript
+    const Koa = require('koa')
+    const app = new Koa()
+
+    // 按照①②③④⑤执行后输出
+
+    app.use(async (ctx, next) => {
+      // ①
+      await next()
+      // ⑤
+    })
+
+    app.use((ctx, next) => {
+      // ②
+      return next().then(() => {
+        // ④
+      })
+    })
+
+    app.use(async ctx => {
+      // ③
+    })
+
+    app.use(async ctx => {
+      // 前一个中间件没有执行`next`，因此后面的中间件不再被执行
+    })
+
+    app.listen(3000)
+    ```
+2. `const app = new Koa()`实例
+
+    1. 对`ctx`统一写入
+
+        1. 写入：
+
+            `app.context.新属性 = 值`
+        2. 读取：
+
+            ```javascript
+            app.use((ctx) => {
+              console.log(ctx.新属性)
+            })
+            ```
+    2. 获取`NODE_ENV`的值（若未定义，则默认：`development`）
+
+        `app.env`
+    3. 创建并返回HTTP服务器
+
+        `app.listen(数字)`
+    4. `app.callback()`
+    5. 使用中间件
+
+        `app.use(方法)`
+    6. 错误处理
+
+        `app.on('error', (err, ctx) => {})`
+    7. `app.keys`
+3. 上下文（context）
+
+    中间件的第二个参数`ctx`
+
+    1. `.req`
+
+        Node.js的`request`
+    2. `.res`
+
+        Node.js的`response`
+    3. `.state`
+
+        推荐的命名空间，用于通过中间件传递信息。
+
+        ```javascript
+        // 前面的中间件设置
+        ctx.state.属性1 = 值
+
+        // 后面的中间获得
+        ctx.state.属性1
+        ```
+    4. `.app`
+
+        应用程序实例引用。
+
+            1. `.app.emit(事件名[, ...args])`
+
+                发起一个EventEmitter事件。
+    5. `.cookies`
+
+        >使用[cookies](https://github.com/pillarjs/cookies)模块。
+
+        1. `.cookies.get(名[, options])`
+        2. `.cookies.set(名[, 值 [, options]])`
+    6. `.throw([状态[, 信息[, properties]]])`
+
+        抛出错误。
+    7. `.assert(值[, status[, 信息[, properties]]])`
+
+    8. ~~`.respond`~~
+
+        是否绕过Koa的`Response`。
+    9. `.request`
+
+        Koa的`Request`
+
+        1. `.header` === `.request.header` === `.headers` === `.request.header`
+        1. `.header=` === `.request.header=` === `.headers=` === `.request.header=`
+        1. `.method` === `.request.method`
+        1. `.method=` === `.request.method=`
+        1. `.request.length`
+        1. `.url` === `.request.url`
+        1. `.url=` === `.request.url=`
+        1. `.originalUrl` === `.request.originalUrl`
+        1. `.origin` === `.request.origin`
+        1. `.href` === `.request.href`
+        1. `.path` === `.request.path`
+        1. `.path=` === `.request.path=`
+        1. `.query` === `.request.query`
+        1. `.query=` === `.request.query=`
+        1. `.querystring` === `.request.querystring`
+        1. `.querystring=` === `.request.querystring=`
+        1. `.request.search`
+        1. `.request.search=`
+        1. `.host` === `.request.host`
+        1. `.hostname` === `.request.hostname`
+        1. `.request.URL`
+        1. `.request.type`
+        1. `.request.charset`
+        1. `.fresh` === `.request.fresh`
+        1. `.stale` === `.request.stale`
+        1. `.socket` === `.request.socket`
+        1. `.protocol` === `.request.protocol`
+        1. `.secure` === `.request.secure`
+        1. `.ip` === `.request.ip`
+        1. `.ips` === `.request.ips`
+        1. `.subdomains` === `.request.subdomains`
+        1. `.is()` === `.request.is()`
+        1. `.accepts()` === `.request.accepts()`
+        1. `.acceptsEncodings()` === `.request.acceptsEncodings()`
+        1. `.acceptsCharsets()` === `.request.acceptsCharsets()`
+        1. `.acceptsLanguages()` === `.request.acceptsLanguages()`
+        1. `.request.idempotent`
+        1. `.get()` === `.request.get()`
+    10. `.response`
+
+        Koa的`Response`
+
+        1. `.response.header` === `.response.headers`
+        1. `.body` === `.response.body`
+        1. `.body=` === `.response.body=`
+        1. `.response.socket`
+        1. `.status` === `.response.status`
+        1. `.status=` === `.response.status=`
+        1. `.message` === `.response.message`
+        1. `.message=` === `.response.message=`
+        1. `.length` === `.response.length`
+        1. `.length=` === `.response.length=`
+        1. `.type` === `.response.type`
+        1. `.type=` === `.response.type=`
+        1. `.headerSent` === `.response.headerSent`
+        1. `.redirect()` === `.response.redirect()`
+        1. `.attachment()` === `.response.attachment()`
+        1. `.response.get()`
+        1. `.set()` === `.response.set()`
+        1. `.append()` === `.response.append()`
+        1. `.remove()` === `.response.remove()`
+        1. `.lastModified` ≈ `.response.lastModified`
+        1. `.lastModified=` === `.response.lastModified=`
+        1. `.etag` ≈ `.response.etag`
+        1. `.etag=` === `.response.etag=`
+        1. `.response.is()`
+        1. `.response.vary()`
+        1. `.response.flushHeaders()`

@@ -450,6 +450,17 @@
         >
         >obj1.obj2.foo1() // => 全局对象
         >obj1.obj2.foo2() // => obj2
+        >
+        >
+        >var c = {
+        >  d: {
+        >    e: () => {
+        >      console.log(this)
+        >    }
+        >  }
+        >}
+        >
+        >c.d.e()          // => 全局对象
         >```
         ></details>
 

@@ -3039,9 +3039,16 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     27. `watchers`
     28. `extractCSS`
 
-        使用`extract-css-chunks-webpack-plugin`将主块中的CSS提取到一个单独的CSS文件中（自动注入模板），该文件允许单独缓存文件。
+        使用[extract-css-chunks-webpack-plugin](https://github.com/faceyspacey/extract-css-chunks-webpack-plugin)将各样式内容提取到各自单独的CSS文件中。因此能够缓存样式文件。
 
-        >开发模式建议关闭，否则无法热更新样式：`extractCSS: process.env.NODE_ENV === 'production'`。
+        1. `false`（默认）
+
+            样式由 初始化 或 每个路由的.js 插入`<style>`。
+        2. `true`
+
+            样式由 初始化 或 每个路由的.js 插入`<link href>`。
+
+        >开发模式建议关闭，否则无法热更新样式；生产环境建议开启：`extractCSS: process.env.NODE_ENV === 'production'`。
     </details>
 3. <details>
 
@@ -3085,7 +3092,16 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         仅在嵌套路由的`pages`组件中引入`pages`组件。
     3. `<nuxt-link/>`
 
-        与`<router-link/>`一致。
+        与`<router-link/>`类似。
+
+        - 区别
+
+            1. `<nuxt-link/>`
+
+                会预加载`<nuxt-link/>`指向的所有pages脚本（如：`pages_路由1.js`），这些脚本执行也会加载相应的样式内容（如：`<style>`或`link href`）
+            2. `<router-link/>`
+
+                不会预加载`<router-link/>`指向的pages脚本。
     4. `<no-ssr/>`
 
         设置组件内部内容不在服务器渲染中呈现。
