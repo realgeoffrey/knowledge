@@ -119,7 +119,7 @@
 
         1. 使用加速视频解码的`<video>`元素。
         2. 拥有3D（WebGL）上下文或加速的2D上下文的`<canvas>`元素。
-        3. `flash`等混合插件。
+        3. Flash等混合插件。
     3. 其他提升至单独层的方法：
 
         1. `transform 3D`或`perspective`。

@@ -27,6 +27,7 @@
     1. [浏览器缓存](#浏览器缓存)
     1. [欺骗JS词法作用域](#欺骗js词法作用域)
     1. [JS压缩细节](#js压缩细节)
+    1. [JS混淆（加密）细节](#js混淆加密细节)
 1. [编程技巧](#编程技巧)
 
     1. [JS代码风格规范（coding style guide）](#js代码风格规范coding-style-guide)
@@ -127,16 +128,39 @@
     ></details>
 5. 实例化（`new`）一个构造函数
 
-    `new`得到的实例对象，拥有构造函数体内使用`this`定义的属性和方法，且拥有构造函数的原型对象上的属性和方法（因为实例的`[[Prototype]]`指向`构造函数.prototype`）；在构造函数体内`var`的变量和`function`无法被这个对象使用，只能在构造函数里使用（类似私有变量）。
-
     >1. 相对于单全局变量，构造函数更加灵活，可以生成多个对象进行互相独立的操作。
     >2. 构造函数，其实就是一个普通函数，没有任何特殊。
+
+    1. `new`得到的实例对象（若构造函数不是返回一个引用数据类型），拥有构造函数体内使用`this`定义的属性和方法，且拥有构造函数的原型对象上的属性和方法（因为实例的`[[Prototype]]`指向`构造函数.prototype`）；在构造函数体内`var`的变量和`function`无法被这个对象使用，只能在构造函数里使用（类似私有变量）。
+    2. <details>
+
+        <summary>若构造函数返回值不是这个构造函数的实例时，则<code>new 构造函数() instanceof 构造函数 === false</code></summary>
+
+        ```javascript
+        class Foo {
+          constructor () {
+            return Object.create(null)
+          }
+        }
+        console.log(new Foo() instanceof Foo)   // => false
+
+
+        function Foo2 () {
+          return {}
+        }
+        console.log(new Foo2() instanceof Foo2) // => false
+        ```
+        </details>
+
+    >1. `new Func`等价于：`new Func()`。
+    >2. `new Obj().func()`等价于：`(new Obj()).func()`（先新建实例，再调用实例的方法/原型链上方法）。
+    >3. `new Obj.func()`等价于：`new (Obj.func)()`、`new (Obj.func)`、`new Obj.func`（新建实例）。
 
     - <details>
 
         <summary><code>new</code>一个构造函数执行的步骤</summary>
 
-        e.g. `var newObj = new Func(para);`
+        e.g. `var newObj = new Func(para1, para2);`
 
         1. 创建一个空对象（假设为obj）：
 
@@ -149,35 +173,66 @@
 
         3. 使用obj作为上下文调用构造函数，并传入参数：
 
-            `Func.call(obj, para);`
+            `Func.apply(obj, arguments);`
         4. newObj赋值
 
             1. 若Func返回**引用数据类型**，则这个引用数据类型的值赋值给newObj。
             2. 若Func返回基本数据类型或返回this或无返回，则obj赋值给newObj。
+
+        ><details>
+        ><summary>模拟实现一个<code>new</code></summary>
+        >
+        >```javascript
+        >// 第一个参数是构造函数，后面是参数
+        >// 不支持class的构造函数，因为class必须`new`创建，否则报错。也不支持new.target。
+        >function objectFactory () {
+        >  const obj = new Object()
+        >  const Constructor = Array.prototype.shift.call(arguments)
+        >  Object.setPrototypeOf(obj, Constructor.prototype)
+        >  const ret = Constructor.apply(obj, arguments)
+        >
+        >  return (typeof ret === 'object' && ret !== null) || typeof ret === 'function' ? ret : obj
+        >}
+        >
+        >/* 使用测试 */
+        >function A (a, b) {
+        >  this.a = a
+        >  this.b = b
+        >}
+        >function B (a, b) {
+        >  this.a = a
+        >  this.b = b
+        >  return null
+        >}
+        >function C (a, b) {
+        >  this.a = a
+        >  this.b = b
+        >  return 1
+        >}
+        >function D (a, b) {
+        >  this.a = a
+        >  this.b = b
+        >  return function () {
+        >    return a + b
+        >  }
+        >}
+        >function E (a, b) {
+        >  this.a = a
+        >  this.b = b
+        >  return {
+        >    otherA: a,
+        >    otherB: b
+        >  }
+        >}
+        >
+        >console.log(objectFactory(A, 'a1', 'b1'), new A('a1', 'b1'))
+        >console.log(objectFactory(B, 'a1', 'b1'), new B('a1', 'b1'))
+        >console.log(objectFactory(C, 'a1', 'b1'), new C('a1', 'b1'))
+        >console.log(objectFactory(D, 'a1', 'b1'), new D('a1', 'b1'))
+        >console.log(objectFactory(E, 'a1', 'b1'), new E('a1', 'b1'))
+        >```
+        ></details>
         </details>
-
-    >1. `new Func`等价于：`new Func()`。
-    >2. `new Obj().func()`等价于：`(new Obj()).func()`（先新建实例，再调用实例的方法/原型链上方法）。
-    >3. `new Obj.func()`等价于：`new (Obj.func)()`、`new (Obj.func)`、`new Obj.func`（新建实例）。
-
-    ><details>
-    ><summary>若构造函数返回值不是这个构造函数的实例时，则<code>new 构造函数() instanceof 构造函数 === false</code></summary>
-    >
-    >```javascript
-    >class Foo {
-    >  constructor () {
-    >    return Object.create(null)
-    >  }
-    >}
-    >console.log(new Foo() instanceof Foo)   // => false
-    >
-    >
-    >function Foo2 () {
-    >  return {}
-    >}
-    >console.log(new Foo2() instanceof Foo2) // => false
-    >```
-    ></details>
 6. <a name="函数-参数"></a>参数
 
     1. 参数变量在函数体内是默认声明的（传递进函数体），所以不能在函数体内用`let`或`const`再次声明同名参数（`var`可以）。
@@ -1609,7 +1664,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
                 }
 
 
-                /* 测试使用 */
+                /* 使用测试 */
                 function asyncFunc (ms = 1000) {  // 模拟异步操作
                   return new Promise((resolve) => setTimeout(resolve, ms))
                 }
@@ -1689,7 +1744,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
                 }
 
 
-                /* 测试使用 */
+                /* 使用测试 */
                 function asyncFunc (ms = 1000) {  // 模拟异步操作
                   return new Promise((resolve) => setTimeout(resolve, ms))
                 }
@@ -1927,7 +1982,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
 
     ><details>
     ><summary>僵尸cookie（<a href="https://en.wikipedia.org/wiki/Zombie_cookie">zombie cookie</a>）</summary>
-    >是指那些删不掉的，删掉会自动重建的cookie。僵尸cookie是依赖于其他的本地存储方法（如：flash的share object、HTML5的local storages等），当用户删除cookie后，自动从其他本地存储里读取出cookie的备份，并重新种植。
+    >是指那些删不掉的，删掉会自动重建的cookie。僵尸cookie是依赖于其他的本地存储方法（如：Flash的share object、HTML5的local storages等），当用户删除cookie后，自动从其他本地存储里读取出cookie的备份，并重新种植。
     ></details>
 
 >隐身模式策略：存储API仍然可用，并且看起来功能齐全，只是无法真正储存（如：分配储存空间为0）。
@@ -2375,7 +2430,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
     1. `===/!==`的两个操作数都是`String`类型或都是`Boolean`类型的，缩短成`==/!=`。
     2. 缩短赋值表达式
 
-        对于类似`a = a + b`这样的赋值表达式（`+` `-` `*` `/` `%` `>>` `<<` `>>>` `|` `&` `^`），可以缩短成`a += b`。
+        对于类似`a = a + b`的赋值表达式（`+` `-` `*` `/` `%` `>>` `<<` `>>>` `|` `&` `^`），可以缩短成`a += b`。
     3. `!`操作符的压缩
 
         对于`!(a>=b)`，若转换后`a<b`得到更短的代码，则转换。
@@ -2383,13 +2438,14 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
 
     1. 去除重复的指示性字符串，如：`"use strict"`。
     2. 去除没有使用的函数参数。
-    3. 去除函数表达式的函数名（若未引用）。
+    3. 去除函数表达式的函数名（若未使用）。
     4. 去除没用的块语句。
     5. 去除没有使用的`break`。
     6. 去除没有引用的`label`。
+    7. 去除没有作用的`toString`调用。
 5. 压缩`while`
 
-    1. 去除根本不会执行的`while`（`while(false){}`）。
+    1. 去除根本不会执行的`while`，如：`while(false){}`。
     5. `while(true){}` -> `for(;;){}`
 6. `条件判断 ? 表达式1 : 表达式2`
 
@@ -2403,7 +2459,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
     4. 合并块末尾的`return`语句及其前边的多条表达式语句。
 8. 优化`if`
 
-    1. 去除没用的、空的`if/else`分支
+    1. 去除没用的、空的`if/else`分支。
     2. 尝试反转`if/else`分支，看看生成代码是否更短。
     3. 若`if`块里边仅有一个`if`语句，且`else`块为空，则可以合并这两个`if`。
     4. 若`if`最后一个语句是跳出控制语句，则可以把`else`块的内容提到`else`外边，然后去掉`else`。
@@ -2411,7 +2467,10 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
     6. 若`if/else`里各仅有一条语句，则可以转换为三元运算符表达式。
     7. 若`if/else`其中一个块为空，另一个块仅有一条语句，则可以转化成`||/&&`表达式。
 
->[移动时代的前端加密](http://div.io/topic/1220)。
+### JS混淆（加密）细节
+>参考：[JavaScript混淆安全加固](https://github.com/yacan8/blog/blob/master/posts/JavaScript混淆安全加固.md)。
+
+减少加密的成本、增加破解的成本，「当你采用的加密模式，使得攻击者为了破解所付出的代价 远远超过其所获得的利益之时，你的加密方案就是安全的」。
 
 ---
 ## 编程技巧
