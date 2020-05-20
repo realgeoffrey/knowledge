@@ -13,6 +13,7 @@
 1. [基于HTTP的功能追加的技术或协议](#基于http的功能追加的技术或协议)
 1. [HTTPS](#https)
 1. [HTTP严格传输安全（HTTP strict transport security，HSTS）](#http严格传输安全http-strict-transport-securityhsts)
+1. [`Mixed Content`](#mixed-content)
 1. [HTTP持久连接、WebSocket、HTTP/2](#http持久连接websockethttp2)
 1. [CORS（cross-origin resource sharing，跨域资源共享）](#corscross-origin-resource-sharing跨域资源共享)
 1. [服务端验证用户状态](#服务端验证用户状态)
@@ -744,6 +745,8 @@
 
     1. SSL处理速度变慢：通信速度降低、消耗大量CPU和内存。
     2. 证书需要购买。
+- HTTPS也不一定安全，需要使用[HSTS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http严格传输安全http-strict-transport-securityhsts)才能最大限度避免被劫持。
+- 混用HTTPS与HTTP导致浏览器提示[`Mixed Content`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#mixed-content)。
 
 ### HTTP严格传输安全（HTTP strict transport security，HSTS）
 一套互联网安全策略机制，强制浏览器使用HTTPS与网站进行通信（避免：先发出HTTP请求再302重定向为HTTPS），以减少会话劫持风险。
@@ -767,6 +770,37 @@
 4. [HSTS preload list（浏览器预置HSTS域名列表）](https://github.com/chromium/hstspreload.org)，包含的域名硬编码进浏览器从而对这些域名默认开启HSTS保护。
 
 >可以在Chrome地址栏输入`chrome://net-internals/#hsts`查看HSTS包含的域名情况。
+
+### `Mixed Content`
+`Mixed Content`（混合内容）：初始HTML内容通过安全的HTTPS连接加载（.html），但其他资源（如：样式表、脚本、图像、多媒体资源等）通过不安全的HTTP连接加载。
+
+1. 现代浏览器会显示警告/错误，以向用户表明此页面包含不安全的资源
+
+    1. 被动混合内容（提示warning，但还可以正常发出请求）：
+
+        1. `<img>`的`src`
+        2. `<audio>`的`src`
+        3. `video`的`src`
+        4. `object`的子资源
+    2. 主动混合内容（提示error，阻止发出请求）：
+
+        1. `<script>`的`src`
+        2. `<link>`的`href`
+        3. 样式内的地址（如：`@font-sace`、`cursor`、`background-image`、等）
+        4. `<picture>`的子资源（如：`<img>`）
+        5. `XMLHttpRequest`请求
+        6. `<iframe>`的`src`
+        7. `<object>`的`data`
+        8. `navigator.sendBeacon`请求
+        9. Flash
+2. 让页面中发起的HTTP请求自动转化为HTTPS请求进行发出：
+
+    1. HTTP响应头：
+
+        `Content-Security-Policy: upgrade-insecure-requests;`
+    2. `.html`的`<meta>`
+
+        `<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">`
 
 ### HTTP持久连接、WebSocket、HTTP/2
 1. HTTP持久连接（HTTP长连接，HTTP Persistent Connections，HTTP keep-alive，HTTP connection reuse）

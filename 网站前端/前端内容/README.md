@@ -76,7 +76,7 @@
 ### 网站性能优化
 >性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#前端工程化)问题。
 
-页面内容下载速度 -> 页面解析、渲染速度和流畅性 -> 用户交互流程性 的具体优化。
+页面内容下载速度 -> 页面解析、渲染速度和流畅性 -> 用户交互流畅性 的具体优化。
 
 1. URL输入：
 
@@ -92,9 +92,12 @@
     6. 对资源进行缓存：
 
         1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
-        2. 使用[缓存相关HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since` `ETag/If-None-Match`。
+        2. 使用[缓存相关HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)
+
+            `Expires` `Cache-Control` `Last-Modified/If-Modified-Since` `ETag/If-None-Match`
         3. 配置超长时间的本地缓存，采用文件的数字签名（如：MD5）作为缓存更新依据。
-    7. [非覆盖式更新资源](https://github.com/fouber/blog/issues/6)。
+
+            [非覆盖式更新资源](https://github.com/fouber/blog/issues/6)。
 2. 载入页面时，优化CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）：
 
     1. 减少关键资源、减少HTTP请求：
@@ -106,10 +109,16 @@
             1. 增量加载资源：
 
                 1. [图片的延迟加载（lazyload）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载lazyload)。
-                2. AJAX加载（如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery滚动加载)、[IntersectionObserver判断DOM可见再发起异步加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsdom展示或消失执行方法intersectionobserver)）。
+                2. AJAX加载。
+
+                    如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery滚动加载)、[IntersectionObserver判断DOM可见再发起异步加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsdom展示或消失执行方法intersectionobserver)。
                 3. 功能文件按需加载（模块化、组件化）。
-            2. 使AJAX可缓存（当用GET方式时添加缓存HTTP头：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since`）。
-        4. 使用缓存代替每次请求（localStorage、sessionStorage、cookie等）
+            2. 使AJAX可缓存。
+
+                当用GET方式时添加缓存HTTP头：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since`。
+        4. 使用缓存代替每次请求。
+
+            客户端：localStorage、sessionStorage、cookie等；服务端：Redis等。
         5. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
         6. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）、第三方资源使用统一的CDN服务和设置[`<link>`预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
         7. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
@@ -130,13 +139,15 @@
     3. 缩短CRP长度：
 
         CSS放在HTML顶部，JS放在HTML底部。
-    4. 用户体验（减弱用户对加载时长的感知）：
+    4. 用户体验：
+
+        >本质上是减弱用户对加载时长的感知，并没有真的提高程序性能。
 
         1. 骨架屏
         2. lazyload默认图
 3. 载入页面后进行的[页面解析、渲染](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面解析渲染步骤)、线程执行性能：
 
-    >大部分情况下的浏览器是单线程执行，因此最小化主线程的责任来确保渲染流畅和交互响应及时。
+    >大部分情况下的浏览器是单线程执行，因此要尽量做到「最小化主线程的责任」，来确保渲染流畅和交互响应及时。
 
     1. CSS性能：
 
@@ -162,6 +173,25 @@
         5. 避免强制同步布局、避免布局抖动。
         6. 使用`Web Worker`处理复杂的计算。
         7. 正则表达式尽可能准确地匹配目标字符串，以减少不必要的回溯。
+        8. 针对在用框架，使用合理的特性实现业务逻辑。
+
+            1. <details>
+
+                <summary>vue</summary>
+
+                1. `key`属性的组件/DOM复用。
+                2. `v-once`只渲染元素和组件一次。
+                3. 最小限度使用响应式系统。
+
+                    1. 若不需要响绑定到视图的变量
+
+                        1. 不提前注册在`data`或`computed`中，直接this.来创建
+                        2. `Object.freeze()`
+                4. 注意内存泄漏（全局副作用）：
+
+                    1. 在Vue实例内部`new`的其他实例或DOM，应放在`data`内进行掌控，当使用完毕后引导垃圾回收。
+                    2. 在Vue实例内部手动绑定的事件（如：`addEventListener`）、计时器、http连接、以及任何需要手动关闭的内容，需要在`beforeDestroy`前手动清除（`destroyed`仅自动清除Vue自己定义、绑定的内容）。
+                </details>
     3. HTML：
 
         1. 减少层级嵌套。
@@ -384,14 +414,16 @@
             cookie设置为HttpOnly不能在客户端使用~~document.cookie~~访问。
         3. `Content-Security-Policy`设置不允许加载白名单外的域名资源
 
+            >指令细节：[MDN: Content-Security-Policy](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Security-Policy)。
+
             1. HTTP响应头：
 
-                `Content-Security-Policy: 具体内容`
+                `Content-Security-Policy: 具体指令`
             2. `.html`的`<meta>`
 
-                `<meta http-equiv="Content-Security-Policy" content="具体内容">`
+                `<meta http-equiv="Content-Security-Policy" content="具体指令">`
 
-        >flash的安全沙盒机制配置跨域传输：crossdomian.xml
+        >Flash的安全沙盒机制配置跨域传输：crossdomian.xml
 2. CSRF
 
     跨站请求伪造（Cross-Site Request Forgery，CSRF）是挟制用户在已登录的网页上执行非本意操作。利用网站对用户浏览器的信任。
@@ -412,7 +444,7 @@
 
             >token：判断用户当前的会话状态是否有效（短时效性）。
 
-            操作请求需要提供额外的**不保存在浏览器上、保存在页面表单中**的随机校验码。可以放进请求参数、或自定义HTTP请求头。保证用户必须实时在目标网站才能获取到校验token。
+            目标网站请求需要额外提供保存在页面中的随机校验码（不保存在cookie即可）。可以放进请求参数、或自定义HTTP请求头。保证用户必须实时在目标网站才能获取到校验token。
         3. 验证码
 
             保证用户必须和目标网站进行交互后才可以发起请求。

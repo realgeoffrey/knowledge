@@ -152,7 +152,6 @@ repeat功能不需要刷新页面，只需要repeat请求，还可以进行压�
 ![Charles图](./images/24.png)
 
 ### HTTPS分析
-
 若未安装Charles根证书，则仅能捕获加密后的HTTPS请求。
 
 1. 安装、信任证书：
