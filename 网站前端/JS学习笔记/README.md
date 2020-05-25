@@ -360,7 +360,7 @@
         2. 对象的方法调用（如：`obj1.obj2.func()`）
 
             `this`：最后一层对象（`obj2`）
-        3. 间接调用（如：`alert.call/apply/bind(传入的值)`等[this替代](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#this替代)）
+        3. 间接调用（如：`alert.call/apply/bind(传入的值)`等[this替代](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#this替代)）
 
             `this`：传入的值
 

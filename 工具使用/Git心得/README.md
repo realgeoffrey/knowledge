@@ -708,6 +708,8 @@ feat(details): 添加了分享功能
 >可阅读：[用 GitLab CI 进行持续集成](https://scarletsky.github.io/2016/07/29/use-gitlab-ci-for-continuous-integration/)。
 
 1. 在服务器安装Runners，并在gitlab仓库内配置并开启相应Runners
+
+    >注意安装Runners时设置执行shell脚本的用户名，权限问题。
 2. 在仓库根目录添加`.gitlab-ci.yml`并设置要在服务器运行的脚本、运行的时机：
 
     >shell脚本。
