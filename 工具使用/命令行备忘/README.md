@@ -223,6 +223,25 @@ vi ~/.zshrc         # zsh
 5. `head`查看文件头部
 6. `od`以二进制方式输出
 
+### 查看group、user
+1. 查看所有组
+
+    ```shell
+    cat /etc/group  # 返回的每一条是一个组的信息：`组名:密码:组id:组内用户列表`
+    ```
+2. 查看所有用户
+
+    ```shell
+    cat /etc/passwd # 返回的每一条是一个用户的信息：`用户名:密码:用户id:所在组id:备注:用户的home目录:shell命令所在目录`
+    ```
+3. `groups`
+
+    ```shell
+    groups          # 返回当前用户所在的组名
+
+    groups 「用户名」 # 返回「用户名」所在的组名
+    ```
+
 ---
 ### macOS命令
 

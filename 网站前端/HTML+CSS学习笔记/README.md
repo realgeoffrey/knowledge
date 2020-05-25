@@ -1305,10 +1305,10 @@
 
     1. 乘以包含块的`width`：
 
-        `margin`、`padding`、`left`、`right`、`width`、`max-width`、`min-width`、`text-indent`
+        `margin`、`padding`、`left`、`right`、`width`、`max-width`、`min-width`、`text-indent`、`grid-template-columns`、`grid-auto-columns`、`column-gap`
     2. 乘以包含块的`height`：
 
-        `top`、`bottom`、`height`、`max-height`、`min-height`
+        `top`、`bottom`、`height`、`max-height`、`min-height`、`grid-template-rows`、`grid-auto-rows`、`row-gap`
     3. 乘以继承的`font-size`：
 
         `font-size`
@@ -1320,22 +1320,33 @@
         `vertical-align`
     6. 乘以节点自己的`width/height`：
 
-        `border-radius`、`background-size`、`translate`、`transform-origin`、`zoom`、`clip-path`
-    7. `background-position`：
+        >x轴方向的百分比：乘以节点自己的`width`；y轴方向的百分比：乘以节点自己的`height`。可以配合`calc`进行动态设计，如：`calc(100% - 50px)`。
 
-        百分比值会同时应用于元素和图像。
+        `border-radius`、`background-size`、`translate`、`transform-origin`、`zoom`、`clip-path`、`border-image-width`
+    7. 乘以主轴长度（`flex`）：
 
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >1. `50% 50%`会把图片的（50%, 50%）这一点与框的（50%, 50%）处对齐，相当于设置了`center center`。
-        >2. `0% 0%`相当于`left top`。
-        >3. `100% 100%`相当于`right bottom`。
-        ></details>
-    8. 节点自己是`position: absolute;`：
+        `flex-basis`
+    8. 特殊：
+
+        1. `background-position`
+
+            百分比值会同时应用于元素和图像。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >1. `50% 50%`会把图片的（50%, 50%）这一点与框的（50%, 50%）处对齐，相当于设置了`center center`。
+            >2. `0% 0%`相当于`left top`。
+            >3. `100% 100%`相当于`right bottom`。
+            ></details>
+        2. `border-image-slice`
+
+            相对于图片尺寸。
+        3. `filter`系列函数
+    9. 节点自己是`position: absolute;`：
 
         离它最近的`positon: relative/absolute/fixed;`的祖先元素；若没有，则相对于视口。
-    9. 节点自己是`position: fixed;`：
+    10. 节点自己是`position: fixed;`：
 
         相对于视口。
 
