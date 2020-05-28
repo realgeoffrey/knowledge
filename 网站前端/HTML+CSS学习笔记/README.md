@@ -28,6 +28,7 @@
     1. [滚动条](#滚动条)
     1. [`@font-face`](#font-face)
     1. [`text-align: justify;`](#text-align-justify)
+    1. [CSS渐变](#css渐变)
     1. [`table-layout`](#table-layout)
     1. [横竖屏切换（模拟手机屏幕旋转）](#横竖屏切换模拟手机屏幕旋转)
 1. [HTML + CSS](#html--css)
@@ -1379,8 +1380,8 @@
 >当`<img>`的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
 
 1. 不要用**空的`<img>`加上背景来用作默认图**，必须用其他标签来代替。
-2. 要谨慎给`<img>`设置背景（如：内容图片或头像的初始图，不要使用背景，应该使用[JS延时加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载lazyload)前的默认图），因为当图片是透明图时，会出现背景。
-3. `<img>`没有`src`属性或`src`属性为空隐藏
+2. 要谨慎给`<img>`设置背景（如：内容图片或头像的初始图，不要使用背景，应该使用[JS延时加载-图片lazyload](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载lazyload)前的默认图），因为当图片是透明图时，会出现背景。
+3. 隐藏没有`src`属性或`src`属性为空的`<img>`：
 
     ```css
     img[src=""] {   /* ie8+ */
@@ -1390,11 +1391,17 @@
         visibility: hidden; /* 属性不存在隐藏 */
     }
     ```
-4. 设置`<img>`中[可替换元素](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Replaced_element)的位置、拉升：`object-position`、`object-fit`。
+4. （PC或WAP）下载保存的图片，与图片的`style`、节点属性等无关，仅与图片资源本身有关。
 
-    >类似于针对背景图的位置、拉升：`background-position`、`background-size`（`background-repeat: no-repeat`）。
+- `<img>`相关特性：
 
-- （PC或WAP）下载保存的图片，与图片的`style`、节点属性等无关，仅与图片资源本身有关
+    1. 设置`<img>`中[可替换元素](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Replaced_element)的位置、拉升：`object-position`、`object-fit`。
+
+        >类似于针对背景图的位置、拉升：`background-position`、`background-size`（当`background-repeat: no-repeat`时）。
+    2. `<img>`的`display`属性的默认值是`inline`，但是它的默认分辨率是由被嵌入的图片的原始宽高来确定的，使得它就像`inline-block`一样。
+    3. `<img>`可以设置`vertical-align`来指定与其他行内元素的垂直对齐方式。
+
+        >`vertical-align`用来指定`inline`、`inline-block`、`table-cell`元素的垂直对齐方式。
 
 ### 滚动条
 1. 若`overflow-x`和`overflow-y`相同，则等同于`overflow`；若不同，且其中一个值为`visible`，另一个为`hidden/scroll/auto`，则`visible`重置为`auto`。
@@ -1516,6 +1523,39 @@
 3. `text-align: justify-all;`：和`justify`一致，且最后一行也是文字向两侧对齐。
 
 >不推荐中文的文章用这个属性值，建议用默认或者`text-align: start;`；对固定的文本可以使用这个属性，达到设计稿效果。
+
+### CSS渐变
+CSS渐变是以CSS背景图的形式展示，但没有内在尺寸（没有固定大小、也没有宽高比），其实际的大小取决于其填充元素的大小。
+
+1. 可以添加在[CSS背景图](https://developer.mozilla.org/en-US/docs/Web/CSS/image)能添加的地方。
+
+    如：`background-image`、`list-style-image`、`border-image-source`、`cursor`、`mask-image`、`shape-outside`、`mask-border-source`、等。
+2. 作为CSS背景图属性的属性值
+
+    >如：`background-image: linear-gradient(#e66465, #9198e5);`。
+
+    1. [`linear-gradient()`](https://developer.mozilla.org/en-US/docs/Web/CSS/linear-gradient)
+    2. [`repeating-linear-gradient()`](https://developer.mozilla.org/en-US/docs/Web/CSS/repeating-linear-gradient)
+    3. [`radial-gradient()`](https://developer.mozilla.org/en-US/docs/Web/CSS/radial-gradient)
+    4. [`repeating-radial-gradient()`](https://developer.mozilla.org/en-US/docs/Web/CSS/repeating-radial-gradient)
+    5. [`conic-gradient()`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/conic-gradient)
+    6. [`repeating-conic-gradient()`](https://developer.mozilla.org/en-US/docs/Web/CSS/repeating-conic-gradient)
+
+### 裁剪`clip-path`
+todo
+`clip`已废弃
+
+`object-fit`是对可替换元素的拉升，超出容器部分被裁剪掉。
+`clip-path`裁剪元素。
+`background-clip`是背景运用到哪里，和裁剪无关。
+
+### `background`详解
+todo
+
+---
+
+
+
 
 ### `table-layout`
 1. `auto`（默认）

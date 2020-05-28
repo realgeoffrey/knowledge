@@ -158,7 +158,7 @@
         判断正则表达式与指定的字符串是否匹配。返回`true`或`false`。
     2. `regexp.exec(str)`：
 
-        >返回结果与`str.match(regexp)`带`g`标志的结果相同。
+        >`regexp.exec(str)`（带不带`g`不影响）返回结果与`str.match(regexp)`不带`g`标志的结果相同。
 
         指定的一段字符串执行搜索匹配操作。返回`数组`或`null`。
 
@@ -167,31 +167,60 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```javasscript
-        >var regexp = /quick\s(brown).+?(jumps)/ig;
-        >var arr = regexp.exec('The Quick Brown Fox Jumps Over The Lazy Dog');
-        >```
+        >1. 执行：
         >
-        >产生的结果：
+        >    ```javasscript
+        >    var regexp = /quick\s(brown).+?(jumps)/ig;
+        >    var arr1 = regexp.exec('The Quick Brown Fox Jumps Over The Lazy Dog');
+        >    ```
         >
-        >| 返回对象[属性/索引] | 描述 | 例子中的值 |
-        >| :--- | :--- | :--- |
-        >| `arr[0]` | 匹配得到的字符串 | `Quick Brown Fox Jumps` |
-        >| `arr[1]`~`arr[n]` | 捕获项 | `arr[1] = Brown`、`arr[2] = Jumps` |
-        >| `arr.index` | 匹配到的字符位于原始字符串的基于0的索引值 | `4` |
-        >| `arr.input` | 原始字符串 | `The Quick Brown Fox Jumps Over The Lazy Dog` |
+        >    产生的结果：
         >
-        >| 正则对象[属性/索引] | 描述 | 例子中的值 |
-        >| :--- | :--- | :--- |
-        >| `regexp.lastIndex` | 下一次匹配开始的位置 | `25` |
-        >| `regexp.ignoreCase` | 是否使用了`i`标记 | `true` |
-        >| `regexp.global` | 是否使用了`g`标记 | `true` |
-        >| `regexp.multiline` | 是否使用了`m`标记 | `false` |
-        >| `regexp.source` | 正则模式的字符串 | `quick\s(brown).+?(jumps)` |
+        >    | 返回对象[属性/索引] | 描述 | 例子中的值 |
+        >    | :--- | :--- | :--- |
+        >    | `arr1[0]` | 匹配得到的字符串 | `'Quick Brown Fox Jumps'` |
+        >    | `arr1[1]`~`arr1[n]` | 捕获项 | `arr1[1] = 'Brown'`<br>`arr1[2] = 'Jumps'` |
+        >    | `arr1.index` | 匹配到的字符位于原始字符串的基于0的索引值 | `4` |
+        >    | `arr1.input` | 原始字符串 | `'The Quick Brown Fox Jumps Over The Lazy Dog'` |
+        >
+        >    | 正则对象[属性/索引] | 描述 | 例子中的值 |
+        >    | :--- | :--- | :--- |
+        >    | `regexp.lastIndex` | 下一次匹配开始的位置 | `25` |
+        >    | `regexp.source` | 正则模式的字符串 | `'quick\s(brown).+?(jumps)'` |
+        >    | `regexp.flags` | 返回修饰符 | `'gi'` |
+        >    | `regexp.global` | 是否使用了`g`标记 | `true` |
+        >    | `regexp.multiline` | 是否使用了`m`标记 | `false` |
+        >2. 再次执行：
+        >
+        >    ```javasscript
+        >    var arr2 = regexp.exec('0123456789012345678901234 Quick Brown Fox Jumps');
+        >    ```
+        >
+        >    产生的结果：
+        >
+        >    | 返回对象[属性/索引] | 描述 | 例子中的值 |
+        >    | :--- | :--- | :--- |
+        >    | `arr2[0]` | 匹配得到的字符串 | `'Quick Brown Fox Jumps'` |
+        >    | `arr2[1]`~`arr2[n]` | 捕获项 | `arr2[1] = 'Brown'`<br>`arr2[2] = 'Jumps'` |
+        >    | `arr2.index` | 匹配到的字符位于原始字符串的基于0的索引值 | `26` |
+        >    | `arr2.input` | 原始字符串 | `'0123456789012345678901234 Quick Brown Fox Jumps'` |
+        >
+        >    | 正则对象[属性/索引] | 描述 | 例子中的值 |
+        >    | :--- | :--- | :--- |
+        >    | `regexp.lastIndex` | 下一次匹配开始的位置 | `47` |
+        >
+        >- 没有 ~~`g`~~
+        >
+        >    ```javascrpit
+        >    var regexp2 = /quick\s(brown).+?(jumps)/i;
+        >    var arr3 = regexp2.exec('The Quick Brown Fox Jumps Over The Lazy Dog');
+        >
+        >    console.log(regexp2.lastIndex)  // => 0
+        >    ```
         ></details>
     3. 正则表达式的属性：
 
-        1. `source`
+        1. `RegExp.prototype.source`
 
             当前正则表达式对象的模式文本的字符串，该字符串不会包含正则字面量两边的反斜线以及任何标志字符，并会自动添加字符串的`\`转义（基本仅对`\`、`"`、`'`转义）。
 
@@ -203,13 +232,28 @@
             new RegExp('\\w', 'g').source === '\\w'; // true
             ```
             </details>
-        2. `flags`
+        2. `lastIndex`
+
+            下次匹配开始的字符串索引位置。只有正则表达式使用了表示全局检索的`g`标志时，`lastIndex`才起作用。
+        3. `RegExp.prototype.flags`
 
             返回修饰符。
-        3. `sticky`
+        4. `RegExp.prototype.global`
+
+            是否设置了`g`修饰符。
+        5. `RegExp.prototype.ignoreCase`
+
+            是否设置了`i`修饰符。
+        6. `RegExp.prototype.multiline`
+
+            是否设置了`m`修饰符。
+        7. `RegExp.prototype.unicode`
+
+            是否设置了`u`修饰符。
+        8. `RegExp.prototype.sticky`
 
             是否设置了`y`修饰符。
-        4. `dotAll`
+        9. `RegExp.prototype.dotAll`
 
             是否设置了`s`修饰符。
 2. String对象的方法
@@ -218,10 +262,10 @@
 
         当字符串匹配到正则表达式时，方法返回`匹配项`，否则返回`null`。
 
-        匹配到的情况：
+        - 匹配到的情况：
 
-        1. 若正则表达式没有`g`标志，则返回和`regexp.exec(str)`相同的结果的`数组`（包含匹配的字符串、捕获项，还拥有`index`和`input`属性）。
-        2. 若正则表达式包含`g`标志，则返回一个`包含所有匹配结果的数组`。
+            1. 若正则表达式没有`g`标志，则返回和`regexp.exec(str)`（带不带`g`不影响）相同的结果的`数组`（包含匹配的字符串、捕获项，还拥有`index`和`input`属性）。
+            2. 若正则表达式包含`g`标志，则返回一个`包含所有匹配结果的数组`。
     2. `str.search(regexp)`：
 
         判断字符串对象与一个正则表达式是否匹配，返回`正则表达式在字符串中首次匹配项的索引`，否则返回`-1`。
