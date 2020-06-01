@@ -20,7 +20,7 @@
     1. [媒体查询](#媒体查询)
     1. [块级元素的`width`](#块级元素的width)
     1. [使元素强制表现为`block`的CSS设置](#使元素强制表现为block的css设置)
-    1. [几个类似的换行属性](#几个类似的换行属性)
+    1. [换行属性](#换行属性)
     1. [CSS的小数、百分比](#css的小数百分比)
     1. [`em`、`%`](#em)
     1. [`line-height`](#line-height)
@@ -29,6 +29,7 @@
     1. [`@font-face`](#font-face)
     1. [`text-align: justify;`](#text-align-justify)
     1. [CSS渐变](#css渐变)
+    1. [裁剪属性](#裁剪属性)
     1. [`table-layout`](#table-layout)
     1. [横竖屏切换（模拟手机屏幕旋转）](#横竖屏切换模拟手机屏幕旋转)
 1. [HTML + CSS](#html--css)
@@ -1182,7 +1183,7 @@
 
 >意味着有以上CSS属性的行内标签可以当做块级标签使用。
 
-### 几个类似的换行属性
+### 换行属性
 1. 单词内断字
 
     >默认效果：若此行放不下则整个单词换行，若下行也放不下则溢出（保持单词不断字）。
@@ -1525,7 +1526,7 @@
 >不推荐中文的文章用这个属性值，建议用默认或者`text-align: start;`；对固定的文本可以使用这个属性，达到设计稿效果。
 
 ### CSS渐变
-CSS渐变是以CSS背景图的形式展示，但没有内在尺寸（没有固定大小、也没有宽高比），其实际的大小取决于其填充元素的大小。
+CSS渐变是以CSS背景图的形式展示，但没有内在尺寸（没有固定大小、也没有宽高比），其实际大小取决于其填充元素大小。
 
 1. 可以添加在[CSS背景图](https://developer.mozilla.org/en-US/docs/Web/CSS/image)能添加的地方。
 
@@ -1541,21 +1542,20 @@ CSS渐变是以CSS背景图的形式展示，但没有内在尺寸（没有固�
     5. [`conic-gradient()`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/conic-gradient)
     6. [`repeating-conic-gradient()`](https://developer.mozilla.org/en-US/docs/Web/CSS/repeating-conic-gradient)
 
-### 裁剪`clip-path`
-todo
-`clip`已废弃
+### 裁剪属性
+1. `clip-path`
 
-`object-fit`是对可替换元素的拉升，超出容器部分被裁剪掉。
-`clip-path`裁剪元素。
-`background-clip`是背景运用到哪里，和裁剪无关。
+    >~~`clip`~~ 已废弃。
 
-### `background`详解
-todo
+    裁剪出元素的可显示区域。区域内的部分显示，区域外的隐藏。
 
----
+    >被裁剪过的元素，其BFC占用的位置不会变化，只是把裁剪区域外的元素内容隐藏、透明了。裁剪区域外对其他元素而言是透明的，堆叠会直接显示其他元素。
+2. `object-fit`
 
+    对可替换元素（如：`<img>`、`<video>`）的拉升，超出容器部分被裁剪掉。
+3. `background-clip`
 
-
+    背景运用到哪里（如：背景延伸到`border`、`padding`、`content`、文字），和裁剪无关。
 
 ### `table-layout`
 1. `auto`（默认）
