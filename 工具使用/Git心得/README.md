@@ -653,6 +653,8 @@ feat(details): 添加了分享功能
     >若已经克隆过的仓库，则仅需要修改`.git/config`文件夹内的`url`仓库地址即可。
 
 ### 设置gitconfig
+>`git config --global或--local 「参数」`要把`--global或--local`写在第三个参数位置，否则无效。
+
 1. 用户名和邮箱
 
     1. 全局设置
