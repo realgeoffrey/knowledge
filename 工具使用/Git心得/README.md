@@ -717,8 +717,8 @@ feat(details): 添加了分享功能
     >shell脚本。
 
     1. build仓库代码、或开启的服务；
-    2. build完毕之后的程序，保存到docker镜像中（docker镜像保证多个地方拉取的内容一致），该docker镜像保存到服务器；
-    3. 利用docker镜像发布内容到CDN或k8s等。
+    2. build完毕之后的程序，保存到Docker镜像中（Docker镜像保证多个地方拉取的内容一致），该Docker镜像保存到服务器；
+    3. 利用Docker镜像发布内容到CDN或k8s等。
 3. 推送内容到远程就会根据`.gitlab-ci.yml`设置要求进行对应服务器的对应操作
 
 ### 减少Git项目下载大小
