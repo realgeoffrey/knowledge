@@ -13,6 +13,8 @@
         kubectl get pod     # 查看所有pod
 
         kubectl get pod -n 「namespace名字」 | grep 「筛选关键字」 # 查看所有某命名空间的pod
+
+        kubectl describe pod 「pod名字」 # 获取某一个pod详情
         ```
     3. 查看pod内日志：
 

@@ -61,6 +61,14 @@
 4. （`class`是保留字，）标签上用`className`代替`class`使用。
 5. 组件只能显性接受传入的`props`内容（在外层传`style`、`className`等，需要在组件内接受并处理）。
 
+- 概念
+
+    1. 高阶组件（higher order component，HOC）
+
+        >来自：[react：高阶组件](https://react.docschina.org/docs/higher-order-components.html)。
+
+        react中对组件逻辑进行重用的高级技术。高阶组件是一个函数，且该函数接受一个组件作为参数，并返回一个新的组件。对比组件将props属性转变成UI，高阶组件则是将一个组件转换成另一个新组件。
+
 ### [mobx](https://github.com/mobxjs/mobx)
 1. computed
 

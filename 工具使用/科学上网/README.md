@@ -19,30 +19,8 @@
 ### 通过Docker安装服务器：Shadowsocks、Cisco IPSec（IPSec Xauth PSK）或IPsec/L2TP（L2TP/IPsec PSK）
 >[Docker](https://www.docker.com/)建议Linux内核在3.0以上。[Bandwagon](https://bwh1.net/)内核只有2.6，无法使用Docker；[vultr](https://my.vultr.com/)可以使用Docker。
 
-- 安装、启动Docker（若已安装Docker，不要再次安装/启动）
+- [安装、启动Docker](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Docker使用/README.md#docker使用)（若已安装Docker，不要再次安装/启动）
 
-    ```shell
-    curl -fsSL https://get.docker.com/ | sh # 安装。或用官网安装方式
-
-    service docker start    # 启动
-    ```
-
-    - 启动、停止、重启、删除 容器实例
-
-        ```shell
-        docker ps                # 获取容器信息，包括ID（`-a`：显示所有的容器，包括未运行的）
-
-
-        docker start 「容器ID」   # 启动容器
-
-        docker stop 「容器ID」    # 停止容器（`-t=「时间 默认10」`：若超时未能关闭则强制kill）
-        # 或
-        docker kill 「容器ID」    # 直接关闭容器
-
-        docker restart 「容器ID」 # 重启容器（无论容器是否已启动）
-
-        docker rm 「容器ID」      # 删除容器
-        ```
 1. Shadowsocks服务端安装
 
     >来自：[Shadowsocks-libev Docker Image](https://github.com/shadowsocks/shadowsocks-libev/blob/master/docker/alpine/README.md#shadowsocks-libev-docker-image)。

@@ -1,4 +1,5 @@
 # Vue.js学习笔记
+>针对v2版本。
 
 ## 目录
 1. [vue](#vue)
@@ -21,7 +22,6 @@
 1. [vue-cli](#vue-cli)
 1. [nuxt](#nuxt)
 1. [jQuery与Vue.js对比](#jquery与vuejs对比)
-1. [其他概念](#其他概念)
 
 ---
 
@@ -3317,11 +3317,3 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         1. 程序员关注数据，DOM的操作交给框架；代码清晰、强制规范，利于维护；有自己的组件系统。
         2. 不兼容旧版本浏览器；需要一些学习成本。
-
-### 其他概念
-
-1. 高阶组件（higher order component，HOC）
-
-    >来自：[react：高阶组件](https://react.docschina.org/docs/higher-order-components.html)。
-
-    react中对组件逻辑进行重用的高级技术。高阶组件是一个函数，且该函数接受一个组件作为参数，并返回一个新的组件。对比组件将props属性转变成UI，高阶组件则是将一个组件转换成另一个新组件。

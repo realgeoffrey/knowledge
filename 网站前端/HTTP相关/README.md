@@ -11,9 +11,11 @@
 1. [HTTP头（HTTP headers）](#http头http-headers)
 1. [HTTP缓存](#http缓存)
 1. [基于HTTP的功能追加的技术或协议](#基于http的功能追加的技术或协议)
-1. [HTTPS](#https)
-1. [HTTP严格传输安全（HTTP strict transport security，HSTS）](#http严格传输安全http-strict-transport-securityhsts)
-1. [`Mixed Content`](#mixed-content)
+1. [HTTPS相关](#https相关)
+
+    1. [HTTPS](#https)
+    1. [HTTP严格传输安全（HTTP strict transport security，HSTS）](#http严格传输安全http-strict-transport-securityhsts)
+    1. [`Mixed Content`](#mixed-content)
 1. [HTTP持久连接、WebSocket、HTTP/2](#http持久连接websockethttp2)
 1. [CORS（cross-origin resource sharing，跨域资源共享）](#corscross-origin-resource-sharing跨域资源共享)
 1. [服务端验证用户状态](#服务端验证用户状态)
@@ -698,8 +700,12 @@
 
     1. 服务器可以主动推送。
     2. 持久连接。
-4. SPDY或HTTP/2
-5. WebDAV
+4. HTTPS
+5. SPDY或HTTP/2
+6. WebDAV
+
+---
+## HTTPS相关
 
 ### HTTPS
 1. HTTP不足
@@ -802,6 +808,7 @@
 
         `<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">`
 
+---
 ### HTTP持久连接、WebSocket、HTTP/2
 1. HTTP持久连接（HTTP长连接，HTTP Persistent Connections，HTTP keep-alive，HTTP connection reuse）
 
