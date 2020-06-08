@@ -227,6 +227,29 @@
 
                         >当目录中已经存在指定模块，默认：不会重新安装已经安装的模块。或删除`node_modules`目录再重新安装。
                     2. `--save`、`-S`：安装信息保存到`package.json`的`dependencies`（执行时依赖插件）。
+
+                        ><details>
+                        ><summary>e.g.</summary>
+                        >
+                        >当前目录package.json依赖了A、B.v1、C共3个库，并且A的dependencies依赖了B.v2和AA，并且B.v1的dependencies依赖BB.v1，并且B.v2的dependencies依赖BB.v2，C的dependencies依赖CC，产生的文件目录为：
+                        >
+                        >```text
+                        >.
+                        >├── node_modules/
+                        >|   ├── A/
+                        >|   |   └── node_modules/
+                        >|   |       └── B.v2/             # 若同名库已经在先之前被引用了，则安装在依赖库的node_modules中，否则安装在外层node_modules中。引用是从深往根部走。
+                        >|   |           └── node_modules/
+                        >|   |               └── BB.v2/
+                        >|   ├───AA/
+                        >|   ├───B.v1/
+                        >|   ├───BB.v1/
+                        >|   ├───C/
+                        >|   └── CC/
+                        >|
+                        >└── package.json
+                        >```
+                        ></details>
                     3. `--save-dev`、`-D`：安装信息保存到`package.json`的`devDependencies`（开发时依赖插件）。
                     4. `--save-optional`、`-O`：安装信息保存到`package.json`的`optionalDependencies`。
             2. 作用域
@@ -390,7 +413,7 @@
 
 一个模块就是一个Node.js文件。
 
->主模块：通过命令行参数传递给Node.js以启动程序的模块，负责调度组成整个程序的其它模块完成工作。如：`node 文件名`、package.json的`main`。
+>主模块：通过命令行参数传递给Node.js以启动程序的模块，负责调度组成整个程序的其它模块完成工作。如：`node 文件名`、`package.json`的`main`。
 
 - 概述
 

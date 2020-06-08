@@ -104,7 +104,7 @@
         # 若删除的是其他用户还未拉取的commit，则其他用户不会有感知
         ```
 
-        >最多能取消至第二条commit；要删除第一条commit，不如先删除仓库再创建仓库。
+        >最多能取消至第二条commit；要删除第一条commit，不如先删除仓库再创建仓库，或使用下面的「清空一个分支中的所有commit记录」。
     2. `rebase`
 
         >破坏所有commit，其他用户必须`git pull --rebase`。
@@ -187,7 +187,22 @@
         # if产生冲突，则需要对本分支每一个commit冲突进行处理，
         #   修改冲突文件 -> add（不要commit） -> git rebase --continue
         ```
-6. 解决冲突
+6. cherry-pick
+
+    ```git
+    git cherry-pick 「多个SHA」  # 把（其他分支的）多个commit合并至当前分支
+
+    # 若产生冲突，则需要解决冲突 或 放弃
+
+    # 1. 解决冲突
+    解决代码冲突
+    git add .
+    git cherry-pick --continue
+
+    # 2. 放弃
+    git cherry-pick --abort
+    ```
+7. 解决冲突
 
     1. 冲突标记：git会在冲突时，标记两个分支对同一个地方的修改
 
@@ -208,12 +223,12 @@
     2. 解决冲突：冲突只是把两个分支修改内容合并一起并且增加标记，无论是否修改内容（甚至可以保持标记），都以`git add 「修改的文件」`表示解决冲突
 
         正常情况下，人工合并两个修改，并删除冲突标记。
-7. 更新远程仓库引用
+8. 更新远程仓库引用
 
     ```git
     git fetch -fp
     ```
-8. branch
+9. branch
 
     >`HEAD`是指向目前所在的分支的游标（或不指向分支时，是detached狀態）。
 
@@ -258,7 +273,7 @@
 
         # 要推送至远程，依然需要推送（新建）远程分支、删除远程分支
         ```
-9. tag
+10. tag
 
     ```git
     git tag [-l 「完整内容或*」] [-n]     # 列出现有（本地+远程）标签
@@ -277,7 +292,7 @@
     git push origin -d tag 「名字」     # 删除远程tag
     git push origin :refs/tags/「名字」 # 删除远程tag
     ```
-10. stash
+11. stash
 
     ```git
     git stash                       # 往堆栈推送一个新的储藏，并且恢复修改过的被追踪的文件
@@ -292,7 +307,7 @@
 
     git stash pop                   # 应用最后一个储藏，删除最后一个储藏
     ```
-11. submodule
+12. submodule
 
     1. 新增子模块
 
@@ -341,6 +356,21 @@
 
         编辑 .git/config，删除子模块信息
         ```
+13. 清空一个分支中的所有commit记录
+
+    ```git
+    git checkout --orphan 「新分支名」 # 基于当前分支创建一个独立的分支，不包含任何commit
+
+    git add -A                       # 添加所有文件变化至暂存空间
+
+    git commit -m "「commit内容」"    # commit
+
+    git branch -D 「原本分支名」       # 删除原本分支
+
+    git branch -m 「原本分支名」       # 重新命名当前新分支为原本分支名
+
+    git push -f origin 「原本分支名」  # 强制推送
+    ```
 
 ### [Zen-like commit messages（Angular）格式](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines)
 ```text
