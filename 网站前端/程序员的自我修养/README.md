@@ -6,7 +6,7 @@
 1. [数据结构（data structure）](#数据结构data-structure)
 1. [设计模式](#设计模式)
 1. [数据库](#数据库)
-1. [bug调试方式](#bug调试方式)
+1. [bug调试策略](#bug调试策略)
 1. [MD5 && SHA](#md5--sha)
 1. [Unicode](#unicode)
 1. [树的遍历](#树的遍历)
@@ -276,7 +276,7 @@
         3. 隔离性（isolation）：多个事务并发执行时，一个事务的执行不应影响其他事务的执行。
         4. 持久性（durability）：已被提交的事务对数据库的修改应该永久保存在数据库中。
 
-### bug调试方式
+### bug调试策略
 >参考：[程序员新人怎样在复杂代码中找 bug？](https://www.zhihu.com/question/23019630/answer/23369396)。
 
 1. 打断点、输出中间值、堆栈跟踪
@@ -313,7 +313,7 @@
 
     >如：用`try-catch`掩盖一些奇怪的崩溃。不到万不得已不要这么干，未来可能会付出更大代价。
 
-- 前端的[代码调试方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#代码调试方式)
+- 前端相关的[代码调试](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/代码调试相关/README.md#代码调试相关)
 
 ### MD5 && SHA
 >1. 不同系统、不同编程语言对MD5或SHA实现的逻辑相同（对同一内容，用不同实现的MD5或SHA得出结果相同）。

@@ -155,7 +155,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
                 e.g. `https://a.app.qq.com/o/simple.jsp?pkgname=com.xx.xxx&ckey=xxxx&android_schema=xxxx://xx`
 
         >1. 微信分享在部分系统（低于微信客户端Android6.2）使用~~pushState~~导致签名失败，可查询[官方文档](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115)；又因为一般是异步加载、配置微信的设置，所以要等待微信第三方文件和接口完成后才能够配置成功（才能够设置成功）。
-        >2. Android的微信、QQ等X5内核可以用<http://debugx5.qq.com/>打开调试，可进行清除缓存等操作。
+        >2. Android的微信、QQ等X5内核可以用<http://debugx5.qq.com/>打开调试，支持「清除缓存」等操作。
         >3. 长按没有 ~~`src`~~ 的`<img>`：
         >
         >    1. 在iOS微信WebView，截屏这个`<img>`所在位置；
@@ -220,7 +220,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         ></details>
     >接口设计可以带有「透传数据」：前端调用客户端方法时多传一个透传参数，之后客户端异步调用前端方法时带着这个参数的值。
 2. 根据WebView的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在WebView遇到的bug。
-3. 调试WebView：[代码调试方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#代码调试方式)中针对移动端的部分。
+3. 调试WebView：[前端调试方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/代码调试相关/README.md#前端调试方式)中针对移动端的部分。
 4. 分享到其他App
 
     1. 通过JS触发Native App之间的切换分享（自己Native内可用桥协议，任意App均要起作用只能用Scheme）。

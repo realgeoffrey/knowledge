@@ -4,7 +4,7 @@
 
     [webstorm.jar](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/IDEs设置/webstorm0529.jar)(PhpStorm can use too)
 
-    - 可以用`Settings Repository`或`IDE Settings Sync`在线同步设备。
+    - 可以用`Settings Repository`或`IDE Settings Sync`在线同步设备，如：我的[JetBrainsSettingsRepository](https://github.com/realgeoffrey/JetBrainsSettingsRepository)。
 2. **Help -> Edit Custom VM Options** can change the memories for the IDE.
 
 >Chinese Language Pack：please go to [jetbrains-in-chinese](https://github.com/pingfangx/jetbrains-in-chinese) (or [WebStorm-Chinese](https://github.com/ewen0930/WebStorm-Chinese), [PhpStorm-Chinese](https://github.com/ewen0930/PhpStorm-Chinese), or [PyCharm-Chinese](https://github.com/ewen0930/PyCharm-Chinese)).

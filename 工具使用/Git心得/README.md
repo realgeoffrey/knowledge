@@ -256,6 +256,8 @@
 
         git checkout -b 「分支名」 origin/「分支名」  # 从远程分支中，新建并切换至新分支
         ```
+
+        >`git checkout 「SHA」   # 切换到某个commit`
     5. 删除分支
 
         ```git

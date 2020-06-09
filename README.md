@@ -59,19 +59,20 @@
     >    </details>
     >4. [SCSS使用](./网站前端/SCSS使用/README.md)
     ></details>
-4. 前端技术栈
+4. [代码调试相关](./网站前端/代码调试相关/README.md)
+5. 前端技术栈
 
     1. [Vue.js学习笔记](./网站前端/Vue.js学习笔记/README.md)
     2. [React学习笔记](./网站前端/React学习笔记/README.md)
-5. 大前端
+6. 大前端
 
     1. [Hybrid前端开发](./网站前端/Hybrid前端开发/README.md)
     2. [Node.js学习笔记](./网站前端/Node.js学习笔记/README.md)
     3. [Typescript学习笔记](./网站前端/Typescript学习笔记/README.md)
     4. [服务端相关](./网站前端/服务端相关/README.md)
-6. [HTTP相关](./网站前端/HTTP相关/README.md)
-7. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
-8. <details>
+7. [HTTP相关](./网站前端/HTTP相关/README.md)
+8. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
+9. <details>
 
     <summary>前端构建工具</summary>
 
