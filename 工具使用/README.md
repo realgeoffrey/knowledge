@@ -20,13 +20,7 @@
 ><details>
 ><summary>其他</summary>
 >
->1. <details>
->
->    <summary><a href="./IDEs设置/README.md">IDEs设置</a></summary>
->
->    [webstorm.jar](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/IDEs设置/webstorm0529.jar)
->    </details>
->2. [iOS使用](./iOS使用/README.md)
->3. [Android调试](./Android调试/README.md)
->4. [Google搜索技巧](./Google搜索技巧/README.md)
+>1. [IDEs设置](./IDEs设置/README.md)
+>2. [Android调试](./Android调试/README.md)
+>3. [Google搜索技巧](./Google搜索技巧/README.md)
 ></details>

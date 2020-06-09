@@ -232,7 +232,7 @@ app.use((ctx) => {
             3. `kubectl logs 「pod名字」 -n 「namespace名字」 -c 「container名字」 -f --tail 「数字」`查看pod日志。
 
 ### 接口错误排查
-顺着请求链路排查：域名 -（DNS -> 服务器地址） -> HTTP Server（如：nginx、Apache、Tomcat） -> 服务端应用程序（逻辑、IO）。
+顺着请求链路排查：域名 -（DNS -> 服务器地址） -> HTTP Server（如：nginx、Apache） -> 服务端应用程序（逻辑、IO）。
 
 - 出错维度、链路：
 
@@ -280,12 +280,14 @@ app.use((ctx) => {
     >若有错误信息，则方便直接定位出错点；若没有错误信息，则需要顺着链路查询。
 
     1. [查看服务器日志](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/服务端相关/README.md#服务器日志查看)
-    2. `curl`依赖的服务、nginx、端口？ // todo
-    3. 通用查询
+    2. 进入服务器或容器内：
 
-        1. 进程：`ps -ef`
-        2. 连接、端口：`netstat -antp`
-        3. [查看磁盘空间占用](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/命令行备忘/README.md#查看磁盘空间占用)
+        1. 宿主机`curl`容器监听端口，确认是否能从宿主机进入容器。
+        2. 进入容器内，`curl`依赖的API，确认是否宿主机内能正常访问API。
+        3. 在宿主机或容器内通用查询：
+
+            1. [查看端口占用、网络链接，查看进程](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/命令行备忘/README.md#查看端口占用网络链接查看进程)
+            2. [查看磁盘空间占用](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/命令行备忘/README.md#查看磁盘空间占用)
 
     - （一些log监控器提示的错误可能会缺失细节信息，）可以去服务器手动执行相同命令现场复现原始错误信息。
 

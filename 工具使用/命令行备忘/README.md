@@ -14,6 +14,7 @@
 1. [查看本机IP](#查看本机ip)
 1. [执行文件](#执行文件)
 1. [（Unix-like）开机自动运行的脚本](#unix-like开机自动运行的脚本)
+1. [查看端口占用、网络链接，查看进程](#查看端口占用网络链接查看进程)
 1. [查看端口占用，杀掉进程](#查看端口占用杀掉进程)
 1. [查看磁盘空间占用](#查看磁盘空间占用)
 1. [创建文件](#创建文件)
@@ -184,6 +185,26 @@ vi ~/.zshrc         # zsh
 # source 脚本   # 当前运行一遍
 ```
 
+#### 查看端口占用、网络链接，查看进程
+1. 所有端口占用、网络连接情况（Linux）
+
+    ```shell
+    # Linux
+    netstat -antp
+    ```
+2. 某端口占用
+
+    ```shell
+    # macOS、Linux
+    netstat -ant | grep 「端口号」
+    lsof -i :「端口号」
+    ```
+3. 查看进程
+
+    ```shell
+    ps -ef
+    ```
+
 #### 查看端口占用，杀掉进程
 1. macOS、Linux
 
@@ -191,6 +212,7 @@ vi ~/.zshrc         # zsh
     lsof -i :「端口号」
 
     kill 「PID」
+    # macOS的「活动监视器」也可以查到「PID」并关闭进程
     ```
 2.  Windows（需要在cmd.exe进行）
 
@@ -214,10 +236,10 @@ vi ~/.zshrc         # zsh
 2. 指定的目录或文件所占用的磁盘空间
 
     ```shell
-    // macOS
+    # macOS
     du -h -d1 「路径」
 
-    // Linux
+    # Linux
     du -h --max-depth=1 「路径」
     ```
 3. 查找超过10M的文件

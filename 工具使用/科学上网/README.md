@@ -226,6 +226,8 @@
 
 3. iOS
 
+    >所有本机的科学上网方式最终都是在`设置`-`VPN`中配置（包括：Shadowsocks、Cisco IPSec、IKEv2、等）。成功开启后，都会在顶部bar显示`VPN`字样。
+
     在App Store使用美国区Apple ID安装`Quantumult X`等客户端，添加服务器之后会在`设置`-`VPN`中添加一个手机全局使用Shadowsocks的VPN配置。
 
 ### Cisco IPSec（IPSec Xauth PSK）或IPsec/L2TP（L2TP/IPsec PSK）客户端配置
@@ -252,6 +254,9 @@
         2. 若服务器使用**自签名证书**，则客户端必须导入证书。
 
             客户端用Safari导入ca.cert.cer并选择**始终信任此证书**。
+
+        >1. 在`证书信任设置`可以开关信任的证书。
+        >2. 在`描述文件`可以查询、删除证书。
 2. macOS
 
     >系统偏好设置 -> 网络
