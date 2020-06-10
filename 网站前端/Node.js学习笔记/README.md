@@ -227,29 +227,6 @@
 
                         >当目录中已经存在指定模块，默认：不会重新安装已经安装的模块。或删除`node_modules`目录再重新安装。
                     2. `--save`、`-S`：安装信息保存到`package.json`的`dependencies`（执行时依赖插件）。
-
-                        ><details>
-                        ><summary>e.g.</summary>
-                        >
-                        >当前目录package.json依赖了A、B.v1、C共3个库，并且A的dependencies依赖了B.v2和AA，并且B.v1的dependencies依赖BB.v1，并且B.v2的dependencies依赖BB.v2，C的dependencies依赖CC，产生的文件目录为：
-                        >
-                        >```text
-                        >.
-                        >├── node_modules/
-                        >|   ├── A/
-                        >|   |   └── node_modules/
-                        >|   |       └── B.v2/             # 若同名库已经在先之前被引用了，则安装在依赖库的node_modules中，否则安装在外层node_modules中。引用是从深往根部走。
-                        >|   |           └── node_modules/
-                        >|   |               └── BB.v2/
-                        >|   ├───AA/
-                        >|   ├───B.v1/
-                        >|   ├───BB.v1/
-                        >|   ├───C/
-                        >|   └── CC/
-                        >|
-                        >└── package.json
-                        >```
-                        ></details>
                     3. `--save-dev`、`-D`：安装信息保存到`package.json`的`devDependencies`（开发时依赖插件）。
                     4. `--save-optional`、`-O`：安装信息保存到`package.json`的`optionalDependencies`。
             2. 作用域
@@ -312,6 +289,59 @@
     1. `dependencies`
 
         生产环境依赖。
+
+        >[node_modules 困境](https://zhuanlan.zhihu.com/p/137535779)。
+
+        1. 安装依赖（`npm install`）是从（项目根目录）最外层往（引用处）最里层安装，若本层已经有同名但不同版本的库文件夹，则往里层尝试安装；
+        2. 引用依赖是从（引用处）最里层往（项目根目录）最外层引用，一旦找到库目录就检索完毕。
+
+        <details>
+        <summary>e.g.</summary>
+
+        1. 项目依赖逻辑：
+
+            ```text
+            .
+            └── package.json
+                .dependencies
+                ├── A.v1
+                |   .dependencies
+                |   ├── B.v1
+                |   ├── C.v1
+                |   └── D.v1
+                └── B.v2
+                    .dependencies
+                    ├── A.v2
+                    └── C.v2
+                        .dependencies
+                        ├── A.v3
+                        |   .dependencies
+                        |   └── D.v1
+                        └── D.v2
+            ```
+        2. `npm install`后的文件结构：
+
+            ```text
+            .
+            ├── node_modules/
+            |   ├── A.v1/
+            |   |   └── node_modules/
+            |   |       └── B.v1/
+            |   ├── B.v2/
+            |   |   └── node_modules/
+            |   |       ├── A.v2/
+            |   |       ├── C.v2/
+            |   |       |   └── node_modules/
+            |   |       |       └── A.v3/
+            |   |       |           └── node_modules/
+            |   |       |               └── D.v1/   # 注意，D.v1又安装了一遍
+            |   |       └── D.v2/   # 注意，是C.v2引用D.v2，但安装在这里
+            |   ├── C.v1/
+            |   └── D.v1/
+            |
+            └── package.json
+            ```
+        </details>
     2. `devDependencies`
 
         开发、测试依赖。
@@ -656,7 +686,7 @@ Node.js的全局对象`global`是全局变量的宿主。
 1. 调试方法：
 
     1. 控制台输出`console`等。
-    2. 通过Chrome的<chrome://inspect/#devices>，监听Node.js程序运行`node --inspect 文件`，可以使用`debugger`等进行断点调试。
+    2. 通过Chrome的 <chrome://inspect/#devices>，监听Node.js程序运行`node --inspect 文件`，可以使用`debugger`等进行断点调试。
 
         >[调试指南](https://nodejs.org/zh-cn/docs/guides/debugging-getting-started/)。
     3. 安装[ndb](https://github.com/GoogleChromeLabs/ndb)调试。

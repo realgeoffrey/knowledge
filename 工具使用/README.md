@@ -21,6 +21,5 @@
 ><summary>其他</summary>
 >
 >1. [IDEs设置](./IDEs设置/README.md)
->2. [Android调试](./Android调试/README.md)
->3. [Google搜索技巧](./Google搜索技巧/README.md)
+>2. [Google搜索技巧](./Google搜索技巧/README.md)
 ></details>
