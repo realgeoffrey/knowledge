@@ -232,7 +232,7 @@ app.use((ctx) => {
             3. `kubectl logs 「pod名字」 -n 「namespace名字」 -c 「container名字」 -f --tail 「数字」`查看pod日志。
 
 ### 接口错误排查
-顺着请求链路排查：域名 -（DNS -> 服务器地址） -> HTTP Server（如：nginx、Apache） -> 服务端应用程序（逻辑、IO）。
+顺着请求链路排查：域名 -（DNS -> 服务器地址） -> HTTP Server（如：nginx、Apache Tomcat） -> 服务端应用程序（逻辑、IO）。
 
 - 出错维度、链路：
 

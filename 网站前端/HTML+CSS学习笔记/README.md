@@ -1617,19 +1617,20 @@ CSS渐变是以CSS背景图的形式展示，但没有内在尺寸（没有固�
     >注意：`<iframe>`的`scrolling="no"时其视口就是整个`<iframe>`高宽边界，因此其内部的`position: fixed;`定位不是以外层的浏览器viewport定位，而是以此`<iframe>`的边界来定位。
 
 ### 网页图标favicon的兼容写法
->更详细的写法：[张鑫旭：详细介绍HTML favicon尺寸 格式 制作等相关知识](https://www.zhangxinxu.com/wordpress/2019/06/html-favicon-size-ico-generator/)。
+>参考：[张鑫旭：详细介绍HTML favicon尺寸 格式 制作等相关知识](https://www.zhangxinxu.com/wordpress/2019/06/html-favicon-size-ico-generator/)。
 
 ```html
-<link rel="apple-touch-icon" sizes="180x180" href="favicon-180x180.png">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="mask-icon" href="favicon.svg" color="#fff">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon-180x180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="mask-icon" href="/favicon.svg" color="#fff">
 
-<!--<link rel="manifest" href="/images/manifest.json">-->
-<!--<meta name="msapplication-config" content="/images/browserconfig.xml">-->
+<!--<link rel="manifest" href="/site.webmanifest">-->
+<!--<meta name="msapplication-TileColor" content="#2b5797">-->
+<!--<meta name="theme-color" content="#ffffff">-->
 ```
 
->favicon制作：<https://realfavicongenerator.net/>。
+>完整favicon制作：<https://realfavicongenerator.net/>。
 
 ### 富文本编辑器
 >富文本编辑器（rich text editor）：一种可内嵌于浏览器，所见即所得（what you see is what you get，WYSIWYG）的文本编辑器。

@@ -3,6 +3,11 @@
 >用户名 = Geoffrey；所在组 = staff。
 
 1. `brew`安装nginx，php-fpm自带。
+
+    ```text
+    /usr/local/etc/nginx/nginx.conf   # 配置文件路径
+    /usr/local/Cellar/nginx/「版本号」   # 安装路径
+    ```
 2. PHP
 
     1. 配置PHP
