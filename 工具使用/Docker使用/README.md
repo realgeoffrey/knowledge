@@ -95,3 +95,13 @@
                 ```shell
                 docker stats
                 ```
+        5. 新建、提交镜像
+
+            1. 新建镜像（本地）
+
+                ```shell
+                docker commit 「已存在的容器ID」 「新的镜像名」:「tag，如：1.0.0」  # （本地）根据一个已存在的容器创建一个新的镜像
+                -m="「描述信息」"        # Commit message
+                -a="「作者」"           # 作者
+                -c="「Dockerfile指令」" # Apply Dockerfile instruction to the created image
+                ```

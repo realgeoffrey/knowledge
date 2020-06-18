@@ -251,7 +251,7 @@
 >1. 判断是否DOM构造：打印该DOM。
 >2. 判断是否完成新的渲染：查看页面显示的DOM结果（DOM结构和样式效果）。
 >3. 可以利用抓包工具（如：Charles），breakpoints静态资源来模拟加载缓慢或加载失败，从而判断是否会影响后面的解析或渲染。
->4. 利用devTools的Network中的Waterfall判断资源加载的开始时间、是否并行。
+>4. 利用DevTools的Network中的Waterfall判断资源加载的开始时间、是否并行。
 ></details>
 
 1. 解析HTML（parse HTML）

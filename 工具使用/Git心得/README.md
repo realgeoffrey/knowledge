@@ -392,7 +392,7 @@ feat(details): 添加了分享功能
 给页面添加了分享功能
 
 - 添加分享到微博的功能
-- 添加分享到微信的功能
+- 添加分享到xx的功能
 ```
 </details>
 
@@ -661,6 +661,7 @@ feat(details): 添加了分享功能
 2. 为不同账户地址设置对应的SSH key路径：
 
     **~/.ssh/config**文件添加
+
     ```text
     Host 账户1.github.com
     	HostName github.com
@@ -671,6 +672,13 @@ feat(details): 添加了分享功能
     	HostName github.com
     	User git
     	IdentityFile ~/.ssh/「键2」
+
+
+    # 一个源下，若只有一个账户，则不需要额外修改
+    Host gitlab.xxx
+        HostName gitlab.xxx
+        User 「名字ID」
+        IdentityFile ~/.ssh/「键3」
     ```
 3. 克隆仓库时修改**仓库地址**：
 
