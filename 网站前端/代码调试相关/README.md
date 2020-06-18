@@ -21,17 +21,19 @@
     3. 执行时间：`console.time`至`console.timeEnd`
 2. PC端
 
-    DevTools
+    遵循[devtools-protocol](https://github.com/chromedevtools/devtools-protocol)协议的应用都可以打开[DevTools](https://developers.google.com/web/tools/chrome-devtools)进行调试。
 
     1. Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）。
     2. Elements，右键标签可以Break On：子节点修改、attribute修改、Node移除。
-    3. 通过Chrome的 <chrome://inspect/#devices>，监听Node.js程序运行`node --inspect 文件`，可使用`debugger`等进行断点调试、`console`打印等。
+    3. Node.js
+
+        通过Chrome的 <chrome://inspect/#devices>，监听Node.js程序运行`node --inspect 文件`，可使用`debugger`等进行断点调试、`console`打印等。
 3. WAP端（真机）
 
     1. 使用页面模拟调试，如：[eruda](https://github.com/liriliri/eruda)、[vConsole](https://github.com/Tencent/vConsole)。
     2. 针对**已开启调试功能的APP**连接对应的调试工具：
 
-        >最佳方式：连接上电脑后借助DevTools。
+        >最佳方式：连接上电脑后借助 Chrome的DevTools 或 Safari的开发工具。
 
         1. Android
 
@@ -43,7 +45,7 @@
                 2. 用<http://debugx5.qq.com/>打开TBS内核调试功能的[腾讯X5内核WebView](https://x5.tencent.com/)（如：Android的微信、QQ）
                 3. 开启调试功能的debug包APP
 
-            >若PC端的Chrome识别不到手机WebView，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)并运行（进入文件夹后运行`adb.exe devices`或`./adb devices`连接手机设备）。
+            >若PC端的Chrome识别不到手机WebView，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)（macOS可以用brew安装）并运行（进入文件夹后运行`adb.exe devices`或`./adb devices`连接手机设备）。
         2. iOS
 
             macOS的Safari的「开发」可以调试**iOS已开启调试功能的APP**的WebView。
