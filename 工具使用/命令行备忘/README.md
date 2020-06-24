@@ -300,6 +300,8 @@ vi ~/.zshrc         # zsh
 brew update && brew upgrade && brew cask upgrade
 ```
 
+>brew cask可以安装大部分软件，使用`brew search 「软件名」`进行搜索。
+
 #### （macOS）打开文件（夹）
 ```shell
 open 「路径/文件」

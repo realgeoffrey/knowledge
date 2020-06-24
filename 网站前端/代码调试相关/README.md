@@ -28,37 +28,68 @@
     3. Node.js
 
         通过Chrome的 <chrome://inspect/#devices>，监听Node.js程序运行`node --inspect 文件`，可使用`debugger`等进行断点调试、`console`打印等。
-3. WAP端（真机）
+3. WAP端
 
-    1. 使用页面模拟调试，如：[eruda](https://github.com/liriliri/eruda)、[vConsole](https://github.com/Tencent/vConsole)。
-    2. 针对**已开启调试功能的APP**连接对应的调试工具：
+    1. WebView
 
-        >最佳方式：连接上电脑后借助 Chrome的DevTools 或 Safari的开发工具。
+        1. 使用页面模拟调试，如：[eruda](https://github.com/liriliri/eruda)、[vConsole](https://github.com/Tencent/vConsole)。
+        2. 针对**已开启调试功能的APP**连接对应的调试工具：
+
+            >最佳方式：连接上电脑后借助 Chrome的DevTools 或 Safari的开发工具。
+
+            1. Android
+
+                PC端的Chrome的Remote devices（<chrome://inspect/#devices>）可以调试**Android已开启调试功能的APP**的WebView（需要能够访问google，否则首次打开inspect页面会404）。
+
+                - Android已开启调试功能的APP：
+
+                    1. Chrome
+                    2. 用<http://debugx5.qq.com/>打开TBS内核调试功能的[腾讯X5内核WebView](https://x5.tencent.com/)（如：Android的微信、QQ）
+                    3. 开启调试功能的debug包APP
+
+                >若PC端的Chrome识别不到手机WebView，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)（macOS可以用brew安装：`brew cask install android-platform-tools`）并运行（进入文件夹后运行`adb.exe devices`或`adb devices`连接手机设备）。
+            2. iOS
+
+                macOS的Safari的「开发」可以调试**iOS已开启调试功能的APP**的WebView。
+
+                - iOS已开启调试功能的APP：
+
+                    1. Safari
+                    2. 开启调试功能的debug包APP
+        3. 使用抓包工具查看请求、Map请求，如：[Charles](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Charles使用/README.md#charles使用)、[whistle](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/whistle使用/README.md#whistle使用)。
+    2. 其他语言2Native
 
         1. Android
 
-            PC端的Chrome的Remote devices（<chrome://inspect/#devices>）可以调试**Android已开启调试功能的APP**的WebView（需要能够访问google，否则首次打开inspect页面会404）。
+            1. adb端口代理
 
-            - Android已开启调试功能的APP：
+                1. `adb reverse tcp:「手机端口号」 tcp:「PC端口号」`
 
-                1. Chrome
-                2. 用<http://debugx5.qq.com/>打开TBS内核调试功能的[腾讯X5内核WebView](https://x5.tencent.com/)（如：Android的微信、QQ）
-                3. 开启调试功能的debug包APP
+                    手机访问「手机端口号」的流量都会转发到PC的「PC端口号」。
+                2. `adb forward tcp:「PC端口号」 tcp:「手机端口号」`
 
-            >若PC端的Chrome识别不到手机WebView，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)（macOS可以用brew安装）并运行（进入文件夹后运行`adb.exe devices`或`./adb devices`连接手机设备）。
+                    PC访问「PC端口号」的流量都会转发到手机的「手机端口号」。
+
+                >可以混合配置使用，如：手机端口号A -> PC端口号B > 手机端口号C。
+            2. 日志
+
+                1. JS日志：
+
+                    `chrome://inspect/#devices`设置Target`localhost:「手机端口号」`
+                2. 手机日志：
+
+                    1. `adb logcat`
+
+                        或：`adb shell`之后`logcat | grep 「筛选内容」`。
+                    2. Android Studio内的logcat（需要安装SDK）
         2. iOS
 
-            macOS的Safari的「开发」可以调试**iOS已开启调试功能的APP**的WebView。
+            Xcode模拟App。
 
-            - iOS已开启调试功能的APP：
-
-                1. Safari
-                2. 开启调试功能的debug包APP
-    3. Android真机调试
+    - Android真机调试
 
         1. 打开「开发者选项」的「显示布局边界」，会展示Native渲染边界，方便区分WebView的H5与Native内容。
         2. 打开其他APP时设置的允许/拒绝信息，可以操作当前APP「清除数据」恢复提醒。
-    4. 使用抓包工具查看请求、Map请求，如：[Charles](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Charles使用/README.md#charles使用)、[whistle](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/whistle使用/README.md#whistle使用)。
 
 - 其他策略
 
