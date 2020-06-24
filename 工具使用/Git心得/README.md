@@ -373,6 +373,7 @@
 
     git push -f origin 「原本分支名」  # 强制推送
     ```
+14. 使用[git-lfs](https://github.com/git-lfs/git-lfs)管理大文件。
 
 ### [Zen-like commit messages（Angular）格式](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines)
 ```text

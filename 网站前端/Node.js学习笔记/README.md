@@ -59,7 +59,7 @@
     ```shell
     npm install -g n
 
-    # 或：brew/curl
+    # 或：brew、curl
     ```
 2. 切换版本
 
