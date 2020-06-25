@@ -112,7 +112,7 @@
         ![WAMP图](./images/7.png)
     3. 左击系统托盘中的WampServer，选择 **Apache -> httpd-vhosts.conf** 配置文件，添加：
 
-        ```test
+        ```text
         <VirtualHost *:80>
             ServerName 域名1
             ProxyPass / http://域名2:端口号/

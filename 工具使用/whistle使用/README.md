@@ -1,5 +1,4 @@
 ### [whistle](https://github.com/avwo/whistle)使用
-test
 1. 启动
 
     ```shell

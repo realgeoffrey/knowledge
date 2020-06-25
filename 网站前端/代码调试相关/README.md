@@ -2,94 +2,118 @@
 
 ## 目录
 1. [前端调试方式](#前端调试方式)
+
+    1. [JS](#js)
+    1. [PC端](#pc端)
+    1. [WAP端](#wap端)
 1. [服务端调试](#服务端调试)
 
 ---
+## 前端调试方式
 
-### 前端调试方式
-1. JS：
+### JS
+1. 展示：`console.log/info/warn/error`（`alert`）
 
-    1. 展示：`console.log/info/warn/error`（`alert`）
+    >（Value below was evaluated just now.）`console`引用类型的数据，在点击开来查看的这个时刻才去取引用类型的快照（意味着可以console之后再修改展示内容），打开之后不再关联。
 
-        >（Value below was evaluated just now.）`console`引用类型的数据，在点击开来查看的这个时刻才去取引用类型的快照（意味着可以console之后再修改展示内容），打开之后不再关联。
+    - 更好的展示：
 
-        - 更好的展示：
+        1. 缩进：`console.groupCollapsed/group`至`console.groupEnd`
+        2. 表格：`console.table`
+2. 调用栈：`console.trace`
+3. 执行时间：`console.time`至`console.timeEnd`
 
-            1. 缩进：`console.groupCollapsed/group`至`console.groupEnd`
-            2. 表格：`console.table`
-    2. 调用栈：`console.trace`
-    3. 执行时间：`console.time`至`console.timeEnd`
-2. PC端
+### PC端
+>1. 遵循[devtools-protocol](https://github.com/chromedevtools/devtools-protocol)协议的应用都拥有打开Chrome的[DevTools](https://developers.google.com/web/tools/chrome-devtools)进行调试的能力。
+>2. 遵循[JavaScriptCore](https://developer.apple.com/documentation/javascriptcore)协议的应用都拥有打开Safari的`开发`进行调试的能力。
 
-    遵循[devtools-protocol](https://github.com/chromedevtools/devtools-protocol)协议的应用都可以打开[DevTools](https://developers.google.com/web/tools/chrome-devtools)进行调试。
+1. Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）。
+2. Elements，右键标签可以Break On：子节点修改、attribute修改、Node移除。
+3. Node.js
 
-    1. Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）。
-    2. Elements，右键标签可以Break On：子节点修改、attribute修改、Node移除。
-    3. Node.js
+    通过Chrome的 <chrome://inspect/#devices>，监听Node.js程序运行`node --inspect 文件`，可使用`debugger`等进行断点调试、`console`打印等。
 
-        通过Chrome的 <chrome://inspect/#devices>，监听Node.js程序运行`node --inspect 文件`，可使用`debugger`等进行断点调试、`console`打印等。
-3. WAP端
+### WAP端
+1. WebView
 
-    1. WebView
+    1. 使用页面模拟调试，如：[eruda](https://github.com/liriliri/eruda)、[vConsole](https://github.com/Tencent/vConsole)。
+    2. 针对**已开启调试功能的APP**连接对应的调试工具：
 
-        1. 使用页面模拟调试，如：[eruda](https://github.com/liriliri/eruda)、[vConsole](https://github.com/Tencent/vConsole)。
-        2. 针对**已开启调试功能的APP**连接对应的调试工具：
-
-            >最佳方式：连接上电脑后借助 Chrome的DevTools 或 Safari的开发工具。
-
-            1. Android
-
-                PC端的Chrome的Remote devices（<chrome://inspect/#devices>）可以调试**Android已开启调试功能的APP**的WebView（需要能够访问google，否则首次打开inspect页面会404）。
-
-                - Android已开启调试功能的APP：
-
-                    1. Chrome
-                    2. 用<http://debugx5.qq.com/>打开TBS内核调试功能的[腾讯X5内核WebView](https://x5.tencent.com/)（如：Android的微信、QQ）
-                    3. 开启调试功能的debug包APP
-
-                >若PC端的Chrome识别不到手机WebView，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)（macOS可以用brew安装：`brew cask install android-platform-tools`）并运行（进入文件夹后运行`adb.exe devices`或`adb devices`连接手机设备）。
-            2. iOS
-
-                macOS的Safari的「开发」可以调试**iOS已开启调试功能的APP**的WebView。
-
-                - iOS已开启调试功能的APP：
-
-                    1. Safari
-                    2. 开启调试功能的debug包APP
-        3. 使用抓包工具查看请求、Map请求，如：[Charles](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Charles使用/README.md#charles使用)、[whistle](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/whistle使用/README.md#whistle使用)。
-    2. 其他语言2Native
+        >最佳方式：连接上电脑后借助 Chrome的DevTools（遵循devtools-protocol） 或 Safari的`开发`（遵循JavaScriptCore）。
 
         1. Android
 
-            1. adb端口代理
+            PC端的Chrome的Remote devices（<chrome://inspect/#devices>）可以调试**Android已开启调试功能的APP**的WebView（需要能够访问google，否则首次打开inspect页面会404）。
 
-                1. `adb reverse tcp:「手机端口号」 tcp:「PC端口号」`
+            - Android已开启调试功能的APP：
 
-                    手机访问「手机端口号」的流量都会转发到PC的「PC端口号」。
-                2. `adb forward tcp:「PC端口号」 tcp:「手机端口号」`
+                1. Chrome
+                2. 用<http://debugx5.qq.com/>打开TBS内核调试功能的[腾讯X5内核WebView](https://x5.tencent.com/)（如：Android的微信、QQ）
+                3. 开启调试功能的debug包APP
 
-                    PC访问「PC端口号」的流量都会转发到手机的「手机端口号」。
-
-                >可以混合配置使用，如：手机端口号A -> PC端口号B > 手机端口号C。
-            2. 日志
-
-                1. JS日志：
-
-                    `chrome://inspect/#devices`设置Target`localhost:「手机端口号」`
-                2. 手机日志：
-
-                    1. `adb logcat`
-
-                        或：`adb shell`之后`logcat | grep 「筛选内容」`。
-                    2. Android Studio内的logcat（需要安装SDK）
+            >若PC端的Chrome识别不到手机WebView，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)（macOS可以用brew安装：`brew cask install android-platform-tools`）并运行（进入文件夹后运行`adb.exe devices`或`adb devices`连接手机设备）。
         2. iOS
 
-            Xcode模拟App。
+            macOS的Safari的`开发`可以调试**iOS已开启调试功能的APP**的WebView。
 
-    - Android真机调试
+            - iOS已开启调试功能的APP：
 
-        1. 打开「开发者选项」的「显示布局边界」，会展示Native渲染边界，方便区分WebView的H5与Native内容。
-        2. 打开其他APP时设置的允许/拒绝信息，可以操作当前APP「清除数据」恢复提醒。
+                1. Safari
+                2. 开启调试功能的debug包APP
+    3. 使用抓包工具查看请求、Map请求，如：[Charles](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Charles使用/README.md#charles使用)、[whistle](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/whistle使用/README.md#whistle使用)。
+2. 其他语言2Native
+
+    >1. iOS用Xcode模拟器运行客户端调试APP。
+    >2. Android用真机安装APK调试APP。
+
+    1. Android
+
+        1. adb端口代理
+
+            1. `adb reverse tcp:「手机端口号」 tcp:「PC端口号」`
+
+                手机访问「手机端口号」的流量都会转发到PC的「PC端口号」。
+            2. `adb forward tcp:「PC端口号」 tcp:「手机端口号」`
+
+                PC访问「PC端口号」的流量都会转发到手机的「手机端口号」。
+
+            >可以混合配置使用，如：手机端口号A -> PC端口号B > 手机端口号C。
+        2. 日志
+
+            1. JS日志：
+
+                `chrome://inspect/#devices`设置Target`localhost:「手机端口号？」`（Console、Sources、Profiler、Memory）
+            2. 手机日志：
+
+                1. `adb logcat`
+
+                    或：`adb shell`之后`logcat | grep 「筛选内容」`。
+                2. Android Studio内的logcat（需要安装SDK）
+        3. Android Studio编译APK
+
+            1. 改动代码 -> Make -> Run -> target获得APK
+
+                >Make === Build === 编译。APK路径：app/build/outputs/apk/debug/app-debug.apk。
+
+                1. Make一次后已生成编译好的文件，之后都可以直接Run 「项目名」（不需要再Make）
+
+                    1. 可以仅对改动的地方进行「增量」编译后运行：
+
+                        1. `Make Module 「模块名」`
+                        2. `Make Project`
+                    2. 使用Rebuild Project（或：Clean Project）删除已编译文件后重新编译整个项目
+                    3. 改动代码后若不编译，则Run的结果为之前编译的内容
+            2. Run需要有target（真机或模拟器）
+    2. iOS
+
+        Xcode模拟App：Run（command + R） 或 Run Without Building（command + control + R）。
+
+    - 若网络通信不通过发起HTTP请求，则会有其他客户端通讯协议。此时就不能用HTTP抓包查看请求，需要客户端通讯协议对应的通讯查看方式。
+
+- Android真机调试：
+
+    1. 打开「开发者选项」的「显示布局边界」，会展示Native渲染边界，方便区分WebView的H5与Native内容。
+    2. 打开其他APP时设置的允许/拒绝信息，可以操作当前APP「清除数据」恢复提醒。
 
 - 其他策略
 
@@ -136,4 +160,5 @@
             >```
             ></details>
 
-### [服务端调试](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/服务端相关/README.md#接口错误排查)
+---
+## [服务端调试](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/服务端相关/README.md#接口错误排查)

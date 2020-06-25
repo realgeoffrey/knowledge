@@ -300,9 +300,11 @@ vi ~/.zshrc         # zsh
 brew update && brew upgrade && brew cask upgrade
 ```
 
->brew cask可以安装大部分软件，使用`brew search 「软件名」`进行搜索。
+>brew cask可以安装大部分软件，使用`brew search 「软件名」`进行搜索（建议对非App Store安装的应用，都尝试用brew cask安装）。
 
 #### （macOS）打开文件（夹）
 ```shell
 open 「路径/文件」
 ```
+
+>安装[duti](https://github.com/moretension/duti)（brew install duti），可以为各种文档设置默认应用程序。如：设置纯文本的默认应用程序为Sublime`duti -s com.sublimetext.3 public.plain-text all`。

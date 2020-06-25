@@ -1,6 +1,7 @@
 # Hybrid前端开发
 
 ## 目录
+1. [JS引擎](#js引擎)
 1. [WebView相关](#webview相关)
 
     1. [Native提供给Hybrid宿主环境（WebView）](#native提供给hybrid宿主环境webview)
@@ -9,9 +10,28 @@
 1. [其他语言2Native](#其他语言2native)
 
 ---
->Hybrid App：狭义上是App内嵌WebView，再在WebView上使用页面的方案。广义上包括所有App混合方案，包括WebView方案、其他语言2Native方案、等。
+>Hybrid App：狭义上是App内嵌WebView组件，再在WebView上使用页面的方案。广义上包括所有App混合方案，包括WebView方案、其他语言2Native方案、等。
+
+### JS引擎
+todo js引擎作用
+1. Android运用的JS引擎：Google的[V8](https://github.com/v8/v8)。
+2. iOS运行的JS引擎：Apple的[JavaScriptCore](https://developer.apple.com/documentation/javascriptcore)。
+
+>还有其他JS引擎：SpiderMonkey、Rhino、等。
 
 ## WebView相关
+
+><details>
+><summary>WebView种类</summary>
+>
+>1. iOS：
+>
+>    官方：[WKWebView](https://developer.apple.com/documentation/webkit/wkwebview)、[UIWebView](https://developer.apple.com/documentation/uikit/uiwebview)（不推荐）
+>2. Android：
+>
+>    1. 官方：[WebView](https://developer.android.com/reference/android/webkit/WebView)
+>    2. 第三方：[X5](https://x5.tencent.com/)、[AgentWeb](https://github.com/Justson/AgentWeb)、等
+></details>
 
 ### Native提供给Hybrid宿主环境（WebView）
 Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、JS进行业务开发。
