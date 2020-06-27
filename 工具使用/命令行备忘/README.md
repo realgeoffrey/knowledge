@@ -20,6 +20,7 @@
 1. [创建文件](#创建文件)
 1. [查看文件](#查看文件)
 1. [查看group、user](#查看groupuser)
+1. [指令的别名](#指令的别名)
 1. [macOS命令](#macos命令)
 
     1. [（macOS）brew更新](#macosbrew更新)
@@ -292,6 +293,18 @@ vi ~/.zshrc         # zsh
     groups 「用户名」 # 返回「用户名」所在的组名
     ```
 
+### 指令的别名
+```shell
+alias   # 查看已设置的内容
+
+alias 「自定义命令名」='「执行命令1」; 「执行命令2」'   # 新增 别名=执行命令
+
+alias 「自定义命令名」      # 打印设置的执行命令
+
+
+unalias 「自定义命令名」    # 删除 别名
+```
+
 ---
 ### macOS命令
 
@@ -307,4 +320,4 @@ brew update && brew upgrade && brew cask upgrade
 open 「路径/文件」
 ```
 
->安装[duti](https://github.com/moretension/duti)（brew install duti），可以为各种文档设置默认应用程序。如：设置纯文本的默认应用程序为Sublime`duti -s com.sublimetext.3 public.plain-text all`。
+>安装[duti](https://github.com/moretension/duti)（brew install duti），可为各种文档设置默认应用程序。如：设置纯文本的默认应用程序为Sublime`duti -s com.sublimetext.3 public.plain-text all`。
