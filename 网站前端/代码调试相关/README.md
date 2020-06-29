@@ -82,7 +82,7 @@
 
             1. JS日志：
 
-                `chrome://inspect/#devices`设置Target`localhost:「手机端口号？」`（Console、Sources、Profiler、Memory）
+                `chrome://inspect/#devices`设置Target`localhost:「PC端口号」`（Console、Sources、Profiler、Memory）
             2. 手机日志：
 
                 1. `adb logcat`

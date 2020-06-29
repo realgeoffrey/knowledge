@@ -21,6 +21,7 @@
 1. [查看文件](#查看文件)
 1. [查看group、user](#查看groupuser)
 1. [指令的别名](#指令的别名)
+1. [adb](#adb)
 1. [macOS命令](#macos命令)
 
     1. [（macOS）brew更新](#macosbrew更新)
@@ -304,6 +305,51 @@ alias 「自定义命令名」      # 打印设置的执行命令
 
 unalias 「自定义命令名」    # 删除 别名
 ```
+
+### adb
+1. 查看已连接的设备（尝试连接手机）
+
+    ```shell
+    adb devices -l
+    # List of devices attached
+    # 「序列号」       device usb:「？？？」 product:「手机型号」 model:「手机型号」 device:「手机型号」 transport_id:「数字」
+    ```
+2. 系统消息输出
+
+    ```shell
+    adb logcat
+
+    # 或
+
+    adb shell   # 启动交互式Unix shell对设备发起命令
+    logcat | grep 「筛选内容」
+    ```
+3. 端口转发
+
+    1. 手机访问「手机端口号」的流量都会转发到PC的「PC端口号」：
+
+        ```shell
+        adb reverse --list  # 打印所有 手机->PC 的映射端口哦连接列表
+
+        adb reverse tcp:「手机端口号」 tcp:「PC端口号」 # 新增一个端口映射
+
+        adb reverse --remove tcp:「手机端口号」      # 删除一个端口映射
+
+        adb reverse --remove-all                 # 删除所有端口映射
+        ```
+    2. PC访问「PC端口号」的流量都会转发到手机的「手机端口号」：
+
+        ```shell
+        adb forward --list  # 打印所有 PC->手机 的映射端口哦连接列表
+
+        adb forward tcp:「PC端口号」 tcp:「手机端口号」 # 新增一个端口映射
+
+        adb forward --remove tcp:「PC端口号」       # 删除一个端口映射
+
+        adb forward --remove-all                 # 删除所有端口映射
+        ```
+
+    >可以混合配置使用，如：手机端口号A -> PC端口号B > 手机端口号C。
 
 ---
 ### macOS命令
