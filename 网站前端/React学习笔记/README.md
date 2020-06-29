@@ -17,7 +17,7 @@
       this.func()
     }
     ```
-2. `key`的取值和[Vue中`key`的注意点（16.i）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#指令--特殊attribute)一致
+2. `key`的取值和[Vue中`key`的注意点（17.i）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#指令--特殊attribute)一致
 
     因为JSX的灵活，只要是能够`切换或条件判断`的都需要考虑`key`。包括`Array`方法、数组、条件判断（`switch`、`if`）等。
 3. 模板内的属性

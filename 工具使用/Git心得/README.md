@@ -741,6 +741,11 @@ feat(details): 添加了分享功能
     git config --local --list   # 当前目录
     git config --global --list  # 全局
     ```
+- 删除某个设置
+
+    ```git
+    git config --unset 「配置名」
+    ```
 
 ### .gitkeep文件
 >因为Git不跟踪空文件夹，所以项目中的空文件夹都无法进入Git版本控制。
