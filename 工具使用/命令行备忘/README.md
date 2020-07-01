@@ -350,6 +350,22 @@ unalias 「自定义命令名」    # 删除 别名
         ```
 
     >可以混合配置使用，如：手机端口号A -> PC端口号B > 手机端口号C。
+4. 查看手机中所有安装的包
+
+    ```shell
+    adb shell pm list packages
+    # package:「包名」
+    # e.g. com.tencent.mtt.hippy.example:com.tencent.mtt.hippy.example
+    ```
+5. 查看界面性能数据
+
+    >来自：[测试界面性能](https://developer.android.com/training/testing/performance)。
+
+    ```shell
+    # 需要打开了「GPU呈现模式分析」为「在adb shell dumpsys gfxinfo中」
+    adb shell dumpsys gfxinfo <PACKAGE_NAME>
+    adb shell dumpsys gfxinfo <PACKAGE_NAME> framestats
+    ```
 
 ---
 ### macOS命令

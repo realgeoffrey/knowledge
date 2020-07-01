@@ -243,7 +243,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         ></details>
     >接口设计可以带有「透传数据」：前端调用客户端方法时多传一个透传参数，之后客户端异步调用前端方法时带着这个参数的值。
 2. 根据WebView的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在WebView遇到的bug。
-3. 调试WebView：[前端调试方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/代码调试相关/README.md#前端调试方式)中针对移动端的部分。
+3. [WebView调试](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/代码调试相关/README.md#webview调试)
 4. 分享到其他App
 
     1. 通过JS触发Native App之间的切换分享（自己Native内可用桥协议，任意App均要起作用只能用Scheme）。
@@ -281,3 +281,5 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 前端编写的代码，通过中间的`其他语言2Native`之类的方式转换为原生App代码运行。
 
 如：Dart2Native、React Native2Native、Weex2Native。
+
+1. [其他语言2Native调试](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/代码调试相关/README.md#其他语言2native调试)

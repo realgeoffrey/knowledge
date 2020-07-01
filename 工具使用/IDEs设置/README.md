@@ -2,7 +2,7 @@
 
 1. There is **WebStorm** settings. I exported `.jar` to make sure settings in my workplace and my PCs are the same.
 
-    [webstorm.jar](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/IDEs设置/webstorm0529.jar)(PhpStorm can use too)
+    [webstorm.jar](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/IDEs设置/webstorm0704.jar)(PhpStorm can use too)
 
     - 可以用`Settings Repository`或`IDE Settings Sync`在线同步设备，如：我的[JetBrainsSettingsRepository](https://github.com/realgeoffrey/JetBrainsSettingsRepository)。
 2. **Help -> Edit Custom VM Options** can change the memories for the IDE.

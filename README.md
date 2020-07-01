@@ -67,9 +67,10 @@
 6. 大前端
 
     1. [Hybrid前端开发](./网站前端/Hybrid前端开发/README.md)
-    2. [Node.js学习笔记](./网站前端/Node.js学习笔记/README.md)
-    3. [Typescript学习笔记](./网站前端/Typescript学习笔记/README.md)
-    4. [服务端相关](./网站前端/服务端相关/README.md)
+    2. [Hippy学习笔记](./网站前端/Hippy学习笔记/README.md)
+    3. [Node.js学习笔记](./网站前端/Node.js学习笔记/README.md)
+    4. [Typescript学习笔记](./网站前端/Typescript学习笔记/README.md)
+    5. [服务端相关](./网站前端/服务端相关/README.md)
 7. [HTTP相关](./网站前端/HTTP相关/README.md)
 8. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
 9. <details>

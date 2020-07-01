@@ -65,6 +65,33 @@
 
         >每个plugin都会绑定各种webpack生命周期钩子进行执行plugin内某些具体内容，用户一般不用关注各plugins之间执行顺序。
     5. `resolve.alias`：定义路径的别名
+
+        1. 普通别名
+
+            ```javascript
+            // webpack
+            alias: {
+              xyz: path.resolve(__dirname, 'path/to/file.js')
+            }
+
+
+            // 使用
+            import Test1 from 'xyz/file.js'; // 匹配
+            import Test2 from '../xyz/file.js'; // 不匹配
+            ```
+        2. 精准匹配别名（`「名字」$`）
+
+            ```javascript
+            // webpack
+            alias: {
+              xyz$: path.resolve(__dirname, 'path/to/file.js')
+            }
+
+
+            // 使用
+            import Test2 from 'xyz'; // 精确匹配，所以 path/to/file.js 被解析和导入
+            import Test3 from 'xyz/file.js'; // 非精确匹配，触发普通解析
+            ```
 2. `webpack-dev-server`的热更新配置：`devServer.hot: true`（需要插件`new webpack.HotModuleReplacementPlugin()`配合）
 
     利用websocket实现，websocket-server识别到html、css和js的改变，就向websocket-client发送一个消息，websocket-client判断若是html和css则操作dom，实现局部刷新，若是js则整体刷新。
