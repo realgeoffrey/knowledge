@@ -93,21 +93,23 @@
             1. `adb logcat`
 
                 或：`adb shell`之后`logcat | grep 「筛选内容」`。
-            2. Android Studio内的logcat（需要安装SDK）
+            2. Android Studio的logcat（需要安装SDK）
     3. 元素查看
 
-        Android Studio的[Layout Inspector](https://developer.android.com/studio/debug/layout-inspector)
+        1. Android Studio的[Layout Inspector](https://developer.android.com/studio/debug/layout-inspector)
+
+            结束选择Stop inspector。
     4. 性能调试
 
         1. 「开发人员选项」的「GPU呈现模式分析」
-        2. [剖析应用性能](https://developer.android.com/studio/profile)
+        2. Android Studio的[Profiler](https://developer.android.com/studio/profile/android-profiler)
 
             - [测试界面性能](https://developer.android.com/training/testing/performance)
 
                 ```shell
                 # 需要打开了「GPU呈现模式分析」为「在adb shell dumpsys gfxinfo中」
-                adb shell dumpsys gfxinfo <PACKAGE_NAME>
-                adb shell dumpsys gfxinfo <PACKAGE_NAME> framestats
+                adb shell dumpsys gfxinfo 「PACKAGE_NAME」
+                adb shell dumpsys gfxinfo 「PACKAGE_NAME」 framestats
                 ```
 
     - Android Studio编译APK
@@ -127,6 +129,8 @@
         2. Run需要有target（真机或模拟器）
 2. iOS（Simulator）
 
+    >Xcode的Parallelization并行化设置为最大，增加编译效率。
+
     1. Xcode模拟App
 
         Run（command + R） 或 Run Without Building（command + control + R）
@@ -140,7 +144,9 @@
             Xcode底部
     3. 元素查看
 
-        Xcode的Debug View Hierarchy
+        1. Xcode的Debug View Hierarchy
+
+            查看时会阻塞进程。结束点击Continue program excution。
     4. 性能调试
 
         1. Xcode的Show the Debug navigator -> debug gauges
@@ -155,14 +161,18 @@
 
         >来自：[配置设备上的开发者选项](https://developer.android.com/studio/debug/dev-options)。
 
-        1. 「显示触摸操作」
-        2. 「指针位置」
-        4. 「“仅充电”模式下允许ADB调试」
-        5. 「保持唤醒状态」
-        6. 「演示模式」
-        7. 「显示布局边界」：会展示Native渲染边界，方便区分WebView的H5与Native内容。
-        8. 「GPU呈现模式分析」：展示分析
+        - 打开方便调试
 
+            1. 「显示触摸操作」
+            2. 「指针位置」
+            4. 「“仅充电”模式下允许ADB调试」
+            5. 「保持唤醒状态」
+            6. 「演示模式」
+        - 可选
+
+            1. 「显示布局边界」：会展示Native渲染边界，方便区分WebView的H5与Native内容
+            2. 「GPU呈现模式分析」：展示分析
+            3. 「最小宽度」：设置手机的宽度dp
     2. 打开其他APP时设置的允许/拒绝信息，可以操作当前APP「清除数据」恢复提醒。
     3. 连接着的手机，无法识别，开关切换一下「USB调试」恢复。
 

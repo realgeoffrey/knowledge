@@ -363,8 +363,8 @@ unalias 「自定义命令名」    # 删除 别名
 
     ```shell
     # 需要打开了「GPU呈现模式分析」为「在adb shell dumpsys gfxinfo中」
-    adb shell dumpsys gfxinfo <PACKAGE_NAME>
-    adb shell dumpsys gfxinfo <PACKAGE_NAME> framestats
+    adb shell dumpsys gfxinfo 「PACKAGE_NAME」
+    adb shell dumpsys gfxinfo 「PACKAGE_NAME」 framestats
     ```
 
 ---
