@@ -37,6 +37,12 @@
         URL file:///User/username/test   # macOS、Linux
         URL file://E:\xx\test            # Windows的路径分隔符可以用 \ 或者 /
         ```
+    3. 往`content-type`为`html`的响应内容的前面或后面添加文本内容
+
+        ```shell
+        URL htmlPrepend://文件路径
+        URL htmlAppend://文件路径
+        ```
     4. 在页面**末尾**注入内容HTML、JS、CSS内容
 
         ```shell

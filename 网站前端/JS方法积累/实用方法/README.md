@@ -1840,7 +1840,7 @@ function getScrollBarWidth() {
 ```
 
 ### *原生JS*验证邮箱有效性
->来自：[stackoverflow:Validate email address in JavaScript?](http://stackoverflow.com/questions/46155/validate-email-address-in-javascript#answer-46181)。
+>来自：[Stack Overflow: Validate email address in JavaScript?](http://stackoverflow.com/questions/46155/validate-email-address-in-javascript#answer-46181)。
 
 ```javascript
 function validateEmail(email) {
