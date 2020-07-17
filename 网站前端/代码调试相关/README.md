@@ -152,6 +152,21 @@
         1. Xcode的Show the Debug navigator -> debug gauges
         2. （进阶）Xcode -> Product -> Profile
 
+    - Simulator代理到whistle（或其他任意代理）
+
+        1. 方法一：设置系统代理为8899，Simulator为系统代理
+        2. 方法二：利用Proxifier
+
+            1. 安装证书：`127.0.0.1:8899`
+            2. 安装Proxifier
+
+                1. Proxies
+
+                    HTTPS 127.0.0.1:8899
+                2. Rules
+
+                    `Simulator; "Xcode Server Builder"; "MobileSafari"; "com.apple.WebKit.Networking";`
+
 - 若网络通信不通过发起HTTP请求，则会有其他客户端通讯协议。此时就不能用HTTP抓包查看请求，需要客户端通讯协议对应的通讯查看方式。
 
 #### 其他调试方法

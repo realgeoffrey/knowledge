@@ -3,20 +3,25 @@
 
     ```shell
     whistle run     # 前台启动
+
     whistle start   # 后台启动
     whistle stop    # 后台停止
     whistle restart # 后台重启
+    whistle status  # 后台运行信息展示
 
     # w2是whistle命令的简写
+
+    # 运行参数
+    -p 「端口号数字，默认8899」
+    -t
     ```
-2. 调试
+2. 配置原则
 
-    >默认代理端口号：`8899`。
+    1. 相同协议规则的默认优先级从上到下，即前面的规则优先级匹配高于后面。
 
-    1. 被调试的设备设置HTTP代理：`电脑IP:8899`
-
-        >PC可以用系统的HTTP代理设置，也可以用浏览器的代理设置（如：SwitchyOmega）。
-    2. 电脑Chrome打开查看调试：`127.0.0.1:8899`或`127.0.0.1:8900`
+        >与传统的hosts配置优先级相反。
+    2. 一些属于不同协议，但功能有冲突的规则，按常用优先级为`rule`>`host`>`proxy`。
+    3. 部分相同协议会匹配及合并所有可以匹配的规则。
 3. **Rules**
 
     >`#`为注释符号。
@@ -31,13 +36,24 @@
         请求域名 指向的IP地址:端口号
         指向的IP地址:端口号 请求域名
         ```
-    2. 本地替换
+    2. 代理转发
+
+        ```shell
+        URL proxy://127.0.0.1:「端口号」?host=「IP地址」    # URL通过 本地映射「端口号」的应用 去转发「IP地址」
+        ```
+    3. 本地替换
 
         ```shell
         URL file:///User/username/test   # macOS、Linux
         URL file://E:\xx\test            # Windows的路径分隔符可以用 \ 或者 /
         ```
-    4. 在页面**末尾**注入内容HTML、JS、CSS内容
+    4. 往`content-type`为`html`的响应内容的前面或后面添加文本内容
+
+        ```shell
+        URL htmlPrepend://文件路径
+        URL htmlAppend://文件路径
+        ```
+    5. 在页面**末尾**注入内容HTML、JS、CSS内容
 
         ```shell
         # macOS、Linux
@@ -50,7 +66,7 @@
         URL js://E:\xx\test\test.js
         URL css://E:\xx\test\test.css
         ```
-    5. 在响应的body**开头**或**末尾**注入HTML内容（可以注入`<script>`、`<link>`）
+    6. 在响应的body**开头**或**末尾**注入HTML内容（可以注入`<script>`、`<link>`）
 
         >因为是插入至响应的body，因此URL要具体到某一个html文件才行，否则会导致所有请求都添加一遍HTML内容。
 
@@ -90,7 +106,7 @@
         ><p>这是whistle插入内容</p>
         >```
         ></details>
-    6. log信息
+    7. log信息
 
         >开启后会阻止把错误信息输入到vconsole和eruda。
 
@@ -109,7 +125,7 @@
             URL log://E:\xx\test\test.js
             URL log:///User/xxx/test/test.js
             ```
-    7. **Weinre**查看页面结构
+    8. **Weinre**查看页面结构
 
         >开启后会阻止把`console`输入到vconsole和eruda。
 
@@ -122,12 +138,13 @@
         1. 域名（端口号、请求协议）
         2. 路径
         3. 正则
-        4. 精确匹配（`$`）
-        5. 通配符匹配（`*`、`**`）
-        6. 通配路径匹配（`~`）
-4. **Values**
+        4. 精确匹配（`$`开头）
+        5. 通配符匹配（`^`、`$`、`*`）
+
+            支持`$0`到`$9`获取通配符。
+3. **Values**
 
     配置resPrepend、log等协议中添加的`{变量名}`的HTML内容或JS脚本。
-5. **Network**
+4. **Network**
 
     查看右边`log->console`抓取的页面console信息（需要设置**Rules**的log协议）。

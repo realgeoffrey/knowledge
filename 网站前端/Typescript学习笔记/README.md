@@ -4,7 +4,6 @@
 1. [Typescript](#typescript)
 
 ---
-
 ### [Typescript](https://github.com/microsoft/TypeScript)
 >参考：[TypeScript 入门教程](https://github.com/xcatliu/typescript-tutorial)、[TypeScript使用手册](https://github.com/zhongsp/TypeScript)。
 

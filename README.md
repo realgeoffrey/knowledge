@@ -83,6 +83,7 @@
     3. [Babel学习笔记](./网站前端/Babel学习笔记/README.md)
     4. [gulp使用](./网站前端/gulp使用/README.md)
     5. [ESLint学习笔记](./网站前端/ESLint学习笔记/README.md)
+    6. [Prettier学习笔记](./网站前端/Prettier学习笔记/README.md)
 </details>
 
 ><details>
