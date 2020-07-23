@@ -3209,6 +3209,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
 21. 前端无法获取~~电脑文件系统中文件的绝对路径~~
 
     `<input type="file">`只能获得`C:\fakepath\文件名.文件类型`。
+22. `dom1.contains(dom2)`判断dom2是否为dom1的后代节点（若`dom1 === dom2`，则返回`true`）。
 
 ---
 ## 事件相关

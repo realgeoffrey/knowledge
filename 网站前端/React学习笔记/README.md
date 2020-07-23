@@ -6,6 +6,7 @@
     1. [JSX](#jsx)
     1. [元素渲染](#元素渲染)
     1. [组件](#组件)
+    1. [代码分割（动态加载）](#代码分割动态加载)
 1. [create-react-app](#create-react-app)
 1. [redux](#redux)
 1. [mobx](#mobx)
@@ -22,9 +23,19 @@
     1. `&&`
     2. `condition ? true : false`
     3. `Array`方法
-4. 采用小驼峰式（camelCase）定义属性名称，包括：事件名。
-5. 插入的值都会进行HTML的字符实体（character entity）转义，避免XSS。
-6. Babel会把JSX转译成`React.createElement`函数调用，生成React元素
+4. 采用小驼峰式（camelCase）定义标签的属性名称，包括：事件名。
+
+    >类似DOM对象的`properties`名。
+
+    1. （`class`是保留字，）`className`代替`class`
+    2. `htmlFor`代替`for`
+
+    - 特殊情况用`-`短横线隔开式（kebab-case）的属性名：
+
+        1. 无障碍属性`aria-*`
+5. 组件名称必须以大写字母开头。
+6. 插入的值都会进行HTML的字符实体（character entity）转义，避免XSS。
+7. Babel会把JSX转译成`React.createElement`函数调用，生成React元素
 
     ><details>
     ><summary>e.g.</summary>
@@ -62,6 +73,8 @@
     2. 在使用JSX的.js文件引用加上`type="text/babel"`。
 
 #### 元素渲染
+>由`ReactDOM.render`对根DOM组件开始初始化-渲染，随着引入的子组件再以树状结构对子组件进行初始化-渲染。
+
 1. `ReactDOM.render`
 
     渲染到根DOM。
@@ -73,8 +86,11 @@
 
     1. 不可变对象（[immutable](https://zh.wikipedia.org/wiki/不可变对象)）
     2. 创建开销极小的普通对象
+4. 组件渲染
 
-- 由`ReactDOM.render`对根DOM组件开始初始化-渲染，随着引入的子组件再以树状结构对子组件进行初始化-渲染
+    组件渲染完成后返回React元素。
+
+    1. `render`方法（或函数组件）返回`null`，组件会正常运行和执行生命周期函数，只是不渲染出任何DOM（因为渲染空内容）。
 
 #### 组件
 组件：它接受任意的入参（Props），并返回用于描述页面展示内容的React元素。
@@ -128,10 +144,9 @@
         ></details>
 2. 限制
 
-    1. 组件名称必须以大写字母开头。
-    2. Props不能被修改（只读）。
-    3. （`class`是保留字，）标签上用`className`代替`class`使用。
-    4. 组件只能显性接受传入的Props内容（在外层传`style`、`className`等，需要在组件内接受并处理）。
+    1. Props不能被修改（只读）。
+    2. 组件只能显性接受传入的Props内容（在外层传`style`、`className`等，需要在组件内接受并处理）。
+    3. 组件需要以`default`方式导出。
 3. State
 
     State是私有的，并且完全受控于当前组件，其父、子组件均不可见。
@@ -157,6 +172,61 @@
         >}));
         >```
         ></details>
+    3. 属性值改变的策略
+
+        1. 要在模板内展示的属性，需要放到State中被观测（或放到store中被观测，如：redux、mobx），才能在这些值改变时通知视图重新渲染（`this.setState`）。
+
+            `this.setState(对象或函数, () => {/* 更新后的回调 */})`函数是唯一能够更新`this.state.属性`的方式。
+
+            - 不可变性（引用数据类型）
+
+                不直接修改数据（或改变底层数据），而是用新值替换旧值。（对需要修改的State内容浅复制一层，对新值进行修改后覆盖原State）
+        2. 不在模板内展示的值（如：仅作为事件触发修改的状态值 或 仅在JS逻辑中改变的值），直接放在class中的实例属性中。
+
+            - 可以向组件中加入任意不参与数据流的额外字段，但是要在组件生命周期结束前清理（如：在`componentWillUnmount`中处理）。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```jsx
+        >class MyComponent extends Component {
+        >  constructor (props) {
+        >    super(props)
+        >    this.state = {
+        >      current: 0    // 需要放到模板内展示
+        >    }
+        >  }
+        >
+        >  componentDidMount () {
+        >    this.timerID = setInterval(
+        >      () => {},
+        >      1000
+        >    );
+        >  }
+        >
+        >  componentWillUnmount () {
+        >    clearInterval(this.timerID);
+        >  }
+        >
+        >  isLoading = false // 不需要在模板内展示
+        >
+        >  render () {
+        >    return (
+        >      <View
+        >        onClick={() => {
+        >          this.isLoading = !this.isLoading // 直接赋值修改
+        >          this.setState({                  // setState修改
+        >            current: this.state.current + 1
+        >          })
+        >        }}
+        >      >
+        >        {this.state.current}
+        >      </View>
+        >    )
+        >  }
+        >}
+        >```
+        ></details>
 4. Props
 
     >可以把任何东西当做Props传递，如：组件、函数、JS的任意数据类型。
@@ -170,6 +240,45 @@
             >1. 组件的`key`值并不需要在全局都保证唯一，只需要在当前的同一级元素（兄弟节点）之前保证唯一即可。
             >2. `key`无法 ~~作为Props传递给子组件~~。
         2. `ref`
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```jsx
+            >// father
+            >constructor(props) {
+            >  super(props);
+            >  this.divRef = React.createRef();
+            >  this.sonRef = React.createRef();
+            >}
+            >render() {
+            >  return (
+            >    <div onClick={() => {console.log(this.divRef, this.sonRef)}}>
+            >      <div
+            >        ref={this.divRef}
+            >      />
+            >      <Son
+            >        refData={this.sonRef}  // 父组件渲染会导致子组件渲染
+            >      />
+            >    </div>
+            >  );
+            >}
+            >
+            >
+            >// Son
+            >render() {
+            >  return (
+            >    <div ref={this.props.refData} />
+            >  );
+            >}
+            >```
+            ></details>
+
+            可以从父级传递`React.createRef()`实例，再在子组件赋值子组件节点的`ref`到Props，这样父节点就可以获得子节点的`ref`。
+
+            - `React.forwardRef((props, ref) => {})`
+
+                Refs转发
     2. 把DOM或React元素传入子组件
 
         1. `children`
@@ -294,26 +403,30 @@
 
             若这种写法作为Props传入子组件，则父级每次render都会导致传入子组件的这个Props变化，导致子组件重新渲染。
 
-            ```jsx
-            class 组件 extends React.Component {
-              handleClick (e) {
-                console.log(this, e);
-              };
-
-              render () {
-                return (
-                  <button
-                    // handleClick的this指向组件实例
-                    onClick={this.handleClick.bind(this)}
-                    onClick={(e) => {this.handleClick(e);}}
-
-                    // handleClick的this指向undefined
-                    // onClick={this.handleClick}
-                  />
-                );
-              }
-            }
-            ```
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```jsx
+            >class 组件 extends React.Component {
+            >  handleClick (e) {
+            >    console.log(this, e);
+            >  };
+            >
+            >  render () {
+            >    return (
+            >      <button
+            >        // handleClick的this指向组件实例
+            >        onClick={this.handleClick.bind(this)}
+            >        onClick={(e) => {this.handleClick(e);}}
+            >
+            >        // handleClick的this指向undefined
+            >        // onClick={this.handleClick}
+            >      />
+            >    );
+            >  }
+            >}
+            >```
+            ></details>
     2. State初始化：
 
         ```jsx
@@ -334,62 +447,7 @@
           }
         }
         ```
-6. 属性值改变的策略
-
-    1. 要在模板内展示的属性，需要放到State中被观测（或放到store中被观测，如：redux、mobx），才能在这些值改变时通知视图重新渲染（`this.setState`）。
-
-        `this.setState(对象或函数, () => {/* 更新后的回调 */})`函数是唯一能够更新`this.state.属性`的方式。
-
-        - 不可变性（引用数据类型）
-
-            不直接修改数据（或改变底层数据），而是用新值替换旧值。（对需要修改的State内容浅复制一层，对新值进行修改后覆盖原State）
-    2. 不在模板内展示的值（如：仅作为事件触发修改的状态值 或 仅在JS逻辑中改变的值），直接放在class中的实例属性中。
-
-        - 可以向组件中加入任意不参与数据流的额外字段，但是要在组件生命周期结束前清理（如：在`componentWillUnmount`中处理）。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```jsx
-    >class MyComponent extends Component {
-    >  constructor (props) {
-    >    super(props)
-    >    this.state = {
-    >      current: 0    // 需要放到模板内展示
-    >    }
-    >  }
-    >
-    >  componentDidMount () {
-    >    this.timerID = setInterval(
-    >      () => {},
-    >      1000
-    >    );
-    >  }
-    >
-    >  componentWillUnmount () {
-    >    clearInterval(this.timerID);
-    >  }
-    >
-    >  isLoading = false // 不需要在模板内展示
-    >
-    >  render () {
-    >    return (
-    >      <View
-    >        onClick={() => {
-    >          this.isLoading = !this.isLoading // 直接赋值修改
-    >          this.setState({                  // setState修改
-    >            current: this.state.current + 1
-    >          })
-    >        }}
-    >      >
-    >        {this.state.current}
-    >      </View>
-    >    )
-    >  }
-    >}
-    >```
-    ></details>
-7. 通信
+6. 通信
 
     1. 父子组件间的通信（单向数据流/单向绑定）
 
@@ -471,7 +529,37 @@
         1. 祖孙组件间的通信
 
             1. Props逐层往下传递
-            2. `context`从祖辈向所有孙辈传递
+
+            2. <details>
+
+                <summary><code>context</code>从祖辈向所有孙辈传递</summary>
+
+                1. `const MyContext = React.createContext(默认值)`
+                2. 祖辈组件设置：`<MyContext.Provider value={/* 某个值 */}>`
+
+                    >可以嵌套不同context的Provider。
+
+                    当`Provider`的`value`值发生变化时，它内部所有孙辈节点的`this.context`和`Consumer组件`都会重新渲染。
+                3. 孙辈组件使用的2种方式：
+
+                    从组件树中离自身最近匹配`Provider`中读取到当前的`context`值。
+
+                    1. `contextType`
+
+                        - 2种声明方式：
+
+                            1. 组件类的声明之后：`组件.contextType = MyContext`
+                            2. 组件类的静态属性：`static contextType = MyContext`
+
+                        孙辈组件中通过`this.context`使用。
+                    2. `<MyContext.Consumer>{(data) => { return 组件 }}<MyContext.Consumer>`
+
+                        >`Provider`及其内部`Consumer组件`都不受制于`shouldComponentUpdate`函数，因此当`Consumer组件`在其祖辈组件退出更新的情况下也能更新。
+
+                - `MyContext.displayName = 字符串`
+
+                    React DevTools使用该字符串来确定context要显示的内容。
+                </details>
         2. 通用
 
             1. 状态管理（redux、mobx）
@@ -482,133 +570,179 @@
     >
     >    应当依靠自上而下的数据流，而不是尝试在不同组件间同步State。
     >2. 若某些数据可以由Props或State推导得出，则它就不应该存在于State中
-8. 事件处理
+7. 事件处理
 
     1. 小驼峰式（camelCase）定义事件名
     2. 事件处理函数的参数是一个合成事件（`e`）。
 
         1. 参数只能同步使用，异步不保存。
         2. 阻止默认行为、阻止冒泡，必须显式调用`e.preventDefault/stopPropagation()`
-9. 组件渲染
+8. 特殊组件
 
-    1. `render`方法返回`null（`或函数组件返回`null`），组件会正常运行和执行生命周期函数，只是不渲染出任何DOM（因为渲染空内容）。
-10. 表单
+    1. `<React.Fragment>`
 
-    1. 受控组件（controlled components）
+        1. 仅支持`key`属性。
+        2. 短语法：`<>子节点</>`（不支持所有属性，包括不支持`key`属性）。
+    2. 表单
 
-        渲染表单的React组件还控制着用户输入过程中表单发生的操作（表单的`value`、`onChange`受组件控制）。React的State成为表单“唯一数据源”。
+        1. 受控组件（controlled components）
 
-        1. `<input>`、`<textarea>`
+            渲染表单的React组件还控制着用户输入过程中表单发生的操作（表单的`value`、`onChange`受组件控制）。React的State成为表单“唯一数据源”。
 
-            ><details>
-            ><summary>e.g.</summary>
-            >
-            >```jsx
-            >constructor (props) {
-            >  super(props);
-            >  this.state = { value: "初始化值" };
-            >
-            >  this.handleChange = this.handleChange.bind(this);
-            >}
-            >
-            >handleChange (event) {
-            >  this.setState({ value: event.target.value });
-            >}
-            >
-            >render () {
-            >  return (
-            >    <input或textarea type="text" value={this.state.value} onChange={this.handleChange} />
-            >  );
-            >}
-            >```
-            ></details>
-        2. `<select>`
+            1. `<input>`、`<textarea>`
 
-            ><details>
-            ><summary>e.g.</summary>
-            >
-            >```jsx
-            >// 单选
-            >constructor (props) {
-            >  super(props);
-            >  this.state = { value: "coconut" };
-            >
-            >  this.handleChange = this.handleChange.bind(this);
-            >}
-            >
-            >handleChange (event) {
-            >  this.setState({ value: event.target.value });
-            >}
-            >
-            >render () {
-            >  return (
-            >    <select value={this.state.value} onChange={this.handleChange}>
-            >      <option value="grapefruit">葡萄柚</option>
-            >      <option value="lime">酸橙</option>
-            >      <option value="coconut">椰子</option>
-            >      <option value="mango">芒果</option>
-            >    </select>
-            >  );
-            >}
-            >```
-            >
-            >```jsx
-            >// 多选
-            >constructor (props) {
-            >  super(props);
-            >  this.state = { value: ["coconut", "mango"] };
-            >
-            >  this.handleClick = this.handleClick.bind(this);
-            >}
-            >
-            >handleClick (event) {
-            >  const value = event.target.value;
-            >
-            >  this.setState((state) => {
-            >    const oldValue = state.value.slice();
-            >    if (oldValue.includes(value)) {
-            >      oldValue.splice(oldValue.indexOf(value), 1);
-            >    } else {
-            >      oldValue.push(value);
-            >    }
-            >    return { value: oldValue };
-            >  });
-            >
-            >}
-            >
-            >render () {
-            >  return (
-            >    <select multiple={true} value={this.state.value} onChange={this.handleClick}>
-            >      <option value="grapefruit">葡萄柚</option>
-            >      <option value="lime">酸橙</option>
-            >      <option value="coconut">椰子</option>
-            >      <option value="mango">芒果</option>
-            >    </select>
-            >  );
-            >}
-            >```
-            ></details>
-        - 在受控组件上写死`value`会阻止用户输入（除了 ~~`null/undefined`~~）。
+                ><details>
+                ><summary>e.g.</summary>
+                >
+                >```jsx
+                >constructor (props) {
+                >  super(props);
+                >  this.state = { value: "初始化值" };
+                >
+                >  this.handleChange = this.handleChange.bind(this);
+                >}
+                >
+                >handleChange (event) {
+                >  this.setState({ value: event.target.value });
+                >}
+                >
+                >render () {
+                >  return (
+                >    <input或textarea type="text" value={this.state.value} onChange={this.handleChange} />
+                >  );
+                >}
+                >```
+                ></details>
+            2. `<select>`
 
-            >e.g.
-            >
-            >1. 无法输入改变表单：`<input value="hi" />`。
-            >2. 可以输入改变表单：`<input value={undefined} />`、`<input value={null} />`、`<input />`。
-    2. 非受控组件（uncontrolled components）
+                ><details>
+                ><summary>e.g.</summary>
+                >
+                >```jsx
+                >// 单选
+                >constructor (props) {
+                >  super(props);
+                >  this.state = { value: "coconut" };
+                >
+                >  this.handleChange = this.handleChange.bind(this);
+                >}
+                >
+                >handleChange (event) {
+                >  this.setState({ value: event.target.value });
+                >}
+                >
+                >render () {
+                >  return (
+                >    <select value={this.state.value} onChange={this.handleChange}>
+                >      <option value="grapefruit">葡萄柚</option>
+                >      <option value="lime">酸橙</option>
+                >      <option value="coconut">椰子</option>
+                >      <option value="mango">芒果</option>
+                >    </select>
+                >  );
+                >}
+                >```
+                >
+                >```jsx
+                >// 多选
+                >constructor (props) {
+                >  super(props);
+                >  this.state = { value: ["coconut", "mango"] };
+                >
+                >  this.handleClick = this.handleClick.bind(this);
+                >}
+                >
+                >handleClick (event) {
+                >  const value = event.target.value;
+                >
+                >  this.setState((state) => {
+                >    const oldValue = state.value.slice();
+                >    if (oldValue.includes(value)) {
+                >      oldValue.splice(oldValue.indexOf(value), 1);
+                >    } else {
+                >      oldValue.push(value);
+                >    }
+                >    return { value: oldValue };
+                >  });
+                >
+                >}
+                >
+                >render () {
+                >  return (
+                >    <select multiple={true} value={this.state.value} onChange={this.handleClick}>
+                >      <option value="grapefruit">葡萄柚</option>
+                >      <option value="lime">酸橙</option>
+                >      <option value="coconut">椰子</option>
+                >      <option value="mango">芒果</option>
+                >    </select>
+                >  );
+                >}
+                >```
+                ></details>
 
-11. 严格模式`<React.StrictMode />`
+            - 在受控组件上写死`value`会阻止用户输入（除了 ~~`null/undefined`~~）。
 
+                >e.g.
+                >
+                >1. 无法输入改变表单：`<input value="hi" />`。
+                >2. 可以输入改变表单：`<input value={undefined} />`、`<input value={null} />`、`<input />`。
+        2. 非受控组件（uncontrolled components）
+    3. 错误边界（error boundaries）
 
-12. 命名规范
+        若一个class组件中定义了`static getDerivedStateFromError()`（渲染备用UI）或`componentDidCatch()`（打印错误信息）这两个生命周期方法中的任意一个（或两个）时，则它就变成一个错误边界。可以当做常规组件去使用。
+
+        >任何未被错误边界捕获的错误将会导致整个React组件树被卸载。
+
+        - 无法捕获错误的场景：
+
+            1. 事件处理
+
+                >利用`try-catch`弥补。
+            2. 异步代码
+            3. 服务端渲染
+            4. 它自身抛出的错误
+
+                若一个错误边界无法渲染错误信息，则错误会冒泡至最近的上层错误边界。
+    4. 严格模式`<React.StrictMode />`
+    5. 高阶组件（higher order component，HOC）
+
+        >是一种设计模式。
+
+        参数为组件，返回值为新组件的函数。
+
+        1. HOC不应该修改传入组件，而应该使用组合的方式，通过将组件包装在容器组件中实现功能。
+9. 命名规范
 
     1. 事件监听Props命名为：`on[Event]`；事件监听处理函数命名为：`handle[Event]`。
 
+#### 代码分割（动态加载）
+添加一个动态引入，就会新增一个`chunk`、不会~~把动态引入的代码加入`bundle`~~。策略：基于路由进行代码分割。
 
-- 概念
+1. `import()`
 
-    1. 高阶组件（higher order component，HOC）
+    >e.g. `import("./math").then(math => { console.log(math.add(16, 26)); });`
+2. `<Suspense>`渲染`React.lazy`
 
-        react中对组件逻辑进行重用的高级技术。高阶组件是一个函数，且该函数接受一个组件作为参数，并返回一个新的组件。对比组件将Props属性转变成UI，高阶组件则是将一个组件转换成另一个新组件。
+    >不支持服务端渲染。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```jsx
+    >import React, { Suspense } from 'react';
+    >
+    >const OtherComponent = React.lazy(() => import('./OtherComponent'));
+    >
+    >function MyComponent() {
+    >  return (
+    >    <Suspense fallback={<div>懒加载前展示的组件</div>}>
+    >      多个懒加载组件
+    >      <OtherComponent />
+    >    </Suspense>
+    >  );
+    >}
+    >```
+    ></details>
 
 ### [create-react-app](https://github.com/facebook/create-react-app)
 1. 模板：
@@ -642,24 +776,25 @@
 
     >若要改变环境变量，则需要重启应用。
 
-    1. 内容
+    1. 内容：
 
         1. `NODE_ENV`
         2. 以`REACT_APP_`开头的环境变量（不是以`REACT_APP_`开头的均无法获得）
-    2. 使用
+    2. 使用：
 
         1. `src/`：`process.env.「名字」`
         2. `public/index.html`：`%「名字」%`
 
             >只有`public/index.html`可以使用环境变量，`public/`其他文件都不编译解析、直接拷贝到根目录供引用。
-    3. 设置环境变量：
+    3. 设置：
 
         1. 根目录下的`.env`等文件
         2. 临时：`REACT_APP_「变量」=「值」 npm start`（macOS）
         3. 设置环境变量：`export 「变量」=「值」`
-    4. [高级环境配置](https://create-react-app.dev/docs/advanced-configuration/)
 
-        >小部分可以在代码中使用，大部分只是配置、无法在代码中输出。
+        - [高级环境配置](https://create-react-app.dev/docs/advanced-configuration/)
+
+            >小部分可以在代码中使用，大部分只是配置、无法在代码中输出。
 
 ### [redux](https://github.com/reduxjs/redux)
 1. 设计思想
