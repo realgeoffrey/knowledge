@@ -9,9 +9,15 @@
     ```
 2. 配置文件
 
-    1. `.prettierrc.json`
+    1. 配置规则：
+
+        1. `package.json`：`prettier`
+        2. JSON或YAML：`.prettierrc`
+        3. `.prettierrc.json`、`.prettierrc.yml`、`.prettierrc.yaml`
+        4. `module.exports`：`.prettierrc.js`、`prettier.config.js`
+        5. `.prettierrc.toml`
     2. `.prettierignore`
-3. 忽略接下来的语句块
+3. 不对接下来的语句块进行prettier
 
     ```shell
     # JS
@@ -44,3 +50,6 @@
     # Handlebars
     {{! prettier-ignore }}
     ```
+4. 配置规则
+
+    [prettier: options](https://prettier.io/docs/en/options.html)

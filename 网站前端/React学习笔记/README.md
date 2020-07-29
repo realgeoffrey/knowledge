@@ -16,14 +16,16 @@
 ### [react](https://github.com/facebook/react)
 
 #### JSX
-1. JSX是一个表达式
-2. 若多行，则包裹`(` `)`
-3. `{JS表达式}`
+
+1. 需要`import React from "react";`才可以使用JSX语法。
+2. JSX是一个表达式
+3. 若多行，则包裹`(` `)`
+4. `{JS表达式}`
 
     1. `&&`
     2. `condition ? true : false`
     3. `Array`方法
-4. 采用小驼峰式（camelCase）定义标签的属性名称，包括：事件名。
+5. 采用小驼峰式（camelCase）定义标签的属性名称，包括：事件名。
 
     >类似DOM对象的`properties`名。
 
@@ -33,9 +35,9 @@
     - 特殊情况用`-`短横线隔开式（kebab-case）的属性名：
 
         1. 无障碍属性`aria-*`
-5. 组件名称必须以大写字母开头。
-6. 插入的值都会进行HTML的字符实体（character entity）转义，避免XSS。
-7. Babel会把JSX转译成`React.createElement`函数调用，生成React元素
+6. 组件名称必须以大写字母开头。
+7. 插入的值都会进行HTML的字符实体（character entity）转义，避免XSS。
+8. Babel会把JSX转译成`React.createElement`函数调用，生成React元素
 
     ><details>
     ><summary>e.g.</summary>
@@ -711,6 +713,7 @@
         参数为组件，返回值为新组件的函数。
 
         1. HOC不应该修改传入组件，而应该使用组合的方式，通过将组件包装在容器组件中实现功能。
+        2. 是纯函数，没有副作用。
 9. 命名规范
 
     1. 事件监听Props命名为：`on[Event]`；事件监听处理函数命名为：`handle[Event]`。
@@ -809,3 +812,6 @@
 
 ### [react-native](https://github.com/facebook/react-native)
 1. 排版引擎：[yoga](https://github.com/facebook/yoga)
+2. 样式
+
+    [Stack Overflow: flex vs flexGrow vs flexShrink vs flexBasis in React Native?](https://stackoverflow.com/questions/43143258/flex-vs-flexgrow-vs-flexshrink-vs-flexbasis-in-react-native)
