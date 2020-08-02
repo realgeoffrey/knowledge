@@ -12,9 +12,13 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 1. 配置
 
     `tsconfig.json`
+
+    >`tsc`会自动查找命令目录下的`tsconfig.json`；添加了`tsconfig.json`就不能在`tsc`后增加参数。
 2. 文件后缀
 
     `.ts`、`.tsx`（React、`JSX`）
+
+    >TypeScript错误`TS1128: Declaration or statement expected.`，可能导致的原因是：tsx文件名命名必须为全小写。
 3. 数据类型
 
     1. 基本数据类型

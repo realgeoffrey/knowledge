@@ -66,6 +66,8 @@
         1. [DOM展示或消失执行方法（IntersectionObserver）](#原生jsdom展示或消失执行方法intersectionobserver)
         1. [执行方法的前/后进行开/关loading](#原生js执行方法的前后进行开关loading)
         1. [点击下载](#原生js点击下载)
+        1. [获取对象指定深度属性](#原生js获取对象指定深度属性)
+        1. [数组去重](#原生js数组去重)
     1. 提升性能
 
         1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
@@ -1342,7 +1344,7 @@ function split (str) {
 
 
 /* 使用测试 */
-console.log(split('💩1a💩哈。.↑'))  // =>  ["💩", "1", "a", "💩", "哈", "。", ".", "↑"]
+console.log(split('💩1a💩哈。.↑'))  // => ["💩", "1", "a", "💩", "哈", "。", ".", "↑"]
 ```
 
 ### *原生JS*产生随机数
@@ -2667,6 +2669,75 @@ loadingFetch(() => { console.log('同步方法') })
     /* 使用测试 */
     imageDownload('图片地址', '图片文件名.文件类型')
     ```
+
+### *原生JS*获取对象指定深度属性
+```javascript
+/**
+ * 获取对象指定深度属性
+ * @param {Object} data - 要处理的对象
+ * @param {Array} path - 路径深度
+ * @returns temp - 属性值
+ */
+function getUniqueValue(data, path = []) {
+  let temp = data;
+  for (let i = 0, length = path.length; i < length; i++) {
+    temp = temp[path[i]];
+  }
+  return temp;
+}
+
+
+/* 使用测试 */
+getUniqueValue({a: {b: 'cc'}}, ['a', 'b'])  // 'cc'
+```
+
+### *原生JS*数组去重
+```javascript
+function getUniqueValue(data, path = []) {
+  let temp = data;
+  for (let i = 0, length = path.length; i < length; i++) {
+    temp = temp[path[i]];
+  }
+  return temp;
+}
+
+/**
+ * 数组去重
+ * @param {Array} arr - 要处理的数组
+ * @param {Array} path - 路径深度
+ * @returns 去重后的数组
+ */
+function deduplicateArray (arr, path = []) {
+  if (path.length > 0) {
+    const newArr = [];
+    return arr.filter((data) => {
+      const id = getUniqueValue(data, path);
+      if (newArr.includes(id)) {
+        return false;
+      } else {
+        newArr.push(id);
+        return true;
+      }
+    });
+  } else {
+    return Array.from(new Set(arr));
+  }
+}
+
+
+/* 使用测试 */
+deduplicateArray( // [id从1到4的对象]
+  [
+    { id: 1, text: "aaaaa" },
+    { id: 2, text: "bbbb" },
+    { id: 3, text: "cccc" },
+    { id: 1, text: "dddd" },
+    { id: 4, text: "eeee" }
+  ],
+  ["id"]
+);
+deduplicateArray([1, 2, 3, 1, 4]);    // [1, 2, 3, 4]
+```
 
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript

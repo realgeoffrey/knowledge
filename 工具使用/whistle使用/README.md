@@ -132,6 +132,13 @@
         ```shell
         域名 weinre://变量名
         ```
+    9. excludeFilter
+
+        前面的规则，排除一下路径。
+
+        ```shell
+        URL 匹配规则 excludeFilter://*/xx/xxx/  # 匹配的规则，排除后面的路径
+        ```
 
     - 所有协议均支持以下匹配方式
 

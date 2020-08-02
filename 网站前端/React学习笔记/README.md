@@ -6,6 +6,7 @@
     1. [JSX](#jsx)
     1. [元素渲染](#元素渲染)
     1. [组件](#组件)
+    1. [生命周期](#生命周期)
     1. [代码分割（动态加载）](#代码分割动态加载)
 1. [create-react-app](#create-react-app)
 1. [redux](#redux)
@@ -118,7 +119,7 @@
         ></details>
     2. 函数组件（function components）
 
-        不能包含 ~~State~~。
+        不能包含~~State~~，没有~~生命周期~~，没有~~this~~
 
         ><details>
         ><summary>e.g.</summary>
@@ -572,14 +573,17 @@
     >
     >    应当依靠自上而下的数据流，而不是尝试在不同组件间同步State。
     >2. 若某些数据可以由Props或State推导得出，则它就不应该存在于State中
-7. 事件处理
+7. 样式
+
+    1. `style={[ 对象1, 判断 ? 对象2 : ''或null或undefined ]}`，空不能用`{}`。
+8. 事件处理
 
     1. 小驼峰式（camelCase）定义事件名
     2. 事件处理函数的参数是一个合成事件（`e`）。
 
         1. 参数只能同步使用，异步不保存。
         2. 阻止默认行为、阻止冒泡，必须显式调用`e.preventDefault/stopPropagation()`
-8. 特殊组件
+9. 特殊组件
 
     1. `<React.Fragment>`
 
@@ -714,9 +718,12 @@
 
         1. HOC不应该修改传入组件，而应该使用组合的方式，通过将组件包装在容器组件中实现功能。
         2. 是纯函数，没有副作用。
-9. 命名规范
+10. 命名规范
 
     1. 事件监听Props命名为：`on[Event]`；事件监听处理函数命名为：`handle[Event]`。
+
+#### 生命周期
+1. `UNSAFE_componentWillMount`唯一会在服务端渲染时调用的生命周期
 
 #### 代码分割（动态加载）
 添加一个动态引入，就会新增一个`chunk`、不会~~把动态引入的代码加入`bundle`~~。策略：基于路由进行代码分割。
@@ -800,10 +807,123 @@
             >小部分可以在代码中使用，大部分只是配置、无法在代码中输出。
 
 ### [redux](https://github.com/reduxjs/redux)
-1. 设计思想
+>支持：前端、服务端、客户端。
 
-    1. Web应用是一个状态机，视图与状态是一一对应的。
-    2. 所有的状态，保存在一个对象里面。
+Web应用是一个状态机，视图与状态是一一对应的。让state的变化变得可预测。
+
+1. 核心概念
+
+    1. state
+
+        >来自服务端的state可以在无需编写更多代码的情况下被序列化并注入到前端（`JSON.stringify/parse`）。
+
+        普通对象。store的当前state值，不能被其他代码修改。
+    2. action
+
+        普通对象。`{ type: 「字符串」[, 多个参数: '' ]}`，描述已发生事件，store数据的唯一来源。
+
+        1. `type`会被定义成字符串常量
+
+            当应用规模越来越大时，建议使用单独的模块或文件来存放action的type。
+
+            >e.g. `import { 常量1, 常量2 } from '../actionTypes'`
+        2. 应该尽量减少在action中传递的数据
+        3. action创建函数：返回action的函数
+        4. 调用`store.dispatch(某个action)`触发reducer
+    3. reducer
+
+        函数。接受当前state和action，返回新的state。响应发送而来的action。
+
+        >reducer是纯函数：当传入参数相同时（state、action），返回的state也相同，没有副作用。
+
+        1. 不要进行：
+
+            1. 修改传入的参数（state、action）
+            2. 执行有副作用的操作，如：API请求或路由跳转
+            3. 调用非纯函数，如：`Data.now()`或`Math.random`
+        2. 默认情况 或 遇到未知的action时，返回旧的state
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```javascript
+            >switch (action.type) {
+            >  case XXX:
+            >    return Object.assign({}, state, action.data)
+            >  default: // 默认情况 或 遇到未知的action时，返回旧的state
+            >    return state
+            >}
+            >```
+            ></details>
+        3. 拆分reducer再合成：`combineReducers`
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```javascript
+            >import { combineReducers } from 'redux'
+            >
+            >export default combineReducers({
+            >  属性名1: reduce函数1,  // 只能一级对象，不能：属性名1: { 属性名2: reduce函数1, }
+            >  属性名2: reduce函数2
+            >})
+            >```
+            ></details>
+    4. store
+
+        ```javascript
+        import { createStore } from 'redux'
+        import reducers对象 from './reducers'  // reducers对象 === combineReducers({ reduce1: reduce函数1, reduce2: reduce函数2 })
+
+        let store = createStore(reducers对象[, state初始状态])
+        ```
+
+        1. 提供`store.getState()`获取当前state
+        2. 提供`store.dispatch(某个action)`更新state
+        3. 通过`store.subscribe(监听函数)`注册监听器，并返回注销监听器方法
+3. 三大原则
+
+    1. 单一数据源
+
+        整个应用的state被储存在一棵object tree中，并且这个object tree只存在于唯一一个store中：store -> object tree -> 众多state。
+    2. state是只读的
+    3. 使用纯函数来执行修改（reducer）
+4. 与React配合使用（[react-redux](https://github.com/reduxjs/react-redux)）
+
+    1. redux的store和dispatch 映射到 组件的props
+
+        ```javascript
+        import { connect } from 'react-redux'
+
+        export default connect(
+          mapStateToProps: (state, ownProps) => { props某属性: state相关内容, },         // redux的store 映射到 组件的props。默认方法返回：state: state
+          mapDispatchToProps: (dispatch, ownProps) => { props某方法: dispatch相关内容, } // redux的dispatch 映射到 组件的props。默认方法返回：dispatch: dispatch
+        )(class组件)
+        ```
+    2. 访问store
+
+        1. `Provider`
+
+            `<Provider>`的所有孙辈的容器组件都可以访问`store`，而不必显式地传递它。
+
+            ```jsx
+            import React from 'react'
+            import { render } from 'react-dom'
+            import { Provider } from 'react-redux'
+            import { createStore } from 'redux'
+            import todoApp from './reducers'
+            import App from './components/App'
+
+            let store = createStore(todoApp)
+
+            render(
+              <Provider store={store}>
+                <App />
+              </Provider>,
+              document.getElementById('root')
+            )
+            ```
+        2. ~~手动监听~~
 
 ### [mobx](https://github.com/mobxjs/mobx)
 1. computed
