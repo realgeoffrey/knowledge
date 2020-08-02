@@ -179,6 +179,8 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 
         >1. 微信分享在部分系统（低于微信客户端Android6.2）使用~~pushState~~导致签名失败，可查询[官方文档](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115)；又因为一般是异步加载、配置微信的设置，所以要等待微信第三方文件和接口完成后才能够配置成功（才能够设置成功）。
         >2. Android的微信、QQ等X5内核可以用<http://debugx5.qq.com/>打开调试，支持「清除缓存」等操作。
+        >
+        >    iOS可以在 设置->通用->存储空间 清理缓存。
         >3. 长按没有 ~~`src`~~ 的`<img>`：
         >
         >    1. 在iOS微信WebView，截屏这个`<img>`所在位置；
