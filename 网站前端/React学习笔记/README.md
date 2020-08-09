@@ -7,6 +7,7 @@
     1. [元素渲染](#元素渲染)
     1. [组件](#组件)
     1. [生命周期](#生命周期)
+    1. [与第三方库协同](#与第三方库协同)
     1. [代码分割（动态加载）](#代码分割动态加载)
 1. [create-react-app](#create-react-app)
 1. [redux](#redux)
@@ -17,28 +18,105 @@
 ### [react](https://github.com/facebook/react)
 
 #### JSX
+>`React.createElement(component, props, ...children)`函数的语法糖。
 
-1. 需要`import React from "react";`才可以使用JSX语法。
+1. 使用JSX语法前提：
+
+    1. 打包工具：需要`import React from "react";`。
+    2. `<script>`加载：需要把`React`挂载到全局变量。
+
+        - 为`非构建工具（未使用JSX预处理器）`处理的`<script>`，添加JSX支持：
+
+            1. 添加`<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>`；
+            2. 在使用JSX的.js文件引用加上`type="text/babel"`。
 2. JSX是一个表达式
-3. 若多行，则包裹`(` `)`
-4. `{JS表达式}`
 
-    1. `&&`
-    2. `condition ? true : false`
-    3. `Array`方法
-5. 采用小驼峰式（camelCase）定义标签的属性名称，包括：事件名。
+    >`if`、`for`不是表达式。
+3. `return 组件`，若多行，则`(` `)`包裹组件
+4. `<组件名称>`
 
-    >类似DOM对象的`properties`名。
+    1. **必须**以大写字母开头。
+    2. `.`
 
-    1. （`class`是保留字，）`className`代替`class`
-    2. `htmlFor`代替`for`
+        `<对象.属性名>`
 
-    - 特殊情况用`-`短横线隔开式（kebab-case）的属性名：
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```jsx
+        >import React from "react";
+        >
+        >const myComponents = {
+        >  datePicker: function datePicker (props) {
+        >    return <div>传值data：{props.data}</div>;
+        >  }
+        >};
+        >
+        >export default (props) => {
+        >  return <myComponents.datePicker data={props.data} />;
+        >}
+        >```
+        ></details>
+    3. 不能是表达式
 
-        1. 无障碍属性`aria-*`
-6. 组件名称必须以大写字母开头。
-7. 插入的值都会进行HTML的字符实体（character entity）转义，避免XSS。
-8. Babel会把JSX转译成`React.createElement`函数调用，生成React元素
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```jsx
+        >// 错误！不能是一个表达式。
+        >return <components[props.storyType] story={props.story} />;
+        >
+        >// 正确！大写字母开头的变量（不能是小写字母开头）
+        >const SpecificStory = components[props.storyType];
+        >return <SpecificStory story={props.story} />;
+        >```
+        ></details>
+5. 插入HTML的值都会进行HTML的字符实体（character entity）转义，避免XSS。
+6. Props
+
+    1. 采用小驼峰式（camelCase）定义标签的属性名称，包括：事件名
+
+        >类似DOM对象的`properties`名。
+
+        1. （`class`是保留字，）`className`代替`class`
+        2. `htmlFor`代替`for`
+
+        - 特殊情况用`-`短横线隔开式（kebab-case）的属性名：
+
+            1. 无障碍属性`aria-*`
+
+    2. 若没有给Props赋值，则默认值是`true`
+    3. `...`展开元素
+    4. 包含在开始和结束标签之间的表达式内容将作为特定属性：`props.children`
+
+        1. 可插入内容：
+
+            1. 字符串字面量
+            2. 组件、HTML标签
+            3. `{JS表达式}`
+
+                >1. `&&`、`||`
+                >2. `condition ? true : false`
+                >3. `Array`方法
+
+                1. HTML标签内可返回：
+
+                    组件、HTML标签、String类型、Number类型、数组
+
+                    >其他数据类型可能导致报错。
+
+                    - 渲染空白的返回：`false`、`true`、`null`、`undefined`、Symbol类型、BigInt类型
+                2. 组件内可返回任何数据类型（传递给组件的`props.children`使用）
+
+                    e.g. 函数、引用数据类型
+        2. 对空白的处理：
+
+            1. 移除行首尾的空格以及空行
+            2. 与标签相邻的空行均会被删除
+            3. 文本字符串之间的新行会被压缩为一个空格
+8. 元素组成的数组，会按顺序渲染（注意添加`key`）
+
+- Babel会把JSX转译成`React.createElement`函数调用，生成React元素
 
     ><details>
     ><summary>e.g.</summary>
@@ -70,17 +148,12 @@
     >```
     ></details>
 
-- 为`非构建工具（未使用JSX预处理器）`处理的`<script>`，添加JSX支持：
-
-    1. 添加`<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>`；
-    2. 在使用JSX的.js文件引用加上`type="text/babel"`。
-
 #### 元素渲染
 >由`ReactDOM.render`对根DOM组件开始初始化-渲染，随着引入的子组件再以树状结构对子组件进行初始化-渲染。
 
 1. `ReactDOM.render`
 
-    渲染到根DOM。
+    渲染到根DOM（可多次调用）。
 2. React DOM
 
     1. 管理根DOM内所有内容。
@@ -154,8 +227,31 @@
 
     State是私有的，并且完全受控于当前组件，其父、子组件均不可见。
 
-    1. 不要~~直接修改State~~，仅用`this.setState`修改
-    2. State的更新是异步的（`setState`是异步的）
+    1. 初始化：
+
+        ```jsx
+        class 组件名 extends React.Component {
+          constructor(props) {  // 覆盖class的实例属性
+            super(props)
+
+            this.state = {
+              value1: 1,
+              value2: 2
+            }
+          }
+
+          // 或
+          state = {
+            value2: 22,
+            value3: 3
+          }
+        }
+
+
+        // 结果：初始化的State为`{value1: 1, value2: 2}`
+        ```
+    2. 不要~~直接修改State~~，仅用`this.setState`修改
+    3. State的更新是异步的（`setState`是异步的）
 
         `this.props`和`this.state`可能会异步更新。
 
@@ -175,9 +271,9 @@
         >}));
         >```
         ></details>
-    3. 属性值改变的策略
+    4. 属性值改变的策略
 
-        1. 要在模板内展示的属性，需要放到State中被观测（或放到store中被观测，如：redux、mobx），才能在这些值改变时通知视图重新渲染（`this.setState`）。
+        1. 模板中渲染相关的属性（如：要在模板内展示的属性 或 Props传值、`style`取值等），需要放到State中被观测（或放到store中被观测，如：redux、mobx），才能在这些值改变时通知视图重新渲染（`this.setState`）。
 
             `this.setState(对象或函数, () => {/* 更新后的回调 */})`函数是唯一能够更新`this.state.属性`的方式。
 
@@ -221,6 +317,8 @@
         >          this.setState({                  // setState修改
         >            current: this.state.current + 1
         >          })
+        >        p1={this.state.current} // 能够响应式传递进去
+        >        p2={this.isLoading}     // 不能响应式传递进去
         >        }}
         >      >
         >        {this.state.current}
@@ -234,55 +332,172 @@
 
     >可以把任何东西当做Props传递，如：组件、函数、JS的任意数据类型。
 
-    1. 特殊属性
+    1. 默认值
+
+        class组件的静态属性添加`defaultProps`。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```jsx
+        >class 组件名 extends React.Component {
+        >  static defaultProps = {
+        >    属性1: "默认值1",
+        >    属性2: "默认值2"
+        >  };
+        >}
+        >
+        >// 或
+        >组件名.defaultProps = {   // 覆盖class内部的静态属性
+        >    属性2: "默认值2_",
+        >    属性3: "默认值3"
+        >}
+        >
+        >
+        >// 结果：默认的Props为`{属性2: "默认值2_", 属性3: "默认值3"}`
+        >```
+        ></details>
+    2. 特殊属性
 
         1. `key`的取值和[Vue中`key`的注意点（17.i）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#指令--特殊attribute)一致
 
+            >`key`不是Props（经过React特殊处理），无法传递给子节点。
+
             因为JSX的灵活，只要是能够`切换或条件判断`的都需要考虑`key`。包括：`Array`方法、数组、条件判断（`switch`、`if`）等。
 
-            >1. 组件的`key`值并不需要在全局都保证唯一，只需要在当前的同一级元素（兄弟节点）之前保证唯一即可。
-            >2. `key`无法 ~~作为Props传递给子组件~~。
+            >组件的`key`值并不需要在全局都保证唯一，只需要在当前的同一级元素（兄弟节点）之前保证唯一即可。
         2. `ref`
+
+            >`ref`不是Props（经过React特殊处理），无法传递给子节点。
+
+            >不能在函数组件上使用`ref`属性，因为他们没有实例。e.g. ~~`<函数组价 ref={React.createRef()} />`~~。
+
+            1. 由`React.createRef()`创建，`.current`获取DOM或子组件实例。
+
+                1. 本组件内使用，获取DOM。
+                2. 可以从父级传递`React.createRef()`实例到子子组件：
+
+                    >不能在函数组件中传入`ref`（因为函数组件没有实例）。
+
+                    1. 引用子组件`ref=React.createRef()`，父组件获取子组件（不是子组件内部节点）。
+                    2. 引用子组件`参数=React.createRef()`，父组件获得子组件内部节点的`ref`。
+                    3. 引用子组件`ref=React.createRef()`，子组件是Refs转发（`React.forwardRef((props, ref) => {})`），父组件获取子组件内部节点的`ref`
+
+                        - 在HOC中使用，获取HOC传入组件内部节点的`ref`
+            2. 回调Refs
+
+                传递函数给`ref`属性。组件挂载时，会调用`ref`回调函数，并传入DOM元素，当卸载时调用它并传入`null`。
+
+                1. 在`componentDidMount`或`componentDidUpdate`触发前，React会保证`回调Refs`一定是最新的；
+                2. 可以在组件间传递；
+                3. 若回调Refs的函数是以内联函数的方式定义的，在更新过程中它会被执行两次，第一次传入参数`null`，然后第二次会传入参数DOM元素。
+
+                    >这是因为在每次渲染时会创建一个新的函数实例，所以React清空旧的`ref`并且设置新的。通过将`ref`的回调函数定义成`class`的绑定函数的方式可以避免上述问题，但是大多数情况下它是无关紧要的。
+            3. ~~`this.refs.值`~~（已废弃）
 
             ><details>
             ><summary>e.g.</summary>
             >
             >```jsx
             >// father
-            >constructor(props) {
-            >  super(props);
-            >  this.divRef = React.createRef();
-            >  this.sonRef = React.createRef();
+            >import React from "react";
+            >import Son1 from "./Son1";
+            >import Son2 from "./Son2";
+            >import Son3 from "./Son3";
+            >import Son4 from "./Son4";
+            >export default class Father extends React.Component {
+            >  constructor(props) {
+            >    super(props);
+            >    this.divRef = React.createRef();
+            >    this.sonRef = React.createRef();
+            >    this.sonDomRef = React.createRef();
+            >    this.sonForwardRef = React.createRef();
+            >    this.funcRef1 = null;
+            >    this.funcRef2 = null;
+            >  }
+            >  render() {
+            >    return (
+            >      <div onClick={() => { console.log(this.divRef, this.sonDomRef, this.sonRef, this.sonForwardRef, this.funcRef1, this.funcRef2); }}>
+            >        <div
+            >          className="m-ref"
+            >          ref={this.divRef} // 本组件内使用，获取DOM
+            >        >
+            >          this.divRef
+            >        </div>
+            >
+            >        <Son1
+            >          ref={this.sonRef} // 获取子组件（不是子组件内部DOM）
+            >        />
+            >
+            >        <Son2
+            >          refData={this.sonDomRef} // 获取子组件内部节点的`ref`
+            >        />
+            >
+            >        <Son3
+            >          ref={this.sonForwardRef} // 获取子组件内部节点的`ref`，要求子组件是Refs转发
+            >        />
+            >
+            >        <div
+            >          className="m-ref-func"
+            >          ref={(dom) => { // 节点更新则触发2次，一次null一次dom
+            >            console.log(dom, "m-ref-func");
+            >            this.funcRef1 = dom;
+            >          }}
+            >        >
+            >          this.funcRef1
+            >        </div>
+            >
+            >        <Son4
+            >          funcRef={(dom) => { // 节点更新则触发2次，一次null一次dom
+            >            console.log(dom, "Son4");
+            >            this.funcRef2 = dom;
+            >          }}
+            >        />
+            >      </div>
+            >    );
+            >  }
             >}
-            >render() {
+            >
+            >
+            >// Son1
+            ><div className="m-son-1">Son1</div>
+            >
+            >// Son2
+            ><div className="m-son-2">
+            >  <div className="m-son-2-ref" ref={this.props.refData}>
+            >    Son2
+            >  </div>
+            ></div>
+            >
+            >// Son3
+            >import React from "react";
+            >export default React.forwardRef((props, ref) => {
             >  return (
-            >    <div onClick={() => {console.log(this.divRef, this.sonRef)}}>
-            >      <div
-            >        ref={this.divRef}
-            >      />
-            >      <Son
-            >        refData={this.sonRef}  // 父组件渲染会导致子组件渲染
-            >      />
+            >    <div className="m-son-3">
+            >      <div className="m-son-3-ref" ref={ref}>
+            >        Son3
+            >      </div>
             >    </div>
             >  );
-            >}
+            >});
             >
-            >
-            >// Son
-            >render() {
-            >  return (
-            >    <div ref={this.props.refData} />
-            >  );
-            >}
+            >// Son4
+            ><div className="m-son-4">
+            >  <div className="m-son-4-ref" ref={this.props.funcRef}>
+            >    Son4
+            >  </div>
+            ></div>
             >```
             ></details>
 
-            可以从父级传递`React.createRef()`实例，再在子组件赋值子组件节点的`ref`到Props，这样父节点就可以获得子节点的`ref`。
+            - 适用场景
 
-            - `React.forwardRef((props, ref) => {})`
+                >避免使用ref来做任何可以通过声明式实现来完成的事情。
 
-                Refs转发
-    2. 把DOM或React元素传入子组件
+                1. 管理焦点，文本选择或媒体播放。
+                2. 触发强制动画。
+                3. 集成第三方DOM库。
+    3. 把DOM或React元素传入子组件
 
         1. `children`
 
@@ -430,26 +645,9 @@
             >}
             >```
             ></details>
-    2. State初始化：
+    2. `this.`会取到最新值，注意异步操作后的取值
 
-        ```jsx
-        class 组件名 extends React.Component {
-          state = {
-            value: 0
-          }
-        }
-        ```
-
-        ```jsx
-        class 组件名 extends React.Component {
-          constructor(props) {
-            super(props)
-            this.state = {
-              value: 0
-            }
-          }
-        }
-        ```
+        可以用解构的方式在方法顶部先固定`this.`当前的值，之后异步时使用。
 6. 通信
 
     1. 父子组件间的通信（单向数据流/单向绑定）
@@ -558,10 +756,6 @@
                     2. `<MyContext.Consumer>{(data) => { return 组件 }}<MyContext.Consumer>`
 
                         >`Provider`及其内部`Consumer组件`都不受制于`shouldComponentUpdate`函数，因此当`Consumer组件`在其祖辈组件退出更新的情况下也能更新。
-
-                - `MyContext.displayName = 字符串`
-
-                    React DevTools使用该字符串来确定context要显示的内容。
                 </details>
         2. 通用
 
@@ -716,14 +910,103 @@
 
         参数为组件，返回值为新组件的函数。
 
-        1. HOC不应该修改传入组件，而应该使用组合的方式，通过将组件包装在容器组件中实现功能。
+        1. HOC不应该修改和继承传入的组件，而应该使用组合的方式，通过将组件包装在容器组件中实现功能。
         2. 是纯函数，没有副作用。
+        3. 约定：
+
+            1. 将不相关的Props传递给被包裹的组件。
+
+                特殊属性无法传递：`ref`（可以利用Refs转发传递）、`key`。
+            2. 最大化可组合性。
+        3. 注意事项：
+
+            1. 不要在`render`方法中使用。
+            2. 务必复制静态方法。
+
+                >[hoist-non-react-statics](https://github.com/mridgway/hoist-non-react-statics)。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```jsx
+        >// 高阶组件 HOCComponent.js
+        >import React from "react";
+        >export default (WrappedComponent) =>
+        >  class WrapperComponent extends React.Component {
+        >    render () {
+        >      console.log(this.props, 'HOCComponent')
+        >      return <WrappedComponent {...this.props} />;
+        >    }
+        >  }
+        >
+        >
+        >// 利用高阶组件生成的新组件 WrappedComponent.js
+        >import React from "react";
+        >import HOC from "./HOCComponent";
+        >export default HOC(
+        >  class WrappedComponent extends React.Component {
+        >    render () {
+        >      return <div>WrappedComponent</div>
+        >    }
+        >  }
+        >);
+        >
+        >
+        >// 使用组件
+        ><WrappedComponent a='aa' b='bb' />
+        >```
+        ></details>
 10. 命名规范
 
     1. 事件监听Props命名为：`on[Event]`；事件监听处理函数命名为：`handle[Event]`。
+11. `displayName`
+
+    [React DevTools](https://github.com/facebook/react/tree/master/packages/react-devtools)使用该字符串来确定要显示的名字。
+
+    1. `class组件名或函数组件名.displayName = 「组件名」`
+
+        显示为：`「组件名」`。
+
+        >默认显示：class组件名或函数组件名。
+    2. `React.createContext()的对象.displayName = 「content名」`
+
+        显示为：`「content名」.Provider`和`「content名」.Consumer`。
+
+        >默认显示：`Context.Provider`和`Context.Consumer`。
+    3. `React.forwardRef的匿名函数.displayName = 「Refs转发组件名」`
+
+        显示为：`「Refs转发组件名」 ForwardRef`
+
+        >默认显示：`Anonymous ForwardRef`或`「匿名函数名」 ForwardRef`。
 
 #### 生命周期
-1. `UNSAFE_componentWillMount`唯一会在服务端渲染时调用的生命周期
+1. `UNSAFE_componentWillMount`
+
+    >唯一会在服务端渲染时调用的生命周期。
+2. `componentDidMount`
+
+    组件已经装载。
+3. `shouldComponentUpdate`
+
+    重新渲染前被触发：（`React.Component`默认）返回`true`，更新真实DOM；返回`false`，跳过本次更新。
+
+    - `React.PureComponent`
+
+        （与`React.Component`区别：）`shouldComponentUpdate`默认实现：浅比较`prop`和`state`并跳过所有子组件树的Props更新。
+4. `componentWillUnmount`
+
+    卸载组件
+5. `componentWillReceiveProps`
+6. `componentWillUpdate`
+7. `render`
+
+#### 与第三方库协同
+>React不会理会React自身之外的DOM操作。它根据内部虚拟DOM来决定是否需要更新，而且如果同一个DOM被另一个库操作了，React会觉得困惑而且没有办法恢复。
+
+1. 协同而避免冲突的最简单方式就是防止React组件更新。
+
+    1. 渲染无需更新的React元素，比如一个空的`<div>`。
+    2. 利用`componentDidMount`和`componentWillUnmount`对React不会更新的React元素进行挂载和清理。
 
 #### 代码分割（动态加载）
 添加一个动态引入，就会新增一个`chunk`、不会~~把动态引入的代码加入`bundle`~~。策略：基于路由进行代码分割。
@@ -935,3 +1218,6 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 2. 样式
 
     [Stack Overflow: flex vs flexGrow vs flexShrink vs flexBasis in React Native?](https://stackoverflow.com/questions/43143258/flex-vs-flexgrow-vs-flexshrink-vs-flexbasis-in-react-native)
+3. `Dimensions`
+
+    `Dimensions.get('window')`尽管尺寸信息立即就可用，但它可能会在将来被修改（譬如设备的方向改变），所以基于这些常量的渲染逻辑和样式应当每次 render 之后都调用此函数，而不是将对应的值保存下来。

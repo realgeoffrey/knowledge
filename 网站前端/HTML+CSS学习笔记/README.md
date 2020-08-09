@@ -1039,7 +1039,7 @@
         布局所占宽度 = width = content + padding左右 + border左右
     3. ~~`padding-box`~~
 
-        （废弃）
+        （已废弃）
 3. [margin合并](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#margin合并)
 
 >ie低版本盒模型比较特殊。

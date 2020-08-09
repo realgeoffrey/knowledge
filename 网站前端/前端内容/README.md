@@ -125,7 +125,7 @@
             2. 小图合并雪碧图。
 
                 >大图切小图：单个大文件需要多次HTTP请求获取。
-            3. 合理使用Base64、WebP、`srcset`属性。
+            3. 合理使用Base64、WebP（SharpP）、`srcset`属性。
 
                 >1. 服务端（或CDN）处理图片资源，提供返回多种图片类型的接口（如：[七牛](https://developer.qiniu.com/dora/manual/3683/img-directions-for-use)）。
                 >2. [判断浏览器是否支持WebP](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断是否支持webp)，对不同浏览器请求不同的图片类型。

@@ -101,16 +101,21 @@
             结束选择Stop inspector。
     4. 性能调试
 
-        1. 「开发人员选项」的「GPU呈现模式分析」
-        2. Android Studio的[Profiler](https://developer.android.com/studio/profile/android-profiler)
+        >[检查GPU渲染速度和过度绘制](https://developer.android.com/topic/performance/rendering/inspect-gpu-rendering)。
 
-            - [测试界面性能](https://developer.android.com/training/testing/performance)
+        1. 「开发人员选项」 -> 「GPU呈现模式分析」：
 
-                ```shell
-                # 需要打开了「GPU呈现模式分析」为「在adb shell dumpsys gfxinfo中」
-                adb shell dumpsys gfxinfo 「PACKAGE_NAME」
-                adb shell dumpsys gfxinfo 「PACKAGE_NAME」 framestats
-                ```
+            1. 「在屏幕上显示为条形图」
+            2. Android Studio的[Profiler](https://developer.android.com/studio/profile/android-profiler)
+
+                - [测试界面性能](https://developer.android.com/training/testing/performance)
+
+                    ```shell
+                    # 需要打开了「GPU呈现模式分析」为「在adb shell dumpsys gfxinfo中」
+                    adb shell dumpsys gfxinfo 「PACKAGE_NAME」
+                    adb shell dumpsys gfxinfo 「PACKAGE_NAME」 framestats
+                    ```
+        2. 「开发人员选项」 -> 「调试GPU过度绘制」
 
     - Android Studio编译APK
 
@@ -149,7 +154,7 @@
             查看时会阻塞进程。结束点击Continue program excution。
     4. 性能调试
 
-        1. Xcode的Show the Debug navigator -> debug gauges
+        1. （基础）Xcode -> Show the Debug navigator -> debug gauges
         2. （进阶）Xcode -> Product -> Profile
 
     - Simulator代理到whistle（或其他任意代理）
@@ -185,11 +190,12 @@
             6. 「演示模式」
         - 可选
 
-            1. 「显示布局边界」：会展示Native渲染边界，方便区分WebView的H5与Native内容
-            2. 「GPU呈现模式分析」：展示分析
-            3. 「最小宽度」：设置手机的宽度dp
+            1. 「显示布局边界」：会展示Native渲染边界，方便区分WebView的H5与Native内容，也可判断布局是否合理
+            2. 「最小宽度」：设置手机的宽度dp
+            3. 「GPU呈现模式分析」：渲染时间展示
+            4. 「调试GPU过度绘制」：重复渲染展示
     2. 打开其他APP时设置的允许/拒绝信息，可以操作当前APP「清除数据」恢复提醒。
-    3. 连接着的手机，无法识别，开关切换一下「USB调试」恢复。
+    3. 连接着的手机，无法识别，切换一下「USB调试」的开关可以恢复。
 
 - 其他策略
 

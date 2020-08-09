@@ -592,7 +592,7 @@ dom.addEventListener('事件名', function (e) {
             }
         });
         ```
-2. ~~`KeyboardEvent.which/keyCode/charCode`~~（废弃）
+2. ~~`KeyboardEvent.which/keyCode/charCode`~~（已废弃）
 
     1. *原生JS*
 

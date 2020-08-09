@@ -325,6 +325,12 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
                 >```
                 ></details>
         2. 若已赋值，则只能访问类型推论出的某一个类型的属性/方法。
+    - 交叉类型（Intersection Types）
+
+        `&`
+
+        将多个类型合并为一个类型。
+
     - 类型推论（Type Inference）
 
         若没有明确的指定类型，则依照类型推论规则推断出一个类型：
@@ -686,6 +692,19 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
     用于取值被限定在一定范围内的场景。语义化、限制值的范围（只允许使用已定义的枚举名）。
 
     >使用枚举类型可以为一组数值赋予友好的名字。
+
+    <details>
+    <summary>e.g.</summary>
+
+    ```typescript
+    enum E {
+      Foo = 123,
+      Bar
+    }
+
+    console.log(E.Foo, E.Bar, E[E.Foo]) // => 123 124 "Foo"
+    ```
+    </details>
 
     1. 枚举成员的类型
 

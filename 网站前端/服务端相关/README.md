@@ -324,3 +324,7 @@ app.use((ctx) => {
                     `Enum`枚举、`map<类型, 类型>`字典、`vector<类型>`序列（`vector<byte>`二进制码）、`常量`、`key[struct名, 多个变量名]`
             >任何`struct`、`map`、`vector`都可嵌套。
         2. `interface`暴露接口
+        3. `const string`注释命令字
+2. 命令字有约定格式
+
+    e.g. 3级命令字：`「一级」.「二级」.「三级」`，可能省略约定的第一级命令字。
