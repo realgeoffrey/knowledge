@@ -78,7 +78,7 @@
 
     `<Image>`、`<ListView>`、`<Modal>`、`<Navigator>`、`<RefreshWrapper>`、`<ScrollView>`、`<TextInput>`、`<Text>`、`<View>`、`<ViewPager>`
 
-    >组件功能需要完全按照文档描述来使用，不像前端标签那么灵活。如：`<View>`和`<ScrollView>`不能混用，`<ScrollView>`文档只有`contentContainerStyle`而没有 ~~`style`~~。
+    >组件功能需要完全按照文档描述来使用，不像前端标签那么灵活。如：`<View>`和`<ScrollView>`不能混用，`<ScrollView>`文档只有`contentContainerStyle`而没有 ~~`style`~~，`<View>`内部不能直接放字符串而需要放组件。
 
     - 客户端都是**单屏**视口（可以理解为外层包裹着一个高宽等于视口的flex父级容器），借助某些组件的内部滚动来实现多屏效果。
 
@@ -103,25 +103,134 @@
 
         - 其他组件都没有组件内部滚动功能（`overflow`只有`hidden/visible`2个属性值）。
 
-    - 注意点
+    - 注意点（bug？）
 
         1. `<Image>`
 
             1. 若设置`position: 'absolute'`，则需要显示设置`width`和`height`。
-        2. `<ScrollView>`
-
-            1. 不要用 ~~`style`~~，用文档要求的`contentContainerStyle`。
-        3. `<Text>`
+        2. `<Text>`
 
             1. Android:
 
                 1. `ellipsizeMode`仅支持`tail`。
                 2. 截断中有特殊字符（如一些标点符号）时，截断会提前，不会在内容结尾处正常截断。
+        3. `<ViewPager>`
+
+            >`height`和`flexBasis`类似。
+
+            1. 需要父级容器还有空间 或 显式设置`height`，否则会导致内容高度为0。
+            2. 不能切换的时候改变`height`（会导致切换到一半卡主），可以设置延迟时间等待切换结束之后再改变`height`（>300ms）。
+            3. 需要大于等于2个子节点。
+        4. 大部分组件都有`onLayout`
+
+            当元素挂载或者布局改变的时候被调用。返回节点实时的：高宽（`height`、`width`）、距离顶部(0,0)距离（`x`、`y`）。
+        5. `<ListView>`改变渲染内容后（除了`onEndReached`触发之外）有时无法再触发`onEndReached`
+
+            （除了`onEndReached`触发之外）改变渲染内容时，改变`<ListView>`的`key`属性。
+        6. `<ScrollView>`、`<ListView>`的滚动事件，需要`onMomentumScrollEnd`（非用户触发的滚动结束）和`onScrollEndDrag`（用户触发的滚动结束）配合使用
+        7. `<ScrollView>`
+
+            1. 配合使用`contentContainerStyle`（在内层的内容容器生效）和`style`（在外层容器生效）
+
+                - `<ScrollView>`会渲染里外2个容器：
+
+                    1. `flex: 1`可能要同时设置到`style`和`contentContainerStyle`上（尤其是在降级为H5页面时）
+                    2. `<ScrollView>`转换为`<View>`时注意是否有`contentContainerStyle`，若有，则可能需要嵌套`<View>`
+
+                        ><details>
+                        ><summary>e.g.</summary>
+                        >
+                        >```jsx
+                        ><ScrollView style={样式1} contentContainerStyle={样式2}>内容</ScrollView>
+                        >
+                        >转换 =>
+                        >
+                        ><View style={样式1}>
+                        >  <View style={样式2}>
+                        >    内容
+                        >  <View>
+                        ><View>
+                        >```
+                        ></details>
+            2. 获取：滚动距离、内容总高度（视口高度+最大滚动距离 === 子级的总高度）、布局总高度（视口高度）
+
+                >`<ListView>`可能类似。
+
+                ```jsx
+                // 下面3个值能够实时获取
+                contentOffsetY = 0;          // 滚动距离
+                contentSizeY = 0;            // 内容总高度（视口高度+最大滚动距离 === 子级的总高度）
+                layoutMeasurementHeight = 0; // 布局总高度（视口高度）
+
+                render () {
+                  return (
+                    <ScrollView
+                      onLayout={(data) => {
+                        this.layoutMeasurementHeight = data.layout.height
+                      }}
+                      onMomentumScrollEnd={(data) => {  // 滚动停止（非用户拖拽导致）
+                        this.contentOffsetY = data.contentOffset.y;
+                        this.contentSizeY = data.contentSize.height
+                        this.layoutMeasurementHeight = data.layoutMeasurement.height
+                      }}
+                      onScrollEndDrag={(data) => {  // 滚动停止（用户拖拽导致）
+                        this.contentOffsetY = data.contentOffset.y;
+                        this.contentSizeY = data.contentSize.height
+                        this.layoutMeasurementHeight = data.layoutMeasurement.height
+                      }}
+                    >
+                      <View
+                        onLayout={(data)=>{
+                          this.contentSizeY = data.layout.height
+                        }}
+                      >
+                        真正布局内容。。。
+                      </View>
+                    </ScrollView>
+                  )
+                }
+                ```
+        8. 降级到H5时，各回调函数的参数可能会变化，每个组件的实现要具体看降级时h5的源码
+        9. 业务中解决问题，可以在节点内层或外层嵌套一层`<View>`并利用它的`onLayout`
+        10. 注意组件嵌套过多导致的性能、渲染问题
+        11. 带着`key`的组件可能挂载2次（触发2次`componentDidMount`）
+        12. 各组件转换为H5组件时，可能会多套一层节点，注意`padding`或`margin`翻倍问题
 2. 模块
 
     >[模块文档](https://hippyjs.org/#/hippy-react/modules)比较简单，更详细的用法在[demo](https://github.com/Tencent/Hippy/tree/master/examples/hippy-react-demo/src/modules)或[源码](https://github.com/Tencent/Hippy/tree/master/packages/hippy-react/src/modules)中。
 
-    `Animation`、`AnimationSet`、`AsyncStorage`、`BackAndroid`、`Clipboard`、`Dimensions`、`NetInfo`、`NetworkModule`、`PixelRatio`、`Platform`、`Stylesheet`
+    1. `Animation`、`AnimationSet`
+
+        动画组件
+    2. `AsyncStorage`
+
+        异步、持久化的键-值存储系统
+    3. `BackAndroid`
+
+        监听Android实体键的回退，在退出前做操作或拦截实体键的回退
+    4. `Clipboard`
+
+        读取或写入剪贴板
+    5. `Dimensions.get('window或screen')`
+
+        获取设备的Hippy Root View或者屏幕尺寸的宽高
+
+        >按照设计稿等比例高宽：`width: Dimensions.get("window").width - 固定宽度, height: (设计稿高 / 设计稿宽) * (Dimensions.get("window").width - 固定宽度)`。
+    6. `NetInfo`
+
+        获取网络状态
+    7. `NetworkModule`
+
+        网络相关的模块，目前主要是操作Cookie。
+    8. `PixelRatio`
+
+        获取设备的像素密度(pixel density)
+    9. `Platform`
+
+        判断平台
+    10. `Stylesheet`（`.hairlineWidth`、`.create()`）
+
+        CSS样式表
 
     - 引入base64
 
@@ -211,9 +320,10 @@
     ```
 5. 样式
 
-    >1. Hippy的还原设计稿方案，与客户端的方案基本一致：[各端还原设计稿方案响应式方案](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/还原设计稿/README.md#各端还原设计稿方案响应式方案)。
+    >1. Hippy的还原设计稿方案，与客户端的方案基本一致：[适配布局（与设计师协作思路）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/还原设计稿/README.md#适配布局与设计师协作思路)。
     >2. [React Native样式](https://reactnative.dev/docs/style)的子级。
     >3. 注意属性值要求是`Number`还是`String`，要严格遵守，不能互换。
+    >4. 部分属性仅支持部分组件。如：`backgroundImage`仅支持`<View>`、不支持 ~~`<Text>`~~。
 
     1. 长度单位
 
@@ -227,7 +337,13 @@
 
         1. `width`
         2. `height`
-        3. `border`
+        3. `max/min`+`Width/Height`
+
+            - 注意点（bug？）
+
+                1. `min`+`Width/Height`可能是`box-sizing: content-box 或 border-box`效果。
+                2. `max`+`Width/Height`可能完全不生效。
+        4. `border`
 
             1. 宽度（`Number`）
 
@@ -252,7 +368,7 @@
                 1. `'solid'`（默认）
                 1. `'dotted'`
                 1. `'dashed'`
-        4. `padding`（`Number`）
+        5. `padding`（`Number`）
 
             1. `padding`
 
@@ -267,7 +383,7 @@
             5. `paddingRight`
             6. `paddingBottom`
             7. `paddingLeft`
-        5. `margin`（`Number`）
+        6. `margin`（`Number`）
 
             1. `margin`
 
@@ -392,11 +508,16 @@
 
         1. `backgroundImage`
 
-            >url不能缩写。不能用 ~~<https://placeholder.com/>~~？
+            >1. URL不能缩写。不能用 ~~<https://placeholder.com/>~~？
+            >2. 属性值只能跟URL，不能用`import`本地资源。
+            >
+            >    本地资源用：`<View><Image source={{ uri: import资源 }} style={{position: 'absolute', top: 0, left: 0, zIndex: -1, width: 宽, height: 高}} /></View>`制作背景图。
+            >3. 仅针对`<View>`等。
 
             e.g. `backgroundImage: "https://图片地址"`
         2. `backgroundPositionX`
-        2. `backgroundPositionY`
+        3. `backgroundPositionY`
+        4. `backgroundColor`
     12. 外边框圆角（`Number`）
 
         1. `borderRadius`

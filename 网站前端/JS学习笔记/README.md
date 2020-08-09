@@ -3088,7 +3088,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
     >1. 若是新打开的窗口（`target="_blank"`），则会出现`document.referrer`有值，但`history.back()`已回退到底。
     >2. 若是`history.pushState/replaceState`改变路由，则不改变`document.referrer`（可能初始`document.referrer === ''`）。
     >3. 重新请求当前页面链接（如：`location.reload()`、或点击`<a href="当前页面链接">`），会导致`document.referrer === '当前页面链接'`。
-15. 使用`encodeURIComponent/decodeURIComponent`仅处理URI中的query属性名和属性值；使用`encodeURI/decodeURI`处理整个URI；不要使用 ~~`escape/unescape`~~（废弃）
+15. 使用`encodeURIComponent/decodeURIComponent`仅处理URI中的query属性名和属性值；使用`encodeURI/decodeURI`处理整个URI；不要使用 ~~`escape/unescape`~~（已废弃）
 
     1. `encodeURIComponent`
 

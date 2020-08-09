@@ -286,4 +286,4 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 如：Dart2Native、React Native2Native、Weex2Native。
 
 1. [其他语言2Native调试](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/代码调试相关/README.md#其他语言2native调试)
-2. [各端还原设计稿方案（响应式方案）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/还原设计稿/README.md#各端还原设计稿方案响应式方案)
+2. [适配布局（与设计师协作思路）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/还原设计稿/README.md#适配布局与设计师协作思路)

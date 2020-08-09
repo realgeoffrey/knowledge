@@ -22,13 +22,26 @@
         >与传统的hosts配置优先级相反。
     2. 一些属于不同协议，但功能有冲突的规则，按常用优先级为`rule`>`host`>`proxy`。
     3. 部分相同协议会匹配及合并所有可以匹配的规则。
+    4. 建议：
+
+        ```text
+        127.0.0.1 xxx.com/dev node.xxx.com/dev xxx.com/node/dev
+
+        proxy://127.0.0.1:12639 xxx.com/gtimg/
+
+        htmlPrepend://路径 xxx.com
+
+        10.175.102.200 xxx.com excludeFilter://*/gtimg/
+
+        proxy://127.0.0.1:12639?host=9.68.155.53 xxx.com
+        ```
 3. **Rules**
 
     >`#`为注释符号。
 
     1. 设置hosts、代理转发
 
-        ```shell
+        ```text
         # 不带IP地址
         请求域名 指向域名
 
@@ -38,24 +51,24 @@
         ```
     2. 代理转发
 
-        ```shell
+        ```text
         URL proxy://127.0.0.1:「端口号」?host=「IP地址」    # URL通过 本地映射「端口号」的应用 去转发「IP地址」
         ```
     3. 本地替换
 
-        ```shell
+        ```text
         URL file:///User/username/test   # macOS、Linux
         URL file://E:\xx\test            # Windows的路径分隔符可以用 \ 或者 /
         ```
     4. 往`content-type`为`html`的响应内容的前面或后面添加文本内容
 
-        ```shell
+        ```text
         URL htmlPrepend://文件路径
         URL htmlAppend://文件路径
         ```
     5. 在页面**末尾**注入内容HTML、JS、CSS内容
 
-        ```shell
+        ```text
         # macOS、Linux
         URL html:///User/xxx/test/test.html
         URL js:///User/xxx/test/test.js
@@ -72,12 +85,12 @@
 
         1. 开头
 
-            ```shell
+            ```text
             URL resPrepend://{变量名}
             ```
         2. 末尾
 
-            ```shell
+            ```text
             URL resAppend://{变量名}
             ```
 
@@ -112,12 +125,12 @@
 
         1. 获取页面的`console`和错误信息
 
-            ```shell
+            ```text
             URL log://
             ```
         2. 加载完毕后运行脚本（并且获取页面的`console`和错误信息）
 
-            ```shell
+            ```text
             # 在Values设置的'变量名'作为加载完成后输出的JS内容
             URL log://{变量名}
 
@@ -129,14 +142,14 @@
 
         >开启后会阻止把`console`输入到vconsole和eruda。
 
-        ```shell
+        ```text
         域名 weinre://变量名
         ```
     9. excludeFilter
 
         前面的规则，排除一下路径。
 
-        ```shell
+        ```text
         URL 匹配规则 excludeFilter://*/xx/xxx/  # 匹配的规则，排除后面的路径
         ```
 
