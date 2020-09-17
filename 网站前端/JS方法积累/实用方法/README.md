@@ -68,6 +68,7 @@
         1. [点击下载](#原生js点击下载)
         1. [获取对象指定深度属性](#原生js获取对象指定深度属性)
         1. [数组去重](#原生js数组去重)
+        1. [写入剪切板](#原生js写入剪切板)
     1. 提升性能
 
         1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
@@ -1148,7 +1149,7 @@ function numConvert (operand, fromRadix, toRadix) {
  * 选取范围内随机值
  * @param {Number} min - 下限（或上限）
  * @param {Number} max - 上限（或下限）
- * @returns {Number} - 上下限区间内的随机值
+ * @returns {Number} - 上下限区间内的随机值（闭区间，[下限, 上限]）
  */
 function randomFrom(min, max) {
     var temp;
@@ -1162,11 +1163,15 @@ function randomFrom(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 ```
->`Math.random()`返回`[0,1)`。假设返回的值的开闭区间改变：
+><details>
+><summary><code>Math.random()</code>返回<code>[0,1)</code>。</summary>
+>
+>假设返回的值的开闭区间改变：
 >
 >1. 若返回的是：`(0,1)`，则返回`Math.floor(Math.random() * (max - min + 2) + min - 1);`。
 >2. 若返回的是：`(0,1]`，则返回`Math.floor(Math.random() * (max - min + 1) + min - 1);`。
 >3. 若返回的是：`[0,1]`，则返回`Math.floor(Math.random() * (max - min) + min);`。
+></details>
 
 ### *原生JS*转化为Unicode、反转字符串、字符串长度、所占字节数
 >注意：Unicode码点大于`\uFFFF`（65535）的字符，如：`'💩'.codePointAt(0) // 128169`
@@ -2678,7 +2683,7 @@ loadingFetch(() => { console.log('同步方法') })
  * @param {Array} path - 路径深度
  * @returns temp - 属性值
  */
-function getUniqueValue(data, path = []) {
+function getNestedValue(data, path = []) {
   let temp = data;
   for (let i = 0, length = path.length; i < length; i++) {
     temp = temp[path[i]];
@@ -2688,12 +2693,12 @@ function getUniqueValue(data, path = []) {
 
 
 /* 使用测试 */
-getUniqueValue({a: {b: 'cc'}}, ['a', 'b'])  // 'cc'
+getNestedValue({a: {b: 'cc'}}, ['a', 'b'])  // 'cc'
 ```
 
 ### *原生JS*数组去重
 ```javascript
-function getUniqueValue(data, path = []) {
+function getNestedValue(data, path = []) {
   let temp = data;
   for (let i = 0, length = path.length; i < length; i++) {
     temp = temp[path[i]];
@@ -2711,7 +2716,7 @@ function deduplicateArray (arr, path = []) {
   if (path.length > 0) {
     const newArr = [];
     return arr.filter((data) => {
-      const id = getUniqueValue(data, path);
+      const id = getNestedValue(data, path);
       if (newArr.includes(id)) {
         return false;
       } else {
@@ -2738,6 +2743,40 @@ deduplicateArray( // [id从1到4的对象]
 );
 deduplicateArray([1, 2, 3, 1, 4]);    // [1, 2, 3, 4]
 ```
+
+### *原生JS*写入剪切板
+```typescript
+async function clipboard (text: string | number): Promise<string> {
+  text = String(text);
+
+  try {
+    await window.navigator.clipboard.writeText(text); // 新接口
+  } catch {
+    try {
+      // 需要浏览器tab是active或有交互才能触发
+      let textArea = document.createElement("input");
+
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+
+      document.execCommand("cut"); // 已废弃
+      document.body.removeChild(textArea);
+    } catch {
+      return Promise.reject(text);
+    }
+  }
+  return Promise.resolve(text);
+}
+
+
+/* 使用测试 */
+clipboard("写入的内容~")
+  .then((text) => {console.log(`\`${text}\`写入成功！`)})
+  .catch((text) => {console.warn(`\`${text}\`写入失败！`)})
+```
+>1. 注意，有些浏览器对不信任的域名会静默失败（resolved）。
+>2. 可以使用[clipboard.js](https://github.com/zenorocha/clipboard.js)。
 
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript
