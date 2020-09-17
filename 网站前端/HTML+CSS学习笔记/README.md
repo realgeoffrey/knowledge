@@ -1542,6 +1542,14 @@ CSS渐变是以CSS背景图的形式展示，但没有内在尺寸（没有固�
     5. [`conic-gradient()`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/conic-gradient)
     6. [`repeating-conic-gradient()`](https://developer.mozilla.org/en-US/docs/Web/CSS/repeating-conic-gradient)
 
+- 文字渐变：
+
+    ```css
+    background-image: linear-gradient(to right, rgb(255, 254, 184), rgb(247, 190, 61));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    ```
+
 ### 裁剪属性
 1. `clip-path`
 

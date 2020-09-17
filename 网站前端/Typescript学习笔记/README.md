@@ -3,23 +3,19 @@
 ## 目录
 1. [Typescript](#typescript)
 
+    1. [类型](#类型)
+    1. [其他相关](#其他相关)
+
 ---
 ### [Typescript](https://github.com/microsoft/TypeScript)
 >参考：[TypeScript 入门教程](https://github.com/xcatliu/typescript-tutorial)、[TypeScript使用手册](https://github.com/zhongsp/TypeScript)。
 
 TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持。
 
-1. 配置
+#### 类型
+1. 数据类型
 
-    `tsconfig.json`
-
-    >`tsc`会自动查找命令目录下的`tsconfig.json`；添加了`tsconfig.json`就不能在`tsc`后增加参数。
-2. 文件后缀
-
-    `.ts`、`.tsx`（React、`JSX`）
-
-    >TypeScript错误`TS1128: Declaration or statement expected.`，可能导致的原因是：tsx文件名命名必须为全小写。
-3. 数据类型
+    >`Number`、`String`、`Boolean`、`Symbol`、`BigInt`、`Object`：（大写的）几乎在任何时候都不应该被用作一个类型。
 
     1. 基本数据类型
 
@@ -31,10 +27,11 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         6. `undefined`
         7. `null`
 
-        >`undefined`和`null`可以赋值给所有类型的变量（除了`never`类型），`undefined`和`null`是所有类型的子类型（除了`never`类型）。
+        >1. `undefined`和`null`可以赋值给所有类型的变量（除了`never`类型），`undefined`和`null`是所有类型的子类型（除了`never`类型）。
+        >2. 若配置`strictNullChecks`，则：`undefined`只能赋值给类型`any`、`undefined`、`void`；`null`只能赋值给类型`any`、`null`。
     2. `void`
 
-        1. 仅允许赋值`undefined`或`null`。
+        1. 仅允许被`undefined`或`null`赋值。
         2. 表示没有任何返回值的函数。
     3. `never`
 
@@ -80,7 +77,9 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >未声明类型的被认为是`any`。
     5. `unknown`
 
-        对照于`any`、`unknown`是类型安全的。任何值都可以赋给`unknown`，但是当没有类型断言或基于控制流的类型细化时`unknown`不可以赋值给其它类型，除了它自己和`any`外。 同样地，在`unknown`没有被断言或细化到一个确切类型之前，是不允许在其上进行任何操作的。
+        1. 任何值都可以赋给`unknown`；
+        2. 但是当没有类型断言或基于控制流的类型细化时`unknown`不可以赋值给其它类型，除了它自己和`any`外。
+        3. 同样地，在`unknown`没有被类型断言或细化到一个确切类型之前，是不允许在其上进行任何操作的。
     6. `object`或`{}`
 
         表示非原始类型（除了`boolean`、`number`、`string`、`symbol`、`undefined`、`null`之外的类型）。允许给它赋任意值和访问`Object.prototype`上的属性，但不能调用任意其他方法，即便它真的有这些方法。
@@ -109,7 +108,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         ></details>
     7. 对象类型
 
-        1. 用接口定义。
+        1. 用`接口`定义。
 
             1. 确定属性（`属性名: 数据类型`），对象不允许多于或少于约定的属性数量（若有任意属性时，则允许多定义属性）。
             2. 可选属性（`属性名?: 数据类型`）。
@@ -146,12 +145,58 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >tom.xxx = true // 报错，true不是string | number
             >```
             ></details>
-        2. `:{ 属性: 数据类型 }`
+        2. `: { 属性: 数据类型 }`
+        3. `: 类名`
+
+            以类为形状。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```typescript
+            >class A {
+            >  a: number = 2;
+            >  aa?: number = 2;
+            >  b: () => void = () => {};
+            >  bb?: () => void = () => {};
+            >
+            >  c() {}
+            >  cc?() {}
+            >
+            >  static d: any;
+            >}
+            >
+            >let a1: A = new A();
+            >let a2: A = { a: 1, b() {}, c() {} };
+            >let a3: A = {};                       // 报错，需要a、b、c属性
+            >```
+            ><details>
     8. 数组类型
 
         1. `数据类型[]`
 
-            >e.g. `let arr: (number | string)[] = [1, '1']`
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```typescript
+            >let arr1: (number | string)[] = [1, "1"];
+            >let arr2: { name: string; age: number }[] = [
+            >  { name: "", age: 0 },
+            >  { name: "1", age: 1 },
+            >];
+            >
+            >class A {
+            >  name: string = "";
+            >  age: number = 0;
+            >  sex?: boolean = true;
+            >}
+            >
+            >let arr3: A[] = [
+            >  { name: "", age: 0, sex: false },
+            >  { name: "1", age: 1 },
+            >];
+            >```
+            ><details>
         2. 泛型`Array<数据类型>`
 
             >e.g. `let arr: Array<number | string> = [1, '1']`
@@ -171,12 +216,12 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
                 >ro.push(5)      // 报错
                 >ro.length = 100 // 报错
                 >
-                >let b: number[] = ro    // 报错，ReadonlyArray赋值到一个普通数组也是不可以的
+                >let b: number[] = ro    // 报错，ReadonlyArray赋值给一个普通数组也是不可以的
                 >let c: number[] = ro as number[]  // 允许，类型断言重写
-                >let d = ro as number[]  // 允许，ReadonlyArray赋值到一个类型推论为ReadonlyArray的数组
+                >let d = ro as number[]  // 允许，ReadonlyArray赋值给一个类型推论为ReadonlyArray的数组
                 >```
                 ></details>
-        3. 用接口定义
+        3. 用`接口`定义
 
             用`任意属性`来定义索引和项。
 
@@ -191,7 +236,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >let arr: NumberArray = [1, '1']
             >```
             ></details>
-        4. 元组
+        4. 元组（Tuple）
 
             规定`数组`每一项的数据类型：
 
@@ -219,7 +264,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         2. 支持：函数声明、函数表达式。
         3. 支持：可选参数、默认参数、剩余参数。
         4. 引用函数传入的参数不允许多于或少于约定的参数数量（若有可选参数、或默认参数、或剩余参数时，则允许少传入参数）。
-        5. 函数表达式可用接口定义。
+        5. 函数表达式可用`接口`定义。
 
         ><details>
         ><summary>e.g.</summary>
@@ -279,13 +324,14 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             ><summary>e.g.</summary>
             >
             >```typescript
-            >function reverse (x: number): number
-            >function reverse (x: string): string
-            >function reverse (x: number | string): number | string {
-            >  if (typeof x === 'number') {
-            >    return Number(x.toString().split('').reverse().join(''))
-            >  } else if (typeof x === 'string') {
-            >    return x.split('').reverse().join('')
+            >function reverse1(x: number): number;
+            >function reverse1(x: string): string;
+            >
+            >function reverse1(x: number | string): number | string {
+            >  if (typeof x === "number") {
+            >    return Number(x.toString().split("").reverse().join(""));
+            >  } else {
+            >    return x.split("").reverse().join("");
             >  }
             >}
             >```
@@ -301,42 +347,6 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         - ~~Node.js~~
 
             Node.js不是内置对象的一部分，需引入第三方声明文件：`npm install @types/node --save-dev`。
-
-    - 联合类型（Union Types）
-
-        `|`
-
-        1. 若未赋值，则只能访问此联合类型的所有类型里共有的属性/方法（不确定联合类型的变量到底是哪个类型）。
-
-            - 类型断言（Type Assertion）：`<数据类型>值` 或 `值 as 数据类型`（在`.tsx`中必须用后一种）
-
-                断言联合类型的变量成为联合类型其中的一种类型（就可以访问此类型的属性/方法）。
-
-                ><details>
-                ><summary>e.g.</summary>
-                >
-                >```typescript
-                >function getLength (something: string | number) {
-                >  something.toString();       // 访问此联合类型的所有类型里共有的属性/方法
-                >  (<string>something).length  // 类型断言
-                >  something.length;           // 报错，只能访问此联合类型的所有类型里共有的属性/方法
-                >  (<boolean>something).length // 报错，只能断言成一个联合类型中存在的类型
-                >}
-                >```
-                ></details>
-        2. 若已赋值，则只能访问类型推论出的某一个类型的属性/方法。
-    - 交叉类型（Intersection Types）
-
-        `&`
-
-        将多个类型合并为一个类型。
-
-    - 类型推论（Type Inference）
-
-        若没有明确的指定类型，则依照类型推论规则推断出一个类型：
-
-        1. 若声明时有赋值，则推断成此赋值的类型。
-        2. 若声明时没赋值，则推断成`any`。
 4. 类
 
     1. 访问修饰符（Access Modifiers）
@@ -473,15 +483,15 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >    return Greeter.staticGreeting
         >  }
         >}
-        >​
+        >
         >let greeter1: Greeter // 实例（实例属性/方法、类.prototype.属性/方法）
         >greeter1 = new Greeter()
         >console.log(greeter1.greet(), greeter1.greeting)
-        >​
+        >
         >let greeterMaker: typeof Greeter  // 类（静态属性/方法、构造函数）
         >greeterMaker = Greeter
         >greeterMaker.staticGreeting = 'Hey there!'
-        >​
+        >
         >let greeter2: Greeter
         >greeter2 = new greeterMaker()
         >console.log(greeter2.greet(), greeter2.greeting)
@@ -521,48 +531,48 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         ></details>
 
         >仅定义、不实现的方法都只有`()`、没有`{}`：`interface 中的方法`、`declare class 中的 方法`、`abstract class 中的 abstract 方法`。
-    4. 类实现接口
+    4. `implements`
 
-        `implements`
+        类实现接口
 
         ><details>
         ><summary>e.g.</summary>
         >
         >```typescript
         >interface Alarm {
-        >  alert (number)
+        >  alert(num: number): void;
         >}
         >
         >interface Light {
-        >  lightOn (string): boolean
+        >  lightOn(str: string): boolean;
         >
-        >  lightOff? ()
+        >  lightOff?(): void;
         >}
         >
         >class Car1 implements Light {
-        >  public lightOn (str) {
-        >    console.log('Car1 light on', str)
-        >    return true
+        >  public lightOn(str: string) {
+        >    console.log("Car1 light on", str);
+        >    return true;
         >  }
         >
-        >  x () {}
+        >  x() {}
         >}
         >
         >class Car2 extends Car1 implements Alarm, Light {
-        >  alert (num) {
-        >    console.log('Car2 alert', num)
+        >  alert(num: number) {
+        >    console.log("Car2 alert", num);
         >  }
         >
-        >  private lightOn (str) {
-        >    console.log('Car2 light on', str)
-        >    return true
+        >  public lightOn(str: string) {    // 可以用 private 吗？
+        >    console.log("Car2 light on", str);
+        >    return true;
         >  }
         >
-        >  lightOff () {
-        >    console.log('Car2 light off')
+        >  lightOff() {
+        >    console.log("Car2 light off");
         >  }
         >
-        >  protected xx () {}
+        >  protected xx() {}
         >}
         >```
         ></details>
@@ -607,11 +617,11 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             ></details>
     2. 对`类`的一部分行为进行抽象（`类`实现`接口`）
 
-    - 接口继承
+    - `extends`
 
-        `extends`
+        接口继承
 
-        1. 接口继承接口
+        1. 接口继承`接口`
 
             ><details>
             ><summary>e.g.</summary>
@@ -628,14 +638,14 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >}
             >```
             ></details>
-        2. 接口继承类
+        2. 接口继承`类`
 
             ><details>
             ><summary>e.g.</summary>
             >
             >```typescript
             >class Point {
-            >  x: number
+            >  x?: number
             >  y: number
             >}
             >
@@ -643,9 +653,10 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >  z: number
             >}
             >
-            >let point3d: Point3d = { x: 1, y: 2, z: 3 }
+            >let point3d: Point3d = { y: 2, z: 3 }
             >```
             ></details>
+
     - 支持重载、合并
 
         1. 接口中的属性在合并时会简单的合并到一个接口中
@@ -687,7 +698,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >handleEvent(document.getElementById('world'), 'dbclick') // 报错，event 不能为 'dbclick'
         >```
         ></details>
-7. 枚举
+7. 枚举（Enum）
 
     用于取值被限定在一定范围内的场景。语义化、限制值的范围（只允许使用已定义的枚举名）。
 
@@ -698,11 +709,15 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
     ```typescript
     enum E {
-      Foo = 123,
-      Bar
+      aa,
+      bb = 123,
+      cc,
+      dd = 222,
+      ee,
     }
 
-    console.log(E.Foo, E.Bar, E[E.Foo]) // => 123 124 "Foo"
+    console.log(E.aa, E.bb, E.cc, E.dd, E.ee); // => 0 123 124 222 223
+    console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]); // => "aa" "bb" "cc" "dd" "ee"
     ```
     </details>
 
@@ -873,12 +888,137 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
     `<类型名>`
 
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```typescript
+    >function func<T, P>(a: T, b: P, c: Array<T | P>) {
+    >  return `${a} ${b} ${c}`;
+    >}
+    >func<string, number>("aaa", 222, ["a", "b", 3]);
+    >
+    >
+    >class A<T extends number | string> {
+    >  constructor(private paras: T[]) {}
+    >}
+    >new A<string>(["a1", "a2"]);
+    >```
+    ></details>
+
     1. 可以是自定义类型，用任意的非保留关键字
-    2. 泛型约束，`<类型名a extends 类型名b>`
-    3. 泛型接口
-    4. 泛型类
-    5. 泛型参数的默认类型，`<类型名 = 数据类型>`
-9. 声明文件
+    2. 泛型接口
+    3. 泛型类
+    4. 泛型参数的默认类型，`<类型名 = 数据类型>`
+    5. 泛型约束，`<类型名 extends 数据类型>`
+9. 其他
+
+    - 类型断言（Type Assertion）：
+
+        `<数据类型>变量名` 或 `变量名 as 数据类型`（在`.tsx`中必须用后一种）
+
+    - 联合类型（Union Types）
+
+        `|`
+
+        1. 若未赋值，则只能访问此联合类型的所有类型里共有的属性/方法（不确定联合类型的变量到底是哪个类型）。
+
+            - 类型断言联合类型的变量成为联合类型其中的一种类型（就可以访问此类型的属性/方法）。
+
+                ><details>
+                ><summary>e.g.</summary>
+                >
+                >```typescript
+                >function getLength(something: string | number) {
+                >  something.toString(); // 访问此联合类型的所有类型里共有的属性/方法
+                >  (something as string).length; // 类型断言
+                >  (<number>something).toFixed(); // 类型断言
+                >
+                >  something.length; // 报错，只能访问此联合类型的所有类型里共有的属性/方法
+                >  (<boolean>something).length; // 报错，只能类型断言成一个联合类型中存在的类型
+                >}
+                >```
+                ></details>
+        2. 若已赋值，则只能访问类型推论出的某一个类型的属性/方法。
+
+    - 交叉类型（Intersection Types）
+
+        `&`
+
+        将多个类型合并为一个类型。
+
+    - 类型推论（Type Inference）
+
+        若没有明确的指定类型，则依照类型推论规则推断出一个类型：
+
+        1. 若声明时有赋值，则推断成此赋值的类型。
+        2. 若声明时没赋值，则推断成`any`。
+
+    - `!`
+
+        表示从前面的表达式里移除 ~~`null`~~ 和 ~~`undefined`~~。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >// 配置文件：compilerOptions.strictNullChecks: true
+        >let foo: string | undefined
+        >
+        >foo.length     // 报错， - 'foo' is possibly 'undefined'
+        >foo!.length
+        >```
+        ></details>
+
+#### 其他
+1. 配置
+
+    [`tsconfig.json`](https://www.staging-typescript.org/tsconfig)
+
+    >`tsc`会自动查找命令目录下的`tsconfig.json`；添加了`tsconfig.json`就不能在`tsc`后增加参数。
+
+    1. `--init`生成一个`tsconfig.json`文件。
+2. 文件后缀
+
+    `.ts`、`.tsx`（React、`JSX`）
+
+    >TypeScript错误`TS1128: Declaration or statement expected.`，可能导致的原因是：tsx文件名命名必须为全小写。
+3. `namespace`
+
+    生成的.js有一层命名空间包含内容（不容易污染全局变量）。
+
+    1. 可嵌套
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```typescript
+    >// .ts
+    >namespace A1 {
+    >  class B1 {}
+    >  namespace A2 {
+    >    class B2 {}
+    >  }
+    >}
+    >
+    >
+    >// 被编译为.js
+    >var A1;
+    >(function (A1) {
+    >  var B1 = /** @class */ (function () {
+    >    function B1() {}
+    >    return B1;
+    >  })();
+    >  var A2;
+    >  (function (A2) {
+    >    var B2 = /** @class */ (function () {
+    >      function B2() {}
+    >      return B2;
+    >    })();
+    >  })(A2 || (A2 = {}));
+    >})(A1 || (A1 = {}));
+    >```
+    ></details>
+4. 声明文件
 
     `名字.d.ts`
 
@@ -943,22 +1083,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
     2. 导出`export`
 
     - 引入第三方库声明文件（不需任何配置，引入就可声明成功），可搜索：<https://microsoft.github.io/TypeSearch/>
-10. `!`
-
-    表示从前面的表达式里移除 ~~`null`~~ 和 ~~`undefined`~~。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```typescript
-    >// 配置文件：compilerOptions.strictNullChecks: true
-    >let foo: string | undefined
-    >
-    >foo.length     // 报错， - 'foo' is possibly 'undefined'
-    >foo!.length
-    >```
-    ></details>
-11. 其他
+5. tips
 
     1. 已经定义好的属性的数据类型，除非有重载机制，否则不能在之后赋值时再次定义新的数据类型。只能用其他临时变量来保存。
 

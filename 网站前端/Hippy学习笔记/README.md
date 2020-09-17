@@ -108,6 +108,7 @@
         1. `<Image>`
 
             1. 若设置`position: 'absolute'`，则需要显示设置`width`和`height`。
+            2. 部分机型`onError`无法正常触发。
         2. `<Text>`
 
             1. Android:
@@ -511,7 +512,7 @@
             >1. URL不能缩写。不能用 ~~<https://placeholder.com/>~~？
             >2. 属性值只能跟URL，不能用`import`本地资源。
             >
-            >    本地资源用：`<View><Image source={{ uri: import资源 }} style={{position: 'absolute', top: 0, left: 0, zIndex: -1, width: 宽, height: 高}} /></View>`制作背景图。
+            >    - 本地资源制作背景图方式：`<View><Image source={{ uri: import资源 }} style={{position: 'absolute', top: 0, left: 0, zIndex: -1, width: 宽, height: 高}} /></View>`。
             >3. 仅针对`<View>`等。
 
             e.g. `backgroundImage: "https://图片地址"`

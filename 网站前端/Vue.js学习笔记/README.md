@@ -1829,7 +1829,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 >
 >    1. backbone.js：发布者-订阅者模式
 >    2. angular.js：脏值检查
->    3. react：？
+>    3. react：主动触发
 >    4. vue.js：数据劫持 + 发布者-订阅者模式
 
 ### 虚拟DOM系统
