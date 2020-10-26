@@ -30,6 +30,7 @@
         1. [大数加减法（不考虑小数和负数）](#原生js大数加减法不考虑小数和负数)
         1. [不同进制数互相转换](#原生js不同进制数互相转换)
         1. [选取范围内随机值](#原生js选取范围内随机值)
+        1. [选取范围内多个随机值](#原生js选取范围内多个随机值)
     1. 字符串操作
 
         1. [转化为Unicode、反转字符串、字符串长度、所占字节数](#原生js转化为unicode反转字符串字符串长度所占字节数)
@@ -1172,6 +1173,44 @@ function randomFrom(min, max) {
 >2. 若返回的是：`(0,1]`，则返回`Math.floor(Math.random() * (max - min + 1) + min - 1);`。
 >3. 若返回的是：`[0,1]`，则返回`Math.floor(Math.random() * (max - min) + min);`。
 ></details>
+
+### *原生JS*选取范围内多个随机值
+```javascript
+/**
+ * 选取范围内多个随机值
+ * @param {Number} min - 下限（或上限）
+ * @param {Number} max - 上限（或下限）
+ * @param {Number} [num = 1] - 返回随机数的数量
+ * @returns {Array|Boolean} - 上下限区间内的num个随机值组成的数组（闭区间，[下限, 上限]） 或 false（错误）
+ */
+function randomsFrom(min, max, num = 1) {
+  let temp;
+
+  if (min > max) {
+    temp = min;
+    min = max;
+    max = temp;
+  }
+
+  const count = max - min + 1;
+
+  const arr = Array.apply(null, new Array(count)).map(
+    (item, index) => index + min
+  );
+
+  if (num <= 0 || num > count) {
+    return false;
+  } else if (num === count) {
+    return arr;
+  } else {
+    const outs = [];
+    while (num > outs.length) {
+      outs.push(...arr.splice(Math.floor(Math.random() * arr.length), 1));
+    }
+    return outs.sort((a, b) => a - b);
+  }
+}
+```
 
 ### *原生JS*转化为Unicode、反转字符串、字符串长度、所占字节数
 >注意：Unicode码点大于`\uFFFF`（65535）的字符，如：`'💩'.codePointAt(0) // 128169`

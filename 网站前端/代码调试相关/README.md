@@ -69,6 +69,8 @@
             2. 开启调试功能的debug包APP
 3. 使用抓包工具查看请求、Map请求，如：[Charles](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Charles使用/README.md#charles使用)、[whistle](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/whistle使用/README.md#whistle使用)。
 
+    >tips: 若命中强缓存（本地缓存），则不会发起请求，所以抓包工具也无法抓到命中强缓存（本地缓存）的资源，也就无法对这些资源进行代理操作。
+
 #### 其他语言2Native调试
 >1. iOS用Xcode模拟器运行客户端调试APP。
 >
@@ -162,7 +164,7 @@
     - Simulator代理到whistle（或其他任意代理）
 
         1. 方法一：设置系统代理为8899，Simulator为系统代理
-        2. 方法二：利用Proxifier
+        2. 方法二：利用Proxifier（可代理PC所有应用到指定地址和端口）
 
             1. 安装证书：`127.0.0.1:8899`
             2. 安装Proxifier

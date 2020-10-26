@@ -637,8 +637,7 @@
             >        onClick={this.handleClick.bind(this)}
             >        onClick={(e) => {this.handleClick(e);}}
             >
-            >        // handleClick的this指向undefined
-            >        // onClick={this.handleClick}
+            >        // onClick={this.handleClick}  // handleClick的this指向undefined
             >      />
             >    );
             >  }
@@ -992,7 +991,7 @@
 
     - `React.PureComponent`
 
-        （与`React.Component`区别：）`shouldComponentUpdate`默认实现：浅比较`prop`和`state`并跳过所有子组件树的Props更新。
+        （与`React.Component`的区别：）`shouldComponentUpdate`默认实现：浅比较`prop`和`state`并跳过所有子组件树的Props更新。
 4. `componentWillUnmount`
 
     卸载组件
@@ -1112,7 +1111,10 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             >e.g. `import { 常量1, 常量2 } from '../actionTypes'`
         2. 应该尽量减少在action中传递的数据
         3. action创建函数：返回action的函数
-        4. 调用`store.dispatch(某个action)`触发reducer
+        4. 调用`dispatch(某个action)`触发reducer
+
+            1. dispatch接收一个action（若不是action则报错）；dispatch返回这个action。
+            2. ~~dispatch接收一个方法，第一个参数传入dispatch方法，第二个参数传入getState方法；dispatch返回参数方法的返回。~~
     3. reducer
 
         函数。接受当前state和action，返回新的state。响应发送而来的action。

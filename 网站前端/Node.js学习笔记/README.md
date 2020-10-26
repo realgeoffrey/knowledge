@@ -5,15 +5,15 @@
 
     1. [nvm更新Node.js版本](#nvm更新nodejs版本)
     1. [n更新Node.js版本](#n更新nodejs版本)
+1. [npm](#npm)
+1. [CommonJS规范](#commonjs规范)
 1. [原理机制](#原理机制)
 
-    1. [npm](#npm)
-    1. [CommonJS规范](#commonjs规范)
-    1. [Node.js原生模块](#nodejs原生模块)
-    1. [Node.js全局变量](#nodejs全局变量)
     1. [Node.js的运行机制](#nodejs的运行机制)
     1. [特性](#特性)
-    1. [基础](#基础)
+    1. [Node.js原生模块（需要`require`引入）](#nodejs原生模块需要require引入)
+    1. [Node.js全局变量](#nodejs全局变量)
+    1. [Tips](#tips)
 1. [工具使用](#工具使用)
 
     1. [Koa](#koa)
@@ -31,8 +31,10 @@
     nvm alias default v新版本号
 
     nvm list
-    nvm uninstall v旧版本号     # 若无法删除，则用管理员权限按要求设置文件夹权限，还可以去目录删除 /Users/用户名/.nvm/versions/node/v版本
+    nvm uninstall v旧版本号     # 若无法删除，则用管理员权限按要求设置文件夹权限，还可以去目录删除 /Users/「用户名」/.nvm/versions/node/v「版本号」
     ```
+
+    >安装的全局软件包位置：`/Users/「用户名」/.nvm/versions/node/v「版本号」/lib/node_modules`
 2. Windows的[nvm-windows](https://github.com/coreybutler/nvm-windows)：
 
     >安装nvm-windows时，需要删除原本安装在电脑上的Node.js。
@@ -46,7 +48,7 @@
     nvm use 新版本号
 
     nvm list
-    nvm uninstall 旧版本号     # 还可以再去目录中删除 C:\Users\用户名\AppData\Roaming\nvm\v版本
+    nvm uninstall 旧版本号      # 还可以再去目录中删除 C:\Users\「用户名」\AppData\Roaming\nvm\v「版本号」
     ```
 
 >切换版本之后需重装Node.js的全局模块包。
@@ -92,7 +94,6 @@
     ```
 
 ---
-## 原理机制
 
 ### npm
 1. 命令
@@ -161,12 +162,14 @@
 
         1. 查看模块官方信息
 
-            `npm info [<@scope>/]<pkg>[@<version>] [<field>[.subfield]...]`
+            `npm view [<@scope>/]<pkg>[@<version>] [<field>[.subfield]...]`
+
+            - `npm view <pkg> versions`：展示所有版本
         2. 查看已安装的模块和依赖
 
             `npm list [[<@scope>/]<pkg> ...]`
 
-            >若仅查看原始依赖`npm list --depth 0`
+            >仅查看顶层依赖：`npm list --depth=0`
         3. 查看已安装模块是否需要升级
 
             `npm outdated [[<@scope>/]<pkg> ...]`
@@ -278,6 +281,10 @@
 
             >1. 若使用lock机制，则应该将`package-lock.json`提交到版本控制。
             >2. 若不使用lock机制，则应该把`package-lock=false`加入`.npmrc`，并把`.npmrc`提交到版本控制。
+
+            1. `version`：版本号
+            2. `resolved`：软件包位置
+            3. `integrity`：校验码
     4. 执行脚本
 
         1. `npm run 「package.json中scripts字段的命令」 -- 「添加脚本后面的参数」`
@@ -286,7 +293,17 @@
         2. [npx](https://github.com/zkat/npx)
 2. [`package.json`](https://docs.npmjs.com/files/package.json)字段
 
-    1. `dependencies`
+    1. `name`
+
+        仓库名。
+
+        >组成：小写、无空格、字母数字下划线中划线。
+    2. `version`
+
+        版本号`x.x.x`。
+
+        >`npm version [<newversion> | major | minor | patch | premajor | preminor | prepatch | prerelease | from-git]`更新`version`。
+    3. `dependencies`
 
         生产环境依赖。
 
@@ -342,7 +359,7 @@
             └── package.json
             ```
         </details>
-    2. `devDependencies`
+    4. `devDependencies`
 
         开发、测试依赖。
 
@@ -353,20 +370,7 @@
         >
         >        >`export NODE_ENV=production;`。
         >    3. `npm install --production`不会安装自己的`devDependencies`。
-    3. `name`
-
-        仓库名。
-
-        >组成：小写、无空格、字母数字下划线中划线。
-    4. `version`
-
-        版本号`x.x.x`。
-
-        >`npm version [<newversion> | major | minor | patch | premajor | preminor | prepatch | prerelease | from-git]`更新`version`。
-    5. `description`
-
-        描述，也作为在npm官网被搜索的内容。
-    6. `main`
+    5. `main`
 
         代码入口，默认：`index.js`。
 
@@ -377,16 +381,32 @@
             1. `module`：ES6 Module
             2. `unpkg`：`<script>`引用（针对[unpkg.com](https://unpkg.com/)）
             3. `jsdelivr`：`<script>`引用（针对[www.jsdelivr.com](https://www.jsdelivr.com/)）
-    7. `scripts`
+    6. `scripts`
 
         可执行脚本，用`npm run 脚本名`执行。
 
         - `pre脚本名`会在执行`脚本名`之前自动执行。
-    8. `repository`
+    7. `files`
+
+        将仓库作为依赖项安装时要包含的路径、文件的数组。
+    8. `bin`
+
+        `{ 新增的命令: 对应的可执行文件路径 }`
+    9. `engines`
+
+        该仓库在哪个版本的Node.js（、npm、yarn、等）上运行。
+    10. `browserslist`
+
+        支持哪些浏览器（及其版本）。
+    11. `description`
+
+        描述，也作为在npm官网被搜索的内容。
+    12. `repository`
 
         仓库远程版本控制，可以是github等。
 
-        >e.g.
+        ><details>
+        ><summary>e.g.</summary>
         >
         >```json
         >"repository": {
@@ -394,25 +414,32 @@
         >    "url": "git@github.com:用户名/仓库名.git"
         >}
         >```
-    9. `keywords`
+        ></details>
+    13. `keywords`
 
         在npm官网被搜索的关键字。
-    10. `author`
+    14. `author`
 
         仓库作者。
-    11. `license`
+    15. `contributors`
+
+        仓库贡献者。
+    16. `license`
 
         证书。
-    12. `homepage`
+    17. `homepage`
 
         主页。
-    13. `private`
+    18. `bugs`
+
+        链接到软件包的问题跟踪器，最常用的是GitHub的issues页面。
+    19. `private`
 
         设置为`true`，则无法`npm publish`，用于避免不小心公开项目。
-    14. `files`
+    20. 命令特有的属性
 
-        将仓库作为依赖项安装时要包含的路径、文件的数组。
-    15. 其他
+        某些命令特有的（如：ESLint的`eslintConfig`、Babel的`babel`、等），可以在相应的命令/项目文档中找到如何使用它们。
+    21. 其他
 3. 包的制作-使用
 
     1. 制作：
@@ -608,47 +635,8 @@
 
     >所有模块都是Node.js内部`Module`构建函数的实例。
 
-### Node.js原生模块
->核心模块定义在[源代码的lib/目录](https://github.com/nodejs/node/tree/master/lib)。
-
-1. `util`：提供常用函数的集合，用于弥补核心JavaScript 的功能 过于精简的不足。
-2. `fs`：文件操作API，异步、同步两种版本。
-3. `http`：HTTP请求相关API。
-4. `url`：解析URL。
-5. `child_process`：创建子进程。
-6. 工具模块
-
-    1. `os`：基本的系统操作函数。
-    2. `path`：处理文件路径的小工具。
-
-        >系统兼容性用`path.join`？
-    3. `net`：用于底层的网络通信小工具，包含创建服务器/客户端的方法。
-    4. `dns`：解析域名。
-    5. `domain`：简化异步代码的异常处理，可以捕捉处理`try-catch`无法捕捉的异常。
-7. `events`
-
-### Node.js全局变量
-Node.js的全局对象`global`是全局变量的宿主。
-
-1. 仅在模块内有效
-
-    1. `exports`
-    2. `module`
-    3. `require`
-    4. `__filename`：当前正在执行的脚本所在位置的绝对路径+文件名。
-    5. `__dirname`：当前正在执行的脚本所在位置的绝对路径。
-2. `process`：描述当前Node.js进程状态的对象，提供了一个与操作系统的简单接口。
-3. `Buffer`：二进制数据流。
-4. `Stream`：数据流（当内存中无法一次装下需要处理的数据时、或一边读取一边处理更加高效时，使用数据流）。
-5. `setImmediate`、`clearImmediate`
-6. <details>
-
-    <summary>其他全局变量（类似于浏览器的全局对象<code>window</code>所包含的全局变量）</summary>
-
-    1. `setTimeout`、`clearTimeout`、`setInterval`、`clearInterval`
-    2. `console`
-    3. `URL`、`URLSearchParams`
-    </details>
+---
+## 原理机制
 
 ### Node.js的运行机制
 1. V8引擎解析JS脚本。
@@ -656,7 +644,7 @@ Node.js的全局对象`global`是全局变量的宿主。
 3. [libuv](https://github.com/libuv/libuv)负责Node.js的API的执行。将不同的任务分配给不同的线程，形成一个Event Loop（事件循环），以异步的方式将任务的执行结果返回给V8引擎。
 4. V8引擎再将结果返回给用户。
 
->JS本身的`throw-try-catch`异常处理机制并不会导致内存泄漏，也不会让程序的执行结果出乎意料，但Node.JS并不是存粹的JS。NodeJS里大量的API内部是用C/C++实现的，因此Node.JS程序的运行过程中，代码执行路径穿梭于JS引擎内部和外部，而JS的异常抛出机制可能会打断正常的代码执行流程，导致C/C++部分的代码表现异常，进而导致内存泄漏等问题。
+>JS本身的`throw-try-catch`异常处理机制并不会导致内存泄漏，也不会让程序的执行结果出乎意料，但Node.js并不是存粹的JS。Node.js里大量的API内部是由C/C++实现，因此Node.js程序的运行过程中，代码执行路径穿梭于JS引擎内部和外部，而JS的异常抛出机制可能会打断正常的代码执行流程，导致C/C++部分的代码表现异常，进而导致内存泄漏等问题。
 
 ![Node.js的事件循环图](./images/nodejs-system-1.png)
 
@@ -673,16 +661,200 @@ Node.js的全局对象`global`是全局变量的宿主。
 
     回调函数异步执行，通过事件循环检查已完成的I/O进行依次处理。
 
-    >I/O主要指由[libuv](https://github.com/libuv/libuv)支持的，与系统磁盘和网络之间的交互。
+    >1. I/O主要指由[libuv](https://github.com/libuv/libuv)支持的，与系统磁盘和网络之间的交互。
+    >2. 大多数Node.js核心API所提供的异步方法都遵从惯例：**错误信息优先**的回调模式（第一个参数是错误信息，若不报错则其值为`null`）。
+    >
+    >    `EventEmitter`类事件函数不属于此范畴。
 3. 事件驱动
 
     用事件驱动（事件循环）来完成服务器的任务调度。
 
 >1. Node.js开发应用程序：善于I/O（任务调度），不善于计算。如：长连接的实时交互应用程序。
 >2. Node.js服务器：没有根目录概念，没有web容器。URL通过顶层路由设计，呈递静态文件。
->>只有打通和后端技术的桥梁、实现互联互通，Node.js才能在公司业务中有更长远的发展。
+>
+>只有打通和后端技术的桥梁、实现互联互通，Node.js才能在公司业务中有更长远的发展。
 
-### 基础
+### Node.js[原生模块](http://nodejs.cn/api/)（需要`require`引入）
+>核心模块定义在[源代码的lib/目录](https://github.com/nodejs/node/tree/master/lib)。
+
+1. `http`：HTTP请求相关API
+
+    1. 接口永远不会缓冲整个请求或响应，所以用户可以流式地传输数据。
+    2. 为了支持所有可能的HTTP应用程序，Node.js的HTTP API都是非常底层的。
+
+        它仅进行流处理和消息解析。它将消息解析为消息头和消息主体，但不会解析具体的消息头或消息主体。
+2. `http2`
+3. `https`
+4. `fs`：文件操作API
+
+    提供版本：异步、同步（+`Sync`）、基于Promise（`require("fs").promises`）。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```javascript
+    >// 异步（结果在回调）
+    >require('fs').rename('before.json', 'after.json', err => {
+    >  if (err) {
+    >    return console.error(err)
+    >  }
+    >  //完成
+    >})
+    >
+    >
+    >// 同步（阻塞线程，直到文件操作结束。结果在执行语句返回）
+    >try {
+    >  require('fs').renameSync('before.json', 'after.json')
+    >  //完成
+    >} catch (err) {
+    >  console.error(err)
+    >}
+    >
+    >
+    >// Promise
+    >require("fs").promises
+    >  .rename("before.json", "after.json")
+    >  .then((data) => {
+    >    console.log('succeeded', data);
+    >  })
+    >  .catch((error) => {
+    >    console.error('failed' ,error);
+    >  });
+    >```
+    ></details>
+
+    - 尽量选择使用**流**读写文件的内容
+
+        >（不使用流的）读操作都会在返回数据之前将文件的全部内容读取到内存中，这意味着大文件会对内存的消耗和程序执行的速度产生重大的影响；（不使用流的）写操作都是在将全部内容写入文件之后才会将控制权返回给程序（在异步的版本中，这意味着执行回调）。
+5. `events`：事件触发器
+
+    >`EventEmitter`类：`require('events')`
+
+    1. 所有能触发事件的对象都是`EventEmitter`类的实例。
+    2. `EventEmitter`以注册的顺序同步地调用所有监听器。
+6. `path`：处理文件路径
+7. `url`：解析URL。
+8. `os`：基本的系统操作函数
+9. `stream`：数据流
+
+    流是一种以高效的方式处理读/写文件、网络通信、或任何类型的端到端的信息交换。
+
+    >e.g. 在传统的方式中，当告诉程序读取文件或通信时，这会将文件或信息从头到尾读入内存，然后进行处理。若使用流，则可以逐个片段地读取并处理（而无需全部保存在内存中），能够一边读取一边处理更加高效。
+
+    1. 所有的流都是`EventEmitter`类的实例。
+    2. Node.js提供了多种流对象（`fs`、`http`、`process`等都有流操作方式），除非要创建新类型的流实例，否则极少需要直接使用`stream`。
+    3. 流类型：可读（Readable）、可写（Writable）、可读可写（Duplex）、可修改或转换数据（Transform）。
+10. `readline`：用于一次一行地读取可读流中的数据
+11. `util`：提供常用函数的集合，用于弥补核心JavaScript的功能过于精简的不足
+12. `child_process`：衍生子进程
+
+    衍生的Node.js子进程独立于父进程，但两者之间建立的IPC通信通道除外。每个进程都有自己的内存，带有自己的V8实例。
+
+    >由于需要额外的资源分配，因此不建议衍生大量的Node.js子进程。
+13. `cluster`：集群
+
+    创建共享服务器端口的子进程。为了充分利用多核系统，有时需要启用一组Node.js进程去处理负载任务。
+14. `worker_threads`：并行地执行JS的线程
+15. `dgram`：数据报
+
+    对UDP socket的一层封装。
+16. `net`：用于创建基于流的TCP或IPC的服务器（`net.createServer`）与客户端（`net.createConnection`）
+
+    - Experimental功能
+
+        1. `require('net').createQuicSocket`：QUIC（快速UDP网络连接，Quick UDP Internet Connections）
+17. `dns`：解析域名
+18. `querystring`：解析和格式化URL查询字符串
+19. `string_decoder`：字符串解码器
+20. `tls`：实现安全传输层（TLS）及安全套接层（SSL）协议，建立在OpenSSL的基础上
+21. `module`：模块
+22. `perf_hooks`：性能钩子
+
+    实现w3c的Performance API的子类。
+23. `assert`：断言
+24. `repl`：REPL（交互式解释器）
+
+    - 终端使用Node.js的REPL：
+
+        1. `_`
+
+            打印最后一次操作结果（不执行语句、没有副作用）。
+        2. `.help`、`.editor`、`.break`、`.clear`、`.load`、`.save`、`.exit`
+25. `tty`：终端
+26. `v8`：V8的api
+27. `vm`：提供V8虚拟机上下文中进行编译和运行代码
+28. `crypto`：加密
+
+     OpenSSL的哈希、HMAC、加密、解密、签名、以及验证功能的一整套封装。
+
+    - Experimental功能
+
+        1. `require('crypto').webcrypto`：实现Web Crypto API规范
+29. `zlib`：提供`Gzip、Deflate/Inflate、Brotli`的压缩功能
+
+- Experimental功能
+
+    1. `inspector`：与V8调试器交互
+    2. `wasi`：实现WebAssembly系统接口规范
+    3. `diagnostics_channel`：诊断
+    4. `trace_events`：跟踪事件
+    5. `async_hooks`：异步钩子去跟踪异步资源
+
+### Node.js[全局变量](http://nodejs.cn/api/globals.html)
+Node.js的全局对象`global`是全局变量的宿主。
+
+1. 仅在模块内有效
+
+    1. `require`
+    2. `exports`
+    3. `module`
+    4. `__filename`：当前正在执行的脚本所在位置的绝对路径+文件名。
+    5. `__dirname`：当前正在执行的脚本所在位置的绝对路径。
+2. `process`：描述当前Node.js进程状态的对象，提供了一个与操作系统的简单接口。
+3. `Buffer`：二进制数据流。
+
+    可以将buffer视为整数数组：数组的每一项都是整数，并代表一个数据字节。
+4. `queueMicrotask`
+
+    将微任务放入队列以便调用回调。
+5. `MessageChannel`、`MessageEvent`、`MessagePort`
+6. `setImmediate/clearImmediate`
+7. 其他全局变量（类似于浏览器的全局对象<code>window</code>所包含的全局变量）
+
+    1. `setTimeout/clearTimeout`、`setInterval/clearInterval`
+    2. `console`
+    3. `URL`、`URLSearchParams`
+    4. `Error`
+
+        >若在程序执行过程中引发了**未捕获的异常**或**未捕获的失败Promise实例**，则程序将崩溃。捕获未捕获的异常：
+        >
+        >1. 捕获未捕获的异常
+        >
+        >    ```javascript
+        >    process.on('uncaughtException', err => {
+        >      // 执行逻辑
+        >    })
+        >    ```
+        >2. 捕获未捕获的失败Promise实例
+        >
+        >    ```javascript
+        >    process.on('unhandledRejection', err => {
+        >      // 执行逻辑
+        >    })
+        >    ```
+    5. `debugger`
+
+        1. `node inspect 脚本.js`：命令行调试
+        2. `node --inspect 脚本.js`：与Chrome配合调试
+    6. `TextDecoder`、`TextEncoder`
+    7. `WebAssembly`
+
+    - Experimental功能
+
+        1. `AbortController`、`AbortSignal`
+        2. `Event`、`EventTarget`
+
+### Tips
 1. 调试方法：
 
     1. 控制台输出`console`等。
@@ -703,6 +875,9 @@ Node.js的全局对象`global`是全局变量的宿主。
     3. 异常处理、错误报警
 
         对各种IO要进行异常处理（如：`try-catch`包裹所有IO代码），并需要把错误上报（打日志`console`或借助第三方监控）。
+3. 与浏览器JS的区别
+
+    除了全局变量、提供的模块、模块系统、API不同之外，在Node.js中，可以控制运行环境：除非构建的是任何人都可以在任何地方部署的开源应用程序，否则开发者知道会在哪个版本的Node.js上运行该应用程序。与浏览器环境（无法选择访客会使用的浏览器）相比起来，这非常方便。
 
 ---
 ## 工具使用

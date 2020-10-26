@@ -2,7 +2,8 @@
 
 ## 目录
 1. [命令花费时间](#命令花费时间)
-1. [ping地址测试](#ping地址测试)
+1. [URL连接测试](#url连接测试)
+1. [IPv6相关命令](#ipv6相关命令)
 1. [ssh登录](#ssh登录)
 1. [远程复制文件（夹）](#远程复制文件夹)
 1. [同步文件（夹）](#同步文件夹)
@@ -46,24 +47,53 @@ time 「命令」
 # e.g. time ls
 ```
 
-#### ping地址测试
-```shell
-ping 「地址」
-```
+#### URL连接测试
+1. `ping`
 
-- IPv6相关
+    向域名或IP（没有~~协议头、端口、路径~~）传出一个ICMP的请求回显数据包，并等待接收回显回应数据包。判断网络是否畅通、查看连接速度信息。
 
     ```shell
-    nslookup -type=AAAA 「域名」
-
-    dig 「域名」 AAAA
-
-    # ping6 「域名」
-
-    # ping -6 「域名」
-
-    # curl -6 「URI」
+    ping 「地址」
     ```
+2. `curl`
+
+    发起HTTP请求，查看返回信息。
+
+    ```shell
+    curl 「URL」           # 返回HTTP响应正文
+    -i                   # 返回完整HTTP响应（响应头+响应正文）
+    -H 「'一个请求头'」      # 设置请求头的请求
+    -X 「请求方法，如：POST」 # 设置请求方法的请求
+    ```
+3. `nslookup`
+
+    查询DNS的记录，查看域名解析是否正常，在网络故障的时候用来诊断网络问题。
+4. `dig`
+
+    从DNS域名服务器查询主机地址信息。
+5. `telnet`
+
+    可测试端口是否可连接。互联网远程登录服务的标准协议和主要方式。
+
+    ```shell
+    telnet 「IP」 「端口」
+    ```
+6. `ab`
+
+    压力测试工具。
+
+#### IPv6相关命令
+```shell
+nslookup -type=AAAA 「域名」
+
+dig 「域名」 AAAA
+
+# ping6 「域名」
+
+# ping -6 「域名」
+
+# curl -6 「URI」
+```
 
 #### ssh登录
 ```shell
@@ -372,7 +402,7 @@ unalias 「自定义命令名」    # 删除 别名
 
 #### （macOS）brew更新
 ```shell
-brew update && brew upgrade && brew cask upgrade
+brew update && brew upgrade && brew upgrade --cask
 ```
 
 >brew cask可以安装大部分软件，使用`brew search 「软件名」`进行搜索（建议对非App Store安装的应用，都尝试用brew cask安装）。
