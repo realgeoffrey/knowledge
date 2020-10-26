@@ -1083,7 +1083,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
         在主线程上排队执行的任务。
     2. 异步任务（asynchronous）：
 
-        1. 先挂起到（对应种类的）工作线程等待结果，主线程不会因此阻塞；有结果后，发起通知进入（对应种类的）「任务队列」（task queue或「消息队列」）；「执行栈」（execution context stack）为空后会读取并执行「任务队列」的通知对应的回调函数。
+        1. 先挂起到（对应种类的）工作线程等待结果，主线程不会因此阻塞；有结果后，发起通知进入（对应种类的）「任务队列」（task queue）；「执行栈」（execution context stack）为空后会读取并执行「任务队列」的通知对应的回调函数。
 
             >相同类型的异步工作线程是串行工作；不同类型的异步工作线程互不影响执行。
         2. 异步任务分为两种类型：macrotask（task）、microtask（job）
@@ -1168,7 +1168,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
 
             - macrotask、microtask的事件循环运行机制：
 
-                1. 检查macrotask队列
+                1. 检查macrotask队列：
 
                     1. 选择最早加入的任务X，设置为「目前运行的任务」并进入「执行栈」；若macrotask队列为空，则跳到第4步；
 
@@ -1239,17 +1239,17 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
 
     定时器触发后，会把**定时器处理程序（回调函数）**插入至等待执行的**任务队列**最后面。`setInterval`和`setTimeout`的内部运行机制完全一致。
 
-    1. `setInterval`、`clearInterval`：
+    1. `setInterval/clearInterval`：
 
         1. 同一个被setInterval执行的函数只能插入一个**定时器处理程序**到**任务队列**。
         2. setInterval是间隔时间去尝试执行函数，不关注上一次是何时执行。
         3. 若setInterval触发时已有它的**定时器处理程序**在**任务队列**中，则忽略此次触发。直到没有它的**定时器处理程序**在**任务队列**后才可以再次插入（正在执行的不算在**任务队列**中）。
         4. 相邻的2次**定时器处理程序**可能小于或大于（或等于）设定的间隔时间。无法确定**定时器处理程序**何时执行。
-    2. `setTimeout`、`clearTimeout`:
+    2. `setTimeout/clearTimeout`:
 
         [用setTimeout模拟setInterval](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用settimeout模拟setinterval)，可以提高性能（上一次执行完毕后延迟时间再执行下一次，而不是固定间隔时间都尝试执行），并且可以确保每次**定时器处理程序**执行间隔一定大于（或等于）设置的间隔时间。
 
-    - `setImmediate`、`clearImmediate`：
+    - `setImmediate/clearImmediate`：
 
         >仅ie10支持。
 
@@ -1967,11 +1967,17 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
 
         1. JS的`document.cookie`：
 
-            1. 新建或更新cookie等同于服务端`Set-Cookie`响应头：一次设置一条cookie的`名=值[; expires=绝对时间][; max-age=相对时间][; domain=域名][; path=路径][; secure]`。
+            1. 新建或更新cookie（一条命令只能设置一条cookie）类似于服务端`Set-Cookie`响应头（一条命令可以设置多条cookie）：
 
-                >`Set-Cookie`额外可以设置`[; HttpOnly]`属性。
-            2. 读取cookie等同于客户端`Cookie`请求头：展示所有cookie的`名1=值1[; 名2=值2]`（无法查看其他信息）。
-            3. 删除cookie项，需要`path`（路径）符合（默认是当前路由的path）。
+                `名=值[; expires=绝对时间（时间戳）][; max-age=相对时间（秒）][; domain=域名][; path=路径][; secure][; samesite=Strict或Lax][; priority=low或medium或high]`
+
+                >1. `Set-Cookie`可以额外设置`HttpOnly`属性；客户端不能设置、也不能查看和操作被设置为`HttpOnly`的cookie。
+                >2. 非安全站点（HTTP）不能在cookie中设置`secure`，若设置，则此条新建或更新cookie无效。
+                >3. `priority`是Chrome的提案。
+            2. 读取cookie等同于客户端`Cookie`请求头：
+
+                展示所有cookie`名1=值1[; 名2=值2]`（无法查看其他信息）。
+            3. cookie的`名称`、`domain`（默认当前完整域名）、`path`（默认当前路由的path）一同唯一确定一个cookie，因此删除cookie项，需要关注这3个属性。
         2. 没有~~改变`cookie`的事件通知~~，只能轮询检测。
     6. 同源同路径，或父域名、父路径 共享。
 

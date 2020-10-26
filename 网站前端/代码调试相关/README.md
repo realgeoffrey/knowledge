@@ -69,6 +69,8 @@
             2. 开启调试功能的debug包APP
 3. 使用抓包工具查看请求、Map请求，如：[Charles](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Charles使用/README.md#charles使用)、[whistle](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/whistle使用/README.md#whistle使用)。
 
+    >Tips: 若命中强缓存（本地缓存），则不会发起请求，所以抓包工具也无法抓到命中强缓存（本地缓存）的资源，也就无法对这些资源进行代理操作。
+
 #### 其他语言2Native调试
 >1. iOS用Xcode模拟器运行客户端调试APP。
 >
@@ -159,20 +161,27 @@
         1. （基础）Xcode -> Show the Debug navigator -> debug gauges
         2. （进阶）Xcode -> Product -> Profile
 
-    - Simulator代理到whistle（或其他任意代理）
+    - Simulator
 
-        1. 方法一：设置系统代理为8899，Simulator为系统代理
-        2. 方法二：利用Proxifier
+        1. 代理到whistle（或其他任意代理）
 
-            1. 安装证书：`127.0.0.1:8899`
-            2. 安装Proxifier
+            1. 方法一：设置系统代理为8899，Simulator为系统代理
+            2. 方法二：利用Proxifier（可代理PC所有应用到指定地址和端口）
 
-                1. Proxies
+                1. 安装证书：`127.0.0.1:8899`
+                2. 安装Proxifier
 
-                    HTTPS 127.0.0.1:8899
-                2. Rules
+                    1. Proxies
 
-                    `Simulator; "Xcode Server Builder"; "MobileSafari"; "com.apple.WebKit.Networking";`
+                        HTTPS 127.0.0.1:8899
+                    2. Rules
+
+                        `Simulator; "Xcode Server Builder"; "MobileSafari"; "com.apple.WebKit.Networking";`
+        2. 软键盘开启：
+
+            Simulator -> I/O -> Keyboard -> 取消选择：Connect Hardware Keyboard
+
+            >取消连接到硬件keyboard，这样就取消了连接到电脑的键盘，而使用iOS模拟器自己的键盘。
 
 - 若网络通信不通过发起HTTP请求，则会有其他客户端通讯协议。此时就不能用HTTP抓包查看请求，需要客户端通讯协议对应的通讯查看方式。
 

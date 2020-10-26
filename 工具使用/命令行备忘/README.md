@@ -2,7 +2,8 @@
 
 ## 目录
 1. [命令花费时间](#命令花费时间)
-1. [ping地址测试](#ping地址测试)
+1. [URL连接测试](#url连接测试)
+1. [IPv6相关命令](#ipv6相关命令)
 1. [ssh登录](#ssh登录)
 1. [远程复制文件（夹）](#远程复制文件夹)
 1. [同步文件（夹）](#同步文件夹)
@@ -14,7 +15,7 @@
 1. [查看本机IP](#查看本机ip)
 1. [执行文件](#执行文件)
 1. [（Unix-like）开机自动运行的脚本](#unix-like开机自动运行的脚本)
-1. [查看端口占用、网络链接，查看进程](#查看端口占用网络链接查看进程)
+1. [查看端口占用、网络链接，查看进程并杀死](#查看端口占用网络链接查看进程并杀死)
 1. [查看端口占用，杀掉进程](#查看端口占用杀掉进程)
 1. [查看磁盘空间占用](#查看磁盘空间占用)
 1. [创建文件](#创建文件)
@@ -22,6 +23,8 @@
 1. [查看group、user](#查看groupuser)
 1. [指令的别名](#指令的别名)
 1. [adb](#adb)
+1. [nohup](#nohup)
+1. [sleep](#sleep)
 1. [macOS命令](#macos命令)
 
     1. [（macOS）brew更新](#macosbrew更新)
@@ -46,24 +49,54 @@ time 「命令」
 # e.g. time ls
 ```
 
-#### ping地址测试
-```shell
-ping 「地址」
-```
+#### URL连接测试
+1. `ping`
 
-- IPv6相关
+    向域名或IP（没有~~协议头、端口、路径~~）传出一个ICMP的请求回显数据包，并等待接收回显回应数据包。判断网络是否畅通、查看连接速度信息。
 
     ```shell
-    nslookup -type=AAAA 「域名」
-
-    dig 「域名」 AAAA
-
-    # ping6 「域名」
-
-    # ping -6 「域名」
-
-    # curl -6 「URI」
+    ping 「地址」
     ```
+2. `curl`
+
+    发起HTTP请求，查看返回信息。
+
+    ```shell
+    curl 「URL」           # 返回HTTP响应正文
+    -i                   # 返回完整HTTP响应（响应头+响应正文）
+    -H 「'一个请求头'」      # 设置请求头的请求
+    -X 「请求方法，如：POST」 # 设置请求方法的请求
+    -g                   # 关闭解析`{}`、`[]`
+    ```
+3. `nslookup`
+
+    查询DNS的记录，查看域名解析是否正常，在网络故障的时候用来诊断网络问题。
+4. `dig`
+
+    从DNS域名服务器查询主机地址信息。
+5. `telnet`
+
+    可测试端口是否可连接。互联网远程登录服务的标准协议和主要方式。
+
+    ```shell
+    telnet 「IP」 「端口」
+    ```
+6. `ab`
+
+    压力测试工具。
+
+#### IPv6相关命令
+```shell
+nslookup -type=AAAA 「域名」
+
+dig 「域名」 AAAA
+
+# ping6 「域名」
+
+# ping -6 「域名」
+
+# curl -6 「URI」
+```
 
 #### ssh登录
 ```shell
@@ -187,7 +220,7 @@ vi ~/.zshrc         # zsh
 # source 脚本   # 当前运行一遍
 ```
 
-#### 查看端口占用、网络链接，查看进程
+#### 查看端口占用、网络链接，查看进程并杀死
 1. 所有端口占用、网络连接情况（Linux）
 
     ```shell
@@ -201,10 +234,20 @@ vi ~/.zshrc         # zsh
     netstat -ant | grep 「端口号」
     lsof -i :「端口号」
     ```
-3. 查看进程
+3. 查看进程并杀死
 
     ```shell
-    ps -ef
+    ps -ef   #
+    ps -efc  # command改成进程名展示
+    ps -ef | grep '「命令关键字」' | grep -v grep  # 搜索「命令关键字」、排除grep
+
+
+    # 杀死进程
+    kill -9 「PID」   # 杀死具体PID的进程
+    kill $(ps -ef | grep '「命令关键字」' | grep -v grep | awk '{print $2}')  # 杀死所有关键字相关的进程（排除grep）
+
+    # 杀死所有同名进程（慎）
+    killall 「名称」
     ```
 
 #### 查看端口占用，杀掉进程
@@ -213,7 +256,7 @@ vi ~/.zshrc         # zsh
     ```shell
     lsof -i :「端口号」
 
-    kill 「PID」
+    kill -9 「PID」
     # macOS的「活动监视器」也可以查到「PID」并关闭进程
     ```
 2.  Windows（需要在cmd.exe进行）
@@ -294,7 +337,7 @@ vi ~/.zshrc         # zsh
     groups 「用户名」 # 返回「用户名」所在的组名
     ```
 
-### 指令的别名
+#### 指令的别名
 ```shell
 alias   # 查看已设置的内容
 
@@ -306,7 +349,7 @@ alias 「自定义命令名」      # 打印设置的执行命令
 unalias 「自定义命令名」    # 删除 别名
 ```
 
-### adb
+#### adb
 1. 查看已连接的设备（尝试连接手机）
 
     ```shell
@@ -367,12 +410,26 @@ unalias 「自定义命令名」    # 删除 别名
     adb shell dumpsys gfxinfo 「PACKAGE_NAME」 framestats
     ```
 
+#### nohup
+用于忽略SIGHUP（signal hang up，挂断信号：终端注销时所发送至程序的一个信号）。
+
+```shell
+nohup 「命令」 &    # 后台执行命令。命令的标准输出到当前目录或$HOME的`nohup.out`文件
+```
+
+杀死后台进程先`ps`后`kill`：[查看端口占用、网络链接，查看进程并杀死](#查看端口占用网络链接查看进程并杀死)。
+
+#### sleep
+```shell
+sleep 「秒数」  # 延迟一段时间，再向下继续执行命令
+```
+
 ---
 ### macOS命令
 
 #### （macOS）brew更新
 ```shell
-brew update && brew upgrade && brew cask upgrade
+brew update && brew upgrade && brew upgrade --cask
 ```
 
 >brew cask可以安装大部分软件，使用`brew search 「软件名」`进行搜索（建议对非App Store安装的应用，都尝试用brew cask安装）。

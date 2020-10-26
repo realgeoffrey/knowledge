@@ -591,33 +591,35 @@ var cookieFuc = {
      * @param {String} [path] - 路径。默认：当前文档位置的路径
      * @param {String} [domain] - 域名。默认：当前文档位置的路径的域名部分
      * @param {Boolean} [secure] - 是否「仅通过https协议传输」。默认：否
+     * @param {String} [samesite] - SameSite，取值：Strict、Lax。默认：无
+     * @param {String} [priority] - 优先级，取值；Low、Medium、High。默认：Medium
      * @returns {Boolean} - 操作成功或失败
      */
-    setItem: function (key, value, deadline, path, domain, secure) {
-        if (!key || /^(?:expires|max\-age|path|domain|secure)$/i.test(key)) {
+    setItem: function (key, value, deadline, path, domain, secure, samesite, priority) {
+      if (!key || (window.location.protocol === 'http:' && secure)) {   // todo: 更多设置cookie失败的情况
 
-            return false;
-        } else {
-            var expires = '';
+        return false;
+      } else {
+        var expires = "";
 
-            if (deadline) {
-                switch (deadline.constructor) {
-                    case Number:
-                        expires = deadline === Infinity ? '; expires=Fri, 31 Dec 9999 23:59:59 GMT' : '; max-age=' + deadline;
-                        break;
-                    case String:
-                        expires = '; expires=' + deadline;
-                        break;
-                    case Date:
-                        expires = '; expires=' + deadline.toUTCString();
-                        break;
-                }
-            }
-
-            document.cookie = encodeURIComponent(key) + '=' + encodeURIComponent(value) + expires + (domain ? '; domain=' + domain : '') + (path ? '; path=' + path : '') + (secure ? '; secure' : '');
-
-            return true;
+        if (deadline) {
+          switch (deadline.constructor) {
+            case Number:
+              expires = deadline === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + deadline;
+              break;
+            case String:
+              expires = "; expires=" + deadline;
+              break;
+            case Date:
+              expires = "; expires=" + deadline.toUTCString();
+              break;
+          }
         }
+
+        document.cookie = encodeURIComponent(key) + "=" + encodeURIComponent(value) + expires + (domain ? "; domain=" + domain : "") + (path ? "; path=" + path : "") + (secure ? "; secure" : "") + (samesite ? "; samesite=" + samesite : "") + (priority ? "; priority=" + priority : "");
+
+        return true;
+      }
     },
 
     /**

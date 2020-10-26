@@ -59,7 +59,7 @@
         3. `cookie`（NetworkModule）
     3. 定时器
 
-        `setTimeout`、`clearTimeout`、`setInterval`、`clearInterval`
+        `setTimeout/clearTimeout`、`setInterval/clearInterval`
     4. 日志
 
         `console.log/warn/error`
@@ -68,6 +68,7 @@
     5. 自定义字体
 
         `fontFamily`
+    6. 二分法定位问题
 
 ### hippy-react
 ![hippy-react图](./images/hippy-react-1.png)
@@ -86,14 +87,13 @@
 
         1. `<ScrollView>`
 
-            支持：横向 或 竖向滚动（`horizontal`只能选择其一，不能同时横向、竖向滚动）。
+            支持：横向 或 竖向滚动（`horizontal`只能选择其一，不能同时横向、竖向滚动）。没有复用节点优化。
 
             1. 组件宽度/高度优先等于子组件总共的宽度/高度（就不用滚动）；若显式设置的宽度/高度小于子组件总共的宽度/高度则滚动。
             2. `<ScrollView>`内可嵌套所有组件（包括：`<ScrollView>`、`<ListView>`、`<ViewPager>`）。
         2. `<ListView>`
 
-            支持：竖向滚动。
-
+            支持：竖向滚动。复用节点优化：自动删除不在可视区的节点，对进入可视区的节点进行按类型复用。
         3. `<RefreshWrapper>`
 
             包裹一个`<ListView>`后支持：下滑刷新。
@@ -103,7 +103,7 @@
 
         - 其他组件都没有组件内部滚动功能（`overflow`只有`hidden/visible`2个属性值）。
 
-    - 注意点（bug？）
+    - Tips（bug？）
 
         1. `<Image>`
 
@@ -115,6 +115,10 @@
 
                 1. `ellipsizeMode`仅支持`tail`。
                 2. 截断中有特殊字符（如一些标点符号）时，截断会提前，不会在内容结尾处正常截断。
+                3. 低版本Android机可能不支持`opacity`效果，可能导致整个文本渲染消失
+
+                    用字体颜色`color: rgba(x,y,z, 透明度)`来代替。
+            2. 仅有`<Text>`有不同截断效果（ellipsizeMode），其他组件需要自己实现（计算字符数，结尾自己添加`...`或图片覆盖）。
         3. `<ViewPager>`
 
             >`height`和`flexBasis`类似。
@@ -122,7 +126,7 @@
             1. 需要父级容器还有空间 或 显式设置`height`，否则会导致内容高度为0。
             2. 不能切换的时候改变`height`（会导致切换到一半卡主），可以设置延迟时间等待切换结束之后再改变`height`（>300ms）。
             3. 需要大于等于2个子节点。
-        4. 大部分组件都有`onLayout`
+        4. 大部分（但不是所有）组件都有`onLayout`
 
             当元素挂载或者布局改变的时候被调用。返回节点实时的：高宽（`height`、`width`）、距离顶部(0,0)距离（`x`、`y`）。
         5. `<ListView>`改变渲染内容后（除了`onEndReached`触发之外）有时无法再触发`onEndReached`
@@ -196,6 +200,51 @@
         10. 注意组件嵌套过多导致的性能、渲染问题
         11. 带着`key`的组件可能挂载2次（触发2次`componentDidMount`）
         12. 各组件转换为H5组件时，可能会多套一层节点，注意`padding`或`margin`翻倍问题
+        13. `render`返回多个节点会有渲染问题（React已支持）
+
+            <details>
+            <summary>e.g.</summary>
+
+            ```jsx
+            // 渲染错误：
+            render() {
+              return [1, 2, 3].map((item, index) => {
+                return <Text key={index}>{index + 1}</Text>;
+              });
+            }
+
+
+            // 渲染正确：
+            render() {
+              return (
+                <View>
+                  {[1, 2, 3].map((item, index) => {
+                    return <Text key={index}>{index + 1}</Text>;
+                  })}
+                </View>
+              );
+            }
+            ```
+            </details>
+        14. `<TextInput>`
+
+            1. 数字为：`keyboardType="phone-pad"`。
+            2. 显式设置`multiline={false}`，否则多行。
+            3. 输入完毕判断：`onEndEditing`事件、`onBlur`事件、点击其他区域。
+            4. 获取输入内容时机：`onEndEditing`事件、`onBlur`事件、`onChangeText`事件
+            5. Android：
+
+                1. 输入光标无法消除，除非设置`editable`为`false`。
+                2. 调用节点`.blur()`（作用：触发节点`onBlur`事件）无效。
+
+                    需要设置`editable`先为`false`再为`ture`才会触发节点`onBlur`事件。
+
+                    >`onBlur`事件触发还会隐藏软键盘。
+            6. iOS：
+
+                1. 软键盘被唤起时，页面不会向上顶起，因此可能会挡住要输入的区域。
+
+                    利用`onKeyboardWillShow`事件获得软键盘弹起时高度，把输入框区域垫高；输入完毕之后再恢复高度。
 2. 模块
 
     >[模块文档](https://hippyjs.org/#/hippy-react/modules)比较简单，更详细的用法在[demo](https://github.com/Tencent/Hippy/tree/master/examples/hippy-react-demo/src/modules)或[源码](https://github.com/Tencent/Hippy/tree/master/packages/hippy-react/src/modules)中。
@@ -209,6 +258,9 @@
     3. `BackAndroid`
 
         监听Android实体键的回退，在退出前做操作或拦截实体键的回退
+
+        1. 开启：`BackAndroid.addListener(方法名)`
+        2. 关闭：`BackAndroid.removeListener(方法名)`
     4. `Clipboard`
 
         读取或写入剪贴板
@@ -216,7 +268,20 @@
 
         获取设备的Hippy Root View或者屏幕尺寸的宽高
 
-        >按照设计稿等比例高宽：`width: Dimensions.get("window").width - 固定宽度, height: (设计稿高 / 设计稿宽) * (Dimensions.get("window").width - 固定宽度)`。
+        - 按照设计稿等比例高宽：
+
+            1. 自由放大缩小
+
+                1. `width: 设计稿此物体宽 / 设计稿总宽 * Dimensions.get("window").width`
+                2. `height: (设计稿此物体高 / 设计稿此物体宽) * 前面的width`
+            2. 间距固定、单个物体占满：
+
+                1. `width: Dimensions.get("window").width - 固定宽度`
+                2. `height: (设计稿此物体高 / 设计稿此物体宽) * 前面的width`
+            3. 间距固定、多个物品平均占满：
+
+                1. `width: (Dimensions.get("window").width - 固定宽度) / 几个物品`
+                2. `height: (设计稿此物体高 / 设计稿此物体宽) * 前面的width`
     6. `NetInfo`
 
         获取网络状态
@@ -340,7 +405,7 @@
         2. `height`
         3. `max/min`+`Width/Height`
 
-            - 注意点（bug？）
+            - Tips（bug？）
 
                 1. `min`+`Width/Height`可能是`box-sizing: content-box 或 border-box`效果。
                 2. `max`+`Width/Height`可能完全不生效。
@@ -438,6 +503,8 @@
                     >此时`flex: 「正整数」`等价于`flexGrow: 「正整数」`。
 
                 3. `-1`：若空间不足则缩小到最小的宽度/高度。若空间没有不足，则使用自身原本宽度/高度占据空间。
+
+                    >CSS的`flex-grow`和`flex-shrink`的默认表现。
             2. `flexGrow`：伸缩项目扩展的能力。
 
                 >与CSS的`flex-grow`表现一致。
@@ -487,6 +554,15 @@
 
             1. `'relative'`（默认）
             2. `'absolute'`
+
+            - 不支持 ~~`fixed`~~。若要制作`fixed`效果，则：
+
+                ```jsx
+                <View>
+                  <ScrollView></ScrollView>
+                  <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}>类似fixed的效果</View>
+                </View>
+                ```
         2. `top`
         3. `right`
         4. `bottom`
@@ -507,18 +583,33 @@
         2. `'hidden'`
     11. 背景
 
+        >不能直接 ~~`background`~~，无效果。
+
         1. `backgroundImage`
 
             >1. URL不能缩写。不能用 ~~<https://placeholder.com/>~~？
             >2. 属性值只能跟URL，不能用`import`本地资源。
-            >
-            >    - 本地资源制作背景图方式：`<View><Image source={{ uri: import资源 }} style={{position: 'absolute', top: 0, left: 0, zIndex: -1, width: 宽, height: 高}} /></View>`。
             >3. 仅针对`<View>`等。
 
             e.g. `backgroundImage: "https://图片地址"`
         2. `backgroundPositionX`
         3. `backgroundPositionY`
         4. `backgroundColor`
+
+        >- 本地资源制作背景图方式：
+        >
+        >     ```jsx
+        >     <View>
+        >       <Image source={{ uri: import资源 }} style={{position: 'absolute', top: 0, left: 0, zIndex: -1, width: 宽, height: 高}} />
+        >       内部节点
+        >     </View>
+        >     ```
+        >
+        >     ```jsx
+        >     <Image source={{ uri: import资源 }} style={{width: 宽, height: 高}}>
+        >       内部节点
+        >     </Image>
+        >     ```
     12. 外边框圆角（`Number`）
 
         1. `borderRadius`

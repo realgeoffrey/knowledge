@@ -580,6 +580,8 @@
 
     1. `render`函数中事件触发组件方法时传递`this`的绑定事件方式：
 
+        >非React提供的事件监听回调函数的this绑定也同理。
+
         1. 仅一次声明（推荐）
 
             ```jsx
@@ -591,8 +593,8 @@
                 this.handleClick = this.handleClick.bind(this);
               }
 
-              handleClick (e) {
-                console.log(this, e)
+              handleClick () {
+                console.log(this, arguments) // 组件实例this, [事件回调参数]
               }
 
               render () {
@@ -606,8 +608,8 @@
             ```jsx
             class 组件 extends React.Component {
               // 关键代码：
-              handleClick = (e) => {  // 注意: 这是 *实验性* 语法（默认启用此语法）
-                console.log(this, e);
+              handleClick = (..._arguments) => {  // 注意: 这是 *实验性* 语法（默认启用此语法）
+                console.log(this, _arguments); // 组件实例this, [事件回调参数]
               };
 
               render () {
@@ -626,8 +628,8 @@
             >
             >```jsx
             >class 组件 extends React.Component {
-            >  handleClick (e) {
-            >    console.log(this, e);
+            >  handleClick () {
+            >    console.log(this, arguments); // 组件实例this, [事件回调参数]
             >  };
             >
             >  render () {
@@ -637,8 +639,7 @@
             >        onClick={this.handleClick.bind(this)}
             >        onClick={(e) => {this.handleClick(e);}}
             >
-            >        // handleClick的this指向undefined
-            >        // onClick={this.handleClick}
+            >        // onClick={this.handleClick}  // handleClick的this指向undefined
             >      />
             >    );
             >  }
@@ -992,7 +993,7 @@
 
     - `React.PureComponent`
 
-        （与`React.Component`区别：）`shouldComponentUpdate`默认实现：浅比较`prop`和`state`并跳过所有子组件树的Props更新。
+        （与`React.Component`的区别：）`shouldComponentUpdate`默认实现：浅比较`prop`和`state`并跳过所有子组件树的Props更新。
 4. `componentWillUnmount`
 
     卸载组件
@@ -1012,6 +1013,8 @@
 添加一个动态引入，就会新增一个`chunk`、不会~~把动态引入的代码加入`bundle`~~。策略：基于路由进行代码分割。
 
 1. `import()`
+
+    webpack提供的支持。`require`和非动态`import`不会进行代码分割。
 
     >e.g. `import("./math").then(math => { console.log(math.add(16, 26)); });`
 2. `<Suspense>`渲染`React.lazy`
@@ -1112,7 +1115,10 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             >e.g. `import { 常量1, 常量2 } from '../actionTypes'`
         2. 应该尽量减少在action中传递的数据
         3. action创建函数：返回action的函数
-        4. 调用`store.dispatch(某个action)`触发reducer
+        4. 调用`dispatch(某个action)`触发reducer
+
+            1. dispatch接收一个action（若不是action则报错）；dispatch返回这个action。
+            2. ~~dispatch接收一个方法，第一个参数传入dispatch方法，第二个参数传入getState方法；dispatch返回参数方法的返回。~~
     3. reducer
 
         函数。接受当前state和action，返回新的state。响应发送而来的action。

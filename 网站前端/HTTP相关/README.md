@@ -493,73 +493,81 @@
 
     1. 通用头部字段（general）
 
+        >同时适用于请求和响应，但与最终消息主体中传输的数据无关的消息头。
+
         | 通用头部字段名 | 说明 |
         | :--- | :--- |
         | Cache-Control | 控制缓存的行为 |
-        | Pragma | 要求所有中间服务器不返回缓存的资源 |
+        | Pragma | 仅有`Pragma: no-cache`一个值，与`Cache-Control: no-cache`效果一致，强制要求缓存服务器在返回缓存的版本之前将请求提交到源头服务器进行验证 |
         | Connection | 逐跳头部（控制不再转发给代理的头部）、持久连接的管理 |
         | Date | 创建报文的日期时间 |
         | Trailer | 报文末端的头部一览 |
         | Transfer-Encoding | 指定报文主体的传输编码方式 |
         | Upgrade | 升级为其他协议 |
-        | Via | 代理服务器的相关信息 |
-        | Warning | 错误通知 |
-    2. 请求头部字段（request）
+        | Via | 代理服务器的相关信息。若这个请求经过了多个代理层，则Via头部就会有多个网关信息 |
+        | Warning | 附加的警告信息 |
+    2. 实体头部字段（entity）
 
-        >形如`If-xxx`这种样式的请求头部字段，都可称为条件请求。服务器接收到附带条件的请求后，只有判断指定条件为真时，才会执行请求。
-
-        | 请求头部字段名 | 说明 |
-        | :--- | :--- |
-        | Origin | 请求源 |
-        | Accept | 用户代理可处理的媒体类型 |
-        | Accept-Charset | 优先的字符集 |
-        | Accept-Encoding | 优先的内容编码 |
-        | Accept-Language | 优先的语言（自然语言） |
-        | TE | 优先的传输编码 |
-        | Authorization | 服务器要求客户端的认证信息（令牌） |
-        | Proxy-Authorization | 代理服务器要求客户端的认证信息（令牌） |
-        | Expect | 期待服务器的特定行为 |
-        | From | 用户的电子邮箱地址 |
-        | Host | 请求资源的主机名（必须添加） |
-        | If-Match | 比较实体标记（ETag），相同则服务器接受请求 |
-        | If-None-Match | 比较实体标记（ETag），不同则服务器接受请求 |
-        | If-Modified-Since | 比较资源的更新时间（Last-Modified），之后时间有更新则服务器接受请求 |
-        | If-Unmodified-Since | 比较资源的更新时间（Last-Modified），之后时间没有更新则服务器接受请求 |
-        | If-Range | 比较ETag或Last-Modified，相同则作为范围请求处理；反之，则返回全体资源 |
-        | Range | 实体的字节范围请求 |
-        | Max-Forwards | 最大传输逐跳数 |
-        | Referer | 请求来源地址 |
-        | User-Agent | HTTP客户端程序的信息 |
-        | Cookie | 客户端存在的cookie（一次可发送多个cookie） |
-    3. 响应头部字段（response）
-
-        | 响应头部字段名 | 说明 |
-        | :--- | :--- |
-        | Accept-Ranges | 是否接受字节范围请求 |
-        | Age | 推算资源创建经过时间 |
-        | ETag | 资源的匹配信息 |
-        | Location | 令客户端重定向至指定URI |
-        | WWW-Authenticate | 服务器对客户端的认证信息 |
-        | Proxy-Authenticate | 代理服务器对客户端的认证信息 |
-        | Retry-After | 对再次发起请求的时机要求 |
-        | Server | HTTP服务器的安装信息 |
-        | Vary | 代理服务器缓存的管理信息 |
-        | Set-Cookie | 服务端设置客户端cookie（一次可发送多个cookie） |
-        | Content-Security-Policy | 控制用户代理在一个页面上可以加载使用的资源 |
-    4. 实体头部字段（entity）
+        >同时适用于请求和响应，包含有关实体主体的更多信息。
 
         | 实体头部字段名 | 说明 |
         | :--- | :--- |
         | Allow | 资源可支持的HTTP请求方法 |
         | Content-Encoding | 实体主体适用的编码方式（如：gzip） |
-        | Content-Language | 实体主体的自然语言 |
+        | Content-Language | 实体主体的语言（自然语言） |
         | Content-Length | 实体主体的大小（字节） |
         | Content-Location | 替代对应资源的URI |
         | Content-MD5 | 实体主体的报文摘要 |
-        | Content-Range | 实体主体的位置范围 |
-        | Content-Type | 实体主体的媒体类型（如：针对JSON，可以用：`application/octet-stream`二进制流数据文件下载、或`application/json`JSON数据结构） |
+        | Content-Range | 实体主体的位置范围，表示传输的Body数据在整体资源块中的字节范围 |
+        | Content-Type | 实体主体的媒体类型（Multipurpose Internet Mail Extensions，MIME type）和编码格式 |
         | Expires | 实体主体过期的日期时间 |
         | Last-Modified | 资源的最后修改日期时间 |
+    3. 请求头部字段（request）
+
+        >包含更多有关要获取的资源或客户端本身信息的消息头。
+
+        | 请求头部字段名 | 说明 |
+        | :--- | :--- |
+        | Origin | 请求源 |
+        | Accept | 用户代理可处理的媒体类型，表示客户端期望服务器返回的媒体格式 |
+        | Accept-Charset | 优先的字符集，表示客户端期望服务器返回的内容的编码格式 |
+        | Accept-Encoding | 优先的内容编码，表示客户端期望服务器返回的编码 |
+        | Accept-Language | 优先的语言（自然语言），表示客户端期望服务器返回的语言 |
+        | TE | 优先的传输编码 |
+        | Authorization | 服务器要求客户端的认证信息（令牌），对响应头WWW-Authenticate的应答 |
+        | Proxy-Authorization | 代理服务器要求客户端的认证信息（令牌） |
+        | Expect | 用于请求发送之前向服务器询问许可 |
+        | From | 用户的电子邮箱地址 |
+        | Host | 请求资源的主机名（必须添加）。一般无法修改，由请求URL确定 |
+        | If-Match | 比较实体标记（ETag），相同则服务器接受请求 |
+        | If-None-Match | 比较实体标记（ETag），不同则服务器接受请求 |
+        | If-Modified-Since | 比较资源的更新时间（Last-Modified），之后时间有更新则服务器接受请求 |
+        | If-Unmodified-Since | 比较资源的更新时间（Last-Modified），之后时间没有更新则服务器接受请求 |
+        | If-Range | 比较ETag或Last-Modified，相同则作为范围请求处理；反之，则返回全体资源 |
+        | Range | 实体的字节范围请求。断点续传，它表示客户端请求资源的一部分时指定的请求字节范围 |
+        | Max-Forwards | 最大传输逐跳数 |
+        | Referer | 发起请求的页面的上一个页面的URL |
+        | User-Agent | HTTP客户端程序的信息 |
+        | Cookie | 客户端存在的cookie（一次发送所有相关cookie） |
+
+        >形如`If-xxx`这种样式的请求头部字段，都可称为条件请求。服务器接收到附带条件的请求后，只有判断指定条件为真时，才会执行请求。
+    4. 响应头部字段（response）
+
+        >包含有关响应的补充信息，如其位置或服务器本身（名称和版本等）的消息头。
+
+        | 响应头部字段名 | 说明 |
+        | :--- | :--- |
+        | Accept-Ranges | 是否接受字节范围请求 |
+        | Age | 推算资源创建经过时间（秒） |
+        | ETag | 资源的匹配信息 |
+        | Location | 令客户端重定向至指定URI。302跳转时，Location为目标URL |
+        | WWW-Authenticate | 服务器对客户端的认证信息。401 Unauthorized错误码返回时必须携带 |
+        | Proxy-Authenticate | 代理服务器对客户端的认证信息 |
+        | Retry-After | 服务器升级时，客户端的请求会直接给予503(Service Unavailable)错误，通过在响应头里面加入Retry-After字段告知客户端何时服务可以恢复正常访问 |
+        | Server | HTTP服务器的安装信息 |
+        | Vary | 代理服务器缓存的管理信息 |
+        | Set-Cookie | 服务端设置客户端cookie（一次可发送多个cookie） |
+        | Content-Security-Policy | 控制用户代理在一个页面上可以加载使用的资源 |
 4. 缓存、代理是否转发
 
     1. 逐跳（hop-by-hop）
