@@ -17,6 +17,7 @@
 1. [工具使用](#工具使用)
 
     1. [Koa](#koa)
+    1. [pm2](#pm2)
 
 ---
 ## 安装
@@ -96,6 +97,8 @@
 ---
 
 ### npm
+npm（Node Package Manager）。
+
 1. 命令
 
     >在任意命令后添加`-h`、`--help`查看当前命令的所有参数。
@@ -293,6 +296,8 @@
         2. [npx](https://github.com/zkat/npx)
 2. [`package.json`](https://docs.npmjs.com/files/package.json)字段
 
+    包描述、说明文件。
+
     1. `name`
 
         仓库名。
@@ -461,7 +466,11 @@
         `@scope/project-name`
 4. `.npmrc`
 
-    npm的配置文件。
+    npm的配置文件，手动或用`npm config`进行修改。
+
+    >`npm config ls -l`查看所有已有配置和默认配置。
+
+    - 常用：`package-lock`、`registry`。
 
 >项目中使用某个开源库时，要考虑它的License和文件大小（若使用webpack打包，则可以使用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)进行分析）。
 
@@ -565,13 +574,15 @@
 
     加载模块。读取并执行一个JS文件（`.js`后缀可以省略），返回该模块的`exports`值（没有导出内容则为`{}`）。
 
+    >被引入的内容就可以被各种解构。
+
     - <details>
 
         <summary>查找逻辑</summary>
 
         ![Node.js的require流程图](./images/nodejs-require-1.jpg)
 
-        1. 若 X 以`/`、`./`或`../`开头
+        1. 若 X 以（绝对路径）`/`或（相对路径）`./`、`../`开头
 
             1. 根据 X 所在的父模块，确定 X 的绝对路径。
             2. 将 X 当成**文件**，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。
@@ -589,19 +600,21 @@
 
             1. 根据 X 所在的父模块，确定 X 可能的安装目录。
             2. 依次在每个目录中，将 X 当成**文件**或**目录**加载。
-        4. 抛出`not found`。
+
+                若当前目录找不到，向上一层搜索 X。
+        4. 抛出`Error: Cannot find module 'X'`。
 
         ><details>
         ><summary>e.g.</summary>
         >
-        >- 在`/home/ry/projects/foo.js`执行了`require('bar')`：
+        >- 在`/home/xx/projects/foo.js`执行了`require('bar')`：
         >
         >    1. 属于不带路径情况，判断不是内置模块，当作安装在本地的模块进行搜索；
         >    2. 依次搜索每一个目录：
         >
         >        ```text
-        >        /home/ry/projects/node_modules/
-        >        /home/ry/node_modules/
+        >        /home/xx/projects/node_modules/
+        >        /home/xx/node_modules/
         >        /home/node_modules/
         >        /node_modules/
         >        ```
@@ -617,7 +630,7 @@
         >            bar/index.json
         >            bar/index.node
         >            ```
-        >    3. 都找不到则抛出`not found`。
+        >    3. 都找不到则抛出`Error: Cannot find module 'bar'`。
         ></details>
 
         </details>
@@ -662,7 +675,7 @@
     回调函数异步执行，通过事件循环检查已完成的I/O进行依次处理。
 
     >1. I/O主要指由[libuv](https://github.com/libuv/libuv)支持的，与系统磁盘和网络之间的交互。
-    >2. 大多数Node.js核心API所提供的异步方法都遵从惯例：**错误信息优先**的回调模式（第一个参数是错误信息，若不报错则其值为`null`）。
+    >2. 大多数Node.js核心API所提供的异步方法都遵从惯例：**错误信息优先**的回调模式（Error-first Callback，第一个参数是错误信息，若不报错则其值为`null`）。
     >
     >    `EventEmitter`类事件函数不属于此范畴。
 3. 事件驱动
@@ -780,6 +793,7 @@
 
             打印最后一次操作结果（不执行语句、没有副作用）。
         2. `.help`、`.editor`、`.break`、`.clear`、`.load`、`.save`、`.exit`
+        3. 可以直接使用系统模块，不需要`require`引入。e.g. REPL中`http === require('http')`。
 25. `tty`：终端
 26. `v8`：V8的api
 27. `vm`：提供V8虚拟机上下文中进行编译和运行代码
@@ -845,7 +859,9 @@ Node.js的全局对象`global`是全局变量的宿主。
     5. `debugger`
 
         1. `node inspect 脚本.js`：命令行调试
-        2. `node --inspect 脚本.js`：与Chrome配合调试
+        2. `node --inspect 脚本.js`：与Chrome配合调试（默认端口：9229）
+
+            >有时因为运行的代码，就算退出了程序也无法关闭占用inspect的9229（默认）端口。需要手动杀死占用端口的进程，e.g. `lsof -i :9229`然后`kill -9 「PID」`。
     6. `TextDecoder`、`TextEncoder`
     7. `WebAssembly`
 
@@ -861,7 +877,6 @@ Node.js的全局对象`global`是全局变量的宿主。
     2. 通过Chrome的 <chrome://inspect/#devices>，监听Node.js程序运行`node --inspect 文件`，可以使用`debugger`等进行断点调试。
 
         >[调试指南](https://nodejs.org/zh-cn/docs/guides/debugging-getting-started/)。
-    3. 安装[ndb](https://github.com/GoogleChromeLabs/ndb)调试。
 2. 服务端开发注意点：
 
     1. 相对于客户端，服务端要处理大量并发的请求。
@@ -878,34 +893,47 @@ Node.js的全局对象`global`是全局变量的宿主。
 3. 与浏览器JS的区别
 
     除了全局变量、提供的模块、模块系统、API不同之外，在Node.js中，可以控制运行环境：除非构建的是任何人都可以在任何地方部署的开源应用程序，否则开发者知道会在哪个版本的Node.js上运行该应用程序。与浏览器环境（无法选择访客会使用的浏览器）相比起来，这非常方便。
+4. Node.js运行环境退出（命令行执行完毕后自动退出）：
+
+    代码运行完毕。包括：执行队列、任务队列、等待加入任务队列的其他线程任务，全都执行完毕，当不会有新的指令需要执行时，就自动退出Node.js的进程。监听系统端口，意味着还有事件需要待执行。
+5. 不管任何情况，始终保证要有回包，就算代码运行错误，也要兜底回包（`.end()`）
 
 ---
 ## 工具使用
 
 ### [Koa](https://github.com/koajs/koa)
-1. 级联：中间件执行顺序，随着第二个参数`next`执行进入执行栈
+关键点：级联 + 通过上下文在中间件间传递数据 + ctx.body的值为HTTP响应数据。
+
+1. 级联（Cascading）：中间件按顺序执行，随着第二个参数`next`执行进入执行栈
+
+    >为了能够更好的链式调用中间件，要使用`await next()`或`return next()`的方式，否则虽然会`next`进入下一个中间件，但下一个中间件的异步代码会导致请求先返回之后再处理异步后代码。
 
     ```javascript
     const Koa = require('koa')
     const app = new Koa()
 
-    // 按照①②③④⑤执行后输出
+    // 按照①②③④⑤⑥执行后输出
 
     app.use(async (ctx, next) => {
       // ①
       await next()
-      // ⑤
+      // ⑥
     })
 
     app.use((ctx, next) => {
       // ②
       return next().then(() => {
-        // ④
+        // ⑤
       })
     })
 
-    app.use(async ctx => {
+    app.use((ctx, next) => {
       // ③
+      return next()
+    })
+
+    app.use(async ctx => {
+      // ④
     })
 
     app.use(async ctx => {
@@ -916,11 +944,82 @@ Node.js的全局对象`global`是全局变量的宿主。
     ```
 2. `const app = new Koa()`实例
 
-    1. 对`ctx`统一写入
+    1. `app.context`
+
+        上下文，可以添加新值
+    2. `app.env`
+
+        获取`NODE_ENV`的值（默认：`'development'`）
+    3. `app.use(async (上下文, next) => {}))`
+
+        使用中间件
+    4. `app.callback()`
+
+        返回一个函数，用于`http.createServer()`的第一个参数
+    5. `app.listen(数字)`
+
+        创建并返回HTTP服务器
+
+        - <details>
+
+            <summary>语法糖</summary>
+
+            等价于：
+
+            ```javascript
+            const http = require('http');
+            const Koa = require('koa');
+            const app = new Koa();
+            http.createServer(app.callback()).listen(数字);
+            ```
+            </details>
+    6. `app.on('error', (err, ctx) => {})`
+
+        错误处理
+    7. `app.keys = `
+
+        设置签名的 Cookie 密钥
+
+    - 其他
+
+        1. `app.maxIpsCount`
+
+            从代理 ip 消息头读取的最大ip数（默认：`0`，表示无限）
+        2. `app.middleware`
+
+            所有用到的中间件的引用（数组）。
+        3. `app.proxy = `
+
+            若设置为`true`，则header fields将被信任
+        4. `app.proxyIpHeader`
+
+            代理 ip 消息头（默认：`'X-Forwarded-For'`）
+        5. `app.subdomainOffset`
+
+            `.subdomains`忽略的偏移量（默认：`2`）
+        6. `app.emit(事件名[, ...args])`
+
+            发起一个`EventEmitter`事件。
+        7. `app.request`
+        8. `app.response`
+3. 上下文（context）
+
+    >`app.context`、中间件的第一个参数。
+
+    每一个请求都将创建一个新的上下文（来自`app.context`），并在中间件间引用传递和新赋值。
+
+    - 对上下文的写入和读取
 
         1. 写入：
 
-            `app.context.新属性 = 值`
+            1. 统一写入`app.context.新属性 = 值`
+            2. 中间件写入
+
+                ```javascript
+                app.use((ctx) => {
+                  ctx.新属性 = 值
+                })
+                ```
         2. 读取：
 
             ```javascript
@@ -928,68 +1027,15 @@ Node.js的全局对象`global`是全局变量的宿主。
               console.log(ctx.新属性)
             })
             ```
-    2. 获取`NODE_ENV`的值（若未定义，则默认：`development`）
 
-        `app.env`
-    3. 创建并返回HTTP服务器
+    - HTTP响应的内容：所有中间件执行结束之后的`ctx.body`值
 
-        `app.listen(数字)`
-    4. `app.callback()`
-    5. 使用中间件
-
-        `app.use(方法)`
-    6. 错误处理
-
-        `app.on('error', (err, ctx) => {})`
-    7. `app.keys`
-3. 上下文（context）
-
-    中间件的第二个参数`ctx`
-
-    1. `.req`
-
-        Node.js的`request`
-    2. `.res`
-
-        Node.js的`response`
-    3. `.state`
-
-        推荐的命名空间，用于通过中间件传递信息。
-
-        ```javascript
-        // 前面的中间件设置
-        ctx.state.属性1 = 值
-
-        // 后面的中间获得
-        ctx.state.属性1
-        ```
-    4. `.app`
-
-        应用程序实例引用。
-
-            1. `.app.emit(事件名[, ...args])`
-
-                发起一个EventEmitter事件。
-    5. `.cookies`
-
-        >使用[cookies](https://github.com/pillarjs/cookies)模块。
-
-        1. `.cookies.get(名[, options])`
-        2. `.cookies.set(名[, 值 [, options]])`
-    6. `.throw([状态[, 信息[, properties]]])`
-
-        抛出错误。
-    7. `.assert(值[, status[, 信息[, properties]]])`
-
-    8. ~~`.respond`~~
-
-        是否绕过Koa的`Response`。
-    9. `.request`
+    1. `.request`
 
         Koa的`Request`
 
-        1. `.header` === `.request.header` === `.headers` === `.request.header`
-        1. `.header=` === `.request.header=` === `.headers=` === `.request.header=`
+        1. `.header` === `.request.header` === `.headers` === `.request.headers`
+        1. `.header=` === `.request.header=` === `.headers=` === `.request.headers=`
         1. `.method` === `.request.method`
         1. `.method=` === `.request.method=`
         1. `.request.length`
@@ -1026,7 +1072,7 @@ Node.js的全局对象`global`是全局变量的宿主。
         1. `.acceptsLanguages()` === `.request.acceptsLanguages()`
         1. `.request.idempotent`
         1. `.get()` === `.request.get()`
-    10. `.response`
+    2. `.response`
 
         Koa的`Response`
 
@@ -1056,3 +1102,160 @@ Node.js的全局对象`global`是全局变量的宿主。
         1. `.response.is()`
         1. `.response.vary()`
         1. `.response.flushHeaders()`
+    3. `.state`
+
+        推荐的命名空间，用于通过中间件传递信息。
+
+        ```javascript
+        // 前面的中间件设置
+        ctx.state.属性1 = 值
+
+        // 后面的中间获得
+        ctx.state.属性1
+        ```
+    4. `.app`
+
+        应用程序实例引用（`const app = new Koa()`）。
+    5. `.cookies`
+
+        >使用[cookies](https://github.com/pillarjs/cookies)模块。
+
+        1. `.cookies.get(名[, options])`
+        2. `.cookies.set(名[, 值 [, options]])`
+    6. `.throw([状态[, 信息[, properties]]])`
+
+        抛出错误。
+    7. `.assert(值[, status[, 信息[, properties]]])`
+
+        当`值`为`false`时抛出一个类似`.throw`的错误。与Node.js的`assert()`方法类似.
+
+        e.g. `ctx.assert(ctx.state.user, 401, 'User not found. Please login!');`
+    8. `.req`
+
+        Node.js的`Request`
+    9. `.res`
+
+        Node.js的`Response`
+
+        - 绕过Koa的`Response`处理是不被支持的. 应避免使用以下Node.js属性：
+
+            1. ~~`res.statusCode`~~
+            2. ~~`res.writeHead()`~~
+            3. ~~`res.write()`~~
+            4. ~~`res.end()`~~
+    10. ~~`.respond`~~
+
+        是否绕过Koa的`Response`。
+4. 调试模式
+
+    运行前添加环境变量：`DEBUG=koa*`
+
+### [pm2](https://github.com/Unitech/pm2)
+后台运行、进程管理（自动重启、永保活动状态、不停机重新加载，显示进程信息，配置进程处理条件）、多进程运行、负载均衡、处理log输出。
+
+1. 命令行
+
+    `pm2` +
+
+    1. `list/ls/l/status`
+    2. `describe 「进程id或进程名」`
+    2. `show 「进程id或进程名」`
+    3. `monit`
+    4. `logs`
+
+        1. `「进程名」`
+        2. `--json`
+        3. `--format`
+    5. `reloadLogs`
+
+        重载所有logs
+    6. `flush`
+
+        清空所有logs
+    7. `start`、`stop`、`reload`、`restart`、`delete` + 进程名/进程id/all、配置脚本（.json等）、ecosystem脚本。
+
+        1. `start 执行文件或配置文件`
+
+            >若使用脚本，则命令行参数大部分会被忽略（除了部分参数，如：`--env`、等）。
+
+            1. `-- 「任意内容，以空格分隔」`
+
+                传递值进脚本
+            1. `--log 「out、error脚本路径」`
+
+                1. `--output 「out脚本路径」`
+                2. `--error 「error脚本路径」`
+            1. `-i 「进程数：max、-1、数字」`
+
+                cluster模式。
+
+                1. `--merge-logs`
+
+                    当多进程使用同一个进程名时，不用进程id区分log文件（同名的多进程写到同一个log文件）。
+            1. `--watch`
+
+                监听改动文件后重新执行指令（先kill再重启）
+            2. `--ignore-watch="「文件或文件夹」"`
+            1. `--interpreter=bash/python/ruby/coffee/php/perl/node`
+
+                需要配置`exec_mode: fork_mode`、`exec_interpreter: 对应语言`。
+            2. `--max-memory-restart 「数字」K/M/G`
+
+                达到最大内存就自动重启应用。
+            1. `--restart-delay 「数字」ms`
+            1. `--time`
+
+                每行log前缀添加时间戳
+            1. `--cron 「cron格式」`
+
+                cron形式的自动重启配置
+            1. `--env 「环境名」`
+
+                使用脚本中的`env_「环境名」`的环境变量配置。不传则默认使用脚本中`env`的环境变量配置。
+
+                ><details>
+                ><summary>e.g.</summary>
+                >
+                >```javascript
+                >// 默认使用
+                >"env": {
+                >  "DEBUG": "xxx"
+                >},
+                >// 传`--env p`时使用
+                >"env_p": {
+                >  "DEBUG": "yyy"
+                >}
+                >```
+                ></details>
+            1. `--no-daemon`
+
+                不使用pm2自己的守护进程运行。
+        2. `stop all或进程名或进程id或执行文件或配置文件`
+        3. `reload all或进程名或进程id或配置文件`
+
+            如果是在cluster mode，reload会依序升级重启每一个程序，达到zero downtime升级
+        4. `restart all或进程名或进程id或执行文件或配置文件`
+        5. `delete all或进程名或进程id或执行文件或配置文件`
+    1. `ping`
+
+        判断pm2守护进程正在运行。
+    8. 系统重启或pm2自己的重启
+
+        1. `startup`
+        2. `save`
+        3. `unstartup`
+    9. `install 模块名`
+
+        1. `pm2 install typescript` -> `pm2 start app.ts --watch`
+    10. `update`
+
+        更新在内存中运行的pm2。
+
+        >先在全局更新`npm install pm2@latest -g`，然后再更新在内存中运行的pm2。
+    11. `ecosystem`
+
+        依赖`ecosystem.config.js`文件。
+    12. `deploy`
+    1. `kill`
+
+        杀掉pm2自己，包括所有：pm2程序、pm2运行的进程、等，然后重启pm2。

@@ -580,6 +580,8 @@
 
     1. `render`函数中事件触发组件方法时传递`this`的绑定事件方式：
 
+        >非React提供的事件监听回调函数的this绑定也同理。
+
         1. 仅一次声明（推荐）
 
             ```jsx
@@ -591,8 +593,8 @@
                 this.handleClick = this.handleClick.bind(this);
               }
 
-              handleClick (e) {
-                console.log(this, e)
+              handleClick () {
+                console.log(this, arguments) // 组件实例this, [事件回调参数]
               }
 
               render () {
@@ -606,8 +608,8 @@
             ```jsx
             class 组件 extends React.Component {
               // 关键代码：
-              handleClick = (e) => {  // 注意: 这是 *实验性* 语法（默认启用此语法）
-                console.log(this, e);
+              handleClick = (..._arguments) => {  // 注意: 这是 *实验性* 语法（默认启用此语法）
+                console.log(this, _arguments); // 组件实例this, [事件回调参数]
               };
 
               render () {
@@ -626,8 +628,8 @@
             >
             >```jsx
             >class 组件 extends React.Component {
-            >  handleClick (e) {
-            >    console.log(this, e);
+            >  handleClick () {
+            >    console.log(this, arguments); // 组件实例this, [事件回调参数]
             >  };
             >
             >  render () {
@@ -1011,6 +1013,8 @@
 添加一个动态引入，就会新增一个`chunk`、不会~~把动态引入的代码加入`bundle`~~。策略：基于路由进行代码分割。
 
 1. `import()`
+
+    webpack提供的支持。`require`和非动态`import`不会进行代码分割。
 
     >e.g. `import("./math").then(math => { console.log(math.add(16, 26)); });`
 2. `<Suspense>`渲染`React.lazy`

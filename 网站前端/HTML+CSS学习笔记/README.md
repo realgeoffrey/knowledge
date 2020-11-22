@@ -734,9 +734,15 @@
         1. `rel="noopener"`的新窗口：
 
             与原页面不在同一个进程、且`window.opener`返回`null`。
+
+            - 相同：`window.open(地址, '_blank', 'noopener')`。
         2. `rel="noreferrer"`（不限于`target="_blank"`）：
 
+            >包含`rel="noopener"`。
+
             （不在一个进程、且`window.opener`返回`null`，）http请求不发送`Referer`（`document.referrer`返回`''`）。
+
+            - 相同：`window.open(地址, '_blank', 'noreferrer')`。
 4. （SEO）对不想宣传的链接，在`<a>`中添加`rel="nofollow"`。
 
     ><details>
@@ -940,7 +946,7 @@
         1. 只要当前选择符的左边还有其他选择符，样式系统就会继续向左移动，直到找到和规则匹配的元素或因为不匹配而退出。
         2. 选择器最右边的选择符是决定效率的**关键选择器**，越具体的关键选择器，其性能越高。
 
-        >从右向左解析的[原因](https://stackoverflow.com/questions/5797014/why-do-browsers-match-css-selectors-from-right-to-left)：更快地判断出某选择器不匹配某DOM，从而更高效匹配完所有内容。
+        >从右向左解析的原因：[Stack Overflow: Why do browsers match CSS selectors from right to left?](https://stackoverflow.com/questions/5797014/why-do-browsers-match-css-selectors-from-right-to-left)：更快地判断出某选择器不匹配某DOM，从而更高效匹配完所有内容。
     2. 效率（从高到低）
 
         1. ID选择器

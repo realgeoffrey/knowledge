@@ -548,7 +548,7 @@
         | Max-Forwards | 最大传输逐跳数 |
         | Referer | 发起请求的页面的上一个页面的URL |
         | User-Agent | HTTP客户端程序的信息 |
-        | Cookie | 客户端存在的cookie（一次可发送多个cookie） |
+        | Cookie | 客户端存在的cookie（一次发送所有相关cookie） |
 
         >形如`If-xxx`这种样式的请求头部字段，都可称为条件请求。服务器接收到附带条件的请求后，只有判断指定条件为真时，才会执行请求。
     4. 响应头部字段（response）

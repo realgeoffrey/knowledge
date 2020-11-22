@@ -258,6 +258,17 @@
         ```
 
         >`git checkout 「SHA」   # 切换到某个commit`
+
+        - 切出 指定分支或SHA 的部分修改内容（文件或文件夹），可以仅对这些内容进行git操作
+
+            ```git
+            # 1. 切换至目标分支
+
+            # 2. 切出其他其他分支或commit的修改内容
+            git checkout 「分支或SHA」 「文件或文件夹」
+
+            # 3. git操作这些选定内容，如：合并到目标分支。方便从一个分支或commit中提取出部分内容进行git操作
+            ```
     5. 删除分支
 
         ```git
@@ -725,9 +736,19 @@ feat(details): 添加了分享功能
         >
         >```text
         >.idea
+        >.DS_Store
         >```
         ></details>
-3. 开启对文件名大小写敏感
+3. http代理、https代理
+
+    ```text
+    git config --global http.proxy 'http://127.0.0.1:7890'
+    # 或 git config --global http.proxy 'socks5://127.0.0.1:7891'
+
+    git config --global https.proxy 'http://127.0.0.1:7890'
+    # 或 git config --global https.proxy 'socks5://127.0.0.1:7891'
+    ```
+4. 开启对文件名大小写敏感
 
     >默认文件名大小写不敏感。
 

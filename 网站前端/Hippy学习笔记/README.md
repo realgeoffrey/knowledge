@@ -103,7 +103,7 @@
 
         - 其他组件都没有组件内部滚动功能（`overflow`只有`hidden/visible`2个属性值）。
 
-    - 注意点（bug？）
+    - Tips（bug？）
 
         1. `<Image>`
 
@@ -115,6 +115,9 @@
 
                 1. `ellipsizeMode`仅支持`tail`。
                 2. 截断中有特殊字符（如一些标点符号）时，截断会提前，不会在内容结尾处正常截断。
+                3. 低版本Android机可能不支持`opacity`效果，可能导致整个文本渲染消失
+
+                    用字体颜色`color: rgba(x,y,z, 透明度)`来代替。
             2. 仅有`<Text>`有不同截断效果（ellipsizeMode），其他组件需要自己实现（计算字符数，结尾自己添加`...`或图片覆盖）。
         3. `<ViewPager>`
 
@@ -225,11 +228,23 @@
             </details>
         14. `<TextInput>`
 
-            1. 显式设置`multiline={false}`，否则多行。
-            2. Android：
+            1. 数字为：`keyboardType="phone-pad"`。
+            2. 显式设置`multiline={false}`，否则多行。
+            3. 输入完毕判断：`onEndEditing`事件、`onBlur`事件、点击其他区域。
+            4. 获取输入内容时机：`onEndEditing`事件、`onBlur`事件、`onChangeText`事件
+            5. Android：
 
                 1. 输入光标无法消除，除非设置`editable`为`false`。
-                2. 调用节点的`blur`事件无效。需要用设置`editable`先为`false`再为`ture`触发blur效果（隐藏软键盘、触发`blur`事件）。
+                2. 调用节点`.blur()`（作用：触发节点`onBlur`事件）无效。
+
+                    需要设置`editable`先为`false`再为`ture`才会触发节点`onBlur`事件。
+
+                    >`onBlur`事件触发还会隐藏软键盘。
+            6. iOS：
+
+                1. 软键盘被唤起时，页面不会向上顶起，因此可能会挡住要输入的区域。
+
+                    利用`onKeyboardWillShow`事件获得软键盘弹起时高度，把输入框区域垫高；输入完毕之后再恢复高度。
 2. 模块
 
     >[模块文档](https://hippyjs.org/#/hippy-react/modules)比较简单，更详细的用法在[demo](https://github.com/Tencent/Hippy/tree/master/examples/hippy-react-demo/src/modules)或[源码](https://github.com/Tencent/Hippy/tree/master/packages/hippy-react/src/modules)中。
@@ -390,7 +405,7 @@
         2. `height`
         3. `max/min`+`Width/Height`
 
-            - 注意点（bug？）
+            - Tips（bug？）
 
                 1. `min`+`Width/Height`可能是`box-sizing: content-box 或 border-box`效果。
                 2. `max`+`Width/Height`可能完全不生效。
@@ -488,6 +503,8 @@
                     >此时`flex: 「正整数」`等价于`flexGrow: 「正整数」`。
 
                 3. `-1`：若空间不足则缩小到最小的宽度/高度。若空间没有不足，则使用自身原本宽度/高度占据空间。
+
+                    >CSS的`flex-grow`和`flex-shrink`的默认表现。
             2. `flexGrow`：伸缩项目扩展的能力。
 
                 >与CSS的`flex-grow`表现一致。

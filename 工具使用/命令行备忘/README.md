@@ -15,7 +15,7 @@
 1. [查看本机IP](#查看本机ip)
 1. [执行文件](#执行文件)
 1. [（Unix-like）开机自动运行的脚本](#unix-like开机自动运行的脚本)
-1. [查看端口占用、网络链接，查看进程](#查看端口占用网络链接查看进程)
+1. [查看端口占用、网络链接，查看进程并杀死](#查看端口占用网络链接查看进程并杀死)
 1. [查看端口占用，杀掉进程](#查看端口占用杀掉进程)
 1. [查看磁盘空间占用](#查看磁盘空间占用)
 1. [创建文件](#创建文件)
@@ -23,6 +23,8 @@
 1. [查看group、user](#查看groupuser)
 1. [指令的别名](#指令的别名)
 1. [adb](#adb)
+1. [nohup](#nohup)
+1. [sleep](#sleep)
 1. [macOS命令](#macos命令)
 
     1. [（macOS）brew更新](#macosbrew更新)
@@ -64,6 +66,7 @@ time 「命令」
     -i                   # 返回完整HTTP响应（响应头+响应正文）
     -H 「'一个请求头'」      # 设置请求头的请求
     -X 「请求方法，如：POST」 # 设置请求方法的请求
+    -g                   # 关闭解析`{}`、`[]`
     ```
 3. `nslookup`
 
@@ -217,7 +220,7 @@ vi ~/.zshrc         # zsh
 # source 脚本   # 当前运行一遍
 ```
 
-#### 查看端口占用、网络链接，查看进程
+#### 查看端口占用、网络链接，查看进程并杀死
 1. 所有端口占用、网络连接情况（Linux）
 
     ```shell
@@ -231,10 +234,20 @@ vi ~/.zshrc         # zsh
     netstat -ant | grep 「端口号」
     lsof -i :「端口号」
     ```
-3. 查看进程
+3. 查看进程并杀死
 
     ```shell
-    ps -ef
+    ps -ef   #
+    ps -efc  # command改成进程名展示
+    ps -ef | grep '「命令关键字」' | grep -v grep  # 搜索「命令关键字」、排除grep
+
+
+    # 杀死进程
+    kill -9 「PID」   # 杀死具体PID的进程
+    kill $(ps -ef | grep '「命令关键字」' | grep -v grep | awk '{print $2}')  # 杀死所有关键字相关的进程（排除grep）
+
+    # 杀死所有同名进程（慎）
+    killall 「名称」
     ```
 
 #### 查看端口占用，杀掉进程
@@ -243,7 +256,7 @@ vi ~/.zshrc         # zsh
     ```shell
     lsof -i :「端口号」
 
-    kill 「PID」
+    kill -9 「PID」
     # macOS的「活动监视器」也可以查到「PID」并关闭进程
     ```
 2.  Windows（需要在cmd.exe进行）
@@ -324,7 +337,7 @@ vi ~/.zshrc         # zsh
     groups 「用户名」 # 返回「用户名」所在的组名
     ```
 
-### 指令的别名
+#### 指令的别名
 ```shell
 alias   # 查看已设置的内容
 
@@ -336,7 +349,7 @@ alias 「自定义命令名」      # 打印设置的执行命令
 unalias 「自定义命令名」    # 删除 别名
 ```
 
-### adb
+#### adb
 1. 查看已连接的设备（尝试连接手机）
 
     ```shell
@@ -396,6 +409,20 @@ unalias 「自定义命令名」    # 删除 别名
     adb shell dumpsys gfxinfo 「PACKAGE_NAME」
     adb shell dumpsys gfxinfo 「PACKAGE_NAME」 framestats
     ```
+
+#### nohup
+用于忽略SIGHUP（signal hang up，挂断信号：终端注销时所发送至程序的一个信号）。
+
+```shell
+nohup 「命令」 &    # 后台执行命令。命令的标准输出到当前目录或$HOME的`nohup.out`文件
+```
+
+杀死后台进程先`ps`后`kill`：[查看端口占用、网络链接，查看进程并杀死](#查看端口占用网络链接查看进程并杀死)。
+
+#### sleep
+```shell
+sleep 「秒数」  # 延迟一段时间，再向下继续执行命令
+```
 
 ---
 ### macOS命令
