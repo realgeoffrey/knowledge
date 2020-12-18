@@ -1593,6 +1593,32 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
         >}
         >```
         </details>
+
+    ><details>
+    ><summary><code>while</code>、<code>do-while</code>、<code>for</code>、<code>for-in</code>、<code>for-of</code>配合<code>async-await</code>可以保证内部、外部的执行顺序按照预想结果进行。</summary>
+    >
+    >```javascript
+    >var asyncFunc = (ms = 1000) => new Promise((resolve) => setTimeout(resolve, ms)) // 模拟异步操作
+    >
+    >async function func () {
+    >  console.log('start')
+    >
+    >  for (const i of [1, 2]) {   // while、do-while、for、for-in、for-of 同理
+    >    await asyncFunc()    // 一项完成才会进行下一项，全部完成才会执行for之后代码。
+    >    console.log(i)
+    >  }
+    >
+    >  console.log('end')
+    >}
+    >
+    >func()
+    >
+    >console.log('outside')
+    >
+    >// => start => outside =>（异步） => 1 => 2 => end
+    >```
+    ></details>
+
     5. Array方法
 
         ><details>
@@ -1637,155 +1663,41 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
         >    1. `Array.prototype.reduce(回调函数(上一次调用返回的值, 当前值, 索引, 数组整体)[, 第一次调用回调函数的第一个参数])`
         >    2. `Array.prototype.reduceRight(回调函数(上一次调用返回的值, 当前值, 索引, 数组整体)[, 第一次调用回调函数的第一个参数])`
 
-        - 与`async-await`或`Promise`配合的异步Array方法：
+        - Array方法配合`async-await`（或`Promise`）的执行顺序：
 
-            Array遍历方法都是同步方法，直接加上`async-await`或`Promise`无法达到预期效果，只能通过改造来分步骤实现异步逻辑。
+            1. Array遍历方法内的每一项按项的顺序执行但不互相依赖（后面的项不会等前面的执行完毕才开始执行），`async-await`只能处理每一项自己方法内的执行顺序。
 
-            1. <details>
+                >控制每一项之间的执行细节（并行、串行、等）：[async](https://github.com/caolan/async)。
+            2. Array遍历方法没有返回promise实例，因此直接在外部加上`await`无法达到预期效果（内部加上`async-await`仅影响单一项目的执行，不影响外部和其他项）。
 
-                <summary><code>Array.prototype.map/filter/reduce/reduceRight</code>可以改造成异步循环逻辑</summary>
+            改用`while`、`do-while`、`for`、`for-in`、`for-of`等实现异步效果。
 
-                ```javascript
-                // Array.prototype.map
-                function mapAsync (arr = [], callback = () => {}) {  // 并行
-                  return Promise.all(arr.map((item, index) => callback(item, index, arr)))
-                }
+            ><details>
+            ><summary>e.g. </summary>
+            >
+            >```javascript
+            >var asyncFunc = (ms = 1000) => new Promise((resolve) => setTimeout(resolve, ms)) // 模拟异步操作
+            >
+            >function func () {
+            >  console.log('start');
+            >
+            >  ([1, 2]).forEach(async (item) => {  // forEach、map、filter、every 同理
+            >    console.log('array start', item)
+            >    await asyncFunc()
+            >    console.log('array end', item)
+            >  })
+            >
+            >  console.log('end')
+            >}
+            >
+            >func()
+            >
+            >console.log('outside')
+            >
+            >// => start => array start 1 => array start 2 => end => outside （异步） => array end 1 => array end 2
+            >```
+            ></details>
 
-                // Array.prototype.filter
-                async function filterAsync (arr = [], callback = () => {}) {  // 并行
-                  const result = await mapAsync(arr, callback)
-                  return arr.filter((item, index) => result[index])
-                }
-
-                // Array.prototype.reduce/reduceRight
-                function reduceAsync (arr = [], callback = () => {}) {  // 并行
-                  return arr.reduce((accumulator, item, index) => callback(accumulator, item, index, arr), Promise.resolve(0))
-                }
-
-
-                /* 使用测试 */
-                function asyncFunc (ms = 1000) {  // 模拟异步操作
-                  return new Promise((resolve) => setTimeout(resolve, ms))
-                }
-
-                const a = await mapAsync([' map a', 'map b', 'map c'], async (item, index, arr) => {
-                  const result = await asyncFunc().then(() => item)  // 异步操作
-                  console.log(item, '完成') // 其他操作
-                  return result
-                })
-                console.log(a, 'mapAsync 完成')
-
-                const b = await filterAsync([true, false, true], async (item, index, arr) => {
-                  const result = await asyncFunc().then(() => item)  // 异步操作
-                  console.log(item, '完成') // 其他操作
-                  return result
-                })
-                console.log(b, 'filterAsync 完成')
-
-                const c = await reduceAsync([1, 2, 3], async (accumulator, item, index, arr) => {
-                  const result = await asyncFunc().then(async () => (await accumulator) + item) // 异步操作
-                  console.log(accumulator, item, result, '完成')  // 其他操作
-                  return result
-                })
-                console.log(c, 'reduceAsync 完成')
-                ```
-                </details>
-            2. <details>
-
-                <summary><code>Array.prototype.forEach/every/some/find/findIndex</code>只能用<code>for</code>等循环来实现异步循环逻辑</summary>
-
-                ```javascript
-                // Array.prototype.forEach
-                async function forEachAsync (arr = [], callback = () => {}) {  // 串行
-                  for (const [index, item] of Object.entries(arr)) {
-                    await callback(item, index, arr)
-                  }
-                }
-
-                // Array.prototype.every
-                async function everyAsync (arr = [], callback = () => {}) {  // 串行
-                  for (const [index, item] of Object.entries(arr)) {
-                    if (!await callback(item, index, arr)) {
-                      return false
-                    }
-                  }
-                  return true
-                }
-
-                // Array.prototype.some
-                async function someAsync (arr = [], callback = () => {}) {  // 串行
-                  for (const [index, item] of Object.entries(arr)) {
-                    if (await callback(item, index, arr)) {
-                      return true
-                    }
-                  }
-                  return false
-                }
-
-                // Array.prototype.find
-                async function findAsync (arr = [], callback = () => {}) {  // 串行
-                  for (const [index, item] of Object.entries(arr)) {
-                    if (await callback(item, index, arr)) {
-                      return item
-                    }
-                  }
-                  return undefined
-                }
-
-                // Array.prototype.findIndex
-                async function findIndexAsync (arr = [], callback = () => {}) {  // 串行
-                  for (const [index, item] of Object.entries(arr)) {
-                    if (await callback(item, index, arr)) {
-                      return index
-                    }
-                  }
-                  return -1
-                }
-
-
-                /* 使用测试 */
-                function asyncFunc (ms = 1000) {  // 模拟异步操作
-                  return new Promise((resolve) => setTimeout(resolve, ms))
-                }
-
-                await forEachAsync([1, 2, 3], async (item, index, arr) => {
-                  const result = await asyncFunc().then(() => item)  // 异步操作
-                  console.log(item, '完成') // 其他操作
-                  return result
-                })
-                console.log('forEachAsync 完成')
-
-                const d = await everyAsync([true, true, false, false], async (item, index, arr) => {
-                  const result = await asyncFunc().then(() => item)  // 异步操作
-                  console.log(item, '完成') // 其他操作
-                  return result
-                })
-                console.log(d, 'everyAsync 完成')
-
-                const e = await someAsync([false, false, true, true], async (item, index, arr) => {
-                  const result = await asyncFunc().then(() => item)  // 异步操作
-                  console.log(item, '完成') // 其他操作
-                  return result
-                })
-                console.log(e, 'someAsync 完成')
-
-                const f = await findAsync([false, false, true, true], async (item, index, arr) => {
-                  const result = await asyncFunc().then(() => item)  // 异步操作
-                  console.log(item, '完成') // 其他操作
-                  return result
-                })
-                console.log(f, 'findAsync 完成')
-
-                const g = await findIndexAsync([false, false, 5, true], async (item, index, arr) => {
-                  const result = await asyncFunc().then(() => item)  // 异步操作
-                  console.log(item, '完成') // 其他操作
-                  return result
-                })
-                console.log(g, 'findIndexAsync 完成')
-                ```
-                </details>
-
-            >可以控制并发的库细节的库：[async](https://github.com/caolan/async)。
 2. jQuery
 
     1. <details>
