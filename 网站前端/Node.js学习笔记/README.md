@@ -897,6 +897,10 @@ Node.js的全局对象`global`是全局变量的宿主。
 
     代码运行完毕。包括：执行队列、任务队列、等待加入任务队列的其他线程任务，全都执行完毕，当不会有新的指令需要执行时，就自动退出Node.js的进程。监听系统端口，意味着还有事件需要待执行。
 5. 不管任何情况，始终保证要有回包，就算代码运行错误，也要兜底回包（`.end()`）
+6. `node 「传递给Node.js的参数，如：--inspect」 「执行文件」 「传递给执行文件的参数，以空格分隔」`
+
+    1. 执行文件之前的是传递给Node.js运行的参数，有特定值，错误参数会报错。
+    2. 执行文件之后的是传递进执行文件使用的（`process.argv`），可以输入任意内容。
 
 ---
 ## 工具使用
@@ -1153,65 +1157,51 @@ Node.js的全局对象`global`是全局变量的宿主。
 ### [pm2](https://github.com/Unitech/pm2)
 后台运行、进程管理（自动重启、永保活动状态、不停机重新加载，显示进程信息，配置进程处理条件）、多进程运行、负载均衡、处理log输出。
 
-1. 命令行
+1. [`pm2`命令](https://pm2.keymetrics.io/docs/usage/pm2-doc-single-page/)
 
     `pm2` +
 
-    1. `list/ls/l/status`
-    2. `describe 「进程id或进程名」`
-    2. `show 「进程id或进程名」`
-    3. `monit`
-    4. `logs`
+    1. `start`、`stop`、`restart`、`startOrRestart`、`delete`、`reload` + 执行文件、进程名/进程id/all、配置脚本（.js、.json、.yml）
 
-        1. `「进程名」`
-        2. `--json`
-        3. `--format`
-    5. `reloadLogs`
+        1. `start 执行文件或配置脚本`
 
-        重载所有logs
-    6. `flush`
+            1. `-- 「参数，已空格分隔」`
 
-        清空所有logs
-    7. `start`、`stop`、`reload`、`restart`、`delete` + 进程名/进程id/all、配置脚本（.json等）、ecosystem脚本。
+                传递进执行脚本。只能用在命令行最后，`--`之后的所有内容都将当做是参数。
+            2. `--node-args="「参数」"`
 
-        1. `start 执行文件或配置文件`
+                >相同：`--interpreter-args="「参数」"`。
 
-            >若使用脚本，则命令行参数大部分会被忽略（除了部分参数，如：`--env`、等）。
-
-            1. `-- 「任意内容，以空格分隔」`
-
-                传递值进脚本
-            1. `--log 「out、error脚本路径」`
+                传递给Node.js的`node`运行命令（不是~~传递进执行脚本~~），如：`--inspect`。
+            3. `--log 「out、error脚本路径」`
 
                 1. `--output 「out脚本路径」`
                 2. `--error 「error脚本路径」`
-            1. `-i 「进程数：max、-1、数字」`
+            4. `-i 「进程数：max、-1、数字」`
 
                 cluster模式。
 
                 1. `--merge-logs`
 
                     当多进程使用同一个进程名时，不用进程id区分log文件（同名的多进程写到同一个log文件）。
-            1. `--watch`
+            5. `--watch`
 
                 监听改动文件后重新执行指令（先kill再重启）
-            2. `--ignore-watch="「文件或文件夹」"`
-            1. `--interpreter=bash/python/ruby/coffee/php/perl/node`
+
+                1. `--ignore-watch="「文件或文件夹」"`
+            6. `--interpreter=bash/python/ruby/coffee/php/perl/node`
 
                 需要配置`exec_mode: fork_mode`、`exec_interpreter: 对应语言`。
-            2. `--max-memory-restart 「数字」K/M/G`
+            7. `--max-memory-restart 「数字」K/M/G`
 
                 达到最大内存就自动重启应用。
-            1. `--restart-delay 「数字」ms`
-            1. `--time`
+            8. `--restart-delay 「数字」ms`
+            9. `--time`
 
                 每行log前缀添加时间戳
-            1. `--cron 「cron格式」`
+            10. `--env 「环境名」`
 
-                cron形式的自动重启配置
-            1. `--env 「环境名」`
-
-                使用脚本中的`env_「环境名」`的环境变量配置。不传则默认使用脚本中`env`的环境变量配置。
+                使用配置脚本中的`env_「环境名」`的环境变量配置。不传则默认使用配置脚本中`env`的环境变量配置。
 
                 ><details>
                 ><summary>e.g.</summary>
@@ -1219,43 +1209,77 @@ Node.js的全局对象`global`是全局变量的宿主。
                 >```javascript
                 >// 默认使用
                 >"env": {
-                >  "DEBUG": "xxx"
+                >  "DEBUG": "this"
                 >},
-                >// 传`--env p`时使用
-                >"env_p": {
-                >  "DEBUG": "yyy"
+                >// 传`--env xx`时使用
+                >"env_xx": {
+                >  "DEBUG": "that"
                 >}
                 >```
                 ></details>
-            1. `--no-daemon`
+            11. `--cron 「cron格式」`
+
+                cron形式的自动重启配置
+            12. `--no-daemon`
 
                 不使用pm2自己的守护进程运行。
-        2. `stop all或进程名或进程id或执行文件或配置文件`
-        3. `reload all或进程名或进程id或配置文件`
+        2. `stop all或进程名或进程id或执行文件或配置脚本`
+        3. `restart all或进程名或进程id或执行文件或配置脚本`
+        4. `startOrRestart all或进程名或进程id或执行文件或配置脚本`
+        5. `delete all或进程名或进程id或执行文件或配置脚本`
+        6. `reload all或进程名或进程id或配置脚本`
 
             如果是在cluster mode，reload会依序升级重启每一个程序，达到zero downtime升级
-        4. `restart all或进程名或进程id或执行文件或配置文件`
-        5. `delete all或进程名或进程id或执行文件或配置文件`
-    1. `ping`
+
+        >若使用配置脚本，则命令行参数大部分会被忽略（除了部分参数，如：`--env`、等）。
+
+        - 命令行参数都可以用配置脚本设置，参考：[pm2: Attributes available](https://pm2.keymetrics.io/docs/usage/application-declaration/#attributes-available)。
+    2. `ecosystem/init`
+
+        初始化`ecosystem.config.js`文件。
+
+    3. `list/ls/l/status`
+    4. `monit`
+    5. `logs`
+
+        1. `「进程名」`
+        2. `--json`
+        3. `--format`
+    6. `reloadLogs`
+
+        重载所有logs。
+    7. `flush`
+
+        清空所有logs。
+    8. `describe 「进程id或进程名」`
+    9. `show 「进程id或进程名」`
+    10. `ping`
 
         判断pm2守护进程正在运行。
-    8. 系统重启或pm2自己的重启
+    11. `kill`
+
+        杀掉pm2自己，包括所有：pm2程序、pm2运行的进程、等，然后重启pm2。
+
+        >pm2卡死的时候使用。
+    12. 系统重启或pm2自己的重启
+
+        >重启信息记录在：`$HOME/.pm2/dump.pm2`。
 
         1. `startup`
         2. `save`
         3. `unstartup`
-    9. `install 模块名`
+        4. `resurrect`
+    13. `serve 「文件路径，默认：./」 「端口号，默认：8080」`
+
+        静态服务。
+    14. `install 「模块名」`
 
         1. `pm2 install typescript` -> `pm2 start app.ts --watch`
-    10. `update`
+    15. `update`
 
         更新在内存中运行的pm2。
 
         >先在全局更新`npm install pm2@latest -g`，然后再更新在内存中运行的pm2。
-    11. `ecosystem`
+    16. `deploy`
 
-        依赖`ecosystem.config.js`文件。
-    12. `deploy`
-    1. `kill`
-
-        杀掉pm2自己，包括所有：pm2程序、pm2运行的进程、等，然后重启pm2。
+        部署、发布。
