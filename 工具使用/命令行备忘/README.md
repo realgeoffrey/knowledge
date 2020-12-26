@@ -25,6 +25,8 @@
 1. [adb](#adb)
 1. [nohup](#nohup)
 1. [sleep](#sleep)
+1. [xargs](#xargs)
+1. [mysql](#mysql)
 1. [macOS命令](#macos命令)
 
     1. [（macOS）brew更新](#macosbrew更新)
@@ -54,12 +56,14 @@ time 「命令」
 
     向域名或IP（没有~~协议头、端口、路径~~）传出一个ICMP的请求回显数据包，并等待接收回显回应数据包。判断网络是否畅通、查看连接速度信息。
 
+    >发送的ICMP请求是一个固定的协议，不能设定端口号，因此也不能用`ping`来检测某端口是否可访问。若目标IP不返回ICMP数据包，则也无法ping通。
+
     ```shell
     ping 「地址」
     ```
 2. `curl`
 
-    发起HTTP请求，查看返回信息。
+    发起HTTP请求，查看返回信息（HTTP响应）。
 
     ```shell
     curl 「URL」           # 返回HTTP响应正文
@@ -68,19 +72,20 @@ time 「命令」
     -X 「请求方法，如：POST」 # 设置请求方法的请求
     -g                   # 关闭解析`{}`、`[]`
     ```
-3. `nslookup`
+3. `telnet`
 
-    查询DNS的记录，查看域名解析是否正常，在网络故障的时候用来诊断网络问题。
-4. `dig`
-
-    从DNS域名服务器查询主机地址信息。
-5. `telnet`
-
-    可测试端口是否可连接。互联网远程登录服务的标准协议和主要方式。
+    可测试IP+端口是否可连接。互联网远程登录服务的标准协议和主要方式。
 
     ```shell
     telnet 「IP」 「端口」
+    # 若连通则会有进一步操作；若不连通则trying或退出
     ```
+4. `nslookup`
+
+    查询DNS的记录，查看域名解析是否正常，在网络故障的时候用来诊断网络问题。
+5. `dig`
+
+    从DNS域名服务器查询主机地址信息。
 6. `ab`
 
     压力测试工具。
@@ -422,6 +427,21 @@ nohup 「命令」 &    # 后台执行命令。命令的标准输出到当前目
 #### sleep
 ```shell
 sleep 「秒数」  # 延迟一段时间，再向下继续执行命令
+```
+
+#### xargs
+将标准输入转为命令行参数。
+
+```shell
+echo 1.txt 2.txt 3.txt | xargs touch
+```
+
+#### mysql
+```shell
+mysql -h 「IP」 -P 「端口号」 -u 「用户名」 -p「密码（-p与密码没有空格）」 -D 「数据库名」 --default-character-set=utf8
+
+# `;`作为结束输入的标志
+show databases;
 ```
 
 ---

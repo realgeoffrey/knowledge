@@ -31,7 +31,6 @@
                     1. Android SDK Build-Tools：28.0.3
                     2. CMake：3.6.4111459
             2. 配置自己sdk里面的cmake到环境变量
-            3. Android Studio右上角的Project Structure（command + ;） -> SDK Location -> Android NDK location 设置ndk位置
     4. 运行Hippy demo项目
 
         `npm run hippy:dev`、`npm run hippy:debug`
@@ -620,6 +619,35 @@
         1. `borderBottomRightRadius`
         1. `borderBottomLeftRadius`
     13. `opacity`
+    14. 阴影
+
+        >仅iOS实现。
+
+        ```typescript
+        /**
+         * Sets the drop shadow color
+         * @platform ios
+         */
+        shadowColor: string;
+
+        /**
+         * Sets the drop shadow offset
+         * @platform ios
+         */
+        shadowOffset: { width: number; height: number };
+
+        /**
+         * Sets the drop shadow opacity (multiplied by the color's alpha component)
+         * @platform ios
+         */
+        shadowOpacity: number;
+
+        /**
+         * Sets the drop shadow blur radius
+         * @platform ios
+         */
+        shadowRadius: number;
+        ```
 
     - 样式写法
 

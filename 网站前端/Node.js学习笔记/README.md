@@ -99,7 +99,7 @@
 ### npm
 npm（Node Package Manager）。
 
-1. 命令
+1. `npm`CI
 
     >在任意命令后添加`-h`、`--help`查看当前命令的所有参数。
 
@@ -739,6 +739,14 @@ npm（Node Package Manager）。
     - 尽量选择使用**流**读写文件的内容
 
         >（不使用流的）读操作都会在返回数据之前将文件的全部内容读取到内存中，这意味着大文件会对内存的消耗和程序执行的速度产生重大的影响；（不使用流的）写操作都是在将全部内容写入文件之后才会将控制权返回给程序（在异步的版本中，这意味着执行回调）。
+
+        - 导出文件需求：
+
+            1. 后端返回json数据（无法利用流技术，只能完整保存在服务端内存中），前端根据数据生成文件并[创建下载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js点击下载)。
+            2. 后端直接返回文件，前端请求下载文件（get请求）
+
+                1. 利用流技术，创建并保存文件在服务端；
+                2. 利用流技术，把刚刚保存的文件传递给前端进行下载。
 5. `events`：事件触发器
 
     >`EventEmitter`类：`require('events')`
@@ -746,6 +754,8 @@ npm（Node Package Manager）。
     1. 所有能触发事件的对象都是`EventEmitter`类的实例。
     2. `EventEmitter`以注册的顺序同步地调用所有监听器。
 6. `path`：处理文件路径
+
+    >e.g. 当前文件所在目录的相对位置：`require('path').resolve(__dirname, '../../xx/xxx.txt')`
 7. `url`：解析URL。
 8. `os`：基本的系统操作函数
 9. `stream`：数据流
@@ -1157,7 +1167,7 @@ Node.js的全局对象`global`是全局变量的宿主。
 ### [pm2](https://github.com/Unitech/pm2)
 后台运行、进程管理（自动重启、永保活动状态、不停机重新加载，显示进程信息，配置进程处理条件）、多进程运行、负载均衡、处理log输出。
 
-1. [`pm2`命令](https://pm2.keymetrics.io/docs/usage/pm2-doc-single-page/)
+1. [`pm2`CI](https://pm2.keymetrics.io/docs/usage/pm2-doc-single-page/)
 
     `pm2` +
 
@@ -1223,6 +1233,7 @@ Node.js的全局对象`global`是全局变量的宿主。
             12. `--no-daemon`
 
                 不使用pm2自己的守护进程运行。
+
         2. `stop all或进程名或进程id或执行文件或配置脚本`
         3. `restart all或进程名或进程id或执行文件或配置脚本`
         4. `startOrRestart all或进程名或进程id或执行文件或配置脚本`
@@ -1230,14 +1241,16 @@ Node.js的全局对象`global`是全局变量的宿主。
         6. `reload all或进程名或进程id或配置脚本`
 
             如果是在cluster mode，reload会依序升级重启每一个程序，达到zero downtime升级
+        7. `start/stop/restart/startOrRestart/delete/reload 配置脚本 --only 「进程名」`
 
-        >若使用配置脚本，则命令行参数大部分会被忽略（除了部分参数，如：`--env`、等）。
+            仅对某一个进程进行操作。
+
+        >若使用配置脚本，则命令行参数大部分会被忽略（除了部分参数，如：`--env`、`--only`、等）。
 
         - 命令行参数都可以用配置脚本设置，参考：[pm2: Attributes available](https://pm2.keymetrics.io/docs/usage/application-declaration/#attributes-available)。
     2. `ecosystem/init`
 
         初始化`ecosystem.config.js`文件。
-
     3. `list/ls/l/status`
     4. `monit`
     5. `logs`

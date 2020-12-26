@@ -1047,10 +1047,14 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
 1. `expr1 || expr2`：
 
     1. 赋值操作：若expr1能转换成true（`Boolean(expr1)`）则返回expr1，否则返回expr2。
+
+        若多个`||`，则取第一个为true的值（`Boolean(expr)`）或最后一个值。
     2. 在Boolean环境（如：if的条件判断）中使用：两个操作结果中只要有一个为true，返回true；二者操作结果都为false时返回false。
 2. `expr1 && expr2`：
 
     1. 赋值操作：若expr1能转换成false（`Boolean(expr1)`）则返回expr1，否则返回expr2。
+
+        若多个`&&`，则取第一个为false的值（`Boolean(expr)`）或最后一个值。
     2. 在Boolean环境（如：if的条件判断）中使用：两个操作结果都为true时返回true，否则返回false。
 
 ### 事件循环（event loop）

@@ -1,8 +1,8 @@
 # Node.js脚手架（typescript+pm2或nodemon+inspect）
 
-实现：Node.js服务端开发，使用typescript、改动代码自动重启服务（`pm2`或`nodemon`）、chrome的inspect自动更新
+期望：Node.js服务端开发，使用typescript、改动代码自动重启服务（`pm2`或`nodemon`）、chrome的inspect自动更新。
 
->`pm2`或`nodemon` + `typescript` + `--inspect` + Chrome的inspect自动更新（或Visual Studio Code）
+>使用ts运行Node.js占用更多的资源，若生产发布则务必导出js运行。
 
 - 文件结构
 
@@ -36,8 +36,6 @@
     ```
 2. 配置文件
 
-    >推荐用`pm2`（e.g. `pm2 start '「指令」' --watch`），`nodemon`可能无法成功监听改动后重启Node.js服务。
-
     1. pm2.json
 
         ```json
@@ -46,16 +44,22 @@
             "name": "xxx",
             "script": "./src/index.ts",
             "interpreter": "./node_modules/.bin/ts-node",
+
+            "error_file": "./logs/pm2-err.log",
+            "out_file": "./logs/pm2-out.log",
+            "log_date_format": "YYYY-MM-DD HH:mm Z",
+            "exec_mode": "fork",
+            "instances": 1,
+            "max_memory_restart": "100M",
+
             "watch": true,
             "ignore_watch": [
               "node_modules",
               "logs"
             ],
-            "error_file": "./logs/pm2-err.log",
-            "out_file": "./logs/pm2-out.log",
-            "log_date_format": "YYYY-MM-DD HH:mm Z",
             "env": {
-              "NODE_OPTIONS": "--inspect"
+              "NODE_OPTIONS": "--inspect",
+              "NODE_ENV": "development"
             }
           }
         }
@@ -79,6 +83,8 @@
           "ext": "js,json,ts"
         }
         ```
-3. 安装Chrome插件[NIM](https://github.com/june07/NIM)（Visual Studio Code默认支持）
+3. Chrome最新版的DevTools - Node.js已经支持对以上配置进行inspect自动更新
 
-    >参考：[Stack Overflow: Can I get node --inspect to open Chrome automatically](https://stackoverflow.com/questions/41398970/can-i-get-node-inspect-to-open-chrome-automatically#answer-46262271)。
+    1. ~~安装Chrome插件[NIM](https://github.com/june07/NIM)（Visual Studio Code默认支持）~~
+
+        >~~参考：[Stack Overflow: Can I get node --inspect to open Chrome automatically](https://stackoverflow.com/questions/41398970/can-i-get-node-inspect-to-open-chrome-automatically#answer-46262271)。~~

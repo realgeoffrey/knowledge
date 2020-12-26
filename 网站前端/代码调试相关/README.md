@@ -50,7 +50,9 @@
 
     1. Android
 
-        PC端的Chrome的Remote devices（<chrome://inspect/#devices>）可以调试**Android已开启调试功能的APP**的WebView（需要能够访问google，否则首次打开inspect页面会404）。
+        PC端的Chrome的Remote devices（<chrome://inspect/#devices>）可以调试**Android已开启调试功能的APP**的WebView。
+
+        >Remote devices需要能够访问google，否则首次打开inspect页面会404。会自动联网更新相关SDK：控制台界面修复（低端机原本乱码，更新后会正常显示）、渲染器升级（低端机一开始不支持的CSS特性，更新后会支持）。
 
         - Android已开启调试功能的APP：
 
@@ -136,9 +138,31 @@
                 2. 使用Rebuild Project（或：Clean Project）删除已编译文件后重新编译整个项目
                 3. 改动代码后若不编译，则Run的结果为之前编译的内容
         2. Run需要有target（真机或模拟器）
+
+        - 若出问题，可以考虑：
+
+            1. 报错哪些SDK没有安装，就去安装哪些SDK
+            2. 若报错的某些SDK，但又明确SDK目录有这些文件夹，则可能之前先安装后删除时没有删除干净，导致文件夹存在，系统判定已装但使用报错。
+
+                根据错误提示，尝试去SDK安装目录（如：`~/Library/Android/sdk/`），手动删除导致问题的某SDK文件夹，让其能够重新下载同步。
+            3. Android Studio右上角的Project Structure（command + ;） -> SDK Location -> Android NDK location 设置ndk位置
+
+        - <details>
+
+            <summary>Gradle</summary>
+
+            1. 一个自动化的项目构建工具，用来帮助开发人员自动构建项目。
+            2. Project -> Gradle Scripts -> 查看 build.gradle 配置文件。
+
+            >Gradle优势：
+            >
+            >1. `Apache Ant`可以自动化打包逻辑。
+            >2. `Apache Maven`也可以自动化打包，相比于ant，它多做的事是帮你下载jar包。但是maven的打包逻辑太死板，定制起来太麻烦，不如ant好用。
+            >3. `Gradle`又能自动下jar包，又能自己写脚本，并且脚本写起来还比ant好用。针对依赖的库，下载-编译-放到指定位置，直接import就可以使用。
+            </details>
 2. iOS（Simulator）
 
-    >Xcode的Parallelization并行化设置为最大，增加编译效率。
+    >Xcode的Parallelization并行化设置为最大，增加编译效率。Xcode无法安装任何应用，只能安装代码编译上去的应用。
 
     1. Xcode模拟App
 

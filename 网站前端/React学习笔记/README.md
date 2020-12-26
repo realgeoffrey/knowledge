@@ -9,6 +9,7 @@
     1. [生命周期](#生命周期)
     1. [与第三方库协同](#与第三方库协同)
     1. [代码分割（动态加载）](#代码分割动态加载)
+    1. [类型检查](#类型检查)
 1. [create-react-app](#create-react-app)
 1. [redux](#redux)
 1. [mobx](#mobx)
@@ -99,16 +100,16 @@
                 >2. `condition ? true : false`
                 >3. `Array`方法
 
-                1. HTML标签内可返回：
+                1. 任何数据类型（传递给组件的`props.children`使用）
+
+                    >e.g. 函数、引用数据类型
+                2. HTML标签间可返回：
 
                     组件、HTML标签、String类型、Number类型、数组
 
                     >其他数据类型可能导致报错。
 
                     - 渲染空白的返回：`false`、`true`、`null`、`undefined`、Symbol类型、BigInt类型
-                2. 组件内可返回任何数据类型（传递给组件的`props.children`使用）
-
-                    e.g. 函数、引用数据类型
         2. 对空白的处理：
 
             1. 移除行首尾的空格以及空行
@@ -271,7 +272,13 @@
         >}));
         >```
         ></details>
-    4. 属性值改变的策略
+    4. `setState`设置相同的值：
+
+        根据`shouldComponentUpdate`返回的值决定是否更新DOM。
+
+        >1. `React.Component`的`shouldComponentUpdate`默认返回`true`：总会更新DOM。
+        >2. `React.PureComponent`的`shouldComponentUpdate`默认实现：浅比较`prop`和`state`，相同则返回`false`不更新。
+    5. 属性值改变的策略
 
         1. 模板中渲染相关的属性（如：要在模板内展示的属性 或 Props传值、`style`取值等），需要放到State中被观测（或放到store中被观测，如：redux、mobx），才能在这些值改变时通知视图重新渲染（`this.setState`）。
 
@@ -370,7 +377,7 @@
 
             >`ref`不是Props（经过React特殊处理），无法传递给子节点。
 
-            >不能在函数组件上使用`ref`属性，因为他们没有实例。e.g. ~~`<函数组价 ref={React.createRef()} />`~~。
+            >不能在函数组件上使用`ref`属性，因为他们没有实例。e.g. ~~`<函数组件 ref={React.createRef()} />`~~。
 
             1. 由`React.createRef()`创建，`.current`获取DOM或子组件实例。
 
@@ -731,7 +738,6 @@
         1. 祖孙组件间的通信
 
             1. Props逐层往下传递
-
             2. <details>
 
                 <summary><code>context</code>从祖辈向所有孙辈传递</summary>
@@ -788,7 +794,7 @@
 
         1. 受控组件（controlled components）
 
-            渲染表单的React组件还控制着用户输入过程中表单发生的操作（表单的`value`、`onChange`受组件控制）。React的State成为表单“唯一数据源”。
+            表单数据由React组件来管理。渲染表单的React组件还控制着用户输入过程中表单发生的操作（表单的`value`、`onChange`受组件控制）。React的State成为表单“唯一数据源”。
 
             1. `<input>`、`<textarea>`
 
@@ -888,6 +894,45 @@
                 >1. 无法输入改变表单：`<input value="hi" />`。
                 >2. 可以输入改变表单：`<input value={undefined} />`、`<input value={null} />`、`<input />`。
         2. 非受控组件（uncontrolled components）
+
+            表单数据将交由DOM节点来处理。
+
+            - 默认值`defaultValue`、`defaultChecked`
+
+                >e.g. `<input defaultValue="默认值" type="text" ref={this.input} />`
+
+            - `<input type="file" />`始终是一个非受控组件
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```jsx
+            >constructor(props) {
+            >  super(props);
+            >  this.handleSubmit = this.handleSubmit.bind(this);
+            >  this.fileInput = React.createRef();
+            >}
+            >handleSubmit(event) {
+            >  event.preventDefault();
+            >  alert(
+            >    `Selected file - ${this.fileInput.current.files[0].name}`
+            >  );
+            >}
+            >
+            >render() {
+            >  return (
+            >    <form onSubmit={this.handleSubmit}>
+            >      <label>
+            >        Upload file:
+            >        <input type="file" ref={this.fileInput} />
+            >      </label>
+            >      <br />
+            >      <button type="submit">Submit</button>
+            >    </form>
+            >  );
+            >}
+            >```
+            ></details>
     3. 错误边界（error boundaries）
 
         若一个class组件中定义了`static getDerivedStateFromError()`（渲染备用UI）或`componentDidCatch()`（打印错误信息）这两个生命周期方法中的任意一个（或两个）时，则它就变成一个错误边界。可以当做常规组件去使用。
@@ -904,7 +949,23 @@
             4. 它自身抛出的错误
 
                 若一个错误边界无法渲染错误信息，则错误会冒泡至最近的上层错误边界。
-    4. 严格模式`<React.StrictMode />`
+    4. 严格模式`<React.StrictMode>`
+
+        在开发模式中，对所有孙辈组件运行严格模式检查。
+
+        1. 识别不安全的生命周期
+        2. 关于使用过时字符串 ref API 的警告（`this.refs.值`）
+        3. 关于使用废弃的`findDOMNode`方法的警告
+        4. 检测意外的副作用
+
+            - 故意重复调用以下函数来实现检测：
+
+                1. class 组件的 constructor，render 以及 shouldComponentUpdate 方法
+                2. class 组件的生命周期方法 getDerivedStateFromProps
+                3. 函数组件体
+                4. 状态更新函数 (即 setState 的第一个参数）
+                5. 函数组件通过使用 useState，useMemo 或者 useReducer
+        5. 检测过时的 context API
     5. 高阶组件（higher order component，HOC）
 
         >是一种设计模式。
@@ -981,25 +1042,39 @@
         >默认显示：`Anonymous ForwardRef`或`「匿名函数名」 ForwardRef`。
 
 #### 生命周期
-1. `UNSAFE_componentWillMount`
+1. `constructor`
+2. `componentWillMount/UNSAFE_componentWillMount`
 
     >唯一会在服务端渲染时调用的生命周期。
-2. `componentDidMount`
+3. `componentDidMount`
 
     组件已经装载。
-3. `shouldComponentUpdate`
+4. `shouldComponentUpdate`
 
-    重新渲染前被触发：（`React.Component`默认）返回`true`，更新真实DOM；返回`false`，跳过本次更新。
+    重新渲染前被触发。（`React.Component`默认）返回`true`，更新真实DOM；返回`false`，跳过本次更新DOM。
 
-    - `React.PureComponent`
+    - `React.PureComponent`的`shouldComponentUpdate`默认实现：
 
-        （与`React.Component`的区别：）`shouldComponentUpdate`默认实现：浅比较`prop`和`state`并跳过所有子组件树的Props更新。
-4. `componentWillUnmount`
+        浅比较`prop`和`state`并跳过所有子组件树的Props更新。
+5. `componentDidUpdate`
 
-    卸载组件
-5. `componentWillReceiveProps`
-6. `componentWillUpdate`
-7. `render`
+    更新后会被立即调用。首次渲染不会执行此方法。
+6. `componentWillUnmount`
+
+    卸载组件。
+
+    >`render`返回`null`时不会触发`componentWillUnmount`，只有组件被卸载才会触发。
+7. `componentWillReceiveProps/UNSAFE_componentWillReceiveProps`
+
+    1. 组件第一次渲染时不会执行componentWillReceiveProps；
+    2. 当props发生变化的时时候会执行componentWillReceiveProps；
+    3. 在componentWillReceiveProps里面，旧的属性可以通过this.props来获取，新的属性则可以通过参数nextProps来获取；
+    4. 此函数可以通过调用this.setState()来更新组件状态，并且不会引起第二次的渲染
+    5. 也可在此函数内根据需要调用自己的自定义函数，来对prop的改变做出一些响应。
+8. `componentWillUpdate/UNSAFE_componentWillUpdate`
+9. `getDerivedStateFromProps`
+10. `render`
+11. `setState`
 
 #### 与第三方库协同
 >React不会理会React自身之外的DOM操作。它根据内部虚拟DOM来决定是否需要更新，而且如果同一个DOM被另一个库操作了，React会觉得困惑而且没有办法恢复。
@@ -1040,6 +1115,15 @@
     >```
     ></details>
 
+#### 类型检查
+1. PropTypes
+
+    >利用：[prop-types](https://github.com/facebook/prop-types)。
+
+    `类名.propTypes = { props名: 类型 }`
+2. TypeScript
+
+---
 ### [create-react-app](https://github.com/facebook/create-react-app)
 1. 模板：
 

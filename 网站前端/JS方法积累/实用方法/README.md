@@ -70,6 +70,7 @@
         1. [获取对象指定深度属性](#原生js获取对象指定深度属性)
         1. [数组去重](#原生js数组去重)
         1. [写入剪切板](#原生js写入剪切板)
+        1. [默认图组件](#react默认图组件)
     1. 提升性能
 
         1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
@@ -2618,7 +2619,7 @@ loadingFetch(() => { console.log('同步方法') })
     `<a href="文件地址" download="文件名.文件类型">点击若同源就下载，不同源还是导航跳转</a>`
 2. 下载文本
 
-    >Blob。代码生成文本内容再进行下载。
+    >Blob。代码生成文本内容再创建下载。
 
     ```javascript
     /**
@@ -2816,6 +2817,59 @@ clipboard("写入的内容~")
 ```
 >1. 注意，有些浏览器对不信任的域名会静默失败（resolved）。
 >2. 可以使用[clipboard.js](https://github.com/zenorocha/clipboard.js)。
+
+### *React*默认图组件
+```jsx
+import React, { Component } from "react";
+
+export default class TheImage extends Component {
+  state = {
+    isError: false,
+  };
+
+  componentDidUpdate(prevProps) {
+    // 检测到图片有更新，需要重新加载
+    if (prevProps?.src !== this.props?.src && this.state.isError) {
+      // eslint-disable-next-line
+      this.setState({
+        isError: false,
+      });
+    }
+  }
+  render() {
+    const { style, src, onClick, defaultImage } = this.props;
+
+    return (
+      <img
+        src={this.state.isError ? defaultImage : src || defaultImage}
+        style={style}
+        onClick={() => {
+          onClick && onClick();
+        }}
+        onError={() => {
+          this.setState({
+            isError: true,
+          });
+        }}
+        alt={`图${src}`}
+      />
+    );
+  }
+}
+
+
+/* 使用测试 */
+<TheImage
+  style={{ width: "100px", height: "100px" }}
+  src={this.state.switch ? 'https://fakeimg.pl/100/?text=true': '1'}
+  onClick={() => {
+    this.setState({
+      switch: !this.state.switch
+    })
+  }}
+  defaultImage="https://fakeimg.pl/100/?text=default"
+/>
+```
 
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript

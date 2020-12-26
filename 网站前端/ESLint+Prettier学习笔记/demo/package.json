@@ -1,0 +1,26 @@
+{
+  "scripts": {
+    "lint:js": "eslint --fix --ext .js ."
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "7",
+    "eslint-config-prettier": "7",
+    "eslint-config-standard": "16",
+    "eslint-plugin-import": "2",
+    "eslint-plugin-node": "11",
+    "eslint-plugin-prettier": "3",
+    "eslint-plugin-promise": "4",
+    "husky": "4",
+    "lint-staged": "10",
+    "prettier": "2"
+  }
+}
