@@ -11,6 +11,7 @@
 1. [.gitkeep文件](#gitkeep文件)
 1. [GitLab CI](#gitlab-ci)
 1. [减少Git项目下载大小](#减少git项目下载大小)
+1. [`husky`+`lint-staged`](#huskylint-staged)
 
 ---
 ### Git的文件状态
@@ -71,9 +72,9 @@
     3. 撤销`git commit`的请求
 
         ```git
-        git reset 「SHA」                 # 撤销commit请求（恢复commit的文件），不修改文件、使已修改文件恢复到untracked
+        git reset 「SHA」                 # 撤销commit至「SHA」，不修改文件、使已修改文件恢复到untracked
 
-        git reset --hard 「SHA」          # 撤销commit请求（恢复commit的文件），恢复git add的全部文件（untracked不恢复）
+        git reset --hard 「SHA」          # 撤销commit至「SHA」，恢复git add的全部文件（untracked不恢复）
         ```
     4. 清除所有不在版本控制内的内容（如：.idea、node_modules）
 
@@ -92,7 +93,7 @@
         向前逐个删除commit（除了第一个commit）。
 
         ```git
-        git reset --hard HEAD~「数字」      # 取消当前版本之前的N次提交
+        git reset --hard HEAD~「数字」     # 取消当前版本之前的N次提交
         # 或
         git reset --hard 「SHA」          # 取消至某SHA
 
@@ -262,10 +263,10 @@
         - 切出 指定分支或SHA 的部分修改内容（文件或文件夹），可以仅对这些内容进行git操作
 
             ```git
-            # 1. 切换至目标分支
+            # 1. 切换至目标分支（如：新建一个分支 或 直接切换到需要修改的分支）
 
-            # 2. 切出其他其他分支或commit的修改内容
-            git checkout 「分支或SHA」 「文件或文件夹」
+            # 2. 切出其他分支或commit的修改内容（目标分支和 其他分支或SHA 不在同一个工作流）
+            git checkout 「其他分支或SHA」 「文件或文件夹」
 
             # 3. git操作这些选定内容，如：合并到目标分支。方便从一个分支或commit中提取出部分内容进行git操作
             ```
@@ -304,6 +305,8 @@
 
     git push origin -d tag 「名字」     # 删除远程tag
     git push origin :refs/tags/「名字」 # 删除远程tag
+
+    git checkout 「tag名」              # 切换到分支
     ```
 11. stash
 
@@ -385,6 +388,9 @@
     git push -f origin 「原本分支名」  # 强制推送
     ```
 14. 使用[git-lfs](https://github.com/git-lfs/git-lfs)管理大文件。
+15. 遇到`unable to update local ref`
+
+    尝试：`git gc`
 
 ### [Zen-like commit messages（Angular）格式](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines)
 ```text
@@ -820,3 +826,9 @@ feat(details): 添加了分享功能
 2. 减少克隆深度
 
     `git clone 「仓库地址」 --depth 「数字」`
+
+### `husky`+`lint-staged`
+1. 使用[husky](https://github.com/typicode/husky)设置：方便的[git hooks](https://git-scm.com/book/zh/v2/自定义-Git-Git-钩子)。
+2. 使用[lint-staged](https://github.com/okonet/lint-staged)设置：针对git的staged文件进行lints操作（如：eslint、prettier、等）。
+
+配合效果：针对git的staged文件，在git hooks时期，进行lints操作（如：eslint、prettier、等）。

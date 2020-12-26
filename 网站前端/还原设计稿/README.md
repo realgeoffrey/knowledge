@@ -29,6 +29,22 @@
     >如：仅针对某些机型、某些系统、某些版本的特殊样式效果。
 
 ### 各端还原设计稿方案（响应式方案）
+><details>
+><summary>可参考：<a href="https://uiiiuiii.com/screen/index.htm">屏幕尺寸大全</a></summary>
+>
+>1. iOS屏幕宽度：
+>
+>    1. 320：iPhone SE（SE, 5S, 5C）
+>    2. 360：iPhone 12 Mini
+>    3. 375：iPhone 11 Pro
+>    4. 390：iPhone 12 Pro
+>    5. 414：iPhone 11 Pro Max
+>    6. 428：iPhone 12 Pro Max
+>2. Android屏幕宽度：
+>
+>    320、360、392、411、480
+></details>
+
 1. iOS
 
     >iPhone：320、375、414；iPad：768+。

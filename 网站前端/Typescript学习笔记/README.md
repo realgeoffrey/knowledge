@@ -1272,11 +1272,17 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         在条件类型语句中, 可以用 infer 声明一个类型变量并且对它进行使用，我们可以用它获取函数的返回类型。
 10. 内置类型别名
 
-    >来自：[lib.es5.d.ts](https://github.com/microsoft/TypeScript/blob/master/lib/lib.es5.d.ts#L1455)。
+    >来自：[lib.es5.d.ts](https://github.com/microsoft/TypeScript/blob/master/lib/lib.es5.d.ts#L1455)、[typescript: Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html)。
 
-    `Partial`、`Required`、`Readonly`、`Pick`、`Record`、`Exclude`、`Extract`、`ReturnType`、`ThisType`、`InstanceType`、`NonNullable`、`Parameters`、`ConstructorParameters`、`Omit`、等
+    `Partial`、`Required`、`Readonly`、`Pick`、`Record`、`Exclude`、`Extract`、`ThisType`、`InstanceType`、`NonNullable`、`Parameters`、`ConstructorParameters`、`Omit`、等
 
-#### 其他
+    1. `ReturnType`
+
+        获得方法类型的返回类型。
+
+        >e.g. `ReturnType<typeof 方法>`
+
+#### 其他相关
 1. 配置
 
     [`tsconfig.json`](https://www.staging-typescript.org/tsconfig)
@@ -1403,3 +1409,4 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >let _a: string = String(a)
         >```
         ></details>
+    2. 对于同名、后缀分别为`.js`和`.ts`的文件，引用时优先引用`.js`的文件

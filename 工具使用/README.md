@@ -9,8 +9,8 @@
     2. [Redis使用](./Redis使用/README.md)
 4. 容器管理
 
-    1. [Kubernetes使用](./Kubernetes使用/README.md)
-    2. [Docker使用](./Docker使用/README.md)
+   1. [Docker使用](./Docker使用/README.md)
+   2. [Kubernetes使用](./Kubernetes使用/README.md)
 5. 代理、抓包工具
 
     1. [Charles使用](./Charles使用/README.md)
