@@ -244,6 +244,9 @@
                 1. 软键盘被唤起时，页面不会向上顶起，因此可能会挡住要输入的区域。
 
                     利用`onKeyboardWillShow`事件获得软键盘弹起时高度，把输入框区域垫高；输入完毕之后再恢复高度。
+        15. `false && B`可能输出内容
+
+            用三元运算符替换：`false ? B : null`。
 2. 模块
 
     >[模块文档](https://hippyjs.org/#/hippy-react/modules)比较简单，更详细的用法在[demo](https://github.com/Tencent/Hippy/tree/master/examples/hippy-react-demo/src/modules)或[源码](https://github.com/Tencent/Hippy/tree/master/packages/hippy-react/src/modules)中。

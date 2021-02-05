@@ -84,15 +84,16 @@
     3. [Babel学习笔记](./网站前端/Babel学习笔记/README.md)
     4. [gulp使用](./网站前端/gulp使用/README.md)
     5. [ESLint+Prettier学习笔记](./网站前端/ESLint+Prettier学习笔记/README.md)
-    6. [Node.js脚手架（typescript+pm2或nodemon+inspect）](./网站前端/Node.js脚手架（typescript+pm2或nodemon+inspect）/README.md)
+    6. [Node.js脚手架（TypeScript+pm2或nodemon+--inspect）](./网站前端/Node.js脚手架（TypeScript+pm2或nodemon+--inspect）/README.md)
     7. [yarn学习笔记](./网站前端/yarn学习笔记/README.md)
 </details>
 
 ><details>
 ><summary>其他</summary>
 >
->1. [工具使用](./工具使用/README.md)
->2. [环境安装、配置](./环境安装、配置/README.md)
+>1. [拓展知识](./网站前端/拓展知识/README.md)
+>2. [/工具使用](./工具使用/README.md)
+>3. [/环境安装、配置](./环境安装、配置/README.md)
 ></details>
 
 ><details>

@@ -1,5 +1,4 @@
-# [yarn](https://github.com/yarnpkg/yarn)学习笔记
-
+### [yarn](https://github.com/yarnpkg/yarn)学习笔记
 1. [`.yarnrc`](https://classic.yarnpkg.com/zh-Hans/docs/yarnrc)
 
     ```text

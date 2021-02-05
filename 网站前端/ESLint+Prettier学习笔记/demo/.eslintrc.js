@@ -1,13 +1,15 @@
 module.exports = {
   root: true,
-  extends: ["standard", "plugin:prettier/recommended"],
+  parser: "@typescript-eslint/parser",
+  extends: ["standard", "prettier/@typescript-eslint", "plugin:prettier/recommended"],
   plugins: ["prettier"],
   rules: {
     "prettier/prettier": [
-      "error",
+      "warn",
       {
         // 传入prettier的配置
-        trailingComma: "none"
+        trailingComma: "none",
+        printWidth: 120
       }
     ]
   }

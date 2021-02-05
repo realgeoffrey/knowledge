@@ -1,6 +1,5 @@
-# Node.js脚手架（typescript+pm2或nodemon+inspect）
-
-期望：Node.js服务端开发，使用typescript、改动代码自动重启服务（`pm2`或`nodemon`）、chrome的inspect自动更新。
+### Node.js脚手架（TypeScript+pm2或nodemon+--inspect）
+期望：Node.js服务端开发，使用TypeScript、改动代码自动重启服务（`pm2`或`nodemon`）、chrome的--inspect自动更新。
 
 >使用ts运行Node.js占用更多的资源，若生产发布则务必导出js运行。
 
@@ -47,7 +46,7 @@
 
             "error_file": "./logs/pm2-err.log",
             "out_file": "./logs/pm2-out.log",
-            "log_date_format": "YYYY-MM-DD HH:mm Z",
+            "log_date_format": "YYYY-MM-DD HH:mm ZZ",
             "exec_mode": "fork",
             "instances": 1,
             "max_memory_restart": "100M",
@@ -83,8 +82,10 @@
           "ext": "js,json,ts"
         }
         ```
-3. Chrome最新版的DevTools - Node.js已经支持对以上配置进行inspect自动更新
+3. Chrome最新版的DevTools - Node.js已经支持对以上配置进行--inspect自动更新
 
     1. ~~安装Chrome插件[NIM](https://github.com/june07/NIM)（Visual Studio Code默认支持）~~
 
         >~~参考：[Stack Overflow: Can I get node --inspect to open Chrome automatically](https://stackoverflow.com/questions/41398970/can-i-get-node-inspect-to-open-chrome-automatically#answer-46262271)。~~
+
+>全套Node.js脚手架：[scaffolding-node（TypeScript+pm2+--inspect+ESLint+Prettier+husky+lint-staged）](https://github.com/realgeoffrey/scaffolding-node)。
