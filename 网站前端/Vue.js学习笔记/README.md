@@ -640,18 +640,20 @@
     1. `key`
 
         <details>
-        <summary>决定是否重用DOM（保持原DOM尽量不变化，尽量仅在原DOM上修改属性和内部内容，而不是<del>销毁再新建DOM/移动DOM来匹配数据项的顺序</del>）</summary>
+        <summary>决定是否重用DOM（无<code>key</code>或<code>key</code>相同：保持原DOM尽量不变化，尽量仅在原DOM上修改属性和内部内容；有<code>key</code>且变化：销毁再新建DOM 或 移动DOM来匹配数据项的顺序）</summary>
 
-         - key的特殊属性主要用在Vue的虚拟DOM算法，在新旧nodes对比时辨识VNode。
+        `key`主要用在Vue的虚拟DOM算法，在新旧nodes对比时辨识VNode。
 
-            1. 若不使用`key`，则Vue会使用一种最大限度减少动态元素并且尽可能的尝试修复/再利用相同类型元素的算法。
-            2. 使用`key`，它会基于`key`的变化重新排列元素顺序，并且会移除`key`不存在的元素。
+        1. 若不使用`key`，则Vue会使用一种最大限度减少动态元素并且尽可能的尝试修复/再利用相同类型元素的算法。
+        2. 使用`key`，它会基于`key`的变化重新排列元素顺序，并且会移除`key`不存在的元素。
+
+            1. 切换的DOM的没有`key`属性或`key`属性相同时：最大化重用DOM。
+            2. 切换的DOM的`key`属性不同：不重用DOM（就算DOM完全相同，也会重新渲染）。
+
+                >对于仅有的一个元素（不是数组），`key`的变化会导致销毁再新建DOM。
         </details>
 
         >针对：有相同父元素的子元素必须有独特的`key`（重复的`key`会造成渲染错误）。相同标签名的DOM切换展示、或相同组件间切换展示。`v-for`、`v-if`、`<transition/>`、`<transition-group/>`。
-
-        1. 切换的DOM的没有`key`属性或`key`属性相同时：最大化重用DOM。
-        2. 切换的DOM的`key`属性不同：不重用DOM（就算DOM完全相同，也会重新渲染）。
 
         - `key`的取值：
 

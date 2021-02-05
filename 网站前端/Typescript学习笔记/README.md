@@ -1287,9 +1287,8 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
     [`tsconfig.json`](https://www.staging-typescript.org/tsconfig)
 
-    >`tsc`会自动查找命令目录下的`tsconfig.json`；添加了`tsconfig.json`就不能在`tsc`后增加参数。
-
-    1. `--init`生成一个`tsconfig.json`文件。
+    1. `tsc`（不带任何输入文件）会自动查找命令目录下的`tsconfig.json`；若带输入文件参数，则忽略 ~~`tsconfig.json`~~。
+    2. `tsc --init`生成一个`tsconfig.json`文件。
 2. 文件后缀
 
     `.ts`、`.tsx`（React、`JSX`）
@@ -1396,7 +1395,20 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
     2. 导出`export`
 
     - 引入第三方库声明文件（不需任何配置，引入就可声明成功），可搜索：<https://microsoft.github.io/TypeSearch/>
-5. Tips
+5. 引入方式：
+
+    1. 有类型声明
+
+        1. 标准ES6 Module库：
+
+            `import * as xx from 'xx'` 或 `import xx from 'xx'`
+        2. 标准CommonJS库：
+
+            `import xx = require('xx')`
+    3. 没有类型声明
+
+        `const xx = require('xx')`（默认导入为`any`类型）
+6. Tips
 
     1. 已经定义好的属性的数据类型，除非有重载机制，否则不能在之后赋值时再次定义新的数据类型。只能用其他临时变量来保存。
 

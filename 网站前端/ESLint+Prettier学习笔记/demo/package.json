@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "lint:js": "eslint --fix --ext .js ."
+    "lint:js": "eslint --fix --ext .js .",
+    "lint:ts": "eslint --fix --ext .ts ."
   },
   "husky": {
     "hooks": {
@@ -8,10 +9,14 @@
     }
   },
   "lint-staged": {
-    "*.js": "eslint --cache --fix"
+    "*.js": "npm run lint:js",
+    "*.ts": "npm run lint:ts"
   },
   "dependencies": {},
   "devDependencies": {
+    "@types/node": "14",
+    "@typescript-eslint/eslint-plugin": "4",
+    "@typescript-eslint/parser": "4",
     "eslint": "7",
     "eslint-config-prettier": "7",
     "eslint-config-standard": "16",
@@ -21,6 +26,7 @@
     "eslint-plugin-promise": "4",
     "husky": "4",
     "lint-staged": "10",
-    "prettier": "2"
+    "prettier": "2",
+    "typescript": "4"
   }
 }

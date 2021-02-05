@@ -223,3 +223,15 @@
     unitless(100px); // false
     ```
 12. `@if` `@for` `@each` `@while`
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```scss
+    >@for $i from 5000 through 5999 {
+    >  .s#{$i} {
+    >    width: $i * 1%;
+    >  }
+    >}
+    >```
+    ></details>

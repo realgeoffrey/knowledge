@@ -19,7 +19,7 @@
 ### [react](https://github.com/facebook/react)
 
 #### JSX
->`React.createElement(component, props, ...children)`函数的语法糖。
+>`React.createElement(type或element[, props[, ...children]])`函数的语法糖（已废弃：~~`React.createFactory(type或element)`~~）。
 
 1. 使用JSX语法前提：
 
@@ -36,10 +36,12 @@
 3. `return 组件`，若多行，则`(` `)`包裹组件
 4. `<组件名称>`
 
-    1. **必须**以大写字母开头。
+    1. （`<组件名称>`）**必须**以大写字母开头。
+
+        >大写字母表示用户定义组件，小写字母表示HTML标签。
     2. `.`
 
-        `<对象.属性名>`
+        `<对象.属性名>`（不要求~~大写字母开头~~）
 
         ><details>
         ><summary>e.g.</summary>
@@ -85,8 +87,11 @@
         - 特殊情况用`-`短横线隔开式（kebab-case）的属性名：
 
             1. 无障碍属性`aria-*`
+    2. 赋值
 
-    2. 若没有给Props赋值，则默认值是`true`
+        1. `{}`包裹JS表达式赋值给Props：`prop={JS表达式}`
+        2. 字符串字面量：`prop="某字符串"`
+        3. 若没有给Props赋值，则默认值是`true`：`prop`
     3. `...`展开元素
     4. 包含在开始和结束标签之间的表达式内容将作为特定属性：`props.children`
 
@@ -115,7 +120,7 @@
             1. 移除行首尾的空格以及空行
             2. 与标签相邻的空行均会被删除
             3. 文本字符串之间的新行会被压缩为一个空格
-8. 元素组成的数组，会按顺序渲染（注意添加`key`）
+7. 元素组成的数组，会按顺序渲染（注意添加`key`）
 
 - Babel会把JSX转译成`React.createElement`函数调用，生成React元素
 
@@ -168,6 +173,20 @@
     组件渲染完成后返回React元素。
 
     1. `render`方法（或函数组件）返回`null`，组件会正常运行和执行生命周期函数，只是不渲染出任何DOM（因为渲染空内容）。
+
+- API
+
+    1. `React.cloneElement(element[, props[, ...children]])`（已废弃：~~`React.addons.cloneWithProps`~~）
+
+        克隆并返回新的React元素。
+
+        >几乎等同于：`<element.type {...element.props} {...props}>{children}</element.type>` + 原element上的`key`和`ref`
+    2. `React.isValidElement(object)`
+
+        验证对象是否为React元素。返回：`true/false`。
+    3. `React.Children` + `.map/.forEach/.count/.only/.toArray`
+
+        处理`this.props.children`
 
 #### 组件
 组件：它接受任意的入参（Props），并返回用于描述页面展示内容的React元素。
@@ -274,10 +293,10 @@
         ></details>
     4. `setState`设置相同的值：
 
-        根据`shouldComponentUpdate`返回的值决定是否更新DOM。
+        根据`shouldComponentUpdate`返回的值决定是否更新真实DOM（是否触发`render`）。
 
         >1. `React.Component`的`shouldComponentUpdate`默认返回`true`：总会更新DOM。
-        >2. `React.PureComponent`的`shouldComponentUpdate`默认实现：浅比较`prop`和`state`，相同则返回`false`不更新。
+        >2. `React.PureComponent`的`shouldComponentUpdate`默认实现（修改实现会Warning提示）：浅比较`prop`和`state`，若相同则返回`false`不更新，若不相同则返回`true`更新。
     5. 属性值改变的策略
 
         1. 模板中渲染相关的属性（如：要在模板内展示的属性 或 Props传值、`style`取值等），需要放到State中被观测（或放到store中被观测，如：redux、mobx），才能在这些值改变时通知视图重新渲染（`this.setState`）。
@@ -295,7 +314,7 @@
         ><summary>e.g.</summary>
         >
         >```jsx
-        >class MyComponent extends Component {
+        >class MyComponent extends React.Component {
         >  constructor (props) {
         >    super(props)
         >    this.state = {
@@ -366,13 +385,11 @@
         ></details>
     2. 特殊属性
 
-        1. `key`的取值和[Vue中`key`的注意点（17.i）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#指令--特殊attribute)一致
+        1. `key`的取值和逻辑，与[Vue中`key`的注意点（17.i）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#指令--特殊attribute)一致
 
             >`key`不是Props（经过React特殊处理），无法传递给子节点。
 
             因为JSX的灵活，只要是能够`切换或条件判断`的都需要考虑`key`。包括：`Array`方法、数组、条件判断（`switch`、`if`）等。
-
-            >组件的`key`值并不需要在全局都保证唯一，只需要在当前的同一级元素（兄弟节点）之前保证唯一即可。
         2. `ref`
 
             >`ref`不是Props（经过React特殊处理），无法传递给子节点。
@@ -382,7 +399,7 @@
             1. 由`React.createRef()`创建，`.current`获取DOM或子组件实例。
 
                 1. 本组件内使用，获取DOM。
-                2. 可以从父级传递`React.createRef()`实例到子子组件：
+                2. 可以从父级传递`React.createRef()`实例到子组件：
 
                     >不能在函数组件中传入`ref`（因为函数组件没有实例）。
 
@@ -960,11 +977,11 @@
 
             - 故意重复调用以下函数来实现检测：
 
-                1. class 组件的 constructor，render 以及 shouldComponentUpdate 方法
-                2. class 组件的生命周期方法 getDerivedStateFromProps
+                1. class组件的`constructor`、`render`、`shouldComponentUpdate`
+                2. class组件的生命周期方法`getDerivedStateFromProps`
                 3. 函数组件体
-                4. 状态更新函数 (即 setState 的第一个参数）
-                5. 函数组件通过使用 useState，useMemo 或者 useReducer
+                4. 状态更新函数 (即`setState`的第一个参数）
+                5. 函数组件通过使用`useState`、`useMemo`或`useReducer`
         5. 检测过时的 context API
     5. 高阶组件（higher order component，HOC）
 
@@ -980,7 +997,7 @@
 
                 特殊属性无法传递：`ref`（可以利用Refs转发传递）、`key`。
             2. 最大化可组合性。
-        3. 注意事项：
+        4. 注意事项：
 
             1. 不要在`render`方法中使用。
             2. 务必复制静态方法。
@@ -1018,6 +1035,30 @@
         ><WrappedComponent a='aa' b='bb' />
         >```
         ></details>
+
+        - `React.memo`
+
+            若组件在相同props的情况下渲染相同的结果，则可以通过将其包装在`React.memo`中调用，以此通过记忆组件渲染结果的方式来提高组件的性能表现。这意味着在这种情况下，React将跳过渲染组件的操作并直接复用最近一次渲染的结果。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```jsx
+            >function MyComponent(props) {
+            >  /* 函数组件，使用 props 渲染 */
+            >}
+            >function areEqual(prevProps, nextProps) {
+            >  /*
+            >  默认是浅比较props。
+            >  若把 nextProps 传入 render 方法的返回结果 与 将 prevProps 传入 render 方法的返回结果一致则返回 true，
+            >  否则返回 false。
+            >  （与shouldComponentUpdate返回值相反）
+            >  */
+            >}
+            >
+            >export default React.memo(MyComponent[, areEqual]);
+            >```
+            ></details>
 10. 命名规范
 
     1. 事件监听Props命名为：`on[Event]`；事件监听处理函数命名为：`handle[Event]`。
@@ -1025,9 +1066,23 @@
 
     [React DevTools](https://github.com/facebook/react/tree/master/packages/react-devtools)使用该字符串来确定要显示的名字。
 
-    1. `class组件名或函数组件名.displayName = 「组件名」`
+    1. class组件的静态属性`displayName` 或 `函数组件名.displayName` 赋值 `新组件名`
 
-        显示为：`「组件名」`。
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```jsx
+        >class 组件名 extends React.Component {
+        >  static displayName = '新组件名'
+        >}
+        >
+        >// 或
+        >组件名.displayName = '新组件名'   // 覆盖class内部的静态属性
+        >
+        >
+        >// 结果：显示为：`新组件名`
+        >```
+        ></details>
 
         >默认显示：class组件名或函数组件名。
     2. `React.createContext()的对象.displayName = 「content名」`
@@ -1042,6 +1097,8 @@
         >默认显示：`Anonymous ForwardRef`或`「匿名函数名」 ForwardRef`。
 
 #### 生命周期
+>来自：[React: React.Component](https://zh-hans.reactjs.org/docs/react-component.html)。
+
 1. `constructor`
 2. `componentWillMount/UNSAFE_componentWillMount`
 
@@ -1051,11 +1108,7 @@
     组件已经装载。
 4. `shouldComponentUpdate`
 
-    重新渲染前被触发。（`React.Component`默认）返回`true`，更新真实DOM；返回`false`，跳过本次更新DOM。
-
-    - `React.PureComponent`的`shouldComponentUpdate`默认实现：
-
-        浅比较`prop`和`state`并跳过所有子组件树的Props更新。
+    重新渲染前被触发。返回`true`，更新真实DOM（触发`render`+`componentDidUpdate`）；返回`false`，跳过本次更新DOM（不触发 ~~`render`~~+~~`componentDidUpdate`~~）。
 5. `componentDidUpdate`
 
     更新后会被立即调用。首次渲染不会执行此方法。
@@ -1075,6 +1128,11 @@
 9. `getDerivedStateFromProps`
 10. `render`
 11. `setState`
+12. `getSnapshotBeforeUpdate`
+
+>[生命周期图谱](https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)。
+
+![react生命周期图](./images/lifecycle.png)
 
 #### 与第三方库协同
 >React不会理会React自身之外的DOM操作。它根据内部虚拟DOM来决定是否需要更新，而且如果同一个DOM被另一个库操作了，React会觉得困惑而且没有办法恢复。
@@ -1092,7 +1150,7 @@
     webpack提供的支持。`require`和非动态`import`不会进行代码分割。
 
     >e.g. `import("./math").then(math => { console.log(math.add(16, 26)); });`
-2. `<Suspense>`渲染`React.lazy`
+2. `<React.Suspense>`渲染`React.lazy`
 
     >不支持服务端渲染。
 
@@ -1100,16 +1158,16 @@
     ><summary>e.g.</summary>
     >
     >```jsx
-    >import React, { Suspense } from 'react';
+    >import React from 'react';
     >
     >const OtherComponent = React.lazy(() => import('./OtherComponent'));
     >
     >function MyComponent() {
     >  return (
-    >    <Suspense fallback={<div>懒加载前展示的组件</div>}>
+    >    <React.Suspense fallback={<div>懒加载前展示的组件</div>}>
     >      多个懒加载组件
     >      <OtherComponent />
-    >    </Suspense>
+    >    </React.Suspense>
     >  );
     >}
     >```

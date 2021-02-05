@@ -471,6 +471,7 @@ npm（Node Package Manager）。
     >`npm config ls -l`查看所有已有配置和默认配置。
 
     - 常用：`package-lock`、`registry`。
+    - 注释：`;`或`#`。
 
 >项目中使用某个开源库时，要考虑它的License和文件大小（若使用webpack打包，则可以使用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)进行分析）。
 
@@ -696,6 +697,63 @@ npm（Node Package Manager）。
     2. 为了支持所有可能的HTTP应用程序，Node.js的HTTP API都是非常底层的。
 
         它仅进行流处理和消息解析。它将消息解析为消息头和消息主体，但不会解析具体的消息头或消息主体。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >1. Node.js原生处理POST请求
+    >
+    >    ```javascript
+    >    const http = require('http')
+    >
+    >    http.createServer((req, res) => {
+    >      if (req.method === 'POST') {
+    >        let body = '';
+    >        req.on('data', chunk => {
+    >          body += chunk.toString();
+    >        });
+    >        req.on('end', () => {
+    >          console.log(body);       // body是POST请求body
+    >          // 接受完成，可返回`res.end('ok')`
+    >        });
+    >      }
+    >    })
+    >      .listen(3000, '0.0.0.0')
+    >    ```
+    >2. Node.js原生发起POST请求
+    >
+    >    ```javascript
+    >    const http = require("http");
+    >
+    >    const req = http.request(
+    >      路径,
+    >      {
+    >        method: "POST",
+    >        headers: {
+    >          "Content-Type": "application/json; charset=UTF-8",
+    >        },
+    >      },
+    >      (res) => {
+    >        res.setEncoding("utf8");
+    >        let body = "";
+    >        res.on("data", (chunk) => {
+    >          body += chunk || "";
+    >        });
+    >        res.on("end", () => {
+    >          console.log(body);       // body是POST请求后返回的响应body
+    >          // 返回接受完成
+    >        });
+    >      }
+    >    );
+    >
+    >    req.on("error", (e) => {
+    >      console.warn(e);
+    >    });
+    >
+    >    req.write(JSON.stringify({ a: "发起的请求body" })); // 保证：发起请求的body和请求头匹配
+    >    req.end();
+    >    ```
+    ></details>
 2. `http2`
 3. `https`
 4. `fs`：文件操作API
@@ -1201,7 +1259,7 @@ Node.js的全局对象`global`是全局变量的宿主。
                 1. `--ignore-watch="「文件或文件夹」"`
             6. `--interpreter=bash/python/ruby/coffee/php/perl/node`
 
-                需要配置`exec_mode: fork_mode`、`exec_interpreter: 对应语言`。
+                需要配置`exec_mode: fork`、`exec_interpreter: 对应语言`。
             7. `--max-memory-restart 「数字」K/M/G`
 
                 达到最大内存就自动重启应用。
