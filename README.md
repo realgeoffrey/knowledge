@@ -91,9 +91,9 @@
 ><details>
 ><summary>其他</summary>
 >
->1. [拓展知识](./网站前端/拓展知识/README.md)
->2. [/工具使用](./工具使用/README.md)
->3. [/环境安装、配置](./环境安装、配置/README.md)
+>1. [/工具使用](./工具使用/README.md)
+>2. [/环境安装、配置](./环境安装、配置/README.md)
+>3. [拓展知识](./网站前端/拓展知识/README.md)
 ></details>
 
 ><details>

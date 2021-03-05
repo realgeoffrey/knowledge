@@ -144,7 +144,7 @@ npm（Node Package Manager）。
                     - 取消：
 
                         引用的仓库：`npm unlink 模块名`
-        4. 发布（默认：发布至**latest**标签）
+        4. 发布（默认：发布至`latest`标签）
 
             `npm publish [--tag <tag>]`
 
@@ -417,6 +417,13 @@ npm（Node Package Manager）。
         >"repository": {
         >    "type": "git",
         >    "url": "git@github.com:用户名/仓库名.git"
+        >}
+        >
+        >// 针对monorepo：
+        >"repository": {
+        >  "type": "git",
+        >  "url": "https://github.com/用户名/仓库名.git",
+        >  "directory": "packages/文件夹名"
         >}
         >```
         ></details>
