@@ -11,7 +11,7 @@
 
     >转译的结果在默认情况下并不包括ES6对运行时的扩展：一般不会造成全局变量污染（修改全局变量）、prototype污染（扩展内建类型的原型方法）。
 
-    当有新语法出现（如：ES6的语法糖），部分浏览器无法支持，就用Babel把新语法转译成老语法（[编译器原理](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#编译器原理)）。
+    当有新语法出现（如：ES6的语法糖），部分浏览器无法支持，就用Babel把新语法转译成老语法（[编译器编译原理](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#编译器编译原理)）。
 
     >Babel也适当做了些polyfill：[babel-plugin-transform-runtime](https://github.com/babel/babel/tree/master/packages/babel-plugin-transform-runtime)（开发依赖）。
 2. polyfill：（运行时）垫片，判断不支持的API或全局变量进行添加
