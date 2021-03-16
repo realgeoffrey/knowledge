@@ -86,6 +86,7 @@
     5. [ESLint+Prettier学习笔记](./网站前端/ESLint+Prettier学习笔记/README.md)
     6. [Node.js脚手架（TypeScript+pm2或nodemon+--inspect）](./网站前端/Node.js脚手架（TypeScript+pm2或nodemon+--inspect）/README.md)
     7. [yarn学习笔记](./网站前端/yarn学习笔记/README.md)
+    8. [Lerna学习笔记](./网站前端/Lerna学习笔记/README.md)
 </details>
 
 ><details>

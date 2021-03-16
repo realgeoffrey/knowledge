@@ -10,9 +10,10 @@
 1. [MD5 && SHA](#md5--sha)
 1. [Unicode](#unicode)
 1. [树的遍历](#树的遍历)
-1. [编译器原理](#编译器原理)
+1. [编译器编译原理](#编译器编译原理)
 1. [行业术语](#行业术语)
 
+    1. [抽象语法树（abstract syntax tree，AST）](#抽象语法树abstract-syntax-treeast)
     1. [平稳退化（优雅降级）、渐进增强](#平稳退化优雅降级渐进增强)
     1. [向前兼容、向后兼容](#向前兼容向后兼容)
     1. [自底向上、自顶向下](#自底向上自顶向下)
@@ -27,7 +28,6 @@
     1. [柯里化（currying）](#柯里化currying)
     1. [求值策略（evaluation strategy）](#求值策略evaluation-strategy)
     1. [云服务](#云服务)
-    1. [抽象语法树（abstract syntax tree，AST）](#抽象语法树abstract-syntax-treeast)
     1. [胶水语言（glue languages）](#胶水语言glue-languages)
     1. [词法作用域、动态作用域](#词法作用域动态作用域)
     1. [中台](#中台)
@@ -380,7 +380,7 @@ Unicode：包含全世界所有字符的一个字符集（计算机只要支持�
     3. 重复步骤2。
     4. 若队列为空，表示整张图都检查过了——亦即图中没有欲搜索的目标。结束搜索并回传「找不到目标」。
 
-### 编译器原理
+### 编译器编译原理
 >来自：[the-super-tiny-compiler](https://github.com/jamiebuilds/the-super-tiny-compiler)。
 
 （广义的）编译器：把一种语言代码转为另一种语言代码的程序。
@@ -470,6 +470,27 @@ Unicode：包含全世界所有字符的一个字符集（计算机只要支持�
 
 1. 「架构」是对客观不足的妥协（硬件不足、网络太慢、开发资源有限等客观不足）；
 2. 「规范」是对主观不足的妥协（开发者水平参差不齐的主观不足）。
+
+### 抽象语法树（abstract syntax tree，AST）
+源代码的抽象语法结构的树状表现形式。
+
+- 针对JS
+
+    1. JavaScript的语法是为开发者而设计，但不适合程序理解。因此需要转化为AST用于程序分析。
+    2. 通过JavaScript Parser把代码转化为一棵AST，这棵树定义了代码的结构，通过操纵这棵树，可以精准地定位到声明语句、赋值语句、运算语句等，实现对代码的分析、优化、变更等操作。
+
+        >JavaScript Parser：把JS源码转化为AST的解析器（浏览器会把JS源码通过解析器转为AST，再进一步转化为字节码或直接生成机器码）。
+    3. 常见用途：
+
+        1. 代码语法的检查、代码风格的检查、代码的格式化、代码的高亮、代码错误提示、代码自动补全。
+
+            >e.g. ESLint、IDE。
+        2. 代码混淆压缩。
+
+            >e.g. ES5的[UglifyJS2](https://github.com/mishoo/UglifyJS2)、ES6的[terser](https://github.com/terser/terser)。
+        3. 优化变更代码、改变代码结构使达到想要的结构。
+
+            >e.g. Babel、打包工具、不同模块化方案间转换、CoffeeScript/TypeScript/JSX转化为原生JS。
 
 ### 平稳退化（优雅降级）、渐进增强
 1. 平稳退化（graceful degradation，优雅降级）：
@@ -821,29 +842,6 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 - BaaS（Backend as a Service，后端即服务）
 - FaaS（Function as a Service，函数即服务）
 - Serverless（无服务器架构）
-
-### 抽象语法树（abstract syntax tree，AST）
->来自：[Abstract Syntax Tree 抽象语法树简介](https://div.io/topic/1994)。
-
-源代码的抽象语法结构的树状表现形式。
-
-- 针对JS
-
-    1. JavaScript的语法是为开发者而设计，但不适合程序理解。因此需要转化为AST用于程序分析。
-    2. 通过JavaScript Parser把代码转化为一棵AST，这棵树定义了代码的结构，通过操纵这棵树，可以精准地定位到声明语句、赋值语句、运算语句等，实现对代码的分析、优化、变更等操作。
-
-        >JavaScript Parser：把JS源码转化为AST的解析器（浏览器会把JS源码通过解析器转为AST，再进一步转化为字节码或直接生成机器码）。
-    3. 常见用途：
-
-        1. 代码语法的检查、代码风格的检查、代码的格式化、代码的高亮、代码错误提示、代码自动补全。
-
-            >e.g. ESLint、IDE。
-        2. 代码混淆压缩。
-
-            >e.g. ES5的[UglifyJS2](https://github.com/mishoo/UglifyJS2)、ES6的[terser](https://github.com/terser/terser)。
-        3. 优化变更代码、改变代码结构使达到想要的结构。
-
-            >e.g. Babel、打包工具、不同模块化方案间转换、CoffeeScript/TypeScript/JSX转化为原生JS。
 
 ### 胶水语言（glue languages）
 能够通过操作系统调用其他语言的程序、获取并处理其执行的结果和输入输出的语言，都可以被称作胶水语言（通常是脚本语言）。一个系统由多种语言编写，把不同的语言编写的模块打包起来，最外层使用胶水语言调用这些封装好的包。
