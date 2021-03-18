@@ -39,7 +39,7 @@
     2. 注意内存泄漏（全局副作用）：
 
         1. 在Vue实例内部`new`的其他实例或DOM，应放在`data`内进行掌控，当使用完毕后引导垃圾回收。
-        2. 在Vue实例内部手动绑定的事件（如：`addEventListener`）、计时器、http连接、以及任何需要手动关闭的内容，需要在`beforeDestroy`前手动清除（`destroyed`仅自动清除Vue自己定义、绑定的内容）。
+        2. 在Vue实例内部手动绑定的事件（如：`addEventListener`）、计时器、http连接、以及任何需要手动关闭的内容，需要在`beforeDestroy`手动清除（`destroyed`仅自动清除Vue自己定义、绑定的内容）。
     3. 请求异步数据的业务结构：
 
         1. 独立的API模块专门进行请求数据异步

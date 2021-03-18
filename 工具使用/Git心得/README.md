@@ -311,17 +311,20 @@
 11. stash
 
     ```git
-    git stash                       # 往堆栈推送一个新的储藏，并且恢复修改过的被追踪的文件
+    git stash [push]                # 往堆栈推送一个新的储藏，并且恢复修改过的被追踪的文件
+    -m=「信息」
 
     git stash list                  # 查看所有储藏
 
     git stash apply                 # 应用最后一个储藏
-    git stash apply stash@{「数字」}    # 应用指定的一个储藏
-
-    git stash drop                  # 删除最后一个储藏
-    git stash drop stash@{「数字」}     # 删除指定的一个储藏
+    git stash apply stash@{「数字」}   # 应用指定的一个储藏
 
     git stash pop                   # 应用最后一个储藏，删除最后一个储藏
+
+    git stash drop                  # 删除最后一个储藏
+    git stash drop stash@{「数字」}    # 删除指定的一个储藏
+
+    git stash clear                 # 删除所有储藏
     ```
 12. submodule
 
@@ -829,6 +832,8 @@ feat(details): 添加了分享功能
 
 ### `husky`+`lint-staged`
 1. 使用[husky](https://github.com/typicode/husky)设置：方便的[git hooks](https://git-scm.com/book/zh/v2/自定义-Git-Git-钩子)。
+
+    >或[simple-git-hooks](https://github.com/toplenboren/simple-git-hooks)代替。
 2. 使用[lint-staged](https://github.com/okonet/lint-staged)设置：针对git的staged文件进行lints操作（如：eslint、prettier、等）。
 
 配合效果：针对git的staged文件，在git hooks时期，进行lints操作（如：eslint、prettier、等）。

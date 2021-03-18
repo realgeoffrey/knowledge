@@ -243,6 +243,6 @@
 2. 配合使用：
 
     1. 通过`eslint`命令，使用`prettier`+`eslint`功能：[eslint-plugin-prettier](https://github.com/prettier/eslint-plugin-prettier)（使用eslint的忽略文件；可以在eslint的配置文件中配置prettier配置规则；可以完全不添加prettier配置文件和忽略文件）。
-    2. 使用[`husky`](https://github.com/typicode/husky)+[`lint-staged`](https://github.com/okonet/lint-staged)，针对git的staged文件，在git hooks时期，进行lints操作（如：eslint、prettier、等）。
+    2. 使用[`husky`](https://github.com/typicode/husky)/[`simple-git-hooks`](https://github.com/toplenboren/simple-git-hooks)+[`lint-staged`](https://github.com/okonet/lint-staged)，针对git的staged文件，在git hooks时期，进行lints操作（如：eslint、prettier、等）。
 
     >[demo](./demo)。

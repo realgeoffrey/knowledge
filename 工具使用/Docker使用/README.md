@@ -51,8 +51,8 @@
             ><details>
             ><summary>e.g.</summary>
             >
-            >1. 宿主机nginx监听80端口、配置转发xxx.com到1234端口，hosts配置：`127.0.0.1 xxx.com`，容器docker监听宿主机1234端口映射到容器内部x端口。
-            >2. 宿主机请求xxx.com：hosts到127.0.0.1:80->nginx端口转发到127.0.0.1:1234->1234端口被docker镜像监听，转发到镜像内的x端口，镜像内处理返回。
+            >1. 宿主机nginx监听80端口、配置转发xxx.com到1234端口，hosts配置：`127.0.0.1 xxx.com`，容器docker监听宿主机1234端口映射到容器内部4321端口（`-p=1234:4321`）。
+            >2. 宿主机请求xxx.com：hosts到127.0.0.1:80->nginx端口转发到127.0.0.1:1234->1234端口被docker镜像监听，转发到镜像内的4321端口，镜像内处理返回。
             ></details>
 
             1. `-P`
@@ -61,31 +61,38 @@
         2. `-d`
 
             后台方式运行。
-        3. `-it`
+        3. `-e 「环境变量名」=「值」`
+
+            设置环境变量。
+        4. `-it`
 
             使用交互方式运行，进入容器主shell进程（exit会使容器停止）。
-        4. `--rm`
+
+            >e.g. `docker run -it 「镜像名或ID」 /bin/bash或/bin/sh`
+        5. `--rm`
 
             若容器退出，则自动删除容器。
-        5. `-v=「宿主机目录或文件」:「容器内目录或文件」`
+        6. `-v=「宿主机目录或文件」:「容器内目录或文件」`
 
             数据卷（volume）：宿主机中的一个目录或文件。用于容器数据持久化 或 （外部服务与容器内部、容器间）数据同步。
 
             1. Docker容器中产生的数据 与 宿主机 互相同步。
             2. 一个数据卷可以同时被多个容器同时挂载（容器间数据同步）。
             3. 一个容器也可以被挂载多个数据卷。
-        6. `--name=「容器名」`
+
+            >容器不运行也可以正常同步。
+        7. `--name=「容器名」`
 
             给运行的容器增加一个容器别名，容器ID和容器名均指向此容器。
-        7. `--cidfile=「新文件路径」`
+        8. `--cidfile=「新文件路径」`
 
             尝试创建一个新文件，并将容器ID写入它。若文件已存在，将返回一个错误。Docker运行退出时，Docker将关闭此文件。
-        8. `--pid=host`或`--pid=container:「容器ID或容器名」`
+        9. `--pid=host`或`--pid=container:「容器ID或容器名」`
 
             进程管理。
-        9. `--uts=host`
-        10. `--ipc=「none|private|shareable|container:「容器ID或容器名」|host|""（默认）」`
-        11. 网络
+        10. `--uts=host`
+        11. `--ipc=「none|private|shareable|container:「容器ID或容器名」|host|""（默认）」`
+        12. 网络
 
             1. `--dns=`
             2. `--network=「none|bridge（默认）」|host|container:「容器ID或容器名」|「用户自定义」`
@@ -97,8 +104,8 @@
             6. `--ip=`
             7. `--ip6=`
             8. `--link-local-ip=`
-        12. `--restart=「no（默认）|on-failure[:max-retries]|always|unless-stopped」`
-        13. `--security-opt`
+        13. `--restart=「no（默认）|on-failure[:max-retries]|always|unless-stopped」`
+        14. `--security-opt`
     4. 容器
 
         >互相隔离，每个容器都有一个属于自己的文件系统、网络、进程树。
@@ -138,8 +145,8 @@
                 ```shell
                 docker logs 「容器ID或容器名」
                 -t      # 展示时间戳
-                --tail=「数字」 # 展示最后n条日志（新增继续增加）
                 -f      # 流式输出（文件改动后重新输出）
+                --tail=「数字」 # 最后n条日志
                 ```
             2. 容器底层基础信息
 
@@ -165,6 +172,8 @@
             docker cp 「宿主机文件路径」 「容器ID或容器名」:「保存路径」   # 宿主机 -> 容器
             ```
     5. 新建、提交镜像
+
+        >[Docker Hub](https://hub.docker.com/)。
 
         1. 新建镜像（本地）
 

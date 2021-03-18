@@ -1054,7 +1054,11 @@ Node.js的全局对象`global`是全局变量的宿主。
             </details>
     6. `app.on('error', (err, ctx) => {})`
 
-        错误处理
+        >[koa的错误处理](https://github.com/koajs/koa/blob/master/docs/error-handling.md)。
+
+        错误处理，中间件产生的 未捕获的 同步错误（或同步`ctx.throw`）都会捕获到这里
+
+        >未捕获的异步错误用`process.on('uncaughtException', err => {})`捕获；未捕获的失败Promise实例用`process.on('unhandledRejection', err => {})`捕获。
     7. `app.keys = `
 
         设置签名的 Cookie 密钥
@@ -1203,7 +1207,7 @@ Node.js的全局对象`global`是全局变量的宿主。
         2. `.cookies.set(名[, 值 [, options]])`
     6. `.throw([状态[, 信息[, properties]]])`
 
-        抛出错误。
+        抛出错误（可以被`try-catch`捕获处理）
     7. `.assert(值[, status[, 信息[, properties]]])`
 
         当`值`为`false`时抛出一个类似`.throw`的错误。与Node.js的`assert()`方法类似.
