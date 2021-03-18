@@ -21,7 +21,7 @@
         ```shell
         kubectl logs 「pod名字」 -n 「namespace名字」 -c 「container名字」  # 查看某一个pod内日志
         -f             # 流式输出（文件改动后重新输出）
-        --tail 「数字」   # 最新n条信息
+        --tail 「数字」   # 最后n条日志
         ```
     3. 用可交互模式执行bash
 

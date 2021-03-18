@@ -34,7 +34,7 @@
 >
 >1. iOS屏幕宽度：
 >
->    1. 320：iPhone SE（SE, 5S, 5C）
+>    1. 320：iPhone SE(1st) 或 5S
 >    2. 360：iPhone 12 Mini
 >    3. 375：iPhone 11 Pro
 >    4. 390：iPhone 12 Pro

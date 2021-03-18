@@ -387,14 +387,20 @@ Unicode：包含全世界所有字符的一个字符集（计算机只要支持�
 
 1. 解析（parsing）
 
+    >[对 Parser 的误解](http://www.yinwang.org/blog-cn/2015/09/19/parser)。
+
     `原始代码`（先转化为`Token`，再）转化为[`AST`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#抽象语法树abstract-syntax-treeast)。
 
     1. 词法分析（lexical analysis）
 
-        接收原始代码，分割成Token（一个数组，分割代码字符串的种类：数字、标签、标点符号、运算符，等）。
+        接收原始代码，分割成Token（一个数组，分割代码字符串的种类：数字、标签、标点符号、运算符、等）。
+
+        >正则表达式的DFA。
     2. 语法分析（syntactic analysis）
 
         接收之前生成的Token，转换成AST。
+
+        >上下文无关文法（CFG）、正则表达式的BNF
 
     ><details>
     ><summary>e.g. lisp代码 -> Token -> AST</summary>
@@ -453,12 +459,12 @@ Unicode：包含全世界所有字符的一个字符集（计算机只要支持�
 
     >让它能做到编译器期望它做到的事情。
 
-    遍历AST的所有节点，使用visitor中对应类型的处理函数，对不同类型的节点进行逻辑处理。
+    遍历AST的所有节点，使用visitor中对应类型的处理函数，对不同类型的节点进行逻辑处理。一般会生成一个新的AST。
 3. 代码生成（code generation）
 
     >可能会和转换有重叠。
 
-    根据最终的AST或之前的Token输出新的代码。
+    根据最终的AST或之前的Token输出新的语言代码。
 
 ---
 ## 行业术语

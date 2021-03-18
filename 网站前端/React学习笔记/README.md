@@ -1099,36 +1099,104 @@
 #### 生命周期
 >来自：[React: React.Component](https://zh-hans.reactjs.org/docs/react-component.html)。
 
-1. `constructor`
-2. `componentWillMount/UNSAFE_componentWillMount`
+1. `constructor(props)`
 
-    >唯一会在服务端渲染时调用的生命周期。
-3. `componentDidMount`
+    1. 执行其他语句之前，必须先调用`super(props)`。
+    2. 作用
+
+        1. 通过给`this.state`赋值对象来初始化内部`state`（不能用 ~~`this.setState`~~）。
+        2. 为事件处理函数绑定实例`this`。
+    3. 避免将`props`的值复制给`state`。
+
+    >避免引入任何副作用或订阅。
+9. `static getDerivedStateFromProps(props, state)`
+
+    1. 调用`render`方法之前调用。
+    2. 唯一作用：让组件在`props`变化时更新`state`、`state`的值在任何时候都取决于`props`（需要开发者自行判断）。
+
+        返回一个对象来更新`state`，若返回`null`则不更新`state`。
+
+    >此方法无权访问组件实例（`this`返回`undefined`）。
+7. `componentWillReceiveProps(nextProps)/UNSAFE_componentWillReceiveProps`
+
+    1. 当`props`发生变化时执行；若父组件导致组件重新渲染，即使`props`没有更改，也会执行。
+    2. 首次渲染时不执行。
+    3. 此函数可以通过调用`this.setState()`来更新组件状态。
+4. `shouldComponentUpdate(nextProps, nextState)`
+
+    1. 重新渲染前被触发。
+
+        1. 返回`true`，更新真实DOM（触发`componentWillUpdate+render+componentDidUpdate`）；
+        2. 返回`false`，（可能）跳过本次更新DOM（不触发 ~~`componentWillUpdate+render+componentDidUpdate`~~）。
+    2. 首次渲染 或 调用`forceUpdate`时不执行。
+    3. 不建议进行深层比较或使用`JSON.stringify`。这样非常影响效率，且会损害性能。
+
+    >仅作为性能优化的方式而存在。不要企图依靠此方法来“阻止”渲染，因为这可能会产生bug。应该考虑使用内置的`PureComponent`组件。
+8. `componentWillUpdate(nextProps, nextState)/UNSAFE_componentWillUpdate`
+
+    1. 当组件收到新的`props`或`state`时，会在渲染之前执行。
+    2. 首次渲染时不执行。
+
+    >不可调用`this.setState`；在`componentWillUpdate`返回之前，你也不应该执行任何其他操作（例如，`dispatch` Redux的`action`）触发对React组件的更新。
+10. `render()`
+
+    >不可省略。应该为纯函数。
+12. `getSnapshotBeforeUpdate(prevProps, prevState)`
+
+    1. `render`触发之后、DOM真实渲染之前触发。
+    2. 返回的值传递给`componentDidUpdate`的第三个参数。
+
+5. `componentDidUpdate(prevProps, prevState, snapshot)`
+
+    更新后会被立即调用。首次渲染时不执行。
+
+    >`getSnapshotBeforeUpdate`返回的值作为第三个参数。
+2. `componentWillMount()/UNSAFE_componentWillMount`
+
+    >唯一会在服务端渲染时调用的生命周期。避免引入任何副作用或订阅。
+3. `componentDidMount()`
 
     组件已经装载。
-4. `shouldComponentUpdate`
 
-    重新渲染前被触发。返回`true`，更新真实DOM（触发`render`+`componentDidUpdate`）；返回`false`，跳过本次更新DOM（不触发 ~~`render`~~+~~`componentDidUpdate`~~）。
-5. `componentDidUpdate`
+    >执行有副作用的操作。依赖DOM的初始化操作、网络请求、订阅。
+6. `componentWillUnmount()`
 
-    更新后会被立即调用。首次渲染不会执行此方法。
-6. `componentWillUnmount`
+    1. 卸载组件。
+    2. 注意内存泄漏（全局副作用）：手动绑定的事件（如：`addEventListener`）、订阅、计时器、http连接、以及任何需要手动关闭的内容，需要在`componentWillUnmount`手动清除。
 
-    卸载组件。
+    >`render`返回`null`时不会触发`componentWillUnmount`，只有组件被卸载才会触发。不应该调用 ~~`this.setState`~~，将永远不会重新渲染。
+1. 错误边界
 
-    >`render`返回`null`时不会触发`componentWillUnmount`，只有组件被卸载才会触发。
-7. `componentWillReceiveProps/UNSAFE_componentWillReceiveProps`
+    仅捕获子组件树中的错误，但它本身组件的错误无法捕获。捕获子组件树在渲染期间、生命周期方法、其整个树的构造函数中发生的错误。
 
-    1. 组件第一次渲染时不会执行componentWillReceiveProps；
-    2. 当props发生变化的时时候会执行componentWillReceiveProps；
-    3. 在componentWillReceiveProps里面，旧的属性可以通过this.props来获取，新的属性则可以通过参数nextProps来获取；
-    4. 此函数可以通过调用this.setState()来更新组件状态，并且不会引起第二次的渲染
-    5. 也可在此函数内根据需要调用自己的自定义函数，来对prop的改变做出一些响应。
-8. `componentWillUpdate/UNSAFE_componentWillUpdate`
-9. `getDerivedStateFromProps`
-10. `render`
-11. `setState`
-12. `getSnapshotBeforeUpdate`
+    1. `static getDerivedStateFromError(error)`
+
+        若后代组件抛出错误则被调用。它将抛出的错误作为参数，并返回一个对象以更新`state`。
+
+        >必须是纯函数。
+    2. `componentDidCatch(error, info)`
+
+        1. 此生命周期在后代组件抛出错误后被调用。
+        2. 参数：error，抛出的错误；info，带有 componentStack key 的对象，其中包含有关组件引发错误的栈信息。
+        3. 应该用于记录错误之类的情况。
+
+        >允许执行副作用。
+
+    >- 无法捕获错误的场景：
+    >
+    >    1. 事件处理
+    >
+    >        >利用`try-catch`弥补。
+    >    2. 异步代码
+    >    3. 服务端渲染
+    >    4. 它自身抛出的错误
+    >
+    >        若一个错误边界无法渲染错误信息，则错误会冒泡至最近的上层错误边界。
+
+- 其他
+
+    11. `setState`
+    12. `forceUpdate`
 
 >[生命周期图谱](https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)。
 
