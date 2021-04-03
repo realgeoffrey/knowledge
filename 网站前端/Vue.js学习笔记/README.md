@@ -2867,19 +2867,49 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
     <summary><code>nuxt.config.js</code>：配置文件</summary>
 
-    >配置文件引入的内容不会打包进最终项目代码里。因此若需要使用一些敏感数据且不打算打包进最终项目代码，可以在`nuxt.config.js`引入敏感文件并写入`env`供给项目中使用。
-    >
-    >```javascript
-    >// nuxt.config.js
-    >var a = require('./a')  // 只打算用a.js文件中的一部分，不打算在项目代码中引入a.js
-    >
-    >module.exports = {
-    >  env: {
-    >    xxx: a.xxx  // process.env.xxx 或 上下文.env.xxx
-    >  },
-    >}
-    >```
+    1. `alias`
 
+        配置引用别名。
+
+        <details>
+        <summary>e.g.</summary>
+
+        ```javascript
+        import { resolve } from 'path'
+        export default {
+          alias: {
+            'images': resolve(__dirname, './assets/images'),
+            'style': resolve(__dirname, './assets/style'),
+            'data': resolve(__dirname, './assets/other/data')
+          }
+        }
+        ```
+
+        JS直接使用，CSS或HTML（非JS的）等，需要加`~`前缀：
+
+        ```vue
+        <template>
+          <img src="~images/main-bg.jpg">
+        </template>
+
+        <script>
+        import data from 'data/test.json'
+
+        // etc.
+        </script>
+
+        <style>
+        @import '~style/variables.scss';
+        @import '~style/utils.scss';
+        @import '~style/base.scss';
+
+        body {
+          background-image: url('~images/main-bg.jpg');
+        }
+        </style>
+        ```
+
+        </details>
     1. `build`
 
         配置webpack构建。
@@ -2910,10 +2940,36 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         3. `.extend`
 
             为客户端和服务端的构建配置进行手工的扩展处理。
+        4. `extractCSS`
+
+            使用[extract-css-chunks-webpack-plugin](https://github.com/faceyspacey/extract-css-chunks-webpack-plugin)将各样式内容提取到各自单独的CSS文件中。因此能够缓存样式文件。
+
+            1. `false`（默认）
+
+                样式由 初始化 或 每个路由的.js 插入`<style>`。
+            2. `true`
+
+                样式由 初始化 或 每个路由的.js 插入`<link href>`。
+
+            >开发模式建议关闭，否则无法热更新样式；生产环境建议开启：`extractCSS: process.env.NODE_ENV === 'production'`。
     2. `buildDir`
 
         配置`.nuxt`（默认）目录。
-    3. `css`
+    3. `cli`
+
+        修改CLI打印出的一些效果。
+
+        <details>
+        <summary>e.g.</summary>
+
+        ```javascript
+        cli: {
+          badgeMessages: ['Hello World!'],
+          bannerColor: 'yellow'
+        }
+        ```
+        </details>
+    4. `css`
 
         配置全局（所有页面都引用）的样式，包括文件、模块、第三方库。
 
@@ -2931,10 +2987,35 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         }
         ```
         </details>
-    4. `dev`
+    5. `components`
+
+        >来自：[nuxt/components](https://github.com/nuxt/components)。
+
+        自动引入components。针对`nuxt/components`文件夹。
+    6. `dev`
 
         配置开发/生产模式。
-    5. `env`
+    7. `dir`
+
+        配置代码结构路径。
+
+        <details>
+        <summary>e.g.</summary>
+
+        ```javascript
+        // 默认：
+        dir: {
+          assets: 'assets',
+          app: 'app',
+          layouts: 'layouts',
+          middleware: 'middleware',
+          pages: 'pages',
+          static: 'static',
+          store: 'store'
+        }
+        ```
+        </details>
+    8. `env`
 
         配置（客户端和服务端）环境变量（由`webpack.DefinePlugin`实现）。
 
@@ -2943,46 +3024,62 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             1. `process.env.定义的值`
             2. `上下文.env.定义的值`
 
-        >（不同于vue-cli，）`process.env`在客户端只返回空对象，需要明确环境变量名才可以在客户端展示（e.g. `process.env.某`）。
-    6. `generate`
+        >1. （不同于vue-cli，）`process.env`在客户端只返回空对象，需要明确环境变量名才可以在客户端展示（e.g. `process.env.某`）。
+        >2. 配置文件引入的内容不会打包进最终项目代码里。因此若需要使用一些敏感数据且不打算打包进最终项目代码，可以在`nuxt.config.js`引入敏感文件并写入`env`供给项目中使用。
+        >
+        >    ```javascript
+        >    // nuxt.config.js
+        >    var a = require('./a')  // 只打算用a.js文件中的一部分，不打算在项目代码中引入a.js
+        >
+        >    module.exports = {
+        >      env: {
+        >        xxx: a.xxx  // process.env.xxx 或 上下文.env.xxx
+        >      },
+        >    }
+        >    ```
+    9. `extendPlugins`
+
+        定制plugins。
+    10. `generate`
 
         当运行`nuxt generate`命令或在编码中调用`nuxt.generate()`时，Nuxt.js 会使用 generate 属性的配置。
-    7. `globalName`
-    8. `head`
+    11. `globalName`
+    12. `head`
 
         >`hid`是标签（如：`<meta>`等）的唯一的标识编号，用于覆盖父组件相同标签（vue-meta中默认是`vmid`）。
 
         配置HTML的公共静态内容，可在`pages`组件内重置。
 
         >来自：[vue-meta](https://github.com/declandewet/vue-meta)，可以设置多种内容，包括CSS文件、JS文件、style内容等，可以设置`htmlAttrs`、`headAttrs`、`bodyAttrs`。
-    9. `hooks`
-    10. `ignore`、`ignorePrefix`
-    11. `loading`
+    13. `hooks`
+    14. `ignore`
+    15. `loading`
 
         配置加载组件。
-    12. `loadingIndicator`
+    16. `loadingIndicator`
 
         配置内置加载器样式。
-    13. `mode`
+    17. `mode`
 
         配置nuxt启动的服务端（开发模式、生产模式）是否使用SSR。使用SSR（默认）：`'universal'`；关闭SSR：`'spa'`。
-    14. `modern`
-    15. `modules`
+    18. `modern`
+    19. `modules`
 
         配置需要添加的nuxt模块。
-    16. `modulesDir`
-    17. `plugins`
+    20. `modulesDir`
+    21. `plugins`
 
         配置在Vue根应用的实例化前需要运行的JS插件。
-    18. `render`
-    19. `rootDir`
+    22. `render`
+    23. `rootDir`
 
         配置根目录。
-    20. `router`
+    24. `router`
 
         配置覆盖默认的`vue-router`配置。
 
-        1. `router.mode`：
+        1. `base`
+        2. `mode`：
 
             配置路由模式（`history`或`hash`）。
 
@@ -2998,7 +3095,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             };
             ```
             </details>
-        2. `router.middleware`：
+        3. `middleware`：
 
             配置全局中间件。
 
@@ -3014,7 +3111,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             };
             ```
             </details>
-        3. `router.extendRoutes`
+        4. `extendRoutes`
 
             添加自定义路由（pages自动生成的路由 优先于 自定义添加的路由）
 
@@ -3043,31 +3140,23 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             }
             ```
             </details>
-    21. `server`
-    22. `serverMiddleware`
-    23. `srcDir`
+    25. `runtimeConfig`
+    26. `server`
+    27. `serverMiddleware`
+    28. `srcDir`
 
         配置源码目录。
-    24. `transition`
+    29. `ssr`
+    30. `target`
+    31. `telemetry`
+    32. `transition`
 
         配置过渡效果属性的默认值。
-    25. `vue.config`
-    26. `watch`
+    33. `vue.config`
+    34. `watch`
 
         允许监听自定义文件来重新启动服务器。
-    27. `watchers`
-    28. `extractCSS`
-
-        使用[extract-css-chunks-webpack-plugin](https://github.com/faceyspacey/extract-css-chunks-webpack-plugin)将各样式内容提取到各自单独的CSS文件中。因此能够缓存样式文件。
-
-        1. `false`（默认）
-
-            样式由 初始化 或 每个路由的.js 插入`<style>`。
-        2. `true`
-
-            样式由 初始化 或 每个路由的.js 插入`<link href>`。
-
-        >开发模式建议关闭，否则无法热更新样式；生产环境建议开启：`extractCSS: process.env.NODE_ENV === 'production'`。
+    35. `watchers`
     </details>
 3. <details>
 

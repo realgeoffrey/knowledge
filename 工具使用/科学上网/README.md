@@ -10,6 +10,9 @@
     1. [Shadowsocks](#shadowsocks客户端配置)
     1. [Cisco IPSec（IPSec Xauth PSK）或IPsec/L2TP（L2TP/IPsec PSK）](#cisco-ipsecipsec-xauth-psk或ipsecl2tpl2tpipsec-psk客户端配置)
     1. [IKEv2（IKEv1）](#ikev2ikev1客户端配置)
+1. [案例](#案例)
+
+    1. [ClashX提供给同局域网其他设备翻墙功能](#clashx提供给同局域网其他设备翻墙功能)
 
 ---
 ## 服务端安装
@@ -296,3 +299,12 @@
 
                 选择「证书」添加。
             3. 证书 -> 受信任的根证书颁发机构 -> 证书，右键 -> 所有任务 -> 导入，选择ca.cert.cer导入成功。
+
+---
+## 案例
+
+### ClashX提供给同局域网其他设备翻墙功能
+
+已经联网的mac电脑，开启ClashX，并开启"允许局域网连接"：同一局域网下的机器，http代理到mac电脑的IP+ClashX的HTTP代理端口，即可翻墙。
+
+>连接VPN的手机，也需要有HTTP代理功能才可以提供翻墙功能给连接其热点的设备。iOS的Quantumult X暂时没有找到类似功能。

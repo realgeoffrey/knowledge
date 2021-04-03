@@ -775,7 +775,7 @@
                     >对象：`({...obj} = obj)`
                 3. `arr = arr.slice()`或`arr = arr.concat()`
 
-                    >对象：`obj = Object.assign({}, obj)`（不推荐用 ~~`obj = Object.create(obj)`~~）
+                    >对象：`obj = Object.assign({}, obj)`（不推荐用：~~`obj = Object.create(obj)`~~）
                 4. 一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)赋值
             2. [深复制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#深复制拷贝实现思路)。
 4. <details>
@@ -855,19 +855,21 @@
 
 >随着JS引擎的更新，原来会导致内存泄漏的bug已经慢慢被修复，因此写代码时不太需要注意内存泄漏问题（误）；Node.js的内存泄漏比较严重、隐蔽、难根除。
 
-todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如何规避。`console.profile()和console.profileEnd()`
+todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄漏和如何规避。`console.profile()和console.profileEnd()`
 
 ### 深复制（拷贝）实现思路
 >参考：[深入剖析JavaScript的深复制](http://jerryzou.com/posts/dive-into-deep-clone-in-javascript/)。
 
 1. [递归赋值](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)（最全面方式）
 
-    >深复制要处理的坑：循环引用、各种引用数据类型。
+    >深复制要处理的坑：循环引用、各种引用数据类型、执行性能。
 2. 针对**仅能够被JSON直接表示的数据结构（对象、数组、数值、字符串、布尔值、null）**：
 
     `JSON.parse(JSON.stringify(obj));`
 
 >不考虑原型链。
+
+3. `Proxy`
 
 ### 数据类型转换
 >参考：[阮一峰：数据类型转换](http://javascript.ruanyifeng.com/grammar/conversion.html)、[ecma-262等于比较](https://www.ecma-international.org/ecma-262/#sec-abstract-equality-comparison)。
@@ -1076,7 +1078,8 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
 
         1. 新增**Web Worker**标准，但不能~~操作DOM~~，完全受主线程控制。
 
-            >在浏览器tab没有被激活时（inactive），计时器间隔的最小值会提升、进程执行会变慢。用Web Worker不会受浏览器是否激活的影响。
+            >1. Worker与主线程通信，都通过`postMessage`传递信息、通过`message`事件接受信息。
+            >2. 在浏览器tab没有被激活时（inactive），计时器间隔的最小值会提升、进程执行会变慢。用Web Worker不会受浏览器是否激活的影响。
         2. 多个异步线程分别处理：**网络请求**、**定时器**、**读写文件**、**I/O设备事件**、**页面渲染**等。
 
             >DOM的变动（尤其是涉及页面重新渲染的部分），通常不会立即执行，而是每16毫秒执行一次。
@@ -1314,7 +1317,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
 
             <summary>Error类型实例 -> <code>'[object Error]'</code></summary>
 
-            Error、EvalError、RangeError、ReferenceError、SyntaxError、TypeError、URIError
+            `Error`、`EvalError`、`RangeError`、`ReferenceError`、`SyntaxError`、`TypeError`、`URIError`
             </details>
         15. Map实例 -> `'[object Map]'`
         16. Set实例 -> `'[object Set]'`
@@ -1391,6 +1394,8 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
     判断对象或对象的整条原型链（`[[Prototype]]`）上是否拥有属性名，不读取属性值。
 
     >1. `对象.hasOwnProperty(属性名)`仅检查在当前实例对象，不检测其原型链。
+    >
+    >    `对象.hasOwnProperty(属性名)`建议代替用：`Object.prototype.hasOwnProperty.call(对象, 属性名)`。
     >2. ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
 
 - Chrome的DevTools的控制台执行`queryObjects(构造函数)`，返回当前执行环境的构造函数创建的所有实例。
@@ -1405,6 +1410,11 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
 >1. `continue`应用在循环（`while`、`do-while`、`for`、`for-in`、`for-of`），表示跳过当次循环；`break`应用在循环、`switch`，表示跳出整个循环。
 >2. `forEach`、`map`、`filter`、`some`、`every`无法中止循环（`return`只结束回调函数）。
 >3. `$.each/$dom.each`跳出循环用`return true`（功能等价于：`continue`）、`return false`（功能等价于：`break`）。
+
+- 尽量不要在`for-in`、`for-of`、Array遍历方法中改变原数组项或值
+
+    1. 若仅是删减项，则可以用`Array.prototype.filter`。
+    2. 若是更复杂的情况，则可以用`Array.prototype.reduce`（最方便）或`for`（需要创建一个新变量保存结果，可能性能好些）。
 
 1. 原生JS
 
@@ -1562,14 +1572,40 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
         }
         ```
 
-        >若在`for-in`中改变了原对象/原数组，则不会影响遍历的项和顺序，但直接使用原对象/原数组会展示修改后的值。
+        >在`for-in`时，需要遍历的key值和顺序预先确定。若遍历到某个key，此key不存在（被删了或移出了），则会跳过不执行当前key。若在`for-in`内部新增的key，不会被遍历执行。且任何时候直接使用原对象/原数组会展示修改后的当前值。
         >
+        >e.g.
         >```javascript
-        >// e.g.
-        >var originObj = { a: 'aa', b: 'bb' }
-        >for (let key in originObj) {
-        >  originObj.c = 'cc'
-        >  console.log(key, originObj)  // => 'a' 修改后对象 => 'b' 修改后对象
+        >var originObj1 = { a: "aa", b: "bb" };
+        >for (const key in originObj1) {
+        >  originObj1[key + key] = originObj1[key] + originObj1[key];
+        >  console.log(key, originObj1); // => 'a' {a: "aa", b: "bb", aa: "aaaa"} => 'b' {a: "aa", b: "bb", aa: "aaaa", bb: "bbbb"}
+        >}
+        >
+        >var originObj2 = { a: "aa", b: "bb", c: "cc" };
+        >for (const key in originObj2) {
+        >  delete originObj2[key];
+        >  console.log(key, originObj2); // => 'a' {b: "bb", c: "cc"} => 'b' {c: "cc"} => 'c' {}
+        >}
+        >
+        >var originObj3 = { a: "aa", b: "bb", c: "cc" };
+        >for (const key in originObj3) {
+        >  delete originObj3.b;
+        >  console.log(key, originObj3); // => 'a' {a: "aa", c: "cc"} => 'c' {a: "aa", c: "cc"}
+        >}
+        >
+        >
+        >const originArr1 = ["a", "b"];
+        >for (const key in originArr1) {
+        >  originArr1.unshift(key + "<-" + key);
+        >  originArr1.push(key + "->" + key);
+        >  console.log(key, originArr1); // => 0 ["0<-0", "a", "b", "0->0"] => 1 ["1<-1", "0<-0", "a", "b", "0->0", "1->1"]
+        >}
+        >
+        >const originArr2 = ["a", "b", "c"];
+        >for (const key in originArr2) {
+        >  originArr2.splice(1, 1);
+        >  console.log(key, originArr2); // => 0 ["a", "c"] => 1 ["a"]
         >}
         >```
         </details>
@@ -1586,7 +1622,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
         }
         ```
 
-        >若在`for-of`中改变原数组，则会影响遍历的项和顺序。
+        >若在`for-of`中改变原数组，则会影响遍历的项和顺序。且任何时候直接使用原数组会展示修改后的当前值。
         >
         >```javascript
         >// e.g.
@@ -1626,14 +1662,14 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
     5. Array方法
 
         ><details>
-        ><summary>若在Array遍历的回调函数中改变原数组，则会影响遍历的项和顺序。</summary>
+        ><summary>若在Array遍历的回调函数中改变原数组，则会影响遍历的项和顺序。且任何时候直接使用原数组会展示修改后的当前值</summary>
         >
         >```javascript
         >// e.g.
         >var originArr = ['a', 'b', 'c']
         >originArr.forEach((item, index, arr) => {   // 或其他所有Array.prototype.遍历方法
         >  originArr.pop()
-        >  console.log(arr, originArr)   // => ['a', 'b'] ['a', 'b'] => ['a'] ['a']
+        >  console.log(index, arr, originArr)   // => 0 ['a', 'b'] ['a', 'b'] => 1 ['a'] ['a']
         >})
         >```
         ></details>
@@ -1915,6 +1951,8 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
 1. 原生错误类型
 
     >来自：[MDN:Error](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Error)。
+
+    错误类型：`Error`、`EvalError`、`RangeError`、`ReferenceError`、`SyntaxError`、`TypeError`、`URIError`。
 2. 自定义错误
 
     ```javascript
@@ -2055,7 +2093,7 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
 
     >捕获错误的目的在于避免浏览器以默认方式处理它们；而抛出错误的目的在于提供错误发生具体原因的消息。
 
-    - 对于打包压缩的JS，可以用sourcemap进行还原定位错误位置，并且可以把sourcemap放在仅允许特殊IP访问的地方以限制外网人员查看。
+    - 对于打包压缩的JS，可以用SourceMap进行还原定位错误位置，并且可以把SourceMap放在仅允许特殊IP访问的地方以限制外网人员查看。
     - 尽量避免~~静默错误~~（`try-catch`的`catch`没有任何处理，也没有任何提示）
 
         若添加`try-catch`捕获了错误，在`catch`中：要不然进行新的逻辑、要不然要把错误暴露出来。如：在`catch`中添加`console`或上报错误或其他方式能让开发者感知到出错了。
@@ -2300,6 +2338,8 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
     ```
 
     - 类似的有：`setTimeout/setInterval`的第一个参数是字符串、`new Function`的最后一个字符串参数，都能动态生成代码，都能在运行期修改书写期的词法作用域。
+
+    >动态执行JS脚本的方式：`eval`、`new Function`、Node.js的`vm`模块。
 2. `with`
 
     ```javascript
@@ -3228,6 +3268,8 @@ todo: chrome如何查内存泄漏，Node.js如何查隐蔽的内存泄漏和如�
         </details>
 
 - 移除绑定：
+
+    `绑定事件接口`将回调函数压入该事件的回调函数队列，当事件发生时，回调函数队列会被遍历，其中的函数会被逐个执行。`解除绑定事件接口`将回调函数从该事件的回调函数队列中移除，当事件发生时，队列中没有该函数，于是该函数便不会执行。
 
     1. HTML事件处理程序、DOM0级事件处理程序，用赋值覆盖解绑。
     2. `attachEvent/detachEvent`，必须一一对应具体的**handle**进行解绑。**handle**是匿名函数无法解绑。

@@ -1451,7 +1451,6 @@ console.log(versionCompare('1.1.10', '1.2'))  // => <
  * @returns {Boolean} - 是否在区间
  */
 function isVersionIncluded (version, base, separator = '-') {
-  debugger
   version = String(version)
   base = String(base)
 
