@@ -36,6 +36,32 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
         1. 仅允许被`undefined`或`null`赋值。
         2. 表示没有任何返回值的函数。
+
+            ><details>
+            ><summary>Promise的默认返回可以用<code>void</code>（不能用<del><code>undefined</code></del>）</summary>
+            >
+            >e.g.
+            >
+            >```typescript
+            >function a (): Promise<void> {  // 只能用void
+            >  return new Promise((resolve, reject) => {
+            >    resolve();
+            >  }).then(() => {
+            >
+            >  });
+            >}
+            >
+            >
+            >
+            >function b (): Promise<void> {  // 或 Promise<undefined>
+            >  return new Promise((resolve, reject) => {
+            >    resolve();
+            >  }).then(() => {
+            >    return undefined
+            >  });
+            >}
+            >```
+            ></details>
     3. `never`
 
         表示永不存在的值的类型（如：总是会抛出异常或根本就不会有返回值的函数表达式或箭头函数表达式的返回值类型；变量也可能是never类型，当它们被永不为真的类型保护所约束时）。
@@ -286,7 +312,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
             可选参数 和 默认参数 不能同时设置。e.g. 不允许：~~`y?: number = 1`~~。
         4. 引用函数传入的参数不允许多于或少于约定的参数数量（若有可选参数、或默认参数、或剩余参数时，则允许少传入参数）。
-        5. 函数表达式可用`接口`定义。
+        5. 函数表达式可用`接口` 或 `对象`定义。
         6. 函数的参数和返回值可以根据`接口`进行类型推论。
 
         ><details>
@@ -336,6 +362,12 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >// 或：mySum3 = function (x: number, y: number): string {    // 显式定义（不是类型推论）
         >  return x + y + ''
         >}
+        >
+        >// 对象
+        >function identity<T>(arg: T): T {
+        >    return arg;
+        >}
+        >let myIdentity: {<T>(arg: T): T} = identity;
         >```
         ></details>
 
@@ -732,6 +764,25 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
             >合并的相同属性的类型必须是相同的。
         2. 接口中方法的合并，与函数的合并一样：支持重载、合并。
+        3. 对象可以重载覆盖，但是需要用更多属性的对象，不能用更少属性的对象
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```typescript
+            >interface a {
+            >  aa: { a: string; b: string }
+            >}
+            >
+            >interface b extends a {
+            >  aa: { a: string; b: string; c: string };
+            >}
+            >
+            >interface c extends a {            // 报错，不能用更少的属性覆盖
+            >  aa: { a: string; c: string };
+            >}
+            >```
+            ></details>
 6. `type`
 
     1. 类型别名
@@ -982,6 +1033,8 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
     >
     >func<string, number>("aaa", 222, ["a", "b", 3]);   // 显式定义（不是类型推论）
     >func<"aaa", 222>("aaa", 222, ["aaa", "aaa", 222]); // 显式定义（不是类型推论）
+    >func("a", 2, ["aa", 22]);                          // 类型推论。会报错，等价于：func<"a", 2>("a", 2, ["aa", 22])
+    >func("a" as string, 2 as number, ["aa", 22]);      // 类型推论
     >
     >
     >class A<T extends number | string> {
@@ -996,7 +1049,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
     - 定义 - 赋值
 
-        1. 定义：类型变量（用任意的非保留关键字）
+        1. 定义：类型变量/泛型变量（用任意的非保留关键字）
         2. 赋值：传入类型，可以是自定义类型，可以是类型推论
     2. 泛型接口
     3. 泛型类
@@ -1286,13 +1339,49 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
     >来自：[lib.es5.d.ts](https://github.com/microsoft/TypeScript/blob/master/lib/lib.es5.d.ts#L1455)、[typescript: Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html)。
 
-    `Partial`、`Required`、`Readonly`、`Pick`、`Record`、`Exclude`、`Extract`、`ThisType`、`InstanceType`、`NonNullable`、`Parameters`、`ConstructorParameters`、`Omit`、等
+    `Partial`、`Required`、`Readonly`、`Pick`、`Record`、`Extract`、`ThisType`、`InstanceType`、`NonNullable`、`Parameters`、`ConstructorParameters`、等
+
 
     1. `ReturnType`
 
         获得方法类型的返回类型。
 
         >e.g. `ReturnType<typeof 方法>`
+    2. `Omit`
+
+        去除类型中的某些属性。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >interface A {
+        >  title: string
+        >  completed: boolean
+        >  description: string
+        >}
+        >
+        >type AB = Omit<A, "description">
+        >
+        >const a: AB = {
+        >  title: 'Clean room',
+        >  completed: false
+        >}
+        >```
+        ></details>
+    3. `Exclude`
+
+        去除类型中的一部分。
+
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >type a = number | string | boolean
+        >type b = Exclude<a, number | boolean>
+        >```
+        ></details>
 
 #### 其他相关
 1. 配置

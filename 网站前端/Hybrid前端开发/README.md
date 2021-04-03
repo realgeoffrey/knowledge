@@ -105,6 +105,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         >2. 有些App会设置允许跳转的其他App的白名单或黑名单，如：微信白名单。
         >3. 除了增加回调函数且被客户端调用，否则无法准确判定是否在此App内部。
         >4. 跨App使用`自定义URL Scheme`，其后面的字符串要产生的行为仅目的App能理解。
+        >5. 快速触发多次`自定义URL Scheme`，有时仅有最后一个产生效果。e.g. 用`window.location.href`快速触发多次，仅有最后一次跳转信息能够传递给客户端。
 
         1. iOS
 
@@ -251,6 +252,14 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
     1. 通过JS触发Native App之间的切换分享（自己Native内可用桥协议，任意App均要起作用只能用Scheme）。
     2. 带分享信息参数去访问目标App提供的分享URL。
 5. [响应式页面解决方案](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#响应式页面解决方案)
+6. 客户端内的前端页面，添加半屏弹窗策略：
+
+    针对通用的逻辑，要给多个前端页面添加半屏弹窗逻辑。如：某个后台接口返回错误码，统一弹出半屏弹窗。
+
+    1. 提前注入弹窗DOM和逻辑，需要触发时调用。
+    2. 需要触发时动态注入弹窗DOM和逻辑，再调用。
+    3. 新制作一个前端的弹窗页面，需要触发时在原页面上层覆盖这个半屏弹窗页面。
+    4. 客户端提供bridge或Scheme用于弹出客户端的弹窗，需要触发时唤起客户端的弹窗。
 
 ### WebView性能
 >参考：[WebView性能、体验分析与优化](https://tech.meituan.com/2017/06/09/webviewperf.html)。

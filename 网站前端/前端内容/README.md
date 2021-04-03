@@ -18,6 +18,9 @@
 2. 服务端Node.js与各种终端的涌现，让前端进入了大前端范畴，这时的前端，已远远不只是浏览器端的页面实现技术，而是后端服务与人机界面的连接器。
 
     ![前端涉及内容图2](./images/fe-tech-2.png)
+3. 前端涉及：
+
+    性能（体验），稳定性（监控告警），开发效率（工具，开发、构建流程）
 
 ### 前端工程化
 >参考：[张云龙：前端工程——基础篇](https://github.com/fouber/blog/issues/10)。
@@ -350,6 +353,51 @@
         >[渲染细节和性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)。
 
         页面每一帧刷新时，会使用当前最新解析完成的DOM和CSSOM进行渲染。阶段性生成CSSOM完成之前（生成CSSOM进行时），会阻塞渲染。
+
+- JS阻止浏览器执行渲染方式：
+
+    1. `alert`
+    2. 执行不停止的JS代码
+    3. ~~`debugger`~~ 无法阻止
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```html
+    ><div id="j-div-1">1</div>
+    ><div id="j-div-2">2</div>
+    ><div id="j-div-3">3</div>
+    >
+    ><script>
+    >const dom1 = document.querySelector('#j-div-1')
+    >dom1.onclick = () => {
+    >  dom1.innerHTML = 'hello'
+    >  console.log(dom1.innerHTML)  // 能打印出：'hello'
+    >
+    >  alert()                      // 阻塞浏览器渲染
+    >}
+    >
+    >const dom2 = document.querySelector('#j-div-2')
+    >dom2.onclick = () => {
+    >  dom2.innerHTML = 'hello'
+    >  console.log(dom2.innerHTML)  // 能打印出：'hello'
+    >
+    >  debugger                     // 不阻塞
+    >}
+    >
+    >const dom3 = document.querySelector('#j-div-3')
+    >dom3.onclick = () => {
+    >  dom3.innerHTML = 'hello'
+    >  console.log(dom3.innerHTML); // 能打印出：'hello'
+    >
+    >  (function sleep (ms) {       // js运行期间，阻塞浏览器渲染
+    >    ms += new Date().getTime()
+    >    while (new Date() < ms) {}
+    >  }(3000))
+    >}
+    ></script>
+    >```
+    ></details>
 
 ### 前端「增量」原则
 1. 「增量」原则：

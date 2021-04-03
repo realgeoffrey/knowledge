@@ -238,7 +238,7 @@ vi ~/.zshrc         # zsh
     ```shell
     # macOS、Linux
     netstat -ant | grep 「端口号」
-    lsof -i :「端口号」
+    lsof -i :「端口号」              # sudo su
     ```
 3. 查看进程并杀死
 
@@ -260,7 +260,7 @@ vi ~/.zshrc         # zsh
 1. macOS、Linux
 
     ```shell
-    lsof -i :「端口号」
+    lsof -i :「端口号」              # sudo su
 
     kill -9 「PID」
     # macOS的「活动监视器」也可以查到「PID」并关闭进程
@@ -457,12 +457,56 @@ echo 1.txt 2.txt 3.txt | xargs touch
 ```
 
 #### mysql
-```shell
-mysql -h 「IP」 -P 「端口号」 -u 「用户名」 -p「密码（-p与密码没有空格）」 -D 「数据库名」 --default-character-set=utf8
+>[mysql 命令](https://dev.mysql.com/doc/refman/8.0/en/)。
 
-# `;`作为结束输入的标志
-show databases;
-```
+1. 连接mysql
+
+    ```shell
+    mysql -h 「IP」 -P 「端口号」 -u 「用户名」 -p「密码（-p与密码没有空格）」 -D 「数据库名」 --default-character-set=utf8
+    ```
+2. 进入mysql后命令行
+
+    >`;`作为结束输入的标志。
+
+    1. 查看
+
+        ```shell
+        # 查看所有数据库
+        show databases;
+
+        # 访问某数据库
+        use 「数据库名」;
+
+        # 查看某数据库的所有表
+        show tables;
+
+        # 查看某表的所有字段信息
+        describe 「表名」;
+
+        # select
+        SELECT * FROM 「表名」;
+        ```
+    2. 增删改查 数据
+
+        `select/delete/update/insert`、`from 「表名」`、`order by 「字段名」`、`where`、`or`、`and`、`like`
+    3. 修改表
+
+        ```shell
+        # 新建表
+        create table 「表名」(「字段」 「类型」);
+
+        # 删除表
+        drop table 「表名」;
+
+        # 修改表名
+        rename table 「原表名」 to 「新表名」;
+
+        # 修改数据库的配置参数
+        alter database 「表名」 「内容」
+
+        # 修改表字段信息
+        alter table 「表名」 「内容」
+        ```
 
 ---
 ### macOS命令

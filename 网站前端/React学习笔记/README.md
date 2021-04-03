@@ -7,9 +7,12 @@
     1. [元素渲染](#元素渲染)
     1. [组件](#组件)
     1. [生命周期](#生命周期)
+    1. [Hook](#hook)
     1. [与第三方库协同](#与第三方库协同)
+    1. [性能优化](#性能优化)
     1. [代码分割（动态加载）](#代码分割动态加载)
     1. [类型检查](#类型检查)
+    1. [测试](#测试)
 1. [create-react-app](#create-react-app)
 1. [redux](#redux)
 1. [mobx](#mobx)
@@ -19,9 +22,9 @@
 ### [react](https://github.com/facebook/react)
 
 #### JSX
->`React.createElement(type或element[, props[, ...children]])`函数的语法糖（已废弃：~~`React.createFactory(type或element)`~~）。
+>（React16及之前）`React.createElement(type或element[, props[, ...children]])`函数的语法糖（已废弃：~~`React.createFactory(type或element)`~~）。
 
-1. 使用JSX语法前提：
+1. 使用JSX语法前提（React16及之前）：
 
     1. 打包工具：需要`import React from "react";`。
     2. `<script>`加载：需要把`React`挂载到全局变量。
@@ -77,21 +80,38 @@
 5. 插入HTML的值都会进行HTML的字符实体（character entity）转义，避免XSS。
 6. Props
 
-    1. 采用小驼峰式（camelCase）定义标签的属性名称，包括：事件名
+    1. 采用小驼峰式（camelCase）定义标签的属性名称
 
         >类似DOM对象的`properties`名。
 
+        任何标准的或自定义的DOM属性都是完全支持。
+
         1. （`class`是保留字，）`className`代替`class`
+
+            >若在React中使用Web Components（这是一种不常见的使用方式），则使用`class`属性代替。
         2. `htmlFor`代替`for`
+        3. 受控组件的：`value`、`onChange`、`selected`、`checked`
+        4. 非受控组件的：`defaultValue`、`defaultChecked`
+        5. `style`
+        6. [事件名](https://zh-hans.reactjs.org/docs/events.html)
 
         - 特殊情况用`-`短横线隔开式（kebab-case）的属性名：
 
             1. 无障碍属性`aria-*`
+            2. `data-*`
+
+        - 特殊属性
+
+            1. `dangerouslySetInnerHTML={{__html: 'innerHtml内容'}}`
+
+                为浏览器DOM提供innerHTML的替换方案。不会~~进行HTML的字符实体（character entity）转义~~，有XSS风险。
+            2. `suppressContentEditableWarning`
+            3. `suppressHydrationWarning`
     2. 赋值
 
-        1. `{}`包裹JS表达式赋值给Props：`prop={JS表达式}`
-        2. 字符串字面量：`prop="某字符串"`
-        3. 若没有给Props赋值，则默认值是`true`：`prop`
+        1. `{}`包裹JS表达式赋值给Props：`某prop={JS表达式}`
+        2. 字符串字面量：`某prop="某字符串"`
+        3. 若没有给Props赋值，则默认值是`true`：`某prop`
     3. `...`展开元素
     4. 包含在开始和结束标签之间的表达式内容将作为特定属性：`props.children`
 
@@ -121,8 +141,17 @@
             2. 与标签相邻的空行均会被删除
             3. 文本字符串之间的新行会被压缩为一个空格
 7. 元素组成的数组，会按顺序渲染（注意添加`key`）
+8. 注释
 
-- Babel会把JSX转译成`React.createElement`函数调用，生成React元素
+    ```jsx
+    {/* 单行注释 */}
+
+    {/*
+      多行注释
+    */}
+    ```
+
+- （React16及之前）Babel会把JSX转译成`React.createElement`函数调用，生成React元素
 
     ><details>
     ><summary>e.g.</summary>
@@ -163,7 +192,7 @@
 2. React DOM
 
     1. 管理根DOM内所有内容。
-    2. 将React元素和它的子元素与它们之前的状态进行比较，并只会进行必要的更新来使DOM达到预期的状态。
+    2. 将React元素和它的子元素与它们之前的状态进行比较，并只会进行必要的更新来使DOM达到预期的状态（协调）。
 3. React元素（React elements）
 
     1. 不可变对象（[immutable](https://zh.wikipedia.org/wiki/不可变对象)）
@@ -181,7 +210,7 @@
         克隆并返回新的React元素。
 
         >几乎等同于：`<element.type {...element.props} {...props}>{children}</element.type>` + 原element上的`key`和`ref`
-    2. `React.isValidElement(object)`
+    2. `React.isValidElement(对象)`
 
         验证对象是否为React元素。返回：`true/false`。
     3. `React.Children` + `.map/.forEach/.count/.only/.toArray`
@@ -199,7 +228,7 @@
         ><summary>e.g.</summary>
         >
         >```jsx
-        >class 组件名 extends React.Component {
+        >class 组件名 extends React.Component {    // 或 React.PureComponent
         >  render() {
         >    return (
         >      <div className="m-div" onClick={this.props.onClick}>
@@ -212,7 +241,7 @@
         ></details>
     2. 函数组件（function components）
 
-        不能包含~~State~~，没有~~生命周期~~，没有~~this~~
+        不能包含~~State~~（Hook弥补），没有~~生命周期~~，没有~~this~~。
 
         ><details>
         ><summary>e.g.</summary>
@@ -270,33 +299,57 @@
 
         // 结果：初始化的State为`{value1: 1, value2: 2}`
         ```
-    2. 不要~~直接修改State~~，仅用`this.setState`修改
-    3. State的更新是异步的（`setState`是异步的）
+    2. 不要~~直接修改State~~，仅用`setState`（或`forceUpdate`）修改
+    3. State的更新是异步的（`setState`是异步的，并且在同一周期内会对多个`setState`进行批处理，浅合并）
 
-        `this.props`和`this.state`可能会异步更新。
+        >[原因讨论](https://github.com/facebook/react/issues/11527)。
 
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```jsx
-        >// Wrong
-        >this.setState({
-        >  counter: this.state.counter + this.props.increment,
-        >});
-        >
-        >
-        >// Correct
-        >this.setState((state, props) => ({  // 第一个参数是上一个State，第二个参数是此函数运行时的Props
-        >  counter: state.counter + props.increment
-        >}));
-        >```
-        ></details>
+        1. `this.props`和`this.state`可能会异步更新。
+
+            给`setState`传递一个函数，而不是一个对象，就可以确保每次的调用都是使用最新版的`state`和`props`。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```jsx
+            >// 错误
+            >this.setState({
+            >  counter: this.state.counter + this.props.increment,
+            >});
+            >
+            >
+            >// 正确
+            >this.setState((state, props) => ({  // 第一个参数是上一个State，第二个参数是此函数运行时的Props
+            >  counter: state.counter + props.increment
+            >}));
+            >```
+            >
+            >```jsx
+            >incrementCount() {
+            >  // 错误：调用一次 handleSomething 只能导致 + 1
+            >  this.setState({count: this.state.count + 1});
+            >
+            >
+            >  // 正确：调用一次 handleSomething 导致 + 3
+            >  this.setState((state) => {
+            >    return { count: state.count + 1 }
+            >  });
+            >}
+            >
+            >handleSomething() {
+            >  this.incrementCount();
+            >  this.incrementCount();
+            >  this.incrementCount();
+            >}
+            >```
+            ></details>
+        2. 若要确保更新State之后执行方法，则使用`componentDidUpdate`或`setState`的第二个回调函数参数。
     4. `setState`设置相同的值：
 
         根据`shouldComponentUpdate`返回的值决定是否更新真实DOM（是否触发`render`）。
 
         >1. `React.Component`的`shouldComponentUpdate`默认返回`true`：总会更新DOM。
-        >2. `React.PureComponent`的`shouldComponentUpdate`默认实现（修改实现会Warning提示）：浅比较`prop`和`state`，若相同则返回`false`不更新，若不相同则返回`true`更新。
+        >2. `React.PureComponent`的`shouldComponentUpdate`默认实现（修改实现会Warning提示）：浅比较`props`和`state`，若相同则返回`false`不更新，若不相同则返回`true`更新。
     5. 属性值改变的策略
 
         1. 模板中渲染相关的属性（如：要在模板内展示的属性 或 Props传值、`style`取值等），需要放到State中被观测（或放到store中被观测，如：redux、mobx），才能在这些值改变时通知视图重新渲染（`this.setState`）。
@@ -305,7 +358,14 @@
 
             - 不可变性（引用数据类型）
 
+                >`state`、`props`、store、等，都建议遵循不可变性。
+
                 不直接修改数据（或改变底层数据），而是用新值替换旧值。（对需要修改的State内容浅复制一层，对新值进行修改后覆盖原State）
+
+                >优势：
+                >
+                >1. 简化复杂的功能，方便切换历史数、time-travel。
+                >2. 跟踪数据的改变，方便确定数据是否发生了变化。
         2. 不在模板内展示的值（如：仅作为事件触发修改的状态值 或 仅在JS逻辑中改变的值），直接放在class中的实例属性中。
 
             - 可以向组件中加入任意不参与数据流的额外字段，但是要在组件生命周期结束前清理（如：在`componentWillUnmount`中处理）。
@@ -318,7 +378,7 @@
         >  constructor (props) {
         >    super(props)
         >    this.state = {
-        >      current: 0    // 需要放到模板内展示
+        >      cur: 0    // 需要放到模板内展示
         >    }
         >  }
         >
@@ -341,26 +401,29 @@
         >        onClick={() => {
         >          this.isLoading = !this.isLoading // 直接赋值修改
         >          this.setState({                  // setState修改
-        >            current: this.state.current + 1
+        >            cur: this.state.cur + 1
         >          })
-        >        p1={this.state.current} // 能够响应式传递进去
+        >        p1={this.state.cur}     // 能够响应式传递进去
         >        p2={this.isLoading}     // 不能响应式传递进去
         >        }}
         >      >
-        >        {this.state.current}
+        >        {this.state.cur}
         >      </View>
         >    )
         >  }
         >}
         >```
         ></details>
+    6. `forceUpdate`
+
+        跳过 ~~`shouldComponentUpdate`~~，直接触发`render`。
 4. Props
 
-    >可以把任何东西当做Props传递，如：组件、函数、JS的任意数据类型。
+    >可以把任何东西当做Props传递，如：组件、函数、JS的任意数据类型。只读的，不应以任何方式修改。
 
     1. 默认值
 
-        class组件的静态属性添加`defaultProps`。
+        class组件的静态属性添加`defaultProps`（用于props未赋值，但又不能为`null`的情况）。
 
         ><details>
         ><summary>e.g.</summary>
@@ -525,7 +588,7 @@
 
         1. `children`
 
-            传入子组件内的内容，都会在子组件的`props.children`中。
+            传入子组件内的内容（开始标签和结束标签之间的内容），都会在子组件的`props.children`中。
         2. 传参
 
         ><details>
@@ -645,7 +708,7 @@
             ```
         2. 组件render时会创建不同回调函数（不推荐）
 
-            若这种写法作为Props传入子组件，则父级每次render都会导致传入子组件的这个Props变化，导致子组件重新渲染。
+            若这种写法作为Props传入子组件，则父级每次render都会导致传入子组件的这个Props变化，导致子组件重新渲染（性能问题）。
 
             ><details>
             ><summary>e.g.</summary>
@@ -733,7 +796,6 @@
         >
         >    return(
         >        <View
-        >          style={styles.son}
         >          onClick={() => {
         >            this.setState({
         >              本地属性1: 本地属性1 + 1
@@ -755,11 +817,11 @@
         1. 祖孙组件间的通信
 
             1. Props逐层往下传递
-            2. <details>
-
-                <summary><code>context</code>从祖辈向所有孙辈传递</summary>
+            2. 从祖辈向所有孙辈传递
 
                 1. `const MyContext = React.createContext(默认值)`
+
+                    返回`{ Provider, Consumer }`。
                 2. 祖辈组件设置：`<MyContext.Provider value={/* 某个值 */}>`
 
                     >可以嵌套不同context的Provider。
@@ -771,16 +833,27 @@
 
                     1. `contextType`
 
-                        - 2种声明方式：
+                        class组件的静态属性添加`contextType`。
 
-                            1. 组件类的声明之后：`组件.contextType = MyContext`
-                            2. 组件类的静态属性：`static contextType = MyContext`
+                        ><details>
+                        ><summary>e.g.</summary>
+                        >
+                        >```jsx
+                        >class 组件名 extends React.Component {
+                        >  static contextType = MyContext;
+                        >}
+                        >
+                        >// 或
+                        >组件名.contextType = MyContext   // 覆盖class内部的静态属性
+                        >```
+                        ></details>
 
                         孙辈组件中通过`this.context`使用。
                     2. `<MyContext.Consumer>{(data) => { return 组件 }}<MyContext.Consumer>`
 
+                        孙辈组件中通过`props.children`传入函数使用。
+
                         >`Provider`及其内部`Consumer组件`都不受制于`shouldComponentUpdate`函数，因此当`Consumer组件`在其祖辈组件退出更新的情况下也能更新。
-                </details>
         2. 通用
 
             1. 状态管理（redux、mobx）
@@ -793,25 +866,112 @@
     >2. 若某些数据可以由Props或State推导得出，则它就不应该存在于State中
 7. 样式
 
-    1. `style={[ 对象1, 判断 ? 对象2 : ''或null或undefined ]}`，空不能用`{}`。
+    1. `style`
+
+        `style={[ 对象1, 判断 ? 对象2 : ''或null或undefined ]}`，空不能用`{}`。
+
+        1. `style`在React应用中多用于在渲染过程中添加**动态计算**的样式。
+
+            通常不推荐将`style`属性作为设置元素样式的主要方式。在多数情况下，应使用`className`属性来引用外部CSS样式表中定义的class。
+        2. 样式不会自动补齐前缀。若需要，则需要手动补充。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```javascript
+            >const divStyle = {
+            >  transition: 'all',
+            >
+            >  MozTransition: 'all',
+            >  OTransition: 'all',
+            >  WebkitTransition: 'all',
+            >  msTransition: 'all'      // 'ms' is the only lowercase vendor prefix
+            >};
+            >```
+            ></details>
+        3. React会自动添加`px`后缀到内联样式为数字的属性后。
+
+            1. 如需使用`px`以外的单位，请将此值设为数字与所需单位组成的字符串。
+            2. 并非所有样式属性都转换为像素字符串。有些样式属性是没有单位的，完整列表见：[react: isUnitlessNumber](https://github.com/facebook/react/blob/4131af3e4bf52f3a003537ec95a1655147c81270/src/renderers/dom/shared/CSSProperty.js#L15-L59)。
+    2. `className`
+
+        在其他地方全局引入`.css`文件（`import './x.css'` 或 html的css引入），`className="类名"`或`className={变量或类名字符串}`
+
+        - 其他支持
+
+            1. css modules
 8. 事件处理
 
     1. 小驼峰式（camelCase）定义事件名
     2. 事件处理函数的参数是一个合成事件（`e`）。
 
         1. 参数只能同步使用，异步不保存。
-        2. 阻止默认行为、阻止冒泡，必须显式调用`e.preventDefault/stopPropagation()`
+        2. 阻止默认行为、阻止冒泡，必须显式调用：`e.preventDefault()`、`e.stopPropagation()`。
 9. 特殊组件
 
-    1. `<React.Fragment>`
+    1. 高阶组件（higher order component，HOC）
+
+        >是一种设计模式。
+
+        参数为组件，返回值为新组件的函数。
+
+        1. HOC不应该修改和继承传入的组件，而应该使用组合的方式，通过将组件包装在容器组件中实现功能。
+        2. 是纯函数，没有副作用。
+        3. 约定：
+
+            1. 将不相关的Props传递给被包裹的组件。
+
+                特殊属性无法传递：`ref`（可以利用Refs转发传递）、`key`。
+            2. 最大化可组合性。
+        4. 注意事项：
+
+            1. 不要在`render`方法中使用。
+            2. 务必复制静态方法。
+
+                >[hoist-non-react-statics](https://github.com/mridgway/hoist-non-react-statics)。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```jsx
+        >// 高阶组件 HOCComponent.js
+        >import React from "react";
+        >export default (WrappedComponent) =>
+        >  class WrapperComponent extends React.Component {
+        >    render () {
+        >      console.log(this.props, 'HOCComponent')
+        >      return <WrappedComponent {...this.props} />;
+        >    }
+        >  }
+        >
+        >
+        >// 利用高阶组件生成的新组件 WrappedComponent.js
+        >import React from "react";
+        >import HOC from "./HOCComponent";
+        >export default HOC(
+        >  class WrappedComponent extends React.Component {
+        >    render () {
+        >      return <div>WrappedComponent</div>
+        >    }
+        >  }
+        >);
+        >
+        >
+        >// 使用组件
+        ><WrappedComponent a='aa' b='bb' />
+        >```
+        ></details>
+    2. `<React.Fragment>`
 
         1. 仅支持`key`属性。
         2. 短语法：`<>子节点</>`（不支持所有属性，包括不支持`key`属性）。
-    2. 表单
+    3. 表单
 
         1. 受控组件（controlled components）
 
-            表单数据由React组件来管理。渲染表单的React组件还控制着用户输入过程中表单发生的操作（表单的`value`、`onChange`受组件控制）。React的State成为表单“唯一数据源”。
+            >事件：`onChange`。每当表单字段变化时，该事件都会被触发。
+
+            表单数据由React组件来管理。渲染表单的React组件还控制着用户输入过程中表单发生的操作（表单的`value`、`onChange`、`selected`、`checked`受组件控制）。React的State成为表单“唯一数据源”。
 
             1. `<input>`、`<textarea>`
 
@@ -950,7 +1110,7 @@
             >}
             >```
             ></details>
-    3. 错误边界（error boundaries）
+    4. 错误边界（error boundaries）
 
         若一个class组件中定义了`static getDerivedStateFromError()`（渲染备用UI）或`componentDidCatch()`（打印错误信息）这两个生命周期方法中的任意一个（或两个）时，则它就变成一个错误边界。可以当做常规组件去使用。
 
@@ -966,12 +1126,14 @@
             4. 它自身抛出的错误
 
                 若一个错误边界无法渲染错误信息，则错误会冒泡至最近的上层错误边界。
-    4. 严格模式`<React.StrictMode>`
+    5. 严格模式`<React.StrictMode>`
+
+        >仅在开发模式下运行；它们不会影响生产构建。
 
         在开发模式中，对所有孙辈组件运行严格模式检查。
 
         1. 识别不安全的生命周期
-        2. 关于使用过时字符串 ref API 的警告（`this.refs.值`）
+        2. 关于使用过时字符串ref API的警告（`this.refs.值`）
         3. 关于使用废弃的`findDOMNode`方法的警告
         4. 检测意外的副作用
 
@@ -981,84 +1143,46 @@
                 2. class组件的生命周期方法`getDerivedStateFromProps`
                 3. 函数组件体
                 4. 状态更新函数 (即`setState`的第一个参数）
-                5. 函数组件通过使用`useState`、`useMemo`或`useReducer`
-        5. 检测过时的 context API
-    5. 高阶组件（higher order component，HOC）
+                5. 函数组件通过使用Hook：`useState`、`useMemo`或`useReducer`
+        5. 检测[过时的context API](https://zh-hans.reactjs.org/docs/legacy-context.html)
+    6. `React.memo`
 
-        >是一种设计模式。
-
-        参数为组件，返回值为新组件的函数。
-
-        1. HOC不应该修改和继承传入的组件，而应该使用组合的方式，通过将组件包装在容器组件中实现功能。
-        2. 是纯函数，没有副作用。
-        3. 约定：
-
-            1. 将不相关的Props传递给被包裹的组件。
-
-                特殊属性无法传递：`ref`（可以利用Refs转发传递）、`key`。
-            2. 最大化可组合性。
-        4. 注意事项：
-
-            1. 不要在`render`方法中使用。
-            2. 务必复制静态方法。
-
-                >[hoist-non-react-statics](https://github.com/mridgway/hoist-non-react-statics)。
+        若组件在相同props的情况下渲染相同的结果，则可以通过将其包装在`React.memo`中调用，以此通过记忆组件渲染结果的方式来提高组件的性能表现。这意味着在这种情况下，React将跳过渲染组件的操作并直接复用最近一次渲染的结果。
 
         ><details>
         ><summary>e.g.</summary>
         >
         >```jsx
-        >// 高阶组件 HOCComponent.js
-        >import React from "react";
-        >export default (WrappedComponent) =>
-        >  class WrapperComponent extends React.Component {
-        >    render () {
-        >      console.log(this.props, 'HOCComponent')
-        >      return <WrappedComponent {...this.props} />;
-        >    }
-        >  }
+        >function MyComponent(props) {
+        >  /* 函数组件，使用 props 渲染 */
+        >}
+        >function areEqual(prevProps, nextProps) {
+        >  /*
+        >  默认是浅比较props。
+        >  若把 nextProps 传入 render 方法的返回结果 与 将 prevProps 传入 render 方法的返回结果一致则返回 true，
+        >  否则返回 false。
+        >  （与shouldComponentUpdate返回值相反）
+        >  */
+        >}
         >
-        >
-        >// 利用高阶组件生成的新组件 WrappedComponent.js
-        >import React from "react";
-        >import HOC from "./HOCComponent";
-        >export default HOC(
-        >  class WrappedComponent extends React.Component {
-        >    render () {
-        >      return <div>WrappedComponent</div>
-        >    }
-        >  }
-        >);
-        >
-        >
-        >// 使用组件
-        ><WrappedComponent a='aa' b='bb' />
+        >export default React.memo(MyComponent[, areEqual]);
         >```
         ></details>
+    7. `ReactDOM.createPortal(组件, 挂载去的DOM节点)`
 
-        - `React.memo`
+        节点渲染挂载到存在于父组件以外的DOM节点。
 
-            若组件在相同props的情况下渲染相同的结果，则可以通过将其包装在`React.memo`中调用，以此通过记忆组件渲染结果的方式来提高组件的性能表现。这意味着在这种情况下，React将跳过渲染组件的操作并直接复用最近一次渲染的结果。
+        1. 除了挂载到其他DOM之外，其他特性均没有改变，视作其父组件引用的子组件。
 
-            ><details>
-            ><summary>e.g.</summary>
-            >
-            >```jsx
-            >function MyComponent(props) {
-            >  /* 函数组件，使用 props 渲染 */
-            >}
-            >function areEqual(prevProps, nextProps) {
-            >  /*
-            >  默认是浅比较props。
-            >  若把 nextProps 传入 render 方法的返回结果 与 将 prevProps 传入 render 方法的返回结果一致则返回 true，
-            >  否则返回 false。
-            >  （与shouldComponentUpdate返回值相反）
-            >  */
-            >}
-            >
-            >export default React.memo(MyComponent[, areEqual]);
-            >```
-            ></details>
+            事件冒泡、context等所有行为，也在组件的父级-子级间进行，不会与挂载到的DOM节点有联系。
+    8. `<Profiler id="id值" onRender={回调函数}>`
+
+        >生产构建默认会被禁用。
+
+        测量渲染一个React应用多久渲染一次以及渲染一次的“代价”。它的目的是识别出应用中渲染较慢的部分。
+    9. `<React.Suspense>`、`React.lazy`
+
+        代码分割（动态加载）。
 10. 命名规范
 
     1. 事件监听Props命名为：`on[Event]`；事件监听处理函数命名为：`handle[Event]`。
@@ -1109,20 +1233,44 @@
     3. 避免将`props`的值复制给`state`。
 
     >避免引入任何副作用或订阅。
-9. `static getDerivedStateFromProps(props, state)`
+2. `static getDerivedStateFromProps(props, state)`
 
     1. 调用`render`方法之前调用。
     2. 唯一作用：让组件在`props`变化时更新`state`、`state`的值在任何时候都取决于`props`（需要开发者自行判断）。
 
         返回一个对象来更新`state`，若返回`null`则不更新`state`。
 
-    >此方法无权访问组件实例（`this`返回`undefined`）。
-7. `componentWillReceiveProps(nextProps)/UNSAFE_componentWillReceiveProps`
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```jsx
+        >class ExampleComponent extends React.Component {
+        >  // 在构造函数中初始化state 或 使用属性初始化器
+        >  state = {
+        >    isScrollingDown: false,
+        >    lastRow: null,
+        >  };
+        >
+        >  static getDerivedStateFromProps(props, state) {
+        >    if (props.currentRow !== state.lastRow) {
+        >      return {
+        >        isScrollingDown: props.currentRow > state.lastRow,
+        >        lastRow: props.currentRow,
+        >      };
+        >    }
+        >
+        >    // 返回 null 表示无需更新 state
+        >    return null;
+        >  }
+        >}
+        >```
+        ></details>
 
-    1. 当`props`发生变化时执行；若父组件导致组件重新渲染，即使`props`没有更改，也会执行。
-    2. 首次渲染时不执行。
-    3. 此函数可以通过调用`this.setState()`来更新组件状态。
-4. `shouldComponentUpdate(nextProps, nextState)`
+    >此方法无权访问组件实例（`this`返回`undefined`）。
+
+>[React：你可能不需要使用派生 state](https://zh-hans.reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html)
+
+3. `shouldComponentUpdate(nextProps, nextState)`
 
     1. 重新渲染前被触发。
 
@@ -1131,41 +1279,45 @@
     2. 首次渲染 或 调用`forceUpdate`时不执行。
     3. 不建议进行深层比较或使用`JSON.stringify`。这样非常影响效率，且会损害性能。
 
-    >仅作为性能优化的方式而存在。不要企图依靠此方法来“阻止”渲染，因为这可能会产生bug。应该考虑使用内置的`PureComponent`组件。
-8. `componentWillUpdate(nextProps, nextState)/UNSAFE_componentWillUpdate`
-
-    1. 当组件收到新的`props`或`state`时，会在渲染之前执行。
-    2. 首次渲染时不执行。
-
-    >不可调用`this.setState`；在`componentWillUpdate`返回之前，你也不应该执行任何其他操作（例如，`dispatch` Redux的`action`）触发对React组件的更新。
-10. `render()`
+    >应该仅作为性能优化的方式而存在。不要企图依靠此方法来“阻止”渲染，因为这可能会产生bug。应该考虑使用内置的`PureComponent`组件。
+4. `render()`
 
     >不可省略。应该为纯函数。
-12. `getSnapshotBeforeUpdate(prevProps, prevState)`
+5. `getSnapshotBeforeUpdate(prevProps, prevState)`
 
     1. `render`触发之后、DOM真实渲染之前触发。
     2. 返回的值传递给`componentDidUpdate`的第三个参数。
-
-5. `componentDidUpdate(prevProps, prevState, snapshot)`
-
-    更新后会被立即调用。首次渲染时不执行。
-
-    >`getSnapshotBeforeUpdate`返回的值作为第三个参数。
-2. `componentWillMount()/UNSAFE_componentWillMount`
-
-    >唯一会在服务端渲染时调用的生命周期。避免引入任何副作用或订阅。
-3. `componentDidMount()`
+6. `componentDidMount()`
 
     组件已经装载。
 
     >执行有副作用的操作。依赖DOM的初始化操作、网络请求、订阅。
-6. `componentWillUnmount()`
+7. `componentDidUpdate(prevProps, prevState, snapshot)`
+
+    更新后会被立即调用。首次渲染时不执行。
+
+    >`getSnapshotBeforeUpdate`返回的值作为第三个参数。
+8. `componentWillUnmount()`
 
     1. 卸载组件。
     2. 注意内存泄漏（全局副作用）：手动绑定的事件（如：`addEventListener`）、订阅、计时器、http连接、以及任何需要手动关闭的内容，需要在`componentWillUnmount`手动清除。
 
     >`render`返回`null`时不会触发`componentWillUnmount`，只有组件被卸载才会触发。不应该调用 ~~`this.setState`~~，将永远不会重新渲染。
-1. 错误边界
+9. `componentWillReceiveProps(nextProps)/UNSAFE_componentWillReceiveProps`
+
+    1. 当`props`发生变化时执行；若父组件导致组件重新渲染，即使`props`没有更改，也会执行。
+    2. 首次渲染时不执行。
+    3. 此函数可以通过调用`this.setState()`来更新组件状态。
+10. `componentWillUpdate(nextProps, nextState)/UNSAFE_componentWillUpdate`
+
+    1. 当组件收到新的`props`或`state`时，会在渲染之前执行。
+    2. 首次渲染时不执行。
+
+    >不可调用`this.setState`；在`componentWillUpdate`返回之前，你也不应该执行任何其他操作（例如，`dispatch` Redux的`action`）触发对React组件的更新。
+11. `componentWillMount()/UNSAFE_componentWillMount`
+
+    >唯一会在服务端渲染时调用的生命周期。避免引入任何副作用或订阅。
+12. 错误边界
 
     仅捕获子组件树中的错误，但它本身组件的错误无法捕获。捕获子组件树在渲染期间、生命周期方法、其整个树的构造函数中发生的错误。
 
@@ -1177,7 +1329,7 @@
     2. `componentDidCatch(error, info)`
 
         1. 此生命周期在后代组件抛出错误后被调用。
-        2. 参数：error，抛出的错误；info，带有 componentStack key 的对象，其中包含有关组件引发错误的栈信息。
+        2. 参数：error，抛出的错误；info，带有componentStack key 的对象，其中包含有关组件引发错误的栈信息。
         3. 应该用于记录错误之类的情况。
 
         >允许执行副作用。
@@ -1193,14 +1345,334 @@
     >
     >        若一个错误边界无法渲染错误信息，则错误会冒泡至最近的上层错误边界。
 
-- 其他
-
-    11. `setState`
-    12. `forceUpdate`
-
 >[生命周期图谱](https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)。
 
 ![react生命周期图](./images/lifecycle.png)
+
+#### Hook
+Hook是一些可以在**函数组件**里“钩入”React state及生命周期等特性的**函数**。
+
+- 使用规则：
+
+    1. 只能在函数最外层调用Hook。不要在~~循环、条件判断或嵌套函数~~中调用。
+
+        >在条件语句中有`return`的语句之后调用也不可以。
+    2. 只能在React的函数组件 或 自定义Hook 中调用Hook。
+
+        不能在~~class组件~~中使用；不要在~~其他JS函数~~中调用。
+
+>运行规则：函数组件的函数体先执行，按顺序执行语句（包括hook）；hook的回调函数在函数组件的函数体执行完毕之后，按照类型和顺序执行。
+
+1. `useState`
+
+    `const [变量名, 修改变量的方法名] = useState(初始值 或 初始方法)`
+
+    1. `变量名`
+
+        值：一开始是初始值（或初始方法返回的值），后续是传入`修改变量的方法名`的新值（或函数返回的新值）。
+    2. `修改变量的方法名`
+
+        1. 可传入：新值 或 函数（`(旧值) => 新值`）
+        2. 若传入修改状态的值和当前的值完全相同，则不会产生渲染、effect不会执行、也不会运行整个函数组件（子组件也跳过）。
+
+            >使用`Object.is`进行比较。
+        3. 与`this.setState`不同点：不会把新的state和旧的state进行合并，而是用新的state整个替换旧的state。
+    3. 初始值可以是：值 或 函数（仅在初始渲染时调用）
+2. `useReducer`
+
+    >`useState`的替代方案。
+
+    `const [变量名, 修改变量的方法名] = useReducer(reducer函数, 初始值[, 初始函数])`
+
+    1. 若`修改变量的方法名`的返回值和当前的值完全相同，则不会产生渲染、effect不会执行、也不会运行整个函数组件（子组件也跳过）。
+
+        >使用`Object.is`进行比较。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```jsx
+    >function init(initialCount) {
+    >  return { count: initialCount?.count || initialCount || 0 };
+    >}
+    >
+    >function reducer(state, action) {
+    >  switch (action.type) {
+    >    case 'increment':
+    >      return {count: state.count + 1};
+    >    case 'decrement':
+    >      return {count: state.count - 1};
+    >    case 'reset':
+    >      return init(action.payload);
+    >    default:
+    >      throw new Error();
+    >  }
+    >}
+    >
+    >function Counter({initialCount}) {
+    >  // <Counter initialCount={数字}/>
+    >  const [state, dispatch] = useReducer(reducer, initialCount, init);
+    >
+    >  // <Counter initialCount={{ count: 数字 }}/>
+    >  // const [state, dispatch] = useReducer(reducer, initialCount);
+    >
+    >  return (
+    >    <>
+    >      Count: {state.count}
+    >      <button
+    >        onClick={() => dispatch({type: 'reset', payload: initialCount})}>
+    >        Reset
+    >      </button>
+    >      <button onClick={() => dispatch({type: 'decrement'})}>-</button>
+    >      <button onClick={() => dispatch({type: 'increment'})}>+</button>
+    >    </>
+    >  );
+    >}
+    >```
+    ></details>
+3. `useEffect`
+
+    >类似生命周期的效果：`componentDidMount`+`componentDidUpdate`+`componentWillUnmount`。接收一个包含命令式、且可能有副作用代码的函数。
+
+    ```javascript
+    useEffect(() => {
+      /* 副作用逻辑 */
+
+      return () => {
+       /* 清除副作用逻辑 */
+      }
+    }[, 依赖的数组])
+    ```
+
+    1. React会在每次渲染**完成后**调用副作用函数，包括第一次渲染时。
+
+        >虽然useEffect会在浏览器绘制后延迟执行，但会保证在任何新的渲染前执行。
+    2. return的清除方法，会在下一次effect触发之前调用，也会在组件卸载前调用。
+    3. `依赖的数组`，仅当依赖的数组内的值都变化才触发执行。
+
+        1. 确保数组中包含了**所有**`外部作用域中会发生变化`且`在effect中使用`的变量（包括要用到的`state`和`props`），否则代码会引用到*先前渲染中的旧变量*。
+
+            >变量一般是其他hook方法产生的变量，也可以是任意变量。
+        2. 若想执行只运行一次的effect（仅在组件挂载和卸载时执行），可以传递一个空数组（`[]`）作为第二个参数。
+
+            >这就告诉React你的effect不依赖于props或state中的任何值，所以它永远都不需要重复执行。
+
+            此时，effect内部的`props`和`state`就会一直保持其初始值。
+    4. 可以把引用的函数放到effect内部，方便确认使用了哪些props和state。
+
+><details>
+><summary>执行时机</summary>
+>
+>1. `useEffect`
+>
+>    1. 首次渲染：
+>
+>        函数组件执行 -> React渲染 -> DOM修改 -> useEffect执行 -> 浏览器渲染
+>    2. 非首次渲染：
+>
+>        函数组件执行 -> React渲染 -> DOM修改 -> 浏览器渲染 -> 上一个useEffect清除执行（使用上次useState产生值） -> useEffect执行
+>    3. 卸载组件：
+>
+>        函数组件执行 -> React渲染 -> DOM修改 -> 浏览器渲染 -> 上一个useEffect清除执行（使用上次useState产生值）
+>
+>2. `useLayoutEffect`
+>
+>    1. 首次渲染：
+>
+>        函数组件执行 -> React渲染 -> DOM修改 -> useLayoutEffect执行 -> 浏览器渲染
+>    2. 非首次渲染：
+>
+>        1. 函数组件执行 -> React渲染 -> DOM修改 -> 上一个useLayoutEffect清除执行（使用上次useState产生值） -> useLayoutEffect执行
+>        2. -> 若导致函数组件需要再次执行，则再次 a. 执行一遍逻辑，直到没有JS代码执行
+>        3. -> 浏览器渲染
+>    3. 卸载组件：
+>
+>        函数组件执行 -> React渲染 -> DOM修改 -> 上一个useLayoutEffect清除执行（使用上次useState产生值） -> 浏览器渲染
+>
+>- useEffect + useLayoutEffect，同时执行，会按照useLayoutEffect微调执行useEffect时机
+></details>
+
+4. `useLayoutEffect`
+
+    与`useEffect`函数签名一致。
+
+    - 区别：
+
+        1. `useEffect`
+
+            DOM更新完、浏览器渲染完毕之后，异步调用useEffect函数。
+        2. `useLayoutEffect`
+
+            DOM变更之后同步执行useLayoutEffect函数，阻塞浏览器渲染（useLayoutEffect执行完毕之后线程才会去执行浏览器绘制）。
+5. 自定义Hook
+
+    通过自定义Hook，可以将组件逻辑提取到可重用的函数中。和使用官方hook一样的使用方式。
+
+    1. 自定义Hook更像是一种约定而不是功能。
+    2. 如果函数的名字以`use`开头并紧跟一个大写字母 且 调用其他Hook，我们就说这是一个：自定义Hook。
+
+        >`useSomething`的命名约定可以让我们的linter插件在使用Hook的代码中找到bug。
+6. `useContext`
+
+    `const 变量名 = useContext(React.createContext的返回值)`，返回该`context`的当前值
+
+    ><details>
+    ><summary><code>useContext(MyContext)</code>相当于class组件中的<code>static contextType = MyContext</code>或<code>&lt;MyContext.Consumer&gt;</code>。</summary>
+    >
+    >`useContext(MyContext)`只是让你能够读取`context`的值以及订阅`context`的变化。你仍然需要在上层组件树中使用`<MyContext.Provider>`来为下层组件提供`context`。
+    ></details>
+
+    1. 当前的context值由上层组件中距离当前组件最近的`<MyContext.Provider>`的`value`属性决定。
+    2. 调用了`useContext`的组件总会在`context`值变化时重新渲染
+
+        当组件上层最近的`<MyContext.Provider>`更新时，该Hook会触发重渲染，并使用最新传递给`<MyContext.Provider>`的value属性值。
+
+        >即使祖先使用`React.memo`或`shouldComponentUpdate`，也会在组件本身使用useContext时重新渲染。
+7. `useRef`
+
+    `const 带current属性的变量 = useRef(current属性的初始值);`
+
+    >1. `useRef`创建的是一个普通JS对象（`{ current: 值 }`），它和自建一个`{ current: 值 }`对象的唯一区别是：`useRef`会在每次渲染时返回同一个`ref`对象。
+    >2. 当`ref`对象内容发生变化时，`useRef`并不会~~发起通知~~。变更`.current`属性不会~~引发组件重新渲染~~。
+
+    1. DOM或子组件实例
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```jsx
+        >export default function UseRefDemo() {
+        >  const inputEl = useRef(null);
+        >  const onButtonClick = () => {
+        >    // `current` 指向已挂载到 DOM 上的文本输入元素
+        >    inputEl.current.focus();
+        >  };
+        >
+        >  return (
+        >    <>
+        >      <input ref={inputEl} type="text" />
+        >      <button onClick={onButtonClick}>Focus the input</button>
+        >    </>
+        >  );
+        >}
+        >```
+        ></details>
+    2. 方便地保存任何可变值
+
+        1. 类似于一个class的实例属性。
+        2. 除非正在做 懒加载，否则避免在渲染期间设置`refs`（可能导致意外的行为），通常应在`事件处理器`或`useEffect`中修改。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >1. 事件处理器
+        >
+        >    ```jsx
+        >    export default function UseRefDemo() {
+        >      const xx = useRef(123);
+        >
+        >      return (
+        >        <>
+        >          <button onClick={() => { xx.current = xx.current + 1; }}>修改xx</button>
+        >          <button onClick={() => { console.log(xx); }}>打印xx</button>
+        >        </>
+        >      );
+        >    }
+        >    ```
+        >2. `useEffect`
+        >
+        >    ```jsx
+        >    function Timer() {
+        >      const intervalRef = useRef(0);
+        >
+        >      useEffect(() => {
+        >        const id = setInterval(() => {
+        >          // ...
+        >        });
+        >        intervalRef.current = id;
+        >        return () => {
+        >          clearInterval(intervalRef.current);
+        >        };
+        >      });
+        >
+        >      // ...
+        >    }
+        >    ```
+        ></details>
+8. `useMemo`
+
+    ```jsx
+    const memoizedValue = useMemo(
+      () => computeExpensiveValue(a, b),
+      [a, b]    // 依赖项数组
+    );
+    ```
+
+    返回一个`memoized`值。
+
+    1. 仅会在某个依赖项改变时才重新计算memoized值。
+    2. 若没有提供依赖项数组，则useMemo在每次渲染时都会计算新的值。
+    3. 传入useMemo的函数会在渲染期间执行。
+
+        不要在这个函数内部执行与渲染无关的操作。
+9. `useCallback`
+
+    >`useCallback(fn, deps)` === `useMemo(() => fn, deps)`
+
+    ```jsx
+    const memoizedCallback = useCallback(
+      () => {
+        doSomething(a, b);
+      },
+      [a, b]    // 依赖项数组
+    );
+    ```
+
+    返回一个`memoized`回调函数。
+10. `useImperativeHandle`
+
+    `useImperativeHandle(ref, createHandle, [deps])`
+
+>若指定了一个`依赖列表`作为`useEffect`、`useLayoutEffect`、`useMemo`、`useCallback`、`useImperativeHandle`的最后一个参数，它必须包含回调中的所有值，并参与React数据流。这就包括`props`、`state`，以及任何由它们衍生而来的东西。
+
+11. `useDebugValue`
+
+    `useDebugValue(value[, 格式化函数])`，在React开发者工具中显示`自定义Hook`的标签
+
+- redux
+
+    1. `useSelector`
+
+        `const 变量 = useSelector(store => { return store.slice名 })`
+    2. `useDispatch`
+
+        ```javascript
+        const dispatch = useDispatch()
+        dispatch(createSlice实例.actions.方法名(参数));
+        ```
+
+><details>
+><summary>从class迁移到Hook</summary>
+>
+>1. `constructor`：
+>
+>    函数组件不需要构造函数。你可以通过调用`useState`来初始化state。如果计算的代价比较昂贵，你可以传一个函数给`useState`。
+>2. `getDerivedStateFromProps`：
+>
+>    改为 在渲染时 安排一次更新。
+>3. `shouldComponentUpdate`：
+>
+>    `React.memo`。
+>4. `render`：
+>
+>    这是函数组件体本身。
+>5. `componentDidMount`、`componentDidUpdate`、`componentWillUnmount`：
+>
+>    `useEffect`可以表达所有这些(包括 不那么 常见 的场景)的组合。
+>6. `getSnapshotBeforeUpdate`、`componentDidCatch`、`getDerivedStateFromError`：
+>
+>    目前还没有这些方法的Hook等价写法，但很快会被添加。
+></details>
 
 #### 与第三方库协同
 >React不会理会React自身之外的DOM操作。它根据内部虚拟DOM来决定是否需要更新，而且如果同一个DOM被另一个库操作了，React会觉得困惑而且没有办法恢复。
@@ -1209,6 +1681,21 @@
 
     1. 渲染无需更新的React元素，比如一个空的`<div>`。
     2. 利用`componentDidMount`和`componentWillUnmount`对React不会更新的React元素进行挂载和清理。
+
+#### 性能优化
+1. 使用生产版本
+2. 虚拟化长列表
+
+    >如：[react-window](https://github.com/bvaughn/react-window)。
+3. 渲染前的diff，可利用`shouldComponentUpdate`跳过
+
+    ><details>
+    ><summary><a href="https://zh-hans.reactjs.org/docs/reconciliation.html">协调（reconciliation）</a></summary>
+    >
+    >当一个组件的`props`或`state`变更，React会将最新返回的元素与之前渲染的元素进行对比（diff），以此决定是否有必要更新真实的DOM。当它们不相同时，React会最小化更新该DOM。这个过程被称为“协调”。
+    >
+    >>React16新增的协调引擎：[Fiber](https://github.com/facebook/react/tree/master/packages/react-reconciler)（介绍文章：[react-fiber-architecture](https://github.com/acdlite/react-fiber-architecture)）。
+    ></details>
 
 #### 代码分割（动态加载）
 添加一个动态引入，就会新增一个`chunk`、不会~~把动态引入的代码加入`bundle`~~。策略：基于路由进行代码分割。
@@ -1248,6 +1735,10 @@
 
     `类名.propTypes = { props名: 类型 }`
 2. TypeScript
+
+#### 测试
+1. react-dom/test-utils
+2. react-test-renderer
 
 ---
 ### [create-react-app](https://github.com/facebook/create-react-app)
@@ -1316,7 +1807,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         普通对象。store的当前state值，不能被其他代码修改。
     2. action
 
-        普通对象。`{ type: 「字符串」[, 多个参数: '' ]}`，描述已发生事件，store数据的唯一来源。
+        普通对象。`{ type: 「字符串」[, 多个参数（payload）: 值 ]}`，描述已发生事件，store数据的唯一来源。
 
         1. `type`会被定义成字符串常量
 
@@ -1324,21 +1815,25 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
             >e.g. `import { 常量1, 常量2 } from '../actionTypes'`
         2. 应该尽量减少在action中传递的数据
-        3. action创建函数：返回action的函数
+        3. action创建函数：
+
+            返回action的函数
         4. 调用`dispatch(某个action)`触发reducer
 
             1. dispatch接收一个action（若不是action则报错）；dispatch返回这个action。
             2. ~~dispatch接收一个方法，第一个参数传入dispatch方法，第二个参数传入getState方法；dispatch返回参数方法的返回。~~
     3. reducer
 
-        函数。接受当前state和action，返回新的state。响应发送而来的action。
+        函数。接受当前state和发送来的action，（仅基于state和action）返回新的state。
 
-        >reducer是纯函数：当传入参数相同时（state、action），返回的state也相同，没有副作用。
+        >可以将reducer视为事件侦听器，该事件侦听器根据接收到的事件类型（action的type）来处理事件。
 
         1. 不要进行：
 
             1. 修改传入的参数（state、action）
             2. 执行有副作用的操作，如：API请求或路由跳转
+
+                >reducer是纯函数：当传入参数相同时（state、action），返回的state也相同，没有副作用。
             3. 调用非纯函数，如：`Data.now()`或`Math.random`
         2. 默认情况 或 遇到未知的action时，返回旧的state
 
@@ -1379,50 +1874,58 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
         1. 提供`store.getState()`获取当前state
         2. 提供`store.dispatch(某个action)`更新state
+
+            >更新state的唯一方式。
         3. 通过`store.subscribe(监听函数)`注册监听器，并返回注销监听器方法
+
+        ![redux流程](./images/redux-1.gif)
 3. 三大原则
 
     1. 单一数据源
 
         整个应用的state被储存在一棵object tree中，并且这个object tree只存在于唯一一个store中：store -> object tree -> 众多state。
-    2. state是只读的
+    2. state是只读的，不可变的
     3. 使用纯函数来执行修改（reducer）
-4. 与React配合使用（[react-redux](https://github.com/reduxjs/react-redux)）
+4. 工具
 
-    1. redux的store和dispatch 映射到 组件的props
+    1. 与React配合使用：[react-redux](https://github.com/reduxjs/react-redux)
 
-        ```javascript
-        import { connect } from 'react-redux'
+        1. 访问store
 
-        export default connect(
-          mapStateToProps: (state, ownProps) => { props某属性: state相关内容, },         // redux的store 映射到 组件的props。默认方法返回：state: state
-          mapDispatchToProps: (dispatch, ownProps) => { props某方法: dispatch相关内容, } // redux的dispatch 映射到 组件的props。默认方法返回：dispatch: dispatch
-        )(class组件)
-        ```
-    2. 访问store
+            1. `Provider`
 
-        1. `Provider`
+                `<Provider>`的所有孙辈的容器组件都可以访问`store`，而不必显式地传递它。
 
-            `<Provider>`的所有孙辈的容器组件都可以访问`store`，而不必显式地传递它。
+                ```jsx
+                import React from 'react'
+                import { render } from 'react-dom'
+                import { Provider } from 'react-redux'
+                import { createStore } from 'redux'
+                import todoApp from './reducers'
+                import App from './components/App'
 
-            ```jsx
-            import React from 'react'
-            import { render } from 'react-dom'
-            import { Provider } from 'react-redux'
-            import { createStore } from 'redux'
-            import todoApp from './reducers'
-            import App from './components/App'
+                let store = createStore(todoApp)
 
-            let store = createStore(todoApp)
+                render(
+                  <Provider store={store}>
+                    <App />
+                  </Provider>,
+                  document.getElementById('root')
+                )
+                ```
+            2. ~~手动监听~~
+        2. redux的store和dispatch 映射到 组件的props
 
-            render(
-              <Provider store={store}>
-                <App />
-              </Provider>,
-              document.getElementById('root')
-            )
+            ```javascript
+            import { connect } from 'react-redux'
+
+            export default connect(
+              mapStateToProps: (state, ownProps) => { props某属性: state相关内容, },         // redux的store 映射到 组件的props。默认方法返回：state: state
+              mapDispatchToProps: (dispatch, ownProps) => { props某方法: dispatch相关内容, } // redux的dispatch 映射到 组件的props。默认方法返回：dispatch: dispatch
+            )(class组件)
             ```
-        2. ~~手动监听~~
+    2. 简化逻辑的最佳实践：[redux-toolkit](https://github.com/reduxjs/redux-toolkit)（包含：[redux](https://github.com/reduxjs/redux)、[redux-thunk](https://github.com/reduxjs/redux-thunk)、[reselect](https://github.com/reduxjs/reselect)、[immer](https://github.com/immerjs/immer)、等）
+    3. 开发者工具：[redux-devtools](https://github.com/reduxjs/redux-devtools)、[redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension)
 
 ### [mobx](https://github.com/mobxjs/mobx)
 1. computed

@@ -40,9 +40,13 @@
             1. `adb reverse tcp:38989 tcp:38989`
             2. App点击：本地调试 -> 点击调试
             3. `chrome://inspect/#devices`打开Hippy debug tools for V8
+
+                >根据<https://hippyjs.org/#/guide/debug?id=android>的要求，关闭`Discover USB devices`可以减少断连手机。
         2. iOS调试（按步骤）：
 
             1. 打开Safari，勾选：开发 -> 模拟器 xxx -> ️自动显示JSContext的网页检查器
+
+                >调试H5页面时要关闭「️自动显示JSContext的网页检查器」，无效且影响页面切换性能。
             2. App点击：本地调试 -> 点击调试
 
                 >若Safari没有调试信息，则重启App
@@ -64,6 +68,8 @@
         `console.log/warn/error`
 
         - `console`日志会输出到iOS和Android系统日志中。
+
+            >注意：若客户端系统打印多次日志，则可能是前端调用多次，也可能是客户端打印bug导致打印多次。
     5. 自定义字体
 
         `fontFamily`
@@ -104,11 +110,12 @@
 
     - Tips（bug？）
 
-        1. `<Image>`
+        1. 官方属性/方法应该都能使用，只是有些属性/方法有各种问题（可能是触发时机偏晚、时序控制不好、兼容性不佳、等），导致实际情况无法满足效果而较少使用
+        2. `<Image>`
 
             1. 若设置`position: 'absolute'`，则需要显示设置`width`和`height`。
             2. 部分机型`onError`无法正常触发。
-        2. `<Text>`
+        3. `<Text>`
 
             1. Android:
 
@@ -118,21 +125,27 @@
 
                     用字体颜色`color: rgba(x,y,z, 透明度)`来代替。
             2. 仅有`<Text>`有不同截断效果（ellipsizeMode），其他组件需要自己实现（计算字符数，结尾自己添加`...`或图片覆盖）。
-        3. `<ViewPager>`
+            3. 不包裹在`<Text>`内的文字内容，无法渲染新值，只能展示首次渲染值。
+            4. 文本若不设置`lineHeight`（或`height`），可能导致渲染出的行高影响整体渲染，甚至影响祖父元素的高度或间距，无法达到确定的"稳定状态"。
+        4. `<ViewPager>`
 
             >`height`和`flexBasis`类似。
 
             1. 需要父级容器还有空间 或 显式设置`height`，否则会导致内容高度为0。
             2. 不能切换的时候改变`height`（会导致切换到一半卡主），可以设置延迟时间等待切换结束之后再改变`height`（>300ms）。
             3. 需要大于等于2个子节点。
-        4. 大部分（但不是所有）组件都有`onLayout`
+        5. 大部分（但不是所有）组件都有`onLayout`
 
             当元素挂载或者布局改变的时候被调用。返回节点实时的：高宽（`height`、`width`）、距离顶部(0,0)距离（`x`、`y`）。
-        5. `<ListView>`改变渲染内容后（除了`onEndReached`触发之外）有时无法再触发`onEndReached`
+
+            1. 若所有组件都套上`onLayout`，则可以滚动到指定组件位置和判断组件是否"曝光"。
+            2. `onLayout`是异步的，并且可能触发时间比较慢，在组件渲染完毕之后上百毫秒（250ms？）才触发。
+            3. 业务中解决问题，可以在节点内层或外层嵌套一层`<View>`并利用它的`onLayout`
+        6. `<ListView>`改变渲染内容后（除了`onEndReached`触发之外）有时无法再触发`onEndReached`
 
             （除了`onEndReached`触发之外）改变渲染内容时，改变`<ListView>`的`key`属性。
-        6. `<ScrollView>`、`<ListView>`的滚动事件，需要`onMomentumScrollEnd`（非用户触发的滚动结束）和`onScrollEndDrag`（用户触发的滚动结束）配合使用
-        7. `<ScrollView>`
+        7. `<ScrollView>`、`<ListView>`的滚动事件，需要`onMomentumScrollEnd`（非用户触发的滚动结束）和`onScrollEndDrag`（用户触发的滚动结束）配合使用
+        8. `<ScrollView>`
 
             1. 配合使用`contentContainerStyle`（在内层的内容容器生效）和`style`（在外层容器生效）
 
@@ -194,10 +207,13 @@
                   )
                 }
                 ```
-        8. 降级到H5时，各回调函数的参数可能会变化，每个组件的实现要具体看降级时h5的源码
-        9. 业务中解决问题，可以在节点内层或外层嵌套一层`<View>`并利用它的`onLayout`
+        9. 降级到H5时，各回调函数的参数可能会变化，每个组件的实现要具体看降级时h5的源码
         10. 注意组件嵌套过多导致的性能、渲染问题
-        11. 带着`key`的组件可能挂载2次（触发2次`componentDidMount`）
+        11. `key`的diff有bug
+
+
+            1. 带着`key`的组件可能挂载2次（触发2次`componentDidMount`）
+            2. 复用组件会导致bug，可以用`key="index"`规避
         12. 各组件转换为H5组件时，可能会多套一层节点，注意`padding`或`margin`翻倍问题
         13. `render`返回多个节点会有渲染问题（React已支持）
 
@@ -247,6 +263,7 @@
         15. `false && B`可能输出内容
 
             用三元运算符替换：`false ? B : null`。
+        16. 没有类似.html的DOM结构，不能动态向根节点插入内容，只能按照组件结构插入组件（`new Hippy`的`entryPage`）
 2. 模块
 
     >[模块文档](https://hippyjs.org/#/hippy-react/modules)比较简单，更详细的用法在[demo](https://github.com/Tencent/Hippy/tree/master/examples/hippy-react-demo/src/modules)或[源码](https://github.com/Tencent/Hippy/tree/master/packages/hippy-react/src/modules)中。

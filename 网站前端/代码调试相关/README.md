@@ -30,6 +30,17 @@
 2. 调用栈：`console.trace`
 3. 执行时间：`console.time`至`console.timeEnd`
 
+- 监控告警
+
+    根据错误日志，找到错误根源。
+
+    1. 还原错误源代码、还原错误堆栈
+
+        >SourceMap。
+    2. 错误触发所在的UA（系统版本、app版本、浏览器版本）
+
+        >判断是否是某些特定版本系统，如：低版本Android等。
+
 ### PC端
 >1. 遵循[devtools-protocol](https://github.com/chromedevtools/devtools-protocol)协议的应用都拥有打开Chrome的[DevTools](https://developers.google.com/web/tools/chrome-devtools/)进行调试的能力。
 >2. 遵循[JavaScriptCore](https://developer.apple.com/documentation/javascriptcore)协议的应用都拥有打开Safari的`开发`进行调试的能力。
@@ -61,6 +72,8 @@
             3. 开启调试功能的debug包APP
 
         >若PC端的Chrome识别不到手机WebView，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)（macOS可以用brew安装：`brew cask install android-platform-tools`）并运行（进入文件夹后运行`adb.exe devices`或`adb devices`连接手机设备）。
+
+        >若APP没有开启调试功能，只能连接电脑的logcat看日志。
     2. iOS
 
         macOS的Safari的`开发`可以调试**iOS已开启调试功能的APP**的WebView。
@@ -69,6 +82,8 @@
 
             1. Safari
             2. 开启调试功能的debug包APP
+
+        >若APP没有开启调试功能，只能连接Xcode看日志。
 3. 使用抓包工具查看请求、Map请求，如：[Charles](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Charles使用/README.md#charles使用)、[whistle](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/whistle使用/README.md#whistle使用)。
 
     >Tips: 若命中强缓存（本地缓存），则不会发起请求，所以抓包工具也无法抓到命中强缓存（本地缓存）的资源，也就无法对这些资源进行代理操作。
@@ -172,6 +187,8 @@
         1. JS日志、断点：
 
             Safari的网页检查器（自动显示JSContext、自动暂停连接到JSContext）
+
+            >调试H5页面时要关闭「️自动显示JSContext的网页检查器」，无效且影响页面切换性能。
         2. 客户端日志：
 
             Xcode底部
@@ -190,10 +207,10 @@
         1. 代理到whistle（或其他任意代理）
 
             1. 方法一：设置系统代理为8899，Simulator为系统代理
-            2. 方法二：利用Proxifier（可代理PC所有应用到指定地址和端口）
+            2. 方法二：利用Proxifier V2（可代理PC所有应用到指定地址和端口）
 
                 1. 安装证书：`127.0.0.1:8899`
-                2. 安装Proxifier
+                2. 安装Proxifier V2
 
                     1. Proxies
 
@@ -230,7 +247,12 @@
             3. 「GPU呈现模式分析」：渲染时间展示
             4. 「调试GPU过度绘制」：重复渲染展示
     2. 打开其他APP时设置的允许/拒绝信息，可以操作当前APP「清除数据」恢复提醒。
-    3. 连接着的手机，无法识别，切换一下「USB 调试」的开关（或「撤销 USB 调试授权」后重新授权）可以恢复。
+    3. 连接着的手机，无法识别，
+
+        1. 刷新一下<chrome://inspect/#devices>
+        2. 切换一下「USB 调试」的开关（或「撤销 USB 调试授权」后重新授权）
+
+        - <chrome://inspect/#devices>中，关闭`Discover USB devices`可以减少断连手机。
 
 - 其他策略
 

@@ -72,27 +72,24 @@
         5. `--rm`
 
             若容器退出，则自动删除容器。
-        6. `-v=「宿主机目录或文件」:「容器内目录或文件」`
+        6. `-v=[「宿主机目录或文件 或名字」:]「容器内目录或文件」`
 
-            数据卷（volume）：宿主机中的一个目录或文件。用于容器数据持久化 或 （外部服务与容器内部、容器间）数据同步。
+            宿主机与容器创建数据卷。
+        7. `--volumes-from=「容器名」`
 
-            1. Docker容器中产生的数据 与 宿主机 互相同步。
-            2. 一个数据卷可以同时被多个容器同时挂载（容器间数据同步）。
-            3. 一个容器也可以被挂载多个数据卷。
-
-            >容器不运行也可以正常同步。
-        7. `--name=「容器名」`
+            容器间共用数据卷。从另一个容器中挂载已创建好的数据卷。
+        8. `--name=「容器名」`
 
             给运行的容器增加一个容器别名，容器ID和容器名均指向此容器。
-        8. `--cidfile=「新文件路径」`
+        9. `--cidfile=「新文件路径」`
 
             尝试创建一个新文件，并将容器ID写入它。若文件已存在，将返回一个错误。Docker运行退出时，Docker将关闭此文件。
-        9. `--pid=host`或`--pid=container:「容器ID或容器名」`
+        10. `--pid=host`或`--pid=container:「容器ID或容器名」`
 
             进程管理。
-        10. `--uts=host`
-        11. `--ipc=「none|private|shareable|container:「容器ID或容器名」|host|""（默认）」`
-        12. 网络
+        11. `--uts=host`
+        12. `--ipc=「none|private|shareable|container:「容器ID或容器名」|host|""（默认）」`
+        13. 网络
 
             1. `--dns=`
             2. `--network=「none|bridge（默认）」|host|container:「容器ID或容器名」|「用户自定义」`
@@ -104,8 +101,22 @@
             6. `--ip=`
             7. `--ip6=`
             8. `--link-local-ip=`
-        13. `--restart=「no（默认）|on-failure[:max-retries]|always|unless-stopped」`
-        14. `--security-opt`
+        14. `--restart=「no（默认）|on-failure[:max-retries]|always|unless-stopped」`
+        15. `--security-opt`
+
+    - 数据卷（volume）：宿主机中的一个目录或文件。用于容器数据持久化 或 （外部服务与容器内部、容器间）数据同步。
+
+        1. Docker容器中产生的数据 与 宿主机 互相同步。
+        2. 一个数据卷可以同时被多个容器同时挂载（容器间数据同步）。
+        3. 一个容器也可以被挂载多个数据卷。
+
+        >容器不运行也可以正常同步。
+
+        - `docker volume ls/inspect/create/rm/prune`
+
+            处理手动挂载的数据卷
+
+            >在macOS，可能找不到宿主机路径。
     4. 容器
 
         >互相隔离，每个容器都有一个属于自己的文件系统、网络、进程树。
@@ -188,3 +199,63 @@
             ```shell
             docker push 「镜像名」[:「tag，如：1.0.0」] # （除非是认证的组织）镜像名必须包含用户名的namespace，如：`你的账户名/镜像名`
             ```
+    6. Dockerfile
+
+        包含一系列命令的文件。
+
+        1. `docker build .`
+
+            通过Dockerfile和context（`Path`递归的本地路径 + `URL`递归的git仓库地址），Docker daemon**逐一**执行指令，最终创建一个镜像。
+
+            - 在`build`和`.`之间添加参数
+
+                1. `-f 「文件路径」`
+
+                    设置Dockerfile的文件路径。
+                2. `-t 「用户名/镜像名[:「tag，如：1.0.0」]」`
+
+                    创建镜像的名字。可以同时添加多个：`-t xx -t xx`。
+        2. `.dockerignore`
+
+            忽略文件。
+        3. 指令书写
+
+            ```shell
+            # 注释会在执行命令前被删除
+
+            # 「syntax或escape」=「值」
+
+            # 指令不区分大小写。惯例是将它们大写以更轻松地将它们与参数区分开
+            INSTRUCTION arguments
+
+            FROM
+            RUN
+            CMD
+            LABEL
+            EXPOSE
+            ENV
+            ADD
+            COPY
+            ENTRYPOINT
+            VOLUME
+            USER
+            WORKDIR
+            ARG
+            ONBUILD
+            STOPSIGNAL
+            HEALTHCHECK
+            SHELL
+            ```
+
+            1. 每一个指令创建一个层（layer）
+
+                ><details>
+                ><summary>e.g.</summary>
+                >
+                >```shell
+                >FROM ubuntu:18.04       # 1. `FROM` creates a layer from the ubuntu:18.04 Docker image.
+                >COPY . /app             # 2. `COPY` adds files from your Docker client’s current directory.
+                >RUN make /app           # 3. RUN builds your application with make.
+                >CMD python /app/app.py  # 4. CMD specifies what command to run within the container.
+                >```
+                ></details>
