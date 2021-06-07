@@ -2101,6 +2101,8 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         若添加`try-catch`捕获了错误，在`catch`中：要不然进行新的逻辑、要不然要把错误暴露出来。如：在`catch`中添加`console`或上报错误或其他方式能让开发者感知到出错了。
 
 ### 预加载
+预加载，但不影响页面渲染，等待相关资源真正需要被使用时直接使用已预加载的资源 或 更快速的建立连接。
+
 1. `<link>`预加载
 
     1. `<link rel="preload" href="资源">`
@@ -2115,18 +2117,13 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
             >利用浏览器空闲时间去下载或预取用户在不久的将来可能访问的文档。
 
             请求、下载、缓存资源。
-        2. `<link rel="subresource" href="资源">`
-
-            >最低优先级。
-
-            请求、下载、缓存资源。
-        3. `<link rel="prerender"  href="域名">`
+        2. `<link rel="prerender"  href="域名">`
 
             就像在后台打开了一个隐藏的tab，下载域名的所有资源、创建DOM、渲染页面、执行JS等等。
-        4. `<link rel="dns-prefetch" href="域名">`
+        3. `<link rel="dns-prefetch" href="域名">`
 
             解析DNS。
-        5. `<link rel="preconnect" href="域名">`
+        4. `<link rel="preconnect" href="域名">`
 
             解析DNS，建立TCP握手连接、TLS协议。
 2. 实现预加载图片
@@ -2301,7 +2298,10 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
 ### 浏览器缓存
 1. [HTTP定义的缓存机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)
-2. 其他缓存机制（不推荐）
+2. 数据缓存
+
+    Web Storage（`localStorage`、`sessionStorage`）、cookie、IndexDB、等。
+3. 其他缓存机制（不推荐）
 
     1. HTML的`<meta>`设置缓存情况：
 
