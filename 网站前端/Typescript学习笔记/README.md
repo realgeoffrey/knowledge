@@ -4,7 +4,8 @@
 1. [Typescript](#typescript)
 
     1. [类型](#类型)
-    1. [其他相关](#其他相关)
+    1. [语法](#语法)
+    1. [使用](#使用)
 
 ---
 ### [Typescript](https://github.com/microsoft/TypeScript)
@@ -28,14 +29,16 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         4. `symbol`
         5. `bigint`
         6. `undefined`
+
+            >可以赋值给可选参数、可选属性(`?:`)。
         7. `null`
 
         >1. `undefined`和`null`可以赋值给所有类型的变量（除了`never`类型），`undefined`和`null`是所有类型的子类型（除了`never`类型）。
-        >2. 若配置`strictNullChecks`，则：`undefined`只能赋值给类型`any`、`undefined`、`void`；`null`只能赋值给类型`any`、`null`。
+        >2. 若配置`strictNullChecks`，则：`undefined`只能赋值给类型`any`、`undefined`、`void`，`null`只能赋值给类型`any`、`null`。
     2. `void`
 
-        1. 仅允许被`undefined`或`null`赋值。
-        2. 表示没有任何返回值的函数。
+        1. 仅允许被`null`（只在--strictNullChecks未指定时）或`undefined`赋值。
+        2. 表示`return null`（只在--strictNullChecks未指定时）、`return undefined`、`return`、没有任何返回值 的函数。
 
             ><details>
             ><summary>Promise的默认返回可以用<code>void</code>（不能用<del><code>undefined</code></del>）</summary>
@@ -52,7 +55,6 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >}
             >
             >
-            >
             >function b (): Promise<void> {  // 或 Promise<undefined>
             >  return new Promise((resolve, reject) => {
             >    resolve();
@@ -64,7 +66,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             ></details>
     3. `never`
 
-        表示永不存在的值的类型（如：总是会抛出异常或根本就不会有返回值的函数表达式或箭头函数表达式的返回值类型；变量也可能是never类型，当它们被永不为真的类型保护所约束时）。
+        表示永不存在的值的类型（如：总是会抛出异常或根本就不会有返回值的函数表达式或箭头函数表达式的返回值类型；变量也可能是never类型，当它们被永不为真的类型保护所约束时）。当类型不存在时通常返回`never`（如：`number & string`、`Extract<string | number , boolean>`）。
 
         >`never`可以赋值给所有类型的变量（包括`undefined`和`null`），`never`是所有类型的子类型。
 
@@ -106,12 +108,12 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >未声明类型的被认为是`any`。
     5. `unknown`
 
-        1. 任何值都可以赋给`unknown`；
-        2. 但是当没有类型断言或基于控制流的类型细化时`unknown`不可以赋值给其它类型，除了它自己和`any`外。
-        3. 同样地，在`unknown`没有被类型断言或细化到一个确切类型之前，是不允许在其上进行任何操作的。
+        1. 任何值都可以赋给`unknown`。
+        2. 当没有类型断言或基于控制流的类型细化时`unknown`不可以赋值给其它类型，除了它自己和`any`外。
+        3. 在`unknown`没有被类型断言或js代码细化到一个确切类型之前，不允许在其上进行任何操作。
     6. `object`或`{}`
 
-        表示非原始类型（除了`boolean`、`number`、`string`、`symbol`、`undefined`、`null`之外的类型）。允许给它赋任意值和访问`Object.prototype`上的属性，但不能调用任意其他方法，即便它真的有这些方法。
+        表示非原始类型/非基本数据类型（除了`boolean`、`number`、`string`、`symbol`、`bigint`、`undefined`、`null`之外的类型）。允许给它赋任意值和访问`Object.prototype`上的属性，但不能调用任意其他方法，即便它真的有这些方法。
 
         ><details>
         ><summary>e.g.</summary>
@@ -157,6 +159,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >
             >  readonly id: number
             >
+            >  // 描述对象的属性
             >  [x: string]: string | number | boolean // 必须包含：所有其他属性的类型的联合类型（|）
             >}
             >
@@ -174,7 +177,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >tom.xxx = 1n // 报错，1n不是string | number | boolean
             >```
             ></details>
-        2. `: { 属性: 数据类型 }`
+        2. `: { 属性: 数据类型, }`
         3. `: 类名`
 
             取**实例**的类型，而不是~~类~~的类型，不包含类的所有 ~~`静态属性/方法`~~ 和 ~~`构造函数`~~。
@@ -259,7 +262,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >
             >```typescript
             >interface NumberArray {
-            >  [index: number]: number | string
+            >  [index: number]: number | string // 描述数组
             >}
             >
             >let arr: NumberArray = [1, '1']
@@ -304,14 +307,12 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >枚举被编译为.js是数组。
     9. 函数类型
 
-        >包括：参数类型+返回值类型。
-
         1. 输入的参数、输出的结果都需要设置类型。
         2. 支持：函数声明、函数表达式。
         3. 支持：可选参数、默认参数、剩余参数。
 
             可选参数 和 默认参数 不能同时设置。e.g. 不允许：~~`y?: number = 1`~~。
-        4. 引用函数传入的参数不允许多于或少于约定的参数数量（若有可选参数、或默认参数、或剩余参数时，则允许少传入参数）。
+        4. 引用函数传入的参数不允许多于或少于约定的参数数量（若有可选参数`?`、或默认参数`=`、或剩余参数`...`，则允许少传入参数）。
         5. 函数表达式可用`接口` 或 `对象`定义。
         6. 函数的参数和返回值可以根据`接口`进行类型推论。
 
@@ -355,6 +356,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >
         >// 接口
         >interface mySum {
+        >  // 描述方法
         >  (xx: number, yy: number): string   // 定义的参数名和实现的函数参数名不用一致
         >}
         >let mySum3: mySum  // 显式定义（不是类型推论）
@@ -396,8 +398,8 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
         - 显示定义
 
-            1. `参数类型 => 返回类型`
-            2. `Function`
+            1. `: 参数类型 => 返回类型`
+            2. `: Function`
     10. 内置对象类型
 
         1. 浏览器环境
@@ -409,7 +411,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         - ~~Node.js~~
 
             Node.js不是内置对象的一部分，需引入第三方声明文件：`npm install @types/node --save-dev`。
-4. 类
+2. 类
 
     1. 访问修饰符（Access Modifiers）
 
@@ -530,7 +532,11 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >```
             ></details>
 
-        - `readonly`
+        - `class-extends`重载属性
+
+            1. `public`仅可用`public`重载
+            2. `private`不可以重载
+            3. `protected`仅可用`public`或`protected`重载
     2. `typeof 类名`
 
         取**类**的类型，而不是~~实例~~的类型，包含类的所有`静态属性/方法`和`构造函数`。
@@ -561,9 +567,9 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >console.log(greeter2.greet(), greeter2.greeting)
         >```
         ></details>
-    3. 抽象类、抽象方法
+    3. `abstract`
 
-        `abstract`定义抽象类、抽象方法。
+        抽象类、抽象方法。
 
         1. 抽象类不能实例化
         2. 抽象方法**必须**被子类实现（抽象类自己不能定义自己的抽象方法的实现）
@@ -647,7 +653,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
             >合并的相同属性的类型必须是相同的。
         2. 类中方法的合并，与函数的合并一样：支持重载、合并。
-5. 接口（Interfaces）
+3. 接口（Interfaces）
 
     `interface`
 
@@ -660,11 +666,11 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >
             >```typescript
             >interface Counter {
-            >  (start: number): string
+            >  (start: number): string  // 描述方法
             >
-            >  interval: number
+            >  interval: number         // 描述对象的属性
             >
-            >  reset (): void
+            >  reset (): void           // 描述对象的方法
             >}
             >
             >function getCounter (): Counter {
@@ -700,6 +706,12 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >  lightOn ()
             >
             >  lightOff ()
+            >}
+            >
+            >const obj: LightableAlarm = {
+            >  alert(){},
+            >  lightOn(){},
+            >  lightOff(){}
             >}
             >```
             ></details>
@@ -783,7 +795,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >}
             >```
             ></details>
-6. `type`
+4. `type`
 
     1. 类型别名
 
@@ -833,7 +845,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >
         >```
         ></details>
-7. 枚举（Enum）
+5. 枚举（Enum）
 
     用于取值被限定在一定范围内的场景。语义化、限制值的范围（只允许使用已定义的枚举名）。
 
@@ -1019,9 +1031,30 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >var directions2 = [0 /* Up */, 1 /* Down */, 2 /* Left */, 3 /* Right */];
             >```
             ></details>
-8. 泛型（Generics）
 
-    `<类型名>`
+    - 遍历枚举类型
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >enum A {
+        >  'top',
+        >  'down',
+        >}
+        >
+        >function func() {
+        >  for (var key in A) {
+        >    console.log(key);
+        >  }
+        >}
+        >
+        >func(); // => '0' => '1' => 'top' => 'down'
+        >```
+        ></details>
+6. 泛型（Generics）
+
+    `名称<类型名>其他内容`
 
     ><details>
     ><summary>e.g.</summary>
@@ -1051,10 +1084,76 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
         1. 定义：类型变量/泛型变量（用任意的非保留关键字）
         2. 赋值：传入类型，可以是自定义类型，可以是类型推论
-    2. 泛型接口
+    2. 泛型接口、泛型类型别名（`type`）
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >// 泛型接口
+        >interface GenericIdentityFn {
+        >    <T>(arg: T): T;
+        >}
+        >function identity<T>(arg: T): T {
+        >    return arg;
+        >}
+        >let myIdentity: GenericIdentityFn = identity;
+        >
+        >
+        >interface GenericIdentityFn<T> {
+        >    (arg: T): T;
+        >}
+        >function identity<T>(arg: T): T {
+        >    return arg;
+        >}
+        >let myIdentity: GenericIdentityFn<number> = identity;
+        >
+        >
+        >// 泛型类型别名
+        >type LinkedList<T> = { name: T; next: LinkedList<T> };
+        >
+        >var people: LinkedList<string>;
+        >var s = people.name;
+        >var s = people.next.name;
+        >var s = people.next.next.name;
+        >var s = people.next.next.next.name;
+        >```
+        ></details>
     3. 泛型类
-    4. 泛型参数的默认类型，`<类型名 = 数据类型>`
-    5. 泛型约束，`<类型名 extends 数据类型>`
+
+        >类的静态属性不能使用泛型类型。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >class GenericNumber<T> {
+        >    zeroValue: T;
+        >    add: (x: T, y: T) => T;
+        >}
+        >
+        >let myGenericNumber = new GenericNumber<number>();
+        >```
+        ></details>
+    4. 泛型函数
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >function identity<T>(arg: T): T {
+        >    return arg;
+        >}
+        >
+        >let myIdentity1: <U>(arg: U) => U = identity;
+        >let myIdentity2: {<T>(arg: T): T} = identity;
+        >```
+        ></details>
+
+    >没有~~泛型枚举~~和~~泛型命名空间~~。
+
+    5. 泛型参数的默认类型，`<类型名 = 数据类型>`
+    6. 泛型约束，`<类型名 extends 数据类型>`
 
         类型名 需要包含 数据类型。
 
@@ -1078,276 +1177,80 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >getProperty({ a: 1 }, "m"); // 报错
         >```
         ></details>
-9. 其他
+7. 内置类型别名
 
-    - 类型推论（Type Inference）
+    >来自：[lib.es5.d.ts](https://github.com/microsoft/TypeScript/blob/master/lib/lib.es5.d.ts#L1455)、[typescript: Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html)。
 
-        若没有明确的指定类型，则依照类型推论规则推断出一个类型：
+    1. `Partial`
 
-        1. 若声明时有赋值，则推断成此赋值的类型。
-        2. 若声明时没赋值，则推断成`any`。
+        将类型定义的所有属性都修改为可选。
 
-    - 类型断言（Type Assertion）：
+        >e.g. `Partial<数据类型>`
+    2. `Required`
 
-        `<数据类型>变量名` 或 `变量名 as 数据类型`（在`.tsx`中必须用后一种）
+        将类型定义的所有属性都修改为必须。
 
-        - 可以绕过检查
+        >e.g. `Required<数据类型>`
+    3. `Readonly`
 
-            ><details>
-            ><summary>e.g.</summary>
-            >
-            >```typescript
-            >interface A {}
-            >
-            >let a = { aa: 1 } as A;
-            >```
-            ></details>
+        将类型定义的所有属性都修改为只读。
 
-    - 联合类型（Union Types）
+        >e.g. `Readonly<数据类型>`
+    4. `Record`
 
-        `|`
+        将类型A的所有属性值都映射到类型B上并创造一个新的类型。
 
-        1. 若未赋值，则只能访问此联合类型的所有类型里共有的属性/方法（不确定联合类型的变量到底是哪个类型）。
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >type A = 'dog' | 'cat' | 'fish';
+        >interface B {
+        >   name:string,
+        >   age:number,
+        >}
+        >
+        >type C = Record<A, B>;
+        >
+        >const c:C = {
+        >   dog:{
+        >       name:'dogName',
+        >       age:2
+        >   },
+        >   cat:{
+        >       name:'catName',
+        >       age:3
+        >   },
+        >   fish:{
+        >       name:'fishName',
+        >       age:5
+        >   }
+        >}
+        >```
+        ></details>
+    5. `Pick`
 
-            - 类型断言 或 js逻辑判断 联合类型的变量成为联合类型其中的某一种类型，就可以访问此类型的属性/方法。
-
-                ><details>
-                ><summary>e.g.</summary>
-                >
-                >```typescript
-                >function getLength(something: string | number) {
-                >  something.toString(); // 访问此联合类型的所有类型里共有的属性/方法
-                >  (something as string).length; // 类型断言
-                >  (<number>something).toFixed(); // 类型断言
-                >  if (typeof something === 'string') {
-                >    something.length;  // js逻辑判断
-                >  }
-                >
-                >  something.length; // 报错，只能访问此联合类型的所有类型里共有的属性/方法
-                >  (<boolean>something).length; // 报错，只能类型断言成一个联合类型中存在的类型
-                >}
-                >```
-                ></details>
-        2. 若已赋值，则只能访问类型推论出的某一个类型的属性/方法。
-        3. 第一个值前面也可以添加`|`（主要为了格式化美观）。
-
-            e.g. `type a = | number | string;`
-
-    - 交叉类型（Intersection Types）
-
-        `&`
-
-        将多个类型合并为一个类型。
+        从类型定义的属性中，选取指定一组属性，返回一个新的类型定义。
 
         ><details>
         ><summary>e.g.</summary>
         >
         >```typescript
         >interface A {
-        >  a: number;
+        >  title: string
+        >  completed: boolean
+        >  description: string
         >}
-        >interface B {
-        >  b: string;
-        >}
-        >type C = {
-        >  c: boolean;
-        >};
         >
-        >const aa: A & B & C & { d: number } = {
-        >  a: 1,
-        >  b: "",
-        >  c: false,
-        >  d: 1,
-        >};
+        >type someA = Pick<A, 'title'|'completed'>
+        >
+        >const a: someA = {
+        >  title: 'Clean room',
+        >  completed: false
+        >}
         >```
         ></details>
-
-    - `!`
-
-        表示从前面的表达式里移除 ~~`null`~~ 和 ~~`undefined`~~。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```typescript
-        >// 配置文件：compilerOptions.strictNullChecks: true
-        >let foo: string | undefined
-        >
-        >foo.length     // 报错， - 'foo' is possibly 'undefined'
-        >foo!.length
-        >```
-        ></details>
-
-    - `typeof`
-
-        >也保留js中的含义，但优先使用ts的语义。
-
-        获取一个变量的声明类型，如果不存在，则获取该类型的推论类型。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```typescript
-        >function foo(x: number): Array<number> {
-        >  return [x];
-        >}
-        >type F = typeof foo; // -> (x: number) => number[]
-        >
-        >
-        >class A {
-        >  a: string;
-        >  constructor() {
-        >    console.log("I'm A");
-        >  }
-        >}
-        >
-        >const a: A = { a: "" };
-        >
-        >type A2 = A;        // -> A的实例类型
-        >type A3 = typeof a; // -> a的类型（也就是A的实例类型）
-        >type A4 = typeof A; // -> A的类型
-        >
-        >let a1: A2;
-        >a1 = { a: "" };
-        >
-        >let a2: A3;
-        >a2 = { a: "" };
-        >
-        >let a3: A4;
-        >a3 = A;
-        >
-        >let a4: A4;
-        >a4 = class B extends A {
-        >  constructor() {
-        >    super();
-        >    console.log("I'm B");
-        >  }
-        >};
-        >
-        >new a3(); // => I'm A
-        >new a4(); // => I'm A I'm B
-        >```
-        ></details>
-
-    - `类型1 extends 类型2 ? 类型3 : 类型4`
-
-        >`extends`可用于：interface去继承另一个interface或类，泛型约束。
-
-        若 类型1可以赋值给类型2 （或？ 类型1是类型2的扩展），则返回类型 类型3，否则返回 类型4。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```typescript
-        >type Type1 = number | boolean;
-        >
-        >type W<T> = T extends Type1 ? "yes" : string;
-        >
-        >type W1 = W<number>;                               // -> 'yes'
-        >type W2 = W<1>;                                    // -> 'yes'
-        >type W3 = W<W1>;                                   // -> string
-        >
-        >
-        >class A {
-        >  a: number;
-        >}
-        >interface B extends A {
-        >  b: string;
-        >}
-        >interface C extends B {
-        >  c: boolean;
-        >}
-        >
-        >type Z<T> = T extends B ? "B+" : Type1;
-        >type Z1a = Z<A>;                                   // -> Type1
-        >type Z1c = Z<C>;                                   // -> 'B+'
-        >type Z2 = Z<{ a: 1; b: "" }>;                      // -> 'B+'
-        >type Z3 = Z<{ a: "1"; b: "" }>;                    // -> Type1
-        >
-        >
-        >type Type2 = { a: number; b: string };
-        >
-        >type X<T> = T extends Type2 ? true : false;
-        >
-        >type X1 = X<{ a: number }>;                        // -> false
-        >type X2 = X<{ a: number; b: string }>;             // -> true
-        >type X3 = X<{ a: number; b: string; c: number }>;  // -> true
-        >```
-        ></details>
-
-    - `keyof`（输入索引类型查询）
-
-        获取某种类型的所有键，其返回类型是联合类型（`|`）。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```typescript
-        >interface Person {
-        >  name: string;
-        >  age: number;
-        >  location?: string;
-        >}
-        >
-        >type K1 = keyof Person;                  // -> "name" | "age" | "location"
-        >type K2 = keyof Person[];                // -> number | "length" | "push" | "pop" | "concat" | ...
-        >type K3 = keyof { [x: string]: Person }; // -> string | number （隐式转换key为number）
-        >```
-        ></details>
-
-    - 索引访问类型
-
-        在语法上，它们看起来像属性或元素访问，但最终会被转换为类型。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```typescript
-        >interface Person {
-        >  name: string;
-        >  age: number;
-        >  location: string;
-        >}
-        >
-        >type P1 = Person["name"];          // -> string
-        >type P2 = Person["name" | "age"];  // -> string | number
-        >type P3 = string["charAt"];        // -> (pos: number) => string
-        >type P4 = string[]["push"];        // -> (...items: string[]) => number
-        >type P5 = string[][0];             // -> string
-        >```
-        ></details>
-
-    - `in`
-
-        遍历枚举类型。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```typescript
-        >type Keys = "a" | "b"
-        >type Obj = {
-        >  [p in Keys]: any
-        >} // -> { a: any, b: any }
-        >```
-        ></details>
-
-    - `infer`
-
-        在条件类型语句中, 可以用 infer 声明一个类型变量并且对它进行使用，我们可以用它获取函数的返回类型。
-10. 内置类型别名
-
-    >来自：[lib.es5.d.ts](https://github.com/microsoft/TypeScript/blob/master/lib/lib.es5.d.ts#L1455)、[typescript: Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html)。
-
-    `Partial`、`Required`、`Readonly`、`Pick`、`Record`、`Extract`、`ThisType`、`InstanceType`、`NonNullable`、`Parameters`、`ConstructorParameters`、等
-
-
-    1. `ReturnType`
-
-        获得方法类型的返回类型。
-
-        >e.g. `ReturnType<typeof 方法>`
-    2. `Omit`
+    6. `Omit`
 
         去除类型中的某些属性。
 
@@ -1361,29 +1264,442 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >  description: string
         >}
         >
-        >type AB = Omit<A, "description">
+        >type AB = Omit<A, "completed"|"description">
         >
         >const a: AB = {
-        >  title: 'Clean room',
-        >  completed: false
+        >  title: 'Clean room'
         >}
         >```
         ></details>
-    3. `Exclude`
+    7. `Exclude`
 
-        去除类型中的一部分。
-
+        去除联合类型中的一部分。
 
         ><details>
         ><summary>e.g.</summary>
         >
         >```typescript
         >type a = number | string | boolean
-        >type b = Exclude<a, number | boolean>
+        >type b = Exclude<a, number | boolean>  // string
+        >```
+        ></details>
+    8. `Extract`
+
+        从联合类型A中提取类型B。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >type T0 = Extract<'a' | 'b' | 'c', 'a' | 'b'>          // 'a' | 'b'
+        >type T1 = Extract<string | number | boolean, boolean>  // boolean
+        >type T2 = Extract<string | number , boolean>           // never
+        >```
+        ></details>
+    9. `NonNullable`
+
+        去除联合类型中的`null`和`undefined`。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >type T1 = NonNullable<string | null | undefined>;  // string
+        >type T2 = NonNullable<null | undefined>;           // never
+        >```
+        ></details>
+    10. `ReturnType`
+
+        获得方法类型的返回类型。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >type F1 = () => Date;
+        >function F2 ():Date { return new Date() }
+        >
+        >type F1ReturnType = ReturnType<F1>;        // Date
+        >type F2ReturnType = ReturnType<typeof F2>; // Date
+        >```
+        ></details>
+    11. `Parameters`
+
+        获取函数的全部参数类型，以`元组`返回。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >type F0 = (a: string, b: number) => boolean;
+        >type F1 = Parameters<F0>;                      // [string, number]
+        >
+        >type F2 = () => boolean;
+        >type F3 = Parameters<F2>;                      // []
+        >```
+        ></details>
+    12. `InstanceType`
+
+        获得构造方法类型的返回类型。
+    13. `ConstructorParameters`
+
+        获取构造函数的全部参数类型，以`元组`或数组返回。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >type T0 = ConstructorParameters<ErrorConstructor>;     // [message?: string]
+        >type T1 = ConstructorParameters<FunctionConstructor>;  // string[]
+        >type T2 = ConstructorParameters<RegExpConstructor>;    // [pattern: string | RegExp, flags?: string]
+        >type T3 = ConstructorParameters<any>;                  // unknown[]
+        >type T4 = ConstructorParameters<Function>;             // 报错
+        >```
+        ></details>
+    14. `ThisParameterType`
+
+        获取函数中`this`的数据类型，若没有则返回`unknown`。
+    15. `OmitThisParameter`
+
+        移除函数中的`this`数据类型。
+    16. `ThisType`
+
+#### 语法
+- 类型推论（Type Inference）
+
+    若没有明确的指定类型，则依照类型推论规则推断出一个类型：
+
+    1. 若声明时有赋值，则推断成此赋值的类型。
+    2. 若声明时没赋值，则推断成`any`。
+
+- 类型断言（Type Assertion）：
+
+    `<数据类型>变量名` 或 `变量名 as 数据类型`
+
+    >若JSX中使用`<数据类型>变量名`断言语法时，则与JSX的语法存在歧义（如：`let foo = <string>bar;</string>`），因此在`.tsx`中必须用`变量名 as 数据类型`的断言语法。
+
+    - 可以绕过检查
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >interface A {
+        >  aa?: number
+        >}
+        >interface B {
+        >  bb: number
+        >}
+        >
+        >let a:A = {};
+        >let b:B = a as B;  // 不报错
         >```
         ></details>
 
-#### 其他相关
+- 联合类型（Union Types）
+
+    `|`
+
+    1. 若未赋值，则只能访问此联合类型的所有类型里共有的属性/方法（不确定联合类型的变量到底是哪个类型）。
+
+        - 类型断言 或 js逻辑判断 联合类型的变量成为联合类型其中的某一种类型，就可以访问此类型的属性/方法。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```typescript
+            >function getLength(something: string | number) {
+            >  something.toString(); // 访问此联合类型的所有类型里共有的属性/方法
+            >  (something as string).length; // 类型断言
+            >  (<number>something).toFixed(); // 类型断言
+            >  if (typeof something === 'string') {
+            >    something.length;  // js逻辑判断
+            >  }
+            >
+            >  something.length; // 报错，只能访问此联合类型的所有类型里共有的属性/方法
+            >  (<boolean>something).length; // 报错，只能类型断言成一个联合类型中存在的类型
+            >}
+            >```
+            ></details>
+    2. 若已赋值，则只能访问类型推论出的某一个类型的属性/方法。
+
+    >第一个值前面也可以添加`|`（主要为了格式化美观）。e.g. `type a = | number | string;`
+
+- 交叉类型（Intersection Types）
+
+    `&`
+
+    将多个类型合并为一个类型。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```typescript
+    >interface A {
+    >  a: number;
+    >}
+    >interface B {
+    >  b: string;
+    >}
+    >type C = {
+    >  c: boolean;
+    >};
+    >
+    >const aa: A & B & C & { d: number } = {
+    >  a: 1,
+    >  b: "",
+    >  c: false,
+    >  d: 1,
+    >};
+    >```
+    ></details>
+
+- `!`
+
+    表示从前面的表达式里移除 ~~`null`~~ 和 ~~`undefined`~~。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```typescript
+    >// 配置文件：compilerOptions.strictNullChecks: true
+    >let foo: string | undefined
+    >
+    >foo.length     // 报错， - 'foo' is possibly 'undefined'
+    >foo!.length
+    >
+    >
+    >function func (x:undefined | string) :string{
+    >  return x!
+    >}
+    >```
+    ></details>
+
+- `typeof`
+
+    >也保留js中的含义，但优先使用ts的语义。
+
+    获取一个变量的声明类型（若不存在，则获取该类型的推论类型）。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```typescript
+    >function foo(x: number): Array<number> {
+    >  return [x];
+    >}
+    >type F = typeof foo; // -> (x: number) => number[]
+    >
+    >
+    >class A {
+    >  a: string;
+    >  constructor() {
+    >    console.log("I'm A");
+    >  }
+    >}
+    >
+    >const a: A = { a: "" };
+    >
+    >type A2 = A;        // -> A的实例类型
+    >type A3 = typeof a; // -> a的类型（也就是A的实例类型）
+    >type A4 = typeof A; // -> A的类型
+    >
+    >let a1: A2 = { a: "" };
+    >
+    >let a2: A3 = { a: "" };
+    >
+    >let a3: A4 = A;
+    >
+    >let a4: A4 = class B extends A {
+    >  constructor() {
+    >    super();
+    >    console.log("I'm B");
+    >  }
+    >};
+    >
+    >new a3(); // => I'm A
+    >new a4(); // => I'm A I'm B
+    >```
+    ></details>
+
+- `keyof`（输入索引类型查询）
+
+    获取某种**类型**的所有键（属性名），以联合类型（`|`）返回。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```typescript
+    >interface Person {
+    >  name: string;
+    >  age: number;
+    >  location?: string;
+    >}
+    >
+    >type K1 = keyof Person;                  // -> "name" | "age" | "location"
+    >type K2 = keyof Person[];                // -> number | "length" | "push" | "pop" | "concat" | ...
+    >type K3 = keyof { [x: string]: Person }; // -> string | number （隐式转换key为number）
+    >```
+    ></details>
+
+- 索引访问类型
+
+    在语法上，它们看起来像属性或元素访问，但最终会被转换为类型。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```typescript
+    >interface Person {
+    >  name: string;
+    >  age: number;
+    >  location: string;
+    >}
+    >
+    >type P1 = Person["name"];          // -> string
+    >type P2 = Person["name" | "age"];  // -> string | number
+    >type P3 = string["charAt"];        // -> (pos: number) => string
+    >type P4 = string[]["push"];        // -> (...items: string[]) => number
+    >type P5 = string[][0];             // -> string
+    >```
+    ></details>
+
+- `in`
+
+    类型的属性通过`in`遍历获得。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```typescript
+    >type Keys = "a" | "b"
+    >type Obj = {
+    >  [p in Keys]: any
+    >} // -> { a: any, b: any }
+    >
+    >
+    >enum Keys2 {
+    >  'top',
+    >  'down'
+    >}
+    >type Obj2 = {
+    >  [p in Keys2]: any
+    >} // -> { 0: any, 1: any }
+    >```
+    ></details>
+
+- 装饰器（Decorators）
+
+    `@装饰器表达式-最终求值后是一个函数`
+
+    @expression 这种形式，expression 求值后为一个函数，它在运行时被调用，被装饰的声明信息会被做为参数传入。
+
+    多个装饰器组合在一起，在运行时，要注意，调用顺序是 从下至上 依次调用，正好和书写的顺序相反。
+
+    TypeScript 中的装饰器可以被附加到`类声明`、`方法`、 `访问符(getter/setter)`、`属性`和`参数`上。
+
+- `readonly`
+
+    属性标记为只读。
+
+    1. 方法的形参
+    2. 对象（`: { 属性: 数据类型, }`）、类、interface、type 的属性
+
+        >与访问修饰符同时使用时要放在其后面。
+
+- `new`
+
+    构造函数相关。
+
+- 参数`this`
+
+    定义函数中`this`的类型。
+
+- `类型1 extends 类型2 ? 类型3 : 类型4`
+
+    >`extends`可用于：interface去继承另一个interface或类，泛型约束。
+
+    若 类型1可以赋值给类型2 （或？ 类型1是类型2的扩展），则返回类型 类型3，否则返回 类型4。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```typescript
+    >type Type1 = number | boolean;
+    >
+    >type W<T> = T extends Type1 ? "yes" : string;
+    >
+    >type W1 = W<number>;                               // -> 'yes'
+    >type W2 = W<1>;                                    // -> 'yes'
+    >type W3 = W<W1>;                                   // -> string
+    >
+    >
+    >class A {
+    >  a: number;
+    >}
+    >interface B extends A {
+    >  b: string;
+    >}
+    >interface C extends B {
+    >  c: boolean;
+    >}
+    >
+    >type Z<T> = T extends B ? "B+" : Type1;
+    >type Z1a = Z<A>;                                   // -> Type1
+    >type Z1c = Z<C>;                                   // -> 'B+'
+    >type Z2 = Z<{ a: 1; b: "" }>;                      // -> 'B+'
+    >type Z3 = Z<{ a: "1"; b: "" }>;                    // -> Type1
+    >
+    >
+    >type Type2 = { a: number; b: string };
+    >
+    >type X<T> = T extends Type2 ? true : false;
+    >
+    >type X1 = X<{ a: number }>;                        // -> false
+    >type X2 = X<{ a: number; b: string }>;             // -> true
+    >type X3 = X<{ a: number; b: string; c: number }>;  // -> true
+    >```
+    ></details>
+
+- `infer`
+
+    在条件类型语句中, 可以用 infer 声明一个类型变量并且对它进行使用，我们可以用它获取函数的返回类型。
+
+- 类型守卫（Type Guards）
+
+    一些表达式，它们会在运行时检查以确保在某个作用域里的类型。
+
+    1. 类型谓词
+
+        定义一个函数，它的返回值是一个`类型谓词`：`参数名 is 类型`。
+
+        ```typescript
+        function isFish(pet: Fish | Bird): pet is Fish {
+            return (pet as Fish).swim !== undefined;
+        }
+        ```
+    2. `字符串字面量或字符串字面量类型 in 联合类型`
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >function move(pet: Fish | Bird) {
+        >    if ("swim" in pet) {
+        >        return pet.swim();
+        >    }
+        >    return pet.fly();
+        >}
+        >```
+        ></details>
+    3. `typeof 变量 !==或=== "number或string或boolean或symbol或bigint"`
+
+        >e.g. `if (typeof x === 'number') {}`
+    4. `变量 instanceof 构造函数`
+
+        >e.g. `if(x instanceof Func) {}`
+
+#### 使用
 1. 配置
 
     [`tsconfig.json`](https://www.staging-typescript.org/tsconfig)
@@ -1397,9 +1713,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
     >TypeScript错误`TS1128: Declaration or statement expected.`，可能导致的原因是：tsx文件名命名必须为全小写。
 3. `namespace`
 
-    生成的.js有一层命名空间包含内容（不容易污染全局变量）。
-
-    1. 可嵌套
+    生成的.js有一层命名空间包含内容（不容易污染全局变量），可嵌套。
 
     ><details>
     ><summary>e.g.</summary>
@@ -1455,9 +1769,9 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
             ```typescript
             declare class 类名 {
-              属性名: 数据类型                 // 没有()是属性
-              方法名1(参数: 数据类型): 数据类型 // 有()是方法
-              方法名2()                       // 有()是方法
+              属性名: 数据类型                // 没有()是属性
+              方法名1(参数: 数据类型): 数据类型  // 有()是方法
+              方法名2()                     // 有()是方法
             }
             ```
             >仅定义、不实现的方法都只有`()`、没有`{}`：`interface 中的方法`、`declare class 中的 方法`、`abstract class 中的 abstract 方法`。
@@ -1468,16 +1782,16 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
               属性名
             }
             ```
-        5. 声明全局的接口、类型
+        5. 声明全局的接口、type
+
+            >不需要`declare`关键字
 
             ```typescript
-            // 用接口定义（对象、数组、函数、类）
             interface 名字 {
                 属性名: 数据类型
             }
 
 
-            // 类型（类型别名、字符串字面量类型）
             type 属性名 = 数据类型 或 字符串字面量类型
             ```
 
@@ -1495,7 +1809,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         - 多种声明可以组合使用（对同一个名字进行多种不同的声明），是**或**的声明关系。
     2. 导出`export`
 
-    - 引入第三方库声明文件（不需任何配置，引入就可声明成功），可搜索：<https://microsoft.github.io/TypeSearch/>
+    - 引入第三方库声明文件（不需任何配置，引入就可声明成功），可搜索：<https://www.typescriptlang.org/dt/search>
 5. 引入方式：
 
     1. 有类型声明

@@ -141,9 +141,14 @@
             1. 若所有组件都套上`onLayout`，则可以滚动到指定组件位置和判断组件是否"曝光"。
             2. `onLayout`是异步的，并且可能触发时间比较慢，在组件渲染完毕之后上百毫秒（250ms？）才触发。
             3. 业务中解决问题，可以在节点内层或外层嵌套一层`<View>`并利用它的`onLayout`
-        6. `<ListView>`改变渲染内容后（除了`onEndReached`触发之外）有时无法再触发`onEndReached`
+        6. `<ListView>`
 
-            （除了`onEndReached`触发之外）改变渲染内容时，改变`<ListView>`的`key`属性。
+            1. 改变渲染内容后（除了`onEndReached`触发之外）有时无法再触发`onEndReached`
+
+                （除了`onEndReached`触发之外）改变渲染内容时，改变`<ListView>`的`key`属性。
+            2. `getRowType`返回类型根据版本会有不同，旧版SDK（[@hippy/react](https://www.npmjs.com/package/@hippy/react)）需要字符串类型，新版SDK需要数字类型。
+
+                >会在客户端层面报错（非前端层面，因此safari不报错），类似：`Error setting property 'type' of ListViewItem with tag #153: JSON value '0' of type NSNumber cannot be converted to NSString`。
         7. `<ScrollView>`、`<ListView>`的滚动事件，需要`onMomentumScrollEnd`（非用户触发的滚动结束）和`onScrollEndDrag`（用户触发的滚动结束）配合使用
         8. `<ScrollView>`
 
@@ -538,20 +543,24 @@
                 >与CSS的`align-self`表现一致。
     4. 颜色
 
+        >包括所有颜色，如：border、字体、background、阴影。
+
         1. rgb
 
             e.g. `'#f0f'`、`'#ff00ff'`、`'rgb(255, 0, 255)'`
         2. rgba
 
             e.g. `'#f0ff'`、`'#ff00ff40'`、`'rgba(255, 0, 255, 0.5)'`
-        4. hsl
+        3. hsl
 
             e.g. `'hsl(0, 33%, 69%)'`
-        5. hsla
+        4. hsla
 
             e.g. `'hsla(0, 33%, 69%, 0.5)'`
-        6. `'transparent'`
-        7. 颜色名字
+        5. `'transparent'`
+
+            >没有`'none'`，只能用`'transparent'`覆盖回无背景色。
+        6. 颜色名字
     5. 字体
 
         1. `fontSize`
