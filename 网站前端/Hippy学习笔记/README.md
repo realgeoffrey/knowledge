@@ -538,20 +538,24 @@
                 >与CSS的`align-self`表现一致。
     4. 颜色
 
+        >包括所有颜色，如：border、字体、background、阴影。
+
         1. rgb
 
             e.g. `'#f0f'`、`'#ff00ff'`、`'rgb(255, 0, 255)'`
         2. rgba
 
             e.g. `'#f0ff'`、`'#ff00ff40'`、`'rgba(255, 0, 255, 0.5)'`
-        4. hsl
+        3. hsl
 
             e.g. `'hsl(0, 33%, 69%)'`
-        5. hsla
+        4. hsla
 
             e.g. `'hsla(0, 33%, 69%, 0.5)'`
-        6. `'transparent'`
-        7. 颜色名字
+        5. `'transparent'`
+
+            >没有`'none'`，只能用`'transparent'`覆盖回无背景色。
+        6. 颜色名字
     5. 字体
 
         1. `fontSize`
