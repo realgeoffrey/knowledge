@@ -21,6 +21,6 @@
 ><summary>其他</summary>
 >
 >1. [IDEs设置](./IDEs设置/README.md)
->2. [其他](./其他/README.md)
+>2. [Chrome使用](./Chrome使用/README.md)
 >3. [Google搜索技巧](./Google搜索技巧/README.md)
 ></details>
