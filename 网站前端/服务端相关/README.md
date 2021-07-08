@@ -329,4 +329,4 @@ app.use((ctx) => {
 
     e.g. 3级命令字：`「一级」.「二级」.「三级」`，可能省略约定的第一级命令字。
 
->[jetbrains plugin: JCE Support](https://plugins.jetbrains.com/plugin/11500-jce-support)
+>[jetbrains plugin: JCE Support](https://plugins.jetbrains.com/plugin/11500-jce-support)。
