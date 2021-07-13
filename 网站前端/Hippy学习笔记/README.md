@@ -315,6 +315,15 @@
     8. `PixelRatio`
 
         获取设备的像素密度(pixel density)
+
+        - 1px的线：
+
+            ```jsx
+            import { View, PixelRatio } from "react-native";
+
+            {/* 大部分机型不支持1px，只能1dp（小数进位成整数） */}
+            <View style={{ width或height: 1 / PixelRatio.get() }}/>
+            ```
     9. `Platform`
 
         判断平台
