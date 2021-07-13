@@ -417,11 +417,11 @@
 
     1. 长度单位
 
-        无单位、数值型（`Number`）。含义是dp或pt。不支持：~~百分比~~、~~任何单位（`px`、`em`、`rem`、`vw`、`vh`）~~。支持小数点（与浏览器不同）。
+        无单位、数值型（`Number`）。含义是dp或pt。不支持：~~百分比~~、~~任何单位（`px/em/rem/vw/vh`）~~。支持小数点、不取整。
 
         - 1px或小数点长度：
 
-            客户端支持小数点数值（Xcode模拟可能还是会四舍五入数值，用真机试一试）。
+            客户端支持小数点数值（Xcode模拟可能还是会取整，用真机试一试）。
 
             ```jsx
             import { View, PixelRatio, StyleSheet } from "react-native";
