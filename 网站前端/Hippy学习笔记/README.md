@@ -421,7 +421,7 @@
 
         - 1px或小数点长度：
 
-            （部分）客户端支持小数点数值（并非所有样式都支持，比如：有些机型不支持`width`，但是支持`border`。以不同样式在具体机型的具体效果为主）。
+            （部分）客户端支持小数点数值（并非所有样式都支持，比如：有些机型不支持`width`，但支持`border`。以不同样式在具体机型的具体效果为准）。
 
             ```jsx
             import { View, PixelRatio, StyleSheet } from "react-native";
