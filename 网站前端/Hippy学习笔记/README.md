@@ -315,15 +315,6 @@
     8. `PixelRatio`
 
         获取设备的像素密度(pixel density)
-
-        - 1px的线：
-
-            ```jsx
-            import { View, PixelRatio } from "react-native";
-
-            {/* 大部分机型不支持1px，只能1dp（小数进位成整数） */}
-            <View style={{ width或height: 1 / PixelRatio.get() }}/>
-            ```
     9. `Platform`
 
         判断平台
@@ -426,7 +417,20 @@
 
     1. 长度单位
 
-        无单位、数值型（`Number`）。含义是dp或pt。不支持：~~百分比~~、~~任何单位（`px`、`em`、`rem`、`vw`、`vh`）~~。
+        无单位、数值型（`Number`）。含义是dp或pt。不支持：~~百分比~~、~~任何单位（`px`、`em`、`rem`、`vw`、`vh`）~~。支持小数点（与浏览器不同）。
+
+        - 1px或小数点长度：
+
+            客户端支持小数点数值（Xcode模拟可能还是会四舍五入数值，用真机试一试）。
+
+            ```jsx
+            import { View, PixelRatio, StyleSheet } from "react-native";
+
+            <View style={{ width或height: 0.5 }}/>
+            <View style={{ width或height: 1 / PixelRatio.get() }}/>
+            <View style={{ width或height: StyleSheet.hairlineWidth || 0.333333 }}/>
+            {/* StyleSheet.hairlineWidth 注意要存在，返回0.33... */}
+            ```
 
     >属性名的方向：`left === start`、`right === end`。但貌似未实现 ~~`start`~~ 或 ~~`end`~~。
 
