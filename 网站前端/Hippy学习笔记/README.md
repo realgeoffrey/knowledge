@@ -417,7 +417,20 @@
 
     1. 长度单位
 
-        无单位、数值型（`Number`）。含义是dp或pt。不支持：~~百分比~~、~~任何单位（`px`、`em`、`rem`、`vw`、`vh`）~~。
+        无单位、数值型（`Number`）。含义是dp或pt。不支持：~~百分比~~、~~任何单位（`px/em/rem/vw/vh`）~~。（部分机型）支持小数点、不取整。
+
+        - 1px或小数点长度：
+
+            （部分）客户端支持小数点数值（并非所有样式都支持，比如：有些机型不支持`width`，但支持`border`。以不同样式在具体机型的具体效果为准）。
+
+            ```jsx
+            import { View, PixelRatio, StyleSheet } from "react-native";
+
+            <View style={{ width或height: 0.5 }}/>
+            <View style={{ width或height: 1 / PixelRatio.get() }}/>
+            <View style={{ width或height: StyleSheet.hairlineWidth || 0.333333 }}/>
+            {/* StyleSheet.hairlineWidth 注意要存在，返回0.33... */}
+            ```
 
     >属性名的方向：`left === start`、`right === end`。但貌似未实现 ~~`start`~~ 或 ~~`end`~~。
 
