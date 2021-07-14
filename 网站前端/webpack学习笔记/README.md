@@ -12,7 +12,7 @@
 
 1. 能使用各种方式表达依赖关系
 
-    CommonJS、ES6 module、AMD、CSS的`@import`、样式的`url()`、HTML的`<img src="">`。都被转化为CommonJS规范的实现（各种方式引入效果相同）。
+    CommonJS、ES6 Module、AMD、CSS的`@import`、样式的`url()`、HTML的`<img src="">`。都被转化为CommonJS规范的实现（各种方式引入效果相同）。
 
     >```javascript
     >import list from './list';
@@ -112,6 +112,9 @@
     3. 仓库中没有被引用到的文件不会打包进最终bundle。
 
     >e.g. 可以用`import debounce from 'lodash/debounce'`代替`import { debounce } from 'lodash'`，这样最终打包的结果不会引用整个lodash，而只会引用debounce的引用链路文件（可以用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)分析并可视化构建后的打包文件进行对比）。
+2. tree shaking
+
+    只支持ES6 Module，不支持CommonJS。
 
 ### [Rollup](https://github.com/rollup/rollup)与webpack对比
 1. Rollup：
