@@ -156,7 +156,58 @@
 
                 - `<ScrollView>`会渲染里外2个容器：
 
-                    1. `flex: 1`可能要同时设置到`style`和`contentContainerStyle`上（尤其是在降级为H5页面时）
+                    1. flex相关样式可能要同时设置到`style`和`contentContainerStyle`上（尤其是在降级为H5页面时）
+
+                        1. `style`是`<ScrollView>`自身外层的的样式，设置`flex: 1`占满其父级剩余空间。
+                        2. `contentContainerStyle`是`<ScrollView>`内部包裹一层的样式，设置`flexGrow: 1`可以使子项占满父级剩余空间并且正常滚动。
+
+                        ><details>
+                        ><summary>e.g.</summary>
+                        >
+                        >实现：内容不够时子项拉伸，内容足够时<ScrollView>滚动
+                        >
+                        >```jsx
+                        ><View style={styles.container}>
+                        >  <View style={{ width: 50, height: 100, backgroundColor: "red" }} />
+                        >
+                        >  <ScrollView style={styles.scrollviewStyle} contentContainerStyle={styles.scrollviewContentContainerStyle}>
+                        >    <View style={styles.viewStyle}>1个或多个，满足效果</View>
+                        >  </ScrollView>
+                        >
+                        >  <View style={{ width: 50, height: 100, backgroundColor: "red" }} />
+                        ></View>
+                        >
+                        >const styles = StyleSheet.create({
+                        >  container: {
+                        >    flex: 1,
+                        >    backgroundColor: "#a2a2a2",
+                        >    alignItems: "center",
+                        >  },
+                        >  scrollviewStyle: {
+                        >    flex: 1,
+                        >    backgroundColor: "yellow",
+                        >    width: 300,
+                        >  },
+                        >  scrollviewContentContainerStyle: {
+                        >    alignItems: "center",
+                        >    background: "white",
+                        >    padding: 10,
+                        >
+                        >    // 关键设置
+                        >    flexGrow: 1,  // 注意，不可以用：`flex: 1`。省去则仅正常滚动，不会内容不够时还占满父级
+                        >  },
+                        >  viewStyle: {
+                        >    height: 200,
+                        >    backgroundColor: "pink",
+                        >    width: 200,
+                        >    marginVertical: 50,
+                        >
+                        >    // 关键设置
+                        >    flex: 1,   // 或：`flexGrow: 1`
+                        >  },
+                        >});
+                        >```
+                        ></details>
                     2. `<ScrollView>`转换为`<View>`时注意是否有`contentContainerStyle`，若有，则可能需要嵌套`<View>`
 
                         ><details>
@@ -537,11 +588,14 @@
                 1. `0`（默认）：元素没有弹性，不管父级容器空间，仅使用自身原本宽度/高度占据空间。
                 2. `「正整数」`：元素有弹性，`每个元素占用的剩余空间 = 自己的 flex 数值 / 所有同一级子容器的 flex 数字之和`。
 
-                    >此时`flex: 「正整数」`等价于`flexGrow: 「正整数」`。
+                    >此时`flex: 「正整数」`等价于`flexGrow: 「正整数」, flexShrink: 1, flexBasis: 0`。
 
                 3. `-1`：若空间不足则缩小到最小的宽度/高度。若空间没有不足，则使用自身原本宽度/高度占据空间。
 
                     >CSS的`flex-grow`和`flex-shrink`的默认表现。
+
+            >多个项：若都设置`flex: 1`（无论各项内容不一），则所有项占用空间大小均**一致**。若都设置`flexGrow: 1`，则各项先按照自己内容大小占据不同大小空间，再对剩余空间进行拉伸（各项所占空间**不一致**）。
+
             2. `flexGrow`：伸缩项目扩展的能力。
 
                 >与CSS的`flex-grow`表现一致。
@@ -595,6 +649,8 @@
 
             1. `'relative'`（默认）
             2. `'absolute'`
+
+                起点：从父级内容开始计算（不包括父级的`border`、`padding`、`margin`）；从本身的`margin`开始计算。
 
             - 不支持 ~~`fixed`~~。若要制作`fixed`效果，则：
 

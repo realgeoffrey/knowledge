@@ -18,6 +18,8 @@
 1. [mobx](#mobx)
 1. [react-native](#react-native)
 
+    1. [核心概念](#核心概念)
+
 ---
 ### [react](https://github.com/facebook/react)
 
@@ -1934,6 +1936,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
     （？某些情况下：）用到才去计算。每一次用到都会跑一遍计算的方法（类似vuex的getters返回一个函数的情况）。
 
+---
 ### [react-native](https://github.com/facebook/react-native)
 1. 排版引擎：[yoga](https://github.com/facebook/yoga)
 2. 样式
@@ -1942,3 +1945,16 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 3. `Dimensions`
 
     `Dimensions.get('window')`尽管尺寸信息立即就可用，但它可能会在将来被修改（譬如设备的方向改变），所以基于这些常量的渲染逻辑和样式应当每次 render 之后都调用此函数，而不是将对应的值保存下来。
+
+#### 核心概念
+1. React Native = JavaScriptCore + ReactJS + Bridges
+
+    1. JavaScriptCore负责JS代码解释执行
+
+        >iOS自带，Android没有，所以RN打包后Android的包比iOS大。
+    2. ReactJS负责描述和管理VirtualDom，指挥原生组件进行绘制和更新，同时很多计算逻辑也在js里面进行
+
+        ReactJS自身是不直接绘制UI的，UI绘制是非常耗时的操作，原生组件最擅长这事情（，Flutter则自绘渲染）。
+    3. Bridges用来翻译ReactJS的绘制指令给原生组件进行绘制，同时把原生组件接收到的用户事件反馈给ReactJS
+
+        >要在不同的平台实现不同的效果就可以通过定制Bridges来实现。
