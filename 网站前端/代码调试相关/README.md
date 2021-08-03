@@ -83,6 +83,8 @@
             1. Safari
             2. 开启调试功能的debug包APP
 
+        >对于未开启调试功能的APP，内部的WebView可以进行元素样式、命令行调试（e.g. weiner、vConsole），但无法进行debugger调试。e.g. 微信APP内部的WebView，无法进行debugger调试（~~[spy-debugger](https://github.com/wuchangming/spy-debugger)~~、~~[ios-webkit-debug-proxy](https://github.com/google/ios-webkit-debug-proxy)~~ 均不能），只能作为APP的开发者或使用越狱版微信进行调试。
+
         >若APP没有开启调试功能，只能连接Xcode看日志。
 3. 使用抓包工具查看请求、Map请求，如：[Charles](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Charles使用/README.md#charles使用)、[whistle](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/whistle使用/README.md#whistle使用)。
 
@@ -204,20 +206,32 @@
 
     - Simulator
 
-        1. 代理到whistle（或其他任意代理）
+        1. 代理到whistle（端口8899，或其他任意代理）
 
-            1. 方法一：设置系统代理为8899，Simulator为系统代理
-            2. 方法二：利用Proxifier V2（可代理PC所有应用到指定地址和端口）
+            1. Simulator内安装whistle证书
 
-                1. 安装证书：`127.0.0.1:8899`
-                2. 安装Proxifier V2
+                Safari输入`127.0.0.1:8899`，安装、同意证书。
+            2. Simulator设置http请求发送到8899
 
-                    1. Proxies
+                1. 方法一：设置系统代理为8899，Simulator设置走系统代理
+                2. 方法二：利用Proxifier V2（可代理PC所有应用到指定地址和端口）
 
-                        HTTPS 127.0.0.1:8899
-                    2. Rules
+                    - <details>
 
-                        `Simulator; "Xcode Server Builder"; "MobileSafari"; "com.apple.WebKit.Networking";`
+                        <summary>安装、配置Proxifier V2</summary>
+
+                        1. Proxies
+
+                            HTTPS 127.0.0.1:8899
+
+                            ![配置选项-Proxies](./images/proxifier-1.png)
+                        2. Rules
+
+                            `Simulator; "Xcode Server Builder"; "MobileSafari"; "com.apple.WebKit.Networking";`
+
+                            ![配置选项-Rules](./images/proxifier-2.png)
+                        3. 电脑同意权限并重启
+                        </details>
         2. 软键盘开启：
 
             Simulator -> I/O -> Keyboard -> 取消选择：Connect Hardware Keyboard

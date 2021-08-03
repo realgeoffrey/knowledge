@@ -74,6 +74,9 @@
 
         `fontFamily`
     6. 二分法定位问题
+3. 因为依赖客户端渲染的本质，所以最终需要在iOS和Android都真机测试才可以。
+
+    iOS和Android的渲染结果可能不同，样式（截断、遮挡）、事件冒泡情况、等，容易产生区别。
 
 ### hippy-react
 ![hippy-react图](./images/hippy-react-1.png)
@@ -308,7 +311,7 @@
                 1. 输入光标无法消除，除非设置`editable`为`false`。
                 2. 调用节点`.blur()`（作用：触发节点`onBlur`事件）无效。
 
-                    需要设置`editable`先为`false`再为`ture`才会触发节点`onBlur`事件。
+                    需要设置`editable`先为`false`再为`ture`才会触发节点`onBlur`事件（可能是需要触发页面渲染）。
 
                     >`onBlur`事件触发还会隐藏软键盘。
             6. iOS：
@@ -434,6 +437,8 @@
 
         1. 若事件回调返回`false`，则冒泡。
         2. 若事件回调返回`true`或不返回值，则不再冒泡。
+
+        >注意使用UI库时，某些组件是否进行事件冒泡拦截。e.g. 大部分`<Button>`的实现，点击事件不会继续向上冒泡。
     - 事件拦截
 
         父级组件拦截或中断子级组件的事件触发。所有触发在子级组件的事件都仅触发在父级组件。
@@ -567,14 +572,13 @@
             2. `flexWrap`：一条主轴排不下的情况，如何换行。
 
                 >与CSS的`flex-wrap`表现一致。
+            3. `alignContent`：多根主轴（一条主轴排不下，有换行）的对齐方式（不换行则该属性不起作用）。
 
-                1. `alignContent`：多根主轴（一条主轴排不下，有换行）的对齐方式（不换行则该属性不起作用）。
-
-                    1. `flex-start`（默认）
-            3. `justifyContent`：子项在主轴上的对齐方式（与轴的方向有关）。
+                1. `flex-start`（默认）
+            4. `justifyContent`：子项在主轴上的对齐方式（与轴的方向有关）。
 
                 >与CSS的`justify-Content`表现一致。
-            4. `alignItems`：子项在侧轴上的对齐方式（与轴的方向有关）。
+            5. `alignItems`：子项在侧轴上的对齐方式（与轴的方向有关）。
 
                 1. `stretch`（默认）
 
@@ -650,7 +654,10 @@
             1. `'relative'`（默认）
             2. `'absolute'`
 
-                起点：从父级内容开始计算（不包括父级的`border`、`padding`、`margin`）；从本身的`margin`开始计算。
+                1. 起点：从父级内容开始计算（不包括父级的`border`、`padding`、`margin`）；从本身的`margin`开始计算。
+                2. Tips（bug？）：
+
+                    Android机型，子级元素一定会被父级元素截断（父级元素固定`overflow: 'hidden'`不可改变）。
 
             - 不支持 ~~`fixed`~~。若要制作`fixed`效果，则：
 
@@ -678,6 +685,8 @@
 
         1. `'visible'`（默认）
         2. `'hidden'`
+
+            >Android机型，子级元素一定会被父级元素截断（父级元素固定`overflow: 'hidden'`不可改变）。
     11. 背景
 
         >不能直接 ~~`background`~~，无效果。

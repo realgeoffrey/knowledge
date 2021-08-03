@@ -13,7 +13,7 @@
 
         1. [判断是否存在某cookie](#原生js判断是否存在某cookie)
         1. [获取URL相关信息](#原生js获取url相关信息)
-        1. [在URL末尾添加查询键-值](#原生js在url末尾添加查询键-值)
+        1. [在URL末尾修改search键-值](#原生js在url末尾修改search键-值)
     1. 事件相关
 
         1. [绑定、解绑事件](#原生js绑定解绑事件)
@@ -43,7 +43,6 @@
         1. [格式化文件大小](#原生js格式化文件大小)
     1. 功能
 
-        1. [实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`](#原生js实现类似jquery的htmlbodyanimatescrollleft-像素-scrolltop-像素-毫秒)
         1. [用请求图片作log统计](#原生js用请求图片作log统计)
         1. [判断是否为`Node`、是否为`Element`](#原生js判断是否为node是否为element)
         1. [判断对象是否为空](#原生js判断对象是否为空)
@@ -348,63 +347,106 @@ function getLocation (url) {
 >url2 = api2 + '&a=1' + '&b=2' + '&c=3'
 >```
 
-### *原生JS*在URL末尾添加查询键-值
-1. 单个添加（未处理同名）
-
-    ```javascript
-    /**
-     * 在URL末尾添加search键-值（未处理同名）
-     * @param {String} url - URL
-     * @param {String} name - 名
-     * @param {String} value - 值
-     * @returns {String} - 添加完毕的URL
-     */
-    function addUrlSearch(url, name, value) {
-        if (!name || !value) {
-
-            return url;
-        }
-
-        var hashIndex = url.indexOf('#') !== -1 ? url.indexOf('#') : url.length,
-            newUrl = url.slice(0, hashIndex),
-            hash = url.slice(hashIndex),
-            searchIndex = newUrl.indexOf('?');
-
-        if (searchIndex === -1) {
-            newUrl += '?';
-        } else if (searchIndex !== newUrl.length - 1) {
-            newUrl += '&';
-        }
-
-        newUrl += encodeURIComponent(name) + '=' + encodeURIComponent(value) + hash;
-
-        return newUrl;
-    }
-    ```
-2. 批量添加
+### *原生JS*在URL末尾修改search键-值
+1. 批量添加（未加`encodeURIComponent`）
 
     >对象转换为`a=1&b=2`：`Object.entries(对象).map((val) => val.join('=')).join('&')`。
 
     ```javascript
     /**
-     * 在URL末尾添加search键-值
+     * 在URL末尾修改search键-值
      * @param {String} [url = window.location.href] - URL
-     * @param {Object} searchObj - 新增的search键-值
-     * @returns {String} - 添加完毕的URL
+     * @param {Object} searchObj - 修改的search键-值（若key-value的value设置为`false`，则删除这个key）
+     * @returns {String} - 修改完毕的URL
      */
-    function addUrlSearch (url = window.location.href, searchObj = {}) {
+    function changeUrlSearch (url = window.location.href, searchObj = {}) {
       if (Object.keys(searchObj).length === 0) {  // 空对象不处理
         return url
       }
 
-      const hashIndex = url.indexOf('#') !== -1 ? url.indexOf('#') : url.length // # 所在的字符串位置索引
-      const newUrl = url.slice(0, hashIndex) // 去除hash后url
-      const searchIndex = newUrl.indexOf('?')  // ? 所在的字符串位置索引
+      const hashIndex = url.includes('#') ? url.indexOf('#') : url.length // "#"所在的字符串位置索引
+      const urlWithoutHash = url.slice(0, hashIndex) // 去除hash后的url
+      const searchIndex = urlWithoutHash.indexOf('?')  // "?"所在的字符串位置索引
 
       // 把原始search值写入对象
       const originalSearchObj = {}
       if (searchIndex !== -1) {
-        const search = newUrl.slice(searchIndex + 1)  // search值（不包括 ?）
+        const search = urlWithoutHash.slice(searchIndex + 1)  // search值（不包括 ?）
+
+        // 写入已存在search的键-值
+        const searchArr = search.split('&')
+        for (let i = 0, len = searchArr.length; i < len; i++) {
+          if (searchArr[i] !== '') {
+            const searchItem = searchArr[i].split('=')
+            const key = searchItem.shift()
+            const value = searchItem.join('=')  // 兜底有些值包含"="
+            originalSearchObj[key] = value
+          }
+        }
+      }
+
+      // 合并原始search和新增search（同名覆盖）
+      const newSearchObj = Object.assign({}, originalSearchObj, searchObj)
+
+      // 生成新的合并过后的search字符串
+      const newSearch = Object.entries(newSearchObj)
+        // 值为`false`的key被删除
+        .filter(([key, value]) => {
+          return value !== false
+        })
+        .map((val) => {
+          return val.join('=')
+        }).join('&')
+
+      const hash = url.slice(hashIndex)  // 原始hash
+
+      let urlWithoutSearch  // 去除search、hash后的url
+      if (searchIndex !== -1) {
+        urlWithoutSearch = urlWithoutHash.slice(0, searchIndex)
+      } else {
+        urlWithoutSearch = urlWithoutHash
+      }
+
+      return urlWithoutSearch + (newSearch ? `?${newSearch}` : '') + hash
+    }
+    ```
+2. <details>
+
+    <summary>单个添加</summary>
+
+    ```javascript
+    /**
+     * 在URL末尾修改search键-值
+     * @param {String} url - URL
+     * @param {String} name - 名
+     * @param {String|Boolean} value - 值（若传`false`则删除属性名）
+     * @returns {String} - 添加完毕的URL
+     */
+    function changeUrlSearch (url, name, value) {
+      if (!name) {
+        return url
+      }
+
+      var hashIndex = url.includes('#') ? url.indexOf('#') : url.length
+      var urlWithoutHash = url.slice(0, hashIndex)
+      var hash = url.slice(hashIndex)
+      var searchIndex = urlWithoutHash.indexOf('?')
+
+      if (searchIndex === -1) {
+        if (value === false) {
+          return url
+        }
+        return urlWithoutHash + '?' + encodeURIComponent(name) + '=' + encodeURIComponent(value) + hash
+      } else if (searchIndex === urlWithoutHash.length - 1) {
+        if (value === false) {
+          return url.slice(0, urlWithoutHash.length - 1)
+        }
+        return urlWithoutHash + encodeURIComponent(name) + '=' + encodeURIComponent(value) + hash
+      } else {
+        const urlWithoutSearch = urlWithoutHash.slice(0, searchIndex)
+        const search = urlWithoutHash.slice(searchIndex + 1)
+
+        const originalSearchObj = {}
 
         // 写入已存在search的键-值
         const searchArr = search.split('&')
@@ -416,28 +458,31 @@ function getLocation (url) {
             originalSearchObj[key] = value
           }
         }
+
+        let newSearch
+        if (value === false) {
+          delete originalSearchObj[name]
+          newSearch = Object.entries(originalSearchObj)
+            .map((val) => {
+              return val.join('=')
+            })
+            .join('&')
+        } else {
+          const newSearchObj = Object.assign({}, originalSearchObj, {
+            [encodeURIComponent(name)]: encodeURIComponent(value)
+          })
+          newSearch = Object.entries(newSearchObj)
+            .map((val) => {
+              return val.join('=')
+            })
+            .join('&')
+        }
+
+        return urlWithoutSearch + (newSearch ? `?${newSearch}` : '') + hash
       }
-
-      // 合并原始search和新增search（新增会覆盖原始）
-      const newSearchObj = Object.assign({}, originalSearchObj, searchObj)
-
-      // 生成新的合并过后的search字符串
-      const newSearch = Object.entries(newSearchObj).map((val) => {
-        return val.join('=')
-      }).join('&')
-
-      const hash = url.slice(hashIndex)  // 原始hash
-
-      let originPath  // 原始 origin + pathname
-      if (searchIndex !== -1) {
-        originPath = newUrl.slice(0, searchIndex)
-      } else {
-        originPath = newUrl
-      }
-
-      return originPath + (newSearch ? `?${newSearch}` : '') + hash
     }
     ```
+    </details>
 
 ### *原生JS*绑定、解绑事件
 ```javascript
@@ -1567,41 +1612,6 @@ function upperCaseWord(str) {
     });
 }
 ```
-
-### *原生JS*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
-```javascript
-/**
- * 滚动到x、y轴指定位置
- * @param {Number} endX - 到达x轴像素
- * @param {Number} endY - 到达y轴像素
- * @param {Number} time - 所用毫秒
- */
-function animateTo(endX, endY, time) {
-    var scrollFromX = document.body.scrollLeft || document.documentElement.scrollLeft,
-        scrollFromY = document.body.scrollTop || document.documentElement.scrollTop,
-        scrollToX = endX > document.documentElement.scrollWidth ? document.documentElement.scrollWidth : endX,
-        scrollToY = endY > document.documentElement.scrollHeight ? document.documentElement.scrollHeight : endY,
-        i = 0,
-        runEvery = 5,
-        myself = arguments.callee;
-
-    time /= runEvery;
-
-    clearInterval(myself.setIntervalId);
-
-    myself.setIntervalId = setInterval(function () {
-        i += 1;
-
-        window.scrollTo((scrollToX - scrollFromX) / time * i + scrollFromX, (scrollToY - scrollFromY) / time * i + scrollFromY);
-
-        if (i >= time) {
-            clearInterval(myself.setIntervalId);
-        }
-    }, runEvery);
-}
-```
->使用[velocity动画库](https://github.com/julianshapiro/velocity)（[中文文档](http://www.mrfront.com/docs/velocity.js/)）做所有的动画（包括JS和CSS）才是最简单且性能最佳的选择。
->如：滚动到某位置`$('html').velocity('scroll', {offset: y轴像素, duration: 毫秒});`。
 
 ### *原生JS*用请求图片作log统计
 ```javascript
@@ -2818,57 +2828,111 @@ clipboard("写入的内容~")
 >2. 可以使用[clipboard.js](https://github.com/zenorocha/clipboard.js)。
 
 ### *React*默认图组件
-```jsx
-import React, { Component } from "react";
+1. class组件
 
-export default class TheImage extends Component {
-  state = {
-    isError: false,
-  };
+    ```tsx
+    import React, { Component } from 'react';
 
-  componentDidUpdate(prevProps) {
-    // 检测到图片有更新，需要重新加载
-    if (prevProps?.src !== this.props?.src && this.state.isError) {
-      // eslint-disable-next-line
-      this.setState({
-        isError: false,
-      });
+    interface PropsType {
+      className?: string;
+      style?: React.CSSProperties;
+      onClick?: () => void;
+      src: string;
+      defaultImage: string;
     }
-  }
-  render() {
-    const { style, src, onClick, defaultImage } = this.props;
 
-    return (
-      <img
-        src={this.state.isError ? defaultImage : src || defaultImage}
-        style={style}
-        onClick={() => {
-          onClick && onClick();
-        }}
-        onError={() => {
+    export default class TheImage extends Component<PropsType> {
+      state = {
+        isError: false,
+      };
+
+      componentDidUpdate(prevProps: PropsType) {
+        // 检测到图片有更新，需要重新加载
+        if (prevProps?.src !== this.props?.src && this.state.isError) {
+          // eslint-disable-next-line
           this.setState({
-            isError: true,
+            isError: false,
           });
-        }}
-        alt={`图${src}`}
-      />
-    );
-  }
-}
+        }
+      }
 
+      render() {
+        const { style, className, src, onClick, defaultImage } = this.props;
 
-/* 使用测试 */
-<TheImage
-  style={{ width: "100px", height: "100px" }}
-  src={this.state.switch ? 'https://fakeimg.pl/100/?text=true': '1'}
-  onClick={() => {
-    this.setState({
-      switch: !this.state.switch
-    })
-  }}
-  defaultImage="https://fakeimg.pl/100/?text=default"
-/>
-```
+        return (
+          <img
+            src={this.state.isError ? defaultImage : src || defaultImage}
+            style={style}
+            className={className}
+            onClick={() => {
+              onClick && onClick();
+            }}
+            onError={() => {
+              this.setState({
+                isError: true,
+              });
+            }}
+            alt={`图${src}`}
+          />
+        );
+      }
+    }
+    ```
+2. hook函数组件
+
+    ```tsx
+    import React, { useEffect, useState } from 'react';
+
+    interface PropsType {
+      className?: string;
+      style?: React.CSSProperties;
+      onClick?: () => void;
+      src: string;
+      defaultImage: string;
+    }
+
+    export default function TheImage2(props: PropsType) {
+      const { style, className, src, onClick, defaultImage } = props;
+
+      const [isError, setIsError] = useState(false);
+
+      useEffect(() => {
+        setIsError(false);
+      }, [src]);
+
+      return (
+        <img
+          src={isError ? defaultImage : src || defaultImage}
+          style={style}
+          className={className}
+          onClick={() => {
+            onClick && onClick();
+          }}
+          onError={() => {
+            setIsError(true);
+          }}
+          alt={`图${src}`}
+        />
+      );
+    }
+    ```
+
+- 使用
+
+    ```tsx
+    /* 使用测试 */
+    <TheImage
+      src={this.state.switch ? 'https://fakeimg.pl/100/?text=true': '1'}
+      defaultImage="https://fakeimg.pl/100/?text=default"
+      style={{ width: "100px", height: "100px" }}
+      className='abc'
+      onClick={() => {
+        this.setState({
+          switch: !this.state.switch
+        })
+      }}
+    />
+    ```
 
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript

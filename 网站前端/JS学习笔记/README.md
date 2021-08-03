@@ -1710,7 +1710,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
             1. Array遍历方法内的每一项按项的顺序执行但不互相依赖（后面的项不会等前面的执行完毕才开始执行），`async-await`只能处理每一项自己方法内的执行顺序。
 
                 >控制每一项之间的执行细节（并行、串行、等）：[async](https://github.com/caolan/async)。
-            2. Array遍历方法没有返回promise实例，因此直接在外部加上`await`无法达到预期效果（内部加上`async-await`仅影响单一项目的执行，不影响外部和其他项）。
+            2. Array遍历方法没有返回Promise实例，因此直接在外部加上`await`无法达到预期效果（内部加上`async-await`仅影响单一项目的执行，不影响外部和其他项）。
 
             改用`while`、`do-while`、`for`、`for-in`、`for-of`等实现异步效果。
 
@@ -3809,9 +3809,9 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 3. `document.body.scrollTop = document.documentElement.scrollTop = 纵轴坐标`
 
     >`document.body.scrollLeft = document.documentElement.scrollLeft = 横轴坐标`
-4. `window.scroll/scrollTo(横轴坐标, 纵轴坐标)`
+4. `window.scroll/scrollTo(横轴坐标, 纵轴坐标)` 或 `window.scroll/scrollTo({ left: 横轴坐标, top: 纵轴坐标, behavior: 'smooth'或'auto' })`
 
-    >`window.scrollBy(相对横轴坐标, 相对纵轴坐标)`
+    >`window.scrollBy(相对横轴坐标, 相对纵轴坐标)` 或 `window.scrollBy({ left: 相对横轴坐标, top: 相对纵轴坐标, behavior: 'smooth'或'auto' })`
 
 ### DOM相对位置
 1. DOM点击事件的定位（原生JS）

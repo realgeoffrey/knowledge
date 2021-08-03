@@ -24,22 +24,11 @@
 ### [react](https://github.com/facebook/react)
 
 #### JSX
->（React16及之前）`React.createElement(type或element[, props[, ...children]])`函数的语法糖（已废弃：~~`React.createFactory(type或element)`~~）。
-
-1. 使用JSX语法前提（React16及之前）：
-
-    1. 打包工具：需要`import React from "react";`。
-    2. `<script>`加载：需要把`React`挂载到全局变量。
-
-        - 为`非构建工具（未使用JSX预处理器）`处理的`<script>`，添加JSX支持：
-
-            1. 添加`<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>`；
-            2. 在使用JSX的.js文件引用加上`type="text/babel"`。
-2. JSX是一个表达式
+1. JSX是一个表达式
 
     >`if`、`for`不是表达式。
-3. `return 组件`，若多行，则`(` `)`包裹组件
-4. `<组件名称>`
+2. `return 组件`，若多行，则`(` `)`包裹组件
+3. `<组件名称>`
 
     1. （`<组件名称>`）**必须**以大写字母开头。
 
@@ -79,8 +68,8 @@
         >return <SpecificStory story={props.story} />;
         >```
         ></details>
-5. 插入HTML的值都会进行HTML的字符实体（character entity）转义，避免XSS。
-6. Props
+4. 插入HTML的值都会自动进行HTML的字符实体（character entity）转义，避免XSS。
+5. Props
 
     1. 采用小驼峰式（camelCase）定义标签的属性名称
 
@@ -104,16 +93,22 @@
 
         - 特殊属性
 
-            1. `dangerouslySetInnerHTML={{__html: 'innerHtml内容'}}`
+            1. `dangerouslySetInnerHTML={{ __html: 'innerHtml内容' }}`
 
                 为浏览器DOM提供innerHTML的替换方案。不会~~进行HTML的字符实体（character entity）转义~~，有XSS风险。
             2. `suppressContentEditableWarning`
             3. `suppressHydrationWarning`
     2. 赋值
 
-        1. `{}`包裹JS表达式赋值给Props：`某prop={JS表达式}`
-        2. 字符串字面量：`某prop="某字符串"`
-        3. 若没有给Props赋值，则默认值是`true`：`某prop`
+        1. `{}`包裹JS表达式赋值给Props：
+
+            `某prop={JS表达式}`
+        2. 字符串字面量：
+
+            `某prop="某字符串"`
+        3. 若没有给Props赋值，则默认值是`true`：
+
+            `某prop`
     3. `{...某对象}`展开元素
 
         >e.g. `<组件名 {...某对象} />`
@@ -144,8 +139,8 @@
             1. 移除行首尾的空格以及空行
             2. 与标签相邻的空行均会被删除
             3. 文本字符串之间的新行会被压缩为一个空格
-7. 元素组成的数组，会按顺序渲染（注意添加`key`）
-8. 注释
+6. 元素组成的数组，会按顺序渲染（注意添加`key`）
+7. 注释
 
     ```jsx
     {/* 单行注释 */}
@@ -155,37 +150,78 @@
     */}
     ```
 
-- （React16及之前）Babel会把JSX转译成`React.createElement`函数调用，生成React元素
+- <details>
 
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```jsx
-    >const element = (
-    >  <h1 className="greeting">
-    >    Hello, world!
-    >  </h1>
-    >);
-    >
-    >// 等价于：
-    >
-    >const element = React.createElement(
-    >  'h1',
-    >  {className: 'greeting'},
-    >  'Hello, world!'
-    >);
-    >
-    >
-    >// => 创建React元素
-    >const element = {   // 简化后的结构
-    >  type: 'h1',
-    >  props: {
-    >    className: 'greeting',
-    >    children: 'Hello, world!'
-    >  }
-    >};
-    >```
-    ></details>
+    <summary>实现</summary>
+
+    - 使用JSX语法前提（React16及之前）：
+
+        1. 打包工具：需要`import React from "react";`。
+        2. `<script>`加载：需要把`React`挂载到全局变量。
+
+            - 为`非构建工具（未使用JSX预处理器）`处理的`<script>`，添加JSX支持：
+
+                1. 添加`<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>`；
+                2. 在使用JSX的.js文件引用加上`type="text/babel"`。
+
+    1. （React16及之前）Babel会把JSX转译成`React.createElement`函数调用，生成React元素
+
+        >（React16及之前）JSX是`React.createElement(type或element[, props[, ...children]])`函数的语法糖（已废弃：~~`React.createFactory(type或element)`~~）。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```jsx
+        >import React from 'react';
+        >
+        >const element = (
+        >  <h1 className="greeting">
+        >    Hello, world!
+        >  </h1>
+        >);
+        >
+        >
+        >// 等价于：
+        >import React from 'react';
+        >
+        >const element = React.createElement(
+        >  'h1',
+        >  {className: 'greeting'},
+        >  'Hello, world!'
+        >);
+        >
+        >
+        >// => 创建React元素
+        >const element = {   // 简化后的结构
+        >  type: 'h1',
+        >  props: {
+        >    className: 'greeting',
+        >    children: 'Hello, world!'
+        >  }
+        >};
+        >```
+        ></details>
+    2. （React17及之后）JSX无需引入React
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```jsx
+        >function App() {
+        >  return <h1>Hello World</h1>;
+        >}
+        >
+        >
+        >// => 编译结果：
+        >// 由编译器引入（禁止自己引入！）
+        >import {jsx as _jsx} from 'react/jsx-runtime';
+        >
+        >function App() {
+        >  return _jsx('h1', { children: 'Hello world' });
+        >}
+        >```
+        ></details>
+    </details>
 
 #### 元素渲染
 >由`ReactDOM.render`对根DOM组件开始初始化-渲染，随着引入的子组件再以树状结构对子组件进行初始化-渲染。
@@ -200,7 +236,7 @@
 3. React元素（React elements）
 
     1. 不可变对象（[immutable](https://zh.wikipedia.org/wiki/不可变对象)）
-    2. 创建开销极小的普通对象
+    2. 创建开销极小的**普通对象**
 4. 组件渲染
 
     组件渲染完成后返回React元素。
@@ -213,7 +249,7 @@
 
         克隆并返回新的React元素。
 
-        >几乎等同于：`<element.type {...element.props} {...props}>{children}</element.type>` + 原element上的`key`和`ref`
+        >几乎等同于：`<element.type {...element.props} {...props}>{children}</element.type>` + 原element上的`key`和`ref`。添加的`props`的属性会覆盖`element`原本的属性。
     2. `React.isValidElement(对象)`
 
         验证对象是否为React元素。返回：`true/false`。
@@ -245,7 +281,7 @@
         ></details>
     2. 函数组件（function components）
 
-        不能包含~~State~~（Hook弥补），没有~~生命周期~~，没有~~this~~。
+        不能包含~~State~~（Hook弥补），没有~~生命周期~~（Hook弥补），没有~~this~~。
 
         ><details>
         ><summary>e.g.</summary>
@@ -907,7 +943,7 @@
 8. 事件处理
 
     1. 小驼峰式（camelCase）定义事件名
-    2. 事件处理函数的参数是一个合成事件（`e`）。
+    2. 事件处理函数的参数是一个[合成事件](https://zh-hans.reactjs.org/docs/events.html)（`e`）。
 
         1. 参数只能同步使用，异步不保存。
         2. 阻止默认行为、阻止冒泡，必须显式调用：`e.preventDefault()`、`e.stopPropagation()`。
@@ -929,10 +965,39 @@
             2. 最大化可组合性。
         4. 注意事项：
 
-            1. 不要在`render`方法中使用。
-            2. 务必复制静态方法。
+            1. 不要在`render`方法中使用
+
+                ><details>
+                ><summary>e.g.</summary>
+                >
+                >```jsx
+                >render() {
+                >  // 每次调用 render 函数都会创建一个新的 EnhancedComponent
+                >  // EnhancedComponent1 !== EnhancedComponent2
+                >  const EnhancedComponent = enhance(MyComponent);   // 应该在非render处仅创建一次
+                >  // 这将导致子树每次渲染都会进行卸载，和重新挂载的操作！
+                >  return <EnhancedComponent />;
+                >}
+                >```
+                ></details>
+            2. 务必复制静态方法
 
                 >[hoist-non-react-statics](https://github.com/mridgway/hoist-non-react-statics)。
+
+                ><details>
+                ><summary>e.g.</summary>
+                >
+                >```jsx
+                >import hoistNonReactStatic from 'hoist-non-react-statics';
+                >
+                >function enhance(WrappedComponent) {
+                >  class Enhance extends React.Component {/*...*/}
+                >  hoistNonReactStatic(Enhance, WrappedComponent);  // 把所有WrappedComponent的静态方法（不包括react原生静态方法）拷贝到Enhance
+                >  return Enhance;
+                >}
+                >```
+                ></details>
+            3. `ref`（和`key`一样）不会被传递，需要使用`React.forwardRef`
 
         ><details>
         ><summary>e.g.</summary>
@@ -977,7 +1042,7 @@
 
             表单数据由React组件来管理。渲染表单的React组件还控制着用户输入过程中表单发生的操作（表单的`value`、`onChange`、`selected`、`checked`受组件控制）。React的State成为表单“唯一数据源”。
 
-            1. `<input>`、`<textarea>`
+            1. `<input type="text">`、`<textarea type="text">`
 
                 ><details>
                 ><summary>e.g.</summary>
@@ -1001,7 +1066,29 @@
                 >}
                 >```
                 ></details>
-            2. `<select>`
+            2. `<input type="checkbox">`
+
+                ><details>
+                ><summary>e.g.</summary>
+                >
+                >```jsx
+                >function Checkbox() {
+                >  const [checked, setChecked] = React.useState(true);
+                >
+                >  return (
+                >    <label>
+                >      <input
+                >        type="checkbox"
+                >        checked={checked}
+                >        onChange={() => setChecked(!checked)}
+                >      />
+                >      Check Me!
+                >    </label>
+                >  );
+                >}
+                >```
+                ></details>
+            3. `<select>`
 
                 ><details>
                 ><summary>e.g.</summary>
@@ -1463,6 +1550,25 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
             此时，effect内部的`props`和`state`就会一直保持其初始值。
     4. 可以把引用的函数放到effect内部，方便确认使用了哪些props和state。
+    5. 使用`async-await`
+
+        >`useEffect`应该返回一个方法（有其特别的意义：清除方法）。async方法返回的是Promise实例。
+
+        ```jsx
+        // 不可以
+        useEffect(async () => {},)
+
+        // 可以
+        useEffect(() => {
+          async function func1 () {}
+          func()
+
+          const func2 = async function () {}
+          func2()
+
+          (async function(){}())
+        },)
+        ```
 
 ><details>
 ><summary>执行时机</summary>
@@ -1615,13 +1721,37 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     返回一个`memoized`值。
 
     1. 仅会在某个依赖项改变时才重新计算memoized值。
-    2. 若没有提供依赖项数组，则useMemo在每次渲染时都会计算新的值。
-    3. 传入useMemo的函数会在渲染期间执行。
+    2. 若没有提供依赖项数组（第二个参数为`undefined`），则`useMemo`在每次渲染时都会计算新的值。
 
-        不要在这个函数内部执行与渲染无关的操作。
+        若提供空数组`[]`，则仅计算一次，之后渲染不会再改变值。
+    3. 传入`useMemo`的函数会在渲染期间执行。
+
+        不要在这个函数内部执行与渲染无关的操作。诸如副作用这类的操作属于`useEffect`的适用范畴，而不是 ~~`useMemo`~~。
+    4. 若`useMemo`第一个参数返回的`computeExpensiveValue`返回的是Promise实例，则`useMemo`返回的是`Promise实例`。
+
+        <details>
+        <summary>e.g.</summary>
+
+        ```jsx
+        const memoizedValue = useMemo(
+          () =>
+            (async function (show) {
+              await new Promise((resolve) => {
+                setTimeout(resolve, 1000)
+              })
+              return show
+            }(props.show)),
+          [props.show]
+        )
+
+
+        memoizedValue   // Promise实例
+        ```
+        </details>
+
+>`useMemo(() => fn, deps)`（返回fn执行后的结果） 相当于 `useCallback(fn, deps)`（返回fn）
+
 9. `useCallback`
-
-    >`useCallback(fn, deps)` === `useMemo(() => fn, deps)`
 
     ```jsx
     const memoizedCallback = useCallback(
@@ -1633,6 +1763,30 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     ```
 
     返回一个`memoized`回调函数。
+
+    1. 必须传2个参数。具体逻辑查看`useMemo`。
+    2. 若`useCallback`第一个参数方法返回Promise实例，则`useCallback`返回的是`返回Promise实例的方法`。
+
+        <details>
+        <summary>e.g.</summary>
+
+        ```jsx
+        const memoizedCallback = useCallback(
+          async (data) => {
+            await new Promise((resolve) => {
+              setTimeout(resolve, 1000);
+            });
+            console.log(props.show, data);
+          },
+          [props.show]
+        );
+
+
+        memoizedCallback(123)    // 返回Promise实例
+        ```
+        </details>
+
+    >当想要`useEffect`限制执行次数，但依赖一些不变化的props或state时，很有用。
 10. `useImperativeHandle`
 
     `useImperativeHandle(ref, createHandle, [deps])`
@@ -1905,10 +2059,10 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
                 import { render } from 'react-dom'
                 import { Provider } from 'react-redux'
                 import { createStore } from 'redux'
-                import todoApp from './reducers'
+                import xx from './reducers'
                 import App from './components/App'
 
-                let store = createStore(todoApp)
+                let store = createStore(xx)
 
                 render(
                   <Provider store={store}>

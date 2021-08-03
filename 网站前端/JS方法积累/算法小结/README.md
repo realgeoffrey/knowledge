@@ -871,7 +871,7 @@ function switchArr ({ arr, from, to, isLeft = false }) {
 
     4. <details>
 
-        <summary><del><code>setTimeout</code>占用主线程（阻塞、卡死线程）</del></summary>
+        <summary>JS循环代码占用主线程（阻塞、卡死线程）</del></summary>
 
         ```javascript
         function sleep (ms) {

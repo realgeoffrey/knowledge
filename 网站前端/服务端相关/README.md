@@ -321,7 +321,7 @@ app.use((ctx) => {
                     `void`、`bool`、`string`、`byte`、`short`、`int`、`double`、`float`、`long`、`unsigned byte`、`unsigned short`、`unsigned int`
                 2. 复杂类型：
 
-                    `Enum`枚举、`map<类型, 类型>`字典、`vector<类型>`序列（`vector<byte>`二进制码）、`常量`、`key[struct名, 多个变量名]`
+                    `Enum`枚举、`map<类型, 类型>`字典、`vector<类型>`序列（`vector<byte>`二进制码，JS：`'0'`和`'1'`组成的字符串）、`常量`、`key[struct名, 多个变量名]`
             >任何`struct`、`map`、`vector`都可嵌套。
         2. `interface`暴露接口
         3. `const string`注释命令字

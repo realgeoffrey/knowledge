@@ -55,7 +55,10 @@
         - `yarn upgrade-interactive`
 
             交互式更新。
-    5. `yarn global` + `add`、`remove`、`upgrade`、`upgrade-interactive`、`bin`、`list`、`dir`、等
+    5. `yarn global` +
+
+        1. `add`、`remove`、`upgrade`、`upgrade-interactive`
+        2. `bin`、`list`（打印已安装的packages）、`dir`（打印packages安装的目录）
 
         全局操作。
     6. `yarn outdated`

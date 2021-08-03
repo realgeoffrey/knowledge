@@ -25,6 +25,7 @@
     1. [`em`、`%`](#em)
     1. [`line-height`](#line-height)
     1. [`<img>`的`src`属性](#img的src属性)
+    1. [安全区域适配](#安全区域适配)
     1. [滚动条](#滚动条)
     1. [`@font-face`](#font-face)
     1. [`text-align: justify;`](#text-align-justify)
@@ -843,6 +844,7 @@
     某些边设为`border-width`不为`0`、`border-right-color`为`transparent`可以制造一些形状。
 22. 用`filter: drop-shadow`（图像本身形状和alpha通道的阴影）代替`box-shadow`（盒阴影）
 23. 若在视口中**添加/删除**节点导致滚动条变化，则浏览器会尽量保持视口最顶部节点固定不变（从而瞬间改变滚动条位置以使视口顶部节点尽量保持不随滚动条变化而位移）
+24. `overflow: hidden`无法处理`position: fixed`的子孙节点。
 
 ---
 ## CSS
@@ -1388,7 +1390,6 @@
 >ie6以及部分浏览器不能用line-height控制图片与文字的对齐位置，使用其他垂直居中方式（如：使用`display: flex; align-items: center;`）。
 
 ### `<img>`的`src`属性
->当`<img>`的地址为空或错误时，会出现浏览器默认灰色边框，无法去除。
 
 1. 不要用**空的`<img>`加上背景来用作默认图**，必须用其他标签来代替。
 2. 要谨慎给`<img>`设置背景（如：内容图片或头像的初始图，不要使用背景，应该使用[JS延时加载-图片lazyload](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载lazyload)前的默认图），因为当图片是透明图时，会出现背景。
@@ -1403,8 +1404,9 @@
     }
     ```
 4. （PC或WAP）下载保存的图片，与图片的`style`、节点属性等无关，仅与图片资源本身有关。
+5. 当`<img>`的地址为空或错误时，会出现浏览器默认灰色边框（和图片错误图标），无法去除，只能使用图片的`error`事件替换成默认图解决：[默认图组件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#react默认图组件)。
 
-- `<img>`相关特性：
+- `<img>`CSS相关特性：
 
     1. 设置`<img>`中[可替换元素](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Replaced_element)的位置、拉升：`object-position`、`object-fit`。
 
@@ -1413,6 +1415,50 @@
     3. `<img>`可以设置`vertical-align`来指定与其他行内元素的垂直对齐方式。
 
         >`vertical-align`用来指定`inline`、`inline-block`、`table-cell`元素的垂直对齐方式。
+
+### 安全区域适配
+1. iOS
+
+    iPhone的安全区域（[Apple: Adaptivity and Layout](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/adaptivity-and-layout/#layout-guides-and-safe-area)）：一个可视窗口范围，处于安全区域的内容不受 ~~圆角（corners）~~、~~齐刘海（sensor housing）~~、~~小黑条（Home Indicator）~~ 影响，如下图蓝色区域。
+
+    ![Chrome任务管理器图](./images/safe-area-1.png)
+
+    - 针对iPhone X之后的全面屏：
+
+        1. 设置`viewport-fit=cover`
+
+            `<meta name="viewport" content="其他..., viewport-fit=cover">`
+        2. 使用iOS11新特性CSS变量
+
+            1. `safe-area-inset-left`：安全区域距离左边边界距离
+            2. `safe-area-inset-right`：安全区域距离右边边界距离
+            3. `safe-area-inset-top`：安全区域距离顶部边界距离
+            4. `safe-area-inset-bottom`：安全区域距离底部边界距离
+
+            - `constant(变量名)`、`env(变量名)`进行使用
+
+        <details>
+        <summary>e.g.</summary>
+
+        ```html
+        <meta name="viewport" content="width=device-width, viewport-fit=cover">
+        ```
+
+        ```css
+        height:60px;                                          /* 兼容其他 */
+        height:calc(60px + constant(safe-area-inset-bottom)); /* iOS < 11.2 */
+        height:calc(60px + env(safe-area-inset-bottom));      /* iOS >= 11.2 */
+
+
+        padding-bottom: 0;
+        padding-bottom: constant(safe-area-inset-bottom);
+        padding-bottom: env(safe-area-inset-bottom);
+        ```
+        </details>
+2. Android
+
+    1. 针对Android的刘海屏、水滴屏等问题，写个固定值笼统处理。
+    2. 因为Android的屏幕版本太多，不同机型不同App需要单独适配，要想完美适配只能和原生进行交互，客户端可获取安全区域数据，从客户端拿到高度用于页面样式。
 
 ### 滚动条
 1. 若`overflow-x`和`overflow-y`相同，则等同于`overflow`；若不同，且其中一个值为`visible`，另一个为`hidden/scroll/auto`，则`visible`重置为`auto`。

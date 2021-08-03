@@ -21,6 +21,9 @@
 
         1. [防抖函数](#原生js防抖函数)
         1. [节流函数](#原生js节流函数)
+    1. 可用js原生代替
+
+        1. [实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`](#原生js实现类似jquery的htmlbodyanimatescrollleft-像素-scrolltop-像素-毫秒)
 1. [函数模板](#函数模板)
 1. <details>
 
@@ -847,6 +850,46 @@ var a = throttle(function () {  // 不要使用箭头函数，因为实现代码
 $(window).on('scroll', a);
 ```
 >可以使用lodash的`_.throttle(func, [wait=0], [options={}])`，完全替代。
+
+### *原生JS*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
+```javascript
+/**
+ * 滚动到x、y轴指定位置
+ * @param {Number} endX - 到达x轴像素
+ * @param {Number} endY - 到达y轴像素
+ * @param {Number} time - 所用毫秒
+ */
+function animateTo(endX, endY, time) {
+    var scrollFromX = document.body.scrollLeft || document.documentElement.scrollLeft,
+        scrollFromY = document.body.scrollTop || document.documentElement.scrollTop,
+        scrollToX = endX > document.documentElement.scrollWidth ? document.documentElement.scrollWidth : endX,
+        scrollToY = endY > document.documentElement.scrollHeight ? document.documentElement.scrollHeight : endY,
+        i = 0,
+        runEvery = 5,
+        myself = arguments.callee;
+
+    time /= runEvery;
+
+    clearInterval(myself.setIntervalId);
+
+    myself.setIntervalId = setInterval(function () {
+        i += 1;
+
+        window.scrollTo((scrollToX - scrollFromX) / time * i + scrollFromX, (scrollToY - scrollFromY) / time * i + scrollFromY);
+
+        if (i >= time) {
+            clearInterval(myself.setIntervalId);
+        }
+    }, runEvery);
+}
+```
+>1. 使用[velocity动画库](https://github.com/julianshapiro/velocity)（[中文文档](http://www.mrfront.com/docs/velocity.js/)）做所有的动画（包括JS和CSS）才是最简单且性能最佳的选择。
+>
+>    如：滚动到某位置`$('html').velocity('scroll', {offset: y轴像素, duration: 毫秒});`。
+>2. 原生js已支持：支持顺滑滚动，但不支持设定滚动时间
+>
+>    1. `window.scroll/scrollTo(横轴坐标, 纵轴坐标)` 或 `window.scroll/scrollTo({ left: 横轴坐标, top: 纵轴坐标, behavior: 'smooth'或'auto' })`
+>    2. `window.scrollBy(相对横轴坐标, 相对纵轴坐标)` 或 `window.scrollBy({ left: 相对横轴坐标, top: 相对纵轴坐标, behavior: 'smooth'或'auto' })`
 
 ---
 ### 函数模板
