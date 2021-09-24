@@ -2,6 +2,8 @@
 
 ## 目录
 1. [概念](#概念)
+1. [微信外部链接](#微信外部链接)
+1. [微信内访问第三方页面的网页授权](#微信内访问第三方页面的网页授权)
 1. [小程序相关](#小程序相关)
 
     1. [taro](#taro)
@@ -52,6 +54,15 @@
         （需要应用先绑定到微信开放平台帐号才存在，）一个用户id（uid）针对微信开放平台帐号生成的唯一且不变化的id
 
         >同一用户，对同一个微信开放平台下的不同应用（用微信开放平台登录的app、h5，用微信开放平台绑定的公众帐号、小程序、小游戏），UnionID是相同的。
+
+### 微信外部链接
+遵守[《微信外部链接内容管理规范》](https://weixin.qq.com/cgi-bin/readtemplate?t=weixin_external_links_content_management_specification)，避免被封禁。
+
+
+### 微信内访问第三方页面的网页授权
+授权流程根据[《微信网页开发/网页授权》](https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/Wechat_webpage_authorization.html)进行。
+
+>针对`A域名`发起微信登录授权到`B域名`，h5跳转登录授权页会弹出提示（iOS）——h5跳转`open.weixin.qq.com`前 iOS会拦截进行弹窗，可以用Node.js跳转登录授权页来去除弹出提示（iOS）。
 
 ---
 ## 小程序相关

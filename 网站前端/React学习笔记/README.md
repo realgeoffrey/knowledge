@@ -1755,10 +1755,10 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     ```jsx
     const memoizedCallback = useCallback(
-      () => {
-        doSomething(a, b);
+      (props) => {  // 传入 memoizedCallback 的参数会到达 props
+        doSomething(a, b, props);
       },
-      [a, b]    // 依赖项数组
+      [a, b]        // 依赖项数组
     );
     ```
 
