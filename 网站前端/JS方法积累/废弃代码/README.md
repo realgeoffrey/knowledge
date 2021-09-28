@@ -8,6 +8,7 @@
         1. [格式化日期](#原生js格式化日期)
         1. [获取年龄](#原生js获取年龄)
         1. [倒计时显示](#原生js倒计时显示)
+        1. [倒计时组件](#vuereact倒计时组件)
     1. 可用[lodash](https://github.com/lodash/lodash)、[jQuery](https://github.com/jquery/jquery)或ES6或其他库代替
 
         1. [多异步返回后才执行总回调函数（利用jQuery的`$.ajax`）](#原生js多异步返回后才执行总回调函数利用jquery的ajax)
@@ -381,6 +382,136 @@ function getAge (birthday) {
     // a.stop();
     ```
 >可以使用[moment](https://github.com/moment/moment/)（或[dayjs](https://github.com/iamkun/dayjs)、[date-fns](https://github.com/date-fns/date-fns)）格式化时间，完全替代。
+
+### *vue/react*倒计时组件
+1. vue
+
+    [vue-timer-countdown](https://github.com/realgeoffrey/vue-timer-countdown)
+2. react
+
+    ```typescript
+    // TimerCountDown
+    import React, { useEffect, useRef, useState } from 'react'
+
+    interface PropsType {
+      deadline: number; // 倒计时时间（秒）
+
+      leftSecond?: number; // 提前到期（秒，默认：0）
+
+      callback?: Function; // 倒计时结束后回调
+      renderSecond?: (second: number) => React.ReactNode; // 渲染倒计时（秒）
+    }
+
+    // 周期执行（构造函数）
+    const SET_INTERVAL = function (
+      this: { stop: Function },
+      func: Function,
+      millisecond: number
+    ) {
+      let setIntervalId: ReturnType<typeof setTimeout>
+      if (typeof func === 'function') {
+        setIntervalId = setTimeout(function self () {
+          setIntervalId = setTimeout(self, millisecond)
+          func()
+        }, millisecond)
+      }
+      this.stop = () => {
+        clearTimeout(setIntervalId)
+      }
+      return this
+    }
+
+    // 获取剩余时间（秒）
+    const GET_REST_TIME = (deadlineTimestamp: number): number => {
+      return Math.max(Math.round((deadlineTimestamp - Date.now()) / 1000), 0)
+    }
+
+    export default function TimerCountDown (props: PropsType) {
+      const { deadline, leftSecond = 0, callback, renderSecond } = props
+
+      // 倒计时时间（时间戳）
+      const [deadlineTimestamp, setDeadlineTimestamp] = useState<number>(
+        Date.now() + deadline * 1000
+      )
+
+      useEffect(() => {
+        setDeadlineTimestamp(Date.now() + deadline * 1000)
+      }, [deadline])
+
+      // 每秒执行（实例）
+      const setIntervalInstance = useRef<ReturnType<typeof SET_INTERVAL> | { stop: Function }>({ stop: () => {} })
+
+      useEffect(() => {
+        // 精确的倒计时时间（秒）
+        const restTime = GET_REST_TIME(deadlineTimestamp)
+
+        setRestTotalSecond(restTime)
+
+        if (restTime > leftSecond) {
+          setIntervalInstance.current.stop()
+
+          setIntervalInstance.current = new (SET_INTERVAL as any)(() => {
+            setRestTotalSecond(GET_REST_TIME(deadlineTimestamp))
+
+            if (GET_REST_TIME(deadlineTimestamp) <= leftSecond) {
+              setIntervalInstance.current.stop()
+
+              callback && callback()
+            }
+          }, 1000)
+        }
+
+        return () => {
+          setIntervalInstance.current.stop()
+        }
+      }, [deadlineTimestamp, leftSecond, callback])
+
+      const [restTotalSecond, setRestTotalSecond] = useState<number>(
+        GET_REST_TIME(deadlineTimestamp)
+      )
+
+      return <>{renderSecond ? renderSecond(restTotalSecond) : restTotalSecond}</>
+    }
+    ```
+
+    ```typescript
+    // 使用
+    import React, { useState } from 'react'
+    import TimerCountDown from './components/TimerCountDown'
+
+    function App () {
+      const [deadline, setDeadline] = useState(10)
+      return (
+        <>
+          <TimerCountDown
+            callback={() => {console.log('callback')}}
+            deadline={deadline}
+            leftSecond={1}
+            renderSecond={(second) => {
+              // 格式化数字格式
+              const FORMAT_NUMBER = (number: number) => {
+                if (number < 10) {
+                  return '0' + number
+                } else {
+                  return number.toString()
+                }
+              }
+              return FORMAT_NUMBER(second)
+            }}
+          />
+
+          <div onClick={() => {setDeadline(15)}}>15</div>
+          <div onClick={() => {setDeadline(10)}}>10</div>
+          <div onClick={() => {setDeadline(5)}}>5</div>
+          <div onClick={() => {setDeadline(2)}}>2</div>
+          <div onClick={() => {setDeadline(1)}}>1</div>
+          <div onClick={() => {setDeadline(0)}}>0</div>
+        </>
+      )
+    }
+
+    export default App
+    ```
 
 ### *原生JS*多异步返回后才执行总回调函数（利用jQuery的`$.ajax`）
 ```javascript

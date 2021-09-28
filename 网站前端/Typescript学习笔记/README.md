@@ -111,6 +111,8 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         1. 任何值都可以赋给`unknown`。
         2. 当没有类型断言或基于控制流的类型细化时`unknown`不可以赋值给其它类型，除了它自己和`any`外。
         3. 在`unknown`没有被类型断言或js代码细化到一个确切类型之前，不允许在其上进行任何操作。
+        4. `try-catch`抓到的是`unknown`，需要`if (err instanceof Error) {){}`之后使用。
+        5. 用`?.`无效。
     6. `object`或`{}`
 
         表示非原始类型/非基本数据类型（除了`boolean`、`number`、`string`、`symbol`、`bigint`、`undefined`、`null`之外的类型）。允许给它赋任意值和访问`Object.prototype`上的属性，但不能调用任意其他方法，即便它真的有这些方法。

@@ -889,11 +889,55 @@
                         ></details>
 
                         孙辈组件中通过`this.context`使用。
-                    2. `<MyContext.Consumer>{(data) => { return 组件 }}<MyContext.Consumer>`
+                    2. `<MyContext.Consumer>{(data) => { return 组件 }}</MyContext.Consumer>`
 
                         孙辈组件中通过`props.children`传入函数使用。
 
                         >`Provider`及其内部`Consumer组件`都不受制于`shouldComponentUpdate`函数，因此当`Consumer组件`在其祖辈组件退出更新的情况下也能更新。
+
+                ><details>
+                ><summary>e.g.</summary>
+                >
+                >```tsx
+                >// 使用 Provider、Consumer
+                >import React, { useState } from "react";
+                >import { MyContext } from "../context";
+                >
+                >export default function TheDemo() {
+                >  const [data, setData] = useState({ a: 10 });
+                >
+                >  return (
+                >    <>
+                >      <div onClick={() => { setData(Object.assign({}, data, { a: data.a + 1 })); }}>
+                >        a + 1
+                >      </div>
+                >
+                >      <MyContext.Provider value={data}>
+                >        <div onClick={() => { setData(Object.assign({}, data, { a: data.a - 1 })); }}>
+                >          a - 1
+                >        </div>
+                >
+                >        {/* 正常工作 */}
+                >        <MyContext.Consumer>
+                >          {(res) => { return <div>{JSON.stringify(res)}</div>; }}
+                >        </MyContext.Consumer>
+                >      </MyContext.Provider>
+                >
+                >      {/* 无效，不变化 */}
+                >      <MyContext.Consumer>
+                >        {(res) => { return <div>{JSON.stringify(res)}</div>; }}
+                >      </MyContext.Consumer>
+                >    </>
+                >  );
+                >}
+                >
+                >
+                >// ../context.ts
+                >import React from "react";
+                >
+                >export const MyContext = React.createContext({ a: 1 });
+                >```
+                ></details>
         2. 通用
 
             1. 状态管理（redux、mobx）
@@ -1629,7 +1673,8 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     ><details>
     ><summary><code>useContext(MyContext)</code>相当于class组件中的<code>static contextType = MyContext</code>或<code>&lt;MyContext.Consumer&gt;</code>。</summary>
     >
-    >`useContext(MyContext)`只是让你能够读取`context`的值以及订阅`context`的变化。你仍然需要在上层组件树中使用`<MyContext.Provider>`来为下层组件提供`context`。
+    >1. 因此，使用`useContext`之后，就不需要使用`<MyContext.Consumer>`或`static contextType = MyContext`。
+    >2. `useContext(MyContext)`只是让你能够读取`context`的值以及订阅`context`的变化。你仍然需要在上层组件树中使用`<MyContext.Provider>`来为下层组件提供`context`。
     ></details>
 
     1. 当前的context值由上层组件中距离当前组件最近的`<MyContext.Provider>`的`value`属性决定。
@@ -1638,6 +1683,56 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
         当组件上层最近的`<MyContext.Provider>`更新时，该Hook会触发重渲染，并使用最新传递给`<MyContext.Provider>`的value属性值。
 
         >即使祖先使用`React.memo`或`shouldComponentUpdate`，也会在组件本身使用useContext时重新渲染。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```tsx
+    >// 祖先
+    >import React, { useState } from "react";
+    >import { MyContext2 } from "../context";
+    >import TheContextHook from "./TheContextHook";
+    >
+    >export default function TheHooks() {
+    >  const [data, setData] = useState({ b: 10 });
+    >
+    >  return (
+    >    <>
+    >      <div onClick={() => { setData(Object.assign({}, data, { b: data.b + 1 })); }}>
+    >        b + 1
+    >      </div>
+    >
+    >      <MyContext2.Provider value={data}>
+    >        <div onClick={() => { setData(Object.assign({}, data, { b: data.b - 1 })); }}>
+    >          b - 1
+    >        </div>
+    >
+    >        <TheContextHook /> {/* 正常工作 */}
+    >      </MyContext2.Provider>
+    >
+    >      <TheContextHook />   {/* 无效，不变化 */}
+    >    </>
+    >  );
+    >}
+    >
+    >
+    >// ./TheContextHook.tsx
+    >import React, { useState, useContext } from "react";
+    >import { MyContext2 } from "../context";
+    >
+    >export default function TheContextHook() {
+    >  const res = useContext(MyContext2);
+    >
+    >  return <>{JSON.stringify(res)}</>;
+    >}
+    >
+    >
+    >// ../context.ts
+    >import React from "react";
+    >
+    >export const MyContext2 = React.createContext({ b: 1 });
+    >```
+    ></details>
 7. `useRef`
 
     `const 带current属性的变量 = useRef(current属性的初始值);`

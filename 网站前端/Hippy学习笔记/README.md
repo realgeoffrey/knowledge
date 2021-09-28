@@ -319,6 +319,28 @@
                 1. 软键盘被唤起时，页面不会向上顶起，因此可能会挡住要输入的区域。
 
                     利用`onKeyboardWillShow`事件获得软键盘弹起时高度，把输入框区域垫高；输入完毕之后再恢复高度。
+            7. 书写方式：
+
+                ```jsx
+                <TextInput
+                  multiline={false}
+                  style={{
+                    flex: 1,
+                    fontSize: 14,
+
+                    height: 40,                          // Android必须大于40，不然显示不全
+                    lineHeight: 38,
+
+                    borderWidth: 1,
+                    borderColor: 'black',
+                    underlineColorAndroid: "transparent" // 去除Android特有的底部横线
+                  }}
+                  onChangeText={text => {
+                    // text -> data
+                  }}
+                  value={data}
+                />
+                ```
         15. `false && B`可能输出内容
 
             用三元运算符替换：`false ? B : null`。
@@ -590,6 +612,8 @@
             1. `flex`：占用容器中剩余空间的大小。
 
                 1. `0`（默认）：元素没有弹性，不管父级容器空间，仅使用自身原本宽度/高度占据空间。
+
+                    >也可能因为内容太多溢出父级，建议用`-1`代替。
                 2. `「正整数」`：元素有弹性，`每个元素占用的剩余空间 = 自己的 flex 数值 / 所有同一级子容器的 flex 数字之和`。
 
                     >此时`flex: 「正整数」`等价于`flexGrow: 「正整数」, flexShrink: 1, flexBasis: 0`。
@@ -706,7 +730,8 @@
         >
         >     ```jsx
         >     <View>
-        >       <Image source={{ uri: import资源 }} style={{position: 'absolute', top: 0, left: 0, zIndex: -1, width: 宽, height: 高}} />
+        >       <Image source={{ uri: import资源 }} style={{position: 'absolute', top: 0, left: 0, width: 宽, height: 高}} />
+        >       {/* Android不能设置`zIndex: -1`，会导致看不见。也不需要设置`zIndex: -1`，`position: 'absolute'`还是会按顺序层叠 */}
         >       内部节点
         >     </View>
         >     ```
