@@ -103,6 +103,11 @@
             8. `--link-local-ip=`
         14. `--restart=「no（默认）|on-failure[:max-retries]|always|unless-stopped」`
         15. `--security-opt`
+    4. 查看镜像构建历史
+
+        ```shell
+        docker history 「镜像名或ID」
+        ```
 
     - 数据卷（volume）：宿主机中的一个目录或文件。用于容器数据持久化 或 （外部服务与容器内部、容器间）数据同步。
 
@@ -117,7 +122,7 @@
             处理手动挂载的数据卷
 
             >在macOS，可能找不到宿主机路径。
-    4. 容器
+    5. 容器
 
         >互相隔离，每个容器都有一个属于自己的文件系统、网络、进程树。
 
@@ -182,7 +187,7 @@
             docker cp 「容器ID或容器名」:「文件路径」 「宿主机保存路径」   # 容器 -> 宿主机
             docker cp 「宿主机文件路径」 「容器ID或容器名」:「保存路径」   # 宿主机 -> 容器
             ```
-    5. 新建、提交镜像
+    6. 新建、提交镜像
 
         >[Docker Hub](https://hub.docker.com/)。
 
@@ -199,7 +204,7 @@
             ```shell
             docker push 「镜像名」[:「tag，如：1.0.0」] # （除非是认证的组织）镜像名必须包含用户名的namespace，如：`你的账户名/镜像名`
             ```
-    6. Dockerfile
+    7. Dockerfile
 
         包含一系列命令的文件。
 
@@ -228,26 +233,26 @@
             # 指令不区分大小写。惯例是将它们大写以更轻松地将它们与参数区分开
             INSTRUCTION arguments
 
-            FROM
-            RUN
-            CMD
+            FROM        # 来源的基础镜像
+            RUN         # 镜像构建的时候需要运行的命令
+            CMD         # 指定这个容器启动时运行的命令，只有最后一个会生效
+            ENTRYPOINT  # 指定这个容器启动时运行的命令，可以追加命令
             LABEL
-            EXPOSE
-            ENV
-            ADD
-            COPY
-            ENTRYPOINT
-            VOLUME
+            EXPOSE      # 设置对外暴露端口
+            ENV         # 构建时，设置环境变量
+            ADD         # 添加文件
+            COPY        # 将文件拷贝到镜像中
+            VOLUME      # 设置卷，挂载主机目录
             USER
-            WORKDIR
+            WORKDIR     # 设置当前工作目录
             ARG
-            ONBUILD
+            ONBUILD     # 其他镜像使用当前镜像时（FROM），触发的指令
             STOPSIGNAL
             HEALTHCHECK
             SHELL
             ```
 
-            1. 每一个指令创建一个层（layer）
+            1. 每一个指令都会创建一个层（layer）
 
                 ><details>
                 ><summary>e.g.</summary>

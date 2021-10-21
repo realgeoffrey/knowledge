@@ -859,6 +859,8 @@
             1. Props逐层往下传递
             2. 从祖辈向所有孙辈传递
 
+                >兄弟节点间通信，可以通过在公共的祖先组件设置`Provider`并且`value`传递能够修改`value`值的方法，兄弟节点设置`Consumer`，进行通信。
+
                 1. `const MyContext = React.createContext(默认值)`
 
                     返回`{ Provider, Consumer }`。
@@ -901,41 +903,59 @@
                 >```tsx
                 >// 使用 Provider、Consumer
                 >import React, { useState } from "react";
-                >import { MyContext } from "../context";
+                >import { MyContext1 } from "../../context";
+                >import TheContextSon from "./TheContextSon";
                 >
-                >export default function TheDemo() {
+                >export default function TheContext() {
                 >  const [data, setData] = useState({ a: 10 });
                 >
                 >  return (
                 >    <>
-                >      <div onClick={() => { setData(Object.assign({}, data, { a: data.a + 1 })); }}>
-                >        a + 1
-                >      </div>
+                >      <MyContext1.Provider value={{ state: data, dispatch: setData }}>
+                >        {/* 子组件1、兄弟组件，正常工作 */}
+                >        <TheContextSon />
                 >
-                >      <MyContext.Provider value={data}>
-                >        <div onClick={() => { setData(Object.assign({}, data, { a: data.a - 1 })); }}>
-                >          a - 1
-                >        </div>
+                >        {/* 子组件2、兄弟组件，正常工作 */}
+                >        <TheContextSon />
+                >      </MyContext1.Provider>
                 >
-                >        {/* 正常工作 */}
-                >        <MyContext.Consumer>
-                >          {(res) => { return <div>{JSON.stringify(res)}</div>; }}
-                >        </MyContext.Consumer>
-                >      </MyContext.Provider>
-                >
-                >      {/* 无效，不变化 */}
-                >      <MyContext.Consumer>
-                >        {(res) => { return <div>{JSON.stringify(res)}</div>; }}
-                >      </MyContext.Consumer>
+                >      {/* 非子组件，无效，不变化 */}
+                >      <TheContextSon />
                 >    </>
                 >  );
                 >}
                 >
                 >
-                >// ../context.ts
+                >// ../TheContextSon.tsx
+                >import React from "react";
+                >import { MyContext1 } from "../../context";
+                >
+                >export default function TheContextSon() {
+                >  return (
+                >    <MyContext1.Consumer>
+                >      {({ state, dispatch }) => {
+                >        return (
+                >          <div
+                >            onClick={() => {
+                >              dispatch({ a: state.a - 1 });
+                >            }}
+                >          >
+                >            {JSON.stringify(state)}
+                >          </div>
+                >        );
+                >      }}
+                >    </MyContext1.Consumer>
+                >  );
+                >}
+                >
+                >
+                >// ../../context.ts
                 >import React from "react";
                 >
-                >export const MyContext = React.createContext({ a: 1 });
+                >export const MyContext1 = React.createContext({
+                >  state: { a: 1 },
+                >  dispatch(data: { a: number }) {},
+                >});
                 >```
                 ></details>
         2. 通用
@@ -1662,10 +1682,12 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     通过自定义Hook，可以将组件逻辑提取到可重用的函数中。和使用官方hook一样的使用方式。
 
-    1. 自定义Hook更像是一种约定而不是功能。
-    2. 如果函数的名字以`use`开头并紧跟一个大写字母 且 调用其他Hook，我们就说这是一个：自定义Hook。
+    1. 与React组件不同的是，自定义Hook不需要具有特殊的标识。我们可以自由的决定它的参数是什么，以及它应该返回什么（如果需要的话）。换句话说，它就像一个正常的函数。但是它的名字应该始终以`use`开头。
+    2. 自定义Hook更像是一种约定而不是功能。
+    3. 如果函数的名字以`use`开头并紧跟一个大写字母 且 调用其他Hook，我们就说这是一个：自定义Hook。
 
         >`useSomething`的命名约定可以让我们的linter插件在使用Hook的代码中找到bug。
+    4. 每次使用自定义Hook时，其中的所有state和副作用都是和其他自定义Hook以及其他组件完全隔离。
 6. `useContext`
 
     `const 变量名 = useContext(React.createContext的返回值)`，返回该`context`的当前值
@@ -1690,7 +1712,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     >```tsx
     >// 祖先
     >import React, { useState } from "react";
-    >import { MyContext2 } from "../context";
+    >import { MyContext2 } from "../../context";
     >import TheContextHook from "./TheContextHook";
     >
     >export default function TheHooks() {
@@ -1698,39 +1720,43 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     >
     >  return (
     >    <>
-    >      <div onClick={() => { setData(Object.assign({}, data, { b: data.b + 1 })); }}>
-    >        b + 1
-    >      </div>
-    >
-    >      <MyContext2.Provider value={data}>
-    >        <div onClick={() => { setData(Object.assign({}, data, { b: data.b - 1 })); }}>
-    >          b - 1
-    >        </div>
-    >
-    >        <TheContextHook /> {/* 正常工作 */}
+    >      <MyContext2.Provider value={{ state: data, dispatch: setData }}>
+    >        <TheContextHook />  {/* 子组件1、兄弟组件，正常工作 */}
+    >        <TheContextHook />  {/* 子组件2、兄弟组件，正常工作 */}
     >      </MyContext2.Provider>
     >
-    >      <TheContextHook />   {/* 无效，不变化 */}
+    >      <TheContextHook />    {/* 非子组件，无效，不变化 */}
     >    </>
     >  );
     >}
     >
     >
     >// ./TheContextHook.tsx
-    >import React, { useState, useContext } from "react";
-    >import { MyContext2 } from "../context";
+    >import React, { useContext } from "react";
+    >import { MyContext2 } from "../../context";
     >
     >export default function TheContextHook() {
-    >  const res = useContext(MyContext2);
+    >  const { state, dispatch } = useContext(MyContext2);
     >
-    >  return <>{JSON.stringify(res)}</>;
+    >  return (
+    >    <div
+    >      onClick={() => {
+    >        dispatch({ b: state.b + 1 });
+    >      }}
+    >    >
+    >      {JSON.stringify(state)}
+    >    </div>
+    >  );
     >}
     >
     >
-    >// ../context.ts
+    >// ../../context.ts
     >import React from "react";
     >
-    >export const MyContext2 = React.createContext({ b: 1 });
+    >export const MyContext2 = React.createContext({
+    >  state: { b: 1 },
+    >  dispatch(data: { b: number }) {},
+    >});
     >```
     ></details>
 7. `useRef`
@@ -1896,12 +1922,19 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     1. `useSelector`
 
-        `const 变量 = useSelector(store => { return store.slice名 })`
+        `const state值 = useSelector(state => { return state.slice名 })`
     2. `useDispatch`
 
         ```javascript
         const dispatch = useDispatch()
+
         dispatch(createSlice实例.actions.方法名(参数));
+        ```
+    3. `useStore`
+
+        ```javascript
+        // `{store.getState()}`不会随着state更新而触发视图更新
+        const store = useStore()        // store: { dispatch, getState, replaceReducer, subscribe }
         ```
 
 ><details>

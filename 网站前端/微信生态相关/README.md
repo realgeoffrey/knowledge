@@ -2,8 +2,11 @@
 
 ## 目录
 1. [概念](#概念)
-1. [微信外部链接](#微信外部链接)
-1. [微信内访问第三方页面的网页授权](#微信内访问第三方页面的网页授权)
+1. [微信调试开发](#微信调试开发)
+
+    1. [`WeixinJSBridge`](#weixinjsbridge)
+    1. [微信外部链接](#微信外部链接)
+    1. [微信内访问第三方页面的网页授权](#微信内访问第三方页面的网页授权)
 1. [小程序相关](#小程序相关)
 
     1. [taro](#taro)
@@ -12,17 +15,18 @@
 ### 概念
 1. 微信[开放平台](https://open.weixin.qq.com/)：
 
-    （微信内外的）h5、app等 与 微信app 进行第三方功能（登录、支付、分享、等）。
+    `（微信内外的）h5、app等`与`微信app`进行第三方功能（登录、支付、分享、等）。
 2. 微信[公众平台](https://mp.weixin.qq.com/)：
 
-    公众号（服务号、订阅号、企业号）、小程序、小游戏。
-3. 微信[JSSDK](https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/JS-SDK.html)：
+    公众号（服务号、订阅号）、小程序、小游戏、企业微信。
 
-    微信内部的H5与微信app功能（原生硬件能力、微信app功能）的交互功能。
-4. 小程序、小游戏：
+    1. 微信[JSSDK](https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/JS-SDK.html)：
 
-    怎么开发这些功能。
-5. 多端（如：uni-app）：
+        微信内部的H5与微信app功能（原生硬件能力、微信app功能）的交互功能。
+    2. 小程序、小游戏：
+
+        怎么开发这些功能。
+3. 多端（如：uni-app）：
 
     按照小程序为基础，扁平化开发，可能用到 开放平台、JSSDK 等功能。
 
@@ -55,9 +59,27 @@
 
         >同一用户，对同一个微信开放平台下的不同应用（用微信开放平台登录的app、h5，用微信开放平台绑定的公众帐号、小程序、小游戏），UnionID是相同的。
 
+---
+## 微信调试开发
+1. 检查域名是否在接口调用权限安全域名内。
+
+    1. 某个域名，能请求通就是有权限，不能请求通（根据错误码信息）就是没有权限。
+    2. 基本权限，公众号申请appid之后就可以获得。高级权限，仅有内部app才可以申请获得。
+
+    如：`WeixinJSBridge`。
+
+    >一般不会有外部接口查询哪些域名支持哪些接口。
+2. 在微信内调用需要引入对应的sdk文件。
+3. 重要的流程，调用`wx.config`的方法进行相关的权限配置。
+
+### `WeixinJSBridge`
+>`WeixinJSBridge`是底层的接口，建议使用官方封装的[JSSDK](https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/JS-SDK.html)。
+
+1. `WeixinJSBridge.invoke("API名称", 参数对象, 回调函数)`
+2. `WeixinJSBridge.on("事件名称", 回调函数)`
+
 ### 微信外部链接
 遵守[《微信外部链接内容管理规范》](https://weixin.qq.com/cgi-bin/readtemplate?t=weixin_external_links_content_management_specification)，避免被封禁。
-
 
 ### 微信内访问第三方页面的网页授权
 授权流程根据[《微信网页开发/网页授权》](https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/Wechat_webpage_authorization.html)进行。

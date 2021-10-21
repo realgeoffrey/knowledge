@@ -753,33 +753,26 @@
     13. `opacity`
     14. 阴影
 
-        >仅iOS实现。
+        1. `boxShadow`+后缀
 
-        ```typescript
-        /**
-         * Sets the drop shadow color
-         * @platform ios
-         */
-        shadowColor: string;
+            ```javascript
+            boxShadowOpacity: 0.6,
+            boxShadowRadius: 5,
+            boxShadowOffsetX: 10,
+            boxShadowOffsetY: 10,
+            // spread attr is only supported on iOS
+            // spread 属性仅适用于iOS
+            boxShadowSpread: 1,
+            boxShadowColor: '#4c9afa',
+            ```
+        2. `textShadow`+后缀
 
-        /**
-         * Sets the drop shadow offset
-         * @platform ios
-         */
-        shadowOffset: { width: number; height: number };
-
-        /**
-         * Sets the drop shadow opacity (multiplied by the color's alpha component)
-         * @platform ios
-         */
-        shadowOpacity: number;
-
-        /**
-         * Sets the drop shadow blur radius
-         * @platform ios
-         */
-        shadowRadius: number;
-        ```
+            ```javascript
+            textShadowColor
+            textShadowOffsetX
+            textShadowOffsetY
+            textShadowRadius
+            ```
 
     - 样式写法
 

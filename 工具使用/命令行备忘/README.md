@@ -32,6 +32,7 @@
 
     1. [（macOS）brew更新](#macosbrew更新)
     1. [（macOS）打开文件（夹）](#macos打开文件夹)
+    1. [（macOS）钥匙串](#macos钥匙串)
 
 ---
 
@@ -60,7 +61,7 @@ time 「命令」
     >发送的ICMP请求是一个固定的协议，不能设定端口号，因此也不能用`ping`来检测某端口是否可访问。若目标IP不返回ICMP数据包，则也无法ping通。
 
     ```shell
-    ping 「地址」
+    ping 「域名或IP」
     ```
 2. `curl`
 
@@ -76,7 +77,7 @@ time 「命令」
     ```
 3. `telnet`
 
-    可测试IP+端口是否可连接。互联网远程登录服务的标准协议和主要方式。
+    可测试IP+端口是否可连接（不可以填写~~域名~~）。互联网远程登录服务的标准协议和主要方式。
 
     ```shell
     telnet 「IP」 「端口」
@@ -485,7 +486,13 @@ echo 1.txt 2.txt 3.txt | xargs touch
         describe 「表名」;
 
         # select
-        SELECT * FROM 「表名」;
+        select * from 「表名」;
+
+        # 查看用户
+        select user from mysql.user;
+
+        # 展示使用权限
+        show grants;
         ```
     2. 增删改查 数据
 
@@ -508,6 +515,17 @@ echo 1.txt 2.txt 3.txt | xargs touch
         # 修改表字段信息
         alter table 「表名」 「内容」
         ```
+    4. 授权
+
+        ```shell
+        grant 「权限。如：`all`，`select, update`」 on 「库名 或 *」.「表名 或 *」 to '「用户名」'@'「ip」' identified by '「用户密码」';
+        ```
+
+        - 撤销
+
+            ```shell
+            revoke 「权限。如：`all`，`select, update`」 on 「库名 或 *」.「表名 或 *」 from '「用户名」'@'「ip」';
+            ```
 
 ---
 ### macOS命令
@@ -525,3 +543,6 @@ open 「路径/文件」
 ```
 
 >安装[duti](https://github.com/moretension/duti)（brew install duti），可为各种文档设置默认应用程序。如：设置纯文本的默认应用程序为Sublime`duti -s com.sublimetext.3 public.plain-text all`。
+
+#### （macOS）钥匙串
+`钥匙串`应用可以查看本机保存的密码（大部分应用都会把密码保存在钥匙串）。
