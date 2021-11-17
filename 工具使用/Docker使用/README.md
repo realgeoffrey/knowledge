@@ -14,27 +14,43 @@
     1. 安装、启动
 
         ```shell
-        curl -fsSL https://get.docker.com/ | sh # 安装。或官网安装（https://www.docker.com/products/docker-desktop）
+        # 安装。或官网安装（https://www.docker.com/products/docker-desktop）
+        curl -fsSL https://get.docker.com/ | sh
 
-        service docker start    # 启动
+        # 启动
+        service docker start
 
-        docker info # 安装信息
+        # 安装信息
+        docker info
         ```
     2. 查看、操作镜像
 
         >联合文件系统（UnionFS），支持分层（layer）。
 
         ```shell
-        docker images             # 查看本地镜像
+        # 查看本地镜像
+        docker images
         -a      # 显示所有的镜像，包括中间层镜像
         -q      # 仅显示镜像ID
 
-        docker search 「关键字」     # 搜索镜像，或去网站搜索，如：https://hub.docker.com/
-
-        docker pull 「镜像名」       # 拉取镜像
-
-        docker rmi 「镜像ID或镜像名」  # 删除镜像（需要此镜像没有在容器中使用）
+        # 删除镜像（需要此镜像没有在容器中使用）
+        docker rmi 「镜像ID或镜像名」
         -f      # 强制删除
+
+
+        # 搜索镜像，或去网站搜索，如：https://hub.docker.com/
+        docker search 「关键字」
+
+        # 拉取镜像
+        docker pull 「镜像名」
+
+
+        # 查看镜像构建历史
+        docker history 「镜像名或ID」
+
+
+        # 使镜像增加镜像名、标签
+        docker tag 「来源：用户名/镜像名[:「tag，如：1.0.0」]」 「目标：用户名/镜像名[:「tag，如：1.0.0」]」
         ```
     3. 用镜像启动一个容器
 
@@ -103,11 +119,6 @@
             8. `--link-local-ip=`
         14. `--restart=「no（默认）|on-failure[:max-retries]|always|unless-stopped」`
         15. `--security-opt`
-    4. 查看镜像构建历史
-
-        ```shell
-        docker history 「镜像名或ID」
-        ```
 
     - 数据卷（volume）：宿主机中的一个目录或文件。用于容器数据持久化 或 （外部服务与容器内部、容器间）数据同步。
 
@@ -122,28 +133,36 @@
             处理手动挂载的数据卷
 
             >在macOS，可能找不到宿主机路径。
-    5. 容器
+    4. 容器
 
         >互相隔离，每个容器都有一个属于自己的文件系统、网络、进程树。
 
         1. 查看、启动/关闭/删除
 
             ```shell
-            docker ps               # 获取当前运行的容器信息（PORTS 宿主机端口 -> 容器内端口）
+            # 获取当前运行的容器信息（PORTS 宿主机端口 -> 容器内端口）
+            docker ps
             -a      # 显示所有的容器，包括未运行的
             -q      # 仅显示容器ID
 
+            # 删除容器（不能删除正在运行的容器）
+            docker rm 「容器ID或容器名」
+            -f      # 强制删除
 
-            docker start 「容器ID或容器名」    # 启动容器
 
-            docker stop 「容器ID或容器名」     # 停止容器（`-t=「时间 默认10」`：若超时未能关闭则强制kill）
-            docker kill 「容器ID或容器名」     # 强制直接关闭容器
+            # 启动容器
+            docker start 「容器ID或容器名」
+
+            # 停止容器（`-t=「时间 默认10」`：若超时未能关闭则强制kill）
+            docker stop 「容器ID或容器名」
+
+            # 强制直接关闭容器
+            docker kill 「容器ID或容器名」
+
             # 关闭容器，内部的文件也不会被清除。除非把容器删除，否则无论容器是否运行，文件都存在，并且文件都可以被宿主机拷贝
 
-            docker restart 「容器ID或容器名」  # 重启容器（无论容器是否已启动）
-
-            docker rm 「容器ID或容器名」       # 删除容器（不能删除正在运行的容器）
-            -f      # 强制删除
+            # 重启容器（无论容器是否已启动）
+            docker restart 「容器ID或容器名」
             ```
         2. 进入容器shell
 
@@ -187,14 +206,31 @@
             docker cp 「容器ID或容器名」:「文件路径」 「宿主机保存路径」   # 容器 -> 宿主机
             docker cp 「宿主机文件路径」 「容器ID或容器名」:「保存路径」   # 宿主机 -> 容器
             ```
-    6. 新建、提交镜像
+    5. 新建、提交镜像
 
         >[Docker Hub](https://hub.docker.com/)。
 
-        1. 新建镜像（本地）
+        - 登录、登出
 
             ```shell
-            docker commit 「已存在的容器ID或容器名」 「新的镜像名」[:「tag，如：1.0.0」]  # 根据一个已存在的容器创建一个新的镜像
+            # 登录
+            docker login [--username=「用户名」 --password=「密码」 「docker源地址」]
+
+            # 登出
+            docker logout [「docker源地址」]
+
+
+            # 查看登录信息
+            cat ~/.docker/config.json
+            ```
+
+        1. 根据容器创建新镜像
+
+            >最好用Dockerfile方式代替。
+
+            ```shell
+            # 根据一个已存在的容器创建一个新的镜像（不包括安装在容器内的数据卷中包含的任何数据）
+            docker commit 「已存在的容器ID或容器名」 [「新的镜像名」[:「tag，如：1.0.0」]]
             -m="「描述信息」"        # Commit message
             -a="「作者」"           # 作者
             -c="「Dockerfile指令」" # Apply Dockerfile instruction to the created image
@@ -202,11 +238,12 @@
         2. 推送镜像到远程仓库
 
             ```shell
-            docker push 「镜像名」[:「tag，如：1.0.0」] # （除非是认证的组织）镜像名必须包含用户名的namespace，如：`你的账户名/镜像名`
+            # （除非是认证的组织）镜像名必须包含用户名的namespace，如：`你的账户名/镜像名`
+            docker push 「镜像名」[:「tag，如：1.0.0」]
             ```
-    7. Dockerfile
+    6. Dockerfile
 
-        包含一系列命令的文件。
+        包含一系列命令的文件，用于自动构建镜像。
 
         1. `docker build .`
 
@@ -222,33 +259,55 @@
                     创建镜像的名字。可以同时添加多个：`-t xx -t xx`。
         2. `.dockerignore`
 
-            忽略文件。
+            忽略文件（命令行操作 以及 Dockerfile的`ADD`和`COPY` 时忽略的文件/文件夹）。
         3. 指令书写
 
             ```shell
             # 注释会在执行命令前被删除
 
-            # 「syntax或escape」=「值」
+            # 解析器指令（Parser directives）
+            # 「`syntax`或`escape`」=「值」
 
             # 指令不区分大小写。惯例是将它们大写以更轻松地将它们与参数区分开
-            INSTRUCTION arguments
 
-            FROM        # 来源的基础镜像
+            # 每条指令都是独立的，上一条指令不会影响下一条指令，因此`RUN`、`cd`等对下一条指令没有任何影响
+
+            # 指令语法：INSTRUCTION arguments
+
+            FROM        # 来源的基础镜像（最基本镜像：scrach）
+
             RUN         # 镜像构建的时候需要运行的命令
-            CMD         # 指定这个容器启动时运行的命令，只有最后一个会生效
-            ENTRYPOINT  # 指定这个容器启动时运行的命令，可以追加命令
-            LABEL
+
+            CMD         # 指定这个容器启动时运行的命令。运行容器时追加的指令，会覆盖CMD
+
+            ENTRYPOINT  # 指定这个容器启动时运行的命令。运行容器时追加的指令，不会覆盖ENTRYPOINT，而是添加在最后
+
+            LABEL       # 向镜像添加元数据
+
             EXPOSE      # 设置对外暴露端口
-            ENV         # 构建时，设置环境变量
-            ADD         # 添加文件
+
+            ENV         # 构建时，设置环境变量。定义后使用：`${变量名}`或`$变量名`。`\`转义的不会去使用变量：`\${xx}`或`\$xx`
+                        # 一个ENV命令结束后的下一条才能使用之前设置的环境变量
+                        # 能够使用变量的指令：ADD COPY ENV EXPOSE FROM LABEL STOPSIGNAL USER VOLUME WORKDIR ONBUILD
+
+            ADD         # 添加文件（若是压缩文件则自动解压出）
+
             COPY        # 将文件拷贝到镜像中
+
             VOLUME      # 设置卷，挂载主机目录
-            USER
-            WORKDIR     # 设置当前工作目录
-            ARG
+
+            WORKDIR     # 设置当前工作目录。若提供了相对路径，则相对于前一条WORKDIR指令的路径
+
             ONBUILD     # 其他镜像使用当前镜像时（FROM），触发的指令
+
+            ARG
+
+            USER
+
             STOPSIGNAL
+
             HEALTHCHECK
+
             SHELL
             ```
 
