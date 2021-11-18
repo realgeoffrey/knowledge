@@ -33,9 +33,11 @@
         -a      # 显示所有的镜像，包括中间层镜像
         -q      # 仅显示镜像ID
 
+
         # 删除镜像（需要此镜像没有在容器中使用）
         docker rmi 「镜像ID或镜像名」
         -f      # 强制删除
+        # 删除所有：`docker rmi $(docker images -a -q)`
 
 
         # 搜索镜像，或去网站搜索，如：https://hub.docker.com/
@@ -51,7 +53,17 @@
 
         # 使镜像增加镜像名、标签
         docker tag 「来源：用户名/镜像名[:「tag，如：1.0.0」]」 「目标：用户名/镜像名[:「tag，如：1.0.0」]」
+
+
+        # 保存镜像到本地文件
+        docker save --output=「地址/文件.tar」 「镜像名或ID」
+
+        # 加载本地文件到镜像
+        docker load --input=「地址/文件.tar」
         ```
+
+    >配置镜像源：在`/etc/docker/daemon.json`输入`{ "registry-mirrors" : ["镜像源地址"] }`。
+
     3. 用镜像启动一个容器
 
         >用镜像启动一个容器时，会新增一个可写层到镜像层的顶部，称之为容器层，容器的所有操作都基于容器层。
@@ -67,8 +79,8 @@
             ><details>
             ><summary>e.g.</summary>
             >
-            >1. 宿主机nginx监听80端口、配置转发xxx.com到1234端口，hosts配置：`127.0.0.1 xxx.com`，容器docker监听宿主机1234端口映射到容器内部4321端口（`-p=1234:4321`）。
-            >2. 宿主机请求xxx.com：hosts到127.0.0.1:80->nginx端口转发到127.0.0.1:1234->1234端口被docker镜像监听，转发到镜像内的4321端口，镜像内处理返回。
+            >1. 宿主机监听80端口、配置转发xxx.com到1234端口，hosts配置：`127.0.0.1 xxx.com`，容器docker监听宿主机1234端口映射到容器内部4321端口（`-p=1234:4321`）。
+            >2. 宿主机请求xxx.com：hosts到127.0.0.1:80->端口转发到127.0.0.1:1234->1234端口被docker镜像监听，转发到镜像内的4321端口，镜像内处理返回。
             ></details>
 
             1. `-P`
@@ -107,16 +119,19 @@
         12. `--ipc=「none|private|shareable|container:「容器ID或容器名」|host|""（默认）」`
         13. 网络
 
-            1. `--dns=`
-            2. `--network=「none|bridge（默认）」|host|container:「容器ID或容器名」|「用户自定义」`
+            1. `--link=「容器ID或容器名」`
+
+                在容器的hosts中，增加一个映射：`「容器桥接ip到容器ID或容器名」 「容器ID或容器名」`（如：`172.1.2.3 tomcat002`这样就可以在当前容器中`ping tomcat002`成功，可以单向连接到tomcat002）。
+            2. `--dns=`
+            3. `--network=「none|bridge（默认）」|host|container:「容器ID或容器名」|「用户自定义」`
 
                 网络连通性。
-            3. `--network-alias=`
-            4. `--add-host=`
-            5. `--mac-address=`
-            6. `--ip=`
-            7. `--ip6=`
-            8. `--link-local-ip=`
+            4. `--network-alias=`
+            5. `--add-host=`
+            6. `--mac-address=`
+            7. `--ip=`
+            8. `--ip6=`
+            9. `--link-local-ip=`
         14. `--restart=「no（默认）|on-failure[:max-retries]|always|unless-stopped」`
         15. `--security-opt`
 
@@ -133,7 +148,7 @@
             处理手动挂载的数据卷
 
             >在macOS，可能找不到宿主机路径。
-    4. 容器
+    4. 容器操作
 
         >互相隔离，每个容器都有一个属于自己的文件系统、网络、进程树。
 
@@ -145,9 +160,11 @@
             -a      # 显示所有的容器，包括未运行的
             -q      # 仅显示容器ID
 
+
             # 删除容器（不能删除正在运行的容器）
             docker rm 「容器ID或容器名」
             -f      # 强制删除
+            # 删除所有：`docker rm $(docker ps -a -q)`
 
 
             # 启动容器
@@ -198,7 +215,7 @@
                 ```shell
                 docker top 「容器ID或容器名」
                 ```
-        4. 拷贝
+        4. 拷贝内容
 
             >容器不运行也可以正常拷贝。
 
@@ -206,7 +223,12 @@
             docker cp 「容器ID或容器名」:「文件路径」 「宿主机保存路径」   # 容器 -> 宿主机
             docker cp 「宿主机文件路径」 「容器ID或容器名」:「保存路径」   # 宿主机 -> 容器
             ```
-    5. 新建、提交镜像
+    5. 容器网络
+
+        >docker使用linux桥接，宿主机是一个Docker容器的网桥：docker0。docker中所有的网络接口都是虚拟的（转发效率高）。私网地址、公网地址。
+
+        `docker network create/connect/disconnect/inspect/ls/prune/rm`
+    6. 新建、提交镜像
 
         >[Docker Hub](https://hub.docker.com/)。
 
@@ -241,7 +263,7 @@
             # （除非是认证的组织）镜像名必须包含用户名的namespace，如：`你的账户名/镜像名`
             docker push 「镜像名」[:「tag，如：1.0.0」]
             ```
-    6. Dockerfile
+    7. Dockerfile
 
         包含一系列命令的文件，用于自动构建镜像。
 
