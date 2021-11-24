@@ -483,10 +483,10 @@ echo 1.txt 2.txt 3.txt | xargs touch
         show tables;
 
         # 查看某表的所有字段信息
-        describe 「表名」;
+        describe 「表名」;  # 等价于：`show columns from 「表名」;`
 
-        # select
-        select * from 「表名」;
+        # 查看某表的所有字段信息（+full 包括所有额外信息）
+        show [full] columns from 「表名」;
 
         # 查看用户
         select user from mysql.user;
@@ -494,9 +494,18 @@ echo 1.txt 2.txt 3.txt | xargs touch
         # 展示使用权限
         show grants;
         ```
-    2. 增删改查 数据
+    2. 修改数据库
 
-        `select/delete/update/insert`、`from 「表名」`、`order by 「字段名」`、`where`、`or`、`and`、`like`
+        ```shell
+        # 新建数据库
+        create database 「数据库名」;
+
+        # 删除数据库
+        drop database 「数据库名」;
+
+        # 修改数据库的配置参数
+        alter database 「表名」 「内容」;
+        ```
     3. 修改表
 
         ```shell
@@ -509,11 +518,8 @@ echo 1.txt 2.txt 3.txt | xargs touch
         # 修改表名
         rename table 「原表名」 to 「新表名」;
 
-        # 修改数据库的配置参数
-        alter database 「表名」 「内容」
-
         # 修改表字段信息
-        alter table 「表名」 「内容」
+        alter table 「表名」 「内容」;
         ```
     4. 授权
 
@@ -526,6 +532,9 @@ echo 1.txt 2.txt 3.txt | xargs touch
             ```shell
             revoke 「权限。如：`all`，`select, update`」 on 「库名 或 *」.「表名 或 *」 from '「用户名」'@'「ip」';
             ```
+    5. 增删改查 数据
+
+        `select/delete/update/insert`、`from 「表名」`、`order by 「字段名」`、`where`、`or`、`and`、`like`
 
 ---
 ### macOS命令

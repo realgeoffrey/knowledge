@@ -227,7 +227,7 @@
                             ![配置选项-Proxies](./images/proxifier-1.png)
                         2. Rules
 
-                            `Simulator; "Xcode Server Builder"; "MobileSafari"; "com.apple.WebKit.Networking";`
+                            `Simulator; "Xcode Server Builder"; "MobileSafari"; "com.apple.WebKit.Networking"; `（针对部分APP需要+`「APP包名，如："com.tencent.QQKSong"」;`）
 
                             ![配置选项-Rules](./images/proxifier-2.png)
                         3. 电脑同意权限并重启

@@ -180,6 +180,8 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >```
             ></details>
         2. `: { 属性: 数据类型, }`
+
+            >`: { [x:string]: any }`等价于`: Record<string, any>`，表示对象类型，比 ~~`: object`~~、~~`: {}`~~ 更严格定义对象类型。
         3. `: 类名`
 
             取**实例**的类型，而不是~~类~~的类型，不包含类的所有 ~~`静态属性/方法`~~ 和 ~~`构造函数`~~。
@@ -1428,6 +1430,26 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >```
         ></details>
 
+    1. const断言（const assertions）
+
+        `as const`或`<const>`：该表达式中的字面类型不应被扩展（如：不能从`"hello"`转换为string），对象字面量获取只读属性，数组文字成为只读元组。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >const x1 = 'x1';        // -> 'x1'
+        >let x2 = 'x2';          // -> string
+        >let x3 = 'x3' as const; // -> 'x3'
+        >
+        >const obj1 = { key: 'value' }           // -> { type: string }
+        >const obj2 = { key: 'value' } as const  // -> { readonly key: 'value' }
+        >
+        >const arr1 = [1,2,3]            // -> number[]
+        >const arr2 = [1,2,3] as const   // -> readonly [1,2,3]
+        >```
+        ></details>
+
 - 联合类型（Union Types）
 
     `|`
@@ -1575,6 +1597,42 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
     >type K3 = keyof { [x: string]: Person }; // -> string | number （隐式转换key为number）
     >```
     ></details>
+
+    - 获取 对象或类型 的所有属性值，以联合类型（`|`）返回：
+
+        >类似`enum`的功能，若非特别必要，请用`enum`代替。
+
+        ```typescript
+        const obj1 = {
+          key1: "value1",
+          key2: "value2"
+        } as const;                 // 关键，若不加`as const`，则 Obj1Values1和Obj1Values2 -> string
+
+        interface Interface1 {
+          key1: "value1";
+          key2: "value2";
+        }
+
+        class Class1 {
+          key1 = "value1" as const; // 关键，若不加`as const`，则 Class1Values -> string
+          key2 = "value2" as const;
+        }
+
+
+        type ValueOf<T> = T[keyof T];
+        type Obj1Values1 = ValueOf<typeof obj1>;                // -> "value1" | "value2"
+
+        type Obj1Values2 = (typeof obj1)[keyof (typeof obj1)];  // -> "value1" | "value2"
+
+        type Interface1Values = Interface1[keyof Interface1]    // -> "value1" | "value2"
+
+        type Class1Values = Class1[keyof Class1]                // -> "value1" | "value2"
+
+        // enum EnumValues {
+        //   'key1' = 'value1',
+        //   'key2' = 'value2'
+        // }
+        ```
 
 - 索引访问类型
 

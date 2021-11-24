@@ -102,7 +102,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         ></details>
 
         >1. 客户端可以捕获、拦截任何行为（如：`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
-        >2. 有些App会设置允许跳转的其他App的白名单或黑名单，如：微信白名单。
+        >2. 有些App会设置允许跳转的其他App的白名单或黑名单（记录其他APP的Scheme），如：微信白名单。
         >3. 除了增加回调函数且被客户端调用，否则无法准确判定是否在此App内部。
         >4. 跨App使用`自定义URL Scheme`，其后面的字符串要产生的行为仅目的App能理解。
         >5. 快速触发多次`自定义URL Scheme`，有时仅有最后一个产生效果。e.g. 用`window.location.href`快速触发多次，仅有最后一次跳转信息能够传递给客户端。
@@ -170,7 +170,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
                 1. 应用宝主链接：`https://a.app.qq.com/o/simple.jsp?`
                 2. 跳转参数（search值，在`?`后面，用`&`分割）:
 
-                    1. 包名：`pkgname=` + `com.xx.xxx`
+                    1. APP包名：`pkgname=` + `com.xx.xxx`
                     2. 渠道包链接（可选）：`ckey=` + `CK1234567890123`
                     3. 目标APP内打开路径（可选）：`android_schema=` + `自定义URL Scheme://具体跳转路径`
 

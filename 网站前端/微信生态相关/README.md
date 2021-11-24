@@ -15,9 +15,10 @@
 ### 概念
 1. 微信[开放平台](https://open.weixin.qq.com/)：
 
-    `（微信内外的）h5、app等`与`微信app`进行第三方功能（登录、支付、分享、等）。
+    `（微信内外的）h5、app等`与`微信app`进行第三方功能（登录、支付、分享、[打开其他APP](https://developers.weixin.qq.com/doc/oplatform/Mobile_App/WeChat_H5_Launch_APP.html)、等）。
 
->开放平台是基础，APP、小程序、web、公众号 可以选择绑定到开放平台，由开放平台统一管理（如：开放平台提供统一的UnionID判断用户，达到多平台用户信息统一的作用）。
+>1. 开放平台是基础，APP、小程序、web、公众号 可以选择绑定到开放平台，由开放平台统一管理（如：开放平台提供统一的UnionID判断用户，达到多平台用户信息统一的作用）。
+>2. 微信公众平台 处理 微信APP内部交互，微信开放平台 处理 外部应用与微信APP的交互。
 
 2. 微信[公众平台](https://mp.weixin.qq.com/)：
 
