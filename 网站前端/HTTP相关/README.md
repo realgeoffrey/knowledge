@@ -529,7 +529,7 @@
         | Content-Location | 替代对应资源的URI |
         | Content-MD5 | 实体主体的报文摘要 |
         | Content-Range | 实体主体的位置范围，表示传输的Body数据在整体资源块中的字节范围 |
-        | Content-Type | 实体主体的媒体类型（Multipurpose Internet Mail Extensions，MIME type）和编码格式。无论是前端还是后端发起，`Content-Type`必须要与传输的数据类型一一对应，否则解析失败 |
+        | Content-Type | 实体主体的媒体类型（Multipurpose Internet Mail Extensions，MIME types）和编码格式。无论是前端还是后端发起，`Content-Type`必须要与传输的数据类型一一对应，否则解析失败 |
         | Expires | 实体主体过期的日期时间 |
         | Last-Modified | 资源的最后修改日期时间 |
     3. 请求头部字段（request）

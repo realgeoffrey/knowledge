@@ -1,4 +1,4 @@
-### [Docker](https://github.com/docker/docker-ce)使用
+### [Docker](https://www.docker.com/)使用
 >1. 虚拟机：虚拟出一套硬件，运行一个完整的操作系统，然后在这个系统上安装和运行软件。
 >2. 容器：没有自己的内核、没有虚拟出硬件，容器内应用直接运行在宿主机（host machine）的内核（容器化技术并不是模拟的一个完整操作系统）。
 
@@ -23,6 +23,20 @@
         # 安装信息
         docker info
         ```
+
+    - [Daemon配置文件](https://docs.docker.com/engine/reference/commandline/dockerd/)
+
+        1. 地址（默认）：
+
+            1. Linux：`/etc/docker/daemon.json`
+            2. Windows：`%programdata%\docker\config\daemon.json`
+            3. macOS：Docker Desktop -> Preferences -> Docker Engine
+        2. 配置项
+
+            1. 镜像源：`"registry-mirrors" : ["镜像源地址"]`
+
+                >`镜像源地址（registry mirrors）` 不等于 `Docker源地址（Docker Registry）`。
+
     2. 查看、操作镜像
 
         >联合文件系统（UnionFS），支持分层（layer）。
@@ -39,40 +53,52 @@
         -f      # 强制删除
         # 删除所有：`docker rmi $(docker images -a -q)`
 
+        # 删除悬空镜像（没有仓库名或标签的镜像，`<none>`）
+        docker images prune
+        -f      # 不提示确认
+        -a      # 删除所有未使用的镜像，而不仅仅是悬空的镜像
+        --filter    # 过滤器
+
 
         # 搜索镜像，或去网站搜索，如：https://hub.docker.com/
         docker search 「关键字」
 
-        # 拉取镜像
-        docker pull 「镜像名」
+        # 拉取远程镜像到本地
+        docker pull 「镜像名，如：Docker源地址/用户名/镜像名:tag名」
 
 
         # 查看镜像构建历史
         docker history 「镜像名或ID」
 
 
-        # 使镜像增加镜像名、标签
-        docker tag 「来源：用户名/镜像名[:「tag，如：1.0.0」]」 「目标：用户名/镜像名[:「tag，如：1.0.0」]」
+        # 使本地镜像增加镜像名、标签
+        docker tag 「来源：Docker源地址/用户名/镜像名:tag名」 「目标：Docker源地址/用户名/镜像名:tag名」
 
 
-        # 保存镜像到本地文件
+        # 保存 镜像 到本地文件
         docker save --output=「地址/文件.tar」 「镜像名或ID」
 
         # 加载本地文件到镜像
         docker load --input=「地址/文件.tar」
+
+
+        # 导出 容器的文件系统 到本地文件
+        docker export --output=「地址/文件.tar」 「容器ID或容器名」
+
+        # 导入本地文件到镜像
+        docker import 「地址/文件.tar 或 URL 或 -」 [「Docker源地址/用户名/镜像名:tag名」]
         ```
 
-    >配置镜像源：在`/etc/docker/daemon.json`输入`{ "registry-mirrors" : ["镜像源地址"] }`。
-
+        >镜像是 根文件系统更改 和 在容器运行时中使用的相应执行参数 的有序集合。镜像通常包含堆叠在彼此之上的分层文件系统的联合。镜像没有状态，它永远不会改变。
     3. 用镜像启动一个容器
 
-        >用镜像启动一个容器时，会新增一个可写层到镜像层的顶部，称之为容器层，容器的所有操作都基于容器层。
+        >用镜像启动一个容器时，会新增一个**可写**层到镜像层的顶部，称之为容器层，容器的所有操作都基于容器层。
 
         `docker run [「参数」] 「镜像名或ID」 [「命令」 [「命令参数」]]`
 
         >容器参数必须加在`run`和`镜像名或ID`之间。
 
-        1. `-p=「（宿主机IP+）宿主机端口」:「容器端口」`
+        1. `-p=「（宿主机IP + ）宿主机端口」:「容器端口」`
 
             容器暴露端口（把宿主机的端口与容器的端口关联起来）。
 
@@ -91,9 +117,9 @@
         2. `-d`
 
             后台方式运行。
-        3. `-e 「环境变量名」=「值」`
+        3. `-e 「本地环境变量名」`或`-e 「环境变量名」=「值」`
 
-            设置环境变量。
+            设置容器内环境变量。若没有 ~~`=`~~，则使用宿主环境的环境变量值；若没有 ~~`=`~~ 且宿主环境没有这个环境变量值，则不设置。
         4. `-it`
 
             使用交互方式运行，进入容器主shell进程（exit会使容器停止）。
@@ -105,7 +131,9 @@
         6. `-v=[「宿主机目录或文件 或 数据卷名字」:]「容器内目录或文件」`
 
             宿主机与容器创建数据卷。
-        7. `--volumes-from=「容器名」`
+
+            >若`数据卷名字`不存在，则会自动创建一个命名数据卷。
+        7. `--volumes-from=「容器ID或容器名」`
 
             容器间共用数据卷。从另一个容器中挂载已创建好的数据卷。
         8. `--name=「容器名」`
@@ -136,6 +164,9 @@
             9. `--link-local-ip=`
         14. `--restart=「no（默认）|on-failure[:max-retries]|always|unless-stopped」`
         15. `--security-opt`
+        16. `-w=「容器内路径」`
+
+            设置命令（`CMD`或替换命令）执行的路径（若容器内部不存在设置的路径，则新建）。
 
     - 数据卷（volume）：宿主机中的一个目录或文件。用于容器数据持久化 或 （外部服务与容器内部、容器间）数据同步。
 
@@ -145,11 +176,25 @@
 
         >容器不运行也可以正常同步。
 
-        - `docker volume create/ls/inspect/rm/prune`
+        1. 命名数据卷（Named Volumes）
 
-            处理手动挂载的数据卷。
+            `docker volume create/ls/inspect/rm/prune`
+        2. 绑定挂载（Bind Mounts）
 
-            >在macOS，可能找不到宿主机路径。
+        - 对比
+
+            |  | Named Volumes | Bind Mounts |
+            | :--- | :--- | :--- |
+            | Host Location | Docker chooses | You control |
+            | Mount Example (using `-v`) | `「my-volume」:/usr/local/data` | `「/path/to/data」:/usr/local/data` |
+            | Populates new volume with container contents | yes | no |
+            | Supports Volume Drivers | yes | no |
+
+        3. tmps mounts（Linux）
+        4. named pipes（Windows）
+
+        >[Docker: storage](https://docs.docker.com/storage/)
+
     4. 容器操作
 
         >互相隔离，每个容器都有一个属于自己的文件系统、网络、进程树。
@@ -167,6 +212,11 @@
             docker rm 「容器ID或容器名」
             -f      # 强制删除
             # 删除所有：`docker rm $(docker ps -a -q)`
+
+            # 删除所有停止的容器
+            docker container prune
+            -f      # 不提示确认
+            --filter    # 过滤器
 
 
             # 启动容器
@@ -230,18 +280,45 @@
         >docker使用linux桥接，宿主机是一个Docker容器的网桥：docker0。docker中所有的网络接口都是虚拟的（转发效率高）。私网地址、公网地址。
 
         `docker network create/connect/disconnect/inspect/ls/prune/rm`
+
+        1. 若两个容器在同一个网络上，则它们可以相互通信。否则它们就不能通信。
+        2. 将容器设置在网络上的两种方法：
+
+            1. 在开始时分配它
+
+                `docker run` + `--network=「网络名」`
+            2. 连接现有的容器
+
+                `docker network connect 「网络名」 「容器ID或容器名」`
+
+        >[Docker: network](https://docs.docker.com/network/)。
+
+    - Prune一切
+
+        ```shell
+        # all stopped containers
+        # all networks not used by at least one container
+        # all dangling images
+        # all build cache
+        docker system prune
+        -f      # 不提示确认
+        -a      # 删除所有未使用的镜像，而不仅仅是悬空的镜像
+        --filter    # 过滤器
+        --volumes   # 增加Prune volumes
+        ```
+
     6. 新建、提交镜像
 
-        >[Docker Hub](https://hub.docker.com/)。
+        >[Docker Hub](https://hub.docker.com/)是一个默认的官方的Docker源地址。
 
         - 登录、登出
 
             ```shell
             # 登录
-            docker login [--username=「用户名」 --password=「密码」 「docker源地址」]
+            docker login [--username=「用户名」 --password=「密码」 「Docker源地址」]
 
             # 登出
-            docker logout [「docker源地址」]
+            docker logout [「Docker源地址」]
 
 
             # 查看登录信息
@@ -254,7 +331,7 @@
 
             ```shell
             # 根据一个已存在的容器创建一个新的镜像（不包括安装在容器内的数据卷中包含的任何数据）
-            docker commit 「已存在的容器ID或容器名」 [「新的镜像名」[:「tag，如：1.0.0」]]
+            docker commit 「容器ID或容器名」 [「新的镜像名」[:「tag，如：1.0.0」]]
             -m="「描述信息」"        # Commit message
             -a="「作者」"           # 作者
             -c="「Dockerfile指令」" # Apply Dockerfile instruction to the created image
@@ -263,34 +340,43 @@
 
             ```shell
             # （除非是认证的组织）镜像名必须包含用户名的namespace，如：`你的账户名/镜像名`
-            docker push 「镜像名」[:「tag，如：1.0.0」]
+            docker push 「镜像名，如：Docker源地址/用户名/镜像名:tag名」
             ```
-    7. Dockerfile
+
+    - Dockerfile
 
         包含一系列命令的文件，用于自动构建镜像。
 
-        1. `docker build .`
+        1. `docker build [「参数」] 「路径（如：.） 或 URL 或 -」`
 
-            通过Dockerfile和context（`Path`递归的本地路径 + `URL`递归的git仓库地址），Docker daemon**逐一**执行指令，最终创建一个镜像。
+            通过Dockerfile和构建上下文（context），Docker守护进程（daemon）**逐一**执行指令，最终创建一个镜像。
 
-            - 在`build`和`.`之间添加参数
+            1. `-f 「文件路径」`
 
-                1. `-f 「文件路径」`
+                设置Dockerfile的文件路径（默认当前目录下的`Dockerfile`）。
+            2. `-t 「用户名/镜像名[:「tag，如：1.0.0」]」`
 
-                    设置Dockerfile的文件路径。
-                2. `-t 「用户名/镜像名[:「tag，如：1.0.0」]」`
+                创建镜像的名字。可以同时添加多个：`-t xx -t xx`。
+            3. `--target 「多阶段构建的名字」`
 
-                    创建镜像的名字。可以同时添加多个：`-t xx -t xx`。
+                在构建具有多个构建阶段的Dockerfile时，可用于按名称将中间构建阶段指定为生成镜像的**最终阶段**。目标阶段之后的命令将被跳过（依旧会从Dockerfile的第一行开始按顺序执行指令至目标阶段结束）。
+            4. `--build-arg 「名」=「值」`
+
+                传入Dockerfile构建参数。构建时，docker无法获得系统环境变量，需要传入（`ARG`）或者构建文件自己声明（`ENV`）。
+
+            - 构建上下文
+
+                当发出`docker build` + `「路径」`命令时，「路径」称为构建上下文。（无论Dockerfile实际位于何处，）「路径」中的文件和目录的所有递归内容都将作为构建上下文发送到Docker守护进程。
         2. `.dockerignore`
 
             忽略文件（命令行操作 以及 Dockerfile的`ADD`和`COPY` 时忽略的文件/文件夹）。
         3. 指令书写
 
             ```shell
-            # 注释会在执行命令前被删除
-
-            # 解析器指令（Parser directives）
+            # 解析器指令（Parser directives），需要在文本最前面书写
             # 「`syntax`或`escape`」=「值」
+
+            # 注释会在执行命令前被删除
 
             # 指令不区分大小写。惯例是将它们大写以更轻松地将它们与参数区分开
 
@@ -298,33 +384,46 @@
 
             # 指令语法：INSTRUCTION arguments
 
-            FROM        # 来源的基础镜像（最基本镜像：scrach）
+            FROM        # 来源的基础镜像（最基本镜像：scrach） 或 （多阶段构建的）之前阶段
+                        # 单个Dockerfile文件可以包含多个FROM指令从而进行多阶段构建
+                        # + `as 「名字」`用于指定多阶段构建的某一阶段名字，作用：
+                        #   1. `docker build`+`--target=「名字」`设置为最终阶段
+                        #   2. `COPY --from=「名字」`指定复制来源为此构建内容
+                        #   3. 之后阶段`FROM`之前阶段
 
             RUN         # 镜像构建的时候需要运行的命令
-
-            CMD         # 指定这个容器启动时运行的命令。运行容器时追加的指令，会覆盖CMD
-
-            ENTRYPOINT  # 指定这个容器启动时运行的命令。运行容器时追加的指令，不会覆盖ENTRYPOINT，而是添加在最后
+                        # 是在镜像中进行操作，不是在构建上下文
 
             LABEL       # 向镜像添加元数据
 
             EXPOSE      # 设置对外暴露端口
 
-            ENV         # 构建时，设置环境变量。定义后使用：`${变量名}`或`$变量名`。`\`转义的不会去使用变量：`\${xx}`或`\$xx`
+            ENV         # 构建时，设置环境变量。e.g. `ENV xx=「值」`
+                        # 定义后使用：`${变量名}`或`$变量名`。`\`转义的不会去使用变量：`\${xx}`或`\$xx`
                         # 一个ENV命令结束后的下一条才能使用之前设置的环境变量
                         # 能够使用变量的指令：ADD COPY ENV EXPOSE FROM LABEL STOPSIGNAL USER VOLUME WORKDIR ONBUILD
+                        # 构建时存在 且 镜像启动的容器也会保留（环境变量）
 
-            ADD         # 添加文件（若是压缩文件则自动解压出）
+            ARG         # `docker build` + `--build-arg 「名」=「值」`传入的键值对
+                        # e.g. 定义：ARG key1[=「默认值」]；使用：$key1
+                        # 仅构建时存在，不会保留到容器中（不写入环境变量）
 
-            COPY        # 将文件拷贝到镜像中
+            ADD         # 添加文件（若是压缩文件则自动解压出）。从 构建上下文 向 镜像 操作
+
+            COPY        # 将文件拷贝到镜像中。从 构建上下文 向 镜像 操作
+                        # `--from=「多阶段构建的序号（从0开始）或名字，其他镜像」`：
+                        #   用某个多阶段构建的内容 或 其他镜像内容 代替docker build的构建上下文
+
+                        # 不太支持在Dockerfile内进行判断文件（夹）是否存在后进行复制操作，最好是在外部创建构建上下文的时候就确定文件（夹）已经存在：
+                        #   https://stackoverflow.com/questions/31528384/conditional-copy-add-in-dockerfile
+                        # 添加的同名文件夹会合并，同名文件以之后操作的覆盖之前的
 
             VOLUME      # 设置卷，挂载主机目录
 
             WORKDIR     # 设置当前工作目录。若提供了相对路径，则相对于前一条WORKDIR指令的路径
+                        # 建议仅用绝对路径；建议替代难以维护的`cd`，如：`RUN cd ... && ...`
 
             ONBUILD     # 其他镜像使用当前镜像时（FROM），触发的指令
-
-            ARG
 
             USER
 
@@ -333,9 +432,15 @@
             HEALTHCHECK
 
             SHELL
+
+            CMD         # 指定这个容器启动时运行的命令。运行容器时追加的指令，会覆盖CMD
+
+            ENTRYPOINT  # 指定这个容器启动时运行的命令。运行容器时追加的指令，不会覆盖ENTRYPOINT，而是添加在最后
             ```
 
-            1. 每一个指令都会创建一个层（layer）
+            1. 一个Docker镜像由**只读**层（layer）组成，每个层代表一个Dockerfile指令。这些层是堆叠的，每一层都是前一层变化的增量。
+
+                应尽量减少层数，因此尽量合并指令（如：利用`&&`写命令，合并多个`RUN`为单个`RUN`）。
 
                 ><details>
                 ><summary>e.g.</summary>
@@ -347,3 +452,28 @@
                 >CMD python /app/app.py  # 4. CMD specifies what command to run within the container.
                 >```
                 ></details>
+            2. 当运行一个镜像并生成一个容器时，会在层的顶部添加一个新的**可写**层（“容器层”）。对正在运行的容器所做的所有更改，例如写入新文件、修改现有文件和删除文件，都将写入此可写容器层。
+        4. 多阶段构建
+
+            多阶段构建允许大幅减少最终镜像的大小，而无需费力减少中间层和文件的数量。因为镜像是在构建过程的最后阶段构建的，所以可以通过利用构建缓存来最小化镜像层。
+        5. 多服务执行
+
+            >为了从Docker中获得最大收益，请避免一个容器负责整个应用程序的多个方面。可以使用用户定义的网络和共享数据卷连接多个容器。
+
+            1. 把多服务放在一个脚本中，用`CMD`运行这个脚本。
+            2. 或 使用其他守护进程管理多服务（如：supervisord等），用`CMD`运行这个守护进程。
+
+    7. 扫描镜像
+
+        >订阅收费内容。
+
+        1. 推送Docker Hub之前自动触发
+        2. 或 主动运行命令
+
+            ```shell
+            # 扫描需要登录，如：https://app.snyk.io/
+            docker scan --login
+
+            # 扫描镜像
+            docker scan 「镜像名」
+            ```

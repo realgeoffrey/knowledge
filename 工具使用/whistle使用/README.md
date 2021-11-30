@@ -1,4 +1,6 @@
 ### [whistle](https://github.com/avwo/whistle)使用
+whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所有操作都可以通过类似配置hosts的方式实现。功能文档齐全，建议查看官方文档。
+
 1. 启动
 
     ```shell
@@ -156,6 +158,13 @@
 
         ```text
         URL 匹配规则 excludeFilter://*/xx/xxx/  # 匹配的规则，排除后面的路径
+        ```
+    10. resType
+
+        修改响应头的`content-type`（[MIME类型](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Basics_of_HTTP/MIME_types)）。
+
+        ```text
+        URL resType://「text/plain、text/html、image/png、等」
         ```
 
     - 所有协议均支持以下匹配方式

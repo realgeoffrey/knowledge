@@ -8,7 +8,7 @@
 ### 适配布局（与设计师协作思路）
 1. 选择一种尺寸（宽度）作为设计和开发基准。
 
-    >根据设计规范或市面上机型的分辨率情况，如：iOS可选375、Android可选360。
+    >根据设计规范或市面上机型的分辨率情况，如：iOS可选375、Android可选360，或均选择375。
 2. 定义一套适配规则，自动适配设计稿宽度以外的尺寸：
 
     1. 使用（类似）flex布局
@@ -32,22 +32,21 @@
 ><details>
 ><summary>可参考：<a href="https://uiiiuiii.com/screen/index.htm">屏幕尺寸大全</a></summary>
 >
->1. iOS屏幕宽度：
+>1. iOS屏幕宽度pt：
 >
->    1. 320：iPhone SE(1st) 或 5S
->    2. 360：iPhone 12 Mini
->    3. 375：iPhone 11 Pro
->    4. 390：iPhone 12 Pro
->    5. 414：iPhone 11 Pro Max
->    6. 428：iPhone 12 Pro Max
->2. Android屏幕宽度：
+>    1. 320：iPhone SE(1st)
+>    2. 375：iPhone 11 Pro（iPhone 13 Mini的渲染像素的逻辑像素的宽度也是375）
+>    3. 390：iPhone 13 Pro
+>    4. 414：iPhone 11 Pro Max
+>    5. 428：iPhone 13 Pro Max
+>2. Android屏幕宽度dp：
 >
->    320、360、392、411、480
+>    320、360、392、411、480，还可以在开发者设置里指定屏幕宽度。
 ></details>
 
 1. iOS
 
-    >iPhone：320、375、414；iPad：768+。
+    >iPhone宽度pt：320、375、390、414、428；iPad宽度pt：768+。
 
     （约定）375（无单位）总宽，保证资源（图片）有`@2x图`、`@3x图`。利用相对布局（flex布局）。
 2. Android

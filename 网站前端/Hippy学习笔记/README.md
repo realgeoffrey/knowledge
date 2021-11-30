@@ -345,6 +345,9 @@
 
             用三元运算符替换：`false ? B : null`。
         16. 没有类似.html的DOM结构，不能动态向根节点插入内容，只能按照组件结构插入组件（`new Hippy`的`entryPage`）
+        17. 每个组件（包括`<Text>`）都是块状的，不能像H5那样内联展示
+
+            >e.g. 无法做到，一个换行的文字中，某几个字颜色不同或者有额外交互功能（除非一个字一个组件的输出方式…）。
 2. 模块
 
     >[模块文档](https://hippyjs.org/#/hippy-react/modules)比较简单，更详细的用法在[demo](https://github.com/Tencent/Hippy/tree/master/examples/hippy-react-demo/src/modules)或[源码](https://github.com/Tencent/Hippy/tree/master/packages/hippy-react/src/modules)中。

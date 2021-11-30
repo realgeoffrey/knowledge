@@ -1152,7 +1152,49 @@
                 >}
                 >```
                 ></details>
-            3. `<select>`
+            3. `<input type="radio">`
+
+                ><details>
+                ><summary>e.g.</summary>
+                >
+                >```jsx
+                >function Radio() {
+                >  const [radioValue, setRadioValue] = useState<"chooseA" | "chooseB">("chooseB");
+                >
+                >  return <>
+                >    <label htmlFor="chooseA">
+                >      <input
+                >        type="radio"
+                >        name="choose"
+                >        id="chooseA"
+                >        value="chooseA"
+                >
+                >        checked={radioValue === "chooseA"}
+                >        onChange={(e) => {
+                >          setRadioValue(e.target.value as "chooseA");
+                >        }}
+                >      />
+                >      选中A
+                >    </label>
+                >    <label htmlFor="chooseB">
+                >      <input
+                >        type="radio"
+                >        name="choose"
+                >        id="chooseB"
+                >        value="chooseB"
+                >
+                >        checked={radioValue !== "chooseA"}
+                >        onChange={(e) => {
+                >          setRadioValue(e.target.value as "chooseB");
+                >        }}
+                >      />
+                >      选中B
+                >    </label>
+                >  </>
+                >}
+                >```
+                ></details>
+            4. `<select>`
 
                 ><details>
                 ><summary>e.g.</summary>
@@ -1234,6 +1276,29 @@
                 >e.g. `<input defaultValue="默认值" type="text" ref={this.input} />`
 
             - `<input type="file" />`始终是一个非受控组件
+
+            - `<input type="checkbox">`
+
+                ><details>
+                ><summary>e.g.</summary>
+                >
+                >```jsx
+                >function Checkbox() {
+                >  const [checked, setChecked] = React.useState(true);
+                >
+                >  return (
+                >    <label>
+                >      <input
+                >        type="checkbox"
+                >        checked={checked}
+                >        onClick={() => setChecked(!checked)}
+                >      />
+                >      Check Me!
+                >    </label>
+                >  );
+                >}
+                >```
+                ></details>
 
             ><details>
             ><summary>e.g.</summary>

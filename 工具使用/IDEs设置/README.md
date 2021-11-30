@@ -16,3 +16,19 @@
 4. IDE错误（如：无法搜索文件等）的解决办法：
 
     点击File,选择Invalidate Caches/Restart...
+
+- IDE针对Node.js调试（支持：TypeScript+自动重启）
+
+    ![debug图](./images/ide-node-debug-1.png)
+
+    ```xml
+    <component name="ProjectRunConfigurationManager">
+      <configuration default="false" name="app.ts" type="NodeJSConfigurationType" application-parameters="--project tsconfig.json" nameIsGenerated="true" node-parameters="$USER_HOME$/.nvm/versions/node/v14.17.5/bin/nodemon" path-to-js-file="app.ts" working-dir="$PROJECT_DIR$">
+        <envs>
+          <env name="NODE_ENV" value="development" />
+          <env name="DEBUG" value="koa*" />
+        </envs>
+        <method v="2" />
+      </configuration>
+    </component>
+    ```

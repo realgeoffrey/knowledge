@@ -89,3 +89,5 @@
         >~~参考：[Stack Overflow: Can I get node --inspect to open Chrome automatically](https://stackoverflow.com/questions/41398970/can-i-get-node-inspect-to-open-chrome-automatically#answer-46262271)。~~
 
 >全套Node.js脚手架：[scaffolding-node（TypeScript+pm2+--inspect+ESLint+Prettier+husky+lint-staged）](https://github.com/realgeoffrey/scaffolding-node)。
+
+P.S. 也可以直接依赖IDE的debug配置，支持TypeScript+自动重启+IDE内查看调试。就不需要以上所有配置和Chrome。

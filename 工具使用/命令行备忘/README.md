@@ -2,16 +2,17 @@
 
 ## 目录
 1. [命令花费时间](#命令花费时间)
+1. [判断命令来源](#判断命令来源)
 1. [URL连接测试](#url连接测试)
 1. [IPv6相关命令](#ipv6相关命令)
-1. [ssh登录](#ssh登录)
+1. [`ssh`](#ssh)
 1. [远程复制文件（夹）](#远程复制文件夹)
 1. [同步文件（夹）](#同步文件夹)
+1. [图形界面文件上传/下载（lrzsz）](#图形界面文件上传下载lrzsz)
 1. [改密码](#改密码)
 1. [指令在PATH变量的路径](#指令在path变量的路径)
 1. [hosts文件位置](#hosts文件位置)
 1. [验证文件的数字签名](#验证文件的数字签名)
-1. [查看/设置环境变量](#查看设置环境变量)
 1. [查看本机IP](#查看本机ip)
 1. [执行文件](#执行文件)
 1. [（Unix-like）开机自动运行的脚本](#unix-like开机自动运行的脚本)
@@ -23,11 +24,15 @@
 1. [清空文件内容](#清空文件内容)
 1. [查看group、user](#查看groupuser)
 1. [指令的别名](#指令的别名)
-1. [adb](#adb)
-1. [nohup](#nohup)
-1. [sleep](#sleep)
-1. [xargs](#xargs)
-1. [mysql](#mysql)
+1. [`adb`](#adb)
+1. [`nohup`](#nohup)
+1. [`sleep`](#sleep)
+1. [`xargs`](#xargs)
+1. [批量删除文件](#批量删除文件)
+1. [`mysql`](#mysql)
+1. [`read`](#read)
+1. [`sed`](#sed)
+1. [Shell环境的运行参数](#shell环境的运行参数)
 1. [macOS命令](#macos命令)
 
     1. [（macOS）brew更新](#macosbrew更新)
@@ -53,6 +58,11 @@ time 「命令」
 # e.g. time ls
 ```
 
+#### 判断命令来源
+```shell
+type 命令
+```
+
 #### URL连接测试
 1. `ping`
 
@@ -73,7 +83,7 @@ time 「命令」
     -H 「'一个请求头'」             # 设置请求头的请求
     -X 「请求方法，如：POST」        # 设置请求方法的请求
     -g                          # 关闭解析`{}`、`[]`
-    -x 「protocol://host:port」   # 通过代理访问
+    -x 「protocol://host:port」   # 通过代理访问，如：http://127.0.0.1:8899
     ```
 3. `telnet`
 
@@ -106,7 +116,7 @@ dig 「域名」 AAAA
 # curl -6 「URI」
 ```
 
-#### ssh登录
+#### `ssh`
 ```shell
 ssh 「用户名@地址」 -p 「端口号，默认：22」
 ```
@@ -141,6 +151,101 @@ rsync 「来源文件」 「目标文件」
 ```
 
 仅传输有差异内容，性能更好，参数更复杂。
+
+#### 图形界面文件上传/下载（[lrzsz](https://www.ohse.de/uwe/software/lrzsz.html)）
+```shell
+rz
+
+sz 「文件路径」
+```
+
+><details>
+><summary>macOS的iTerm2配置使用。</summary>
+>
+>1. 安装
+>
+>    `brew install lrzsz`
+>2. 命令配置
+>
+>    1. `cd /usr/local/bin`
+>    2. 在目录下创建2个文件
+>
+>        1. `vi iterm2-recv-zmodem.sh`
+>
+>            ```shell
+>            #!/bin/bash
+>            # Author: Matt Mastracci (matthew@mastracci.com)
+>            # AppleScript from http://stackoverflow.com/questions/4309087/cancel-button-on-osascript-in-a-bash-script
+>            # licensed under cc-wiki with attribution required
+>            # Remainder of script public domain
+>
+>            osascript -e 'tell application "iTerm2" to version' > /dev/null 2>&1 && NAME=iTerm2 || NAME=iTerm
+>            if [[ $NAME = "iTerm" ]]; then
+>                FILE=`osascript -e 'tell application "iTerm" to activate' -e 'tell application "iTerm" to set thefile to choose folder with prompt "Choose a folder to place received files in"' -e "do shell script (\"echo \"&(quoted form of POSIX path of thefile as Unicode text)&\"\")"`
+>            else
+>                FILE=`osascript -e 'tell application "iTerm2" to activate' -e 'tell application "iTerm2" to set thefile to choose folder with prompt "Choose a folder to place received files in"' -e "do shell script (\"echo \"&(quoted form of POSIX path of thefile as Unicode text)&\"\")"`
+>            fi
+>
+>            if [[ $FILE = "" ]]; then
+>                echo Cancelled.
+>                # Send ZModem cancel
+>                echo -e \\x18\\x18\\x18\\x18\\x18
+>                sleep 1
+>                echo
+>                echo \# Cancelled transfer
+>            else
+>                cd "$FILE"
+>                /usr/local/bin/rz -E -e -b
+>                sleep 1
+>                echo
+>                echo
+>                echo \# Sent \-\> $FILE
+>            fi
+>            ```
+>        2. `vi iterm2-send-zmodem.sh`
+>
+>            ```shell
+>            #!/bin/bash
+>            # Author: Matt Mastracci (matthew@mastracci.com)
+>            # AppleScript from http://stackoverflow.com/questions/4309087/cancel-button-on-osascript-in-a-bash-script
+>            # licensed under cc-wiki with attribution required
+>            # Remainder of script public domain
+>
+>            osascript -e 'tell application "iTerm2" to version' > /dev/null 2>&1 && NAME=iTerm2 || NAME=iTerm
+>            if [[ $NAME = "iTerm" ]]; then
+>                FILE=`osascript -e 'tell application "iTerm" to activate' -e 'tell application "iTerm" to set thefile to choose file with prompt "Choose a file to send"' -e "do shell script (\"echo \"&(quoted form of POSIX path of thefile as Unicode text)&\"\")"`
+>            else
+>                FILE=`osascript -e 'tell application "iTerm2" to activate' -e 'tell application "iTerm2" to set thefile to choose file with prompt "Choose a file to send"' -e "do shell script (\"echo \"&(quoted form of POSIX path of thefile as Unicode text)&\"\")"`
+>            fi
+>            if [[ $FILE = "" ]]; then
+>                echo Cancelled.
+>                # Send ZModem cancel
+>                echo -e \\x18\\x18\\x18\\x18\\x18
+>                sleep 1
+>                echo
+>                echo \# Cancelled transfer
+>            else
+>                /usr/local/bin/sz "$FILE" -e -b
+>                sleep 1
+>                echo
+>                echo \# Received $FILE
+>            fi
+>            ```
+>    3. `chmod 777 iterm2-*`
+>    4. iTerm2 -> Preferences -> Profiles -> Advanced -> Triggers Edit
+>
+>        ```text
+>        Regular expression: rz waiting to receive.\*\*B0100
+>        Action: Run Silent Coprocess
+>        Parameters: /usr/local/bin/iterm2-send-zmodem.sh
+>
+>        Regular expression: \*\*B00000000000000
+>        Action: Run Silent Coprocess
+>        Parameters: /usr/local/bin/iterm2-recv-zmodem.sh
+>        ```
+>        ![iTerm2配置](./images/iTerm2-lrzsz.png)
+>3. 在iTerm2中使用`rz`、`sz`
+></details>
 
 #### 改密码
 
@@ -191,13 +296,6 @@ which 「指令」
     echo -n 「字符串」 | sha1sum.exe
     # 使用特定算法：`sha224sum.exe sha256sum.exe sha384sum.exe sha512sum.exe`
     ```
-
-#### 查看/设置环境变量
-```shell
-echo $「变量」          # 查看变量
-
-export 「变量」=「值」   # 设置变量
-```
 
 #### 查看本机IP
 ```shell
@@ -366,17 +464,20 @@ vi ~/.zshrc         # zsh
 
 #### 指令的别名
 ```shell
+# 只能为命令定义别名，无法为其他部分（比如很长的路径）定义别名
+
 alias   # 查看已设置的内容
 
 alias 「自定义命令名」='「执行命令1」; 「执行命令2」'   # 新增 别名=执行命令
 
 alias 「自定义命令名」      # 打印设置的执行命令
 
+# 别名也可以接受参数，参数会直接传入原始命令
 
 unalias 「自定义命令名」    # 删除 别名
 ```
 
-#### adb
+#### `adb`
 1. 查看已连接的设备（尝试连接手机）
 
     ```shell
@@ -437,7 +538,7 @@ unalias 「自定义命令名」    # 删除 别名
     adb shell dumpsys gfxinfo 「PACKAGE_NAME」 framestats
     ```
 
-#### nohup
+#### `nohup`
 用于忽略SIGHUP（signal hang up，挂断信号：终端注销时所发送至程序的一个信号）。
 
 ```shell
@@ -446,21 +547,24 @@ nohup 「命令」 &    # 后台执行命令。命令的标准输出到当前目
 
 杀死后台进程先`ps`后`kill`：[查看端口占用、网络链接，查看进程并杀死](#查看端口占用网络链接查看进程并杀死)。
 
-#### sleep
+#### `sleep`
 ```shell
 sleep 「秒数」  # 延迟一段时间，再向下继续执行命令
 ```
 
-#### xargs
+#### `xargs`
 将标准输入转为命令行参数。
 
 ```shell
 echo 1.txt 2.txt 3.txt | xargs touch
 ```
 
-#### mysql
->[mysql 命令](https://dev.mysql.com/doc/refman/8.0/en/)。
+#### 批量删除文件
+```shell
+find ./ -name "文件名" -exec rm -rf {} \;
+```
 
+#### [`mysql`](https://dev.mysql.com/doc/refman/8.0/en/)
 1. 连接mysql
 
     ```shell
@@ -535,6 +639,96 @@ echo 1.txt 2.txt 3.txt | xargs touch
     5. 增删改查 数据
 
         `select/delete/update/insert`、`from 「表名」`、`order by 「字段名」`、`where`、`or`、`and`、`like`
+
+#### `read`
+```shell
+# 用户输入到变量名（默认以空格作为输入结果分隔，以 IFS 变量决定）。若没有变量名，则默认输入到 REPLY 变量
+read 「n个变量名（以空格分隔），默认REPLY」
+-t 「数字，默认 TMOUT 变量值」   # 输入超时时间（秒）
+-p 「提示信息」
+-a 「变量名」                  # 赋值给数组（以0开始）
+-n 「数字」                    # 截取字符数
+-e                          # 自动补全
+-d 「用户输入结束符」
+-r                          # raw 模式，表示不把用户输入的反斜杠字符解释为转义字符
+-s                          # 使得用户的输入不显示在屏幕上，这常常用于输入密码或保密信息
+-u 「文件描述符」               # 使用文件描述符作为输入
+```
+
+- 读取文件到变量
+
+    ```shell
+    #!/bin/bash
+
+    filename='「文件绝对地址」'
+
+    while read myline
+    do
+      echo "$myline"
+    done < $filename
+    ```
+
+#### `sed`
+sed默认读取整个文件并对每一行进行修改。
+
+1. 修改原文件
+
+    ```shell
+    # macOS
+    sed -i "「原文件备份文件的后缀，若为空则不添加备份文件。参数为必须」" "s/「匹配内容」/「修改内容」/g" 「原文件」   # 修改原文件，可选生成原文件的备份文件
+
+    # Linux
+    sed -i "s/「匹配内容」/「修改内容」/g" 「原文件」            # 修改原文件
+    sed "s/「匹配内容」/「修改内容」/g" 「原文件」 > 「新文件」   # 原文件不变，替换后内容保存在新文件
+
+
+    # 若替换的内容有`/`，则用`#`替换`/`作为分割符
+    # e.g.
+    sed "s#abc/def#${变量名}#g" 文件名1 > 文件名2
+    ```
+
+#### Shell环境的运行参数
+- 修改当前Shell环境的运行参数（不会继承到子Shell），即定制环境
+
+    1. [`set`](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html) + 配置项
+
+        >e.g. `set -u`
+    2. `bash`（或其他Shell） + 配置项 + 脚本
+
+        会完全脚本的忽略Shebang行（Shebang行加的运行参数也会被忽略）。
+
+        >e.g. `bash -u ./脚本`
+    3. 脚本Shebang行 + 配置项
+
+        >e.g. `#!/bin/sh -u`
+
+```shell
+# 运行参数的配置项：
+
+-u          # 若遇到不存在的变量，则报错并停止执行。或：`-o nounset`
++u          # 默认。取消`-u`的效果。或：`+o nounset`
+
+-x          # 运行结果之前，先输出执行的那一行命令。或：`-o xtrace`
++x          # 默认。取消`-x`的效果。或：`+o xtrace`
+
+-e          # 脚本只要发生错误，就终止执行（管道）。或：`-o errexit`
++e          # 默认。取消`-e`的效果。`+o errexit`
+
+# 管道命令，是多个子命令通过管道运算符`|`组合成为一个大的命令。Bash会把最后一个子命令的退出码，作为整个命令的退出码
+-o pipefail # 只要一个子命令失败，整个管道命令就失败，脚本就会终止执行
++o pipefail # 默认。取消`-o pipefail`效果
+
+-E          # 一旦设置了`-e`参数，会导致函数内的错误不会被`trap`命令捕获。`-E`参数可以纠正这个行为，使得函数也能继承trap命令
++E          # 默认。取消`-E`的效果
+
+-n          # 不运行命令，只检查语法是否正确。或：`-o noexec`
+
+-f          # 不对通配符进行文件名扩展。或：`-o noglob`
++f          # 默认。取消`-f`的效果。`+o noglob`
+
+-v          # 打印Shell接收到的每一行输入。。或：`-o verbose`
++v          # 默认。取消`-v`的效果。`+o verbose`
+```
 
 ---
 ### macOS命令

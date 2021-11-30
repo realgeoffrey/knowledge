@@ -2,7 +2,10 @@
 
 ## 目录
 1. [Git心得](./Git心得/README.md)
-2. [命令行备忘](./命令行备忘/README.md)
+2. 命令行学习
+
+    1. [Bash学习笔记](./Bash学习笔记/README.md)
+    2. [命令行备忘](./命令行备忘/README.md)
 3. 数据库
 
     1. [MongoDB使用](./MongoDB使用/README.md)
@@ -13,8 +16,8 @@
    2. [Kubernetes使用](./Kubernetes使用/README.md)
 5. 代理、抓包工具
 
-    1. [Charles使用](./Charles使用/README.md)
-    2. [whistle使用](./whistle使用/README.md)
+    1. [whistle使用](./whistle使用/README.md)
+    2. [Charles使用](./Charles使用/README.md)
 6. [YAML使用](./YAML使用/README.md)
 7. [科学上网](./科学上网/README.md)
 

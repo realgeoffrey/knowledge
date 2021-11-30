@@ -845,6 +845,9 @@
 22. 用`filter: drop-shadow`（图像本身形状和alpha通道的阴影）代替`box-shadow`（盒阴影）
 23. 若在视口中**添加/删除**节点导致滚动条变化，则浏览器会尽量保持视口最顶部节点固定不变（从而瞬间改变滚动条位置以使视口顶部节点尽量保持不随滚动条变化而位移）
 24. `overflow: hidden`无法处理`position: fixed`的子孙节点。
+25. `position: absolute`超出浏览器可能导致Android出现滚动条（虽然不能滚动）
+
+    尝试用`position: fixed`代替。
 
 ---
 ## CSS
@@ -1472,6 +1475,9 @@
 4. 滚动条会占用容器的可用高度或宽度（[JS获取滚动轴宽度（或高度）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js获取滚动条宽度或高度)）。
 
     >针对右边滚动条：（除了`<html>`的）DOM的滚动条，可以设置`margin-right: -某px;`（[`width: auto;`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#块级元素的width)）[使滚动条向右移动、移出此DOM容器（`padding-right: 某px;`可以产生与滚动条的间隔）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#滚动条在容器外部)。
+5. 能滚动的DOM（父`overflow`值非 ~~`hidden`~~）在iOS有额外滚动距离的效果，导致被遮盖的节点被显露：
+
+    可以在父级设置`overflow: hidden`阻止滚动，从而规避需要被遮盖的节点被显露。
 
 ### `@font-face`
 >使用[www.iconfont.cn](https://www.iconfont.cn/)方便生成字体图标，每个字体图标对应一个Unicode（也可用现存文字已使用的Unicode作为字体图标的Unicode）。

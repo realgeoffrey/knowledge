@@ -125,7 +125,7 @@ npm（Node Package Manager）。
 
             `npm link`、`npm unlink`
 
-            1. 本地
+            1. 仅本地
 
                 1. 引用的仓库：`npm link 本地模块的路径`
 
@@ -934,7 +934,7 @@ Node.js的全局对象`global`是全局变量的宿主。
     5. `debugger`
 
         1. `node inspect 脚本.js`：命令行调试
-        2. `node --inspect 脚本.js`：与Chrome配合调试（默认端口：9229）
+        2. `node --inspect 脚本.js`：与Chrome配合调试（默认：`--inspect=127.0.0.1:9229`。开启远程调试：`--inspect=「公共IP或0.0.0.0」:9229`）
 
             >有时因为运行的代码，就算退出了程序也无法关闭占用inspect的9229（默认）端口。需要手动杀死占用端口的进程，e.g. `lsof -i :9229`然后`kill -9 「PID」`。
     6. `TextDecoder`、`TextEncoder`
@@ -976,7 +976,56 @@ Node.js的全局对象`global`是全局变量的宿主。
 
     1. 执行文件之前的是传递给Node.js运行的参数，有特定值，错误参数会报错。
     2. 执行文件之后的是传递进执行文件使用的（`process.argv`），可以输入任意内容。
+
+    - 命令行执行eval字符串并打印：`node -p "「js代码文本」"`
 7. 返回的内容的属性值为`undefined`的，可能会把这个属性去除。
+8. 抓包Node.js发起的http/https请求
+
+    1. 本机全局代理到抓包软件、或用Proxifier等软件转发到抓包软件
+    2. 或 代码设置Node.js发起请求时通过代理转发
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >1. Node.js的`host`和`port`参数
+        >
+        >    ```javascript
+        >    const http = import("http");
+        >
+        >    const req = http.request(
+        >      {
+        >        port: "8899",       // 代理端口
+        >        host: '127.0.0.1',  // 代理地址
+        >
+        >        path: 路径,
+        >        method: "POST",
+        >        headers: {
+        >          "Content-Type": "application/json; charset=UTF-8",
+        >        },
+        >      },
+        >      (res) => {
+        >        res.setEncoding("utf8");
+        >        let body = "";
+        >        res.on("data", (chunk) => {
+        >          body += chunk || "";
+        >        });
+        >        res.on("end", () => {
+        >          console.log(body);       // body是POST请求后返回的响应body
+        >          // 返回接受完成
+        >        });
+        >      }
+        >    );
+        >
+        >    req.on("error", (e) => {
+        >      console.warn(e);
+        >    });
+        >
+        >    req.write(JSON.stringify({ a: "发起的请求body" })); // 保证：发起请求的body和请求头匹配
+        >    req.end();
+        >    ```
+        >2. [axios](https://github.com/axios/axios)的`proxy`参数
+        >3. [request](https://github.com/request/request)的`proxy`参数
+        ></details>
 
 ---
 ## 工具使用
