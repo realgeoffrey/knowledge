@@ -846,9 +846,28 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >  c: { c1: true, c2: "123" },
         >  cc: { c1: false, c2: 13 },
         >};
-        >
         >```
         ></details>
+
+        - 模版字面量类型
+
+            若在替换字符串的位置是联合类型，则结果类型是由每个联合类型成员构成的字符串字面量的集合。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```typescript
+            >type World = 'world';
+            >type Greeting = `hello ${World}`;  // -> 'hello world'
+            >
+            >
+            >type EmailLocaleIDs = 'welcome_email' | 'email_heading';
+            >type FooterLocaleIDs = 'footer_title' | 'footer_sendoff';
+            >type Id = 'id1' | 'id2'
+            >type AllLocaleIDs = `${EmailLocaleIDs | FooterLocaleIDs}_${Id}`;
+            >// -> "welcome_email_id1" | "email_heading_id1" | "footer_title_id1" | "footer_sendoff_id1" | "welcome_email_id2" | "email_heading_id2" | "footer_title_id2" | "footer_sendoff_id2"
+            >```
+            ></details>
 5. 枚举（Enum）
 
     用于取值被限定在一定范围内的场景。语义化、限制值的范围（只允许使用已定义的枚举名）。
@@ -1397,14 +1416,55 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
     16. `ThisType`
 
         >若使用，则需要开启`--noImplicitThis`。
+8. 操作固有字符串的类型
+
+    >这些类型内置于编译器之中，以便提高性能，它们不存在于~~TypeScript提供的`.d.ts`文件中~~。
+
+    1. `Uppercase<StringType>`
+
+        将字符串中的每个字符转换为大写字母。
+    2. `Lowercase<StringType>`
+
+        将字符串中的每个字符转换为小写字母。
+    3. `Capitalize<StringType>`
+
+        将字符串中的首字母转换为大写字母。
+    4. `Uncapitalize<StringType>`
+
+        将字符串中的首字母转换为小写字母。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```typescript
+    >// Uppercase改成Lowercase、Capitalize、Uncapitalize，均可行
+    >
+    >type Greeting = 'Hello, world';
+    >type ShoutyGreeting = Uppercase<Greeting>;  // -> "HELLO, WORLD"
+    >
+    >
+    >type ASCIICacheKey<Str extends string> = `ID-${Uppercase<Str>}`;
+    >type MainID = ASCIICacheKey<'my_app'>;  // -> "ID-MY_APP"
+    >```
+    ></details>
 
 #### 语法
 - 类型推论（Type Inference）
 
-    若没有明确的指定类型，则依照类型推论规则推断出一个类型：
+    若没有明确的指定类型，则依照类型推论规则推断出一个类型。
 
-    1. 若声明时有赋值，则推断成此赋值的类型。
-    2. 若声明时没赋值，则推断成`any`。
+    1. 最佳通用类型
+
+        1. 当需要从几个表达式中推断类型时，会使用这些表达式的类型来推断出一个最合适的通用类型。
+        2. （数组的情况下，）若没有找到最佳通用类型，则使用联合（数组）类型。
+
+        - 声明时
+
+            1. 若声明时有赋值，则推断成此赋值的类型。
+            2. 若声明时没赋值，则推断成`any`。
+    2. 上下文归类
+
+        通常包含：函数的参数，赋值表达式的右边，类型断言，对象成员，数组字面量，返回值语句。
 
 - 类型断言（Type Assertion）：
 
@@ -1491,6 +1551,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
     ><summary>e.g.</summary>
     >
     >```typescript
+    >// 1.
     >interface A {
     >  a: number;
     >}
@@ -1507,6 +1568,10 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
     >  c: false,
     >  d: 1,
     >};
+    >
+    >
+    >// 2.
+    >type X = string & (1 | '2' | true) // -> '2'
     >```
     ></details>
 

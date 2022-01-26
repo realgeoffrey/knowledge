@@ -708,7 +708,7 @@ sed默认读取整个文件并对每一行进行修改。
 -u          # 若遇到不存在的变量，则报错并停止执行。或：`-o nounset`
 +u          # 默认。取消`-u`的效果。或：`+o nounset`
 
--x          # 运行结果之前，先输出执行的那一行命令。或：`-o xtrace`
+-x          # 运行结果之前，先输出执行的那一行命令（用`+ 指令内容`的方式输出，环境变量`PS4`的值决定输出符号）。或：`-o xtrace`
 +x          # 默认。取消`-x`的效果。或：`+o xtrace`
 
 -e          # 脚本只要发生错误，就终止执行（管道）。或：`-o errexit`
@@ -736,6 +736,7 @@ sed默认读取整个文件并对每一行进行修改。
 #### （macOS）brew更新
 ```shell
 brew update && brew upgrade && brew upgrade --cask
+# 更新用brew安装的软件，也更新brew自身
 ```
 
 >brew cask可以安装大部分软件，使用`brew search 「软件名」`进行搜索（建议对非App Store安装的应用，都尝试用brew cask安装）。

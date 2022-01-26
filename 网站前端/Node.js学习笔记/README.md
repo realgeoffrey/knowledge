@@ -136,6 +136,8 @@ npm（Node Package Manager）。
 
                 1. 本地模块：`npm link`
 
+                    也支持bin。
+
                     - 取消：
 
                         本地模块：`npm unlink`
