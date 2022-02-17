@@ -534,15 +534,15 @@ feat(details): 添加了分享功能
 
     ```text
     [gitflow "branch"]
-    	master = master
-    	develop = develop
+        master = master
+        develop = develop
     [gitflow "prefix"]
-    	feature = feature/
-    	bugfix = bugfix/
-    	release = release/
-    	hotfix = hotfix/
-    	support = support/
-    	versiontag =
+        feature = feature/
+        bugfix = bugfix/
+        release = release/
+        hotfix = hotfix/
+        support = support/
+        versiontag =
     ```
     </details>
 
@@ -693,24 +693,24 @@ feat(details): 添加了分享功能
     **~/.ssh/config**文件添加
 
     ```text
-    Host 账户1.github.com
-    	HostName github.com
-    	User git
-    	IdentityFile ~/.ssh/「键1」
+    Host 账户1.github.com         # 别名（可任意取）
+        HostName github.com      # 别名替换成的真实服务器名
+        User git                 # 用户名@别名:仓库名1/仓库名2.git 的前缀：用户名
+        IdentityFile ~/.ssh/「键1」
 
     Host 账户2.github.com
-    	HostName github.com
-    	User git
-    	IdentityFile ~/.ssh/「键2」
+        HostName github.com
+        User git
+        IdentityFile ~/.ssh/「键2」
 
 
-    # 一个源下，若只有一个账户，则不需要额外修改
+    # 一个源下，若只有一个账户，则不需要额外的别名
     Host gitlab.xxx
         HostName gitlab.xxx
         User 「名字ID」
         IdentityFile ~/.ssh/「键3」
     ```
-3. 克隆仓库时修改**仓库地址**：
+3. 克隆仓库时把**仓库地址**的HostName改为别名：
 
     `git@github.com:账户/仓库.git` -> `git@账户.github.com:账户/仓库.git`
     ```git

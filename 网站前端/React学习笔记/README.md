@@ -1523,18 +1523,18 @@
     2. 注意内存泄漏（全局副作用）：手动绑定的事件（如：`addEventListener`）、订阅、计时器、http连接、以及任何需要手动关闭的内容，需要在`componentWillUnmount`手动清除。
 
     >`render`返回`null`时不会触发`componentWillUnmount`，只有组件被卸载才会触发。不应该调用 ~~`this.setState`~~，将永远不会重新渲染。
-9. `componentWillReceiveProps(nextProps)/UNSAFE_componentWillReceiveProps`
+9. `UNSAFE_componentWillReceiveProps(nextProps)/componentWillReceiveProps`
 
     1. 当`props`发生变化时执行；若父组件导致组件重新渲染，即使`props`没有更改，也会执行。
     2. 首次渲染时不执行。
     3. 此函数可以通过调用`this.setState()`来更新组件状态。
-10. `componentWillUpdate(nextProps, nextState)/UNSAFE_componentWillUpdate`
+10. `UNSAFE_componentWillUpdate(nextProps, nextState)/componentWillUpdate`
 
     1. 当组件收到新的`props`或`state`时，会在渲染之前执行。
     2. 首次渲染时不执行。
 
     >不可调用`this.setState`；在`componentWillUpdate`返回之前，你也不应该执行任何其他操作（例如，`dispatch` Redux的`action`）触发对React组件的更新。
-11. `componentWillMount()/UNSAFE_componentWillMount`
+11. `UNSAFE_componentWillMount()/componentWillMount`
 
     >唯一会在服务端渲染时调用的生命周期。避免引入任何副作用或订阅。
 12. 错误边界

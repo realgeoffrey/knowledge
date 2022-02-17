@@ -17,6 +17,7 @@
 1. [搜索算法](#搜索算法)
 
     1. [二分搜索](#二分搜索)
+    1. [特殊二分搜索](#特殊二分搜索)
 1. [其他算法](#其他算法)
 
     1. [数组去重](#数组去重)
@@ -48,11 +49,8 @@
 >    2. 空间复杂度。
 >
 >        渐进空间复杂度，用来表示算法的存储空间与数据规模之间的增长关系，反应的只是一个趋势。
->4. 线性时间：
->
->    一个被称为线性时间或`Ο(n)`时间的算法，表示此算法解题所需时间与输入资料的大小成线性比例。
->5. [数据结构](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#数据结构data-structure)
->6. 鉴别arr是否是数组：
+>4. [数据结构](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#数据结构data-structure)
+>5. 鉴别arr是否是数组：
 >
 >    ```javascript
 >    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是数组 */
@@ -496,6 +494,8 @@ function countingSort(arr) {
 ## 搜索算法
 
 ### 二分搜索
+>对于已经排序的数组，一般考虑使用二分搜索的方式解题。
+
 1. 循环：
 
     ```javascript
@@ -561,6 +561,80 @@ function countingSort(arr) {
 >        2. 若某一特定元素大于或小于中间元素，则在数组大于或小于中间元素的那一半中查找，并且也从中间元素开始比较。
 >        3. 若在某一步骤数组为空，则代表找不到。
 >2. 时间复杂度：O(log n)。
+
+### 特殊二分搜索
+```javascript
+/**
+ * 针对Number型递增数组，从前往后二分搜索，
+ * 若数组存在target则返回`true`；若不存在则返回 `大于target的数中最小的一个的数组下标`；若不存在大于target的数则返回 `false`
+ * @param {number[]} arr  递增数组
+ * @param {number} target 目标
+ * @param {number} [start = 0] 数组开始下标
+ * @param {number} [end = arr.length - 1] 数组结束下标
+ * @return {boolean | number}
+ */
+var hasTarget1 = function ({
+  arr = [],
+  target,
+  start = 0,
+  end = arr.length - 1,
+} = {}) {
+  let left = start;
+  let right = end;
+
+  let foundBigger = false;
+
+  while (left <= right) {
+    const middle = Math.floor((left + right) / 2);
+    if (arr[middle] > target) {
+      right = middle - 1;
+      foundBigger = middle;
+    } else if (arr[middle] < target) {
+      left = middle + 1;
+    } else {
+      return true;
+    }
+  }
+
+  return foundBigger;
+};
+
+
+/**
+ * 针对Number型递增数组，从后往前二分搜索，
+ * 若数组存在target则返回`true`；若不存在则返回 `小于target的数中最大的一个的数组下标`；若不存在大于target的数则返回 `false`
+ * @param {number[]} arr  递增数组
+ * @param {number} target 目标
+ * @param {number} [start = arr.length - 1] 数组开始下标
+ * @param {number} [end = 0] 数组结束下标
+ * @return {boolean | number}
+ */
+var hasTarget2 = function ({
+  arr = [],
+  target,
+  start = arr.length - 1,
+  end = 0,
+} = {}) {
+  let right = start;
+  let left = end;
+
+  let foundSmaller = false;
+
+  while (right >= left) {
+    const middle = Math.floor((right + left) / 2);
+    if (arr[middle] > target) {
+      right = middle - 1;
+    } else if (arr[middle] < target) {
+      left = middle + 1;
+      foundSmaller = middle;
+    } else {
+      return true;
+    }
+  }
+
+  return foundSmaller;
+};
+```
 
 ---
 ## 其他算法

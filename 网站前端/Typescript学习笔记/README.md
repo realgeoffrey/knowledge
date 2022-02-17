@@ -9,7 +9,7 @@
 
 ---
 ### [Typescript](https://github.com/microsoft/TypeScript)
->参考：[TypeScript 入门教程](https://github.com/xcatliu/typescript-tutorial)、[TypeScript使用手册](https://github.com/zhongsp/TypeScript)。
+>参考：[TypeScript 入门教程](https://github.com/xcatliu/typescript-tutorial)、[TypeScript 使用手册（中文版）翻译](https://github.com/zhongsp/TypeScript)。
 
 TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持。
 
@@ -162,7 +162,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >  readonly id: number
             >
             >  // 描述对象的属性
-            >  [x: string]: string | number | boolean // 必须包含：所有其他属性的类型的联合类型（|）
+            >  [x: string]: string | number | boolean | undefined // 必须包含：所有其他属性的类型的联合类型（|）
             >}
             >
             >let tom: Person = {
@@ -315,7 +315,8 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         2. 支持：函数声明、函数表达式。
         3. 支持：可选参数、默认参数、剩余参数。
 
-            可选参数 和 默认参数 不能同时设置。e.g. 不允许：~~`y?: number = 1`~~。
+            1. 可选参数 和 默认参数 不能同时设置。e.g. 不允许：~~`y?: number = 1`~~。
+            2. 设置 所有参数类型（空参数也满足）：`(...args: 数组类型)`。
         4. 引用函数传入的参数不允许多于或少于约定的参数数量（若有可选参数`?`、或默认参数`=`、或剩余参数`...`，则允许少传入参数）。
         5. 函数表达式可用`接口` 或 `对象`定义。
         6. 函数的参数和返回值可以根据`接口`进行类型推论。
@@ -400,7 +401,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >```
             ></details>
 
-        - 显示定义
+        - 显式定义
 
             1. `: 参数类型 => 返回类型`
             2. `: Function`
@@ -694,7 +695,9 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
     - `extends`
 
-        接口继承
+        >与`class-extends`的不完全一致。
+
+        接口继承。`interface B extends A`理解为：B可以赋值给A（概括下面的`继承`+`重载`）。
 
         1. 接口继承`接口`
 
@@ -771,10 +774,24 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
                 >}
                 >```
                 ></details>
+        3. 接口继承`别名`
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```typescript
+            >type Name = {
+            >  name: string;
+            >}
+            >interface User extends Name {
+            >  age: number;
+            >}
+            >```
+            ></details>
 
     - 支持重载、合并
 
-        同名的interface会自动合并。
+        同名的interface会自动合并（`type`不可以有同名的定义）。
 
         1. 接口中的属性在合并时会简单的合并到一个接口中
 
@@ -799,76 +816,115 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
             >}
             >```
             ></details>
-4. `type`
+4. 类型别名
 
-    1. 类型别名
+    >类型别名和`接口`有时很像，但可以作用于 原始值、联合类型、元组以及其它任何需要手写的类型（`接口`仅定义 对象、数组、函数）。
+
+    `type`：与其原始的类型完全一致；它们只是简单的替代名。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```typescript
+    >type Name = string
+    >type NameResolver = () => string
+    >type NameOrResolver = Name | NameResolver
+    >function getName(n: NameOrResolver): Name {
+    >    if (typeof n === 'string') {
+    >        return n
+    >    } else {
+    >        return n()
+    >    }
+    >}
+    >```
+    ></details>
+
+    1. 起别名不会新建一个类型，仅创建了一个新名字来引用那个类型
+    2. 可以使用类型别名来在属性里引用自己（`接口`不可以）
 
         ><details>
         ><summary>e.g.</summary>
         >
         >```typescript
-        >type Name = string
-        >type NameResolver = () => string
-        >type NameOrResolver = Name | NameResolver
-        >function getName(n: NameOrResolver): Name {
-        >    if (typeof n === 'string') {
-        >        return n
-        >    } else {
-        >        return n()
-        >    }
+        >type Tree<T> = {
+        >  value: T;
+        >  left: Tree<T>;
+        >  right: Tree<T>;
         >}
+        >
+        >type LinkedList<T> = T & { next: LinkedList<T> };
         >```
         ></details>
-    2. 字面量类型
+    3. 扩展用`&`（`接口`用`extends`）
 
         ><details>
         ><summary>e.g.</summary>
         >
         >```typescript
-        >type aa = "ease-in" | "ease-out" | "ease-in-out";
-        >type bb = 8 | 16 | 32;
-        >type cc = { c1: true; c2: string } | { c1: false; c2: number };
-        >
-        >interface MapType {
-        >  a: "ease-in" | "ease-out" | "ease-in-out";
-        >  aa: aa;
-        >  b: 8 | 16 | 32;
-        >  bb: bb;
-        >  c: { c1: true; c2: string } | { c1: false; c2: number };
-        >  cc: cc;
+        >type Name1 = {
+        >  name: string;
         >}
+        >type User1 = Name1 & { age: number; };
         >
-        >const obj: MapType = {
-        >  a: "ease-in",
-        >  aa: "ease-in",
-        >  b: 8,
-        >  bb: 8,
-        >  c: { c1: true, c2: "123" },
-        >  cc: { c1: false, c2: 13 },
-        >};
+        >
+        >interface Name2 {
+        >  name: string;
+        >}
+        >type User2 = Name2 & { age: number; };
         >```
         ></details>
+5. 字面量类型
 
-        - 模版字面量类型
+    一个字面量是一个集体类型（字符串、数字、布尔值）中更为具体的一种子类型。通过使用字面量类型，可以规定一个字符串、数字或布尔值必须含有的确定值。
 
-            若在替换字符串的位置是联合类型，则结果类型是由每个联合类型成员构成的字符串字面量的集合。
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```typescript
+    >type aa = "ease-in" | "ease-out" | "ease-in-out";
+    >type bb = 8 | 16 | 32;
+    >type cc = { c1: true; c2: string } | { c1: false; c2: number };
+    >
+    >interface MapType {
+    >  a: "ease-in" | "ease-out" | "ease-in-out";
+    >  aa: aa;
+    >  b: 8 | 16 | 32;
+    >  bb: bb;
+    >  c: { c1: true; c2: string } | { c1: false; c2: number };
+    >  cc: cc;
+    >}
+    >
+    >const obj: MapType = {
+    >  a: "ease-in",
+    >  aa: "ease-in",
+    >  b: 8,
+    >  bb: 8,
+    >  c: { c1: true, c2: "123" },
+    >  cc: { c1: false, c2: 13 },
+    >};
+    >```
+    ></details>
 
-            ><details>
-            ><summary>e.g.</summary>
-            >
-            >```typescript
-            >type World = 'world';
-            >type Greeting = `hello ${World}`;  // -> 'hello world'
-            >
-            >
-            >type EmailLocaleIDs = 'welcome_email' | 'email_heading';
-            >type FooterLocaleIDs = 'footer_title' | 'footer_sendoff';
-            >type Id = 'id1' | 'id2'
-            >type AllLocaleIDs = `${EmailLocaleIDs | FooterLocaleIDs}_${Id}`;
-            >// -> "welcome_email_id1" | "email_heading_id1" | "footer_title_id1" | "footer_sendoff_id1" | "welcome_email_id2" | "email_heading_id2" | "footer_title_id2" | "footer_sendoff_id2"
-            >```
-            ></details>
-5. 枚举（Enum）
+    - 模版字面量类型
+
+        若在替换字符串的位置是联合类型，则结果类型是由每个联合类型成员构成的字符串字面量的集合。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >type World = 'world';
+        >type Greeting = `hello ${World}`;  // -> 'hello world'
+        >
+        >
+        >type EmailLocaleIDs = 'welcome_email' | 'email_heading';
+        >type FooterLocaleIDs = 'footer_title' | 'footer_sendoff';
+        >type Id = 'id1' | 'id2'
+        >type AllLocaleIDs = `${EmailLocaleIDs | FooterLocaleIDs}_${Id}`;
+        >// -> "welcome_email_id1" | "email_heading_id1" | "footer_title_id1" | "footer_sendoff_id1" | "welcome_email_id2" | "email_heading_id2" | "footer_title_id2" | "footer_sendoff_id2"
+        >```
+        ></details>
+6. 枚举（Enum）
 
     用于取值被限定在一定范围内的场景。语义化、限制值的范围（只允许使用已定义的枚举名）。
 
@@ -1075,7 +1131,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >func(); // => '0' => '1' => 'top' => 'down'
         >```
         ></details>
-6. 泛型（Generics）
+7. 泛型（Generics）
 
     `名称<类型名>其他内容`
 
@@ -1107,7 +1163,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
         1. 定义：类型变量/泛型变量（用任意的非保留关键字）
         2. 赋值：传入类型，可以是自定义类型，可以是类型推论
-    2. 泛型接口、泛型类型别名（`type`）
+    2. 泛型接口、泛型类型别名
 
         ><details>
         ><summary>e.g.</summary>
@@ -1200,7 +1256,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >getProperty({ a: 1 }, "m"); // 报错
         >```
         ></details>
-7. 内置类型别名
+8. 内置类型别名
 
     >来自：[lib.es5.d.ts](https://github.com/microsoft/TypeScript/blob/master/lib/lib.es5.d.ts#L1455)、[typescript: Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html)。
 
@@ -1416,7 +1472,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
     16. `ThisType`
 
         >若使用，则需要开启`--noImplicitThis`。
-8. 操作固有字符串的类型
+9. 操作固有字符串的类型
 
     >这些类型内置于编译器之中，以便提高性能，它们不存在于~~TypeScript提供的`.d.ts`文件中~~。
 
@@ -1792,9 +1848,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
 - `类型1 extends 类型2 ? 类型3 : 类型4`
 
-    >`extends`可用于：interface去继承另一个interface或类，泛型约束。
-
-    有条件类型：若 类型1可以赋值给类型2 （或？ 类型1是类型2的扩展），则返回类型 类型3，否则返回 类型4。
+    有条件类型：若 类型1可以赋值给类型2（或 类型1是类型2的extends），则返回类型 类型3，否则返回 类型4。
 
     ><details>
     ><summary>e.g.</summary>
@@ -1807,6 +1861,7 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
     >type W1 = W<number>;                               // -> 'yes'
     >type W2 = W<1>;                                    // -> 'yes'
     >type W3 = W<W1>;                                   // -> string
+    >type W4 = W<number | boolean | string>;            // -> string
     >
     >
     >class A {

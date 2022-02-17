@@ -167,7 +167,7 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
         URL resType://「text/plain、text/html、image/png、等」
         ```
 
-    - 所有协议均支持以下匹配方式
+    - 所有协议均支持以下[匹配方式](https://wproxy.org/whistle/pattern.html)
 
         1. 域名（端口号、请求协议）
         2. 路径
@@ -175,10 +175,26 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
         4. 精确匹配（`$`开头）
         5. 通配符匹配（`^`、`$`、`*`）
 
-            支持`$0`到`$9`获取通配符。
-3. **Values**
+            1. 通配域名匹配：
+
+                ```test
+                # 匹配二级域名以 .com 结尾的所有url，如: test.com, abc.com，但不包含 *.xxx.com
+                *.com file:///User/xxx/test
+                //*.com file:///User/xxx/test
+
+                # 匹配 test.com 的子域名，不包括 test.com
+                # 也不包括诸如 *.xxx.test.com 的四级域名，只能包含: a.test.com，www.test.com 等test.com的三级域名
+                *.test.com file:///User/xxx/test
+                //*.test.com file:///User/xxx/test
+
+                # 如果要配置所有子域名生效，可以使用 **
+                **.com file:///User/xxx/test
+                **.test.com file:///User/xxx/test
+                ```
+
+4. **Values**
 
     配置resPrepend、log等协议中添加的`{变量名}`的HTML内容或JS脚本。
-4. **Network**
+5. **Network**
 
     查看右边`log->console`抓取的页面console信息（需要设置**Rules**的log协议）。

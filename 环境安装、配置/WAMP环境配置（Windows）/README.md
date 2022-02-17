@@ -6,35 +6,35 @@
 
 1. 安装
 
-	安装接近尾声时会提示选择程序打开的**浏览器**和**文本编辑器**。
+    安装接近尾声时会提示选择程序打开的**浏览器**和**文本编辑器**。
 2. 调整语言
 
-	程序安装好并启动，右击系统托盘中WampServer图标，选择：**language -> chinese**。
+    程序安装好并启动，右击系统托盘中WampServer图标，选择：**language -> chinese**。
 3. 配置 www 目录
 
-	1. 进入程序所在的文件夹，找到 *路径\wamp\scripts* 下的 **config.inc.php**：
+    1. 进入程序所在的文件夹，找到 *路径\wamp\scripts* 下的 **config.inc.php**：
 
-	    文本打开并找到`$wwwDir`（默认：安装目录的 www 文件夹），修改为自定义位置`$wwwDir = 'E:/www'`，如图：
+        文本打开并找到`$wwwDir`（默认：安装目录的 www 文件夹），修改为自定义位置`$wwwDir = 'E:/www'`，如图：
 
-	    ![WAMP图](./images/1.png)
+        ![WAMP图](./images/1.png)
 
-	    >注意：Windows 里的文件夹为`E:\www`，这里的是 `E:/www`，斜线方向有区别。
-	2. 保存文件，退出Wamp再次进入即可生效。
+        >注意：Windows 里的文件夹为`E:\www`，这里的是 `E:/www`，斜线方向有区别。
+    2. 保存文件，退出Wamp再次进入即可生效。
 
-	    左击系统托盘中的WampServer，选择 **www 目录** 菜单项后就会打开设置好的目录。
+        左击系统托盘中的WampServer，选择 **www 目录** 菜单项后就会打开设置好的目录。
 
-	    >请先确保系统中存在此文件夹。
+        >请先确保系统中存在此文件夹。
 4. 配置 Apache Web 服务器
 
-	1. 设置主目录
+    1. 设置主目录
 
-	    左击系统托盘中的WampServer，选择 **Apache -> httpd.conf** 配置文件：
+        左击系统托盘中的WampServer，选择 **Apache -> httpd.conf** 配置文件：
 
-	    1. 找到`DocumentRoot`，设置为`DocumentRoot "E:/www"`。
-	    2. 找到`<Directory "${INSTALL_DIR}/www/">`，设置为`<Directory "E:/www/">`。
+        1. 找到`DocumentRoot`，设置为`DocumentRoot "E:/www"`。
+        2. 找到`<Directory "${INSTALL_DIR}/www/">`，设置为`<Directory "E:/www/">`。
 
-	    ![WAMP图](./images/2.png)
-	2. 启动
+        ![WAMP图](./images/2.png)
+    2. 启动
 
         若Apache没有启动，则左击系统托盘中的WampServer：选择 **Apache -> Service administration -> 安装服务**再选择**启动/继续服务**：
 
@@ -53,11 +53,11 @@
     ![WAMP图](./images/3.png)
 6. 配置 MySQL 数据库
 
-	左击系统托盘中的WampServer，选择 **phpMyAdmin** 。
+    左击系统托盘中的WampServer，选择 **phpMyAdmin** 。
 
-	>默认：用户为`root`、密码为空。
+    >默认：用户为`root`、密码为空。
 7. 配置 虚拟主机
-	1. 左击系统托盘中的WampServer，选择 **Apache -> httpd-vhosts.conf** 配置文件：
+    1. 左击系统托盘中的WampServer，选择 **Apache -> httpd-vhosts.conf** 配置文件：
 
         1. 配置localhost虚拟主机：
 
@@ -70,8 +70,8 @@
                     Require all granted
                 </Directory>
             </VirtualHost>
-		    ```
-		2. 在默认配置后面添加新的虚拟主机：
+            ```
+        2. 在默认配置后面添加新的虚拟主机：
 
             ```text
             <VirtualHost *:80>
@@ -80,15 +80,15 @@
             </VirtualHost>
             ```
 
-		    >在www文件内新建demo文件夹，再在demo文件夹内新建123.me文件夹。
+            >在www文件内新建demo文件夹，再在demo文件夹内新建123.me文件夹。
 
         ![WAMP图](./images/4.png)
-	2. 打开 *C:\WINDOWS\system32\drivers\etc* 下的 **hosts**，增加代码：
+    2. 打开 *C:\WINDOWS\system32\drivers\etc* 下的 **hosts**，增加代码：
 
-		```text
-		127.0.0.1 123.me
-		```
-	3. 重启Apache，虚拟主机配置成功。
+        ```text
+        127.0.0.1 123.me
+        ```
+    3. 重启Apache，虚拟主机配置成功。
 8. 在APACHE服务器上的访问方式上去除**index.php**
 
     在项目代码的根目录中新建`.htaccess`文件，添加：
@@ -120,4 +120,4 @@
         ```
 10. 后续
 
-	升级Chrome之后导致出现 Aestan Tray Menu 找不到有效路径问题，查看 `路径\wamp` 下的 **wampmanager.ini** 和 **wampmanager.conf**，把里面所有Chrome浏览器错误路径修改为现在正确路径，再关闭wamp，重启即解决问题。
+    升级Chrome之后导致出现 Aestan Tray Menu 找不到有效路径问题，查看 `路径\wamp` 下的 **wampmanager.ini** 和 **wampmanager.conf**，把里面所有Chrome浏览器错误路径修改为现在正确路径，再关闭wamp，重启即解决问题。

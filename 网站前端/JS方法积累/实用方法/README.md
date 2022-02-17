@@ -41,6 +41,10 @@
         1. [判断版本号是否在某个版本区间（纯数字）](#原生js判断版本号是否在某个版本区间纯数字)
         1. [判断检索内容是否在被检索内容的分隔符间](#原生js判断检索内容是否在被检索内容的分隔符间)
         1. [格式化文件大小](#原生js格式化文件大小)
+    1. 数组操作
+
+        1. [分割数组](#原生js分割数组)
+        1. [数组去重](#原生js数组去重)
     1. 功能
 
         1. [用请求图片作log统计](#原生js用请求图片作log统计)
@@ -56,7 +60,6 @@
         1. [单词首字母大写](#原生js单词首字母大写)
         1. [展示页面帧数](#原生js展示页面帧数)
         1. [获取星座](#原生js获取星座)
-        1. [分割数组](#原生js分割数组)
         1. [加入收藏夹](#原生js加入收藏夹)
         1. [从字符串中获取绝对路径](#原生js从字符串中获取绝对路径)
         1. [不传递请求头的Referrer进行跳转](#原生js不传递请求头的referrer进行跳转)
@@ -67,7 +70,6 @@
         1. [执行方法的前/后进行开/关loading](#原生js执行方法的前后进行开关loading)
         1. [点击下载](#原生js点击下载)
         1. [获取对象指定深度属性](#原生js获取对象指定深度属性)
-        1. [数组去重](#原生js数组去重)
         1. [写入剪切板](#原生js写入剪切板)
         1. [默认图组件](#react默认图组件)
     1. 提升性能
@@ -1602,15 +1604,85 @@ function fileSize (bytes = 0) {
 fileSize(数字)
 ```
 
-### *原生JS*单词首字母大写
+### *原生JS*分割数组
 ```javascript
-function upperCaseWord(str) {
+/**
+ * 分割数组，并以嵌套数组形式返回
+ * @param {Array} arr - 数组
+ * @param {Number} [divisor = 1] - 分割除数
+ * @returns {Array} newArr - 如：[[0, 1, 2], [3, 4, 5], [6]]
+ */
+function divideArr(arr, divisor) {
+    divisor = divisor || 1;
+    arr = arr.slice();  // 浅复制
 
-    return str.replace(/\b[a-zA-Z]/g, function (match) {
+    var newArr = [];    // 数组中嵌套数组的形式返回
+    var tempArr = [];   // 临时数组
 
-        return match.toUpperCase();
-    });
+    while (arr.length > 0) {
+        for (var i = 0; i < divisor && arr.length > 0; i++) {
+            tempArr.push(arr.shift());
+        }
+        newArr.push(tempArr);
+        tempArr = [];
+    }
+
+    return newArr;
 }
+```
+
+### *原生JS*数组去重
+```javascript
+/**
+ * 获取对象指定深度属性
+ * @param {Object} data - 要处理的对象
+ * @param {Array} path - 路径深度
+ * @returns temp - 属性值
+ */
+function getNestedValue(data, path = []) {
+  let temp = data;
+  for (let i = 0, length = path.length; i < length; i++) {
+    temp = temp[path[i]];
+  }
+  return temp;
+}
+
+/**
+ * 数组去重
+ * @param {Array} arr - 要处理的数组
+ * @param {Array} path - 路径深度
+ * @returns 去重后的数组
+ */
+function deduplicateArray (arr, path = []) {
+  if (path.length > 0) {
+    const newArr = [];
+    return arr.filter((data) => {
+      const id = getNestedValue(data, path);
+      if (newArr.includes(id)) {
+        return false;
+      } else {
+        newArr.push(id);
+        return true;
+      }
+    });
+  } else {
+    return Array.from(new Set(arr));
+  }
+}
+
+
+/* 使用测试 */
+deduplicateArray( // [id从1到4的对象]
+  [
+    { id: 1, text: "aaaaa" },
+    { id: 2, text: "bbbb" },
+    { id: 3, text: "cccc" },
+    { id: 1, text: "dddd" },
+    { id: 4, text: "eeee" }
+  ],
+  ["id"]
+);
+deduplicateArray([1, 2, 3, 1, 4]);    // [1, 2, 3, 4]
 ```
 
 ### *原生JS*用请求图片作log统计
@@ -2114,6 +2186,17 @@ xhr.send(null);
 
     >CSS代码文本，如：`div {background-color: yellow;}`。
 
+### *原生JS*单词首字母大写
+```javascript
+function upperCaseWord(str) {
+
+    return str.replace(/\b[a-zA-Z]/g, function (match) {
+
+        return match.toUpperCase();
+    });
+}
+```
+
 ### *原生JS*展示页面帧数
 ```javascript
 /**
@@ -2219,33 +2302,6 @@ function getConstellation (birthday) {
 >/* 使用测试 */
 >monthFormat(new Date().getMonth())
 >```
-
-### *原生JS*分割数组
-```javascript
-/**
- * 分割数组，并以嵌套数组形式返回
- * @param {Array} arr - 数组
- * @param {Number} [divisor = 1] - 分割除数
- * @returns {Array} newArr - 如：[[0, 1, 2], [3, 4, 5], [6]]
- */
-function divideArr(arr, divisor) {
-    divisor = divisor || 1;
-    arr = arr.slice();  // 浅复制
-
-    var newArr = [];    // 数组中嵌套数组的形式返回
-    var tempArr = [];   // 临时数组
-
-    while (arr.length > 0) {
-        for (var i = 0; i < divisor && arr.length > 0; i++) {
-            tempArr.push(arr.shift());
-        }
-        newArr.push(tempArr);
-        tempArr = [];
-    }
-
-    return newArr;
-}
-```
 
 ### *原生JS*加入收藏夹
 ```javascript
@@ -2745,54 +2801,6 @@ function getNestedValue(data, path = []) {
 
 /* 使用测试 */
 getNestedValue({a: {b: 'cc'}}, ['a', 'b'])  // 'cc'
-```
-
-### *原生JS*数组去重
-```javascript
-function getNestedValue(data, path = []) {
-  let temp = data;
-  for (let i = 0, length = path.length; i < length; i++) {
-    temp = temp[path[i]];
-  }
-  return temp;
-}
-
-/**
- * 数组去重
- * @param {Array} arr - 要处理的数组
- * @param {Array} path - 路径深度
- * @returns 去重后的数组
- */
-function deduplicateArray (arr, path = []) {
-  if (path.length > 0) {
-    const newArr = [];
-    return arr.filter((data) => {
-      const id = getNestedValue(data, path);
-      if (newArr.includes(id)) {
-        return false;
-      } else {
-        newArr.push(id);
-        return true;
-      }
-    });
-  } else {
-    return Array.from(new Set(arr));
-  }
-}
-
-
-/* 使用测试 */
-deduplicateArray( // [id从1到4的对象]
-  [
-    { id: 1, text: "aaaaa" },
-    { id: 2, text: "bbbb" },
-    { id: 3, text: "cccc" },
-    { id: 1, text: "dddd" },
-    { id: 4, text: "eeee" }
-  ],
-  ["id"]
-);
-deduplicateArray([1, 2, 3, 1, 4]);    // [1, 2, 3, 4]
 ```
 
 ### *原生JS*写入剪切板

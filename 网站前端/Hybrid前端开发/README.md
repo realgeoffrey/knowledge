@@ -144,7 +144,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         2. Android
 
             ```javascript
-            location.href = '自定义URL Scheme';	  // 也可以用`<iframe>`
+            location.href = '自定义URL Scheme';    // 也可以用`<iframe>`
 
             var start = Date.now();
             setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）（浏览器非激活时，定时器执行时间会变慢/主线程被占用，所以会大于定时器时间之后才执行定时器内回调）

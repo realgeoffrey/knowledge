@@ -2518,7 +2518,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             >
             >// 错误页面操作
             >this.$router.replace(this.$route.query.指定query || '/')    // 刷新
-            >this.$router.back()                                        // 回退
+            >this.$router.back()                                        // 后退
             >this.$router.replace('/')                                  // 返回首页
             >```
             ></details>

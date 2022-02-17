@@ -360,9 +360,16 @@
     2. `AsyncStorage`
 
         异步、持久化的键-值存储系统
+
+        1. hippy
+
+            返回Promise实例。
+        2. h5
+
+            返回与`window.localStorage`一致。
     3. `BackAndroid`
 
-        监听Android实体键的回退，在退出前做操作或拦截实体键的回退
+        监听Android实体键的back，在退出前做操作或拦截
 
         1. 开启：`BackAndroid.addListener(方法名)`
         2. 关闭：`BackAndroid.removeListener(方法名)`

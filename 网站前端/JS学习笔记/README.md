@@ -462,7 +462,7 @@
         ></details>
     2. 箭头函数
 
-        不会创建自己的`this`（所以不会使用非箭头函数的规则），根据[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)向上遍历查找直到非箭头函数定义的`this`或全局对象；若找到`this`，则再根据非箭头函数的方式决定取值。
+        不会创建自己的`this`（所以不会使用非箭头函数的规则），根据[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)向上遍历查找直到非箭头函数定义的`this`或全局对象（严格模式为undefined）；若找到`this`，则再根据非箭头函数的方式决定取值。
 
         >看上去就像：使用封闭执行上下文最近的一个`this`值。
 
@@ -3045,11 +3045,11 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     ></script>
     >```
     ></details>
-14. （非打开新窗口的、非`history.pushState/replaceState`改变路由的）页面回退
+14. （非打开新窗口的、非`history.pushState/replaceState`改变路由的）页面后退
 
-    `if (document.referrer !== '') { history.back() } else { /* 回退到底的其他行为 */ }`
+    `if (document.referrer !== '') { history.back() } else { /* 后退到底的其他行为 */ }`
 
-    >1. 若是新打开的窗口（`target="_blank"`），则会出现`document.referrer`有值，但`history.back()`已回退到底。
+    >1. 若是新打开的窗口（`target="_blank"`），则会出现`document.referrer`有值，但`history.back()`已后退到底。
     >2. 若是`history.pushState/replaceState`改变路由，则不改变`document.referrer`（可能初始`document.referrer === ''`）。
     >3. 重新请求当前页面链接（如：`location.reload()`、或点击`<a href="当前页面链接">`），会导致`document.referrer === '当前页面链接'`。
 15. 使用`encodeURIComponent/decodeURIComponent`仅处理URI中的query属性名和属性值；使用`encodeURI/decodeURI`处理整个URI；不要使用 ~~`escape/unescape`~~（已废弃）
@@ -3916,6 +3916,8 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         >1. `.attributes`展示此DOM对象的所有`attribute`
         >2. `.getAttribute/setAttribute/removeAttribute/hasAttribute/toggleAttribute`操作`attribute`
     2. `properties`：DOM对象的属性。
+
+    >浏览器的 前进/后退/重新打开关闭的标签页（~~刷新~~不行），会进行：重新下载HTML后进行常规的[解析HTML-加载资源-渲染](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面解析渲染步骤)，但会尝试恢复之前页面的`properties`（包括页面滚动、每个DOM对象的`properties`、等）。仅针对文档对象模型（DOM构造），不包括`attributes`；仅针对新加载出来页面能匹配之前页面的部分，新增的DOM没有匹配。
 2. 当一个DOM节点为某个HTML标签所创建时，其大多数`properties`与对应`attributes`拥有相同或相近的名字，但并非一对一的关系：
 
     >浏览器在加载页面之后会对页面中的标签进行解析，并生成与之相符的DOM对象，每个标签中都可能包含一些属性。若这些属性是[标准属性](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Attributes)，则解析生成的DOM对象中也会包含与之对应的属性。
@@ -3962,7 +3964,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
       // 获取：HTML上属性的值
       // 设置：若没有使用①设置值，则可以仅把关闭设置为打开、无法把打开设置为关闭（removeAttribute可以关闭）；
       //    若使用①设置过，则仅设置HTML上属性的值、不会真的改变显示效果
-      dom.getAttribute('checked'); // 设置 dom.setAttribute('checked', 值)
+      dom.getAttribute('checked'); // 设置 dom.setAttribute('checked', 值)；去除 dom.removeAttribute('checked')
     </script>
     ```
 
