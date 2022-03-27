@@ -1264,13 +1264,12 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
         等价于：`setTimeout(func, 0)`。
 
-    ><details>
-    ><summary><code>setInterval</code>、<code>setTimeout</code>有最短延迟时间、最长延迟时间</summary>
+
+    >`setInterval`、`setTimeout`有最短延迟时间、最长延迟时间：
     >
     >1. 最短延迟时间大概是>4ms（从其他地方调用`setInterval`，或在嵌套函数达到特定深度时调用`setTimeout`）。
     >2. 若处于未激活窗口，则最短延迟时间可能扩大到>1000ms。
     >3. 有最大延迟时间，若延迟时间设置>`Math.pow(2, 31) - 1`ms，则延时溢出导致立即执行回调函数。
-    ></details>
 2. 重绘函数（`requestAnimationFrame`）
 
     >[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
@@ -1879,6 +1878,9 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         只能发送GET请求，无法访问服务器的响应文本。只能浏览器向服务器单向通信。
 
         >常用来[统计](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用请求图片作log统计)。
+    4. 通过代理服务器转发请求
+
+        通过成功访问代理服务器，利用代理服务器转发请求获得数据后（同源策略仅限于浏览器）再返回给浏览器。
 
 ### Web Storage && cookie
 >1. 因为HTTP请求都会携带cookie，因此cookie最好仅用于服务端判定状态。

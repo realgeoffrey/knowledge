@@ -127,6 +127,9 @@
                 3. 低版本Android机可能不支持`opacity`效果，可能导致整个文本渲染消失
 
                     用字体颜色`color: rgba(x,y,z, 透明度)`来代替。
+                4. 渲染变化的节点，如果没有加`style`，会被渲染为空。
+
+                    强制加上`style`设置一些样式内容。
             2. 仅有`<Text>`有不同截断效果（ellipsizeMode），其他组件需要自己实现（计算字符数，结尾自己添加`...`或图片覆盖）。
             3. 不包裹在`<Text>`内的文字内容，无法渲染新值，只能展示首次渲染值。
             4. 文本若不设置`lineHeight`（或`height`），可能导致渲染出的行高影响整体渲染，甚至影响祖父元素的高度或间距，无法达到确定的"稳定状态"。
@@ -423,8 +426,10 @@
         `import { UIManagerModule } from "@hippy/react"`
     2. 自定义模块
 
-        `import { callNative, callNativeWithPromise } from "@hippy/react"`
-3. 手势系统（点击事件、触屏事件）
+        1. 与Native通信方式（`桥协议`、JSI）：`import { callNative, callNativeWithPromise } from "@hippy/react"`
+
+            >H5与Native通信方式：[`桥协议`或`自定义URL Scheme` + WebView提供给Native调用的全局回调函数（或匿名函数）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Hybrid前端开发/README.md#native提供给hybrid宿主环境webview)。
+4. 手势系统（点击事件、触屏事件）
 
     所有组件（或自定义组件）均支持监听手势系统（点击事件、触屏事件）。
 
@@ -485,7 +490,7 @@
                 2. 若父级组件在设置`onInterceptTouchEvent`为`true`之前，子级组件已经在处理触屏事件，则子级组件将收到一次`onTouchCancel`回调（如果子控件有注册该函数）。
             2. `false`（默认）：不拦截
         2. `onInterceptPullUpEvent`（貌似还未实现？）
-4. 终端事件
+5. 终端事件
 
     ```jsx
     import { HippyEventEmitter } from '@hippy/react';
@@ -498,7 +503,7 @@
     # 事件卸载
     this.call.remove();
     ```
-5. 样式
+6. 样式
 
     >1. Hippy的还原设计稿方案，与客户端的方案基本一致：[适配布局（与设计师协作思路）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/还原设计稿/README.md#适配布局与设计师协作思路)。
     >2. [React Native样式](https://reactnative.dev/docs/style)的子级。

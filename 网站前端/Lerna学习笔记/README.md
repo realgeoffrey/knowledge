@@ -91,6 +91,8 @@
     8. `lerna add`
 
         向匹配的包添加依赖关系
+
+        >建议改成：`yarn workspace 「包内的package.json的name」 add 「依赖库」`
     9. `lerna clean`
 
         从所有包中删除node_modules目录

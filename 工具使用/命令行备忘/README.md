@@ -356,6 +356,8 @@ vi ~/.zshrc         # zsh
     killall 「名称」
     ```
 
+    >当macOS手势突然失效，尝试`killall Dock`。
+
 #### 查看端口占用，杀掉进程
 1. macOS、Linux
 
@@ -536,6 +538,11 @@ unalias 「自定义命令名」    # 删除 别名
     # 需要打开了「GPU呈现模式分析」为「在adb shell dumpsys gfxinfo中」
     adb shell dumpsys gfxinfo 「PACKAGE_NAME」
     adb shell dumpsys gfxinfo 「PACKAGE_NAME」 framestats
+    ```
+6. 安装本地包
+
+    ```shell
+    adb install 「包地址」
     ```
 
 #### `nohup`

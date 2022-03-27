@@ -109,7 +109,8 @@
         17. `yarn versions`
         18. `yarn why`
         19. `yarn workspace`
-        20. `yarn login`、`yarn publish`、`yarn logout`
+        20. `yarn workspaces`
+        21. `yarn login`、`yarn publish`、`yarn logout`
 
             发布相关。
-        21. `yarn help`
+        22. `yarn help`
