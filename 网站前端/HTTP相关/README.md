@@ -596,13 +596,15 @@
 
 只缓存GET请求。
 
-1. 强缓存（本地缓存）
+1. 强缓存（本地缓存，Freshness）
 
     浏览器加载资源时，先根据这个资源之前响应头的`Expires`、`Cache-Control`判断它是否命中强缓存（判断是否到了过期时间）。
 
     1. 命中状态码：
 
         `200 OK (from 某某 cache)`
+
+        >Chrome的DevTools的Network会显示该资源的Request Headers：`Provisional headers are shown.`
     2. 利用之前HTTP response header返回的`Expires`和`Cache-Control`
 
         >`Cache-Control`的优先级高于`Expires`（当服务器同时使用时，忽略~~Expires~~）。
@@ -635,7 +637,13 @@
                 2. 若没有命中缓存，发请求到服务器，根据响应头更新这个资源的Cache-Control。
 
     >建议：[配置超长时间的本地缓存；采用文件的数字签名（如：MD5）作为缓存更新依据](https://github.com/fouber/blog/issues/6)。
-2. 协商缓存
+
+    - 启发式缓存（Heuristic Freshness）
+
+        >只有在服务端没有返回明确的缓存策略时才会激活浏览器的启发式缓存策略。
+
+        若一个资源响应头未设置 ~~`Expires`~~、~~`Cache-Control`~~，但响应头有设置`Last-Modified`信息，则浏览器会有一个默认的缓存策略（效果、状态码等，与 强缓存 一致），缓存时间：`(响应头的Date - 响应头的Last-Modified) * 0.1`。
+2. 协商缓存（Validation）
 
     若没有命中强缓存，浏览器发送一个请求到服务器，服务端根据这个资源的`If-Modified-Since`（`Last-Modified`）、`If-None-Match`（`ETag`）判断它是否命中协商缓存（判断缓存资源和服务端资源是否一致）。
 
@@ -686,8 +694,6 @@
             3. 某些服务器不能精确地得到文件最后修改时间。
 
         因此具体某个资源只需运用ETag或Last-Modified的两者之一。
-
-todo: 启发式缓存
 
 - 强缓存与协商缓存的联系：
 
