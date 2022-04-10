@@ -1455,6 +1455,8 @@
     >避免引入任何副作用或订阅。
 2. `static getDerivedStateFromProps(props, state)`
 
+    >`this`指向类名，不指向~~实例~~。
+
     1. 调用`render`方法之前调用。
     2. 唯一作用：让组件在`props`变化时更新`state`、`state`的值在任何时候都取决于`props`（需要开发者自行判断）。
 
@@ -1491,6 +1493,8 @@
 >[React：你可能不需要使用派生 state](https://zh-hans.reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html)
 
 3. `shouldComponentUpdate(nextProps, nextState)`
+
+    >`this.props`和`this.state`都是当前值（未改变的，不是 ~~`nextProps`~~、~~`nextState`~~）。调用组件方法`this.func`，组件方法用当前值，若需要用next值，要用传参的方式`this.func(nextProps, nextState)`或`其他方法(nextProps, nextState)`。
 
     1. 重新渲染前被触发。
 

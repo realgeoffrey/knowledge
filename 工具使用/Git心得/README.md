@@ -806,6 +806,8 @@ feat(details): 添加了分享功能
     3. 利用Docker镜像发布内容到CDN或k8s等。
 3. 推送内容到远程就会根据`.gitlab-ci.yml`设置要求进行对应服务器的对应操作
 
+>gitlab-ci问题可以考虑按钮`Clear Runner Caches`清除缓存。
+
 ### 减少Git项目下载大小
 1. 仅在Git项目中选择下载某些文件夹或文件
 

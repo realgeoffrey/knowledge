@@ -17,6 +17,7 @@
     1. [HTTP严格传输安全（HTTP strict transport security，HSTS）](#http严格传输安全http-strict-transport-securityhsts)
     1. [`Mixed Content`](#mixed-content)
 1. [HTTP持久连接、WebSocket、HTTP/2](#http持久连接websockethttp2)
+1. [HTTP/3](#http3)
 1. [CORS（cross-origin resource sharing，跨域资源共享）](#corscross-origin-resource-sharing跨域资源共享)
 1. [服务端验证用户状态](#服务端验证用户状态)
 1. [其他网络概念](#其他网络概念)
@@ -878,6 +879,13 @@
     3. 数据流优先级。
     4. 头部压缩（header compression）。
     5. 服务端推送（server push）。
+
+### HTTP/3
+1. 草案状态（2022.02）。
+2. HTTP/3是即将到来的第三个主要版本的HTTP协议。与其前任HTTP/1.1和HTTP/2不同，在HTTP/3中，将弃用TCP协议，改为使用基于UDP协议的QUIC协议（快速UDP网络连接）实现。
+
+    1. 此变化主要为了解决HTTP/2中存在的队头阻塞问题。由于HTTP/2在单个TCP连接上使用了多路复用，受到TCP拥塞控制的影响，少量的丢包就可能导致整个TCP连接上的所有流被阻塞。
+    2. QUIC是一种实验性的网络传输协议，由Google开发，该协议旨在使网页传输更快。
 
 ### CORS（cross-origin resource sharing，跨域资源共享）
 >参考：[跨域资源共享 CORS 详解](http://www.ruanyifeng.com/blog/2016/04/cors.html)。

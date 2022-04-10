@@ -4009,6 +4009,10 @@ function getResponseHeaders(requestName) {
 
 ### jQuery修复HTML标签`placeholder`属性无效
 ```javascript
+/**
+ * 修复HTML标签`placeholder`属性无效
+ * @param {Object} [$dom = $('input, textarea')] - jQuery节点
+ */
 function fixPlaceholder($dom) {
     $dom = $dom || $('input, textarea');
 

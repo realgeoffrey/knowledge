@@ -20,6 +20,8 @@
 
         1. `--dev`或`-D`加入devDependencies
         2. `--peer`或`-P`加入peerDependencies
+
+            peerDependencies的目的是提示宿主环境去安装满足插件peerDependencies所指定依赖的包，然后在插件`import`或`require`所依赖的包时，永远都是引用宿主环境统一安装的npm包，最终解决插件与所依赖包不一致的问题。
         3. `--optional`或`-O`加入optionalDependencies
 
         >默认安装主版本下的最新版（1.x.y）。

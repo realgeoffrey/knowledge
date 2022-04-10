@@ -1081,7 +1081,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         1. 新增**Web Worker**标准，但不能~~操作DOM~~，完全受主线程控制。
 
             >1. Worker与主线程通信，都通过`postMessage`传递信息、通过监听`message`事件接受信息，信息通过[结构化克隆算法](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)（一种深复制）复制后传递。
-            >2. 在浏览器tab没有被激活时（inactive），计时器间隔的最小值会提升、进程执行会变慢。用Web Worker不会受浏览器是否激活的影响。
+            >2. 在浏览器tab没有被激活时（inactive），计时器间隔的最小值会提升、进程执行会变慢。用`Web Worker`不会受浏览器是否激活的影响。
         2. 多个异步线程分别处理：**网络请求**、**定时器**、**读写文件**、**I/O设备事件**、**页面渲染**等。
 
             >DOM的变动（尤其是涉及页面重新渲染的部分），通常不会立即执行，而是每16毫秒执行一次。
