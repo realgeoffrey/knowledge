@@ -959,7 +959,7 @@
     2. 一旦服务器通过预检请求，之后的每次跨域请求都与简单请求一致。
 
 ### 服务端验证用户状态
-HTTP是无状态协议，通过session-cookie、token判断客户端的用户状态。
+HTTP是无状态协议，通过session-cookie或token判断客户端的用户状态。
 
 1. session-cookie
 
@@ -976,6 +976,13 @@ HTTP是无状态协议，通过session-cookie、token判断客户端的用户状
     >最简单的token组成：uid（用户唯一的身份标识）、time（当前时间的时间戳）、sign（加盐后哈希）。
 
     认证用户，授权App。针对App与服务端的无状态API。与session-cookie方式没有直接关系、可一起使用、不冲突。
+
+    1. [OAuth（Open Authorization）](https://datatracker.ietf.org/doc/html/rfc6749)
+
+        一个行业的标准授权协议，主要用来授权**第三方应用**获取有限的网页权限。**登录平台**经过**用户**授权，为**第三方应用**颁发一个有时效性的token，**第三方应用**能够通过该token获取**登录平台**的部分资源。
+    2. [JWT（JSON Web Token）](https://datatracker.ietf.org/doc/html/rfc7519)
+
+        跨域认证解决方案。服务器认证以后，生成一个JSON对象（转成特殊结构的字符串），发回给用户，用户与服务端通信时，都要发回这个token。服务器完全只靠这个token认定用户身份，服务器不保存任何session数据。
 
 >从已经登录的客户端提取出登录信息（session_id或token），传递给其他客户端，再由其他客户端把登录信息注入cookie，就可以转移登录状态到其他客户端。
 

@@ -833,3 +833,21 @@
             <Text style={styles.verticalScrollView}/>
             ```
             </details>
+7. 无障碍
+
+    组件属性`accessible`、`accessibilityLabel`。
+
+    1. （因为兼容性，）尽量在原本就有事件的组件上增加无障碍属性，不要提升无障碍属性到祖先级组件。
+    2. Tips（bug？）
+
+        1. Android：
+
+            1. 组件均需要`accessible`、`accessibilityLabel` + 事件（如：`onClick={()=>false}`）才能支持无障碍选中。
+
+                >注意加了事件之后，不要影响到原来的事件逻辑（如：阻止了原有冒泡逻辑）。
+            2. 父级`accessible={true}`，还会再选中子级的`accessible`。
+            3. 弹窗之类的，无法屏蔽下层组件的无障碍选中。
+        2. iOS：
+
+            1. `<Text>`不需要加`accessible`、`accessibilityLabel`（可以设置`accessible={false}`关闭）；其他组件需要加`accessible`、`accessibilityLabel`。
+            2. 父级`accessible={true}`，就不会再选中子级的`accessible`（但是可以阅读出所有子级的`accessibilityLabel`内容）。
