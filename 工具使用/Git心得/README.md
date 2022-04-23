@@ -354,6 +354,9 @@
         git submodule update                # 拉取、更新子模块仓库至 本地已保存的SHA
         # 或
         git submodule update --remote       # 拉取、更新子模块仓库至 远程分支（若未设置分支名，则default branch）下最新SHA（会改变子模块文件夹的SHA）
+
+        # git submodule update --init 等于 git submodule init + git submodule update
+        # git submodule update --init --remote 等于 git submodule init + git submodule update --remote
         ```
     3. 修改、推送子模块
 

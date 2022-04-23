@@ -15,7 +15,10 @@
     1. [测试](#测试)
 1. [create-react-app](#create-react-app)
 1. [redux](#redux)
+
+    1. [dva](#dva)
 1. [mobx](#mobx)
+1. [umi](#umi)
 1. [react-native](#react-native)
 
     1. [核心概念](#核心概念)
@@ -250,6 +253,24 @@
         克隆并返回新的React元素。
 
         >几乎等同于：`<element.type {...element.props} {...props}>{children}</element.type>` + 原element上的`key`和`ref`。添加的`props`的属性会覆盖`element`原本的属性。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >把接受到的参数传递给`props.children`渲染：
+        >
+        >```tsx
+        >const { children, ...otherProps } = props;
+        >
+        >return (
+        >  <>
+        >    {React.Children.map(children, (child) => {
+        >      return React.cloneElement(child, {...otherProps, 新增参数: '值'});
+        >    })}
+        >  </>
+        >)
+        >```
+        ></details>
     2. `React.isValidElement(对象)`
 
         验证对象是否为React元素。返回：`true/false`。
@@ -399,6 +420,34 @@
             - 不可变性（引用数据类型）
 
                 >`state`、`props`、store、等，都建议遵循不可变性。
+
+                ><details>
+                ><summary>可以用<a href="https://github.com/immerjs/immer">immer</a>处理。</summary>
+                >
+                >e.g.
+                >
+                >```javascript
+                >import produce from "immer"
+                >
+                >const baseState = [
+                >    {
+                >        willDo: "Learn typescript",
+                >        done: true
+                >    },
+                >    {
+                >        willDo: "Try immer",
+                >        done: false
+                >    }
+                >]
+                >
+                >const nextState = produce(baseState, draftState => {
+                >    draftState.push({willDo: "Tweet about it"})
+                >    draftState[1].done = true
+                >})
+                >```
+                >
+                >上面的示例中，对`draftState`的修改都会反映到`nextState`上，并且不会修改`baseState`。而immer使用的结构是共享的，`nextState`在结构上与`currentState`共享未修改的部分。
+                ></details>
 
                 不直接修改数据（或改变底层数据），而是用新值替换旧值。（对需要修改的State内容浅复制一层，对新值进行修改后覆盖原State）
 
@@ -2091,6 +2140,8 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     `类名.propTypes = { props名: 类型 }`
 2. TypeScript
 
+    >当出现.js使用正常（说明功能正常），但是换成.tsx就类型报错的情况，除了检查自己是否写错之外，也可能是框架bug，只能用设置为`any`来绕过。
+
 #### 测试
 1. react-dom/test-utils
 2. react-test-renderer
@@ -2282,10 +2333,16 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
     2. 简化逻辑的最佳实践：[redux-toolkit](https://github.com/reduxjs/redux-toolkit)（包含：[redux](https://github.com/reduxjs/redux)、[redux-thunk](https://github.com/reduxjs/redux-thunk)、[reselect](https://github.com/reduxjs/reselect)、[immer](https://github.com/immerjs/immer)、等）
     3. 开发者工具：[redux-devtools](https://github.com/reduxjs/redux-devtools)、[redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension)
 
+#### [dva](https://github.com/dvajs/dva)
+>基于redux和redux-saga的精简封装数据流方案。然后为了简化开发体验，还额外内置了react-router和fetch，所以也可以理解为一个轻量级的应用框架。
+
 ### [mobx](https://github.com/mobxjs/mobx)
 1. computed
 
     （？某些情况下：）用到才去计算。每一次用到都会跑一遍计算的方法（类似vuex的getters返回一个函数的情况）。
+
+### [umi](https://github.com/umijs/umi)
+>路由+antd+dva等阿里系封装框架，类似next.js。
 
 ---
 ### [react-native](https://github.com/facebook/react-native)

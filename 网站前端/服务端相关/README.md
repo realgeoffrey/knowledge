@@ -5,9 +5,6 @@
 1. [中间件/拦截器的流程](#中间件拦截器的流程)
 1. [服务器日志查看](#服务器日志查看)
 1. [接口错误排查](#接口错误排查)
-1. [其他](#其他)
-
-    1. [ICE's brother](#ices-brother)
 
 ---
 ### 前端与服务端配合细节
@@ -293,38 +290,3 @@ app.use((ctx) => {
             2. [查看磁盘空间占用](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/命令行备忘/README.md#查看磁盘空间占用)
 
     - （一些log监控器提示的错误可能会缺失细节信息，）可以去服务器手动执行相同命令现场复现原始错误信息。
-
----
-## 其他
-
-### ICE's brother
->闭源。
-
-一种二进制、支持字段动态增加，代码自动生成、跨平台的应用层协议。
-
-1. .jce文件阅读
-
-    1. `module`模块名（命名空间）
-
-        命名空间不能嵌套，可以引用其他命名空间`模块名::struct名`。
-
-        1. `struct`封装数据
-
-            `字段id require/optional 类型 变量名[ = 默认值]`
-
-            - 类型：
-
-                1. 基本类型：
-
-                    `void`、`bool`、`string`、`byte`、`short`、`int`、`double`、`float`、`long`、`unsigned byte`、`unsigned short`、`unsigned int`
-                2. 复杂类型：
-
-                    `Enum`枚举、`map<类型, 类型>`字典、`vector<类型>`序列（`vector<byte>`二进制码，JS：`'0'`和`'1'`组成的字符串）、`常量`、`key[struct名, 多个变量名]`
-            >任何`struct`、`map`、`vector`都可嵌套。
-        2. `interface`暴露接口
-        3. `const string`注释命令字
-2. 命令字有约定格式
-
-    e.g. 3级命令字：`「一级」.「二级」.「三级」`，可能省略约定的第一级命令字。
-
->[jetbrains plugin: JCE Support](https://plugins.jetbrains.com/plugin/11500-jce-support)。

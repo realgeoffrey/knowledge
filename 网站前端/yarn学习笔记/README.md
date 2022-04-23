@@ -86,7 +86,15 @@
 
         1. `--mutex 「file 或 network」`确保任意给定时间只有一个实例运行（并且避免冲突）。
         2. `--verbose`详细日志
-    9. 其他
+    9. `yarn create 「包名」 [「参数」]`
+
+        >类似`npx`功能。
+
+        1. 先全局安装`create-「包名」`到最新版本；
+        2. 再运行`create-「包名」 [「参数」]`（`「包名」`里package.json的`bin`命令）。
+
+        >e.g. `yarn create react-app my-app`等价于`yarn global add create-react-app`+`create-react-app my-app`。
+    10. 其他
 
         1. `yarn config` + `set`、`get`、`delete`、`list`
 

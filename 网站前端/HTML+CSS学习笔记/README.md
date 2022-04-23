@@ -848,6 +848,9 @@
 25. `position: absolute`超出浏览器可能导致Android出现滚动条（虽然不能滚动）
 
     尝试用`position: fixed`代替。
+26. 字体高度抖动
+
+    可能和设置在父级的`line-height`有关，尝试把`line-height`改到设置在包裹文字的节点。
 
 ---
 ## CSS

@@ -67,6 +67,19 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
         URL file:///User/username/test   # macOS、Linux
         URL file://E:\xx\test            # Windows的路径分隔符可以用 \ 或者 /
         ```
+
+        1. 若文件替换替换之后，还需要解决CORS问题，则增加resCors协议：
+
+            ```text
+            URL file:///User/username/test   # macOS、Linux
+            URL resCors://{变量名1}
+            ```
+
+            Values添加一个新的变量：变量名1
+
+            ```text
+            origin: *
+            ```
     4. 往`content-type`为`html`的响应内容的前面或后面添加文本内容
 
         ```text
@@ -150,7 +163,7 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
         >开启后会阻止把`console`输入到vconsole和eruda。
 
         ```text
-        域名 weinre://变量名
+        域名 weinre://任意值做为id
         ```
     9. excludeFilter
 
@@ -167,11 +180,15 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
         URL resType://「text/plain、text/html、image/png、等」
         ```
 
-    - 所有协议均支持以下[匹配方式](https://wproxy.org/whistle/pattern.html)
+    - 所有协议均支持以下[匹配模式](https://wproxy.org/whistle/pattern.html)
 
         1. 域名（端口号、请求协议）
         2. 路径
         3. 正则
+
+            `/reg/`或`/reg/i`
+
+            >支持所有情况。
         4. 精确匹配（`$`开头）
         5. 通配符匹配（`^`、`$`、`*`）
 
