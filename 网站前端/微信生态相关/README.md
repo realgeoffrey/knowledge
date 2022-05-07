@@ -75,6 +75,9 @@
     >一般不会有外部接口查询哪些域名支持哪些接口。
 2. 在微信内调用需要引入对应的sdk文件。
 3. 重要的流程，调用`wx.config`的方法进行相关的权限配置。
+4. 清理微信WebView的缓存或Cookies等，貌似现在最佳的方案只能是退出-重新登录微信账号。
+
+    现代版本Android微信好像也不是~~x5~~内核，而转用系统内置WebView内核了。
 
 ### `WeixinJSBridge`
 >`WeixinJSBridge`是底层的接口，建议使用官方封装的[JSSDK](https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/JS-SDK.html)。

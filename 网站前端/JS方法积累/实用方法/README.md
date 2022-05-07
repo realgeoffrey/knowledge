@@ -2875,7 +2875,7 @@ clipboard("写入的内容~")
             style={style}
             className={className}
             onClick={() => {
-              onClick && onClick();
+              onClick?.();
             }}
             onError={() => {
               this.setState({
@@ -2916,7 +2916,7 @@ clipboard("写入的内容~")
           style={style}
           className={className}
           onClick={() => {
-            onClick && onClick();
+            onClick?.();
           }}
           onError={() => {
             setIsError(true);

@@ -495,7 +495,7 @@ npm（Node Package Manager）。
 
     1. 执行阶段（运行时）进行模块加载：确定模块的依赖关系、输入和输出的变量。
 
-        `module.exports`和`require`能够在任何位置使用（包括块级作用域）。
+        因为本身就是动态引入，`module.exports`和`require`能够在任何位置使用（包括块级作用域）。
     2. 有自己单独作用域，不污染全局作用域，必须`module.exports`才能输出给其他模块。
 
         >不推荐`window.属性`。

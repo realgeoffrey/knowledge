@@ -9,6 +9,7 @@
     1. [生命周期](#生命周期)
     1. [Hook](#hook)
     1. [与第三方库协同](#与第三方库协同)
+    1. [Virtual DOM](#virtual-dom)
     1. [性能优化](#性能优化)
     1. [代码分割（动态加载）](#代码分割动态加载)
     1. [类型检查](#类型检查)
@@ -113,6 +114,8 @@
 
             `某prop`
     3. `{...某对象}`展开元素
+
+        很容易将不必要的props传递给不相关的组件，或者将无效的HTML属性传递给DOM。需要谨慎的使用该语法，如：`const {children, xx, otherProps} = props; return <组件名 {...otherProps} />`。
 
         >e.g. `<组件名 {...某对象} />`
     4. 包含在开始和结束标签之间的表达式内容将作为特定属性：`props.children`
@@ -300,7 +303,7 @@
         >}
         >```
         ></details>
-    2. 函数组件（function components）
+    2. 函数组件（function components，FC）
 
         不能包含~~State~~（Hook弥补），没有~~生命周期~~（Hook弥补），没有~~this~~。
 
@@ -415,7 +418,7 @@
 
         1. 模板中渲染相关的属性（如：要在模板内展示的属性 或 Props传值、`style`取值等），需要放到State中被观测（或放到store中被观测，如：redux、mobx），才能在这些值改变时通知视图重新渲染（`this.setState`）。
 
-            `this.setState(对象或函数, () => {/* 更新后的回调 */})`函数是唯一能够更新`this.state.属性`的方式。
+            `this.setState(对象或函数, (/* 无参数 */) => {/* 更新后的回调 */})`函数是唯一能够更新`this.state.属性`的方式。
 
             - 不可变性（引用数据类型）
 
@@ -1478,9 +1481,9 @@
         ></details>
 
         >默认显示：class组件名或函数组件名。
-    2. `React.createContext()的对象.displayName = 「content名」`
+    2. `React.createContext()的对象.displayName = 「context名」`
 
-        显示为：`「content名」.Provider`和`「content名」.Consumer`。
+        显示为：`「context名」.Provider`和`「context名」.Consumer`。
 
         >默认显示：`Context.Provider`和`Context.Consumer`。
     3. `React.forwardRef的匿名函数.displayName = 「Refs转发组件名」`
@@ -2086,20 +2089,30 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     1. 渲染无需更新的React元素，比如一个空的`<div>`。
     2. 利用`componentDidMount`和`componentWillUnmount`对React不会更新的React元素进行挂载和清理。
 
+#### Virtual DOM
+- [协调（reconciliation）](https://zh-hans.reactjs.org/docs/reconciliation.html)
+
+    当一个组件的`props`或`state`变更，React会将最新返回的元素与之前渲染的元素进行对比（diff），以此决定是否有必要更新真实的DOM。当它们不相同时，React会最小化更新该DOM。这个过程被称为“协调”。
+
+    >React16新增的协调引擎：[Fiber](https://github.com/facebook/react/tree/master/packages/react-reconciler)（介绍文章：[react-fiber-architecture](https://github.com/acdlite/react-fiber-architecture)），将整个更新划分为多个原子性的任务，这就保证了原本完整的组件的更新流程可以被中断与恢复，在浏览器的空闲期执行这些任务并且区别高优先级与低优先级的任务。
+
+><details>
+><summary>虚拟DOM系统的辩证思考：<a href="https://github.com/y8n/blog/issues/5">理解 Virtual DOM</a></summary>
+>
+>Virtual DOM的优势不在于单次的操作，而是在大量、频繁的数据更新下，能够对视图进行合理、高效的更新。
+>
+>1. Virtual DOM在牺牲部分性能的前提下，增加了可维护性，这也是很多框架的通性。
+>2. 实现了对DOM的集中化操作，在数据改变时先对虚拟DOM进行修改，再反映到真实的DOM中，用最小的代价来更新DOM，提高效率。
+>3. 打开了函数式UI编程的大门。
+>4. 可以渲染到DOM以外的端，如：ReactNative、SSR。
+></details>
+
 #### 性能优化
 1. 使用生产版本
 2. 虚拟化长列表
 
     >如：[react-window](https://github.com/bvaughn/react-window)。
 3. 渲染前的diff，可利用`shouldComponentUpdate`跳过
-
-    ><details>
-    ><summary><a href="https://zh-hans.reactjs.org/docs/reconciliation.html">协调（reconciliation）</a></summary>
-    >
-    >当一个组件的`props`或`state`变更，React会将最新返回的元素与之前渲染的元素进行对比（diff），以此决定是否有必要更新真实的DOM。当它们不相同时，React会最小化更新该DOM。这个过程被称为“协调”。
-    >
-    >>React16新增的协调引擎：[Fiber](https://github.com/facebook/react/tree/master/packages/react-reconciler)（介绍文章：[react-fiber-architecture](https://github.com/acdlite/react-fiber-architecture)）。
-    ></details>
 
 #### 代码分割（动态加载）
 添加一个动态引入，就会新增一个`chunk`、不会~~把动态引入的代码加入`bundle`~~。策略：基于路由进行代码分割。

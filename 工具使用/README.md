@@ -24,7 +24,8 @@
 
         1. Wireshark、tcpdump
 6. [YAML使用](./YAML使用/README.md)
-7. [科学上网](./科学上网/README.md)
+7. [OpenTelemetry](./OpenTelemetry/README.md)
+8. [科学上网](./科学上网/README.md)
 
 ><details>
 ><summary>其他</summary>
