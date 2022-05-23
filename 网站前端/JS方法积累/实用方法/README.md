@@ -72,6 +72,7 @@
         1. [获取对象指定深度属性](#原生js获取对象指定深度属性)
         1. [写入剪切板](#原生js写入剪切板)
         1. [默认图组件](#react默认图组件)
+        1. [溢出文本的省略](#原生js溢出文本的省略)
     1. 提升性能
 
         1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
@@ -2943,6 +2944,38 @@ clipboard("写入的内容~")
       }}
     />
     ```
+
+### *原生JS*溢出文本的省略
+```html
+<style>
+  p {
+    font-size: 12px; /* 注意太大的字体，一行的撑起的scrollHeight可能超过line-height */
+    height: 40px;
+    line-height: 20px;
+  }
+</style>
+
+<p id="container">123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。</p>
+
+<script>
+const container = document.getElementById('container')
+const containerHeight = container.offsetHeight
+// todo：不仅针对innerText，还可以把每个子节点container.childNodes，根据nodeType的值来分别处理。如：`Node.ELEMENT_NODE`当做一个整体，`Node.TEXT_NODE`分割每个文字
+const text = container.innerText
+for (let i = 0; i < text.length; i++) {
+  container.innerText = text.substring(0, i)
+  if (containerHeight < container.scrollHeight) {
+    container.style.overflow = 'hidden'
+    container.innerHTML = text.substring(0, i - 3) + '<span style="cursor: pointer" onclick="container.innerHTML=text; container.style.overflow=\'unset\'">...</span>'
+
+    console.log('产生省略')
+    break
+  }
+}
+</script>
+```
+
+>可参考：[Ant Design：Typography排版的`ellipsis`](https://ant.design/components/typography-cn/)。
 
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript
