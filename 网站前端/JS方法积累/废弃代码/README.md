@@ -48,6 +48,20 @@
 ## 原生JS方法
 
 ### *原生JS*格式化日期
+```typescript
+// 时间戳 -> yyyy.MM.dd
+export function formatTimestamp(timestamp: number | string): string {
+  const date = new Date(timestamp);
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return `${date.getFullYear()}.${month >= 10 ? month : `0${month}`}.${day >= 10 ? day : `0${day}`}`;
+}
+
+
+/* 使用测试 */
+formatTimestamp(new Date("2020/09/09").getTime())
+```
+
 ```javascript
 var format = {
   date: function (dateObj, fmt) {    /* 格式化日期 */

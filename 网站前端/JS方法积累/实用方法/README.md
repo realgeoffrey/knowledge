@@ -73,6 +73,7 @@
         1. [写入剪切板](#原生js写入剪切板)
         1. [默认图组件](#react默认图组件)
         1. [溢出文本的省略](#原生js溢出文本的省略)
+        1. [React组件业务类似Promise.all的效果](#react组件业务类似promiseall的效果)
     1. 提升性能
 
         1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
@@ -2600,55 +2601,130 @@ var b = new ScrollDirection({
     >`<img>`外嵌套一层`<picture>`，样式要注意，尤其是使用子元素选择器（`>`）时。如：`xx > img`时无法选中，需要`xx > picture > img`。
 
 ### *原生JS*DOM展示或消失执行方法（IntersectionObserver）
-```javascript
-/**
- * DOM展示或消失执行方法（IntersectionObserver）
- * @constructor
- * @param {Object} target - 观察的目标元素
- * @param {Function} [show = () => {}] - 展示时调用
- * @param {Function} [hide = () => {}] - 消失时调用
- * @param {Number} [threshold = 0] - 交叉比例
- * @param {Boolean} [once = false] - 是否仅执行一次，否则执行无数次（仅针对展示。若为true，则展示一次后，展示、消失方法均不再执行）
- * @param {Object} [root = null] - 观察的相对物。null: viewport；祖先元素
- */
-function DisplayDom ({ target, show = () => {}, hide = () => {}, threshold = 0.01, once = false, root = null } = {}) {
-  threshold = Math.max(Math.min(threshold, 1), 0.01)  // 取值在[0.01, 1]
-  try {
-    const io = new window.IntersectionObserver(
-      (entries) => {
-        if (entries[0].intersectionRatio >= threshold) { // 展示
-          show()
+1. class写法：
 
-          if (once) {
-            this.stop()
-          }
-        } else {  // 消失
-          hide()
+    ```typescript
+    /**
+     * DOM展示或消失执行方法（IntersectionObserver）
+     * @constructor
+     * @param {Object} target - 观察的目标元素
+     * @param {Function} [show = () => {}] - 展示时调用
+     * @param {Function} [hide = () => {}] - 消失时调用
+     * @param {Number} [threshold = 0] - 交叉比例
+     * @param {Boolean} [once = false] - 是否仅执行一次，否则执行无数次（仅针对展示。若为true，则展示一次后，展示、消失方法均不再执行）
+     * @param {Object} [root = null] - 观察的相对物。null: viewport；祖先元素
+     */
+    export class DisplayDom {
+      io: IntersectionObserver | undefined;
+
+      constructor({
+        target,
+        show = () => {},
+        hide = () => {},
+        threshold = 0.01,
+        once = false,
+        root = null,
+      }: {
+        target: Element;
+        show?: Function;
+        hide?: Function;
+        threshold?: number;
+        once?: boolean;
+        root?: Element | Document | null;
+      }) {
+        const thresholdSafe = Math.max(Math.min(threshold, 1), 0.01); // 取值在[0.01, 1]
+        try {
+          this.io = new window.IntersectionObserver(
+            (entries) => {
+              if (entries[0].intersectionRatio >= thresholdSafe) {
+                // 出现
+                show();
+
+                if (once) {
+                  this.stop();
+                }
+              } else {
+                // 不出现
+                hide();
+              }
+            },
+            { threshold: [thresholdSafe], root },
+          );
+
+          this.io.observe(target); // 开始观察
+        } catch (error) {
+          console.error(
+            error,
+            `\n不支持IntersectionObserver，升级浏览器或代码使用polyfill: https://github.com/w3c/IntersectionObserver`,
+          );
         }
-      },
-      { threshold: [threshold], root }
-    )
+      }
 
-    io.observe(target)    // 开始观察
-
-    this.stop = () => {
-      io.disconnect()
+      stop() {
+        this.io?.disconnect();
+      }
     }
-  } catch (error) {
-    console.error(error.message, `\n不支持IntersectionObserver，升级浏览器或代码使用polyfill: https://github.com/w3c/IntersectionObserver`)
-  }
-}
+
+    /* 使用测试 */
+    var a = new DisplayDom({
+      target: document.getElementById('asd'),
+      show: () => { console.log('show') },
+      hide: () => { console.log('hide') }
+    })
+
+    // a.stop()
+    ```
+2. 构造函数写法：
+
+    ```javascript
+    /**
+     * DOM展示或消失执行方法（IntersectionObserver）
+     * @constructor
+     * @param {Object} target - 观察的目标元素
+     * @param {Function} [show = () => {}] - 展示时调用
+     * @param {Function} [hide = () => {}] - 消失时调用
+     * @param {Number} [threshold = 0] - 交叉比例
+     * @param {Boolean} [once = false] - 是否仅执行一次，否则执行无数次（仅针对展示。若为true，则展示一次后，展示、消失方法均不再执行）
+     * @param {Object} [root = null] - 观察的相对物。null: viewport；祖先元素
+     */
+    function DisplayDom ({ target, show = () => {}, hide = () => {}, threshold = 0.01, once = false, root = null } = {}) {
+      threshold = Math.max(Math.min(threshold, 1), 0.01)  // 取值在[0.01, 1]
+      try {
+        const io = new window.IntersectionObserver(
+          (entries) => {
+            if (entries[0].intersectionRatio >= threshold) { // 展示
+              show()
+
+              if (once) {
+                this.stop()
+              }
+            } else {  // 消失
+              hide()
+            }
+          },
+          { threshold: [threshold], root }
+        )
+
+        io.observe(target)    // 开始观察
+
+        this.stop = () => {
+          io.disconnect()
+        }
+      } catch (error) {
+        console.error(error.message, `\n不支持IntersectionObserver，升级浏览器或代码使用polyfill: https://github.com/w3c/IntersectionObserver`)
+      }
+    }
 
 
-/* 使用测试 */
-var a = new DisplayDom({
-  target: document.getElementById('asd'),
-  show: () => { console.log('show') },
-  hide: () => { console.log('hide') }
-})
+    /* 使用测试 */
+    var a = new DisplayDom({
+      target: document.getElementById('asd'),
+      show: () => { console.log('show') },
+      hide: () => { console.log('hide') }
+    })
 
-// a.stop()
-```
+    // a.stop()
+    ```
 
 ### *原生JS*执行方法的前/后进行开/关loading
 ```javascript
@@ -2976,6 +3052,93 @@ for (let i = 0; i < text.length; i++) {
 ```
 
 >可参考：[Ant Design：Typography排版的`ellipsis`](https://ant.design/components/typography-cn/)。
+
+### React组件业务类似Promise.all的效果
+```tsx
+import React, { useEffect, useState, useRef } from "react";
+import { notification, Button } from "antd";
+
+// 模拟异步请求
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export default function Demo(props: { show: boolean }) {
+  const resolveFunc1 = useRef<Function>(() => {});
+  const resolveFunc2 = useRef<Function>(() => {});
+  const resolveFunc3 = useRef<Function>(() => {});
+
+  // 若3个方法均被调用，则ready被赋值
+  const [ready, setReady] = useState<any>(null);
+
+  useEffect(() => {
+    Promise.all([
+      new Promise((resolve1) => {
+        resolveFunc1.current = resolve1;
+      }),
+      new Promise((resolve2) => {
+        resolveFunc2.current = resolve2;
+      }),
+      new Promise((resolve3) => {
+        resolveFunc3.current = resolve3;
+      }),
+    ]).then((data) => {
+      setReady(data);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (ready) {
+      const info = JSON.stringify(ready);
+      console.log(info);
+      notification.open({ message: info });
+    }
+  }, [ready]);
+
+  // 以下模拟3个方法被调用成功
+
+  const [asyncSelfShow, setAsyncSelfShow] = useState<boolean>(false);
+  useEffect(() => {
+    // 1. 模拟异步返回
+    sleep(2000).then(() => {
+      resolveFunc1.current({ a: 1 });
+
+      setAsyncSelfShow(true);
+    });
+  }, []);
+
+  const { show } = props;
+  useEffect(() => {
+    // 2. 参数传入满足
+    show && resolveFunc2.current({ b: 2 });
+  }, [show]);
+
+  const [selfShow, setSelfShow] = useState<boolean>(false);
+
+  return (
+    <div>
+      <h3>ready: {JSON.stringify(ready)}</h3>
+
+      <p>props.show: {show ? "true" : "false"}</p>
+      <p>asyncSelfShow： {asyncSelfShow ? "true" : "false"}</p>
+      <p>
+        selfShow: {selfShow ? "true" : "false"}
+        <br/>
+        <Button
+          onClick={() => {
+            // 3. 组件自身状态变化
+            resolveFunc3.current({ c: 3 });
+
+            setSelfShow(!selfShow);
+          }}
+        >
+          setSelfShow{!selfShow ? "true" : "false"}
+        </Button>
+        </p>
+    </div>
+  );
+}
+```
 
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript

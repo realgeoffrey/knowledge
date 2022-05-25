@@ -418,6 +418,8 @@
 
         1. 模板中渲染相关的属性（如：要在模板内展示的属性 或 Props传值、`style`取值等），需要放到State中被观测（或放到store中被观测，如：redux、mobx），才能在这些值改变时通知视图重新渲染（`this.setState`）。
 
+            >使用函数组件的话，放在`useState`等里效果相同。
+
             `this.setState(对象或函数, (/* 无参数 */) => {/* 更新后的回调 */})`函数是唯一能够更新`this.state.属性`的方式。
 
             - 不可变性（引用数据类型）
@@ -425,7 +427,7 @@
                 >`state`、`props`、store、等，都建议遵循不可变性。
 
                 ><details>
-                ><summary>可以用<a href="https://github.com/immerjs/immer">immer</a>处理。</summary>
+                ><summary>可以用<a href="https://github.com/immerjs/immer">immer</a>处理（与react组件配合方式：<a href="https://immerjs.github.io/immer/zh-CN/example-setstate">React & Immer</a>）。</summary>
                 >
                 >e.g.
                 >
@@ -460,12 +462,17 @@
                 >2. 跟踪数据的改变，方便确定数据是否发生了变化。
         2. 不在模板内展示的值（如：仅作为事件触发修改的状态值 或 仅在JS逻辑中改变的值），直接放在class中的实例属性中。
 
+            >使用函数组件的话，放在`useRef`里效果相同。
+
             - 可以向组件中加入任意不参与数据流的额外字段，但是要在组件生命周期结束前清理（如：在`componentWillUnmount`中处理）。
+        3. 所有这个组件的实例全部共用同一个值，不响应式更新，放在组件外部。
 
         ><details>
         ><summary>e.g.</summary>
         >
         >```jsx
+        >let value = 0  // 该组件的所有实例共享
+        >
         >class MyComponent extends React.Component {
         >  constructor (props) {
         >    super(props)
@@ -491,15 +498,19 @@
         >    return (
         >      <View
         >        onClick={() => {
-        >          this.isLoading = !this.isLoading // 直接赋值修改
         >          this.setState({                  // setState修改
         >            cur: this.state.cur + 1
         >          })
+        >          this.isLoading = !this.isLoading // 直接赋值修改
+        >          value = value + 1                // 直接赋值修改
+        >        }}
         >        p1={this.state.cur}     // 能够响应式传递进去
         >        p2={this.isLoading}     // 不能响应式传递进去
-        >        }}
+        >        p3={value}              // 不能响应式传递进去
         >      >
-        >        {this.state.cur}
+        >        {this.state.cur}        {/* 值改变，能够响应式触发更新 */}
+        >        {this.isLoading}        {/* 值改变，不能够响应式触发更新 */}
+        >        {value}                 {/* 值改变，不能够响应式触发更新 */}
         >      </View>
         >    )
         >  }
@@ -1063,6 +1074,32 @@
 
         1. 参数只能同步使用，异步不保存。
         2. 阻止默认行为、阻止冒泡，必须显式调用：`e.preventDefault()`、`e.stopPropagation()`。
+
+    - debounce/throttle事件处理
+
+        1. class组件
+
+            ```jsx
+            // 不随渲染而改变的函数
+            debounceFunc = debounce((e, otherValue) => {
+             // do something...
+            }, 500);
+
+            <input onChange={(e) => debounceFunc(e, 其他响应式数据)}>
+            ```
+        2. 函数组件
+
+            ```jsx
+            // 不随渲染而改变的函数（随依赖项而改变）
+            const debounceFunc = useCallback(   // 或：useRef
+              debounce((e, otherValue) => {
+                // do something...
+              }, 500),
+              [依赖项]
+            );
+
+            <input onChange={(e) => debounceFunc(e, 其他响应式数据)}>
+            ```
 9. 特殊组件
 
     1. 高阶组件（higher order component，HOC）
@@ -1658,7 +1695,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     >`useState`的替代方案。
 
-    `const [变量名, 修改变量的方法名] = useReducer(reducer函数, 初始值[, 初始函数])`
+    `const [变量名, 修改变量的方法名] = useReducer(reducer函数, 初始值或传入初始函数的值[, 初始函数])`
 
     1. 若`修改变量的方法名`的返回值和当前的值完全相同，则不会产生渲染、effect不会执行、也不会运行整个函数组件（子组件也跳过）。
 
@@ -1685,12 +1722,12 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     >  }
     >}
     >
-    >function Counter({initialCount}) {
+    >function Counter({initialCount}) { // props传入作为初始化数据
     >  // <Counter initialCount={数字}/>
-    >  const [state, dispatch] = useReducer(reducer, initialCount, init);
+    >  const [state, dispatch] = useReducer(reducer, initialCount, init);   // 若有最后一个初始化方法，则init(initialCount)为初始state
     >
     >  // <Counter initialCount={{ count: 数字 }}/>
-    >  // const [state, dispatch] = useReducer(reducer, initialCount);
+    >  // const [state, dispatch] = useReducer(reducer, initialCount);  // 若没有最后一个初始化方法，则第二个参数直接为初始state
     >
     >  return (
     >    <>
@@ -1725,6 +1762,8 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
         >虽然useEffect会在浏览器绘制后延迟执行，但会保证在任何新的渲染前执行。
     2. return的清除方法，会在下一次effect触发之前调用，也会在组件卸载前调用。
     3. `依赖的数组`，仅当依赖的数组内的值都变化才触发执行。
+
+        >依赖项的每一项进行浅比较`Object.is()`判断是否变化。
 
         1. 确保数组中包含了**所有**`外部作用域中会发生变化`且`在effect中使用`的变量（包括要用到的`state`和`props`），否则代码会引用到*先前渲染中的旧变量*。
 
@@ -1803,9 +1842,9 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     通过自定义Hook，可以将组件逻辑提取到可重用的函数中。和使用官方hook一样的使用方式。
 
-    1. 与React组件不同的是，自定义Hook不需要具有特殊的标识。我们可以自由的决定它的参数是什么，以及它应该返回什么（如果需要的话）。换句话说，它就像一个正常的函数。但是它的名字应该始终以`use`开头。
+    1. 与React组件不同的是，自定义Hook不需要具有特殊的标识。我们可以自由的决定它的参数是什么，以及它应该返回什么（若需要的话）。换句话说，它就像一个正常的函数。但是它的名字应该始终以`use`开头。
     2. 自定义Hook更像是一种约定而不是功能。
-    3. 如果函数的名字以`use`开头并紧跟一个大写字母 且 调用其他Hook，我们就说这是一个：自定义Hook。
+    3. 若函数的名字以`use`开头并紧跟一个大写字母 且 调用其他Hook，则我们就说这是一个：自定义Hook。
 
         >`useSomething`的命名约定可以让我们的linter插件在使用Hook的代码中找到bug。
     4. 每次使用自定义Hook时，其中的所有state和副作用都是和其他自定义Hook以及其他组件完全隔离。
@@ -1951,6 +1990,120 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
         >    }
         >    ```
         ></details>
+
+><details>
+><summary><code>useState</code>、<code>useRef</code>等，与Promise数据配合要注意在初始化时处理Promise实例可能导致的问题（有触发条件，暂不明确），建议初始化和赋值分开来</summary>
+>
+>1. `useState`
+>
+>    1. 建议写法：
+>
+>        ```tsx
+>        const res0 = useRef<Function>(() => {});
+>
+>        const [pro0, setPro0] = useState<Promise<any>|null>(null);
+>
+>        useEffect(() => {
+>          setPro0(
+>            new Promise((resolve) => {
+>              res0.current = resolve;
+>            }),
+>          );
+>        }, []);
+>
+>        useEffect(() => {
+>          pro0 && pro0.then((data)=>{
+>            // do sth.
+>          })
+>        }, [pro0])
+>
+>        // 执行：res0.current()
+>        ```
+>    2. 可能出问题写法：
+>
+>        ```tsx
+>        const res1 = useRef<Function>(() => {});
+>
+>        const [pro1] = useState(
+>          new Promise((resolve) => {
+>            res1.current = resolve;
+>          })
+>        );
+>
+>        useEffect(() => {
+>          pro1.then((data)=>{
+>            // do sth.
+>          })
+>        }, [])
+>
+>
+>        // 执行：res1.current()
+>        ```
+>2. `useRef`
+>    1. 建议写法：
+>
+>        ```tsx
+>        const resolveFunc1 = useRef<Function>(() => {});
+>
+>        const promiseAll = useRef<Promise<any>|null>(null);
+>
+>        useEffect(() => {
+>          // 不能把这个赋值，直接放在 useRef 初始化里面，可能导致问题
+>          promiseAll.current = Promise.all([
+>            new Promise((resolve1) => {
+>              resolveFunc1.current = resolve1;
+>            }),
+>          ]);
+>
+>          promiseAll.current.then((data) => {
+>            // do sth.
+>          });
+>        }, []);
+>
+>        // 执行：resolveFunc1.current()
+>        ```
+>    2. 可能出问题写法：
+>
+>        ```tsx
+>        const resolveFunc1 = useRef<Function>(() => {});
+>
+>        // 直接初始化，里面赋值的resolveFunc1可能无法达到预期
+>        const promiseAll = useRef<Promise<any>>(
+>          Promise.all([
+>            new Promise((resolve1) => {
+>              resolveFunc1.current = resolve1;
+>            }),
+>          ])
+>        );
+>
+>        useEffect(() => {
+>          promiseAll.current.then((data) => {
+>            // do sth.
+>          });
+>        }, []);
+>
+>        // 执行：resolveFunc1.current()
+>        ```
+>
+>- 上面的2种写法可以简化为：
+>
+>    ```tsx
+>    const resolveFunc1 = useRef<Function>(() => {});
+>
+>    useEffect(() => {
+>      Promise.all([
+>        new Promise((resolve1) => {
+>          resolveFunc1.current = resolve1;
+>        }),
+>      ]).then((data) => {
+>        // do sth.
+>      });
+>    }, []);
+>
+>    // 执行：resolveFunc1.current()
+>    ```
+></details>
+
 8. `useMemo`
 
     ```jsx
@@ -2038,32 +2191,16 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 11. `useDebugValue`
 
     `useDebugValue(value[, 格式化函数])`，在React开发者工具中显示`自定义Hook`的标签
-
-- redux
-
-    1. `useSelector`
-
-        `const state值 = useSelector(state => { return state.slice名 })`
-    2. `useDispatch`
-
-        ```javascript
-        const dispatch = useDispatch()
-
-        dispatch(createSlice实例.actions.方法名(参数));
-        ```
-    3. `useStore`
-
-        ```javascript
-        // `{store.getState()}`不会随着state更新而触发视图更新
-        const store = useStore()        // store: { dispatch, getState, replaceReducer, subscribe }
-        ```
+12. `useDeferredValue`
+13. `useTransition`
+14. `useId`
 
 ><details>
 ><summary>从class迁移到Hook</summary>
 >
 >1. `constructor`：
 >
->    函数组件不需要构造函数。你可以通过调用`useState`来初始化state。如果计算的代价比较昂贵，你可以传一个函数给`useState`。
+>    函数组件不需要构造函数。你可以通过调用`useState`来初始化state。若计算的代价比较昂贵，则可以传一个函数给`useState`。
 >2. `getDerivedStateFromProps`：
 >
 >    改为 在渲染时 安排一次更新。
@@ -2081,8 +2218,23 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 >    目前还没有这些方法的Hook等价写法，但很快会被添加。
 ></details>
 
+- 例子
+
+    1. 强制刷新函数组件
+
+        ```jsx
+        const [refresh, setRefresh] = useState(false);
+
+        useEffect(() => {
+            refresh && setTimeout(() => setRefresh(false))
+        }, [refresh])
+
+        // 重新渲染触发。或其他时机触发
+        const doRefresh = () => setRefresh(true)
+        ```
+
 #### 与第三方库协同
->React不会理会React自身之外的DOM操作。它根据内部虚拟DOM来决定是否需要更新，而且如果同一个DOM被另一个库操作了，React会觉得困惑而且没有办法恢复。
+>React不会理会React自身之外的DOM操作。它根据内部虚拟DOM来决定是否需要更新，而且若同一个DOM被另一个库操作了，则React会觉得困惑而且没有办法恢复。
 
 1. 协同而避免冲突的最简单方式就是防止React组件更新。
 
@@ -2219,38 +2371,76 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
 1. 核心概念
 
-    1. state
+    1. store
+
+        ```javascript
+        import { createStore } from 'redux'
+        import reducers对象 from './reducers'  // reducers对象 === combineReducers({ reduce1: reduce函数1, reduce2: reduce函数2 })
+
+        // store 是通过传入一个reducer来创建的
+        let store = createStore(reducers对象[, state初始状态])    // store === { getState, dispatch, subscribe }
+
+
+        // react中的使用
+        import { Provider } from 'react-redux'
+        <Provider store={store}>
+          子节点通过connect或useStore、useDispatch等来使用
+        </Provider>
+        ```
+
+        1. 提供`store.getState()`获取当前state
+        2. 提供`store.dispatch(某个action)`更新state
+
+            >dispatch一个action可以形象的理解为“触发一个事件”。
+
+            触发后，store将执行所有reducer函数（root reducer）并计算出更新后的state，之后调用getState()可以获取新state。
+
+            >更新state的唯一方式。
+        3. 通过`store.subscribe(监听函数)`注册监听器，并返回注销监听器方法
+
+            >在react中使用react-redux代替手动监听。
+    2. state
 
         >来自服务端的state可以在无需编写更多代码的情况下被序列化并注入到前端（`JSON.stringify/parse`）。
 
-        普通对象。store的当前state值，不能被其他代码修改。
-    2. action
+        普通对象。store的当前值，不能被其他代码修改。
+
+        1. Selector函数
+
+            可以从store状态树中提取指定的片段。随着应用变得越来越大，会遇到应用程序的不同部分需要读取相同的数据，selector可以避免重复这样的读取逻辑。
+
+            >e.g.
+            >
+            >```javascript
+            >const selectXx = state => state.Xx
+            >const currentXx = selectXx(store.getState())
+            >```
+    3. action
 
         普通对象。`{ type: 「字符串」[, 多个参数（payload）: 值 ]}`，描述已发生事件，store数据的唯一来源。
 
-        1. `type`会被定义成字符串常量
+        >可以将action视为描述应用程序中发生了什么的事件。
 
-            当应用规模越来越大时，建议使用单独的模块或文件来存放action的type。
+        1. `type`描述性的名字，会被定义成字符串常量
 
-            >e.g. `import { 常量1, 常量2 } from '../actionTypes'`
-        2. 应该尽量减少在action中传递的数据
-        3. action创建函数：
+            通常把`type`写成`域/事件名称`，其中第一部分是这个action所属的特征或类别，第二部分是发生的具体事情。
 
-            返回action的函数
-        4. 调用`dispatch(某个action)`触发reducer
+            >当应用规模越来越大时，建议使用单独的模块或文件来存放action的type。e.g. `import { 常量1, 常量2 } from '../actionTypes'`
+        2. 应该尽量减少在action中传递的数据（payload）
+        3. action创建函数（action creator）：
 
-            1. dispatch接收一个action（若不是action则报错）；dispatch返回这个action。
-            2. ~~dispatch接收一个方法，第一个参数传入dispatch方法，第二个参数传入getState方法；dispatch返回参数方法的返回。~~
-    3. reducer
+            返回action的函数，作用是让你不必每次都手动编写action对象。
+        4. 调用`dispatch(某个action)`将执行所有reducer函数（root reducer）并计算出更新后的state
+    4. reducer
 
         函数。接受当前state和发送来的action，（仅基于state和action）返回新的state。
 
-        >可以将reducer视为事件侦听器，该事件侦听器根据接收到的事件类型（action的type）来处理事件。
+        >可以将reducer视为事件侦听器，该事件侦听器根据接收到的事件类型（action的type）来处理事件，当收到关注的action后，更新state。
 
-        1. 不要进行：
+        1. ~~不要进行~~：
 
             1. 修改传入的参数（state、action）
-            2. 执行有副作用的操作，如：API请求或路由跳转
+            2. 执行有副作用的操作，如：API请求或路由跳转、异步逻辑
 
                 >reducer是纯函数：当传入参数相同时（state、action），返回的state也相同，没有副作用。
             3. 调用非纯函数，如：`Data.now()`或`Math.random`
@@ -2282,20 +2472,13 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             >})
             >```
             ></details>
-    4. store
 
-        ```javascript
-        import { createStore } from 'redux'
-        import reducers对象 from './reducers'  // reducers对象 === combineReducers({ reduce1: reduce函数1, reduce2: reduce函数2 })
+        - 一个reducer函数的一般流程：
 
-        let store = createStore(reducers对象[, state初始状态])
-        ```
+            1. 检查reducer是否关心这个action
 
-        1. 提供`store.getState()`获取当前state
-        2. 提供`store.dispatch(某个action)`更新state
-
-            >更新state的唯一方式。
-        3. 通过`store.subscribe(监听函数)`注册监听器，并返回注销监听器方法
+                1. 若是，则复制state，使用新值更新state副本，然后返回新state
+                2. 否则，返回原来的state不变
 
         ![redux流程](./images/redux-1.gif)
 3. 三大原则
@@ -2333,7 +2516,27 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
                 )
                 ```
             2. ~~手动监听~~
-        2. redux的store和dispatch 映射到 组件的props
+        2. 函数组件内使用（hooks）
+
+            `import { useSelector, useDispatch, useStore } from 'react-redux'`
+
+            1. `useSelector`
+
+                `const state值 = useSelector(state => { return state.slice名 })`
+            2. `useDispatch`
+
+                ```javascript
+                const dispatch = useDispatch()
+
+                dispatch(createSlice实例.actions.方法名(参数));
+                ```
+            3. `useStore`
+
+                ```javascript
+                // `{store.getState()}`不会随着state更新而触发视图更新
+                const store = useStore()        // store === { dispatch, getState, replaceReducer, subscribe }
+                ```
+        3. class组件内使用
 
             ```javascript
             import { connect } from 'react-redux'

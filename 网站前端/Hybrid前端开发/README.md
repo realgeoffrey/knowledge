@@ -106,6 +106,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         >3. 除了增加回调函数且被客户端调用，否则无法准确判定是否在此App内部。
         >4. 跨App使用`自定义URL Scheme`，其后面的字符串要产生的行为仅目的App能理解。
         >5. 快速触发多次`自定义URL Scheme`，有时仅有最后一个产生效果。e.g. 用`window.location.href`快速触发多次，仅有最后一次跳转信息能够传递给客户端。
+        >6. 想要实现这样的功能："关闭当前WebView，然后执行某功能"，若用`window.location.href`等触发`自定义URL Scheme`方式给客户端拦截，则可能WebView实例关闭后，事件无法被客户端捕获（类似：异步的`XMLHttpRequest`会随WebView实例关闭而被忽略）。可以尝试换用`桥协议`。
 
         1. iOS
 

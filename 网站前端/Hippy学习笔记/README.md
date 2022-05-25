@@ -572,7 +572,7 @@
 
             1. `padding`
 
-                >仅能设置为相同数值。
+                >仅能设置为相同数值。优先级最低。
             2. `paddingVertical`
 
                 >仅能设置为相同数值。
@@ -640,6 +640,7 @@
                 3. `-1`：若空间不足则缩小到最小的宽度/高度。若空间没有不足，则使用自身原本宽度/高度占据空间。
 
                     >CSS的`flex-grow`和`flex-shrink`的默认表现。
+                >子项铺满父级的主轴剩余空间：`flex: 1`；子项扩充满父级的侧轴：`alignSelf: 'stretch'`。
 
             >多个项：若都设置`flex: 1`（无论各项内容不一），则所有项占用空间大小均**一致**。若都设置`flexGrow: 1`，则各项先按照自己内容大小占据不同大小空间，再对剩余空间进行拉伸（各项所占空间**不一致**）。
 
@@ -745,21 +746,34 @@
         3. `backgroundPositionY`
         4. `backgroundColor`
 
-        >- 本地资源制作背景图方式：
+        >- 实现背景图某些效果
         >
-        >     ```jsx
-        >     <View>
-        >       <Image source={{ uri: import资源 }} style={{position: 'absolute', top: 0, left: 0, width: 宽, height: 高}} />
-        >       {/* Android不能设置`zIndex: -1`，会导致看不见。也不需要设置`zIndex: -1`，`position: 'absolute'`还是会按顺序层叠 */}
-        >       内部节点
-        >     </View>
-        >     ```
+        >    1. 本地资源制作背景图方式：
         >
-        >     ```jsx
-        >     <Image source={{ uri: import资源 }} style={{width: 宽, height: 高}}>
-        >       内部节点
-        >     </Image>
-        >     ```
+        >        ```jsx
+        >        <View>
+        >          <Image source={{ uri: import资源 }} style={{position: 'absolute', top: 0, left: 0, width: 宽, height: 高}} />
+        >          {/* Android不能设置`zIndex: -1`，会导致看不见。也不需要设置`zIndex: -1`，`position: 'absolute'`还是会按顺序层叠 */}
+        >          内部节点
+        >        </View>
+        >        ```
+        >
+        >        ```jsx
+        >        <Image source={{ uri: import资源 }} style={{width: 宽, height: 高}}>
+        >          内部节点
+        >        </Image>
+        >        ```
+        >    2. 实现图片repeat效果
+        >
+        >        `<Image>`的`resizeMode`（`cover`、`contain`、`stretch`、`repeat`、`center`）类似CSS的`object-fit`+`background-repeat`属性，但没有CSS那么多效果组合。
+        >
+        >        ```jsx
+        >        <Image
+        >          style={{ width: 图片真实宽度或倍数, height: 图片真实高度或倍数 }}
+        >          source={{ uri: 一倍图片 }}
+        >          resizeMode="repeat"
+        >        />
+        >        ```
     12. 外边框圆角（`Number`）
 
         1. `borderRadius`

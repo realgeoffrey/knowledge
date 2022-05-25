@@ -78,6 +78,7 @@
 4. 清理微信WebView的缓存或Cookies等，貌似现在最佳的方案只能是退出-重新登录微信账号。
 
     现代版本Android微信好像也不是~~x5~~内核，而转用系统内置WebView内核了。
+5. 微信支付等提示`签名参数构造错`，尝试关闭代理后再试。
 
 ### `WeixinJSBridge`
 >`WeixinJSBridge`是底层的接口，建议使用官方封装的[JSSDK](https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/JS-SDK.html)。

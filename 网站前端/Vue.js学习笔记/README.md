@@ -1797,6 +1797,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     >    3. 若`x = { y: 2 }`指向新的响应式对象，之后`x.y = 3`会响应式触发视图更新。
     >    </details>
     >2. 针对不需要展示到`template`的属性，可以不把属性初始化在`data`中，而是直接`vm.属性 = 值`在JS中使用（这个属性值无法绑定到`template`中显示，意味着给这个属性值赋值之后，`{{ 属性 }}`也总是为空）。
+    >3. 针对所有这个组件的实例全部共用同一个值、不响应式更新、不能放在`template`内的值，可以放在组件外部（类似上面的那用用法）。
 2. 每个组件实例都有相应的`watcher`实例对象，它会在组件渲染的过程中把属性记录为依赖，之后当依赖项的`setter`被调用时，会通知`watcher`重新计算，从而致使它关联的组件得以更新（[虚拟DOM系统](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#虚拟dom系统)）。
 3. 响应式操作：Vue实例的`data`的属性值、vuex的store的属性值
 
