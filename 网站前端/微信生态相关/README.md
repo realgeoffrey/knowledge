@@ -79,6 +79,9 @@
 
     现代版本Android微信好像也不是~~x5~~内核，而转用系统内置WebView内核了。
 5. 微信支付等提示`签名参数构造错`，尝试关闭代理后再试。
+6. 若自定义CA证书有问题，则微信里可能就会拦截从而不发起请求（在其他APP可能只是提示证书有问题）。
+
+    可能是操作系统问题或APP本身问题，尝试升级至最新版本。
 
 ### `WeixinJSBridge`
 >`WeixinJSBridge`是底层的接口，建议使用官方封装的[JSSDK](https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/JS-SDK.html)。

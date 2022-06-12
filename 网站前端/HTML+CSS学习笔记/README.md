@@ -1698,7 +1698,7 @@ CSS渐变是以CSS背景图的形式展示，但没有内在尺寸（没有固�
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="mask-icon" href="/favicon.svg" color="#fff">
 
-<!--<link rel="manifest" href="/site.webmanifest">-->
+<!--<link rel="manifest" href="/site.webmanifest">--><!-- PWA -->
 <!--<meta name="msapplication-TileColor" content="#2b5797">-->
 <!--<meta name="theme-color" content="#ffffff">-->
 ```

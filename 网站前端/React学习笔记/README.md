@@ -1626,7 +1626,7 @@
     1. 当组件收到新的`props`或`state`时，会在渲染之前执行。
     2. 首次渲染时不执行。
 
-    >不可调用`this.setState`；在`componentWillUpdate`返回之前，你也不应该执行任何其他操作（例如，`dispatch` Redux的`action`）触发对React组件的更新。
+    >不可调用`this.setState`；在`componentWillUpdate`返回之前，你也不应该执行任何其他操作（例如，redux的`store.dispatch(某个action)`）触发对React组件的更新。
 11. `UNSAFE_componentWillMount()/componentWillMount`
 
     >唯一会在服务端渲染时调用的生命周期。避免引入任何副作用或订阅。
@@ -1686,7 +1686,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     2. `修改变量的方法名`
 
         1. 可传入：新值 或 函数（`(旧值) => 新值`）
-        2. 若传入修改状态的值和当前的值完全相同，则不会产生渲染、effect不会执行、也不会运行整个函数组件（子组件也跳过）。
+        2. 若`修改变量的方法名`的返回值和当前的值完全相同，则不会产生渲染、effect不会执行、也不会运行整个函数组件（子组件也跳过）。
 
             >使用`Object.is`进行比较。
         3. 与`this.setState`不同点：不会把新的state和旧的state进行合并，而是用新的state整个替换旧的state。
@@ -2373,9 +2373,11 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
     1. store
 
+        通过传入`reducer`（作为root reducer）来创建。
+
         ```javascript
         import { createStore } from 'redux'
-        import reducers对象 from './reducers'  // reducers对象 === combineReducers({ reduce1: reduce函数1, reduce2: reduce函数2 })
+        import reducers对象 from './reducers'  // reducers对象 === combineReducers({ reduce1: reduce函数1, reduce2: reduce函数2 })。root reducer
 
         // store 是通过传入一个reducer来创建的
         let store = createStore(reducers对象[, state初始状态])    // store === { getState, dispatch, subscribe }
@@ -2396,9 +2398,9 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             触发后，store将执行所有reducer函数（root reducer）并计算出更新后的state，之后调用getState()可以获取新state。
 
             >更新state的唯一方式。
-        3. 通过`store.subscribe(监听函数)`注册监听器，并返回注销监听器方法
+        3. 通过`store.subscribe(监听函数)`注册监听器，并返回注销监听器方法，store变化后会触发`监听函数`
 
-            >在react中使用react-redux代替手动监听。
+            >在react中使用react-redux代替手动书写`store.subscribe`监听逻辑。
     2. state
 
         >来自服务端的state可以在无需编写更多代码的情况下被序列化并注入到前端（`JSON.stringify/parse`）。
@@ -2409,12 +2411,26 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
             可以从store状态树中提取指定的片段。随着应用变得越来越大，会遇到应用程序的不同部分需要读取相同的数据，selector可以避免重复这样的读取逻辑。
 
-            >e.g.
+            ><details>
+            ><summary>e.g.</summary>
             >
             >```javascript
             >const selectXx = state => state.Xx
             >const currentXx = selectXx(store.getState())
             >```
+            >
+            >```javascript
+            >import { connect } from 'react-redux'
+            >
+            >`connect`的第一个参数
+            >```
+            >
+            >```javascript
+            >import { useSelector } from 'react-redux'
+            >
+            >useSelector(Selector函数)
+            >```
+            ></details>
     3. action
 
         普通对象。`{ type: 「字符串」[, 多个参数（payload）: 值 ]}`，描述已发生事件，store数据的唯一来源。
@@ -2430,7 +2446,9 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         3. action创建函数（action creator）：
 
             返回action的函数，作用是让你不必每次都手动编写action对象。
-        4. 调用`dispatch(某个action)`将执行所有reducer函数（root reducer）并计算出更新后的state
+
+            >（若使用thunk，则）也可以返回`thunk函数`。
+        4. 调用`store.dispatch(某个action)`将执行所有reducer函数（root reducer）并计算出更新后的state
     4. reducer
 
         函数。接受当前state和发送来的action，（仅基于state和action）返回新的state。
@@ -2440,10 +2458,10 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         1. ~~不要进行~~：
 
             1. 修改传入的参数（state、action）
-            2. 执行有副作用的操作，如：API请求或路由跳转、异步逻辑
+            2. 执行有副作用的操作。e.g. API请求或路由跳转、异步逻辑
 
                 >reducer是纯函数：当传入参数相同时（state、action），返回的state也相同，没有副作用。
-            3. 调用非纯函数，如：`Data.now()`或`Math.random`
+            3. 调用非纯函数。e.g. `Data.now()`或`Math.random`
         2. 默认情况 或 遇到未知的action时，返回旧的state
 
             ><details>
@@ -2465,10 +2483,18 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             >
             >```javascript
             >import { combineReducers } from 'redux'
+            >import reduce函数1 from '../xxSlice'
             >
             >export default combineReducers({
-            >  属性名1: reduce函数1,  // 只能一级对象，不能：属性名1: { 属性名2: reduce函数1, }
-            >  属性名2: reduce函数2
+            >  属性名1: reduce函数1,         // 只能一级对象，不能：属性名1: { 属性名2: reduce函数1, }
+            >  属性名2: (state, action) => {
+            >    switch (action.type) {
+            >      case xxx:
+            >        return Object.assign({}, state, action.data)
+            >      default:
+            >        return state
+            >    }
+            >  }
             >})
             >```
             ></details>
@@ -2487,7 +2513,9 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
         整个应用的state被储存在一棵object tree中，并且这个object tree只存在于唯一一个store中：store -> object tree -> 众多state。
     2. state是只读的，不可变的
-    3. 使用纯函数来执行修改（reducer）
+
+        更新state的唯一方式：`store.dispatch(某个action)`。
+    3. reducer是纯函数
 4. 工具
 
     1. 与React配合使用：[react-redux](https://github.com/reduxjs/react-redux)
@@ -2515,14 +2543,16 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
                   document.getElementById('root')
                 )
                 ```
-            2. ~~手动监听~~
+            2. ~~手动监听`store.subscribe`~~
         2. 函数组件内使用（hooks）
 
             `import { useSelector, useDispatch, useStore } from 'react-redux'`
 
             1. `useSelector`
 
-                `const state值 = useSelector(state => { return state.slice名 })`
+                `const state切片值 = useSelector(state => { return state.slice名 }[, 浅比较函数])`
+
+                >`浅比较函数`可以直接用`import { shallowEqual } from 'react-redux'`，作用：浅比较前后`state切片值`是否相同，如果相同则不触发更新。
             2. `useDispatch`
 
                 ```javascript
@@ -2542,12 +2572,152 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             import { connect } from 'react-redux'
 
             export default connect(
-              mapStateToProps: (state, ownProps) => { props某属性: state相关内容, },         // redux的store 映射到 组件的props。默认方法返回：state: state
-              mapDispatchToProps: (dispatch, ownProps) => { props某方法: dispatch相关内容, } // redux的dispatch 映射到 组件的props。默认方法返回：dispatch: dispatch
+              (state, ownProps) => { props某属性: state相关内容, },        // mapStateToProps：redux的store 映射到 组件的props。默认方法返回：state: state
+              (dispatch, ownProps) => { props某方法: dispatch相关内容, }   // mapDispatchToProps：redux的dispatch 映射到 组件的props。默认方法返回：dispatch: dispatch
             )(class组件)
             ```
     2. 简化逻辑的最佳实践：[redux-toolkit](https://github.com/reduxjs/redux-toolkit)（包含：[redux](https://github.com/reduxjs/redux)、[redux-thunk](https://github.com/reduxjs/redux-thunk)、[reselect](https://github.com/reduxjs/reselect)、[immer](https://github.com/immerjs/immer)、等）
-    3. 开发者工具：[redux-devtools](https://github.com/reduxjs/redux-devtools)、[redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension)
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```jsx
+        >// ./index.js
+        >import ReactDOM from 'react-dom';
+        >import store from './store';
+        >import { Provider } from 'react-redux';
+        >import Counter from '../features/counter/Counter';
+        >
+        >ReactDOM.render(
+        >  <Provider store={store}>
+        >    <Counter />
+        >  </Provider>,
+        >  document.getElementById('root')
+        >);
+        >```
+        >
+        >```jsx
+        >// ./store.js
+        >import { configureStore } from '@reduxjs/toolkit';
+        >import counterReducer from '../features/counter/counterSlice';
+        >
+        >// 默认启用了 redux-thunk 中间件
+        >export default configureStore({
+        >  reducer: {
+        >    counter: counterReducer,
+        >  },
+        >});
+        >```
+        >
+        >```jsx
+        >// ../features/counter/counterSlice.js
+        >import { createSlice } from '@reduxjs/toolkit';
+        >
+        >const counterSlice = createSlice({
+        >  name: 'xx',
+        >  initialState: {
+        >    value: 0,
+        >  },
+        >  reducers: {
+        >    increment: state => {
+        >      state.value += 1;
+        >    },
+        >    decrement: state => {
+        >      state.value -= 1;
+        >    },
+        >    incrementByAmount: (state, action) => {
+        >      state.value += action.payload;
+        >    },
+        >  },
+        >});
+        >
+        >// action
+        >export const { increment, decrement, incrementByAmount } = counterSlice.actions;
+        >
+        >// thunk
+        >export const incrementAsync = amount => dispatch => {  // 用法：dispatch(incrementAsync(数字))
+        >  setTimeout(() => {
+        >    dispatch(incrementByAmount(amount));
+        >  }, 1000);
+        >};
+        >export const incrementAsync2 = (amount) => {
+        >  return async (dispatch, getState) => {
+        >    try {
+        >      await sleep(1000);
+        >      dispatch(incrementByAmount(amount));
+        >    } catch (err) {
+        >    }
+        >  };
+        >};
+        >
+        >// selector
+        >export const selectCount = state => state.counter.value;
+        >
+        >// reducer
+        >export default counterSlice.reducer;
+        >```
+        >
+        >```tsx
+        >// ../features/counter/Counter.js
+        >import { useSelector, useDispatch } from 'react-redux'
+        >import {
+        >  increment,
+        >  decrement,
+        >  incrementByAmount,
+        >  incrementAsync,
+        >  incrementAsync2,
+        >  selectCount
+        >} from './counterSlice'
+        >
+        >export function Counter() {
+        >  const count = useSelector(selectCount)
+        >  const dispatch = useDispatch()
+        >
+        >  return (
+        >    <div
+        >      onClick={() => {
+        >        dispatch(increment())
+        >        dispatch(decrement())
+        >        dispatch(incrementByAmount(1))
+        >        dispatch(incrementAsync(2))
+        >        dispatch(incrementAsync2(3))
+        >      }}
+        >    >
+        >      {count}
+        >    </div>
+        >  )
+        >}
+        >```
+        ></details>
+
+        1. `configureStore`
+
+            >默认启用了`redux-thunk`中间件。
+        2. `createSlice`
+        3. `createSelector`
+
+            记忆化selector
+        4. `createEntityAdapter`
+        5. `createAsyncThunk`
+    3. 开发者工具：[redux-devtools](https://github.com/reduxjs/redux-devtools)
+    4. 中间件（Middleware）
+
+        把原本只能同步的`store.dispatch(某个action)`变成异步或更多功能。
+
+        - 可实现
+
+            1. `store.dispatch(参数)`时执行额外的逻辑（例如打印action的日志、状态）
+            2. 暂停、修改、延迟、替换或停止dispatch的action
+            3. 编写可以访问dispatch和getState的额外代码
+            4. 教dispatch如何接受除普通action对象之外的其他值（e.g. 函数、promise），通过拦截它们并dispatch实际action对象来代替
+
+        ![redux中间件](./images/redux-async.gif)
+
+        1. [redux-thunk](https://github.com/reduxjs/redux-thunk)
+
+            `store.dispatch(thunk函数 或 thunk函数生成器(参数))`，其中thunk函数的参数是`dispatch`、`getState`。
+
+            >`thunk函数生成器`也是action creator。
 
 #### [dva](https://github.com/dvajs/dva)
 >基于redux和redux-saga的精简封装数据流方案。然后为了简化开发体验，还额外内置了react-router和fetch，所以也可以理解为一个轻量级的应用框架。

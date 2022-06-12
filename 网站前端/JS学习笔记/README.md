@@ -1884,7 +1884,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
 ### Web Storage && cookie
 >1. 因为HTTP请求都会携带cookie，因此cookie最好仅用于服务端判定状态。
->2. 浏览器数据存储方式：cookie、Web Storage、IndexedDB、Web SQL、Manifest、Service Workers。
+>2. 浏览器数据存储方式：变量、cookie、Web Storage、IndexedDB、~~Web SQL~~、~~`<html>`的Manifest~~、Service Workers。
 
 1. Web Storage（`localStorage`、`sessionStorage`）
 

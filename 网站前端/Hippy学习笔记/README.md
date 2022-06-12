@@ -135,6 +135,7 @@
             2. 仅有`<Text>`有不同截断效果（ellipsizeMode），其他组件需要自己实现（计算字符数，结尾自己添加`...`或图片覆盖）。
             3. 不包裹在`<Text>`内的文字内容，无法渲染新值，只能展示首次渲染值。
             4. 文本若不设置`lineHeight`（或`height`），可能导致渲染出的行高影响整体渲染，甚至影响祖父元素的高度或间距，无法达到确定的"稳定状态"。
+            5. 若出现文字上下被截断的情况，则也试着设置大一些的`lineHeight`去解决。
         4. `<ViewPager>`
 
             >`height`和`flexBasis`类似。
@@ -698,10 +699,9 @@
             1. `'relative'`（默认）
             2. `'absolute'`
 
-                1. 起点：从父级内容开始计算（不包括父级的`border`、`padding`、`margin`）；从本身的`margin`开始计算。
-                2. Tips（bug？）：
+                1. 起点：从父级`border`内开始计算（父级的`margin`、`padding`不影响子级`absolute`位置相对父级位置）；从本身的`margin`开始计算。
 
-                    Android机型，子级元素一定会被父级元素截断（父级元素固定`overflow: 'hidden'`不可改变）。
+                    >与CSS表现一致。
 
             - 不支持 ~~`fixed`~~。若要制作`fixed`效果，则：
 
@@ -730,7 +730,7 @@
         1. `'visible'`（默认）
         2. `'hidden'`
 
-            >Android机型，子级元素一定会被父级元素截断（父级元素固定`overflow: 'hidden'`不可改变）。
+            Android机型，大部分子级元素一定会被父级元素截断（就像：父级元素固定`overflow: 'hidden'`不可改变），但是部分客户端组件还是需要父级设置`overflow: 'hidden'`才截断。
     11. 背景
 
         >不能直接 ~~`background`~~，无效果。
