@@ -169,7 +169,7 @@
             >database->collection->document(field)。
         2. 键值存储数据库（键-值）
 
-            Redis
+            Redis、IndexedDB
         3. 列存储数据库（column-oriented）
         4. 图形数据库（graph）
 2. 关系型数据库的范式

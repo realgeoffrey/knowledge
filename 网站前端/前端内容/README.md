@@ -197,6 +197,8 @@
         4. 高频事件（如：`scroll`、`mousemove`、`touchmove`）使用[函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)，避免在高频事件中进行运行时间长的代码。
         5. 避免强制同步布局、避免布局抖动。
         6. 使用`Web Worker`处理复杂的计算。
+
+            >[MDN：Web Workers可以使用的函数和类](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Functions_and_classes_available_to_workers)。
         7. 正则表达式尽可能准确地匹配目标字符串，以减少不必要的回溯。
         8. 针对在用框架，使用合理的特性实现业务逻辑。
 

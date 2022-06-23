@@ -20,7 +20,7 @@
     1. [判断数据类型](#判断数据类型)
     1. [循环遍历](#循环遍历)
     1. [跨域请求](#跨域请求)
-    1. [Web Storage && cookie](#web-storage--cookie)
+    1. [Web Storage && cookie && IndexedDB](#web-storage--cookie--indexeddb)
     1. [错误处理机制](#错误处理机制)
     1. [预加载](#预加载)
     1. [判断对象、方法是否定义](#判断对象方法是否定义)
@@ -1767,7 +1767,6 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         类似`Array.prototype.filter`
 
 ### 跨域请求
-
 ><details>
 ><summary>浏览器同源策略（协议、域名、端口号，必须完全相同）限制</summary>
 >
@@ -1882,7 +1881,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
         通过成功访问代理服务器，利用代理服务器转发请求获得数据后（同源策略仅限于浏览器）再返回给浏览器。
 
-### Web Storage && cookie
+### Web Storage && cookie && IndexedDB
 >1. 因为HTTP请求都会携带cookie，因此cookie最好仅用于服务端判定状态。
 >2. 浏览器数据存储方式：变量、cookie、Web Storage、IndexedDB、~~Web SQL~~、~~`<html>`的Manifest~~、Service Workers。
 
@@ -1893,10 +1892,14 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     3. ie8+支持（ie及FF需在web服务器里运行）。
 
         >ie6/7可以用它们独有的`UserData`代替使用。
-    4. 单个对象数据大小5M+。
+    4. 单个对象数据大小5M+（或2.5MB~10MB）。
     5. 拥有方便的API
 
-        1. 调用`localStorage`、`sessionStorage`对象会为每个源（每个tab）创建独立的`Storage`对象，每个对象都拥有：`setItem`、`getItem`、`removeItem`、`clear`、`key`方法，`length`属性。
+        同步。
+
+        1. 调用`localStorage`、`sessionStorage`对象会为每个源（每个tab）创建独立的`Storage`对象，每个对象都拥有：
+
+            `setItem`、`getItem`、`removeItem`、`clear`、`key`方法，`length`属性。没有~~索引功能~~。
         2. `window`的`storage`事件，会在其他tab的同源页面修改`localStorage`值时触发（增、删、改，`setItem`相同值时不触发）。
     6. 区别
 
@@ -1910,7 +1913,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
             1. 同源且同会话（tab窗口）共享。
             2. 会话级别存储。跳转页面为同源后仍旧有效（不同tab不共通），关闭浏览器后被清除（重新加载或关闭后恢复，任然存在）。
             3. 应用场景：需要拆分成多个子页面分别存储的数据。
-2. cookie：
+2. cookie
 
     1. 客户端保存（JS添加或响应头设置），始终在HTTP请求中携带（同源同路径，或父域名、父路径），明文传递，服务端接收、操作客户端cookie。
 
@@ -1920,6 +1923,8 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     3. 所有浏览器都支持。
     4. 单域名内，cookie保存的数据不超过4k，数量（最少）20个。
     5. 源生的cookie接口不友好，需要自己[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js操作cookie)。
+
+        同步。
 
         1. JS的`document.cookie`：
 
@@ -1945,6 +1950,21 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     ><summary>僵尸cookie（<a href="https://en.wikipedia.org/wiki/Zombie_cookie">zombie cookie</a>）</summary>
     >是指那些删不掉的，删掉会自动重建的cookie。僵尸cookie是依赖于其他的本地存储方法（如：Flash的share object、HTML5的local storages等），当用户删除cookie后，自动从其他本地存储里读取出cookie的备份，并重新种植。
     ></details>
+3. IndexedDB
+
+    1. 客户端保存，不参与服务器通信。
+    2. 所有类型的数据都可以直接存入。
+
+        1. 不属于~~关系型数据库~~（不支持~~SQL查询语句~~），更接近NoSQL数据库。
+        2. 对象仓库中，数据以"键值对"的形式保存，每一个数据记录都有对应的主键，主键是独一无二的，不能有重复，否则会抛出一个错误。
+        3. IndexedDB不仅可以储存字符串，还可以储存二进制数据（ArrayBuffer对象和Blob对象）。
+    3. ie10+。
+    4. 单个库储存空间250MB+。
+    5. 异步。支持事务。
+
+        复杂的API。
+    6. 同源共享。
+    7. 持久化本地存储。
 
 >隐身模式策略：存储API仍然可用，并且看起来功能齐全，只是无法真正储存（如：分配储存空间为0）。
 
