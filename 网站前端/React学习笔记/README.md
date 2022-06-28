@@ -2400,6 +2400,11 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             触发后，store将执行所有reducer函数（root reducer）并计算出更新后的state，之后调用getState()可以获取新state。
 
             >更新state的唯一方式。
+
+            - 返回值
+
+                1. `store.dispatch(某个action)`返回：`某个action`
+                2. （若使用thunk，则）`store.dispatch(thunk函数)`返回：`thunk函数()`（可返回Promise实例）
         3. 通过`store.subscribe(监听函数)`注册监听器，并返回注销监听器方法，store变化后会触发`监听函数`
 
             >在react中使用react-redux代替手动书写`store.subscribe`监听逻辑。
@@ -2633,15 +2638,18 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         >  },
         >});
         >
-        >// action
+        >// action creator
         >export const { increment, decrement, incrementByAmount } = counterSlice.actions;
+        >// createSlice会自动生成与我们编写的reducer函数同名的action creator。参数会成为action的payload，e.g. incrementByAmount(参数) -> {type: 'xx/incrementByAmount', payload: 参数}
         >
-        >// thunk
-        >export const incrementAsync = amount => dispatch => {  // 用法：dispatch(incrementAsync(数字))
-        >  setTimeout(() => {
-        >    dispatch(incrementByAmount(amount));
-        >  }, 1000);
-        >};
+        >// thunk creator（action creator）
+        >export const incrementAsync = amount => // 用法：dispatch(incrementAsync(数字))
+        >  // thunk
+        >  dispatch => {
+        >    setTimeout(() => {
+        >      dispatch(incrementByAmount(amount));
+        >    }, 1000);
+        >  };
         >export const incrementAsync2 = (amount) => {
         >  return async (dispatch, getState) => {
         >    try {

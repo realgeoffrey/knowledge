@@ -25,7 +25,6 @@
 1. [查看group、user](#查看groupuser)
 1. [指令的别名](#指令的别名)
 1. [`adb`](#adb)
-1. [`nohup`](#nohup)
 1. [`sleep`](#sleep)
 1. [`xargs`](#xargs)
 1. [批量删除文件](#批量删除文件)
@@ -544,15 +543,6 @@ unalias 「自定义命令名」    # 删除 别名
     ```shell
     adb install 「包地址」
     ```
-
-#### `nohup`
-用于忽略SIGHUP（signal hang up，挂断信号：终端注销时所发送至程序的一个信号）。
-
-```shell
-nohup 「命令」 &    # 后台执行命令。命令的标准输出到当前目录或$HOME的`nohup.out`文件
-```
-
-杀死后台进程先`ps`后`kill`：[查看端口占用、网络链接，查看进程并杀死](#查看端口占用网络链接查看进程并杀死)。
 
 #### `sleep`
 ```shell

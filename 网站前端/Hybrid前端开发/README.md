@@ -72,6 +72,8 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 4. 身份验证机制
 
     Native创建WebView时，根据客户端登录情况注入跟登录有关的信息（session_id或token）至WebView（可注入到全局对象或cookie）。
+
+    >cookie有同源策略，所以客户端可以对指定白名单域名添加cookie。
 5. 开发测试
 
     1. 提供**切换成线上资源请求方式**的功能，用代理工具代理成本地资源。
