@@ -1400,6 +1400,8 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >
         >type F1ReturnType = ReturnType<F1>;        // Date
         >type F2ReturnType = ReturnType<typeof F2>; // Date
+        >
+        >type F3 = ReturnType<typeof setTimeout>;   // number
         >```
         ></details>
     11. `Parameters`

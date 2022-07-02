@@ -527,7 +527,7 @@ Bash只有一种数据类型：字符串。不管用户输入什么数据，Bash
         Bash脚本的解释器一般是`/bin/sh`或`/bin/bash`，也可以是其他语言的解释器。
     2. 若Bash解释器不放在目录`/bin`，则脚本无法执行
 
-        为了保险，可以写成`#!/usr/bin/env 「解释器名」`，如：`#!/usr/bin/env bash或node或python等`。
+        为了保险，可以写成`#!/usr/bin/env 「解释器名」`，如：`#!/usr/bin/env bash或node或python或其他自定义解释器`。
     3. Shebang行不是必需的，但建议加上。若缺少该行，则需要手动将脚本传给解释器
 
         若包含shebang行，则可直接调用`./脚本`（当前用户拥有执行该文件的权限），否则需要解释器+脚本：`bash ./脚本`（或其他Shell）。

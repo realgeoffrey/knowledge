@@ -1064,9 +1064,12 @@
 
         在其他地方全局引入`.css`文件（`import './x.css'` 或 html的css引入），`className="类名"`或`className={变量或类名字符串}`
 
-        - 其他支持
+        - 除了引入.css文件（或CSS预处理器文件）之外，其他支持：
 
-            1. css modules
+            1. 局部作用域、CSS类模块：[css modules](https://github.com/css-modules/css-modules)（可以与CSS预处理器配合使用）
+            2. CSS in JS方案：[styled-components](https://github.com/styled-components/styled-components)（运行时生成`<style>`类样式，供给生成的样式组件的className使用）
+
+                >CSS in JS：CSS由JavaScript生成而不是~~在外部文件（.css文件或CSS预处理器文件）中定义~~。
 8. 事件处理
 
     1. 小驼峰式（camelCase）定义事件名
@@ -2381,7 +2384,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         import { createStore } from 'redux'
         import reducers对象 from './reducers'  // reducers对象 === combineReducers({ reduce1: reduce函数1, reduce2: reduce函数2 })。root reducer
 
-        // store 是通过传入一个reducer来创建的
+        // store 是通过传入一个reducer（root reducer）来创建的
         let store = createStore(reducers对象[, state初始状态])    // store === { getState, dispatch, subscribe }
 
 
@@ -2483,7 +2486,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             >}
             >```
             ></details>
-        3. 拆分reducer再合成：`combineReducers`
+        3. 拆分reducer再合成：`combineReducers`（生成root reducer）
 
             ><details>
             ><summary>e.g.</summary>
@@ -2610,8 +2613,9 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         >
         >// 默认启用了 redux-thunk 中间件
         >export default configureStore({
-        >  reducer: {
+        >  reducer: {   // 或 reducer: combineReducers({ counter: counterReducer, 其他: 其他Reducer })
         >    counter: counterReducer,
+        >    其他: 其他Reducer
         >  },
         >});
         >```
