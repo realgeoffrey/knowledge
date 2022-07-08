@@ -422,7 +422,7 @@
                         # 能够使用变量的指令：ADD COPY ENV EXPOSE FROM LABEL STOPSIGNAL USER VOLUME WORKDIR ONBUILD
                         # 构建时存在 且 镜像启动的容器也会保留（环境变量）
 
-            ARG         # `docker build` + `--build-arg 「名」=「值」`传入的键值对
+            ARG         # `docker build` + `--build-arg 「名」=「值」`传入的键-值
                         # e.g. 定义：ARG key1[=「默认值」]；使用：$key1
                         # 仅构建时存在，不会保留到容器中（不写入环境变量）
 

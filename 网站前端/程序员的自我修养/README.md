@@ -167,7 +167,7 @@
             MongoDB
 
             >database->collection->document(field)。
-        2. 键值存储数据库（键-值）
+        2. 键-值存储数据库
 
             Redis、IndexedDB
         3. 列存储数据库（column-oriented）

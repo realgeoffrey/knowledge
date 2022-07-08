@@ -21,7 +21,7 @@
     >```
 2. 所有文件都当作是**模块（module）**：`脚本（js、jsx、tsx、coffee）`、`样式（css、scss、sass、less）`、`模版（html、tpl）`、`JSON`、`图片`、`字体`。
 
-    webpack自身只理解JS，使用`loader`把所有类型的文件（链式）转换为模块。
+    webpack自身只理解JS和JSON文件，使用`loader（加载器）`把所有类型的文件（链式）转换为模块。
 3. 从入口起点（`entry`）开始进入文件进行解析，递归地构建一个依赖图（dependency graph），这个依赖图包含着应用程序所需的每个模块，模块通过`加载器`解析完毕，之后经过`插件`二次处理，最终将所有这些模块打包为少量的bundle由浏览器加载。
 4. 概念
 
@@ -61,6 +61,11 @@
     3. `module`：加载器定义模块（文件）的处理方式
 
         >`use`有顺序之分，数组逆序执行。
+
+        1. `loader`：加载器。
+
+            1. `module.rules[].text`：标识出应该被对应的loader进行转换的某个或某些文件。
+            2. `module.rules[].use`：进行转换时，应该使用哪个loader。
     4. `plugin`：插件对编译完成后的内容（加载器处理之后）进行二度加工
 
         >每个plugin都会绑定各种webpack生命周期钩子进行执行plugin内某些具体内容，用户一般不用关注各plugins之间执行顺序。

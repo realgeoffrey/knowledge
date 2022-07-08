@@ -413,9 +413,41 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
 
             1. [ECMAScript标准提供的内置对象](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects)
             2. 文档对象模型（DOM）、浏览器对象模型（BOM）的内置对象
+
         - ~~Node.js~~
 
             Node.js不是内置对象的一部分，需引入第三方声明文件：`npm install @types/node --save-dev`。
+
+    - 返回Promise类型
+
+        `Promise<resolve的类型>`仅能定义完成的Promise实例，不能定义失败的。失败的Promise实例总是认为是`unknown`。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >function a(): Promise<number | string> {  // 仅能定义resolve
+        >  return new Promise((resolve, reject) => {
+        >    const random = Math.random();
+        >    if (random < 0.3) {
+        >      resolve(1);               // number
+        >    } else if (random < 0.6) {
+        >      resolve("1");             // string
+        >    } else {
+        >      reject(false);            // 完全忽略reject
+        >    }
+        >  });
+        >}
+        >
+        >function b(): Promise<string> {
+        >  return Promise.resolve(123);  // 报错，要求 string
+        >}
+        >
+        >function c(): Promise<string> {
+        >  return Promise.reject(123);   // 没问题，完全忽略reject
+        >}
+        >```
+        ></details>
 2. 类
 
     1. 访问修饰符（Access Modifiers）
@@ -570,6 +602,8 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
         >let greeter2: Greeter
         >greeter2 = new greeterMaker()
         >console.log(greeter2.greet(), greeter2.greeting)
+        >
+        >type A = keyof typeof Greeter  // -> 'greeting' | 'greet'
         >```
         ></details>
     3. `abstract`
@@ -1715,9 +1749,12 @@ TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持�
     >  location?: string;
     >}
     >
-    >type K1 = keyof Person;                  // -> "name" | "age" | "location"
-    >type K2 = keyof Person[];                // -> number | "length" | "push" | "pop" | "concat" | ...
-    >type K3 = keyof { [x: string]: Person }; // -> string | number （隐式转换key为number）
+    >type K1 = keyof Person;                        // -> "name" | "age" | "location"
+    >type K2 = keyof Person[];                      // -> number | "length" | "push" | "pop" | "concat" | ...
+    >type K3 = keyof { [x: string]: Person };       // -> string | number （隐式转换key为number）
+    >
+    >const a = { 'b': 1, 'c': '2', 3: 3, '4': 4 };
+    >type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
     >```
     ></details>
 

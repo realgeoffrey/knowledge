@@ -74,6 +74,7 @@
         1. [默认图组件](#react默认图组件)
         1. [溢出文本的省略](#原生js溢出文本的省略)
         1. [React组件业务类似Promise.all的效果](#react组件业务类似promiseall的效果)
+        1. [轮询](#原生js轮询)
     1. 提升性能
 
         1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
@@ -1945,7 +1946,7 @@ const a = new ScrollStopPropagation(document.getElementById('j-bounce'))
 </script>
 ```
 [CodePen demo](https://codepen.io/realgeoffrey/pen/oKYJOg)
->参考[ScrollFix](https://github.com/joelambert/ScrollFix)。
+>参考：[ScrollFix](https://github.com/joelambert/ScrollFix)。
 
 ### *原生JS*获取滚动条宽度（或高度）
 ```javascript
@@ -3139,6 +3140,103 @@ export default function Demo(props: { show: boolean }) {
   );
 }
 ```
+
+### *原生JS*轮询
+```typescript
+// 提供给 taskFn 内部返回 Promise.reject(CANCEL_TOKEN)
+export const CANCEL_TOKEN = "CANCEL_TOKEN";
+
+interface Options<T> {
+  // 轮询执行方法（额外约定主动结束轮询：返回`Promise.reject(CANCEL_TOKEN)`）
+  //   若返回 Promise.resolve，则执行成功、轮询成功结束；
+  //   若返回 Promise.reject，则执行失败：
+  //     若主动结束轮询 或 轮询重试用完，则轮询失败结束，否则继续轮询
+  taskFn: () => Promise<T>;
+  // 整个轮询超时时间（ms）
+  masterTimeout?: number;
+  // 重试回调(剩余重试次数, 本次错误信息)
+  progressCallback?: (retriesRemain: number, err: unknown) => void;
+
+  // 轮询次数
+  retries?: number;
+  // 重试间隔（ms）
+  retryInterval?: number;
+}
+
+// 轮询执行
+export const promisePoller = <T>(options: Options<T>): Promise<T> => {
+  const { taskFn, masterTimeout, progressCallback, retries = 5, retryInterval = 1000 } = options;
+
+  let timeoutId: number = 0;
+  let pollingSafe = true; // 是否可以继续轮询
+  let rejections: Array<unknown> = []; // 存放失败信息
+  let retriesRemain = retries;
+
+  return new Promise((resolve, reject) => {
+    if (masterTimeout) {
+      timeoutId = window.setTimeout(() => {
+        pollingSafe = false;
+        reject(rejections.concat("轮询总时间超时"));
+      }, masterTimeout);
+    }
+
+    const poll = () => {
+      taskFn()
+        .then((result) => {
+          clearTimeout(timeoutId);
+          resolve(result);
+        })
+        .catch((err: typeof CANCEL_TOKEN | unknown) => {
+          if (err === CANCEL_TOKEN) {
+            clearTimeout(timeoutId);
+            reject(rejections.concat("主动结束轮询"));
+          } else {
+            // 存储轮询失败信息
+            rejections.push(err);
+
+            // 剩余重试次数减一
+            retriesRemain -= 1;
+
+            progressCallback?.(retriesRemain, err);
+
+            if (retriesRemain > 0) {
+              pollingSafe && delay(retryInterval).then(poll);
+            } else {
+              clearTimeout(timeoutId);
+              reject(rejections);
+            }
+          }
+        });
+    };
+
+    poll();
+  });
+};
+
+const delay = (ms: number) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
+
+/* 使用测试 */
+let i = 0;
+promisePoller({
+  taskFn() {
+    return new Promise(async (resolve, reject) => {
+      await delay(100);
+      i++;
+      if (i < 3) {
+        reject(new Error(String(i)));
+      } else {
+        resolve(i);
+        // reject(CANCEL_TOKEN)
+      }
+    });
+  },
+}).then((data) => console.warn(data));
+```
+>参考：[promise-poller](https://github.com/joeattardi/promise-poller)。
 
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript

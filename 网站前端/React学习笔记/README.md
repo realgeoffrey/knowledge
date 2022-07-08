@@ -2380,6 +2380,8 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
         通过传入`reducer`（作为root reducer）来创建。
 
+        >若root reducer包含多个键-值（利用`combineReducers`组合），则把root reducer的任意一个键-值区域称为一个'切片'（slice），同时我们使用"切片 reducer"（slice reducer）这个术语，去形容负责更新该切片状态的reducer函数。
+
         ```javascript
         import { createStore } from 'redux'
         import reducers对象 from './reducers'  // reducers对象 === combineReducers({ reduce1: reduce函数1, reduce2: reduce函数2 })。root reducer
@@ -2491,11 +2493,11 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             ><details>
             ><summary>e.g.</summary>
             >
-            >```javascript
+            >```typescript
             >import { combineReducers } from 'redux'
             >import reduce函数1 from '../xxSlice'
             >
-            >export default combineReducers({
+            >const rootReducer = combineReducers({
             >  属性名1: reduce函数1,         // 只能一级对象，不能：属性名1: { 属性名2: reduce函数1, }
             >  属性名2: (state, action) => {
             >    switch (action.type) {
@@ -2506,6 +2508,11 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             >    }
             >  }
             >})
+            >
+            >export default rootReducer;
+            >
+            >// state的类型
+            >export type RootState = ReturnType<typeof rootReducer>;
             >```
             ></details>
 
@@ -2606,18 +2613,29 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         >);
         >```
         >
-        >```jsx
-        >// ./store.js
-        >import { configureStore } from '@reduxjs/toolkit';
+        >```typescript
+        >// ./store.ts
+        >import { configureStore, ThunkAction, Action, combineReducers } from '@reduxjs/toolkit';
         >import counterReducer from '../features/counter/counterSlice';
         >
         >// 默认启用了 redux-thunk 中间件
-        >export default configureStore({
+        >const store = configureStore({
         >  reducer: {   // 或 reducer: combineReducers({ counter: counterReducer, 其他: 其他Reducer })
         >    counter: counterReducer,
         >    其他: 其他Reducer
         >  },
         >});
+        >
+        >export default store;
+        >
+        >export type AppDispatch = typeof store.dispatch;
+        >export type RootState = ReturnType<typeof store.getState>;
+        >export type AppThunk<returnType = void> = ThunkAction<
+        >  returnType,
+        >  RootState,
+        >  unknown,
+        >  Action<string>
+        >>;
         >```
         >
         >```jsx
@@ -2625,11 +2643,11 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         >import { createSlice } from '@reduxjs/toolkit';
         >
         >const counterSlice = createSlice({
-        >  name: 'xx',
-        >  initialState: {
+        >  name: 'xx',      // 被用于生成的action type的前缀（不是切片名）
+        >  initialState: {  // reducer的初始状态值
         >    value: 0,
         >  },
-        >  reducers: {
+        >  reducers: {      // 其中的键会成为action type，而函数是当action type被分发时调用的reducer（有时候它们也会被称为"case reducers"，因为它们类似于switch语句中的case）。默认开启immer
         >    increment: state => {
         >      state.value += 1;
         >    },
@@ -2639,19 +2657,20 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         >    incrementByAmount: (state, action) => {
         >      state.value += action.payload;
         >    },
+        >    // yyy: { reducer (state, action) {}, prepare回调函数 }
         >  },
         >});
         >
         >// action creator
         >export const { increment, decrement, incrementByAmount } = counterSlice.actions;
-        >// createSlice会自动生成与我们编写的reducer函数同名的action creator。参数会成为action的payload，e.g. incrementByAmount(参数) -> {type: 'xx/incrementByAmount', payload: 参数}
+        >// createSlice会自动生成与我们编写的reducer函数同名的action creator，参数会成为action的payload，e.g. incrementByAmount(参数) -> {type: 'xx/incrementByAmount', payload: 参数}
         >
         >// thunk creator（action creator）
         >export const incrementAsync = amount => // 用法：dispatch(incrementAsync(数字))
         >  // thunk
         >  dispatch => {
         >    setTimeout(() => {
-        >      dispatch(incrementByAmount(amount));
+        >      dispatch(incrementByAmount(amount)); // 也可以继续触发thunk
         >    }, 1000);
         >  };
         >export const incrementAsync2 = (amount) => {
@@ -2671,7 +2690,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         >export default counterSlice.reducer;
         >```
         >
-        >```tsx
+        >```jsx
         >// ../features/counter/Counter.js
         >import { useSelector, useDispatch } from 'react-redux'
         >import {
@@ -2706,13 +2725,53 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
         1. `configureStore`
 
-            >默认启用了`redux-thunk`中间件。
-        2. `createSlice`
-        3. `createSelector`
+            包装`createStore`以提供简化的配置选项和良好的默认预设。自动组合切片的reducer，添加你提供的任何Redux中间件。
 
-            记忆化selector
-        4. `createEntityAdapter`
+            >默认启用了`redux-thunk`中间件；默认启用`redux-devtools`扩展。
+        2. `createReducer`
+
+            生成reducer。
+
+            ```javascript
+            const counter1 = createReducer(0, { // 初始状态值、action type的查找表。创建一个reducer来处理所有这些action type
+              [INCREMENT]: state => state + 1,
+              [DECREMENT]: state => state - 1
+            })
+
+            // 等价于：
+
+            function counter2(state = 0, action) {
+              switch (action.type) {
+                case INCREMENT:
+                  return state + 1
+                case DECREMENT:
+                  return state - 1
+                default:
+                  return state
+              }
+            }
+            ```
+
+            >自动启用`immer`。
+        3. `createAction`
+
+            生成action creator、action的type。
+
+            1. `createAction(「type值」)(「payload值」)` 等于 `{ type: 「type值」, payload: 「payload值」 }`。
+            2. `createAction(「type值」).toString()` 等于 `createAction(「type值」).type` 等于 `「type值」`。
+            3. `createAction(「type值」, prepare回调函数)`
+        4. `createSlice`
+
+            >自动启用`immer`。
         5. `createAsyncThunk`
+
+            接受一个action type和一个返回promise的函数，并生成一个发起基于该promise的`pending/fulfilled/rejected`的action类型的thunk。
+        6. `createEntityAdapter`
+        7. `createSelector`
+
+            记忆化selector。
+
+            >来自：[reselect](https://github.com/reduxjs/reselect)。
     3. 开发者工具：[redux-devtools](https://github.com/reduxjs/redux-devtools)
     4. 中间件（Middleware）
 

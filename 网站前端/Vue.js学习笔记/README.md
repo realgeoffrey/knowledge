@@ -1840,7 +1840,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 >    4. vue.js：数据劫持 + 发布者-订阅者模式
 
 ### 虚拟DOM系统
->Vue.js参考[snabbdom](https://github.com/snabbdom/snabbdom)的虚拟DOM实现。
+>Vue.js参考：[snabbdom](https://github.com/snabbdom/snabbdom)的虚拟DOM实现。
 
 ><details>
 ><summary>约定</summary>

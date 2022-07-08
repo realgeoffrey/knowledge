@@ -212,6 +212,23 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
 4. **Values**
 
     配置resPrepend、log等协议中添加的`{变量名}`的HTML内容或JS脚本。
+
+    - [操作值](https://wproxy.org/whistle/data.html)
+
+        1. 可以内嵌多行操作值
+
+            1. 这种内嵌值位置可以在Rules里面任意放置，格式如下：
+
+                `` ``` 「keyName」 ``
+
+                `content`
+
+                `` ``` ``
+            2. 这样可以在Rules里面的任意位置引用该内容：
+
+                ```text
+                pattern protocol://{「keyName」}
+                ```
 5. **Network**
 
     查看右边`log->console`抓取的页面console信息（需要设置**Rules**的log协议）。
