@@ -357,62 +357,64 @@ function getLocation (url) {
 
     >对象转换为`a=1&b=2`：`Object.entries(对象).map((val) => val.join('=')).join('&')`。
 
-    ```javascript
+    ```typescript
     /**
      * 在URL末尾修改search键-值
      * @param {String} [url = window.location.href] - URL
      * @param {Object} searchObj - 修改的search键-值（若key-value的value设置为`false`，则删除这个key）
      * @returns {String} - 修改完毕的URL
      */
-    function changeUrlSearch (url = window.location.href, searchObj = {}) {
-      if (Object.keys(searchObj).length === 0) {  // 空对象不处理
-        return url
+    function changeUrlSearch(url: string = window.location.href, searchObj: Record<string, string | false> = {}): string {
+      if (Object.keys(searchObj).length === 0) {
+        // 空对象不处理
+        return url;
       }
 
-      const hashIndex = url.includes('#') ? url.indexOf('#') : url.length // "#"所在的字符串位置索引
-      const urlWithoutHash = url.slice(0, hashIndex) // 去除hash后的url
-      const searchIndex = urlWithoutHash.indexOf('?')  // "?"所在的字符串位置索引
+      const hashIndex = url.includes("#") ? url.indexOf("#") : url.length; // "#"所在的字符串位置索引
+      const urlWithoutHash = url.slice(0, hashIndex); // 去除hash后的url
+      const searchIndex = urlWithoutHash.indexOf("?"); // "?"所在的字符串位置索引
 
       // 把原始search值写入对象
-      const originalSearchObj = {}
+      const originalSearchObj: Record<string, string> = {};
       if (searchIndex !== -1) {
-        const search = urlWithoutHash.slice(searchIndex + 1)  // search值（不包括 ?）
+        const search = urlWithoutHash.slice(searchIndex + 1); // search值（不包括 ?）
 
         // 写入已存在search的键-值
-        const searchArr = search.split('&')
+        const searchArr = search.split("&");
         for (let i = 0, len = searchArr.length; i < len; i++) {
-          if (searchArr[i] !== '') {
-            const searchItem = searchArr[i].split('=')
-            const key = searchItem.shift()
-            const value = searchItem.join('=')  // 兜底有些值包含"="
-            originalSearchObj[key] = value
+          if (searchArr[i] !== "") {
+            const searchItem = searchArr[i].split("=");
+            const key = searchItem.shift() as string;
+            const value = searchItem.join("="); // 兜底有些值包含"="
+            originalSearchObj[key] = value;
           }
         }
       }
 
       // 合并原始search和新增search（同名覆盖）
-      const newSearchObj = Object.assign({}, originalSearchObj, searchObj)
+      const newSearchObj: Record<string, string | false> = Object.assign({}, originalSearchObj, searchObj);
 
       // 生成新的合并过后的search字符串
       const newSearch = Object.entries(newSearchObj)
         // 值为`false`的key被删除
         .filter(([key, value]) => {
-          return value !== false
+          return value !== false;
         })
         .map((val) => {
-          return val.join('=')
-        }).join('&')
+          return val.join("=");
+        })
+        .join("&");
 
-      const hash = url.slice(hashIndex)  // 原始hash
+      const hash = url.slice(hashIndex); // 原始hash
 
-      let urlWithoutSearch  // 去除search、hash后的url
+      let urlWithoutSearch; // 去除search、hash后的url
       if (searchIndex !== -1) {
-        urlWithoutSearch = urlWithoutHash.slice(0, searchIndex)
+        urlWithoutSearch = urlWithoutHash.slice(0, searchIndex);
       } else {
-        urlWithoutSearch = urlWithoutHash
+        urlWithoutSearch = urlWithoutHash;
       }
 
-      return urlWithoutSearch + (newSearch ? `?${newSearch}` : '') + hash
+      return urlWithoutSearch + (newSearch ? `?${newSearch}` : "") + hash;
     }
     ```
 2. <details>
@@ -2916,17 +2918,21 @@ clipboard("写入的内容~")
 >2. 可以使用[clipboard.js](https://github.com/zenorocha/clipboard.js)。
 
 ### *React*默认图组件
-1. class组件
+1. <details>
+
+    <summary>class组件</summary>
 
     ```tsx
-    import React, { Component } from 'react';
+    import React, { Component } from "react";
 
     interface PropsType {
-      className?: string;
-      style?: React.CSSProperties;
-      onClick?: () => void;
       src: string;
       defaultImage: string;
+      className?: string;
+      classNameForError?: string;
+      style?: React.CSSProperties;
+      onClick?: () => void;
+      alt?: string;
     }
 
     export default class TheImage extends Component<PropsType> {
@@ -2936,22 +2942,38 @@ clipboard("写入的内容~")
 
       componentDidUpdate(prevProps: PropsType) {
         // 检测到图片有更新，需要重新加载
-        if (prevProps?.src !== this.props?.src && this.state.isError) {
-          // eslint-disable-next-line
-          this.setState({
-            isError: false,
-          });
+        if (prevProps.src !== this.props.src) {
+          if (this.props.src && this.state.isError) {
+            this.setState({
+              isError: false,
+            });
+          }
+          if (!this.props.src && !this.state.isError) {
+            this.setState({
+              isError: true,
+            });
+          }
         }
       }
 
       render() {
-        const { style, className, src, onClick, defaultImage } = this.props;
+        const {
+          src,
+          defaultImage,
+          className = "",
+          classNameForError = "",
+          style,
+          onClick,
+          alt,
+        } = this.props;
 
         return (
           <img
-            src={this.state.isError ? defaultImage : src || defaultImage}
+            src={this.state.isError ? defaultImage : src}
+            className={
+              this.state.isError ? `${classNameForError} ${className}` : className
+            }
             style={style}
-            className={className}
             onClick={() => {
               onClick?.();
             }}
@@ -2960,46 +2982,57 @@ clipboard("写入的内容~")
                 isError: true,
               });
             }}
-            alt={`图${src}`}
+            alt={alt || `图${src}`}
           />
         );
       }
     }
     ```
+    </details>
 2. hook函数组件
 
     ```tsx
-    import React, { useEffect, useState } from 'react';
+    import React, { useEffect, useState } from "react";
 
     interface PropsType {
-      className?: string;
-      style?: React.CSSProperties;
-      onClick?: () => void;
       src: string;
       defaultImage: string;
+      className?: string;
+      classNameForError?: string;
+      style?: React.CSSProperties;
+      onClick?: () => void;
+      alt?: string;
     }
 
-    export default function TheImage2(props: PropsType) {
-      const { style, className, src, onClick, defaultImage } = props;
+    export default function TheImage(props: PropsType) {
+      const {
+        src,
+        defaultImage,
+        className = "",
+        classNameForError = "",
+        style,
+        onClick,
+        alt,
+      } = props;
 
       const [isError, setIsError] = useState(false);
 
       useEffect(() => {
-        setIsError(false);
+        setIsError(!src);
       }, [src]);
 
       return (
         <img
-          src={isError ? defaultImage : src || defaultImage}
+          src={isError ? defaultImage : src}
+          className={isError ? `${classNameForError} ${className}` : className}
           style={style}
-          className={className}
           onClick={() => {
             onClick?.();
           }}
           onError={() => {
             setIsError(true);
           }}
-          alt={`图${src}`}
+          alt={alt || `图${src}`}
         />
       );
     }
@@ -3014,6 +3047,7 @@ clipboard("写入的内容~")
       defaultImage="https://fakeimg.pl/100/?text=default"
       style={{ width: "100px", height: "100px" }}
       className='abc'
+      classNameForError='abc-error'
       onClick={() => {
         this.setState({
           switch: !this.state.switch

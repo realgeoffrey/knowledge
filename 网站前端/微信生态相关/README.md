@@ -77,11 +77,14 @@
 3. 重要的流程，调用`wx.config`的方法进行相关的权限配置。
 4. 清理微信WebView的缓存或Cookies等，貌似现在最佳的方案只能是退出-重新登录微信账号。
 
-    现代版本Android微信好像也不是~~x5~~内核，而转用系统内置WebView内核了。
+    >现代版本Android微信也不是~~x5~~内核，而转用系统内置WebView内核。
 5. 微信支付等提示`签名参数构造错`，尝试关闭代理后再试。
 6. 若自定义CA证书有问题，则微信里可能就会拦截从而不发起请求（在其他APP可能只是提示证书有问题）。
 
     可能是操作系统问题或APP本身问题，尝试升级至最新版本。
+7. 直接打开在聊天界面的URL，会有诸多限制，如：无法拉起APP、分享的URL不是卡片而是纯文本 等。
+
+    打开 分享的卡片、二维码扫描 的网址，才有更多页面权限。
 
 ### `WeixinJSBridge`
 >`WeixinJSBridge`是底层的接口，建议使用官方封装的[JSSDK](https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/JS-SDK.html)。

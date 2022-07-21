@@ -127,11 +127,11 @@ npm（Node Package Manager）。
 
             1. 仅本地
 
-                1. 引用的仓库：`npm link 本地模块的路径`
+                1. 引用本地模块的仓库：`npm link 本地模块的路径`
 
                     - 取消：
 
-                        引用的仓库：`npm unlink 模块名`
+                        引用本地模块的仓库：`npm unlink 模块名`
             2. 全局
 
                 1. 本地模块：`npm link`
@@ -141,11 +141,11 @@ npm（Node Package Manager）。
                     - 取消：
 
                         本地模块：`npm unlink`
-                2. 引用的仓库：`npm link 模块名`
+                2. 引用本地模块的仓库：`npm link 模块名`
 
                     - 取消：
 
-                        引用的仓库：`npm unlink 模块名`
+                        引用本地模块的仓库：`npm unlink 模块名`
         4. 发布（默认：发布至`latest`标签）
 
             `npm publish [--tag <tag>]`
@@ -296,6 +296,10 @@ npm（Node Package Manager）。
 
             >非`-`开头的参数可以忽略`--`而传递。e.g. `npm run gulp runCss`等价于：`npm run gulp -- runCss`
         2. [npx](https://github.com/zkat/npx)
+
+            >1. 去`node_modules/.bin`路径检查命令是否存在，找到之后执行；
+            >2. 找不到，就去环境变量`$PATH`里，检查命令是否存在，找到之后执行;
+            >3. 还是找不到，自动下载一个临时的依赖包最新版本在一个临时目录，然后再运行命令，运行完之后删除，不污染全局环境。
 2. [`package.json`](https://docs.npmjs.com/files/package.json)字段
 
     包描述、说明文件。
@@ -495,7 +499,7 @@ npm（Node Package Manager）。
 
     1. 执行阶段（运行时）进行模块加载：确定模块的依赖关系、输入和输出的变量。
 
-        因为本身就是动态引入，`module.exports`和`require`能够在任何位置使用（包括块级作用域）。
+        因为本身就是**动态引入**，`module.exports`和`require`能够在任何位置使用（包括块级作用域）。
     2. 有自己单独作用域，不污染全局作用域，必须`module.exports`才能输出给其他模块。
 
         >不推荐`window.属性`。
@@ -591,6 +595,8 @@ npm（Node Package Manager）。
 
         <summary>查找逻辑</summary>
 
+        >官方解析：[Modules: All together](https://nodejs.org/api/modules.html#all-together)。
+
         ![Node.js的require流程图](./images/nodejs-require-1.jpg)
 
         1. 若 X 以（绝对路径）`/`或（相对路径）`./`、`../`开头
@@ -642,6 +648,18 @@ npm（Node Package Manager）。
         >            bar/index.node
         >            ```
         >    3. 都找不到则抛出`Error: Cannot find module 'bar'`。
+        >- `require('foo')`，将会按如下顺序查找模块：
+        >
+        >    1. `./node_modules/foo`
+        >    2. `../node_modules/foo`
+        >    3. `../../node_modules/foo`
+        >    4. 直到系统的根目录
+        >- `require('foo/bar')`，将会按如下顺序查找模块：
+        >
+        >    1. `./node_modules/foo/bar`
+        >    2. `../node_modules/foo/bar`
+        >    3. `../../node_modules/foo/bar`
+        >    4. 直到系统的根目录
         ></details>
 
         </details>
@@ -997,14 +1015,13 @@ Node.js的全局对象`global`是全局变量的宿主。
         >1. Node.js的`host`和`port`参数
         >
         >    ```javascript
-        >    const http = import("http");
-        >
+        >    const http = require("http");
         >    const req = http.request(
         >      {
-        >        port: "8899",       // 代理端口
-        >        host: '127.0.0.1',  // 代理地址
+        >        port: "8899",      // 代理端口
+        >        host: "127.0.0.1", // 代理地址
         >
-        >        path: 路径,
+        >        path: "http://127.0.0.1:8080/", // 访问地址
         >        method: "POST",
         >        headers: {
         >          "Content-Type": "application/json; charset=UTF-8",
@@ -1017,7 +1034,7 @@ Node.js的全局对象`global`是全局变量的宿主。
         >          body += chunk || "";
         >        });
         >        res.on("end", () => {
-        >          console.log(body);       // body是POST请求后返回的响应body
+        >          console.log(body); // body是POST请求后返回的响应body
         >          // 返回接受完成
         >        });
         >      }

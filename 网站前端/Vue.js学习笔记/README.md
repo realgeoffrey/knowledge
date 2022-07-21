@@ -392,6 +392,8 @@
             other1 父级内容
           </template>
           <template v-slot:other2="sonData">
+            other2 父级内容
+
             other2 父级使用子级显性提供的属性对应值：
             {{ sonData.someData }}
             {{ sonData.a }}

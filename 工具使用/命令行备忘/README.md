@@ -31,12 +31,14 @@
 1. [`mysql`](#mysql)
 1. [`read`](#read)
 1. [`sed`](#sed)
+1. [`ln`](#ln)
 1. [Shell环境的运行参数](#shell环境的运行参数)
 1. [macOS命令](#macos命令)
 
     1. [（macOS）brew更新](#macosbrew更新)
     1. [（macOS）打开文件（夹）](#macos打开文件夹)
     1. [（macOS）钥匙串](#macos钥匙串)
+    1. [（macOS）删除描述文件](#macos删除描述文件)
 
 ---
 
@@ -684,6 +686,13 @@ sed默认读取整个文件并对每一行进行修改。
     sed "s#abc/def#${变量名}#g" 文件名1 > 文件名2
     ```
 
+#### `ln`
+```shell
+ln 「源文件」 「目标文件」             # 硬链接，会在 目标文件 上生成一个与 源文件 大小相同的文件（不能是文件夹）
+ln -s 「源文件/目录」 「目标文件/目录」  # 软链接，会在 目标位置 上生成一个 源文件/目录 的镜像，不占用磁盘空间（类似Windows的快捷方式）
+# 硬链接、软链接：文件都保持同步变化
+```
+
 #### Shell环境的运行参数
 - 修改当前Shell环境的运行参数（不会继承到子Shell），即定制环境
 
@@ -747,3 +756,18 @@ open 「路径/文件」
 
 #### （macOS）钥匙串
 `钥匙串`应用可以查看本机保存的密码（大部分应用都会把密码保存在钥匙串）。
+
+#### （macOS）删除描述文件
+>来自：[macOS：删除 MDM 配置描述文件](https://blog.csdn.net/cneducation/article/details/111466407)。
+
+1. 进入[恢复模式](https://support.apple.com/zh-cn/HT201255)
+2. 进入描述文件的文件夹，删掉所有文件后新建空文件夹、文件
+
+    ```shell
+    # Macintosh HD 是目标的启动卷
+    cd /Volumes/Macintosh HD/private/var/db/ConfigurationProfiles
+    rm -rf *
+    mkdir Settings
+    touch Settings/.profilesAreInstalled
+    ```
+3. 重启

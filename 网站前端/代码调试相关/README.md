@@ -68,7 +68,7 @@
         - Android已开启调试功能的APP：
 
             1. Chrome
-            2. 用<http://debugx5.qq.com/>打开TBS内核调试功能的[腾讯X5内核WebView](https://x5.tencent.com/)（如：Android的微信、QQ）
+            2. 用<http://debugx5.qq.com/>打开TBS内核调试功能的[腾讯X5内核WebView](https://x5.tencent.com/)（如：Android的QQ、QQ浏览器、旧版微信）
             3. 开启调试功能的debug包APP
 
         >若PC端的Chrome识别不到手机WebView，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)（macOS可以用brew安装：`brew cask install android-platform-tools`）并运行（进入文件夹后运行`adb.exe devices`或`adb devices`连接手机设备）。
@@ -89,6 +89,7 @@
 3. 使用抓包工具查看请求、Map请求，如：[Charles](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Charles使用/README.md#charles使用)、[whistle](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/whistle使用/README.md#whistle使用)。
 
     >Tips:
+    >
     >1. 若命中强缓存（本地缓存），则不会发起请求，所以抓包工具也无法抓到命中强缓存（本地缓存）的资源，也就无法对这些资源进行代理操作。
     >2. （高版本Android默认禁止了明文通道、只信任系统CA证书，）客户端开发需要设置APP能够信任自定义CA证书，才能正常抓包。
 
@@ -234,11 +235,20 @@
                             ![配置选项-Rules](./images/proxifier-2.png)
                         3. 电脑同意权限并重启
                         </details>
-        2. 软键盘开启：
+        2. 关注顶部的操作
 
-            Simulator -> I/O -> Keyboard -> 取消选择：Connect Hardware Keyboard
+            ![Simulator](./images/simulator-1.png)
 
-            >取消连接到硬件keyboard，这样就取消了连接到电脑的键盘，而使用iOS模拟器自己的键盘。
+            1. 软键盘开启：
+
+                Simulator -> I/O -> Keyboard -> 取消选择：Connect Hardware Keyboard
+
+                >取消连接到硬件keyboard，这样就取消了连接到电脑的键盘，而使用iOS模拟器自己的键盘。
+            2. 模拟定位
+
+                Simulator -> Features -> Location
+
+                ![Simulator](./images/simulator-2.png)
 
 - 若网络通信不通过发起HTTP请求，则会有其他客户端通讯协议。此时就不能用HTTP抓包查看请求，需要客户端通讯协议对应的通讯查看方式。
 - 前端组件最终是传递给客户端，由客户端组件来实现呈现，因此用客户端工具查看客户端组件时，可以根据组件名字是否有前端标识，判断其是否来自于前端。

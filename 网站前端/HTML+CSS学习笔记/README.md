@@ -1443,6 +1443,11 @@
 
             - `constant(变量名)`、`env(变量名)`进行使用
 
+                >iOS的专属CSS方法，包括：
+                >
+                >    1. iOS11~11.2：`constant`
+                >    2. iOS11.2+：`env`、`min`、`max`
+
         <details>
         <summary>e.g.</summary>
 
@@ -1459,6 +1464,9 @@
         padding-bottom: 0;
         padding-bottom: constant(safe-area-inset-bottom);
         padding-bottom: env(safe-area-inset-bottom);
+
+        padding-left: max(12px, env(safe-area-inset-left))    /* iOS >= 11.2 */
+        padding-right: min(12px, env(safe-area-inset-right))  /* iOS >= 11.2 */
         ```
         </details>
 2. Android

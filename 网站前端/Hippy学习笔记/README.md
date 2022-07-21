@@ -92,7 +92,7 @@
     1. 前端组件最终是传递给客户端，由客户端组件来实现呈现
 
         因此用客户端工具查看客户端组件时，可以根据组件名字前缀有`Hippy`的，判断其来自于前端。
-    2. 客户端都是**单屏**视口（可以理解为外层包裹着一个高宽等于视口的flex父级容器），借助某些组件的内部滚动来实现多屏效果。
+    2. 客户端都是**单屏**视口（可以理解为外层包裹着一个宽高等于视口的flex父级容器），借助某些组件的内部滚动来实现多屏效果。
 
         >所有滚动都是：组件内部滚动。
 
@@ -118,8 +118,11 @@
         1. 官方属性/方法应该都能使用，只是有些属性/方法有各种问题（可能是触发时机偏晚、时序控制不好、兼容性不佳、等），导致实际情况无法满足效果而较少使用
         2. `<Image>`
 
-            1. 若设置`position: 'absolute'`，则需要显示设置`width`和`height`。
+            1. 需要显式设置`width`和`height`，才能显示。
             2. 部分机型`onError`无法正常触发。
+
+                可能是客户端对不同类型的图片地址采取的加载错误处理方案不同，如：http、base64、普通字符串、等。
+            3. `padding`无法像CSS那样扩展图片的外部，因此若想要图片的点击范围大于图片内容，则需要在外部嵌套父级，父级设置`padding`并把点击事件放在父级。
         3. `<Text>`
 
             1. Android:
@@ -135,21 +138,22 @@
             2. 仅有`<Text>`有不同截断效果（ellipsizeMode），其他组件需要自己实现（计算字符数，结尾自己添加`...`或图片覆盖）。
             3. 不包裹在`<Text>`内的文字内容，无法渲染新值，只能展示首次渲染值。
             4. 文本若不设置`lineHeight`（或`height`），可能导致渲染出的行高影响整体渲染，甚至影响祖父元素的高度或间距，无法达到确定的"稳定状态"。
-            5. 若出现文字上下被截断的情况，则也试着设置大一些的`lineHeight`去解决。
+
+                若出现文字上下被截断的情况，则也试着设置大一些的`lineHeight`去解决。
         4. `<ViewPager>`
 
             >`height`和`flexBasis`类似。
 
             1. 需要父级容器还有空间 或 显式设置`height`，否则会导致内容高度为0。
-            2. 不能切换的时候改变`height`（会导致切换到一半卡主），可以设置延迟时间等待切换结束之后再改变`height`（>300ms）。
+            2. 不能在切换时改变`height`（会导致切换到一半卡住），可以设置延迟时间等待切换结束之后再改变`height`（>300ms）。
             3. 需要大于等于2个子节点。
         5. 大部分（但不是所有）组件都有`onLayout`
 
-            当元素挂载或者布局改变的时候被调用。返回节点实时的：高宽（`height`、`width`）、距离顶部(0,0)距离（`x`、`y`）。
+            当元素挂载或者布局改变时被调用。返回节点实时的：宽高（`width`、`height`）、距离父级顶部(0,0)距离（`x`、`y`）。
 
             1. 若所有组件都套上`onLayout`，则可以滚动到指定组件位置和判断组件是否"曝光"。
-            2. `onLayout`是异步的，并且可能触发时间比较慢，在组件渲染完毕之后上百毫秒（250ms？）才触发。
-            3. 业务中解决问题，可以在节点内层或外层嵌套一层`<View>`并利用它的`onLayout`
+            2. `onLayout`是异步的，并且可能触发时间比较慢，在组件渲染完毕之后上百毫秒（250ms？）才触发，也不一定按照排列顺序触发（如前面的组件比较复杂等原因）。
+            3. 业务中解决问题，可以在节点内层或外层嵌套一层`<View>`并利用它的`onLayout`。
         6. `<ListView>`
 
             1. 改变渲染内容后（除了`onEndReached`触发之外）有时无法再触发`onEndReached`
@@ -158,6 +162,7 @@
             2. `getRowType`返回类型根据版本会有不同，旧版SDK（[@hippy/react](https://www.npmjs.com/package/@hippy/react)）需要字符串类型，新版SDK需要数字类型。
 
                 >会在客户端层面报错（非前端层面，因此safari不报错），类似：`Error setting property 'type' of ListViewItem with tag #153: JSON value '0' of type NSNumber cannot be converted to NSString`。
+            3. `renderRow`不支持横向排列、不足换行的方案（~~`flexDirection: 'row'`~~、~~`flexWrap: wrap或wrap-reverse`~~）。
         7. `<ScrollView>`、`<ListView>`的滚动事件，需要`onMomentumScrollEnd`（非用户触发的滚动结束）和`onScrollEndDrag`（用户触发的滚动结束）配合使用
         8. `<ScrollView>`
 
@@ -296,11 +301,11 @@
             // 渲染正确：
             render() {
               return (
-                <View>
+                <>
                   {[1, 2, 3].map((item, index) => {
                     return <Text key={index}>{index + 1}</Text>;
                   })}
-                </View>
+                </>
               );
             }
             ```
@@ -352,16 +357,43 @@
 
             用三元运算符替换：`「变量名」 ? 「组件或嵌套组件」 : null`（`「变量名」`的`true/false`切换时，仅新增/删除`「组件或嵌套组件」`，不会有额外的空`<Text>`出现替换）
         16. 没有类似.html的DOM结构，不能动态向根节点插入内容，只能按照组件结构插入组件（`new Hippy`的`entryPage`）
-        17. 每个组件（包括`<Text>`）都是块状的，不能像H5那样内联展示
+        17. 每个组件（包括`<Text>`）都是块状的，不能像H5那样内联展示。但可以用如下方式制作类似`inline-block`的文字，支持不同颜色、换行、事件。
 
-            >e.g. 无法做到，一个换行的文字中，某几个字颜色不同或者有额外交互功能（除非一个字一个组件的输出方式…）。
+            ```jsx
+            import { Text } from "react-native";
+
+            <Text>      {/* 必须是 Text 包裹 Text */}
+              <Text>    {/* 可以加样式、点击事件等所有属性 */}
+                inline-block文字1
+              </Text>
+              <Text
+                style={{ color: "red" }}
+                onClick={() => {
+                  console.log('点到我了')
+                }}
+              >
+                inline-block文字2
+              </Text>
+              <Text>    {/* 可以加样式、点击事件等所有属性 */}
+                inline-block文字3
+              </Text>
+            </Text>
+            ```
+        18. 列表项目曝光
+
+            1. 若是`<ListView>`，则用`onAppear`或`onWillAppear`判断某子节点是否曝光。
+            2. 若是`<ScrollView>`（`<ListView>`也同理），则用`onLayout`按顺序记录每个子节点的宽高，然后 父级`onScroll`的滚动距离 与 父级宽高、各子节点宽高 的关系。
 2. 模块
 
     >[模块文档](https://hippyjs.org/#/hippy-react/modules)比较简单，更详细的用法在[demo](https://github.com/Tencent/Hippy/tree/master/examples/hippy-react-demo/src/modules)或[源码](https://github.com/Tencent/Hippy/tree/master/packages/hippy-react/src/modules)中。
 
     1. `Animation`、`AnimationSet`
 
-        动画组件
+        动画组件。提供给前端React/Vue渲染使用的按时间变化的style中某样式属性值。
+
+        - [`setNativeProps`](https://hippyjs.org/#/style/setNativeProps?id=setnativeprops)
+
+            直接操作最终的客户端UI组件样式（跳过前端执行后再传递给客户端渲染），性能更佳。
     2. `AsyncStorage`
 
         异步、持久化的键-值存储系统
@@ -385,7 +417,7 @@
 
         获取设备的Hippy Root View或者屏幕尺寸的宽高
 
-        - 按照设计稿等比例高宽：
+        - 按照设计稿等比例宽高：
 
             1. 自由放大缩小
 
@@ -399,6 +431,16 @@
 
                 1. `width: (Dimensions.get("window").width - 固定宽度) / 几个物品`
                 2. `height: (设计稿此物体高 / 设计稿此物体宽) * 前面的width`
+
+        >若是`position: "absolute"`要占满全屏且父级已占满全屏（高满屏或宽满屏），则可以用`top: 0; bottom: 0;`代替`Dimensions.get("window").height`，`left: 0; right: 0;`代替`Dimensions.get("window").width`。
+
+        - Tips（bug？）
+
+            1. （Android全面屏手机）`Dimensions.get('window').height`或横屏的`Dimensions.get('window').width`有可能会自动减少StatusBar的高度。
+
+                >（React Native问题）市场上大多数的Android全面屏手机，一般都是以 刘海屏、水滴屏、挖孔屏 等异形屏的形式存在。屏幕在显示UI界面时，顶上的挖孔部分一般都是作为 状态栏 的形式存在。这其中的一些机型，在计算`Dimensions.get('window').height`时不将状态栏计算进去，但在实际渲染界面时又把状态栏作为可视区域。
+
+                需要更多地利用flex布局而不是确定尺寸的布局。
     6. `NetInfo`
 
         获取网络状态
@@ -477,7 +519,7 @@
         点击事件、触屏事件均支持事件冒泡，由最上层组件往根元素冒泡触发事件回调。
 
         1. 若事件回调返回`false`，则冒泡。
-        2. 若事件回调返回`true`或不返回值，则不再冒泡。
+        2. 若事件回调`不返回值`、或返回任何除了 ~~`false`~~ 的值，则不再冒泡。
 
         >注意使用UI库时，某些组件是否进行事件冒泡拦截。e.g. 大部分`<Button>`的实现，点击事件不会继续向上冒泡。
     - 事件拦截
@@ -498,6 +540,8 @@
 
         1. 若对一个节点不设置事件监听，则对该节点的事件触发会穿透到下层（类似默认添加了CSS的`pointer-events: none;`）。
         2. 若设置了事件监听，则会承接住事件，事件不会透传至下层节点。
+
+        >对于结构复杂的情况，可能违背这个逻辑，导致有覆盖的节点就不穿透。
 5. 终端事件
 
     ```jsx
@@ -614,20 +658,20 @@
 
             1. `flexDirection`：决定主轴的方向。
 
-                1. `'row'`：水平方向，起点在左端。
+                1. `'row'`：水平方向，起点在左端（CSS的`flex-direction`默认：`'row'`）。
                 2. `'column'`（默认）：垂直方向，起点在上沿。
             2. `flexWrap`：一条主轴排不下的情况，如何换行。
 
                 >与CSS的`flex-wrap`表现一致。
             3. `alignContent`：多根主轴（一条主轴排不下，有换行）的对齐方式（不换行则该属性不起作用）。
 
-                1. `flex-start`（默认）
+                默认：`'flex-start'`（CSS的`align-content`默认：`'stretch'`）。
             4. `justifyContent`：子项在主轴上的对齐方式（与轴的方向有关）。
 
                 >与CSS的`justify-Content`表现一致。
             5. `alignItems`：子项在侧轴上的对齐方式（与轴的方向有关）。
 
-                1. `stretch`（默认）
+                默认：`'stretch'`（CSS的`align-content`默认：`'normal'`）。
 
                 >与CSS的`align-Items`表现一致。
         2. Flex子项
@@ -645,15 +689,21 @@
 
                 3. `-1`：若空间不足则缩小到最小的宽度/高度。若空间没有不足，则使用自身原本宽度/高度占据空间。
 
-                    >CSS的`flex-grow`和`flex-shrink`的默认表现。
+                    适合可变元素后面紧跟着内容的情况。
+
+                    >CSS的`flex-grow: 0`和`flex-shrink: 1`的默认表现。
                 >子项铺满父级的主轴剩余空间：`flex: 1`；子项扩充满父级的侧轴：`alignSelf: 'stretch'`。
 
             >多个项：若都设置`flex: 1`（无论各项内容不一），则所有项占用空间大小均**一致**。若都设置`flexGrow: 1`，则各项先按照自己内容大小占据不同大小空间，再对剩余空间进行拉伸（各项所占空间**不一致**）。
 
             2. `flexGrow`：伸缩项目扩展的能力。
 
+                默认：`0`。
+
                 >与CSS的`flex-grow`表现一致。
             3. `flexShrink`：伸缩项目收缩的能力。
+
+                默认：`0`（CSS的`flex-shrink`默认：`1`）。
 
                 >与CSS的`flex-shrink`表现一致。
             4. `flexBasis`：伸缩基准值。
@@ -711,9 +761,10 @@
             - 不支持 ~~`fixed`~~。若要制作`fixed`效果，则：
 
                 ```jsx
-                <View>
+                <View>      // 此处父级必须是全屏才可以：占满上下左右全屏。因为"absolute"仅能针对父级
                   <ScrollView></ScrollView>
                   <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}>类似fixed的效果</View>
+                  <View style={{ position: "absolute", top: 0, left: 0, width: Dimensions.get("window").width, height: Dimensions.get("window").height }}>类似fixed的效果（不够优雅）</View>
                 </View>
                 ```
         2. `top`
@@ -721,6 +772,8 @@
         4. `bottom`
         5. `left`
     9. `zIndex`
+
+        `position: relative/absolute`的节点，均按代码书写顺序进行堆叠，`zIndex`等效改变任何一个节点。
 
         1. `0`（默认）
 
@@ -743,55 +796,63 @@
         1. `backgroundImage`
 
             >1. URL不能缩写。不能用 ~~<https://placeholder.com/>~~？
-            >2. 属性值只能跟URL，不能用`import`本地资源。
-            >3. 仅针对`<View>`等。
+            >2. 仅针对`<View>`等。
 
-            e.g. `backgroundImage: "https://图片地址"`
+            e.g. `backgroundImage: import变量/require变量/"http资源"`
         2. `backgroundPositionX`
         3. `backgroundPositionY`
         4. `backgroundColor`
 
-        >- 实现背景图某些效果
-        >
-        >    1. 本地资源制作背景图方式：
-        >
-        >        ```jsx
-        >        <View>
-        >          <Image source={{ uri: import资源 }} style={{position: 'absolute', top: 0, left: 0, width: 宽, height: 高}} />
-        >          {/* Android不能设置`zIndex: -1`，会导致看不见。也不需要设置`zIndex: -1`，`position: 'absolute'`还是会按顺序层叠 */}
-        >          内部节点
-        >        </View>
-        >        ```
-        >
-        >        ```jsx
-        >        <Image source={{ uri: import资源 }} style={{width: 宽, height: 高}}>
-        >          内部节点
-        >        </Image>
-        >        ```
-        >    2. 实现图片repeat效果
-        >
-        >        `<Image>`的`resizeMode`（`cover`、`contain`、`stretch`、`repeat`、`center`）类似CSS的`object-fit`+`background-repeat`属性，但没有CSS那么多效果组合。
-        >
-        >        ```jsx
-        >        <Image
-        >          style={{ width: 图片真实宽度或倍数, height: 图片真实高度或倍数 }}
-        >          source={{ uri: 一倍图片 }}
-        >          resizeMode="repeat"
-        >        />
-        >        ```
+        - 实现背景图某些效果
+
+            1. 本地资源制作背景图方式：
+
+                ```jsx
+                <View>
+                  <Image source={{ uri: import变量/require变量/"http资源" }} style={{position: 'absolute', top: 0, left: 0, width: 宽, height: 高}} />
+                  内部节点
+                </View>
+                ```
+
+                或
+
+                ```jsx
+                <Image source={{ uri: import变量/require变量/"http资源" }} style={{width: 宽, height: 高}}>
+                  内部节点
+                </Image>
+                ```
+
+                或
+
+                父级节点的style添加：`backgroundImage`
+            2. 实现图片repeat效果
+
+                `<Image>`的`resizeMode`（`cover`、`contain`、`stretch`、`repeat`、`center`）类似CSS的`object-fit`+`background-repeat`属性，但没有CSS那么多效果组合。
+
+                ```jsx
+                <Image
+                  style={{ width: 图片真实宽度或倍数, height: 图片真实高度或倍数 }}
+                  source={{ uri: 一倍图片 }}
+                  resizeMode="repeat"
+                />
+                ```
     12. 外边框圆角（`Number`）
 
         1. `borderRadius`
 
             >仅能设置为相同数值。
-        1. `borderTopLeftRadius`
-        1. `borderTopRightRadius`
-        1. `borderBottomRightRadius`
-        1. `borderBottomLeftRadius`
+        1. `borderTopLeftRadius`、`borderTopRightRadius`、`borderBottomRightRadius`、`borderBottomLeftRadius`
+
+            - Tips（bug？）
+
+                1. Android用这种单独设置的属性会导致`overflow: 'hidden'`有问题。
+                2. Android的`<LinearGradientView>`（nativeName="LinearGradientView"）对这种单独设置的属性支持不好（无效）。
     13. `opacity`
     14. 阴影
 
         1. `boxShadow`+后缀
+
+            >直接`boxShadow: '属性'`无效。
 
             ```javascript
             boxShadowOpacity: 0.6,
@@ -804,6 +865,8 @@
             boxShadowColor: '#4c9afa',
             ```
         2. `textShadow`+后缀
+
+            >直接`textShadow: '属性'`无效。
 
             ```javascript
             textShadowColor
