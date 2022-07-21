@@ -234,11 +234,20 @@
                             ![配置选项-Rules](./images/proxifier-2.png)
                         3. 电脑同意权限并重启
                         </details>
-        2. 软键盘开启：
+        2. 关注顶部的操作
 
-            Simulator -> I/O -> Keyboard -> 取消选择：Connect Hardware Keyboard
+            ![Simulator](./images/simulator-1.png)
 
-            >取消连接到硬件keyboard，这样就取消了连接到电脑的键盘，而使用iOS模拟器自己的键盘。
+            1. 软键盘开启：
+
+                Simulator -> I/O -> Keyboard -> 取消选择：Connect Hardware Keyboard
+
+                >取消连接到硬件keyboard，这样就取消了连接到电脑的键盘，而使用iOS模拟器自己的键盘。
+            2. 模拟定位
+
+                Simulator -> Features -> Location
+
+                ![Simulator](./images/simulator-2.png)
 
 - 若网络通信不通过发起HTTP请求，则会有其他客户端通讯协议。此时就不能用HTTP抓包查看请求，需要客户端通讯协议对应的通讯查看方式。
 - 前端组件最终是传递给客户端，由客户端组件来实现呈现，因此用客户端工具查看客户端组件时，可以根据组件名字是否有前端标识，判断其是否来自于前端。

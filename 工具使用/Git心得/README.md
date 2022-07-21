@@ -357,6 +357,8 @@
 
         # git submodule update --init 等于 git submodule init + git submodule update
         # git submodule update --init --remote 等于 git submodule init + git submodule update --remote
+
+        git submodule update --init --recursive # 循环初始化。若子模块有嵌套的子模块
         ```
     3. 修改、推送子模块
 
@@ -696,9 +698,11 @@ feat(details): 添加了分享功能
     **~/.ssh/config**文件添加
 
     ```text
+    # `用户名@别名:仓库名.git`（「仓库名」可能包含多个`/`）
+    #   e.g. git clone git@realgeoffrey.github.com:realgeoffrey/knowledge.git
     Host 账户1.github.com         # 别名（可任意取）
         HostName github.com      # 别名替换成的真实服务器名
-        User git                 # 用户名@别名:仓库名1/仓库名2.git 的前缀：用户名
+        User git                 # 用户名
         IdentityFile ~/.ssh/「键1」
 
     Host 账户2.github.com

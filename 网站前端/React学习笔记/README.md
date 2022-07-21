@@ -731,6 +731,74 @@
         >```
         ></details>
 
+        - 插槽（类似Vue）
+
+            若父子组件的结构有耦合，则需要用插槽。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```tsx
+            >// Father.tsx
+            >import Son from "./Son";
+            >export default function SlotCompoment() {
+            >  return (
+            >    <Son
+            >      Slot={({ children }) => {
+            >        return (
+            >          <div>
+            >            ②father's Slot 父组件数据
+            >            {children}
+            >          </div>
+            >        );
+            >      }}
+            >      children={({ children }) => {
+            >        return (
+            >          <div>
+            >            ④father's children 父组件数据
+            >            {children}
+            >          </div>
+            >        );
+            >      }}
+            >    />
+            >  );
+            >}
+            >```
+            >
+            >```tsx
+            >// Son.tsx
+            >interface Props {
+            >  Slot: React.FC<{ children: React.ReactNode }>;
+            >  children: React.FC<{ children: React.ReactNode }>;
+            >}
+            >export default function Son(props: Props) {
+            >  // children需要换个变量名才可以<组件名>
+            >  const { Slot, children: Children } = props;
+            >
+            >  return (
+            >    <>
+            >      ①slot son 子组件数据
+            >      <Slot>
+            >        <div>③slot son's Slot 子组件数据</div>
+            >      </Slot>
+            >      <Children>
+            >        <div>⑤slot son's children 子组件数据</div>
+            >      </Children>
+            >    </>
+            >  );
+            >}
+            >```
+            >
+            >```text
+            >->
+            >①slot son 子组件数据
+            >②father's Slot 父组件数据
+            >③slot son's Slot 子组件数据
+            >④father's children 父组件数据
+            >⑤slot son's children 子组件数据
+            >```
+            ></details>
+
     - 组合、~~继承~~
 
         用组合（`import`和Props）的方式、而不是 ~~继承（`extends`）~~ 的方式构建新组件。
@@ -1757,14 +1825,14 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
       return () => {
        /* 清除副作用逻辑 */
       }
-    }[, 依赖的数组])
+    }[, 依赖项数组])
     ```
 
     1. React会在每次渲染**完成后**调用副作用函数，包括第一次渲染时。
 
         >虽然useEffect会在浏览器绘制后延迟执行，但会保证在任何新的渲染前执行。
     2. return的清除方法，会在下一次effect触发之前调用，也会在组件卸载前调用。
-    3. `依赖的数组`，仅当依赖的数组内的值都变化才触发执行。
+    3. `依赖项`，仅当依赖项内的值都变化才触发执行。
 
         >依赖项的每一项进行浅比较`Object.is()`判断是否变化。
 
@@ -2157,6 +2225,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     const memoizedCallback = useCallback(
       (props) => {  // 传入 memoizedCallback 的参数会到达 props
         doSomething(a, b, props);
+        // 方法内调用 memoizedCallback() 是旧的自己（不随依赖项改变）
       },
       [a, b]        // 依赖项数组
     );
@@ -2185,13 +2254,41 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
         memoizedCallback(123)    // 返回Promise实例
         ```
         </details>
+    3. 引用自己会引用旧的自己（没有随依赖项变化）
+
+        <details>
+        <summary>可以写一个自定义Hook解决</summary>
+
+        ```typescript
+        // 生成不变化的函数，并且内部的所有变量都是实时的。不需要依赖项、可以引用自己
+        const usePersistCallback = <T extends (...args: any) => any>(rawFunc: T) => {
+          const func = useRef(rawFunc);
+
+          useLayoutEffect(() => {
+            func.current = rawFunc;
+          });
+
+          return useCallback((...args: Parameters<T>): ReturnType<T> => {
+            return func.current(...(args as any));
+          }, []);
+        };
+
+
+        /* 使用测试 */
+        const func = usePersistCallback(()=>{
+            // 可以使用任何变量，每次都会用最新值（不需要依赖项）
+            // func是不变的变量
+            // （最重要的：）内部引用`func()`，其内部的变量都可以用最新值
+        })
+        ```
+        </details>
 
     >当想要`useEffect`限制执行次数，但依赖一些不变化的props或state时，很有用。
 10. `useImperativeHandle`
 
     `useImperativeHandle(ref, createHandle, [deps])`
 
->若指定了一个`依赖列表`作为`useEffect`、`useLayoutEffect`、`useMemo`、`useCallback`、`useImperativeHandle`的最后一个参数，它必须包含回调中的所有值，并参与React数据流。这就包括`props`、`state`，以及任何由它们衍生而来的东西。
+>若指定了一个`依赖项数组`作为`useEffect`、`useLayoutEffect`、`useMemo`、`useCallback`、`useImperativeHandle`的最后一个参数，它必须包含回调中的所有值，并参与React数据流。这就包括`props`、`state`，以及任何由它们衍生而来的东西。
 
 11. `useDebugValue`
 
@@ -2228,14 +2325,14 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     1. 强制刷新函数组件
 
         ```jsx
-        const [refresh, setRefresh] = useState(false);
+        const [show, setShow] = useState(true);
 
         useEffect(() => {
-            refresh && setTimeout(() => setRefresh(false))
-        }, [refresh])
+            !show && setTimeout(() => setShow(true))
+        }, [show])
 
-        // 重新渲染触发。或其他时机触发
-        const doRefresh = () => setRefresh(true)
+        // 重新渲染触发。或其他时机触发。注意可能会导致子组件的`useEffect`等有依赖项的钩子多次执行
+        const doRefreshShow = () => setShow(false)
         ```
 
 #### 与第三方库协同
@@ -2413,6 +2510,9 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         3. 通过`store.subscribe(监听函数)`注册监听器，并返回注销监听器方法，store变化后会触发`监听函数`
 
             >在react中使用react-redux代替手动书写`store.subscribe`监听逻辑。
+        4. `store.replaceReducer(nextReducer)`
+
+            设置store会使用的下一个reducer（替换store当前用来计算state的reducer）。
     2. state
 
         >来自服务端的state可以在无需编写更多代码的情况下被序列化并注入到前端（`JSON.stringify/parse`）。
@@ -2533,7 +2633,22 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
         更新state的唯一方式：`store.dispatch(某个action)`。
     3. reducer是纯函数
-4. 工具
+4. api
+
+    1. `createStore(reducer[, 初始state][, 中间件方法])`
+    2. `combineReducers(reducers)`
+    3. `applyMiddleware(...middlewares)`
+
+        >e.g. `createStore(reducer, applyMiddleware(thunk, 其他中间件))`
+    4. `bindActionCreators(action creators或value是action creator的对象, dispatch)`
+
+        >唯一会使用到的场景是当需要把action creator往下传到一个组件上，却不想让这个组件觉察到Redux的存在，而且不希望把dispatch或Redux store传给它。
+
+        若第一个参数是对象，则返回把这个value为不同action creator的对象，转成拥有同名key的对象。若第一个参数是方法，则返回一个方法。同时使用dispatch对每个action creator进行包装，以便可以直接调用它们。
+    5. `compose(...functions)`
+
+        >e.g. `createStore(reducer, compose(applyMiddleware(thunk), DevTools.instrument()))`
+5. 工具
 
     1. 与React配合使用：[react-redux](https://github.com/reduxjs/react-redux)
 
@@ -2562,6 +2677,8 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
                 ```
             2. ~~手动监听`store.subscribe`~~
         2. 函数组件内使用（hooks）
+
+            >也可以用`connect`，但是不推荐。以下hooks更推荐。
 
             `import { useSelector, useDispatch, useStore } from 'react-redux'`
 

@@ -37,6 +37,7 @@
     1. [（macOS）brew更新](#macosbrew更新)
     1. [（macOS）打开文件（夹）](#macos打开文件夹)
     1. [（macOS）钥匙串](#macos钥匙串)
+    1. [（macOS）删除描述文件](#macos删除描述文件)
 
 ---
 
@@ -747,3 +748,18 @@ open 「路径/文件」
 
 #### （macOS）钥匙串
 `钥匙串`应用可以查看本机保存的密码（大部分应用都会把密码保存在钥匙串）。
+
+#### （macOS）删除描述文件
+>来自：[macOS：删除 MDM 配置描述文件](https://blog.csdn.net/cneducation/article/details/111466407)。
+
+1. 进入[恢复模式](https://support.apple.com/zh-cn/HT201255)
+2. 进入描述文件的文件夹，删掉所有文件后新建空文件夹、文件
+
+    ```shell
+    # Macintosh HD 是目标的启动卷
+    cd /Volumes/Macintosh HD/private/var/db/ConfigurationProfiles
+    rm -rf *
+    mkdir Settings
+    touch Settings/.profilesAreInstalled
+    ```
+3. 重启

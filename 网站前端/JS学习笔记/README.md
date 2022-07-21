@@ -1881,6 +1881,8 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
         通过成功访问代理服务器，利用代理服务器转发请求获得数据后（同源策略仅限于浏览器）再返回给浏览器。
 
+>解决浏览器显示`Script error`错误：①引用资源添加`<script src="CDN地址" crossorigin="anonymous"></script>`，②CDN地址资源响应头包含`Access-Control-Allow-Origin: 请求头的Origin值 或 *`。
+
 ### Web Storage && cookie && IndexedDB
 >1. 因为HTTP请求都会携带cookie，因此cookie最好仅用于服务端判定状态。
 >2. 浏览器数据存储方式：变量、cookie、Web Storage、IndexedDB、~~Web SQL~~、~~`<html>`的Manifest~~、Service Workers。
@@ -2003,6 +2005,8 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     ```
 4. 处理代码中抛出的错误
 
+    >语法错误无法被各种方式捕获。
+
     1. `try-catch-finally`
 
         1. 必须`try-catch`或`try-finally`或`try-catch-finally`同时出现。
@@ -2011,7 +2015,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         4. 若`try`中代码是以`return`、`continue`或`break`终止的，则必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
         5. 在`catch`中接收的错误，不会再向上提交给浏览器。
 
-        >`try { setTimeout(() => { 错误 }, 0) } catch (e) {}`不会捕获异步操作中的错误（同理，在`Promise`或`async-await`等语法中的异步错误也无法被捕获，但可以捕获`await`的`reject`）。可以在异步回调内部再包一层`try-catch`。
+        >`try { setTimeout(() => { 错误 }, 0) } catch (e) {}`不会捕获异步操作中的错误（同理，在`Promise`或`async-await`等语法中的异步错误也无法被捕获，但可以捕获`await`的`reject`）。可以在异步回调内部再包一层`try-catch`、或用`window`的`error`事件捕获。
     2. `window`的`error`事件
 
         1. 没有经过`try-catch`处理的错误都会触发`window`的`error`事件。
@@ -3826,14 +3830,26 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         `文档滚动高度 === 0`
 
 ### 进行文档滚动
-1. 滚动到DOM进入视口：[`dom.scrollIntoView()`](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/scrollIntoView)
-2. #锚点
-3. `document.body.scrollTop = document.documentElement.scrollTop = 纵轴坐标`
+1. 支持动画过渡效果（smooth）：
 
-    >`document.body.scrollLeft = document.documentElement.scrollLeft = 横轴坐标`
-4. `window.scroll/scrollTo(横轴坐标, 纵轴坐标)` 或 `window.scroll/scrollTo({ left: 横轴坐标, top: 纵轴坐标, behavior: 'smooth'或'auto' })`
+    1. 滚动到使DOM进入视口：[`dom.scrollIntoView()`](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/scrollIntoView)
+    2. `dom或window.scroll/scrollTo(横轴坐标, 纵轴坐标)` 或 `dom或window.scroll/scrollTo({ left: 横轴坐标, top: 纵轴坐标, behavior: 'smooth'或'auto' })`
 
-    >`window.scrollBy(相对横轴坐标, 相对纵轴坐标)` 或 `window.scrollBy({ left: 相对横轴坐标, top: 相对纵轴坐标, behavior: 'smooth'或'auto' })`
+        >`dom或window.scrollBy(相对横轴坐标, 相对纵轴坐标)` 或 `dom或window.scrollBy({ left: 相对横轴坐标, top: 相对纵轴坐标, behavior: 'smooth'或'auto' })`
+2. 不支持过渡效果、瞬间定位：
+
+    1. `window.location.href = #锚点`
+    2. `dom.scrollTop = 纵轴坐标`
+
+        >`dom.scrollLeft = 横轴坐标`
+
+        - 整个文档滚动：
+
+            `document.body.scrollTop = document.documentElement.scrollTop = 纵轴坐标`
+
+            >`document.body.scrollLeft = document.documentElement.scrollLeft = 横轴坐标`
+
+- dom设置CSS样式`scroll-behavior: smooth;`会强制上面所有滚动效果在dom上都是动画过渡效果（smooth）。
 
 ### DOM相对位置
 1. DOM点击事件的定位（原生JS）
