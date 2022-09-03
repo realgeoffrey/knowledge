@@ -2918,17 +2918,21 @@ clipboard("写入的内容~")
 >2. 可以使用[clipboard.js](https://github.com/zenorocha/clipboard.js)。
 
 ### *React*默认图组件
-1. class组件
+1. <details>
+
+    <summary>class组件</summary>
 
     ```tsx
-    import React, { Component } from 'react';
+    import React, { Component } from "react";
 
     interface PropsType {
-      className?: string;
-      style?: React.CSSProperties;
-      onClick?: () => void;
       src: string;
       defaultImage: string;
+      className?: string;
+      classNameForError?: string;
+      style?: React.CSSProperties;
+      onClick?: () => void;
+      alt?: string;
     }
 
     export default class TheImage extends Component<PropsType> {
@@ -2938,22 +2942,38 @@ clipboard("写入的内容~")
 
       componentDidUpdate(prevProps: PropsType) {
         // 检测到图片有更新，需要重新加载
-        if (prevProps?.src !== this.props?.src && this.state.isError) {
-          // eslint-disable-next-line
-          this.setState({
-            isError: false,
-          });
+        if (prevProps.src !== this.props.src) {
+          if (this.props.src && this.state.isError) {
+            this.setState({
+              isError: false,
+            });
+          }
+          if (!this.props.src && !this.state.isError) {
+            this.setState({
+              isError: true,
+            });
+          }
         }
       }
 
       render() {
-        const { style, className, src, onClick, defaultImage } = this.props;
+        const {
+          src,
+          defaultImage,
+          className = "",
+          classNameForError = "",
+          style,
+          onClick,
+          alt,
+        } = this.props;
 
         return (
           <img
-            src={this.state.isError ? defaultImage : src || defaultImage}
+            src={this.state.isError ? defaultImage : src}
+            className={
+              this.state.isError ? `${classNameForError} ${className}` : className
+            }
             style={style}
-            className={className}
             onClick={() => {
               onClick?.();
             }}
@@ -2962,46 +2982,57 @@ clipboard("写入的内容~")
                 isError: true,
               });
             }}
-            alt={`图${src}`}
+            alt={alt || `图${src}`}
           />
         );
       }
     }
     ```
+    </details>
 2. hook函数组件
 
     ```tsx
-    import React, { useEffect, useState } from 'react';
+    import React, { useEffect, useState } from "react";
 
     interface PropsType {
-      className?: string;
-      style?: React.CSSProperties;
-      onClick?: () => void;
       src: string;
       defaultImage: string;
+      className?: string;
+      classNameForError?: string;
+      style?: React.CSSProperties;
+      onClick?: () => void;
+      alt?: string;
     }
 
-    export default function TheImage2(props: PropsType) {
-      const { style, className, src, onClick, defaultImage } = props;
+    export default function TheImage(props: PropsType) {
+      const {
+        src,
+        defaultImage,
+        className = "",
+        classNameForError = "",
+        style,
+        onClick,
+        alt,
+      } = props;
 
       const [isError, setIsError] = useState(false);
 
       useEffect(() => {
-        setIsError(false);
+        setIsError(!src);
       }, [src]);
 
       return (
         <img
-          src={isError ? defaultImage : src || defaultImage}
+          src={isError ? defaultImage : src}
+          className={isError ? `${classNameForError} ${className}` : className}
           style={style}
-          className={className}
           onClick={() => {
             onClick?.();
           }}
           onError={() => {
             setIsError(true);
           }}
-          alt={`图${src}`}
+          alt={alt || `图${src}`}
         />
       );
     }
@@ -3016,6 +3047,7 @@ clipboard("写入的内容~")
       defaultImage="https://fakeimg.pl/100/?text=default"
       style={{ width: "100px", height: "100px" }}
       className='abc'
+      classNameForError='abc-error'
       onClick={() => {
         this.setState({
           switch: !this.state.switch

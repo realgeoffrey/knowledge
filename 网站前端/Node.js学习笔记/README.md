@@ -296,6 +296,10 @@ npm（Node Package Manager）。
 
             >非`-`开头的参数可以忽略`--`而传递。e.g. `npm run gulp runCss`等价于：`npm run gulp -- runCss`
         2. [npx](https://github.com/zkat/npx)
+
+            >1. 去`node_modules/.bin`路径检查命令是否存在，找到之后执行；
+            >2. 找不到，就去环境变量`$PATH`里，检查命令是否存在，找到之后执行;
+            >3. 还是找不到，自动下载一个临时的依赖包最新版本在一个临时目录，然后再运行命令，运行完之后删除，不污染全局环境。
 2. [`package.json`](https://docs.npmjs.com/files/package.json)字段
 
     包描述、说明文件。

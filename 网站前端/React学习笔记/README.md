@@ -28,6 +28,8 @@
 ### [react](https://github.com/facebook/react)
 
 #### JSX
+>（TS转译.tsx成为.jsx或.js，）Babel转译.jsx成为.js。
+
 1. JSX是一个表达式
 
     >`if`、`for`不是表达式。
@@ -2684,7 +2686,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
             1. `useSelector`
 
-                `const state切片值 = useSelector(state => { return state.slice名 }[, 浅比较函数])`
+                `const state切片值 = useSelector((state: RootState) => { return state.slice名 }[, 浅比较函数])`
 
                 >`浅比较函数`可以直接用`import { shallowEqual } from 'react-redux'`，作用：浅比较前后`state切片值`是否相同，如果相同则不触发更新。
             2. `useDispatch`
@@ -2882,7 +2884,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             >自动启用`immer`。
         5. `createAsyncThunk`
 
-            接受一个action type和一个返回promise的函数，并生成一个发起基于该promise的`pending/fulfilled/rejected`的action类型的thunk。
+            接受一个action type和一个返回Promise实例的函数，并生成一个发起基于该Promise实例的`pending/fulfilled/rejected`的action类型的thunk。
         6. `createEntityAdapter`
         7. `createSelector`
 
@@ -2899,7 +2901,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             1. `store.dispatch(参数)`时执行额外的逻辑（例如打印action的日志、状态）
             2. 暂停、修改、延迟、替换或停止dispatch的action
             3. 编写可以访问dispatch和getState的额外代码
-            4. 教dispatch如何接受除普通action对象之外的其他值（e.g. 函数、promise），通过拦截它们并dispatch实际action对象来代替
+            4. 教dispatch如何接受除普通action对象之外的其他值（e.g. 函数、Promise实例），通过拦截它们并dispatch实际action对象来代替
 
         ![redux中间件](./images/redux-async.gif)
 

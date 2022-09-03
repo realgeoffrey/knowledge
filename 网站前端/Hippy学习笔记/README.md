@@ -162,6 +162,7 @@
             2. `getRowType`返回类型根据版本会有不同，旧版SDK（[@hippy/react](https://www.npmjs.com/package/@hippy/react)）需要字符串类型，新版SDK需要数字类型。
 
                 >会在客户端层面报错（非前端层面，因此safari不报错），类似：`Error setting property 'type' of ListViewItem with tag #153: JSON value '0' of type NSNumber cannot be converted to NSString`。
+            3. `renderRow`不支持横向排列、不足换行的方案（~~`flexDirection: 'row'`~~、~~`flexWrap: wrap或wrap-reverse`~~）。
         7. `<ScrollView>`、`<ListView>`的滚动事件，需要`onMomentumScrollEnd`（非用户触发的滚动结束）和`onScrollEndDrag`（用户触发的滚动结束）配合使用
         8. `<ScrollView>`
 
