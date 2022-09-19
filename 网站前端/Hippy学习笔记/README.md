@@ -431,6 +431,14 @@
                 2. `height: (设计稿此物体高 / 设计稿此物体宽) * 前面的width`
 
         >若是`position: "absolute"`要占满全屏且父级已占满全屏（高满屏或宽满屏），则可以用`top: 0; bottom: 0;`代替`Dimensions.get("window").height`，`left: 0; right: 0;`代替`Dimensions.get("window").width`。
+
+        - Tips（bug？）
+
+            1. （Android全面屏手机）`Dimensions.get('window').height`或横屏的`Dimensions.get('window').width`有可能会自动减少StatusBar的高度。
+
+                >（React Native问题）市场上大多数的Android全面屏手机，一般都是以 刘海屏、水滴屏、挖孔屏 等异形屏的形式存在。屏幕在显示UI界面时，顶上的挖孔部分一般都是作为 状态栏 的形式存在。这其中的一些机型，在计算`Dimensions.get('window').height`时不将状态栏计算进去，但在实际渲染界面时又把状态栏作为可视区域。
+
+                需要更多地利用flex布局而不是确定尺寸的布局。
     6. `NetInfo`
 
         获取网络状态
