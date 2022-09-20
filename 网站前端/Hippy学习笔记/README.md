@@ -362,8 +362,8 @@
             ```jsx
             import { Text } from "react-native";
 
-            <Text>  {/* 必须是 Text 包裹 Text */}
-              <Text>
+            <Text>      {/* 必须是 Text 包裹 Text */}
+              <Text>    {/* 可以加样式、点击事件等所有属性 */}
                 inline-block文字1
               </Text>
               <Text
@@ -374,13 +374,11 @@
               >
                 inline-block文字2
               </Text>
-              <Text>
+              <Text>    {/* 可以加样式、点击事件等所有属性 */}
                 inline-block文字3
               </Text>
             </Text>
             ```
-
-            >e.g. 无法做到，一个换行的文字中，某几个字颜色不同或者有额外交互功能（除非一个字一个组件的输出方式…）。
         18. 列表项目曝光
 
             1. 若是`<ListView>`，则用`onAppear`或`onWillAppear`判断某子节点是否曝光。
@@ -391,7 +389,11 @@
 
     1. `Animation`、`AnimationSet`
 
-        动画组件
+        动画组件。提供给前端React/Vue渲染使用的按时间变化的style中某样式属性值。
+
+        - [`setNativeProps`](https://hippyjs.org/#/style/setNativeProps?id=setnativeprops)
+
+            直接操作最终的客户端UI组件样式（跳过前端执行后再传递给客户端渲染），性能更佳。
     2. `AsyncStorage`
 
         异步、持久化的键-值存储系统
@@ -656,20 +658,20 @@
 
             1. `flexDirection`：决定主轴的方向。
 
-                1. `'row'`：水平方向，起点在左端。
+                1. `'row'`：水平方向，起点在左端（CSS的`flex-direction`默认：`'row'`）。
                 2. `'column'`（默认）：垂直方向，起点在上沿。
             2. `flexWrap`：一条主轴排不下的情况，如何换行。
 
                 >与CSS的`flex-wrap`表现一致。
             3. `alignContent`：多根主轴（一条主轴排不下，有换行）的对齐方式（不换行则该属性不起作用）。
 
-                1. `flex-start`（默认）
+                默认：`'flex-start'`（CSS的`align-content`默认：`'stretch'`）。
             4. `justifyContent`：子项在主轴上的对齐方式（与轴的方向有关）。
 
                 >与CSS的`justify-Content`表现一致。
             5. `alignItems`：子项在侧轴上的对齐方式（与轴的方向有关）。
 
-                1. `stretch`（默认）
+                默认：`'stretch'`（CSS的`align-content`默认：`'normal'`）。
 
                 >与CSS的`align-Items`表现一致。
         2. Flex子项
@@ -687,15 +689,21 @@
 
                 3. `-1`：若空间不足则缩小到最小的宽度/高度。若空间没有不足，则使用自身原本宽度/高度占据空间。
 
-                    >CSS的`flex-grow`和`flex-shrink`的默认表现。
+                    适合可变元素后面紧跟着内容的情况。
+
+                    >CSS的`flex-grow: 0`和`flex-shrink: 1`的默认表现。
                 >子项铺满父级的主轴剩余空间：`flex: 1`；子项扩充满父级的侧轴：`alignSelf: 'stretch'`。
 
             >多个项：若都设置`flex: 1`（无论各项内容不一），则所有项占用空间大小均**一致**。若都设置`flexGrow: 1`，则各项先按照自己内容大小占据不同大小空间，再对剩余空间进行拉伸（各项所占空间**不一致**）。
 
             2. `flexGrow`：伸缩项目扩展的能力。
 
+                默认：`0`。
+
                 >与CSS的`flex-grow`表现一致。
             3. `flexShrink`：伸缩项目收缩的能力。
+
+                默认：`0`（CSS的`flex-shrink`默认：`1`）。
 
                 >与CSS的`flex-shrink`表现一致。
             4. `flexBasis`：伸缩基准值。
@@ -844,6 +852,8 @@
 
         1. `boxShadow`+后缀
 
+            >直接`boxShadow: '属性'`无效。
+
             ```javascript
             boxShadowOpacity: 0.6,
             boxShadowRadius: 5,
@@ -855,6 +865,8 @@
             boxShadowColor: '#4c9afa',
             ```
         2. `textShadow`+后缀
+
+            >直接`textShadow: '属性'`无效。
 
             ```javascript
             textShadowColor
