@@ -18,6 +18,7 @@
 1. [redux](#redux)
 
     1. [dva](#dva)
+    1. [rematch](#rematch)
 1. [mobx](#mobx)
 1. [umi](#umi)
 1. [react-native](#react-native)
@@ -2498,12 +2499,12 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         </Provider>
         ```
 
-        1. 提供`store.getState()`获取当前state
+        1. 提供`store.getState()`获取当前最新state（全局）
         2. 提供`store.dispatch(某个action)`更新state
 
             >dispatch一个action可以形象的理解为“触发一个事件”。
 
-            触发后，store将执行所有reducer函数（root reducer）并计算出更新后的state，之后调用getState()可以获取新state。
+            触发后，store将执行所有reducer函数（root reducer）并计算出更新后的state，之后调用getState()可以获取当前最新state（全局）。
 
             >更新state的唯一方式。
 
@@ -2769,7 +2770,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         >    value: 0,
         >  },
         >  reducers: {      // 其中的键会成为action type，而函数是当action type被分发时调用的reducer（有时候它们也会被称为"case reducers"，因为它们类似于switch语句中的case）。默认开启immer
-        >    increment: state => {
+        >    increment: state => {  // state仅自己切片的，不是全局的
         >      state.value += 1;
         >    },
         >    decrement: state => {
@@ -2795,7 +2796,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         >    }, 1000);
         >  };
         >export const incrementAsync2 = (amount) => {
-        >  return async (dispatch, getState) => {
+        >  return async (dispatch, getState) => {   // getState()获取当前最新state（全局）
         >    try {
         >      await sleep(1000);
         >      dispatch(incrementByAmount(amount));
@@ -2915,6 +2916,9 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
 #### [dva](https://github.com/dvajs/dva)
 >基于redux和redux-saga的精简封装数据流方案。然后为了简化开发体验，还额外内置了react-router和fetch，所以也可以理解为一个轻量级的应用框架。
+
+#### [rematch](https://github.com/rematch/rematch)
+>没有样板文件的Redux最佳实践。没有多余的action types，action creators，switch语句或thunks。简单、易用。
 
 ### [mobx](https://github.com/mobxjs/mobx)
 1. computed

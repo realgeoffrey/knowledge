@@ -108,6 +108,8 @@
         3. `<RefreshWrapper>`
 
             包裹一个`<ListView>`后支持：下滑刷新。
+
+            - 新版本hippy，`<ListView>`支持下拉、上拉刷新功能（`renderPullHeader`/`onHeaderPulling`/`onHeaderReleased`、`renderPullFooter`/`onFooterPulling`/`onFooterReleased`），可以不需要`<RefreshWrapper>`配合下拉刷新。
         4. `<ViewPager>`
 
             支持：横向切换（类似Swiper）。
@@ -277,6 +279,7 @@
                   )
                 }
                 ```
+            3. 有些SDK会给`<ScrollView>`默认设置`flex: 1`效果，可在外部加一个`<View>`节点限制来规避（或设置`flex: 0`，但未成功）
         9. 降级到H5时，各回调函数的参数可能会变化，每个组件的实现要具体看降级时h5的源码
         10. 注意组件嵌套过多导致的性能、渲染问题
         11. `key`的diff有bug
@@ -440,7 +443,7 @@
 
                 >（React Native问题）市场上大多数的Android全面屏手机，一般都是以 刘海屏、水滴屏、挖孔屏 等异形屏的形式存在。屏幕在显示UI界面时，顶上的挖孔部分一般都是作为 状态栏 的形式存在。这其中的一些机型，在计算`Dimensions.get('window').height`时不将状态栏计算进去，但在实际渲染界面时又把状态栏作为可视区域。
 
-                需要更多地利用flex布局而不是确定尺寸的布局。
+                （网上较多是根据`Dimensions.get('window').height/Dimensions.get('window').width`比值判断出需要处理的Android全面屏，再一刀切加上StatusBar的高度。我感觉不妥，）需要更多地利用flex布局而不是~~确定尺寸~~的布局，或在最外层满屏的`<View>`上用`onLayout`异步获得渲染出的满屏高宽。
     6. `NetInfo`
 
         获取网络状态
@@ -788,7 +791,7 @@
         1. `'visible'`（默认）
         2. `'hidden'`
 
-            Android机型，大部分子级元素一定会被父级元素截断（就像：父级元素固定`overflow: 'hidden'`不可改变），但是部分客户端组件还是需要父级设置`overflow: 'hidden'`才截断。
+            Android机型，大部分子级元素一定会被父级元素截断（就像：父级元素固定`overflow: 'hidden'`不可改变），但是部分客户端组件还是需要父级设置`overflow: 'hidden'`才截断。但对于`border`等，父级还是需要`overflow: hidden`才能不被子级盖住。
     11. 背景
 
         >不能直接 ~~`background`~~，无效果。
