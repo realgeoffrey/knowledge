@@ -24,6 +24,7 @@
     1. [模块化](#模块化)
     1. [`名字.d.ts`（声明文件）](#名字dts声明文件)
     1. [协变与逆变](#协变与逆变)
+    1. [`// @ts-ignore`](#-ts-ignore)
 1. [其他](#其他)
 
 ---
@@ -2783,6 +2784,19 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
     >b = a;             // 错误，a不能赋值给b
     >```
     ></details>
+
+### `// @ts-ignore`
+忽略TS错误。
+
+- 若eslint报错，则：
+
+    1. eslint的rule配置：`"@typescript-eslint/ban-ts-comment": "off"`
+    2. 或
+
+        ```
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        ```
 
 ### 其他
 1. 配置
