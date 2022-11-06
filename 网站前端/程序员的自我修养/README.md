@@ -34,6 +34,7 @@
     1. [BFF（backends for frontends，服务于前端的后端）](#bffbackends-for-frontends服务于前端的后端)
     1. [单工、半双工、全双工](#单工半双工全双工)
     1. [CGI（common gateway interface）](#cgicommon-gateway-interface)
+    1. [RPC（remote procedure call）](#rpcremote-procedure-call)
     1. [自绘](#自绘)
     1. [Pipeline as Code（流水线即代码）原则](#pipeline-as-code流水线即代码原则)
 1. [端口](#端口)
@@ -993,6 +994,15 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 
 >1. 最初的CGI：从server fork出一个进程，仅仅处理这一个请求，处理完成就退出，处理的过程是从环境变量中获取HTTP头，从标准输入中读取POST数据，从标准输出中输出HTTP响应。由于需要不停地创建和销毁进程，这种实现方式性能是比较低下的，功能也受到许多限制。
 >2. FastCGI是CGI的一种改进：它在单个连接上接受连续的多个请求，一个一个进行处理，提高了吞吐量。
+
+### RPC（remote procedure call）
+主要目的是做到不同服务间调用方法像同一服务间调用本地方法一样。
+
+1. Call ID映射
+2. 序列化和反序列化
+3. 网络传输
+
+>可参考：[知乎：谁能用通俗的语言解释一下什么是 RPC 框架？](https://www.zhihu.com/question/25536695/answer/221638079)。
 
 ### 自绘
 客户端只需提供一个画布，框架自带渲染引擎在画布上进行UI渲染和逻辑（不需要客户端帮忙渲染）。
