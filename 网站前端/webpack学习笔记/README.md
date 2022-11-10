@@ -3,6 +3,7 @@
 ## 目录
 1. [总结](#总结)
 1. [`webpack.config.js`](#webpackconfigjs)
+1. [webpack构建优化](#webpack构建优化)
 1. [心得](#心得)
 1. [Rollup与webpack对比](#rollup与webpack对比)
 
@@ -36,12 +37,12 @@
 
         >使用`SplitChunksPlugin`进行自动化选择某些资源避免重复依赖。
 
-        第三方库，独立于经常改动的业务代码，额外提取出chunk成为单独的bundle用于用户缓存。每次构建时都需要进行构建。
+        独立于经常改动的业务代码，额外提取出chunk成为单独的bundle用于用户缓存（分包）。第三方库。每次构建时都需要进行构建。
     3. dll
 
         >`DLLPlugin`和`DLLReferencePlugin`配合设置动态链接库（还需要在html中插入），指定资源避免重复依赖。
 
-        独立于经常改动的业务代码，额外提取出chunk成为单独的bundle用于用户缓存，只有修改了dll引用的内容才需再次构建dll，提升了构建的速度。
+        独立于经常改动的业务代码，额外提取出chunk成为单独的bundle用于用户缓存（分包）。只有修改了dll引用的内容才需再次构建dll（DllPlugin生成了manifest.json文件，指定需要的依赖，DllReferencePlugin再去引用），缓存了dll分包，提升了构建的速度。
 
         >Dll这个概念借鉴了Windows系统的动态链接库（Dynamic Link Library，DLL）。一个dll包，仅仅是一个依赖库，它本身不能运行，仅用来给app引用。打包dll时，Webpack会将所有包含的库做一个索引，写在一个manifest文件中，而引用dll的代码（dll user）在打包时，只需读取这个manifest文件即可。
 
@@ -141,11 +142,61 @@
     ```javascript
     module.exports = [配置1, 配置2]
     ```
+### webpack构建优化
+1. 打包速度分析
+
+    1. 粗粒度：webpack的`stats`配置
+    2. 细粒度：[speed-measure-webpack-plugin](https://github.com/stephencookdev/speed-measure-webpack-plugin)
+2. 打包产物体积分析：[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)
+3. 构建优化
+
+    1. 升级Node.js、webpack版本
+    2. 多进程多实例：
+
+        1. 构建：
+
+            [thread-loader](https://github.com/webpack-contrib/thread-loader)
+        2. 压缩：
+
+            1. [webpack-parallel-uglify-plugin](https://github.com/gdborton/webpack-parallel-uglify-plugin)
+            2. 压缩插件（~~[uglifyjs-webpack-plugin](https://github.com/webpack-contrib/uglifyjs-webpack-plugin)~~、[terser-webpack-plugin](https://github.com/webpack-contrib/terser-webpack-plugin)）开启`parallel`参数
+    3. 分包
+
+        1. vendor
+
+            优化产物缓存
+        2. dll
+
+            优化产物缓存、优化构建缓存。预编译资源模块
+    4. 构建缓存
+
+        >提升非首次构建速度。缓存位于：`/node_modules/.cache/`。
+
+        1. loader缓存
+
+            [babel-loader](https://github.com/babel/babel-loader)开启`cacheDirectory`缓存参数
+        2. 压缩缓存
+
+            ~~[uglifyjs-webpack-plugin](https://github.com/webpack-contrib/uglifyjs-webpack-plugin)~~、[terser-webpack-plugin](https://github.com/webpack-contrib/terser-webpack-plugin)开启`cache`缓存参数（terser-webpack-plugin@5默认强制开启缓存）
+        3. plugin缓存
+
+            [hard-source-webpack-plugin](https://github.com/mzgoddard/hard-source-webpack-plugin)
+    5. 缩小构建目标
+
+        1. 优化`rule.include/exclude`配置（限制loader作用文件夹范围）
+
+            >e.g. 不解析`node_modules`
+        2. 减少文件搜索范围
+
+            1. 优化`resolve.modules`配置（减少模块搜索层级，避免上溯父目录）
+            2. 优化`resolve.mainFields`配置（减少依赖库入口文件搜索逻辑）
+            3. 优化`resolve.extensions`配置（减少文件后缀搜索范围）
+            4. 合理使用`resolve.alias`（减少某些确认依赖库的引用搜索）
 
 ### 心得
 1. 引用仓库
 
-    1. 若引用仓库，则会按照仓库设置好的路径引用仓库文件。
+    1. 若引用仓库，则会按照仓库设置好的路径引用仓库文件（package.json的字段）。
     2. 若引用仓库中某文件，则会按照该文件的引用链路去引用仓库文件。
     3. 仓库中没有被引用到的文件不会打包进最终bundle。
 
@@ -153,7 +204,7 @@
 2. tree shaking
 
     只支持ES6 Module，不支持CommonJS。
-3. 还未找到满足 css和img放置指定地点 且 html和css都有引入图片 的配置方案:)
+3. 还未找到满足 css和img放置指定地点 且 html和css都能正确引入图片路径 的配置方案。
 
 ### [Rollup](https://github.com/rollup/rollup)与webpack对比
 1. Rollup：

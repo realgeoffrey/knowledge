@@ -19,6 +19,7 @@
     1. [`this`](#this)
     1. [`类型1 extends 类型2 ? 类型3 : 类型4`（条件类型）](#类型1-extends-类型2--类型3--类型4条件类型)
     1. [`infer`](#infer)
+    1. [`...`展开类型](#展开类型)
     1. [`///`（三斜线指令）](#三斜线指令)
     1. [`namespace`（命名空间）](#namespace命名空间)
     1. [模块化](#模块化)
@@ -2488,6 +2489,37 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 >type ElementOfArray<ArrayType extends readonly unknown[]> = ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
 >```
 ></details>
+
+#### `...`展开类型
+元组包裹：`...` + 类型、类型变量/泛型变量、`infer`。
+
+1. 元组
+
+    ```typescript
+    type A = [number, ...string[]]  // 元组第一项是number，后面项是string（后面可为空）
+
+    const a: A = [1, 's']
+    const b: A = [1]
+    ```
+2. 元组 + 类型变量/泛型变量
+
+    ```typescript
+    type MyConcat<T extends any[], U extends any[]> = [...T, ...U]
+
+    type result = MyConcat<[1, 2], [3, 4]>  // -> [1, 2, 3, 4]
+    ```
+3. 元组 + 类型变量/泛型变量 + `infer`
+
+    ```typescript
+    // 数组首项匹配
+    type FirstOfArray<T extends any[]> = T extends [infer L, ...infer R] ? L : never
+    type result1 = FirstOfArray<[1, 2, 3]>   // -> 1
+
+
+    // 数组尾项匹配
+    type LastOfArray<T extends any[]> = T extends [...infer L, infer R] ? R : never
+    type result2 = LastOfArray<[1, 2, 3]>   // -> 3
+    ```
 
 #### `///`（三斜线指令）
 包含单个XML标签的单行注释。注释的内容会做为编译器指令使用。

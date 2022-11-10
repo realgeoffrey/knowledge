@@ -121,6 +121,8 @@
         2. `<Image>`
 
             1. 需要显式设置`width`和`height`，才能显示。
+
+                若是资源图且不知道高宽比例，可以用[`Image.getSize`](https://hippyjs.org/#/hippy-react/components?id=getsize)获取图片的宽高。
             2. 部分机型`onError`无法正常触发。
 
                 可能是客户端对不同类型的图片地址采取的加载错误处理方案不同，如：http、base64、普通字符串、等。
@@ -462,7 +464,7 @@
 
     - 引入base64
 
-        >默认情况下，webpack会针对小于某KB的图标进行转base64，所以一般情况不需要显式使用这个。
+        >默认情况下，webpack配置了针对小于某KB的图标进行转base64，所以一般情况不需要显式使用这个。
 
         `!!url-loader?modules!路径`，如：`import defaultSource from '!!url-loader?modules!./defaultSource.jpg';`
 
