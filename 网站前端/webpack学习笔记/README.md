@@ -2,7 +2,7 @@
 
 ## 目录
 1. [总结](#总结)
-1. [`webpack.config.js`](#webpackconfigjs)
+1. [`webpack.config.js`配置](#webpackconfigjs配置)
 1. [webpack构建优化](#webpack构建优化)
 1. [心得](#心得)
 1. [Rollup与webpack对比](#rollup与webpack对比)
@@ -52,7 +52,7 @@
 
         多个chunk的最终合并产出物。
 
-### `webpack.config.js`
+### `webpack.config.js`配置
 1. `entry`：定义整个编译过程的起点
 
     1. 单入口：`string`
@@ -192,6 +192,32 @@
             2. 优化`resolve.mainFields`配置（减少依赖库入口文件搜索逻辑）
             3. 优化`resolve.extensions`配置（减少文件后缀搜索范围）
             4. 合理使用`resolve.alias`（减少某些确认依赖库的引用搜索）
+    6. 产物优化（自动）
+
+        1. 分包（vendor或dll）
+        2. 图片压缩
+
+            [imagemin](https://github.com/imagemin) + [image-webpack-loader](https://github.com/tcoopman/image-webpack-loader)
+        3. tree shaking
+
+            1. 无用JS删除（只支持ES6 Module，不支持CommonJS）
+            2. 无用CSS删除：
+
+                1. [purgecss](https://github.com/FullHuman/purgecss) + [mini-css-extract-plugin](https://github.com/webpack-contrib/mini-css-extract-plugin)
+
+                    >实现原理：通过[jsdom](https://github.com/jsdom/jsdom)加载、[postcss](https://github.com/postcss/postcss)解析所有样式表，通过`document.querySelector`筛选出HTML文件中未找到的选择器。
+                2. [uncss](https://github.com/uncss/uncss)
+
+                    >实现原理：遍历代码（对所有文件进行匹配），识别已用到的CSS class。
+        4. 动态polyfill
+
+            [polyfill-server](https://github.com/Financial-Times/polyfill-service)：根据请求ua返回需要的polyfill
+
+            >其他polyfill的缺点：
+            >
+            >1. babel-polyfill：200k+，难以单独抽离部分功能
+            >2. babel-pligin-trasnform-runtime：不能polyfill原型上方法，不适合业务项目的复杂开发环境
+            >3. 自己写：重复造轮子，维护问题
 
 ### 心得
 1. 引用仓库
@@ -201,10 +227,7 @@
     3. 仓库中没有被引用到的文件不会打包进最终bundle。
 
     >e.g. 可以用`import debounce from 'lodash/debounce'`代替`import { debounce } from 'lodash'`，这样最终打包的结果不会引用整个lodash，而只会引用debounce的引用链路文件（可以用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)分析并可视化构建后的打包文件进行对比；也可以直接用[lodash.debounce](https://www.npmjs.com/package/lodash.debounce)单独库代替）。
-2. tree shaking
-
-    只支持ES6 Module，不支持CommonJS。
-3. 还未找到满足 css和img放置指定地点 且 html和css都能正确引入图片路径 的配置方案。
+2. 还未找到满足 css和img放置指定地点 且 html和css都能正确引入图片路径 的配置方案。
 
 ### [Rollup](https://github.com/rollup/rollup)与webpack对比
 1. Rollup：
