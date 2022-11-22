@@ -479,7 +479,7 @@ npm（Node Package Manager）。
         `@scope/project-name`
 4. `.npmrc`
 
-    npm的配置文件，手动或用`npm config`进行修改。
+    npm的配置文件，手动或用`npm config set xxx=yyy`进行修改（`npm config get xxx`进行查看）。
 
     >`npm config ls -l`查看所有已有配置和默认配置。
 

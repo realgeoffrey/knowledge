@@ -60,7 +60,8 @@
     5. `yarn global` +
 
         1. `add`、`remove`、`upgrade`、`upgrade-interactive`
-        2. `bin`、`list`（打印已安装的packages）、`dir`（打印packages安装的目录）
+        2. `bin`（打印bin安装的目录）、`dir`（打印packages安装的目录）
+        3. `list`（打印已安装的packages）
 
         全局操作。
     6. `yarn outdated`
@@ -94,33 +95,35 @@
         2. 再运行`create-「包名」 [「参数」]`（`「包名」`里package.json的`bin`命令）。
 
         >e.g. `yarn create react-app my-app`等价于`yarn global add create-react-app`+`create-react-app my-app`。
-    10. 其他
+    10. `yarn config` + `set`、`get`、`delete`、`list` + `--global`或`-g`
 
-        1. `yarn config` + `set`、`get`、`delete`、`list`
+        设置或查看配置。
 
-            `--global`或`-g`
-        2. `yarn autoclean`
-        3. `yarn bin`
-        4. `yarn cache clean`
-        5. `yarn check`
-        6. `yarn generate-lock-entry`
-        7. `yarn import`
-        8. `yarn info`
-        9. `yarn licenses`
-        10. `yarn link`、`yarn unlink`
-        11. `yarn list或ls [--depth=「数字」]`
-        12. `yarn owner` + `list`、`add`、`remove`
-        13. `yarn pack`
+        >e.g. `yarn config get registry -g`、`yarn config set registry "https://mirrors.tencent.com/npm/" -g`
+    11. 其他
+
+        1. `yarn autoclean`
+        2. `yarn bin`
+        3. `yarn cache clean`
+        4. `yarn check`
+        5. `yarn generate-lock-entry`
+        6. `yarn import`
+        7. `yarn info`
+        8. `yarn licenses`
+        9. `yarn link`、`yarn unlink`
+        10. `yarn list或ls [--depth=「数字」]`
+        11. `yarn owner` + `list`、`add`、`remove`
+        12. `yarn pack`
 
             创建依赖包的一个gzip压缩文件。
-        14. `yarn tag`
-        15. `yarn team`
-        16. `yarn version`
-        17. `yarn versions`
-        18. `yarn why`
-        19. `yarn workspace`
-        20. `yarn workspaces`
-        21. `yarn login`、`yarn publish`、`yarn logout`
+        13. `yarn tag`
+        14. `yarn team`
+        15. `yarn version`
+        16. `yarn versions`
+        17. `yarn why`
+        18. `yarn workspace`
+        19. `yarn workspaces`
+        20. `yarn login`、`yarn publish`、`yarn logout`
 
             发布相关。
-        22. `yarn help`
+        21. `yarn help`
