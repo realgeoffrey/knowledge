@@ -6,6 +6,8 @@
     1. [nvm更新Node.js版本](#nvm更新nodejs版本)
     1. [n更新Node.js版本](#n更新nodejs版本)
 1. [npm](#npm)
+
+    1. [一个项目中同时安装、使用同个依赖包的不同版本](#一个项目中同时安装使用同个依赖包的不同版本)
 1. [CommonJS规范](#commonjs规范)
 1. [原理机制](#原理机制)
 
@@ -95,7 +97,6 @@
     ```
 
 ---
-
 ### npm
 npm（Node Package Manager）。
 
@@ -488,6 +489,34 @@ npm（Node Package Manager）。
 
 >项目中使用某个开源库时，要考虑它的License和文件大小（若使用webpack打包，则可以使用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)进行分析）。
 
+#### 一个项目中同时安装、使用同个依赖包的不同版本
+>很容易导致ts类型的冲突，需要额外处理全局类型问题。
+
+1. npm aliases（npm：6.9.0+）
+
+    >[pnpm aliases](https://pnpm.io/zh/aliases)也类似。
+
+    1. 安装带别名的指定仓库：
+
+        `npm install 「别名」@npm:「[<@scope>/]<pkg>[@<version>]」 --save`
+    2. 会写入package.json的依赖：
+
+        ```json
+        "dependencies": {
+          "「别名」": "npm:「[<@scope>/]<pkg>[@<version>]」"
+        }
+        ```
+    3. 使用时，根据引用名进入指定的版本中
+2. 发布一个新依赖包，包含引用指定版本的目标依赖包，然后通过 新依赖包+相对路径 引用
+
+    >安装依赖（`npm install`）是从（项目根目录）最外层往（引用处）最里层安装，若本层已经有同名但不同版本的库文件夹，则往里层尝试安装。
+
+    `"「新依赖包」/node_modules/「目标依赖包」"`（若没有不同版本的同个依赖包，则路径错误）
+3. （仅适合全新项目）monorepo
+
+    各子项目中的依赖互相隔离。
+
+---
 ### CommonJS规范
 >参考：[阮一峰：require() 源码解读](http://www.ruanyifeng.com/blog/2015/05/require.html)、[CommonJS 详细介绍](https://neveryu.github.io/2017/03/07/commonjs/)、[阮一峰：JavaScript 模块的循环加载](http://www.ruanyifeng.com/blog/2015/11/circular-dependency.html)。
 

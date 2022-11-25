@@ -95,8 +95,7 @@
     4. [gulp使用](./网站前端/gulp使用/README.md)
     5. [ESLint+Prettier学习笔记](./网站前端/ESLint+Prettier学习笔记/README.md)
     6. [Node.js脚手架（TypeScript+pm2或nodemon+--inspect）](./网站前端/Node.js脚手架（TypeScript+pm2或nodemon+--inspect）/README.md)
-    7. [yarn学习笔记](./网站前端/yarn学习笔记/README.md)
-    8. [Lerna学习笔记](./网站前端/Lerna学习笔记/README.md)
+    7. [yarn+Lerna学习笔记](./网站前端/yarn+Lerna学习笔记/README.md)
     </details>
 11. [无障碍](./网站前端/无障碍/README.md)
 
