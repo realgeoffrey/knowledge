@@ -144,6 +144,15 @@
             4. 文本若不设置`lineHeight`（或`height`），可能导致渲染出的行高影响整体渲染，甚至影响祖父元素的高度或间距，无法达到确定的"稳定状态"。
 
                 若出现文字上下被截断的情况，则也试着设置大一些的`lineHeight`去解决。
+            5. 若SDK没有处理好文字顺序的功能（如：右对齐、Right-to-Left的阿拉伯语），则考虑在外层包裹一层`<View>`用`flex`处理。
+            6. `fontStyle`只有`'normal/italic'`值，若要制作下划线或删除线等，则需要用额外节点处理（包裹一层<View>，然后absolute模拟）：
+
+                ```jsx
+                <View>
+                  <Text numberOfLines={1}>文案</Text>
+                  <View style={{ position: 'absolute', left: 0, right: 0, bottom: x, height: 1, backgroundColor: 'red' }}/>
+                </View>
+                ```
         4. `<ViewPager>`
 
             >`height`和`flexBasis`类似。
@@ -153,7 +162,7 @@
             3. 需要大于等于2个子节点。
         5. 大部分（但不是所有）组件都有`onLayout`
 
-            当元素挂载或者布局改变时被调用。返回节点实时的：宽高（`width`、`height`）、距离父级顶部(0,0)距离（`x`、`y`）。
+            当**元素挂载**或者**布局改变**时被调用。返回节点实时的：宽高（`width`、`height`）、距离父级顶部(0,0)距离（`x`、`y`）。
 
             1. 若所有组件都套上`onLayout`，则可以滚动到指定组件位置和判断组件是否"曝光"。
             2. `onLayout`是异步的，并且可能触发时间比较慢，在组件渲染完毕之后上百毫秒（250ms？）才触发，也不一定按照排列顺序触发（如前面的组件比较复杂等原因）。
@@ -846,6 +855,10 @@
         1. `borderRadius`
 
             >仅能设置为相同数值。
+
+            - Tips（bug？）
+
+                1. 可能不支持`<Text>`
         1. `borderTopLeftRadius`、`borderTopRightRadius`、`borderBottomRightRadius`、`borderBottomLeftRadius`
 
             - Tips（bug？）
