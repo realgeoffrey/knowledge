@@ -3,6 +3,7 @@
 ## 目录
 1. [yarn](#yarn)
 1. [Lerna](#lerna)
+1. [Monorepo方案](#monorepo方案)
 
 ---
 ### yarn
@@ -94,6 +95,14 @@
 
         1. `--mutex 「file 或 network」`确保任意给定时间只有一个实例运行（并且避免冲突）。
         2. `--verbose`详细日志
+
+        - 执行查找命令细节（有别于npm）
+
+            >来自：[yarn run(v2)](https://yarnpkg.com/cli/run#details)。
+
+            1. 根目录`package.json`的scripts；
+            2. `node_modules/.bin`的二进制文件；
+            3. 若命令包含`:`，则可以针对workspaces下某一个包的`package.json`的scripts。
     9. `yarn create 「包名」 [「参数」]`
 
         >类似`npx`功能。
@@ -236,7 +245,7 @@
         从所有包中删除node_modules目录
     10. `lerna import`
 
-        将一个包导入到带有提交历史记录的monorepo中
+        将一个包导入到带有提交历史记录的Monorepo中
     11. `lerna link`
 
         将所有相互依赖的包符号链接在一起
@@ -247,7 +256,40 @@
 
         打印本地环境信息
 
-- monorepo方案：
+### Monorepo方案
+1. ~~Lerna + yarn workspace~~
 
-    1. ~~Lerna + yarn workspace~~
-    2. pnpm
+    >用yarn来处理依赖问题，用lerna来处理发布问题。能用yarn做的就用yarn做。
+
+    对于已经配置好的Lerna + yarn workspace的Monorepo项目（`package.json`的`workspaces`和`lerna.json`）：
+
+    1. 通过使用workspace，yarn install会自动解决安装和`link`问题
+
+        >yarn install会将package下的依赖统一安装到根目录之下。这有利于提升依赖的安装效率和不同package间的版本复用（有些包是需要私有依赖的，而私有依赖会被多个包安装多次，而提升依赖可以解决这一问题）。
+
+        `yarn install # 等价于 lerna bootstrap --npm-client yarn --use-workspaces`
+    2. 清理环境
+
+        ```shell
+        lerna clean         # 删除各包下的node_modules（根目录的不删）
+        ```
+    3. 增加、去除依赖
+
+        ```shell
+        yarn workspace packageB remove packageA # 给packageB去除packageA
+        yarn workspaces remove packageA         # 给所有package去除packageA
+        yarn remove -W -D packageA              # 给root去除packageA（-D：--dev保存至devDependencies，-W：在workspaces根目录进行）
+        # add 同理
+        ```
+    4. 执行scripts
+
+        ```shell
+        yarn script1                        # 根目录执行script1（->`node_modules/.bin`的二进制文件->若命令包含`:`，则可以针对workspaces下某一个包的`package.json`的scripts）
+
+        yarn workspace package1 run script1 # 在package1中执行script1
+
+        yarn workspaces run script1         # 所有package均执行script1（若有任何package不存在script1则报错）
+        ```
+2. pnpm
+
+    todo

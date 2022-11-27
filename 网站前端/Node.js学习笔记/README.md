@@ -426,7 +426,7 @@ npm（Node Package Manager）。
         >    "url": "git@github.com:用户名/仓库名.git"
         >}
         >
-        >// 针对monorepo：
+        >// 针对Monorepo：
         >"repository": {
         >  "type": "git",
         >  "url": "https://github.com/用户名/仓库名.git",
@@ -512,7 +512,7 @@ npm（Node Package Manager）。
     >安装依赖（`npm install`）是从（项目根目录）最外层往（引用处）最里层安装，若本层已经有同名但不同版本的库文件夹，则往里层尝试安装。
 
     `"「新依赖包」/node_modules/「目标依赖包」"`（若没有不同版本的同个依赖包，则路径错误）
-3. （仅适合全新项目）monorepo
+3. （仅适合全新项目）Monorepo
 
     各子项目中的依赖互相隔离。
 
