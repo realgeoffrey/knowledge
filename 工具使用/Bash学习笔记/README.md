@@ -13,7 +13,7 @@
 1. [函数](#函数)
 1. [数组](#数组)
 1. [默认环境变量](#默认环境变量)
-1. [启动Shell](#启动shell)
+1. [启动Bash](#启动bash)
 
 ---
 >Linux一切皆文件。
@@ -1017,8 +1017,11 @@ fn 参数1 参数2
 
     `PS1`、`PS2`、`PS3`、`PS4`
 
-### 启动Shell
+### 启动Bash
 用户每次使用Shell，都会开启一个与Shell的Session（对话）。
+
+>以下顺序针对`bash`。若使用其他shell时（如：`zsh`等。查看或设置：[系统shell类型](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/命令行备忘/README.md#系统shell类型)），则执行启动脚本的顺序和文件会变化，详情可查看：[关于Linux下Bash与Zsh启动档的载入顺序研究](https://blog.miniasp.com/post/2021/07/26/Bash-and-Zsh-Initialization-Files)、[Zsh/Bash startup files loading order (.bashrc, .zshrc etc.)
+](https://shreevatsa.wordpress.com/2008/03/30/zshbash-startup-files-loading-order-bashrc-zshrc-etc/)。
 
 1. 登录Session、login shell
 

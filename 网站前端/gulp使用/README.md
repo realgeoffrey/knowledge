@@ -8,6 +8,8 @@
 
     1. `npm run gulp`
     2. `npm run gulp -- browserSync`
+
+        >BrowserSync利用WebSocket，当监控的文件MD5发生变化时，向客户端发送刷新页面指令。
     3. `npm run gulp -- delRelease`
     4. `npm run gulp -- watch`
 
