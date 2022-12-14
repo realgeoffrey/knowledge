@@ -15,6 +15,7 @@
 1. [验证文件的数字签名](#验证文件的数字签名)
 1. [查看本机IP](#查看本机ip)
 1. [执行文件](#执行文件)
+1. [系统shell类型](#系统shell类型)
 1. [（Unix-like）开机自动运行的脚本](#unix-like开机自动运行的脚本)
 1. [查看端口占用、网络链接，查看进程并杀死](#查看端口占用网络链接查看进程并杀死)
 1. [查看端口占用，杀掉进程](#查看端口占用杀掉进程)
@@ -315,6 +316,23 @@ ipconfig    # 查看`以太网适配器 本地连接 的 IPv4 地址`
 
 . 「路径名/文件名」.sh
 ```
+
+#### 系统shell类型
+1. 查看系统安装的所有shell
+
+    ```shell
+    cat /etc/shells
+    ```
+2. 查看系统使用的shell
+
+    ```shell
+    echo $SHELL
+    ```
+3. 修改系统使用的shell
+
+    ```shell
+    chsh -s 「shell路径，如：/bin/zsh 或 /bin/bash 等」
+    ```
 
 #### （Unix-like）开机自动运行的脚本
 ```shell
@@ -750,9 +768,10 @@ brew update && brew upgrade && brew upgrade --cask
 #### （macOS）打开文件（夹）
 ```shell
 open 「路径/文件」
+    -t # Opens with default text editor
 ```
 
->安装[duti](https://github.com/moretension/duti)（brew install duti），可为各种文档设置默认应用程序。如：设置纯文本的默认应用程序为Sublime`duti -s com.sublimetext.3 public.plain-text all`。
+>安装[duti](https://github.com/moretension/duti)（brew install duti），可为各种文档设置默认应用程序。如：设置纯文本的默认应用程序为Sublime`duti -s com.sublimetext.4 public.plain-text all`、设置纯文本的默认应用程序为TextEdit`duti -s com.apple.TextEdit public.plain-text all`。
 
 #### （macOS）钥匙串
 `钥匙串`应用可以查看本机保存的密码（大部分应用都会把密码保存在钥匙串）。
@@ -771,3 +790,5 @@ open 「路径/文件」
     touch Settings/.profilesAreInstalled
     ```
 3. 重启
+
+>为什么删了描述文件，还是可以连上公司的Wifi？

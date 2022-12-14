@@ -16,22 +16,40 @@
     2. 根目录执行`npm run build`
     3. 客户端demo运行
 
-        1. iOS
+        1. iOS（/examples/ios-demo/）
 
             直接可以根据文档运行Xcode
-        2. Android
-
-            参考：[Hippy/issues/39](https://github.com/Tencent/Hippy/issues/39)。
+        2. Android（/examples/android-demo/）
 
             1. Android Studio安装SDK
 
                 1. 当提示 ToolChain 需要更新时全部选择拒绝（Gradle等）。
                 2. 选择安装制定版本的SDK Tools：
 
+                    >参考：[Hippy/issues/39](https://github.com/Tencent/Hippy/issues/39)。
+
                     1. Android SDK Build-Tools：28.0.3
                     2. CMake：3.6.4111459
             2. 配置自己sdk里面的cmake到环境变量
-    4. 运行Hippy demo项目
+            3. 配置环境变量
+
+                ```shell
+                export ANDROID_HOME=/Users/「用户名」/Library/Android/sdk
+                export PATH=${PATH}:${ANDROID_HOME}/tools
+                export PATH=${PATH}:${ANDROID_HOME}/platform-tools
+                ```
+            4. `Task 'wrapper' not found in project`、`Task 'prepareKotlinBuildScriptModel' not found in project`：
+
+                ```groovy
+                // `build.gradle`文件最后添加：
+                task wrapper(type: Wrapper) {
+                  gradleVersion = '8.0.0'
+                }
+
+                task prepareKotlinBuildScriptModel {
+                }
+                ```
+    4. 运行Hippy demo项目（/examples/hippy-react-demo/、/examples/hippy-vue-demo/）
 
         `npm run hippy:dev`、`npm run hippy:debug`
 
@@ -605,8 +623,8 @@
 
             - Tips（bug？）
 
-                1. `min`+`Width/Height`可能是`box-sizing: content-box 或 border-box`效果。
-                2. `max`+`Width/Height`可能完全不生效。
+                1. `minWidth/minHeight`可能是`box-sizing: content-box 或 border-box`效果。
+                2. `maxWidth/maxHeight`可能完全不生效。
         4. `border`
 
             1. 宽度（`Number`）
@@ -701,7 +719,7 @@
 
                     >此时`flex: 「正整数」`等价于`flexGrow: 「正整数」, flexShrink: 1, flexBasis: 0`。
 
-                3. `-1`：若空间不足则缩小到最小的宽度/高度。若空间没有不足，则使用自身原本宽度/高度占据空间。
+                3. `-1`：若空间不足则缩小到`minWidth/minHeight`。若空间没有不足，则使用自身原本宽度/高度占据空间。
 
                     适合可变元素后面紧跟着内容的情况。
 
