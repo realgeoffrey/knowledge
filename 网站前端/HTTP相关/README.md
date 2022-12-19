@@ -123,8 +123,6 @@
     ![HTTP协议版本区别](./images/5.png)
 
 ### TCP的三次握手、四次挥手
->参考：[简析TCP的三次握手与四次分手](http://www.jellythink.com/archives/705)。
-
 ![TCP三次握手和四次挥手图](./images/3.png)
 
 ><details>
@@ -850,11 +848,27 @@
 
 2. WebSocket
 
-    新的全双工通讯协议。在HTTP建立之后，再进行一次握手后创建连接。
+    新的全双工通讯协议。在TCP建立之后，复用HTTP的握手通道，再进行一次握手后创建连接。
 
     1. 保持持久连接状态。
     2. 服务端能够主动推送。
     3. 头部信息小，减少通信量。
+    4. 可以发送文本（`String`）、二进制数据（`Blob`实例或`Arraybuffer`实例）。
+    5. 没有~~同源策略~~限制，客户端可以与任意服务器通信。
+    6. 协议标识符`ws`，默认端口`80`；加密协议标识`wss`，默认端口`443`。
+
+        >e.g. `ws://example.com:80/some/path`、`wss://example.com:443/some/path`
+
+    - 相关头
+
+        1. 请求头：
+
+            `Connection: Upgrade`、`Upgrade: websocket`、`Sec-WebSocket-Key`
+        2. 响应头：
+
+            `Connection: Upgrade`、`Upgrade: websocket`、`Sec-WebSocket-Accept`
+
+    ![websocket-http](./images/websocket-1.jpg)
 3. HTTP/2
 
     ><details>

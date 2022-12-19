@@ -11,6 +11,11 @@
 ---
 >Hybrid App：狭义上是App内嵌WebView组件，再在WebView上使用页面的方案。广义上包括所有App混合方案，包括WebView方案、其他语言2Native方案、等。
 
+>随着技术的发展，有新的技术替代`桥协议`，如：JSI、等。以下内容中描述桥协议的部分，都可以用这些新技术替代。
+>
+>1. `桥协议`：JS和C++互相无感知，只能通过桥协议作为中间层，异步进行序列化/反序列化传输通讯。
+>2. [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi)：将C++中的常用类型、定义的对象和函数 映射到JS中，支持JS随时调用C++中方法。并且支持其他JS引擎。
+
 ## WebView相关
 
 ><details>

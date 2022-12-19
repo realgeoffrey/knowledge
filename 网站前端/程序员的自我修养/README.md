@@ -763,6 +763,8 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
     1. 函数式编程（functional programming）
 
         一个程序会被看作是一个无状态的函数计算的序列。更加强调程序执行的结果而非执行的过程，倡导利用若干简单的执行单元让计算结果不断渐进。
+
+        >[函数式编程术语](https://github.com/shfshanyue/fp-jargon-zh)。
     2. 命令式编程（imperative programming）
 
         关心解决问题的步骤。

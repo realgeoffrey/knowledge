@@ -17,7 +17,7 @@
 >
 >    1. `PC`：针对桌面端制作的网页（系统包括：macOS、Windows）。
 >    2. `WAP`：针对移动端（手机浏览器或Hybrid App）制作的页面（系统包括：iOS、Android）。
->4. 默认仅针对浏览器环境的内容。
+>4. 默认仅针对浏览器的JS运行环境（，其他JS运行环境：Node.js）。
 >5. 原型链（`[[Prototype]]`）
 >
 >    （非标准）`对象.__proto__`等价于：`Object.getPrototypeOf(对象)/Object.setPrototypeOf(对象, 原型对象)`

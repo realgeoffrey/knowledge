@@ -85,7 +85,7 @@
 
         `console.log/warn/error`
 
-        - `console`日志会输出到iOS和Android系统日志中。
+        - `console`日志会输出到iOS和Android系统日志中（Hippy 2.10.0之前）。
 
             >注意：若客户端系统打印多次日志，则可能是前端调用多次，也可能是客户端打印bug导致打印多次。
     5. 自定义字体
@@ -162,7 +162,7 @@
             4. 文本若不设置`lineHeight`（或`height`），可能导致渲染出的行高影响整体渲染，甚至影响祖父元素的高度或间距，无法达到确定的"稳定状态"。
 
                 若出现文字上下被截断的情况，则也试着设置大一些的`lineHeight`去解决。
-            5. 若SDK没有处理好文字顺序的功能（如：右对齐、Right-to-Left的阿拉伯语），则考虑在外层包裹一层`<View>`用`flex`处理。
+            5. 若SDK没有处理好文字顺序的功能（如：右对齐、Right-to-Left的阿拉伯语），则考虑在外层包裹一层`<View>`用`flex-start/flex-end`处理。
             6. `fontStyle`只有`'normal/italic'`值，若要制作下划线或删除线等，则需要用额外节点处理（包裹一层<View>，然后absolute模拟）：
 
                 ```jsx
@@ -445,7 +445,10 @@
     4. `Clipboard`
 
         读取或写入剪贴板
-    5. `Dimensions.get('window或screen')`
+    5. `ConsoleModule`
+
+        提供了将前端日志输出到iOS终端日志和Android logcat的能力。（Hippy 2.10.0之后，`console`不再能输出至终端日志）
+    6. `Dimensions.get('window或screen')`
 
         获取设备的Hippy Root View或者屏幕尺寸的宽高
 
@@ -473,21 +476,27 @@
                 >（React Native问题）市场上大多数的Android全面屏手机，一般都是以 刘海屏、水滴屏、挖孔屏 等异形屏的形式存在。屏幕在显示UI界面时，顶上的挖孔部分一般都是作为 状态栏 的形式存在。这其中的一些机型，在计算`Dimensions.get('window').height`时不将状态栏计算进去，但在实际渲染界面时又把状态栏作为可视区域。
 
                 （网上较多是根据`Dimensions.get('window').height/Dimensions.get('window').width`比值判断出需要处理的Android全面屏，再一刀切加上StatusBar的高度。我感觉不妥，）需要更多地利用flex布局而不是~~确定尺寸~~的布局，或在最外层满屏的`<View>`上用`onLayout`异步获得渲染出的满屏高宽。
-    6. `NetInfo`
+    7. `ImageLoaderModule`
+
+        对远程图片进行相应操作：获取图片大小、预加载图片。
+    8. `NetInfo`
 
         获取网络状态
-    7. `NetworkModule`
+    9. `NetworkModule`
 
         网络相关的模块，目前主要是操作Cookie。
-    8. `PixelRatio`
+    10. `PixelRatio`
 
         获取设备的像素密度(pixel density)
-    9. `Platform`
+    11. `Platform`
 
         判断平台
-    10. `Stylesheet`（`.hairlineWidth`、`.create()`）
+    12. `Stylesheet`（`.hairlineWidth`、`.create()`）
 
         CSS样式表
+    13. `UIManagerModule`
+
+        提供了操作UI相关的能力。
 
     - 引入base64
 
@@ -499,13 +508,19 @@
 
     1. 自定义组件
 
-        `import { UIManagerModule } from "@hippy/react"`
+        在需要渲染的地方通过`nativeName`属性指定到终端组件名称。
+
+        >e.g. `<div nativeName="LinearGradientView">`
     2. 自定义模块
 
-        1. 与Native通信方式（`桥协议`、JSI）：`import { callNative, callNativeWithPromise } from "@hippy/react"`
+        1. 导入`callNative`或`callNativeWithPromise`
+        2. 封装调用接口
+        3. 导出模块
+        4. 使用
+4. 与Native通信方式（`桥协议`、JSI）：`import { callNative, callNativeWithPromise } from "@hippy/react"`
 
-            >H5与Native通信方式：[`桥协议`或`自定义URL Scheme` + WebView提供给Native调用的全局回调函数（或匿名函数）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Hybrid前端开发/README.md#native提供给hybrid宿主环境webview)。
-4. 手势系统（点击事件、触屏事件）
+    >通用的，H5与Native通信方式：[`桥协议`或`自定义URL Scheme` + WebView提供给Native调用的全局回调函数（或匿名函数）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Hybrid前端开发/README.md#native提供给hybrid宿主环境webview)。
+5. 手势系统（点击事件、触屏事件）
 
     所有组件（或自定义组件）均支持监听手势系统（点击事件、触屏事件）。
 
@@ -546,35 +561,40 @@
             }
             ```
 
-    - 事件冒泡
+    - 事件
 
-        点击事件、触屏事件均支持事件冒泡，由最上层组件往根元素冒泡触发事件回调。
+        1. 事件冒泡
 
-        1. 若事件回调返回`false`，则冒泡。
-        2. 若事件回调`不返回值`、或返回任何除了 ~~`false`~~ 的值，则不再冒泡。
+            点击事件、触屏事件均支持事件冒泡，由最上层组件往根元素冒泡触发事件回调。
 
-        >注意使用UI库时，某些组件是否进行事件冒泡拦截。e.g. 大部分`<Button>`的实现，点击事件不会继续向上冒泡。
-    - 事件拦截
+            1. 若事件回调返回`false`，则冒泡。
+            2. 若事件回调`不返回值`、或返回任何除了 ~~`false`~~ 的值，则不再冒泡。
 
-        父级组件拦截或中断子级组件的事件触发。所有触发在子级组件的事件都仅触发在父级组件。
+            >注意使用UI库时，某些组件是否进行事件冒泡拦截。e.g. 大部分`<Button>`的实现，点击事件不会继续向上冒泡。
+        2. 事件捕获
 
-        1. `onInterceptTouchEvent`：
+            在目标元素事件名添加`Capture`后缀，e.g. `onClickCapture`、`onTouchDownCapture`。
+        3. 事件拦截
 
-            1. `true`：
+            父级组件拦截或中断子级组件的事件触发。所有触发在子级组件的事件都仅触发在父级组件。
 
-                1. 拦截所有手势事件（点击事件+触屏事件）。
-                2. 若父级组件在设置`onInterceptTouchEvent`为`true`之前，子级组件已经在处理触屏事件，则子级组件将收到一次`onTouchCancel`回调（如果子控件有注册该函数）。
-            2. `false`（默认）：不拦截
-        2. `onInterceptPullUpEvent`（貌似还未实现？）
-    - 事件穿透
+            1. `onInterceptTouchEvent`：
 
-        >客户端双端原生特性如此。
+                1. `true`：
 
-        1. 若对一个节点不设置事件监听，则对该节点的事件触发会穿透到下层（类似默认添加了CSS的`pointer-events: none;`）。
-        2. 若设置了事件监听，则会承接住事件，事件不会透传至下层节点。
+                    1. 拦截所有手势事件（点击事件+触屏事件）。
+                    2. 若父级组件在设置`onInterceptTouchEvent`为`true`之前，子级组件已经在处理触屏事件，则子级组件将收到一次`onTouchCancel`回调（如果子控件有注册该函数）。
+                2. `false`（默认）：不拦截
+            2. `onInterceptPullUpEvent`（貌似还未实现？）
+        4. 事件穿透
 
-        >对于结构复杂的情况，可能违背这个逻辑，导致有覆盖的节点就不穿透。
-5. 终端事件
+            >客户端双端原生特性如此。
+
+            1. 若对一个节点不设置事件监听，则对该节点的事件触发会穿透到下层（类似默认添加了CSS的`pointer-events: none;`）。
+            2. 若设置了事件监听，则会承接住事件，事件不会透传至下层节点。
+
+            >对于结构复杂的情况，可能违背这个逻辑，导致有覆盖的节点就不穿透。
+6. 终端事件
 
     ```jsx
     import { HippyEventEmitter } from '@hippy/react';
@@ -587,7 +607,7 @@
     # 事件卸载
     this.call.remove();
     ```
-6. 样式
+7. 样式
 
     >1. Hippy的还原设计稿方案，与客户端的方案基本一致：[适配布局（与设计师协作思路）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/还原设计稿/README.md#适配布局与设计师协作思路)。
     >2. [React Native样式](https://reactnative.dev/docs/style)的子级。
@@ -951,7 +971,7 @@
             <Text style={styles.verticalScrollView}/>
             ```
             </details>
-7. 无障碍
+8. 无障碍
 
     组件属性`accessible`、`accessibilityLabel`。
 
