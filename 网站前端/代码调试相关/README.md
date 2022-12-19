@@ -143,7 +143,7 @@
                     ```
         2. 「开发人员选项」 -> 「调试GPU过度绘制」
 
-    - Android Studio编译APK
+    - Android Studio编译APK（Android Application Package）
 
         1. 改动代码 -> Make -> Run -> target获得APK
 
@@ -187,6 +187,8 @@
     1. Xcode模拟App
 
         Run（command + R） 或 Run Without Building（command + control + R）
+
+        >就像安装ipa（iPhone application archive）一样。
     2. debugger
 
         1. JS日志、断点：

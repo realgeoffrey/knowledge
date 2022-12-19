@@ -1178,7 +1178,7 @@
 
     1. 高阶组件（higher order component，HOC）
 
-        >是一种设计模式。
+        >是一种设计模式。高阶函数 (Higher-Order Function，HOF)：以函数为参数或/和返回值的函数。
 
         参数为组件，返回值为新组件的函数。
 
