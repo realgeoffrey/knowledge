@@ -30,15 +30,17 @@
 
 ### 各端还原设计稿方案（响应式方案）
 ><details>
-><summary>可参考：<a href="https://uiiiuiii.com/screen/index.htm">屏幕尺寸大全</a></summary>
+><summary>可参考：<a href="https://www.strerr.com/screen.html">手机屏幕尺寸大全</a></summary>
 >
 >1. iOS屏幕宽度pt：
 >
 >    1. 320：iPhone SE(1st)
->    2. 375：iPhone 11 Pro（iPhone 13 Mini的渲染像素的逻辑像素的宽度也是375）
+>    2. 375：iPhone 11 Pro（iPhone 12/13 Mini的渲染像素的逻辑像素的宽度也是375）
 >    3. 390：iPhone 13 Pro
->    4. 414：iPhone 11 Pro Max
->    5. 428：iPhone 13 Pro Max
+>    4. 393：iPhone 14 Pro
+>    5. 414：iPhone 11 Pro Max
+>    6. 428：iPhone 13 Pro Max
+>    7. 430：iPhone 14 Pro Max
 >2. Android屏幕宽度dp：
 >
 >    320、360、392、411、480，还可以在开发者设置里指定屏幕宽度。

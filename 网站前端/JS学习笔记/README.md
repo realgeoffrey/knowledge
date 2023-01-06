@@ -67,7 +67,7 @@
 
     1. 函数拥有
 
-        1. `length`：希望接收的命名参数个数（计数到`默认参数`或`剩余参数`之前的参数）
+        1. `length`：希望接收的命名参数个数（计数到`默认参数`或`剩余参数`之前的形参）
         2. `name`：函数名
         3. `prototype`：（函数独有）指向函数的原型对象
     2. ES6不推荐使用（部分情况下导致报错）：
@@ -104,7 +104,7 @@
         `var 名字 = new Function([多个参数, ]函数体字符串);`
 
         >直接调用`Function`（不使用`new`操作符）的效果与调用构造函数一样，区别是`this`指向`window`。
-4. 匿名函数、[箭头函数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#箭头函数)
+4. [匿名函数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#自执行匿名函数拉姆达λlambda)、[箭头函数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#箭头函数)
 
     只能提供给其他变量引用、或自执行。
 
@@ -1260,10 +1260,9 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
     - `setImmediate/clearImmediate`：
 
-        >仅ie10支持。
+        >主流浏览器不支持，仅ie10+、Node.js支持。
 
-        等价于：`setTimeout(func, 0)`。
-
+        大致类似于：`setTimeout(func, 0)`。
 
     >`setInterval`、`setTimeout`有最短延迟时间、最长延迟时间：
     >
@@ -4083,7 +4082,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         >2. `.css('height')`返回带`px`的`字符串`。
 9. `$.proxy()`和原生JS的`Function.prototype.bind`类似，返回一个确定了`this`（和参数）的新方法
 
-    >新方法的参数填补在原函数去除已设置形参的后面（与`Function.prototype.bind`一致）。
+    >新方法的参数填补在原函数去除已设置参数的后面（与`Function.prototype.bind`一致）。
 
     - 额外的，jQuery确保即使绑定的函数经过`$.proxy()`处理，依然可以用原先的函数来正确地取消绑定
 

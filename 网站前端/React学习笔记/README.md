@@ -1530,6 +1530,8 @@
         5. 检测[过时的context API](https://zh-hans.reactjs.org/docs/legacy-context.html)
     6. `React.memo`
 
+        >类似`React.Component`实现浅比较`shouldComponentUpdate` 或 `React.PureComponent`。
+
         若组件在相同props的情况下渲染相同的结果，则可以通过将其包装在`React.memo`中调用，以此通过记忆组件渲染结果的方式来提高组件的性能表现。这意味着在这种情况下，React将跳过渲染组件的操作并直接复用最近一次渲染的结果。
 
         ><details>
@@ -2288,7 +2290,49 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
         ```
         </details>
 
-    >当想要`useEffect`限制执行次数，但依赖一些不变化的props或state时，很有用。
+    >当想要`useEffect`限制执行次数，但依赖一些不变化的props或state时，很有用：`const a = useCallback(方法,[依赖1]); useEffect(()=>{执行},[a])`。
+
+- `useMemo`、`useCallback`辩证看待：
+
+    1. 缓存使用有成本（首次渲染的负担，增加程序的复杂性，缓存、闭包等开销），避免滥用
+    2. `useCallback`设计初衷并非~~解决组件内部函数多次创建~~的问题，而是 减少子组件的不必要重复渲染
+    3. `useMemo`主要作用是 避免重复进行复杂耗时的计算，而不是 ~~单纯缓存变量~~
+    4. 子组件不会重新渲染（re-render）需要满足的条件：
+
+        1. 子组件自身被缓存（`React.memo`或`useMemo`等）
+        2. 子组件所有的prop都被缓存
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >`<Child prop1={data1} prop2={data2}>`，此子组件不重新渲染需要：`<Child>`被缓存，`data1`、`data2`被缓存。
+        >
+        >```jsx
+        >import React from "react";
+        >
+        >const CountButton = React.memo(function ({ onClick, count }) {
+        >  console.log("子级渲染", count);
+        >  return <button onClick={onClick}>{count}</button>;
+        >});
+        >
+        >export default function Demo() {
+        >  const [count1, setCount1] = React.useState(0);
+        >  const increment1 = React.useCallback(() => setCount1((c) => c + 1), []);
+        >
+        >  const [count2, setCount2] = React.useState(0);
+        >  const increment2 = React.useCallback(() => setCount2((c) => c + 1), []);
+        >
+        >  console.log("父级渲染");
+        >
+        >  return (
+        >    <>
+        >      <CountButton count={count1} onClick={increment1} />
+        >      <CountButton count={count2} onClick={increment2} />
+        >    </>
+        >  );
+        >}
+        >```
+        ></details>
 10. `useImperativeHandle`
 
     `useImperativeHandle(ref, createHandle, [deps])`

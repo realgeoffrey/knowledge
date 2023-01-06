@@ -1,5 +1,5 @@
 # Vue.js学习笔记
->针对v2版本。
+>针对Vue 2版本。
 
 ## 目录
 1. [vue](#vue)
@@ -17,6 +17,7 @@
     1. [SSR](#ssr)
     1. [Vue实现原理](#vue实现原理)
     1. [例子](#例子)
+    1. [Vue 2 与 Vue 3 区别](#vue-2-与-vue-3-区别)
 1. [vue-router](#vue-router)
 1. [vuex](#vuex)
 1. [vue-cli](#vue-cli)
@@ -704,7 +705,7 @@
         父级使用子组件字符串的作用域名字。
 - <details>
 
-    <summary>官方建议的顺序：<a href="https://cn.vuejs.org/v2/style-guide/#元素特性的顺序-推荐">元素特性的顺序</a></summary>
+    <summary>官方建议的顺序：<a href="https://v2.cn.vuejs.org/v2/style-guide/index.html#元素-attribute-的顺序推荐">元素特性的顺序</a></summary>
 
     1. 定义（提供组件的选项）
 
@@ -913,7 +914,7 @@
 
 - <details>
 
-    <summary>官方建议的顺序：<a href="https://cn.vuejs.org/v2/style-guide/#组件-实例的选项的顺序-推荐">组件/实例的选项的顺序</a></summary>
+    <summary>官方建议的顺序：<a href="https://v2.cn.vuejs.org/v2/style-guide/index.html#组件-实例的选项的顺序推荐">组件/实例的选项的顺序</a></summary>
 
     1. 副作用（触发组件外的影响）
 
@@ -1553,7 +1554,7 @@
 
 - 插入、更新、移除DOM时，提供过渡/动画的操作
 
-    1. 在CSS过渡/动画中自动应用class（可配合使用第三方CSS动画库，如：[animate.css](https://github.com/daneden/animate.css)）
+    1. 在CSS过渡/动画中自动应用class（可配合使用第三方CSS动画库，如：[animate.css](https://github.com/animate-css/animate.css)）
     2. 在过渡钩子函数中使用JS直接操作DOM（可配合使用第三方JS动画库，如：[velocity](https://github.com/julianshapiro/velocity)）
 
 1. `<transition/>`（仅针对第一个子元素）
@@ -1885,7 +1886,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
     若使用非Vue控制的方法直接修改DOM结构，无法~~反向对响应式系统和虚拟DOM系统起效果~~，将导致虚拟DOM系统与DOM结构不匹配。因此若使用了虚拟DOM系统，必须严格控制仅用此系统操作DOM结构。
 
-### [SSR](https://ssr.vuejs.org/zh/)
+### [SSR](https://v2.ssr.vuejs.org/zh/)
 1. 若在`mounted`之前改变DOM，会导致「客户端激活」（client-side hydration）时，客户端的虚拟DOM（从服务端渲染完毕传递来的JSON字符串，在客户端解析而成。如：nuxt的`window.__NUXT__`）和服务端传来的DOM（服务端渲染完毕传输来的HTML）不同而出问题。
 
     ><details>
@@ -2022,6 +2023,9 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     </script>
     ```
     </details>
+
+### Vue 2 与 Vue 3 区别
+x
 
 ---
 ### [vue-router](https://github.com/vuejs/vue-router)
@@ -2470,7 +2474,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         1. 在.js访问：`process.env.VUE_APP_名字/NODE_ENV/BASE_URL`
         2. 在public的.html访问：`<%= VUE_APP_名字/NODE_ENV/BASE_URL %>`
 
-### [nuxt](https://github.com/nuxt/nuxt.js)
+### [nuxt](https://github.com/nuxt/nuxt)
 基于Vue的通用应用框架（SPA或SSR），把webpack、babel、vue-server-renderer、vue-router、vuex、vue-meta等工具整合在一起，并通过自带的`nuxt.config.js`统一配置，不需要对每个工具进行单独配置。
 
 >框架内的Vue组件都是以**Vue单文件组件**的形式，每一个`pages`目录下的组件都是一个页面路由。
@@ -3053,7 +3057,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         配置HTML的公共静态内容，可在`pages`组件内重置。
 
-        >来自：[vue-meta](https://github.com/declandewet/vue-meta)，可以设置多种内容，包括CSS文件、JS文件、style内容等，可以设置`htmlAttrs`、`headAttrs`、`bodyAttrs`。
+        >来自：[vue-meta](https://github.com/nuxt/vue-meta)，可以设置多种内容，包括CSS文件、JS文件、style内容等，可以设置`htmlAttrs`、`headAttrs`、`bodyAttrs`。
     13. `hooks`
     14. `ignore`
     15. `loading`
@@ -3165,7 +3169,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
     <summary>上下文（nuxt特有）</summary>
 
-    >来自：[nuxt: 上下文对象](https://zh.nuxtjs.org/api/context/#上下文对象)。
+    >来自：[nuxt: 上下文对象](https://nuxtjs.org/docs/internals-glossary/context/)。
 
     上下文对象存在于nuxt的生命周期中（在`plugins`、`middleware`、pages的`asyncData/fetch/validate`、store的`actions`。不在Vue的 ~~`vm`~~ 中），包含属性：
 

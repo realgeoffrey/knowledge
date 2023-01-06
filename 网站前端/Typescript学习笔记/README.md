@@ -1418,6 +1418,7 @@
         >func(); // => '0' => '1' => 'top' => 'down'
         >```
         ></details>
+
     - 赋值兼容
 
         1. 枚举与数字类型相互兼容
@@ -1815,6 +1816,12 @@
     16. `ThisType`
 
         >若使用，则需要开启`--noImplicitThis`。
+    17. `Promise`
+
+        Promise实例类型。
+    18. `PromiseLike`
+
+        仅有`then`属性的对象类型，类似Promise实例的then属性（是`Promise`类型的数据也满足`PromiseLike`类型）。
 9. 操作固有字符串的类型（不是~~值~~）
 
     >这些类型内置于编译器之中，以便提高性能，它们不存在于~~TypeScript提供的`.d.ts`文件中~~。
@@ -1875,8 +1882,11 @@
 - 可以绕过检查
 
     1. 变量的类型（或类型推论） 和 断言的类型 可以单向赋值才能够成功（A类型是B类型的子级，或反过来），否则报错。
-    2. `双重断言` 可以断言成任何类型：先断言成`any`，再断言成某类型。
+    2. `双重断言` 可以断言成任何类型：先断言成`any`或`unknown`，再断言成某类型。
 
+        任何类型都可以被断言为`any`或`unknown`，而`any`和`unknown`可以被断言为任何类型。
+
+        >慎用双重断言。
     ><details>
     ><summary>e.g.</summary>
     >
@@ -2343,7 +2353,7 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 >```typescript
 >type Keys = "a" | "b"
 >type Obj = {
->  [p in Keys]: any
+>  [p in Keys]: any         // 不能用：p: Keys
 >} // -> { a: any, b: any }
 >
 >
@@ -2352,7 +2362,7 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 >  'down'
 >}
 >type Obj2 = {
->  [p in Keys2]: any
+>  [p in Keys2]: any        // 不能用：p: Keys2
 >} // -> { 0: any, 1: any }
 >```
 ></details>
@@ -2835,8 +2845,20 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 
     [`tsconfig.json`](https://www.typescriptlang.org/zh/tsconfig)
 
-    1. `tsc`（不带任何输入文件）会自动查找命令目录下的`tsconfig.json`；若带输入文件参数（`-p 「地址」`），则忽略 ~~`tsconfig.json`~~。
-    2. `tsc --init`生成一个`tsconfig.json`文件。
+    - 类型的校验、ts转化后的js、IDE的代码补全和提示 等，都会依赖`tsconfig.json`的配置而变化。
+
+        `tsc`（不带任何输入文件）会自动查找命令目录下的`tsconfig.json`；若带输入文件参数（`-p 「配置文件」`），则忽略 ~~`tsconfig.json`~~。
+
+    - <details>
+
+        <summary>配置字段</summary>
+
+        1. `target`
+
+            设置生成的JS语言的版本，并且会包含兼容的库（环境）的定义。
+
+            >e.g. 若设置为`"es2017"`，则`Promise`包含`then`、`catch`；若设置为`"es2018"`，则`Promise`包含`then`、`catch`、`finally`。
+        </details>
 2. 文件后缀
 
     `.ts`、`.tsx`（React、`JSX`）、`d.ts`

@@ -3546,9 +3546,9 @@ var a = new RepeatRAF(function () {
      * @constructor
      * @param {String} className - 触发的类名
      * @param {String} [dataSrc = 'data-src'] - img标签上存放「真实地址」的属性
-     * @param {Function} func - 图片加载成功后回调函数，this和形参为图片DOM
+     * @param {Function} func - 图片加载成功后回调函数，this和参数为图片DOM
      * @param {String} [dataError = 'data-error'] - img标签上存放「真实地址加载失败后显示的地址」的属性
-     * @param {Function} errorFunc - 图片加载失败后回调函数，this和形参为图片DOM
+     * @param {Function} errorFunc - 图片加载失败后回调函数，this和参数为图片DOM
      */
     function ImgLazyLoad(className, dataSrc, func, dataError, errorFunc) {
         if (typeof Date.now !== 'function') {
