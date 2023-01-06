@@ -916,6 +916,30 @@ function switchArr ({ arr, from, to, isLeft = false }) {
 
         demo()
         ```
+
+    >支持取消的sleep实现：
+    >
+    >```typescript
+    >type CancelablePromise = Promise<any> & { cancel: any };
+    >
+    >function sleep(timeout: number): CancelablePromise {
+    >  let res: (v: string) => void;
+    >  let timer: ReturnType<typeof setTimeout>;
+    >  const promise = new Promise((resolve) => {
+    >    res = resolve;
+    >    timer = setTimeout(() => {
+    >      resolve("done");
+    >    }, timeout);
+    >  }) as CancelablePromise;
+    >  promise.cancel = function (data: string) {
+    >    res(data);
+    >    clearTimeout(timer);
+    >  };
+    >
+    >  return promise;
+    >}
+    >```
+
     2. `Promise`、`setTimeout`
 
         ```javascript

@@ -196,7 +196,7 @@
             >布局抖动（layout thrashing）：快速多次进行强制同步布局。
         3. 使用离线DOM操作样式完毕，再添加或替换到文档中；把文档中要操作的DOM设置为`display: none;`再操作样式，操作完毕后恢复复显示。
         4. `position: absollute/fixed;`的元素reflow开销较小。
-        5. 使用[`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#弹性盒子)布局（对于相同数量的元素、视觉外观，flex布局的时间更少）。
+        5. 使用[`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子（Flexbox）.md)布局（对于相同数量的元素、视觉外观，flex布局的时间更少）。
     4. 简化绘制的复杂度、减小绘制区域
 
         合理划分层，动静分离，可避免大面积重绘。
@@ -476,7 +476,7 @@
             ```
 
 ### 自适应宽度布局
-1. [`flex`实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex布局实践)
+1. [`flex`实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子（Flexbox）.md#flex布局实践)
 2. `float`
 
     >`float`节点：可以填补在**之后节点**的水平`margin`内（`padding`内不可以）；不可以填补在**之前节点**的水平`margin`内。
@@ -583,7 +583,7 @@
         >3. 完全由内容决定布局；
         >4. 第一块内容要给第二块内容留下足够空间，否则第二块放不下会整个换行；第一块+第二块要给第三块留下足够空间，否则第三块放不下会整个换行。
 
-### [`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex语法)优雅解决布局、自适应问题
+### [`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子（Flexbox）.md#flex语法)优雅解决布局、自适应问题
 1. 不使用`flex`导致不方便处理的问题：
 
     1. 栅格系统
@@ -593,7 +593,7 @@
         >[图标和文字并排垂直水平居中](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#图标和文字并排垂直水平居中)
     4. [粘性页脚](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#粘性页脚)
     5. [多列等高](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#多列等高)
-2. `flex`具体解决方案：[`flex`布局实践](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex布局实践)。
+2. `flex`具体解决方案：[`flex`布局实践](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子（Flexbox）.md#flex布局实践)。
 
 ### 经验技巧
 1. 命名间隔

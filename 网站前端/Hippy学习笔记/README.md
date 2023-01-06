@@ -157,6 +157,9 @@
                 4. 渲染变化的节点，如果没有加`style`，会被渲染为空。
 
                     强制加上`style`设置一些样式内容。
+                5. 某些渲染情况下，不设置`color`时会变成透明文字
+
+                    需要显式设置`color`才能展示文字。
             2. 仅有`<Text>`有不同截断效果（ellipsizeMode），其他组件需要自己实现（计算字符数，结尾自己添加`...`或图片覆盖）。
             3. 不包裹在`<Text>`内的文字内容，无法渲染新值，只能展示首次渲染值。
             4. 文本若不设置`lineHeight`（或`height`），可能导致渲染出的行高影响整体渲染，甚至影响祖父元素的高度或间距，无法达到确定的"稳定状态"。
@@ -204,6 +207,8 @@
                     1. flex相关样式可能要同时设置到`style`和`contentContainerStyle`上（尤其是在降级为H5页面时）
 
                         1. `style`是`<ScrollView>`自身外层的的样式，设置`flex: 1`占满其父级剩余空间。
+
+                            Android的`borderRadius`有问题。
                         2. `contentContainerStyle`是`<ScrollView>`内部包裹一层的样式，设置`flexGrow: 1`可以使子项占满父级剩余空间并且正常滚动。
 
                         ><details>
@@ -253,6 +258,8 @@
                         >});
                         >```
                         ></details>
+
+                        3. `horizontal={true}`横向滚动的左右间距问题，用 ~~`style`~~ 或 ~~`contentContainerStyle`~~ 不能达到预期效果的，尝试在子项中进行设置。
                     2. `<ScrollView>`转换为`<View>`时注意是否有`contentContainerStyle`，若有，则可能需要嵌套`<View>`
 
                         ><details>
@@ -704,7 +711,7 @@
 
         仅支持flex（，所以省略 ~~`display: flex`~~，所有组件全都只能是`flex`）。
 
-        >与CSS的[flex](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子.md#flex语法)略有不同。
+        >与CSS的[flex](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子（Flexbox）.md#flex语法)略有不同。
 
         1. Flex容器
 
@@ -714,18 +721,22 @@
                 2. `'column'`（默认）：垂直方向，起点在上沿。
             2. `flexWrap`：一条主轴排不下的情况，如何换行。
 
-                >与CSS的`flex-wrap`表现一致。
-            3. `alignContent`：多根主轴（一条主轴排不下，有换行）的对齐方式（不换行则该属性不起作用）。
+                项的排布顺序。
 
-                默认：`'flex-start'`（CSS的`align-content`默认：`'stretch'`）。
-            4. `justifyContent`：子项在主轴上的对齐方式（与轴的方向有关）。
+                >与CSS的表现不同，也没有 ~~`alignContent`~~ 配合。还是只能配合`justifyContent`、`alignItems`使用。
+            3. `justifyContent`：子项在主轴上的对齐方式（与轴的方向有关）。
 
                 >与CSS的`justify-Content`表现一致。
-            5. `alignItems`：子项在侧轴上的对齐方式（与轴的方向有关）。
+            4. `alignItems`：子项在侧轴上的对齐方式（与轴的方向有关）。
 
                 默认：`'stretch'`（CSS的`align-content`默认：`'normal'`）。
 
                 >与CSS的`align-Items`表现一致。
+            >无效属性：
+            >
+            >5. ~~`alignContent`~~：多根主轴（一条主轴排不下，有换行）的对齐方式（不换行则该属性不起作用）。
+            >
+            >    默认：`'flex-start'`（CSS的`align-content`默认：`'stretch'`）。
         2. Flex子项
 
             >都在主轴方向上。
@@ -764,6 +775,7 @@
             5. `alignSelf`：单个子项覆盖父元素的`alignItems`。
 
                 >与CSS的`align-self`表现一致。
+            >无效属性：~~`order`~~
     4. 颜色
 
         >包括所有颜色，如：border、字体、background、阴影。
@@ -840,7 +852,7 @@
         1. `'visible'`（默认）
         2. `'hidden'`
 
-            Android机型，大部分子级元素一定会被父级元素截断（就像：父级元素固定`overflow: 'hidden'`不可改变），但是部分客户端组件还是需要父级设置`overflow: 'hidden'`才截断。但对于`border`等，父级还是需要`overflow: hidden`才能不被子级盖住。
+            Android机型，大部分子级元素一定会被父级元素截断（就像：父级元素固定`overflow: 'hidden'`不可改变），但是部分客户端组件还是需要父级设置`overflow: 'hidden'`才截断。因此若需要做超过父级的节点，则必须往上不断提升该节点。但对于`border`等，父级还是需要`overflow: hidden`才能不被子级盖住。
     11. 背景
 
         >不能直接 ~~`background`~~，无效果。
@@ -897,12 +909,34 @@
             - Tips（bug？）
 
                 1. 可能不支持`<Text>`
-        1. `borderTopLeftRadius`、`borderTopRightRadius`、`borderBottomRightRadius`、`borderBottomLeftRadius`
+        2. `borderTopLeftRadius`、`borderTopRightRadius`、`borderBottomRightRadius`、`borderBottomLeftRadius`
 
             - Tips（bug？）
 
                 1. Android用这种单独设置的属性会导致`overflow: 'hidden'`有问题。
                 2. Android的`<LinearGradientView>`（nativeName="LinearGradientView"）对这种单独设置的属性支持不好（无效）。
+                3. iOS若最终设置的4个角值不同，则导致`backgroundColor`渲染问题。应避免使用这些单独设置的属性：
+
+                    1. 切图处理
+                    2. 用一个子节点设置`borderRadius`模拟
+
+                        ```tsx
+                        <View style={{ paddingBottom: 10, backgroundColor: "颜色1" }}>...</View>
+                        <View style={{ marginTop: -10 }}>
+                          <View
+                            style={{
+                              borderRadius: 5,
+                              height: 10,
+                              backgroundColor: "颜色2",
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                            }}
+                          />
+                          <View style={{ backgroundColor: "颜色2", marginTop: 5 }}>...</View>
+                        </View>
+                        ```
     13. `opacity`
     14. 阴影
 

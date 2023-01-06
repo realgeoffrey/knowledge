@@ -75,7 +75,7 @@ Ctrl/commad + f调出。
 
     >进入设置**Proxy - Access Control Settings**，若接收的IP范围是192.168.1.xxx的话，则添加并设置成`192.168.1.0/24`；若全部范围都接收的话，则直接设置成`0.0.0.0/0`。
 
->Charles支持HTTPS和HTTP，不支持sockets。
+>Charles支持HTTPS和HTTP，不支持socket协议。
 
 ### Map至本地、网址
 - 设置路由

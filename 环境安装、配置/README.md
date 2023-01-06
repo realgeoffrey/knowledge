@@ -22,12 +22,13 @@
 1. [nginx环境配置（Windows）](nginx环境配置（Windows）/README.md)
 2. [nginx+PHP配置（macOS）](nginx+PHP配置（macOS）/README.md)
 
-><details>
-><summary>其他</summary>
->
->1. [WAMP环境配置（Windows）](WAMP环境配置（Windows）/README.md)
->2. [LAMP环境配置（CentOS7.0）](LAMP环境配置（CentOS7.0）/README.md)
->3. [Laravel框架配置+LNMP环境配置（Ubuntu15.04）](Laravel框架配置+LNMP环境配置（Ubuntu15.04）/README.md)
->4. [SVN环境配置（CentOS）](SVN环境配置（CentOS）/README.md)
->5. [Vagrant环境配置](Vagrant环境配置/README.md)
-></details>
+- <details>
+
+    <summary>其他</summary>
+
+    1. [WAMP环境配置（Windows）](WAMP环境配置（Windows）/README.md)
+    2. [LAMP环境配置（CentOS7.0）](LAMP环境配置（CentOS7.0）/README.md)
+    3. [Laravel框架配置+LNMP环境配置（Ubuntu15.04）](Laravel框架配置+LNMP环境配置（Ubuntu15.04）/README.md)
+    4. [SVN环境配置（CentOS）](SVN环境配置（CentOS）/README.md)
+    5. [Vagrant环境配置](Vagrant环境配置/README.md)
+    </details>

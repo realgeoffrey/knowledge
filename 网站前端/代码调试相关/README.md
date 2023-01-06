@@ -10,13 +10,11 @@
         1. [WebView调试](#webview调试)
         1. [其他语言2Native调试](#其他语言2native调试)
         1. [其他调试方法](#其他调试方法)
+    1. [浏览器调试（以Chrome为主）](#浏览器调试以chrome为主)
 1. [服务端调试](#服务端调试)
 
 ---
 ## 前端调试方式
->1. Chrome的DevTools文档：<https://developers.google.com/web/tools/chrome-devtools/>
->2. Android Studio文档：<https://developer.android.com/studio/intro>
->3. Xcode文档：<https://developer.apple.com/library/archive/documentation/ToolsLanguages/Conceptual/Xcode_Overview/UsingtheDebugger.html>
 
 ### JS
 1. 展示：`console.log/info/warn/error`（`alert`）
@@ -94,10 +92,11 @@
     >2. （高版本Android默认禁止了明文通道、只信任系统CA证书，）客户端开发需要设置APP能够信任自定义CA证书，才能正常抓包。
 
 #### 其他语言2Native调试
->1. iOS用Xcode模拟器运行客户端调试APP。
+>1. iOS用Xcode模拟器运行客户端调试APP（Xcode文档：<https://developer.apple.com/documentation/xcode>）
 >
->    若升级Xcode版本导致无法运行代码，可以尝试再安装一个[旧版本Xcode](https://developer.apple.com/download/more/?name=Xcode)。
->2. Android用真机安装APK调试APP。
+>    若升级Xcode版本导致无法运行代码，可以尝试再安装一个[旧版本Xcode](https://developer.apple.com/download/all/?q=xcode)（或使用[XcodesApp
+](https://github.com/RobotsAndPencils/XcodesApp)）。
+>2. Android用真机安装APK调试APP（Android Studio文档：<https://developer.android.com/studio/intro>）
 
 1. Android（真机）
 
@@ -184,11 +183,11 @@
 
     >Xcode的Parallelization并行化设置为最大，增加编译效率。Xcode无法安装任何应用，只能安装代码编译上去的应用。
 
-    1. Xcode模拟App
+    1. Xcode模拟器构建运行App
 
         Run（command + R） 或 Run Without Building（command + control + R）
 
-        >就像安装ipa（iPhone application archive）一样。
+        >.ipa（iPhone application archive）文件仅支持真机；.app文件支持模拟器和真机。
     2. debugger
 
         1. JS日志、断点：
@@ -334,6 +333,35 @@
             >document.addEventListener('touchstart', wapConsole, false)
             >```
             ></details>
+
+### 浏览器调试（以Chrome为主）
+
+>Chrome的DevTools文档：<https://developer.chrome.com/docs/devtools/overview/>
+
+#### Console面板
+>来自：[Chrome Developers:Console Utilities API reference](https://developer.chrome.com/docs/devtools/console/utilities/)。
+
+1. `$0`、`$1`、`$2`、`$3`、`$4`
+
+    返回在Elements面板中选中的 当前、上1个、上2个、上3个、上4个节点。
+2. `monitor(「函数名」)`、`unmonitor(「函数名」)`
+
+    观察/取消观察某函数，若观察的函数被调用，则输出函数名和参数。
+3. `monitorEvents(「DOM」[, 事件名或事件名数组])`、`unmonitorEvents(「DOM」[, 事件名或事件名数组])`
+
+    >Safari相同。
+
+    观察/取消观察DOM的事件，若观察的DOM事件被触发，则输出事件名、事件对象。
+4. `copy(「值或变量名」)`
+
+    >Safari相同。
+
+    拷贝一个对象（DOM也可）为字符串表示方式到系统剪切板。
+5. `getEventListeners(「DOM」)`
+
+    >Safari相同。
+
+    获取注册到一个DOM上的所有事件监听器。
 
 ---
 ## [服务端调试](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/服务端相关/README.md#接口错误排查)

@@ -19,6 +19,7 @@
 1. [工具使用](#工具使用)
 
     1. [Koa](#koa)
+    1. [express](#express)
     1. [pm2](#pm2)
 
 ---
@@ -152,7 +153,7 @@ npm（Node Package Manager）。
             `npm publish [--tag <tag>]`
 
             >1. 除了latest，其他标签都不会默认被安装。最后推送的latest版本会显示在npm官网。
-            >2. 注意：设置源为npm的网站（https://registry.npmjs.org/）才可以推送到npm。
+            >2. 注意：设置源为npm的网站（`https://registry.npmjs.org/`）才可以推送到npm。
         5. 「下线」
 
             >`npm unpublish [<@scope>/]<pkg>[@<version>]`只能下线24小时内发布的版本。
@@ -611,8 +612,16 @@ npm（Node Package Manager）。
         1. `module.exports = 值`
         2. `module.exports.属性 = 值`
 
-        >1. `exports`指向`module.exports`（`exports === module.exports`）。
-        >2. 若`exports = 值`或`module.exports = 值`则切断了`exports`与`module.exports`的连接，`exports`将没有导出效果。
+        >1. `exports`指向`module.exports`
+        >2. 若`exports = 值`或`module.exports = 值`则切断了`exports`与`module.exports`的连接，`exports`将没有导出效果（导出的永远是`module.exports`）。
+        >
+        >    e.g.
+        >
+        >    ```javascript
+        >    console.log(module.exports, exports, module.exports=== exports)   // => {} {} true
+        >    exports = {}    // 或 module.exports = {}
+        >    console.log(module.exports, exports, module.exports === exports)  // => {} {} false
+        >    ```
 2. `require(X)`
 
     加载模块。读取并执行一个JS文件（`.js`后缀可以省略），返回该模块的`exports`值（没有导出内容则为`{}`）。
@@ -710,9 +719,13 @@ npm（Node Package Manager）。
 ## 原理机制
 
 ### Node.js的运行机制
-1. V8引擎解析JS脚本。
+1. [V8](https://v8.dev/)引擎解析JS脚本。
+
+    >V8处理JS，除了 **正则表达式**、**JSON的处理** 之外，对于大部分操作都很快。
+    >
+    >1. 使用正则表达式时注意ReDoS（Regular expression Denial of Service，正则表达式拒绝服务攻击）风险。
 2. 解析后的代码，调用Node.js的API。
-3. [libuv](https://github.com/libuv/libuv)负责Node.js的API的执行。将不同的任务分配给不同的线程，形成一个Event Loop（事件循环），以异步的方式将任务的执行结果返回给V8引擎。
+3. [libuv](https://github.com/libuv/libuv)负责Node.js的API的执行。将不同的任务分配给不同的线程，形成一个[Event Loop（事件循环）](https://nodejs.org/zh-cn/docs/guides/event-loop-timers-and-nexttick/)，以异步的方式将任务的执行结果返回给V8引擎。
 4. V8引擎再将结果返回给用户。
 
 >JS本身的`throw-try-catch`异常处理机制并不会导致内存泄漏，也不会让程序的执行结果出乎意料，但Node.js并不是存粹的JS。Node.js里大量的API内部是由C/C++实现，因此Node.js程序的运行过程中，代码执行路径穿梭于JS引擎内部和外部，而JS的异常抛出机制可能会打断正常的代码执行流程，导致C/C++部分的代码表现异常，进而导致内存泄漏等问题。
@@ -722,12 +735,14 @@ npm（Node Package Manager）。
 ### 特性
 1. 单线程
 
+    >尽量不用同步方法，尽量不阻塞进程。
+
     不为单个客户端连接创建一个新的线程，而仅仅使用单一线程支持所有客户端连接。通过非阻塞I/O和事件驱动机制，让Node.js程序宏观上并行。
 
     1. 优点：没有线程创建、销毁的时间开销；不需维护多个线程耗费的内存，可同时处理更多的客户端连接；运行中的单线程CPU利用率饱和。
     2. 缺点：若单一客户端连接造成线程的阻塞或奔溃，则影响所有客户端连接。
 
-    >Java、PHP或.NET等服务器语言，会为每一个客户端连接创建一个新的线程或使用协程。
+    >事件循环不同于许多其他语言的模型，其它语言创建额外线程来处理并发工作：Java、PHP或.NET等服务器语言，会为每一个客户端连接创建一个新的线程或使用协程。
 2. 非阻塞I/O
 
     回调函数异步执行，通过事件循环检查已完成的I/O进行依次处理。
@@ -746,7 +761,7 @@ npm（Node Package Manager）。
 >只有打通和后端技术的桥梁、实现互联互通，Node.js才能在公司业务中有更长远的发展。
 
 ### Node.js[原生模块](http://nodejs.cn/api/)（需要`require`引入）
->核心模块定义在[源代码的lib/目录](https://github.com/nodejs/node/tree/master/lib)。
+>核心模块定义在[源代码的lib/文件](https://github.com/nodejs/node/tree/main/lib/)。同名加载时，原生模块优先级高于路径加载或自定义模块。
 
 1. `http`：HTTP请求相关API
 
@@ -815,13 +830,13 @@ npm（Node Package Manager）。
 3. `https`
 4. `fs`：文件操作API
 
-    提供版本：异步、同步（+`Sync`）、基于Promise（`require("fs").promises`）。
+    提供版本：异步、同步（+`Sync`）、基于Promise（`require("fs").promises`）。其他模块也类似。
 
     ><details>
     ><summary>e.g.</summary>
     >
     >```javascript
-    >// 异步（结果在回调）
+    >// 异步（结果在回调；若出错，则回调函数第一个参数不为null或undefined）
     >require('fs').rename('before.json', 'after.json', err => {
     >  if (err) {
     >    return console.error(err)
@@ -830,7 +845,7 @@ npm（Node Package Manager）。
     >})
     >
     >
-    >// 同步（阻塞线程，直到文件操作结束。结果在执行语句返回）
+    >// 同步（阻塞线程，直到文件操作结束。结果在执行语句返回。需要try-catch等方式处理错误）
     >try {
     >  require('fs').renameSync('before.json', 'after.json')
     >  //完成
@@ -895,7 +910,7 @@ npm（Node Package Manager）。
 14. `worker_threads`：并行地执行JS的线程
 15. `dgram`：数据报
 
-    对UDP socket的一层封装。
+    对UDP datagram sockets（UDP的数据报套接字）的一层封装。
 16. `net`：用于创建基于流的TCP或IPC的服务器（`net.createServer`）与客户端（`net.createConnection`）
 
     - Experimental功能
@@ -1084,9 +1099,9 @@ Node.js的全局对象`global`是全局变量的宿主。
 ## 工具使用
 
 ### [Koa](https://github.com/koajs/koa)
-关键点：级联 + 通过上下文在中间件间传递数据 + ctx.body的值为HTTP响应数据。
+关键点：级联 + 通过上下文（ctx）在中间件间传递数据 + ctx.body的值为HTTP响应数据。
 
-1. 级联（Cascading）：中间件按顺序执行，随着第二个参数`next`执行进入执行栈
+1. 级联（Cascading）：中间件按顺序执行，随着第二个参数`next`执行进入执行栈，所有中间件运行完毕后自动返回响应
 
     >为了能够更好的链式调用中间件，要使用`await next()`或`return next()`的方式，否则虽然会`next`进入下一个中间件，但下一个中间件的异步代码会导致请求先返回之后再处理异步后代码。
 
@@ -1124,6 +1139,7 @@ Node.js的全局对象`global`是全局变量的宿主。
 
     app.listen(3000)
     ```
+    >中间件/拦截器的流程：从上到下，执行中间件，直到抵达路由匹配到的中间件为止，不再继续向下执行（若所有都不匹配，则执行兜底中间件）
 2. `const app = new Koa()`实例
 
     1. `app.context`
@@ -1335,6 +1351,22 @@ Node.js的全局对象`global`是全局变量的宿主。
 4. 调试模式
 
     运行前添加环境变量：`DEBUG=koa*`
+
+### [express](https://github.com/expressjs/express)
+1. 通过回调实现异步函数，在多个回调、多个中间件中写起来容易逻辑混乱。
+2. 错误处理中间件，需要回调函数固定传4个参数（Error-first）。
+
+    >回调函数传3个参数的就不是~~错误处理中间件~~，而是普通的中间件。
+
+- express 与 koa 对比
+
+    | 区别 | express | koa |
+    | :--- | :--- | :--- |
+    | 中间件模型 | 线性模型（没有 ~~async/await~~） | 洋葱模型（级联） |
+    | 异步方式 | 基于回调函数 | 基于async/await |
+    | 捕获错误 | Error-First模式（中间件的回调函数若写4个参数则固定作为错误处理中间件） | 使用try/catch的方式 |
+    | 响应机制 | 调用API后立刻响应 | 所有中间件执行完之后才响应 |
+    | 集成成度 | 集成度高，自带部分中间件 | 集成度低，没有捆绑任何中间件 |
 
 ### [pm2](https://github.com/Unitech/pm2)
 后台运行、进程管理（自动重启、永保活动状态、不停机重新加载，显示进程信息，配置进程处理条件）、多进程运行、负载均衡、处理log输出。
