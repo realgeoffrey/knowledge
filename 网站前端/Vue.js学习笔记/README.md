@@ -17,7 +17,7 @@
     1. [SSR](#ssr)
     1. [Vue实现原理](#vue实现原理)
     1. [例子](#例子)
-    1. [Vue 2 与 Vue 3 区别](#vue-2-与-vue-3-区别)
+    1. [Vue 3 与 Vue 2 区别](#vue-3-与-vue-2-区别)
 1. [vue-router](#vue-router)
 1. [vuex](#vuex)
 1. [vue-cli](#vue-cli)
@@ -2024,8 +2024,151 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     ```
     </details>
 
-### Vue 2 与 Vue 3 区别
-x
+### Vue 3 与 Vue 2 区别
+1. 双向数据绑定原理不同
+
+    1. 2
+
+        利用ES5的`Object.defineProperty`对数据进行劫持，结合发布订阅模式的方式来实现。
+    2. 3
+
+        使用了ES6的`Proxy`对数据代理。
+
+        - 相比vue2.x的`Object.defineProperty`，使用`Proxy`的优势：
+
+            1. `Object.defineProperty`只能监听某个属性，不能对全对象监听
+            2. 可以省去`for-in`，闭包等内容来提升效率（直接绑定整个对象即可）
+            3. 可以监听数组，不用再去单独的对数组做特异性操作，`Proxy`可以检测到数组内部数据的变化
+2. 虚拟DOM的diff算法不同
+
+    1. 2
+
+        递归遍历两个虚拟DOM树，并比较每个节点上的每个属性（有点暴力算法），来确定实际DOM的哪些部分需要更新。
+    2. 3
+
+        采用block tree的做法。
+3. 是否支持碎片（Fragment）
+
+    1. 2
+
+        不支持，必须：`<template><div>多个节点</div></template>`。
+    2. 3
+
+        支持，允许：`<template>多个节点</template>`。
+4. API类型不同
+
+    1. 2
+
+        使用**选项类型api（Options API）**，在代码里分割了不同的属性：data、computed、methods、等。声明选项的方式书写Vue组件。
+    2. 3
+
+        使用**合成型api（Composition API）**，使用方法来分割，相比于旧的api使用属性来分组，这样代码会更加简便和整洁。使用函数的方式书写组件。
+5. 定义数据变量和方法、生命周期钩子函数、父子通信 不同
+
+    1. 2
+
+        定义数据变量要在`data(){}`，创建的方法要在`methods:{}`中，计算属性要在`computed:{}`中，生命周期钩子要在组件属性中调用，父子通信用`this.props/emit`。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```javascript
+        >export default {
+        >  props: {
+        >    title: String
+        >  },
+        >  data () {
+        >    return {
+        >      username: '',
+        >      password: ''
+        >    }
+        >  },
+        >  computed: {
+        >    lowerCaseUsername () {
+        >      return this.username.toLowerCase()
+        >    }
+        >  },
+        >  methods: {
+        >    login () {
+        >        // this.props
+        >        // this.emit
+        >    }
+        >  },
+        >  mounted () {}
+        >}
+        >```
+        ></details>
+    2. 3
+
+        需要使用一个新的`setup`属性方法，此方法在组件初始化构造的时候触发。
+
+        1. 使用以下三个步骤来建立反应性数据：
+
+            1. 从vue引入`reactive`；
+            2. 使用`reactive()`方法来声明数据为响应性数据；
+            3. 使用`setup()`方法来返回我们的响应性数据，从而template可以获取这些响应性数据。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```javascript
+        >import { reactive, computed, onMounted } from 'vue'
+        >
+        >export default {
+        >  props: {
+        >    title: String
+        >  },
+        >  setup (props, content) {
+        >    const state = reactive({
+        >      username: '',
+        >      password: '',
+        >      lowerCaseUsername: computed(() => state.username.toLowerCase())
+        >    })
+        >
+        >    const login = () => {
+        >        // props
+        >        // content.emit
+        >    }
+        >
+        >    onMounted(()=>{})
+        >
+        >    return { state, login }
+        >  }
+        >}
+        >```
+        ></details>
+6. `this`不同
+
+    1. 2
+
+        指向当前组件
+    2. 3
+
+        `undefined`
+7. 指令与插槽不同
+
+    1. 2
+
+        使用slot可以直接使用slot；`v-for`优先级高于`v-if`，而且不建议一起使用。
+    2. 3
+
+        必须使用v-slot的形式；只会把当前v-if当做v-for中的一个判断语句，不会相互冲突；移除keyCode作为v-on的修饰符，当然也不支持config.keyCodes；移除v-on.native修饰符；移除过滤器filter。
+8. main.js文件不同
+
+    1. 2
+
+        可以使用prototype（原型）的形式去进行操作，引入的是构造函数。
+    2. 3
+
+        需要使用结构的形式进行操作，引入的是工厂函数；vue3中app组件中可以没有根标签。
+9. ts的支持不同
+
+    1. 2
+
+        支持Flow。
+    2. 3
+
+        支持ts。
 
 ---
 ### [vue-router](https://github.com/vuejs/vue-router)
