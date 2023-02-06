@@ -13,7 +13,7 @@
 
     1. [Node.js的运行机制](#nodejs的运行机制)
     1. [特性](#特性)
-    1. [Node.js原生模块（需要`require`引入）](#nodejs原生模块需要require引入)
+    1. [Node.js核心模块（需要`require`引入）](#nodejs核心模块需要require引入)
     1. [Node.js全局变量](#nodejs全局变量)
     1. [Tips](#tips)
 1. [工具使用](#工具使用)
@@ -296,7 +296,9 @@ npm（Node Package Manager）。
 
         1. `npm run 「package.json中scripts字段的命令」 -- 「添加脚本后面的参数」`
 
-            >非`-`开头的参数可以忽略`--`而传递。e.g. `npm run gulp runCss`等价于：`npm run gulp -- runCss`
+            非`-`开头的参数可以忽略`--`而传递。e.g. `npm run gulp runCss`等价于：`npm run gulp -- runCss`
+
+            >执行的命令，优先找本地`node_modules/.bin`的命令，然后才找`$PATH`的命令（暂时未找到绕过**先找本地的**方法）。
         2. [npx](https://github.com/zkat/npx)
 
             >1. 去`node_modules/.bin`路径检查命令是否存在，找到之后执行；
@@ -646,10 +648,12 @@ npm（Node Package Manager）。
             3. 将 X 当成**目录**，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。
 
                 `X/package.json（main字段）`、`X/index.js`、`X/index.json`、`X/index.node`
-        2. 若 X 是内置模块，则返回该模块，不再继续执行。
+        2. 若 X 是核心模块（内置），则返回该模块，不再继续执行。
 
             >e.g. `require('http')`
-        3. 若 X 不带路径且不是内置模块
+
+            可以使用`node:`前缀来识别核心模块，在这种情况下它会绕过require缓存。e.g. `require('node:http')`将始终返回内置的HTTP模块，即使有该名称的`require.cache`条目。核心模块列表：`module.builtinModules`。
+        3. 若 X 不带路径且不核心置模块
 
             >当作安装在本地的模块。
 
@@ -664,7 +668,7 @@ npm（Node Package Manager）。
         >
         >- 在`/home/xx/projects/foo.js`执行了`require('bar')`：
         >
-        >    1. 属于不带路径情况，判断不是内置模块，当作安装在本地的模块进行搜索；
+        >    1. 属于不带路径情况，判断不是模块，当作安装在本地的模块进行搜索；
         >    2. 依次搜索每一个目录：
         >
         >        ```text
@@ -724,6 +728,7 @@ npm（Node Package Manager）。
     >V8处理JS，除了 **正则表达式**、**JSON的处理** 之外，对于大部分操作都很快。
     >
     >1. 使用正则表达式时注意ReDoS（Regular expression Denial of Service，正则表达式拒绝服务攻击）风险。
+    >2. `JSON.parse/stringify`随着输入参数线性增加执行时间。
 2. 解析后的代码，调用Node.js的API。
 3. [libuv](https://github.com/libuv/libuv)负责Node.js的API的执行。将不同的任务分配给不同的线程，形成一个[Event Loop（事件循环）](https://nodejs.org/zh-cn/docs/guides/event-loop-timers-and-nexttick/)，以异步的方式将任务的执行结果返回给V8引擎。
 4. V8引擎再将结果返回给用户。
@@ -732,10 +737,50 @@ npm（Node Package Manager）。
 
 ![Node.js的事件循环图](./images/nodejs-system-1.png)
 
+- <details>
+
+    <summary><a href="https://nodejs.org/zh-cn/docs/meta/topics/dependencies/">Node.js依赖项</a></summary>
+
+    1. 类库
+
+        1. V8
+        2. libuv
+        3. llhttp
+        4. c-ares
+        5. OpenSSL
+        6. zlib
+    2. 工具
+
+        1. npm
+        2. gyp
+        3. gtest
+    </details>
+
 ### 特性
 1. 单线程
 
-    >尽量不用同步方法，尽量不阻塞进程。
+    ><details>
+    ><summary>尽量不用同步方法，尽量不阻塞进程</summary>
+    >
+    >高开销的同步方法：
+    >
+    >1. `crypto`加密
+    >
+    >    1. `crypto.randomBytes`（同步版本）
+    >    2. `crypto.randomFillSync`
+    >    3. `crypto.pbkdf2Sync`
+    >    - 同时你应当非常小心对加密和解密给予大数据输入的情况。
+    >2. `zlib`压缩
+    >
+    >    1. `zlib.inflateSync`
+    >    2. `zlib.deflateSync`
+    >3. `fs`文件系统
+    >4. `child_process`子进程
+    >
+    >    1. `child_process.spawnSync`
+    >    2. `child_process.execSync`
+    >    3. `child_process.execFileSync`
+    ></details>
 
     不为单个客户端连接创建一个新的线程，而仅仅使用单一线程支持所有客户端连接。通过非阻塞I/O和事件驱动机制，让Node.js程序宏观上并行。
 
@@ -760,8 +805,8 @@ npm（Node Package Manager）。
 >
 >只有打通和后端技术的桥梁、实现互联互通，Node.js才能在公司业务中有更长远的发展。
 
-### Node.js[原生模块](http://nodejs.cn/api/)（需要`require`引入）
->核心模块定义在[源代码的lib/文件](https://github.com/nodejs/node/tree/main/lib/)。同名加载时，原生模块优先级高于路径加载或自定义模块。
+### Node.js[核心模块](http://nodejs.cn/api/)（需要`require`引入）
+>核心模块定义在[源代码的lib/文件](https://github.com/nodejs/node/tree/main/lib/)。同名加载时，核心模块优先级高于路径加载或自定义模块。
 
 1. `http`：HTTP请求相关API
 
@@ -773,24 +818,25 @@ npm（Node Package Manager）。
     ><details>
     ><summary>e.g.</summary>
     >
-    >1. Node.js原生处理POST请求
+    >1. Node.js原生处理POST/GET请求
     >
     >    ```javascript
-    >    const http = require('http')
+    >    const http = require("http");
     >
-    >    http.createServer((req, res) => {
-    >      if (req.method === 'POST') {
-    >        let body = '';
-    >        req.on('data', chunk => {
+    >    http
+    >      .createServer((req, res) => {
+    >        let body = "";
+    >        req.on("data", (chunk) => {
     >          body += chunk.toString();
     >        });
-    >        req.on('end', () => {
-    >          console.log(body);       // body是POST请求body
-    >          // 接受完成，可返回`res.end('ok')`
+    >        req.on("end", () => {
+    >          // 接受完成
+    >          const text = `收到${req.method}请求\nurl是：${req.url}${req.method === "POST" ? `\nbody是: ${body}` : ""}\n`;
+    >          console.log(text);
+    >          res.end(text);
     >        });
-    >      }
-    >    })
-    >      .listen(3000, '0.0.0.0')
+    >      })
+    >      .listen(3000, "0.0.0.0");
     >    ```
     >2. Node.js原生发起POST请求
     >
@@ -798,7 +844,7 @@ npm（Node Package Manager）。
     >    const http = require("http");
     >
     >    const req = http.request(
-    >      路径,
+    >      "路径",
     >      {
     >        method: "POST",
     >        headers: {
@@ -812,8 +858,8 @@ npm（Node Package Manager）。
     >          body += chunk || "";
     >        });
     >        res.on("end", () => {
-    >          console.log(body);       // body是POST请求后返回的响应body
-    >          // 返回接受完成
+    >          // 响应接受完成
+    >          console.log(body);   // body是GET/POST的响应内容
     >        });
     >      }
     >    );
@@ -825,10 +871,39 @@ npm（Node Package Manager）。
     >    req.write(JSON.stringify({ a: "发起的请求body" })); // 保证：发起请求的body和请求头匹配
     >    req.end();
     >    ```
+    >3. Node.js原生发起GET请求
+    >
+    >    ```javascript
+    >    const http = require("http");
+    >
+    >    const req = http.request(
+    >      "路径",
+    >      {
+    >        method: "GET",
+    >      },
+    >      (res) => {
+    >        res.setEncoding("utf8");
+    >        let body = "";
+    >        res.on("data", (chunk) => {
+    >          body += chunk || "";
+    >        });
+    >        res.on("end", () => {
+    >          // 响应接受完成
+    >          console.log(body);   // body是GET/POST的响应内容
+    >        });
+    >      }
+    >    );
+    >
+    >    req.on("error", (e) => {
+    >      console.warn(e);
+    >    });
+    >
+    >    req.end();
+    >    ```
     ></details>
 2. `http2`
 3. `https`
-4. `fs`：文件操作API
+4. `fs`：以标准POSIX函数为模型的方式与文件系统进行交互
 
     提供版本：异步、同步（+`Sync`）、基于Promise（`require("fs").promises`）。其他模块也类似。
 
@@ -886,9 +961,7 @@ npm（Node Package Manager）。
 6. `path`：处理文件路径
 
     >e.g. 当前文件所在目录的相对位置：`require('path').resolve(__dirname, '../../xx/xxx.txt')`
-7. `url`：解析URL。
-8. `os`：基本的系统操作函数
-9. `stream`：数据流
+7. `stream`：数据流
 
     流是一种以高效的方式处理读/写文件、网络通信、或任何类型的端到端的信息交换。
 
@@ -897,35 +970,55 @@ npm（Node Package Manager）。
     1. 所有的流都是`EventEmitter`类的实例。
     2. Node.js提供了多种流对象（`fs`、`http`、`process`等都有流操作方式），除非要创建新类型的流实例，否则极少需要直接使用`stream`。
     3. 流类型：可读（Readable）、可写（Writable）、可读可写（Duplex）、可修改或转换数据（Transform）。
-10. `readline`：用于一次一行地读取可读流中的数据
-11. `util`：提供常用函数的集合，用于弥补核心JavaScript的功能过于精简的不足
-12. `child_process`：衍生子进程
+8. `readline`：用于一次一行地读取可读流中的数据
+9. `buffer`：缓冲区
+
+    `Buffer`用于表示固定长度的字节序列。是JS`Uint8Array`的子类，并使用涵盖额外用例的方法对其进行扩展。
+10. `string_decoder`：字符串解码器
+
+    提供了用于将`Buffer`对象解码为字符串（以保留编码的多字节UTF-8和UTF-16字符的方式）的API。
+11. `os`：提供了与操作系统相关的实用方法和属性
+12. `util`：提供常用函数的集合，用于弥补核心JavaScript的功能过于精简的不足
+13. `process`：进程
+
+    `require("node:process") === process`
+14. `child_process`：衍生子进程
 
     衍生的Node.js子进程独立于父进程，但两者之间建立的IPC通信通道除外。每个进程都有自己的内存，带有自己的V8实例。
 
     >由于需要额外的资源分配，因此不建议衍生大量的Node.js子进程。
-13. `cluster`：集群
+15. `cluster`：集群（运行多个Node.js实例）
 
     创建共享服务器端口的子进程。为了充分利用多核系统，有时需要启用一组Node.js进程去处理负载任务。
-14. `worker_threads`：并行地执行JS的线程
-15. `dgram`：数据报
+16. `worker_threads`：工作线程（单个Node.js实例中并行运行多个应用程序线程）
+17. `crypto`：加密
+
+     OpenSSL的哈希、HMAC、加密、解密、签名、以及验证功能的一整套封装。
+18. `zlib`：提供`Gzip、Deflate/Inflate、Brotli`的压缩功能
+
+    >压缩和解压缩是围绕`stream`流API构建的。
+19. `dgram`：数据报
 
     对UDP datagram sockets（UDP的数据报套接字）的一层封装。
-16. `net`：用于创建基于流的TCP或IPC的服务器（`net.createServer`）与客户端（`net.createConnection`）
+20. `net`：用于创建基于流的TCP或IPC的服务器（`net.createServer`）与客户端（`net.createConnection`）
+21. `dns`：解析域名
+22. `url`：解析URL。
+23. `querystring`：解析和格式化URL查询字符串
+24. `tls`：实现安全传输层（TLS）及安全套接层（SSL）协议，建立在OpenSSL的基础上
+25. `module`：模块
 
-    - Experimental功能
+    提供几个对象属性。
+26. `timers`
 
-        1. `require('net').createQuicSocket`：QUIC（快速UDP网络连接，Quick UDP Internet Connections）
-17. `dns`：解析域名
-18. `querystring`：解析和格式化URL查询字符串
-19. `string_decoder`：字符串解码器
-20. `tls`：实现安全传输层（TLS）及安全套接层（SSL）协议，建立在OpenSSL的基础上
-21. `module`：模块
-22. `perf_hooks`：性能钩子
+    >Node.js中的定时器函数实现了与网络浏览器提供的定时器API类似的API，但使用的是围绕Node.js事件循环构建的不同的内部实现。
+
+    1. 定时器函数是全局的，所以不需要调用 ~~`require('node:timers')`~~ 来使用该API。
+    2. 提供了一组可返回Promise对象的可供选择的定时器函数：`require('node:timers/promises')`。
+27. `perf_hooks`：性能钩子
 
     实现w3c的Performance API的子类。
-23. `assert`：断言
-24. `repl`：REPL（交互式解释器）
+28. `assert`：断言
+29. `repl`：REPL（交互式解释器）
 
     - 终端使用Node.js的REPL：
 
@@ -933,26 +1026,39 @@ npm（Node Package Manager）。
 
             打印最后一次操作结果（不执行语句、没有副作用）。
         2. `.help`、`.editor`、`.break`、`.clear`、`.load`、`.save`、`.exit`
-        3. 可以直接使用系统模块，不需要`require`引入。e.g. REPL中`http === require('http')`。
-25. `tty`：终端
-26. `v8`：V8的api
-27. `vm`：提供V8虚拟机上下文中进行编译和运行代码
-28. `crypto`：加密
+        3. 可以直接使用系统模块，不需要`require`引入。
 
-     OpenSSL的哈希、HMAC、加密、解密、签名、以及验证功能的一整套封装。
+            >e.g. REPL中`http === require('http')`。
+30. `v8`：V8的api
+31. `vm`：提供V8虚拟机上下文中进行编译和运行代码
+32. `console`控制台
 
-    - Experimental功能
+    `require("node:console").Console === console.Console`
+33. `inspector`：与V8调试器交互
+34. `tty`：终端
 
-        1. `require('crypto').webcrypto`：实现Web Crypto API规范
-29. `zlib`：提供`Gzip、Deflate/Inflate、Brotli`的压缩功能
+    >在大多数情况下，没有必要或不可能直接使用此模块。
+35. C++相关
+
+    1. C++ addons
+    2. C/C++ addons with Node-API
+    3. C++ embedder API
 
 - Experimental功能
 
-    1. `inspector`：与V8调试器交互
-    2. `wasi`：实现WebAssembly系统接口规范
-    3. `diagnostics_channel`：诊断
-    4. `trace_events`：跟踪事件
-    5. `async_hooks`：异步钩子去跟踪异步资源
+    1. `wasi`：实现WebAssembly系统接口规范
+    2. `diagnostics_channel`：诊断通道
+    3. `trace_events`：跟踪事件
+    4. `async_hooks`：异步钩子去跟踪异步资源
+    5. `Corepack`：管理包管理器的版本的工具
+    6. `require('crypto').webcrypto`：实现Web Crypto API规范
+    7. `require('stream').web`：网络流
+    8. `test`：测试
+
+- 弃用
+
+    1. ~~`domain`~~
+    2. ~~`punycode`~~
 
 ### Node.js[全局变量](http://nodejs.cn/api/globals.html)
 Node.js的全局对象`global`是全局变量的宿主。
@@ -969,13 +1075,11 @@ Node.js的全局对象`global`是全局变量的宿主。
     1. `process.cwd()`：运行node命令时所在文件夹的绝对路径。
 3. `Buffer`：二进制数据流。
 
-    可以将buffer视为整数数组：数组的每一项都是整数，并代表一个数据字节。
-4. `queueMicrotask`
+    >虽然`Buffer`在全局作用域内可用，但仍然建议通过`import/require`语句显式地引用它：`const { Buffer } = require('node:buffer')`。
 
-    将微任务放入队列以便调用回调。
-5. `MessageChannel`、`MessageEvent`、`MessagePort`
-6. `setImmediate/clearImmediate`
-7. 其他全局变量（类似于浏览器的全局对象<code>window</code>所包含的全局变量）
+    可以将buffer视为整数数组：数组的每一项都是整数，并代表一个数据字节。
+4. `setImmediate/clearImmediate`
+5. 类似于浏览器的全局对象`window`所包含的全局变量
 
     1. `setTimeout/clearTimeout`、`setInterval/clearInterval`
     2. `console`
@@ -1006,13 +1110,19 @@ Node.js的全局对象`global`是全局变量的宿主。
             >有时因为运行的代码，就算退出了程序也无法关闭占用inspect的9229（默认）端口。需要手动杀死占用端口的进程，e.g. `lsof -i :9229`然后`kill -9 「PID」`。
 
             - `--debug-brk`：直接从第一行代码开始进行断点调试。
-    6. `TextDecoder`、`TextEncoder`
-    7. `WebAssembly`
+    6. `Blob`
+    7. `Event`、`EventTarget`
+    8. `TextDecoder`、`TextEncoder`
+    9. `WebAssembly`
+    10. `AbortController`、`AbortSignal`
+    11. `BroadcastChannel`
+    12. `queueMicrotask`
 
-    - Experimental功能
-
-        1. `AbortController`、`AbortSignal`
-        2. `Event`、`EventTarget`
+        将微任务放入队列以便调用回调。
+    13. `MessageChannel`、`MessageEvent`、`MessagePort`
+    14. `performance`
+    15. `structuredClone`
+    16. `DOMException`
 
 ### Tips
 1. 调试方法：
@@ -1041,12 +1151,21 @@ Node.js的全局对象`global`是全局变量的宿主。
 
     代码运行完毕。包括：执行队列、任务队列、等待加入任务队列的其他线程任务，全都执行完毕，当不会有新的指令需要执行时，就自动退出Node.js的进程。监听系统端口，意味着还有事件需要待执行。
 5. 不管任何情况，始终保证要有回包，就算代码运行错误，也要兜底回包（`.end()`）
-6. `node 「传递给Node.js的参数，如：--inspect」 「执行文件」 「传递给执行文件的参数，以空格分隔」`
+6. [CLI命令行](http://nodejs.cn/api/cli.html)（`man node`）
 
-    1. 执行文件之前的是传递给Node.js运行的参数，有特定值，错误参数会报错。
-    2. 执行文件之后的是传递进执行文件使用的（`process.argv`），可以输入任意内容。
+    ```bash
+    node [options] [V8 options] [<program-entry-point> | -e "script" | -] [--] [arguments]
 
-    - 命令行执行eval字符串并打印：`node -p "「js代码文本」"`
+    node inspect [<program-entry-point> | -e "script" | <host>:<port>] …
+
+    node --v8-options
+    ```
+
+    1. 不带参数执行以启动交互式解释器。
+    2. `-`：标准输入的别名。 类似于在其他命令行工具中使用 -，这意味着脚本是从标准输入读取的，其余的选项将传给该脚本。
+    3. `--`：指示 node 选项的结束。 将其余参数传给脚本。 如果在此之前没有提供脚本文件名或评估/打印脚本，则下一个参数用作脚本文件名。
+
+    >`node -e "「js代码文本」"`：eval执行字符串；`node -p "「js代码文本」"`：eval执行字符串（`-e`）并打印。
 7. 返回的内容的属性值为`undefined`的，可能会把这个属性去除。
 8. 抓包Node.js发起的http/https请求
 
@@ -1354,9 +1473,15 @@ Node.js的全局对象`global`是全局变量的宿主。
 
 ### [express](https://github.com/expressjs/express)
 1. 通过回调实现异步函数，在多个回调、多个中间件中写起来容易逻辑混乱。
-2. 错误处理中间件，需要回调函数固定传4个参数（Error-first）。
+2. 回调函数的参数数量：
 
-    >回调函数传3个参数的就不是~~错误处理中间件~~，而是普通的中间件。
+    1. 2个参数一般认为是路由（中间件）
+    2. 3个参数一般认为是通用中间件
+    3. 4个参数是错误处理中间件
+
+        错误处理中间件，需要回调函数固定传4个参数（Error-first）。
+
+    >无论是哪种类型的中间件，都是按代码顺序依次执行。
 
 - express 与 koa 对比
 

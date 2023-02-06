@@ -353,7 +353,7 @@ function getLocation (url) {
 >```
 
 ### *原生JS*在URL末尾修改search键-值
-1. 批量添加（未加`encodeURIComponent`）
+1. 批量修改（未加`encodeURIComponent`）
 
     >对象转换为`a=1&b=2`：`Object.entries(对象).map((val) => val.join('=')).join('&')`。
 
@@ -419,7 +419,7 @@ function getLocation (url) {
     ```
 2. <details>
 
-    <summary>单个添加</summary>
+    <summary>单个修改</summary>
 
     ```javascript
     /**

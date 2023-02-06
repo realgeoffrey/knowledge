@@ -141,6 +141,7 @@
                     adb shell dumpsys gfxinfo 「PACKAGE_NAME」 framestats
                     ```
         2. 「开发人员选项」 -> 「调试GPU过度绘制」
+        3. PerfDog
 
     - Android Studio编译APK（Android Application Package）
 
@@ -207,6 +208,7 @@
 
         1. （基础）Xcode -> Show the Debug navigator -> debug gauges
         2. （进阶）Xcode -> Product -> Profile
+        3. PerfDog
 
     - Simulator
 

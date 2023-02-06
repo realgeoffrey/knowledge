@@ -17,6 +17,7 @@
 1. [create-react-app](#create-react-app)
 1. [redux](#redux)
 
+    1. [redux工具](#redux工具)
     1. [dva](#dva)
     1. [rematch](#rematch)
 1. [mobx](#mobx)
@@ -567,6 +568,8 @@
 
             1. 由`React.createRef()`创建，`.current`获取DOM或子组件实例。
 
+                >`createRef`主要用在class组件（函数组件内基本没有 ~~使用`createRef`的场景~~，都可以用`useRef`替代）；`useRef`只能用在函数组件。
+
                 1. 本组件内使用，获取DOM。
                 2. 可以从父级传递`React.createRef()`实例到子组件：
 
@@ -914,78 +917,93 @@
 
     1. 父子组件间的通信（单向数据流/单向绑定）
 
-        父级（Props） -> 子级。其中Props包括：数据（可以是父级的State） + 父级的方法。
+        1. 父级（Props） -> 子级。其中Props包括：数据（可以是父级的State） + 父级的方法。
 
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```jsx
-        >// 父级
-        ><子组件
-        >  必要属性1='你好'
-        >  可选方法1={this.父级方法} // 父级方法的参数：子级调用时传入
-        >/>
-        >```
-        >
-        >```jsx
-        >// 子级
-        >import React from "react";
-        >
-        >import { View } from "react-native";
-        >
-        >// 可选Props
-        >interface 组件PropsOptional {
-        >  可选属性1?: boolean,
-        >  可选属性2?: number,
-        >  可选方法1?: () => void,
-        >}
-        >
-        >// +必要Props
-        >interface 组件Props extends 组件PropsOptional {
-        >  必要属性1: string
-        >}
-        >
-        >// State
-        >interface 组件State {
-        >  本地属性1: number
-        >}
-        >
-        >export default class 组件 extends React.Component<组件Props, 组件State> {
-        >  public static defaultProps: 组件PropsOptional = {
-        >    可选属性1: false,
-        >    可选属性2: 123,
-        >  };
-        >
-        >  public readonly state: 组件State = {
-        >    本地属性1: this.props.可选属性2 || 0
-        >  };
-        >
-        >  public constructor (props: 组件Props) {
-        >    super(props);
-        >  }
-        >
-        >  public render () {
-        >    const { 本地属性1 } = this.state;
-        >    const { 必要属性1, 可选属性1, 可选方法1 } = this.props;
-        >
-        >    return(
-        >        <View
-        >          onClick={() => {
-        >            this.setState({
-        >              本地属性1: 本地属性1 + 1
-        >            });
-        >            可选方法1 && 可选方法1(子级参数);
-        >          }}
-        >        >
-        >          <View>{本地属性1}</View>
-        >          <View>{必要属性1}</View>
-        >          <View>{可选属性1 ? '可选属性1: true' : '可选属性1: false'}</View>
-        >        </View>
-        >    );
-        >  }
-        >}
-        >```
-        ></details>
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```jsx
+            >// 父级
+            ><子组件
+            >  必要属性1='你好'
+            >  可选方法1={this.父级方法} // 父级方法的参数：子级调用时传入
+            >/>
+            >```
+            >
+            >```jsx
+            >// 子级
+            >import React from "react";
+            >
+            >import { View } from "react-native";
+            >
+            >// 可选Props
+            >interface 组件PropsOptional {
+            >  可选属性1?: boolean,
+            >  可选属性2?: number,
+            >  可选方法1?: () => void,
+            >}
+            >
+            >// +必要Props
+            >interface 组件Props extends 组件PropsOptional {
+            >  必要属性1: string
+            >}
+            >
+            >// State
+            >interface 组件State {
+            >  本地属性1: number
+            >}
+            >
+            >export default class 组件 extends React.Component<组件Props, 组件State> {
+            >  public static defaultProps: 组件PropsOptional = {
+            >    可选属性1: false,
+            >    可选属性2: 123,
+            >  };
+            >
+            >  public readonly state: 组件State = {
+            >    本地属性1: this.props.可选属性2 || 0
+            >  };
+            >
+            >  public constructor (props: 组件Props) {
+            >    super(props);
+            >  }
+            >
+            >  public render () {
+            >    const { 本地属性1 } = this.state;
+            >    const { 必要属性1, 可选属性1, 可选方法1 } = this.props;
+            >
+            >    return(
+            >        <View
+            >          onClick={() => {
+            >            this.setState({
+            >              本地属性1: 本地属性1 + 1
+            >            });
+            >            可选方法1 && 可选方法1(子级参数);
+            >          }}
+            >        >
+            >          <View>{本地属性1}</View>
+            >          <View>{必要属性1}</View>
+            >          <View>{可选属性1 ? '可选属性1: true' : '可选属性1: false'}</View>
+            >        </View>
+            >    );
+            >  }
+            >}
+            >```
+            ></details>
+        2. 父 -> 子：触发子组件的方法
+
+            1. 父级引用子级的方法
+
+                1. 子组件是class组件
+
+                    父级ref引用子级实例，直接调用实例方法。
+
+                    >e.g. `<Son ref={a}>`，a（或a.current）为子级实例，`.实例属性方法`。
+                2. 子组件是函数组件
+
+                    子级利用`useImperativeHandle`（可配合`forwardRef`等）导出方法，父级ref引用子级暴露的方法。
+
+                    >e.g. `<Son ref={a}>`，a（或a.current）为对象，包含子级主动暴露的方法，`.主动暴露的方法`。
+            2. 子级通过观察父级修改的数据后触发（利用props或redux等）
     2. 非父子组件通信
 
         1. 祖孙组件间的通信
@@ -1140,7 +1158,7 @@
             1. 局部作用域、CSS类模块：[css modules](https://github.com/css-modules/css-modules)（可以与CSS预处理器配合使用）
             2. CSS in JS方案：[styled-components](https://github.com/styled-components/styled-components)（运行时生成`<style>`类样式，供给生成的样式组件的className使用）
 
-                >CSS in JS：CSS由JavaScript生成而不是~~在外部文件（.css文件或CSS预处理器文件）中定义~~。
+                >CSS in JS/CSS-in-JS：CSS由JavaScript生成而不是~~在外部文件（.css文件或CSS预处理器文件）中定义~~。
 8. 事件处理
 
     1. 小驼峰式（camelCase）定义事件名
@@ -2337,6 +2355,35 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     `useImperativeHandle(ref, createHandle, [deps])`
 
+    在使用`ref`时自定义暴露给父组件的实例值，与`forwardRef`一起使用。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```tsx
+    >// 子
+    >import { useImperativeHandle, forwardRef } from "react";
+    >function _Son(props: any, ref: any) {
+    >  function _func() {
+    >    console.log("son3 func");
+    >  }
+    >  useImperativeHandle(ref, () => ({
+    >    func: () => {
+    >      _func();
+    >    },
+    >  }));
+    >  return <div>son</div>;
+    >}
+    >const Son = forwardRef(_Son);
+    >export default Son;
+    >
+    >
+    >// 父
+    ><Son ref={a} />
+    >a.current.func()
+    >```
+    ></details>
+
 >若指定了一个`依赖项数组`作为`useEffect`、`useLayoutEffect`、`useMemo`、`useCallback`、`useImperativeHandle`的最后一个参数，它必须包含回调中的所有值，并参与React数据流。这就包括`props`、`state`，以及任何由它们衍生而来的东西。
 
 11. `useDebugValue`
@@ -2371,7 +2418,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
 - 例子
 
-    1. 强制刷新函数组件
+    1. 强制刷新函数组件（也可改成强制防抖动）
 
         ```jsx
         const [show, setShow] = useState(true);
@@ -2544,6 +2591,8 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         ```
 
         1. 提供`store.getState()`获取当前最新state（全局）
+
+            >若想要非组件的地方获得最新state（又不愿意通过thunk或传递dispatch的方式），则可以导出store或仅导出store.getState。
         2. 提供`store.dispatch(某个action)`更新state
 
             >dispatch一个action可以形象的理解为“触发一个事件”。
@@ -2697,266 +2746,280 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
     5. `compose(...functions)`
 
         >e.g. `createStore(reducer, compose(applyMiddleware(thunk), DevTools.instrument()))`
-5. 工具
 
-    1. 与React配合使用：[react-redux](https://github.com/reduxjs/react-redux)
+#### redux工具
+1. 与React配合使用：[react-redux](https://github.com/reduxjs/react-redux)
 
-        1. 访问store
+    ><details>
+    ><summary><a href="https://react-redux.js.org/introduction/why-use-react-redux">为什么应该使用React-Redux？</a></summary>
+    >
+    >Redux本身是一个独立的库，可以与任何UI层或框架一起使用，包括React、Angular、Vue、Ember和vanilla JS。虽然Redux和React通常一起使用，但它们是相互独立的。
+    >
+    >Redux与任何类型的UI框架一起使用时，通常会使用“UI绑定”库将Redux与UI框架绑定在一起，而不是直接在UI代码里与store进行交互。
+    >
+    >React-Redux是React的官方Redux UI绑定库。如果想要同时使用Redux和React，你也应该使用React-Redux来绑定这两个库。
+    >
+    >虽然可以手动编写Redux store的订阅逻辑，但这样做会有很多重复工作。此外，优化UI性能包含复杂的逻辑。
+    >
+    >订阅store、检查更新数据和触发重新渲染的过程可以变得更加通用和可复用。像React-Redux这样的UI绑定库会处理store的交互逻辑，因此你不必手动编写该代码。
+    ></details>
 
-            1. `Provider`
+    1. 访问store
 
-                `<Provider>`的所有孙辈的容器组件都可以访问`store`，而不必显式地传递它。
+        1. `Provider`
 
-                ```jsx
-                import React from 'react'
-                import { render } from 'react-dom'
-                import { Provider } from 'react-redux'
-                import { createStore } from 'redux'
-                import xx from './reducers'
-                import App from './components/App'
+            `<Provider>`的所有孙辈的容器组件都可以访问`store`，而不必显式地传递它。
 
-                let store = createStore(xx)
+            ```jsx
+            import React from 'react'
+            import { render } from 'react-dom'
+            import { Provider } from 'react-redux'
+            import { createStore } from 'redux'
+            import xx from './reducers'
+            import App from './components/App'
 
-                render(
-                  <Provider store={store}>
-                    <App />
-                  </Provider>,
-                  document.getElementById('root')
-                )
-                ```
-            2. ~~手动监听`store.subscribe`~~
-        2. 函数组件内使用（hooks）
+            let store = createStore(xx)
 
-            >也可以用`connect`，但是不推荐。以下hooks更推荐。
+            render(
+              <Provider store={store}>
+                <App />
+              </Provider>,
+              document.getElementById('root')
+            )
+            ```
+        2. ~~手动监听`store.subscribe`~~
+    2. 函数组件内使用（hooks）
 
-            `import { useSelector, useDispatch, useStore } from 'react-redux'`
+        >也可以用`connect`，但是不推荐。以下hooks更推荐。
 
-            1. `useSelector`
+        `import { useSelector, useDispatch, useStore } from 'react-redux'`
 
-                `const state切片值 = useSelector((state: RootState) => { return state.slice名 }[, 浅比较函数])`
+        1. `useSelector`
 
-                >`浅比较函数`可以直接用`import { shallowEqual } from 'react-redux'`，作用：浅比较前后`state切片值`是否相同，如果相同则不触发更新。
-            2. `useDispatch`
+            `const state切片值 = useSelector((state: RootState) => { return state.slice名 }[, 浅比较函数])`
 
-                ```javascript
-                const dispatch = useDispatch()
-
-                dispatch(createSlice实例.actions.方法名(参数));
-                ```
-            3. `useStore`
-
-                ```javascript
-                // `{store.getState()}`不会随着state更新而触发视图更新
-                const store = useStore()        // store === { dispatch, getState, replaceReducer, subscribe }
-                ```
-        3. class组件内使用
+            >`浅比较函数`可以直接用`import { shallowEqual } from 'react-redux'`，作用：浅比较前后`state切片值`是否相同，如果相同则不触发更新。
+        2. `useDispatch`
 
             ```javascript
-            import { connect } from 'react-redux'
+            const dispatch = useDispatch()
 
-            export default connect(
-              (state, ownProps) => { props某属性: state相关内容, },        // mapStateToProps：redux的store 映射到 组件的props。默认方法返回：state: state
-              (dispatch, ownProps) => { props某方法: dispatch相关内容, }   // mapDispatchToProps：redux的dispatch 映射到 组件的props。默认方法返回：dispatch: dispatch
-            )(class组件)
+            dispatch(createSlice实例.actions.方法名(参数));
             ```
-    2. 简化逻辑的最佳实践：[redux-toolkit](https://github.com/reduxjs/redux-toolkit)（包含：[redux](https://github.com/reduxjs/redux)、[redux-thunk](https://github.com/reduxjs/redux-thunk)、[reselect](https://github.com/reduxjs/reselect)、[immer](https://github.com/immerjs/immer)、等）
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```jsx
-        >// ./index.js
-        >import ReactDOM from 'react-dom';
-        >import store from './store';
-        >import { Provider } from 'react-redux';
-        >import Counter from '../features/counter/Counter';
-        >
-        >ReactDOM.render(
-        >  <Provider store={store}>
-        >    <Counter />
-        >  </Provider>,
-        >  document.getElementById('root')
-        >);
-        >```
-        >
-        >```typescript
-        >// ./store.ts
-        >import { configureStore, ThunkAction, Action, combineReducers } from '@reduxjs/toolkit';
-        >import counterReducer from '../features/counter/counterSlice';
-        >
-        >// 默认启用了 redux-thunk 中间件
-        >const store = configureStore({
-        >  reducer: {   // 或 reducer: combineReducers({ counter: counterReducer, 其他: 其他Reducer })
-        >    counter: counterReducer,
-        >    其他: 其他Reducer
-        >  },
-        >});
-        >
-        >export default store;
-        >
-        >export type AppDispatch = typeof store.dispatch;
-        >export type RootState = ReturnType<typeof store.getState>;
-        >export type AppThunk<returnType = void> = ThunkAction<
-        >  returnType,
-        >  RootState,
-        >  unknown,
-        >  Action<string>
-        >>;
-        >```
-        >
-        >```jsx
-        >// ../features/counter/counterSlice.js
-        >import { createSlice } from '@reduxjs/toolkit';
-        >
-        >const counterSlice = createSlice({
-        >  name: 'xx',      // 被用于生成的action type的前缀（不是切片名）
-        >  initialState: {  // reducer的初始状态值
-        >    value: 0,
-        >  },
-        >  reducers: {      // 其中的键会成为action type，而函数是当action type被分发时调用的reducer（有时候它们也会被称为"case reducers"，因为它们类似于switch语句中的case）。默认开启immer
-        >    increment: state => {  // state仅自己切片的，不是全局的
-        >      state.value += 1;
-        >    },
-        >    decrement: state => {
-        >      state.value -= 1;
-        >    },
-        >    incrementByAmount: (state, action) => {
-        >      state.value += action.payload;
-        >    },
-        >    // yyy: { reducer (state, action) {}, prepare回调函数 }
-        >  },
-        >});
-        >
-        >// action creator
-        >export const { increment, decrement, incrementByAmount } = counterSlice.actions;
-        >// createSlice会自动生成与我们编写的reducer函数同名的action creator，参数会成为action的payload，e.g. incrementByAmount(参数) -> {type: 'xx/incrementByAmount', payload: 参数}
-        >
-        >// thunk creator（action creator）
-        >export const incrementAsync = amount => // 用法：dispatch(incrementAsync(数字))
-        >  // thunk
-        >  dispatch => {
-        >    setTimeout(() => {
-        >      dispatch(incrementByAmount(amount)); // 也可以继续触发thunk
-        >    }, 1000);
-        >  };
-        >export const incrementAsync2 = (amount) => {
-        >  return async (dispatch, getState) => {   // getState()获取当前最新state（全局）
-        >    try {
-        >      await sleep(1000);
-        >      dispatch(incrementByAmount(amount));
-        >    } catch (err) {
-        >    }
-        >  };
-        >};
-        >
-        >// selector
-        >export const selectCount = state => state.counter.value;
-        >
-        >// reducer
-        >export default counterSlice.reducer;
-        >```
-        >
-        >```jsx
-        >// ../features/counter/Counter.js
-        >import { useSelector, useDispatch } from 'react-redux'
-        >import {
-        >  increment,
-        >  decrement,
-        >  incrementByAmount,
-        >  incrementAsync,
-        >  incrementAsync2,
-        >  selectCount
-        >} from './counterSlice'
-        >
-        >export function Counter() {
-        >  const count = useSelector(selectCount)
-        >  const dispatch = useDispatch()
-        >
-        >  return (
-        >    <div
-        >      onClick={() => {
-        >        dispatch(increment())
-        >        dispatch(decrement())
-        >        dispatch(incrementByAmount(1))
-        >        dispatch(incrementAsync(2))
-        >        dispatch(incrementAsync2(3))
-        >      }}
-        >    >
-        >      {count}
-        >    </div>
-        >  )
-        >}
-        >```
-        ></details>
-
-        1. `configureStore`
-
-            包装`createStore`以提供简化的配置选项和良好的默认预设。自动组合切片的reducer，添加你提供的任何Redux中间件。
-
-            >默认启用了`redux-thunk`中间件；默认启用`redux-devtools`扩展。
-        2. `createReducer`
-
-            生成reducer。
+        3. `useStore`
 
             ```javascript
-            const counter1 = createReducer(0, { // 初始状态值、action type的查找表。创建一个reducer来处理所有这些action type
-              [INCREMENT]: state => state + 1,
-              [DECREMENT]: state => state - 1
-            })
-
-            // 等价于：
-
-            function counter2(state = 0, action) {
-              switch (action.type) {
-                case INCREMENT:
-                  return state + 1
-                case DECREMENT:
-                  return state - 1
-                default:
-                  return state
-              }
-            }
+            // `{store.getState()}`不会随着state更新而触发视图更新
+            const store = useStore()        // store === { dispatch, getState, replaceReducer, subscribe }
             ```
+    3. class组件内使用
 
-            >自动启用`immer`。
-        3. `createAction`
+        ```javascript
+        import { connect } from 'react-redux'
 
-            生成action creator、action的type。
+        export default connect(
+          (state, ownProps) => { props某属性: state相关内容, },        // mapStateToProps：redux的store 映射到 组件的props。默认方法返回：state: state
+          (dispatch, ownProps) => { props某方法: dispatch相关内容, }   // mapDispatchToProps：redux的dispatch 映射到 组件的props。默认方法返回：dispatch: dispatch
+        )(class组件)
+        ```
+2. 简化逻辑的最佳实践：[redux-toolkit](https://github.com/reduxjs/redux-toolkit)（包含：[redux](https://github.com/reduxjs/redux)、[redux-thunk](https://github.com/reduxjs/redux-thunk)、[reselect](https://github.com/reduxjs/reselect)、[immer](https://github.com/immerjs/immer)、等）
 
-            1. `createAction(「type值」)(「payload值」)` 等于 `{ type: 「type值」, payload: 「payload值」 }`。
-            2. `createAction(「type值」).toString()` 等于 `createAction(「type值」).type` 等于 `「type值」`。
-            3. `createAction(「type值」, prepare回调函数)`
-        4. `createSlice`
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```jsx
+    >// ./index.js
+    >import ReactDOM from 'react-dom';
+    >import store from './store';
+    >import { Provider } from 'react-redux';
+    >import Counter from '../features/counter/Counter';
+    >
+    >ReactDOM.render(
+    >  <Provider store={store}>
+    >    <Counter />
+    >  </Provider>,
+    >  document.getElementById('root')
+    >);
+    >```
+    >
+    >```typescript
+    >// ./store.ts
+    >import { configureStore, ThunkAction, Action, combineReducers } from '@reduxjs/toolkit';
+    >import counterReducer from '../features/counter/counterSlice';
+    >
+    >// 默认启用了 redux-thunk 中间件
+    >const store = configureStore({
+    >  reducer: {   // 或 reducer: combineReducers({ counter: counterReducer, 其他: 其他Reducer })
+    >    counter: counterReducer,
+    >    其他: 其他Reducer
+    >  },
+    >});
+    >
+    >export default store;
+    >
+    >export type AppDispatch = typeof store.dispatch;
+    >export type RootState = ReturnType<typeof store.getState>;
+    >export type AppThunk<returnType = void> = ThunkAction<
+    >  returnType,
+    >  RootState,
+    >  unknown,
+    >  Action<string>
+    >>;
+    >```
+    >
+    >```jsx
+    >// ../features/counter/counterSlice.js
+    >import { createSlice } from '@reduxjs/toolkit';
+    >
+    >const counterSlice = createSlice({
+    >  name: 'xx',      // 被用于生成的action type的前缀（不是切片名）
+    >  initialState: {  // reducer的初始状态值
+    >    value: 0,
+    >  },
+    >  reducers: {      // 其中的键会成为action type，而函数是当action type被分发时调用的reducer（有时候它们也会被称为"case reducers"，因为它们类似于switch语句中的case）。默认开启immer
+    >    increment: state => {  // state仅自己切片的，不是全局的
+    >      state.value += 1;
+    >    },
+    >    decrement: state => {
+    >      state.value -= 1;
+    >    },
+    >    incrementByAmount: (state, action) => {
+    >      state.value += action.payload;
+    >    },
+    >    // yyy: { reducer (state, action) {}, prepare回调函数 }
+    >  },
+    >});
+    >
+    >// action creator
+    >export const { increment, decrement, incrementByAmount } = counterSlice.actions;
+    >// createSlice会自动生成与我们编写的reducer函数同名的action creator，参数会成为action的payload，e.g. incrementByAmount(参数) -> {type: 'xx/incrementByAmount', payload: 参数}
+    >
+    >// thunk creator（action creator）
+    >export const incrementAsync = amount => // 用法：dispatch(incrementAsync(数字))
+    >  // thunk
+    >  dispatch => {
+    >    setTimeout(() => {
+    >      dispatch(incrementByAmount(amount)); // 也可以继续触发thunk
+    >    }, 1000);
+    >  };
+    >export const incrementAsync2 = (amount) => {
+    >  return async (dispatch, getState) => {   // getState()获取当前最新state（全局）
+    >    try {
+    >      await sleep(1000);
+    >      dispatch(incrementByAmount(amount));
+    >    } catch (err) {
+    >    }
+    >  };
+    >};
+    >
+    >// selector
+    >export const selectCount = state => state.counter.value;
+    >
+    >// reducer
+    >export default counterSlice.reducer;
+    >```
+    >
+    >```jsx
+    >// ../features/counter/Counter.js
+    >import { useSelector, useDispatch } from 'react-redux'
+    >import {
+    >  increment,
+    >  decrement,
+    >  incrementByAmount,
+    >  incrementAsync,
+    >  incrementAsync2,
+    >  selectCount
+    >} from './counterSlice'
+    >
+    >export function Counter() {
+    >  const count = useSelector(selectCount)
+    >  const dispatch = useDispatch()
+    >
+    >  return (
+    >    <div
+    >      onClick={() => {
+    >        dispatch(increment())
+    >        dispatch(decrement())
+    >        dispatch(incrementByAmount(1))
+    >        dispatch(incrementAsync(2))
+    >        dispatch(incrementAsync2(3))
+    >      }}
+    >    >
+    >      {count}
+    >    </div>
+    >  )
+    >}
+    >```
+    ></details>
 
-            >自动启用`immer`。
-        5. `createAsyncThunk`
+    1. `configureStore`
 
-            接受一个action type和一个返回Promise实例的函数，并生成一个发起基于该Promise实例的`pending/fulfilled/rejected`的action类型的thunk。
-        6. `createEntityAdapter`
-        7. `createSelector`
+        包装`createStore`以提供简化的配置选项和良好的默认预设。自动组合切片的reducer，添加你提供的任何Redux中间件。
 
-            记忆化selector。
+        >默认启用了`redux-thunk`中间件；默认启用`redux-devtools`扩展。
+    2. `createReducer`
 
-            >来自：[reselect](https://github.com/reduxjs/reselect)。
-    3. 开发者工具：[redux-devtools](https://github.com/reduxjs/redux-devtools)
-    4. 中间件（Middleware）
+        生成reducer。
 
-        把原本只能同步的`store.dispatch(某个action)`变成异步或更多功能。
+        ```javascript
+        const counter1 = createReducer(0, { // 初始状态值、action type的查找表。创建一个reducer来处理所有这些action type
+          [INCREMENT]: state => state + 1,
+          [DECREMENT]: state => state - 1
+        })
 
-        - 可实现
+        // 等价于：
 
-            1. `store.dispatch(参数)`时执行额外的逻辑（例如打印action的日志、状态）
-            2. 暂停、修改、延迟、替换或停止dispatch的action
-            3. 编写可以访问dispatch和getState的额外代码
-            4. 教dispatch如何接受除普通action对象之外的其他值（e.g. 函数、Promise实例），通过拦截它们并dispatch实际action对象来代替
+        function counter2(state = 0, action) {
+          switch (action.type) {
+            case INCREMENT:
+              return state + 1
+            case DECREMENT:
+              return state - 1
+            default:
+              return state
+          }
+        }
+        ```
 
-        ![redux中间件](./images/redux-async.gif)
+        >自动启用`immer`。
+    3. `createAction`
 
-        1. [redux-thunk](https://github.com/reduxjs/redux-thunk)
+        生成action creator、action的type。
 
-            `store.dispatch(thunk函数 或 thunk函数生成器(参数))`，其中thunk函数的参数是`dispatch`、`getState`。
+        1. `createAction(「type值」)(「payload值」)` 等于 `{ type: 「type值」, payload: 「payload值」 }`。
+        2. `createAction(「type值」).toString()` 等于 `createAction(「type值」).type` 等于 `「type值」`。
+        3. `createAction(「type值」, prepare回调函数)`
+    4. `createSlice`
 
-            >`thunk函数生成器`也是action creator。
+        >自动启用`immer`。
+    5. `createAsyncThunk`
+
+        接受一个action type和一个返回Promise实例的函数，并生成一个发起基于该Promise实例的`pending/fulfilled/rejected`的action类型的thunk。
+    6. `createEntityAdapter`
+    7. `createSelector`
+
+        记忆化selector。
+
+        >来自：[reselect](https://github.com/reduxjs/reselect)。
+3. 开发者工具：[redux-devtools](https://github.com/reduxjs/redux-devtools)
+4. 中间件（Middleware）
+
+    把原本只能同步的`store.dispatch(某个action)`变成异步或更多功能。
+
+    - 可实现
+
+        1. `store.dispatch(参数)`时执行额外的逻辑（例如打印action的日志、状态）
+        2. 暂停、修改、延迟、替换或停止dispatch的action
+        3. 编写可以访问dispatch和getState的额外代码
+        4. 教dispatch如何接受除普通action对象之外的其他值（e.g. 函数、Promise实例），通过拦截它们并dispatch实际action对象来代替
+
+    ![redux中间件](./images/redux-async.gif)
+
+    1. [redux-thunk](https://github.com/reduxjs/redux-thunk)
+
+        `store.dispatch(thunk函数 或 thunk函数生成器(参数))`，其中thunk函数的参数是`dispatch`、`getState`。
+
+        >`thunk函数生成器`也是action creator。
 
 #### [dva](https://github.com/dvajs/dva)
 >基于redux和redux-saga的精简封装数据流方案。然后为了简化开发体验，还额外内置了react-router和fetch，所以也可以理解为一个轻量级的应用框架。

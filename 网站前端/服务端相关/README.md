@@ -184,22 +184,20 @@
         3. 查看日志文件。
 2. 服务端应用程序日志
 
-    1. Node.js
+    1. pm2
 
-        1. pm2
+        1. `pm2 list`获得进程列表；
+        2. `pm2 info 「进程id或name」`获取进程信息；
+        3. `pm2 log 「进程id或name」`查看进程日志。
+    2. Docker
 
-            1. `pm2 list`获得进程列表；
-            2. `pm2 info 「进程id或name」`获取进程信息；
-            3. `pm2 log 「进程id或name」`查看进程日志。
-        2. Docker
+        1. `docker ps`获取容器信息；
+        2. `docker logs -f --tail 「数字」 「容器ID」`查看Docker日志。
+    3. Kubernetes
 
-            1. `docker ps`获取容器信息；
-            2. `docker logs -f --tail 「数字」 「容器ID」`查看Docker日志。
-        3. Kubernetes
-
-            1. `kubectl get namespace`查看所有命名空间；
-            2. `kubectl get pod -n 「namespace名字」 | grep 「筛选关键字」`查看所有某命名空间的pod；
-            3. `kubectl logs 「pod名字」 -n 「namespace名字」 -c 「container名字」 -f --tail 「数字」`查看pod日志。
+        1. `kubectl get namespace`查看所有命名空间；
+        2. `kubectl get pod -n 「namespace名字」 | grep 「筛选关键字」`查看所有某命名空间的pod；
+        3. `kubectl logs 「pod名字」 -n 「namespace名字」 -c 「container名字」 -f --tail 「数字」`查看pod日志。
 
 ### 接口错误排查
 顺着请求链路排查：域名 -（DNS -> 服务器地址） -> HTTP Server（如：nginx、Apache Tomcat） -> 服务端应用程序（逻辑、IO）。
