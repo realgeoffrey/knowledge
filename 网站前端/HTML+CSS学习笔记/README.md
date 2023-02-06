@@ -1390,8 +1390,8 @@
 
     **内容区域（content area） + 行间距（vertical spacing） = 行高（line-height）**
 
-    >1. 内容区域（鼠标选中后的高度）：只与`font-size`、`font-family`有关。
-    >2. 行间距：摇摆不定，可以为负值，仅为达成以上等式而变化。
+    >1. 内容区域（鼠标选中后的高度）：只与`font-size`、`font-family`有关，与 ~~`line-height`~~ 无关。
+    >2. 行间距：摇摆不定，可以为负值，仅为达成以上等式而变化。若行高小于内容区域，则行间距是负数，此时文字被裁切，上下行间部分重合。
 
 >ie6以及部分浏览器不能用line-height控制图片与文字的对齐位置，使用其他垂直居中方式（如：使用`display: flex; align-items: center;`）。
 

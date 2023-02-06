@@ -24,7 +24,7 @@
     ![前端涉及内容图2](./images/fe-tech-2.png)
 3. 前端涉及：
 
-    性能（体验），稳定性（监控告警），开发效率（工具，开发、构建流程）
+    性能（用户体验），稳定性（监控告警），开发效率（工具，开发、构建流程，开发者体验）
 
     - <details>
 
@@ -39,6 +39,10 @@
         5. 真正经历过大型项目并且做过技术架构的工程师都会重视监控系统的建设。
         6. 做好监控需要有很好的大局观，一方面是产品的大局观，包括思考用户会如何使用产品，如何量化这些行为，每个环节数据的预期变化。另一方面是技术的大局观，要了解到整个技术架构不同模块是如何协作的，怎样测量它们是否正常工作。
         </details>
+
+- 行业趋势总结
+
+    1. [2022大前端总结和2023就业分析](https://github.com/i5ting/fe-2022-in-china)
 
 ### 前端工程化
 >参考：[张云龙：前端工程——基础篇](https://github.com/fouber/blog/issues/10)。
@@ -90,7 +94,7 @@
 
 - <details>
 
-    <summary><a href="https://ngte-web.gitbook.io/i/node/quan-zhan-kai-fa">前端架构师需要考虑整个项目的工程化程度</a></summary>
+    <summary><a href="https://github.com/wx-chevalier/wx-chevalier.github.io/blob/master/content/books/web-engineering-series/工程化体系/工具化与工程化.md#frontend-architect-前端架构师">前端架构师需要考虑整个项目的工程化程度</a></summary>
 
     众所周知，现在前端进入了一种爆炸期，各种技术框架百花齐放，各种应用场景天差地别，前端工程化个人感觉不仅仅是选定某个技术框架、选定代码规范、选定测试方案等等，工程化的根本目标即是以尽可能快的速度实现可信赖的产品。尽可能短的时间包括开发速度、部署速度与重构速度，而可信赖又在于产品的可测试性、可变性以及Bug的重现与定位。笔者感觉遇见的最大的问题在于需求的不明确、接口的不稳定与开发人员素质的参差不齐。先不论技术层面，项目开发中我们在组织层面的希望能让每个参与的人无论水平高低都能最大限度的发挥其价值，每个人都会写组件，都会写实体类，但是他们不一定能写出合适的优质的代码。另一方面，好的架构都是衍化而来，不同的行业领域、应用场景、界面交互的需求都会引发架构的衍化。我们需要抱着开放的心态，不断地提取公共代码，保证合适的复用程度。同时也要避免过度抽象而带来的一系列问题。当我们落地到前端时，笔者在历年的实践中感受到以下几个突出的问题：
 
@@ -98,6 +102,8 @@
     2. 多业务系统的组件复用：当我们面临新的开发需求，或者具有多个业务系统时，我们希望能够尽量复用已有代码，不仅是为了提高开发效率，还是为了能够保证公司内部应用风格的一致性。
     3. 多平台适配与代码复用：在移动化浪潮面前，我们的应用不仅需要考虑到PC端的支持，还需要考虑微信小程序、微信内H5、WAP、ReactNative、Weex、Cordova等等平台内的支持。这里我们希望能够尽量的复用代码来保证开发速度与重构速度，这里需要强调的是，笔者觉得移动端和PC端本身是不同的设计风格，笔者不赞同过多的考虑所谓的响应式开发来复用界面组件，更多的应该是着眼于逻辑代码的复用，虽然这样不可避免的会影响效率。鱼与熊掌，不可兼得，这一点需要因地制宜，也是不能一概而论。
     </details>
+
+>[从零开始构建 JavaScript 技术栈](https://github.com/wooo-on/js-stack-from-scratch)。
 
 ### 网站性能优化
 >性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#前端工程化)问题。
@@ -114,7 +120,7 @@
     2. 优先开启使用HTTP/2.0（代替HTTP/1.1、HTTP/1.0）
     3. 减少DNS查找，设置合适的TTL值，避免重定向。
     4. 使用CDN。
-    5. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#静态资源使用额外域名的原因)，减少cookie。
+    5. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#静态资源使用额外域名的原因)；尽量减少保存进cookie的数据种类和大小（因为同源的cookie会全部参与HTTP通讯）；合理减少HTTP头数量。
     6. 对资源进行缓存：
 
         1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
@@ -147,7 +153,8 @@
             客户端： Web Storage（`localStorage`、`sessionStorage`）、cookie、IndexDB等；服务端：Redis等。
         5. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
         6. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）、第三方资源使用统一的CDN服务和设置[`<link>`预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-        7. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
+        7. 利用CDN combo。
+        8. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
     2. 最小化字节：
 
         1. 压缩资源。
@@ -157,11 +164,12 @@
             2. 小图合并雪碧图。
 
                 >大图切小图：单个大文件需要多次HTTP请求获取。
-            3. 合理使用Base64、WebP（SharpP）、`srcset`属性。
+            3. 合理使用：Base64、WebP（SharpP）、`srcset`属性、[不同ppi的设备使用不同分辨率的图片](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#不同ppi的设备使用不同分辨率的图片)。
 
                 >1. 服务端（或CDN）处理图片资源，提供返回多种图片类型的接口（如：[七牛](https://developer.qiniu.com/dora/manual/3683/img-directions-for-use)）。
                 >2. [判断浏览器是否支持WebP](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断是否支持webp)，对不同浏览器请求不同的图片类型。
                 >3. 用`<source>/<img>`的`type`、`srcset`、`sizes`、`media`等属性，让浏览器自动选择使用哪种资源（浏览器自动跳过不支持的资源）。
+                >4. ~~`navigator.connection`（实验中的功能，兼容性差、不靠谱、基本没用）获取浏览器网络情况，从而在不同网络（2G/3G/4G/wifi）使用不同尺寸的图片。~~
     3. 缩短CRP长度：
 
         CSS放在HTML顶部，JS放在HTML底部。
@@ -224,10 +232,13 @@
 
         1. 减少层级嵌套。
         2. 在拥有`target="_blank"`的`<a>`中添加`rel="noopener"`。
+4. 客户端配合优化
 
-- [WebView优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Hybrid前端开发/README.md#webview性能)：
+    1. [WebView优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Hybrid前端开发/README.md#webview性能)：
 
-    配合客户端开发落地优化方案。
+        配合客户端开发落地优化方案。
+    2. 首屏CGI提前
+    3. 离线包
 
 >- <details>
 >

@@ -2344,6 +2344,62 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 >```
 ></details>
 
+- <details>
+
+    <summary>若想获取一个已有类型的部分属性</summary>
+
+    ```typescript
+    import { $Rsp } from "其他模块";
+
+    // 写法1？
+    interface Data1 {
+    stTask: {
+      uId: $Rsp["stTask"]["uId"];
+      uType: $Rsp["stTask"]["uType"];
+      uState: $Rsp["stTask"]["uState"];
+      strRewardId: $Rsp["stTask"]["strRewardId"];
+      stNormal: {
+        stRewardProgress: {
+          vctNode: $Rsp["stTask"]["stNormal"]["stRewardProgress"]["vctNode"];
+        };
+      };
+    };
+    }
+
+    let data1: Data1 = {
+    stTask: {
+      uId: 0,
+      uType: 0,
+      uState: 0,
+      strRewardId: "",
+      stNormal: { stRewardProgress: { vctNode: [] } },
+    },
+    };
+
+
+    // 写法2？
+    type Data2 = { stTask: Pick<$Rsp["stTask"], "uId" | "uType" | "uState" | "strRewardId"> } & {
+    stTask: {
+      stNormal: {
+        stRewardProgress: {
+          vctNode: $Rsp["stTask"]["stNormal"]["stRewardProgress"]["vctNode"];
+        };
+      };
+    };
+    };
+
+    let data2: Data2 = {
+    stTask: {
+      uId: 0,
+      uType: 0,
+      uState: 0,
+      strRewardId: "",
+      stNormal: { stRewardProgress: { vctNode: [] } },
+    },
+    };
+    ```
+    </details>
+
 #### `in`
 类型的属性、枚举的项名 通过`in`遍历获得。
 

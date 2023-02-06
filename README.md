@@ -17,7 +17,9 @@
 >
 >    1. `PC`：针对桌面端制作的网页（系统包括：macOS、Windows）。
 >    2. `WAP`：针对移动端（手机浏览器或Hybrid App）制作的页面（系统包括：iOS、Android）。
->4. 默认仅针对浏览器的JS运行环境（，其他JS运行环境：Node.js）。
+>4. 默认仅针对浏览器的JS运行时环境（JavaScript runtime environment）
+>
+>    其他JS运行时环境：Node.js、[Deno](https://github.com/denoland/deno)、[Bun](https://github.com/oven-sh/bun)。
 >5. 原型链（`[[Prototype]]`）
 >
 >    （非标准）`对象.__proto__`等价于：`Object.getPrototypeOf(对象)/Object.setPrototypeOf(对象, 原型对象)`
@@ -123,4 +125,9 @@
 ></details>
 
 ---
->完美不在于无以复加，而在于无可删减。
+><details>
+><summary>完美不在于无以复加，而在于无可删减。</summary>
+>
+>
+>[![Star History Chart](https://api.star-history.com/svg?repos=realgeoffrey/knowledge&type=Date)](https://star-history.com/#realgeoffrey/knowledge&Date)
+></details>

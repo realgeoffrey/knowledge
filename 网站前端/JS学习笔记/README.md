@@ -2325,6 +2325,8 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 1. [HTTP定义的缓存机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)
 2. 数据缓存
 
+    >因为保存在客户端，因此都不应该保存用户的隐私数据。
+
     Web Storage（`localStorage`、`sessionStorage`）、cookie、IndexDB、等。
 3. 其他缓存机制（不推荐）
 

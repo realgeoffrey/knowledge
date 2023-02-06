@@ -174,6 +174,15 @@
                   <View style={{ position: 'absolute', left: 0, right: 0, bottom: x, height: 1, backgroundColor: 'red' }}/>
                 </View>
                 ```
+            7. `numberOfLines`设置会影响最大高度，文字排版几行才有几行的高度。
+            8. `lineHeight`最好大于`fontSize`某个值（如：某些默认字体下`lineHeight`大于等于1.2倍`fontSize`），否则可能会导致行高不够裁切文字。
+
+                >与CSS类似：
+                >
+                >1. 字体内容（content-area）高度 与`font-size`和`font-family`相关，与 ~~`line-height`~~ 无关。
+                >2. 字体内容(content area) + 行间距(vertical spacing) = 行高(line-height)。其中行间距分上下部分，间距对半分。
+                >
+                >    若行高(line-height) 小于 字体内容(content area)，则行间距是负数，此时文字被裁切，上下行间部分重合。
         4. `<ViewPager>`
 
             >`height`和`flexBasis`类似。
@@ -181,6 +190,121 @@
             1. 需要父级容器还有空间 或 显式设置`height`，否则会导致内容高度为0。
             2. 不能在切换时改变`height`（会导致切换到一半卡住），可以设置延迟时间等待切换结束之后再改变`height`（>300ms）。
             3. 需要大于等于2个子节点。
+            4. <details>
+
+                <summary>制作普通的左右滑动切换，e.g.</summary>
+
+                ```tsx
+                import { useEffect, useState, useRef } from "react";
+                import { pt, STATUS_BAR_HEIGHT } from "../utils";
+                import { ScrollView, StyleSheet, Text, TouchableOpacity, View, ViewPager } from "react-native";
+                import { event, getParameter } from "@tencent/kg-base";
+                import FriendsList from "../components/FriendsCmp/FriendsList";
+
+                const TAB_ARRAY: string[] = ["关注", "粉丝", "互关"];
+
+                export default function Friends() {
+                  // 强制刷新
+                  const [show, setShow] = useState(true);
+                  useEffect(() => {
+                    !show && setTimeout(() => setShow(true));
+                  }, [show]);
+
+                  const viewPager = useRef<ViewPager>(null);
+
+                  const [tab, setTab] = useState<0 | 1 | 2>(
+                    [0, 1, 2].indexOf(Number(getParameter("tab"))) === -1 ? 0 : (Number(getParameter("tab")) as 0 | 1 | 2)
+                  );
+
+                  useEffect(() => {
+                    event.on("router.enter", () => {
+                      setShow(false);
+                    });
+                    return () => {
+                      event.off("router.enter");
+                    };
+                  }, []);
+
+                  return (
+                    <View style={styles.wrap}>
+                      <View style={styles.svTabWrap}>
+                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={!!__DEV__}>
+                          <View style={{ width: pt(6) }} />
+                          {TAB_ARRAY.map((value, index) => {
+                            return (
+                              <TouchableOpacity
+                                key={index}
+                                onPress={() => {
+                                  if (index !== tab) {
+                                    viewPager.current?.setPage(index);
+                                  }
+                                }}
+                                style={styles.tabWrap}
+                              >
+                                <Text style={tab === index ? styles.tabTextActive : styles.tabText}>{value}</Text>
+                                {tab === index ? <View style={styles.active} /> : null}
+                              </TouchableOpacity>
+                            );
+                          })}
+                        </ScrollView>
+                      </View>
+
+                      <ViewPager
+                        ref={viewPager}
+                        style={{ flex: 1 }}
+                        initialPage={tab}
+                        onPageSelected={({ position }) => {
+                          setTab(position as 0 | 1 | 2);
+                        }}
+                      >
+                        {TAB_ARRAY.map((value, index) => {
+                          return (
+                            <View key={index} style={{ flex: 1 }}>
+                              {show ? <FriendsList tabIndex={index as 0 | 1 | 2} /> : null}
+                            </View>
+                          );
+                        })}
+                      </ViewPager>
+                    </View>
+                  );
+                }
+
+                const styles = StyleSheet.create({
+                  wrap: {
+                    flex: 1,
+                    paddingTop: pt(92) - pt(35) + STATUS_BAR_HEIGHT
+                  },
+                  svTabWrap: {
+                    height: pt(26)
+                  },
+                  tabWrap: {
+                    paddingHorizontal: pt(14),
+                    alignItems: "center"
+                  },
+                  tabText: {
+                    lineHeight: pt(20),
+                    fontSize: pt(14),
+                    color: "rgba(0,0,0,0.4)",
+                    height: pt(20)
+                  },
+                  tabTextActive: {
+                    lineHeight: pt(20),
+                    fontSize: pt(14),
+                    color: "#000",
+                    height: pt(20),
+                    fontWeight: "bold"
+                  },
+                  active: {
+                    width: pt(16),
+                    height: pt(2),
+                    borderRadius: pt(8),
+                    backgroundColor: "#FF6D77",
+                    marginTop: pt(4)
+                  }
+                });
+                ```
+                </details>
+
         5. 大部分（但不是所有）组件都有`onLayout`
 
             当**元素挂载**或者**布局改变**时被调用。返回节点实时的：宽高（`width`、`height`）、距离父级顶部(0,0)距离（`x`、`y`）。
@@ -197,6 +321,7 @@
 
                 >会在客户端层面报错（非前端层面，因此safari不报错），类似：`Error setting property 'type' of ListViewItem with tag #153: JSON value '0' of type NSNumber cannot be converted to NSString`。
             3. `renderRow`不支持横向排列、不足换行的方案（~~`flexDirection: 'row'`~~、~~`flexWrap: wrap或wrap-reverse`~~）。
+            4. Android若第一次渲染内容无法达到底部，则不会触发 ~~`renderRow`~~、无法正确触发加载逻辑；iOS可能会多次触发`renderRow`。
         7. `<ScrollView>`、`<ListView>`的滚动事件，需要`onMomentumScrollEnd`（非用户触发的滚动结束）和`onScrollEndDrag`（用户触发的滚动结束）配合使用
         8. `<ScrollView>`
 
@@ -316,6 +441,24 @@
                 }
                 ```
             3. 有些SDK会给`<ScrollView>`默认设置`flex: 1`效果，可在外部加一个`<View>`节点限制来规避（或设置`flex: 0`，但未成功）
+            4. 实现随着内容高度变化而自适应滚动或不滚动
+
+                ```jsx
+                // 内容不够则收缩至实际高度；内容超过外层flex: 1拥有的最高高度则内容滚动
+                <View style={{ flexShrink: 1 }}>
+                  <ScrollView>
+                    ...内容
+                  </ScrollView>
+                </View>
+
+
+                // 内容不够则收缩至实际高度，内容超过外层最大高度则内容滚动
+                <View style={{ maxHeight: 123 }}>
+                  <ScrollView>
+                    ...内容
+                  </ScrollView>
+                </View>
+                ```
         9. 降级到H5时，各回调函数的参数可能会变化，每个组件的实现要具体看降级时h5的源码
         10. 注意组件嵌套过多导致的性能、渲染问题
         11. `key`的diff有bug
@@ -422,17 +565,171 @@
 
             1. 若是`<ListView>`，则用`onAppear`或`onWillAppear`判断某子节点是否曝光。
             2. 若是`<ScrollView>`（`<ListView>`也同理），则用`onLayout`按顺序记录每个子节点的宽高，然后 父级`onScroll`的滚动距离 与 父级宽高、各子节点宽高 的关系。
+        19. 制作swiper
+
+            1. 最基本的滑块
+
+                1. （必须宽度满屏）`<ScrollView>`配置`pagingEnabled={true}`
+                2. （可设置宽度）`<ViewPager>`
+            2. 有异化效果的滑块
+
+                1. （必须宽度满屏）`<ScrollView>`
+
+                    监控滚动事件，滚动结束后补偿滚动从而使子项居中，还可以利用滚动距离设置每一项的异化。
+
+                    ><details>
+                    ><summary>e.g.</summary>
+                    >
+                    >```tsx
+                    >import { View, ScrollView, ScrollEvent } from "react-native";
+                    >import { useRef } from "react";
+                    >
+                    >export default () => {
+                    >  const ScrollViewRef = useRef<ScrollView | null>(null);
+                    >  return (
+                    >    <View style={{ height: 高度 }}>
+                    >      <ScrollView
+                    >        horizontal={true}
+                    >        scrollEventThrottle={16}
+                    >        showScrollIndicator={!!__DEV__}
+                    >        contentContainerStyle={样式}
+                    >        ref={ScrollViewRef}
+                    >
+                    >        onScroll={(obj: ScrollEvent) => {
+                    >          // 异化子项：为每个子项计算与视图正中的距离
+                    >        }}
+                    >        onScrollBeginDrag={() => {
+                    >          // 停止自动轮播
+                    >        }}
+                    >        onScrollEndDrag={(obj: ScrollEvent) => {
+                    >          // 补偿滚动到合适位置（ScrollViewRef.current.scrollTo）
+                    >
+                    >          // 开始自动轮播
+                    >        }}
+                    >        onMomentumScrollEnd={(obj: ScrollEvent) => {
+                    >          // （可选）补偿滚动到合适位置（ScrollViewRef.current.scrollTo）
+                    >        }}
+                    >      >
+                    >        {子项}
+                    >      </ScrollView>
+                    >    </View>
+                    >  );
+                    >}
+                    >```
+                    ></details>
 2. 模块
 
     >[模块文档](https://hippyjs.org/#/hippy-react/modules)比较简单，更详细的用法在[demo](https://github.com/Tencent/Hippy/tree/master/examples/hippy-react-demo/src/modules)或[源码](https://github.com/Tencent/Hippy/tree/master/packages/hippy-react/src/modules)中。
 
-    1. `Animation`、`AnimationSet`
+    1. 动画组件
 
-        动画组件。提供给前端React/Vue渲染使用的按时间变化的style中某样式属性值。
+        提供给前端React/Vue渲染使用的按时间变化的style中某样式属性值。
 
-        - [`setNativeProps`](https://hippyjs.org/#/style/setNativeProps?id=setnativeprops)
+        1. `Animation`、`AnimationSet`
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```tsx
+            >import { View, Text, AnimationOption, Animation } from "react-native";
+            >import { useEffect, useState } from "react";
+            >
+            >const DEFAULT = 1;
+            >const NEXT_VALUE = 0;
+            >
+            >// 从0->1动画
+            >const animationConfig1: AnimationOption = {
+            >  mode: "timing",
+            >  timingFunction: "ease-in-out",
+            >  startValue: NEXT_VALUE,
+            >  toValue: DEFAULT,
+            >  duration: 3000
+            >};
+            >
+            >// 从1->0动画
+            >const animationConfig2: AnimationOption = {
+            >  mode: "timing",
+            >  timingFunction: "ease-in-out",
+            >  startValue: DEFAULT,
+            >  toValue: NEXT_VALUE,
+            >  duration: 3000
+            >};
+            >
+            >export default function Demo2() {
+            >  const [opacity, setOpacity] = useState<Animation | typeof DEFAULT>(DEFAULT);
+            >
+            >  useEffect(() => {
+            >    if (opacity !== DEFAULT) {
+            >      opacity.start();
+            >      opacity.onAnimationEnd(() => {
+            >        opacity.destroy();
+            >      });
+            >    }
+            >  }, [opacity]);
+            >
+            >  return (
+            >    <>
+            >      <View
+            >        style={{
+            >          backgroundColor: "red",
+            >          width: 100,
+            >          height: 100,
+            >
+            >          opacity: opacity
+            >        }}
+            >      />
+            >      <Text
+            >        onClick={() => {
+            >          setOpacity(new Animation(animationConfig1));
+            >        }}
+            >      >
+            >        opacity: 0=》1
+            >      </Text>
+            >      <Text
+            >        onClick={() => {
+            >          setOpacity(new Animation(animationConfig2));
+            >        }}
+            >      >
+            >        opacity: 1 =》 0
+            >      </Text>
+            >    </>
+            >  );
+            >}
+            >```
+            ></details>
+
+            - Tips（bug？）
+
+                动画未完成不能中途`updateAnimation`（或者参数`startValue`必须是动画当前值）。
+        2. [`setNativeProps`](https://hippyjs.org/#/style/setNativeProps?id=setnativeprops)
 
             直接操作最终的客户端UI组件样式（跳过前端执行后再传递给客户端渲染），性能更佳。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```tsx
+            >import { View, UIManagerModule } from "react-native";
+            >import { useRef } from "react";
+            >
+            >export default () => {
+            >  const ViewRef = useRef<View | null>(null);
+            >
+            >  return (
+            >      <View
+            >        style={原样式}
+            >        ref={ViewRef}
+            >        onClick={() => {
+            >          ViewRef.current &&
+            >            UIManagerModule.getElementFromFiberRef?.(ViewRef.current)?.setNativeProps?.({
+            >              style: {新样式（会合并到原样式中）},
+            >            });
+            >        }}
+            >      />
+            >  )
+            >}
+            >```
+            ></details>
     2. `AsyncStorage`
 
         异步、持久化的键-值存储系统
@@ -831,6 +1128,7 @@
                   <View style={{ position: "absolute", top: 0, left: 0, width: Dimensions.get("window").width, height: Dimensions.get("window").height }}>类似fixed的效果（不够优雅）</View>
                 </View>
                 ```
+            - 若要制作全局定位（如：全屏居中、贴底部、贴顶部、等）的组件，因为`'absolute'`仅针对父级 且 Android子级不能超出父级（强制`'hidden'`）的限制，则其父级必须是占满上下左右全屏（视情况而定），但不要求是最外层元素。
         2. `top`
         3. `right`
         4. `bottom`
@@ -960,10 +1258,21 @@
 
             ```javascript
             textShadowColor
-            textShadowOffsetX
-            textShadowOffsetY
+            textShadowOffsetX   // 大于0才有效
+            textShadowOffsetY   // 大于0才有效
             textShadowRadius
             ```
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```javascript
+            >textShadowColor: "#fff",
+            >textShadowOffsetX: 0.1,
+            >textShadowOffsetY: 0.1,
+            >textShadowRadius: 5
+            >```
+            ></details>
 
     - 样式写法
 
