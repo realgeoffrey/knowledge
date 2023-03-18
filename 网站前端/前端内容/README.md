@@ -454,6 +454,8 @@
     3. 复杂的BigRender、BigPipe、Quickling、PageCache等技术。
 
 ### 安全漏洞攻击
+>[代码安全指南](https://github.com/Tencent/secguide)。
+
 1. XSS
 
     跨站脚本（Cross-Site Scripting，XSS）是恶意代码注入网页。利用用户对指定网站的信任。

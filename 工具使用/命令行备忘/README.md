@@ -54,6 +54,8 @@
 >
 >    阅读英文文档时，英文水平是痛点，跳着看容易看不懂……
 
+>可阅读：[bash-guide](https://github.com/Idnan/bash-guide)。
+
 #### 命令花费时间
 ```shell
 time 「命令」
