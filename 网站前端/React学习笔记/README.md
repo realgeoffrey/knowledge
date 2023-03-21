@@ -2594,7 +2594,6 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
             >若想要非组件的地方获得最新state（又不愿意通过thunk或传递dispatch的方式），则可以导出store或仅导出store.getState。
         2. 提供`store.dispatch(某个action)`更新state
-
             >dispatch一个action可以形象的理解为“触发一个事件”。
 
             触发后，store将执行所有reducer函数（root reducer）并计算出更新后的state，之后调用getState()可以获取当前最新state（全局）。
@@ -2605,6 +2604,8 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
                 1. `store.dispatch(某个action)`返回：`某个action`
                 2. （若使用thunk，则）`store.dispatch(thunk函数)`返回：`thunk函数()`（可返回Promise实例）
+
+                    >thunk函数：`(dispatch, getState) => {/* 具体实现，可返回Promise实例 */}`
         3. 通过`store.subscribe(监听函数)`注册监听器，并返回注销监听器方法，store变化后会触发`监听函数`
 
             >在react中使用react-redux代替手动书写`store.subscribe`监听逻辑。
@@ -2653,11 +2654,11 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
             >当应用规模越来越大时，建议使用单独的模块或文件来存放action的type。e.g. `import { 常量1, 常量2 } from '../actionTypes'`
         2. 应该尽量减少在action中传递的数据（payload）
-        3. action创建函数（action creator）：
+        3. action的创建函数（action creator）：
 
             返回action的函数，作用是让你不必每次都手动编写action对象。
 
-            >（若使用thunk，则）也可以返回`thunk函数`。
+            >（若使用thunk，则）thunk函数的创建函数（thunk creator）： 返回thunk函数的函数，作用是让你不必每次都手动编写thunk函数。
         4. 调用`store.dispatch(某个action)`将执行所有reducer函数（root reducer）并计算出更新后的state
     4. reducer
 
@@ -2896,10 +2897,10 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
     >
     >// thunk creator（action creator）
     >export const incrementAsync = amount => // 用法：dispatch(incrementAsync(数字))
-    >  // thunk
+    >  // thunk函数
     >  dispatch => {
     >    setTimeout(() => {
-    >      dispatch(incrementByAmount(amount)); // 也可以继续触发thunk
+    >      dispatch(incrementByAmount(amount)); // 也可以继续触发thunk函数
     >    }, 1000);
     >  };
     >export const incrementAsync2 = (amount) => {
@@ -2924,7 +2925,6 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
     >import { useSelector, useDispatch } from 'react-redux'
     >import {
     >  increment,
-    >  decrement,
     >  incrementByAmount,
     >  incrementAsync,
     >  incrementAsync2,
@@ -2938,9 +2938,13 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
     >  return (
     >    <div
     >      onClick={() => {
+    >        // `increment()`和`dispatch(increment())`都返回：`{type: 'xx/increment', payload: undefined}`
     >        dispatch(increment())
-    >        dispatch(decrement())
+    >        // `incrementByAmount(1)`和`dispatch(incrementByAmount(1))`都返回：`{type: 'xx/incrementByAmount', payload: 1}`
     >        dispatch(incrementByAmount(1))
+    >
+    >        // thunk creator返回thunk函数的函数，看起来是一个 返回特殊函数 的特殊函数：`(参数) => (dispatch, getState)=> {/* 使用 参数、dispatch、getState，可返回Promise实例 */}`
+    >        // `dispatch(thunk函数)`和`thunk函数()`返回一致
     >        dispatch(incrementAsync(2))
     >        dispatch(incrementAsync2(3))
     >      }}
@@ -2994,7 +2998,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         >自动启用`immer`。
     5. `createAsyncThunk`
 
-        接受一个action type和一个返回Promise实例的函数，并生成一个发起基于该Promise实例的`pending/fulfilled/rejected`的action类型的thunk。
+        接受一个action type和一个返回Promise实例的函数，并生成一个发起基于该Promise实例的`pending/fulfilled/rejected`的action类型的thunk函数。
     6. `createEntityAdapter`
     7. `createSelector`
 
@@ -3017,7 +3021,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
     1. [redux-thunk](https://github.com/reduxjs/redux-thunk)
 
-        `store.dispatch(thunk函数 或 thunk函数生成器(参数))`，其中thunk函数的参数是`dispatch`、`getState`。
+        `store.dispatch(thunk函数 或 thunk函数生成器(参数))`，其中thunk函数的参数是`dispatch`、`getState`，可返回Promise实例。
 
         >`thunk函数生成器`也是action creator。
 

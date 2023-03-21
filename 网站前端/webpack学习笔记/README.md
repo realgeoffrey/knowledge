@@ -6,6 +6,7 @@
 1. [总结](#总结)
 
     1. [原理](#原理)
+    1. [输出文件分析](#输出文件分析)
     1. [Rollup与webpack对比](#rollup与webpack对比)
 
 ---
@@ -260,6 +261,162 @@
 
         module.exports = DonePlugin;
         ```
+
+#### 输出文件分析
+1. <details>
+
+    <summary>源文件、配置文件</summary>
+
+    1. `webpack.config.js`
+
+        ```javascript
+        // "webpack": "^5.76.2",
+        // "webpack-cli": "^5.0.1"
+        module.exports = {
+          entry: "./src/index.js",
+          output: {
+            filename: "main.js",
+            path: require("path").resolve(__dirname, "dist"),
+          },
+          mode: "development",
+          module: {},
+          plugins: [],
+          devtool: false,
+        };
+        ```
+    2. 源文件
+
+        ```javascript
+        // ./src/index.js
+        const a = require("./a");
+
+        require("./c");
+
+        console.log("index.js");
+
+        module.exports = function Index() {
+          return a;
+        };
+        ```
+
+        ```javascript
+        // ./src/a.js
+        const b = require("./b");
+        console.log(b);
+
+        const d = require("./d");
+        console.log(d);
+
+        module.exports = {
+          fileName: "a..js",
+        };
+        ```
+
+        ```javascript
+        // ./src/b.js
+        require("./c");
+
+        console.log("b..js");
+        ```
+
+        ```javascript
+        // ./src/c.js
+        console.log("i am a not export c..js");
+        ```
+
+        ```javascript
+        // ./src/d.js
+        console.log("d..js");
+
+        exports.fileName = "d..js";
+        ```
+    </details>
+
+2. 输出文件
+
+    ```javascript
+    (() => {
+      // webpackBootstrap
+      var __webpack_modules__ = {
+        "./src/a.js": (module, __unused_webpack_exports, __webpack_require__) => {
+          const b = __webpack_require__("./src/b.js");
+          console.log(b);
+
+          const d = __webpack_require__("./src/d.js");
+          console.log(d);
+
+          module.exports = {
+            fileName: "a..js",
+          };
+        },
+
+        "./src/b.js": (
+          __unused_webpack_module,
+          __unused_webpack_exports,
+          __webpack_require__
+        ) => {
+          __webpack_require__("./src/c.js");
+
+          console.log("b..js");
+        },
+
+        "./src/c.js": () => {
+          console.log("i am a not export c..js");
+        },
+
+        "./src/d.js": (__unused_webpack_module, exports) => {
+          console.log("d..js");
+
+          exports.fileName = "d..js";
+        },
+
+        "./src/index.js": (
+          module,
+          __unused_webpack_exports,
+          __webpack_require__
+        ) => {
+          const a = __webpack_require__("./src/a.js");
+
+          __webpack_require__("./src/c.js");
+
+          console.log("index.js");
+
+          module.exports = function Index() {
+            return a;
+          };
+        },
+      };
+
+      // The module cache
+      var __webpack_module_cache__ = {};
+
+      // The require function
+      function __webpack_require__(moduleId) {
+        // Check if module is in cache
+        var cachedModule = __webpack_module_cache__[moduleId];
+        if (cachedModule !== undefined) {
+          return cachedModule.exports;
+        }
+        // Create a new module (and put it into the cache)
+        var module = (__webpack_module_cache__[moduleId] = {
+          // no module.id needed
+          // no module.loaded needed
+          exports: {},
+        });
+
+        // Execute the module function
+        __webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+
+        // Return the exports of the module
+        return module.exports;
+      }
+
+      // startup
+      // Load entry module and return exports
+      // This entry module is referenced by other modules so it can't be inlined
+      var __webpack_exports__ = __webpack_require__("./src/index.js");
+    })();
+    ```
 
 #### [Rollup](https://github.com/rollup/rollup)与webpack对比
 1. Rollup：
