@@ -483,7 +483,7 @@ npm（Node Package Manager）。
         `@scope/project-name`
 4. `.npmrc`
 
-    npm的配置文件，手动或用`npm config set xxx=yyy`进行修改（`npm config get xxx`进行查看）。
+    npm的配置文件，或全局修改：`npm config set xxx=yyy`（`npm config get xxx`查看`.npmrc`->全局；`npm config get xxx -g`查看全局）。
 
     >`npm config ls -l`查看所有已有配置和默认配置。
 
@@ -648,7 +648,7 @@ npm（Node Package Manager）。
             3. 将 X 当成**目录**，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。
 
                 `X/package.json（main字段）`、`X/index.js`、`X/index.json`、`X/index.node`
-        2. 若 X 是核心模块（内置），则返回该模块，不再继续执行。
+        2. 若 X 是核心模块（内置模块），则返回该模块，不再继续执行。
 
             >e.g. `require('http')`
 
@@ -723,15 +723,17 @@ npm（Node Package Manager）。
 ## 原理机制
 
 ### Node.js的运行机制
-1. [V8](https://v8.dev/)引擎解析JS脚本。
+1. [V8](https://v8.dev/)引擎解析应用程序输入的JS脚本。
 
     >V8处理JS，除了 **正则表达式**、**JSON的处理** 之外，对于大部分操作都很快。
     >
     >1. 使用正则表达式时注意ReDoS（Regular expression Denial of Service，正则表达式拒绝服务攻击）风险。
     >2. `JSON.parse/stringify`随着输入参数线性增加执行时间。
-2. 解析后的代码，调用Node.js的API。
+2. 解析后的代码，能够与操作系统进行交互。
+
+    >代码 -> Node.js内置模块 -> V8（internalBinding） -> C/C++ -> 操作系统
 3. [libuv](https://github.com/libuv/libuv)负责Node.js的API的执行。将不同的任务分配给不同的线程，形成一个[Event Loop（事件循环）](https://nodejs.org/zh-cn/docs/guides/event-loop-timers-and-nexttick/)，以异步的方式将任务的执行结果返回给V8引擎。
-4. V8引擎再将结果返回给用户。
+4. V8引擎再将结果返回给应用程序。
 
 >JS本身的`throw-try-catch`异常处理机制并不会导致内存泄漏，也不会让程序的执行结果出乎意料，但Node.js并不是存粹的JS。Node.js里大量的API内部是由C/C++实现，因此Node.js程序的运行过程中，代码执行路径穿梭于JS引擎内部和外部，而JS的异常抛出机制可能会打断正常的代码执行流程，导致C/C++部分的代码表现异常，进而导致内存泄漏等问题。
 
@@ -792,21 +794,22 @@ npm（Node Package Manager）。
 
     回调函数异步执行，通过事件循环检查已完成的I/O进行依次处理。
 
-    >1. I/O主要指由[libuv](https://github.com/libuv/libuv)支持的，与系统磁盘和网络之间的交互。
-    >2. 大多数Node.js核心API所提供的异步方法都遵从惯例：**错误信息优先**的回调模式（Error-first Callback，第一个参数是错误信息，若不报错则其值为`null`）。
+    >1. 阻塞I/O、非阻塞I/O的区别：系统接收输入再到输出期间，能不能接收其他输入。
+    >2. I/O主要指由[libuv](https://github.com/libuv/libuv)支持的，与系统磁盘和网络之间的交互。
+    >3. 大多数Node.js核心API所提供的异步方法都遵从惯例：**错误信息优先**的回调模式（Error-first Callback，第一个参数是错误信息，若不报错则其值为`null`）。
     >
     >    `EventEmitter`类事件函数不属于此范畴。
 3. 事件驱动
 
     用事件驱动（事件循环）来完成服务器的任务调度。
 
->1. Node.js开发应用程序：善于I/O（任务调度），不善于计算。如：长连接的实时交互应用程序。
+>1. Node.js开发应用程序：不善于计算，善于I/O（任务调度）。如：长连接的实时交互应用程序。
 >2. Node.js服务器：没有根目录概念，没有web容器。URL通过顶层路由设计，呈递静态文件。
 >
 >只有打通和后端技术的桥梁、实现互联互通，Node.js才能在公司业务中有更长远的发展。
 
 ### Node.js[核心模块](http://nodejs.cn/api/)（需要`require`引入）
->核心模块定义在[源代码的lib/文件](https://github.com/nodejs/node/tree/main/lib/)。同名加载时，核心模块优先级高于路径加载或自定义模块。
+>核心模块/内置模块 定义在[源代码的lib/文件](https://github.com/nodejs/node/tree/main/lib/)。同名加载时，核心模块优先级高于路径加载或自定义模块。
 
 1. `http`：HTTP请求相关API
 
@@ -1061,7 +1064,7 @@ npm（Node Package Manager）。
     2. ~~`punycode`~~
 
 ### Node.js[全局变量](http://nodejs.cn/api/globals.html)
-Node.js的全局对象`global`是全局变量的宿主。
+Node.js的全局对象`global`是所有全局变量的宿主。
 
 1. 仅在模块内有效
 

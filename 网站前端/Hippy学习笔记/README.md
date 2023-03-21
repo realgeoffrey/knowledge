@@ -1066,6 +1066,20 @@
                 默认：`0`（CSS的`flex-shrink`默认：`1`）。
 
                 >与CSS的`flex-shrink`表现一致。
+
+                - 父级`flexShrink: 1` + 子级`flex: 1`，可以实现：内容不够则收缩至实际高度/宽度；内容最大高度/宽度不超过外层flex: 1拥有的最大高度/宽度
+
+                    ```jsx
+                    <View>
+                      <View style={{ flexShrink:1}}>
+                        <Text style={{ flex: 1 }}>  // 也可以是<ScrollView>等 会变化的内容
+                          自适应的内容
+                        </Text>
+                      </View>
+
+                      <View>固定内容</View>
+                    </View>
+                    ```
             4. `flexBasis`：伸缩基准值。
 
                 >与CSS的`flex-basis`表现一致。

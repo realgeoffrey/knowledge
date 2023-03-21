@@ -12,6 +12,7 @@
     1. [过渡/动画](#过渡动画)
     1. [插件（plugin）](#插件plugin)
     1. [特性](#特性)
+    1. [vue风格指南](#vue风格指南)
     1. [响应式系统](#响应式系统)
     1. [虚拟DOM系统](#虚拟dom系统)
     1. [SSR](#ssr)
@@ -1777,6 +1778,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
     >JS字符串模版：`<script type="text/x-template">`、JS内联模板字符串。
 4. Vue实例（`Vue`）或Vue组件实例（`VueComponent`）挂载在DOM，会在这个DOM上增加`__vue__`属性指向这个Vue实例或Vue组件实例（生产环境也行）。
+
+### [vue风格指南](https://v2.cn.vuejs.org/v2/style-guide)
 
 ### 响应式系统
 1. 当把对象传给Vue实例的`data`和vuex的store时，Vue将遍历此对象所有的属性，并使用`Object.defineProperty`把这些属性全部转为`getter/setter`（访问器属性）。

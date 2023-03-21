@@ -6,6 +6,7 @@
     1. [函数](#函数)
     1. [变量、`this`](#变量this)
     1. [闭包（closure）](#闭包closure)
+    1. [欺骗JS词法作用域](#欺骗js词法作用域)
     1. [原型](#原型)
     1. [继承](#继承)
     1. [内存机制](#内存机制)
@@ -25,7 +26,6 @@
     1. [预加载](#预加载)
     1. [判断对象、方法是否定义](#判断对象方法是否定义)
     1. [浏览器缓存](#浏览器缓存)
-    1. [欺骗JS词法作用域](#欺骗js词法作用域)
     1. [JS压缩细节](#js压缩细节)
     1. [JS混淆（加密）细节](#js混淆加密细节)
 1. [编程技巧](#编程技巧)
@@ -320,29 +320,38 @@
     3. 多层的嵌套作用域中，可以定义同名的标识符（变量、函数），遮蔽效应使内部的标识符「遮蔽」外部的标识符（若查找到第一个匹配的标识符则停止再向上查找）。
 
         >`window.某变量`可以访问被同名变量`某变量`遮蔽的全局变量。
+    4. 产生[闭包](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)
 
-    - 产生[闭包](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)
+        <details>
+        <summary>e.g. 词法作用域</summary>
 
-    <details>
-    <summary>e.g. 词法作用域</summary>
+        ```javascript
+        function foo () {
+          console.log(a)
+        }
 
-    ```javascript
-    function foo () {
-      console.log(a)
-    }
+        function bar () {
+          var a = 2
+          foo()
+        }
 
-    function bar () {
-      var a = 2
-      foo()
-    }
+        var a = 1
+        bar() // => 1
 
-    var a = 1
-    bar() // => 1
+        // JS是词法作用域的流程：执行 foo 函数，先从 foo 函数内部查找是否有局部变量 value，如果没有，就根据书写的位置（声明位置），查找上面一层的代码，也就是 value 等于 1，所以结果会打印 1。
+        // 其他语言是动态作用域的流程：执行 foo 函数，依然是从 foo 函数内部查找是否有局部变量 value。如果没有，就从调用函数的作用域，也就是 bar 函数内部查找 value 变量，所以结果会打印 2。
+        ```
+        </details>
+    - 变量命名规范（包含：方法名、类名等所有变量名）
 
-    // JS是词法作用域的流程：执行 foo 函数，先从 foo 函数内部查找是否有局部变量 value，如果没有，就根据书写的位置（声明位置），查找上面一层的代码，也就是 value 等于 1，所以结果会打印 1。
-    // 其他语言是动态作用域的流程：执行 foo 函数，依然是从 foo 函数内部查找是否有局部变量 value。如果没有，就从调用函数的作用域，也就是 bar 函数内部查找 value 变量，所以结果会打印 2。
-    ```
-    </details>
+        1. 只能由`字母`、`数字`、`_`、`$`，不能~~以数字开头~~
+
+            >允许非英文字母，但不推荐。
+        2. 不能使用~~关键字~~、~~保留字~~
+
+            >[MDN：关键字](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Lexical_grammar#关键字)。
+        3. 区分大小写
+        >一般推荐的多个单词隔断方式：小驼峰、大驼峰；（表示常数：）全大写+单词用`_`分割。
 2. `this`（函数调用方式）
 
     1. 非箭头函数
@@ -530,6 +539,48 @@
     1. 可以操作函数体内的私有内容（特权方法）。
     2. 让被操作的私有内容始终保持在内存中不被垃圾回收。
     3. 占用较多的内存。
+
+### 欺骗JS词法作用域
+通过`eval`、`with`，能在JS运行期修改或创建书写期就确定的词法作用域。
+
+>运行期修改或创建词法作用域，会导致JS无法进行JIT优化（当JS引擎遇到这些代码时，只能谨慎地不进行JIT优化，因此可能导致**所有**优化都失效）。且极度不安全，最好不要使用。
+
+1. `eval`
+
+    接受一个字符串作为参数，将其中的内容视为好像在书写时就存在于程序中这个位置的代码（用程序动态生成代码并运行，好像代码是写在这个位置一样）。
+
+    ```javascript
+    // e.g.
+    function foo (str, a) {
+      eval(str)         // 改变词法作用域
+      console.log(a, b)
+    }
+
+    var b = 2
+    foo('var b = 3', 1) // => 1 3
+    ```
+
+    - 类似的有：`setTimeout/setInterval`的第一个参数是字符串、`new Function`的最后一个字符串参数，都能动态生成代码，都能在运行期修改书写期的词法作用域。
+
+    >动态执行JS脚本的方式：`eval`、`new Function`、Node.js的`vm`模块。
+2. `with`
+
+    ```javascript
+    // e.g.
+    function foo (obj) {
+      with (obj) { // 为形参obj创建作用域
+        a = 2      // 作用域中查找变量a并赋值（若查找不到则向上查找，顶层也找不到则创建一个全局变量）
+      }
+    }
+
+    var o1 = { a: 1 }
+    foo(o1)
+    console.log(o1.a)    // => 2
+
+    var o2 = {}
+    foo(o2)
+    console.log(o2.a, a) // => undefined 2
+    ```
 
 ### 原型
 1. 构造函数、原型对象、实例、原型链
@@ -1213,26 +1264,35 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
     ```javascript
     try {
-      Promise.resolve().then(() => { 错误 }) // 异步的无法捕获，错误会向全局抛
+      setTimeout(()=>{
+        错误                                  // 异步的无法捕获，错误会向全局抛
+      })
+    } catch (e) {}
+
+
+    try {
+      Promise.resolve().then(() => { 错误 })  // 异步的无法捕获，错误抛给Promise变成未捕获的失败Promise实例，再向全局抛出
     } catch (e) {}
 
 
     new Promise((resolve, reject) => {
-      Promise.resolve().then(() => { 错误 }) // 异步的无法捕获，错误会向全局抛
-    })
+      Promise.resolve().then(() => { 错误 }) // 异步的无法捕获，错误抛给Promise变成未捕获的失败Promise实例，再向全局抛出
+    }).catch(()=>{})
 
 
     async function func1 () {
-      Promise.resolve().then(() => { 错误 }) // 异步的无法捕获，错误会向全局抛
+      Promise.resolve().then(() => { 错误 }) // 异步的无法捕获，错误抛给Promise变成未捕获的失败Promise实例，再向全局抛出
     }
+    func1().catch(()=>{})
 
 
     async function func2 () {
       await Promise.resolve().then(() => { 错误 }) // 可以捕获
     }
+    func2().catch(()=>{})
     ```
 
-    - 解决办法：可以在异步回调内部再包一层`try-catch`。
+    - 解决办法：可以在异步回调内部再包一层`try-catch`，或Promise实例后添加`.catch`
 5. JS的异步编程方式：
 
     1. 回调函数
@@ -2013,6 +2073,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         3. 若没有`catch`，`try`中的代码抛出错误后，则先执行`finally`中的语句，然后将`try`中抛出的错误往上抛。
         4. 若`try`中代码是以`return`、`continue`或`break`终止的，则必须先执行完`finally`中的语句后再执行相应的`try`中的返回语句。
         5. 在`catch`中接收的错误，不会再向上提交给浏览器。
+        - `try-catch`能捕获其中所有同步代码，同步调用外部的方法也包含。
 
         >`try { setTimeout(() => { 错误 }, 0) } catch (e) {}`不会捕获异步操作中的错误（同理，在`Promise`或`async-await`等语法中的异步错误也无法被捕获，但可以捕获`await`的`reject`）。可以在异步回调内部再包一层`try-catch`、或用`window`的`error`事件捕获。
     2. `window`的`error`事件
@@ -2344,49 +2405,6 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         ```html
         <html manifest=".manifest文件/.appcache文件">
         ```
-
-### 欺骗JS词法作用域
-
-通过`eval`、`with`，能在JS运行期修改或创建书写期就确定的词法作用域。
-
->运行期修改或创建词法作用域，会导致JS无法进行JIT优化（当JS引擎遇到这些代码时，只能谨慎地不进行JIT优化，因此可能导致**所有**优化都失效）。且极度不安全，最好不要使用。
-
-1. `eval`
-
-    接受一个字符串作为参数，将其中的内容视为好像在书写时就存在于程序中这个位置的代码（用程序动态生成代码并运行，好像代码是写在这个位置一样）。
-
-    ```javascript
-    // e.g.
-    function foo (str, a) {
-      eval(str)         // 改变词法作用域
-      console.log(a, b)
-    }
-
-    var b = 2
-    foo('var b = 3', 1) // => 1 3
-    ```
-
-    - 类似的有：`setTimeout/setInterval`的第一个参数是字符串、`new Function`的最后一个字符串参数，都能动态生成代码，都能在运行期修改书写期的词法作用域。
-
-    >动态执行JS脚本的方式：`eval`、`new Function`、Node.js的`vm`模块。
-2. `with`
-
-    ```javascript
-    // e.g.
-    function foo (obj) {
-      with (obj) { // 为形参obj创建作用域
-        a = 2      // 作用域中查找变量a并赋值（若查找不到则向上查找，顶层也找不到则创建一个全局变量）
-      }
-    }
-
-    var o1 = { a: 1 }
-    foo(o1)
-    console.log(o1.a)    // => 2
-
-    var o2 = {}
-    foo(o2)
-    console.log(o2.a, a) // => undefined 2
-    ```
 
 ### JS压缩细节
 >来自：[Javascript代码压缩细节](http://div.io/topic/447)。
