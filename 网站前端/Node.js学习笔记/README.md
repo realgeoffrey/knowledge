@@ -723,15 +723,15 @@ npm（Node Package Manager）。
 ## 原理机制
 
 ### Node.js的运行机制
-1. [V8](https://v8.dev/)引擎解析JS脚本。
+1. [V8](https://v8.dev/)引擎解析应用程序输入的JS脚本。
 
     >V8处理JS，除了 **正则表达式**、**JSON的处理** 之外，对于大部分操作都很快。
     >
     >1. 使用正则表达式时注意ReDoS（Regular expression Denial of Service，正则表达式拒绝服务攻击）风险。
     >2. `JSON.parse/stringify`随着输入参数线性增加执行时间。
-2. 解析后的代码，调用Node.js的API。
+2. 解析后的代码，（通过Node.js的Bindings）调用Node.js的API，与操作系统进行交互。
 3. [libuv](https://github.com/libuv/libuv)负责Node.js的API的执行。将不同的任务分配给不同的线程，形成一个[Event Loop（事件循环）](https://nodejs.org/zh-cn/docs/guides/event-loop-timers-and-nexttick/)，以异步的方式将任务的执行结果返回给V8引擎。
-4. V8引擎再将结果返回给用户。
+4. V8引擎再将结果返回给应用程序。
 
 >JS本身的`throw-try-catch`异常处理机制并不会导致内存泄漏，也不会让程序的执行结果出乎意料，但Node.js并不是存粹的JS。Node.js里大量的API内部是由C/C++实现，因此Node.js程序的运行过程中，代码执行路径穿梭于JS引擎内部和外部，而JS的异常抛出机制可能会打断正常的代码执行流程，导致C/C++部分的代码表现异常，进而导致内存泄漏等问题。
 
