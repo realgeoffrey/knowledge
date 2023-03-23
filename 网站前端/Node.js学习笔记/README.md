@@ -800,7 +800,7 @@ npm（Node Package Manager）。
 
     用事件驱动（事件循环）来完成服务器的任务调度。
 
->1. Node.js开发应用程序：善于I/O（任务调度），不善于计算。如：长连接的实时交互应用程序。
+>1. Node.js开发应用程序：不善于计算，善于I/O（任务调度）。如：长连接的实时交互应用程序。
 >2. Node.js服务器：没有根目录概念，没有web容器。URL通过顶层路由设计，呈递静态文件。
 >
 >只有打通和后端技术的桥梁、实现互联互通，Node.js才能在公司业务中有更长远的发展。
@@ -1061,7 +1061,7 @@ npm（Node Package Manager）。
     2. ~~`punycode`~~
 
 ### Node.js[全局变量](http://nodejs.cn/api/globals.html)
-Node.js的全局对象`global`是全局变量的宿主。
+Node.js的全局对象`global`是所有全局变量的宿主。
 
 1. 仅在模块内有效
 
