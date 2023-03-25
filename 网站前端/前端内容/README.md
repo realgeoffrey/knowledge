@@ -11,7 +11,7 @@
 
 ---
 >1. 好的程序员能够独立的解决某个技术难题，主动的关心项目进度与潜在瓶颈，能够负责模块小组，合理地分配任务，与项目经理、产品经理、美工、测试、服务端的同事高效包容地沟通。
->2. 好的架构师的标准则是整个项目的工程化程度：[前后端分离与全栈架构](https://ngte-web.gitbook.io/i/node/quan-zhan-kai-fa#qian-hou-duan-fen-li-yu-quan-zhan-jia-gou)。
+>2. 好的架构师的标准则是整个项目的工程化程度：[前后端分离与全栈架构](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#前端工程化)。
 
 ### 前端涉及内容
 ![前端涉及内容图1](./images/fe-tech-1.png)
