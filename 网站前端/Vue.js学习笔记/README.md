@@ -698,10 +698,10 @@
     3. `is`
 
         有效标签或动态组件。
-    4. ~~`slot`~~（已废弃，用`v-slot`代替）
+    4. ~~`slot`~~（已废弃，用`v-slot`替代）
 
         父级向子组件引入内容。
-    5. ~~`slot-scope`、`scope`~~（已废弃，用`v-slot`代替）
+    5. ~~`slot-scope`、`scope`~~（已废弃，用`v-slot`替代）
 
         父级使用子组件字符串的作用域名字。
 - <details>
@@ -1043,7 +1043,7 @@
         `-`短横线隔开式（kebab-case）、小驼峰式（camelCase）、大驼峰式（PascalCase）。
     2. HTML中：
 
-        1. 仅能使用`-`短横线隔开式（把大/小驼峰式用`-`隔开并小写单词代替）
+        1. 仅能使用`-`短横线隔开式（把大/小驼峰式用`-`隔开并小写单词替代）
         2. 在JS字符串模版、`.vue`组件，可以使用额外方式
 
             <details>
@@ -1882,7 +1882,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 ><details>
 ><summary>虚拟DOM系统的辩证思考：<a href="https://medium.com/@hayavuk/why-virtual-dom-is-slower-2d9b964b4c9e">Why Virtual DOM is slower</a></summary>
 >
->根据定义，**虚拟DOM** 比 **精细地直接更新DOM（`innerHTML`）** 更慢。虚拟DOM是执行DOM更新的一种折衷方式、一种权衡，尽管没有提升性能，但带来很多好处，可以提升开发人员的开发效率（提供了开发人员：「用数据驱动视图」代替「频繁操作DOM」的能力）。
+>根据定义，**虚拟DOM** 比 **精细地直接更新DOM（`innerHTML`）** 更慢。虚拟DOM是执行DOM更新的一种折衷方式、一种权衡，尽管没有提升性能，但带来很多好处，可以提升开发人员的开发效率（提供了开发人员：「用数据驱动视图」替代「频繁操作DOM」的能力）。
 ></details>
 
 3. （响应式系统和）虚拟DOM系统只能单向操作DOM结构。

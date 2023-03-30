@@ -233,7 +233,7 @@
         >2. 若引用仓库中某文件，则会按照该文件的引用链路去引用仓库文件。
         >3. 仓库中没有被引用到的文件不会打包进最终bundle。
         >
-        >>e.g. 可以用`import debounce from 'lodash/debounce'`代替`import { debounce } from 'lodash'`，这样最终打包的结果不会引用整个lodash，而只会引用debounce的引用链路文件（可以用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)分析并可视化构建后的打包文件进行对比；也可以直接用[lodash.debounce](https://www.npmjs.com/package/lodash.debounce)单独库代替）。
+        >>e.g. 可以用`import debounce from 'lodash/debounce'`替代`import { debounce } from 'lodash'`，这样最终打包的结果不会引用整个lodash，而只会引用debounce的引用链路文件（可以用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)分析并可视化构建后的打包文件进行对比；也可以直接用[lodash.debounce](https://www.npmjs.com/package/lodash.debounce)单独库代替）。
         ></details>
 
 #### 原理

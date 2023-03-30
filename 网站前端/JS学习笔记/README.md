@@ -273,7 +273,7 @@
             >}
             >f4()                       // ReferenceError: x is not defined
             >```
-            >></details>
+            ></details>
         3. 不能~~在参数默认值中调用函数体内的方法~~（参数默认值总是被首先执行，而函数体内的函数声明之后生效）。
     3. 建议参数都用对象形式传递，且形参设置为解构赋值+默认参数。
 
@@ -348,6 +348,10 @@
 
             >允许非英文字母，但不推荐。
         2. 不能使用~~关键字~~、~~保留字~~
+
+            - `undefined`不是保留关键字。
+
+                全局属性`undefined`不能被重写（`window.undefined`、`global.undefined`），但是要注意局部变量名可以声明为`undefined`，从而优先被引用的问题。可以用`void 运算符`永远返回的`undefined`代替值`undefined`。
 
             >[MDN：关键字](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Lexical_grammar#关键字)。
         3. 区分大小写
@@ -925,7 +929,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 3. `Proxy`
 
 ### 数据类型转换
->参考：[阮一峰：数据类型转换](http://javascript.ruanyifeng.com/grammar/conversion.html)、[ecma-262等于比较](https://www.ecma-international.org/ecma-262/#sec-abstract-equality-comparison)。
+>参考：[阮一峰：数据类型转换](http://javascript.ruanyifeng.com/grammar/conversion.html)、[ecma-262等于比较](https://262.ecma-international.org/#sec-islooselyequal)。
 
 1. 强制转换
 
@@ -1166,13 +1170,31 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
                     在当前「执行栈」的尾部——读取"任务队列"之前，添加事件。
                 2. `Promise`（`Promise.prototype.then/catch/finally(回调)`的回调）
 
-                    `new Promise(回调)`的回调、`Promise.all/race([回调])`的回调、`Promise.resolve/reject()`，都是同步任务。
+                    `new Promise(回调)`的回调、`Promise.all/race/any/allSettled([回调])`的回调、`Promise.resolve/reject()`，都是同步任务。
                 3. `async-await`（只有`await`是异步）
 
                     `await`后若是方法则同步执行该方法，执行结果交给`await`后才是microtask（无论结果如何）。
 
                     ><details>
                     ><summary>e.g.</summary>
+                    >
+                    >```javascript
+                    >async function func () {
+                    >  await // 同步执行，执行完无论未完成/完成/失败，都异步microtask执行后面代码
+                    >    new Promise((resolve) => {
+                    >        console.log('a')       // 同步
+                    >        resolve()
+                    >    })
+                    >    .then(() => {console.log('then1')}) // 异步microtask
+                    >    .then(() => {console.log('then2')}) // 异步microtask
+                    >
+                    >    console.log('b')     // 等待await完成（microtask）
+                    >}
+                    >
+                    >func()
+                    >console.log('c')
+                    >// => a c then1 then2 b
+                    >```
                     >
                     >```javascript
                     >var obj = {
@@ -1185,7 +1207,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
                     >  }
                     >}
                     >
-                    >async function func2 () {
+                    >async function func () {
                     >  await // 同步执行，执行完无论未完成/完成/失败，都异步microtask执行后面代码
                     >    obj.a() // 同步
                     >      .b()  // 同步
@@ -1193,10 +1215,11 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
                     >  console.log('d')  // 等待await完成（microtask）
                     >}
                     >
-                    >func2()
+                    >func()
                     >console.log('c')
                     >// =>a b c d
                     >```
+                    >
                     >```javascript
                     >var obj = {
                     >  a () {
@@ -1209,18 +1232,19 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
                     >  }
                     >}
                     >
-                    >async function func1 () {
+                    >async function func () {
                     >  await // 同步执行，执行完无论未完成/完成/失败，都异步microtask执行后面代码
                     >    obj.a() // 同步
                     >      .b()  // 同步
-                    >      .then(() => {console.log('then')}) // 异步microtask
+                    >      .then(() => {console.log('then1')}) // 异步microtask
+                    >      .then(() => {console.log('then2')}) // 异步microtask
                     >
                     >  console.log('d')  // 等待await完成（microtask）
                     >}
                     >
-                    >func1()
+                    >func()
                     >console.log('c')
-                    >// =>a b c then d
+                    >// =>a b c then1 then2 d
                     >```
                     ></details>
                 4. `for-await-of`的方法体执行和迭代器遍历
@@ -1262,6 +1286,8 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     ![事件循环图](./images/event-loop-1.png)
 4. 由于异步函数是立刻返回，异步事务中发生的错误是无法通过外层的：`try-catch`、`Promise`、`async-await`来捕捉（但可以捕获`await`的`reject`）。
 
+    每个事件循环都是一个独立的调用栈，不同调用栈之间无法互相`try-catch`错误，所以新的事件循环不会被原调用栈捕获错误，导致向上抛出错误（若新的事件循环内没有在自己的调用栈上设置`try-catch`）。
+
     ```javascript
     try {
       setTimeout(()=>{
@@ -1287,7 +1313,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
 
     async function func2 () {
-      await Promise.resolve().then(() => { 错误 }) // 可以捕获
+      await Promise.resolve().then(() => { 错误 }) // 错误可以被func2捕获
     }
     func2().catch(()=>{})
     ```
@@ -1295,7 +1321,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     - 解决办法：可以在异步回调内部再包一层`try-catch`，或Promise实例后添加`.catch`
 5. JS的异步编程方式：
 
-    1. 回调函数
+    1. 回调函数（可能产生回调地狱）
     2. 事件监听（观察者模式）
     3. Promise
     4. Generator
@@ -1455,7 +1481,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
     >1. `对象.hasOwnProperty(属性名)`仅检查在当前实例对象，不检测其原型链。
     >
-    >    `对象.hasOwnProperty(属性名)`建议代替用：`Object.prototype.hasOwnProperty.call(对象, 属性名)`。
+    >    `对象.hasOwnProperty(属性名)`建议替代用：`Object.prototype.hasOwnProperty.call(对象, 属性名)`。
     >2. ie8-的DOM对象并非继承自Object对象，因此没有hasOwnProperty方法。
 
 - Chrome的DevTools的控制台执行`queryObjects(构造函数)`，返回当前执行环境的构造函数创建的所有实例。
@@ -1952,7 +1978,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     2. 对象形式，键-值的内容都会转换为字符串（若不是字符串则它的`toString`方法）。
     3. ie8+支持（ie及FF需在web服务器里运行）。
 
-        >ie6/7可以用它们独有的`UserData`代替使用。
+        >ie6/7可以用它们独有的`UserData`替代使用。
     4. 单个对象数据大小5M+（或2.5MB~10MB）。
     5. 拥有方便的API
 
@@ -2030,7 +2056,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 >隐身模式策略：存储API仍然可用，并且看起来功能齐全，只是无法真正储存（如：分配储存空间为0）。
 
 ### 错误处理机制
->1. 当JS出现错误时，JS引擎会根据JS调用栈逐级寻找对应的`catch`，若**没有找到相应的catch handler**或**catch handler本身又有error**或**又抛出新的error**，则会把这个error交给浏览器，浏览器会用各自不同的方式显示错误信息，可以用`window`的`error`进行自定义操作。
+>1. 当JS出现错误时，JS引擎会根据JS调用栈逐级寻找对应的`catch`（每个异步任务会创建各自独立的调用栈，不同调用栈之间不能互相`catch`），若**没有找到相应的catch handler**或**catch handler本身又有error**或**又抛出新的error**，则会把这个error抛给全局（浏览器会用各自不同的方式显示错误信息，可以用`window`的`error`进行自定义操作）。
 >2. 在某个**JS block**（`<script>`或`try-catch`的`try`语句块）内，第一个错误触发后，当前JS block后面的代码会被自动忽略，不再执行，其他的JS block内代码不被影响。
 
 1. 原生错误类型
@@ -2438,7 +2464,12 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     1. `===/!==`的两个操作数都是`String`类型或都是`Boolean`类型的，缩短成`==/!=`。
     2. 缩短赋值表达式
 
-        对于类似`a = a + b`的赋值表达式（`+` `-` `*` `/` `%` `>>` `<<` `>>>` `|` `&` `^`），可以缩短成`a += b`。
+        >参考：[MDN：赋值运算符](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators#赋值运算符)。
+
+        对于类似`a = a + b`的赋值表达式（`+` `-` `*` `/` `%` `**` `&&` `||` `??` `>>` `>>>` `<<` `&` `|` `^`），可以缩短成`a += b`。
+
+        >1. 位运算：`>>`符号传播右移、`>>>`无符号右移/零填充右移、`<<`左移、`|`按位或、`&`按位与、`^`按位异或。
+        >2. 逻辑复制：逻辑与赋值`x &&= y`运算仅在x为真值时为其赋值；逻辑或赋值`x ||= y`运算仅在x为假值时为其赋值；逻辑空赋值运算符`x ??= y`仅在x是空值`undefined/null`时对其赋值。
     3. `!`操作符的压缩
 
         对于`!(a>=b)`，若转换后`a<b`得到更短的代码，则转换。
@@ -2619,7 +2650,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         ></details>
     6. 对象的属性、方法，与变量、方法命名规则相同。
     7. 若属性、变量、方法在表示其是私有的，可在开头加一个下划线`_`作为区分。
-6. 使用字面量代替构造函数（普通函数）的[数据创建方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#数据创建方式)
+6. 使用字面量替代构造函数（普通函数）的[数据创建方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#数据创建方式)
 
     >好处：
     >1. 代码更少。
@@ -2719,7 +2750,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
                 1. 难以理解的代码。
                 2. 可能被误认为错误的代码。
                 3. 浏览器特性hack。
-    3. 函数注释规范（使用部分[JSDoc](http://usejsdoc.org/)）
+    3. 函数注释规范（使用部分[JSDoc](https://jsdoc.app/)）
 
         ```javascript
         /**

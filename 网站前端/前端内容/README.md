@@ -117,7 +117,7 @@
     1. 服务器开启gzip（如：nginx）。
 
         >前端查看Response头是否有：`Content-Encoding: gzip`。
-    2. 优先开启使用HTTP/2.0（代替HTTP/1.1、HTTP/1.0）
+    2. 优先开启使用HTTP/2（替代HTTP/1.1、HTTP/1.0）
     3. 减少DNS查找，设置合适的TTL值，避免重定向。
     4. 使用CDN。
     5. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#静态资源使用额外域名的原因)；尽量减少保存进cookie的数据种类和大小（因为同源的cookie会全部参与HTTP通讯）；合理减少HTTP头数量。
@@ -148,7 +148,7 @@
             2. 使AJAX可缓存。
 
                 当用GET方式时添加缓存HTTP头：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since`。
-        4. 使用缓存代替每次请求。
+        4. 使用缓存替代每次请求。
 
             客户端： Web Storage（`localStorage`、`sessionStorage`）、cookie、IndexDB等；服务端：Redis等。
         5. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
@@ -164,7 +164,7 @@
             2. 小图合并雪碧图。
 
                 >大图切小图：单个大文件需要多次HTTP请求获取。
-            3. 合理使用：Base64、WebP（SharpP）、`srcset`属性、[不同ppi的设备使用不同分辨率的图片](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#不同ppi的设备使用不同分辨率的图片)。
+            3. 合理使用：[Base64](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#base64)、WebP（SharpP）、`srcset`属性、[不同ppi的设备使用不同分辨率的图片](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#不同ppi的设备使用不同分辨率的图片)。
 
                 >1. 服务端（或CDN）处理图片资源，提供返回多种图片类型的接口（如：[七牛](https://developer.qiniu.com/dora/manual/3683/img-directions-for-use)）。
                 >2. [判断浏览器是否支持WebP](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断是否支持webp)，对不同浏览器请求不同的图片类型。

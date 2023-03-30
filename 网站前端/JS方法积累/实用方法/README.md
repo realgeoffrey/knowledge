@@ -36,6 +36,7 @@
         1. [转化为Unicode、反转字符串、字符串长度、所占字节数](#原生js转化为unicode反转字符串字符串长度所占字节数)
         1. [字符串匹配、替换](#原生js字符串匹配替换)
         1. [分割字符串](#原生js分割字符串)
+        1. [数字增加分隔符](#原生js数字增加分隔符)
         1. [产生随机数](#原生js产生随机数)
         1. [比较版本号大小（纯数字）](#原生js比较版本号大小纯数字)
         1. [判断版本号是否在某个版本区间（纯数字）](#原生js判断版本号是否在某个版本区间纯数字)
@@ -304,53 +305,56 @@ function getLocation (url) {
   }
 }
 ```
->参考：[用正则表达式分析 URL](http://harttle.com/2016/02/23/javascript-regular-expressions.html)。
 
->获取某search值：
+>参考：[用正则表达式分析 URL](https://harttle.land/2016/02/23/javascript-regular-expressions.html)。
+
+>1. 获取某search值：
 >
->```javascript
->/**
-> * 获取某search值
-> * @param {String} checkKey - search的key
-> * @param {String} [search = window.location.search] - search总字符串
-> * @returns {String|Boolean} - search的value 或 不存在false
-> */
->function getSearchValue (checkKey, search = window.location.search) {
->  checkKey = checkKey.toString()
+>    ```javascript
+>    /**
+>     * 获取某search值
+>     * @param {String} checkKey - search的key
+>     * @param {String} [search = window.location.search] - search总字符串（不校验）
+>     * @returns {String|Boolean} - search的value 或 不存在false
+>     */
+>    function getSearchValue (checkKey, search = window.location.search) {
+>      checkKey = checkKey.toString()
 >
->  if (search.slice(0, 1) === '?') {
->    search = search.slice(1)
->  }
->
->  for (let i = 0, searchArr = search.split('&'), len = searchArr.length; i < len; i++) {
->    if (searchArr[i] !== '') {
->      const tempArr = searchArr[i].split('=')
->      const key = tempArr.shift()
->      const value = tempArr.join('=')
->
->      if (key === checkKey) {
->
->        return decodeURIComponent(value)
+>      if (search.slice(0, 1) === '?') {
+>        search = search.slice(1)
 >      }
+>
+>      for (let i = 0, searchArr = search.split('&'), len = searchArr.length; i < len; i++) {
+>        if (searchArr[i] !== '') {
+>          const tempArr = searchArr[i].split('=')
+>          const key = tempArr.shift()
+>          const value = tempArr.join('=')
+>
+>          if (key === checkKey) {
+>
+>            return decodeURIComponent(value)
+>          }
+>        }
+>      }
+>
+>      return false
 >    }
->  }
+>    ```
+>2. 拼接接口URL时，可以在路由最后添加`?`并且加上一些固定不变的search参数，在使用URL时候都以`&参数=值`的形式添加额外参数：
 >
->  return false
->}
->```
-
->拼接接口URL时，可以在路由最后添加`?`并且加上一些固定不变的search参数，在使用URL时候都以`&参数=值`的形式添加额外参数：
+>    >`xxx/xxx?&a=1`可以正常解析
 >
->>`xxx/xxx?&a=1`可以正常解析
+>    ```javascript
+>    const api1 = 'xxx/xxx?'
+>    const api2 = 'xxx/xxx?v=1.0'
 >
->```javascript
->const api1 = 'xxx/xxx?'
->const api2 = 'xxx/xxx?v=1.0'
+>    // 使用时
+>    url1 = api1 + '&a=1' + '&b=2' + '&c=3'
+>    url2 = api2 + '&a=1' + '&b=2' + '&c=3'
+>    ```
+>3. URL携带JSON数据：
 >
->// 使用时
->url1 = api1 + '&a=1' + '&b=2' + '&c=3'
->url2 = api2 + '&a=1' + '&b=2' + '&c=3'
->```
+>    search某key的值为`encodeURIComponent(JSON.stringify(JSON数据))`，获取某key值后`JSON.parse(decodeURIComponent(前面的值))`。
 
 ### *原生JS*在URL末尾修改search键-值
 1. 批量修改（未加`encodeURIComponent`）
@@ -1196,7 +1200,7 @@ function numConvert (operand, fromRadix, toRadix) {
 >注意：
 >
 >1. 检查不同语言原始返回的随机值两边端点开闭情况——不同的开闭区间影响最终算法。
->2. 获取到的每个整数的概率是否均等——用向下取整代替四舍五入可以使概率均等。
+>2. 获取到的每个整数的概率是否均等——用向下取整替代四舍五入可以使概率均等。
 
 ```javascript
 /**
@@ -1444,6 +1448,31 @@ function split (str) {
 console.log(split('💩1a💩哈。.↑'))  // => ["💩", "1", "a", "💩", "哈", "。", ".", "↑"]
 ```
 
+### *原生JS*数字增加分隔符
+```typescript
+// 每n位数添加一个分隔符
+export function numberSeparator({
+  num,
+  gap = 3,
+  separator = ","
+}: {
+  num: number;
+  gap?: number;
+  separator?: string;
+}): string {
+  const strSplit = num.toString().split(".");
+  const integer = strSplit[0];
+  const decimal = strSplit[1] ? `.${strSplit[1]}` : "";
+
+  const reg = new RegExp(`\\B(?=(\\d{${gap}})+(?!\\d))`, "g");
+  return integer.replace(reg, separator) + decimal;
+}
+
+
+/* 使用测试 */
+numberSeparator({ num: 12345.123 })  // -> '12,345.123'
+```
+
 ### *原生JS*产生随机数
 ```javascript
 /**
@@ -1576,6 +1605,10 @@ function isKeyInStr(key, str, separator) {
 
     return flag;
 }
+
+
+/* 使用测试 */
+isKeyInStr('d','abc|d|efg123','|')  // -> true
 ```
 
 ### *原生JS*格式化文件大小

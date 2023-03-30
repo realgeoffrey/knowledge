@@ -97,7 +97,7 @@
 
         1. 表示永不存在的值的类型
 
-            >e.g. 总是会抛出异常 或 根本就不会有返回值 的函数表达式；变量也可能是never类型，当它们被永不为真的类型保护所约束时。
+            >e.g. 总是会抛出异常 或 根本就不会有返回值（如：死循环） 的函数表达式；变量也可能是never类型，当它们被永不为真的类型保护所约束时。
         2. 当类型不存在时通常返回`never`
 
             >e.g. `number & string`、`Extract<string | number , boolean>`）。
@@ -185,6 +185,8 @@
 
                 >作为变量使用用`const`，作为属性使用用`readonly`。
             4. `索引签名`（`[任意名: string]: 数据类型`），确定属性、可选属性、只读属性的类型都必须是`索引签名`的类型的子集。
+
+                >不能用`in`代替`:`。
 
                 1. 尽量不要把 `索引签名` 与 属性 混合使用。若属性名称中有拼写错误，则这个错误不会被捕获到
 
@@ -288,9 +290,29 @@
             >tom.xxx = 1n // 报错，1n不是 string | Function | number | undefined | boolean
             >```
             ></details>
-        2. `: { 属性: 数据类型, }`（内联类型注解）
+        2. `: 类型别名`、`: { 属性: 数据类型, }`（内联类型注解）
 
-            >`{ [任意名: string]: any }`等价于`Record<string, any>`，表示对象类型，比 ~~`object`~~、~~`{}`~~ 更严格定义对象类型。
+            `{ [任意名: string]: any }`等价于`Record<string, any>`，表示对象类型，比 ~~`object`~~、~~`{}`~~ 更严格定义对象类型。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```typescript
+            >type A ={
+            >  [key: string]: 数据类型;
+            >}
+            >type A2 ={
+            >  [key in string]: 数据类型;
+            >}
+            >
+            >type B ={
+            >  [key in 0|1]: 数据类型;       // 不能用`:`代替`in`
+            >}
+            >type C ={
+            >  [key in 枚举类型]: 数据类型;  // 不能用`:`代替`in`
+            >}
+            >```
+            ></details>
         3. `: 类名`
 
             取**实例**的类型，而不是~~类~~的类型，不包含类的所有 ~~`静态属性/方法`~~ 和 ~~`构造函数`~~。
@@ -462,6 +484,10 @@
         5. 函数的参数和返回值可以自动进行类型推论。
         6. `new`可实例化
 
+            >声明构造函数，最好还是用`class`，不要用`new`关键字。
+
+            在各种函数类型的前面加上`new`，表示实例化类型。
+
             ><details>
             ><summary>e.g.</summary>
             >
@@ -619,6 +645,8 @@
         >```
         ></details>
 2. 类
+
+    >class在ts里既是类型，也是函数（构造函数）。相对于函数，使用 类 可以省去给函数声明类型。
 
     1. 访问修饰符（Access Modifiers）
 
@@ -1031,8 +1059,14 @@
 
     >类型别名和`接口`有时很像，区别：
     >
-    >1. 类型别名可以作用于：原始值、联合类型、交叉类型、元组以及其它任何需要手写的类型，只需要给它一个语义化的名字即可；
-    >2. `接口`仅定义：对象、数组、函数，但有层次结构，能使用`implements`、`extends`。
+    >1. 类型别名
+    >
+    >    1. 可以作用于：原始值、联合类型、交叉类型、元组以及其它任何需要手写的类型，只需要给它一个语义化的名字即可。
+    >    2. 不能重名（自然不存在同名聚合）。
+    >2. `接口`
+    >
+    >    1. 仅定义：对象、数组、函数，但有层次结构，能使用`implements`、`extends`。
+    >    2. 同名的`interface`自动聚合，也可以跟同名的`class`自动聚合。
 
     `type`：与其原始的类型完全一致；它们只是简单的替代名。
 
@@ -1465,7 +1499,7 @@
             ></details>
 7. 泛型（Generics）
 
-    `名称<多个类型名>使用部分`。泛型是指在定义函数（`<多个类型名>(参数): 返回值`）、接口（`interface 接口名<多个类型名>`）或类（`class 类名<多个类型名>`）时，不预先指定具体的类型，而在使用时再指定类型的一种特性。
+    泛型是指 在定义属性函数（`<多个类型名>(参数): 返回值`）、接口（`interface 接口名<多个类型名>`）、类型别名（`type 类型别名<多个类型名>`）或类（`class 类名<多个类型名>`）时，不预先指定具体的类型，而在使用时再指定类型的一种特性。
 
     - 定义 - 赋值
 
@@ -1600,24 +1634,44 @@
         ></details>
 8. 内置类型别名
 
-    >来自：[lib.es5.d.ts](https://github.com/microsoft/TypeScript/blob/master/lib/lib.es5.d.ts#L1455)、[typescript: Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html)。
+    >来自：[src/lib/es5.d.ts](https://github.com/microsoft/TypeScript/blob/main/src/lib/es5.d.ts#L1504)、[typescript: Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html)。
 
-    1. `Partial`
+    1. `Awaited`
+
+        获取Promise实例的返回值类型。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >type basic = Awaited<Promise<string>>;                     // -> string
+        >
+        >type recursive = Awaited<Promise<Promise<string>>>;        // -> string
+        >
+        >type nonThenObj = Awaited<boolean>;                        // -> boolean
+        >
+        >type unions = Awaited<Date | Promise<Promise<string>>>;    // -> string | Date
+        >
+        >type FakePromise = { then: () => string };
+        >type fake = Awaited<FakePromise>;                          // -> never
+        >```
+        ></details>
+    2. `Partial`
 
         将类型定义的所有属性都修改为可选（非~~必须~~）。
 
         >e.g. `Partial<数据类型>`
-    2. `Required`
+    3. `Required`
 
         将类型定义的所有属性都修改为必须（非~~可选~~）。
 
         >e.g. `Required<数据类型>`
-    3. `Readonly`
+    4. `Readonly`
 
         将类型定义的所有属性都修改为只读（readonly）。
 
         >e.g. `Readonly<数据类型>`
-    4. `Record`
+    5. `Record`
 
         将类型A的所有属性值都映射到类型B上并创造一个新的类型。
 
@@ -1649,7 +1703,7 @@
         >}
         >```
         ></details>
-    5. `Pick`
+    6. `Pick`
 
         从类型定义的属性中，选取指定一组属性，返回一个新的类型定义。
 
@@ -1671,7 +1725,7 @@
         >}
         >```
         ></details>
-    6. `Omit`
+    7. `Omit`
 
         去除类型定义中的某些属性。
 
@@ -1692,7 +1746,7 @@
         >}
         >```
         ></details>
-    7. `Extract`
+    8. `Extract`
 
         从联合类型A中提取类型B。
 
@@ -1705,7 +1759,7 @@
         >type T2 = Extract<string | number , boolean>           // -> never
         >```
         ></details>
-    8. `Exclude`
+    9. `Exclude`
 
         去除联合类型中的一部分。
 
@@ -1717,7 +1771,7 @@
         >type b = Exclude<a, number | boolean>  // -> string
         >```
         ></details>
-    9. `NonNullable`
+    10. `NonNullable`
 
         去除联合类型中的`null`和`undefined`。
 
@@ -1729,7 +1783,7 @@
         >type T2 = NonNullable<null | undefined>;           // -> never
         >```
         ></details>
-    10. `ReturnType`
+    11. `ReturnType`
 
         获得函数类型的返回类型。
 
@@ -1746,7 +1800,7 @@
         >type F3 = ReturnType<typeof setTimeout>;   // -> number
         >```
         ></details>
-    11. `Parameters`
+    12. `Parameters`
 
         获取函数类型的全部参数类型，以`元组`返回。
 
@@ -1762,7 +1816,7 @@
         >type F4 = Parameters<F2>;                      // -> []
         >```
         ></details>
-    12. `InstanceType`
+    13. `InstanceType`
 
         获得构造函数类型的实例类型。
 
@@ -1778,7 +1832,7 @@
         >type T0 = InstanceType<typeof C>; // -> C
         >```
         ></details>
-    13. `ConstructorParameters`
+    14. `ConstructorParameters`
 
         获取构造函数的全部参数类型，以`元组`或数组返回。
 
@@ -1793,7 +1847,7 @@
         >type T4 = ConstructorParameters<Function>;             // -> never。报错
         >```
         ></details>
-    14. `ThisParameterType`
+    15. `ThisParameterType`
 
         获取函数类型中`this`参数的数据类型，若没有则返回`unknown`。
 
@@ -1810,16 +1864,16 @@
         >}
         >```
         ></details>
-    15. `OmitThisParameter`
+    16. `OmitThisParameter`
 
         移除函数类型中的`this`参数的数据类型，返回移除后的函数类型。
-    16. `ThisType`
+    17. `ThisType`
 
         >若使用，则需要开启`--noImplicitThis`。
-    17. `Promise`
+    18. `Promise`
 
         Promise实例类型。
-    18. `PromiseLike`
+    19. `PromiseLike`
 
         仅有`then`属性的对象类型，类似Promise实例的then属性（是`Promise`类型的数据也满足`PromiseLike`类型）。
 9. 操作固有字符串的类型（不是~~值~~）
@@ -2066,6 +2120,8 @@
 #### 联合类型（Union Types）
 `|`
 
+仅满足其中一个类型。
+
 1. 若未赋值，则只能访问此联合类型的所有类型里共有的属性/方法（不确定联合类型的变量到底是哪个类型）。
 
     - 类型断言 或 js逻辑判断（类型保护） 联合类型的变量成为联合类型其中的某一种类型，就可以访问此类型的属性/方法。
@@ -2138,7 +2194,7 @@
 #### 交叉类型（Intersection Types）
 `&`
 
-将多个类型合并为一个类型。
+将多个类型合并为一个类型（必须同时满足所有类型）。
 
 - 用法
 
@@ -2286,7 +2342,7 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 
 - 获取 对象或类型 的所有属性值，以联合类型（`|`）返回：
 
-    >类似`enum`的功能，若非特别必要，请用`enum`代替。
+    >类似`enum`的功能，若非特别必要，请用`enum`替代。
 
     ```typescript
     const obj1 = {
@@ -2650,52 +2706,31 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 
 >配置和书写建议：配置`module: commonjs`选项、使用[`ES6 Module`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#es6-module)语法（完全支持所有写法）导入、导出、编写模块。
 
-1. 导出
+1. 任何声明（如：变量、函数、类、类型别名、接口、namespace、枚举）
 
-    任何声明（如：变量、函数、类、类型别名、接口、namespace、枚举）都能够通过添加`export`关键字来导出。
-2. 引入方式：
+    1. 导出
 
-    1. 有类型声明
+        1. TS特定写法：`export =`
+        2. [`ES6 Module`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#es6-module)的`export`
+        - 未见过 ~~CommonJS的`exports`或`module.exports`~~ 导出
+    2. 引入
 
-        1. 标准[`ES6 Module`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#es6-module)库
-        2. 标准CommonJS库的TS特定写法：
+        1. 有类型声明
 
-            `import xx = require('xx')`
-    2. 没有类型声明
+            1. TS特定写法：`import xx = require('xx')`
+            2. [`ES6 Module`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#es6-module)的`import`
 
-        `const xx = require('xx')`（默认导入为`any`类型）
+        2. 没有类型声明
 
-- 特殊：`export =`、`import 变量 = require(模块路径)`
+            1. CommonJS的`require`
 
-    <details>
-    <summary>e.g.</summary>
+                `const xx = require('xx')`（默认导入为`any`类型）
+2. 仅导入、导出类型（不能包含值；在编译结果中会被删除）
 
-    ```typescript
-    // ZipCodeValidator.ts
-    let numberRegexp = /^[0-9]+$/;
-    class ZipCodeValidator {
-        isAcceptable(s: string) {
-            return s.length === 5 && numberRegexp.test(s);
-        }
-    }
-    export = ZipCodeValidator;
+    1. `import type { xx, yy } from 'aa'`、`import type xx from 'aa'`
 
-
-    // Test.ts
-    import zip = require("./ZipCodeValidator");
-
-    // Some samples to try
-    let strings = ["Hello", "98052", "101"];
-
-    // Validators to use
-    let validator = new zip();
-
-    // Show whether each string passed each validator
-    strings.forEach(s => {
-      console.log(`"${ s }" - ${ validator.isAcceptable(s) ? "matches" : "does not match" }`);
-    });
-    ```
-    </details>
+        >不能同时写：~~`import type xx, { yy, zz } from 'aa'`~~。
+    2. `export type { xx, yy }`、`export type { xx as default, yy as zz }`
 
 #### `名字.d.ts`（声明文件）
 >只能定义数据类型，不能定义具体实现，否则报错。

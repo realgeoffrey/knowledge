@@ -765,7 +765,7 @@
 8. 页面是按照顺序加载资源，当且仅当有使用需求时才会去加载外部资源。
 
     已加载完成的CSS文件内有多个URL请求（`background`），但仅在页面节点要引用某个URL请求时（无论节点是否隐藏），才会去请求这个资源，而不是在加载CSS文件时就加载外部资源。可以用于监控用户行为（当用户某些操作导致展示背景时加载外部资源——外部资源可以是上报接口）。
-9. 使用动态DOM加载，代替内容的`display: none;`（免去构建复杂的DOM）：
+9. 使用动态DOM加载，替代内容的`display: none;`（免去构建复杂的DOM）：
 
     1. `<script type="text/template"></script>`
     2. `<template></template>`
@@ -842,12 +842,12 @@
 21. `border`分为上、右、下、左，每一块区域的`border-width`不为`0`时都是梯形（`width`或`height`为`0`时为三角形），`border-width`决定梯形（或三角形）的高。
 
     某些边设为`border-width`不为`0`、`border-right-color`为`transparent`可以制造一些形状。
-22. 用`filter: drop-shadow`（图像本身形状和alpha通道的阴影）代替`box-shadow`（盒阴影）
+22. 用`filter: drop-shadow`（图像本身形状和alpha通道的阴影）替代`box-shadow`（盒阴影）
 23. 若在视口中**添加/删除**节点导致滚动条变化，则浏览器会尽量保持视口最顶部节点固定不变（从而瞬间改变滚动条位置以使视口顶部节点尽量保持不随滚动条变化而位移）
 24. `overflow: hidden`无法处理`position: fixed`的子孙节点。
 25. `position: absolute`超出浏览器可能导致Android出现滚动条（虽然不能滚动）
 
-    尝试用`position: fixed`代替。
+    尝试用`position: fixed`替代。
 26. 字体高度抖动
 
     可能和设置在父级的`line-height`有关，尝试把`line-height`改到设置在包裹文字的节点。
@@ -1028,7 +1028,7 @@
 
         将属性设置为其初始值（初始值不是user agent stylesheet，初始值由官方CSS规范定义）。
 
-        >在继承属性上，初始值可能是意外的（因为是针对文档根元素）。应该使用`inherit/unset/revert`关键字代替。
+        >在继承属性上，初始值可能是意外的（因为是针对文档根元素）。应该使用`inherit/unset/revert`关键字替代。
     3. `unset`
 
         若该属性默认可继承，则值为`inherit`；否则值为`initial`。
@@ -1397,7 +1397,7 @@
 
 ### `<img>`的`src`属性
 
-1. 不要用**空的`<img>`加上背景来用作默认图**，必须用其他标签来代替。
+1. 不要用**空的`<img>`加上背景来用作默认图**，必须用其他标签来替代。
 2. 要谨慎给`<img>`设置背景（如：内容图片或头像的初始图，不要使用背景，应该使用[JS延时加载-图片lazyload](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery图片延时加载lazyload)前的默认图），因为当图片是透明图时，会出现背景。
 3. 隐藏没有`src`属性或`src`属性为空的`<img>`：
 

@@ -153,7 +153,7 @@
                 2. 截断中 有特殊字符（如一些标点符号） 或 与图片一起展示 时，截断会提前，不会在内容结尾处正常截断。
                 3. 低版本Android机可能不支持`opacity`效果，可能导致整个文本渲染消失
 
-                    用字体颜色`color: rgba(x,y,z, 透明度)`来代替。
+                    用字体颜色`color: rgba(x,y,z, 透明度)`来替代。
                 4. 渲染变化的节点，如果没有加`style`，会被渲染为空。
 
                     强制加上`style`设置一些样式内容。
@@ -304,7 +304,9 @@
                 });
                 ```
                 </details>
+            5. `onPageSelected`
 
+                iOS初始化时不会 ~~触发`onPageSelected`~~；Android初始化时会触发`onPageSelected`。
         5. 大部分（但不是所有）组件都有`onLayout`
 
             当**元素挂载**或者**布局改变**时被调用。返回节点实时的：宽高（`width`、`height`）、距离父级顶部(0,0)距离（`x`、`y`）。
@@ -625,77 +627,323 @@
 
         提供给前端React/Vue渲染使用的按时间变化的style中某样式属性值。
 
+        >若制作一直存在的动画，则需要考虑在页面非激活状态时候消除动画、重新激活时候重启动画，避免内存占用。
+
         1. `Animation`、`AnimationSet`
+
+            1. `Animation`针对一个属性的一个配置后的变化；`AnimationSet`针对一个属性的多个配置后的变化。
+            2. 若需要多个属性同时变化，则多个属性的每一个都设置一个`Animation`或`AnimationSet`，同时触发。
+
+                多个动画、多个节点的主要问题是动画的协同，循环动画尤其需要处理**等待动画全部结束后再同时开始全部新的动画**。不能直接依赖（不准确、无法预料的）`setTimeout`和动画计时。
+            3. 组件重新渲染不会导致其设置的值无效。
+            4. 已经运行的`Animation`不能再被初始化（同理销毁过的也不能再用）；`AnimationSet`配置里是`new Animation`，因此也不能再次使用已经运行过的`AnimationSet`配置。
+
+            - 有效执行顺序：
+
+                1. `new Animation(配置)`
+
+                    2. `.onXX(回调函数)`（监听函数必须在`.start()`之前，否则监听函数无效）
+                    3. `.updateAnimation(配置)`（`.start()`之后就无效了）
+                    4. `.start()`
+                    5. `.pause()`、`.resume()`
+                    6. `.destroy()`（销毁之后，再也没办法启动当前动画，需要重新建一个动画`new Animation(配置)`）
 
             ><details>
             ><summary>e.g.</summary>
             >
-            >```tsx
-            >import { View, Text, AnimationOption, Animation } from "react-native";
-            >import { useEffect, useState } from "react";
+            >1. 触发单次动画后销毁
             >
-            >const DEFAULT = 1;
-            >const NEXT_VALUE = 0;
+            >    ```tsx
+            >    import { View, Text, AnimationOption, Animation } from "react-native";
+            >    import { useEffect, useState } from "react";
             >
-            >// 从0->1动画
-            >const animationConfig1: AnimationOption = {
-            >  mode: "timing",
-            >  timingFunction: "ease-in-out",
-            >  startValue: NEXT_VALUE,
-            >  toValue: DEFAULT,
-            >  duration: 3000
-            >};
+            >    const DEFAULT = 1;
+            >    const NEXT_VALUE = 0;
             >
-            >// 从1->0动画
-            >const animationConfig2: AnimationOption = {
-            >  mode: "timing",
-            >  timingFunction: "ease-in-out",
-            >  startValue: DEFAULT,
-            >  toValue: NEXT_VALUE,
-            >  duration: 3000
-            >};
+            >    // 从0->1动画
+            >    const animationConfig1: AnimationOption = {
+            >      startValue: NEXT_VALUE,
+            >      toValue: DEFAULT,
+            >      valueType: undefined,
+            >      duration: 3000,
+            >      delay: 0,
+            >      repeatCount: 0,
+            >      mode: "timing",
+            >      timingFunction: "ease-in-out",
+            >    };
             >
-            >export default function Demo2() {
-            >  const [opacity, setOpacity] = useState<Animation | typeof DEFAULT>(DEFAULT);
+            >    // 从1->0动画
+            >    const animationConfig2: AnimationOption = {
+            >      startValue: DEFAULT,
+            >      toValue: NEXT_VALUE,
+            >      valueType: undefined,
+            >      duration: 3000,
+            >      delay: 0,
+            >      repeatCount: 0,
+            >      mode: "timing",
+            >      timingFunction: "ease-in-out",
+            >    };
             >
-            >  useEffect(() => {
-            >    if (opacity !== DEFAULT) {
-            >      opacity.start();
-            >      opacity.onAnimationEnd(() => {
-            >        opacity.destroy();
-            >      });
+            >    const DEFAULT_DEG = "90deg";
+            >    const NEXT_VALUE_DEG = "0deg";
+            >
+            >    // 从90deg->0deg动画
+            >    const animationConfigDeg_1: AnimationOption = {
+            >      startValue: parseInt(DEFAULT_DEG, 10),
+            >      toValue: parseInt(NEXT_VALUE_DEG, 10),
+            >      valueType: "deg",
+            >      duration: 3000,
+            >      delay: 0,
+            >      repeatCount: 0,
+            >      mode: "timing",
+            >      timingFunction: "ease-in-out",
+            >    };
+            >    // 从0deg->90deg动画
+            >    const animationConfigDeg_2: AnimationOption = {
+            >      startValue: parseInt(NEXT_VALUE_DEG, 10),
+            >      toValue: parseInt(DEFAULT_DEG, 10),
+            >      valueType: "deg",
+            >      duration: 3000,
+            >      delay: 0,
+            >      repeatCount: 0,
+            >      mode: "timing",
+            >      timingFunction: "ease-in-out",
+            >    };
+            >
+            >    export default function Demo2() {
+            >      const [opacity, setOpacity] = useState<Animation | typeof DEFAULT>(DEFAULT);
+            >      const [rotateY, setRotateY] = useState<Animation | typeof DEFAULT_DEG>(DEFAULT_DEG);
+            >
+            >      useEffect(() => {
+            >        if (opacity !== DEFAULT) {
+            >          opacity.onAnimationEnd(() => {
+            >            opacity.destroy();
+            >          });
+            >          opacity.start();
+            >        }
+            >      }, [opacity]);
+            >
+            >      useEffect(() => {
+            >        if (rotateY !== DEFAULT_DEG) {
+            >          rotateY.onAnimationEnd(() => {
+            >            rotateY.destroy();
+            >          });
+            >          rotateY.start();
+            >        }
+            >      }, [rotateY]);
+            >
+            >      return (
+            >        <>
+            >          <View
+            >            style={{
+            >              backgroundColor: "red",
+            >              width: 100,
+            >              height: 100,
+            >
+            >              // 组件渲染不会取消动画设置的值
+            >              opacity: opacity,
+            >              transform: [{ rotateY }]
+            >            }}
+            >          />
+            >          <Text
+            >            onClick={() => {
+            >              setOpacity(new Animation(animationConfig1));
+            >              setRotateY(new Animation(animationConfigDeg_1));
+            >            }}
+            >          >
+            >            opacity: 0=》1 | rotateY: 0 =》90
+            >          </Text>
+            >          <Text
+            >            onClick={() => {
+            >              setOpacity(new Animation(animationConfig2));
+            >              setRotateY(new Animation(animationConfigDeg_2));
+            >            }}
+            >          >
+            >            opacity: 1 =》 0 | rotateY: 90 =》0
+            >          </Text>
+            >        </>
+            >      );
             >    }
-            >  }, [opacity]);
+            >    ```
+            >2. 循环播放
             >
-            >  return (
-            >    <>
-            >      <View
-            >        style={{
-            >          backgroundColor: "red",
-            >          width: 100,
-            >          height: 100,
+            >    1. `repeatCount`: `-1` 或 `'loop'`
+            >    2. `onAnimationEnd`触发`destroy`后再创建新的动画`new Animation/AnimationSet`
             >
-            >          opacity: opacity
-            >        }}
-            >      />
-            >      <Text
-            >        onClick={() => {
-            >          setOpacity(new Animation(animationConfig1));
-            >        }}
-            >      >
-            >        opacity: 0=》1
-            >      </Text>
-            >      <Text
-            >        onClick={() => {
-            >          setOpacity(new Animation(animationConfig2));
-            >        }}
-            >      >
-            >        opacity: 1 =》 0
-            >      </Text>
-            >    </>
-            >  );
-            >}
-            >```
+            >
+            >        1. `Animation`
+            >
+            >            ```tsx
+            >            import { ViewStyle, View, AnimationOption, Animation } from "react-native";
+            >            import React, { useEffect, useState } from "react";
+            >
+            >            // 透明度动画
+            >            const opacity_DEFAULT = 0.4;
+            >            const opacity_NEXT_VALUE = 0.8;
+            >            const opacityConfig: AnimationOption = {
+            >              startValue: opacity_DEFAULT,
+            >              toValue: opacity_NEXT_VALUE,
+            >              valueType: undefined,
+            >              duration: 250,
+            >              delay: 0,
+            >              repeatCount: 0,
+            >              mode: "timing",
+            >              timingFunction: "ease-in-out",
+            >            };
+            >
+            >            interface Props {
+            >              children: React.ReactNode;
+            >              style?: ViewStyle | ViewStyle[];
+            >              callback?: Function;
+            >              opacity?: Partial<AnimationOption>;
+            >            }
+            >            export default function AnimationCmp(props: Props) {
+            >              const { children, style, callback, opacity: opacityValues } = props;
+            >
+            >              // 透明度动画
+            >              const defaultOpacity = opacityValues?.startValue ?? opacity_DEFAULT;
+            >              const [opacity, setOpacity] = useState<Animation | typeof defaultOpacity>(defaultOpacity);
+            >              useEffect(() => {        // 可能会有多个元素动画同步问题，尤其是互相转化、退回初始值的闪烁问题
+            >                const config = Object.assign({}, opacityConfig, opacityValues);
+            >                if (config.startValue !== config.toValue) {
+            >                  if (typeof opacity !== "number") {
+            >                    opacity.onAnimationEnd(() => {
+            >                      opacity.destroy();
+            >                      setTimeout(() => {
+            >                        callback?.();
+            >                        setOpacity(defaultOpacity);
+            >                      }, 1000); // 动画结束后1秒重新开始
+            >                    });
+            >                    opacity.start();
+            >                  } else {
+            >                    setOpacity(new Animation(config));
+            >                  }
+            >                }
+            >              }, [opacity]);
+            >
+            >              return (
+            >                <View
+            >                  style={[
+            >                    style,
+            >                    {
+            >                      // 组件渲染不会取消动画设置的值
+            >                      opacity: opacity,
+            >                    },
+            >                  ]}
+            >                >
+            >                  {children}
+            >                </View>
+            >              );
+            >            }
+            >            ```
+            >        2. `AnimationSet`
+            >
+            >            ```tsx
+            >            import { ViewStyle, View, Animation, AnimationSet } from "react-native";
+            >            import React, { useEffect, useState } from "react";
+            >
+            >            // 放大动画
+            >            const scale_DEFAULT = 0;
+            >            const scale_NEXT_VALUE = 1;
+            >
+            >            interface Props {
+            >              children: React.ReactNode;
+            >              style?: ViewStyle | ViewStyle[];
+            >              callback?: Function;
+            >            }
+            >
+            >            export default function TheAnimation3(props: Props) {
+            >              const { children, style, callback } = props;
+            >
+            >              // 放大动画
+            >              const [scale, setScale] = useState<AnimationSet | number>(scale_DEFAULT);
+            >              useEffect(() => {
+            >                if (typeof scale !== "number") {
+            >                  scale.onAnimationEnd(() => {
+            >                    scale.destroy();
+            >                    setTimeout(() => {
+            >                      callback?.();
+            >                      setScale(scale_DEFAULT);
+            >                    }, 1000);
+            >                  });
+            >                  scale.start();
+            >                } else {
+            >                  setScale(
+            >                    new AnimationSet({
+            >                      children: [
+            >                        {
+            >                          animation: new Animation({
+            >                            startValue: scale_DEFAULT,
+            >                            toValue: scale_NEXT_VALUE + 0.2,
+            >                            valueType: undefined,
+            >                            duration: 250,
+            >                            delay: 2500,
+            >                            repeatCount: 0,
+            >                            mode: "timing",
+            >                            timingFunction: "ease-in-out",
+            >                          }),
+            >                          follow: false,
+            >                        },
+            >                        {
+            >                          animation: new Animation({
+            >                            startValue: scale_NEXT_VALUE + 0.2,
+            >                            toValue: scale_NEXT_VALUE - 0.1,
+            >                            valueType: undefined,
+            >                            duration: 250,
+            >                            delay: 0,
+            >                            repeatCount: 0,
+            >                            mode: "timing",
+            >                            timingFunction: "ease-in-out",
+            >                          }),
+            >                          follow: true,
+            >                        },
+            >                        {
+            >                          animation: new Animation({
+            >                            startValue: scale_NEXT_VALUE - 0.1,
+            >                            toValue: scale_NEXT_VALUE + 0.05,
+            >                            valueType: undefined,
+            >                            duration: 200,
+            >                            delay: 0,
+            >                            repeatCount: 0,
+            >                            mode: "timing",
+            >                            timingFunction: "ease-in-out",
+            >                          }),
+            >                          follow: true,
+            >                        },
+            >                        {
+            >                          animation: new Animation({
+            >                            startValue: scale_NEXT_VALUE + 0.05,
+            >                            toValue: scale_NEXT_VALUE,
+            >                            valueType: undefined,
+            >                            duration: 150,
+            >                            delay: 0,
+            >                            repeatCount: 0,
+            >                            mode: "timing",
+            >                            timingFunction: "ease-in-out",
+            >                          }),
+            >                          follow: true,
+            >                        },
+            >                      ],
+            >                      repeatCount: 0,
+            >                    })
+            >                  );
+            >                }
+            >              }, [scale]);
+            >
+            >              return (
+            >                <View
+            >                  style={[
+            >                    style,
+            >                    {
+            >                      transform: [{ scale: scale }],
+            >                    },
+            >                  ]}
+            >                >
+            >                  {children}
+            >                </View>
+            >              );
+            >            }
+            >            ```
             ></details>
 
             - Tips（bug？）
@@ -703,7 +951,7 @@
                 动画未完成不能中途`updateAnimation`（或者参数`startValue`必须是动画当前值）。
         2. [`setNativeProps`](https://hippyjs.org/#/style/setNativeProps?id=setnativeprops)
 
-            直接操作最终的客户端UI组件样式（跳过前端执行后再传递给客户端渲染），性能更佳。
+            直接操作最终的客户端UI组件样式（跳过前端执行后再传递给客户端渲染），性能更佳。组件重新渲染（需要导致`style`属性重新渲染）会导致其设置的值无效。
 
             ><details>
             ><summary>e.g.</summary>
@@ -717,7 +965,7 @@
             >
             >  return (
             >      <View
-            >        style={原样式}
+            >        style={原样式}            // 组件渲染会（需要导致`style`属性重新渲染）取消动画设置的值，回退回react设置的样式
             >        ref={ViewRef}
             >        onClick={() => {
             >          ViewRef.current &&
@@ -742,10 +990,21 @@
             返回与`window.localStorage`一致。
     3. `BackAndroid`
 
-        监听Android实体键的back，在退出前做操作或拦截
+        监听Android返回操作（实体键、手势、虚拟按键），在退出前做操作或拦截
 
         1. 开启：`BackAndroid.addListener(方法名)`
-        2. 关闭：`BackAndroid.removeListener(方法名)`
+
+            >最后注册的会覆盖之前注册的。
+
+            `方法名`返回`true`：拦截终端的回退操作；`方法名`返回`false`：不拦截终端的回退操作。
+        2. 关闭：`BackAndroid.removeListener(方法名)`或`BackAndroid.addListener(方法名).remove()`
+
+            >或`BackAndroid.removeListener(()=>{return false})`覆盖为不拦截状态。
+
+        - iOS需要业务实现：
+
+            1. 阻止：边缘左滑 -> 拖动页面左滑
+            2. 监听左滑事件
     4. `Clipboard`
 
         读取或写入剪贴板
@@ -771,7 +1030,7 @@
                 1. `width: (Dimensions.get("window").width - 固定宽度) / 几个物品`
                 2. `height: (设计稿此物体高 / 设计稿此物体宽) * 前面的width`
 
-        >若是`position: "absolute"`要占满全屏且父级已占满全屏（高满屏或宽满屏），则可以用`top: 0; bottom: 0;`代替`Dimensions.get("window").height`，`left: 0; right: 0;`代替`Dimensions.get("window").width`。
+        >若是`position: "absolute"`要占满全屏且父级已占满全屏（高满屏或宽满屏），则可以用`top: 0; bottom: 0;`替代`Dimensions.get("window").height`，`left: 0; right: 0;`替代`Dimensions.get("window").width`。
 
         - Tips（bug？）
 
@@ -949,6 +1208,8 @@
 
                 1. `minWidth/minHeight`可能是`box-sizing: content-box 或 border-box`效果。
                 2. `maxWidth/maxHeight`可能完全不生效。
+                3. `minWidth`的父节点内部若有子级，则父级布局所占最小宽度 = minWidth = content（不包括：~~padding左右 + border左右~~）。
+                4. `minHeight`会作用于`flexWrap`换行的每一行（`height`、`maxHeight`不会）。
         4. `border`
 
             1. 宽度（`Number`）
@@ -1020,7 +1281,7 @@
 
                 项的排布顺序。
 
-                >与CSS的表现不同，也没有 ~~`alignContent`~~ 配合。还是只能配合`justifyContent`、`alignItems`使用。
+                >与CSS的表现不同，也没有 ~~`alignContent`~~ 配合。还是只能配合`justifyContent`、`alignItems`使用。`minHeight`会作用于`flexWrap`换行的每一行（`height`、`maxHeight`不会）。
             3. `justifyContent`：子项在主轴上的对齐方式（与轴的方向有关）。
 
                 >与CSS的`justify-Content`表现一致。
@@ -1135,13 +1396,30 @@
 
             - 不支持 ~~`fixed`~~。若要制作`fixed`效果，则：
 
-                ```jsx
-                <View>      // 此处父级必须是全屏才可以：占满上下左右全屏。因为"absolute"仅能针对父级
-                  <ScrollView></ScrollView>
-                  <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}>类似fixed的效果</View>
-                  <View style={{ position: "absolute", top: 0, left: 0, width: Dimensions.get("window").width, height: Dimensions.get("window").height }}>类似fixed的效果（不够优雅）</View>
-                </View>
-                ```
+                1. 有兄弟节点的情况
+
+                    ```jsx
+                    <View>      // 此处父级必须是全屏才可以：占满上下左右全屏。因为"absolute"仅能针对父级
+                      <ScrollView></ScrollView> // 兄弟节点
+
+                      <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}>类似fixed的效果</View>
+                      <View style={{ position: "absolute", top: 0, left: 0, width: Dimensions.get("window").width, height: Dimensions.get("window").height }}>类似fixed的效果（不够优雅）</View>
+
+                      <ScrollView></ScrollView> // 兄弟节点
+                    </View>
+                    ```
+                2. 没有兄弟节点的情况
+
+                    ```jsx
+                    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>  // 此处父级必须是全屏才可以：占满上下左右全屏。因为"absolute"仅能针对父级、才能让子级默认居中
+
+                      <View>水平、垂直居中</View>
+
+                      <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}>类似fixed的效果</View>
+                      <View style={{ position: "absolute", top: 0, left: 0, width: Dimensions.get("window").width, height: Dimensions.get("window").height }}>类似fixed的效果（不够优雅）</View>
+
+                    </View>
+                    ```
             - 若要制作全局定位（如：全屏居中、贴底部、贴顶部、等）的组件，因为`'absolute'`仅针对父级 且 Android子级不能超出父级（强制`'hidden'`）的限制，则其父级必须是占满上下左右全屏（视情况而定），但不要求是最外层元素。
         2. `top`
         3. `right`
@@ -1249,6 +1527,24 @@
                           <View style={{ backgroundColor: "颜色2", marginTop: 5 }}>...</View>
                         </View>
                         ```
+
+                ><details>
+                ><summary>e.g. 好像又能正常设置</summary>
+                >
+                >```javascript
+                >tag: {
+                >  position:'absolute',
+                >  top: -pt(1.5),
+                >  left: -pt(1.5),
+                >  height: pt(16),
+                >  paddingHorizontal: pt(6),
+                >  backgroundColor:'#EA392C',
+                >
+                >  borderTopLeftRadius: pt(8),
+                >  borderBottomRightRadius: pt(8),
+                >}
+                >```
+                ></details>
     13. `opacity`
     14. 阴影
 
@@ -1266,6 +1562,8 @@
             boxShadowSpread: 1,
             boxShadowColor: '#4c9afa',
             ```
+
+            效果不好。若达不到要求，则改为切图实现。
         2. `textShadow`+后缀
 
             >直接`textShadow: '属性'`无效。

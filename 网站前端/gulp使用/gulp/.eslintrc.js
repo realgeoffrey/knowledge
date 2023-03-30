@@ -27,7 +27,7 @@ module.exports = {
     'max-len': [0, { 'code': 150 }],  // 设置最大长度
 
     /* 重载ESLint（standard） */
-    'eqeqeq': 1,  // 强制使用`===/!==`代替`==/!=`
+    'eqeqeq': 1,  // 强制使用`===/!==`替代`==/!=`
     'no-new': 0,  // 允许单独使用`new 构造函数()`，而不赋值
     'no-multi-spaces': [2, { ignoreEOLComments: true }],  // 忽略行尾注释前的多个空格
     'no-trailing-spaces': [2, { skipBlankLines: true }],  // 允许在空行使用空白符

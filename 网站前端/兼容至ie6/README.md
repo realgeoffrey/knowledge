@@ -172,7 +172,7 @@
         >    });
         ></script>
         >```
-        >></details>
+        ></details>
 18. ie6的`<input>`有很多CSS问题，尽量不要设置复杂的CSS效果在`<input>`上：
 
     - `<input>`设`display: block;`会跟父级上下有1px间距，用`float`解决。

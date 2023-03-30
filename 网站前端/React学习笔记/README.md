@@ -85,10 +85,10 @@
 
         任何标准的或自定义的DOM属性都是完全支持。
 
-        1. （`class`是保留字，）`className`代替`class`
+        1. （`class`是保留字，）`className`替代`class`
 
-            >若在React中使用Web Components（这是一种不常见的使用方式），则使用`class`属性代替。
-        2. `htmlFor`代替`for`
+            >若在React中使用Web Components（这是一种不常见的使用方式），则使用`class`属性替代。
+        2. `htmlFor`替代`for`
         3. 受控组件的：`value`、`onChange`、`selected`、`checked`
         4. 非受控组件的：`defaultValue`、`defaultChecked`
         5. `style`
@@ -2608,7 +2608,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
                     >thunk函数：`(dispatch, getState) => {/* 具体实现，可返回Promise实例 */}`
         3. 通过`store.subscribe(监听函数)`注册监听器，并返回注销监听器方法，store变化后会触发`监听函数`
 
-            >在react中使用react-redux代替手动书写`store.subscribe`监听逻辑。
+            >在react中使用react-redux替代手动书写`store.subscribe`监听逻辑。
         4. `store.replaceReducer(nextReducer)`
 
             设置store会使用的下一个reducer（替换store当前用来计算state的reducer）。

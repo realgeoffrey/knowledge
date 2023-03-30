@@ -732,7 +732,9 @@ feat(details): 添加了分享功能
 ### 设置gitconfig
 >`git config --global或--local 「参数」`要把`--global或--local`写在第三个参数位置，否则无效。
 
-1. 用户名和邮箱
+1. 用户名和邮箱（用于判断推送者的账号信息）
+
+    >Github不会验证用户名、邮件地址 和 Git服务器统一，因此理论上可以设置任何账号为推送者（假装推送者为其他账号的用户）。但可以在设置中开启账号的[警戒模式](https://docs.github.com/zh/authentication/managing-commit-signature-verification/displaying-verification-statuses-for-all-of-your-commits)，这样可以提示该账号的commit是否`Verified`或`Unverified`、`Partially verified`。
 
     1. 全局设置
 
