@@ -26,7 +26,6 @@
 1. [jQuery与Vue.js对比](#jquery与vuejs对比)
 
 ---
-
 >约定：`vm`（ViewModel）变量名表示：Vue实例。
 
 ## [vue](https://github.com/vuejs/vue)

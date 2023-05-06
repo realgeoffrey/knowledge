@@ -27,6 +27,7 @@
     1. [核心概念](#核心概念)
 
 ---
+
 ### [react](https://github.com/facebook/react)
 
 #### JSX
@@ -93,6 +94,9 @@
         4. 非受控组件的：`defaultValue`、`defaultChecked`
         5. `style`
         6. [事件名](https://zh-hans.reactjs.org/docs/events.html)
+        7. 针对`<svg>`等有带`:`的属性，采用小驼峰式（camelCase）替换
+
+            >e.g. `xlink:actuate` -> `xlinkActuate`、`xlink:arcrole` -> `xlinkArcrole`、`xlink:href` -> `xlinkHref`、`xlink:role` -> `xlinkRole`、`xlink:show` -> `xlinkShow`、`xlink:title` -> `xlinkTitle`、`xlink:type` -> `xlinkType`、`xml:base` -> `xmlBase`、`xml:lang` -> `xmlLang`、`xml:space` -> `xmlSpace`、`xmlns:xlink` -> `xmlnsXlink`
 
         - 特殊情况用`-`短横线隔开式（kebab-case）的属性名：
 
@@ -2282,21 +2286,23 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     3. 引用自己会引用旧的自己（没有随依赖项变化）
 
         <details>
-        <summary>可以写一个自定义Hook解决</summary>
+        <summary>可以写一个自定义Hook解决：<code>usePersistCallback</code></summary>
 
         ```typescript
+        import { useCallback, useLayoutEffect, useRef } from "react";
+
         // 生成不变化的函数，并且内部的所有变量都是实时的。不需要依赖项、可以引用自己
-        const usePersistCallback = <T extends (...args: any) => any>(rawFunc: T) => {
+        export default function usePersistCallback<T extends (...args: any[]) => any>(rawFunc: T) {
           const func = useRef(rawFunc);
 
-          useLayoutEffect(() => {
+          useLayoutEffect(() => {   // 这个嵌套，或可删除，直接：`func.current = rawFunc;`
             func.current = rawFunc;
           });
 
           return useCallback((...args: Parameters<T>): ReturnType<T> => {
-            return func.current(...(args as any));
+            return func.current(...args);
           }, []);
-        };
+        }
 
 
         /* 使用测试 */
@@ -2304,9 +2310,12 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
             // 可以使用任何变量，每次都会用最新值（不需要依赖项）
             // func是不变的变量
             // （最重要的：）内部引用`func()`，其内部的变量都可以用最新值
-        })
+        })  // 方便针对：依赖变量a触发执行的内容，包含除了a之外的变量也必须是当前最新值
+
+        func()  // 在任意地方调用
         ```
         </details>
+    4. 与debounce/throttle等配合使用方式，搜索本文上面内容
 
     >当想要`useEffect`限制执行次数，但依赖一些不变化的props或state时，很有用：`const a = useCallback(方法,[依赖1]); useEffect(()=>{执行},[a])`。
 

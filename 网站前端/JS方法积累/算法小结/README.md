@@ -30,27 +30,33 @@
     1. [任务队列链式调用](#任务队列链式调用)
     1. [无缝轮播](#无缝轮播)
 
+---
+>更详细的算法：[javascript-algorithms](https://github.com/trekhleb/javascript-algorithms)。
+
 ><details>
 ><summary>概念</summary>
 >
->1. 稳定性：
+>1. 算法含义：[Hello 算法： 算法是什么](https://www.hello-algo.com/chapter_introduction/what_is_dsa/)
+>2. 算法效率评估：
+>
+>    算法复杂度
+>
+>    1. 时间复杂度（Time Complexity）
+>
+>        渐进时间复杂度，表示算法的执行时间与数据规模之间的增长关系，反应的只是一个趋势，不是统计算法运行时间。
+>    2. 空间复杂度（Space Complexity）
+>
+>        渐进空间复杂度，用来表示算法的存储空间与数据规模之间的增长关系，反应的只是一个趋势，不是统计算法运行空间。
+>3. 稳定性：
 >
 >    稳定排序算法会让原本有相等键值的纪录维持相对次序。
 >
 >    >若一个排序算法是稳定的，则当有两个相等键值的纪录R和S，且在原本的列表中R出现在S之前，在排序过的列表中R也将会是在S之前。
->2. 比较排序：
+>4. 比较排序：
 >
 >    排序算法的一种，通过一个抽象的内容比较操作来确定两个元素中哪个应该放在序列前面。
->3. 算法复杂度：
->
->    1. 时间复杂度。
->
->        渐进时间复杂度，表示算法的执行时间与数据规模之间的增长关系，反应的只是一个趋势。
->    2. 空间复杂度。
->
->        渐进空间复杂度，用来表示算法的存储空间与数据规模之间的增长关系，反应的只是一个趋势。
->4. [数据结构](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#数据结构data-structure)
->5. 鉴别arr是否是数组：
+>5. [数据结构](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#数据结构data-structure)
+>6. 鉴别arr是否是数组：
 >
 >    ```javascript
 >    if (Object.prototype.toString.call(arr) !== '[object Array]') {   /* 不是数组 */
@@ -59,9 +65,6 @@
 >    }
 >    ```
 ></details>
-
----
->更详细的算法：[javascript-algorithms](https://github.com/trekhleb/javascript-algorithms)。
 
 ## 排序算法
 >部分排序算法演示：[visualgo](https://visualgo.net/sorting)。
@@ -86,7 +89,7 @@ function shuffle(arr) {
     return arr;
 }
 ```
->时间复杂度：O(n)。
+>时间复杂度： $O(n)$ 。
 
 ### 插入排序
 ```javascript
@@ -115,8 +118,8 @@ function insertionSort(arr) {
 >            1. 若排序元素大于对比元素，将排序元素向后移一位。
 >            2. 否则将对比元素插入到排序元素后一位。
 >2. 稳定、比较排序。
->3. 时间复杂度：O(n^2)。
->4. 空间复杂度：O(1)。
+>3. 时间复杂度： $O(n^2)$ 。
+>4. 空间复杂度： $O(1)$ 。
 
 ![插入排序图](./images/insertion-sort-1.gif)
 
@@ -148,8 +151,8 @@ function bubbleSort(arr) {
 >    3. 针对所有的元素重复以上的步骤，除了已经置底的（遍历几次就有几个元素置底）。
 >    4. 持续每次对越来越少的元素重复上面的步骤，直到没有任何一对数字需要比较。
 >2. 稳定、比较排序。
->3. 时间复杂度：O(n^2)。
->4. 空间复杂度：O(1)。
+>3. 时间复杂度： $O(n^2)$ 。
+>4. 空间复杂度： $O(1)$ 。
 
 ![冒泡排序图](./images/bubble-sort-1.gif)
 
@@ -183,8 +186,8 @@ function quickSort(arr) {
 >    2. 遍历其他元素，比基准值小的摆放在基准前面，比基准值大的摆在基准的后面（相同可以到放置任一边）。
 >    3. 递归地把前后两数组进行相同操作。
 >2. 不稳定、比较排序。
->3. 时间复杂度：平均O(n*log n)，最坏O(n^2)。
->4. 空间复杂度：O(log n)。
+>3. 时间复杂度：平均 $O(n*log n)$ ，最坏 $O(n^2)$ 。
+>4. 空间复杂度： $O(log n)$ 。
 
 ![快速排序图](./images/quick-sort-1.gif)
 
@@ -215,8 +218,8 @@ function shellSort(arr) {
 >
 >    将元素分为几个区域来提升*插入排序*的性能：让一个元素可以一次性朝最终位置前进一大步。算法再取越来越小的步长进行排序，最后是步长为1的插入排序。
 >2. 不稳定、比较排序。
->3. 时间复杂度：根据步长取值而变化，最好O(n*log^2 n)，最坏O(n^2)。
->4. 空间复杂度：O(1)。
+>3. 时间复杂度：根据步长取值而变化，最好 $O(n*log^2 n)$ ，最坏 $O(n^2)$ 。
+>4. 空间复杂度： $O(1)$ 。
 
 ### 梳排序
 ```javascript
@@ -254,8 +257,8 @@ function combSort(arr) {
 >    2. 开始时的间距设定为数列长度，并在循环中以固定比率递减（0.8）。
 >    3. 当间距递减为1时，进行冒泡排序。
 >2. 不稳定、比较排序。
->3. 时间复杂度：O(n^2)。
->4. 空间复杂度：O(1)。
+>3. 时间复杂度： $O(n^2)$ 。
+>4. 空间复杂度： $O(1)$ 。
 
 ![梳排序图](./images/comb-sort-1.gif)
 
@@ -298,8 +301,8 @@ function mergeSort(arr) {
 >    1. 将相邻两个元素进行**归并操作**（将两个已经排序的数列合并成排序数列），每个排序后数列包含两个元素。
 >    2. 重复以上操作，直到所有元素归并操作成一个数列。
 >2. 稳定、比较排序。
->3. 时间复杂度：O(n*log n)。
->4. 空间复杂度：O(n)。
+>3. 时间复杂度： $O(n*log n)$ 。
+>4. 空间复杂度： $O(n)$ 。
 
 ![归并排序图](./images/merge-sort-1.gif)
 
@@ -332,8 +335,8 @@ function selectionSort(arr) {
 >
 >    从剩余未排序元素中寻找最小（大）元素，放到已排序数列的末尾。直到所有元素均排序完毕。
 >2. 不稳定、比较排序。
->3. 时间复杂度：O(n^2)。
->4. 空间复杂度：O(1)。
+>3. 时间复杂度： $O(n^2)$ 。
+>4. 空间复杂度： $O(1)$ 。
 
 ![选择排序图](./images/selection-sort-1.gif)
 
@@ -387,7 +390,7 @@ function radixSort(arr) {
 >
 >    LSD：从最低位（个位）开始，依次进行一次排序，排序结束后再用已经排序过的内容进行高一位的排序。直到最高位排序结束。
 >2. 稳定、非比较排序。
->3. 时间复杂度：平均O(k*n)（k：元素最大位数），最坏O(n^2)。
+>3. 时间复杂度：平均 $O(k*n)$ （k：元素最大位数），最坏 $O(n^2)$ 。
 
 ![基数排序图](./images/radix-sort-1.gif)
 
@@ -449,8 +452,8 @@ function heapSort(arr) {
 >        2. 父节点i的右子节点在位置(2*i+2);
 >        3. 子节点i的父节点在位置Math.floor((i-1)/2);
 >2. 不稳定、比较排序。
->3. 时间复杂度：O(n*log n)。
->4. 空间复杂度：O(1)。
+>3. 时间复杂度： $O(n*log n)$ 。
+>4. 空间复杂度： $O(1)$ 。
 
 ![堆排序图](./images/heap-sort-1.gif)
 
@@ -485,8 +488,8 @@ function countingSort(arr) {
 >    2. 统计值为i的元素出现的次数，存入count的第i项。对count每项计数累加，每一项和前一项相加。
 >    3. 反向填充目标数组：将每个元素值i放在count(i)-1项，每放一个元素就将count(i)减去1。
 >2. 稳定、非比较排序。
->3. 时间复杂度：O(n+k)（k：元素最大值）。
->4. 空间复杂度：O(n+k)。
+>3. 时间复杂度： $O(n+k)$ （k：元素最大值）。
+>4. 空间复杂度： $O(n+k)$ 。
 
 ![计数排序图](./images/counting-sort-1.gif)
 
@@ -521,7 +524,7 @@ function countingSort(arr) {
         return -1;
     }
     ```
-    >空间复杂度：O(1)。
+    >空间复杂度： $O(1)$ 。
 2. 递归：
 
     ```javascript
@@ -550,7 +553,7 @@ function countingSort(arr) {
         }
     }
     ```
-    >空间复杂度：O(log n)。
+    >空间复杂度： $O(log n)$ 。
 
 >1. 思路：
 >
@@ -560,7 +563,7 @@ function countingSort(arr) {
 >        1. 若中间元素正好是要查找的元素，则搜索过程结束。
 >        2. 若某一特定元素大于或小于中间元素，则在数组大于或小于中间元素的那一半中查找，并且也从中间元素开始比较。
 >        3. 若在某一步骤数组为空，则代表找不到。
->2. 时间复杂度：O(log n)。
+>2. 时间复杂度： $O(log n)$ 。
 
 ### 特殊二分搜索
 ```javascript
@@ -677,7 +680,7 @@ var hasTarget2 = function ({
             return newArr;
         }
         ```
-    >时间复杂度：O(n^2)。
+    >时间复杂度： $O(n^2)$ 。
 2. 定义一个空数组变量，遍历需要去重的数组：若项的值在原数组中唯一，则放入新数组；若不唯一，丢弃并继续向后遍历。
 
     >重复的项取最后的放入新数组。
@@ -702,7 +705,7 @@ var hasTarget2 = function ({
         return newArr;
     }
     ```
-    >时间复杂度：O(n^2)。
+    >时间复杂度： $O(n^2)$ 。
 3. 先排序原始数组（需要额外排序算法，否则只能处理Number型数据），第一项加入，之后每个项对比前一个项：若不同，则加入；若相同，则丢弃。
 
     ```javascript
@@ -710,7 +713,7 @@ var hasTarget2 = function ({
       return arr.concat().sort().filter((item, index, array) => !index || item !== array[index - 1])
     }
     ```
-    >时间复杂度：O(n) + 数组排序。
+    >时间复杂度： $O(n)$ + 数组排序。
 4. 用对象（哈希表）去重（只能处理Number型数据）。
 
     ```javascript
@@ -720,7 +723,7 @@ var hasTarget2 = function ({
       return arr.filter((item) => obj.hasOwnProperty(item) ? false : (obj[item] = true))
     }
     ```
-    >时间复杂度：O(n)。
+    >时间复杂度： $O(n)$ 。
 5. ES6的`Set`
 
     ```javascript
@@ -794,7 +797,7 @@ var hasTarget2 = function ({
       return arr.filter((value) => value !== delValue)
     }
     ```
->时间复杂度：O(n)。
+>时间复杂度： $O(n)$ 。
 
 ### 数组的某项插入某位置
 ```javascript

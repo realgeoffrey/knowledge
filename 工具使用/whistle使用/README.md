@@ -232,3 +232,7 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
 5. **Network**
 
     查看右边`log->console`抓取的页面console信息（需要设置**Rules**的log协议）。
+
+- 证书安装，可能也需要进行信任证书操作：[安装、信任证书](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Charles使用/README.md#https分析)
+
+    >ps. 所有系统（电脑、手机、等）关于证书安装的，都可能经历 如何安装、是否需要进一步信任 的流程。

@@ -5,6 +5,7 @@
 1. [hippy-react](#hippy-react)
 
 ---
+
 ### [Hippy](https://github.com/Tencent/Hippy)
 ![hippy图](./images/hippy-1.png)
 
@@ -336,7 +337,7 @@
                         1. `style`是`<ScrollView>`自身外层的的样式，设置`flex: 1`占满其父级剩余空间。
 
                             Android的`borderRadius`有问题。
-                        2. `contentContainerStyle`是`<ScrollView>`内部包裹一层的样式，设置`flexGrow: 1`可以使子项占满父级剩余空间并且正常滚动。
+                        2. `contentContainerStyle`是`<ScrollView>`内部包裹一层的样式，设置`flexGrow: 1`可以使子项占满父级剩余空间并且正常滚动（或更差方案：若小于一屏则设置`flex: 1`；若大于一屏则不额外设置），可以无脑都加上这个样式设置。
 
                         ><details>
                         ><summary>e.g.</summary>
@@ -494,7 +495,16 @@
             }
             ```
             </details>
-        14. `<TextInput>`
+        14. jsx（tsx）字符串进行`[...'字符串']`会得到`['字符串']`（React正常）
+
+            ```tsx
+            {
+              [...'字符串'].map((str,index)=>{
+                // 只会触发一次，str 等于 '字符串'
+              })
+            }
+            ```
+        15. `<TextInput>`
 
             1. 数字为：`keyboardType="phone-pad"`。
             2. 显式设置`multiline={false}`，否则多行。
@@ -535,13 +545,13 @@
                   value={data}
                 />
                 ```
-        15. `「变量名」 && 「组件或嵌套组件」`，当`「变量名」`为`false`时，会用一个新的空`<Text>`替换`「组件或嵌套组件」`
+        16. `「变量名」 && 「组件或嵌套组件」`，当`「变量名」`为`false`时，会用一个新的空`<Text>`替换`「组件或嵌套组件」`
 
             >`false && 「组件或嵌套组件」`因为一直都是`false`，所以不会有额外的空`<Text>`出现，直接忽略本句渲染。
 
             用三元运算符替换：`「变量名」 ? 「组件或嵌套组件」 : null`（`「变量名」`的`true/false`切换时，仅新增/删除`「组件或嵌套组件」`，不会有额外的空`<Text>`出现替换）
-        16. 没有类似.html的DOM结构，不能动态向根节点插入内容，只能按照组件结构插入组件（`new Hippy`的`entryPage`）
-        17. 每个组件（包括`<Text>`）都是块状的，不能像H5那样内联展示。但可以用如下方式制作类似`inline-block`的文字，支持不同颜色、换行、事件。
+        17. 没有类似.html的DOM结构，不能动态向根节点插入内容，只能按照组件结构插入组件（`new Hippy`的`entryPage`）
+        18. 每个组件（包括`<Text>`）都是块状的，不能像H5那样内联展示。但可以用如下方式制作类似`inline-block`的文字，支持不同颜色、换行、事件。
 
             ```jsx
             import { Text } from "react-native";
@@ -563,11 +573,11 @@
               </Text>
             </Text>
             ```
-        18. 列表项目曝光
+        19. 列表项目曝光
 
             1. 若是`<ListView>`，则用`onAppear`或`onWillAppear`判断某子节点是否曝光。
             2. 若是`<ScrollView>`（`<ListView>`也同理），则用`onLayout`按顺序记录每个子节点的宽高，然后 父级`onScroll`的滚动距离 与 父级宽高、各子节点宽高 的关系。
-        19. 制作swiper
+        20. 制作swiper
 
             1. 最基本的滑块
 
@@ -944,6 +954,94 @@
             >              );
             >            }
             >            ```
+            >3. 传递进props开启一次动画
+            >
+            >    ```tsx
+            >    import { Animation, AnimationOption, View, ViewStyle } from "react-native";
+            >    import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+            >
+            >    // 生成稳定的函数（返回的同一函数）
+            >    function usePersistCallback<T extends (...args: any[]) => any>(rawFunc: T) {
+            >      const func = useRef(rawFunc);
+            >
+            >      useLayoutEffect(() => {
+            >        func.current = rawFunc;
+            >      });
+            >
+            >      return useCallback((...args: Parameters<T>): ReturnType<T> => {
+            >        return func.current(...args);
+            >      }, []);
+            >    }
+            >
+            >    // 位移动画
+            >    const translateYConfig: AnimationOption = {
+            >      startValue: Number.MAX_VALUE,
+            >      toValue: Number.MAX_VALUE,
+            >      valueType: undefined,
+            >      duration: 500,
+            >      delay: 0,
+            >      repeatCount: 0,
+            >      mode: "timing",
+            >      timingFunction: "ease-in-out",
+            >    };
+            >
+            >    interface Props {
+            >      children: React.ReactNode;
+            >      style?: ViewStyle | ViewStyle[];
+            >      callback?: Function;
+            >      // 注意：传递相同的 translateYValues.startValue 会导致不进行新的动画。可以初始化 translateYValues.startValue = Number.MAX_VALUE
+            >      translateYValues: Pick<AnimationOption, "startValue" | "toValue">;
+            >    }
+            >
+            >    export default function TheAnimation(props: Props) {
+            >      const { children, style, callback, translateYValues } = props;
+            >      // 位移动画
+            >      const [translateY, setTranslateY] = useState<Animation | number>(Number.MAX_VALUE);
+            >
+            >      // 动画逻辑
+            >      const animationAction = usePersistCallback(() => {
+            >        const config = Object.assign({}, translateYConfig, {
+            >          startValue: translateYValues.startValue,
+            >          toValue: translateYValues.toValue,
+            >        });
+            >        if (config.startValue !== config.toValue) {
+            >          if (typeof translateY !== "number") {
+            >            translateY.onAnimationEnd(() => {
+            >              translateY.destroy();
+            >              callback?.();
+            >            });
+            >            translateY.start();
+            >          } else {
+            >            setTranslateY(new Animation(config));
+            >          }
+            >        }
+            >      });
+            >      useEffect(() => {
+            >        animationAction();
+            >      }, [translateY]);
+            >
+            >      // 传递进来的动画对象变化，则开始一次动画启动
+            >      useEffect(() => {
+            >        if (typeof translateY !== "number") {
+            >          translateY?.destroy();
+            >        }
+            >        setTranslateY(translateYValues.startValue);
+            >      }, [translateYValues]);
+            >
+            >      return (
+            >        <View
+            >          style={[
+            >            style,
+            >            {
+            >              transform: [{ translateY: translateY }],
+            >            },
+            >          ]}
+            >        >
+            >          {children}
+            >        </View>
+            >      );
+            >    }
+            >    ```
             ></details>
 
             - Tips（bug？）
@@ -990,7 +1088,7 @@
             返回与`window.localStorage`一致。
     3. `BackAndroid`
 
-        监听Android返回操作（实体键、手势、虚拟按键），在退出前做操作或拦截
+        监听Android返回操作（系统实体键、手势、虚拟按键 或 action触发客户端退出逻辑），在退出前做操作或拦截
 
         1. 开启：`BackAndroid.addListener(方法名)`
 
@@ -1157,6 +1255,11 @@
             2. 若设置了事件监听，则会承接住事件，事件不会透传至下层节点。
 
             >对于结构复杂的情况，可能违背这个逻辑，导致有覆盖的节点就不穿透。
+
+            - 针对hippy穿透到下方Native：
+
+                1. Android，若设置了监听事件，则不穿透，否则穿透
+                2. iOS，设不设置监听事件，都不穿透
 6. 终端事件
 
     ```jsx
@@ -1170,6 +1273,13 @@
     # 事件卸载
     this.call.remove();
     ```
+
+    1. `rotate`
+    2. `dealloc`
+    3. `destroyInstance`
+    4. `onSizeChanged`
+
+        Tip：注意部分手机（部分Android机已复现）一进页面必然调用`onSizeChanged`事件。
 7. 样式
 
     >1. Hippy的还原设计稿方案，与客户端的方案基本一致：[适配布局（与设计师协作思路）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/还原设计稿/README.md#适配布局与设计师协作思路)。
@@ -1192,6 +1302,21 @@
             <View style={{ width或height: 1 / PixelRatio.get() }}/>
             <View style={{ width或height: StyleSheet.hairlineWidth || 0.333333 }}/>
             {/* StyleSheet.hairlineWidth 注意要存在，返回0.33... */}
+            ```
+        - 响应式：
+
+            ```typescript
+            import { Dimensions } from "react-native";
+
+            const WINDOW_WIDTH = Dimensions.get("window").width;
+
+            export function pt(p: number, needInteger: boolean = false) {
+              const REM = Math.min(WINDOW_WIDTH / 375, 480 / 375);
+              if (needInteger) {
+                return Math.round(p * REM);
+              }
+              return p * REM;
+            }
             ```
 
     >属性名的方向：`left === start`、`right === end`。但貌似未实现 ~~`start`~~ 或 ~~`end`~~。
@@ -1390,7 +1515,7 @@
             1. `'relative'`（默认）
             2. `'absolute'`
 
-                1. 起点：从父级`border`内开始计算（父级的`margin`、`padding`不影响子级`absolute`位置相对父级位置）；从本身的`margin`开始计算。
+                1. 起点：从父级`border`之内开始计算（父级的`margin`、`padding`不影响子级`absolute`位置相对父级位置）；从本身的`margin`开始计算。
 
                     >与CSS表现一致。
 
@@ -1498,13 +1623,14 @@
 
             - Tips（bug？）
 
-                1. 可能不支持`<Text>`
+                1. 可能不支持`<Text>`。
+                2. Android不支持`<LinearGradientView>`设置`borderRadius`，可以统一在外层设置`borderRadius`+`overflow: 'hidden'`。
         2. `borderTopLeftRadius`、`borderTopRightRadius`、`borderBottomRightRadius`、`borderBottomLeftRadius`
 
             - Tips（bug？）
 
                 1. Android用这种单独设置的属性会导致`overflow: 'hidden'`有问题。
-                2. Android的`<LinearGradientView>`（nativeName="LinearGradientView"）对这种单独设置的属性支持不好（无效）。
+                2. Android的`<LinearGradientView>`（nativeName="LinearGradientView"）对这种单独设置的属性支持不好（无效），可以统一在外层设置这种单独设置的属性+`overflow: 'hidden'`（上一条说这样也还会有问题）。
                 3. iOS若最终设置的4个角值不同，则导致`backgroundColor`渲染问题。应避免使用这些单独设置的属性：
 
                     1. 切图处理

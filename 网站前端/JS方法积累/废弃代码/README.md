@@ -45,6 +45,7 @@
     </details>
 
 ---
+
 ## 原生JS方法
 
 ### *原生JS*格式化日期
@@ -917,83 +918,132 @@ $(window).on('scroll', a);
 >可以使用lodash的`_.debounce(func, [wait=0], [options={}])`，完全替代。
 
 ### *原生JS*节流函数
->来自：[underscore](https://github.com/jashkenas/underscore)。
+1. 简单实现
 
-```javascript
-/**
- * 函数连续调用时，func在wait时间内，执行次数不得高于1次
- * @param {Function} func - 传入函数
- * @param {Number} wait - 函数触发的最小间隔
- * @param {Object} [options] - 若想忽略开始边界上的调用，则传入{leading: false}；若想忽略结尾边界上的调用，则传入{trailing: false}
- * @returns {Function} - 返回客户调用函数
- */
-function throttle(func, wait, options) {
-    if (typeof Date.now !== 'function') {
-        Date.now = function () {
-            return new Date().getTime();
-        };
+    ```typescript
+    class Throttle<T extends any[]> {
+      constructor(func: (...args: T) => void, delay: number = 300, atBegin: boolean = true) {
+        this.delay = delay;
+        this.atBegin = atBegin;
+        this.func = func;
+      }
+
+      private delay: number;
+      private atBegin: boolean;
+      private func: (...args: T) => void;
+
+      private timer: number = 0;
+
+      // 刷新执行
+      public flush: (...args: T) => void = (...args: T) => {
+        if (!this.timer) {
+          this.atBegin && this.func.apply(this, args);
+          this.timer = setTimeout(() => {
+            !this.atBegin && this.func.apply(this, args);
+            this.timer = 0;
+          }, this.delay);
+        }
+      };
+
+      // 取消执行
+      public cancel: () => void = () => {
+        if (this.timer) {
+          clearTimeout(this.timer);
+          this.timer = 0;
+        }
+      };
+
+      // 判断是否节流中
+      public isPending: () => boolean = () => {
+        return this.timer !== 0;
+      };
     }
 
-    var context, args, result;
-    var timeout = null;
-    var previous = 0;   // 上次执行时间点
 
-    if (!options) {
-        options = {};
-    }
+    /* 使用测试 */
+    const a = new Throttle((a: number, b: string)=>{})
+    a.flush(1, '');a.flush(1, '');
+    a.isPending();
+    a.cancel()
+    ```
+2. 来自：[underscore](https://github.com/jashkenas/underscore)：
 
-    // 延迟执行函数
-    var later = function () {
-        // 若设定了开始边界不执行选项，上次执行时间始终为0
-        previous = options.leading === false ? 0 : Date.now();
-        timeout = null;
-        result = func.apply(context, args);
-        if (!timeout) {
-            context = args = null;
-        }
-    };
-
-    return function () {
-        var now = Date.now();
-
-        // 首次执行时，若设定了开始边界不执行选项，则将上次执行时间设定为当前时间。
-        if (!previous && options.leading === false) {
-            previous = now;
+    ```javascript
+    /**
+     * 函数连续调用时，func在wait时间内，执行次数不得高于1次
+     * @param {Function} func - 传入函数
+     * @param {Number} wait - 函数触发的最小间隔
+     * @param {Object} [options] - 若想忽略开始边界上的调用，则传入{leading: false}；若想忽略结尾边界上的调用，则传入{trailing: false}
+     * @returns {Function} - 返回客户调用函数
+     */
+    function throttle(func, wait, options) {
+        if (typeof Date.now !== 'function') {
+            Date.now = function () {
+                return new Date().getTime();
+            };
         }
 
-        // 延迟执行时间间隔
-        var remaining = wait - (now - previous);
+        var context, args, result;
+        var timeout = null;
+        var previous = 0;   // 上次执行时间点
 
-        context = this;
+        if (!options) {
+            options = {};
+        }
 
-        args = arguments;
-
-        // 延迟时间间隔remaining小于等于0，表示上次执行至此所间隔时间已经超过一个时间窗口 || remaining大于时间窗口wait，表示客户端系统时间被调整过
-        if (remaining <= 0 || remaining > wait) {
-            if (timeout) {
-                clearTimeout(timeout);
-                timeout = null;
-            }
-            previous = now;
+        // 延迟执行函数
+        var later = function () {
+            // 若设定了开始边界不执行选项，上次执行时间始终为0
+            previous = options.leading === false ? 0 : Date.now();
+            timeout = null;
             result = func.apply(context, args);
             if (!timeout) {
                 context = args = null;
             }
-        } else if (!timeout && options.trailing !== false) { // 若延迟执行不存在、且没有设定结尾边界不执行选项
-            timeout = setTimeout(later, remaining);
-        }
-        return result;
-    };
-}
+        };
+
+        return function () {
+            var now = Date.now();
+
+            // 首次执行时，若设定了开始边界不执行选项，则将上次执行时间设定为当前时间。
+            if (!previous && options.leading === false) {
+                previous = now;
+            }
+
+            // 延迟执行时间间隔
+            var remaining = wait - (now - previous);
+
+            context = this;
+
+            args = arguments;
+
+            // 延迟时间间隔remaining小于等于0，表示上次执行至此所间隔时间已经超过一个时间窗口 || remaining大于时间窗口wait，表示客户端系统时间被调整过
+            if (remaining <= 0 || remaining > wait) {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                }
+                previous = now;
+                result = func.apply(context, args);
+                if (!timeout) {
+                    context = args = null;
+                }
+            } else if (!timeout && options.trailing !== false) { // 若延迟执行不存在、且没有设定结尾边界不执行选项
+                timeout = setTimeout(later, remaining);
+            }
+            return result;
+        };
+    }
 
 
-/* 使用测试 */
-var a = throttle(function () {  // 不要使用箭头函数，因为实现代码中有用`apply`
-    console.log(1);
-}, 1000);
+    /* 使用测试 */
+    var a = throttle(function () {  // 不要使用箭头函数，因为实现代码中有用`apply`
+        console.log(1);
+    }, 1000);
 
-$(window).on('scroll', a);
-```
+    $(window).on('scroll', a);
+    ```
+
 >可以使用lodash的`_.throttle(func, [wait=0], [options={}])`，完全替代。
 
 ### *原生JS*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`

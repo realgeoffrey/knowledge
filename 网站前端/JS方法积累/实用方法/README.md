@@ -99,6 +99,7 @@
     >大部分情况下，jQuery内容适用于Zepto。
 
 ---
+
 ## 原生JS方法
 
 >更全面判断所在系统、浏览器：[bowser](https://github.com/lancedikson/bowser)。

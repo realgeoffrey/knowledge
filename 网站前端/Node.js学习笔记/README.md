@@ -23,6 +23,7 @@
     1. [pm2](#pm2)
 
 ---
+
 ## 安装
 
 ### nvm更新Node.js版本
@@ -304,9 +305,11 @@ npm（Node Package Manager）。
             >1. 去`node_modules/.bin`路径检查命令是否存在，找到之后执行；
             >2. 找不到，就去环境变量`$PATH`里，检查命令是否存在，找到之后执行;
             >3. 还是找不到，自动下载一个临时的依赖包最新版本在一个临时目录，然后再运行命令，运行完之后删除，不污染全局环境。
-2. [`package.json`](https://docs.npmjs.com/files/package.json)字段
+2. [`package.json`](https://docs.npmjs.com/cli/v9/configuring-npm/package-json)字段
 
     包描述、说明文件。
+
+    >npm、yarn、pnpm等，不同的包管理器配置不同。
 
     1. `name`
 
@@ -385,7 +388,24 @@ npm（Node Package Manager）。
         >
         >        >`export NODE_ENV=production;`。
         >    3. `npm install --production`不会安装自己的`devDependencies`。
-    5. `main`
+    5. `peerDependencies`
+
+        在开发插件时，你的插件需要某些依赖的支持，但是你又没必要去安装，因为插件的宿主会去安装这些依赖。此时就可以用 peerDependencies 去声明一下需要依赖的插件和版本。如果出问题的话，npm 会有警告来提示使用者去解决版本中的冲突。
+    6. `peerDependenciesMeta`
+
+        配置`peerDependencies`行为的选项。
+    7. `optionalDependencies`
+
+        如果一个依赖关系可以被使用，但你希望npm在找不到它或安装失败的情况下继续进行，那么你可以把它放在optionalDependencies对象中。optionalDependencies中的条目会覆盖dependencies中同名的条目，所以通常最好只放在一个地方。
+    8. `overrides`
+
+        可以重写项目依赖的依赖，及其依赖树下某个依赖的版本号，进行包的替换。overrides 支持任意深度的嵌套。
+
+        >如果在 yarn 里也想复写依赖版本号，需要使用 `resolution` 字段；在 pnpm 里复写版本号需要使用 `pnpm.overrides`或`pnpm.resolutions` 字段。
+    9. `bundleDependencies`
+
+        指定的包也将在发布或`npm pack`的时候一并被打包（当其他人使用这个包时，就可以直接使用打包在项目内的依赖，而不需要在通过包管理器去下载）。
+    10. `main`
 
         代码入口，默认：`index.js`。
 
@@ -396,27 +416,82 @@ npm（Node Package Manager）。
             1. `module`：ES6 Module
             2. `unpkg`：`<script>`引用（针对[unpkg.com](https://unpkg.com/)）
             3. `jsdelivr`：`<script>`引用（针对[www.jsdelivr.com](https://www.jsdelivr.com/)）
-    6. `scripts`
+    11. `browser`
+
+        若是作用域浏览器客户端，则替代 ~~`main`~~ 使用。
+    12. `scripts`
 
         可执行脚本，用`npm run 脚本名`执行。
 
-        - `pre脚本名`会在执行`脚本名`之前自动执行。
-    7. `files`
+        - 钩子：`pre`（命令之前执行）、`post`（命令之后执行）
+
+    >`scripts`中命令能使用的环境变量：
+    >
+    >    1. `npm_package_多个名字`：可以拿到`package.json`里面的字段。e.g. `npm_package_version`、`npm_package_repository_type`等。
+    >    2. `npm_config_名字`：可以拿到npm配置（`.npmrc`）。
+
+    13. `config`
+
+        配置仅`scripts`中命令能使用的环境变量，用法：`process.env.npm_package_config_键名`。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```javascript
+        >// ./package.json
+        >{
+        >  "config" : { "xx" : "any thing" },
+        >  "scripts" : { "start" : "node server.js" }
+        >}
+        >
+        >
+        >// ./server.js
+        >console.log(process.env.npm_package_config_xx)
+        >
+        >
+        >// 终端
+        >$ npm run start
+        >any thing
+        >$ node server.js
+        >undefined
+        >```
+        ></details>
+    14. `files`
 
         将仓库作为依赖项安装时要包含的路径、文件的数组。
-    8. `bin`
+    15. `bin`
 
         `{ 新增的命令: 对应的可执行文件路径 }`
-    9. `engines`
+    16. `man`
+
+        `man`说明文档路径。
+    17. `directories: { bin: 路径, man: 路径 }`
+
+        多命令、多说明文档。
+    18. `engines`
 
         该仓库在哪个版本的Node.js（、npm、yarn、等）上运行。
-    10. `browserslist`
 
-        支持哪些浏览器（及其版本）。
-    11. `description`
+        >e.g. `"engines": { "node": ">=0.10.3 <15" }`。
+    19. `os`
+
+        支持运行的操作系统。
+    20. `cpu`
+
+        支持运行的cpi架构。
+    21. `private`
+
+        设置为`true`，则无法`npm publish`，用于避免不小心公开项目。
+    22. `publishConfig`
+
+        发布时的配置（覆盖`.npmrc`）。
+    23. `workspaces`
+
+        工作区相关。
+    24. `description`
 
         描述，也作为在npm官网被搜索的内容。
-    12. `repository`
+    25. `repository`
 
         仓库远程版本控制，可以是github等。
 
@@ -437,31 +512,41 @@ npm（Node Package Manager）。
         >}
         >```
         ></details>
-    13. `keywords`
+    26. `keywords`
 
         在npm官网被搜索的关键字。
-    14. `author`
+    27. `author`
 
         仓库作者。
-    15. `contributors`
+    28. `contributors`
 
         仓库贡献者。
-    16. `license`
+    29. `license`
 
         证书。
-    17. `homepage`
+    30. `homepage`
 
         主页。
-    18. `bugs`
+    31. `bugs`
 
         链接到软件包的问题跟踪器，最常用的是GitHub的issues页面。
-    19. `private`
+    32. `funding`
 
-        设置为`true`，则无法`npm publish`，用于避免不小心公开项目。
-    20. 命令特有的属性
+        捐款。
 
-        某些命令特有的（如：ESLint的`eslintConfig`、Babel的`babel`、等），可以在相应的命令/项目文档中找到如何使用它们。
-    21. 其他
+    - 其他命令特有的属性，可以在相应的命令/项目文档中找到如何使用它们：
+
+        1. `eslintConfig`
+        2. `babel`
+        3. `browserslist`
+
+            支持哪些浏览器（及其版本）。
+        4. `gitHooks`
+        5. `lint-staged`
+        6. `sideEffects`
+        6. `exports`
+        6. `types`
+        6. `jest`
 3. 包的制作-使用
 
     1. 制作：
@@ -489,6 +574,12 @@ npm（Node Package Manager）。
 
     - 常用：`package-lock`、`registry`。
     - 注释：`;`或`#`。
+    - 优先级
+
+        1. per-project config file (/path/to/my/project/.npmrc)
+        2. per-user config file (~/.npmrc)
+        3. global config file ($PREFIX/etc/npmrc)
+        4. npm builtin config file (/path/to/npm/npmrc)
 
 >项目中使用某个开源库时，要考虑它的License和文件大小（若使用webpack打包，则可以使用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)进行分析）。
 
