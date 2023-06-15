@@ -1788,6 +1788,9 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >```typescript
     >type a = number | string | boolean
     >type b = Exclude<a, number | boolean>  // -> string
+    >
+    >enum c { A, B, C }
+    >type d = Exclude<c, c.A>       // -> c.B | c.C
     >```
     ></details>
 10. `NonNullable`

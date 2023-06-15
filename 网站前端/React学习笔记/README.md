@@ -2033,7 +2033,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
         >
         >```jsx
         >export default function UseRefDemo() {
-        >  const inputEl = useRef(null);
+        >  const inputEl = useRef(null);    // 类型：HTMLElement 或具体 HTMLInputElement（HTMLXxElement）
         >  const onButtonClick = () => {
         >    // `current` 指向已挂载到 DOM 上的文本输入元素
         >    inputEl.current.focus();
@@ -2306,13 +2306,18 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
 
         /* 使用测试 */
-        const func = usePersistCallback(()=>{
+        const func1 = usePersistCallback(()=>{
             // 可以使用任何变量，每次都会用最新值（不需要依赖项）
             // func是不变的变量
             // （最重要的：）内部引用`func()`，其内部的变量都可以用最新值
         })  // 方便针对：依赖变量a触发执行的内容，包含除了a之外的变量也必须是当前最新值
 
-        func()  // 在任意地方调用
+        func1()  // 在任意地方调用
+
+
+        const func2 = usePersistCallback((a:string, b:number)=>{})
+
+        func2('', 1)
         ```
         </details>
     4. 与debounce/throttle等配合使用方式，搜索本文上面内容
