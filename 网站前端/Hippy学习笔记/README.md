@@ -1569,7 +1569,14 @@
         1. `'visible'`（默认）
         2. `'hidden'`
 
-            Android机型，大部分子级元素一定会被父级元素截断（就像：父级元素固定`overflow: 'hidden'`不可改变），但是部分客户端组件还是需要父级设置`overflow: 'hidden'`才截断。因此若需要做超过父级的节点，则必须往上不断提升该节点。但对于`border`等，父级还是需要`overflow: hidden`才能不被子级盖住。
+            1. Android机型
+
+                1. 大部分子级元素一定会被父级元素截断（就像：父级元素固定`overflow: 'hidden'`不可改变），但是部分客户端组件还是需要父级设置`overflow: 'hidden'`才截断。
+
+                    因此若需要做超过父级的节点，则必须往上不断提升该节点。
+                2. 但对于`border`等，父级还是需要`overflow: hidden`才能不被子级盖住。
+
+                - 若第一个子级设置`marginLeft: -x`或最后一个子级设置`marginRight: -y`，想要父级不掩盖子级，则可以设置父级`paddingLeft: x`或`paddingRight: y`。
     11. 背景
 
         >不能直接 ~~`background`~~，无效果。

@@ -69,7 +69,7 @@
         >    1. CSS的`animation`相关事件：
         >
         >        `animationstart`、`animationend`、`animationcancel`、`animationiteration`
-        >    1. CSS的`transition`相关事件：`transitionend`
+        >    2. CSS的`transition`相关事件：`transitionend`
         >2. 动画其实就是按某种顺序、**平滑**地修改样式：如：颜色、大小、间距、`transform`等。
     2. `Style`：
 
@@ -861,6 +861,16 @@
 26. 字体高度抖动
 
     可能和设置在父级的`line-height`有关，尝试把`line-height`改到设置在包裹文字的节点。
+27. 国际化处理
+
+    todo
+
+    1. 翻译系统
+    2. 书写顺序
+
+        1. 设置`<html>`的`dir="ltr或rtl"`
+        2. 用插件处理样式中左右相关的样式，分离成左右排版顺序的逻辑
+28. （针对某些iOS机型，）`animation`和`transition`两种动画方式共用有兼容问题
 
 ---
 ## CSS

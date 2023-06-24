@@ -259,7 +259,7 @@
 
                 Simulator -> Edit -> Automatically Sync Pasteboard
 
-                >若失败，则：[Copy/Paste not working in XCode 13 Simulators with M1 Macbook Pro](https://stackoverflow.com/questions/71569778/copy-paste-not-working-in-xcode-13-simulators-with-m1-macbook-pro/73878520#73878520)（非M1亲测也可）。
+                >若失败，则：[Copy/Paste not working in XCode 13 Simulators with M1 Macbook Pro](https://stackoverflow.com/questions/71569778/copy-paste-not-working-in-xcode-13-simulators-with-m1-macbook-pro/73878520#73878520)（非M1亲测也可）。或升级打开的模拟器iOS系统版本大于16.x（bugfix）。
 
 - 若网络通信不通过发起HTTP请求，则会有其他客户端通讯协议。此时就不能用HTTP抓包查看请求，需要客户端通讯协议对应的通讯查看方式。
 - 前端组件最终是传递给客户端，由客户端组件来实现呈现，因此用客户端工具查看客户端组件时，可以根据组件名字是否有前端标识，判断其是否来自于前端。

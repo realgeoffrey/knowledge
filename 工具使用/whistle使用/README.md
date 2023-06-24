@@ -179,6 +179,16 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
         ```text
         URL resType://「text/plain、text/html、image/png、等」
         ```
+    11. ignore
+
+        忽略指定协议的匹配规则。
+
+        ```text
+        pattern ignore://protocol1|protocol2|protocolN
+
+        // 忽略所有规则
+        pattern ignore://*
+        ```
 
     - 所有协议均支持以下[匹配模式](https://wproxy.org/whistle/pattern.html)
 
