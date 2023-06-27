@@ -2130,7 +2130,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ```typescript
     // 传进来参数的类型是`Fish | Bird`。函数返回`true`参数类型是`Fish`；函数返回`false`参数类型是除去`Fish`
     function isFish(pet: Fish | Bird): pet is Fish {
-        return (pet as Fish).swim !== undefined;
+        return (pet as Fish).swim !== undefined;    // 自定义类型保护若要用到非共有的属性/方法，也需要用类型断言
     }
 
     // Both calls to 'swim' and 'fly' are now okay.
@@ -2408,6 +2408,10 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 
 >不支持：~~`类型.键名`~~。
 
+1. `类型[键名]`获取某个键名的类型
+2. `数组类型[number]`获取数组所有项的联合类型
+3. `{ [x:string]: 类型A }[string]`获取对象所有项的联合类型（其实就是类型A）
+
 ><details>
 ><summary>e.g.</summary>
 >
@@ -2417,12 +2421,15 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 >  age: number;
 >  location: string;
 >}
->
 >type P1 = Person["name"];          // -> string
 >type P2 = Person["name" | "age"];  // -> string | number
+>
 >type P3 = string["charAt"];        // -> (pos: number) => string
 >type P4 = string[]["push"];        // -> (...items: string[]) => number
 >type P5 = string[][0];             // -> string
+>
+>type A = [...{a: string; b: number;}[], boolean]
+>type B = A[number]                 // -> boolean | {a: string; b: number;}
 >```
 ></details>
 

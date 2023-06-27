@@ -6,6 +6,8 @@
     1. 根据UA或浏览器特性判断
 
         1. [判断所在系统](#原生js判断所在系统)
+        1. [判断Android版本号](#原生js判断android版本号)
+        1. [判断iOS版本号](#原生js判断ios版本号)
         1. [判断移动平台](#原生js判断移动平台)
         1. [判断ie6、7、8、9版本](#原生js判断ie6789版本)
         1. [判断ie所有版本](#原生js判断ie所有版本)
@@ -23,6 +25,7 @@
         1. [拖拽和放下](#原生js拖拽和放下)
         1. [触摸屏模拟点击事件（消除「延时300毫秒后才触发click事件」，使点击事件提前触发）](#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)
         1. [判断事件在浏览器是否存在](#原生js判断事件在浏览器是否存在)
+        1. [根据滚动方向执行函数](#原生js根据滚动方向执行函数)
     1. 数字计算
 
         1. [科学计数法转换成字符串的数字](#原生js科学计数法转换成字符串的数字)
@@ -49,12 +52,7 @@
     1. 功能
 
         1. [用请求图片作log统计](#原生js用请求图片作log统计)
-        1. [判断是否为`Node`、是否为`Element`](#原生js判断是否为node是否为element)
-        1. [判断对象是否为空](#原生js判断对象是否为空)
-        1. [输入框光标位置的获取和设置](#原生js输入框光标位置的获取和设置)
-        1. [文本选区覆盖某DOM的文本范围](#原生js文本选区覆盖某dom的文本范围)
-        1. [针对WAP的阻止滚动冒泡（仅DOM）](#原生js针对wap的阻止滚动冒泡仅dom)
-        1. [获取滚动条宽度（或高度）](#原生js获取滚动条宽度或高度)
+
         1. [验证邮箱有效性](#原生js验证邮箱有效性)
         1. [创建兼容的XHR对象](#原生js创建兼容的xhr对象)
         1. [动态添加脚本、样式](#原生js动态添加脚本样式)
@@ -65,17 +63,24 @@
         1. [从字符串中获取绝对路径](#原生js从字符串中获取绝对路径)
         1. [不传递请求头的Referrer进行跳转](#原生js不传递请求头的referrer进行跳转)
         1. [格式化接口返回的数据](#原生js格式化接口返回的数据)
-        1. [根据滚动方向执行函数](#原生js根据滚动方向执行函数)
         1. [判断是否支持WebP](#原生js判断是否支持webp)
         1. [DOM展示或消失执行方法（IntersectionObserver）](#原生jsdom展示或消失执行方法intersectionobserver)
         1. [执行方法的前/后进行开/关loading](#原生js执行方法的前后进行开关loading)
         1. [点击下载](#原生js点击下载)
         1. [获取对象指定深度属性](#原生js获取对象指定深度属性)
         1. [写入剪切板](#原生js写入剪切板)
-        1. [默认图组件](#react默认图组件)
-        1. [溢出文本的省略](#原生js溢出文本的省略)
         1. [React组件业务类似Promise.all的效果](#react组件业务类似promiseall的效果)
         1. [轮询](#原生js轮询)
+    1. DOM相关
+
+        1. [判断是否为`Node`、是否为`Element`](#原生js判断是否为node是否为element)
+        1. [判断对象是否为空](#原生js判断对象是否为空)
+        1. [输入框光标位置的获取和设置](#原生js输入框光标位置的获取和设置)
+        1. [文本选区覆盖某DOM的文本范围](#原生js文本选区覆盖某dom的文本范围)
+        1. [针对WAP的阻止滚动冒泡（仅DOM）](#原生js针对wap的阻止滚动冒泡仅dom)
+        1. [获取滚动条宽度（或高度）](#原生js获取滚动条宽度或高度)
+        1. [默认图组件](#react默认图组件)
+        1. [溢出文本的省略](#原生js溢出文本的省略)
     1. 提升性能
 
         1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
@@ -151,6 +156,20 @@ function detectOS (ua = window.navigator.userAgent, pf = window.navigator.platfo
 }
 ```
 >判断是WAP或PC：`if (/AppleWebKit.*Mobile/.test(window.navigator.userAgent)) { /* WAP */ } else { /* PC */ }`
+
+### *原生JS*判断Android版本号
+```javascript
+function versionAndroid (ua = window.navigator.userAgent) {
+  return ua.toLowerCase().match(/android (.*?);/)?.[1] || '';
+}
+```
+
+### *原生JS*判断iOS版本号
+```javascript
+function versionIOS (ua = window.navigator.userAgent) {
+  return ua.toLowerCase().match(/cpu iphone os (.*?) like mac os/)?.[1] || '';
+}
+```
 
 ### *原生JS*判断移动平台
 ```javascript
@@ -972,6 +991,81 @@ function isEventSupported(eventName, element) {
 
 >更全面的性能监听：[stats.js](https://github.com/mrdoob/stats.js/)。
 
+### *原生JS*根据滚动方向执行函数
+```javascript
+/**
+ * 根据滚动方向直行对应
+ * @constructor
+ * @param {object} [dom = window] - 监听滚动的DOM
+ * @param {Function} [up] - 向上滚动的回调
+ * @param {Function} [down] - 向下滚动的回调
+ * @param {Function} [left] - 向左滚动的回调
+ * @param {Function} [right] - 向右滚动的回调
+ */
+function ScrollDirection ({dom = window, up = () => {}, down = () => {}, left = () => {}, right = () => {}} = {}) {
+  let beforeV // 垂直滚动高度
+  let beforeH // 水平滚动高度
+  if (dom === window) {
+    beforeV = document.body.scrollTop || document.documentElement.scrollTop
+    beforeH = document.body.scrollLeft || document.documentElement.scrollLeft
+  } else {
+    beforeV = dom.scrollTop
+    beforeH = dom.scrollLeft
+  }
+
+  const handleScroll = () => {
+    let afterV  // 垂直滚动高度
+    let afterH  // 水平滚动高度
+    if (dom === window) {
+      afterV = document.body.scrollTop || document.documentElement.scrollTop
+      afterH = document.body.scrollLeft || document.documentElement.scrollLeft
+    } else {
+      afterV = dom.scrollTop
+      afterH = dom.scrollLeft
+    }
+
+    const gapV = afterV - beforeV
+    const gapH = afterH - beforeH
+
+    if (gapV > 0) {
+      down()
+    } else if (gapV < 0) {
+      up()
+    }
+
+    if (gapH > 0) {
+      right()
+    } else if (gapH < 0) {
+      left()
+    }
+
+    beforeV = afterV
+    beforeH = afterH
+  }
+
+  dom.addEventListener('scroll', handleScroll, false)
+
+  this.stop = () => {
+    dom.removeEventListener('scroll', handleScroll, false)
+  }
+}
+
+
+/* 使用测试 */
+var a = new ScrollDirection({
+  up: () => {console.log('up')},
+  down: () => {console.log('down')},
+  left: () => {console.log('left')},
+  right: () => {console.log('right')}
+})
+var b = new ScrollDirection({
+  dom: document.getElementById('j-div'), up: () => {console.log('dom up')}, down: () => {console.log('dom down')}
+})
+
+// a.stop()
+// b.stop()
+```
+
 ### *原生JS*科学计数法转换成字符串的数字
 ```javascript
 function eToString(number) {
@@ -1768,244 +1862,6 @@ var sendLog = (function () {
 sendLog('统计url');
 ```
 
-### *原生JS*判断是否为`Node`、是否为`Element`
-```javascript
-// 判断是否为Node
-function isNode(o) {
-  return typeof Node === 'object' ? o instanceof Node : !!o && typeof o === 'object' && typeof o.nodeType === 'number' && typeof o.nodeName === 'string';
-}
-
-// 判断是否为Element
-function isElement(o) {
-  return typeof HTMLElement === 'object' ? o instanceof HTMLElement : !!o && typeof o === 'object' && o !== null && o.nodeType === 1 && typeof o.nodeName === 'string';
-}
-```
-
-### *原生JS*判断对象是否为空
-```javascript
-function isObjEmpty(obj) {
-    if (obj !== Object(obj)) {  /* 参数不是对象 */
-        throw new TypeError('参数不是对象');
-    } else if (typeof Object.keys === 'function') { /* ie9+ */
-
-        return Object.keys(obj).length === 0;
-    } else {
-        for (var one in obj) {
-            if (obj.hasOwnProperty(one)) {
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-}
-```
-
-### *原生JS*输入框光标位置的获取和设置
-```javascript
-var cursorPosition = {
-
-    /**
-     * 获取光标位置和选中长度
-     * @param {Object} dom - 标签input或textarea的DOM对象
-     * @returns {Object} - {光标起始位置,选中长度}
-     */
-    get: function (dom) {
-        var start = 0,  // 光标起始位置
-            selLen = 0, // 光标选中长度
-            sel, ieSel;
-
-        if ('selectionStart' in dom) {
-            start = dom.selectionStart;
-            selLen = dom.selectionEnd - start;
-        } else if (document.selection) {    /* ie */
-            sel = document.selection.createRange();
-            selLen = sel.text.length;
-
-            if (dom.nodeName.toLowerCase() === 'textarea') {
-                ieSel = document.body.createTextRange();
-                ieSel.moveToElementText(dom);
-            } else {
-                ieSel = dom.createTextRange();
-            }
-
-            ieSel.setEndPoint('EndToEnd', sel);
-            start = ieSel.text.length - selLen;
-        }
-
-        return {start: start, select: selLen};
-    },
-
-    /**
-     * 设置光标起始位置和选中长度
-     * @param {Object} dom - 标签input或textarea的DOM对象
-     * @param {Number} start - 光标起始位置
-     * @param {Number} len - 选中长度
-     * @returns {Number} end - 结束位置（start+len）
-     */
-    set: function (dom, start, len) {
-        var valueLen = dom.value.length,
-            end, ieSel;
-
-        /* 初始化start */
-        start = parseInt(start, 10);
-        if (!start) {
-            start = 0;
-        } else if (start > valueLen) {
-            start = valueLen;
-        }
-
-        /* 初始化len */
-        len = parseInt(len, 10);
-        if (!len) {
-            len = 0;
-        }
-
-        /* 初始化end */
-        end = start + len;
-        if (end > valueLen) {
-            end = valueLen;
-        }
-
-        if (valueLen !== 0) {
-            if (dom.setSelectionRange) {
-                dom.setSelectionRange(start, end);
-                dom.focus();
-            } else {    /* ie */
-                ieSel = dom.createTextRange();
-                ieSel.moveStart('character', -valueLen);
-                ieSel.moveEnd('character', -valueLen);
-                ieSel.moveStart('character', start);
-                ieSel.moveEnd('character', len);
-                ieSel.select();
-            }
-        } else {
-            if (dom.setSelectionRange) {
-                dom.focus();
-            } else {    /* ie */
-                ieSel = dom.createTextRange();
-                ieSel.select();
-            }
-        }
-
-        return end;
-    }
-};
-
-
-/* 使用测试 */
-$(输入框选择器).on('mouseup keyup', function () {
-    console.log(cursorPosition.get(this));
-});
-
-console.log(cursorPosition.set(输入框dom, 起始位置, 选中长度));
-```
-[CodePen demo](https://codepen.io/realgeoffrey/pen/BXQvbZ)
-
-### *原生JS*文本选区覆盖某DOM的文本范围
-```javascript
-/**
- * 文本选区覆盖某DOM文本范围
- * @param {Object} dom - DOM对象
- * @returns {Boolean} 是否成功
- */
-function selectElement (dom) {
-  if (window.getSelection && dom) {  // ie9+
-    let sel = window.getSelection()
-    sel.removeAllRanges()
-    let range = document.createRange()
-    range.selectNode(dom)
-    sel.addRange(range)
-    return true
-  } else {
-    return false
-  }
-}
-```
-
-### *原生JS*针对WAP的阻止滚动冒泡（仅DOM）
->1. 因为`scroll`事件不会冒泡，所以`stopPropagation`、`preventDefault`无法达到效果。
->2. iOS可以在DOM滚动到顶部或底部时，通过`-webkit-overflow-scrolling: touch;`继续触发「橡皮筋效果」。
-
-```html
-<style>
-    .bounce {
-        overflow-y: scroll;
-        -webkit-overflow-scrolling: touch;  /* 增加DOM的回弹效果（iOS） */
-
-        height: 固定高度;
-    }
-</style>
-
-<div class="bounce" id="j-bounce">
-    a<br>
-    b<br>
-    c<br>
-    d<br>
-    e<br>
-    f<br>
-    g<br>
-</div>
-
-<script>
-const ScrollStopPropagation = function (dom) {
-  const _stopPropagation = function () {
-    const startTopScroll = dom.scrollTop  // 滚动高度
-    const domHeight = dom.offsetHeight  // 占据高度
-    const contentHeight = dom.scrollHeight  // 内容高度（占据高度+可滚动最大高度
-
-    /*
-     * 在触摸开始时，若发现滚动区域已经处于极限状态时，则手工设置 scrollTop 的值，
-     * 将滚动内容向边缘方向偏移 1px（这实际上改变了滚动区域的极限状态），
-     * 从而诱使浏览器对滚动区块使用橡皮筋效果，而不会把触摸事件向上传播到 DOM 树（引起整页滚动）。
-     */
-    if (startTopScroll <= 0) {
-      dom.scrollTop = 1
-    } else if (startTopScroll + domHeight >= contentHeight) {
-      dom.scrollTop = contentHeight - domHeight - 1
-    }
-  }
-
-  dom.addEventListener('touchstart', _stopPropagation, false)
-
-  this.stop = () => {
-    dom.removeEventListener('touchstart', _stopPropagation, false)
-  }
-}
-
-/* 使用测试 */
-const a = new ScrollStopPropagation(document.getElementById('j-bounce'))
-
-
-// a.stop()
-</script>
-```
-[CodePen demo](https://codepen.io/realgeoffrey/pen/oKYJOg)
->参考：[ScrollFix](https://github.com/joelambert/ScrollFix)。
-
-### *原生JS*获取滚动条宽度（或高度）
-```javascript
-function getScrollBarWidth() {
-    if (typeof arguments.callee.barWidth !== 'undefined') {
-
-        return arguments.callee.barWidth;
-    }
-
-    var dom = document.createElement('div');
-
-    dom.style.cssText = 'overflow: scroll; width: 100px; height: 100px;';
-
-    document.body.appendChild(dom);
-
-    arguments.callee.barWidth = dom.offsetWidth - dom.clientWidth;
-
-    document.body.removeChild(dom);
-
-    return arguments.callee.barWidth;
-}
-```
-
 ### *原生JS*验证邮箱有效性
 >来自：[Stack Overflow: Validate email address in JavaScript?](http://stackoverflow.com/questions/46155/validate-email-address-in-javascript#answer-46181)。
 
@@ -2506,81 +2362,6 @@ function noreferrerOpenNew (fullLink) {  // 需要完整URL
     );
     ```
 
-### *原生JS*根据滚动方向执行函数
-```javascript
-/**
- * 根据滚动方向直行对应
- * @constructor
- * @param {object} [dom = window] - 监听滚动的DOM
- * @param {Function} [up] - 向上滚动的回调
- * @param {Function} [down] - 向下滚动的回调
- * @param {Function} [left] - 向左滚动的回调
- * @param {Function} [right] - 向右滚动的回调
- */
-function ScrollDirection ({dom = window, up = () => {}, down = () => {}, left = () => {}, right = () => {}} = {}) {
-  let beforeV // 垂直滚动高度
-  let beforeH // 水平滚动高度
-  if (dom === window) {
-    beforeV = document.body.scrollTop || document.documentElement.scrollTop
-    beforeH = document.body.scrollLeft || document.documentElement.scrollLeft
-  } else {
-    beforeV = dom.scrollTop
-    beforeH = dom.scrollLeft
-  }
-
-  const handleScroll = () => {
-    let afterV  // 垂直滚动高度
-    let afterH  // 水平滚动高度
-    if (dom === window) {
-      afterV = document.body.scrollTop || document.documentElement.scrollTop
-      afterH = document.body.scrollLeft || document.documentElement.scrollLeft
-    } else {
-      afterV = dom.scrollTop
-      afterH = dom.scrollLeft
-    }
-
-    const gapV = afterV - beforeV
-    const gapH = afterH - beforeH
-
-    if (gapV > 0) {
-      down()
-    } else if (gapV < 0) {
-      up()
-    }
-
-    if (gapH > 0) {
-      right()
-    } else if (gapH < 0) {
-      left()
-    }
-
-    beforeV = afterV
-    beforeH = afterH
-  }
-
-  dom.addEventListener('scroll', handleScroll, false)
-
-  this.stop = () => {
-    dom.removeEventListener('scroll', handleScroll, false)
-  }
-}
-
-
-/* 使用测试 */
-var a = new ScrollDirection({
-  up: () => {console.log('up')},
-  down: () => {console.log('down')},
-  left: () => {console.log('left')},
-  right: () => {console.log('right')}
-})
-var b = new ScrollDirection({
-  dom: document.getElementById('j-div'), up: () => {console.log('dom up')}, down: () => {console.log('dom down')}
-})
-
-// a.stop()
-// b.stop()
-```
-
 ### *原生JS*判断是否支持WebP
 1. 同步判断
 
@@ -2951,177 +2732,6 @@ clipboard("写入的内容~")
 >1. 注意，有些浏览器对不信任的域名会静默失败（resolved）。
 >2. 可以使用[clipboard.js](https://github.com/zenorocha/clipboard.js)。
 
-### *React*默认图组件
-1. <details>
-
-    <summary>class组件</summary>
-
-    ```tsx
-    import React, { Component } from "react";
-
-    interface PropsType {
-      src: string;
-      defaultImage: string;
-      className?: string;
-      classNameForError?: string;
-      style?: React.CSSProperties;
-      onClick?: () => void;
-      alt?: string;
-    }
-
-    export default class TheImage extends Component<PropsType> {
-      state = {
-        isError: false,
-      };
-
-      componentDidUpdate(prevProps: PropsType) {
-        // 检测到图片有更新，需要重新加载
-        if (prevProps.src !== this.props.src) {
-          if (this.props.src && this.state.isError) {
-            this.setState({
-              isError: false,
-            });
-          }
-          if (!this.props.src && !this.state.isError) {
-            this.setState({
-              isError: true,
-            });
-          }
-        }
-      }
-
-      render() {
-        const {
-          src,
-          defaultImage,
-          className = "",
-          classNameForError = "",
-          style,
-          onClick,
-          alt,
-        } = this.props;
-
-        return (
-          <img
-            src={this.state.isError ? defaultImage : src}
-            className={
-              this.state.isError ? `${classNameForError} ${className}` : className
-            }
-            style={style}
-            onClick={() => {
-              onClick?.();
-            }}
-            onError={() => {
-              this.setState({
-                isError: true,
-              });
-            }}
-            alt={alt || `图${src}`}
-          />
-        );
-      }
-    }
-    ```
-    </details>
-2. hook函数组件
-
-    ```tsx
-    import React, { useEffect, useState } from "react";
-
-    interface PropsType {
-      src: string;
-      defaultImage: string;
-      className?: string;
-      classNameForError?: string;
-      style?: React.CSSProperties;
-      onClick?: () => void;
-      alt?: string;
-    }
-
-    export default function TheImage(props: PropsType) {
-      const {
-        src,
-        defaultImage,
-        className = "",
-        classNameForError = "",
-        style,
-        onClick,
-        alt,
-      } = props;
-
-      const [isError, setIsError] = useState(false);
-
-      useEffect(() => {
-        setIsError(!src);
-      }, [src]);
-
-      return (
-        <img
-          src={isError ? defaultImage : src}
-          className={isError ? `${classNameForError} ${className}` : className}
-          style={style}
-          onClick={() => {
-            onClick?.();
-          }}
-          onError={() => {
-            setIsError(true);
-          }}
-          alt={alt || `图${src}`}
-        />
-      );
-    }
-    ```
-
-- 使用
-
-    ```tsx
-    /* 使用测试 */
-    <TheImage
-      src={this.state.switch ? 'https://fakeimg.pl/100/?text=true': '1'}
-      defaultImage="https://fakeimg.pl/100/?text=default"
-      style={{ width: "100px", height: "100px" }}
-      className='abc'
-      classNameForError='abc-error'
-      onClick={() => {
-        this.setState({
-          switch: !this.state.switch
-        })
-      }}
-    />
-    ```
-
-### *原生JS*溢出文本的省略
-```html
-<style>
-  p {
-    font-size: 12px; /* 注意太大的字体，一行的撑起的scrollHeight可能超过line-height */
-    height: 40px;
-    line-height: 20px;
-  }
-</style>
-
-<p id="container">123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。</p>
-
-<script>
-const container = document.getElementById('container')
-const containerHeight = container.offsetHeight
-// todo：不仅针对innerText，还可以把每个子节点container.childNodes，根据nodeType的值来分别处理。如：`Node.ELEMENT_NODE`当做一个整体，`Node.TEXT_NODE`分割每个文字
-const text = container.innerText
-for (let i = 0; i < text.length; i++) {
-  container.innerText = text.substring(0, i)
-  if (containerHeight < container.scrollHeight) {
-    container.style.overflow = 'hidden'
-    container.innerHTML = text.substring(0, i - 3) + '<span style="cursor: pointer" onclick="container.innerHTML=text; container.style.overflow=\'unset\'">...</span>'
-
-    console.log('产生省略')
-    break
-  }
-}
-</script>
-```
-
->可参考：[Ant Design：Typography排版的`ellipsis`](https://ant.design/components/typography-cn/)。
-
 ### React组件业务类似Promise.all的效果
 ```tsx
 import React, { useEffect, useState, useRef } from "react";
@@ -3305,6 +2915,415 @@ promisePoller({
 }).then((data) => console.warn(data));
 ```
 >参考：[promise-poller](https://github.com/joeattardi/promise-poller)。
+
+### *原生JS*判断是否为`Node`、是否为`Element`
+```javascript
+// 判断是否为Node
+function isNode(o) {
+  return typeof Node === 'object' ? o instanceof Node : !!o && typeof o === 'object' && typeof o.nodeType === 'number' && typeof o.nodeName === 'string';
+}
+
+// 判断是否为Element
+function isElement(o) {
+  return typeof HTMLElement === 'object' ? o instanceof HTMLElement : !!o && typeof o === 'object' && o !== null && o.nodeType === 1 && typeof o.nodeName === 'string';
+}
+```
+
+### *原生JS*判断对象是否为空
+```javascript
+function isObjEmpty(obj) {
+    if (obj !== Object(obj)) {  /* 参数不是对象 */
+        throw new TypeError('参数不是对象');
+    } else if (typeof Object.keys === 'function') { /* ie9+ */
+
+        return Object.keys(obj).length === 0;
+    } else {
+        for (var one in obj) {
+            if (obj.hasOwnProperty(one)) {
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+```
+
+### *原生JS*输入框光标位置的获取和设置
+```javascript
+var cursorPosition = {
+
+    /**
+     * 获取光标位置和选中长度
+     * @param {Object} dom - 标签input或textarea的DOM对象
+     * @returns {Object} - {光标起始位置,选中长度}
+     */
+    get: function (dom) {
+        var start = 0,  // 光标起始位置
+            selLen = 0, // 光标选中长度
+            sel, ieSel;
+
+        if ('selectionStart' in dom) {
+            start = dom.selectionStart;
+            selLen = dom.selectionEnd - start;
+        } else if (document.selection) {    /* ie */
+            sel = document.selection.createRange();
+            selLen = sel.text.length;
+
+            if (dom.nodeName.toLowerCase() === 'textarea') {
+                ieSel = document.body.createTextRange();
+                ieSel.moveToElementText(dom);
+            } else {
+                ieSel = dom.createTextRange();
+            }
+
+            ieSel.setEndPoint('EndToEnd', sel);
+            start = ieSel.text.length - selLen;
+        }
+
+        return {start: start, select: selLen};
+    },
+
+    /**
+     * 设置光标起始位置和选中长度
+     * @param {Object} dom - 标签input或textarea的DOM对象
+     * @param {Number} start - 光标起始位置
+     * @param {Number} len - 选中长度
+     * @returns {Number} end - 结束位置（start+len）
+     */
+    set: function (dom, start, len) {
+        var valueLen = dom.value.length,
+            end, ieSel;
+
+        /* 初始化start */
+        start = parseInt(start, 10);
+        if (!start) {
+            start = 0;
+        } else if (start > valueLen) {
+            start = valueLen;
+        }
+
+        /* 初始化len */
+        len = parseInt(len, 10);
+        if (!len) {
+            len = 0;
+        }
+
+        /* 初始化end */
+        end = start + len;
+        if (end > valueLen) {
+            end = valueLen;
+        }
+
+        if (valueLen !== 0) {
+            if (dom.setSelectionRange) {
+                dom.setSelectionRange(start, end);
+                dom.focus();
+            } else {    /* ie */
+                ieSel = dom.createTextRange();
+                ieSel.moveStart('character', -valueLen);
+                ieSel.moveEnd('character', -valueLen);
+                ieSel.moveStart('character', start);
+                ieSel.moveEnd('character', len);
+                ieSel.select();
+            }
+        } else {
+            if (dom.setSelectionRange) {
+                dom.focus();
+            } else {    /* ie */
+                ieSel = dom.createTextRange();
+                ieSel.select();
+            }
+        }
+
+        return end;
+    }
+};
+
+
+/* 使用测试 */
+$(输入框选择器).on('mouseup keyup', function () {
+    console.log(cursorPosition.get(this));
+});
+
+console.log(cursorPosition.set(输入框dom, 起始位置, 选中长度));
+```
+[CodePen demo](https://codepen.io/realgeoffrey/pen/BXQvbZ)
+
+### *原生JS*文本选区覆盖某DOM的文本范围
+```javascript
+/**
+ * 文本选区覆盖某DOM文本范围
+ * @param {Object} dom - DOM对象
+ * @returns {Boolean} 是否成功
+ */
+function selectElement (dom) {
+  if (window.getSelection && dom) {  // ie9+
+    let sel = window.getSelection()
+    sel.removeAllRanges()
+    let range = document.createRange()
+    range.selectNode(dom)
+    sel.addRange(range)
+    return true
+  } else {
+    return false
+  }
+}
+```
+
+### *原生JS*针对WAP的阻止滚动冒泡（仅DOM）
+>1. 因为`scroll`事件不会冒泡，所以`stopPropagation`、`preventDefault`无法达到效果。
+>2. iOS可以在DOM滚动到顶部或底部时，通过`-webkit-overflow-scrolling: touch;`继续触发「橡皮筋效果」。
+
+```html
+<style>
+    .bounce {
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;  /* 增加DOM的回弹效果（iOS） */
+
+        height: 固定高度;
+    }
+</style>
+
+<div class="bounce" id="j-bounce">
+    a<br>
+    b<br>
+    c<br>
+    d<br>
+    e<br>
+    f<br>
+    g<br>
+</div>
+
+<script>
+const ScrollStopPropagation = function (dom) {
+  const _stopPropagation = function () {
+    const startTopScroll = dom.scrollTop  // 滚动高度
+    const domHeight = dom.offsetHeight  // 占据高度
+    const contentHeight = dom.scrollHeight  // 内容高度（占据高度+可滚动最大高度
+
+    /*
+     * 在触摸开始时，若发现滚动区域已经处于极限状态时，则手工设置 scrollTop 的值，
+     * 将滚动内容向边缘方向偏移 1px（这实际上改变了滚动区域的极限状态），
+     * 从而诱使浏览器对滚动区块使用橡皮筋效果，而不会把触摸事件向上传播到 DOM 树（引起整页滚动）。
+     */
+    if (startTopScroll <= 0) {
+      dom.scrollTop = 1
+    } else if (startTopScroll + domHeight >= contentHeight) {
+      dom.scrollTop = contentHeight - domHeight - 1
+    }
+  }
+
+  dom.addEventListener('touchstart', _stopPropagation, false)
+
+  this.stop = () => {
+    dom.removeEventListener('touchstart', _stopPropagation, false)
+  }
+}
+
+/* 使用测试 */
+const a = new ScrollStopPropagation(document.getElementById('j-bounce'))
+
+
+// a.stop()
+</script>
+```
+[CodePen demo](https://codepen.io/realgeoffrey/pen/oKYJOg)
+>参考：[ScrollFix](https://github.com/joelambert/ScrollFix)。
+
+### *原生JS*获取滚动条宽度（或高度）
+```javascript
+function getScrollBarWidth() {
+    if (typeof arguments.callee.barWidth !== 'undefined') {
+
+        return arguments.callee.barWidth;
+    }
+
+    var dom = document.createElement('div');
+
+    dom.style.cssText = 'overflow: scroll; width: 100px; height: 100px;';
+
+    document.body.appendChild(dom);
+
+    arguments.callee.barWidth = dom.offsetWidth - dom.clientWidth;
+
+    document.body.removeChild(dom);
+
+    return arguments.callee.barWidth;
+}
+```
+
+### *React*默认图组件
+1. <details>
+
+    <summary>class组件</summary>
+
+    ```tsx
+    import React, { Component } from "react";
+
+    interface PropsType {
+      src: string;
+      defaultImage: string;
+      className?: string;
+      classNameForError?: string;
+      style?: React.CSSProperties;
+      onClick?: () => void;
+      alt?: string;
+    }
+
+    export default class TheImage extends Component<PropsType> {
+      state = {
+        isError: false,
+      };
+
+      componentDidUpdate(prevProps: PropsType) {
+        // 检测到图片有更新，需要重新加载
+        if (prevProps.src !== this.props.src) {
+          if (this.props.src && this.state.isError) {
+            this.setState({
+              isError: false,
+            });
+          }
+          if (!this.props.src && !this.state.isError) {
+            this.setState({
+              isError: true,
+            });
+          }
+        }
+      }
+
+      render() {
+        const {
+          src,
+          defaultImage,
+          className = "",
+          classNameForError = "",
+          style,
+          onClick,
+          alt,
+        } = this.props;
+
+        return (
+          <img
+            src={this.state.isError ? defaultImage : src}
+            className={
+              this.state.isError ? `${classNameForError} ${className}` : className
+            }
+            style={style}
+            onClick={() => {
+              onClick?.();
+            }}
+            onError={() => {
+              this.setState({
+                isError: true,
+              });
+            }}
+            alt={alt || `图${src}`}
+          />
+        );
+      }
+    }
+    ```
+    </details>
+2. hook函数组件
+
+    ```tsx
+    import React, { useEffect, useState } from "react";
+
+    interface PropsType {
+      src: string;
+      defaultImage: string;
+      className?: string;
+      classNameForError?: string;
+      style?: React.CSSProperties;
+      onClick?: () => void;
+      alt?: string;
+    }
+
+    export default function TheImage(props: PropsType) {
+      const {
+        src,
+        defaultImage,
+        className = "",
+        classNameForError = "",
+        style,
+        onClick,
+        alt,
+      } = props;
+
+      const [isError, setIsError] = useState(false);
+
+      useEffect(() => {
+        setIsError(!src);
+      }, [src]);
+
+      return (
+        <img
+          src={isError ? defaultImage : src}
+          className={isError ? `${classNameForError} ${className}` : className}
+          style={style}
+          onClick={() => {
+            onClick?.();
+          }}
+          onError={() => {
+            setIsError(true);
+          }}
+          alt={alt || `图${src}`}
+        />
+      );
+    }
+    ```
+
+- 使用
+
+    ```tsx
+    /* 使用测试 */
+    <TheImage
+      src={this.state.switch ? 'https://fakeimg.pl/100/?text=true': '1'}
+      defaultImage="https://fakeimg.pl/100/?text=default"
+      style={{ width: "100px", height: "100px" }}
+      className='abc'
+      classNameForError='abc-error'
+      onClick={() => {
+        this.setState({
+          switch: !this.state.switch
+        })
+      }}
+    />
+    ```
+
+### *原生JS*溢出文本的省略
+```html
+<style>
+  p {
+    font-size: 12px; /* 注意太大的字体，一行的撑起的scrollHeight可能超过line-height */
+    height: 40px;
+    line-height: 20px;
+  }
+</style>
+
+<p id="container">123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。</p>
+
+<script>
+const container = document.getElementById('container')
+const containerHeight = container.offsetHeight
+// todo：不仅针对innerText，还可以把每个子节点container.childNodes，根据nodeType的值来分别处理。如：`Node.ELEMENT_NODE`当做一个整体，`Node.TEXT_NODE`分割每个文字
+const text = container.innerText
+for (let i = 0; i < text.length; i++) {
+  container.innerText = text.substring(0, i)
+  if (containerHeight < container.scrollHeight) {
+    container.style.overflow = 'hidden'
+    container.innerHTML = text.substring(0, i - 3) + '<span style="cursor: pointer" onclick="container.innerHTML=text; container.style.overflow=\'unset\'">...</span>'
+
+    console.log('产生省略')
+    break
+  }
+}
+</script>
+```
+
+>可参考：[Ant Design：Typography排版的`ellipsis`](https://ant.design/components/typography-cn/)。
 
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript

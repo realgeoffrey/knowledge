@@ -3250,6 +3250,8 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 21. 前端无法获取~~电脑文件系统中文件的绝对路径~~
 
     `<input type="file">`只能获得`C:\fakepath\文件名.文件类型`。
+
+    >`<input>`输出的已加载文件的类型由文件名后缀决定，不会去解析文件而获得真实文件类型；`<input type="file" accept="image/png" />`也只会限制文件名后缀。
 22. `dom1.contains(dom2)`判断dom2是否为dom1的后代节点（若`dom1 === dom2`，则返回`true`）。
 
 ---
