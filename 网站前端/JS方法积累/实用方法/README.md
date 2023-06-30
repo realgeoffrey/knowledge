@@ -1,91 +1,91 @@
 # JS实用方法
 
 ## 目录
-1. [原生JS方法](#原生js方法)
+1. 根据UA或浏览器特性判断
 
-    1. 根据UA或浏览器特性判断
+    1. [判断所在系统](#原生js判断所在系统)
+    1. [判断Android版本号](#原生js判断android版本号)
+    1. [判断iOS版本号](#原生js判断ios版本号)
+    1. [判断移动平台](#原生js判断移动平台)
+    1. [判断ie6、7、8、9版本](#原生js判断ie6789版本)
+    1. [判断ie所有版本](#原生js判断ie所有版本)
+1. `键-值`操作
 
-        1. [判断所在系统](#原生js判断所在系统)
-        1. [判断Android版本号](#原生js判断android版本号)
-        1. [判断iOS版本号](#原生js判断ios版本号)
-        1. [判断移动平台](#原生js判断移动平台)
-        1. [判断ie6、7、8、9版本](#原生js判断ie6789版本)
-        1. [判断ie所有版本](#原生js判断ie所有版本)
-    1. `键-值`操作
+    1. [判断是否存在某cookie](#原生js判断是否存在某cookie)
+    1. [获取URL相关信息](#原生js获取url相关信息)
+    1. [在URL末尾修改search键-值](#原生js在url末尾修改search键-值)
+1. 事件相关
 
-        1. [判断是否存在某cookie](#原生js判断是否存在某cookie)
-        1. [获取URL相关信息](#原生js获取url相关信息)
-        1. [在URL末尾修改search键-值](#原生js在url末尾修改search键-值)
-    1. 事件相关
+    1. [绑定、解绑事件](#原生js绑定解绑事件)
+    1. [阻止冒泡和阻止浏览器默认行为](#原生jsjquery阻止冒泡和阻止浏览器默认行为)
+    1. [事件代理](#原生js事件代理)
+    1. [实现判断按下具体某按键](#原生jsjquery实现判断按下具体某按键)
+    1. [拖拽和放下](#原生js拖拽和放下)
+    1. [触摸屏模拟点击事件（消除「延时300毫秒后才触发click事件」，使点击事件提前触发）](#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)
+    1. [判断事件在浏览器是否存在](#原生js判断事件在浏览器是否存在)
+    1. [根据滚动方向执行函数](#原生js根据滚动方向执行函数)
+1. 数字计算
 
-        1. [绑定、解绑事件](#原生js绑定解绑事件)
-        1. [阻止冒泡和阻止浏览器默认行为](#原生jsjquery阻止冒泡和阻止浏览器默认行为)
-        1. [事件代理](#原生js事件代理)
-        1. [实现判断按下具体某按键](#原生jsjquery实现判断按下具体某按键)
-        1. [拖拽和放下](#原生js拖拽和放下)
-        1. [触摸屏模拟点击事件（消除「延时300毫秒后才触发click事件」，使点击事件提前触发）](#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)
-        1. [判断事件在浏览器是否存在](#原生js判断事件在浏览器是否存在)
-        1. [根据滚动方向执行函数](#原生js根据滚动方向执行函数)
-    1. 数字计算
+    1. [科学计数法转换成字符串的数字](#原生js科学计数法转换成字符串的数字)
+    1. [用整数进行小数的四则运算（避免浮点数运算误差）](#原生js用整数进行小数的四则运算避免浮点数运算误差)
+    1. [大数加减法（按位计算，不考虑小数和负数）](#原生js大数加减法按位计算不考虑小数和负数)
+    1. [不同进制数互相转换](#原生js不同进制数互相转换)
+    1. [选取范围内随机值](#原生js选取范围内随机值)
+    1. [选取范围内多个随机值](#原生js选取范围内多个随机值)
+1. 字符串操作
 
-        1. [科学计数法转换成字符串的数字](#原生js科学计数法转换成字符串的数字)
-        1. [用整数进行小数的四则运算（避免浮点数运算误差）](#原生js用整数进行小数的四则运算避免浮点数运算误差)
-        1. [大数加减法（按位计算，不考虑小数和负数）](#原生js大数加减法按位计算不考虑小数和负数)
-        1. [不同进制数互相转换](#原生js不同进制数互相转换)
-        1. [选取范围内随机值](#原生js选取范围内随机值)
-        1. [选取范围内多个随机值](#原生js选取范围内多个随机值)
-    1. 字符串操作
+    1. [转化为Unicode、反转字符串、字符串长度、所占字节数](#原生js转化为unicode反转字符串字符串长度所占字节数)
+    1. [字符串匹配、替换](#原生js字符串匹配替换)
+    1. [分割字符串](#原生js分割字符串)
+    1. [数字增加分隔符](#原生js数字增加分隔符)
+    1. [产生随机数](#原生js产生随机数)
+    1. [比较版本号大小（纯数字）](#原生js比较版本号大小纯数字)
+    1. [判断版本号是否在某个版本区间（纯数字）](#原生js判断版本号是否在某个版本区间纯数字)
+    1. [判断检索内容是否在被检索内容的分隔符间](#原生js判断检索内容是否在被检索内容的分隔符间)
+    1. [格式化文件大小](#原生js格式化文件大小)
+    1. [单词首字母大写](#原生js单词首字母大写)
+1. 数组操作
 
-        1. [转化为Unicode、反转字符串、字符串长度、所占字节数](#原生js转化为unicode反转字符串字符串长度所占字节数)
-        1. [字符串匹配、替换](#原生js字符串匹配替换)
-        1. [分割字符串](#原生js分割字符串)
-        1. [数字增加分隔符](#原生js数字增加分隔符)
-        1. [产生随机数](#原生js产生随机数)
-        1. [比较版本号大小（纯数字）](#原生js比较版本号大小纯数字)
-        1. [判断版本号是否在某个版本区间（纯数字）](#原生js判断版本号是否在某个版本区间纯数字)
-        1. [判断检索内容是否在被检索内容的分隔符间](#原生js判断检索内容是否在被检索内容的分隔符间)
-        1. [格式化文件大小](#原生js格式化文件大小)
-    1. 数组操作
+    1. [分割数组](#原生js分割数组)
+    1. [数组去重](#原生js数组去重)
+1. 功能
 
-        1. [分割数组](#原生js分割数组)
-        1. [数组去重](#原生js数组去重)
-    1. 功能
+    1. [用请求图片作log统计](#原生js用请求图片作log统计)
+    1. [判断对象是否为空](#原生js判断对象是否为空)
+    1. [验证邮箱有效性](#原生js验证邮箱有效性)
+    1. [创建兼容的XHR对象](#原生js创建兼容的xhr对象)
+    1. [动态添加脚本、样式](#原生js动态添加脚本样式)
+    1. [获取星座](#原生js获取星座)
+    1. [加入收藏夹](#原生js加入收藏夹)
+    1. [从字符串中获取绝对路径](#原生js从字符串中获取绝对路径)
+    1. [不传递请求头的Referrer进行跳转](#原生js不传递请求头的referrer进行跳转)
+    1. [格式化接口返回的数据](#原生js格式化接口返回的数据)
+    1. [判断是否支持WebP](#原生js判断是否支持webp)
+    1. [DOM展示或消失执行方法（IntersectionObserver）](#原生jsdom展示或消失执行方法intersectionobserver)
+    1. [执行方法的前/后进行开/关loading](#原生js执行方法的前后进行开关loading)
+    1. [点击下载](#原生js点击下载)
+    1. [获取对象指定深度属性](#原生js获取对象指定深度属性)
+    1. [写入剪切板](#原生js写入剪切板)
+    1. [React组件业务类似Promise.all的效果](#react组件业务类似promiseall的效果)
+    1. [轮询](#原生js轮询)
+1. DOM相关
 
-        1. [用请求图片作log统计](#原生js用请求图片作log统计)
+    1. [判断是否为`Node`、是否为`Element`](#原生js判断是否为node是否为element)
+    1. [输入框光标位置的获取和设置](#原生js输入框光标位置的获取和设置)
+    1. [文本选区覆盖某DOM的文本范围](#原生js文本选区覆盖某dom的文本范围)
+    1. [针对WAP的阻止滚动冒泡（仅DOM）](#原生js针对wap的阻止滚动冒泡仅dom)
+    1. [获取滚动条宽度（或高度）](#原生js获取滚动条宽度或高度)
+    1. [展示页面帧数](#原生js展示页面帧数)
+    1. [默认图组件](#react默认图组件)
+    1. [溢出文本的省略](#原生js溢出文本的省略)
+    1. [九宫格抽奖](#九宫格抽奖)
+1. 提升性能
 
-        1. [验证邮箱有效性](#原生js验证邮箱有效性)
-        1. [创建兼容的XHR对象](#原生js创建兼容的xhr对象)
-        1. [动态添加脚本、样式](#原生js动态添加脚本样式)
-        1. [单词首字母大写](#原生js单词首字母大写)
-        1. [展示页面帧数](#原生js展示页面帧数)
-        1. [获取星座](#原生js获取星座)
-        1. [加入收藏夹](#原生js加入收藏夹)
-        1. [从字符串中获取绝对路径](#原生js从字符串中获取绝对路径)
-        1. [不传递请求头的Referrer进行跳转](#原生js不传递请求头的referrer进行跳转)
-        1. [格式化接口返回的数据](#原生js格式化接口返回的数据)
-        1. [判断是否支持WebP](#原生js判断是否支持webp)
-        1. [DOM展示或消失执行方法（IntersectionObserver）](#原生jsdom展示或消失执行方法intersectionobserver)
-        1. [执行方法的前/后进行开/关loading](#原生js执行方法的前后进行开关loading)
-        1. [点击下载](#原生js点击下载)
-        1. [获取对象指定深度属性](#原生js获取对象指定深度属性)
-        1. [写入剪切板](#原生js写入剪切板)
-        1. [React组件业务类似Promise.all的效果](#react组件业务类似promiseall的效果)
-        1. [轮询](#原生js轮询)
-    1. DOM相关
+    1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
+    1. [`requestAnimationFrame`的递归](#原生jsrequestanimationframe的递归)
+1. <details>
 
-        1. [判断是否为`Node`、是否为`Element`](#原生js判断是否为node是否为element)
-        1. [判断对象是否为空](#原生js判断对象是否为空)
-        1. [输入框光标位置的获取和设置](#原生js输入框光标位置的获取和设置)
-        1. [文本选区覆盖某DOM的文本范围](#原生js文本选区覆盖某dom的文本范围)
-        1. [针对WAP的阻止滚动冒泡（仅DOM）](#原生js针对wap的阻止滚动冒泡仅dom)
-        1. [获取滚动条宽度（或高度）](#原生js获取滚动条宽度或高度)
-        1. [默认图组件](#react默认图组件)
-        1. [溢出文本的省略](#原生js溢出文本的省略)
-    1. 提升性能
-
-        1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
-        1. [`requestAnimationFrame`的递归](#原生jsrequestanimationframe的递归)
-1. [jQuery方法](#jquery方法)
+    <summary><a href="#jquery方法">jQuery方法</a></summary>
 
     1. 延迟异步加载
 
@@ -102,10 +102,8 @@
     1. [模拟手机旋转（使页面都以「横屏」展示）](#jquery模拟手机旋转使页面都以横屏展示)
 
     >大部分情况下，jQuery内容适用于Zepto。
-
+    </details>
 ---
-
-## 原生JS方法
 
 >更全面判断所在系统、浏览器：[bowser](https://github.com/lancedikson/bowser)。
 
@@ -1737,6 +1735,17 @@ function fileSize (bytes = 0) {
 fileSize(数字)
 ```
 
+### *原生JS*单词首字母大写
+```javascript
+function upperCaseWord(str) {
+
+    return str.replace(/\b[a-zA-Z]/g, function (match) {
+
+        return match.toUpperCase();
+    });
+}
+```
+
 ### *原生JS*分割数组
 ```javascript
 /**
@@ -1860,6 +1869,27 @@ var sendLog = (function () {
 
 /* 使用测试 */
 sendLog('统计url');
+```
+
+### *原生JS*判断对象是否为空
+```javascript
+function isObjEmpty(obj) {
+    if (obj !== Object(obj)) {  /* 参数不是对象 */
+        throw new TypeError('参数不是对象');
+    } else if (typeof Object.keys === 'function') { /* ie9+ */
+
+        return Object.keys(obj).length === 0;
+    } else {
+        for (var one in obj) {
+            if (obj.hasOwnProperty(one)) {
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
 ```
 
 ### *原生JS*验证邮箱有效性
@@ -2080,76 +2110,6 @@ xhr.send(null);
         ```
 
     >CSS代码文本，如：`div {background-color: yellow;}`。
-
-### *原生JS*单词首字母大写
-```javascript
-function upperCaseWord(str) {
-
-    return str.replace(/\b[a-zA-Z]/g, function (match) {
-
-        return match.toUpperCase();
-    });
-}
-```
-
-### *原生JS*展示页面帧数
-```javascript
-/**
- * 展示fps
- * @constructor
- * @param {Object} [dom] - 展示的DOM
- */
-function ShowFPS (dom) {
-  let fps = 0
-  let before = Date.now()
-  let now
-  const show = function (fps) {
-    dom.innerHTML = 'fps: ' + fps
-  }
-
-  let father
-  if (!dom) {
-    dom = document.createElement('span')
-    dom.style.cssText = 'position: fixed; top: 0px; background: white; color: black; z-index: 1;'
-
-    father = document.getElementsByTagName('body')[0] || document.getElementsByTagName('head')[0]
-    father.appendChild(dom)
-  }
-
-  const self = this
-
-  this.id = requestAnimationFrame(function repeatShow () {
-    now = Date.now()
-
-    if (now - before >= 1000) {
-      before = now
-      show(fps)
-      fps = 0
-    } else {
-      fps += 1
-    }
-
-    self.id = requestAnimationFrame(repeatShow)
-  })
-
-  this.stop = () => {
-    cancelAnimationFrame(this.id)
-
-    if (father) {
-      father.removeChild(dom)
-    } else {
-      dom.innerHTML = ''
-    }
-  }
-}
-
-
-/* 使用测试 */
-var a = new ShowFPS();
-
-// a.stop();
-```
->类似效果；DevTools的Rendering中的FPS meter。
 
 ### *原生JS*获取星座
 ```javascript
@@ -2929,27 +2889,6 @@ function isElement(o) {
 }
 ```
 
-### *原生JS*判断对象是否为空
-```javascript
-function isObjEmpty(obj) {
-    if (obj !== Object(obj)) {  /* 参数不是对象 */
-        throw new TypeError('参数不是对象');
-    } else if (typeof Object.keys === 'function') { /* ie9+ */
-
-        return Object.keys(obj).length === 0;
-    } else {
-        for (var one in obj) {
-            if (obj.hasOwnProperty(one)) {
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-}
-```
-
 ### *原生JS*输入框光标位置的获取和设置
 ```javascript
 var cursorPosition = {
@@ -3154,6 +3093,65 @@ function getScrollBarWidth() {
 }
 ```
 
+### *原生JS*展示页面帧数
+```javascript
+/**
+ * 展示fps
+ * @constructor
+ * @param {Object} [dom] - 展示的DOM
+ */
+function ShowFPS (dom) {
+  let fps = 0
+  let before = Date.now()
+  let now
+  const show = function (fps) {
+    dom.innerHTML = 'fps: ' + fps
+  }
+
+  let father
+  if (!dom) {
+    dom = document.createElement('span')
+    dom.style.cssText = 'position: fixed; top: 0px; background: white; color: black; z-index: 1;'
+
+    father = document.getElementsByTagName('body')[0] || document.getElementsByTagName('head')[0]
+    father.appendChild(dom)
+  }
+
+  const self = this
+
+  this.id = requestAnimationFrame(function repeatShow () {
+    now = Date.now()
+
+    if (now - before >= 1000) {
+      before = now
+      show(fps)
+      fps = 0
+    } else {
+      fps += 1
+    }
+
+    self.id = requestAnimationFrame(repeatShow)
+  })
+
+  this.stop = () => {
+    cancelAnimationFrame(this.id)
+
+    if (father) {
+      father.removeChild(dom)
+    } else {
+      dom.innerHTML = ''
+    }
+  }
+}
+
+
+/* 使用测试 */
+var a = new ShowFPS();
+
+// a.stop();
+```
+>类似效果；DevTools的Rendering中的FPS meter。
+
 ### *React*默认图组件
 1. <details>
 
@@ -3325,6 +3323,170 @@ for (let i = 0; i < text.length; i++) {
 
 >可参考：[Ant Design：Typography排版的`ellipsis`](https://ant.design/components/typography-cn/)。
 
+### 九宫格抽奖
+>canvas实现的抽奖插件（大转盘、九宫格、老虎机）：[lucky-canvas](https://github.com/buuing/lucky-canvas)。
+
+1. 缓动函数触发回调，可以设置最终触发回调命中的index
+
+    todo
+2. 原生JS，直接修改DOM
+
+    ```typescript
+    type initData = {
+      // 主容器
+      container: Element;
+      // 子级轮播的class名，若没传，则轮播用子级所有li标签
+      subClass?: string;
+      // 子级激活后添加的class名
+      currentClass?: string;
+      // 每走一格的时间(ms)
+      speed?: number;
+      // 循环的圈数
+      lap?: number;
+      // 动画结束回调
+      callback?: Function;
+    };
+
+    export default class SlotMC {
+      private domlist: NodeListOf<Element>;
+      private container: Element;
+      private currentClass: string;
+      private speed: number;
+      private ratio: number;
+      private ease: boolean;
+      private lap: number;
+      private callback: Function;
+      private playing: boolean;
+      private length: number;
+      private index: number;
+
+      constructor(object: initData) {
+        if (!object.container) {
+          console.error('没有指定container参数,无法获取节点');
+          return;
+        }
+        if (!object.subClass) {
+          this.container = object.container;
+          this.domlist = this.container.querySelectorAll('li');
+        } else {
+          this.container = object.container;
+          this.domlist = this.container.querySelectorAll(`.${object.subClass.toString()}`);
+        }
+        this.currentClass = object.currentClass || 'current';
+        this.speed = object.speed || 70; // 每转一格的时间(ms)(老虎机时为整个动画的时间)
+        this.ratio = object.lap || 3; // 变速时，速度的倍数(九宫格,直)
+        this.ease = true; // 先慢后快，结束时变慢(老虎机时为速度效果的速度曲线)
+        this.lap = object.lap || 3; // 循环的圈数
+        this.callback = object.callback || function () {}; // 结束后的回调函数
+
+        this.playing = false;
+        this.length = this.domlist.length;
+        for (let i = 0; i < this.length; i++) {
+          // @ts-ignore
+          this.domlist[i].index = i;
+        }
+      }
+
+      public hit(pos: number) {
+        let { speed } = this;
+        let roundIndex = 0; // 每圈内当前序列
+        let lap = 0; // 圈数
+        let slowStart = true;
+        let slowEnd = true;
+        let finish = false; // 结束的标识
+        if (!this.playing) {
+          this.playing = true;
+          this.domlist[0].classList.add(this.currentClass);
+          if (this.ease) {
+            speed = this.speed * this.ratio;
+          }
+          /** 超出范围或者未提供位置 */
+          if (!pos || pos > this.domlist.length) {
+            // eslint-disable-next-line no-param-reassign
+            pos = 1;
+          }
+
+          const loop = () => {
+            const choose = this.container.querySelector(`.${this.currentClass}`);
+            // @ts-ignore
+            this.index = choose.index + 1;
+            if (this.index === this.length) {
+              this.index = 0;
+            }
+            choose.classList.remove(this.currentClass);
+            this.domlist[this.index].classList.add(this.currentClass);
+
+            // eslint-disable-next-line no-plusplus
+            roundIndex++;
+            if (roundIndex === this.length) {
+              // 计算圈数
+              // eslint-disable-next-line no-plusplus
+              lap++;
+              roundIndex = 0;
+            }
+            if (this.ease && roundIndex === Math.floor(this.length / 2) && slowStart) {
+              clearInterval(timeout);
+              speed = this.speed;
+              slowStart = false;
+              timeout = setInterval(loop, speed);
+            }
+            if (lap > this.lap) {
+              // 圈跑完了
+              if (this.ease && slowEnd) {
+                // 圈跑完了，进入变速
+                clearInterval(timeout);
+                speed = this.speed * this.ratio;
+                slowEnd = false;
+                timeout = setInterval(loop, speed);
+              }
+              if (this.index + 1 === pos && finish) {
+                clearInterval(timeout);
+                this.playing = false;
+                this.callback?.call(this, pos);
+              }
+              finish = true;
+            }
+          };
+          let timeout = setInterval(loop, speed);
+        }
+      }
+    }
+    ```
+
+    ```html
+    <!-- 使用测试 -->
+    <style>
+      .current {
+        background-color: red;
+      }
+    </style>
+
+    <ul id="j-ul">
+      <li >不包含</li>
+      <li class="box">1</li>
+      <li class="box">2</li>
+      <li class="box">3</li>
+      <li class="box">4</li>
+      <li class="box">5</li>
+      <li class="box">6</li>
+      <li class="box">7</li>
+      <li class="box">8</li>
+      <li class="box">9</li>
+      <li class="box">...</li>
+      <li class="box">第n个</li>
+      <li >不包含</li>
+    </ul>
+
+    <script>
+    let sl = new SlotMC({
+      container: document.getElementById('j-ul'),
+      subClass: 'box'
+    });
+    sl.hit(2);
+    // 去除current类之后继续调用：sl.hit(n)
+    </script>
+    ```
+
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript
 /**
@@ -3399,9 +3561,9 @@ var a = new RepeatRAF(function () {
 ```
 
 ---
-## jQuery方法
+### jQuery方法
 
-### jQuery滚动加载
+#### jQuery滚动加载
 1. 以**放置在底部的节点与屏幕的相对距离**作为是否滚动到底部的判断：
 
     ```html
@@ -3585,7 +3747,7 @@ var a = new RepeatRAF(function () {
 
 >Zepto默认：没有`deferred`的对象、没有`outerHeight`方法。
 
-### jQuery图片延时加载（lazyload）
+#### jQuery图片延时加载（lazyload）
 >1. [lazysizes](https://github.com/aFarkas/lazysizes)
 >2. vue的某个懒加载库：[vue-lazyload](https://github.com/hilongjw/vue-lazyload)。
 
@@ -3754,7 +3916,7 @@ var a = new RepeatRAF(function () {
 
 >滚动事件代理可以代理在`window`或监控图片加载的滚动节点上。
 
-### jQuery节点跟随屏幕滚动而相对静止
+#### jQuery节点跟随屏幕滚动而相对静止
 1. `fixed`：
 
     ```html
@@ -3923,7 +4085,7 @@ var a = new RepeatRAF(function () {
     ```
     [CodePen demo](https://codepen.io/realgeoffrey/pen/xvRmov)
 
-### jQuery弹出toast
+#### jQuery弹出toast
 1. jQuery
 
     ```html
@@ -4060,7 +4222,7 @@ var a = new RepeatRAF(function () {
     </script>
     ```
 
-### jQuery全选、取消全选
+#### jQuery全选、取消全选
 ```html
 <div id="j-form">
   <label for="all">
@@ -4133,7 +4295,7 @@ var a = new RepeatRAF(function () {
 </script>
 ```
 
-### jQuery点击指定区域以外执行函数
+#### jQuery点击指定区域以外执行函数
 1. jQuery
 
     ```javascript
@@ -4239,7 +4401,7 @@ var a = new RepeatRAF(function () {
     ```
     [CodePen demo](https://codepen.io/realgeoffrey/pen/BXQMbq)
 
-### jQuery hover展示内容并且可跨越间隙到内容
+#### jQuery hover展示内容并且可跨越间隙到内容
 ```html
 <div class="j-box">
     <div class="j-trigger">
@@ -4275,7 +4437,7 @@ var a = new RepeatRAF(function () {
 ```
 [CodePen demo](https://codepen.io/realgeoffrey/pen/QeGYPP)
 
-### jQuery启动、暂停CSS动画
+#### jQuery启动、暂停CSS动画
 ```html
 <style>
     .dom.z-hover {
@@ -4341,7 +4503,7 @@ var a = new RepeatRAF(function () {
 ```
 [CodePen demo](https://codepen.io/realgeoffrey/pen/MNbZzB)
 
-### jQuery获取`HTTP response header`信息
+#### jQuery获取`HTTP response header`信息
 ```javascript
 /**
  * 获取HTTP response header信息
@@ -4388,7 +4550,7 @@ function getResponseHeaders(requestName) {
 }
 ```
 
-### jQuery修复HTML标签`placeholder`属性无效
+#### jQuery修复HTML标签`placeholder`属性无效
 ```javascript
 /**
  * 修复HTML标签`placeholder`属性无效
@@ -4419,7 +4581,7 @@ function fixPlaceholder($dom) {
 }
 ```
 
-### jQuery模拟手机旋转（使页面都以「横屏」展示）
+#### jQuery模拟手机旋转（使页面都以「横屏」展示）
 ```html
 <style>
     .dom {

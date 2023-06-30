@@ -132,6 +132,45 @@
         6. `baseline`
     5. `order`：子项的排列顺序。数值越小，排列越靠前（整数值、允许负值），默认：`0`。
 
+        ><details>
+        ><summary>e.g. </summary>
+        >
+        >```html
+        ><!-- 九宫格 -->
+        ><style>
+        >  ul {
+        >    display: flex;
+        >    flex-wrap: wrap;
+        >
+        >    width: 300px;
+        >    height: 300px;
+        >
+        >    background-color: pink;
+        >    padding: 0;
+        >  }
+        >
+        >  li {
+        >    width: 100px;
+        >    height: 100px;
+        >
+        >    box-shadow: 0 0 5px red;
+        >  }
+        ></style>
+        >
+        ><ul>
+        >  <li style="order: 1">1</li>
+        >  <li style="order: 2">2</li>
+        >  <li style="order: 3">3</li>
+        >  <li style="order: 6">4</li>
+        >  <li style="order: 9">5</li>
+        >  <li style="order: 8">6</li>
+        >  <li style="order: 7">7</li>
+        >  <li style="order: 4">8</li>
+        >  <li style="order: 5">9（空白）</li>
+        ></ul>
+        >```
+        ></details>
+
     - `margin`：控制子项的间距。
 
         >`flex-basis`设置基础空间，再根据`margin`占用空间之后，剩下的容器空间才是剩余空间。
