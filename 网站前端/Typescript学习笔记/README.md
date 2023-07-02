@@ -510,10 +510,10 @@
         >const bar1 = new A1Func(); // bar1 被推断为 string 类型
         >
         >
-        >type A2 = new () => string
+        >type A2 = new (a: number) => string
         >// 使用
         >declare const A2Func: A2
-        >const bar2 = new A2Func(); // bar2 被推断为 string 类型
+        >const bar2 = new A2Func(1); // bar2 被推断为 string 类型
         >```
         ></details>
     7. 函数类型的[协变与逆变](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Typescript学习笔记/README.md#协变与逆变)
@@ -560,6 +560,7 @@
     >interface mySum {
     >  // 描述方法（没有属性名）
     >  (xx: number, yy: number): string   // 定义的参数名和实现的函数参数名不用一致
+    >  // 还可以继续定义属性，成为 方法-对象 混合类型： a: string; b(): void
     >}
     >let mySum3: mySum  // 显式定义（不是类型推论）
     >mySum3 = function (x, y) { // 类型推论
@@ -694,7 +695,7 @@
     >
     >```typescript
     >class Animal {
-    >  public constructor (name, age, sex) {
+    >  public constructor (name, age, sex) {    // 默认返回值类型是当前类：Animal
     >    // （默认值会在编译后的.js的构造函数最前面加上：）this.age = 100
     >
     >    this.name = name
@@ -820,9 +821,14 @@
     抽象类、抽象方法。
 
     1. 抽象类不能实例化
-    2. 抽象方法**必须**被子类实现（抽象类自己不能定义自己的抽象方法的实现）
+    2. 抽象类包含抽象方法、非抽象方法
 
         抽象方法仅允许出现在抽象类中。
+    3. 抽象方法**必须**被子类实现
+
+        抽象类自己不能实现自己的抽象方法。
+
+    >抽象类的主要作用是规范其子类的行为，让代码更加规范和易于维护或扩展，利用抽象方法规定子类必须实现的方法类型，利用非抽象方法定义通用逻辑在子类中共享。
 
     ><details>
     ><summary>e.g.</summary>
@@ -836,10 +842,10 @@
     >  }
     >
     >  public abstract sayHi () // 抽象方法
-    >  public func () {}
+    >  public func () {}        // 抽象类中允许存在非抽象方法
     >}
     >
-    >class Cat extends Animal {
+    >class Cat extends Animal {  // 继承抽象类，必须实现抽象方法
     >  public sayHi (): void {
     >    console.log(`Meow, My name is ${this.name}`)
     >  }
@@ -851,7 +857,9 @@
     ></details>
 4. `implements`
 
-    `class`实现`interface`（仅对`class`的实例属性/方法进行类型检查、不检查`class`的静态属性/方法）
+    `class`实现`interface`
+
+    >仅对`class`的实例属性/方法进行类型检查；被实现的`interface`定义的内容不包括`class`的：静态属性/方法、`private/protected`成员、构造函数（因此`interface`内不能定义`new (类型): 类型`）。
 
     ><details>
     ><summary>e.g.</summary>
@@ -991,6 +999,8 @@
         ></details>
 
         - 接口会继承类的访问修饰符（`public`、`private`、`protected`）
+
+            >`public/private/protected`只能显式写在class上，其他地方不能显式设置。
 
             当一个接口继承了一个拥有`private`或`protected`的成员的类时，这个接口类型只能被这个类或其子类所实现（implement）。
 

@@ -51,11 +51,11 @@
 >1. iOS屏幕宽度pt：
 >
 >    1. 320：iPhone SE(1st)
->    2. 375：iPhone 11 Pro（iPhone 12/13 Mini的渲染像素的逻辑像素的宽度也是375）
->    3. 390：iPhone 13 Pro
+>    2. 375：iPhone 11 Pro（iPhone 12 Mini/13 Mini的渲染像素的逻辑像素的宽度也是375）
+>    3. 390：iPhone 14
 >    4. 393：iPhone 14 Pro
 >    5. 414：iPhone 11 Pro Max
->    6. 428：iPhone 13 Pro Max
+>    6. 428：iPhone 14 Plus
 >    7. 430：iPhone 14 Pro Max
 >2. Android屏幕宽度dp：
 >

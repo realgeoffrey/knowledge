@@ -6,7 +6,7 @@
 1. [总结](#总结)
 
     1. [原理](#原理)
-    1. [输出文件分析](#输出文件分析)
+    1. [分析输出文件](#分析输出文件)
     1. [Rollup与webpack对比](#rollup与webpack对比)
 
 ---
@@ -263,7 +263,7 @@
         module.exports = DonePlugin;
         ```
 
-#### 输出文件分析
+#### 分析输出文件
 1. <details>
 
     <summary>源文件、配置文件</summary>

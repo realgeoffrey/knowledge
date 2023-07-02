@@ -661,7 +661,7 @@
             ><details>
             ><summary>e.g.</summary>
             >
-            >1. 触发单次动画后销毁
+            >1. 单次播放
             >
             >    ```tsx
             >    import { View, Text, AnimationOption, Animation } from "react-native";
@@ -805,6 +805,7 @@
             >              children: React.ReactNode;
             >              style?: ViewStyle | ViewStyle[];
             >              callback?: Function;
+            >              // 注意 startValue和toValue 相同会导致不进行动画（但是会设置style）
             >              opacity?: Partial<AnimationOption>;
             >            }
             >            export default function AnimationCmp(props: Props) {
@@ -954,7 +955,7 @@
             >              );
             >            }
             >            ```
-            >3. 传递进props开启一次动画
+            >3. 传递进props开启新的单次播放
             >
             >    ```tsx
             >    import { Animation, AnimationOption, View, ViewStyle } from "react-native";
@@ -988,13 +989,17 @@
             >    interface Props {
             >      children: React.ReactNode;
             >      style?: ViewStyle | ViewStyle[];
+            >      // 动画结束（onAnimationEnd）时触发（如果因为下面原因导致动画没有执行，就不会触发callback，改而触发errCallback）
             >      callback?: Function;
-            >      // 注意：传递相同的 translateYValues.startValue 会导致不进行新的动画。可以初始化 translateYValues.startValue = Number.MAX_VALUE
+            >      // 不进行动画时触发：
+            >      //   ① translateYValues.startValue等于translateYValues.toValue时，仅设置style，不进行动画
+            >      errCallback?: Function;
+            >      // 支持连续传 startValue/toValue 分别都相同的不同对象触发动画（e.g. 传2次 {startValue:1,toValue:2} 不同对象）
             >      translateYValues: Pick<AnimationOption, "startValue" | "toValue">;
             >    }
             >
             >    export default function TheAnimation(props: Props) {
-            >      const { children, style, callback, translateYValues } = props;
+            >      const { children, style, callback, errCallback, translateYValues } = props;
             >      // 位移动画
             >      const [translateY, setTranslateY] = useState<Animation | number>(Number.MAX_VALUE);
             >
@@ -1014,13 +1019,15 @@
             >          } else {
             >            setTranslateY(new Animation(config));
             >          }
+            >        } else {
+            >          errCallback?.()
             >        }
             >      });
             >      useEffect(() => {
             >        animationAction();
             >      }, [translateY]);
             >
-            >      // 传递进来的动画对象变化，则开始一次动画启动
+            >      // 传递进来的动画对象变化，则开始一次动画启动（这里可以按需增加逻辑：若传入和上次传入相同内容的对象，则不执行逻辑，改而调用errCallback?.()）
             >      useEffect(() => {
             >        if (typeof translateY !== "number") {
             >          translateY?.destroy();

@@ -79,6 +79,36 @@
     >1. 优点：使用链表结构可以克服数组链表需要预先知道数据大小的缺点，链表结构可以充分利用计算机内存空间，实现灵活的内存动态管理。
     >2. 缺点：链表访问节点效率低，失去了数组随机读取的优点；链表空间开销较大，增加了结点的指针域。
 
+    <details>
+    <summary>JS定义：链表</summary>
+
+    ```typescript
+    /* 链表节点类 */
+    class ListNode {
+        val: number;
+        next: ListNode | null;
+        constructor(val?: number, next?: ListNode | null) {
+            this.val = val === undefined ? 0 : val;        // 节点值
+            this.next = next === undefined ? null : next;  // 指向下一节点的引用
+        }
+    }
+    ```
+
+    ```typescript
+    /* 双向链表节点类 */
+    class ListNode {
+        val: number;
+        next: ListNode | null;
+        prev: ListNode | null;
+        constructor(val?: number, next?: ListNode | null, prev?: ListNode | null) {
+            this.val = val  ===  undefined ? 0 : val;        // 节点值
+            this.next = next  ===  undefined ? null : next;  // 指向后继节点的指针（引用）
+            this.prev = prev  ===  undefined ? null : prev;  // 指向前驱节点的指针（引用）
+        }
+    }
+    ```
+    </details>
+
 - 数组、链表 对比：
 
     |              | 数组                  | 链表        |
@@ -94,9 +124,489 @@
 3. 栈（stack）
 
     后进先出（LIFO，Last In First Out）：仅允许在顶端进行插入数据、删除数据。
+
+    <details>
+    <summary>JS定义：栈</summary>
+
+    ```typescript
+    /* 基于链表实现的栈 */
+    class LinkedListStack {
+        private stackPeek: ListNode | null; // 将头节点作为栈顶
+        private stkSize: number = 0; // 栈的长度
+
+        constructor() {
+            this.stackPeek = null;
+        }
+
+        /* 获取栈的长度 */
+        get size(): number {
+            return this.stkSize;
+        }
+
+        /* 判断栈是否为空 */
+        isEmpty(): boolean {
+            return this.size == 0;
+        }
+
+        /* 入栈 */
+        push(num: number): void {
+            const node = new ListNode(num);
+            node.next = this.stackPeek;
+            this.stackPeek = node;
+            this.stkSize++;
+        }
+
+        /* 出栈 */
+        pop(): number {
+            const num = this.peek();
+            if (!this.stackPeek) throw new Error('栈为空');
+            this.stackPeek = this.stackPeek.next;
+            this.stkSize--;
+            return num;
+        }
+
+        /* 访问栈顶元素 */
+        peek(): number {
+            if (!this.stackPeek) throw new Error('栈为空');
+            return this.stackPeek.val;
+        }
+
+        /* 将链表转化为 Array 并返回 */
+        toArray(): number[] {
+            let node = this.stackPeek;
+            const res = new Array<number>(this.size);
+            for (let i = res.length - 1; i >= 0; i--) {
+                res[i] = node!.val;
+                node = node!.next;
+            }
+            return res;
+        }
+    }
+    ```
+
+    ```typescript
+    /* 基于数组实现的栈 */
+    class ArrayStack {
+        private stack: number[];
+        constructor() {
+            this.stack = [];
+        }
+
+        /* 获取栈的长度 */
+        get size(): number {
+            return this.stack.length;
+        }
+
+        /* 判断栈是否为空 */
+        empty(): boolean {
+            return this.stack.length === 0;
+        }
+
+        /* 入栈 */
+        push(num: number): void {
+            this.stack.push(num);
+        }
+
+        /* 出栈 */
+        pop(): number | undefined {
+            if (this.empty()) throw new Error('栈为空');
+            return this.stack.pop();
+        }
+
+        /* 访问栈顶元素 */
+        top(): number | undefined {
+            if (this.empty()) throw new Error('栈为空');
+            return this.stack[this.stack.length - 1];
+        }
+
+        /* 返回 Array */
+        toArray() {
+            return this.stack;
+        }
+    }
+    ```
+    </details>
 4. 队列（queue）
 
     先进先出（FIFO，First In First Out）：仅允许在后端进行插入数据，在前端进行删除数据。
+
+    <details>
+    <summary>JS定义：队列</summary>
+
+    ```typescript
+    /* 基于链表实现的队列 */
+    class LinkedListQueue {
+        private front: ListNode | null; // 头节点 front
+        private rear: ListNode | null; // 尾节点 rear
+        private queSize: number = 0;
+
+        constructor() {
+            this.front = null;
+            this.rear = null;
+        }
+
+        /* 获取队列的长度 */
+        get size(): number {
+            return this.queSize;
+        }
+
+        /* 判断队列是否为空 */
+        isEmpty(): boolean {
+            return this.size === 0;
+        }
+
+        /* 入队 */
+        push(num: number): void {
+            // 尾节点后添加 num
+            const node = new ListNode(num);
+            // 如果队列为空，则令头、尾节点都指向该节点
+            if (!this.front) {
+                this.front = node;
+                this.rear = node;
+                // 如果队列不为空，则将该节点添加到尾节点后
+            } else {
+                this.rear!.next = node;
+                this.rear = node;
+            }
+            this.queSize++;
+        }
+
+        /* 出队 */
+        pop(): number {
+            const num = this.peek();
+            if (!this.front) throw new Error('队列为空');
+            // 删除头节点
+            this.front = this.front.next;
+            this.queSize--;
+            return num;
+        }
+
+        /* 访问队首元素 */
+        peek(): number {
+            if (this.size === 0) throw new Error('队列为空');
+            return this.front!.val;
+        }
+
+        /* 将链表转化为 Array 并返回 */
+        toArray(): number[] {
+            let node = this.front;
+            const res = new Array<number>(this.size);
+            for (let i = 0; i < res.length; i++) {
+                res[i] = node!.val;
+                node = node!.next;
+            }
+            return res;
+        }
+    }
+    ```
+
+    ```typescript
+    /* 基于环形数组实现的队列 */
+    class ArrayQueue {
+        private nums: number[]; // 用于存储队列元素的数组
+        private front: number; // 队首指针，指向队首元素
+        private queSize: number; // 队列长度
+
+        constructor(capacity: number) {
+            this.nums = new Array(capacity);
+            this.front = this.queSize = 0;
+        }
+
+        /* 获取队列的容量 */
+        get capacity(): number {
+            return this.nums.length;
+        }
+
+        /* 获取队列的长度 */
+        get size(): number {
+            return this.queSize;
+        }
+
+        /* 判断队列是否为空 */
+        empty(): boolean {
+            return this.queSize == 0;
+        }
+
+        /* 入队 */
+        push(num: number): void {
+            if (this.size == this.capacity) {
+                console.log('队列已满');
+                return;
+            }
+            // 计算尾指针，指向队尾索引 + 1
+            // 通过取余操作，实现 rear 越过数组尾部后回到头部
+            const rear = (this.front + this.queSize) % this.capacity;
+            // 将 num 添加至队尾
+            this.nums[rear] = num;
+            this.queSize++;
+        }
+
+        /* 出队 */
+        pop(): number {
+            const num = this.peek();
+            // 队首指针向后移动一位，若越过尾部则返回到数组头部
+            this.front = (this.front + 1) % this.capacity;
+            this.queSize--;
+            return num;
+        }
+
+        /* 访问队首元素 */
+        peek(): number {
+            if (this.empty()) throw new Error('队列为空');
+            return this.nums[this.front];
+        }
+
+        /* 返回 Array */
+        toArray(): number[] {
+            // 仅转换有效长度范围内的列表元素
+            const arr = new Array(this.size);
+            for (let i = 0, j = this.front; i < this.size; i++, j++) {
+                arr[i] = this.nums[j % this.capacity];
+            }
+            return arr;
+        }
+    }
+    ```
+    </details>
+
+    - 双向队列
+
+        允许在头部和尾部执行元素的添加或删除操作。
+
+        <details>
+        <summary>JS定义：双向队列</summary>
+
+        ```typescript
+        /* 双向链表节点 */
+        class ListNode {
+            prev: ListNode; // 前驱节点引用 (指针)
+            next: ListNode; // 后继节点引用 (指针)
+            val: number; // 节点值
+
+            constructor(val: number) {
+                this.val = val;
+                this.next = null;
+                this.prev = null;
+            }
+        }
+
+        /* 基于双向链表实现的双向队列 */
+        class LinkedListDeque {
+            private front: ListNode; // 头节点 front
+            private rear: ListNode; // 尾节点 rear
+            private queSize: number; // 双向队列的长度
+
+            constructor() {
+                this.front = null;
+                this.rear = null;
+                this.queSize = 0;
+            }
+
+            /* 队尾入队操作 */
+            pushLast(val: number): void {
+                const node: ListNode = new ListNode(val);
+                // 若链表为空，则令 front, rear 都指向 node
+                if (this.queSize === 0) {
+                    this.front = node;
+                    this.rear = node;
+                } else {
+                    // 将 node 添加至链表尾部
+                    this.rear.next = node;
+                    node.prev = this.rear;
+                    this.rear = node; // 更新尾节点
+                }
+                this.queSize++;
+            }
+
+            /* 队首入队操作 */
+            pushFirst(val: number): void {
+                const node: ListNode = new ListNode(val);
+                // 若链表为空，则令 front, rear 都指向 node
+                if (this.queSize === 0) {
+                    this.front = node;
+                    this.rear = node;
+                } else {
+                    // 将 node 添加至链表头部
+                    this.front.prev = node;
+                    node.next = this.front;
+                    this.front = node; // 更新头节点
+                }
+                this.queSize++;
+            }
+
+            /* 队尾出队操作 */
+            popLast(): number {
+                if (this.queSize === 0) {
+                    return null;
+                }
+                const value: number = this.rear.val; // 存储尾节点值
+                // 删除尾节点
+                let temp: ListNode = this.rear.prev;
+                if (temp !== null) {
+                    temp.next = null;
+                    this.rear.prev = null;
+                }
+                this.rear = temp; // 更新尾节点
+                this.queSize--;
+                return value;
+            }
+
+            /* 队首出队操作 */
+            popFirst(): number {
+                if (this.queSize === 0) {
+                    return null;
+                }
+                const value: number = this.front.val; // 存储尾节点值
+                // 删除头节点
+                let temp: ListNode = this.front.next;
+                if (temp !== null) {
+                    temp.prev = null;
+                    this.front.next = null;
+                }
+                this.front = temp; // 更新头节点
+                this.queSize--;
+                return value;
+            }
+
+            /* 访问队尾元素 */
+            peekLast(): number {
+                return this.queSize === 0 ? null : this.rear.val;
+            }
+
+            /* 访问队首元素 */
+            peekFirst(): number {
+                return this.queSize === 0 ? null : this.front.val;
+            }
+
+            /* 获取双向队列的长度 */
+            size(): number {
+                return this.queSize;
+            }
+
+            /* 判断双向队列是否为空 */
+            isEmpty(): boolean {
+                return this.queSize === 0;
+            }
+
+            /* 打印双向队列 */
+            print(): void {
+                const arr: number[] = [];
+                let temp: ListNode = this.front;
+                while (temp !== null) {
+                    arr.push(temp.val);
+                    temp = temp.next;
+                }
+                console.log('[' + arr.join(', ') + ']');
+            }
+        }
+        ```
+
+        ```typescript
+        /* 基于环形数组实现的双向队列 */
+        class ArrayDeque {
+            private nums: number[]; // 用于存储双向队列元素的数组
+            private front: number; // 队首指针，指向队首元素
+            private queSize: number; // 双向队列长度
+
+            /* 构造方法 */
+            constructor(capacity: number) {
+                this.nums = new Array(capacity);
+                this.front = 0;
+                this.queSize = 0;
+            }
+
+            /* 获取双向队列的容量 */
+            capacity(): number {
+                return this.nums.length;
+            }
+
+            /* 获取双向队列的长度 */
+            size(): number {
+                return this.queSize;
+            }
+
+            /* 判断双向队列是否为空 */
+            isEmpty(): boolean {
+                return this.queSize === 0;
+            }
+
+            /* 计算环形数组索引 */
+            index(i: number): number {
+                // 通过取余操作实现数组首尾相连
+                // 当 i 越过数组尾部后，回到头部
+                // 当 i 越过数组头部后，回到尾部
+                return (i + this.capacity()) % this.capacity();
+            }
+
+            /* 队首入队 */
+            pushFirst(num: number): void {
+                if (this.queSize === this.capacity()) {
+                    console.log('双向队列已满');
+                    return;
+                }
+                // 队首指针向左移动一位
+                // 通过取余操作，实现 front 越过数组头部后回到尾部
+                this.front = this.index(this.front - 1);
+                // 将 num 添加至队首
+                this.nums[this.front] = num;
+                this.queSize++;
+            }
+
+            /* 队尾入队 */
+            pushLast(num: number): void {
+                if (this.queSize === this.capacity()) {
+                    console.log('双向队列已满');
+                    return;
+                }
+                // 计算尾指针，指向队尾索引 + 1
+                const rear: number = this.index(this.front + this.queSize);
+                // 将 num 添加至队尾
+                this.nums[rear] = num;
+                this.queSize++;
+            }
+
+            /* 队首出队 */
+            popFirst(): number {
+                const num: number = this.peekFirst();
+                // 队首指针向后移动一位
+                this.front = this.index(this.front + 1);
+                this.queSize--;
+                return num;
+            }
+
+            /* 队尾出队 */
+            popLast(): number {
+                const num: number = this.peekLast();
+                this.queSize--;
+                return num;
+            }
+
+            /* 访问队首元素 */
+            peekFirst(): number {
+                if (this.isEmpty()) throw new Error('The Deque Is Empty.');
+                return this.nums[this.front];
+            }
+
+            /* 访问队尾元素 */
+            peekLast(): number {
+                if (this.isEmpty()) throw new Error('The Deque Is Empty.');
+                // 计算尾元素索引
+                const last = this.index(this.front + this.queSize - 1);
+                return this.nums[last];
+            }
+
+            /* 返回数组用于打印 */
+            toArray(): number[] {
+                // 仅转换有效长度范围内的列表元素
+                const res: number[] = [];
+                for (let i = 0, j = this.front; i < this.queSize; i++, j++) {
+                    res[i] = this.nums[this.index(j)];
+                }
+                return res;
+            }
+        }
+        ```
+        </details>
 5. 散列表（hash、哈希表）
 
     根据键（key）直接访问在内存存储位置。通过计算一个关于键-值的函数（哈希函数），将所需查询的数据映射到表（哈希表）中一个位置来访问记录，不需比较便可直接取得所查记录。
@@ -106,6 +616,101 @@
     - 两个不同的key可能在经过哈希函数后得到相同的索引，导致查询结果出错，这种现象被称为哈希冲突。
 
         缓解哈希冲突的方法主要有：扩容哈希表、优化哈希函数（如：链式地址、开放寻址）。
+
+    <details>
+    <summary>JS定义：散列表</summary>
+
+    ```typescript
+    /* 键值对 Number -> String */
+    class Pair {
+        public key: number;
+        public val: string;
+
+        constructor(key: number, val: string) {
+            this.key = key;
+            this.val = val;
+        }
+    }
+
+    /* 基于数组简易实现的哈希表 */
+    class ArrayHashMap {
+        private readonly buckets: (Pair | null)[];
+
+        constructor() {
+            // 初始化数组，包含 100 个桶
+            this.buckets = new Array(100).fill(null);
+        }
+
+        /* 哈希函数 */
+        private hashFunc(key: number): number {
+            return key % 100;
+        }
+
+        /* 查询操作 */
+        public get(key: number): string | null {
+            let index = this.hashFunc(key);
+            let pair = this.buckets[index];
+            if (pair === null) return null;
+            return pair.val;
+        }
+
+        /* 添加操作 */
+        public set(key: number, val: string) {
+            let index = this.hashFunc(key);
+            this.buckets[index] = new Pair(key, val);
+        }
+
+        /* 删除操作 */
+        public delete(key: number) {
+            let index = this.hashFunc(key);
+            // 置为 null ，代表删除
+            this.buckets[index] = null;
+        }
+
+        /* 获取所有键值对 */
+        public entries(): (Pair | null)[] {
+            let arr: (Pair | null)[] = [];
+            for (let i = 0; i < this.buckets.length; i++) {
+                if (this.buckets[i]) {
+                    arr.push(this.buckets[i]);
+                }
+            }
+            return arr;
+        }
+
+        /* 获取所有键 */
+        public keys(): (number | undefined)[] {
+            let arr: (number | undefined)[] = [];
+            for (let i = 0; i < this.buckets.length; i++) {
+                if (this.buckets[i]) {
+                    arr.push(this.buckets[i]?.key);
+                }
+            }
+            return arr;
+        }
+
+        /* 获取所有值 */
+        public values(): (string | undefined)[] {
+            let arr: (string | undefined)[] = [];
+            for (let i = 0; i < this.buckets.length; i++) {
+                if (this.buckets[i]) {
+                    arr.push(this.buckets[i]?.val);
+                }
+            }
+            return arr;
+        }
+
+        /* 打印哈希表 */
+        public print() {
+            let pairSet = this.entries();
+            for (const pair of pairSet) {
+                if (!pair) continue;
+                console.info(`${pair.key} -> ${pair.val}`);
+            }
+        }
+    }
+    ```
+    </details>
 6. 树（tree）
 
     一种抽象数据类型，具有层次关系的集合。
@@ -116,6 +721,27 @@
         2. 没有父节点的节点称为根节点。
         3. 每一个非根节点有且只有一个父节点。
         4. 每个节点可以分为多个不相交的子树。
+
+    1. 二叉树（binary Tree）
+
+        <details>
+        <summary>JS定义：二叉树</summary>
+
+        ```typescript
+        /* 二叉树节点类 */
+        class TreeNode {
+            val: number;
+            left: TreeNode | null;
+            right: TreeNode | null;
+
+            constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+                this.val = val === undefined ? 0 : val; // 节点值
+                this.left = left === undefined ? null : left; // 左子节点指针
+                this.right = right === undefined ? null : right; // 右子节点指针
+            }
+        }
+        ```
+        </details>
 7. 堆（heap）
 
     1. n个元素序列{k1,k2...ki...kn}，当且仅当满足下列关系时称之为堆：
@@ -385,6 +1011,14 @@
     输入不定长度信息，（根据算法不同）输出（不同）固定长度的算法。
 
     >安全、破解难度大：SHA-2、SHA-3。已被破解：SHA-1。
+
+|          | ~~MD5~~                    | ~~SHA-1~~          | SHA-2                  | SHA-3                |
+| -------- | ---------------------- | -------------- | ---------------------- | -------------------- |
+| 推出时间 | 1992                     | 1995          | 2002                    | 2008                 |
+| 输出长度 | 128 bits                 | 160 bits      | 256 / 512 bits          | 224/256/384/512 bits |
+| 哈希冲突 | 较多                      | 较多          | 很少                     | 很少                 |
+| 安全等级 | 低，已被成功攻击            | 低，已被成功攻击 | 高                      | 高                   |
+| 应用    | 已被弃用，仍用于数据完整性检查 | 已被弃用       | 加密货币交易验证、数字签名等 | 可用于替代 SHA-2     |
 
 ### ASCII
 ASCII码（American Standard Code for Information Interchange、美国标准信息交换码）是基于拉丁字母的一套电脑编码系统、字符集。它定义了一个用于代表现代英文的字典。第一位始终是`0`，只定义了128个字符（之后又扩展了第一位是`1`的128个），包含控制字符和可显示字符：

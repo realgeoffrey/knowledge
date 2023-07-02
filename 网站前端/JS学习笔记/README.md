@@ -3025,17 +3025,12 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 5. `{a: 'b'} + 1; // 1`：
 
     大括号视为代码块，没有返回值。需要给大括号加上小括号，表明为一个值：`({a: 'b'}) + 1; // [object Object]1`。
-6. 浮点数的计算：
-
-    浮点数值计算会产生舍入误差，因此永远不要用条件语句判断某个特定浮点数值，也不要用JS进行复杂的计算。
-
-    >避免浮点数运算误差函数：[用整数进行小数的四则运算](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用整数进行小数的四则运算避免浮点数运算误差)。
-7. 判断DOM是否支持某属性：
+6. 判断DOM是否支持某属性：
 
     若要判定一个属性是否被DOM所支持，新建一个DOM来判断：`if('属性' in document.createElement('某标签')){...}`。
 
     >在DOM中随意添加一个属性，`此属性 in 此DOM`永远为真，不可以判断是否此DOM存在此属性（或方法）。
-8. `eval`中直接执行`function`声明无效，必须用引号把`function`声明包裹起来才有效（尽量不用`eval`）：
+7. `eval`中直接执行`function`声明无效，必须用引号把`function`声明包裹起来才有效（尽量不用`eval`）：
 
     >`eval`的参数是字符串。
 
@@ -3046,11 +3041,11 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
     >1. `if()`中的代码对于`function`的声明就是用`eval`带入方法做参数，因此虽然返回true，但方法没有被声明。
     >2. `setTimeout`与`setInterval`中第一个参数若使用字符串，也是使用`eval`把字符串转化为代码。
-9. 获取数组中最大最小值：
+8. 获取数组中最大最小值：
 
     1. `Math.min(...[1, 2, 3])`或`Math.min.apply(null, [1, 2, 3])`
     2. `Math.max(...[1, 2, 3])`或`Math.max.apply(null, [1, 2, 3])`
-10. 获取CSS的样式：
+9. 获取CSS的样式：
 
     <details>
     <summary><code>dom.style或window.getComputedStyle(dom[, 伪元素字符串])</code>返回一个<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/CSSStyleDeclaration">CSSStyleDeclaration对象</a></summary>
@@ -3068,7 +3063,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
     1. `dom.style`
     2. `window.getComputedStyle(dom[, 伪元素字符串])`
-11. 设置CSS的内嵌样式：
+10. 设置CSS的内嵌样式：
 
     >`window.getComputedStyle(dom[, 伪元素字符串])`获取的是只读对象，不允许任何方式设置（包括 ~~`setProperty`~~）。
 
@@ -3082,7 +3077,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     3. 删除某个内嵌样式属性：`dom.style.某属性名 = ''`或`dom.style.setProperty('某属性名','')`或`dom.style.removeProperty('某属性名')`。
 
     >若赋值错误，则保持赋值前的值。
-12. 文档或一个子资源正在被卸载（关闭、刷新）时先触发`beforeunload`、再触发`unload`：
+11. 文档或一个子资源正在被卸载（关闭、刷新）时先触发`beforeunload`、再触发`unload`：
 
     >关闭前异步发送数据：`navigator.sendBeacon(地址, 数据)`（`XMLHttpRequest`：异步会被忽略、同步影响体验）。
 
@@ -3109,7 +3104,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         2. 对于终端用户所有资源均不可见
         3. 界面交互无效（`window.open`、`alert`、`confirm`等）
         4. 错误不会停止卸载文档的过程
-13. 页面的id值会动态地成为`window`的属性（全局变量），值为这个id所在的Element，除非`window`已存在这个属性名。
+12. 页面的id值会动态地成为`window`的属性（全局变量），值为这个id所在的Element，除非`window`已存在这个属性名。
 
     ><details>
     ><summary>e.g.</summary>
@@ -3122,14 +3117,14 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     ></script>
     >```
     ></details>
-14. （非打开新窗口的、非`history.pushState/replaceState`改变路由的）页面后退
+13. （非打开新窗口的、非`history.pushState/replaceState`改变路由的）页面后退
 
     `if (document.referrer !== '') { history.back() } else { /* 后退到底的其他行为 */ }`
 
     >1. 若是新打开的窗口（`target="_blank"`），则会出现`document.referrer`有值，但`history.back()`已后退到底。
     >2. 若是`history.pushState/replaceState`改变路由，则不改变`document.referrer`（可能初始`document.referrer === ''`）。
     >3. 重新请求当前页面链接（如：`location.reload()`、或点击`<a href="当前页面链接">`），会导致`document.referrer === '当前页面链接'`。
-15. 使用`encodeURIComponent/decodeURIComponent`仅处理URI中的query属性名和属性值；使用`encodeURI/decodeURI`处理整个URI；不要使用 ~~`escape/unescape`~~（已废弃）
+14. 使用`encodeURIComponent/decodeURIComponent`仅处理URI中的query属性名和属性值；使用`encodeURI/decodeURI`处理整个URI；不要使用 ~~`escape/unescape`~~（已废弃）
 
     1. `encodeURIComponent`
 
@@ -3137,7 +3132,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     2. `encodeURI`
 
         转义除了以下字符之外的所有字符：`字母` `数字` `(` `)` `.` `!` `~` `*` `'` `-` `_` `;` `,` `/` `?` `:` `@` `&` `=` `+` `$` `#`
-16. 当一个`<script>`被执行时，在它之前的标签可以访问，但在它之后的标签无法访问（还不存在、未被解析到）
+15. 当一个`<script>`被执行时，在它之前的标签可以访问，但在它之后的标签无法访问（还不存在、未被解析到）
 
     ```html
     <!-- document、document.documentElement、document.head 出现 -->
@@ -3148,7 +3143,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
       </body>
     </html>
     ```
-17. 判断浏览器标签是否在激活状态
+16. 判断浏览器标签是否在激活状态
 
     1. `document.hidden`：当前文档是否被隐藏
     2. `document.visibilityState`：当前文档的可见情况（`'visible'`、`'hidden'`、`'prerender'`、`'unloaded'`）
@@ -3156,7 +3151,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
         >`window`的`focus/blur`事件：当前文档**获得焦点/失去焦点**时触发（并不意味着被浏览器标签是否被隐藏）
     4. `document.hasFocus()`：当前文档是否获得焦点
-18. 处理多次引入同个全局对象的冲突
+17. 处理多次引入同个全局对象的冲突
 
     >参考：[jQuery的防冲突（noConflict）](https://github.com/jquery/jquery/blob/master/src/exports/global.js#L7-L25)。
 
@@ -3205,7 +3200,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     console.log(a)                                  // 第二次引入的对象
     ```
     </details>
-19. 对异步加载的功能，可以用`push`的方式处理异步加载问题
+18. 对异步加载的功能，可以用`push`的方式处理异步加载问题
 
     ```html
     <script src="a.js" async></script><!-- 可以在任意地方异步插入 -->
@@ -3238,7 +3233,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
       window.a = _a
     })()
     ```
-20. 兼容特殊浏览器、PC与WAP加载不同资源的方案
+19. 兼容特殊浏览器、PC与WAP加载不同资源的方案
 
     1. 不同页面URL入口。
     2. 引入资源前，根据UA判断是否加载特殊资源。
@@ -3247,12 +3242,13 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         >2. UA判断：[判断所在系统](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断所在系统)、[判断移动平台](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断移动平台)、[判断ie所有版本](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断ie所有版本)
     3. 把特殊资源打包进总体代码，再根据UA判断引入。
     4. 服务端根据HTTP请求的UA判断输出不同页面加载不同资源（BFF层）。
-21. 前端无法获取~~电脑文件系统中文件的绝对路径~~
+20. 前端无法获取~~电脑文件系统中文件的绝对路径~~
 
     `<input type="file">`只能获得`C:\fakepath\文件名.文件类型`。
 
     >`<input>`输出的已加载文件的类型由文件名后缀决定，不会去解析文件而获得真实文件类型；`<input type="file" accept="image/png" />`也只会限制文件名后缀。
-22. `dom1.contains(dom2)`判断dom2是否为dom1的后代节点（若`dom1 === dom2`，则返回`true`）。
+21. `dom1.contains(dom2)`判断dom2是否为dom1的后代节点（若`dom1 === dom2`，则返回`true`）。
+22. 分享图最好用没有透明度的图，大部分app会在图片后面加上占位颜色
 
 ---
 ## 事件相关
