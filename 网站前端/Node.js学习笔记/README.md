@@ -1255,7 +1255,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 5. 不管任何情况，始终保证要有回包，就算代码运行错误，也要兜底回包（`.end()`）
 6. [CLI命令行](http://nodejs.cn/api/cli.html)（`man node`）
 
-    ```bash
+    ```shell
     node [options] [V8 options] [<program-entry-point> | -e "script" | -] [--] [arguments]
 
     node inspect [<program-entry-point> | -e "script" | <host>:<port>] …

@@ -6,8 +6,9 @@
 1. [总结](#总结)
 
     1. [原理](#原理)
-    1. [分析输出文件](#分析输出文件)
-    1. [Rollup与webpack对比](#rollup与webpack对比)
+1. [分析输出文件](#分析输出文件)
+1. [动态加载](#动态加载)
+1. [Rollup与webpack对比](#rollup与webpack对比)
 
 ---
 
@@ -263,7 +264,8 @@
         module.exports = DonePlugin;
         ```
 
-#### 分析输出文件
+---
+### 分析输出文件
 1. <details>
 
     <summary>源文件、配置文件</summary>
@@ -419,7 +421,91 @@
     })();
     ```
 
-#### [Rollup](https://github.com/rollup/rollup)与webpack对比
+### 动态加载
+1. 代码使用 ES6 Module的`import()` 或 特别约定的`require` 来告诉webpack支持动态加载
+
+    1. [React通过`<React.Suspense>`、`React.lazy`配合`import()`进行代码分割（动态加载）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/React学习笔记/README.md#代码分割动态加载)
+    2. <details>
+
+        <summary>Vue的异步组件</summary>
+
+        ```javascript
+        Vue.component(
+          'async-webpack-example',
+          // 这个动态导入会返回一个 `Promise` 对象。
+          () => import('./my-async-component')
+        )
+
+
+        Vue.component('async-webpack-example', function (resolve) {
+          // 这个特殊的 `require` 语法将会告诉 webpack：
+          //   自动将你的构建代码切割成多个包，这些包会通过 Ajax 请求加载
+          require(['./my-async-component'], resolve)
+        })
+        ```
+        </details>
+2. Webpack会将这个import语句（或其他）解析为一个独立的文件，并在运行时加载它
+
+    输出的实现动态加载方法（JSONP原理）：
+
+    ```javascript
+    var inProgress = {};
+    var dataWebpackPrefix = "wepack5-demo:";
+
+    // loadScript function to load a script via script tag
+    __webpack_require__.l = (url, done, key, chunkId) => {
+      if (inProgress[url]) {
+        inProgress[url].push(done);
+        return;
+      }
+      var script, needAttach;
+      if (key !== undefined) {
+        var scripts = document.getElementsByTagName("script");
+        for (var i = 0; i < scripts.length; i++) {
+          var s = scripts[i];
+          if (
+            s.getAttribute("src") == url ||
+            s.getAttribute("data-webpack") == dataWebpackPrefix + key
+          ) {
+            script = s;
+            break;
+          }
+        }
+      }
+      if (!script) {
+        needAttach = true;
+        script = document.createElement("script");
+
+        script.charset = "utf-8";
+        script.timeout = 120;
+        if (__webpack_require__.nc) {
+          script.setAttribute("nonce", __webpack_require__.nc);
+        }
+        script.setAttribute("data-webpack", dataWebpackPrefix + key);
+        script.src = url;
+      }
+      inProgress[url] = [done];
+      var onScriptComplete = (prev, event) => {
+        // avoid mem leaks in IE.
+        script.onerror = script.onload = null;
+        clearTimeout(timeout);
+        var doneFns = inProgress[url];
+        delete inProgress[url];
+        script.parentNode && script.parentNode.removeChild(script);
+        doneFns && doneFns.forEach((fn) => fn(event));
+        if (prev) return prev(event);
+      };
+      var timeout = setTimeout(
+        onScriptComplete.bind(null, undefined, { type: "timeout", target: script }),
+        120000,
+      );
+      script.onerror = onScriptComplete.bind(null, script.onerror);
+      script.onload = onScriptComplete.bind(null, script.onload);
+      needAttach && document.head.appendChild(script);
+    };
+    ```
+
+### [Rollup](https://github.com/rollup/rollup)与webpack对比
 1. Rollup：
 
     1. 文件很小，几乎没多余代码；执行很快；可方便输出CommonJS、ES6 Module、IIFE（用于`<script>`引用）格式。

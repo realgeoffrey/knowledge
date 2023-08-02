@@ -56,11 +56,20 @@
         2. [用户代理判断ie所有版本](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断ie所有版本)。
 
     ><details>
-    ><summary>图片类型选择png-24</summary>
+    ><summary>图片类型选择png-24透明图（png-32）</summary>
     >
     >1. 用gulp压缩图片后，图片在ie6~8表现出的颜色会改变，因此不要把背景切入图中，最好用透明的切图。
-    >2. **png-24透明图**和**png-24不透明图**或**png-8不透明图**压缩后的文件大小相差不大，因此可以都使用**png-24透明图**切图后再用gulp压缩。
+    >2. **png-24透明图（png-32）**和**png-24不透明图**或**png-8**压缩后的文件大小相差不大，因此可以都使用**png-24透明图**切图后再用gulp压缩。
     >3. png24透明图增加透明区域对文件大小增加很小，因此切图时不必特意限制纯透明区域大小。
+    >4. 判断png类型：`file 文件名`
+    >
+    >    ```shell
+    >    file *
+    >    # 输出：
+    >    /png-24.png:    PNG image data, 宽 x 高, 8-bit/color RGB, non-interlaced
+    >    /png-32.png:    PNG image data, 宽 x 高, 8-bit/color RGBA, non-interlaced
+    >    /png-8.png:     PNG image data, 宽 x 高, 8-bit colormap, non-interlaced
+    >    ```
     ></details>
 2. ie6/7替换写法：
 
@@ -88,11 +97,11 @@
 4. 兼容至ie6的：`position: absolute;`元素拉升至父容器（`position: relative;`）相同高宽：
 
     - `top: 0; bottom: 0; left: 0; right: 0; _height: 100%; _width: 100%;`
-5. ie6图片无法用png-24透明图，会把透明部分显示为灰色：
+5. ie6图片无法用png-24透明图（png-32），会把透明部分显示为灰色：
 
     1. gulp压缩图片：
 
-        用png-24透明图切图，再用gulp压缩。
+        用png-24透明图（png-32）切图，再用gulp压缩。
 
     2. ~~JS方法~~：
 

@@ -37,16 +37,8 @@
 2. JS
 
     1. [JS学习笔记](./网站前端/JS学习笔记/README.md)
-
-    - <details>
-
-        <summary>其他</summary>
-
-        1. [JS实用方法](./网站前端/JS方法积累/实用方法/README.md)
-        2. [JS正则表达式](./网站前端/JS正则表达式/README.md)
-        3. [JS算法小结](./网站前端/JS方法积累/算法小结/README.md)
-        4. [LeeCcode记录](./网站前端/JS方法积累/LeeCcode记录/README.md)
-        </details>
+    2. [JS实用方法](./网站前端/JS方法积累/实用方法/README.md)
+    3. [JS正则表达式](./网站前端/JS正则表达式/README.md)
 3. HTML+CSS
 
     1. [HTML+CSS学习笔记](./网站前端/HTML+CSS学习笔记/README.md)
@@ -86,8 +78,11 @@
     6. [微信生态相关](./网站前端/微信生态相关/README.md)
 7. [还原设计稿](./网站前端/还原设计稿/README.md)
 8. [HTTP相关](./网站前端/HTTP相关/README.md)
-9. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
-10. <details>
+9. [算法](./网站前端/算法/README.md)
+
+    1. [LeetCode记录](./网站前端/算法/LeetCode记录/README.md)
+10. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
+11. <details>
 
     <summary>前端构建工具</summary>
 
@@ -104,8 +99,8 @@
         1. [我安装的全局仓库](./网站前端/Node.js学习笔记/我安装的全局仓库.md)
         </details>
     </details>
-11. [无障碍](./网站前端/无障碍/README.md)
-12. [海外应用总结](./网站前端/海外应用总结/README.md)
+12. [无障碍](./网站前端/无障碍/README.md)
+13. [海外应用总结](./网站前端/海外应用总结/README.md)
 
 - <details>
 

@@ -96,6 +96,11 @@
 3. 因为依赖客户端渲染的本质，所以最终需要在iOS和Android都真机测试才可以。
 
     iOS和Android的渲染结果可能不同，样式（截断、遮挡）、事件冒泡情况、等，容易产生区别。
+4. （像RN一样）提供一个JS运行时环境（类似Node.js、WebView），JS运行并通过桥协议与客户端交互，最终客户端渲染视图。
+
+    >前端最终提供一个.js文件在JS运行时环境中执行。
+
+    对于不支持的方法（如：window、document、Buffer、等），若需要，则前端人员自己hack（就可以直接使用各种开源库，如：webpack、React库、等）。
 
 ### hippy-react
 ![hippy-react图](./images/hippy-react-1.png)
@@ -1787,3 +1792,22 @@
 
             1. `<Text>`不需要加`accessible`、`accessibilityLabel`（可以设置`accessible={false}`关闭）；其他组件需要加`accessible`、`accessibilityLabel`。
             2. 父级`accessible={true}`，就不会再选中子级的`accessible`（但是可以阅读出所有子级的`accessibilityLabel`内容）。
+9. 异常捕获
+
+    >类似Node.js或浏览器。
+
+    1. 捕获未捕获的异常
+
+        ```javascript
+        global.Hippy.on('uncaughtException', (...args) => {
+          // 此处可以做错误上报
+          console.error('uncaughtException', ...args);
+        });
+        ```
+    2. 捕获未捕获的失败Promise实例
+
+        ```javascript
+        global.Hippy.on('unhandledRejection', (reason) => {
+          console.error('unhandledRejection', reason);
+        });
+        ```

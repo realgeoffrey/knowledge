@@ -7,6 +7,7 @@
     1. [水平居中、垂直居中](#水平居中垂直居中)
     1. [自适应宽度布局](#自适应宽度布局)
     1. [`flex`优雅解决布局、自适应问题](#flex优雅解决布局自适应问题)
+    1. [组件样式使用方案（如：React、Vue）](#组件样式使用方案如reactvue)
     1. [经验技巧](#经验技巧)
     1. [Tips](#tips)
 1. [CSS](#css)
@@ -604,6 +605,23 @@
     4. [粘性页脚](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#粘性页脚)
     5. [多列等高](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/实现具体业务.md#多列等高)
 2. `flex`具体解决方案：[`flex`布局实践](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子（Flexbox）.md#flex布局实践)。
+
+### 组件样式使用方案（如：React、Vue）
+除了引入.css文件（或CSS预处理器文件）之外，其他支持：
+
+1. 局部作用域、CSS类模块：[css modules](https://github.com/css-modules/css-modules)
+
+    >可以与CSS预处理器配合使用。
+
+    构建期间修改组件要使用的样式类名，使其成为该组件特殊的类名而不会污染全局样式（当然也支持全局作用域的写法），额外支持选择器互相继承（composition）。
+2. CSS in JS方案：[styled-components](https://github.com/styled-components/styled-components)
+
+    >CSS in JS/CSS-in-JS：CSS由JavaScript生成而不是~~在外部文件（.css文件或CSS预处理器文件）中定义~~。
+
+    生成随机类名的某HTML标签的新组件（在运行时解析样式并动态插入样式）。
+3. 原子化CSS（Atomic CSS）：[tailwindcss](https://github.com/tailwindlabs/tailwindcss)、[unocss](https://github.com/unocss/unocss)
+
+    CSS样式库，一个个类名代表一个个CSS属性，拼凑的各类名替代拼凑的各CSS属性。
 
 ### 经验技巧
 1. 命名间隔

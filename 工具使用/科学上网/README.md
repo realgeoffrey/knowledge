@@ -12,7 +12,8 @@
     1. [IKEv2（IKEv1）](#ikev2ikev1客户端配置)
 1. [案例](#案例)
 
-    1. [ClashX提供给同局域网其他设备翻墙功能](#clashx提供给同局域网其他设备翻墙功能)
+    1. [ClashX 提供给同局域网其他设备翻墙功能](#clashx-提供给同局域网其他设备翻墙功能)
+    1. [Quantumult X 提供给同局域网其他设备翻墙功能](#quantumult-x-提供给同局域网其他设备翻墙功能)
 
 ---
 
@@ -304,8 +305,19 @@
 ---
 ## 案例
 
-### ClashX提供给同局域网其他设备翻墙功能
+### ClashX 提供给同局域网其他设备翻墙功能
 
-已经联网的mac电脑，开启ClashX，并开启"允许局域网连接"：同一局域网下的机器，http代理到mac电脑的IP+ClashX的HTTP代理端口，即可翻墙。
+已经联网的mac电脑，开启ClashX，并开启"允许局域网连接"：同一局域网下的机器（手机、电脑、等），HTTP代理到mac电脑的IP+ClashX的HTTP代理端口，即可翻墙。
 
->连接VPN的手机，也需要有HTTP代理功能才可以提供翻墙功能给连接其热点的设备。iOS的Quantumult X暂时没有找到类似功能。
+>连接VPN的手机，也需要有HTTP代理功能才可以提供翻墙功能给连接其热点的设备。
+
+### Quantumult X 提供给同局域网其他设备翻墙功能
+1. 提供翻墙的手机（安装了Quantumult X的手机）
+
+    1. 打开手机热点
+    2. 打开Quantumult X的VPN开关，并「设置」->「其他设置」->「VPN」->打开「HTTP代理服务器」
+
+        ![Quantumult X提供翻墙功能](./images/QuantumultX-1.jpg)
+2. 其他设备（手机、电脑、等）需要：连接热点 + 配置HTTP代理。
+
+    即可HTTP请求通过上面手机Quantumult X的VPN功能。

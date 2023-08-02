@@ -4,16 +4,23 @@
 1. [react](#react)
 
     1. [JSX](#jsx)
-    1. [元素渲染](#元素渲染)
     1. [组件](#组件)
+
+        1. [元素渲染](#元素渲染)
     1. [生命周期](#生命周期)
     1. [Hook](#hook)
     1. [与第三方库协同](#与第三方库协同)
     1. [Virtual DOM](#virtual-dom)
     1. [性能优化](#性能优化)
-    1. [代码分割（动态加载）](#代码分割动态加载)
-    1. [类型检查](#类型检查)
-    1. [测试](#测试)
+
+    - <details>
+
+        <summary>其他</summary>
+
+        1. [代码分割（动态加载）](#代码分割动态加载)
+        1. [类型检查](#类型检查)
+        1. [测试](#测试)
+        </details>
 1. [create-react-app](#create-react-app)
 1. [redux](#redux)
 
@@ -28,9 +35,9 @@
 
 ---
 
-### [react](https://github.com/facebook/react)
+## [react](https://github.com/facebook/react)
 
-#### JSX
+### JSX
 >（TS转译.tsx成为.jsx或.js，）Babel转译.jsx成为.js。
 
 1. JSX是一个表达式
@@ -237,59 +244,8 @@
         ></details>
     </details>
 
-#### 元素渲染
->由`ReactDOM.render`对根DOM组件开始初始化-渲染，随着引入的子组件再以树状结构对子组件进行初始化-渲染。
-
-1. `ReactDOM.render`
-
-    渲染到根DOM（可多次调用）。
-2. React DOM
-
-    1. 管理根DOM内所有内容。
-    2. 将React元素和它的子元素与它们之前的状态进行比较，并只会进行必要的更新来使DOM达到预期的状态（协调）。
-3. React元素（React elements）
-
-    1. 不可变对象（[immutable](https://zh.wikipedia.org/wiki/不可变对象)）
-    2. 创建开销极小的**普通对象**
-4. 组件渲染
-
-    组件渲染完成后返回React元素。
-
-    1. `render`方法（或函数组件）返回`null`，组件会正常运行和执行生命周期函数，只是不渲染出任何DOM（因为渲染空内容）。
-
-- API
-
-    1. `React.cloneElement(element[, props[, ...children]])`（已废弃：~~`React.addons.cloneWithProps`~~）
-
-        克隆并返回新的React元素。
-
-        >几乎等同于：`<element.type {...element.props} {...props}>{children}</element.type>` + 原element上的`key`和`ref`。添加的`props`的属性会覆盖`element`原本的属性。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >把接受到的参数传递给`props.children`渲染：
-        >
-        >```tsx
-        >const { children, ...otherProps } = props;
-        >
-        >return (
-        >  <>
-        >    {React.Children.map(children, (child) => {
-        >      return React.cloneElement(child, {...otherProps, 新增参数: '值'});
-        >    })}
-        >  </>
-        >)
-        >```
-        ></details>
-    2. `React.isValidElement(对象)`
-
-        验证对象是否为React元素。返回：`true/false`。
-    3. `React.Children` + `.map/.forEach/.count/.only/.toArray`
-
-        处理`this.props.children`
-
-#### 组件
+---
+### 组件
 组件：它接受任意的入参（Props），并返回用于描述页面展示内容的React元素。
 
 1. 组件类型：
@@ -1157,12 +1113,7 @@
 
         在其他地方全局引入`.css`文件（`import './x.css'` 或 html的css引入），`className="类名"`或`className={变量或类名字符串}`
 
-        - 除了引入.css文件（或CSS预处理器文件）之外，其他支持：
-
-            1. 局部作用域、CSS类模块：[css modules](https://github.com/css-modules/css-modules)（可以与CSS预处理器配合使用）
-            2. CSS in JS方案：[styled-components](https://github.com/styled-components/styled-components)（运行时生成`<style>`类样式，供给生成的样式组件的className使用）
-
-                >CSS in JS/CSS-in-JS：CSS由JavaScript生成而不是~~在外部文件（.css文件或CSS预处理器文件）中定义~~。
+        - 除了引入.css文件（或CSS预处理器文件）之外，其他支持：[组件样式使用方案（如：React、Vue）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#组件样式使用方案如reactvue)
 8. 事件处理
 
     1. 小驼峰式（camelCase）定义事件名
@@ -1627,7 +1578,60 @@
 
         >默认显示：`Anonymous ForwardRef`或`「匿名函数名」 ForwardRef`。
 
-#### 生命周期
+#### 元素渲染
+>由`ReactDOM.render`对根DOM组件开始初始化-渲染，随着引入的子组件再以树状结构对子组件进行初始化-渲染。
+
+1. `ReactDOM.render`
+
+    渲染到根DOM（可多次调用）。
+2. React DOM
+
+    1. 管理根DOM内所有内容。
+    2. 将React元素和它的子元素与它们之前的状态进行比较，并只会进行必要的更新来使DOM达到预期的状态（协调）。
+3. React元素（React elements）
+
+    1. 不可变对象（[immutable](https://zh.wikipedia.org/wiki/不可变对象)）
+    2. 创建开销极小的**普通对象**
+4. 组件渲染
+
+    组件渲染完成后返回React元素。
+
+    1. `render`方法（或函数组件）返回`null`，组件会正常运行和执行生命周期函数，只是不渲染出任何DOM（因为渲染空内容）。
+
+- API
+
+    1. `React.cloneElement(element[, props[, ...children]])`（已废弃：~~`React.addons.cloneWithProps`~~）
+
+        克隆并返回新的React元素。
+
+        >几乎等同于：`<element.type {...element.props} {...props}>{children}</element.type>` + 原element上的`key`和`ref`。添加的`props`的属性会覆盖`element`原本的属性。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >把接受到的参数传递给`props.children`渲染：
+        >
+        >```tsx
+        >const { children, ...otherProps } = props;
+        >
+        >return (
+        >  <>
+        >    {React.Children.map(children, (child) => {
+        >      return React.cloneElement(child, {...otherProps, 新增参数: '值'});
+        >    })}
+        >  </>
+        >)
+        >```
+        ></details>
+    2. `React.isValidElement(对象)`
+
+        验证对象是否为React元素。返回：`true/false`。
+    3. `React.Children` + `.map/.forEach/.count/.only/.toArray`
+
+        处理`this.props.children`
+
+---
+### 生命周期
 >来自：[React: React.Component](https://zh-hans.reactjs.org/docs/react-component.html)。
 
 1. `constructor(props)`
@@ -1760,7 +1764,7 @@
 
 ![react生命周期图](./images/lifecycle.png)
 
-#### Hook
+### Hook
 Hook是一些可以在**函数组件**里“钩入”React state及生命周期等特性的**函数**。
 
 - 使用规则：
@@ -2445,15 +2449,16 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
         const doRefreshShow = () => setShow(false)
         ```
 
-#### 与第三方库协同
+---
+### 与第三方库协同
 >React不会理会React自身之外的DOM操作。它根据内部虚拟DOM来决定是否需要更新，而且若同一个DOM被另一个库操作了，则React会觉得困惑而且没有办法恢复。
 
 1. 协同而避免冲突的最简单方式就是防止React组件更新。
 
-    1. 渲染无需更新的React元素，比如一个空的`<div>`。
-    2. 利用`componentDidMount`和`componentWillUnmount`对React不会更新的React元素进行挂载和清理。
+    1. 渲染无需更新的React元素（如：一个空的`<div>`），用于第三方库操作；
+    2. 利用`componentDidMount`和`componentWillUnmount`对React不会更新的React元素进行第三方库的挂载和清理。
 
-#### Virtual DOM
+### Virtual DOM
 - [协调（reconciliation）](https://zh-hans.reactjs.org/docs/reconciliation.html)
 
     当一个组件的`props`或`state`变更，React会将最新返回的元素与之前渲染的元素进行对比（diff），以此决定是否有必要更新真实的DOM。当它们不相同时，React会最小化更新该DOM。这个过程被称为“协调”。
@@ -2471,13 +2476,14 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 >4. 可以渲染到DOM以外的端，如：ReactNative、SSR。
 ></details>
 
-#### 性能优化
+### 性能优化
 1. 使用生产版本
 2. 虚拟化长列表
 
     >如：[react-window](https://github.com/bvaughn/react-window)。
 3. 渲染前的diff，可利用`shouldComponentUpdate`跳过
 
+---
 #### 代码分割（动态加载）
 添加一个动态引入，就会新增一个`chunk`、不会~~把动态引入的代码加入`bundle`~~。策略：基于路由进行代码分割。
 
@@ -2576,6 +2582,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
             >小部分可以在代码中使用，大部分只是配置、无法在代码中输出。
 
+---
 ### [redux](https://github.com/reduxjs/redux)
 >支持：前端、服务端、客户端。
 
@@ -2978,7 +2985,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         >1. 默认启用了`redux-thunk`中间件；默认启用`redux-devtools`扩展。
         >2. <details>
         >
-        >    <summary>中间件默认开启序列化检查</summary>
+        >    <summary>中间件默认开启序列化检查（开启后违背会提示：<code>A non-serializable value was detected in an action, in the path: `xxx`.</code>）</summary>
         >
         >    >[原因](https://redux.js.org/style-guide#do-not-put-non-serializable-values-in-state-or-actions)。
         >
@@ -3064,6 +3071,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 #### [rematch](https://github.com/rematch/rematch)
 >没有样板文件的Redux最佳实践。没有多余的action types，action creators，switch语句或thunks。简单、易用。
 
+---
 ### [mobx](https://github.com/mobxjs/mobx)
 1. computed
 

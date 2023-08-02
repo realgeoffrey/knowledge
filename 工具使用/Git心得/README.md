@@ -767,7 +767,7 @@ feat(details): 添加了分享功能
         >.DS_Store
         >```
         ></details>
-3. http代理、https代理
+3. HTTP代理、HTTPS代理
 
     ```text
     git config --global http.proxy 'http://127.0.0.1:7890'

@@ -47,7 +47,11 @@
 1. 数组操作
 
     1. [分割数组](#原生js分割数组)
-    1. [数组去重](#原生js数组去重)
+    1. [数组去重（项为对象）](#原生js数组去重项为对象)
+    1. [数组去重](#数组去重)
+    1. [数组删去某值](#数组删去某值)
+    1. [数组的某项插入某位置](#数组的某项插入某位置)
+    1. [声明某长度并设定值的数组](#声明某长度并设定值的数组)
 1. 功能
 
     1. [用请求图片作log统计](#原生js用请求图片作log统计)
@@ -79,6 +83,11 @@
     1. [默认图组件](#react默认图组件)
     1. [溢出文本的省略](#原生js溢出文本的省略)
     1. [九宫格抽奖](#九宫格抽奖)
+1. 算法思路
+
+    1. [sleep](#sleep)
+    1. [任务队列链式调用](#任务队列链式调用)
+    1. [无缝轮播](#无缝轮播)
 1. 提升性能
 
     1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
@@ -247,6 +256,7 @@ function detectIE() {
 }
 ```
 
+---
 ### *原生JS*判断是否存在某cookie
 ```javascript
 function hasCookie (checkKey) {
@@ -513,6 +523,7 @@ function getLocation (url) {
     ```
     </details>
 
+---
 ### *原生JS*绑定、解绑事件
 ```javascript
 var eventUtil = {
@@ -1064,6 +1075,7 @@ var b = new ScrollDirection({
 // b.stop()
 ```
 
+---
 ### *原生JS*科学计数法转换成字符串的数字
 ```javascript
 function eToString(number) {
@@ -1362,6 +1374,7 @@ function randomsFrom(min, max, num = 1) {
 }
 ```
 
+---
 ### *原生JS*转化为Unicode、反转字符串、字符串长度、所占字节数
 >注意：Unicode码点大于`\uFFFF`（65535）的字符，如：`'💩'.codePointAt(0) // 128169`
 
@@ -1746,6 +1759,7 @@ function upperCaseWord(str) {
 }
 ```
 
+---
 ### *原生JS*分割数组
 ```javascript
 /**
@@ -1773,7 +1787,7 @@ function divideArr(arr, divisor) {
 }
 ```
 
-### *原生JS*数组去重
+### *原生JS*数组去重（项为对象）
 ```javascript
 /**
  * 获取对象指定深度属性
@@ -1790,7 +1804,7 @@ function getNestedValue(data, path = []) {
 }
 
 /**
- * 数组去重
+ * 数组去重（项为对象）
  * @param {Array} arr - 要处理的数组
  * @param {Array} path - 路径深度
  * @returns 去重后的数组
@@ -1827,6 +1841,256 @@ deduplicateArray( // [id从1到4的对象]
 deduplicateArray([1, 2, 3, 1, 4]);    // [1, 2, 3, 4]
 ```
 
+### 数组去重
+>来自：[JavaScript 数组去重](https://github.com/hanzichi/underscore-analysis/issues/9)。
+
+1. 定义一个空数组变量，遍历需要去重的数组：若项的值不存在新数组中，则放入新数组；若已经存在，则丢弃。
+
+    >重复的项取最前的放入新数组。
+
+    1. 使用`Array.prototype.indexOf`、`Array.prototype.filter`
+
+        ```javascript
+        function uniqueArr (arr) {
+          return arr.filter((item, index, array) => array.indexOf(item) === index)
+        }
+        ```
+    2. 不使用~~Array.prototype.indexOf~~、~~Array.prototype.filter~~
+
+        ```javascript
+        function uniqueArr(arr) {
+            var newArr = [],
+                i, j, iLen, jLen, item;
+
+            for (i = 0, iLen = arr.length; i < iLen; i++) {
+                item = arr[i];
+
+                for (j = 0, jLen = newArr.length; j < jLen; j++) {
+                    if (newArr[j] === item) {
+                        break;
+                    }
+                }
+
+                if (j === jLen) {
+                    newArr.push(item);
+                }
+            }
+
+            return newArr;
+        }
+        ```
+    >时间复杂度： $O(n^2)$ 。
+2. 定义一个空数组变量，遍历需要去重的数组：若项的值在原数组中唯一，则放入新数组；若不唯一，丢弃并继续向后遍历。
+
+    >重复的项取最后的放入新数组。
+
+    ```javascript
+    function uniqueArr(arr) {
+        var newArr = [],
+            len = arr.length,
+            i, j;
+
+        for (i = 0; i < len; i++) {
+            for (j = i + 1; j < len; j++) {
+                if (arr[i] === arr[j]) {    // 若发现相同元素，则i自增并且进入下一个数的循环比较
+                    i += 1;
+                    j = i;
+                }
+            }
+
+            newArr.push(arr[i]);
+        }
+
+        return newArr;
+    }
+    ```
+    >时间复杂度： $O(n^2)$ 。
+3. 先排序原始数组（需要额外排序算法，否则只能处理Number型数据），第一项加入，之后每个项对比前一个项：若不同，则加入；若相同，则丢弃。
+
+    ```javascript
+    function uniqueArr (arr) {
+      return arr.concat().sort().filter((item, index, array) => !index || item !== array[index - 1])
+    }
+    ```
+    >时间复杂度： $O(n)$ + 数组排序。
+4. 用对象（哈希表）去重（只能处理Number型数据）。
+
+    ```javascript
+    function uniqueArr (arr) {
+      const obj = {}
+
+      return arr.filter((item) => obj.hasOwnProperty(item) ? false : (obj[item] = true))
+    }
+    ```
+    >时间复杂度： $O(n)$ 。
+5. ES6的`Set`
+
+    ```javascript
+    function uniqueArr(arr) {
+        return Array.from(new Set(arr));
+        // 或：return [...new Set(arr)];
+    }
+    ```
+
+### 数组删去某值
+1. 仅使用赋值操作：
+
+    ```javascript
+    function reduceArr(arr, delValue) {
+        arr = arr.slice();
+
+        var delCount = 0,
+            i, len;
+
+        for (i = 0, len = arr.length; i < len; i++) {
+            if (arr[i] === delValue) {
+                delCount += 1;
+            } else if (delCount !== 0) {
+                arr[i - delCount] = arr[i];
+            }
+        }
+
+        arr.length = len - delCount;
+
+        return arr;
+    }
+    ```
+2. 使用`Array.prototype.splice`：
+
+    ```javascript
+    function reduceArr(arr, delValue) {
+        arr = arr.slice();
+
+        var i, len;
+
+        for (i = 0, len = arr.length; i < len; i++) {
+            if (arr[i] === delValue) {
+                arr.splice(i, 1);
+                i--;
+            }
+        }
+
+        return arr;
+    }
+    ```
+3. 使用新数组保存：
+
+    ```javascript
+    function reduceArr(arr, delValue) {
+        var newArr = [],
+            i, len;
+
+        for (i = 0, len = arr.length; i < len; i++) {
+            if (arr[i] !== delValue) {
+                newArr.push(arr[i]);
+            }
+        }
+
+        return newArr;
+    }
+    ```
+4. 使用`Array.prototype.filter`（数组空位不遍历）：
+
+    ```javascript
+    function reduceArr (arr, delValue) {
+      return arr.filter((value) => value !== delValue)
+    }
+    ```
+>时间复杂度： $O(n)$ 。
+
+### 数组的某项插入某位置
+```javascript
+/**
+ * 移动数组的项，从一个位置插入至另一个位置（不是调换位置）
+ * @param {Array} arr - 数组
+ * @param {Number} from - 原数组起始位置
+ * @param {Number} to - 原数组插入位置
+ * @param {Boolean} [isLeft = false] - 是否插入左边（默认：插入右边）
+ * @returns {Array} arr - 调换位置的数组
+ */
+function switchArr ({ arr, from, to, isLeft = false }) {
+  arr = arr.slice()
+
+  if (isLeft) {
+    if (from < to - 1) {
+      arr.splice(to - 1, 0, ...arr.splice(from, 1))
+    } else if (from >= to + 1) {
+      arr.splice(to, 0, ...arr.splice(from, 1))
+    }
+  } else {
+    if (from > to + 1) {
+      arr.splice(to + 1, 0, ...arr.splice(from, 1))
+    } else if (from < to) {
+      arr.splice(to, 0, ...arr.splice(from, 1))
+    }
+  }
+
+  return arr
+}
+```
+
+### 声明某长度并设定值的数组
+>e.g. 声明arr：长度为n，值为下标（或某固定值）
+
+1. 直接创建并循环赋值
+
+    1. 字面量
+
+        ```javascript
+        var n = 55;
+
+        var arr = [],
+            i;
+
+        for (i = 0; i < n; i++) {
+            arr[i] = i;
+        }
+        ```
+    2. `Array`构造函数：
+
+        ```javascript
+        var n = 55;
+
+        var arr = new Array(n),
+            i, len;
+
+        for (i = 0, len = arr.length; i < len; i++) {
+            arr[i] = i;
+        }
+        ```
+2. `Array.prototype.map`赋值
+
+    1. `Array`：
+
+        ```javascript
+        var n = 55
+
+        var arr = Array.apply(null, new Array(n)).map((item, index) => index)
+        ```
+    2. `Array`、`join`、`split`：
+
+        ```javascript
+        var n = 55
+
+        var arr = new Array(n + 1).join().split('').map((item, index) => index)
+        ```
+    3. `Object.keys`、`Array`、`toString`、`split`：
+
+        ```javascript
+        var n = 55
+
+        var arr = Object.keys(new Array(n + 1).toString().split('')).map((item, index) => index)
+        ```
+3. ES6的`Array.from`
+
+    ```javascript
+    var n = 55
+
+    var arr = Array.from({ length: n }, (value, index) => index)
+    ```
+4. 纯手打字面量（性能最好方式）
+
+---
 ### *原生JS*用请求图片作log统计
 ```javascript
 var sendLog = (function () {
@@ -2876,6 +3140,7 @@ promisePoller({
 ```
 >参考：[promise-poller](https://github.com/joeattardi/promise-poller)。
 
+---
 ### *原生JS*判断是否为`Node`、是否为`Element`
 ```javascript
 // 判断是否为Node
@@ -3487,6 +3752,195 @@ for (let i = 0; i < text.length; i++) {
     </script>
     ```
 
+---
+### sleep
+1. 要求：
+
+    延时一段时间之后执行剩余代码。
+2. 实现方式：
+
+    1. `async-await`、`Promise`、`setTimeout`
+
+        ```javascript
+        function sleep (ms) {
+          return new Promise((resolve) => setTimeout(resolve, ms))
+        }
+
+        async function demo () {
+          // 使用
+          console.time(1)
+          await sleep(1000) // 延时执行
+          console.timeEnd(1)
+          console.time(2)
+          await sleep(1000) // 延时执行
+          console.timeEnd(2)
+        }
+
+        demo()
+        ```
+
+    >支持取消的sleep实现：
+    >
+    >```typescript
+    >type CancelablePromise = Promise<any> & { cancel: any };
+    >
+    >function sleep(timeout: number): CancelablePromise {
+    >  let res: (v: string) => void;
+    >  let timer: ReturnType<typeof setTimeout>;
+    >  const promise = new Promise((resolve) => {
+    >    res = resolve;
+    >    timer = setTimeout(() => {
+    >      resolve("done");
+    >    }, timeout);
+    >  }) as CancelablePromise;
+    >  promise.cancel = function (data: string) {
+    >    res(data);
+    >    clearTimeout(timer);
+    >  };
+    >
+    >  return promise;
+    >}
+    >```
+
+    2. `Promise`、`setTimeout`
+
+        ```javascript
+        function sleep (ms) {
+          return new Promise((resolve) => setTimeout(resolve, ms))
+        }
+
+        // 使用
+        console.time(1)
+        sleep(1000).then(() => {    // 延时执行
+          console.timeEnd(1)
+          console.time(2)
+          sleep(1000).then(() => {  // 延时执行
+            console.timeEnd(2)
+          })
+        })
+        ```
+    3. `setTimeout`
+
+        ```javascript
+        // 使用
+        console.time(1)
+        setTimeout(() => {  // 延时执行
+          console.timeEnd(1)
+          console.time(2)
+          setTimeout(() => {  // 延时执行
+            console.timeEnd(2)
+          }, 1000)
+        }, 1000)
+        ```
+
+    4. <details>
+
+        <summary>JS循环代码占用主线程（阻塞、卡死线程）</del></summary>
+
+        ```javascript
+        function sleep (ms) {
+          ms += new Date().getTime()
+          while (new Date() < ms) {}
+        }
+
+        // 使用
+        console.time(1)
+        sleep(1000) // 延时执行
+        console.timeEnd(1)
+        console.time(2)
+        sleep(1000) // 延时执行
+        console.timeEnd(2)
+        ```
+        </details>
+
+### 任务队列链式调用
+1. 要求：
+
+    任务队列，可以链式调用、可以取消前一个任务。
+2. 实现方式：
+
+    ```javascript
+    const obj = {
+      taskQueue: [],  // 存放执行队列
+      print (text) {  // 真的执行
+        console.log(text)
+      },
+      setTimeoutId: 0, // 保证链式调用在最后一个调用后才真的执行
+      execute () {  // 尝试执行
+        clearTimeout(this.setTimeoutId)
+        this.setTimeoutId = setTimeout(async () => {
+          while (this.taskQueue.length > 0) {
+            await this.taskQueue.shift().func()
+          }
+        }, 0)
+
+        return this
+      },
+
+      do (msg = 'do sth.') { // 普通行为（可被cancel）
+        this.taskQueue.push({ type: 'do', msg, func: () => { this.print(msg) } })
+
+        return this.execute()
+      },
+      sleep (ms = 1000) { // 使后面的链式休眠后再执行（可被cancel）
+        this.taskQueue.push({
+          type: 'sleep',
+          msg: ms,
+          func: () => new Promise((resolve) => {
+            this.print(`sleep:${ms}ms`)
+            setTimeout(() => resolve(), ms)
+          })
+        })
+
+        return this.execute()
+      },
+      cancel () { // 取消前一个链式的执行
+        if (this.taskQueue.length > 0) {
+          const task = this.taskQueue[this.taskQueue.length - 1]
+
+          if (task.type !== 'cancel') {
+            this.taskQueue.pop()
+            this.taskQueue.push({ type: 'cancel', func: () => { this.print(`\`${task.type}(${task.msg})\` was cancel`) } })
+          } else {
+            this.taskQueue.push({ type: 'cancel', func: () => { this.print('canceled nothing') } })
+          }
+        } else {
+          this.taskQueue.push({ type: 'cancel', func: () => { this.print('canceled nothing') } })
+        }
+
+        return this.execute()
+      }
+    }
+
+
+    /* 使用测试 */
+    // obj.do('你好').cancel()
+    // obj.cancel().do('hello').sleep(1000).do('yo ho')
+    obj.sleep(1000).sleep(2000).cancel().cancel().do('他好').cancel().sleep(1000).sleep(1000).do('我好').do('我好')
+    ```
+
+### 无缝轮播
+1. 要求：
+
+    一共有`n`数量的项（**1**,**2**,**3**,...,**n**），中间展示内容有`i`数量的项，左右（或上下）分别展示待轮播有`m`数量的项（轮播到任何项都可以看见左右`m`数量的项），可以无缝向左右（或上下）轮播。
+2. 实现方式：
+
+    1. 方法1：
+
+        1. *原始项*前面复制*原始项*最后的 **n-(m+i)+1**项~**n**项 的一共`m+i`数量的项；*原始项*后面复制*原始项*最前的 **1**项~**m+i**项 的一共`m+i`数量的项。
+        2. 因为前后新增了项，滚动前的初始位置要向左（或上）移动`m+i`数量的项的距离。
+        3. 轮播到达*原始项*边缘：
+
+            1. 右（或下）轮播：当完全播放完原始最后一项时（最后`i`数量的项全部轮播完毕），把整个轮播内容向左（或上）移动整个*原始项*的距离。
+            2. 左（或上）轮播：当完全播放完原始最前一项时（最前`i`数量的项全部轮播完毕），把整个轮播内容向右（或下）移动整个*原始项*的距离。
+    2. 方法2：
+
+        不复制、移动整个DOM的方法。
+    3. 方法3：
+
+        改变单个项的堆叠层级。
+
+---
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript
 /**
@@ -3916,6 +4370,7 @@ var a = new RepeatRAF(function () {
 
 >滚动事件代理可以代理在`window`或监控图片加载的滚动节点上。
 
+---
 #### jQuery节点跟随屏幕滚动而相对静止
 1. `fixed`：
 

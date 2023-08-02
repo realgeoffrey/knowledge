@@ -3250,6 +3250,8 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 21. `dom1.contains(dom2)`判断dom2是否为dom1的后代节点（若`dom1 === dom2`，则返回`true`）。
 22. 分享图最好用没有透明度的图，大部分app会在图片后面加上占位颜色
 
+    同一个APP的Android、iOS效果可能不一致，不同APP实现效果更可能不一致。
+
 ---
 ## 事件相关
 

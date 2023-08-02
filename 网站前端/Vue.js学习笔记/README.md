@@ -1392,6 +1392,7 @@
                 </template>
                 ```
                 </details>
+
     - 组件的API来自三部分
 
         `<my-component :子属性="父属性" @父事件="父方法"><template v-slot:某名字="临时变量">插槽内容</template></my-component>`
@@ -1406,6 +1407,7 @@
     3. `<transition-group/>`
     4. `<keep-alive/>`
     5. `<slot/>`
+
 - 杂项
 
     1. 父级引用组件时添加属性`ref="字符串"`，可以在Vue实例的`$refs`中访问子组件。
@@ -1422,6 +1424,21 @@
     4. 当组件中包含大量静态内容时，可以考虑使用`v-once`将渲染结果在组件注册的`template`字段里缓存起来。
     5. 若组件内有多个`if-else`的展示逻辑，则尽量创建新的子组件，把每个子组件的逻辑放到子组件内部。
     6. 异步组件。
+
+        ```javascript
+        Vue.component(
+          'async-webpack-example',
+          // 这个动态导入会返回一个 `Promise` 对象。
+          () => import('./my-async-component')
+        )
+
+
+        Vue.component('async-webpack-example', function (resolve) {
+          // 这个特殊的 `require` 语法将会告诉 webpack：
+          //   自动将你的构建代码切割成多个包，这些包会通过 Ajax 请求加载
+          require(['./my-async-component'], resolve)
+        })
+        ```
     7. 高级异步组件。
     8. 递归组件。
     9. 循环组件。

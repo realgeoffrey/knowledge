@@ -1,4 +1,4 @@
-# [LeeCcode](https://leetcode-cn.com/)记录
+# [LeetCode](https://leetcode-cn.com/)记录
 
 ## 目录
 1. [简单](#简单)
@@ -31,52 +31,6 @@
     1. [礼物的最大价值](#礼物的最大价值)
 
 ---
->1. 时间复杂度
->
->    1. 设输入数据大小为n ，常见的时间复杂度类型包括（按照从低到高的顺序排列）：
->
->        $O(1)$常数阶 < $O(log n)$ 对数阶 < $O(n)$ 线性阶 < $O(n * log n)$ 线性对数阶 < $O(n^2)$ 平方阶 < $O(2^n)$ 指数阶 < $O(n!)$ 阶乘阶
->    2. <details>
->
->        <summary>时间复杂度举例</summary>
->
->        1. 二分搜索 或 每轮缩减一半的递归函数 的时间复杂度： $O(log n)$ 。
->
->            原因：[为什么说二分查找的时间复杂度是O(log n)](https://github.com/JasonGaoH/KnowledgeSummary/blob/master/Docs/Algorithm/为什么说二分查找的时间复杂度是O(log%20n).md)。
->
->            e.g. `function logRecur(n) { if (n <= 1) return 0; return logRecur(n / 2) + 1; }`
->        2. 嵌套循环中，两层循环的时间复杂度分别为 $O(log n)$ 和 $O(n)$ 的函数： $O(n * log n)$
->
->            主流排序算法，如：快速排序、归并排序、堆排序等。
->        3. 一分为二的递归函数 的时间复杂度： $O(2^n)$ 。
->
->            e.g. `function expRecur(n) { if (n == 1) return 1; return expRecur(n - 1) + expRecur(n - 1) + 1; }`
->        4. 每次减少1的递归： $O(n!)$
->
->            e.g. `function factorialRecur(n) { if (n == 0) return 1; let count = 0; for (let i = 0; i < n; i++) { count += factorialRecur(n - 1); } return count; }`
->        </details>
->2. 对称的数据结构（如：二叉树），多用递归解题，从整体的对称性思考，把大问题分解成子问题进行递归，即不是单独考虑一部分(如：树的左子树)，而是同时考虑对称的两部分(如：左右子树)，从而写出对称性的递归代码。
->
->    1. 可能需要辅助函数。
->    2. 一般先找到匹配的根节点，再判断其子树是否匹配
->4. 动态规划（Dynamic programming，DP）
->
->    1. 通过把原问题分解为相对简单的子问题的方式求解复杂问题的方法
->
->        1. 状态定义。e.g. `dp(n)`定义为题目要求解的含义。
->        2. 转移方程（递归）。e.g. `dp(n)`与`dp(n-1)`等的关系。
->        3. 初始状态。e.g. 当`n`为最初的若干值时，`dp`的返回结果。
->        4. 返回值
->    2. 解题流程（包含：递归、记忆化、滚动数组）：
->
->        1. 先想递归
->        2. 发现重复计算
->
->            1. 通过记忆化等方法（填表）去掉重复计算（空间换时间）
->            2. 若记忆法会导致内存超出等问题，则考虑利用 **计算顺序**、**滚动数组** 来压缩空间
->
->                >滚动数组：是DP中的一种编程思想。让数组滚动起来，每次都使用固定的几个存储空间，来达到压缩、节省存储空间的作用。因为DP题目是一个自底向上的扩展过程，常常需要用到的是连续的解，前面的解往往可以舍去。
-
 ## 简单
 
 ### 用两个栈实现队列
@@ -1259,7 +1213,7 @@ F(N) = F(N - 1) + F(N - 2), 其中 N > 1.
 
 1. 解法
 
-    略。与上一题（[斐波那契数列](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/LeeCcode记录/README.md#斐波那契数列)）基本一致，改下初始值即可。
+    略。与上一题（[斐波那契数列](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/算法/LeetCode记录/README.md#斐波那契数列)）基本一致，改下初始值即可。
 
 ### 连续子数组的最大和
 输入一个整型数组，数组中的一个或连续多个整数组成一个子数组。求所有子数组的和的最大值。
@@ -1859,7 +1813,7 @@ F(N) = F(N - 1) + F(N - 2), 其中 N > 1.
 
 1. 解法
 
-    略。与上一题（[从上到下打印二叉树 II](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/LeeCcode记录/README.md#从上到下打印二叉树-ii)）基本一致，根据奇偶改下每行输出即可。
+    略。与上一题（[从上到下打印二叉树 II](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/算法/LeetCode记录/README.md#从上到下打印二叉树-ii)）基本一致，根据奇偶改下每行输出即可。
 
 ### 树的子结构
 输入两棵二叉树A和B，判断B是不是A的子结构。(约定空树不是任意一个树的子结构)
