@@ -45,8 +45,8 @@
     >安装nvm-windows时，需要删除原本安装在电脑上的Node.js。
 
     ```shell
-    nvm node_mirror https://npm.taobao.org/mirrors/node/    # 设置node源
-    nvm npm_mirror https://npm.taobao.org/mirrors/npm/      # 设置npm源
+    nvm node_mirror https://npmmirror.com/mirrors/node/    # 设置node源
+    nvm npm_mirror https://npmmirror.com/mirrors/npm/      # 设置npm源
 
     nvm list available
     nvm install 新版本号
@@ -1315,6 +1315,10 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         >2. [axios](https://github.com/axios/axios)的`proxy`参数
         >3. [request](https://github.com/request/request)的`proxy`参数
         ></details>
+9. 最外层`return`语句
+
+    Node.js支持最外层`return`语句，作为文件执行完毕作用（不影响命令的退出码）。浏览器不允许 ~~最外层`return`语句~~，会报错。
+10. `node 文件.mjs`可以用ES6 Module的规范运行文件
 
 ---
 ## 工具使用

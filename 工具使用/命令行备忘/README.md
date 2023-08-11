@@ -34,6 +34,7 @@
 1. [`sed`](#sed)
 1. [`ln`](#ln)
 1. [Shell环境的运行参数](#shell环境的运行参数)
+1. [压缩、解压缩](#压缩解压缩)
 1. [macOS命令](#macos命令)
 
     1. [（macOS）brew更新](#macosbrew更新)
@@ -754,6 +755,20 @@ ln -s 「源文件/目录」 「目标文件/目录」  # 软链接，会在 目
 -v          # 打印Shell接收到的每一行输入。。或：`-o verbose`
 +v          # 默认。取消`-v`的效果。`+o verbose`
 ```
+
+#### 压缩、解压缩
+1. 压缩文件夹
+
+    ```shell
+    zip 「名.zip」 「文件」
+    zip -r 「x.zip」 「源文件夹」
+        # -e
+    ```
+2. 解压缩
+
+    ```shell
+    unzip 「x.zip」
+    ```
 
 ---
 ### macOS命令

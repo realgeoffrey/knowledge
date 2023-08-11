@@ -4,7 +4,6 @@
 1. [OpenTelemetry](#opentelemetry)
 
 ---
-
 ### OpenTelemetry
 >参考：[OpenTelemetry官方中文文档](https://github.com/open-telemetry/docs-cn)、[OpenTelemetry 可观测性的未来](https://github.com/rootsongjc/opentelemetry-obervability)。
 

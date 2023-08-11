@@ -19,6 +19,8 @@
     1. [斐波那契数列](#斐波那契数列)
     1. [青蛙跳台阶问题](#青蛙跳台阶问题)
     1. [连续子数组的最大和](#连续子数组的最大和)
+    1. [移除元素](#移除元素)
+    1. [有序数组的平方](#有序数组的平方)
 1. [中等](#中等)
 
     1. [复杂链表的复制](#复杂链表的复制)
@@ -28,7 +30,36 @@
     1. [从上到下打印二叉树 III](#从上到下打印二叉树-iii)
     1. [树的子结构](#树的子结构)
     1. [股票的最大利润](#股票的最大利润)
-    1. [礼物的最大价值](#礼物的最大价值)
+    1. [鸡蛋掉落-两枚鸡蛋](#鸡蛋掉落-两枚鸡蛋)
+    1. [长度最小的子数组](#长度最小的子数组)
+    1. [螺旋矩阵 II](#螺旋矩阵-ii)
+
+---
+<details>
+<summary>解题思路</summary>
+
+1. 对称的数据结构（如：二叉树），多用递归解题，从整体的对称性思考，把大问题分解成子问题进行递归，即不是单独考虑一部分(如：树的左子树)，而是同时考虑对称的两部分(如：左右子树)，从而写出对称性的递归代码。
+
+    1. 可能需要辅助函数。
+    2. 一般先找到匹配的根节点，再判断其子树是否匹配
+2. 动态规划（Dynamic programming，DP）
+
+    1. 通过把原问题分解为相对简单的子问题的方式求解复杂问题的方法
+
+        1. 状态定义。e.g. `dp(n)`定义为题目要求解的含义。
+        2. 转移方程（递归）。e.g. `dp(n)`与`dp(n-1)`等的关系。
+        3. 初始状态。e.g. 当`n`为最初的若干值时，`dp`的返回结果。
+        4. 返回值
+    2. 解题流程（包含：递归、记忆化、滚动数组）：
+
+        1. 先想递归
+        2. 发现重复计算
+
+            1. 通过记忆化等方法（填表）去掉重复计算（空间换时间）
+            2. 若记忆法会导致内存超出等问题，则考虑利用 **计算顺序**、**滚动数组** 来压缩空间
+
+                >滚动数组：是DP中的一种编程思想。让数组滚动起来，每次都使用固定的几个存储空间，来达到压缩、节省存储空间的作用。因为DP题目是一个自底向上的扩展过程，常常需要用到的是连续的解，前面的解往往可以舍去。
+</details>
 
 ---
 ## 简单
@@ -333,7 +364,7 @@ minStack.min();   --> 返回 -2.
 
     ```javascript
     var replaceSpace = function (s) {
-      // 模拟的 C++ 语言中的可变长度字符串的实现原理，将其 N^2 的空间复杂度降低到 1
+      // 模拟的 C++ 语言中的可变长度字符串的实现原理，将其 O(n^2) 的空间复杂度降低到 O(1)
       const arr = s.split("");
       let oldLen = arr.length;
       let spaceCount = 0;
@@ -1213,7 +1244,7 @@ F(N) = F(N - 1) + F(N - 2), 其中 N > 1.
 
 1. 解法
 
-    略。与上一题（[斐波那契数列](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/算法/LeetCode记录/README.md#斐波那契数列)）基本一致，改下初始值即可。
+    略。与上一题（[斐波那契数列](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/LeetCode记录/README.md#斐波那契数列)）基本一致，改下初始值即可。
 
 ### 连续子数组的最大和
 输入一个整型数组，数组中的一个或连续多个整数组成一个子数组。求所有子数组的和的最大值。
@@ -1247,8 +1278,188 @@ F(N) = F(N - 1) + F(N - 2), 其中 N > 1.
     };
     ```
 
----
+### 移除元素
+给你一个数组 `nums` 和一个值 `val`，你需要 **原地** 移除所有数值等于 `val` 的元素，并返回移除后数组的新长度。
 
+不要使用额外的数组空间，你必须仅使用 $O(1)$ 额外空间并 **原地** 修改输入数组。
+
+元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
+
+说明:
+
+为什么返回数值是整数，但输出的答案是数组呢?
+
+请注意，输入数组是以 **「引用」** 方式传递的，这意味着在函数里修改输入数组对于调用者是可见的。
+
+你可以想象内部操作如下:
+
+```
+// nums 是以“引用”方式传递的。也就是说，不对实参作任何拷贝
+int len = removeElement(nums, val);
+
+// 在函数里修改输入数组对于调用者是可见的。
+// 根据你的函数返回的长度, 它会打印出数组中 该长度范围内 的所有元素。
+for (int i = 0; i < len; i++) {
+    print(nums[i]);
+}
+```
+
+示例 1：
+
+```
+输入：nums = [3,2,2,3], val = 3
+输出：2, nums = [2,2]
+解释：函数应该返回新的长度 2, 并且 nums 中的前两个元素均为 2。你不需要考虑数组中超出新长度后面的元素。例如，函数返回的新长度为 2 ，而 nums = [2,2,3,3] 或 nums = [2,2,0,0]，也会被视作正确答案。
+```
+
+示例 2：
+
+```
+输入：nums = [0,1,2,2,3,0,4,2], val = 2
+输出：5, nums = [0,1,4,0,3]
+解释：函数应该返回新的长度 5, 并且 nums 中的前五个元素为 0, 1, 3, 0, 4。注意这五个元素可为任意顺序。你不需要考虑数组中超出新长度后面的元素。
+```
+
+提示：
+
+- `0 <= nums.length <= 100`
+- `0 <= nums[i] <= 50`
+- `0 <= val <= 100`
+
+1. 解法一
+
+    ```javascript
+    /**
+     * @param {number[]} nums
+     * @param {number} val
+     * @return {number}
+     */
+    var removeElement = function(nums, val) {
+        let delCount = 0;
+        const len = nums.length;
+
+        // 类似双指针
+        for (let i = 0; i < len; i++) {
+            if (nums[i] === val) {
+                delCount += 1;
+            } else if (delCount !== 0) {
+                nums[i - delCount] = nums[i];
+            }
+        }
+
+        return len - delCount;
+    };
+    ```
+2. 解法二
+
+    双指针法（快慢指针法）：通过一个快指针和慢指针在一个for循环下完成两个for循环的工作。
+
+    ```javascript
+    var removeElement = function(nums, val) {
+      let j = 0; // 慢指针j：指向更新 新数组下标的位置
+
+      // 快指针i：寻找新数组的元素 ，新数组就是不含有目标元素的数组
+      for(let i = 0; i < nums.length; i++){
+        if(nums[i] !== val){
+          nums[j++] = nums[i]
+        }
+      }
+
+      return j;
+    };
+    ```
+3. 解法三
+
+    暴力解法，时间复杂度 O(n^2)。
+
+    ```javascript
+    var removeElement = function(nums, val) {
+      let len = nums.length;
+
+      for(let i = 0; i < len; i++) {
+        if(nums[i] === val){    // 若发现需要移除的元素，则将数组集体向前移动一位
+          for(let j = i + 1; j < len; j++) {
+            nums[j - 1] = nums[j];
+          }
+          i--;      // 因为下标i以后的数值都向前移动了一位，所以i也向前移动一位
+          len--;    // 此时数组的大小-1
+        }
+      }
+
+      return len;
+    };
+
+    ```
+
+### 有序数组的平方
+给你一个按 **非递减顺序** 排序的整数数组 `nums`，返回 **每个数字的平方** 组成的新数组，要求也按 **非递减顺序** 排序。
+
+示例 1：
+
+```
+输入：nums = [-4,-1,0,3,10]
+输出：[0,1,9,16,100]
+解释：平方后，数组变为 [16,1,0,9,100]
+排序后，数组变为 [0,1,9,16,100]
+```
+
+示例 2：
+
+```
+输入：nums = [-7,-3,2,3,11]
+输出：[4,9,9,49,121]
+```
+
+提示：
+
+- `1 <= nums.length <= 10 ** 4`
+- `-10 ** 4 <= nums[i] <= 10 ** 4`
+- `nums` 已按 **非递减顺序** 排序
+
+进阶：
+
+- 请你设计时间复杂度为 $O(n)$ 的算法解决本问题
+
+1. 解法一
+
+    暴力解法。
+
+    ```javascript
+    /**
+     * @param {number[]} nums
+     * @return {number[]}
+     */
+    var sortedSquares = function(nums) {
+        // 先计算平方，再排序（注意排序算法的时间复杂度）
+        return nums.map(i => i * i).sort((a, b) => a - b);
+    };
+    ```
+2. 解法二
+
+    双指针法。
+
+    ```javascript
+    var sortedSquares = function(nums) {
+        const newNums = [];
+        let left = 0;
+        let right = nums.length - 1;
+
+        while (left <= right) {
+            // 最大的平方值一定在两端
+            if (Math.abs(nums[left]) > nums[right]) {
+                newNums.unshift(nums[left] ** 2);
+                left++;
+            } else {
+                newNums.unshift(nums[right] ** 2);
+                right--;
+            }
+        }
+
+        return newNums;
+    };
+    ```
+
+---
 ## 中等
 
 ### 复杂链表的复制
@@ -1469,7 +1680,7 @@ F(N) = F(N - 1) + F(N - 2), 其中 N > 1.
 
     /**
      * 针对Number型递增数组，从前往后二分搜索，
-     * 若数组存在target则返回`true`；若不存在则返回 `大于target的数中最小的一个的数组下标`；若不存在大于target的数则返回 `false`
+     *   若数组存在target则返回`true`；若不存在则返回 `第一个大于target的数所在的数组下标`；若不存在大于target的数则返回 `false`
      * @param {number[]} arr  递增数组
      * @param {number} target 目标
      * @param {number} [start = 0] 数组开始下标
@@ -1504,7 +1715,7 @@ F(N) = F(N - 1) + F(N - 2), 其中 N > 1.
 
     /**
      * 针对Number型递增数组，从后往前二分搜索，
-     * 若数组存在target则返回`true`；若不存在则返回 `小于target的数中最大的一个的数组下标`；若不存在大于target的数则返回 `false`
+     *   若数组存在target则返回`true`；若不存在则返回 `第一个小于target的数所在的数组下标`；若不存在小于target的数则返回 `false`
      * @param {number[]} arr  递增数组
      * @param {number} target 目标
      * @param {number} [start = arr.length - 1] 数组开始下标
@@ -1813,7 +2024,7 @@ F(N) = F(N - 1) + F(N - 2), 其中 N > 1.
 
 1. 解法
 
-    略。与上一题（[从上到下打印二叉树 II](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/算法/LeetCode记录/README.md#从上到下打印二叉树-ii)）基本一致，根据奇偶改下每行输出即可。
+    略。与上一题（[从上到下打印二叉树 II](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/LeetCode记录/README.md#从上到下打印二叉树-ii)）基本一致，根据奇偶改下每行输出即可。
 
 ### 树的子结构
 输入两棵二叉树A和B，判断B是不是A的子结构。(约定空树不是任意一个树的子结构)
@@ -1938,30 +2149,299 @@ B是A的子结构， 即 A中有出现和B相同的结构和节点值。
     };
     ```
 
-### 礼物的最大价值
-在一个 m*n 的棋盘的每一格都放有一个礼物，每个礼物都有一定的价值（价值大于 0）。你可以从棋盘的左上角开始拿格子里的礼物，并每次向右或者向下移动一格、直到到达棋盘的右下角。给定一个棋盘及其上面的礼物的价值，请计算你最多能拿到多少价值的礼物？
+### 鸡蛋掉落-两枚鸡蛋
+给你**2 枚相同**的鸡蛋，和一栋从第`1`层到第`n`层共有`n`层楼的建筑。
 
-实例 1：
+已知存在楼层`f`，满足`0 <= f <= n`，任何从**高于**`f`的楼层落下的鸡蛋都**会碎** ，从`f`**楼层或比它低**的楼层落下的鸡蛋都**不会碎**。
+
+每次操作，你可以取一枚**没有碎**的鸡蛋并把它从任一楼层`x`扔下（满足`1 <= x <= n`）。如果鸡蛋碎了，你就不能再次使用它。如果某枚鸡蛋扔下后没有摔碎，则可以在之后的操作中**重复使用**这枚鸡蛋。
+
+请你计算并返回要确定`f`**确切的值**的**最小操作次数**是多少？
+
+示例 1：
 
 ```
-输入:
-[
-  [1,3,1],
-  [1,5,1],
-  [4,2,1]
-]
-输出: 12
-解释: 路径 1→3→5→2→1 可以拿到最多价值的礼物
+输入：n = 2
+输出：2
+解释：我们可以将第一枚鸡蛋从 1 楼扔下，然后将第二枚从 2 楼扔下。
+如果第一枚鸡蛋碎了，可知 f = 0；
+如果第二枚鸡蛋碎了，但第一枚没碎，可知 f = 1；
+否则，当两个鸡蛋都没碎时，可知 f = 2。
 ```
+
+示例 2：
+
+```
+输入：n = 100
+输出：14
+解释：
+一种最优的策略是：
+- 将第一枚鸡蛋从 9 楼扔下。如果碎了，那么 f 在 0 和 8 之间。将第二枚从 1 楼扔下，然后每扔一次上一层楼，在 8 次内找到 f 。总操作次数 = 1 + 8 = 9 。
+- 如果第一枚鸡蛋没有碎，那么再把第一枚鸡蛋从 22 层扔下。如果碎了，那么 f 在 9 和 21 之间。将第二枚鸡蛋从 10 楼扔下，然后每扔一次上一层楼，在 12 次内找到 f 。总操作次数 = 2 + 12 = 14 。
+- 如果第一枚鸡蛋没有再次碎掉，则按照类似的方法从 34, 45, 55, 64, 72, 79, 85, 90, 94, 97, 99 和 100 楼分别扔下第一枚鸡蛋。
+不管结果如何，最多需要扔 14 次来确定 f 。
+```
+
+提示：
+
+`1 <= n <= 1000`
+
+1. 解法一
+
+    数学规律。
+
+    ```javascript
+    // ①第一枚鸡蛋用于从低到高、间隔楼层直到破碎
+    // ②第二枚鸡蛋用于在第一枚鸡蛋确认的最高不碎层到最低破碎层之间，由低到高逐层测试
+    // ③为了稳定操作数，第一枚鸡蛋确定的间隔层 每测试成功一次都要递减1。
+    //   假设第一次间隔层是f，那么第二次间隔层就是f-1，以此类推至最后一个间隔是1：
+    //   f + f-1 + f-2 + ... + f-(f-1)=总楼层数n
+    //   这样得到的f就是操作数的上限
+    function twoEggDrop(n) {
+      let f;
+      // 找到第一个小于或等于 n 的等差求和的项数（第一项是1，公差是1）
+      for (f = 1; sumOfArithmeticSequence(1, 1, f) < n; f++) {}
+      return f;
+    };
+
+    // 等差数列的求和。a1：第1项；d：公差；n：项数
+    function sumOfArithmeticSequence (a1, d, n) {
+      const an = a1 + (n - 1) * d;
+      return ((a1 + an) * n) / 2;
+    }
+    ```
+2. 解法二
+
+    动态规划。
+
+    ```javascript
+    function twoEggDrop(n, k = 2) {
+      // 初始化：题解的数组[最大n层楼][最大k枚鸡蛋]
+      let memo = new Array(n + 1).fill(0).map((i, n) => {
+        return new Array(k + 1).fill(0).map((j, k) => {
+          return k === 1 ? n : 0;
+        });
+      });
+      return dp(n, k);
+
+      // k枚，n层的题目解：表示现在有n层楼需要验证，此时你手里有k个鸡蛋，返回此时的最小操作次数
+      function dp(n, k) {
+        // base case
+        if (n === 0) {
+          return 0;
+        }
+        if (k === 1) {
+          return n;
+        }
+
+        // 查表
+        if (memo[n][k] !== 0) {
+          return memo[n][k];
+        }
+
+        let res = Number.MAX_SAFE_INTEGER;
+        // 选i层楼扔鸡蛋
+        for (let i = 1; i <= n; i++) {
+          // Math.max：寻找（第i层碎或不碎）最坏的情况
+          // Math.min：在最坏的情况里，选出最小的操作次数
+          res = Math.min(res, Math.max(dp(i - 1, k - 1), dp(n - i, k)) + 1);
+        }
+
+        // dp(n, k)需要的操作次数，是在所有楼层中选择 最坏情况下需要的操作次数最小的楼层 扔鸡蛋。所以需要遍历所有楼层，找到Math.min(res, Math.max(dp(i-1, k-1), dp(n-i, k)) + 1)
+        memo[n][k] = res;
+        return res;
+      }
+    }
+    ```
+
+### 长度最小的子数组
+给定一个含有 `n` 个正整数的数组和一个正整数 `target` 。
+
+找出该数组中满足其总和大于等于 `target` 的长度最小的 **连续子数组** `[nums[l], nums[l+1], ..., nums[r-1], nums[r]]` ，并返回其长度。如果不存在符合条件的子数组，返回 `0` 。
+
+示例 1：
+
+```
+输入：target = 7, nums = [2,3,1,2,4,3]
+输出：2
+解释：子数组 [4,3] 是该条件下的长度最小的子数组。
+```
+
+示例 2：
+
+```
+输入：target = 4, nums = [1,4,4]
+输出：1
+```
+
+示例 3：
+
+```
+输入：target = 11, nums = [1,1,1,1,1,1,1,1]
+输出：0
+```
+
+提示：
+
+- `1 <= target <= 10 ** 9`
+- `1 <= nums.length <= 10 ** 5`
+- `1 <= nums[i] <= 10 ** 5`
+
+
+进阶：
+
+- 如果你已经实现 $O(n)$ 时间复杂度的解法, 请尝试设计一个 $O(n*log(n))$ 时间复杂度的解法。
+
+1. 解法一
+
+    滑动窗口。
+
+    ```javascript
+    /**
+     * @param {number} target
+     * @param {number[]} nums
+     * @return {number}
+     */
+    var minSubArrayLen = function (target, nums) {
+      let result = Number.MAX_SAFE_INTEGER;
+
+      for (let i = 0, j = 0, sum = 0; i < nums.length; i++) {
+        sum += nums[i];
+        while (sum >= target) {
+          result = Math.min(i - j + 1, result);
+          sum -= nums[j];
+          j++;
+        }
+      }
+
+      return result === Number.MAX_SAFE_INTEGER ? 0 : result;
+    };
+    ```
+2. 解法二
+
+    暴力算法，O(n^2)。
+
+    ```javascript
+    var minSubArrayLen = function (target, nums) {
+      let minLen = 0;
+      for (let i = 0; i < nums.length; i++) {
+        let sum = nums[i];
+        if (sum >= target) {
+          minLen = 1;
+          break;
+        }
+        for (let j = i + 1; j < nums.length; j++) {
+          sum = sum + nums[j];
+          if (sum >= target) {
+            minLen = minLen === 0 ? j - i + 1 : Math.min(j - i + 1, minLen);
+            break;
+          }
+        }
+      }
+      return minLen;
+    };
+    ```
+
+    ```javascript
+    var minSubArrayLen = function(target, nums) {
+        let minLen = 0;
+        for(let i = 0; i < nums.length; i++){
+            let sum = nums[i]
+
+            // 已超时
+            for(let j = i; j < nums.length;sum+= nums[++j]){
+                if(sum >= target){
+                    minLen =  minLen === 0 ? j - i + 1 : Math.min(j - i + 1,minLen);
+                    break;
+                }
+            }
+        }
+        return minLen;
+    };
+    ```
+3. 解法三
+
+    把暴力算法改成二分法，从而达到O(n*logn)。
+
+    ```javascript
+    var minSubArrayLen = function (target, nums) {
+      const len = nums.length;
+
+      let result = Number.MAX_SAFE_INTEGER;
+
+      // 前缀和
+      // sums[0] = 0 意味着前 0 个元素的前缀和为 0
+      // sums[1] = nums[0] 前 1 个元素的前缀和为 nums[0]
+      // sums[2] = nums[0] + nums[1]
+      // sums比nums长度多1
+      const sums = [0];
+
+      for (let i = 1; i <= len; i++) {
+        sums[i] = sums[i - 1] + nums[i - 1];
+      }
+
+      for (let j = 0; j < len; j++) {
+        let endValue = sums[j] + target;
+
+        let bound = binarySearch(sums, endValue, j, len);
+        if (bound !== -1) {
+          result = Math.min(result, bound - j);
+        }
+      }
+
+      return result === Number.MAX_SAFE_INTEGER ? 0 : result;
+    };
+
+    // 二分搜索查找大于等于searchVal
+    function binarySearch(arr, searchVal, leftIndex, rightIndex) {
+      while (leftIndex <= rightIndex) {
+        const middleIndex = Math.floor((leftIndex + rightIndex) / 2);
+
+        if (searchVal < arr[middleIndex]) {
+          rightIndex = middleIndex - 1;
+        } else if (searchVal > arr[middleIndex]) {
+          leftIndex = middleIndex + 1;
+        } else {
+          return middleIndex;
+        }
+      }
+
+      // 找不到等于的，再判断是否有大于的
+      return arr[leftIndex] > searchVal ? leftIndex : -1;
+    }
+    ```
+
+### 螺旋矩阵 II
+给你一个正整数 `n` ，生成一个包含 `1` 到 `n2` 所有元素，且元素按顺时针顺序螺旋排列的 `n x n` 正方形矩阵 `matrix` 。
+
+示例 1：
+
+![螺旋矩阵 II-1](./images/Spiral-Matrix-II-1.jpg)
+
+```
+输入：n = 3
+输出：[[1,2,3],[8,9,4],[7,6,5]]
+```
+
+示例 2：
+
+```
+输入：n = 1
+输出：[[1]]
+```
+
+提示：
+
+- `1 <= n <= 20`
 
 1. 解法一
 
     ```javascript
     /**
-     * @param {number[][]} grid
-     * @return {number}
+     * @param {number} n
+     * @return {number[][]}
      */
-    var maxValue = function(grid) {
+    var generateMatrix = function(n) {
 
     };
     ```

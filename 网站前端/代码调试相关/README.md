@@ -127,7 +127,7 @@
             结束选择Stop inspector。
     4. 性能调试
 
-        >[检查GPU渲染速度和过度绘制](https://developer.android.com/topic/performance/rendering/inspect-gpu-rendering)。
+        >[检查 GPU 渲染速度和过度绘制](https://developer.android.com/topic/performance/rendering/inspect-gpu-rendering?hl=zh-cn)。
 
         1. 「开发人员选项」 -> 「GPU呈现模式分析」：
 
@@ -142,7 +142,7 @@
                     adb shell dumpsys gfxinfo 「PACKAGE_NAME」 framestats
                     ```
         2. 「开发人员选项」 -> 「调试GPU过度绘制」
-        3. PerfDog
+        3. [PerfDog](https://perfdog.qq.com/)（全平台）
 
     - Android Studio编译APK（Android Application Package）
 
@@ -209,7 +209,7 @@
 
         1. （基础）Xcode -> Show the Debug navigator -> debug gauges
         2. （进阶）Xcode -> Product -> Profile
-        3. PerfDog
+        3. [PerfDog](https://perfdog.qq.com/)（全平台）
 
     - Simulator
 

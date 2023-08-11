@@ -24,7 +24,6 @@
 1. [特殊的IP地址](#特殊的ip地址)
 
 ---
-
 ### HTTP特点
 >HTTP（HyperText Transfer Protocol，超文本传输协议）通信通常通过TCP/IP连接进行，默认端口是TCP 80，但可以使用其他端口，以ASCII码传输。这并不妨碍HTTP在任何其他协议之上实现，HTTP只是假定了一个可靠的传输，任何能够提供可靠传输的协议都能够被使用。
 
@@ -192,7 +191,7 @@
 ### HTTP报文组成
 1. request：
 
-    ```http
+    ```text
     <method> <request-URI> <version>        // 请求行
     <headers>                               // 请求头
                                             // 空行（CR+LF）
@@ -200,7 +199,7 @@
     ```
 2. response：
 
-    ```http
+    ```text
     <version> <status code> <reason phrase> // 状态行
     <headers>                               // 响应头
                                             // 空行（CR+LF）
@@ -1023,7 +1022,7 @@ HTTP是无状态协议，通过session-cookie或token判断客户端的用户状
 
         （已不推荐使用）
 
-    URI的结构：`scheme` `://` `user:passwd@` `host:port` `path` `?query` `#fragment`
+    URI（URL）的结构：`scheme` `://` [`user:passwd@`] `host` [`:port`] `/path` [`?query`] [`#fragment`]
 
     >URL的锚点（`#fragment`）不会出现在HTTP请求中，因此可以避免中间人攻击。
 2. 协议（protocol）：

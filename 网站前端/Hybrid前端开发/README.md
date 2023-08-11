@@ -105,7 +105,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         ><details>
         ><summary><code>URL Scheme</code></summary>
         >
-        >是iOS和Android提供给开发者的一种WAP唤醒Native App方式（客户端用DeepLink实现）。Android应用在mainfest中注册自己的Scheme；iOS应用在App属性中配置。典型的URL Scheme：`myscheme://my.hostxxxxxxx`。
+        >是iOS和Android提供给开发者的一种WAP唤醒Native App方式（客户端用DeepLink、Deferred Deeplink实现）。Android应用在mainfest中注册自己的Scheme；iOS应用在App属性中配置。典型的URL Scheme：`myscheme://my.hostxxxxxxx`。
         ></details>
 
         >1. 客户端可以捕获、拦截任何行为（如：`console`、`alert`）。相对于注入全局变量，拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
@@ -301,7 +301,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 
 ---
 ## 其他语言2Native
-前端编写的代码，通过中间的`其他语言2Native`之类的方式转换为原生App代码运行。
+前端编写的代码，通过中间的`其他语言2Native`之类的方式（bridge）转换为原生App代码运行，原生App代码也会通过`Native2其他语言`（bridge）回调前端编写的代码。
 
 如：Dart2Native、React Native2Native、Weex2Native。
 

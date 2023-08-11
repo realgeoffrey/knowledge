@@ -75,12 +75,11 @@
             1. [Node.js实用方法](./网站前端/Node.js学习笔记/Node.js实用方法/README.md)
             </details>
     5. [服务端相关](./网站前端/服务端相关/README.md)
-    6. [微信生态相关](./网站前端/微信生态相关/README.md)
 7. [还原设计稿](./网站前端/还原设计稿/README.md)
 8. [HTTP相关](./网站前端/HTTP相关/README.md)
-9. [算法](./网站前端/算法/README.md)
+9. [数据结构与算法](./网站前端/数据结构与算法/README.md)
 
-    1. [LeetCode记录](./网站前端/算法/LeetCode记录/README.md)
+    1. [LeetCode记录](./网站前端/数据结构与算法/LeetCode记录/README.md)
 10. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
 11. <details>
 
@@ -99,8 +98,7 @@
         1. [我安装的全局仓库](./网站前端/Node.js学习笔记/我安装的全局仓库.md)
         </details>
     </details>
-12. [无障碍](./网站前端/无障碍/README.md)
-13. [海外应用总结](./网站前端/海外应用总结/README.md)
+12. [其他前端专项](./网站前端/其他前端专项/README.md)
 
 - <details>
 
@@ -108,7 +106,6 @@
 
     1. [/工具使用](./工具使用/README.md)
     2. [/环境安装、配置](./环境安装、配置/README.md)
-    3. [拓展知识](./网站前端/拓展知识/README.md)
     </details>
 
 ><details>

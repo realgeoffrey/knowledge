@@ -1765,6 +1765,8 @@
 ![react生命周期图](./images/lifecycle.png)
 
 ### Hook
+todo: hook的优势：<https://juejin.cn/post/6844903985338400782>、<https://zhuanlan.zhihu.com/p/88593858>
+
 Hook是一些可以在**函数组件**里“钩入”React state及生命周期等特性的**函数**。
 
 - 使用规则：

@@ -1721,6 +1721,8 @@ CSS渐变是以CSS背景图的形式展示，但没有内在尺寸（没有固�
 
 ### 插件避免被其他样式污染方式
 1. 与原页面不同的命名方式
+
+    - [组件样式使用方案（如：React、Vue）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#组件样式使用方案如reactvue)
 2. shadow DOM
 3. `<iframe>`
 

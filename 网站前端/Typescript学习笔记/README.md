@@ -2887,7 +2887,14 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
         ></details>
 2. 导出`export`
 
-- 引入第三方库声明文件（不需任何配置，引入就可声明成功），可搜索：<https://www.typescriptlang.org/dt/search>
+- 第三方库支持TS
+
+    ><https://www.typescriptlang.org/docs/handbook/declaration-files/publishing.html>
+
+    1. 类型随着npm一起导出，第三方库的package.json包含`types`（或`typings`）
+    2. 额外引入第三方库声明文件（不需任何配置，引入就可声明成功），可搜索：<https://www.npmjs.com/~types>
+
+        >[DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/README.zh-Hans.md)
 
 - [lib.d.ts](https://github.com/microsoft/TypeScript/tree/main/src/lib)
 

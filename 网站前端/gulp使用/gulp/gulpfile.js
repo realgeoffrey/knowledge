@@ -1,10 +1,10 @@
 const gulp = require('gulp')
 const imagemin = require('gulp-imagemin') // imagemin
-const svgo = require('imagemin-svgo') // svg压缩
-const gifsicle = require('imagemin-gifsicle') // gif压缩
-const jpegtran = require('imagemin-jpegtran') // jpg压缩
-const pngquant = require('imagemin-pngquant') // png压缩
-const optipng = require('imagemin-optipng') // png压缩
+const svgo = require('imagemin-svgo') // svg压缩（无损）
+const gifsicle = require('imagemin-gifsicle') // gif压缩（无损）
+const jpegtran = require('imagemin-jpegtran') // jpg压缩（无损）
+const pngquant = require('imagemin-pngquant') // png压缩（有损）
+const optipng = require('imagemin-optipng') // png压缩（无损）
 const sourcemaps = require('gulp-sourcemaps') // source map
 // const concat = require('gulp-concat') // 合并文件
 const cssnano = require('gulp-cssnano') // css压缩

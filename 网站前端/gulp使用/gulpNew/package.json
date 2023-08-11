@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "gulp": "^4.0.2",
+    "gulp-imagemin": "^8.0.0",
+    "imagemin-pngquant": "^9.0.2",
+    "imagemin-webp": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.0",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  },
+  "scripts": {
+    "gulp": "gulp -f gulpfile.mjs",
+    "gulpWatch": "gulp -f gulpfile.mjs -- watch",
+    "gulpWebp": "gulp -f gulpfile.mjs -- runImageWebp",
+
+    "nodemon": "nodemon ./demo/index.js",
+    "nodemonTs": "nodemon --ext ts,tsx --exec ts-node ./demo/2.ts"
+  }
+}

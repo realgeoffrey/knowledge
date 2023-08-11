@@ -2,6 +2,12 @@
 
 >gulp: stream building tools.
 
+#### [仅图片压缩](./gulpNew)
+1. `npm run gulp`图片压缩
+2. `npm run gulpWatch`watch图片压缩
+3. `npm run gulpWebp`图片转成webp
+
+#### [完整使用](./gulp)
 1. <details>
 
     <summary>Node.js' package for gulp(local): <a href="./gulp/package.json">package.json</a></summary>

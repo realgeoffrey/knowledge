@@ -913,6 +913,13 @@
 
 todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄漏和如何规避。`console.profile()和console.profileEnd()`
 
+- 关于内存优化的重要性
+
+    1. 减少OOM，提高应用稳定性
+    2. 减少卡顿，提高应用流畅度
+    3. 减少内存占用，提高应用后台运行时的存活率
+    4. 减少异常发生和代码逻辑隐患
+
 ### 深复制（拷贝）实现思路
 >参考：[深入剖析JavaScript的深复制](http://jerryzou.com/posts/dive-into-deep-clone-in-javascript/)。
 
@@ -1426,7 +1433,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         28. `WebAssembly` -> `'[object WebAssembly]'`
         29. <details>
 
-            <summary>「TypedArray」实例 -> <code>'[object 构造函数名]'</code></summary>
+            <summary>「TypedArrays」实例 -> <code>'[object 构造函数名]'</code></summary>
 
             Int8Array、Uint8Array、Uint8ClampedArray、Int16Array、Uint16Array、Int32Array、Uint32Array、Float32Array、Float64Array
             </details>

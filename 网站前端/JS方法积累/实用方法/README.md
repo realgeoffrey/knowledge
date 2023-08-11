@@ -88,6 +88,8 @@
     1. [sleep](#sleep)
     1. [任务队列链式调用](#任务队列链式调用)
     1. [无缝轮播](#无缝轮播)
+    1. [洗牌算法](#洗牌算法)
+    1. [获取某一位的数字](#获取某一位的数字)
 1. 提升性能
 
     1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
@@ -113,7 +115,6 @@
     >大部分情况下，jQuery内容适用于Zepto。
     </details>
 ---
-
 >更全面判断所在系统、浏览器：[bowser](https://github.com/lancedikson/bowser)。
 
 ### *原生JS*判断所在系统
@@ -846,6 +847,7 @@ dom.addEventListener('事件名', function (e) {
 
     // action.stop();
     ```
+
     [CodePen demo](https://codepen.io/realgeoffrey/pen/GVNPeN)
 2. WAP端的touch事件
 
@@ -1879,7 +1881,7 @@ deduplicateArray([1, 2, 3, 1, 4]);    // [1, 2, 3, 4]
             return newArr;
         }
         ```
-    >时间复杂度： $O(n^2)$ 。
+    >时间复杂度：O(n^2)。
 2. 定义一个空数组变量，遍历需要去重的数组：若项的值在原数组中唯一，则放入新数组；若不唯一，丢弃并继续向后遍历。
 
     >重复的项取最后的放入新数组。
@@ -1904,7 +1906,7 @@ deduplicateArray([1, 2, 3, 1, 4]);    // [1, 2, 3, 4]
         return newArr;
     }
     ```
-    >时间复杂度： $O(n^2)$ 。
+    >时间复杂度：O(n^2)。
 3. 先排序原始数组（需要额外排序算法，否则只能处理Number型数据），第一项加入，之后每个项对比前一个项：若不同，则加入；若相同，则丢弃。
 
     ```javascript
@@ -1912,7 +1914,7 @@ deduplicateArray([1, 2, 3, 1, 4]);    // [1, 2, 3, 4]
       return arr.concat().sort().filter((item, index, array) => !index || item !== array[index - 1])
     }
     ```
-    >时间复杂度： $O(n)$ + 数组排序。
+    >时间复杂度：O(n) + 数组排序。
 4. 用对象（哈希表）去重（只能处理Number型数据）。
 
     ```javascript
@@ -1922,7 +1924,7 @@ deduplicateArray([1, 2, 3, 1, 4]);    // [1, 2, 3, 4]
       return arr.filter((item) => obj.hasOwnProperty(item) ? false : (obj[item] = true))
     }
     ```
-    >时间复杂度： $O(n)$ 。
+    >时间复杂度：O(n)。
 5. ES6的`Set`
 
     ```javascript
@@ -1933,29 +1935,7 @@ deduplicateArray([1, 2, 3, 1, 4]);    // [1, 2, 3, 4]
     ```
 
 ### 数组删去某值
-1. 仅使用赋值操作：
-
-    ```javascript
-    function reduceArr(arr, delValue) {
-        arr = arr.slice();
-
-        var delCount = 0,
-            i, len;
-
-        for (i = 0, len = arr.length; i < len; i++) {
-            if (arr[i] === delValue) {
-                delCount += 1;
-            } else if (delCount !== 0) {
-                arr[i - delCount] = arr[i];
-            }
-        }
-
-        arr.length = len - delCount;
-
-        return arr;
-    }
-    ```
-2. 使用`Array.prototype.splice`：
+1. 使用`Array.prototype.splice`：
 
     ```javascript
     function reduceArr(arr, delValue) {
@@ -1973,7 +1953,7 @@ deduplicateArray([1, 2, 3, 1, 4]);    // [1, 2, 3, 4]
         return arr;
     }
     ```
-3. 使用新数组保存：
+2. 使用新数组保存：
 
     ```javascript
     function reduceArr(arr, delValue) {
@@ -1989,14 +1969,14 @@ deduplicateArray([1, 2, 3, 1, 4]);    // [1, 2, 3, 4]
         return newArr;
     }
     ```
-4. 使用`Array.prototype.filter`（数组空位不遍历）：
+3. 使用`Array.prototype.filter`（数组空位不遍历）：
 
     ```javascript
     function reduceArr (arr, delValue) {
       return arr.filter((value) => value !== delValue)
     }
     ```
->时间复杂度： $O(n)$ 。
+4. leetcode解法：[移除元素](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/LeetCode记录/README.md#移除元素)
 
 ### 数组的某项插入某位置
 ```javascript
@@ -3253,6 +3233,7 @@ $(输入框选择器).on('mouseup keyup', function () {
 
 console.log(cursorPosition.set(输入框dom, 起始位置, 选中长度));
 ```
+
 [CodePen demo](https://codepen.io/realgeoffrey/pen/BXQvbZ)
 
 ### *原生JS*文本选区覆盖某DOM的文本范围
@@ -3333,7 +3314,9 @@ const a = new ScrollStopPropagation(document.getElementById('j-bounce'))
 // a.stop()
 </script>
 ```
+
 [CodePen demo](https://codepen.io/realgeoffrey/pen/oKYJOg)
+
 >参考：[ScrollFix](https://github.com/joelambert/ScrollFix)。
 
 ### *原生JS*获取滚动条宽度（或高度）
@@ -3940,6 +3923,116 @@ for (let i = 0; i < text.length; i++) {
 
         改变单个项的堆叠层级。
 
+### 洗牌算法
+```javascript
+function shuffle(arr) {
+    var i, len, swapIndex, temp;
+
+    arr = arr.slice();  // 浅复制
+
+    for (i = 0, len = arr.length; i < len; i++) {
+        // i位置的数和[i, len-1]位置的数调换，保证每个数在任一位置的概率相同
+        swapIndex = Math.floor(Math.random() * (len - i) + i);
+
+        /* 元素交换 */
+        temp = arr[swapIndex];
+        arr[swapIndex] = arr[i];
+        arr[i] = temp;
+    }
+
+    return arr;
+}
+```
+>时间复杂度：O(n)。
+
+### 获取某一位的数字
+1. 字符串化后获取那一位的字符
+
+    ```javascript
+    /**
+     * 获取某一位的数字
+     * @param {Number} num - 操作数
+     * @param {Number} [index = 0] - 获取从右向左第index位置上的数字（若是10进制，则0：个位；1：十位；2：百位...）
+     * @param {Number} [radix = 10] - 进制
+     * @returns {Number} - 数字（十进制表示）
+     */
+    function getIndexNumber(num, index = 0, radix = 10) {
+      const str = num.toString(radix);
+      return parseInt(str[str.length - 1 - index], radix) || 0;
+    }
+    ```
+2. 算术
+
+    ```javascript
+    /**
+     * 获取某一位的数字
+     * @param {Number} num - 操作数
+     * @param {Number} [index = 0] - 获取从右向左第index位置上的数字（若是10进制，则0：个位；1：十位；2：百位...）
+     * @param {Number} [radix = 10] - 进制
+     * @returns {Number} - 数字（十进制表示）
+     */
+    function getIndexNumber(num, index = 0, radix = 10) {
+      return Math.floor(num / Math.pow(radix, index)) % radix;
+    }
+    ```
+
+<details>
+<summary>数学公式</summary>
+
+对于一个 $d$ 进制的数字 $x$，要获取其第 $k$ 位 $x_k$（k：0表示右边第一位、1表示右边第二位，以此类推）：
+
+$x_k = \lfloor\frac{x}{d^k}\rfloor \bmod d$（ $\lfloor a \rfloor$表示对浮点数 $a$ 向下取整； $\bmod \space d$ 表示对 $d$ 取余）。
+</details>
+
+- <details>
+
+    <summary>使用测试</summary>
+
+    ```javascript
+    /* 使用测试 */
+    console.log(getIndexNumber(1, 0), 1);
+    console.log(getIndexNumber(1, 1), 0);
+    console.log(getIndexNumber(1, 2), 0);
+    console.log("----");
+    console.log(getIndexNumber(123456, 0), 6);
+    console.log(getIndexNumber(123456, 1), 5);
+    console.log(getIndexNumber(123456, 2), 4);
+    console.log(getIndexNumber(123456, 3), 3);
+    console.log(getIndexNumber(123456, 4), 2);
+    console.log(getIndexNumber(123456, 5), 1);
+    console.log(getIndexNumber(123456, 6), 0);
+    console.log("----");
+    console.log(getIndexNumber(0b101, 0, 2), 1);
+    console.log(getIndexNumber(0b101, 1, 2), 0);
+    console.log(getIndexNumber(0b101, 2, 2), 1);
+    console.log(getIndexNumber(0b101, 3, 2), 0);
+    console.log("----");
+    console.log(getIndexNumber(0b101101, 0, 2), 1);
+    console.log(getIndexNumber(0b101101, 1, 2), 0);
+    console.log(getIndexNumber(0b101101, 2, 2), 1);
+    console.log(getIndexNumber(0b101101, 3, 2), 1);
+    console.log(getIndexNumber(0b101101, 4, 2), 0);
+    console.log(getIndexNumber(0b101101, 5, 2), 1);
+    console.log(getIndexNumber(0b101101, 6, 2), 0);
+    console.log(getIndexNumber(0b101101, 7, 2), 0);
+    console.log("----");
+    console.log(getIndexNumber(0x4567890abcdef, 0, 16), 15);
+    console.log(getIndexNumber(0x4567890abcdef, 1, 16), 14);
+    console.log(getIndexNumber(0x4567890abcdef, 2, 16), 13);
+    console.log(getIndexNumber(0x4567890abcdef, 3, 16), 12);
+    console.log(getIndexNumber(0x4567890abcdef, 4, 16), 11);
+    console.log(getIndexNumber(0x4567890abcdef, 5, 16), 10);
+    console.log(getIndexNumber(0x4567890abcdef, 6, 16), 0);
+    console.log(getIndexNumber(0x4567890abcdef, 7, 16), 9);
+    console.log(getIndexNumber(0x4567890abcdef, 8, 16), 8);
+    console.log(getIndexNumber(0x4567890abcdef, 9, 16), 7);
+    console.log(getIndexNumber(0x4567890abcdef, 10, 16), 6);
+    console.log(getIndexNumber(0x4567890abcdef, 11, 16), 5);
+    console.log(getIndexNumber(0x4567890abcdef, 12, 16), 4);
+    console.log(getIndexNumber(0x4567890abcdef, 13, 16), 0);
+    ```
+    </details>
+
 ---
 ### *原生JS*用`setTimeout`模拟`setInterval`
 ```javascript
@@ -4020,184 +4113,184 @@ var a = new RepeatRAF(function () {
 #### jQuery滚动加载
 1. 以**放置在底部的节点与屏幕的相对距离**作为是否滚动到底部的判断：
 
-    ```html
-    <!--
-    data-next：加载内容标识（-1：去除滚动加载功能；0：单次不加载）
-    data-status：是否正在加载（'ready'：不在加载中、可以进行加载；'busy'：加载中、不允许加载）
-    -->
-    <div class="j-load" data-next="1" data-status="ready">放置在底部的标记节点，内容添加在此节点前面</div>
+```html
+<!--
+data-next：加载内容标识（-1：去除滚动加载功能；0：单次不加载）
+data-status：是否正在加载（'ready'：不在加载中、可以进行加载；'busy'：加载中、不允许加载）
+-->
+<div class="j-load" data-next="1" data-status="ready">放置在底部的标记节点，内容添加在此节点前面</div>
 
-    <script>
-        var scrollLoadObj = {
-            namespace: '', /*事件命名空间 */
-            loadMore: function (next) { /*加载逻辑 */
-                var $load = $('.j-load'),
-                    newNext = 0;
+<script>
+    var scrollLoadObj = {
+        namespace: '', /*事件命名空间 */
+        loadMore: function (next) { /*加载逻辑 */
+            var $load = $('.j-load'),
+                newNext = 0;
 
-                next = parseInt(next, 10);
+            next = parseInt(next, 10);
 
-                if (next !== -1 && $load.length >= 1) {
-                    if ($load.attr('data-status') === 'ready' && next !== 0) {
-                        $load.attr('data-status', 'busy');
+            if (next !== -1 && $load.length >= 1) {
+                if ($load.attr('data-status') === 'ready' && next !== 0) {
+                    $load.attr('data-status', 'busy');
 
-                        $.ajax({
-                            url: '',
-                            dataType: 'json',
-                            data: {
-                                id: next
-                            }
-                        }).done(function (data) {
-                            /* 删除重复内容 */
-                            /* 其他具体操作 */
+                    $.ajax({
+                        url: '',
+                        dataType: 'json',
+                        data: {
+                            id: next
+                        }
+                    }).done(function (data) {
+                        /* 删除重复内容 */
+                        /* 其他具体操作 */
 
-                            newNext = data.next;
+                        newNext = data.next;
 
-                            $load.attr('data-next', newNext);
-                        }).fail(function () {
-                            console.log('网络错误');
-                        }).always(function () {
-                            $load.attr('data-status', 'ready');
+                        $load.attr('data-next', newNext);
+                    }).fail(function () {
+                        console.log('网络错误');
+                    }).always(function () {
+                        $load.attr('data-status', 'ready');
 
-                            if (/* 某条件 */) {   /* 不再加载 */
-                                $(window).off('scroll' + '.' + scrollLoadObj.namespace);
-                                /* $load.hide(); */
-                            } else {
-                                scrollLoadObj.autoLoadMore(newNext);
-                            }
-                        });
-                    }
-                } else {
-                    $(window).off('scroll' + '.' + scrollLoadObj.namespace);
-                    /* $load.hide(); */
-                }
-            },
-            autoLoadMore: function (next) { /* 若html小于视窗则触发加载 */
-                if ($('html').outerHeight(true) <= $(window).height()) {
-                    scrollLoadObj.loadMore(next);
-                }
-            },
-            init: function () {
-                if (typeof Date.now !== 'function') {
-                    Date.now = function () {
-                        return new Date().getTime();
-                    };
-                }
-
-                scrollLoadObj.namespace = Date.now();
-
-                $(function () {
-                    var $load = $('.j-load'),
-                        scrollSetTimeoutId;
-
-                    scrollLoadObj.autoLoadMore($load.attr('data-next'));
-
-                    $(window).on('scroll' + '.' + scrollLoadObj.namespace, function () {
-                        clearTimeout(scrollSetTimeoutId);
-
-                        scrollSetTimeoutId = setTimeout(function () {
-                            if ($load.offset().top <= $(window).scrollTop() + $(window).height()) {  /* 节点顶部在屏幕底部以上 */
-                                scrollLoadObj.loadMore($load.attr('data-next'));
-                            }
-                        }, 200);
+                        if (/* 某条件 */) {   /* 不再加载 */
+                            $(window).off('scroll' + '.' + scrollLoadObj.namespace);
+                            /* $load.hide(); */
+                        } else {
+                            scrollLoadObj.autoLoadMore(newNext);
+                        }
                     });
-                });
+                }
+            } else {
+                $(window).off('scroll' + '.' + scrollLoadObj.namespace);
+                /* $load.hide(); */
             }
-        };
+        },
+        autoLoadMore: function (next) { /* 若html小于视窗则触发加载 */
+            if ($('html').outerHeight(true) <= $(window).height()) {
+                scrollLoadObj.loadMore(next);
+            }
+        },
+        init: function () {
+            if (typeof Date.now !== 'function') {
+                Date.now = function () {
+                    return new Date().getTime();
+                };
+            }
+
+            scrollLoadObj.namespace = Date.now();
+
+            $(function () {
+                var $load = $('.j-load'),
+                    scrollSetTimeoutId;
+
+                scrollLoadObj.autoLoadMore($load.attr('data-next'));
+
+                $(window).on('scroll' + '.' + scrollLoadObj.namespace, function () {
+                    clearTimeout(scrollSetTimeoutId);
+
+                    scrollSetTimeoutId = setTimeout(function () {
+                        if ($load.offset().top <= $(window).scrollTop() + $(window).height()) {  /* 节点顶部在屏幕底部以上 */
+                            scrollLoadObj.loadMore($load.attr('data-next'));
+                        }
+                    }, 200);
+                });
+            });
+        }
+    };
 
 
-        /* 使用测试 */
-        scrollLoadObj.init();
-    </script>
-    ```
+    /* 使用测试 */
+    scrollLoadObj.init();
+</script>
+```
 2. 以**文档是否滚动到底部**作为是否滚动到底部的判断：
 
-    ```html
-    <!--
-    data-next：加载内容标识（-1：去除滚动加载功能；0：单次不加载）
-    data-status：是否正在加载（'ready'：不在加载中、可以进行加载；'busy'：加载中、不允许加载）
-    -->
-    <div class="j-load" data-next="1" data-status="ready">不作为标记节点，仅作为内容添加容器</div>
+```html
+<!--
+data-next：加载内容标识（-1：去除滚动加载功能；0：单次不加载）
+data-status：是否正在加载（'ready'：不在加载中、可以进行加载；'busy'：加载中、不允许加载）
+-->
+<div class="j-load" data-next="1" data-status="ready">不作为标记节点，仅作为内容添加容器</div>
 
-    <script type="text/javascript">
-        var scrollLoadObj = {
-            namespace: '', /* 事件命名空间 */
-            loadMore: function (next) { /* 加载逻辑 */
-                var $load = $('.j-load'),
-                    newNext = 0;
+<script type="text/javascript">
+    var scrollLoadObj = {
+        namespace: '', /* 事件命名空间 */
+        loadMore: function (next) { /* 加载逻辑 */
+            var $load = $('.j-load'),
+                newNext = 0;
 
-                next = parseInt(next, 10);
+            next = parseInt(next, 10);
 
-                if (next !== -1 && $load.length >= 1) {
-                    if ($load.attr('data-status') === 'ready' && next !== 0) {
-                        $load.attr('data-status', 'busy');
+            if (next !== -1 && $load.length >= 1) {
+                if ($load.attr('data-status') === 'ready' && next !== 0) {
+                    $load.attr('data-status', 'busy');
 
-                        $.ajax({
-                            url: '',
-                            dataType: 'json',
-                            data: {
-                                id: next
-                            }
-                        }).done(function (data) {
-                            /* 删除重复内容 */
-                            /* 其他具体操作 */
+                    $.ajax({
+                        url: '',
+                        dataType: 'json',
+                        data: {
+                            id: next
+                        }
+                    }).done(function (data) {
+                        /* 删除重复内容 */
+                        /* 其他具体操作 */
 
-                            newNext = data.next;
+                        newNext = data.next;
 
-                            $load.attr('data-next', newNext);
-                        }).fail(function () {
-                            console.log('网络错误');
-                        }).always(function () {
-                            $load.attr('data-status', 'ready');
+                        $load.attr('data-next', newNext);
+                    }).fail(function () {
+                        console.log('网络错误');
+                    }).always(function () {
+                        $load.attr('data-status', 'ready');
 
-                            if (/* 某条件 */) {   /* 不再加载 */
-                                $(window).off('scroll' + '.' + scrollLoadObj.namespace);
-                            } else {
-                                scrollLoadObj.autoLoadMore(newNext);
-                            }
-                        });
-                    }
-                } else {
-                    $(window).off('scroll' + '.' + scrollLoadObj.namespace);
-                }
-            },
-            autoLoadMore: function (next) { /* 若html小于视窗则触发加载 */
-                if ($('html').outerHeight(true) <= $(window).height()) {
-                    scrollLoadObj.loadMore(next);
-                }
-            },
-            init: function () {
-                if (typeof Date.now !== 'function') {
-                    Date.now = function () {
-                        return new Date().getTime();
-                    };
-                }
-
-                scrollLoadObj.namespace = Date.now();
-
-                $(function () {
-                    var $load = $('.j-load'),
-                        scrollSetTimeoutId;
-
-                    scrollLoadObj.autoLoadMore($load.attr('data-next'));
-
-                    $(window).on('scroll' + '.' + scrollLoadObj.namespace, function () {
-                        clearTimeout(scrollSetTimeoutId);
-
-                        scrollSetTimeoutId = setTimeout(function () {
-                            if ($(window).height() + $(window).scrollTop() >= $(document).height()) {  /* 文档滚动到底部 */
-                                scrollLoadObj.loadMore($load.attr('data-next'));
-                            }
-                        }, 200);
+                        if (/* 某条件 */) {   /* 不再加载 */
+                            $(window).off('scroll' + '.' + scrollLoadObj.namespace);
+                        } else {
+                            scrollLoadObj.autoLoadMore(newNext);
+                        }
                     });
-                });
+                }
+            } else {
+                $(window).off('scroll' + '.' + scrollLoadObj.namespace);
             }
-        };
+        },
+        autoLoadMore: function (next) { /* 若html小于视窗则触发加载 */
+            if ($('html').outerHeight(true) <= $(window).height()) {
+                scrollLoadObj.loadMore(next);
+            }
+        },
+        init: function () {
+            if (typeof Date.now !== 'function') {
+                Date.now = function () {
+                    return new Date().getTime();
+                };
+            }
+
+            scrollLoadObj.namespace = Date.now();
+
+            $(function () {
+                var $load = $('.j-load'),
+                    scrollSetTimeoutId;
+
+                scrollLoadObj.autoLoadMore($load.attr('data-next'));
+
+                $(window).on('scroll' + '.' + scrollLoadObj.namespace, function () {
+                    clearTimeout(scrollSetTimeoutId);
+
+                    scrollSetTimeoutId = setTimeout(function () {
+                        if ($(window).height() + $(window).scrollTop() >= $(document).height()) {  /* 文档滚动到底部 */
+                            scrollLoadObj.loadMore($load.attr('data-next'));
+                        }
+                    }, 200);
+                });
+            });
+        }
+    };
 
 
-        /* 使用测试 */
-        scrollLoadObj.init();
-    </script>
-    ```
+    /* 使用测试 */
+    scrollLoadObj.init();
+</script>
+```
 
 >Zepto默认：没有`deferred`的对象、没有`outerHeight`方法。
 
@@ -4366,6 +4459,7 @@ var a = new RepeatRAF(function () {
     // b.stop();
 </script>
 ```
+
 [CodePen demo](https://codepen.io/realgeoffrey/pen/gVLZyg)
 
 >滚动事件代理可以代理在`window`或监控图片加载的滚动节点上。
@@ -4374,308 +4468,311 @@ var a = new RepeatRAF(function () {
 #### jQuery节点跟随屏幕滚动而相对静止
 1. `fixed`：
 
-    ```html
-    <style>
-        .z-affix-top {
-            width: 宽度;
-            position: fixed;
-            left: ;
-            margin-left: ;
-            top: ;
-        }
-        .z-affix-bottom {
-            width: 宽度;
-            position: absolute;
-            left: ;
-        }
-    </style>
+```html
+<style>
+    .z-affix-top {
+        width: 宽度;
+        position: fixed;
+        left: ;
+        margin-left: ;
+        top: ;
+    }
+    .z-affix-bottom {
+        width: 宽度;
+        position: absolute;
+        left: ;
+    }
+</style>
 
-    <script>
-        /**
-         * 跟随屏幕滚动而相对静止（fixed），当到达底部某距离时「恢复」滚动
-         * @constructor
-         * @param {Object} $target - 跟屏目标的jQuery对象
-         * @param {Number} topOffset - 触发添加topClass的距文档顶部的距离
-         * @param {String} topClass - 跟随屏幕的类，要规定节点的宽度、位置（fixed）
-         * @param {Number} [bottomOffset = 0] - 触发添加bottomClass的距文档底部的距离
-         * @param {String} [bottomClass = ''] - 触底的类，要规定节点的宽度、位置（absolute），top由代码计算获得
-         */
-        function FollowFixed($target, topOffset, topClass, bottomOffset, bottomClass) {
-          if (typeof Date.now !== 'function') {
-            Date.now = function () {
-              return new Date().getTime();
-            };
-          }
+<script>
+    /**
+     * 跟随屏幕滚动而相对静止（fixed），当到达底部某距离时「恢复」滚动
+     * @constructor
+     * @param {Object} $target - 跟屏目标的jQuery对象
+     * @param {Number} topOffset - 触发添加topClass的距文档顶部的距离
+     * @param {String} topClass - 跟随屏幕的类，要规定节点的宽度、位置（fixed）
+     * @param {Number} [bottomOffset = 0] - 触发添加bottomClass的距文档底部的距离
+     * @param {String} [bottomClass = ''] - 触底的类，要规定节点的宽度、位置（absolute），top由代码计算获得
+     */
+    function FollowFixed($target, topOffset, topClass, bottomOffset, bottomClass) {
+      if (typeof Date.now !== 'function') {
+        Date.now = function () {
+          return new Date().getTime();
+        };
+      }
 
-          var _namespace = Date.now(),  // 事件命名空间
-            _isIE = function (num) {    // 判断ie版本
-              var dom = document.createElement('b');
+      var _namespace = Date.now(),  // 事件命名空间
+        _isIE = function (num) {    // 判断ie版本
+          var dom = document.createElement('b');
 
-              dom.innerHTML = '<!--[if IE ' + num + ']><i></i><![endif]-->';
+          dom.innerHTML = '<!--[if IE ' + num + ']><i></i><![endif]-->';
 
-              return dom.getElementsByTagName('i').length;
-            },
-            _followFixed = function () {
-              var scollTop = $(window).scrollTop(),
-                documentHeight = $(document).height(),
-                targetHeight = $target.height();   // jQuery可以用outerHeight
+          return dom.getElementsByTagName('i').length;
+        },
+        _followFixed = function () {
+          var scollTop = $(window).scrollTop(),
+            documentHeight = $(document).height(),
+            targetHeight = $target.height();   // jQuery可以用outerHeight
 
-              if (scollTop >= topOffset) {    // 滚动距离超过topOffset
-                if (!$target.hasClass(bottomClass)) {   // 没有添加bottomClass
-                  if (documentHeight - ($target.offset().top + targetHeight) > bottomOffset) {    // 节点底部距离文档底部距离 > bottomOffet
-                    requestAnimationFrame(function () {
-                      $target.removeClass(bottomClass).addClass(topClass)
-                        .removeAttr('style');
-                    });
-                  } else if (bottomClass) {   // 超过bottomOffet,并且bottomClass存在
-                    requestAnimationFrame(function () {
-                      $target.removeClass(topClass).addClass(bottomClass)
-                        .css('top', documentHeight - $target.offsetParent().offset().top - targetHeight - bottomOffset);
-                    });
-                  }
-                } else {    // 添加了bottomClass
-                  if (scollTop < $target.offset().top) {  // 滚动小于节点
-                    requestAnimationFrame(function () {
-                      $target.removeClass(bottomClass).addClass(topClass)
-                        .removeAttr('style');
-                    });
-                  }
-                }
-              } else {
+          if (scollTop >= topOffset) {    // 滚动距离超过topOffset
+            if (!$target.hasClass(bottomClass)) {   // 没有添加bottomClass
+              if (documentHeight - ($target.offset().top + targetHeight) > bottomOffset) {    // 节点底部距离文档底部距离 > bottomOffet
                 requestAnimationFrame(function () {
-                  $target.removeClass(topClass + ' ' + bottomClass)
+                  $target.removeClass(bottomClass).addClass(topClass)
+                    .removeAttr('style');
+                });
+              } else if (bottomClass) {   // 超过bottomOffet,并且bottomClass存在
+                requestAnimationFrame(function () {
+                  $target.removeClass(topClass).addClass(bottomClass)
+                    .css('top', documentHeight - $target.offsetParent().offset().top - targetHeight - bottomOffset);
+                });
+              }
+            } else {    // 添加了bottomClass
+              if (scollTop < $target.offset().top) {  // 滚动小于节点
+                requestAnimationFrame(function () {
+                  $target.removeClass(bottomClass).addClass(topClass)
                     .removeAttr('style');
                 });
               }
-            };
-
-          if (!_isIE(6)) {
-            bottomOffset = bottomOffset || 0;
-            bottomClass = bottomClass || '';
-
-            _followFixed();
-
-            $(window).on('scroll' + '.' + _namespace, _followFixed);
+            }
+          } else {
+            requestAnimationFrame(function () {
+              $target.removeClass(topClass + ' ' + bottomClass)
+                .removeAttr('style');
+            });
           }
+        };
 
-          this.stop = function () {
-            $target.removeClass(topClass + ' ' + bottomClass);
-            $(window).off('scroll' + '.' + _namespace);
-          };
-        }
+      if (!_isIE(6)) {
+        bottomOffset = bottomOffset || 0;
+        bottomClass = bottomClass || '';
+
+        _followFixed();
+
+        $(window).on('scroll' + '.' + _namespace, _followFixed);
+      }
+
+      this.stop = function () {
+        $target.removeClass(topClass + ' ' + bottomClass);
+        $(window).off('scroll' + '.' + _namespace);
+      };
+    }
 
 
-        /* 使用测试 */
-        var a = new FollowFixed($('.target'), $('.target').offset().top, 'z-affix-top', 200, 'z-affix-bottom');
+    /* 使用测试 */
+    var a = new FollowFixed($('.target'), $('.target').offset().top, 'z-affix-top', 200, 'z-affix-bottom');
 
-        // a.stop();
-    </script>
-    ```
-    [CodePen demo](https://codepen.io/realgeoffrey/pen/LwbMKE)
+    // a.stop();
+</script>
+```
+
+[CodePen demo](https://codepen.io/realgeoffrey/pen/LwbMKE)
+
 2. `margin-top`：
 
-    ```html
-    <div class="clearfix">
-        <div class="father">
-            可有可无的、带margin或不带margin的节点
-            <div class="target">target内容</div>
-            可有可无的、带margin或不带margin的节点，ie6、7下可能需要触发hasLayout
-        </div>
-        <div class="dependent">
-            父级的兄弟节点
-        </div>
+```html
+<div class="clearfix">
+    <div class="father">
+        可有可无的、带margin或不带margin的节点
+        <div class="target">target内容</div>
+        可有可无的、带margin或不带margin的节点，ie6、7下可能需要触发hasLayout
     </div>
+    <div class="dependent">
+        父级的兄弟节点
+    </div>
+</div>
 
-    <script>
-        /**
-         * 跟随屏幕滚动而相对静止（margin-top变化）
-         * @constructor
-         * @param {String} target - 目标节点
-         * @param {String} father - 目标节点的父级节点
-         * @param {String} dependent - 目标节点的父级节点的兄弟参照物（跟随不超过此参照物）
-         */
-        function FollowMarginTop(target, father, dependent) {
-          if (typeof Date.now !== 'function') {
-            Date.now = function () {
-              return new Date().getTime();
-            };
+<script>
+    /**
+     * 跟随屏幕滚动而相对静止（margin-top变化）
+     * @constructor
+     * @param {String} target - 目标节点
+     * @param {String} father - 目标节点的父级节点
+     * @param {String} dependent - 目标节点的父级节点的兄弟参照物（跟随不超过此参照物）
+     */
+    function FollowMarginTop(target, father, dependent) {
+      if (typeof Date.now !== 'function') {
+        Date.now = function () {
+          return new Date().getTime();
+        };
+      }
+
+      var namespace = Date.now(), /* 事件命名空间 */
+        $target = $(target),
+        startOffset = $target.offset().top,
+        targetMarginTop = parseInt($target.css('margin-top'), 10) || 0,
+        prevMarginBottom = parseInt($target.prev().css('margin-bottom'), 10) || 0,
+        defaultMarginTop = Math.max(targetMarginTop, prevMarginBottom),
+        maxMarginTop = $(dependent).height() - $(father).height() + defaultMarginTop; // jQuery可以用outerHeight
+
+      $(window).on('scroll' + '.' + namespace, function () {
+        var marginTop = $(window).scrollTop() - startOffset + defaultMarginTop;
+
+        if (marginTop > defaultMarginTop) {
+          if (marginTop > maxMarginTop) {
+            marginTop = maxMarginTop;
           }
-
-          var namespace = Date.now(), /* 事件命名空间 */
-            $target = $(target),
-            startOffset = $target.offset().top,
-            targetMarginTop = parseInt($target.css('margin-top'), 10) || 0,
-            prevMarginBottom = parseInt($target.prev().css('margin-bottom'), 10) || 0,
-            defaultMarginTop = Math.max(targetMarginTop, prevMarginBottom),
-            maxMarginTop = $(dependent).height() - $(father).height() + defaultMarginTop; // jQuery可以用outerHeight
-
-          $(window).on('scroll' + '.' + namespace, function () {
-            var marginTop = $(window).scrollTop() - startOffset + defaultMarginTop;
-
-            if (marginTop > defaultMarginTop) {
-              if (marginTop > maxMarginTop) {
-                marginTop = maxMarginTop;
-              }
-            } else {
-              marginTop = defaultMarginTop;
-            }
-
-            requestAnimationFrame(function () {
-              $target.css({ 'margin-top': marginTop });
-            });
-          });
-
-          this.stop = function () {
-            $target.css({ 'margin-top': targetMarginTop });
-            $(window).off('scroll' + '.' + namespace);
-          };
+        } else {
+          marginTop = defaultMarginTop;
         }
 
+        requestAnimationFrame(function () {
+          $target.css({ 'margin-top': marginTop });
+        });
+      });
 
-        /* 使用测试 */
-        var a = new FollowMarginTop('.target', '.father', '.dependent');
+      this.stop = function () {
+        $target.css({ 'margin-top': targetMarginTop });
+        $(window).off('scroll' + '.' + namespace);
+      };
+    }
 
-        // a.stop();
-    </script>
-    ```
-    [CodePen demo](https://codepen.io/realgeoffrey/pen/xvRmov)
+
+    /* 使用测试 */
+    var a = new FollowMarginTop('.target', '.father', '.dependent');
+
+    // a.stop();
+</script>
+```
+
+[CodePen demo](https://codepen.io/realgeoffrey/pen/xvRmov)
 
 #### jQuery弹出toast
 1. jQuery
 
-    ```html
-    <style>
-        .样式类 {
-            position: fixed;
-            _position: absolute;
-            left: 50%;
-            top: 50%;
-            margin-top: -30px;
-            margin-left: -450px;
-            width: 900px;
-            text-align: center;
+```html
+<style>
+    .样式类 {
+        position: fixed;
+        _position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-top: -30px;
+        margin-left: -450px;
+        width: 900px;
+        text-align: center;
 
-            p {
-                display: inline-block;
-                *display: inline;
-                *zoom: 1;
-                max-width: 840px;
-                _width: 840px;
-                padding: 15px 30px;
-                line-height: 30px;
-                font-size: 14px;
-                color: #fff;
-                word-wrap: break-word;
-                background-color: rgba(0, 0, 0, .7);
-                filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr=#70000000, endColorStr=#70000000)\9;
-                *zoom: 1;
-            }
+        p {
+            display: inline-block;
+            *display: inline;
+            *zoom: 1;
+            max-width: 840px;
+            _width: 840px;
+            padding: 15px 30px;
+            line-height: 30px;
+            font-size: 14px;
+            color: #fff;
+            word-wrap: break-word;
+            background-color: rgba(0, 0, 0, .7);
+            filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr=#70000000, endColorStr=#70000000)\9;
+            *zoom: 1;
         }
-    </style>
-    <script>
-        function alertToast() {
-            if ($('.j-pop-toast').length === 0) {
-                $('body').append('<div class="j-pop-toast 样式类" style="display: none;"><p></p></div>');
-            }
-
-            var $toast = $('.j-pop-toast'),
-                $text = $toast.children('p'),
-                self = arguments.callee,
-                textArr = [],
-                i, text;
-
-            clearTimeout(self.setTimeoutId);
-
-            for (i = 0; i < arguments.length; i++) {
-                textArr.push(arguments[i]);
-            }
-
-            text = textArr.join('<br>');
-
-            $text.html(text);
-
-            setTimeout(function () {
-                $toast.fadeIn(1000);
-            }, 0);
-
-            self.setTimeoutId = setTimeout(function () {
-                $toast.fadeOut(1000);
-            }, 2500);
+    }
+</style>
+<script>
+    function alertToast() {
+        if ($('.j-pop-toast').length === 0) {
+            $('body').append('<div class="j-pop-toast 样式类" style="display: none;"><p></p></div>');
         }
 
+        var $toast = $('.j-pop-toast'),
+            $text = $toast.children('p'),
+            self = arguments.callee,
+            textArr = [],
+            i, text;
 
-        /* 使用测试 */
-        alertToast('<span style="color: red;">red</span>', '哈哈');
-    </script>
-    ```
+        clearTimeout(self.setTimeoutId);
+
+        for (i = 0; i < arguments.length; i++) {
+            textArr.push(arguments[i]);
+        }
+
+        text = textArr.join('<br>');
+
+        $text.html(text);
+
+        setTimeout(function () {
+            $toast.fadeIn(1000);
+        }, 0);
+
+        self.setTimeoutId = setTimeout(function () {
+            $toast.fadeOut(1000);
+        }, 2500);
+    }
+
+
+    /* 使用测试 */
+    alertToast('<span style="color: red;">red</span>', '哈哈');
+</script>
+```
 2. Zepto
 
-    ```html
-    <style>
-        .样式类 {
-            transition: 1s;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            margin-left: rem(-230);
-            margin-top: rem(-49);
-            width: rem(460);
-            text-align: center;
+```html
+<style>
+    .样式类 {
+        transition: 1s;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        margin-left: rem(-230);
+        margin-top: rem(-49);
+        width: rem(460);
+        text-align: center;
 
-            p {
-                display: inline-block;
-                max-width: rem(460);    /*box-sizing: border-box;*/
-                min-width: rem(166);
-                padding: rem(29) rem(30);
-                line-height: rem(40);
-                font-size: rem(28);
-                color: #fff;
-                word-wrap: break-word;
-                background-color: rgba(0, 0, 0, .7);
-                border-radius: rem(4);
-            }
-            &.z-hidden {
-                visibility: hidden;
-                opacity: 0;
-            }
+        p {
+            display: inline-block;
+            max-width: rem(460);    /*box-sizing: border-box;*/
+            min-width: rem(166);
+            padding: rem(29) rem(30);
+            line-height: rem(40);
+            font-size: rem(28);
+            color: #fff;
+            word-wrap: break-word;
+            background-color: rgba(0, 0, 0, .7);
+            border-radius: rem(4);
         }
-    </style>
-    <script>
-        function alertToast() {
-            if ($('.j-pop-toast').length === 0) {
-                $('body').append('<div class="j-pop-toast z-hidden 样式类"><p></p></div>');
-            }
-
-            var $toast = $('.j-pop-toast'),
-                $text = $toast.children('p'),
-                self = arguments.callee,
-                textArr = [],
-                i, text;
-
-            clearTimeout(self.setTimeoutId);
-
-            for (i = 0; i < arguments.length; i++) {
-                textArr.push(arguments[i]);
-            }
-
-            text = textArr.join('<br>');
-
-            $text.html(text);
-
-            setTimeout(function () {
-                $toast.removeClass('z-hidden');
-            }, 0);
-
-            self.setTimeoutId = setTimeout(function () {
-                $toast.addClass('z-hidden');
-            }, 2500);
+        &.z-hidden {
+            visibility: hidden;
+            opacity: 0;
+        }
+    }
+</style>
+<script>
+    function alertToast() {
+        if ($('.j-pop-toast').length === 0) {
+            $('body').append('<div class="j-pop-toast z-hidden 样式类"><p></p></div>');
         }
 
+        var $toast = $('.j-pop-toast'),
+            $text = $toast.children('p'),
+            self = arguments.callee,
+            textArr = [],
+            i, text;
 
-        /* 使用测试 */
-        alertToast('<span style="color: red;">red</span>', '哈哈');
-    </script>
-    ```
+        clearTimeout(self.setTimeoutId);
+
+        for (i = 0; i < arguments.length; i++) {
+            textArr.push(arguments[i]);
+        }
+
+        text = textArr.join('<br>');
+
+        $text.html(text);
+
+        setTimeout(function () {
+            $toast.removeClass('z-hidden');
+        }, 0);
+
+        self.setTimeoutId = setTimeout(function () {
+            $toast.addClass('z-hidden');
+        }, 2500);
+    }
+
+
+    /* 使用测试 */
+    alertToast('<span style="color: red;">red</span>', '哈哈');
+</script>
+```
 
 #### jQuery全选、取消全选
 ```html
@@ -4753,108 +4850,111 @@ var a = new RepeatRAF(function () {
 #### jQuery点击指定区域以外执行函数
 1. jQuery
 
-    ```javascript
-    /**
-     * 点击指定区域以外执行函数（一次性）
-     * @param {Object} $dom - jQuery节点
-     * @param {Function} callback - 回调函数
-     * @param {Number} [limit] - 自动失效时间，若没有传或传0则不会自动失效
-     * @param {String|Number} [namespace = Date.now()] - 事件命名空间
-     */
-    function beyongOneAct($dom, callback, limit, namespace) {
-        if (typeof Date.now !== 'function') {
-            Date.now = function () {
-                return new Date().getTime();
-            };
-        }
-
-        namespace = namespace || Date.now();
-
-        if (limit) {
-            setTimeout(function () {
-                $(document).off('click.' + namespace);
-            }, limit);
-        }
-
-        $(document).on('click.' + namespace, function (e) {
-            if (!$dom.is(e.target) && $dom.has(e.target).length === 0) {    /* 点击不在指定区域内 */
-                $(document).off('click.' + namespace);
-
-                if (typeof callback === 'function') {
-                    callback();
-                }
-            }
-        });
+```javascript
+/**
+ * 点击指定区域以外执行函数（一次性）
+ * @param {Object} $dom - jQuery节点
+ * @param {Function} callback - 回调函数
+ * @param {Number} [limit] - 自动失效时间，若没有传或传0则不会自动失效
+ * @param {String|Number} [namespace = Date.now()] - 事件命名空间
+ */
+function beyongOneAct($dom, callback, limit, namespace) {
+    if (typeof Date.now !== 'function') {
+        Date.now = function () {
+            return new Date().getTime();
+        };
     }
 
+    namespace = namespace || Date.now();
 
-    /* 使用测试 */
-    beyongOneAct(
-      $('.dom1,#dom2'),
-      function () {
-        console.log('点击区域外');
-      },
-      1000
-    );
-    ```
-    [CodePen demo](https://codepen.io/realgeoffrey/pen/WVoLVM)
+    if (limit) {
+        setTimeout(function () {
+            $(document).off('click.' + namespace);
+        }, limit);
+    }
+
+    $(document).on('click.' + namespace, function (e) {
+        if (!$dom.is(e.target) && $dom.has(e.target).length === 0) {    /* 点击不在指定区域内 */
+            $(document).off('click.' + namespace);
+
+            if (typeof callback === 'function') {
+                callback();
+            }
+        }
+    });
+}
+
+
+/* 使用测试 */
+beyongOneAct(
+  $('.dom1,#dom2'),
+  function () {
+    console.log('点击区域外');
+  },
+  1000
+);
+```
+
+[CodePen demo](https://codepen.io/realgeoffrey/pen/WVoLVM)
+
 2. Zepto
 
-    ```javascript
-    /**
-     * 点击指定区域以外执行函数（一次性）
-     * @param {Object} $dom - jQuery节点
-     * @param {Function} callback - 回调函数
-     * @param {Number} [limit] - 自动失效时间，若没有传或传0则不会自动失效
-     * @param {String|Number} [namespace = Date.now()] - 事件命名空间
-     */
-    function beyongOneAct($dom, callback, limit, namespace) {
-        if (typeof Date.now !== 'function') {
-            Date.now = function () {
-                return new Date().getTime();
-            };
-        }
-
-        namespace = namespace || Date.now();
-
-        if (limit) {
-            setTimeout(function () {
-                $(document.body).off('click.' + namespace);
-            }, limit);
-        }
-
-        $(document.body).on('click.' + namespace, function (e) {
-            var withinArea = false,
-                i;
-
-            for (i = 0; i < $dom.length; i++) {
-                if ($dom.get(i) === e.target || $dom.eq(i).has(e.target).length !== 0) {
-                    withinArea = true;
-                    break;
-                }
-            }
-
-            if (!withinArea) {    /* 点击不在指定区域内 */
-                $(document.body).off('click.' + namespace);
-
-                if (typeof callback === 'function') {
-                    callback();
-                }
-            }
-        });
+```javascript
+/**
+ * 点击指定区域以外执行函数（一次性）
+ * @param {Object} $dom - jQuery节点
+ * @param {Function} callback - 回调函数
+ * @param {Number} [limit] - 自动失效时间，若没有传或传0则不会自动失效
+ * @param {String|Number} [namespace = Date.now()] - 事件命名空间
+ */
+function beyongOneAct($dom, callback, limit, namespace) {
+    if (typeof Date.now !== 'function') {
+        Date.now = function () {
+            return new Date().getTime();
+        };
     }
 
+    namespace = namespace || Date.now();
 
-    /* 使用测试 */
-    beyongOneAct(
-      $('.dom1,#dom2'),
-      function () {
-        console.log('点击区域外');
-      },
-      1000
-    );
-    ```
-    [CodePen demo](https://codepen.io/realgeoffrey/pen/BXQMbq)
+    if (limit) {
+        setTimeout(function () {
+            $(document.body).off('click.' + namespace);
+        }, limit);
+    }
+
+    $(document.body).on('click.' + namespace, function (e) {
+        var withinArea = false,
+            i;
+
+        for (i = 0; i < $dom.length; i++) {
+            if ($dom.get(i) === e.target || $dom.eq(i).has(e.target).length !== 0) {
+                withinArea = true;
+                break;
+            }
+        }
+
+        if (!withinArea) {    /* 点击不在指定区域内 */
+            $(document.body).off('click.' + namespace);
+
+            if (typeof callback === 'function') {
+                callback();
+            }
+        }
+    });
+}
+
+
+/* 使用测试 */
+beyongOneAct(
+  $('.dom1,#dom2'),
+  function () {
+    console.log('点击区域外');
+  },
+  1000
+);
+```
+
+[CodePen demo](https://codepen.io/realgeoffrey/pen/BXQMbq)
 
 #### jQuery hover展示内容并且可跨越间隙到内容
 ```html
@@ -4890,6 +4990,7 @@ var a = new RepeatRAF(function () {
     });
 </script>
 ```
+
 [CodePen demo](https://codepen.io/realgeoffrey/pen/QeGYPP)
 
 #### jQuery启动、暂停CSS动画
@@ -4956,6 +5057,7 @@ var a = new RepeatRAF(function () {
     // b.stop;
 </script>
 ```
+
 [CodePen demo](https://codepen.io/realgeoffrey/pen/MNbZzB)
 
 #### jQuery获取`HTTP response header`信息

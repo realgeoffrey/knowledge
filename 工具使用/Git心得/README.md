@@ -14,7 +14,6 @@
 1. [`husky`+`lint-staged`](#huskylint-staged)
 
 ---
-
 ### Git的文件状态
 1. `untracked`
 
