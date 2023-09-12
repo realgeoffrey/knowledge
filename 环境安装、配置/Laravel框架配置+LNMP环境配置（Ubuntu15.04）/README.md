@@ -5,6 +5,8 @@
     >安装完毕之后可以删除ios虚拟光盘
 2. 安装LNMP环境
 
+    >LNMP：Linux Nginx MySQL PHP。
+
     1. 安装**php5-fpm**，并安装**php5-mcrypt**和**php5-curl**和**php5-cli**和**php5-gd**扩展
 
         ```shell

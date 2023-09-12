@@ -105,7 +105,7 @@
     1. 服务器开启gzip（如：nginx）。
 
         >前端查看Response头是否有：`Content-Encoding: gzip`。
-    2. 优先开启使用HTTP/2（替代HTTP/1.1、HTTP/1.0）
+    2. 优先开启使用[HTTP/2](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http持久连接websockethttp2)（替代HTTP/1.1、HTTP/1.0）
     3. 减少DNS查找，设置合适的TTL值，避免重定向。
     4. 使用CDN。
     5. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#静态资源使用额外域名的原因)；尽量减少保存进cookie的数据种类和大小（因为同源的cookie会全部参与HTTP通讯）；合理减少HTTP头数量。
@@ -235,6 +235,9 @@
                     1. 在Vue实例内部`new`的其他实例或DOM，应放在`data`内进行掌控，当使用完毕后引导垃圾回收。
                     2. 在Vue实例内部手动绑定的事件（如：`addEventListener`）、计时器、http连接、以及任何需要手动关闭的内容，需要在`beforeDestroy`前手动清除（`destroyed`仅自动清除Vue自己定义、绑定的内容）。
                 </details>
+        9. 针对长列表考虑虚拟列表，针对非可见区域考虑先销毁
+
+            注意分析具体场景下重新创建的优劣。
     3. HTML：
 
         1. 减少层级嵌套。

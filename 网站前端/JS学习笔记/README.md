@@ -3734,14 +3734,14 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
             `$dom.innerHeight()`
         2. height+padding+border：
 
-            `dom.offsetHeight`
+            `dom.offsetHeight`（元素的像素高度，包含该元素的垂直内边距和边框，且是一个整数。理解为一个设置的高度）
 
             或
 
             `$dom.outerHeight()`
     2. 节点内容高度：
 
-        `dom.scrollHeight`
+        `dom.scrollHeight`（元素内容高度的度量，包括由于溢出导致的视图中不可见内容。）
     3. 节点内滚动距离：
 
         `dom.scrollTop`

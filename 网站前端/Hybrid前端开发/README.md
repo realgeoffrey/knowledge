@@ -293,7 +293,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 
     ![WebView启动流程](./images/webview-2.png)
 
-    1. 相对于Native App的流畅体验，WebView的页面瓶颈一般都卡在WebView实例初始化，可能导致App卡顿、页面加载缓慢。
+    1. 相对于Native App的流畅体验，WebView的页面瓶颈一般都卡在**WebView实例初始化**，可能导致App卡顿、页面加载缓慢。
 
         WebView的初始化、保持，占用较多内存。
     2. 与浏览器不同，App中打开WebView的第一步并不是建立连接，而是启动浏览器内核。
