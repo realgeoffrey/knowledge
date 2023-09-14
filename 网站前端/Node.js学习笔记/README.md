@@ -12,6 +12,7 @@
 1. [原理机制](#原理机制)
 
     1. [Node.js的运行机制](#nodejs的运行机制)
+    1. [Node.js的`事件循环（event loop）`](#nodejs的事件循环event-loop)
     1. [特性](#特性)
     1. [Node.js核心模块（需要`require`引入）](#nodejs核心模块需要require引入)
     1. [Node.js全局变量](#nodejs全局变量)
@@ -814,7 +815,7 @@ npm（Node Package Manager）。
 ## 原理机制
 
 ### Node.js的运行机制
-1. [V8](https://v8.dev/)引擎解析应用程序输入的JS脚本。
+1. [V8](https://v8.dev/)引擎（JS引擎）解析应用程序输入的JS脚本。
 
     >V8处理JS，除了 **正则表达式**、**JSON的处理** 之外，对于大部分操作都很快。
     >
@@ -823,12 +824,12 @@ npm（Node Package Manager）。
 2. 解析后的代码，能够与操作系统进行交互。
 
     >代码 -> Node.js内置模块 -> V8（internalBinding） -> C/C++ -> 操作系统
-3. [libuv](https://github.com/libuv/libuv)负责Node.js的API的执行。将不同的任务分配给不同的线程，形成一个[Event Loop（事件循环）](https://nodejs.org/zh-cn/docs/guides/event-loop-timers-and-nexttick/)，以异步的方式将任务的执行结果返回给V8引擎。
+3. [libuv](https://github.com/libuv/libuv)负责Node.js的API的执行。将不同的任务分配给不同的线程，形成一个[Event Loop（事件循环）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Node.js学习笔记/README.md#nodejs的事件循环event-loop)，以异步的方式将任务的执行结果返回给V8引擎。
 4. V8引擎再将结果返回给应用程序。
 
 >JS本身的`throw-try-catch`异常处理机制并不会导致内存泄漏，也不会让程序的执行结果出乎意料，但Node.js并不是存粹的JS。Node.js里大量的API内部是由C/C++实现，因此Node.js程序的运行过程中，代码执行路径穿梭于JS引擎内部和外部，而JS的异常抛出机制可能会打断正常的代码执行流程，导致C/C++部分的代码表现异常，进而导致内存泄漏等问题。
 
-![Node.js的事件循环图](./images/nodejs-system-1.png)
+![Node.js系统图](./images/nodejs-system-1.png)
 
 - <details>
 
@@ -848,6 +849,63 @@ npm（Node Package Manager）。
         2. gyp
         3. gtest
     </details>
+
+### Node.js的`事件循环（event loop）`
+与[浏览器的`事件循环（event loop）`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#浏览器的事件循环event-loop)类似。由libuv引擎实现。
+
+```text
+main
+ ↓
+                 # 宏任务                                               # 微任务（不是event loop）
+                 ┌─────────────────────────────────┐                     process.nextTick
+              ┌─>│  timers(setTimeout,setInterval) │                            ↓
+              │  └─────────────┬───────────────────┘                          Promise
+              │  ┌─────────────┴───────────────────┐
+              │  │pending callbacks(OS,delayed I/O)│
+              │  └─────────────┬───────────────────┘
+              │  ┌─────────────┴───────────────────┐
+              │  │   idle, prepare(Node.js core)   │
+check         │  └─────────────┬───────────────────┘    ┌────────────┐
+event loop ─→ │  ┌─────────────┴───────────────────┐    │ incoming:  │
+              │  │           poll(a lot)           │<───┤connections,│
+              │  └─────────────┬───────────────────┘    │ data, etc. │
+              │  ┌─────────────┴───────────────────┐    └────────────┘
+              │  │       check(setImmediate)       │
+              │  └─────────────┬───────────────────┘
+              │  ┌─────────────┴───────────────────┐
+              └──┤         close callbacks         │
+ ↓               └─────────────────────────────────┘
+over
+```
+
+1. main
+
+    启动入口文件，运行主函数。
+2. event loop
+
+    检查系统中是否有异步任务，决定是否进入事件循环。
+
+    1. 6个队列，每个队列都需要 全部执行完毕整个队列 才会进入下一个队列。
+    2. poll队列
+
+        1. 若poll中没有回调函数需要执行（已是空队列），但（系统中）有异步任务，则会在这里等待其他队列中出现回调：
+
+            0. 若poll出现新的回调函数，则执行直到poll为空队列，然后继续等待其他队列出现回调；
+            1. 若其他队列中出现回调，则从poll向下执行队列check、close callbacks，之后进行新的event loop判断（判断是否有异步任务，有就继续新的event loop，没有就结束over）；
+            3. 若Node.js线程一直holding在poll队列，等很长一段时间还是没有任务来临，则会自动断开等待（不自信表现），向下执行轮询流程，经过check、close callbacks后到达新的event loop判断；
+        2. 若poll中没有回调函数需要执行（已是空队列），也没有异步任务，则向下执行轮询流程，经过check、close callbacks后到达新的event loop判断，判断没有异步任务，结束over。
+3. over
+
+    所有事情都完毕，也没有异步任务，结束。
+
+![Node.js事件循环图](./images/node-event-loop-1.webp)
+
+4. 微任务
+
+    **事件循环中，每执行一个回调之前，** 先按序清空`process.nextTick`、`Promise`。
+
+    1. `process.nextTick`优先级最高（最快执行的异步函数）
+    2. `Promise`
 
 ### 特性
 1. 单线程
@@ -1405,7 +1463,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         >未捕获的异步错误用`process.on('uncaughtException', err => {})`捕获；未捕获的失败Promise实例用`process.on('unhandledRejection', err => {})`捕获。
     7. `app.keys = `
 
-        设置签名的 Cookie 密钥
+        设置签名的cookie密钥
 
     - 其他
 

@@ -85,6 +85,8 @@
     1. 小程序
 
         默认配置规定屏幕总宽为750rpx。
+
+        >rpx（responsive pixel，响应单位）是微信小程序独有的、解决屏幕自适应的尺寸单位，可以根据屏幕宽度进行自适应，不论大小屏幕，规定屏幕宽为750rpx（类似CSS的100vw）。
     2. iOS、Android、React Native、Hippy、Flutter（可利用[flutter_screenutil](https://github.com/OpenFlutter/flutter_screenutil)）
 
         按设计稿和设备视口比例进行换算，如：`设计稿中某长度 * 设备视口宽度 / 设计稿总宽`、等。

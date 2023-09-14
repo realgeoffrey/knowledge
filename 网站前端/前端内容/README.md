@@ -90,6 +90,10 @@
             2. 采用文件的数字签名（如：MD5）作为缓存更新依据 —— 精确的缓存控制
             3. 静态资源CDN部署 —— 优化网络请求
             4. 非覆盖式更新资源 —— 平滑升级
+5. 其他
+
+    1. CI/CD
+    2. Monorepo方案
 
 >[从零开始构建 JavaScript 技术栈](https://github.com/wooo-on/js-stack-from-scratch)。
 
@@ -145,11 +149,13 @@
             客户端： Web Storage（`localStorage`、`sessionStorage`）、cookie、IndexDB等；服务端：Redis等。
         5. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
         6. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）、第三方资源使用统一的CDN服务和设置[`<link>`预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-        7. 利用CDN combo。
+        7. 利用CDN combo（利用构建打包工具，如webpack，把多个文件合并为一个文件，并使用特定的URL来请求该合并后的文件）。
         8. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
     2. 最小化字节：
 
         1. 压缩资源。
+
+            >[webpack性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/webpack学习笔记/README.md#webpack性能优化)
         2. 图片优化
 
             1. 压缩。
@@ -185,7 +191,7 @@
                 3. 当加载时长低于1秒时或加载游戏资源这种场景过长时，不建议展示加载样式；当加载时长高于10秒时，建议给出用户加载失败反馈和出口。
             </details>
         2. lazyload默认图
-        3. loading图、loading进度条
+        3. loading图/进度条
 3. 载入页面后进行的[页面解析、渲染](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面解析渲染步骤)、线程执行性能：
 
     >大部分情况下的浏览器是单线程执行，因此要尽量做到「最小化主线程的责任」，来确保渲染流畅和交互响应及时。
@@ -201,13 +207,13 @@
             4. 尽量仅使用`opacity`、`transform: translate/scale/rotate/skew`处理动画。
     2. JS代码性能优化：
 
-        1. 使用性能好的代码方式（微优化）
+        1. 使用性能好的代码方式（微优化，micro-optimizations：尝试写出认为会让浏览器稍微更快速运行的代码或调用更快的方法）
 
             1. 字面量创建数据，而不是构造函数。
             2. 缓存DOM的选择、缓存列表.length。
             3. [闭包合理使用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)。
             4. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)。
-            5. 长字符串拼接使用`Array.prototype.join()`，而不使用`+`。
+            5. 长字符串拼接使用`Array.prototype.join()`，而不使用 ~~`+`~~ 或 ~~`String.prototype.concat`~~。
         2. 尽量使用事件代理，避免批量绑定事件。
         3. [定时器取舍，合理使用重绘函数代替](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)。
         4. 高频事件（如：`scroll`、`mousemove`、`touchmove`）使用[函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)，避免在高频事件中进行运行时间长的代码。
@@ -218,26 +224,9 @@
         7. 正则表达式尽可能准确地匹配目标字符串，以减少不必要的回溯。
         8. 针对在用框架，使用合理的特性实现业务逻辑。
 
-            1. <details>
-
-                <summary>vue</summary>
-
-                1. `key`属性的组件/DOM复用。
-                2. `v-once`只渲染元素和组件一次。
-                3. 最小限度使用响应式系统。
-
-                    1. 若不需要响绑定到视图的变量
-
-                        1. 不提前注册在`data`或`computed`中，直接this.来创建
-                        2. `Object.freeze()`
-                4. 注意内存泄漏（全局副作用）：
-
-                    1. 在Vue实例内部`new`的其他实例或DOM，应放在`data`内进行掌控，当使用完毕后引导垃圾回收。
-                    2. 在Vue实例内部手动绑定的事件（如：`addEventListener`）、计时器、http连接、以及任何需要手动关闭的内容，需要在`beforeDestroy`前手动清除（`destroyed`仅自动清除Vue自己定义、绑定的内容）。
-                </details>
-        9. 针对长列表考虑虚拟列表，针对非可见区域考虑先销毁
-
-            注意分析具体场景下重新创建的优劣。
+            1. [vue性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#vue性能优化)
+            2. [react性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/React学习笔记/README.md#react性能优化)
+        9. 长列表考虑虚拟列表（针对非可见区域先销毁，注意分析具体场景下重新创建的优劣）
     3. HTML：
 
         1. 减少层级嵌套。
@@ -254,13 +243,16 @@
 >
 >    <summary>优先优化对性能影响大、导致瓶颈的部分</summary>
 >
->    1. 在客户端运行[`window.performance`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#performance)查看页面从打开到加载完成的时间数据。
->    2. DevTools：
+>    1. DevTools：
+>
+>        - 或客户端的性能查看工具：[其他语言2Native调试](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/代码调试相关/README.md#其他语言2native调试)
 >
 >        1. Performance查询运行时导致**帧数**过高的代码。
 >        2. Rendering、Layers查看CSS渲染情况。
 >        3. Memory、JavaScript Profiler、Performance monitor查询内存占用情况。
->    3. 打开各种分析工具，根据建议逐条对照修改
+>    2. 打开各种分析工具，根据建议逐条对照修改
+>
+>        - 在客户端运行[`window.performance`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#performance)查看页面从打开到加载完成的时间数据，或其他约定好的性能口径。
 >
 >        1. [lighthouse](https://github.com/GoogleChrome/lighthouse)
 >
@@ -276,6 +268,7 @@
 >                2. [CSS验证](https://jigsaw.w3.org/css-validator/validator.html.zh-cn)
 >                3. [链接测试](https://validator.w3.org/checklink)
 >            3. [性能测试](https://gtmetrix.com/)
+>    3. webpack的[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)分析包体积。
 >    </details>
 >- <details>
 >

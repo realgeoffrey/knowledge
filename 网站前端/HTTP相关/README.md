@@ -4,7 +4,7 @@
 1. [HTTP特点](#http特点)
 1. [TCP/IP协议四层模型](#tcpip协议四层模型)
 1. [TCP的三次握手、四次挥手](#tcp的三次握手四次挥手)
-1. [输入URL后的HTTP流程](#输入url后的http流程)
+1. [输入URL后的HTTP流程-浏览器流程](#输入url后的http流程-浏览器流程)
 1. [HTTP报文组成](#http报文组成)
 1. [HTTP请求方法（HTTP request methods）](#http请求方法http-request-methods)
 1. [HTTP状态码（HTTP status codes）](#http状态码http-status-codes)
@@ -16,13 +16,12 @@
     1. [HTTPS](#https)
     1. [HTTP严格传输安全（HTTP strict transport security，HSTS）](#http严格传输安全http-strict-transport-securityhsts)
     1. [`Mixed Content`](#mixed-content)
-1. [HTTP持久连接、WebSocket、HTTP/2](#http持久连接websockethttp2)
-1. [HTTP/3](#http3)
+1. [HTTP持久连接、WebSocket、服务器推送](#http持久连接websocket服务器推送)
 1. [CORS（cross-origin resource sharing，跨域资源共享）](#corscross-origin-resource-sharing跨域资源共享)
 1. [服务端验证用户状态](#服务端验证用户状态)
+1. [HTTP协议迭代（HTTP/3、HTTP/2、HTTP/1）](#http协议迭代http3http2http1)
 1. [其他网络概念](#其他网络概念)
 1. [特殊的IP地址](#特殊的ip地址)
-
 ---
 ### HTTP特点
 >HTTP（HyperText Transfer Protocol，超文本传输协议）通信通常通过TCP/IP连接进行，默认端口是TCP 80，但可以使用其他端口，以ASCII码传输。这并不妨碍HTTP在任何其他协议之上实现，HTTP只是假定了一个可靠的传输，任何能够提供可靠传输的协议都能够被使用。
@@ -118,10 +117,6 @@
                 >0:0:0:0:0:0:0:0       → ::
                 >```
 
-- HTTP协议版本区别
-
-    ![HTTP协议版本区别](./images/5.png)
-
 ### TCP的三次握手、四次挥手
 ![TCP三次握手和四次挥手图](./images/3.png)
 
@@ -175,7 +170,7 @@
 >    4. 当收到主机A返回ACK报文段时，表示主机A已经知道主机B没有数据发送了，之后彼此都中断这次TCP连接。
 ></details>
 
-### 输入URL后的HTTP流程
+### 输入URL后的HTTP流程-浏览器流程
 1. 获取域名的IP地址
 
     DNS解析：浏览器自身DNS缓存 -> 操作系统DNS缓存 -> 本地hosts文件 -> 路由器DNS缓存 -> 宽带运营商。
@@ -184,9 +179,14 @@
     发起「三次握手」（验证客户端），试图建立TCP/IP链接。
 
     >关闭TCP链接要「四次挥手」。
+
+    - 建立TLS连接
 3. 浏览器发送HTTP请求，服务器响应
 
     服务器端接受请求，根据路径参数、经过后端处理之后，把结果的数据返回浏览器。
+
+- [HTTP缓存](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)
+- [页面解析渲染步骤](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面解析渲染步骤) -> [每一帧渲染流程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)
 
 ### HTTP报文组成
 1. request：
@@ -836,7 +836,7 @@
         `<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">`
 
 ---
-### HTTP持久连接、WebSocket、HTTP/2
+### HTTP持久连接、WebSocket、服务器推送
 1. HTTP持久连接（HTTP长连接，HTTP Persistent Connections，HTTP keep-alive，HTTP connection reuse）
 
     只要任意一端没有明确提出断开连接，则保持TCP连接状态，（不用重复连接）可以完成多个HTTP请求。单个客户端与服务器和代理服务器之间不应该维持超过2个持久连接。
@@ -869,37 +869,13 @@
             `Connection: Upgrade`、`Upgrade: websocket`、`Sec-WebSocket-Accept`
 
     ![websocket-http](./images/websocket-1.jpg)
-3. HTTP/2
+3. 服务器推送
 
-    ><details>
-    ><summary>主要基于SPDY协议演变而来</summary>
-    >
-    >主要区别：
-    >
-    >1. HTTP/2支持明文HTTP传输；SPDY强制使用HTTPS。
-    >2. HTTP/2消息头的压缩算法采用HPACK；SPDY采用DEFLATE。
-    ></details>
+    HTTP/2加入的，其允许服务器在客户端缓存中填充数据，通过一个叫**服务器推送**的机制来提前请求。
 
-    与HTTP/1.1完全语义兼容，进一步减少网络延迟：
+    >还没有收到浏览器的请求，服务器就把各种资源推送给浏览器。e.g. 浏览器只请求了index.html，但是服务器把index.html、style.css、example.png全部发送给浏览器。这样的话，只需要一轮HTTP通信，浏览器就得到了全部资源，提高了性能。
 
-    1. 2进制分帧
-
-        在应用层（HTTP/2）和传输层（TCP/UDP）间增加一个2进制分帧层。
-    2. 多路复用（multiplexing）
-
-        >流（stream）、帧（frame）。
-
-        允许通过单一连接（TCP）建立双向字节流。
-    3. 数据流优先级。
-    4. 头部压缩（header compression）。
-    5. 服务端推送（server push）。
-
-### HTTP/3
-1. 草案状态（2022.02）。
-2. HTTP/3是即将到来的第三个主要版本的HTTP协议。与其前任HTTP/1.1和HTTP/2不同，在HTTP/3中，将弃用TCP协议，改为使用基于UDP协议的QUIC协议（快速UDP网络连接）实现。
-
-    1. 此变化主要为了解决HTTP/2中存在的队头阻塞问题。由于HTTP/2在单个TCP连接上使用了多路复用，受到TCP拥塞控制的影响，少量的丢包就可能导致整个TCP连接上的所有流被阻塞。
-    2. QUIC是一种实验性的网络传输协议，由Google开发，该协议旨在使网页传输更快。
+    ![服务器推送](./images/server-push.png)
 
 ### CORS（cross-origin resource sharing，跨域资源共享）
 >参考：[跨域资源共享 CORS 详解](http://www.ruanyifeng.com/blog/2016/04/cors.html)。
@@ -938,7 +914,7 @@
             1. `Access-Control-Allow-Origin`：值为请求头`Origin`的值或`*`，表明接受跨域请求
 
                 >若`Access-Control-Allow-Credentials`为`true`，则`Access-Control-Allow-Origin`不能为`*`，需要是明确的、与请求网页一致的域名。
-            2. `Access-Control-Allow-Credentials`：（可选）是否允许发送Cookie
+            2. `Access-Control-Allow-Credentials`：（可选）是否允许发送cookie
 
                 >`XMLHttpRequest`要设置`withCredentials`为`true`，浏览器才会发送。
             3. `Access-Control-Expose-Headers`：（可选）CORS请求时，`XMLHttpRequest`只能拿到6个基本字段（`Cache-Control`、`Content-Language`、`Content-Type`、`Expires`、`Last-Modified`、`Pragma`），若需要其他字段，需在此指定
@@ -949,7 +925,9 @@
 
     >非简单请求是那种对服务器有特殊要求的请求。先发起的预检请求可以避免跨域请求对服务器数据产生未预期的副作用；得到服务端允许后，浏览器才会发送正式的跨域请求（与简单请求一致）。
 
-    1. 预检请求
+    1. 预检请求（preflight）
+
+        >一般来说预检请求，指的就是`OPTIONS`请求。它会在浏览器认为即将要执行的请求可能会对服务器造成不可预知的影响时，由浏览器自动发出。通过预检请求，浏览器能够知道当前的服务器是否允许执行即将要进行的请求，只有获得了允许，浏览器才会真正执行接下来的请求。通常preflight请求不需要用户自己去管理和干预，它的发出的响应都是由浏览器和服务器自动管理的。HTTP状态码可以是200、204、等2XX，会被浏览器认为预检请求成功。
 
         1. 浏览器判断为非简单请求，自动发出`OPTIONS`方法的HTTP请求：
 
@@ -963,7 +941,7 @@
                     >若`Access-Control-Allow-Credentials`为`true`，则`Access-Control-Allow-Origin`不能为`*`，需要是明确的、与请求网页一致的域名。
                 2. `Access-Control-Allow-Methods`：服务器支持的所有跨域请求的请求方法
                 3. `Access-Control-Allow-Headers`：（若HTTP请求头有`Access-Control-Request-Headers`则必须）服务器支持的所有跨域请求的请求头字段，以`,`分割
-                4. `Access-Control-Allow-Credentials`：（可选）是否允许发送Cookie
+                4. `Access-Control-Allow-Credentials`：（可选）是否允许发送cookie
 
                     >`XMLHttpRequest`要设置`withCredentials`为`true`，浏览器才会发送。
                 5. `Access-Control-Max-Age`：（可选）本次预检请求的有效期，单位秒
@@ -1007,6 +985,123 @@ HTTP是无状态协议，通过session-cookie或token判断客户端的用户状
         >e.g. 服务A在认证了用户身份后，颁发一个很短过期时间的JWT给客户端，若客户端在向服务B的请求中带上该JWT，则服务B可以通过验证该JWT来判断用户是否有权执行服务B上的相关操作。
 
 >从已经登录的客户端提取出登录信息（session_id或token），传递给其他客户端，再由其他客户端把登录信息注入cookie，就可以转移登录状态到其他客户端。
+
+### HTTP协议迭代（HTTP/3、HTTP/2、HTTP/1）
+![HTTP协议的发展图](./images/http-upgrade.webp)
+
+1. [HTTP/3](https://www.rfc-editor.org/rfc/rfc9114.html)：基于QUIC的HTTP
+
+    传输层使用QUIC协议（快速UDP网络连接）而不是~~TCP~~（建立连接慢；1个TCP连接的队头阻塞）。
+
+    类似于HTTP/2（但HTTP/2通过1个TCP连接运行，所以在TCP层处理的数据包丢失检测和重传会阻止所有流），它是一个**多路复用协议**，QUIC通过UDP（无连接，不需要“握手”、“挥手”，因此快速）运行多个流，并为每个流独立实现数据包丢失检测和重传，因此如果发生错误，只有该数据包中包含数据的流才会被阻止。
+2. [HTTP/2](https://www.rfc-editor.org/rfc/rfc9113.html)：为了更优异的表现
+
+    与HTTP/1.1完全语义兼容，进一步减少网络延迟：
+
+    1. **二进制协议**（二进制分帧层，frame）而不是~~文本协议~~。
+
+        把请求、响应内容拆成多个二进制帧来传输，解析效率高；多个帧可以乱序发送，根据帧首部的流标识可以重新组装。
+    2. **多路复用协议**。
+
+        同域名下所有通信都在一个TCP连接上完成。一个TCP连接可以承载任意数量并行的双向数据流（stream）。移除了HTTP/1中顺序和阻塞的约束。
+    3. **压缩HTTP headers**。因为HTTP头在一系列请求中常常是相似的，其移除了重复和传输重复数据的成本。
+    4. 其允许服务器在客户端缓存中填充数据，通过一个叫**服务器推送**的机制来提前请求。
+
+- HTTPS
+- CORS、CSP
+
+3. [HTTP/1.1](https://www.rfc-editor.org/rfc/rfc9112.html)：标准化的协议
+
+    消除了大量歧义内容并引入了多项改进：
+
+    1. 连接可以复用（HTTP持久连接），节省了多次打开TCP连接加载网页文档资源的时间。
+    2. 增加管线化技术，允许在第一个应答被完全发送之前就发送第二个请求，以降低通信延迟。
+    3. 支持响应分块。
+    4. 引入额外的缓存控制机制。
+    5. 引入内容协商机制，包括语言、编码、类型等。并允许客户端和服务器之间约定以最合适的内容进行交换。
+    6. 凭借`Host`头，能够使不同域名配置在同一个IP地址的服务器上。
+
+    - 1997年-2014年不断扩展
+
+    ```http
+    GET /static/img/header-background.png HTTP/1.1
+    Host: developer.mozilla.org
+    User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:50.0) Gecko/20100101 Firefox/50.0
+    Accept: */*
+    Accept-Language: en-US,en;q=0.5
+    Accept-Encoding: gzip, deflate, br
+    Referer: https://developer.mozilla.org/zh-CN/docs/Glossary/Simple_header
+    ```
+
+    ```http
+    200 OK
+    Age: 9578461
+    Cache-Control: public, max-age=315360000
+    Connection: keep-alive
+    Content-Length: 3077
+    Content-Type: image/png
+    Date: Thu, 31 Mar 2016 13:34:46 GMT
+    Last-Modified: Wed, 21 Oct 2015 18:27:50 GMT
+    Server: Apache
+
+    (image content of 3077 bytes)
+    ```
+4. [HTTP/1.0](https://www.rfc-editor.org/info/rfc1945)：构建可扩展性
+
+    >非官方标准。
+
+    1. 协议版本信息现在会随着每个请求发送（`HTTP/1.0`被追加到了`GET`行）。
+
+        ```http
+        GET /mypage.html HTTP/1.0
+        User-Agent: NCSA_Mosaic/2.0 (Windows 3.1)
+        ```
+    2. 状态码会在响应开始时发送，使浏览器能了解请求执行成功或失败，并相应调整行为（如更新或使用本地缓存）。
+
+        ```http
+        200 OK
+        Date: Tue, 15 Nov 1994 08:12:31 GMT
+        Server: CERN/3.0 libwww/2.17
+        Content-Type: text/html
+        <HTML>
+        一个包含图片的页面
+          <IMG SRC="/myimage.gif">
+        </HTML>
+        ```
+    3. 引入了HTTP headers概念，无论是对于请求还是响应，允许传输元数据，使协议变得非常灵活，更具扩展性。
+
+        在新HTTP headers的帮助下，具备了传输除纯文本HTML文件以外其他类型文档的能力（凭借`Content-Type`头）。
+
+        ```http
+        GET /myimage.gif HTTP/1.0
+        User-Agent: NCSA_Mosaic/2.0 (Windows 3.1)
+        ```
+
+        ```http
+        200 OK
+        Date: Tue, 15 Nov 1994 08:12:32 GMT
+        Server: CERN/3.0 libwww/2.17
+        Content-Type: text/gif
+        (这里是图片内容)
+        ```
+5. HTTP/0.9：单行协议
+
+    >最初版本的HTTP协议并没有版本号，后来它的版本号被定位在0.9以区分后来的版本。
+
+    1. 请求由单行指令构成，以唯一可用方法`GET`开头，其后跟目标资源的路径（一旦连接到服务器，协议、服务器、端口号这些都不是必须的）。
+
+        ```http
+        GET /mypage.html
+        ```
+    2. 响应也极其简单的：只包含响应文档本身。
+
+        ```http
+        <html>
+          这是一个非常简单的 HTML 页面
+        </html>
+        ```
+
+        只能传HTML文件。一旦出现问题，也只能返回包含问题描述的HTML文件。
 
 ### 其他网络概念
 1. URI = URL + URN

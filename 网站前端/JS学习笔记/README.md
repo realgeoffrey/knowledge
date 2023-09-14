@@ -11,10 +11,10 @@
     1. [继承](#继承)
     1. [内存机制](#内存机制)
     1. [内存泄漏](#内存泄漏)
-    1. [深复制（拷贝）实现思路](#深复制拷贝实现思路)
+    1. [深复制（深拷贝）实现思路](#深复制深拷贝实现思路)
     1. [数据类型转换](#数据类型转换)
     1. [`||`和`&&`](#和)
-    1. [事件循环（event loop）](#事件循环event-loop)
+    1. [浏览器的`事件循环（event loop）`](#浏览器的事件循环event-loop)
     1. [定时器 && 重绘函数](#定时器--重绘函数)
 1. [功能归纳](#功能归纳)
 
@@ -60,7 +60,6 @@
 ></details>
 
 ---
-
 ## 性能原理
 
 ### 函数
@@ -178,60 +177,6 @@
 
             1. 若Func返回**引用数据类型**，则这个引用数据类型的值赋值给newObj。
             2. 若Func返回基本数据类型或返回this或无返回，则obj赋值给newObj。
-
-        ><details>
-        ><summary>模拟实现一个<code>new</code></summary>
-        >
-        >```javascript
-        >// 第一个参数是构造函数，后面是参数
-        >// 不支持class的构造函数，因为class必须`new`创建，否则报错。也不支持new.target。
-        >function objectFactory () {
-        >  const obj = new Object()
-        >  const Constructor = Array.prototype.shift.call(arguments)
-        >  Object.setPrototypeOf(obj, Constructor.prototype)
-        >  const ret = Constructor.apply(obj, arguments)
-        >
-        >  return (typeof ret === 'object' && ret !== null) || typeof ret === 'function' ? ret : obj
-        >}
-        >
-        >/* 使用测试 */
-        >function A (a, b) {
-        >  this.a = a
-        >  this.b = b
-        >}
-        >function B (a, b) {
-        >  this.a = a
-        >  this.b = b
-        >  return null
-        >}
-        >function C (a, b) {
-        >  this.a = a
-        >  this.b = b
-        >  return 1
-        >}
-        >function D (a, b) {
-        >  this.a = a
-        >  this.b = b
-        >  return function () {
-        >    return a + b
-        >  }
-        >}
-        >function E (a, b) {
-        >  this.a = a
-        >  this.b = b
-        >  return {
-        >    otherA: a,
-        >    otherB: b
-        >  }
-        >}
-        >
-        >console.log(objectFactory(A, 'a1', 'b1'), new A('a1', 'b1'))
-        >console.log(objectFactory(B, 'a1', 'b1'), new B('a1', 'b1'))
-        >console.log(objectFactory(C, 'a1', 'b1'), new C('a1', 'b1'))
-        >console.log(objectFactory(D, 'a1', 'b1'), new D('a1', 'b1'))
-        >console.log(objectFactory(E, 'a1', 'b1'), new E('a1', 'b1'))
-        >```
-        ></details>
         </details>
 6. <a name="函数-参数"></a>参数
 
@@ -280,20 +225,43 @@
 
         >e.g. `function func ({ para1 = 'default', para2 } = {}) {}`
     4. 参数的数量有限制，如：有些JS引擎限制在`Math.pow(2, 16)`。
+
+    - 设计函数的参数时，有2种方式：①多参数；②单参数是对象。
+
+        可选的参数最好设计成对象形式，方便将来扩展。
+
+        ```javascript
+        // 方便扩展
+        function func1 (必填1, 必填2, { 可选1 = '默认值1' } = {}) {}
+        function func2 ({ 必填1, 必填2, 可选1 = '默认值1' } = {}) {}
+
+        // 不方便扩展
+        function func3 (必填1, 必填2, 可选1 = '默认值1') {}
+        ```
 7. [变量、`this`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#变量this)的取值
 
-- 设计函数的参数时，有2种方式：①多参数；②单参数是对象。
+- <details>
 
-    可选的参数最好设计成对象形式，方便将来扩展。
+    <summary>复制一个函数：<code>eval(`(${func.toString()})`)</code>或<code>new Function("return " + func.toString())()</code></summary>
+
+    >仅根据`func.toString()`创建，不包含`func`额外添加的属性。
 
     ```javascript
-    // 方便扩展
-    function func1 (必填1, 必填2, { 可选1 = '默认值1' } = {}) {}
-    function func2 ({ 必填1, 必填2, 可选1 = '默认值1' } = {}) {}
-
-    // 不方便扩展
-    function func3 (必填1, 必填2, 可选1 = '默认值1') {}
+    function cloneFunction(func) {
+      try {
+        // 或：return new Function("return " + func.toString())();
+        return eval(`(${func.toString()})`); // 不支持：`a={b(){}};`中`a.b`方法（以及后面catch还报错的）
+      } catch {
+        try {
+          // 或：return new Function("return function " + func.toString())();
+          return eval(`(function ${func.toString()})`); // 不支持：任何native code方法（包括.bind新创建的函数）
+        } catch {
+          return func; // 暂不处理、直接返回：任何native code方法（包括.bind新创建的函数）
+        }
+      }
+    }
     ```
+    </details>
 
 ### 变量、`this`
 1. `变量`（[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)）
@@ -567,7 +535,34 @@
 
     - 类似的有：`setTimeout/setInterval`的第一个参数是字符串、`new Function`的最后一个字符串参数，都能动态生成代码，都能在运行期修改书写期的词法作用域。
 
-    >动态执行JS脚本的方式：`eval`、`new Function`、Node.js的`vm`模块。
+    ><details>
+    ><summary>动态执行JS脚本的方式（执行字符串）：<code>eval</code>、<code>new Function</code>、<code>setTimeout/setInterval</code>、Node.js的<code>vm</code>模块。</summary>
+    >
+    >e.g.
+    >
+    >```javascript
+    >// 全部都极度不安全，不建议使用
+    >
+    >var a = 'console.log("aa")';
+    >var b = 'console.log("bb")';
+    >var c = 'console.log("cc")';
+    >var d = 'console.log("dd")';
+    >
+    >eval(a);
+    >new Function(b)();
+    >setTimeout(c, 0);
+    >setInterval(d, 0);  // 需要clearInterval
+    >```
+    >
+    >```javascript
+    >// Node.js
+    >
+    >var e = 'console.log("ee")';
+    >const vm = require("node:vm");
+    >const script = new vm.Script(e);
+    >script.runInThisContext();
+    >```
+    ></details>
 2. `with`
 
     ```javascript
@@ -833,7 +828,7 @@
 
                     >对象：`obj = Object.assign({}, obj)`（不推荐用：~~`obj = Object.create(obj)`~~）
                 4. 一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)赋值
-            2. [深复制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#深复制拷贝实现思路)。
+            2. [深复制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#深复制深拷贝实现思路)。
 4. <details>
 
     <summary>存储、值传递步骤举例</summary>
@@ -915,26 +910,27 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
 - 关于内存优化的重要性
 
-    1. 减少OOM，提高应用稳定性
+    1. 减少OOM（Out Of Memory，内存不足），提高应用稳定性
     2. 减少卡顿，提高应用流畅度
     3. 减少内存占用，提高应用后台运行时的存活率
     4. 减少异常发生和代码逻辑隐患
 
-### 深复制（拷贝）实现思路
+### 深复制（深拷贝）实现思路
 >参考：[深入剖析JavaScript的深复制](http://jerryzou.com/posts/dive-into-deep-clone-in-javascript/)。
 
-1. [递归赋值](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)（最全面方式）
+1. 递归赋值（最全面方式）
 
     >深复制要处理的坑：循环引用、各种引用数据类型、执行性能。
-
-    - [结构化克隆算法](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)
 2. 针对**仅能够被JSON直接表示的数据结构（对象、数组、数值、字符串、布尔值、null）**：
 
     `JSON.parse(JSON.stringify(obj));`
+3. [`structuredClone(value[, { transfer }])`](https://developer.mozilla.org/zh-CN/docs/Web/API/structuredClone)
+
+    使用[结构化克隆算法](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)将给定的值进行深拷贝（注意支持的类型，对不支持的类型会导致抛出异常）。
 
 >不考虑原型链。
 
-3. `Proxy`
+4. `Proxy`
 
 ### 数据类型转换
 >参考：[阮一峰：数据类型转换](http://javascript.ruanyifeng.com/grammar/conversion.html)、[ecma-262等于比较](https://262.ecma-international.org/#sec-islooselyequal)。
@@ -1043,7 +1039,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         | :--- | :--- | :--- |
         | Undefined | 无 | `undefined` |
         | Boolean | `true` | `false` |
-        | Number | 任何非零`Number`类型的值（包括无穷大） | `0`、`-0`、`+0`、`NaN` |
+        | Number | 任何非零`Number`类型的值（包括无穷大） | `0`、`-0`、`+0`、（+-）`NaN` |
         | String | 任何非空`String`类型的值 | `''` |
         | Symbol | 任何`Symbol`类型的值 | 无 |
         | BigInt | 任何非零`BigInt`类型的值 | `0n`、`-0n`、`+0n` |
@@ -1124,7 +1120,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         若多个`&&`，则取第一个为false的值（`Boolean(expr)`）或最后一个值。
     2. 在Boolean环境（如：if的条件判断）中使用：两个操作结果都为true时返回true，否则返回false。
 
-### 事件循环（event loop）
+### 浏览器的`事件循环（event loop）`
 >参考：[阮一峰：再谈Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)、[Help, I’m stuck in an event-loop.](https://vimeo.com/96425312)、[Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)。
 
 >不是在ECMAScript中定义，而是在[HTML Standard](https://html.spec.whatwg.org/#event-loops)中定义。
@@ -1158,11 +1154,11 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         1. 先挂起到（对应种类的）工作线程等待结果，主线程不会因此阻塞；有结果后，发起通知进入（对应种类的）「任务队列」（task queue）；「执行栈」（execution context stack）为空后会读取并执行「任务队列」的通知对应的回调函数。
 
             >相同类型的异步工作线程是串行工作；不同类型的异步工作线程互不影响执行。
-        2. 异步任务分为两种类型：macrotask（task）、microtask（job）
+        2. 异步任务分为两种类型：
 
-            1. macrotask一般包括:
+            1. macrotask（task，宏任务）一般包括:
 
-                1. `I/O`
+                1. I/O、UI交互
 
                     监听的事件。
                 2. `requestAnimationFrame`
@@ -1170,16 +1166,13 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
                 4. `setTimeout`、`setInterval`、`setImmediate`
 
                     在当前「任务队列」的尾部，添加事件。
-                5. `AJAX`
-            2. microtask一般包括:
+                5. AJAX、`fetch`
+            2. microtask（job，微任务）一般包括:
 
-                1. `process.nextTick`（Node.js）
-
-                    在当前「执行栈」的尾部——读取"任务队列"之前，添加事件。
-                2. `Promise`（`Promise.prototype.then/catch/finally(回调)`的回调）
+                1. `Promise`（`Promise.prototype.then/catch/finally(回调)`的回调）
 
                     `new Promise(回调)`的回调、`Promise.all/race/any/allSettled([回调])`的回调、`Promise.resolve/reject()`，都是同步任务。
-                3. `async-await`（只有`await`是异步）
+                2. `async-await`（只有`await`是异步）
 
                     `await`后若是方法则同步执行该方法，执行结果交给`await`后才是microtask（无论结果如何）。
 
@@ -1255,30 +1248,10 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
                     >// =>a b c then1 then2 d
                     >```
                     ></details>
-                4. `for-await-of`的方法体执行和迭代器遍历
-                5. `MutationObserver`
+                3. `for-await-of`的方法体执行和迭代器遍历
+                4. `MutationObserver`
+                5. `queueMicrotask`
 
-            - macrotask、microtask的事件循环运行机制：
-
-                1. 检查macrotask队列：
-
-                    1. 选择最早加入的任务X，设置为「目前运行的任务」并进入「执行栈」；若macrotask队列为空，则跳到第4步；
-
-                        >最初时刻：「执行栈」为空，`<script>`作为第一个macrotask被运行。
-                    2. 「执行栈」运行任务X（运行对应的回调函数）；
-                    3. 设置「目前运行的任务」为`null`，从macrotask队列中移除任务X；
-                    4. 跳出macrotask队列、进行浏览器渲染。
-                2. 浏览器渲染；
-                3. 检查microtask队列：
-
-                    1. 选择最早加入的任务a，设置为「目前运行的任务」并进入「执行栈」；若microtask队列为空，则跳到第5步；
-                    2. 「执行栈」运行任务a（运行对应的回调函数）；
-                    3. 设置「目前运行的任务」为`null`，从microtask队列中移除任务a；
-                    4. 跳到第1步（检查下一个最早加入的microtask任务）；
-                    5. 跳出microtask队列、进行检查macrotask队列。
-            >- macrotask和microtast选择
-            >
-            >    若想让一个任务立即执行，则把它设置为microtask，除此之外都用macrotask。因为虽然JS是异步非阻塞，但在一个事件循环中，microtask的执行方式基本上是用同步的。
     - 空闲任务（线程空闲时才会执行，优先级非常低）：
 
         1. `requestIdleCallback`
@@ -1290,6 +1263,27 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         1. 所有同步任务都在主线程上执行，形成一个「执行栈」，串行执行直到「执行栈」为空（只有前一个任务执行完毕，才能执行后一个任务）。
         2. 主线程之外，还存在「任务队列」。「执行栈」遇到异步任务则把其挂起到异步线程，只要异步线程有了运行结果，就在「任务队列」之中放置通知。
     2. 一旦「执行栈」中的所有同步任务执行完毕，系统就会（按照macrotask、microtask的事件循环运行机制）读取「任务队列」，把**一个**通知对应的回调函数加入执行栈。跳回步骤1（「执行栈」又有内容可以执行）。
+
+        - macrotask、microtask的事件循环运行机制：
+
+            1. 检查macrotask队列：
+
+                1. 选择最早加入的任务X，设置为「目前运行的任务」并进入「执行栈」；若macrotask队列为空，则跳到第4步；
+
+                    >最初时刻：「执行栈」为空，`<script>`作为第一个macrotask被运行。
+                2. 「执行栈」运行任务X（运行对应的回调函数）；
+                3. 设置「目前运行的任务」为`null`，从macrotask队列中移除任务X；
+                4. 跳出macrotask队列、进行浏览器渲染。
+            2. 检查microtask队列：
+
+                1. 选择最早加入的任务a，设置为「目前运行的任务」并进入「执行栈」；若microtask队列为空，则跳到第5步；
+                2. 「执行栈」运行任务a（运行对应的回调函数）；
+                3. 设置「目前运行的任务」为`null`，从microtask队列中移除任务a；
+                4. 跳到第1步（检查下一个最早加入的microtask任务）；
+                5. 跳出microtask队列、进行检查macrotask队列。
+            3. 浏览器渲染。
+
+            >macrotask和microtast选择：若想让一个任务立即执行，则把它设置为microtask，除此之外都用macrotask。因为虽然JS是异步非阻塞，但在一个事件循环中，microtask的执行方式基本上是用同步的。
 
     ![事件循环图](./images/event-loop-1.png)
 4. 由于异步函数是立刻返回，异步事务中发生的错误是无法通过外层的：`try-catch`、`Promise`、`async-await`来捕捉（但可以捕获`await`的`reject`）。
@@ -1360,7 +1354,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
     >`setInterval`、`setTimeout`有最短延迟时间、最长延迟时间：
     >
-    >1. 最短延迟时间大概是>4ms（从其他地方调用`setInterval`，或在嵌套函数达到特定深度时调用`setTimeout`）。
+    >1. 最短延迟时间大概是>4ms（从其他地方调用`setInterval`，或在嵌套函数达到特定深度时调用`setTimeout`）。浏览器和Node.js等的最短时间不同。
     >2. 若处于未激活窗口，则最短延迟时间可能扩大到>1000ms。
     >3. 有最大延迟时间，若延迟时间设置>`Math.pow(2, 31) - 1`ms，则延时溢出导致立即执行回调函数。
 2. 重绘函数（`requestAnimationFrame`）
@@ -1464,9 +1458,8 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
             >所有基本包装类型都返回`'object'`。
         9. `null` -> `'object'`
 
-        >1. 因为`typeof null`返回`'object'`，因此typeof不能判断是否是引用数据类型。
+        >1. 因为`typeof null`返回`'object'`，因此要特别判断一下null。
         >2. ie8-的DOM节点的方法返回不是~~function~~，而是`object`，因此只能用`方法名 in DOM`检测DOM是否拥有某方法。
-
 3. `对象 instanceof 构造函数或类`
 
     >可用`构造函数或类.prototype.isPrototypeOf(对象)`代替。
@@ -1501,7 +1494,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 >`obj`为对象实例，`arr`为数组实例。
 ></details>
 
->1. `continue`应用在循环（`while`、`do-while`、`for`、`for-in`、`for-of`），表示跳过当次循环；`break`应用在循环、`switch`，表示跳出整个循环。
+>1. `continue`应用在循环（`while`、`do-while`、`for`、`for-in`、`for-of`），表示跳过当次循环；`break`应用在循环、`switch-case`，表示跳出整个循环。
 >2. `forEach`、`map`、`filter`、`some`、`every`无法中止循环（`return`只结束回调函数）。
 >3. `$.each/$dom.each`跳出循环用`return true`（功能等价于：`continue`）、`return false`（功能等价于：`break`）。
 
@@ -1872,8 +1865,8 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 1. [CORS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#corscross-origin-resource-sharing跨域资源共享)（服务端需要支持）
 
     >1. 不受同源政策限制。
-    >2. ie9-的jQuery的非jsonp的AJAX跨域，要添加`jQuery.support.cors = true`。
-2. jsonp（服务端需要支持）
+    >2. ie9-的jQuery的非JSONP的AJAX跨域，要添加`jQuery.support.cors = true`。
+2. JSONP（json with padding）（服务端需要支持）
 
     >1. 不受同源政策限制。
     >2. 只支持**GET**请求。
@@ -1881,13 +1874,13 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     网页通过添加一个`<script>`，向服务器发起文档请求（不受同源政策限制）；服务器收到请求后，将数据放在一个指定名字的回调函数里传回网页直接执行。
 
     ><details>
-    ><summary>jQuery在它的<code>AJAX</code>方法中封装了<code>jsonp</code>功能</summary>
+    ><summary>jQuery在它的<code>AJAX</code>方法中封装了<code>JSONP</code>功能</summary>
     >
     >```javascript
     >$.ajax({
     >    url: '接口地址',
     >    dataType: 'jsonp',
-    >    jsonp: '与服务端约定的支持jsonp方法',  // 前端唯一需要额外添加的内容
+    >    jsonp: '与服务端约定的支持JSONP方法',  // 前端唯一需要额外添加的内容
     >    data: {},
     >    success: function (data) {
     >        // data为跨域请求获得的服务端返回数据
@@ -2025,11 +2018,12 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
             1. 新建或更新cookie（一条命令只能设置一条cookie）类似于服务端`Set-Cookie`响应头（一条命令可以设置多条cookie）：
 
-                `名=值[; expires=绝对时间（时间戳）][; max-age=相对时间（秒）][; domain=域名][; path=路径][; secure][; samesite=Strict或Lax][; priority=low或medium或high]`
+                `名=值[; expires=绝对时间（时间戳）][; max-age=相对时间（秒）][; domain=域名][; path=路径][; secure][; samesite=Strict或Lax或None][; priority=low或medium或high]`
 
                 >1. `Set-Cookie`可以额外设置`HttpOnly`属性；客户端不能设置、也不能查看和操作被设置为`HttpOnly`的cookie。
-                >2. 非安全站点（HTTP）不能在cookie中设置`secure`，若设置，则此条新建或更新cookie无效。
-                >3. `priority`是Chrome的提案。
+                >2. 标记为`Secure`的cookie只能通过被HTTPS协议加密过的请求发送给服务端。非安全站点（HTTP）不能在cookie中设置`secure`，若设置，则此条新建或更新cookie无效。
+                >3. `SameSite`是否应该限制在跨站点请求中发送。
+                >4. `priority`是Chrome的提案。
             2. 读取cookie等同于客户端`Cookie`请求头：
 
                 展示所有cookie`名1=值1[; 名2=值2]`（无法查看其他信息）。
@@ -2618,8 +2612,18 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     >2. 可以用`(function () {'use strict';/* 执行内容 */}());`匿名函数方式使用严格模式。
 3. 全等`===`（不全等`!==`）与等号`==`（不等`!=`）的区别
 
+    >[JS比较表](https://dorey.github.io/JavaScript-Equality-Table/)。
+
     1. 当比较的两个值的类型不同时，`==`和`!=`都会强制[类型转换](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#数据类型转换)，再进行转换后值的比较。
-    2. 用`===`和`!==`则不会转换，若类型不同则直接返回`false`（`switch`语句比较值是全等模式比较）。
+    2. 用`===`和`!==`则不会转换，若类型不同则直接返回`false`。
+
+        >`NaN`是唯一不全等于自己的值；`+0`和`-0`全等相等。
+
+        使用`===`进行判断的内置方法：`Array.prototype.indexOf/lastIndexOf(查找的元素)`、`「TypedArrays」.prototype.indexOf/lastIndexOf(查找的元素)`、`switch-case`。
+
+    - 通过类似`===`判断是否相同，但额外能判断`NaN === NaN`成立的内置方法：`Array.prototype.includes(查找的元素)`、`「TypedArrays」.prototype.includes(查找的元素)`、`Map`（不重复的键）、`Set`（不重复的值）。
+
+    - `Object.is`与`===`区别：`+0`与`-0`返回`false`；（+-）`NaN`与`NaN`返回`true`。
 
     >1. 建议：都用`===`或`!==`进行比较。
     >2. `>=`等价于：`== || >`；`<=`等价于：`== || <`。
@@ -2705,41 +2709,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         ```
 
     - 其他数据类型
-7. 长字符串拼接使用`Array.prototype.join()`，而不使用`+`
-
-    1. `.join()`性能好（建议方式）
-
-        <details>
-        <summary>e.g.</summary>
-
-        ```javascript
-        var arr = [],
-            i;
-
-        for (i = 0; i < 100; i++) {
-            arr[i] = '字符串' + i + '字符串';
-        }
-
-        return arr.join('');
-        ```
-        </details>
-    2. `+`性能差（不推荐）
-
-        <details>
-        <summary>e.g.</summary>
-
-        ```javascript
-        var text = '',
-            i;
-
-        for (i = 0; i < 100; i++) {
-            text = text + '字符串' + i + '字符串';
-        }
-
-        return text;
-        ```
-        </details>
-8. 注释规范
+7. 注释规范
 
     1. 单行注释：`//`后不空格
 
@@ -2779,7 +2749,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
             return result;
         }
         ```
-9. JS编程风格总结（programming style）
+8. JS编程风格总结（programming style）
 
     >参考：[阮一峰：JavaScript 编程风格](http://javascript.ruanyifeng.com/grammar/style.html)。
 
@@ -2797,12 +2767,12 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     12. 构造函数的函数名，采用首字母大写；其他函数名，一律首字母小写。
     13. 不要使用自增（`++`）和自减（`--`）运算符，用`+= 1`和`-= 1`代替。
     14. 不省略大括号。
-10. JS编码规范
+9. JS编码规范
 
     绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/javascript.md#javascript编码规范)。
 
     >可以设置为IDEs的**Reformat Code**的排版样式。
-11. 用户体验
+10. 用户体验
 
     1. 平稳退化（优雅降级）：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
 
@@ -2832,11 +2802,6 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
         1. 关于「性能」的写法建议，更多的是一种编程习惯（微优化）：写出更易读、性能更好的代码。
         2. 在解决页面性能瓶颈时，要从URL输入之后就进行[网站性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#网站性能优化)；避免在处理网页瓶颈时进行~~微优化~~。
-
-            >1. 即时编译（just in time compile，JIT）：JS引擎会在JS运行过程中逐渐重新编译部分代码为机器码，使代码运行更快。
-            >
-            >    运行前编译（ahead of time，AOT）：将较高级别的编程语言或中间表示形式，编译为本机机器代码的行为，生成的二进制文件可以直接在本机上执行。
-            >2. 微优化（micro-optimizations）：尝试写出认为会让浏览器稍微更快速运行的代码或调用更快的方法。
 
 ### 编程实践（programming practices）
 1. UI层的松耦合
@@ -3020,9 +2985,9 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         (0, obj.func)() // window
         // 返回最后一个操作对象的值，返回一个方法
         ```
-    2. `if(var a = 1, b = 2, c = 3, false){/* 不执行 */}`：
+    2. `if(var a = 1, b = 2, c = 3, false){/* 不执行 */}`（已语法报错）：
 
-        >`var`语句中的逗号不是逗号操作符，因为它不存在于一个表达式中。尽管从实际效果来看，那个逗号同逗号运算符的表现很相似。但它是`var`语句中的一个特殊符号，用于把多个变量声明结合成一个。
+        >`var/let/const`语句中的逗号不是逗号操作符，因为它不存在于一个表达式中。尽管从实际效果来看，那个逗号同逗号运算符的表现很相似。但它是`var/let/const`语句中的一个特殊符号，用于把多个变量声明结合成一个。
     3. `var a = [10, 20, 30, 40][1, 2, 3]; // 40`：
 
         1. `[10, 20, 30, 40]`被解析为数组；

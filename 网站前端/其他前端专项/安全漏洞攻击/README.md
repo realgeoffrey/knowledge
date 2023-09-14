@@ -14,13 +14,15 @@
             攻击成功后，能够：盗取用户cookie、破坏页面结构、重定向到其它地址、利用用户机器执行各种非客户意愿的行为（如：发起请求、向其他网站发起DDoS攻击）等。
     2. 防御措施：
 
-        1. 过滤用户输入（白名单）
+        1. 过滤用户输入（白名单HTML标签和标签属性）
+
+            去除或转义（如：HTML的字符实体）。
 
             >e.g. [js-xss](https://github.com/leizongmin/js-xss)
         2. HttpOnly
 
             cookie设置为HttpOnly不能在客户端使用~~document.cookie~~访问。
-        3. `Content-Security-Policy`设置不允许加载白名单外的域名资源
+        3. 开启CSP（Content-Security-Policy，内容安全策略），设置不允许加载白名单外的域名资源
 
             >指令细节：[MDN: Content-Security-Policy](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Security-Policy)。
 
@@ -43,9 +45,7 @@
             攻击成功后，能够：进行所有目标网站的请求操作。
     2. 防御措施
 
-        1. 检查HTTP请求的Referer字段
-
-            Referer：请求来源地址。
+        1. 检查HTTP请求的Referer字段（Referer：请求来源地址），若不是信任的请求来源地址，则拒绝
 
             >地址栏直接输入内容不会提供`Referer`。
         2. 添加校验token
@@ -57,6 +57,8 @@
 
             保证用户必须和目标网站进行交互后才可以发起请求。
         4. 跨域请求的限制（利用CORS等）
+        5. cookie设置`SameSite`属性（cookie不随着跨域请求发送）
+        6. `POST`请求代替`GET`请求，
 3. 其他攻击
 
     1. 注入型劫持

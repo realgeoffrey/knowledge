@@ -240,7 +240,7 @@
             new RegExp('\\w', 'g').source === '\\w'; // true
             ```
             </details>
-        2. `lastIndex`
+        2. `实例.lastIndex`
 
             下次匹配开始的字符串索引位置。只有正则表达式使用了表示全局检索的`g`标志时，`lastIndex`才起作用。
         3. `RegExp.prototype.flags`
@@ -264,6 +264,9 @@
         9. `RegExp.prototype.dotAll`
 
             是否设置了`s`修饰符。
+        10. `RegExp.prototype.hasIndices`
+
+            是否设置了`d`修饰符。
 2. String对象的方法
 
     1. `str.match(regexp)`：

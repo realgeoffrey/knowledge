@@ -13,15 +13,10 @@
 
         1. [多异步返回后才执行总回调函数（利用jQuery的`$.ajax`）](#原生js多异步返回后才执行总回调函数利用jquery的ajax)
         1. [对象合二为一（改变第一个参数）](#原生js对象合二为一改变第一个参数)
-        1. [深复制](#原生js深复制)
         1. [通过类名获取DOM](#原生js通过类名获取dom)
     1. 可用[js-cookie](https://github.com/js-cookie/js-cookie)代替
 
         1. [操作cookie](#原生js操作cookie)
-    1. 可用[lodash](https://github.com/lodash/lodash)或[underscore](https://github.com/jashkenas/underscore)代替
-
-        1. [防抖函数](#原生js防抖函数)
-        1. [节流函数](#原生js节流函数)
     1. 可用js原生代替
 
         1. [实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`](#原生js实现类似jquery的htmlbodyanimatescrollleft-像素-scrolltop-像素-毫秒)
@@ -32,7 +27,6 @@
 
     1. [`requestAnimationFrame`和`cancelAnimationFrame`](#原生jsrequestanimationframe和cancelanimationframe的polyfill)
     1. [`Date.now`](#原生jsdatenow的polyfill)
-    1. [`Object.create`](#原生jsobjectcreate的polyfill)
     1. [`Array.isArray`](#原生jsarrayisarray的polyfill)
     1. [`Array.prototype.map`](#原生jsarrayprototypemap的polyfill)
     1. [`Function.prototype.bind`](#原生jsfunctionprototypebind的polyfill)
@@ -481,66 +475,6 @@ function extend(target, options) {
 >2. 可以使用[deepmerge](https://github.com/KyleAMathews/deepmerge)，完全替代。
 >3. 可以使用jQuery的`$.extend(对象1, 对象2)`，完全替代。
 
-### *原生JS*深复制
-```javascript
-/**
- * 深复制。针对：基本数据类型、数组、基本对象、正则对象、方法（方法的属性不再深复制）
- * @param {*} obj - 被深复制的内容
- * @returns {*} - 深复制后的内容
- */
-function deepCopy (obj) {
-  if (typeof obj === 'function') {  // Function
-    const newFunc = eval('(' + obj.toString() + ')');
-    for (let key in obj) {
-      newFunc[key] = obj[key]; // 避免「调用栈溢出」，方法的属性不再深复制
-    }
-
-    return newFunc;
-  } else if (typeof obj !== 'object' || obj === null) { // 基本数据类型
-
-    return obj;
-  } else if (Object.prototype.toString.call(obj) === '[object RegExp]') { // RegExp
-    const g = obj.global ? 'g' : '';
-    const m = obj.multiline ? 'm' : '';
-    const i = obj.ignoreCase ? 'i' : '';
-
-    return new RegExp(obj.source, g + i + m);
-  } else if (Array.isArray(obj)) {  // Array
-
-    return obj.map(() => deepCopy(obj));  // 多层深复制，容易产生「调用栈溢出」
-  } else {  // Object
-    const newObj = {};
-    for (let key in obj) {
-      newObj[key] = deepCopy(obj[key]); // 多层深复制，容易产生「调用栈溢出」
-    }
-
-    return newObj;
-  }
-}
-
-
-/* 使用测试 */
-var a = {
-  b: [],
-  c: null,
-  d: undefined,
-  e: Symbol('e'),
-  f: {},
-  g: {
-    h1: function () {},
-    h2: function h () {}
-  },
-  i: /g/gim,
-  j: 1n
-};
-a.g.h1.k = [1, 2];
-
-var b = deepCopy(a);
-console.log(b);
-```
->1. 可以使用lodash的`_.clone(value)`（浅复制）、`_.cloneDeep(value)`（深复制），完全替代。
->2. 可以使用jQuery的`$.extend(true, {}, 被复制对象)`，完全替代。
-
 ### *原生JS*通过类名获取DOM
 ```javascript
 /**
@@ -724,205 +658,6 @@ var cookieFuc = {
 };
 ```
 >可以使用[js-cookie](https://github.com/js-cookie/js-cookie)，完全替代。
-
-### *原生JS*防抖函数
->来自：[underscore](https://github.com/jashkenas/underscore)。
-
-```javascript
-/**
- * 函数连续调用时，间隔时间必须大于或等于wait，func才会执行
- * @param {Function} func - 传入函数
- * @param {Number} wait - 函数触发的最小间隔
- * @param {Boolean} [immediate] - 设置为ture时，调用触发于开始边界而不是结束边界
- * @returns {Function} - 返回客户调用函数
- */
-function debounce(func, wait, immediate) {
-    if (typeof Date.now !== 'function') {
-        Date.now = function () {
-            return new Date().getTime();
-        };
-    }
-
-    var timeout, args, context, timestamp, result;
-
-    var later = function () {
-        // 据上一次触发时间间隔
-        var last = Date.now() - timestamp;
-
-        // 上次被包装函数被调用时间间隔last小于设定时间间隔wait
-        if (last < wait && last >= 0) {
-            timeout = setTimeout(later, wait - last);
-        } else {
-            timeout = null;
-
-            // 若设定为immediate===true，则因为开始边界已经调用过了此处无需调用
-            if (!immediate) {
-                result = func.apply(context, args);
-
-                if (!timeout) {
-                    context = args = null;
-                }
-            }
-        }
-    };
-
-    return function () {
-        context = this;
-        args = arguments;
-        timestamp = Date.now();
-
-        var callNow = immediate && !timeout;
-
-        if (!timeout) {
-            timeout = setTimeout(later, wait);
-        }
-        if (callNow) {
-            result = func.apply(context, args);
-            context = args = null;
-        }
-
-        return result;
-    };
-}
-
-
-/* 使用测试 */
-var a = debounce(function () {  // 不要使用箭头函数，因为实现代码中有用`apply`
-    console.log(1);
-}, 1000);
-
-$(window).on('scroll', a);
-```
->可以使用lodash的`_.debounce(func, [wait=0], [options={}])`，完全替代。
-
-### *原生JS*节流函数
-1. 简单实现
-
-    ```typescript
-    class Throttle<T extends any[]> {
-      constructor(func: (...args: T) => void, delay: number = 300, atBegin: boolean = true) {
-        this.delay = delay;
-        this.atBegin = atBegin;
-        this.func = func;
-      }
-
-      private delay: number;
-      private atBegin: boolean;
-      private func: (...args: T) => void;
-
-      private timer: number = 0;
-
-      // 刷新执行
-      public flush: (...args: T) => void = (...args: T) => {
-        if (!this.timer) {
-          this.atBegin && this.func.apply(this, args);
-          this.timer = setTimeout(() => {
-            !this.atBegin && this.func.apply(this, args);
-            this.timer = 0;
-          }, this.delay);
-        }
-      };
-
-      // 取消执行
-      public cancel: () => void = () => {
-        if (this.timer) {
-          clearTimeout(this.timer);
-          this.timer = 0;
-        }
-      };
-
-      // 判断是否节流中
-      public isPending: () => boolean = () => {
-        return this.timer !== 0;
-      };
-    }
-
-
-    /* 使用测试 */
-    const a = new Throttle((a: number, b: string)=>{})
-    a.flush(1, '');a.flush(1, '');
-    a.isPending();
-    a.cancel()
-    ```
-2. 来自：[underscore](https://github.com/jashkenas/underscore)：
-
-    ```javascript
-    /**
-     * 函数连续调用时，func在wait时间内，执行次数不得高于1次
-     * @param {Function} func - 传入函数
-     * @param {Number} wait - 函数触发的最小间隔
-     * @param {Object} [options] - 若想忽略开始边界上的调用，则传入{leading: false}；若想忽略结尾边界上的调用，则传入{trailing: false}
-     * @returns {Function} - 返回客户调用函数
-     */
-    function throttle(func, wait, options) {
-        if (typeof Date.now !== 'function') {
-            Date.now = function () {
-                return new Date().getTime();
-            };
-        }
-
-        var context, args, result;
-        var timeout = null;
-        var previous = 0;   // 上次执行时间点
-
-        if (!options) {
-            options = {};
-        }
-
-        // 延迟执行函数
-        var later = function () {
-            // 若设定了开始边界不执行选项，上次执行时间始终为0
-            previous = options.leading === false ? 0 : Date.now();
-            timeout = null;
-            result = func.apply(context, args);
-            if (!timeout) {
-                context = args = null;
-            }
-        };
-
-        return function () {
-            var now = Date.now();
-
-            // 首次执行时，若设定了开始边界不执行选项，则将上次执行时间设定为当前时间。
-            if (!previous && options.leading === false) {
-                previous = now;
-            }
-
-            // 延迟执行时间间隔
-            var remaining = wait - (now - previous);
-
-            context = this;
-
-            args = arguments;
-
-            // 延迟时间间隔remaining小于等于0，表示上次执行至此所间隔时间已经超过一个时间窗口 || remaining大于时间窗口wait，表示客户端系统时间被调整过
-            if (remaining <= 0 || remaining > wait) {
-                if (timeout) {
-                    clearTimeout(timeout);
-                    timeout = null;
-                }
-                previous = now;
-                result = func.apply(context, args);
-                if (!timeout) {
-                    context = args = null;
-                }
-            } else if (!timeout && options.trailing !== false) { // 若延迟执行不存在、且没有设定结尾边界不执行选项
-                timeout = setTimeout(later, remaining);
-            }
-            return result;
-        };
-    }
-
-
-    /* 使用测试 */
-    var a = throttle(function () {  // 不要使用箭头函数，因为实现代码中有用`apply`
-        console.log(1);
-    }, 1000);
-
-    $(window).on('scroll', a);
-    ```
-
->可以使用lodash的`_.throttle(func, [wait=0], [options={}])`，完全替代。
 
 ### *原生JS*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
 ```javascript
@@ -1138,41 +873,6 @@ if (typeof Date.now !== 'function') {
 }
 ```
 >`Date.now()`相对于`new Date().getTime()`及其他方式，可以避免生成不必要的`Date`对象，更高效。
-
-### *原生JS*`Object.create`的Polyfill
->来自：[MDN:Object.create](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill)。
-
-```javascript
-if (typeof Object.create !== 'function') {
-    Object.create = (function () {
-        function Temp() {}
-
-        var hasOwn = Object.prototype.hasOwnProperty;
-
-        return function (O) {
-            if (typeof O != 'object') {
-                throw TypeError('Object prototype may only be an Object or null');
-            }
-
-            Temp.prototype = O;
-            var obj = new Temp();
-            Temp.prototype = null; // 不要保持一个 O 的杂散引用（a stray reference）...
-
-            if (arguments.length > 1) {
-                var Properties = Object(arguments[1]);
-
-                for (var prop in Properties) {
-                    if (hasOwn.call(Properties, prop)) {
-                        obj[prop] = Properties[prop];
-                    }
-                }
-            }
-
-            return obj;
-        };
-    })();
-}
-```
 
 ### *原生JS*`Array.isArray`的Polyfill
 >来自：[MDN:Array.isArray](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray#Polyfill)。

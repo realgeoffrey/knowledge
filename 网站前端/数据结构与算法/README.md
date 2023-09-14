@@ -725,6 +725,8 @@ class ArrayHashMap {
 
 1. 二叉树（binary Tree）
 
+    每个节点最多只有两个分支（即不存在分支度大于2的节点）的树结构。
+
     <details>
     <summary>JS定义：二叉树</summary>
 
@@ -1575,7 +1577,7 @@ function radixSort(arr) {
         // tips: 若这里的数组包含重复数字并且查找第一个目标，则用`return targetIndex;`替换上一行
     }
     ```
-    
+
     >空间复杂度：O(1)。
 
 >实现注意：区间的定义，边界判定（大小判断时有没有等号`=`，边界需不需要加减一`+-1`）。
@@ -1608,7 +1610,7 @@ function radixSort(arr) {
         }
     }
     ```
-    
+
     >空间复杂度：O(log n)。
 
 >1. 思路：

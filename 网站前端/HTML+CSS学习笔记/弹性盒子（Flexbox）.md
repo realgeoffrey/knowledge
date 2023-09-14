@@ -116,9 +116,27 @@
 
         >浏览器根据这个属性，计算主轴是否有多余空间或是否空间不足。
 
-    - `flex`：`flex-grow`、`flex-shrink`（可选）、`flex-basis`（可选）的简写形式，默认：`0 1 auto`。
+    - `flex`：`flex-grow`（初始`0`，省略默认`1`）、`flex-shrink`（初始`1`，省略默认`1`）、`flex-basis`（初始`auto`，省略默认`0`）的简写形式。
 
-        该属性有两个快捷值：`auto`（`1 1 auto`）和`none`（`0 0 auto`）。
+        1. 默认：`0 1 auto`
+        2. 快捷值：
+
+            1. `auto`（`1 1 auto`）
+            2. `none`（`0 0 auto`）
+        3. 单值：
+
+            1. 一个`flex-grow`的有效值，会扩展为`flex: flex-grow值 1 0;`
+            2. 一个`flex-basis`的有效值，会扩展为`flex: 1 1 flex-basis值;`
+        4. 双值：
+
+            1. 第一个值必须是一个`flex-grow`的有效值
+            2. 第二个值：
+
+                1. 一个`flex-shrink`的有效值，会扩展为`flex: flex-grow值 flex-shrink值 0;`
+                1. 一个`flex-basis`的有效值，会扩展为`flex: flex-grow值 1 flex-shrink值;`
+        5. 三值：
+
+            `flex: flex-grow值 flex-shrink值 flex-basis值;`
 
     4. `align-self`：单个子项覆盖父元素的`align-items`。
 
@@ -488,4 +506,4 @@
     ```
     </details>
 
->骰子的[CodePen demo](https://codepen.io/realgeoffrey/pen/OKbrrp)。
+>骰子的[CodePen demo](https://codepen.io/realgeoffrey/pen/OKbrrp)（`flex-direction`、`flex-wrap: wrap;`、`justify-content`、`align-content`、`align-self`）

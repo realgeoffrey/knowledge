@@ -24,7 +24,7 @@
     1. [触摸屏模拟点击事件（消除「延时300毫秒后才触发click事件」，使点击事件提前触发）](#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)
     1. [判断事件在浏览器是否存在](#原生js判断事件在浏览器是否存在)
     1. [根据滚动方向执行函数](#原生js根据滚动方向执行函数)
-1. 数字计算
+1. 数字操作
 
     1. [科学计数法转换成字符串的数字](#原生js科学计数法转换成字符串的数字)
     1. [用整数进行小数的四则运算（避免浮点数运算误差）](#原生js用整数进行小数的四则运算避免浮点数运算误差)
@@ -32,6 +32,7 @@
     1. [不同进制数互相转换](#原生js不同进制数互相转换)
     1. [选取范围内随机值](#原生js选取范围内随机值)
     1. [选取范围内多个随机值](#原生js选取范围内多个随机值)
+    1. [阿拉伯数字转中文](#原生js阿拉伯数字转中文)
 1. 字符串操作
 
     1. [转化为Unicode、反转字符串、字符串长度、所占字节数](#原生js转化为unicode反转字符串字符串长度所占字节数)
@@ -55,7 +56,6 @@
 1. 功能
 
     1. [用请求图片作log统计](#原生js用请求图片作log统计)
-    1. [判断对象是否为空](#原生js判断对象是否为空)
     1. [验证邮箱有效性](#原生js验证邮箱有效性)
     1. [创建兼容的XHR对象](#原生js创建兼容的xhr对象)
     1. [动态添加脚本、样式](#原生js动态添加脚本样式)
@@ -65,15 +65,13 @@
     1. [不传递请求头的Referrer进行跳转](#原生js不传递请求头的referrer进行跳转)
     1. [格式化接口返回的数据](#原生js格式化接口返回的数据)
     1. [判断是否支持WebP](#原生js判断是否支持webp)
-    1. [DOM展示或消失执行方法（IntersectionObserver）](#原生jsdom展示或消失执行方法intersectionobserver)
     1. [执行方法的前/后进行开/关loading](#原生js执行方法的前后进行开关loading)
     1. [点击下载](#原生js点击下载)
-    1. [获取对象指定深度属性](#原生js获取对象指定深度属性)
     1. [写入剪切板](#原生js写入剪切板)
     1. [React组件业务类似Promise.all的效果](#react组件业务类似promiseall的效果)
-    1. [轮询](#原生js轮询)
 1. DOM相关
 
+    1. [DOM展示或消失执行方法（IntersectionObserver）](#原生jsdom展示或消失执行方法intersectionobserver)
     1. [判断是否为`Node`、是否为`Element`](#原生js判断是否为node是否为element)
     1. [输入框光标位置的获取和设置](#原生js输入框光标位置的获取和设置)
     1. [文本选区覆盖某DOM的文本范围](#原生js文本选区覆盖某dom的文本范围)
@@ -83,20 +81,25 @@
     1. [默认图组件](#react默认图组件)
     1. [溢出文本的省略](#原生js溢出文本的省略)
     1. [九宫格抽奖](#九宫格抽奖)
-1. 算法思路
+1. 任务执行
 
     1. [sleep](#sleep)
-    1. [任务队列链式调用](#任务队列链式调用)
+    1. [轮询](#原生js轮询)
+    1. [任务队列链式调用和取消](#任务队列链式调用和取消)
+    1. [调度器任务并发](#调度器任务并发)
+    1. [节流函数](#原生js节流函数)
+    1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
+    1. [`requestAnimationFrame`的递归](#原生jsrequestanimationframe的递归)
+1. 算法思路
+
+    1. [获取对象指定深度属性](#原生js获取对象指定深度属性)
+    1. [判断对象是否为空](#原生js判断对象是否为空)
     1. [无缝轮播](#无缝轮播)
     1. [洗牌算法](#洗牌算法)
     1. [获取某一位的数字](#获取某一位的数字)
-1. 提升性能
-
-    1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
-    1. [`requestAnimationFrame`的递归](#原生jsrequestanimationframe的递归)
 1. <details>
 
-    <summary><a href="#jquery方法">jQuery方法</a></summary>
+    <summary>jQuery方法</summary>
 
     1. 延迟异步加载
 
@@ -114,7 +117,9 @@
 
     >大部分情况下，jQuery内容适用于Zepto。
     </details>
+
 ---
+## 根据UA或浏览器特性判断
 >更全面判断所在系统、浏览器：[bowser](https://github.com/lancedikson/bowser)。
 
 ### *原生JS*判断所在系统
@@ -258,6 +263,8 @@ function detectIE() {
 ```
 
 ---
+## `键-值`操作
+
 ### *原生JS*判断是否存在某cookie
 ```javascript
 function hasCookie (checkKey) {
@@ -525,6 +532,8 @@ function getLocation (url) {
     </details>
 
 ---
+## 事件相关
+
 ### *原生JS*绑定、解绑事件
 ```javascript
 var eventUtil = {
@@ -1078,6 +1087,8 @@ var b = new ScrollDirection({
 ```
 
 ---
+## 数字操作
+
 ### *原生JS*科学计数法转换成字符串的数字
 ```javascript
 function eToString(number) {
@@ -1376,7 +1387,41 @@ function randomsFrom(min, max, num = 1) {
 }
 ```
 
+### *原生JS*阿拉伯数字转中文
+```javascript
+function intToChinese(num = 0) {
+  // 不要超过最大安全数字，也就是 九千万亿多（其实是 亿亿之后的单位不想查了）
+  if (!Number.isSafeInteger(num)) {
+    return new Error(`超过${Number.MAX_SAFE_INTEGER}(${intToChinese(Number.MAX_SAFE_INTEGER)})`);
+  }
+  if (isNaN(num)) return "零";
+
+  const CHINESE_NUMBERS = [ "零", "一", "二", "三", "四", "五", "六", "七", "八", "九" ];
+  const CHINESE_UNITS = [ "", "十", "百", "千", "万", "十", "百", "千", "亿", "十", "百", "千", "万", "十", "百", "千", "亿" ];
+
+  // 逆序一下，数组第一个项是个位数，第二个项是十位数，以此类推
+  const numStr = num.toString().split("").reverse();
+  let result = "";
+  for (let i = 0; i < numStr.length; i++) {
+    result = CHINESE_UNITS[i] + result; // 单位
+    result = CHINESE_NUMBERS[numStr[i]] + result; // 值
+  }
+
+  // 处理中文数字的特殊情况
+  result = result.replace(/零(千|百|十)/g, "零").replace(/十零/g, "十");
+  result = result.replace(/零+/g, "零");
+  result = result.replace(/零亿/g, "亿").replace(/零万/g, "万");
+  result = result.replace(/亿万/g, "亿");
+  result = result.replace(/零+$/, "");
+  result = result.replace(/^一十/g, "十");
+
+  return result;
+}
+```
+
 ---
+## 字符串操作
+
 ### *原生JS*转化为Unicode、反转字符串、字符串长度、所占字节数
 >注意：Unicode码点大于`\uFFFF`（65535）的字符，如：`'💩'.codePointAt(0) // 128169`
 
@@ -1762,6 +1807,8 @@ function upperCaseWord(str) {
 ```
 
 ---
+## 数组操作
+
 ### *原生JS*分割数组
 ```javascript
 /**
@@ -2071,6 +2118,8 @@ function switchArr ({ arr, from, to, isLeft = false }) {
 4. 纯手打字面量（性能最好方式）
 
 ---
+## 功能
+
 ### *原生JS*用请求图片作log统计
 ```javascript
 var sendLog = (function () {
@@ -2113,27 +2162,6 @@ var sendLog = (function () {
 
 /* 使用测试 */
 sendLog('统计url');
-```
-
-### *原生JS*判断对象是否为空
-```javascript
-function isObjEmpty(obj) {
-    if (obj !== Object(obj)) {  /* 参数不是对象 */
-        throw new TypeError('参数不是对象');
-    } else if (typeof Object.keys === 'function') { /* ie9+ */
-
-        return Object.keys(obj).length === 0;
-    } else {
-        for (var one in obj) {
-            if (obj.hasOwnProperty(one)) {
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-}
 ```
 
 ### *原生JS*验证邮箱有效性
@@ -2206,7 +2234,7 @@ xhr.send(null);
 
     1. 异步（JS文件地址）
 
-        1. 动态创建`<script>`
+        1. 动态创建`<script>`（JSONP）
 
             >默认是`async`（可以手动设置`newScript.async = false`）；没有`async`时按动态添加的时序（与位置无关）执行。
 
@@ -2475,9 +2503,9 @@ function noreferrerOpenNew (fullLink) {  // 需要完整URL
       const isObjEmpty = (obj) => {
         if (obj !== Object(obj)) {  /* 参数不是对象 */
           throw new TypeError('参数不是对象');
-        } else if (typeof Object.keys === 'function') { /* ie9+ */
+        } else if (typeof Object.keys === 'function') {
           return Object.keys(obj).length === 0;
-        } else {
+        } else { /* 兼容性，ie9- */
           for (let one in obj) {
             if (obj.hasOwnProperty(one)) {
               return false;
@@ -2530,9 +2558,9 @@ function noreferrerOpenNew (fullLink) {  // 需要完整URL
       const isObjEmpty = (obj) => {
         if (obj !== Object(obj)) {  /* 参数不是对象 */
           throw new TypeError('参数不是对象');
-        } else if (typeof Object.keys === 'function') { /* ie9+ */
+        } else if (typeof Object.keys === 'function') {
           return Object.keys(obj).length === 0;
-        } else {
+        } else {    /* 兼容性，ie9- */
           for (let one in obj) {
             if (obj.hasOwnProperty(one)) {
               return false;
@@ -2621,132 +2649,6 @@ function noreferrerOpenNew (fullLink) {  // 需要完整URL
     ```
 
     >`<img>`外嵌套一层`<picture>`，样式要注意，尤其是使用子元素选择器（`>`）时。如：`xx > img`时无法选中，需要`xx > picture > img`。
-
-### *原生JS*DOM展示或消失执行方法（IntersectionObserver）
-1. class写法：
-
-    ```typescript
-    /**
-     * DOM展示或消失执行方法（IntersectionObserver）
-     * @constructor
-     * @param {Object} target - 观察的目标元素
-     * @param {Function} [show = () => {}] - 展示时调用
-     * @param {Function} [hide = () => {}] - 消失时调用
-     * @param {Number} [threshold = 0] - 交叉比例
-     * @param {Boolean} [once = false] - 是否仅执行一次，否则执行无数次（仅针对展示。若为true，则展示一次后，展示、消失方法均不再执行）
-     * @param {Object} [root = null] - 观察的相对物。null: viewport；祖先元素
-     */
-    export class DisplayDom {
-      io: IntersectionObserver | undefined;
-
-      constructor({
-        target,
-        show = () => {},
-        hide = () => {},
-        threshold = 0.01,
-        once = false,
-        root = null,
-      }: {
-        target: Element;
-        show?: Function;
-        hide?: Function;
-        threshold?: number;
-        once?: boolean;
-        root?: Element | Document | null;
-      }) {
-        const thresholdSafe = Math.max(Math.min(threshold, 1), 0.01); // 取值在[0.01, 1]
-        try {
-          this.io = new window.IntersectionObserver(
-            (entries) => {
-              if (entries[0].intersectionRatio >= thresholdSafe) {
-                // 出现
-                show();
-
-                if (once) {
-                  this.stop();
-                }
-              } else {
-                // 不出现
-                hide();
-              }
-            },
-            { threshold: [thresholdSafe], root },
-          );
-
-          this.io.observe(target); // 开始观察
-        } catch (error) {
-          console.error(
-            error,
-            `\n不支持IntersectionObserver，升级浏览器或代码使用polyfill: https://github.com/w3c/IntersectionObserver`,
-          );
-        }
-      }
-
-      stop() {
-        this.io?.disconnect();
-      }
-    }
-
-    /* 使用测试 */
-    var a = new DisplayDom({
-      target: document.getElementById('asd'),
-      show: () => { console.log('show') },
-      hide: () => { console.log('hide') }
-    })
-
-    // a.stop()
-    ```
-2. 构造函数写法：
-
-    ```javascript
-    /**
-     * DOM展示或消失执行方法（IntersectionObserver）
-     * @constructor
-     * @param {Object} target - 观察的目标元素
-     * @param {Function} [show = () => {}] - 展示时调用
-     * @param {Function} [hide = () => {}] - 消失时调用
-     * @param {Number} [threshold = 0] - 交叉比例
-     * @param {Boolean} [once = false] - 是否仅执行一次，否则执行无数次（仅针对展示。若为true，则展示一次后，展示、消失方法均不再执行）
-     * @param {Object} [root = null] - 观察的相对物。null: viewport；祖先元素
-     */
-    function DisplayDom ({ target, show = () => {}, hide = () => {}, threshold = 0.01, once = false, root = null } = {}) {
-      threshold = Math.max(Math.min(threshold, 1), 0.01)  // 取值在[0.01, 1]
-      try {
-        const io = new window.IntersectionObserver(
-          (entries) => {
-            if (entries[0].intersectionRatio >= threshold) { // 展示
-              show()
-
-              if (once) {
-                this.stop()
-              }
-            } else {  // 消失
-              hide()
-            }
-          },
-          { threshold: [threshold], root }
-        )
-
-        io.observe(target)    // 开始观察
-
-        this.stop = () => {
-          io.disconnect()
-        }
-      } catch (error) {
-        console.error(error.message, `\n不支持IntersectionObserver，升级浏览器或代码使用polyfill: https://github.com/w3c/IntersectionObserver`)
-      }
-    }
-
-
-    /* 使用测试 */
-    var a = new DisplayDom({
-      target: document.getElementById('asd'),
-      show: () => { console.log('show') },
-      hide: () => { console.log('hide') }
-    })
-
-    // a.stop()
-    ```
 
 ### *原生JS*执行方法的前/后进行开/关loading
 ```javascript
@@ -2881,27 +2783,6 @@ loadingFetch(() => { console.log('同步方法') })
     imageDownload('图片地址', '图片文件名.文件类型')
     ```
 
-### *原生JS*获取对象指定深度属性
-```javascript
-/**
- * 获取对象指定深度属性
- * @param {Object} data - 要处理的对象
- * @param {Array} path - 路径深度
- * @returns temp - 属性值
- */
-function getNestedValue(data, path = []) {
-  let temp = data;
-  for (let i = 0, length = path.length; i < length; i++) {
-    temp = temp[path[i]];
-  }
-  return temp;
-}
-
-
-/* 使用测试 */
-getNestedValue({a: {b: 'cc'}}, ['a', 'b'])  // 'cc'
-```
-
 ### *原生JS*写入剪切板
 ```typescript
 async function clipboard (text: string | number): Promise<string> {
@@ -3023,104 +2904,135 @@ export default function Demo(props: { show: boolean }) {
 }
 ```
 
-### *原生JS*轮询
-```typescript
-// 提供给 taskFn 内部返回 Promise.reject(CANCEL_TOKEN)
-export const CANCEL_TOKEN = "CANCEL_TOKEN";
+---
+## DOM相关
 
-interface Options<T> {
-  // 轮询执行方法（额外约定主动结束轮询：返回`Promise.reject(CANCEL_TOKEN)`）
-  //   若返回 Promise.resolve，则执行成功、轮询成功结束；
-  //   若返回 Promise.reject，则执行失败：
-  //     若主动结束轮询 或 轮询重试用完，则轮询失败结束，否则继续轮询
-  taskFn: () => Promise<T>;
-  // 整个轮询超时时间（ms）
-  masterTimeout?: number;
-  // 重试回调(剩余重试次数, 本次错误信息)
-  progressCallback?: (retriesRemain: number, err: unknown) => void;
+### *原生JS*DOM展示或消失执行方法（IntersectionObserver）
+1. class写法：
 
-  // 轮询次数
-  retries?: number;
-  // 重试间隔（ms）
-  retryInterval?: number;
-}
+    ```typescript
+    /**
+     * DOM展示或消失执行方法（IntersectionObserver）
+     * @constructor
+     * @param {Object} target - 观察的目标元素
+     * @param {Function} [show = () => {}] - 展示时调用
+     * @param {Function} [hide = () => {}] - 消失时调用
+     * @param {Number} [threshold = 0] - 交叉比例
+     * @param {Boolean} [once = false] - 是否仅执行一次，否则执行无数次（仅针对展示。若为true，则展示一次后，展示、消失方法均不再执行）
+     * @param {Object} [root = null] - 观察的相对物。null: viewport；祖先元素
+     */
+    export class DisplayDom {
+      io: IntersectionObserver | undefined;
 
-// 轮询执行
-export const promisePoller = <T>(options: Options<T>): Promise<T> => {
-  const { taskFn, masterTimeout, progressCallback, retries = 5, retryInterval = 1000 } = options;
+      constructor({
+        target,
+        show = () => {},
+        hide = () => {},
+        threshold = 0.01,
+        once = false,
+        root = null,
+      }: {
+        target: Element;
+        show?: Function;
+        hide?: Function;
+        threshold?: number;
+        once?: boolean;
+        root?: Element | Document | null;
+      }) {
+        const thresholdSafe = Math.max(Math.min(threshold, 1), 0.01); // 取值在[0.01, 1]
+        try {
+          this.io = new window.IntersectionObserver(
+            (entries) => {
+              if (entries[0].intersectionRatio >= thresholdSafe) {
+                // 出现
+                show();
 
-  let timeoutId: number = 0;
-  let pollingSafe = true; // 是否可以继续轮询
-  let rejections: Array<unknown> = []; // 存放失败信息
-  let retriesRemain = retries;
+                if (once) {
+                  this.stop();
+                }
+              } else {
+                // 不出现
+                hide();
+              }
+            },
+            { threshold: [thresholdSafe], root },
+          );
 
-  return new Promise((resolve, reject) => {
-    if (masterTimeout) {
-      timeoutId = window.setTimeout(() => {
-        pollingSafe = false;
-        reject(rejections.concat("轮询总时间超时"));
-      }, masterTimeout);
+          this.io.observe(target); // 开始观察
+        } catch (error) {
+          console.error(
+            error,
+            `\n不支持IntersectionObserver，升级浏览器或代码使用polyfill: https://github.com/w3c/IntersectionObserver`,
+          );
+        }
+      }
+
+      stop() {
+        this.io?.disconnect();
+      }
     }
 
-    const poll = () => {
-      taskFn()
-        .then((result) => {
-          clearTimeout(timeoutId);
-          resolve(result);
-        })
-        .catch((err: typeof CANCEL_TOKEN | unknown) => {
-          if (err === CANCEL_TOKEN) {
-            clearTimeout(timeoutId);
-            reject(rejections.concat("主动结束轮询"));
-          } else {
-            // 存储轮询失败信息
-            rejections.push(err);
+    /* 使用测试 */
+    var a = new DisplayDom({
+      target: document.getElementById('asd'),
+      show: () => { console.log('show') },
+      hide: () => { console.log('hide') }
+    })
 
-            // 剩余重试次数减一
-            retriesRemain -= 1;
+    // a.stop()
+    ```
+2. 构造函数写法：
 
-            progressCallback?.(retriesRemain, err);
+    ```javascript
+    /**
+     * DOM展示或消失执行方法（IntersectionObserver）
+     * @constructor
+     * @param {Object} target - 观察的目标元素
+     * @param {Function} [show = () => {}] - 展示时调用
+     * @param {Function} [hide = () => {}] - 消失时调用
+     * @param {Number} [threshold = 0] - 交叉比例
+     * @param {Boolean} [once = false] - 是否仅执行一次，否则执行无数次（仅针对展示。若为true，则展示一次后，展示、消失方法均不再执行）
+     * @param {Object} [root = null] - 观察的相对物。null: viewport；祖先元素
+     */
+    function DisplayDom ({ target, show = () => {}, hide = () => {}, threshold = 0.01, once = false, root = null } = {}) {
+      threshold = Math.max(Math.min(threshold, 1), 0.01)  // 取值在[0.01, 1]
+      try {
+        const io = new window.IntersectionObserver(
+          (entries) => {
+            if (entries[0].intersectionRatio >= threshold) { // 展示
+              show()
 
-            if (retriesRemain > 0) {
-              pollingSafe && delay(retryInterval).then(poll);
-            } else {
-              clearTimeout(timeoutId);
-              reject(rejections);
+              if (once) {
+                this.stop()
+              }
+            } else {  // 消失
+              hide()
             }
-          }
-        });
-    };
+          },
+          { threshold: [threshold], root }
+        )
 
-    poll();
-  });
-};
+        io.observe(target)    // 开始观察
 
-const delay = (ms: number) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-
-
-/* 使用测试 */
-let i = 0;
-promisePoller({
-  taskFn() {
-    return new Promise(async (resolve, reject) => {
-      await delay(100);
-      i++;
-      if (i < 3) {
-        reject(new Error(String(i)));
-      } else {
-        resolve(i);
-        // reject(CANCEL_TOKEN)
+        this.stop = () => {
+          io.disconnect()
+        }
+      } catch (error) {
+        console.error(error.message, `\n不支持IntersectionObserver，升级浏览器或代码使用polyfill: https://github.com/w3c/IntersectionObserver`)
       }
-    });
-  },
-}).then((data) => console.warn(data));
-```
->参考：[promise-poller](https://github.com/joeattardi/promise-poller)。
+    }
 
----
+
+    /* 使用测试 */
+    var a = new DisplayDom({
+      target: document.getElementById('asd'),
+      show: () => { console.log('show') },
+      hide: () => { console.log('hide') }
+    })
+
+    // a.stop()
+    ```
+
 ### *原生JS*判断是否为`Node`、是否为`Element`
 ```javascript
 // 判断是否为Node
@@ -3554,7 +3466,7 @@ var a = new ShowFPS();
 <script>
 const container = document.getElementById('container')
 const containerHeight = container.offsetHeight
-// todo：不仅针对innerText，还可以把每个子节点container.childNodes，根据nodeType的值来分别处理。如：`Node.ELEMENT_NODE`当做一个整体，`Node.TEXT_NODE`分割每个文字
+// todo: 不仅针对innerText，还可以把每个子节点container.childNodes，根据nodeType的值来分别处理。如：`Node.ELEMENT_NODE`当做一个整体，`Node.TEXT_NODE`分割每个文字
 const text = container.innerText
 for (let i = 0; i < text.length; i++) {
   container.innerText = text.substring(0, i)
@@ -3736,6 +3648,8 @@ for (let i = 0; i < text.length; i++) {
     ```
 
 ---
+## 任务执行
+
 ### sleep
 1. 要求：
 
@@ -3836,7 +3750,104 @@ for (let i = 0; i < text.length; i++) {
         ```
         </details>
 
-### 任务队列链式调用
+### *原生JS*轮询
+```typescript
+// 提供给 taskFn 内部返回 Promise.reject(CANCEL_TOKEN)
+export const CANCEL_TOKEN = "CANCEL_TOKEN";
+
+interface Options<T> {
+  // 轮询执行方法（额外约定主动结束轮询：返回`Promise.reject(CANCEL_TOKEN)`）
+  //   若返回 Promise.resolve，则执行成功、轮询成功结束；
+  //   若返回 Promise.reject，则执行失败：
+  //     若主动结束轮询 或 轮询重试用完，则轮询失败结束，否则继续轮询
+  taskFn: () => Promise<T>;
+  // 整个轮询超时时间（ms）
+  masterTimeout?: number;
+  // 重试回调(剩余重试次数, 本次错误信息)
+  progressCallback?: (retriesRemain: number, err: unknown) => void;
+
+  // 轮询次数
+  retries?: number;
+  // 重试间隔（ms）
+  retryInterval?: number;
+}
+
+// 轮询执行
+export const promisePoller = <T>(options: Options<T>): Promise<T> => {
+  const { taskFn, masterTimeout, progressCallback, retries = 5, retryInterval = 1000 } = options;
+
+  let timeoutId: number = 0;
+  let pollingSafe = true; // 是否可以继续轮询
+  let rejections: Array<unknown> = []; // 存放失败信息
+  let retriesRemain = retries;
+
+  return new Promise((resolve, reject) => {
+    if (masterTimeout) {
+      timeoutId = window.setTimeout(() => {
+        pollingSafe = false;
+        reject(rejections.concat("轮询总时间超时"));
+      }, masterTimeout);
+    }
+
+    const poll = () => {
+      taskFn()
+        .then((result) => {
+          clearTimeout(timeoutId);
+          resolve(result);
+        })
+        .catch((err: typeof CANCEL_TOKEN | unknown) => {
+          if (err === CANCEL_TOKEN) {
+            clearTimeout(timeoutId);
+            reject(rejections.concat("主动结束轮询"));
+          } else {
+            // 存储轮询失败信息
+            rejections.push(err);
+
+            // 剩余重试次数减一
+            retriesRemain -= 1;
+
+            progressCallback?.(retriesRemain, err);
+
+            if (retriesRemain > 0) {
+              pollingSafe && delay(retryInterval).then(poll);
+            } else {
+              clearTimeout(timeoutId);
+              reject(rejections);
+            }
+          }
+        });
+    };
+
+    poll();
+  });
+};
+
+const delay = (ms: number) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
+
+/* 使用测试 */
+let i = 0;
+promisePoller({
+  taskFn() {
+    return new Promise(async (resolve, reject) => {
+      await delay(100);
+      i++;
+      if (i < 3) {
+        reject(new Error(String(i)));
+      } else {
+        resolve(i);
+        // reject(CANCEL_TOKEN)
+      }
+    });
+  },
+}).then((data) => console.warn(data));
+```
+>参考：[promise-poller](https://github.com/joeattardi/promise-poller)。
+
+### 任务队列链式调用和取消
 1. 要求：
 
     任务队列，可以链式调用、可以取消前一个任务。
@@ -3901,6 +3912,250 @@ for (let i = 0; i < text.length; i++) {
     // obj.cancel().do('hello').sleep(1000).do('yo ho')
     obj.sleep(1000).sleep(2000).cancel().cancel().do('他好').cancel().sleep(1000).sleep(1000).do('我好').do('我好')
     ```
+
+### 调度器任务并发
+1. 要求：
+
+    ```javascript
+    // 请实现一个调度器，这个调度器保证任务的并发数为2
+    class Schedular {
+      // task是一个函数，会返回一个promise，add也会返回一个promise，add的promise根据task的promise状态改变
+      add (task) {
+      }
+    }
+
+    const task = (duration, order) => new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(order);
+      }, duration);
+    });
+
+    // 开始测试
+    const schedular = new Schedular();
+    schedular.add(task(100, 1)).then(res => console.log(res));
+    schedular.add(task(500, 2)).then(res => console.log(res));
+    schedular.add(task(300, 3)).then(res => console.log(res));
+    schedular.add(task(50, 4)).then(res => console.log(res));
+    // 结果应该为1, 3, 4, 2
+    ```
+2. 实现方式：
+
+    ```javascript
+    class Scheduler {
+      tasks = []; // 待执行任务队列
+      runningCount = []; // 当前正在运行的任务数
+
+      constructor(maxRunningCount = 2) {
+        this.maxRunningCount = maxRunningCount; // 最大并行任务数
+      }
+
+      add(task) {
+        return new Promise((resolve) => {
+          // 执行当前add后继续触发执行其他
+          const doTask = async () => {
+            resolve(await task());
+
+            this.runningCount--;
+            this.schedule();
+          };
+
+          this.tasks.push(doTask);
+          this.schedule();
+        });
+      }
+
+      schedule() {
+        while (this.runningCount < this.maxRunningCount && this.tasks.length > 0) {
+          this.runningCount++;
+
+          this.tasks.shift()(); // 取出队列中的任务、执行
+        }
+      }
+    }
+
+
+    /* 使用测试 */
+    const task = (duration, order) => () => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(order);
+        }, duration);
+      });
+    };
+
+    const scheduler = new Scheduler();
+    scheduler.add(task(100, 1)).then((res) => console.log(res));
+    scheduler.add(task(500, 2)).then((res) => console.log(res));
+    scheduler.add(task(300, 3)).then((res) => console.log(res));
+    scheduler.add(task(50, 4)).then((res) => console.log(res));
+    ```
+
+### *原生JS*节流函数
+```typescript
+class Throttle<T extends any[]> {
+  constructor(func: (...args: T) => void, delay: number = 300, atBegin: boolean = true) {
+    this.delay = delay;
+    this.atBegin = atBegin;
+    this.func = func;
+  }
+
+  private delay: number;
+  private atBegin: boolean;
+  private func: (...args: T) => void;
+
+  private timer: number = 0;
+
+  // 刷新执行
+  public flush: (...args: T) => void = (...args: T) => {
+    if (!this.timer) {
+      this.atBegin && this.func.apply(this, args);
+      this.timer = setTimeout(() => {
+        !this.atBegin && this.func.apply(this, args);
+        this.timer = 0;
+      }, this.delay);
+    }
+  };
+
+  // 取消执行
+  public cancel: () => void = () => {
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = 0;
+    }
+  };
+
+  // 判断是否节流中
+  public isPending: () => boolean = () => {
+    return this.timer !== 0;
+  };
+}
+
+
+/* 使用测试 */
+const a = new Throttle((a: number, b: string)=>{})
+a.flush(1, '');a.flush(1, '');
+a.isPending();
+a.cancel()
+```
+
+### *原生JS*用`setTimeout`模拟`setInterval`
+```javascript
+/**
+ * 用setTimeout模拟setInterval
+ * @constructor
+ * @param {Function} func - 循环执行函数
+ * @param {Number} millisecond - 间隔毫秒
+ */
+function SetInterval(func, millisecond) {
+    var _setIntervalId;
+
+    if (typeof func === 'function') {
+        _setIntervalId = setTimeout(function () {
+            _setIntervalId = setTimeout(arguments.callee, millisecond);
+
+            func();
+        }, millisecond);
+    }
+
+    this.stop = function () {
+        clearTimeout(_setIntervalId);
+    };
+}
+
+
+/* 使用测试 */
+var a = new SetInterval(function () {
+    console.log(1);
+
+    if (...) {
+        a.stop();
+    }
+}, 1000);
+
+// a.stop();
+```
+
+### *原生JS*`requestAnimationFrame`的递归
+```javascript
+/**
+ * 每一帧都执行一次func
+ * @constructor
+ * @param {Function} func - 执行的函数
+ */
+function RepeatRAF(func) {
+    var _repeatRAFId;
+
+    if (typeof func === 'function') {
+        _repeatRAFId = requestAnimationFrame(function () {
+            _repeatRAFId = requestAnimationFrame(arguments.callee);
+
+            func();
+        });
+    }
+
+    this.stop = function () {
+        cancelAnimationFrame(_repeatRAFId);
+    };
+}
+
+
+/* 使用测试 */
+var a = new RepeatRAF(function () {
+    console.log(1);
+
+    if (...) {
+        a.stop();
+    }
+});
+
+// a.stop();
+```
+
+---
+## 算法思路
+
+### *原生JS*获取对象指定深度属性
+```javascript
+/**
+ * 获取对象指定深度属性
+ * @param {Object} data - 要处理的对象
+ * @param {Array} path - 路径深度
+ * @returns temp - 属性值
+ */
+function getNestedValue(data, path = []) {
+  let temp = data;
+  for (let i = 0, length = path.length; i < length; i++) {
+    temp = temp[path[i]];
+  }
+  return temp;
+}
+
+
+/* 使用测试 */
+getNestedValue({a: {b: 'cc'}}, ['a', 'b'])  // 'cc'
+getNestedValue({a: {b: "cc"}, d: [0, 1, 2, 3, {e: {f: [1]}}]}, ["d", 4, "e"]); // {f:[1]}
+```
+
+### *原生JS*判断对象是否为空
+```javascript
+function isObjEmpty(obj) {
+    if (obj !== Object(obj)) {  /* 参数不是对象 */
+        throw new TypeError('参数不是对象');
+    } else if (typeof Object.keys === 'function') {
+
+        return Object.keys(obj).length === 0;
+    } else {    /* 兼容性，ie9- */
+        for (var one in obj) {
+            if (obj.hasOwnProperty(one)) {
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+```
 
 ### 无缝轮播
 1. 要求：
@@ -4032,80 +4287,6 @@ $x_k = \lfloor\frac{x}{d^k}\rfloor \bmod d$（ $\lfloor a \rfloor$表示对浮�
     console.log(getIndexNumber(0x4567890abcdef, 13, 16), 0);
     ```
     </details>
-
----
-### *原生JS*用`setTimeout`模拟`setInterval`
-```javascript
-/**
- * 用setTimeout模拟setInterval
- * @constructor
- * @param {Function} func - 循环执行函数
- * @param {Number} millisecond - 间隔毫秒
- */
-function SetInterval(func, millisecond) {
-    var _setIntervalId;
-
-    if (typeof func === 'function') {
-        _setIntervalId = setTimeout(function () {
-            _setIntervalId = setTimeout(arguments.callee, millisecond);
-
-            func();
-        }, millisecond);
-    }
-
-    this.stop = function () {
-        clearTimeout(_setIntervalId);
-    };
-}
-
-
-/* 使用测试 */
-var a = new SetInterval(function () {
-    console.log(1);
-
-    if (...) {
-        a.stop();
-    }
-}, 1000);
-
-// a.stop();
-```
-
-### *原生JS*`requestAnimationFrame`的递归
-```javascript
-/**
- * 每一帧都执行一次func
- * @constructor
- * @param {Function} func - 执行的函数
- */
-function RepeatRAF(func) {
-    var _repeatRAFId;
-
-    if (typeof func === 'function') {
-        _repeatRAFId = requestAnimationFrame(function () {
-            _repeatRAFId = requestAnimationFrame(arguments.callee);
-
-            func();
-        });
-    }
-
-    this.stop = function () {
-        cancelAnimationFrame(_repeatRAFId);
-    };
-}
-
-
-/* 使用测试 */
-var a = new RepeatRAF(function () {
-    console.log(1);
-
-    if (...) {
-        a.stop();
-    }
-});
-
-// a.stop();
-```
 
 ---
 ### jQuery方法
