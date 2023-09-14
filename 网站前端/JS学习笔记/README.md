@@ -11,7 +11,7 @@
     1. [继承](#继承)
     1. [内存机制](#内存机制)
     1. [内存泄漏](#内存泄漏)
-    1. [深复制（拷贝）实现思路](#深复制拷贝实现思路)
+    1. [深复制（深拷贝）实现思路](#深复制深拷贝实现思路)
     1. [数据类型转换](#数据类型转换)
     1. [`||`和`&&`](#和)
     1. [事件循环（event loop）](#事件循环event-loop)
@@ -567,7 +567,34 @@
 
     - 类似的有：`setTimeout/setInterval`的第一个参数是字符串、`new Function`的最后一个字符串参数，都能动态生成代码，都能在运行期修改书写期的词法作用域。
 
-    >动态执行JS脚本的方式：`eval`、`new Function`、Node.js的`vm`模块。
+    ><details>
+    ><summary>动态执行JS脚本的方式（执行字符串）：<code>eval</code>、<code>new Function</code>、<code>setTimeout/setInterval</code>、Node.js的<code>vm</code>模块。</summary>
+    >
+    >e.g.
+    >
+    >```javascript
+    >// 全部都极度不安全，不建议使用
+    >
+    >var a = 'console.log("aa")';
+    >var b = 'console.log("bb")';
+    >var c = 'console.log("cc")';
+    >var d = 'console.log("dd")';
+    >
+    >eval(a);
+    >new Function(b)();
+    >setTimeout(c, 0);
+    >setInterval(d, 0);  // 需要clearInterval
+    >```
+    >
+    >```javascript
+    >// Node.js
+    >
+    >var e = 'console.log("ee")';
+    >const vm = require("node:vm");
+    >const script = new vm.Script(e);
+    >script.runInThisContext();
+    >```
+    ></details>
 2. `with`
 
     ```javascript
@@ -833,7 +860,7 @@
 
                     >对象：`obj = Object.assign({}, obj)`（不推荐用：~~`obj = Object.create(obj)`~~）
                 4. 一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)赋值
-            2. [深复制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#深复制拷贝实现思路)。
+            2. [深复制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#深复制深拷贝实现思路)。
 4. <details>
 
     <summary>存储、值传递步骤举例</summary>
@@ -915,12 +942,12 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
 - 关于内存优化的重要性
 
-    1. 减少OOM，提高应用稳定性
+    1. 减少OOM（Out Of Memory，内存不足），提高应用稳定性
     2. 减少卡顿，提高应用流畅度
     3. 减少内存占用，提高应用后台运行时的存活率
     4. 减少异常发生和代码逻辑隐患
 
-### 深复制（拷贝）实现思路
+### 深复制（深拷贝）实现思路
 >参考：[深入剖析JavaScript的深复制](http://jerryzou.com/posts/dive-into-deep-clone-in-javascript/)。
 
 1. [递归赋值](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js深复制)（最全面方式）
@@ -1872,8 +1899,8 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 1. [CORS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#corscross-origin-resource-sharing跨域资源共享)（服务端需要支持）
 
     >1. 不受同源政策限制。
-    >2. ie9-的jQuery的非jsonp的AJAX跨域，要添加`jQuery.support.cors = true`。
-2. jsonp（服务端需要支持）
+    >2. ie9-的jQuery的非JSONP的AJAX跨域，要添加`jQuery.support.cors = true`。
+2. JSONP（json with padding）（服务端需要支持）
 
     >1. 不受同源政策限制。
     >2. 只支持**GET**请求。
@@ -1881,13 +1908,13 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     网页通过添加一个`<script>`，向服务器发起文档请求（不受同源政策限制）；服务器收到请求后，将数据放在一个指定名字的回调函数里传回网页直接执行。
 
     ><details>
-    ><summary>jQuery在它的<code>AJAX</code>方法中封装了<code>jsonp</code>功能</summary>
+    ><summary>jQuery在它的<code>AJAX</code>方法中封装了<code>JSONP</code>功能</summary>
     >
     >```javascript
     >$.ajax({
     >    url: '接口地址',
     >    dataType: 'jsonp',
-    >    jsonp: '与服务端约定的支持jsonp方法',  // 前端唯一需要额外添加的内容
+    >    jsonp: '与服务端约定的支持JSONP方法',  // 前端唯一需要额外添加的内容
     >    data: {},
     >    success: function (data) {
     >        // data为跨域请求获得的服务端返回数据
@@ -2705,41 +2732,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
         ```
 
     - 其他数据类型
-7. 长字符串拼接使用`Array.prototype.join()`，而不使用`+`
-
-    1. `.join()`性能好（建议方式）
-
-        <details>
-        <summary>e.g.</summary>
-
-        ```javascript
-        var arr = [],
-            i;
-
-        for (i = 0; i < 100; i++) {
-            arr[i] = '字符串' + i + '字符串';
-        }
-
-        return arr.join('');
-        ```
-        </details>
-    2. `+`性能差（不推荐）
-
-        <details>
-        <summary>e.g.</summary>
-
-        ```javascript
-        var text = '',
-            i;
-
-        for (i = 0; i < 100; i++) {
-            text = text + '字符串' + i + '字符串';
-        }
-
-        return text;
-        ```
-        </details>
-8. 注释规范
+7. 注释规范
 
     1. 单行注释：`//`后不空格
 
@@ -2779,7 +2772,7 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
             return result;
         }
         ```
-9. JS编程风格总结（programming style）
+8. JS编程风格总结（programming style）
 
     >参考：[阮一峰：JavaScript 编程风格](http://javascript.ruanyifeng.com/grammar/style.html)。
 
@@ -2797,12 +2790,12 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
     12. 构造函数的函数名，采用首字母大写；其他函数名，一律首字母小写。
     13. 不要使用自增（`++`）和自减（`--`）运算符，用`+= 1`和`-= 1`代替。
     14. 不省略大括号。
-10. JS编码规范
+9. JS编码规范
 
     绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/javascript.md#javascript编码规范)。
 
     >可以设置为IDEs的**Reformat Code**的排版样式。
-11. 用户体验
+10. 用户体验
 
     1. 平稳退化（优雅降级）：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
 
@@ -2832,11 +2825,6 @@ todo: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄�
 
         1. 关于「性能」的写法建议，更多的是一种编程习惯（微优化）：写出更易读、性能更好的代码。
         2. 在解决页面性能瓶颈时，要从URL输入之后就进行[网站性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#网站性能优化)；避免在处理网页瓶颈时进行~~微优化~~。
-
-            >1. 即时编译（just in time compile，JIT）：JS引擎会在JS运行过程中逐渐重新编译部分代码为机器码，使代码运行更快。
-            >
-            >    运行前编译（ahead of time，AOT）：将较高级别的编程语言或中间表示形式，编译为本机机器代码的行为，生成的二进制文件可以直接在本机上执行。
-            >2. 微优化（micro-optimizations）：尝试写出认为会让浏览器稍微更快速运行的代码或调用更快的方法。
 
 ### 编程实践（programming practices）
 1. UI层的松耦合

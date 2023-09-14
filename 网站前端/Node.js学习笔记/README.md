@@ -814,7 +814,7 @@ npm（Node Package Manager）。
 ## 原理机制
 
 ### Node.js的运行机制
-1. [V8](https://v8.dev/)引擎解析应用程序输入的JS脚本。
+1. [V8](https://v8.dev/)引擎（JS引擎）解析应用程序输入的JS脚本。
 
     >V8处理JS，除了 **正则表达式**、**JSON的处理** 之外，对于大部分操作都很快。
     >

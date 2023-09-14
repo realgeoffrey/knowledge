@@ -11,7 +11,7 @@
     1. [Hook](#hook)
     1. [与第三方库协同](#与第三方库协同)
     1. [Virtual DOM](#virtual-dom)
-    1. [性能优化](#性能优化)
+    1. [React性能优化](#react性能优化)
 
     - <details>
 
@@ -1468,7 +1468,7 @@
             ></details>
     4. 错误边界（error boundaries）
 
-        若一个class组件中定义了`static getDerivedStateFromError()`（渲染备用UI）或`componentDidCatch()`（打印错误信息）这两个生命周期方法中的任意一个（或两个）时，则它就变成一个错误边界。可以当做常规组件去使用。
+        若一个class组件中定义了`static getDerivedStateFromError()`（**渲染备用UI**）或`componentDidCatch()`（**打印错误信息**）任意一个（或两个），则它就变成一个错误边界，可以当做常规组件去使用，如：`<错误边界组件名>其他UI组件</错误边界组件名>`。
 
         >任何未被错误边界捕获的错误将会导致整个React组件树被卸载。
 
@@ -1482,6 +1482,8 @@
             4. 它自身抛出的错误
 
                 若一个错误边界无法渲染错误信息，则错误会冒泡至最近的上层错误边界。
+
+        >支持所有React渲染器：[react-error-boundary](https://github.com/bvaughn/react-error-boundary)（函数组件没有错误边界，直接用这个第三方库的class组件错误边界）
     5. 严格模式`<React.StrictMode>`
 
         >仅在开发模式下运行；它们不会影响生产构建。
@@ -1765,8 +1767,6 @@
 ![react生命周期图](./images/lifecycle.png)
 
 ### Hook
-todo: hook的优势：<https://juejin.cn/post/6844903985338400782>、<https://zhuanlan.zhihu.com/p/88593858>
-
 Hook是一些可以在**函数组件**里“钩入”React state及生命周期等特性的**函数**。
 
 - 使用规则：
@@ -1780,6 +1780,36 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
 >运行规则：函数组件的函数体先执行，按顺序执行语句（包括hook）；hook的回调函数在函数组件的函数体执行完毕之后，按照类型和顺序执行。
 
+- hook解决的问题（相对class组件的优势）
+
+    1. class组件的不足
+
+        1. 状态逻辑难复用：
+
+            在组件之间复用状态逻辑很难，可能要用到render props（渲染属性）或HOC（高阶组件），都会在原先的组件外包裹一层父容器（如：`<div>`），导致层级冗余。
+
+            >`Mixin`已被证伪，HoC和render props被诟病嵌套地狱。
+        2. 趋向复杂难以维护：
+
+            在生命周期函数中混杂不相干的逻辑，类组件中到处都是对状态的访问和处理，导致组件难以拆分成更小的组件。
+        3. `this`实例绑定
+
+            开发人员理解难度大，编译器优化不友好（如：不能很好的压缩class组件，热重载不稳定）。
+    2. hook优势
+
+        1. 能优化class组件的上面三大问题
+
+            1. 更好的可复用性：
+
+                可以更容易地将组件逻辑封装为自定义的Hooks以复用。
+            2. 简化组件逻辑：
+
+                1. 可以将组件的状态（state）和副作用（side effects）分离，使组件的逻辑更加清晰和易于理解。
+                2. 可以将相关的逻辑聚合在一起（而不用像class组件那样在不同的生命周期方法中进行分散编写）。
+            3. 无需关注`this`
+        2. 函数式编程：
+
+            Hooks鼓励使用函数式编程的风格编写组件，这有助于组件的可测试性和可维护性。由于Hooks是纯函数，不依赖于组件实例，因此更易于进行单元测试和模块化开发。
 1. `useState`
 
     `const [变量名, 修改变量的方法名] = useState(初始值 或 初始方法)`
@@ -2461,11 +2491,158 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     2. 利用`componentDidMount`和`componentWillUnmount`对React不会更新的React元素进行第三方库的挂载和清理。
 
 ### Virtual DOM
-- [协调（reconciliation）](https://zh-hans.reactjs.org/docs/reconciliation.html)
+1. Virtual DOM是树形结构`[虚拟DOM1, 虚拟DOM2, ...]`
+
+    虚拟DOM主要参数：`DOM类型`、`DOM参数`、`子节点列表（每个项也是虚拟DOM）`
+
+    <details>
+    <summary>e.g. 虚拟DOM的数据结构</summary>
+
+    ```jsx
+    // 组件：
+    const Greet = ({ name }) => (
+      <div>
+        <h2>Hello, {name}</h2>
+      </div>
+    );
+    ```
+
+    ```javascript
+    // 单个虚拟DOM类似：
+    {
+      // element 对应的 DOM node
+      dom: divNode,
+      // element 数据
+      element: {
+        type: 'div',    // 类型（函数组件的type就是函数组件的方法）
+        props: {}       // 参数
+      },
+      // 子节点列表
+      children: [
+        {
+          dom: h2Node,
+          element: {
+            type: 'h2',
+            props: {}
+          },
+          children: [
+            {
+              dom: textNode,
+              element: {
+                type: 'text',
+                props: { nodeValue: 'Hello, xxx' }
+              }
+            }
+          ]
+        }
+      ]
+    }
+    ```
+    </details>
+2. [协调（reconciliation）](https://zh-hans.reactjs.org/docs/reconciliation.html)
 
     当一个组件的`props`或`state`变更，React会将最新返回的元素与之前渲染的元素进行对比（diff），以此决定是否有必要更新真实的DOM。当它们不相同时，React会最小化更新该DOM。这个过程被称为“协调”。
 
-    >React16新增的协调引擎：[Fiber](https://github.com/facebook/react/tree/master/packages/react-reconciler)（介绍文章：[react-fiber-architecture](https://github.com/acdlite/react-fiber-architecture)），将整个更新划分为多个原子性的任务，这就保证了原本完整的组件的更新流程可以被中断与恢复，在浏览器的空闲期执行这些任务并且区别高优先级与低优先级的任务。
+    <details>
+    <summary>e.g. 协调</summary>
+
+    >来自：[codesandbox](https://codesandbox.io/s/tinyreact-functional-component-x51ul?file=/src/index.js)。
+
+    ```javascript
+    let rootInstance = null;
+
+    // element: 虚拟DOM，类似 { type, props, children }。container: DOM
+    function render(element, container) {
+      const prevInstance = rootInstance;
+      const nextInstance = reconcile(container, prevInstance, element);
+      rootInstance = nextInstance;
+    }
+
+    function reconcile(parentDom, instance, element) {
+      // 如果没有对应的之前虚拟 DOM 节点实例，
+      // 则创建一个实例（包括 DOM 节点、传入的 element 数据、子实例列表等），并添加到页面 DOM 中。这也是第一次执行 render 时的逻辑
+      if (instance === null) {
+        // Create instance
+        const newInstance = instantiate(element);
+        parentDom.appendChild(newInstance.dom);
+        return newInstance;
+      }
+      // 如果已经有虚拟 DOM 节点实例，但是本次渲染传入的 element 数据为空，
+      // 则意味着新 UI 中不再需要该节点，因此从 DOM 中删除之前的 DOM 节点，并返回空结果
+      else if (element === null) {
+        // Remove instance
+        parentDom.removeChild(instance.dom);
+        return null;
+      }
+      // 如果当前虚拟 DOM 实例和新的 element 类型是一致的，说明节点类型没有变化，例如之前是一个 div，现在仍然是一个 div，
+      // 则只检查是否有对应的节点属性需要变更，并递归处理所有子节点实例
+      else if (instance.element.type === element.type) {
+        // Update instance
+        updateDomProperties(instance.dom, instance.element.props, element.props);
+        instance.childInstances = reconcileChildren(instance, element); // 协调子列表
+        instance.element = element;
+        return instance;
+      }
+      // 最后一种情况是当前虚拟 DOM 实例和新的 element 类型不一致，
+      // 则创建新实例并进行替换
+      else {
+        // Replace instance
+        const newInstance = instantiate(element);
+        parentDom.replaceChild(newInstance.dom, instance.dom);
+        return newInstance;
+      }
+    }
+    ```
+    </details>
+3. [Fiber](https://github.com/facebook/react/tree/main/packages/react-reconciler)
+
+    React16新增的协调引擎（介绍文章：[react-fiber-architecture](https://github.com/acdlite/react-fiber-architecture)）。将整个更新划分为多个原子性的任务，这就保证了原本完整的组件的更新流程可以被中断与恢复，在浏览器的空闲期执行这些任务并且区别高优先级与低优先级的任务。
+
+    >Fiber副作用：分render和commit两个阶段，render可以被打断，执行到一半下次渲染线程抢回主动权时，重新执行一遍遍历任务；commit是同步的，commit阶段运行副作用修改dom。所以`componentWillMount`、`componentWillUpdate`、`componentWillReceiveProps`可能重复执行。
+
+    1. 产生原因
+
+        在react15及之前fiber未出现时，react的一系列执行过程（如：生命周期执行、虚拟dom的比较、dom树的更新、等）都是**同步**的，一旦开始执行就不会中断，直到所有的工作流程全部结束为止。当应用组件树比较庞大时，一旦状态开始变更，组件树层层递归开始更新，js主线程就不得不停止其他工作。用户的点击输入等交互事件、页面动画等都不会得到响应，体验就会非常的差。
+
+        为了解决这一问题，react16引入了fiber这种数据结构，将更新渲染耗时长的大任务，分为许多的小片。每个小片的任务执行完成后，都先去执行其他高优先级的任务(如：用户点击输入事件、动画、等)，这样js的主线程就不会被react独占，虽然任务执行的总时间不变，但是页面能够及时响应高优先级任务，显得不会卡顿了。
+    2. fiber数据结构：链表结构，包含 dom相关信息、fiber链表树相关的引用、要更新时的副作用、等
+
+        <details>
+        <summary>e.g. fiber的数据结构</summary>
+
+        ```javascript
+        // 存储dom信息
+        tag、key、type、stateNode（真实dom节点）等信息
+
+        // fiber链表树相关
+        return: Fiber | null, // 父 fiber
+        child: Fiber | null, // 第一个子 fiber
+        sibling: Fiber | null, // 下一个兄弟 fiber
+        index: number, // 在父 fiber 下面的子 fiber 中的下标
+
+        // 副作用相关
+        flags: Flags, // 记录更新时当前 fiber 的副作用(删除、更新、替换等)状态
+        subtreeFlags: Flags, // 当前子树的副作用状态
+        deletions: Array<Fiber> | null, // 要删除的子 fiber
+        nextEffect: Fiber | null, // 下一个有副作用的 fiber
+        firstEffect: Fiber | null, // 指向第一个有副作用的 fiber
+        lastEffect: Fiber | null, // 指向最后一个有副作用的 fiber
+
+        // 工作单元，用于计算 state 和 props 渲染
+        pendingProps: any, // 本次渲染需要使用的 props
+        memoizedProps: any, // 上次渲染使用的 props
+        updateQueue: mixed, // 用于状态更新、回调函数、DOM更新的队列
+        memoizedState: any, // 上次渲染后的 state 状态
+        dependencies: Dependencies | null, // contexts、events 等依赖
+
+        // 优先级相关（react枚举用户交互优先级）
+        lanes: Lanes,
+        childLanes: Lanes,
+
+
+        alternate: Fiber | null, // 指向 workInProgress fiber 树中对应的节点
+        ```
+        </details>
 
 ><details>
 ><summary>虚拟DOM系统的辩证思考：<a href="https://github.com/y8n/blog/issues/5">理解 Virtual DOM</a></summary>
@@ -2478,12 +2655,17 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 >4. 可以渲染到DOM以外的端，如：ReactNative、SSR。
 ></details>
 
-### 性能优化
+### React性能优化
 1. 使用生产版本
-2. 虚拟化长列表
+2. 长列表考虑虚拟列表
 
     >如：[react-window](https://github.com/bvaughn/react-window)。
 3. 渲染前的diff，可利用`shouldComponentUpdate`跳过
+4. `useMemo`、`useCallback`辩证看待
+5. 注意`render`函数内属性的写法，避免父级重新渲染总是触发子级重新渲染（避免子级的Props变化）
+6. 遵守React不可变对象的不可变性
+7. 代码分割（动态加载）（`<React.Suspense>`、`React.lazy`）
+8. SSR
 
 ---
 #### 代码分割（动态加载）

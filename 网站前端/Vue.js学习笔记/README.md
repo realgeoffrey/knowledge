@@ -17,6 +17,7 @@
     1. [虚拟DOM系统](#虚拟dom系统)
     1. [SSR](#ssr)
     1. [Vue实现原理](#vue实现原理)
+    1. [Vue性能优化](#vue性能优化)
     1. [例子](#例子)
     1. [Vue 3 与 Vue 2 区别](#vue-3-与-vue-2-区别)
 1. [vue-router](#vue-router)
@@ -1974,6 +1975,26 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         相同类型的VNode才需要比较，不同类型直接完全替换；相同HTML标签才需要比较，不同标签直接完全替换。
 
         1. `Diff`
+
+### Vue性能优化
+1. `key`属性的组件/DOM复用。
+2. `v-once`只渲染元素和组件一次。
+3. 最小限度使用响应式系统。
+
+    1. 若不需要响绑定到视图的变量
+
+        1. 不提前注册在`data`或`computed`中，直接this.来创建
+        2. `Object.freeze()`
+4. 注意内存泄漏（全局副作用）：
+
+    1. 在Vue实例内部`new`的其他实例或DOM，应放在`data`内进行掌控，当使用完毕后引导垃圾回收。
+    2. 在Vue实例内部手动绑定的事件（如：`addEventListener`）、计时器、http连接、以及任何需要手动关闭的内容，需要在`beforeDestroy`前手动清除（`destroyed`仅自动清除Vue自己定义、绑定的内容）。
+6. 长列表考虑虚拟列表（如：[vue-virtual-scroller](https://github.com/Akryum/vue-virtual-scroller)）
+7. 避免不必要的组件抽象
+
+    组件实例比普通DOM节点要昂贵得多，而且为了逻辑抽象创建太多组件实例将会导致性能损失。
+5. 异步组件（构建分包懒加载）
+8. SSR
 
 ### 例子
 1. <details>

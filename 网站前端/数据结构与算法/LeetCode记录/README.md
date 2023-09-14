@@ -21,6 +21,8 @@
     1. [连续子数组的最大和](#连续子数组的最大和)
     1. [移除元素](#移除元素)
     1. [有序数组的平方](#有序数组的平方)
+    1. [两数之和](#两数之和)
+    1. [移动零](#移动零)
 1. [中等](#中等)
 
     1. [复杂链表的复制](#复杂链表的复制)
@@ -33,6 +35,11 @@
     1. [鸡蛋掉落-两枚鸡蛋](#鸡蛋掉落-两枚鸡蛋)
     1. [长度最小的子数组](#长度最小的子数组)
     1. [螺旋矩阵 II](#螺旋矩阵-ii)
+    1. [字母异位词分组](#字母异位词分组)
+    1. [最长连续序列](#最长连续序列)
+    1. [盛最多水的容器](#盛最多水的容器)
+    1. [三数之和](#三数之和)
+    1. [无重复字符的最长子串](#无重复字符的最长子串)
 
 ---
 <details>
@@ -329,7 +336,7 @@ minStack.min();   --> 返回 -2.
     ```javascript
     var reverseList = function (head) {
       // 递归
-      if (head == null || head.next == null) {
+      if (head === null || head.next === null) {
         return head;
       }
       const newHead = reverseList(head.next);
@@ -1085,15 +1092,15 @@ s 只包含小写字母。
 
     // 递归
     var helper = function (root1, root2) {
-      if (root1 === null && root2 == null) {
+      if (root1 === null && root2 === null) {
         return true;
       }
-      if (root1 == null || root2 == null) {
+      if (root1 === null || root2 === null) {
         return false;
       }
 
       return (
-        root1.val == root2.val &&
+        root1.val === root2.val &&
         helper(root1.left, root2.right) &&
         helper(root1.right, root2.left)
       );
@@ -1352,7 +1359,7 @@ for (int i = 0; i < len; i++) {
     ```
 2. 解法二
 
-    双指针法（快慢指针法）：通过一个快指针和慢指针在一个for循环下完成两个for循环的工作。
+    **双指针法（快慢指针法）：通过一个快指针和慢指针在一个for循环下完成两个for循环的工作。**
 
     ```javascript
     var removeElement = function(nums, val) {
@@ -1370,7 +1377,7 @@ for (int i = 0; i < len; i++) {
     ```
 3. 解法三
 
-    暴力解法，时间复杂度 O(n^2)。
+    暴力解法，O(n^2)。
 
     ```javascript
     var removeElement = function(nums, val) {
@@ -1413,7 +1420,7 @@ for (int i = 0; i < len; i++) {
 提示：
 
 - `1 <= nums.length <= 10 ** 4`
-- `-10 ** 4 <= nums[i] <= 10 ** 4`
+- `-(10 ** 4) <= nums[i] <= 10 ** 4`
 - `nums` 已按 **非递减顺序** 排序
 
 进阶：
@@ -1456,6 +1463,160 @@ for (int i = 0; i < len; i++) {
         }
 
         return newNums;
+    };
+    ```
+
+### 两数之和
+给定一个整数数组 `nums` 和一个整数目标值 `target`，请你在该数组中找出 **和为目标值** `target`  的那 **两个** 整数，并返回它们的数组下标。
+
+你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
+
+你可以按任意顺序返回答案。
+
+示例 1：
+
+```
+输入：nums = [2,7,11,15], target = 9
+输出：[0,1]
+解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。
+```
+
+示例 2：
+
+```
+输入：nums = [3,2,4], target = 6
+输出：[1,2]
+```
+
+示例 3：
+
+```
+输入：nums = [3,3], target = 6
+输出：[0,1]
+```
+
+提示：
+
+- `2 <= nums.length <= 10 ** 4`
+- `-(10 ** 9) <= nums[i] <= 10 ** 9`
+- `-(10 ** 9) <= target <= 10 ** 9`
+- 只会存在一个有效答案
+
+进阶：你可以想出一个时间复杂度小于 O(n^2) 的算法吗？
+
+1. 解法一
+
+    暴力解法，O(n^2)。
+
+    ```javascript
+    /**
+     * @param {number[]} nums
+     * @param {number} target
+     * @return {number[]}
+     */
+    var twoSum = function (nums, target) {
+      for (let i = 0; i < nums.length; i++) {
+        const left = target - nums[i];
+
+        for (let j = i + 1; j < nums.length; j++) {
+          if (nums[j] === left) {
+            return [i, j];
+          }
+        }
+      }
+      return [];
+    };
+    ```
+2. 解法二
+
+    哈希法（**当我们需要查询一个元素是否出现过，或者一个元素是否在集合里的时候，就要第一时间想到哈希法**），O(n)。
+
+    ```javascript
+    var twoSum = function (nums, target) {
+      // 利用Map类型：不重复键的键-值集合。键存nums项的value，值存nums项的key
+      const hash = new Map();
+      for (let i = 0; i < nums.length; i++) {
+        const leftValue = target - nums[i];
+        if (hash.get(leftValue) !== undefined) {
+          return [i, hash.get(leftValue)];
+        } else {
+          hash.set(nums[i], i);
+        }
+      }
+      return [];
+    };
+    ```
+
+### 移动零
+给定一个数组 `nums`，编写一个函数将所有 `0` 移动到数组的末尾，同时保持非零元素的相对顺序。
+
+请注意 ，必须在不复制数组的情况下原地对数组进行操作。
+
+示例 1:
+
+```
+输入: nums = [0,1,0,3,12]
+输出: [1,3,12,0,0]
+```
+
+示例 2:
+
+```
+输入: nums = [0]
+输出: [0]
+```
+
+提示:
+
+- `1 <= nums.length <= 10 ** 4`
+- `-(2 ** 31) <= nums[i] <= 2 ** 31 - 1`
+
+
+进阶：你能尽量减少完成的操作次数吗？
+
+1. 解法一
+
+    双指针。
+
+    ```javascript
+    /**
+     * @param {number[]} nums
+     * @return {void} Do not return anything, modify nums in-place instead.
+     */
+    var moveZeroes = function (nums) {
+      // 双指针，移动数组，最后补0
+      let noZeroIndex = 0;
+      for (let i = 0; i < nums.length; i++) {
+        if (i !== noZeroIndex) {
+          nums[noZeroIndex] = nums[i];
+        }
+
+        if (nums[i] !== 0) {
+          noZeroIndex += 1;
+        }
+      }
+
+      nums.fill(0, noZeroIndex);
+
+      return nums;
+    };
+    ```
+2. 解法二
+
+    双指针。
+
+    ```javascript
+    var moveZeroes = function (nums) {
+      // 双指针。如果i项!==0，替换i、j项的值并j指针自增。
+      for (let i = 0, j = 0; i < nums.length; i++) {
+        if(nums[i] !== 0){
+          const tmp = nums[i]
+          nums[i] = nums[j];
+          nums[j] = tmp
+
+          j++
+        }
+      }
     };
     ```
 
@@ -2294,7 +2455,7 @@ B是A的子结构， 即 A中有出现和B相同的结构和节点值。
 
 1. 解法一
 
-    滑动窗口。
+    滑动窗口（双指针）。
 
     ```javascript
     /**
@@ -2319,7 +2480,7 @@ B是A的子结构， 即 A中有出现和B相同的结构和节点值。
     ```
 2. 解法二
 
-    暴力算法，O(n^2)。
+    暴力解法，O(n^2)，已超时。
 
     ```javascript
     var minSubArrayLen = function (target, nums) {
@@ -2361,7 +2522,7 @@ B是A的子结构， 即 A中有出现和B相同的结构和节点值。
     ```
 3. 解法三
 
-    把暴力算法改成二分法，从而达到O(n*logn)。
+    把暴力解法改成二分法，从而达到O(n*logn)。
 
     ```javascript
     var minSubArrayLen = function (target, nums) {
@@ -2412,6 +2573,8 @@ B是A的子结构， 即 A中有出现和B相同的结构和节点值。
     ```
 
 ### 螺旋矩阵 II
+todo
+
 给你一个正整数 `n` ，生成一个包含 `1` 到 `n2` 所有元素，且元素按顺时针顺序螺旋排列的 `n x n` 正方形矩阵 `matrix` 。
 
 示例 1：
@@ -2445,3 +2608,472 @@ B是A的子结构， 即 A中有出现和B相同的结构和节点值。
 
     };
     ```
+
+### 字母异位词分组
+给你一个字符串数组，请你将 **字母异位词** 组合在一起。可以按任意顺序返回结果列表。
+
+**字母异位词** 是由重新排列源单词的所有字母得到的一个新单词。
+
+示例 1:
+
+```
+输入: strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
+输出: [["bat"],["nat","tan"],["ate","eat","tea"]]
+```
+
+示例 2:
+
+```
+输入: strs = [""]
+输出: [[""]]
+```
+
+示例 3:
+
+```
+输入: strs = ["a"]
+输出: [["a"]]
+```
+
+提示：
+
+- `1 <= strs.length <= 10 ** 4`
+- `0 <= strs[i].length <= 100`
+- `strs[i] 仅包含小写字母`
+
+1. 解法一
+
+    先排序，再哈希表。
+
+    ```javascript
+    /**
+     * @param {string[]} strs
+     * @return {string[][]}
+     */
+    var groupAnagrams = function (strs) {
+      // 以排序过的每个项字符串为key，以原数组每个字符串的值为value
+      const hash = new Map();
+
+      const newStrs = strs.map((str) => {
+        return str.split("").sort().join("");
+      });
+
+      for (let i = 0; i < newStrs.length; i++) {
+        if (hash.has(newStrs[i])) {
+          hash.get(newStrs[i]).push(strs[i]);
+        } else {
+          hash.set(newStrs[i], [strs[i]]);
+        }
+      }
+
+      return [...hash.values()];
+    };
+    ```
+2. 解法二
+
+    先单词的字母计数，再哈希表。
+
+    ```javascript
+    var groupAnagrams = function (strs) {
+      // 每个key都是按照单词所占的26个字母数量，如：'abda'的key为'2:1:0:1:...'
+      const hash = new Map();
+
+      for (let i = 0; i < strs.length; i++) {
+        // 把单词转变成按顺序的26个字母数量的字符串
+        const letterArr = Array.from({ length: 26 }).fill(0);
+        for (let j of strs[i]) {
+          letterArr[j.charCodeAt() - "a".charCodeAt()] += 1;
+        }
+        const key = letterArr.join(":");
+
+        if (hash.get(key)) {
+          hash.get(key).push(strs[i]);
+        } else {
+          hash.set(key, [strs[i]]);
+        }
+      }
+
+      return [...hash.values()];
+    };
+    ```
+
+### 最长连续序列
+给定一个未排序的整数数组 `nums` ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+
+请你设计并实现时间复杂度为 O(n) 的算法解决此问题。
+
+
+
+示例 1：
+
+```
+输入：nums = [100,4,200,1,3,2]
+输出：4
+解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
+```
+
+示例 2：
+
+```
+输入：nums = [0,3,7,2,5,8,4,6,0,1]
+输出：9
+```
+
+提示：
+
+- `0 <= nums.length <= 10 ** 5`
+- `-(10 ** 9) <= nums[i] <= 10 ** 9`
+
+1. 解法一
+
+    哈希表，为了达到 O(n)，仅对最小的数字进行累加计数操作。
+
+    ```javasciprt
+    /**
+     * @param {number[]} nums
+     * @return {number}
+     */
+    var longestConsecutive = function (nums) {
+      // 去除相同的项
+      const set = new Set(nums);
+
+      let longestLen = 0;
+
+      for (const i of set) {
+        // 为了保证 O(n) 所以只处理连续数字中最小的
+        if (!set.has(i - 1)) {
+          let currentLen = 1;
+          let currentNum = i;
+          while (set.has(currentNum + 1)) {
+            currentLen += 1;
+            currentNum += 1;
+          }
+          longestLen = Math.max(longestLen, currentLen);
+        }
+      }
+
+      return longestLen;
+    };
+    ```
+2. 解法二
+
+    哈希表，仅遍历一次，哈希表key代表数字、value代表该key数字连续长度。
+
+    ```javascript
+    var longestConsecutive = function (nums) {
+      // 把连续次数存放在哈希表（key：数字；value：连续长度）
+      let hash = new Map();
+      let longestLen = 0;
+
+      for (let i of nums) {
+        let num = i;
+        // 相同数字仅处理一次
+        if (!hash.has(num)) {
+          // 前后一个数字是否有值
+          let left = hash.get(num - 1) || 0;
+          let right = hash.get(num + 1) || 0;
+
+          let currentLen = 1 + left + right;
+          longestLen = Math.max(currentLen, longestLen);
+
+          hash.set(num, currentLen);
+          // 同步更新2端边界
+          hash.set(num - left, currentLen);
+          hash.set(num + right, currentLen);
+        }
+      }
+
+      return longestLen;
+    };
+    ```
+
+### 盛最多水的容器
+给定一个长度为 `n` 的整数数组 `height` 。有 `n` 条垂线，第 `i` 条线的两个端点是 `(i, 0)` 和 `(i, height[i])` 。
+
+找出其中的两条线，使得它们与 `x` 轴共同构成的容器可以容纳最多的水。
+
+返回容器可以储存的最大水量。
+
+说明：你不能倾斜容器。
+
+示例 1：
+
+![question_11.jpg](./images/question_11.jpg)
+
+```
+输入：[1,8,6,2,5,4,8,3,7]
+输出：49
+解释：图中垂直线代表输入数组 [1,8,6,2,5,4,8,3,7]。在此情况下，容器能够容纳水（表示为蓝色部分）的最大值为 49。
+```
+
+示例 2：
+
+```
+输入：height = [1,1]
+输出：1
+```
+
+提示：
+
+- `n == height.length`
+- `2 <= n <= 10 ** 5`
+- `0 <= height[i] <= 10 ** 4`
+
+1. 解法一
+
+    双指针。缩减搜索空间如何保证不漏情况。
+
+    ```javascript
+    /**
+     * @param {number[]} height
+     * @return {number}
+     */
+    var maxArea = function (height) {
+      let maxArea = 0;
+      // 第一个和最后一个项为双指针初始状态
+      for (let left = 0, right = height.length - 1; left < right; ) {
+        maxArea = Math.max(
+          maxArea,
+          (right - left) * Math.min(height[left], height[right]),
+        );
+
+        // 需要验证：缩小短的一边能找到最大面积（相等的边缩短哪一边都一样）
+        if (height[left] < height[right]) {
+          left++;
+        } else {
+          right--;
+        }
+      }
+
+      return maxArea;
+    };
+
+    // 缩减搜索空间，如何找到最大的面积：
+    //   1. 在每个状态下，无论长板或短板向中间收窄一格，都会导致水槽 底边宽度 −1 变短，
+    //   2.1. 若向内 移动短板 ，水槽的短板可能 变大或不变或变小，因此下个水槽的面积 可能增大；
+    //   2.2. 若向内 移动长板 ，水槽的短板可能 不变或变小，因此下个水槽的面积 一定变小。
+    //   缩小短的一边能找到最大面积。
+    ```
+2. 解法二
+
+    暴力解法，O(n^2)，已超时。
+
+    ```javascript
+    var maxArea = function (height) {
+      let maxvolume = 0;
+      for (let i = 0; i < height.length - 1; i++) {
+        for (let j = i + 1; j < height.length; j++) {
+          maxvolume = Math.max(maxvolume, (j - i) * Math.min(height[i], height[j]));
+        }
+      }
+      return maxvolume;
+    };
+    ```
+
+### 三数之和
+给你一个整数数组 `nums` ，判断是否存在三元组 `[nums[i], nums[j], nums[k]]` 满足 `i != j`、`i != k` 且 `j != k` ，同时还满足 `nums[i] + nums[j] + nums[k] == 0` 。请
+
+你返回所有和为 `0` 且不重复的三元组。
+
+注意：答案中不可以包含重复的三元组。
+
+示例 1：
+
+```
+输入：nums = [-1,0,1,2,-1,-4]
+输出：[[-1,-1,2],[-1,0,1]]
+解释：
+nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0 。
+nums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0 。
+nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。
+不同的三元组是 [-1,0,1] 和 [-1,-1,2] 。
+注意，输出的顺序和三元组的顺序并不重要。
+```
+
+示例 2：
+
+```
+输入：nums = [0,1,1]
+输出：[]
+解释：唯一可能的三元组和不为 0 。
+```
+
+示例 3：
+
+```
+输入：nums = [0,0,0]
+输出：[[0,0,0]]
+解释：唯一可能的三元组和为 0 。
+```
+
+提示：
+
+- `3 <= nums.length <= 3000`
+- `-10 ** 5 <= nums[i] <= 10 ** 5`
+
+1. 解法一
+
+    双指针，O(n^2)。关键在去除重复答案。
+
+    ```javascript
+    /**
+     * @param {number[]} nums
+     * @return {number[][]}
+     */
+    function threeSum(nums) {
+      // 先排序，因为去重和算法逻辑需要
+      nums.sort((a, b) => a - b);
+
+      const resultArr = [];
+
+      for (let left = 0; left < nums.length; left++) {
+        if (nums[left] > 0) {
+          return resultArr; // nums经过排序后，只要nums[left]>0, 此后的nums[left] + nums[middle] + nums[right]均大于0,可以提前终止循环。
+        }
+        // 去重
+        if (left > 0 && nums[left] === nums[left - 1]) {
+          continue;
+        }
+        let middle = left + 1;
+        let right = nums.length - 1;
+        while (middle < right) {
+          let total = nums[left] + nums[middle] + nums[right];
+          if (total === 0) {
+            resultArr.push([nums[left], nums[middle], nums[right]]);
+
+            // 去重需要，所以2个指针同时移动
+            middle++;
+            right--;
+
+            // 去重需要
+            while (nums[right] === nums[right + 1]) {
+              right--;
+            }
+            // 去重需要
+            while (nums[middle] === nums[middle - 1]) {
+              middle++;
+            }
+          } else if (total < 0) {
+            middle++;
+          } else {
+            right--;
+          }
+        }
+      }
+      return resultArr;
+    }
+    ```
+
+### 无重复字符的最长子串
+给定一个字符串 `s` ，请你找出其中不含有重复字符的 **最长子串** 的长度。
+
+示例 1:
+
+```
+输入: s = "abcabcbb"
+输出: 3
+解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+```
+
+示例 2:
+
+```
+输入: s = "bbbbb"
+输出: 1
+解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
+```
+
+示例 3:
+
+```
+输入: s = "pwwkew"
+输出: 3
+解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
+     请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
+```
+
+提示：
+
+- `0 <= s.length <= 5 * 10 ** 4`
+- `s` 由英文字母、数字、符号和空格组成
+
+1. 解法一
+
+    滑动窗口（双指针）。
+
+    ```javascript
+    /**
+     * @param {string} s
+     * @return {number}
+     */
+    var lengthOfLongestSubstring = function (s) {
+      // 哈希表
+      const hash = new Set();
+
+      let longestLen = 0;
+
+      // 双指针
+      for (let left = 0, right = 0; left < s.length; ++left) {
+        if (left === 0) {
+          // 初始化
+          hash.add(s[0]);
+          longestLen = 1;
+        } else {
+          // 左指针向右移动一格，移除一个字符
+          hash.delete(s[left - 1]);
+        }
+
+        // 不断地移动右指针，直到长度尽头或者重复
+        while (right + 1 < s.length && !hash.has(s[right + 1])) {
+          hash.add(s[right + 1]);
+          ++right;
+        }
+
+        longestLen = Math.max(longestLen, right - left + 1);
+      }
+      return longestLen;
+    };
+    ```
+2. 解法二
+
+    暴力解法，O(n^2) + 嵌套的判断无重复的时间复杂度。
+
+    1. 利用`Set`
+
+        ``javascript
+        var lengthOfLongestSubstring = function (s) {
+          let longestLen = 0;
+          for (let i = 0; i < s.length; i++) {
+            longestLen = Math.max(longestLen, 1);
+
+            const hash = new Set([s[i]]);
+
+            for (let j = i + 1; j < s.length; j++) {
+              if (hash.has(s[j])) {
+                break;
+              }
+              hash.add(s[j]);
+              longestLen = Math.max(longestLen, j - i + 1);
+            }
+          }
+          return longestLen;
+        };
+        ```
+    2. 利用`String.prototype.includes`
+
+        ```javascript
+        var lengthOfLongestSubstring = function (s) {
+          let longestLen = 0;
+          for (let i = 0; i < s.length; i++) {
+            longestLen = Math.max(longestLen, 1);
+
+            for (let j = i + 1; j < s.length; j++) {
+              if (s.slice(i, j).includes(s[j])) {
+                break;
+              }
+              longestLen = Math.max(longestLen, j - i + 1);
+            }
+          }
+          return longestLen;
+        };
+        ```

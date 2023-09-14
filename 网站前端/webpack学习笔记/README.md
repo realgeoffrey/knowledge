@@ -8,7 +8,9 @@
     1. [原理](#原理)
 1. [分析输出文件](#分析输出文件)
 1. [动态加载](#动态加载)
-1. [Rollup与webpack对比](#rollup与webpack对比)
+1. [热更新（hot module replacement，HMR，模块热替换）](#热更新hot-module-replacementhmr模块热替换)
+1. [tree shaking](#tree-shaking)
+1. [Rollup、vite与webpack对比](#rollupvite与webpack对比)
 
 ---
 
@@ -61,10 +63,10 @@
 
     [webpack-dev-server](https://github.com/webpack/webpack-dev-server)、webpack-hot-middleware、webpack-dev-middleware，可以写入内存中（而不是写入磁盘、看不见文件）编译并serve资源来提高性能。
 
-    1. `hot`（需要`new webpack.HotModuleReplacementPlugin()`配合）：热更新
+    1. `static`（替代 ~~`contentBase`~~）
+    2. `hot`（添加`new webpack.HotModuleReplacementPlugin()`配合）：[热更新](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/webpack学习笔记/README.md#热更新hot-module-replacementhmr模块热替换)
 
         >利用websocket实现，websocket-server识别到html、css和js的改变，就向websocket-client发送一个消息，websocket-client判断若是html和css则操作dom，实现局部刷新，若是js则重载页面。
-    2. `static`（替代 ~~`contentBase`~~）
 8. `resolve`
 
     1. `.alias`：定义路径的别名
@@ -162,7 +164,7 @@
         2. 图片压缩
 
             [imagemin](https://github.com/imagemin) + [image-webpack-loader](https://github.com/tcoopman/image-webpack-loader)
-        3. tree shaking
+        3. [tree shaking](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/webpack学习笔记/README.md#tree-shaking)
 
             1. 无用JS删除（只支持ES6 Module，不支持CommonJS）
             2. 无用CSS删除：
@@ -263,6 +265,15 @@
 
         module.exports = DonePlugin;
         ```
+- Compiler：对象主要用于控制打包过程的整个流程
+
+    1. run：开始启动编译过程
+    2. make：进行编译
+    3. seal：编译完成，形成chunk
+    4. emit：输出文件
+
+    - compilation对象代表在这个打包过程中的打包产物，用于记录打包过程中的内容，如dependencies/modules/chunks等等。
+    - plugin插件则是监听打包过程中的某一个或多个过程，然后对compilation等内容进行加工处理，最终得到打包好的内容。
 
 ---
 ### 分析输出文件
@@ -422,9 +433,9 @@
     ```
 
 ### 动态加载
-1. 代码使用 ES6 Module的`import()` 或 特别约定的`require` 来告诉webpack支持动态加载
+1. 代码使用 ES6 Module的`import()` 或 特别约定的`require` 来告诉webpack支持代码分离
 
-    1. [React通过`<React.Suspense>`、`React.lazy`配合`import()`进行代码分割（动态加载）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/React学习笔记/README.md#代码分割动态加载)
+    1. [React通过`<React.Suspense>`、`React.lazy`配合`import()`进行代码分离（动态加载）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/React学习笔记/README.md#代码分割动态加载)
     2. <details>
 
         <summary>Vue的异步组件</summary>
@@ -444,75 +455,158 @@
         })
         ```
         </details>
-2. Webpack会将这个import语句（或其他）解析为一个独立的文件，并在运行时加载它
+    3. 基于路由的代码分离
+2. 实现原理
 
-    输出的实现动态加载方法（JSONP原理）：
+    1. 构建阶段的代码分离（Code Splitting）：
+
+        当Webpack构建项目时，它会根据代码分离配置将模块分组为不同的块（安装使用`@babel/plugin-syntax-dynamic-import`babel配置，代码遇到`import()`或其他）。每个块都是一个独立的文件，可以被异步加载。
+    2. 执行代码到动态加载部分时：
+
+        先尝试读取模块缓存，若没有，则创建`<scrip>`加载chunk包（JSONP），chunk写入`window.webpackJsonp`并被webpack的模块加载体系（`__webpack_require__`）引入执行。
+
+        - 动态模块的代码存放在`window.webpackJsonp`：
+
+            ```javascript
+            // window.webpackJsonp
+            [
+              0: [
+                ["模块1"],
+                {./src/templates/basic/模块1.js: ƒ}
+              ],
+              1: [
+                ["模块2"],
+                {./src/templates/basic/模块2.js: ƒ}
+              ],
+              push: f webpackJsonpCallback(data)
+            ]
+            ```
+
+        - 输出的实现动态加载方法（JSONP原理）：
+
+            ```javascript
+            var inProgress = {};
+            var dataWebpackPrefix = "wepack5-demo:";
+
+            // loadScript function to load a script via script tag
+            // url: __webpack_require__.p + __webpack_require__.u(chunkId)
+            // done: loading结束方法
+            // key: "chunk-" + chunkId
+            // chunkId: 路径名、文件名、后缀 组成的字符串
+            __webpack_require__.l = (url, done, key, chunkId) => {
+              // 使用缓存
+              if (inProgress[url]) {
+                inProgress[url].push(done);
+                return;
+              }
+              var script, needAttach;
+              if (key !== undefined) {
+                var scripts = document.getElementsByTagName("script");
+                for (var i = 0; i < scripts.length; i++) {
+                  var s = scripts[i];
+                  if (
+                    s.getAttribute("src") == url ||
+                    s.getAttribute("data-webpack") == dataWebpackPrefix + key
+                  ) {
+                    script = s;
+                    break;
+                  }
+                }
+              }
+              if (!script) {
+                needAttach = true;
+                script = document.createElement("script");
+
+                script.charset = "utf-8";
+                script.timeout = 120;
+                if (__webpack_require__.nc) {
+                  script.setAttribute("nonce", __webpack_require__.nc);
+                }
+                script.setAttribute("data-webpack", dataWebpackPrefix + key);
+                script.src = url;
+              }
+              inProgress[url] = [done];
+              var onScriptComplete = (prev, event) => {
+                // avoid mem leaks in IE.
+                script.onerror = script.onload = null;
+                clearTimeout(timeout);
+                var doneFns = inProgress[url];
+                delete inProgress[url];
+                script.parentNode && script.parentNode.removeChild(script);
+                doneFns && doneFns.forEach((fn) => fn(event));
+                if (prev) return prev(event);
+              };
+              var timeout = setTimeout(
+                onScriptComplete.bind(null, undefined, { type: "timeout", target: script }),
+                120000,
+              );
+              script.onerror = onScriptComplete.bind(null, script.onerror);
+              script.onload = onScriptComplete.bind(null, script.onload);
+              needAttach && document.head.appendChild(script);
+            };
+            ```
+
+### 热更新（hot module replacement，HMR，模块热替换）
+1. 配置
 
     ```javascript
-    var inProgress = {};
-    var dataWebpackPrefix = "wepack5-demo:";
-
-    // loadScript function to load a script via script tag
-    __webpack_require__.l = (url, done, key, chunkId) => {
-      if (inProgress[url]) {
-        inProgress[url].push(done);
-        return;
-      }
-      var script, needAttach;
-      if (key !== undefined) {
-        var scripts = document.getElementsByTagName("script");
-        for (var i = 0; i < scripts.length; i++) {
-          var s = scripts[i];
-          if (
-            s.getAttribute("src") == url ||
-            s.getAttribute("data-webpack") == dataWebpackPrefix + key
-          ) {
-            script = s;
-            break;
-          }
-        }
-      }
-      if (!script) {
-        needAttach = true;
-        script = document.createElement("script");
-
-        script.charset = "utf-8";
-        script.timeout = 120;
-        if (__webpack_require__.nc) {
-          script.setAttribute("nonce", __webpack_require__.nc);
-        }
-        script.setAttribute("data-webpack", dataWebpackPrefix + key);
-        script.src = url;
-      }
-      inProgress[url] = [done];
-      var onScriptComplete = (prev, event) => {
-        // avoid mem leaks in IE.
-        script.onerror = script.onload = null;
-        clearTimeout(timeout);
-        var doneFns = inProgress[url];
-        delete inProgress[url];
-        script.parentNode && script.parentNode.removeChild(script);
-        doneFns && doneFns.forEach((fn) => fn(event));
-        if (prev) return prev(event);
-      };
-      var timeout = setTimeout(
-        onScriptComplete.bind(null, undefined, { type: "timeout", target: script }),
-        120000,
-      );
-      script.onerror = onScriptComplete.bind(null, script.onerror);
-      script.onload = onScriptComplete.bind(null, script.onload);
-      needAttach && document.head.appendChild(script);
-    };
+    devServer: {
+      hot: true,
+    },
+    plugins: [
+      new webpack.HotModuleReplacementPlugin(),
+    ],
     ```
+2. 流程
 
-### [Rollup](https://github.com/rollup/rollup)与webpack对比
+    1. 服务启动（webpack-dev-server）：
+
+        1. Bundle server（文件服务器，express）
+        2. HMR Server（服务端服务，包含websocket）
+        3. HMR Runtime（客户端服务，包含websocket）
+    2. 浏览器加载页面之后，浏览器端的HMR Runtime 与 服务端的HMR Server 建立websocket连接。
+    3. 本地文件变化 -> 通知webpack增量构建，产生：
+
+        1. hash值
+        2. manifest（.json，包含所有发生变更的模块列表）
+        3. chunk（.js，增量修改内容）
+    4. 产生的hash值通过websocket通知HMR Runtime
+    5. HMR Runtime对比新旧的hash值，若不一致，则ajax获取manifest确定需要改动的module和chunk，再通过JSONP去Bundle server获取最新资源
+
+### [tree shaking](https://webpack.docschina.org/guides/tree-shaking)
+基于静态分析的原理，通过识别未使用的模块、函数、变量等并打上标记，然后在压缩阶段利用uglify-js/terser等压缩工具删除这些没有用到的代码（AST裁剪）。
+
+1. 在webpack中开启，必须同时满足：
+
+    1. 使用ES6 Module规范编写代码
+
+        ><details>
+        ><summary>原因</summary>
+        >
+        >1. 在CommonJs、AMD、CMD等旧版本的JS模块化方案中，导入导出行为是高度动态，难以预测。
+        >2. ES6 Module方案则从规范层面规避这一行为，它要求所有的导入导出语句只能出现在模块顶层，且导入导出的模块名必须为字符串常量（不能修改），所以，ES6 Module下模块之间的依赖关系是高度确定的，与运行状态无关，编译工具只需要对代码做静态分析，就可以从代码字面量中推断出哪些模块值未曾被其它模块使用，这是实现Tree Shaking技术的必要条件。
+        ></details>
+
+        - 确保代码不会在某些阶段被转换为CommonJS等（在使用babel时避免`compilerOptions.module`设置为非ES6 Module）
+    2. 配置`optimization.usedExports: true`启动标记功能
+    3. 启动代码优化功能：`mode: 'production'`或`optimization.minimize: true`或`optimization.minimizer: 「数组」`
+
+### [Rollup](https://github.com/rollup/rollup)、[vite](https://github.com/vitejs/vite)与webpack对比
 1. Rollup：
 
-    1. 文件很小，几乎没多余代码；执行很快；可方便输出CommonJS、ES6 Module、IIFE（用于`<script>`引用）格式。
+    1. 打包结果文件很小，几乎没多余代码（Tree Shaking）；执行很快；可方便输出CommonJS、ES6 Module、IIFE（用于`<script>`引用）格式。
     2. 必须用ES6 Module格式的代码才可以打包。
-2. webpack：
+    3. 适合纯JS的库或组件。
+2. webpack
 
-    1. 拥有强大、全面的功能，更好的社区。
-    2. 在进行资源打包时会产生很多冗余的代码。
+    1. 拥有强大、全面的功能、高度可配置，更好的社区。
+    2. 针对各种类型的文件（loader支持）。可以处理多个入口文件和复杂的依赖关系。通过配置文件和加载器，可以高度定制和扩展Webpack的功能。
+    3. 在进行资源打包时会产生很多冗余的代码（webpack内部结构、模块化方案、`__webpack_require__`）。
+    4. 适合复杂项目。
+3. vite
 
-- 总结：App级别的应用——webpack，JS库级别的应用——Rollup。
+    1. 核心原理：利用现代浏览器现在已经支持ES6 Module的import能力，遇到import就会发送一个HTTP请求去加载ES6 Module文件。整个过程中没有对文件进行打包编译。
+    2. 快速的冷启动能力，提供了快速的开发体验。在开发阶段使用原生ES6 Module直接引入模块，而不需要像Webpack和Rollup一样进行打包，从而提供了更快的热重载和构建速度。
+    3. 适用于中小型项目，特别是基于现代浏览器的单页应用（SPA）或中小型网站开发。
+
+- 总结：App级别的应用——webpack，JS库级别的应用——Rollup，现代浏览器快读开发体验——vite。

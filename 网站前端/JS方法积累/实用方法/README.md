@@ -86,7 +86,8 @@
 1. 算法思路
 
     1. [sleep](#sleep)
-    1. [任务队列链式调用](#任务队列链式调用)
+    1. [任务队列链式调用和取消](#任务队列链式调用和取消)
+    1. [调度器任务并发](#调度器任务并发)
     1. [无缝轮播](#无缝轮播)
     1. [洗牌算法](#洗牌算法)
     1. [获取某一位的数字](#获取某一位的数字)
@@ -2206,7 +2207,7 @@ xhr.send(null);
 
     1. 异步（JS文件地址）
 
-        1. 动态创建`<script>`
+        1. 动态创建`<script>`（JSONP）
 
             >默认是`async`（可以手动设置`newScript.async = false`）；没有`async`时按动态添加的时序（与位置无关）执行。
 
@@ -3836,7 +3837,7 @@ for (let i = 0; i < text.length; i++) {
         ```
         </details>
 
-### 任务队列链式调用
+### 任务队列链式调用和取消
 1. 要求：
 
     任务队列，可以链式调用、可以取消前一个任务。
@@ -3900,6 +3901,83 @@ for (let i = 0; i < text.length; i++) {
     // obj.do('你好').cancel()
     // obj.cancel().do('hello').sleep(1000).do('yo ho')
     obj.sleep(1000).sleep(2000).cancel().cancel().do('他好').cancel().sleep(1000).sleep(1000).do('我好').do('我好')
+    ```
+
+### 调度器任务并发
+1. 要求：
+
+    ```javascript
+    // 请实现一个调度器，这个调度器保证任务的并发数为2
+    class Schedular {
+      // task是一个函数，会返回一个promise，add也会返回一个promise，add的promise根据task的promise状态改变
+      add (task) {
+      }
+    }
+
+    const task = (duration, order) => new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(order);
+      }, duration);
+    });
+
+    // 开始测试
+    const schedular = new Schedular();
+    schedular.add(task(100, 1)).then(res => console.log(res));
+    schedular.add(task(500, 2)).then(res => console.log(res));
+    schedular.add(task(300, 3)).then(res => console.log(res));
+    schedular.add(task(50, 4)).then(res => console.log(res));
+    // 结果应该为1, 3, 4, 2
+    ```
+2. 实现方式：
+
+    ```javascript
+    class Scheduler {
+      tasks = []; // 待执行任务队列
+      runningCount = []; // 当前正在运行的任务数
+
+      constructor(maxRunningCount = 2) {
+        this.maxRunningCount = maxRunningCount; // 最大并行任务数
+      }
+
+      add(task) {
+        return new Promise((resolve) => {
+          // 执行当前add后继续触发执行其他
+          const doTask = async () => {
+            resolve(await task());
+
+            this.runningCount--;
+            this.schedule();
+          };
+
+          this.tasks.push(doTask);
+          this.schedule();
+        });
+      }
+
+      schedule() {
+        while (this.runningCount < this.maxRunningCount && this.tasks.length > 0) {
+          this.runningCount++;
+
+          this.tasks.shift()(); // 取出队列中的任务、执行
+        }
+      }
+    }
+
+
+    // 测试代码
+    const task = (duration, order) => () => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(order);
+        }, duration);
+      });
+    };
+
+    const scheduler = new Scheduler();
+    scheduler.add(task(100, 1)).then((res) => console.log(res));
+    scheduler.add(task(500, 2)).then((res) => console.log(res));
+    scheduler.add(task(300, 3)).then((res) => console.log(res));
+    scheduler.add(task(50, 4)).then((res) => console.log(res));
     ```
 
 ### 无缝轮播

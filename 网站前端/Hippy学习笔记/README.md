@@ -98,7 +98,7 @@
     iOS和Android的渲染结果可能不同，样式（截断、遮挡）、事件冒泡情况、等，容易产生区别。
 4. （像RN一样）提供一个JS运行时环境（类似Node.js、WebView），JS运行并通过桥协议与客户端交互，最终客户端渲染视图。
 
-    >前端最终提供一个.js文件在JS运行时环境中执行。
+    >前端最终提供一个.js文件在JS运行时环境中执行。hippy使用的JS引擎：iOS用JSC，Android用V8。
 
     对于不支持的方法（如：window、document、Buffer、等），若需要，则前端人员自己hack（就可以直接使用各种开源库，如：webpack、React库、等）。
 
@@ -638,7 +638,7 @@
 
     >[模块文档](https://hippyjs.org/#/hippy-react/modules)比较简单，更详细的用法在[demo](https://github.com/Tencent/Hippy/tree/master/examples/hippy-react-demo/src/modules)或[源码](https://github.com/Tencent/Hippy/tree/master/packages/hippy-react/src/modules)中。
 
-    1. 动画组件
+    1. <a name="hippy-react-模块-动画组件"></a>动画组件
 
         提供给前端React/Vue渲染使用的按时间变化的style中某样式属性值。
 
