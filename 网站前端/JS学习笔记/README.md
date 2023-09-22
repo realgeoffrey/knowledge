@@ -178,60 +178,6 @@
 
             1. 若Func返回**引用数据类型**，则这个引用数据类型的值赋值给newObj。
             2. 若Func返回基本数据类型或返回this或无返回，则obj赋值给newObj。
-
-        ><details>
-        ><summary>模拟实现一个<code>new</code></summary>
-        >
-        >```javascript
-        >// 第一个参数是构造函数，后面是参数
-        >// 不支持class的构造函数，因为class必须`new`创建，否则报错。也不支持new.target。
-        >function objectFactory () {
-        >  const obj = new Object()
-        >  const Constructor = Array.prototype.shift.call(arguments)
-        >  Object.setPrototypeOf(obj, Constructor.prototype)
-        >  const ret = Constructor.apply(obj, arguments)
-        >
-        >  return (typeof ret === 'object' && ret !== null) || typeof ret === 'function' ? ret : obj
-        >}
-        >
-        >/* 使用测试 */
-        >function A (a, b) {
-        >  this.a = a
-        >  this.b = b
-        >}
-        >function B (a, b) {
-        >  this.a = a
-        >  this.b = b
-        >  return null
-        >}
-        >function C (a, b) {
-        >  this.a = a
-        >  this.b = b
-        >  return 1
-        >}
-        >function D (a, b) {
-        >  this.a = a
-        >  this.b = b
-        >  return function () {
-        >    return a + b
-        >  }
-        >}
-        >function E (a, b) {
-        >  this.a = a
-        >  this.b = b
-        >  return {
-        >    otherA: a,
-        >    otherB: b
-        >  }
-        >}
-        >
-        >console.log(objectFactory(A, 'a1', 'b1'), new A('a1', 'b1'))
-        >console.log(objectFactory(B, 'a1', 'b1'), new B('a1', 'b1'))
-        >console.log(objectFactory(C, 'a1', 'b1'), new C('a1', 'b1'))
-        >console.log(objectFactory(D, 'a1', 'b1'), new D('a1', 'b1'))
-        >console.log(objectFactory(E, 'a1', 'b1'), new E('a1', 'b1'))
-        >```
-        ></details>
         </details>
 6. <a name="函数-参数"></a>参数
 

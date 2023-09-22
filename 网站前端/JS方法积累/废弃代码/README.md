@@ -32,7 +32,6 @@
 
     1. [`requestAnimationFrame`和`cancelAnimationFrame`](#原生jsrequestanimationframe和cancelanimationframe的polyfill)
     1. [`Date.now`](#原生jsdatenow的polyfill)
-    1. [`Object.create`](#原生jsobjectcreate的polyfill)
     1. [`Array.isArray`](#原生jsarrayisarray的polyfill)
     1. [`Array.prototype.map`](#原生jsarrayprototypemap的polyfill)
     1. [`Function.prototype.bind`](#原生jsfunctionprototypebind的polyfill)
@@ -1138,41 +1137,6 @@ if (typeof Date.now !== 'function') {
 }
 ```
 >`Date.now()`相对于`new Date().getTime()`及其他方式，可以避免生成不必要的`Date`对象，更高效。
-
-### *原生JS*`Object.create`的Polyfill
->来自：[MDN:Object.create](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill)。
-
-```javascript
-if (typeof Object.create !== 'function') {
-    Object.create = (function () {
-        function Temp() {}
-
-        var hasOwn = Object.prototype.hasOwnProperty;
-
-        return function (O) {
-            if (typeof O != 'object') {
-                throw TypeError('Object prototype may only be an Object or null');
-            }
-
-            Temp.prototype = O;
-            var obj = new Temp();
-            Temp.prototype = null; // 不要保持一个 O 的杂散引用（a stray reference）...
-
-            if (arguments.length > 1) {
-                var Properties = Object(arguments[1]);
-
-                for (var prop in Properties) {
-                    if (hasOwn.call(Properties, prop)) {
-                        obj[prop] = Properties[prop];
-                    }
-                }
-            }
-
-            return obj;
-        };
-    })();
-}
-```
 
 ### *原生JS*`Array.isArray`的Polyfill
 >来自：[MDN:Array.isArray](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray#Polyfill)。
