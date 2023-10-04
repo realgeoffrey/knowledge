@@ -8,15 +8,20 @@
     通过模拟输入和预测输出的方式测试独立的函数或类。
 
     >前端库：[jest](https://github.com/facebook/jest)、[mocha](https://github.com/mochajs/mocha)
-2. 组件测试库
-
-    >前端库：[testing-library](https://github.com/testing-library)、[storybook](https://github.com/storybookjs/storybook)、[vue-test-utils](https://github.com/vuejs/vue-test-utils)
-3. 端到端（E2E、end to end）测试
+2. 端到端（E2E、end to end）测试（UI测试）
 
     功能测试，站在用户视角，使用各种功能、各种交互，是用户的真实使用场景的仿真。
 
+    1. 编写脚本，浏览器运行。
+
+        >[cypress](https://github.com/cypress-io/cypress)
+    2. 编写脚本，虚拟机运行，模拟界面点击 + 截图
+
+        >[puppeteer](https://github.com/puppeteer/puppeteer)
+    3. 大部分手工测试。
+
     >集成测试（Integration Test）的一种：在单元测试的基础上，将所有模块按照设计要求组装成为子系统或系统，进行集成测试。
-4. 代码覆盖率（code coverage）测试
+3. 代码覆盖率（code coverage）测试
 
     通过计算测试过程中被执行的源代码占全部源代码的比例，进而间接度量软件质量的方法。
 
@@ -26,7 +31,6 @@
     2. Branches：分支覆盖率，所有代码分支（如：if、三目运算）的执行率
     3. Functions：函数覆盖率，所有函数的被调用率
     4. Lines：行覆盖率，所有有效代码行的执行率，和语句类似，但是计算方式略有差别
+4. 组件测试库
 
-- UI测试
-
-    大部分手工测试。
+    >前端库：[react-testing-library](https://github.com/testing-library/react-testing-library)、[vue-test-utils](https://github.com/vuejs/vue-test-utils)、[storybook](https://github.com/storybookjs/storybook)

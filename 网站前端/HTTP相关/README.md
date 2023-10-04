@@ -41,7 +41,7 @@
 4. 无状态（[cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#服务端验证用户状态)弥补）
 
     通信过程不保存上下文信息，每次HTTP请求都是独立、无关的。
-5. 无连接、短连接（[持久连接](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http持久连接websockethttp2)弥补）
+5. 无连接、短连接（[持久连接](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http持久连接websocket服务器推送)弥补）
 
     每次TCP连接只处理一个请求-响应。每一次完整的HTTP通信都要建立单独的TCP连接，服务器处理完客户的请求、并收到客户的应答后，即断开TCP连接。可以节省传输时间。
 
@@ -203,7 +203,7 @@
     <version> <status code> <reason phrase> // 状态行
     <headers>                               // 响应头
                                             // 空行（CR+LF）
-    <entity-body>                           // 响应正文
+    <entity-body>                           // 响应消息主体
     ```
 
 ><details>
@@ -242,6 +242,39 @@
 1. GET：通常用来获取资源
 
     向指定的资源发出「显示」请求。使用GET方法应该只用在读取数据，而不应当被用于产生「副作用」的操作中。
+
+><details>
+><summary>GET与POST区别</summary>
+>
+>1. 幂等性、副作用
+>
+>    1. GET，幂等，无副作用
+>    2. POST，非幂等，有副作用
+>2. 浏览器
+>
+>    1. GET
+>
+>        1. URL可以被收藏，在导航栏会被保留成历史记录
+>        2. 可以被HTTP缓存
+>        3. 绝大部分HTML标签、CSS属性、等的地址只能是GET请求
+>        4. 浏览器会把http header和data一并发送出去，服务器响应200 ok
+>    2. POST
+>
+>        1. URL不可以被收藏，不会被保存历史记录
+>        2. 不可以被HTTP缓存（除非手动设置）
+>        3. 只有`<form method="post">`（`<button formmethod="">`或`<input formmethod="">`可以覆盖）或JS能发起POST请求
+>        4. （有些浏览器的实现：）浏览器先发送header，服务器响应100 continue，浏览器再发送data，服务器响应200 ok
+>3. 安全性
+>
+>    1. GET，参数在URL上暴露
+>    2. POST，参数一般不在URL上暴露，而在响应消息主体中
+>4. 编码类型（`enctype`）
+>
+>    1. GET，`application/x-www-form-urlencoded`。在表单中使用GET方法时，数据类型中只接受 ASCII 字符。
+>    2. POST，``multipart/form-data`或`application/x-www-form-urlencoded`对二进制数据使用多部分编码。在表单提交时，POST方法不绑定表单数据类型，并允许二进制和ASCII字符。
+>5. 语义
+></details>
+
 2. POST：提交数据
 
     向指定资源提交数据，请求服务器进行处理（如：提交表单或上传文件）。数据被包含在请求本文中。这个请求可能会创建新的资源或修改现有资源，或二者皆有。
@@ -384,7 +417,7 @@
     5. **404 Not Found**
 
         资源未找到。
-    6. 405 Method Not Allowed
+    6. **405 Method Not Allowed**
 
         请求行中指定的请求方法不能被用于请求相应的资源。
     7. 406 Not Acceptable
@@ -595,7 +628,7 @@
 ### HTTP缓存
 >参考：[浏览器缓存知识小结及应用](http://www.cnblogs.com/lyzg/p/5125934.html)。
 
-只缓存GET请求。
+只缓存**GET**请求。
 
 1. 强缓存（本地缓存，Freshness）
 
@@ -622,6 +655,7 @@
 
                 1. 若请求时间在Expires之前，命中缓存，返回`200 OK (from 某某 cache)`，从本地缓存中读取资源，不会发请求到服务器。
                 2. 若没有命中缓存，发请求到服务器，根据响应头更新这个资源的Expires。
+            >缺陷：受限于系统时间，若更改则会缓存失效；浏览器与服务端两端的实际时间不一致，可能会造成缓存混乱。
         2. `Cache-Control`：
 
             相对时间。秒级。HTTP/1.1提出。
@@ -637,7 +671,7 @@
                 1. 若请求时间在过期时间之前，命中缓存，返回`200 OK (from 某某 cache)`，从本地缓存中读取资源，不会发请求到服务器。
                 2. 若没有命中缓存，发请求到服务器，根据响应头更新这个资源的Cache-Control。
 
-    >建议：[配置超长时间的本地缓存；采用文件的数字签名（如：MD5）作为缓存更新依据](https://github.com/fouber/blog/issues/6)。
+    >建议：资源[配置超长时间的强缓存；采用文件的数字签名（如：MD5）作为缓存更新依据](https://github.com/fouber/blog/issues/6)，`.html`设置不缓存或协商缓存或超短时间强缓存。
 
     - 启发式缓存（Heuristic Freshness）
 
@@ -688,7 +722,7 @@
 
             1. 分布式系统尽量关闭ETag（每台机器生成的ETag都会不一样）。
             2. 修改文件之后生成ETag需要消耗服务器性能。
-        - `ETag`的必要性
+        - `ETag`的必要性（`Last-Modified`缺陷）
 
             1. 某些文件会周期性地更改，但内容并不改变（仅改变修改时间），这时不希望客户端认为文件被修改了，而导致重新GET。
             2. 某些文件修改非常频繁（如：在1秒的时间内进行修改），If-Modified-Since能检查到的粒度是秒级的，这种修改无法判断（或说UNIX记录MTIME只能精确到秒）。
@@ -715,6 +749,8 @@
             | 前进、后退 | 有效 | 有效 |
             | 刷新 | **无效** | 有效 |
             | 强制刷新 | **无效** | **无效** |
+
+- webpack的分包机制，考虑代码更新频率和缓存的问题
 
 ### 基于HTTP的功能追加的技术或协议
 1. AJAX
@@ -894,7 +930,7 @@
 >    1. 请求方法：
 >
 >         `HEAD`或`GET`或`POST`。
->    2. 请求头仅包含（浏览器自动添加的其他请求头也可以是简单请求）：
+>    2. 请求头仅包含（浏览器自动添加的其他请求头也可以是简单请求，如：`Origin`）：
 >
 >         1. `Accept`
 >         2. `Accept-Language`
@@ -916,7 +952,7 @@
                 >若`Access-Control-Allow-Credentials`为`true`，则`Access-Control-Allow-Origin`不能为`*`，需要是明确的、与请求网页一致的域名。
             2. `Access-Control-Allow-Credentials`：（可选）是否允许发送cookie
 
-                >`XMLHttpRequest`要设置`withCredentials`为`true`，浏览器才会发送。
+                >后台响应包含`Access-Control-Allow-Credentials: true`（且`Access-Control-Allow-Origin`不能为`*`） 且 前端请求包含`xhr = new XMLHttpRequest(); xhr.withCredentials = true`，浏览器才能在跨域请求中携带cookie。
             3. `Access-Control-Expose-Headers`：（可选）CORS请求时，`XMLHttpRequest`只能拿到6个基本字段（`Cache-Control`、`Content-Language`、`Content-Type`、`Expires`、`Last-Modified`、`Pragma`），若需要其他字段，需在此指定
         2. 不允许跨域：
 
@@ -943,8 +979,8 @@
                 3. `Access-Control-Allow-Headers`：（若HTTP请求头有`Access-Control-Request-Headers`则必须）服务器支持的所有跨域请求的请求头字段，以`,`分割
                 4. `Access-Control-Allow-Credentials`：（可选）是否允许发送cookie
 
-                    >`XMLHttpRequest`要设置`withCredentials`为`true`，浏览器才会发送。
-                5. `Access-Control-Max-Age`：（可选）本次预检请求的有效期，单位秒
+                    >后台响应包含`Access-Control-Allow-Credentials: true`（且`Access-Control-Allow-Origin`不能为`*`） 且 前端请求包含`xhr = new XMLHttpRequest(); xhr.withCredentials = true`，浏览器才能在跨域请求中携带cookie。
+                5. `Access-Control-Max-Age`：（可选）本次预检请求的有效期，单位秒（-1：禁用预检缓存）
             2. 不允许跨域：
 
                 若服务器否定了预检请求，服务器会返回一个正常的HTTP响应，但没有任何CORS相关的头信息字段。浏览器根据响应没有包含相关响应头则认定为跨域错误（被`XMLHttpRequest`的`onerror`回调函数捕获）。
@@ -1004,6 +1040,13 @@ HTTP是无状态协议，通过session-cookie或token判断客户端的用户状
     2. **多路复用协议**。
 
         同域名下所有通信都在一个TCP连接上完成。一个TCP连接可以承载任意数量并行的双向数据流（stream）。移除了HTTP/1中顺序和阻塞的约束。
+
+        >问题：
+        >
+        >1. TCP需要客户端-服务端三次握手建立连接。
+        >2. TCP为了保证可靠传输，有一个“超时重传”机制，丢失的包必须等待重传确认，HTTP/2出现丢包时，整个TCP都要等待重传，那么就会阻塞该TCP连接中的所有请求。
+        >3. 多路复用导致服务器压力上升：多路复用没有限制同时请求数。请求的平均数量与往常相同，但实际会有许多请求的短暂爆发，导致瞬时QPS暴增。
+        >4. 多路复用容易Timeout：大批量的请求同时发送，由于HTTP/2连接内存在多个并行的流，而网络带宽和服务器资源有限，每个流的资源会被稀释，虽然它们开始时间相差更短，但却都可能超时。
     3. **压缩HTTP headers**。因为HTTP头在一系列请求中常常是相似的，其移除了重复和传输重复数据的成本。
     4. 其允许服务器在客户端缓存中填充数据，通过一个叫**服务器推送**的机制来提前请求。
 
@@ -1014,7 +1057,11 @@ HTTP是无状态协议，通过session-cookie或token判断客户端的用户状
 
     消除了大量歧义内容并引入了多项改进：
 
-    1. 连接可以复用（HTTP持久连接），节省了多次打开TCP连接加载网页文档资源的时间。
+    1. 连接可以复用（HTTP持久连接，一次TCP握手成功后，可以多次传递HTTP请求），节省了多次打开TCP连接加载网页文档资源的时间。
+
+        >问题：
+        >
+        >复用但是按顺序复用，导致队头阻塞：虽然能公用一个TCP管道，但是在一个管道中同一时刻只能处理一个请求，在当前的请求没有结束之前，其他的请求只能处于阻塞状态。当顺序发送的请求序列中的一个请求因为某种原因被阻塞时，在后面排队的所有请求也一并被阻塞，会导致客户端迟迟收不到数据。针对方案：①将同一页面的资源分散到不同域名下，提升连接上限；②减少请求数量，合并小文件；③内联一些资源：css、base64图片、等。
     2. 增加管线化技术，允许在第一个应答被完全发送之前就发送第二个请求，以降低通信延迟。
     3. 支持响应分块。
     4. 引入额外的缓存控制机制。

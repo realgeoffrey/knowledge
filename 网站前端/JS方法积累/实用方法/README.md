@@ -69,6 +69,7 @@
     1. [点击下载](#原生js点击下载)
     1. [写入剪切板](#原生js写入剪切板)
     1. [React组件业务类似Promise.all的效果](#react组件业务类似promiseall的效果)
+    1. [判断是否有循环引用](#原生js判断是否有循环引用)
 1. DOM相关
 
     1. [DOM展示或消失执行方法（IntersectionObserver）](#原生jsdom展示或消失执行方法intersectionobserver)
@@ -85,11 +86,10 @@
 
     1. [sleep](#sleep)
     1. [轮询](#原生js轮询)
-    1. [任务队列链式调用和取消](#任务队列链式调用和取消)
-    1. [调度器任务并发](#调度器任务并发)
     1. [节流函数](#原生js节流函数)
     1. [用`setTimeout`模拟`setInterval`](#原生js用settimeout模拟setinterval)
     1. [`requestAnimationFrame`的递归](#原生jsrequestanimationframe的递归)
+    1. [`requestAnimationFrame`模拟`setTimeout`和`setInterval`](#原生jsrequestanimationframe模拟settimeout和setinterval)
 1. 算法思路
 
     1. [获取对象指定深度属性](#原生js获取对象指定深度属性)
@@ -133,7 +133,7 @@
 function detectOS (ua = window.navigator.userAgent, pf = window.navigator.platform) {
   let os = ''
 
-  if (/iPhone|iPad|iPod|iOS/.test(ua)) {    // fixme:注意iOS13之后的iPad可能会判断为macOS
+  if (/iPhone|iPad|iPod|iOS/.test(ua)) {    // fixme: 注意iOS13之后的iPad可能会判断为macOS
     os = 'iOS'
   } else if (/Android/.test(ua)) {
     os = 'Android'
@@ -2234,9 +2234,9 @@ xhr.send(null);
 
     1. 异步（JS文件地址）
 
-        1. 动态创建`<script>`（JSONP）
+        1. JSONP
 
-            >默认是`async`（可以手动设置`newScript.async = false`）；没有`async`时按动态添加的时序（与位置无关）执行。
+            >动态创建的`<script>`默认是`async`（可以手动设置`dom.async = false`，这样就是`defer`效果——按添加顺序加载，尽管此时`dom.defer === false`）。
 
             ```javascript
             const newScript = document.createElement('script')
@@ -2246,24 +2246,17 @@ xhr.send(null);
 
             appendPlace.appendChild(newScript)
             ```
-        2. 改变已存在的`<script>`的`src`属性
 
-            >效果类似于`async`。
+        2. <details>
 
-            ```html
-            <script type="text/javascript" id="节点id"></script>
-
-            <script>
-                document.getElementById('节点id').src = 'JS文件地址';
-            </script>
-            ```
-        3. 直接`document.write`
+            <summary>（文档未加载完成时）直接<code>document.write</code></summary>
 
             >因为`document.write`需要向文档流中写入内容，因此在关闭（已加载）的文档上调用`document.write`会自动调用`document.open`，这将清空该文档的内容。
 
             ```javascript
             document.write('<script src="JS文件地址"><\/script>');
             ```
+            </details>
     2. 同步（JS代码文本）
 
         >动态创建的、没有`src`属性的、通过`text`属性设置JS代码文本的`<script>`，添加后的脚本被马上执行（可以认为是当前脚本一部分，但实际不是，作用域不同；这个也是jQuery的ajax加载执行外部JS脚本的方式）。
@@ -2283,65 +2276,61 @@ xhr.send(null);
         // 上面代码同步执行完毕再执行下面的代码
         ```
 
-        ><details>
-        ><summary>通过<code>XMLHttpRequest</code>的同步请求获得JS代码文本</summary>
-        >
-        >```javascript
-        >/**
-        > * 同步加载JS脚本
-        > * @param {String} url - JS文件的相对路径或绝对路径
-        > * @returns {Boolean} - 是否加载成功
-        > */
-        >function syncLoadJS(url) {
-        >    var xmlHttp,
-        >        appendPlace,
-        >        newScript;
-        >
-        >    if (window.ActiveXObject) { /* ie */
-        >        try {
-        >            xmlHttp = new ActiveXObject('Msxml2.XMLHTTP');
-        >        }
-        >        catch (e) {
-        >            xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
-        >        }
-        >    } else if (window.XMLHttpRequest) {
-        >        xmlHttp = new XMLHttpRequest();
-        >    }
-        >
-        >    xmlHttp.open('GET', url, false);    // 采用同步加载
-        >    xmlHttp.send(null); // 发送同步请求，若浏览器为Chrome或Opera，则必须发布后才能运行，不然会报错
-        >
-        >    /* 4代表数据发送完毕 */
-        >    if (xmlHttp.readyState == 4) {
-        >        /* 0为访问的本地，200到300代表访问服务器成功，304代表没做修改访问的是缓存 */
-        >        if ((xmlHttp.status >= 200 && xmlHttp.status < 300) || xmlHttp.status == 0 || xmlHttp.status == 304) {
-        >            newScript = document.createElement('script');
-        >            appendPlace = document.getElementsByTagName('body')[0] || document.getElementsByTagName('head')[0];
-        >
-        >            try {
-        >                newScript.appendChild(document.createTextNode(xmlHttp.responseText));
-        >            }
-        >            catch (e) {
-        >                newScript.text = xmlHttp.responseText;
-        >            }
-        >
-        >            appendPlace.appendChild(newScript);
-        >
-        >            return true;
-        >        }
-        >        else {
-        >
-        >            return false;
-        >        }
-        >    }
-        >    else {
-        >
-        >        return false;
-        >    }
-        >}
-        >```
-        ></details>
+        - <details>
+
+            <summary>通过<code>XMLHttpRequest</code>的同步请求获得JS代码文本</summary>
+
+            ```javascript
+            /**
+             * 同步加载JS脚本
+             * @param {String} url - JS文件的相对路径或绝对路径
+             * @returns {Boolean} - 是否加载成功
+             */
+            function syncLoadJS(url) {
+              var xmlHttp, appendPlace, newScript;
+
+              if (window.ActiveXObject) {
+                /* ie */
+                try {
+                  xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+                } catch (e) {
+                  xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+              } else if (window.XMLHttpRequest) {
+                xmlHttp = new XMLHttpRequest();
+              }
+
+              xmlHttp.open("GET", url, false); // 采用同步加载
+              xmlHttp.send(null); // 发送同步请求，若浏览器为Chrome或Opera，则必须发布后才能运行，不然会报错
+
+              /* 4代表数据发送完毕 */
+              if (xmlHttp.readyState === 4) {
+                /* 0为访问的本地，200到300代表访问服务器成功，304代表没做修改访问的是缓存 */
+                if ((xmlHttp.status >= 200 && xmlHttp.status < 300) || xmlHttp.status === 0 || xmlHttp.status === 304) {
+                  newScript = document.createElement("script");
+                  appendPlace = document.getElementsByTagName("body")[0] || document.getElementsByTagName("head")[0];
+
+                  try {
+                    newScript.appendChild(document.createTextNode(xmlHttp.responseText));
+                  } catch (e) {
+                    newScript.text = xmlHttp.responseText;
+                  }
+
+                  appendPlace.appendChild(newScript);
+
+                  return true;
+                } else {
+                  return false;
+                }
+              } else {
+                return false;
+              }
+            }
+            ```
+            </details>
 2. 动态添加样式
+
+    >样式的所有3种情况（`<style>`、`<link>`、`style`内嵌样式），动态添加或删除之后都是马上重新计算CSSOM，然后渲染。
 
     1. 添加`<style>`
 
@@ -2373,7 +2362,7 @@ xhr.send(null);
 
         document.getElementsByTagName('head')[0].appendChild(newLink);
         ```
-    3. 添加内嵌样式
+    3. 添加`style`内嵌样式
 
         ```javascript
         var oneDom = document.getElementById('节点id');
@@ -2489,109 +2478,101 @@ function noreferrerOpenNew (fullLink) {  // 需要完整URL
 ```
 
 ### *原生JS*格式化接口返回的数据
-1. 格式化数组
+根据业务要求进行：数据结构转化（如：提取属性）、数据填补默认字段。
+
+1. 数据结构转化
 
     ```javascript
-    /**
-     * （针对接口返回）格式化数组。不是数组则返回[]；是数组则每项都添加键-值默认值
-     * @param {Array} list - 要处理的数组
-     * @param {Object} [params = {}] - 要添加的键-值的对象。键是要添加的键，值是添加键的默认值
-     * @returns {Array} newList - 处理好的数组
-     */
-    function formatArr (list, params = {}) {
-      // 是否是空对象
-      const isObjEmpty = (obj) => {
-        if (obj !== Object(obj)) {  /* 参数不是对象 */
-          throw new TypeError('参数不是对象');
-        } else if (typeof Object.keys === 'function') {
-          return Object.keys(obj).length === 0;
-        } else { /* 兼容性，ie9- */
-          for (let one in obj) {
-            if (obj.hasOwnProperty(one)) {
-              return false;
-            }
-          }
-
-          return true;
+    // 按keyName提取
+    function groupArrayByKey(arr, keyName) {
+      return arr.reduce((acc, current) => {
+        if (!acc[current[keyName]]) {
+          acc[current[keyName]] = [];
         }
-      };
-
-      let newList = [];
-
-      if (Array.isArray(list)) {
-        if (isObjEmpty(params)) {
-          newList = list;
-        } else {  // 需要添加键-值
-          newList = list.map((item) => {
-            for (let one of Object.entries(params)) {
-              if (typeof item[one[0]] === 'undefined') {  // 没有判断null
-                item[one[0]] = one[1] || '';
-              }
-            }
-
-            return item;
-          });
-        }
-      }
-
-      return newList;
+        acc[current[keyName]].push(current);
+        return acc;
+      }, {});
     }
 
 
     /* 使用测试 */
-    formatArr(
-      [{}, { 参数1: '有值' }],
-      { '参数1': '默认值1', '参数2': true, '参数3': { a: 1 } }
-    );
+    groupArrayByKey(
+      [
+        { classId: "1", name: "张三", age: 16 },
+        { classId: "1", name: "李四", age: 15 },
+        { classId: "2", name: "王五", age: 16 },
+        { classId: "3", name: "赵六", age: 15 },
+        { classId: "2", name: "孔七", age: 16 },
+      ],
+      "classId",
+    )
     ```
-2. 格式化对象
+2. 数据填补默认字段
 
     ```javascript
     /**
-     * （针对接口返回）格式化对象。不是对象则返回params；是对象则添加键-值默认值
-     * @param {Object} obj - 要处理的对象
+     * 每项都添加 键-值（默认值）
+     * @param {Array|Object} data - 要处理的数据
      * @param {Object} [params = {}] - 要添加的键-值的对象。键是要添加的键，值是添加键的默认值
-     * @returns {Object} obj - 处理好的对象
+     * @returns {Array|Object} 处理好的数据
      */
-    function formatObj (obj = {}, params = {}) {
-      // 是否是空对象
-      const isObjEmpty = (obj) => {
-        if (obj !== Object(obj)) {  /* 参数不是对象 */
-          throw new TypeError('参数不是对象');
-        } else if (typeof Object.keys === 'function') {
-          return Object.keys(obj).length === 0;
-        } else {    /* 兼容性，ie9- */
-          for (let one in obj) {
-            if (obj.hasOwnProperty(one)) {
-              return false;
-            }
-          }
-
-          return true;
-        }
-      };
-
-      if (Object.prototype.toString.call(obj) === '[object Object]') {
-        if (!isObjEmpty(params)) {  // 需要添加键-值
-          for (let one of Object.entries(params)) {
-            if (typeof obj[one[0]] === 'undefined') { // 没有判断null
-              obj[one[0]] = one[1] || '';
-            }
-          }
-        }
-      } else {
-        obj = params;
+    function formatData(data, params = {}) {
+      if (isObjEmpty(params)) {
+        return data;
       }
 
-      return obj;
+      // 是数组
+      if (Array.isArray(data)) {
+        return data.map((item) => {
+          // 需要添加键-值
+          for (let [key, value] of Object.entries(params)) {
+            if (typeof item[key] === "undefined") {
+              item[key] = value;
+            }
+          }
+
+          return item;
+        });
+      }
+      // 是对象
+      else {
+        // 需要添加键-值
+        for (let [key, value] of Object.entries(params)) {
+          if (typeof data[key] === "undefined") {
+            data[key] = value;
+          }
+        }
+
+        return data;
+      }
     }
+
+    // 是否是空对象
+    const isObjEmpty = (obj) => {
+      if (obj !== Object(obj)) {    /* 参数不是对象 */
+        throw new TypeError("参数不是对象");
+      } else if (typeof Object.keys === "function") {
+        return Object.keys(obj).length === 0;
+      } else {                      /* 兼容性，ie9- */
+        for (let one in obj) {
+          if (obj.hasOwnProperty(one)) {
+            return false;
+          }
+        }
+        return true;
+      }
+    };
 
 
     /* 使用测试 */
-    formatObj(
-      { '参数1': '有值' },
-      { '参数1': '默认值1', '参数2': true, '参数3': { a: 1 } }
-    );
+    formatData(
+      [{}, { 参数1: "有值" }],
+      { 参数1: "默认值", 参数2: false, 参数3: { a: "默认值" } }
+    )
+    formatData(
+      { 参数1: "有值" },
+      { 参数1: "默认值", 参数2: false, 参数3: { a: "默认值" } }
+    )
     ```
 
 ### *原生JS*判断是否支持WebP
@@ -2901,6 +2882,29 @@ export default function Demo(props: { show: boolean }) {
         </p>
     </div>
   );
+}
+```
+
+### *原生JS*判断是否有循环引用
+```javascript
+function hasCircularReference(obj, weakmap = new WeakMap()) {
+  // 基本数据类型
+  if (obj === null || (typeof obj !== "object" && typeof obj !== "function")) {
+    return false;
+  }
+
+  if (weakmap.has(obj)) {
+    return true;
+  } else {
+    weakmap.set(obj, true);
+
+    for (const key of Object.keys(obj)) {
+      if (hasCircularReference(obj[key], weakmap)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
 ```
 
@@ -3433,23 +3437,25 @@ var a = new ShowFPS();
     }
     ```
 
-- 使用
+<details>
+<summary>使用测试</summary>
 
-    ```tsx
-    /* 使用测试 */
-    <TheImage
-      src={this.state.switch ? 'https://fakeimg.pl/100/?text=true': '1'}
-      defaultImage="https://fakeimg.pl/100/?text=default"
-      style={{ width: "100px", height: "100px" }}
-      className='abc'
-      classNameForError='abc-error'
-      onClick={() => {
-        this.setState({
-          switch: !this.state.switch
-        })
-      }}
-    />
-    ```
+```tsx
+/* 使用测试 */
+<TheImage
+  src={this.state.switch ? 'https://fakeimg.pl/100/?text=true': '1'}
+  defaultImage="https://fakeimg.pl/100/?text=default"
+  style={{ width: "100px", height: "100px" }}
+  className='abc'
+  classNameForError='abc-error'
+  onClick={() => {
+    this.setState({
+      switch: !this.state.switch
+    })
+  }}
+/>
+```
+</details>
 
 ### *原生JS*溢出文本的省略
 ```html
@@ -3466,7 +3472,7 @@ var a = new ShowFPS();
 <script>
 const container = document.getElementById('container')
 const containerHeight = container.offsetHeight
-// todo: 不仅针对innerText，还可以把每个子节点container.childNodes，根据nodeType的值来分别处理。如：`Node.ELEMENT_NODE`当做一个整体，`Node.TEXT_NODE`分割每个文字
+// fixme: 不仅针对innerText，还可以把每个子节点container.childNodes，根据nodeType的值来分别处理。如：`Node.ELEMENT_NODE`当做一个整体，`Node.TEXT_NODE`分割每个文字
 const text = container.innerText
 for (let i = 0; i < text.length; i++) {
   container.innerText = text.substring(0, i)
@@ -3488,7 +3494,7 @@ for (let i = 0; i < text.length; i++) {
 
 1. 缓动函数触发回调，可以设置最终触发回调命中的index
 
-    todo
+    fixme
 2. 原生JS，直接修改DOM
 
     ```typescript
@@ -3613,6 +3619,9 @@ for (let i = 0; i < text.length; i++) {
     }
     ```
 
+    <details>
+    <summary>使用测试</summary>
+
     ```html
     <!-- 使用测试 -->
     <style>
@@ -3646,6 +3655,7 @@ for (let i = 0; i < text.length; i++) {
     // 去除current类之后继续调用：sl.hit(n)
     </script>
     ```
+    </details>
 
 ---
 ## 任务执行
@@ -3676,29 +3686,28 @@ for (let i = 0; i < text.length; i++) {
         demo()
         ```
 
-    >支持取消的sleep实现：
-    >
-    >```typescript
-    >type CancelablePromise = Promise<any> & { cancel: any };
-    >
-    >function sleep(timeout: number): CancelablePromise {
-    >  let res: (v: string) => void;
-    >  let timer: ReturnType<typeof setTimeout>;
-    >  const promise = new Promise((resolve) => {
-    >    res = resolve;
-    >    timer = setTimeout(() => {
-    >      resolve("done");
-    >    }, timeout);
-    >  }) as CancelablePromise;
-    >  promise.cancel = function (data: string) {
-    >    res(data);
-    >    clearTimeout(timer);
-    >  };
-    >
-    >  return promise;
-    >}
-    >```
+    - 支持取消的sleep：
 
+        ```typescript
+        type CancelablePromise = Promise<any> & { cancel: any };
+
+        function sleep(timeout: number): CancelablePromise {
+          let res: (v: string) => void;
+          let timer: ReturnType<typeof setTimeout>;
+          const promise = new Promise((resolve) => {
+            res = resolve;
+            timer = setTimeout(() => {
+              resolve("done");
+            }, timeout);
+          }) as CancelablePromise;
+          promise.cancel = function (data: string) {
+            res(data);
+            clearTimeout(timer);
+          };
+
+          return promise;
+        }
+        ```
     2. `Promise`、`setTimeout`
 
         ```javascript
@@ -3847,149 +3856,6 @@ promisePoller({
 ```
 >参考：[promise-poller](https://github.com/joeattardi/promise-poller)。
 
-### 任务队列链式调用和取消
-1. 要求：
-
-    任务队列，可以链式调用、可以取消前一个任务。
-2. 实现方式：
-
-    ```javascript
-    const obj = {
-      taskQueue: [],  // 存放执行队列
-      print (text) {  // 真的执行
-        console.log(text)
-      },
-      setTimeoutId: 0, // 保证链式调用在最后一个调用后才真的执行
-      execute () {  // 尝试执行
-        clearTimeout(this.setTimeoutId)
-        this.setTimeoutId = setTimeout(async () => {
-          while (this.taskQueue.length > 0) {
-            await this.taskQueue.shift().func()
-          }
-        }, 0)
-
-        return this
-      },
-
-      do (msg = 'do sth.') { // 普通行为（可被cancel）
-        this.taskQueue.push({ type: 'do', msg, func: () => { this.print(msg) } })
-
-        return this.execute()
-      },
-      sleep (ms = 1000) { // 使后面的链式休眠后再执行（可被cancel）
-        this.taskQueue.push({
-          type: 'sleep',
-          msg: ms,
-          func: () => new Promise((resolve) => {
-            this.print(`sleep:${ms}ms`)
-            setTimeout(() => resolve(), ms)
-          })
-        })
-
-        return this.execute()
-      },
-      cancel () { // 取消前一个链式的执行
-        if (this.taskQueue.length > 0) {
-          const task = this.taskQueue[this.taskQueue.length - 1]
-
-          if (task.type !== 'cancel') {
-            this.taskQueue.pop()
-            this.taskQueue.push({ type: 'cancel', func: () => { this.print(`\`${task.type}(${task.msg})\` was cancel`) } })
-          } else {
-            this.taskQueue.push({ type: 'cancel', func: () => { this.print('canceled nothing') } })
-          }
-        } else {
-          this.taskQueue.push({ type: 'cancel', func: () => { this.print('canceled nothing') } })
-        }
-
-        return this.execute()
-      }
-    }
-
-
-    /* 使用测试 */
-    // obj.do('你好').cancel()
-    // obj.cancel().do('hello').sleep(1000).do('yo ho')
-    obj.sleep(1000).sleep(2000).cancel().cancel().do('他好').cancel().sleep(1000).sleep(1000).do('我好').do('我好')
-    ```
-
-### 调度器任务并发
-1. 要求：
-
-    ```javascript
-    // 请实现一个调度器，这个调度器保证任务的并发数为2
-    class Schedular {
-      // task是一个函数，会返回一个promise，add也会返回一个promise，add的promise根据task的promise状态改变
-      add (task) {
-      }
-    }
-
-    const task = (duration, order) => new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(order);
-      }, duration);
-    });
-
-    // 开始测试
-    const schedular = new Schedular();
-    schedular.add(task(100, 1)).then(res => console.log(res));
-    schedular.add(task(500, 2)).then(res => console.log(res));
-    schedular.add(task(300, 3)).then(res => console.log(res));
-    schedular.add(task(50, 4)).then(res => console.log(res));
-    // 结果应该为1, 3, 4, 2
-    ```
-2. 实现方式：
-
-    ```javascript
-    class Scheduler {
-      tasks = []; // 待执行任务队列
-      runningCount = []; // 当前正在运行的任务数
-
-      constructor(maxRunningCount = 2) {
-        this.maxRunningCount = maxRunningCount; // 最大并行任务数
-      }
-
-      add(task) {
-        return new Promise((resolve) => {
-          // 执行当前add后继续触发执行其他
-          const doTask = async () => {
-            resolve(await task());
-
-            this.runningCount--;
-            this.schedule();
-          };
-
-          this.tasks.push(doTask);
-          this.schedule();
-        });
-      }
-
-      schedule() {
-        while (this.runningCount < this.maxRunningCount && this.tasks.length > 0) {
-          this.runningCount++;
-
-          this.tasks.shift()(); // 取出队列中的任务、执行
-        }
-      }
-    }
-
-
-    /* 使用测试 */
-    const task = (duration, order) => () => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(order);
-        }, duration);
-      });
-    };
-
-    const scheduler = new Scheduler();
-    scheduler.add(task(100, 1)).then((res) => console.log(res));
-    scheduler.add(task(500, 2)).then((res) => console.log(res));
-    scheduler.add(task(300, 3)).then((res) => console.log(res));
-    scheduler.add(task(50, 4)).then((res) => console.log(res));
-    ```
-
 ### *原生JS*节流函数
 ```typescript
 class Throttle<T extends any[]> {
@@ -4044,32 +3910,32 @@ a.cancel()
  * 用setTimeout模拟setInterval
  * @constructor
  * @param {Function} func - 循环执行函数
- * @param {Number} millisecond - 间隔毫秒
+ * @param {Number} ms - 间隔毫秒
  */
-function SetInterval(func, millisecond) {
-    var _setIntervalId;
+function SetInterval(func, ms) {
+  let timeoutId;
 
-    if (typeof func === 'function') {
-        _setIntervalId = setTimeout(function () {
-            _setIntervalId = setTimeout(arguments.callee, millisecond);
+  if (typeof func === "function") {
+    timeoutId = setTimeout(function cb() {
+      timeoutId = setTimeout(cb, ms);
 
-            func();
-        }, millisecond);
-    }
+      func();
+    }, ms);
+  }
 
-    this.stop = function () {
-        clearTimeout(_setIntervalId);
-    };
+  this.stop = function () {
+    clearTimeout(timeoutId);
+  };
 }
 
 
 /* 使用测试 */
 var a = new SetInterval(function () {
-    console.log(1);
+  console.log(1);
 
-    if (...) {
-        a.stop();
-    }
+  if (...) {
+    a.stop();
+  }
 }, 1000);
 
 // a.stop();
@@ -4083,33 +3949,104 @@ var a = new SetInterval(function () {
  * @param {Function} func - 执行的函数
  */
 function RepeatRAF(func) {
-    var _repeatRAFId;
+  let requestId;
 
-    if (typeof func === 'function') {
-        _repeatRAFId = requestAnimationFrame(function () {
-            _repeatRAFId = requestAnimationFrame(arguments.callee);
+  if (typeof func === "function") {
+    requestId = requestAnimationFrame(function cb() {
+      requestId = requestAnimationFrame(cb);
 
-            func();
-        });
-    }
+      func();
+    });
+  }
 
-    this.stop = function () {
-        cancelAnimationFrame(_repeatRAFId);
-    };
+  this.stop = function () {
+    cancelAnimationFrame(requestId);
+  };
 }
 
 
 /* 使用测试 */
 var a = new RepeatRAF(function () {
-    console.log(1);
+  console.log(1);
 
-    if (...) {
-        a.stop();
-    }
+  if (...) {
+    a.stop();
+  }
 });
 
 // a.stop();
 ```
+
+### *原生JS*`requestAnimationFrame`模拟`setTimeout`和`setInterval`
+1. 模拟`setTimeout`
+
+    ```javascript
+    function SetTimeout(func, ms) {
+      const start = Date.now();
+
+      let requestId;
+
+      if (typeof func === "function") {
+        requestId = requestAnimationFrame(function cb() {
+          if (Date.now() - start >= ms) {
+            func();
+          } else {
+            requestId = requestAnimationFrame(cb);
+          }
+        });
+      }
+
+      this.stop = function () {
+        cancelAnimationFrame(requestId);
+      };
+    }
+
+    /* 使用测试 */
+    var a = new SetTimeout(function () {
+      console.log(1);
+
+      if (...) {
+        a.stop();
+      }
+    }, 1000);
+
+    // a.stop();
+    ```
+2. 模拟`setInterval`
+
+    ```javascript
+    function SetInterval(func, ms) {
+      let start = Date.now();
+
+      let requestId;
+
+      if (typeof func === "function") {
+        requestId = requestAnimationFrame(function cb() {
+          requestId = requestAnimationFrame(cb);
+
+          if (Date.now() - start >= ms) {
+            func();
+            start = Date.now();
+          }
+        });
+      }
+
+      this.stop = function () {
+        cancelAnimationFrame(requestId);
+      };
+    }
+
+    /* 使用测试 */
+    var a = new SetInterval(function () {
+      console.log(1);
+
+      if (...) {
+        a.stop();
+      }
+    }, 100);
+
+    // a.stop();
+    ```
 
 ---
 ## 算法思路
@@ -4125,7 +4062,11 @@ var a = new RepeatRAF(function () {
 function getNestedValue(data, path = []) {
   let temp = data;
   for (let i = 0, length = path.length; i < length; i++) {
-    temp = temp[path[i]];
+    if (Object.prototype.hasOwnProperty.call(temp, path[i])) {  // 或：Object.hasOwn(temp, path[i])
+      temp = temp[path[i]];
+    } else {
+      return undefined;
+    }
   }
   return temp;
 }
@@ -4139,21 +4080,18 @@ getNestedValue({a: {b: "cc"}, d: [0, 1, 2, 3, {e: {f: [1]}}]}, ["d", 4, "e"]); /
 ### *原生JS*判断对象是否为空
 ```javascript
 function isObjEmpty(obj) {
-    if (obj !== Object(obj)) {  /* 参数不是对象 */
-        throw new TypeError('参数不是对象');
-    } else if (typeof Object.keys === 'function') {
-
-        return Object.keys(obj).length === 0;
-    } else {    /* 兼容性，ie9- */
-        for (var one in obj) {
-            if (obj.hasOwnProperty(one)) {
-
-                return false;
-            }
-        }
-
-        return true;
+  if (obj !== Object(obj)) {  /* 参数不是对象 */
+    throw new TypeError("参数不是对象");
+  } else if (typeof Object.keys === "function") {
+    return Object.keys(obj).length === 0;
+  } else {                    /* 兼容性，ie9- */
+    for (var one in obj) {
+      if (obj.hasOwnProperty(one)) {
+        return false;
+      }
     }
+    return true;
+  }
 }
 ```
 

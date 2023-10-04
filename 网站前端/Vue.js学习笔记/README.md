@@ -41,7 +41,7 @@
     2. 注意内存泄漏（全局副作用）：
 
         1. 在Vue实例内部`new`的其他实例或DOM，应放在`data`内进行掌控，当使用完毕后引导垃圾回收。
-        2. 在Vue实例内部手动绑定的事件（如：`addEventListener`）、计时器、http连接、以及任何需要手动关闭的内容，需要在`beforeDestroy`手动清除（`destroyed`仅自动清除Vue自己定义、绑定的内容）。
+        2. 在Vue实例内部手动绑定的事件（如：`addEventListener`）、定时器、http连接、以及任何需要手动关闭的内容，需要在`beforeDestroy`手动清除（`destroyed`仅自动清除Vue自己定义、绑定的内容）。
     3. 请求异步数据的业务结构：
 
         1. 独立的API模块专门进行请求数据异步
@@ -1990,13 +1990,15 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 4. 注意内存泄漏（全局副作用）：
 
     1. 在Vue实例内部`new`的其他实例或DOM，应放在`data`内进行掌控，当使用完毕后引导垃圾回收。
-    2. 在Vue实例内部手动绑定的事件（如：`addEventListener`）、计时器、http连接、以及任何需要手动关闭的内容，需要在`beforeDestroy`前手动清除（`destroyed`仅自动清除Vue自己定义、绑定的内容）。
+    2. 在Vue实例内部手动绑定的事件（如：`addEventListener`）、定时器、http连接、以及任何需要手动关闭的内容，需要在`beforeDestroy`前手动清除（`destroyed`仅自动清除Vue自己定义、绑定的内容）。
 6. 长列表考虑虚拟列表（如：[vue-virtual-scroller](https://github.com/Akryum/vue-virtual-scroller)）
 7. 避免不必要的组件抽象
 
     组件实例比普通DOM节点要昂贵得多，而且为了逻辑抽象创建太多组件实例将会导致性能损失。
 5. 异步组件
 8. SSR
+
+- [网站性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#网站性能优化)-JS代码性能优化（JS通用）
 
 ### 例子
 1. <details>
@@ -3577,6 +3579,17 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         >创建所有路由的`.html`文件（去除动态路由），每个文件都是预渲染完成的不同页面。
 
         会跑一遍nuxt的流程（Vue、vue router、vuex的初始化 -> middleware、plugins的初始化 -> middleware -> asyncData -> beforeCreate -> `props->data->computed->watch` -> created -> fetch），生成静态化文件。
+
+        ><details>
+        ><summary>优势:</summary>
+        >
+        >1. 无需服务器运行：静态站点不需要在~~服务器上运行Node.js或其他服务器环境~~，只需将生成的静态文件部署到任何能够提供静态文件服务的服务器上即可。
+        >2. 加载速度更快：直接下载静态资源，而不需要服务器运行后导出页面。
+        >3. 更好的可缓存性：由于静态站点是预先生成的HTML文件，可以更好地利用浏览器缓存机制，提供更好的缓存性能。
+        >4. 更好的搜索引擎优化（SEO）：搜索引擎可以直接抓取并索引静态页面，提高站点在搜索结果中的可见性。
+        >
+        >- 需要注意的是，适用于那些不需要动态内容的网站或页面，或不频繁更新的内容。
+        ></details>
     >增加`--help`参数查看nuxt命令可带参数。
 
     - 部署发布

@@ -192,7 +192,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
                 e.g. `https://a.app.qq.com/o/simple.jsp?pkgname=com.xx.xxx&ckey=xxxx&android_schema=xxxx://xx`
 
         >1. 微信分享在部分系统（低于微信客户端Android6.2）使用~~pushState~~导致签名失败，可查询[官方文档](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115)；又因为一般是异步加载、配置微信的设置，所以要等待微信第三方文件和接口完成后才能够配置成功（才能够设置成功）。
-        >2. Android的微信、QQ等X5内核可以用<http://debugx5.qq.com/>打开调试，支持「清除缓存」等操作。
+        >2. Android的微信、QQ等X5内核可以用 ~~<http://debugx5.qq.com/>~~（已失效）打开调试，支持「清除缓存」等操作。
         >
         >    iOS可以在 设置->通用->存储空间 清理缓存。
         >3. 长按没有 ~~`src`~~ 的`<img>`：
@@ -219,7 +219,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         >        callbackName = `${method}CallbackName_${_localCounter}`
         >        _localCounter += 1
         >
-        >        window[callbackName] = (res) => {    // todo: 增加定时器处理长时间未被客户端回调的方法
+        >        window[callbackName] = (res) => {    // fixme: 增加定时器处理长时间未被客户端回调的方法
         >          try {
         >            resolve({ result: 'ok', data: JSON.parse(res) })
         >          } catch (e) {
@@ -277,7 +277,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 ### WebView性能
 >参考：[WebView性能、体验分析与优化](https://tech.meituan.com/2017/06/09/webviewperf.html)。
 
-1. 原生实现 VS. 页面实现
+1. 移动端技术演进：Native -> Hybrid -> Native容器 -> 自绘
 
     1. Native App
 
@@ -291,6 +291,18 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         3. 不依赖Native发包更新（注意避免违反苹果的热更新条款）
 
     ![原生实现 VS. 页面实现](./images/webview-1.png)
+
+    3. Native容器方案
+
+        以Weex（已掉队）和RN最具代表，原理类似，上层JS利用Vue/React框架维护虚拟节点，通过bridge（或JSI等优化）与Native通信，最终在Native渲染组件。
+
+    >Native容器方案 与 自绘方案，就目前而言没有谁优谁劣：对于Native容器方案来说，更多的是代表了研发效率与动态性；对于Flutter这类框架而言，虽然实现了高性能自绘，但却缺少一套较为完备的动态化方案。
+
+    4. 自绘方案
+
+        客户端只需提供一个画布，框架自带渲染引擎在画布上进行UI渲染和逻辑（不需要客户端帮忙渲染，因此不需要RN那样的一层Bridge进行JS和Native的通信数据转发，渲染效率更高）。
+
+        >e.g. Flutter：既不使用WebView，也不使用操作系统的原生控件。原生系统提供2D画布（`Canvas`），Flutter使用自己的高性能渲染引擎Skia在画布上绘制Widget。这样不仅可以保证在Android和iOS上UI的一致性，而且可以避免因对原生控件依赖而带来的限制及高昂的维护成本。
 2. WebView启动流程
 
     ![WebView启动流程](./images/webview-2.png)

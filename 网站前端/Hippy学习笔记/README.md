@@ -1,14 +1,14 @@
 # Hippy学习笔记
+>针对Hippy 2版本。
 
 ## 目录
 1. [Hippy](#hippy)
 1. [hippy-react](#hippy-react)
+1. [hippy流程和优化（前端）](#hippy流程和优化前端)
+1. [Hippy与React Native对比](#hippy与react-native对比)
 
 ---
-
 ### [Hippy](https://github.com/Tencent/Hippy)
-![hippy图](./images/hippy-1.png)
-
 1. 运行demo、调试
 
     >来自：[前端调试](https://hippyjs.org/#/guide/debug)。
@@ -96,7 +96,7 @@
 3. 因为依赖客户端渲染的本质，所以最终需要在iOS和Android都真机测试才可以。
 
     iOS和Android的渲染结果可能不同，样式（截断、遮挡）、事件冒泡情况、等，容易产生区别。
-4. （像RN一样）提供一个JS运行时环境（类似Node.js、WebView），JS运行并通过桥协议与客户端交互，最终客户端渲染视图。
+4. （像React Native一样）提供一个JS运行时环境（类似Node.js、WebView），JS运行并通过桥协议与客户端交互，最终客户端渲染视图。
 
     >前端最终提供一个.js文件在JS运行时环境中执行。hippy使用的JS引擎：iOS用JSC，Android用V8。
 
@@ -104,11 +104,12 @@
 
     1. Hippy抹除react、vue不同
 
-        1. api一致
-        2. JS转给Native中间有一层c++，最后生产一样的json结构给到native渲染
+        react/vue框架能支持虚拟DOM，hippy-react、hippy-vue封装了UI指令，通过中间C++层，最终生产一样的json结构给到native渲染。
     2. Hippy无法抹除Android、iOS不同，这是原生不同结果
 
 ### hippy-react
+hippy-react是基于React的官方自定义渲染器react-reconciler重新开发的React到终端的渲染层，可以使用React的全部特性，当前采用 React17。
+
 ![hippy-react图](./images/hippy-react-1.png)
 
 1. 组件
@@ -134,7 +135,9 @@
             2. `<ScrollView>`内可嵌套所有组件（包括：`<ScrollView>`、`<ListView>`、`<ViewPager>`）。
         2. `<ListView>`
 
-            支持：竖向滚动。复用节点优化：自动删除不在可视区的节点，对进入可视区的节点进行按类型复用。
+            支持：竖向滚动。复用节点优化：（在客户端进行，不在前端进行：）自动删除不在可视区的节点，对进入可视区的节点进行按类型视图复用。
+
+            >视图复用只体现在终端视图上，前端的视图描述（虚拟Dom、渲染树等）没有实现复用，大量的列表依然会在前端维持着大量的数据，导致内存占用、阻塞与终端交互。解决：可以利用`<ul nativeName="RapidListView" dataSource="数据"><li nativeName="RapidListViewItem">{模板}</li></ul>`，通过前端分离视图模板和数据源（前端不进行渲染，只传递数据和模板给Native），减少前端渲染次数和与终端交互数据量（模板内的事件绑定需要统一事件代理/事件委托绑定在父级ul上，再通过模板内clickTag传递点击区域）。
         3. `<RefreshWrapper>`
 
             包裹一个`<ListView>`后支持：下滑刷新。
@@ -1189,7 +1192,7 @@
 
         在需要渲染的地方通过`nativeName`属性指定到终端组件名称。
 
-        >e.g. `<div nativeName="LinearGradientView">`
+        >e.g. `<div nativeName="LinearGradientView">`、`<ul nativeName="RapidListView" dataSource="数据"><li nativeName="RapidListViewItem">{模板}</li></ul>`
     2. 自定义模块
 
         1. 导入`callNative`或`callNativeWithPromise`
@@ -1779,7 +1782,7 @@
             <Text style={styles.verticalScrollView}/>
             ```
             </details>
-8. 无障碍
+8. <a name="hippy-react-无障碍"></a>无障碍
 
     组件属性`accessible`、`accessibilityLabel`。
 
@@ -1817,3 +1820,154 @@
           console.error('unhandledRejection', reason);
         });
         ```
+
+### hippy流程和优化（前端）
+1. 总流程与优化：
+
+    下载JS bundle（**webpack压缩优化**）、初始化JS引擎（**多JS引擎、复用JS引擎优化**） -> [JS引擎](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#js引擎)V8/JSC执行JS bundle（**webpack按需加载优化；尝试JS引擎切换成Facebook开发的Hermes优化**） -> 创建Root View，首帧 -> 前端框架虚拟DOM通过Native Renderer翻译成Native组件上屏，首屏（**前置后台请求优化；运行时优化**） -> 客户端与JS通过JSI、Bridge通信（**自绘引擎引入优化**）
+
+    >针对优化后1秒内的首屏。JS bundle压缩包大小：150kb；JS bundle大小：500kb；JS引擎初始化时间：100ms。JS bundle下载时间：小几百ms或预下载0。JS bundle执行时间：200ms。
+2. <details>
+
+    <summary>3层架构</summary>
+
+    ![Hippy整体架构2.x](./images/hippy-architecture.png)
+
+    1. 上层：UI（JS）层，Hippy-React或Hippy-Vue负责驱动UI指令生成
+    2. 中层：[C++的HippyCore](https://hippyjs.org/#/structure/core)负责抹平平台差异性、提供高性能模块
+
+        1. 部分模块实现JSI：JS环境中直接插入函数、类等方式，JS使用这些函数或方法，可以直接访问C++代码，直接共享JS和C++运行环境和数据，提供了非常高的JS和终端通信性能（节省bridge的先序列化后异步通信的耗时）。e.g. 定时器、日志模块。
+
+            ![hippy图](./images/hippy-bridge.png)
+        2. 其他模块依然还是bridge
+    3. 渲染层：Android/iOS负责提供终端底层模块、组件、并与布局引擎通信。
+    </details>
+3. 尝试优化点
+
+    1. 请求层优化
+
+        1. 预请求后台数据，把JS业务代码中请求首屏数据的逻辑 前置到 客户端加载JS bundle时（客户端并行处理）
+
+            1. Native加载某个前端页面的URL时，若URL包含预请求参数（请求方法名、请求参数）则并行客户端发起请求、下载-执行JS bundle；
+
+                >或URL包含预请求标志，具体请求参数在Hippy包里某个JSON文件中描述。
+            2. 客户端发起请求的结果存入客户端缓存，待前端通过bridge获取；
+            3. 前端获取后台数据：`Promise.any(bridge获取客户端缓存的后台数据, 发起后台请求)`
+    2. JS bundle包加载耗时优化
+
+        >低端机执行JS bundle会随着文件增大而耗时增加更明显（短板效应严重），特别依赖包体积减少。
+
+        1. webpack优化
+
+            0. ~~分包（vendor或dll）~~
+
+                >若基础包和业务包压缩在一起则没有意义。需要维护内置分包的更新逻辑。
+            1. [动态加载](https://hippyjs.org/#/guide/dynamic-import)
+
+                webpack加入[@hippy/hippy-dynamic-import-plugin](https://github.com/hippy-contrib/hippy-dynamic-import-plugin)，业务代码中使用`import()`，如：
+
+                ```javascript
+                import(/* webpackMode: "lazy", webpackChunkName: "asyncComponentFromHttp" */'./AsyncComponentHttp')
+                  .then((component) => {
+                    this.setState({
+                      AsyncComponentFromHttp: component.default || component,
+                    });
+                  })
+                ```
+
+                >H5页面通过JSONP实现动态加载，若Hippy的JS引擎不能直接用JSONP方案，则hack成请求到代码字符串然后`eval(代码字符串)`或`(new Function(代码字符串)())`。
+            2. [tree shaking](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/webpack学习笔记/README.md#tree-shaking)、压缩
+            - 利用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)分析包体积
+        2. 尽量用CDN图片，谨慎合理使用base64图片
+        3. 考虑后台数据传输依赖的打包解包的裁剪优化
+    3. JS Bundle运行时
+
+        >优先优化对性能影响大、导致瓶颈的部分：本地测试，利用客户端性能工具（如：Perfdog）；大盘数据，利用性能监控基建。
+
+        1. 优化不可见内存
+
+            移除非可见区域的视图内容（内存空间节省导致切换区域后重新渲染，低端机需要综合上屏时间进行取舍）。
+        2. 避免组件层级过多导致渲染层级过深（内存占用）
+        3. 避免复杂渲染（帧率下降、GPU占用率高）
+
+        >关注 背景、圆角、裁剪（`overflow: hidden`）、描边 样式，在iOS（可能导致[iOS离屏渲染](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#ios的离屏渲染)）、Android都会导致GPU占用过高。
+
+        4. 长列表`<ListView>`优化
+
+            >`<ListView>`的视图复用只体现在终端视图上，前端的视图描述（虚拟Dom、渲染树等）没有实现复用，大量的列表依然会在前端维持着大量的数据，导致内存占用、阻塞与终端交互。
+
+            解决：可以利用类似`<ul nativeName="RapidListView" dataSource="数据"><li nativeName="RapidListViewItem">{模板}</li></ul>`，通过前端分离视图模板和数据源（前端不进行渲染，只传递数据和模板给Native），减少前端渲染次数和与终端交互数据量。
+        5. 图片资源过大过多导致内存、GPU消耗太多，考虑用小图、裁剪图或压缩图。
+        6. 动画性能问题，需要特别测试验证（帧率、内存、GPU、）
+
+            >特别关注：低端机。
+
+            动画组件（`Animation`、`AnimationSet`）、Lottie组件。
+
+            >关注lottie动画导致的GPU占用率过高：若lottie动画中使用了旋转和透明度变化则会导致GPU消耗增加；若lottie动画中的层级过复杂、蒙层较多则会增加渲染负担。需要和设计同学沟通。
+        7. 预渲染
+
+            1. 骨架屏
+            2. 提前通知Native渲染无法交互的UI，然后并行渲染真实UI后上屏替换（有待斟酌）
+
+        - [网站性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#网站性能优化)-JS代码性能优化（JS通用）
+
+    - Native层优化
+
+        1. 一级页和部分高优先级页面考虑作为APP的内置包，随版本发布。
+        2. JS引擎初始化耗时优化
+
+            1. 预加载：每次使用一个Hippy实例时，都会预先创建另一个JS引擎，等待下一次打开Hippy页面时直接使用、不需要等待JS引擎初始化（总是保持有一个空闲的JS引擎等待被使用）
+
+                >引擎池会越来越多，除非页面被关闭，节省了引擎加载耗时，但提高了内存。
+            2. 复用：利用V8引擎的单引擎多context（上下文）方式进行业务隔离（不用创建过多引擎，依然可以业务隔离）。
+        3. JS引擎切换成[Hermes](https://github.com/facebook/hermes)
+        4. 引入自绘引擎[skia](https://github.com/google/skia)
+
+>可参考：[全民 K 歌跨端体系建设](https://xie.infoq.cn/article/e284b3a19e7937dc209a3d345)。
+
+### Hippy与React Native对比
+>Hippy是腾讯公司在当年React开源协议风波下fork React Native后不断开发维护的~~轮子~~框架。
+
+1. 同时支持 React 和 Vue 两种前端主流框架
+
+    和Web接近的开发体验。支持产出虚拟DOM的框架都能够在客户端渲染。做了一层ui指令封装、对终端功能、协议进行封装，抹平差异。
+2. 支持同构到H5页面
+
+    虚拟DOM通过`@hippy/react-web`渲染到H5页面。
+3. 优化JSI数据传递效率，有效提升 JS 前端代码和终端的通讯性能。
+
+    直接通过 C++ 开发的模块直接插入JS引擎中运行，绕过了前终端通讯编解码的开销。
+4. 把部分Native层的逻辑，前置到中间的C++层
+
+    1. Hippy实现高性能自绘，c++重写canvas
+5. 运行性能：
+
+    渲染性能比React Native更好。
+6. 包体积
+
+    更轻量，更小的安装包。打出的JS bundle包体积也更小，只有React Native的一半左右（官网图）。
+7. 手势系统
+
+    和 React Native 的 PanResponder 不同，Hippy 的手势事件可以应用于任何一个组件上，更加接近浏览器的实现。
+8. 样式
+
+    hippy不支持百分比，是标准盒模型，默认（且不能更改）是`box-sizing: border-box`，Flex布局默认（且不能更改）是`display: fex`。
+9. 动画
+
+    Hippy通过将动画方案一次性下发给终端实现了更好的动画性能；React Native的动画模块是由前端通过定时器驱动，存在大量前终端通讯。
+
+- [hippy官网](https://hippyjs.org/#/)对比RN的优势：
+
+    1. 一个空的APK，在引入后终端包大小对比：
+
+        ![包体积-空](./images/hippy-vs-1.png)
+    2. 在前端搭建了一个最简单的 ListView 后，前端打出的 JS 的包大小对比：
+
+        ![包体积-listview](./images/hippy-vs-2.png)
+    3. ListView 在滑动时的性能对比，Hippy 可以一直保持十分流畅的状态：
+
+        ![渲染性能](./images/hippy-vs-3.png)
+    4. 在内存占用上，初始化 List 时 Hippy 就略占优势，在滑动了几屏后内存开销的差距越来越大：
+
+        ![内存占用](./images/hippy-vs-4.png)

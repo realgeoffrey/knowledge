@@ -41,7 +41,6 @@
     1. [网页图标favicon的兼容写法](#网页图标favicon的兼容写法)
 
 ---
-
 ## 经验总结
 
 ### 渲染性能（rendering performance）
@@ -903,7 +902,7 @@
             ID选择器（ID selectors）。
         4. **4级**
 
-            内嵌样式（标签的`style`属性值）。
+            `style`内嵌样式（HTML标签的`style`属性值）。
         5. **5级**
 
             `!important`。

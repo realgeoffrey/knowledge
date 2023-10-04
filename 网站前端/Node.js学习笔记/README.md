@@ -24,7 +24,6 @@
     1. [pm2](#pm2)
 
 ---
-
 ## 安装
 
 ### nvm更新Node.js版本
@@ -391,6 +390,8 @@ npm（Node Package Manager）。
         >    3. `npm install --production`不会安装自己的`devDependencies`。
     5. `peerDependencies`
 
+        >本插件要使用的依赖库，但是本插件不去安装，要求宿主环境使用本插件时需要同时安装这些依赖库。
+
         在开发插件时，你的插件需要某些依赖的支持，但是你又没必要去安装，因为插件的宿主会去安装这些依赖。此时就可以用 peerDependencies 去声明一下需要依赖的插件和版本。如果出问题的话，npm 会有警告来提示使用者去解决版本中的冲突。
     6. `peerDependenciesMeta`
 
@@ -552,7 +553,7 @@ npm（Node Package Manager）。
 
     1. 制作：
 
-        按照[CommonJS规范](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Node.js学习笔记/README.md#commonjs规范)编写代码。
+        按照CommonJS规范编写代码。
     2. 使用：
 
         1. 在Node.js环境下使用（`require`）
@@ -612,204 +613,7 @@ npm（Node Package Manager）。
     各子项目中的依赖互相隔离。
 
 ---
-### CommonJS规范
->参考：[阮一峰：require() 源码解读](http://www.ruanyifeng.com/blog/2015/05/require.html)、[CommonJS 详细介绍](https://neveryu.github.io/2017/03/07/commonjs/)、[阮一峰：JavaScript 模块的循环加载](http://www.ruanyifeng.com/blog/2015/11/circular-dependency.html)。
-
-一个模块就是一个Node.js文件。
-
->主模块：通过命令行参数传递给Node.js以启动程序的模块，负责调度组成整个程序的其它模块完成工作。如：`node 文件名`、`package.json`的`main`。
-
-- 概述
-
-    1. 执行阶段（运行时）进行模块加载：确定模块的依赖关系、输入和输出的变量。
-
-        因为本身就是**动态引入**，`module.exports`和`require`能够在任何位置使用（包括块级作用域）。
-    2. 有自己单独作用域，不污染全局作用域，必须`module.exports`才能输出给其他模块。
-
-        >不推荐`window.属性`。
-    3. 模块的加载逻辑：
-
-        1. 模块加载的顺序：按照其在代码中出现的顺序、引用则嵌套加载。
-        2. 注入`exports`、`require`、`module`三个全局变量。
-        3. 执行模块的源码：
-
-            1. `require`第一次加载某模块，执行整个脚本，在内存生成一个缓存对象：
-
-                `{ id: '...', exports: {...}, loaded: true/false, ... }`
-            2. a模块执行时出现`require(b)`则进入b模块代码中执行，执行完毕后再回到a模块继续向下执行。
-            3. 无论加载多少次，仅在第一次加载时运行，之后再被引用则直接返回已导出内容。
-
-                >除非手动清除系统缓存。
-            4. 「循环加载」（circular dependency）
-
-                引用之前已经被引用过的模块b，会直接返回模块b已导出的内容，而不会再进入模块b内执行。
-
-                <details>
-                <summary>e.g.</summary>
-
-                ```javascript
-                // 按①②③④⑤⑥的顺序执行
-
-
-                // 入口
-                ... // ①
-                require('a模块'); // ②③④⑤执行后，②⑤导出a模块的内容2
-                ... // ⑥
-
-
-                // a模块
-                ... // ②
-                require('b模块'); // ③④执行后，③④导出b模块的内容
-                ... // ⑤
-
-
-                // b模块
-                ... // ③
-                require('a模块'); // ②导出a模块的内容1（因为a模块已经被引用过，所以直接使用a已经导出的内容，而不继续执行a的剩余代码）
-                ... // ④
-                ```
-                </details>
-        4. 将模块的`exports`值输出至缓存，以供其他模块`require`获取（或「循环加载」时，部分已经执行产生的`exports`供其他模块引用）。
-        5. 若被`require`的模块没有`exports`，则仅执行一遍模块代码，返回`{}`。
-    4. `require(a模块)`返回内存中a模块的`module.exports`指向的值（值传递），`require`的内容可以重新赋值和属性改写（重新赋值将不再使用模块引用；属性改写会改变a模块的缓存值，所有`require(a模块)`都会共享）。
-
-        1. 输出的模块内容是一个被复制的值，这个值缓存起来以便其他模块复制引用，这个缓存值可以被本模块修改。
-        2. `require`只是使用缓存起来的内容。已经引用模块后，被引用的模块内部再次修改导出内容，不会影响已经引用过的值（修改属性还是会影响）。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```javascript
-        >var a = 'a1'
-        >module.exports.a = a      // 此时引用则获得`a1`的复制
-        >setTimeout(() => {
-        >  a = 'a2'                // 不会改变a的输出。此时引用则还是获得`a1`的复制
-        >}, 500)
-        >
-        >
-        >module.exports.b = 'b1'   // 此时引用获得`b1`的复制
-        >setTimeout(() => {
-        >  module.exports.b = 'b2' // 重新输出b。此时引用则获得`b2`的复制
-        >}, 500)
-        >```
-        ></details>
-    5. CommonJS是一个单对象输出、单对象加载的模型：
-
-        1. 所有要输出的对象统统挂载在`module.exports`上，然后暴露给外界。
-        2. 通过`require`加载别的模块，`require`的返回值就是模块暴露的对象。
-1. `module.exports`
-
-    模块提供使用的`exports`值。
-
-    - 允许用两种方式为导出赋值：
-
-        1. `module.exports = 值`
-        2. `module.exports.属性 = 值`
-
-        >1. `exports`指向`module.exports`
-        >2. 若`exports = 值`或`module.exports = 值`则切断了`exports`与`module.exports`的连接，`exports`将没有导出效果（导出的永远是`module.exports`）。
-        >
-        >    e.g.
-        >
-        >    ```javascript
-        >    console.log(module.exports, exports, module.exports=== exports)   // => {} {} true
-        >    exports = {}    // 或 module.exports = {}
-        >    console.log(module.exports, exports, module.exports === exports)  // => {} {} false
-        >    ```
-2. `require(X)`
-
-    加载模块。读取并执行一个JS文件（`.js`后缀可以省略），返回该模块的`exports`值（没有导出内容则为`{}`）。
-
-    >1. 被引入的内容就可以被各种解构。
-    >2. 注意文件名大小写，可能导致引用路径失败（针对：开发时的系统大小写不敏感，上线或其他机器运行时系统大小写又敏感的情况）。
-
-    - <details>
-
-        <summary>查找逻辑</summary>
-
-        >官方解析：[Modules: All together](https://nodejs.org/api/modules.html#all-together)。
-
-        ![Node.js的require流程图](./images/nodejs-require-1.jpg)
-
-        1. 若 X 以（绝对路径）`/`或（相对路径）`./`、`../`开头
-
-            1. 根据 X 所在的父模块，确定 X 的绝对路径。
-            2. 将 X 当成**文件**，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。
-
-                `X`、`X.js`、`X.json`、`X.node`
-            3. 将 X 当成**目录**，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。
-
-                `X/package.json（main字段）`、`X/index.js`、`X/index.json`、`X/index.node`
-        2. 若 X 是核心模块（内置模块），则返回该模块，不再继续执行。
-
-            >e.g. `require('http')`
-
-            可以使用`node:`前缀来识别核心模块，在这种情况下它会绕过require缓存。e.g. `require('node:http')`将始终返回内置的HTTP模块，即使有该名称的`require.cache`条目。核心模块列表：`module.builtinModules`。
-        3. 若 X 不带路径且不核心置模块
-
-            >当作安装在本地的模块。
-
-            1. 根据 X 所在的父模块，确定 X 可能的安装目录。
-            2. 依次在每个目录中，将 X 当成**文件**或**目录**加载。
-
-                若当前目录找不到，向上一层搜索 X。
-        4. 抛出`Error: Cannot find module 'X'`。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >- 在`/home/xx/projects/foo.js`执行了`require('bar')`：
-        >
-        >    1. 属于不带路径情况，判断不是模块，当作安装在本地的模块进行搜索；
-        >    2. 依次搜索每一个目录：
-        >
-        >        ```text
-        >        /home/xx/projects/node_modules/
-        >        /home/xx/node_modules/
-        >        /home/node_modules/
-        >        /node_modules/
-        >        ```
-        >
-        >        1. 搜索时，先将`bar`当作文件名，依次在`某某/node_modules/`尝试加载下面文件：
-        >
-        >            `bar`、`bar.js`、`bar.json`、`bar.node`
-        >        2. 若都不成功，则说明`bar`可能是目录名，依次在`某某/node_modules/`尝试加载下面文件：
-        >
-        >            ```text
-        >            bar/package.json（main字段）
-        >            bar/index.js
-        >            bar/index.json
-        >            bar/index.node
-        >            ```
-        >    3. 都找不到则抛出`Error: Cannot find module 'bar'`。
-        >- `require('foo')`，将会按如下顺序查找模块：
-        >
-        >    1. `./node_modules/foo`
-        >    2. `../node_modules/foo`
-        >    3. `../../node_modules/foo`
-        >    4. 直到系统的根目录
-        >- `require('foo/bar')`，将会按如下顺序查找模块：
-        >
-        >    1. `./node_modules/foo/bar`
-        >    2. `../node_modules/foo/bar`
-        >    3. `../../node_modules/foo/bar`
-        >    4. 直到系统的根目录
-        ></details>
-
-        </details>
-3. `module`
-
-    - 当前模块对象。拥有以下属性：
-
-        1. `module.id`：模块的识别符，通常是带有绝对路径的模块文件名。
-        2. `module.filename`：模块的文件名，带有绝对路径。
-        3. `module.loaded`：返回一个布尔值，表示模块是否已经完成加载。
-        4. `module.parent`：返回一个对象，表示调用该模块的模块。
-        5. `module.children`：返回一个数组，表示该模块要用到的其他模块。
-        6. `module.exports`：表示模块对外输出的值。
-        7. `module.paths`：返回一个数组，模块文件默认搜索目录（`某某/node_modules/`）。
-
-    >所有模块都是Node.js内部`Module`构建函数的实例。
+### [CommonJS规范](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS模块化方案/README.md#commonjs规范)
 
 ---
 ## 原理机制
@@ -1288,7 +1092,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 1. 调试方法：
 
     1. 控制台输出`console`等。
-    2. 通过Chrome的 <chrome://inspect/#devices>，监听Node.js程序运行`node --inspect 文件`，可以使用`debugger`等进行断点调试。
+    2. 通过Chrome的`<chrome://inspect/#devices>`，监听Node.js程序运行`node --inspect 文件`，可以使用`debugger`等进行断点调试。
 
         >[调试指南](https://nodejs.org/zh-cn/docs/guides/debugging-getting-started/)。
 2. 服务端开发注意点：
@@ -1376,17 +1180,17 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 9. 最外层`return`语句
 
     Node.js支持最外层`return`语句，作为文件执行完毕作用（不影响命令的退出码）。浏览器不允许 ~~最外层`return`语句~~，会报错。
-10. `node 文件.mjs`可以用ES6 Module的规范运行文件
+10. Node.js可以用ES6 Module规范运行文件
+
+    `.mjs`文件总是以ES6 Module规范加载，`.cjs`文件总是以CommonJS规范加载，`.js`文件的加载取决于`package.json`的`type`字段的设置（`"module"`、`"commonjs"`默认）。
 
 ---
 ## 工具使用
 
 ### [Koa](https://github.com/koajs/koa)
-关键点：级联 + 通过上下文（ctx）在中间件间传递数据 + ctx.body的值为HTTP响应数据。
+关键点：级联（洋葱模型） + 通过上下文（ctx）在中间件间传递数据 + ctx.body的值为HTTP响应数据。
 
 1. 级联（Cascading）：中间件按顺序执行，随着第二个参数`next`执行进入执行栈，所有中间件运行完毕后自动返回响应
-
-    >为了能够更好的链式调用中间件，要使用`await next()`或`return next()`的方式，否则虽然会`next`进入下一个中间件，但下一个中间件的异步代码会导致请求先返回之后再处理异步后代码。
 
     ```javascript
     const Koa = require('koa')
@@ -1422,7 +1226,18 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 
     app.listen(3000)
     ```
-    >中间件/拦截器的流程：从上到下，执行中间件，直到抵达路由匹配到的中间件为止，不再继续向下执行（若所有都不匹配，则执行兜底中间件）
+
+    >1. 为了能够更好的链式调用中间件，要使用`await next()`或`return next()`的方式，否则虽然会`next`进入下一个中间件，但下一个中间件的异步代码会导致请求先返回之后再处理异步后代码。
+    >2. 中间件/拦截器的流程：从上到下，执行中间件，直到抵达路由匹配到的中间件为止，不再继续向下执行（若所有都不匹配，则执行兜底中间件）。
+    >3. 不允许一个中间件中执行多次`next`（[koa-compose源码](https://github.com/koajs/compose/blob/master/index.js#L36)）。
+
+    - 洋葱模型优点：
+
+        1. 可读性和可维护性：洋葱模型将中间件按照顺序组织成层次结构，使得代码更具可读性和可维护性。每个中间件函数只需关注自身的特定任务，降低了代码的复杂性。
+        2. 异步流程控制：洋葱模型使得开发人员可以方便地控制异步请求的处理流程。每个中间件函数可以在请求到达服务器之前和发送响应之后执行特定的操作，处理验证、日志记录、错误处理等任务。
+        3. 错误处理：洋葱模型在处理错误时非常灵活。中间件函数可以通过`try-catch`捕获和处理错误，从而避免错误导致整个应用程序崩溃或中断请求处理流程。
+        4. 中间件的扩展和定制：洋葱模型允许开发人员在请求的处理流程中动态地添加、删除或修改中间件函数。这种灵活性使得可以根据具体需求定制中间件的功能，从而满足不同的业务需求。
+        5. 中间件能使用之后的中间件所添加的东西，方便中间件之间互相组合使用。
 2. `const app = new Koa()`实例
 
     1. `app.context`

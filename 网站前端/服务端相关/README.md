@@ -65,87 +65,87 @@
 
     不同接口、但类别相同的数据，都按照相同的结构约定数据格式（如：[normalizr](https://github.com/paularmstrong/normalizr)）。
 
-    ><details>
-    ><summary>前端可以进行数据扁平化，把不同接口返回的数据都根据类别按照hash的方式存放在各自类别的store，并再保存一份数组记录展示顺序（把数据库的hash保存的方式移植到前端也用hash保存）</summary>
-    >
-    >e.g. 一个接口返回的数据包括articles、users数据，进行扁平化
-    >
-    >```javascript
-    >// articles的store（内聚）
-    >const articles = {}  // articles的store
-    >articles.all = {}  // 存放articles的元数据（元数据：完整的单项数据，用唯一的id进行hash索引）
-    >articles.hot = {  // 存放articles的hot的展示顺序
-    >  sequence: [], // 元数据的id顺序
-    >  hasMore: true // 是否继续请求
-    >}
-    >articles.new = {  // 存放articles的new的展示顺序
-    >  sequence: [], // 元数据的id顺序
-    >  hasMore: true // 是否继续请求
-    >}
-    >articles.flattenData = (data) => { // 扁平化数据：把单项数据全部保存在同一个地方
-    >  articles.all[data.id] = Object.assign({}, articles.all[data.id], data)
-    >}
-    >articles.changeSequence = (data) => { // 写入某业务的展示顺序
-    >  const list = articles[data.category]
-    >
-    >  if (data.refresh) {
-    >    list.sequence = data.sequence
-    >  } else {
-    >    list.sequence = list.sequence.concat(data.sequence)
-    >  }
-    >}
-    >
-    >
-    >// 相同省略：users的store
-    >
-    >
-    >// 请求articles.hot的数据。返回的数据包含多种类别数据（articles、users）
-    >function handleData (arr, category) {  // 处理数据
-    >  articles.changeSequence({  // 写入hot的展示顺序
-    >    category: category,
-    >    refresh: false,
-    >    sequence: arr.map((data) => {
-    >      articles.flattenData(data.articles)   // 把元数据合并至articles
-    >      // users.flattenData(data.users)   // 把元数据合并至users
-    >
-    >      return data.articles.id  // 返回articles的id用于保存顺序
-    >    })
-    >  })
-    >
-    >  console.log(category, JSON.parse(JSON.stringify(articles)))  // 打印
-    >}
-    >
-    >// 针对articles.hot的第一次请求
-    >const data1 = [
-    >  { articles: { id: '1', data: 'articles第一个数据' }, users: { id: 'a', data: 'users第I个数据' } },
-    >  { articles: { id: '20', data: 'articles第二个数据' }, users: { id: 'b', data: 'users第II个数据' } },
-    >  { articles: { id: '300', data: 'articles第三个数据' }, users: { id: 'c', data: 'users第III个数据' } },
-    >  { articles: { id: '4000', data: 'articles第四个数据' }, users: { id: 'd', data: 'users第IV个数据' } }
-    >]
-    >handleData(data1, 'hot')
-    >
-    >// 针对articles.hot的第二次请求
-    >const data2 = [
-    >  { articles: { id: '5000', data: 'articles第五个数据' }, users: { id: 'E', data: 'users第V个数据' } },
-    >  { articles: { id: '600', data: 'articles第六个数据' }, users: { id: 'F', data: 'users第VI个数据' } },
-    >  { articles: { id: '70', data: 'articles第七个数据' }, users: { id: 'G', data: 'users第VII个数据' } },
-    >  { articles: { id: '8', data: 'articles第八个数据' }, users: { id: 'H', data: 'users第VIII个数据' } },
-    >  { articles: { id: '1', data: 'articles第一的覆盖内容' }, users: { id: 'a', data: 'users第I个的覆盖内容' } }
-    >]
-    >handleData(data2, 'hot')
-    >
-    >// 针对articles.new的第一次请求
-    >const data3 = [
-    >  { articles: { id: '5000', data: 'articles第五的覆盖内容' }, users: { id: 'E', data: 'users第V的覆盖内容' } },
-    >  { articles: { id: '8', data: 'articles第八的覆盖内容' }, users: { id: 'H', data: 'users第VIII的覆盖内容' } },
-    >  { articles: { id: '300', data: 'articles第三的覆盖内容' }, users: { id: 'c', data: 'users第III的覆盖内容' } },
-    >  { articles: { id: '20', data: 'articles第二的覆盖内容' }, users: { id: 'b', data: 'users第II的覆盖内容' } }
-    >]
-    >handleData(data3, 'new')
-    >
-    >console.log('接口获得的数据都进行扁平化处理；在对应类别的store按照id存取数据，再保存一份存放顺序的数组')
-    >```
-    ></details>
+    <details>
+    <summary>前端可以进行数据扁平化，把不同接口返回的数据都根据类别按照hash的方式存放在各自类别的store，并再保存一份数组记录展示顺序（把数据库的hash保存的方式移植到前端也用hash保存）。</summary>
+
+    e.g. 一个接口返回的数据包括articles、users数据，进行扁平化
+
+    ```javascript
+    // articles的store（内聚）
+    const articles = {}  // articles的store
+    articles.all = {}  // 存放articles的元数据（元数据：完整的单项数据，用唯一的id进行hash索引）
+    articles.hot = {  // 存放articles的hot的展示顺序
+      sequence: [], // 元数据的id顺序
+      hasMore: true // 是否继续请求
+    }
+    articles.new = {  // 存放articles的new的展示顺序
+      sequence: [], // 元数据的id顺序
+      hasMore: true // 是否继续请求
+    }
+    articles.flattenData = (data) => { // 扁平化数据：把单项数据全部保存在同一个地方
+      articles.all[data.id] = Object.assign({}, articles.all[data.id], data)
+    }
+    articles.changeSequence = (data) => { // 写入某业务的展示顺序
+      const list = articles[data.category]
+
+      if (data.refresh) {
+        list.sequence = data.sequence
+      } else {
+        list.sequence = list.sequence.concat(data.sequence)
+      }
+    }
+
+
+    // 相同省略：users的store
+
+
+    // 请求articles.hot的数据。返回的数据包含多种类别数据（articles、users）
+    function handleData (arr, category) {  // 处理数据
+      articles.changeSequence({  // 写入hot的展示顺序
+        category: category,
+        refresh: false,
+        sequence: arr.map((data) => {
+          articles.flattenData(data.articles)   // 把元数据合并至articles
+          // users.flattenData(data.users)   // 把元数据合并至users
+
+          return data.articles.id  // 返回articles的id用于保存顺序
+        })
+      })
+
+      console.log(category, JSON.parse(JSON.stringify(articles)))  // 打印
+    }
+
+    // 针对articles.hot的第一次请求
+    const data1 = [
+      { articles: { id: '1', data: 'articles第一个数据' }, users: { id: 'a', data: 'users第I个数据' } },
+      { articles: { id: '20', data: 'articles第二个数据' }, users: { id: 'b', data: 'users第II个数据' } },
+      { articles: { id: '300', data: 'articles第三个数据' }, users: { id: 'c', data: 'users第III个数据' } },
+      { articles: { id: '4000', data: 'articles第四个数据' }, users: { id: 'd', data: 'users第IV个数据' } }
+    ]
+    handleData(data1, 'hot')
+
+    // 针对articles.hot的第二次请求
+    const data2 = [
+      { articles: { id: '5000', data: 'articles第五个数据' }, users: { id: 'E', data: 'users第V个数据' } },
+      { articles: { id: '600', data: 'articles第六个数据' }, users: { id: 'F', data: 'users第VI个数据' } },
+      { articles: { id: '70', data: 'articles第七个数据' }, users: { id: 'G', data: 'users第VII个数据' } },
+      { articles: { id: '8', data: 'articles第八个数据' }, users: { id: 'H', data: 'users第VIII个数据' } },
+      { articles: { id: '1', data: 'articles第一的覆盖内容' }, users: { id: 'a', data: 'users第I个的覆盖内容' } }
+    ]
+    handleData(data2, 'hot')
+
+    // 针对articles.new的第一次请求
+    const data3 = [
+      { articles: { id: '5000', data: 'articles第五的覆盖内容' }, users: { id: 'E', data: 'users第V的覆盖内容' } },
+      { articles: { id: '8', data: 'articles第八的覆盖内容' }, users: { id: 'H', data: 'users第VIII的覆盖内容' } },
+      { articles: { id: '300', data: 'articles第三的覆盖内容' }, users: { id: 'c', data: 'users第III的覆盖内容' } },
+      { articles: { id: '20', data: 'articles第二的覆盖内容' }, users: { id: 'b', data: 'users第II的覆盖内容' } }
+    ]
+    handleData(data3, 'new')
+
+    console.log('接口获得的数据都进行扁平化处理；在对应类别的store按照id存取数据，再保存一份存放顺序的数组')
+    ```
+    </details>
 5. 接口请求失败，不能帮用户静默再次请求
 
     1. 提示用户（针对必要展示的信息）

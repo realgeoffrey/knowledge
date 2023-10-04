@@ -14,7 +14,6 @@
 1. [服务端调试](#服务端调试)
 
 ---
-
 ## 前端调试方式
 
 ### JS
@@ -48,7 +47,7 @@
 2. Elements，右键标签可以Break On：子节点修改、attribute修改、Node移除。
 3. Node.js
 
-    通过Chrome的 <chrome://inspect/#devices>，监听Node.js程序运行`node --inspect 文件`，可使用`debugger`等进行断点调试、`console`打印等。
+    通过Chrome的`<chrome://inspect/#devices>`，监听Node.js程序运行`node --inspect 文件`，可使用`debugger`等进行断点调试、`console`打印等。
 
 ### WAP端
 
@@ -60,14 +59,14 @@
 
     1. Android
 
-        PC端的Chrome的Remote devices（<chrome://inspect/#devices>）可以调试**Android已开启调试功能的APP**的WebView。
+        PC端的Chrome的Remote devices（`<chrome://inspect/#devices>`）可以调试**Android已开启调试功能的APP**的WebView。
 
         >Remote devices需要能够访问google，否则首次打开inspect页面会404。会自动联网更新相关SDK：控制台界面修复（低端机原本乱码，更新后会正常显示）、渲染器升级（低端机一开始不支持的CSS特性，更新后会支持）。
 
         - Android已开启调试功能的APP：
 
             1. Chrome
-            2. 用<http://debugx5.qq.com/>打开TBS内核调试功能的[腾讯X5内核WebView](https://x5.tencent.com/)（如：Android的QQ、QQ浏览器、旧版微信）
+            2. 用 ~~<http://debugx5.qq.com/>~~（已失效）打开TBS内核调试功能的[腾讯X5内核WebView](https://x5.tencent.com/)（如：Android的QQ、QQ浏览器、旧版微信）
             3. 开启调试功能的debug包APP
 
         >若PC端的Chrome识别不到手机WebView，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)（macOS可以用brew安装：`brew cask install android-platform-tools`）并运行（进入文件夹后运行`adb.exe devices`或`adb devices`连接手机设备）。
@@ -265,7 +264,7 @@
 - 前端组件最终是传递给客户端，由客户端组件来实现呈现，因此用客户端工具查看客户端组件时，可以根据组件名字是否有前端标识，判断其是否来自于前端。
 
 #### 其他调试方法
-- Android真机调试：
+1. Android真机调试：
 
     1. 开发人员选项
 
@@ -287,12 +286,11 @@
     2. 打开其他APP时设置的允许/拒绝信息，可以操作当前APP「清除数据」恢复提醒。
     3. 连接着的手机，无法识别，
 
-        1. 刷新一下<chrome://inspect/#devices>
+        1. 刷新一下`<chrome://inspect/#devices>`
         2. 切换一下「USB 调试」的开关（或「撤销 USB 调试授权」后重新授权）
 
-        - <chrome://inspect/#devices>中，关闭`Discover USB devices`可以减少断连手机。
-
-- 其他策略
+        - `<chrome://inspect/#devices>`中，关闭`Discover USB devices`可以减少断连手机。
+2. 其他策略
 
     1. 对于App内不方便查看的信息，可以把需要查看的信息发送HTTP请求、再抓包的方式进行调试。
     2. 上线的页面中藏着某些「后门」调试（如：隐蔽操作开启`console`）

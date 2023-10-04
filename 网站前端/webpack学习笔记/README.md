@@ -8,6 +8,7 @@
     1. [动态加载（按需加载，代码分割，异步组件，路由/组件 懒加载）](#动态加载按需加载代码分割异步组件路由组件-懒加载)
     1. [热更新（hot module replacement，HMR，模块热替换）](#热更新hot-module-replacementhmr模块热替换)
     1. [tree shaking](#tree-shaking)
+    1. [scope hoisting（作用域提升）](#scope-hoisting作用域提升)
     1. [文件监听工作原理](#文件监听工作原理)
     1. [webpack-dev-server自动刷新原理](#webpack-dev-server自动刷新原理)
 1. [分析输出文件](#分析输出文件)
@@ -66,12 +67,14 @@
         2. 优化`watchOptions.aggregateTimeout/poll`配置（减少重新构建的频率）
         3. （webpack5删除）`devServer.inline`用`inline`（`<iframe>`）代替默认的websocket
     6. 开启热更新
-    7. 开启Scope Hoisting
+    7. 开启[Scope Hoisting](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/webpack学习笔记/README.md#scope-hoisting作用域提升)
 
         webpack.optimize.ModuleConcatenationPlugin
 2. 产物优化（自动）
 
     1. 分包（vendor或dll）
+
+        >HTTP/1考虑分包总量尽量少，有利于减少HTTP排队耗时；HTTP/2+考虑分包尽量细粒度，不太关注数量，有利于更新频率降低和缓存命中。
     2. 压缩JS、CSS
     3. 图片压缩
 
@@ -128,9 +131,18 @@
     1. loader
 
         模块转换器，一个`输入-输出`函数，用于把module原内容按照需求转换成新内容。递归获得路径所有依赖module，输入给第一个loader，处理完毕输出给下一个loader，直到所有loader链式顺序执行完毕，由最后一个loader输出给Webpack。
+
+        1. 四个阶段：`pre` -> `normal` -> `inline` -> `post`
+        2. inline loader跳过其他阶段loader：`!`（跳过`normal`）、`!!`（跳过`pre`、`normal`、`post`）、`-!`（跳过`pre`、`normal`）
+        3. 同步loader、异步loader
+        4. Webpack会从左到右执行每个loader上的`pitch`方法（如果有）
+
+            `pitch loader`的熔断效果：pitch loader中如果存在非`undefeind`返回值的话，那么上述图中的整个loader chain会发生熔断效果。
+
+        >官网可查看官方各loader的功能和实现原理：[webpack: loaders](https://webpack.docschina.org/loaders/)。
     2. Plugin
 
-        扩展插件，一个包含`apply`方法的Class（构造函数），在Webpack构建流程中的特定时机广播出对应的事件，plugin监听事件进行逻辑。
+        扩展插件，[一个包含`apply`方法的Class（构造函数）](https://github.com/webpack/webpack/blob/main/lib/webpack.js#L71C1-L79)，在Webpack构建流程中的特定时机广播出对应的事件（钩子数：200+），plugin监听事件进行逻辑，在事件处理函数内部进行 `修改上下文属性`或`调用上下文api` 等方式对webpack产生side effect。
 
         ```javascript
         class BasicPlugin{
@@ -140,7 +152,15 @@
           // Webpack 会调用 plugin实例 的 apply 方法传入 compiler 对象
           apply(compiler){
             // 监听 compilation、等各种事件
-            compiler.plugin('compilation',function(compilation) {})
+            compiler.plugin('compilation',function(compilation) {
+              // webpack 会将上下文信息以参数或this (compiler 对象) 形式传递给钩子回调，
+              // 在回调中可以调用 上下文对象的方法 或 直接修改上下文对象属性，对原定的流程产生 side effect
+              // 如：
+              //   compilation.addModule：添加模块，可以在原有的 module 构建规则之外，添加自定义模块
+              //   compilation.emitAsset：直译是“提交资产”，功能可以理解将内容写入到特定路径
+              //   compilation.addEntry：添加入口，功能上与直接定义 entry 配置相同
+              //   module.addError：添加编译错误信息
+            })
           }
         }
 
@@ -148,16 +168,19 @@
         module.exports = BasicPlugin;
         ```
 
-        - Webpack中的plugin机制基于[Tapable](https://github.com/webpack/tapable)实现，与打包流程解耦。
+        - Webpack中的plugin机制——compiler，基于[Tapable](https://github.com/webpack/tapable)实现，与打包流程解耦。
 
             Tapable本质上是提供更方面创建自定义事件和触发自定义事件的库（类似于：[Nodejs的EventEmitter](https://nodejs.org/api/events.html#class-eventemitter)）。
 3. 打包后产物
 
-    打包过程过程：chunk -> bundle。vendor、dll是有特殊缓存逻辑的bundle。
+    打包过程：chunk -> bundle。vendor、dll是有特殊缓存逻辑的bundle。
 
     1. chunk
 
-        （中间过程的）代码块，由多个module组合而成，用于代码合并与分割。块的名字在`entry`设置，数字是id。
+        是输出的基本单位，默认情况下这些chunks与最终输出的资源一一对应，一个entry会对应打包出一个资源，而通过动态引入语句引入的模块，也对应会打包出相应的资源。块的名字在`entry`设置，数字是id。
+
+        1. entry及entry触达到的模块，组合成一个chunk
+        2. 使用动态引入语句引入的模块，各自组合成一个chunk
 
         >每次修改一个module时，webpack会生成两部分：`manifest.json`（新的编译hash和所有的待更新chunks目录）、更新后的chunks（.js）。
     2. vendor
@@ -193,7 +216,61 @@
         1. bundle能直接运行在浏览器中的原因在于输出的文件中通过`__webpack_require__`函数定义了一个可以在浏览器中执行的加载函数来模拟Node.js中的`require`语句。
         2. 原来一个个独立的module文件被合并到了一个单独的bundle的原因在于浏览器不能像Node.js那样快速地去本地加载一个个module文件，而必须通过网络请求去加载还未得到的文件。 如果module数量很多，加载时间会很长，因此把所有module都存放在了数组中，执行一次网络加载。
         3. 做了缓存优化：执行加载过的module不会再执行第二次，执行结果会缓存在内存中，当某个module第二次被访问时会直接去内存中读取被缓存的返回值。
+
+        ```javascript
+        // e.g.
+        function __webpack_require__(moduleId) {
+            // 1.首先会检查模块缓存
+            if(installedModules[moduleId]) {
+                return installedModules[moduleId].exports;
+            }
+
+            // 2. 缓存不存在时，创建并缓存一个新的模块对象，类似Node中的new Module操作
+            var module = installedModules[moduleId] = {
+                i: moduleId,
+                l: false,
+                exports: {},
+                children: []
+            };
+
+            // 3. 执行模块，类似于Node中的：
+            // result = compiledWrapper.call(this.exports, this.exports, require, this, filename, dirname);
+            modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+            module.l = true;
+
+            // 4. 返回该module的输出
+            return module.exports;
+        }
+        ```
         </details>
+4. 名词解析
+
+    1. Entry：编译入口，webpack编译的起点
+    2. Compiler：编译管理器，webpack启动后会创建compiler对象，该对象一直存活直到结束退出
+
+    >1. compiler对象代表了完整的webpack环境配置，启动时一次性建立，配置好所有可操作的设置
+    >2. compilation对象代表了一次资源版本构建，当检测到文件变化就触发一个新的compilation
+
+    3. Compilation：单次编辑过程的管理器
+
+        >e.g. `watch: true`时，运行过程中只有一个compiler，但每次文件变更触发重新编译时，都会创建一个新的compilation对象
+
+        Compilation模块会被Compiler用来创建新的编译，Compilation实例负责**处理一次完整的构建过程**，从启动构建到生成输出文件。当Webpack开始一次新的构建时，它会使用已有的Compiler实例创建一个新的Compilation实例。Compilation实例将负责管理和执行构建过程中的所有步骤。每次构建过程生成的所有中间结果，包括依赖关系图、转换过的资源和生成的代码块，都将存储在Compilation对象中，直至最终生成输出文件。
+
+        - 在编译阶段，模块会被：
+
+            1. 加载（loaded）
+            2. 封存（sealed）
+            3. 优化（optimized）
+            4. 分块（chunked）
+            5. 哈希（hashed）
+            6. 重新创建（restored）
+    4. Dependence：依赖对象，webpack基于该类型记录模块间依赖关系
+    5. Module：webpack内部所有资源都会以“module”对象形式存在，所有关于资源的操作、转译、合并都是以“module”为基本单位进行的
+    6. Chunk：编译完成准备输出时，webpack会将module按特定的规则组织成一个一个的chunk，这些chunk某种程度上跟最终输出一一对应
+    7. Loader：资源内容转换器，其实就是实现从内容A转换B的转换器
+    8. Plugin：webpack构建过程中，会在特定的时机广播对应的事件，插件监听这些事件，在特定时间点介入编译过程
 
 #### 流程概括
 Webpack的运行流程是一个串行的过程，从启动到结束会依次执行以下流程：
@@ -212,7 +289,7 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
     从入口文件出发，调用所有配置的Loader对module进行翻译，再找出该module依赖的module，再递归本步骤直到所有入口依赖的文件都经过了本步骤的处理；
 5. 完成模块编译：
 
-    在经过第4步使用Loader翻译完所有module后，得到了每个module被翻译后的最终内容以及它们之间的依赖关系；
+    在经过第4步使用Loader翻译完所有module后，得到了每个module被翻译后的最终内容以及它们之间的依赖关系（遍历AST集合过程中，识别`require/import`之类的导入语句，确定模块对其他资源的依赖关系）；
 6. 输出资源：
 
     根据入口和module之间的依赖关系，组装成一个个包含多个module的`Chunk`，再把每个Chunk转换成一个单独的文件加入到输出列表，这步是可以修改输出内容的最后机会；
@@ -347,7 +424,7 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
       hot: true,
     },
     plugins: [
-      new webpack.HotModuleReplacementPlugin(),
+      new webpack.HotModuleReplacementPlugin(), // 负责加载热更新清单和chunk，并更新替换模块缓存
     ],
     ```
 2. 流程
@@ -381,8 +458,59 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
         ></details>
 
         - 确保代码不会在某些阶段被转换为CommonJS等（在使用babel时避免`compilerOptions.module`设置为非ES6 Module）
-    2. 配置`optimization.usedExports: true`启动标记功能
-    3. 启动代码优化功能：`mode: 'production'`或`optimization.minimize: true`或`optimization.minimizer: 「数组」`
+    2. 配置`optimization.usedExports: true`启动标记功能（标记哪些代码没有被使用）
+
+        1. Make 阶段，收集模块导出变量并记录到模块依赖关系图 ModuleGraph 变量中（收集）
+        2. Seal 阶段，遍历 ModuleGraph 标记模块导出变量有没有被使用（标记）
+        3. 生成产物时，若变量没有被其它模块使用则删除对应的导出语句（删除）
+    3. 启动代码优化功能：
+
+        `mode: 'production'`或`optimization.minimize: true`或`optimization.minimizer: 「数组」`
+2. 目标代码
+
+    0. 使用ES6 Module规范编写代码
+    1. 通过package.json的`"sideEffects"`标记（`: false`：当前包的所有模块都被标记没有副作用；`[有副作用的文件或文件夹]`：标记有副作用的部分），可以安全地删除标记无副作用文件中未使用的部分
+    2. 函数标记无副作用
+
+        1. `/*#__PURE__*/`被放到函数调用之前，用来标记是无副作用的（传到函数中的入参是无法被刚才的注释所标记，需要单独每一个标记才可以）。
+        2. webpack开启`optimization.innerGraph: true`
+3. [Tree-Shaking 实现原理](https://mp.weixin.qq.com/s/McigcfZyIuuA-vfOu3F7VQ)
+
+#### scope hoisting（作用域提升）
+分析出模块之间的依赖关系，尽可能的把打散的模块合并到一个函数中去，但前提是不能造成代码冗余。因此只有那些被引用了一次的模块才能被合并。
+
+><details>
+><summary>e.g.</summary>
+>
+>1. 未开启：
+>
+>    ```javascript
+>    [
+>      (function (module, __webpack_exports__, __webpack_require__) {
+>        var __WEBPACK_IMPORTED_MODULE_0__util_js__ = __webpack_require__(1);
+>        console.log(__WEBPACK_IMPORTED_MODULE_0__util_js__["a"]);
+>      }),
+>      (function (module, __webpack_exports__, __webpack_require__) {
+>        __webpack_exports__["a"] = ('Hello,Webpack');
+>      })
+>    ]
+>    ```
+>2. 开启后：
+>
+>    ```javascript
+>    [
+>      (function (module, __webpack_exports__, __webpack_require__) {
+>        var util = ('Hello,Webpack');
+>        console.log(util);
+>      })
+>    ]
+>    ```
+></details>
+
+1. 使用
+
+    1. ES6 Module的静态语法
+    2. plugin增加`new require('webpack/lib/optimize/ModuleConcatenationPlugin')()`
 
 #### 文件监听工作原理
 1. 定时的去获取**文件的最后编辑时间**，每次都存下最新的最后编辑时间，如果发现当前获取的和最后一次保存的最后编辑时间不一致，就认为该文件发生了变化。配置项中的`watchOptions.poll: 毫秒`用于控制定时检查的周期。
@@ -668,19 +796,27 @@ App级别的应用（开发、打包）：webpack；JS库级别的应用（打�
 
     1. 打包结果文件很小，几乎没多余代码（Tree Shaking）；执行很快；可方便输出CommonJS、ES6 Module、IIFE（用于`<script>`引用）格式。不支持代码分离。
     2. 功能不如webpack完善，配置、使用更加简单。
-    3. 必须用ES6 Module格式的代码才可以打包。
+    3. 原生只支持ES6 Module格式的代码才可以打包（可以用插件[@rollup/plugin-commonjs](https://github.com/rollup/plugins/tree/master/packages/commonjs)导入CommonJS代码）。
     4. 适合纯JS的库或组件。
+
+    - 优点：产物格式极为干净，产物结果对 tree shaking 非常友好。
+    - 缺点：产物优化能力薄弱，尤其是缺失 Bundle Splitting 等能力导致业务很难做精细的优化；CommonJS支持不佳（CommonJS转ES6无法做到完全兼容）；不支持HMR，watch表现一般。
 2. webpack
 
     1. 拥有强大、全面的功能、高度可配置，更好的社区。
     2. 针对各种类型的文件（loader支持）。可以处理多个入口文件和复杂的依赖关系。可以高度定制和扩展Webpack的功能。
     3. 在进行资源打包时会产生很多冗余的代码（webpack内部结构、模块化方案、`__webpack_require__`）。
     4. 适合复杂项目。
-3. vite
 
-    1. 核心原理：利用现代浏览器现在已经支持ES6 Module的import能力，遇到import就会发送一个HTTP请求去加载ES6 Module文件。整个过程中没有对文件进行打包编译。
+    - 最大优点：扩展能力极强，能够支持几乎所有的构建场景。
+    - 缺点：黑盒化严重，调试能力差，业务碰到构建相关的问题，几乎都很难自行排查；性能问题。
+3. vite（`/vit/`）
+
+    1. 核心原理：利用现代浏览器现在已经支持ES6 Module的import能力，遇到import就会发送一个HTTP请求去加载ES6 Module文件。整个过程中没有对文件进行打包编译。很多地方用了esbuild。
     2. 快速的冷启动能力，提供了快速的开发体验。在开发阶段使用原生ES6 Module直接引入模块，而不需要像Webpack和Rollup一样进行打包，从而提供了更快的热重载和构建速度。
     3. 适用于中小型项目，特别是基于现代浏览器的单页应用（SPA）或中小型网站开发。
+
+    - 缺点：每个模块引用都需要ES6 module的的网络请求，网络请求开销大（尤其是HMR时）。
 
 >4. Grunt
 >
@@ -702,13 +838,16 @@ App级别的应用（开发、打包）：webpack；JS库级别的应用（打�
 >    模块打包工具，把CommonJS模块化代码打包成浏览器能运行的代码。
 >8. esbuild
 >
->    GoLang编写的**快速**JS、TS打包器，
+>    **GoLang**编写的**快速**JS、TS打包器，支持CommonJS（是rollup的很好替代品）。
 >9. Parcel
 >
 >    零配置的打包工具，适用于小型项目、静态网页或需要快速上手的场景。
 >9. Bun
 >
->    是像Node.js、Deno一样的现代JS运行时。旨在无感替代现有的JS运行时并成为 浏览器外执行JS 的主流环境，为用户带来性能和复杂性的提升的同时，以更好更简单的工具提高开发者的效率。和传统的Node.js这种传统的JS运行时不同，Bun.js直接内置了打包器、转译器、任务运行器和npm客户端，这意味着你不再需要Webpack/Rollup/esbuild/Snowpack/Parcel/Rome/swc/babel就可以直接运行TypeScript、JSX。另外，Bun.js原生支持了数百个Node.js和Web API。
+>    是像Node.js、Deno一样的现代**JS运行时**。旨在无感替代现有的JS运行时并成为 浏览器外执行JS 的主流环境，为用户带来性能和复杂性的提升的同时，以更好更简单的工具提高开发者的效率。和传统的Node.js这种传统的JS运行时不同，**Bun.js直接内置了打包器、转译器、任务运行器和npm客户端**，这意味着你不再需要Webpack/Rollup/esbuild/Snowpack/Parcel/Rome/swc/babel就可以直接运行TypeScript、JSX。另外，Bun.js原生支持了数百个Node.js和Web API。
 >9. Rspack
 >
->    Rust编写的Web构建工具，意在用更快、更直接的方式取代Webpack。
+>    **Rust**编写的Web构建工具，意在用更快、更直接的方式取代Webpack。
+>9. Turbopack
+>
+>    针对JS和TS优化的增量打包器，用**Rust**编写。高度优化的机器代码和低级增量计算引擎，可以**缓存**到单个函数的级别。一旦Turbopack执行了一项任务，它就再也不会这样做了。特点是快。

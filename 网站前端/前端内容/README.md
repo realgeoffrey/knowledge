@@ -41,7 +41,31 @@
 
 - 行业趋势总结
 
-    1. [2022大前端总结和2023就业分析](https://github.com/i5ting/fe-2022-in-china)
+    1. [狼叔：2022大前端总结和2023就业分析](https://github.com/i5ting/fe-2022-in-china)
+    2. 未来前端的发展
+
+        1. 移动端、跨平台开发
+
+            RN、flutter、ionic、~~weex~~，小程序。
+        2. web组件和微前端
+
+            1. shadow dom，custom elements
+            2. qiankun，single-spa，webpack模块联邦
+        3. 低代码
+
+            <https://github.com/alibaba/lowcode-engine>
+        4. 性能优化
+
+            1. webpack，代替webpack的一系列轮子。
+            2. 监控、分析
+            3. 性能api：`PerformanceNavigationTiming`
+        5. 与人工智能结合
+
+            TensorFlow.js（在浏览器中运行机器学习模型，支持图像、文本和声音等多种应用场景）、
+              BrainJS（js实现，用于创建和训练神经网络，支持多种类型的神经网络）
+              convnetjs（在浏览器中进行图像分类、物体检测等任务）
+              ml5js（js实现，用于创建和训练机器学习模型，支持多种应用场景，包括图像、文本、音频等）
+        6. WebAssembly
 
 ### 前端工程化
 >参考：[张云龙：前端工程——基础篇](https://github.com/fouber/blog/issues/10)。
@@ -59,7 +83,8 @@
     >提升维护效率。
 
     **分而治之**
-    1. [JS模块化方案](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#js模块化方案)：
+
+    1. [JS模块化方案](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS模块化方案/README.md)：
 
         CommonJS/AMD/CMD/ES6 Module/UMD
     2. CSS模块化方案：
@@ -78,15 +103,14 @@
         3. 由于组件具有独立性，因此组件与组件之间可以**自由组合**；
         4. 页面只不过是组件的容器，负责组合组件形成功能完整的界面；
         5. 当不需要某个组件，或想要替换组件时，可以整个目录替换、删除。
-
     2. 资源管理
 
-        >静态资源加载的技术实现。
+        >静态资源加载的技术实现。不包括.html（`.html`设置不缓存或协商缓存或超短时间强缓存）。
 
         1. 静态资源管理系统 = 资源表 + 资源加载框架
         2. [大公司的静态资源优化方案](https://github.com/fouber/blog/issues/6)：
 
-            1. 配置超长时间的本地缓存 —— 节省带宽，提高性能
+            1. 配置超长时间的强缓存 —— 节省带宽，提高性能
             2. 采用文件的数字签名（如：MD5）作为缓存更新依据 —— 精确的缓存控制
             3. 静态资源CDN部署 —— 优化网络请求
             4. 非覆盖式更新资源 —— 平滑升级
@@ -98,18 +122,20 @@
 >[从零开始构建 JavaScript 技术栈](https://github.com/wooo-on/js-stack-from-scratch)。
 
 ### 网站性能优化
->性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#前端工程化)问题。
+>性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#前端工程化)问题。所有优化都是梳理完整个执行链路后，逐步优化链路中每个环节。
 
 页面内容下载速度 -> 页面解析、渲染速度和流畅性 -> 用户交互流畅性 的具体优化。
 
-1. URL输入：
+1. <details>
+
+    <summary>URL输入：</summary>
 
     服务端（运维）对HTTP请求、资源发布和缓存、服务器配置的优化。
 
     1. 服务器开启gzip（如：nginx）。
 
         >前端查看Response头是否有：`Content-Encoding: gzip`。
-    2. 优先开启使用[HTTP/2](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http持久连接websockethttp2)（替代HTTP/1.1、HTTP/1.0）
+    2. 优先开启使用[HTTP/3或HTTP/2](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http协议迭代http3http2http1)（替代HTTP/1.1、HTTP/1.0）
     3. 减少DNS查找，设置合适的TTL值，避免重定向。
     4. 使用CDN。
     5. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#静态资源使用额外域名的原因)；尽量减少保存进cookie的数据种类和大小（因为同源的cookie会全部参与HTTP通讯）；合理减少HTTP头数量。
@@ -119,19 +145,22 @@
         2. 使用[缓存相关HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)
 
             `Expires` `Cache-Control` `Last-Modified/If-Modified-Since` `ETag/If-None-Match`
-        3. 配置超长时间的本地缓存，采用文件的数字签名（如：MD5）作为缓存更新依据。
+        3. 配置超长时间的强缓存，采用文件的数字签名（如：MD5）作为缓存更新依据。
+
+            >`.html`设置不缓存或协商缓存或超短时间强缓存。
 
             [非覆盖式更新资源](https://github.com/fouber/blog/issues/6)。
 
             - 针对无法修改url地址的资源（如：头像等），若既要长缓存又要及时更新，则后台需要额外存储资源更新时间
 
                 e.g. https://xxx.com/avatar/uid?t=更新时间
+    </details>
 2. 载入页面时，优化CRP（Critical Rendering Path，关键渲染路径，优先显示与用户操作有关内容）：
 
     1. 减少关键资源、减少HTTP请求：
 
         1. 资源合并、去重。
-        2. 首屏资源进行服务端渲染，不要在客户端异步加载并渲染。
+        2. 首屏资源进行服务端渲染SSR，不要在客户端异步加载并渲染。
         3. 非首屏资源延迟异步加载：
 
             1. 增量加载资源：
@@ -141,6 +170,8 @@
 
                     如：[滚动加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery滚动加载)、[IntersectionObserver判断DOM可见再发起异步加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsdom展示或消失执行方法intersectionobserver)。
                 3. 功能文件按需加载（模块化、组件化）。
+
+                    [webpack的动态加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/webpack学习笔记/README.md#动态加载按需加载代码分割异步组件路由组件-懒加载)
             2. 使AJAX可缓存。
 
                 当用GET方式时添加缓存HTTP头：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since`。
@@ -149,8 +180,10 @@
             客户端： Web Storage（`localStorage`、`sessionStorage`）、cookie、IndexDB等；服务端：Redis等。
         5. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
         6. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）、第三方资源使用统一的CDN服务和设置[`<link>`预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
-        7. 利用CDN combo（利用构建打包工具，如webpack，把多个文件合并为一个文件，并使用特定的URL来请求该合并后的文件）。
-        8. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
+        - 其他
+
+            1. 利用CDN combo（利用构建打包工具，如webpack，把多个文件合并为一个文件，并使用特定的URL来请求该合并后的文件）。
+            2. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
     2. 最小化字节：
 
         1. 压缩资源。
@@ -196,23 +229,14 @@
 
     >大部分情况下的浏览器是单线程执行，因此要尽量做到「最小化主线程的责任」，来确保渲染流畅和交互响应及时。
 
-    1. CSS性能：
-
-        1. [CSS选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
-        2. [渲染性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)
-
-            1. 样式缩小计算范围、降低复杂度。
-            2. 减少重绘和重排。
-            3. 动画合理触发GPU加速。
-            4. 尽量仅使用`opacity`、`transform: translate/scale/rotate/skew`处理动画。
-    2. JS代码性能优化：
+    1. **JS代码性能优化（JS通用）**：
 
         1. 使用性能好的代码方式（微优化，micro-optimizations：尝试写出认为会让浏览器稍微更快速运行的代码或调用更快的方法）
 
             1. 字面量创建数据，而不是构造函数。
             2. 缓存DOM的选择、缓存列表.length。
             3. [闭包合理使用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)。
-            4. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)。
+            4. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)（全局变量、闭包引用的变量、定时器、事件监听、DOM引用）。
             5. 长字符串拼接使用`Array.prototype.join()`，而不使用 ~~`+`~~ 或 ~~`String.prototype.concat`~~。
         2. 尽量使用事件代理，避免批量绑定事件。
         3. [定时器取舍，合理使用重绘函数代替](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)。
@@ -227,6 +251,15 @@
             1. [vue性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#vue性能优化)
             2. [react性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/React学习笔记/README.md#react性能优化)
         9. 长列表考虑虚拟列表（针对非可见区域先销毁，注意分析具体场景下重新创建的优劣）
+    2. CSS性能：
+
+        1. [CSS选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
+        2. [渲染性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)
+
+            1. 样式缩小计算范围、降低复杂度。
+            2. 减少重绘和重排。
+            3. 动画合理触发GPU加速。
+            4. 尽量仅使用`opacity`、`transform: translate/scale/rotate/skew`处理动画。
     3. HTML：
 
         1. 减少层级嵌套。
@@ -236,29 +269,28 @@
     1. [WebView优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Hybrid前端开发/README.md#webview性能)：
 
         配合客户端开发落地优化方案。
-    2. 首屏CGI提前
+    2. 首屏CGI提前至页面加载前
     3. 离线包（内置包、缓存包，运行前已提前下载准备好）
+    - [hippy流程和优化（前端）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Hippy学习笔记/README.md#hippy流程和优化前端)
 
 >- <details>
 >
 >    <summary>优先优化对性能影响大、导致瓶颈的部分</summary>
 >
->    1. DevTools：
+>    1. （本地纠错）DevTools：
 >
 >        - 或客户端的性能查看工具：[其他语言2Native调试](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/代码调试相关/README.md#其他语言2native调试)
 >
 >        1. Performance查询运行时导致**帧数**过高的代码。
 >        2. Rendering、Layers查看CSS渲染情况。
 >        3. Memory、JavaScript Profiler、Performance monitor查询内存占用情况。
->    2. 打开各种分析工具，根据建议逐条对照修改
+>    2. （大盘数据）打开各种分析工具，根据建议逐条对照修改
 >
 >        - 在客户端运行[`window.performance`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#performance)查看页面从打开到加载完成的时间数据，或其他约定好的性能口径。
 >
 >        1. [lighthouse](https://github.com/GoogleChrome/lighthouse)
 >
->            1. DevTools的Audits
->            2. Chrome的扩展程序：[Lighthouse](https://chrome.google.com/webstore/detail/lighthouse/blipmdconlkpinefehnmjammfjpmpbjk)
->            3. Node.js全局安装[lighthouse](https://www.npmjs.com/package/lighthouse)并执行`lighthouse 域名`
+>           DevTools的Lighthouse、Chrome的扩展程序[Lighthouse](https://chrome.google.com/webstore/detail/lighthouse/blipmdconlkpinefehnmjammfjpmpbjk)、Node.js全局安装[lighthouse](https://www.npmjs.com/package/lighthouse)并执行`lighthouse 域名`。
 >        2. 分析网站：
 >
 >            1. google的性能分析[PageSpeed Insights](https://developers.google.com/speed/pagespeed/insights/)
@@ -268,7 +300,7 @@
 >                2. [CSS验证](https://jigsaw.w3.org/css-validator/validator.html.zh-cn)
 >                3. [链接测试](https://validator.w3.org/checklink)
 >            3. [性能测试](https://gtmetrix.com/)
->    3. webpack的[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)分析包体积。
+>    3. （依赖包分析）webpack的[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)分析包体积。
 >    </details>
 >- <details>
 >
@@ -289,7 +321,7 @@
 >    </details>
 
 ### 页面解析、渲染步骤
->参考：[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)、[浏览器的工作原理：新式网络浏览器幕后揭秘](https://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/#The_order_of_processing_scripts_and_style_sheets)。
+>参考：[全方位提升网站打开速度：前端、后端、新的技术](https://github.com/xitu/gold-miner/blob/master/TODO/building-a-shop-with-sub-second-page-loads-lessons-learned.md#前端性能)、[浏览器的工作原理：新式网络浏览器幕后揭秘](https://www.html5rocks.com/zh/tutorials/internals/howbrowserswork)。
 
 ![页面解析步骤图](./images/load-html-1.png)
 
@@ -365,8 +397,11 @@
             ><details>
             ><summary>一个<code><script></code>最多执行一次。</summary>
             >
-            >1. 已经执行过的脚本（`<script>`：外部脚本`src`或内嵌脚本），若再次修改或删除，不会再执行，也不会影响执行过的内容。已经执行过的脚本，若删除外部脚本`src`或删除内嵌脚本内容，之后再添加外部脚本`src`或添加内嵌脚本内容，也不会再次执行。
+            >1. 已经执行过的脚本（`<script>`：外部脚本`src`或内嵌脚本），若再次修改或删除，不会再执行，也不会影响执行过的内容。
+            >
+            >    已经执行过的脚本，若删除外部脚本`src`或删除内嵌脚本内容，之后再添加外部脚本`src`或添加内嵌脚本内容，也不会再次执行。
             >2. 没有执行过内容的空脚本`<script></script>`，若添加外部脚本`src`或添加内嵌脚本，会执行一次。
+            >3. 已经被浏览器执行到的`<script>`，若 外部脚本`src`有值（不管能否加载成功） 或 内嵌脚本有内容，则必定按浏览器执行时设定的内容执行（加载失败也算执行），马上修改或删除`<script>`都不影响执行结果（动态加载途中删除也不影响执行结果）。
             ></details>
         4. 脚本执行完毕，继续 解析HTML（DOM构造）。
 
@@ -405,44 +440,44 @@
     2. 执行不停止的JS代码
     3. ~~`debugger`~~ 无法阻止
 
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```html
-    ><div id="j-div-1">1</div>
-    ><div id="j-div-2">2</div>
-    ><div id="j-div-3">3</div>
-    >
-    ><script>
-    >const dom1 = document.querySelector('#j-div-1')
-    >dom1.onclick = () => {
-    >  dom1.innerHTML = 'hello'
-    >  console.log(dom1.innerHTML)  // 能打印出：'hello'
-    >
-    >  alert()                      // 阻塞浏览器渲染
-    >}
-    >
-    >const dom2 = document.querySelector('#j-div-2')
-    >dom2.onclick = () => {
-    >  dom2.innerHTML = 'hello'
-    >  console.log(dom2.innerHTML)  // 能打印出：'hello'
-    >
-    >  debugger                     // 不阻塞
-    >}
-    >
-    >const dom3 = document.querySelector('#j-div-3')
-    >dom3.onclick = () => {
-    >  dom3.innerHTML = 'hello'
-    >  console.log(dom3.innerHTML); // 能打印出：'hello'
-    >
-    >  (function sleep (ms) {       // js运行期间，阻塞浏览器渲染
-    >    ms += new Date().getTime()
-    >    while (new Date() < ms) {}
-    >  }(3000))
-    >}
-    ></script>
-    >```
-    ></details>
+    <details>
+    <summary>e.g.</summary>
+
+    ```html
+    <div id="j-div-1">1</div>
+    <div id="j-div-2">2</div>
+    <div id="j-div-3">3</div>
+
+    <script>
+    const dom1 = document.querySelector('#j-div-1')
+    dom1.onclick = () => {
+      dom1.innerHTML = 'hello'
+      console.log(dom1.innerHTML)  // 能打印出：'hello'
+
+      alert()                      // 阻塞浏览器渲染
+    }
+
+    const dom2 = document.querySelector('#j-div-2')
+    dom2.onclick = () => {
+      dom2.innerHTML = 'hello'
+      console.log(dom2.innerHTML)  // 能打印出：'hello'
+
+      debugger                     // 不阻塞
+    }
+
+    const dom3 = document.querySelector('#j-div-3')
+    dom3.onclick = () => {
+      dom3.innerHTML = 'hello'
+      console.log(dom3.innerHTML); // 能打印出：'hello'
+
+      (function sleep (ms) {       // js运行期间，阻塞浏览器渲染
+        ms += new Date().getTime()
+        while (new Date() < ms) {}
+      }(3000))
+    }
+    </script>
+    ```
+    </details>
 
 ### 前端「增量」原则
 1. 「增量」原则：
@@ -475,7 +510,7 @@
     3. 上报系统（页面级、功能组件级；特殊操作，如：营收）
     4. 与客户端交互方式和协议（互相监听事件、回调）
 
-        解决如何高效地由某一端程序员起草协议后，同步给其他端程序员。
+        解决如何高效地由某一端程序员起草协议后，同步给其他端程序员。e.g. 类似[flutter pigeon](https://pub.dev/packages/pigeon)的生成所有端代码（前端、iOS、Android）。
     5. 运营活动配置能力，降低活动研发成本
 
         （类似low-code）以组件维度开发，多个组件可以任意拼接后由运营人员配置发布，支持换肤、配置活动id（后台服务支持）。

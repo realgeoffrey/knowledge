@@ -224,10 +224,6 @@
 
 - Chrome插件[SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega)，能够对Chrome发出的所有请求都进行代理配置。
 
-    >SwitchyOmega配置备份文件：
-    >
-    >[https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/科学上网/OmegaOptions.bak](https://raw.githubusercontent.com/realgeoffrey/knowledge/master/工具使用/科学上网/OmegaOptions.bak)
-
 3. iOS
 
     >所有本机的科学上网方式最终都是在`设置`-`VPN`中配置（包括：Shadowsocks、Cisco IPSec、IKEv2、等）。成功开启后，都会在顶部bar显示`VPN`字样。

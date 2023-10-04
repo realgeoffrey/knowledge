@@ -39,7 +39,6 @@
     </details>
 
 ---
-
 ## 原生JS方法
 
 ### *原生JS*格式化日期
@@ -557,7 +556,7 @@ var cookieFuc = {
      * @returns {Boolean} - 操作成功或失败
      */
     setItem: function (key, value, deadline, path, domain, secure, samesite, priority) {
-      if (!key || (window.location.protocol === 'http:' && secure)) {   // todo: 更多设置cookie失败的情况
+      if (!key || (window.location.protocol === 'http:' && secure)) {   // fixme: 更多设置cookie失败的情况
 
         return false;
       } else {

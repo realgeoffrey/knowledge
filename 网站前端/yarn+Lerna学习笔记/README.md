@@ -4,9 +4,9 @@
 1. [yarn](#yarn)
 1. [Lerna](#lerna)
 1. [Monorepo方案](#monorepo方案)
+1. [仓库管理方案对比：Git Submodule、MultiRepo、MonoRepo](#仓库管理方案对比git-submodulemultirepomonorepo)
 
 ---
-
 ### yarn
 1. [`.yarnrc`](https://classic.yarnpkg.com/zh-Hans/docs/yarnrc)
 
@@ -258,9 +258,12 @@
         打印本地环境信息
 
 ### Monorepo方案
-Monorepo（单一仓库）是一种软件开发管理策略，（相比于将每个组件、库或应用程序分别存储在独立的仓库中，）它将一个项目的多个组件、库或应用程序集中存储在一个版本控制仓库中（版本控制无法细分每个组件，仓库很大），共享 安装依赖、构建、部署（耗时长：包含所有组件处理），更方便组件间依赖管理`npm link`。
+Monorepo（单一仓库，monolithic repository）是一种软件开发管理策略，（相比于将每个组件、库或应用程序分别存储在独立的仓库中，）它将一个项目的多个组件、库或应用程序集中存储在一个版本控制仓库中（*版本控制无法细分每个组件，仓库很大*），共享 安装依赖、构建、部署（*耗时长：包含所有组件处理*），更方便组件间依赖管理`npm link`（*幽灵依赖*）。
 
 1. ~~Lerna + yarn workspace~~
+
+    <details>
+    <summary>使用</summary>
 
     >用yarn来处理依赖问题，用lerna来处理发布问题。能用yarn做的就用yarn做。
 
@@ -293,6 +296,47 @@ Monorepo（单一仓库）是一种软件开发管理策略，（相比于将每
 
         yarn workspaces run script1         # 所有package均执行script1（若有任何package不存在script1则报错）
         ```
-2. pnpm
+    </details>
+
+    - 问题
+
+        1. 需要把整个仓库的依赖全部全部安装
+        2. yarn（和npm@3+）会平铺node_modules（扁平化）
+
+            提升只能提升某个包的一个版本，后面再遇到相同包的不同版本，依然还是用嵌套的方式，可能相同版本在不同依赖位置嵌套安装多次。导致：
+
+            1. 幽灵依赖（依赖提升会把各package下依赖的包全部提升到最外层，因此问题会被放大）
+
+                >幽灵依赖（phantom dependencies，幻影依赖，隐式依赖）：一个库使用了不属于其dependencies里的Package。
+            2. 依赖分身（相同版本的依赖被重复安装）
+            3. ~~不确定性（同样的package.json文件，install依赖后可能不会得到同样的node_modules目录结构。`yarn.lock`已解决，之后`package-lock.json`也解决）~~
+        - pnpm都可以解决以上问题
+2. **pnpm**
 
     todo
+
+    1. 通过自动硬链接（hard link）和软链接（sybolic link）来实现npm模块的管理。
+
+        由pnpm创建的node_modules文件夹中，所有Package都与自身的依赖项分组在一起（隔离），但是依赖层级却不会过深（软链接到外面真正的地址）。
+    2. 包安装速度极快
+    3. 磁盘空间利用非常高效
+
+         内部使用`基于内容寻址`的文件系统来存储磁盘上所有的文件：不会重复安装同一个包；即使一个包的不同版本，pnpm 也会极大程度地复用之前版本的代码。
+3. rust
+4. [nx](https://github.com/nrwl/nx)
+
+### 仓库管理方案对比：Git Submodule、MultiRepo、MonoRepo
+1. Git Submodule：
+
+    >主项目保存的是子模块的索引。
+
+    1. 优点：方便项目回馈更改
+    2. 缺点：协同开发**分支多**、子模块数量多，管理成本高
+2. MultiRepo：
+
+    1. 优点：模块划分清晰，每个模块都是**独立**的 repo，利于团队协作
+    2. 缺点：由于依赖关系，所以版本号需要手动控制、调试麻烦、issue难以管理
+3. Monorepo：
+
+    1. 优点：代码统一管理、方便统一处理issue和生成ChangeLog、调试代码`npm/yarn link`一把梭
+    2. 缺点：统一构建、CI、测试和发布流程带来的技术挑战、项目体积变得更大、构建、安装依赖需要**包含所有仓库**

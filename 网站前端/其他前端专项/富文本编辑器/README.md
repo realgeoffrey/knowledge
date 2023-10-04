@@ -6,7 +6,6 @@
 1. [我的富文本编辑器实现（`contenteditable` + `document.execCommand`）](#我的富文本编辑器实现contenteditable--documentexecCommand)
 
 ---
-
 >富文本、纯文本、markdown。
 
 ### 富文本编辑器实现方式
@@ -83,3 +82,10 @@
         >如：[quill](https://github.com/quilljs/quill)。
 
         除了添加标签和`style`之外，还会额外添加`class`和DOM（需自定义样式）。
+
+- 总结：
+
+    1. 支持插入定制的HTML标签；控制标签和属性的白名单，避免xss。
+    2. 复制-粘贴监控。
+    3. 聚焦点的储存。
+    4. 浏览器兼容性。

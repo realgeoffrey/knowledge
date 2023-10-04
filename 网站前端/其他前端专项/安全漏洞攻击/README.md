@@ -9,20 +9,20 @@
 
         >所有可输入的地方，若没有对输入数据进行处理的话，则都存在XSS漏洞。
 
-        - 通过巧妙的方法注入恶意指令代码（HTML、JS、Flash）到网页内容，使用户加载并执行恶意程序。
+        - 通过巧妙的方法注入恶意指令代码（HTML、JS、Flash、`<iframe>`，任何能写url的地方包含`javascript: 可执行代码`）到网页内容，使用户加载并执行恶意程序。
 
             攻击成功后，能够：盗取用户cookie、破坏页面结构、重定向到其它地址、利用用户机器执行各种非客户意愿的行为（如：发起请求、向其他网站发起DDoS攻击）等。
     2. 防御措施：
 
         1. 过滤用户输入（白名单HTML标签和标签属性）
 
-            去除或转义（如：HTML的字符实体）。
+            去除或转义（如：HTML的字符实体）、对URL编码（`encodeURI`）。
 
             >e.g. [js-xss](https://github.com/leizongmin/js-xss)
         2. HttpOnly
 
             cookie设置为HttpOnly不能在客户端使用~~document.cookie~~访问。
-        3. 开启CSP（Content-Security-Policy，内容安全策略），设置不允许加载白名单外的域名资源
+        3. 开启浏览器CSP（Content-Security-Policy，内容安全策略），设置不允许加载白名单外的域名资源
 
             >指令细节：[MDN: Content-Security-Policy](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Security-Policy)。
 
@@ -32,22 +32,26 @@
             2. `.html`的`<meta>`
 
                 `<meta http-equiv="Content-Security-Policy" content="具体指令">`
-
+            - （已被CSP拒绝执行）避免动态执行JS脚本的方式（执行字符串）：`eval`、`new Function`、`setTimeout/setInterval`。
         >Flash的安全沙盒机制配置跨域传输：crossdomian.xml
 2. CSRF
 
-    跨站请求伪造（Cross-Site Request Forgery，CSRF）是挟制用户在已登录的网页上执行非本意操作。利用网站对用户浏览器的信任。
+    跨站请求伪造（Cross-Site Request Forgery，CSRF）是 第三方网站 挟制用户 在已登录的网页上执行非本意操作。利用网站对用户浏览器的信任。
 
     1. 攻击方式
 
-        - 当用户已经得到目标网站的认可后，对目标网站进行请求操作。
+        - 当用户已经得到目标网站的认可后，在第三方网站 对 目标网站 进行请求操作。
 
             攻击成功后，能够：进行所有目标网站的请求操作。
     2. 防御措施
 
-        1. 检查HTTP请求的Referer字段（Referer：请求来源地址），若不是信任的请求来源地址，则拒绝
+        1. 同源策略
 
-            >地址栏直接输入内容不会提供`Referer`。
+            1. 检查HTTP请求的Referer字段（Referer：请求来源地址），若不是信任的请求来源地址，则拒绝
+
+                >地址栏直接输入内容不会提供`Referer`。
+            2. 跨域请求的限制（利用CORS等）
+            3. cookie设置`SameSite`属性（cookie不随着跨域请求发送）
         2. 添加校验token
 
             >token：判断用户当前的会话状态是否有效（短时效性）。
@@ -56,9 +60,9 @@
         3. 验证码
 
             保证用户必须和目标网站进行交互后才可以发起请求。
-        4. 跨域请求的限制（利用CORS等）
-        5. cookie设置`SameSite`属性（cookie不随着跨域请求发送）
-        6. `POST`请求代替`GET`请求，
+        4. `POST`请求代替`GET`请求
+
+            >都可能被利用，但`POST`安全性高些：不会明文把参数写在url上；HTML标签自动请求GET请求（如：`<img src="GET请求">`），更容易被利用。
 3. 其他攻击
 
     1. 注入型劫持
