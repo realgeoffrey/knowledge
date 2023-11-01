@@ -39,6 +39,16 @@
     1. [删除二叉搜索树中的节点](#删除二叉搜索树中的节点)
     1. [修剪二叉搜索树](#修剪二叉搜索树)
     1. [把二叉搜索树转换为累加树](#把二叉搜索树转换为累加树)
+1. [动态规划](#动态规划)
+
+    - [三步问题](#三步问题)
+    - [斐波那契数](#斐波那契数)
+    - [青蛙跳台阶问题](#青蛙跳台阶问题)
+    - [连续子数组的最大和](#连续子数组的最大和)
+    1. [股票的最大利润](#股票的最大利润)
+    1. [鸡蛋掉落-两枚鸡蛋](#鸡蛋掉落-两枚鸡蛋)
+    1. [最大子数组和](#最大子数组和)
+    1. [最长回文子串](#最长回文子串)
 1. [简单](#简单)
 
     1. [用栈实现队列](#用栈实现队列)
@@ -51,9 +61,7 @@
     1. [0～n-1中缺失的数字](#0n-1中缺失的数字)
     1. [旋转数组的最小数字](#旋转数组的最小数字)
     1. [第一个只出现一次的字符](#第一个只出现一次的字符)
-    1. [斐波那契数](#斐波那契数)
-    1. [青蛙跳台阶问题](#青蛙跳台阶问题)
-    1. [连续子数组的最大和](#连续子数组的最大和)
+
     1. [移除元素](#移除元素)
     1. [有序数组的平方](#有序数组的平方)
     1. [两数之和](#两数之和)
@@ -65,8 +73,6 @@
 1. [中等](#中等)
 
     1. [二维数组中的查找](#二维数组中的查找)
-    1. [股票的最大利润](#股票的最大利润)
-    1. [鸡蛋掉落-两枚鸡蛋](#鸡蛋掉落-两枚鸡蛋)
     1. [长度最小的子数组](#长度最小的子数组)
     1. [螺旋矩阵 II](#螺旋矩阵-ii)
     1. [字母异位词分组](#字母异位词分组)
@@ -77,7 +83,6 @@
     1. [下一个排列](#下一个排列)
     1. [寻找峰值](#寻找峰值)
     1. [森林中的兔子](#森林中的兔子)
-    1. [最大子数组和](#最大子数组和)
     1. [每日温度](#每日温度)
     1. [找到字符串中所有字母异位词](#找到字符串中所有字母异位词)
     1. [和为 K 的子数组](#和为-k-的子数组)
@@ -90,7 +95,6 @@
     1. [岛屿的最大面积](#岛屿的最大面积)
     1. [统计子岛屿](#统计子岛屿)
     1. [不同岛屿的数量](#不同岛屿的数量)
-    1. [最长回文子串](#最长回文子串)
 1. [困难](#困难)
 
     1. [滑动窗口最大值](#滑动窗口最大值)
@@ -2413,6 +2417,547 @@ myLinkedList.get(1);              // 返回 3
     ```
 
 ---
+## 动态规划
+
+### 三步问题
+楼梯有n阶台阶，一次可以上1阶、2阶或3阶。计算上n阶有多少种走法。结果可能很大，你需要对结果模1000000007。
+
+1. 解法一
+
+    动态规划。
+
+    ```javascript
+    /**
+     * @param {number} n
+     * @return {number}
+     */
+    var waysToStep = function (n) {
+      // dp[i]：登上第i阶的方式数量
+      const dp = [];
+      const modulo = 1000000007;
+
+      dp[1] = 1;
+      dp[2] = 2;
+      dp[3] = 4;
+
+      for (let i = 4; i <= n; i++) {
+        // 转移方程（跳到倒一、跳到倒二、跳到倒三，注意剩下3台阶不能再加数量，否则会重复）
+        // 任意2次相加取模都可
+        dp[i] = (dp[i - 3] + ((dp[i - 2] + dp[i - 1]) % modulo)) % modulo;
+      }
+      return dp[n];
+    };
+    ```
+
+<details>
+<summary>其他解法</summary>
+
+2. 解法二
+
+    滚动数组（优化空间）。
+
+    ```javascript
+    var waysToStep = (n) => {
+      if (n === 1) {
+        return 1;
+      }
+      if (n === 2) {
+        return 2;
+      }
+      if (n === 3) {
+        return 4;
+      }
+
+      const modulo = 1000000007;
+
+      let a = 4;
+      let b = 2;
+      let c = 1;
+      for (let i = 3; i <= n; i++) {
+        const temp_a = a;
+        const temp_b = b;
+        a = (a + ((b + c) % modulo)) % modulo;
+        b = temp_a;
+        c = temp_b;
+      }
+      return a;
+    };
+    ```
+</details>
+
+### 斐波那契数
+**斐波那契数** （通常用 `F(n)` 表示）形成的序列称为 **斐波那契数列** 。该数列由 **0** 和 **1** 开始，后面的每一项数字都是前面两项数字的和。也就是：
+
+```
+F(0) = 0，F(1) = 1
+F(n) = F(n - 1) + F(n - 2)，其中 n > 1
+```
+
+给定 `n` ，请计算 `F(n)` 。
+
+答案需要取模 1e9+7(1000000007) ，如计算初始结果为：1000000008，请返回 1。
+
+
+
+示例 1：
+
+```
+输入：n = 2
+输出：1
+解释：F(2) = F(1) + F(0) = 1 + 0 = 1
+```
+
+示例 2：
+
+```
+输入：n = 3
+输出：2
+解释：F(3) = F(2) + F(1) = 1 + 1 = 2
+```
+
+示例 3：
+
+```
+输入：n = 4
+输出：3
+解释：F(4) = F(3) + F(2) = 2 + 1 = 3
+```
+
+提示：
+
+- `0 <= n <= 100`
+
+1. 解法一
+
+    ```javascript
+    /**
+     * @param {number} n
+     * @return {number}
+     */
+    var fib = function (n) {
+      // 动态规划
+      if (n < 2) {
+        return n;
+      }
+      const modulo = 1000000007;
+      let previous = 0;
+      let current = 1;
+      // 迭代：记录 前一个值 和 当前值
+      for (let i = 2; i <= n; i++) {
+        const temp = previous;
+        previous = current;
+        current =
+          temp + current >= modulo
+            ? temp + current - modulo
+            : temp + current;
+      }
+      return current;
+    };
+    ```
+2. 解法二
+
+    ```javascript
+    var fib = function (n) {
+      // 动态规划
+      // 保存计算过的结果，避免递归时超时
+      this.map = this.map || new Map();
+      if (this.map.has(n)) {
+        return map.get(n);
+      }
+
+      // 递归
+      if (n < 2) {
+        map.set(n, n);
+        return n;
+      }
+
+      const modulo = 1000000007;
+      const result = ((fib(n - 1) % modulo) + (fib(n - 2) % modulo)) % modulo; // (a+b)%c === (a%c+b%c)%c
+      map.set(n, result);
+      return result;
+    };
+    ```
+
+### 青蛙跳台阶问题
+一只青蛙一次可以跳上1级台阶，也可以跳上2级台阶。求该青蛙跳上一个 n 级的台阶总共有多少种跳法。
+
+答案需要取模 1e9+7（1000000007），如计算初始结果为：1000000008，请返回 1。
+
+示例 1：
+
+```
+输入：n = 2
+输出：2
+```
+
+示例 2：
+
+```
+输入：n = 7
+输出：21
+```
+
+示例 3：
+
+```
+输入：n = 0
+输出：1
+```
+
+- <details>
+
+    <summary>解析：青蛙跳台问题</summary>
+
+    设跳上 n 级台阶有 f(n) 种跳法。在所有跳法中，青蛙的最后一步只有两种情况：跳上 1 级或 2 级台阶，即 f(n)=f(n−1)+f(n−2)。本题可转化为 求斐波那契数列第 n 项的值。
+    </details>
+
+1. 解法
+
+    略。与上一题（[斐波那契数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/LeetCode记录/README.md#斐波那契数)）基本一致，改下初始值即可。
+
+### 连续子数组的最大和
+输入一个整型数组，数组中的一个或连续多个整数组成一个子数组。求所有子数组的和的最大值。
+
+要求时间复杂度为 $O(n)$ 。
+
+示例1:
+
+```
+输入: nums = [-2,1,-3,4,-1,2,1,-5,4]
+输出: 6
+解释: 连续子数组 [4,-1,2,1] 的和最大，为 6。
+```
+
+1. 解法
+
+    ```javascript
+    /**
+     * @param {number[]} nums
+     * @return {number}
+     */
+    var maxSubArray = function (nums) {
+      // 动态规划
+      let max = nums[0];
+      for (let i = 1, tempResult = nums[0]; i < nums.length; i++) {
+        // tempResult：以元素nums[i]为结尾 的连续子数组最大和
+        tempResult = nums[i] + Math.max(tempResult, 0);
+        max = Math.max(max, tempResult);
+      }
+      return max;
+    };
+    ```
+
+### 股票的最大利润
+假设把某股票的价格按照时间先后顺序存储在数组中，请问买卖该股票一次可能获得的最大利润是多少？
+
+示例 1:
+
+```
+输入: [7,1,5,3,6,4]
+输出: 5
+解释: 在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+     注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格。
+```
+
+示例 2:
+
+```
+输入: [7,6,4,3,1]
+输出: 0
+解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。
+```
+
+1. 解法
+
+    ```javascript
+    /**
+     * @param {number[]} prices
+     * @return {number}
+     */
+    var maxProfit = function (prices) {
+      // 动态规划
+      let minPrice = prices[0] || 0;    // 或 = Number.MAX_VALUE;
+      let maxProfit = 0;
+      for (let price of prices) {
+        minPrice = Math.min(minPrice, price);
+        maxProfit = Math.max(maxProfit, price - minPrice);
+      }
+      return maxProfit;
+    };
+    ```
+
+### 鸡蛋掉落-两枚鸡蛋
+给你**2 枚相同**的鸡蛋，和一栋从第`1`层到第`n`层共有`n`层楼的建筑。
+
+已知存在楼层`f`，满足`0 <= f <= n`，任何从**高于**`f`的楼层落下的鸡蛋都**会碎** ，从`f`**楼层或比它低**的楼层落下的鸡蛋都**不会碎**。
+
+每次操作，你可以取一枚**没有碎**的鸡蛋并把它从任一楼层`x`扔下（满足`1 <= x <= n`）。如果鸡蛋碎了，你就不能再次使用它。如果某枚鸡蛋扔下后没有摔碎，则可以在之后的操作中**重复使用**这枚鸡蛋。
+
+请你计算并返回要确定`f`**确切的值**的**最小操作次数**是多少？
+
+示例 1：
+
+```
+输入：n = 2
+输出：2
+解释：我们可以将第一枚鸡蛋从 1 楼扔下，然后将第二枚从 2 楼扔下。
+如果第一枚鸡蛋碎了，可知 f = 0；
+如果第二枚鸡蛋碎了，但第一枚没碎，可知 f = 1；
+否则，当两个鸡蛋都没碎时，可知 f = 2。
+```
+
+示例 2：
+
+```
+输入：n = 100
+输出：14
+解释：
+一种最优的策略是：
+- 将第一枚鸡蛋从 9 楼扔下。如果碎了，那么 f 在 0 和 8 之间。将第二枚从 1 楼扔下，然后每扔一次上一层楼，在 8 次内找到 f 。总操作次数 = 1 + 8 = 9 。
+- 如果第一枚鸡蛋没有碎，那么再把第一枚鸡蛋从 22 层扔下。如果碎了，那么 f 在 9 和 21 之间。将第二枚鸡蛋从 10 楼扔下，然后每扔一次上一层楼，在 12 次内找到 f 。总操作次数 = 2 + 12 = 14 。
+- 如果第一枚鸡蛋没有再次碎掉，则按照类似的方法从 34, 45, 55, 64, 72, 79, 85, 90, 94, 97, 99 和 100 楼分别扔下第一枚鸡蛋。
+不管结果如何，最多需要扔 14 次来确定 f 。
+```
+
+提示：
+
+`1 <= n <= 1000`
+
+1. 解法一
+
+    数学规律。
+
+    ```javascript
+    // ①第一枚鸡蛋用于从低到高、间隔楼层直到破碎
+    // ②第二枚鸡蛋用于在第一枚鸡蛋确认的最高不碎层到最低破碎层之间，由低到高逐层测试
+    // ③为了稳定操作数，第一枚鸡蛋确定的间隔层 每测试成功一次都要递减1。
+    //   假设第一次间隔层是f，那么第二次间隔层就是f-1，以此类推至最后一个间隔是1：
+    //   f + f-1 + f-2 + ... + f-(f-1)=总楼层数n
+    //   这样得到的f就是操作数的上限
+    function twoEggDrop(n) {
+      let f;
+      // 找到第一个小于或等于 n 的等差求和的项数（第一项是1，公差是1）
+      for (f = 1; sumOfArithmeticSequence(1, 1, f) < n; f++) {}
+      return f;
+    };
+
+    // 等差数列的求和。a1：第1项；d：公差；n：项数
+    function sumOfArithmeticSequence (a1, d, n) {
+      const an = a1 + (n - 1) * d;
+      return ((a1 + an) * n) / 2;
+    }
+    ```
+2. 解法二
+
+    动态规划。
+
+    ```javascript
+    function twoEggDrop(n, k = 2) {
+      // 初始化：题解的数组[最大n层楼][最大k枚鸡蛋]
+      let memo = new Array(n + 1).fill(0).map((i, n) => {
+        return new Array(k + 1).fill(0).map((j, k) => {
+          return k === 1 ? n : 0;
+        });
+      });
+      return dp(n, k);
+
+      // k枚，n层的题目解：表示现在有n层楼需要验证，此时你手里有k个鸡蛋，返回此时的最小操作次数
+      function dp(n, k) {
+        // base case
+        if (n === 0) {
+          return 0;
+        }
+        if (k === 1) {
+          return n;
+        }
+
+        // 查表
+        if (memo[n][k] !== 0) {
+          return memo[n][k];
+        }
+
+        let res = Number.MAX_SAFE_INTEGER;
+        // 选i层楼扔鸡蛋
+        for (let i = 1; i <= n; i++) {
+          // Math.max：寻找（第i层碎或不碎）最坏的情况
+          // Math.min：在最坏的情况里，选出最小的操作次数
+          res = Math.min(res, Math.max(dp(i - 1, k - 1), dp(n - i, k)) + 1);
+        }
+
+        // dp(n, k)需要的操作次数，是在所有楼层中选择 最坏情况下需要的操作次数最小的楼层 扔鸡蛋。所以需要遍历所有楼层，找到Math.min(res, Math.max(dp(i-1, k-1), dp(n-i, k)) + 1)
+        memo[n][k] = res;
+        return res;
+      }
+    }
+    ```
+
+### 最大子数组和
+给你一个整数数组 `nums` ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+**子数组** 是数组中的一个连续部分。
+
+示例 1：
+
+```
+输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+输出：6
+解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
+```
+
+示例 2：
+
+```
+输入：nums = [1]
+输出：1
+```
+
+示例 3：
+
+```
+输入：nums = [5,4,-1,7,8]
+输出：23
+```
+
+提示：
+
+- `1 <= nums.length <= 10 ** 5`
+- `-(10 ** 4) <= nums[i] <= 10 ** 4`
+
+**进阶**：如果你已经实现复杂度为 `O(n)` 的解法，尝试使用更为精妙的 **分治法** 求解。
+
+1. 解法一
+
+    O(n)，贪心。
+
+    ```javascript
+    /**
+     * @param {number[]} nums
+     * @return {number}
+     */
+    var maxSubArray = function (nums) {
+      let max = Number.NEGATIVE_INFINITY;
+
+      for (let i = 0, sum = 0; i < nums.length; i++) {
+        // sum小于等于0
+        if (sum <= 0) {
+          sum = nums[i];
+        }
+        // sum大于0
+        else {
+          sum = sum + nums[i];
+        }
+
+        max = Math.max(max, sum);
+      }
+      return max;
+    };
+    ```
+2. 解法二
+
+    O(n)，动态规划。
+
+    ```javascript
+    var maxSubArray = function (nums) {
+      let max;
+
+      // dp[i]：以nums[i]为结尾的最大连续子序列和为dp[i]。
+      const dp = [];
+
+      dp[0] = nums[0];
+      for (let i = 1; i < nums.length; i++) {
+        if (dp[i - 1] <= 0) {
+          dp[i] = nums[i];
+        } else {
+          dp[i] = dp[i - 1] + nums[i];
+        }
+
+        max = Math.max(dp[i - 1], dp[i]);
+      }
+      return max;
+    };
+    ```
+
+### 最长回文子串
+给你一个字符串 `s`，找到 `s` 中最长的回文子串。
+
+如果字符串的反序与原始字符串相同，则该字符串称为回文字符串。
+
+示例 1：
+
+```
+输入：s = "babad"
+输出："bab"
+解释："aba" 同样是符合题意的答案。
+```
+
+示例 2：
+
+```
+输入：s = "cbbd"
+输出："bb"
+```
+
+提示：
+
+- `1 <= s.length <= 1000`
+- `s` 仅由数字和英文字母组成
+
+1. 解法一
+
+    动态规划，一个回文去掉两头依然是回文：dp[i][j] = (s[i]===s[j]) && dp[i+1][j-1]（注意边界）。
+
+    ```javascript
+    /**
+     * @param {string} s
+     * @return {string}
+     */
+    var longestPalindrome = function (s) {
+      const len = s.length;
+      if (len < 2) { return s; }
+
+      let maxLen = 1;
+      let begin = 0;
+
+      // 动态规划：dp[i][j] 表示 s[i..j] 是否是回文串。一个回文去掉两头依然是回文：dp[i][j] = (s[i]===s[j]) && dp[i+1][j-1]
+      const dp = Array.from({ length: len }).map(() =>
+        Array.from({ length: len }).fill(false),
+      );
+
+      // 初始化：所有长度为 1 的子串都是回文串（可省略）
+      for (let i = 0; i < len; i++) {
+        dp[i][i] = true;
+      }
+
+      // dp每个参考左下方的dp的值，因此从第2列开始 && 先 列 再 行
+      for (let j = 1; j < len; j++) { // 行（字符串有边界）
+        for (let i = 0; i < j; i++) { // 列（字符串左边界）
+          // 头尾字符不等
+          if (s[i] !== s[j]) {
+            dp[i][j] = false;
+          }
+          // 头尾字符相等
+          else {
+            // 头尾去掉后：没有字符(j-i<i+1) || 仅剩1个字符（j-1===i+1）
+            if (j - i <= 2) { // j-1-(i+1)<=0
+              dp[i][j] = true;
+            } else {
+              dp[i][j] = dp[i + 1][j - 1];
+            }
+          }
+
+          // 若是回文，则判断是否最长
+          if (dp[i][j] && j - i + 1 > maxLen) {
+            maxLen = j - i + 1;
+            begin = i;
+          }
+        }
+      }
+
+      return s.slice(begin, begin + maxLen);
+    };
+    ```
+
+---
 ## 简单
 
 ### 用栈实现队列
@@ -2474,17 +3019,10 @@ myQueue.empty(); // return false
       this.outStack = [];
     };
 
-    /**
-     * @param {number} x
-     * @return {void}
-     */
     MyQueue.prototype.push = function (x) {
       this.inStack.unshift(x);
     };
 
-    /**
-     * @return {number}
-     */
     MyQueue.prototype.pop = function () {
       // 若outStack为空，则把inStack栈出给outStack栈入，这样原顺序颠倒
       if (this.outStack.length === 0) {
@@ -2495,9 +3033,6 @@ myQueue.empty(); // return false
       return this.outStack.shift();
     };
 
-    /**
-     * @return {number}
-     */
     MyQueue.prototype.peek = function () {
       if (this.outStack.length === 0) {
         while (this.inStack.length) {
@@ -2507,9 +3042,6 @@ myQueue.empty(); // return false
       return this.outStack[0];
     };
 
-    /**
-     * @return {boolean}
-     */
     MyQueue.prototype.empty = function () {
       return this.inStack.length === 0 && this.outStack.length === 0;
     };
@@ -3334,168 +3866,6 @@ s 只包含小写字母。
     };
     ```
 
-### 斐波那契数
-**斐波那契数** （通常用 `F(n)` 表示）形成的序列称为 **斐波那契数列** 。该数列由 **0** 和 **1** 开始，后面的每一项数字都是前面两项数字的和。也就是：
-
-```
-F(0) = 0，F(1) = 1
-F(n) = F(n - 1) + F(n - 2)，其中 n > 1
-```
-
-给定 `n` ，请计算 `F(n)` 。
-
-答案需要取模 1e9+7(1000000007) ，如计算初始结果为：1000000008，请返回 1。
-
-
-
-示例 1：
-
-```
-输入：n = 2
-输出：1
-解释：F(2) = F(1) + F(0) = 1 + 0 = 1
-```
-
-示例 2：
-
-```
-输入：n = 3
-输出：2
-解释：F(3) = F(2) + F(1) = 1 + 1 = 2
-```
-
-示例 3：
-
-```
-输入：n = 4
-输出：3
-解释：F(4) = F(3) + F(2) = 2 + 1 = 3
-```
-
-提示：
-
-- `0 <= n <= 100`
-
-1. 解法一
-
-    ```javascript
-    /**
-     * @param {number} n
-     * @return {number}
-     */
-    var fib = function (n) {
-      // 动态规划
-      if (n < 2) {
-        return n;
-      }
-      const modulo = 1000000007;
-      let previous = 0;
-      let current = 1;
-      // 迭代：记录 前一个值 和 当前值
-      for (let i = 2; i <= n; i++) {
-        const temp = previous;
-        previous = current;
-        current =
-          temp + current >= modulo
-            ? temp + current - modulo
-            : temp + current;
-      }
-      return current;
-    };
-    ```
-2. 解法二
-
-    ```javascript
-    var fib = function (n) {
-      // 动态规划
-      // 保存计算过的结果，避免递归时超时
-      this.map = this.map || new Map();
-      if (this.map.has(n)) {
-        return map.get(n);
-      }
-
-      // 递归
-      if (n < 2) {
-        map.set(n, n);
-        return n;
-      }
-
-      const modulo = 1000000007;
-      const result = ((fib(n - 1) % modulo) + (fib(n - 2) % modulo)) % modulo; // (a+b)%c === (a%c+b%c)%c
-      map.set(n, result);
-      return result;
-    };
-    ```
-
-### 青蛙跳台阶问题
-一只青蛙一次可以跳上1级台阶，也可以跳上2级台阶。求该青蛙跳上一个 n 级的台阶总共有多少种跳法。
-
-答案需要取模 1e9+7（1000000007），如计算初始结果为：1000000008，请返回 1。
-
-示例 1：
-
-```
-输入：n = 2
-输出：2
-```
-
-示例 2：
-
-```
-输入：n = 7
-输出：21
-```
-
-示例 3：
-
-```
-输入：n = 0
-输出：1
-```
-
-- <details>
-
-    <summary>解析：青蛙跳台问题</summary>
-
-    设跳上 n 级台阶有 f(n) 种跳法。在所有跳法中，青蛙的最后一步只有两种情况：跳上 1 级或 2 级台阶，即 f(n)=f(n−1)+f(n−2)。本题可转化为 求斐波那契数列第 n 项的值。
-    </details>
-
-1. 解法
-
-    略。与上一题（[斐波那契数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/LeetCode记录/README.md#斐波那契数)）基本一致，改下初始值即可。
-
-### 连续子数组的最大和
-输入一个整型数组，数组中的一个或连续多个整数组成一个子数组。求所有子数组的和的最大值。
-
-要求时间复杂度为 $O(n)$ 。
-
-示例1:
-
-```
-输入: nums = [-2,1,-3,4,-1,2,1,-5,4]
-输出: 6
-解释: 连续子数组 [4,-1,2,1] 的和最大，为 6。
-```
-
-1. 解法
-
-    ```javascript
-    /**
-     * @param {number[]} nums
-     * @return {number}
-     */
-    var maxSubArray = function (nums) {
-      // 动态规划
-      let max = nums[0];
-      for (let i = 1, tempResult = nums[0]; i < nums.length; i++) {
-        // tempResult：以元素nums[i]为结尾 的连续子数组最大和
-        tempResult = nums[i] + Math.max(tempResult, 0);
-        max = Math.max(max, tempResult);
-      }
-      return max;
-    };
-    ```
-
 ### 移除元素
 给你一个数组 `nums` 和一个值 `val`，你需要 **原地** 移除所有数值等于 `val` 的元素，并返回移除后数组的新长度。
 
@@ -4283,150 +4653,6 @@ for (int i = 0; i < k; i++) {
 
       return foundSmaller;
     };
-    ```
-
-### 股票的最大利润
-假设把某股票的价格按照时间先后顺序存储在数组中，请问买卖该股票一次可能获得的最大利润是多少？
-
-示例 1:
-
-```
-输入: [7,1,5,3,6,4]
-输出: 5
-解释: 在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
-     注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格。
-```
-
-示例 2:
-
-```
-输入: [7,6,4,3,1]
-输出: 0
-解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。
-```
-
-1. 解法
-
-    ```javascript
-    /**
-     * @param {number[]} prices
-     * @return {number}
-     */
-    var maxProfit = function (prices) {
-      // 动态规划
-      let minPrice = prices[0] || 0;    // 或 = Number.MAX_VALUE;
-      let maxProfit = 0;
-      for (let price of prices) {
-        minPrice = Math.min(minPrice, price);
-        maxProfit = Math.max(maxProfit, price - minPrice);
-      }
-      return maxProfit;
-    };
-    ```
-
-### 鸡蛋掉落-两枚鸡蛋
-给你**2 枚相同**的鸡蛋，和一栋从第`1`层到第`n`层共有`n`层楼的建筑。
-
-已知存在楼层`f`，满足`0 <= f <= n`，任何从**高于**`f`的楼层落下的鸡蛋都**会碎** ，从`f`**楼层或比它低**的楼层落下的鸡蛋都**不会碎**。
-
-每次操作，你可以取一枚**没有碎**的鸡蛋并把它从任一楼层`x`扔下（满足`1 <= x <= n`）。如果鸡蛋碎了，你就不能再次使用它。如果某枚鸡蛋扔下后没有摔碎，则可以在之后的操作中**重复使用**这枚鸡蛋。
-
-请你计算并返回要确定`f`**确切的值**的**最小操作次数**是多少？
-
-示例 1：
-
-```
-输入：n = 2
-输出：2
-解释：我们可以将第一枚鸡蛋从 1 楼扔下，然后将第二枚从 2 楼扔下。
-如果第一枚鸡蛋碎了，可知 f = 0；
-如果第二枚鸡蛋碎了，但第一枚没碎，可知 f = 1；
-否则，当两个鸡蛋都没碎时，可知 f = 2。
-```
-
-示例 2：
-
-```
-输入：n = 100
-输出：14
-解释：
-一种最优的策略是：
-- 将第一枚鸡蛋从 9 楼扔下。如果碎了，那么 f 在 0 和 8 之间。将第二枚从 1 楼扔下，然后每扔一次上一层楼，在 8 次内找到 f 。总操作次数 = 1 + 8 = 9 。
-- 如果第一枚鸡蛋没有碎，那么再把第一枚鸡蛋从 22 层扔下。如果碎了，那么 f 在 9 和 21 之间。将第二枚鸡蛋从 10 楼扔下，然后每扔一次上一层楼，在 12 次内找到 f 。总操作次数 = 2 + 12 = 14 。
-- 如果第一枚鸡蛋没有再次碎掉，则按照类似的方法从 34, 45, 55, 64, 72, 79, 85, 90, 94, 97, 99 和 100 楼分别扔下第一枚鸡蛋。
-不管结果如何，最多需要扔 14 次来确定 f 。
-```
-
-提示：
-
-`1 <= n <= 1000`
-
-1. 解法一
-
-    数学规律。
-
-    ```javascript
-    // ①第一枚鸡蛋用于从低到高、间隔楼层直到破碎
-    // ②第二枚鸡蛋用于在第一枚鸡蛋确认的最高不碎层到最低破碎层之间，由低到高逐层测试
-    // ③为了稳定操作数，第一枚鸡蛋确定的间隔层 每测试成功一次都要递减1。
-    //   假设第一次间隔层是f，那么第二次间隔层就是f-1，以此类推至最后一个间隔是1：
-    //   f + f-1 + f-2 + ... + f-(f-1)=总楼层数n
-    //   这样得到的f就是操作数的上限
-    function twoEggDrop(n) {
-      let f;
-      // 找到第一个小于或等于 n 的等差求和的项数（第一项是1，公差是1）
-      for (f = 1; sumOfArithmeticSequence(1, 1, f) < n; f++) {}
-      return f;
-    };
-
-    // 等差数列的求和。a1：第1项；d：公差；n：项数
-    function sumOfArithmeticSequence (a1, d, n) {
-      const an = a1 + (n - 1) * d;
-      return ((a1 + an) * n) / 2;
-    }
-    ```
-2. 解法二
-
-    动态规划。
-
-    ```javascript
-    function twoEggDrop(n, k = 2) {
-      // 初始化：题解的数组[最大n层楼][最大k枚鸡蛋]
-      let memo = new Array(n + 1).fill(0).map((i, n) => {
-        return new Array(k + 1).fill(0).map((j, k) => {
-          return k === 1 ? n : 0;
-        });
-      });
-      return dp(n, k);
-
-      // k枚，n层的题目解：表示现在有n层楼需要验证，此时你手里有k个鸡蛋，返回此时的最小操作次数
-      function dp(n, k) {
-        // base case
-        if (n === 0) {
-          return 0;
-        }
-        if (k === 1) {
-          return n;
-        }
-
-        // 查表
-        if (memo[n][k] !== 0) {
-          return memo[n][k];
-        }
-
-        let res = Number.MAX_SAFE_INTEGER;
-        // 选i层楼扔鸡蛋
-        for (let i = 1; i <= n; i++) {
-          // Math.max：寻找（第i层碎或不碎）最坏的情况
-          // Math.min：在最坏的情况里，选出最小的操作次数
-          res = Math.min(res, Math.max(dp(i - 1, k - 1), dp(n - i, k)) + 1);
-        }
-
-        // dp(n, k)需要的操作次数，是在所有楼层中选择 最坏情况下需要的操作次数最小的楼层 扔鸡蛋。所以需要遍历所有楼层，找到Math.min(res, Math.max(dp(i-1, k-1), dp(n-i, k)) + 1)
-        memo[n][k] = res;
-        return res;
-      }
-    }
     ```
 
 ### 长度最小的子数组
@@ -5403,92 +5629,6 @@ nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。
         // 一组内最多相同的兔子：answer + 1；兔子：times；组数：向上取整(兔子/一组内最多相同的兔子)
         return acc + (answer + 1) * Math.ceil(times / (answer + 1));
       }, 0);
-    };
-    ```
-
-### 最大子数组和
-给你一个整数数组 `nums` ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
-
-**子数组** 是数组中的一个连续部分。
-
-示例 1：
-
-```
-输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
-输出：6
-解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
-```
-
-示例 2：
-
-```
-输入：nums = [1]
-输出：1
-```
-
-示例 3：
-
-```
-输入：nums = [5,4,-1,7,8]
-输出：23
-```
-
-提示：
-
-- `1 <= nums.length <= 10 ** 5`
-- `-(10 ** 4) <= nums[i] <= 10 ** 4`
-
-**进阶**：如果你已经实现复杂度为 `O(n)` 的解法，尝试使用更为精妙的 **分治法** 求解。
-
-1. 解法一
-
-    O(n)，贪心。
-
-    ```javascript
-    /**
-     * @param {number[]} nums
-     * @return {number}
-     */
-    var maxSubArray = function (nums) {
-      let max = Number.NEGATIVE_INFINITY;
-
-      for (let i = 0, sum = 0; i < nums.length; i++) {
-        // sum小于等于0
-        if (sum <= 0) {
-          sum = nums[i];
-        }
-        // sum大于0
-        else {
-          sum = sum + nums[i];
-        }
-
-        max = Math.max(max, sum);
-      }
-      return max;
-    };
-    ```
-2. 解法二
-
-    O(n)，动态规划。
-
-    ```javascript
-    var maxSubArray = function (nums) {
-      let max;
-
-      // dp[i]：以nums[i]为结尾的最大连续子序列和为dp[i]。
-      const dp = [];
-
-      dp[0] = nums[0];
-      for (let i = 1; i < nums.length; i++) {
-        if (dp[i - 1] <= 0) {
-          dp[i] = nums[i];
-        } else {
-          dp[i] = dp[i - 1] + nums[i];
-        }
-
-        max = Math.max(dp[i - 1], dp[i]);
-      }
-      return max;
     };
     ```
 
@@ -6644,86 +6784,6 @@ grid2 中标红的 1 区域是子岛屿，总共有 2 个子岛屿。
 
       // 路线退出（若不退出，则会导致不同岛屿却路径可能一样）
       path.push(-dir);
-    };
-    ```
-
-### 最长回文子串
-给你一个字符串 `s`，找到 `s` 中最长的回文子串。
-
-如果字符串的反序与原始字符串相同，则该字符串称为回文字符串。
-
-示例 1：
-
-```
-输入：s = "babad"
-输出："bab"
-解释："aba" 同样是符合题意的答案。
-```
-
-示例 2：
-
-```
-输入：s = "cbbd"
-输出："bb"
-```
-
-提示：
-
-- `1 <= s.length <= 1000`
-- `s` 仅由数字和英文字母组成
-
-1. 解法一
-
-    动态规划，一个回文去掉两头依然是回文：dp[i][j] = (s[i]===s[j]) && dp[i+1][j-1]（注意边界）。
-
-    ```javascript
-    /**
-     * @param {string} s
-     * @return {string}
-     */
-    var longestPalindrome = function (s) {
-      const len = s.length;
-      if (len < 2) { return s; }
-
-      let maxLen = 1;
-      let begin = 0;
-
-      // 动态规划：dp[i][j] 表示 s[i..j] 是否是回文串。一个回文去掉两头依然是回文：dp[i][j] = (s[i]===s[j]) && dp[i+1][j-1]
-      const dp = Array.from({ length: len }).map(() =>
-        Array.from({ length: len }).fill(false),
-      );
-
-      // 初始化：所有长度为 1 的子串都是回文串（可省略）
-      for (let i = 0; i < len; i++) {
-        dp[i][i] = true;
-      }
-
-      // dp每个参考左下方的dp的值，因此从第2列开始 && 先 列 再 行
-      for (let j = 1; j < len; j++) { // 行（字符串有边界）
-        for (let i = 0; i < j; i++) { // 列（字符串左边界）
-          // 头尾字符不等
-          if (s[i] !== s[j]) {
-            dp[i][j] = false;
-          }
-          // 头尾字符相等
-          else {
-            // 头尾去掉后：没有字符(j-i<i+1) || 仅剩1个字符（j-1===i+1）
-            if (j - i <= 2) { // j-1-(i+1)<=0
-              dp[i][j] = true;
-            } else {
-              dp[i][j] = dp[i + 1][j - 1];
-            }
-          }
-
-          // 若是回文，则判断是否最长
-          if (dp[i][j] && j - i + 1 > maxLen) {
-            maxLen = j - i + 1;
-            begin = i;
-          }
-        }
-      }
-
-      return s.slice(begin, begin + maxLen);
     };
     ```
 

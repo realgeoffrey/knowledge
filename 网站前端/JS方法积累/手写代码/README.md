@@ -18,7 +18,7 @@
     1. [手写防抖函数、节流函数](#手写防抖函数节流函数)
     1. [手写小数加法](#手写小数加法)
     1. [手写`loadScript`（类似webpack实现`import()`的JSONP+缓存）](#手写loadscript类似webpack实现import的jsonp缓存)
-    1. [手写`loadScript`（JSONP+缓存+错误重试、超时重试）](#手写loadscriptjsonp缓存错误重试超时重试)
+    1. [手写`loadScript`支持超时重试](#手写loadscript支持超时重试)
     1. [手写发布订阅模式](#手写发布订阅模式)
 1. 模拟实现
 
@@ -26,9 +26,11 @@
 1. 代码题
 
     1. [解压字符串](#解压字符串)
-    1. [调度器任务并发](#调度器任务并发)
+    1. [调度器任务并发（单任务插入）](#调度器任务并发单任务插入)
+    1. [调度器任务并发（多任务插入）](#调度器任务并发多任务插入)
     1. [任务队列链式调用和取消](#任务队列链式调用和取消)
     1. [HEX转换为RGBA](#hex转换为rgba)
+    1. [n从1开始，每个操作可以对n加1或加倍，如果要使n是任意数，最少需要几个操作](#n从1开始每个操作可以对n加1或加倍如果要使n是任意数最少需要几个操作)
 
 ---
 ### 手写`Object.create`
@@ -563,9 +565,8 @@ Function.prototype.myBind = function (context, ...args) {
   }
 
   // 设置原型链，确保通过 BoundFunction 创建的实例可以访问原函数的原型上的方法
-  BoundFunction.prototype = Object.create(func.prototype);
+  BoundFunction.prototype = Object.create(func.prototype);          // fixme: bind原逻辑是`新函数.prototype === undefined`，这里为了解决new构造函数逻辑，没法设为undefined
   BoundFunction.prototype.constructor = BoundFunction;
-  // fixme: bind原逻辑是`新函数.prototype === undefined`，这里为了解决new构造函数逻辑，没法设为undefined
 
   return BoundFunction;
 };
@@ -847,7 +848,7 @@ console.log(deepClone(obj));
             return curried.apply(
               this,
               args
-                .map((arg) => arg === placeholder ? remainingArgs.shift() ?? arg : arg) // 若之前参数有占位符，则从之后参数替换填上（不管之后参数是不是占位符，若有则再下一次调用会处理）
+                .map((arg) => arg === placeholder ? remainingArgs.shift() ?? arg : arg) // 若之前参数有占位符，则从之后参数替换填上（不管之后参数是不是占位符，若之后参数还是占位符则再下一次调用会处理）
                 .concat(remainingArgs)
             );
           };
@@ -980,7 +981,9 @@ function loadScript(src) {
 }
 ```
 
-### 手写`loadScript`（JSONP+缓存+错误重试、超时重试）
+<details>
+<summary><del>手写<code>loadScript</code>（JSONP+缓存+错误重试、超时重试）</del></summary>
+
 >不能终止 JSONP动态加载的脚本 执行。
 
 ```javascript
@@ -1048,6 +1051,29 @@ function loadScript(src, reTryTimes = 5, timeout = 1000) {
   loadedScripts.set(src, promise);
   return promise;
 }
+```
+</details>
+
+### 手写`loadScript`支持超时重试
+```javascript
+const loadScript = async (modulePath, timeoutMs = 10000, retryTimes = 3) => {
+  for (let i = 0; i < retryTimes; i++) {
+    try {
+      return await Promise.race([import(modulePath), timeoutReject(timeoutMs)]);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  return Promise.reject("failed");
+};
+
+const timeoutReject = (ms) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject("timeout reject!");
+    }, ms);
+  });
+};
 ```
 
 ### 手写发布订阅模式
@@ -1299,7 +1325,7 @@ uncompress('3(ab2(c))') // 'abccabccabcc'
     }
     ```
 
-### 调度器任务并发
+### 调度器任务并发（单任务插入）
 ```javascript
 // 请实现一个调度器，这个调度器保证任务的并发数为2
 class Schedular {
@@ -1339,15 +1365,16 @@ schedular.add(task(50, 4)).then(res => console.log(res));
 
       add(task) {
         return new Promise((resolve) => {
-          const doTask = async () => {
+          this.tasks.push(async () => {
+            // 真正执行任务
             resolve(await task());
             this.runningCount--;
 
             // 执行当前任务后继续尝试执行剩下任务
             this.schedule();
-          };
+          });
 
-          this.tasks.push(doTask);
+          // 启动执行
           this.schedule();
         });
       }
@@ -1361,6 +1388,81 @@ schedular.add(task(50, 4)).then(res => console.log(res));
       }
     }
     ```
+
+### 调度器任务并发（多任务插入）
+实现传入`(多个urls, 并行数量max)`，返回Promise实例，值包含每个urls按顺序请求后结果（请求方式无所谓，可以用`fetch`模拟）。
+
+```javascript
+batchFetch([n个url], 10).then((data)=>{ 按顺序n个url的结果 })
+```
+
+1. 解法一
+
+    ```javascript
+    function batchFetch(urls, max) {
+      return new Promise((resolve) => {
+        // 正在运行的任务数量
+        let runningCount = 0;
+        // 任务
+        const tasks = [];
+        // 结果
+        const result = [];
+
+        urls.forEach((url) => {
+          tasks.push(() => {
+            return new Promise(async (resolve) => {
+              // 真正执行任务
+              resolve(await task(1000 * Math.random(), url)());
+              runningCount--;
+
+              // 执行当前任务后继续尝试执行剩下任务
+              run();
+            });
+          });
+        });
+
+        function run() {
+          while (tasks.length > 0 && runningCount < max) {
+            runningCount++;
+
+            const promise = tasks.shift()(); // 取出队列中的任务、执行
+            result.push(promise);
+          }
+
+          // 完成条件
+          if (result.length === urls.length) {
+            resolve(Promise.allSettled(result));
+          }
+        }
+
+        // 启动执行
+        run();
+      });
+    }
+    ```
+
+    <details>
+    <summary>使用测试</summary>
+
+    ```javascript
+    /* 使用测试 */
+    // 注意：执行2次才返回Promise
+    const task = (duration, order) => {
+      return function () {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(order);
+            console.log("执行完毕", order);
+          }, duration);
+        });
+      };
+    };
+    batchFetch(Array.from({ length: 100 }).map((item, index) => index), 10,)
+      .then((data) => {
+        console.log('完成了', data);
+      });
+    ```
+    </details>
 
 ### 任务队列链式调用和取消
 任务队列，可以链式调用、可以取消前一个任务。
@@ -1566,5 +1668,53 @@ hexToRgb('#fff')
         .map((hex) => parseInt(hex, 16));
 
       return `rgba(${r},${g},${b},${a / 255})`;
+    }
+    ```
+
+### n从1开始，每个操作可以对n加1或加倍，如果要使n是任意数，最少需要几个操作
+><https://www.nowcoder.com/questionTerminal/56983ced1a9547948928c1813d6ba4f0>
+
+1. 解法一
+
+    转化为二进制，1个"0"需要1步，1个"1"需要2步。
+
+    ```javascript
+    function minimumStep(n = 1) {
+      // 转化为二进制，那么从0b1到0b1xxx，左移1位是x2，+1是+1
+      const binary = n.toString(2);
+      let zeroCount = 0;
+      let oneCount = 0;
+      for (let str of binary.slice(1)) {
+        if (str === "0") {
+          // 多一个0需要1步：+1
+          zeroCount++;
+        } else {
+          // 多一个1需要2步：+1 x2
+          oneCount++;
+        }
+      }
+
+      return zeroCount + oneCount * 2;  // 若题目改成从0开始，则这里额外：+1
+    }
+    ```
+2. 解法二
+
+    动态规划。
+
+    ```javascript
+    function minimumStep(n) {
+      // dp[i]：到达数量i的最少步骤
+      const dp = new Array(n + 1);
+      dp[1] = 0;    // 若题目改成从0开始，则这里：dp[1]=1
+
+      for (let i = 2; i <= n; i++) {
+        if (i % 2 === 0) {
+          dp[i] = Math.min(dp[i - 1] + 1, dp[i / 2] + 1);
+        } else {
+          dp[i] = dp[i - 1] + 1;
+        }
+      }
+
+      return dp[n];
     }
     ```

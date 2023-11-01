@@ -10,7 +10,7 @@
     1. [字面量类型](#字面量类型)
     1. [枚举（Enum）](#枚举enum)
     1. [泛型（Generics）](#泛型generics)
-    1. [内置类型别名](#内置类型别名)
+    1. [内置类型别名（Utility Types）](#内置类型别名utility-types)
     1. [操作固有字符串的类型（不是~~值~~）](#操作固有字符串的类型不是值)
 1. [语法](#语法)
 
@@ -26,6 +26,7 @@
     1. [`in`](#in)
     1. [装饰器（Decorators）](#装饰器decorators)
     1. [`readonly`](#readonly)
+    1. [映射修饰符（mapping modifiers）`+`、`-`](#映射修饰符mapping-modifiers-)
     1. [`this`](#this)
     1. [`类型1 extends 类型2 ? 类型3 : 类型4`（条件类型）](#类型1-extends-类型2--类型3--类型4条件类型)
     1. [`infer`](#infer)
@@ -53,8 +54,6 @@
 ### 数据类型
 
 >1. `Number`、`String`、`Boolean`、`Symbol`、`BigInt`、`Object`：（大写的）几乎在任何时候都不应该被用作一个类型。
->
->    `Object`类型：匹配任何值（基本数据类型+引用数据类型）。
 >2. 除了`Object`之外的引用类型（如：`Function`、`Date`），他们的实例类型用（大写的）构造函数名称（如：`: Function`、`: Date`）。
 
 1. 基本数据类型
@@ -161,32 +160,40 @@
     3. 在`unknown`没有被类型断言或js代码细化到一个确切类型之前，不允许在其上进行任何操作。
     4. `try-catch`抓到的是`unknown`，需要类型保护（e.g. `if (err instanceof Error) {){}`）之后才能认为`err`是`Error`类型。
     5. 用`?.`无效，只能用类型保护才能使用其属性。
-6. `object`或`{}`
+6. `Object`、`{}`、`object`区别
 
-    表示非原始类型/非基本数据类型（除了`boolean`、`number`、`string`、`symbol`、`bigint`、`undefined`、`null`之外的类型）。允许给它赋任意值和访问`Object.prototype`上的属性，但不能调用任意其他方法，即便它真的有这些方法。
+    1. [`Object`](https://github.com/microsoft/TypeScript/blob/main/src/lib/es5.d.ts#L105)
 
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```typescript
-    >let obj1: object
-    >
-    >obj1 = []
-    >
-    >obj1.toString()  // 允许访问Object.prototype上的属性
-    >obj1.a()         // 报错，只允许使用Object.prototype上的属性
-    >obj1.length      // 报错，只允许使用Object.prototype上的属性
-    >
-    >
-    >let obj2: { a }
-    >
-    >obj2 = { a: () => {} }
-    >
-    >obj2.toString()  // 允许访问Object.prototype上的属性
-    >obj2.a()         // 允许访问定义的属性a
-    >obj2.length      // 报错，只允许使用Object.prototype上的属性
-    >```
-    ></details>
+        包含所有`Object.prototype.`方法类型（也就是所有JS类型原型链抵达的方法）；匹配任何值（基本数据类型+引用数据类型），`strictNullChecks`模式下不匹配`undefined`、`null`。
+    2. `{}`
+
+        空对象，不包含任何属性也不包含对象原型属性；匹配任何值（基本数据类型+引用数据类型），`strictNullChecks`模式下不匹配`undefined`、`null`。
+    3. `object`
+
+        表示非~~基本数据类型~~（匹配除了`boolean`、`number`、`string`、`symbol`、`bigint`、`undefined`、`null`之外的类型）。允许给它赋任意非基本数据类型的值和访问`Object.prototype`上的属性，但不能调用任意其他属性/方法，即便它真的有这些属性/方法。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```typescript
+        >let obj1: object
+        >
+        >obj1 = []
+        >
+        >obj1.toString()  // 允许访问Object.prototype上的属性
+        >obj1.a()         // 报错，只允许使用Object.prototype上的属性
+        >obj1.length      // 报错，只允许使用Object.prototype上的属性
+        >
+        >
+        >let obj2: { a }
+        >
+        >obj2 = { a: () => {} }
+        >
+        >obj2.toString()  // 允许访问Object.prototype上的属性
+        >obj2.a()         // 允许访问定义的属性a
+        >obj2.length      // 报错，只允许使用Object.prototype上的属性
+        >```
+        ></details>
 7. 对象类型
 
     1. 用`接口`定义。
@@ -477,12 +484,12 @@
         ></details>
 
     >枚举被编译为.js是数组。
-9. 函数类型
+9. 函数类型（方法类型）
 
     1. 输入的参数、输出的返回值都需要设置类型。
     2. 支持：函数声明、函数表达式。
 
-        1. 函数表达式定义类型方式：`Function` 或 `参数类型 => 返回类型` 或 `接口`（、类型别名、内联类型注解）
+        1. 函数表达式定义类型方式：[`Function`](https://github.com/microsoft/TypeScript/blob/main/src/lib/es5.d.ts#L257)（类似于`(...args: any) => any`，但缺少参数和返回值定义） 或 `参数类型 => 返回类型` 或 `接口`（、类型别名、内联类型注解）
 
             若函数表达式需要表示重载，则只能通过 `接口`（、类型别名、内联类型注解） 定义。
         2. 函数声明使用定义类型方式：内联类型注解
@@ -1666,12 +1673,12 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >```
     ></details>
 
-### 内置类型别名
+### 内置类型别名（Utility Types）
 >来自：[src/lib/es5.d.ts](https://github.com/microsoft/TypeScript/blob/main/src/lib/es5.d.ts#L1504)、[typescript: Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html)。
 
-1. `Awaited`
+1. `Awaited<T>`
 
-    获取Promise实例的返回值类型。
+    获取Promise实例类型T（递归到最终）的返回值类型。
 
     ><details>
     ><summary>e.g.</summary>
@@ -1689,24 +1696,36 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >type fake = Awaited<FakePromise>;                          // -> never
     >```
     ></details>
-2. `Partial`
+2. `Partial<T>`
 
-    将类型定义的所有属性都修改为可选（非~~必须~~）。
+    将类型定义T的所有属性都修改为可选（非~~必须~~）。
 
-    >e.g. `Partial<数据类型>`
-3. `Required`
+    ```typescript
+    type Partial<T> = {
+        [P in keyof T]?: T[P];
+    };
+    ```
+3. `Required<T>`
 
-    将类型定义的所有属性都修改为必须（非~~可选~~）。
+    将类型定义T的所有属性都修改为必须（非~~可选~~）。
 
-    >e.g. `Required<数据类型>`
-4. `Readonly`
+    ```typescript
+    type Required<T> = {
+        [P in keyof T]-?: T[P];
+    };
+    ```
+4. `Readonly<T>`
 
-    将类型定义的所有属性都修改为只读（readonly）。
+    将类型定义T的所有属性都修改为只读（readonly）。
 
-    >e.g. `Readonly<数据类型>`
-5. `Record`
+    ```typescript
+    type Readonly<T> = {
+        readonly [P in keyof T]: T[P];
+    };
+    ```
+5. `Record<Keys, T>`
 
-    将类型A的所有属性值都映射到类型B上并创造一个新的类型。
+    定义一个对象类型：属性名是类型Keys，属性值是类型T。
 
     ><details>
     ><summary>e.g.</summary>
@@ -1736,9 +1755,15 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >}
     >```
     ></details>
-6. `Pick`
 
-    从类型定义的属性中，选取指定一组属性，返回一个新的类型定义。
+    ```typescript
+    type Record<K extends keyof any, T> = {
+        [P in K]: T;
+    };
+    ```
+6. `Pick<T, Keys>`
+
+    定义一个类型：从类型T中 选择 仅包含 类型Keys的属性名 的部分。
 
     ><details>
     ><summary>e.g.</summary>
@@ -1758,9 +1783,15 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >}
     >```
     ></details>
-7. `Omit`
 
-    去除类型定义中的某些属性。
+    ```typescript
+    type Pick<T, K extends keyof T> = {
+        [P in K]: T[P];
+    };
+    ```
+7. `Omit<T, Keys>`
+
+    定义一个类型：选择类型T，再剔除 类型Keys的属性名 的部分。
 
     ><details>
     ><summary>e.g.</summary>
@@ -1779,9 +1810,13 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >}
     >```
     ></details>
-8. `Extract`
 
-    从联合类型A中提取类型B。
+    ```typescript
+    type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
+    ```
+8. `Extract<Union1, Union2>`
+
+    定义一个类型：从联合类型Union1中 提取 可分配给联合类型Union2 的联合类型。
 
     ><details>
     ><summary>e.g.</summary>
@@ -1792,9 +1827,13 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >type T2 = Extract<string | number , boolean>           // -> never
     >```
     ></details>
-9. `Exclude`
 
-    去除联合类型中的一部分。
+    ```typescript
+    type Extract<T, U> = T extends U ? T : never;
+    ```
+9. `Exclude<Union1, Union2>`
+
+    定义一个类型：从联合类型Union1中 剔除 联合类型Union2 之后的剩余的联合类型。
 
     ><details>
     ><summary>e.g.</summary>
@@ -1807,9 +1846,13 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >type d = Exclude<c, c.A>       // -> c.B | c.C
     >```
     ></details>
-10. `NonNullable`
 
-    去除联合类型中的`null`和`undefined`。
+    ```typescript
+    type Exclude<T, U> = T extends U ? never : T;
+    ```
+10. `NonNullable<Union>`
+
+    定义一个类型：从联合类型Union中剔除`null`和`undefined`类型后的类型。
 
     ><details>
     ><summary>e.g.</summary>
@@ -1819,9 +1862,13 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >type T2 = NonNullable<null | undefined>;           // -> never
     >```
     ></details>
-11. `ReturnType`
 
-    获得函数类型的返回类型。
+    ```typescript
+    type NonNullable<T> = T & {};
+    ```
+11. `ReturnType<FunctionT>`
+
+    定义一个类型：从函数类型FunctionT中获取的返回值类型。
 
     ><details>
     ><summary>e.g.</summary>
@@ -1832,11 +1879,17 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >
     >type F1ReturnType = ReturnType<F1>;        // -> Date
     >type F2ReturnType = ReturnType<typeof F2>; // -> Date
-    >
     >type F3 = ReturnType<typeof setTimeout>;   // -> number
+    >type F4 = ReturnType<Function>;            // Error: Type 'Function' does not satisfy the constraint '(...args: any) => any'
     >```
     ></details>
-12. `Parameters`
+
+    ```typescript
+    type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any;
+    ```
+12. `Parameters<FunctionT>`
+
+    定义一个元组类型：从函数类型FunctionT中获取的参数类型形成的元组类型（若空参数则空元组`[]`）。
 
     获取函数类型的全部参数类型，以`元组`返回。
 
@@ -1853,9 +1906,17 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >
     >declare function ajax<T, R>(params: T): Promise<R>;
     >type F5 = Parameters<typeof ajax<number, string>>[0]; // -> number
+    >
+    >type F6 = Parameters<Function>;    // -> never。Error： Type 'Function' provides no match for the signature '(...args: any): any'
     >```
     ></details>
-13. `InstanceType`
+
+    ```typescript
+    type Parameters<T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never;
+    ```
+13. `InstanceType<ConstructorT>`
+
+    定义一个类型：从构造函数类型ConstructorT（class类型）中获取实例的类型。
 
     获得构造函数类型的实例类型。
 
@@ -1867,13 +1928,18 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >  x = 0;
     >  y = 0;
     >}
-    >
     >type T0 = InstanceType<typeof C>; // -> C
+    >
+    >type T1 = InstanceType<Function>; // Error: Type 'Function' does not satisfy the constraint 'abstract new (...args: any) => any'
     >```
     ></details>
-14. `ConstructorParameters`
 
-    获取构造函数的全部参数类型，以`元组`或数组返回。
+    ```typescript
+    type InstanceType<T extends abstract new (...args: any) => any> = T extends abstract new (...args: any) => infer R ? R : any;
+    ```
+14. `ConstructorParameters<ConstructorT>`
+
+    定义一个元组类型：从构造函数类型ConstructorT（class类型）中获取参数类型形成的元组类型（若空参数则空元组`[]`）。
 
     ><details>
     ><summary>e.g.</summary>
@@ -1883,12 +1949,18 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >type T1 = ConstructorParameters<FunctionConstructor>;  // -> string[]
     >type T2 = ConstructorParameters<RegExpConstructor>;    // -> [pattern: string | RegExp, flags?: string]
     >type T3 = ConstructorParameters<any>;                  // -> unknown[]
-    >type T4 = ConstructorParameters<Function>;             // -> never。报错
+    >type T4 = ConstructorParameters<typeof Object>;        // typeof 类名：取 类 的类型，而不是 实例的类型
+    >type T5 = ConstructorParameters<Object>;               // Error：实例的类型
+    >type T6 = ConstructorParameters<Function>;             // -> never。Error：Type 'Function' does not satisfy the constraint 'abstract new (...args: any) => any'.
     >```
     ></details>
-15. `ThisParameterType`
 
-    获取函数类型中`this`参数的数据类型，若没有则返回`unknown`。
+    ```typescript
+    type ConstructorParameters<T extends abstract new (...args: any) => any> = T extends abstract new (...args: infer P) => any ? P : never;
+    ```
+15. `ThisParameterType<FunctionT>`
+
+    提取函数类型FunctionT中`this`的类型。
 
     ><details>
     ><summary>e.g.</summary>
@@ -1903,16 +1975,24 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >}
     >```
     ></details>
-16. `OmitThisParameter`
 
-    移除函数类型中的`this`参数的数据类型，返回移除后的函数类型。
-17. `ThisType`
+    ```typescript
+    type ThisParameterType<T> = T extends (this: infer U, ...args: never) => any ? U : unknown;
+    ```
+16. `OmitThisParameter<FunctionT>`
+
+    提取 函数类型FunctionT中 剔除`this`的类型 之外的函数类型。
+
+    ```typescript
+    type OmitThisParameter<T> = unknown extends ThisParameterType<T> ? T : T extends (...args: infer A) => infer R ? (...args: A) => R : T;
+    ```
+17. `ThisType<T>`
 
     >若使用，则需要开启`--noImplicitThis`。
-18. `Promise`
+18. `Promise<T>`
 
     Promise实例类型。
-19. `PromiseLike`
+19. `PromiseLike<T>`
 
     仅有`then`属性的对象类型，类似Promise实例的then属性（是`Promise`类型的数据也满足`PromiseLike`类型）。
 
@@ -2562,6 +2642,21 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 
 >相关内置：`Readonly`类型别名、`ReadonlyArray`泛型接口。
 
+### 映射修饰符（mapping modifiers）`+`、`-`
+增加（不写默认`+`）或去除：`readonly`或`?`
+
+```typescript
+// Removes 'readonly' attributes from a type's properties
+type CreateMutable<Type> = {
+  -readonly [Property in keyof Type]: Type[Property];
+};
+
+// Removes 'optional' attributes from a type's properties
+type Concrete<Type> = {
+  [Property in keyof Type]-?: Type[Property];
+};
+```
+
 ### `this`
 1. 返回类型`this`
 
@@ -2747,7 +2842,7 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
     1. 全局性：命名空间中的声明是全局可见的，意味着我们可以在代码的任何地方访问它们，只要我们引入了相应的命名空间。
     2. 层级结构：命名空间可以形成层级结构嵌套，可以在命名空间内部创建更深层次的命名空间，以更好地组织代码。
     3. **防止命名冲突**：命名空间提供了一种避免全局命名冲突的机制。
-    - 较小代码库或简单场景使用。
+    - 较小代码库或简单场景使用，建议不用。
 2. TS模块
 
     1. 作用域限制：模块具有自己的作用域，模块中的声明默认是私有的，只有通过导出才能在外部访问。

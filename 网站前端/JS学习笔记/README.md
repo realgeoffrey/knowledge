@@ -1255,18 +1255,19 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                 1. I/O、UI交互
 
                     监听的事件。
-                2. `requestAnimationFrame`
-                3. `新的<script>`
-                4. `setTimeout`、`setInterval`、`setImmediate`
+                2. `setTimeout`、`setInterval`、`setImmediate`
 
                     在当前「任务队列」的尾部，添加事件。
-                5. AJAX、`fetch`
+                3. AJAX、`fetch`
+                4. `新的<script>`
             2. microtask（job，微任务）一般包括:
 
                 1. `Promise`（`Promise.prototype.then/catch/finally(回调)`的回调）
 
                     `new Promise(回调)`的回调、`Promise.all/race/any/allSettled([回调])`的回调、`Promise.resolve/reject()`，都是同步任务。
                 2. `async-await`（只有`await`是异步）
+
+                    >生成器（generators）是中断-恢复同步运行-中断，不是异步任务。
 
                     `await`后若是方法则同步执行该方法，执行结果交给`await`后才是microtask（无论结果如何）。
 
@@ -1346,10 +1347,14 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                 4. `MutationObserver`
                 5. `queueMicrotask`
 
-    - 空闲任务（线程空闲时才会执行，优先级非常低）：
+    3. 浏览器渲染相关的异步任务
 
-        1. `requestIdleCallback`
-        2. `IntersectionObserver`
+        1. 渲染前执行
+
+            `requestAnimationFrame` -> `IntersectionObserver`
+        2. 渲染后若还有空闲时间：
+
+            `requestIdleCallback`
 3. JS的事件循环运行机制：
 
     1. 「执行栈」进行：
@@ -1367,15 +1372,15 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                     >最初时刻：「执行栈」为空，`<script>`作为第一个macrotask被运行。
                 2. 「执行栈」运行任务X（运行对应的回调函数）；
                 3. 设置「目前运行的任务」为`null`，从macrotask队列中移除任务X；
-                4. 跳出macrotask队列、进行浏览器渲染。
+                4. 跳出macrotask队列、进行：检查microtask队列。
             2. 检查microtask队列：
 
                 1. 选择最早加入的任务a，设置为「目前运行的任务」并进入「执行栈」；若microtask队列为空，则跳到第5步；
                 2. 「执行栈」运行任务a（运行对应的回调函数）；
                 3. 设置「目前运行的任务」为`null`，从microtask队列中移除任务a；
                 4. 跳到第1步（检查下一个最早加入的microtask任务）；
-                5. 跳出microtask队列、进行检查macrotask队列。
-            3. 浏览器渲染。
+                5. 跳出microtask队列、进行：检查macrotask队列 或 浏览器渲染。
+            3. 浏览器渲染（根据屏幕刷新率、浏览器performance策略，如：每16.6ms才会触发一次）。
 
             >macrotask和microtast选择：若想让一个任务立即执行，则把它设置为microtask，除此之外都用macrotask。因为虽然JS是异步非阻塞，但在一个事件循环中，microtask的执行方式基本上是用同步的。
 
@@ -2007,7 +2012,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     - 改用`while`、`do-while`、`for`、`for-in`、`for-of`等实现异步效果。
     - 使用第三方库，能够控制每一项之间的执行细节（并行、串行、等）：[async](https://github.com/caolan/async)、[bluebird](https://github.com/petkaantonov/bluebird)。
 
-- 实现一个同时只能执行1个任务的[调度器](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/手写代码/README.md#调度器任务并发)
+- 实现一个同时只能执行1个任务的[调度器](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/手写代码/README.md#调度器任务并发单任务插入)
 
 ### 跨域请求
 ><details>

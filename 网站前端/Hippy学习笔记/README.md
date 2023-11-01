@@ -1850,9 +1850,11 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
 
             1. Native加载某个前端页面的URL时，若URL包含预请求参数（请求方法名、请求参数）则并行客户端发起请求、下载-执行JS bundle；
 
-                >或URL包含预请求标志，具体请求参数在Hippy包里某个JSON文件中描述。
+                >或URL包含预请求标志，具体请求参数在Hippy包里某个JSON文件中描述。暂不支持动态数据传递。
             2. 客户端发起请求的结果存入客户端缓存，待前端通过bridge获取；
-            3. 前端获取后台数据：`Promise.any(bridge获取客户端缓存的后台数据, 发起后台请求)`
+            3. 前端获取后台数据：先bridge获取客户端缓存的后台数据（若客户端请求中则pending），若失败则再发起后台请求。
+
+                >~~`Promise.any(bridge获取客户端缓存的后台数据, 发起后台请求)`（会有后台请求2次的问题）~~
     2. JS bundle包加载耗时优化
 
         >低端机执行JS bundle会随着文件增大而耗时增加更明显（短板效应严重），特别依赖包体积减少。
@@ -1878,7 +1880,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
                 >H5页面通过JSONP实现动态加载，若Hippy的JS引擎不能直接用JSONP方案，则hack成请求到代码字符串然后`eval(代码字符串)`或`(new Function(代码字符串)())`。
             2. [tree shaking](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/webpack学习笔记/README.md#tree-shaking)、压缩
             - 利用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)分析包体积
-        2. 尽量用CDN图片，谨慎合理使用base64图片
+        2. 尽量用CDN图片，谨慎合理使用base64图片（小图可以用base64，考虑减少请求数量和增加少量文件大小）
         3. 考虑后台数据传输依赖的打包解包的裁剪优化
     3. JS Bundle运行时
 

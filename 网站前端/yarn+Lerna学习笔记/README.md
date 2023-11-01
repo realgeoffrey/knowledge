@@ -300,8 +300,10 @@ Monorepo（单一仓库，monolithic repository）是一种软件开发管理策
 
     - 问题
 
-        1. 需要把整个仓库的依赖全部全部安装
+        1. 需要把整个仓库的依赖全部安装
         2. yarn（和npm@3+）会平铺node_modules（扁平化）
+
+            >npm@2-会嵌套安装node_modules（每个依赖都会在各自的node_modules内完整安装自己的依赖，嵌套地狱）
 
             提升只能提升某个包的一个版本，后面再遇到相同包的不同版本，依然还是用嵌套的方式，可能相同版本在不同依赖位置嵌套安装多次。导致：
 
@@ -313,15 +315,9 @@ Monorepo（单一仓库，monolithic repository）是一种软件开发管理策
         - pnpm都可以解决以上问题
 2. **pnpm**
 
-    todo
+    >[依赖管理（npm、yarn、pnpm）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Node.js学习笔记/README.md#依赖管理npmyarnpnpm)。
 
-    1. 通过自动硬链接（hard link）和软链接（sybolic link）来实现npm模块的管理。
-
-        由pnpm创建的node_modules文件夹中，所有Package都与自身的依赖项分组在一起（隔离），但是依赖层级却不会过深（软链接到外面真正的地址）。
-    2. 包安装速度极快
-    3. 磁盘空间利用非常高效
-
-         内部使用`基于内容寻址`的文件系统来存储磁盘上所有的文件：不会重复安装同一个包；即使一个包的不同版本，pnpm 也会极大程度地复用之前版本的代码。
+    通过自动硬链接（hard link）和软链接（symbolic link）来实现模块依赖管理（包安装速度极快、磁盘空间利用非常高效），解决了~~幽灵依赖~~、~~依赖分身~~问题。
 3. rust
 4. [nx](https://github.com/nrwl/nx)
 

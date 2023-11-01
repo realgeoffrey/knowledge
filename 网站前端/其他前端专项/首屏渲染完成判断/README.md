@@ -1,6 +1,6 @@
 ### 首屏渲染完成判断
 
-todo: https://mp.weixin.qq.com/mp/appmsgalbum?action=getalbum&album_id=1997906031212888065
+todo: later read https://mp.weixin.qq.com/mp/appmsgalbum?action=getalbum&album_id=1997906031212888065
 
 - 首先确定首屏渲染完成的标准
 

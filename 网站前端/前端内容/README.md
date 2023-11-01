@@ -250,7 +250,7 @@
 
             1. [vue性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#vue性能优化)
             2. [react性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/React学习笔记/README.md#react性能优化)
-        9. 长列表考虑虚拟列表（针对非可见区域先销毁，注意分析具体场景下重新创建的优劣）
+        9. 长列表考虑虚拟列表（针对非可见区域先销毁，注意分析具体场景的重新创建优劣）
     2. CSS性能：
 
         1. [CSS选择器性能](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#css选择器)。
@@ -284,7 +284,7 @@
 >        1. Performance查询运行时导致**帧数**过高的代码。
 >        2. Rendering、Layers查看CSS渲染情况。
 >        3. Memory、JavaScript Profiler、Performance monitor查询内存占用情况。
->    2. （大盘数据）打开各种分析工具，根据建议逐条对照修改
+>    2. （大盘监控数据）打开各种分析工具，根据建议逐条对照修改
 >
 >        - 在客户端运行[`window.performance`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#performance)查看页面从打开到加载完成的时间数据，或其他约定好的性能口径。
 >

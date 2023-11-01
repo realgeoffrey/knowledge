@@ -257,7 +257,11 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         >  })
         >```
         ></details>
+
     >接口设计可以带有「透传数据」：前端调用客户端方法时多传一个透传参数，之后客户端异步调用前端方法时带着这个参数的值。
+
+    4. 以 全双工通讯协议 作为桥梁通信，如：前端的websocket，客户端启动在后台的通信服务。
+    5. RN前端和`<WebView>`组件通信：`postMessage`。
 2. 根据WebView的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在WebView遇到的bug。
 3. [WebView调试](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/代码调试相关/README.md#webview调试)
 4. 分享到其他App

@@ -35,7 +35,6 @@
 
     1. [核心概念](#核心概念)
 1. [Vue与React对比](#vue与react对比)
-1. [其他前端框架](#其他前端框架)
 
 ---
 ## [react](https://github.com/facebook/react)
@@ -1936,7 +1935,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     <details>
     <summary>原因</summary>
 
-    由于React Hook的实现设计导致的副作用：`currentlyRenderingFiber.memorizedState`中保存一条Hook对应数据的单向链表，因此每次渲染触发的调用顺序必须完全一致，以便正确地管理状态和更新。
+    由于React Hook的实现设计导致：`currentlyRenderingFiber.memorizedState`中保存一条Hook对应数据的单向链表，因此每次渲染触发的调用顺序必须完全一致，以便正确地管理状态和更新。
 
     ```typescript
     // https://github.com/facebook/react/blob/main/packages/react-reconciler/src/ReactFiberHooks.js#L184-L190
@@ -3859,11 +3858,3 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
         1. Vue的核心思想是尽可能的降低前端开发的门槛，是一个灵活易用的渐进式双向绑定的MVVM框架（由MVC发展而来）。
         2. React的核心思想是声明式渲染和组件化、单向数据流，前端组件化框架，不属于~~MVC或MVVM架构~~。
-
-### 其他前端框架
-todo
-
-1. 无虚拟dom
-
-    svelte
-2.
