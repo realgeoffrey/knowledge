@@ -121,7 +121,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 
             1. iOS8-
 
-                ```javascript
+                ```js
                 var iframe = document.createElement('iframe');
                 iframe.src = '自定义URL Scheme';
                 iframe.style.display = 'none';
@@ -136,7 +136,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 
                 >`<iframe>`无效。
 
-                ```javascript
+                ```js
                 location.href = '自定义URL Scheme';
 
                 setTimeout(function () {
@@ -153,7 +153,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
                 >参考：[通用链接（Universal Links）的使用详解](http://www.hangge.com/blog/cache/detail_1554.html)、[Universal Link 前端部署采坑记](http://awhisper.github.io/2017/09/02/universallink/)、[Support Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html#//apple_ref/doc/uid/TP40016308-CH12-SW2)。
         2. Android
 
-            ```javascript
+            ```js
             location.href = '自定义URL Scheme';    // 也可以用`<iframe>`
 
             var start = Date.now();
@@ -206,7 +206,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         >
         >e.g.
         >
-        >```javascript
+        >```js
         >let _localCounter = 1 // 同一个方法名快速请求时，可能 Date.now() 还没有变化
         >
         >function invokeJSBridge (method, arg, { hasCallback = true }) {
@@ -300,7 +300,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 
         以Weex（已掉队）和RN最具代表，原理类似，上层JS利用Vue/React框架维护虚拟节点，通过bridge（或JSI等优化）与Native通信，最终在Native渲染组件。
 
-    >Native容器方案 与 自绘方案，就目前而言没有谁优谁劣：对于Native容器方案来说，更多的是代表了研发效率与动态性；对于Flutter这类框架而言，虽然实现了高性能自绘，但却缺少一套较为完备的动态化方案。
+    >Native容器方案 与 自绘方案，就目前而言没有谁优谁劣：对于Native容器方案来说，更多的是代表了研发效率与动态性；对于Flutter这类框架而言，虽然实现了高性能、多端一致的自绘，但却缺少一套较为完备的动态化方案。
 
     4. 自绘方案
 

@@ -241,7 +241,7 @@
             2. 使用gif透明图（ie的24位PNG图透明时引起的内存泄漏）。
 28. ie6/7/8/9没有console方法（执行会报错），可用alert替代：
 
-    ```javascript
+    ```js
     if (typeof console === 'undefined' || typeof console.log === 'undefined') {
       console = {}
       console.log = function (msg) {

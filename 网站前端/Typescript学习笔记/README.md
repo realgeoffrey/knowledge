@@ -40,6 +40,7 @@
     1. [协变与逆变](#协变与逆变)
     1. [`// @ts-ignore`](#-ts-ignore)
 1. [其他](#其他)
+1. [ts的优缺点](#ts的优缺点)
 
 ---
 >参考：[TypeScript 入门教程](https://github.com/xcatliu/typescript-tutorial)、[TypeScript 使用手册（中文版）翻译](https://github.com/zhongsp/TypeScript)、[TypeScript Deep Dive 中文版](https://github.com/jkchao/typescript-book-chinese)。
@@ -85,7 +86,7 @@
         >
         >e.g.
         >
-        >```typescript
+        >```ts
         >function a (): Promise<void> {
         >  return new Promise((resolve, reject) => {
         >    resolve();
@@ -118,7 +119,7 @@
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >// 返回never的函数必须存在无法达到的终点
     >function error (message: string): never {
     >  throw new Error(message)
@@ -175,7 +176,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >let obj1: object
         >
         >obj1 = []
@@ -212,7 +213,7 @@
                 <details>
                 <summary>e.g.</summary>
 
-                ```typescript
+                ```ts
                 // 错误示范：
                 interface NestedCSS1 {
                   color?: string;
@@ -254,7 +255,7 @@
                 <details>
                 <summary>e.g.</summary>
 
-                ```typescript
+                ```ts
                 type FieldState = {
                   value: string;
                 };
@@ -279,7 +280,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >interface Person {
         >  name: string
         >
@@ -316,7 +317,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >type A ={
         >  [key: string]: 数据类型;
         >}
@@ -339,7 +340,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >class A {
         >  a: number = 2;
         >  aa?: number = 2;
@@ -365,7 +366,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >function logName(something: { name: string }) {
         >  console.log(something.name);
         >}
@@ -390,7 +391,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >let arr1: (number | string)[] = [1, "1"];
         >let arr2: { name: string; age: number }[] = [
         >  { name: "", age: 0 },
@@ -420,7 +421,7 @@
             ><details>
             ><summary>e.g.</summary>
             >
-            >```typescript
+            >```ts
             >let a: number[] = [1, 2, 3, 4]
             >let ro: ReadonlyArray<number> = a  // 允许，普通数据类型 赋值给 ReadonlyArray
             >
@@ -436,7 +437,7 @@
 
         用`索引签名`来定义索引和项。
 
-        ```typescript
+        ```ts
         interface NumberArray {
           [任意名: number]: number | string
         }
@@ -454,7 +455,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >let arr1: [string, number] = ['string', 1]
         >arr1.push(2)
         >arr1.push(true)                                  // 报错，只能添加联合类型
@@ -473,7 +474,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >interface ReadonlyStringArray {
         >  readonly [任意名: number]: string;
         >}
@@ -510,7 +511,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >interface A1 {     // 或：类型别名、内联类型注解
         >  new (): string;
         >}
@@ -530,7 +531,7 @@
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >// 函数声明
     >
     >// 可选参数
@@ -596,7 +597,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >// 函数声明
         >function reverse1(x: number): number;
         >function reverse1(x: string): string;
@@ -641,7 +642,7 @@
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >function a(): Promise<number | string> {  // 仅能定义resolve
     >  return new Promise((resolve, reject) => {
     >    const random = Math.random();
@@ -683,7 +684,7 @@
         >
         >e.g.
         >
-        >```typescript
+        >```ts
         >class Person {
         >  protected constructor () {}
         >}
@@ -702,7 +703,7 @@
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >class Animal {
     >  public constructor (name, age, sex) {    // 默认返回值类型是当前类：Animal
     >    // （默认值会在编译后的.js的构造函数最前面加上：）this.age = 100
@@ -768,7 +769,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >// A1和A2编译出的.js结果一致
         >
         >class A1 {
@@ -799,7 +800,7 @@
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >class Greeter {
     >  static staticGreeting = 'Hello, there'
     >  greeting: string
@@ -842,7 +843,7 @@
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >abstract class Animal {    // 抽象类
     >  public name: string
     >
@@ -873,7 +874,7 @@
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >interface Alarm {
     >  alert(num: number): void;  // 接口上的属性 被class实现必须是public
     >}
@@ -935,7 +936,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >interface Counter {
         >  (start: number): string  // 描述方法（没有属性名）
         >
@@ -970,7 +971,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >interface Alarm {
         >  alert ()
         >}
@@ -993,7 +994,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >class Point {
         >  x?: number
         >  y: number
@@ -1016,7 +1017,7 @@
             ><details>
             ><summary>e.g.</summary>
             >
-            >```typescript
+            >```ts
             >class Control {
             >  private state: any;
             >}
@@ -1047,7 +1048,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >type Name = {
         >  name: string;
         >}
@@ -1070,7 +1071,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >interface a {
         >  aa: { a: string; b: string }
         >}
@@ -1104,7 +1105,7 @@
 ><details>
 ><summary>e.g.</summary>
 >
->```typescript
+>```ts
 >type Name = string
 >type NameResolver = () => string
 >type NameOrResolver = Name | NameResolver
@@ -1124,7 +1125,7 @@
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >type Tree<T> = {
     >  value: T;
     >  left: Tree<T>;
@@ -1139,7 +1140,7 @@
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >type Name1 = {
     >  name: string;
     >}
@@ -1159,7 +1160,7 @@
 ><details>
 ><summary>e.g.</summary>
 >
->```typescript
+>```ts
 >type aa = "ease-in" | "ease-out" | "ease-in-out";
 >type bb = 8 | 16 | 32;
 >type cc = { c1: true; c2: string } | { c1: false; c2: number };
@@ -1191,7 +1192,7 @@
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >type World = 'world';
     >type Greeting = `hello ${World}`;  // -> 'hello world'
     >
@@ -1212,7 +1213,7 @@
 <details>
 <summary>e.g.</summary>
 
-```typescript
+```ts
 enum E {
   aa,
   bb = 123,
@@ -1237,7 +1238,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
             ><details>
             ><summary>e.g.</summary>
             >
-            >```typescript
+            >```ts
             >// .ts
             >enum Days {Sun, Mon, Tue, Wed, Thu, Fri, Sat}
             >
@@ -1277,7 +1278,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
                 ><details>
                 ><summary>e.g.</summary>
                 >
-                >```typescript
+                >```ts
                 >// .ts
                 >enum Days {Sun = 7, Mon, Tue, Wed, Thu, Fri, Sat = <any>true, a = 13, b}
                 >
@@ -1313,7 +1314,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >// .ts
         >enum Color {Red = 'red', Green = 3, Blue = "blue".length, Yellow = 5, White, X = Math.random()}
         >
@@ -1343,7 +1344,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >// .ts
         >const enum Directions {
         >  Up,
@@ -1367,7 +1368,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >// .ts
         >declare enum Directions1 {
         >  Up,
@@ -1389,7 +1390,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >// .ts
         >declare const enum Directions2 {
         >  Up,
@@ -1411,7 +1412,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >// .ts
     >enum Weekday {
     >  Monday,
@@ -1480,7 +1481,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >enum A {
     >  'top',
     >  'down',
@@ -1504,7 +1505,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >enum Status {
     > Ready,
     > Waiting
@@ -1551,7 +1552,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
 ><details>
 ><summary>e.g.</summary>
 >
->```typescript
+>```ts
 >function func<T, P>(a: T, b: P, c: Array<T | P>) {
 >  return `${a} ${b} ${c}`;
 >}
@@ -1577,7 +1578,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >function identity<T>(arg: T): T {
     >    return arg;
     >}
@@ -1592,7 +1593,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >// 泛型接口1
     >interface GenericIdentityFn {
     >    <T>(arg: T): T;
@@ -1629,7 +1630,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >class GenericNumber<T> {
     >  zeroValue: T;
     >  add: (x: T, y: T) => T = function (x, y) {
@@ -1655,7 +1656,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >function loggingIdentity<T extends { length: number }> (arg: T): T {
     >  console.log(arg.length);
     >
@@ -1683,7 +1684,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >type basic = Awaited<Promise<string>>;                     // -> string
     >
     >type recursive = Awaited<Promise<Promise<string>>>;        // -> string
@@ -1700,7 +1701,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
 
     将类型定义T的所有属性都修改为可选（非~~必须~~）。
 
-    ```typescript
+    ```ts
     type Partial<T> = {
         [P in keyof T]?: T[P];
     };
@@ -1709,7 +1710,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
 
     将类型定义T的所有属性都修改为必须（非~~可选~~）。
 
-    ```typescript
+    ```ts
     type Required<T> = {
         [P in keyof T]-?: T[P];
     };
@@ -1718,7 +1719,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
 
     将类型定义T的所有属性都修改为只读（readonly）。
 
-    ```typescript
+    ```ts
     type Readonly<T> = {
         readonly [P in keyof T]: T[P];
     };
@@ -1730,7 +1731,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >type A = 'dog' | 'cat' | 'fish';
     >interface B {
     >   name: string,
@@ -1756,7 +1757,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >```
     ></details>
 
-    ```typescript
+    ```ts
     type Record<K extends keyof any, T> = {
         [P in K]: T;
     };
@@ -1768,7 +1769,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >interface A {
     >  title: string
     >  completed: boolean
@@ -1784,7 +1785,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >```
     ></details>
 
-    ```typescript
+    ```ts
     type Pick<T, K extends keyof T> = {
         [P in K]: T[P];
     };
@@ -1796,7 +1797,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >interface A {
     >  title: string
     >  completed: boolean
@@ -1811,7 +1812,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >```
     ></details>
 
-    ```typescript
+    ```ts
     type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
     ```
 8. `Extract<Union1, Union2>`
@@ -1821,14 +1822,14 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >type T0 = Extract<'a' | 'b' | 'c', 'a' | 'b'>          // -> 'a' | 'b'
     >type T1 = Extract<string | boolean, boolean | number>  // -> boolean
     >type T2 = Extract<string | number , boolean>           // -> never
     >```
     ></details>
 
-    ```typescript
+    ```ts
     type Extract<T, U> = T extends U ? T : never;
     ```
 9. `Exclude<Union1, Union2>`
@@ -1838,7 +1839,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >type a = number | string | boolean
     >type b = Exclude<a, number | boolean>  // -> string
     >
@@ -1847,7 +1848,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >```
     ></details>
 
-    ```typescript
+    ```ts
     type Exclude<T, U> = T extends U ? never : T;
     ```
 10. `NonNullable<Union>`
@@ -1857,13 +1858,13 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >type T1 = NonNullable<string | null | undefined>;  // -> string
     >type T2 = NonNullable<null | undefined>;           // -> never
     >```
     ></details>
 
-    ```typescript
+    ```ts
     type NonNullable<T> = T & {};
     ```
 11. `ReturnType<FunctionT>`
@@ -1873,7 +1874,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >type F1 = () => Date;
     >function F2 (): Date { return new Date() }
     >
@@ -1884,7 +1885,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >```
     ></details>
 
-    ```typescript
+    ```ts
     type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any;
     ```
 12. `Parameters<FunctionT>`
@@ -1896,7 +1897,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >type F0 = (a: string, b: number) => boolean;
     >type F1 = Parameters<F0>;                      // -> [a: string, b: number] 或 [string, number]
     >type F2 = F1[1];                               // -> number
@@ -1911,7 +1912,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >```
     ></details>
 
-    ```typescript
+    ```ts
     type Parameters<T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never;
     ```
 13. `InstanceType<ConstructorT>`
@@ -1923,7 +1924,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >class C {
     >  x = 0;
     >  y = 0;
@@ -1934,7 +1935,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >```
     ></details>
 
-    ```typescript
+    ```ts
     type InstanceType<T extends abstract new (...args: any) => any> = T extends abstract new (...args: any) => infer R ? R : any;
     ```
 14. `ConstructorParameters<ConstructorT>`
@@ -1944,7 +1945,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >type T0 = ConstructorParameters<ErrorConstructor>;     // -> [message?: string]
     >type T1 = ConstructorParameters<FunctionConstructor>;  // -> string[]
     >type T2 = ConstructorParameters<RegExpConstructor>;    // -> [pattern: string | RegExp, flags?: string]
@@ -1955,7 +1956,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >```
     ></details>
 
-    ```typescript
+    ```ts
     type ConstructorParameters<T extends abstract new (...args: any) => any> = T extends abstract new (...args: infer P) => any ? P : never;
     ```
 15. `ThisParameterType<FunctionT>`
@@ -1965,7 +1966,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >function toHex(this: Number) {
     >    return this.toString(16);
     >}
@@ -1976,14 +1977,14 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >```
     ></details>
 
-    ```typescript
+    ```ts
     type ThisParameterType<T> = T extends (this: infer U, ...args: never) => any ? U : unknown;
     ```
 16. `OmitThisParameter<FunctionT>`
 
     提取 函数类型FunctionT中 剔除`this`的类型 之外的函数类型。
 
-    ```typescript
+    ```ts
     type OmitThisParameter<T> = unknown extends ThisParameterType<T> ? T : T extends (...args: infer A) => infer R ? (...args: A) => R : T;
     ```
 17. `ThisType<T>`
@@ -2015,7 +2016,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
 ><details>
 ><summary>e.g.</summary>
 >
->```typescript
+>```ts
 >// Uppercase改成Lowercase、Capitalize、Uncapitalize，均可行
 >
 >type Greeting = 'Hello, world' | 'Hi';
@@ -2064,7 +2065,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >interface A {
     >  aa?: number
     >}
@@ -2088,7 +2089,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >const x1 = 'x1';        // -> 'x1'
     >let x2 = 'x2';          // -> string
     >let x3 = 'x3' as const; // -> 'x3'
@@ -2113,7 +2114,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >function test(input: string | number) {
     >  if (typeof input == 'string') {
     >    // 这里 input 的类型「收紧」为 string
@@ -2131,7 +2132,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >class Foo {}
     >class Bar {}
     >
@@ -2152,7 +2153,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >interface Foo {
     >  foo: string;
     >}
@@ -2178,7 +2179,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >type Foo = 'foo' | 'bar' | 'unknown';
     >
     >function test(input: Foo) {
@@ -2195,7 +2196,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
 ><details>
 ><summary>若上述条件不是直接通过字面量书写，而是通过一个条件函数来替代时，则类型保护便会失效</summary>
 >
->```typescript
+>```ts
 >function isString (input: any) {
 >  return typeof input === 'string';
 >}
@@ -2221,7 +2222,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
 
     >本质是一种类型断言。
 
-    ```typescript
+    ```ts
     // 传进来参数的类型是`Fish | Bird`。函数返回`true`参数类型是`Fish`；函数返回`false`参数类型是除去`Fish`
     function isFish(pet: Fish | Bird): pet is Fish {
         return (pet as Fish).swim !== undefined;    // 自定义类型保护若要用到非共有的属性/方法，也需要用类型断言
@@ -2249,7 +2250,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >function getLength(something: string | number) {
         >  something.toString(); // 访问此联合类型的所有类型里共有的属性/方法
         >  (something as string).length; // 类型断言
@@ -2272,7 +2273,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >// 可辨识：vType
     >interface Motorcycle {
     >  vType: "motorcycle"; // discriminant
@@ -2326,7 +2327,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
             ><details>
             ><summary>e.g.</summary>
             >
-            >```typescript
+            >```ts
             >interface A {
             >  a: number;
             >}
@@ -2359,7 +2360,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
 ><details>
 ><summary>e.g.</summary>
 >
->```typescript
+>```ts
 >// 配置文件：compilerOptions.strictNullChecks: true
 >let foo: string | undefined
 >
@@ -2381,7 +2382,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
 ><details>
 ><summary>e.g.</summary>
 >
->```typescript
+>```ts
 >function foo(x: number): Array<number> {
 >  return [x];
 >}
@@ -2418,7 +2419,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
 >new a4(); // => I'm A I'm B
 >```
 >
->```typescript
+>```ts
 >const foo1 = 'Hello World';
 >let bar1: typeof foo1;
 >// bar1 仅能被赋值 'Hello World'
@@ -2445,7 +2446,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
 <details>
 <summary>e.g.</summary>
 
-```typescript
+```ts
 interface Person {
   name: string;
   age: number;
@@ -2464,7 +2465,7 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 
     >类似`enum`的功能，若非特别必要，请用`enum`替代。
 
-    ```typescript
+    ```ts
     const obj1 = {
       key1: "value1",
       key2: "value2"
@@ -2509,7 +2510,7 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 ><details>
 ><summary>e.g.</summary>
 >
->```typescript
+>```ts
 >interface Person {
 >  name: string;
 >  age: number;
@@ -2531,7 +2532,7 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 
     <summary>若想获取一个已有类型的部分属性</summary>
 
-    ```typescript
+    ```ts
     import { $Rsp } from "其他模块";
 
     // 写法1？
@@ -2589,7 +2590,7 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 ><details>
 ><summary>e.g.</summary>
 >
->```typescript
+>```ts
 >type Keys = "a" | "b"
 >type Obj = {
 >  [p in Keys]: any         // 不能用：p: Keys
@@ -2612,7 +2613,7 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 1. `@expression`的expression求值后为一个函数，它在运行时被调用，被装饰的声明信息会被做为参数传入。
 2. 当多个装饰器应用在一个声明上时：
 
-    ```typescript
+    ```ts
     // 书写在同一行上
     @f @g x
 
@@ -2645,7 +2646,7 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 ### 映射修饰符（mapping modifiers）`+`、`-`
 增加（不写默认`+`）或去除：`readonly`或`?`
 
-```typescript
+```ts
 // Removes 'readonly' attributes from a type's properties
 type CreateMutable<Type> = {
   -readonly [Property in keyof Type]: Type[Property];
@@ -2673,7 +2674,7 @@ type Concrete<Type> = {
 ><details>
 ><summary>e.g.</summary>
 >
->```typescript
+>```ts
 >type Type1 = number | boolean;
 >
 >type W<T> = T extends Type1 ? "yes" : string;
@@ -2732,7 +2733,7 @@ type Concrete<Type> = {
 ><details>
 ><summary>e.g.</summary>
 >
->```typescript
+>```ts
 >// 整句表示为：若`T`能赋值给 `(arg: infer P) => any`，则结果是`(arg: infer P) => any`类型中的参数`P`，否则返回为`T`
 >type ParamType<T> = T extends (arg: infer P) => any ? P : T;
 >
@@ -2748,7 +2749,7 @@ type Concrete<Type> = {
 >type AA = ParamType<string>; // string
 >```
 >
->```typescript
+>```ts
 >// 获取数组的项值类型
 >type ElementOfArray<ArrayType extends readonly unknown[]> = ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
 >```
@@ -2759,7 +2760,7 @@ type Concrete<Type> = {
 
 1. 元组
 
-    ```typescript
+    ```ts
     type A = [number, ...string[]]  // 元组第一项是number，后面项是string（后面可为空）
 
     const a: A = [1, 's']
@@ -2767,14 +2768,14 @@ type Concrete<Type> = {
     ```
 2. 元组 + 类型变量/泛型变量
 
-    ```typescript
+    ```ts
     type MyConcat<T extends any[], U extends any[]> = [...T, ...U]
 
     type result = MyConcat<[1, 2], [3, 4]>  // -> [1, 2, 3, 4]
     ```
 3. 元组 + 类型变量/泛型变量 + `infer`
 
-    ```typescript
+    ```ts
     // 数组首项匹配
     type FirstOfArray<T extends any[]> = T extends [infer L, ...infer R] ? L : never
     type result1 = FirstOfArray<[1, 2, 3]>   // -> 1
@@ -2804,7 +2805,7 @@ type Concrete<Type> = {
 ><details>
 ><summary>e.g.</summary>
 >
->```typescript
+>```ts
 >// .ts
 >namespace A1 {
 >  class B1 {}
@@ -2910,7 +2911,7 @@ type Concrete<Type> = {
         >支持：重载。
     3. 声明全局类：
 
-        ```typescript
+        ```ts
         declare class 类名 {
           属性名: 数据类型                // 没有()是属性
           方法名1(参数: 数据类型): 数据类型  // 有()是方法
@@ -2919,7 +2920,7 @@ type Concrete<Type> = {
         ```
     4. 声明全局枚举类型：
 
-        ```typescript
+        ```ts
         declare enum 变量名 {
           属性名
         }
@@ -2932,7 +2933,7 @@ type Concrete<Type> = {
 
         >`declare`关键字是可选的。
 
-        ```typescript
+        ```ts
         // 可加可不加 declare
         interface 名字 {
             属性名: 数据类型
@@ -2946,7 +2947,7 @@ type Concrete<Type> = {
 
         >暴露在最外层的声明会作为全局类型作用于整个项目中，应该尽可能少定义全局类型，因此最好将它们方法`namespace`中。
 
-        ```typescript
+        ```ts
         declare namespace 变量名 {
             变量和数据类型
         }
@@ -2955,7 +2956,7 @@ type Concrete<Type> = {
         - 命名空间内可以包括所有类型的声明，也可以包含`namespace`（嵌套）
     7. 声明模块（提供给`import/require`）：
 
-        ```typescript
+        ```ts
         declare module 模块名 {
           export var bar: number;
         }
@@ -2982,17 +2983,17 @@ type Concrete<Type> = {
         >
         >要定义全局的`window.a`
         >
-        >```typescript
+        >```ts
         >// 某.d.ts
         >interface Window {a: any;}
         >```
         >
-        >```typescript
+        >```ts
         >// 全局模块（没有import/export的文件）
         >interface Window {a: any;}
         >```
         >
-        >```typescript
+        >```ts
         >// 文件模块（有import/export的文件）
         >declare global {
         >  interface Window {a: any;}
@@ -3035,7 +3036,7 @@ type Concrete<Type> = {
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >class A {
     >  a() {}
     >}
@@ -3066,7 +3067,7 @@ type Concrete<Type> = {
     ><details>
     ><summary>e.g.</summary>
     >
-    >```typescript
+    >```ts
     >class A {
     >  a() {}
     >}
@@ -3144,10 +3145,28 @@ type Concrete<Type> = {
         ><details>
         ><summary>e.g.</summary>
         >
-        >```typescript
+        >```ts
         >let a: number = 1
         >a: string = String(a)      // 报错
         >let _a: string = String(a)
         >```
         ></details>
     2. 对于同名、后缀分别为`.js`和`.ts`的文件，引用时优先引用`.js`的文件
+
+### ts的优缺点
+1. 优点
+
+    1. 增加代码的可读性和可维护性，尤其针对 大型项目、与外部接口交互部分、发布给其他人使用的项目
+
+        1. 类型系统是最好的文档，大部分函数看类型定义即可；方便重构
+        2. 在编译阶段就发现大部分错误，避免在运行时试错
+        3. 代码可预测（变量指定类型就不能再修改类型）
+        3. 增强编辑器、IDE的功能，如：代码补全、接口提示、跳转到定义、重构、等
+    2. 渐进式采用、包容性高：.js文件可以直接改成.ts文件，类型报错可以通过any跳过
+    3. 社区支持、生态良好
+2. 缺点
+
+    1. 有学习成本
+    2. 开发成本大；为了避免any，可能需要去搜索DOM类型、React类型
+    3. 编译成JS需要时间（JS引擎大概率只支持JS，不支持TS）
+    - 避免用any，否则将丢失类型定义优势

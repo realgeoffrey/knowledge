@@ -46,17 +46,6 @@
     2. [响应式相关](./网站前端/HTML+CSS学习笔记/响应式相关.md)
     3. [弹性盒子（Flexbox）](./网站前端/HTML+CSS学习笔记/弹性盒子（Flexbox）.md)
     4. [实现具体业务](./网站前端/HTML+CSS学习笔记/实现具体业务.md)
-
-    - <details>
-
-        <summary>其他</summary>
-
-        1. 初始化模板
-
-            1. [cssReset.scss](./网站前端/初始化模板/cssReset.scss)
-            2. [init.html](./网站前端/初始化模板/init.html)
-        2. [SCSS使用](./网站前端/SCSS使用/README.md)
-        </details>
 4. [还原设计稿](./网站前端/还原设计稿/README.md)
 5. [代码调试相关](./网站前端/代码调试相关/README.md)
 6. 前端技术栈
@@ -139,6 +128,11 @@
 >2. [JS废弃代码](./网站前端/JS方法积累/废弃代码/README.md)
 >3. [原生JS宽高](./网站前端/JS学习笔记/原生JS宽高.md)
 >4. [gulp使用](./网站前端/gulp使用/README.md)
+>5. 初始化模板
+>
+>    1. [cssReset.scss](./网站前端/初始化模板/cssReset.scss)
+>    2. [init.html](./网站前端/初始化模板/init.html)
+>6. [SCSS使用](./网站前端/SCSS使用/README.md)
 ></details>
 
 ---

@@ -10,6 +10,7 @@
     1. [手写`Promise.resolve/reject/all/any/race/allSettled`](#手写promiseresolverejectallanyraceallsettled)
     1. [手写`Function.prototype.call/apply`](#手写functionprototypecallapply)
     1. [手写`Function.prototype.bind`](#手写functionprototypebind)
+    1. [手写`Array.prototype.reduce`](#手写arrayprototypereduce)
     1. [手写`JSON.stringify`](#手写jsonstringify)
 1. 功能
 
@@ -19,10 +20,12 @@
     1. [手写小数加法](#手写小数加法)
     1. [手写`loadScript`（类似webpack实现`import()`的JSONP+缓存）](#手写loadscript类似webpack实现import的jsonp缓存)
     1. [手写`loadScript`支持超时重试](#手写loadscript支持超时重试)
-    1. [手写发布订阅模式](#手写发布订阅模式)
 1. 模拟实现
 
     1. [实现一个Koa的洋葱模型](#实现一个koa的洋葱模型)
+    1. [实现`memo`](#实现memo)
+    1. [实现`EventEmitter`（不返回取消方法）](#实现eventemitter不返回取消方法)
+    1. [实现`EventEmitter`（返回取消方法）](#实现eventemitter返回取消方法)
 1. 代码题
 
     1. [解压字符串](#解压字符串)
@@ -31,10 +34,27 @@
     1. [任务队列链式调用和取消](#任务队列链式调用和取消)
     1. [HEX转换为RGBA](#hex转换为rgba)
     1. [n从1开始，每个操作可以对n加1或加倍，如果要使n是任意数，最少需要几个操作](#n从1开始每个操作可以对n加1或加倍如果要使n是任意数最少需要几个操作)
+    1. [实现`_.get(object, path, [defaultValue])`](#实现_getobject-path-defaultvalue)
+    1. [洗牌算法shuffle](#洗牌算法shuffle)
+    1. [对角线打印二维数组](#对角线打印二维数组)
+    1. [添加千位分隔符](#添加千位分隔符)
+1. react自定义Hook
+
+    1. [`useDebounce`（值）](#usedebounce值)
+    1. [`useTimeout`](#usetimeout)
+    1. [`useScroll`](#usescroll)
+    1. [`useClickOutside`](#useclickoutside)
+    1. [`useHover`（`useFocus`一样）](#usehoverusefocus一样)
+    1. [`useIsFirstRender`](#useisfirstrender)
+    1. [`usePrevious`](#useprevious)
+    1. [`useUpdateEffect`](#useupdateeffect)
+    1. [`useToggle`](#usetoggle)
+    1. [`useArray`](#usearray)
+    1. [`usePersistCallback`](#usepersistcallback)
 
 ---
 ### 手写`Object.create`
-```javascript
+```js
 function create(proto, propertiesObject) { // 不支持null
   function F() {}
 
@@ -49,7 +69,7 @@ function create(proto, propertiesObject) { // 不支持null
 ```
 
 ### 手写`instanceof`或`Object.prototype.isPrototypeOf`
-```javascript
+```js
 function myInstanceof(obj, constructor) {
   if (obj === null || (typeof obj !== "object" && typeof obj !== "function")) { return false; }
 
@@ -68,7 +88,7 @@ function myInstanceof(obj, constructor) {
 ```
 
 ### 手写`new`
-```javascript
+```js
 function myNew(constructor, ...args) {
   // 创建：原型是传入构造函数的 空对象
   const obj = Object.create(constructor.prototype); // 或：const obj = {}; obj.__proto__ = constructor.prototype;
@@ -85,7 +105,7 @@ function myNew(constructor, ...args) {
 ### 手写`Promise`、`Promise.prototype.then/catch/finally`
 >fixme: 未处理包含then属性的对象
 
-```javascript
+```js
 class MyPromise {
   // 状态值
   static PENDING = "pending";
@@ -197,7 +217,7 @@ class MyPromise {
 <details>
 <summary>包含<code>Promise.prototype.finally</code></summary>
 
-```javascript
+```js
 class MyPromise {
   // 状态值
   static PENDING = "pending";
@@ -366,8 +386,8 @@ class MyPromise {
 ### 手写`Promise.resolve/reject/all/any/race/allSettled`
 1. `Promise.resolve`
 
-    ```javascript
-    Promise.resolve = function (value) {
+    ```js
+    Promise.myResolve = function (value) {
       if (value instanceof Promise) {
         return value;
       }
@@ -378,8 +398,8 @@ class MyPromise {
     ```
 2. `Promise.reject`
 
-    ```javascript
-    Promise.reject = function (reason) {
+    ```js
+    Promise.myReject = function (reason) {
       return new Promise((resolve, reject) => {
         reject(reason);
       });
@@ -387,8 +407,8 @@ class MyPromise {
     ```
 3. `Promise.all`
 
-    ```javascript
-    Promise.all = function (iterable) {
+    ```js
+    Promise.myAll = function (iterable) {
       return new Promise((resolve, reject) => {
         if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
           return reject(new Error("不是可迭代对象"));
@@ -422,8 +442,8 @@ class MyPromise {
     ```
 4. `Promise.any`
 
-    ```javascript
-    Promise.any = function (iterable) {
+    ```js
+    Promise.myAny = function (iterable) {
       return new Promise((resolve, reject) => {
         if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
           return reject(new Error("不是可迭代对象"));
@@ -457,8 +477,8 @@ class MyPromise {
     ```
 5. `Promise.race`
 
-    ```javascript
-    Promise.race = function (iterable) {
+    ```js
+    Promise.myRace = function (iterable) {
       return new Promise((resolve, reject) => {
         if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
           return reject(new Error("不是可迭代对象"));
@@ -481,8 +501,8 @@ class MyPromise {
     ```
 6. `Promise.allSettled`
 
-    ```javascript
-    Promise.allSettled = function (iterable) {
+    ```js
+    Promise.myAllSettled = function (iterable) {
       return new Promise((resolve, reject) => {
         if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
           return reject(new Error("不是可迭代对象"));
@@ -521,7 +541,7 @@ class MyPromise {
 ### 手写`Function.prototype.call/apply`
 1. `Function.prototype.call`
 
-    ```javascript
+    ```js
     Function.prototype.myCall = function (context, ...args) {
       context = context || window; // 若传递undefined或null，则使用全局对象window（或globalThis）
 
@@ -535,7 +555,7 @@ class MyPromise {
     ```
 2. `Function.prototype.apply`
 
-    ```javascript
+    ```js
     Function.prototype.myApply = function (context, args) {
       context = context || window; // 若传递undefined或null，则使用全局对象window（或globalThis）
 
@@ -549,7 +569,7 @@ class MyPromise {
     ```
 
 ### 手写`Function.prototype.bind`
-```javascript
+```js
 Function.prototype.myBind = function (context, ...args) {
   const func = this; // 当前函数
 
@@ -572,8 +592,31 @@ Function.prototype.myBind = function (context, ...args) {
 };
 ```
 
-### 手写`JSON.stringify`
+### 手写`Array.prototype.reduce`
 ```javascript
+Array.prototype.myReduce = function (callback, current) {
+  if (typeof callback !== "function") { throw TypeError("undefined is not a function");}
+  if (this.length === 0 && arguments.length === 1) { throw TypeError("Reduce of empty array with no initial value");}
+
+  const arr = this;
+
+  // 第二个参数可选（有第二个参数则多一次执行回调）
+  if (current === undefined) {
+    current = arr[0];
+  } else {
+    current = callback(current, arr[0], 0, arr);
+  }
+
+  for (let i = 1; i < arr.length; i++) {
+    current = callback(current, arr[i], i, arr);
+  }
+
+  return current;
+};
+```
+
+### 手写`JSON.stringify`
+```js
 function stringify(data, weakmap = new WeakMap()) {
   // 处理带toJSON属性
   if (typeof data === "object" && data && typeof data.toJSON === "function") {
@@ -646,9 +689,7 @@ function stringify(data, weakmap = new WeakMap()) {
 <details>
 <summary>使用测试</summary>
 
-```javascript
-/* 使用测试 */
-/* 使用测试 */
+```js
 function l2() {}
 var l3 = function () {};
 var l4 = () => {};
@@ -701,8 +742,9 @@ console.log(stringify(obj));
 ```
 </details>
 
+---
 ### 手写深复制（深拷贝）
-```javascript
+```js
 function deepClone(obj, weakmap = new WeakMap()) {
   // 基本数据类型：`Undefined`、`Null`、`Boolean`、`Number`、`String`、`Symbol`、`BigInt`
   if (obj === null || (typeof obj !== "object" && typeof obj !== "function")) {
@@ -766,8 +808,7 @@ function deepClone(obj, weakmap = new WeakMap()) {
 <details>
 <summary>使用测试</summary>
 
-```javascript
-/* 使用测试 */
+```js
 function l2() {}
 var l3 = function () {};
 var l4 = () => {};
@@ -816,7 +857,7 @@ console.log(deepClone(obj));
 ### 手写柯里化
 1. 柯里化
 
-    ```javascript
+    ```js
     function curry(fn) {
       return function curried(...args) {
         // 实参个数达到原函数的形参个数，则直接执行原函数
@@ -834,7 +875,7 @@ console.log(deepClone(obj));
     ```
 2. 支持占位符的柯里化
 
-    ```javascript
+    ```js
     // 支持占位符
     function curry(fn, placeholder = curry.placeholder) {
       return function curried(...args) {
@@ -862,8 +903,7 @@ console.log(deepClone(obj));
     <details>
     <summary>使用测试</summary>
 
-    ```javascript
-    /* 使用测试 */
+    ```js
     const _ = curry.placeholder;
 
     const fn = curry(function (a, b, c, d, e) {
@@ -892,7 +932,7 @@ console.log(deepClone(obj));
 ### 手写防抖函数、节流函数
 1. 防抖函数
 
-    ```javascript
+    ```js
     function debounce(func, delay) {
       let timeoutId;
 
@@ -907,22 +947,59 @@ console.log(deepClone(obj));
     ```
 2. 节流函数
 
-    ```javascript
-    function throttle(fn, delay) {
-      let lastTime = 0;
+    1. 解法一
 
-      return function (...arg) {
-        let nowTime = Date.now();
-        if (nowTime - lastTime >= delay) {
-          fn.apply(this, arg);
-          lastTime = nowTime;
+        ```js
+        function throttle(func, wait) {
+          let waiting = false;
+          let lastArgs = null;
+
+          return function (...args) {
+            if (!waiting) {
+              func.apply(this, args);
+              waiting = true;
+
+              let timeout = () => {
+                setTimeout(() => {
+                  waiting = false;
+
+                  if (lastArgs) {
+                    func.apply(this, lastArgs);
+                    waiting = true;
+
+                    lastArgs = null;
+                    timeout();
+                  }
+                }, wait);
+              };
+
+              timeout();
+            } else {
+              lastArgs = args;
+            }
+          };
         }
-      };
-    }
-    ```
+        ```
+    2. 解法二
+
+        简化：第一次执行，之后需要在跨度时间结束后执行才有效，不记录失效期间的执行。
+
+        ```js
+        function throttle(fn, delay) {
+          let lastTime = 0;
+
+          return function (...arg) {
+            let nowTime = Date.now();
+            if (nowTime - lastTime >= delay) {
+              fn.apply(this, arg);
+              lastTime = nowTime;
+            }
+          };
+        }
+        ```
 
 ### 手写小数加法
-```javascript
+```js
 function decimalSum(...nums) {
   // 获取最大精度
   const precision = Math.max(
@@ -946,7 +1023,7 @@ function getPrecision(num) {
 ```
 
 ### 手写`loadScript`（类似webpack实现`import()`的JSONP+缓存）
-```javascript
+```js
 // 缓存已加载的脚本（以[加载地址src, Promise实例]存储）
 const loadedScripts = new Map();
 
@@ -986,7 +1063,7 @@ function loadScript(src) {
 
 >不能终止 JSONP动态加载的脚本 执行。
 
-```javascript
+```js
 // 缓存已加载的脚本（以[加载地址src, Promise实例]存储）
 const loadedScripts = new Map();
 
@@ -1055,7 +1132,7 @@ function loadScript(src, reTryTimes = 5, timeout = 1000) {
 </details>
 
 ### 手写`loadScript`支持超时重试
-```javascript
+```js
 const loadScript = async (modulePath, timeoutMs = 10000, retryTimes = 3) => {
   for (let i = 0; i < retryTimes; i++) {
     try {
@@ -1076,62 +1153,9 @@ const timeoutReject = (ms) => {
 };
 ```
 
-### 手写发布订阅模式
-```javascript
-class EventEmitter {
-  // 事件名: 回调列表
-  events = { /* eventName1: [callback1, ...] */ };
-
-  // 订阅事件
-  on(eventName, callback) {
-    if (!this.events[eventName]) {
-      this.events[eventName] = [];
-    }
-    this.events[eventName].push(callback);
-  }
-
-  // 订阅单次事件
-  one(eventName, callback) {
-    if (!this.events[eventName]) {
-      this.events[eventName] = [];
-    }
-
-    const onceCallback = (data) => {
-      callback(data);
-      this.off(eventName, onceCallback);
-    };
-    onceCallback.originCallback = callback; // 用于unsubscribe
-    this.events[eventName].push(onceCallback);
-  }
-
-  // 取消订阅事件
-  off(eventName, callback) {
-    if (!this.events[eventName]) {
-      return;
-    }
-
-    if (callback) {
-      this.events[eventName] = this.events[eventName].filter((cb) => {
-        return !(cb === callback || cb.originCallback === callback);    // .originCallback：one相关
-      });
-    } else {
-      this.events[eventName] = [];
-    }
-  }
-
-  // 发布事件
-  emit(eventName, data) {
-    if (!this.events[eventName]) {
-      return;
-    }
-
-    this.events[eventName].forEach((callback) => callback(data));
-  }
-}
-```
-
+---
 ### 实现一个Koa的洋葱模型
-```javascript
+```js
 class Koa {
   middlewares = [];
 
@@ -1165,7 +1189,7 @@ function compose(middlewares) { // 返回一个中间件（可以继续被当做
   // }
 
   return function (context, lastNext) {
-    // 创建指针（用于：保证一个中间件只能调用一次next）
+    // ②创建指针（用于：保证一个中间件只能调用一次next）
     let index = -1;
 
     function dispatch(i) {
@@ -1173,6 +1197,7 @@ function compose(middlewares) { // 返回一个中间件（可以继续被当做
       if (i <= index) { return Promise.reject(new Error("next() called multiple times"));}
       index = i;
 
+      // ①
       let fn = middlewares[i];
 
       // ③兼容（单次调用compose产生的）最后一个中间件继续调用next时
@@ -1200,8 +1225,7 @@ function compose(middlewares) { // 返回一个中间件（可以继续被当做
 <details>
 <summary>使用测试</summary>
 
-```javascript
-/* 使用测试 */
+```js
 const app = new Koa();
 
 function sleep(ms) {
@@ -1254,6 +1278,114 @@ app.listen(3001);
 ```
 </details>
 
+### 实现`memo`
+><https://bigfrontend.dev/zh/problem/implement-general-memoization-function>
+
+```js
+function memo(func, resolver) {
+  const cache = new Map();
+
+  return function (...props) {
+    const cacheKey = resolver ? resolver(...props) : props.join(",");
+
+    if (cache.has(cacheKey)) {
+      return cache.get(cacheKey);
+    }
+    const value = func.apply(this, props);
+    cache.set(cacheKey, value);
+    return value;
+  };
+}
+```
+
+### 实现`EventEmitter`（不返回取消方法）
+```js
+class EventEmitter {
+  // 事件名: 回调列表
+  events = { /* eventName1: [callback1, ...] */ };
+
+  // 订阅事件
+  on(eventName, callback) {
+    if (!this.events[eventName]) {
+      this.events[eventName] = [];
+    }
+    this.events[eventName].push(callback);
+  }
+
+  // 订阅单次事件
+  one(eventName, callback) {
+    if (!this.events[eventName]) {
+      this.events[eventName] = [];
+    }
+
+    const onceCallback = (...data) => {
+      callback(...data);
+      this.off(eventName, onceCallback);
+    };
+    onceCallback.originCallback = callback; // 用于unsubscribe
+    this.events[eventName].push(onceCallback);
+  }
+
+  // 取消订阅事件
+  off(eventName, callback) {
+    if (!this.events[eventName]) {
+      return;
+    }
+
+    if (callback) {
+      this.events[eventName] = this.events[eventName].filter((cb) => {
+        return !(cb === callback || cb.originCallback === callback);    // .originCallback：one相关
+      });
+    } else {
+      this.events[eventName] = [];
+    }
+  }
+
+  // 发布事件
+  emit(eventName, ...data) {
+    if (!this.events[eventName]) {
+      return;
+    }
+
+    this.events[eventName].forEach((callback) => callback(...data));
+  }
+}
+```
+
+### 实现`EventEmitter`（返回取消方法）
+><https://bigfrontend.dev/zh/problem/create-an-Event-Emitter>
+
+```js
+class EventEmitter {
+  events = {};
+
+  subscribe(eventName, callback) {
+    if (!this.events[eventName]) {
+      this.events[eventName] = new Map();
+    }
+
+    const key = Symbol();
+    this.events[eventName].set(key, callback);
+
+    return {
+      release: () => {
+        this.events[eventName].delete(key);
+      },
+    };
+  }
+
+  emit(eventName, ...args) {
+    if (!this.events[eventName]) {
+      return;
+    }
+    for (const callback of this.events[eventName].values()) {
+      callback(...args);
+    }
+  }
+}
+```
+
+---
 ### 解压字符串
 ><https://bigfrontend.dev/zh/problem/uncompress-string>
 
@@ -1271,7 +1403,7 @@ uncompress('3(ab2(c))') // 'abccabccabcc'
 
     栈保存嵌套的部分（有先进后出就用栈）。
 
-    ```javascript
+    ```js
     function uncompress(str) {
       // 遇见 "(" 就入栈，遇见 ")" 就出栈，栈可以解决嵌套问题
       const stack = [];
@@ -1310,7 +1442,7 @@ uncompress('3(ab2(c))') // 'abccabccabcc'
 
     正则匹配，递归处理非嵌套的部分。
 
-    ```javascript
+    ```js
     function uncompress(str) {
       // 仅解决非嵌套的
       const result = str.replace(
@@ -1326,7 +1458,7 @@ uncompress('3(ab2(c))') // 'abccabccabcc'
     ```
 
 ### 调度器任务并发（单任务插入）
-```javascript
+```js
 // 请实现一个调度器，这个调度器保证任务的并发数为2
 class Schedular {
   // add返回一个promise，add的promise根据task()的promise状态改变
@@ -1354,7 +1486,7 @@ schedular.add(task(50, 4)).then(res => console.log(res));
 
 1. 解法一
 
-    ```javascript
+    ```js
     class Schedular {
       tasks = []; // 待执行任务队列
       runningCount = 0; // 当前正在运行的任务数
@@ -1392,13 +1524,13 @@ schedular.add(task(50, 4)).then(res => console.log(res));
 ### 调度器任务并发（多任务插入）
 实现传入`(多个urls, 并行数量max)`，返回Promise实例，值包含每个urls按顺序请求后结果（请求方式无所谓，可以用`fetch`模拟）。
 
-```javascript
+```js
 batchFetch([n个url], 10).then((data)=>{ 按顺序n个url的结果 })
 ```
 
 1. 解法一
 
-    ```javascript
+    ```js
     function batchFetch(urls, max) {
       return new Promise((resolve) => {
         // 正在运行的任务数量
@@ -1444,8 +1576,7 @@ batchFetch([n个url], 10).then((data)=>{ 按顺序n个url的结果 })
     <details>
     <summary>使用测试</summary>
 
-    ```javascript
-    /* 使用测试 */
+    ```js
     // 注意：执行2次才返回Promise
     const task = (duration, order) => {
       return function () {
@@ -1490,7 +1621,7 @@ batchFetch([n个url], 10).then((data)=>{ 按顺序n个url的结果 })
 
 1. 解法一：
 
-    ```javascript
+    ```js
     class Task {
       taskQueue = []; // 存放执行队列
       timeoutId = 0; // 保证链式调用在最后一个调用后才真的执行（否则会一插入就执行，无法通过execute控制）
@@ -1565,8 +1696,7 @@ batchFetch([n个url], 10).then((data)=>{ 按顺序n个url的结果 })
     <details>
     <summary>使用测试</summary>
 
-    ```javascript
-    /* 使用测试 */
+    ```js
     var obj = new Task();
     arrange = obj.arrange.bind(obj);    // obj.arrange()可以直接用，但是为了题目就bind
 
@@ -1620,7 +1750,7 @@ hexToRgb('#fff')
 
 1. 解法一
 
-    ```javascript
+    ```js
     function hexToRGB(hex) {
       // 三、四、六、八值语法
       if (!/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(hex)) {
@@ -1649,7 +1779,7 @@ hexToRgb('#fff')
     ```
 2. 解法二
 
-    ```javascript
+    ```js
     function hexToRGB(hex) {
       // 三、四、六、八值语法
       if (!/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(hex)) {
@@ -1678,7 +1808,7 @@ hexToRgb('#fff')
 
     转化为二进制，1个"0"需要1步，1个"1"需要2步。
 
-    ```javascript
+    ```js
     function minimumStep(n = 1) {
       // 转化为二进制，那么从0b1到0b1xxx，左移1位是x2，+1是+1
       const binary = n.toString(2);
@@ -1701,7 +1831,7 @@ hexToRgb('#fff')
 
     动态规划。
 
-    ```javascript
+    ```js
     function minimumStep(n) {
       // dp[i]：到达数量i的最少步骤
       const dp = new Array(n + 1);
@@ -1718,3 +1848,493 @@ hexToRgb('#fff')
       return dp[n];
     }
     ```
+
+### 实现`_.get(object, path, [defaultValue])`
+><https://bigfrontend.dev/zh/problem/implement-lodash-get>
+
+```js
+function get(source, path, defaultValue = undefined) {
+  const props = Array.isArray(path)
+    ? path
+    : path.replaceAll("[", ".").replaceAll("]", "").split(".");
+
+  let result = source;
+  for (const key of props) {
+    if (Object.hasOwn(result, key)) {
+      result = result[key];
+    } else {
+      return defaultValue;
+    }
+  }
+
+  return result;
+}
+```
+
+### 洗牌算法shuffle
+```js
+function shuffle(arr) {
+  for (let i = 0, len = arr.length; i < len; i++) {
+    // i位置的数和[i, len-1]位置的数调换，保证每个数在任一位置的概率相同
+    const swapIndex = Math.floor(Math.random() * (len - i) + i);
+
+    // 元素交换
+    [arr[swapIndex], arr[i]] = [arr[i], arr[swapIndex]];
+  }
+}
+```
+
+### 对角线打印二维数组
+><https://blog.csdn.net/qiyei2009/article/details/80295930>
+
+```js
+// 从右向左
+function rtl(arr) {
+  const result = [];
+
+  const row = arr[0].length; // 行长度
+  const column = arr.length; // 列长度
+
+  // i、_i：行下标；j：列下标
+  for (let i = row - 1; i >= 0; i--) {
+    for (let j = 0, _i = i; j <= column - 1 && _i <= row - 1; j++, _i++) {
+      result.push(arr[j][_i]);
+    }
+  }
+
+  // i：行下标；j、_j：列下标
+  for (let j = 1; j <= column - 1; j++) {
+    for (let i = 0, _j = j; i <= row - 1 && _j <= column - 1; i++, _j++) {
+      result.push(arr[_j][i]);
+    }
+  }
+
+  return result;
+}
+```
+
+```js
+// 从左向右
+function ltr(arr) {
+  const result = [];
+
+  const row = arr[0].length; // 行长度
+  const column = arr.length; // 列长度
+
+  // i、_i：行下标；j：列下标
+  for (let i = 0; i <= row - 1; i++) {
+    for (let j = 0, _i = i; j <= column - 1 && _i >= 0; j++, _i--) {
+      result.push(arr[j][_i]);
+    }
+  }
+
+  // i：行下标；j、_j：列下标
+  for (let j = 1; j <= column - 1; j++) {
+    for (let i = row - 1, _j = j; i >= 0 && _j <= column - 1; i--, _j++) {
+      result.push(arr[_j][i]);
+    }
+  }
+
+  return result;
+}
+```
+
+<details>
+<summary>使用测试</summary>
+
+```js
+const arr = [
+  [1, 2, 3, 4, 5 ],
+  [6, 7, 8, 9, 10],
+  [11,12,13,14,15]
+];
+
+console.log(rtl(arr), [5, 4, 10, 3, 9, 15, 2, 8, 14, 1, 7, 13, 6, 12, 11]);
+console.log(ltr(arr), [1, 2, 6, 3, 7, 11, 4, 8, 12, 5, 9, 13, 10, 14, 15]);
+```
+</details>
+
+>来回变化顺序遍历：[对角线遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/LeetCode记录/README.md#对角线遍历)。
+
+### 添加千位分隔符
+><https://bigfrontend.dev/zh/problem/add-comma-to-number>
+
+1. 解法一
+
+    正则匹配替换。
+
+    ```js
+    function addComma(num) {
+      let str = num.toString();
+
+      // 开头(符号 n个数字)(3个数字)
+      const reg = /^(-?\+?\d+)(\d{3})/;
+
+      // 多次匹配
+      while (reg.test(str)) {
+        str = str.replace(reg, "$1,$2");
+      }
+
+      return str;
+    }
+    ```
+2. 解法二
+
+    字符串分割：符号、整数部分、小数部分。
+
+    ```js
+    function addComma(num) {
+      let numStr = num.toString();
+
+      // 符号
+      let symbol = "";
+      if (numStr[0] === "-" || numStr[0] === "+") {
+        symbol = numStr[0];
+        numStr = numStr.slice(1);
+      }
+
+      // 小数点后
+      let fraction = numStr.split(".")[1] ?? "";
+      numStr = numStr.split(".")[0];
+
+      // 整数处理
+      let integer = "";
+      while (numStr.length > 3) {
+        integer = "," + numStr.slice(-3) + integer;
+        numStr = numStr.slice(0, numStr.length - 3);
+      }
+      if (numStr) {
+        integer = numStr + integer;
+      }
+
+      return symbol + integer + (fraction ? `.${fraction}` : "");
+    }
+    ```
+
+---
+### `useDebounce`（值）
+><https://bigfrontend.dev/zh/react/useDebounce>
+
+```ts
+import { useEffect, useState } from "react";
+
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+```
+
+### `useTimeout`
+><https://bigfrontend.dev/zh/react/usetimeout>
+
+1. reset the timer if delay changes
+2. DO NOT reset the timer if only callback changes
+
+```ts
+import { useEffect, useRef } from "react";
+
+export function useTimeout(callback: (...props: any[]) => any, delay: number) {
+  const callbackRef = useRef(callback);
+  callbackRef.current = callback;
+
+  useEffect(() => {
+    const id = setTimeout(() => callbackRef.current(), delay);
+    return () => clearTimeout(id);
+  }, [delay]);
+}
+```
+
+### `useScroll`
+滚动后更新x、y。
+
+```js
+import { useEffect, useState } from "react";
+
+export function useScroll(scrollRef) {
+  const [pos, setPos] = useState([0, 0]);
+
+  useEffect(() => {
+    const dom = scrollRef.current;
+
+    function handleScroll() {
+      setPos([dom.scrollLeft, dom.scrollTop]);
+    }
+
+    dom?.addEventListener("scroll", handleScroll, false);
+    return () => {
+      dom?.removeEventListener("scroll", handleScroll, false);
+    };
+  }, [scrollRef, scrollRef.current]);
+
+  return pos;
+}
+```
+
+### `useClickOutside`
+><https://bigfrontend.dev/zh/react/useclickoutside>
+
+```js
+import { useEffect, useRef } from "react";
+
+export function useClickOutside(callback) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const click = ({ target }) => {
+      if (target && ref.current && !ref.current.contains(target)) {
+        callback();
+      }
+    };
+
+    document.addEventListener("mousedown", click);
+
+    return () => {
+      document.removeEventListener("mousedown", click);
+    };
+  }, [callback]);
+
+  return ref;
+}
+```
+
+### `useHover`（`useFocus`一样）
+><https://bigfrontend.dev/zh/react/useHover>
+
+```ts
+import { Ref, useCallback, useRef, useState } from "react";
+
+export function useHover<T extends HTMLElement>(): [Ref<T>, boolean] {
+  const [isHovered, setIsHovered] = useState(false);
+  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
+  const handleMouseLeave = useCallback(() => setIsHovered(false), []);
+
+  const ref = useRef<T>();
+  const callbackRef = useCallback(
+    (node: T) => {
+      if (ref.current) {
+        ref.current.removeEventListener("mouseenter", handleMouseEnter);
+        ref.current.removeEventListener("mouseleave", handleMouseLeave);
+      }
+
+      ref.current = node;
+
+      if (ref.current) {
+        ref.current.addEventListener("mouseenter", handleMouseEnter);
+        ref.current.addEventListener("mouseleave", handleMouseLeave);
+      }
+    },
+    [handleMouseEnter, handleMouseLeave]
+  );
+
+  return [callbackRef, isHovered];
+}
+```
+
+<details>
+<summary>其他解法</summary>
+
+```ts
+import { Ref, useEffect, useRef, useState } from "react";
+
+export function useHover<T extends HTMLElement>(): [ Ref<T | undefined>, boolean] {
+  const ref = useRef<T>();
+  const [isHovering, setHovering] = useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+
+    const setTrue = () => {
+      setHovering(true)
+    };
+    const setFalse = () => {
+      setHovering(false)
+    };
+
+    element?.addEventListener("mouseenter", setTrue);
+    element?.addEventListener("mouseleave", setFalse);
+
+    return () => {
+      // setHovering(false);
+      element?.removeEventListener("mouseenter", setTrue);
+      element?.removeEventListener("mouseleave", setFalse);
+    };
+  }, [ref.current]); // 会执行2次：一次初始化ref.current===''、一次引用赋值ref.current===dom，但函数体执行时ref.current大概率都等于dom，因此会有些问题
+  return [ref, isHovering];
+}
+```
+</details>
+
+### `useIsFirstRender`
+><https://bigfrontend.dev/zh/react/useIsFirstRender>
+
+```ts
+import { useEffect, useRef } from "react";
+
+export function useIsFirstRender(): boolean {
+  const isFirst = useRef(true);
+
+  useEffect(() => {
+    isFirst.current = false;
+  }, []);
+
+  return isFirst.current;
+}
+```
+
+<details>
+<summary>其他解法</summary>
+
+```ts
+import { useRef } from "react";
+
+export function useIsFirstRender(): boolean {
+  const isFirstRender = useRef(true);
+
+  if (isFirstRender.current) {
+    isFirstRender.current = false;
+    return true;
+  }
+
+  return false;
+}
+```
+</details>
+
+### `usePrevious`
+><https://bigfrontend.dev/zh/react/usePrevious>
+
+输出浏览器渲染前的值。
+
+```ts
+import { useEffect, useRef } from "react";
+
+export function usePrevious<T>(state: T): T | undefined {
+  const ref = useRef<T>();
+
+  useEffect(() => {
+    ref.current = state;
+  });
+
+  return ref.current;
+}
+```
+
+### `useUpdateEffect`
+><https://bigfrontend.dev/zh/react/useUpdateEffect>
+
+实现：与`useEffect`类似，但跳过第一次渲染。
+
+```ts
+import { DependencyList, EffectCallback, useEffect, useRef } from "react";
+
+export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
+  const isFirstRender = useRef(true);
+
+  const cb = useRef(effect);
+
+  useEffect(() => {
+    cb.current = effect;
+  }, [effect]);
+
+  useEffect(() => {
+    let cleanUpCallback: ReturnType<typeof effect>;
+
+    if (!isFirstRender.current) {
+      cleanUpCallback = cb.current();
+    } else {
+      isFirstRender.current = false;
+    }
+
+    return () => {
+      cleanUpCallback && cleanUpCallback();
+    };
+  }, deps);
+}
+```
+
+### `useToggle`
+><https://bigfrontend.dev/zh/react/useToggle>
+
+```ts
+import { useReducer } from "react";
+
+export function useToggle(on?: boolean): [boolean, () => void] {
+  const [onState, toggle] = useReducer((state) => !state, !!on);
+
+  return [onState, toggle];
+}
+```
+
+### `useArray`
+><https://bigfrontend.dev/zh/react/useArray>
+
+```ts
+import { useCallback, useMemo, useState } from "react";
+
+type UseArrayActions<T> = {
+  value: T[];
+  push: (item: T) => T;
+  removeByIndex: (index: number) => void;
+};
+
+export function useArray<T>(initialValue: T[]): UseArrayActions<T> {
+  const [value, setValue] = useState<T[]>(initialValue);
+
+  const push = useCallback((item: T): T => {
+    setValue((prev) => [...prev, item]);
+    return item;
+  }, []);
+  const removeByIndex = useCallback((index: number) => {
+    setValue((prev) => {
+      const copy = prev.slice();
+      copy.splice(index, 1);
+      return copy;
+    });
+  }, []);
+
+  return useMemo(
+    () => ({ value, push, removeByIndex }),
+    [value, push, removeByIndex]
+  );
+}
+```
+
+### `usePersistCallback`
+```ts
+import { useCallback, useRef } from "react";
+
+// ①返回一个固定不变化的函数，②调用usePersistCallback传入的回调函数内部的所有变量都是实时的（③不需要依赖项），④回调函数可以引用自己
+export function usePersistCallback<T extends (...args: any[]) => any>(rawFunc: T) {
+  const func = useRef(rawFunc);
+
+  func.current = rawFunc;
+
+  return useCallback((...args: Parameters<T>):ReturnType<T> => {
+    return func.current(...args);
+  }, []);
+}
+```
+
+<details>
+<summary>使用测试</summary>
+
+```ts
+const func1 = usePersistCallback((a: string, b: number) => {    // func1是固定不变化的变量
+  // 可以使用任何变量，每次都会用最新值（不需要依赖项）
+  // （最重要的：）这里内部引用`func1()`，每一次调用的变量都用最新值
+}); // 方便针对：依赖变量a触发执行的内容，包含除了a之外的变量也必须是当前最新值
+
+func1('', 1)    // 任意位置调用
+```
+</details>

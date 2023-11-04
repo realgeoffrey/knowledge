@@ -14,14 +14,14 @@
 
     1. 字面量
 
-        ```javascript
+        ```js
         /\\/gimuy   // 对`(` `)` `[` `]` `{` `}` `\` `/` `^` `$` `|` `?` `*` `+` `.` 进行转义（添加`\`）
         ```
 
         加载JS脚本后就编译（compilation），更好的性能。
     2. 构造函数
 
-        ```javascript
+        ```js
         // 第一个参数为正则表达式字面量，需要转义特殊字符
         // 对`(` `)` `[` `]` `{` `}` `\` `/` `^` `$` `|` `?` `*` `+` `.` 进行转义（添加`\`）
         new RegExp(/\\/, 'gimuy')   // /\\/gimuy
@@ -234,7 +234,7 @@
             <details>
             <summary>e.g.</summary>
 
-            ```javascript
+            ```js
             /\w/g.source === '\\w';                  // true
             new RegExp('\\w', 'g').source === '\\w'; // true
             ```

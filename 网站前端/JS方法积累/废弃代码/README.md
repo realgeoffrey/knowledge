@@ -42,7 +42,7 @@
 ## 原生JS方法
 
 ### *原生JS*格式化日期
-```typescript
+```ts
 // 时间戳 -> yyyy.MM.dd
 export function formatTimestamp(timestamp: number | string): string {
   const date = new Date(timestamp);
@@ -56,7 +56,7 @@ export function formatTimestamp(timestamp: number | string): string {
 formatTimestamp(new Date("2020/09/09").getTime())
 ```
 
-```javascript
+```js
 var format = {
   date: function (dateObj, fmt) {    /* 格式化日期 */
     var o = {
@@ -105,7 +105,7 @@ var a = format.date(new Date(), 'yyyy-MM-dd HH:mm:ss S毫秒 EEE 季度q');
 >可以使用[moment](https://github.com/moment/moment/)（或[dayjs](https://github.com/iamkun/dayjs)、[date-fns](https://github.com/date-fns/date-fns)）格式化时间，完全替代。
 
 ### *原生JS*获取年龄
-```javascript
+```js
 /**
  * 获取年龄
  * @param {String|Number} birthday - 年月日（8位，如：'19900220'或19900220） 或 空字符串
@@ -146,7 +146,7 @@ function getAge (birthday) {
 ### *原生JS*倒计时显示
 1. 统一输出
 
-    ```javascript
+    ```js
     /**
      * 显示倒计时，统一输出
      * @constructor
@@ -271,7 +271,7 @@ function getAge (birthday) {
     ```
 2. 分开输出
 
-    ```javascript
+    ```js
     /**
      * 显示倒计时，单独输出每一个位数（秒个位、秒十位、分个位、分十位、时个位、时十位、天）
      * @constructor
@@ -400,7 +400,7 @@ function getAge (birthday) {
     [react-time-countdown](https://github.com/realgeoffrey/react-time-countdown)
 
 ### *原生JS*多异步返回后才执行总回调函数（利用jQuery的`$.ajax`）
-```javascript
+```js
 /**
  * 异步函数都成功返回后，执行func
  * @param {Function} func
@@ -451,7 +451,7 @@ function multiCallback(func, url) {
 >2. 可以使用jQuery的Deferred对象`$.when($.ajax()...).done(成功后方法)`，完全替代。
 
 ### *原生JS*对象合二为一（改变第一个参数）
-```javascript
+```js
 function extend(target, options) {
     var copy, name;
 
@@ -475,7 +475,7 @@ function extend(target, options) {
 >3. 可以使用jQuery的`$.extend(对象1, 对象2)`，完全替代。
 
 ### *原生JS*通过类名获取DOM
-```javascript
+```js
 /**
  * 通过类名获取一组元素
  * @param {String} className - 类名
@@ -525,7 +525,7 @@ function getElementsByClassName(className, parentDom) {
 ### *原生JS*操作cookie
 >参考：[MDN:cookie](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie#一个小框架：一个完整支持unicode的cookie读取写入器)。
 
-```javascript
+```js
 var cookieFuc = {
 
     /**
@@ -659,7 +659,7 @@ var cookieFuc = {
 >可以使用[js-cookie](https://github.com/js-cookie/js-cookie)，完全替代。
 
 ### *原生JS*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
-```javascript
+```js
 /**
  * 滚动到x、y轴指定位置
  * @param {Number} endX - 到达x轴像素
@@ -704,7 +704,7 @@ function animateTo(endX, endY, time) {
 
     1. 普通版：
 
-        ```javascript
+        ```js
         var OneConstructor = function () {
             /* 私有的内容 */
             var _para = {a: '私有的变量_para'},
@@ -735,7 +735,7 @@ function animateTo(endX, endY, time) {
         ```
     2. 修改构造函数的原型对象（所有实例都共享）：
 
-        ```javascript
+        ```js
         var OneConstructor = (function () {
             /* 私有的内容 */
             var _para = {a: '私有的变量_para'},
@@ -789,7 +789,7 @@ function animateTo(endX, endY, time) {
         ```
 2. 模块模式（单例模式+私有变量和特权方法）
 
-    ```javascript
+    ```js
     var singletonObj = (function () {
         /* 私有变量和私有方法，无法直接访问，只能由return的对象字面量访问 */
         var _para = {a: '私有变量'},
@@ -817,7 +817,7 @@ function animateTo(endX, endY, time) {
     }());
     ```
     >单例模式：
-    >```javascript
+    >```js
     >var singletonObj = {
     >   para: {},
     >   func: function () {}
@@ -830,7 +830,7 @@ function animateTo(endX, endY, time) {
 ### *原生JS*`requestAnimationFrame`和`cancelAnimationFrame`的Polyfill
 >来自：[rAF.js](https://gist.github.com/paulirish/1579671)。
 
-```javascript
+```js
 (function () {
     var lastTime = 0,
         vendors = ['ms', 'moz', 'webkit', 'o'],
@@ -864,7 +864,7 @@ function animateTo(endX, endY, time) {
 ```
 
 ### *原生JS*`Date.now`的Polyfill
-```javascript
+```js
 if (typeof Date.now !== 'function') {
     Date.now = function () {
         return new Date().getTime();
@@ -876,7 +876,7 @@ if (typeof Date.now !== 'function') {
 ### *原生JS*`Array.isArray`的Polyfill
 >来自：[MDN:Array.isArray](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray#Polyfill)。
 
-```javascript
+```js
 if (!Array.isArray) {
     Array.isArray = function (arg) {
         return Object.prototype.toString.call(arg) === '[object Array]';
@@ -887,7 +887,7 @@ if (!Array.isArray) {
 ### *原生JS*`Array.prototype.map`的Polyfill
 >来自：[MDN:Array.prototype.map](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map#Compatibility)。
 
-```javascript
+```js
 if (!Array.prototype.map) {
     Array.prototype.map = function (callback, thisArg) {
         var T, A, k;
@@ -935,7 +935,7 @@ if (!Array.prototype.map) {
 ### *原生JS*`Function.prototype.bind`的Polyfill
 >来自：[MDN:Function.prototype.bind](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind#Compatibility)。
 
-```javascript
+```js
 if (!Function.prototype.bind) {
     Function.prototype.bind = function (oThis) {
         if (typeof this !== 'function') {
@@ -964,7 +964,7 @@ if (!Function.prototype.bind) {
 ### *原生JS*`String.prototype.trim`的Polyfill
 >来自：[MDN:String.prototype.trim](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/Trim#兼容旧环境)。
 
-```javascript
+```js
 if (!String.prototype.trim) {
     String.prototype.trim = function () {
         return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
@@ -975,7 +975,7 @@ if (!String.prototype.trim) {
 ### *原生JS*`String.prototype.repeat`的Polyfill
 >来自：[MDN:String.prototype.repeat](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/repeat#填充)。
 
-```javascript
+```js
 if (!String.prototype.repeat) {
   String.prototype.repeat = function (count) {
     'use strict';
@@ -1021,7 +1021,7 @@ if (!String.prototype.repeat) {
 ### *原生JS*`Number.isNaN`的Polyfill
 >来自：[MDN:Number.isNaN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN#Polyfill)。
 
-```javascript
+```js
 Number.isNaN = Number.isNaN || function (value) {
   return typeof value === 'number' && isNaN(value);
 };
@@ -1030,7 +1030,7 @@ Number.isNaN = Number.isNaN || function (value) {
 ### *原生JS*`Number.isFinite`的Polyfill
 >来自：[MDN:Number.isFinite](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite#Polyfill)。
 
-```javascript
+```js
 Number.isFinite = Number.isFinite || function (value) {
   return typeof value === 'number' && isFinite(value);
 };
@@ -1039,7 +1039,7 @@ Number.isFinite = Number.isFinite || function (value) {
 ### *原生JS*`Number.isInteger`的Polyfill
 >来自：[MDN:Number.isInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill)。
 
-```javascript
+```js
 Number.isInteger = Number.isInteger || function (value) {
   return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
 };
@@ -1048,7 +1048,7 @@ Number.isInteger = Number.isInteger || function (value) {
 ### *原生JS*`Number.isSafeInteger`的Polyfill
 >来自：[MDN:Number.isSafeInteger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/isSafeInteger#Polyfill)。
 
-```javascript
+```js
 Number.isSafeInteger = Number.isSafeInteger || function (value) {
   return Number.isInteger(value) && Math.abs(value) <= Number.MAX_SAFE_INTEGER;
 };

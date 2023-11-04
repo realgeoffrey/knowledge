@@ -176,7 +176,7 @@
             ><details>
             ><summary>e.g.</summary>
             >
-            >```javascript
+            >```js
             >/* bad：强制同步布局，可能产生布局抖动 */
             >dom.forEach(function (elem) {
             >    if (window.scrollY < 200) { // 计算读取layout
@@ -809,7 +809,7 @@
 
         <summary>处理函数（jQuery）</summary>
 
-        ```javascript
+        ```js
         $(输入框).on('change', function () {
             const $this = $(this);
             let val = $this.val();
@@ -1203,7 +1203,7 @@
     ><details>
     ><summary>e.g.</summary>
     >
-    >```javascript
+    >```js
     >var mql = window.matchMedia('(prefers-color-scheme: dark)') // 深色方案
     >
     >mql.addEventListener('change', function () {

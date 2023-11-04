@@ -46,6 +46,7 @@
 
     1. [获取位置信息](#获取位置信息)
     1. [节点与视口距离关系](#节点与视口距离关系)
+    1. [节点是否在首屏](#节点是否在首屏)
     1. [判断滚动定位](#判断滚动定位)
     1. [进行文档滚动](#进行文档滚动)
     1. [DOM相对位置](#dom相对位置)
@@ -73,6 +74,8 @@
         1. `length`：希望接收的命名参数个数（计数到`默认参数`或`剩余参数`之前的形参）
         2. `name`：函数名
         3. `prototype`：（函数独有）指向函数的原型对象
+
+            箭头函数、`bind`生成的函数，没有 ~~`prototype`~~。
     2. ES6不推荐使用（部分情况下导致报错）：
 
         1. 函数体内的`arguments.callee`是一个指针：其指向拥有`arguments`对象的函数（函数自身）。
@@ -116,7 +119,7 @@
     >
     >e.g.
     >
-    > ```javascript
+    > ```js
     > var func1 = function func2() { // 其中函数名`func2`只能在函数体内部使用。
     >    console.log(typeof func1);  // => function
     >    console.log(typeof func2);  // => function
@@ -138,7 +141,7 @@
 
         <summary>若构造函数返回值不是这个构造函数的实例时，则<code>new 构造函数() instanceof 构造函数 === false</code></summary>
 
-        ```javascript
+        ```js
         class Foo {
           constructor () {
             return Object.create(null)
@@ -192,7 +195,7 @@
             ><details>
             ><summary>e.g.</summary>
             >
-            >```javascript
+            >```js
             >function f1(y1 = x1) {     // 形成短暂的单独作用域，x1没有定义，向父级作用域取值，取不到则报错
             >  let x1 = 'x1'
             >  console.log(y1)
@@ -233,7 +236,7 @@
 
         可选的参数最好设计成对象形式，方便将来扩展。
 
-        ```javascript
+        ```js
         // 方便扩展
         function func1 (必填1, 必填2, { 可选1 = '默认值1' } = {}) {}
         function func2 ({ 必填1, 必填2, 可选1 = '默认值1' } = {}) {}
@@ -258,7 +261,7 @@
         一种在第一次调用时初始化并替换自身的函数。这种技术通常用于优化那些根据特定条件执行不同逻辑的函数，特别是当这些条件在函数第一次调用时就已经确定的情况下。
     4. 仅执行一次函数
 
-        ```javascript
+        ```js
         // e.g.
         function a(func) {
           let called = false;   // 利用闭包
@@ -299,7 +302,7 @@
         <details>
         <summary>e.g. 词法作用域</summary>
 
-        ```javascript
+        ```js
         function foo () {
           console.log(a)
         }
@@ -316,6 +319,97 @@
         // 其他语言是动态作用域的流程：执行 foo 函数，依然是从 foo 函数内部查找是否有局部变量 value。如果没有，就从调用函数的作用域，也就是 bar 函数内部查找 value 变量，所以结果会打印 2。
         ```
         </details>
+
+        回调函数里的变量，也满足词法作用域：声明函数时，变量处在哪一个函数作用域（或块级作用域）唯一决定。
+    5. 声明
+
+        >在[JS的预编译](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#js的预编译)阶段进行提升（hoisting）。
+
+        0. [`let`、`const`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#letconst)
+        1. 变量声明（`var`）
+
+            无论语句在何处，无论是否会真正执行到，所有的`var`语句的**声明**都提升到作用域（函数体内或全局）顶部执行，但具体**赋值**不会被提前。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```js
+            >(function () {
+            >    console.log(a);    // undefined
+            >    var a = 2;
+            >    console.log(a);    // 2
+            >})();
+            >
+            >// 等价于：
+            >(function () {
+            >    var a;
+            >    console.log(a);    // undefined
+            >    a = 2;
+            >    console.log(a);    // 2
+            >})();
+            >```
+            ></details>
+
+            1. 声明变量是所在上下文环境的不可配置属性；非声明变量是可配置的。
+            2. 相同作用域中，对同一个变量进行多次声明，则忽略第一次之后的声明（会执行变量赋值）。
+
+            >建议：总是把所有变量声明都放在函数顶部，而不是散落在各个角落。
+        2. 函数声明
+
+            1. 也会被JS引擎提升到当前执行的作用域顶部声明（函数声明就等同于赋值），因此代码中函数的调用可以出现在函数声明之前。
+            2. 函数声明不应当出现在~~语句块~~内（如：条件语句），语句块的函数也会提前声明，导致语义不清容易出错。
+        3. 函数表达式（Function expressions）声明
+
+            必须先声明：`var a = function () {...};`才可以使用，声明会被提前，但赋值不会被提前。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```js
+            >foo() // TypeError: foo is not a function
+            >bar() // ReferenceError: bar is not defined
+            >
+            >var foo = function bar () {}
+            >```
+            ></details>
+        4. 同名的变量声明和函数声明（不是函数表达式）
+
+            同时声明的情况下（顺序不影响结果）：
+
+            1. 变量仅声明不赋值：被赋值为函数。
+            2. 变量赋值：被赋值为变量。
+
+            - 原因：
+
+                1. 函数、变量都在编译时提升，变量的赋值在运行时进行，函数的声明等同于赋值。
+
+                    因此：所有函数声明会提升到所有变量声明赋值之前。
+                2. 可以重复声明，重复声明的变量`var`被忽略，重复声明的函数`function`会覆盖之前同名的函数声明。
+
+            ><details>
+            ><summary>e.g.</summary>
+            >
+            >```js
+            >var a1 = 1;
+            >function a1() {}
+            >console.log(a1);    // 1
+            >
+            >function b2() {}
+            >var b2 = 1;
+            >console.log(b2);    // 1
+            >
+            >var c3;
+            >function c3() {}
+            >console.log(c3);    // function
+            >
+            >function d4() {}
+            >var d4;
+            >console.log(d4);    // function
+            >```
+            ></details>
+
+        >建议：先声明再使用；把函数声明紧接着放在变量声明之后。
+
     - 变量命名规范（包含：方法名、类名等所有变量名）
 
         1. 只能由`字母`、`数字`、`_`、`$`，不能~~以数字开头~~
@@ -331,6 +425,8 @@
         3. 区分大小写
         >一般推荐的多个单词隔断方式：小驼峰、大驼峰；（表示常数：）全大写+单词用`_`分割。
 2. `this`（函数调用方式）
+
+    >Node.js的`this`指向全局变量的情况不太一样。
 
     1. 非箭头函数
 
@@ -371,72 +467,87 @@
         <details>
         <summary>e.g.</summary>
 
-        ```javascript
-        var x = 'global'
+        ```js
+        var x = "global";
 
-        function windowTest () {
-          console.log(this.x + '|' + _test() + '|' + (function () {return this.x}()))
+        function windowTest() {
+          console.log(this.x);
+          console.log(_test());
+          console.log(
+            (function () {
+              return this.x;
+            })(),
+          );
 
-          function _test () {
-            return this.x
+          function _test() {
+            return this.x;
           }
         }
 
         /* window：方法没有对象调用（直接函数调用、立即调用的函数表达式，且与作用域无关） */
-        windowTest()                // => global|global|global
-
+        windowTest(); // => global => global => global
+        console.log("------------------");
         var obj1 = {
           x: 1,
           test1: function () {
-            var that = this
+            var that = this;
 
             return function () {
-
-              console.log(this.x + '|' + that.x)
-            }
+              console.log(this.x);
+              console.log(that.x);
+            };
           },
           test2: function () {
-            console.log(this.x)
-          }
-        }
-        ;(obj1.test1()())           // => global|1
+            console.log(this.x);
+          },
+        };
+        obj1.test1()(); // => global => 1
+        console.log("------------------");
 
-        var { test1 } = obj1
-        ;(test1()())                // => global|global
-        setTimeout(obj1.test1(), 0) // => global|1
-        setTimeout(obj1.test2, 0)   // => global
+        var { test1 } = obj1;
+        test1()(); // => global|global
+        console.log("------------------");
 
+        setTimeout(obj1.test1(), 0); // => global => 1
+        setTimeout(obj1.test2, 0); // => global
 
         /* 上级对象：函数作为某个对象的方法调用 */
-        var obj2 = {}
-        obj2.x = 2
-        obj2.func = windowTest
-        obj2.func()                 // => 2|global|global
-
+        var obj2 = {};
+        obj2.x = 2;
+        obj2.func = windowTest;
+        obj2.func(); // => 2 => global => global
+        console.log("------------------");
 
         /* 新实例对象：构造函数 */
-        function Test () {
-          this.x = 3
-          console.log(this.x + '|' + _test() + '|' + (function () {return this.x}()))
+        function Test() {
+          this.x = 3;
+          console.log(this.x);
+          console.log(_test());
+          console.log(
+            (function () {
+              return this.x;
+            })(),
+          );
 
-          function _test () {
-            return this.x
+          function _test() {
+            return this.x;
           }
         }
 
-        var obj3 = new Test()       // => 3|global|global
-
+        var obj3 = new Test(); // => 3 => global => global
+        console.log("------------------");
 
         /* 传入的指定对象：apply或call调用 */
-        var obj4 = { x: 4 }
-        obj2.func.call(obj4)        // => 4|global|global
+        var obj4 = { x: 4 };
+        obj2.func.call(obj4); // => 4 => global => global
+        console.log("------------------");
         ```
         </details>
 
         ><details>
         ><summary>某些挂在<code>window</code>下的方法，内部实现有使用到<code>this</code>，且<code>this</code>需要指向特殊对象（如：必须指向<code>window</code>或<code>null</code>），因此当新建对象指向某方法时，注意this。</summary>
         >
-        >```javascript
+        >```js
         >// e.g.
         >const a = {
         >  b: window.open
@@ -456,7 +567,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```javascript
+        >```js
         >var a = {
         >  foo: () => { // 箭头函数
         >    return () => {
@@ -505,6 +616,54 @@
         >```
         ></details>
 
+    - 回调函数里的`this`
+
+        1. 回调函数是非箭头函数：取决于回调函数在代码实现逻辑里如何被调用。
+
+            大部分是直接函数调用，如：`setTimeout(回调)`，回调内的this指向全局对象。
+        2. 回调函数是箭头函数：与箭头函数一致。
+
+<details>
+<summary>e.g.</summary>
+
+```js
+function F() {
+  this.func = function () {
+    console.log("1");
+  };
+
+  func = function () {
+    console.log("2");
+  };
+
+  return;
+}
+
+F.func = function () {
+  console.log("3");
+};
+F.prototype.func = function () {
+  console.log("4");
+};
+
+var func = function () {
+  console.log("5");
+};
+
+function func() {
+  console.log("6");
+}
+
+func(); // => 5
+var a = new F();
+a.func(); // => 1
+func(); // => 2
+new F.func(); // => 3
+new F().func(); // => 1
+new new F().func(); // => 1  === new (new F()).func();
+```
+</details>
+
 ### 闭包（closure）
 >因为JS是[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)，所以产生了闭包效果。
 
@@ -525,7 +684,7 @@
 >
 >`var`只有全局作用域、函数作用域；`let`、`const`有全局作用域、函数作用域、块级作用域。
 >
->```javascript
+>```js
 >for (var i = 0; i < 3; i++) {
 >    // 不用匿名函数
 >    setTimeout(function () {
@@ -581,7 +740,7 @@
     1. 浏览器：`eval`、`new Function`、`setTimeout/setInterval`
     2. Node.js：`eval`、`new Function`、`vm`模块
 
-    ```javascript
+    ```js
     // 全部都极度不安全，不建议使用
 
     var a = 'console.log("aa")';
@@ -596,7 +755,7 @@
     setInterval(d, 0);  // 需要clearInterval。Node.js已不支持第一个参数传字符串
     ```
 
-    ```javascript
+    ```js
     // Node.js
 
     var e = 'console.log("ee")';
@@ -608,7 +767,7 @@
 
     >仅根据`func.toString()`创建，不包含`func`额外添加的属性。
 
-    ```javascript
+    ```js
     function cloneFunction(func) {
       const funcStr = func.toString();
       try {
@@ -634,7 +793,7 @@
 
     接受一个字符串作为参数，将其中的内容视为好像在书写时就存在于程序中这个位置的代码（用程序动态生成代码并运行，好像代码是写在这个位置一样）。
 
-    ```javascript
+    ```js
     // e.g.
     function foo (str, a) {
       eval(str)         // 改变词法作用域
@@ -648,7 +807,7 @@
     - 类似的有：`setTimeout/setInterval`的第一个参数是字符串、`new Function`的最后一个字符串参数，都能动态生成代码，都能在运行期修改书写期的词法作用域。
 2. `with`
 
-    ```javascript
+    ```js
     // e.g.
     function foo (obj) {
       with (obj) { // 为形参obj创建作用域
@@ -688,7 +847,7 @@
 
         原型链终点是`null`，倒数第二是`Object.prototype`。
 
-        ```javascript
+        ```js
         Object或Function或任意函数.__proto_ === Function.prototype
         Function.prototype.__proto__ === Object.prototype
         Object.prototype.__proto__ === null
@@ -697,7 +856,7 @@
     <details>
     <summary>e.g.</summary>
 
-    ```javascript
+    ```js
     var A = function () {};
     var a = new A();
 
@@ -718,7 +877,7 @@
     </details>
 2. 若重写原型的值（不是添加），可以给原型添加`constructor`属性并指向**构造函数**
 
-    ```Javascript
+    ```js
     var A = function () {};
 
     A.prototype = {
@@ -757,7 +916,7 @@
 
         **能够继承原生构造函数**：先新建父类的实例对象`this`，然后再用子类的构造函数修饰`this`，使得父类的所有行为都可以继承。
 
-        ```javascript
+        ```js
         class Father {
           constructor (...args) {   // 可省略
             // this.
@@ -790,7 +949,7 @@
 
         **无法继承原生构造函数**：先新建子类的实例对象`this`，再将父类的属性添加到子类上，导致父类的内部属性无法获取。
 
-        ```javascript
+        ```js
         /* 父类定义： */
         function Father(fatherPara) {
             // 私有属性用let；静态私有属性用const
@@ -837,7 +996,7 @@
         ><details>
         ><summary>「子类继承父类原型链」可改为的不使用<code>Object.create</code>方式</summary>
         >
-        >```javascript
+        >```js
         >(function (subType, superType) {
         >    function _object(o) {
         >        function F() {}
@@ -916,7 +1075,7 @@
 
     <summary>存储、值传递步骤举例</summary>
 
-    ```javascript
+    ```js
     // e.g.
     var a = 'test1';            // i
     var b = {'key': 'test1'};   // ii
@@ -970,7 +1129,7 @@
 
     ![内存泄漏图](./images/memory-leak-1.gif)
 
-    ```javascript
+    ```js
     var refA = document.getElementById('refA');
     var refB = document.getElementById('refB');
     document.body.removeChild(refA);  // 尽管删除了，但DOM#refA不能GC回收，因为存在变量refA对它的引用
@@ -1037,7 +1196,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
             e.g.
 
-            ```javascript
+            ```js
             Number('123')       // 123
             Number('123a')      // NaN
             Number('')          // 0
@@ -1063,7 +1222,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
             e.g.
 
-            ```javascript
+            ```js
             Number([5])             // 5
             Number([])              // 0
             Number([undefined])     // 0
@@ -1091,7 +1250,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                 原来的值
             3. 布尔值：
 
-                ```javascript
+                ```js
                 String(true)        // 'true'
                 String(false)       // 'false'
                 ```
@@ -1103,7 +1262,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                 `String(null)       // 'null'`
             6. `Symbol`：
 
-                ```javascript
+                ```js
                 String(Symbol())    // 'Symbol()'
                 String(Symbol(1))   // 'Symbol(1)'
                 String(Symbol('a')) // 'Symbol(a)'
@@ -1115,7 +1274,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
             若是数组，则返回该数组的字符串形式；否则返回一个类型字符串。
 
-            ```javascript
+            ```js
             // e.g.
             String([1, 2, 3])                  // '1,2,3'
             String([1, [2], [3, [4, [5, 6]]]]) // '1,2,3,4,5,6'
@@ -1150,7 +1309,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
             <details>
             <summary>e.g.</summary>
 
-            ```javascript
+            ```js
             'a' + + 'a'         // 'a' + (+ 'a') -> 'a' + NaN -> 'aNaN'
             + '123';            // 123
             - [123];            // -123
@@ -1274,7 +1433,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                     ><details>
                     ><summary>e.g.</summary>
                     >
-                    >```javascript
+                    >```js
                     >async function func () {
                     >  await // 同步执行，执行完无论未完成/完成/失败，都异步microtask执行后面代码
                     >    new Promise((resolve) => {
@@ -1292,7 +1451,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                     >// => a c then1 then2 b
                     >```
                     >
-                    >```javascript
+                    >```js
                     >var obj = {
                     >  a () {
                     >    console.log('a')
@@ -1316,7 +1475,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                     >// =>a b c d
                     >```
                     >
-                    >```javascript
+                    >```js
                     >var obj = {
                     >  a () {
                     >    console.log('a')
@@ -1389,7 +1548,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     每个事件循环都是一个独立的调用栈，不同调用栈之间无法互相`try-catch`错误，所以新的事件循环不会被原调用栈捕获错误，导致向上抛出错误（若新的事件循环内没有在自己的调用栈上设置`try-catch`）。
 
-    ```javascript
+    ```js
     try {
       setTimeout(()=>{
         错误                                  // 异步的无法捕获，错误会向全局抛
@@ -1565,7 +1724,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     1. 不能跨帧（`<iframe>`、`window.open()`的新窗口）。
 
-        >```javascript
+        >```js
         >/* 跨帧：浏览器的帧（frame）里的对象传入到另一个帧中，两个帧都定义了相同的构造函数或类 */
         >A实例 instanceof A构造函数或类; // true
         >A实例 instanceof B构造函数或类; // false
@@ -1611,7 +1770,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         ><details>
         ><summary>e.g.</summary>
         >
-        >```javascript
+        >```js
         >const obj = {
         >  a: 'obj\'s a',
         >  [Symbol('b')]: 'obj\'s b'
@@ -1723,13 +1882,13 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         <summary><code>while</code>、<code>do-while</code></summary>
 
-        ```javascript
+        ```js
         while (跳出判断) {
 
         }
         ```
 
-        ```javascript
+        ```js
         do {
 
         } while (跳出判断);
@@ -1739,7 +1898,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         <summary><code>for</code></summary>
 
-        ```javascript
+        ```js
         for (执行一次; 跳出判断; 每执行一次后执行) {
 
         }
@@ -1751,7 +1910,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         遍历对象自身和整条原型链（`[[Prototype]]`）上的可枚举属性。
 
-        ```javascript
+        ```js
         /* i为数组当前项的索引或对象当前项的属性名 */
         for (var i in obj或arr) {
 
@@ -1761,7 +1920,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         >在`for-in`时，需要遍历的key值和顺序预先确定。若遍历到某个key，此key不存在（被删了或移出了），则会跳过不执行当前key。若在`for-in`内部新增的key，不会被遍历执行。且任何时候直接使用原对象/原数组会展示修改后的当前值。
         >
         >e.g.
-        >```javascript
+        >```js
         >var originObj1 = { a: "aa", b: "bb" };
         >for (const key in originObj1) {
         >  originObj1[key + key] = originObj1[key] + originObj1[key];
@@ -1801,7 +1960,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         遍历可迭代对象自身的项。
 
-        ```javascript
+        ```js
         /* i为迭代对象的属性值 */
         for (let i of 可迭代对象) {
 
@@ -1810,7 +1969,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         >若在`for-of`中改变原数组，则会影响遍历的项和顺序。且任何时候直接使用原数组会展示修改后的当前值。
         >
-        >```javascript
+        >```js
         >// e.g.
         >var originArr = ['a', 'b', 'c']
         >for (let item of originArr) {
@@ -1824,7 +1983,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         ><details>
         ><summary>若在Array遍历的回调函数中改变原数组，则会影响遍历的项和顺序。且任何时候直接使用原数组会展示修改后的当前值</summary>
         >
-        >```javascript
+        >```js
         >// e.g.
         >var originArr = ['a', 'b', 'c']
         >originArr.forEach((item, index, arr) => {   // 或其他所有Array.prototype.遍历方法
@@ -1868,7 +2027,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         <summary><code>$.each</code></summary>
 
-        ```javascript
+        ```js
         /* index为数组当前项的索引或对象当前项的属性名或jQuery对象的索引，item为当前项的值（不是jQuery对象，是DOM对象，与this相同） */
         $.each(obj或arr或$dom, function (index, item) {
 
@@ -1879,7 +2038,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         <summary><code>$dom.each</code></summary>
 
-        ```javascript
+        ```js
         /* index为jQuery对象的索引，item为当前项的值（不是jQuery对象，是DOM对象，与this相同） */
         $dom.each(function (index, item) {
 
@@ -1897,7 +2056,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     <details>
     <summary>e.g. </summary>
 
-    ```javascript
+    ```js
     var asyncFunc = (ms = 1000) => new Promise((resolve) => setTimeout(resolve, ms)) // 模拟异步操作
 
     async function func () {
@@ -1927,7 +2086,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         <details>
         <summary>e.g. </summary>
 
-        ```javascript
+        ```js
         var asyncFunc = (ms = 1000) => new Promise((resolve) => setTimeout(resolve, ms)) // 模拟异步操作
 
         function func () {
@@ -1954,7 +2113,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         Array遍历方法没有返回Promise实例，因此直接在外部加上`await`也是同步执行、无法达到预期效果。
     3. 利用`Array.prototype.reduce`实现
 
-        ```javascript
+        ```js
         const chainingAsyncRun = (callbackArr) => {
           callbackArr.reduce(async (prevPromise, currentCallback) => {
             try {
@@ -1969,7 +2128,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         <details>
         <summary>使用测试</summary>
 
-        ```javascript
+        ```js
         /* 使用测试 */
         var funcArr = [
           () => {
@@ -2038,7 +2197,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     ><details>
     ><summary>jQuery在它的<code>AJAX</code>方法中封装了<code>JSONP</code>功能</summary>
     >
-    >```javascript
+    >```js
     >$.ajax({
     >    url: '接口地址',
     >    dataType: 'jsonp',
@@ -2064,7 +2223,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     1. 与`<iframe>`通信：
 
-        ```javascript
+        ```js
         // 父窗口调用`<iframe>`的window对象
         var newIframe = document.getElementById('new-iframe').contentWindow;    // 或：window.frames[0]
 
@@ -2074,7 +2233,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         ```
     2. 与`window.open()`的新窗口通信：
 
-        ```javascript
+        ```js
         // 父窗口调用新打开窗口的window对象
         var newWin = window.open('某URL');
 
@@ -2087,7 +2246,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     >1. 不受同源政策限制。
     >2. ie8、ie9仅支持与`<iframe>`，ie10+支持与`<iframe>`、`window.open()`的新窗口。
 
-    ```javascript
+    ```js
     // 发送方（允许自己发给自己接受）
     目标window对象.postMessage(信息内容, '目标源地址或*');
 
@@ -2098,14 +2257,16 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 5. websocket作为中转服务
 
     >1. 不受同源政策限制。
-6. 其他方式
+6. <details>
+
+    <summary>其他方式</summary>
 
     1. 父窗口改变`<iframe>`的hash，`<iframe>`通过监听hash变化的`hashchange`事件获取父窗口信息
 
         >1. 不受同源政策限制。
         >2. ie8+支持。若只改变hash值，页面不会重新刷新。
 
-        ```javascript
+        ```js
         // 父窗口改变`<iframe>`的hash值
         document.getElementById('new-iframe').src = '除了hash值，url不变';
 
@@ -2131,6 +2292,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     4. 通过代理服务器转发请求
 
         通过成功访问代理服务器，利用代理服务器转发请求获得数据后（同源策略仅限于浏览器）再返回给浏览器。
+    </details>
 
 >解决浏览器显示`Script error`错误：①引用资源添加`<script src="CDN地址" crossorigin="anonymous"></script>`，②CDN地址资源响应头包含`Access-Control-Allow-Origin: 请求头的Origin值 或 *`。
 
@@ -2233,7 +2395,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     错误类型：`Error`、`EvalError`、`RangeError`、`ReferenceError`、`SyntaxError`、`TypeError`、`URIError`。
 2. 自定义错误
 
-    ```javascript
+    ```js
     // ES5
     function MyError(message) {
         this.stack = (Error.call(this, message)).stack;
@@ -2248,7 +2410,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     ```
 3. 手动抛出错误
 
-    ```javascript
+    ```js
     throw 'Error'                  // 抛出字符串
     throw 100                      // 抛出数值
     throw true                     // 抛出布尔值
@@ -2283,7 +2445,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         - 无法捕获：~~语法错误~~、~~静态资源异常~~、~~接口异常~~。
 
-        ```javascript
+        ```js
         window.addEventListener('error', (event) => {
           /* code */
 
@@ -2312,7 +2474,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         >`<iframe>`需要同源才能够监听事件。
 
-        ```javascript
+        ```js
         window.addEventListener('error', function (event) { // 包含上面的：没有经过`try-catch`处理的错误都会触发`window`的`error`事件
           // 资源加载报错（event.target：错误资源的DOM）
           if (event.target && (event.target.src || event.target.href)) {
@@ -2333,7 +2495,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         若失败的Promise实例未被处理，则触发`window`的`unhandledrejection`事件。
 
-        ```javascript
+        ```js
         window.addEventListener('unhandledrejection', (event) => {
           /* code */
 
@@ -2360,7 +2522,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
             ```
         2. `Image`实例的属性
 
-            ```javascript
+            ```js
             var img = new Image();  // 或document.createElement('img');
 
             img.onerror = function () {
@@ -2421,7 +2583,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     1. JS
 
-        ```javascript
+        ```js
         var img = new Image();  // 或document.createElement('img');
 
         img.src = '图片地址';
@@ -2556,7 +2718,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 ### 判断对象、方法是否定义
 1. 判断对象方法是否可以执行
 
-    ```javascript
+    ```js
     /* 对象已经定义 && 对象不等于null && 对象方法存在 */
     if (typeof obj !== 'undefined' && obj !== null && typeof obj.func === 'function') {
         /* 对象方法已定义 可执行 */
@@ -2564,7 +2726,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     ```
 2. 判断全局对象方法是否可以执行
 
-    ```javascript
+    ```js
     /* window的子对象存在 && 对象方法存在 */
     if (window.obj && typeof window.obj.func === 'function') {
         /* 对象方法已定义 可执行 */
@@ -2572,7 +2734,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     ```
 3. 判断是否需要重新定义
 
-    ```javascript
+    ```js
     /* 对象不存在 || 对象等于null || 对象方法不存在 */
     if (typeof obj === 'undefined' || obj === null || typeof obj.func !== 'function') {
         /* 对象或对象方法没有定义 需重新定义 */
@@ -2580,7 +2742,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     ```
 4. 变量已定义
 
-    ```javascript
+    ```js
     /* 变量已定义 && 变量不等于null */
     if (typeof a !== 'undefined' && a !== null) {
         /* 对象已定义 可操作 */
@@ -2698,99 +2860,13 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 ## 编程技巧
 
 ### JS代码风格规范（coding style guide）
-1. 声明
-
-    >在[JS的预编译](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#js的预编译)阶段进行提升（hoisting）。
-
-    1. 变量声明（`var`）
-
-        无论语句在何处，无论是否会真正执行到，所有的`var`语句的**声明**都提升到作用域（函数体内或全局）顶部执行，但具体**赋值**不会被提前。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```javascript
-        >(function () {
-        >    console.log(a);    // undefined
-        >    var a = 2;
-        >    console.log(a);    // 2
-        >})();
-        >
-        >// 等价于：
-        >(function () {
-        >    var a;
-        >    console.log(a);    // undefined
-        >    a = 2;
-        >    console.log(a);    // 2
-        >})();
-        >```
-        ></details>
-
-        1. 声明变量是所在上下文环境的不可配置属性；非声明变量是可配置的。
-        2. 相同作用域中，对同一个变量进行多次声明，则忽略第一次之后的声明（会执行变量赋值）。
-
-        >建议：总是把所有变量声明都放在函数顶部，而不是散落在各个角落。
-    2. 函数声明
-
-        1. 也会被JS引擎提升到当前执行的作用域顶部声明，因此代码中函数的调用可以出现在函数声明之前。
-        2. 函数声明不应当出现在~~语句块~~内（如：条件语句），语句块的函数也会提前声明，导致语义不清容易出错。
-    3. 函数表达式（Function expressions）声明
-
-        必须先声明：`var a = function () {...};`才可以使用，声明会被提前，但赋值不会被提前。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```javascript
-        >foo() // TypeError: foo is not a function
-        >bar() // ReferenceError: bar is not defined
-        >
-        >var foo = function bar () {}
-        >```
-        ></details>
-    4. 同名的变量声明和函数声明（不是函数表达式）
-
-        同时声明的情况下（顺序不影响结果）：
-
-        1. 变量仅声明不赋值：被赋值为函数。
-        2. 变量赋值：被赋值为变量。
-
-        - 原因：
-
-            1. 函数、变量都在编译时提升，变量的赋值在运行时进行。
-            2. 所有函数声明会提升到所有变量声明之前；
-            3. 可以重复声明，重复声明的变量`var`被忽略，重复声明的函数`function`会覆盖之前同名的函数声明。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```javascript
-        >var a1 = 1;
-        >function a1() {}
-        >console.log(a1);    // 1
-        >
-        >function b2() {}
-        >var b2 = 1;
-        >console.log(b2);    // 1
-        >
-        >var c3;
-        >function c3() {}
-        >console.log(c3);    // function
-        >
-        >function d4() {}
-        >var d4;
-        >console.log(d4);    // function
-        >```
-        ></details>
-
-    >建议：先声明再使用；把函数声明紧接着放在变量声明之后。
-2. 严格模式`use strict`
+1. 严格模式`use strict`
 
     可用于全局，也可以用于局部（函数体内）。
 
     >1. 不推荐在全局作用域中使用，因为当有JS文件合并时，一个文件的全局严格模式会导致整个文件都是严格模式。
     >2. 可以用`(function () {'use strict';/* 执行内容 */}());`匿名函数方式使用严格模式。
-3. 全等`===`（不全等`!==`）与等号`==`（不等`!=`）的区别
+2. 全等`===`（不全等`!==`）与等号`==`（不等`!=`）的区别
 
     >[JS比较表](https://dorey.github.io/JavaScript-Equality-Table/)。
 
@@ -2807,11 +2883,11 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     >1. 建议：都用`===`或`!==`进行比较。
     >2. `>=`等价于：`== || >`；`<=`等价于：`== || <`。
-4. 三元运算符应当仅仅用在条件赋值语句中，而不要作为`if`语句的替代：
+3. 三元运算符应当仅仅用在条件赋值语句中，而不要作为`if`语句的替代：
 
     1. `var a = condition ? '1' : '2';`
     2. ~~`condition ? func1() : func2();`~~
-5. 命名
+4. 命名
 
     1. 变量命名的前缀应当是**名词**，函数命名的前缀应当是**动词**。
     2. 约定函数名：
@@ -2829,7 +2905,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         ><details>
         ><summary>e.g.</summary>
         >
-        >```javascript
+        >```js
         >/* 不提倡的多行写法 */
         >var a = 'abc\
         >def';
@@ -2842,7 +2918,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         ></details>
     6. 对象的属性、方法，与变量、方法命名规则相同。
     7. 若属性、变量、方法在表示其是私有的，可在开头加一个下划线`_`作为区分。
-6. 使用字面量替代构造函数（普通函数）的[数据创建方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#数据创建方式)
+5. 使用字面量替代构造函数（普通函数）的[数据创建方式](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#数据创建方式)
 
     >好处：
     >1. 代码更少。
@@ -2853,7 +2929,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         e.g.
 
-        ```javascript
+        ```js
         /* 不提倡的构造函数写法 */
         var a1 = new Object();
         a.attr1 = '...';
@@ -2867,7 +2943,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         e.g.
 
-        ```javascript
+        ```js
         /* 不提倡的构造函数写法 */
         var arr1 = new Array('a', 'b');
 
@@ -2879,7 +2955,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         e.g.
 
-        ```javascript
+        ```js
         /* 不提倡的构造函数写法 */
         var str1 = new String('a');
 
@@ -2889,7 +2965,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         ```
 
     - 其他数据类型
-7. 注释规范
+6. 注释规范
 
     1. 单行注释：`//`后不空格
 
@@ -2910,7 +2986,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                 3. 浏览器特性hack。
     3. 函数注释规范（使用部分[JSDoc](https://jsdoc.app/)）
 
-        ```javascript
+        ```js
         /**
          * 方法描述
          * @constructor - （是否构造函数）
@@ -2929,7 +3005,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
             return result;
         }
         ```
-8. JS编程风格总结（programming style）
+7. JS编程风格总结（programming style）
 
     >参考：[阮一峰：JavaScript 编程风格](http://javascript.ruanyifeng.com/grammar/style.html)。
 
@@ -2947,12 +3023,12 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     12. 构造函数的函数名，采用首字母大写；其他函数名，一律首字母小写。
     13. 不要使用自增（`++`）和自减（`--`）运算符，用`+= 1`和`-= 1`代替。
     14. 不省略大括号。
-9. JS编码规范
+8. JS编码规范
 
     绝大部分同意[fex-team:tyleguide](https://github.com/fex-team/styleguide/blob/master/javascript.md#javascript编码规范)。
 
     >可以设置为IDEs的**Reformat Code**的排版样式。
-10. 用户体验
+9. 用户体验
 
     1. 平稳退化（优雅降级）：当浏览器不支持或禁用了JS功能后，访问者也能完成最基本的内容访问。
 
@@ -3001,7 +3077,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         隔离代码。
 
-        ```javascript
+        ```js
         (function (win) {
             'use strict';   // 严格模式可以避免创建全局变量
 
@@ -3039,7 +3115,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     >1. `function`关键字当作一个**函数声明**的开始，函数声明的后面不能跟圆括号；
     >2. 将函数声明包含在圆括号中，表示**函数表达式**，函数表达式的后面可以跟圆括号，表示执行此函数。
 
-    ```javascript
+    ```js
     /* 建议方式 */
     ;(function () {}())
     ;(function () {})()
@@ -3070,7 +3146,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     ><details>
     ><summary>e.g.</summary>
     >
-    >```javascript
+    >```js
     >for (var i = 0; i < 3; i++) {
     >    // 不用匿名函数
     >    setTimeout(function () {
@@ -3104,7 +3180,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     <details>
     <summary>等价于：</summary>
 
-    ```javascript
+    ```js
     /* 不是传参情况 */
     var a;
 
@@ -3141,7 +3217,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     1. `(0, obj.func)()`相当于`0; var tmp = obj.func; tmp();`
 
-        ```javascript
+        ```js
         const obj = {
           func () {
             console.log(this)
@@ -3175,7 +3251,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         >`eval`的参数是字符串。
 
-        ```javascript
+        ```js
         eval(function a() {});   // function a() {}（但没有声明）
         eval('function b() {}'); // undefined（声明成功）
         ```
@@ -3217,7 +3293,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         2. Android：可以执行事件函数但不会弹出对话框。
         3. iOS：无效。
 
-        ```javascript
+        ```js
         window.onbeforeunload = function (e) {
           // do sth.
 
@@ -3291,7 +3367,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     <details>
     <summary>e.g.</summary>
 
-    ```javascript
+    ```js
     (() => {
       // ①备份原先全局对象到局部变量，用于将来noConflict时覆盖
       var backups = window.myGlobalVariable
@@ -3343,7 +3419,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     </script>
     ```
 
-    ```javascript
+    ```js
     // a.js
     (() => {
       // 主要功能
@@ -3504,7 +3580,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         >    1. `funcIe.bind(dom)`（需要`bind`的[polyfill](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生jsfunctionprototypebind的polyfill)）。
         >    2. 使用`window.event`定义~~this~~
         >
-        >        ```javascript
+        >        ```js
         >        function funcIe(e) {
         >            e = e || window.event;                 // 事件对象
         >            var _this = e.srcElement || e.target;  // 触发的DOM
@@ -3528,7 +3604,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         >来自：[MDN:CustomEvent](https://developer.mozilla.org/zh-CN/docs/Web/API/CustomEvent/CustomEvent)。
 
-        ```javascript
+        ```js
         // 监听自定义事件
         dom.addEventListener('事件名', function (e) {...}, false) // e.bubbles/cancelable/composed/detail
 
@@ -3544,7 +3620,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         >
         >来自：[MDN:Event](https://developer.mozilla.org/zh-CN/docs/Web/API/Event/Event)。
         >
-        >```javascript
+        >```js
         >// 监听自定义事件
         >dom.addEventListener('事件名', function (e) {...}, false) // e.bubbles/cancelable/composed
         >
@@ -3557,7 +3633,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         ></details>
     2. `jQuery`：
 
-        ```javascript
+        ```js
         $('选择器').on('自定义事件', function () {})
         $('选择器').trigger('自定义事件')
         ```
@@ -3862,16 +3938,12 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
             `dom.clientHeight`
 
-            或
-
-            `$dom.innerHeight()`
+            >jQuery：`$dom.innerHeight()`
         2. height+padding+border：
 
             `dom.offsetHeight`（元素的像素高度，包含该元素的垂直内边距和边框，且是一个整数。理解为一个设置的高度）
 
-            或
-
-            `$dom.outerHeight()`
+            >jQuery：`$dom.outerHeight()`
     2. 节点内容高度：
 
         `dom.scrollHeight`（元素内容高度的度量，包括由于溢出导致的视图中不可见内容。）
@@ -3879,104 +3951,166 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         `dom.scrollTop`
 
-        或
-
-        `$dom.scrollTop()`
+        >jQuery：`$dom.scrollTop()`
     4. 节点顶部相对视口顶部距离：
 
         `dom.getBoundingClientRect().top`
 
-        或
-
-        `$dom.offset().top + document.documentElement.clientTop - $(window).scrollTop()`
+        >jQuery：`$dom.offset().top + document.documentElement.clientTop - $(window).scrollTop()`
 
         >`document.documentElement.clientTop`：`<html>`的`border-top-width`数值。
     5. 节点顶部相对文档顶部距离（不包括~~文档的border~~）：
 
         `dom.getBoundingClientRect().top + (document.body.scrollTop || document.documentElement.scrollTop) - document.documentElement.clientTop`
 
-        或
-
-        `$dom.offset().top`
+        >jQuery：`$dom.offset().top`
 2. 文档和视口
 
     1. 视口高度：
 
         `window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight`
 
-        或
-
-        `$(window).height()`
+        >jQuery：`$(window).height()`
     2. 文档内容高度：
 
         `document.body.scrollHeight`
 
-        或
-
-        `$(document).height()`
+        >jQuery：`$(document).height()`
     3. 文档滚动高度：
 
         `document.body.scrollTop || document.documentElement.scrollTop`
 
-        或
-
-        `$(window).scrollTop()`
+        >jQuery：`$(window).scrollTop()`
 
 >1. 还可以使用[`IntersectionObserver`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#intersectionobserver)判断节点和视口（或祖先节点）相交程度。
 >2. Zepto没有`innerHeight`和`outerHeight`，改为`height`。
 
 ### 节点与视口距离关系
-1. 原生JS
-
-    1. `getBoundingClientRect`
-
-        ><details>
-        ><summary>视口高度</summary>
-        >
-        >`window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight`
-        >
-        >或
-        >
-        >`$(window).height()`
-        ></details>
-
-        1. 节点**顶部**在**视口底部**以上
-
-            `dom.getBoundingClientRect().top <= 视口高度`
-        2. 节点**底部**在**视口顶部**以下
-
-            `dom.getBoundingClientRect().bottom >= 0`
-        3. 节点在视口内
-
-            以上`&&`结合。
-    2. [`IntersectionObserver`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#intersectionobserver)判断节点和视口（或祖先节点）相交程度。
+1. `getBoundingClientRect`
 
     ><details>
-    ><summary>某dom跟随屏幕滚动而相对静止</summary>
+    ><summary>视口高度</summary>
     >
-    >1. 判断：要处理的节点顶部相对视口顶部距离（`dom.getBoundingClientRect().top`）。
-    >
-    >    1. 若≤0，则处理dom（具体实现：[节点跟随屏幕滚动而相对静止](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery节点跟随屏幕滚动而相对静止)）。
-    >    2. 若>0，则恢复dom的文档流。
-    >2. 从文档顶部到要处理的位置用`<div>`包裹，对这个额外包裹的`<div>`进行`IntersectionObserver`处理。
-    >
-    >    1. 若消失，则处理dom。
-    >    1. 若展示，则恢复dom的文档流。
+    >`window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight`
     ></details>
-2. <details>
-
-    <summary>jQuery</summary>
 
     1. 节点**顶部**在**视口底部**以上
 
-        `$dom.offset().top <= $(window).scrollTop() + $(window).height()`
+        `dom.getBoundingClientRect().top <= 视口高度`
+
+        >jQuery：`$dom.offset().top <= $(window).scrollTop() + $(window).height()`
     2. 节点**底部**在**视口顶部**以下
 
-        `$dom.offset().top + $dom.outerHeight() >= $(window).scrollTop()`
+        `dom.getBoundingClientRect().bottom >= 0`
+
+        >jQuery：`$dom.offset().top + $dom.outerHeight() >= $(window).scrollTop()`
     3. 节点在视口内
 
         以上`&&`结合。
-    </details>
+
+        <details>
+        <summary>e.g.</summary>
+
+        ```js
+        function isInViewport(dom) {
+          const viewPortHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+          const viewPortWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+          const rect = dom.getBoundingClientRect()
+          const { top, bottom, left, right } = rect;
+
+          // 只要在视口露一点头就返回true（可以按业务逻辑修改）
+          return (
+            top <= viewPortHeight &&
+            bottom >= 0 &&
+            left <= viewPortWidth &&
+            right >= 0
+          );
+        }
+        ```
+        </details>
+2. [`IntersectionObserver`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#intersectionobserver)判断节点和视口（或祖先节点）相交程度。
+
+><details>
+><summary>某dom跟随屏幕滚动而相对静止</summary>
+>
+>1. 判断：要处理的节点顶部相对视口顶部距离（`dom.getBoundingClientRect().top`）。
+>
+>    1. 若≤0，则处理dom（具体实现：[节点跟随屏幕滚动而相对静止](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#jquery节点跟随屏幕滚动而相对静止)）。
+>    2. 若>0，则恢复dom的文档流。
+>2. 从文档顶部到要处理的位置用`<div>`包裹，对这个额外包裹的`<div>`进行`IntersectionObserver`处理。
+>
+>    1. 若消失，则处理dom。
+>    1. 若展示，则恢复dom的文档流。
+></details>
+
+### 节点是否在首屏
+1. 距离文档顶部、左边距离
+
+    ```js
+    // 获取距离顶部距离（对fixed处理：当做是浏览器无滚动时的距离）
+    function getToTop(dom) {
+      let realTop = dom.offsetTop;
+      let realLeft = dom.offsetLeft;
+      let parent = dom.offsetParent;
+      while (parent !== null) {
+        realTop += parent.offsetTop;
+        realLeft += parent.offsetLeft;
+        parent = parent.offsetParent;
+      }
+
+      const domHeight = dom.offsetHeight;
+      const domWidth = dom.offsetWidth;
+
+      return {
+        top: realTop,
+        bottom: realTop + domHeight,
+        left: realLeft,
+        right: realLeft + domWidth,
+      };
+    }
+    ```
+
+    <details>
+    <summary><code>getBoundingClientRect</code>实现</summary>
+
+    >2种算法，会有一些对border数值取值的误差。
+
+    ```js
+    // 获取距离顶部距离（对fixed处理：加上浏览器滚动距离，就好像fixed内容跟随视口滚动、与视口距离相对不变化）
+    function getToTop(dom) {
+      const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+      const scrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft;
+
+      const rect = dom.getBoundingClientRect();
+      const { top, bottom, left, right } = rect;
+
+      return {
+        top: scrollTop + top,
+        bottom: scrollTop + bottom,
+        left: scrollLeft + left,
+        right: scrollLeft + right,
+      };
+    }
+    ```
+2. DOM节点是否在首屏内
+
+    ```js
+    function isFirstScreen(dom) {
+      const viewPortHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+      const viewPortWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+      const { top, bottom, left, right } = getToTop(dom);
+
+      // 只要在视口露一点头就返回true（可以按业务逻辑修改）
+      return (
+        top < viewPortHeight &&
+        bottom > 0 &&
+        left < viewPortWidth &&
+        right > 0
+      );
+    }
+    ```
 
 ### 判断滚动定位
 >也可以给底部（或顶部）放置一个标记节点，当这个节点的顶部在容器底部以上（或这个节点的底部在容器顶部以下）时为滚动到底部（或顶部）。
@@ -3997,24 +4131,12 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     >1. 视口高度:
     >
     >    `window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight`
-    >
-    >    或
-    >
-    >    `$(window).height()`
     >2. 文档滚动高度：
     >
     >    `document.body.scrollTop || document.documentElement.scrollTop`
-    >
-    >    或
-    >
-    >    `$(window).scrollTop()`
     >3. 文档内容高度：
     >
     >    `document.body.scrollHeight`
-    >
-    >    或
-    >
-    >    `$(document).height()`
     ></details>
 
     1. 滚动到底部：
@@ -4078,7 +4200,9 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         1. `pageX/Y`
         2. `clientX/Y`
         3. `screenX/Y`
-2. 相对偏移（jQuery）
+2. <details>
+
+    <summary>相对偏移（jQuery）</summary>
 
     1. `$dom.offset()`
 
@@ -4092,6 +4216,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     4. `$dom.scrollLeft/Top()`
 
         返回：当前滚动条的位置（可以设置）。
+    </details>
 
 ### DOM修改
 1. 用HTML文本覆盖：
@@ -4210,7 +4335,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 ### 遍历页面中所有元素
 1. [`document.createNodeIterator(root[, whatToShow[, filter]])`](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/createNodeIterator)
 
-    ```javascript
+    ```js
     const html = document.getElementsByTagName("html")[0];
     const it = document.createNodeIterator(html);
     const nodes = [];
@@ -4225,7 +4350,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 ### jQuery相关
 1. 当变量是jQuery对象时，可用`$`作为开头命名，利于与普通变量区分
 
-    ```javascript
+    ```js
     // e.g.
     var num = 1;
     var dom = $('div').get();
@@ -4300,7 +4425,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         <details>
         <summary>e.g.</summary>
 
-        ```javascript
+        ```js
         var obj = {
           test: function () {
             console.log(this);

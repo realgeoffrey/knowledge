@@ -42,7 +42,7 @@
                 <details>
                 <summary>e.g.</summary>
 
-                ```javascript
+                ```js
                 // 按①②③④⑤⑥的顺序执行
 
 
@@ -77,7 +77,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```javascript
+        >```js
         >// index1.js
         >let a = 1;
         >let b = {
@@ -125,7 +125,7 @@
         >1. 每个模块执行前，`exports`指向`module.exports`：`exports = module.exports`
         >2. 若`exports = 值`或`module.exports = 值`则切断了`exports`与`module.exports`的连接，`exports`将没有导出效果（导出的永远是`module.exports`）。
         >
-        >    ```javascript
+        >    ```js
         >    // e.g.
         >    console.log(module.exports, exports, module.exports=== exports)   // => {} {} true
         >    exports = {}    // 或 module.exports = {}
@@ -133,7 +133,7 @@
         >    ```
         >-  原理：Node.js在运行时为每个模块创建一个包装函数（自执行匿名函数，作用域隔离）：
         >
-        >    ```javascript
+        >    ```js
         >    // 参数会设置好引用关系，如：exports = module.exports
         >
         >    (function(exports, require, module, __filename, __dirname) {   // 因此模块内可以直接使用这5个变量
@@ -218,7 +218,7 @@
 
         <summary><code>require</code>实现逻辑模拟</summary>
 
-        ```javascript
+        ```js
         // 执行`myRequire(filename)`逻辑：
         // 1. 先将filename转化为绝对路径（跳过Node.js查找流程）。若有缓存，则直接导出缓存
         // 2. fs读取这个绝对路径文件，获取`代码字符串`，根据绝对路径的文件后缀，执行不同的文件处理方法
@@ -348,7 +348,7 @@
         ><details>
         ><summary>预编译阶段无法解析<del>块级作用域</del>、<del>表达式</del>、<del>变量</del></summary>
         >
-        >```javascript
+        >```js
         >// 报错（块级作用域）
         >if (x === 1) {
         >  import { foo } from 'module1';
@@ -383,7 +383,7 @@
                 ><summary>循环依赖关系为<code>入口 -> a -> b -> a</code>，模块执行顺序为<code>b -> a -> 入口</code>，完整执行完一个模块才会进入下一个模块执行</summary>
                 >
                 >e.g.
-                >```javascript
+                >```js
                 >// 按①②③④⑤⑥的顺序执行
                 >
                 >
@@ -415,7 +415,7 @@
                     <details>
                     <summary>e.g.</summary>
 
-                    ```javascript
+                    ```js
                     // a.mjs
                     import { bar } from './b'  // ①
                     console.log('a.mjs')
@@ -461,7 +461,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```javascript
+        >```js
         >// index.mjs
         >let a = 1;
         >let b = {
@@ -532,7 +532,7 @@
         >
         >跨模块常量案例：
         >
-        >```javascript
+        >```js
         >/* 单个常量文件 */
         >
         >// constants/db.js
@@ -569,7 +569,7 @@
         ><details>
         ><summary>e.g.</summary>
         >
-        >```javascript
+        >```js
         >/* 表达式 */
         >number + 1
         >function () {}
@@ -608,7 +608,7 @@
         >
         >需要2行代码进行：
         >
-        >```javascript
+        >```js
         >import x, { c } from "./x";
         >const { a, b } = x;
         >
@@ -650,7 +650,7 @@
 
     1. CommonJS
 
-        ```javascript
+        ```js
         const module = require('module')
         const { namedExport } = require('module')
 
@@ -659,7 +659,7 @@
         ```
     2. ES6 Module
 
-        ```javascript
+        ```js
         import defaultExport from 'module'
         import { namedExport } from 'module'
 
@@ -725,7 +725,7 @@
 
 3. [UMD规范](https://github.com/umdjs/umd)的简单示例：
 
-    ```javascript
+    ```js
     (function (root, factory) {
         if (typeof define === 'function' && define.amd) {
             // AMD. Register as an anonymous module.

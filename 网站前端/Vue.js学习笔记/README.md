@@ -193,7 +193,7 @@
 
             - 若要达到效果（同步更新bar），还需要在组件中添加：
 
-                ```javascript
+                ```js
                 Vue.component('myComponent', {
                   props: ['foo'],
                   template: '<p @click="doIt">{{foo}}</p>',
@@ -468,7 +468,7 @@
 
             - 若要达到效果（双向数据绑定），还需要在组件中添加：
 
-                ```javascript
+                ```js
                 Vue.component('myInput', {
                   props: ['value'],
                   template: '<input :value="value" @input="updateValue($event)">',
@@ -591,7 +591,7 @@
     >e.g. `<div v-observer:10="{ show: xx }" v-observer:20="{ show: yy }" />`：添加2个独立的自定义指令。
     ></details>
 
-    ```javascript
+    ```js
     // 局部
     new Vue({
       // 在局部的模板内使用
@@ -608,7 +608,7 @@
     ><details>
     ><summary><code>钩子对象</code></summary>
     >
-    >```javascript
+    >```js
     >{
     >  // 只调用一次，指令第一次绑定到元素时调用。在这里可以进行一次性的初始化设置
     >  bind (el, binding, vnode) {},
@@ -668,7 +668,7 @@
                 <details>
                 <summary>e.g.</summary>
 
-                ```javascript
+                ```js
                 let localCounter = 1
 
                 function getLocalCounter () {
@@ -769,7 +769,7 @@
 
     当未设置`set`时，不能主动去设置`computed`的值（~~`this.计算属性 = 值`~~）；设置了`set`也不能改变自己的值（`set`函数里不能再循环设置自己的值）。
 
-    ```javascript
+    ```js
     // e.g.
     const vm = new Vue({
       data: {
@@ -829,7 +829,7 @@
 >
 >e.g.
 >
->```javascript
+>```js
 >async mounted () {
 >  await this.login()
 >
@@ -1002,7 +1002,7 @@
                     >props会在一个组件实例创建之前进行验证，所以实例的属性（如：`data`、`computed`、`methods`等）在`default`或`validator`函数中不可用。
     3. `data`（方法）：`return`数据对象
 
-        ```javascript
+        ```js
         data () {   // 组件多个实例间不共享数据对象
           return {
             a: 0,
@@ -1022,7 +1022,7 @@
 
     >要确保在初始化Vue实例之前注册了组件。
 
-    ```javascript
+    ```js
     // 局部
     new Vue({
         components: {
@@ -1134,7 +1134,7 @@
                     <details>
                     <summary>e.g.</summary>
 
-                    ```javascript
+                    ```js
                     Vue.component(
                       'myComponent',
                       {
@@ -1226,7 +1226,7 @@
 
             1. 在简单的场景下，可以使用一个空的Vue实例作为中央事件总线。
 
-                ```javascript
+                ```js
                 const bus = new Vue()   // vm.$emit只能向自己的Vue实例发送触发事件通知
 
                 // 触发组件 A 中的事件
@@ -1419,7 +1419,7 @@
         引用组件时，添加`inline-template`DOM属性。组件的内容当作模板，而不是分发内容。
     3. `<script type=text/x-template id="id名">`
 
-        ```javascript
+        ```js
         Vue.component('组件名', {
           template: '#id名'
         })
@@ -1428,7 +1428,7 @@
     5. 若组件内有多个`if-else`的展示逻辑，则尽量创建新的子组件，把每个子组件的逻辑放到子组件内部。
     6. 异步组件。
 
-        ```javascript
+        ```js
         Vue.component(
           'async-webpack-example',
           // 这个动态导入会返回一个 `Promise` 对象。
@@ -1504,7 +1504,7 @@
 
     主要为了解决：要挂载到不在组件操作范围内的DOM、或组件外生成的DOM（如：富文本内要嵌入Vue实例）。
 
-    ```javascript
+    ```js
     // 某单文件组件One.vue
     import Vue from 'vue'
     import store from '@/store'     // 若是nuxt，则直接使用实例上：vm.$store
@@ -1716,7 +1716,7 @@
 >自制可复用的过渡组件：把`<transition/>`或`<transition-group/>`作为根组件。
 
 ### 插件（plugin）
-```javascript
+```js
 // 插件是.js文件，应当有一个公开的install方法
 const MyPlugin = {}
 MyPlugin.install = function (Vue, options) { // 第一个参数是Vue构造器，第二个参数是Vue.use时传入的可选参数对象
@@ -1755,7 +1755,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 >
 >    - 可以合起来导出：
 >
->        ```javascript
+>        ```js
 >        import 组件名字 from './路径/组件名字.vue'
 >
 >        组件名字.install = (Vue, options = {}) => {
@@ -1768,7 +1768,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 >        <details>
 >        <summary>不推荐</summary>
 >
->        ```javascript
+>        ```js
 >        import 组件名字 from './路径/组件名字.vue'
 >
 >        const plugin = {
@@ -1885,7 +1885,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     <details>
     <summary>e.g.</summary>
 
-    ```javascript
+    ```js
     // 虚拟DOM的伪代码（对象实现的树形结构）
     let domNode = {
       tag: 'ul',
@@ -1934,7 +1934,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
     e.g.
 
-    ```javascript
+    ```js
     function apiFetch () {      // 所有接口都返回Promise。错误处理：每个接口、每个Promise.all/race后添加`.then/catch`
       return Promise.all([      // 互不依赖的接口：apiA、apiB、apiC
         apiA.then(() => {
@@ -2116,7 +2116,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         ><details>
         ><summary>e.g.</summary>
         >
-        >```javascript
+        >```js
         >export default {
         >  props: {
         >    title: String
@@ -2155,7 +2155,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         ><details>
         ><summary>e.g.</summary>
         >
-        >```javascript
+        >```js
         >import { reactive, computed, onMounted } from 'vue'
         >
         >export default {
@@ -2218,7 +2218,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 ### [vue-router](https://github.com/vuejs/vue-router)
 1. 初始化
 
-    ```javascript
+    ```js
     new Vue({
       router: new VueRouter({
         mode: 'hash或history或abstract',    // 默认：hash
@@ -2325,7 +2325,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
             <summary>检测路由变化，可以在组件中<code>watch</code>注入的<code>$route</code>或使用额外的钩子（导航守卫）</summary>
 
-            ```javascript
+            ```js
             new Vue({
               watch: {
                 '$route' (to, from) {
@@ -2413,7 +2413,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         返回对象，用于组件`computed`属性的简写（`data1 () { return this.$store.state.state1 }`）。
 
-        ```javascript
+        ```js
         // 组件中
         import { mapState } from 'vuex'
 
@@ -2451,7 +2451,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         返回对象，用于组件`computed`属性的简写（`data1 () { return this.$store.getters['getters1'] }`）。
 
-        ```javascript
+        ```js
         // 组件中
         import { mapGetters } from 'vuex'
 
@@ -2486,7 +2486,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         返回对象，用于组件`methods`方法的简写（`method1 (data) { this.$store.commit('mutate1', data) }`）。
 
-        ```javascript
+        ```js
         // 组件中
         import { mapMutations } from 'vuex'
 
@@ -2521,7 +2521,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
         返回对象，用于组件`methods`方法的简写（`method1 (data) { this.$store.dispatch('act1', data) }`）。
 
-        ```javascript
+        ```js
         // 组件中
         import { mapActions } from 'vuex'
 
@@ -2544,7 +2544,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 ><details>
 ><summary>非模块模式使用vuex</summary>
 >
->```javascript
+>```js
 >import Vue from 'vue'
 >import Vuex from 'vuex'
 >
@@ -2695,7 +2695,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             ><details>
             ><summary>实现fetch跳转到错误页面，错误页面能正常跳回</summary>
             >
-            >```javascript
+            >```js
             >// 某页面
             >export default {
             >  fetch ({ route, redirect, error }) {
@@ -2784,7 +2784,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             ><details>
             ><summary>e.g.</summary>
             >
-            >```javascript
+            >```js
             >// plugins/stat-plugin.js
             >export default (context, inject) => {
             >  // 在Vue实例、组件、`pages`组件新增属性（`asyncData`、`fetch`、`layout`）的上下文.app、store的actions/mutations，创建`$stat`方法
@@ -2800,7 +2800,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             <details>
             <summary><code>nuxt.config.js</code>文件引用<code>plugins</code>目录下插件的方式</summary>
 
-            ```javascript
+            ```js
             // nuxt.config.js
             module.exports = {
               plugins: [  // 一般也会配置在vendor.bundle.js中
@@ -2826,7 +2826,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
                 <details>
                 <summary>e.g.</summary>
 
-                ```javascript
+                ```js
                 // store/index.js
                 import Vuex from 'vuex';
 
@@ -2867,7 +2867,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
                 <details>
                 <summary>e.g.</summary>
 
-                ```javascript
+                ```js
                 // store/index.js
                 export const state = () => ({
                   num: 0
@@ -2994,7 +2994,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             ...
             ```
 
-            ```javascript
+            ```js
             // pages/页面名.vue
             export default {
               layout: '布局文件名',
@@ -3013,14 +3013,14 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             <details>
             <summary><code>nuxt.config.js</code>文件或<code>layouts</code>或<code>pages</code>目录下组件引用<code>middleware</code>目录下中间件的方式</summary>
 
-            ```javascript
+            ```js
             // middleware/中间件文件名.js
             export default function (context) {
               // 路由跳转之后，且在每页渲染前运行
             }
             ```
 
-            ```javascript
+            ```js
             // nuxt.config.js
             module.exports = {
               router: {
@@ -3068,7 +3068,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         <details>
         <summary>e.g.</summary>
 
-        ```javascript
+        ```js
         import { resolve } from 'path'
         export default {
           alias: {
@@ -3117,7 +3117,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             <details>
             <summary>e.g.</summary>
 
-            ```javascript
+            ```js
             module.exports = {
               build: {
                 vendor: ['已安装插件名', '~/plugins/插件文件名']
@@ -3156,7 +3156,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         <details>
         <summary>e.g.</summary>
 
-        ```javascript
+        ```js
         cli: {
           badgeMessages: ['Hello World!'],
           bannerColor: 'yellow'
@@ -3170,7 +3170,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         <details>
         <summary>e.g.</summary>
 
-        ```javascript
+        ```js
         module.exports = {
           css: [
             'bulma',                    // 直接加载一个 Node.js 模块。（在这里它是一个 Sass 文件）
@@ -3196,7 +3196,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         <details>
         <summary>e.g.</summary>
 
-        ```javascript
+        ```js
         // 默认：
         dir: {
           assets: 'assets',
@@ -3221,7 +3221,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
         >1. （不同于vue-cli，）`process.env`在客户端只返回空对象，需要明确环境变量名才可以在客户端展示（e.g. `process.env.某`）。
         >2. 配置文件引入的内容不会打包进最终项目代码里。因此若需要使用一些敏感数据且不打算打包进最终项目代码，可以在`nuxt.config.js`引入敏感文件并写入`env`供给项目中使用。
         >
-        >    ```javascript
+        >    ```js
         >    // nuxt.config.js
         >    var a = require('./a')  // 只打算用a.js文件中的一部分，不打算在项目代码中引入a.js
         >
@@ -3280,7 +3280,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             <details>
             <summary>e.g.</summary>
 
-            ```javascript
+            ```js
             module.exports = {
               router: {
                 mode: 'hash' // 默认：'history'
@@ -3296,7 +3296,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             <details>
             <summary>e.g.</summary>
 
-            ```javascript
+            ```js
             module.exports = {
               router: {
                 middleware: ['中间件文件名']
@@ -3312,7 +3312,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
             <details>
             <summary>e.g.</summary>
 
-            ```javascript
+            ```js
             router: {
               extendRoutes (routes, resolve) {
                 routes.push({
@@ -3451,7 +3451,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
             <summary>验证动态路由的参数</summary>
 
-            ```javascript
+            ```js
             export default {
               validate({ params }) {
                 return /^\d+$/.test(params.userid); // 校验为数字

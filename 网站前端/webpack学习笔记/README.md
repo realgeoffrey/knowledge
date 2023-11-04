@@ -109,6 +109,8 @@
         2. 细粒度：[speed-measure-webpack-plugin](https://github.com/stephencookdev/speed-measure-webpack-plugin)
     2. 打包产物体积分析：[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)
 
+        >分析：包依赖关系、大小占比、gzip开启前后区别。发现解决问题：①依赖同一个库多个版本（考虑依赖升级到相同版本）；②第三方包太大（引入时选型：替换更小的类似库，如：dayjs替换moment；替换成支持tree shaking的库，选择的库需要支持导出es6模块且其依赖库也能导出es6模块，且有sideEffects配置）；③替换没有按需加载的库（引用仅使用到的部分，如：lodash-debounce替换lodash；）；④针对不是每次都要使用的库，考虑动态加载引入（如：`import(xx).then((xx)=>{使用逻辑})`）
+
 ---
 ### 原理
 >webpack: module building system.一种基于事件流的编程范例，一系列的插件运行。
@@ -121,7 +123,7 @@
 
         CommonJS、ES6 Module、AMD、CSS的`@import`、样式的`url()`、HTML的`<img src="">`。都被转化为CommonJS规范的实现（各种方式引入效果相同）。
 
-        >```javascript
+        >```js
         >import list from './list';
         >// 等价于：
         >var list = require('./list');
@@ -144,7 +146,7 @@
 
         扩展插件，[一个包含`apply`方法的Class（构造函数）](https://github.com/webpack/webpack/blob/main/lib/webpack.js#L71C1-L79)，在Webpack构建流程中的特定时机广播出对应的事件（钩子数：200+），plugin监听事件进行逻辑，在事件处理函数内部进行 `修改上下文属性`或`调用上下文api` 等方式对webpack产生side effect。
 
-        ```javascript
+        ```js
         class BasicPlugin{
           // 在构造函数中获取用户给该插件传入的配置
           constructor(options){}
@@ -217,7 +219,7 @@
         2. 原来一个个独立的module文件被合并到了一个单独的bundle的原因在于浏览器不能像Node.js那样快速地去本地加载一个个module文件，而必须通过网络请求去加载还未得到的文件。 如果module数量很多，加载时间会很长，因此把所有module都存放在了数组中，执行一次网络加载。
         3. 做了缓存优化：执行加载过的module不会再执行第二次，执行结果会缓存在内存中，当某个module第二次被访问时会直接去内存中读取被缓存的返回值。
 
-        ```javascript
+        ```js
         // e.g.
         function __webpack_require__(moduleId) {
             // 1.首先会检查模块缓存
@@ -280,24 +282,25 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
     从配置文件和Shell语句中读取与合并参数，得出最终的参数；
 2. 开始编译：
 
-    用上一步得到的参数初始化Compiler对象，加载所有配置的`plugin`，执行对象的run方法开始执行编译；
+    （用上一步得到的参数初始化Compiler对象，）加载所有配置的`plugin`，执行对象的run方法（开启监听事件），开始执行编译；
 3. 确定入口：
 
     根据配置中的`entry`找出所有的入口文件；
 4. 编译模块：
 
-    从入口文件出发，调用所有配置的Loader对module进行翻译，再找出该module依赖的module，再递归本步骤直到所有入口依赖的文件都经过了本步骤的处理；
-5. 完成模块编译：
+    从入口文件出发，调用所有配置的Loader对module进行翻译，找出该入口module依赖的module，递归直到所有入口依赖的文件都经过Loader处理；最终得到每个module被翻译后的最终内容以及它们之间的依赖关系；
 
-    在经过第4步使用Loader翻译完所有module后，得到了每个module被翻译后的最终内容以及它们之间的依赖关系（遍历AST集合过程中，识别`require/import`之类的导入语句，确定模块对其他资源的依赖关系）；
-6. 输出资源：
+    >遍历AST集合过程中，识别`require/import`之类的导入语句，确定模块对其他资源的依赖关系。
+5. 输出资源：
 
-    根据入口和module之间的依赖关系，组装成一个个包含多个module的`Chunk`，再把每个Chunk转换成一个单独的文件加入到输出列表，这步是可以修改输出内容的最后机会；
-7. 输出完成：
+    根据入口和module之间的依赖关系，组装成一个个包含多个module的`Chunk`，再把每个Chunk转换成一个单独的文件加入到输出列表；
 
-    在确定好输出内容后，根据配置确定输出的路径和文件名，把文件内容写入到文件系统。
+    >这步是可以修改输出内容的最后机会。
+6. 输出完成：
 
-在以上过程中，Webpack会在特定的生命周期广播出特定的事件，`plugin`在监听到代码编写的事件后会执行特定的逻辑，并且plugin可以调用Webpack提供的API改变Webpack的运行结果。
+    根据配置确定输出的路径和文件名，把文件内容写入到文件系统。
+
+- 在以上过程中，Webpack会在特定的生命周期广播出特定的事件，`plugin`在监听到代码编写的事件后会执行特定的逻辑，并且可以调用Webpack提供的API改变Webpack的运行结果。
 
 #### 动态加载（按需加载，代码分割，异步组件，路由/组件 懒加载）
 1. 代码使用 ES6 Module的`import()` 或 特别约定的`require` 来告诉webpack支持动态加载
@@ -307,7 +310,7 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 
         <summary>Vue的异步组件</summary>
 
-        ```javascript
+        ```js
         Vue.component(
           'async-webpack-example',
           // 这个动态导入会返回一个 `Promise` 对象。
@@ -334,7 +337,7 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 
         - 动态module的代码存放在`window.webpackJsonp`：
 
-            ```javascript
+            ```js
             // window.webpackJsonp
             [
               0: [
@@ -353,7 +356,7 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 
             <summary>输出文件中的 实现动态加载方法（JSONP原理）</summary>
 
-            ```javascript
+            ```js
             var inProgress = {};
             var dataWebpackPrefix = "wepack5-demo:";
 
@@ -419,7 +422,7 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 #### 热更新（hot module replacement，HMR，模块热替换）
 1. 配置
 
-    ```javascript
+    ```js
     devServer: {
       hot: true,
     },
@@ -444,13 +447,13 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
     5. 浏览器端的HMR Runtime对比新旧的hash值，若不一致，则ajax获取manifest确定需要改动的module和chunk，再通过JSONP去Bundle server获取最新资源
 
 #### [tree shaking](https://webpack.docschina.org/guides/tree-shaking)
-todo: 具体能成功的套路
+移除JS上下文中的未引用代码（dead-code）行为的术语，最早由rollup实现，后来webpack等广泛跟进实现。
 
 ①基于静态分析的原理，通过识别未使用的module、函数、变量等并②打上标记，③然后在压缩阶段利用uglify-js/terser等压缩工具删除这些没有用到的代码（AST裁剪）。
 
 1. 在webpack中开启，必须同时满足：
 
-    1. 使用ES6 Module规范编写代码
+    1. 针对使用ES6 Module规范编写代码
 
         ><details>
         ><summary>原因</summary>
@@ -458,25 +461,38 @@ todo: 具体能成功的套路
         >1. 在CommonJS、AMD、CMD等旧版本的JS模块化方案中，导入导出行为是高度动态，难以预测。
         >2. ES6 Module方案则从规范层面规避这一行为，它要求所有的导入导出语句只能出现在模块顶层，且导入导出的模块名必须为字符串常量（不能修改），所以，ES6 Module下模块之间的依赖关系是高度确定的，与运行状态无关，编译工具只需要对代码做静态分析，就可以从代码字面量中推断出哪些模块值未曾被其它模块使用，这是实现Tree Shaking技术的必要条件。
         ></details>
+    2. 配置`optimization.usedExports: true`启动标记功能（**标记哪些`导出`没有被使用**，导出层面，不是模块文件层面）
 
-        - 确保代码不会在某些阶段被转换为CommonJS等（在使用babel时避免`compilerOptions.module`设置为非ES6 Module）
-    2. 配置`optimization.usedExports: true`启动标记功能（标记哪些代码没有被使用）
-
-        1. Make 阶段，收集模块导出变量并记录到模块依赖关系图 ModuleGraph 变量中（收集）
-        2. Seal 阶段，遍历 ModuleGraph 标记模块导出变量有没有被使用（标记）
-        3. 生成产物时，若变量没有被其它模块使用则删除对应的导出语句（删除）
-    3. 启动代码优化功能：
+        >webpack在代码中标记：`/* unused harmony export xxx */`。
+    3. 启动代码优化功能（最终由压缩工具删除，如：terser）：
 
         `mode: 'production'`或`optimization.minimize: true`或`optimization.minimizer: 「数组」`
 2. 目标代码
 
+    >虽然Webpack自2.x开始就原生支持Tree Shaking功能，但受限于JS的动态特性与模块的复杂性，直至最新的5.0版本依然没有解决许多代码副作用带来的问题，使得优化效果并不如Tree Shaking原本设想的那么完美，所以需要使用者有意识地优化代码结构，或使用一些补丁技术帮助Webpack更精确地检测无效代码，完成Tree Shaking操作。
+
     0. 使用ES6 Module规范编写代码
-    1. 通过package.json的`"sideEffects"`标记（`: false`：当前包的所有模块都被标记没有副作用；`[有副作用的文件或文件夹]`：标记有副作用的部分），可以安全地删除标记无副作用文件中未使用的部分
-    2. 函数标记无副作用
+
+        - 确保代码不会在某些阶段被转换为CommonJS等（babel、TypeScript需要配置产出ES6 Module）。
+    1. 通过package.json的`"sideEffects"`标记（`: false`：当前包的所有模块都被标记没有副作用；`[有副作用的文件或文件夹]`：标记有副作用的部分）（**标记若一个导入模块的内容没有被使用，则允许完全跳过这个模块**，整个模块文件层面）
+
+        默认情况下，库的每个模块都是有副作用（默认"sideEffects: true"）。
+
+        >副作用标识（`sideEffects`）比起检测无用的导出（`usedExports`）来说是更有效的优化手段，因为它允许跳过整个子树或者子模块的扫描。
+    2. `调用函数`标记无副作用（允许删除这条`调用函数`逻辑）
 
         1. `/*#__PURE__*/`被放到函数调用之前，用来标记是无副作用的（传到函数中的入参是无法被刚才的注释所标记，需要单独每一个标记才可以）。
         2. webpack开启`optimization.innerGraph: true`
-3. [Tree-Shaking 实现原理](https://mp.weixin.qq.com/s/McigcfZyIuuA-vfOu3F7VQ)
+    3. 使用明确表示支持tree shaking的库：
+
+        1. 库提供ES6 Module代码，且其依赖的库也是ES6 Module代码。
+        2. 库包含package.json的`"sideEffects"`标记
+    4. 构建前不能丢失模块结构
+
+        1. 我们应该保留库产物的模块结构，以便其充分受益于 sideEffects 的优化。
+        2. 库产物应该被分割成多个独立的小模块，每个模块只负责一段逻辑。
+        3. 在使用代码分割的应用程序中，树摇优化的模块只能在 sideEffects 优化下工作。
+        4. 转译库（如：babel、TypeScript）不能丢失模块结构和ES6 Module特性
 
 #### scope hoisting（作用域提升）
 分析出模块之间的依赖关系，尽可能的把打散的模块合并到一个函数中去，但前提是不能造成代码冗余。因此只有那些被引用了一次的模块才能被合并。
@@ -486,7 +502,7 @@ todo: 具体能成功的套路
 >
 >1. 未开启：
 >
->    ```javascript
+>    ```js
 >    [
 >      (function (module, __webpack_exports__, __webpack_require__) {
 >        var __WEBPACK_IMPORTED_MODULE_0__util_js__ = __webpack_require__(1);
@@ -499,7 +515,7 @@ todo: 具体能成功的套路
 >    ```
 >2. 开启后：
 >
->    ```javascript
+>    ```js
 >    [
 >      (function (module, __webpack_exports__, __webpack_require__) {
 >        var util = ('Hello,Webpack');
@@ -536,7 +552,7 @@ todo: 具体能成功的套路
 
     1. `webpack.config.js`
 
-        ```javascript
+        ```js
         // "webpack": "^5.76.2",
         // "webpack-cli": "^5.0.1"
         module.exports = {
@@ -553,7 +569,7 @@ todo: 具体能成功的套路
         ```
     2. 源文件
 
-        ```javascript
+        ```js
         // ./src/index.js
         const a = require("./a");
 
@@ -566,7 +582,7 @@ todo: 具体能成功的套路
         };
         ```
 
-        ```javascript
+        ```js
         // ./src/a.js
         const b = require("./b");
         console.log(b);
@@ -579,19 +595,19 @@ todo: 具体能成功的套路
         };
         ```
 
-        ```javascript
+        ```js
         // ./src/b.js
         require("./c");
 
         console.log("b..js");
         ```
 
-        ```javascript
+        ```js
         // ./src/c.js
         console.log("i am a not export c..js");
         ```
 
-        ```javascript
+        ```js
         // ./src/d.js
         console.log("d..js");
 
@@ -601,7 +617,7 @@ todo: 具体能成功的套路
 
 2. 输出文件
 
-    ```javascript
+    ```js
     (() => {
       // webpackBootstrap
       var __webpack_modules__ = {
@@ -755,7 +771,7 @@ todo: 具体能成功的套路
 
         1. 普通别名
 
-            ```javascript
+            ```js
             // webpack
             alias: {
               xyz: path.resolve(__dirname, 'path/to/file.js')
@@ -768,7 +784,7 @@ todo: 具体能成功的套路
             ```
         2. 精准匹配别名（`「名字」$`）
 
-            ```javascript
+            ```js
             // webpack
             alias: {
               xyz$: path.resolve(__dirname, 'path/to/file.js')
@@ -783,7 +799,7 @@ todo: 具体能成功的套路
 
 - 可以导出数组，分别进行配置，串行执行多个webpack任务（如：前后端同构任务）
 
-    ```javascript
+    ```js
     module.exports = [配置1, 配置2]
     ```
 

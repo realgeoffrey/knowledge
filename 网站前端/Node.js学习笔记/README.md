@@ -440,7 +440,7 @@ npm（Node Package Manager）。
         ><details>
         ><summary>e.g.</summary>
         >
-        >```javascript
+        >```js
         >// ./package.json
         >{
         >  "config" : { "xx" : "any thing" },
@@ -815,7 +815,7 @@ over
     >
     >1. Node.js原生处理POST/GET请求
     >
-    >    ```javascript
+    >    ```js
     >    const http = require("http");
     >
     >    http
@@ -835,7 +835,7 @@ over
     >    ```
     >2. Node.js原生发起POST请求
     >
-    >    ```javascript
+    >    ```js
     >    const http = require("http");
     >
     >    const req = http.request(
@@ -868,7 +868,7 @@ over
     >    ```
     >3. Node.js原生发起GET请求
     >
-    >    ```javascript
+    >    ```js
     >    const http = require("http");
     >
     >    const req = http.request(
@@ -905,7 +905,7 @@ over
     ><details>
     ><summary>e.g.</summary>
     >
-    >```javascript
+    >```js
     >// 异步（结果在回调；若出错，则回调函数第一个参数不为null或undefined）
     >require('fs').rename('before.json', 'after.json', err => {
     >  if (err) {
@@ -1092,14 +1092,14 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         >
         >1. 捕获未捕获的异常
         >
-        >    ```javascript
+        >    ```js
         >    process.on('uncaughtException', err => {
         >      // 执行逻辑
         >    })
         >    ```
         >2. 捕获未捕获的失败Promise实例
         >
-        >    ```javascript
+        >    ```js
         >    process.on('unhandledRejection', err => {
         >      // 执行逻辑
         >    })
@@ -1179,7 +1179,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         >
         >1. Node.js的`host`和`port`参数
         >
-        >    ```javascript
+        >    ```js
         >    const http = require("http");
         >    const req = http.request(
         >      {
@@ -1230,7 +1230,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 
 1. 级联（Cascading）：中间件按顺序执行，随着第二个参数`next`执行进入执行栈，所有中间件运行完毕后自动返回响应
 
-    ```javascript
+    ```js
     const Koa = require('koa')
     const app = new Koa()
 
@@ -1300,7 +1300,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 
             等价于：
 
-            ```javascript
+            ```js
             const http = require('http');
             const Koa = require('koa');
             const app = new Koa();
@@ -1353,14 +1353,14 @@ Node.js的全局对象`global`是所有全局变量的宿主。
             1. 统一写入`app.context.新属性 = 值`
             2. 中间件写入
 
-                ```javascript
+                ```js
                 app.use((ctx) => {
                   ctx.新属性 = 值
                 })
                 ```
         2. 读取：
 
-            ```javascript
+            ```js
             app.use((ctx) => {
               console.log(ctx.新属性)
             })
@@ -1444,7 +1444,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 
         推荐的命名空间，用于通过中间件传递信息。
 
-        ```javascript
+        ```js
         // 前面的中间件设置
         ctx.state.属性1 = 值
 
@@ -1562,7 +1562,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
                 ><details>
                 ><summary>e.g.</summary>
                 >
-                >```javascript
+                >```js
                 >// 默认使用
                 >"env": {
                 >  "DEBUG": "this"

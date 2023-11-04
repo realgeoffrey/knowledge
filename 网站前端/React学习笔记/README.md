@@ -191,7 +191,7 @@
 
         - `React.createElement`创建`ReactElement`对象：
 
-            ```typescript
+            ```ts
             export type ReactElement = {|
               // 用于辨别ReactElement对象
               $$typeof: any,
@@ -419,7 +419,7 @@
                         ><details>
                         ><summary>e.g.</summary>
                         >
-                        >```javascript
+                        >```js
                         >// 伪逻辑
                         >isBatchingUpdates = true
                         >
@@ -467,7 +467,7 @@
                 >
                 >e.g.
                 >
-                >```javascript
+                >```js
                 >import produce from "immer"
                 >
                 >const baseState = [
@@ -959,7 +959,7 @@
             ><details>
             ><summary>e.g.</summary>
             >
-            >```javascript
+            >```js
             >const divStyle = {
             >  transition: 'all',
             >
@@ -1408,7 +1408,7 @@
 
         >类似`React.Component`实现浅比较`shouldComponentUpdate` 或 `React.PureComponent`默认。
 
-        若组件在相同props的情况下渲染相同的结果，则可以通过将其包装在`React.memo`中调用，以此通过记忆组件渲染结果的方式来提高组件的性能表现。这意味着在这种情况下，React将跳过渲染组件的操作并直接复用最近一次渲染的结果。
+        若组件在相同props的情况下渲染相同的结果，则可以通过将其包装在`React.memo`中调用，以此通过记忆组件渲染结果的方式来提高组件的性能表现。这意味着在这种情况下，React将跳过渲染组件的操作并直接复用最近一次渲染的结果（不执行第一个参数——组件方法，而是用上一次的缓存值）。
 
         ><details>
         ><summary>e.g.</summary>
@@ -1923,7 +1923,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
 - 使用规则（eslint-plugin-react-hooks）：
 
-    1. 只能在函数最外层调用Hook。不要在~~循环、条件判断或嵌套函数~~中调用。
+    1. 只能在函数组件内的最外层调用Hook。不要在~~循环、条件判断或嵌套函数~~中调用。
 
         若想要有条件地执行一个effect，可以将判断放到Hook内部。
 
@@ -1935,9 +1935,9 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     <details>
     <summary>原因</summary>
 
-    由于React Hook的实现设计导致：`currentlyRenderingFiber.memorizedState`中保存一条Hook对应数据的单向链表，因此每次渲染触发的调用顺序必须完全一致，以便正确地管理状态和更新。
+    由于React Hook的实现设计导致：在源码中Hook是无环的单向链表，函数组件的业务代码是从上到下执行，每执行到一个hook都从单向链表中获取之前保存的值，如果条件语句跳过了某些hook执行，但单向链表没法跳过，这样会导致获取之前储存的对应hook值出错。因此每次渲染触发的调用顺序必须完全一致（只能在函数组件内的最外层调用Hook），以便正确地管理状态和更新。
 
-    ```typescript
+    ```ts
     // https://github.com/facebook/react/blob/main/packages/react-reconciler/src/ReactFiberHooks.js#L184-L190
     export type Hook = {
       memoizedState: any,       // 内存状态, 用于输出成最终的fiber树
@@ -1964,7 +1964,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     };
     ```
 
-    ```javascript
+    ```js
     // e.g. 模拟实现
     let hookStates = [];    // 放着此组件的所有的hooks数据
     let hookIndex = 0;      // 代表当前的hooks的索引
@@ -1982,7 +1982,26 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     }
     ```
 
-    >Hook与fiber的关系：在fiber对象中有一个属性fiber.memoizedState指向fiber节点的内存状态。在function类型的组件中，fiber.memoizedState就指向Hook队列(Hook队列保存了function类型的组件状态)。
+    >Hook与fiber的关系：使用Hook最终也是为了控制fiber节点的状态和副作用，使用Hook的任意一个api，最后都是为了控制以下fiber属性：
+    >
+    >```ts
+    >export type Fiber = {
+    >  // 1. fiber节点自身状态相关
+    >  pendingProps: any, // 本次渲染需要使用的 props
+    >  memoizedProps: any, // 上次渲染使用的 props
+    >  updateQueue: mixed, // 用于状态更新、回调函数、DOM更新的队列
+    >  memoizedState: any, // 上次渲染后的 state 状态
+    >  // 多个Hook对象构成一个链表结构, 并挂载到fiber.memoizedState之上
+    >
+    >  // 2. fiber节点副作用(Effect)相关
+    >  flags: Flags, // 记录更新时当前 fiber 的副作用(删除、更新、替换等)状态
+    >  nextEffect: Fiber | null, // 下一个有副作用的 fiber
+    >  firstEffect: Fiber | null, // 指向第一个有副作用的 fiber
+    >  lastEffect: Fiber | null, // 指向最后一个有副作用的 fiber
+    >}
+    >```
+    >fiber树更新阶段，把current.memoizedState链表上的所有Hook按照顺序克隆到workInProgress.memoizedState上，实现数据的持久化。
+
     </details>
 
 >运行规则：函数组件的函数体先执行，按顺序执行语句（包括hook）；hook的回调函数在函数组件的函数体执行完毕之后，按照类型和顺序执行。
@@ -2025,12 +2044,12 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     1. `变量名`
 
         值：一开始是初始值（或初始方法返回的值），后续是传入`修改变量的方法名`的新值（或函数返回的新值）。
-    2. `修改变量的方法名`
+    2. `修改变量的方法名`（返回空）
 
         1. 可传入：新值 或 函数（`(旧值) => 新值`）
         2. 若`修改变量的方法名`的返回值和当前的值完全相同，则不会产生渲染、effect不会执行、也不会运行整个函数组件（子组件也跳过）。
 
-            >使用`Object.is`进行比较。
+            >使用`Object.is`进行浅比较。
         3. 与`this.setState`不同点：不会把新的state和旧的state进行合并，而是用新的state整个替换旧的state。
     3. 初始值可以是：值 或 函数（仅在初始渲染时调用）
 2. `useReducer`
@@ -2041,7 +2060,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     1. 若`修改变量的方法名`的返回值和当前的值完全相同，则不会产生渲染、effect不会执行、也不会运行整个函数组件（子组件也跳过）。
 
-        >使用`Object.is`进行比较。
+        >使用`Object.is`进行浅比较。
 
     ><details>
     ><summary>e.g.</summary>
@@ -2089,7 +2108,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     >类似生命周期的效果：`componentDidMount`+`componentDidUpdate`+`componentWillUnmount`。接收一个包含命令式、且可能有副作用代码的函数。
 
-    ```javascript
+    ```js
     useEffect(() => {
       /* 副作用逻辑 */
 
@@ -2101,11 +2120,13 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     1. React会在每次渲染**完成后**调用副作用函数，包括第一次渲染时。
 
-        >虽然useEffect会在浏览器绘制后延迟执行，但会保证在任何新的渲染前执行。
+        虽然useEffect会在浏览器绘制后延迟执行，但会保证在任何新的渲染前执行。
+
+        >e.g. 第一次渲染展示`useRef`某个值，若在`useEffect`里修改这个值（`useRef`值修改不触发重新渲染），则在没有其他触发重新渲染的情况下，页面会继续展示旧的`useRef`值，尽管此时这个值已经更新，需要触发重新渲染才能把新值上屏。
     2. return的清除方法，会在下一次effect触发之前调用，也会在组件卸载前调用。
     3. `依赖项`，仅当依赖项内的值都变化才触发执行。
 
-        >依赖项的每一项进行浅比较`Object.is()`判断是否变化。
+        >依赖项数组的每一项进行浅比较`Object.is`判断是否变化（数组顺序和长度不能变化）。
 
         1. 确保数组中包含了**所有**`外部作用域中会发生变化`且`在effect中使用`的变量（包括要用到的`state`和`props`），否则代码会引用到*先前渲染中的旧变量*。
 
@@ -2171,6 +2192,8 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 4. `useLayoutEffect`
 
     与`useEffect`函数签名一致。
+
+    >依赖项数组的每一项进行浅比较`Object.is`判断是否变化（数组顺序和长度不能变化）。
 
     - 区别：
 
@@ -2335,6 +2358,31 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
         >    ```
         ></details>
 
+    - 作为依赖项（如：`useEffect`、`useCallback`、`useMemo`、等的依赖项）
+
+        >e.g. `const ref = useRef()`
+
+        1. `useRef`创建`ref`后将保持其永远返回同一个对象，因此不能把`ref`作为依赖项。
+        2. `ref.current`改变不会触发重新渲染，就算放在依赖项里面也不会因为值变化而触发重新渲染；但是，若放在依赖项里，则其他情况触发本组件重新渲染后，判断 本次和上次ref.current是否同一个值，若不是同一个值则触发方法体执行（但方法体内的ref.current永远是最新值）。
+
+        ```js
+        // e.g.
+
+        const ref = useRef()
+
+        // 第一次渲染触发一次，之后不会再触发，等效于依赖项：[]。避免这样做，没有意义
+        useEffect(() => {}, [ref]);
+
+        // 第一次渲染触发一次；其他情况触发本组件重新渲染后，判断：若ref.current和上次渲染时的ref.current不同，则再次触发（但方法体内的ref.current永远是最新值）
+        useEffect(() => {}, [ref.current]);
+
+        // 第一次渲染触发一次，之后不会再触发
+        useEffect(() => {}, []);
+
+        // 每次渲染触发一次
+        useEffect(() => {});
+        ```
+
 ><details>
 ><summary><code>useState</code>、<code>useRef</code>等，与Promise数据配合要注意在初始化时处理Promise实例可能导致的问题（有触发条件，暂不明确），建议初始化和赋值分开来</summary>
 >
@@ -2460,6 +2508,8 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     返回一个`memoized`值。
 
     1. 仅会在某个依赖项改变时才重新计算memoized值。
+
+        >依赖项数组的每一项进行浅比较`Object.is`判断是否变化（数组顺序和长度不能变化）。
     2. 若没有提供依赖项数组（第二个参数为`undefined`），则`useMemo`在每次渲染时都会计算新的值。
 
         若提供空数组`[]`，则仅计算一次，之后渲染不会再改变值。
@@ -2506,6 +2556,8 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     返回一个`memoized`回调函数。
 
+    >依赖项数组的每一项进行浅比较`Object.is`判断是否变化（数组顺序和长度不能变化）。
+
     1. 必须传2个参数。具体逻辑查看`useMemo`。
     2. 若`useCallback`第一个参数方法返回Promise实例，则`useCallback`返回的是`返回Promise实例的方法`。
 
@@ -2529,41 +2581,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
         </details>
     3. 引用自己会引用旧的自己（没有随依赖项变化）
 
-        <details>
-        <summary>可以写一个自定义Hook解决：<code>usePersistCallback</code></summary>
-
-        ```typescript
-        import { useCallback, useLayoutEffect, useRef } from "react";
-
-        // 生成不变化的函数，并且内部的所有变量都是实时的。不需要依赖项、可以引用自己
-        export default function usePersistCallback<T extends (...args: any[]) => any>(rawFunc: T) {
-          const func = useRef(rawFunc);
-
-          useLayoutEffect(() => {   // 这个嵌套，或可删除，直接：`func.current = rawFunc;`
-            func.current = rawFunc;
-          });
-
-          return useCallback((...args: Parameters<T>): ReturnType<T> => {
-            return func.current(...args);
-          }, []);
-        }
-
-
-        /* 使用测试 */
-        const func1 = usePersistCallback(()=>{
-            // 可以使用任何变量，每次都会用最新值（不需要依赖项）
-            // func是不变的变量
-            // （最重要的：）内部引用`func()`，其内部的变量都可以用最新值
-        })  // 方便针对：依赖变量a触发执行的内容，包含除了a之外的变量也必须是当前最新值
-
-        func1()  // 在任意地方调用
-
-
-        const func2 = usePersistCallback((a:string, b:number)=>{})
-
-        func2('', 1)
-        ```
-        </details>
+        可以写一个自定义Hook解决：[`usePersistCallback`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/手写代码/README.md#usepersistcallback)。
     4. 与debounce/throttle等配合使用方式，搜索本文上面内容
 
     >当想要`useEffect`限制执行次数，但依赖一些不变化的props或state时，很有用：`const a = useCallback(方法,[依赖1]); useEffect(()=>{执行},[a])`。
@@ -2613,6 +2631,8 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     `useImperativeHandle(ref, createHandle, [deps])`
 
+    >依赖项数组的每一项进行浅比较`Object.is`判断是否变化（数组顺序和长度不能变化）。
+
     在使用`ref`时自定义暴露给父组件的实例值，与`forwardRef`一起使用。
 
     ><details>
@@ -2652,6 +2672,8 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 14. `useId`
 15. `useInsertionEffect`
 16. `useSyncExternalStore`
+17. `useMutableSource`
+18. `useCacheRefresh`
 
 ><details>
 ><summary>从class迁移到Hook</summary>
@@ -2717,7 +2739,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     );
     ```
 
-    ```javascript
+    ```js
     // 单个虚拟DOM类似：
     {
       // element 对应的 DOM node
@@ -2780,7 +2802,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
         <summary>e.g. 模拟来自：<a href="https://codesandbox.io/s/tinyreact-functional-component-x51ul?file=/src/index.js">codesandbox</a></summary>
 
-        ```javascript
+        ```js
         let rootInstance = null;
 
         // element: 虚拟DOM，类似 { type, props, children }。container: DOM
@@ -2876,7 +2898,15 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
             2. Reconciler（调和器）：（Fiber Reconciler）负责找出变化的组件，更新工作从递归变成了可以中断的循环过程。Reconciler内部采用了Fiber的架构，被称为`render`阶段（因为在该阶段会调用组件的`render`方法。）
             3. Renderer（渲染器）：负责将变化的组件渲染到页面上，被称为`commit`阶段
 
-            为了解决react15的同步调和问题，react16引入了fiber这种数据结构（Fiber Reconciler），将更新渲染耗时长的调和大任务，分为 多个原子性（不可中断）的任务 在 许多的小片**循环**执行（时间切片，Time Slicing），实现了 原本完整的组件的更新流程可以被中断与恢复（类似系统协程）。每个小片的任务执行完成后，回到Scheduler判断 是否还有空闲时间（Scheduler模拟`requestIdleCallback`判断浏览器渲染一帧的空闲期） 或 是否有更优先级最高的任务（Scheduler优先执行高优先级的任务，如：用户点击输入事件、动画、等。所有操作都被分了优先级，调和流程优先级最低，用户操作、浏览器一帧渲染优先级最高），让出主线程（把控制权归还浏览器，浏览器可以处理UI绘制、用户输入，就显得不会卡顿）。这就叫做并发渲染模式（Concurrent Mode：React在渲染组件时更有效地利用浏览器的资源，关键点：时间切片、浏览器空闲时间执行、优先级调度、过渡api设置低优先级任务）
+            为了解决react15的同步调和问题，react16引入了fiber这种数据结构（Fiber Reconciler），将更新渲染耗时长的调和大任务，分为 多个原子性（不可中断）的任务 在 许多的小片**循环**执行（时间切片，Time Slicing），实现了 原本完整的组件的更新流程可以被中断与恢复（类似系统协程）。每个小片的任务执行完成后，回到Scheduler判断 “是否还有空闲时间” 或 “是否有更优先级最高的任务”，从而决定是否让出主线程。这就叫做并发渲染模式（Concurrent Mode：React在渲染组件时更有效地利用浏览器的资源，
+
+            - 关键点
+
+                1. 时间切片
+                3. 让出主线程：把控制权归还浏览器，浏览器可以处理UI绘制、用户输入，就显得不会卡顿
+                4. 浏览器空闲时间执行：Scheduler模拟`requestIdleCallback`判断浏览器渲染一帧的空闲期
+                5. 优先级调度：Scheduler优先执行高优先级的任务，如：用户点击输入事件、动画、等。所有操作都被分了优先级，调和流程优先级最低，用户操作、浏览器一帧渲染优先级最高
+                6. 过渡api设置低优先级任务
 
         >1. Stack Example: <https://claudiopro.github.io/react-fiber-vs-stack-demo/stack.html>
         >2. Fiber Example: <https://claudiopro.github.io/react-fiber-vs-stack-demo/fiber.html>
@@ -2885,7 +2915,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
         <details>
         <summary>e.g. fiber的数据结构FiberNode</summary>
 
-        ```javascript
+        ```js
         // 存储dom信息
         tag、key、elementType、type、stateNode（真实dom节点）等信息
 
@@ -3097,7 +3127,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
         ```
 2. 自动批处理更新state变化，减少渲染次数
 
-    ```javascript
+    ```js
     // react17
     // 只有 React 事件会被批处理。
     setTimeout(() => {
@@ -3121,7 +3151,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     `startTransition`、`useTransition`、`useDeferredValue`更新可以中断，可以跟踪挂起的更新，并且它会立即执行。意味着他们可以被其他紧急渲染所抢占。这种渲染优先级的调整手段可以帮助我们解决各种性能伪瓶颈，提升用户体验。
 
-    ```javascript
+    ```js
     import { startTransition } from 'react';
     // 或hook：const [isPending, startTransition] = useTransition();
 
@@ -3135,7 +3165,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     });
     ```
 
-    ```javascript
+    ```js
     import { useState, useDeferredValue } from 'react';
 
     function SearchPage() {
@@ -3283,7 +3313,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
         >若root reducer包含多个键-值（利用`combineReducers`组合），则把root reducer的任意一个键-值区域称为一个'切片'（slice），同时我们使用"切片 reducer"（slice reducer）这个术语，去形容负责更新该切片状态的reducer函数。
 
-        ```javascript
+        ```js
         import { createStore } from 'redux'
         import reducers对象 from './reducers'  // reducers对象 === combineReducers({ reduce1: reduce函数1, reduce2: reduce函数2 })。root reducer
 
@@ -3333,18 +3363,18 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             ><details>
             ><summary>e.g.</summary>
             >
-            >```javascript
+            >```js
             >const selectXx = state => state.Xx
             >const currentXx = selectXx(store.getState())
             >```
             >
-            >```javascript
+            >```js
             >import { connect } from 'react-redux'
             >
             >`connect`的第一个参数
             >```
             >
-            >```javascript
+            >```js
             >import { useSelector } from 'react-redux'
             >
             >useSelector(Selector函数)
@@ -3386,7 +3416,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             ><details>
             ><summary>e.g.</summary>
             >
-            >```javascript
+            >```js
             >switch (action.type) {
             >  case XXX:
             >    return Object.assign({}, state, action.data)
@@ -3400,7 +3430,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             ><details>
             ><summary>e.g.</summary>
             >
-            >```typescript
+            >```ts
             >import { combineReducers } from 'redux'
             >import reduce函数1 from '../xxSlice'
             >
@@ -3511,20 +3541,20 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             >`浅比较函数`可以直接用`import { shallowEqual } from 'react-redux'`，作用：浅比较前后`state切片值`是否相同，如果相同则不触发更新。
         2. `useDispatch`
 
-            ```javascript
+            ```js
             const dispatch = useDispatch()
 
             dispatch(createSlice实例.actions.方法名(参数));
             ```
         3. `useStore`
 
-            ```javascript
+            ```js
             // `{store.getState()}`不会随着state更新而触发视图更新
             const store = useStore()        // store === { dispatch, getState, replaceReducer, subscribe }
             ```
     3. class组件内使用
 
-        ```javascript
+        ```js
         import { connect } from 'react-redux'
 
         export default connect(
@@ -3552,7 +3582,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
     >);
     >```
     >
-    >```typescript
+    >```ts
     >// ./store.ts
     >import { configureStore, ThunkAction, Action, combineReducers } from '@reduxjs/toolkit';
     >import counterReducer from '../features/counter/counterSlice';
@@ -3676,7 +3706,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         >
         >    >[原因](https://redux.js.org/style-guide#do-not-put-non-serializable-values-in-state-or-actions)。
         >
-        >    ```javascript
+        >    ```js
         >    export default configureStore({
         >      reducer: rootReducer,
         >      middleware: (getDefaultMiddleware) => {
@@ -3692,7 +3722,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
         生成reducer。
 
-        ```javascript
+        ```js
         const counter1 = createReducer(0, { // 初始状态值、action type的查找表。创建一个reducer来处理所有这些action type
           [INCREMENT]: state => state + 1,
           [DECREMENT]: state => state - 1

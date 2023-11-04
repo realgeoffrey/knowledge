@@ -303,7 +303,7 @@
             ><details>
             ><summary>e.g.</summary>
             >
-            >```javascript
+            >```js
             >let consolelogId = 0
             >
             >function wapConsole () {

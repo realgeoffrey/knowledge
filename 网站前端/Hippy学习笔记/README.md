@@ -69,6 +69,13 @@
             2. App点击：本地调试 -> 点击调试
 
                 >若Safari没有调试信息，则重启App
+
+        - 调试原理
+
+            1. 开发时启动一个基于websocket的debugServer
+            2. debugserver作为 Chrome与手机端 的中间桥梁，分别与Chrome、手机端做两条socket通道连接，当安卓在执行JS bundle代码时，遇到日志的输出，会被客户端拦截，经过[CDP](https://chromedevtools.github.io/devtools-protocol/)包装，转发到debugServer上，而debugServer又会将CDP数据转发到Chrome，实现调试日志的输出，反过来，chrome上断点调试的信息，也会经过debugServer 转发到客户端中。
+
+                - iOS通过类似的[safari调试协议](https://github.com/WebKit/webkit/tree/main/Source/JavaScriptCore/inspector/protocol)进行调试；或考虑把safari调试协议转化为CDP统一通过Chrome调试。
 2. 前端使用：
 
     1. 构建工具
@@ -135,9 +142,9 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
             2. `<ScrollView>`内可嵌套所有组件（包括：`<ScrollView>`、`<ListView>`、`<ViewPager>`）。
         2. `<ListView>`
 
-            支持：竖向滚动。复用节点优化：（在客户端进行，不在前端进行：）自动删除不在可视区的节点，对进入可视区的节点进行按类型视图复用。
+            支持：竖向滚动。复用节点优化（在客户端进行，不在前端进行）：自动删除不在可视区的节点，对进入可视区的节点进行按类型视图复用。
 
-            >视图复用只体现在终端视图上，前端的视图描述（虚拟Dom、渲染树等）没有实现复用，大量的列表依然会在前端维持着大量的数据，导致内存占用、阻塞与终端交互。解决：可以利用`<ul nativeName="RapidListView" dataSource="数据"><li nativeName="RapidListViewItem">{模板}</li></ul>`，通过前端分离视图模板和数据源（前端不进行渲染，只传递数据和模板给Native），减少前端渲染次数和与终端交互数据量（模板内的事件绑定需要统一事件代理/事件委托绑定在父级ul上，再通过模板内clickTag传递点击区域）。
+            >视图复用只体现在终端视图上，前端的视图描述（虚拟Dom、渲染树等）没有实现复用，大量的列表依然会在前端维持着大量的数据，导致内存占用、阻塞与终端交互。解决：可以利用`<ul nativeName="RapidListView" dataSource="数据"><li nativeName="RapidListViewItem">{模板}</li></ul>`，通过前端分离数据源和视图模板（前端不进行渲染，改成只传递 数据和模板 给Native），省去前端渲染列表的虚拟dom开销、减少与终端交互的数据量（模板内的事件绑定需要统一事件代理/事件委托绑定在父级ul上，再通过模板内clickTag传递点击区域）。
         3. `<RefreshWrapper>`
 
             包裹一个`<ListView>`后支持：下滑刷新。
@@ -1215,7 +1222,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
 
         - 回调参数：
 
-            ```javascript
+            ```js
             {
               name: 「事件名」,
               id: 「控件的id」,
@@ -1233,7 +1240,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
 
         - 回调参数：
 
-            ```javascript
+            ```js
             {
               name: 「事件名」,
               id: 「控件的id」,
@@ -1328,7 +1335,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
             ```
         - 响应式：
 
-            ```typescript
+            ```ts
             import { Dimensions } from "react-native";
 
             const WINDOW_WIDTH = Dimensions.get("window").width;
@@ -1687,7 +1694,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
                 ><details>
                 ><summary>e.g. 好像又能正常设置</summary>
                 >
-                >```javascript
+                >```js
                 >tag: {
                 >  position:'absolute',
                 >  top: -pt(1.5),
@@ -1708,7 +1715,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
 
             >直接`boxShadow: '属性'`无效。
 
-            ```javascript
+            ```js
             boxShadowOpacity: 0.6,
             boxShadowRadius: 5,
             boxShadowOffsetX: 10,
@@ -1724,7 +1731,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
 
             >直接`textShadow: '属性'`无效。
 
-            ```javascript
+            ```js
             textShadowColor
             textShadowOffsetX   // 大于0才有效
             textShadowOffsetY   // 大于0才有效
@@ -1734,7 +1741,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
             ><details>
             ><summary>e.g.</summary>
             >
-            >```javascript
+            >```js
             >textShadowColor: "#fff",
             >textShadowOffsetX: 0.1,
             >textShadowOffsetY: 0.1,
@@ -1807,7 +1814,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
 
     1. 捕获未捕获的异常
 
-        ```javascript
+        ```js
         global.Hippy.on('uncaughtException', (...args) => {
           // 此处可以做错误上报
           console.error('uncaughtException', ...args);
@@ -1815,7 +1822,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
         ```
     2. 捕获未捕获的失败Promise实例
 
-        ```javascript
+        ```js
         global.Hippy.on('unhandledRejection', (reason) => {
           console.error('unhandledRejection', reason);
         });
@@ -1826,7 +1833,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
 
     下载JS bundle（**webpack压缩优化**）、初始化JS引擎（**多JS引擎、复用JS引擎优化**） -> [JS引擎](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#js引擎)V8/JSC执行JS bundle（**webpack按需加载优化；尝试JS引擎切换成Facebook开发的Hermes优化**） -> 创建Root View，首帧 -> 前端框架虚拟DOM通过Native Renderer翻译成Native组件上屏，首屏（**前置后台请求优化；运行时优化**） -> 客户端与JS通过JSI、Bridge通信（**自绘引擎引入优化**）
 
-    >针对优化后1秒内的首屏。JS bundle压缩包大小：150kb；JS bundle大小：500kb；JS引擎初始化时间：100ms。JS bundle下载时间：小几百ms或预下载0。JS bundle执行时间：200ms。
+    >针对优化后1秒内的首屏。JS bundle压缩包大小：150kb；JS bundle大小：500kb。JS bundle压缩包下载时间：100ms~300ms或预下载0；JS引擎初始化时间：150ms或不用初始化0；JS bundle执行时间：200ms~400ms；首屏后台请求：100ms~300ms。
 2. <details>
 
     <summary>3层架构</summary>
@@ -1868,7 +1875,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
 
                 webpack加入[@hippy/hippy-dynamic-import-plugin](https://github.com/hippy-contrib/hippy-dynamic-import-plugin)，业务代码中使用`import()`，如：
 
-                ```javascript
+                ```js
                 import(/* webpackMode: "lazy", webpackChunkName: "asyncComponentFromHttp" */'./AsyncComponentHttp')
                   .then((component) => {
                     this.setState({
@@ -1881,6 +1888,15 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
             2. [tree shaking](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/webpack学习笔记/README.md#tree-shaking)、压缩
             - 利用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)分析包体积
         2. 尽量用CDN图片，谨慎合理使用base64图片（小图可以用base64，考虑减少请求数量和增加少量文件大小）
+
+            - <details>
+
+                <summary>CDN图片也可以考虑预请求静态资源</summary>
+
+                1. 方案一：类似「H5的`<link rel="preload/prefetch">`」，在JS执行开始时调用hippy自带的预加载图片能力：`ImageLoaderModule.prefetch(地址)`。可以在构建阶段收集后加入构建结果代码开头。
+                2. 方案二：类似「预请求后台数据」，构建出资源列表，让客户端加载JS时替前端预请求静态资源。
+                - 不处理：客户端会有统一图片缓存功能。若图片加载不是瓶颈则不用额外考虑，避免加重系统复杂度和负担。
+                </details>
         3. 考虑后台数据传输依赖的打包解包的裁剪优化
     3. JS Bundle运行时
 
@@ -1898,7 +1914,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
 
             >`<ListView>`的视图复用只体现在终端视图上，前端的视图描述（虚拟Dom、渲染树等）没有实现复用，大量的列表依然会在前端维持着大量的数据，导致内存占用、阻塞与终端交互。
 
-            解决：可以利用类似`<ul nativeName="RapidListView" dataSource="数据"><li nativeName="RapidListViewItem">{模板}</li></ul>`，通过前端分离视图模板和数据源（前端不进行渲染，只传递数据和模板给Native），减少前端渲染次数和与终端交互数据量。
+            解决：可以利用类似`<ul nativeName="RapidListView" dataSource="数据"><li nativeName="RapidListViewItem">{模板}</li></ul>`，通过前端分离数据源和视图模板（前端不进行渲染，改成只传递 数据和模板 给Native），省去前端渲染列表的虚拟dom开销、减少与终端交互的数据量。
         5. 图片资源过大过多导致内存、GPU消耗太多，考虑用小图、裁剪图或压缩图。
         6. 动画性能问题，需要特别测试验证（帧率、内存、GPU、）
 
@@ -1923,13 +1939,13 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
 
                 >引擎池会越来越多，除非页面被关闭，节省了引擎加载耗时，但提高了内存。
             2. 复用：利用V8引擎的单引擎多context（上下文）方式进行业务隔离（不用创建过多引擎，依然可以业务隔离）。
-        3. JS引擎切换成[Hermes](https://github.com/facebook/hermes)
+        3. JS引擎切换成[Hermes](https://github.com/facebook/hermes)（[ˈhɜrmiz]）
         4. 引入自绘引擎[skia](https://github.com/google/skia)
 
 >可参考：[全民 K 歌跨端体系建设](https://xie.infoq.cn/article/e284b3a19e7937dc209a3d345)。
 
 ### Hippy与React Native对比
->Hippy是腾讯公司在当年React开源协议风波下fork React Native后不断开发维护的~~轮子~~框架。
+>Hippy是腾讯公司在当年React开源协议风波下fork React Native后不断开发维护的框架。
 
 1. 同时支持 React 和 Vue 两种前端主流框架
 

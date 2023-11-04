@@ -183,7 +183,7 @@
         - 其他
 
             1. 利用CDN combo（利用构建打包工具，如webpack，把多个文件合并为一个文件，并使用特定的URL来请求该合并后的文件）。
-            2. 避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。
+            2. ~~避免使用空链接的`<img>`、`<link>`、`<script>`、`<iframe>`（老版本浏览器依旧会请求）。~~
     2. 最小化字节：
 
         1. 压缩资源。
@@ -269,7 +269,7 @@
     1. [WebView优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Hybrid前端开发/README.md#webview性能)：
 
         配合客户端开发落地优化方案。
-    2. 首屏CGI提前至页面加载前
+    2. 首屏数据请求 提前至 页面加载前（利用客户端加载页面阶段，并行数据请求）
     3. 离线包（内置包、缓存包，运行前已提前下载准备好）
     - [hippy流程和优化（前端）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Hippy学习笔记/README.md#hippy流程和优化前端)
 

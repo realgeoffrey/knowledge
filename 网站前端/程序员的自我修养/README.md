@@ -293,7 +293,7 @@
     >    `(add 2 (subtract 4 2))`
     >2. 生成的Token：
     >
-    >    ```javascript
+    >    ```js
     >    [
     >      { type: 'paren',  value: '('        },
     >      { type: 'name',   value: 'add'      },
@@ -308,7 +308,7 @@
     >    ```
     >3. 生成的AST：
     >
-    >    ```javascript
+    >    ```js
     >    {
     >      type: 'Program',
     >      body: [{
@@ -721,7 +721,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 ><details>
 ><summary>e.g.</summary>
 >
->```javascript
+>```js
 >// 最软
 >function func(num) {
 >  ...
@@ -823,7 +823,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 
     一种**重复**执行特定代码块的控制结构。它允许在满足特定条件的情况下多次执行相同的代码块。
 
-    ```javascript
+    ```js
     // e.g.
     for (let i = 1; i <= 5; i++) {
       console.log(i);
@@ -833,7 +833,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 
     按照一定的规则或顺序**访问数据结构中的每个元素或节点**。遍历可以用于访问数组、链表、树等数据结构中的元素，并对它们进行相应的操作。
 
-    ```javascript
+    ```js
     // e.g.
     const arr = [1, 2, 3, 4, 5];
     for (const element of arr) {
@@ -844,7 +844,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 
     重复执行一段代码，每次都**根据上一次迭代的结果计算下一次迭代的值**。迭代通常使用循环结构来实现。
 
-    ```javascript
+    ```js
     // e.g. while循环进行迭代计算斐波那契数列
     function fibonacci(n) {
       let a = 0;
@@ -865,7 +865,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 
     一种在函数内部**调用自身**的编程技术。通过将问题分解为更小的子问题，递归函数可以重复地调用自己，直到达到基本情况（递归终止条件）。
 
-    ```javascript
+    ```js
     // e.g.
     function factorial(n) {
       if (n === 0) {
@@ -900,7 +900,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
         ><details>
         ><summary>优化原理</summary>
         >
-        >```javascript
+        >```js
         >// 尾调用由于是函数的最后一步操作，所以不需要保留外层函数的调用记录，
         >// 因为调用位置、内部变量等信息都不会再用到，
         >// 所以只要直接用内层函数的调用记录，取代外层函数的调用记录就可以了。

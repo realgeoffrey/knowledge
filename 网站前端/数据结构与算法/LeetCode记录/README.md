@@ -39,6 +39,24 @@
     1. [删除二叉搜索树中的节点](#删除二叉搜索树中的节点)
     1. [修剪二叉搜索树](#修剪二叉搜索树)
     1. [把二叉搜索树转换为累加树](#把二叉搜索树转换为累加树)
+1. [数组](#数组)（二分法、双指针法、滑动窗口、模拟行为）
+
+    - [移除元素](#移除元素)
+    - [有序数组的平方](#有序数组的平方)
+    - [数组中重复的数字](#数组中重复的数字)
+    - [在排序数组中查找数字 I](#在排序数组中查找数字-i)
+    - [0～n-1中缺失的数字](#0n-1中缺失的数字)
+    - [旋转数组的最小数字](#旋转数组的最小数字)
+    - [合并两个有序数组](#合并两个有序数组)
+    - [删除有序数组中的重复项](#删除有序数组中的重复项)
+    1. [搜索二维矩阵 II](#搜索二维矩阵-ii)
+    1. [长度最小的子数组](#长度最小的子数组)
+    1. [螺旋矩阵 II](#螺旋矩阵-ii)
+    1. [和为 K 的子数组](#和为-k-的子数组)
+    1. [扁平化嵌套数组](#扁平化嵌套数组)
+    1. [删除有序数组中的重复项 II](#删除有序数组中的重复项-ii)
+    1. [合并区间](#合并区间)
+    1. [对角线遍历](#对角线遍历)
 1. [动态规划](#动态规划)
 
     - [三步问题](#三步问题)
@@ -49,32 +67,34 @@
     1. [鸡蛋掉落-两枚鸡蛋](#鸡蛋掉落-两枚鸡蛋)
     1. [最大子数组和](#最大子数组和)
     1. [最长回文子串](#最长回文子串)
+1. [字符串](#字符串)
+
+    - [反转字符串](#反转字符串)
+    - [反转字符串 II](#反转字符串-ii)
+    - [替换空格](#替换空格)
+    - [左旋转字符串](#左旋转字符串)
+    - [第一个只出现一次的字符](#第一个只出现一次的字符)
+    1. [反转字符串中的单词](#反转字符串中的单词)
+1. [栈与队列](#栈与队列)
+
+    - [用栈实现队列](#用栈实现队列)
+    - [用队列实现栈](#用队列实现栈)
+    - [最小栈](#最小栈)
+1. [岛屿相关](#岛屿相关)
+
+    1. [岛屿数量](#岛屿数量)
+    1. [统计封闭岛屿的数目](#统计封闭岛屿的数目)
+    1. [飞地的数量](#飞地的数量)
+    1. [岛屿的最大面积](#岛屿的最大面积)
+    1. [统计子岛屿](#统计子岛屿)
+    1. [不同岛屿的数量](#不同岛屿的数量)
 1. [简单](#简单)
 
-    1. [用栈实现队列](#用栈实现队列)
-    1. [用队列实现栈](#用队列实现栈)
-    1. [最小栈](#最小栈)
-    1. [替换空格](#替换空格)
-    1. [左旋转字符串](#左旋转字符串)
-    1. [数组中重复的数字](#数组中重复的数字)
-    1. [在排序数组中查找数字 I](#在排序数组中查找数字-i)
-    1. [0～n-1中缺失的数字](#0n-1中缺失的数字)
-    1. [旋转数组的最小数字](#旋转数组的最小数字)
-    1. [第一个只出现一次的字符](#第一个只出现一次的字符)
-
-    1. [移除元素](#移除元素)
-    1. [有序数组的平方](#有序数组的平方)
     1. [两数之和](#两数之和)
     1. [移动零](#移动零)
     1. [有效的括号](#有效的括号)
-    1. [合并两个有序数组](#合并两个有序数组)
-    1. [删除有序数组中的重复项](#删除有序数组中的重复项)
-
 1. [中等](#中等)
 
-    1. [二维数组中的查找](#二维数组中的查找)
-    1. [长度最小的子数组](#长度最小的子数组)
-    1. [螺旋矩阵 II](#螺旋矩阵-ii)
     1. [字母异位词分组](#字母异位词分组)
     1. [最长连续序列](#最长连续序列)
     1. [盛最多水的容器](#盛最多水的容器)
@@ -85,16 +105,8 @@
     1. [森林中的兔子](#森林中的兔子)
     1. [每日温度](#每日温度)
     1. [找到字符串中所有字母异位词](#找到字符串中所有字母异位词)
-    1. [和为 K 的子数组](#和为-k-的子数组)
-    1. [扁平化嵌套数组](#扁平化嵌套数组)
-    1. [删除有序数组中的重复项 II](#删除有序数组中的重复项-ii)
-    1. [合并区间](#合并区间)
-    1. [岛屿数量](#岛屿数量)
-    1. [统计封闭岛屿的数目](#统计封闭岛屿的数目)
-    1. [飞地的数量](#飞地的数量)
-    1. [岛屿的最大面积](#岛屿的最大面积)
-    1. [统计子岛屿](#统计子岛屿)
-    1. [不同岛屿的数量](#不同岛屿的数量)
+    1. [课程表 II](#课程表-ii)
+    1. [比较版本号](#比较版本号)
 1. [困难](#困难)
 
     1. [滑动窗口最大值](#滑动窗口最大值)
@@ -127,7 +139,7 @@
                 >滚动数组：是DP中的一种编程思想。让数组滚动起来，每次都使用固定的几个存储空间，来达到压缩、节省存储空间的作用。因为DP题目是一个自底向上的扩展过程，常常需要用到的是连续的解，前面的解往往可以舍去。
 </details>
 
->面试做算法题或编程题时，先讲思路，边说边写。面试官关注：书写速度、逻辑思路。
+>面试做算法题或编程题时，先讲思路，边说边写。面试官关注：书写速度、逻辑思路、**变量命名**。
 
 ---
 ## 链表
@@ -145,7 +157,7 @@
 
     迭代，从前往后。
 
-    ```javascript
+    ```js
     /**
      * Definition for singly-linked list.
      * function ListNode(val) {
@@ -179,7 +191,7 @@
 
     递归，从前往后。和上面迭代逻辑一致。
 
-    ```javascript
+    ```js
     var reverseList = function (head) {
       return reverse(null, head);
     };
@@ -199,7 +211,7 @@
 
     递归，从后往前。看不懂。
 
-    ```javascript
+    ```js
     var reverseList = function (head) {
       if (head === null || head.next === null) { return head; }
 
@@ -251,7 +263,7 @@
 
     新增一个节点指向题目给出的头结点，这样可以统一处理删除逻辑。
 
-    ```javascript
+    ```js
     /**
      * Definition for singly-linked list.
      * function ListNode(val, next) {
@@ -290,7 +302,7 @@
 
     不利用新增一个虚拟前置头节点，因此需要分别处理head删除和next删除。不推荐。
 
-    ```javascript
+    ```js
     var removeElements = function (head, val) {
       // 先把头部自己是val的去掉
       while (head && head.val === val) {
@@ -382,7 +394,7 @@
 
     若有相交，则必然是2个链表最后相同长度的部分出现相交点。因此先确定2个链表长度，然后按照短的链表总长度对比找出相交节点。
 
-    ```javascript
+    ```js
     /**
      * Definition for singly-linked list.
      * function ListNode(val) {
@@ -443,7 +455,7 @@
 
     2链表连接在一起一同遍历。当遍历到节点相同时，要不然是交点，要不然是null。
 
-    ```javascript
+    ```js
     var getIntersectionNode = function (headA, headB) {
       let curA = headA;
       let curB = headB;
@@ -501,8 +513,11 @@ myLinkedList.get(1);              // 返回 3
 
     工具函数getNode，通过新增一个节点指向头结点来查询；需要维护链表 head、size。
 
-    ```javascript
+    ```ts
     class LinkNode {
+      val: number;
+      next: LinkNode;
+
       constructor(val, next) {
         this.val = val;
         this.next = next;
@@ -512,75 +527,74 @@ myLinkedList.get(1);              // 返回 3
     class MyLinkedList {
       size = 0;
       head = null;
-    }
 
-    // 工具函数：获取第index个节点
-    MyLinkedList.prototype.getNode = function (index) {
-      if (index >= this.size) { return null; }
+      // 工具函数：获取第index个节点
+      getNode(index: number): LinkNode | null {
+        if (index >= this.size) { return null; }
 
-      const vNode = new LinkNode(-1, this.head);
-      let cur = vNode;
-      for (let i = 0; i <= index; i++) {
-        cur = cur.next;
-      }
-      return cur;
-    };
-
-    MyLinkedList.prototype.get = function (index) {
-      if (index >= this.size) { return -1; }
-
-      return this.getNode(index).val;
-    };
-
-    MyLinkedList.prototype.addAtHead = function (val) {
-      this.head = new LinkNode(val, this.head);
-      this.size++;
-    };
-
-    MyLinkedList.prototype.addAtTail = function (val) {
-      if (this.size === 0) {
-        this.addAtHead(val);
-        return;
+        const vNode = new LinkNode(-1, this.head);
+        let cur = vNode;
+        for (let i = 0; i <= index; i++) {
+          cur = cur.next;
+        }
+        return cur;
       }
 
-      const node = this.getNode(this.size - 1);
-      node.next = new LinkNode(val, null);
-      this.size++;
-    };
-
-    MyLinkedList.prototype.addAtIndex = function (index, val) {
-      if (index > this.size) { return; }
-
-      if (index === 0) {
-        this.addAtHead(val);
-        return;
+      get(index: number): number {
+        if (index >= this.size) { return -1; }
+        return this.getNode(index).val;
       }
 
-      if (index === this.size) {
-        this.addAtTail(val);
-        return;
+      addAtHead(val: number): void {
+        this.head = new LinkNode(val, this.head);
+        this.size++;
       }
 
-      // 获取目标节点的上一个的节点
-      const node = this.getNode(index - 1);
-      node.next = new LinkNode(val, node.next);
-      this.size++;
-    };
+      addAtTail(val: number): void {
+        if (this.size === 0) {
+          this.addAtHead(val);
+          return;
+        }
 
-    MyLinkedList.prototype.deleteAtIndex = function (index) {
-      if (index >= this.size) { return; }
+        const node = this.getNode(this.size - 1);
+        node.next = new LinkNode(val, null);
+        this.size++;
+      }
 
-      if (index === 0) {
-        this.head = this.head.next;
+      addAtIndex(index: number, val: number): void {
+        if (index > this.size) { return; }
+
+        if (index === 0) {
+          this.addAtHead(val);
+          return;
+        }
+
+        if (index === this.size) {
+          this.addAtTail(val);
+          return;
+        }
+
+        // 获取目标节点的上一个的节点
+        const node = this.getNode(index - 1);
+        node.next = new LinkNode(val, node.next);
+        this.size++;
+      }
+
+      deleteAtIndex(index: number): void {
+        if (index >= this.size) { return; }
+
+        if (index === 0) {
+          this.head = this.head.next;
+          this.size--;
+          return;
+        }
+
+        // 获取目标节点的上一个的节点
+        const node = this.getNode(index - 1);
+        node.next = node.next.next;
         this.size--;
-        return;
       }
-
-      // 获取目标节点的上一个的节点
-      const node = this.getNode(index - 1);
-      node.next = node.next.next;
-      this.size--;
-    };
+    }
     ```
 
 <details>
@@ -590,7 +604,7 @@ myLinkedList.get(1);              // 返回 3
 
     工具函数getNode，通过新增一个节点指向头结点来查询；需要维护链表 head、tail、size。
 
-    ```javascript
+    ```js
     class LinkNode {
       constructor(val, next) {
         this.val = val;
@@ -754,7 +768,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归+哈希表。
 
-    ```javascript
+    ```js
     /**
      * // Definition for a Node.
      * function Node(val, next, random) {
@@ -797,7 +811,7 @@ myLinkedList.get(1);              // 返回 3
 
     3次循环。
 
-    ```javascript
+    ```js
     var copyRandomList = function (head) {
       if (head === null) {
         return null;
@@ -862,7 +876,7 @@ myLinkedList.get(1);              // 返回 3
 
     迭代，虚拟头节点，若下2个节点都存在则进行交换。
 
-    ```javascript
+    ```js
     /**
      * Definition for singly-linked list.
      * function ListNode(val, next) {
@@ -931,7 +945,7 @@ myLinkedList.get(1);              // 返回 3
 
     双指针（快慢指针）。
 
-    ```javascript
+    ```js
     /**
      * Definition for singly-linked list.
      * function ListNode(val, next) {
@@ -1014,7 +1028,7 @@ myLinkedList.get(1);              // 返回 3
 
     双指针（快慢指针），走1和走2步，会在环内相遇 或 null退出循环。然后通过数学证明，从head出发1个指针 和 从相遇节点出发1个指针，每次都只走1个节点，相遇点就是环形入口。
 
-    ```javascript
+    ```js
     /**
      * Definition for singly-linked list.
      * function ListNode(val) {
@@ -1058,7 +1072,7 @@ myLinkedList.get(1);              // 返回 3
 
     哈希表，记录每一个节点。空间复杂度 O(n)。
 
-    ```javascript
+    ```js
     var detectCycle = function (head) {
       // hash，保存节点地址
       const visited = new Set();
@@ -1087,7 +1101,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -1117,7 +1131,7 @@ myLinkedList.get(1);              // 返回 3
 
     迭代。
 
-    ```javascript
+    ```js
     // 先序。压栈顺序：右左中；出栈顺序：中左右
     // 中序。压栈顺序：右中左；出栈顺序：左中右
     // 后序。压栈顺序：中右左；出栈顺序：左右中
@@ -1151,7 +1165,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归，不修改原二叉树。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -1173,7 +1187,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归，修改原二叉树。
 
-    ```javascript
+    ```js
     var invertTree = function (root) {
       if (root === null) { return null; }
 
@@ -1248,7 +1262,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val) {
@@ -1284,7 +1298,7 @@ myLinkedList.get(1);              // 返回 3
 
     迭代，栈。
 
-    ```javascript
+    ```js
     var isSymmetric = function (root) {
       if (root === null) {
         return true;
@@ -1344,7 +1358,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归+回溯（回溯和递归是一一对应的，有一个递归，就要有一个回溯）。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -1419,7 +1433,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -1451,7 +1465,7 @@ myLinkedList.get(1);              // 返回 3
 
     迭代，与二叉树的遍历（前、中、后均可）类似。
 
-    ```javascript
+    ```js
     var sumOfLeftLeaves = function (root) {
       let result = 0;
 
@@ -1479,7 +1493,7 @@ myLinkedList.get(1);              // 返回 3
 
     把完全二叉树拆分成 根节点+左右2棵满二叉树。利用满二叉树原理：h层（h从1开始）节点总数等于`2^h - 1`。时间复杂度：O(log n × log n)。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -1527,7 +1541,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归，O(n)。
 
-    ```javascript
+    ```js
     var countNodes = function (root) {
       if (root === null) { return 0; }
       return 1 + countNodes(root.left) + countNodes(root.right);
@@ -1537,7 +1551,7 @@ myLinkedList.get(1);              // 返回 3
 
     层序遍历，O(n)。
 
-    ```javascript
+    ```js
     var countNodes = function (root) {
       let result = 0;
 
@@ -1567,7 +1581,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归。平衡二叉树：左子树高度 和 右子树高度 差小于等于1。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -1608,7 +1622,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -1636,7 +1650,7 @@ myLinkedList.get(1);              // 返回 3
 
     迭代。
 
-    ```javascript
+    ```js
     let hasPathSum = function (root, targetSum) {
       if (root === null) { return false; }
       const nodeArr = [root];
@@ -1668,7 +1682,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归+回溯，类似[二叉树的所有路径](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/LeetCode记录/README.md#二叉树的所有路径)。
 
-    ```javascript
+    ```js
     var hasPathSum = function (root, targetSum) {
       const result = [];
       if (root === null) {
@@ -1713,7 +1727,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -1744,7 +1758,7 @@ myLinkedList.get(1);              // 返回 3
 
     迭代。
 
-    ```javascript
+    ```js
     var mergeTrees = function (root1, root2) {
       if (root1 === null) return root2;
       if (root2 === null) return root1;
@@ -1813,7 +1827,7 @@ myLinkedList.get(1);              // 返回 3
 
     二叉搜索树的中序排序是递增输出。递归。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -1865,7 +1879,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归。获取有序数组中间的数，作为每个子树的根节点。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -1900,7 +1914,7 @@ myLinkedList.get(1);              // 返回 3
 
     **层序遍历 -> 广度优先遍历（队列实现）。**
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -1947,7 +1961,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val) {
@@ -2009,7 +2023,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归，构造二叉树。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -2040,7 +2054,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归，构造二叉树。
 
-    ```javascript
+    ```js
     var buildTree = function (preorder, inorder) {
       if (preorder.length === 0) return null;
       const rootVal = preorder.shift(); // 推出 前序的第一个元素：根节点值
@@ -2100,7 +2114,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归，构造二叉树。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -2177,7 +2191,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归，看不懂……
 
-    ```javascript
+    ```js
     // 最近公共祖先：左右子树分别包含p、q 或 p、q自己就是另一个节点的祖先
     var lowestCommonAncestor = function (root, p, q) {
       if (root === null) { return null; }
@@ -2205,7 +2219,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val) {
@@ -2235,7 +2249,7 @@ myLinkedList.get(1);              // 返回 3
 
     迭代。
 
-    ```javascript
+    ```js
     var lowestCommonAncestor = function (root, p, q) {
       while (root) {
         if (root.val > p.val && root.val > q.val) {
@@ -2255,7 +2269,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -2287,7 +2301,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -2350,7 +2364,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -2386,7 +2400,7 @@ myLinkedList.get(1);              // 返回 3
 
     递归，反中序遍历（后->中->前）累加。
 
-    ```javascript
+    ```js
     /**
      * Definition for a binary tree node.
      * function TreeNode(val, left, right) {
@@ -2417,1454 +2431,7 @@ myLinkedList.get(1);              // 返回 3
     ```
 
 ---
-## 动态规划
-
-### 三步问题
-楼梯有n阶台阶，一次可以上1阶、2阶或3阶。计算上n阶有多少种走法。结果可能很大，你需要对结果模1000000007。
-
-1. 解法一
-
-    动态规划。
-
-    ```javascript
-    /**
-     * @param {number} n
-     * @return {number}
-     */
-    var waysToStep = function (n) {
-      // dp[i]：登上第i阶的方式数量
-      const dp = [];
-      const modulo = 1000000007;
-
-      dp[1] = 1;
-      dp[2] = 2;
-      dp[3] = 4;
-
-      for (let i = 4; i <= n; i++) {
-        // 转移方程（跳到倒一、跳到倒二、跳到倒三，注意剩下3台阶不能再加数量，否则会重复）
-        // 任意2次相加取模都可
-        dp[i] = (dp[i - 3] + ((dp[i - 2] + dp[i - 1]) % modulo)) % modulo;
-      }
-      return dp[n];
-    };
-    ```
-
-<details>
-<summary>其他解法</summary>
-
-2. 解法二
-
-    滚动数组（优化空间）。
-
-    ```javascript
-    var waysToStep = (n) => {
-      if (n === 1) {
-        return 1;
-      }
-      if (n === 2) {
-        return 2;
-      }
-      if (n === 3) {
-        return 4;
-      }
-
-      const modulo = 1000000007;
-
-      let a = 4;
-      let b = 2;
-      let c = 1;
-      for (let i = 3; i <= n; i++) {
-        const temp_a = a;
-        const temp_b = b;
-        a = (a + ((b + c) % modulo)) % modulo;
-        b = temp_a;
-        c = temp_b;
-      }
-      return a;
-    };
-    ```
-</details>
-
-### 斐波那契数
-**斐波那契数** （通常用 `F(n)` 表示）形成的序列称为 **斐波那契数列** 。该数列由 **0** 和 **1** 开始，后面的每一项数字都是前面两项数字的和。也就是：
-
-```
-F(0) = 0，F(1) = 1
-F(n) = F(n - 1) + F(n - 2)，其中 n > 1
-```
-
-给定 `n` ，请计算 `F(n)` 。
-
-答案需要取模 1e9+7(1000000007) ，如计算初始结果为：1000000008，请返回 1。
-
-
-
-示例 1：
-
-```
-输入：n = 2
-输出：1
-解释：F(2) = F(1) + F(0) = 1 + 0 = 1
-```
-
-示例 2：
-
-```
-输入：n = 3
-输出：2
-解释：F(3) = F(2) + F(1) = 1 + 1 = 2
-```
-
-示例 3：
-
-```
-输入：n = 4
-输出：3
-解释：F(4) = F(3) + F(2) = 2 + 1 = 3
-```
-
-提示：
-
-- `0 <= n <= 100`
-
-1. 解法一
-
-    ```javascript
-    /**
-     * @param {number} n
-     * @return {number}
-     */
-    var fib = function (n) {
-      // 动态规划
-      if (n < 2) {
-        return n;
-      }
-      const modulo = 1000000007;
-      let previous = 0;
-      let current = 1;
-      // 迭代：记录 前一个值 和 当前值
-      for (let i = 2; i <= n; i++) {
-        const temp = previous;
-        previous = current;
-        current =
-          temp + current >= modulo
-            ? temp + current - modulo
-            : temp + current;
-      }
-      return current;
-    };
-    ```
-2. 解法二
-
-    ```javascript
-    var fib = function (n) {
-      // 动态规划
-      // 保存计算过的结果，避免递归时超时
-      this.map = this.map || new Map();
-      if (this.map.has(n)) {
-        return map.get(n);
-      }
-
-      // 递归
-      if (n < 2) {
-        map.set(n, n);
-        return n;
-      }
-
-      const modulo = 1000000007;
-      const result = ((fib(n - 1) % modulo) + (fib(n - 2) % modulo)) % modulo; // (a+b)%c === (a%c+b%c)%c
-      map.set(n, result);
-      return result;
-    };
-    ```
-
-### 青蛙跳台阶问题
-一只青蛙一次可以跳上1级台阶，也可以跳上2级台阶。求该青蛙跳上一个 n 级的台阶总共有多少种跳法。
-
-答案需要取模 1e9+7（1000000007），如计算初始结果为：1000000008，请返回 1。
-
-示例 1：
-
-```
-输入：n = 2
-输出：2
-```
-
-示例 2：
-
-```
-输入：n = 7
-输出：21
-```
-
-示例 3：
-
-```
-输入：n = 0
-输出：1
-```
-
-- <details>
-
-    <summary>解析：青蛙跳台问题</summary>
-
-    设跳上 n 级台阶有 f(n) 种跳法。在所有跳法中，青蛙的最后一步只有两种情况：跳上 1 级或 2 级台阶，即 f(n)=f(n−1)+f(n−2)。本题可转化为 求斐波那契数列第 n 项的值。
-    </details>
-
-1. 解法
-
-    略。与上一题（[斐波那契数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/LeetCode记录/README.md#斐波那契数)）基本一致，改下初始值即可。
-
-### 连续子数组的最大和
-输入一个整型数组，数组中的一个或连续多个整数组成一个子数组。求所有子数组的和的最大值。
-
-要求时间复杂度为 $O(n)$ 。
-
-示例1:
-
-```
-输入: nums = [-2,1,-3,4,-1,2,1,-5,4]
-输出: 6
-解释: 连续子数组 [4,-1,2,1] 的和最大，为 6。
-```
-
-1. 解法
-
-    ```javascript
-    /**
-     * @param {number[]} nums
-     * @return {number}
-     */
-    var maxSubArray = function (nums) {
-      // 动态规划
-      let max = nums[0];
-      for (let i = 1, tempResult = nums[0]; i < nums.length; i++) {
-        // tempResult：以元素nums[i]为结尾 的连续子数组最大和
-        tempResult = nums[i] + Math.max(tempResult, 0);
-        max = Math.max(max, tempResult);
-      }
-      return max;
-    };
-    ```
-
-### 股票的最大利润
-假设把某股票的价格按照时间先后顺序存储在数组中，请问买卖该股票一次可能获得的最大利润是多少？
-
-示例 1:
-
-```
-输入: [7,1,5,3,6,4]
-输出: 5
-解释: 在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
-     注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格。
-```
-
-示例 2:
-
-```
-输入: [7,6,4,3,1]
-输出: 0
-解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。
-```
-
-1. 解法
-
-    ```javascript
-    /**
-     * @param {number[]} prices
-     * @return {number}
-     */
-    var maxProfit = function (prices) {
-      // 动态规划
-      let minPrice = prices[0] || 0;    // 或 = Number.MAX_VALUE;
-      let maxProfit = 0;
-      for (let price of prices) {
-        minPrice = Math.min(minPrice, price);
-        maxProfit = Math.max(maxProfit, price - minPrice);
-      }
-      return maxProfit;
-    };
-    ```
-
-### 鸡蛋掉落-两枚鸡蛋
-给你**2 枚相同**的鸡蛋，和一栋从第`1`层到第`n`层共有`n`层楼的建筑。
-
-已知存在楼层`f`，满足`0 <= f <= n`，任何从**高于**`f`的楼层落下的鸡蛋都**会碎** ，从`f`**楼层或比它低**的楼层落下的鸡蛋都**不会碎**。
-
-每次操作，你可以取一枚**没有碎**的鸡蛋并把它从任一楼层`x`扔下（满足`1 <= x <= n`）。如果鸡蛋碎了，你就不能再次使用它。如果某枚鸡蛋扔下后没有摔碎，则可以在之后的操作中**重复使用**这枚鸡蛋。
-
-请你计算并返回要确定`f`**确切的值**的**最小操作次数**是多少？
-
-示例 1：
-
-```
-输入：n = 2
-输出：2
-解释：我们可以将第一枚鸡蛋从 1 楼扔下，然后将第二枚从 2 楼扔下。
-如果第一枚鸡蛋碎了，可知 f = 0；
-如果第二枚鸡蛋碎了，但第一枚没碎，可知 f = 1；
-否则，当两个鸡蛋都没碎时，可知 f = 2。
-```
-
-示例 2：
-
-```
-输入：n = 100
-输出：14
-解释：
-一种最优的策略是：
-- 将第一枚鸡蛋从 9 楼扔下。如果碎了，那么 f 在 0 和 8 之间。将第二枚从 1 楼扔下，然后每扔一次上一层楼，在 8 次内找到 f 。总操作次数 = 1 + 8 = 9 。
-- 如果第一枚鸡蛋没有碎，那么再把第一枚鸡蛋从 22 层扔下。如果碎了，那么 f 在 9 和 21 之间。将第二枚鸡蛋从 10 楼扔下，然后每扔一次上一层楼，在 12 次内找到 f 。总操作次数 = 2 + 12 = 14 。
-- 如果第一枚鸡蛋没有再次碎掉，则按照类似的方法从 34, 45, 55, 64, 72, 79, 85, 90, 94, 97, 99 和 100 楼分别扔下第一枚鸡蛋。
-不管结果如何，最多需要扔 14 次来确定 f 。
-```
-
-提示：
-
-`1 <= n <= 1000`
-
-1. 解法一
-
-    数学规律。
-
-    ```javascript
-    // ①第一枚鸡蛋用于从低到高、间隔楼层直到破碎
-    // ②第二枚鸡蛋用于在第一枚鸡蛋确认的最高不碎层到最低破碎层之间，由低到高逐层测试
-    // ③为了稳定操作数，第一枚鸡蛋确定的间隔层 每测试成功一次都要递减1。
-    //   假设第一次间隔层是f，那么第二次间隔层就是f-1，以此类推至最后一个间隔是1：
-    //   f + f-1 + f-2 + ... + f-(f-1)=总楼层数n
-    //   这样得到的f就是操作数的上限
-    function twoEggDrop(n) {
-      let f;
-      // 找到第一个小于或等于 n 的等差求和的项数（第一项是1，公差是1）
-      for (f = 1; sumOfArithmeticSequence(1, 1, f) < n; f++) {}
-      return f;
-    };
-
-    // 等差数列的求和。a1：第1项；d：公差；n：项数
-    function sumOfArithmeticSequence (a1, d, n) {
-      const an = a1 + (n - 1) * d;
-      return ((a1 + an) * n) / 2;
-    }
-    ```
-2. 解法二
-
-    动态规划。
-
-    ```javascript
-    function twoEggDrop(n, k = 2) {
-      // 初始化：题解的数组[最大n层楼][最大k枚鸡蛋]
-      let memo = new Array(n + 1).fill(0).map((i, n) => {
-        return new Array(k + 1).fill(0).map((j, k) => {
-          return k === 1 ? n : 0;
-        });
-      });
-      return dp(n, k);
-
-      // k枚，n层的题目解：表示现在有n层楼需要验证，此时你手里有k个鸡蛋，返回此时的最小操作次数
-      function dp(n, k) {
-        // base case
-        if (n === 0) {
-          return 0;
-        }
-        if (k === 1) {
-          return n;
-        }
-
-        // 查表
-        if (memo[n][k] !== 0) {
-          return memo[n][k];
-        }
-
-        let res = Number.MAX_SAFE_INTEGER;
-        // 选i层楼扔鸡蛋
-        for (let i = 1; i <= n; i++) {
-          // Math.max：寻找（第i层碎或不碎）最坏的情况
-          // Math.min：在最坏的情况里，选出最小的操作次数
-          res = Math.min(res, Math.max(dp(i - 1, k - 1), dp(n - i, k)) + 1);
-        }
-
-        // dp(n, k)需要的操作次数，是在所有楼层中选择 最坏情况下需要的操作次数最小的楼层 扔鸡蛋。所以需要遍历所有楼层，找到Math.min(res, Math.max(dp(i-1, k-1), dp(n-i, k)) + 1)
-        memo[n][k] = res;
-        return res;
-      }
-    }
-    ```
-
-### 最大子数组和
-给你一个整数数组 `nums` ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
-
-**子数组** 是数组中的一个连续部分。
-
-示例 1：
-
-```
-输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
-输出：6
-解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
-```
-
-示例 2：
-
-```
-输入：nums = [1]
-输出：1
-```
-
-示例 3：
-
-```
-输入：nums = [5,4,-1,7,8]
-输出：23
-```
-
-提示：
-
-- `1 <= nums.length <= 10 ** 5`
-- `-(10 ** 4) <= nums[i] <= 10 ** 4`
-
-**进阶**：如果你已经实现复杂度为 `O(n)` 的解法，尝试使用更为精妙的 **分治法** 求解。
-
-1. 解法一
-
-    O(n)，贪心。
-
-    ```javascript
-    /**
-     * @param {number[]} nums
-     * @return {number}
-     */
-    var maxSubArray = function (nums) {
-      let max = Number.NEGATIVE_INFINITY;
-
-      for (let i = 0, sum = 0; i < nums.length; i++) {
-        // sum小于等于0
-        if (sum <= 0) {
-          sum = nums[i];
-        }
-        // sum大于0
-        else {
-          sum = sum + nums[i];
-        }
-
-        max = Math.max(max, sum);
-      }
-      return max;
-    };
-    ```
-2. 解法二
-
-    O(n)，动态规划。
-
-    ```javascript
-    var maxSubArray = function (nums) {
-      let max;
-
-      // dp[i]：以nums[i]为结尾的最大连续子序列和为dp[i]。
-      const dp = [];
-
-      dp[0] = nums[0];
-      for (let i = 1; i < nums.length; i++) {
-        if (dp[i - 1] <= 0) {
-          dp[i] = nums[i];
-        } else {
-          dp[i] = dp[i - 1] + nums[i];
-        }
-
-        max = Math.max(dp[i - 1], dp[i]);
-      }
-      return max;
-    };
-    ```
-
-### 最长回文子串
-给你一个字符串 `s`，找到 `s` 中最长的回文子串。
-
-如果字符串的反序与原始字符串相同，则该字符串称为回文字符串。
-
-示例 1：
-
-```
-输入：s = "babad"
-输出："bab"
-解释："aba" 同样是符合题意的答案。
-```
-
-示例 2：
-
-```
-输入：s = "cbbd"
-输出："bb"
-```
-
-提示：
-
-- `1 <= s.length <= 1000`
-- `s` 仅由数字和英文字母组成
-
-1. 解法一
-
-    动态规划，一个回文去掉两头依然是回文：dp[i][j] = (s[i]===s[j]) && dp[i+1][j-1]（注意边界）。
-
-    ```javascript
-    /**
-     * @param {string} s
-     * @return {string}
-     */
-    var longestPalindrome = function (s) {
-      const len = s.length;
-      if (len < 2) { return s; }
-
-      let maxLen = 1;
-      let begin = 0;
-
-      // 动态规划：dp[i][j] 表示 s[i..j] 是否是回文串。一个回文去掉两头依然是回文：dp[i][j] = (s[i]===s[j]) && dp[i+1][j-1]
-      const dp = Array.from({ length: len }).map(() =>
-        Array.from({ length: len }).fill(false),
-      );
-
-      // 初始化：所有长度为 1 的子串都是回文串（可省略）
-      for (let i = 0; i < len; i++) {
-        dp[i][i] = true;
-      }
-
-      // dp每个参考左下方的dp的值，因此从第2列开始 && 先 列 再 行
-      for (let j = 1; j < len; j++) { // 行（字符串有边界）
-        for (let i = 0; i < j; i++) { // 列（字符串左边界）
-          // 头尾字符不等
-          if (s[i] !== s[j]) {
-            dp[i][j] = false;
-          }
-          // 头尾字符相等
-          else {
-            // 头尾去掉后：没有字符(j-i<i+1) || 仅剩1个字符（j-1===i+1）
-            if (j - i <= 2) { // j-1-(i+1)<=0
-              dp[i][j] = true;
-            } else {
-              dp[i][j] = dp[i + 1][j - 1];
-            }
-          }
-
-          // 若是回文，则判断是否最长
-          if (dp[i][j] && j - i + 1 > maxLen) {
-            maxLen = j - i + 1;
-            begin = i;
-          }
-        }
-      }
-
-      return s.slice(begin, begin + maxLen);
-    };
-    ```
-
----
-## 简单
-
-### 用栈实现队列
-请你仅使用两个栈实现先入先出队列。队列应当支持一般队列支持的所有操作（`push`、`pop`、`peek`、`empty`）：
-
-实现 `MyQueue` 类：
-
-- `void push(int x)` 将元素 x 推到队列的末尾
-- `int pop()` 从队列的开头移除并返回元素
-- `int peek()` 返回队列开头的元素
-- `boolean empty()` 如果队列为空，返回 `true` ；否则，返回 `false`
-
-说明：
-
-- 你 **只能** 使用标准的栈操作 —— 也就是只有 `push to top`, `peek/pop from top`, `size`, 和 `is empty` 操作是合法的。
-- 你所使用的语言也许不支持栈。你可以使用 list 或者 deque（双端队列）来模拟一个栈，只要是标准的栈操作即可。
-
-示例 1：
-
-```
-输入：
-["MyQueue", "push", "push", "peek", "pop", "empty"]
-[[], [1], [2], [], [], []]
-输出：
-[null, null, null, 1, 1, false]
-
-解释：
-MyQueue myQueue = new MyQueue();
-myQueue.push(1); // queue is: [1]
-myQueue.push(2); // queue is: [1, 2] (leftmost is front of the queue)
-myQueue.peek(); // return 1
-myQueue.pop(); // return 1, queue is [2]
-myQueue.empty(); // return false
-```
-
-提示：
-
-- `1 <= x <= 9`
-- 最多调用 `100` 次 `push`、`pop`、`peek` 和 `empty`
-- 假设所有操作都是有效的 （例如，一个空的队列不会调用 `pop` 或者 `peek` 操作）
-
-**进阶**：
-
-- 你能否实现每个操作均摊时间复杂度为 `O(1)` 的队列？换句话说，执行 `n` 个操作的总时间复杂度为 `O(n)` ，即使其中一个操作可能花费较长时间。
-
-1. 解法一
-
-    **所有`用2个栈实现1个队列`的方法：2个栈，一个栈出 -> 一个栈入 所有数据之后，就能够把原顺序颠倒。**
-
-    ```javascript
-    var MyQueue = function () {
-      // 模拟栈，意味着只能 unshift shift 的数组（或只能 push pop）
-      // 实现队列，因此要实现类似数组的 unshift pop（或 push shift）
-
-      // 存放插入的数据（栈入）
-      this.inStack = [];
-      // 处理移出的数据。
-      // 当为空时，inStack栈出->outStack栈入 所有数据（2个栈，一个栈出一个栈入就能够把原顺序颠倒）
-      this.outStack = [];
-    };
-
-    MyQueue.prototype.push = function (x) {
-      this.inStack.unshift(x);
-    };
-
-    MyQueue.prototype.pop = function () {
-      // 若outStack为空，则把inStack栈出给outStack栈入，这样原顺序颠倒
-      if (this.outStack.length === 0) {
-        while (this.inStack.length) {
-          this.outStack.unshift(this.inStack.shift());
-        }
-      }
-      return this.outStack.shift();
-    };
-
-    MyQueue.prototype.peek = function () {
-      if (this.outStack.length === 0) {
-        while (this.inStack.length) {
-          this.outStack.unshift(this.inStack.shift());
-        }
-      }
-      return this.outStack[0];
-    };
-
-    MyQueue.prototype.empty = function () {
-      return this.inStack.length === 0 && this.outStack.length === 0;
-    };
-    ```
-
-### 用队列实现栈
-请你仅使用两个队列实现一个后入先出（LIFO）的栈，并支持普通栈的全部四种操作（`push`、`top`、`pop` 和 `empty`）。
-
-实现 `MyStack` 类：
-
-- `void push(int x)` 将元素 x 压入栈顶。
-- `int pop()` 移除并返回栈顶元素。
-- `int top()` 返回栈顶元素。
-- `boolean empty()` 如果栈是空的，返回 `true` ；否则，返回 `false` 。
-
-注意：
-
-- 你只能使用队列的基本操作 —— 也就是 `push to back`、`peek/pop from front`、`size` 和 `is empty` 这些操作。
-- 你所使用的语言也许不支持队列。 你可以使用 list （列表）或者 deque（双端队列）来模拟一个队列 , 只要是标准的队列操作即可。
-
-示例：
-
-```
-输入：
-["MyStack", "push", "push", "top", "pop", "empty"]
-[[], [1], [2], [], [], []]
-输出：
-[null, null, null, 2, 2, false]
-
-解释：
-MyStack myStack = new MyStack();
-myStack.push(1);
-myStack.push(2);
-myStack.top(); // 返回 2
-myStack.pop(); // 返回 2
-myStack.empty(); // 返回 False
-```
-
-提示：
-
-- `1 <= x <= 9`
-- 最多调用`100` 次 `push`、`pop`、`top` 和 `empty`
-- 每次调用 `pop` 和 `top` 都保证栈不为空
-
-**进阶**：你能否仅用一个队列来实现栈。
-
-1. 解法一
-
-    **所有`用1个队列实现1个栈`的方法：正常压入，移除时执行 长度-1的 移除-压入，最后一个就是移除结果（或反过来：压入时处理，移除时正常移除）。**
-
-    ```javascript
-    var MyStack = function () {
-      // 模拟队列，意味着只能 unshift pop 的数组（或只能 push shift）
-      // 实现栈，因此要实现类似数组的 unshift shift（或 push pop）
-
-      // 存放插入的数据（队列入）
-      this.queue = [];
-    };
-
-    /**
-     * @param {number} x
-     * @return {void}
-     */
-    MyStack.prototype.push = function (x) {
-      this.queue.unshift(x);
-    };
-
-    /**
-     * @return {number}
-     */
-    MyStack.prototype.pop = function () {
-      // 队列重新插入，剩下最后一个就是要移除的（或插入的时候处理，移除的时候就不用处理）
-      for (let i = 0; i < this.queue.length - 1; i++) {
-        this.queue.unshift(this.queue.pop());
-      }
-      return this.queue.pop();
-    };
-
-    /**
-     * @return {number}
-     */
-    MyStack.prototype.top = function () {
-      return this.queue[0];
-    };
-
-    /**
-     * @return {boolean}
-     */
-    MyStack.prototype.empty = function () {
-      return this.queue.length === 0;
-    };
-    ```
-
-<details>
-<summary>其他解法</summary>
-
-2. 解法二
-
-    用2个队列的话，只是把原本1个队列自己移除-自己压入，变成有一个辅助队列帮助，逻辑不变。不推荐。
-
-    ```javascript
-    let MyStack = function () {
-      this.queue = [];
-      // 仅辅助作用，暂时保存queue数据
-      this._queue = [];
-    };
-
-    MyStack.prototype.push = function (x) {
-      this.queue.push(x);
-    };
-
-    MyStack.prototype.pop = function () {
-      while (this.queue.length > 1) {
-        this._queue.push(this.queue.shift());
-      }
-      let result = this.queue.shift();
-
-      while (this._queue.length) {
-        this.queue.push(this._queue.shift());
-      }
-      return result;
-    };
-
-    MyStack.prototype.top = function () {
-      return this.queue[this.queue.length - 1];
-    };
-
-    MyStack.prototype.empty = function () {
-      return this.queue.length === 0;
-    };
-    ```
-</details>
-
-### 最小栈
-请你设计一个 **最小栈** 。它提供 `push` ，`pop` ，`top` 操作，并能在常数时间内检索到最小元素的栈。
-
-实现 `MinStack` 类:
-
-- `MinStack()` 初始化堆栈对象。
-- `void push(int val)` 将元素val推入堆栈。
-- `void pop()` 删除堆栈顶部的元素。
-- `int top()` 获取堆栈顶部的元素。
-- `int getMin()` 获取堆栈中的最小元素。
-
-示例 1:
-
-```
-输入：
-["MinStack","push","push","push","getMin","pop","top","getMin"]
-[[],[-2],[2],[-3],[],[],[],[]]
-
-输出：
-[null,null,null,null,-3,null,2,-2]
-
-解释：
-MinStack minStack = new MinStack();
-minStack.push(-2);
-minStack.push(2);
-minStack.push(-3);
-minStack.getMin();   --> 返回 -3.
-minStack.pop();
-minStack.top();      --> 返回 2.
-minStack.getMin();   --> 返回 -2.
-```
-
-提示：
-
-- `-(2 ** 31) <= val <= 2 ** 31 - 1`
-- `pop`、`top` 和 `getMin` 操作总是在 非空栈 上调用
-- `push`、`pop`、`top` 和 `getMin` 最多被调用 `3 * 10 ** 4` 次
-
-1. 解法一
-
-    ```javascript
-    var MinStack = function () {
-      // 存放栈数据
-      this.list = [];
-      // 存放最小数
-      this.minList = [];
-    };
-
-    MinStack.prototype.push = function (x) {
-      this.list.unshift(x);
-
-      // 若插入的值没有比之前最小值更小或相等，就不插入minList
-      if (this.minList.length === 0 || x <= this.minList[0]) {
-        this.minList.unshift(x);
-      }
-    };
-
-    MinStack.prototype.pop = function () {
-      if (this.list.length > 0) {
-        const value = this.list.shift();
-
-        if (value === this.minList[0]) {
-          this.minList.shift();
-        }
-        return;
-      }
-
-      throw Error("栈内为空");
-    };
-
-    MinStack.prototype.top = function () {
-      if (this.list.length > 0) {
-        return this.list[0];
-      }
-
-      throw Error("栈内为空");
-    };
-
-    MinStack.prototype.getMin = function () {
-      if (this.minList.length > 0) {
-        return this.minList[0];
-      }
-
-      throw Error("栈内为空");
-    };
-    ```
-
-<details>
-<summary>其他解法</summary>
-
-2. 解法二
-
-    保持2个数组相同长度，但插入minList的不一定最后插入的值 而必须是和之前最小值对比更小的值。
-
-    ```javascript
-    var MinStack = function () {
-      // 存放栈数据
-      this.list = [];
-      // 存放最小数
-      this.minList = [];
-    };
-
-    MinStack.prototype.push = function (x) {
-      this.list.unshift(x);
-
-      if (this.minList.length === 0) {
-        this.minList.unshift(x);
-      } else {
-        // 保持2个数组都相同长度，但是插入minList的永远都是最小值（因此可能插入的不是x而是上一个最小值）
-        this.minList.unshift(Math.min(x, this.minList[0]));
-      }
-    };
-
-    MinStack.prototype.pop = function () {
-      if (this.list.length > 0) {
-        this.list.shift();
-        this.minList.shift();
-        return;
-      }
-
-      throw Error("栈内为空");
-    };
-
-    MinStack.prototype.top = function () {
-      if (this.list.length > 0) {
-        return this.list[0];
-      }
-
-      throw Error("栈内为空");
-    };
-
-    MinStack.prototype.getMin = function () {
-      if (this.minList.length > 0) {
-        return this.minList[0];
-      }
-
-      throw Error("栈内为空");
-    };
-    ```
-</details>
-
-### 替换空格
-请实现一个函数，把字符串 s 中的每个空格替换成"%20"。
-
-示例 1：
-```
-输入：s = "We are happy."
-输出："We%20are%20happy."
-```
-
-1. 解法一
-
-    ```javascript
-    /**
-     * @param {string} s
-     * @return {string}
-     */
-    var replaceSpace = function (s) {
-      // 还有 split/join 等解法
-      return s.replace(/ /g, "%20");
-    };
-    ```
-2. 解法二
-
-    ```javascript
-    var replaceSpace = function (s) {
-      // 模拟的 C++ 语言中的可变长度字符串的实现原理，将其 O(n^2) 的空间复杂度降低到 O(1)
-      const arr = s.split("");
-      let oldLen = arr.length;
-      let spaceCount = 0;
-      for (let i = 0; i < oldLen; i++) {
-        if (arr[i] === " ") spaceCount++;
-      }
-      arr.length += spaceCount * 2;
-      // 数组遍历，一定要从后往前遍历，避免从前往后，造成字符被修改，导致错误！
-      for (let i = oldLen - 1, j = arr.length - 1; i >= 0; i--, j--) {
-        if (arr[i] !== " ") arr[j] = arr[i];
-        else {
-          arr[j - 2] = "%";
-          arr[j - 1] = "2";
-          arr[j] = "0";
-          j -= 2;
-        }
-      }
-      return arr.join("");
-    };
-    ```
-
-### 左旋转字符串
-字符串的左旋转操作是把字符串前面的若干个字符转移到字符串的尾部。请定义一个函数实现字符串左旋转操作的功能。比如，输入字符串"abcdefg"和数字2，该函数将返回左旋转两位得到的结果"cdefgab"。
-
-示例 1：
-```
-输入: s = "abcdefg", k = 2
-输出: "cdefgab"
-```
-
-示例 2：
-```
-输入: s = "lrloseumgh", k = 6
-输出: "umghlrlose"
-```
-
-1. 解法一
-
-    ```javascript
-    /**
-     * @param {string} s
-     * @param {number} n
-     * @return {string}
-     */
-    var reverseLeftWords = function (s, n) {
-      // 以及其他简单拼接法
-      return s.slice(n) + s.slice(0, n);
-    };
-    ```
-2. 解法二
-
-    ```javascript
-    var reverseLeftWords = function (s, n) {
-      if (n >= s.length) {
-        return s;
-      }
-      // 复制一遍字符串，再截取
-      return (s + s).slice(n, n + s.length);
-    };
-    ```
-
-### 数组中重复的数字
-找出数组中重复的数字。
-
-在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1 的范围内。数组中某些数字是重复的，但不知道有几个数字重复了，也不知道每个数字重复了几次。请找出数组中任意一个重复的数字。
-
-示例 1：
-```
-输入：
-[2, 3, 1, 0, 2, 5, 3]
-输出：2 或 3
-```
-
-1. 解法一
-
-    ```javascript
-    /**
-     * @param {number[]} nums
-     * @return {number}
-     */
-    var findRepeatNumber = function (nums) {
-      // 哈希表
-      const oneSet = new Set();
-
-      for (let i = 0, length = nums.length; i < length; i++) {
-        if (oneSet.has(nums[i])) {
-          return nums[i];
-        }
-        oneSet.set(nums[i]);
-      }
-    };
-    ```
-2. 解法二
-
-    ```javascript
-    var findRepeatNumber = function (nums) {
-      // 排序后比较
-      const sortedNums = nums.sort()
-      for (let i = 0, length = sortedNums.length; i < length - 1; i++) {
-        if (sortedNums[i] === sortedNums[i + 1]) {
-          return sortedNums[i]
-        }
-      }
-    };
-    ```
-3. 解法三
-
-    ```javascript
-    var findRepeatNumber = function (nums) {
-      // 利用题目的条件：数字在下标范围内
-      const tempNums = [];
-      for (let i = 0, length = nums.length; i < length; i++) {
-        if (tempNums[nums[i]] === nums[i]) {
-          return nums[i];
-        }
-        tempNums[nums[i]] = nums[i];
-      }
-    };
-    ```
-4. 解法四
-
-    ```javascript
-    var findRepeatNumber = function (nums) {
-      // 利用题目的条件：数字在下标范围内。并且不用额外的数组。自哈希
-      for (let i = 0, length = nums.length; i < length; i++) {
-        // 因为n的长度的数组数字都在0~n-1，所以：要不然所有数字各一个，要不然就必须会有重复
-        // 尝试把每个位置放上等于下标的数字
-        // 若当前数字跟对应的索引不相同，则交换。
-        while (nums[i] !== i) {
-          if (nums[i] === nums[nums[i]]) {
-            return nums[i];
-          }
-          const temp = nums[i];
-          nums[i] = nums[temp];
-          nums[temp] = temp;
-        }
-      }
-    };
-    ```
-
-### 在排序数组中查找数字 I
-统计一个数字在排序数组中出现的次数。
-
-示例 1:
-```
-输入: nums = [5,7,7,8,8,10], target = 8
-输出: 2
-```
-
-示例 2:
-```
-输入: nums = [5,7,7,8,8,10], target = 6
-输出: 0
-```
-
-nums 是一个非递减数组
-
-1. 解法一
-
-    ```javascript
-    /**
-     * @param {number[]} nums
-     * @param {number} target
-     * @return {number}
-     */
-    var search = function (nums, target) {
-      const length = nums.length;
-      let start = -1;
-      let end = -1;
-
-      let left = 0;
-      let right = length - 1;
-      // 二分搜索：找到左边界，找到第一次出现
-      while (left <= right) {
-        let mid = Math.floor((left + right) / 2);
-        if (nums[mid] === target) {
-          start = mid;
-          right = mid - 1;
-        } else if (nums[mid] > target) {
-          right = mid - 1;
-        } else {
-          left = mid + 1;
-        }
-      }
-
-      if (start === -1) {
-        return 0;
-      }
-
-      left = 0;
-      right = length - 1;
-      // 二分搜索：找到右边界，找到最后一次出现
-      while (left <= right) {
-        let mid = Math.floor((left + right) / 2);
-        if (nums[mid] === target) {
-          end = mid;
-          left = mid + 1;
-        } else if (nums[mid] > target) {
-          right = mid - 1;
-        } else {
-          left = mid + 1;
-        }
-      }
-
-      return end - start + 1;
-    };
-    ```
-2. 解法二
-
-    ```javascript
-    var search = function (nums, target) {
-      const leftIdx = binarySearch(nums, target, true);
-      const rightIdx = binarySearch(nums, target, false);
-      if (leftIdx !== rightIdx) {
-        return rightIdx - leftIdx;
-      }
-      return 0;
-    };
-
-    // 二分搜索：nums中，第一个大于等于 或 第一个大于 target 的下标
-    const binarySearch = (nums, target, equal) => {
-      let left = 0;
-      let right = nums.length - 1;
-      // 定义超出数组长度（表明nums中不存在要求的下标）
-      let resultIndex = nums.length;
-
-      while (left <= right) {
-        const mid = Math.floor((left + right) / 2);
-        if (nums[mid] > target || (equal && nums[mid] === target)) {
-          right = mid - 1;
-          resultIndex = mid;
-        } else {
-          left = mid + 1;
-        }
-      }
-      return resultIndex;
-    };
-    ```
-3. 解法三
-
-    暴力搜索、穷举搜索。
-
-    ```javascript
-    var search = function (nums, target) {
-      let count = 0;
-      nums.forEach((x) => {
-        if (x === target) count++;
-      });
-      return count;
-    };
-    ```
-
-    ```javascript
-    var search = function (nums, target) {
-      let left = 0;
-      let right = nums.length - 1;
-
-      // 左边搜索
-      while (nums[left] !== target && left < nums.length) {
-        ++left;
-      }
-
-      // 右边搜索
-      while (nums[right] !== target && right >= 0) {
-        --right;
-      }
-
-      return left <= right ? right - left + 1 : 0;
-    };
-    ```
-
-    ```javascript
-    const search = function (nums, target) {
-      return nums.reduce((a, b) => (b === target ? a + 1 : a), 0);
-    };
-    ```
-
-### 0～n-1中缺失的数字
-一个长度为n-1的递增排序数组中的所有数字都是唯一的，并且每个数字都在范围0～n-1之内。在范围0～n-1内的n个数字中有且只有一个数字不在该数组中，请找出这个数字。
-
-示例 1:
-```
-输入: [0,1,3]
-输出: 2
-```
-
-示例 2:
-```
-输入: [0,1,2,3,4,5,6,7,9]
-输出: 8
-```
-
-1. 解法一
-
-    >开闭区间的选择？
-
-    ```javascript
-    /**
-     * @param {number[]} nums
-     * @return {number}
-     */
-    var missingNumber = function (nums) {
-      let left = 0;
-      // 设置超出数组的下标，这样可以多判断一次，因为最大下标比长度小1，而最大数字等于长度
-      let right = nums.length;
-      // 二分搜索
-      while (left < right) {
-        const middle = Math.floor((left + right) / 2);
-        if (nums[middle] === middle) {
-          // middle可以排除
-          left = middle + 1;
-        } else {
-          // middle不能被排除
-          right = middle;
-        }
-      }
-      return left;
-    };
-    ```
-2. 解法二
-
-    暴力搜索、穷举搜索。
-
-    ```javascript
-    var missingNumber = function (nums) {
-      for (let i = 0; i < nums.length; i++) {
-        if (nums[i] !== i) return i;
-      }
-      return nums.length;
-    };
-    ```
-
-    ```javascript
-    var missingNumber = function (nums) {
-      let length = nums.length;
-      // 等差数列求和
-      let sum = (length + 1) * length / 2;
-      for (let i of nums) {
-        sum -= i;
-      }
-      return sum;
-    };
-    ```
-
-    ```javascript
-    var missingNumber = function (nums) {
-      // 任何数字异或自己等于0，0异或任何数字等于这个数字
-      let xor = 0;
-      for (let i = 0; i < nums.length; i++) {
-        xor ^= nums[i] ^ i;
-      }
-      return xor ^ nums.length;
-    };
-    ```
-
-### 旋转数组的最小数字
-把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。
-
-给你一个可能存在 重复 元素值的数组 numbers，它原来是一个升序排列的数组，并按上述情形进行了一次旋转。请返回旋转数组的最小元素。例如，数组 [3,4,5,1,2] 为 [1,2,3,4,5] 的一次旋转，该数组的最小值为1。
-
-示例 1：
-
-```
-输入：[3,4,5,1,2]
-输出：1
-```
-
-示例 2：
-
-```
-输入：[2,2,2,0,1]
-输出：0
-```
-
-1. 解法一
-
-    ```javascript
-    /**
-     * @param {number[]} numbers
-     * @return {number}
-     */
-    var minArray = function (numbers) {
-      const firstOne = numbers[0];
-      const lastOne = numbers[numbers.length - 1];
-
-      // 全部旋转（或者没有旋转）
-      if (firstOne < lastOne) {
-        return firstOne;
-      }
-      // 第一个和最后一个数字相等，用遍历
-      else if (firstOne === lastOne) {
-        for (let i = numbers.length - 1; i > 0; i--) {
-          if (numbers[i] < numbers[i - 1]) {
-            return numbers[i];
-          }
-        }
-        return firstOne;
-      }
-      // 第一个比最后一个大，用二分搜索：找到 左边第一个小于firstOne的数
-      else {
-        let left = 0;
-        let right = numbers.length - 1;
-        let result = lastOne;
-
-        while (left <= right) {
-          const middle = Math.floor((left + right) / 2);
-          if (numbers[middle] < firstOne) {
-            right = middle - 1;
-            result = numbers[middle];
-          } else if (numbers[middle] >= firstOne) {
-            left = middle + 1;
-          }
-        }
-        return result;
-      }
-    };
-    ```
-2. 解法二
-
-    ```javascript
-    var minArray = function (numbers) {
-      let left = 0;
-      let right = numbers.length - 1;
-      while (left < right) {
-        const middle = Math.floor((right + left) / 2);
-        if (numbers[middle] < numbers[right]) {
-          right = middle;
-        } else if (numbers[middle] > numbers[right]) {
-          left = middle + 1;
-        }
-        // 若相等，则最右边的项一定不是目标（3种情况判断的结果）
-        else {
-          right -= 1;
-        }
-      }
-      // 退出时，left === right
-      return numbers[left];
-    };
-    ```
-
-### 第一个只出现一次的字符
-在字符串 s 中找出第一个只出现一次的字符。如果没有，返回一个单空格。
-
-s 只包含小写字母。
-
-示例 1:
-
-```
-输入：s = "abaccdeff"
-输出：'b'
-```
-
-示例 2:
-
-```
-输入：s = ""
-输出：' '
-```
-
-1. 解法一
-
-    ```javascript
-    /**
-     * @param {string} s
-     * @return {character}
-     */
-    var firstUniqChar = function (s) {
-      const strArr = s.split("");
-      return (
-        strArr.find((str) => {
-          return strArr.indexOf(str) === strArr.lastIndexOf(str);
-        }) ?? " "
-      );
-    };
-    ```
-2. 解法二
-
-    ```javascript
-    var firstUniqChar = function (s) {
-      const strArr = s.split("");
-      const map = new Map();
-      for (let str of strArr) {
-        map.set(str, (map.get(str) ?? 0) + 1);
-      }
-      for (let val of map) {
-        if (val[1] === 1) {
-          return val[0];
-        }
-      }
-      return " ";
-    };
-    ```
-3. 解法三
-
-    ```javascript
-    var firstUniqChar = function (s) {
-      for (let char of new Set(s)) {
-        if (s.match(new RegExp(char, "g")).length === 1) {
-          return char;
-        }
-      }
-      return " ";
-    };
-    ```
-4. 解法四
-
-    ```javascript
-    var firstUniqChar = function (s) {
-      const arr = new Array(26).fill(0);
-      const unicodeA = "a".charCodeAt(0);
-
-      for (let c of s) {
-        arr[c.charCodeAt(0) - unicodeA] += 1;
-      }
-
-      for (let c of s) {
-        if (arr[c.charCodeAt(0) - unicodeA] === 1) {
-          return c;
-        }
-      }
-      return " ";
-    };
-    ```
+## 数组
 
 ### 移除元素
 给你一个数组 `nums` 和一个值 `val`，你需要 **原地** 移除所有数值等于 `val` 的元素，并返回移除后数组的新长度。
@@ -3916,7 +2483,7 @@ for (int i = 0; i < len; i++) {
 
 1. 解法一
 
-    ```javascript
+    ```js
     /**
      * @param {number[]} nums
      * @param {number} val
@@ -3942,7 +2509,7 @@ for (int i = 0; i < len; i++) {
 
     **双指针法（快慢指针法）：通过一个快指针和慢指针在一个for循环下完成两个for循环的工作。**
 
-    ```javascript
+    ```js
     var removeElement = function(nums, val) {
       let j = 0; // 慢指针j：指向更新 新数组下标的位置
 
@@ -3960,7 +2527,7 @@ for (int i = 0; i < len; i++) {
 
     暴力解法，O(n^2)。
 
-    ```javascript
+    ```js
     var removeElement = function(nums, val) {
       let len = nums.length;
 
@@ -4011,7 +2578,7 @@ for (int i = 0; i < len; i++) {
 
     双指针法。
 
-    ```javascript
+    ```js
     /**
      * @param {number[]} nums
      * @return {number[]}
@@ -4039,244 +2606,389 @@ for (int i = 0; i < len; i++) {
 
     暴力解法。
 
-    ```javascript
+    ```js
     var sortedSquares = function(nums) {
         // 先计算平方，再排序（注意排序算法的时间复杂度）
         return nums.map(i => i * i).sort((a, b) => a - b);
     };
     ```
 
-### 两数之和
-给定一个整数数组 `nums` 和一个整数目标值 `target`，请你在该数组中找出 **和为目标值** `target`  的那 **两个** 整数，并返回它们的数组下标。
+### 数组中重复的数字
+找出数组中重复的数字。
 
-你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
-
-你可以按任意顺序返回答案。
+在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1 的范围内。数组中某些数字是重复的，但不知道有几个数字重复了，也不知道每个数字重复了几次。请找出数组中任意一个重复的数字。
 
 示例 1：
-
 ```
-输入：nums = [2,7,11,15], target = 9
-输出：[0,1]
-解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。
+输入：
+[2, 3, 1, 0, 2, 5, 3]
+输出：2 或 3
 ```
-
-示例 2：
-
-```
-输入：nums = [3,2,4], target = 6
-输出：[1,2]
-```
-
-示例 3：
-
-```
-输入：nums = [3,3], target = 6
-输出：[0,1]
-```
-
-提示：
-
-- `2 <= nums.length <= 10 ** 4`
-- `-(10 ** 9) <= nums[i] <= 10 ** 9`
-- `-(10 ** 9) <= target <= 10 ** 9`
-- 只会存在一个有效答案
-
-进阶：你可以想出一个时间复杂度小于 O(n^2) 的算法吗？
 
 1. 解法一
 
-    哈希法（**当我们需要查询一个元素是否出现过，或者一个元素是否在集合里的时候，就要第一时间想到哈希法**），O(n)。
-
-    ```javascript
+    ```js
     /**
      * @param {number[]} nums
-     * @param {number} target
-     * @return {number[]}
+     * @return {number}
      */
-    var twoSum = function (nums, target) {
-      // 利用Map类型：不重复键的键-值集合。键存nums项的value，值存nums项的key
-      const hash = new Map();
-      for (let i = 0; i < nums.length; i++) {
-        const leftValue = target - nums[i];
-        if (hash.get(leftValue) !== undefined) {
-          return [i, hash.get(leftValue)];
-        } else {
-          hash.set(nums[i], i);
+    var findRepeatNumber = function (nums) {
+      // 哈希表
+      const oneSet = new Set();
+
+      for (let i = 0, length = nums.length; i < length; i++) {
+        if (oneSet.has(nums[i])) {
+          return nums[i];
         }
+        oneSet.set(nums[i]);
       }
-      return [];
     };
     ```
 2. 解法二
 
-    暴力解法，O(n^2)。
-
-    ```javascript
-    var twoSum = function (nums, target) {
-      for (let i = 0; i < nums.length; i++) {
-        const left = target - nums[i];
-
-        for (let j = i + 1; j < nums.length; j++) {
-          if (nums[j] === left) {
-            return [i, j];
-          }
+    ```js
+    var findRepeatNumber = function (nums) {
+      // 排序后比较
+      const sortedNums = nums.sort()
+      for (let i = 0, length = sortedNums.length; i < length - 1; i++) {
+        if (sortedNums[i] === sortedNums[i + 1]) {
+          return sortedNums[i]
         }
       }
-      return [];
+    };
+    ```
+3. 解法三
+
+    ```js
+    var findRepeatNumber = function (nums) {
+      // 利用题目的条件：数字在下标范围内
+      const tempNums = [];
+      for (let i = 0, length = nums.length; i < length; i++) {
+        if (tempNums[nums[i]] === nums[i]) {
+          return nums[i];
+        }
+        tempNums[nums[i]] = nums[i];
+      }
+    };
+    ```
+4. 解法四
+
+    ```js
+    var findRepeatNumber = function (nums) {
+      // 利用题目的条件：数字在下标范围内。并且不用额外的数组。自哈希
+      for (let i = 0, length = nums.length; i < length; i++) {
+        // 因为n的长度的数组数字都在0~n-1，所以：要不然所有数字各一个，要不然就必须会有重复
+        // 尝试把每个位置放上等于下标的数字
+        // 若当前数字跟对应的索引不相同，则交换。
+        while (nums[i] !== i) {
+          if (nums[i] === nums[nums[i]]) {
+            return nums[i];
+          }
+          const temp = nums[i];
+          nums[i] = nums[temp];
+          nums[temp] = temp;
+        }
+      }
     };
     ```
 
-### 移动零
-给定一个数组 `nums`，编写一个函数将所有 `0` 移动到数组的末尾，同时保持非零元素的相对顺序。
-
-请注意 ，必须在不复制数组的情况下原地对数组进行操作。
+### 在排序数组中查找数字 I
+统计一个数字在排序数组中出现的次数。
 
 示例 1:
-
 ```
-输入: nums = [0,1,0,3,12]
-输出: [1,3,12,0,0]
+输入: nums = [5,7,7,8,8,10], target = 8
+输出: 2
 ```
 
 示例 2:
-
 ```
-输入: nums = [0]
-输出: [0]
+输入: nums = [5,7,7,8,8,10], target = 6
+输出: 0
 ```
 
-提示:
-
-- `1 <= nums.length <= 10 ** 4`
-- `-(2 ** 31) <= nums[i] <= 2 ** 31 - 1`
-
-
-进阶：你能尽量减少完成的操作次数吗？
+nums 是一个非递减数组
 
 1. 解法一
 
-    双指针。
-
-    ```javascript
+    ```js
     /**
      * @param {number[]} nums
-     * @return {void} Do not return anything, modify nums in-place instead.
+     * @param {number} target
+     * @return {number}
      */
-    var moveZeroes = function (nums) {
-      // 双指针，移动数组，最后补0
-      let noZeroIndex = 0;
-      for (let i = 0; i < nums.length; i++) {
-        if (i !== noZeroIndex) {
-          nums[noZeroIndex] = nums[i];
-        }
+    var search = function (nums, target) {
+      const length = nums.length;
+      let start = -1;
+      let end = -1;
 
-        if (nums[i] !== 0) {
-          noZeroIndex += 1;
+      let left = 0;
+      let right = length - 1;
+      // 二分搜索：找到左边界，找到第一次出现
+      while (left <= right) {
+        let mid = Math.floor((left + right) / 2);
+        if (nums[mid] === target) {
+          start = mid;
+          right = mid - 1;
+        } else if (nums[mid] > target) {
+          right = mid - 1;
+        } else {
+          left = mid + 1;
         }
       }
 
-      nums.fill(0, noZeroIndex);
+      if (start === -1) {
+        return 0;
+      }
 
-      return nums;
+      left = 0;
+      right = length - 1;
+      // 二分搜索：找到右边界，找到最后一次出现
+      while (left <= right) {
+        let mid = Math.floor((left + right) / 2);
+        if (nums[mid] === target) {
+          end = mid;
+          left = mid + 1;
+        } else if (nums[mid] > target) {
+          right = mid - 1;
+        } else {
+          left = mid + 1;
+        }
+      }
+
+      return end - start + 1;
     };
     ```
 2. 解法二
 
-    双指针。
+    ```js
+    var search = function (nums, target) {
+      const leftIdx = binarySearch(nums, target, true);
+      const rightIdx = binarySearch(nums, target, false);
+      if (leftIdx !== rightIdx) {
+        return rightIdx - leftIdx;
+      }
+      return 0;
+    };
 
-    ```javascript
-    var moveZeroes = function (nums) {
-      // 双指针。如果i项!==0，替换i、j项的值并j指针自增。
-      for (let i = 0, j = 0; i < nums.length; i++) {
-        if(nums[i] !== 0){
-          const tmp = nums[i]
-          nums[i] = nums[j];
-          nums[j] = tmp
+    // 二分搜索：nums中，第一个大于等于 或 第一个大于 target 的下标
+    const binarySearch = (nums, target, equal) => {
+      let left = 0;
+      let right = nums.length - 1;
+      // 定义超出数组长度（表明nums中不存在要求的下标）
+      let resultIndex = nums.length;
 
-          j++
+      while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+        if (nums[mid] > target || (equal && nums[mid] === target)) {
+          right = mid - 1;
+          resultIndex = mid;
+        } else {
+          left = mid + 1;
         }
       }
+      return resultIndex;
+    };
+    ```
+3. 解法三
+
+    暴力搜索、穷举搜索。
+
+    ```js
+    var search = function (nums, target) {
+      let count = 0;
+      nums.forEach((x) => {
+        if (x === target) count++;
+      });
+      return count;
     };
     ```
 
-### 有效的括号
-给定一个只包括 `'('`，`')'`，`'{'`，`'}'`，`'['`，`']'` 的字符串 `s` ，判断字符串是否有效。
+    ```js
+    var search = function (nums, target) {
+      let left = 0;
+      let right = nums.length - 1;
 
-有效字符串需满足：
+      // 左边搜索
+      while (nums[left] !== target && left < nums.length) {
+        ++left;
+      }
 
-1. 左括号必须用相同类型的右括号闭合。
-2. 左括号必须以正确的顺序闭合。
-3. 每个右括号都有一个对应的相同类型的左括号。
+      // 右边搜索
+      while (nums[right] !== target && right >= 0) {
+        --right;
+      }
+
+      return left <= right ? right - left + 1 : 0;
+    };
+    ```
+
+    ```js
+    const search = function (nums, target) {
+      return nums.reduce((a, b) => (b === target ? a + 1 : a), 0);
+    };
+    ```
+
+### 0～n-1中缺失的数字
+一个长度为n-1的递增排序数组中的所有数字都是唯一的，并且每个数字都在范围0～n-1之内。在范围0～n-1内的n个数字中有且只有一个数字不在该数组中，请找出这个数字。
+
+示例 1:
+```
+输入: [0,1,3]
+输出: 2
+```
+
+示例 2:
+```
+输入: [0,1,2,3,4,5,6,7,9]
+输出: 8
+```
+
+1. 解法一
+
+    >开闭区间的选择？
+
+    ```js
+    /**
+     * @param {number[]} nums
+     * @return {number}
+     */
+    var missingNumber = function (nums) {
+      let left = 0;
+      // 设置超出数组的下标，这样可以多判断一次，因为最大下标比长度小1，而最大数字等于长度
+      let right = nums.length;
+      // 二分搜索
+      while (left < right) {
+        const middle = Math.floor((left + right) / 2);
+        if (nums[middle] === middle) {
+          // middle可以排除
+          left = middle + 1;
+        } else {
+          // middle不能被排除
+          right = middle;
+        }
+      }
+      return left;
+    };
+    ```
+2. 解法二
+
+    暴力搜索、穷举搜索。
+
+    ```js
+    var missingNumber = function (nums) {
+      for (let i = 0; i < nums.length; i++) {
+        if (nums[i] !== i) return i;
+      }
+      return nums.length;
+    };
+    ```
+
+    ```js
+    var missingNumber = function (nums) {
+      let length = nums.length;
+      // 等差数列求和
+      let sum = (length + 1) * length / 2;
+      for (let i of nums) {
+        sum -= i;
+      }
+      return sum;
+    };
+    ```
+
+    ```js
+    var missingNumber = function (nums) {
+      // 任何数字异或自己等于0，0异或任何数字等于这个数字
+      let xor = 0;
+      for (let i = 0; i < nums.length; i++) {
+        xor ^= nums[i] ^ i;
+      }
+      return xor ^ nums.length;
+    };
+    ```
+
+### 旋转数组的最小数字
+把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。
+
+给你一个可能存在 重复 元素值的数组 numbers，它原来是一个升序排列的数组，并按上述情形进行了一次旋转。请返回旋转数组的最小元素。例如，数组 [3,4,5,1,2] 为 [1,2,3,4,5] 的一次旋转，该数组的最小值为1。
 
 示例 1：
 
 ```
-输入：s = "()"
-输出：true
+输入：[3,4,5,1,2]
+输出：1
 ```
 
 示例 2：
 
 ```
-输入：s = "()[]{}"
-输出：true
+输入：[2,2,2,0,1]
+输出：0
 ```
-
-示例 3：
-
-```
-输入：s = "(]"
-输出：false
-```
-
-提示：
-
-- `1 <= s.length <= 10 ** 4`
-- `s` 仅由括号 `'()[]{}'` 组成
 
 1. 解法一
 
-    栈（有先进后出就用栈）。
-
-    ```javascript
+    ```js
     /**
-     * @param {string} s
-     * @return {boolean}
+     * @param {number[]} numbers
+     * @return {number}
      */
-    var isValid = function (s) {
-      // 优化点性能
-      if (s % 2 === 1) {
-        return false;
+    var minArray = function (numbers) {
+      const firstOne = numbers[0];
+      const lastOne = numbers[numbers.length - 1];
+
+      // 全部旋转（或者没有旋转）
+      if (firstOne < lastOne) {
+        return firstOne;
       }
-
-      // 字符串是左括号就入栈，字符串是右括号则出栈对比
-      const stack = [];
-
-      for (let str of s) {
-        if (str === "(" || str === "[" || str === "{") {
-          stack.push(str);
-        }
-        // 默认只输入6种字符，所以这里不再判断
-        else {
-          const pop = stack.pop();
-
-          if (
-            (str === ")" && pop === "(") ||
-            (str === "]" && pop === "[") ||
-            (str === "}" && pop === "{")
-          ) {
-            // ok
-          } else {
-            return false;
+      // 第一个和最后一个数字相等，用遍历
+      else if (firstOne === lastOne) {
+        for (let i = numbers.length - 1; i > 0; i--) {
+          if (numbers[i] < numbers[i - 1]) {
+            return numbers[i];
           }
         }
+        return firstOne;
       }
+      // 第一个比最后一个大，用二分搜索：找到 左边第一个小于firstOne的数
+      else {
+        let left = 0;
+        let right = numbers.length - 1;
+        let result = lastOne;
 
-      if (stack.length > 0) {
-        return false;
+        while (left <= right) {
+          const middle = Math.floor((left + right) / 2);
+          if (numbers[middle] < firstOne) {
+            right = middle - 1;
+            result = numbers[middle];
+          } else if (numbers[middle] >= firstOne) {
+            left = middle + 1;
+          }
+        }
+        return result;
       }
-      return true;
+    };
+    ```
+2. 解法二
+
+    ```js
+    var minArray = function (numbers) {
+      let left = 0;
+      let right = numbers.length - 1;
+      while (left < right) {
+        const middle = Math.floor((right + left) / 2);
+        if (numbers[middle] < numbers[right]) {
+          right = middle;
+        } else if (numbers[middle] > numbers[right]) {
+          left = middle + 1;
+        }
+        // 若相等，则最右边的项一定不是目标（3种情况判断的结果）
+        else {
+          right -= 1;
+        }
+      }
+      // 退出时，left === right
+      return numbers[left];
     };
     ```
 
@@ -4330,7 +3042,7 @@ for (int i = 0; i < len; i++) {
 
     从后向前，双指针。
 
-    ```javascript
+    ```js
     /**
      * @param {number[]} nums1
      * @param {number} m
@@ -4364,7 +3076,7 @@ for (int i = 0; i < len; i++) {
 
     暴力解法，利用一个新数据（空间复杂度O(m+n)），不推荐。
 
-    ```javascript
+    ```js
     var merge = function (nums1, m, nums2, n) {
       let result = [];
 
@@ -4444,7 +3156,7 @@ for (int i = 0; i < k; i++) {
 
     双指针。
 
-    ```javascript
+    ```js
     /**
      * @param {number[]} nums
      * @return {number}
@@ -4465,11 +3177,11 @@ for (int i = 0; i < k; i++) {
     };
     ```
 
----
-## 中等
+### 搜索二维矩阵 II
+编写一个高效的算法来搜索 `m x n` 矩阵 `matrix` 中的一个目标值 `target` 。该矩阵具有以下特性：
 
-### 二维数组中的查找
-在一个 n * m 的二维数组中，每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序。请完成一个高效的函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数。
+- 每行的元素从左到右升序排列。
+- 每列的元素从上到下升序排列。
 
 示例:
 
@@ -4491,7 +3203,9 @@ for (int i = 0; i < k; i++) {
 
 1. 解法一
 
-    ```javascript
+    从右上角开始行动（类似二叉树搜索或二分搜索），只能向下和向左，O(n+m)。
+
+    ```js
     /**
      * @param {number[][]} matrix
      * @param {number} target
@@ -4503,7 +3217,7 @@ for (int i = 0; i < k; i++) {
 
       let column = 0;
       let row = rowLength - 1;
-      // O(n+m)，从右上角开始行动（类似二叉树搜索或二分搜索）
+      // 从右上角开始行动（类似二叉树搜索或二分搜索），只能向下和向左
       while (column < columnLength && row >= 0) {
         if (matrix[column][row] < target) {
           column++;
@@ -4516,15 +3230,18 @@ for (int i = 0; i < k; i++) {
       return false;
     };
     ```
+2. 解法二
 
-    ```javascript
+    从左下角开始行动（类似二叉树搜索或二分搜索），只能向上或向右，O(n+m)。
+
+    ```js
     var findNumberIn2DArray = function (matrix, target) {
       const columnLength = matrix.length;
       const rowLength = matrix[0]?.length ?? 0;
 
       let column = columnLength - 1;
       let row = 0;
-      // O(n+m)，从左下角开始行动（类似二叉树搜索或二分搜索）
+      // 从左下角开始行动（类似二叉树搜索或二分搜索），只能向上或向右
       while (column >= 0 && row < rowLength) {
         if (matrix[column][row] < target) {
           row++;
@@ -4535,123 +3252,6 @@ for (int i = 0; i < k; i++) {
         }
       }
       return false;
-    };
-    ```
-2. 解法二
-
-    ```javascript
-    var findNumberIn2DArray = function (matrix, target) {
-      // 列长度
-      const columnLength = matrix.length;
-      // 行长度
-      const rowLength = matrix[0]?.length ?? 0;
-
-      let column = columnLength - 1;
-      let row = 0;
-      // O(log n + log m)，从左下角开始行动（类似二叉树搜索或二分搜索）
-      while (column >= 0 && row <= rowLength - 1) {
-        const columnArr = matrix[column];
-
-        // 搜索同行的数。若找到target则返回true；否则查找大于target且本行最小；若找不到则返回false
-        if (columnArr[row] < target) {
-          const result = hasTarget1({ arr: columnArr, target, start: row });
-          if (Object.prototype.toString.call(result) === "[object Boolean]") {
-            return result;
-          } else {
-            row = result;
-          }
-        }
-        // 搜索同列的数。若找到target则返回true；否则查找小于target且本行最大；若找不到则返回false
-        else if (columnArr[row] > target) {
-          const result = hasTarget2({
-            arr: matrix.map((rowArr) => {
-              return rowArr[row];
-            }),
-            target,
-            start: column,
-          });
-          if (Object.prototype.toString.call(result) === "[object Boolean]") {
-            return result;
-          } else {
-            column = result;
-          }
-        }
-        // 找到
-        else {
-          return true;
-        }
-      }
-      return false;
-    };
-
-    /**
-     * 针对Number型递增数组，从前往后二分搜索，
-     *   若数组存在target则返回`true`；若不存在则返回 `第一个大于target的数所在的数组下标`；若不存在大于target的数则返回 `false`
-     * @param {number[]} arr  递增数组
-     * @param {number} target 目标
-     * @param {number} [start = 0] 数组开始下标
-     * @param {number} [end = arr.length - 1] 数组结束下标
-     * @return {boolean | number}
-     */
-    var hasTarget1 = function ({
-      arr = [],
-      target,
-      start = 0,
-      end = arr.length - 1,
-    } = {}) {
-      let left = start;
-      let right = end;
-
-      let foundBigger = false;
-
-      while (left <= right) {
-        const middle = Math.floor((left + right) / 2);
-        if (arr[middle] > target) {
-          right = middle - 1;
-          foundBigger = middle;
-        } else if (arr[middle] < target) {
-          left = middle + 1;
-        } else {
-          return true;
-        }
-      }
-
-      return foundBigger;
-    };
-
-    /**
-     * 针对Number型递增数组，从后往前二分搜索，
-     *   若数组存在target则返回`true`；若不存在则返回 `第一个小于target的数所在的数组下标`；若不存在小于target的数则返回 `false`
-     * @param {number[]} arr  递增数组
-     * @param {number} target 目标
-     * @param {number} [start = arr.length - 1] 数组开始下标
-     * @param {number} [end = 0] 数组结束下标
-     * @return {boolean | number}
-     */
-    var hasTarget2 = function ({
-      arr = [],
-      target,
-      start = arr.length - 1,
-      end = 0,
-    } = {}) {
-      let right = start;
-      let left = end;
-
-      let foundSmaller = false;
-
-      while (right >= left) {
-        const middle = Math.floor((right + left) / 2);
-        if (arr[middle] > target) {
-          right = middle - 1;
-        } else if (arr[middle] < target) {
-          left = middle + 1;
-          foundSmaller = middle;
-        } else {
-          return true;
-        }
-      }
-
-      return foundSmaller;
     };
     ```
 
@@ -4697,7 +3297,7 @@ for (int i = 0; i < k; i++) {
 
     滑动窗口（双指针）。
 
-    ```javascript
+    ```js
     /**
      * @param {number} target
      * @param {number[]} nums
@@ -4722,7 +3322,7 @@ for (int i = 0; i < k; i++) {
 
     暴力解法，O(n^2)，已超时。
 
-    ```javascript
+    ```js
     var minSubArrayLen = function (target, nums) {
       let minLen = 0;
       for (let i = 0; i < nums.length; i++) {
@@ -4743,7 +3343,7 @@ for (int i = 0; i < k; i++) {
     };
     ```
 
-    ```javascript
+    ```js
     var minSubArrayLen = function(target, nums) {
         let minLen = 0;
         for(let i = 0; i < nums.length; i++){
@@ -4764,7 +3364,7 @@ for (int i = 0; i < k; i++) {
 
     把暴力解法改成二分法，从而达到O(n*logn)。
 
-    ```javascript
+    ```js
     var minSubArrayLen = function (target, nums) {
       const len = nums.length;
 
@@ -4839,7 +3439,7 @@ for (int i = 0; i < k; i++) {
 
     注意确定区间的开闭统一，比如此解就是规定所有边都是左闭右开。
 
-    ```javascript
+    ```js
     /**
      * @param {number} n
      * @return {number[][]}
@@ -4910,7 +3510,7 @@ for (int i = 0; i < k; i++) {
 
     四个边界按顺序填入，然后边界缩小，左闭右闭。
 
-    ```javascript
+    ```js
     var generateMatrix = function (n) {
       // 二维数组
       const res = new Array(n).fill(0).map(() => new Array(n).fill(0));
@@ -4939,914 +3539,6 @@ for (int i = 0; i < k; i++) {
       }
 
       return res;
-    };
-    ```
-
-### 字母异位词分组
-给你一个字符串数组，请你将 **字母异位词** 组合在一起。可以按任意顺序返回结果列表。
-
-**字母异位词** 是由重新排列源单词的所有字母得到的一个新单词。
-
-示例 1:
-
-```
-输入: strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
-输出: [["bat"],["nat","tan"],["ate","eat","tea"]]
-```
-
-示例 2:
-
-```
-输入: strs = [""]
-输出: [[""]]
-```
-
-示例 3:
-
-```
-输入: strs = ["a"]
-输出: [["a"]]
-```
-
-提示：
-
-- `1 <= strs.length <= 10 ** 4`
-- `0 <= strs[i].length <= 100`
-- `strs[i] 仅包含小写字母`
-
-1. 解法一
-
-    先排序，再哈希表。
-
-    ```javascript
-    /**
-     * @param {string[]} strs
-     * @return {string[][]}
-     */
-    var groupAnagrams = function (strs) {
-      // 以排序过的每个项字符串为key，以原数组每个字符串的值为value
-      const hash = new Map();
-
-      const newStrs = strs.map((str) => {
-        return str.split("").sort().join("");
-      });
-
-      for (let i = 0; i < newStrs.length; i++) {
-        if (hash.has(newStrs[i])) {
-          hash.get(newStrs[i]).push(strs[i]);
-        } else {
-          hash.set(newStrs[i], [strs[i]]);
-        }
-      }
-
-      return [...hash.values()];
-    };
-    ```
-2. 解法二
-
-    先单词的字母计数，再哈希表。
-
-    ```javascript
-    var groupAnagrams = function (strs) {
-      // 每个key都是按照单词所占的26个字母数量，如：'abda'的key为'2:1:0:1:...'
-      const hash = new Map();
-
-      for (let i = 0; i < strs.length; i++) {
-        // 把单词转变成按顺序的26个字母数量的字符串
-        const letterArr = Array.from({ length: 26 }).fill(0);
-        for (let j of strs[i]) {
-          letterArr[j.charCodeAt() - "a".charCodeAt()] += 1;
-        }
-        const key = letterArr.join(":");
-
-        if (hash.get(key)) {
-          hash.get(key).push(strs[i]);
-        } else {
-          hash.set(key, [strs[i]]);
-        }
-      }
-
-      return [...hash.values()];
-    };
-    ```
-
-### 最长连续序列
-给定一个未排序的整数数组 `nums` ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
-
-请你设计并实现时间复杂度为 O(n) 的算法解决此问题。
-
-
-
-示例 1：
-
-```
-输入：nums = [100,4,200,1,3,2]
-输出：4
-解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
-```
-
-示例 2：
-
-```
-输入：nums = [0,3,7,2,5,8,4,6,0,1]
-输出：9
-```
-
-提示：
-
-- `0 <= nums.length <= 10 ** 5`
-- `-(10 ** 9) <= nums[i] <= 10 ** 9`
-
-1. 解法一
-
-    哈希表，为了达到 O(n)，仅对最小的数字进行累加计数操作。
-
-    ```javasciprt
-    /**
-     * @param {number[]} nums
-     * @return {number}
-     */
-    var longestConsecutive = function (nums) {
-      // 去除相同的项
-      const set = new Set(nums);
-
-      let longestLen = 0;
-
-      for (const i of set) {
-        // 为了保证 O(n) 所以只处理连续数字中最小的
-        if (!set.has(i - 1)) {
-          let currentLen = 1;
-          let currentNum = i;
-          while (set.has(currentNum + 1)) {
-            currentLen += 1;
-            currentNum += 1;
-          }
-          longestLen = Math.max(longestLen, currentLen);
-        }
-      }
-
-      return longestLen;
-    };
-    ```
-2. 解法二
-
-    哈希表，仅遍历一次，哈希表key代表数字、value代表该key数字连续长度。
-
-    ```javascript
-    var longestConsecutive = function (nums) {
-      // 把连续次数存放在哈希表（key：数字；value：连续长度）
-      let hash = new Map();
-      let longestLen = 0;
-
-      for (let i of nums) {
-        let num = i;
-        // 相同数字仅处理一次
-        if (!hash.has(num)) {
-          // 前后一个数字是否有值
-          let left = hash.get(num - 1) || 0;
-          let right = hash.get(num + 1) || 0;
-
-          let currentLen = 1 + left + right;
-          longestLen = Math.max(currentLen, longestLen);
-
-          hash.set(num, currentLen);
-          // 同步更新2端边界
-          hash.set(num - left, currentLen);
-          hash.set(num + right, currentLen);
-        }
-      }
-
-      return longestLen;
-    };
-    ```
-
-### 盛最多水的容器
-给定一个长度为 `n` 的整数数组 `height` 。有 `n` 条垂线，第 `i` 条线的两个端点是 `(i, 0)` 和 `(i, height[i])` 。
-
-找出其中的两条线，使得它们与 `x` 轴共同构成的容器可以容纳最多的水。
-
-返回容器可以储存的最大水量。
-
-说明：你不能倾斜容器。
-
-示例 1：
-
-![question_11.jpg](./images/question_11.jpg)
-
-```
-输入：[1,8,6,2,5,4,8,3,7]
-输出：49
-解释：图中垂直线代表输入数组 [1,8,6,2,5,4,8,3,7]。在此情况下，容器能够容纳水（表示为蓝色部分）的最大值为 49。
-```
-
-示例 2：
-
-```
-输入：height = [1,1]
-输出：1
-```
-
-提示：
-
-- `n == height.length`
-- `2 <= n <= 10 ** 5`
-- `0 <= height[i] <= 10 ** 4`
-
-1. 解法一
-
-    双指针。缩减搜索空间如何保证不漏情况。
-
-    ```javascript
-    /**
-     * @param {number[]} height
-     * @return {number}
-     */
-    var maxArea = function (height) {
-      let maxArea = 0;
-      // 第一个和最后一个项为双指针初始状态
-      for (let left = 0, right = height.length - 1; left < right; ) {
-        maxArea = Math.max(
-          maxArea,
-          (right - left) * Math.min(height[left], height[right]),
-        );
-
-        // 需要验证：缩小短的一边能找到最大面积（相等的边缩短哪一边都一样）
-        if (height[left] < height[right]) {
-          left++;
-        } else {
-          right--;
-        }
-      }
-
-      return maxArea;
-    };
-
-    // 缩减搜索空间，如何找到最大的面积：
-    //   1. 在每个状态下，无论长板或短板向中间收窄一格，都会导致水槽 底边宽度 −1 变短，
-    //   2.1. 若向内 移动短板 ，水槽的短板可能 变大或不变或变小，因此下个水槽的面积 可能增大；
-    //   2.2. 若向内 移动长板 ，水槽的短板可能 不变或变小，因此下个水槽的面积 一定变小。
-    //   缩小短的一边能找到最大面积。
-    ```
-2. 解法二
-
-    暴力解法，O(n^2)，已超时。
-
-    ```javascript
-    var maxArea = function (height) {
-      let maxvolume = 0;
-      for (let i = 0; i < height.length - 1; i++) {
-        for (let j = i + 1; j < height.length; j++) {
-          maxvolume = Math.max(maxvolume, (j - i) * Math.min(height[i], height[j]));
-        }
-      }
-      return maxvolume;
-    };
-    ```
-
-### 三数之和
-给你一个整数数组 `nums` ，判断是否存在三元组 `[nums[i], nums[j], nums[k]]` 满足 `i != j`、`i != k` 且 `j != k` ，同时还满足 `nums[i] + nums[j] + nums[k] == 0` 。请
-
-你返回所有和为 `0` 且不重复的三元组。
-
-注意：答案中不可以包含重复的三元组。
-
-示例 1：
-
-```
-输入：nums = [-1,0,1,2,-1,-4]
-输出：[[-1,-1,2],[-1,0,1]]
-解释：
-nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0 。
-nums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0 。
-nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。
-不同的三元组是 [-1,0,1] 和 [-1,-1,2] 。
-注意，输出的顺序和三元组的顺序并不重要。
-```
-
-示例 2：
-
-```
-输入：nums = [0,1,1]
-输出：[]
-解释：唯一可能的三元组和不为 0 。
-```
-
-示例 3：
-
-```
-输入：nums = [0,0,0]
-输出：[[0,0,0]]
-解释：唯一可能的三元组和为 0 。
-```
-
-提示：
-
-- `3 <= nums.length <= 3000`
-- `-(10 ** 5) <= nums[i] <= 10 ** 5`
-
-1. 解法一
-
-    双指针，O(n^2)。关键在去除重复答案。
-
-    ```javascript
-    /**
-     * @param {number[]} nums
-     * @return {number[][]}
-     */
-    function threeSum(nums) {
-      // 先排序，因为去重和算法逻辑需要
-      nums.sort((a, b) => a - b);
-
-      const resultArr = [];
-
-      for (let left = 0; left < nums.length; left++) {
-        if (nums[left] > 0) {
-          return resultArr; // nums经过排序后，只要nums[left]>0, 此后的nums[left] + nums[middle] + nums[right]均大于0,可以提前终止循环。
-        }
-        // 去重
-        if (left > 0 && nums[left] === nums[left - 1]) {
-          continue;
-        }
-        let middle = left + 1;
-        let right = nums.length - 1;
-        while (middle < right) {
-          let total = nums[left] + nums[middle] + nums[right];
-          if (total === 0) {
-            resultArr.push([nums[left], nums[middle], nums[right]]);
-
-            // 去重需要，所以2个指针同时移动
-            middle++;
-            right--;
-
-            // 去重需要
-            while (nums[right] === nums[right + 1]) {
-              right--;
-            }
-            // 去重需要
-            while (nums[middle] === nums[middle - 1]) {
-              middle++;
-            }
-          } else if (total < 0) {
-            middle++;
-          } else {
-            right--;
-          }
-        }
-      }
-      return resultArr;
-    }
-    ```
-
-### 无重复字符的最长子串
-给定一个字符串 `s` ，请你找出其中不含有重复字符的 **最长子串** 的长度。
-
-示例 1:
-
-```
-输入: s = "abcabcbb"
-输出: 3
-解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
-```
-
-示例 2:
-
-```
-输入: s = "bbbbb"
-输出: 1
-解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
-```
-
-示例 3:
-
-```
-输入: s = "pwwkew"
-输出: 3
-解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
-     请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
-```
-
-提示：
-
-- `0 <= s.length <= 5 * 10 ** 4`
-- `s` 由英文字母、数字、符号和空格组成
-
-1. 解法一
-
-    滑动窗口（双指针）。
-
-    ```javascript
-    /**
-     * @param {string} s
-     * @return {number}
-     */
-    var lengthOfLongestSubstring = function (s) {
-      // 哈希表
-      const hash = new Set();
-
-      let longestLen = 0;
-
-      // 双指针
-      for (let left = 0, right = 0; left < s.length; ++left) {
-        if (left === 0) {
-          // 初始化
-          hash.add(s[0]);
-          longestLen = 1;
-        } else {
-          // 左指针向右移动一格，移除一个字符
-          hash.delete(s[left - 1]);
-        }
-
-        // 不断地移动右指针，直到长度尽头或者重复
-        while (right + 1 < s.length && !hash.has(s[right + 1])) {
-          hash.add(s[right + 1]);
-          ++right;
-        }
-
-        longestLen = Math.max(longestLen, right - left + 1);
-      }
-      return longestLen;
-    };
-    ```
-2. 解法二
-
-    暴力解法，O(n^2) + 嵌套的判断无重复的时间复杂度。
-
-    1. 利用`Set`
-
-        ```javascript
-        var lengthOfLongestSubstring = function (s) {
-          let longestLen = 0;
-          for (let i = 0; i < s.length; i++) {
-            longestLen = Math.max(longestLen, 1);
-
-            const hash = new Set([s[i]]);
-
-            for (let j = i + 1; j < s.length; j++) {
-              if (hash.has(s[j])) {
-                break;
-              }
-              hash.add(s[j]);
-              longestLen = Math.max(longestLen, j - i + 1);
-            }
-          }
-          return longestLen;
-        };
-        ```
-    2. 利用`String.prototype.includes`
-
-        ```javascript
-        var lengthOfLongestSubstring = function (s) {
-          let longestLen = 0;
-          for (let i = 0; i < s.length; i++) {
-            longestLen = Math.max(longestLen, 1);
-
-            for (let j = i + 1; j < s.length; j++) {
-              if (s.slice(i, j).includes(s[j])) {
-                break;
-              }
-              longestLen = Math.max(longestLen, j - i + 1);
-            }
-          }
-          return longestLen;
-        };
-        ```
-
-### 下一个排列
-整数数组的一个 **排列**  就是将其所有成员以序列或线性顺序排列。
-
-- 例如，`arr = [1,2,3]` ，以下这些都可以视作 `arr` 的排列：`[1,2,3]`、`[1,3,2]`、`[3,1,2]`、`[2,3,1]` 。
-
-整数数组的 **下一个排列** 是指其整数的下一个字典序更大的排列。更正式地，如果数组的所有排列根据其字典顺序从小到大排列在一个容器中，那么数组的 **下一个排列** 就是在这个有序容器中排在它后面的那个排列。如果不存在下一个更大的排列，那么这个数组必须重排为字典序最小的排列（即，其元素按升序排列）。
-
-- 例如，`arr = [1,2,3]` 的下一个排列是 `[1,3,2]` 。
-- 类似地，`arr = [2,3,1]` 的下一个排列是 `[3,1,2]` 。
-- 而 `arr = [3,2,1]` 的下一个排列是 `[1,2,3]` ，因为 `[3,2,1]` 不存在一个字典序更大的排列。
-
-给你一个整数数组 `nums` ，找出 `nums` 的下一个排列。
-
-必须 **原地** 修改，只允许使用额外常数空间。
-
-示例 1：
-
-```
-输入：nums = [1,2,3]
-输出：[1,3,2]
-```
-
-示例 2：
-
-```
-输入：nums = [3,2,1]
-输出：[1,2,3]
-```
-
-示例 3：
-
-```
-输入：nums = [1,1,5]
-输出：[1,5,1]
-```
-
-提示：
-
-- `1 <= nums.length <= 100`
-- `0 <= nums[i] <= 100`
-
-1. 解法一
-
-    由后往前，若找到第一个后面项大于前面项，则调换位置，此时前面项之后的所有项都保持递减排序，需要对之后项用递增排序或reverse；若找不到，则说明原来就是最大排列，需要对所有项用递增排序或reverse。
-
-    ```javascript
-    /**
-     * @param {number[]} nums
-     * @return {void} Do not return anything, modify nums in-place instead.
-     */
-    var nextPermutation = function (nums) {
-      // 第一层：从后往前遍历，到达0结束
-      for (let i = nums.length - 1; i >= 0; i--) {
-        // 第二层：从后往前遍历，到达i后一个结束
-        for (let j = nums.length - 1; j > i; j--) {
-          // 若找到第一个后面项大于前面项的，则调换i、j项位置。此时i后面项是递减排序，需要逆序
-          if (nums[j] > nums[i]) {
-            let temp = nums[i];
-            nums[i] = nums[j];
-            nums[j] = temp;
-
-            // i后项也保持递减，需要逆序（实现reverse数组部分项）
-            let l = i + 1;
-            let r = nums.length - 1;
-            while (l < r) {
-              [nums[l], nums[r]] = [nums[r], nums[l]];
-              l++;
-              r--;
-            }
-            return;
-          }
-        }
-      }
-
-      // 若所有都是递减数字会走到这里，则需要重回到最小排列，需要逆序
-      nums.reverse();
-    };
-    ```
-2. 解法二
-
-    把解法一的嵌套for改为2遍扫描。
-
-    ```javascript
-    var nextPermutation = function (nums) {
-      let i;
-      // 从后往前，找到第一个相邻的项i满足 前面小于后面（若找不到则i===-1）
-      for (i = nums.length - 2; i >= 0 && nums[i] >= nums[i + 1]; i--) {}
-
-      if (i >= 0) {
-        let j;
-        // 从后往前，找到第一个i项小于j项
-        for (j = nums.length - 1; j >= 0 && nums[i] >= nums[j]; j--) {}
-
-        // 换i、j项位置。
-        [nums[i], nums[j]] = [nums[j], nums[i]];
-
-        // 此时i后面项是递减排序，需要逆序i+1到最后1项
-      }
-
-      // 若i===-1，则表示原本是最大排列，需要逆序i+1到最后1项
-
-      // reverse
-      let l = i + 1;
-      let r = nums.length - 1;
-      while (l < r) {
-        [nums[l], nums[r]] = [nums[r], nums[l]];
-        l++;
-        r--;
-      }
-    };
-    ```
-
-### 寻找峰值
-峰值元素是指其值严格大于左右相邻值的元素。
-
-给你一个整数数组 `nums`，找到峰值元素并返回其索引。数组可能包含多个峰值，在这种情况下，返回 **任何一个峰值** 所在位置即可。
-
-你可以假设 `nums[-1] = nums[n] = -∞` 。
-
-你必须实现时间复杂度为 `O(log n)` 的算法来解决此问题。
-
-示例 1：
-
-```
-输入：nums = [1,2,3,1]
-输出：2
-解释：3 是峰值元素，你的函数应该返回其索引 2。
-```
-
-示例 2：
-
-```
-输入：nums = [1,2,1,3,5,6,4]
-输出：1 或 5
-解释：你的函数可以返回索引 1，其峰值元素为 2；
-     或者返回索引 5， 其峰值元素为 6。
-```
-
-提示：
-
-- `1 <= nums.length <= 1000`
-- `-(2 ** 31) <= nums[i] <= 2 ** 31 - 1`
-- 对于所有有效的 `i` 都有 `nums[i] != nums[i + 1]`
-
-1. 解法一
-
-    二分法。重点是验证二分法一定能找到题解：因为题目表示`nums[-1] = nums[n] = -∞`数组边界当做是负无穷 且 `nums[i] != nums[i + 1]`不存在相邻项相等，所以任意相邻的项中，朝更大的项的方向一定能找到峰值。
-
-    ```javascript
-    /**
-     * @param {number[]} nums
-     * @return {number}
-     */
-    var findPeakElement = function (nums) {
-      let left = 0;
-      let right = nums.length - 1;
-      let middle;
-      while (left < right) {
-        middle = Math.floor((left + right) / 2);
-        if (nums[middle] < nums[middle + 1]) {
-          left = middle + 1;
-        } else {
-          right = middle;
-        }
-      }
-
-      return left;
-    };
-    ```
-
-### 森林中的兔子
-森林中有未知数量的兔子。提问其中若干只兔子 **"还有多少只兔子与你（指被提问的兔子）颜色相同?"** ，将答案收集到一个整数数组 `answers` 中，其中 `answers[i]` 是第 `i` 只兔子的回答。
-
-给你数组 `answers` ，返回森林中兔子的最少数量。
-
-示例 1：
-
-```
-输入：answers = [1,1,2]
-输出：5
-解释：
-两只回答了 "1" 的兔子可能有相同的颜色，设为红色。
-之后回答了 "2" 的兔子不会是红色，否则他们的回答会相互矛盾。
-设回答了 "2" 的兔子为蓝色。
-此外，森林中还应有另外 2 只蓝色兔子的回答没有包含在数组中。
-因此森林中兔子的最少数量是 5 只：3 只回答的和 2 只没有回答的。
-```
-
-示例 2：
-
-```
-输入：answers = [10,10,10]
-输出：11
-```
-
-提示：
-
-- `1 <= answers.length <= 1000`
-- `0 <= answers[i] < 1000`
-
-1. 解法一
-
-    ```javascript
-    /**
-     * @param {number[]} answers
-     * @return {number}
-     */
-    var numRabbits = function (answers) {
-      // {回答x只: 回答x只的兔子数}
-      const map = new Map();
-      answers.filter((answer) => {
-        map.set(answer, map.get(answer) ? map.get(answer) + 1 : 1);
-      });
-
-      return [...map].reduce((acc, [answer, times]) => {
-        // 一组内最多相同的兔子：answer + 1；兔子：times；组数：向上取整(兔子/一组内最多相同的兔子)
-        return acc + (answer + 1) * Math.ceil(times / (answer + 1));
-      }, 0);
-    };
-    ```
-
-### 每日温度
-给定一个整数数组 `temperatures` ，表示每天的温度，返回一个数组 `answer` ，其中 `answer[i]` 是指对于第 `i` 天，下一个更高温度出现在几天后。如果气温在这之后都不会升高，请在该位置用 `0` 来代替。
-
-示例 1:
-
-```
-输入: temperatures = [73,74,75,71,69,72,76,73]
-输出: [1,1,4,2,1,1,0,0]
-```
-
-示例 2:
-
-```
-输入: temperatures = [30,40,50,60]
-输出: [1,1,1,0]
-```
-
-示例 3:
-
-```
-输入: temperatures = [30,60,90]
-输出: [1,1,0]
-```
-
-提示：
-
-- `1 <= temperatures.length <= 10 ** 5`
-- `30 <= temperatures[i] <= 100`
-
-1. 解法一
-
-    **通常是一维数组，要寻找任一个元素的右边或者左边第一个比自己大或者小的元素的位置，此时我们就要想到可以用单调栈。** O(n)。
-
-    ```javascript
-    /**
-     * @param {number[]} temperatures
-     * @return {number[]}
-     */
-    var dailyTemperatures = function (temperatures) {
-      // 单调栈（栈头至栈底 递增，但存储的是下标）
-      const stack = [];
-
-      const answer = new Array(temperatures.length).fill(0);
-
-      for (let i = 0; i < temperatures.length; i++) {
-        // 第一个元素 || i项 小于等于 栈顶元素
-        if (
-          stack.length === 0 ||
-          temperatures[i] <= temperatures[stack[stack.length - 1]]
-        ) {
-          // i项如栈
-          stack.push(i);
-        } else {
-          // 栈不空 && i项 大于 栈顶元素
-          while (
-            stack.length > 0 &&
-            temperatures[i] > temperatures[stack[stack.length - 1]]
-          ) {
-            // 栈顶元素存储的下标 找到了第一个大于自己的值，得到它的解答、出栈
-            answer[stack[stack.length - 1]] = i - stack[stack.length - 1];
-            stack.pop();
-          }
-
-          // 没有比 i项 小的 栈元素，i项入栈
-          stack.push(i);
-        }
-      }
-      return answer;
-    };
-    ```
-
-### 找到字符串中所有字母异位词
-给定两个字符串 `s` 和 `p`，找到 s 中所有 p 的 **异位词** 的子串，返回这些子串的起始索引。不考虑答案输出的顺序。
-
-**异位词** 指由相同字母重排列形成的字符串（包括相同的字符串）。
-
-示例 1:
-
-```
-输入: s = "cbaebabacd", p = "abc"
-输出: [0,6]
-解释:
-起始索引等于 0 的子串是 "cba", 它是 "abc" 的异位词。
-起始索引等于 6 的子串是 "bac", 它是 "abc" 的异位词。
-```
-
- 示例 2:
-
-```
-输入: s = "abab", p = "ab"
-输出: [0,1,2]
-解释:
-起始索引等于 0 的子串是 "ab", 它是 "ab" 的异位词。
-起始索引等于 1 的子串是 "ba", 它是 "ab" 的异位词。
-起始索引等于 2 的子串是 "ab", 它是 "ab" 的异位词。
-```
-
-提示:
-
-- `1 <= s.length, p.length <= 3 * 10 ** 4`
-- `s` 和 `p` 仅包含小写字母
-
-1. 解法一
-
-    滑动窗口。
-
-    ```javascript
-    /**
-     * @param {string} s
-     * @param {string} p
-     * @return {number[]}
-     */
-    var findAnagrams = function (s, p) {
-      const sLen = s.length;
-      const pLen = p.length;
-
-      // 特例：s长度小于p长度
-      if (sLen < pLen) {
-        return [];
-      }
-
-      const result = [];
-
-      // 在字符串 s 中构造一个长度为与字符串 p 的长度相同的滑动窗口，并在滑动中维护窗口中每种字母的数量；当窗口中每种字母的数量与字符串 p 中每种字母的数量相同时，则说明当前窗口为字符串 p 的异位词。
-      const sCount = new Array(26).fill(0);
-      // 对比用
-      const pCount = new Array(26).fill(0);
-      for (let i = 0; i < pLen; ++i) {
-        ++sCount[s[i].charCodeAt() - "a".charCodeAt()];
-        ++pCount[p[i].charCodeAt() - "a".charCodeAt()];
-      }
-
-      if (sCount.toString() === pCount.toString()) {
-        result.push(0);
-      }
-
-      // 滑动窗口，滑动 sLen - pLen 次
-      for (let i = 0; i < sLen - pLen; ++i) {
-        // 滑动：去除前一个字符，就要在pLen后面加一个字符
-        --sCount[s[i].charCodeAt() - "a".charCodeAt()];
-        ++sCount[s[i + pLen].charCodeAt() - "a".charCodeAt()];
-
-        if (sCount.toString() === pCount.toString()) {
-          result.push(i + 1);
-        }
-      }
-
-      return result;
-    };
-    ```
-2. 解法二
-
-    滑动窗口（不再维护每种字母的数量，而维护每种字母数量的差），逻辑较复杂。
-
-    ```javascript
-    var findAnagrams = function (s, p) {
-      const sLen = s.length;
-      const pLen = p.length;
-
-      // 特例：s长度小于p长度
-      if (sLen < pLen) {
-        return [];
-      }
-
-      const result = [];
-
-      // count[i]：i序号字母在s和p的相差数量。0：数量相同；正数：s多出现次数；负数：s少出现次数
-      const count = Array(26).fill(0);
-      for (let i = 0; i < pLen; ++i) {
-        ++count[s[i].charCodeAt() - "a".charCodeAt()];
-        --count[p[i].charCodeAt() - "a".charCodeAt()];
-      }
-
-      // 字母不同数量（值：0~26），若count[i]为0则i序号字母相同，否则不同
-      let differ = 0;
-      for (let j = 0; j < 26; ++j) {
-        if (count[j] !== 0) {
-          ++differ;
-        }
-      }
-
-      if (differ === 0) {
-        result.push(0);
-      }
-
-      // 滑动窗口，滑动 sLen - pLen 次
-      for (let i = 0; i < sLen - pLen; ++i) {
-        // 去除前一个字符
-        // 若原来多1个，则去掉就数量相同，differ减少1
-        if (count[s[i].charCodeAt() - "a".charCodeAt()] === 1) {
-          --differ;
-        }
-        // 若原来数量相同，则去掉就少1个，differ增加1
-        else if (count[s[i].charCodeAt() - "a".charCodeAt()] === 0) {
-          ++differ;
-        } // 其他差距值不会影响differ
-        --count[s[i].charCodeAt() - "a".charCodeAt()];
-
-        // 增加pLen后一个字符
-        // 若原来少1个，则增加就数量相同，differ减少1
-        if (count[s[i + pLen].charCodeAt() - "a".charCodeAt()] === -1) {
-          --differ;
-        }
-        // 若原来数量相同，则增加就多1个，differ增加1
-        else if (count[s[i + pLen].charCodeAt() - "a".charCodeAt()] === 0) {
-          ++differ;
-        } // 其他差距值不会影响differ
-        ++count[s[i + pLen].charCodeAt() - "a".charCodeAt()];
-
-        if (differ === 0) {
-          result.push(i + 1);
-        }
-      }
-
-      return result;
     };
     ```
 
@@ -5879,7 +3571,7 @@ nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。
 
     暴力解法，O(n^2)。
 
-    ```javascript
+    ```js
     /**
      * @param {number[]} nums
      * @param {number} k
@@ -5903,7 +3595,7 @@ nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。
 
     前缀和+哈希表，O(n)。
 
-    ```javascript
+    ```js
     const subarraySum = (nums, k) => {
       let result = 0;
 
@@ -5991,7 +3683,7 @@ n = 2
 
     递归
 
-    ```javascript
+    ```js
     /**
      * @param {Array} arr
      * @param {number} depth
@@ -6018,7 +3710,7 @@ n = 2
 
     循环（利用了`Array.prototype.concat`对参数尝试去掉一层嵌套的机制）。
 
-    ```javascript
+    ```js
     var flat = function (arr, n) {
       while (n > 0 && arr.some(Array.isArray)) {
         arr = [].concat(...arr); // concat会尝试对所有参数解一层嵌套（否则还是需要一层for循环实现）
@@ -6078,7 +3770,7 @@ for (int i = 0; i < len; i++) {
 
     双指针。
 
-    ```javascript
+    ```js
     /**
      * @param {number[]} nums
      * @return {number}
@@ -6137,7 +3829,7 @@ for (int i = 0; i < len; i++) {
 
     必须先排序，然后才能顺序比较。
 
-    ```javascript
+    ```js
     /**
      * @param {number[][]} intervals
      * @return {number[][]}
@@ -6179,6 +3871,1312 @@ for (int i = 0; i < len; i++) {
       return true;
     }
     ```
+
+### 对角线遍历
+给你一个大小为 `m x n` 的矩阵 `mat` ，请以对角线遍历的顺序，用一个数组返回这个矩阵中的所有元素。
+
+示例1：
+
+![diag1-grid.jpg](./images/diag1-grid.jpg)
+
+```
+输入：mat = [[1,2,3],[4,5,6],[7,8,9]]
+输出：[1,2,4,7,5,3,6,8,9]
+```
+
+示例 2：
+
+```
+输入：mat = [[1,2],[3,4]]
+输出：[1,2,3,4]
+```
+
+1. 解法一
+
+    参考[对角线打印二维数组](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/手写代码/README.md#对角线打印二维数组)。
+
+    ```js
+    /**
+     * @param {number[][]} mat
+     * @return {number[]}
+     */
+    var findDiagonalOrder = function (mat) {
+      const result = [];
+
+      const row = mat[0].length; // 行长度
+      const column = mat.length; // 列长度
+
+      let flag = false;
+
+      // i、_i：行下标；j：列下标
+      for (let i = 0; i <= row - 1; i++) {
+        const tempArr = [];
+        for (let j = 0, _i = i; j <= column - 1 && _i >= 0; j++, _i--) {
+          flag ? tempArr.push(mat[j][_i]) : tempArr.unshift(mat[j][_i]);
+        }
+        result.push(...tempArr);
+        flag = !flag;
+      }
+
+      // i：行下标；j、_j：列下标
+      for (let j = 1; j <= column - 1; j++) {
+        const tempArr = [];
+        for (let i = row - 1, _j = j; i >= 0 && _j <= column - 1; i--, _j++) {
+          flag ? tempArr.push(mat[_j][i]) : tempArr.unshift(mat[_j][i]);
+        }
+        result.push(...tempArr);
+        flag = !flag;
+      }
+
+      return result;
+    };
+    ```
+
+---
+## 动态规划
+
+### 三步问题
+楼梯有n阶台阶，一次可以上1阶、2阶或3阶。计算上n阶有多少种走法。结果可能很大，你需要对结果模1000000007。
+
+1. 解法一
+
+    动态规划。
+
+    ```js
+    /**
+     * @param {number} n
+     * @return {number}
+     */
+    var waysToStep = function (n) {
+      // dp[i]：登上第i阶的方式数量
+      const dp = [];
+      const modulo = 1000000007;
+
+      dp[1] = 1;
+      dp[2] = 2;
+      dp[3] = 4;
+
+      for (let i = 4; i <= n; i++) {
+        // 转移方程（跳到倒一、跳到倒二、跳到倒三，注意剩下3台阶不能再加数量，否则会重复）
+        // 任意2次相加取模都可
+        dp[i] = (dp[i - 3] + ((dp[i - 2] + dp[i - 1]) % modulo)) % modulo;
+      }
+      return dp[n];
+    };
+    ```
+
+<details>
+<summary>其他解法</summary>
+
+2. 解法二
+
+    滚动数组（优化空间）。
+
+    ```js
+    var waysToStep = (n) => {
+      if (n === 1) {
+        return 1;
+      }
+      if (n === 2) {
+        return 2;
+      }
+      if (n === 3) {
+        return 4;
+      }
+
+      const modulo = 1000000007;
+
+      let a = 4;
+      let b = 2;
+      let c = 1;
+      for (let i = 3; i <= n; i++) {
+        const temp_a = a;
+        const temp_b = b;
+        a = (a + ((b + c) % modulo)) % modulo;
+        b = temp_a;
+        c = temp_b;
+      }
+      return a;
+    };
+    ```
+</details>
+
+### 斐波那契数
+**斐波那契数** （通常用 `F(n)` 表示）形成的序列称为 **斐波那契数列** 。该数列由 **0** 和 **1** 开始，后面的每一项数字都是前面两项数字的和。也就是：
+
+```
+F(0) = 0，F(1) = 1
+F(n) = F(n - 1) + F(n - 2)，其中 n > 1
+```
+
+给定 `n` ，请计算 `F(n)` 。
+
+答案需要取模 1e9+7(1000000007) ，如计算初始结果为：1000000008，请返回 1。
+
+
+
+示例 1：
+
+```
+输入：n = 2
+输出：1
+解释：F(2) = F(1) + F(0) = 1 + 0 = 1
+```
+
+示例 2：
+
+```
+输入：n = 3
+输出：2
+解释：F(3) = F(2) + F(1) = 1 + 1 = 2
+```
+
+示例 3：
+
+```
+输入：n = 4
+输出：3
+解释：F(4) = F(3) + F(2) = 2 + 1 = 3
+```
+
+提示：
+
+- `0 <= n <= 100`
+
+1. 解法一
+
+    ```js
+    /**
+     * @param {number} n
+     * @return {number}
+     */
+    var fib = function (n) {
+      // 动态规划
+      if (n < 2) {
+        return n;
+      }
+      const modulo = 1000000007;
+      let previous = 0;
+      let current = 1;
+      // 迭代：记录 前一个值 和 当前值
+      for (let i = 2; i <= n; i++) {
+        const temp = previous;
+        previous = current;
+        current =
+          temp + current >= modulo
+            ? temp + current - modulo
+            : temp + current;
+      }
+      return current;
+    };
+    ```
+2. 解法二
+
+    ```js
+    var fib = function (n) {
+      // 动态规划
+      // 保存计算过的结果，避免递归时超时
+      this.map = this.map || new Map();
+      if (this.map.has(n)) {
+        return map.get(n);
+      }
+
+      // 递归
+      if (n < 2) {
+        map.set(n, n);
+        return n;
+      }
+
+      const modulo = 1000000007;
+      const result = ((fib(n - 1) % modulo) + (fib(n - 2) % modulo)) % modulo; // (a+b)%c === (a%c+b%c)%c
+      map.set(n, result);
+      return result;
+    };
+    ```
+
+### 青蛙跳台阶问题
+一只青蛙一次可以跳上1级台阶，也可以跳上2级台阶。求该青蛙跳上一个 n 级的台阶总共有多少种跳法。
+
+答案需要取模 1e9+7（1000000007），如计算初始结果为：1000000008，请返回 1。
+
+示例 1：
+
+```
+输入：n = 2
+输出：2
+```
+
+示例 2：
+
+```
+输入：n = 7
+输出：21
+```
+
+示例 3：
+
+```
+输入：n = 0
+输出：1
+```
+
+- <details>
+
+    <summary>解析：青蛙跳台问题</summary>
+
+    设跳上 n 级台阶有 f(n) 种跳法。在所有跳法中，青蛙的最后一步只有两种情况：跳上 1 级或 2 级台阶，即 f(n)=f(n−1)+f(n−2)。本题可转化为 求斐波那契数列第 n 项的值。
+    </details>
+
+1. 解法
+
+    略。与上一题（[斐波那契数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/LeetCode记录/README.md#斐波那契数)）基本一致，改下初始值即可。
+
+### 连续子数组的最大和
+输入一个整型数组，数组中的一个或连续多个整数组成一个子数组。求所有子数组的和的最大值。
+
+要求时间复杂度为 $O(n)$ 。
+
+示例1:
+
+```
+输入: nums = [-2,1,-3,4,-1,2,1,-5,4]
+输出: 6
+解释: 连续子数组 [4,-1,2,1] 的和最大，为 6。
+```
+
+1. 解法
+
+    ```js
+    /**
+     * @param {number[]} nums
+     * @return {number}
+     */
+    var maxSubArray = function (nums) {
+      // 动态规划
+      let max = nums[0];
+      for (let i = 1, tempResult = nums[0]; i < nums.length; i++) {
+        // tempResult：以元素nums[i]为结尾 的连续子数组最大和
+        tempResult = nums[i] + Math.max(tempResult, 0);
+        max = Math.max(max, tempResult);
+      }
+      return max;
+    };
+    ```
+
+### 股票的最大利润
+假设把某股票的价格按照时间先后顺序存储在数组中，请问买卖该股票一次可能获得的最大利润是多少？
+
+示例 1:
+
+```
+输入: [7,1,5,3,6,4]
+输出: 5
+解释: 在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+     注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格。
+```
+
+示例 2:
+
+```
+输入: [7,6,4,3,1]
+输出: 0
+解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。
+```
+
+1. 解法
+
+    ```js
+    /**
+     * @param {number[]} prices
+     * @return {number}
+     */
+    var maxProfit = function (prices) {
+      // 动态规划
+      let minPrice = prices[0] || 0;    // 或 = Number.MAX_VALUE;
+      let maxProfit = 0;
+      for (let price of prices) {
+        minPrice = Math.min(minPrice, price);
+        maxProfit = Math.max(maxProfit, price - minPrice);
+      }
+      return maxProfit;
+    };
+    ```
+
+### 鸡蛋掉落-两枚鸡蛋
+给你**2 枚相同**的鸡蛋，和一栋从第`1`层到第`n`层共有`n`层楼的建筑。
+
+已知存在楼层`f`，满足`0 <= f <= n`，任何从**高于**`f`的楼层落下的鸡蛋都**会碎** ，从`f`**楼层或比它低**的楼层落下的鸡蛋都**不会碎**。
+
+每次操作，你可以取一枚**没有碎**的鸡蛋并把它从任一楼层`x`扔下（满足`1 <= x <= n`）。如果鸡蛋碎了，你就不能再次使用它。如果某枚鸡蛋扔下后没有摔碎，则可以在之后的操作中**重复使用**这枚鸡蛋。
+
+请你计算并返回要确定`f`**确切的值**的**最小操作次数**是多少？
+
+示例 1：
+
+```
+输入：n = 2
+输出：2
+解释：我们可以将第一枚鸡蛋从 1 楼扔下，然后将第二枚从 2 楼扔下。
+如果第一枚鸡蛋碎了，可知 f = 0；
+如果第二枚鸡蛋碎了，但第一枚没碎，可知 f = 1；
+否则，当两个鸡蛋都没碎时，可知 f = 2。
+```
+
+示例 2：
+
+```
+输入：n = 100
+输出：14
+解释：
+一种最优的策略是：
+- 将第一枚鸡蛋从 9 楼扔下。如果碎了，那么 f 在 0 和 8 之间。将第二枚从 1 楼扔下，然后每扔一次上一层楼，在 8 次内找到 f 。总操作次数 = 1 + 8 = 9 。
+- 如果第一枚鸡蛋没有碎，那么再把第一枚鸡蛋从 22 层扔下。如果碎了，那么 f 在 9 和 21 之间。将第二枚鸡蛋从 10 楼扔下，然后每扔一次上一层楼，在 12 次内找到 f 。总操作次数 = 2 + 12 = 14 。
+- 如果第一枚鸡蛋没有再次碎掉，则按照类似的方法从 34, 45, 55, 64, 72, 79, 85, 90, 94, 97, 99 和 100 楼分别扔下第一枚鸡蛋。
+不管结果如何，最多需要扔 14 次来确定 f 。
+```
+
+提示：
+
+`1 <= n <= 1000`
+
+1. 解法一
+
+    数学规律。
+
+    ```js
+    // ①第一枚鸡蛋用于从低到高、间隔楼层直到破碎
+    // ②第二枚鸡蛋用于在第一枚鸡蛋确认的最高不碎层到最低破碎层之间，由低到高逐层测试
+    // ③为了稳定操作数，第一枚鸡蛋确定的间隔层 每测试成功一次都要递减1。
+    //   假设第一次间隔层是f，那么第二次间隔层就是f-1，以此类推至最后一个间隔是1：
+    //   f + f-1 + f-2 + ... + f-(f-1)=总楼层数n
+    //   这样得到的f就是操作数的上限
+    function twoEggDrop(n) {
+      let f;
+      // 找到第一个小于或等于 n 的等差求和的项数（第一项是1，公差是1）
+      for (f = 1; sumOfArithmeticSequence(1, 1, f) < n; f++) {}
+      return f;
+    };
+
+    // 等差数列的求和。a1：第1项；d：公差；n：项数
+    function sumOfArithmeticSequence (a1, d, n) {
+      const an = a1 + (n - 1) * d;
+      return ((a1 + an) * n) / 2;
+    }
+    ```
+2. 解法二
+
+    动态规划。
+
+    ```js
+    function twoEggDrop(n, k = 2) {
+      // 初始化：题解的数组[最大n层楼][最大k枚鸡蛋]
+      let memo = new Array(n + 1).fill(0).map((i, n) => {
+        return new Array(k + 1).fill(0).map((j, k) => {
+          return k === 1 ? n : 0;
+        });
+      });
+      return dp(n, k);
+
+      // k枚，n层的题目解：表示现在有n层楼需要验证，此时你手里有k个鸡蛋，返回此时的最小操作次数
+      function dp(n, k) {
+        // base case
+        if (n === 0) {
+          return 0;
+        }
+        if (k === 1) {
+          return n;
+        }
+
+        // 查表
+        if (memo[n][k] !== 0) {
+          return memo[n][k];
+        }
+
+        let res = Number.MAX_SAFE_INTEGER;
+        // 选i层楼扔鸡蛋
+        for (let i = 1; i <= n; i++) {
+          // Math.max：寻找（第i层碎或不碎）最坏的情况
+          // Math.min：在最坏的情况里，选出最小的操作次数
+          res = Math.min(res, Math.max(dp(i - 1, k - 1), dp(n - i, k)) + 1);
+        }
+
+        // dp(n, k)需要的操作次数，是在所有楼层中选择 最坏情况下需要的操作次数最小的楼层 扔鸡蛋。所以需要遍历所有楼层，找到Math.min(res, Math.max(dp(i-1, k-1), dp(n-i, k)) + 1)
+        memo[n][k] = res;
+        return res;
+      }
+    }
+    ```
+
+### 最大子数组和
+给你一个整数数组 `nums` ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+**子数组** 是数组中的一个连续部分。
+
+示例 1：
+
+```
+输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+输出：6
+解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
+```
+
+示例 2：
+
+```
+输入：nums = [1]
+输出：1
+```
+
+示例 3：
+
+```
+输入：nums = [5,4,-1,7,8]
+输出：23
+```
+
+提示：
+
+- `1 <= nums.length <= 10 ** 5`
+- `-(10 ** 4) <= nums[i] <= 10 ** 4`
+
+**进阶**：如果你已经实现复杂度为 `O(n)` 的解法，尝试使用更为精妙的 **分治法** 求解。
+
+1. 解法一
+
+    O(n)，贪心。
+
+    ```js
+    /**
+     * @param {number[]} nums
+     * @return {number}
+     */
+    var maxSubArray = function (nums) {
+      let max = Number.NEGATIVE_INFINITY;
+
+      for (let i = 0, sum = 0; i < nums.length; i++) {
+        // sum小于等于0
+        if (sum <= 0) {
+          sum = nums[i];
+        }
+        // sum大于0
+        else {
+          sum = sum + nums[i];
+        }
+
+        max = Math.max(max, sum);
+      }
+      return max;
+    };
+    ```
+2. 解法二
+
+    O(n)，动态规划。
+
+    ```js
+    var maxSubArray = function (nums) {
+      let max;
+
+      // dp[i]：以nums[i]为结尾的最大连续子序列和为dp[i]。
+      const dp = [];
+
+      dp[0] = nums[0];
+      for (let i = 1; i < nums.length; i++) {
+        if (dp[i - 1] <= 0) {
+          dp[i] = nums[i];
+        } else {
+          dp[i] = dp[i - 1] + nums[i];
+        }
+
+        max = Math.max(dp[i - 1], dp[i]);
+      }
+      return max;
+    };
+    ```
+
+### 最长回文子串
+给你一个字符串 `s`，找到 `s` 中最长的回文子串。
+
+如果字符串的反序与原始字符串相同，则该字符串称为回文字符串。
+
+示例 1：
+
+```
+输入：s = "babad"
+输出："bab"
+解释："aba" 同样是符合题意的答案。
+```
+
+示例 2：
+
+```
+输入：s = "cbbd"
+输出："bb"
+```
+
+提示：
+
+- `1 <= s.length <= 1000`
+- `s` 仅由数字和英文字母组成
+
+1. 解法一
+
+    动态规划，一个回文去掉两头依然是回文：dp[i][j] = (s[i]===s[j]) && dp[i+1][j-1]（注意边界）。
+
+    ```js
+    /**
+     * @param {string} s
+     * @return {string}
+     */
+    var longestPalindrome = function (s) {
+      const len = s.length;
+      if (len < 2) { return s; }
+
+      let maxLen = 1;
+      let begin = 0;
+
+      // 动态规划：dp[i][j] 表示 s[i..j] 是否是回文串。一个回文去掉两头依然是回文：dp[i][j] = (s[i]===s[j]) && dp[i+1][j-1]
+      const dp = Array.from({ length: len }).map(() =>
+        Array.from({ length: len }).fill(false),
+      );
+
+      // 初始化：所有长度为 1 的子串都是回文串（可省略）
+      for (let i = 0; i < len; i++) {
+        dp[i][i] = true;
+      }
+
+      // dp每个参考左下方的dp的值，因此从第2列开始 && 先 列 再 行
+      for (let j = 1; j < len; j++) { // 行（字符串有边界）
+        for (let i = 0; i < j; i++) { // 列（字符串左边界）
+          // 头尾字符不等
+          if (s[i] !== s[j]) {
+            dp[i][j] = false;
+          }
+          // 头尾字符相等
+          else {
+            // 头尾去掉后：没有字符(j-i<i+1) || 仅剩1个字符（j-1===i+1）
+            if (j - i <= 2) { // j-1-(i+1)<=0
+              dp[i][j] = true;
+            } else {
+              dp[i][j] = dp[i + 1][j - 1];
+            }
+          }
+
+          // 若是回文，则判断是否最长
+          if (dp[i][j] && j - i + 1 > maxLen) {
+            maxLen = j - i + 1;
+            begin = i;
+          }
+        }
+      }
+
+      return s.slice(begin, begin + maxLen);
+    };
+    ```
+
+---
+## 字符串
+
+### 反转字符串
+编写一个函数，其作用是将输入的字符串反转过来。输入字符串以字符数组 `s` 的形式给出。
+
+不要给另外的数组分配额外的空间，你必须**原地修改输入数组**、使用 `O(1)` 的额外空间解决这一问题。
+
+1. 解法一
+
+    前后镜像调换。
+
+    ```js
+    /**
+     * @param {character[]} s
+     * @return {void} Do not return anything, modify s in-place instead.
+     */
+    var reverseString = function (s) {
+      for (let i = 0, j = s.length - 1; i < j; i++, j--) {
+        [s[i], s[j]] = [s[j], s[i]];
+      }
+      return s;
+    };
+    ```
+
+### 反转字符串 II
+给定一个字符串 `s` 和一个整数 `k`，从字符串开头算起，每计数至 `2k` 个字符，就反转这 `2k` 字符中的前 `k` 个字符。
+
+- 如果剩余字符少于 `k` 个，则将剩余字符全部反转。
+- 如果剩余字符小于 `2k` 但大于或等于 `k` 个，则反转前 `k` 个字符，其余字符保持原样。
+
+1. 解法一
+
+    ```js
+    /**
+     * @param {string} s
+     * @param {number} k
+     * @return {string}
+     */
+    var reverseStr = function (s, k) {
+      let result = "";
+      while (s.length > 0) {
+        let str = s.slice(0, 2 * k);
+        s = s.slice(2 * k);
+
+        result += [...str.slice(0, k)].reverse().join("") + str.slice(k);
+      }
+      return result;
+    };
+    ```
+2. 解法二
+
+    ```js
+    var reverseStr = function (s, k) {
+      const len = s.length;
+      let resultArr = s.split("");
+      for (let i = 0; i < len; i += 2 * k) {
+        let l = i;
+        let r = (i + k > len ? len : i + k) - 1;
+        while (l < r) {
+          [resultArr[l], resultArr[r]] = [resultArr[r], resultArr[l]];
+          ++l;
+          --r;
+        }
+      }
+      return resultArr.join("");
+    };
+    ```
+
+### 替换空格
+请实现一个函数，把字符串 s 中的每个空格替换成"%20"。
+
+示例 1：
+```
+输入：s = "We are happy."
+输出："We%20are%20happy."
+```
+
+1. 解法一
+
+    双指针。模拟的 C++ 语言中的可变长度字符串的实现原理，将其 O(n^2) 的空间复杂度降低到 O(1)。
+
+    ```js
+    var replaceSpace = function (s) {
+      const arr = s.split("");
+      let oldLen = s.length;
+
+      // 空格数量
+      let spaceCount = 0;
+      for (let i = 0; i < oldLen; i++) {
+        if (arr[i] === " ") spaceCount++;
+      }
+
+      arr.length += spaceCount * 2; // 1个空格转化为3个字母
+      // 数组遍历，一定要从后往前遍历，避免从前往后，造成字符被修改，导致错误！
+      for (let i = oldLen - 1, j = arr.length - 1; i >= 0; i--, j--) {
+        if (arr[i] !== " ") arr[j] = arr[i];
+        else {
+          arr[j - 2] = "%";
+          arr[j - 1] = "2";
+          arr[j] = "0";
+          j -= 2;
+        }
+      }
+      return arr.join("");
+    };
+    ```
+
+### 左旋转字符串
+字符串的左旋转操作是把字符串前面的若干个字符转移到字符串的尾部。请定义一个函数实现字符串左旋转操作的功能。比如，输入字符串"abcdefg"和数字2，该函数将返回左旋转两位得到的结果"cdefgab"。
+
+示例 1：
+```
+输入: s = "abcdefg", k = 2
+输出: "cdefgab"
+```
+
+示例 2：
+```
+输入: s = "lrloseumgh", k = 6
+输出: "umghlrlose"
+```
+
+1. 解法一
+
+    直接截取。
+
+    ```js
+    /**
+     * @param {string} s
+     * @param {number} n
+     * @return {string}
+     */
+    var reverseLeftWords = function (s, n) {
+      // 以及其他简单拼接法
+      return s.slice(n) + s.slice(0, n);
+    };
+    ```
+2. 解法二
+
+    复制一遍截取。
+
+    ```js
+    var reverseLeftWords = function (s, n) {
+      if (n >= s.length) {
+        return s;
+      }
+      // 复制一遍字符串，再截取
+      return (s + s).slice(n, n + s.length);
+    };
+    ```
+3. 解法三
+
+    三次翻转。
+
+    ```js
+    var reverseLeftWords = function (s, n) {
+      let strArr = s.split("");
+      let length = strArr.length;
+
+      // 全部翻转
+      reverseWords(strArr);
+      // 翻转回前面部分（0 ~ length-1-n）
+      reverseWords(strArr, 0, length - n - 1);
+      // 翻转回后面部分（length-n ~ 结尾）
+      reverseWords(strArr, length - n);
+      return strArr.join("");
+    };
+
+    // 翻转数组的 start到end 之间的项
+    function reverseWords(strArr, start = 0, end = strArr.length - 1) {
+      while (start < end) {
+        [strArr[start], strArr[end]] = [strArr[end], strArr[start]];
+        start++;
+        end--;
+      }
+    }
+    ```
+
+### 第一个只出现一次的字符
+在字符串 s 中找出第一个只出现一次的字符。如果没有，返回一个单空格。
+
+s 只包含小写字母。
+
+示例 1:
+
+```
+输入：s = "abaccdeff"
+输出：'b'
+```
+
+示例 2:
+
+```
+输入：s = ""
+输出：' '
+```
+
+1. 解法一
+
+    哈希表保存所有字符出现次数。
+
+    ```js
+    var firstUniqChar = function (s) {
+      const map = new Map();
+      for (let str of s) {
+        map.set(str, (map.get(str) ?? 0) + 1);
+      }
+      for (let val of map) {
+        if (val[1] === 1) {
+          return val[0];
+        }
+      }
+      return " ";
+    };
+    ```
+2. 解法二
+
+    26个字母的数组保存所有字符出现次数。
+
+    ```js
+    var firstUniqChar = function (s) {
+      const arr = new Array(26).fill(0);
+      const unicodeA = "a".charCodeAt(0);
+
+      for (let c of s) {
+        arr[c.charCodeAt(0) - unicodeA] += 1;
+      }
+
+      for (let c of s) {
+        if (arr[c.charCodeAt(0) - unicodeA] === 1) {
+          return c;
+        }
+      }
+      return " ";
+    };
+    ```
+3. 解法三
+
+    若`indexOf`与`lastIndexOf`相等，则说明是唯一。
+
+    ```js
+    /**
+     * @param {string} s
+     * @return {character}
+     */
+    var firstUniqChar = function (s) {
+      const strArr = s.split("");
+      return (
+        strArr.find((str) => {
+          return strArr.indexOf(str) === strArr.lastIndexOf(str);
+        }) ?? " "
+      );
+    };
+    ```
+
+<details>
+<summary>其他解法</summary>
+
+4. 解法四
+
+    正则查找。
+
+    ```js
+    var firstUniqChar = function (s) {
+      for (let char of new Set(s)) {
+        if (s.match(new RegExp(char, "g")).length === 1) {
+          return char;
+        }
+      }
+      return " ";
+    };
+    ```
+</details>
+
+### 反转字符串中的单词
+给你一个字符串 `s` ，请你反转字符串中 **单词** 的顺序。
+
+**单词** 是由非空格字符组成的字符串。`s` 中使用至少一个空格将字符串中的 **单词** 分隔开。
+
+返回 **单词** 顺序颠倒且 **单词** 之间用单个空格连接的结果字符串。
+
+注意：输入字符串 `s`中可能会存在前导空格、尾随空格或者单词间的多个空格。返回的结果字符串中，单词间应当仅用单个空格分隔，且不包含任何额外的空格。
+
+**进阶**：如果字符串在你使用的编程语言中是一种可变数据类型，请尝试使用 `O(1)` 额外空间复杂度的 **原地** 解法。
+
+1. 解法一
+
+    先移除多余空格，再翻转整个字符串，再把单词翻转。
+
+    ```js
+    /**
+     * @param {string} s
+     * @return {string}
+     */
+    var reverseWords = function (s) {
+      // 字符串转数组
+      const strArr = Array.from(s);
+
+      // 移除多余空格
+      removeExtraSpaces(strArr);
+      // 翻转整个字符串数组（此时单词被翻转了，需要之后再转回来）
+      reverse(strArr, 0, strArr.length - 1);
+
+      // 翻转每一个单词
+      for (let i = 0, start = 0; i <= strArr.length; i++) {
+        if (strArr[i] === " " || i === strArr.length) {
+          // 翻转单词（i位置是空格 或 数组结尾+1）
+          reverse(strArr, start, i - 1);
+          start = i + 1;
+        }
+      }
+
+      return strArr.join("");
+    };
+
+    // 删除多余空格
+    function removeExtraSpaces(strArr) {
+      let slowIndex = 0;
+      let fastIndex = 0;
+
+      while (fastIndex < strArr.length) {
+        // 第1个单词前不能有空格 && 之后的单词前不能有2个空格
+        if (
+          strArr[fastIndex] === " " &&
+          (fastIndex === 0 || strArr[fastIndex - 1] === " ")
+        ) {
+          fastIndex++;
+        } else {
+          strArr[slowIndex] = strArr[fastIndex];
+          slowIndex++; // 注意最后需要判断是否最后一个是空格
+          fastIndex++;
+        }
+      }
+
+      // 移除末尾空格
+      strArr.length = strArr[slowIndex - 1] === " " ? slowIndex - 1 : slowIndex;
+    }
+
+    // 翻转从 start 到 end 的数组
+    function reverse(strArr, start, end) {
+      while (start < end) {
+        // 交换
+        [strArr[start], strArr[end]] = [strArr[end], strArr[start]];
+        start++;
+        end--;
+      }
+    }
+    ```
+
+---
+## 栈与队列
+
+### 用栈实现队列
+请你仅使用两个栈实现先入先出队列。队列应当支持一般队列支持的所有操作（`push`、`pop`、`peek`、`empty`）：
+
+实现 `MyQueue` 类：
+
+- `void push(int x)` 将元素 x 推到队列的末尾
+- `int pop()` 从队列的开头移除并返回元素
+- `int peek()` 返回队列开头的元素
+- `boolean empty()` 如果队列为空，返回 `true` ；否则，返回 `false`
+
+说明：
+
+- 你 **只能** 使用标准的栈操作 —— 也就是只有 `push to top`, `peek/pop from top`, `size`, 和 `is empty` 操作是合法的。
+- 你所使用的语言也许不支持栈。你可以使用 list 或者 deque（双端队列）来模拟一个栈，只要是标准的栈操作即可。
+
+示例 1：
+
+```
+输入：
+["MyQueue", "push", "push", "peek", "pop", "empty"]
+[[], [1], [2], [], [], []]
+输出：
+[null, null, null, 1, 1, false]
+
+解释：
+MyQueue myQueue = new MyQueue();
+myQueue.push(1); // queue is: [1]
+myQueue.push(2); // queue is: [1, 2] (leftmost is front of the queue)
+myQueue.peek(); // return 1
+myQueue.pop(); // return 1, queue is [2]
+myQueue.empty(); // return false
+```
+
+提示：
+
+- `1 <= x <= 9`
+- 最多调用 `100` 次 `push`、`pop`、`peek` 和 `empty`
+- 假设所有操作都是有效的 （例如，一个空的队列不会调用 `pop` 或者 `peek` 操作）
+
+**进阶**：
+
+- 你能否实现每个操作均摊时间复杂度为 `O(1)` 的队列？换句话说，执行 `n` 个操作的总时间复杂度为 `O(n)` ，即使其中一个操作可能花费较长时间。
+
+1. 解法一
+
+    **所有`用2个栈实现1个队列`的方法：2个栈，一个栈出 -> 一个栈入 所有数据之后，就能够把原顺序颠倒。**
+
+    ```ts
+    // 模拟栈，意味着只能 unshift shift 的数组（或只能 push pop）
+    // 实现队列，因此要实现类似数组的 unshift pop（或 push shift）
+    class MyQueue {
+      // 存放插入的数据（栈入）
+      inStack = [];
+      // 处理移出的数据。
+      // 当为空时，inStack栈出->outStack栈入 所有数据（2个栈，一个栈出一个栈入就能够把原顺序颠倒）
+      outStack = [];
+
+      push(x: number): void {
+        this.inStack.unshift(x);
+      }
+
+      pop(): number {
+        // 若outStack为空，则把inStack栈出给outStack栈入，这样原顺序颠倒
+        if (this.outStack.length === 0) {
+          while (this.inStack.length) {
+            this.outStack.unshift(this.inStack.shift());
+          }
+        }
+        return this.outStack.shift();
+      }
+
+      peek(): number {
+        if (this.outStack.length === 0) {
+          while (this.inStack.length) {
+            this.outStack.unshift(this.inStack.shift());
+          }
+        }
+        return this.outStack[0];
+      }
+
+      empty(): boolean {
+        return this.inStack.length === 0 && this.outStack.length === 0;
+      }
+
+      size(): number {
+        return this.inStack.length + this.outStack.length;
+      }
+    }
+    ```
+
+### 用队列实现栈
+请你仅使用两个队列实现一个后入先出（LIFO）的栈，并支持普通栈的全部四种操作（`push`、`top`、`pop` 和 `empty`）。
+
+实现 `MyStack` 类：
+
+- `void push(int x)` 将元素 x 压入栈顶。
+- `int pop()` 移除并返回栈顶元素。
+- `int top()` 返回栈顶元素。
+- `boolean empty()` 如果栈是空的，返回 `true` ；否则，返回 `false` 。
+
+注意：
+
+- 你只能使用队列的基本操作 —— 也就是 `push to back`、`peek/pop from front`、`size` 和 `is empty` 这些操作。
+- 你所使用的语言也许不支持队列。 你可以使用 list （列表）或者 deque（双端队列）来模拟一个队列 , 只要是标准的队列操作即可。
+
+示例：
+
+```
+输入：
+["MyStack", "push", "push", "top", "pop", "empty"]
+[[], [1], [2], [], [], []]
+输出：
+[null, null, null, 2, 2, false]
+
+解释：
+MyStack myStack = new MyStack();
+myStack.push(1);
+myStack.push(2);
+myStack.top(); // 返回 2
+myStack.pop(); // 返回 2
+myStack.empty(); // 返回 False
+```
+
+提示：
+
+- `1 <= x <= 9`
+- 最多调用`100` 次 `push`、`pop`、`top` 和 `empty`
+- 每次调用 `pop` 和 `top` 都保证栈不为空
+
+**进阶**：你能否仅用一个队列来实现栈。
+
+1. 解法一
+
+    **所有`用1个队列实现1个栈`的方法：正常压入，移除时执行 长度-1的 移除-压入，最后一个就是移除结果（或反过来：压入时处理，移除时正常移除）。**
+
+    ```ts
+    // 模拟队列，意味着只能 unshift pop 的数组（或只能 push shift）
+    // 实现栈，因此要实现类似数组的 unshift shift（或 push pop）
+    class MyStack {
+      // 存放插入的数据（队列入）
+      queue = [];
+
+      push(x: number): void {
+        this.queue.unshift(x);
+      }
+
+      pop(): number {
+        // 队列重新插入，剩下最后一个就是要移除的（或插入的时候处理，移除的时候就不用处理）
+        for (let i = 0; i < this.queue.length - 1; i++) {
+          this.queue.unshift(this.queue.pop());
+        }
+        return this.queue.pop();
+      }
+
+      top(): number {
+        return this.queue[0];
+      }
+
+      empty(): boolean {
+        return this.queue.length === 0;
+      }
+
+      size(): number {
+        return this.queue.length;
+      }
+    }
+    ```
+
+<details>
+<summary>其他解法</summary>
+
+2. 解法二
+
+    用2个队列的话，只是把原本1个队列自己移除-自己压入，变成有一个辅助队列帮助，逻辑不变。不推荐。
+
+    ```js
+    let MyStack = function () {
+      this.queue = [];
+      // 仅辅助作用，暂时保存queue数据
+      this._queue = [];
+    };
+
+    MyStack.prototype.push = function (x) {
+      this.queue.push(x);
+    };
+
+    MyStack.prototype.pop = function () {
+      while (this.queue.length > 1) {
+        this._queue.push(this.queue.shift());
+      }
+      let result = this.queue.shift();
+
+      while (this._queue.length) {
+        this.queue.push(this._queue.shift());
+      }
+      return result;
+    };
+
+    MyStack.prototype.top = function () {
+      return this.queue[this.queue.length - 1];
+    };
+
+    MyStack.prototype.empty = function () {
+      return this.queue.length === 0;
+    };
+    ```
+</details>
+
+### 最小栈
+请你设计一个 **最小栈** 。它提供 `push` ，`pop` ，`top` 操作，并能在常数时间内检索到最小元素的栈。
+
+实现 `MinStack` 类:
+
+- `MinStack()` 初始化堆栈对象。
+- `void push(int val)` 将元素val推入堆栈。
+- `void pop()` 删除堆栈顶部的元素。
+- `int top()` 获取堆栈顶部的元素。
+- `int getMin()` 获取堆栈中的最小元素。
+
+示例 1:
+
+```
+输入：
+["MinStack","push","push","push","getMin","pop","top","getMin"]
+[[],[-2],[2],[-3],[],[],[],[]]
+
+输出：
+[null,null,null,null,-3,null,2,-2]
+
+解释：
+MinStack minStack = new MinStack();
+minStack.push(-2);
+minStack.push(2);
+minStack.push(-3);
+minStack.getMin();   --> 返回 -3.
+minStack.pop();
+minStack.top();      --> 返回 2.
+minStack.getMin();   --> 返回 -2.
+```
+
+提示：
+
+- `-(2 ** 31) <= val <= 2 ** 31 - 1`
+- `pop`、`top` 和 `getMin` 操作总是在 非空栈 上调用
+- `push`、`pop`、`top` 和 `getMin` 最多被调用 `3 * 10 ** 4` 次
+
+1. 解法一
+
+    ```ts
+    class MinStack {
+      // 存放栈数据
+      list = [];
+      // 存放最小数
+      minList = [];
+
+      push(val: number): void {
+        this.list.unshift(val);
+
+        // 若插入的值没有比之前最小值更小或相等，就不插入minList
+        if (this.minList.length === 0 || val <= this.minList[0]) {
+          this.minList.unshift(val);
+        }
+      }
+
+      pop(): void {
+        if (this.list.length > 0) {
+          const value = this.list.shift();
+
+          if (value === this.minList[0]) {
+            this.minList.shift();
+          }
+          return;
+        }
+
+        throw Error("栈内为空");
+      }
+
+      top(): number {
+        if (this.list.length > 0) {
+          return this.list[0];
+        }
+
+        throw Error("栈内为空");
+      }
+
+      getMin(): number {
+        if (this.minList.length > 0) {
+          return this.minList[0];
+        }
+
+        throw Error("栈内为空");
+      }
+    }
+    ```
+
+<details>
+<summary>其他解法</summary>
+
+2. 解法二
+
+    保持2个数组相同长度，但插入minList的不一定最后插入的值 而必须是和之前最小值对比更小的值。
+
+    ```js
+    var MinStack = function () {
+      // 存放栈数据
+      this.list = [];
+      // 存放最小数
+      this.minList = [];
+    };
+
+    MinStack.prototype.push = function (x) {
+      this.list.unshift(x);
+
+      if (this.minList.length === 0) {
+        this.minList.unshift(x);
+      } else {
+        // 保持2个数组都相同长度，但是插入minList的永远都是最小值（因此可能插入的不是x而是上一个最小值）
+        this.minList.unshift(Math.min(x, this.minList[0]));
+      }
+    };
+
+    MinStack.prototype.pop = function () {
+      if (this.list.length > 0) {
+        this.list.shift();
+        this.minList.shift();
+        return;
+      }
+
+      throw Error("栈内为空");
+    };
+
+    MinStack.prototype.top = function () {
+      if (this.list.length > 0) {
+        return this.list[0];
+      }
+
+      throw Error("栈内为空");
+    };
+
+    MinStack.prototype.getMin = function () {
+      if (this.minList.length > 0) {
+        return this.minList[0];
+      }
+
+      throw Error("栈内为空");
+    };
+    ```
+</details>
+
+---
+## 岛屿相关
 
 ### 岛屿数量
 给你一个由 `'1'`（陆地）和 `'0'`（水）组成的的二维网格，请你计算网格中岛屿的数量。
@@ -6222,7 +5220,7 @@ for (int i = 0; i < len; i++) {
 
     深度优先遍历，为了避免重复遍历，需要把相连的陆地（整个岛屿）全淹了。
 
-    ```javascript
+    ```js
     /**
      * @param {String[][]} grid
      * @return {number}
@@ -6315,7 +5313,7 @@ for (int i = 0; i < len; i++) {
 
     深度优先遍历把 上下左右边 的岛屿先排除掉（先全淹了），剩下的就是封闭岛屿（与[岛屿数量](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/LeetCode记录/README.md#岛屿数量)类似：深度优先遍历，为了避免重复遍历，需要把相连的陆地（整个岛屿）全淹了）。
 
-    ```javascript
+    ```js
     /**
      * @param {number[][]} grid
      * @return {number}
@@ -6381,7 +5379,7 @@ for (int i = 0; i < len; i++) {
 
     深度优先遍历，不推荐。
 
-    ```javascript
+    ```js
     var closedIsland = function (grid) {
       let result = 0;
       const m = grid.length;
@@ -6459,7 +5457,7 @@ for (int i = 0; i < len; i++) {
 
     深度优先遍历把 上下左右边 的岛屿先排除掉（先全淹了），剩下的就是飞地。
 
-    ```javascript
+    ```js
     /**
      * @param {number[][]} grid
      * @return {number}
@@ -6552,7 +5550,7 @@ for (int i = 0; i < len; i++) {
 
     深度优先遍历，为了避免重复遍历，需要把相连的陆地（整个岛屿）全淹了，淹的时候记录岛屿面积。
 
-    ```javascript
+    ```js
     /**
      * @param {number[][]} grid
      * @return {number}
@@ -6640,7 +5638,7 @@ grid2 中标红的 1 区域是子岛屿，总共有 2 个子岛屿。
 
     深度优先遍历把 不是子岛屿 的岛屿先排除掉（先全淹了），剩下的就是子岛屿（与[岛屿数量](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/LeetCode记录/README.md#岛屿数量)类似：深度优先遍历，为了避免重复遍历，需要把相连的陆地（整个岛屿）全淹了）。
 
-    ```javascript
+    ```js
     /**
      * @param {number[][]} grid1
      * @param {number[][]} grid2
@@ -6732,7 +5730,7 @@ grid2 中标红的 1 区域是子岛屿，总共有 2 个子岛屿。
 
     深度优先遍历，为了避免重复遍历，需要把相连的陆地（整个岛屿）全淹了，淹的时候记录序列化路径。
 
-    ```javascript
+    ```js
     /**
      * @param {number[][]} grid
      * @return {number}
@@ -6788,6 +5786,1320 @@ grid2 中标红的 1 区域是子岛屿，总共有 2 个子岛屿。
     ```
 
 ---
+## 简单
+
+### 两数之和
+给定一个整数数组 `nums` 和一个整数目标值 `target`，请你在该数组中找出 **和为目标值** `target`  的那 **两个** 整数，并返回它们的数组下标。
+
+你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
+
+你可以按任意顺序返回答案。
+
+示例 1：
+
+```
+输入：nums = [2,7,11,15], target = 9
+输出：[0,1]
+解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。
+```
+
+示例 2：
+
+```
+输入：nums = [3,2,4], target = 6
+输出：[1,2]
+```
+
+示例 3：
+
+```
+输入：nums = [3,3], target = 6
+输出：[0,1]
+```
+
+提示：
+
+- `2 <= nums.length <= 10 ** 4`
+- `-(10 ** 9) <= nums[i] <= 10 ** 9`
+- `-(10 ** 9) <= target <= 10 ** 9`
+- 只会存在一个有效答案
+
+进阶：你可以想出一个时间复杂度小于 O(n^2) 的算法吗？
+
+1. 解法一
+
+    哈希法（**当我们需要查询一个元素是否出现过，或者一个元素是否在集合里的时候，就要第一时间想到哈希法**），O(n)。
+
+    ```js
+    /**
+     * @param {number[]} nums
+     * @param {number} target
+     * @return {number[]}
+     */
+    var twoSum = function (nums, target) {
+      // 利用Map类型：不重复键的键-值集合。键存nums项的value，值存nums项的key
+      const hash = new Map();
+      for (let i = 0; i < nums.length; i++) {
+        const leftValue = target - nums[i];
+        if (hash.get(leftValue) !== undefined) {
+          return [i, hash.get(leftValue)];
+        } else {
+          hash.set(nums[i], i);
+        }
+      }
+      return [];
+    };
+    ```
+
+<details>
+<summary>其他解法</summary>
+
+2. 解法二
+
+    暴力解法，O(n^2)。
+
+    ```js
+    var twoSum = function (nums, target) {
+      for (let i = 0; i < nums.length; i++) {
+        const left = target - nums[i];
+
+        for (let j = i + 1; j < nums.length; j++) {
+          if (nums[j] === left) {
+            return [i, j];
+          }
+        }
+      }
+      return [];
+    };
+    ```
+</details>
+
+### 移动零
+给定一个数组 `nums`，编写一个函数将所有 `0` 移动到数组的末尾，同时保持非零元素的相对顺序。
+
+请注意 ，必须在不复制数组的情况下原地对数组进行操作。
+
+示例 1:
+
+```
+输入: nums = [0,1,0,3,12]
+输出: [1,3,12,0,0]
+```
+
+示例 2:
+
+```
+输入: nums = [0]
+输出: [0]
+```
+
+提示:
+
+- `1 <= nums.length <= 10 ** 4`
+- `-(2 ** 31) <= nums[i] <= 2 ** 31 - 1`
+
+
+进阶：你能尽量减少完成的操作次数吗？
+
+1. 解法一
+
+    双指针。
+
+    ```js
+    /**
+     * @param {number[]} nums
+     * @return {void} Do not return anything, modify nums in-place instead.
+     */
+    var moveZeroes = function (nums) {
+      // 双指针，移动数组，最后补0
+      let noZeroIndex = 0;
+      for (let i = 0; i < nums.length; i++) {
+        if (i !== noZeroIndex) {
+          nums[noZeroIndex] = nums[i];
+        }
+
+        if (nums[i] !== 0) {
+          noZeroIndex += 1;
+        }
+      }
+
+      nums.fill(0, noZeroIndex);
+
+      return nums;
+    };
+    ```
+2. 解法二
+
+    双指针。
+
+    ```js
+    var moveZeroes = function (nums) {
+      // 双指针。如果i项!==0，替换i、j项的值并j指针自增。
+      for (let i = 0, j = 0; i < nums.length; i++) {
+        if(nums[i] !== 0){
+          const tmp = nums[i]
+          nums[i] = nums[j];
+          nums[j] = tmp
+
+          j++
+        }
+      }
+    };
+    ```
+
+### 有效的括号
+给定一个只包括 `'('`，`')'`，`'{'`，`'}'`，`'['`，`']'` 的字符串 `s` ，判断字符串是否有效。
+
+有效字符串需满足：
+
+1. 左括号必须用相同类型的右括号闭合。
+2. 左括号必须以正确的顺序闭合。
+3. 每个右括号都有一个对应的相同类型的左括号。
+
+示例 1：
+
+```
+输入：s = "()"
+输出：true
+```
+
+示例 2：
+
+```
+输入：s = "()[]{}"
+输出：true
+```
+
+示例 3：
+
+```
+输入：s = "(]"
+输出：false
+```
+
+提示：
+
+- `1 <= s.length <= 10 ** 4`
+- `s` 仅由括号 `'()[]{}'` 组成
+
+1. 解法一
+
+    栈（有先进后出就用栈）。
+
+    ```js
+    /**
+     * @param {string} s
+     * @return {boolean}
+     */
+    var isValid = function (s) {
+      // 优化点性能
+      if (s % 2 === 1) {
+        return false;
+      }
+
+      // 字符串是左括号就入栈，字符串是右括号则出栈对比
+      const stack = [];
+
+      for (let str of s) {
+        if (str === "(" || str === "[" || str === "{") {
+          stack.push(str);
+        }
+        // 默认只输入6种字符，所以这里不再判断
+        else {
+          const pop = stack.pop();
+
+          if (
+            (str === ")" && pop === "(") ||
+            (str === "]" && pop === "[") ||
+            (str === "}" && pop === "{")
+          ) {
+            // ok
+          } else {
+            return false;
+          }
+        }
+      }
+
+      if (stack.length > 0) {
+        return false;
+      }
+      return true;
+    };
+    ```
+
+---
+## 中等
+
+### 字母异位词分组
+给你一个字符串数组，请你将 **字母异位词** 组合在一起。可以按任意顺序返回结果列表。
+
+**字母异位词** 是由重新排列源单词的所有字母得到的一个新单词。
+
+示例 1:
+
+```
+输入: strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
+输出: [["bat"],["nat","tan"],["ate","eat","tea"]]
+```
+
+示例 2:
+
+```
+输入: strs = [""]
+输出: [[""]]
+```
+
+示例 3:
+
+```
+输入: strs = ["a"]
+输出: [["a"]]
+```
+
+提示：
+
+- `1 <= strs.length <= 10 ** 4`
+- `0 <= strs[i].length <= 100`
+- `strs[i] 仅包含小写字母`
+
+1. 解法一
+
+    先排序，再哈希表。
+
+    ```js
+    /**
+     * @param {string[]} strs
+     * @return {string[][]}
+     */
+    var groupAnagrams = function (strs) {
+      // 以排序过的每个项字符串为key，以原数组每个字符串的值为value
+      const hash = new Map();
+
+      const newStrs = strs.map((str) => {
+        return str.split("").sort().join("");
+      });
+
+      for (let i = 0; i < newStrs.length; i++) {
+        if (hash.has(newStrs[i])) {
+          hash.get(newStrs[i]).push(strs[i]);
+        } else {
+          hash.set(newStrs[i], [strs[i]]);
+        }
+      }
+
+      return [...hash.values()];
+    };
+    ```
+2. 解法二
+
+    先单词的字母计数，再哈希表。
+
+    ```js
+    var groupAnagrams = function (strs) {
+      // 每个key都是按照单词所占的26个字母数量，如：'abda'的key为'2:1:0:1:...'
+      const hash = new Map();
+
+      for (let i = 0; i < strs.length; i++) {
+        // 把单词转变成按顺序的26个字母数量的字符串
+        const letterArr = Array.from({ length: 26 }).fill(0);
+        for (let j of strs[i]) {
+          letterArr[j.charCodeAt() - "a".charCodeAt()] += 1;
+        }
+        const key = letterArr.join(":");
+
+        if (hash.get(key)) {
+          hash.get(key).push(strs[i]);
+        } else {
+          hash.set(key, [strs[i]]);
+        }
+      }
+
+      return [...hash.values()];
+    };
+    ```
+
+### 最长连续序列
+给定一个未排序的整数数组 `nums` ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+
+请你设计并实现时间复杂度为 O(n) 的算法解决此问题。
+
+
+
+示例 1：
+
+```
+输入：nums = [100,4,200,1,3,2]
+输出：4
+解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
+```
+
+示例 2：
+
+```
+输入：nums = [0,3,7,2,5,8,4,6,0,1]
+输出：9
+```
+
+提示：
+
+- `0 <= nums.length <= 10 ** 5`
+- `-(10 ** 9) <= nums[i] <= 10 ** 9`
+
+1. 解法一
+
+    哈希表，为了达到 O(n)，仅对最小的数字进行累加计数操作。
+
+    ```javasciprt
+    /**
+     * @param {number[]} nums
+     * @return {number}
+     */
+    var longestConsecutive = function (nums) {
+      // 去除相同的项
+      const set = new Set(nums);
+
+      let longestLen = 0;
+
+      for (const i of set) {
+        // 为了保证 O(n) 所以只处理连续数字中最小的
+        if (!set.has(i - 1)) {
+          let currentLen = 1;
+          let currentNum = i;
+          while (set.has(currentNum + 1)) {
+            currentLen += 1;
+            currentNum += 1;
+          }
+          longestLen = Math.max(longestLen, currentLen);
+        }
+      }
+
+      return longestLen;
+    };
+    ```
+2. 解法二
+
+    哈希表，仅遍历一次，哈希表key代表数字、value代表该key数字连续长度。
+
+    ```js
+    var longestConsecutive = function (nums) {
+      // 把连续次数存放在哈希表（key：数字；value：连续长度）
+      let hash = new Map();
+      let longestLen = 0;
+
+      for (let i of nums) {
+        let num = i;
+        // 相同数字仅处理一次
+        if (!hash.has(num)) {
+          // 前后一个数字是否有值
+          let left = hash.get(num - 1) || 0;
+          let right = hash.get(num + 1) || 0;
+
+          let currentLen = 1 + left + right;
+          longestLen = Math.max(currentLen, longestLen);
+
+          hash.set(num, currentLen);
+          // 同步更新2端边界
+          hash.set(num - left, currentLen);
+          hash.set(num + right, currentLen);
+        }
+      }
+
+      return longestLen;
+    };
+    ```
+
+### 盛最多水的容器
+给定一个长度为 `n` 的整数数组 `height` 。有 `n` 条垂线，第 `i` 条线的两个端点是 `(i, 0)` 和 `(i, height[i])` 。
+
+找出其中的两条线，使得它们与 `x` 轴共同构成的容器可以容纳最多的水。
+
+返回容器可以储存的最大水量。
+
+说明：你不能倾斜容器。
+
+示例 1：
+
+![question_11.jpg](./images/question_11.jpg)
+
+```
+输入：[1,8,6,2,5,4,8,3,7]
+输出：49
+解释：图中垂直线代表输入数组 [1,8,6,2,5,4,8,3,7]。在此情况下，容器能够容纳水（表示为蓝色部分）的最大值为 49。
+```
+
+示例 2：
+
+```
+输入：height = [1,1]
+输出：1
+```
+
+提示：
+
+- `n == height.length`
+- `2 <= n <= 10 ** 5`
+- `0 <= height[i] <= 10 ** 4`
+
+1. 解法一
+
+    双指针。缩减搜索空间如何保证不漏情况。
+
+    ```js
+    /**
+     * @param {number[]} height
+     * @return {number}
+     */
+    var maxArea = function (height) {
+      let maxArea = 0;
+      // 第一个和最后一个项为双指针初始状态
+      for (let left = 0, right = height.length - 1; left < right; ) {
+        maxArea = Math.max(
+          maxArea,
+          (right - left) * Math.min(height[left], height[right]),
+        );
+
+        // 需要验证：缩小短的一边能找到最大面积（相等的边缩短哪一边都一样）
+        if (height[left] < height[right]) {
+          left++;
+        } else {
+          right--;
+        }
+      }
+
+      return maxArea;
+    };
+
+    // 缩减搜索空间，如何找到最大的面积：
+    //   1. 在每个状态下，无论长板或短板向中间收窄一格，都会导致水槽 底边宽度 −1 变短，
+    //   2.1. 若向内 移动短板 ，水槽的短板可能 变大或不变或变小，因此下个水槽的面积 可能增大；
+    //   2.2. 若向内 移动长板 ，水槽的短板可能 不变或变小，因此下个水槽的面积 一定变小。
+    //   缩小短的一边能找到最大面积。
+    ```
+2. 解法二
+
+    暴力解法，O(n^2)，已超时。
+
+    ```js
+    var maxArea = function (height) {
+      let maxvolume = 0;
+      for (let i = 0; i < height.length - 1; i++) {
+        for (let j = i + 1; j < height.length; j++) {
+          maxvolume = Math.max(maxvolume, (j - i) * Math.min(height[i], height[j]));
+        }
+      }
+      return maxvolume;
+    };
+    ```
+
+### 三数之和
+给你一个整数数组 `nums` ，判断是否存在三元组 `[nums[i], nums[j], nums[k]]` 满足 `i != j`、`i != k` 且 `j != k` ，同时还满足 `nums[i] + nums[j] + nums[k] == 0` 。请
+
+你返回所有和为 `0` 且不重复的三元组。
+
+注意：答案中不可以包含重复的三元组。
+
+示例 1：
+
+```
+输入：nums = [-1,0,1,2,-1,-4]
+输出：[[-1,-1,2],[-1,0,1]]
+解释：
+nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0 。
+nums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0 。
+nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。
+不同的三元组是 [-1,0,1] 和 [-1,-1,2] 。
+注意，输出的顺序和三元组的顺序并不重要。
+```
+
+示例 2：
+
+```
+输入：nums = [0,1,1]
+输出：[]
+解释：唯一可能的三元组和不为 0 。
+```
+
+示例 3：
+
+```
+输入：nums = [0,0,0]
+输出：[[0,0,0]]
+解释：唯一可能的三元组和为 0 。
+```
+
+提示：
+
+- `3 <= nums.length <= 3000`
+- `-(10 ** 5) <= nums[i] <= 10 ** 5`
+
+1. 解法一
+
+    双指针，O(n^2)。关键在去除重复答案。
+
+    ```js
+    /**
+     * @param {number[]} nums
+     * @return {number[][]}
+     */
+    function threeSum(nums) {
+      // 先排序，因为去重和算法逻辑需要
+      nums.sort((a, b) => a - b);
+
+      const resultArr = [];
+
+      for (let left = 0; left < nums.length; left++) {
+        if (nums[left] > 0) {
+          return resultArr; // nums经过排序后，只要nums[left]>0, 此后的nums[left] + nums[middle] + nums[right]均大于0,可以提前终止循环。
+        }
+        // 去重
+        if (left > 0 && nums[left] === nums[left - 1]) {
+          continue;
+        }
+        let middle = left + 1;
+        let right = nums.length - 1;
+        while (middle < right) {
+          let total = nums[left] + nums[middle] + nums[right];
+          if (total === 0) {
+            resultArr.push([nums[left], nums[middle], nums[right]]);
+
+            // 去重需要，所以2个指针同时移动
+            middle++;
+            right--;
+
+            // 去重需要
+            while (nums[right] === nums[right + 1]) {
+              right--;
+            }
+            // 去重需要
+            while (nums[middle] === nums[middle - 1]) {
+              middle++;
+            }
+          } else if (total < 0) {
+            middle++;
+          } else {
+            right--;
+          }
+        }
+      }
+      return resultArr;
+    }
+    ```
+
+### 无重复字符的最长子串
+给定一个字符串 `s` ，请你找出其中不含有重复字符的 **最长子串** 的长度。
+
+示例 1:
+
+```
+输入: s = "abcabcbb"
+输出: 3
+解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+```
+
+示例 2:
+
+```
+输入: s = "bbbbb"
+输出: 1
+解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
+```
+
+示例 3:
+
+```
+输入: s = "pwwkew"
+输出: 3
+解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
+     请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
+```
+
+提示：
+
+- `0 <= s.length <= 5 * 10 ** 4`
+- `s` 由英文字母、数字、符号和空格组成
+
+1. 解法一
+
+    滑动窗口（双指针）。
+
+    ```js
+    /**
+     * @param {string} s
+     * @return {number}
+     */
+    var lengthOfLongestSubstring = function (s) {
+      // 哈希表
+      const hash = new Set();
+
+      let longestLen = 0;
+
+      // 双指针
+      for (let left = 0, right = 0; left < s.length; ++left) {
+        if (left === 0) {
+          // 初始化
+          hash.add(s[0]);
+          longestLen = 1;
+        } else {
+          // 左指针向右移动一格，移除一个字符
+          hash.delete(s[left - 1]);
+        }
+
+        // 不断地移动右指针，直到长度尽头或者重复
+        while (right + 1 < s.length && !hash.has(s[right + 1])) {
+          hash.add(s[right + 1]);
+          ++right;
+        }
+
+        longestLen = Math.max(longestLen, right - left + 1);
+      }
+      return longestLen;
+    };
+    ```
+2. 解法二
+
+    暴力解法，O(n^2) + 嵌套的判断无重复的时间复杂度。
+
+    1. 利用`Set`
+
+        ```js
+        var lengthOfLongestSubstring = function (s) {
+          let longestLen = 0;
+          for (let i = 0; i < s.length; i++) {
+            longestLen = Math.max(longestLen, 1);
+
+            const hash = new Set([s[i]]);
+
+            for (let j = i + 1; j < s.length; j++) {
+              if (hash.has(s[j])) {
+                break;
+              }
+              hash.add(s[j]);
+              longestLen = Math.max(longestLen, j - i + 1);
+            }
+          }
+          return longestLen;
+        };
+        ```
+    2. 利用`String.prototype.includes`
+
+        ```js
+        var lengthOfLongestSubstring = function (s) {
+          let longestLen = 0;
+          for (let i = 0; i < s.length; i++) {
+            longestLen = Math.max(longestLen, 1);
+
+            for (let j = i + 1; j < s.length; j++) {
+              if (s.slice(i, j).includes(s[j])) {
+                break;
+              }
+              longestLen = Math.max(longestLen, j - i + 1);
+            }
+          }
+          return longestLen;
+        };
+        ```
+
+### 下一个排列
+整数数组的一个 **排列**  就是将其所有成员以序列或线性顺序排列。
+
+- 例如，`arr = [1,2,3]` ，以下这些都可以视作 `arr` 的排列：`[1,2,3]`、`[1,3,2]`、`[3,1,2]`、`[2,3,1]` 。
+
+整数数组的 **下一个排列** 是指其整数的下一个字典序更大的排列。更正式地，如果数组的所有排列根据其字典顺序从小到大排列在一个容器中，那么数组的 **下一个排列** 就是在这个有序容器中排在它后面的那个排列。如果不存在下一个更大的排列，那么这个数组必须重排为字典序最小的排列（即，其元素按升序排列）。
+
+- 例如，`arr = [1,2,3]` 的下一个排列是 `[1,3,2]` 。
+- 类似地，`arr = [2,3,1]` 的下一个排列是 `[3,1,2]` 。
+- 而 `arr = [3,2,1]` 的下一个排列是 `[1,2,3]` ，因为 `[3,2,1]` 不存在一个字典序更大的排列。
+
+给你一个整数数组 `nums` ，找出 `nums` 的下一个排列。
+
+必须 **原地** 修改，只允许使用额外常数空间。
+
+示例 1：
+
+```
+输入：nums = [1,2,3]
+输出：[1,3,2]
+```
+
+示例 2：
+
+```
+输入：nums = [3,2,1]
+输出：[1,2,3]
+```
+
+示例 3：
+
+```
+输入：nums = [1,1,5]
+输出：[1,5,1]
+```
+
+提示：
+
+- `1 <= nums.length <= 100`
+- `0 <= nums[i] <= 100`
+
+1. 解法一
+
+    由后往前，若找到第一个后面项大于前面项，则调换位置，此时前面项之后的所有项都保持递减排序，需要对之后项用递增排序或reverse；若找不到，则说明原来就是最大排列，需要对所有项用递增排序或reverse。
+
+    ```js
+    /**
+     * @param {number[]} nums
+     * @return {void} Do not return anything, modify nums in-place instead.
+     */
+    var nextPermutation = function (nums) {
+      // 第一层：从后往前遍历，到达0结束
+      for (let i = nums.length - 1; i >= 0; i--) {
+        // 第二层：从后往前遍历，到达i后一个结束
+        for (let j = nums.length - 1; j > i; j--) {
+          // 若找到第一个后面项大于前面项的，则调换i、j项位置。此时i后面项是递减排序，需要逆序
+          if (nums[j] > nums[i]) {
+            let temp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = temp;
+
+            // i后项也保持递减，需要逆序（实现reverse数组部分项）
+            let l = i + 1;
+            let r = nums.length - 1;
+            while (l < r) {
+              [nums[l], nums[r]] = [nums[r], nums[l]];
+              l++;
+              r--;
+            }
+            return;
+          }
+        }
+      }
+
+      // 若所有都是递减数字会走到这里，则需要重回到最小排列，需要逆序
+      nums.reverse();
+    };
+    ```
+2. 解法二
+
+    把解法一的嵌套for改为2遍扫描。
+
+    ```js
+    var nextPermutation = function (nums) {
+      let i;
+      // 从后往前，找到第一个相邻的项i满足 前面小于后面（若找不到则i===-1）
+      for (i = nums.length - 2; i >= 0 && nums[i] >= nums[i + 1]; i--) {}
+
+      if (i >= 0) {
+        let j;
+        // 从后往前，找到第一个i项小于j项
+        for (j = nums.length - 1; j >= 0 && nums[i] >= nums[j]; j--) {}
+
+        // 换i、j项位置。
+        [nums[i], nums[j]] = [nums[j], nums[i]];
+
+        // 此时i后面项是递减排序，需要逆序i+1到最后1项
+      }
+
+      // 若i===-1，则表示原本是最大排列，需要逆序i+1到最后1项
+
+      // reverse
+      let l = i + 1;
+      let r = nums.length - 1;
+      while (l < r) {
+        [nums[l], nums[r]] = [nums[r], nums[l]];
+        l++;
+        r--;
+      }
+    };
+    ```
+
+### 寻找峰值
+峰值元素是指其值严格大于左右相邻值的元素。
+
+给你一个整数数组 `nums`，找到峰值元素并返回其索引。数组可能包含多个峰值，在这种情况下，返回 **任何一个峰值** 所在位置即可。
+
+你可以假设 `nums[-1] = nums[n] = -∞` 。
+
+你必须实现时间复杂度为 `O(log n)` 的算法来解决此问题。
+
+示例 1：
+
+```
+输入：nums = [1,2,3,1]
+输出：2
+解释：3 是峰值元素，你的函数应该返回其索引 2。
+```
+
+示例 2：
+
+```
+输入：nums = [1,2,1,3,5,6,4]
+输出：1 或 5
+解释：你的函数可以返回索引 1，其峰值元素为 2；
+     或者返回索引 5， 其峰值元素为 6。
+```
+
+提示：
+
+- `1 <= nums.length <= 1000`
+- `-(2 ** 31) <= nums[i] <= 2 ** 31 - 1`
+- 对于所有有效的 `i` 都有 `nums[i] != nums[i + 1]`
+
+1. 解法一
+
+    二分法。重点是验证二分法一定能找到题解：因为题目表示`nums[-1] = nums[n] = -∞`数组边界当做是负无穷 且 `nums[i] != nums[i + 1]`不存在相邻项相等，所以任意相邻的项中，朝更大的项的方向一定能找到峰值。
+
+    ```js
+    /**
+     * @param {number[]} nums
+     * @return {number}
+     */
+    var findPeakElement = function (nums) {
+      let left = 0;
+      let right = nums.length - 1;
+      let middle;
+      while (left < right) {
+        middle = Math.floor((left + right) / 2);
+        if (nums[middle] < nums[middle + 1]) {
+          left = middle + 1;
+        } else {
+          right = middle;
+        }
+      }
+
+      return left;
+    };
+    ```
+
+### 森林中的兔子
+森林中有未知数量的兔子。提问其中若干只兔子 **"还有多少只兔子与你（指被提问的兔子）颜色相同?"** ，将答案收集到一个整数数组 `answers` 中，其中 `answers[i]` 是第 `i` 只兔子的回答。
+
+给你数组 `answers` ，返回森林中兔子的最少数量。
+
+示例 1：
+
+```
+输入：answers = [1,1,2]
+输出：5
+解释：
+两只回答了 "1" 的兔子可能有相同的颜色，设为红色。
+之后回答了 "2" 的兔子不会是红色，否则他们的回答会相互矛盾。
+设回答了 "2" 的兔子为蓝色。
+此外，森林中还应有另外 2 只蓝色兔子的回答没有包含在数组中。
+因此森林中兔子的最少数量是 5 只：3 只回答的和 2 只没有回答的。
+```
+
+示例 2：
+
+```
+输入：answers = [10,10,10]
+输出：11
+```
+
+提示：
+
+- `1 <= answers.length <= 1000`
+- `0 <= answers[i] < 1000`
+
+1. 解法一
+
+    ```js
+    /**
+     * @param {number[]} answers
+     * @return {number}
+     */
+    var numRabbits = function (answers) {
+      // {回答x只: 回答x只的兔子数}
+      const map = new Map();
+      answers.filter((answer) => {
+        map.set(answer, map.get(answer) ? map.get(answer) + 1 : 1);
+      });
+
+      return [...map].reduce((acc, [answer, times]) => {
+        // 一组内最多相同的兔子：answer + 1；兔子：times；组数：向上取整(兔子/一组内最多相同的兔子)
+        return acc + (answer + 1) * Math.ceil(times / (answer + 1));
+      }, 0);
+    };
+    ```
+
+### 每日温度
+给定一个整数数组 `temperatures` ，表示每天的温度，返回一个数组 `answer` ，其中 `answer[i]` 是指对于第 `i` 天，下一个更高温度出现在几天后。如果气温在这之后都不会升高，请在该位置用 `0` 来代替。
+
+示例 1:
+
+```
+输入: temperatures = [73,74,75,71,69,72,76,73]
+输出: [1,1,4,2,1,1,0,0]
+```
+
+示例 2:
+
+```
+输入: temperatures = [30,40,50,60]
+输出: [1,1,1,0]
+```
+
+示例 3:
+
+```
+输入: temperatures = [30,60,90]
+输出: [1,1,0]
+```
+
+提示：
+
+- `1 <= temperatures.length <= 10 ** 5`
+- `30 <= temperatures[i] <= 100`
+
+1. 解法一
+
+    **通常是一维数组，要寻找任一个元素的右边或者左边第一个比自己大或者小的元素的位置，此时我们就要想到可以用单调栈。** O(n)。
+
+    ```js
+    /**
+     * @param {number[]} temperatures
+     * @return {number[]}
+     */
+    var dailyTemperatures = function (temperatures) {
+      // 单调栈（栈头至栈底 递增，但存储的是下标）
+      const stack = [];
+
+      const answer = new Array(temperatures.length).fill(0);
+
+      for (let i = 0; i < temperatures.length; i++) {
+        // 第一个元素 || i项 小于等于 栈顶元素
+        if (
+          stack.length === 0 ||
+          temperatures[i] <= temperatures[stack[stack.length - 1]]
+        ) {
+          // i项如栈
+          stack.push(i);
+        } else {
+          // 栈不空 && i项 大于 栈顶元素
+          while (
+            stack.length > 0 &&
+            temperatures[i] > temperatures[stack[stack.length - 1]]
+          ) {
+            // 栈顶元素存储的下标 找到了第一个大于自己的值，得到它的解答、出栈
+            answer[stack[stack.length - 1]] = i - stack[stack.length - 1];
+            stack.pop();
+          }
+
+          // 没有比 i项 小的 栈元素，i项入栈
+          stack.push(i);
+        }
+      }
+      return answer;
+    };
+    ```
+
+### 找到字符串中所有字母异位词
+给定两个字符串 `s` 和 `p`，找到 s 中所有 p 的 **异位词** 的子串，返回这些子串的起始索引。不考虑答案输出的顺序。
+
+**异位词** 指由相同字母重排列形成的字符串（包括相同的字符串）。
+
+示例 1:
+
+```
+输入: s = "cbaebabacd", p = "abc"
+输出: [0,6]
+解释:
+起始索引等于 0 的子串是 "cba", 它是 "abc" 的异位词。
+起始索引等于 6 的子串是 "bac", 它是 "abc" 的异位词。
+```
+
+ 示例 2:
+
+```
+输入: s = "abab", p = "ab"
+输出: [0,1,2]
+解释:
+起始索引等于 0 的子串是 "ab", 它是 "ab" 的异位词。
+起始索引等于 1 的子串是 "ba", 它是 "ab" 的异位词。
+起始索引等于 2 的子串是 "ab", 它是 "ab" 的异位词。
+```
+
+提示:
+
+- `1 <= s.length, p.length <= 3 * 10 ** 4`
+- `s` 和 `p` 仅包含小写字母
+
+1. 解法一
+
+    滑动窗口。
+
+    ```js
+    /**
+     * @param {string} s
+     * @param {string} p
+     * @return {number[]}
+     */
+    var findAnagrams = function (s, p) {
+      const sLen = s.length;
+      const pLen = p.length;
+
+      // 特例：s长度小于p长度
+      if (sLen < pLen) {
+        return [];
+      }
+
+      const result = [];
+
+      // 在字符串 s 中构造一个长度为与字符串 p 的长度相同的滑动窗口，并在滑动中维护窗口中每种字母的数量；当窗口中每种字母的数量与字符串 p 中每种字母的数量相同时，则说明当前窗口为字符串 p 的异位词。
+      const sCount = new Array(26).fill(0);
+      // 对比用
+      const pCount = new Array(26).fill(0);
+      for (let i = 0; i < pLen; ++i) {
+        ++sCount[s[i].charCodeAt() - "a".charCodeAt()];
+        ++pCount[p[i].charCodeAt() - "a".charCodeAt()];
+      }
+
+      if (sCount.toString() === pCount.toString()) {
+        result.push(0);
+      }
+
+      // 滑动窗口，滑动 sLen - pLen 次
+      for (let i = 0; i < sLen - pLen; ++i) {
+        // 滑动：去除前一个字符，就要在pLen后面加一个字符
+        --sCount[s[i].charCodeAt() - "a".charCodeAt()];
+        ++sCount[s[i + pLen].charCodeAt() - "a".charCodeAt()];
+
+        if (sCount.toString() === pCount.toString()) {
+          result.push(i + 1);
+        }
+      }
+
+      return result;
+    };
+    ```
+2. 解法二
+
+    滑动窗口（不再维护每种字母的数量，而维护每种字母数量的差），逻辑较复杂。
+
+    ```js
+    var findAnagrams = function (s, p) {
+      const sLen = s.length;
+      const pLen = p.length;
+
+      // 特例：s长度小于p长度
+      if (sLen < pLen) {
+        return [];
+      }
+
+      const result = [];
+
+      // count[i]：i序号字母在s和p的相差数量。0：数量相同；正数：s多出现次数；负数：s少出现次数
+      const count = Array(26).fill(0);
+      for (let i = 0; i < pLen; ++i) {
+        ++count[s[i].charCodeAt() - "a".charCodeAt()];
+        --count[p[i].charCodeAt() - "a".charCodeAt()];
+      }
+
+      // 字母不同数量（值：0~26），若count[i]为0则i序号字母相同，否则不同
+      let differ = 0;
+      for (let j = 0; j < 26; ++j) {
+        if (count[j] !== 0) {
+          ++differ;
+        }
+      }
+
+      if (differ === 0) {
+        result.push(0);
+      }
+
+      // 滑动窗口，滑动 sLen - pLen 次
+      for (let i = 0; i < sLen - pLen; ++i) {
+        // 去除前一个字符
+        // 若原来多1个，则去掉就数量相同，differ减少1
+        if (count[s[i].charCodeAt() - "a".charCodeAt()] === 1) {
+          --differ;
+        }
+        // 若原来数量相同，则去掉就少1个，differ增加1
+        else if (count[s[i].charCodeAt() - "a".charCodeAt()] === 0) {
+          ++differ;
+        } // 其他差距值不会影响differ
+        --count[s[i].charCodeAt() - "a".charCodeAt()];
+
+        // 增加pLen后一个字符
+        // 若原来少1个，则增加就数量相同，differ减少1
+        if (count[s[i + pLen].charCodeAt() - "a".charCodeAt()] === -1) {
+          --differ;
+        }
+        // 若原来数量相同，则增加就多1个，differ增加1
+        else if (count[s[i + pLen].charCodeAt() - "a".charCodeAt()] === 0) {
+          ++differ;
+        } // 其他差距值不会影响differ
+        ++count[s[i + pLen].charCodeAt() - "a".charCodeAt()];
+
+        if (differ === 0) {
+          result.push(i + 1);
+        }
+      }
+
+      return result;
+    };
+    ```
+
+### 课程表 II
+返回你为了学完所有课程所安排的学习顺序。可能会有多个正确的顺序，你只要返回 **任意一种** 就可以了。如果不可能完成所有课程，返回 **一个空数组** 。
+
+1. 解法一
+
+    有向图的拓扑排序，利用入度（依赖几个就入度几），广度优先搜索。
+
+    ```js
+    /**
+     * @param {number} numCourses
+     * @param {number[][]} prerequisites
+     * @return {number[]}
+     */
+    var findOrder = function (numCourses, prerequisites) {
+      const result = [];
+      // 有向图（二维数组。一维是被依赖项，二维是主依赖者数组）
+      const edges = new Array(numCourses).fill().map(() => []);
+      // 节点的入度（入度n：依赖n个其他节点）
+      const indegree = new Array(numCourses).fill(0);
+
+      // 初始化：有向图、入度数组
+      for (const [course, prerequisite] of prerequisites) {
+        edges[prerequisite].push(course);
+        indegree[course]++;
+      }
+
+      // 入度为0的节点加入queque
+      const queue = [];
+      // 将所有入度为 0 的节点（依赖0个其他节点）放入队列（后面统一处理）
+      for (let i = 0; i < numCourses; i++) {
+        if (indegree[i] === 0) {
+          queue.unshift(i);
+        }
+      }
+
+      // 广度优先搜索
+      while (queue.length > 0) {
+        const indegree0 = queue.pop();
+        result.push(indegree0);
+
+        // 去掉一个入度为0的节点，使 依赖这个节点的所有节点入度-1
+        if (edges[indegree0]) {
+          for (const v of edges[indegree0]) {
+            indegree[v]--;
+
+            // 若新生成入度为0的节点，则加入queque
+            if (indegree[v] === 0) {
+              queue.unshift(v);
+            }
+          }
+        }
+      }
+
+      // 若有环，则总会有入度不为0的节点
+      if (result.length !== numCourses) { return []; }
+
+      // 拓扑排序
+      return result;
+    };
+    ```
+2. 解法二
+
+    有向图的拓扑排序，深度优先搜索。
+
+    ```js
+    var findOrder = function (numCourses, prerequisites) {
+      const result = [];
+      // 有向图（二维数组。一维是被依赖项，二维是主依赖者数组）
+      const edges = new Array(numCourses).fill().map(() => []);
+      // 标记每个节点访问状态：0=未搜索，1=搜索中，2=已完成（为了判定是否有环：若2次被范围则说明有环）
+      const visited = new Array(numCourses).fill(0);
+      // 判断有向图中是否有环
+      let valid = true;
+
+      // 初始化：有向图
+      for (const [course, prerequisite] of prerequisites) {
+        edges[prerequisite].push(course);
+      }
+
+      // 每次挑选一个「未搜索」的节点，开始进行深度优先搜索
+      for (let i = 0; i < numCourses && valid; i++) {
+        if (visited[i] === 0) {
+          dfs(i);
+        }
+      }
+
+      // 环
+      if (!valid) { return []; }
+
+      // 拓扑排序
+      return result;
+
+      // 深度优先搜索
+      function dfs(pre) {
+        // 标记为「搜索中」
+        visited[pre] = 1;
+
+        // 搜索其相邻节点
+        for (const main of edges[pre]) {
+          // 如果「未搜索」那么搜索相邻节点
+          if (visited[main] === 0) {
+            dfs(main);
+
+            // 只要发现有环，立刻停止搜索
+            if (!valid) { return; }
+          }
+          // 如果「搜索中」说明找到了环
+          else if (visited[main] === 1) {
+            valid = false;
+            return;
+          }
+        }
+        // 将节点标记为「已完成」
+        visited[pre] = 2;
+
+        result.unshift(pre);
+      }
+    };
+    ```
+
+### 比较版本号
+比较版本号时，请按从左到右的顺序依次比较它们的修订号。比较修订号时，只需比较 **忽略任何前导零后的整数值** 。也就是说，修订号 `1` 和修订号 `001` **相等** 。如果版本号没有指定某个下标处的修订号，则该修订号视为 `0`
+
+1. 解法一
+
+    字符串分割。
+
+    ```js
+    /**
+     * @param {string} version1
+     * @param {string} version2
+     * @return {number}
+     */
+    var compareVersion = function (version1, version2) {
+      let v1 = version1.split(".").map((v) => {
+        return Number(v);   // 去除前导零
+      });
+      let v2 = version2.split(".").map((v) => {
+        return Number(v);
+      });
+
+      const v1Len = v1.length;
+      const v2Len = v2.length;
+      // 补齐一样长度的数组
+      if (v1Len > v2Len) {
+        v2 = v2.concat(Array.from({ length: v1Len - v2Len }).map(() => 0));
+      } else {
+        v1 = v1.concat(Array.from({ length: v2Len - v1Len }).map(() => 0));
+      }
+      for (let i = 0; i < v1.length; i++) {
+        if (v1[i] === v2[i]) {
+          continue;
+        } else {
+          return v1[i] > v2[i] ? 1 : -1;
+        }
+      }
+
+      return 0;
+    };
+    ```
+
+---
 ## 困难
 
 ### 滑动窗口最大值
@@ -6830,7 +7142,7 @@ grid2 中标红的 1 区域是子岛屿，总共有 2 个子岛屿。
 
     ![借助单调递减队列](./images/239.gif)
 
-    ```javascript
+    ```js
     /**
      * @param {number[]} nums
      * @param {number} k
@@ -6916,7 +7228,7 @@ grid2 中标红的 1 区域是子岛屿，总共有 2 个子岛屿。
 
     暴力解法，计算每一列，O(n^2)
 
-    ```javascript
+    ```js
     /**
      * @param {number[]} height
      * @return {number}
@@ -6945,7 +7257,7 @@ grid2 中标红的 1 区域是子岛屿，总共有 2 个子岛屿。
 
     动态规划，先计算并保存左右柱子最大高度，把暴力解法的嵌套计算逻辑放在外面，较少遍历层级，计算每一列，O(n)。
 
-    ```javascript
+    ```js
     var trap = function (height) {
       // if (height.length <= 2) return 0;  // 可选
 
@@ -6979,7 +7291,7 @@ grid2 中标红的 1 区域是子岛屿，总共有 2 个子岛屿。
 
     单调栈（类似[每日温度](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/LeetCode记录/README.md#每日温度)），O(n)。
 
-    ```javascript
+    ```js
     var trap = function (height) {
       // if (height.length <= 2) return 0; // 可选
 
@@ -7015,7 +7327,7 @@ grid2 中标红的 1 区域是子岛屿，总共有 2 个子岛屿。
 
     双指针（优化动态规划需要的空间复杂度），O(n)。
 
-    ```javascript
+    ```js
     var trap = function (height) {
       // 按列累加
       let sum = 0;

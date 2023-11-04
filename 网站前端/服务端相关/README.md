@@ -38,7 +38,7 @@
     >        <details>
     >        <summary>e.g.</summary>
     >
-    >        ```javascript
+    >        ```js
     >        let arr = []    // 数据
     >        const size = 10 // 每页数量
     >        const total = 111 // 总量
@@ -70,7 +70,7 @@
 
     e.g. 一个接口返回的数据包括articles、users数据，进行扁平化
 
-    ```javascript
+    ```js
     // articles的store（内聚）
     const articles = {}  // articles的store
     articles.all = {}  // 存放articles的元数据（元数据：完整的单项数据，用唯一的id进行hash索引）
@@ -163,7 +163,7 @@
     >
     >e.g.
     >
-    >```javascript
+    >```js
     >try {
     >  asd
     >} catch (e) {

@@ -98,7 +98,7 @@
 <details>
 <summary>JS定义：链表</summary>
 
-```typescript
+```ts
 /* 链表节点类 */
 class ListNode {
     val: number;
@@ -110,7 +110,7 @@ class ListNode {
 }
 ```
 
-```typescript
+```ts
 /* 双向链表节点类 */
 class ListNode {
     val: number;
@@ -131,7 +131,7 @@ class ListNode {
 <details>
 <summary>JS定义：栈</summary>
 
-```typescript
+```ts
 /* 基于链表实现的栈 */
 class LinkedListStack {
     private stackPeek: ListNode | null; // 将头节点作为栈顶
@@ -187,7 +187,7 @@ class LinkedListStack {
 }
 ```
 
-```typescript
+```ts
 /* 基于数组实现的栈 */
 class ArrayStack {
     private stack: number[];
@@ -236,7 +236,7 @@ class ArrayStack {
 <details>
 <summary>JS定义：队列</summary>
 
-```typescript
+```ts
 /* 基于链表实现的队列 */
 class LinkedListQueue {
     private front: ListNode | null; // 头节点 front
@@ -303,7 +303,7 @@ class LinkedListQueue {
 }
 ```
 
-```typescript
+```ts
 /* 基于环形数组实现的队列 */
 class ArrayQueue {
     private nums: number[]; // 用于存储队列元素的数组
@@ -379,7 +379,7 @@ class ArrayQueue {
     <details>
     <summary>JS定义：双向队列</summary>
 
-    ```typescript
+    ```ts
     /* 双向链表节点 */
     class ListNode {
         prev: ListNode; // 前驱节点引用 (指针)
@@ -504,7 +504,7 @@ class ArrayQueue {
     }
     ```
 
-    ```typescript
+    ```ts
     /* 基于环形数组实现的双向队列 */
     class ArrayDeque {
         private nums: number[]; // 用于存储双向队列元素的数组
@@ -623,7 +623,7 @@ class ArrayQueue {
 <details>
 <summary>JS定义：散列表</summary>
 
-```typescript
+```ts
 /* 键值对 Number -> String */
 class Pair {
   public key: number;
@@ -734,7 +734,7 @@ class ArrayHashMap {
     <details>
     <summary>JS定义：二叉树</summary>
 
-    ```typescript
+    ```ts
     /* 二叉树节点类 */
     class TreeNode {
         val: number;
@@ -873,7 +873,7 @@ class ArrayHashMap {
         针对`{k1, k2, ...ki, ...kn}`n个项，当且仅当满足则为：大顶堆`ki >= k2i+1 且 ki >= k2i+2`（`i < n/2`）。
 
 #### 堆的创建
-```javascript
+```js
 // 创建大顶堆
 function createMaxHeapify(arr) {
   arr = arr.slice(); // 浅复制
@@ -1081,7 +1081,7 @@ function createMaxHeapify(arr) {
 >比较排序理论最好时间复杂度为 $O(n*log n)$。
 
 #### 插入排序（insertion sort）
-```javascript
+```js
 function insertionSort(arr) {
     arr = arr.slice();  // 浅复制
 
@@ -1116,7 +1116,7 @@ function insertionSort(arr) {
 ![插入排序图](./images/insertion-sort-1.gif)
 
 #### 冒泡排序（bubble sort）
-```javascript
+```js
 function bubbleSort(arr) {
     arr = arr.slice();  // 浅复制
 
@@ -1157,7 +1157,7 @@ function bubbleSort(arr) {
 ![冒泡排序图](./images/bubble-sort-1.gif)
 
 #### 快速排序（quick sort）
-```javascript
+```js
 function quickSort(arr) {
     arr = arr.slice();  // 浅复制
 
@@ -1198,7 +1198,7 @@ function quickSort(arr) {
 ![快速排序图](./images/quick-sort-1.gif)
 
 #### 希尔排序
-```javascript
+```js
 function shellSort(arr) {
     arr = arr.slice();  // 浅复制
 
@@ -1228,7 +1228,7 @@ function shellSort(arr) {
 >4. 空间复杂度： $O(1)$
 
 #### 梳排序
-```javascript
+```js
 function combSort(arr) {
     arr = arr.slice();  // 浅复制
 
@@ -1269,7 +1269,7 @@ function combSort(arr) {
 ![梳排序图](./images/comb-sort-1.gif)
 
 #### 归并排序（merge sort）
-```javascript
+```js
 function mergeSort(arr) {
   arr = arr.slice(); // 浅复制
 
@@ -1316,7 +1316,7 @@ function _merge(arrA, arrB) {
 ![归并排序图](./images/merge-sort-1.gif)
 
 #### 选择排序（selection sort）
-```javascript
+```js
 function selectionSort(arr) {
     arr = arr.slice();  // 浅复制
 
@@ -1350,7 +1350,7 @@ function selectionSort(arr) {
 ![选择排序图](./images/selection-sort-1.gif)
 
 #### 堆排序（heap sort）
-```javascript
+```js
 function heapSort(arr) {
   arr = arr.slice(); // 浅复制
 
@@ -1421,7 +1421,7 @@ function heapSort(arr) {
 #### 桶排序（bucket sort）
 >桶排序适用于处理体量很大的数据。e.g. 输入数据包含100万个元素，由于空间限制，系统内存无法一次性加载所有数据。此时，可以将数据分成1000个桶，然后分别对每个桶进行排序，最后将结果合并。桶排序的关键在于对数据进行平均分配。
 
-```javascript
+```js
 function bucketSort(arr) {
   arr = arr.slice(); // 浅复制
 
@@ -1475,7 +1475,7 @@ function bucketSort(arr) {
 >    1. 计数排序只适用于非负整数。若想要将其用于其他类型的数据，需要确保这些数据可以被转换为非负整数，并且在转换过程中不能改变各个元素之间的相对大小关系。e.g. 对于包含负数的整数数组，可以先给所有数字加上一个常数，将全部数字转化为正数，排序完成后再转换回去即可。
 >    2. 计数排序适用于数据量大但数据范围较小的情况。
 
-```javascript
+```js
 function countingSort(arr) {
     var len = arr.length,
         min = Math.min.apply(null, arr),
@@ -1516,7 +1516,7 @@ function countingSort(arr) {
 #### 基数排序（radix sort）
 >相较于计数排序，基数排序适用于数值范围较大的情况，但前提是数据必须可以表示为固定位数的格式，且位数不能过大。e.g. 浮点数不适合使用基数排序，因为其位数k过大，可能导致时间复杂度 $O(n*k)$ 远大于 $O(n^2)$。
 
-```javascript
+```js
 function radixSort(arr) {
     arr = arr.slice();  // 浅复制
 
@@ -1580,7 +1580,7 @@ function radixSort(arr) {
 
 1. 循环：
 
-    ```javascript
+    ```js
     function binarySearch(arr, searchVal) {
         var leftIndex = 0,
             rightIndex = arr.length - 1,
@@ -1612,7 +1612,7 @@ function radixSort(arr) {
 
 2. 递归：
 
-    ```javascript
+    ```js
     function binarySearch(arr, searchVal, leftIndex, rightIndex) {
         if (typeof leftIndex === 'undefined' || typeof rightIndex === 'undefined') {
             leftIndex = 0;
@@ -1655,7 +1655,7 @@ function radixSort(arr) {
 
     <summary>简单变形的二分搜索：</summary>
 
-    ```javascript
+    ```js
     /**
      * 针对Number型递增数组，从前往后 二分搜索，
      *   若数组存在target则返回`true`；若不存在则返回 `第一个大于target的数所在的数组下标`；若不存在大于target的数则返回 `false`

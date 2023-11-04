@@ -9,7 +9,7 @@
 ---
 ### 语言问题
 1. 文字长短不一、文字高度不一
-2. 书写顺序，`ltr`、`rtl`（整个界面布局习惯跟随书写顺序变化）
+2. 书写顺序，`ltr`、`rtl`（整个界面布局习惯跟随书写顺序变化，关注用户交互体验）
 3. 时间问题：日期显示，时区，历法
 
     >[dayjs](https://github.com/iamkun/dayjs)
@@ -27,48 +27,45 @@
 ### 书写顺序
 >阿拉伯文、希伯来文，波斯文 等从右至左的语言文字。
 
-1. HTML全局设置整个DOM
+0. HTML全局设置整个DOM
 
-    `<html dir="ltr或rtl">`
-2. CSS设置左右翻转（镜像）
+    >功能有限，很多样式问题无法处理到，如：`float`、绝对定位布局，更复杂的一些布局。
 
-    1. `transform: scaleX(-1)`
-    2. `text-align: right`
+    `<html dir="ltr或rtl">`或`html{ direction: ltr或rtl; }`（该属性指定了块的基本书写方向，以及针对 Unicode 双向算法的嵌入和覆盖方向）
+1. CSS设置左右翻转（镜像）
 
-    - 镜像方案
+    1. 父级整体：`transform: scaleX(-1)`
+    2. 子级的文字、某些图标等，再翻转回去：`transform: scaleX(-1)`、`text-align: right`
 
-        ```html
-        <!-- 利用 transform 实现全局镜像（左右颠倒） -->
-        <div style="transform: scaleX(-1)">
-          <!-- 文字向右对齐，重置镜像 -->
-          <p style="transform: scaleX(-1); text-align: right;">
-            居右 على الرغم من أن لديه بعض الصعوبات على سبيل المثال
-            <br>، بعض الرجل يمكن أن مجرد فتح devtools وإزالة أو تغيير قسم
-            'لانغ'. لمنع هذا ، أوصي بوضعه في المتغير.
-            </Text>
-            </View>
-          </p>
+        可以写一个组件，包裹需要翻转回去的节点。
 
-          <!-- 镜像（左右颠倒） -->
-          <div>
-            镜像的内容123
-          </div>
-        </div>
-        ```
+    ```html
+    <!-- e.g. 利用 transform 实现全局镜像（左右颠倒） -->
+    <div style="transform: scaleX(-1)">
+      <!-- 文字向右对齐，重置镜像 -->
+      <p style="transform: scaleX(-1); text-align: right;">
+        居右 على الرغم من أن لديه بعض الصعوبات على سبيل المثال
+        <br>، بعض الرجل يمكن أن مجرد فتح devtools وإزالة أو تغيير قسم
+        'لانغ'. لمنع هذا ، أوصي بوضعه في المتغير.
+        </Text>
+        </View>
+      </p>
 
-        1. 当镜像一个 UI 时，这些元素会发生改变：
+      <!-- 镜像（左右颠倒） -->
+      <div>
+        镜像的内容123
+      </div>
+    </div>
+    ```
 
-            1. **文本框图标**显示在字段的另一侧
-            2. **导航按钮**以相反的顺序显示
-            3. 表示方向的**图标**会被镜像，如：箭头
-            4. **文本**（如果它被翻译为 RTL 语言）右对齐
+    >具体参考：[苹果指南](https://developer.apple.com/cn/design/human-interface-guidelines/right-to-left)、[Material Design 指南](https://www.mdui.org/design/usability/bidirectionality.html)、[微软指南](https://learn.microsoft.com/zh-cn/windows/apps/design/globalizing/design-for-bidi-text)。
+2. 劫持创建虚拟DOM的函数，对样式统一镜像修改
 
-        >具体参考：[苹果指南](https://developer.apple.com/cn/design/human-interface-guidelines/right-to-left)、[Material Design 指南](https://www.mdui.org/design/usability/bidirectionality.html)、[微软指南](https://learn.microsoft.com/zh-cn/windows/apps/design/globalizing/design-for-bidi-text)。
-3. 劫持创建虚拟DOM的函数，对样式统一镜像修改
+    >若是RN等，则可以考虑这一块由客户端SDK完成。
 
-    如：`left/right`、`margin左右`、`padding左右`、`border左右`、`borderRadius左右`、等。
+    如：`left/right`、`margin左右`、`padding左右`、`border左右`、`borderRadius左右`等颠倒，flex项的几个CSS属性起始方向`flex-start`和`flex-end`颠倒（实现`direction: rtl;`设置后的默认效果）。类似：[rtlcss](https://github.com/MohammadYounes/rtlcss)。
 
-    ```javascript
+    ```js
     // e.g. React中重写`React.createElement`
     const oldCreateElement = React.createElement;
 
@@ -85,10 +82,10 @@
       }
     }
     ```
-4. 细节注意
+3. 细节注意
 
     1. 动画、绝对定位的数值是否考虑取负值
-    2. 方向敏感的图标考虑是否翻转（在RTL下，箭头向右表示后退，向左表示前进）
+    2. 方向敏感的图标考虑是否翻转（在RTL下，箭头向右表示后退，向左表示前进），图标库需要重新设计
     3. 留意文字长度（如：阿拉伯文أَبْجَدِيَّة عَرَبِيَّة宽度较长）、留意文字高度（如：泰文อักษรไทย高度较高）
 
         >有点类似兼容颜文字。

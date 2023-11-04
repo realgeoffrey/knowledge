@@ -161,7 +161,7 @@
 
 1. `lerna.json`
 
-    ```javascript
+    ```js
     {
       // 当前版本或`independent`
       "version": "1.1.3",

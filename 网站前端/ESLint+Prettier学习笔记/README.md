@@ -33,7 +33,7 @@
 
     - 配置文件内容
 
-        ```javascript
+        ```js
         {
           //Eslint检测配置文件步骤：
           //1.在要检测的文件同一目录里寻找.eslintrc.*和package.json

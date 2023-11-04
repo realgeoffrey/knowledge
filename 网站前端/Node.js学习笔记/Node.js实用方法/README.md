@@ -6,7 +6,7 @@
 ---
 ### 确保文件夹存在
 
-```javascript
+```js
 const fs = require("fs");
 const path = require("path");
 
