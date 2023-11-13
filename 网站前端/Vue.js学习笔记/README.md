@@ -21,8 +21,12 @@
     1. [例子](#例子)
     1. [Vue 3 与 Vue 2 区别](#vue-3-与-vue-2-区别)
 1. [vue-router](#vue-router)
-1. [vuex](#vuex)
-1. [vue-cli](#vue-cli)
+1. [用pinia代替vuex](#用pinia代替vuex)
+
+    1. [vuex](#vuex)
+1. [用create-vue代替vue-cli](#用create-vue代替vue-cli)
+
+    1. [vue-cli](#vue-cli)
 1. [nuxt](#nuxt)
 1. [jQuery与Vue.js对比](#jquery与vuejs对比)
 
@@ -81,7 +85,7 @@
     是语句，不是表达式
     {{ var a = 1 }}
 
-    流控制不会生效，请使用三元表达式
+    流控制不会生效，请使用三元运算符表达式
     {{ if ... }}
 
     不支持分号，无法添加多个表达式
@@ -89,19 +93,21 @@
     -->
     ```
     </details>
-2. 只能访问部分全局变量（白名单）；不允许访问自定义的全局变量（引入的其他库变量仅在JS代码中使用）。
+2. 只能访问部分全局变量（[白名单](https://github.com/vuejs/vue/blob/v2.7.15/src/core/instance/proxy.ts#L9-L14)）；不允许访问自定义的全局变量（引入的其他库变量仅在JS代码中使用）。
 3. 作用域在所属Vue实例范围内。
 
     >在模板中使用Vue实例的属性/方法时，省去 ~~`this`~~。
 
     父级模板里的所有内容都是在父级作用域中编译的；子级模板里的所有内容都是在子级作用域中编译的。
 
-    >特例：父级通过`v-slot="临时变量"`去使用子级`<slot>`给定的属性对应的值。
+    >特例：父级通过`v-slot="临时变量"`去使用子级`<slot>`给定的属性对应的值；父级通过给子级添加`inline-template`，能够直接用子级的属性。
 4. `v-slot`和`<slot>`
 
     用于父级（`v-slot:某名字`）向子组件（`<slot name="某名字">`）插入内容。
 5. 所有渲染结果不包含`<template>`
-6. 注意直接用.html写模板在DOM上的，不能用大写字母命名组件。
+6. 注意：在.html的DOM上书写模板时，不能用大写字母命名组件（同理：HTML中的属性名也是大小写不敏感的）。
+
+    ><https://v2.cn.vuejs.org/v2/guide/components-registration.html#组件名大小写>
 
 ### 指令 && 特殊attribute
 指令（directives）是带有`v-`前缀的DOM的特殊属性。
@@ -116,12 +122,12 @@
 
         由表达式计算的结果为最终`:`后跟的值。
 
-        >e.g. `v-bind:[表达式]='xx'`、`v-on:[表达式]='xx'`、`v-slot:[表达式]`。
+        >e.g. `v-bind:[表达式]='xx'`、`v-on:[表达式]='xx'`（`@[表达式]='xx'`）、`v-slot:[表达式]`。
 2. `v-if`、`v-else`、`v-else-if`
 
     DOM或组件判定为`false`，则完全销毁（组件会调用`destroyed`）；判定为`true`，则新建。除非使用`<keep-alive/>`包裹。
 
-    - 若切换的DOM或组件是相同的，则根据`key`属性是否相同判断是否复用（未设置`key`则也认为是相同）。
+    - 若切换的DOM或组件是相同的，则根据`key`属性是否相同判断是否复用（若未设置`key`则也认为是相同）。
 
         ><details>
         ><summary>e.g.</summary>
@@ -180,31 +186,31 @@
 
             <summary><code>.sync</code></summary>
 
-            >仅为语法糖
+            1. 仅为语法糖：`<my-component :foo.sync="bar"/>`
 
-            `<my-component :foo.sync="bar"/>`
+                >导致`foo`值改变：可以用`@update:foo="方法"`（会传入新值）、或`watch` `bar`。
 
-            >监听`foo`值改变：可以用`@update:foo="方法"`（会传入新值）、或`watch` `bar`。
+                等价于：`<my-component :foo="bar" @update:foo="val => bar = val"/>`
 
-            等价于：
+                - 若要达到效果（同步更新bar），还需要在组件中添加：
 
-            `<my-component :foo="bar" @update:foo="val => bar = val"/>`
+                    ```js
+                    Vue.component('myComponent', {
+                      props: ['foo'],
+                      template: '<p @click="doIt">{{foo}}</p>',
+                      methods: {
+                        doIt () {
+                          this.$emit('update:foo', 'new value') // 触发自己的事件（调用父级的回调函数），父级事件改变值，再传入子组件
+                        }
+                      }
+                    })
+                    ```
+                >不能和表达式一起使用，仅能绑定属性名，错误：~~`v-bind:title.sync="属性名 + '!'"`~~。
+            2. 同时设置多个prop的语法糖：`<my-component v-bind.sync="对象1"/>`（`对象1`假设有`属性1`、`属性2`）
 
+                等价于：`<my-component :属性1.sync="对象1.属性1" :属性2.sync="对象1.属性2"/>`
 
-            - 若要达到效果（同步更新bar），还需要在组件中添加：
-
-                ```js
-                Vue.component('myComponent', {
-                  props: ['foo'],
-                  template: '<p @click="doIt">{{foo}}</p>',
-                  methods: {
-                    doIt () {
-                      this.$emit('update:foo', 'new value') // 触发自己的事件（调用父级的回调函数），父级事件改变值，再传入子组件
-                    }
-                  }
-                })
-                ```
-            >不能和表达式一起使用，仅能绑定属性名：错误：~~`v-bind:title.sync="属性名 + '!'"`~~。
+                >不能将`v-bind.sync`用在一个字面量的对象上，错误：~~`v-bind.sync="{ title: doc.title }"`~~。
             </details>
         2. `.prop`（绑定到DOM的`property`而不是HTML标签的 ~~`attribute`~~）
         3. `.camel`（小驼峰式camelCase转换为大驼峰式PascalCase）
@@ -269,9 +275,10 @@
         </details>
 5. `v-on`（`v-on:xx`缩写：`@xx`）事件监听
 
+    0. 绑定方法名：`v-on:xx="方法名"`；内联JS语句`v-on:xx="方法名(参数)"`、
     1. 事件修饰符：
 
-        1. `.stop`（阻止冒泡）、`.prevent`（阻止默认行为）、`.capture`（捕获事件流）、`.self`（只当事件在该元素本身而不是子元素触发时才触发）、`.once`（事件将只触发一次）、`.passive`（滚动事件的默认滚动行为将立即触发，而不等待~~scroll~~事件完成）
+        1. `.stop`（阻止冒泡）、`.prevent`（阻止默认行为）、`.capture`或`!`前缀（捕获事件流）、`.self`（只当事件在该元素本身而不是子元素触发时才触发）、`.once`或`~`前缀（事件将只触发一次）、`.passive`或`&`前缀（滚动事件的默认滚动行为将立即触发，而不等待~~scroll~~事件完成）
 
             - 特殊：
 
@@ -455,16 +462,12 @@
 
             `<input v-model="bar">`
 
-            等价于：
-
-            `<input :value="bar" @input="bar = $event.target.value">`
+            等价于：`<input :value="bar" @input="bar = $event.target.value">`
         2. 组件
 
             `<my-input v-model="bar"/>`
 
-            等价于（默认：属性绑定为`value`、事件绑定为`input`。可由组件属性`model`修改）：
-
-            `<my-input :value="bar" @input="bar = arguments[0]"/>`
+            等价于（默认：属性绑定为`value`、事件绑定为`input`。可由组件属性`model`修改）：`<my-input :value="bar" @input="bar = arguments[0]"/>`
 
             - 若要达到效果（双向数据绑定），还需要在组件中添加：
 
@@ -761,11 +764,11 @@
 
     以`_`或`$`开头的属性不会被Vue实例代理，但可以使用`vm.$data`访问（e.g. `vm.$data._property`）。
 
-    >Vue内置的属性、API方法会以`_`或`$`开头，因此若看到不带这些前缀的Vue实例的属性时，则一般可认为是Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性）。
+    >Vue内置的属性、API方法会以 `_`或`$` 开头，因此若看到不带这些前缀的Vue实例的属性时，则一般可认为是Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性）。
 3. `computed`（对象）：依赖其他值（`props`、`data`、`computed`）的改变而执行，最后`return`值
 
     <details>
-    <summary>默认：<code>get</code>（初始化时会调用一次）；显式设置：<code>set</code>（被赋值时执行）和<code>get</code></summary>
+    <summary>默认：<code>get</code>（初始化时会调用一次）；显式设置：<code>set</code>（被赋值时执行）和<code>get</code>。</summary>
 
     当未设置`set`时，不能主动去设置`computed`的值（~~`this.计算属性 = 值`~~）；设置了`set`也不能改变自己的值（`set`函数里不能再循环设置自己的值）。
 
@@ -787,7 +790,7 @@
             const names = newValue.split(' ')
             this.firstName = names[0]
             this.lastName = names[names.length - 1]
-            // 不允许`this.fullName = 值`会导致死循环
+            // 这里不允许`this.fullName = 值`会导致死循环
           }
         }
       }
@@ -804,10 +807,14 @@
 4. `watch`（对象）：被watch的值改变而执行函数（观察的值必须是`props`或`data`或`computed`的属性）
 
     1. 可以设置`immediate`参数（侦听开始后立即调用一次）
-    2. 可以设置`deep`参数（监听的对象的属性修改时调用一次，无论嵌套多深的属性，属性的属性也触发）
-    3. 键名可以是`属性1.子属性2`，来观察嵌套的属性值
+    2. 可以设置`deep`参数
 
-    >还可以用`vm.$watch`来观察属性改变。
+        1. `: false`（默认）：仅监听的值变化才调用（引用类型变化需要引用地址变化）
+        2. `: true`：（针对已存在的属性，新增属性不触发）监听的对象的属性修改时调用一次，无论嵌套多深的属性（性能开销大）
+    3. 键名可以是`属性1.子属性2`，来观察嵌套的属性值
+    4. 传入数组，逐一调用，e.g. `[方法1, 对象1, ...]`
+
+    >还可以用`vm.$watch`（返回`unwatch`方法，取消观察）来观察属性改变。
 
 >执行顺序是：（`props` -> ）`data` -> `computed` -> `watch`。
 
@@ -815,7 +822,7 @@
 
     方法内部没有代理 ~~`this`~~ 到Vue实例。
 
-    >因为不会被Vue实例代理，所以可以和Vue实例代理的属性同名（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性`）。
+    >因为不会被Vue实例代理，所以可以和Vue实例代理的属性同名（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性）。
 6. `components`（对象）：局部注册组件（仅在此Vue实例中可用）
 7. `methods`（对象）：可调用方法
 
@@ -871,14 +878,14 @@
     3. `beforeMount`
     4. `mounted`
 
-        >不判断子组件是否挂载完毕。若希望整个视图都渲染完毕，可以用`vm.$nextTick`。
+        >不判断子组件是否挂载完毕（虽然先子组件再父组件的挂载顺序）。若希望整个视图都渲染完毕，可以用`vm.$nextTick`。
 
     >页面加载后就要展现的数据，可以在`created`、`beforeMount`、`mounted`请求（`vue-router`、`nuxt`等封装了更方便的钩子，可控制更多执行时机，如：路由切换前后、数据加载完毕前后）。
 
     5. `beforeUpdate`
     6. `updated`
 
-        >不判断子组件是否更新完毕。若希望整个视图都渲染完毕，可以用`vm.$nextTick`。
+        >不判断子组件是否更新完毕（虽然先子组件再父组件的更新顺序）。若希望整个视图都渲染完毕，可以用`vm.$nextTick`。
     7. `activated`
 
         >`<keep-alive/>`组件特有，内部组件激活时在内部组件调用。
@@ -987,11 +994,11 @@
 
             - 验证方式：
 
-                1. 原生构造器（`String`、`Number`、`Boolean`、`Function`、`Object`、`Array`）、或`Symbol`、`BigInt`、或`null`（允许任何类型）
+                1. 原生构造器（`String`、`Number`、`Boolean`、`Function`、`Object`、`Array`、`Symbol`、`BigInt`）或 `自定义构造函数`（通过`instanceof`检查确认）或`null`（允许任何类型）
                 2. 上面类型组成的数组
                 3. 对象
 
-                    1. `type`：原生构造器、或`null`、或原生构造器的数组
+                    1. `type`：原生构造器、或`自定义构造函数`、或原生构造器和`自定义构造函数`的数组、或`null`
                     2. `required`：是否必须（默认：`false`）
                     3. `default`：基本数据类型的值；对象或数组必须从工厂函数返回默认值（当且仅当没有传入时才使用或调用）
 
@@ -1025,11 +1032,10 @@
     ```js
     // 局部
     new Vue({
-        components: {
-            '组件元素名': 对象 // 仅在此Vue实例中可用
-        }
+      components: {
+        '组件元素名': 对象 // 仅在此Vue实例中可用
+      }
     })
-
 
     // 全局
     Vue.component('组件元素名', 对象)
@@ -1119,7 +1125,7 @@
 
             1. 父 -> 子：通过`props`向下传递初始化数据给子组件实例（不出现在DOM中）
 
-                >（当`inheritAttrs`默认`true`时，）添加在DOM上而不在`props`的声明，则仅添加到子组件最外层的DOM属性，不传入子组件。其中`class`和`style`属性会合并，其他属性会覆盖。
+                >（当`inheritAttrs`默认`true`时，）若添加在子组件的props但不在子组件`props`的声明，则仅添加到子组件最外层的DOM属性。其中`class`和`style`属性会合并，其他属性会覆盖。`inheritAttrs: false`不影响`style`和`class`的绑定。
 
                 1. `props`是单向传递的：当父级的属性变化时，将传导给子组件，不会反过来
 
@@ -1405,7 +1411,7 @@
         3. `slots`：允许外部环境将额外的内容组合在组件中。
 6. 内置组件
 
-    1. `<component/>`
+    1. `<component/>`动态组件
     2. `<transition/>`
     3. `<transition-group/>`
     4. `<keep-alive/>`
@@ -1416,7 +1422,20 @@
     1. 父级引用组件时添加属性`ref="字符串"`，可以在Vue实例的`$refs`中访问子组件。
     2. 内联模板：
 
-        引用组件时，添加`inline-template`DOM属性。组件的内容当作模板，而不是分发内容。
+        引用组件时，添加`inline-template`DOM属性。包裹的内容当做子组件的模板，而不是分发内容。
+
+        <details>
+        <summary>e.g.</summary>
+
+        ```vue
+        <son-component inline-template>
+          <div>
+            直接作为 son-component 组件的template，
+            并且可以直接使用 son-component 的属性渲染，如：{{ son的属性 }}
+          </div>
+        </son-component>
+        ```
+        </details>
     3. `<script type=text/x-template id="id名">`
 
         ```js
@@ -1447,6 +1466,17 @@
     9. 循环组件。
 
 ### 单文件组件（Single-File Component，SFC）
+```vue
+<!-- my-component.vue -->
+<template>
+  <div>This will be pre-compiled</div>
+</template>
+
+<script src="./my-component.js"></script>
+
+<style src="./my-component.css"></style>
+```
+
 1. （有导出的）组件内部可以直接引用自身组件（小心无止境的循环引用）
 2. 大部分都用局部注册。除非是大范围的统一功能，才用全局方式，才用插件方式。
 3. 样式引入
@@ -1821,8 +1851,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     >    2. `x`指向的对象不是响应式的，无法通过`x.y = 2`去响应式修改。
     >    3. 若`x = { y: 2 }`指向新的响应式对象，之后`x.y = 3`会响应式触发视图更新。
     >    </details>
-    >2. 针对不需要展示到`template`的属性，可以不把属性初始化在`data`中，而是直接`vm.属性 = 值`在JS中使用（这个属性值无法绑定到`template`中显示，意味着给这个属性值赋值之后，`{{ 属性 }}`也总是为空）。
-    >3. 针对所有这个组件的实例全部共用同一个值、不响应式更新、不能放在`template`内的值，可以放在组件外部（类似上面的那用用法）。
+    >2. 针对不需要展示到`template`的属性，可以不把属性初始化在`data`中，而是直接`vm.属性 = 值`在JS中使用（这个属性变更不会导致响应式更新，意味着：若`template`展示`{{ 属性 }}`，则更新这个值之后，需要依赖其他更新视图的方式才能看到视图展示新的值）。
+    >3. 针对所有这个组件的实例全部共用同一个值、不响应式更新、不能放在`template`内的值，可以放在组件外部。
 2. 每个组件实例都有相应的`watcher`实例对象，它会在组件渲染的过程中把属性记录为依赖，之后当依赖项的`setter`被调用时，会通知`watcher`重新计算，从而致使它关联的组件得以更新（[虚拟DOM系统](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#虚拟dom系统)）。
 3. 响应式操作：Vue实例的`data`的属性值、vuex的store的属性值
 
@@ -2379,7 +2409,9 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     1. 组件最大限度复用：路由切换时，若两个路由都渲染同个组件，则不会销毁重建，而是直接复用，因此被复用的组件的生命周期钩子不会再被调用。
     2. 匹配优先级：有时候，同一个路径可以匹配多个路由，此时，匹配的优先级就按照路由的定义顺序：谁先定义的，谁的优先级就最高。
 
-### [vuex](https://github.com/vuejs/vuex)
+### 用[pinia](https://github.com/vuejs/pinia)代替vuex
+
+#### [vuex](https://github.com/vuejs/vuex)
 >store的概念：vuex提供的容器，state的集合。
 
 一个专为Vue.js应用程序开发的**状态管理模式**。采用集中式存储管理应用的所有组件的状态（仅一个实例对象就能负责保存整个应用的状态，「唯一数据源」），并以相应的规则保证状态以一种可预测的方式发生变化。vuex的状态存储是**响应式的**，若store中的状态发生变化，则有读取状态的组件（`computed`依赖状态或直接输出状态）也会相应地得到高效更新。
@@ -2638,7 +2670,9 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
 - 若在`new`Vue实例时，把（已经`Vue.use(Vuex)`的）Vuex.Store实例通过`store`属性注入，则子组件内就能通过`vm.$store`访问此Vuex实例。
 
-### [vue-cli](https://github.com/vuejs/vue-cli)
+### 用[create-vue](https://github.com/vuejs/create-vue)代替vue-cli
+
+#### [vue-cli](https://github.com/vuejs/vue-cli)
 快速构建Vue应用的脚手架，可以使用Vue官方或第三方模板来进行Vue应用的配置，主要包括webpack等工具的配置。
 
 1. 任何放置在public文件夹的静态资源都会被简单的复制，而不经过~~webpack~~。需要通过**绝对路径**来引用。
@@ -2664,7 +2698,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 ### [nuxt](https://github.com/nuxt/nuxt)
 基于Vue的通用应用框架（SPA或SSR），把webpack、babel、vue-server-renderer、vue-router、vuex、vue-meta等工具整合在一起，并通过自带的`nuxt.config.js`统一配置，不需要对每个工具进行单独配置。
 
->框架内的Vue组件都是以**Vue单文件组件**的形式，每一个`pages`目录下的组件都是一个页面路由。
+>框架内的Vue组件都是以**Vue单文件组件**的形式，每一个`pages`目录下的组件都是一个页面路由（约定式路由）。
 
 1. 目录结构
 

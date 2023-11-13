@@ -322,6 +322,8 @@
         >}
         >```
         ></details>
+
+        函数组件每次渲染，都执行一遍函数。要注意每次执行时，内部的所有变量（除了被hooks或方法返回的不一定），都会重新创建一遍。
 2. 限制
 
     1. Props不能被修改（只读）。
@@ -450,7 +452,8 @@
 
         >1. `React.Component`的`shouldComponentUpdate`默认返回`true`：总会更新DOM。
         >2. `React.PureComponent`的`shouldComponentUpdate`默认实现（修改实现会Warning提示）：浅比较`props`和`state`，若相同则返回`false`不更新，若不相同则返回`true`更新。
-    5. 属性值改变的策略
+    5. 若父组件重新渲染，则会导致所有子组件也重新渲染，但子组件可以根据`shouldComponentUpdate`（class组件）或`React.memo`（函数组件）来跳过（相同props的）重新渲染。
+    6. 属性值改变的策略
 
         1. 模板中渲染相关的属性（如：要在模板内展示的属性 或 Props传值、`style`取值等），需要放到State中被观测（或放到store中被观测，如：redux、mobx），才能在这些值改变时通知视图重新渲染（`this.setState`）。
 
@@ -553,7 +556,7 @@
         >}
         >```
         ></details>
-    6. `forceUpdate`
+    7. `forceUpdate`
 
         跳过 ~~`shouldComponentUpdate`~~，直接触发`render`。
 4. Props
@@ -1404,11 +1407,11 @@
                 4. 状态更新函数 (即`setState`的第一个参数）
                 5. 函数组件通过使用Hook：`useState`、`useMemo`或`useReducer`
         5. 检测[过时的context API](https://zh-hans.reactjs.org/docs/legacy-context.html)
-    6. `React.memo`
+    6. `React.memo(函数组件[, 对比props的方法]);`
 
-        >类似`React.Component`实现浅比较`shouldComponentUpdate` 或 `React.PureComponent`默认。
+        >`对比props的方法`（接收2个参数：前props、现props）默认用`Object.is`浅比较每个props，若相同则返回`true`不重新渲染。类似`React.Component`实现浅比较`shouldComponentUpdate` 或 `React.PureComponent`默认。
 
-        若组件在相同props的情况下渲染相同的结果，则可以通过将其包装在`React.memo`中调用，以此通过记忆组件渲染结果的方式来提高组件的性能表现。这意味着在这种情况下，React将跳过渲染组件的操作并直接复用最近一次渲染的结果（不执行第一个参数——组件方法，而是用上一次的缓存值）。
+        若函数组件在相同props的情况下渲染相同的结果，则可以通过将其包装在`React.memo`中调用，以此通过记忆组件渲染结果的方式来提高组件的性能表现。这意味着在这种情况下，React将跳过渲染组件的操作并直接复用最近一次渲染的结果（不执行第一个参数——函数组件方法，而是用上一次的缓存值）。
 
         ><details>
         ><summary>e.g.</summary>
@@ -1417,11 +1420,11 @@
         >function MyComponent(props) {
         >  /* 函数组件，使用 props 渲染 */
         >}
+        >
         >function areEqual(prevProps, nextProps) {
         >  /*
         >  默认是浅比较props。
-        >  若把 nextProps 传入 render 方法的返回结果 与 将 prevProps 传入 render 方法的返回结果一致则返回 true，
-        >  否则返回 false。
+        >  自定义，若返回`true`则不触发重新渲染。否者触发重新渲染。
         >  （与shouldComponentUpdate返回值相反）
         >  */
         >}
@@ -1914,7 +1917,7 @@
     ```
     </details>
 
->[生命周期图谱](https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)。
+>[生命周期图谱](https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)（生命周期、hooks 都是先子组件再父组件的顺序，vue也是）。
 
 ![react生命周期图](./images/lifecycle.png)
 
@@ -2004,9 +2007,9 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     </details>
 
->运行规则：函数组件的函数体先执行，按顺序执行语句（包括hook）；hook的回调函数在函数组件的函数体执行完毕之后，按照类型和顺序执行。
+- <details>
 
-- hook解决的问题（相对class组件的优势）
+    <summary>hook解决的问题（相对class组件的优势）</summary>
 
     1. class组件的不足
 
@@ -2036,6 +2039,25 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
         2. 函数式编程：
 
             Hooks鼓励使用函数式编程的风格编写组件，这有助于组件的可测试性和可维护性。由于Hooks是纯函数，不依赖于组件实例，因此更易于进行单元测试和模块化开发。
+    </details>
+
+- 函数组件每次渲染，都执行一遍函数，包含传入hook的参数也会执行一遍。注意尽量不要传递引用类型作为hook的参数。
+
+    ```js
+    // 每次渲染，若父级传参不变，则传入的props不变
+    console.log(props);
+
+
+    // 每次渲染，func()都会执行（虽然某些原生hook实现了不会再使用初始值）
+    const ref = useRef(func());
+    const [value,setValue] = useState(func());
+    func();
+    const a = func();
+
+
+    // 每次渲染，都会创建新的引用数据类型（基本数据类型也是新创建，只是相同值一般相同）
+    const [value,setValue] = useState({ a:1 }); // 虽然只会使用一次初始值，但是每次渲染都会产生{ a:1 }
+    ```
 
 1. `useState`
 
@@ -2231,7 +2253,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
         当组件上层最近的`<MyContext.Provider>`更新时，该Hook会触发重渲染，并使用最新传递给`<MyContext.Provider>`的value属性值。
 
-        >即使祖先使用`React.memo`或`shouldComponentUpdate`返回`false`，也会在组件本身使用useContext时重新渲染。
+        >即使祖先使用（函数组件）`React.memo`或（class组件）`shouldComponentUpdate`返回`false`，也会在组件本身使用useContext时重新渲染。
 
     ><details>
     ><summary>e.g.</summary>
@@ -3023,9 +3045,9 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 2. 长列表考虑虚拟列表
 
     >如：[react-window](https://github.com/bvaughn/react-window)。
-3. 渲染前的diff，可利用`shouldComponentUpdate`返回`false`（`React.memo`浅比较）跳过
-4. `useMemo`、`useCallback`辩证看待、合理使用
-5. 注意`render`函数内属性的写法，避免父级重新渲染总是触发子级重新渲染（避免子级的Props变化）
+3. 注意`render`函数内属性的写法，避免父级重新渲染总是触发子级重新渲染（避免子级的Props变化）
+4. 渲染前的diff，class组件 可利用`shouldComponentUpdate`返回`false`，函数组件 可利用`React.memo`浅比较props，跳过（相同props的）重新渲染。
+5. `useMemo`、`useCallback`辩证看待、合理使用
 6. 遵守React不可变对象的不可变性
 7. 代码分割（动态加载）（`<React.Suspense>`、`React.lazy`）
 8. 避免过深层级的结构
@@ -3850,7 +3872,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         1. vue可以更快地计算出Virtual DOM的差异，这是由于它在渲染过程中，会跟踪每一个组件的依赖关系，不需要重新渲染整个组件树。
         2. react在应用的状态被改变时，全部子组件都会重新渲染。
 
-            >可以通过`shouldComponentUpdate`返回`false`（`React.memo`浅比较）进行控制不更新，但vue将此视为默认的优化。
+            >可以通过（class组件）`shouldComponentUpdate`返回`false` 或 （函数组件）`React.memo`浅比较，进行控制不更新，但vue将此视为默认的优化。
     6. diff算法实现
 
         1. react
@@ -3875,7 +3897,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
             1. 基于snabbdom库，它有较好的速度以及模块机制。Diff使用双向链表，边对比，边更新DOM。
             2. 列表比对，采用从两端到中间的比对方式。当一个集合，只是把最后一个节点移动到了第一个：vue只会把最后一个节点移动到第一个。
             3. 比较节点类型和key，还有属性（若className不同，则认为是不同类型元素，删除重建）
-            - 属于组件级更新。基于数据劫持，更新粒度很小，没有更新耗时压力，不需要fiber。
+            - 属于组件级更新。基于数据劫持，更新粒度很小，没有更新耗时压力，**不需要fiber**。
     7. 数据流
 
         1. vue父子组件间单向数据流，组件与DOM间利用`v-model`实现双向绑定（语法糖）。

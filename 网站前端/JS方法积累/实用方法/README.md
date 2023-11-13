@@ -27,8 +27,6 @@
 1. 数字操作
 
     1. [科学计数法转换成字符串的数字](#原生js科学计数法转换成字符串的数字)
-    1. [用整数进行小数的四则运算（避免浮点数运算误差）](#原生js用整数进行小数的四则运算避免浮点数运算误差)
-    1. [大数加减法（按位计算，不考虑小数和负数）](#原生js大数加减法按位计算不考虑小数和负数)
     1. [不同进制数互相转换](#原生js不同进制数互相转换)
     1. [选取范围内随机值](#原生js选取范围内随机值)
     1. [选取范围内多个随机值](#原生js选取范围内多个随机值)
@@ -47,7 +45,6 @@
     1. [单词首字母大写](#原生js单词首字母大写)
 1. 数组操作
 
-    1. [分割数组](#原生js分割数组)
     1. [数组去重（项为对象）](#原生js数组去重项为对象)
     1. [数组去重](#数组去重)
     1. [数组删去某值](#数组删去某值)
@@ -95,6 +92,9 @@
     1. [判断对象是否为空](#原生js判断对象是否为空)
     1. [无缝轮播](#无缝轮播)
     1. [获取某一位的数字](#获取某一位的数字)
+1. Node.js相关
+
+    1. [确保文件夹存在](#确保文件夹存在)
 1. <details>
 
     <summary>jQuery方法</summary>
@@ -1133,158 +1133,6 @@ function eToString(number) {
 }
 ```
 
-### *原生JS*用整数进行小数的四则运算（避免浮点数运算误差）
-```js
-var fourOperations = {
-    add: function (arg1, arg2) {    /* 加 */
-        var int1 = parseInt(arg1.toString().replace('.', ''), 10),
-            int2 = parseInt(arg2.toString().replace('.', ''), 10),
-            dotLength1, dotLength2, gap, gapMultiple, multiple;
-
-        try {
-            dotLength1 = arg1.toString().split('.')[1].length;
-        } catch (e) {
-            dotLength1 = 0;
-        }
-        try {
-            dotLength2 = arg2.toString().split('.')[1].length;
-        } catch (e) {
-            dotLength2 = 0;
-        }
-
-        gap = Math.abs(dotLength1 - dotLength2);
-
-        if (gap > 0) {
-            gapMultiple = Math.pow(10, gap);
-
-            if (dotLength1 < dotLength2) {
-                int1 = int1 * gapMultiple;
-            } else {
-                int2 = int2 * gapMultiple;
-            }
-        }
-
-        multiple = Math.pow(10, Math.max(dotLength1, dotLength2));
-
-        return (int1 + int2) / multiple;
-    },
-    sub: function (arg1, arg2) {    /* 减 */
-
-        return this.add(arg1, -arg2);
-    },
-    mul: function (arg1, arg2) {    /* 乘 */
-        var multiple;
-
-        try {
-            multiple = arg1.toString().split('.')[1].length;
-        } catch (e) {
-            multiple = 0;
-        }
-        try {
-            multiple = multiple + arg2.toString().split('.')[1].length;
-        } catch (e) {
-
-        }
-
-        return parseInt(arg1.toString().replace('.', ''), 10) * parseInt(arg2.toString().replace('.', ''), 10) / Math.pow(10, multiple);
-    },
-    div: function (arg1, arg2) {    /* 除 */
-        var dotLength1, dotLength2;
-
-        try {
-            dotLength1 = arg1.toString().split('.')[1].length;
-        } catch (e) {
-            dotLength1 = 0;
-        }
-        try {
-            dotLength2 = arg2.toString().split('.')[1].length;
-        } catch (e) {
-            dotLength2 = 0;
-        }
-
-        return parseInt(arg1.toString().replace('.', ''), 10) / parseInt(arg2.toString().replace('.', ''), 10) * Math.pow(10, dotLength2 - dotLength1);
-    }
-};
-```
->类似[number-precision](https://github.com/nefe/number-precision)。
-
-### *原生JS*大数加减法（按位计算，不考虑小数和负数）
-```js
-var overRangeOperations = {
-    add: function (arg1, arg2) {    /* 加 */
-        /* 需要把科学计数法转化为字符串的数字 */
-        arg1 = arg1.toString(10).split('');
-        arg2 = arg2.toString(10).split('');
-
-        var carry = 0,  // 进位
-            result = [],
-            temp;
-
-        while (arg1.length || arg2.length || carry) {
-            temp = parseInt(arg1.pop() || 0, 10) + parseInt(arg2.pop() || 0, 10) + carry;
-            result.unshift(temp % 10);
-            carry = Math.floor(temp / 10);
-        }
-
-        return result.join('');
-    },
-
-    sub: function (arg1, arg2) {    /* 减 */
-        /* 需要把科学计数法转化为字符串的数字 */
-        arg1 = arg1.toString(10).split('');
-        arg2 = arg2.toString(10).split('');
-
-        var isArg2Bigger, // 标记arg2是否大于arg1
-            result = [],
-            i, len, temp;
-
-        (function () {  /* 确保大数减小数 */
-            isArg2Bigger = arg1.length < arg2.length;
-
-            if (arg1.length === arg2.length) {
-                for (i = 0, len = arg1.length; i < len; i++) {
-                    if (arg1[i] === arg2[i]) {
-                        continue;
-                    }
-
-                    isArg2Bigger = arg1[i] < arg2[i];
-
-                    break;
-                }
-            }
-
-            if (isArg2Bigger) {
-                temp = arg1;
-                arg1 = arg2;
-                arg2 = temp;
-            }
-        }());
-
-        while (arg1.length) {
-            temp = parseInt(arg1.pop(), 10) - parseInt(arg2.pop() || 0, 10);
-
-            if (temp >= 0) {
-                result.unshift(temp);
-            } else {
-                result.unshift(temp + 10);
-
-                arg1[arg1.length - 1] -= 1; // 由于arg1一定大于等于arg2，所以不存在arg1[i-1]为undefined的情况
-            }
-        }
-
-        result = result.join('').replace(/^0*/, '');    // 去掉前面的0
-
-        if (result === '') {
-            result = 0;
-        } else {
-            result = (isArg2Bigger ? '-' : '') + result;
-        }
-
-        return result;
-    }
-};
-```
-
 ### *原生JS*不同进制数互相转换
 ```js
 /**
@@ -1806,33 +1654,6 @@ function upperCaseWord(str) {
 
 ---
 ## 数组操作
-
-### *原生JS*分割数组
-```js
-/**
- * 分割数组，并以嵌套数组形式返回
- * @param {Array} arr - 数组
- * @param {Number} [divisor = 1] - 分割除数
- * @returns {Array} newArr - 如：[[0, 1, 2], [3, 4, 5], [6]]
- */
-function divideArr(arr, divisor) {
-    divisor = divisor || 1;
-    arr = arr.slice();  // 浅复制
-
-    var newArr = [];    // 数组中嵌套数组的形式返回
-    var tempArr = [];   // 临时数组
-
-    while (arr.length > 0) {
-        for (var i = 0; i < divisor && arr.length > 0; i++) {
-            tempArr.push(arr.shift());
-        }
-        newArr.push(tempArr);
-        tempArr = [];
-    }
-
-    return newArr;
-}
-```
 
 ### *原生JS*数组去重（项为对象）
 ```js
@@ -4189,6 +4010,28 @@ $x_k = \lfloor\frac{x}{d^k}\rfloor \bmod d$（ $\lfloor a \rfloor$表示对浮�
     console.log(getIndexNumber(0x4567890abcdef, 13, 16), 0);
     ```
     </details>
+
+---
+## Node.js相关
+
+### 确保文件夹存在
+```js
+const fs = require("fs");
+const path = require("path");
+
+// 确保文件夹存在（不存在则创建，可判断多层文件夹）
+function validateFolder(pathWay) {
+  if (fs.existsSync(pathWay)) {
+    return true;
+  } else {
+    if (validateFolder(path.dirname(pathWay))) {
+      fs.mkdirSync(pathWay);
+      console.log(`创建 ${pathWay}`);
+      return true;
+    }
+  }
+}
+```
 
 ---
 ### jQuery方法

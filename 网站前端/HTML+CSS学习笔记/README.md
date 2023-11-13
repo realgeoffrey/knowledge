@@ -8,6 +8,7 @@
     1. [自适应宽度布局](#自适应宽度布局)
     1. [`flex`优雅解决布局、自适应问题](#flex优雅解决布局自适应问题)
     1. [组件样式使用方案（如：React、Vue）](#组件样式使用方案如reactvue)
+    1. [样式隔离方案](#样式隔离方案)
     1. [经验技巧](#经验技巧)
     1. [Tips](#tips)
 1. [CSS](#css)
@@ -37,7 +38,6 @@
 1. [HTML + CSS](#html--css)
 
     1. [禁用`<a>`的鼠标、键盘事件](#禁用a的鼠标键盘事件)
-    1. [插件避免被其他样式污染方式](#插件避免被其他样式污染方式)
     1. [网页图标favicon的兼容写法](#网页图标favicon的兼容写法)
 
 ---
@@ -614,14 +614,42 @@
     >可以与CSS预处理器配合使用。
 
     构建期间修改组件要使用的样式类名，使其成为该组件特殊的类名而不会污染全局样式（当然也支持全局作用域的写法），额外支持选择器互相继承（composition）。
-2. CSS in JS方案：[styled-components](https://github.com/styled-components/styled-components)
+2. CSS in JS/CSS-in-JS方案：
 
-    >CSS in JS/CSS-in-JS：CSS由JavaScript生成而不是~~在外部文件（.css文件或CSS预处理器文件）中定义~~。
+    CSS由JS生成而不是~~在外部文件（.css文件或CSS预处理器文件）中定义~~。
 
-    生成随机类名的某HTML标签的新组件（在运行时解析样式并动态插入样式）。
+    1. [styled-components](https://github.com/styled-components/styled-components)
+
+        生成随机类名的某HTML标签的新组件（在运行时解析样式并动态插入样式）。
+    2. JS内联样式（如：react写法）
 3. 原子化CSS（Atomic CSS）：[tailwindcss](https://github.com/tailwindlabs/tailwindcss)、[unocss](https://github.com/unocss/unocss)
 
     CSS样式库，一个个类名代表一个个CSS属性，拼凑的各类名替代拼凑的各CSS属性。
+
+### 样式隔离方案
+1. 利用命名规则避开冲突。是约定规则，容易出纰漏。
+
+    1. BEM（以及变种）
+    2. Sass/Less/Stylus等CSS预处理器
+
+        利用样式嵌套。
+2. 通过编译生成，依赖构建期打包
+
+    1. CSS Modules
+
+        通过编译生成不冲突的hash类名。
+    2. CSS in JS
+
+        构建生成不冲突的样式，随机类名方案、内联样式方案。
+    3. vue scoped
+
+        通过编译生成hash的DOM属性和对应样式，如：`<div class="a" data-v-039c5b43>`，`.a[data-v-039c5b43] {}`。
+3. 浏览器原生支持
+
+    1. Shadow DOM
+
+        浏览器原生CSS沙箱支持。
+    2. `<iframe>`
 
 ### 经验技巧
 1. 命名间隔
@@ -1718,15 +1746,6 @@ CSS渐变是以CSS背景图的形式展示，但没有内在尺寸（没有固�
 ```html
 <a style="pointer-events: none;">禁用鼠标和键盘的链接</a>
 ```
-
-### 插件避免被其他样式污染方式
-1. 与原页面不同的命名方式
-
-    - [组件样式使用方案（如：React、Vue）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#组件样式使用方案如reactvue)
-2. shadow DOM
-3. `<iframe>`
-
-    >注意：`<iframe>`的`scrolling="no"时其视口就是整个`<iframe>`高宽边界，因此其内部的`position: fixed;`定位不是以外层的浏览器viewport定位，而是以此`<iframe>`的边界来定位。
 
 ### 网页图标favicon的兼容写法
 >参考：[张鑫旭：详细介绍HTML favicon尺寸 格式 制作等相关知识](https://www.zhangxinxu.com/wordpress/2019/06/html-favicon-size-ico-generator/)。

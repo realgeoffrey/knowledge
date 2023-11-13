@@ -14,7 +14,7 @@
     1. [内存泄漏](#内存泄漏)
     1. [深复制（深拷贝）实现思路](#深复制深拷贝实现思路)
     1. [数据类型转换](#数据类型转换)
-    1. [`||`和`&&`](#和)
+    1. [`||`和`&&`和`??`](#和和)
     1. [浏览器的`事件循环（event loop）`](#浏览器的事件循环event-loop)
     1. [定时器 && 重绘函数](#定时器--重绘函数)
 1. [功能归纳](#功能归纳)
@@ -23,6 +23,7 @@
     1. [循环遍历](#循环遍历)
     1. [异步循环遍历](#异步循环遍历)
     1. [跨域请求](#跨域请求)
+    1. [浏览器文档间的数据交互（文档与`<iframe>`、文档与`window.open()`的新窗口）](#浏览器文档间的数据交互文档与iframe文档与windowopen的新窗口)
     1. [Web Storage && cookie && IndexedDB](#web-storage--cookie--indexeddb)
     1. [错误处理机制](#错误处理机制)
     1. [预加载](#预加载)
@@ -53,15 +54,7 @@
     1. [DOM修改](#dom修改)
     1. [`Node`与`Element`](#node与element)
     1. [`attribute`与`property`](#attribute与property)
-    1. [遍历页面中所有元素](#遍历页面中所有元素)
     1. [jQuery相关](#jquery相关)
-
-><details>
-><summary>约定</summary>
->
->1. `dom`为JS对象，`$dom`为jQuery（或Zepto）对象。
->2. 大部分情况下，jQuery内容适用于Zepto。
-></details>
 
 ---
 ## 性能原理
@@ -75,7 +68,7 @@
         2. `name`：函数名
         3. `prototype`：（函数独有）指向函数的原型对象
 
-            箭头函数、`bind`生成的函数，没有 ~~`prototype`~~。
+            箭头函数、`bind`生成的函数，没有 ~~`prototype`~~，不能作为 ~~类`extends`的基类~~。
     2. ES6不推荐使用（部分情况下导致报错）：
 
         1. 函数体内的`arguments.callee`是一个指针：其指向拥有`arguments`对象的函数（函数自身）。
@@ -252,10 +245,10 @@
 
     1. 函数防抖、函数节流。
 
-        e.g. [手写防抖函数、节流函数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/手写代码/README.md#手写防抖函数节流函数)
+        e.g. [防抖函数、节流函数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/手写代码/README.md#防抖函数节流函数)
     2. 柯里化（currying）
 
-        把接受多个参数的函数变换成接受单一参数（最初函数的第一个参数）的函数，并且返回接受余下参数的新函数。e.g. [手写柯里化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/手写代码/README.md#手写柯里化)
+        把接受多个参数的函数变换成接受单一参数（最初函数的第一个参数）的函数，并且返回接受余下参数的新函数。e.g. [柯里化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/手写代码/README.md#柯里化)
     3. 惰性函数（Lazy Function）
 
         一种在第一次调用时初始化并替换自身的函数。这种技术通常用于优化那些根据特定条件执行不同逻辑的函数，特别是当这些条件在函数第一次调用时就已经确定的情况下。
@@ -1066,7 +1059,7 @@ new new F().func(); // => 1  === new (new F()).func();
                 2. `[...arr] = arr`（ES6的解构赋值的剩余参数）
 
                     >对象：`({...obj} = obj)`
-                3. `arr = arr.slice()`或`arr = arr.concat()`
+                3. `arr = arr.slice()`或`arr = arr.concat()`或`arr = Array.from(arr)`
 
                     >对象：`obj = Object.assign({}, obj)`（不推荐用：~~`obj = Object.create(obj)`~~）
                 4. 一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)赋值
@@ -1116,11 +1109,14 @@ new new F().func(); // => 1  === new (new F()).func();
 
 - 不是内存泄漏，只是不会被垃圾回收：
 
-    1. 全局变量不会被垃圾回收：合理创建全局变量。
+    1. 全局变量不会被垃圾回收：合理创建全局变量，[严格模式（`"use strict"`）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#严格模式)可以避免意外创建全局变量。
     2. 被闭包引用的变量不会被垃圾回收：合理使用闭包。
     3. 被遗忘的定时器或事件监听的回调函数：不使用时及时清除。
+    4. `console`打印的`对象`，不会被垃圾回收：生产环境去除`console`日志。
 
 1. DOM清空或删除时事件绑定未清除，引起的内存泄漏：删除DOM前，先移除事件绑定。
+
+    浏览器已优化，原生的事件可以不关注解绑，第三方库的自定义事件要关注解绑。
 
     >jQuery的`empty`和`remove`会移除元素内部的一切，包括绑定的事件及与该元素相关的jQuery数据（data、promise等所有数据）；`detach`则保留所有jQuery数据。
 2. <details>
@@ -1359,19 +1355,24 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 >1. `ToPrimitive`：依次调用对象的`valueOf`、`toString`，将对象转化了基本数据类型。
 >2. `{ toString: () => {console.log('toString');return {}}, valueOf: () => {console.log('valueOf');return {}} }`对象来判断先调用哪个属性。
 
-### `||`和`&&`
+### `||`和`&&`和`??`
 1. `expr1 || expr2`：
 
     1. 赋值操作：若expr1能转换成true（`Boolean(expr1)`）则返回expr1，否则返回expr2。
 
-        若多个`||`，则取第一个为true的值（`Boolean(expr)`）或最后一个值。
+        若多个`||`，则取第一个为true的值（`Boolean(expr)`）或最后一个值，短路求值。
     2. 在Boolean环境（如：if的条件判断）中使用：两个操作结果中只要有一个为true，返回true；二者操作结果都为false时返回false。
 2. `expr1 && expr2`：
 
     1. 赋值操作：若expr1能转换成false（`Boolean(expr1)`）则返回expr1，否则返回expr2。
 
-        若多个`&&`，则取第一个为false的值（`Boolean(expr)`）或最后一个值。
+        若多个`&&`，则取第一个为false的值（`Boolean(expr)`）或最后一个值，短路求值。
     2. 在Boolean环境（如：if的条件判断）中使用：两个操作结果都为true时返回true，否则返回false。
+3. `expr1 ?? expr2`
+
+    1. 赋值操作：若expr1不是`null`或`undefined`则返回expr1，否则返回expr2。
+
+        若多个`??`，则取第一个 不是`null`或`undefined`值 或最后一个值，短路求值。
 
 ### 浏览器的`事件循环（event loop）`
 >参考：[阮一峰：再谈Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)、[Help, I’m stuck in an event-loop.](https://vimeo.com/96425312)、[Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)。
@@ -1753,6 +1754,8 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 ></details>
 
 >1. `continue`应用在循环（`while`、`do-while`、`for`、`for-in`、`for-of`），表示跳过当次循环；`break`应用在循环、`switch-case`，表示跳出整个循环。
+>
+>    不支持在 三元运算符 带上`continue`或`break`，会报错（请用`if-else`代替），e.g. `(i > 5) ? alert(i) : continue // 报错`。
 >2. `forEach`、`map`、`filter`、`some`、`every`无法中止循环（`return`只结束回调函数）。
 >3. `$.each/$dom.each`跳出循环用`return true`（功能等价于：`continue`）、`return false`（功能等价于：`break`）。
 
@@ -2209,17 +2212,48 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     >})
     >```
     ></details>
+3. websocket作为中转服务
 
-><details>
-><summary>不同源的文档间（文档与<code><iframe></code>、文档与<code>window.open()</code>的新窗口）不能进行JS交互操作</summary>
->
->1. 可以获取window对象，但无法进一步获取相应的属性、方法。
->2. 无法获取DOM、`cookie`、`Web Storage`、`IndexDB`。仅允许调用部分方法（白名单）。
-></details>
+    >1. 不受同源政策限制。
+4. 其他方式
 
-3. `document.domain`相同则可以文档间互相操作
+    1. 图片地址
 
-    把不同文档的`document.domain`设置为一致的值（仅允许设置为上一级域），即可双向通信、互相操作（`cookie`可以直接操作；`localStorage`、`IndexDB`只能通过`postMessage`通信）。
+        只能发送GET请求，无法访问服务器的响应文本。只能浏览器向服务器单向通信。常用来[统计](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用请求图片作log统计)。
+    2. 通过代理服务器转发请求
+
+        通过成功访问代理服务器（统一解决了跨域问题），利用代理服务器转发请求获得数据后（同源策略仅限于浏览器）再返回给浏览器。
+    3. 通过[浏览器文档间的数据交互](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#浏览器文档间的数据交互文档与iframe文档与windowopen的新窗口)
+
+        >e.g. A页面不存在同源策略问题，B页面存在同源策略问题，可通过A页面传递信息给B页面。
+
+>解决浏览器显示`Script error`错误：①引用资源添加`<script src="CDN地址" crossorigin="anonymous"></script>` 且 ②CDN地址资源响应头包含`Access-Control-Allow-Origin: 请求头的Origin值 或 *`。
+
+### 浏览器文档间的数据交互（文档与`<iframe>`、文档与`window.open()`的新窗口）
+>若是完全独立、不存在父子关系的文档间，则只能通过后台服务或宿主环境服务进行通讯，`SharedWorker`支持同源的文档共同使用。
+
+1. `document.domain`相同则可以文档间互相操作
+
+    ><details>
+    ><summary>不同源的文档间不能进行JS交互操作</summary>
+    >
+    >1. 可以获取window对象，但无法进一步获取相应的属性、方法。
+    >2. 无法获取DOM、`cookie`、`Web Storage`、`IndexDB`。仅允许调用部分方法（白名单）。
+    ></details>
+
+    把不同文档的`document.domain`设置为一致的值，即可双向通信、互相操作（`cookie`可以直接操作；`localStorage`、`IndexDB`只能通过`postMessage`通信）。
+
+    ><details>
+    ><summary><code>document.domain</code>使用限制</summary>
+    >
+    >1. `document.domain = `仅允许设置为当前域名或向上N级域，e.g. 域名为`a.b.c.com`的文档仅允许设置`document.domain`为：`a.b.c.com`或`b.c.com`或`c.com`。
+    >2. `document.domain`（类似`location.hostname`）不包含端口号，意味着不同端口号的相同域名，默认`document.domain`相同，e.g. `http://localhost:3000`与`http://localhost:8899`默认的`document.domain`都是`localhost`。
+    >3. 现代浏览器禁止修改`document.domain`解决办法：
+    >
+    >    1. 方案一：目标文档响应头包含`Origin-Agent-Cluster: ?0`，可允许浏览器在当前文档修改`document.domain`。
+    >    2. 方案二：使用`postMessage`或`MessageChannel`传递信息的方案，代替相同`document.domain`共用cookie
+    的方案。
+    ></details>
 
     1. 与`<iframe>`通信：
 
@@ -2241,7 +2275,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         // 新打开窗口调用父窗口的window对象
         var father = window.opener;
         ```
-4. `postMessage`文档间通信
+2. `postMessage`（或`MessageChannel`）文档间通信
 
     >1. 不受同源政策限制。
     >2. ie8、ie9仅支持与`<iframe>`，ie10+支持与`<iframe>`、`window.open()`的新窗口。
@@ -2254,12 +2288,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     // 监听的文档
     window.addEventListener('message', function (e) {...}, false) // e.data === 信息内容
     ```
-5. websocket作为中转服务
-
-    >1. 不受同源政策限制。
-6. <details>
-
-    <summary>其他方式</summary>
+3. 其他方式
 
     1. 父窗口改变`<iframe>`的hash，`<iframe>`通过监听hash变化的`hashchange`事件获取父窗口信息
 
@@ -2284,17 +2313,6 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         1. 父窗口打开一个子窗口，载入一个不同源的网页，该网页将信息写入`window.name`属性。
         2. 子窗口跳回一个与主窗口同域的网址（文档间访问`window.name`遵循同源策略）。
         3. 主窗口可以读取子窗口的`window.name`值作为信息的传递。
-    3. 图片地址
-
-        只能发送GET请求，无法访问服务器的响应文本。只能浏览器向服务器单向通信。
-
-        >常用来[统计](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用请求图片作log统计)。
-    4. 通过代理服务器转发请求
-
-        通过成功访问代理服务器，利用代理服务器转发请求获得数据后（同源策略仅限于浏览器）再返回给浏览器。
-    </details>
-
->解决浏览器显示`Script error`错误：①引用资源添加`<script src="CDN地址" crossorigin="anonymous"></script>`，②CDN地址资源响应头包含`Access-Control-Allow-Origin: 请求头的Origin值 或 *`。
 
 ### Web Storage && cookie && IndexedDB
 >1. 因为HTTP请求都会携带cookie，因此cookie最好仅用于服务端判定状态。
@@ -2358,7 +2376,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         2. 没有~~改变`cookie`的事件通知~~，只能轮询检测。
     6. 同源同路径，或父域名、父路径 共享。
 
-        >子域名可以访问（获取/修改/删除）主域名的cookie。如：`a.b.c.com`可以获取`a.b.c.com`、`b.c.com`、`c.com`的cookie，但无法获取`d.a.b.c.com`或`d.com`的cookie。
+        >子域名可以访问（获取/修改/删除）主域名的cookie。e.g. `a.b.c.com`可以获取`a.b.c.com`、`b.c.com`、`c.com`的cookie，但无法获取`d.a.b.c.com`或`d.com`的cookie。
     7. 默认：关闭浏览器后失效（存储在内存）；设置失效时间则到期后失效（存储在硬盘）。
     8. 应用场景：服务端确定请求是否来自于同一个客户端（cookie的session_id与服务端session配合），以确认、保持用户状态。
 
@@ -4332,20 +4350,12 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         2. 判断、获取：`$dom.prop('checked')`，设置：`$dom.prop('checked', true/false)`。
         3. 判断、获取：`$dom.is(':checked')`。
 
-### 遍历页面中所有元素
-1. [`document.createNodeIterator(root[, whatToShow[, filter]])`](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/createNodeIterator)
-
-    ```js
-    const html = document.getElementsByTagName("html")[0];
-    const it = document.createNodeIterator(html);
-    const nodes = [];
-    let root = it.nextNode();
-    while (root) {
-      console.log(root);
-      nodes.push(root);
-      root = it.nextNode();
-    }
-    ```
+><details>
+><summary>约定</summary>
+>
+>1. `dom`为JS对象，`$dom`为jQuery（或Zepto）对象。
+>2. 大部分情况下，jQuery内容适用于Zepto。
+></details>
 
 ### jQuery相关
 1. 当变量是jQuery对象时，可用`$`作为开头命名，利于与普通变量区分

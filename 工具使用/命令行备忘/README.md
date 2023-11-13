@@ -359,7 +359,10 @@ vi ~/.zshrc         # zsh
     ```shell
     # macOS、Linux
     netstat -ant | grep 「端口号」
+
     lsof -i :「端口号」              # sudo su
+        -P # 不将端口号转换为服务名
+        -n # 不将IP地址转换为主机名
     ```
 3. 查看进程并杀死
 

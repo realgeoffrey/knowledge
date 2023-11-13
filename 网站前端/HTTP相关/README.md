@@ -952,7 +952,7 @@
                 >若`Access-Control-Allow-Credentials`为`true`，则`Access-Control-Allow-Origin`不能为`*`，需要是明确的、与请求网页一致的域名。
             2. `Access-Control-Allow-Credentials`：（可选）是否允许发送cookie
 
-                >后台响应包含`Access-Control-Allow-Credentials: true`（且`Access-Control-Allow-Origin`不能为`*`） 且 前端请求包含`xhr = new XMLHttpRequest(); xhr.withCredentials = true`，浏览器才能在跨域请求中携带cookie。
+                >跨域发送cookie需要：后台响应包含`Access-Control-Allow-Credentials: true`（且`Access-Control-Allow-Origin`不能为`*`） 且 前端请求包含`xhr = new XMLHttpRequest(); xhr.withCredentials = true`（`fetch(url,{ credentials: 'include', mode: 'cors' })`），浏览器才能在跨域请求中携带 未被标记为`samesite: strict`的cookie。
             3. `Access-Control-Expose-Headers`：（可选）CORS请求时，`XMLHttpRequest`只能拿到6个基本字段（`Cache-Control`、`Content-Language`、`Content-Type`、`Expires`、`Last-Modified`、`Pragma`），若需要其他字段，需在此指定
         2. 不允许跨域：
 
@@ -979,7 +979,7 @@
                 3. `Access-Control-Allow-Headers`：（若HTTP请求头有`Access-Control-Request-Headers`则必须）服务器支持的所有跨域请求的请求头字段，以`,`分割
                 4. `Access-Control-Allow-Credentials`：（可选）是否允许发送cookie
 
-                    >后台响应包含`Access-Control-Allow-Credentials: true`（且`Access-Control-Allow-Origin`不能为`*`） 且 前端请求包含`xhr = new XMLHttpRequest(); xhr.withCredentials = true`，浏览器才能在跨域请求中携带cookie。
+                    >跨域发送cookie需要：后台响应包含`Access-Control-Allow-Credentials: true`（且`Access-Control-Allow-Origin`不能为`*`） 且 前端请求包含`xhr = new XMLHttpRequest(); xhr.withCredentials = true`（`fetch(url,{ credentials: 'include', mode: 'cors' })`），浏览器才能在跨域请求中携带 未被标记为`samesite: strict`的cookie。
                 5. `Access-Control-Max-Age`：（可选）本次预检请求的有效期，单位秒（-1：禁用预检缓存）
             2. 不允许跨域：
 

@@ -1833,7 +1833,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
 
     下载JS bundle（**webpack压缩优化**）、初始化JS引擎（**多JS引擎、复用JS引擎优化**） -> [JS引擎](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#js引擎)V8/JSC执行JS bundle（**webpack按需加载优化；尝试JS引擎切换成Facebook开发的Hermes优化**） -> 创建Root View，首帧 -> 前端框架虚拟DOM通过Native Renderer翻译成Native组件上屏，首屏（**前置后台请求优化；运行时优化**） -> 客户端与JS通过JSI、Bridge通信（**自绘引擎引入优化**）
 
-    >针对优化后1秒内的首屏。JS bundle压缩包大小：150kb；JS bundle大小：500kb。JS bundle压缩包下载时间：100ms~300ms或预下载0；JS引擎初始化时间：150ms或不用初始化0；JS bundle执行时间：200ms~400ms；首屏后台请求：100ms~300ms。
+    >针对优化后1秒内的首屏。JS bundle压缩包大小：150kb；JS bundle大小：500kb。JS bundle压缩包下载时间：100ms至300ms或预下载0；JS引擎初始化时间：150ms或不用初始化0；JS bundle执行时间：200ms至400ms；首屏后台请求：100ms至300ms。
 2. <details>
 
     <summary>3层架构</summary>
@@ -1885,6 +1885,49 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
                 ```
 
                 >H5页面通过JSONP实现动态加载，若Hippy的JS引擎不能直接用JSONP方案，则hack成请求到代码字符串然后`eval(代码字符串)`或`(new Function(代码字符串)())`。
+
+                1. <details>
+
+                    <summary>（一般）基于路由</summary>
+
+                    ```js
+                    import Loadable from "react-loadable";
+                    import IndexPage from "./pages/IndexPage";
+
+                    const LabelPage = Loadable({
+                      loader: () => {
+                        return import(/* webpackChunkName:"LabelPage" */ "./pages/LabelPage");
+                      },
+                      loading: () => null
+                    });
+
+                    const routes = [
+                      {
+                        path: "/",
+                        component: IndexPage,
+                        title: "首页"
+                      },
+                      {
+                        path: "/label",
+                        component: LabelPage,
+                        title: "分类歌单"
+                      }
+                    ];
+
+                    export default routes;
+                    ```
+                    </details>
+                2. <details>
+
+                    <summary>（额外可以）基于组件内业务</summary>
+
+                    ```js
+                    import(/* webpackChunkName:"video" */ "./components/Video")
+                      .then(({ default: Video }) => {
+                        this.setState({ Video: Video });
+                      })
+                    ```
+                    </details>
             2. [tree shaking](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/webpack学习笔记/README.md#tree-shaking)、压缩
             - 利用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)分析包体积
         2. 尽量用CDN图片，谨慎合理使用base64图片（小图可以用base64，考虑减少请求数量和增加少量文件大小）
@@ -1953,27 +1996,29 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
 2. 支持同构到H5页面
 
     虚拟DOM通过`@hippy/react-web`渲染到H5页面。
-3. 优化JSI数据传递效率，有效提升 JS 前端代码和终端的通讯性能。
-
-    直接通过 C++ 开发的模块直接插入JS引擎中运行，绕过了前终端通讯编解码的开销。
-4. 把部分Native层的逻辑，前置到中间的C++层
-
-    1. Hippy实现高性能自绘，c++重写canvas
 5. 运行性能：
 
     渲染性能比React Native更好。
 6. 包体积
 
     更轻量，更小的安装包。打出的JS bundle包体积也更小，只有React Native的一半左右（官网图）。
-7. 手势系统
+- 其他
 
-    和 React Native 的 PanResponder 不同，Hippy 的手势事件可以应用于任何一个组件上，更加接近浏览器的实现。
-8. 样式
+    1. 优化JSI数据传递效率，有效提升 JS 前端代码和终端的通讯性能。
 
-    hippy不支持百分比，是标准盒模型，默认（且不能更改）是`box-sizing: border-box`，Flex布局默认（且不能更改）是`display: fex`。
-9. 动画
+        直接通过 C++ 开发的模块直接插入JS引擎中运行，绕过了前终端通讯编解码的开销。
+    2. 把部分Native层的逻辑，前置到中间的C++层
 
-    Hippy通过将动画方案一次性下发给终端实现了更好的动画性能；React Native的动画模块是由前端通过定时器驱动，存在大量前终端通讯。
+        1. Hippy实现高性能自绘，c++重写canvas
+    3. 手势系统
+
+        和 React Native 的 PanResponder 不同，Hippy 的手势事件可以应用于任何一个组件上，更加接近浏览器的实现。
+    4. 样式
+
+        hippy不支持百分比，是标准盒模型，默认（且不能更改）是`box-sizing: border-box`，Flex布局默认（且不能更改）是`display: fex`。
+    5. 动画
+
+        Hippy通过将动画方案一次性下发给终端实现了更好的动画性能；React Native的动画模块是由前端通过定时器驱动，存在大量前终端通讯。
 
 - [hippy官网](https://hippyjs.org/#/)对比RN的优势：
 

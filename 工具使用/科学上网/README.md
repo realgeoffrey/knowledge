@@ -14,6 +14,8 @@
 
     1. [ClashX 提供给同局域网其他设备翻墙功能](#clashx-提供给同局域网其他设备翻墙功能)
     1. [Quantumult X 提供给同局域网其他设备翻墙功能](#quantumult-x-提供给同局域网其他设备翻墙功能)
+    1. [Quantumult X 配置/添加节点](#quantumult-x-配置添加节点)
+    1. [ClashX 配置](#clashx-配置)
 
 ---
 ## 服务端安装
@@ -316,3 +318,22 @@
 2. 其他设备（手机、电脑、等）需要：连接热点 + 配置HTTP代理。
 
     即可HTTP请求通过上面手机Quantumult X的VPN功能。
+
+### Quantumult X 配置/添加节点
+支持满足其规则的配置，如：Shadowsocks、ShadowsocksR、HTTP、Socks5、VMess、Trojan等代理协议。
+
+1. 方案一
+
+    完整的配置文件：设置 -> 配置文件 - 下载配置 -> 输入配置链接，**会覆盖之前所有配置**。
+2. 方案二
+
+    仅新增节点：设置 -> 节点 - 节点资源 -> 右上角添加 -> 资源 - 节点 - 资源路径（可能需要关闭翻墙才能添加成功？），**在原有配置的基础上添加节点**。
+
+### ClashX 配置
+支持满足其规则的配置，如：Shadowsocks(SS)、ShadowsocksR(SSR)、Socks、Snell、V2Ray、Trojan等代理协议。
+
+1. 配置 -> 托管配置 -> 管理，可以新增/删除进行配置管理。
+
+    可以多配置切换（Quantumult X仅能有一个配置？）。
+
+    ![ClashX配置](./images/ClashX-1.png)

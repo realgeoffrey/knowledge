@@ -1,33 +1,5 @@
 # knowledge
 
-><details>
-><summary>约定</summary>
->
->1. `+`、`-`含义
->
->    1. `ie8+`：包括ie8以及高于ie8的ie浏览器。
->    2. `ie8-`：包括ie8以及低于ie8的ie浏览器。
->2. 变量命名含义
->
->    1. `dom`：`Element`实例（或`document`、`Node`实例）
->    2. `$dom`：jQuery（或Zepto）对象包装的DOM元素
->    3. `obj`：对象实例
->    4. `arr`：数组实例
->3. 浏览器针对的系统环境
->
->    1. `PC`：针对桌面端制作的网页（系统包括：macOS、Windows）。
->    2. `WAP`：针对移动端（手机浏览器或Hybrid App）制作的页面（系统包括：iOS、Android）。
->4. 默认仅针对浏览器的JS运行时环境（JavaScript runtime environment）
->
->    其他JS运行时环境：Node.js、[Deno](https://github.com/denoland/deno)、[Bun](https://github.com/oven-sh/bun)。
->5. 原型链（`[[Prototype]]`）
->
->    （非标准）`对象.__proto__`等价于：`Object.getPrototypeOf(对象)/Object.setPrototypeOf(对象, 原型对象)`
->6. 父子级含义
->
->    广义上可能包含祖先级、孙辈级之间关系，不仅仅是一层父子间关系。
-></details>
-
 ## 目录
 1. 前端内容
 
@@ -63,21 +35,8 @@
     2. 向后端
 
         1. [Node.js学习笔记](./网站前端/Node.js学习笔记/README.md)
-
-            - <details>
-
-                <summary>其他</summary>
-
-                1. [Node.js实用方法](./网站前端/Node.js学习笔记/Node.js实用方法/README.md)
-                </details>
         2. [服务端相关](./网站前端/服务端相关/README.md)
-8. [HTTP相关](./网站前端/HTTP相关/README.md)
-9. [数据结构与算法](./网站前端/数据结构与算法/README.md)
-
-    1. [LeetCode记录](./网站前端/数据结构与算法/LeetCode记录/README.md)
-    2. [JS手写代码](./网站前端/JS方法积累/手写代码/README.md)
-10. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
-11. <details>
+8. <details>
 
     <summary>前端构建工具</summary>
 
@@ -86,15 +45,9 @@
     3. [yarn+Lerna学习笔记](./网站前端/yarn+Lerna学习笔记/README.md)
     4. [ESLint+Prettier学习笔记](./网站前端/ESLint+Prettier学习笔记/README.md)
     5. [Node.js脚手架（TypeScript+pm2或nodemon+--inspect）](./网站前端/Node.js脚手架（TypeScript+pm2或nodemon+--inspect）/README.md)
-
-    - <details>
-
-        <summary>其他</summary>
-
-        1. [我安装的全局仓库](./网站前端/Node.js学习笔记/我安装的全局仓库.md)
-        </details>
+    6. [我安装的全局仓库](./网站前端/Node.js学习笔记/我安装的全局仓库.md)
     </details>
-12. 其他前端专项
+9. 其他前端专项
 
     1. [安全漏洞攻击](./网站前端/其他前端专项/安全漏洞攻击/README.md)
     1. [富文本编辑器](./网站前端/其他前端专项/富文本编辑器/README.md)
@@ -105,13 +58,23 @@
     1. [水印合成](./网站前端/其他前端专项/水印合成/README.md)
     1. [监控系统（上报设计）](./网站前端/其他前端专项/监控系统（上报设计）/README.md)
 
-        1. [前端日志输出规范（Native）](./网站前端/其他前端专项/前端日志输出规范（Native）/README.md)
         1. [首屏渲染完成判断](./网站前端/其他前端专项/首屏渲染完成判断/README.md)
+        1. [白屏问题](./网站前端/其他前端专项/白屏问题/README.md)
+        1. [前端日志输出规范（Native）](./网站前端/其他前端专项/前端日志输出规范（Native）/README.md)
     1. [页面发布更新](./网站前端/其他前端专项/页面发布更新/README.md)
     1. [离线包差量更新方案](./网站前端/其他前端专项/离线包差量更新方案/README.md)
     1. [虚拟列表模拟长列表方案](./网站前端/其他前端专项/虚拟列表模拟长列表方案/README.md)
     1. ~~[低代码](./网站前端/其他前端专项/低代码/README.md)~~
     1. ~~[微前端](./网站前端/其他前端专项/微前端/README.md)~~
+10. [HTTP相关](./网站前端/HTTP相关/README.md)
+11. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
+12. <details>
+
+    <summary><a href="https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/README.md">数据结构与算法</a></summary>
+
+    1. [LeetCode记录](./网站前端/数据结构与算法/LeetCode记录/README.md)
+    2. [JS手写代码](./网站前端/JS方法积累/手写代码/README.md)
+    </details>
 
 - <details>
 
@@ -135,10 +98,37 @@
 >6. [SCSS使用](./网站前端/SCSS使用/README.md)
 ></details>
 
+><details>
+><summary>约定</summary>
+>
+>1. `+`、`-`含义
+>
+>    1. `ie8+`：包括ie8以及高于ie8的ie浏览器。
+>    2. `ie8-`：包括ie8以及低于ie8的ie浏览器。
+>2. 变量命名含义
+>
+>    1. `dom`：`Element`实例（或`document`、`Node`实例）
+>    2. `$dom`：jQuery（或Zepto）对象包装的DOM元素
+>    3. `obj`：对象实例
+>    4. `arr`：数组实例
+>3. 浏览器针对的系统环境
+>
+>    1. `PC`：针对桌面端制作的网页（系统包括：macOS、Windows）。
+>    2. `WAP`：针对移动端（手机浏览器或Hybrid App）制作的页面（系统包括：iOS、Android）。
+>4. 默认仅针对浏览器的JS运行时环境（JavaScript runtime environment）
+>
+>    其他JS运行时环境：Node.js、[Deno](https://github.com/denoland/deno)、[Bun](https://github.com/oven-sh/bun)。
+>5. 原型链（`[[Prototype]]`）
+>
+>    （非标准）`对象.__proto__`等价于：`Object.getPrototypeOf(对象)/Object.setPrototypeOf(对象, 原型对象)`
+>6. 父子级含义
+>
+>    广义上可能包含祖先级、孙辈级之间关系，不仅仅是一层父子间关系。
+></details>
+
 ---
 ><details>
 ><summary>完美不在于无以复加，而在于无可删减。</summary>
->
 >
 >[![Star History Chart](https://api.star-history.com/svg?repos=realgeoffrey/knowledge&type=Date)](https://star-history.com/#realgeoffrey/knowledge&Date)
 ></details>

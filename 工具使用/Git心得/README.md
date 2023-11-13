@@ -6,7 +6,7 @@
 1. [Zen-like commit messages（Angular）格式](#zen-like-commit-messagesangular格式)
 1. [命令生成commit message && changelog](#命令生成commit-message--changelog)
 1. [git-flow使用](#git-flow使用)
-1. [如何在一台电脑中使用2（多个）个Github账号的SSH keys](#如何在一台电脑中使用2多个个github账号的ssh-keys)
+1. [如何在一台电脑中使用2个（多个）SSH keys](#如何在一台电脑中使用2个多个ssh-keys)
 1. [设置gitconfig](#设置gitconfig)
 1. [.gitkeep文件](#gitkeep文件)
 1. [GitLab CI](#gitlab-ci)
@@ -684,9 +684,9 @@ feat(details): 添加了分享功能
 >建议都用[命令生成](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Git心得/README.md#zen-like-commit-messagesangular格式)（commit message -> changelog -> tag描述）
 ></details>
 
-### 如何在一台电脑中使用2（多个）个Github账号的SSH keys
+### 如何在一台电脑中使用2个（多个）SSH keys
 
->在github网站中：不同账户无法使用相同的**SSH key**。
+>在GitHub等网站中：不同账户无法使用相同的**SSH key**。
 
 1. 生产多对的**SSH keys**，并放入 **.ssh文件夹**（自动生成并放入`~/.ssh/`）：
 
@@ -695,39 +695,52 @@ feat(details): 添加了分享功能
     ```
 2. 为不同账户地址设置对应的SSH key路径：
 
-    **~/.ssh/config**文件添加
+    >以 GitHub、GitLab 为例，[GitHub：在一台服务器上使用多个仓库](https://docs.github.com/zh/authentication/connecting-to-github-with-ssh/managing-deploy-keys#using-multiple-repositories-on-one-server)、[GitLab: Use different accounts on a single GitLab instance](https://docs.gitlab.com/ee/user/ssh.html#use-different-accounts-on-a-single-gitlab-instance)
 
-    ```text
-    # `用户名@别名:仓库名.git`（「仓库名」可能包含多个`/`）
-    #   e.g. git clone git@realgeoffrey.github.com:realgeoffrey/knowledge.git
-    Host 账户1.github.com         # 别名（可任意取）
-        HostName github.com      # 别名替换成的真实服务器名
-        User git                 # 用户名
-        IdentityFile ~/.ssh/「键1」
+    1. **~/.ssh/config**文件添加
 
-    Host 账户2.github.com
-        HostName github.com
-        User git
-        IdentityFile ~/.ssh/「键2」
+        ```text
+        Host 账户1.github.com             # 别名
+            HostName github.com          # 主机名（别名指向的真实主机名，不包含端口）
+            IdentityFile ~/.ssh/「键1」
+        Host 账户2.github.com
+            HostName github.com
+            IdentityFile ~/.ssh/「键2」
 
+        Host 账户3.xx.mygitlab.com
+            HostName xx.mygitlab.com
+            IdentityFile ~/.ssh/「键3」
+        Host 账户4.xx.mygitlab.com
+            HostName xx.mygitlab.com
+            IdentityFile ~/.ssh/「键4」
+        ```
+    2. 克隆仓库时把**仓库地址**的 「主机名」 改为 「别名」（其他不变，若有端口号，保留端口号）：
 
-    # 一个源下，若只有一个账户，则不需要额外的别名
-    Host gitlab.xxx
-        HostName gitlab.xxx
-        User 「名字ID」
-        IdentityFile ~/.ssh/「键3」
-    ```
-3. 克隆仓库时把**仓库地址**的HostName改为别名：
+        ```shell
+        git clone git@账户1.github.com:账户/仓库.git
+        git clone git@账户2.github.com:账户/仓库.git
 
-    `git@github.com:账户/仓库.git` -> `git@账户.github.com:账户/仓库.git`
-    ```git
-    #进入文件夹1
-    git clone git@账户1.github.com:账户1/仓库.git
+        git clone ssh://git@账户3.xx.mygitlab.com:端口号/账户/仓库.git   # 若有端口号
+        git clone ssh://git@账户4.xx.mygitlab.com:端口号/账户/仓库.git
+        ```
 
-    #进入文件夹2
-    git clone git@账户2.github.com:账户2/仓库.git
-    ```
-    >若已经克隆过的仓库，则仅需要修改`.git/config`文件夹内的`url`仓库地址即可。
+        >若已经克隆过的仓库，则仅需要修改`.git/config`文件夹内的`url`仓库地址即可。
+- 若设置了以上内容，针对某些服务地址还是要求输入密码（但无法输入正确），则需要额外进行：
+
+    <https://juejin.cn/post/7158284813315604516>
+
+    1. 方案一：
+
+        重新生成 ed25519 算法的密钥：`ssh-keygen -t ed25519`
+    2. 方案二：
+
+        在`~/.ssh/config`配置：
+
+        ```text
+        Host 域名
+            HostkeyAlgorithms +ssh-rsa
+            PubkeyAcceptedAlgorithms +ssh-rsa
+        ```
 
 ### 设置gitconfig
 >`git config --global或--local 「参数」`要把`--global或--local`写在第三个参数位置，否则无效。

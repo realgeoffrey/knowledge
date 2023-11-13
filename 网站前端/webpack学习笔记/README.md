@@ -836,36 +836,36 @@ App级别的应用（开发、打包）：webpack；JS库级别的应用（打�
 
     - 缺点：每个模块引用都需要ES6 module的的网络请求，网络请求开销大（尤其是HMR时）。
 
->4. ~~Grunt~~
+>4. esbuild
+>
+>    **GoLang**编写的**快速**JS、TS打包器，支持CommonJS（是rollup的很好替代品）。
+>5. Parcel
+>
+>    零配置的打包工具，适用于小型项目、静态网页或需要快速上手的场景。
+>6. Bun
+>
+>    是像Node.js、Deno一样的现代**JS运行时**。旨在无感替代现有的JS运行时并成为 浏览器外执行JS 的主流环境，为用户带来性能和复杂性的提升的同时，以更好更简单的工具提高开发者的效率。和传统的Node.js这种传统的JS运行时不同，**Bun.js直接内置了打包器、转译器、任务运行器和npm客户端**，这意味着你不再需要Webpack/Rollup/esbuild/Snowpack/Parcel/Rome/swc/babel就可以直接运行TypeScript、JSX。另外，Bun.js原生支持了数百个Node.js和Web API。
+>7. Rspack
+>
+>    **Rust**编写的Web构建工具，意在用更快、更直接的方式取代Webpack。
+>8. Turbopack
+>
+>    针对JS和TS优化的增量打包器，用**Rust**编写。高度优化的机器代码和低级增量计算引擎，可以**缓存**到单个函数的级别。一旦Turbopack执行了一项任务，它就再也不会这样做了。特点是快。
+>9. ~~Grunt~~
 >
 >    是一个任务执行者（和npm中`package.json`的`scripts`类似，相当于其进化版，弥补其不足），大量现成的插件封装了常见的任务，也能管理任务之间的依赖关系，自动化执行依赖的任务，每个任务的具体执行代码和依赖关系写在配置文件`Gruntfile.js`。
 >
 >    >缺点是集成度不高，要写很多配置后才可以用，无法做到开箱即用。
->5. ~~gulp~~
+>9. ~~gulp~~
 >
 >    基于流的自动化构建工具（是Grunt的加强版，增加了监听文件、读写文件、流式处理的功能）。
 >
 >    >缺点是和Grunt类似，集成度不高，要写很多配置后才可以用，无法做到开箱即用。
->6. ~~Fis3~~
+>9. ~~Fis3~~
 >
 >    集成了Web开发中的常用构建功能，一个完整解决方案。
 >
 >    >已不再更新维护，不支持新版本Node.js。
->7. ~~Browserify~~
+>9. ~~Browserify~~
 >
 >    模块打包工具，把CommonJS模块化代码打包成浏览器能运行的代码。
->8. esbuild
->
->    **GoLang**编写的**快速**JS、TS打包器，支持CommonJS（是rollup的很好替代品）。
->9. Parcel
->
->    零配置的打包工具，适用于小型项目、静态网页或需要快速上手的场景。
->9. Bun
->
->    是像Node.js、Deno一样的现代**JS运行时**。旨在无感替代现有的JS运行时并成为 浏览器外执行JS 的主流环境，为用户带来性能和复杂性的提升的同时，以更好更简单的工具提高开发者的效率。和传统的Node.js这种传统的JS运行时不同，**Bun.js直接内置了打包器、转译器、任务运行器和npm客户端**，这意味着你不再需要Webpack/Rollup/esbuild/Snowpack/Parcel/Rome/swc/babel就可以直接运行TypeScript、JSX。另外，Bun.js原生支持了数百个Node.js和Web API。
->9. Rspack
->
->    **Rust**编写的Web构建工具，意在用更快、更直接的方式取代Webpack。
->9. Turbopack
->
->    针对JS和TS优化的增量打包器，用**Rust**编写。高度优化的机器代码和低级增量计算引擎，可以**缓存**到单个函数的级别。一旦Turbopack执行了一项任务，它就再也不会这样做了。特点是快。

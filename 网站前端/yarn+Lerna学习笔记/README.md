@@ -318,11 +318,11 @@ Monorepo（单一仓库，monolithic repository）是一种软件开发管理策
     >[依赖管理（npm、yarn、pnpm）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Node.js学习笔记/README.md#依赖管理npmyarnpnpm)。
 
     通过自动硬链接（hard link）和软链接（symbolic link）来实现模块依赖管理（包安装速度极快、磁盘空间利用非常高效），解决了~~幽灵依赖~~、~~依赖分身~~问题。
-3. rust
+3. [rush](https://rushjs.io/zh-cn/)
 4. [nx](https://github.com/nrwl/nx)
 
 ### 仓库管理方案对比：Git Submodule、MultiRepo、MonoRepo
-1. Git Submodule：
+1. Git Submodule（Git子模块仓库）：
 
     >主项目保存的是子模块的索引。
 

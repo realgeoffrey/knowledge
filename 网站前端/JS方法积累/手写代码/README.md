@@ -1,5 +1,7 @@
 # JS手写代码
 
+>题目可参考：<https://bigfrontend.dev/zh>。
+
 ## 目录
 1. 原生代码实现
 
@@ -14,30 +16,42 @@
     1. [手写`JSON.stringify`](#手写jsonstringify)
 1. 功能
 
-    1. [手写深复制（深拷贝）](#手写深复制深拷贝)
-    1. [手写柯里化](#手写柯里化)
-    1. [手写防抖函数、节流函数](#手写防抖函数节流函数)
-    1. [手写小数加法](#手写小数加法)
-    1. [手写`loadScript`（类似webpack实现`import()`的JSONP+缓存）](#手写loadscript类似webpack实现import的jsonp缓存)
-    1. [手写`loadScript`支持超时重试](#手写loadscript支持超时重试)
+    1. [深复制（深拷贝）](#深复制深拷贝)
+    1. [柯里化](#柯里化)
+    1. [防抖函数、节流函数](#防抖函数节流函数)
+    1. [小数加法](#小数加法)
+    1. [大数加法](#大数加法)
+    1. [`loadScript`（类似webpack实现`import()`的JSONP+缓存）](#loadscript类似webpack实现import的jsonp缓存)
+    1. [`loadScript`支持超时重试](#loadscript支持超时重试)
+    1. [函数组合compose、pipe](#函数组合composepipe)
 1. 模拟实现
 
-    1. [实现一个Koa的洋葱模型](#实现一个koa的洋葱模型)
+    1. [实现Koa的洋葱模型compose](#实现koa的洋葱模型compose)
     1. [实现`memo`](#实现memo)
     1. [实现`EventEmitter`（不返回取消方法）](#实现eventemitter不返回取消方法)
     1. [实现`EventEmitter`（返回取消方法）](#实现eventemitter返回取消方法)
+    1. [调度器任务并发（单任务插入）](#调度器任务并发单任务插入)
+    1. [调度器任务并发（多任务插入）](#调度器任务并发多任务插入)
+    1. [多任务同时执行且按顺序输出结果](#多任务同时执行且按顺序输出结果)
+    1. [任务队列链式调用和取消](#任务队列链式调用和取消)
 1. 代码题
 
     1. [解压字符串](#解压字符串)
-    1. [调度器任务并发（单任务插入）](#调度器任务并发单任务插入)
-    1. [调度器任务并发（多任务插入）](#调度器任务并发多任务插入)
-    1. [任务队列链式调用和取消](#任务队列链式调用和取消)
     1. [HEX转换为RGBA](#hex转换为rgba)
     1. [n从1开始，每个操作可以对n加1或加倍，如果要使n是任意数，最少需要几个操作](#n从1开始每个操作可以对n加1或加倍如果要使n是任意数最少需要几个操作)
     1. [实现`_.get(object, path, [defaultValue])`](#实现_getobject-path-defaultvalue)
     1. [洗牌算法shuffle](#洗牌算法shuffle)
     1. [对角线打印二维数组](#对角线打印二维数组)
     1. [添加千位分隔符](#添加千位分隔符)
+    1. [下划线转驼峰](#下划线转驼峰)
+    1. [判断同花顺](#判断同花顺)
+    1. [模版字符串替换](#模版字符串替换)
+    1. [将二维数组两两拼接](#将二维数组两两拼接)
+    1. [拆分一维数组](#拆分一维数组)
+1. DOM相关
+
+    1. [遍历所有元素](#遍历所有元素)
+    1. [DOM转JSON](#dom转json)
 1. react自定义Hook
 
     1. [`useDebounce`（值）](#usedebounce值)
@@ -51,6 +65,7 @@
     1. [`useToggle`](#usetoggle)
     1. [`useArray`](#usearray)
     1. [`usePersistCallback`](#usepersistcallback)
+    1. [`useCountdown`](#usecountdown)
 
 ---
 ### 手写`Object.create`
@@ -410,12 +425,12 @@ class MyPromise {
     ```js
     Promise.myAll = function (iterable) {
       return new Promise((resolve, reject) => {
-        if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
-          return reject(new Error("不是可迭代对象"));
-        }
+        // if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
+        //   return reject(new Error("不是可迭代对象"));
+        // }
 
         const promises = Array.from(iterable); // 将可迭代对象转换为数组
-        const results = new Array(promises.length); // 存储所有 Promise 对象的完成信息
+        const results = Array.from({length: promises.length}); // 存储所有 Promise 对象的完成信息
         let fulfilledCount = 0;
 
         if (promises.length === 0) {
@@ -445,12 +460,12 @@ class MyPromise {
     ```js
     Promise.myAny = function (iterable) {
       return new Promise((resolve, reject) => {
-        if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
-          return reject(new Error("不是可迭代对象"));
-        }
+        // if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
+        //   return reject(new Error("不是可迭代对象"));
+        // }
 
         const promises = Array.from(iterable); // 将可迭代对象转换为数组
-        const errors = new Array(promises.length); // 存储所有 Promise 对象的失败信息
+        const errors = Array.from({length: promises.length}); // 存储所有 Promise 对象的失败信息
         let rejectedCount = 0;
 
         if (promises.length === 0) {
@@ -480,9 +495,9 @@ class MyPromise {
     ```js
     Promise.myRace = function (iterable) {
       return new Promise((resolve, reject) => {
-        if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
-          return reject(new Error("不是可迭代对象"));
-        }
+        // if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
+        //   return reject(new Error("不是可迭代对象"));
+        // }
 
         const promises = Array.from(iterable); // 将可迭代对象转换为数组
 
@@ -504,12 +519,12 @@ class MyPromise {
     ```js
     Promise.myAllSettled = function (iterable) {
       return new Promise((resolve, reject) => {
-        if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
-          return reject(new Error("不是可迭代对象"));
-        }
+        // if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
+        //   return reject(new Error("不是可迭代对象"));
+        // }
 
         const promises = Array.from(iterable); // 将可迭代对象转换为数组
-        const results = new Array(promises.length); // 存储所有 Promise 对象的完成信息或失败信息
+        const results = Array.from({length:promises.length}); // 存储所有 Promise 对象的完成信息或失败信息
         let settledCount = 0;
 
         if (promises.length === 0) {
@@ -584,9 +599,9 @@ Function.prototype.myBind = function (context, ...args) {
     }
   }
 
-  // 设置原型链，确保通过 BoundFunction 创建的实例可以访问原函数的原型上的方法
-  BoundFunction.prototype = Object.create(func.prototype);          // fixme: bind原逻辑是`新函数.prototype === undefined`，这里为了解决new构造函数逻辑，没法设为undefined
-  BoundFunction.prototype.constructor = BoundFunction;
+  // 优化：设置原型链，确保通过 new BoundFunction() 创建的实例可以访问原函数的原型上的方法
+  // BoundFunction.prototype = Object.create(func.prototype);          // fixme: bind原逻辑是`新函数.prototype === undefined`，这里为了解决new构造函数逻辑，没法设为undefined
+  // BoundFunction.prototype.constructor = BoundFunction;
 
   return BoundFunction;
 };
@@ -743,7 +758,7 @@ console.log(stringify(obj));
 </details>
 
 ---
-### 手写深复制（深拷贝）
+### 深复制（深拷贝）
 ```js
 function deepClone(obj, weakmap = new WeakMap()) {
   // 基本数据类型：`Undefined`、`Null`、`Boolean`、`Number`、`String`、`Symbol`、`BigInt`
@@ -854,7 +869,7 @@ console.log(deepClone(obj));
 ```
 </details>
 
-### 手写柯里化
+### 柯里化
 1. 柯里化
 
     ```js
@@ -929,7 +944,7 @@ console.log(deepClone(obj));
     ```
     </details>
 
-### 手写防抖函数、节流函数
+### 防抖函数、节流函数
 1. 防抖函数
 
     ```js
@@ -998,14 +1013,16 @@ console.log(deepClone(obj));
         }
         ```
 
-### 手写小数加法
+### 小数加法
+支持符号。微调可实现：减法、乘法。
+
 ```js
 function decimalSum(...nums) {
   // 获取最大精度
   const precision = Math.max(
     ...nums.map((num) => {
       return getPrecision(num);
-    }),
+    })
   );
 
   return (
@@ -1022,7 +1039,41 @@ function getPrecision(num) {
 }
 ```
 
-### 手写`loadScript`（类似webpack实现`import()`的JSONP+缓存）
+### 大数加法
+><https://bigfrontend.dev/zh/problem/add-BigInt-string>
+
+不支持符号。
+
+```js
+function bigIntSum(...nums) {
+  const result = [];
+
+  // [12,34,567] -> [['1','2'], ['3','4'], ['5','6','7']]
+  const numsArr = nums.map((num) => {
+    return String(num).split("");
+  });
+
+  let carry = 0; // 进位
+
+  while (
+    numsArr.some((numArr) => {    // 还有没有处理完毕的数字
+      return numArr.length > 0;
+    }) ||
+    carry
+  ) {
+    const sum = numsArr.reduce((pre, numArr) => {
+      return pre + Number(numArr.pop() || 0);
+    }, carry);
+
+    result.unshift(sum % 10);
+    carry = Math.floor(sum / 10);
+  }
+
+  return result.join("");
+}
+```
+
+### `loadScript`（类似webpack实现`import()`的JSONP+缓存）
 ```js
 // 缓存已加载的脚本（以[加载地址src, Promise实例]存储）
 const loadedScripts = new Map();
@@ -1059,7 +1110,7 @@ function loadScript(src) {
 ```
 
 <details>
-<summary><del>手写<code>loadScript</code>（JSONP+缓存+错误重试、超时重试）</del></summary>
+<summary><del><code>loadScript</code>（JSONP+缓存+错误重试、超时重试）</del></summary>
 
 >不能终止 JSONP动态加载的脚本 执行。
 
@@ -1131,7 +1182,7 @@ function loadScript(src, reTryTimes = 5, timeout = 1000) {
 ```
 </details>
 
-### 手写`loadScript`支持超时重试
+### `loadScript`支持超时重试
 ```js
 const loadScript = async (modulePath, timeoutMs = 10000, retryTimes = 3) => {
   for (let i = 0; i < retryTimes; i++) {
@@ -1153,8 +1204,42 @@ const timeoutReject = (ms) => {
 };
 ```
 
+### 函数组合compose、pipe
+>compose：<https://leetcode.cn/problems/function-composition/description/>；pipe：<https://bigfrontend.dev/zh/problem/what-is-composition-create-a-pipe>。
+
+>compose由后往前执行，pipe由前往后执行，实现逻辑颠倒一下数组顺序即可。第一个函数可传多个参数，之后函数参数是前一个函数返回值。
+
+1. 解法一
+
+    ```js
+    function compose(functions) {
+      if (functions.length === 0) {
+        return (arg) => arg;
+      }
+      return function (...arg) {
+        const firstValue = functions.pop()(...arg);
+
+        return functions.reduceRight((preValue, curFunc) => {
+          return curFunc(preValue); // 返回值
+        }, firstValue);
+      };
+    }
+    ```
+2. 解法二
+
+    ```js
+    function compose(functions) {
+      if (functions.length === 0) {
+        return (arg) => arg;
+      }
+      return functions.reduceRight((preFunc, curFunc) => {
+        return (...arg) => curFunc(preFunc(...arg));    // 返回方法
+      });
+    }
+    ```
+
 ---
-### 实现一个Koa的洋葱模型
+### 实现Koa的洋葱模型compose
 ```js
 class Koa {
   middlewares = [];
@@ -1200,8 +1285,8 @@ function compose(middlewares) { // 返回一个中间件（可以继续被当做
       // ①
       let fn = middlewares[i];
 
-      // ③兼容（单次调用compose产生的）最后一个中间件继续调用next时
       if (i === middlewares.length) {
+        // ③每一次调用compose 且 这个compose最后一个中间件调用next
         fn = lastNext;
       }
       if (!fn) {
@@ -1385,78 +1470,6 @@ class EventEmitter {
 }
 ```
 
----
-### 解压字符串
-><https://bigfrontend.dev/zh/problem/uncompress-string>
-
-给定一个压缩过后的字符串，请恢复其原始状态。
-
-```
-uncompress('3(ab)') // 'ababab'
-uncompress('3(ab2(c))') // 'abccabccabcc'
-```
-
-- 数字 `k` 之后如果有一对括号，意味着括号内的子字符串在原来的状态中重复了k次。`k`是正整数。
-- 测试用例的输入均为有效字符串，原始字符串中不存在数字
-
-1. 解法一
-
-    栈保存嵌套的部分（有先进后出就用栈）。
-
-    ```js
-    function uncompress(str) {
-      // 遇见 "(" 就入栈，遇见 ")" 就出栈，栈可以解决嵌套问题
-      const stack = [];
-
-      let currentStr = "";
-      let repeatTimes = 0;
-
-      for (let char of str) {
-        // 解析数字
-        if (char >= "0" && char <= "9") {
-          repeatTimes = repeatTimes * 10 + Number(char);
-        }
-        // 将当前的字符串和数字分别入栈，并重置当前的数字和字符串
-        else if (char === "(") {
-          stack.push([currentStr, repeatTimes]);
-          currentStr = "";
-          repeatTimes = 0;
-        }
-        // 出栈，获取之前保存的数字和字符串
-        else if (char === ")") {
-          let [prevStr, prevRepeatTimes] = stack.pop();
-
-          // 将重复的字符串追加到之前的字符串后面
-          currentStr = prevStr + currentStr.repeat(prevRepeatTimes);
-        }
-        // 普通字符，追加到当前字符串后面
-        else {
-          currentStr += char;
-        }
-      }
-
-      return currentStr;
-    }
-    ```
-2. 解法二
-
-    正则匹配，递归处理非嵌套的部分。
-
-    ```js
-    function uncompress(str) {
-      // 仅解决非嵌套的
-      const result = str.replace(
-        /(\d+)\((\D*?)\)/gi, // 仅匹配所有："数字(字母)"。注意：需要`*?`惰性匹配，否则会匹配到后面非配对的内容
-        (_, multiplier, subString) => {
-          return subString.repeat(multiplier);
-        },
-      );
-
-      // 解决了非嵌套的之后，产生新的非嵌套内容，递归再次尝试正则匹配
-      return result.includes("(") ? uncompress(result) : result;
-    }
-    ```
-
 ### 调度器任务并发（单任务插入）
 ```js
 // 请实现一个调度器，这个调度器保证任务的并发数为2
@@ -1484,15 +1497,15 @@ schedular.add(task(50, 4)).then(res => console.log(res));
 // 结果应该为1, 3, 4, 2
 ```
 
-1. 解法一
+1. 解法
 
     ```js
     class Schedular {
       tasks = []; // 待执行任务队列
       runningCount = 0; // 当前正在运行的任务数
 
-      constructor(maxRunningCount = 2) {
-        this.maxRunningCount = maxRunningCount; // 最大并行任务数
+      constructor(maxCount = 2) {
+        this.maxCount = maxCount; // 最大并行任务数
       }
 
       add(task) {
@@ -1512,7 +1525,7 @@ schedular.add(task(50, 4)).then(res => console.log(res));
       }
 
       schedule() {
-        while (this.runningCount < this.maxRunningCount && this.tasks.length > 0) {
+        while (this.runningCount < this.maxCount && this.tasks.length > 0) {
           this.runningCount++;
 
           this.tasks.shift()(); // 取出队列中的任务、执行
@@ -1528,7 +1541,7 @@ schedular.add(task(50, 4)).then(res => console.log(res));
 batchFetch([n个url], 10).then((data)=>{ 按顺序n个url的结果 })
 ```
 
-1. 解法一
+1. 解法
 
     ```js
     function batchFetch(urls, max) {
@@ -1595,6 +1608,50 @@ batchFetch([n个url], 10).then((data)=>{ 按顺序n个url的结果 })
     ```
     </details>
 
+### 多任务同时执行且按顺序输出结果
+多任务尽快并行执行，但输出要按照原本调用顺序（意味着后面的任务要等待前面的任务完成后才能输出）。
+
+```js
+async function batchTasks(...tasks) {
+  const promiseResult = [];
+
+  for (const task of tasks) {
+    promiseResult.push(task());
+  }
+
+  for (const result of promiseResult) {
+    await result
+      .then((data) => {
+        console.log("完成输出->", data);
+      })
+      .catch((err) => {
+        console.log("失败输出->", err);
+      });
+  }
+}
+```
+
+<details>
+<summary>使用测试</summary>
+
+```js
+// 注意：执行2次才返回Promise
+const task = (duration, order) => {
+  return function () {
+    return new Promise((resolve, reject) => {
+      console.log("开始执行：", order);
+      setTimeout(() => {
+        Math.random() > 0.5 ? resolve(order) : reject(order);
+        console.log("执行完成 >", order, "。等待输出");
+      }, duration);
+    });
+  };
+};
+
+batchTasks(task(10, 1), task(1000, 2), task(10, 3), task(5000, 4));
+```
+</details>
+
 ### 任务队列链式调用和取消
 任务队列，可以链式调用、可以取消前一个任务。
 
@@ -1619,7 +1676,7 @@ batchFetch([n个url], 10).then((data)=>{ 按顺序n个url的结果 })
 // > Start to push
 ```
 
-1. 解法一：
+1. 解法
 
     ```js
     class Task {
@@ -1732,6 +1789,78 @@ batchFetch([n个url], 10).then((data)=>{ 按顺序n个url的结果 })
     //   // .execute()
     ```
     </details>
+
+---
+### 解压字符串
+><https://bigfrontend.dev/zh/problem/uncompress-string>
+
+给定一个压缩过后的字符串，请恢复其原始状态。
+
+```
+uncompress('3(ab)') // 'ababab'
+uncompress('3(ab2(c))') // 'abccabccabcc'
+```
+
+- 数字 `k` 之后如果有一对括号，意味着括号内的子字符串在原来的状态中重复了k次。`k`是正整数。
+- 测试用例的输入均为有效字符串，原始字符串中不存在数字
+
+1. 解法一
+
+    栈保存嵌套的部分（有先进后出就用栈）。
+
+    ```js
+    function uncompress(str) {
+      // 遇见 "(" 就入栈，遇见 ")" 就出栈，栈可以解决嵌套问题
+      const stack = [];
+
+      let currentStr = "";
+      let repeatTimes = 0;
+
+      for (let char of str) {
+        // 解析数字
+        if (char >= "0" && char <= "9") {
+          repeatTimes = repeatTimes * 10 + Number(char);
+        }
+        // 将当前的字符串和数字分别入栈，并重置当前的数字和字符串
+        else if (char === "(") {
+          stack.push([currentStr, repeatTimes]);
+          currentStr = "";
+          repeatTimes = 0;
+        }
+        // 出栈，获取之前保存的数字和字符串
+        else if (char === ")") {
+          let [prevStr, prevRepeatTimes] = stack.pop();
+
+          // 将重复的字符串追加到之前的字符串后面
+          currentStr = prevStr + currentStr.repeat(prevRepeatTimes);
+        }
+        // 普通字符，追加到当前字符串后面
+        else {
+          currentStr += char;
+        }
+      }
+
+      return currentStr;
+    }
+    ```
+2. 解法二
+
+    正则匹配，递归处理非嵌套的部分。
+
+    ```js
+    function uncompress(str) {
+      // 仅解决非嵌套的
+      const result = str.replace(
+        /(\d+)\((\D*?)\)/gi, // 仅匹配所有："数字(字母)"。注意：需要`*?`惰性匹配，否则会匹配到后面非配对的内容
+        (_, multiplier, subString) => {
+          return subString.repeat(multiplier);
+        },
+      );
+
+      // 解决了非嵌套的之后，产生新的非嵌套内容，递归再次尝试正则匹配
+      return result.includes("(") ? uncompress(result) : result;
+    }
+    ```
 
 ### HEX转换为RGBA
 ><https://bigfrontend.dev/zh/problem/convert-HEX-color-to-RGBA>
@@ -2011,6 +2140,260 @@ console.log(ltr(arr), [1, 2, 6, 3, 7, 11, 4, 8, 12, 5, 9, 13, 10, 14, 15]);
     }
     ```
 
+### 下划线转驼峰
+><https://bigfrontend.dev/zh/problem/convert-snake_case-to-camelCase>
+
+连续的下划线`__`，打头的下划线`_a`和结尾的下划线`a_`需要被保留。
+
+1. 解法一
+
+    正则。
+
+    ```js
+    function snakeToCamel(str) {
+      return str.replaceAll(/([^_])_([^_])/g, (_, before, after) => {
+        return before + after.toUpperCase();
+      });
+    }
+    ```
+2. 解法二
+
+    ```js
+    function snakeToCamel(str) {
+      // 第一个字一定不会被处理
+      let result = str[0];
+
+      for (let i = 1; i < str.length; i++) {
+        if (
+          // 不是连续的下划线
+          str[i] === "_" &&
+          str[i - 1] !== "_" &&
+          str[i + 1] !== "_" &&
+          // 不是结尾
+          i < str.length - 1
+        ) {
+          result += str[i + 1].toUpperCase();
+          i++;
+        } else {
+          result += str[i];
+        }
+      }
+      return result;
+    }
+    ```
+
+### 判断同花顺
+```js
+function isStraightFlush(arr) {
+  // 每种花色定义：1~13 14~26 27~39 40~52
+
+  // 判断同花
+  for (let i = 1; i < arr.length; i++) {
+    if (color(arr[i - 1]) !== color(arr[i])) {
+      return false;
+    }
+  }
+
+  // 判断顺子
+  arr.sort((a, b) => a - b);
+  const length = arr.length;
+  let i = 0;
+  if (
+    (arr[0] === 1 || arr[0] === 14 || arr[0] === 27 || arr[0] === 40) &&
+    (arr[length - 1] === 13 ||
+      arr[length - 1] === 26 ||
+      arr[length - 1] === 39 ||
+      arr[length - 1] === 52)
+  ) {
+    i = 1; // 跳过第一个，因为已和最后一个位置形成连张
+  }
+  for (i = i + 1; i < length; i++) {
+    if (arr[i - 1] + 1 !== arr[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function color(num) {
+  if (num <= 13) {
+    return "color 1";
+  } else if (num <= 26) {
+    return "color 2";
+  } else if (num <= 39) {
+    return "color 3";
+  } else if (num <= 52) {
+    return "color 4";
+  }
+}
+```
+
+### 模版字符串替换
+templateReplace("${name} is ${year} year old", { name: "aa", year: 12 }) => aa is 12 year old
+
+```js
+function templateReplace(str, obj) {
+  return str.replace(/\$\{(.*?)}/g, (_, $1) => {  // *?非贪婪模式
+    return obj[$1.trim()] ?? "";    // 若题目要模拟语法，则：eval($1)
+  });
+}
+```
+
+### 将二维数组两两拼接
+输入一个二维数组，将其两两拼接，输出一个二维数组
+
+```
+例如输入
+[[1,2],[3,4],[5,6]]
+输出
+[[1,3,5],[1,4,5],[1,3,6],[1,4,6],[2,3,5],[2,4,5],[2,3,6],[2,4,6]]
+```
+
+1. 解法
+
+    看不懂。
+
+    ```js
+    function concatenateArrays(arrays) {
+      // 辅助函数，用于对两个数组进行拼接
+      function concat(a, b) {
+        const result = [];
+        for (const x of a) {
+          for (const y of b) {
+            result.push([x, ...(y instanceof Array ? y : [y])]);
+          }
+        }
+        return result;
+      }
+
+      // 递归函数，将数组进行两两拼接
+      function helper(start) {
+        if (start === arrays.length - 1) {
+          return arrays[start];
+        }
+
+        return concat(arrays[start], helper(start + 1));
+      }
+
+      return helper(0);
+    }
+    ```
+
+### 拆分一维数组
+1. 解法一
+
+    ```js
+    /**
+     * 分割数组，并以嵌套数组形式返回
+     * @param {Array} arr - 数组
+     * @param {Number} n - 分割除数
+     * @returns {Array} result - 如：[[0, 1, 2], [3, 4, 5], [6]]
+     */
+    function divideArr(arr, n) {
+      let temp = [];
+      const result = arr.reduce((pre, current) => {
+        temp.push(current);
+
+        if (temp.length >= n) {
+          pre.push(temp);
+          temp = [];
+        }
+
+        return pre;
+      }, []);
+
+      if (temp.length !== 0) {
+        result.push(temp);
+      }
+
+      return result;
+    }
+    ```
+2. 解法二
+
+    ```js
+    function divideArr(arr, n) {
+      const result = [];
+      let temp = [];
+
+      for (let i = 0; i < arr.length; i++) {
+        temp.push(arr[i]);
+
+        if (temp.length >= n) {
+          result.push(temp);
+          temp = [];
+        }
+      }
+
+      if (temp.length !== 0) {
+        result.push(temp);
+      }
+
+      return result;
+    }
+    ```
+
+---
+### 遍历所有元素
+1. 解法一
+
+    dom.children遍历，队列实现层序遍历
+
+    ><https://bigfrontend.dev/zh/problem/Traverse-DOM-level-by-level>
+
+    ```js
+    function flatten(root) {
+      if (root === null) { return []; }
+
+      const result = [];
+
+      const queue = [root];
+      while (queue.length > 0) {
+        const head = queue.shift();
+        result.push(head);
+        queue.push(...head.children);
+      }
+
+      return result;
+    }
+    ```
+2. 解法二
+
+    [`document.createNodeIterator(root[, whatToShow[, filter]])`](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/createNodeIterator)
+
+    ```js
+    function getNode(root) {
+      const result = [];
+
+      const it = document.createNodeIterator(root);
+      let node = it.nextNode();
+      while (node) {
+        if (node.tagName) {
+          result.push(node);
+        }
+        node = it.nextNode();
+      }
+      return result;
+    }
+    ```
+
+### DOM转JSON
+```js
+function dom2Json(node) {
+  if (!node.tagName) { return; }
+
+  const obj = {};
+  obj.tagName = node.tagName.toLowerCase(); // 其他要加什么属性，直接：obj.xx = node.xx
+  obj.children = [];
+  node.childNodes.forEach((child) => {
+    const obj2 = dom2Json(child);
+    obj2 && obj.children.push(obj2);
+  });
+  return obj;
+}
+```
+
 ---
 ### `useDebounce`（值）
 ><https://bigfrontend.dev/zh/react/useDebounce>
@@ -2102,7 +2485,7 @@ export function useClickOutside(callback) {
     return () => {
       document.removeEventListener("mousedown", click);
     };
-  }, [callback]);
+  }, [callback]);   // fixme:依赖项是否改为`[]`
 
   return ref;
 }
@@ -2242,10 +2625,7 @@ export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
   const isFirstRender = useRef(true);
 
   const cb = useRef(effect);
-
-  useEffect(() => {
-    cb.current = effect;
-  }, [effect]);
+  cb.current = effect;
 
   useEffect(() => {
     let cleanUpCallback: ReturnType<typeof effect>;
@@ -2269,8 +2649,8 @@ export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
 ```ts
 import { useReducer } from "react";
 
-export function useToggle(on?: boolean): [boolean, () => void] {
-  const [onState, toggle] = useReducer((state) => !state, !!on);
+export function useToggle(isOn?: boolean): [boolean, () => void] {
+  const [onState, toggle] = useReducer((state) => !state, !!isOn);
 
   return [onState, toggle];
 }
@@ -2317,7 +2697,6 @@ import { useCallback, useRef } from "react";
 // ①返回一个固定不变化的函数，②调用usePersistCallback传入的回调函数内部的所有变量都是实时的（③不需要依赖项），④回调函数可以引用自己
 export function usePersistCallback<T extends (...args: any[]) => any>(rawFunc: T) {
   const func = useRef(rawFunc);
-
   func.current = rawFunc;
 
   return useCallback((...args: Parameters<T>):ReturnType<T> => {
@@ -2338,3 +2717,52 @@ const func1 = usePersistCallback((a: string, b: number) => {    // func1是固�
 func1('', 1)    // 任意位置调用
 ```
 </details>
+
+### `useCountdown`
+hook倒计时组件，支持执行倒计时结束的回调，展示成”00:00:00”的格式。
+
+```ts
+import { useEffect, useRef, useState } from "react";
+
+export const useCountdown = (
+  deadlineTime: number,
+  props?: { onComplete?: Function },
+) => {
+  const { onComplete } = props || {};
+  const refOnComplete = useRef(onComplete);
+  refOnComplete.current = onComplete;
+
+  const [leftTime, setLeftTime] = useState(deadlineTime - Date.now());
+
+  useEffect(() => {
+    let timeoutId = 0;
+
+    function countdown() {
+      const leftTime = deadlineTime - Date.now();
+
+      setLeftTime(leftTime < 0 ? 0 : leftTime);
+
+      if (leftTime > 0) {
+        timeoutId = window.setTimeout(countdown, 1000);
+      } else {
+        refOnComplete.current && refOnComplete.current();
+      }
+    }
+
+    countdown();
+
+    return () => {
+      clearInterval(timeoutId);
+    };
+  }, [deadlineTime]);
+
+  return formatTime(leftTime); // 建议放到渲染层去format
+};
+
+function formatTime(ms: number) {
+  const hours = Math.floor(ms / (1000 * 60 * 60));
+  const minute = Math.floor((ms / (1000 * 60)) % 60);
+  const second = Math.round((ms / 1000) % 60);
+  return `${hours < 10 ? `0${hours}` : hours}:${minute < 10 ? `0${minute}` : minute}:${second < 10 ? `0${second}` : second}`;
+}
+```

@@ -5,7 +5,7 @@
 
 1. 业务型：
 
-    业务插一个一定是跨屏才有的DOM，观测其变化情况（`MutationObserver`触发后`performance.now()` 或 各种生命周期钩子）。
+    业务插一个一定是跨屏才有的DOM，观测其变化情况：①`MutationObserver`触发后`performance.now()` 或 ②各种生命周期钩子触发后`performance.now()`（React的`componentDidMount(){/* 渲染完成 */}`或`useEffect(()=>{/* 渲染完成 */},[])`；Vue的`mounted(){ this.$nextTick(function (){/* 渲染完成 */}) }`）。
 2. 通用型：
 
     >参考：<https://gitee.com/hoholove/study-code-snippet/blob/master/FIRST_SCREEN_TIME/index.js>

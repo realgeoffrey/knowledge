@@ -30,6 +30,8 @@
 ### nvm更新Node.js版本
 1. macOS或Linux的[nvm](https://github.com/creationix/nvm)：
 
+    >若M1安装v15以下版本，建议终端打开[Rosetta模式](https://support.apple.com/en-hk/HT211861)：<https://github.com/nvm-sh/nvm/issues/2350>。
+
     ```shell
     nvm list-remote
     nvm install v新版本号
@@ -37,7 +39,7 @@
     nvm alias default v新版本号
 
     nvm list
-    nvm uninstall v旧版本号     # 若无法删除，则用管理员权限按要求设置文件夹权限，还可以去目录删除 /Users/「用户名」/.nvm/versions/node/v「版本号」
+    nvm uninstall v旧版本号 # 若无法删除，则用管理员权限按要求设置文件夹权限，还可以去目录删除 /Users/「用户名」/.nvm/versions/node/v「版本号」
     ```
 
     >安装的全局软件包位置：`/Users/「用户名」/.nvm/versions/node/v「版本号」/lib/node_modules`
@@ -119,9 +121,9 @@ npm（Node Package Manager）。
             - 修改初始化信息
 
                 ```shell
-                npm set init.author.name "名字"
-                npm set init.author.email "邮箱"
-                npm set init.license "MIT"
+                npm set init-author-name "名字"
+                npm set init-author-email "邮箱"
+                npm set init-license "MIT"
                 ```
 
                 >初始化信息会存放在`~/.npmrc`文件里。
@@ -623,7 +625,7 @@ npm（Node Package Manager）。
         直接按照包依赖的树形结构下载填充本地目录结构，嵌套的node_modules结构（嵌套地狱）。
     2. npm@3+
 
-        扁平化嵌套（副作用：~~不确定性~~、依赖分身、幽灵依赖）。尽量把依赖提升（hoist）到项目目录的node_modules（幽灵依赖），提升只能提升依赖的一个版本（不确定性，不确定提升哪个版本；之后`package-lock.json`解决，按照`package-lock.json`文件安装），后面再遇到相同包的不同版本，依然还是用嵌套的方式，可能相同版本在不同依赖位置嵌套安装多次（依赖分身）。
+        扁平化嵌套（副作用：~~不确定性~~、依赖分身、幽灵依赖）。尽量把依赖提升（hoist）到项目目录的node_modules（**幽灵依赖**），提升只能提升依赖的一个版本（不确定性，不确定提升哪个版本；之后`package-lock.json`解决，按照`package-lock.json`文件安装），后面再遇到相同包的不同版本，依然还是用嵌套的方式，可能相同版本在不同依赖位置嵌套安装多次（**依赖分身**）。
 2. yarn
 
     yarn install和npm install流程类似，但并行执行安装任务（快）。`yarn.lock`、扁平化（不同于npm，会把使用频率较大的版本安装到顶层目录），依然存在问题：幽灵依赖、依赖分身。
