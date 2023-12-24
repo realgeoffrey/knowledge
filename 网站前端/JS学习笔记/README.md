@@ -555,7 +555,7 @@
 
         不会创建自己的`this`（所以不会使用非箭头函数的规则），根据[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)向上遍历查找直到非箭头函数定义的`this`或全局对象（严格模式为undefined）；若找到`this`，则再根据非箭头函数的方式决定取值。
 
-        >看上去就像：使用封闭执行上下文最近的一个`this`值。
+        >看上去就像：使用封闭执行上下文最近（就近原则）的一个`this`值。
 
         ><details>
         ><summary>e.g.</summary>
@@ -1393,7 +1393,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         1. 新增**Web Worker**标准，但不能~~操作DOM~~，完全受主线程控制。
 
-            >1. Worker与主线程通信，都通过`postMessage`传递信息、通过监听`message`事件接受信息，信息通过[结构化克隆算法](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)（一种深复制）复制后传递。
+            >1. Worker与主线程通信，都通过`postMessage`（或`MessageChannel`）传递信息、通过监听`message`事件接受信息，信息通过[结构化克隆算法](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)（一种深复制）复制后传递。
             >2. 在浏览器tab没有被激活时（inactive），定时器间隔的最小值会提升、进程执行会变慢。用`Web Worker`不会受浏览器是否激活的影响。
         2. 多个异步线程分别处理：**网络请求**、**定时器**、**读写文件**、**I/O设备事件**、**页面渲染**等。
 
@@ -2241,7 +2241,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     >2. 无法获取DOM、`cookie`、`Web Storage`、`IndexDB`。仅允许调用部分方法（白名单）。
     ></details>
 
-    把不同文档的`document.domain`设置为一致的值，即可双向通信、互相操作（`cookie`可以直接操作；`localStorage`、`IndexDB`只能通过`postMessage`通信）。
+    把不同文档的`document.domain`设置为一致的值，即可双向通信、互相操作（`cookie`可以直接操作；`localStorage`、`IndexDB`只能通过`postMessage`或`MessageChannel`通信）。
 
     ><details>
     ><summary><code>document.domain</code>使用限制</summary>
@@ -2251,7 +2251,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     >3. 现代浏览器禁止修改`document.domain`解决办法：
     >
     >    1. 方案一：目标文档响应头包含`Origin-Agent-Cluster: ?0`，可允许浏览器在当前文档修改`document.domain`。
-    >    2. 方案二：使用`postMessage`或`MessageChannel`传递信息的方案，代替相同`document.domain`共用cookie
+    >    2. 方案二：使用`postMessage`（或`MessageChannel`）传递信息的方案，代替相同`document.domain`共用cookie
     的方案。
     ></details>
 
@@ -4227,10 +4227,10 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         返回：相对于文档的距离（可以设置）。
     2. `$dom.position()`
 
-        返回：相对于**距离该元素最近的且被定位过的祖先元素**的距离。
+        返回：相对于**距离该元素最近（就近原则）的且被定位过的祖先元素**的距离。
     3. `$dom.offsetParent()`
 
-        返回：相对于**距离该元素最近的且被定位过的祖先元素**的jQuery对象。
+        返回：相对于**距离该元素最近（就近原则）的且被定位过的祖先元素**的jQuery对象。
     4. `$dom.scrollLeft/Top()`
 
         返回：当前滚动条的位置（可以设置）。

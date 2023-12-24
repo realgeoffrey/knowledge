@@ -688,16 +688,17 @@ feat(details): 添加了分享功能
 
 >在GitHub等网站中：不同账户无法使用相同的**SSH key**。
 
-1. 生产多对的**SSH keys**，并放入 **.ssh文件夹**（自动生成并放入`~/.ssh/`）：
+1. 生产多对的**SSH keys**，并放入 **.ssh文件夹**：
 
     ```shell
-    ssh-keygen -f 「地址/名字」
+    ssh-keygen
+        # -f 「地址/名字」    # 若不设置，则默认放入~/.ssh/
     ```
 2. 为不同账户地址设置对应的SSH key路径：
 
-    >以 GitHub、GitLab 为例，[GitHub：在一台服务器上使用多个仓库](https://docs.github.com/zh/authentication/connecting-to-github-with-ssh/managing-deploy-keys#using-multiple-repositories-on-one-server)、[GitLab: Use different accounts on a single GitLab instance](https://docs.gitlab.com/ee/user/ssh.html#use-different-accounts-on-a-single-gitlab-instance)
+    >以 GitHub、GitLab 为例。文档：[GitHub](https://docs.github.com/zh/authentication/connecting-to-github-with-ssh/managing-deploy-keys#using-multiple-repositories-on-one-server)、[GitLab](https://docs.gitlab.com/ee/user/ssh.html#use-different-accounts-on-a-single-gitlab-instance)。
 
-    1. **~/.ssh/config**文件添加
+    1. **~/.ssh/config**文件修改：
 
         ```text
         Host 账户1.github.com             # 别名
@@ -714,7 +715,7 @@ feat(details): 添加了分享功能
             HostName xx.mygitlab.com
             IdentityFile ~/.ssh/「键4」
         ```
-    2. 克隆仓库时把**仓库地址**的 「主机名」 改为 「别名」（其他不变，若有端口号，保留端口号）：
+    2. 克隆仓库时把**仓库地址**的「主机名」改为「别名」（URL其他部分不变。若有端口号，则保留端口号）：
 
         ```shell
         git clone git@账户1.github.com:账户/仓库.git

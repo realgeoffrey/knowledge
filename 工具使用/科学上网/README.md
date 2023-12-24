@@ -14,6 +14,7 @@
 
     1. [ClashX 提供给同局域网其他设备翻墙功能](#clashx-提供给同局域网其他设备翻墙功能)
     1. [Quantumult X 提供给同局域网其他设备翻墙功能](#quantumult-x-提供给同局域网其他设备翻墙功能)
+    1. [ClashX的`增强模式`](#clashx的增强模式)
     1. [Quantumult X 配置/添加节点](#quantumult-x-配置添加节点)
     1. [ClashX 配置](#clashx-配置)
 
@@ -318,6 +319,17 @@
 2. 其他设备（手机、电脑、等）需要：连接热点 + 配置HTTP代理。
 
     即可HTTP请求通过上面手机Quantumult X的VPN功能。
+
+### ClashX的`增强模式`
+ClashX`的增强模式`原理：通过一个虚拟网卡接管所有流量。
+
+- 有些应用可能不会遵循`系统代理`设置，使用`增强模式`可以让 ClashX 处理所有应用流量
+
+    1. ClashX 会安装一个虚拟网卡并设置为默认路由
+    2. ClashX 虚拟网卡只能处理 TCP，UDP 和 ICMP 流量
+    3. ICMP 流量不能被代理，ClashX 虚拟网卡将直接返回响应结果
+
+    >e.g. git不走系统代理，可通过两种方案让git通过ClashX代理：①`git config --global http.proxy 'http://127.0.0.1:7890'` 或 ②开启ClashX的`增强模式`。
 
 ### Quantumult X 配置/添加节点
 支持满足其规则的配置，如：Shadowsocks、ShadowsocksR、HTTP、Socks5、VMess、Trojan等代理协议。

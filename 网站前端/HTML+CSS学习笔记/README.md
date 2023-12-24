@@ -1377,7 +1377,7 @@
     ><details>
     ><summary>包含块（containing block）</summary>
     >
-    >不能简单地理解成是父元素。若是`position: static/relative;`元素，包含块是其父元素；若是`position: absolute;`元素，包含块是离它最近的`position: relative/absolute/fixed;`的祖先元素；若是`position: fixed;`元素，包含块是视口（viewport）。
+    >不能简单地理解成是父元素。若是`position: static/relative;`元素，包含块是其父元素；若是`position: absolute;`元素，包含块是离它最近（就近原则）的`position: relative/absolute/fixed;`的祖先元素；若是`position: fixed;`元素，包含块是视口（viewport）。
     ></details>
 
     1. 乘以包含块的`width`：
@@ -1422,7 +1422,7 @@
         3. `filter`系列函数
     9. 节点自己是`position: absolute;`：
 
-        离它最近的`positon: relative/absolute/fixed;`的祖先元素；若没有，则相对于视口。
+        离它最近（就近原则）的`positon: relative/absolute/fixed;`的祖先元素；若没有，则相对于视口。
     10. 节点自己是`position: fixed;`：
 
         相对于视口。

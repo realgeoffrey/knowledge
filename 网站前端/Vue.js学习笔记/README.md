@@ -6,11 +6,12 @@
 
     1. [模板插值](#模板插值)
     1. [指令 && 特殊attribute](#指令--特殊attribute)
-    1. [Vue实例的属性](#vue实例的属性)
+    1. [组件选项](#组件选项)
     1. [组件](#组件)
     1. [单文件组件（Single-File Component，SFC）](#单文件组件single-file-componentsfc)
     1. [过渡/动画](#过渡动画)
     1. [插件（plugin）](#插件plugin)
+    1. [全局API](#全局api)
     1. [特性](#特性)
     1. [vue风格指南](#vue风格指南)
     1. [响应式系统](#响应式系统)
@@ -21,10 +22,10 @@
     1. [例子](#例子)
     1. [Vue 3 与 Vue 2 区别](#vue-3-与-vue-2-区别)
 1. [vue-router](#vue-router)
-1. [用pinia代替vuex](#用pinia代替vuex)
+1. [用pinia代替~~vuex~~](#用pinia代替vuex)
 
     1. [vuex](#vuex)
-1. [用create-vue代替vue-cli](#用create-vue代替vue-cli)
+1. [用create-vue代替~~vue-cli~~](#用create-vue代替vue-cli)
 
     1. [vue-cli](#vue-cli)
 1. [nuxt](#nuxt)
@@ -38,7 +39,7 @@
 
     1. 针对不在vue视图内出现的变量：
 
-        >组件的多个实例会共用模块内、组件外的变量（闭包），组件内部的数据则互相独立（类似于`new`实例）。
+        >组件的多个实例会共用模块内、组件外的变量（闭包），组件内部的数据则互相独立（Vue实例）。
 
         1. 若是常量，则可以放在组件外，用`const` + 大写和下划线组成。
         2. 若是会变化的量，则必须放在组件内（`data`或`computed`或不提前定义就直接`this.新属性 = 值`）。
@@ -103,7 +104,7 @@
     >特例：父级通过`v-slot="临时变量"`去使用子级`<slot>`给定的属性对应的值；父级通过给子级添加`inline-template`，能够直接用子级的属性。
 4. `v-slot`和`<slot>`
 
-    用于父级（`v-slot:某名字`）向子组件（`<slot name="某名字">`）插入内容。
+    用于父级（`v-slot:某名字="临时变量"`）向子组件（`<slot name="某名字" :临时变量的属性="x">`）插入内容。
 5. 所有渲染结果不包含`<template>`
 6. 注意：在.html的DOM上书写模板时，不能用大写字母命名组件（同理：HTML中的属性名也是大小写不敏感的）。
 
@@ -118,11 +119,11 @@
 
     用于添加指令后的参数。
 
-    - `某指令:[表达式]`动态参数
+    - `某指令:[表达式]`动态指令参数
 
-        由表达式计算的结果为最终`:`后跟的值。
+        由表达式计算的结果为最终`:`后跟的值。注意在.html的DOM上书写模板时，对表达式的约束（空格、引号、大写字母）。
 
-        >e.g. `v-bind:[表达式]='xx'`、`v-on:[表达式]='xx'`（`@[表达式]='xx'`）、`v-slot:[表达式]`。
+        >e.g. `v-bind:[表达式]='xx'`（`:[表达式]='xx'`）、`v-on:[表达式]='xx'`（`@[表达式]='xx'`）、`v-slot:[表达式]`（`#[表达式]`）
 2. `v-if`、`v-else`、`v-else-if`
 
     DOM或组件判定为`false`，则完全销毁（组件会调用`destroyed`）；判定为`true`，则新建。除非使用`<keep-alive/>`包裹。
@@ -348,38 +349,81 @@
         e.g. `<button v-on="{ mousedown: doThis, mouseup: doThat }"/>`
 6. `v-slot`（`v-slot:xx`缩写：`#xx`）插槽
 
-    只允许添加在`template`上（特例见下），且**不能~~嵌套~~使用**。子组件使用`<slot>`在内部插入父级引入的内容。
+    只允许添加在`<template>`上（特例见下），且**不能~~嵌套~~使用**。子组件使用`<slot>`在内部插入父级引入的内容。
 
-    >1. 只允许添加在`template`上的特例：被引用的子组件**只使用**默认插槽时，可以简写在引用的子组件上（若要使用多个插槽，则必须始终为所有的插槽使用完整的基于`<template>`的语法）。
-    >
-    >    e.g. `<子组件 v-slot:default>`、`<子组件 v-slot>`、`<子组件 #default>`
-    >2. 若子组件没有包含`<slot name="某名字">`，则父组件引用子组件时的`v-slot:某名字"`的DOM会被抛弃。
+    >只允许添加在`<template>`上的特例：被引用的子组件**只使用**默认插槽时，可以简写在引用的子组件上（若要使用多个插槽，则必须始终为所有的插槽使用完整的基于`<template>`的语法。**但若不遵守，好像也能正常渲染展示**），e.g. 特例，子组件有且仅有默认插槽：`<子组件 v-slot:default>`、`<子组件 v-slot>`、`<子组件 #default>`。
 
+    0. 抛弃内容
+
+        1. 若子组件没有包含`<slot name="某名字">`，则父组件引用子组件时的`v-slot:某名字"`的DOM会被抛弃。
+        2. 若父级组件包含`v-slot=default`，则抛弃其他所有不包含在`v-slot`内的DOM。
     1. 后备内容
 
-        1. 子组件中没有`name`属性或`name="default"`的`<slot>`，匹配父级中*去除所有包含`v-slot:某名字`的DOM*的内容（即：匹配没有`v-slot`或`v-slot`值为空的DOM和内容）。
+        1. 子组件中没有`name`属性或`name="default"`的`<slot>`，①先匹配父级中的`default`插槽，若父级中不存在default插槽 则②匹配父级中*去除所有包含`v-slot`之后的DOM*的内容。
 
-            >`<slot>`默认`name`为：`default`。
-        2. 子组件中`<slot>`的DOM内容，当且仅当没有父级匹配时显示。
+            >`<slot>`默认`name`、`v-slot`默认插槽名都为：`default`。
+        2. 子组件中`<slot>`的DOM内容，当且仅当没有父级匹配占用时显示。
     2. 具名插槽
 
-        父级引用子组件，在元素内部添加的标签的DOM属性`v-slot:某名字`；会匹配子组件模板的`<slot name="某名字">`。
+        父级引用子组件，在元素内部添加的标签的DOM属性`v-slot:某名字`，会匹配子组件模板的`<slot name="某名字">`。
     3. 作用域插槽
 
         父级引用子组件时，使用子组件`<slot>`上的属性对应的值（除了`name`属性）。
 
         1. 子组件的模板：
 
-            `<slot 组件属性1="字符串" :组件属性2="表达式">`
+            `<slot 子组件属性1="字符串" :子组件属性2="表达式">`
 
             >`<slot>`内部是子组件的作用域，和在其上添加的属性内容无关。
         2. 父级使用子组件`<slot>`上显性提供的属性对应值：
 
-            `<template/子组件 v-slot="临时变量">{{ 临时变量.组件属性1 }}{{ 临时变量.组件属性2 }}</template/子组件>`
+            `<template/子组件 v-slot="临时变量">{{ 临时变量.子组件属性1 }}{{ 临时变量.子组件属性2 }}</template/子组件>`
 
-            （`临时变量 === { 组件属性1: '字符串'. 组件属性2: 表达式 }`）
+            （`临时变量 === { 子组件属性1: '字符串'. 子组件属性2: 表达式 }`）
 
-            >`临时变量`支持解构。
+            >`临时变量`支持解构。`vm.$slots`不包含父级使用了 作用域插槽 的那个slot（`vm.$scopedSlots`都包含）。
+
+    - 子组件的`JSON.stringify(vm.$slots.名字)` === `JSON.stringify(vm.$scopedSlots.名字())`，都返回`Array<VNode> | undefined`
+
+        >1. `vm.$slots`不包含父级使用了 作用域插槽 的那个slot（`vm.$scopedSlots`都包含）。
+        >2. `vm.$scopedSlots.名(参数)`会把 参数 传递给 父级 作用域插槽 的 临时变量。
+        >
+        >    e.g.
+        >
+        >    ```vue
+        >    // 父级调用
+        >    <Son>
+        >      <template v-slot:name1="sonData">
+        >        <div>
+        >          父级使用子级显性提供的属性对应值：
+        >          {{ sonData.a }}
+        >          {{ sonData.b }}
+        >        </div>
+        >      </template>
+        >    </Son>
+        >
+        >
+        >    // Son子级调用
+        >    vm.$scopedSlots.name1({ a: 'a' }) // -> 返回 VNode：`<div> 父级使用子级显性提供的属性对应值： a </div>`
+        >    ```
+
+    - （并非嵌套）父级传入的slot内容 包含其他组件也使用插槽：
+
+        `v-slot`针对的是离它最近（就近原则）的子组件。
+
+        ```vue
+        <Son1>
+          <template v-slot:xx1>
+            传递给Son1的插槽，下面的内容也是插槽的一部分
+
+            <Son2>
+              <template v-slot:xx2>
+                传递给Son2的插槽（不是Son1插槽的嵌套）
+              </template>
+            </Son2>
+          </template>
+        </Son1>
+        ```
 
     <details>
     <summary>e.g.</summary>
@@ -541,6 +585,22 @@
 13. `v-cloak`指令保持在元素上直到关联实例结束编译
 
     与CSS一起使用时，在编译完成前使用样式，编译完成后去除样式。
+
+    >e.g.
+    >
+    >```vue
+    ><template>
+    >  <div v-cloak>
+    >    {{context}}
+    >  </div>
+    ></template>
+    >
+    ><style>
+    >  [v-cloak] {
+    >    display: none;
+    >  }
+    ></style>
+    >```
 14. `.`修饰符
 
     >用于指出一个指令应该以特殊方式绑定。
@@ -752,20 +812,42 @@
         - `v-text`
     </details>
 
-### Vue实例的属性
-`new Vue(对象)`
+### 组件选项
+包含：`new Vue(组件选项)`、`Vue.component(名, 组件选项)`、`Vue.extend(组件选项)`/`extends(组件选项)`、`Vue.mixin(组件选项)`/`mixins([组件选项1, 组件选项2, ])`。
 
-1. `el`（字符串）：选择器
+1. `props`（数组或对象）：接受父级传递内容
 
-    >限制：只在由`new`创建的Vue实例中。
-2. `data`（对象或方法）：数据
+    1. 数组：接受的DOM属性名
+    2. 对象：`{ 接受的DOM属性名: 验证方式, }`
+
+        - 验证方式：
+
+            1. 原生构造器（`String`、`Number`、`Boolean`、`Function`、`Object`、`Array`、`Symbol`、`BigInt`）或 `自定义构造函数`（通过`instanceof`检查确认）或`null`（允许任何类型）
+            2. 上面类型组成的数组
+            3. 对象
+
+                1. `type`：原生构造器、或`自定义构造函数`、或原生构造器和`自定义构造函数`的数组、或`null`
+                2. `required`：是否必须（默认：`false`）
+                3. `default`：基本数据类型的值；对象或数组必须从工厂函数返回默认值（当且仅当没有传入时才使用或调用）
+
+                >`required`和`default`二选一。
+
+                4. `validator`：验证方法（对子组件的任何修改包括`v-show`修改以及自身`default`，都会触发所有prop的验证方法）
+
+                >props会在一个组件实例创建之前进行验证，所以实例的属性（如：`data`、`computed`、`methods`等）在`default`或`validator`函数中不可用。
+2. `propsData`（对象`{键:值}`）：创建实例时传递props。
+
+    >限制：只用于`new`创建的实例中。
+
+    主要作用是方便测试，代替`props`属性。
+3. `data`（对象或方法）：数据
 
     >限制：组件的`data`是方法且返回一个数据对象。
 
     以`_`或`$`开头的属性不会被Vue实例代理，但可以使用`vm.$data`访问（e.g. `vm.$data._property`）。
 
     >Vue内置的属性、API方法会以 `_`或`$` 开头，因此若看到不带这些前缀的Vue实例的属性时，则一般可认为是Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性）。
-3. `computed`（对象）：依赖其他值（`props`、`data`、`computed`）的改变而执行，最后`return`值
+4. `computed`（对象）：依赖其他值（`props`、`data`、`computed`）的改变而执行，最后`return`值
 
     <details>
     <summary>默认：<code>get</code>（初始化时会调用一次）；显式设置：<code>set</code>（被赋值时执行）和<code>get</code>。</summary>
@@ -804,27 +886,96 @@
 
 >在（`props`、）`data`、`computed`先定义再使用，而不要对未使用过的变量进行`this.新变量名 = 值`（不先定义就直接使用无法绑定到响应式系统，无法触发视图更新渲染）。
 
-4. `watch`（对象）：被watch的值改变而执行函数（观察的值必须是`props`或`data`或`computed`的属性）
+5. `watch`（对象`{键: methods方法名/方法/对象/数组}`）：被watch的值改变而执行函数（观察的值必须是`props`或`data`或`computed`的属性）
 
-    1. 可以设置`immediate`参数（侦听开始后立即调用一次）
-    2. 可以设置`deep`参数
+    1. 键名可以是`属性1.子属性2`，来观察嵌套的属性值
+    2. 值是对象情况：
 
-        1. `: false`（默认）：仅监听的值变化才调用（引用类型变化需要引用地址变化）
-        2. `: true`：（针对已存在的属性，新增属性不触发）监听的对象的属性修改时调用一次，无论嵌套多深的属性（性能开销大）
-    3. 键名可以是`属性1.子属性2`，来观察嵌套的属性值
-    4. 传入数组，逐一调用，e.g. `[方法1, 对象1, ...]`
+        1. `handler`方法
+        2. 可以设置`immediate`参数（侦听开始后立即调用一次）
+        3. 可以设置`deep`参数
+
+            1. `: false`（默认）：仅监听的值变化才调用（引用类型变化需要引用地址变化）
+            2. `: true`：（针对已存在的属性，新增属性不触发）监听的对象的属性修改时调用一次，无论嵌套多深的属性（性能开销大）
+    3. 值是数组情况：逐一调用，e.g. `[方法1, 对象1, ...]`
 
     >还可以用`vm.$watch`（返回`unwatch`方法，取消观察）来观察属性改变。
 
 >执行顺序是：（`props` -> ）`data` -> `computed` -> `watch`。
 
-5. `filters`（对象）：过滤器方法
+6. `el`（CSS选择器字符串 或 HTMLElement实例）：挂载目标
+
+    >限制：只用于`new`创建的实例中。
+
+    若在实例化时存在`el`，则实例将立即进入编译过程，否则，需要显式调用`vm.$mount()`手动开启编译。
+
+    >若`render`和`template`都不存在，挂载DOM元素的HTML会被提取出来用作模板，此时，必须使用 Runtime + Compiler 构建的 Vue 库。
+
+7. `template`（字符串）：组件的字符串模板
+
+    >限制：只在[完整版](https://v2.cn.vuejs.org/v2/guide/installation.html#对不同构建版本的解释)时可用（需要编译器；运行时的runtime版本没有编译器）。
+
+    1. 直接字符串作为模板，e.g. `template: '<div>{{ msg }}</div'`。
+    2. 若字符串包含`#id名`，则去取`<script type="x-template" id="id名">`的innerHTML作为模板。
+8. `render`（`(createElement: () => VNode) => VNode`）：[字符串模板的代替方案，可使用JSX](https://v2.cn.vuejs.org/v2/guide/render-function.html)
+
+    若组件是一个函数组件（`functional: true`），则渲染函数还会接收第二个`context`参数，为没有实例的函数组件提供上下文信息。
+
+    >Vue选项中的`render`函数若存在，则Vue构造函数不会从`template`选项或通过`el`选项指定的挂载元素中提取出的HTML模板编译渲染函数。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```vue
+    >render(createElement) {
+    >  return createElement("h1", '标题内容');
+    >},
+    >```
+    ></details>
+
+>模板选择优先级：`render` > `template` > `el`挂载的DOM的HTML。
+
+9. `renderError`（`(createElement: () => VNode, error: Error) => VNode`）：当`render`遭遇错误时，提供另外一种渲染输出
+
+    >限制：只在dev环境下工作。
+
+    `render`错误将会作为第二个参数传递到`renderError`。
+10. `components`（对象）：局部注册组件（仅在此Vue实例中可用）
+
+11. `filters`（对象）：过滤器方法
 
     方法内部没有代理 ~~`this`~~ 到Vue实例。
 
     >因为不会被Vue实例代理，所以可以和Vue实例代理的属性同名（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性）。
-6. `components`（对象）：局部注册组件（仅在此Vue实例中可用）
-7. `methods`（对象）：可调用方法
+
+12. `mixins`（`[组件选项1, 组件选项2,...]`）：混入
+
+    mixin数组每一项中的属性，都会合并到组件本身的选项（如：mixin的`methods`合并到组件的`methods`、mixin的`data`合并到组件的`data`）。
+
+    1. 钩子函数都会调用：混入对象的钩子优先调用，组件自身的钩子之后调用。
+    2. 非钩子函数属性，若有同名内容，则合并之后，组件自身内容覆盖mixin：
+
+        `methods`、`components`、`directives`等，合并为同一个对象；对象内部键名冲突时（如：`methods`都有某同名方法），使用组件对象的内容、丢弃mixin的内容。
+
+    >`Vue.mixin`/`mixins`、`Vue.extend`/`extends`的合并逻辑一致。
+
+    - 作用域：
+
+        1. 局部：组件局部注册，仅在本组件内起作用，对子组件无效。
+        2. 全局：`Vue.mixin`全局注册，将会影响之后创建的（之前的不受影响）Vue实例，包括第三方模板。
+13. `extends`（组件选项 或 Vue组件或Vue子类）：扩展、继承一个组件
+
+    主要是为了便于扩展单文件组件。
+14. `directives`（对象）：自定义指令
+15. `provide`（对象 或 返回对象的方法）/`inject`（`Array<string> | { [本地绑定名: string]: provide名 | Symbol | {from: provide名, default: 初始值} }`）
+
+    1. 两个需要一起使用，以允许一个祖先组件向其所有子孙后代注入一个依赖，不论组件层次有多深，并在其上下游关系成立的时间里始终生效。
+
+        孙辈组件 从组件树中离自身最近（就近原则）匹配`provide`中读取到当前的`inject`值。
+    2. `provide`/`inject`绑定并不是可响应的。然而，若传入了一个可监听的对象（如：vue实例的`data`、`computed`等），则其对象的property可响应。
+    3. `provide`若需要提供当前组件中的属性和方法等，则需要使用`返回对象的方法`方式来保证`this`的指向，否则`this`指向`undefined`（普通引用数据类型用哪种方式都正常注入）。
+    4. `inject`的`default`初始值（与`props`的`default`一致）：基本数据类型的值；对象或数组必须从工厂函数返回默认值（当且仅当没有传入时才使用或调用）。
+16. `methods`（对象）：可调用方法
 
     >1. `new`methods里的方法，方法体内的`this`指向这个实例，而非~~Vue实例~~。建议不要在methods中添加构造函数，而改用`import`方式引入构造函数。
     >2. template的每次改变，都会导致VNode重新渲染，也会导致methods重新调用（无论methods使用的值是否变化）。
@@ -863,7 +1014,7 @@
 >```
 ></details>
 
-8. 生命周期钩子
+17. 生命周期钩子
 
     >`async-await`**不**会阻止继续向下执行生命周期。e.g. `beforeCreate(); created(); ...`
 
@@ -897,7 +1048,7 @@
         >可将大部分内存清理工作放在`beforeDestroy`。
     10. `destroyed`
 
-        >调用后，Vue实例指示的所有内容都会解绑，所有Vue事件监听器会被移除，所有子实例也会被销毁。
+        >调用后，Vue实例指示的所有内容都会解绑，所有Vue事件监听器会被移除，所有子实例也会被销毁。
     11. `errorCaptured`
 
     <details>
@@ -905,20 +1056,34 @@
 
     ![vue生命周期图](./images/vue-lifecycle-1.png)
     </details>
-9. `mixins`（数组，每一项为Vue实例的属性）：混入
+18. `parent`（Vue实例）：指定父组件
+19. `name`（字符串）
 
-    mixin数组每一项中的属性，都会合并到组件本身的选项（如：mixin的`methods`合并到组件的`methods`、mixin的`data`合并到组件的`data`）。
+    >限制：只有作为组件选项时起作用。
 
-    1. 钩子函数都会调用：混入对象的钩子优先调用，组件自身的钩子之后调用。
-    2. 非钩子函数属性，若有同名内容，则合并之后，组件自身内容覆盖mixin：
+    允许组件模板递归地调用自身。
 
-        `methods`、`components`、`directives`等，合并为同一个对象；对象内部键名冲突时（如：`methods`都有某同名方法），使用组件对象的内容、丢弃mixin的内容。
+    >1. 组件在全局用`Vue.component()`注册时，全局ID自动作为组件的name。
+    >2. 指定 name 选项的另一个好处是便于调试。有名字的组件有更友好的警告信息。另外，当在有 vue-devtools，未命名组件将显示成`<AnonymousComponent>`，这很没有语义。通过提供 name 选项，可以获得更有语义信息的组件树。
+20. `delimiters`（`Array<string>`，默认值：`["{{", "}}"]`）：改变纯文本插入分隔符
 
-    - 作用域：
+    >限制：只在[完整版](https://v2.cn.vuejs.org/v2/guide/installation.html#对不同构建版本的解释)时可用。
+21. `functional`（`boolean`）：函数式组件
 
-        1. 局部：组件局部注册，仅在本组件内起作用，对子组件无效。
-        2. 全局：`Vue.mixin`全局注册，将会影响之后创建的（之前的不受影响）Vue实例，包括第三方模板。
-10. `extends`（组件对象）：扩展、继承一个组件
+    使组件无状态 (没有 `data`) 和无实例 (没有 `this` 上下文)。他们用一个简单的 `render` 函数返回虚拟节点使它们渲染的代价更小。
+22. `model`（`{ prop?: string, event?: string }`）：修改`v-model`默认使用的属性和事件
+
+    默认：组件上的`v-model`会把`value`用作prop、把`input`用作event。
+23. `inheritAttrs`（`boolean`，默认：`true`）
+
+    默认情况下父作用域的不被认作 props 的 attribute 绑定 (attribute bindings) 将会“回退”且作为普通的 HTML attribute 应用在子组件的根元素上。当撰写包裹一个目标元素或另一个组件的组件时，这可能不会总是符合预期行为。通过设置 inheritAttrs 到 false，这些默认行为将会被去掉。而通过 (同样是 2.4 新增的) 实例 property $attrs 可以让这些 attribute 生效，且可以通过 v-bind 显性的绑定到非根元素上。
+
+    注意：这个选项不影响 class 和 style 绑定。
+24. `comments`（`boolean`，默认：`false`）
+
+    >限制：只在[完整版](https://v2.cn.vuejs.org/v2/guide/installation.html#对不同构建版本的解释)时可用。
+
+    当设为 true 时，将会保留且渲染模板中的 HTML 注释。默认行为是舍弃它们。
 
 - <details>
 
@@ -984,48 +1149,7 @@
 ### 组件
 >所有Vue组件同时也都是Vue实例。
 
-1. 组件属性：
-
-    1. `template`（字符串）：组件的字符串模板
-    2. `props`（数组或对象）：接受父级传递内容
-
-        1. 数组：接受的DOM属性名
-        2. 对象：`{ 接受的DOM属性名: 验证方式, }`
-
-            - 验证方式：
-
-                1. 原生构造器（`String`、`Number`、`Boolean`、`Function`、`Object`、`Array`、`Symbol`、`BigInt`）或 `自定义构造函数`（通过`instanceof`检查确认）或`null`（允许任何类型）
-                2. 上面类型组成的数组
-                3. 对象
-
-                    1. `type`：原生构造器、或`自定义构造函数`、或原生构造器和`自定义构造函数`的数组、或`null`
-                    2. `required`：是否必须（默认：`false`）
-                    3. `default`：基本数据类型的值；对象或数组必须从工厂函数返回默认值（当且仅当没有传入时才使用或调用）
-
-                    >`required`和`default`二选一。
-
-                    4. `validator`：验证方法（对子组件的任何修改包括`v-show`修改以及自身`default`，都会触发所有prop的验证方法）
-
-                    >props会在一个组件实例创建之前进行验证，所以实例的属性（如：`data`、`computed`、`methods`等）在`default`或`validator`函数中不可用。
-    3. `data`（方法）：`return`数据对象
-
-        ```js
-        data () {   // 组件多个实例间不共享数据对象
-          return {
-            a: 0,
-            b: ''
-          }
-        }
-        ```
-
-        >1. `v-for`循环的每个实例都调用创建一份。
-        >2. 仅执行一次，父组件传进来的props改变也不再触发执行。
-    4. `model`（对象，包含`prop`、`event`）：修改`v-model`默认使用的属性和事件
-    5. `name`（字符串）
-
-        默认：`undefined`。
-    - 其他与Vue实例的属性相同（除了一些根级特有的选项）
-2. 注册组件方式：
+1. 注册组件方式：
 
     >要确保在初始化Vue实例之前注册了组件。
 
@@ -1040,7 +1164,7 @@
     // 全局
     Vue.component('组件元素名', 对象)
     ```
-3. 组件命名：
+2. 组件命名：
 
     >W3C规定的组件命名要求：小写，且包含一个`-`。
 
@@ -1079,7 +1203,7 @@
              </script>
             ```
             </details>
-4. 使用组件：
+3. 使用组件：
 
     1. `<组件名/>`
 
@@ -1113,7 +1237,7 @@
     4. `<keep-alive/>`
 
         `<keep-alive>组件</keep-alive>`，会缓存不活动的组件实例，而不是销毁、重建。当组件在其内被切换时，组件的`activated`、`deactivated`被对应执行。
-5. 通信
+4. 通信
 
     >组件（Vue实例）有自己独立的作用域，虽然可以访问到互相依赖关系（`vm.$parent`、`vm.$children`、`vm.$refs`），但是不推荐（不允许）通过依赖获取、修改数据。
 
@@ -1225,12 +1349,174 @@
         2. 父 -> 子：触发子组件的方法
 
             1. 父级引用子组件通过`$refs`直接调用子组件的方法（`vm.$refs.子组件引用名.子组件的methods方法()`）。
-            2. 父级通过传递`props`，子组件`watch`而触发子组件方法（或其他方式让子组件能够`watch`而执行的方式，如：vuex）。
+            2. 父级通过传递`props`，子组件`watch`而触发子组件方法（或其他方式让子组件能够`watch`而执行的方式，如：vuex、pinia）。
     2. 非父子组件通信
 
-        1. 通用
+        1. 祖孙组件间的通信
 
-            1. 在简单的场景下，可以使用一个空的Vue实例作为中央事件总线。
+            1. 通过`provide/inject`从祖辈向所有孙辈传递（不是响应式的，除非传递一个观察对象）数据
+
+                >可以传递组件的Vue实例，提供给孙辈调用。
+            2. 逐层传递
+
+                1. 祖（`props`） -> 孙：逐层往下传递
+                2. 孙（`vm.$emit`） -> 祖：逐层往上传递
+
+                    <details>
+                    <summary>e.g.</summary>
+
+                    1. 祖辈
+
+                        ```html
+                        <template>
+                          <Emit1
+                            @transmission="transmission"
+                          />
+                        </template>
+
+                        <script>
+                        import Emit1 from '@/components/Emit1'
+
+                        export default {
+                          name: 'Emit',
+                          components: {
+                            Emit1
+                          },
+                          methods: {
+                            transmission (...data) {
+                              console.log('transmission', ...data)
+                            }
+                          }
+                        }
+                        </script>
+                        ```
+                    2. 中间传递的子级
+
+                        1. 新增方法名（传递参数列表）
+
+                            ```vue
+                            <template>
+                              <Emit2
+                                @transmission="transmission"
+                              />
+                            </template>
+
+                            <script>
+                            import Emit2 from '@/components/Emit2'
+
+                            export default {
+                              components: {
+                                Emit2
+                              },
+                              methods: {
+                                transmission (...data) {
+                                  this.$emit('transmission', ...data)   // 传递参数列表
+                                }
+                              }
+                            }
+                            </script>
+                            ```
+                        2. 不增加方法名（传递参数列表组成的数组）
+
+                            ```vue
+                            <template>
+                              <div>
+                                <!-- 不能用`...`展开元素，和Babel不兼容 -->
+
+                                <Emit2
+                                  @transmission="$emit('transmission', Array.prototype.slice.call(arguments))"
+                                />
+                                <!-- 或 -->
+                                <Emit2
+                                  @transmission="(...data) => $emit('transmission', data)"
+                                />
+                              </div>
+                            </template>
+
+                            <script>
+                            import Emit2 from '@/components/Emit2'
+
+                            export default {
+                              components: {
+                                Emit2
+                              }
+                            }
+                            </script>
+                            ```
+                    3. 孙辈
+
+                        ```vue
+                        <template>
+                          <a href="javascript:" @click="$emit('transmission', 1, [], {a:3})">
+                            Emit2按钮
+                          </a>
+                        </template>
+                        ```
+                    </details>
+                3. `v-slot`和`<slot>`：逐层插槽
+
+                    <details>
+                    <summary>e.g.</summary>
+
+                    ```vue
+                    // 祖辈
+                    <template>
+                      <Son>
+                        <template v-slot:next="sonData">
+                          {{ sonData }}
+                          <br>
+                          祖辈信息
+                        </template>
+                      </Son>
+                    </template>
+
+                    <script>
+                    import Son from '@/components/Son.vue'
+
+                    export default {
+                      components: {
+                        Son
+                      }
+                    }
+                    </script>
+
+
+                    // 中间子级 Son.vue
+                    <template>
+                      <SonSon>
+                        <template v-slot:next="sonSonData">
+                          {{ sonSonData }}
+                          <br>
+                          <slot name="next" son1="son1" son2="son2" />
+                        </template>
+                      </SonSon>
+                    </template>
+
+                    <script>
+                    import SonSon from '@/components/SonSon.vue'
+
+                    export default {
+                      components: {
+                        SonSon
+                      }
+                    }
+                    </script>
+
+
+                    // 孙辈 SonSon.vue
+                    <template>
+                      <div>
+                        孙辈
+                        <br>
+                        <slot name="next" sonson1="sonson1" sonson2="sonson2" />
+                      </div>
+                    </template>
+                    ```
+                    </details>
+        2. 通用
+
+            1. 专门状态管理模式，如：[vuex](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#vuex)、[pinia](https://github.com/vuejs/pinia)。
+            2. 在简单的场景下，可以使用一个空的Vue实例作为中央事件总线。
 
                 ```js
                 const bus = new Vue()   // vm.$emit只能向自己的Vue实例发送触发事件通知
@@ -1241,166 +1527,8 @@
                 // 在组件 B 创建的钩子中监听事件
                 bus.$on('事件名', function (para) {})
                 ```
-            2. 或专门状态管理模式，如：[vuex](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#vuex)。
-        2. 祖孙组件间的通信
-
-            1. 通过`provide/inject`从祖辈向所有孙辈传递（不是响应式的，除非传递一个观察对象）数据
-
-                >（不推荐）可以传递组件的Vue实例，提供给祖辈或孙辈调用。
-            2. 祖（`props`） -> 孙：逐层往下传递
-            3. 孙（`vm.$emit`） -> 祖：逐层往上传递
-
-                <details>
-                <summary>e.g.</summary>
-
-                1. 祖辈
-
-                    ```html
-                    <template>
-                      <Emit1
-                        @transmission="transmission"
-                      />
-                    </template>
-
-                    <script>
-                    import Emit1 from '@/components/Emit1'
-
-                    export default {
-                      name: 'Emit',
-                      components: {
-                        Emit1
-                      },
-                      methods: {
-                        transmission (...data) {
-                          console.log('transmission', ...data)
-                        }
-                      }
-                    }
-                    </script>
-                    ```
-                2. 中间传递的子级
-
-                    1. 新增方法名（传递参数列表）
-
-                        ```vue
-                        <template>
-                          <Emit2
-                            @transmission="transmission"
-                          />
-                        </template>
-
-                        <script>
-                        import Emit2 from '@/components/Emit2'
-
-                        export default {
-                          components: {
-                            Emit2
-                          },
-                          methods: {
-                            transmission (...data) {
-                              this.$emit('transmission', ...data)   // 传递参数列表
-                            }
-                          }
-                        }
-                        </script>
-                        ```
-                    2. 不增加方法名（传递参数列表组成的数组）
-
-                        ```vue
-                        <template>
-                          <div>
-                            <!-- 不能用`...`展开元素，和Babel不兼容 -->
-
-                            <Emit2
-                              @transmission="$emit('transmission', Array.prototype.slice.call(arguments))"
-                            />
-                            <!-- 或 -->
-                            <Emit2
-                              @transmission="(...data) => $emit('transmission', data)"
-                            />
-                          </div>
-                        </template>
-
-                        <script>
-                        import Emit2 from '@/components/Emit2'
-
-                        export default {
-                          components: {
-                            Emit2
-                          }
-                        }
-                        </script>
-                        ```
-                3. 孙辈
-
-                    ```vue
-                    <template>
-                      <a href="javascript:" @click="$emit('transmission', 1, [], {a:3})">
-                        Emit2按钮
-                      </a>
-                    </template>
-                    ```
-                </details>
-            4. `v-slot`和`<slot>`：逐层插槽
-
-                <details>
-                <summary>e.g.</summary>
-
-                ```vue
-                // 祖辈
-                <template>
-                  <Son>
-                    <template v-slot:next="sonData">
-                      {{ sonData }}
-                      <br>
-                      祖辈信息
-                    </template>
-                  </Son>
-                </template>
-
-                <script>
-                import Son from '@/components/Son.vue'
-
-                export default {
-                  components: {
-                    Son
-                  }
-                }
-                </script>
-
-
-                // 中间子级 Son.vue
-                <template>
-                  <SonSon>
-                    <template v-slot:next="sonSonData">
-                      {{ sonSonData }}
-                      <br>
-                      <slot name="next" son1="son1" son2="son2" />
-                    </template>
-                  </SonSon>
-                </template>
-
-                <script>
-                import SonSon from '@/components/SonSon.vue'
-
-                export default {
-                  components: {
-                    SonSon
-                  }
-                }
-                </script>
-
-
-                // 孙辈 SonSon.vue
-                <template>
-                  <div>
-                    孙辈
-                    <br>
-                    <slot name="next" sonson1="sonson1" sonson2="sonson2" />
-                  </div>
-                </template>
-                ```
-                </details>
+            3. ~~其他能被任意地方调用的全局属性（如：cookie、Web Storage、window、等）~~
+            4. ~~`postMessage`（或`MessageChannel`）~~
 
     - 组件的API来自三部分
 
@@ -1409,7 +1537,7 @@
         1. `props`：允许外部环境传递数据给组件。
         2. `events`：允许从组件内触发外部环境的副作用。
         3. `slots`：允许外部环境将额外的内容组合在组件中。
-6. 内置组件
+5. 内置组件
 
     1. `<component/>`动态组件
     2. `<transition/>`
@@ -1746,10 +1874,14 @@
 >自制可复用的过渡组件：把`<transition/>`或`<transition-group/>`作为根组件。
 
 ### 插件（plugin）
+`Vue.use(对象 或 方法[, 参数])`
+
 ```js
-// 插件是.js文件，应当有一个公开的install方法
+// 插件是.js文件，应当有一个公开的install方法。若插件是一个函数，它被当做install方法
 const MyPlugin = {}
 MyPlugin.install = function (Vue, options) { // 第一个参数是Vue构造器，第二个参数是Vue.use时传入的可选参数对象
+  // 0. 插件可以包含所有Vue的全局设置
+
   // 1. 添加全局方法或属性
   Vue.myGlobalMethod = function () {
     // 逻辑...
@@ -1772,49 +1904,91 @@ MyPlugin.install = function (Vue, options) { // 第一个参数是Vue构造器�
 
 
 // 安装插件处使用
-Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻止多次注册相同插件，届时只会注册一次该插件。
+Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
+
+// ①Vue.use会自动阻止多次注册相同插件，届时只会注册一次该插件
+// ②必须在`new Vue()`之前调用`Vue.use()`才有效（其他全局设置，在任意时刻设置都有效）
 ```
 
->- 制作插件供Vue项目使用：
->
->    1. 导出包含`install`的对象，这样项目`Vue.use(引入的包含install的对象)`就全局注册该插件。
->    2. 也可导出具体的内容（如：组件、自定义指令），由项目选择：
->
->        1. 调用对应的全局API全局注册（如：`Vue.directive('自定义指令名', 导出的自定义指令对象)`）
->        2. 在项目本地插件内局部注册（如：`directives: { '自定义指令名': 导出的自定义指令对象 }`）。
->
->    - 可以合起来导出：
->
->        ```js
->        import 组件名字 from './路径/组件名字.vue'
->
->        组件名字.install = (Vue, options = {}) => {
->          // 具体install注册组件的各种方式
->        }
->
->        export default 组件名字
->        ```
->
->        <details>
->        <summary>不推荐</summary>
->
->        ```js
->        import 组件名字 from './路径/组件名字.vue'
->
->        const plugin = {
->          install (Vue, options = {}) {
->            // 具体install注册组件的各种方式
->          }
->        }
->
->        // 会导致一些打包模式下出问题
->        export {
->          plugin as default,
->
->          组件名字
->        }
->        ```
->        </details>
+- 制作插件供Vue项目使用：
+
+    1. 方案一：导出 包含`install`的对象 或 作为`install`的函数，这样引入者`Vue.use(插件)`就全局注册该插件。
+    2. 方案二：导出具体的内容（组件、自定义指令、过滤器、混入），由引入者选择：
+
+        1. 调用对应的全局注册API（如：`Vue.directive('自定义指令名', 导出的自定义指令对象)`）。
+        2. 在项目本地插件内局部注册（如：`directives: { '自定义指令名': 导出的自定义指令对象 }`）。
+
+    - 可以合起来导出：
+
+        ```js
+        import 组件名字 from './路径/组件名字.vue'
+
+        组件名字.install = (Vue, options = {}) => {
+          // 具体install注册组件的各种方式
+        }
+
+        export default 组件名字
+        ```
+
+        <details>
+        <summary>不推荐</summary>
+
+        ```js
+        import 组件名字 from './路径/组件名字.vue'
+
+        const plugin = {
+          install (Vue, options = {}) {
+            // 具体install注册组件的各种方式
+          }
+        }
+
+        // 会导致一些打包模式下出问题
+        export {
+          plugin as default,
+
+          组件名字
+        }
+        ```
+        </details>
+
+### 全局API
+1. `new Vue(包含组件选项的对象)`
+
+    创建一个Vue实例。
+2. `Vue.extend(包含组件选项的对象 或 Vue组件或Vue子类)`
+
+    使用基础Vue构造器，创建一个`Vue子类`。
+
+    >e.g. `const MyVue = Vue.extend(参数); new MyVue(参数)`：创建一个Vue实例（MyVue实例）。
+3. `Vue.nextTick(回调函数)`或`Vue.nextTick().then(回调函数)`
+
+    在下次DOM更新循环结束之后执行延迟回调函数。
+4. `Vue.set(响应式对象, 键/索引, 新值)`
+5. `Vue.delete(响应式对象, 键/索引)`
+6. `Vue.directive('自定义指令名'[, 钩子对象 或 带参数回调函数])`
+
+    注册或获取 **全局**自定义指令。
+7. `Vue.filter('过滤器名'[, 带参数回调函数])`
+
+    注册或获取 **全局**过滤器。
+8. `Vue.component('组件名'[, 包含组件选项的对象 或 Vue组件或Vue子类])`
+
+    注册或获取 **全局**组件。
+9. `Vue.mixin(包含组件选项的对象)`
+
+    注册 **全局**混入，影响注册之后所有创建的每个Vue实例。
+10. `Vue.use(`[插件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#插件plugin)`)`
+11. `Vue.compile(template字符串模板)`
+
+    将一个 template字符串模板 编译成 `包含render函数的对象`。
+
+    >只在[完整版](https://v2.cn.vuejs.org/v2/guide/installation.html#对不同构建版本的解释)时可用。
+12. `Vue.observable(对象)`
+
+    让一个对象可响应。返回的对象可以直接用于渲染函数和计算属性内，并且会在发生变更时触发相应的更新；也可以作为最小化的跨组件状态存储器。
+13. `Vue.version`
+
+    提供字符串形式的Vue安装版本号。
 
 ### 特性
 1. Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性），在内部`vm.名字`访问，可以直接使用，**所有属性名字都不能重复**（filters不属于同一类）；也有以`$`开头的Vue实例属性（如：`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
@@ -2409,7 +2583,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
     1. 组件最大限度复用：路由切换时，若两个路由都渲染同个组件，则不会销毁重建，而是直接复用，因此被复用的组件的生命周期钩子不会再被调用。
     2. 匹配优先级：有时候，同一个路径可以匹配多个路由，此时，匹配的优先级就按照路由的定义顺序：谁先定义的，谁的优先级就最高。
 
-### 用[pinia](https://github.com/vuejs/pinia)代替vuex
+### 用[pinia](https://github.com/vuejs/pinia)代替~~vuex~~
 
 #### [vuex](https://github.com/vuejs/vuex)
 >store的概念：vuex提供的容器，state的集合。
@@ -2670,7 +2844,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })  // Vue.use会自动阻�
 
 - 若在`new`Vue实例时，把（已经`Vue.use(Vuex)`的）Vuex.Store实例通过`store`属性注入，则子组件内就能通过`vm.$store`访问此Vuex实例。
 
-### 用[create-vue](https://github.com/vuejs/create-vue)代替vue-cli
+### 用[create-vue](https://github.com/vuejs/create-vue)代替~~vue-cli~~
 
 #### [vue-cli](https://github.com/vuejs/vue-cli)
 快速构建Vue应用的脚手架，可以使用Vue官方或第三方模板来进行Vue应用的配置，主要包括webpack等工具的配置。

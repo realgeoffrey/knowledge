@@ -134,7 +134,7 @@
 
         很容易将不必要的props传递给不相关的组件，或者将无效的HTML属性传递给DOM。需要谨慎的使用该语法，如：`const {children, xx, otherProps} = props; return <组件名 {...otherProps} />`。
 
-        >e.g. `<组件名 {...某对象} />`
+        >e.g. `<组件名 {...某对象} />`、`<组件名 {...{ key: value, }} />`
     4. 包含在开始和结束标签之间的表达式内容将作为特定属性：`props.children`
 
         1. 可插入内容：
@@ -1385,7 +1385,7 @@
             3. 服务端渲染
             4. 它自身抛出的错误
 
-                若一个错误边界无法渲染错误信息，则错误会冒泡至最近的上层错误边界。
+                若一个错误边界无法渲染错误信息，则错误会冒泡至最近（就近原则）的上层错误边界。
 
         >支持所有React渲染器：[react-error-boundary](https://github.com/bvaughn/react-error-boundary)（函数组件没有错误边界，可以直接用这个第三方库的class组件错误边界）
     5. 严格模式`<React.StrictMode>`
@@ -1604,7 +1604,7 @@
                 当`Provider`的`value`值发生变化时，它内部所有孙辈节点的`this.context`和`Consumer组件`都会重新渲染。
             3. 孙辈组件使用的2种方式：
 
-                从组件树中离自身最近匹配`Provider`中读取到当前的`context`值。
+                从组件树中离自身最近（就近原则）匹配`Provider`中读取到当前的`context`值。
 
                 1. `contextType`
 
@@ -1696,6 +1696,7 @@
         1. 状态管理（redux、mobx）
         2. 开发人员维护事件订阅机制（事件总线，event bus）
         3. ~~其他能被任意地方调用的全局属性（如：cookie、Web Storage、window、等）~~
+        4. ~~`postMessage`（或`MessageChannel`）~~
 
 >1. 若多个组件需要反映相同的变化数据，则将共享状态提升到最近的共同父组件中去。
 >
@@ -2248,7 +2249,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     >2. `useContext(MyContext)`只是让你能够读取`context`的值以及订阅`context`的变化。你仍然需要在上层组件树中使用`<MyContext.Provider>`来为下层组件提供`context`。
     ></details>
 
-    1. 当前的context值由上层组件中距离当前组件最近的`<MyContext.Provider>`的`value`属性决定。
+    1. 当前的context值由上层组件中距离当前组件最近（就近原则）的`<MyContext.Provider>`的`value`属性决定。
     2. 调用了`useContext`的组件总会在`context`值变化时重新渲染
 
         当组件上层最近的`<MyContext.Provider>`更新时，该Hook会触发重渲染，并使用最新传递给`<MyContext.Provider>`的value属性值。

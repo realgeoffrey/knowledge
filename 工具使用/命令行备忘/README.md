@@ -358,11 +358,12 @@ vi ~/.zshrc         # zsh
 
     ```shell
     # macOS、Linux
-    netstat -ant | grep 「端口号」
+    netstat -ant | grep 「端口号」   # 用于显示各种网络相关信息，如：网络连接，路由表，接口状态
 
-    lsof -i :「端口号」              # sudo su
-        -P # 不将端口号转换为服务名
+    # sudo su
+    lsof -i :「端口号」              # （列出打开文件，lists open files）展示用户权限下能看到的进程信息（进程名、pid、所有者、文件描述符、文件类型、磁盘名、文件大小、索引节点、文件名 或 主机名:服务名）
         -n # 不将IP地址转换为主机名
+        -P # 不将端口号转换为服务名
     ```
 3. 查看进程并杀死
 
@@ -386,7 +387,7 @@ vi ~/.zshrc         # zsh
 1. macOS、Linux
 
     ```shell
-    lsof -i :「端口号」              # sudo su
+    lsof -i :「端口号」 -n -P        # sudo su
 
     kill -9 「PID」
     # macOS的「活动监视器」也可以查到「PID」并关闭进程
