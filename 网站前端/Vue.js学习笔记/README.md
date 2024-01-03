@@ -764,9 +764,13 @@
     4. ~~`slot`~~（已废弃，用`v-slot`替代）
 
         父级向子组件引入内容。
+
+        `<组件 slot="名字"/>`或`<template slot="名字"><组件/></template>` 改为 `<template v-slot:名字><组件/></template>`。
     5. ~~`slot-scope`、`scope`~~（已废弃，用`v-slot`替代）
 
         父级使用子组件字符串的作用域名字。
+
+        `<组件 slot-scope="临时变量"/>`或`<template slot-scope="临时变量"><组件/></template>` 改为 `<template v-slot="临时变量"><组件/></template`。
 - <details>
 
     <summary>官方建议的顺序：<a href="https://v2.cn.vuejs.org/v2/style-guide/index.html#元素-attribute-的顺序推荐">元素特性的顺序</a></summary>
