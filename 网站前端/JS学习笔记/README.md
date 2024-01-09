@@ -3004,17 +3004,19 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                 3. 浏览器特性hack。
     3. 函数注释规范（使用部分[JSDoc](https://jsdoc.app/)）
 
+        >[@param](https://jsdoc.app/tags-param)、[@returns](https://jsdoc.app/tags-returns)。
+
         ```js
         /**
          * 方法描述
          * @constructor - （是否构造函数）
          * @param {Number} param1 - 参数描述，限制值为：1 描述|2 描述|3 描述
          * @param {Object|String|Boolean|Function|Array} param2 - 参数描述
-         * @param {*} [param3] - 可选参数
+         * @param {*} [param3] - 任意类型、可选参数
          * @param [param4 = 'default'] - 可选参数拥有默认值
          * @param {Object} param5 - 对象
          * @param {Object|String|Boolean|Function|Array} param5.param5_1 - 对象的属性描述
-         * @param {...Number} param6 - 可重复使用参数
+         * @param {...Number} param6 - 可重复使用参数（不好理解）
          * @returns {Object|Undefined} result - 参数描述
          */
         function func(param1, param2, param3, param4, param5, param6) {
@@ -3023,6 +3025,8 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
             return result;
         }
         ```
+
+        >jsdoc中类型的注释，大部分都可以用ts定义。
 7. JS编程风格总结（programming style）
 
     >参考：[阮一峰：JavaScript 编程风格](http://javascript.ruanyifeng.com/grammar/style.html)。
