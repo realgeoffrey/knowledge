@@ -1993,6 +1993,9 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 13. `Vue.version`
 
     提供字符串形式的Vue安装版本号。
+14. `Vue.config`
+
+    一个对象，包含 Vue 的全局配置。可以在启动应用（`new Vue()`）之前修改配置（启动之后设置无效）。
 
 ### 特性
 1. Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性），在内部`vm.名字`访问，可以直接使用，**所有属性名字都不能重复**（filters不属于同一类）；也有以`$`开头的Vue实例属性（如：`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。

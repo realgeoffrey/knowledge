@@ -235,6 +235,7 @@ npm（Node Package Manager）。
                         3. 版本范围：`>`、`>=`、`<`、`<=` + 版本号。范围中最后发布的版本。
 
                             >e.g. `npm install npm-devil@">=0.0.1 <0.0.5"`
+
                 3. 参数
 
                     1. `--force`、`-f`：强制重新安装。
@@ -243,6 +244,7 @@ npm（Node Package Manager）。
                     2. `--save`、`-S`：安装信息保存到`package.json`的`dependencies`（执行时依赖插件）。
                     3. `--save-dev`、`-D`：安装信息保存到`package.json`的`devDependencies`（开发时依赖插件）。
                     4. `--save-optional`、`-O`：安装信息保存到`package.json`的`optionalDependencies`。
+                    5. `--no-save`：不保存任何安装信息（不写入package.json、package-lock.json）。
             2. 作用域
 
                 1. 本地：在本地被`require`引入后使用。

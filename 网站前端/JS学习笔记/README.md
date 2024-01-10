@@ -2411,6 +2411,8 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     >来自：[MDN:Error](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Error)。
 
     错误类型：`Error`、`EvalError`、`RangeError`、`ReferenceError`、`SyntaxError`、`TypeError`、`URIError`。
+
+    >代码错误 或 `throw 错误类型`才包含堆栈信息，`throw 非错误类型`不包含堆栈信息。
 2. 自定义错误
 
     ```js
@@ -2437,7 +2439,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     ```
 4. 处理代码中抛出的错误
 
-    >语法错误无法被各种方式捕获。
+    >语法错误无法被各种方式捕获，e.g. `const a.c.`。
 
     1. `try-catch-finally`
 
@@ -2461,7 +2463,9 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
             1. `window.onerror`，若方法返回`true`，则浏览器不再显示错误信息。
             2. `window.addEventListener('error', (event) => {})`，若回调函数调用`event.preventDefault()`，则浏览器不再显示错误信息。
 
-        - 无法捕获：~~语法错误~~、~~静态资源异常~~、~~接口异常~~。
+        - 无法捕获：~~语法错误~~、~~接口异常~~。
+
+        >控制台同步的错误代码无法被`window`的`error`事件捕获，代码中、控制台异步的错误代码可以被捕获。
 
         ```js
         window.addEventListener('error', (event) => {
