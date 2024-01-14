@@ -20,6 +20,7 @@
     1. [Tips](#tips)
 1. [工具使用](#工具使用)
 
+    1. [Egg.js](#eggjs)
     1. [Koa](#koa)
     1. [express](#express)
     1. [pm2](#pm2)
@@ -1228,6 +1229,173 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 
 ---
 ## 工具使用
+
+### [Egg.js](https://github.com/eggjs/egg)
+- 特性
+
+    1. 「约定优于配置」
+
+        统一的约定（文件结构、插件引用方式、扩展逻辑，引用逻辑、参数与this的定义）。
+    2. 插件
+
+        1. 一个插件只做一件事
+        2. 一个插件可以包含
+
+            1. `extend`：扩展基础对象的上下文，提供各种工具类、属性。
+            2. `middleware`：增加一个或多个中间件，提供请求的前置、后置处理逻辑。
+            3. `config`：配置各个环境下插件自身的默认配置项。
+    3. 基于Koa
+
+        Koa：middleware（中间件）、context（上下文、ctx）、async-await
+1. 配置文件`./config/`
+
+    1. `config.default.js`
+
+        任何情况都使用，与其他配置文件合并使用。
+    2. `config.local.js`
+
+        开发模式。
+    3. `config.unittest.js`
+
+        测试模式。
+    4. `config.prod.js`
+
+        正式。
+    - 插件`plugin.js`
+
+        插件配置。可以包含：Service、中间件、配置、扩展；不包含：~~Router~~、~~Controller~~。它没有~~plugin.js~~，只能声明跟其他插件的依赖，而不能决定其他插件的开启与否。
+
+    供插件使用、安全配置、等，`app.config.属性`引用。
+2. 扩展`./app/extend/` +
+
+    1. `application.js`
+
+        扩展app。
+
+        >app对象指的是 Koa 的全局应用对象，全局只有一个，在应用启动时被创建。
+    1. `context.js`
+
+        扩展ctx。
+
+        >Context 指的是 Koa 的请求上下文，这是 请求级别 的对象，每次请求生成一个 Context 实例，简写成ctx。
+    1. `request.js`
+
+        扩展request。
+
+        >Request 对象和 Koa 的 Request 对象相同，是 请求级别 的对象，它提供了大量请求相关的属性和方法供使用。
+    1. `response.js`
+
+        扩展response。
+
+        >Response 对象和 Koa 的 Response 对象相同，是 请求级别 的对象，它提供了大量响应相关的属性和方法供使用。
+    1. `helper.js`
+
+        扩展`ctx.helper`。
+
+    - 能够根据环境选择指定扩展文件进行合并：`扩展名.环境.js`。e.g. `./app/extend/application.unittest.js`。
+3. 启动初始化`./app.js`、`./agent.js`
+
+    参数：`app`或`agent`
+
+    1. 事件：`server`、`error`、`request`、`response`
+    2. class原型链方法，定义生命周期
+4. 路由`./app/router.js`
+
+    参数：`app`
+
+>`this`属性：
+>
+>1. `.ctx`（`.request`、`.response`、`.app`、`.originalUrl`、`.req`、`.res`、`.socket`）
+>
+>    继承koa的ctx，请求级别 的对象，每次请求生成一个ctx实例。
+>2. `.app`（`.config`、`.controller`、`.loggers`、`.middlewares`、`.router`、`.env`、`.name`、`.baseDir`、`.subdomainOffset`、`.httpclient`、`.serviceClasses`）
+>3. `.config`
+>4. `.service`
+
+5. 控制器`./app/controller/`
+
+    导出对象方式，参数：`ctx`；导出class方式，实例：`this`。
+6. 服务`./app/service/`
+
+    实例：`this`。
+7. 中间件`./app/middleware/`
+
+    ```js
+    // config文件中配置传入
+    module.exports = (options) => {
+      return async function (ctx, next) {
+        // this === ctx
+        // await next()
+      }
+    }
+    ```
+
+    1. 全局
+
+        1. 开启中间件：在config文件加入配置
+
+            ```js
+            exports.middleware = ['中间件文件名', ];
+
+            exports.中间件文件名 = {  // 传入对应中间件的options
+              参数
+            };
+            ```
+        2. 在框架和插件中使用中间件
+    2. 局部（单路由生效）
+8. 通用函数`ctx.helper`
+
+    实例：`this`。
+9. 定时任务`./app/schedule/`
+
+    导出对象方式，参数：`ctx`；导出class方式，实例：`this`。
+10. 静态资源`./app/public/`
+
+- [目录结构](https://www.eggjs.org/zh-CN/basics/structure)
+
+    ```text
+    egg-project
+    ├── package.json
+    ├── app.js (可选)                    # 自定义启动时的初始化工作，可选
+    ├── agent.js (可选)                  # 自定义启动时的初始化工作（agent），可选
+    ├── app
+    |   ├── router.js                   # 配置 URL 路由规则
+    │   ├── controller                  # 解析用户的输入，处理后返回相应的结果
+    │   |   └── home.js
+    │   ├── service (可选)               # 编写业务逻辑层，可选，建议使用
+    │   |   └── user.js
+    │   ├── middleware (可选)            # 编写中间件，可选
+    │   |   └── response_time.js
+    │   ├── schedule (可选)              # 定时任务，可选
+    │   |   └── my_task.js
+    │   ├── public (可选)                # 放置静态资源，可选
+    │   |   └── reset.css
+    │   ├── view (可选)                  # 放置模板文件，可选，由模板插件约定
+    │   |   └── home.tpl
+    │   ├── model (可选)                 # 放置领域模型，可选，由领域类相关插件约定
+    │   |   └── home.js
+    │   └── extend (可选)                # 框架的扩展，可选
+    │       ├── helper.js (可选)
+    │       ├── request.js (可选)
+    │       ├── response.js (可选)
+    │       ├── context.js (可选)
+    │       ├── application.js (可选)
+    │       └── agent.js (可选)
+    ├── config
+    |   ├── plugin.js                   # 配置需要加载的插件
+    |   ├── config.default.js           # 编写配置文件 config/config.{env}.js
+    │   ├── config.prod.js
+    |   ├── config.test.js (可选)
+    |   ├── config.local.js (可选)
+    |   └── config.unittest.js (可选)
+    └── test                            # 单元测试
+        ├── middleware
+        |   └── response_time.test.js
+        └── controller
+            └── home.test.js
+    ```
+
+- 本地开发[egg-bin](https://github.com/eggjs/egg-bin)；生产运行[egg-scripts](https://github.com/eggjs/egg-scripts)。
 
 ### [Koa](https://github.com/koajs/koa)
 关键点：级联（洋葱模型） + 通过上下文（ctx）在中间件间传递数据 + ctx.body的值为HTTP响应数据。

@@ -871,3 +871,5 @@ feat(details): 添加了分享功能
 2. 使用[lint-staged](https://github.com/okonet/lint-staged)设置：针对git的staged文件进行lints操作（如：eslint、prettier、等）。
 
 配合效果：针对git的staged文件，在git hooks时期，进行lints操作（如：eslint、prettier、等）。
+
+>跳过git hooks：在大部分相关git命令后面加上`--no-verify`。

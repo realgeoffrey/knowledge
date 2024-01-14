@@ -3335,7 +3335,7 @@ nums 是一个非递减数组
 
 2. 解法二
 
-    暴力解法，利用一个新数据（空间复杂度O(m+n)），不推荐。
+    暴力解法，利用一个新数据（空间复杂度O(m+n)）。不推荐。
 
     ```js
     var merge = function (nums1, m, nums2, n) {
@@ -7302,7 +7302,7 @@ minStack.getMin();   --> 返回 -2.
 
 2. 解法二
 
-    深度优先遍历，不推荐。
+    深度优先遍历。不推荐。
 
     ```js
     var closedIsland = function (grid) {

@@ -13,10 +13,11 @@
 
 >随着技术的发展，有新的技术替代`桥协议`，如：JSI、等。
 >
->1. `桥协议`：JS和C++互相无感知，只能通过桥协议作为中间层，异步进行序列化/反序列化传输通讯。
->2. [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi)：将C++中的常用类型、定义的对象和函数 映射到JS中，支持JS随时调用C++中方法，有更高的性能、更低的通信开销。并且支持其他JS引擎。
+>1. `桥协议`：JS和C++互相无感知，只能通过桥协议作为中间层，**异步进行序列化/反序列化传输通讯**。
+>2. [JSI](https://reactnative.cn/docs/next/the-new-architecture/why#旧架构的问题)：将C++中的常用类型、定义的对象和函数 映射到JS中，支持JS随时调用C++中方法，有更高的性能、更低的通信开销（不需要再~~异步进行序列化/反序列化传输通讯~~，可以同步直接调用方法、传输多种类型数据）。并且支持其他JS引擎。
+>- `postMessage`实现通讯的方案，不影响底层实现是：桥协议的异步进行序列化/反序列化传输通讯 或 JSI实现。
 >
->约定：本篇内容中描述桥协议的部分，都可以用这些新技术替代（广义的桥协议：JS和原生代码之间互相传递数据、调用方法的技术）。
+>约定：本篇内容中描述桥协议的部分，都可以用这些新技术替代。
 
 ## WebView相关
 
@@ -25,7 +26,7 @@
 >
 >1. iOS：
 >
->    官方：[WKWebView](https://developer.apple.com/documentation/webkit/wkwebview)、[UIWebView](https://developer.apple.com/documentation/uikit/uiwebview)（不推荐）
+>    官方：[WKWebView](https://developer.apple.com/documentation/webkit/wkwebview)、~~[UIWebView](https://developer.apple.com/documentation/uikit/uiwebview)~~
 >2. Android：
 >
 >    1. 官方：[WebView](https://developer.android.com/reference/android/webkit/WebView)
@@ -88,21 +89,21 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 ### WebView的前端处理
 1. 与Native通信方式：
 
-    >1. 都是以**字符串**（数据用JSON字符串）的形式交互，向客户端传递：
+    >1. `桥协议`（JSI没有这个限制）都是以**字符串**（数据用JSON字符串）的形式交互，向客户端传递：
     >
     >    1. 全局的方法名 -> 客户端调用`window.方法名(JSON数据)`
     >    2. 匿名函数 -> 客户端调用`(匿名函数(JSON数据))`
     >2. WebView无法判断是否安装了其他App。
     >3. 可以通过`查看注入的全局方法`、或`客户端调用回调函数`（、或`navigator.userAgent`）来判定页面是否在具体App内打开。
     >4. `桥协议`仅在App内部起作用；`自定义URL Scheme`是系统层面，所以可以额外针对跨App起作用（如：分享去其他App）；iOS的**通用链接**可以认为是高级的`自定义URL Scheme`。
-    >5. Native和WebView交互需要时间，对时效性很高的操作会有问题。
+    >5. `桥协议`、`自定义URL Scheme`方式的Native和WebView交互需要时间，对时效性很高的操作会有问题；JSI认为是同步的。
 
     1. `桥协议`：Native注入全局方法至WebView的`window`，WebView调用则客户端拦截后触发Native行为。
 
         >1. 客户端注入方式：javascript伪协议方式`javascript: 代码`。
         >2. 注入JS代码可以在创建WebView之前（`[native code]`）或之后（全局变量JS注入）。
         >- 若注入的方法为`undefined`，则认为不在此App内部。
-    2. `自定义URL Scheme`：拦截跳转（`<iframe>`或`<img>`设置`src`、点击`<a>`、`window.location.href`），触发Native行为。
+    2. `自定义URL Scheme`：拦截跳转（`<iframe>`或`<img>`设置`src`、点击`<a href>`、调用`window.location.href =`），触发Native行为。
 
         ><details>
         ><summary><code>URL Scheme</code></summary>
@@ -117,7 +118,9 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         >5. 快速触发多次`自定义URL Scheme`，有时仅有最后一个产生效果。e.g. 用`window.location.href`快速触发多次，仅有最后一次跳转信息能够传递给客户端。
         >6. 想要实现这样的功能："关闭当前WebView，然后执行某功能"，若用`window.location.href`等触发`自定义URL Scheme`方式给客户端拦截，则可能WebView实例关闭后，事件无法被客户端捕获（类似：异步的`XMLHttpRequest`会随WebView实例关闭而被忽略）。可以尝试换用`桥协议`。
 
-        1. iOS
+        1. <details>
+
+            <summary>JS触发</summary>
 
             1. iOS8-
 
@@ -151,20 +154,22 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
                 >需要HTTPS域名配置、iOS设置等其他端配合。
 
                 >参考：[通用链接（Universal Links）的使用详解](http://www.hangge.com/blog/cache/detail_1554.html)、[Universal Link 前端部署采坑记](http://awhisper.github.io/2017/09/02/universallink/)、[Support Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html#//apple_ref/doc/uid/TP40016308-CH12-SW2)。
-        2. Android
+            4. Android
 
-            ```js
-            location.href = '自定义URL Scheme';    // 也可以用`<iframe>`
+                ```js
+                location.href = '自定义URL Scheme';    // 也可以用`<iframe>`
 
-            var start = Date.now();
-            setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）（浏览器非激活时，定时器执行时间会变慢/主线程被占用，所以会大于定时器时间之后才执行定时器内回调）
-              if (Date.now() - start < 3100) {  // 还在这个页面，认为没有安装App
-                location.href = '下载地址';
-              }
-            }, 3000);
-            ```
+                var start = Date.now();
+                setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到下载页（或做其他未安装App的事情）（浏览器非激活时，定时器执行时间会变慢/主线程被占用，所以会大于定时器时间之后才执行定时器内回调）
+                  if (Date.now() - start < 3100) {  // 还在这个页面，认为没有安装App
+                    location.href = '下载地址';
+                  }
+                }, 3000);
+                ```
+            </details>
+        2. <details>
 
-        - 在WebView中通过应用宝页面**下载/打开**其他APP
+            <summary>在WebView中通过应用宝页面<strong>下载/打开</strong>其他APP</summary>
 
             >参考：[关于微信中直接调起 Native App 的调研报告](https://blog.csdn.net/lixuepeng_001/article/details/78043418)。
 
@@ -190,15 +195,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
                         >若有一些特殊字符，则可以用`encodeURIComponent`转义属性名和属性值。
 
                 e.g. `https://a.app.qq.com/o/simple.jsp?pkgname=com.xx.xxx&ckey=xxxx&android_schema=xxxx://xx`
-
-        >1. 微信分享在部分系统（低于微信客户端Android6.2）使用~~pushState~~导致签名失败，可查询[官方文档](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115)；又因为一般是异步加载、配置微信的设置，所以要等待微信第三方文件和接口完成后才能够配置成功（才能够设置成功）。
-        >2. Android的微信、QQ等X5内核可以用 ~~<http://debugx5.qq.com/>~~（已失效）打开调试，支持「清除缓存」等操作。
-        >
-        >    iOS可以在 设置->通用->存储空间 清理缓存。
-        >3. 长按没有 ~~`src`~~ 的`<img>`：
-        >
-        >    1. 在iOS微信WebView，截屏这个`<img>`所在位置；
-        >    2. 其他情况，可能导致保存图片错误、或不能进行保存。
+            </details>
     3. WebView提供给Native调用的全局回调函数（或匿名函数）。
 
         ><details>
@@ -262,6 +259,8 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 
     4. 以 全双工通讯协议 作为桥梁通信，如：前端的websocket，客户端启动在后台的通信服务。
     5. RN前端和`<WebView>`组件通信：`postMessage`。
+
+        >`postMessage`实现通讯的方案，不影响底层实现是：桥协议的异步进行序列化/反序列化传输通讯 或 JSI实现。
 2. 根据WebView的[错误处理机制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#错误处理机制)统计用户在WebView遇到的bug。
 3. [WebView调试](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/代码调试相关/README.md#webview调试)
 4. 分享到其他App
