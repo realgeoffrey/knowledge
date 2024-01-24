@@ -5,6 +5,7 @@
 
     1. [Native提供给Hybrid宿主环境（WebView）](#native提供给hybrid宿主环境webview)
     1. [WebView的前端处理](#webview的前端处理)
+    1. [前端-客户端协议方案（前端方向）](#前端-客户端协议方案前端方向)
     1. [WebView性能](#webview性能)
 1. [其他语言2Native](#其他语言2native)
 
@@ -276,6 +277,25 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
     2. 需要触发时动态注入弹窗DOM和逻辑，再调用。
     3. 新制作一个前端的弹窗页面，需要触发时在原页面上层覆盖这个半屏弹窗页面。
     4. 客户端提供bridge或Scheme用于弹出客户端的弹窗，需要触发时唤起客户端的弹窗。
+
+### 前端-客户端协议方案（前端方向）
+1. js调用app的中间层代码，兼容实现`不同平台、不同app、环境准备成功与否`的逻辑
+
+    1. 支持：主动调用、事件通知、URL scheme
+    2. 支持：新app低成本接入
+2. 限制js调用的入参和出参（回调函数的类型 或 返回Promise的类型），参数结构统一
+
+    0. 协议规范（强类型）
+    1. 客户端返回的错误码规则（错误码决定错误类型，如：调用未注册接口、导致crash、参数问题）
+    2. js错误兜底（`try-catch`、超时时间），错误码处理（如：提示版本问题、提示升级、静默失败无反馈）
+3. 接口文档，如何根据代码自动生成（jsdoc、typedoc）
+
+    1. 接口demo调试页面 支持 页面实时运行的代码编辑体验（参考[ant-design](https://github.com/ant-design/ant-design)：利用[sandpack](https://github.com/codesandbox/sandpack)）
+4. *3端之间 降低沟通成功、提高变更同步效率
+
+    控制唯一的修改入口（前端、iOS、Android，仅选其一），由某一端人员定义协议，自动生成3端接口代码
+5. *接口成功率监控、告警，异常上报
+6. *流程接入工程化
 
 ### WebView性能
 >参考：[WebView性能、体验分析与优化](https://tech.meituan.com/2017/06/09/webviewperf.html)。

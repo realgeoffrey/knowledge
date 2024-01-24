@@ -1032,14 +1032,14 @@
     3. `beforeMount`
     4. `mounted`
 
-        >不判断子组件是否挂载完毕（虽然先子组件再父组件的挂载顺序）。若希望整个视图都渲染完毕，可以用`vm.$nextTick`。
+        >不判断子组件是否挂载完毕（虽然先子组件再父组件的挂载顺序）。若希望整个视图都渲染完毕（包括所有：自己、子级、父级、兄弟、所有），可以用`vm.$nextTick`。
 
     >页面加载后就要展现的数据，可以在`created`、`beforeMount`、`mounted`请求（`vue-router`、`nuxt`等封装了更方便的钩子，可控制更多执行时机，如：路由切换前后、数据加载完毕前后）。
 
     5. `beforeUpdate`
     6. `updated`
 
-        >不判断子组件是否更新完毕（虽然先子组件再父组件的更新顺序）。若希望整个视图都渲染完毕，可以用`vm.$nextTick`。
+        >不判断子组件是否更新完毕（虽然先子组件再父组件的更新顺序）。若希望整个视图都渲染完毕（包括所有：自己、子级、父级、兄弟、所有），可以用`vm.$nextTick`。
     7. `activated`
 
         >`<keep-alive/>`组件特有，内部组件激活时在内部组件调用。
@@ -1352,7 +1352,8 @@
         2. 父 -> 子：触发子组件的方法
 
             1. 父级引用子组件通过`$refs`直接调用子组件的方法（`vm.$refs.子组件引用名.子组件的methods方法()`）。
-            2. 父级通过传递`props`，子组件`watch`而触发子组件方法（或其他方式让子组件能够`watch`而执行的方式，如：vuex、pinia）。
+            2. 父级引用子组件通过`$refs`直接触发子组件事件，子组件监听后触发子组件方法（父：`vm.$refs.子组件引用名.$emit("子组件事件名")`，子：`vm.$on("子组件事件名", function () {}`）。
+            3. 父级通过传递`props`，子组件`watch`而触发子组件方法（或其他方式让子组件能够`watch`而执行的方式，如：vuex、pinia）。
     2. 非父子组件通信
 
         1. 祖孙组件间的通信
@@ -2321,7 +2322,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     1. 2
 
-        定义数据变量要在`data(){}`，创建的方法要在`methods:{}`中，计算属性要在`computed:{}`中，生命周期钩子要在组件属性中调用，父子通信用`this.props/emit`。
+        定义数据变量要在`data(){}`，创建的方法要在`methods:{}`中，计算属性要在`computed:{}`中，生命周期钩子要在组件属性中调用，父子通信用`this.props/$emit`。
 
         ><details>
         ><summary>e.g.</summary>
@@ -2345,7 +2346,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         >  methods: {
         >    login () {
         >        // this.props
-        >        // this.emit
+        >        // this.$emit
         >    }
         >  },
         >  mounted () {}
@@ -2381,7 +2382,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         >
         >    const login = () => {
         >        // props
-        >        // content.emit
+        >        // content.$emit
         >    }
         >
         >    onMounted(()=>{})

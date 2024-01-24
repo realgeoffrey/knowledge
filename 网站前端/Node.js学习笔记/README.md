@@ -431,7 +431,9 @@ npm（Node Package Manager）。
 
         可执行脚本，用`npm run 脚本名`执行。
 
-        - 钩子：`pre`（命令之前执行）、`post`（命令之后执行）
+        - 钩子：`pre`（命令之前执行）、`post`（命令之后执行）、等
+
+            若执行时打印不出信息，则尝试执行时添加`--foreground-scripts`。[As of npm@7 these scripts run in the background. To see the output, run with: `--foreground-scripts`](https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-scripts).
 
     >`scripts`中命令能使用的环境变量：
     >
@@ -542,7 +544,7 @@ npm（Node Package Manager）。
 
         捐款。
 
-    - 其他命令特有的属性，可以在相应的命令/项目文档中找到如何使用它们：
+    - 其他依赖库需要使用的特有属性，可以在相应的依赖库文档中找到如何使用它们：
 
         1. `eslintConfig`
         2. `babel`
@@ -552,9 +554,13 @@ npm（Node Package Manager）。
         4. `gitHooks`
         5. `lint-staged`
         6. `sideEffects`
-        6. `exports`
-        6. `types`
-        6. `jest`
+
+            >webpack
+        7. `exports`
+        8. `types`
+        9. `jest`
+        10. `husky`
+        11. `「依赖库相关名字」`
 3. 包的制作-使用
 
     1. 制作：
@@ -1249,6 +1255,8 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         Koa：middleware（中间件）、context（上下文、ctx）、async-await
 1. 配置文件`./config/`
 
+    供插件使用、安全配置、等，`app.config.属性`引用。
+
     1. `config.default.js`
 
         任何情况都使用，与其他配置文件合并使用。
@@ -1264,8 +1272,6 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     - 插件`plugin.js`
 
         插件配置。可以包含：Service、中间件、配置、扩展；不包含：~~Router~~、~~Controller~~。它没有~~plugin.js~~，只能声明跟其他插件的依赖，而不能决定其他插件的开启与否。
-
-    供插件使用、安全配置、等，`app.config.属性`引用。
 2. 扩展`./app/extend/` +
 
     1. `application.js`
@@ -1277,17 +1283,17 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 
         扩展ctx。
 
-        >Context 指的是 Koa 的请求上下文，这是 请求级别 的对象，每次请求生成一个 Context 实例，简写成ctx。
+        >Context 指的是 Koa 的请求上下文，是**请求级别**的对象，每次请求生成一个 Context 实例，简写成ctx。
     1. `request.js`
 
         扩展request。
 
-        >Request 对象和 Koa 的 Request 对象相同，是 请求级别 的对象，它提供了大量请求相关的属性和方法供使用。
+        >Request 对象和 Koa 的 Request 对象相同，是**请求级别**的对象，它提供了大量请求相关的属性和方法供使用。
     1. `response.js`
 
         扩展response。
 
-        >Response 对象和 Koa 的 Response 对象相同，是 请求级别 的对象，它提供了大量响应相关的属性和方法供使用。
+        >Response 对象和 Koa 的 Response 对象相同，是**请求级别**的对象，它提供了大量响应相关的属性和方法供使用。
     1. `helper.js`
 
         扩展`ctx.helper`。
@@ -1307,7 +1313,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 >
 >1. `.ctx`（`.request`、`.response`、`.app`、`.originalUrl`、`.req`、`.res`、`.socket`）
 >
->    继承koa的ctx，请求级别 的对象，每次请求生成一个ctx实例。
+>    继承koa的ctx，**请求级别**的对象，每次请求生成一个ctx实例。
 >2. `.app`（`.config`、`.controller`、`.loggers`、`.middlewares`、`.router`、`.env`、`.name`、`.baseDir`、`.subdomainOffset`、`.httpclient`、`.serviceClasses`）
 >3. `.config`
 >4. `.service`
@@ -1317,7 +1323,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     导出对象方式，参数：`ctx`；导出class方式，实例：`this`。
 6. 服务`./app/service/`
 
-    实例：`this`。
+    导出class方式，实例：`this`。
 7. 中间件`./app/middleware/`
 
     ```js
