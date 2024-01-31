@@ -108,7 +108,7 @@ npm（Node Package Manager）。
 
 1. `npm`CI
 
-    >在任意命令后添加`-h`、`--help`查看当前命令的所有参数。
+    >在任意命令后添加`-h`、`--help`查看当前命令的所有参数。在任意命令后添加`--verbose`查看完整日志。
 
     1. 制作
 
@@ -586,7 +586,7 @@ npm（Node Package Manager）。
 
     >`npm config ls -l`查看所有已有配置和默认配置。
 
-    - 常用：`package-lock`、`registry`。
+    - 常用：`package-lock`、`registry`、`audit`
     - 注释：`;`或`#`。
     - 优先级
 
@@ -1242,6 +1242,8 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     1. 「约定优于配置」
 
         统一的约定（文件结构、插件引用方式、扩展逻辑，引用逻辑、参数与this的定义）。
+
+        >在Koa的基础上进行增强最重要的就是基于一定的约定，根据功能差异将代码放到不同的目录下管理，对整体团队的开发成本提升有着明显的效果。
     2. 插件
 
         1. 一个插件只做一件事
@@ -1297,6 +1299,9 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     1. `helper.js`
 
         扩展`ctx.helper`。
+    1. `agent.js`
+
+        扩展agent。
 
     - 能够根据环境选择指定扩展文件进行合并：`扩展名.环境.js`。e.g. `./app/extend/application.unittest.js`。
 3. 启动初始化`./app.js`、`./agent.js`
@@ -1400,6 +1405,20 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         └── controller
             └── home.test.js
     ```
+- 加载顺序
+
+    ①按以下文件（夹）顺序，②插件->框架->应用，③依赖关系。
+
+    1. package.json
+    2. config/plugin.{env}.js
+    3. config/config.{env}.js
+    4. app/extend/application.js、app/extend/request.js、app/extend/response.js、app/extend/context.js、app/extend/helper.js
+    5. agent.js
+    6. app.js
+    7. app/service
+    8. app/middleware
+    9. app/controller
+    10. app/router.js
 
 - 本地开发[egg-bin](https://github.com/eggjs/egg-bin)；生产运行[egg-scripts](https://github.com/eggjs/egg-scripts)。
 

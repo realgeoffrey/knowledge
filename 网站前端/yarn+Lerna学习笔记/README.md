@@ -200,7 +200,7 @@
     }
     ```
 
->[Lerna中文文档](http://www.febeacon.com/lerna-docs-zh-cn/)
+>[Lerna中文网](https://lerna.nodejs.cn/)
 
 2. 初始化
 
@@ -333,6 +333,8 @@ Monorepo（单一仓库，monolithic repository）是一种软件开发管理策
     1. 优点：模块划分清晰，每个模块都是**独立**的 repo，利于团队协作
     2. 缺点：由于依赖关系，所以版本号需要手动控制、调试麻烦、issue难以管理
 3. Monorepo：
+
+    ><https://monorepo.tools>
 
     1. 优点：代码统一管理、方便统一处理issue和生成ChangeLog、调试代码`npm/yarn link`一把梭
     2. 缺点：统一构建、CI、测试和发布流程带来的技术挑战、项目体积变得更大、构建、安装依赖需要**包含所有仓库**
