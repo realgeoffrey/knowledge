@@ -2159,6 +2159,14 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
             >这就告诉React你的effect不依赖于props或state中的任何值，所以它永远都不需要重复执行。
 
             此时，effect内部的`props`和`state`就会一直保持其初始值。
+
+        - 当`依赖项`中没有包含所有需要的项时，会有eslint警告：React Hook useEffect has a missing dependency。去除警告方式：
+
+            0. 添加到`依赖项`
+            1. `useMemo`、`useCallback`返回`memoized`值后加入`依赖项`
+            2. eslint-disable
+            3. 需要依赖的变量/函数 移进useXX内部（不再成为依赖项）
+            4. 需要依赖的变量/函数 移出组件（不会随渲染变化，可以理解为静态的变量/函数）
     4. 可以把引用的函数放到effect内部，方便确认使用了哪些props和state。
     5. 使用`async-await`
 

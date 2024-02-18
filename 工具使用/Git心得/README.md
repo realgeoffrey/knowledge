@@ -7,6 +7,7 @@
 1. [命令生成commit message && changelog](#命令生成commit-message--changelog)
 1. [git-flow使用](#git-flow使用)
 1. [如何在一台电脑中使用2个（多个）SSH keys](#如何在一台电脑中使用2个多个ssh-keys)
+1. [推送到多个远程仓库](#推送到多个远程仓库)
 1. [设置gitconfig](#设置gitconfig)
 1. [.gitkeep文件](#gitkeep文件)
 1. [GitLab CI](#gitlab-ci)
@@ -742,6 +743,29 @@ feat(details): 添加了分享功能
             HostkeyAlgorithms +ssh-rsa
             PubkeyAcceptedAlgorithms +ssh-rsa
         ```
+
+### 推送到多个远程仓库
+>`git remote`都是操作`.git/config`的`[remote "别名"]`，如：
+>
+>```text
+>[remote "别名"]  # 默认别名：origin
+>	url = git@realgeoffrey.github.com:realgeoffrey/knowledge.git
+>	fetch = +refs/heads/*:refs/remotes/origin/*
+>```
+
+0. 查看跟踪的远程仓库
+
+    `git remote -v`或`--verbose`，包含`fetch`（拉取的远程仓库）、`push`/`url`（推送的远程仓库）
+1. 新增一个远程仓库别名
+
+    `git remote add 「别名」 「git远程仓库」`
+
+    - 推送：`git push 「别名」 「任意本地分支名，默认：本地所在分支名」:「任意远程分支名，默认：与前面名相同」`
+2. 原别名下新增一个推送去的远程仓库（`push`/`url`）
+
+    `git remote set-url --add 「原别名」 「git远程仓库」`
+
+    - 推送：单次推送会推送到原别名下所有`push`/`url`配置的远程仓库。
 
 ### 设置gitconfig
 >`git config --global或--local 「参数」`要把`--global或--local`写在第三个参数位置，否则无效。

@@ -424,7 +424,9 @@ function getLocation (url) {
             const searchItem = searchArr[i].split("=");
             const key = searchItem.shift() as string;
             const value = searchItem.join("="); // 兜底有些值包含"="
-            originalSearchObj[key] = value;
+            if (!Object.prototype.hasOwnProperty.call(originalSearchObj, key)) {  // 用第一次出现的
+              originalSearchObj[key] = value;
+            }
           }
         }
       }
@@ -484,7 +486,7 @@ function getLocation (url) {
         return urlWithoutHash + '?' + encodeURIComponent(name) + '=' + encodeURIComponent(value) + hash
       } else if (searchIndex === urlWithoutHash.length - 1) {
         if (value === false) {
-          return url.slice(0, urlWithoutHash.length - 1)
+          return url.slice(0, urlWithoutHash.length - 1) + hash
         }
         return urlWithoutHash + encodeURIComponent(name) + '=' + encodeURIComponent(value) + hash
       } else {
@@ -500,7 +502,9 @@ function getLocation (url) {
             const searchItem = searchArr[i].split('=')
             const key = searchItem.shift()
             const value = searchItem.join('=')
-            originalSearchObj[key] = value
+            if (!Object.prototype.hasOwnProperty.call(originalSearchObj, key)) {  // 用第一次出现的
+              originalSearchObj[key] = value
+            }
           }
         }
 

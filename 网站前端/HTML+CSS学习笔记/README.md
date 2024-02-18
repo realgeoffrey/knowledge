@@ -621,7 +621,7 @@
     1. [styled-components](https://github.com/styled-components/styled-components)
 
         生成随机类名的某HTML标签的新组件（在运行时解析样式并动态插入样式）。
-    2. JS内联样式（如：react写法）
+    2. 模板 内联样式（如：react`<div style=styles.div1>; const styles = {div1:{}}`、vue`<div :style="stylesDiv">; data () { return {stylesDiv:{}} }`）
 3. 原子化CSS（Atomic CSS）：[tailwindcss](https://github.com/tailwindlabs/tailwindcss)、[unocss](https://github.com/unocss/unocss)
 
     CSS样式库，一个个类名代表一个个CSS属性，拼凑的各类名替代拼凑的各CSS属性。

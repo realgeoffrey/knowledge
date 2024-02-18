@@ -117,7 +117,7 @@ npm（Node Package Manager）。
             `npm login`
         2. 初始化`package.json`
 
-            `npm init`
+            `npm init/create/innit`
 
             - 修改初始化信息
 
@@ -153,12 +153,12 @@ npm（Node Package Manager）。
                     - 取消：
 
                         引用本地模块的仓库：`npm unlink 模块名`
-        4. 发布（默认：发布至`latest`标签）
+        4. 发布
 
-            `npm publish [--tag <tag>]`
+            `npm publish [--tag <tag名，默认：latest>]`
 
-            >1. 除了latest，其他标签都不会默认被安装。最后推送的latest版本会显示在npm官网。
-            >2. 注意：设置源为npm的网站（`https://registry.npmjs.org/`）才可以推送到npm。
+            >1. 标签tag 和 版本号version关系：每次发布version需要设置tag，一个tag只对应一个version，tag指向最后发布到这个tag的version，可以删除tag（仅latest无法删除），version可以没有tag（tag被删除 或 被新的version设置同名tag）。
+            >2. 注意：设置源为npm的网站（`https://registry.npmjs.org/`）才可以推送到官方npm。
         5. 「下线」
 
             >`npm unpublish [<@scope>/]<pkg>[@<version>]`只能下线24小时内发布的版本。
@@ -185,28 +185,32 @@ npm（Node Package Manager）。
         3. 查看已安装模块是否需要升级
 
             `npm outdated [[<@scope>/]<pkg> ...]`
-        4. 查看、添加、删除仓库标签的最后版本
+        4. 查看、添加、删除 仓库的标签
 
-            >每个标签仅保留最后一个版本；latest标签无法删除。
+            >latest标签无法删除，仅有latest标签对npm有特殊意义；标签名可以自定义，能够无限制地新增、删除；每个标签仅指向最后指向这个标签的版本号。
 
             ```shell
-            npm dist-tag ls [<pkg>]
-            npm dist-tag add <pkg>@<version> [<tag>]
-            npm dist-tag rm <pkg> <tag>
+            npm dist-tag ls [<pkg>]                     # 打印所有标签
+            npm dist-tag add <pkg>@<version> [<tag>]    # 把一个版本号 发布到一个标签
+            npm dist-tag rm <pkg> <tag>                 # （发布）删除一个标签
+            # 删除一个标签 或 其他版本号发布了同名标签，会导致原版本号不再拥有标签
             ```
     3. 安装
 
-        > 改变安装包的顺序会影响安装包的内容和依赖。
+        >改变安装包的顺序会影响安装包的内容和依赖。
 
-        - 手动安装npm自己
+        - <details>
+
+            <summary>手动安装npm自己</summary>
 
             1. 在本地Node.js同目录下创建目录`node_modules\npm`；
             2. 下载并解压<https://github.com/npm/cli/releases>至本地Node.js同目录下的`node_modules\npm`；
             3. 拷贝`node_modules\npm\bin`下面的`npm`、`npm.cmd`（、`npx`、`npx.cmd`）到本地Node.js同目录下。
+            </details>
 
         1. 安装包
 
-            自动选择范围内最后发布的版本，安装到本地或全局的`node_modules`。全局安装会额外创建系统命令。
+            安装的版本号受version和tag影响。安装到本地或全局的`node_modules`。全局安装会额外创建系统命令。
 
             1. 安装方式
 
@@ -228,15 +232,21 @@ npm（Node Package Manager）。
                     >`主版本号.次版本号.补丁号`，详细定义查看[Semantic](http://semver.org/lang/zh-CN/)。
                 2. `npm install [<@scope>/]<name>[@<tag>]`
 
-                    1. 没有后缀，则最后发布的latest版本。
+                    >- 若不确定安装具体版本号，则按下面的方式查找安装范围：
+                    >
+                    >    0. 除了latest标签，其他标签都不会默认被安装；无标签的版本号可以被默认安装。
+                    >    1. 若范围内有latest标签，则使用latest标签的版本号。
+                    >    2. 若范围内没有latest标签，则选用 无标签、且版本号满足<https://semver.org/lang/zh-CN/>的非先行版、且最后发布的版本号；
+                    >    3. 若找不到满足前面要求的版本号，则安装报错。
+
+                    1. 没有后缀，查找安装范围。
                     2. `@内容`
 
                         1. 具体版本号
                         2. 标签
-                        3. 版本范围：`>`、`>=`、`<`、`<=` + 版本号。范围中最后发布的版本。
+                        3. 版本范围：`>`、`>=`、`<`、`<=` + 版本号，查找安装范围
 
                             >e.g. `npm install npm-devil@">=0.0.1 <0.0.5"`
-
                 3. 参数
 
                     1. `--force`、`-f`：强制重新安装。
@@ -306,11 +316,21 @@ npm（Node Package Manager）。
             非`-`开头的参数可以忽略`--`而传递。e.g. `npm run gulp runCss`等价于：`npm run gulp -- runCss`
 
             >执行的命令，优先找本地`node_modules/.bin`的命令，然后才找`$PATH`的命令（暂时未找到绕过**先找本地的**方法）。
-        2. [npx](https://github.com/zkat/npx)
+        2. [npx](https://github.com/npm/npx)
 
             >1. 去`node_modules/.bin`路径检查命令是否存在，找到之后执行；
             >2. 找不到，就去环境变量`$PATH`里，检查命令是否存在，找到之后执行;
             >3. 还是找不到，自动下载一个临时的依赖包最新版本在一个临时目录，然后再运行命令，运行完之后删除，不污染全局环境。
+        3. `npm exec`（类似npx）
+        4. `npm init/create/innit <initializer>` 等价于 `npm init/create/innit create-<initializer>`：安装`create-<initializer>`后执行其主bin，类似`npm exec`或`npx`。
+
+           ```shell
+           npm init foo -> npm exec create-foo
+           npm init @usr/foo -> npm exec @usr/create-foo
+           npm init @usr -> npm exec @usr/create
+           npm init @usr@2.0.0 -> npm exec @usr/create@2.0.0
+           npm init @usr/foo@2.0.0 -> npm exec @usr/create-foo@2.0.0
+           ```
 2. [`package.json`](https://docs.npmjs.com/cli/v9/configuring-npm/package-json)字段
 
     包描述、说明文件。
@@ -614,7 +634,7 @@ npm（Node Package Manager）。
           "「别名」": "npm:「[<@scope>/]<pkg>[@<version>]」"
         }
         ```
-    3. 使用时，根据引用名进入指定的版本中
+    3. 使用时，根据「别名」进入指定的版本中
 2. 发布一个其他依赖包，包含引用指定版本的目标依赖包，然后通过 其他依赖包+相对路径 引用
 
     >安装依赖（`npm install`）是从（项目根目录）最外层往（引用处）最里层安装，若本层已经有同名但不同版本的库文件夹，则往里层尝试安装。
@@ -1138,12 +1158,27 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     16. `DOMException`
 
 ### Tips
-1. 调试方法：
+1. Node.js调试方式：
 
     1. 控制台输出`console`等。
-    2. 通过Chrome的`<chrome://inspect/#devices>`，监听Node.js程序运行`node --inspect 文件`，可以使用`debugger`等进行断点调试。
+    2. 通过Chrome的`<chrome://inspect/#devices>`，监听Node.js程序运行`node --inspect 文件`，可以使用`debugger`等在代码中进行断点调试。
+    3. IDE调试
 
-        >[调试指南](https://nodejs.org/zh-cn/docs/guides/debugging-getting-started/)。
+        1. VSCode
+        2. WebStorm
+
+            右上角`运行/调试文件`（`调试文件`会自动添加`--inspect`、`运行文件`不会，因此配置和scripts中都不需添加 ~~`--inspect`~~），在IDE内拥有类似chrome调试有的所有操作。
+
+            >设置中关闭`不单步执行库脚本`。
+
+    - 拓展调试
+
+        1. typescript
+
+            **运行/调试配置 - Node.js**：设置Node解释器（interpreter）+ ts配置文件（tsconfig.json），如：[ts-node](https://github.com/TypeStrong/ts-node)。
+        2. 自动重启（如：nodemon、等）
+
+            **运行/调试配置 - npm**：设置执行相关scripts，如：`"nodemon index.js"`、`"nodemon -e ts,tsx --exec ts-node index.ts"`（或通过配置文件）。
 2. 服务端开发注意点：
 
     1. 相对于客户端，服务端要处理大量并发的请求。
@@ -1159,7 +1194,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         对各种IO要进行异常处理（如：`try-catch`包裹所有IO代码），并需要把错误上报（打日志`console`或借助第三方监控告警）。
 3. 与浏览器JS的区别
 
-    除了全局变量、提供的模块、模块系统、API不同之外，在Node.js中，可以控制运行环境：除非构建的是任何人都可以在任何地方部署的开源应用程序，否则开发者知道会在哪个版本的Node.js上运行该应用程序。与浏览器环境（无法选择访客会使用的浏览器）相比起来，这非常方便。
+    除了全局变量、提供的模块、模块系统、API不同之外，在Node.js中，可以控制运行环境：除非构建的是任何人都可以在任何地方部署的开源应用程序，否则开发者知道会在哪个版本的Node.js上运行该应用程序——与浏览器环境（无法选择访客会使用的浏览器）相比起来非常方便。
 4. Node.js运行环境退出（命令行执行完毕后自动退出）：
 
     代码运行完毕。包括：执行队列、任务队列、等待加入任务队列的其他线程任务，全都执行完毕，当不会有新的指令需要执行时，就自动退出Node.js的进程。e.g. 监听系统端口 或 `setTimeout`还未触发，意味着还有事件需要待执行。
@@ -1167,11 +1202,9 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 6. [CLI命令行](http://nodejs.cn/api/cli.html)（`man node`）
 
     ```shell
-    node [options] [V8 options] [<program-entry-point> | -e "script" | -] [--] [arguments]
-
-    node inspect [<program-entry-point> | -e "script" | <host>:<port>] …
-
-    node --v8-options
+    node [options] [v8-options] [-e string | script.js | -] [--] [arguments ...]
+    node inspect [-e string | script.js | - | <host>:<port>] ...
+    node [--v8-options]
     ```
 
     1. 不带参数执行以启动交互式解释器。
@@ -1179,57 +1212,54 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     3. `--`：指示 node 选项的结束。 将其余参数传给脚本。 如果在此之前没有提供脚本文件名或评估/打印脚本，则下一个参数用作脚本文件名。
 
     >`node -e "「js代码文本」"`：eval执行字符串；`node -p "「js代码文本」"`：eval执行字符串（`-e`）并打印。
-7. 返回的内容的属性值为`undefined`的，可能会把这个属性去除。
-8. 抓包Node.js发起的http/https请求
+7. 抓包Node.js发起的http/https请求
 
     1. 本机全局代理到抓包软件、或用Proxifier等软件转发到抓包软件
-    2. 或 代码设置Node.js发起请求时通过代理转发
+    2. <details>
 
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >1. Node.js的`host`和`port`参数
-        >
-        >    ```js
-        >    const http = require("http");
-        >    const req = http.request(
-        >      {
-        >        port: "8899",      // 代理端口
-        >        host: "127.0.0.1", // 代理地址
-        >
-        >        path: "http://127.0.0.1:8080/", // 访问地址
-        >        method: "POST",
-        >        headers: {
-        >          "Content-Type": "application/json; charset=UTF-8",
-        >        },
-        >      },
-        >      (res) => {
-        >        res.setEncoding("utf8");
-        >        let body = "";
-        >        res.on("data", (chunk) => {
-        >          body += chunk || "";
-        >        });
-        >        res.on("end", () => {
-        >          console.log(body); // body是POST请求后返回的响应body
-        >          // 返回接受完成
-        >        });
-        >      }
-        >    );
-        >
-        >    req.on("error", (e) => {
-        >      console.warn(e);
-        >    });
-        >
-        >    req.write(JSON.stringify({ a: "发起的请求body" })); // 保证：发起请求的body和请求头匹配
-        >    req.end();
-        >    ```
-        >2. [axios](https://github.com/axios/axios)的`proxy`参数
-        >3. [request](https://github.com/request/request)的`proxy`参数
-        ></details>
-9. 最外层`return`语句
+        <summary>或 代码设置Node.js发起请求时通过代理转发</summary>
+
+        1. Node.js的`host`和`port`参数
+
+            ```js
+            const http = require("http");
+            const req = http.request(
+              {
+                port: "8899",      // 代理端口
+                host: "127.0.0.1", // 代理地址
+
+                path: "http://127.0.0.1:8080/", // 访问地址
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json; charset=UTF-8",
+                },
+              },
+              (res) => {
+                res.setEncoding("utf8");
+                let body = "";
+                res.on("data", (chunk) => {
+                  body += chunk || "";
+                });
+                res.on("end", () => {
+                  console.log(body); // body是POST请求后返回的响应body
+                  // 返回接受完成
+                });
+              }
+            );
+
+            req.on("error", (e) => {
+              console.warn(e);
+            });
+
+            req.write(JSON.stringify({ a: "发起的请求body" })); // 保证：发起请求的body和请求头匹配
+            req.end();
+            ```
+        2. [axios](https://github.com/axios/axios)的`proxy`参数
+        3. [request](https://github.com/request/request)的`proxy`参数
+8. 最外层`return`语句
 
     Node.js支持最外层`return`语句，作为文件执行完毕作用（不影响命令的退出码）。浏览器不允许 ~~最外层`return`语句~~，会报错。
-10. Node.js可以用ES6 Module规范运行文件
+9. Node.js可以用ES6 Module规范运行文件
 
     `.mjs`文件总是以ES6 Module规范加载，`.cjs`文件总是以CommonJS规范加载，`.js`文件的加载取决于`package.json`的`type`字段的设置（`"module"`、`"commonjs"`默认）。
 
@@ -1239,159 +1269,289 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 ### [Egg.js](https://github.com/eggjs/egg)
 - 特性
 
-    1. 「约定优于配置」
+    0. 基于Koa
+
+        Koa：middleware（中间件，洋葱模型）、context（上下文、ctx）、async-await
+    1. **约定优于配置**
 
         统一的约定（文件结构、插件引用方式、扩展逻辑，引用逻辑、参数与this的定义）。
 
-        >在Koa的基础上进行增强最重要的就是基于一定的约定，根据功能差异将代码放到不同的目录下管理，对整体团队的开发成本提升有着明显的效果。
+        >在Koa的基础上进行增强最重要的就是基于一定的约定，根据功能差异将代码放到不同的目录下管理，从而极大降低应用的开发成本。
     2. 插件
 
-        1. 一个插件只做一件事
-        2. 一个插件可以包含
+        1. 一个插件只做具体的一件事，但插件间可以有依赖关系
+        2. 一个插件除了不包含 ~~./app/router.js~~、~~./app/controller/~~、~~./config/plugin.js~~ 之外，其他配置和应用一致
 
-            1. `extend`：扩展基础对象的上下文，提供各种工具类、属性。
-            2. `middleware`：增加一个或多个中间件，提供请求的前置、后置处理逻辑。
-            3. `config`：配置各个环境下插件自身的默认配置项。
-    3. 基于Koa
+        - 插件目录结构
 
-        Koa：middleware（中间件）、context（上下文、ctx）、async-await
-1. 配置文件`./config/`
+            ```text
+            ├── 其他文件（夹）
+            ├── config
+            │   └── config.default.js
+            └── package.json
+            ```
 
-    供插件使用、安全配置、等，`app.config.属性`引用。
+            ```json
+            # package.json
+            {
+              "eggPlugin": {
+                "name": "myPlugin",                             # 插件名，配置依赖关系时会指定依赖插件的 name
+                "dependencies": [ "registry" ],                 # 当前插件强依赖的插件列表（如果依赖的插件没找到，应用启动失败）
+                "optionalDependencies": [ "vip" ],              # 当前插件的可选依赖插件列表（如果依赖的插件未开启，只会 warning，不会影响应用启动）
+                "env": [ "local", "test", "unittest", "prod" ]  # 指定在某些运行环境才开启当前插件
+              },
+            }
+            ```
+    3. 框架
+
+        >egg可以理解为最底层的框架，该框架默认包含若干基本插件、中间件、以及其他配置项。
+
+        1. 框架是一个启动器（默认是 Egg），有了框架应用才能运行。框架起到封装器的作用，将多个插件的功能聚合起来统一提供。框架可以嵌套框架
+        2. 一个框架除了不包含 ~~./app/router.js~~、~~./app/controller/~~ 之外，其他配置和应用一致
+
+        - 应用或框架 引用框架
+
+            ```json
+            # package.json
+            {
+              "egg": {
+                "framework": "框架仓库名"    # 默认：egg
+              },
+            }
+            ```
+1. 插件引用`./config/plugin.js`或`./config/plugin.{env}.js`
+
+    >不存在 ~~`plugin.default.js`~~。
+
+    ```js
+    // ./config/plugin.js ①插件引用
+    exports.插件名 = {
+      enable: true, // 是否开启（默认：true）
+      package: 'egg-myPlugin', // 从 node_modules 中引入
+      path: path.join(__dirname, '../lib/plugin/egg-mysql'), // 从本地目录中引入
+      env: ['local', 'unittest', 'prod'] // 只有在指定运行环境才能开启
+    }
+
+
+    // ./config/config.{env}.js ②插件配置
+    exports.插件名 = {
+      hello: 'world'
+    }
+
+
+    // ③除了提供的配置之外，还可以直接使用插件提供的功能
+    app.插件名.xxx()
+    ```
+2. 配置文件`./config/config.{env}.js`
+
+    导出对象方式；导出方法方式，参数：`appInfo: {pkg,name,baseDir,HOME,root}`，返回对象。
+
+    `app.config.属性`使用。
 
     1. `config.default.js`
 
-        任何情况都使用，与其他配置文件合并使用。
-    2. `config.local.js`
+        任何情况都使用，与其他配置文件合并使用（通过[extend2](https://github.com/eggjs/extend2)深复制），其他配置优先级高于default。
 
-        开发模式。
-    3. `config.unittest.js`
+        ```js
+        module.exports = {
+          // 全局配置中间件：
 
-        测试模式。
-    4. `config.prod.js`
+          // 配置需要的中间件，数组顺序即为中间件的加载顺序
+          middleware: [ '中间件文件名', ],
+          // 中间件的 options 参数
+          中间件文件名: {
+            // 通用配置（enable、match、ignore）
+            enable: true, // 或 match或ignore: 正则匹配路由才使用当前中间件
+            配置
+          },
 
-        正式。
-    - 插件`plugin.js`
 
-        插件配置。可以包含：Service、中间件、配置、扩展；不包含：~~Router~~、~~Controller~~。它没有~~plugin.js~~，只能声明跟其他插件的依赖，而不能决定其他插件的开启与否。
-2. 扩展`./app/extend/` +
+          // 插件的参数
+          插件名: {
+            配置
+          }
+        }
+        ```
+    2. `config.local.js`开发模式、`config.unittest.js`测试模式、`config.prod.js`正式、其他自定义环境名
 
-    1. `application.js`
+    - 插件、框架、应用 之间的配置文件 以及 具体环境、default 之间的配置文件，都是通过文件合并（通过[extend2](https://github.com/eggjs/extend2)深复制），而不是互相覆盖。
+3. 扩展`./app/extend/` +
+
+    1. `application.js`或`application.{env}.js`
 
         扩展app。
 
         >app对象指的是 Koa 的全局应用对象，全局只有一个，在应用启动时被创建。
-    1. `context.js`
-
-        扩展ctx。
-
-        >Context 指的是 Koa 的请求上下文，是**请求级别**的对象，每次请求生成一个 Context 实例，简写成ctx。
-    1. `request.js`
+    2. `request.js`或`request.{env}.js`
 
         扩展request。
 
         >Request 对象和 Koa 的 Request 对象相同，是**请求级别**的对象，它提供了大量请求相关的属性和方法供使用。
-    1. `response.js`
+    3. `response.js`或`response.{env}.js`
 
         扩展response。
 
         >Response 对象和 Koa 的 Response 对象相同，是**请求级别**的对象，它提供了大量响应相关的属性和方法供使用。
-    1. `helper.js`
+    4. `context.js`或`context.{env}.js`
 
-        扩展`ctx.helper`。
-    1. `agent.js`
+        扩展ctx。
+
+        >Context 指的是 Koa 的请求上下文，是**请求级别**的对象，每次请求生成一个 Context 实例，简写成ctx。
+    5. `helper.js`或`helper.{env}.js`
+
+        扩展`ctx.helper.方法名()`、模板中直接使用`{{ helper.方法名() }}`。
+
+        >定义的方法内，实例`this`等于helper对象，可以调用其他helper方法。
+    6. `agent.js`或`agent.{env}.js`
 
         扩展agent。
+- 运行环境
 
-    - 能够根据环境选择指定扩展文件进行合并：`扩展名.环境.js`。e.g. `./app/extend/application.unittest.js`。
-3. 启动初始化`./app.js`、`./agent.js`
+    1. 设置：`./app/config/env`文件内容 或 环境变量`EGG_SERVER_ENV`的值 或 根据环境变量`NODE_ENV`设置
+    2. 代码获取：`app.config.env`
+    3. 影响：不同的运行环境会对应egg不同的配置（config、plugin、extend）以及不同内部逻辑
+    4. [与环境变量`NODE_ENV`关系](Https://www.eggjs.org/zh-CN/basics/env#与-node_env-的区别)
+4. 启动初始化`./agent.js`、`./app.js`
 
-    参数：`app`或`agent`
+    参数：`agent`或`app`
 
-    1. 事件：`server`、`error`、`request`、`response`
-    2. class原型链方法，定义生命周期
-4. 路由`./app/router.js`
+    1. 事件（`.on/once`）：`server`、`error`、`request`、`response`
+    2. 导出class原型链方法（导出函数方式已作废），定义生命周期：
 
-    参数：`app`
+        1. 配置文件即将加载，为修改配置的最后机会（`configWillLoad`）
+        2. 配置文件已加载完成（`configDidLoad`）
+        3. 文件已加载完成（`didLoad`）
+        4. 插件启动完毕（`willReady`）
+        5. worker 准备就绪（`didReady`）
+        6. 应用启动完成（`serverDidReady`）
+        7. 应用即将关闭（`beforeClose`）
 
 >`this`属性：
 >
->1. `.ctx`（`.request`、`.response`、`.app`、`.originalUrl`、`.req`、`.res`、`.socket`）
+>1. `.ctx`（`.request`、`.response`、`.app`、`.originalUrl`、`.req`、`.res`、`.socket`、`.logger`、`.helper`、`.service`）
 >
 >    继承koa的ctx，**请求级别**的对象，每次请求生成一个ctx实例。
->2. `.app`（`.config`、`.controller`、`.loggers`、`.middlewares`、`.router`、`.env`、`.name`、`.baseDir`、`.subdomainOffset`、`.httpclient`、`.serviceClasses`）
+>2. `.app`（`.config`、`.controller`、`.loggers`、`logger`、`.middlewares`、`.middleware`、`.router`、`.env`、`.name`、`.baseDir`、`.subdomainOffset`、`.httpclient`、`.serviceClasses`）
 >3. `.config`
 >4. `.service`
+>5. `.logger`
 
-5. 控制器`./app/controller/`
-
-    导出对象方式，参数：`ctx`；导出class方式，实例：`this`。
-6. 服务`./app/service/`
+5. 服务`./app/service/`
 
     导出class方式，实例：`this`。
-7. 中间件`./app/middleware/`
+
+    懒加载，只有使用时框架才实例化，`this.service.`、`ctx.service.`使用。**请求级别**的对象。
+
+    >Service在复杂业务场景下用于做业务逻辑封装的一个抽象层：处理复杂业务逻辑；调用数据库或第三方服务。
+6. 中间件`./app/middleware/`
+
+    导出方法，参数：`options, app`（options：中间件的配置项，会将`app.config.中间件文件名`的值传递进来），这个方法返回中间件（参数：`ctx, next`）。
 
     ```js
-    // config文件中配置传入
-    module.exports = (options) => {
-      return async function (ctx, next) {
+    // ./app/middleware/中间件文件名.js
+    module.exports = (options, app) => {
+      return async function (ctx, next) {   // 返回中间件
         // this === ctx
         // await next()
       }
     }
     ```
 
-    1. 全局
+    1. 全局使用中间件（会处理每一个请求）：
 
-        1. 开启中间件：在config文件加入配置
+        1. 在应用中使用：
 
             ```js
-            exports.middleware = ['中间件文件名', ];
-
+            // 在`./config/config.{env}.js`中配置：参数、开启
+            exports.middleware = ['中间件文件名', ];  // 开启
             exports.中间件文件名 = {  // 传入对应中间件的options
               参数
             };
-            ```
-        2. 在框架和插件中使用中间件
-    2. 局部（单路由生效）
-8. 通用函数`ctx.helper`
 
-    实例：`this`。
+            // 该配置最终将在启动时合并到`app.config.appMiddleware`
+            ```
+        2. 在框架和插件中使用：
+
+            框架和插件不支持 ~~在 config.{env}.js 中匹配 middleware~~（但可以配置参数），需要用以下方式添加：
+
+            ```js
+            // 在`./config/config.{env}.js`中配置：仅参数。不能开启中间件
+            // exports.middleware = ['中间件文件名', ];  // 不支持开启中间件
+            exports.中间件文件名 = {  // 传入对应中间件的options
+              参数
+            };
+
+
+            // 在`./app.js`中配置：开启
+            module.exports = app => {
+              // 在中间件最前面（或任意项位置）添加
+              app.config.coreMiddleware.unshift('xx');
+            };
+            ```
+
+        应用层定义的中间件（`app.config.appMiddleware`）和框架默认中间件（`app.config.coreMiddleware`）都会被加载器加载，并挂载到 `app.middleware` 上。
+    2. 局部使用中间件（单路由生效）
+
+        ```js
+        // 在`./app/router.js`中配置：参数、开启
+        module.exports = app => {
+          const xx = app.middleware.xx({ threshold: 1024 });    // 手动传入options
+          app.router.get('/', xx, app.controller.handler);
+        };
+        ```
+    - 框架、插件、应用 中的配置的中间件，不能有任何同名，否则启动时报错。
+7. 控制器`./app/controller/`
+
+    导出class方式，实例：`this`；导出对象方式，属性方法参数：`ctx`（不推荐）。
+
+    `app.controller.`使用，一般仅在router.js中使用。
+8. 路由`./app/router.js`
+
+    导出方法，参数：`app`。
+
+    不提供给开发者引用，主要用来描述请求 URL 和具体承担执行动作的 Controller 的对应关系，框架约定了 app/router.js 文件用于统一所有路由规则；路由 -> 控制器 -> 执行各种逻辑（包括service等）。
+
+    ```js
+    module.exports = app => {
+      const { router, controller } = app;
+
+      // 优先完全匹配；若非完全匹配，则从上往下匹配；若一个路由匹配成功，则不再匹配剩下路由
+
+      // 直接映射 controller...文件夹/文件名.方法名（其他类型引用方式类似）
+      router.all('/api/*', controller.home.api);
+      router.get('*', controller.x.xx.index);
+
+      // 通过冒号 `:x` 来捕获 URL 中的命名参数 x，放入 ctx.params.x
+      router.get('/user/:id/:name', controller.user.info)
+      // 通过自定义正则来捕获 URL 中的分组参数，放入 ctx.params 中
+      router.get(/^\/package\/([\w-.]+\/[\w-.]+)$/, controller.package.detail)
+
+      // 对 posts 按照 RESTful 风格映射到控制器 controller/posts.js 中
+      router.resources('posts', '/posts', controller.posts)
+
+      // 在 controller 处理之前添加任意数量的中间件
+      router.get('/api/home', app.middleware.slow({ threshold: 1 }), controller.home.index)
+    };
+    ```
+
+    >[完整路由定义](https://www.eggjs.org/zh-CN/basics/router#router-详细定义说明)。
 9. 定时任务`./app/schedule/`
 
-    导出对象方式，参数：`ctx`；导出class方式，实例：`this`。
+    从基类`Subscription`继承。导出对象方式；导出class方式，实例：`this`。导出内容的属性包含：`schedule`、`subscribe或task(ctx)`。
+
+    配置了就直接启动，或手动执行`app.runSchedule('文件名 或 完整绝对路径')`。
+
+    >1. 定时上报应用状态。
+    >2. 定时从远程接口更新本地缓存。
+    >3. 定时进行文件切割、临时文件删除。
 10. 静态资源`./app/public/`
 
+    默认映射`/public/*` -> `app/public/*`。
 - [目录结构](https://www.eggjs.org/zh-CN/basics/structure)
 
     ```text
     egg-project
     ├── package.json
-    ├── app.js (可选)                    # 自定义启动时的初始化工作，可选
-    ├── agent.js (可选)                  # 自定义启动时的初始化工作（agent），可选
-    ├── app
-    |   ├── router.js                   # 配置 URL 路由规则
-    │   ├── controller                  # 解析用户的输入，处理后返回相应的结果
-    │   |   └── home.js
-    │   ├── service (可选)               # 编写业务逻辑层，可选，建议使用
-    │   |   └── user.js
-    │   ├── middleware (可选)            # 编写中间件，可选
-    │   |   └── response_time.js
-    │   ├── schedule (可选)              # 定时任务，可选
-    │   |   └── my_task.js
-    │   ├── public (可选)                # 放置静态资源，可选
-    │   |   └── reset.css
-    │   ├── view (可选)                  # 放置模板文件，可选，由模板插件约定
-    │   |   └── home.tpl
-    │   ├── model (可选)                 # 放置领域模型，可选，由领域类相关插件约定
-    │   |   └── home.js
-    │   └── extend (可选)                # 框架的扩展，可选
-    │       ├── helper.js (可选)
-    │       ├── request.js (可选)
-    │       ├── response.js (可选)
-    │       ├── context.js (可选)
-    │       ├── application.js (可选)
-    │       └── agent.js (可选)
     ├── config
     |   ├── plugin.js                   # 配置需要加载的插件
     |   ├── config.default.js           # 编写配置文件 config/config.{env}.js
@@ -1399,28 +1559,62 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     |   ├── config.test.js (可选)
     |   ├── config.local.js (可选)
     |   └── config.unittest.js (可选)
+    ├── agent.js (可选)                  # 自定义启动时的初始化工作（agent）
+    ├── app.js (可选)                    # 自定义启动时的初始化工作
+    ├── app
+    │   ├── extend (可选)                # 框架的扩展
+    │   │   ├── helper.js (可选)
+    │   │   ├── request.js (可选)
+    │   │   ├── response.js (可选)
+    │   │   ├── context.js (可选)
+    │   │   ├── application.js (可选)
+    │   │   └── agent.js (可选)
+    │   ├── service (可选)               # 编写业务逻辑层
+    │   |   └── user.js
+    │   ├── middleware (可选)            # 编写中间件
+    │   |   └── response_time.js
+    │   ├── controller                  # 解析用户的输入，处理后返回相应的结果
+    │   |   └── home.js
+    |   ├── router.js                   # 配置 URL 路由规则
+    │   ├── schedule (可选)              # 定时任务
+    │   |   └── my_task.js
+    │   ├── public (可选)                # 放置静态资源
+    │   |   └── reset.css
+    │   ├── view (可选)                  # 放置模板文件，由模板插件约定
+    │   |   └── home.tpl
+    │   └── model (可选)                 # 放置领域模型，由领域类相关插件约定 ctx.model
+    │       └── home.js
     └── test                            # 单元测试
         ├── middleware
         |   └── response_time.test.js
         └── controller
             └── home.test.js
     ```
-- 加载顺序
+- 配置文件加载顺序
 
-    ①按以下文件（夹）顺序，②插件->框架->应用，③依赖关系。
+    ①按以下文件（夹）顺序，②（框架、应用中的）所有插件 -> 框架（按嵌套顺序逆序） -> 应用（最初先执行一遍，然后最后再执行一遍），③按依赖关系逆序。④同名引用会被后面加载的覆盖。
 
-    1. package.json
-    2. config/plugin.{env}.js
-    3. config/config.{env}.js
-    4. app/extend/application.js、app/extend/request.js、app/extend/response.js、app/extend/context.js、app/extend/helper.js
-    5. agent.js
-    6. app.js
-    7. app/service
-    8. app/middleware
-    9. app/controller
-    10. app/router.js
+    >egg可以理解为最底层的框架，该框架默认包含若干基本插件、中间件、以及其他配置项。
 
+    1. ./package.json
+    2. ./config/plugin.{env}.js
+    3. ./config/config.{env}.js
+    4. ./app/extend/ + application.{env}.js、request.{env}.js、response.{env}.js、context.{env}.js、helper.{env}.js
+    5. ./agent.js
+    6. ./app.js
+    7. ./app/service
+    8. ./app/middleware
+    9. ./app/controller
+    10. ./app/router.js
+
+    - 启动服务时，会输出以下配置：
+
+        1. 最终配置`./run/agent_config.json`、`./run/application_config.json`
+        2. 配置的属性来源`./run/agent_config_meta.json`、`./run/application_config_meta.json`
+        3. 服务启动时间`./run/agent_timing.json`、`./run/application_timing.json`
+        4. 路由配置`./run/router.json`
 - 本地开发[egg-bin](https://github.com/eggjs/egg-bin)；生产运行[egg-scripts](https://github.com/eggjs/egg-scripts)。
+- [在框架上扩展Loader](https://www.eggjs.org/zh-CN/advanced/loader#扩展-loader)
 
 ### [Koa](https://github.com/koajs/koa)
 关键点：级联（洋葱模型） + 通过上下文（ctx）在中间件间传递数据 + ctx.body的值为HTTP响应数据。
@@ -1775,7 +1969,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
                 cron形式的自动重启配置
             12. `--no-daemon`
 
-                不使用pm2自己的守护进程运行。
+                不使用pm2自己的守护进程运行——前台运行（pm2默认后台运行，start后命令行就退出）。
 
         2. `stop all或进程名或进程id或执行文件或配置脚本`
         3. `restart all或进程名或进程id或执行文件或配置脚本`

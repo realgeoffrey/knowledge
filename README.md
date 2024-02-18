@@ -86,7 +86,7 @@
     </details>
 
 ><details>
-><summary>废弃内容:thumbsdown:</summary>
+><summary>废弃内容</summary>
 >
 >1. [兼容至ie6](./网站前端/兼容至ie6/README.md)
 >2. [JS废弃代码](./网站前端/JS方法积累/废弃代码/README.md)

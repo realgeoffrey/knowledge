@@ -1175,7 +1175,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     `JSON.parse(JSON.stringify(obj));`
 3. [`structuredClone(value[, { transfer }])`](https://developer.mozilla.org/zh-CN/docs/Web/API/structuredClone)
 
-    使用[结构化克隆算法](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)将给定的值进行深拷贝（注意支持的类型，对不支持的类型会导致抛出异常）。
+    使用[结构化克隆算法](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)（注意支持的类型，对不支持的类型会导致抛出异常）。
 
 >不考虑原型链。
 
@@ -2365,7 +2365,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
                 `名=值[; expires=绝对时间（时间戳）][; max-age=相对时间（秒）][; domain=域名][; path=路径][; secure][; samesite=Strict或Lax或None][; priority=low或medium或high]`
 
-                >1. `Set-Cookie`可以额外设置`HttpOnly`属性；客户端不能设置、也不能查看和操作被设置为`HttpOnly`的cookie。
+                >1. `Set-Cookie`可以额外设置`HttpOnly`属性；客户端的`document.cookie`不能修改、不能查看以及不能任何操作被设置为`HttpOnly`的cookie（获取不到值，也删除不了）。
                 >2. 标记为`Secure`的cookie只能通过被HTTPS协议加密过的请求发送给服务端。非安全站点（HTTP）不能在cookie中设置`secure`，若设置，则此条新建或更新cookie无效。
                 >3. `SameSite`是否应该限制在跨站点请求中发送。
                 >4. `priority`是Chrome的提案。
