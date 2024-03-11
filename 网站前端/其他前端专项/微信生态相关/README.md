@@ -108,6 +108,7 @@
 2. 小程序10层路由问题
 
     [小程序无限层级路由方案](https://blog.51cto.com/u_15495832/5153304)、[小程序无限层级路由方案（无框架依赖）](https://juejin.cn/post/6844903732967276558)
+3. https抓包能够抓到PC版微信小程序的请求包（Windows、macOS），抓不到手机版微信小程序的请求包（Android、iOS只能抓到静态资源）
 
 ### [taro](https://github.com/NervJS/taro)
 1. 组件库

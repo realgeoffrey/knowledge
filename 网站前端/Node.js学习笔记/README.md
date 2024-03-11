@@ -106,7 +106,7 @@
 ### npm
 npm（Node Package Manager）。
 
-1. `npm`CI
+1. `npm`CLI
 
     >在任意命令后添加`-h`、`--help`查看当前命令的所有参数。在任意命令后添加`--verbose`查看完整日志。
 

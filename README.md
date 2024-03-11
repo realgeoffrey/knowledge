@@ -43,7 +43,7 @@
     1. [webpack学习笔记](./网站前端/webpack学习笔记/README.md)
     2. [Babel学习笔记](./网站前端/Babel学习笔记/README.md)
     3. [yarn+Lerna学习笔记](./网站前端/yarn+Lerna学习笔记/README.md)
-    4. [ESLint+Prettier学习笔记](./网站前端/ESLint+Prettier学习笔记/README.md)
+    4. [ESLint+Prettier+Stylelint学习笔记](./网站前端/ESLint+Prettier+Stylelint学习笔记/README.md)
     5. [Node.js脚手架（TypeScript+pm2或nodemon+--inspect）](./网站前端/Node.js脚手架（TypeScript+pm2或nodemon+--inspect）/README.md)
     6. [我安装的全局仓库](./网站前端/Node.js学习笔记/我安装的全局仓库.md)
     </details>

@@ -13,7 +13,7 @@
     ```text
     registry "https://mirrors.tencent.com/npm/"
     ```
-2. [`yarn`CI](https://classic.yarnpkg.com/zh-Hans/docs/cli/)
+2. [`yarn`CLI](https://classic.yarnpkg.com/zh-Hans/docs/cli/)
 
     1. `yarn init`
 

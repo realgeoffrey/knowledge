@@ -1,5 +1,5 @@
 ### [MongoDB](https://github.com/mongodb/mongo)使用
-1. CI
+1. CLI
 
     1. 启动服务器：`mongod`
     2. 启动客户端：[`mongo`](https://docs.mongodb.com/manual/reference/method/)

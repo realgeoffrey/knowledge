@@ -295,41 +295,38 @@ function hasCookie (checkKey) {
 /**
  * 获取URL相关信息
  * @param {String} [url = window.location.href] - URL
- * @returns {Object} location - 包括href、protocol、hostname、port、pathname、search、searchObj、hash的对象。若不是合法URL，返回false
+ * @returns {Object} location - 包括：href、protocol、hostname、port、pathname、search、searchObj、hash 的对象。若不是合法URL，返回false
  */
-function getLocation (url) {
+function getLocation(url = window.location.href) {
   try {
-    url = url || window.location.href
-
     /* 为了方便阅读 */
-    var _protocol = /^(?:([A-Za-z]+):)?/.source,
-      _slash = /\/*/.source,
-      _hostname = /([0-9A-Za-z.-]+)/.source,
-      _port = /(?::(\d+))?/.source,
-      _pathname = /(\/[^?#]*)?/.source,
-      _search = /(?:\?([^#]*))?/.source,
-      _hash = /(?:#(.*))?$/.source
+    const protocolStr = /^(?:([A-Za-z]+):)?/.source
+    const slashStr = /\/*/.source
+    const hostnameStr = /([0-9A-Za-z.-]+)/.source
+    const portStr = /(?::(\d+))?/.source
+    const pathnameStr = /(\/[^?#]*)?/.source
+    const searchStr = /(?:\?([^#]*))?/.source
+    const hashStr = /(?:#(.*))?$/.source
 
-    var regex = new RegExp(_protocol + _slash + _hostname + _port + _pathname + _search + _hash, 'g'),
-      regexArr = regex.exec(url),
-      keyArr = ['href', 'protocol', 'hostname', 'port', 'pathname', 'search', 'hash'],
-      location = { 'searchObj': {} },
-      search, searchArr, searchItem, key, value
+    const regex = new RegExp(protocolStr + slashStr + hostnameStr + portStr + pathnameStr + searchStr + hashStr, 'g');
+    const regexArr = regex.exec(url);
+    const keyArr = [ 'href', 'protocol', 'hostname', 'port', 'pathname', 'search', 'hash' ];
+    const location = { 'searchObj': {} };
 
     keyArr.forEach(function (item, index) {
       location[item] = regexArr[index] || ''
     })
 
-    search = location['search']
+    const searchArr = location['search'].split('&')
 
-    searchArr = search.split('&')
-
-    for (var i = 0, len = searchArr.length; i < len; i++) {
+    for (let i = 0; i < searchArr.length; i++) {
       if (searchArr[i] !== '') {
-        searchItem = searchArr[i].split('=')
-        key = searchItem.shift()
-        value = searchItem.join('=')
-        location['searchObj'][key] = value
+        const searchItem = searchArr[i].split('=')
+        const key = searchItem.shift()
+        const value = searchItem.join('=')
+        if (!Object.prototype.hasOwnProperty.call(location['searchObj'], key)) {  // 用第一次出现的
+          location['searchObj'][key] = value
+        }
       }
     }
 
