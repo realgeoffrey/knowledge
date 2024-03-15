@@ -29,7 +29,7 @@
 ## 安装
 
 ### nvm更新Node.js版本
-1. macOS或Linux的[nvm](https://github.com/creationix/nvm)：
+1. macOS或Linux的[nvm](https://github.com/nvm-sh/nvm)：
 
     >若M1安装v15以下版本，建议终端打开[Rosetta模式](https://support.apple.com/en-hk/HT211861)：<https://github.com/nvm-sh/nvm/issues/2350>。
 
@@ -1170,6 +1170,8 @@ Node.js的全局对象`global`是所有全局变量的宿主。
             右上角`运行/调试文件`（`调试文件`会自动添加`--inspect`、`运行文件`不会，因此配置和scripts中都不需添加 ~~`--inspect`~~），在IDE内拥有类似chrome调试有的所有操作。
 
             >设置中关闭`不单步执行库脚本`。
+
+        >IDE的调试实现了Node.js调试接口（`--inspect`）与IDE界面联动，但没有实现自动重启等功能，需要在运行命令中包含自动重启等功能。
 
     - 拓展调试
 

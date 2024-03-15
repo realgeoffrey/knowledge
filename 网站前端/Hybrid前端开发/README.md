@@ -110,7 +110,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         ><details>
         ><summary><code>URL Scheme</code></summary>
         >
-        >是iOS和Android提供给开发者的一种WAP唤醒Native App方式（客户端用DeepLink、Deferred Deeplink实现）。Android应用在mainfest中注册自己的Scheme；iOS应用在App属性中配置。典型的URL Scheme：`myscheme://my.hostxxxxxxx`。
+        >是iOS和Android提供给开发者的一种WAP唤起Native App方式（客户端用DeepLink、Deferred Deeplink实现）。Android应用在mainfest中注册自己的Scheme；iOS应用在App属性中配置。典型的URL Scheme：`myscheme://my.hostxxxxxxx`。
         ></details>
 
         >1. 客户端可以监听拦截任何行为（如：`console`、`alert`）。相对于注入全局变量，监听拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
@@ -120,55 +120,79 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         >5. 快速触发多次`自定义URL Scheme`，有时仅有最后一个产生效果。e.g. 用`window.location.href`快速触发多次，仅有最后一次跳转信息能够传递给客户端。
         >6. 想要实现这样的功能："关闭当前WebView，然后执行某功能"，若用`window.location.href`等触发`自定义URL Scheme`方式给客户端监听拦截，则可能WebView实例关闭后，跳转无法发出、因此无法被客户端获取（类似：异步的`XMLHttpRequest`会随WebView实例关闭而被忽略）。可以尝试换用`桥协议`。
 
-        1. <details>
+        1. JS触发
 
-            <summary>JS触发</summary>
-
-            1. iOS8-
-
-                ```js
-                var iframe = document.createElement('iframe');
-                iframe.src = '自定义URL Scheme';
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
-                setTimeout(function () {
-                  document.body.removeChild(iframe);
-                }, 3000);
-
-                location.href = '下载地址';
-                ```
-            2. iOS9+
-
-                >`<iframe>`无效。
-
-                ```js
-                location.href = '自定义URL Scheme';
-
-                setTimeout(function () {
-                  location.href = '下载地址';
-                }, 250);
-                setTimeout(function () {
-                  location.reload();
-                }, 1000);
-                ```
-            3. iOS9+的Universal links（通用链接），可以从底层打开其他App客户端，跳过白名单（微信已禁用），若未安装则打开配置好的落地页（落地页再提示下载app）
+            1. iOS8-支持`<iframe src="自定义URL Scheme">`和`window.location.href="自定义URL Scheme"`跳转；iOS9+不支持 ~~`<iframe>`~~，仅支持`window.location.href="自定义URL Scheme"`跳转
+            2. iOS9+的Universal links（通用链接），可以从底层打开其他App客户端，跳过白名单（微信已禁用），若未安装则打开配置好的落地页（落地页再提示下载app，不需要~~JS判断是否页面被隐藏从而跳转落地页~~）
 
                 >需要HTTPS域名配置、iOS设置等其他端配合。
 
                 >参考：[通用链接（Universal Links）的使用详解](http://www.hangge.com/blog/cache/detail_1554.html)、[Universal Link 前端部署采坑记](http://awhisper.github.io/2017/09/02/universallink/)、[Support Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html#//apple_ref/doc/uid/TP40016308-CH12-SW2)。
-            4. Android
+            3. Android支持`<iframe src="自定义URL Scheme">`和`window.location.href="自定义URL Scheme"`跳转
 
-                ```js
-                location.href = '自定义URL Scheme';    // 也可以用`<iframe>`
+            - <details>
 
-                var start = Date.now();
-                setTimeout(function () {    // 尝试通过上面的唤起方式唤起本地客户端，若唤起超时（还在这个页面），则直接跳转到落地页（或做其他未安装App的事情）（浏览器非激活时，定时器执行时间会变慢/主线程被占用，所以会大于定时器时间之后才执行定时器内回调）
-                  if (Date.now() - start < 3100) {  // 还在这个页面，认为没有安装App
-                    location.href = '下载地址';
-                  }
-                }, 3000);
-                ```
-            </details>
+                <summary>使用自定义URL Scheme唤起APP，若页面没有被隐藏则认为未安装app，从而重定向至落地页</summary>
+
+                1. 方法一（推荐）：
+
+                    ```js
+                    // 尝试跳转URL Scheme
+                    location.href = '自定义URL Scheme'; // 若支持则也可以用`<iframe>`
+
+                    const delay = 2000; // 按实际情况设置2~5秒
+
+                    const timer = setTimeout(() => {
+                      location.href = '落地页';
+
+                      removeEventListener();
+                    }, delay);
+
+                    // visibilitychange 事件方法（webkitvisibilitychange - webkitHidden，mozvisibilitychange - mozHidden）
+                    function clearFunc1() {
+                      if (document.hidden) {
+                        clearTimeout(timer);
+
+                        removeEventListener();
+                      }
+                    }
+
+                    // pagehide 事件方法
+                    function clearFunc2() {
+                      clearTimeout(timer);
+
+                      removeEventListener();
+                    }
+
+                    function removeEventListener() {
+                      window.removeEventListener('visibilitychange', clearFunc1);
+                      window.removeEventListener('pagehide', clearFunc2);
+                    }
+
+                    // 若检测到隐藏页面，则阻止跳转落地页（认为app已安装、已成功跳转URL Scheme）
+                    window.addEventListener('visibilitychange', clearFunc1);
+                    window.addEventListener('pagehide', clearFunc2);
+                    ```
+                2. 方法二：
+
+                    >原理：浏览器非激活时，定时器执行时间会变慢/主线程被占用，所以会大于定时器时间之后才执行定时器内回调。
+
+                    ```js
+                    // 尝试跳转URL Scheme
+                    location.href = '自定义URL Scheme';    // 若支持则也可以用`<iframe>`
+
+                    const delay = 2000;         // 按实际情况设置2~5秒
+
+                    const start = Date.now();
+                    setTimeout(function () {
+                      if (Date.now() - start < delay + 100) {  // 还在这个页面，认为没有安装App
+                        location.href = '落地页';
+                      }
+                    }, delay);
+                    ```
+                </details>
+
+            >落地页跳转App下载地址，除了iOS的企业包要注意用[`itms-services://?action=download-manifest&url=网站链接.plist`](https://support.apple.com/zh-cn/guide/deployment/depce7cefc4d/web)之外，其他情况都可以直接打开下载地址。
         2. <details>
 
             <summary>在WebView中通过应用宝页面<strong>下载/打开</strong>其他APP</summary>

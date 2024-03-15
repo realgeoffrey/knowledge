@@ -119,7 +119,7 @@
             1. glob在项目级配置中是相对于当前配置文件，在`--config`命令行配置中相对于命令执行目录。
             2. 不能在`overrides`属性中使用`ignorePatterns`。
             3. 优先级（降序）：`.eslintignore`文件、`ignorePatterns`配置、`package.json`的`eslintIgnore`
-        14. `settings: {}`插件使用来指定应该在其所有规则中共享的信息
+        14. `settings: {}`插件plugins使用来指定应该在其所有规则rules中共享的信息
 
 ### [Prettier](https://github.com/prettier/prettier)
 1. CLI命令

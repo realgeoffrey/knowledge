@@ -355,7 +355,7 @@ function getLocation(url = window.location.href) {
 >        search = search.slice(1)
 >      }
 >
->      for (let i = 0, searchArr = search.split('&'), len = searchArr.length; i < len; i++) {
+>      for (let i = 0, searchArr = search.split('&'); i < searchArr.length; i++) {
 >        if (searchArr[i] !== '') {
 >          const tempArr = searchArr[i].split('=')
 >          const key = tempArr.shift()
@@ -416,7 +416,7 @@ function getLocation(url = window.location.href) {
 
         // 写入已存在search的键-值
         const searchArr = search.split("&");
-        for (let i = 0, len = searchArr.length; i < len; i++) {
+        for (let i = 0; i < searchArr.length; i++) {
           if (searchArr[i] !== "") {
             const searchItem = searchArr[i].split("=");
             const key = searchItem.shift() as string;
@@ -494,7 +494,7 @@ function getLocation(url = window.location.href) {
 
         // 写入已存在search的键-值
         const searchArr = search.split('&')
-        for (let i = 0, len = searchArr.length; i < len; i++) {
+        for (let i = 0; i < searchArr.length; i++) {
           if (searchArr[i] !== '') {
             const searchItem = searchArr[i].split('=')
             const key = searchItem.shift()
