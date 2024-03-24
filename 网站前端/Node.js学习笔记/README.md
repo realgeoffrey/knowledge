@@ -832,7 +832,7 @@ over
 >只有打通和后端技术的桥梁、实现互联互通，Node.js才能在公司业务中有更长远的发展。
 
 ### Node.js[核心模块](http://nodejs.cn/api/)（需要`require`引入）
->核心模块/内置模块 定义在[源代码的lib/文件](https://github.com/nodejs/node/tree/main/lib/)。同名加载时，核心模块优先级高于路径加载或自定义模块。
+>核心模块/内置模块 定义在[源代码的lib/文件](https://github.com/nodejs/node/tree/main/lib/)。同名加载时，核心模块优先级高于路径加载或自定义模块。可以使用`node:`前缀来识别核心模块（>=v16.0.0），在这种情况下它会绕过require缓存，不使用`node:`前缀就可以加载的核心模块列表暴露在`require('node:module').builtinModules`。
 
 1. `http`：HTTP请求相关API
 
@@ -1617,6 +1617,13 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         4. 路由配置`./run/router.json`
 - 本地开发[egg-bin](https://github.com/eggjs/egg-bin)；生产运行[egg-scripts](https://github.com/eggjs/egg-scripts)。
 - [在框架上扩展Loader](https://www.eggjs.org/zh-CN/advanced/loader#扩展-loader)
+- 日志
+
+    等级区别：`NONE`（不打印日志）、`DEBUG`（.logger.debug及以上）、`INFO`（.logger.info及以上）、`WARN`（.logger.warn及以上）、`ERROR`（.logger.error及以上）
+
+    1. `.logger.error()`会输出到错误日志文件
+    2. `config.logger.level: 日志级别`打印高于等于「日志级别」的日志到文件（`NONE`：关闭打印到文件）
+    3. `config.logger.consoleLevel: 日志级别`打印高于等于「日志级别」的日志到终端（`NONE`：关闭打印到终端）
 
 ### [Koa](https://github.com/koajs/koa)
 关键点：级联（洋葱模型） + 通过上下文（ctx）在中间件间传递数据 + ctx.body的值为HTTP响应数据。
@@ -1777,7 +1784,9 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         1. `.href` === `.request.href`
         1. `.path` === `.request.path`
         1. `.path=` === `.request.path=`
-        1. `.query` === `.request.query`
+        1. `.query` === `.request.query`可能已经经过一次解码（和.url结果不一致）
+
+            >框架或浏览器，都会默认解码一次query方便使用。
         1. `.query=` === `.request.query=`
         1. `.querystring` === `.request.querystring`
         1. `.querystring=` === `.request.querystring=`
@@ -1802,7 +1811,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         1. `.acceptsCharsets()` === `.request.acceptsCharsets()`
         1. `.acceptsLanguages()` === `.request.acceptsLanguages()`
         1. `.request.idempotent`
-        1. `.get()` === `.request.get()`
+        1. `.get(请求头名)` === `.request.get(请求头名)`获取请求头中某个请求头的值
     2. `.response`
 
         Koa的`Response`

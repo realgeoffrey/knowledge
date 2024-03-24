@@ -381,9 +381,13 @@
     2. **301 Moved Permanently**
 
         被请求的资源已永久移动到新位置，并且将来任何对此资源的引用都应该使用本响应返回的若干个URI之一。浏览器默认会做缓存优化，在第二次访问的时候自动访问重定向的那个地址。
-    3. **302 Moved Temporarily**或**302 Found**
+    3. **302 Moved Temporarily** 或 **302 Found**
 
         被请求的资源临时从不同的URI响应请求。
+
+        1. 浏览器请求服务端 ->
+        2. 服务端返回status为302，包含响应header的`Location` ->
+        3. 浏览器得到以上返回，向 响应header的`Location` 发起重定向请求（请求header、请求method：和上一个请求发起的一致、不能变化；同源cookie策略，上一个请求可以修改cookie以传递额外信息给重定向链接）
 
         >[Chrome在302重定向时对原请求产生2次请求](http://www.cnblogs.com/lyzg/p/6237841.html)
     4. **303 See Other**
@@ -1003,33 +1007,17 @@ HTTP是无状态协议，通过session-cookie或token判断客户端的用户状
 
     1. session（会话）
 
-        一种记录服务器和客户端**会话**状态的机制（服务器为了保存客户端状态，给每个客户端分配不同的「身份标识」session，保存在服务器，过期后销毁，客户端发请求时需要携带该标识session_id）。session是基于cookie实现的，session存储在服务器端，sessionId被存储到客户端的cookie中。
-
-        >session的运作通过session_id进行，session_id通常会保存在客户端的cookie中。
+        一种记录服务器和客户端**会话**状态的机制（服务器为了保存客户端状态，给每个客户端分配不同的「身份标识」session，保存在服务器，过期后销毁，客户端发请求时需要携带该标识session_id）。session是基于cookie实现的，session存储在服务器端，session_id存储在客户端的cookie中。
     2. cookie
 
         服务器生成，发送给客户端保存（`Set-Cookie`），再由客户端发送给服务器（`Cookie`）。cookie携带session_id（可以经过加密），能够匹配服务端的session。
 
-    - <details>
-
-        <summary>session-cookie优缺点</summary>
-
-        1. 优点
-
-            1. Cookie简单易用
-            2. Session数据存储在服务端（一般集中存在内存服务器Redis），相较于JWT方便进行管理，也就是当用户登录和主动注销，只需要添加删除对应的Session
-            3. 只需要后端操作即可，前端可以无感等进行操作
-        2. 缺点
-
-            1. 依赖Cookie（浏览器端能够设置禁用Cookie），对移动端的支持性不友好
-            2. 非常不安全，Cookie将数据暴露在浏览器中，增加了数据被盗的风险（容易被CSRF等攻击）
-            3. Session存储在服务端，增大了服务端的开销，用户量大的时候会大大降低服务器性能
-        </details>
+    >若请求cookie未携带session_id，则服务端创建后设置进cookie；若请求cookie已携带session_id，则服务端直接使用它（无论是否登录）。因此一个会话从未登录到登录的session_id都会保持一致（跨越登录前后，保持同一个会话，利用session_id的取值就能取到同一个值）。
 2. token（令牌）
 
     >最简单的token组成：uid（用户唯一的身份标识）、time（当前时间的时间戳）、sign（签名，加盐后哈希）。
 
-    **访问资源接口（API）时所需要的资源凭证**。首次认证用户后授权给App，保存在App。针对App与服务端的无状态API，不存储会话信息。与session-cookie方式没有直接关系、可一起使用、不冲突。
+    **访问资源接口（API）时所需要的资源凭证**。针对App与服务端的无状态API，不存储会话信息。与session-cookie方式没有直接关系、可一起使用、不冲突（如：用token第三方鉴权成功，服务端返回当前服务的session_id）。
 
     1. [OAuth（Open Authorization）](https://datatracker.ietf.org/doc/html/rfc6749)
 
@@ -1040,42 +1028,30 @@ HTTP是无状态协议，通过session-cookie或token判断客户端的用户状
 
         >**跨域认证**解决方案。
 
-        服务器认证以后，生成一个JSON对象（转成特殊结构的字符串），发回给客户端，客户端本地保存，当客户端与服务端通信时，都要发回这个token。服务端不保存任何session数据、变成无状态，从而比较容易实现扩展。
+        服务器认证以后，生成一个JSON对象（转成特殊结构的字符串）发回给客户端，客户端本地保存，当客户端与服务端通信时，都要发回这个token。服务端不保存任何session数据、变成无状态，从而比较容易实现扩展。JWT自包含用户信息、加密签名等数据，因此不需要（或很少）查数据库——但已颁发的JWT不方便通过服务端管理（如：失效销毁、修改信息）。
 
-        - <details>
+- <details>
 
-            <summary>JWT优缺点</summary>
+    <summary>session、token对比：session和token的概念边界很模糊。<strong>用解析token的计算时间换取session的存储空间，从而减轻服务器的压力，减少频繁查询数据库session。</strong></summary>
 
-            1. 优点
+    1. session：
 
-                1. 不需要在服务端保存会话信息（RESTful API的原则之一就是无状态），所以易于应用的扩展，即信息不保存在服务端，不会存在Session扩展不方便的情况
-                2. JWT中的Payload负载可以存储常用信息，用于信息交换，有效地使用JWT，可以降低服务端查询数据库的次数
-            2. 缺点
+        session_id存储在客户端的cookie，session数据存储在服务端，存储开销随用户量增加而增大。
 
-                1. 到期问题：由于服务器不保存Session状态，因此无法在使用过程中废止某个Token或更改Token的权限——一旦JWT签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑
-                2. 加密问题：JWT默认是不加密，但也是可以加密的。生成原始Token以后，可以用密钥再加密一次
-            </details>
+        1. cookie的特性：http请求自动携带、同源同路径、JS可获取、容易受到CSRF攻击。
+        2. session_id很短，请求响应体积小。
+        3. （有状态）依赖服务端存储管理session（如：Redis），服务端方便删除、修改session。
+    2. token：
 
-    - <details>
+        token存在客户端的任意形式，数据加密存储在token里（服务端不存）。
 
-        <summary>token优缺点</summary>
+        1. 不一定依赖cookie，需要前后端配合使用token。
+        2. token自身包含身份验证、权限选择等的所有或部分信息，因此比较大，请求响应体积大。服务端颁发时需要加密，服务端验证时需要解密。
+        3. （无状态）服务端不存储token，已颁发的token不方便通过服务端管理（如：失效销毁、修改信息），因此需要设置较短有效期。
+        4. （token中的一种基于JSON的开放标准：）JWT不需要（或很少）查数据库，直接在服务端进行校验（因为用户信息、加密签名都自包含在JWT中），不需要设计分布式存储方案、扩展性好。
+    </details>
 
-        1. 优点
-
-            1. 服务端无状态化、可扩展性好：Token机制在服务端不需要存储会话（Session）信息，因为Token自身包含了其所标识用户的相关信息，这有利于在多个服务间共享用户状态，一般由客户端保存
-            2. **用解析token的计算时间换取session的存储空间，从而减轻服务器的压力，减少频繁的查询数据库**
-            2. 支持APP移动端设备
-            3. 安全性好：有效避免CSRF攻击（因为不需要Cookie），每一个请求都有签名还能防止监听以及重放攻击
-            4. 支持跨程序调用：因为Cookie是不允许跨域访问的，而Token不必须依赖cookie
-        2. 缺点
-
-            1. 配合：需要前后端配合处理
-            2. 占带宽：正常情况下比sid更大，消耗更多流量，挤占更多宽带
-            3. 性能问题：虽说验证Token时不用再去访问数据库或远程服务进行权限校验，但是需要对Token加解密等操作
-            4. 有效期短：为了避免Token被盗用，一般Token的有效期会设置的较短（所以就有了Refresh Token）
-        </details>
-
->从已经登录的客户端提取出登录信息（session_id或token），传递给其他客户端，再由其他客户端把登录信息注入cookie，就可以转移登录状态到其他客户端。
+>从已经登录的客户端提取出登录信息（session_id或token），传递给其他客户端，再由其他客户端把登录信息注入cookie等存储-传输机制中，就可以转移登录状态到其他客户端（除非有做额外的逻辑，如：对设备信息、IP等进行存储对比）。
 
 #### 登录策略
 1. 单点登录（Single Sign On，SSO）
@@ -1084,7 +1060,7 @@ HTTP是无状态协议，通过session-cookie或token判断客户端的用户状
 
     1. 同域名：
 
-        设置cookie的domain为顶级域名。
+        设置cookie的domain为顶级域名，其他按照正常登录策略即可。
     2. 跨域名：
 
         通过在一个中间域名统一登录后（认证），登录信息以cookie形式存储session_id在中间域名（授权）；当在这个中间域名鉴权成功后，重定向回原域名并带上能够验证登录状态的token；在原网站用token请求登录接口，鉴权成功后以cookie形式存储session_id在原网站域名（授权）。

@@ -188,7 +188,7 @@
 
         Run（command + R） 或 Run Without Building（command + control + R）
 
-        >.ipa（iPhone application archive）文件仅支持真机；.app文件支持模拟器和真机。
+        >.ipa（iPhone application archive）文件仅支持（真机）iPhone、iPod Touch、iPad、使用Apple Silicon平台的Mac，不支持模拟器；.app文件支持模拟器和真机。
     2. debugger
 
         1. JS日志、断点：

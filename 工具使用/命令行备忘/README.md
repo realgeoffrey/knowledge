@@ -287,6 +287,14 @@ which 「指令」
     md5sum.exe 「文件」
     echo -n 「字符串」 | md5sum.exe
     ```
+
+    - Node.js
+
+        ```js
+        const crypto = require('node:crypto');
+        const md5 = crypto.createHash('md5');
+        md5.update('字符串').digest('hex');
+        ```
 2. SHA
 
     ```shell
@@ -301,6 +309,25 @@ which 「指令」
     echo -n 「字符串」 | sha1sum.exe
     # 使用特定算法：`sha224sum.exe sha256sum.exe sha384sum.exe sha512sum.exe`
     ```
+3. base64
+
+    ```shell
+    # 编码
+    echo -n "字符串" | base64
+    base64 -i 「文件」
+
+    # 解码
+    echo "5a2X56ym5LiyCg==" | base64 -d
+    base64 -d -i 「文件」
+    ```
+
+    - Node.js
+
+        ```js
+        Buffer.from('字符串'', 'utf-8').toString('base64')
+
+        btoa('字符串')     // 浏览器也支持
+        ```
 
 #### 查看本机IP
 ```shell
