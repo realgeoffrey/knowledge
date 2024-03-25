@@ -1777,7 +1777,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         1. `.href` === `.request.href`
         1. `.path` === `.request.path`
         1. `.path=` === `.request.path=`
-        1. `.query` === `.request.query`
+        1. `.query` === `.request.query`可能已经经过一次解码（和.url结果不一致）
         1. `.query=` === `.request.query=`
         1. `.querystring` === `.request.querystring`
         1. `.querystring=` === `.request.querystring=`
@@ -1802,7 +1802,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         1. `.acceptsCharsets()` === `.request.acceptsCharsets()`
         1. `.acceptsLanguages()` === `.request.acceptsLanguages()`
         1. `.request.idempotent`
-        1. `.get()` === `.request.get()`
+        1. `.get(请求头名)` === `.request.get(请求头名)`获取请求头中某个请求头的值
     2. `.response`
 
         Koa的`Response`

@@ -286,6 +286,11 @@ which 「指令」
     # Windows
     md5sum.exe 「文件」
     echo -n 「字符串」 | md5sum.exe
+
+    # Node.js
+    const crypto = require('node:crypto');
+    const md5 = crypto.createHash('md5');
+    let result = md5.update('字符串').digest('hex');
     ```
 2. SHA
 
