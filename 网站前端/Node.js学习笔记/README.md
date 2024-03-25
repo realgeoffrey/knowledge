@@ -1778,6 +1778,8 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         1. `.path` === `.request.path`
         1. `.path=` === `.request.path=`
         1. `.query` === `.request.query`可能已经经过一次解码（和.url结果不一致）
+
+            >框架或浏览器，都会默认解码一次query方便使用。
         1. `.query=` === `.request.query=`
         1. `.querystring` === `.request.querystring`
         1. `.querystring=` === `.request.querystring=`
