@@ -2063,14 +2063,14 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     var asyncFunc = (ms = 1000) => new Promise((resolve) => setTimeout(resolve, ms)) // 模拟异步操作
 
     async function func () {
-    console.log('start')
+      console.log('start')
 
-    for (const i of [1, 2]) {   // while、do-while、for、for-in、for-of 同理
+      for (const i of [1, 2]) {   // while、do-while、for、for-in、for-of 同理
         await asyncFunc()    // 一项完成才会进行下一项，全部完成才会执行for之后代码。
         console.log(i)
-    }
+      }
 
-    console.log('end')
+      console.log('end')
     }
 
     func()
