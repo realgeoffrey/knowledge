@@ -1008,7 +1008,7 @@ HTTP是无状态协议，通过session-cookie或token判断客户端的用户状
 
         服务器生成，发送给客户端保存（`Set-Cookie`），再由客户端发送给服务器（`Cookie`）。cookie携带session_id（可以经过加密），能够匹配服务端的session。
 
-    >若请求cookie未携带session_id，则服务端创建后设置进cookie；若请求cookie已携带session_id，则服务端直接使用它（无论是否登录）。因此一个会话从未登录到登录的session_id都会保持一样，能够凭借相同的session_id取到期望值（跨越登录前后的流程）。
+    >若请求cookie未携带session_id，则服务端创建后设置进cookie；若请求cookie已携带session_id，则服务端直接使用它（无论是否登录）。因此一个会话从未登录到登录的session_id都会保持一致（跨越登录前后，保持同一个会话，利用session_id的取值就能取到同一个值）。
 2. token（令牌）
 
     >最简单的token组成：uid（用户唯一的身份标识）、time（当前时间的时间戳）、sign（签名，加盐后哈希）。
