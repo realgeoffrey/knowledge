@@ -170,7 +170,7 @@
 
             >e.g. `require('http')`、`require('node:http')`
 
-            可以使用`node:`前缀来识别核心模块，在这种情况下它会绕过require缓存，不使用`node:`前缀就可以加载的核心模块列表暴露在`require('node:module').builtinModules`。
+            可以使用`node:`前缀来识别核心模块（>=v16），在这种情况下它会绕过require缓存，不使用`node:`前缀就可以加载的核心模块列表暴露在`require('node:module').builtinModules`。
         3. 若 X 不带路径且不是核心模块，则
 
             >当作安装在本地的模块。
