@@ -2369,6 +2369,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                 >2. 标记为`Secure`的cookie只能通过被HTTPS协议加密过的请求发送给服务端。非安全站点（HTTP）不能在cookie中设置`secure`，若设置，则此条新建或更新cookie无效。
                 >3. `SameSite`是否应该限制在跨站点请求中发送。
                 >4. `priority`是Chrome的提案。
+                >5. 若设置cookie时不设置`expires`和`max-age`，则该cookie的过期时间是`session`或`会话`，表示：在当前的浏览器会话结束之后删除该cookie；小心部分App会在App非激活状态或息屏状态下删除会话状态下的cookie；不同浏览器对cookie过期时间有不同上限，如：chrome上限400天；若同时设置`expires`和`max-age`，则`max-age`优先级更高、优先生效。
             2. 读取cookie等同于客户端`Cookie`请求头：
 
                 展示所有cookie`名1=值1[; 名2=值2]`（无法查看其他信息）。

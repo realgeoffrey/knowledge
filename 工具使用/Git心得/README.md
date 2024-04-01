@@ -748,24 +748,30 @@ feat(details): 添加了分享功能
 >`git remote`都是操作`.git/config`的`[remote "别名"]`，如：
 >
 >```text
->[remote "别名"]  # 默认别名：origin
->	url = git@realgeoffrey.github.com:realgeoffrey/knowledge.git
+>[remote "origin"]  # 默认别名：origin
+>	url = git@realgeoffrey.github.com:realgeoffrey/knowledge.git    # 一次push，会推送所有url
+>	url = git@realgeoffrey.github.com:realgeoffrey/knowledge2.git
+>	url = git@realgeoffrey.github.com:realgeoffrey/knowledge3.git
+>	fetch = +refs/heads/*:refs/remotes/origin/*                     # 一次pull，以上面第一个url为fetch地址
+>
+>[remote "别名"]
+>	url = git@realgeoffrey.github.com:realgeoffrey/knowledge4.git
 >	fetch = +refs/heads/*:refs/remotes/origin/*
 >```
 
 0. 查看跟踪的远程仓库
 
-    `git remote -v`或`--verbose`，包含`fetch`（拉取的远程仓库）、`push`/`url`（推送的远程仓库）
+    `git remote -v或--verbose`，包含`fetch`（拉取的git远程仓库，以配置中第一个url为拉取仓库地址）、`push`/`url`（推送的git远程仓库，一次操作推送所有url）
 1. 新增一个远程仓库别名
 
     `git remote add 「别名」 「git远程仓库」`
 
-    - 推送：`git push 「别名」 「任意本地分支名，默认：本地所在分支名」:「任意远程分支名，默认：与前面名相同」`
+    - 推送：指定推送别名`git push 「别名」 「任意本地分支名，默认：本地所在分支名」:「任意远程分支名，默认：与前面名相同」`
 2. 原别名下新增一个推送去的远程仓库（`push`/`url`）
 
-    `git remote set-url --add 「原别名」 「git远程仓库」`
+    `git remote set-url --add 「别名」 「git远程仓库」`
 
-    - 推送：单次推送会推送到原别名下所有`push`/`url`配置的远程仓库。
+    - 推送：单次推送会推送到别名下所有`push`/`url`配置的远程仓库。
 
 ### 设置gitconfig
 >`git config --global或--local 「参数」`要把`--global或--local`写在第三个参数位置，否则无效。

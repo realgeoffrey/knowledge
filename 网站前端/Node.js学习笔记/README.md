@@ -108,7 +108,7 @@ npm（Node Package Manager）。
 
 1. `npm`CLI
 
-    >在任意命令后添加`-h`、`--help`查看当前命令的所有参数。在任意命令后添加`--verbose`查看完整日志。
+    >在任意命令后添加`-h`、`--help`查看当前命令的所有参数。在任意命令后添加`--verbose`查看完整日志；日志都可以在`~/.npm/_logs/`查看。
 
     1. 制作
 
@@ -655,6 +655,8 @@ npm（Node Package Manager）。
     2. npm@3+
 
         扁平化嵌套（副作用：~~不确定性~~、依赖分身、幽灵依赖）。尽量把依赖提升（hoist）到项目目录的node_modules（**幽灵依赖**），提升只能提升依赖的一个版本（不确定性，不确定提升哪个版本；之后`package-lock.json`解决，按照`package-lock.json`文件安装），后面再遇到相同包的不同版本，依然还是用嵌套的方式，可能相同版本在不同依赖位置嵌套安装多次（**依赖分身**）。
+
+        >一些安装方式（可能与引用不同版本或循环引用之类的有关），会导致没有把依赖包安装到node_modules顶层，而是直接安装到嵌套的内部。尝试：`npm i npm-package-i@0.0.13 vue-eslint-parser@9.4.2`，然后观察`eslint-plugin-vue`被安装到了/node_modules/npm-package-i/node_modules/，而没有平铺在最外层。
 2. yarn
 
     yarn install和npm install流程类似，但并行执行安装任务（快）。`yarn.lock`、扁平化（不同于npm，会把使用频率较大的版本安装到顶层目录），依然存在问题：幽灵依赖、依赖分身。
@@ -1487,11 +1489,11 @@ Node.js的全局对象`global`是所有全局变量的宿主。
             // 在`./app.js`中配置：开启
             module.exports = app => {
               // 在中间件最前面（或任意项位置）添加
-              app.config.coreMiddleware.unshift('xx');
+              app.config.coreMiddleware.unshift/push('xx');  // 也可以插入：app.config.appMiddleware
             };
             ```
 
-        应用层定义的中间件（`app.config.appMiddleware`）和框架默认中间件（`app.config.coreMiddleware`）都会被加载器加载，并挂载到 `app.middleware` 上。
+        应用层定义的中间件（`app.config.appMiddleware`）和框架默认中间件（`app.config.coreMiddleware`）都会被加载器加载，并挂载到 `app.middleware` 上（app.middleware顺序 等于 app.config.coreMiddleware顺序 + app.config.appMiddleware顺序）。
     2. 局部使用中间件（单路由生效）
 
         ```js
@@ -1622,8 +1624,8 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     等级区别：`NONE`（不打印日志）、`DEBUG`（.logger.debug及以上）、`INFO`（.logger.info及以上）、`WARN`（.logger.warn及以上）、`ERROR`（.logger.error及以上）
 
     1. `.logger.error()`会输出到错误日志文件
-    2. `config.logger.level: 日志级别`打印高于等于「日志级别」的日志到文件（`NONE`：关闭打印到文件）
-    3. `config.logger.consoleLevel: 日志级别`打印高于等于「日志级别」的日志到终端（`NONE`：关闭打印到终端）
+    2. `config.logger.level: 日志级别，默认：'INFO'`打印高于等于「日志级别」的日志到文件（`NONE`：关闭打印到文件）
+    3. `config.logger.consoleLevel: 日志级别，默认：'INFO'`打印高于等于「日志级别」的日志到终端（`NONE`：关闭打印到终端）
 
 ### [Koa](https://github.com/koajs/koa)
 关键点：级联（洋葱模型） + 通过上下文（ctx）在中间件间传递数据 + ctx.body的值为HTTP响应数据。
@@ -1790,6 +1792,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         1. `.query=` === `.request.query=`
         1. `.querystring` === `.request.querystring`
         1. `.querystring=` === `.request.querystring=`
+        1. `.request.body`
         1. `.request.search`
         1. `.request.search=`
         1. `.host` === `.request.host`

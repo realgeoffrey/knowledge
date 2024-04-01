@@ -195,18 +195,18 @@
 1. request：
 
     ```text
-    <method> <request-URI> <version>        // 请求行
-    <headers>                               // 请求头
-                                            // 空行（CR+LF）
-    <entity-body>                           // 请求消息主体
+    <method><空格><request-URI><空格><version><回车换行>    // 请求行
+    <headers><回车换行>                                   // 请求头（可多行）
+    <回车换行>                                            // 空行（CR+LF）
+    <entity-body>                                       // 请求消息主体
     ```
 2. response：
 
     ```text
-    <version> <status code> <reason phrase> // 状态行
-    <headers>                               // 响应头
-                                            // 空行（CR+LF）
-    <entity-body>                           // 响应消息主体
+    <version><空格><status code><空格><reason phrase><回车换行> // 状态行
+    <headers><回车换行>                                       // 响应头（可多行）
+    <回车换行>                                                // 空行（CR+LF）
+    <entity-body>                                           // 响应消息主体
     ```
 
 ><details>
