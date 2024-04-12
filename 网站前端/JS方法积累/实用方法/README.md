@@ -38,11 +38,11 @@
     1. [分割字符串](#原生js分割字符串)
     1. [数字增加分隔符](#原生js数字增加分隔符)
     1. [产生随机数](#原生js产生随机数)
-    1. [比较版本号大小（纯数字）](#原生js比较版本号大小纯数字)
     1. [判断版本号是否在某个版本区间（纯数字）](#原生js判断版本号是否在某个版本区间纯数字)
     1. [判断检索内容是否在被检索内容的分隔符间](#原生js判断检索内容是否在被检索内容的分隔符间)
     1. [格式化文件大小](#原生js格式化文件大小)
     1. [单词首字母大写](#原生js单词首字母大写)
+    1. [文件扩展名](#原生js文件扩展名)
 1. 数组操作
 
     1. [数组去重（项为对象）](#原生js数组去重项为对象)
@@ -1488,40 +1488,6 @@ function random (length, charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr
 }
 ```
 
-### *原生JS*比较版本号大小（纯数字）
-```js
-/**
- * 比较版本号大小（纯数字）
- * @param {Number|String} version - 比较数1
- * @param {Number|String} base - 比较数2
- * @param {String} [separator = '.'] - 版本分隔符
- * @returns {String} flag - '=' 或 '>' 或 '<'
- */
-function versionCompare (version, base, separator = '.') {
-  const arr1 = version.toString().split(separator)
-  const arr2 = base.toString().split(separator)
-  const length = arr1.length > arr2.length ? arr1.length : arr2.length
-  let flag = '='
-
-  for (let i = 0; i < length; i++) {
-    arr1[i] = arr1[i] || '0'
-    arr2[i] = arr2[i] || '0'
-
-    if (arr1[i] !== arr2[i]) {  /* 两值不同 */
-      flag = parseInt(arr1[i], 10) < parseInt(arr2[i], 10) ? '<' : '>'
-
-      break
-    }
-  }
-
-  return flag
-}
-
-
-/* 使用测试 */
-console.log(versionCompare('1.1.10', '1.2'))  // => <
-```
-
 ### *原生JS*判断版本号是否在某个版本区间（纯数字）
 ```js
 /**
@@ -1650,6 +1616,24 @@ function upperCaseWord(str) {
 
         return match.toUpperCase();
     });
+}
+```
+
+### *原生JS*文件扩展名
+```js
+/**
+ * 返回文件扩展名（注意，没有进行toLowerCase）：简单实现Node.js的path.extname，未处理非一般文件名的情况
+ * @param {String} filename - 文件名字符串
+ * @param {Boolean} [needSeparator = true] - 返回内容是否包含分隔符.
+ * @returns {String} - 文件扩展名
+ */
+function getFileExtension(filename, needSeparator = true) {
+  if (!filename || filename[0] === '.') {
+    return ''
+  }
+  const arr = filename.split('.')
+  const hasDot = arr.length >= 2
+  return hasDot ? `${needSeparator ? '.' : ''}${arr.pop()}` : ''
 }
 ```
 

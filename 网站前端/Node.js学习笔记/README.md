@@ -1281,49 +1281,55 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         统一的约定（文件结构、插件引用方式、扩展逻辑，引用逻辑、参数与this的定义）。
 
         >在Koa的基础上进行增强最重要的就是基于一定的约定，根据功能差异将代码放到不同的目录下管理，从而极大降低应用的开发成本。
-    2. 插件
+    2. 应用、框架、插件
 
-        1. 一个插件只做具体的一件事，但插件间可以有依赖关系
-        2. 一个插件除了不包含 ~~./app/router.js~~、~~./app/controller/~~、~~./config/plugin.js~~ 之外，其他配置和应用一致
+        1. 应用
 
-        - 插件目录结构
+            最外层启动的egg应用，支持所有配置。
+        2. 框架
 
-            ```text
-            ├── 其他文件（夹）
-            ├── config
-            │   └── config.default.js
-            └── package.json
-            ```
+            >[egg](https://github.com/eggjs/egg)是框架嵌套的最底层，该框架默认包含若干基本插件（./config/plugin.js）、中间件（./app/middleware/）、以及其他配置项（./app/extend/、./config/、./agent.js）。
 
-            ```json
-            # package.json
-            {
-              "eggPlugin": {
-                "name": "myPlugin",                             # 插件名，配置依赖关系时会指定依赖插件的 name
-                "dependencies": [ "registry" ],                 # 当前插件强依赖的插件列表（如果依赖的插件没找到，应用启动失败）
-                "optionalDependencies": [ "vip" ],              # 当前插件的可选依赖插件列表（如果依赖的插件未开启，只会 warning，不会影响应用启动）
-                "env": [ "local", "test", "unittest", "prod" ]  # 指定在某些运行环境才开启当前插件
-              },
-            }
-            ```
-    3. 框架
+            1. 框架是一个启动器（默认是 Egg），有了框架应用才能运行。框架起到封装器的作用，将多个插件的功能聚合起来统一提供。框架可以嵌套框架
+            2. 一个框架除了不包含 ~~./app/router.js~~、~~./app/controller/~~ 之外，其他配置和应用一致
 
-        >egg可以理解为最底层的框架，该框架默认包含若干基本插件、中间件、以及其他配置项。
+            - 应用或框架 引用框架
 
-        1. 框架是一个启动器（默认是 Egg），有了框架应用才能运行。框架起到封装器的作用，将多个插件的功能聚合起来统一提供。框架可以嵌套框架
-        2. 一个框架除了不包含 ~~./app/router.js~~、~~./app/controller/~~ 之外，其他配置和应用一致
+                ```json
+                # package.json
+                {
+                  "egg": {
+                    "framework": "框架仓库名"    # 默认引用：egg
+                  },
+                }
+                ```
+        3. 插件
 
-        - 应用或框架 引用框架
+            1. 一个插件只做具体的一件事，但插件间可以有依赖关系
+            2. 一个插件除了不包含 ~~./app/router.js~~、~~./app/controller/~~、~~./config/plugin.js~~ 之外，其他配置和应用一致
+            3. 插件目录结构
 
-            ```json
-            # package.json
-            {
-              "egg": {
-                "framework": "框架仓库名"    # 默认：egg
-              },
-            }
-            ```
-1. 插件引用`./config/plugin.js`或`./config/plugin.{env}.js`
+                ```text
+                ├── 其他文件（夹）
+                ├── config
+                │   └── config.default.js
+                └── package.json
+                ```
+
+                ```json
+                # package.json
+                {
+                  "eggPlugin": {
+                    "name": "myPlugin",                             # 插件名，配置依赖关系时会指定依赖插件的 name
+                    "dependencies": [ "registry" ],                 # 当前插件强依赖的插件列表（如果依赖的插件没找到，应用启动失败）
+                    "optionalDependencies": [ "vip" ],              # 当前插件的可选依赖插件列表（如果依赖的插件未开启，只会 warning，不会影响应用启动）
+                    "env": [ "local", "test", "unittest", "prod" ]  # 指定在某些运行环境才开启当前插件
+                  },
+                }
+                ```
+
+            - 应用或框架 引用插件
+1. 插件引用`./config/plugin.js`或`./config/plugin.{env}.js`（仅支持：应用、框架）
 
     >不存在 ~~`plugin.default.js`~~。
 
@@ -1344,9 +1350,9 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 
 
     // ③除了提供的配置之外，还可以直接使用插件提供的功能
-    app.插件名.xxx()
+    app.插件名.xxx()   // 注入方式，在插件的app.js（或agent.js）的某个生命周期内直接赋值属性，如：app.插件名=对象 或 app.插件名.xxx=方法
     ```
-2. 配置文件`./config/config.{env}.js`
+2. 配置文件`./config/config.{env}.js`（全支持：应用、框架、插件）
 
     导出对象方式；导出方法方式，参数：`appInfo: {pkg,name,baseDir,HOME,root}`，返回对象。
 
@@ -1379,7 +1385,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     2. `config.local.js`开发模式、`config.unittest.js`测试模式、`config.prod.js`正式、其他自定义环境名
 
     - 插件、框架、应用 之间的配置文件 以及 具体环境、default 之间的配置文件，都是通过文件合并（通过[extend2](https://github.com/eggjs/extend2)深复制），而不是互相覆盖。
-3. 扩展`./app/extend/` +
+3. 扩展`./app/extend/`（全支持：应用、框架、插件） +
 
     1. `application.js`或`application.{env}.js`
 
@@ -1415,7 +1421,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     2. 代码获取：`app.config.env`
     3. 影响：不同的运行环境会对应egg不同的配置（config、plugin、extend）以及不同内部逻辑
     4. [与环境变量`NODE_ENV`关系](Https://www.eggjs.org/zh-CN/basics/env#与-node_env-的区别)
-4. 启动初始化`./agent.js`、`./app.js`
+4. 启动初始化`./agent.js`、`./app.js`（全支持：应用、框架、插件）
 
     参数：`agent`或`app`
 
@@ -1430,6 +1436,8 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         6. 应用启动完成（`serverDidReady`）
         7. 应用即将关闭（`beforeClose`）
 
+        - 插件提供的功能，在生命周期内加，e.g. <https://github.com/eggjs/egg-mysql/blob/master/app.ts#L12>、<https://github.com/eggjs/egg-mongoose/blob/master/lib/mongoose.js#L36>
+
 >`this`属性：
 >
 >1. `.ctx`（`.request`、`.response`、`.app`、`.originalUrl`、`.req`、`.res`、`.socket`、`.logger`、`.helper`、`.service`）
@@ -1440,14 +1448,14 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 >4. `.service`
 >5. `.logger`
 
-5. 服务`./app/service/`
+5. 服务`./app/service/`（全支持：应用、框架、插件）
 
     导出class方式，实例：`this`。
 
     懒加载，只有使用时框架才实例化，`this.service.`、`ctx.service.`使用。**请求级别**的对象。
 
     >Service在复杂业务场景下用于做业务逻辑封装的一个抽象层：处理复杂业务逻辑；调用数据库或第三方服务。
-6. 中间件`./app/middleware/`
+6. 中间件`./app/middleware/`（全支持：应用、框架、插件）
 
     导出方法，参数：`options, app`（options：中间件的配置项，会将`app.config.中间件文件名`的值传递进来），这个方法返回中间件（参数：`ctx, next`）。
 
@@ -1503,13 +1511,14 @@ Node.js的全局对象`global`是所有全局变量的宿主。
           app.router.get('/', xx, app.controller.handler);
         };
         ```
-    - 框架、插件、应用 中的配置的中间件，不能有任何同名，否则启动时报错。
-7. 控制器`./app/controller/`
+
+    - 应用或框架或插件 配置中间件。应用、框架、插件 中的配置的中间件，不能有任何同名，否则启动时报错。
+7. 控制器`./app/controller/`（仅支持：应用）
 
     导出class方式，实例：`this`；导出对象方式，属性方法参数：`ctx`（不推荐）。
 
     `app.controller.`使用，一般仅在router.js中使用。
-8. 路由`./app/router.js`
+8. 路由`./app/router.js`（仅支持：应用）
 
     导出方法，参数：`app`。
 
@@ -1539,7 +1548,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     ```
 
     >[完整路由定义](https://www.eggjs.org/zh-CN/basics/router#router-详细定义说明)。
-9. 定时任务`./app/schedule/`
+9. 定时任务`./app/schedule/`（全支持：应用、框架、插件）
 
     从基类`Subscription`继承。导出对象方式；导出class方式，实例：`this`。导出内容的属性包含：`schedule`、`subscribe或task(ctx)`。
 
@@ -1548,9 +1557,10 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     >1. 定时上报应用状态。
     >2. 定时从远程接口更新本地缓存。
     >3. 定时进行文件切割、临时文件删除。
-10. 静态资源`./app/public/`
+- 静态资源`./app/public/`
 
     默认映射`/public/*` -> `app/public/*`。
+
 - [目录结构](https://www.eggjs.org/zh-CN/basics/structure)
 
     ```text
