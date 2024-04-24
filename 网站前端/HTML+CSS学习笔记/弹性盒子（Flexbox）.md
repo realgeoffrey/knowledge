@@ -479,7 +479,7 @@
     <style>
       .father {
         display: flex;
-        align-items: center;
+        align-items: center;    // 水平居中：justify-content: center;
 
         height: 最大高度;
       }

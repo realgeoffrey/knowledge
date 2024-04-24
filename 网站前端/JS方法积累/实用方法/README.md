@@ -1628,13 +1628,28 @@ function upperCaseWord(str) {
  * @returns {String} - 文件扩展名
  */
 function getFileExtension(filename, needSeparator = true) {
-  if (!filename || filename[0] === '.') {
-    return ''
+  const firstDotIndex = filename.indexOf('.');
+  const lastDotIndex = filename.lastIndexOf('.');
+
+  if ((filename.startsWith('.') && firstDotIndex === lastDotIndex) || firstDotIndex === -1) {
+    // 处理特殊情况
+    return '';
   }
-  const arr = filename.split('.')
-  const hasDot = arr.length >= 2
-  return hasDot ? `${needSeparator ? '.' : ''}${arr.pop()}` : ''
+
+  return filename.slice(needSeparator ? lastDotIndex : lastDotIndex + 1);
 }
+
+
+/* 使用测试 */
+const path = require('node:path');
+console.log(`期望输出："${path.extname('')}"。`, getFileExtension('') === path.extname(''));
+console.log(`期望输出："${path.extname('.')}"。`, getFileExtension('.') === path.extname('.'));
+console.log(`期望输出："${path.extname('ABC.')}"。`, getFileExtension('ABC.') === path.extname('ABC.'));
+console.log(`期望输出："${path.extname('ABC')}"。`, getFileExtension('ABC') === path.extname('ABC'));
+console.log(`期望输出："${path.extname('.ABC')}"。`, getFileExtension('.ABC') === path.extname('.ABC'));
+console.log(`期望输出："${path.extname('1.ABC')}"。`, getFileExtension('1.ABC') === path.extname('1.ABC'));
+console.log(`期望输出："${path.extname('1.2.3.a.b.ABC')}"。`, getFileExtension('1.2.3.a.b.ABC') === path.extname('1.2.3.a.b.ABC'));
+console.log(`期望输出："${path.extname('.ABC.md')}"。`, getFileExtension('.ABC.md') === path.extname('.ABC.md'));
 ```
 
 ---

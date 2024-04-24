@@ -88,7 +88,8 @@
                 4. 自定义处理器，从其他类型的文件中提取JS代码，或在提示前对代码进行预处理。
         4. `overrides: []`针对glob模式进行精细化配置，匹配的文件和规则优先级高于其他配置，overrides后面的项优先级更高
 
-            1. glob在项目级配置中是相对于当前配置文件，在`--config`命令行配置中相对于命令执行目录。
+            1. 必须包含`files`字段。
+            2. glob在项目级配置中是相对于当前配置文件，在`--config`命令行配置中相对于命令执行目录。
         5. `env: { 环境名 或 缩写插件名/插件自定义的环境名: true/false, }`是否开启环境提供预设的全局变量
 
             `browser`、`node`、`commonjs`、`shared-node-browser`、`es6`、`es2016~es2024`、`worker`、`amd`、`mocha`、`jasmine`、`jest`、`phantomjs`、`protractor`、`qunit`、`jquery`、`prototypejs`、`shelljs`、`meteor`、`mongo`、`applescript`、`nashorn`、`serviceworker`、`atomtest`、`embertest`、`webextensions`、`greasemonkey`
