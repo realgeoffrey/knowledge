@@ -944,6 +944,8 @@
     >```
     ></details>
 
+    >注意有些是jsx或其他模板的语法，不是vue的template逻辑。如：`<组件 {...{props: 值, on: 值 }}>`是jsx语法，不是vue的template语法。
+
 >模板选择优先级：`render` > `template` > `el`挂载的DOM的HTML。若使用`render`或`template`，则挂载的节点会被完全替换（并非仅替换挂载节点的内部内容，而是直接把挂载节点整个替换），无论是`el`还是`vm.$mount(节点)`。`el`挂载的DOM的HTML 自然就没有替换逻辑。
 
 9. `renderError`（`(createElement: () => VNode, error: Error) => VNode`）：当`render`遭遇错误时，提供另外一种渲染输出

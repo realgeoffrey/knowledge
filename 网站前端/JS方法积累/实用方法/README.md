@@ -3594,34 +3594,37 @@ for (let i = 0; i < text.length; i++) {
 
 ### *原生JS*轮询
 ```ts
-// 提供给 taskFn 内部返回 Promise.reject(CANCEL_TOKEN)
+// 提供给 参数taskFn 返回Promise.reject(CANCEL_TOKEN)
 export const CANCEL_TOKEN = "CANCEL_TOKEN";
 
 interface Options<T> {
-  // 轮询执行方法（额外约定主动结束轮询：返回`Promise.reject(CANCEL_TOKEN)`）
-  //   若返回 Promise.resolve，则执行成功、轮询成功结束；
-  //   若返回 Promise.reject，则执行失败：
-  //     若主动结束轮询 或 轮询重试用完，则轮询失败结束，否则继续轮询
-  taskFn: () => Promise<T>;
-  // 整个轮询超时时间（ms）
-  masterTimeout?: number;
-  // 重试回调(剩余重试次数, 本次错误信息)
-  progressCallback?: (retriesRemain: number, err: unknown) => void;
 
-  // 轮询次数
+  // 轮询执行方法(参数1：轮询第几次，起始为1)
+  //   若返回 Promise.resolve，则执行成功、整个轮询成功结束；
+  //   若返回 Promise.reject，则执行失败：
+  //     主动结束整个轮询 约定：返回`Promise.reject(CANCEL_TOKEN)`。
+  //     若 轮询重试次数用完 或 主动结束整个轮询，则整个轮询失败结束，否则继续轮询；
+  taskFn: (num: number) => Promise<T>;
+
+  // 轮询重试次数，默认：5次
   retries?: number;
-  // 重试间隔（ms）
+  // 重试间隔（毫秒），默认：1000ms
   retryInterval?: number;
+
+  // 整个轮询超时时间（毫秒），若不传则没有整体超时时间
+  masterTimeout?: number;
+  // 重试回调(参数1：剩余重试次数, 参数2：本次错误信息)
+  progressCallback?: (retriesRemain: number, err: unknown) => void;
 }
 
-// 轮询执行
+// 轮询执行（轮询无法在外部终止，只能在 传参taskFn 返回Promise实例处理）
 export const promisePoller = <T>(options: Options<T>): Promise<T> => {
-  const { taskFn, masterTimeout, progressCallback, retries = 5, retryInterval = 1000 } = options;
+  const { taskFn, retries = 5, retryInterval = 1000, masterTimeout, progressCallback } = options;
 
   let timeoutId: number = 0;
   let pollingSafe = true; // 是否可以继续轮询
-  let rejections: Array<unknown> = []; // 存放失败信息
-  let retriesRemain = retries;
+  const rejections: Array<unknown> = []; // 存放失败信息
+  let retriesRemain = retries;  // 剩余重试次数
 
   return new Promise((resolve, reject) => {
     if (masterTimeout) {
@@ -3632,7 +3635,7 @@ export const promisePoller = <T>(options: Options<T>): Promise<T> => {
     }
 
     const poll = () => {
-      taskFn()
+      taskFn(retries - retriesRemain + 1)
         .then((result) => {
           clearTimeout(timeoutId);
           resolve(result);
@@ -3640,7 +3643,7 @@ export const promisePoller = <T>(options: Options<T>): Promise<T> => {
         .catch((err: typeof CANCEL_TOKEN | unknown) => {
           if (err === CANCEL_TOKEN) {
             clearTimeout(timeoutId);
-            reject(rejections.concat("主动结束轮询"));
+            reject(rejections.concat("主动结束整个轮询"));
           } else {
             // 存储轮询失败信息
             rejections.push(err);
@@ -3664,28 +3667,32 @@ export const promisePoller = <T>(options: Options<T>): Promise<T> => {
   });
 };
 
-const delay = (ms: number) =>
-  new Promise((resolve) => {
+const delay = (ms: number) => {
+  return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
+}
 
 
 /* 使用测试 */
-let i = 0;
 promisePoller({
-  taskFn() {
+  taskFn(num: number) {
     return new Promise(async (resolve, reject) => {
-      await delay(100);
-      i++;
-      if (i < 3) {
-        reject(new Error(String(i)));
+      console.log(`执行第${num}次`);
+      await delay(200);
+      if (Math.random() < 0.5) {
+        // 失败
+        reject(new Error(`执行第${num}次失败`));
       } else {
-        resolve(i);
-        // reject(CANCEL_TOKEN)
+        // 成功
+        resolve(num);
+        // 或主动结束整个轮询：reject(CANCEL_TOKEN)
       }
     });
   },
-}).then((data) => console.warn(data));
+})
+  .then((data) => console.log('整个轮询成功', data))
+  .catch((err) => console.error('整个轮询失败', err));
 ```
 >参考：[promise-poller](https://github.com/joeattardi/promise-poller)。
 

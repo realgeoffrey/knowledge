@@ -532,6 +532,8 @@ alias 「自定义命令名」      # 打印设置的执行命令
 unalias 「自定义命令名」    # 删除 别名
 ```
 
+>e.g. `alias sync-public='sync-public(){curl --request PUT https://registry-direct.npmmirror.com/-/package/$1/syncs};sync-public'`，`sync-public fabric-demo`
+
 #### `adb`
 1. 查看已连接的设备（尝试连接手机）
 

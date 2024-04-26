@@ -55,9 +55,9 @@
             4. `-c/--config`（可配合`--no-eslintrc`忽略所有规则默认查找）
         3. 项目级配置
 
-            会在每一个被检查文件的目录中寻找配置文件（不是~~命令执行的目录~~，而是被检查文件的目录，因此不同文件夹的文件都可能有不同的规则配置），并在其直系父目录中寻找，直到文件系统的根目录（`/`）、~~当前用户的主目录（`~/`）~~ 或指定 `root: true` 时停止。
+            会在每一个被检查文件的目录中寻找配置文件（不是~~命令执行的目录~~，而是每一个被检查文件的目录，因此不同文件夹的文件都可能有不同的规则配置），并在其直系祖先目录中寻找，直到触发任意停止条件：抵达文件系统的根目录（`/`）或 配置包含 `root: true` ~~或 抵达当前用户的主目录（`~/`）~~。
 
-            - 不同文件夹的规则嵌套覆盖；同一级文件夹内的规则只会使用以下优先级最高的（降序）：
+            - 同一级文件夹内的配置只会使用以下优先级最高的一个文件（降序）：
 
                 1. .eslintrc.js(输出一个配置对象)
                 2. .eslintrc.cjs
@@ -65,18 +65,20 @@
                 4. .eslintrc.yml
                 5. .eslintrc.json（ESLint的JSON文件允许JavaScript风格的注释）
                 6. package.json（在package.json里创建一个eslintConfig属性，在那里定义你的配置）
+            - 不同文件夹的规则嵌套覆盖。若未达到停止条件，会一直往上查找并合并配置，相同规则 以 越接近文件的（越先被搜索到的）优先。
     2. 忽略文件
 
-        `.eslintignore`（指定其他文件作为eslint忽略文件：`--ignore-path .gitignore`）
+        `.eslintignore`（不会包含.gitignore。指定其他文件作为eslint忽略文件：`--ignore-path .gitignore`）
 
         >忽略语法和[.gitignore](https://git-scm.com/docs/gitignore#_pattern_format)类似。
     3. 配置内容
 
         1. `root: true/false`是否不再向上搜索配置文件
-        2. `extends: [ 配置名 或 文件路径 或 plugin:缩写插件名/插件自定义的配置名 ]`继承另一个配置文件的所有配置
+        2. `extends: [ 配置名 或 plugin:缩写插件名/插件自定义的配置名 或 文件路径 ]`继承另一个配置文件的所有配置，extends后面的项优先级更高
 
             1. 可以省略配置名称中的`eslint-config-`前缀，e.g. `airbnb`会被解析为`eslint-config-airbnb`。
-            2. 可以是基于配置文件的绝对或相对路径。e.g. `"./node_modules/coding-standard/eslintDefaults.js"`
+            2. 可以是基于配置文件的绝对或相对路径。e.g. `"./node_modules/coding-standard/eslintDefaults.js"`、`require.resolve('仓库名/导出的文件路径')`。
+            3. `eslint:recommended`或`eslint:all`。
         3. `plugins: []`添加扩展功能的npm包
 
             1. 可以省略包名中的`eslint-plugin-`前缀，e.g. `react`是`eslint-plugin-react`的缩写。
@@ -132,22 +134,33 @@
     ```
 2. 配置文件
 
-    1. 优先级（降序）
+    1. 项目级配置
 
-        1. `package.json`：`prettier`
-        2. JSON或YAML：`.prettierrc`
-        3. `.prettierrc.json`、`.prettierrc.yml`、`.prettierrc.yaml`
-        4. `module.exports`：`.prettierrc.js`、`prettier.config.js`
-        5. `.prettierrc.toml`
+        会在每一个被检查文件的目录中寻找配置文件（不是~~命令执行的目录~~，而是每一个被检查文件的目录，因此不同文件夹的文件都可能有不同的规则配置），并在其直系祖先目录中寻找，直到触发停止条件：抵达执行prettier命令的目录。
+
+        - 同一级文件夹内的配置只会使用以下优先级最高的一个文件（降序）：
+
+            1. 优先级（降序）
+
+                1. `package.json`：`prettier`
+                2. JSON或YAML：`.prettierrc`
+                3. `.prettierrc.json`、`.prettierrc.yml`、`.prettierrc.yaml`、`.prettierrc.json5`
+                4. `module.exports`：`.prettierrc.js`、`prettier.config.js`
+                5. `export default`：`.prettierrc.mjs`、`prettier.config.mjs`
+                6. `.prettierrc.toml`
+
+                - 配置简单，导出对象，没有config概念，分享使用通过导出对象进行。
+        - 不同文件夹的规则嵌套覆盖。若未达到停止条件，会一直往上查找并合并配置，相同规则 以 越接近文件的（越先被搜索到的）优先。
     2. 忽略文件
 
-        `.prettierignore`
+        `.prettierignore`（prettier@3会默认加上`.gitignore`的内容；`prettier@2`不会）
 
         >忽略语法和[.gitignore](https://git-scm.com/docs/gitignore#_pattern_format)一致。
 
     - 配置规则
 
-        [prettier: options](https://prettier.io/docs/en/options.html)
+        [prettier: options](https://prettier.nodejs.cn/docs/en/options.html`)
+
 3. 不对接下来的语句块进行prettier
 
     ```shell
@@ -183,8 +196,24 @@
     ```
 
 ### [Stylelint](https://github.com/stylelint/stylelint)
+1. 配置内容
 
+    - 配置逻辑和eslint类似
 
+        1. 没有嵌套逻辑，以第一个搜索到的配置文件为准。若cli添加`-c/--config 配置路径`，则规则仅以设置的配置路径为准（类似eslint的`-c 配置路径 --no-eslintrc`）。
+        2. 没有 ~~`root`~~ 配置（或可理解为`root`含义永远为`true`），每个文件仅会有一个配置。
+    1. `extends: [ 配置名 或 文件路径 ]`
+
+        配置。
+    2. `overrides`
+
+        覆盖，必须包含`files`。
+2. 忽略文件
+
+    `.stylelintignore`（不会包含.gitignore）
+
+    >忽略语法和[.gitignore](https://git-scm.com/docs/gitignore#_pattern_format)一致。
+3. [忽略代码](https://stylelint.nodejs.cn/user-guide/ignore-code)
 
 ### 区别和配合使用
 1. 区别：

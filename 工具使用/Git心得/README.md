@@ -900,6 +900,8 @@ feat(details): 添加了分享功能
     >或[simple-git-hooks](https://github.com/toplenboren/simple-git-hooks)代替。
 2. 使用[lint-staged](https://github.com/okonet/lint-staged)设置：针对git的staged文件进行lints操作（如：eslint、prettier、等）。
 
+    若多个任务中任一个任务失败（FAILED），则导致其他任务终止（KILLED），仅打印失败任务错误信息。
+
 配合效果：针对git的staged文件，在git hooks时期，进行lints操作（如：eslint、prettier、等）。
 
 >跳过git hooks：在大部分相关git命令后面加上`--no-verify`。

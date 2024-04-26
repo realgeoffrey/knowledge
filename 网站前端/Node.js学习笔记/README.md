@@ -447,11 +447,11 @@ npm（Node Package Manager）。
     11. `browser`
 
         若是作用域浏览器客户端，则替代 ~~`main`~~ 使用。
-    12. `scripts`
+    12. [`scripts`](https://npm.nodejs.cn/cli/using-npm/scripts)
 
         可执行脚本，用`npm run 脚本名`执行。
 
-        - 钩子：`pre`（命令之前执行）、`post`（命令之后执行）、等
+        - 钩子：`pre`（命令之前执行）、`post`（命令之后执行）、`prepare`、`dependencies`、等
 
             若执行时打印不出信息，则尝试执行时添加`--foreground-scripts`。[As of npm@7 these scripts run in the background. To see the output, run with: `--foreground-scripts`](https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-scripts).
 
@@ -600,7 +600,7 @@ npm（Node Package Manager）。
     - 作用域的包
 
         `@scope/project-name`
-4. `.npmrc`
+4. [`.npmrc`](https://docs.npmjs.com/cli/configuring-npm/npmrc)
 
     npm的配置文件，或全局修改：`npm config set xxx=yyy`（`npm config get xxx`查看`.npmrc`->全局；`npm config get xxx -g`查看全局）。
 
@@ -608,12 +608,13 @@ npm（Node Package Manager）。
 
     - 常用：`package-lock`、`registry`、`audit`
     - 注释：`;`或`#`。
-    - 优先级
+    - 优先级（降序）
 
         1. per-project config file (/path/to/my/project/.npmrc)
         2. per-user config file (~/.npmrc)
         3. global config file ($PREFIX/etc/npmrc)
         4. npm builtin config file (/path/to/npm/npmrc)
+    - 针对部分配置名，在npm cli中用`--no-配置名`可以覆盖某个配置名的值
 
 >项目中使用某个开源库时，要考虑它的License和文件大小（若使用webpack打包，则可以使用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)进行分析）。
 
