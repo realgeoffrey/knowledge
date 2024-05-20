@@ -871,7 +871,7 @@
         7. `<object>`的`data`
         8. `navigator.sendBeacon`请求
         9. Flash
-2. 让页面中发起的HTTP请求自动转化为HTTPS请求进行发出：
+2. 让页面中发起的HTTP请求自动转化为HTTPS请求进行发出（若资源没有https的资源，则考虑其他方案）：
 
     1. HTTP响应头：
 

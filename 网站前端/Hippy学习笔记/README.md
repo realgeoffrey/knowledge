@@ -341,7 +341,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
             1. 改变渲染内容后（除了`onEndReached`触发之外）有时无法再触发`onEndReached`
 
                 （除了`onEndReached`触发之外）改变渲染内容时，改变`<ListView>`的`key`属性。
-            2. `getRowType`返回类型根据版本会有不同，旧版SDK（[@hippy/react](https://www.npmjs.com/package/@hippy/react)）需要字符串类型，新版SDK需要数字类型。
+            2. `getRowType`返回类型根据版本会有不同，旧版SDK（[@hippy/react](https://www.npmjs.com/package/@hippy/react)）需要字符类型，新版SDK需要数字类型。
 
                 >会在客户端层面报错（非前端层面，因此safari不报错），类似：`Error setting property 'type' of ListViewItem with tag #153: JSON value '0' of type NSNumber cannot be converted to NSString`。
             3. `renderRow`不支持横向排列、不足换行的方案（~~`flexDirection: 'row'`~~、~~`flexWrap: wrap或wrap-reverse`~~）。
@@ -1192,7 +1192,6 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
         >默认情况下，webpack配置了针对小于某KB的图标进行转base64，所以一般情况不需要显式使用这个。
 
         `!!url-loader?modules!路径`，如：`import defaultSource from '!!url-loader?modules!./defaultSource.jpg';`
-
 3. 自定义组件、自定义模块
 
     1. 自定义组件

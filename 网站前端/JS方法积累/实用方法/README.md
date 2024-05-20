@@ -2480,16 +2480,42 @@ loadingFetch(() => { console.log('同步方法') })
 ```
 
 ### *原生JS*点击下载
-`<a href="文件地址" download="文件名.文件类型">点击若同源就下载，不同源还是导航跳转</a>`
+`<a href="文件资源地址" download="文件名.文件类型">文件资源地址：若是字符串，则同源就下载，不同源就依然是导航跳转；若是Blob或Data URL协议，则下载</a>`
 
->1. `download`指示浏览器下载URL而不是导航到它。
->2. 下载的文件需要与页面同源。
->3. 支持多种文件类型。
->4. 兼容性不佳。
+>1. `download`指示浏览器下载文件资源地址而不是导航跳转（若不同源，则退回没添加download的逻辑——导航跳转）。
+>2. 支持多种文件类型。
+>3. 兼容性不佳。
+>4. 若download未指定值或未指定文件后缀，则从多种方式中设置`文件名.文件类型`：响应头的`Content-Disposition`、`Content-Type`，URL的最后一段，Data URL的开头，Blob的`type`。
 
-以下方法均依赖`<a>`的`download`属性：
+以下方法均依赖`<a>`的`download`属性（JS的Blob或Data URL，都需要先[CORS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#corscross-origin-resource-sharing跨域资源共享)下载文件资源地址成功后再进行操作）：
 
-1. 下载文本
+1. 下载文件（利用文件URL，支持设置文件名）
+
+    >需要文件资源响应头包含正确的Access-Control-Allow-Origin值（CORS）。
+
+    ```js
+    function getBlob(fileUrl, filename) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', fileUrl, true);
+      xhr.responseType = 'blob';
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          const link = document.createElement('a');
+          link.href = window.URL.createObjectURL(xhr.response); // 也可以用Data URL（base64）
+          link.download = filename;
+
+          link.style.display = 'none';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          window.URL.revokeObjectURL(link.href);
+        }
+      };
+      xhr.send();
+    }
+    ```
+2. 下载文本（把JS字符串变成文本文件下载）
 
     >Blob。代码生成文本内容再创建下载。
 
@@ -2525,10 +2551,10 @@ loadingFetch(() => { console.log('同步方法') })
     /* 使用测试 */
     textDownload('内容字符串', '文件名.文件类型')
     ```
-2. 下载图片
+3. 下载图片（利用Canvas）
 
     >1. Canvas。仅支持：png/jpg/webp。
-    >2. 需要图片响应头包含正确的Access-Control-Allow-Origin值（CORS）。
+    >2. 需要文件资源响应头包含正确的Access-Control-Allow-Origin值（CORS）。
 
     ```js
     /**
@@ -2559,7 +2585,7 @@ loadingFetch(() => { console.log('同步方法') })
         const context = canvas.getContext('2d')
         context.drawImage(domImg, 0, 0)
 
-        // 图片转Base64地址
+        // 图片转Data URL（Base64）地址
         let base64
         if (filename.endsWith('.png')) {
           base64 = canvas.toDataURL('image/png')
@@ -3594,16 +3620,16 @@ for (let i = 0; i < text.length; i++) {
 
 ### *原生JS*轮询
 ```ts
-// 提供给 参数taskFn 返回Promise.reject(CANCEL_TOKEN)
-export const CANCEL_TOKEN = "CANCEL_TOKEN";
+// 提供给 参数taskFn 返回 `失败的、值为CANCEL_TOKEN 的Promise实例`
+export const CANCEL_TOKEN = new Error("主动结束整个轮询的标志");
 
 interface Options<T> {
 
   // 轮询执行方法(参数1：轮询第几次，起始为1)
   //   若返回 Promise.resolve，则执行成功、整个轮询成功结束；
   //   若返回 Promise.reject，则执行失败：
-  //     主动结束整个轮询 约定：返回`Promise.reject(CANCEL_TOKEN)`。
-  //     若 轮询重试次数用完 或 主动结束整个轮询，则整个轮询失败结束，否则继续轮询；
+  //     主动结束整个轮询 约定：返回 `失败的、值为CANCEL_TOKEN 的Promise实例`；
+  //     若 轮询重试次数用完 或 主动结束整个轮询 或 整个轮询超时，则整个轮询失败结束，否则继续轮询。
   taskFn: (num: number) => Promise<T>;
 
   // 轮询重试次数，默认：5次
@@ -3621,14 +3647,14 @@ interface Options<T> {
 export const promisePoller = <T>(options: Options<T>): Promise<T> => {
   const { taskFn, retries = 5, retryInterval = 1000, masterTimeout, progressCallback } = options;
 
-  let timeoutId: number = 0;
+  let timeoutId: ReturnType<typeof setTimeout>;
   let pollingSafe = true; // 是否可以继续轮询
   const rejections: Array<unknown> = []; // 存放失败信息
   let retriesRemain = retries;  // 剩余重试次数
 
   return new Promise((resolve, reject) => {
     if (masterTimeout) {
-      timeoutId = window.setTimeout(() => {
+      timeoutId = setTimeout(() => {
         pollingSafe = false;
         reject(rejections.concat("轮询总时间超时"));
       }, masterTimeout);
@@ -3654,7 +3680,11 @@ export const promisePoller = <T>(options: Options<T>): Promise<T> => {
             progressCallback?.(retriesRemain, err);
 
             if (retriesRemain > 0) {
-              pollingSafe && delay(retryInterval).then(poll);
+              pollingSafe && new Promise((resolve2) => {
+                setTimeout(resolve2, retryInterval)
+              }).finally(() => {
+                poll()
+              });
             } else {
               clearTimeout(timeoutId);
               reject(rejections);
@@ -3667,32 +3697,40 @@ export const promisePoller = <T>(options: Options<T>): Promise<T> => {
   });
 };
 
-const delay = (ms: number) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
-
 
 /* 使用测试 */
 promisePoller({
-  taskFn(num: number) {
-    return new Promise(async (resolve, reject) => {
-      console.log(`执行第${num}次`);
-      await delay(200);
-      if (Math.random() < 0.5) {
-        // 失败
-        reject(new Error(`执行第${num}次失败`));
-      } else {
-        // 成功
-        resolve(num);
-        // 或主动结束整个轮询：reject(CANCEL_TOKEN)
-      }
-    });
+  taskFn: async (num: number) => {
+    console.log(`执行第${num}次`);
+    await delay(200);
+    if (Math.random() < 0.5) {
+      // 失败
+      return Promise.reject(new Error(`执行第${num}次失败`)); // 或： throw new Error(`执行第${num}次失败`)
+    } else if (Math.random() < 0.5) {
+      // 成功
+      return num;
+    } else {
+      // 主动结束整个轮询
+      return Promise.reject(CANCEL_TOKEN);  // 或： throw CANCEL_TOKEN
+    }
   },
 })
   .then((data) => console.log('整个轮询成功', data))
   .catch((err) => console.error('整个轮询失败', err));
+
+function delay(ms: number) {
+  return new Promise((resolve, reject) => {
+    if (Math.random() < 0.5) {
+      setTimeout(() => {
+        reject('delay 随机失败')
+      }, ms);
+    } else {
+      setTimeout(() => {
+        resolve('delay 随机成功')
+      }, ms);
+    }
+  });
+}
 ```
 >参考：[promise-poller](https://github.com/joeattardi/promise-poller)。
 

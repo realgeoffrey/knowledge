@@ -1554,16 +1554,19 @@ batchFetch([n个url], 10).then((data)=>{ 按顺序n个url的结果 })
         const result = [];
 
         urls.forEach((url) => {
-          tasks.push(() => {
-            return new Promise(async (resolve) => {
-              // 真正执行任务
-              resolve(await task(1000 * Math.random(), url)());
-              runningCount--;
+          tasks.push(async () => {
+            // 真正执行任务
+            const res = task(1000 * Math.random(), url)
 
-              // 执行当前任务后继续尝试执行剩下任务
-              run();
-            });
-          });
+            await res.catch(() => {})
+
+            runningCount--;
+
+            // 执行当前任务后继续尝试执行剩下任务
+            run();
+
+            return res
+          })
         });
 
         function run() {
@@ -1590,20 +1593,23 @@ batchFetch([n个url], 10).then((data)=>{ 按顺序n个url的结果 })
     <summary>使用测试</summary>
 
     ```js
-    // 注意：执行2次才返回Promise
     const task = (duration, order) => {
-      return function () {
-        return new Promise((resolve) => {
-          setTimeout(() => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if (Math.random() < 0.5) {
             resolve(order);
-            console.log("执行完毕", order);
-          }, duration);
-        });
-      };
+            console.log("执行成功", order);
+          } else {
+            reject(order);
+            console.log("执行失败", order);
+          }
+        }, duration);
+      });
     };
-    batchFetch(Array.from({ length: 100 }).map((item, index) => index), 10,)
+
+    batchFetch(Array.from({ length: 10 }).map((item, index) => index), 2)
       .then((data) => {
-        console.log('完成了', data);
+        console.log(data, '完成了');
       });
     ```
     </details>

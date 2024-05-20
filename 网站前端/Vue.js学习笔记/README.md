@@ -937,14 +937,56 @@
     ><details>
     ><summary>e.g.</summary>
     >
-    >```vue
+    >```js
     >render(createElement) {
     >  return createElement("h1", '标题内容');
     >},
     >```
     ></details>
 
-    >注意有些是jsx或其他模板的语法，不是vue的template逻辑。如：`<组件 {...{props: 值, on: 值 }}>`是jsx语法，不是vue的template语法。
+    - jsx
+
+        1. 注意有些是jsx或其他模板的语法，不是vue的template逻辑。如：`<组件 {...{props: 值, on: 值 }}>`是jsx语法，不是vue的template语法。
+        2. 渲染非字符或非数字类型：
+
+            1. vue的template语法渲染
+
+                看起来都用`JSON.stringify`处理后展示。
+            2. jsx语法渲染
+
+                1. 正常渲染：组件、HTML标签、String类型、Number类型、数组；
+                2. 其他数据类型可能导致报错；
+                3. 渲染空白的返回：`false`、`true`、`null`、`undefined`、Symbol类型、BigInt类型。
+        3. vue的jsx和react的jsx有些区别
+
+            1. vue的模板语法
+
+                ```vue
+                // 父级（父级是vue的模板语法；子级是什么语法不影响）
+                <子级 :props="{a:1,b:2}" :c="3" :on="{d:()=>{}}"/>
+
+                // 子级
+                获得3个$props属性：`props`、`c`、`on`
+                ```
+            2. vue的jsx语法
+
+                传递给组件的属性若匹配则会先传递给[`createElement`的第二个参数](https://v2.cn.vuejs.org/v2/guide/render-function.html#深入数据对象)（`class`、`style`、`attrs`、`props`、`domProps`、`on`、`nativeOn`、`directives`、`scopedSlots`、`slot`、`key`、`ref`、`refInFor`），剩下未匹配的属性传递给组件的props。
+
+                ```jsx
+                // 父级（父级是vue的jsx语法；子级是什么语法不影响）
+                <子级 props={{a:1,b:2}} c={3} on={{d:()=>{}}}/>
+
+                // 子级
+                获得3个$props属性：`a`、`b`、`c`；1个$listeners属性：`d`
+                ```
+            3. react的jsx语法
+
+                ```jsx
+                <子级 props={{a:1,b:2}} c={3}/>
+
+                // 子级
+                获得2个props属性：`props`、`c`
+                ```
 
 >模板选择优先级：`render` > `template` > `el`挂载的DOM的HTML。若使用`render`或`template`，则挂载的节点会被完全替换（并非仅替换挂载节点的内部内容，而是直接把挂载节点整个替换），无论是`el`还是`vm.$mount(节点)`。`el`挂载的DOM的HTML 自然就没有替换逻辑。
 
@@ -1193,27 +1235,27 @@
             <summary>e.g.</summary>
 
             ```html
+            <script>
+            // 注册的组件（https://eslint.vuejs.org/rules/component-definition-name-casing）
+            new Vue({
+              components: {
+                'kebab-cased-component': {},
+                camelCasedComponent: {},
+                PascalCasedComponent: {}
+              }
+            })
+            </script>
+
+
             <!-- HTML必须是`-`短横线隔开式 -->
             1. <kebab-cased-component/>
             2. <camel-cased-component/>
             3. <pascal-cased-component/>
 
-            <!-- 在JS字符串模版、.vue组件额外可以使用 -->
+            <!-- 在JS字符串模版、.vue组件额外可以使用（https://eslint.vuejs.org/rules/component-name-in-template-casing.html） -->
             1. 无
             2. <camelCasedComponent/>
-            3. <pascalCasedComponent/>
-            3. <PascalCasedComponent/>
-
-             <script>
-             // 注册的组件
-             new Vue({
-               components: {
-                 'kebab-cased-component': {},
-                 camelCasedComponent: {},
-                 PascalCasedComponent: {}
-               }
-             })
-             </script>
+            3. <pascalCasedComponent/>、<PascalCasedComponent/>
             ```
             </details>
 3. 使用组件：
