@@ -1035,7 +1035,7 @@
     >1. `new`methods里的方法，方法体内的`this`指向这个实例，而非~~Vue实例~~。建议不要在methods中添加构造函数，而改用`import`方式引入构造函数。
     >2. template的每次改变，都会导致VNode重新渲染，也会导致methods重新调用（无论methods使用的值是否变化）。
     >
-    >    若在`template`里调用`methods`中的方法从而绑定了数据（因为template最终是成为render函数，且每一次的数据改变都会导致整个组件的VNode重新渲染（VNode在differ之后的nextTick才会真的在DOM中重新渲染），其他方式的数据都有缓存，而调用`methods`的值没有缓存），则数据由调用`methods`而绑定的值，会随着任意模板数据改变而重新执行求值（无论methods使用的值是否变化）。
+    >    若在`template`里调用`methods`中的方法从而绑定了数据（因为template最终是成为render函数，且每一次的数据改变都会导致整个组件的VNode重新渲染（VNode在differ之后的nextTick才会真的在DOM中重新渲染），其他方式的数据都有缓存，而调用`methods`的值没有缓存），则数据由调用`methods`而绑定的值，会随着任意模板数据改变而重新执行求值（无论methods使用的值是否变化）。因此：尽量不要在渲染内容中使用methods，尝试用computed或data数据代替。
 
 ><details>
 ><summary><code>methods</code>、生命周期钩子都能使用<code>async-await</code></summary>
