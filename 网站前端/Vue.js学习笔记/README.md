@@ -409,7 +409,7 @@
 
     - （并非嵌套）父级传入的slot内容 包含其他组件也使用插槽：
 
-        `v-slot`针对的是离它最近（就近原则）的子组件。
+        `v-slot`针对的是离它最近（**就近原则**）的子组件。
 
         ```vue
         <Son1>
@@ -1026,7 +1026,7 @@
 
     1. 两个需要一起使用，以允许一个祖先组件向其所有子孙后代注入一个依赖，不论组件层次有多深，并在其上下游关系成立的时间里始终生效。
 
-        孙辈组件 从组件树中离自身最近（就近原则）匹配`provide`中读取到当前的`inject`值。
+        孙辈组件 从组件树中离自身最近（**就近原则**）匹配`provide`中读取到当前的`inject`值。
     2. `provide`/`inject`绑定并不是可响应的。然而，若传入了一个可监听的对象（如：vue实例的`data`、`computed`等），则其对象的property可响应。
     3. `provide`若需要提供当前组件中的属性和方法等，则需要使用`返回对象的方法`方式来保证`this`的指向，否则`this`指向`undefined`（普通引用数据类型用哪种方式都正常注入）。
     4. `inject`的`default`初始值（与`props`的`default`一致）：基本数据类型的值；对象或数组必须从工厂函数返回默认值（当且仅当没有传入时才使用或调用）。
@@ -1653,7 +1653,13 @@
 ```vue
 <!-- my-component.vue -->
 <template>
-  <div>This will be pre-compiled</div>
+  <div>
+    This will be pre-compiled
+
+    Vue 2不支持Fragment，必须：`<template><div>多个节点</div></template>`。
+
+    Vue 2支持，允许：`<template>多个节点</template>`。
+  </div>
 </template>
 
 <script src="./my-component.js"></script>
@@ -2354,7 +2360,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     2. 3
 
         采用block tree的做法。
-3. 是否支持碎片（Fragment）
+3. [是否支持碎片（Fragment）](https://stackoverflow.com/questions/59388851/is-there-something-like-react-fragment-in-vue)
 
     1. 2
 

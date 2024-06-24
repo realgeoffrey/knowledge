@@ -555,7 +555,7 @@
 
         不会创建自己的`this`（所以不会使用非箭头函数的规则），根据[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)向上遍历查找直到非箭头函数定义的`this`或全局对象（严格模式为undefined）；若找到`this`，则再根据非箭头函数的方式决定取值。
 
-        >看上去就像：使用封闭执行上下文最近（就近原则）的一个`this`值。
+        >看上去就像：使用封闭执行上下文最近（**就近原则**）的一个`this`值。
 
         ><details>
         ><summary>e.g.</summary>
