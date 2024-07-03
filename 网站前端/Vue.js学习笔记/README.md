@@ -29,6 +29,7 @@
 
     1. [vue-cli](#vue-cli)
 1. [nuxt](#nuxt)
+1. [element-ui例子](#element-ui例子)
 1. [jQuery与Vue.js对比](#jquery与vuejs对比)
 
 ---
@@ -2293,7 +2294,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
       },
       methods: {
         // 不要使用箭头函数，因为实现代码中有用`call/apply`
-        handleInput: debounce(function () {  // 或：throttle
+        handleInput: debounce(function (params) {  // 或：throttle。传入handleInput的参数，会赋值给params
           console.log(this)
         }, 500)
       }
@@ -2328,7 +2329,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
       },
       methods: {
         // 不要使用箭头函数，因为实现代码中有用`call/apply`
-        scrollHandle: throttle(function () {
+        scrollHandle: throttle(function (params) {    // 传入scrollHandle的参数，会赋值给params
           this.isTooHigh = this.$refs.actDom && this.$refs.actDom.getBoundingClientRect().bottom < this.$refs.referenceDom.offsetHeight
         }, 400),
       }
@@ -3910,6 +3911,186 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         2. 针对**无法修改服务端设置**或**本地文件打开形式的访问（`file://`）**，用`hash`路由模式。
 
             >服务端是否设置重定向都可行。
+
+### [element-ui](https://github.com/ElemeFE/element)例子
+1. <details>
+
+    <summary>打开一个复杂的Dialog组件</summary>
+
+    ```vue
+    // 父级
+    <MyDialog v-if="showDialog" @update:is-show="(bool)=> showDialog = bool"/><!-- 省略了：`:is-show="showDialog"` -->
+    <MyDialog v-if="showDialog" :is-show.sync="showDialog"/><!-- 推荐（上面的语法糖） -->
+
+    // 主动关闭子级用`this.$refs.子级.dialogVisible = false`，而不要用`this.showDialog = false`
+    ```
+
+    ```vue
+    // 子级MyDialog.vue（包含复杂逻辑，因此用父级v-if加载与否+复杂逻辑全部放在子级的方式）
+    <template>
+      <el-dialog :visible.sync="dialogVisible" @closed="$emit("update:is-show", false)">
+        <el-button @click="dialogVisible = false">关闭</el-button>
+      </el-dialog>
+    </template>
+
+    <script>
+    export default {
+      props: [/* "isShow", */],
+      mounted() {
+        this.dialogVisible = true;
+      },
+      data() {
+        return {
+          dialogVisible: false,
+        };
+      }
+    };
+    </script>
+    ```
+    </details>
+2. <details>
+
+    <summary>Upload组件上传，处理multiple、限制单文件大小、后缀、处理loading状态</summary>
+
+    ```vue
+    <template>
+      <el-upload
+        drag
+        action="上传地址"
+        :accept="accept"
+        :multiple="multiple"
+        :file-list="fileList"
+        :before-upload="beforeUpload"
+        :on-change="onChange"
+        :on-error="onError"
+        :on-remove="onRemove"
+      >
+        {{ loading }}
+
+        <div slot="tip" class="el-upload__tip">
+          <p v-if="accept">可直接将文件拖拽到此处进行上传，支持格式: {{ accept }}</p>
+          <p v-if="limitSize">单个文件大小限制: {{ limitSize }}M</p>
+        </div>
+      </el-upload>
+    </template>
+    <script>
+    export default {
+      props: {
+        multiple: { // 是否可以导入多文件
+          type: Boolean,
+          default: false,
+        },
+        accept: {   // 支持文件后缀类型（以文件后缀名，加,分割，如：'.xls,.xlsx'），若传空字符串则表示不限制
+          type: String,
+          default: '',
+        },
+        limitSize: {    // 单文件限制（M），若传0则表示不限制
+          type: Number,
+          default: 0,
+        }
+      },
+      data() {
+        return {
+          fileList: [], // 上传的文件列表
+          loading: false
+        };
+      },
+      methods: {
+        beforeUpload(file) {        // 上传一个文件之前 钩子，若返回false或失败的Promise实例，则这一个文件停止上传且不再触发这一个文件其他钩子
+          let passed = true;
+
+          // 限制后缀
+          if (this.accept) {
+            const suffix = getFileExtension(file.name).toLowerCase();
+            if (this.accept.split(',').indexOf(suffix) === -1) {
+              setTimeout(() => {
+                this.$message.error('请选择支持的文件后缀: ' + this.accept);
+              });
+              passed = false;
+            }
+          }
+
+          // 限制文件大小
+          if (this.limitSize) {
+            const fileSize = file.size / 1024 / 1024;
+            if (fileSize > this.limitSize) {
+              setTimeout(() => {
+                this.$message.error('上传单个文件不支持超过' + this.limitSize + 'M');
+              });
+              passed = false;
+            }
+          }
+
+          !passed &&
+            this.$nextTick(() => {  // 因为若停止上传，则不会再触发这个文件的其他钩子；需要等该文件状态变化之后再调用，否则loading状态无法保证
+              this.handleFileList();
+            });
+
+          return passed;
+        },
+
+        onError(err, file, fileList) {  // 文件上传网络错误 钩子
+          this.$message.error('文件上传失败');
+        },
+        onChange(file, fileList) {      // 添加文件 + on-success + on-error 钩子
+          this.handleFileList(fileList);
+        },
+        onRemove(file, fileList) {      // 文件列表移除文件时 钩子
+          this.handleFileList(fileList)
+        },
+        handleFileList(fileList) {
+          if (fileList) { this.fileList = fileList; }
+          this.loading = !this.fileList.every((file) => file.status === 'success');
+        }
+      }
+    };
+    </script>
+    ```
+    </details>
+3. <details>
+
+    <summary>解决连续调用Message或Notification导致样式重叠</summary>
+
+    1. 避免样式问题，让所有信息都排列展示
+
+        ```js
+        // 同时多次调用 this.ok() 不会出问题
+        ok(){
+          setTimeout(()=>{
+            this.$message('1') // 或 this.$notify
+          })
+        }
+
+
+        // 同时多次调用 this.notOk() 会出现重叠问题
+        notOk(){
+          this.$message('1')
+        }
+        notOk(){
+          this.$nextTick(()=>{
+            this.$message('1')
+          })
+        }
+        ```
+    2. 加上防抖、节流，间隔展示、会丢弃一些间隔期间的信息
+
+        ```js
+        import { Message } from 'element-ui';
+        import throttle from 'lodash.throttle';
+        const sendMessage1 = throttle(
+          function (txt) { Message.error(txt); },
+          1000,
+          { trailing: false }
+        );
+
+
+        // 同时多次调用 this.ok() 不会出问题
+        ok(){
+          sendMessage1('1')
+        })
+        ```
+    3. 间隔时间消费堆积的信息？
+    </details>
 
 ### jQuery与Vue.js对比
 1. 做的事情

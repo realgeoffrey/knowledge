@@ -889,6 +889,10 @@
     1. HTTP/1.1所有的连接默认是持久连接。
     2. HTTP/1.0设置：`Connection: Keep-Alive`。
 
+    - 服务器发送事件（Server-Sent Event，SSE）
+
+        HTTP响应头包含`Content-Type: text/event-stream`表示接下来由服务器主动推送流信息（单向、不能由客户端再发起请求），客户端`EventSource`接收。
+
 >持久连接的管线化（pipelining）：将多个HTTP请求整批提交，但服务端必须按照顺序整批返回。（非管线化：发送请求后，需要收到响应了才能发送下一个请求）
 
 2. WebSocket

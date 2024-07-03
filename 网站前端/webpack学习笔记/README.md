@@ -808,7 +808,7 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 </details>
 
 ### [Rollup](https://github.com/rollup/rollup)、[vite](https://github.com/vitejs/vite)与webpack对比
-App级别的应用（开发、打包）：webpack；JS库级别的应用（打包）：Rollup；现代浏览器快读开发体验（开发）：vite。
+App级别的应用（开发、打包）——webpack。JS库级别的应用（打包）——Rollup。现代浏览器快速开发体验（开发）——vite。
 
 1. Rollup：
 
@@ -830,27 +830,27 @@ App级别的应用（开发、打包）：webpack；JS库级别的应用（打�
     - 缺点：黑盒化严重，调试能力差，业务碰到构建相关的问题，几乎都很难自行排查；性能问题。
 3. vite（`/vit/`）
 
-    1. 核心原理：利用现代浏览器现在已经支持ES6 Module的import能力，遇到import就会发送一个HTTP请求去加载ES6 Module文件。整个过程中没有对文件进行打包编译。很多地方用了esbuild。
+    1. 核心原理：利用现代浏览器现在已经支持ES6 Module的import能力，遇到import就会发送一个HTTP请求去加载ES6 Module文件。整个过程中没有对文件进行打包编译。在开发环境使用了ESBuild进行预构建，在生产环境使用了Rollup打包，目前存在这种开发和构建之间的不一致性。
     2. 快速的冷启动能力，提供了快速的开发体验。在开发阶段使用原生ES6 Module直接引入模块，而不需要像Webpack和Rollup一样进行打包，从而提供了更快的热重载和构建速度。
     3. 适用于中小型项目，特别是基于现代浏览器的单页应用（SPA）或中小型网站开发。
 
     - 缺点：每个模块引用都需要ES6 module的的网络请求，网络请求开销大（尤其是HMR时）。
 
->4. esbuild
+>4. [esbuild](https://github.com/evanw/esbuild)
 >
 >    **GoLang**编写的**快速**JS、TS打包器，支持CommonJS（是rollup的很好替代品）。
->5. Parcel
+>5. [Parcel](https://github.com/parcel-bundler/parcel)
 >
->    零配置的打包工具，适用于小型项目、静态网页或需要快速上手的场景。
->6. Bun
+>    **零配置**的打包工具，适用于小型项目、静态网页或需要快速上手的场景。
+>6. [Bun](https://github.com/oven-sh/bun)
 >
->    是像Node.js、Deno一样的现代**JS运行时**。旨在无感替代现有的JS运行时并成为 浏览器外执行JS 的主流环境，为用户带来性能和复杂性的提升的同时，以更好更简单的工具提高开发者的效率。和传统的Node.js这种传统的JS运行时不同，**Bun.js直接内置了打包器、转译器、任务运行器和npm客户端**，这意味着你不再需要Webpack/Rollup/esbuild/Snowpack/Parcel/Rome/swc/babel就可以直接运行TypeScript、JSX。另外，Bun.js原生支持了数百个Node.js和Web API。
->7. Rspack
+>    是像Node.js、Deno一样的现代**JS运行时**。旨在无感替代现有的JS运行时（主要替代Node.js）并成为 浏览器外执行JS 的主流环境，为用户带来性能和复杂性的提升的同时，以更好更简单的工具提高开发者的效率。和传统的Node.js这种传统的JS运行时不同，**Bun.js直接内置了打包器、转译器、任务运行器和npm客户端**，这意味着你不再需要安装Webpack/Rollup/esbuild/Snowpack/Parcel/Rome/swc/babel就可以直接运行TypeScript、JSX。另外，Bun.js原生支持了数百个Node.js和Web API。Zig编写。
+>7. [Turbopack](https://turbo.build/pack/docs)
+>
+>    针对JS和TS优化的增量打包器，**Rust**编写。高度优化的机器代码和低级增量计算引擎，可以**缓存**到单个函数的级别。一旦Turbopack执行了一项任务，它就再也不会这样做了。特点是快。
+>8. Rspack
 >
 >    **Rust**编写的Web构建工具，意在用更快、更直接的方式取代Webpack。
->8. Turbopack
->
->    针对JS和TS优化的增量打包器，用**Rust**编写。高度优化的机器代码和低级增量计算引擎，可以**缓存**到单个函数的级别。一旦Turbopack执行了一项任务，它就再也不会这样做了。特点是快。
 >9. ~~Grunt~~
 >
 >    是一个任务执行者（和npm中`package.json`的`scripts`类似，相当于其进化版，弥补其不足），大量现成的插件封装了常见的任务，也能管理任务之间的依赖关系，自动化执行依赖的任务，每个任务的具体执行代码和依赖关系写在配置文件`Gruntfile.js`。
