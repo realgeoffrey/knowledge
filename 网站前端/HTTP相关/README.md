@@ -373,6 +373,8 @@
     8. 207 Multi-Status
 
         代表之后的消息体将是一个XML消息，并且可能依照之前子请求数量的不同，包含一系列独立的响应代码。
+    9. 208 Already Reported
+    10. 226 IM Used
 3. 3XX重定向
 
     代表需要客户端采取进一步的操作才能完成请求。通常，这些状态码用来重定向，后续的请求地址（重定向目标）在本次响应的Location域中指明。
@@ -407,6 +409,7 @@
     8. **307 Temporary Redirect**
 
         被请求的资源临时从不同的URI响应请求，且客户端不会把POST转化为GET访问那个资源。
+    9. 308 Permanent Redirect
 4. 4XX客户端错误
 
     代表客户端看起来可能发生了错误，妨碍了服务器的处理。
@@ -486,18 +489,17 @@
     25. 426 Upgrade Required
 
         客户端应当切换到TLS/1.0。
-    26. 429 Too Many Requests
+    26. 428 Precondition Required
+    27. 429 Too Many Requests
 
         客户端发送的请求过多。
-    27. 431 Request Header Fields Too Large
+    28. 431 Request Header Fields Too Large
 
         请求头的字段内容太大。
-    28. 449 Retry With
+    29. 449 Retry With
 
         由微软扩展，代表请求应当在执行完适当的操作后进行重试。
-    29. ~~451 Unavailable For Legal Reasons~~
-
-        （已废弃）
+    30. 451 Unavailable For Legal Reasons
 5. 5XX服务器错误
 
     代表服务器在处理请求的过程中有错误或异常状态发生，也有可能是服务器意识到以当前的软硬件资源无法完成对请求的处理。
@@ -526,12 +528,14 @@
     8. 507 Insufficient Storage
 
         服务器无法存储完成请求所必须的内容。
-    9. 509 Bandwidth Limit Exceeded
+    9. 508 Loop Detected
+    10. 509 Bandwidth Limit Exceeded
 
         服务器达到带宽限制。
-    10. 510 Not Extended
+    11. 510 Not Extended
 
         获取资源所需要的策略并没有被满足。
+    12. 511 Network Authentication Required
 
 ### HTTP头（HTTP headers）
 1. 作用：

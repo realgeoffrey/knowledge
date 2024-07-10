@@ -137,7 +137,7 @@
         >```vue
         ><template v-if="loginType === 'username'">
         >  <label>Username</label><!-- 复用 -->
-        >  <input placeholder='username' key='username'><!-- 不复用（仅复用相同key值的DOM） -->
+        >  <input placeholder='username' key='username'><!-- 不复用（仅复用相同key值或无key值的DOM） -->
         >  <input placeholder='password'><!-- 复用 -->
         ></template>
         ><template v-else>
@@ -352,18 +352,20 @@
 
     只允许添加在`<template>`上（特例见下），且**不能~~嵌套~~使用**。子组件使用`<slot>`在内部插入父级引入的内容。
 
-    >只允许添加在`<template>`上的特例：被引用的子组件**只使用**默认插槽时，可以简写在引用的子组件上（若要使用多个插槽，则必须始终为所有的插槽使用完整的基于`<template>`的语法。**但若不遵守，好像也能正常渲染展示**），e.g. 特例，子组件有且仅有默认插槽：`<子组件 v-slot:default>`、`<子组件 v-slot>`、`<子组件 #default>`。
+    >`v-slot`只允许添加在`<template>`上的特例：被引用的子组件**只使用**默认插槽时，可以简写在引用的子组件上（若要使用多个插槽，则必须始终为所有的插槽使用完整的基于`<template>`的语法），e.g. 特例：`<子组件 v-slot:default="临时变量">`、`<子组件 v-slot="临时变量">`、`<子组件 #default="临时变量">`（若不使用临时变量则不需要加default在子组件上：默认所有未包含在具名插槽内的都是default插槽，除非有default具名插槽）。
 
     0. 抛弃内容
 
         1. 若子组件没有包含`<slot name="某名字">`，则父组件引用子组件时的`v-slot:某名字"`的DOM会被抛弃。
-        2. 若父级组件包含`v-slot=default`，则抛弃其他所有不包含在`v-slot`内的DOM。
+        2. 若父组件引用子组件时包含`v-slot=default`，则抛弃父组件引用子组件内的其他所有不包含在`v-slot`内的DOM。
     1. 后备内容
 
         1. 子组件中没有`name`属性或`name="default"`的`<slot>`，①先匹配父级中的`default`插槽，若父级中不存在default插槽 则②匹配父级中*去除所有包含`v-slot`之后的DOM*的内容。
 
             >`<slot>`默认`name`、`v-slot`默认插槽名都为：`default`。
-        2. 子组件中`<slot>`的DOM内容，当且仅当没有父级匹配占用时显示。
+
+            >default的slot（父级插槽 传递给 子级的`<slot>` 的default部分）类似React父子间传递的`props.children`。
+        2. 子组件中`<slot>`内的DOM内容，当且仅当没有父级匹配占用时显示。
     2. 具名插槽
 
         父级引用子组件，在元素内部添加的标签的DOM属性`v-slot:某名字`，会匹配子组件模板的`<slot name="某名字">`。
@@ -434,9 +436,9 @@
     <template>
       <div>
         <!-- 特例：被引用的子组件只使用默认插槽 -->
-        <VSlotSon v-slot>父组件1</VSlotSon>
-        <VSlotSon v-slot:default>父组件2</VSlotSon>
-        <VSlotSon #default>父组件3</VSlotSon>
+        <VSlotSon v-slot="临时变量">父级内容{{临时变量.xx}}</VSlotSon>
+        <VSlotSon v-slot:default="临时变量">父级内容{{临时变量.xx}}</VSlotSon>
+        <VSlotSon #default="临时变量">父级内容{{临时变量.xx}}</VSlotSon>
 
         <VSlotSon>
           <template v-slot:default>
@@ -471,7 +473,7 @@
     // 子级
     <template>
       <div>
-        <slot>slot默认内容</slot>
+        <slot xx="xxx">slot默认内容</slot>
         <br>
         <slot name="other1">other1 slot默认内容</slot>
         <br>
@@ -721,7 +723,7 @@
                 >对于仅有的一个元素（不是数组），`key`的变化会导致销毁再新建DOM。
         </details>
 
-        >针对：有相同父元素的子元素必须有独特的`key`（重复的`key`会造成渲染错误）。相同标签名的DOM切换展示、或相同组件间切换展示。`v-for`、`v-if`、`<transition/>`、`<transition-group/>`。
+        >针对：有相同父元素的子元素必须有独特的`key`（重复的`key`会造成渲染错误）。相同标签名的DOM切换展示、或相同组件间切换展示。主要当出现这些时使用：`v-for`、`v-if`、`<transition/>`、`<transition-group/>`。
 
         - `key`的取值：
 
@@ -827,7 +829,7 @@
 
         - 验证方式：
 
-            1. 原生构造器（`String`、`Number`、`Boolean`、`Function`、`Object`、`Array`、`Symbol`、`BigInt`）或 `自定义构造函数`（通过`instanceof`检查确认）或`null`（允许任何类型）
+            1. 原生构造器（`String`、`Number`、`Boolean`、`Function`、`Object`、`Array`、`Symbol`、`BigInt`）或 `自定义构造函数`（通过`instanceof`检查确认）或 `null/undefined`（允许任何类型）
             2. 上面类型组成的数组
             3. 对象
 
@@ -1003,7 +1005,6 @@
     方法内部没有代理 ~~`this`~~ 到Vue实例。
 
     >因为不会被Vue实例代理，所以可以和Vue实例代理的属性同名（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性）。
-
 12. `mixins`（`[组件选项1, 组件选项2,...]`）：混入
 
     mixin数组每一项中的属性，都会合并到组件本身的选项（如：mixin的`methods`合并到组件的`methods`、mixin的`data`合并到组件的`data`）。
@@ -1755,7 +1756,7 @@
           },
           computed: {  // 合并。若属性名相同则后定义的覆盖先定义的
             myText: () => {
-              return this.text  // // this为当前的组件One.vue
+              return this.text  // this为当前的组件One.vue
             }
           },
           propsData: {
@@ -2511,6 +2512,15 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
           // 动态路由
           {
             path: ':动态路由',
+            component: 组件
+          },
+          // 捕获所有路由的动态路由（https://router.vuejs.org/zh/guide/essentials/dynamic-matching#捕获所有路由或-404-Not-found-路由）
+          {
+            path: '其他路由/:动态路由(.*)*', // 匹配：`其他路由`+`其他路由/`+`其他路由/后面任意多路由`，`vm.$route.params.动态路由 === 其他路由/之后的所有内容`
+            component: 组件
+          },
+          {
+            path: '其他路由/:动态路由(.*)+', // 匹配：`其他路由/`+`其他路由/后面任意多路由`，`vm.$route.params.动态路由 === 其他路由/之后的所有内容`
             component: 组件
           },
 
@@ -3915,20 +3925,20 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 ### [element-ui](https://github.com/ElemeFE/element)例子
 1. <details>
 
-    <summary>打开一个复杂的Dialog组件</summary>
+    <summary>打开一个复杂的Dialog或Drawer组件</summary>
 
     ```vue
     // 父级
-    <MyDialog v-if="showDialog" @update:is-show="(bool)=> showDialog = bool"/><!-- 省略了：`:is-show="showDialog"` -->
-    <MyDialog v-if="showDialog" :is-show.sync="showDialog"/><!-- 推荐（上面的语法糖） -->
+    <MyCmp v-if="showDialog" @update:is-show="(bool)=> showDialog = bool"/><!-- 省略了：`:is-show="showDialog"` -->
+    <MyCmp v-if="showDialog" :is-show.sync="showDialog"/><!-- 推荐（上面的语法糖） -->
 
     // 主动关闭子级用`this.$refs.子级.dialogVisible = false`，而不要用`this.showDialog = false`
     ```
 
     ```vue
-    // 子级MyDialog.vue（包含复杂逻辑，因此用父级v-if加载与否+复杂逻辑全部放在子级的方式）
+    // 子级MyCmp.vue（包含复杂逻辑，因此用父级v-if加载与否+复杂逻辑全部放在子级的方式）
     <template>
-      <el-dialog :visible.sync="dialogVisible" @closed="$emit("update:is-show", false)">
+      <el-dialog :visible.sync="dialogVisible" @closed="$emit("update:is-show", false)"><!-- 或：el-drawer -->
         <el-button @click="dialogVisible = false">关闭</el-button>
       </el-dialog>
     </template>
@@ -4089,7 +4099,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
           sendMessage1('1')
         })
         ```
-    3. 间隔时间消费堆积的信息？
+    3. 间隔时间消费堆积的信息（略）？
     </details>
 
 ### jQuery与Vue.js对比

@@ -2495,26 +2495,34 @@ loadingFetch(() => { console.log('同步方法') })
 
     ```js
     function getBlob(fileUrl, filename) {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', fileUrl, true);
-      xhr.responseType = 'blob';
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          const link = document.createElement('a');
-          link.href = window.URL.createObjectURL(xhr.response); // 也可以用Data URL（base64）
-          link.download = filename;
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', fileUrl, true);
+        xhr.responseType = 'blob';
+        xhr.onloadend = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {  // 只有部分2xx支持传递数据（建议只处理200的响应）；304不返回数据
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(xhr.response); // 也可以用Data URL（base64）
+            link.download = filename ?? '';
 
-          link.style.display = 'none';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
-          window.URL.revokeObjectURL(link.href);
-        }
-      };
-      xhr.send();
+            window.URL.revokeObjectURL(link.href);
+
+            resolve(xhr)
+          } else {
+            reject(xhr)
+          }
+        };
+        xhr.send();
+      })
     }
     ```
+
+    >`loadend`事件针对`XMLHttpRequest`或`FileReader`实例的完成（无论成功、失败、终止）仅触发一次。
 2. 下载文本（把JS字符串变成文本文件下载）
 
     >Blob。代码生成文本内容再创建下载。
@@ -2528,7 +2536,7 @@ loadingFetch(() => { console.log('同步方法') })
     function textDownload (content, filename) {
       // 创建隐藏的可下载链接
       const eleLink = document.createElement('a')
-      eleLink.download = filename
+      eleLink.download = filename ?? ''
       eleLink.style.display = 'none'
 
       // 字符内容转变成Blob对象
