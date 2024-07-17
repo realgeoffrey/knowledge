@@ -2356,7 +2356,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     3. 所有浏览器都支持。
     4. 单域名内，cookie保存的数据不超过4k，数量（最少）20个。
 
-        >发送http请求时携带的cookie太多可能会导致nginx等阻绝访问，如返回：`400 Bad Request - request header or cookie too large`。可以设置更大的服务端接受配置 或 减少cookie。
+        >发送http请求时携带的cookie太多可能会导致nginx等阻绝访问，如返回：`400 Bad Request - request header or cookie too large`。可以设置更大的服务端接受配置 或 减少请求携带的cookie。
     5. 源生的cookie接口不友好，需要自己[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js操作cookie)。
 
         同步。

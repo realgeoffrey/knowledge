@@ -2482,9 +2482,9 @@ loadingFetch(() => { console.log('同步方法') })
 ### *原生JS*点击下载
 `<a href="文件资源地址" download="文件名.文件类型">文件资源地址：若是字符串，则同源就下载，不同源就依然是导航跳转；若是Blob或Data URL协议，则下载</a>`
 
->1. `download`指示浏览器下载文件资源地址而不是导航跳转（若不同源，则退回没添加download的逻辑——导航跳转）。
+>1. `download`指示浏览器下载文件资源地址而不是导航跳转（若href的字符串不同源，则退回未添加download的逻辑——导航跳转）。
 >2. 支持多种文件类型。
->3. 兼容性不佳。
+>3. ~~兼容性不佳。~~
 >4. 若download未指定值或未指定文件后缀，则从多种方式中设置`文件名.文件类型`：响应头的`Content-Disposition`、`Content-Type`，URL的最后一段，Data URL的开头，Blob的`type`。
 
 以下方法均依赖`<a>`的`download`属性（JS的Blob或Data URL，都需要先[CORS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#corscross-origin-resource-sharing跨域资源共享)下载文件资源地址成功后再进行操作）：
@@ -2502,7 +2502,7 @@ loadingFetch(() => { console.log('同步方法') })
         xhr.onloadend = () => {
           if (xhr.status >= 200 && xhr.status < 300) {  // 只有部分2xx支持传递数据（建议只处理200的响应）；304不返回数据
             const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(xhr.response); // 也可以用Data URL（base64）
+            link.href = URL.createObjectURL(xhr.response); // Blob URL。也可以用Data URL（base64）
             link.download = filename ?? '';
 
             link.style.display = 'none';
@@ -2523,6 +2523,30 @@ loadingFetch(() => { console.log('同步方法') })
     ```
 
     >`loadend`事件针对`XMLHttpRequest`或`FileReader`实例的完成（无论成功、失败、终止）仅触发一次。
+
+    ><details>
+    ><summary>Data URL（base64）方案</summary>
+    >
+    >```js
+    >...
+    >if (xhr.status >= 200 && xhr.status < 300) {
+    >  const reader = new window.FileReader()
+    >  reader.addEventListener('loadend', (e) => {
+    >    const link = document.createElement('a');
+    >    link.href = e.target.result;
+    >    link.download = filename ?? '';
+    >    link.style.display = 'none';
+    >    document.body.appendChild(link);
+    >    link.click();
+    >    document.body.removeChild(link);
+    >
+    >    resolve(xhr)
+    >  })
+    >  reader.readAsDataURL(blob)
+    >}
+    >...
+    >```
+    ></details>
 2. 下载文本（把JS字符串变成文本文件下载）
 
     >Blob。代码生成文本内容再创建下载。
@@ -2540,9 +2564,9 @@ loadingFetch(() => { console.log('同步方法') })
       eleLink.style.display = 'none'
 
       // 字符内容转变成Blob对象
-      const blob = new Blob([content])
+      const blob = new window.Blob([content])
       // 创建Blob URL
-      const url = window.URL.createObjectURL(blob)
+      const url = URL.createObjectURL(blob)
 
       eleLink.href = url
 

@@ -324,9 +324,9 @@ which 「指令」
     - Node.js
 
         ```js
-        Buffer.from('字符串'', 'utf-8').toString('base64')
+        Buffer.from('任意字符串', 'utf-8').toString('base64')
 
-        btoa('字符串')     // 浏览器也支持
+        btoa('单字节字符串')     // 浏览器也支持
         ```
 
 #### 查看本机IP
