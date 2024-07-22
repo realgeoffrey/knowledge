@@ -91,7 +91,7 @@
 
     1. 采用小驼峰式（camelCase）定义标签的属性名称
 
-        >类似DOM对象的`properties`名。
+        >类似DOM对象的`properties`名。属性名称可以用任何命名方式（大驼峰式PascalCase、`-`短横线隔开式kebab-case、等），只是react都是约定用小驼峰式（事件名仅支持小驼峰式camelCase）。属性名称传递进子级，不会做转化（如：~~`-`变大写~~）
 
         任何标准的或自定义的DOM属性都是完全支持。
 
@@ -985,6 +985,8 @@
 7. 事件处理
 
     1. 小驼峰式（camelCase）定义事件名
+
+        >其他写法（~~大驼峰式PascalCase~~、~~`-`短横线隔开式kebab-case~~、等）无效
     2. 事件处理函数的参数是一个[合成事件（synthetic event）](https://zh-hans.reactjs.org/docs/events.html)（`e`）。
 
         React应用中，元素绑定的事件并不是原生事件，而是React合成的事件（如：onClick是由click合成，onChange是由blur、change、focus等多个事件合成），它符合与底层DOM事件相同的标准，但修复了一些浏览器不一致性。

@@ -235,6 +235,8 @@
             - 多重值：渲染数组中最后一个被浏览器支持的值
 
                 e.g. `:style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"`
+
+        当在一个自定义组件上使用`class`或`style`时，这些值将被添加到该组件的根元素上面（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签），不受`inheritAttrs`影响，`class`或`style`属性会合并（而不是覆盖）。
     3. 传递给子组件DOM属性的值类型
 
         <details>
@@ -274,6 +276,8 @@
           })
         </script>
         ```
+
+        `v-bind="{...$props, ...$attrs}"`
         </details>
 5. `v-on`（`v-on:xx`缩写：`@xx`）事件监听
 
@@ -350,14 +354,17 @@
         e.g. `<button v-on="{ mousedown: doThis, mouseup: doThat }"/>`
 6. `v-slot`（`v-slot:xx`缩写：`#xx`）插槽
 
-    只允许添加在`<template>`上（特例见下），且**不能~~嵌套~~使用**。子组件使用`<slot>`在内部插入父级引入的内容。
+    只允许添加在`<template>`上（特例见下），只允许在**引用子组件的顶级**使用（不允许上级是~~HTML标签~~、不能~~嵌套~~使用）。子组件使用`<slot>`在内部插入父级引入的内容。
 
-    >`v-slot`只允许添加在`<template>`上的特例：被引用的子组件**只使用**默认插槽时，可以简写在引用的子组件上（若要使用多个插槽，则必须始终为所有的插槽使用完整的基于`<template>`的语法），e.g. 特例：`<子组件 v-slot:default="临时变量">`、`<子组件 v-slot="临时变量">`、`<子组件 #default="临时变量">`（若不使用临时变量则不需要加default在子组件上：默认所有未包含在具名插槽内的都是default插槽，除非有default具名插槽）。
+    >`v-slot`只允许添加在`<template>`上的特例：被引用的子组件**仅传入**默认插槽时，可以简写在引用的子组件上（若要使用多个插槽，则必须始终为所有的插槽使用完整的基于`<template>`的语法），e.g. 特例：`<子组件 v-slot:default="临时变量">`、`<子组件 v-slot="临时变量">`、`<子组件 #default="临时变量">`（若不使用临时变量则不需要加default在子组件上：默认所有未包含在具名插槽内的都是default插槽，除非有default具名插槽）。
 
     0. 抛弃内容
 
         1. 若子组件没有包含`<slot name="某名字">`，则父组件引用子组件时的`v-slot:某名字"`的DOM会被抛弃。
         2. 若父组件引用子组件时包含`v-slot=default`，则抛弃父组件引用子组件内的其他所有不包含在`v-slot`内的DOM。
+
+    >组件内相同名字的`<slot>`可以使用任意多次、放在任意位置；传给某一个子组件相同名字的`v-slot`仅最后一个生效（不允许相同名字的`v-slot`）。
+
     1. 后备内容
 
         1. 子组件中没有`name`属性或`name="default"`的`<slot>`，①先匹配父级中的`default`插槽，若父级中不存在default插槽 则②匹配父级中*去除所有包含`v-slot`之后的DOM*的内容。
@@ -380,11 +387,11 @@
             >`<slot>`内部是子组件的作用域，和在其上添加的属性内容无关。
         2. 父级使用子组件`<slot>`上显性提供的属性对应值：
 
-            `<template/子组件 v-slot="临时变量">{{ 临时变量.子组件属性1 }}{{ 临时变量.子组件属性2 }}</template/子组件>`
+            `<template v-slot="临时变量">{{ 临时变量.子组件属性1 }}{{ 临时变量.子组件属性2 }}</template>`
 
-            （`临时变量 === { 子组件属性1: '字符串'. 子组件属性2: 表达式 }`）
+            （`临时变量 === { 子组件属性1: '字符串', 子组件属性2: 表达式 }`）
 
-            >`临时变量`支持解构。`vm.$slots`不包含父级使用了 作用域插槽 的那个slot（`vm.$scopedSlots`都包含）。
+            >`临时变量`支持解构。
 
     - 子组件的`JSON.stringify(vm.$slots.名字)` === `JSON.stringify(vm.$scopedSlots.名字())`，都返回`Array<VNode> | undefined`
 
@@ -410,7 +417,7 @@
         >    vm.$scopedSlots.name1({ a: 'a' }) // -> 返回 VNode：`<div> 父级使用子级显性提供的属性对应值： a </div>`
         >    ```
 
-    - （并非嵌套）父级传入的slot内容 包含其他组件也使用插槽：
+    - 嵌套与非嵌套
 
         `v-slot`针对的是离它最近（**就近原则**）的子组件。
 
@@ -419,14 +426,49 @@
           <template v-slot:xx1>
             传递给Son1的插槽，下面的内容也是插槽的一部分
 
+            <slot>Son1中替换</slot>
+
             <Son2>
               <template v-slot:xx2>
                 传递给Son2的插槽（不是Son1插槽的嵌套）
+
+                <slot>Son1中替换</slot>
               </template>
             </Son2>
           </template>
         </Son1>
         ```
+
+        >`<slot>`没有~~就近原则~~的说法，仅作用在当前组件作用域（可以理解为：先统一换成父级传入的内容——不再是`<slot>`后，继续渲染）。
+
+        - 根据上面的原理，实现**传递插槽**（父级传给子级的插槽`v-slot`，子级不丢失任何信息地传给子子级的插槽`v-slot`）：
+
+            ```vue
+            // 父级
+            <子级>
+              <template v-slot:default>
+                1
+              </template>
+              <template v-slot:xx="abc">
+                2{{ abc }}
+              </template>
+            </子级>
+            ```
+
+            ```vue
+            // 子级
+            <div>
+              ...
+              <子子级>
+                <!-- ①+②+③=传递插槽 -->
+                <template v-for="(slotFunc, name) in $scopedSlots" v-slot:[name]="slotProps">   <!-- ①就近原则，写入<子子级>的v-slot -->
+                  <slot :name="name" v-bind="slotProps" />  <!-- ②<slot>没有就近原则，仅是当前组件作用域功能 --><!-- ③slotProps是上层的临时变量 -->
+                </template>
+
+                <!-- 注意：v-slot同名的只生效最后一个、不具名的视作default的后备 -->
+              </子子级>
+            </div>
+            ```
 
     <details>
     <summary>e.g.</summary>
@@ -837,6 +879,8 @@
                 2. `required`：是否必须（默认：`false`）
                 3. `default`：基本数据类型的值；对象或数组必须从工厂函数返回默认值（当且仅当没有传入时才使用或调用）
 
+                    `Function`类型的`default`直接就是这个props的默认方法（不是再返回的）：e.g.`func: { type: Function, default(args) { return args }}`，而不是~~default(){ return (args) => args }~~。
+
                 >`required`和`default`二选一。
 
                 4. `validator`：验证方法（对子组件的任何修改包括`v-show`修改以及自身`default`，都会触发所有prop的验证方法）
@@ -966,10 +1010,10 @@
 
                 ```vue
                 // 父级（父级是vue的模板语法；子级是什么语法不影响）
-                <子级 :props="{a:1,b:2}" :c="3" :on="{d:()=>{}}"/>
+                <子级 :props="{a:1,b:2}" :c="3" :on="{d:()=>{}}" on-e="1" onF="2" @g-g="()=>{}"/>
 
                 // 子级
-                获得3个$props属性：`props`、`c`、`on`
+                获得5个$props属性：`props`、`c`、`on`、`onE`、`onF`（`-`转化为驼峰）；1个$listeners属性：`g-g`（事件名的大小写、`-`不会做任何变化）
                 ```
             2. vue的jsx语法
 
@@ -977,18 +1021,18 @@
 
                 ```jsx
                 // 父级（父级是vue的jsx语法；子级是什么语法不影响）
-                <子级 props={{a:1,b:2}} c={3} on={{d:()=>{}}}/>
+                <子级 props={{a:1,'b-b':2}} c-c={3} on={{'d-d':()=>{}}} on-e={()=>{}} onF-e={()=>{}}/>
 
                 // 子级
-                获得3个$props属性：`a`、`b`、`c`；1个$listeners属性：`d`
+                获得3个$props属性：`a`、`bB`、`cC`（`-`转化为驼峰）；3个$listeners属性：`d-d`、`e`、`f-e`（on-x等价于onX，之后事件名的大小写、`-`不会做任何变化）（不支持`@事件名`语法）
                 ```
             3. react的jsx语法
 
                 ```jsx
-                <子级 props={{a:1,b:2}} c={3}/>
+                <子级 props={{a:1,b:2}} c={3} onA={4} on-b={5}/>
 
                 // 子级
-                获得2个props属性：`props`、`c`
+                获得4个props属性：`props`、`c`、`onA`、`on-b`（属性的大小写、`-`不会做任何变化）（没有`@事件名`语法，html标签支持`on事件名`）
                 ```
 
 >模板选择优先级：`render` > `template` > `el`挂载的DOM的HTML。若使用`render`或`template`，则挂载的节点会被完全替换（并非仅替换挂载节点的内部内容，而是直接把挂载节点整个替换），无论是`el`还是`vm.$mount(节点)`。`el`挂载的DOM的HTML 自然就没有替换逻辑。
@@ -1133,9 +1177,9 @@
     默认：组件上的`v-model`会把`value`用作prop、把`input`用作event。
 23. `inheritAttrs`（`boolean`，默认：`true`）
 
-    默认情况下父作用域的不被认作 props 的 attribute 绑定 (attribute bindings) 将会“回退”且作为普通的 HTML attribute 应用在子组件的根元素上。当撰写包裹一个目标元素或另一个组件的组件时，这可能不会总是符合预期行为。通过设置 inheritAttrs 到 false，这些默认行为将会被去掉。而通过 (同样是 2.4 新增的) 实例 property $attrs 可以让这些 attribute 生效，且可以通过 v-bind 显性的绑定到非根元素上。
+    默认情况下父作用域的不被认作 props 的 attribute 绑定将会“回退”且作为普通的 HTML attribute 应用在子组件的根元素上。当撰写包裹一个目标元素或另一个组件的组件时，这可能不会总是符合预期行为。通过设置 inheritAttrs 到 false，这些默认行为将会被去掉。而通过 $attrs 可以让这些 attribute 生效，且可以通过 v-bind 显性的绑定到非根元素上。
 
-    注意：这个选项不影响 class 和 style 绑定。
+    >inheritAttrs不会影响 class 和 style 绑定逻辑。
 24. `comments`（`boolean`，默认：`false`）
 
     >限制：只在[完整版](https://v2.cn.vuejs.org/v2/guide/installation.html#对不同构建版本的解释)时可用。
@@ -1306,7 +1350,7 @@
 
             1. 父 -> 子：通过`props`向下传递初始化数据给子组件实例（不出现在DOM中）
 
-                >（当`inheritAttrs`默认`true`时，）若添加在子组件的props但不在子组件`props`的声明，则仅添加到子组件最外层的DOM属性。其中`class`和`style`属性会合并，其他属性会覆盖。`inheritAttrs: false`不影响`style`和`class`的绑定。
+                >（当`inheritAttrs`默认`true`时，）若添加在子组件的props但不在子组件`props`的声明，则仅添加到子组件最外层的DOM属性。其中`class`和`style`属性会合并，其他属性会覆盖。`inheritAttrs`不影响`style`和`class`的绑定（style、class绑定逻辑固定不变）。
 
                 1. `props`是单向传递的：当父级的属性变化时，将传导给子组件，不会反过来
 
@@ -1394,7 +1438,7 @@
                 ></details>
             2. 子 -> 父：通过`vm.$emit`向上传递事件、参数
 
-                >`vm.$listeners`能获得父级的所有能够从子级向上传递的事件。
+                >`vm.$listeners`包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器。
 
                 1. 在父级引用子组件处添加`@自定义事件1="父方法"`监听；
 
@@ -1425,7 +1469,7 @@
 
                     1. 祖辈
 
-                        ```html
+                        ```vue
                         <template>
                           <Emit1
                             @transmission="transmission"
@@ -1593,8 +1637,18 @@
         `<my-component :子属性="父属性" @父事件="父方法"><template v-slot:某名字="临时变量">插槽内容</template></my-component>`
 
         1. `props`：允许外部环境传递数据给组件。
+
+            >`$attrs`、`inheritAttrs`
         2. `events`：允许从组件内触发外部环境的副作用。
+
+            >`$listeners`
+
+        >注意`vm.$attrs/$listeners`对象的属性名和传参名完全一致，不会进行大小写或驼峰法的变化。e.g. 若父级传递`asd`、`aSd`、`a-sd`，则子级收到3个不同属性名。
+
         3. `slots`：允许外部环境将额外的内容组合在组件中。
+
+            >`$scopedSlots`（`$slots`不包含父级使用了 作用域插槽 的那个slot）
+        - *ref直接引用*
 5. 内置组件
 
     1. `<component/>`动态组件
@@ -1650,6 +1704,164 @@
     7. 高级异步组件。
     8. 递归组件。
     9. 循环组件。
+
+    - 包裹组合其他组件（调用组件A的任何方式，就像调用组件B一样，只是额外处理了一些内容）
+
+        >1. vm.$attrs：包含了父作用域中不作为 prop 被识别 (且获取) 的 attribute 绑定 (class 和 style 除外)
+        >
+        >    配合inheritAttrs：false。根元素传递class和style。
+        >2. vm.$listeners：包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器
+        >
+        >注意`vm.$attrs/$listeners`对象的属性名和传参名完全一致，不会进行大小写或驼峰法的变化。e.g. 若父级传递`asd`、`aSd`、`a-sd`，则子级收到3个不同属性名。
+        >
+        >3. vm.$scopedSlots：包含了父作用域中加入的所有插槽的函数
+
+        ```vue
+        <template>
+          <!-- 使用v-bind="$attrs"和v-on="$listeners"传递所有参数。ref传递给父级引用的ref -->
+          <已有组件 ref="innerComponent" v-bind="$attrs" v-on="$listeners">
+            <!-- 传递插槽 -->
+            <template v-for="(slotFunc, name) in $scopedSlots" v-slot:[name]="slotProps">
+              <slot :name="name" v-bind="slotProps" />
+            </template>
+          </已有组件>
+        </template>
+
+        <script>
+        import { 已有组件 } from "？";
+
+        // 导出一个组件，所有调用方式都和直接调用`<已有组件>`一样，并可以做额外处理
+        export default {
+          components: { 已有组件 },
+          inheritAttrs: false, // 禁止将根元素的属性作为普通的 HTML attribute 自动应用到根元素上
+          data() {
+            return {
+              parentRefName: undefined,
+            };
+          },
+          mounted() {
+            // 将内部组件的引用暴露给外部
+            const [name] =
+              Object.entries(this.$parent.$refs).find(([, vm]) => {
+                return vm === this;
+              }) ?? [];
+            if (name) {
+              this.parentRefName = name;
+              this.$parent.$refs[name] = this.$refs.innerComponent;
+            }
+          },
+          beforeDestroy() {
+            // 清除引用以防内存泄漏
+            if (
+              this.parentRefName &&
+              this.$parent.$refs[this.parentRefName] === this.$refs.innerComponent
+            ) {
+              this.$parent.$refs[this.parentRefName] = undefined;
+            }
+          },
+        };
+        </script>
+        ```
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```vue
+        ><template>
+        >  <DatePicker
+        >    ref="innerComponent"
+        >    v-bind="$attrs"
+        >    :value="originalValue"
+        >    :defaultValue="originalDefaultValue"
+        >    @input="
+        >      originalValue = arguments[0];
+        >      $emit('input', filterValueOutput(arguments[0], $attrs));
+        >    "
+        >    @change="$emit('change', filterValueOutput(arguments[0], $attrs))"
+        >    v-on="otherListeners"
+        >  >
+        >    <template v-for="(slotFunc, name) in $scopedSlots" #[name]="slotProps">
+        >      <slot :name="name" v-bind="slotProps" />
+        >    </template>
+        >  </DatePicker>
+        ></template>
+        >
+        ><script>
+        >import { DatePicker } from 'element-ui';
+        >import { valueEquals } from './utils';  // 来自：https://github.com/ElemeFE/element/blob/v2.15.14/packages/date-picker/src/picker.vue#L308-L340
+        >
+        >export default {
+        >  components: { DatePicker },
+        >  inheritAttrs: false,
+        >  props: {
+        >    // 传入传出值（DatePicker的原生参数）
+        >    value: {},
+        >
+        >    // 相同兼容处理的默认值（DatePicker的原生参数）
+        >    defaultValue: {},
+        >
+        >    // 当DatePicker输出时，经过这个函数后输出
+        >    filterValueOutput: {
+        >      type: Function,
+        >      // 输出, 组件入参
+        >      default(val, attrs) {
+        >        return val
+        >      },
+        >    },
+        >    // 参数输入给本组件时，经过这个函数后输入DatePicker
+        >    filterValueInput: {
+        >      type: Function,
+        >      // 输入, 组件入参
+        >      default(val, attrs) {
+        >        return val
+        >      },
+        >    },
+        >  },
+        >  data() {
+        >    return {
+        >      parentRefName: undefined,
+        >      originalValue: this.filterValueInput(this.value, this.$attrs),
+        >    };
+        >  },
+        >  computed: {
+        >    otherListeners() {
+        >      const { input, change, ...others } = this.$listeners;
+        >      return others;
+        >    },
+        >    originalDefaultValue() {
+        >      return this.filterValueInput(this.defaultValue, this.$attrs);
+        >    },
+        >  },
+        >  watch: {
+        >    value: {
+        >      handler(val, oldVal) {
+        >        if (!valueEquals(val, oldVal)) {
+        >          this.originalValue = this.filterValueInput(val, this.$attrs);
+        >        }
+        >      },
+        >    },
+        >  },
+        >  mounted() {
+        >    // 将内部组件的引用暴露给外部
+        >    const [name] =
+        >      Object.entries(this.$parent.$refs).find(([, vm]) => {
+        >        return vm === this;
+        >      }) ?? [];
+        >    if (name) {
+        >      this.parentRefName = name;
+        >      this.$parent.$refs[name] = this.$refs.innerComponent;
+        >    }
+        >  },
+        >  beforeDestroy() {
+        >    // 清除引用以防内存泄漏
+        >    if (this.parentRefName && this.$parent.$refs[this.parentRefName] === this.$refs.innerComponent) {
+        >      this.$parent.$refs[this.parentRefName] = undefined;
+        >    }
+        >  },
+        >};
+        ></script>
+        >```
+        ></details>
 
 ### 单文件组件（Single-File Component，SFC）
 ```vue
@@ -2092,7 +2304,9 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     >    2. `x`指向的对象不是响应式的，无法通过`x.y = 2`去响应式修改。
     >    3. 若`x = { y: 2 }`指向新的响应式对象，之后`x.y = 3`会响应式触发视图更新。
     >    </details>
-    >2. 针对不需要展示到`template`的属性，可以不把属性初始化在`data`中，而是直接`vm.属性 = 值`在JS中使用（这个属性变更不会导致响应式更新，意味着：若`template`展示`{{ 属性 }}`，则更新这个值之后，需要依赖其他更新视图的方式才能看到视图展示新的值）。
+    >2. 针对不需要展示到`template`的属性，可以不把属性初始化在`data`的返回对象中，而是直接`vm.属性 = 值`在JS中使用（这个属性变更不会导致响应式更新，意味着：若`template`展示`{{ 属性 }}`，则更新这个值之后，需要依赖其他更新视图的方式才能看到视图展示新的值）。
+    >
+    >    这种属性最好也初始化在`date`函数里（数据初始化统一位置，且又是生命周期的前期），e.g. `data(){ this.不响应式属性 = 值; return { 响应式属性: 值 }; }`。
     >3. 针对所有这个组件的实例全部共用同一个值、不响应式更新、不能放在`template`内的值，可以放在组件外部。
 2. 每个组件实例都有相应的`watcher`实例对象，它会在组件渲染的过程中把属性记录为依赖，之后当依赖项的`setter`被调用时，会通知`watcher`重新计算，从而致使它关联的组件得以更新（[虚拟DOM系统](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#虚拟dom系统)）。
 3. 响应式操作：Vue实例的`data`的属性值、vuex的store的属性值
