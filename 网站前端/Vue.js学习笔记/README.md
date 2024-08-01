@@ -4315,6 +4315,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         ```
     3. 间隔时间消费堆积的信息（略）？
     </details>
+4. `<el-option>`能够匹配 空字符串、`undefined`、`null`，并且多个相同的value值匹配后展示最后一个项的label值，注意传参为空时出现的问题
 
 ### jQuery与Vue.js对比
 1. 做的事情

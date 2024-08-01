@@ -331,6 +331,9 @@ npm（Node Package Manager）。
            npm init @usr@2.0.0 -> npm exec @usr/create@2.0.0
            npm init @usr/foo@2.0.0 -> npm exec @usr/create-foo@2.0.0
            ```
+   5. 对比
+
+        [`npm diff --diff=「<pkg>@<version>或本地路径」 --diff=「<pkg>@<version>或本地路径」 [多个文件或文件夹]`](https://docs.npmjs.com/cli/commands/npm-diff)
 2. [`package.json`](https://docs.npmjs.com/cli/v9/configuring-npm/package-json)字段
 
     包描述、说明文件。

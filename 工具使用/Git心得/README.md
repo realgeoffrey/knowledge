@@ -411,6 +411,11 @@
 15. 遇到`unable to update local ref`
 
     尝试：`git gc`
+16. 对比
+
+    ```git
+    git diff 「分支名或tag或commit」 「分支名或tag或commit」 「多个文件或文件夹」
+    ```
 
 ### [Zen-like commit messages（Angular）格式](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines)
 ```text

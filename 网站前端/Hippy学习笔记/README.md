@@ -1308,7 +1308,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
     3. `destroyInstance`
     4. `onSizeChanged`
 
-        Tip：注意部分手机（部分Android机已复现）一进页面必然调用`onSizeChanged`事件。
+        tips：注意部分手机（部分Android机已复现）一进页面必然调用`onSizeChanged`事件。
 7. 样式
 
     >1. Hippy的还原设计稿方案，与客户端的方案基本一致：[适配布局（与设计师协作思路）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/还原设计稿/README.md#适配布局与设计师协作思路)。

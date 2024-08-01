@@ -237,9 +237,9 @@
 >
 >    {"errno":0,"errmsg":"","data":{""}}
 >    ```
->
->tips: JSON格式不包含`undefined`，但包含`null`。因此注意发起请求时，会对字段值为`undefined`的直接删除，会保留字段值为`''`或`null`（后端应该都会同样处理为空）。
 ></details>
+
+>tips：JSON格式不包含`undefined`（，但包含`null`）。因此注意发起请求时（以及任何协议是JSON格式、不支持`undefined`的情况），会直接删除 值为`undefined`的字段，会保留值为`''`或`null`等的字段。e.g. 一个保存数据的后台接口，已保存值`{a:'x'}`，若传递`{a:undefined}`则最终会传递`{}`而表示不修改，若传递`{a:''}`则表示修改a为空字符串。
 
 ### HTTP请求方法（HTTP request methods）
 >来自：[MDN：HTTP 请求方法](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Methods)。

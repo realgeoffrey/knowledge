@@ -1585,7 +1585,7 @@ function radixSort(arr) {
         var leftIndex = 0,
             rightIndex = arr.length - 1,
             middleIndex;
-        // tips: `var targetIndex = -1;`
+        // tips：`var targetIndex = -1;`
 
         while (leftIndex <= rightIndex) {
             middleIndex = Math.floor((leftIndex + rightIndex) / 2);
@@ -1595,14 +1595,14 @@ function radixSort(arr) {
             } else if (searchVal > arr[middleIndex]) {  /* 目标大于中间数，在大的一堆找 */
                 leftIndex = middleIndex + 1;
             } else {    /* 找到 */
-                // tips: 若这里的数组包含重复数字并且查找第一个目标，则用`rightIndex = middleIndex - 1; targetIndex = middleIndex;`替换下一行
+                // tips：若这里的数组包含重复数字并且查找第一个目标，则用`rightIndex = middleIndex - 1; targetIndex = middleIndex;`替换下一行
                 return middleIndex;
             }
         }
 
         /* 不存在 */
         return -1;
-        // tips: 若这里的数组包含重复数字并且查找第一个目标，则用`return targetIndex;`替换上一行
+        // tips：若这里的数组包含重复数字并且查找第一个目标，则用`return targetIndex;`替换上一行
     }
     ```
 

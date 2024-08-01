@@ -901,13 +901,20 @@
 22. 用`filter: drop-shadow`（图像本身形状和alpha通道的阴影）替代`box-shadow`（盒阴影）
 23. 若在视口中**添加/删除**节点导致滚动条变化，则浏览器会尽量保持视口最顶部节点固定不变（从而瞬间改变滚动条位置以使视口顶部节点尽量保持不随滚动条变化而位移）
 24. `overflow: hidden`无法处理`position: fixed`的子孙节点。
-25. `position: absolute`超出浏览器可能导致Android出现滚动条（虽然不能滚动）
+
+    `clip-path`可以裁剪所有的子孙节点。
+25. `position: fixed`一般在任何嵌套情况下都是针对视口做相对定位，除非祖先元素包含以下属性之一，就会以这些祖先元素作为定位参照：
+
+    1. `transform`
+    2. `filter`
+    3. `perspective`（`-webkit-perspective`）
+26. `position: absolute`超出浏览器可能导致Android出现滚动条（虽然不能滚动）
 
     尝试用`position: fixed`替代。
-26. 字体高度抖动
+27. 字体高度抖动
 
     可能和设置在父级的`line-height`有关，尝试把`line-height`改到设置在包裹文字的节点。
-27. （针对某些iOS机型，）`animation`和`transition`两种动画方式共用有兼容问题
+28. （针对某些iOS机型，）`animation`和`transition`两种动画方式共用有兼容问题
 
 ---
 ## CSS
