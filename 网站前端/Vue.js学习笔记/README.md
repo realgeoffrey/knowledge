@@ -1889,14 +1889,21 @@
 
         1. 在任意地方引入CSS文件（非 ~~`scoped`~~）
 
-            >在多个组件多次引入同一个CSS文件（允许同时使用JS和CSS两种方式混合引入），最终只会引入同一个CSS文件一次。
-
             1. `<script>import '@/assets/文件名.css'</script>`
             2. `<style src="@/assets/文件名.css"/>`
-        2. 在任意地方引入没有 ~~`scoped`~~ 的`<style>`：
 
-            `<style>样式内容</style>`
+        ><details>
+        ><summary>在多个组件多次引入同一个CSS文件（允许同时使用JS和CSS多种方式混合引入），认为是同一个样式，最终只会引入同一个CSS文件一次（打包）。</summary>
+        >
+        >e.g. `<script>import '@/assets/文件名.css'</script>` 等于 `<style src="@/assets/文件名.css"/>` 等于 `<style>@import "@/assets/文件名.css"</style>`（加不加`url()`都一样） ~~不等于 `<style>@import "@/assets/文件名.css"; 其他内容</style>`~~
+        ></details>
+
+        2. 在任意地方引入没有 ~~`scoped`~~ 的`<style>样式内容</style>`（包含`<style>@import "../assets/文件名.css";</style>`，加不加`url()`都一样）
+
+            >在多个组件多次引入同一个`<style>样式内容</style>`（若`样式内容`完全一致则认为是同一个`<style>`），最终只会引入同一个`<style>`一次（打包）。
         3. 在`public/index.html`中添加静态样式
+
+            >相同的**本地**`<link>`样式文件，最终只会引入一次（打包）。
     2. 局部样式
 
         1. `scoped`（[vue-loader的Scoped CSS](https://vue-loader.vuejs.org/zh/guide/scoped-css.html)）
