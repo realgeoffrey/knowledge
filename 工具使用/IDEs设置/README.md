@@ -4,9 +4,9 @@
 
     ><https://www.jetbrains.com/help/idea/sharing-your-ide-settings.html>。
 
-    1. `IDE Settings Sync`JetBrains账号间同步（2022.3+默认这个）。
-    2. `Settings Repository`设置外部同步仓库（如：我的[JetBrainsSettingsRepository](https://github.com/realgeoffrey/JetBrainsSettingsRepository)）。
-    3. 手动导出导入配置（如：我的[./settings.zip](./settings.zip)）。
+    1. [Settings Sync](https://plugins.jetbrains.com/plugin/20868-settings-sync) JetBrains账号间同步（2022.3+默认这个）。
+    2. 或 手动导出导入配置（如：我的[./settings.zip](./settings.zip)）。
+    3. 或 [~~Settings Repository (Deprecated)~~](https://plugins.jetbrains.com/plugin/7566-settings-repository-deprecated-)设置外部同步仓库（如：我的[JetBrainsSettingsRepository](https://github.com/realgeoffrey/JetBrainsSettingsRepository)）。
 2. **Help -> Edit Custom VM Options** can change the memories for the IDE.
 
 >IDE has its own language plugins. or using 3rd part pack: Chinese Language Pack：please go to [jetbrains-in-chinese](https://github.com/pingfangx/jetbrains-in-chinese) (or [WebStorm-Chinese](https://github.com/ewen0930/WebStorm-Chinese), [PhpStorm-Chinese](https://github.com/ewen0930/PhpStorm-Chinese), or [PyCharm-Chinese](https://github.com/ewen0930/PyCharm-Chinese)).

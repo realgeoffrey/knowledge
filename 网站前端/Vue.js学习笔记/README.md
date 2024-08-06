@@ -1889,14 +1889,21 @@
 
         1. 在任意地方引入CSS文件（非 ~~`scoped`~~）
 
-            >在多个组件多次引入同一个CSS文件（允许同时使用JS和CSS两种方式混合引入），最终只会引入同一个CSS文件一次。
-
             1. `<script>import '@/assets/文件名.css'</script>`
             2. `<style src="@/assets/文件名.css"/>`
-        2. 在任意地方引入没有 ~~`scoped`~~ 的`<style>`：
 
-            `<style>样式内容</style>`
+        ><details>
+        ><summary>在多个组件多次引入同一个CSS文件（允许同时使用JS和CSS多种方式混合引入），认为是同一个样式，最终只会引入同一个CSS文件一次（打包）。</summary>
+        >
+        >e.g. `<script>import '@/assets/文件名.css'</script>` 等于 `<style src="@/assets/文件名.css"/>` 等于 `<style>@import "@/assets/文件名.css"</style>`（加不加`url()`都一样） ~~不等于 `<style>@import "@/assets/文件名.css"; 其他内容</style>`~~
+        ></details>
+
+        2. 在任意地方引入没有 ~~`scoped`~~ 的`<style>样式内容</style>`（包含`<style>@import "../assets/文件名.css";</style>`，加不加`url()`都一样）
+
+            >在多个组件多次引入同一个`<style>样式内容</style>`（若`样式内容`完全一致则认为是同一个`<style>`），最终只会引入同一个`<style>`一次（打包）。
         3. 在`public/index.html`中添加静态样式
+
+            >相同的**本地**`<link>`样式文件，最终只会引入一次（打包）。
     2. 局部样式
 
         1. `scoped`（[vue-loader的Scoped CSS](https://vue-loader.vuejs.org/zh/guide/scoped-css.html)）
@@ -4316,6 +4323,81 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     3. 间隔时间消费堆积的信息（略）？
     </details>
 4. `<el-option>`能够匹配 空字符串、`undefined`、`null`，并且多个相同的value值匹配后展示最后一个项的label值，注意传参为空时出现的问题
+
+    >[CodePen demo](https://codepen.io/realgeoffrey/pen/MWMpxNW)
+5. <details>
+
+    <summary>若大于4位小数则仅展示4位小数并支持hover展示完整，否则直接展示完整</summary>
+
+    ```vue
+    <template>
+      <el-tooltip
+        v-if="showTooltip(num)"
+        :content="String(num)"
+        :placement="placement"
+      >
+        <span>{{ showToDecimalPlaces4(num) }}</span>
+      </el-tooltip>
+      <span v-else>{{ num }}</span>
+    </template>
+
+    <script>
+    import Decimal from "decimal.js";
+
+    export default {
+      props: {
+        num: {
+          type: [Number, String, null],
+          default: "",
+        },
+        placement: {
+          type: String,
+          default: "bottom",
+        },
+      },
+      methods: {
+        showToDecimalPlaces4(number) {
+          if (!number) {
+            return "";
+          }
+          try {
+            return Decimal(number).toDecimalPlaces(4).toString();
+          } catch {
+            return String(number);
+          }
+        },
+        showTooltip(number) {
+          return number && this.showToDecimalPlaces4(number) !== String(number);
+        },
+      },
+    };
+    </script>
+    ```
+    </details>
+6. <details>
+
+    <summary>点击输入框，不进行输入而是打开弹窗逻辑，输入框支持清空</summary>
+
+    ```vue
+    <el-input
+      ref="inputRef"
+      v-model="text1"
+      clearable
+      @click.native="handlerClick($event)"
+      @focus="$refs.inputRef?.blur()"
+      @clear="text2 = ''"
+    />
+
+    handlerClick (event){
+      // 点击到clear按钮
+      if (event?.target?.nodeName === 'I' && event?.target?.classList.contains('el-icon-circle-close')) {
+        return;
+      }
+
+      // 进行其他逻辑，比如打开弹窗，这个弹窗最后修改 text1、text2
+    }
+    ```
+    </details>
 
 ### jQuery与Vue.js对比
 1. 做的事情
