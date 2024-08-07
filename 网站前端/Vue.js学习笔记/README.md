@@ -4325,6 +4325,55 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 4. `<el-option>`能够匹配 空字符串、`undefined`、`null`，并且多个相同的value值匹配后展示最后一个项的label值，注意传参为空时出现的问题
 
     >[CodePen demo](https://codepen.io/realgeoffrey/pen/MWMpxNW)
+5. <details>
+
+    <summary>若大于4位小数则仅展示4位小数并支持hover展示完整，否则直接展示完整</summary>
+
+    ```vue
+    <template>
+      <el-tooltip
+        v-if="showTooltip(num)"
+        :content="String(num)"
+        :placement="placement"
+      >
+        <span>{{ showToDecimalPlaces4(num) }}</span>
+      </el-tooltip>
+      <span v-else>{{ num }}</span>
+    </template>
+
+    <script>
+    import Decimal from "decimal.js";
+
+    export default {
+      props: {
+        num: {
+          type: [Number, String, null],
+          default: "",
+        },
+        placement: {
+          type: String,
+          default: "bottom",
+        },
+      },
+      methods: {
+        showToDecimalPlaces4(number) {
+          if (!number) {
+            return "";
+          }
+          try {
+            return Decimal(number).toDecimalPlaces(4).toString();
+          } catch {
+            return String(number);
+          }
+        },
+        showTooltip(number) {
+          return number && this.showToDecimalPlaces4(number) !== String(number);
+        },
+      },
+    };
+    </script>
+    ```
+    </details>
 
 ### jQuery与Vue.js对比
 1. 做的事情
