@@ -827,10 +827,11 @@
     2. `<template></template>`
     3. `<textarea style="display:none;"></textarea>`
 10. WAP端页面或支持伪类的浏览器，能用`:before/after`的就不要添加标签（但是不要在`content`里加业务文字）。
-11. 单选`<input type="radio">`、多选`<input type="checkbox">`按钮开关自定义样式：
+11. CSS的`content`不要放业务逻辑耦合的内容（如：`楼主`等业务逻辑词汇），可以放固定不变的交互逻辑的内容（如：`：`、`展开/收起`）。
+12. 单选`<input type="radio">`、多选`<input type="checkbox">`按钮开关自定义样式：
 
     用`input:checked + 兄弟节点`操作选项选中与否的不同样式；可以隐藏`<input>`，点击在`<label>`上改变`<input>`的`:checked`状态（`<label>`的`for`绑定`<input>`的`id`），用自定义样式来制作单选框、复选框。避免使用JS。
-12. 输入框仅输入数字的：
+13. 输入框仅输入数字的：
 
     1. `<input type="number" pattern="[0-9]*" onchange="处理函数">`
     2. <details>
@@ -858,7 +859,7 @@
         });
         ```
         </details>
-13. `<datalist>`为`<input>`的输入值添加建议（`<input>`的`list`绑定`<datalist>`的`id`）
+14. `<datalist>`为`<input>`的输入值添加建议（`<input>`的`list`绑定`<datalist>`的`id`）
 
     <details>
     <summary>e.g.</summary>
@@ -871,22 +872,22 @@
     </datalist>
     ```
     </details>
-14. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
-15. 避免：
+15. Android2.3出现渲染问题可以在渲染错误的节点上添加`position: relative;`（类似ie6的haslayout）。
+16. 避免：
 
     1. 避免~~放大、缩小图片~~，使用原始大小展现。
     2. 避免使用不可缓存且增加额外HTTP请求的 ~~<iframe>~~。
-16. 超出内容区域的内容：
+17. 超出内容区域的内容：
 
     1. 用绝对定位把内容设置在外部
 
         不要把超出内容区域的绝对定位设置在`<body>`直接子级，而是设置在`<body>`下拥有`overflow: hidden;`的父级下。
     2. ~~大背景模式~~
-17. `CSS.supports(CSS语句)`或`CSS.supports(CSS属性, 值)`判断浏览器是否支持一个给定CSS语句。
+18. `CSS.supports(CSS语句[, 值])`判断浏览器是否支持一个给定CSS语句。
 
     >`CSS.supports('--变量名', '非空任意值')`可判断是否支持CSS变量。
-18. 切图时`<img>`外嵌套一层标签，好应对可能要在图片上添加东西的需求。
-19. 没有 **背景内容（透明背景无效、局部背景只能在有背景处有效）、或文本、或其他内容（如：`<img>`、`<iframe>`等）** 承载的节点无法触发鼠标事件。
+19. 切图时`<img>`外嵌套一层标签，好应对可能要在图片上添加东西的需求。
+20. 没有背景内容（透明背景无效、局部背景只能在有背景处有效）、或没有文本、或没有其他内容（如：`<img>`、`<iframe>`等）** 承载的节点无法触发鼠标事件。
 
     >RN的实现可能也会有这种效果。
 
@@ -894,7 +895,6 @@
 
     1. 加透明背景：`background: rgba(0, 0, 0, .002)`（小于`0.002`的透明度无效）。
     2. 加1x1像素的透明图：`background: url(1x1像素透明图地址) repeat;`。
-20. CSS的`content`不要放业务逻辑耦合的内容（如：`楼主`等业务逻辑词汇），可以放固定不变的交互逻辑的内容（如：`：`、`展开/收起`）。
 21. `border`分为上、右、下、左，每一块区域的`border-width`不为`0`时都是梯形（`width`或`height`为`0`时为三角形），`border-width`决定梯形（或三角形）的高。
 
     某些边设为`border-width`不为`0`、`border-right-color`为`transparent`可以制造一些形状。
@@ -902,8 +902,8 @@
 23. 若在视口中**添加/删除**节点导致滚动条变化，则浏览器会尽量保持视口最顶部节点固定不变（从而瞬间改变滚动条位置以使视口顶部节点尽量保持不随滚动条变化而位移）
 24. `overflow: hidden`无法处理`position: fixed`的子孙节点。
 
-    `clip-path`可以裁剪所有的子孙节点。
-25. `position: fixed`一般在任何嵌套情况下都是针对视口做相对定位，除非祖先元素包含以下属性之一，就会以这些祖先元素作为定位参照：
+    `clip-path`可以裁剪大部分情况下的子孙节点（如：`position: fixed`的子孙节点）。
+25. `position: fixed`一般在任何嵌套情况下都是针对视口做相对定位，除非祖先元素包含以下属性之一，就会以这些祖先元素作为定位参照（而不再针对视口）：
 
     1. `transform`
     2. `filter`
