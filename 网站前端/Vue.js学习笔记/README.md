@@ -4374,6 +4374,27 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     </script>
     ```
     </details>
+6. 点击输入框，不进行输入而是打开弹窗逻辑，输入框支持清空
+
+    ```vue
+    <el-input
+      ref="inputRef"
+      v-model="text1"
+      clearable
+      @click.native="handlerClick($event)"
+      @focus="$refs.inputRef?.blur()"
+      @clear="text2 = ''"
+    />
+
+    handlerClick (event){
+      // 点击到clear按钮
+      if (event?.target?.nodeName === 'I' && event?.target?.classList.contains('el-icon-circle-close')) {
+        return;
+      }
+
+      // 进行其他逻辑，比如打开弹窗，这个弹窗最后修改 text1、text2
+    }
+    ```
 
 ### jQuery与Vue.js对比
 1. 做的事情
