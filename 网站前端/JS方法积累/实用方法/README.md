@@ -1658,7 +1658,7 @@ console.log(`期望输出："${path.extname('.ABC.md')}"。`, getFileExtension('
 ### *原生JS*数组去重（项为对象）
 ```js
 /**
- * 获取对象指定深度属性
+ * 获取对象指定深度属性（https://lodash.com/docs/4.17.15#get）
  * @param {Object} source - 要处理的对象
  * @param {Array} path - 路径深度
  * @returns result - 属性值
@@ -2542,7 +2542,7 @@ loadingFetch(() => { console.log('同步方法') })
     >
     >    resolve(xhr)
     >  })
-    >  reader.readAsDataURL(blob)
+    >  reader.readAsDataURL(Blob实例 或 File实例)
     >}
     >...
     >```
@@ -2563,7 +2563,7 @@ loadingFetch(() => { console.log('同步方法') })
       eleLink.download = filename ?? ''
       eleLink.style.display = 'none'
 
-      // 字符内容转变成Blob对象
+      // 字符内容转变成Blob实例
       const blob = new window.Blob([content])
       // 创建Blob URL
       const url = URL.createObjectURL(blob)
@@ -3352,29 +3352,36 @@ var a = new ShowFPS();
 ```html
 <style>
   p {
-    font-size: 12px; /* 注意太大的字体，一行的撑起的scrollHeight可能超过line-height */
+    font-size: 12px; /* 注意：太大的字体，一行撑起的scrollHeight可能超过line-height */
     height: 40px;
     line-height: 20px;
   }
 </style>
 
-<p id="container">123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。</p>
+<p id="container">
+  123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。123我是文本abc。</p>
 
 <script>
-const container = document.getElementById('container')
-const containerHeight = container.offsetHeight
-// fixme: 不仅针对innerText，还可以把每个子节点container.childNodes，根据nodeType的值来分别处理。如：`Node.ELEMENT_NODE`当做一个整体，`Node.TEXT_NODE`分割每个文字
-const text = container.innerText
-for (let i = 0; i < text.length; i++) {
-  container.innerText = text.substring(0, i)
-  if (containerHeight < container.scrollHeight) {
-    container.style.overflow = 'hidden'
-    container.innerHTML = text.substring(0, i - 3) + '<span style="cursor: pointer" onclick="container.innerHTML=text; container.style.overflow=\'unset\'">...</span>'
+  const container = document.getElementById('container');
+  const defaultText = container.innerText;
 
-    console.log('产生省略')
-    break
+  function setEllipsis() {
+    const containerHeight = container.offsetHeight
+    // fixme: 不仅针对innerText，还可以把每个子节点container.childNodes，根据nodeType的值来分别处理。如：`Node.ELEMENT_NODE`当做一个整体，`Node.TEXT_NODE`分割每个文字
+    for (let i = 0; i < defaultText.length; i++) {
+      container.innerText = defaultText.substring(0, i)
+      if (containerHeight < container.scrollHeight) {
+        container.style.overflow = 'hidden'
+        container.innerHTML = defaultText.substring(0, i - 3) + '<span style="cursor: pointer" onclick="container.innerHTML=defaultText; container.style.overflow=\'unset\'">...</span>'
+
+        console.log('产生省略')
+        break
+      }
+    }
   }
-}
+
+  window.addEventListener('resize', setEllipsis)
+  setEllipsis()
 </script>
 ```
 

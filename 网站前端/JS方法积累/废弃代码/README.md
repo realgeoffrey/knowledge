@@ -155,7 +155,7 @@ function getAge (birthday) {
      * @param {Object} [data.dom] - 输出节点，若不是节点则console.log输出
      * @param {Function} [data.callback] - 到点后的回调函数
      * @param {Number} [data.leftSec = 0] - 提前到期的秒数
-     * @param {Boolean} [data.completeZero = false] - 是否个位数补全0
+     * @param {Boolean} [data.completeZero = false] - 是否个位数补0
      * @param {String} [data.dType = ' '] - 「天」后面的文字
      * @param {String} [data.hType = ' '] - 「时」后面的文字
      * @param {String} [data.mType = ' '] - 「分」后面的文字

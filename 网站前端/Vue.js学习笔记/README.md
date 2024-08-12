@@ -277,7 +277,7 @@
         </script>
         ```
 
-        `v-bind="{...$props, ...$attrs}"`
+        `v-bind="{...$props, ...$attrs}"`（$props：组件显式接收的属性。$attrs：除了$props、class、style之外，传给组件的属性，不受inheritAttrs取值影响）
         </details>
 5. `v-on`（`v-on:xx`缩写：`@xx`）事件监听
 
@@ -1645,6 +1645,8 @@
 
         >注意`vm.$attrs/$listeners`对象的属性名和传参名完全一致，不会进行大小写或驼峰法的变化。e.g. 若父级传递`asd`、`aSd`、`a-sd`，则子级收到3个不同属性名。
 
+        >一般情况下`vm.$attrs/$listeners`不是响应式对象，但会在某些情况变成响应式对象，并且会出现项的值不变但触发更新（影响computed、watch等）。
+
         3. `slots`：允许外部环境将额外的内容组合在组件中。
 
             >`$scopedSlots`（`$slots`不包含父级使用了 作用域插槽 的那个slot）
@@ -1707,7 +1709,7 @@
 
     - 包裹组合其他组件（调用组件A的任何方式，就像调用组件B一样，只是额外处理了一些内容）
 
-        >1. vm.$attrs：包含了父作用域中不作为 prop 被识别 (且获取) 的 attribute 绑定 (class 和 style 除外)
+        >1. vm.$attrs：包含了父作用域中不作为 prop 被识别 (且获取) 的 attribute 绑定 (class 和 style 除外)。（不会因为`inheritAttrs`的取值而变化）
         >
         >    配合inheritAttrs：false。根元素传递class和style。
         >2. vm.$listeners：包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器
@@ -2247,6 +2249,35 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     在下次DOM更新循环结束之后执行延迟回调函数。
 4. `Vue.set(响应式对象, 键/索引, 新值)`
+
+    - <details>
+
+        <summary>实现<code>setWithPath(响应式对象, 路径, 新值)</code></summary>
+
+        ```js
+        function setWithPath(target, propertyPath, value, vm) {
+          if (Object.prototype.toString.call(target) !== "[object Object]" && Object.prototype.toString.call(target) !== "[object Array]") {
+            throw new Error("target仅支持Object和Array");
+          }
+
+          const pathArr = propertyPath.split("."); // propertyPath路径，以.分割（可改动实现）
+          const propertyName = pathArr.pop();
+          let finalTarget = target;
+          let preFinalTarget;
+          for (const key of pathArr) {
+            preFinalTarget = finalTarget;
+            finalTarget = finalTarget[key];
+            if (Object.prototype.toString.call(finalTarget) !== "[object Object]" && Object.prototype.toString.call(finalTarget) !== "[object Array]") {  // 仅支持Object和Array。fixme：判断不是响应式对象
+              finalTarget = vm.$set(preFinalTarget, key, {});
+            }
+          }
+          vm.$set(finalTarget, propertyName, value);
+        }
+
+
+        setWithPath(this.a, "b.c.d", "value1", this);
+        ```
+        </details>
 5. `Vue.delete(响应式对象, 键/索引)`
 6. `Vue.directive('自定义指令名'[, 钩子对象 或 带参数回调函数])`
 
@@ -4396,6 +4427,54 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
       // 进行其他逻辑，比如打开弹窗，这个弹窗最后修改 text1、text2
     }
+    ```
+    </details>
+7. <details>
+
+    <summary>日期选择器，限制选择日期长度</summary>
+
+    ```vue
+    <el-date-picker
+      type="datetimerange"
+      v-model="dateValue"
+      :picker-options="timePickerOptions"
+      @blur="handleBlur"
+    />
+
+    data() {
+      const that = this;
+      return {
+        dateValue: "",
+
+        // 允许选择的时间范围
+        curSelectDate: {
+          minDate: null,
+          maxDate: null,
+        },
+        timePickerOptions: {
+          // 点击日期面板后触发
+          onPick: ({ maxDate, minDate }) => {
+            // 目的：实现「允许选择的时间范围」限制
+            that.curSelectDate.minDate = minDate;
+            that.curSelectDate.maxDate = maxDate;
+          },
+          disabledDate(time) {
+            const maxTime = 15 * 24 * 60 * 60 * 1000 - 1000; // 假设半个月
+
+            if (that.curSelectDate.minDate && Math.abs(that.curSelectDate.minDate - time) > maxTime) return true;
+            if (that.curSelectDate.maxDate && Math.abs(that.curSelectDate.maxDate - time) > maxTime) return true;
+            return false;
+          },
+        },
+      };
+    },
+    methods: {
+      // 取消时重置
+      handleBlur() {
+        this.curSelectDate.minDate = this.dateValue ? this.dateValue[0] : null;
+        this.curSelectDate.maxDate = this.dateValue ? this.dateValue[1] : null;
+      },
+    },
     ```
     </details>
 

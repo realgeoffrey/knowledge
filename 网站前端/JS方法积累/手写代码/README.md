@@ -960,6 +960,28 @@ console.log(deepClone(obj));
       };
     }
     ```
+
+    ><details>
+    ><summary>实现：一段时间内方法1只执行1遍，若再执行则执行方法2</summary>
+    >
+    >```js
+    >function execute2(fn1, fn2, timeout) {
+    >  let flag = false;
+    >
+    >  return function (...args) {
+    >    if (!flag) {
+    >      fn1.apply(this, args); // 第一次执行的函数
+    >      flag = true;
+    >      setTimeout(() => {
+    >        flag = false;
+    >      }, timeout);
+    >    } else {
+    >      fn2.apply(this, args); // 后续执行的函数
+    >    }
+    >  };
+    >}
+    >```
+    ></details>
 2. 节流函数
 
     1. 解法一

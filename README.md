@@ -26,16 +26,16 @@
     2. [React学习笔记](./网站前端/React学习笔记/README.md)
 7. 大前端
 
-    - [Typescript学习笔记](./网站前端/Typescript学习笔记/README.md)
-
-    1. 向终端
+    1. [Typescript学习笔记](./网站前端/Typescript学习笔记/README.md)
+    2. 向终端
 
         1. [Hybrid前端开发](./网站前端/Hybrid前端开发/README.md)
         2. [Hippy学习笔记](./网站前端/Hippy学习笔记/README.md)
-    2. 向后端
+    3. 向后端
 
         1. [Node.js学习笔记](./网站前端/Node.js学习笔记/README.md)
         2. [服务端相关](./网站前端/服务端相关/README.md)
+    4. [Rust学习笔记](./网站前端/Rust学习笔记/README.md)
 8. <details>
 
     <summary>前端构建工具</summary>

@@ -17,8 +17,8 @@
 1. [执行文件](#执行文件)
 1. [系统shell类型](#系统shell类型)
 1. [（Unix-like）开机自动运行的脚本](#unix-like开机自动运行的脚本)
-1. [查看端口占用、网络链接，查看进程并杀死](#查看端口占用网络链接查看进程并杀死)
 1. [查看端口占用，杀掉进程](#查看端口占用杀掉进程)
+1. [查看端口占用、网络链接，查看进程并杀死](#查看端口占用网络链接查看进程并杀死)
 1. [查看磁盘空间占用](#查看磁盘空间占用)
 1. [创建文件](#创建文件)
 1. [查看文件](#查看文件)
@@ -375,6 +375,28 @@ vi ~/.zshrc         # zsh
 # source 脚本   # 当前运行一遍
 ```
 
+#### 查看端口占用，杀掉进程
+1. macOS、Linux
+
+    ```shell
+    lsof -i :「端口号」 -n -P        # sudo su
+
+    kill -9 「PID」
+    # macOS的「活动监视器」也可以查到「PID」并关闭进程
+    ```
+2.  Windows（需要在cmd.exe进行）
+
+    ```shell
+    netstat -aon | findstr 「端口号」  # 获得某端口号的任务PID
+
+    tasklist | findstr 「PID」          # 获得某PID的任务名
+    # 获得任务名之后可以再用`tasklist | findstr 「任务名」`确认是否有多个子任务
+
+    taskkill /F /T /PID 「PID」           # 需要杀死主进程，否则仅杀死的子进程会被主进程再次创建
+    # 或`taskkill /F /T /IM 「任务名」`
+    # 或去任务管理器结束进程（打开进程->查看->选择列的PID）
+    ```
+
 #### 查看端口占用、网络链接，查看进程并杀死
 1. 所有端口占用、网络连接情况（Linux）
 
@@ -410,28 +432,6 @@ vi ~/.zshrc         # zsh
     ```
 
     >当macOS手势突然失效，尝试`killall Dock`。
-
-#### 查看端口占用，杀掉进程
-1. macOS、Linux
-
-    ```shell
-    lsof -i :「端口号」 -n -P        # sudo su
-
-    kill -9 「PID」
-    # macOS的「活动监视器」也可以查到「PID」并关闭进程
-    ```
-2.  Windows（需要在cmd.exe进行）
-
-    ```shell
-    netstat -aon | findstr 「端口号」  # 获得某端口号的任务PID
-
-    tasklist | findstr 「PID」          # 获得某PID的任务名
-    # 获得任务名之后可以再用`tasklist | findstr 「任务名」`确认是否有多个子任务
-
-    taskkill /F /T /PID 「PID」           # 需要杀死主进程，否则仅杀死的子进程会被主进程再次创建
-    # 或`taskkill /F /T /IM 「任务名」`
-    # 或去任务管理器结束进程（打开进程->查看->选择列的PID）
-    ```
 
 #### 查看磁盘空间占用
 1. 以磁盘分区为单位查看文件系统的磁盘空间情况
