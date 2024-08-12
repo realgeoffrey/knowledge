@@ -1658,7 +1658,7 @@ console.log(`期望输出："${path.extname('.ABC.md')}"。`, getFileExtension('
 ### *原生JS*数组去重（项为对象）
 ```js
 /**
- * 获取对象指定深度属性
+ * 获取对象指定深度属性（https://lodash.com/docs/4.17.15#get）
  * @param {Object} source - 要处理的对象
  * @param {Array} path - 路径深度
  * @returns result - 属性值
