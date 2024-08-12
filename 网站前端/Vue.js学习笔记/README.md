@@ -1645,6 +1645,8 @@
 
         >注意`vm.$attrs/$listeners`对象的属性名和传参名完全一致，不会进行大小写或驼峰法的变化。e.g. 若父级传递`asd`、`aSd`、`a-sd`，则子级收到3个不同属性名。
 
+        >一般情况下`vm.$attrs/$listeners`不是响应式对象，但会在某些情况变成响应式对象，并且会出现项的值不变但触发更新（影响computed、watch等）。
+
         3. `slots`：允许外部环境将额外的内容组合在组件中。
 
             >`$scopedSlots`（`$slots`不包含父级使用了 作用域插槽 的那个slot）
@@ -2247,6 +2249,35 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     在下次DOM更新循环结束之后执行延迟回调函数。
 4. `Vue.set(响应式对象, 键/索引, 新值)`
+
+    - <details>
+
+        <summary>实现<code>setWithPath(响应式对象, 路径, 新值)</code></summary>
+
+        ```js
+        function setWithPath(target, propertyPath, value, vm) {
+          if (Object.prototype.toString.call(target) !== "[object Object]" && Object.prototype.toString.call(target) !== "[object Array]") {
+            throw new Error("target仅支持Object和Array");
+          }
+
+          const pathArr = propertyPath.split("."); // propertyPath路径，以.分割（可改动实现）
+          const propertyName = pathArr.pop();
+          let finalTarget = target;
+          let preFinalTarget;
+          for (const key of pathArr) {
+            preFinalTarget = finalTarget;
+            finalTarget = finalTarget[key];
+            if (Object.prototype.toString.call(finalTarget) !== "[object Object]" && Object.prototype.toString.call(finalTarget) !== "[object Array]") {  // 仅支持Object和Array。fixme：判断不是响应式对象
+              finalTarget = vm.$set(preFinalTarget, key, {});
+            }
+          }
+          vm.$set(finalTarget, propertyName, value);
+        }
+
+
+        setWithPath(this.a, "b.c.d", "value1", this);
+        ```
+        </details>
 5. `Vue.delete(响应式对象, 键/索引)`
 6. `Vue.directive('自定义指令名'[, 钩子对象 或 带参数回调函数])`
 

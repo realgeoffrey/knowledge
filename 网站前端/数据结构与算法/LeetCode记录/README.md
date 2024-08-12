@@ -4543,7 +4543,7 @@ s 只包含小写字母。
      */
     var firstUniqChar = function (s) {
       const map = new Map();
-      for (let str of s) {
+      for (const str of s) {
         map.set(str, (map.get(str) ?? 0) + 1);
       }
       for (let val of map) {
@@ -6274,12 +6274,12 @@ myStack.empty(); // 返回 False
      */
     var isValid = function (s) {
       // 优化点性能
-      if (s % 2 === 1) { return false; }
+      if (s.length % 2 === 1) { return false; }
 
       // 字符串是左括号就入栈，字符串是右括号则出栈对比
       const stack = [];
 
-      for (let str of s) {
+      for (const str of s) {
         if (str === "(" || str === "[" || str === "{") {
           stack.push(str);
         }
