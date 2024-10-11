@@ -1297,6 +1297,8 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         | Symbol | 任何`Symbol`类型的值 | 无 |
         | BigInt | 任何非零`BigInt`类型的值 | `0n`、`-0n`、`+0n` |
         | Object（引用数据类型） | 任何对象（包括基本包装类型） | `null` |
+
+        >`数组.filter(Boolean)`等价于`数组.filter((item)=>Boolean(item))`简化筛选逻辑。
 2. 自动转换
 
     1. 触发情况：
