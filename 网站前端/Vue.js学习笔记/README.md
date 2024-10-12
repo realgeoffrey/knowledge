@@ -277,7 +277,7 @@
         </script>
         ```
 
-        `v-bind="{...$props, ...$attrs}"`
+        `v-bind="{...$props, ...$attrs}"`（$props：组件显式接收的属性。$attrs：除了$props、class、style之外，传给组件的属性，不受inheritAttrs取值影响）
         </details>
 5. `v-on`（`v-on:xx`缩写：`@xx`）事件监听
 
@@ -1709,7 +1709,7 @@
 
     - 包裹组合其他组件（调用组件A的任何方式，就像调用组件B一样，只是额外处理了一些内容）
 
-        >1. vm.$attrs：包含了父作用域中不作为 prop 被识别 (且获取) 的 attribute 绑定 (class 和 style 除外)
+        >1. vm.$attrs：包含了父作用域中不作为 prop 被识别 (且获取) 的 attribute 绑定 (class 和 style 除外)。（不会因为`inheritAttrs`的取值而变化）
         >
         >    配合inheritAttrs：false。根元素传递class和style。
         >2. vm.$listeners：包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器
@@ -4427,6 +4427,54 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
       // 进行其他逻辑，比如打开弹窗，这个弹窗最后修改 text1、text2
     }
+    ```
+    </details>
+7. <details>
+
+    <summary>日期选择器，限制选择日期长度</summary>
+
+    ```vue
+    <el-date-picker
+      type="datetimerange"
+      v-model="dateValue"
+      :picker-options="timePickerOptions"
+      @blur="handleBlur"
+    />
+
+    data() {
+      const that = this;
+      return {
+        dateValue: "",
+
+        // 允许选择的时间范围
+        curSelectDate: {
+          minDate: null,
+          maxDate: null,
+        },
+        timePickerOptions: {
+          // 点击日期面板后触发
+          onPick: ({ maxDate, minDate }) => {
+            // 目的：实现「允许选择的时间范围」限制
+            that.curSelectDate.minDate = minDate;
+            that.curSelectDate.maxDate = maxDate;
+          },
+          disabledDate(time) {
+            const maxTime = 15 * 24 * 60 * 60 * 1000 - 1000; // 假设半个月
+
+            if (that.curSelectDate.minDate && Math.abs(that.curSelectDate.minDate - time) > maxTime) return true;
+            if (that.curSelectDate.maxDate && Math.abs(that.curSelectDate.maxDate - time) > maxTime) return true;
+            return false;
+          },
+        },
+      };
+    },
+    methods: {
+      // 取消时重置
+      handleBlur() {
+        this.curSelectDate.minDate = this.dateValue ? this.dateValue[0] : null;
+        this.curSelectDate.maxDate = this.dateValue ? this.dateValue[1] : null;
+      },
+    },
     ```
     </details>
 
