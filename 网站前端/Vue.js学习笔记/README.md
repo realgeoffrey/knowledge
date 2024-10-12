@@ -4429,6 +4429,54 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     }
     ```
     </details>
+7. <details>
+
+    <summary>日期选择器，限制选择日期长度</summary>
+
+    ```vue
+    <el-date-picker
+      type="datetimerange"
+      v-model="dateValue"
+      :picker-options="timePickerOptions"
+      @blur="handleBlur"
+    />
+
+    data() {
+      const that = this;
+      return {
+        dateValue: "",
+
+        // 允许选择的时间范围
+        curSelectDate: {
+          minDate: null,
+          maxDate: null,
+        },
+        timePickerOptions: {
+          // 点击日期面板后触发
+          onPick: ({ maxDate, minDate }) => {
+            // 目的：实现「允许选择的时间范围」限制
+            that.curSelectDate.minDate = minDate;
+            that.curSelectDate.maxDate = maxDate;
+          },
+          disabledDate(time) {
+            const maxTime = 15 * 24 * 60 * 60 * 1000 - 1000; // 假设半个月
+
+            if (that.curSelectDate.minDate && Math.abs(that.curSelectDate.minDate - time) > maxTime) return true;
+            if (that.curSelectDate.maxDate && Math.abs(that.curSelectDate.maxDate - time) > maxTime) return true;
+            return false;
+          },
+        },
+      };
+    },
+    methods: {
+      // 取消时重置
+      handleBlur() {
+        this.curSelectDate.minDate = this.dateValue ? this.dateValue[0] : null;
+        this.curSelectDate.maxDate = this.dateValue ? this.dateValue[1] : null;
+      },
+    },
+    ```
+    </details>
 
 ### jQuery与Vue.js对比
 1. 做的事情
