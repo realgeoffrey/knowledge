@@ -651,7 +651,7 @@ dom.addEventListener('事件名', function (e) {
 ### *原生JS*、jQuery实现判断按下具体某按键
 1. `KeyboardEvent.key`
 
-    >[MDN:KeyboardEvent.key](https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/key/Key_Values)、[W3C:KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)。
+    >[MDN：KeyboardEvent.key](https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/key/Key_Values)、[W3C:KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)。
 
     1. *原生JS*
 
@@ -1332,15 +1332,14 @@ function intToChinese(num = 0) {
      * 000800 - 00D7FF
      * 00E000 - 00FFFF(61440个代码)    1110xxxx(E0-EF) 10yyyyyy 10zzzzzz           三个字节
      * 010000 - 10FFFF(1048576个代码)  11110www(F0-F7) 10xxxxxx 10yyyyyy 10zzzzzz  四个字节
-     * {@link https://zh.wikipedia.org/wiki/UTF-8}
      *
-     * UTF-16 编码65535以内使用两个字节编码，超出65535的使用四个字节（JS内部，字符储存格式是：UCS-2——UTF-16的子级）
+     * UTF-16 编码65535以内使用两个字节编码，超出65535的使用四个字节（JS内部，字符储存格式是：UCS-2——UTF-16的子级；`<input>`的`maxlength/minlength`以UTF-16码元计算）
      * 000000 - 00FFFF  两个字节
      * 010000 - 10FFFF  四个字节
-     * {@link https://zh.wikipedia.org/wiki/UTF-16}
+     * e.g. <input maxlength="3">：字符是65535以内的占用1，超过65535占用2。因此可以输入上限：'aaa'、'哈哈哈'、'𦤎1'
      *
      * GBK(ASCII的中文扩展) 除了0~126编号是1个字节之外，其他都2个字节（超过65535会由2个字显示）
-     * {@link https://zh.wikipedia.org/wiki/汉字内码扩展规范}
+     * GB 2312、GB 18030 与 GBK相同实现
      *
      * @param  {String} str
      * @param  {String} [charset= 'gbk'] utf-8, utf-16
@@ -1387,7 +1386,7 @@ function intToChinese(num = 0) {
 
 
     /* 使用测试 */
-    console.log(sizeofByte('💩'), sizeofByte('哈'), sizeofByte('©')) // => 4 2 1
+    console.log(sizeofByte('𦤎'), sizeofByte('💩'), sizeofByte('哈'), sizeofByte('©')) // => 4 4 2 1
     ```
 
 ### *原生JS*字符串匹配、替换
@@ -3367,7 +3366,7 @@ var a = new ShowFPS();
 
   function setEllipsis() {
     const containerHeight = container.offsetHeight
-    // fixme: 不仅针对innerText，还可以把每个子节点container.childNodes，根据nodeType的值来分别处理。如：`Node.ELEMENT_NODE`当做一个整体，`Node.TEXT_NODE`分割每个文字
+    // fixme: （复杂实现，）不仅针对innerText，还可以针对innerHTML并把每个子节点container.childNodes，根据nodeType的值来分别处理。如：`Node.ELEMENT_NODE`当做一个整体，`Node.TEXT_NODE`分割每个文字
     for (let i = 0; i < defaultText.length; i++) {
       container.innerText = defaultText.substring(0, i)
       if (containerHeight < container.scrollHeight) {

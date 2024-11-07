@@ -1,8 +1,8 @@
 # Vue.js学习笔记
->针对Vue 2版本。
 
 ## 目录
-1. [vue](#vue)
+1. [Vue 3版本（core）](#vue-3版本core)
+1. [Vue 2版本（vue）](#vue-2版本vue)
 
     1. [模板插值](#模板插值)
     1. [指令 && 特殊attribute](#指令--特殊attribute)
@@ -33,9 +33,20 @@
 1. [jQuery与Vue.js对比](#jquery与vuejs对比)
 
 ---
+
 >约定：`vm`（ViewModel）变量名表示：Vue实例。
 
-## [vue](https://github.com/vuejs/vue)
+## Vue 3版本（[core](https://github.com/vuejs/core)）
+1. API风格
+
+    1. 选项式API（Options API）
+    2. 组合式API（Composition API）
+
+        [优势](https://cn.vuejs.org/guide/extras/composition-api-faq.html)
+
+---
+
+## Vue 2版本（[vue](https://github.com/vuejs/vue)）
 - 心得
 
     1. 针对不在vue视图内出现的变量：
@@ -617,7 +628,7 @@
     >1. `v-html`：`innerHTML`。
     >2. `v-text`、`{{ }}`及其他插值：`innerText（或textContent）`。
     >
-    >    >`innerText`与`textContent`的区别：[MDN:textContent](https://developer.mozilla.org/zh-CN/docs/Web/API/Node/textContent#与innerText的区别)。
+    >    >`innerText`与`textContent`的区别：[MDN：textContent](https://developer.mozilla.org/zh-CN/docs/Web/API/Node/textContent#与innerText的区别)。
     ></details>
 11. `v-pre`不编译
 
@@ -1765,105 +1776,7 @@
         </script>
         ```
 
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```vue
-        ><template>
-        >  <DatePicker
-        >    ref="innerComponent"
-        >    v-bind="$attrs"
-        >    :value="originalValue"
-        >    :defaultValue="originalDefaultValue"
-        >    @input="
-        >      originalValue = arguments[0];
-        >      $emit('input', filterValueOutput(arguments[0], $attrs));
-        >    "
-        >    @change="$emit('change', filterValueOutput(arguments[0], $attrs))"
-        >    v-on="otherListeners"
-        >  >
-        >    <template v-for="(slotFunc, name) in $scopedSlots" #[name]="slotProps">
-        >      <slot :name="name" v-bind="slotProps" />
-        >    </template>
-        >  </DatePicker>
-        ></template>
-        >
-        ><script>
-        >import { DatePicker } from 'element-ui';
-        >import { valueEquals } from './utils';  // 来自：https://github.com/ElemeFE/element/blob/v2.15.14/packages/date-picker/src/picker.vue#L308-L340
-        >
-        >export default {
-        >  components: { DatePicker },
-        >  inheritAttrs: false,
-        >  props: {
-        >    // 传入传出值（DatePicker的原生参数）
-        >    value: {},
-        >
-        >    // 相同兼容处理的默认值（DatePicker的原生参数）
-        >    defaultValue: {},
-        >
-        >    // 当DatePicker输出时，经过这个函数后输出
-        >    filterValueOutput: {
-        >      type: Function,
-        >      // 输出, 组件入参
-        >      default(val, attrs) {
-        >        return val
-        >      },
-        >    },
-        >    // 参数输入给本组件时，经过这个函数后输入DatePicker
-        >    filterValueInput: {
-        >      type: Function,
-        >      // 输入, 组件入参
-        >      default(val, attrs) {
-        >        return val
-        >      },
-        >    },
-        >  },
-        >  data() {
-        >    return {
-        >      parentRefName: undefined,
-        >      originalValue: this.filterValueInput(this.value, this.$attrs),
-        >    };
-        >  },
-        >  computed: {
-        >    otherListeners() {
-        >      const { input, change, ...others } = this.$listeners;
-        >      return others;
-        >    },
-        >    originalDefaultValue() {
-        >      return this.filterValueInput(this.defaultValue, this.$attrs);
-        >    },
-        >  },
-        >  watch: {
-        >    value: {
-        >      handler(val, oldVal) {
-        >        if (!valueEquals(val, oldVal)) {
-        >          this.originalValue = this.filterValueInput(val, this.$attrs);
-        >        }
-        >      },
-        >    },
-        >  },
-        >  mounted() {
-        >    // 将内部组件的引用暴露给外部
-        >    const [name] =
-        >      Object.entries(this.$parent.$refs).find(([, vm]) => {
-        >        return vm === this;
-        >      }) ?? [];
-        >    if (name) {
-        >      this.parentRefName = name;
-        >      this.$parent.$refs[name] = this.$refs.innerComponent;
-        >    }
-        >  },
-        >  beforeDestroy() {
-        >    // 清除引用以防内存泄漏
-        >    if (this.parentRefName && this.$parent.$refs[this.parentRefName] === this.$refs.innerComponent) {
-        >      this.$parent.$refs[this.parentRefName] = undefined;
-        >    }
-        >  },
-        >};
-        ></script>
-        >```
-        ></details>
+        >e.g. [时区的时间选择器利用了这个实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/其他前端专项/海外应用总结/README.md#多时区的一些问题解决方案)
 
 ### 单文件组件（Single-File Component，SFC）
 ```vue
@@ -1919,21 +1832,23 @@
 
                 `<style scoped>样式内容</style>`
 
-            - 使用`scoped`的**单文件组件**内所有Element（包括**其引用的子组件**），都会添加自定义`attributes`（如：`data-v-2185bf6b`）；非Vue内部生成的节点（手动添加）不会添加自定义`attributes`。
+            - 使用`scoped`的**单文件组件**内所有Element（包括 该组件 + **其引用的第一层子组件**），都会添加自定义`attributes`（如：`data-v-2185bf6b`）；非Vue内部生成的节点（手动添加）不会添加自定义`attributes`。
 
-                若已添加`scoped`的子组件也添加`scoped`，则增加一份子组件的自定义`attributes`。
+                若已添加`scoped`的子组件也添加`scoped`，则再增加一份子组件的自定义`attributes`。
 
-                >深度作用选择器：若希望`scoped`样式中的一个选择器能够作用得「更深」（如：影响子组件），则可使用`>>>`或`/deep/`或`::v-deep`操作符（不支持CSS预处理器，如：~~scss~~）。
+                >深度作用选择器：若希望`scoped`样式中的一个选择器能够作用得「更深」（如：影响子组件），则可使用`>>>`或`/deep/`或`::v-deep`操作符。
                 >
                 >e.g.
                 >```vue
                 ><style scoped>
-                >  .a >>> .b { /* 等价于：`.a /deep/ .b`或`.a ::v-deep .b` */ }
-                >  .c > .d {}
+                >  .a .b >>> .c { /* 等价于：`.a .b /deep/ .c`或`.a .b ::v-deep .c` */ }
+                >  .d > .e .f {}
                 >
-                >  // 编译为：
-                >  .a[data-v-039c5b43] .b {}
-                >  .c > .d[data-v-039c5b43] {}
+                >  // 编译为：（若增加deep，则自定义`attributes`添加在deep前。否则添加在最后）
+                >  .a .b[data-v-039c5b43] .c {}
+                >  .d > .e .f[data-v-039c5b43] {}
+                >
+                >  // todo：对于CSS预处理器（如：scss、less等），`{}`嵌套规则下的deep逻辑尚未研究
                 ></style>
                 >```
         2. `module`（[vue-loader的CSS Modules](https://vue-loader.vuejs.org/zh/guide/css-modules.html)）
@@ -2764,6 +2679,18 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
           // 动态路由
           {
             path: ':动态路由',
+            component: 组件
+          },
+          {
+            path: ':动态路由?', // 可选? 1个以及以上+ 0个以及以上*
+            component: 组件
+          },
+          {
+            path: ':动态路由(\\d+)', // 对动态路由进行正则限制，这里限制动态路由必须匹配 \\d+
+            component: 组件
+          },
+          {
+            path: ':动态路由(正则)+', // `正则` 结合 `+*?`
             component: 组件
           },
           // 捕获所有路由的动态路由（https://router.vuejs.org/zh/guide/essentials/dynamic-matching#捕获所有路由或-404-Not-found-路由）
@@ -4190,7 +4117,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     ```vue
     // 子级MyCmp.vue（包含复杂逻辑，因此用父级v-if加载与否+复杂逻辑全部放在子级的方式）
     <template>
-      <el-dialog :visible.sync="dialogVisible" @closed="$emit("update:is-show", false)"><!-- 或：el-drawer -->
+      <el-dialog :visible.sync="dialogVisible" @closed="$emit('update:is-show', false)"><!-- 或：el-drawer -->
         <el-button @click="dialogVisible = false">关闭</el-button>
       </el-dialog>
     </template>
@@ -4353,10 +4280,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         ```
     3. 间隔时间消费堆积的信息（略）？
     </details>
-4. `<el-option>`能够匹配 空字符串、`undefined`、`null`，并且多个相同的value值匹配后展示最后一个项的label值，注意传参为空时出现的问题
-
-    >[CodePen demo](https://codepen.io/realgeoffrey/pen/MWMpxNW)
-5. <details>
+4. <details>
 
     <summary>若大于4位小数则仅展示4位小数并支持hover展示完整，否则直接展示完整</summary>
 
@@ -4405,7 +4329,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     </script>
     ```
     </details>
-6. <details>
+5. <details>
 
     <summary>点击输入框，不进行输入而是打开弹窗逻辑，输入框支持清空</summary>
 
@@ -4414,7 +4338,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
       ref="inputRef"
       v-model="text1"
       clearable
-      @click.native="handlerClick($event)"
+      @click.native.prevent="handlerClick($event)"
       @focus="$refs.inputRef?.blur()"
       @clear="text2 = ''"
     />
@@ -4429,7 +4353,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     }
     ```
     </details>
-7. <details>
+6. <details>
 
     <summary>日期选择器，限制选择日期长度</summary>
 
@@ -4477,6 +4401,16 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     },
     ```
     </details>
+
+- 避免问题
+
+    1. `<el-option>`能够匹配 空字符串、`undefined`、`null`，并且多个相同的value值匹配后展示最后一个项的label值，注意传参为空时出现的问题。匹配是`===`，注意`<el-select>`的`v-model`值`6`不会匹配`<el-option>`的`value`值`'6'`。
+
+        >[CodePen demo](https://codepen.io/realgeoffrey/pen/MWMpxNW)
+    2. 针对非自适应宽度的`<el-table>`，避免所有`<el-table-column>`都设置固定宽度，至少需要一个项不设置宽度或设置`min-width`。
+    3. `<el-input-number>`设置`max`、`min`、`precision`会直接“纠正”`value/v-model`绑定值，无论是不是`disabled`。
+
+        >[CodePen demo](https://codepen.io/realgeoffrey/pen/VYZmYrB)
 
 ### jQuery与Vue.js对比
 1. 做的事情

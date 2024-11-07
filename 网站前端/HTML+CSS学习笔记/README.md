@@ -915,6 +915,9 @@
 
     可能和设置在父级的`line-height`有关，尝试把`line-height`改到设置在包裹文字的节点。
 28. （针对某些iOS机型，）`animation`和`transition`两种动画方式共用有兼容问题
+29. 若`<label>`和`<input>`相关联后，则点击`<label>`的默认行为（`preventDefault`）是聚焦或激活其关联的`<input>`
+
+    >[MDN：label](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/label)
 
 ---
 ## CSS

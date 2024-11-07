@@ -56,6 +56,7 @@
             3. 接口请求的 报错、状态码、响应时间
 
                 封装或劫持 接口请求进行上报细节处理。
+
             - 合并相似错误信息，过滤异常数据
 
             >[白屏问题](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/其他前端专项/白屏问题/README.md)

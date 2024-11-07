@@ -2417,7 +2417,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
 1. 原生错误类型
 
-    >来自：[MDN:Error](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Error)。
+    >来自：[MDN：Error](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Error)。
 
     错误类型：`Error`、`EvalError`、`RangeError`、`ReferenceError`、`SyntaxError`、`TypeError`、`URIError`。
 
@@ -3294,7 +3294,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         >2. `setTimeout`与`setInterval`中第一个参数若使用字符串，也是使用`eval`把字符串转化为代码。
     2. `eval`中的`var`和`函数声明`，会在当前作用域创建变量和方法（非严格模式下）；`eval`中的`let`、`const`（、严格模式下的`var`）不会在当前作用域创建变量（`eval`使用完，下一行JS代码就无法获取里面的变量）
 
-        >[MDN: eval](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#direct_and_indirect_eval)
+        >[MDN：eval](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#direct_and_indirect_eval)
 8. 获取数组中最大最小值：
 
     1. `Math.min(...[1, 2, 3])`或`Math.min.apply(null, [1, 2, 3])`
@@ -3636,7 +3636,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     1. 原生JS：
 
-        >来自：[MDN:CustomEvent](https://developer.mozilla.org/zh-CN/docs/Web/API/CustomEvent/CustomEvent)。
+        >来自：[MDN：CustomEvent](https://developer.mozilla.org/zh-CN/docs/Web/API/CustomEvent/CustomEvent)。
 
         ```js
         // 监听自定义事件
@@ -3652,7 +3652,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         ><details>
         ><summary>或<code>Event</code></summary>
         >
-        >来自：[MDN:Event](https://developer.mozilla.org/zh-CN/docs/Web/API/Event/Event)。
+        >来自：[MDN：Event](https://developer.mozilla.org/zh-CN/docs/Web/API/Event/Event)。
         >
         >```js
         >// 监听自定义事件
