@@ -190,4 +190,166 @@
     2. 方案二：客户端存时间戳要偏移时区到某个固定时区（如：UTC+0或服务端时区）、取出的时间戳也要逆向偏移（*有漏洞：请求参数可以修改，js代码可以修改，时间戳由客户端处理和决定 有风险。但没有其他更好方案*）
 
         e.g. 假设客户端是UTC+8，获取`2024-05-28 0:0:0 UTC+8`是时间戳`x`，若要偏移成UTC+0时间刻度一致的`2024-05-28 0:0:0 UTC+0`则要存时间戳`x + 8*1000*60*60`；服务端取回的`y`表示UTC+0的`2024-05-28 0:0:0 UTC+0`，若直接在UTC+8的客户端`new Date(y)`则会展示`2024-05-28 8:0:0 UTC+8`，因此若要展示0点时间刻度，则要逆向偏移`new Date(y - 8*1000*60*60)`再去修改时间字符串后面的UTC字段。
+
     - feature：存和取 都是针对某个固定时区进行，并不是客户端系统时区。如：客户端选择1点，其含义是某个固定时区（如：UTC+0或服务端时区）的1点，服务端返回的时间戳也要处理展示成1点。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >0. 前、后端以某个确定时区为准
+    >1. 时间选择器展示的时间 <-（正向）偏移（逆向）-> 进出时间选择器的值 === 后端的值
+    >2. 针对`<el-date-picker>`，以下实现：参数传递和原组件一致，仅在原组件外做一层对输入输出值的偏移逻辑
+    >
+    >    1. <details>
+    >
+    >        <summary>实现</summary>
+    >
+    >        ```vue
+    >        <template>
+    >          <!-- 使用v-bind="$attrs"和v-on="$listeners"传递所有参数。ref传递给父级引用的ref -->
+    >          <DatePicker
+    >            ref="innerComponent"
+    >            v-bind="$attrs"
+    >            :value="originalValue"
+    >            :defaultValue="originalDefaultValue"
+    >            :popper-class="originalPopperClass"
+    >            @input="
+    >              originalValue = arguments[0];
+    >              $emit('input', filterValueOutput(arguments[0], $attrs));
+    >            "
+    >            @change="$emit('change', filterValueOutput(arguments[0], $attrs))"
+    >            v-on="otherListeners"
+    >          >
+    >            <!-- 传递插槽 -->
+    >            <template v-for="(slotFunc, name) in $scopedSlots" #[name]="slotProps">
+    >              <slot :name="name" v-bind="slotProps" />
+    >            </template>
+    >          </DatePicker>
+    >        </template>
+    >
+    >        <script>
+    >        import { DatePicker } from 'element-ui';
+    >        import { valueEquals } from './utils';  // 来自：https://github.com/ElemeFE/element/blob/v2.15.14/packages/date-picker/src/picker.vue#L308-L340
+    >
+    >        export default {
+    >          components: { DatePicker },
+    >          inheritAttrs: false, // 禁止将根元素的属性自动应用到根元素上
+    >          props: {
+    >            // 传入传出值（DatePicker的原生参数）
+    >            value: {},
+    >
+    >            // 相同兼容处理的默认值（DatePicker的原生参数）
+    >            defaultValue: {},
+    >
+    >            // 为了解决today问题，目前只能把today样式初始化掉，因此用了该插件不会有today的样式
+    >            popperClass: {
+    >              type: String,
+    >              default: "",
+    >            },
+    >
+    >            // 当DatePicker输出时，经过这个函数后输出
+    >            filterValueOutput: {
+    >              type: Function,
+    >              // 输出, 组件入参
+    >              default(val, attrs) {
+    >                return val;        // todo：正向偏移逻辑
+    >              },
+    >            },
+    >            // 参数输入给本组件时，经过这个函数后输入DatePicker
+    >            filterValueInput: {
+    >              type: Function,
+    >              // 输入, 组件入参
+    >              default(val, attrs) {
+    >                return val;        // todo：逆向偏移逻辑
+    >              },
+    >            },
+    >          },
+    >          data() {
+    >            return {
+    >              parentRefName: undefined,
+    >              originalValue: this.filterValueInput(this.value, this.$attrs),
+    >            };
+    >          },
+    >          computed: {
+    >            otherListeners() {
+    >              const { input, change, ...others } = this.$listeners;
+    >              return others;
+    >            },
+    >            originalDefaultValue() {
+    >              return this.filterValueInput(this.defaultValue, this.$attrs);
+    >            },
+    >            originalPopperClass() {
+    >              return `${this.popperClass} ilk-date-picker-popper-class`;
+    >            },
+    >          },
+    >          watch: {
+    >            value: {
+    >              handler(val, oldVal) {
+    >                if (!valueEquals(val, oldVal)) {
+    >                  this.originalValue = this.filterValueInput(val, this.$attrs);
+    >                }
+    >              },
+    >            },
+    >          },
+    >          mounted() {
+    >            // 将内部组件的引用暴露给外部
+    >            const [name] =
+    >              Object.entries(this.$parent.$refs).find(([, vm]) => {
+    >                return vm === this;
+    >              }) ?? [];
+    >            if (name) {
+    >              this.parentRefName = name;
+    >              this.$parent.$refs[name] = this.$refs.innerComponent;
+    >            }
+    >          },
+    >          beforeDestroy() {
+    >            // 清除引用以防内存泄漏
+    >            if (this.parentRefName && this.$parent.$refs[this.parentRefName] === this.$refs.innerComponent) {
+    >              this.$parent.$refs[this.parentRefName] = undefined;
+    >            }
+    >          },
+    >        };
+    >        </script>
+    >
+    >        <style lang="less">
+    >        // 去除.today样式
+    >        .ilk-date-picker-popper-class {
+    >          .el-date-table td.today span {color: inherit;font-weight: inherit}
+    >          .el-date-table td.today.end-date span, .el-date-table td.today.start-date span {color: inherit}
+    >          .el-date-table td.selected span {color: #fff}
+    >
+    >          .el-month-table td.today .cell {color: inherit;font-weight: inherit}
+    >          .el-month-table td.today.end-date .cell, .el-month-table td.today.start-date .cell {color: inherit}
+    >          .el-year-table td.today .cell {color: inherit;font-weight: inherit}
+    >
+    >          .el-year-table td.current:not(.disabled) .cell, .el-month-table td.current:not(.disabled) .cell {color: #409EFF;}
+    >          .el-year-table td.disabled .cell, .el-month-table td.disabled .cell {color: #c0c4cc;}
+    >        }
+    >        // 隐藏「此刻」
+    >        .ilk-date-picker-popper-class {
+    >          &.el-date-picker .el-picker-panel__link-btn:first-child {
+    >            display: none;
+    >          }
+    >        }
+    >        </style>
+    >        ```
+    >        </details>
+    >    2. 注意
+    >
+    >        1. `picker-options`改为时区版本（不能直接用`Date`逻辑，要进行偏移）
+    >        2. 前端初始化值不能直接用`Date`逻辑，要进行偏移
+    >        3. 以上实现去除了.today样式、隐藏了「此刻」按钮
+    >        4. 后端的值若不经过时间选择器（处理了输入输出的偏移）而直接展示，则需要先偏移后再展示
+    >3. 前端展示后端的值，需要经过偏移处理：
+    >
+    >    ```js
+    >    format = (date, type = 'YYYY-MM-DD HH:mm:ss') => {
+    >      if (typeof date === 'number') {
+    >        return 逆向偏移逻辑后展示(date, type);
+    >      } else if (date && typeof date === 'string') {
+    >        return moment(date).format(type); // 若后台返回时间字符串，则直接展示
+    >      }
+    >      return '';
+    >    };
+    >    ```
+    ></details>

@@ -123,7 +123,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         1. JS触发
 
             1. iOS8-支持`<iframe src="自定义URL Scheme">`和`window.location.href="自定义URL Scheme"`跳转；iOS9+不支持 ~~`<iframe>`~~，仅支持`window.location.href="自定义URL Scheme"`跳转
-            2. iOS9+的Universal links（通用链接），可以从底层打开其他App客户端，跳过白名单（微信已禁用），若未安装则打开配置好的落地页（落地页再提示下载app，不需要~~JS判断是否页面被隐藏从而跳转落地页~~）
+            2. iOS9+的Universal links（通用链接），可以从底层打开其他App客户端，跳过白名单（微信已禁用），若未安装则打开配置好的落地页（落地页再提示下载App，不需要~~JS判断是否页面被隐藏从而跳转落地页~~）
 
                 >需要HTTPS域名配置、iOS设置等其他端配合。
 
@@ -132,7 +132,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 
             - <details>
 
-                <summary>使用自定义URL Scheme唤起APP，若页面没有被隐藏则认为未安装app，从而重定向至落地页</summary>
+                <summary>使用自定义URL Scheme唤起APP，若页面没有被隐藏则认为未安装App，从而重定向至落地页/下载地址</summary>
 
                 1. 方法一（推荐）：
 
@@ -143,7 +143,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
                     const delay = 2000; // 按实际情况设置2~5秒
 
                     const timer = setTimeout(() => {
-                      location.href = '落地页';
+                      location.href = '落地页/下载地址';
 
                       removeEventListener();
                     }, delay);
@@ -169,7 +169,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
                       window.removeEventListener('pagehide', clearFunc2);
                     }
 
-                    // 若检测到隐藏页面，则阻止跳转落地页（认为app已安装、已成功跳转URL Scheme）
+                    // 若检测到隐藏页面，则阻止跳转落地页/下载地址（认为App已安装、已成功跳转URL Scheme）
                     window.addEventListener('visibilitychange', clearFunc1);
                     window.addEventListener('pagehide', clearFunc2);
                     ```
@@ -186,7 +186,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
                     const start = Date.now();
                     setTimeout(function () {
                       if (Date.now() - start < delay + 100) {  // 还在这个页面，认为没有安装App
-                        location.href = '落地页';
+                        location.href = '落地页/下载地址';
                       }
                     }, delay);
                     ```
@@ -222,6 +222,27 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 
                 e.g. `https://a.app.qq.com/o/simple.jsp?pkgname=com.xx.xxx&ckey=xxxx&android_schema=xxxx://xx`
             </details>
+
+        - 落地页按钮方案
+
+            1. 方案一：
+
+                仅一个「打开App」按钮，包含先尝试打开App、然后尝试下载App（使用自定义URL Scheme唤起APP，若页面没有被隐藏则认为未安装App，从而重定向至下载地址）
+
+                >e.g. <https://kg.qq.com/>
+            2. 方案二：
+
+                一个按钮仅「打开App」，一个按钮仅「下载App」
+
+                ><details>
+                >
+                ><summary>e.g. 支付宝App</summary>
+                >
+                >1. pc端下载页：<https://render.alipay.com/p/yuyan/180020040001212700/>
+                >2. 移动端下载页： <https://d.alipay.com>（去除打开App按钮的下载页：<https://d.alipay.com/?nojump=true>）
+                ></details>
+
+            -  「下载App」考虑是否跳转到应用中心App（支持更新、下载、打开，但一个时刻仅支持其中一种功能）
     3. WebView提供给Native调用的全局回调函数（或匿名函数）。
 
         ><details>
@@ -304,10 +325,10 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
     4. 客户端提供bridge或Scheme用于弹出客户端的弹窗，需要触发时唤起客户端的弹窗。
 
 ### 前端-客户端协议方案（前端方向）
-1. js调用app的中间层代码，兼容实现`不同平台、不同app、环境准备成功与否`的逻辑
+1. js调用App的中间层代码，兼容实现`不同平台、不同App、环境准备成功与否`的逻辑
 
     1. 支持：主动调用、事件通知、URL scheme
-    2. 支持：新app低成本接入
+    2. 支持：新App低成本接入
 2. 限制js调用的入参和出参（回调函数的类型 或 返回Promise的类型），参数结构统一
 
     0. 协议规范（强类型）
