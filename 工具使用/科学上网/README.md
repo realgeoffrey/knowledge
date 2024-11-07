@@ -337,9 +337,13 @@ ClashX`的增强模式`原理：通过一个虚拟网卡接管所有流量。
 1. 方案一
 
     完整的配置文件：设置 -> 配置文件 - 下载配置 -> 输入配置链接，**会覆盖之前所有配置**。
+
+    >e.g. 填上`https://dler.cloud/subscribe/**********?quantumultx=smart`
 2. 方案二
 
     仅新增节点：设置 -> 节点 - 节点资源 -> 右上角添加 -> 资源 - 节点 - 资源路径（可能需要关闭翻墙才能添加成功？），**在原有配置的基础上添加节点**。
+
+    >e.g. 填上`https://mysub.cc/subscribe/****/******/ssr/`
 
 ### ClashX 配置
 支持满足其规则的配置，如：Shadowsocks(SS)、ShadowsocksR(SSR)、Socks、Snell、V2Ray、Trojan等代理协议。
@@ -347,5 +351,7 @@ ClashX`的增强模式`原理：通过一个虚拟网卡接管所有流量。
 1. 配置 -> 托管配置 -> 管理，可以新增/删除进行配置管理。
 
     可以多配置切换（Quantumult X仅能有一个配置？）。
+
+    >e.g. 添加`https://mysub.cc/subscribe/****/*****/clash/`或`https://dler.cloud/subscribe/**********?clash=smart`
 
     ![ClashX配置](./images/ClashX-1.png)

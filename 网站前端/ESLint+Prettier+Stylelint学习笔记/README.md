@@ -215,6 +215,8 @@
     >忽略语法和[.gitignore](https://git-scm.com/docs/gitignore#_pattern_format)一致。
 3. [忽略代码](https://stylelint.nodejs.cn/user-guide/ignore-code)
 
+    `stylelint-disable stylelint-enable stylelint-disable-line stylelint-disable-next-line`
+
 ### 区别和配合使用
 1. 区别：
 

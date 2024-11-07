@@ -831,11 +831,11 @@
 - 混用HTTPS与HTTP导致浏览器提示[`Mixed Content`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#mixed-content)。
 
 ### HTTP严格传输安全（HTTP strict transport security，HSTS）
-一套互联网安全策略机制，强制浏览器使用HTTPS与网站进行通信（避免：先发出HTTP请求再302重定向为HTTPS），以减少会话劫持风险。
+一套互联网安全策略机制，强制浏览器使用HTTPS与网站进行通信（避免：先发出HTTP请求再30x重定向为HTTPS），以减少会话劫持风险。
 
 1. 必要性：HTTPS也不够安全
 
-    浏览器向网站发起一次HTTP请求，在得到一个要求重定向的响应后，发起一次302重定向的HTTPS请求并得到最终的响应内容。在HTTP请求时，容易受到中间人攻击。
+    浏览器向网站发起一次HTTP请求，在得到一个要求重定向的响应后，发起一次30X重定向的HTTPS请求并得到最终的响应内容。在HTTP请求时，容易受到中间人攻击。
 2. 开启HSTS方法：当客户端通过HTTPS发出请求时，在服务器返回的HTTP响应头中包含`Strict-Transport-Security`。
 
     <details>
@@ -1073,7 +1073,7 @@ HTTP是无状态协议，通过session-cookie或token判断客户端的用户状
         设置cookie的domain为顶级域名，其他按照正常登录策略即可。
     2. 跨域名：
 
-        通过在一个中间域名统一登录后（认证），登录信息以cookie形式存储session_id在中间域名（授权）；当在这个中间域名鉴权成功后，重定向回原域名并带上能够验证登录状态的token；在原网站用token请求登录接口，鉴权成功后以cookie形式存储session_id在原网站域名（授权）。
+        通过在一个中间域名网站统一登录后（认证），登录信息以cookie形式存储session_id在中间域名（授权）；当在这个中间域名网站鉴权成功后，重定向回原域名网站并带上能够验证登录状态的token；在原域名网站用token请求登录接口，鉴权成功后以cookie形式存储session_id在原域名（授权）。
 
 todo: https://tsejx.github.io/blog/authentication/
 

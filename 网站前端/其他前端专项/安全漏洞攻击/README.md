@@ -24,7 +24,7 @@
             cookie设置为HttpOnly不能在客户端使用~~document.cookie~~访问。
         3. 开启浏览器CSP（Content-Security-Policy，内容安全策略），设置不允许加载白名单外的域名资源
 
-            >指令细节：[MDN: Content-Security-Policy](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Security-Policy)。
+            >指令细节：[MDN：Content-Security-Policy](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Security-Policy)。
 
             1. HTTP响应头：
 

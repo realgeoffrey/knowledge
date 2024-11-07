@@ -38,7 +38,7 @@
     1. [模块化](#模块化)
     1. [`名字.d.ts`（声明文件）](#名字dts声明文件)
     1. [协变与逆变](#协变与逆变)
-    1. [`// @ts-ignore`](#-ts-ignore)
+    1. [注释指令](#注释指令)
 1. [其他](#其他)
 1. [ts的优缺点](#ts的优缺点)
 
@@ -3083,18 +3083,32 @@ type Concrete<Type> = {
     >```
     ></details>
 
-### `// @ts-ignore`
-忽略TS错误。
+### 注释指令
+1. `// @ts-ignore`
 
-- 若eslint报错，则：
+    **下一行**代码忽略TS错误。
 
-    1. eslint的rule配置：`"@typescript-eslint/ban-ts-comment": "off"`
-    2. 或
+    - 若eslint报错，则：
 
-        ```
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        ```
+        1. eslint的rule配置：`"@typescript-eslint/ban-ts-comment": "off"`
+        2. 或
+
+            ```
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            报错行
+            ```
+2. `// @ts-expect-error`
+
+    >主要用在测试用例。
+
+    当**下一行**有类型错误时，它会压制TS的报错信息（即不显示报错信息）；若下一行没有类型错误，则会显示一行提示：`Unused '@ts-expect-error' directive.`。
+3. `// @ts-nocheck`
+
+    放置在文档顶部。告诉编译器不对当前脚本进行类型检查，可用于 TS脚本、JS脚本。
+4. `// @ts-check`
+
+    放置在文档顶部。告诉编译器对该脚本进行类型检查，不论是否启用了checkJs编译选项。
 
 ---
 ## 其他
