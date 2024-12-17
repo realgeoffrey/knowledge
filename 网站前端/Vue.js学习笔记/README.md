@@ -4404,7 +4404,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
 - 避免问题
 
-    1. `<el-option>`能够匹配 空字符串、`undefined`、`null`，并且多个相同的value值匹配后展示最后一个项的label值，注意传参为空时出现的问题
+    1. `<el-option>`能够匹配 空字符串、`undefined`、`null`，并且多个相同的value值匹配后展示最后一个项的label值，注意传参为空时出现的问题。匹配是`===`匹配，注意`6`不会匹配value是`'6'`的项
 
         >[CodePen demo](https://codepen.io/realgeoffrey/pen/MWMpxNW)
     2. 针对非自适应宽度的`<el-table>`，避免所有`<el-table-column>`都设置固定宽度，至少需要一个项不设置宽度或设置`min-width`
