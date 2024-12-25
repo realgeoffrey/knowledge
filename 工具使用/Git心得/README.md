@@ -107,6 +107,23 @@
         ```
 
         >最多能取消至第二条commit；要删除第一条commit，不如先删除仓库再创建仓库，或使用下面的「清空一个分支中的所有commit记录」。
+
+        - merge其他分支之后，若想要撤销本次merge产生的所有commit，则可以直接用reset删除覆盖过merge的「SHA」
+
+            ```git
+            git log                     # 获取merge的commit「SHA」
+
+                # commit sha1
+                # Merge: sha2 sha3
+                #
+                # commit sha4
+                # commit sha5
+
+             git reset --hard HEAD~1    # 取消之前的1次提交（若取消更多次提交，则只要覆盖过merge的「SHA」就可以撤销merge产生的所有commit，多出来的撤销会继续向之前取消提交）
+             # 或 git reset --hard sha4  # 取消至merge之前的那个SHA
+
+             git push -f                # 强制提交到远程版本库
+            ```
     2. `rebase`
 
         >破坏所有commit，其他用户必须`git pull --rebase`。
