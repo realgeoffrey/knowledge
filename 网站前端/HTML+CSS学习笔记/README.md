@@ -1279,7 +1279,7 @@
         2. `break-all`
 
             若此行放不下则直接断字。
-    2. `word-wrap`或`overflow-wrap`
+    2. `overflow-wrap`（别名：`word-wrap`）
 
         1. `normal`（默认）
 

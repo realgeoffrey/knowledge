@@ -2261,6 +2261,21 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     >
     >    这种属性最好也初始化在`date`函数里（数据初始化统一位置，且又是生命周期的前期），e.g. `data(){ this.不响应式属性 = 值; return { 响应式属性: 值 }; }`。
     >3. 针对所有这个组件的实例全部共用同一个值、不响应式更新、不能放在`template`内的值，可以放在组件外部。
+    >4. 在`created`生命周期钩子之前，`vm.属性值`还未被初始化
+    >
+    >    因此不可以在`data`中（或`created`触发之前）使用`this.属性`（此时，`this`存在；但`this.属性`未初始化，为`undefined`），可以先在`data`中设置空值，再在`created`中或之后设置业务值：
+    >
+    >    ```js
+    >    data() {
+    >      return {
+    >        value1: {},
+    >        value2: null // 先设置空值。此时`this.属性`都是undefined
+    >      };
+    >    },
+    >    created() {
+    >      this.value2 = 方法1(this.value1); // 这里 this.value1 已经可用
+    >    }
+    >    ```
 2. 每个组件实例都有相应的`watcher`实例对象，它会在组件渲染的过程中把属性记录为依赖，之后当依赖项的`setter`被调用时，会通知`watcher`重新计算，从而致使它关联的组件得以更新（[虚拟DOM系统](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#虚拟dom系统)）。
 3. 响应式操作：Vue实例的`data`的属性值、vuex的store的属性值
 
@@ -2276,6 +2291,45 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
                 1. 扩展原对象：`原对象 = Object.assign({}, 原对象, { 键: 新值 })`或`原对象 = { ...原对象, 键: 新值 }`
                 2. 扩展原数组：`原数组 = [ 新值, ...原数组, 新值 ]`或`concat`等
                 - 空对象/空数组赋值（`= []`、`= {}`）也是一次重新赋值操作
+
+            - <details>
+
+                <summary>能够正常渲染的情况</summary>
+
+                ```vue
+                <template>
+                  <div>
+                    <p>{{ a }}</p>        <!-- 能够正常渲染展示 -->
+                    <p>{{ a.a1 }}</p>     <!-- 能够正常渲染展示 -->
+                    <p>{{ a.a1?.a2 }}</p> <!-- 能够正常渲染展示 -->
+                    <a @click="handleClick0">handleClick0</a>
+                    <a @click="handleClick1">handleClick1</a>
+                    <a @click="handleClick2">handleClick2</a>
+                  </div>
+                </template>
+
+                <script>
+                export default {
+                  data() {
+                    return {
+                      a: {},
+                    };
+                  },
+                  methods: {
+                    handleClick0() {
+                      this.a = {};              // 赋值后，template能够正常渲染展示
+                    },
+                    handleClick1() {
+                      this.a = { a1: 1 };       // 赋值后，template能够正常渲染展示
+                    },
+                    handleClick2() {
+                      this.a = { a1: {a2: 2} }; // 赋值后，template能够正常渲染展示
+                    },
+                  },
+                };
+                </script>
+                ```
+                </details>
         3. `Vue.set(原对象/原数组, 键/索引, 新值)`：原对象/原数组添加**新**属性或修改原属性
         4. `Vue.delete(原对象/原数组, 键/索引)`：原对象/原数组删除原属性
     2. 无法检测原对象/原数组变动：
