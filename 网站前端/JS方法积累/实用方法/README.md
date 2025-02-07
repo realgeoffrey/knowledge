@@ -1336,7 +1336,7 @@ function intToChinese(num = 0) {
      * UTF-16 编码65535以内使用两个字节编码，超出65535的使用四个字节（JS内部，字符储存格式是：UCS-2——UTF-16的子级；`<input>`的`maxlength/minlength`以UTF-16码元计算）
      * 000000 - 00FFFF  两个字节
      * 010000 - 10FFFF  四个字节
-     * e.g. <input maxlength="3">：字符是65535以内的占用1，超过65535占用2。因此可以输入上限：'aaa'、'哈哈哈'、'𦤎1'
+     * e.g. <input maxlength="3">：字符是65535以内的占用1，超过65535占用2。因此可以输入上限：'aaa'、'哈哈哈'、'𦤎1'、'💩1'
      *
      * GBK(ASCII的中文扩展) 除了0~126编号是1个字节之外，其他都2个字节（超过65535会由2个字显示）
      * GB 2312、GB 18030 与 GBK相同实现
@@ -1657,7 +1657,7 @@ console.log(`期望输出："${path.extname('.ABC.md')}"。`, getFileExtension('
 ### *原生JS*数组去重（项为对象）
 ```js
 /**
- * 获取对象指定深度属性（https://lodash.com/docs/4.17.15#get）
+ * 获取对象指定深度属性（https://lodash.com/docs#get）
  * @param {Object} source - 要处理的对象
  * @param {Array} path - 路径深度
  * @returns result - 属性值
@@ -2485,6 +2485,7 @@ loadingFetch(() => { console.log('同步方法') })
 >2. 支持多种文件类型。
 >3. ~~兼容性不佳。~~
 >4. 若download未指定值或未指定文件后缀，则从多种方式中设置`文件名.文件类型`：响应头的`Content-Disposition`、`Content-Type`，URL的最后一段，Data URL的开头，Blob的`type`。
+>5. 响应头`Content-Disposition: inline`（默认）是预览，`Content-Disposition: attachment`是下载；可以通过先下载资源（blob格式），再设置a标签的`download`进行下载或预览。
 
 以下方法均依赖`<a>`的`download`属性（JS的Blob或Data URL，都需要先[CORS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#corscross-origin-resource-sharing跨域资源共享)下载文件资源地址成功后再进行操作）：
 
@@ -2502,7 +2503,7 @@ loadingFetch(() => { console.log('同步方法') })
           if (xhr.status >= 200 && xhr.status < 300) {  // 只有部分2xx支持传递数据（建议只处理200的响应）；304不返回数据
             const link = document.createElement('a');
             link.href = URL.createObjectURL(xhr.response); // Blob URL。也可以用Data URL（base64）
-            link.download = filename ?? '';
+            link.download = filename ?? ''; // 若没有加download，则就是直接打开链接的逻辑（预览），a的href类似于window.open等
 
             link.style.display = 'none';
             document.body.appendChild(link);
@@ -2533,7 +2534,7 @@ loadingFetch(() => { console.log('同步方法') })
     >  reader.addEventListener('loadend', (e) => {
     >    const link = document.createElement('a');
     >    link.href = e.target.result;
-    >    link.download = filename ?? '';
+    >    link.download = filename ?? ''; // 若没有加download，则就是直接打开链接的逻辑（预览），a的href类似于window.open等。但base64大概率会超过浏览器导航栏输入长度
     >    link.style.display = 'none';
     >    document.body.appendChild(link);
     >    link.click();
@@ -2546,6 +2547,18 @@ loadingFetch(() => { console.log('同步方法') })
     >...
     >```
     ></details>
+
+    - 把下载地址直接通过`a`标签打开
+
+        ```js
+        const link = document.createElement('a');
+        link.href = 下载地址;
+        link.target = '_blank';
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        ```
 2. 下载文本（把JS字符串变成文本文件下载）
 
     >Blob。代码生成文本内容再创建下载。

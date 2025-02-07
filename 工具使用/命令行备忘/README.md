@@ -260,7 +260,7 @@ passwd
 
 #### 指令在PATH变量的路径
 ```shell
-which 「指令」
+which 「指令」  # e.g. which python; which bash
 ```
 
 #### hosts文件位置
@@ -324,9 +324,12 @@ which 「指令」
     - Node.js
 
         ```js
-        Buffer.from('任意字符串', 'utf-8').toString('base64')
+        Buffer.from('任意字符串', 'utf-8').toString('base64')               // 编码
+        Buffer.from('5Lu75oSP5a2X56ym5Liy', 'base64').toString('utf-8');  // 解码
 
-        btoa('单字节字符串')     // 浏览器也支持
+        // 浏览器也支持
+        btoa('单字节字符串')    // 编码（对输入有限制：从 二进制 到 ASCII）
+        atob('编码值')         // 解码（对输入有限制：从 ASCII 到 二进制）
         ```
 
 #### 查看本机IP
@@ -808,6 +811,16 @@ ln -s 「源文件/目录」 「目标文件/目录」  # 软链接，会在 目
 
     ```shell
     unzip 「x.zip」
+    ```
+
+- `lzip`（`brew install lzip`）
+
+    支持压缩单个文件（或已经压缩过的压缩文件，e.g. .zip、.tar），不支持压缩文件夹。
+
+    ```shell
+    lzip 「文件」           # 压缩
+
+    lzip -d 「文件.lz」     # 解压缩
     ```
 
 ---
