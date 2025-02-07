@@ -1,5 +1,12 @@
-### IDEs' Setting
+# IDEs' Setting
 
+### Visual Studio Code
+1. [settings.json](./settings.json)
+2. [keybindings.json](./keybindings.json)
+
+  - ![文件: 比较活动文件与剪贴板](./images/compare.png)
+
+### WebStorm
 1. 在线同步设备可以用：
 
     ><https://www.jetbrains.com/help/idea/sharing-your-ide-settings.html>。
