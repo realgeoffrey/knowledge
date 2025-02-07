@@ -12,6 +12,7 @@
     1. [过渡/动画](#过渡动画)
     1. [插件（plugin）](#插件plugin)
     1. [全局API](#全局api)
+    1. [Vue实例属性](#vue实例属性)
     1. [特性](#特性)
     1. [vue风格指南](#vue风格指南)
     1. [响应式系统](#响应式系统)
@@ -40,9 +41,56 @@
 1. API风格
 
     1. 选项式API（Options API）
+
+        >Vue 2、Vue 3支持。
+
+        使用选项式API，我们可以用包含多个选项的对象来描述组件的逻辑，如：data、methods、mounted、等。选项所定义的属性都会暴露在函数内部的`this`上，它会指向当前的组件实例。
+
+    >选项式API 是在 组合式API 的基础上实现的。
+
     2. 组合式API（Composition API）
 
-        [优势](https://cn.vuejs.org/guide/extras/composition-api-faq.html)
+        >Vue 2.7、Vue 3的内置功能。对于更老的Vue 2版本，安装[composition-api](https://github.com/vuejs/composition-api)后支持。
+
+        通过组合式API，我们可以使用导入的API函数来描述组件逻辑。
+
+        >[优势](https://cn.vuejs.org/guide/extras/composition-api-faq.html)
+2. `:属性名`（等于`v-bind:同名="同名"`、`:同名="同名"`）
+
+    >Vue 3.4+。
+
+    若 attribute名称 与 绑定的js值的名称 相同，则可以进一步简化缩写，省略`="绑定值"`。
+3. `ref`、`setup`、`<script setup>`、`nextTick`、`reactive`、`computed`、`watch`、`watchEffect`、[`onWatcherCleanup`](https://cn.vuejs.org/guide/essentials/watchers.html#watcheffect)、`onMounted`、`useTemplateRef`、`defineProps`、`defineEmits`、`createApp`、`defineModel`、`defineOptions`、`provide/inject`、`defineAsyncComponent`、`<Suspense>`、`toValue`
+4. `Proxy`响应式原理
+5. `ref`与`computed`自动解包（automatically unwrapped），[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)
+6. `computed`
+
+    >Vue 3.4+。
+
+    上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；可写计算属性的`get`的第一个参数`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
+7. 若组件有多个根元素，则不会默认添加在多个根元素上
+
+    可以通过组件的`$attrs`属性来指定接收的元素。
+
+    ```vue
+    <template>
+      <!--  显式使用 $attrs 设置父级传递的class -->
+      <p :class="$attrs.class">Hi!</p>
+      <span>This is a child component</span>
+    </template>
+    ```
+8. 生命周期
+
+    ![vue3生命周期图](./images/vue-lifecycle-2.png)
+9. 深度选择器
+
+    | 写法        | Vue版本支持  | 预处理器支持    | 官方推荐  | 备注 |
+    |------------|-------------|--------------|----------|--------------------------|
+    | `>>>`      | Vue 2       | ❌           | ❌       | 原生CSS，预处理器不兼容 |
+    | `/deep/`   | Vue 2       | ✔️           | ❌       | Vue 3已废弃，部分构建工具可能兼容但会警告 |
+    | `::v-deep` | Vue 2       | ✔️           | ❌       | Vue 3已废弃。`/deep/`的别名，语义更明确 |
+    | `:deep()`  | Vue 3       | ✔️           | ✔️       | 当前最佳实践。与Composition API兼容 |
+10. ~~`$listeners`~~ 在Vue 3中已被移除，事件监听器现在是`$attrs`的一部分
 
 ---
 
@@ -82,7 +130,11 @@
         3. 路由.vue组件用：按该网站当前已有的路由规范命名，如：`-`短横线隔开式（kebab-case）
 
 ### 模板插值
+双大括号——“Mustache”语法。
+
 1. 支持JS表达式（单个），不支持~~语句~~、~~流控制~~。
+
+    >一个简单的判断 是单一表达式 的方法：是否可以合法地写在 `return` 后面。
 
     <details>
     <summary>e.g.</summary>
@@ -93,6 +145,7 @@
     {{ ok ? 'YES' : 'NO' }}
     {{ Array.from(words).reverse().join('') }}
     <div :id="'list-' + id"/>
+    <div :id="`list-${id}`"/>
 
     <!--
     是语句，不是表达式
@@ -106,7 +159,9 @@
     -->
     ```
     </details>
-2. 只能访问部分全局变量（[白名单](https://github.com/vuejs/vue/blob/v2.7.15/src/core/instance/proxy.ts#L9-L14)）；不允许访问自定义的全局变量（引入的其他库变量仅在JS代码中使用）。
+
+    - 双大括号~~不能在HTML attributes中使用~~。想要响应式地绑定一个attribute，应该使用`v-bind`。
+2. 只能访问部分全局变量（Vue 2：[白名单](https://github.com/vuejs/vue/blob/v2.7.16/src/core/instance/proxy.ts#L10-L13)；Vue 3：[白名单](https://github.com/vuejs/core/blob/main/packages/shared/src/globalsAllowList.ts#L3-L6) 以及 `app.config.globalProperties`注册能够被应用内所有组件实例访问到的全局属性的对象）；不允许访问自定义的全局变量（引入的其他库变量仅在JS代码中使用）。
 3. 作用域在所属Vue实例范围内。
 
     >在模板中使用Vue实例的属性/方法时，省去 ~~`this`~~。
@@ -133,7 +188,7 @@
 
     - `某指令:[表达式]`动态指令参数
 
-        由表达式计算的结果为最终`:`后跟的值。注意在.html的DOM上书写模板时，对表达式的约束（空格、引号、大写字母）。
+        由表达式计算的结果为最终`:`后跟的值。表达式计算的结果应当是 字符串 或 `null`（意为显式移除该绑定）。注意在.html的DOM上书写模板时，对表达式的约束（应避免使用：**空格、引号、大写字母**）。
 
         >e.g. `v-bind:[表达式]='xx'`（`:[表达式]='xx'`）、`v-on:[表达式]='xx'`（`@[表达式]='xx'`）、`v-slot:[表达式]`（`#[表达式]`）
 2. `v-if`、`v-else`、`v-else-if`
@@ -191,7 +246,7 @@
 
 4. `v-bind`（`v-bind:xx`缩写：`:xx`）绑定DOM属性与JS表达式的结果
 
-    >此DOM属性随表达式最终值改变而改变，直接修改此DOM属性值不改变表达式的值。
+    >此DOM属性随表达式最终值改变而改变，直接修改此DOM属性值不改变表达式的值。若绑定的值是`null`或`undefined`，则该`attribute`将会从渲染的元素上移除。绑定的attribute也作为普通的 HTML attribute 设置在HTML标签上（e.g. `<p :a="'aa'" b="bb"/>` -> `<p a="aa" b="bb">`）。
 
     1. 绑定修饰符：
 
@@ -246,8 +301,9 @@
             - 多重值：渲染数组中最后一个被浏览器支持的值
 
                 e.g. `:style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"`
+        3. 对于[布尔型的attribute](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Attributes#布尔属性)，若绑定的值是 `真值 或 空字符串`，则这个属性存在，否则 绑定的值是其他假值时 这个属性被忽略。
 
-        当在一个自定义组件上使用`class`或`style`时，这些值将被添加到该组件的根元素上面（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签），不受`inheritAttrs`影响，`class`或`style`属性会合并（而不是覆盖）。
+        当在一个自定义组件上使用`class`或`style`时，这些值将被添加到该组件的**根元素**上面（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签），不受`inheritAttrs`影响，`class`或`style`属性会合并（而不是覆盖）。
     3. 传递给子组件DOM属性的值类型
 
         <details>
@@ -264,7 +320,7 @@
         <my-component :some-prop="a">传递表达式：a（变量是什么类型就是什么类型）</my-component>
         ```
         </details>
-    4. 若不带参数的`v-bind="表达式"`，则绑定表达式的所有属性到DOM。
+    4. 若不带参数的`v-bind="表达式"`（不能用缩写 ~~`:表达式`~~），则绑定表达式的所有属性到DOM。
 
         <details>
         <summary>e.g.</summary>
@@ -300,7 +356,7 @@
             - 特殊：
 
                 `.stop/prevent`：不带方法名的修饰符也有效果。`@click.stop`所有该节点的点击事件阻止冒泡，`@click.prevent`所有该节点的点击事件阻止默认行为。
-        2. `.enter`、`.tab`、`.delete`、`.esc`、`.space`、`.up`、`.down`、`.left`、`.right`、`.数字键值`、[KeyboardEvent.key的短横线形式](https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/key/Key_Values)、`Vue.config.keyCodes`自定义的键位别名
+        2. `.enter`、`.tab`、`.delete`、`.esc`、`.space`、`.up`、`.down`、`.left`、`.right`、`.数字键值`、[KeyboardEvent.key的短横线形式](https://developer.mozilla.org/zh-CN/docs/Web/API/UI_Events/Keyboard_event_key_values)、`Vue.config.keyCodes`自定义的键位别名
 
             键盘。
         3. `.left`、`.right`、`.middle`
@@ -332,7 +388,7 @@
         >    <div @click.self.prevent="doThat">...</div>
         >    ```
         >    </details>
-    2. `$event`原生DOM事件的变量，仅能由HTML内联传入
+    2. `$event`原生DOM事件的变量，仅能由HTML内联传入 或 不调用的方法名默认传入
 
         <details>
         <summary>e.g.</summary>
@@ -341,6 +397,7 @@
         <div id="test">
           <a href="#" @click="a($event)">click（第一个）</a>
           <a href="#" @click="a(1, $event)">click（第二个）</a>
+          <a href="#" @click="a">click（默认传入第一个参数）</a>
         </div>
 
         <script>
@@ -554,6 +611,14 @@
 
         `.lazy`（`change`而不是~~input~~事件触发）、`.number`（输入值转为`Number`类型）、`.trim`（过滤首尾空格）
     2. 仅针对部分元素：`<input>`、`<textarea>`、`<select>`、组件
+
+        1. 文本类型的`<input>`、`<textarea>`会绑定`value`并侦听`input`事件
+        2. `<input type="checkbox">`（①值为`true/false`或②值为`:true-value="表达式"`、`:false-value="表达式"`或③若绑定数组则值为其`value`）、`<input type="radio">`（值为其`value`）会绑定`checked`并侦听`change`事件
+        3. `<select>`会绑定`value`并侦听`change`事件
+        4. 组件、DOM的`value`属性的值；
+
+    >不能和表达式一起使用，仅能绑定属性名：错误：~~`v-model="属性名 + '!'"`~~。
+
     3. <details>
 
         <summary>仅为语法糖</summary>
@@ -563,11 +628,15 @@
             `<input v-model="bar">`
 
             等价于：`<input :value="bar" @input="bar = $event.target.value">`
+
+            >`<input v-model.trim="bar">`等价于：[`<input :value="bar" @input="bar = $event.target.value.trim()">`](https://github.com/vuejs/vue/blob/main/src/platforms/web/compiler/directives/model.ts#L164-L166)
         2. 组件
 
             `<my-input v-model="bar"/>`
 
             等价于（默认：属性绑定为`value`、事件绑定为`input`。可由组件属性`model`修改）：`<my-input :value="bar" @input="bar = arguments[0]"/>`
+
+            >若`<my-input v-model.trim="bar"/>`达不到期望效果，则可以尝试`<my-input v-model="bar" @blur或@change="bar = bar.trim()"/>`
 
             - 若要达到效果（双向数据绑定），还需要在组件中添加：
 
@@ -583,15 +652,7 @@
                 })
                 ```
         </details>
-    4. 绑定的Vue实例的值：
-
-        1. DOM的`value`属性的值；
-        2. 若是`type="checkbox"`，则为`true/false`；
-        3. 若要获得Vue实例的动态属性值，则：
-
-            1. 用`:value="表达式"`；
-            2. 若`type="checkbox"`，则用`:true-value="表达式" :false-value="表达式"`。
-    >不能和表达式一起使用，仅能绑定属性名：错误：~~`v-model="属性名 + '!'"`~~。
+    4. 对于需要使用[IME](https://zh.wikipedia.org/wiki/输入法)的语言（如：中文、日文、韩文等），`v-model`不会在IME输入还在拼字阶段时触发更新。若需要拼字阶段也触发更新，则使用`input`事件监听器和`value`绑定而不要使用 ~~`v-model`~~。
 8. `v-once`只渲染元素和组件一次
 
     随后的重新渲染，元素/组件及其所有的子节点将被视为静态内容并跳过。这可以用于优化更新性能。
@@ -630,6 +691,8 @@
     >
     >    >`innerText`与`textContent`的区别：[MDN：textContent](https://developer.mozilla.org/zh-CN/docs/Web/API/Node/textContent#与innerText的区别)。
     ></details>
+
+    - 不能使用`v-html`来拼接组合模板，因为Vue不是一个基于字符串的模板引擎。在使用Vue时，应当使用组件作为UI重用和组合的基本单元。
 11. `v-pre`不编译
 
     >e.g. `<p v-pre>{{ 不编译 }}</p>`
@@ -897,6 +960,8 @@
                 4. `validator`：验证方法（对子组件的任何修改包括`v-show`修改以及自身`default`，都会触发所有prop的验证方法）
 
                 >props会在一个组件实例创建之前进行验证，所以实例的属性（如：`data`、`computed`、`methods`等）在`default`或`validator`函数中不可用。
+
+            - 任何类型都可以设置默认值为`undefined`
     >- 子级修改props：
     >
     >    1. 修改props的值，不会影响父级，因此若父级再次修改props传入或父级重新渲染子级，则子级修改的内容会被覆盖（以父级传入props为准）
@@ -954,6 +1019,17 @@
 
     若`return`的内容不涉及Vue实例的响应式内容（非Vue实例的属性、或已经被`Object.freeze`处理而非响应式的Vue实例的属性），则`computed`的内容就不是响应式的（不进行Vue的响应式绑定处理）。
 
+    ><details>
+    ><summary>最佳实践​</summary>
+    >
+    >1. Getter 不应有副作用​
+    >
+    >    计算属性的 getter 应只做计算而没有任何其他的副作用，这一点非常重要，请务必牢记。举例来说，不要改变其他状态、在 getter 中做异步请求或者更改 DOM！一个计算属性的声明中描述的是如何根据其他值派生一个值。因此 getter 的职责应该仅为计算和返回该值。
+    >2. 避免直接修改计算属性值​
+    >
+    >    从计算属性返回的值是派生状态。可以把它看作是一个“临时快照”，每当源状态发生变化时，就会创建一个新的快照。更改快照是没有意义的，因此计算属性的返回值应该被视为只读的，并且永远不应该被更改——应该更新它所依赖的源状态以触发新的计算。
+    ></details>
+
 >在（`props`、）`data`、`computed`先定义再使用，而不要对未使用过的变量进行`this.新变量名 = 值`（不先定义就直接使用无法绑定到响应式系统，无法触发视图更新渲染）。
 
 5. `watch`（对象`{键: methods方法名/方法/对象/数组}`）：被watch的值改变而执行函数（观察的值必须是`props`或`data`或`computed`的属性）
@@ -1004,7 +1080,22 @@
 
     - jsx
 
-        1. 注意有些是jsx或其他模板的语法，不是vue的template逻辑。如：`<组件 {...{props: 值, on: 值 }}>`是jsx语法，不是vue的template语法。
+        1. 注意有些是jsx或其他模板的语法，不是vue的template逻辑。如：[`<组件 {...{props: 对象值, on: 对象值, attrs: 对象值 }}>`](https://v2.cn.vuejs.org/v2/guide/render-function.html#深入数据对象)是jsx语法，不是vue的template语法。
+
+            ><details>
+            ><summary>无论顺序如何，都是<code>{...{}}</code>覆盖同名的属性</summary>
+            >
+            >```jsx
+            ><组件名
+            >  value1={1}
+            >  {...{
+            >    props: {value1: 2, value2: 2}
+            >  }}
+            >  value2={1}
+            >/>
+            >// 传入props：value1:2,value2:2
+            >```
+            ></details>
         2. 渲染非字符或非数字类型：
 
             1. vue的template语法渲染
@@ -1064,7 +1155,7 @@
 
     mixin数组每一项中的属性，都会合并到组件本身的选项（如：mixin的`methods`合并到组件的`methods`、mixin的`data`合并到组件的`data`）。
 
-    1. 钩子函数都会调用：混入对象的钩子优先调用，组件自身的钩子之后调用。
+    1. 钩子函数都会调用：混入对象的钩子优先调用，组件自身的钩子之后调用（同名的多个生命周期钩子**不**会等待Promise完成）。
     2. 非钩子函数属性，若有同名内容，则合并之后，组件自身内容覆盖mixin：
 
         `methods`、`components`、`directives`等，合并为同一个对象；对象内部键名冲突时（如：`methods`都有某同名方法），使用组件对象的内容、丢弃mixin的内容。
@@ -1128,7 +1219,7 @@
 
 17. 生命周期钩子
 
-    >`async-await`**不**会阻止继续向下执行生命周期。e.g. `beforeCreate(); created(); ...`
+    >`async-await`**不**会阻止继续向下执行生命周期，也**不**会阻止mixins的多个相同生命周期执行。e.g. `beforeCreate(); mixins的created(); created()...`
 
     1. `beforeCreate`
 
@@ -1166,7 +1257,7 @@
     <details>
     <summary>生命周期图示</summary>
 
-    ![vue生命周期图](./images/vue-lifecycle-1.png)
+    ![vue2生命周期图](./images/vue-lifecycle-1.png)
     </details>
 18. `parent`（Vue实例）：指定父组件
 19. `name`（字符串）
@@ -1188,7 +1279,7 @@
     默认：组件上的`v-model`会把`value`用作prop、把`input`用作event。
 23. `inheritAttrs`（`boolean`，默认：`true`）
 
-    默认情况下父作用域的不被认作 props 的 attribute 绑定将会“回退”且作为普通的 HTML attribute 应用在子组件的根元素上。当撰写包裹一个目标元素或另一个组件的组件时，这可能不会总是符合预期行为。通过设置 inheritAttrs 到 false，这些默认行为将会被去掉。而通过 $attrs 可以让这些 attribute 生效，且可以通过 v-bind 显性的绑定到非根元素上。
+    默认情况下父作用域的不被认作 props 的 attribute 绑定将会“回退”且作为普通的 HTML attribute 应用在子组件的**根元素**上。当撰写包裹一个目标元素或另一个组件的组件时，这可能不会总是符合预期行为。通过设置 inheritAttrs 到 false，这些默认行为将会被去掉。而通过 $attrs 可以让这些 attribute 生效，且可以通过 v-bind 显性的绑定到非根元素上。
 
     >inheritAttrs不会影响 class 和 style 绑定逻辑。
 24. `comments`（`boolean`，默认：`false`）
@@ -1353,7 +1444,7 @@
 
     >组件（Vue实例）有自己独立的作用域，虽然可以访问到互相依赖关系（`vm.$parent`、`vm.$children`、`vm.$refs`），但是不推荐（不允许）通过依赖获取、修改数据。
 
-    1. 父子组件间的通信
+    1. 父子组件间通信
 
         1. 父（`props`） -> 子：传入属性值；子（`vm.$emit`） -> 父：触发外部环境事件，外部事件再改变传进组件的`props`值。
 
@@ -1455,6 +1546,18 @@
 
                     >若`自定义事件1`是原生事件，可以添加`.native`修饰符，监听组件根元素的原生事件（不再接收子组件的 ~~`vm.$emit`~~）。
                 2. 在子组件方法体内添加`vm.$emit('自定义事件1', 参数)`向上传递。
+
+                ><details>
+                ><summary><code>this.$emit('事件名', e)</code>和<code>this.$listeners['事件名']?.(e)</code>虽然都能触发父组件的事件，但它们的机制和适用场景有本质区别</summary>
+                >
+                >| ​对比项​ | `this.$emit('事件名', e)` | `this.$listeners['事件名']?.(e)` |
+                >|------------|-------------|--------------|
+                >| ​通信方向​ | 子组件主动通知父组件（向上通信） | 子组件直接调用父组件方法（类似反向调用） |
+                >| ​事件监听​ | 父组件需通过`@事件名`监听 | 父组件方法需通过`$listeners`透传到子组件 |
+                >| ​调试可见性​ | Vue DevTools可追踪事件流 | Vue DevTools无法追踪直接方法调用 |
+                >| ​返回值处理​ | 无法直接获取父组件处理结果 | 可直接获取父组件方法的返回值 |
+                >| ​适用场景​ | 标准父子组件间通信（推荐标准做法） | 高阶组件封装、跨层级事件透传（特殊场景） |
+                ></details>
 
         >（不推荐）可以传递组件的Vue实例，提供给父级或子级调用。
 
@@ -2106,7 +2209,7 @@ MyPlugin.install = function (Vue, options) { // 第一个参数是Vue构造器�
 // 安装插件处使用
 Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
-// ①Vue.use会自动阻止多次注册相同插件，届时只会注册一次该插件
+// ①Vue.use会自动阻止多次注册相同插件，届时只会注册一次该插件（其他的注册方式 Vue.directive、Vue.filter、Vue.component 对同名多次注册后，之后注册的会覆盖之前注册的）
 // ②必须在`new Vue()`之前调用`Vue.use()`才有效（其他全局设置，在任意时刻设置都有效）
 ```
 
@@ -2221,6 +2324,31 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 14. `Vue.config`
 
     一个对象，包含 Vue 的全局配置。可以在启动应用（`new Vue()`）之前修改配置（启动之后设置无效）。
+
+    包含配置：`silent`、`optionMergeStrategies`、`devtools`、`errorHandler`、`warnHandler`、`ignoredElements`、`keyCodes`、`performance`、`productionTip`。
+
+### Vue实例属性
+1. 实例property
+
+    `$data`、`$props`、`$el`、`$options`、`$root`、`$children`、`$slots`、`$scopedSlots`、`$refs`、`$isServer`、`$attrs`、`$listeners`
+
+    >若子组件是通过`<slot>`或动态组件（`<component :is="...">`）渲染，则此组件的`$parent`可能指向的是中间层级的容器组件，而非预期的逻辑父级（可能需要`this.$parent.$parent`才是预期的父级）。
+    >
+    >```vue
+    ><template>
+    >  <div>
+    >    <组件1> <!-- 以slot形式传递 -->
+    >      <组件2> <!-- 组件2 内vm.$parent可能仅仅指向 组件1，若要指向当前整个父级组件，需要vm.$parent.$parent -->
+    >```
+2. 实例方法/数据
+
+    `$watch`、`$set`、`$delete`
+3. 实例方法/事件
+
+    `$on`、`$once`、`$off`、`$emit`
+4. 实例方法/生命周期
+
+    `$mount`、`$forceUpdate`、`$nextTick`、`$destroy`
 
 ### 特性
 1. Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性），在内部`vm.名字`访问，可以直接使用，**所有属性名字都不能重复**（filters不属于同一类）；也有以`$`开头的Vue实例属性（如：`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
@@ -4455,6 +4583,46 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     },
     ```
     </details>
+7. <details>
+
+    <summary><code>&lt;el-form></code>或<code>&lt;el-form-item></code>的<code>rules</code>属性，对应的是<code>&lt;el-form-item></code>的<code>prop</code>属性，对应表单校验方法指向的prop（validate、validateField、resetFields、clearValidate）</summary>
+
+    ```vue
+    <!-- rules在form -->
+    <el-form :model="formData" :rules="{ value1: [{具体规则}], 属性2: [{具体规则}] }">
+      <el-form-item prop="value1">
+        <el-input v-model="formData.value1"/>
+    ```
+
+    ```vue
+    <!-- rules在form-item -->
+    <el-form :model="formData">
+      <el-form-item prop="value1" :rules="[{具体规则}]">
+        <el-input v-model="formData.value1"/>
+    ```
+
+    ```vue
+    <!-- 动态匹配prop -->
+    <el-form :model="formData">
+      <el-form-item
+        v-for="(item, index) in formData.arr"
+        :key="item.key"
+        :prop="'arr.' + index + '.value1'"
+        :rules="{具体规则}"
+      >
+        <el-input v-model="item.value1"/>
+    ```
+
+    ```vue
+    <!-- 在table内动态匹配prop -->
+    <el-form :model="formData">
+      <el-table :data="formData.tableData">
+        <el-table-column>
+          <template #default="{ $index }">
+            <el-form-item :prop="'tableData.' + $index + '.value1'" :rules="[{具体规则}]">
+              <el-input v-model="formData.tableData[$index].value1"/>
+    ```
+    </details>
 
 - 避免问题
 
@@ -4465,6 +4633,9 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     3. `<el-input-number>`设置`max`、`min`、`precision`会直接“纠正”`value/v-model`绑定值，无论是不是`disabled`。
 
         >[CodePen demo](https://codepen.io/realgeoffrey/pen/VYZmYrB)
+    4. [element-ui的日期格式](https://element.eleme.cn/#/zh-CN/component/date-picker#ri-qi-ge-shi)与[moment的格式](https://momentjs.cn/docs/#/displaying/format/)是不同的，要注意
+
+        e.g. element-ui不支持 ~~`YYYY`、`DDDD`、等~~
 
 ### jQuery与Vue.js对比
 1. 做的事情

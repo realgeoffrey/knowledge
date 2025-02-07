@@ -333,7 +333,7 @@ npm（Node Package Manager）。
            ```
    5. 对比
 
-        [`npm diff --diff=「<pkg>@<version>或本地路径」 --diff=「<pkg>@<version>或本地路径」 [多个文件或文件夹]`](https://docs.npmjs.com/cli/commands/npm-diff)
+        [`npm diff --diff=「<pkg>@<version>或本地路径」 --diff=「<pkg>@<version>或本地路径」 [多个文件或文件夹]`](https://docs.npmjs.com/cli/commands/npm-diff)：前者为参考系，后者为改动结果。
 2. [`package.json`](https://docs.npmjs.com/cli/v9/configuring-npm/package-json)字段
 
     包描述、说明文件。
@@ -674,7 +674,8 @@ npm（Node Package Manager）。
 
         全局store目录里存储依赖的hard links，所有项目都可以从全局store寻找到同一个依赖。不需要重复下载同一个包，只需要硬链接关联；一个包的不同版本也会用增量更新的方式维护多版本包。
 
-        >hard links指通过索引节点来进行连接。在 Linux 的文件系统中，保存在磁盘分区中的文件不管是什么类型都给它分配一个编号，称为索引节点号(Inode Index)。在 Linux 中，多个文件名指向同一索引节点是存在的。比如：A 是 B 的硬链接（A 和 B 都是文件名`ln A B`），则 A 的目录项中的 inode 节点号与 B 的目录项中的 inode 节点号相同，即一个 inode 节点对应两个不同的文件名，两个文件名指向同一个文件，A 和 B 对文件系统来说是完全平等的。删除其中任何一个都不会影响另外一个的访问。
+        >1. hard links指通过索引节点来进行连接。在 Linux 的文件系统中，保存在磁盘分区中的文件不管是什么类型都给它分配一个编号，称为索引节点号(Inode Index)。在 Linux 中，多个文件名指向同一索引节点是存在的。比如：A 是 B 的硬链接（A 和 B 都是文件名`ln A B`），则 A 的目录项中的 inode 节点号与 B 的目录项中的 inode 节点号相同，即一个 inode 节点对应两个不同的文件名，两个文件名指向同一个文件，A 和 B 对文件系统来说是完全平等的。删除其中任何一个都不会影响另外一个的访问。
+        >2. inode通过唯一的编号（inode number）标识文件，系统通过此编号而非文件名操作文件。inode是文件系统的基石，通过分离文件名与元数据实现了高效的文件管理。
     2. symbolic link（软链接）
 
         >`ln -s A B`

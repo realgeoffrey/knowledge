@@ -2460,6 +2460,34 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         - `try-catch`能捕获其中所有同步代码，同步调用外部的方法也包含。
 
         >`try { setTimeout(() => { 错误 }, 0) } catch (e) {}`不会捕获异步操作中的错误（同理，在`Promise`或`async-await`等语法中的异步错误也无法被捕获，但可以捕获`await`的`reject`）。可以在异步回调内部再包一层`try-catch`、或用`window`的`error`事件捕获。
+
+        ><details>
+        >
+        ><summary>注意：<code>finally</code>块总是在控制流退出<code>try-catch-finally</code>结构之前执行。它总是执行，无论是否抛出或捕获异常。</summary>
+        >
+        >1. 在`try`块正常执行完成后立即执行`finally`；
+        >2. 在`catch`块正常执行完成后立即执行`finally`；
+        >3. 在`try`块（无`catch`时）或`catch`块中将要执行控制流语句（`return`、`throw`、`break`、`continue`）退出块之前立即执行`finally`。
+        >
+        >    1. 如果`try`块中抛出异常，即使没有`catch`块来处理异常，`finally`块仍然执行，在这种情况下，异常仍然会在`finally`块正常执行完成后立即抛出。
+        >    2. 在`finally`块中的控制流语句（`return`、`throw`、`break`、`continue`）将“覆盖”`try`块或`catch`块的控制流语句（`return`、`throw`、`break`、`continue`）。
+        >
+        >        ```js
+        >        try {
+        >          throw new Error("哦豁");
+        >        } catch (ex) {
+        >          console.error("内层", ex.message);
+        >          // 退出之前先去执行finally，但是finally又使用控制流，因此“覆盖”下一行控制流不会执行
+        >          throw ex; // 或 return 等
+        >        } finally {
+        >          console.log("最终");
+        >          return;   // 或 throw 等
+        >        }
+        >
+        >        // => 内层, 哦豁, 最终 （不会抛出错误）
+        >        ```
+        ></details>
+
     2. `window`的`error`事件
 
         1. 没有经过`try-catch`处理的错误都会触发`window`的`error`事件。
@@ -4187,7 +4215,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     2. `dom或window.scroll/scrollTo(横轴坐标, 纵轴坐标)` 或 `dom或window.scroll/scrollTo({ left: 横轴坐标, top: 纵轴坐标, behavior: 'smooth'或'auto' })`
 
         >`dom或window.scrollBy(相对横轴坐标, 相对纵轴坐标)` 或 `dom或window.scrollBy({ left: 相对横轴坐标, top: 相对纵轴坐标, behavior: 'smooth'或'auto' })`
-2. 不支持过渡效果、瞬间定位：
+2. 不支持过渡效果、会瞬间定位：
 
     1. `window.location.href = #锚点`
     2. `dom.scrollTop = 纵轴坐标`
