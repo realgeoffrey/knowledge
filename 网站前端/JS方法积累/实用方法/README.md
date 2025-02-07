@@ -2485,6 +2485,7 @@ loadingFetch(() => { console.log('同步方法') })
 >2. 支持多种文件类型。
 >3. ~~兼容性不佳。~~
 >4. 若download未指定值或未指定文件后缀，则从多种方式中设置`文件名.文件类型`：响应头的`Content-Disposition`、`Content-Type`，URL的最后一段，Data URL的开头，Blob的`type`。
+>5. 响应头`Content-Disposition: inline`（默认）是预览，`Content-Disposition: attachment`是下载；可以通过先下载资源（blob格式），再设置a标签的`download`进行下载或预览。
 
 以下方法均依赖`<a>`的`download`属性（JS的Blob或Data URL，都需要先[CORS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#corscross-origin-resource-sharing跨域资源共享)下载文件资源地址成功后再进行操作）：
 
@@ -2502,7 +2503,7 @@ loadingFetch(() => { console.log('同步方法') })
           if (xhr.status >= 200 && xhr.status < 300) {  // 只有部分2xx支持传递数据（建议只处理200的响应）；304不返回数据
             const link = document.createElement('a');
             link.href = URL.createObjectURL(xhr.response); // Blob URL。也可以用Data URL（base64）
-            link.download = filename ?? '';
+            link.download = filename ?? ''; // 若没有加download，则就是直接打开链接的逻辑（预览），a的href类似于window.open等
 
             link.style.display = 'none';
             document.body.appendChild(link);
@@ -2533,7 +2534,7 @@ loadingFetch(() => { console.log('同步方法') })
     >  reader.addEventListener('loadend', (e) => {
     >    const link = document.createElement('a');
     >    link.href = e.target.result;
-    >    link.download = filename ?? '';
+    >    link.download = filename ?? ''; // 若没有加download，则就是直接打开链接的逻辑（预览），a的href类似于window.open等。但base64大概率会超过浏览器导航栏输入长度
     >    link.style.display = 'none';
     >    document.body.appendChild(link);
     >    link.click();

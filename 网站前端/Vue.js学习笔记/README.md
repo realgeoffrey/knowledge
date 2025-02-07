@@ -40,9 +40,20 @@
 1. API风格
 
     1. 选项式API（Options API）
+
+        >Vue 2、Vue 3支持。
+
+        使用选项式API，我们可以用包含多个选项的对象来描述组件的逻辑，如：data、methods、mounted、等。选项所定义的属性都会暴露在函数内部的`this`上，它会指向当前的组件实例。
+
+    >选项式API 是在 组合式API 的基础上实现的。
+
     2. 组合式API（Composition API）
 
-        [优势](https://cn.vuejs.org/guide/extras/composition-api-faq.html)
+        >Vue 2.7、Vue 3的内置功能。对于更老的Vue 2版本，安装[composition-api](https://github.com/vuejs/composition-api)后支持。
+
+        通过组合式API，我们可以使用导入的API函数来描述组件逻辑。
+
+        >[优势](https://cn.vuejs.org/guide/extras/composition-api-faq.html)
 
 ---
 
