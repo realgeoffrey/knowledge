@@ -12,7 +12,7 @@
 1. [.gitkeep文件](#gitkeep文件)
 1. [GitLab CI](#gitlab-ci)
 1. [减少Git项目下载大小](#减少git项目下载大小)
-1. [`husky`+`lint-staged`](#huskylint-staged)
+1. [`husky`+`lint-staged`+`commitlint`+`commitizen`](#huskylint-stagedcommitlintcommitizen)
 
 ---
 ### Git的文件状态
@@ -918,14 +918,30 @@ feat(details): 添加了分享功能
 
     `git clone 「仓库地址」 --depth 「数字」`
 
-### `husky`+`lint-staged`
+### `husky`+`lint-staged`+`commitlint`+`commitizen`
 1. 使用[husky](https://github.com/typicode/husky)设置：方便的[git hooks](https://git-scm.com/book/zh/v2/自定义-Git-Git-钩子)。
 
     >或[simple-git-hooks](https://github.com/toplenboren/simple-git-hooks)代替。
+
+    支持钩子`pre-commit`（如：执行`lint-staged`）、`commit-msg`（如：执行`commitlint`）等。
 2. 使用[lint-staged](https://github.com/okonet/lint-staged)设置：针对git的staged文件进行lints操作（如：eslint、prettier、等）。
 
     若多个任务中任一个任务失败（FAILED），则导致其他任务终止（KILLED），仅打印失败任务错误信息。
+3. `commitlint`（校验提交信息）与`commitizen`（辅助填写提交信息）共用同一份规则配置：
 
-配合效果：针对git的staged文件，在git hooks时期，进行lints操作（如：eslint、prettier、等）。
+    ```shell
+    # 安装配置commitlint
+    npm i -g @commitlint/cli @commitlint/config-conventional
+
+    echo "module.exports = {extends: ['@commitlint/config-conventional']};" > ~/.commitlintrc.js
+
+
+    # 安装配置commitizen
+    npm i -g commitizen @commitlint/cz-commitlint
+
+    echo '{ "path": "@commitlint/cz-commitlint" }' > ~/.czrc
+    ```
+
+配合效果：针对git的staged文件，在git hooks时期，进行lints操作（如：eslint、prettier、等），并对git commit进行校验和支持命令生成。
 
 >跳过git hooks：在大部分相关git命令后面加上`--no-verify`。
