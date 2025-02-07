@@ -35,7 +35,8 @@
 
         1. [Node.js学习笔记](./网站前端/Node.js学习笔记/README.md)
         2. [服务端相关](./网站前端/服务端相关/README.md)
-    4. [Rust学习笔记](./网站前端/Rust学习笔记/README.md)
+    4. [Python学习笔记](./网站前端/Python学习笔记/README.md)
+    5. [Rust学习笔记](./网站前端/Rust学习笔记/README.md)
 8. <details>
 
     <summary>前端构建工具</summary>
