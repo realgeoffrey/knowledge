@@ -187,7 +187,7 @@
 2. 在A时区存储时间，在A或其他时区展示，期望展示同一个时间刻度：
 
     1. 方案一：不包含时区的时间字符串（不能也不需要进行偏移，表示某个固定时区（如：UTC+0或服务端时区）的时间刻度）
-    2. 方案二：客户端存时间戳要偏移时区到某个固定时区（如：UTC+0或服务端时区）、取出的时间戳也要逆向偏移（*有漏洞：请求参数可以修改，js代码可以修改，时间戳由客户端处理和决定 有风险。但没有其他更好方案*）
+    2. 方案二：客户端存时间戳要偏移时区到某个固定时区（如：UTC+0或服务端时区）、取出的时间戳也要逆向偏移（~~有漏洞：请求参数可以修改，js代码可以修改，时间戳由客户端处理和决定 有风险。但没有其他更好方案~~）
 
         e.g. 假设客户端是UTC+8，获取`2024-05-28 0:0:0 UTC+8`是时间戳`x`，若要偏移成UTC+0时间刻度一致的`2024-05-28 0:0:0 UTC+0`则要存时间戳`x + 8*1000*60*60`；服务端取回的`y`表示UTC+0的`2024-05-28 0:0:0 UTC+0`，若直接在UTC+8的客户端`new Date(y)`则会展示`2024-05-28 8:0:0 UTC+8`，因此若要展示0点时间刻度，则要逆向偏移`new Date(y - 8*1000*60*60)`再去修改时间字符串后面的UTC字段。
 
@@ -322,6 +322,7 @@
     >          .el-month-table td.today.end-date .cell, .el-month-table td.today.start-date .cell {color: inherit}
     >          .el-year-table td.today .cell {color: inherit;font-weight: inherit}
     >
+    >          .el-date-table td.current:not(.disabled) span {color: #fff;}
     >          .el-year-table td.current:not(.disabled) .cell, .el-month-table td.current:not(.disabled) .cell {color: #409EFF;}
     >          .el-year-table td.disabled .cell, .el-month-table td.disabled .cell {color: #c0c4cc;}
     >        }
@@ -353,3 +354,9 @@
     >    };
     >    ```
     ></details>
+
+    - 注意：实行 夏令时（Daylight Saving Time，DST，夏时制） 制度的地区，会随着日期变化 而返回不同时区，每年有前后各1小时无法选中的时间。
+
+        >因此偏移量每次都要计算，而不能缓存着偏移量。
+
+        ![夏令时](./images/DST.png)
