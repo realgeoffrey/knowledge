@@ -306,7 +306,7 @@
         ```shell
         路径/xunsearch/bin/xs-ctl.sh restart
         ```
-    9. 安装groovy语言` sudo apt-get install groovy`
+    9. 安装groovy语言`sudo apt-get install groovy`
     10. 设置vpn
 
         「系统设置」 -> 「网络」，添加一个接口为「VPN」、连接类型为「点到点隧道协议（PPTP）」的连接；VPN网关、用户名、密码设置正确后，高级设置里选开「使用点到点加密」、选开「发送PPP回响包」。保存之后会新增一个vpn连接，成功选择vpn连接成功后，会在连接图标上出现一把锁。
