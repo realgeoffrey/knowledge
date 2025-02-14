@@ -1,0 +1,30 @@
+{
+    "editor.fontSize": 13,
+    "editor.tabSize": 2,
+    "files.exclude": {
+        "**/.idea": true
+    },
+    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "workbench.iconTheme": "material-icon-theme",
+    "editor.guides.bracketPairs": "active",
+    "diffEditor.hideUnchangedRegions.enabled": true,
+    "explorer.copyRelativePathSeparator": "/",
+    "explorer.fileNesting.enabled": true,
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.cursorBlinking": "smooth",
+    "window.title": "${activeEditorMedium}${separator}${rootName}${separator}${profileName}",
+    "editor.stickyScroll.maxLineCount": 7,
+    "window.confirmBeforeClose": "keyboardOnly",
+    "window.zoomLevel": 0.5,
+    "editor.minimap.showSlider": "always",
+    "files.autoSave": "onWindowChange",
+    "editor.fontFamily": "Fira Code, Menlo, Monaco, 'Courier New', monospace",
+    "editor.scrollbar.vertical": "hidden",
+    "editor.scrollbar.verticalScrollbarSize": 0,
+    "editor.guides.indentation": false,
+    "search.exclude": {
+        "**/*.logs": true
+    }
+}

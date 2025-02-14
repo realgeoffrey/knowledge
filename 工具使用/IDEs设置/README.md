@@ -1,5 +1,9 @@
-### IDEs' Setting
+# IDEs' Setting
 
+### Visual Studio Code
+[./settings.json](./settings.json)
+
+### WebStorm
 1. 在线同步设备可以用：
 
     ><https://www.jetbrains.com/help/idea/sharing-your-ide-settings.html>。
