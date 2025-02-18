@@ -4,7 +4,7 @@
 1. [settings.json](./settings.json)
 2. [keybindings.json](./keybindings.json)
 
-  - ![文件: 比较活动文件与剪贴板](./images/compare.png)
+    - ![文件: 比较活动文件与剪贴板](./images/compare.png)
 
 ### WebStorm
 1. 在线同步设备可以用：
