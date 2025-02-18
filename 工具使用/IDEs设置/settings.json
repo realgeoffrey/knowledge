@@ -16,7 +16,6 @@
     "window.title": "${activeEditorMedium}${separator}${rootName}${separator}${profileName}",
     "editor.stickyScroll.maxLineCount": 7,
     "window.confirmBeforeClose": "keyboardOnly",
-    "window.zoomLevel": 0.2,
     "editor.minimap.showSlider": "always",
     "files.autoSave": "onWindowChange",
     "editor.fontFamily": "Fira Code, Menlo, Monaco, 'Courier New', monospace",
@@ -37,6 +36,7 @@
     "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
     "typescript.inlayHints.enumMemberValues.enabled": true,
     "js/ts.implicitProjectConfig.target": "ESNext",
+    "window.zoomLevel": 0.3,
     "eslint.codeActionsOnSave.mode": "problems",
     "editor.formatOnSaveMode": "modificationsIfAvailable",
     "[vue]": {
@@ -55,5 +55,7 @@
     "diffEditor.experimental.showMoves": true,
     "diffEditor.hideUnchangedRegions.enabled": true,
     "workbench.editor.tabActionCloseVisibility": false,
-    "workbench.view.alwaysShowHeaderActions": true
+    "workbench.view.alwaysShowHeaderActions": true,
+    "workbench.colorTheme": "Default Dark+",
+    "git.blame.editorDecoration.enabled": true
 }
