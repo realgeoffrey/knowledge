@@ -1,14 +1,12 @@
 {
-    "editor.fontSize": 13,
+    "editor.fontSize": 14,
     "editor.tabSize": 2,
     "files.exclude": {
         "**/.idea": true
     },
-    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
     "git.autofetch": true,
     "git.confirmSync": false,
     "workbench.iconTheme": "material-icon-theme",
-    "editor.guides.bracketPairs": "active",
     "explorer.copyRelativePathSeparator": "/",
     "explorer.fileNesting.enabled": true,
     "editor.cursorSmoothCaretAnimation": "on",
@@ -21,7 +19,6 @@
     "editor.fontFamily": "Fira Code, Menlo, Monaco, 'Courier New', monospace",
     "editor.scrollbar.vertical": "hidden",
     "editor.scrollbar.verticalScrollbarSize": 0,
-    "editor.guides.indentation": false,
     "search.exclude": {
         "**/*.logs": true
     },
@@ -73,5 +70,35 @@
     "search.showLineNumbers": true,
     "workbench.colorTheme": "Webstorm New Dark",
     "workbench.tree.stickyScrollMaxItemCount": 10,
-    "problems.visibility": false
+    "problems.visibility": false,
+    "interactiveWindow.executeWithShiftEnter": true,
+    "vue.format.template.initialIndent": false,
+    "partialDiff.commandsOnContextMenu": {
+        "togglePreComparisonTextNormalizationRules": false,
+        "diffVisibleEditors": false,
+        "markSection2AndTakeDiff": false,
+        "markSection1": false
+    },
+    "diffEditor.ignoreTrimWhitespace": true,
+    "workbench.list.smoothScrolling": true,
+    "workbench.list.scrollByPage": true,
+    "editor.smoothScrolling": true,
+    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+    "editor.codeActions.triggerOnFocusChange": true,
+    "editor.dragAndDrop": false,
+    "editor.experimentalEditContextEnabled": true,
+    "editor.experimentalGpuAcceleration": "on",
+    "editor.guides.bracketPairs": "active",
+    "editor.guides.highlightActiveBracketPair": false,
+    "editor.guides.indentation": false,
+    "editor.linkedEditing": true,
+    "editor.parameterHints.cycle": false,
+    "editor.renderFinalNewline": "dimmed",
+    "editor.renderLineHighlight": "all",
+    "editor.scrollbar.ignoreHorizontalScrollbarInContentHeight": true,
+    "editor.scrollbar.scrollByPage": true,
+    "[javascript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "git.suggestSmartCommit": false
 }
