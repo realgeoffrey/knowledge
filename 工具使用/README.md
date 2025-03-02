@@ -27,6 +27,7 @@
 7. [OpenTelemetry](./OpenTelemetry/README.md)
 8. [科学上网](./科学上网/README.md)
 9. [AI笔记](./AI笔记/README.md)
+10. [区块链笔记](./区块链笔记/README.md)
 
 - <details>
 
