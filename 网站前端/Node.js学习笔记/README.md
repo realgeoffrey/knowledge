@@ -333,7 +333,7 @@ npm（Node Package Manager）。
            ```
    5. 对比
 
-        [`npm diff --diff=「<pkg>@<version>或本地路径」 --diff=「<pkg>@<version>或本地路径」 [多个文件或文件夹]`](https://docs.npmjs.com/cli/commands/npm-diff)
+        [`npm diff --diff=「<pkg>@<version>或本地路径」 --diff=「<pkg>@<version>或本地路径」 [多个文件或文件夹]`](https://docs.npmjs.com/cli/commands/npm-diff)：前者为参考系，后者为改动结果。
 2. [`package.json`](https://docs.npmjs.com/cli/v9/configuring-npm/package-json)字段
 
     包描述、说明文件。
