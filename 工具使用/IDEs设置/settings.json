@@ -103,5 +103,11 @@
     "editor.minimap.size": "fill",
     "editor.lightbulb.enabled": "off",
     "editor.pasteAs.enabled": false,
-    "git.suggestSmartCommit": false
+    "git.suggestSmartCommit": false,
+    "editor.minimap.maxColumn": 50,
+    "terminal.integrated.copyOnSelection": true,
+    "terminal.integrated.enableVisualBell": true,
+    "terminal.integrated.allowChords": false,
+    "terminal.integrated.cursorBlinking": true,
+    "terminal.integrated.scrollback": 3000
 }

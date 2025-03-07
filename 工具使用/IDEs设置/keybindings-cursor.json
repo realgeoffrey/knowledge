@@ -458,6 +458,16 @@
     "command": "-extension.liveServer.goOffline",
     "when": "editorTextFocus"
   },
+  {
+    "key": "cmd+d",
+    "command": "-notebook.addFindMatchToSelection",
+    "when": "config.notebook.multiCursor.enabled && notebookCellEditorFocused && activeEditor == 'workbench.editor.notebook'"
+  },
+  {
+    "key": "cmd+d",
+    "command": "-editor.action.addSelectionToNextFindMatch",
+    "when": "editorFocus"
+  },
   // 以下cursor新增
   {
     "key": "cmd+i",
