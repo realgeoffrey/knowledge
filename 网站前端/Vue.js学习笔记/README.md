@@ -206,7 +206,7 @@
 
 4. `v-bind`（`v-bind:xx`缩写：`:xx`）绑定DOM属性与JS表达式的结果
 
-    >此DOM属性随表达式最终值改变而改变，直接修改此DOM属性值不改变表达式的值。若绑定的值是`null`或`undefined`，则该`attribute`将会从渲染的元素上移除。绑定的attribute不作为普通的 HTML attribute。
+    >此DOM属性随表达式最终值改变而改变，直接修改此DOM属性值不改变表达式的值。若绑定的值是`null`或`undefined`，则该`attribute`将会从渲染的元素上移除。绑定的attribute也作为普通的 HTML attribute 设置在HTML标签上（e.g. `<p :a="'aa'" b="bb"/>` -> `<p a="aa" b="bb">`）。
 
     1. 绑定修饰符：
 
@@ -262,7 +262,7 @@
 
                 e.g. `:style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"`
 
-        当在一个自定义组件上使用`class`或`style`时，这些值将被添加到该组件的根元素上面（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签），不受`inheritAttrs`影响，`class`或`style`属性会合并（而不是覆盖）。
+        当在一个自定义组件上使用`class`或`style`时，这些值将被添加到该组件的**根元素**上面（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签），不受`inheritAttrs`影响，`class`或`style`属性会合并（而不是覆盖）。
     3. 传递给子组件DOM属性的值类型
 
         <details>
@@ -1205,7 +1205,7 @@
     默认：组件上的`v-model`会把`value`用作prop、把`input`用作event。
 23. `inheritAttrs`（`boolean`，默认：`true`）
 
-    默认情况下父作用域的不被认作 props 的 attribute 绑定将会“回退”且作为普通的 HTML attribute 应用在子组件的根元素上。当撰写包裹一个目标元素或另一个组件的组件时，这可能不会总是符合预期行为。通过设置 inheritAttrs 到 false，这些默认行为将会被去掉。而通过 $attrs 可以让这些 attribute 生效，且可以通过 v-bind 显性的绑定到非根元素上。
+    默认情况下父作用域的不被认作 props 的 attribute 绑定将会“回退”且作为普通的 HTML attribute 应用在子组件的**根元素**上。当撰写包裹一个目标元素或另一个组件的组件时，这可能不会总是符合预期行为。通过设置 inheritAttrs 到 false，这些默认行为将会被去掉。而通过 $attrs 可以让这些 attribute 生效，且可以通过 v-bind 显性的绑定到非根元素上。
 
     >inheritAttrs不会影响 class 和 style 绑定逻辑。
 24. `comments`（`boolean`，默认：`false`）
