@@ -978,8 +978,8 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 
 1. IaaS（Infrastructure as a Service，基础设施即服务）
 2. PaaS（Platform as a Service，平台即服务）
-3. SaaS（Software as a Service，软件即服务）
-- BaaS（Backend as a Service，后端即服务）
+3. BaaS（Backend as a Service，后端即服务）
+4. SaaS（Software as a Service，软件即服务）
 
 ![*aaS图](./images/*aaS.webp)
 
@@ -987,11 +987,11 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 
     >[Serverless](https://woai3c.github.io/introduction-to-front-end-engineering/12.html)
 
-    Serverless是一种 ​无服务器架构理念，包含 FaaS 和 BaaS（Backend as a Service）两类服务。其核心是 ​开发者无需管理服务器资源，所有底层运维（如服务器配置、负载均衡）由云厂商负责。
+    Serverless 是一种 ​无服务器架构理念，包含 FaaS 和 BaaS 两类服务。其核心是：​开发者无需管理服务器资源，所有底层运维（如：服务器配置、负载均衡）由云厂商负责。
 
     - FaaS（Function as a Service，函数即服务）
 
-        FaaS是Serverless的核心技术形态，FaaS是一种将应用逻辑封装为 ​独立函数 的服务模型。开发者仅需编写函数代码，由云平台负责 ​事件触发、资源调度及自动扩缩容，函数执行结束后资源立即释放。函数仅在特定事件（如 API 调用、文件上传）触发时运行，无事件时资源零占用。例如，电商秒杀场景中，FaaS 函数可瞬时扩容处理突发流量，结束后自动释放资源。
+        FaaS是一种将应用逻辑封装为 ​独立函数 的服务模型。开发者仅需编写函数代码，由云平台负责 ​事件触发、资源调度及自动扩缩容，函数执行结束后资源立即释放。函数仅在特定事件（如：API调用、文件上传）触发时运行，无事件时资源零占用。例如：电商秒杀场景中，FaaS 函数可瞬时扩容处理突发流量，结束后自动释放资源。
 
 ### 胶水语言（glue languages）
 能够通过操作系统调用其他语言的程序、获取并处理其执行的结果和输入输出的语言，都可以被称作胶水语言（通常是脚本语言）。一个系统由多种语言编写，把不同的语言编写的模块打包起来，最外层使用胶水语言调用这些封装好的包。
