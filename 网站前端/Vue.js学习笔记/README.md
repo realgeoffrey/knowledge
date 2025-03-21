@@ -4491,15 +4491,29 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     e.g.
 
     ```vue
+    <!-- rules在form -->
     <el-form :model="formData" :rules="{ 属性1: [{具体规则}], 属性2: [{具体规则}] }">
       <el-form-item prop="属性1">
         <el-input v-model="formData.属性1"/>
     ```
 
     ```vue
+    <!-- rules在form-item -->
     <el-form :model="formData">
       <el-form-item prop="属性1" :rules="[{具体规则}]">
         <el-input v-model="formData.属性1"/>
+    ```
+
+    ```vue
+    <!-- 动态匹配prop -->
+    <el-form :model="formData">
+      <el-form-item
+        v-for="(domain, index) in formData.domains"
+        :key="domain.key"
+        :prop="'domains.' + index + '.value'"
+        :rules="{具体规则}"
+      >
+        <el-input v-model="domain.value"/>
     ```
 
 - 避免问题
