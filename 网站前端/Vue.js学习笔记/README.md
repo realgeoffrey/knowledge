@@ -4492,36 +4492,36 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     ```vue
     <!-- rules在form -->
-    <el-form :model="formData" :rules="{ 属性1: [{具体规则}], 属性2: [{具体规则}] }">
-      <el-form-item prop="属性1">
-        <el-input v-model="formData.属性1"/>
+    <el-form :model="formData" :rules="{ value1: [{具体规则}], 属性2: [{具体规则}] }">
+      <el-form-item prop="value1">
+        <el-input v-model="formData.value1"/>
     ```
 
     ```vue
     <!-- rules在form-item -->
     <el-form :model="formData">
-      <el-form-item prop="属性1" :rules="[{具体规则}]">
-        <el-input v-model="formData.属性1"/>
+      <el-form-item prop="value1" :rules="[{具体规则}]">
+        <el-input v-model="formData.value1"/>
     ```
 
     ```vue
     <!-- 动态匹配prop -->
     <el-form :model="formData">
       <el-form-item
-        v-for="(domain, index) in formData.domains"
-        :key="domain.key"
-        :prop="'domains.' + index + '.value'"
+        v-for="(item, index) in formData.arr"
+        :key="item.key"
+        :prop="'arr.' + index + '.value1'"
         :rules="{具体规则}"
       >
-        <el-input v-model="domain.value"/>
+        <el-input v-model="item.value1"/>
     ```
 
     ```vue
-    <!-- 在table内校验 -->
+    <!-- 在table内动态匹配prop -->
     <el-form :model="formData">
       <el-table :data="formData.tableData">
         <el-table-column>
-          <template #default="{ row, $index }">
+          <template #default="{ $index }">
             <el-form-item :prop="'tableData.' + $index + '.value1'" :rules="[{具体规则}]">
               <el-input v-model="formData.tableData[$index].value1"/>
     ```
