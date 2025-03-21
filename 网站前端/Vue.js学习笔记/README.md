@@ -4516,6 +4516,16 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         <el-input v-model="domain.value"/>
     ```
 
+    ```vue
+    <!-- 在table内校验 -->
+    <el-form :model="formData">
+      <el-table :data="formData.tableData">
+        <el-table-column>
+          <template #default="{ row, $index }">
+            <el-form-item :prop="'tableData.' + $index + '.value1'" :rules="[{具体规则}]">
+              <el-input v-model="formData.tableData[$index].value1"/>
+    ```
+
 - 避免问题
 
     1. `<el-option>`能够匹配 空字符串、`undefined`、`null`，并且多个相同的value值匹配后展示最后一个项的label值，注意传参为空时出现的问题。匹配是`===`，注意`<el-select>`的`v-model`值`6`不会匹配`<el-option>`的`value`值`'6'`。
