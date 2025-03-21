@@ -110,6 +110,7 @@
     "terminal.integrated.scrollback": 3000,
     "editor.formatOnPaste": true,
     "editor.formatOnType": true,
+    "extensions.ignoreRecommendations": true,
     // curosr默认
     "git.blame.statusBarItem.enabled": true,
     "window.commandCenter": true,

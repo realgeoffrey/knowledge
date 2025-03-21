@@ -109,5 +109,6 @@
     "terminal.integrated.cursorBlinking": true,
     "terminal.integrated.scrollback": 3000,
     "editor.formatOnPaste": true,
-    "editor.formatOnType": true
+    "editor.formatOnType": true,
+    "extensions.ignoreRecommendations": true
 }
