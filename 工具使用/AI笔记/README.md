@@ -20,3 +20,4 @@
 1. 预训练模型
 1. huggingface
 1. RAG（Retrieval-Augmented Generation，检索增强生成）
+1. 推理模型
