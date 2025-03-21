@@ -4488,7 +4488,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     </details>
 7. <details>
 
-    <summary>`<el-form>`或`<el-form-item>`的`rulse`属性，对应的是`<el-form-item>`的`prop`属性，对应表单校验方法指向的prop（validate、validateField、resetFields、clearValidate）</summary>
+    <summary><code><el-form></code>或<code><el-form-item></code>的<code>rulse</code>属性，对应的是<code><el-form-item></code>的<code>prop</code>属性，对应表单校验方法指向的prop（validate、validateField、resetFields、clearValidate）</summary>
 
     ```vue
     <!-- rules在form -->
