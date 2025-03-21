@@ -4486,6 +4486,21 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     },
     ```
     </details>
+7. `<el-form>`或`<el-form-item>`的`rulse`属性，对应的是`<el-form-item>`的`prop`属性，对应表单校验方法指向的prop（validate、validateField、resetFields、clearValidate）
+
+    e.g.
+
+    ```vue
+    <el-form :model="formData" :rules="{ 属性1: [{具体规则}], 属性2: [{具体规则}] }">
+      <el-form-item prop="属性1">
+        <el-input v-model="formData.属性1"/>
+    ```
+
+    ```vue
+    <el-form :model="formData">
+      <el-form-item prop="属性1" :rules="[{具体规则}]">
+        <el-input v-model="formData.属性1"/>
+    ```
 
 - 避免问题
 
