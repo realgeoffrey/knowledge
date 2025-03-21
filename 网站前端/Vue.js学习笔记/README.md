@@ -4486,9 +4486,9 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     },
     ```
     </details>
-7. `<el-form>`或`<el-form-item>`的`rulse`属性，对应的是`<el-form-item>`的`prop`属性，对应表单校验方法指向的prop（validate、validateField、resetFields、clearValidate）
+7. <details>
 
-    e.g.
+    <summary>`<el-form>`或`<el-form-item>`的`rulse`属性，对应的是`<el-form-item>`的`prop`属性，对应表单校验方法指向的prop（validate、validateField、resetFields、clearValidate）</summary>
 
     ```vue
     <!-- rules在form -->
@@ -4525,6 +4525,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
             <el-form-item :prop="'tableData.' + $index + '.value1'" :rules="[{具体规则}]">
               <el-input v-model="formData.tableData[$index].value1"/>
     ```
+    </details>
 
 - 避免问题
 
