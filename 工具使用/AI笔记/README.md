@@ -53,3 +53,5 @@
     2. 循环神经网络 (Recurrent，RNN)：RNN 专为时序或自然语言等序列数据而设计，它使用反馈环来保留先前输入的记忆，因此适合用于具有时间成分的数据。
     3. 卷积神经网络 (Convolutional，CNN)：CNN 专为图像相关任务而设计，使用卷积层从图像中提取特征，从而识别边缘和形状等模式。
     4. 生成对抗网络 (Generative Adversarial，GAN)：GAN 由生成器和判别器组成，并让这两个组件相互对抗。生成器负责创建数据，而判别器则评估其所创建数据的真实性。这种对抗过程使得生成器能够产生越来越真实的数据，通常用于生成图片、视频和音频。
+1. AGI（通用人工智能，artificial general intelligence）、强人工智能（strong AI）：是具备与人类同等智能、或超越人类的人工智能，能表现正常人类所具有的所有智能行为
+1. AIGC（人工智能生成内容，Artificial Intelligence Generated Content）
