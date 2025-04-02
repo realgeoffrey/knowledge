@@ -376,7 +376,7 @@
         >    <div @click.self.prevent="doThat">...</div>
         >    ```
         >    </details>
-    2. `$event`原生DOM事件的变量，仅能由HTML内联传入
+    2. `$event`原生DOM事件的变量，仅能由HTML内联传入 或 不调用的方法名默认传入
 
         <details>
         <summary>e.g.</summary>
@@ -385,6 +385,7 @@
         <div id="test">
           <a href="#" @click="a($event)">click（第一个）</a>
           <a href="#" @click="a(1, $event)">click（第二个）</a>
+          <a href="#" @click="a">click（默认传入第一个参数）</a>
         </div>
 
         <script>
