@@ -407,6 +407,9 @@
         moment('2025-03-09T02:30:00').tz('America/New_York').format()      // -> '2025-03-08T13:30:00-05:00'
         // 强制设定 时间刻度+目标时区的偏移量（不换算时间刻度，不处理夏令时因此会产生时间刻度不存在问题）
         moment('2025-03-09T02:30:00').tz('America/New_York',true).format() // -> '2025-03-09T02:30:00-05:00'
+
+        // 但是就算是不存在的时间刻度也可以被正常创建
+        moment('2025-03-09T02:30:00').tz('America/New_York',true).valueOf() === moment.tz('2025-03-09T02:30:00','America/New_York').valueOf()
         ```
         </details>
 
