@@ -599,6 +599,14 @@
 
         `.lazy`（`change`而不是~~input~~事件触发）、`.number`（输入值转为`Number`类型）、`.trim`（过滤首尾空格）
     2. 仅针对部分元素：`<input>`、`<textarea>`、`<select>`、组件
+
+        1. 文本类型的`<input>`、`<textarea>`会绑定`value`并侦听`input`事件
+        2. `<input type="checkbox">`（①值为`true/false`或②值为`:true-value="表达式"`、`:false-value="表达式"`或③若绑定数组则值为其`value`）、`<input type="radio">`（值为其`value`）会绑定`checked`并侦听`change`事件
+        3. `<select>`会绑定`value`并侦听`change`事件
+        4. 组件、DOM的`value`属性的值；
+
+    >不能和表达式一起使用，仅能绑定属性名：错误：~~`v-model="属性名 + '!'"`~~。
+
     3. <details>
 
         <summary>仅为语法糖</summary>
@@ -628,15 +636,7 @@
                 })
                 ```
         </details>
-    4. 绑定的Vue实例的值：
-
-        1. DOM的`value`属性的值；
-        2. 若是`type="checkbox"`，则为`true/false`；
-        3. 若要获得Vue实例的动态属性值，则：
-
-            1. 用`:value="表达式"`；
-            2. 若`type="checkbox"`，则用`:true-value="表达式" :false-value="表达式"`。
-    >不能和表达式一起使用，仅能绑定属性名：错误：~~`v-model="属性名 + '!'"`~~。
+    4. 对于需要使用[IME](https://zh.wikipedia.org/wiki/输入法)的语言（如：中文、日文、韩文等），`v-model`不会在IME输入还在拼字阶段时触发更新。若需要拼字阶段也触发更新，则使用`input`事件监听器和`value`绑定而不要使用 ~~`v-model`~~。
 8. `v-once`只渲染元素和组件一次
 
     随后的重新渲染，元素/组件及其所有的子节点将被视为静态内容并跳过。这可以用于优化更新性能。
