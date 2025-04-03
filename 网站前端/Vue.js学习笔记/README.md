@@ -344,7 +344,7 @@
             - 特殊：
 
                 `.stop/prevent`：不带方法名的修饰符也有效果。`@click.stop`所有该节点的点击事件阻止冒泡，`@click.prevent`所有该节点的点击事件阻止默认行为。
-        2. `.enter`、`.tab`、`.delete`、`.esc`、`.space`、`.up`、`.down`、`.left`、`.right`、`.数字键值`、[KeyboardEvent.key的短横线形式](https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/key/Key_Values)、`Vue.config.keyCodes`自定义的键位别名
+        2. `.enter`、`.tab`、`.delete`、`.esc`、`.space`、`.up`、`.down`、`.left`、`.right`、`.数字键值`、[KeyboardEvent.key的短横线形式](https://developer.mozilla.org/zh-CN/docs/Web/API/UI_Events/Keyboard_event_key_values)、`Vue.config.keyCodes`自定义的键位别名
 
             键盘。
         3. `.left`、`.right`、`.middle`
