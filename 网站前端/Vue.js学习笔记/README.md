@@ -60,7 +60,7 @@
     >Vue 3.4+。
 
     若 attribute名称 与 绑定的js值的名称 相同，则可以进一步简化缩写，省略`="绑定值"`。
-3. `ref`、`setup`、`<script setup>`、`nextTick`、`reactive`、`computed`
+3. `ref`、`setup`、`<script setup>`、`nextTick`、`reactive`、`computed`、`watch`
 4. `Proxy`响应式原理
 5. `ref`与`computed`自动解包（automatically unwrapped），[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)
 6. `computed`
