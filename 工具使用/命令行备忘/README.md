@@ -260,7 +260,7 @@ passwd
 
 #### 指令在PATH变量的路径
 ```shell
-which 「指令」
+which 「指令」  # e.g. which python; which bash
 ```
 
 #### hosts文件位置

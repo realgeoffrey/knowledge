@@ -111,5 +111,8 @@
     "editor.formatOnPaste": true,
     "editor.formatOnType": true,
     "extensions.ignoreRecommendations": true,
-    "git.closeDiffOnOperation": true
+    "git.closeDiffOnOperation": true,
+    "terminal.integrated.env.osx": {
+        "PATH": "null"
+    }
 }

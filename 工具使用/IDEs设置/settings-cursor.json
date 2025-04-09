@@ -112,6 +112,9 @@
     "editor.formatOnType": true,
     "extensions.ignoreRecommendations": true,
     "git.closeDiffOnOperation": true,
+    "terminal.integrated.env.osx": {
+        "PATH": "null"
+    }
     // curosr
     "workbench.activityBar.orientation": "vertical",
     "git.blame.statusBarItem.enabled": true,
