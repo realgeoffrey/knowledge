@@ -15,6 +15,8 @@
 1. SOP（Standard Operating Procedure）是通过标准化流程将复杂任务分解为可重复执行的具体步骤，以实现效率提升、质量控制和经验传承的核心工具。其核心在于细节量化与流程固化，适用于企业生产、个人管理乃至技术系统设计等领域
 1. ollama、label-studio、cherry-studio、dify、langchain
 1. MCP（Model Context Protocol）模型上下文协议
+1. A2A（the Agent2Agent Protocol）
+1. ANP（Agent Network Protocol）
 1. 知识库（knowledge base，KB）：一个包含文档集合的系统，用于存储和检索信息
 1. RAG（Retrieval-Augmented Generation，检索增强生成）
 1. embedding（嵌入）
