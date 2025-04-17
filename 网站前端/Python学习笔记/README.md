@@ -29,9 +29,9 @@
         `123.456 == 1.23456e2`
     3. 字符串型`str`
 
-        单引号、双引号，`'''`或`"""`支持换行字符串
+        单引号、双引号，`'''`或`"""`支持换行字符串（`\n`可以用回车换行表示）
 
-        1. `r'字符串'`或`R'字符串'`：原始字符串、不会转义
+        1. `r'字符串'`或`R'字符串'`（也支持`'''`或`"""`）：原始字符串、不会转义
     4. 布尔型`bool`
 
         `True`、`False`
@@ -71,7 +71,6 @@
 
             控制输出内容的颜色
     1. `type(变量名或值)`检查类型
-    1. 内置模块`math`、`random`
     1. `range(多个参数)`产生整数序列
 
         1. `range(101)`：可以用来产生0到100范围的整数，需要注意的是取不到101
@@ -83,10 +82,10 @@
     1. `dict()`
 1. 需要`import`才能使用的内置模块
 
-    `math`、`random`
-1. `import math`、`from math import factorial`、`from math import factorial as f`
+    `math`、`random`、`string`
+1. `import math`（仅导入了`math`）、`from math import factorial`（仅导入了`factorial`）、`from math import factorial as f`（仅导入了`f`）
 
-    同名的后导入 覆盖 同名的前导入
+    - 同名的后导入 覆盖 同名的前导入
 1. 列表（list）
 
     1. 列表是一种**可变**容器
@@ -95,7 +94,7 @@
     4. 两个列表可以做关系运算（`<=`、`<`、`>`、`>=`、`==`、`!=`），逐个按顺序对比每个项
     5. 运算符支持：`列表 + 列表`、`列表 * 整数`
     6. `in`、`not in`
-    7. 生成式创建法
+    7. **生成式**创建法
 
         e.g. `items = [i for i in range(1, 100) if i % 3 == 0 or i % 5 == 0]`、`items2 = [num ** 2 for num in items]`
 
