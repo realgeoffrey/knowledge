@@ -82,7 +82,7 @@
     1. `dict()`
 1. 需要`import`才能使用的内置模块
 
-    `math`、`random`、`string`
+    `math`、`random`、`string`、`operator`
 1. `import math`（仅导入了`math`）、`from math import factorial`（仅导入了`factorial`）、`from math import factorial as f`（仅导入了`f`）
 
     - 同名的后导入 覆盖 同名的前导入
@@ -236,7 +236,12 @@
         >```
         ></details>
     2. 默认参数`=`、可变参数`*变量`（元组）`**变量`（字典）
+    3. `del 方法名(变量名: 类型名, 变量 = 1) -> 类型名:`
 
+        标注参数的类型、标注函数返回值的类型，虽然它对代码的执行结果不产生任何影响，但是很好的增强了代码的可读性。
+    4. Python中的函数是“一等函数”，所谓“一等函数”指的就是函数可以赋值给变量，函数可以作为函数的参数，函数也可以作为函数的返回值
+
+        把一个函数作为其他函数的参数或返回值的用法，我们通常称之为“高阶函数”
 
 ### [The Zen of Python（Python之禅）](https://peps.python.org/pep-0020/)
 1. Beautiful is better than ugly. （优美比丑陋好）
