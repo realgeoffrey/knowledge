@@ -242,6 +242,10 @@
     4. Python中的函数是“一等函数”，所谓“一等函数”指的就是函数可以赋值给变量，函数可以作为函数的参数，函数也可以作为函数的返回值
 
         把一个函数作为其他函数的参数或返回值的用法，我们通常称之为“高阶函数”
+    5. lambda函数（匿名函数）
+
+        1. Python中的lambda函数是没有的名字函数
+        2. lambda函数只能有一行代码，代码中的表达式产生的运算结果就是这个匿名函数的返回值
 
 ### [The Zen of Python（Python之禅）](https://peps.python.org/pep-0020/)
 1. Beautiful is better than ugly. （优美比丑陋好）
