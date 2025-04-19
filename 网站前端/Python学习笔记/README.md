@@ -82,7 +82,7 @@
     1. `dict()`
 1. 需要`import`才能使用的内置模块
 
-    `math`、`random`、`string`、`operator`
+    `math`、`random`、`string`、`operator`、`functools`、`time`
 1. `import math`（仅导入了`math`）、`from math import factorial`（仅导入了`factorial`）、`from math import factorial as f`（仅导入了`f`）
 
     - 同名的后导入 覆盖 同名的前导入
@@ -244,8 +244,13 @@
         把一个函数作为其他函数的参数或返回值的用法，我们通常称之为“高阶函数”
     5. lambda函数（匿名函数）
 
+        `lambda 参数1, 参数2: 返回值的表达式`
+
         1. Python中的lambda函数是没有的名字函数
         2. lambda函数只能有一行代码，代码中的表达式产生的运算结果就是这个匿名函数的返回值
+    6. 装饰器
+
+        Python语言中，装饰器是“用一个函数装饰另外一个函数并为其提供额外的能力”的语法现象。装饰器本身是一个函数，它的参数是被装饰的函数，它的返回值是一个带有装饰功能的函数。通过前面的描述，相信大家已经听出来了，装饰器是一个高阶函数，它的参数和返回值都是函数。
 
 ### [The Zen of Python（Python之禅）](https://peps.python.org/pep-0020/)
 1. Beautiful is better than ugly. （优美比丑陋好）
