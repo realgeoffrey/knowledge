@@ -6,6 +6,11 @@
     },
     "git.autofetch": true,
     "git.confirmSync": false,
+    "git.replaceTagsWhenPull": true,
+    "git.suggestSmartCommit": false,
+    "git.closeDiffOnOperation": true,
+    "git.blame.statusBarItem.template": "${authorName} (${authorDateAgo}) ${hashShort}",
+    "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo}) ${hashShort}",
     "explorer.copyRelativePathSeparator": "/",
     "explorer.fileNesting.enabled": true,
     "editor.cursorSmoothCaretAnimation": "on",
@@ -56,7 +61,6 @@
         "*.copilotmd": "vscode.markdown.preview.editor",
         "*.vue": "default"
     },
-    "git.replaceTagsWhenPull": true,
     "[markdown]": {
         "diffEditor.ignoreTrimWhitespace": false
     },
@@ -101,7 +105,6 @@
     "editor.minimap.size": "fill",
     "editor.lightbulb.enabled": "off",
     "editor.pasteAs.enabled": false,
-    "git.suggestSmartCommit": false,
     "editor.minimap.maxColumn": 20,
     "terminal.integrated.copyOnSelection": true,
     "terminal.integrated.enableVisualBell": true,
@@ -111,10 +114,12 @@
     "editor.formatOnPaste": true,
     "editor.formatOnType": true,
     "extensions.ignoreRecommendations": true,
-    "git.closeDiffOnOperation": true,
     "terminal.integrated.env.osx": {
         "PATH": "null"
     },
+    "github.copilot.nextEditSuggestions.fixes": true,
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "editor.copyWithSyntaxHighlighting": false,
     // curosr
     "workbench.activityBar.orientation": "vertical",
     "git.blame.statusBarItem.enabled": true,

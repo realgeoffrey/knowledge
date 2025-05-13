@@ -473,6 +473,16 @@
     "command": "-vue-helper.backspace",
     "when": "textInputFocus && vue-helper.backspace && editorLangId =~ /^vue$|^typescript$|^javascript$|^html$|^json$|^css$|^scss$/"
   },
+  {
+    "key": "f8",
+    "command": "workbench.action.debug.continue",
+    "when": "debugState == 'stopped'"
+  },
+  {
+    "key": "f8",
+    "command": "workbench.action.debug.start",
+    "when": "debuggersAvailable && debugState == 'inactive'"
+  },
   // 以下cursor新增
   {
     "key": "cmd+i",
@@ -1395,20 +1405,6 @@
     "when": "isDevelopment"
   },
   {
-    "key": "shift+cmd+i",
-    "command": "-workbench.action.chat.openEditSession",
-    "when": "chatEditingParticipantRegistered && chatIsEnabled && view != 'workbench.panel.chat.view.edits'"
-  },
-  {
-    "key": "shift+cmd+i",
-    "command": "-workbench.panel.chatEditing",
-    "when": "workbench.panel.chat.view.edits.active"
-  },
-  {
-    "key": "shift+cmd+i",
-    "command": "-composer.newAgentChat"
-  },
-  {
     "key": "shift+cmd+k",
     "command": "-editor.action.deleteLines",
     "when": "textInputFocus && !editorReadonly"
@@ -1433,6 +1429,20 @@
     "command": "-aichat.newchataction"
   },
   {
+    "key": "cmd+i",
+    "command": "-composer.startComposerPrompt"
+  },
+  // New chat
+  {
+    "key": "ctrl+cmd+i",
+    "command": "-workbench.action.chat.open",
+    "when": "chatPanelParticipantRegistered || chatSetupInstalled"
+  },
+  {
+    "key": "ctrl+cmd+i",
+    "command": "composerMode.chat"
+  },
+  {
     "key": "shift+cmd+i",
     "command": "-workbench.panel.chatEditing",
     "when": "workbench.panel.chat.view.edits.active"
@@ -1443,17 +1453,8 @@
     "when": "chatEditingParticipantRegistered && chatIsEnabled && view != 'workbench.panel.chat.view.edits'"
   },
   {
-    "key": "cmd+i",
-    "command": "-composer.startComposerPrompt"
-  },
-  {
-    "key": "ctrl+cmd+i",
-    "command": "-workbench.action.chat.open",
-    "when": "chatPanelParticipantRegistered || chatSetupInstalled"
-  },
-  {
-    "key": "ctrl+cmd+i",
-    "command": "composerMode.chat"
+    "key": "shift+cmd+i",
+    "command": "-composer.newAgentChat"
   },
   {
     "key": "shift+cmd+i",

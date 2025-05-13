@@ -472,5 +472,30 @@
     "key": "backspace",
     "command": "-vue-helper.backspace",
     "when": "textInputFocus && vue-helper.backspace && editorLangId =~ /^vue$|^typescript$|^javascript$|^html$|^json$|^css$|^scss$/"
+  },
+  {
+    "key": "f8",
+    "command": "workbench.action.debug.continue",
+    "when": "debugState == 'stopped'"
+  },
+  {
+    "key": "f8",
+    "command": "workbench.action.debug.start",
+    "when": "debuggersAvailable && debugState == 'inactive'"
+  },
+  // Copilot
+  {
+    "key": "ctrl+cmd+i",
+    "command": "-workbench.action.chat.open",
+    "when": "!chatSetupHidden"
+  },
+  {
+    "key": "ctrl+cmd+i",
+    "command": "workbench.action.chat.openAsk"
+  },
+  {
+    "key": "ctrl+cmd+i",
+    "command": "-workbench.panel.chat",
+    "when": "workbench.panel.chat.view.copilot.active"
   }
 ]

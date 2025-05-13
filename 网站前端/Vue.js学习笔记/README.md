@@ -4629,11 +4629,16 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     1. `<el-option>`能够匹配 空字符串、`undefined`、`null`，并且多个相同的value值匹配后展示最后一个项的label值，注意传参为空时出现的问题。匹配是`===`，注意`<el-select>`的`v-model`值`6`不会匹配`<el-option>`的`value`值`'6'`。
 
         >[CodePen demo](https://codepen.io/realgeoffrey/pen/MWMpxNW)
-    2. 针对非自适应宽度的`<el-table>`，避免所有`<el-table-column>`都设置固定宽度，至少需要一个项不设置宽度或设置`min-width`。
-    3. `<el-input-number>`设置`max`、`min`、`precision`会直接“纠正”`value/v-model`绑定值，无论是不是`disabled`。
+    2. `<el-option>`的数组若不包含`<el-select>`的值，可以考虑`push`这个值到数组中（若要回显的不是value而是label）。
+
+        >[CodePen demo](https://codepen.io/realgeoffrey/pen/emNJOgp)
+    3. 针对非自适应宽度的`<el-table>`，避免所有`<el-table-column>`都设置固定宽度，至少需要一个项不设置宽度或设置`min-width`。
+    4. `<el-input-number>`设置`max`、`min`、`precision`会直接“纠正”`value/v-model`绑定值，无论是不是`disabled`。
 
         >[CodePen demo](https://codepen.io/realgeoffrey/pen/VYZmYrB)
-    4. [element-ui的日期格式](https://element.eleme.cn/#/zh-CN/component/date-picker#ri-qi-ge-shi)与[moment的格式](https://momentjs.cn/docs/#/displaying/format/)是不同的，要注意
+    5. `<el-input-number>`的`v-model`不支持添加`.trim`（填写了没有效果、不会报错）
+    6. `<el-input>`、`el-button`等的`disabled`属性，会导致无法触发点击等事件
+    7. [element-ui的日期格式](https://element.eleme.cn/#/zh-CN/component/date-picker#ri-qi-ge-shi)与[moment的格式](https://momentjs.cn/docs/#/displaying/format/)是不同的，要注意
 
         e.g. element-ui不支持 ~~`YYYY`、`DDDD`、等~~
 
