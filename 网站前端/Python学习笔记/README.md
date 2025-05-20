@@ -188,6 +188,7 @@
 
         >传递`unhashable`会报错。
     1. `open`
+    1. `zip`
 1. 需要`import`才能使用的内置模块
 
     `math`、`random`、`string`、`operator`、`functools`、`time`、`enum`、`json`、`csv`、`re`、`heapq`、`itertools`、`collections`、`threading`、`abc`、`gc`
@@ -195,7 +196,7 @@
 
     1. 同名的后导入 覆盖 同名的前导入
     2. 可以在非顶层结构中导入，导入的变量不会 ~~“提升”到外层作用域~~
-    3. `,`可以一个语句导入多个变量：`import a, b`、`import a as A, b as B`,`from a import x1, x2`,`from a import x1 as A1, x2 as A2`
+    3. `,`可以一个语句导入多个变量：`import a, b`、`import a as A, b as B`、`from a import x1, x2`、`from a import x1 as A1, x2 as A2`
 1. 各种数据类型都支持解构
 1. 列表（list`[值,]`）
 
@@ -305,7 +306,6 @@
         - 注意传递变量不会把变量名作为字符串
 
             >e.g. `a = '某个值'; {a:1} # {'某个值': 1}`
-    4. 注意键不会默认
 1. 不可变类型、可变类型
 
     |  | 不可变类型（Immutable Types） | 可变类型（Mutable Types）​ |
@@ -320,7 +320,7 @@
     | 函数传参​ | 不可变对象传递的是值副本，函数内修改不影响外部变量 | 可变对象传递的是引用，函数内修改会影响原对象 |
 1. 函数`def`
 
-    1. 位置参数、关键字参数
+    1. 位置参数、关键字参数（参数位置可以随意打乱）
 
         ><details>
         ><summary>e.g.</summary>
@@ -331,12 +331,10 @@
         >    return a + b > c and b + c > a and a + c > b
         >
         ># 位置参数
-        >print(make_judgement(1, 2, 3))  # False
-        >print(make_judgement(4, 5, 6))  # True
+        >print(make_judgement(1, 2, 3))         # False
         >
         ># 关键字参数
-        >print(make_judgement(b=2, c=3, a=1))  # False
-        >print(make_judgement(c=6, b=4, a=5))  # True
+        >print(make_judgement(b=2, c=3, a=1))   # False
         >```
         ></details>
 
@@ -382,7 +380,7 @@
         >process_data('你好',18,100,98,99,country='China',sex='male')   # => name='你好' age=18 scores=(100, 98, 99) country='China' extra={'sex': 'male'}
         >```
         ></details>
-    3. `def 方法名(变量名: 类型名, 变量名 = 1, 变量名: 类型名 = 1) -> 类型名:`
+    3. `def 方法名(变量名: 类型名, 变量名 = 默认值, 变量名: 类型名 = 默认值) -> 类型名:`
 
         标注参数的类型、标注函数返回值的类型，*虽然它对代码的执行结果不产生任何影响*，但很好的增强了代码的可读性。
     4. Python中的函数是“一等函数”：函数可以赋值给变量，函数可以作为函数的参数，函数也可以作为函数的返回值
@@ -435,7 +433,7 @@
 
     ```py
     class Student:
-        属性1=值 # 支持解构
+        属性1=值1 # 支持解构
         def __init__(self, name, age):  # 初始化方法
             self.name = name
             self.age = age
@@ -500,7 +498,7 @@
         ```
         3. MRO (Method Resolution Order，方法解析顺序)是Python处理多重继承时确定方法调用顺序的规则体系。
 
-            `super()`不是简单地调用父类方法，而是按照 MRO 顺序调用下一个类的方法（包括类方法和`__init__`等所有方法）。
+            `super().方法()`不是简单地调用父类方法，而是按照 MRO 顺序调用下一个类的方法（可调用包括实例方法和`__init__`）。
 
             ```
               A
