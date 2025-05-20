@@ -305,7 +305,7 @@
         - 字典中的键必须是唯一的。若尝试使用相同的键添加多个值，后面的值会覆盖前面的值。
         - 注意传递变量不会把变量名作为字符串
 
-            >e.g. `a = '某个值'; {a:1} # {'某个值': 1}`
+            >e.g. `a = '某个值'; { a: 1 } # { '某个值': 1 }`
 1. 不可变类型、可变类型
 
     |  | 不可变类型（Immutable Types） | 可变类型（Mutable Types）​ |
@@ -338,21 +338,21 @@
         >```
         ></details>
 
-        1. 用`/`设置强制位置参数（positional-only arguments）：只能按照参数位置来接收参数值的参数（否则报错）
-        2. 用`*`设置命名关键字参数：只能通过`参数名=参数值`的方式来传递和接收参数（否则报错）
+        1. 用`/`设置强制位置参数（positional-only arguments）：`/`前面的参数，只能按照参数位置来接收参数值的参数（否则报错）
+        2. 用`*`设置命名关键字参数：`*`后面的参数，只能通过`参数名=参数值`的方式来传递和接收参数（否则报错）
 
         ><details>
         ><summary>e.g.</summary>
         >
         >```py
-        ># / 前面的参数是强制位置参数
+        ># `/`前面的参数是强制位置参数
         >def make_judgement(a, b, c, /):
         >    """判断三条边的长度能否构成三角形"""
         >    return a + b > c and b + c > a and a + c > b
         >make_judgement(b=2, c=3, a=1)  # TypeError: make_judgement() got some positional-only arguments passed as keyword arguments: 'a, b, c'
         >
         >
-        ># * 后面的参数是命名关键字参数
+        ># `*`后面的参数是命名关键字参数
         >def make_judgement(*, a, b, c):
         >    """判断三条边的长度能否构成三角形"""
         >    return a + b > c and b + c > a and a + c > b
@@ -452,6 +452,12 @@
     # 第一个参数是接收消息的对象
     # 第二个参数是学习的课程名称
     Student.study(stu1, 'Python程序设计')    # => ldh正在学习Python程序设计.
+
+
+    # 类的属性（方法）都可以直接通过类访问，不需要借助实例
+    Student.属性1
+    Student.__init__
+    Student.study
     ```
     3. `__name`表示一个私有属性，`_name`表示一个受保护属性
 
@@ -475,7 +481,7 @@
         >stu.sex = '男'     # AttributeError: 'Student' object has no attribute 'sex'
         >```
         ></details>
-    5. 类的静态方法`@staticmethod`（第一个参数不能是类cls或实例对象self）、类方法`@classmethod`（第一个参数必须是类cls）
+    5. 类的静态方法`@staticmethod`（第一个参数不能是~~类cls或实例对象self~~）、类方法`@classmethod`（第一个参数必须是类cls）
     6. `@property`指定属性（通过属性获取，经过方法计算）
     7. Python语言允许多重继承；`object类`是Python中的顶级类（所有的类都是它的子类，要么直接继承它，要么间接继承它）
 
