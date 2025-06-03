@@ -1395,20 +1395,6 @@
     "when": "isDevelopment"
   },
   {
-    "key": "shift+cmd+i",
-    "command": "-workbench.action.chat.openEditSession",
-    "when": "chatEditingParticipantRegistered && chatIsEnabled && view != 'workbench.panel.chat.view.edits'"
-  },
-  {
-    "key": "shift+cmd+i",
-    "command": "-workbench.panel.chatEditing",
-    "when": "workbench.panel.chat.view.edits.active"
-  },
-  {
-    "key": "shift+cmd+i",
-    "command": "-composer.newAgentChat"
-  },
-  {
     "key": "shift+cmd+k",
     "command": "-editor.action.deleteLines",
     "when": "textInputFocus && !editorReadonly"
@@ -1433,6 +1419,20 @@
     "command": "-aichat.newchataction"
   },
   {
+    "key": "cmd+i",
+    "command": "-composer.startComposerPrompt"
+  },
+  // New chat
+  {
+    "key": "ctrl+cmd+i",
+    "command": "-workbench.action.chat.open",
+    "when": "chatPanelParticipantRegistered || chatSetupInstalled"
+  },
+  {
+    "key": "ctrl+cmd+i",
+    "command": "composerMode.chat"
+  },
+  {
     "key": "shift+cmd+i",
     "command": "-workbench.panel.chatEditing",
     "when": "workbench.panel.chat.view.edits.active"
@@ -1443,17 +1443,8 @@
     "when": "chatEditingParticipantRegistered && chatIsEnabled && view != 'workbench.panel.chat.view.edits'"
   },
   {
-    "key": "cmd+i",
-    "command": "-composer.startComposerPrompt"
-  },
-  {
-    "key": "ctrl+cmd+i",
-    "command": "-workbench.action.chat.open",
-    "when": "chatPanelParticipantRegistered || chatSetupInstalled"
-  },
-  {
-    "key": "ctrl+cmd+i",
-    "command": "composerMode.chat"
+    "key": "shift+cmd+i",
+    "command": "-composer.newAgentChat"
   },
   {
     "key": "shift+cmd+i",

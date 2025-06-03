@@ -115,6 +115,8 @@
     "terminal.integrated.env.osx": {
         "PATH": "null"
     },
+    "github.copilot.nextEditSuggestions.fixes": true,
+    "github.copilot.nextEditSuggestions.enabled": true,
     // curosr
     "workbench.activityBar.orientation": "vertical",
     "git.blame.statusBarItem.enabled": true,
