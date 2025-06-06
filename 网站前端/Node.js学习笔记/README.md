@@ -1186,6 +1186,8 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     3. IDE调试
 
         1. VSCode
+
+            <https://code.visualstudio.com/docs/debugtest/debugging>
         2. WebStorm
 
             右上角`运行/调试文件`（`调试文件`会自动添加`--inspect`、`运行文件`不会，因此配置和scripts中都不需添加 ~~`--inspect`~~），在IDE内拥有类似chrome调试有的所有操作。
