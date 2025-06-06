@@ -473,6 +473,16 @@
     "command": "-vue-helper.backspace",
     "when": "textInputFocus && vue-helper.backspace && editorLangId =~ /^vue$|^typescript$|^javascript$|^html$|^json$|^css$|^scss$/"
   },
+  {
+    "key": "f8",
+    "command": "workbench.action.debug.continue",
+    "when": "debugState == 'stopped'"
+  },
+  {
+    "key": "f8",
+    "command": "workbench.action.debug.start",
+    "when": "debuggersAvailable && debugState == 'inactive'"
+  },
   // 以下cursor新增
   {
     "key": "cmd+i",
