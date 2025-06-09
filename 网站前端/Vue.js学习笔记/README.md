@@ -4637,7 +4637,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
         >[CodePen demo](https://codepen.io/realgeoffrey/pen/VYZmYrB)
     5. `<el-input-number>`的`v-model`不支持添加`.trim`（填写了没有效果、不会报错）
-    6. [element-ui的日期格式](https://element.eleme.cn/#/zh-CN/component/date-picker#ri-qi-ge-shi)与[moment的格式](https://momentjs.cn/docs/#/displaying/format/)是不同的，要注意
+    6. `<el-input>`、`el-button`等的`disabled`属性，会导致无法触发点击等事件
+    7. [element-ui的日期格式](https://element.eleme.cn/#/zh-CN/component/date-picker#ri-qi-ge-shi)与[moment的格式](https://momentjs.cn/docs/#/displaying/format/)是不同的，要注意
 
         e.g. element-ui不支持 ~~`YYYY`、`DDDD`、等~~
 
