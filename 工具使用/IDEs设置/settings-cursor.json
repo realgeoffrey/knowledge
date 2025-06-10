@@ -119,6 +119,7 @@
     },
     "github.copilot.nextEditSuggestions.fixes": true,
     "github.copilot.nextEditSuggestions.enabled": true,
+    "editor.copyWithSyntaxHighlighting": false,
     // curosr
     "workbench.activityBar.orientation": "vertical",
     "git.blame.statusBarItem.enabled": true,
