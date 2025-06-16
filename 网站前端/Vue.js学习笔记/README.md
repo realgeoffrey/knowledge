@@ -4544,11 +4544,11 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
       type="datetimerange"
       v-model="dateValue"
       :picker-options="timePickerOptions"
-      @blur="handleBlur"
+      @blur="handleBlurAndChange"
+      @change="handleBlurAndChange"
     />
 
     data() {
-      const that = this;
       return {
         dateValue: "",
 
@@ -4561,28 +4561,30 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
           // 点击日期面板后触发
           onPick: ({ maxDate, minDate }) => {
             // 目的：实现「允许选择的时间范围」限制
-            that.curSelectDate.minDate = minDate;
-            that.curSelectDate.maxDate = maxDate;
+            this.curSelectDate.minDate = minDate?.valueOf()??minDate;
+            this.curSelectDate.maxDate = maxDate?.valueOf()??maxDate;
           },
-          disabledDate(time) {
+          disabledDate: (time) => {
             const maxTime = 15 * 24 * 60 * 60 * 1000 - 1000; // 假设半个月
 
-            if (that.curSelectDate.minDate && Math.abs(that.curSelectDate.minDate - time) > maxTime) return true;
-            if (that.curSelectDate.maxDate && Math.abs(that.curSelectDate.maxDate - time) > maxTime) return true;
+            if (this.curSelectDate.minDate && Math.abs(this.curSelectDate.minDate - time) > maxTime) return true;
+            if (this.curSelectDate.maxDate && Math.abs(this.curSelectDate.maxDate - time) > maxTime) return true;
             return false;
           },
         },
       };
     },
     methods: {
-      // 取消时重置
-      handleBlur() {
+      // 取消或修改时重置回组件值（解决：选择开始时间后放弃选择结束时间的交互问题）
+      handleBlurAndChange() {
         this.curSelectDate.minDate = this.dateValue ? this.dateValue[0] : null;
         this.curSelectDate.maxDate = this.dateValue ? this.dateValue[1] : null;
       },
     },
     ```
     </details>
+
+    >[CodePen demo](https://codepen.io/realgeoffrey/pen/NWQdavo)
 7. <details>
 
     <summary><code>&lt;el-form></code>或<code>&lt;el-form-item></code>的<code>rules</code>属性，对应的是<code>&lt;el-form-item></code>的<code>prop</code>属性，对应表单校验方法指向的prop（validate、validateField、resetFields、clearValidate）</summary>
@@ -4623,6 +4625,21 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
               <el-input v-model="formData.tableData[$index].value1"/>
     ```
     </details>
+  8. 表单校验`rules: []`是数组，按顺序校验，可以用自定义`validator`方法，属性可以参考[async-validator](https://github.com/yiminghe/async-validator)
+
+      1. 若`rules`中传递了`message`，则命中校验失败只会展示`message`；若`rules`中未传递`message`，则展示`validator`中的`callback(new Error(错误信息))`
+      2. 可动态插入或删除`rules`项（单独触发一个字段校验：`validateField`；触发整个表单所有字段校验：`validate`——有传回调处理回调，不传回调返回Promise）
+      3. 实现：仅提示校验问题，但不阻塞提交
+
+          1. `<el-input>`触发`@chage/input`后去修改`<col-form-item>`的`error`属性，可以做到既展示校验错误信息又提交时不校验
+
+              >修改`<col-form-item>`的`error`属性仅展示/隐藏校验失败信息、不影响校验逻辑，校验逻辑完全遵照rules。
+          2. `validator`函数内，用其他方式提示错误、总是通过校验
+
+              e.g. `{ validator(rule, value, callback){ $message('输入的有点问题，但不影响提交'); callback() }, trigger: [ 'blur' ] }`
+          3. `validate`忽略某些未通过校验的字段（不好判断具体哪一条rules校验未通过）
+
+          >[CodePen demo](https://codepen.io/realgeoffrey/pen/xbGaBVY)
 
 - 避免问题
 

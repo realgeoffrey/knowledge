@@ -31,7 +31,7 @@
 
         单引号、双引号，`'''`或`"""`支持换行字符串（`\n`可以用回车换行表示）
 
-        1. `r'字符串'`或`R'字符串'`（也支持`'''`或`"""`）：原始字符串、不会转义
+        1. `r'字符串'`或`R'字符串'`（也支持`'''`或`"""`）：原始字符串、不会转义（不需要用`\`处理会转义的符号）
 
             ```py
             print("Hello,\nworld")
@@ -46,15 +46,16 @@
             # Hello,
             #\nworld
             ```
+
+            主要用于正则表达式。e.g. `import re; print(re.match(r'^[0-9a-zA-Z_]{6,20}$', input('请输入用户名: ')))`
+        2. `str()`
+        3. f-strings、`str.format()`、`%`格式化
     4. 布尔型`bool`
 
         `True`、`False`
-1. 变量惯例：
-
-    1. 变量名通常使用小写英文字母，多个单词用下划线`_`进行连接
-    2. 受保护的变量用单个下划线`_`开头
-    3. 私有的变量用两个下划线`__`开头
-1. （与JS不同的运算符）`:=`、`==`、`!=`、`not`、`or`、`and`、`//`、`is`、`is not`、`in`、`not in`
+    5. `None`
+1. 变量名通常使用小写英文字母，多个单词用下划线`_`进行连接
+1. （与JS不同的运算符、语法）`:=`、`==`、`!=`、`not`、`or`、`and`、`//`、`is`、`is not`、`in`、`not in`、`*变量`、`**变量`
 1. `if 「条件」:`（没有小括号 ~~`()`~~ ）、`elif 「条件」:`、`else:`
 
     2. 支持`值1 <= 变量 < 值2`
@@ -67,7 +68,15 @@
     items = [i for i in range(1, 10)]   # [1, 2, 3, 4, 5, 6, 7, 8, 9]
     items = [i for i in range(1, 10) if i % 3 == 0 or i % 5 == 0] # [3, 5, 6, 9]
     items = [i ** 2 for i in range(1, 10) if i % 3 == 0 or i % 5 == 0] # [9, 25, 36, 81]
-    # 运行顺序：for -> if ->产出的i进行 i ** 2计算
+    # 运行顺序：for -> if -> 产出的i进行 i ** 2计算
+
+    items = [str(i)+'是偶数' if i%2==0 else str(i)+'是奇数' for i in range(1, 10) if i % 3 == 0 or i % 5 == 0] # ['3是奇数', '5是奇数', '6是偶数', '9是奇数']
+    # 运行顺序：for -> if -> 产出的i进行 三元运算
+
+    # 支持三元运算符表达式： 值1 if 条件表达式 else 值2
+    num = 2
+    a = '偶数' if num%2==0 else '奇数'
+    b = f'{'偶数' if num%2==0 else '奇数'}'
     ```
 1. `break`、`continue`仅针对当前循环
 1. Python中没有用花括号 ~~`{}`~~ 来构造代码块，而是使用**缩进**的方式来表示代码的层次结构
@@ -81,18 +90,45 @@
     1. `print`
 
         1. `print(值或变量)`
-        1. `print('浮点数%f' % 变量1)`、`print('浮点数%.1f 整数%d 字符串%s' % (变量1, 变量2, 变量3))`
-        2. `print(f'{变量1}  {变量2:.2f}')`
+        2. %格式化：`print('浮点数%f' % 变量1)`、`print('浮点数%.1f 整数%d 字符串%s' % (变量1, 变量2, 变量3))`
+        3. f-strings：`print(f'{变量1}  {变量2:.2f}')`
 
-            - 同时输出变量名：`print(f'{变量1 = } {变量2 = :.3f}')`
-        3. `print(变量 := 10)`既能输出又能赋值（~~`print(变量 = 10)`~~ 报错）
-        4. `print(f'\033[样式;前景色;背景色m内容...\033[0m')`
+            1. 同时输出变量名：`print(f'{变量 = }')`
+            2. 格式化规则：`print(f'{变量 : 格式化规则}')`
 
-            >1. 前景色：30（黑）、31（红）、32（绿）、33（黄）、34（蓝）等。
-            >2. 背景色：40（黑）、41（红）、42（绿）等。
-            >3. 样式：0（默认）、1（加粗）、4（下划线）。
+                | 格式代码| 作用 | 举例代码 | 输出 |
+                | ------ | ------ | ------ | ------ |
+                | `{变量}` | 绑定变量到输出中 | `age = 18; f'{age}'` | `18` |
+                | `{变量:+}` | 正负号 | `num = -18; f'{num:+}'` | `-18` |
+                | `{变量:.nf}` | 小数点后保留 n 位 | `price = 123.456; f'{price:.2f}'` | `123.46` |
+                | `{变量:<n}` | 左对齐，宽度为 n | `age = 18; f'{age:<10}'` | `18        ` |
+                | `{变量:>n}` | 右对齐，宽度为 n | `age = 18; f'{age:>10}'` | `        18` |
+                | `{变量:^n}` | 居中对齐，宽度为 n | `age = 18; f'{age:^10}'` | `    18    ` |
+                | `{变量:字符^n}` | 居中对齐（^、<、>同理），宽度为 n，用字符补齐 | `age = 18; f'{age:x^10}'` | `xxxx18xxxx` |
+                | `{变量:d}` | 以整数输出 | `age = 18; f'{age:d}'` | `18` |
+                | `{变量:x}` | 以16进制输出（小写） | `age = 18; f'{age:x}'` | `12` |
+                | `{变量:X}` | 以16进制输出（大写） | `age = 18; f'{age:X}'` | `12` |
+                | `{变量:b}` | 以2进制输出 | `age = 18; f'{age:b}'` | `10010` |
+                | `{变量:e}` | 以科学记数法输出（小写 e） | `price = 123.456; f'{price:e}'` | `1.234560e+02` |
+                | `{变量:E}` | 以科学记数法输出（大写 E） | `price = 123.456; f'{price:E}'` | `1.234560E+02` |
+                | `{变量:,}` | 每三位数添加逗號分隔 | `price = 12345.67; f'{price:,}'` | `12,345.67` |
+                | `{变量:%}` | 以百分数输出（乘100） | `rate = 0.1234; f'{rate:%}'` | `12.340000%` |
+                | `{变量:.n%}` | 以百分数输出（乘100），保留n位小数 | `rate = 0.1234; f'{rate:.1%}'` | `12.3%` |
+                | `{变量:#x}` | 以16进制输出（包括“0x”前缀） | `age = 18; f'{age:#x}'` | `0x12` |
+                | `{变量:#o}` | 以8进制输出（包括“0o”前缀） | `age = 18; f'{age:#o}'` | `0o22` |
+                | `{变量:#b}` | 以2进制输出（包括“0b”前缀） | `age = 18; f'{age:#b}'` | `0b10010` |
 
-            控制输出内容的颜色
+                可以互相组合使用。
+            3. `print(f'\033[样式;前景色;背景色m内容...\033[0m')`
+
+                >1. 前景色：30（黑）、31（红）、32（绿）、33（黄）、34（蓝）等。
+                >2. 背景色：40（黑）、41（红）、42（绿）等。
+                >3. 样式：0（默认）、1（加粗）、4（下划线）。
+
+                控制输出内容的颜色
+        4. `print(变量 := 10)`既能输出又能赋值（~~`print(变量 = 10)`~~ 报错）
+
+        - `字符串.format(顺序传值、索引传值、关键字传值)`
     1. `type(变量名或值)`检查类型
     1. `range(多个参数)`产生整数序列
 
@@ -107,13 +143,16 @@
     1. `hash(hashable类型)`
 
         >传递`unhashable`会报错。
+    1. `open`
 1. 需要`import`才能使用的内置模块
 
-    `math`、`random`、`string`、`operator`、`functools`、`time`
+    `math`、`random`、`string`、`operator`、`functools`、`time`、`enum`、`json`、`csv`、`re`
 1. `import math`（仅导入了`math`）、`import math as m`（仅导入了`m`）、`from math import factorial`（仅导入了`factorial`）、`from math import factorial as f`（仅导入了`f`）
 
-    - 同名的后导入 覆盖 同名的前导入
-1. 列表（list）
+    1. 同名的后导入 覆盖 同名的前导入
+    2. 可以在非顶层结构中导入，导入的变量不会~~“提升”到外层作用域~~
+1. 各种数据类型都支持解构
+1. 列表（list`[值,]`）
 
     1. 列表是一种**可变**容器
     2. `[多个项]`直接创建字面量列表
@@ -126,7 +165,7 @@
         e.g. `items = [i for i in range(1, 100) if i % 3 == 0 or i % 5 == 0]`、`items2 = [num ** 2 for num in items]`
 
         >使用列表生成式创建列表不仅代码简单优雅，而且性能上也优于使用`for-in`循环和`append`方法向空列表中追加元素的方式。**强烈建议用生成式语法来创建列表**
-1. 元组（tuple）
+1. 元组（tuple`(值,)`）
 
     1. 元组是**不可变**类型
     1. 类似列表的大部分操作
@@ -134,7 +173,7 @@
     4. 打包、解包
 
         `*`解包成列表（0或多个元素）
-1. 集合（set）
+1. 集合（set`{值,}`）
 
     1. 集合是**可变**类型
     1. 创建
@@ -169,7 +208,7 @@
     - 不可变集合（frozenset、冻结集合）
 
     >集合的成员运算在性能上要优于列表的成员运算。
-1. 字典（dictionary）
+1. 字典（dictionary`{键:值,}`）
 
     1. 字典是**可变**类型
     1. 创建
@@ -189,13 +228,13 @@
         >print(xinhua)
         >
         >person = {
-        >'name': '王大锤',
-        >'age': 55,
-        >'height': 168,
-        >'weight': 60,
-        >'addr': '成都市武侯区科华北路62号1栋101',
-        >'tel': '13122334455',
-        >'emergence contact': '13800998877'
+        >  'name': '王大锤',
+        >  'age': 55,
+        >  'height': 168,
+        >  'weight': 60,
+        >  'addr': '成都市武侯区科华北路62号1栋101',
+        >  'tel': '13122334455',
+        >  'emergence contact': '13800998877'
         >}
         >print(person)
         >
@@ -249,8 +288,8 @@
         >```
         ></details>
 
-        1. 用`/`设置强制位置参数（positional-only arguments）：只能按照参数位置来接收参数值的参数
-        2. 用`*`设置命名关键字参数：只能通过`参数名=参数值`的方式来传递和接收参数
+        1. 用`/`设置强制位置参数（positional-only arguments）：只能按照参数位置来接收参数值的参数（否则报错）
+        2. 用`*`设置命名关键字参数：只能通过`参数名=参数值`的方式来传递和接收参数（否则报错）
 
         ><details>
         ><summary>e.g.</summary>
@@ -260,22 +299,40 @@
         >def make_judgement(a, b, c, /):
         >    """判断三条边的长度能否构成三角形"""
         >    return a + b > c and b + c > a and a + c > b
-        ># 下面的代码会产生TypeError错误，错误信息提示“强制位置参数是不允许给出参数名的”
-        ># TypeError: make_judgement() got some positional-only arguments passed as keyword arguments
-        ># print(make_judgement(b=2, c=3, a=1))
+        ># make_judgement(b=2, c=3, a=1) # 该代码会产生TypeError错误，错误信息提示“强制位置参数是不允许给出参数名的”
+        >#   TypeError: make_judgement() got some positional-only arguments passed as keyword arguments
         >
         >
         ># * 后面的参数是命名关键字参数
         >def make_judgement(*, a, b, c):
         >    """判断三条边的长度能否构成三角形"""
         >    return a + b > c and b + c > a and a + c > b
-        ># 下面的代码会产生TypeError错误，错误信息提示“函数没有位置参数但却给了3个位置参数”
-        ># TypeError: make_judgement() takes 0 positional arguments but 3 were given
-        ># print(make_judgement(1, 2, 3))
+        ># make_judgement(1, 2, 3)   # 该代码会产生TypeError错误，错误信息提示“函数没有位置参数但却给了3个位置参数”
+        >#   TypeError: make_judgement() takes 0 positional arguments but 3 were given
         >```
         ></details>
     2. 默认参数`=`、可变参数`*变量`（元组）`**变量`（字典）
-    3. `del 方法名(变量名: 类型名, 变量 = 1) -> 类型名:`
+
+        | 参数类型 | 语法 | 顺序规则​ |
+        | --- | --- | --- |
+        | 普通参数 | a,b | 必须最前 ↓ |
+        | 默认参数 | a=1, b=2 | 在普通参数后，在*args前 ↓ |
+        | 可变参数-元组 | *args | 在默认参数后，在**kwargs前 ↓ |
+        | 仅关键字参数 | *, kw_arg | 在*args后，在**kwargs前 ↓ |
+        | 可变参数-字典 | **kwargs | 必须最后 ↓ |
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```py
+        >def process_data(name, age=18, *scores, country="USA", **extra):
+        >    print(f'{name=} {age=} {scores=} {country=} {extra=}')
+        >
+        >
+        >process_data('你好',18,100,98,99,country='China',sex='male')   # => name='你好' age=18 scores=(100, 98, 99) country='China' extra={'sex': 'male'}
+        >```
+        ></details>
+    3. `def 方法名(变量名: 类型名, 变量名 = 1, 变量名: 类型名 = 1) -> 类型名:`
 
         标注参数的类型、标注函数返回值的类型，*虽然它对代码的执行结果不产生任何影响*，但很好的增强了代码的可读性。
     4. Python中的函数是“一等函数”，所谓“一等函数”指的是：函数可以赋值给变量，函数可以作为函数的参数，函数也可以作为函数的返回值
@@ -289,6 +346,170 @@
     6. 装饰器
 
         “用一个函数装饰另外一个函数并为其提供额外的能力”的语法现象。装饰器本身是一个函数，它的参数是被装饰的函数，它的返回值是一个带有装饰功能的函数——是一个高阶函数。
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```py
+        >def wrapper_func(func):
+        >    def wrapper(*args, **kwargs):
+        >        # ...包裹逻辑
+        >        result = func(*args, **kwargs)
+        >        # ...包裹逻辑
+        >        return result
+        >    return wrapper
+        >
+        >@wrapper_func
+        >def real_func(props):   # 方法名可以使用，并且是经过装饰器之后的方法名
+        >    print(f'{props}')   # do sth.
+        ># 等价于：
+        >#def real_func(props):
+        >#    print(f'{props}')
+        >#real_func = wrapper_func(real_func)
+        >
+        >
+        >real_func(1)
+        >```
+        ></details>
+    7. 支持递归调用
+
+        函数自己调用自己称为递归调用。函数调用通过内存中的栈空间来保存现场和恢复现场，栈空间通常都很小，所以递归如果不能迅速收敛，很可能会引发栈溢出错误，从而导致程序的崩溃。
+1. 类`class`
+
+    >形参名`self`、`cls`等只是约定俗成，可以改成任意变量名，但是因为可读性原因不建议换其他变量名。
+
+    1. 方法的第一个参数通常都是实例对象self，它代表了接收这个消息的对象本身。
+
+        >若没有第一个参数`self`的方法，则无法通过对象调用（报错），只能通过类调用（不推荐，要么加上`self`，要么显式用`@staticmethod`）。
+    2. 自动执行`__init__`方法，完成对内存的初始化操作，也就是把数据放到内存空间中。
+
+    ```py
+    class Student:
+        def __init__(self, name, age):  # 初始化方法
+            self.name = name
+            self.age = age
+        def study(self, course_name):
+            print(f'{self.name}正在学习{course_name}.')
+
+
+    stu1 = Student('ldh', 50)
+
+    # 方案1. 通过“对象.方法”调用方法
+    # .前面的对象就是接收消息的对象
+    # 只需要传入第二个参数课程名称
+    stu1.study('Python程序设计')             # => ldh正在学习Python程序设计.
+
+    # 方案2. 通过“类.方法”调用方法（不推荐）
+    # 第一个参数是接收消息的对象
+    # 第二个参数是学习的课程名称
+    Student.study(stu1, 'Python程序设计')    # => ldh正在学习Python程序设计.
+    ```
+    3. `__name`表示一个私有属性，`_name`表示一个受保护属性
+
+        Python语言并没有从语义上做出最严格的限定，可以用`stu._Student__属性名`的方式访问到私有属性`__属性名`或受保护属性`_属性名`
+    4. Python是动态语言，若不希望在使用对象时动态的为对象添加属性，可以使用`__slots__`（若再动态添加其他属性则引发异常）
+
+        ><details>
+        ><summary>e.g.</summary>
+        >
+        >```py
+        >class Student:
+        >    __slots__ = ('name', 'age')
+        >
+        >    def __init__(self, name, age):
+        >        self.name = name
+        >        self.age = age
+        >
+        >
+        >stu = Student('王大锤', 20)
+        >
+        ># AttributeError: 'Student' object has no attribute 'sex'
+        >stu.sex = '男'
+        >```
+        ></details>
+    5. 类的静态方法`@staticmethod`（第一个参数不能是类cls或实例对象self）、类方法`@classmethod`（第一个参数必须是类cls）
+    6. `@property`指定属性（通过属性获取，经过方法计算）
+    7. Python语言允许多重继承（一个类可以有一个或多个父类）；`object类`是Python中的顶级类（所有的类都是它的子类，要么直接继承它，要么间接继承它）
+
+        1. 在子类的初始化方法中，可以通过`super().__init__()`来调用父类初始化方法。
+        2. 子类继承父类的方法后，还可以对方法进行重写（重新实现该方法），不同的子类可以对父类的同一个方法给出不同的实现版本（多态）。
+
+        ```py
+        class Person:   # 默认 class Person(object)
+            def __init__(self, name, age):
+                self.name = name
+                self.age = age
+            def study(self, course_name):
+                print(f'{self.name}随便学习{course_name}.')
+
+        class Student(Person):
+            def __init__(self, name, age):
+                super().__init__(name, age)     # 调用父类初始化方法
+            def study(self, course_name):       # 重写
+                print(f'{self.name}正在努力学习{course_name}.')
+        ```
+    8. 抽象类、抽象方法（需要子类继承父类、重写方法）
+
+        ```py
+        from abc import ABCMeta, abstractmethod
+
+        class Employee(metaclass=ABCMeta):  # 定义抽象基类（该类不能实例化）
+            def __init__(self, name):
+                self.name = name
+
+            @abstractmethod                 # 标记抽象方法（该方法不能调用，需要子类重写）
+            def get_salary(self):
+                """要求子类必须实现薪资计算方法"""
+                pass                        # 什么也不做，也可以用`...`
+        ```
+    - 枚举
+
+        ```py
+        from enum import Enum
+
+        class Color(Enum):
+            RED = 1
+            GREEN = 2
+            BLUE = 3
+
+
+        print(Color.RED)        # => Color.RED
+        print(Color.RED.name)   # => 'RED'
+        print(Color.RED.value)  # => 1
+        ```
+1. 异常处理`try`、`except`、`else`、`finally`、`raise`
+
+    ```py
+    file = None
+    try:
+        file = open('致橡树.txt', 'r', encoding='utf-8')
+        print(file.read())
+    except FileNotFoundError:
+        print('无法打开指定的文件!')
+    except LookupError:
+        print('指定了未知的编码!')
+    except UnicodeDecodeError as err:
+        print(f'读取文件时解码错误! {err}')
+    except:
+        print('其他异常')
+    else:
+        print('没有异常')
+    finally:
+        if file:
+            file.close()
+
+    raise BaseException('手动抛出异常')
+    ```
+1. `with`
+
+    用于上下文管理的语法结构，它简化了资源管理（如：文件操作、数据库连接、线程锁、等）的代码，确保资源被正确释放。
+
+    ```py
+    with expression [as variable]:
+        # with 代码块
+        # 在这里使用资源
+    # 离开代码块后自动清理资源
+    ```
 
 ### [The Zen of Python（Python之禅）](https://peps.python.org/pep-0020/)
 1. Beautiful is better than ugly. （优美比丑陋好）
