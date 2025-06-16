@@ -760,7 +760,7 @@ console.log(stringify(obj));
 ---
 ### 深复制（深拷贝）
 ```js
-function deepClone(obj, weakmap = new WeakMap()) {
+function cloneDeep(obj, weakmap = new WeakMap()) {
   // 基本数据类型：`Undefined`、`Null`、`Boolean`、`Number`、`String`、`Symbol`、`BigInt`
   if (obj === null || (typeof obj !== "object" && typeof obj !== "function")) {
     return obj;
@@ -802,14 +802,14 @@ function deepClone(obj, weakmap = new WeakMap()) {
       for (const key in obj) {
         // 不处理原型链
         if (obj.hasOwnProperty(key)) {  // 或：Object.hasOwn(obj, key)
-          newObj[key] = deepClone(obj[key], weakmap);   // 递归
+          newObj[key] = cloneDeep(obj[key], weakmap);   // 递归
         }
       }
 
       // 处理自有Symbol类型属性名
       const symbolKeys = Object.getOwnPropertySymbols(obj);
       symbolKeys.forEach((key) => {
-        newObj[key] = deepClone(obj[key], weakmap); // 递归
+        newObj[key] = cloneDeep(obj[key], weakmap); // 递归
       });
 
       return newObj;
@@ -864,7 +864,7 @@ var obj = {
 obj.h.h2 = obj;
 
 console.log(obj);
-console.log(deepClone(obj));
+console.log(cloneDeep(obj));
 // console.log(structuredClone(obj))
 ```
 </details>
