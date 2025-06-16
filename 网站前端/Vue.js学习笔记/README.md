@@ -44,7 +44,7 @@
 
         >Vue 2、Vue 3支持。
 
-        使用选项式API，我们可以用包含多个选项的对象来描述组件的逻辑，如：data、methods、mounted、等。选项所定义的属性都会暴露在函数内部的`this`上，它会指向当前的组件实例。
+        使用选项式API，我们可以用包含多个选项的对象来描述组件的逻辑，如：methods、data、mounted、等。选项所定义的属性都会暴露在函数内部的`this`上，它会指向当前的组件实例。
 
     >选项式API 是在 组合式API 的基础上实现的。
 
@@ -68,7 +68,7 @@
     >Vue 3.4+。
 
     上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；可写计算属性的`get`的第一个参数`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
-7. 若组件有多个根元素，则不会默认添加在多个根元素上
+7. 若组件有多个根元素，则不会默认添加在多个根元素上（`inheritAttrs: true（默认）`会在单独一个根元素上添加attribute）
 
     可以通过组件的`$attrs`属性来指定接收的元素。
 
@@ -90,7 +90,29 @@
     | `/deep/`   | Vue 2       | ✔️           | ❌       | Vue 3已废弃，部分构建工具可能兼容但会警告 |
     | `::v-deep` | Vue 2       | ✔️           | ❌       | Vue 3已废弃。`/deep/`的别名，语义更明确 |
     | `:deep()`  | Vue 3       | ✔️           | ✔️       | 当前最佳实践。与Composition API兼容 |
-10. ~~`$listeners`~~ 在Vue 3中已被移除，事件监听器现在是`$attrs`的一部分
+10. 当同时存在于一个节点上时，`v-if`比`v-for`的优先级更高（与vue 2正相反）
+
+    <details>
+    <summary>这意味着<code>v-if</code>的条件将无法访问到<code>v-for</code>作用域内定义的变量别名</summary>
+
+    ```vue
+    <!--
+    这会抛出一个错误，因为属性 todo 此时
+    没有在该实例上定义
+    -->
+    <li v-if="!todo.isComplete" v-for="todo in todos">
+      {{ todo.name }}
+    </li>
+    ```
+    </details>
+11. `$attrs`、`inheritAttrs`区别
+
+    | 特性 | Vue 2 | Vue 3 |
+    |------|-------|-------|
+    | `$attrs`是否包含`class`、`style` | ❌ 不包含 | ✅ 包含 |
+    | 事件监听器存储位置 | `$listeners` | `$attrs`（已移除 ~~`$listeners`~~） |
+    | 事件名 | `$listeners`中保持原样（事件名的大小写、`-`不会做任何变化） | `$attrs`中转化为`onClick`这样的驼峰事件名 |
+    | `inheritAttrs`影响（并非影响`$attrs`） | 影响根元素`不被认作props`的attribute传递，除了`class`、`style` | 影响根元素`不被认作props`的attribute传递，包括`class`、`style` |
 
 ---
 
@@ -225,7 +247,15 @@
     ></li>
     >```
     >
-    >避免`v-if`和`v-for`同时用在同一个元素上。
+    >避免`v-if`和`v-for`同时用在同一个元素上，可用`<template>`分开。
+    >
+    >数组的建议写法：
+    >
+    >```html
+    ><li v-for="li in lis.filter(li => !li.isComplete)">
+    >  {{ li }}
+    ></li>
+    >```
     ></details>
 
     - 在组件中使用`v-for`时，必须添加`key`属性
@@ -278,7 +308,7 @@
 
                 等价于：`<my-component :属性1.sync="对象1.属性1" :属性2.sync="对象1.属性2"/>`
 
-                >不能将`v-bind.sync`用在一个字面量的对象上，错误：~~`v-bind.sync="{ title: doc.title }"`~~。
+                >不能将`v-bind.sync`用在一个字面量的对象上，错误：~~`v-bind.sync="{ title: doc.title }"`~~，必须是`v-bind.sync="对象变量"`。
             </details>
         2. `.prop`（绑定到DOM的`property`而不是HTML标签的 ~~`attribute`~~）
         3. `.camel`（小驼峰式camelCase转换为大驼峰式PascalCase）
@@ -303,7 +333,7 @@
                 e.g. `:style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"`
         3. 对于[布尔型的attribute](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Attributes#布尔属性)，若绑定的值是 `真值 或 空字符串`，则这个属性存在，否则 绑定的值是其他假值时 这个属性被忽略。
 
-        当在一个自定义组件上使用`class`或`style`时，这些值将被添加到该组件的**根元素**上面（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签），不受`inheritAttrs`影响，`class`或`style`属性会合并（而不是覆盖）。
+        当在一个自定义组件上使用`class`或`style`时，这些值将被添加到该组件的**根元素**上面（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签。永远不会成为向内子级的props声明接受，仅能作为普通的 HTML attribute），不受`inheritAttrs`影响；`class`、`style`属性会合并（而不是覆盖）；`class`、`style`永远不会传递进`$props`，无论子级`props`是否声明接受`class`、`style`。
     3. 传递给子组件DOM属性的值类型
 
         <details>
@@ -321,6 +351,8 @@
         ```
         </details>
     4. 若不带参数的`v-bind="表达式"`（不能用缩写 ~~`:表达式`~~），则绑定表达式的所有属性到DOM。
+
+        >同名的属性优先级：①`:同名属性="表达式"`与`同名属性="值"`，哪一个写在后面哪一个生效；②`v-bind="{同名属性:'值'}"`优先级最低；③`class`、`style`任何情况下都是合并处理。
 
         <details>
         <summary>e.g.</summary>
@@ -344,7 +376,7 @@
         </script>
         ```
 
-        `v-bind="{...$props, ...$attrs}"`（$props：组件显式接收的属性。$attrs：除了$props、class、style之外，传给组件的属性，不受inheritAttrs取值影响）
+        `v-bind="{...$props, ...$attrs}"`（$props：组件显式接收的属性。$attrs：除了$props、class、style之外，传给组件的属性，**不受`inheritAttrs`取值影响**）
         </details>
 5. `v-on`（`v-on:xx`缩写：`@xx`）事件监听
 
@@ -953,13 +985,15 @@
                 2. `required`：是否必须（默认：`false`）
                 3. `default`：基本数据类型的值；对象或数组必须从工厂函数返回默认值（当且仅当没有传入时才使用或调用）
 
-                    `Function`类型的`default`直接就是这个props的默认方法（不是再返回的）：e.g.`func: { type: Function, default(args) { return args }}`，而不是~~default(){ return (args) => args }~~。
+                    `Function`类型的`default`直接就是这个props的默认方法（不是再返回的）：e.g.`func: { type: Function, default(args) { return args }}`，而不是~~default() { return (args) => args }~~。
+
+                    >default是方法的，`this`返回组件实例，但因为执行顺序（beforeCreate -> props -> methods -> data -> computed -> watch -> created），因此此时的this只能拿到props写在当前参数之前的传参、拿不到之后的传参，拿不到methods、data、computed等属性。
 
                 >`required`和`default`二选一。
 
                 4. `validator`：验证方法（对子组件的任何修改包括`v-show`修改以及自身`default`，都会触发所有prop的验证方法）
 
-                >props会在一个组件实例创建之前进行验证，所以实例的属性（如：`data`、`computed`、`methods`等）在`default`或`validator`函数中不可用。
+                    >props会在一个组件实例创建之前进行验证，因此`this`返回`undefined`（获取不到组件实例）。
 
             - 任何类型都可以设置默认值为`undefined`
     >- 子级修改props：
@@ -981,7 +1015,7 @@
 
     以`_`或`$`开头的属性不会被Vue实例代理，但可以使用`vm.$data`访问（e.g. `vm.$data._property`）。
 
-    >Vue内置的属性、API方法会以 `_`或`$` 开头，因此若看到不带这些前缀的Vue实例的属性时，则一般可认为是Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性）。
+    >Vue内置的属性、API方法会以 `_`或`$` 开头，因此若看到不带这些前缀的Vue实例的属性时，则一般可认为是Vue实例代理的属性（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins`传入的属性）。
 4. `computed`（对象）：依赖其他值（`props`、`data`、`computed`）的改变而执行，最后`return`值
 
     <details>
@@ -1047,7 +1081,7 @@
 
     >还可以用`vm.$watch`（返回`unwatch`方法，取消观察）来观察属性改变。
 
->执行顺序是：（`props` -> ）`data` -> `computed` -> `watch`。
+>执行顺序是：（`props` -> ）`methods` -> `data` -> `computed` -> `watch`。
 
 6. `el`（CSS选择器字符串 或 HTMLElement实例）：挂载目标
 
@@ -1096,6 +1130,8 @@
             >// 传入props：value1:2,value2:2
             >```
             ></details>
+
+            >无论顺序如何，vue的template语法中的`v-bind="对象"`都被其他同名的属性覆盖（除了`class`、`style`合并之外）。
         2. 渲染非字符或非数字类型：
 
             1. vue的template语法渲染
@@ -1150,22 +1186,23 @@
 
     方法内部没有代理 ~~`this`~~ 到Vue实例。
 
-    >因为不会被Vue实例代理，所以可以和Vue实例代理的属性同名（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性）。
+    >因为不会被Vue实例代理，所以可以和Vue实例代理的属性同名（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins`传入的属性）。
 12. `mixins`（`[组件选项1, 组件选项2,...]`）：混入
 
-    mixin数组每一项中的属性，都会合并到组件本身的选项（如：mixin的`methods`合并到组件的`methods`、mixin的`data`合并到组件的`data`）。
+    mixin数组每一项中的属性，都会合并到组件本身的选项（如：mixin的`methods`/`data`/`watch`合并到组件的`methods`/`data`/`watch`）。
 
-    1. 钩子函数都会调用：混入对象的钩子优先调用，组件自身的钩子之后调用（同名的多个生命周期钩子**不**会等待Promise完成）。
-    2. 非钩子函数属性，若有同名内容，则合并之后，组件自身内容覆盖mixin：
+    1. 钩子函数、`watch`都会调用：混入对象的钩子函数和`watch`优先调用，组件自身的钩子函数和`watch`之后调用（同名的多个生命周期钩子**不**会等待Promise完成）。
+    2. 其他属性，若有同名内容，则合并之后，组件自身内容覆盖mixin：
 
-        `methods`、`components`、`directives`等，合并为同一个对象；对象内部键名冲突时（如：`methods`都有某同名方法），使用组件对象的内容、丢弃mixin的内容。
-
-    >`Vue.mixin`/`mixins`、`Vue.extend`/`extends`的合并逻辑一致。
+        `data`、`methods`、`components`、`directives`等，合并为同一个对象；对象内部键名冲突时（如：`methods`都有某同名方法），使用组件对象的内容、丢弃mixin的内容。
 
     - 作用域：
 
         1. 局部：组件局部注册，仅在本组件内起作用，对子组件无效。
         2. 全局：`Vue.mixin`全局注册，将会影响之后创建的（之前的不受影响）Vue实例，包括第三方模板。
+
+>`Vue.mixin`/`mixins`、`Vue.extend`/`extends`的合并逻辑一致；同时有`Vue.mixin`/`mixins`和`Vue.extend`/`extends`时，先处理mixin，再处理extend
+
 13. `extends`（组件选项 或 Vue组件或Vue子类）：扩展、继承一个组件
 
     主要是为了便于扩展单文件组件。
@@ -1223,7 +1260,7 @@
 
     1. `beforeCreate`
 
-    >实例的（`props`、）`data`、`computed`、`watch`等实例内容的创建。
+    >实例的（`props`、）`methods`、`data`、`computed`、`watch`等实例内容的创建。
 
     2. `created`
 
@@ -1257,7 +1294,7 @@
     <details>
     <summary>生命周期图示</summary>
 
-    ![vue2生命周期图](./images/vue-lifecycle-1.png)
+    ![vue 2生命周期图](./images/vue-lifecycle-1.png)
     </details>
 18. `parent`（Vue实例）：指定父组件
 19. `name`（字符串）
@@ -1279,7 +1316,7 @@
     默认：组件上的`v-model`会把`value`用作prop、把`input`用作event。
 23. `inheritAttrs`（`boolean`，默认：`true`）
 
-    默认情况下父作用域的不被认作 props 的 attribute 绑定将会“回退”且作为普通的 HTML attribute 应用在子组件的**根元素**上。当撰写包裹一个目标元素或另一个组件的组件时，这可能不会总是符合预期行为。通过设置 inheritAttrs 到 false，这些默认行为将会被去掉。而通过 $attrs 可以让这些 attribute 生效，且可以通过 v-bind 显性的绑定到非根元素上。
+    默认情况下父作用域的`不被认作props`的attribute绑定将会“回退”且作为普通的 HTML attribute 应用在子组件的**根元素**上（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签。永远不会成为向内子级的props声明接受，仅能作为普通的 HTML attribute）。当撰写包裹一个目标元素或另一个组件的组件时，这可能不会总是符合预期行为。通过设置`inheritAttrs: false`，这些默认行为将会被去掉。而通过 $attrs 可以让这些 attribute 生效，且可以通过 v-bind 显性的绑定到非根元素上。
 
     >inheritAttrs不会影响 class 和 style 绑定逻辑。
 24. `comments`（`boolean`，默认：`false`）
@@ -1452,7 +1489,7 @@
 
             1. 父 -> 子：通过`props`向下传递初始化数据给子组件实例（不出现在DOM中）
 
-                >（当`inheritAttrs`默认`true`时，）若添加在子组件的props但不在子组件`props`的声明，则仅添加到子组件最外层的DOM属性。其中`class`和`style`属性会合并，其他属性会覆盖。`inheritAttrs`不影响`style`和`class`的绑定（style、class绑定逻辑固定不变）。
+                >（当`inheritAttrs`默认`true`时，）若添加在子组件的props但不在子组件`props`的声明，则仅添加到子组件的根元素（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签。永远不会成为向内子级的props声明接受，仅能作为普通的 HTML attribute）。其中`class`和`style`属性会合并，其他属性会覆盖。`inheritAttrs`不影响`style`和`class`的绑定（style、class绑定逻辑固定不变）。
 
                 1. `props`是单向传递的：当父级的属性变化时，将传导给子组件，不会反过来
 
@@ -1823,7 +1860,7 @@
 
     - 包裹组合其他组件（调用组件A的任何方式，就像调用组件B一样，只是额外处理了一些内容）
 
-        >1. vm.$attrs：包含了父作用域中不作为 prop 被识别 (且获取) 的 attribute 绑定 (class 和 style 除外)。（不会因为`inheritAttrs`的取值而变化）
+        >1. vm.$attrs：包含了父作用域中不作为 prop 被识别 (且获取) 的 attribute 绑定 (~~class~~、~~style~~除外)。（**不受`inheritAttrs`取值影响**）
         >
         >    配合inheritAttrs：false。根元素传递class和style。
         >2. vm.$listeners：包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器
@@ -1982,7 +2019,7 @@
       mounted () {
         // 新建一个Vue实例
         const OtherVue = Vue.extend(OtherComponent)  // 创建Vue子类，继续创建Vue实例需要再`new`创建好的子类
-        this.vm = new OtherVue({  // 后定义，类似于mixin的合并逻辑（钩子：先定义执行 -> 后定义执行；非钩子：后定义执行、先定义忽略）
+        this.vm = new OtherVue({  // 后定义，类似于mixin的合并逻辑（钩子和watch：先定义执行 -> 后定义执行；其他：合并，后定义执行、先定义忽略）
           store,  // 共享store。若是nuxt，则直接：store: this.$store
           router, // 共享router。若是nuxt，则直接：router: this.$router
           beforeDestroy () {    // 合并。先定义的钩子先执行，后定义的钩子后执行
@@ -2351,7 +2388,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     `$mount`、`$forceUpdate`、`$nextTick`、`$destroy`
 
 ### 特性
-1. Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性），在内部`vm.名字`访问，可以直接使用，**所有属性名字都不能重复**（filters不属于同一类）；也有以`$`开头的Vue实例属性（如：`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
+1. Vue实例代理的属性（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins`传入的属性），在内部`vm.名字`访问，可以直接使用，**所有属性名字都不能重复**（filters不属于同一类）；也有以`$`开头的Vue实例属性（如：`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
 
     只有已经被代理的内容是响应的（Vue实例被创建时传入的属性），值的改变（可能）会触发视图的重新渲染。
 2. **Vue实例的属性**和**Vue实例的属性的属性**，慎用~~箭头函数~~，因为`this`的指向无法按预期指向Vue实例。
@@ -2387,7 +2424,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     >    </details>
     >2. 针对不需要展示到`template`的属性，可以不把属性初始化在`data`的返回对象中，而是直接`vm.属性 = 值`在JS中使用（这个属性变更不会导致响应式更新，意味着：若`template`展示`{{ 属性 }}`，则更新这个值之后，需要依赖其他更新视图的方式才能看到视图展示新的值）。
     >
-    >    这种属性最好也初始化在`date`函数里（数据初始化统一位置，且又是生命周期的前期），e.g. `data(){ this.不响应式属性 = 值; return { 响应式属性: 值 }; }`。
+    >    这种属性最好也初始化在`date`函数里（数据初始化统一位置，且又是生命周期的前期），e.g. `data() { this.不响应式属性 = 值; return { 响应式属性: 值 }; }`。
     >3. 针对所有这个组件的实例全部共用同一个值、不响应式更新、不能放在`template`内的值，可以放在组件外部。
     >4. 在`created`生命周期钩子之前，`vm.属性值`还未被初始化
     >
@@ -2723,7 +2760,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     1. 2
 
-        使用**选项类型api（Options API）**，在代码里分割了不同的属性：data、computed、methods、等。声明选项的方式书写Vue组件。
+        使用**选项类型api（Options API）**，在代码里分割了不同的属性：methods、data、computed、等。声明选项的方式书写Vue组件。
     2. 3
 
         使用**合成型api（Composition API）**，使用方法来分割，相比于旧的api使用属性来分组，这样代码会更加简便和整洁。使用函数的方式书写组件。
@@ -2731,7 +2768,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     1. 2
 
-        定义数据变量要在`data(){}`，创建的方法要在`methods:{}`中，计算属性要在`computed:{}`中，生命周期钩子要在组件属性中调用，父子通信用`this.props/$emit`。
+        定义数据变量要在`data() {}`，创建的方法要在`methods:{}`中，计算属性要在`computed:{}`中，生命周期钩子要在组件属性中调用，父子通信用`this.props/$emit`。
 
         ><details>
         ><summary>e.g.</summary>
@@ -4081,7 +4118,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     ![nuxt流程图](./images/nuxt-1.png)
     </details>
 
-    1. 页面加载时，先进行Vue、vue router、vuex的初始化，再初始化`middleware`，最后初始化`plugins`至Vue实例；随后在首次路由加载和每次路由切换时进行`middleware`导出方法的运行；最后进行页面的`asyncData`，然后进行组件的vue原本钩子和页面的`fetch`：`beforeCreate` -> `props -> data -> computed -> watch` -> `created` -> `beforeMount`(SSR没有) -> `fetch` -> `mounted`(SSR没有)。
+    1. 页面加载时，先进行Vue、vue router、vuex的初始化，再初始化`middleware`，最后初始化`plugins`至Vue实例；随后在首次路由加载和每次路由切换时进行`middleware`导出方法的运行；最后进行页面的`asyncData`，然后进行组件的vue原本钩子和页面的`fetch`：`beforeCreate` -> `props -> methods -> data -> computed -> watch` -> `created` -> `beforeMount`(SSR没有) -> `fetch` -> `mounted`(SSR没有)。
     2. 服务端渲染进行步骤至`created`（包括）。
     3. Vue组件的生命周期钩子中，仅有`beforeCreate`、`created`在客户端和服务端均被调用（服务端渲染），其他钩子仅在客户端被调用。
 6. 路由
@@ -4244,7 +4281,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
         >创建所有路由的`.html`文件（去除动态路由），每个文件都是预渲染完成的不同页面。
 
-        会跑一遍nuxt的流程（Vue、vue router、vuex的初始化 -> middleware、plugins的初始化 -> middleware -> asyncData -> beforeCreate -> `props->data->computed->watch` -> created -> fetch），生成静态化文件。
+        会跑一遍nuxt的流程（Vue、vue router、vuex的初始化 -> middleware、plugins的初始化 -> middleware -> asyncData -> beforeCreate -> `props->methods->data->computed->watch` -> created -> fetch），生成静态化文件。
 
         ><details>
         ><summary>优势:</summary>
@@ -4286,7 +4323,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 ### [element-ui](https://github.com/ElemeFE/element)例子
 1. <details>
 
-    <summary>打开一个复杂的Dialog或Drawer组件</summary>
+    <summary>打开一个复杂的<code>el-dialog</code>或<code>el-drawer</code></summary>
 
     ```vue
     // 父级
@@ -4321,35 +4358,40 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     </details>
 2. <details>
 
-    <summary>Upload组件上传，处理multiple、限制单文件大小、后缀、处理loading状态</summary>
+    <summary><code>el-upload</code>上传，处理limit、限制单文件大小、后缀、处理loading状态</summary>
 
     ```vue
     <template>
       <el-upload
-        drag
+        v-bind="$attrs"
+
         action="上传地址"
+        :limit="limit"
         :accept="accept"
-        :multiple="multiple"
         :file-list="fileList"
+
         :before-upload="beforeUpload"
         :on-change="onChange"
         :on-error="onError"
         :on-remove="onRemove"
+        :on-exceed="onExceed"
       >
         {{ loading }}
 
         <div slot="tip" class="el-upload__tip">
           <p v-if="accept">可直接将文件拖拽到此处进行上传，支持格式: {{ accept }}</p>
           <p v-if="limitSize">单个文件大小限制: {{ limitSize }}M</p>
+          <p v-if="limit">最大允许上传个数: {{ limit }}M</p>
         </div>
       </el-upload>
     </template>
     <script>
     export default {
+      // 支持把原本`<el-upload>`支持的props都传入，因为上面有`v-bind="$attrs"`
       props: {
-        multiple: { // 是否可以导入多文件
-          type: Boolean,
-          default: false,
+        limit: { // 最大允许上传个数（0：不限）
+          type: Number,
+          default: 0,
         },
         accept: {   // 支持文件后缀类型（以文件后缀名，加,分割，如：'.xls,.xlsx'），若传空字符串则表示不限制
           type: String,
@@ -4370,16 +4412,17 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         beforeUpload(file) {        // 上传一个文件之前 钩子，若返回false或失败的Promise实例，则这一个文件停止上传且不再触发这一个文件其他钩子
           let passed = true;
 
-          // 限制后缀
-          if (this.accept) {
-            const suffix = getFileExtension(file.name).toLowerCase();
-            if (this.accept.split(',').indexOf(suffix) === -1) {
-              setTimeout(() => {
-                this.$message.error('请选择支持的文件后缀: ' + this.accept);
-              });
-              passed = false;
-            }
-          }
+          // 代码一般跑不到这里，操作系统选择文件一般会限制文件后缀
+          //// 限制后缀
+          //if (this.accept) {
+          //  const suffix = getFileExtension(file.name).toLowerCase();
+          //  if (this.accept.split(',').indexOf(suffix) === -1) {
+          //    setTimeout(() => {
+          //      this.$message.error('请选择支持的文件后缀: ' + this.accept);
+          //    });
+          //    passed = false;
+          //  }
+          //}
 
           // 限制文件大小
           if (this.limitSize) {
@@ -4400,9 +4443,13 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
           return passed;
         },
 
-        onError(err, file, fileList) {  // 文件上传网络错误 钩子
+        onError(err, file, fileList) {  // 文件上传网络错误 钩子（不需要在这个事件中修改文件列表）
           this.$message.error('文件上传失败');
         },
+        onExceed(files, fileList) {      // 文件超出个数限制时 钩子（不需要在这个事件中修改文件列表）
+          this.$message.warning(`当前限制选择 ${this.limit} 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+        },
+
         onChange(file, fileList) {      // 添加文件 + on-success + on-error 钩子
           this.handleFileList(fileList);
         },
@@ -4425,19 +4472,19 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     1. 避免样式问题，让所有信息都排列展示
 
         ```js
-        // 同时多次调用 this.ok() 不会出问题
-        ok(){
+        // ✅同时多次调用 this.ok() 不会出问题
+        ok() {
           setTimeout(()=>{
             this.$message('1') // 或 this.$notify
           })
         }
 
 
-        // 同时多次调用 this.notOk() 会出现重叠问题
-        notOk(){
+        // ❌同时多次调用 this.notOk() 会出现重叠问题
+        notOk() {
           this.$message('1')
         }
-        notOk(){
+        notOk() {
           this.$nextTick(()=>{
             this.$message('1')
           })
@@ -4456,7 +4503,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
 
         // 同时多次调用 this.ok() 不会出问题
-        ok(){
+        ok() {
           sendMessage1('1')
         })
         ```
@@ -4525,13 +4572,20 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
       @clear="text2 = ''"
     />
 
-    handlerClick (event){
+    data() {
+      return {
+        text1: '展示的文案',
+        text2: '可能是表单用的真正文本',
+      }
+    }
+
+    handlerClick(event) {
       // 点击到clear按钮
       if (event?.target?.nodeName === 'I' && event?.target?.classList.contains('el-icon-circle-close')) {
         return;
       }
 
-      // 进行其他逻辑，比如打开弹窗，这个弹窗最后修改 text1、text2
+      // 进行其他逻辑，比如打开弹窗，这个弹窗最后修改 text1（展示）、text2（表单传参）
     }
     ```
     </details>
@@ -4544,11 +4598,11 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
       type="datetimerange"
       v-model="dateValue"
       :picker-options="timePickerOptions"
-      @blur="handleBlur"
+      @blur="handleBlurAndChange"
+      @change="handleBlurAndChange"
     />
 
     data() {
-      const that = this;
       return {
         dateValue: "",
 
@@ -4561,31 +4615,33 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
           // 点击日期面板后触发
           onPick: ({ maxDate, minDate }) => {
             // 目的：实现「允许选择的时间范围」限制
-            that.curSelectDate.minDate = minDate;
-            that.curSelectDate.maxDate = maxDate;
+            this.curSelectDate.minDate = minDate?.valueOf()??minDate;
+            this.curSelectDate.maxDate = maxDate?.valueOf()??maxDate;
           },
-          disabledDate(time) {
+          disabledDate: (time) => {
             const maxTime = 15 * 24 * 60 * 60 * 1000 - 1000; // 假设半个月
 
-            if (that.curSelectDate.minDate && Math.abs(that.curSelectDate.minDate - time) > maxTime) return true;
-            if (that.curSelectDate.maxDate && Math.abs(that.curSelectDate.maxDate - time) > maxTime) return true;
+            if (this.curSelectDate.minDate && Math.abs(this.curSelectDate.minDate - time) > maxTime) return true;
+            if (this.curSelectDate.maxDate && Math.abs(this.curSelectDate.maxDate - time) > maxTime) return true;
             return false;
           },
         },
       };
     },
     methods: {
-      // 取消时重置
-      handleBlur() {
+      // 取消或修改时重置回组件值（解决：选择开始时间后放弃选择结束时间的交互问题）
+      handleBlurAndChange() {
         this.curSelectDate.minDate = this.dateValue ? this.dateValue[0] : null;
         this.curSelectDate.maxDate = this.dateValue ? this.dateValue[1] : null;
       },
     },
     ```
     </details>
+
+    >[CodePen demo](https://codepen.io/realgeoffrey/pen/NWQdavo)
 7. <details>
 
-    <summary><code>&lt;el-form></code>或<code>&lt;el-form-item></code>的<code>rules</code>属性，对应的是<code>&lt;el-form-item></code>的<code>prop</code>属性，对应表单校验方法指向的prop（validate、validateField、resetFields、clearValidate）</summary>
+    <summary><code>el-form</code>或<code>el-form-item</code>的<code>rules</code>属性，对应的是<code>el-form-item</code>的<code>prop</code>属性，对应表单校验方法指向的prop（validate、validateField、resetFields、clearValidate）</summary>
 
     ```vue
     <!-- rules在form -->
@@ -4623,6 +4679,32 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
               <el-input v-model="formData.tableData[$index].value1"/>
     ```
     </details>
+8. 表单校验`rules: []`是数组，按顺序校验，可以用自定义`validator`方法，属性可以参考[async-validator](https://github.com/yiminghe/async-validator)
+
+    1. 若`rules`中传递了`message`，则命中校验失败只会展示`message`；若`rules`中未传递`message`，则展示`validator`中的`callback(new Error(错误信息))`
+    2. 可动态插入或删除`rules`项（单独触发一个字段校验：`validateField`；触发整个表单所有字段校验：`validate`——有传回调处理回调，不传回调返回Promise）
+    3. 实现：仅提示校验问题，但不阻塞提交
+
+        1. `<el-input>`触发`@chage/input`后去修改`<col-form-item>`的`error`属性，可以做到既展示校验错误信息又提交时不校验
+
+            >修改`<col-form-item>`的`error`属性仅展示/隐藏校验失败信息、不影响校验逻辑，校验逻辑完全遵照rules。
+        2. `validator`函数内，用其他方式提示错误、总是通过校验
+
+            e.g. `{ validator(rule, value, callback) { $message('输入的有点问题，但不影响提交'); callback() }, trigger: [ 'blur' ] }`
+        3. `validate`忽略某些未通过校验的字段（不好判断具体哪一条rules校验未通过）
+
+        >[CodePen demo](https://codepen.io/realgeoffrey/pen/xbGaBVY)
+9. `<el-tree>`已提供方法：①`仅选中的叶子` `getCheckedNodes(true)`、②`选中的叶子+全选的非叶子节点` `getCheckedNodes(false)`、③`选中的叶子+全选的非叶子节点+半选的非叶子节点` `getCheckedNodes(false,true)`、④`仅半选的非叶子节点` `getHalfCheckedNodes()`
+
+    >若`:check-strictly="true"`，则没有~~半选的非叶子节点~~，只有`全选的非叶子节点`。
+
+    1. 可以实现`仅全选的非叶子节点`（没有业务意义）：②-①
+    2. 可以实现`没有 [上级全选节点] 的 [叶子+全选的非叶子节点]`：②去除 在其他项children中的项
+
+    >[CodePen demo](https://codepen.io/realgeoffrey/pen/PwPojyr)
+10. `MessageBox`可以用`Vue实例.$msgbox.close()`关闭所有MessageBox（不会触发任何配置的事件处理函数，如：~~callback~~、~~Promise结果~~）
+
+    >源码：<https://github.com/ElemeFE/element/blob/master/src/index.js#L200>、<https://github.com/ElemeFE/element/blob/master/packages/message-box/src/main.js#L208-L213>
 
 - 避免问题
 
@@ -4641,6 +4723,9 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     7. [element-ui的日期格式](https://element.eleme.cn/#/zh-CN/component/date-picker#ri-qi-ge-shi)与[moment的格式](https://momentjs.cn/docs/#/displaying/format/)是不同的，要注意
 
         e.g. element-ui不支持 ~~`YYYY`、`DDDD`、等~~
+    8. `<el-upload>`的`http-request`默认会去使用`action`等参数，并且`action`是必传参数。因此，若要传递`http-request`重写，也必须传递`action`，建议重写的`http-request`也与源码一样去使用`action`
+
+        >源码：<https://github.com/ElemeFE/element/blob/master/packages/upload/src/upload.vue#L137-L156>
 
 ### jQuery与Vue.js对比
 1. 做的事情

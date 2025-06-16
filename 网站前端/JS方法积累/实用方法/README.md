@@ -3348,8 +3348,8 @@ var a = new ShowFPS();
 ```tsx
 /* 使用测试 */
 <TheImage
-  src={this.state.switch ? 'https://fakeimg.pl/100/?text=true': '1'}
-  defaultImage="https://fakeimg.pl/100/?text=default"
+  src={this.state.switch ? 'https://placehold.co/100/?text=true': '1'}
+  defaultImage="https://placehold.co/100/?text=default"
   style={{ width: "100px", height: "100px" }}
   className='abc'
   classNameForError='abc-error'
@@ -3399,7 +3399,7 @@ var a = new ShowFPS();
 </script>
 ```
 
->可参考：[Ant Design：Typography排版的`ellipsis`](https://ant.design/components/typography-cn/)。
+>可参考：[Ant Design：Typography排版的`ellipsis`](https://ant.design/components/typography-cn#typography-demo-ellipsis-controlled)、[element-ui：Table 表格的`show-overflow-tooltip`](https://github.com/ElemeFE/element/blob/master/packages/table/src/table-body.js#L250-L283)。
 
 ### 九宫格抽奖
 >canvas实现的抽奖插件（大转盘、九宫格、老虎机）：[lucky-canvas](https://github.com/buuing/lucky-canvas)。

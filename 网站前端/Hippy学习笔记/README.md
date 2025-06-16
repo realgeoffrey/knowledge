@@ -1610,7 +1610,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
 
         1. `backgroundImage`
 
-            >1. URL不能缩写。不能用 ~~<https://placeholder.com/>~~？
+            >1. URL不能缩写。
             >2. 仅针对`<View>`等。
 
             e.g. `backgroundImage: import变量/require变量/"http资源"`
