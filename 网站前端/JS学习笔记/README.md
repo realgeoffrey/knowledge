@@ -1030,7 +1030,7 @@ new new F().func(); // => 1  === new (new F()).func();
 
         1. 复制对象A时，对象B将复制A的所有字段。若字段是引用数据类型（内存地址），B将复制地址；若字段是基本数据类型，B将复制其值。
         2. 缺点：若改变了对象B（或A）所指向的内存地址所存储的值，则同时也改变了对象A（或B）指向这个地址所存储的值。
-    2. 引用数据类型的深复制
+    2. 引用数据类型的深复制（深拷贝）
 
         1. 新开辟一个内存空间，完全复制所有数据至新的空间，新对象指向这个新空间的地址（原对象不变化）。
         2. 优点：B与A不会相互依赖（A，B完全脱离关联）；缺点：复制的速度更慢，代价更大。
@@ -1067,7 +1067,7 @@ new new F().func(); // => 1  === new (new F()).func();
 
                     >对象：`obj = Object.assign({}, obj)`（不推荐用：~~`obj = Object.create(obj)`~~）
                 4. 一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)赋值
-            2. [深复制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#深复制深拷贝实现思路)。
+            2. [深复制（深拷贝）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#深复制深拷贝实现思路)。
 4. <details>
 
     <summary>存储、值传递步骤举例</summary>
@@ -1174,6 +1174,8 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 1. 递归赋值（最全面方式）
 
     >深复制要处理的坑：循环引用、各种引用数据类型、执行性能。
+
+    >[lodash](https://github.com/lodash/lodash)直接使用：深拷贝`_.cloneDeep()`、深合并`_.merge()`、深对比`_.isEqual()`。
 2. 针对**仅能够被JSON直接表示的数据结构（对象、数组、数值、字符串、布尔值、null）**：
 
     `JSON.parse(JSON.stringify(obj));`
