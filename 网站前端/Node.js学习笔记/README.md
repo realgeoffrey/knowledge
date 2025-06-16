@@ -1381,7 +1381,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 
     1. `config.default.js`
 
-        任何情况都使用，与其他配置文件合并使用（通过[extend2](https://github.com/eggjs/extend2)深复制），其他配置优先级高于default。
+        任何情况都使用，与其他配置文件合并使用（通过[extend2](https://github.com/eggjs/extend2)深复制/深拷贝），其他配置优先级高于default。
 
         ```js
         module.exports = {
@@ -1405,7 +1405,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         ```
     2. `config.local.js`开发模式、`config.unittest.js`测试模式、`config.prod.js`正式、其他自定义环境名
 
-    - 插件、框架、应用 之间的配置文件 以及 具体环境、default 之间的配置文件，都是通过文件合并（通过[extend2](https://github.com/eggjs/extend2)深复制），而不是互相覆盖。
+    - 插件、框架、应用 之间的配置文件 以及 具体环境、default 之间的配置文件，都是通过文件合并（通过[extend2](https://github.com/eggjs/extend2)深复制/深拷贝），而不是互相覆盖。
 3. 扩展`./app/extend/`（全支持：应用、框架、插件） +
 
     1. `application.js`或`application.{env}.js`

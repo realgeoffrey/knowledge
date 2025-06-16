@@ -29,8 +29,6 @@
     1. [预加载](#预加载)
     1. [判断对象、方法是否定义](#判断对象方法是否定义)
     1. [浏览器缓存](#浏览器缓存)
-    1. [JS压缩细节](#js压缩细节)
-    1. [JS混淆（加密）细节](#js混淆加密细节)
 1. [编程技巧](#编程技巧)
 
     1. [JS代码风格规范（coding style guide）](#js代码风格规范coding-style-guide)
@@ -1030,7 +1028,7 @@ new new F().func(); // => 1  === new (new F()).func();
 
         1. 复制对象A时，对象B将复制A的所有字段。若字段是引用数据类型（内存地址），B将复制地址；若字段是基本数据类型，B将复制其值。
         2. 缺点：若改变了对象B（或A）所指向的内存地址所存储的值，则同时也改变了对象A（或B）指向这个地址所存储的值。
-    2. 引用数据类型的深复制
+    2. 引用数据类型的深复制（深拷贝）
 
         1. 新开辟一个内存空间，完全复制所有数据至新的空间，新对象指向这个新空间的地址（原对象不变化）。
         2. 优点：B与A不会相互依赖（A，B完全脱离关联）；缺点：复制的速度更慢，代价更大。
@@ -1067,7 +1065,7 @@ new new F().func(); // => 1  === new (new F()).func();
 
                     >对象：`obj = Object.assign({}, obj)`（不推荐用：~~`obj = Object.create(obj)`~~）
                 4. 一层[循环遍历](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#循环遍历)赋值
-            2. [深复制](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#深复制深拷贝实现思路)。
+            2. [深复制（深拷贝）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#深复制深拷贝实现思路)。
 4. <details>
 
     <summary>存储、值传递步骤举例</summary>
@@ -1174,6 +1172,8 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 1. 递归赋值（最全面方式）
 
     >深复制要处理的坑：循环引用、各种引用数据类型、执行性能。
+
+    >[lodash](https://github.com/lodash/lodash)直接使用：深拷贝`_.cloneDeep()`、深合并`_.merge()`、深对比`_.isEqual()`。
 2. 针对**仅能够被JSON直接表示的数据结构（对象、数组、数值、字符串、布尔值、null）**：
 
     `JSON.parse(JSON.stringify(obj));`
@@ -2463,7 +2463,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         ><details>
         >
-        ><summary>注意：<code>finally</code>块总是在控制流退出<code>try-catch-finally</code>结构之前执行。它总是执行，无论是否抛出或捕获异常。</summary>
+        ><summary>注意：<code>finally</code>块<strong>总是</strong>在控制流退出<code>try-catch-finally</code>结构之前执行，<strong>无论是否抛出或捕获异常或前面代码块return</strong>。</summary>
         >
         >1. 在`try`块正常执行完成后立即执行`finally`；
         >2. 在`catch`块正常执行完成后立即执行`finally`；
@@ -2833,87 +2833,6 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         ```html
         <html manifest=".manifest文件/.appcache文件">
         ```
-
-### JS压缩细节
->来自：[Javascript代码压缩细节](http://www.airmyth.com/thread-1801-1-1.html)。
-
->类似[编译器编译原理](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#编译器编译原理)：parse -> AST -> 转换（压缩逻辑） -> code generate。
-
-试着生成新的代码，对比后输出最短的内容。
-
-1. 去除注释、多余的分隔符与空白符，标识符简写。
-2. 压缩表达式
-
-    1. 表达式预计算
-
-        将可预先计算的表达式替换成其计算结果，并比较原来表达式与生成后的结果的大小，取短的。
-    2. 优化`true/false`
-
-        1. `true`
-
-            1. 在`==/!=`运算 -> `1`
-            2. 其他运算 -> `!0`
-        2. `false`
-
-            1. 在`==/!=`运算 -> `0`
-            2. 其他运算 -> `!1`
-    3. 优化`&&/||`
-
-        1. `true && 表达式` -> `表达式`
-        2. `false && 表达式` -> `!1`
-        3. `true || 表达式` -> `!0`
-        4. `false || 表达式` -> `表达式`
-3. 缩短运算符
-
-    1. `===/!==`的两个操作数都是`String`类型或都是`Boolean`类型的，缩短成`==/!=`。
-    2. 缩短赋值表达式
-
-        >参考：[MDN：赋值运算符](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators#赋值运算符)。
-
-        对于类似`a = a + b`的赋值表达式（`+` `-` `*` `/` `%` `**` `&&` `||` `??` `>>` `>>>` `<<` `&` `|` `^`），可以缩短成`a += b`。
-
-        >1. 位运算：`>>`符号传播右移、`>>>`无符号右移/零填充右移、`<<`左移、`|`按位或、`&`按位与、`^`按位异或。
-        >2. 逻辑复制：逻辑与赋值`x &&= y`运算仅在x为真值时为其赋值；逻辑或赋值`x ||= y`运算仅在x为假值时为其赋值；逻辑空赋值运算符`x ??= y`仅在x是空值`undefined/null`时对其赋值。
-    3. `!`操作符的压缩
-
-        对于`!(a>=b)`，若转换后`a<b`得到更短的代码，则转换。
-4. 去除没用的声明
-
-    1. 去除重复的指示性字符串，如：`"use strict"`。
-    2. 去除没有使用的函数参数。
-    3. 去除函数表达式的函数名（若未使用）。
-    4. 去除没用的块语句。
-    5. 去除没有使用的`break`。
-    6. 去除没有引用的`label`。
-    7. 去除没有作用的`toString`调用。
-5. 压缩`while`
-
-    1. 去除根本不会执行的`while`，如：`while(false){}`。
-    5. `while(true){}` -> `for(;;){}`
-6. `条件判断 ? 表达式1 : 表达式2`
-
-    1. 若`条件判断`有`!`，则去除`!`且调换表达式前后位置。
-    2. 若`条件判断`为常数，则直接缩短为某一个表达式。
-7. 压缩语句块
-
-    1. 连续的表达式语句合并成一个逗号表达式`,`。
-    2. 多个`var`声明可以压缩成一个`var`声明。
-    3. `return`之后的非变量声明、非函数声明可以去除。
-    4. 合并块末尾的`return`语句及其前边的多条表达式语句。
-8. 优化`if`
-
-    1. 去除没用的、空的`if/else`分支。
-    2. 尝试反转`if/else`分支，看看生成代码是否更短。
-    3. 若`if`块里边仅有一个`if`语句，且`else`块为空，则可以合并这两个`if`。
-    4. 若`if`最后一个语句是跳出控制语句，则可以把`else`块的内容提到`else`外边，然后去掉`else`。
-    5. 若`if/else`里各仅有一条`return`语句，则可以合并这两句`return`。
-    6. 若`if/else`里各仅有一条语句，则可以转换为三元运算符表达式。
-    7. 若`if/else`其中一个块为空，另一个块仅有一条语句，则可以转化成`||/&&`表达式。
-
-### JS混淆（加密）细节
->参考：[JavaScript混淆安全加固](https://github.com/yacan8/blog/blob/master/posts/JavaScript混淆安全加固.md)。
-
-减少加密的成本、增加破解的成本，「当你采用的加密模式，使得攻击者为了破解所付出的代价 远远超过其所获得的利益之时，你的加密方案就是安全的」。
 
 ---
 ## 编程技巧
@@ -3529,6 +3448,9 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         - 若资源的`load`/`error`事件触发则加载完成/加载失败。
 
     - DevTools的Network面板
+24. github、google文档、各种文档页面等，都实现了监听「全选」快捷键（command/control+a），去选择文章内容部分，而不是原生浏览器的全选整个页面文字
+
+    >可以通过「停用JavaScript」来验证。
 
 ---
 ## 事件相关

@@ -3399,7 +3399,7 @@ var a = new ShowFPS();
 </script>
 ```
 
->可参考：[Ant Design：Typography排版的`ellipsis`](https://ant.design/components/typography-cn/)。
+>可参考：[Ant Design：Typography排版的`ellipsis`](https://ant.design/components/typography-cn#typography-demo-ellipsis-controlled)、[element-ui：Table 表格的`show-overflow-tooltip`](https://github.com/ElemeFE/element/blob/master/packages/table/src/table-body.js#L250-L283)。
 
 ### 九宫格抽奖
 >canvas实现的抽奖插件（大转盘、九宫格、老虎机）：[lucky-canvas](https://github.com/buuing/lucky-canvas)。

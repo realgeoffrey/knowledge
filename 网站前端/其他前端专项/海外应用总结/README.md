@@ -163,6 +163,8 @@
     >    5. 不同平台、语言的占位符校验、替换
 3. 运行时热更新
 
+    >旧的语言包都随着包发布，作为任何情况的兜底；新的语言包热更新。
+
     支持APP或H5发版之后，在运行时更新翻译结果（时机，如：重启APP或切换语言等），不需要重新安装APP或重新构建H5。
 
 - 按国家/地区
@@ -183,8 +185,10 @@
 ><summary>时区（Time Zone） !== 偏移量（Offset）</summary>
 >
 >1. 时区：[`IANA时区标识符，如"America/New_York"`](https://www.iana.org/time-zones)，时区指定的地区可以查询出一个或多个偏移量（是否处于夏令时）
->2. 偏移量：一个数字（或字符串），表示特定日期/时间值比UTC早或晚多少，如'+0800'、'GMT-0800'
+>2. 偏移量：一个数字（或字符串），表示特定日期/时间值比UTC早或晚多少，如：`'+0800'`、`'GMT-0800'`
 ></details>
+
+>[一文读懂全球化系统中的日期时间处理问题](https://mp.weixin.qq.com/s/0FM16km2qLUAaMyu4yf_6A)
 
 1. 在A时区存储时间，在A或其他时区展示，期望展示正确的绝对时间：
 
@@ -236,7 +240,7 @@
     >
     >        <script>
     >        import { DatePicker } from 'element-ui';
-    >        import { valueEquals } from './utils';  // 来自：https://github.com/ElemeFE/element/blob/v2.15.14/packages/date-picker/src/picker.vue#L308-L340
+    >        import { valueEquals } from './utils';  // 来自：https://github.com/ElemeFE/element/blob/master/packages/date-picker/src/picker.vue#L308-L340
     >
     >        export default {
     >          components: { DatePicker },
@@ -415,7 +419,7 @@
         moment('2025-03-09T02:30:00-05:00').tz('America/New_York').format()
         ```
         </details>
-    6. （不包含偏移量的时间字符串）`2012-11-04T01:00:00`+时区：若表达的是时区下的时间刻度，则可以算出时间戳，那么就等价于上上一条 **（地区+）时区+时间刻度+偏移量**
+    6. （不包含偏移量的时间字符串）`2012-11-04T01:00:00`+时区：若表达的是时区下的时间刻度，则可以算出时间戳，因此等于（上）上一条 **（地区+）时区+时间刻度+偏移量**
 
         <details>
         <summary>e.g.</summary>
@@ -434,6 +438,8 @@
         moment('2025-03-09T02:30:00-05:00').valueOf()
         ```
         </details>
+
+    >时间信息等价：`包含偏移量的时间字符串` 等价于 `时间戳` 等价于 `Date对象`
 
     ><details>
     ><summary>moment的相关方法</summary>
