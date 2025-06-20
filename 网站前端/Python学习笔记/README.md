@@ -55,14 +55,31 @@
         `True`、`False`
     5. `None`
 1. 变量名通常使用小写英文字母，多个单词用下划线`_`进行连接
+1. 变量关键字
+
+    1. `global`
+
+        在函数内部声明或定义全局变量（模块级别的变量），要么直接使用现有的全局作用域的变量，要么定义一个变量放到全局作用域。
+    2. `nonlocal`
+
+        声明使用嵌套作用域的变量（嵌套作用域必须存在该变量，否则报错）。
+    - 最佳实践建议
+
+        1. 尽量避免使用`global`​ - 全局变量会使代码难以维护和理解
+        2. ​优先使用函数参数和返回值​ - 比修改外部变量更清晰
+        ​3. 必要时使用`nonlocal`​ - 在闭包等场景下是合理的选择
+        4. ​变量命名要明确​ - 特别是全局变量，可以用 `G_` 前缀等标识
+1. `del 变量`删除变量
 1. （与JS不同的运算符、语法）`:=`、`==`、`!=`、`not`、`or`、`and`、`//`、`is`、`is not`、`in`、`not in`、`*变量`、`**变量`
 1. `if 「条件」:`（没有小括号 ~~`()`~~ ）、`elif 「条件」:`、`else:`
 
     2. 支持`值1 <= 变量 < 值2`
-1. `for 变量 in 列表或元组或集合或字符串或字典或range(参数):`
+1. `for 变量1, 变量2 in 列表或元组或集合或字符串或字典或range(参数):`
 
     `for _ in xx:`不使用索引
 1. for、if等可以放在表达式中
+
+    >`for`、`if`、`三元运算`看做是一个断句。
 
     ```py
     items = [i for i in range(1, 10)]   # [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -72,6 +89,18 @@
 
     items = [str(i)+'是偶数' if i%2==0 else str(i)+'是奇数' for i in range(1, 10) if i % 3 == 0 or i % 5 == 0] # ['3是奇数', '5是奇数', '6是偶数', '9是奇数']
     # 运行顺序：for -> if -> 产出的i进行 三元运算
+
+    prices = {
+        'AAPL': 191.88,
+        'GOOG': 1186.96,
+        'IBM': 149.24,
+        'ORCL': 48.44,
+        'ACN': 166.89,
+        'FB': 208.09,
+        'SYMC': 21.29
+    }
+    # 用股票价格大于100元的股票构造一个新的字典
+    prices2 = {key: value for key, value in prices.items() if value > 100}
 
     # 支持三元运算符表达式： 值1 if 条件表达式 else 值2
     num = 2
@@ -146,11 +175,12 @@
     1. `open`
 1. 需要`import`才能使用的内置模块
 
-    `math`、`random`、`string`、`operator`、`functools`、`time`、`enum`、`json`、`csv`、`re`
+    `math`、`random`、`string`、`operator`、`functools`、`time`、`enum`、`json`、`csv`、`re`、`heapq`、`itertools`、`collections`、`threading`、`abc`、`gc`
 1. `import math`（仅导入了`math`）、`import math as m`（仅导入了`m`）、`from math import factorial`（仅导入了`factorial`）、`from math import factorial as f`（仅导入了`f`）
 
     1. 同名的后导入 覆盖 同名的前导入
     2. 可以在非顶层结构中导入，导入的变量不会~~“提升”到外层作用域~~
+    3. `,`可以一个语句导入多个变量：`import a, b`、`import a as A, b as B`,`from a import x1, x2`,`from a import x1 as A1, x2 as A2`
 1. 各种数据类型都支持解构
 1. 列表（list`[值,]`）
 
@@ -160,7 +190,7 @@
     4. 两个列表可以做关系运算（`<=`、`<`、`>`、`>=`、`==`、`!=`），逐个按顺序对比每个项
     5. 运算符支持：`列表 + 列表`、`列表 * 整数`
     6. `in`、`not in`
-    7. **生成式**创建法
+    7. **生成式**（推导式）创建法
 
         e.g. `items = [i for i in range(1, 100) if i % 3 == 0 or i % 5 == 0]`、`items2 = [num ** 2 for num in items]`
 
@@ -194,6 +224,7 @@
         >set4 = set([1, 2, 2, 3, 3, 3, 2, 1])
         >print(set4)   # {1, 2, 3}
         >
+        ># 生成式（推导式）创建
         >set5 = {num for num in range(1, 20) if num % 3 == 0 or num % 7 == 0}
         >print(set5)   # {3, 6, 7, 9, 12, 14, 15, 18}
         >```
@@ -248,7 +279,7 @@
         >items2 = dict(zip('ABCDE', range(1, 10)))
         >print(items2)  # {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
         >
-        ># 用字典生成式语法创建字典
+        ># 用字典生成式（推导式）语法创建字典
         >items3 = {x: x ** 3 for x in range(1, 6)}
         >print(items3)  # {1: 1, 2: 8, 3: 27, 4: 64, 5: 125}
         >```
@@ -299,16 +330,14 @@
         >def make_judgement(a, b, c, /):
         >    """判断三条边的长度能否构成三角形"""
         >    return a + b > c and b + c > a and a + c > b
-        ># make_judgement(b=2, c=3, a=1) # 该代码会产生TypeError错误，错误信息提示“强制位置参数是不允许给出参数名的”
-        >#   TypeError: make_judgement() got some positional-only arguments passed as keyword arguments
+        >make_judgement(b=2, c=3, a=1)  # TypeError: make_judgement() got some positional-only arguments passed as keyword arguments: 'a, b, c'
         >
         >
         ># * 后面的参数是命名关键字参数
         >def make_judgement(*, a, b, c):
         >    """判断三条边的长度能否构成三角形"""
         >    return a + b > c and b + c > a and a + c > b
-        ># make_judgement(1, 2, 3)   # 该代码会产生TypeError错误，错误信息提示“函数没有位置参数但却给了3个位置参数”
-        >#   TypeError: make_judgement() takes 0 positional arguments but 3 were given
+        >make_judgement(1, 2, 3)        # TypeError: make_judgement() takes 0 positional arguments but 3 were given
         >```
         ></details>
     2. 默认参数`=`、可变参数`*变量`（元组）`**变量`（字典）
@@ -335,7 +364,7 @@
     3. `def 方法名(变量名: 类型名, 变量名 = 1, 变量名: 类型名 = 1) -> 类型名:`
 
         标注参数的类型、标注函数返回值的类型，*虽然它对代码的执行结果不产生任何影响*，但很好的增强了代码的可读性。
-    4. Python中的函数是“一等函数”，所谓“一等函数”指的是：函数可以赋值给变量，函数可以作为函数的参数，函数也可以作为函数的返回值
+    4. Python中的函数是“一等函数”：函数可以赋值给变量，函数可以作为函数的参数，函数也可以作为函数的返回值
 
         把一个函数作为其他函数的参数或返回值的用法，我们通常称之为“高阶函数”
     5. lambda函数（匿名函数）
@@ -385,6 +414,7 @@
 
     ```py
     class Student:
+        属性1=值 # 支持解构
         def __init__(self, name, age):  # 初始化方法
             self.name = name
             self.age = age
@@ -423,15 +453,14 @@
         >
         >stu = Student('王大锤', 20)
         >
-        ># AttributeError: 'Student' object has no attribute 'sex'
-        >stu.sex = '男'
+        >stu.sex = '男'     # AttributeError: 'Student' object has no attribute 'sex'
         >```
         ></details>
     5. 类的静态方法`@staticmethod`（第一个参数不能是类cls或实例对象self）、类方法`@classmethod`（第一个参数必须是类cls）
     6. `@property`指定属性（通过属性获取，经过方法计算）
-    7. Python语言允许多重继承（一个类可以有一个或多个父类）；`object类`是Python中的顶级类（所有的类都是它的子类，要么直接继承它，要么间接继承它）
+    7. Python语言允许多重继承；`object类`是Python中的顶级类（所有的类都是它的子类，要么直接继承它，要么间接继承它）
 
-        1. 在子类的初始化方法中，可以通过`super().__init__()`来调用父类初始化方法。
+        1. 在子类的初始化方法中，可以通过`super().__init__()`来调用父类初始化方法（MRO）。
         2. 子类继承父类的方法后，还可以对方法进行重写（重新实现该方法），不同的子类可以对父类的同一个方法给出不同的实现版本（多态）。
 
         ```py
@@ -442,13 +471,44 @@
             def study(self, course_name):
                 print(f'{self.name}随便学习{course_name}.')
 
-        class Student(Person):
+        class Student(Person):  # class Student(父类1, 父类2,) 支持多重继承
             def __init__(self, name, age):
-                super().__init__(name, age)     # 调用父类初始化方法
+                super().__init__(name, age)     # 按照 MRO 顺序调用下一个类的初始化方法
             def study(self, course_name):       # 重写
                 print(f'{self.name}正在努力学习{course_name}.')
         ```
+        3. MRO (Method Resolution Order，方法解析顺序)是Python处理多重继承时确定方法调用顺序的规则体系。
+
+            `super()`不是简单地调用父类方法，而是按照 MRO 顺序调用下一个类的方法（包括类方法和`__init__`等所有方法）。
+
+            ```
+              A
+             / \
+            B   C
+             \ /
+              D
+
+            查看D类的MRO：`D.__mro__  # D → B → C → A → object`
+            ```
+            - 当类继承关系无法满足 C3 算法的单调性原则时，Python会抛出错误：
+
+                >C3算法是Python用于确定多重继承中方法解析顺序（MRO）的核心算法，它解决了多重继承中的方法调用顺序问题，特别是著名的"菱形继承"问题。
+
+                ```py
+                class A: pass
+                class B(A): pass
+                class C(A, B): pass  # TypeError: Cannot create a consistent method resolution
+
+
+                class A: pass
+                class B: pass
+                class C(A, B): pass
+                class D(B, A): pass
+                class E(C, D): pass  # TypeError: Cannot create a consistent method resolution
+                ```
     8. 抽象类、抽象方法（需要子类继承父类、重写方法）
+
+        >面向对象三大支柱：封装、继承、多态。
 
         ```py
         from abc import ABCMeta, abstractmethod
@@ -461,6 +521,18 @@
             def get_salary(self):
                 """要求子类必须实现薪资计算方法"""
                 pass                        # 什么也不做，也可以用`...`
+
+        class Manager(Employee):
+            def get_salary(self):
+                return 15000.0
+
+        class Programmer(Employee):
+            def __init__(self, name, working_hour=0):
+                self.working_hour = working_hour
+                super().__init__(name)
+
+            def get_salary(self):
+                return 200.0 * self.working_hour
         ```
     - 枚举
 
