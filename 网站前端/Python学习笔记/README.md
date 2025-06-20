@@ -9,7 +9,17 @@
 ### 核心软件
 1. [conda](https://github.com/conda/conda)
 
-    环境管理、包管理
+    环境、系统包管理器
+2. pip
+
+    python包管理器
+
+>使用方式：
+>
+>1. 首先，为项目安装和/或设置conda（包括所需的 conda env），然后从conda频道安装您需要的所有软件包
+>2. 其次，在激活conda的情况下，可以使用conda附带的pip版本来安装所需的pip依赖项到项目的conda环境中
+>
+>[知乎：pip install 和conda install有什么区别吗？](https://www.zhihu.com/question/395145313)
 
 ### 语法
 1. 单引号`'`与双引号`"`同时支持，相同效果
