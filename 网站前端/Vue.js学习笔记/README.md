@@ -44,7 +44,7 @@
 
         >Vue 2、Vue 3支持。
 
-        使用选项式API，我们可以用包含多个选项的对象来描述组件的逻辑，如：data、methods、mounted、等。选项所定义的属性都会暴露在函数内部的`this`上，它会指向当前的组件实例。
+        使用选项式API，我们可以用包含多个选项的对象来描述组件的逻辑，如：methods、data、mounted、等。选项所定义的属性都会暴露在函数内部的`this`上，它会指向当前的组件实例。
 
     >选项式API 是在 组合式API 的基础上实现的。
 
@@ -955,11 +955,13 @@
 
                     `Function`类型的`default`直接就是这个props的默认方法（不是再返回的）：e.g.`func: { type: Function, default(args) { return args }}`，而不是~~default(){ return (args) => args }~~。
 
+                    >default是方法的，`this`返回组件实例，但因为执行顺序（beforeCreate -> props -> methods -> data -> computed -> watch -> created），因此此时的this只能拿到props写在当前参数之前的传参、拿不到之后的传参，拿不到methods、data、computed等属性。
+
                 >`required`和`default`二选一。
 
                 4. `validator`：验证方法（对子组件的任何修改包括`v-show`修改以及自身`default`，都会触发所有prop的验证方法）
 
-                >props会在一个组件实例创建之前进行验证，所以实例的属性（如：`data`、`computed`、`methods`等）在`default`或`validator`函数中不可用。
+                    >props会在一个组件实例创建之前进行验证，因此`this`返回`undefined`（获取不到组件实例）。
 
             - 任何类型都可以设置默认值为`undefined`
     >- 子级修改props：
@@ -981,7 +983,7 @@
 
     以`_`或`$`开头的属性不会被Vue实例代理，但可以使用`vm.$data`访问（e.g. `vm.$data._property`）。
 
-    >Vue内置的属性、API方法会以 `_`或`$` 开头，因此若看到不带这些前缀的Vue实例的属性时，则一般可认为是Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性）。
+    >Vue内置的属性、API方法会以 `_`或`$` 开头，因此若看到不带这些前缀的Vue实例的属性时，则一般可认为是Vue实例代理的属性（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins`传入的属性）。
 4. `computed`（对象）：依赖其他值（`props`、`data`、`computed`）的改变而执行，最后`return`值
 
     <details>
@@ -1047,7 +1049,7 @@
 
     >还可以用`vm.$watch`（返回`unwatch`方法，取消观察）来观察属性改变。
 
->执行顺序是：（`props` -> ）`data` -> `computed` -> `watch`。
+>执行顺序是：（`props` -> ）`methods` -> `data` -> `computed` -> `watch`。
 
 6. `el`（CSS选择器字符串 或 HTMLElement实例）：挂载目标
 
@@ -1150,7 +1152,7 @@
 
     方法内部没有代理 ~~`this`~~ 到Vue实例。
 
-    >因为不会被Vue实例代理，所以可以和Vue实例代理的属性同名（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性）。
+    >因为不会被Vue实例代理，所以可以和Vue实例代理的属性同名（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins`传入的属性）。
 12. `mixins`（`[组件选项1, 组件选项2,...]`）：混入
 
     mixin数组每一项中的属性，都会合并到组件本身的选项（如：mixin的`methods`合并到组件的`methods`、mixin的`data`合并到组件的`data`）。
@@ -1223,7 +1225,7 @@
 
     1. `beforeCreate`
 
-    >实例的（`props`、）`data`、`computed`、`watch`等实例内容的创建。
+    >实例的（`props`、）`methods`、`data`、`computed`、`watch`等实例内容的创建。
 
     2. `created`
 
@@ -2351,7 +2353,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     `$mount`、`$forceUpdate`、`$nextTick`、`$destroy`
 
 ### 特性
-1. Vue实例代理的属性（`props`、`data`、`computed`、`methods`、`provide/inject`的属性，或`mixins`传入的属性），在内部`vm.名字`访问，可以直接使用，**所有属性名字都不能重复**（filters不属于同一类）；也有以`$`开头的Vue实例属性（如：`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
+1. Vue实例代理的属性（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins`传入的属性），在内部`vm.名字`访问，可以直接使用，**所有属性名字都不能重复**（filters不属于同一类）；也有以`$`开头的Vue实例属性（如：`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
 
     只有已经被代理的内容是响应的（Vue实例被创建时传入的属性），值的改变（可能）会触发视图的重新渲染。
 2. **Vue实例的属性**和**Vue实例的属性的属性**，慎用~~箭头函数~~，因为`this`的指向无法按预期指向Vue实例。
@@ -2723,7 +2725,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     1. 2
 
-        使用**选项类型api（Options API）**，在代码里分割了不同的属性：data、computed、methods、等。声明选项的方式书写Vue组件。
+        使用**选项类型api（Options API）**，在代码里分割了不同的属性：methods、data、computed、等。声明选项的方式书写Vue组件。
     2. 3
 
         使用**合成型api（Composition API）**，使用方法来分割，相比于旧的api使用属性来分组，这样代码会更加简便和整洁。使用函数的方式书写组件。
@@ -4081,7 +4083,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     ![nuxt流程图](./images/nuxt-1.png)
     </details>
 
-    1. 页面加载时，先进行Vue、vue router、vuex的初始化，再初始化`middleware`，最后初始化`plugins`至Vue实例；随后在首次路由加载和每次路由切换时进行`middleware`导出方法的运行；最后进行页面的`asyncData`，然后进行组件的vue原本钩子和页面的`fetch`：`beforeCreate` -> `props -> data -> computed -> watch` -> `created` -> `beforeMount`(SSR没有) -> `fetch` -> `mounted`(SSR没有)。
+    1. 页面加载时，先进行Vue、vue router、vuex的初始化，再初始化`middleware`，最后初始化`plugins`至Vue实例；随后在首次路由加载和每次路由切换时进行`middleware`导出方法的运行；最后进行页面的`asyncData`，然后进行组件的vue原本钩子和页面的`fetch`：`beforeCreate` -> `props -> methods -> data -> computed -> watch` -> `created` -> `beforeMount`(SSR没有) -> `fetch` -> `mounted`(SSR没有)。
     2. 服务端渲染进行步骤至`created`（包括）。
     3. Vue组件的生命周期钩子中，仅有`beforeCreate`、`created`在客户端和服务端均被调用（服务端渲染），其他钩子仅在客户端被调用。
 6. 路由
@@ -4244,7 +4246,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
         >创建所有路由的`.html`文件（去除动态路由），每个文件都是预渲染完成的不同页面。
 
-        会跑一遍nuxt的流程（Vue、vue router、vuex的初始化 -> middleware、plugins的初始化 -> middleware -> asyncData -> beforeCreate -> `props->data->computed->watch` -> created -> fetch），生成静态化文件。
+        会跑一遍nuxt的流程（Vue、vue router、vuex的初始化 -> middleware、plugins的初始化 -> middleware -> asyncData -> beforeCreate -> `props->methods->data->computed->watch` -> created -> fetch），生成静态化文件。
 
         ><details>
         ><summary>优势:</summary>
