@@ -7,13 +7,13 @@
 ---
 
 ### JS压缩细节
->来自：[Javascript代码压缩细节](http://www.airmyth.com/thread-1801-1-1.html)。
+>来自：[Javascript代码压缩细节](https://w3ctech.com/topic/254)。
 
 >类似[编译器编译原理](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#编译器编译原理)：parse -> AST -> 转换（压缩逻辑） -> code generate。
 
 试着生成新的代码，对比后输出最短的内容。
 
-1. 去除注释、多余的分隔符与空白符，标识符简写。
+1. 去除注释、多余的分隔符与空白符，标识符（变量名、函数名）简写。
 2. 压缩表达式
 
     1. 表达式预计算
@@ -74,7 +74,7 @@
     4. 合并块末尾的`return`语句及其前边的多条表达式语句。
 8. 优化`if`
 
-    1. 去除没用的、空的`if/else`分支。
+    1. 去除没用的、空的`if/else`分支（死代码）。
     2. 尝试反转`if/else`分支，看看生成代码是否更短。
     3. 若`if`块里边仅有一个`if`语句，且`else`块为空，则可以合并这两个`if`。
     4. 若`if`最后一个语句是跳出控制语句，则可以把`else`块的内容提到`else`外边，然后去掉`else`。
