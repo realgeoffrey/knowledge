@@ -3,6 +3,7 @@
 ## 目录
 1. [JS压缩细节](#js压缩细节)
 1. [JS混淆（加密）细节](#js混淆加密细节)
+1. [逆向](#逆向)
 
 ---
 
@@ -86,3 +87,7 @@
 >参考：[JavaScript混淆安全加固](https://github.com/yacan8/blog/blob/master/posts/JavaScript混淆安全加固.md)。
 
 减少加密的成本、增加破解的成本，「当你采用的加密模式，使得攻击者为了破解所付出的代价 远远超过其所获得的利益之时，你的加密方案就是安全的」。
+
+[javascript-obfuscator](https://github.com/javascript-obfuscator/javascript-obfuscator)
+
+### 逆向
