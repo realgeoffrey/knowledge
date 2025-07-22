@@ -326,7 +326,7 @@
                 e.g. `:style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"`
         3. 对于[布尔型的attribute](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Attributes#布尔属性)，若绑定的值是 `真值 或 空字符串`，则这个属性存在，否则 绑定的值是其他假值时 这个属性被忽略。
 
-        当在一个自定义组件上使用`class`或`style`时，这些值将被添加到该组件的**根元素**上面（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签。永远不会成为向内子级的props声明接受，仅能作为普通的 HTML attribute，仅能作为普通attribute），不受`inheritAttrs`影响；`class`、`style`属性会合并（而不是覆盖）；`class`、`style`永远不会传递进`$props`，无论子级`props`是否声明接受`class`、`style`。
+        当在一个自定义组件上使用`class`或`style`时，这些值将被添加到该组件的**根元素**上面（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签。永远不会成为向内子级的props声明接受，仅能作为普通的 HTML attribute），不受`inheritAttrs`影响；`class`、`style`属性会合并（而不是覆盖）；`class`、`style`永远不会传递进`$props`，无论子级`props`是否声明接受`class`、`style`。
     3. 传递给子组件DOM属性的值类型
 
         <details>
