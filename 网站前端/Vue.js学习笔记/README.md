@@ -1308,7 +1308,7 @@
     默认：组件上的`v-model`会把`value`用作prop、把`input`用作event。
 23. `inheritAttrs`（`boolean`，默认：`true`）
 
-    默认情况下父作用域的不被认作 props 的 attribute 绑定将会“回退”且作为普通的 HTML attribute 应用在子组件的**根元素**上。当撰写包裹一个目标元素或另一个组件的组件时，这可能不会总是符合预期行为。通过设置 inheritAttrs 到 false，这些默认行为将会被去掉。而通过 $attrs 可以让这些 attribute 生效，且可以通过 v-bind 显性的绑定到非根元素上。
+    默认情况下父作用域的`不被认作props`的 attribute 绑定将会“回退”且作为普通的 HTML attribute 应用在子组件的**根元素**上（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签）。当撰写包裹一个目标元素或另一个组件的组件时，这可能不会总是符合预期行为。通过设置`inheritAttrs: false`，这些默认行为将会被去掉。而通过 $attrs 可以让这些 attribute 生效，且可以通过 v-bind 显性的绑定到非根元素上。
 
     >inheritAttrs不会影响 class 和 style 绑定逻辑。
 24. `comments`（`boolean`，默认：`false`）
@@ -1481,7 +1481,7 @@
 
             1. 父 -> 子：通过`props`向下传递初始化数据给子组件实例（不出现在DOM中）
 
-                >（当`inheritAttrs`默认`true`时，）若添加在子组件的props但不在子组件`props`的声明，则仅添加到子组件最外层的DOM属性。其中`class`和`style`属性会合并，其他属性会覆盖。`inheritAttrs`不影响`style`和`class`的绑定（style、class绑定逻辑固定不变）。
+                >（当`inheritAttrs`默认`true`时，）若添加在子组件的props但不在子组件`props`的声明，则仅添加到子组件的根元素（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签）。其中`class`和`style`属性会合并，其他属性会覆盖。`inheritAttrs`不影响`style`和`class`的绑定（style、class绑定逻辑固定不变）。
 
                 1. `props`是单向传递的：当父级的属性变化时，将传导给子组件，不会反过来
 
@@ -1852,7 +1852,7 @@
 
     - 包裹组合其他组件（调用组件A的任何方式，就像调用组件B一样，只是额外处理了一些内容）
 
-        >1. vm.$attrs：包含了父作用域中不作为 prop 被识别 (且获取) 的 attribute 绑定 (class 和 style 除外)。（不会因为`inheritAttrs`的取值而变化）
+        >1. vm.$attrs：包含了父作用域中不作为 prop 被识别 (且获取) 的 attribute 绑定 (~~class~~、~~style~~除外)。（不会因为`inheritAttrs`的取值而变化）
         >
         >    配合inheritAttrs：false。根元素传递class和style。
         >2. vm.$listeners：包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器
