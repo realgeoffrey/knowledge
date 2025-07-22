@@ -68,7 +68,7 @@
     >Vue 3.4+。
 
     上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；可写计算属性的`get`的第一个参数`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
-7. 若组件有多个根元素，则不会默认添加在多个根元素上
+7. 若组件有多个根元素，则不会默认添加在多个根元素上（`inheritAttrs: true（默认）`会在单独一个根元素上添加attribute）
 
     可以通过组件的`$attrs`属性来指定接收的元素。
 
@@ -90,8 +90,7 @@
     | `/deep/`   | Vue 2       | ✔️           | ❌       | Vue 3已废弃，部分构建工具可能兼容但会警告 |
     | `::v-deep` | Vue 2       | ✔️           | ❌       | Vue 3已废弃。`/deep/`的别名，语义更明确 |
     | `:deep()`  | Vue 3       | ✔️           | ✔️       | 当前最佳实践。与Composition API兼容 |
-10. ~~`$listeners`~~ 在Vue 3中已被移除，事件监听器现在是`$attrs`的一部分
-11. 当同时存在于一个节点上时，`v-if`比`v-for`的优先级更高（与vue 2正相反）
+10. 当同时存在于一个节点上时，`v-if`比`v-for`的优先级更高（与vue 2正相反）
 
     <details>
     <summary>这意味着<code>v-if</code>的条件将无法访问到<code>v-for</code>作用域内定义的变量别名</summary>
@@ -106,6 +105,15 @@
     </li>
     ```
     </details>
+11. `$attrs`、`inheritAttrs`区别
+
+    | 特性 | Vue 2 | Vue 3 |
+    |------|-------|-------|
+    | `$attrs`是否包含`class`、`style` | ❌ 不包含 | ✅ 包含 |
+    | 事件监听器存储位置 | `$listeners` | `$attrs`（已移除~~`$listeners`~~） |
+    | 事件名 | `$listeners`中保持原样（事件名的大小写、`-`不会做任何变化） | `$attrs`中转化为`onClick`这样的驼峰事件名 |
+    | `inheritAttrs`影响（并非影响`$attrs`） | 不影响根元素的`class`、`style`传递 | 影响根元素所有属性传递，包括`class`、`style` |
+
 
 ---
 
