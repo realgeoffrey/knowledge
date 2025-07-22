@@ -110,9 +110,9 @@
     | 特性 | Vue 2 | Vue 3 |
     |------|-------|-------|
     | `$attrs`是否包含`class`、`style` | ❌ 不包含 | ✅ 包含 |
-    | 事件监听器存储位置 | `$listeners` | `$attrs`（已移除~~`$listeners`~~） |
+    | 事件监听器存储位置 | `$listeners` | `$attrs`（已移除 ~~`$listeners`~~） |
     | 事件名 | `$listeners`中保持原样（事件名的大小写、`-`不会做任何变化） | `$attrs`中转化为`onClick`这样的驼峰事件名 |
-    | `inheritAttrs`影响（并非影响`$attrs`） | 不影响根元素的`class`、`style`传递 | 影响根元素所有属性传递，包括`class`、`style` |
+    | `inheritAttrs`影响（并非影响`$attrs`） | 影响根元素`不被认作props`的attribute传递，除了`class`、`style` | 影响根元素`不被认作props`的attribute传递，包括`class`、`style` |
 
 
 ---
@@ -1316,7 +1316,7 @@
     默认：组件上的`v-model`会把`value`用作prop、把`input`用作event。
 23. `inheritAttrs`（`boolean`，默认：`true`）
 
-    默认情况下父作用域的`不被认作props`的 attribute 绑定将会“回退”且作为普通的 HTML attribute 应用在子组件的**根元素**上（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签。永远不会成为向内子级的props声明接受，仅能作为普通的 HTML attribute）。当撰写包裹一个目标元素或另一个组件的组件时，这可能不会总是符合预期行为。通过设置`inheritAttrs: false`，这些默认行为将会被去掉。而通过 $attrs 可以让这些 attribute 生效，且可以通过 v-bind 显性的绑定到非根元素上。
+    默认情况下父作用域的`不被认作props`的attribute绑定将会“回退”且作为普通的 HTML attribute 应用在子组件的**根元素**上（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签。永远不会成为向内子级的props声明接受，仅能作为普通的 HTML attribute）。当撰写包裹一个目标元素或另一个组件的组件时，这可能不会总是符合预期行为。通过设置`inheritAttrs: false`，这些默认行为将会被去掉。而通过 $attrs 可以让这些 attribute 生效，且可以通过 v-bind 显性的绑定到非根元素上。
 
     >inheritAttrs不会影响 class 和 style 绑定逻辑。
 24. `comments`（`boolean`，默认：`false`）
