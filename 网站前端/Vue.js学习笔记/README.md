@@ -1015,7 +1015,7 @@
 
     以`_`或`$`开头的属性不会被Vue实例代理，但可以使用`vm.$data`访问（e.g. `vm.$data._property`）。
 
-    >Vue内置的属性、API方法会以 `_`或`$` 开头，因此若看到不带这些前缀的Vue实例的属性时，则一般可认为是Vue实例代理的属性（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins`传入的属性）。
+    >Vue内置的属性、API方法会以 `_`或`$` 开头，因此若看到不带这些前缀的Vue实例的属性时，则一般可认为是Vue实例代理的属性（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins/extends`传入的属性）。
 4. `computed`（对象）：依赖其他值（`props`、`data`、`computed`）的改变而执行，最后`return`值
 
     <details>
@@ -1186,22 +1186,26 @@
 
     方法内部没有代理 ~~`this`~~ 到Vue实例。
 
-    >因为不会被Vue实例代理，所以可以和Vue实例代理的属性同名（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins`传入的属性）。
+    >因为不会被Vue实例代理，所以可以和Vue实例代理的属性同名（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins/extends`传入的属性）。
 12. `mixins`（`[组件选项1, 组件选项2,...]`）：混入
 
-    mixin数组每一项中的属性，都会合并到组件本身的选项（如：mixin的`methods`/`data`/`watch`合并到组件的`methods`/`data`/`watch`）。
+    mixin数组每一项中的属性，都会合并到组件本身的选项（e.g. mixin的`methods`/`data`/`watch`等，合并到组件的`methods`/`data`/`watch`）。
 
-    1. 钩子函数、`watch`都会调用：混入对象的钩子函数和`watch`优先调用，组件自身的钩子函数和`watch`之后调用（同名的多个生命周期钩子**不**会等待Promise完成）。
-    2. 其他属性，若有同名内容，则合并之后，组件自身内容覆盖mixin：
+    1. 同名属性的处理
 
-        `data`、`methods`、`components`、`directives`等，合并为同一个对象；对象内部键名冲突时（如：`methods`都有某同名方法），使用组件对象的内容、丢弃mixin的内容。
+        1. 钩子函数、`watch` 同名的都会调用：外层->里层->实例（同名的多个生命周期钩子**不**会等待Promise完成）。
+        2. 其他属性 同名的由优先级最高的覆盖其他：优先级 实例>里层>外层
 
-    - 作用域：
+            >e.g. `data`、`methods`、`components`、`directives`等，合并为同一个对象；对象内部键名冲突时（如：`methods`都有某同名方法），使用组件对象的内容、丢弃mixin的内容。
+    2. 作用域
 
         1. 局部：组件局部注册，仅在本组件内起作用，对子组件无效。
         2. 全局：`Vue.mixin`全局注册，将会影响之后创建的（之前的不受影响）Vue实例，包括第三方模板。
 
->`Vue.mixin`/`mixins`、`Vue.extend`/`extends`的合并逻辑一致；同时有`Vue.mixin`/`mixins`和`Vue.extend`/`extends`时，先处理mixin，再处理extend
+>1. `Vue.mixin`/`mixins`、`Vue.extend`/`extends`的合并逻辑、优先级逻辑、调用顺序一致。
+>2. 若同时有mixin和extend 或 有互相嵌套的情况，则作为父子嵌套逻辑合并：都会执行的按照顺序 外层->里层->实例 执行；覆盖的按照优先级 实例>里层>外层 仅保留最高优先级的。
+
+>Vue的mixin（、extend）有着同React的mixin一样的问题：[`Mixin`已被证伪](https://zh-hans.legacy.reactjs.org/blog/2016/07/13/mixins-considered-harmful.html)（隐式依赖、mixin还可以依赖其他mixin，没有依赖关系图、是扁平化结构，名称冲突，重构/改名 风险很大、mixin一旦编写完成就很难移除或修改，使用相同mixin的组件间互相耦合，随业务增长从而复杂性增加、封装边界逐渐瓦解）。
 
 13. `extends`（组件选项 或 Vue组件或Vue子类）：扩展、继承一个组件
 
@@ -1256,7 +1260,7 @@
 
 17. 生命周期钩子
 
-    >`async-await`**不**会阻止继续向下执行生命周期，也**不**会阻止mixins的多个相同生命周期执行。e.g. `beforeCreate(); mixins的created(); created()...`
+    >`async-await`**不**会阻止继续向下执行生命周期，也**不**会阻止mixins/extends的多个同名生命周期执行。e.g. `beforeCreate(); mixins/extends的created(); created()...`
 
     1. `beforeCreate`
 
@@ -2388,7 +2392,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     `$mount`、`$forceUpdate`、`$nextTick`、`$destroy`
 
 ### 特性
-1. Vue实例代理的属性（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins`传入的属性），在内部`vm.名字`访问，可以直接使用，**所有属性名字都不能重复**（filters不属于同一类）；也有以`$`开头的Vue实例属性（如：`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
+1. Vue实例代理的属性（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins/extends`传入的属性），在内部`vm.名字`访问，可以直接使用，**所有属性名字都不能重复**（filters不属于同一类）；也有以`$`开头的Vue实例属性（如：`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
 
     只有已经被代理的内容是响应的（Vue实例被创建时传入的属性），值的改变（可能）会触发视图的重新渲染。
 2. **Vue实例的属性**和**Vue实例的属性的属性**，慎用~~箭头函数~~，因为`this`的指向无法按预期指向Vue实例。

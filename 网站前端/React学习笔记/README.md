@@ -2020,7 +2020,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
             在组件之间复用状态逻辑很难，可能要用到render props（渲染属性）或HOC（高阶组件），都会在原先的组件外包裹一层父容器（如：`<div>`），导致层级冗余。
 
-            >①[`Mixin`已被证伪](https://zh-hans.legacy.reactjs.org/blog/2016/07/13/mixins-considered-harmful.html)（隐式依赖、mixin还可以依赖其他mixin，没有依赖关系图、是扁平化结构，名称冲突，重构/改名 风险很大、mixin一旦编写完成就很难移除或修改，使用相同mixin的组件间互相耦合，随业务增长从而复杂性增加、封装边界逐渐瓦解），②HoC被认为props来源不明，③render props被诟病嵌套地狱。以上三个问题也同样在Vue使用相关功能时出现。
+            >①[`Mixin`已被证伪（`React.createClass`）](https://zh-hans.legacy.reactjs.org/blog/2016/07/13/mixins-considered-harmful.html)（隐式依赖、mixin还可以依赖其他mixin，没有依赖关系图、是扁平化结构，名称冲突，重构/改名 风险很大、mixin一旦编写完成就很难移除或修改，使用相同mixin的组件间互相耦合，随业务增长从而复杂性增加、封装边界逐渐瓦解），②HoC被认为props来源不明，③render props被诟病嵌套地狱。以上三个问题也同样在Vue使用相关功能时出现。
         2. 趋向复杂难以维护：
 
             在生命周期函数中混杂不相干的逻辑，类组件中到处都是对状态的访问和处理，导致组件难以拆分成更小的组件。
@@ -3868,10 +3868,10 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
         1. vue使用[指令](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Vue.js学习笔记/README.md#指令--特殊attribute)。
         2. react利用（JSX内）原生JS语法。
-    3. 组件组合复用
+    3. 组件组合复用（不推荐用~~继承~~的方式）
 
-        1. vue的实例属性`extends`、`mixins`（也有与react的`Mixin`一样问题） -> 组合式API（Composition API）。
-        2. react的`Mixin`（已被证伪） -> HOC（props来源不明） & render props（嵌套地狱） -> Hook。
+        1. vue的实例属性`extends`、`mixins`（也有与react的`Mixin`一样问题） -> 组合式API（Composition API）
+        2. react的`Mixin`（已被证伪） -> HOC（props来源不明） & render props（嵌套地狱） -> Hook
     4. 数据响应式原理
 
         1. vue直接修改原数据属性，渲染系统自动更新。
