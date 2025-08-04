@@ -26,7 +26,6 @@
   },
   "window.zoomPerWindow": false,
   "files.insertFinalNewline": true,
-  "vue.splitEditors.icon": true,
   "vue.inlayHints.missingProps": true,
   "vue.inlayHints.inlineHandlerLeading": true,
   "typescript.inlayHints.variableTypes.enabled": true,
@@ -37,11 +36,7 @@
   "js/ts.implicitProjectConfig.target": "ESNext",
   "eslint.codeActionsOnSave.mode": "problems",
   "editor.formatOnSaveMode": "modificationsIfAvailable",
-  "[vue]": {
-    "editor.defaultFormatter": "Vue.volar"
-  },
   "merge-conflict.autoNavigateNextConflict.enabled": true,
-  "chat.editor.fontSize": 13,
   "search.collapseResults": "auto",
   "files.trimTrailingWhitespace": true,
   "files.trimFinalNewlines": true,
@@ -54,7 +49,6 @@
   "diffEditor.hideUnchangedRegions.enabled": true,
   "workbench.editor.tabActionCloseVisibility": false,
   "workbench.view.alwaysShowHeaderActions": true,
-  "vue.complete.casing.tags": "autoKebab",
   "liveServer.settings.donotShowInfoMsg": true,
   "liveServer.settings.donotVerifyTags": true,
   "workbench.editorAssociations": {
@@ -81,7 +75,6 @@
   "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
   "editor.codeActions.triggerOnFocusChange": true,
   "editor.dragAndDrop": false,
-  "editor.experimentalEditContextEnabled": true,
   "editor.guides.bracketPairs": "active",
   "editor.guides.highlightActiveBracketPair": false,
   "editor.guides.indentation": false,
@@ -89,9 +82,6 @@
   "editor.parameterHints.cycle": false,
   "editor.renderFinalNewline": "dimmed",
   "editor.renderLineHighlight": "all",
-  "[javascript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
-  },
   "vsicons.dontShowNewVersionMessage": true,
   "workbench.list.smoothScrolling": true,
   "editor.smoothScrolling": true,
@@ -117,7 +107,14 @@
   "terminal.integrated.env.osx": {
     "PATH": "null"
   },
+  "editor.copyWithSyntaxHighlighting": false,
+  "explorer.fileNesting.patterns": {
+    "tsconfig.json": "tsconfig.*.json, env.d.ts",
+    "vite.config.*": "jsconfig*, vitest.config.*, cypress.config.*, playwright.config.*",
+    "package.json": "package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .oxlint*, oxlint*, .prettier*, prettier*, .editorconfig"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  // vscode only
   "github.copilot.nextEditSuggestions.fixes": true,
-  "github.copilot.nextEditSuggestions.enabled": true,
-  "editor.copyWithSyntaxHighlighting": false
+  "github.copilot.nextEditSuggestions.enabled": true
 }

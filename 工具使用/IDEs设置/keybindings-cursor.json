@@ -483,6 +483,39 @@
     "command": "workbench.action.debug.start",
     "when": "debuggersAvailable && debugState == 'inactive'"
   },
+  {
+    "key": "shift+alt+a",
+    "command": "-editor.action.blockComment",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "cmd+k cmd+u",
+    "command": "-editor.action.removeCommentLine",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "cmd+k cmd+c",
+    "command": "-editor.action.addCommentLine",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "cmd+k cmd+c",
+    "command": "workbench.files.action.compareWithClipboard"
+  },
+  {
+    "key": "cmd+k c",
+    "command": "-workbench.files.action.compareWithClipboard"
+  },
+  {
+    "key": "cmd+k cmd+c",
+    "command": "-notebook.cell.expandCellInput",
+    "when": "notebookCellInputIsCollapsed && notebookCellListFocused"
+  },
+  {
+    "key": "cmd+k cmd+c",
+    "command": "-notebook.cell.collapseCellInput",
+    "when": "notebookCellListFocused && !inputFocus && !notebookCellInputIsCollapsed"
+  },
   // 以下cursor新增
   {
     "key": "cmd+i",
@@ -493,11 +526,6 @@
     "key": "cmd+k",
     "command": "-cursorai.action.generateInTerminal",
     "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
-  },
-  {
-    "key": "cmd+k cmd+c",
-    "command": "editor.action.addCommentLine",
-    "when": "editorTextFocus && !editorReadonly"
   },
   {
     "key": "cmd+r cmd+c",
@@ -867,11 +895,11 @@
   },
   {
     "key": "cmd+k cmd+k",
-    "command": "editor.action.defineKeybinding",
+    "command": "editor.action.defineKeybinding"
   },
   {
     "key": "cmd+r cmd+k",
-    "command": "-editor.action.defineKeybinding",
+    "command": "-editor.action.defineKeybinding"
   },
   {
     "key": "cmd+k cmd+a",
@@ -914,11 +942,6 @@
     "when": "config.notebook.experimental.cellChat && notebookChatAgentRegistered && notebookEditable && notebookEditorFocused && !inputFocus || config.notebook.experimental.generate && notebookChatAgentRegistered && notebookEditable && notebookEditorFocused && !inputFocus"
   },
   {
-    "key": "cmd+k cmd+c",
-    "command": "notebook.cell.collapseCellInput",
-    "when": "notebookCellListFocused && !inputFocus && !notebookCellInputIsCollapsed"
-  },
-  {
     "key": "cmd+r cmd+c",
     "command": "-notebook.cell.collapseCellInput",
     "when": "notebookCellListFocused && !inputFocus && !notebookCellInputIsCollapsed"
@@ -932,11 +955,6 @@
     "key": "cmd+r t",
     "command": "-notebook.cell.collapseCellOutput",
     "when": "notebookCellHasOutputs && notebookCellListFocused && !inputFocus && !notebookCellOutputIsCollapsed"
-  },
-  {
-    "key": "cmd+k cmd+c",
-    "command": "notebook.cell.expandCellInput",
-    "when": "notebookCellInputIsCollapsed && notebookCellListFocused"
   },
   {
     "key": "cmd+r cmd+c",
@@ -1319,10 +1337,6 @@
     "when": "activeEditorIsPinned"
   },
   {
-    "key": "cmd+k c",
-    "command": "workbench.files.action.compareWithClipboard"
-  },
-  {
     "key": "cmd+r c",
     "command": "-workbench.files.action.compareWithClipboard"
   },
@@ -1459,5 +1473,26 @@
   {
     "key": "shift+cmd+i",
     "command": "composerMode.agent"
+  },
+  {
+    "key": "cmd+e",
+    "command": "composerMode.background"
+  },
+  {
+    "key": "cmd+e",
+    "command": "composerMode.background"
+  },
+  {
+    "key": "cmd+e",
+    "command": "-actions.findWithSelection"
+  },
+  {
+    "key": "cmd+e",
+    "command": "-editor.action.toggleScreenReaderAccessibilityMode",
+    "when": "accessibilityHelpIsShown"
+  },
+  {
+    "key": "cmd+k cmd+c",
+    "command": "workbench.files.action.compareWithClipboard"
   }
 ]

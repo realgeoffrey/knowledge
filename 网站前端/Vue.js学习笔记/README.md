@@ -21,7 +21,6 @@
     1. [Vue实现原理](#vue实现原理)
     1. [Vue性能优化](#vue性能优化)
     1. [例子](#例子)
-    1. [Vue 3 与 Vue 2 区别](#vue-3-与-vue-2-区别)
 1. [vue-router](#vue-router)
 1. [用pinia代替~~vuex~~](#用pinia代替vuex)
 
@@ -38,6 +37,8 @@
 >约定：`vm`（ViewModel）变量名表示：Vue实例。
 
 ## Vue 3版本（[core](https://github.com/vuejs/core)）
+>以下记录与Vue 2的区别部分。参考：[Vue 3 迁移指南](https://v3-migration.vuejs.org/zh/)。
+
 1. API风格
 
     1. 选项式API（Options API）
@@ -52,7 +53,7 @@
 
         >Vue 2.7、Vue 3的内置功能。对于更老的Vue 2版本，安装[composition-api](https://github.com/vuejs/composition-api)后支持。
 
-        通过组合式API，我们可以使用导入的API函数来描述组件逻辑。
+        通过组合式API，我们可以使用导入的API函数来描述组件逻辑。定义数据变量和方法、生命周期钩子函数、父子通信 都不同于 选项式API。`this === undefined`
 
         >[优势](https://cn.vuejs.org/guide/extras/composition-api-faq.html)
 2. `:属性名`（等于`v-bind:同名="同名"`、`:同名="同名"`）
@@ -61,13 +62,13 @@
 
     若 attribute名称 与 绑定的js值的名称 相同，则可以进一步简化缩写，省略`="绑定值"`。
 3. `ref`、`setup`、`<script setup>`、`nextTick`、`reactive`、`computed`、`watch`、`watchEffect`、[`onWatcherCleanup`](https://cn.vuejs.org/guide/essentials/watchers.html#watcheffect)、`onMounted`、`useTemplateRef`、`defineProps`、`defineEmits`、`createApp`、`defineModel`、`defineOptions`、`provide/inject`、`defineAsyncComponent`、`<Suspense>`、`toValue`
-4. `Proxy`响应式原理
 5. `ref`与`computed`自动解包（automatically unwrapped），[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)
 6. `computed`
 
-    >Vue 3.4+。
-
     上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；可写计算属性的`get`的第一个参数`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
+1. 支持Fragments（片段）
+
+    允许：`<template>多个节点</template>`
 7. 若组件有多个根元素，则不会默认添加在多个根元素上（`inheritAttrs: true（默认）`会在单独一个根元素上添加attribute）
 
     可以通过组件的`$attrs`属性来指定接收的元素。
@@ -79,6 +80,7 @@
       <span>This is a child component</span>
     </template>
     ```
+1. 支持`<Teleport>`
 8. 生命周期
 
     ![vue3生命周期图](./images/vue-lifecycle-2.png)
@@ -113,6 +115,32 @@
     | 事件监听器存储位置 | `$listeners` | `$attrs`（已移除 ~~`$listeners`~~） |
     | 事件名 | `$listeners`中保持原样（事件名的大小写、`-`不会做任何变化） | `$attrs`中转化为`onClick`这样的驼峰事件名 |
     | `inheritAttrs`影响（并非影响`$attrs`） | 影响根元素`不被认作props`的attribute传递，除了`class`、`style` | 影响根元素`不被认作props`的attribute传递，包括`class`、`style` |
+4. 响应式原理、数据绑定原理：使用了ES6的`Proxy`对数据代理
+
+    - 相较于Vue 2（利用ES5的`Object.defineProperty`对数据进行劫持，结合发布订阅模式的方式来实现），Vue 3使用`Proxy`的优势：
+
+        1. `Object.defineProperty`只能监听某个属性，不能对全对象监听
+        2. 可以省去`for-in`，闭包等内容来提升效率（直接绑定整个对象即可）
+        3. 可以监听数组，不用再去单独的对数组做特异性操作，`Proxy`可以检测到数组内部数据的变化
+2. 虚拟DOM的diff算法不同
+
+    1. 2
+
+        双端比较，递归遍历两个虚拟DOM树，并比较每个节点上的每个属性（有点暴力算法），来确定实际DOM的哪些部分需要更新。无静态优化，每次更新递归对比所有节点，即使内容未变化。
+    2. 3
+
+        1. 通过计算新旧节点索引映射表，仅移动非递增序列中的节点，减少 DOM 操作次数（LIS算法）
+        2. 编译时通过 PatchFlag 标记动态属性（如文本、class），Diff 时直接跳过静态节点
+        3. 将模板划分为动态区块后仅追踪动态节点集合（​Block Tree）
+1. ts的支持不同
+
+    1. 2
+
+        支持Flow。
+    2. 3
+
+        支持ts。
+1. 新版本[devtools](https://github.com/vuejs/devtools)支持Vue 3，旧版本[devtools-v6](https://github.com/vuejs/devtools-v6)支持Vue 2。2个插件必须仅启动一个才能正常工作
 
 ---
 
@@ -350,7 +378,7 @@
         <my-component :some-prop="a">传递表达式：a（变量是什么类型就是什么类型）</my-component>
         ```
         </details>
-    4. 若不带参数的`v-bind="表达式"`（不能用缩写 ~~`:表达式`~~），则绑定表达式的所有属性到DOM。
+    4. 若不带参数的`v-bind="表达式"`（不能用缩写 ~~`:表达式`~~ —— Vue 3.4+），则绑定表达式的所有属性到DOM。
 
         >同名的属性优先级：①`:同名属性="表达式"`与`同名属性="值"`，哪一个写在后面哪一个生效；②`v-bind="{同名属性:'值'}"`优先级最低；③`class`、`style`任何情况下都是合并处理。
 
@@ -1213,7 +1241,7 @@
 14. `directives`（对象）：自定义指令
 15. `provide`（对象 或 返回对象的方法）/`inject`（`Array<string> | { [本地绑定名: string]: provide名 | Symbol | {from: provide名, default: 初始值} }`）
 
-    1. 两个需要一起使用，以允许一个祖先组件向其所有子孙后代注入一个依赖，不论组件层次有多深，并在其上下游关系成立的时间里始终生效。
+    1. 两个需要一起使用，以允许一个祖辈组件向其所有孙辈组件注入一个依赖，不论组件层次有多深，并在其上下游关系成立的时间里始终生效。
 
         孙辈组件 从组件树中离自身最近（**就近原则**）匹配`provide`中读取到当前的`inject`值。
     2. `provide`/`inject`绑定并不是可响应的。然而，若传入了一个可监听的对象（如：vue实例的`data`、`computed`等），则其对象的property可响应。
@@ -1290,9 +1318,17 @@
     9. `beforeDestroy`
 
         >可将大部分内存清理工作放在`beforeDestroy`。
+
+    >卸载组件及其孙辈组件。
+
     10. `destroyed`
 
-        >调用后，Vue实例指示的所有内容都会解绑，所有Vue事件监听器会被移除，所有子实例也会被销毁。
+        >调用后，Vue实例指示的所有内容都会解绑，所有Vue事件监听器会被移除，所有子实例也会被销毁。
+
+    >`beforeDestroy`、`destroyed`是在组件卸载时触发，不会在页面关闭时触发（同理`deactivated`也不会在页面关闭时触发），需要用`vm.$destroy()`触发实例销毁来触发`beforeDestroy`、`destroyed`（已销毁的实例多次调用`vm.$destroy()`，不会多次执行销毁逻辑与生命周期）。
+    >
+    >e.g. 页面关闭：可以监听window的`beforeunload`或`unload`触发实例销毁；`<iframe>`关闭：可以监听window的`unload`触发实例销毁。
+
     11. `errorCaptured`
 
     <details>
@@ -2728,152 +2764,6 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     </script>
     ```
     </details>
-
-### Vue 3 与 Vue 2 区别
-1. 双向数据绑定原理不同
-
-    1. 2
-
-        利用ES5的`Object.defineProperty`对数据进行劫持，结合发布订阅模式的方式来实现。
-    2. 3
-
-        使用了ES6的`Proxy`对数据代理。
-
-        - 相比Vue 2的`Object.defineProperty`，使用`Proxy`的优势：
-
-            1. `Object.defineProperty`只能监听某个属性，不能对全对象监听
-            2. 可以省去`for-in`，闭包等内容来提升效率（直接绑定整个对象即可）
-            3. 可以监听数组，不用再去单独的对数组做特异性操作，`Proxy`可以检测到数组内部数据的变化
-2. 虚拟DOM的diff算法不同
-
-    1. 2
-
-        递归遍历两个虚拟DOM树，并比较每个节点上的每个属性（有点暴力算法），来确定实际DOM的哪些部分需要更新。
-    2. 3
-
-        采用block tree的做法。
-3. [是否支持碎片（Fragment）](https://stackoverflow.com/questions/59388851/is-there-something-like-react-fragment-in-vue)
-
-    1. 2
-
-        不支持，必须：`<template><div>多个节点</div></template>`。
-    2. 3
-
-        支持，允许：`<template>多个节点</template>`。
-4. API类型不同
-
-    1. 2
-
-        使用**选项类型api（Options API）**，在代码里分割了不同的属性：methods、data、computed、等。声明选项的方式书写Vue组件。
-    2. 3
-
-        使用**合成型api（Composition API）**，使用方法来分割，相比于旧的api使用属性来分组，这样代码会更加简便和整洁。使用函数的方式书写组件。
-5. 定义数据变量和方法、生命周期钩子函数、父子通信 不同
-
-    1. 2
-
-        定义数据变量要在`data() {}`，创建的方法要在`methods:{}`中，计算属性要在`computed:{}`中，生命周期钩子要在组件属性中调用，父子通信用`this.props/$emit`。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```js
-        >export default {
-        >  props: {
-        >    title: String
-        >  },
-        >  data () {
-        >    return {
-        >      username: '',
-        >      password: ''
-        >    }
-        >  },
-        >  computed: {
-        >    lowerCaseUsername () {
-        >      return this.username.toLowerCase()
-        >    }
-        >  },
-        >  methods: {
-        >    login () {
-        >        // this.props
-        >        // this.$emit
-        >    }
-        >  },
-        >  mounted () {}
-        >}
-        >```
-        ></details>
-    2. 3
-
-        需要使用一个新的`setup`属性方法，此方法在组件初始化构造的时候触发。
-
-        1. 使用以下三个步骤来建立反应性数据：
-
-            1. 从vue引入`reactive`；
-            2. 使用`reactive()`方法来声明数据为响应性数据；
-            3. 使用`setup()`方法来返回我们的响应性数据，从而template可以获取这些响应性数据。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```js
-        >import { reactive, computed, onMounted } from 'vue'
-        >
-        >export default {
-        >  props: {
-        >    title: String
-        >  },
-        >  setup (props, content) {
-        >    const state = reactive({
-        >      username: '',
-        >      password: '',
-        >      lowerCaseUsername: computed(() => state.username.toLowerCase())
-        >    })
-        >
-        >    const login = () => {
-        >        // props
-        >        // content.$emit
-        >    }
-        >
-        >    onMounted(()=>{})
-        >
-        >    return { state, login }
-        >  }
-        >}
-        >```
-        ></details>
-6. `this`不同
-
-    1. 2
-
-        指向当前组件
-    2. 3
-
-        `undefined`
-7. 指令与插槽不同
-
-    1. 2
-
-        使用slot可以直接使用slot；`v-for`优先级高于`v-if`，而且不建议一起使用。
-    2. 3
-
-        必须使用v-slot的形式；只会把当前v-if当做v-for中的一个判断语句，不会相互冲突；移除keyCode作为v-on的修饰符，当然也不支持config.keyCodes；移除v-on.native修饰符；移除过滤器filter。
-8. main.js文件不同
-
-    1. 2
-
-        可以使用prototype（原型）的形式去进行操作，引入的是构造函数。
-    2. 3
-
-        需要使用结构的形式进行操作，引入的是工厂函数；vue3中app组件中可以没有根标签。
-9. ts的支持不同
-
-    1. 2
-
-        支持Flow。
-    2. 3
-
-        支持ts。
 
 ---
 ### [vue-router](https://github.com/vuejs/vue-router)
@@ -4724,6 +4614,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         >[CodePen demo](https://codepen.io/realgeoffrey/pen/VYZmYrB)
     5. `<el-input-number>`的`v-model`不支持添加`.trim`（填写了没有效果、不会报错）
     6. `<el-input>`、`el-button`等的`disabled`属性，会导致无法触发点击等事件
+
+        >[CodePen demo](https://codepen.io/realgeoffrey/pen/KwpXvqZ)
     7. [element-ui的日期格式](https://element.eleme.cn/#/zh-CN/component/date-picker#ri-qi-ge-shi)与[moment的格式](https://momentjs.cn/docs/#/displaying/format/)是不同的，要注意
 
         e.g. element-ui不支持 ~~`YYYY`、`DDDD`、等~~
