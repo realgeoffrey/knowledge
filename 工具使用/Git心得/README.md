@@ -798,7 +798,7 @@ feat(details): 添加了分享功能
     - 推送：单次推送会推送到别名下所有`push`/`url`配置的远程仓库。
 
 ### 设置gitconfig
->`git config --global或--local 「参数」`要把`--global或--local`写在第三个参数位置，否则无效。
+>`git config --global/local/system/worktree/file 「参数」`要把`--global等`写在第三个参数位置，否则无效。写：默认`--local`；读：没有默认。
 
 1. 用户名和邮箱（用于判断推送者的账号信息）
 
@@ -845,10 +845,11 @@ feat(details): 添加了分享功能
     ```
 4. 开启对文件名大小写敏感
 
-    >默认文件名大小写不敏感。
+    >每个git项目都会默认显式设置为不敏感，因此可能需要去到每个项目单独配置敏感（项目配置优先于全局配置）。
 
     ```git
-    git config --global core.ignorecase false
+    git config --global core.ignorecase false   # 全局
+    git config core.ignorecase false            # 当前目录
     ```
 
 - 展示所有`configs`、`alias`

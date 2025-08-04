@@ -21,7 +21,7 @@
             1. 判断出设计稿的某些节点是固定宽度（如：图片、明显不是自适应的部分）
             2. 另一部分拉伸填满空间
         2. 居中、栅格系统
-    2. 针对`padding`、`margin`、`border`、`font-size`、`图片`、等，一般写死数值、不自适应变化。
+    2. （非大屏的需求，）针对`padding`、`margin`、`border`、`font-size`、`图片`、等，一般写死数值、不自适应变化
     3. 特殊情况需要像素级还原设计稿：
 
         1. 按设计稿和设备视口比例进行换算：`设计稿中某长度 * (设备视口宽度 / 设计稿总宽)`。
@@ -94,4 +94,8 @@
 
         >px不是响应式。
 
-        [rem+vw](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#响应式页面解决方案)。
+        rem+vw[响应式页面解决方案](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#响应式页面解决方案)
+
+        - 大屏
+
+            建议所有数值都按照rem+vw处理（注意第三方库的样式问题）

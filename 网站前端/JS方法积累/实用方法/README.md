@@ -3787,6 +3787,53 @@ function delay(ms: number) {
 ```
 >参考：[promise-poller](https://github.com/joeattardi/promise-poller)。
 
+- 实现：轮询获取分页接口的所有数据（必须加上请求次数上限）
+
+    ```js
+    async function pollingPaging(maxFetchTimes = 5) {
+      // 耦合写死了：后台接口请求的数据结构、后台接口返回的数据结构、本函数返回的数据结构
+      const data = {
+        list: [],
+        pagination: {
+          current: 1,
+          pageSize: 1000,
+          total: 0,
+        },
+      };
+      let fetchTimes = 0;
+      try {
+        while (fetchTimes < maxFetchTimes) {
+          fetchTimes++;
+
+          const res = await 后台接口({
+            current: data.pagination.current,
+            pageSize: data.pagination.pageSize,
+          });
+          data.list.push(...res.list);
+          data.pagination.total = res.pagination.total;
+
+          // 能够继续请求的情况
+          if (fetchTimes < maxFetchTimes && data.pagination.current * data.pagination.pageSize < res.pagination.total) {
+            data.pagination.current++;
+          } else {
+            break;
+          }
+        }
+      } catch (err) {
+        // 请求报错，回退请求次数相关的值
+        data.pagination.current--;
+        fetchTimes--;
+        console.error(err);
+      }
+
+      // 已达到最大请求次数，但数据未获取完全
+      if (maxFetchTimes === 0 || (fetchTimes >= maxFetchTimes && data.pagination.current * data.pagination.pageSize < data.pagination.total)) {
+        console.error('已达到最大轮询限制({0})，无法再获取更多数据'.replace('{0}', maxFetchTimes));
+      }
+      return data;
+    }
+    ```
+
 ### *原生JS*节流函数
 ```ts
 class Throttle<T extends any[]> {

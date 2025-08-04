@@ -483,6 +483,39 @@
     "command": "workbench.action.debug.start",
     "when": "debuggersAvailable && debugState == 'inactive'"
   },
+  {
+    "key": "shift+alt+a",
+    "command": "-editor.action.blockComment",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "cmd+k cmd+u",
+    "command": "-editor.action.removeCommentLine",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "cmd+k cmd+c",
+    "command": "-editor.action.addCommentLine",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "cmd+k cmd+c",
+    "command": "workbench.files.action.compareWithClipboard"
+  },
+  {
+    "key": "cmd+k c",
+    "command": "-workbench.files.action.compareWithClipboard"
+  },
+  {
+    "key": "cmd+k cmd+c",
+    "command": "-notebook.cell.expandCellInput",
+    "when": "notebookCellInputIsCollapsed && notebookCellListFocused"
+  },
+  {
+    "key": "cmd+k cmd+c",
+    "command": "-notebook.cell.collapseCellInput",
+    "when": "notebookCellListFocused && !inputFocus && !notebookCellInputIsCollapsed"
+  },
   // Copilot
   {
     "key": "ctrl+cmd+i",
@@ -497,5 +530,18 @@
     "key": "ctrl+cmd+i",
     "command": "-workbench.panel.chat",
     "when": "workbench.panel.chat.view.copilot.active"
+  },
+  {
+    "key": "cmd+e",
+    "command": "workbench.action.chat.openEdit"
+  },
+  {
+    "key": "cmd+e",
+    "command": "-editor.action.toggleScreenReaderAccessibilityMode",
+    "when": "accessibilityHelpIsShown"
+  },
+  {
+    "key": "cmd+e",
+    "command": "-actions.findWithSelection"
   }
 ]
