@@ -12,6 +12,8 @@
 
     - ![文件: 比较活动文件与剪贴板](./images/compare.png)
 
+    - IDE读取[jsconfig.json和tsconfig.json](https://www.typescriptlang.org/zh/tsconfig/)进行[JS语言服务](https://github.com/microsoft/TypeScript/wiki/JavaScript-Language-Service-in-Visual-Studio)。
+
 ### WebStorm
 1. 在线同步设备可以用：
 
