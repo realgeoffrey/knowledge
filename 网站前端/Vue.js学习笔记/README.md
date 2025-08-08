@@ -47,6 +47,8 @@
 
         使用选项式API，我们可以用包含多个选项的对象来描述组件的逻辑，如：methods、data、mounted、等。选项所定义的属性都会暴露在函数内部的`this`上，它会指向当前的组件实例。
 
+        `setup`是选项式API。
+
     >选项式API 是在 组合式API 的基础上实现的。
 
     2. 组合式API（Composition API）
@@ -61,9 +63,9 @@
     >Vue 3.4+。
 
     若 attribute名称 与 绑定的js值的名称 相同，则可以进一步简化缩写，省略`="绑定值"`。
-3. `<script setup>`、`ref`、`setup`、`nextTick`、`reactive`、`computed`、`watch`、`watchEffect`、[`onWatcherCleanup`](https://cn.vuejs.org/guide/essentials/watchers.html#watcheffect)、`onMounted`、`onUpdated`、`onUnmounted`、`onBeforeMount`、`onBeforeUpdate`、`onBeforeUnmount`、`onErrorCaptured`、`onRenderTracked`、`onRenderTriggered`、`onActivated`、`onDeactivated`、`onServerPrefetch`、`useTemplateRef`、`defineProps`、`defineEmits`、`createApp`、`defineModel`、`defineOptions`、`provide/inject`、`defineAsyncComponent`、`<Suspense>`、`toValue`
+3. `<script setup>`、`ref`、`setup`、`nextTick`、`reactive`、`computed`、`watch`、`watchEffect`、`onWatcherCleanup`、`onMounted`、`onUpdated`、`onUnmounted`、`onBeforeMount`、`onBeforeUpdate`、`onBeforeUnmount`、`onErrorCaptured`、`onRenderTracked`、`onRenderTriggered`、`onActivated`、`onDeactivated`、`onServerPrefetch`、`useTemplateRef`、`defineProps`、`defineEmits`、`createApp`、`defineModel`、`defineOptions`、`provide/inject`、`defineAsyncComponent`、`<Suspense>`、`toValue`
 
-    1. `reactive()`只适用于引用类型；`ref()`可以接受任何值类型（包括组件），它会返回一个包裹对象，并在`.value`属性下暴露内部值。
+    1. `reactive()`只接受引用类型；`ref()`可以接受任何值类型（包括组件），会返回一个包裹对象，并在`.value`属性下暴露内部值。
 
         在组件的`<script setup>`块中声明的响应式状态，可以在`模板`中直接使用（有包裹的对象会自动在模板中解包，因此不需要再手动 ~~`.value`~~）。
     2. `watch(ref对象, 调用方法并传参)`
@@ -72,7 +74,7 @@
         ```vue
         <script setup>
         const props = defineProps({
-          msg: String
+          msg: String           // 传参会变成驼峰变量
         })
         console.log(props.msg)  // 必须props.msg
         </script>
@@ -87,7 +89,10 @@
 
         emit('注册事件名2', 参数1, 参数2, ) // 必须先注册事件再使用
         ```
+    4. 不像react的函数组件（每次渲染，都执行一遍函数），`<script setup>`中的代码只会只会执行一次，但通过响应式系统追踪依赖
+    5. 直接递归渲染组件自己
 
+        >e.g. <https://cn.vuejs.org/examples/#tree>
 5. `ref`与`computed`自动解包（automatically unwrapped），[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)
 6. `computed`
 
