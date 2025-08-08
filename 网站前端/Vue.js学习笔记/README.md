@@ -66,8 +66,9 @@
 3. `<script setup>`、`ref`、`setup`、`nextTick`、`reactive`、`computed`、`watch`、`watchEffect`、`onWatcherCleanup`、`onMounted`、`onUpdated`、`onUnmounted`、`onBeforeMount`、`onBeforeUpdate`、`onBeforeUnmount`、`onErrorCaptured`、`onRenderTracked`、`onRenderTriggered`、`onActivated`、`onDeactivated`、`onServerPrefetch`、`useTemplateRef`、`defineProps`、`defineEmits`、`createApp`、`defineModel`、`defineOptions`、`provide/inject`、`defineAsyncComponent`、`<Suspense>`、`toValue`
 
     1. `reactive()`只接受引用类型；`ref()`可以接受任何值类型（包括组件），会返回一个包裹对象，并在`.value`属性下暴露内部值。
+    2. 在组件的`<script setup>`块中声明的响应式状态，可以在`模板`中直接使用（有包裹的对象会在模板中自动浅层解包，因此不需要再手动 ~~`.value`~~）。
 
-        在组件的`<script setup>`块中声明的响应式状态，可以在`模板`中直接使用（有包裹的对象会自动在模板中解包，因此不需要再手动 ~~`.value`~~）。
+        有包裹的对象：`ref()`、`computed()`
     2. `watch(ref对象, 调用方法并传参)`
     3. `defineProps`、`defineEmits`是一个编译时宏，并不需要导入
 
@@ -80,7 +81,7 @@
         </script>
 
         <template>
-          <h2>{{ msg }} === {{ props.msg }}</h2> <!-- 可以直接用msg，也可以props.msg -->
+          <h2>{{ msg }} === {{ props.msg }}</h2> <!-- 可以直接用msg，也可以props.msg，都是响应式 -->
         </template>
         ```
 
@@ -93,7 +94,7 @@
     5. 直接递归渲染组件自己
 
         >e.g. <https://cn.vuejs.org/examples/#tree>
-5. `ref`与`computed`自动解包（automatically unwrapped），[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)
+5. `ref`与`computed`自动浅层解包（automatically unwrapped），[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)
 6. `computed`
 
     上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；可写计算属性的`get`的第一个参数`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
