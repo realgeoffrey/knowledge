@@ -61,7 +61,33 @@
     >Vue 3.4+。
 
     若 attribute名称 与 绑定的js值的名称 相同，则可以进一步简化缩写，省略`="绑定值"`。
-3. `ref`、`setup`、`<script setup>`、`nextTick`、`reactive`、`computed`、`watch`、`watchEffect`、[`onWatcherCleanup`](https://cn.vuejs.org/guide/essentials/watchers.html#watcheffect)、`onMounted`、`useTemplateRef`、`defineProps`、`defineEmits`、`createApp`、`defineModel`、`defineOptions`、`provide/inject`、`defineAsyncComponent`、`<Suspense>`、`toValue`
+3. `<script setup>`、`ref`、`setup`、`nextTick`、`reactive`、`computed`、`watch`、`watchEffect`、[`onWatcherCleanup`](https://cn.vuejs.org/guide/essentials/watchers.html#watcheffect)、`onMounted`、`onUpdated`、`onUnmounted`、`onBeforeMount`、`onBeforeUpdate`、`onBeforeUnmount`、`onErrorCaptured`、`onRenderTracked`、`onRenderTriggered`、`onActivated`、`onDeactivated`、`onServerPrefetch`、`useTemplateRef`、`defineProps`、`defineEmits`、`createApp`、`defineModel`、`defineOptions`、`provide/inject`、`defineAsyncComponent`、`<Suspense>`、`toValue`
+
+    1. `reactive()`只适用于引用类型；`ref()`可以接受任何值类型（包括组件），它会返回一个包裹对象，并在`.value`属性下暴露内部值。
+
+        在组件的`<script setup>`块中声明的响应式状态，可以在`模板`中直接使用（有包裹的对象会自动在模板中解包，因此不需要再手动 ~~`.value`~~）。
+    2. `watch(ref对象, 调用方法并传参)`
+    3. `defineProps`、`defineEmits`是一个编译时宏，并不需要导入
+
+        ```vue
+        <script setup>
+        const props = defineProps({
+          msg: String
+        })
+        console.log(props.msg)  // 必须props.msg
+        </script>
+
+        <template>
+          <h2>{{ msg }} === {{ props.msg }}</h2> <!-- 可以直接用msg，也可以props.msg -->
+        </template>
+        ```
+
+        ```js
+        const emit = defineEmits(['注册事件名1','注册事件名2',])
+
+        emit('注册事件名2', 参数1, 参数2, ) // 必须先注册事件再使用
+        ```
+
 5. `ref`与`computed`自动解包（automatically unwrapped），[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)
 6. `computed`
 
