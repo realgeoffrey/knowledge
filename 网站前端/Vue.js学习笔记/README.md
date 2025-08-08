@@ -47,7 +47,7 @@
 
         使用选项式API，我们可以用包含多个选项的对象来描述组件的逻辑，如：methods、data、mounted、等。选项所定义的属性都会暴露在函数内部的`this`上，它会指向当前的组件实例。
 
-        `setup`是选项式API。
+        >[`setup`](https://cn.vuejs.org/api/composition-api-setup)用于在选项式组件中使用组合式API，推荐直接用`<script setup>`替代。
 
     >选项式API 是在 组合式API 的基础上实现的。
 
@@ -65,12 +65,14 @@
     若 attribute名称 与 绑定的js值的名称 相同，则可以进一步简化缩写，省略`="绑定值"`。
 3. `<script setup>`、`ref`、`setup`、`nextTick`、`reactive`、`computed`、`watch`、`watchEffect`、`onWatcherCleanup`、`onMounted`、`onUpdated`、`onUnmounted`、`onBeforeMount`、`onBeforeUpdate`、`onBeforeUnmount`、`onErrorCaptured`、`onRenderTracked`、`onRenderTriggered`、`onActivated`、`onDeactivated`、`onServerPrefetch`、`useTemplateRef`、`defineProps`、`defineEmits`、`createApp`、`defineModel`、`defineOptions`、`provide/inject`、`defineAsyncComponent`、`<Suspense>`、`toValue`
 
-    1. `reactive()`只接受引用类型；`ref()`可以接受任何值类型（包括组件），会返回一个包裹对象，并在`.value`属性下暴露内部值。
-    2. 在组件的`<script setup>`块中声明的响应式状态，可以在`模板`中直接使用（有包裹的对象会在模板中自动浅层解包，因此不需要再手动 ~~`.value`~~）。
+    1. `reactive()`只接受引用类型（使传入的引用类型对象本身具有响应性）；`ref()`可以接受任何值类型（包括组件），会返回一个包裹对象，并在`.value`属性下暴露内部值（使.value的值具有响应性）。
+    1. `reactive`解构不友好
+    2. 在组件的`<script setup>`中的顶层的导入、声明的变量和函数可在同一组件的`模板`中直接使用（有包裹的对象会在模板中自动浅层解包，因此不需要再手动 ~~`.value`~~）。
 
         有包裹的对象：`ref()`、`computed()`
+    1. `shallowRef()`：`ref()`的浅层作用形式；`shallowReactive()`：`reactive()`的浅层作用形式。
     2. `watch(ref对象, 调用方法并传参)`
-    3. `defineProps`、`defineEmits`是一个编译时宏，并不需要导入
+    3. `defineProps`、`defineEmits`、`defineExpose`是一个编译器宏（compiler macro），并不需要导入（但也不能打印或赋值给其他变量）
 
         ```vue
         <script setup>
@@ -95,6 +97,9 @@
 
         >e.g. <https://cn.vuejs.org/examples/#tree>
 5. `ref`与`computed`自动浅层解包（automatically unwrapped），[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)
+
+    1. `ref`会在作为响应式对象的属性被访问或修改时自动浅层解包
+    2. `ref`、`computed`会在模板中自动浅层解包
 6. `computed`
 
     上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；可写计算属性的`get`的第一个参数`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
