@@ -118,9 +118,12 @@
     </template>
     ```
 1. 支持`<Teleport>`
-8. 生命周期
+8. <details>
 
-    ![vue3生命周期图](./images/vue-lifecycle-2.png)
+    <summary>生命周期图示</summary>
+
+    ![vue 3生命周期图](./images/vue-lifecycle-vue3.png)
+    </details>
 9. 深度选择器
 
     | 写法        | Vue版本支持  | 预处理器支持    | 官方推荐  | 备注 |
@@ -1371,7 +1374,7 @@
     <details>
     <summary>生命周期图示</summary>
 
-    ![vue 2生命周期图](./images/vue-lifecycle-1.png)
+    ![vue 2生命周期图](./images/vue-lifecycle-vue2.png)
     </details>
 18. `parent`（Vue实例）：指定父组件
 19. `name`（字符串）
