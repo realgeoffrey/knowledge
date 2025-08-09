@@ -195,6 +195,18 @@
 
         1. `「正数或负数」`
         2. `auto`：占据所有剩余空间。若多个子项都是`auto`，则平分所有剩余空间。
+    - 在Flex布局中，使用`min-height/width: 0`解决**Flex子项内容溢出父容器问题**：
+
+        ```html
+        <div class="parent"><!-- flex父级 -->
+          <div class="child"><!-- flex子级，默认`min-height/width: auto`。若flex子级的内容超过flex子级，则不会产生滚动条、会溢出。需要.child设置`min-height/width:0`（或`height/width: 任意`）才能不溢出、才能够产生滚动条 -->
+            很长的内容很长的内容很长的内容...
+            <!-- 注意嵌套flex项情况，每个子级都要这么设置 -->
+          </div>
+        </div>
+        ```
+
+        >`​min-height/width: auto`的作用机制​：当Flex子项的内容高度 > 父容器分配的高度时，子项会无视height/width或flex-shrink的限制，优先扩展以容纳内容。
 
 - Flex容器内的子元素也可以设置为`display: flex;`，继续在其内部处理其子级的布局问题。
 

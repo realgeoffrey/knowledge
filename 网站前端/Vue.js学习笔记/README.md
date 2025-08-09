@@ -21,11 +21,12 @@
     1. [Vue实现原理](#vue实现原理)
     1. [Vue性能优化](#vue性能优化)
     1. [例子](#例子)
-1. [vue-router](#vue-router)
-1. [用pinia代替~~vuex~~](#用pinia代替vuex)
+1. [vue-router@4(Vue 3)](#vue-router4vue-3)
+1. [vue-router@3(Vue 2)](#vue-router3vue-2)
+1. [pinia（代替~~vuex~~）](#pinia代替vuex)
 
     1. [vuex](#vuex)
-1. [用create-vue代替~~vue-cli~~](#用create-vue代替vue-cli)
+1. [create-vue（代替~~vue-cli~~）](#create-vue代替vue-cli)
 
     1. [vue-cli](#vue-cli)
 1. [nuxt](#nuxt)
@@ -68,8 +69,8 @@
     1. `reactive()`只接受引用类型（使传入的引用类型对象本身具有响应性）；`ref()`可以接受任何值类型（包括组件），会返回一个包裹对象，并在`.value`属性下暴露内部值（使.value的值具有响应性）。
     1. 不能解构：
 
-        1. `reactive`、`setup(props)`的`props`、`vue-router`的`useRoute`：需要用`toRefs`或`toRef`才能解构
-        2. `pinia`的store：需要用`pinia`的`storeToRefs`才能解构
+        1. `reactive`、`setup(props)`的`props`、`vue-router`的`useRoute`：需要用`toRefs`或`toRef`才能解构（`toRefs`或`toRef`产生有包裹的对象）
+        2. `pinia`的store：需要用`pinia`的`storeToRefs`才能解构（`storeToRefs`产生有包裹的对象）
         3. `ref`的`.value`手动解包后不是响应式对象：一般直接`.value`去操作，不会进行解构
     2. 在组件的`<script setup>`中的顶层的导入、声明的变量和函数可在同一组件的`模板`中直接使用（有包裹的对象会在模板中自动浅层解包，因此不需要再手动 ~~`.value`~~）。
 
@@ -2810,7 +2811,10 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     </details>
 
 ---
-### [vue-router](https://github.com/vuejs/vue-router)
+### [vue-router@4](https://github.com/vuejs/router)(Vue 3)
+[Vue Router API 从 v3（Vue2）到 v4（Vue3）的迁移](https://router.vuejs.org/zh/guide/migration/)
+
+### [vue-router@3](https://github.com/vuejs/vue-router)(Vue 2)
 1. 初始化
 
     ```js
@@ -3016,9 +3020,380 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         }
         ```
 
-### 用[pinia](https://github.com/vuejs/pinia)代替~~vuex~~
+### [pinia](https://github.com/vuejs/pinia)（代替~~vuex~~）
+1. `createPinia()`创建pinia实例
+2. `defineStore(id名, {state: 方法, getters: 对象, actions: 对象} 或 类似setup的方法[, 选项对象])`创建useStore函数（用于返回store实例）
 
-#### [vuex](https://github.com/vuejs/vuex)
+    ```js
+    // 0️⃣ ./stores/XX.js，定义store
+    export const useXXStore = defineStore('唯一ID', 对象或方法[, 插件选项]) // 插件的context.options：若第二个参数是对象，则是这个对象，否则是新增的第三个参数
+
+
+    // 1️⃣ .vue（app已经注入pinia实例之后，才可以使用。组件的`setup`就是app启动后执行）
+    <script setup>
+    import { useXXStore } from '@/stores/XX'
+    // 在组件内部的任何地方均可以访问变量`store`（不需要store.state/getters/actions，直接使用定义的属性名store.属性1/计算属性1/方法1）
+    const store = useXXStore()
+    </script>
+
+
+    // 2️⃣ 非SSR
+    // ❌  失败，因为它是在创建 pinia 之前被调用的
+    const store = useXXStore()
+
+    const pinia = createPinia()
+    const app = createApp(App)
+    app.use(pinia)
+
+    // ✅ 成功，因为 pinia 实例现在激活了
+    const store = useXXStore()
+
+
+    // 3️⃣ SSR，需要把pinia实例传递给useXX()函数
+    const pinia = createPinia()
+    const app = createApp(App)
+    app.use(router)
+    app.use(pinia)
+
+    router.beforeEach((to) => {
+      // ✅这会正常工作，因为它确保了正确的 store 被用于
+      // 当前正在运行的应用
+      const store = useXXStore(pinia)
+
+      if (to.meta.requiresAuth && !store.isLoggedIn) return '/login'
+    })
+    ```
+
+    >新的属性如果没有在 state/getter/action 中被定义，则不能被添加。它必须包含初始状态。e.g. 若`secondCount`没有在`state()`中定义，则执行任何设置无效，比如 ~~store.secondCount = 2~~。
+
+    1. state
+
+        1. 重置state为初始值
+
+            1. 选项式API：store的`$reset()`方法将state重置为初始值
+
+                ```js
+                const store = useStore()
+                store.$reset()
+                ```
+            2. Setup Stores：需要创建自己的`$reset()`方法（未默认提供）
+
+                ```js
+                export const useCounterStore = defineStore('counter', () => {
+                  const count = ref(0)
+                  function $reset() { count.value = 0 }
+                  return { count, $reset }
+                })
+                ```
+
+            - 默认情况下，`$reset()`不会重置**插件**添加的 state，但可以重写它来重置插件添加的 state：
+
+                ```js
+                import { toRef, ref } from 'vue'
+
+                pinia.use(({ store }) => {
+                  // 为了正确地处理 SSR，我们需要确保我们没有重写任何一个现有的值
+                  if (!store.$state.hasOwnProperty('hasError')) {
+                    const hasError = ref(false)
+                    store.$state.hasError = hasError
+                  }
+                  store.hasError = toRef(store.$state, 'hasError')
+
+                  // 确认将上下文 (`this`) 设置为 store
+                  const originalReset = store.$reset.bind(store)
+
+                  // 覆写其 $reset 函数
+                  return {
+                    $reset() {
+                      originalReset()
+                      store.hasError = false
+                    },
+                  }
+                })
+                ```
+        2. 直接改变state
+
+            `$patch(新的store对象的部分 或 方法)`
+
+            ```js
+            // 没有被包含到的属性，不会变化；未初始化的属性，无法被添加
+            store.$patch({
+              count: store.count + 1,
+              age: 120,
+              name: 'DIO',
+            })
+
+            store.$patch((state) => {
+              state.items.push({ name: 'shoes', quantity: 1 })
+              state.hasChanged = true
+            })
+            ```
+
+            - 改变state的方式：
+
+                1. 直接修改`store.count++`
+                2. 对`storeToRefs`解构后通过`.value`修改响应式变量`count.value++`
+                3. action暴露的方法
+                4. `$patch(对象或方法)`
+                5. `store.$state = 对象`（内部调用`$patch`实现，等价于`$patch(对象)`）
+                6. 直接修改`mapWritableState`的注入属性，`computed: {...mapWritableState(useCounterStore, ['count'])}`后`this.count++`
+                - `$reset`重置为初始值
+        3. 订阅state
+
+            `store.$subscribe((mutation/* type,storeId,payload */, state) => {}, {vue 3的watch选项 + detached})`
+
+            - 默认情况下，state subscription会被绑定到添加它们的组件上（如果 store 在组件的 setup() 里面）。这意味着，当该组件被卸载时，它们将被自动删除。如果你想在组件卸载后依旧保留它们，请将 `{ detached: true }` 作为第二个参数，以将state subscription从当前组件中分离。
+    2. getter
+
+        1. 第一个参数是state
+        2. （`this`获取当前store的整个实例）`this.当前store的其他getter`（注意不要用箭头函数）
+        3. 其他store实例的值（state、getter、action）：`import`引入直接使用
+
+        ```js
+        import { useOtherStore } from './other-store'
+
+        export const useStore = defineStore('main', {
+          state: () => ({
+            // ...
+          }),
+          getters: {
+            otherGetter(state) {
+              const otherStore = useOtherStore()
+              return state.localData + otherStore.data
+            },
+            doublePlusOne() { // 不要用箭头函数，否则this === undefined
+              return this.doubleCount + 1
+            },
+          },
+        })
+        ```
+    3. action
+
+        1. `this`获取当前store的整个实例（包括state、getter、action）
+        2. 其他store实例的值（state、getter、action）：`import`引入直接使用
+        3. 可以异步（`async-await`）
+        4. 订阅action
+
+            ```js
+            // 传递给它的回调函数会在 action 本身之前执行
+            const unsubscribe = oneStore.$onAction(
+              ({
+                name, // action 名称
+                store, // store 实例，等于`oneStore`
+                args, // 传递给 action 的参数数组
+                after, // 在 action 返回或解决后的钩子
+                onError, // action 抛出或拒绝的钩子
+              }) => {
+                // 为这个特定的 action 调用提供一个共享变量
+                const startTime = Date.now()
+                // 这将在执行 "store "的 action 之前触发。
+                console.log(`Start "${name}" with params [${args.join(', ')}].`)
+
+                // 这将在 action 成功并完全运行后触发。
+                // 它等待着任何返回的 promise
+                after((result) => {
+                  console.log(
+                    `Finished "${name}" after ${
+                      Date.now() - startTime
+                    }ms.\nResult: ${result}.`
+                  )
+                })
+
+                // 如果 action 抛出或返回一个拒绝的 promise，这将触发
+                onError((error) => {
+                  console.warn(
+                    `Failed "${name}" after ${Date.now() - startTime}ms.\nError: ${error}.`
+                  )
+                })
+              } /* ,true ：此订阅器即便在组件卸载之后仍会被保留 */
+            )
+
+            // 手动删除监听器
+            unsubscribe()
+            ```
+
+            - 默认情况下，action 订阅器会被绑定到添加它们的组件上(如果store在组件的`setup()`内)。这意味着，当该组件被卸载时，它们将被自动删除。如果你想在组件卸载后依旧保留它们，请将`true`作为第二个参数传递给 action 订阅器，以便将其从当前组件中分离。
+3. `pinia实例.use(插件)`
+
+    每个插件会按需执行：只有当首次使用到某个插件时才会执行该插件方法，并且只会执行一次。
+
+    ```js
+    // 插件：一个 接受上下文参数、返回对象 的方法
+    export function myPiniaPlugin({
+      pinia, // 用 `createPinia()` 创建的 pinia （每个插件共用）
+      app, // 用 `createApp()` 创建的当前应用(仅 Vue 3)（每个插件共用）
+      store, // 该插件想扩展的具体的每一个 store实例
+      options, // 定义传给 `defineStore()` 的 store 的可选对象（选项式API的第二个参数对象 或 Setup Stores的第三个参数）
+    }) {
+      // 做一些副作用的事情，e.g. 本地存储
+      // 可以直接写入 store（不推荐，推荐在return的对象中添加属性） 、 app
+
+      store.属性1 = 'world' // 无法自动追踪，因此要添加以下代码
+      if (process.env.NODE_ENV === 'development') {
+          // 添加你在 store 中设置的键值
+          store._customProperties.add('属性1')
+      }
+
+      // 返回对象，其属性会添加到所有store
+      return { 属性2, } // 任何由插件返回的属性都会被 devtools 自动追踪
+    }
+    ```
+
+    1. 在插件中，state变更或添加（包括调用`store.$patch()`）都是发生在 store 被激活之前，因此不会触发任何订阅函数
+    2. 若想给 store 添加新的 state 属性或者在服务端渲染的激活过程中使用的属性，则必须同时在两个地方添加它：
+
+        1. 添加到 store 上，然后才可以用 store.myState 访问它；
+        2. 添加到 store.$state 上，然后你才可以在 devtools 中使用它，并且在 SSR 时被正确序列化(serialized)。
+
+        ```js
+        import { toRef, ref } from 'vue'
+
+        pinia.use(({ store }) => {
+          // 为了正确地处理 SSR，我们需要确保我们没有重写任何一个现有的值
+          if (!store.$state.hasOwnProperty('hasError')) {
+            const hasError = ref(false)
+            // 在 `$state` 上设置变量，允许它在 SSR 期间被序列化。
+            store.$state.hasError = hasError
+          }
+          // 我们需要将 ref 从 state 转移到 store
+          // 这样的话,两种方式：store.hasError 和 store.$state.hasError 都可以访问并且共享的是同一个变量
+          store.hasError = toRef(store.$state, 'hasError')
+
+          // 在这种情况下，最好不要return `hasError`
+          // 因为它将被显示在 devtools 的 `state` 部分
+          // 如果我们返回它，devtools 将显示两次。
+        })
+        ```
+    3. 当添加外部属性、第三方库的类实例或非响应式的简单值时，应该先用vue的`markRaw()`来包装一下它，再将它传给pinia
+
+        ```js
+        import { markRaw } from 'vue'
+        // 根据你的路由器的位置来调整
+        import { router } from './router'
+
+        pinia.use(({ store }) => {
+          store.router = markRaw(router)
+        })
+        ```
+    4. 可以在插件中使用 `store.$subscribe` 和 `store.$onAction`
+4. 作用于：选项式API
+
+    1. `mapState`
+
+        不区分state、getter。
+
+        ```js
+        import { mapState } from 'pinia'
+        import { useCounterStore } from '../stores/counter'
+
+        export default {
+          computed: {
+            // 可以访问组件中的 this.count
+            // 与从 store.count 中读取的数据相同
+            ...mapState(useCounterStore, ['count'])
+            // 与上述相同，但将其注册为 this.myOwnName
+            ...mapState(useCounterStore, {
+              myOwnName: 'count',
+              // 你也可以写一个函数来获得对 store 的访问权
+              double: store => store.count * 2,
+              // 它可以访问 `this`，但它没有标注类型...
+              magicValue(store) {
+                return store.someGetter + this.count + this.double
+              },
+            }),
+          },
+        }
+        ```
+    1. `mapWritableState`
+
+        与`mapState`类似，但可以直接修改store，但不能像`mapState()`那样传递一个函数。
+
+        ```js
+        import { mapWritableState } from 'pinia'
+        import { useCounterStore } from '../stores/counter'
+
+        export default {
+          computed: {
+            // 可以访问组件中的 this.count，并允许设置它。
+            // this.count++
+            // 与从 store.count 中读取的数据相同
+            ...mapWritableState(useCounterStore, ['count'])
+            // 与上述相同，但将其注册为 this.myOwnName
+            ...mapWritableState(useCounterStore, {
+              myOwnName: 'count', // 不能传递函数
+            }),
+          },
+        }
+        ```
+    1. `mapActions`
+
+        ```js
+        import { mapActions } from 'pinia'
+        import { useCounterStore } from '../stores/counter'
+
+        export default {
+          methods: {
+            // 访问组件内的 this.increment()
+            // 与从 store.increment() 调用相同
+            ...mapActions(useCounterStore, ['increment'])
+            // 与上述相同，但将其注册为this.myOwnName()
+            ...mapActions(useCounterStore, { myOwnName: 'increment' }),
+          },
+        }
+        ```
+    1. `mapStores`
+    1. ~~`mapGetters`~~
+
+- 每个 store 都是`reactive`包装对象（因此不能直接解构，要用`storeToRefs`解构，被`storeToRefs`解构后需要`.vulue`解包或自动解包），所以可以自动解包任何它所包含的 Ref（`ref()`、`computed()`、等）
+
+    ```js
+    // 组件已自动解包
+    <script setup>
+    import { useXXStore } from '@/stores/xx'
+    const xxStore = useXXStore()
+
+    // 自动解包
+    console.log(xxStore.hello, xxStore.state1)
+    </script>
+
+
+    // 插件已自动解包
+    const sharedRef = ref('shared')
+    pinia.use(({ store }) => {
+      // 每个 store 都有单独的 `hello` 属性
+      store.hello = ref('secret')
+      // 自动解包
+      store.hello // 'secret'
+
+      // 所有的 store 都在共享 `shared` 属性的值
+      store.shared = sharedRef
+      store.shared // 'shared'
+    })
+    ```
+
+5. `storeToRefs`产生有包裹的对象
+
+    不能直接解构store，需要用`storeToRefs`解构响应式引用，会跳过 **所有action或非响应式属性**（action和非响应式属性可以直接解构，~~不需要用`storeToRefs`~~）
+
+    ```vue
+    <script setup>
+    import { storeToRefs } from 'pinia'
+    const store = useCounterStore()
+    // `name` 和 `doubleCount` 都是响应式引用
+    // 下面的代码同样会提取那些来自插件的属性的响应式引用
+    // 但是会跳过所有的 action 或者非响应式（非 ref 或者 非 reactive）的属性
+    const { name, doubleCount } = storeToRefs(store)
+    // 名为 increment 的 action 可以被解构
+    const { increment } = store
+    </script>
+    ```
+
+- TypeScript支持：“上述一切功能都有类型支持，所以你永远不需要使用 ~~`any`~~ 或 ~~`@ts-ignore`~~”
+- 支持SSR
+
+<details>
+<summary><h4><a href="https://github.com/vuejs/vuex">vuex</a></h4></summary>
+
 >store的概念：vuex提供的容器，state的集合。
 
 一个专为Vue.js应用程序开发的**状态管理模式**。采用集中式存储管理应用的所有组件的状态（仅一个实例对象就能负责保存整个应用的状态，「唯一数据源」），并以相应的规则保证状态以一种可预测的方式发生变化。vuex的状态存储是**响应式的**，若store中的状态发生变化，则有读取状态的组件（`computed`依赖状态或直接输出状态）也会相应地得到高效更新。
@@ -3277,9 +3652,13 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
 - 若在`new`Vue实例时，把（已经`Vue.use(Vuex)`的）Vuex.Store实例通过`store`属性注入，则子组件内就能通过`vm.$store`访问此Vuex实例。
 
-### 用[create-vue](https://github.com/vuejs/create-vue)代替~~vue-cli~~
+</details>
 
-#### [vue-cli](https://github.com/vuejs/vue-cli)
+### [create-vue](https://github.com/vuejs/create-vue)（代替~~vue-cli~~）
+
+<details>
+<summary><h4><a href="https://github.com/vuejs/vue-cli">vue-cli</a></h4></summary>
+
 快速构建Vue应用的脚手架，可以使用Vue官方或第三方模板来进行Vue应用的配置，主要包括webpack等工具的配置。
 
 1. 任何放置在public文件夹的静态资源都会被简单的复制，而不经过~~webpack~~。需要通过**绝对路径**来引用。
@@ -3301,6 +3680,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
         1. 在.js访问：`process.env.VUE_APP_名字/NODE_ENV/BASE_URL`
         2. 在public的.html访问：`<%= VUE_APP_名字/NODE_ENV/BASE_URL %>`
+</details>
 
 ### [nuxt](https://github.com/nuxt/nuxt)
 基于Vue的通用应用框架（SPA或SSR），把webpack、babel、vue-server-renderer、vue-router、vuex、vue-meta等工具整合在一起，并通过自带的`nuxt.config.js`统一配置，不需要对每个工具进行单独配置。

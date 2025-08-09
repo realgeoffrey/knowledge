@@ -94,8 +94,8 @@
 
         >px不是响应式。
 
-        rem+vw[响应式页面解决方案](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#响应式页面解决方案)
+        rem+vw：[响应式页面解决方案](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/响应式相关.md#响应式页面解决方案)
 
         - 大屏
 
-            建议所有数值都按照rem+vw处理（注意第三方库的样式问题）
+            建议**所有**数值都按照rem+vw处理，包括高宽、间距、字体等（注意第三方库的样式问题）
