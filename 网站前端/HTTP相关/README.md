@@ -294,7 +294,7 @@
     与GET方法一样，都是向服务器发出指定资源的请求。只不过服务器将不传回资源的本文部分。在不必传输全部内容的情况下，获取关于该资源的信息（HTTP响应头）。
 6. OPTIONS：列出可对资源实行的请求方法，用来跨域请求
 
-    使服务器传回该资源所支持的所有HTTP请求方法。用「*」来代替资源名称，测试服务器功能是否正常运作。
+    使服务器传回该资源所支持的所有HTTP请求方法。用「*」来替代资源名称，测试服务器功能是否正常运作。
 7. TRACE：追踪请求-响应的传输路径
 
     回显服务器收到的请求，主要用于测试或诊断。
@@ -793,7 +793,7 @@
         >中间人攻击（Man-In-The-Middle attack，MITM）。
 2. HTTPS（HTTP Secure） = HTTP + 通信加密 + 证书认证 + 完整性保护
 
-    >HTTPS并非是应用层的一种新协议。只是HTTP通信接口部分用SSL（Secure Socket Layer）或TLS（Transport Layer Security）协议代替（在应用层和传输层中间添加）。
+    >HTTPS并非是应用层的一种新协议。只是HTTP通信接口部分用SSL（Secure Socket Layer）或TLS（Transport Layer Security）协议替代（在应用层和传输层中间添加）。
 
     1. 加密
 

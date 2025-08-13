@@ -119,7 +119,7 @@
         ></details>
 6. ie6不支持`max-height`、`min-height`、`max-width`、`min-width`：
 
-    - 用`_height/_width`等于固定值适量代替。
+    - 用`_height/_width`等于固定值适量替代。
 7. ie6字体渲染的高度和其他浏览器不同，`line-height`可能会渲染小一些：
 
     - 不处理，否则都要细微调节ie6的行高。

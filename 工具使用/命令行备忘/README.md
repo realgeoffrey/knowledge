@@ -48,14 +48,15 @@
 >
 >    1. `「命令」 --help`
 >    2. `man 「命令」`
->    3. `info 「命令」`
->    4. `whatis 「命令」`
+>    3. `tldr 「命令」`（`npm i -g `[tldr](https://github.com/tldr-pages/tldr)）
+>    4. `info 「命令」`
+>    5. `whatis 「命令」`
 >
 >    >`「命令」`可以是 「命令」+「指令」，如：`docker info`。
 >
 >    阅读英文文档时，英文水平是痛点，跳着看容易看不懂……
 
->可阅读：[bash-guide](https://github.com/Idnan/bash-guide)。
+>可阅读：[You-Dont-Need-GUI](https://github.com/you-dont-need/You-Dont-Need-GUI)、[bash-guide](https://github.com/Idnan/bash-guide)。
 
 #### 命令花费时间
 ```shell
@@ -69,6 +70,18 @@ type 命令
 ```
 
 #### URL连接测试
+
+><details>
+><summary>e.g. <code>22</code>端口号测试都通过，但一执行git操作就报<code>22</code>端口号问题</summary>
+>
+>`Connection closed或reset by 20.205.243.166或github.com port 22`核心含义就是：22端口 TCP 可以连通（TCP三次握手成功），但 SSH 握手阶段被对方（或中间设备）直接关闭了连接：
+>
+>1. nc/telnet 只能测到“三次握手成功”，所以显示端口是通的。
+>2. 真正跑 SSH 协议 时，连接会被防火墙/代理/网关 强制 reset/close（SSH握手失败）。
+>3. 所以这不是 GitHub 自己的问题（GitHub 的 22/443 一直开放），而是 你所在网络的限制。
+>4. 可以用`ssh -T git@github.com`或`ssh -T git@账户1.github.com`测试到SSH握手阶段是否成功。
+></details>
+
 1. `ping`
 
     向域名或IP（没有~~协议头、端口、路径~~）传出一个ICMP的请求回显数据包，并等待接收回显回应数据包。判断网络是否畅通、查看连接速度信息。
@@ -92,10 +105,12 @@ type 命令
     ```
 3. `telnet`
 
-    可测试IP+端口是否可连接（不可以填写~~域名~~）。互联网远程登录服务的标准协议和主要方式。
+    >mac：`brew install telnet`
+
+    可测试IP+端口是否可连接。互联网远程登录服务的标准协议和主要方式。
 
     ```shell
-    telnet 「IP」 「端口」
+    telnet 「IP/域名」 「端口」
     # 若连通则会有进一步操作；若不连通则trying或退出
     ```
 4. `nslookup`

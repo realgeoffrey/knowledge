@@ -790,7 +790,7 @@ function cloneDeep(obj, weakmap = new WeakMap()) {
       }
     }
 
-    // fixme: Set、Map复制（也要考虑键、值都是引用类型的循环引用问题）
+    // fixme: Set、Map复制（也要考虑键、值都是引用数据类型的循环引用问题）
 
     // 处理普通对象或数组（对象、数据可以统一处理）
     if (!weakmap.has(obj)) {
@@ -1335,12 +1335,14 @@ function compose(middlewares) { // 返回一个中间件（可以继续被当做
 ```js
 const app = new Koa();
 
-function sleep(ms) {
+// 模拟请求等待时间ms；errorRate报错率：多少概率return Error请求失败
+function sleep(ms, errorRate = 0.1) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve();
-    }, ms);
-  });
+      if (Math.random() < errorRate) reject(new Error('请求失败'))
+      resolve()
+    }, ms)
+  })
 }
 
 // 按照①②③④⑤⑥执行后输出

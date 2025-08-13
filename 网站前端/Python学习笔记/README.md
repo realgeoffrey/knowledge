@@ -17,9 +17,34 @@
 
 >使用方式：
 >
->1. 首先，为项目安装conda、配置conda环境，然后从conda channel安装需要的所有软件包
+>1. 首先，为项目安装conda、配置conda环境，然后从conda channel（存放软件包的远程服务器地址）安装需要的所有软件包
 >2. 其次，在激活conda的情况下，使用conda附带的pip来安装所需的pip依赖项到项目的conda环境中
 >- 建议能用conda安装的优先使用conda，尽量使用conda环境隔离功能，为不同的任务创建不同的环境。如果某个包conda没有，再使用pip安装
+>
+><details>
+><summary>某答案总结的优先级规则</summary>
+>
+>```py
+>def choose_installer(package_name):
+>    """选择用pip还是conda"""
+>
+>    # 科学计算包 -> conda
+>    if package_name in ['numpy', 'scipy', 'pandas', 'matplotlib',
+>                        'scikit-learn', 'tensorflow', 'pytorch', 'faiss']:
+>        return 'conda'
+>
+>    # 有C/C++扩展 -> conda
+>    if has_c_extensions(package_name):
+>        return 'conda'
+>
+>    # 纯Python包 -> pip
+>    if is_pure_python(package_name):
+>        return 'pip'
+>
+>    # 不确定 -> 先试conda，没有再用pip
+>    return 'conda_then_pip'
+>```
+></details>
 >
 >[知乎：pip install 和conda install有什么区别吗？](https://www.zhihu.com/question/395145313)
 
@@ -669,7 +694,7 @@
     | --- | --- | --- | --- |
     | 正则表达式解析 | `re` | 快 | 困难 |
     | XPath 解析 | `lxml` | 快 | 一般 |
-    | CSS 选择器解析 | （三方库） `bs4`或`pyquery` | 不确定 | 简单 |
+    | CSS 选择器解析 | （第三方库） `bs4`或`pyquery` | 不确定 | 简单 |
 5. 爬虫是典型的 I/O 密集型任务
 
     >I/O 密集型任务的特点就是程序会经常性的因为 I/O 操作而进入阻塞状态。
