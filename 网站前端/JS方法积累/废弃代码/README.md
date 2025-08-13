@@ -3,21 +3,25 @@
 ## 目录
 1. [原生JS方法](#原生js方法)
 
-    1. 可用[moment](https://github.com/moment/moment/)（或[dayjs](https://github.com/iamkun/dayjs)、[date-fns](https://github.com/date-fns/date-fns)）代替
+    1. 可用[moment](https://github.com/moment/moment/)（或[dayjs](https://github.com/iamkun/dayjs)、[date-fns](https://github.com/date-fns/date-fns)）替代
 
         1. [格式化日期](#原生js格式化日期)
         1. [获取年龄](#原生js获取年龄)
         1. [倒计时显示](#原生js倒计时显示)
         1. [倒计时组件](#vuereact倒计时组件)
-    1. 可用[lodash](https://github.com/lodash/lodash)、[jQuery](https://github.com/jquery/jquery)或ES6或其他库代替
+    1. 可用[lodash](https://github.com/lodash/lodash)、[jQuery](https://github.com/jquery/jquery)或ES6或其他库替代
 
         1. [多异步返回后才执行总回调函数（利用jQuery的`$.ajax`）](#原生js多异步返回后才执行总回调函数利用jquery的ajax)
         1. [对象合二为一（改变第一个参数）](#原生js对象合二为一改变第一个参数)
         1. [通过类名获取DOM](#原生js通过类名获取dom)
-    1. 可用[js-cookie](https://github.com/js-cookie/js-cookie)代替
+    1. 可用[js-cookie](https://github.com/js-cookie/js-cookie)替代
 
         1. [操作cookie](#原生js操作cookie)
-    1. 可用js原生代替
+    1. 可用`URL`、`URLSearchParams`替代
+
+        1. [获取URL相关信息](#原生js获取url相关信息)
+        1. [在URL末尾修改search键-值](#原生js在url末尾修改search键-值)
+    1. 可用js原生替代
 
         1. [实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`](#原生js实现类似jquery的htmlbodyanimatescrollleft-像素-scrolltop-像素-毫秒)
 1. [函数模板](#函数模板)
@@ -102,6 +106,7 @@ var format = {
 /* 使用测试 */
 var a = format.date(new Date(), 'yyyy-MM-dd HH:mm:ss S毫秒 EEE 季度q');
 ```
+
 >可以使用[moment](https://github.com/moment/moment/)（或[dayjs](https://github.com/iamkun/dayjs)、[date-fns](https://github.com/date-fns/date-fns)）格式化时间，完全替代。
 
 ### *原生JS*获取年龄
@@ -141,6 +146,7 @@ function getAge (birthday) {
   return age
 }
 ```
+
 >可以使用[moment](https://github.com/moment/moment/)（或[dayjs](https://github.com/iamkun/dayjs)、[date-fns](https://github.com/date-fns/date-fns)）格式化时间，完全替代。
 
 ### *原生JS*倒计时显示
@@ -389,6 +395,7 @@ function getAge (birthday) {
 
     // a.stop();
     ```
+
 >可以使用[moment](https://github.com/moment/moment/)（或[dayjs](https://github.com/iamkun/dayjs)、[date-fns](https://github.com/date-fns/date-fns)）格式化时间，完全替代。
 
 ### *vue/react*倒计时组件
@@ -427,7 +434,7 @@ function multiCallback(func, url) {
                     dataType: 'json',
                     data: {}
                     /*,
-                     // Zepto默认：没有deferred的对象，用参数模式代替
+                     // Zepto默认：没有deferred的对象，用参数模式替代
                      success: function (data) {
                          handle.result[url] = data;
                          handle.count += 1;
@@ -447,6 +454,7 @@ function multiCallback(func, url) {
     }
 }
 ```
+
 >1. 可以使用`Promise.all`或`async-await`方法实现。
 >2. 可以使用jQuery的Deferred对象`$.when($.ajax()...).done(成功后方法)`，完全替代。
 
@@ -470,6 +478,7 @@ function extend(target, options) {
     return target;
 }
 ```
+
 >1. 可以使用lodash的`_.assign(object, [sources])`（浅复制）、`_.merge(object, [sources])`（深复制），完全替代。
 >2. 可以使用[deepmerge](https://github.com/KyleAMathews/deepmerge)，完全替代。
 >3. 可以使用jQuery的`$.extend(对象1, 对象2)`，完全替代。
@@ -520,6 +529,7 @@ function getElementsByClassName(className, parentDom) {
     }
 }
 ```
+
 >可以使用jQuery的`$('.类名')`，完全替代。
 
 ### *原生JS*操作cookie
@@ -656,7 +666,251 @@ var cookieFuc = {
     }
 };
 ```
+
 >可以使用[js-cookie](https://github.com/js-cookie/js-cookie)，完全替代。
+
+### *原生JS*获取URL相关信息
+```js
+/**
+ * 获取URL相关信息
+ * @param {String} [url = window.location.href] - URL
+ * @returns {Object} location - 包括：href、protocol、hostname、port、pathname、search、searchObj、hash 的对象。若不是合法URL，返回false
+ */
+function getLocation(url = window.location.href) {
+  try {
+    /* 为了方便阅读 */
+    const protocolStr = /^(?:([A-Za-z]+):)?/.source
+    const slashStr = /\/*/.source
+    const hostnameStr = /([0-9A-Za-z.-]+)/.source
+    const portStr = /(?::(\d+))?/.source
+    const pathnameStr = /(\/[^?#]*)?/.source
+    const searchStr = /(?:\?([^#]*))?/.source
+    const hashStr = /(?:#(.*))?$/.source
+
+    const regex = new RegExp(protocolStr + slashStr + hostnameStr + portStr + pathnameStr + searchStr + hashStr, 'g');
+    const regexArr = regex.exec(url);
+    const keyArr = [ 'href', 'protocol', 'hostname', 'port', 'pathname', 'search', 'hash' ];
+    const location = { 'searchObj': {} };
+
+    keyArr.forEach(function (item, index) {
+      location[item] = regexArr[index] || ''
+    })
+
+    const searchArr = location['search'].split('&')
+
+    for (let i = 0; i < searchArr.length; i++) {
+      if (searchArr[i] !== '') {
+        const searchItem = searchArr[i].split('=')
+        const key = searchItem.shift()
+        const value = searchItem.join('=')
+        if (!Object.prototype.hasOwnProperty.call(location['searchObj'], key)) {  // 用第一次出现的
+          location['searchObj'][key] = value
+        }
+      }
+    }
+
+    return location
+  } catch (e) {  // 不是合法URL
+    return false
+  }
+}
+```
+
+>参考：[用正则表达式分析 URL](https://harttle.land/2016/02/23/javascript-regular-expressions.html)。
+
+>可以使用`new URL(location.href)`，完全替代。
+
+>1. 获取某search值：
+>
+>    ```js
+>    /**
+>     * 获取某search值
+>     * @param {String} checkKey - search的key
+>     * @param {String} [search = window.location.search] - search总字符串（不校验）
+>     * @returns {String|Boolean} - search的value 或 不存在false
+>     */
+>    function getSearchValue (checkKey, search = window.location.search) {
+>      checkKey = checkKey.toString()
+>
+>      if (search.slice(0, 1) === '?') {
+>        search = search.slice(1)
+>      }
+>
+>      for (let i = 0, searchArr = search.split('&'); i < searchArr.length; i++) {
+>        if (searchArr[i] !== '') {
+>          const tempArr = searchArr[i].split('=')
+>          const key = tempArr.shift()
+>          const value = tempArr.join('=')
+>
+>          if (key === checkKey) {
+>
+>            return decodeURIComponent(value)
+>          }
+>        }
+>      }
+>
+>      return false
+>    }
+>    ```
+>
+>    >可以使用`new URLSearchParams(location.search).get(search的key)`，完全替代。
+>2. 拼接接口URL时，可以在路由最后添加`?`并且加上一些固定不变的search参数，在使用URL时候都以`&参数=值`的形式添加额外参数：
+>
+>    >`xxx/xxx?&a=1`可以正常解析
+>
+>    ```js
+>    const api1 = 'xxx/xxx?'
+>    const api2 = 'xxx/xxx?v=1.0'
+>
+>    // 使用时
+>    url1 = api1 + '&a=1' + '&b=2' + '&c=3'
+>    url2 = api2 + '&a=1' + '&b=2' + '&c=3'
+>    ```
+
+### *原生JS*在URL末尾修改search键-值
+1. 批量修改（未加`encodeURIComponent`）
+
+    >对象转换为`a=1&b=2`：`Object.entries(对象).map((val) => val.join('=')).join('&')`。
+
+    ```ts
+    /**
+     * 在URL末尾修改search键-值
+     * @param {String} [url = window.location.href] - URL
+     * @param {Object} searchObj - 修改的search键-值（若key-value的value设置为`false`，则删除这个key）
+     * @returns {String} - 修改完毕的URL
+     */
+    function changeUrlSearch(url: string = window.location.href, searchObj: Record<string, string | false> = {}): string {
+      if (Object.keys(searchObj).length === 0) {
+        // 空对象不处理
+        return url;
+      }
+
+      const hashIndex = url.includes("#") ? url.indexOf("#") : url.length; // "#"所在的字符串位置索引
+      const urlWithoutHash = url.slice(0, hashIndex); // 去除hash后的url
+      const searchIndex = urlWithoutHash.indexOf("?"); // "?"所在的字符串位置索引
+
+      // 把原始search值写入对象
+      const originalSearchObj: Record<string, string> = {};
+      if (searchIndex !== -1) {
+        const search = urlWithoutHash.slice(searchIndex + 1); // search值（不包括 ?）
+
+        // 写入已存在search的键-值
+        const searchArr = search.split("&");
+        for (let i = 0; i < searchArr.length; i++) {
+          if (searchArr[i] !== "") {
+            const searchItem = searchArr[i].split("=");
+            const key = searchItem.shift() as string;
+            const value = searchItem.join("="); // 兜底有些值包含"="
+            if (!Object.prototype.hasOwnProperty.call(originalSearchObj, key)) {  // 用第一次出现的
+              originalSearchObj[key] = value;
+            }
+          }
+        }
+      }
+
+      // 合并原始search和新增search（同名覆盖）
+      const newSearchObj: Record<string, string | false> = Object.assign({}, originalSearchObj, searchObj);
+
+      // 生成新的合并过后的search字符串
+      const newSearch = Object.entries(newSearchObj)
+        // 值为`false`的key被删除
+        .filter(([key, value]) => {
+          return value !== false;
+        })
+        .map((val) => {
+          return val.join("=");
+        })
+        .join("&");
+
+      const hash = url.slice(hashIndex); // 原始hash
+
+      let urlWithoutSearch; // 去除search、hash后的url
+      if (searchIndex !== -1) {
+        urlWithoutSearch = urlWithoutHash.slice(0, searchIndex);
+      } else {
+        urlWithoutSearch = urlWithoutHash;
+      }
+
+      return urlWithoutSearch + (newSearch ? `?${newSearch}` : "") + hash;
+    }
+    ```
+2. <details>
+
+    <summary>单个修改</summary>
+
+    ```js
+    /**
+     * 在URL末尾修改search键-值
+     * @param {String} url - URL
+     * @param {String} name - 名
+     * @param {String|Boolean} value - 值（若传`false`则删除属性名）
+     * @returns {String} - 添加完毕的URL
+     */
+    function changeUrlSearch (url, name, value) {
+      if (!name) {
+        return url
+      }
+
+      var hashIndex = url.includes('#') ? url.indexOf('#') : url.length
+      var urlWithoutHash = url.slice(0, hashIndex)
+      var hash = url.slice(hashIndex)
+      var searchIndex = urlWithoutHash.indexOf('?')
+
+      if (searchIndex === -1) {
+        if (value === false) {
+          return url
+        }
+        return urlWithoutHash + '?' + encodeURIComponent(name) + '=' + encodeURIComponent(value) + hash
+      } else if (searchIndex === urlWithoutHash.length - 1) {
+        if (value === false) {
+          return url.slice(0, urlWithoutHash.length - 1) + hash
+        }
+        return urlWithoutHash + encodeURIComponent(name) + '=' + encodeURIComponent(value) + hash
+      } else {
+        const urlWithoutSearch = urlWithoutHash.slice(0, searchIndex)
+        const search = urlWithoutHash.slice(searchIndex + 1)
+
+        const originalSearchObj = {}
+
+        // 写入已存在search的键-值
+        const searchArr = search.split('&')
+        for (let i = 0; i < searchArr.length; i++) {
+          if (searchArr[i] !== '') {
+            const searchItem = searchArr[i].split('=')
+            const key = searchItem.shift()
+            const value = searchItem.join('=')
+            if (!Object.prototype.hasOwnProperty.call(originalSearchObj, key)) {  // 用第一次出现的
+              originalSearchObj[key] = value
+            }
+          }
+        }
+
+        let newSearch
+        if (value === false) {
+          delete originalSearchObj[name]
+          newSearch = Object.entries(originalSearchObj)
+            .map((val) => {
+              return val.join('=')
+            })
+            .join('&')
+        } else {
+          const newSearchObj = Object.assign({}, originalSearchObj, {
+            [encodeURIComponent(name)]: encodeURIComponent(value)
+          })
+          newSearch = Object.entries(newSearchObj)
+            .map((val) => {
+              return val.join('=')
+            })
+            .join('&')
+        }
+
+        return urlWithoutSearch + (newSearch ? `?${newSearch}` : '') + hash
+      }
+    }
+    ```
+    </details>
+
+>可以使用`var a = new URLSearchParams('?s=url&a=1&b=2&c'); a.set('d', '4'); a.delete('b'); a.toString()`，完全替代。
 
 ### *原生JS*实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`
 ```js

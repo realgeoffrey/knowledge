@@ -93,7 +93,7 @@
 
         - 针对文字高度问题，解决方案：
 
-            1. 不要写死`line-height`或`height`（或用`min-height`代替），让高的字体文字自动撑开。
+            1. 不要写死`line-height`或`height`（或用`min-height`替代），让高的字体文字自动撑开。
 
                 >无法按照UI设计的确定高度展示，因此处理比较粗糙。
             2. 针对特定的语言（如：泰文），设置更高的行高 或 计算dom.scrollHeight（渲染后的内容高度）大于dom.offsetHeight（设置高度、容器高度）就增加行高。
@@ -386,9 +386,14 @@
 
     - 实行 夏令时（Daylight Saving Time，DST，夏时制） 制度的地区：会随着日期变化 而返回不同偏移量；每年有前后各1小时无法选中的时间（夏令时改变时间的临界点）。
 
-        >因此偏移量每次都要计算，而不能缓存着偏移量。
-
-        ![夏令时](./images/DST.png)
+        ><details>
+        ><summary>因此偏移量每次都要计算，而不能缓存着偏移量。</summary>
+        >
+        >e.g. 美国某地在`2025年03月9日的02:00`进行夏令时切换：
+        >
+        >![夏令时](./images/DST1.png)
+        >![夏令时](./images/DST2.gif)
+        ></details>
 
 - 各种相关时间表达方式能够获取的信息
 
@@ -403,7 +408,7 @@
         <summary>e.g.</summary>
 
         ```js
-        // 时间戳（等价于Date对象）：moment.tz(时间戳或Date对象, 时区) 等价于 moment(时间戳Date对象).tz(时区)
+        // 时间戳（等价于Date对象）：moment.tz(时间戳或Date对象, 时区) 等价于 moment(时间戳或Date对象).tz(时区)
         moment.tz(1741505400000,'America/New_York').format() ===
         moment(1741505400000).tz('America/New_York').format()
         ```
