@@ -67,7 +67,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
     4. URL限定，限制访问、跨域问题的解决方案
 
         1. 可以限制WebView的能发起的请求内容。
-        2. 可以代替WebView进行会触发跨域的AJAX请求。
+        2. 可以替代WebView进行会触发跨域的AJAX请求。
 3. 页面在客户端内打开方式
 
     1. 针对产品功能性页面：

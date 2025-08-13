@@ -36,7 +36,7 @@
         2. `wrap`：换行，第一行在上方。
         3. `wrap-reverse`：换行，第一行在下方。
 
-    - `flex-flow`：`flex-direction`（可选）、`flex-wrap`（可选）的简写形式，默认：`row nowrap`。
+    - `flex-flow`：`flex-direction`（可选）、`flex-wrap`（可选）的简写形式，默认：`row nowrap`（因为2个值传的内容不同，所以可以任意省略其中一个值）。
 
     3. `align-content`：多根主轴（一条主轴排不下，有换行）的对齐方式（不换行则该属性不起作用）。
 
@@ -67,6 +67,9 @@
             >Flex容器出现滚动条且`justify-content: 居中`会导致左边溢出无法查看，可以用外面嵌套一层处理。
         4. `space-between`：两端对齐，子项之间的间隔都相等。(第一个项位于起点，最后一个项位于终点)
         5. `space-around`：每个子项两侧的间隔相等。（子项之间的间隔比子项与边框的间隔大一倍）
+
+    - `place-content`：`align-content值 justify-content值`（简写形式。若仅传一个值，则对两个传相同值），默认：`normal normal`。
+
     5. `align-items`：子项在侧轴上的对齐方式（与轴的方向有关）。
 
         >假设侧轴的方向为从上到下，起点就是上、终点就是下。
@@ -83,6 +86,7 @@
         4. `flex-end`：终点对齐。
         5. `center`：居中。
         6. `baseline`：子项的第一行文字的基线对齐。
+    6. `gap: row-gap值 column-gap值`（简写形式。若仅传一个值，则对两个传相同值）、`row-gap`、`column-gap`：行与列之间的间隙，数值或百分比。
 2. Flex子项：Flex容器内的子元素。
 
     >[MDN：控制Flex子元素在主轴上的比例](https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Flexible_Box_Layout/Controlling_Ratios_of_Flex_Items_Along_the_Main_Ax)。
@@ -125,15 +129,15 @@
             2. `none`（`0 0 auto`）
         3. 单值：
 
-            1. 一个`flex-grow`的有效值，会扩展为`flex: flex-grow值 1 0;`
-            2. 一个`flex-basis`的有效值，会扩展为`flex: 1 1 flex-basis值;`
+            1. 是一个`flex-grow`的有效值，会扩展为`flex: flex-grow值 1 0;`
+            2. 是一个`flex-basis`的有效值，会扩展为`flex: 1 1 flex-basis值;`
         4. 双值：
 
             1. 第一个值必须是一个`flex-grow`的有效值
             2. 第二个值：
 
-                1. 一个`flex-shrink`的有效值，会扩展为`flex: flex-grow值 flex-shrink值 0;`
-                1. 一个`flex-basis`的有效值，会扩展为`flex: flex-grow值 1 flex-shrink值;`
+                1. 是一个`flex-shrink`的有效值，会扩展为`flex: flex-grow值 flex-shrink值 0;`
+                1. 是一个`flex-basis`的有效值，会扩展为`flex: flex-grow值 1 flex-shrink值;`
         5. 三值：
 
             `flex: flex-grow值 flex-shrink值 flex-basis值;`
@@ -195,7 +199,11 @@
 
         1. `「正数或负数」`
         2. `auto`：占据所有剩余空间。若多个子项都是`auto`，则平分所有剩余空间。
-    - 在Flex布局中，使用`min-height/width: 0`解决**Flex子项内容溢出父容器问题**：
+
+            - 仅有唯一的Flex子项，设置`margin: auto`可以使其**垂直水平居中**（`margin: auto`使`justify-content`和`align-items`失效，剩余空间全部分配给`margin`）
+    - <details>
+
+        <summary>Flex子项使用<code>min-height/width: 0</code>解决<strong>Flex子项内容溢出父容器问题</strong></summary>
 
         ```html
         <div class="parent"><!-- flex父级 -->
@@ -207,6 +215,9 @@
         ```
 
         >`​min-height/width: auto`的作用机制​：当Flex子项的内容高度 > 父容器分配的高度时，子项会无视height/width或flex-shrink的限制，优先扩展以容纳内容。
+
+        </details>
+    - `visibility: hidden/collapse`针对Flex子项效果完全一致
 
 - Flex容器内的子元素也可以设置为`display: flex;`，继续在其内部处理其子级的布局问题。
 
@@ -248,7 +259,7 @@
     <details>
     <summary>固定的子级添加：<code>flex-shrink: 0; width: 固定宽度;</code>；自适应的子级添加：<code>flex-grow: 1;（overflow: hidden;）</code>。</summary>
 
-    >可以用`flex-basis: 固定宽度; overflow: hidden;`代替`width: 固定宽度`。
+    >可以用`flex-basis: 固定宽度; overflow: hidden;`替代`width: 固定宽度`。
 
     ```html
     <style>
@@ -514,6 +525,27 @@
         任一长度的文字内容，会自动垂直居中。
         任一长度的文字内容，会自动垂直居中。
       </div>
+    </div>
+    ```
+    </details>
+9. 居中
+
+    <details>
+    <summary>子项添加：<code>margin: auto;</code>。</summary>
+
+    ```html
+    <style>
+      .parent {
+        display: flex;
+        height: 300px; /* 随便填 */
+      }
+      .child {
+        margin: auto; /* Magic! */
+      }
+    </style>
+
+    <div class="parent">
+      <div class="child">上下左右居中的模块</div>
     </div>
     ```
     </details>

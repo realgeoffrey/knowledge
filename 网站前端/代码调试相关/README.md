@@ -19,7 +19,7 @@
 ### JS
 1. 展示：`console.log/info/warn/error`（`alert`）
 
-    >（Value below was evaluated just now.）`console`引用类型的数据，在点击开来查看的这个时刻才去取引用类型的快照（意味着可以console之后再修改展示内容），打开之后不再关联。
+    >（Value below was evaluated just now.）`console`引用数据类型的数据，在点击开来查看的这个时刻才去取引用数据类型的快照（意味着可以console之后再修改展示内容），打开之后不再关联。
 
     - 更好的展示：
 

@@ -167,7 +167,7 @@
 
             `obj.__proto__ = Func.prototype;`（或`Object.setPrototypeOf(obj, Func.prototype);`）
 
-        >第一、二步骤也可以用`var obj = Object.create(Func.prototype);`代替。
+        >第一、二步骤也可以用`var obj = Object.create(Func.prototype);`替代。
 
         3. 使用obj作为上下文调用构造函数，并传入参数：
 
@@ -414,7 +414,7 @@
 
             - `undefined`不是保留关键字。
 
-                全局属性`undefined`不能被重写（`window.undefined`、`global.undefined`），但是要注意局部变量名可以声明为`undefined`，从而优先被引用的问题。可以用`void 运算符`永远返回的`undefined`代替值`undefined`。
+                全局属性`undefined`不能被重写（`window.undefined`、`global.undefined`），但是要注意局部变量名可以声明为`undefined`，从而优先被引用的问题。可以用`void 运算符`永远返回的`undefined`替代值`undefined`。
 
             >[MDN：关键字](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Lexical_grammar#关键字)。
         3. 区分大小写
@@ -1727,7 +1727,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         >2. ~~ie8-的DOM节点的方法返回不是function，而是`object`，因此只能用`方法名 in DOM`检测DOM是否拥有某方法。~~
 3. `对象 instanceof 构造函数或类`
 
-    >可用`构造函数或类.prototype.isPrototypeOf(对象)`（不能跨帧）代替。
+    >可用`构造函数或类.prototype.isPrototypeOf(对象)`（不能跨帧）替代。
 
     1. 不能跨帧（`<iframe>`、`window.open()`的新窗口）。
 
@@ -1761,7 +1761,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
 >1. `continue`应用在循环（`while`、`do-while`、`for`、`for-in`、`for-of`），表示跳过当次循环；`break`应用在循环、`switch-case`，表示跳出整个循环。
 >
->    不支持在 三元运算符 带上`continue`或`break`，会报错（请用`if-else`代替），e.g. `(i > 5) ? alert(i) : continue // 报错`。
+>    不支持在 三元运算符 带上`continue`或`break`，会报错（请用`if-else`替代），e.g. `(i > 5) ? alert(i) : continue // 报错`。
 >2. `forEach`、`map`、`filter`、`some`、`every`无法中止循环（`return`只结束回调函数）。
 >3. `$.each/$dom.each`跳出循环用`return true`（功能等价于：`continue`）、`return false`（功能等价于：`break`）。
 
@@ -2257,7 +2257,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     >3. 现代浏览器禁止修改`document.domain`解决办法：
     >
     >    1. 方案一：目标文档响应头包含`Origin-Agent-Cluster: ?0`，可允许浏览器在当前文档修改`document.domain`。
-    >    2. 方案二：使用`postMessage`（或`MessageChannel`）传递信息的方案，代替相同`document.domain`共用cookie
+    >    2. 方案二：使用`postMessage`（或`MessageChannel`）传递信息的方案，替代相同`document.domain`共用cookie
     的方案。
     ></details>
 
@@ -3003,7 +3003,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     10. 避免使用全局变量；*若不得不使用，则用大写字母表示变量名。*
     11. 不要使用`new`命令，改用`Object.create()`命令。
     12. 构造函数的函数名，采用首字母大写；其他函数名，一律首字母小写。
-    13. 不要使用自增（`++`）和自减（`--`）运算符，用`+= 1`和`-= 1`代替。
+    13. 不要使用自增（`++`）和自减（`--`）运算符，用`+= 1`和`-= 1`替代。
     14. 不省略大括号。
 8. JS编码规范
 
@@ -3086,6 +3086,10 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 2. 节流（throttle）
 
     一个函数无法在间隔时间内连续执行，当上一次函数执行后过了间隔时间后才能进行下一次该函数的调用。
+
+- 竞争冒险（race hazard、竞态条件、竞争条件、race condition）
+
+    在前端JS中，​竞争冒险通常出现在异步操作（如：fetch、setTimeout、Promise）的执行顺序不确定时，导致最终结果依赖于不可控的操作完成顺序，如：快速输入内容后实时拉取数据展示、快速选择按钮后请求数据展示、React的`const [count, setCount] = useState(0); setCount(count + 1);`（用`setCount(prev => prev + 1);`规避）。通常可以用 **防抖** + **标记最新请求** 来规避。
 
 ### 自执行匿名函数（拉姆达，λ，lambda）
 立即调用的函数表达式（IIFE，Immediately Invoked Function Expression）。
@@ -3319,7 +3323,10 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     2. `encodeURI`
 
         转义除了以下字符之外的所有字符：`字母` `数字` `(` `)` `.` `!` `~` `*` `'` `-` `_` `;` `,` `/` `?` `:` `@` `&` `=` `+` `$` `#`
-15. 当一个`<script>`被执行时，在它之前的标签可以访问，但在它之后的标签无法访问（还不存在、未被解析到）
+15. URL携带JSON数据：
+
+    search某key的值为`encodeURIComponent(JSON.stringify(JSON数据))`，获取某key值后`JSON.parse(decodeURIComponent(前面的值))`。
+16. 当一个`<script>`被执行时，在它之前的标签可以访问，但在它之后的标签无法访问（还不存在、未被解析到）
 
     ```html
     <!-- document、document.documentElement、document.head 出现 -->
@@ -3330,7 +3337,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
       </body>
     </html>
     ```
-16. 判断浏览器标签是否在激活状态
+17. 判断浏览器标签是否在激活状态
 
     1. `document.hidden`：当前文档是否被隐藏
     2. `document.visibilityState`：当前文档的可见情况（`'visible'`、`'hidden'`、`'prerender'`、`'unloaded'`）
@@ -3338,7 +3345,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         >`window`的`focus/blur`事件：当前文档**获得焦点/失去焦点**时触发（并不意味着被浏览器标签是否被隐藏）
     4. `document.hasFocus()`：当前文档是否获得焦点
-17. 处理多次引入同个全局对象的冲突
+18. 处理多次引入同个全局对象的冲突
 
     >参考：[jQuery的防冲突（noConflict）](https://github.com/jquery/jquery/blob/master/src/exports/global.js#L7-L25)。
 
@@ -3387,7 +3394,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     console.log(a)                                  // 第二次引入的对象
     ```
     </details>
-18. 对异步加载的功能，可以用`push`的方式处理异步加载问题
+19. 对异步加载的功能，可以用`push`的方式处理异步加载问题
 
     ```html
     <script src="a.js" async></script><!-- 可以在任意地方异步插入 -->
@@ -3420,7 +3427,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
       window.a = _a
     })()
     ```
-19. 兼容特殊浏览器、PC与WAP加载不同资源的方案
+20. 兼容特殊浏览器、PC与WAP加载不同资源的方案
 
     1. 不同页面URL入口。
     2. 引入资源前，根据UA判断是否加载特殊资源。
@@ -3429,16 +3436,16 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         >2. UA判断：[判断所在系统](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断所在系统)、[判断移动平台](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断移动平台)、[判断ie所有版本](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js判断ie所有版本)
     3. 把特殊资源打包进总体代码，再根据UA判断引入。
     4. 服务端根据HTTP请求的UA判断输出不同页面加载不同资源（BFF层）。
-20. 前端无法获取~~电脑文件系统中文件的绝对路径~~
+21. 前端无法获取~~电脑文件系统中文件的绝对路径~~
 
     `<input type="file">`只能获得`C:\fakepath\文件名.文件类型`。
 
-    >`<input>`输出的已加载文件的类型由文件名后缀决定，不会去解析文件而获得真实文件类型；`<input type="file" accept="image/png" />`也只会限制文件名后缀。
-21. `dom1.contains(dom2)`判断dom2是否为dom1的后代节点（若`dom1 === dom2`，则返回`true`）。
-22. 分享图最好用没有透明度的图，大部分app会在图片后面加上占位颜色
+    >`<input>`输出的已加载文件的类型由文件名后缀决定，不会去解析文件而获得真实文件类型；`<input type="file" accept="image/png" />`也只会限制文件名后缀（不区分大小写）。
+22. `dom1.contains(dom2)`判断dom2是否为dom1的后代节点（若`dom1 === dom2`，则返回`true`）。
+23. 分享图最好用没有透明度的图，大部分app会在图片后面加上占位颜色
 
     同一个APP的Android、iOS效果可能不一致，不同APP实现效果更可能不一致。
-23. 获取页面内静态资源数量：
+24. 获取页面内静态资源数量：
 
     1. [`performance.getEntriesByType("resource")`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/getEntriesByType)获得所有静态资源的`PerformanceResourceTiming`实例
 
@@ -3448,7 +3455,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         - 若资源的`load`/`error`事件触发则加载完成/加载失败。
 
     - DevTools的Network面板
-24. github、google文档、各种文档页面等，都实现了监听「全选」快捷键（command/control+a），去选择文章内容部分，而不是原生浏览器的全选整个页面文字
+25. github、google文档、各种文档页面等，都实现了监听「全选」快捷键（command/control+a），去选择文章内容部分，而不是原生浏览器的全选整个页面文字
 
     >可以通过「停用JavaScript」来验证。
 
@@ -3668,7 +3675,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         1. 使用[fastclick.js](https://github.com/ftlabs/fastclick)消除`click`的延时（最佳方式）
 
-            用`click`代替全部`tap`事件，这样PC端和WAP端都可以一致用`click`事件且不会出现WAP端点透bug。
+            用`click`替代全部`tap`事件，这样PC端和WAP端都可以一致用`click`事件且不会出现WAP端点透bug。
 
             >fastclick.js原理：在检测到`touchend`事件时，通过DOM自定义事件立即触发一个模拟`click`事件，并阻止浏览器在300ms之后真正触发的`click`事件。
         2. 禁用缩放，设置`<meta name="viewport" content="initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">`。
@@ -3676,7 +3683,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         4. CSS属性`touch-action: manipulation;`仅允许在元素上进行触屏操作的平移、缩放，忽略~~双击~~。
         5. 使用缓动动画，过度300ms延迟。
         6. 中间增加一层接受这个点透事件，然后去除此层。
-        7. [模拟点击事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)代替`click`。
+        7. [模拟点击事件](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js触摸屏模拟点击事件消除延时300毫秒后才触发click事件使点击事件提前触发)替代`click`。
 2. WAP端使用`:active`
 
     1. Android系统的浏览器大部分直接使用CSS伪类即可。
@@ -3748,7 +3755,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
               var video = document.getElementById('j-video')
 
               document.addEventListener('DOMContentLoaded', function () {
-                video.setAttribute('src', '视频地址')   // 代替preload="none"
+                video.setAttribute('src', '视频地址')   // 替代preload="none"
                 video.play()
               }, false)
 
@@ -3847,7 +3854,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
              function touchstartFunc () {
                start.style.display = 'none'
-               video.setAttribute('src', '视频地址')    // 代替preload="none"
+               video.setAttribute('src', '视频地址')    // 替代preload="none"
                video.removeAttribute('style')
                video.play()
 

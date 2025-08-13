@@ -47,7 +47,7 @@
 
 1. 获取提交历史（SHA-1校验、作者名字、作者电子邮件地址、提交时间、提交说明）
 
-    ```git
+    ```shell
     git log
 
     git log --pretty=oneline --graph --decorate --all   # 展示简化的commit
@@ -55,24 +55,26 @@
     git log --all --grep='「内容」' # 筛选符合「内容」的commit
 
     git log 「分支1」 ^「分支2」       # 筛选「分支1」存在、但「分支2」不存在的commit（可以用HEAD指代当前分支）
+
+    git log --author="「作者」" --since="2023-01-01" --until="2023-12-31"
     ```
 2. 撤销未push内容
 
     1. 恢复untracked的文件（版本控制内的文件）
 
-        ```git
+        ```shell
         git checkout -- 「文件名或.」
         ```
     2. 清除`git add`的内容
 
-        ```git
+        ```shell
         git reset HEAD [「文件名」]          # 不修改文件、使已修改文件恢复到状态unstaged或untracked
 
         git reset --hard HEAD [「文件名」]   # 恢复unstaged或git add（committed）的文件，untracked不恢复
         ```
     3. 撤销`git commit`的请求
 
-        ```git
+        ```shell
         git reset 「SHA」                 # 撤销commit至「SHA」，不修改文件、使已修改文件恢复到untracked
 
         git reset --hard 「SHA」          # 撤销commit至「SHA」，恢复git add的全部文件（untracked不恢复）
@@ -82,7 +84,7 @@
         >1. `git status --ignored`：查看包括忽略文件的所有信息。
         >2. `git ls-files --others -i --exclude-standard`：展示忽略文件。
 
-        ```git
+        ```shell
         git clean [「文件路径」] -xdf
         ```
 3. 操作（删除、合并、修改描述）远程版本库的commit
@@ -93,7 +95,7 @@
 
         向前逐个删除commit（除了第一个commit）。
 
-        ```git
+        ```shell
         git reset --hard HEAD~「数字」     # 取消当前版本之前的N次提交
         # 或
         git reset --hard 「SHA」          # 取消至某SHA
@@ -110,7 +112,7 @@
 
         - merge其他分支之后，若想要撤销本次merge产生的所有commit，则可以直接用reset删除覆盖过merge的「SHA」
 
-            ```git
+            ```shell
             git log                     # 获取merge的commit「SHA」
 
                 # commit sha1
@@ -130,7 +132,7 @@
 
         操作任意commit。
 
-        ```git
+        ```shell
         git rebase -i --root 「分支名」  # 选择commit处理状态
         # 编辑commit信息
 
@@ -158,7 +160,7 @@
 
     用一个新的commit提交去覆盖回退之前某一个commit提交的内容。
 
-    ```git
+    ```shell
     git revert 「SHA」    # 可能产生冲突，需要解决冲突并`git add 「冲突文件」`（-n 不自动产生commit）
     git revert 「合并的commit的SHA」 -m 1 # 回退merged commit，选择第1个parent保留（或`-m 2`选择第2个parent保留）
 
@@ -172,7 +174,7 @@
 
     1. `merge`
 
-        ```git
+        ```shell
         # 其他分支更新至最新内容
         git checkout 「其他分支」
         git pull origin 「其他分支」
@@ -205,7 +207,7 @@
             合并时生成一个新的commit（没有分叉也会生成），包含「其他分支」相对本分支所有的commits修改内容（可以用于统一review）。
     2. `rebase`
 
-        ```git
+        ```shell
         git rebase 「其他分支」       # 把其他分支的commit当做祖先commit，本身分支的commit紧随其后
         # if产生冲突，则需要对本分支每一个commit冲突进行处理，
         #   修改冲突文件 -> add（不要commit） -> git rebase --continue
@@ -217,7 +219,7 @@
 
 6. cherry-pick
 
-    ```git
+    ```shell
     git cherry-pick 「多个SHA」  # 把（其他分支的）多个commit合并至当前分支
 
     # 若产生冲突，则需要解决冲突 或 放弃
@@ -233,7 +235,7 @@
 
     - 切出 指定分支或SHA 的部分修改内容（文件或文件夹），不生成commit，可以仅对这些内容进行git操作
 
-        ```git
+        ```shell
         # 1. 切换至目标分支（如：新建一个分支 或 直接切换到需要修改的分支）
 
         # 2. 切出其他分支或commit的修改内容（目标分支和 其他分支或SHA 不在同一个工作流）
@@ -264,7 +266,7 @@
         正常情况下，人工合并两个修改，并删除冲突标记。
 8. 更新远程仓库引用
 
-    ```git
+    ```shell
     git fetch -fp
     ```
 9. branch
@@ -273,22 +275,22 @@
 
     1. 查看分支
 
-        ```git
+        ```shell
         git branch -a
         ```
     2. 本地新建分支
 
-        ```git
+        ```shell
         git branch 「分支名」
         ```
     3. 推送（新建）远程分支
 
-        ```git
+        ```shell
         git push origin 「分支名」   # 新建远程分支（不需要提交commit即可创建远程分支）
         ```
     4. 切换分支
 
-        ```git
+        ```shell
         git checkout 「分支名」
 
         git checkout -b 「分支名」   # 新建并切换至新分支
@@ -299,7 +301,7 @@
         >`git checkout 「SHA」   # 切换到某个commit`
     5. 删除分支
 
-        ```git
+        ```shell
         git branch -d 「分支名」      # 删除本地分支
 
         git push origin -d 「分支名」 # 删除远程分支（不需要先删除本地分支）
@@ -311,14 +313,14 @@
 
         >在原分支基础上新建本地分支，再推送至远程，然后删除原分支。
 
-        ```git
+        ```shell
         git branch -m 「原分支名」 「新分支名」     # 删除本地原分支，新建本地新分支
 
         # 要推送至远程，依然需要推送（新建）远程分支、删除远程分支
         ```
 10. tag
 
-    ```git
+    ```shell
     git tag [-l 「完整内容或*」] [-n]     # 列出现有（本地+远程）标签
 
     git show 「名字」                    # 查看tag详细信息
@@ -339,7 +341,7 @@
     ```
 11. stash
 
-    ```git
+    ```shell
     git stash [push]                # 往堆栈推送一个新的储藏，并且恢复修改过的被追踪的文件
     -m=「信息」
 
@@ -359,7 +361,7 @@
 
     1. 新增子模块
 
-        ```git
+        ```shell
         git submodule add 「子模块仓库」     # 在仓库中加入子模块
 
         git submodule set-branch -b 「分支名」 「子模块目录」   # 设置子模块对应的远程分支名（默认为：default branch）
@@ -368,7 +370,7 @@
         ```
     2. 拉取、更新子模块
 
-        ```git
+        ```shell
         git submodule init                  # 根据 .gitmodules 初始化
 
         git submodule update                # 拉取、更新子模块仓库至 本地已保存的SHA
@@ -382,7 +384,7 @@
         ```
     3. 修改、推送子模块
 
-        ```git
+        ```shell
         # 0. 拉取、更新子模块
         git submodule init
         git submodule update [--remote]
@@ -400,7 +402,7 @@
         ```
     4. 删除子模块
 
-        ```git
+        ```shell
         git rm --cached 「子模块文件夹」
 
         rm -rf 「子模块文件夹」
@@ -411,7 +413,7 @@
         ```
 13. 清空一个分支中的所有commit记录
 
-    ```git
+    ```shell
     git checkout --orphan 「新分支名」 # 基于当前分支创建一个独立的分支，不包含任何commit
 
     git add -A                       # 添加所有文件变化至暂存空间
@@ -430,7 +432,7 @@
     尝试：`git gc`
 16. 对比
 
-    ```git
+    ```shell
     git diff 「分支名或tag或commit」 「分支名或tag或commit」 「多个文件或文件夹」
     ```
 
@@ -530,7 +532,7 @@ feat(details): 添加了分享功能
             >需要`package.json`：`npm init --yes`。
 
             `commitizen init cz-conventional-changelog --save-dev --save-exact --force`
-    3. 使用`git cz`代替`git commit`
+    3. 使用`git cz`替代`git commit`
 
         出现Zen-like的提交信息选择。
 2. changelog
@@ -553,7 +555,7 @@ feat(details): 添加了分享功能
 
 1. 初始化：
 
-    ```git
+    ```shell
     git flow init -fd   # （整个项目首次声明一次即可）
     ```
 
@@ -580,7 +582,7 @@ feat(details): 添加了分享功能
 
 2. 开发新需求：
 
-    ```git
+    ```shell
     git flow feature start 「需求名」 [「develop的SHA」]
         # -> 基于「develop的SHA」或最新develop，在本地创建并切换至「feature/需求名」分支
 
@@ -601,7 +603,7 @@ feat(details): 添加了分享功能
     >可以分别开发多个需求，再一起发布（release），把已经存在的release分支合并develop分支。
 3. 发布版本：
 
-    ```git
+    ```shell
     git flow release start 「版本号」 [「develop的SHA」]
         # -> 基于「develop的SHA」或最新develop，在本地创建并切换至「release/版本号」分支
 
@@ -636,7 +638,7 @@ feat(details): 添加了分享功能
 
     >类似于release。
 
-    ```git
+    ```shell
     git flow hotfix start 「版本号」 [「master的SHA」]
         # -> 基于「master的SHA」或最新master，在本地创建并切换至「hotfix/版本号」分支
 
@@ -740,6 +742,18 @@ feat(details): 添加了分享功能
             HostName xx.mygitlab.com
             IdentityFile ~/.ssh/「键4」
         ```
+
+        >若github.com突然22端口被封，则改成443端口：
+        >
+        >    ```text
+        >    # ~/.ssh/config
+        >    Host github.com
+        >        HostName ssh.github.com
+        >        User git
+        >        Port 443
+        >    ```
+        >
+        >测试github.com的ssh连接情况：`ssh -T git@账户1.github.com`或`ssh -T git@github.com`。
     2. 克隆仓库时把**仓库地址**的「主机名」改为「别名」（URL其他部分不变。若有端口号，则保留端口号）：
 
         ```shell
@@ -751,6 +765,7 @@ feat(details): 添加了分享功能
         ```
 
         >若已经克隆过的仓库，则仅需要修改`.git/config`文件夹内的`url`仓库地址即可。
+
 - 若设置了以上内容，针对某些服务地址还是要求输入密码（但无法输入正确），则需要额外进行：
 
     <https://juejin.cn/post/7158284813315604516>
@@ -798,7 +813,9 @@ feat(details): 添加了分享功能
     - 推送：单次推送会推送到别名下所有`push`/`url`配置的远程仓库。
 
 ### 设置gitconfig
->`git config --global/local/system/worktree/file 「参数」`要把`--global等`写在第三个参数位置，否则无效。写：默认`--local`；读：没有默认。
+>`git config --global/local/system/worktree/file 「参数」`要把`--global等`写在第三个参数位置，否则无效。写：默认`--local`；读：没有默认、必填。
+
+>以下或许是git配置最简的最佳实践：
 
 1. 用户名和邮箱（用于判断推送者的账号信息）
 
@@ -806,13 +823,13 @@ feat(details): 添加了分享功能
 
     1. 全局设置
 
-        ```git
+        ```shell
         git config --global user.email 「邮箱」
         git config --global user.name 「用户名」
         ```
     2. 为具体项目设置
 
-        ```git
+        ```shell
         cd 进入某个git仓库
         git config user.email 「邮箱」
         git config user.name 「用户名」
@@ -821,10 +838,10 @@ feat(details): 添加了分享功能
 
     1. 添加忽略文件
 
-        ```git
+        ```shell
         git config --global core.excludesfile ~/.gitignoreglobal
         ```
-    2. 打开添加的文件.gitignoreglobal，填写要全局忽略的文件（夹）
+    2. 新增.gitignoreglobal文件，填写要全局忽略的文件（夹）
 
         ><details>
         ><summary>e.g.</summary>
@@ -837,30 +854,42 @@ feat(details): 添加了分享功能
 3. HTTP代理、HTTPS代理
 
     ```text
-    git config --global http.proxy 'http://127.0.0.1:7890'
-    # 或 git config --global http.proxy 'socks5://127.0.0.1:7891'
+    git config --global http.proxy 'http://127.0.0.1:7890'  # 或 'socks5://127.0.0.1:7891'
 
-    git config --global https.proxy 'http://127.0.0.1:7890'
-    # 或 git config --global https.proxy 'socks5://127.0.0.1:7891'
+    git config --global https.proxy 'http://127.0.0.1:7890' # 或 'socks5://127.0.0.1:7891'
     ```
 4. 开启对文件名大小写敏感
 
-    >每个git项目都会默认显式设置为不敏感，因此可能需要去到每个项目单独配置敏感（项目配置优先于全局配置）。
+    >每个git项目都会默认显式设置为不敏感，因此需要去到每个项目单独开启敏感（项目配置优先于全局配置）。
 
-    ```git
+    ```shell
     git config --global core.ignorecase false   # 全局
     git config core.ignorecase false            # 当前目录
     ```
+5. 其他建议设置在全局的配置
+
+    ```shell
+    # 推荐：
+    git config --global color.ui auto           # Git自动判断是否在终端输出中使用颜色（默认值就是auto）
+    git config --global core.autocrlf input     # 在提交时自动把 Windows 的 CRLF 换行符转换成 Unix 风格的 LF，但在 checkout 文件时不做任何修改
+    git config --global rebase.autoStash true   # 当有 未commit的变更（未暂存或已暂存）+落后的commit，执行`rebase或pull --rebase`时，自动执行git stash → `rebase或pull --rebase` → git stash pop（若冲突，则需要手动解决），而不是直接报错不允许执行
+
+
+    # 有门槛，新手慎重：
+    git config --global pull.rebase true        # （针对commit）执行pull时，将pull行为改为 rebase（变基）而不是 merge（默认）。注意：有已解决冲突的领先的commit，再使用rebase可能会导致更多麻烦的操作。注意vscode的同步sync会先执行pull
+    ```
+
+    >感觉会导致更麻烦的配置：`git config --global pull.ff only  # 只允许fast-forward合并，否则报错退出。会使 pull.rebase true 配置失效，因为若不是ff合并模式则直接报错退出，不会改用rebase合并`
 
 - 展示所有`configs`、`alias`
 
-    ```git
+    ```shell
     git config --local --list   # 当前目录
-    git config --global --list  # 全局
+    git config --global --list  # 全局（ ~/.gitconfig）
     ```
 - 删除某个设置
 
-    ```git
+    ```shell
     git config --unset 「配置名」
     ```
 
@@ -893,13 +922,13 @@ feat(details): 添加了分享功能
 
     1. 在空白文件夹内，创建空的本地仓库，然后将远程仓库地址加入到项目的**.git/config**文件中：
 
-        ```git
+        ```shell
         git init
         git remote add -f origin 「仓库地址」
         ```
     2. 设置git允许使用**Sparse Checkout模式**：
 
-        ```git
+        ```shell
         git config core.sparsecheckout true
         ```
     3. 选择需要单独克隆的文件或文件夹，写入 **.git/info/sparse-checkout**文件：
@@ -912,7 +941,7 @@ feat(details): 添加了分享功能
         ```
     4. 仅对设置过的内容进行所有git操作：
 
-        ```git
+        ```shell
         git pull origin 「分支名」
         ```
 2. 减少克隆深度
@@ -922,7 +951,7 @@ feat(details): 添加了分享功能
 ### `husky`+`lint-staged`+`commitlint`+`commitizen`
 1. 使用[husky](https://github.com/typicode/husky)设置：方便的[git hooks](https://git-scm.com/book/zh/v2/自定义-Git-Git-钩子)。
 
-    >或[simple-git-hooks](https://github.com/toplenboren/simple-git-hooks)代替。
+    >或[simple-git-hooks](https://github.com/toplenboren/simple-git-hooks)替代。
 
     支持钩子`pre-commit`（如：执行`lint-staged`）、`commit-msg`（如：执行`commitlint`）等。
 2. 使用[lint-staged](https://github.com/okonet/lint-staged)设置：针对git的staged文件进行lints操作（如：eslint、prettier、等）。

@@ -436,7 +436,7 @@
 
             COPY        # 将文件拷贝到镜像中。从 构建上下文 向 镜像 操作
                         # `--from=「多阶段构建的序号（从0开始）或名字，其他镜像」`：
-                        #   用某个多阶段构建的内容 或 其他镜像内容 代替docker build的构建上下文
+                        #   用某个多阶段构建的内容 或 其他镜像内容 替代docker build的构建上下文
 
                         # 不太支持在Dockerfile内进行判断文件（夹）是否存在后进行复制操作，最好是在外部创建构建上下文的时候就确定文件（夹）已经存在：
                         #   https://stackoverflow.com/questions/31528384/conditional-copy-add-in-dockerfile

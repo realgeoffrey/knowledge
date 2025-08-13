@@ -1,5 +1,7 @@
 # HTML+CSS学习笔记
 
+>或许，样式的未知问题多借助AI之力来完成任务和学习了。
+
 ## 目录
 1. [经验总结](#经验总结)
 
@@ -39,6 +41,10 @@
 
     1. [禁用`<a>`的鼠标、键盘事件](#禁用a的鼠标键盘事件)
     1. [网页图标favicon的兼容写法](#网页图标favicon的兼容写法)
+1. [CSS标准](#css标准)
+
+    1. [选择器类型](#选择器类型)
+    1. [CSS变量（CSS Custom properties，CSS variables）](#CSS变量css-custom-propertiescss-variables)
 
 ---
 ## 经验总结
@@ -488,7 +494,9 @@
 
 ### 自适应宽度布局
 1. [`flex`实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子（Flexbox）.md#flex布局实践)
-2. `float`
+2. <details>
+
+    <summary><code>float</code></summary>
 
     >`float`节点：可以填补在**之后节点**的水平`margin`内（`padding`内不可以）；不可以填补在**之前节点**的水平`margin`内。
 
@@ -593,6 +601,10 @@
         >2. 节点上能设定`clear: both;`;
         >3. 完全由内容决定布局；
         >4. 第一块内容要给第二块内容留下足够空间，否则第二块放不下会整个换行；第一块+第二块要给第三块留下足够空间，否则第三块放不下会整个换行。
+    </details>
+3. `table`（legacy）
+
+    父`display: table;`，子`display: table-cell;`（子项会划分父级剩余空间）
 
 ### [`flex`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/弹性盒子（Flexbox）.md#flex语法)优雅解决布局、自适应问题
 1. 不使用`flex`导致不方便处理的问题：
@@ -621,7 +633,8 @@
     1. [styled-components](https://github.com/styled-components/styled-components)
 
         生成随机类名的某HTML标签的新组件（在运行时解析样式并动态插入样式）。
-    2. 模板 内联样式（如：react`<div style=styles.div1>; const styles = {div1:{}}`、vue`<div :style="stylesDiv">; data () { return {stylesDiv:{}} }`）
+    2. [emotion](https://github.com/emotion-js/emotion)
+    3. 模板 内联样式（如：react`<div style=styles.div1>; const styles = {div1:{}}`、vue`<div :style="stylesDiv">; data () { return {stylesDiv:{}} }`）
 3. 原子化CSS（Atomic CSS）：[tailwindcss](https://github.com/tailwindlabs/tailwindcss)、[unocss](https://github.com/unocss/unocss)
 
     CSS样式库，一个个类名代表一个个CSS属性，拼凑的各类名替代拼凑的各CSS属性。
@@ -900,7 +913,15 @@
 21. `border`分为上、右、下、左，每一块区域的`border-width`不为`0`时都是梯形（`width`或`height`为`0`时为三角形），`border-width`决定梯形（或三角形）的高。
 
     某些边设为`border-width`不为`0`、`border-right-color`为`transparent`可以制造一些形状。
-22. 用`filter: drop-shadow`（图像本身形状和alpha通道的阴影）替代`box-shadow`（盒阴影）
+22. CSS的阴影相关属性
+
+    | 属性 | 适用对象 | 跟随透明度 | 多重阴影 | 内部阴影 |
+    |---|---|---|---|---|
+    | `box-shadow` | 任何元素 | ❌ | ✅ | ✅`inset` |
+    | `text-shadow` | 文本内容 | ❌ | ✅ | ❌ |
+    | `filter: drop-shadow()` | 图片、SVG、等有alpha通道的元素 | ✅ | ❌ | ❌ |
+
+    **用`filter: drop-shadow`（图像本身形状和alpha通道的阴影）替代`box-shadow`（盒阴影）**
 23. 若在视口中**添加/删除**节点导致滚动条变化，则浏览器会尽量保持视口最顶部节点固定不变（从而瞬间改变滚动条位置以使视口顶部节点尽量保持不随滚动条变化而位移）
 24. `overflow: hidden`无法处理`position: fixed`的子孙节点。
 
@@ -920,6 +941,7 @@
 29. 若`<label>`和`<input>`相关联后，则点击`<label>`的默认行为（`preventDefault`）是聚焦或激活其关联的`<input>`
 
     >[MDN：label](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/label)
+30. 当`<a>`元素没有文本值但`href`属性有链接时显示链接：`a[href^="http"]:empty::before { content: attr(href); }`
 
 ---
 ## CSS
@@ -1039,7 +1061,7 @@
         >尽量把`元素选择器`前面的`后代元素选择器`改成`子元素选择器`。因为可能有很多匹配的元素选择器，会向前查找过多而影响性能。但是`ID选择器`或`类选择器`前面的`子元素选择器`则无所谓，因为不会匹配太多选择器、不会向前查找太多次。
     3. 避免使用 ~~@import~~，只用`<link>`；避免使用~~CSS表达式（CSS expression）~~。
     4. 移除空CSS规则、合理使用`display`、不滥用`float`、不滥用Web字体。
-3. [类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#选择器类型)
+3. [类型](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#选择器类型)
 
 ### CSS继承
 >1. 初始值：该默认值由官方CSS规范定义（对于继承属性，初始值只能被用于没有指定值的根元素上；对于非继承属性，初始值可以被用于任意没有指定值的元素上）
@@ -1130,7 +1152,7 @@
 >ie低版本盒模型比较特殊。
 
 ### `margin`合并
-1. W3C定义：在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素垂直方向上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
+1. W3C定义：在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素**垂直方向**上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
 
     1. 毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开。
     2. 普通流：除了`float: left/right`、`positon: absolute/fixed`之外的内容，父级是`flex`的节点不是普通流。
@@ -1710,13 +1732,16 @@ CSS渐变是以CSS背景图的形式展示，但没有内在尺寸（没有固�
 ### `table-layout`
 1. `auto`（默认）
 
-    在`<td>`或`<th>`上设置宽度无效，各项宽度取决于内容宽度。
+    1. 在`<td>`或`<th>`上设置的宽度为“建议宽度”，但内容优先。
+    2. 没有设置宽度的项平分父级余下的宽度。若所有项都设定宽度则所有项内容占满之后按（某个逻辑）比例分父级余下的宽度。
+    3. 内容撑开`<table>`
 2. `fixed`
 
     >整个表格在首行被下载后就被解析和渲染。更快完成渲染，性能更优。
 
-    1. 可以设置`<td>`或`<th>`宽度，没有设置宽度的所有项平分父级余下的宽度。
-    2. 第一行宽度决定所有行宽度。
+    1. 第一行`<th>`或`<td>`（或第一行`<col>`、`<colgroup>`）宽度决定所有行宽度。设置的宽度为强制宽度，忽略内容宽度。
+    2. 没有设置宽度的项平分父级余下的宽度。若所有项都设定宽度则所有项按比例分父级余下的宽度。
+    3. 内容不撑开`<table>`
 
 >`<table>`（`display: table;`）各`<td>`或`<td>`项（`display: table-cell;`）默认内容垂直居中，用`vertical-align`调节垂直对齐。
 
@@ -1724,7 +1749,7 @@ CSS渐变是以CSS背景图的形式展示，但没有内在尺寸（没有固�
 >1. 旋转效果的节点，若要增加内嵌滚动条，则不能在此节点上增加`border-radius`，否者滚动条横竖轴颠倒。
 >2. 部分Android系统（或低端机）对内嵌的滚动条（`overflow: hidden/auto;`）支持不佳，尤其增加了旋转效果后，设置的滚动条（甚至`overflow: hidden;`）会导致更多样式问题。除了去除内嵌滚动条的`border-radius`，还可以尝试给兄弟节点设置`z-index`。部分硬件较差的WebView对CSS3支持非常有限，无法做到**旋转+内嵌滚动条**（内嵌滚动条横竖轴颠倒）。
 >
->- 其他解决方案：使用按钮（控制翻页或JS滚动）代替内嵌滚动条；使用`touchmove`实现滑动页面。
+>- 其他解决方案：使用按钮（控制翻页或JS滚动）替代内嵌滚动条；使用`touchmove`实现滑动页面。
 
 1. 媒体查询控制横竖屏添加旋转属性
 
@@ -1774,3 +1799,406 @@ CSS渐变是以CSS背景图的形式展示，但没有内在尺寸（没有固�
 ```
 
 >完整favicon制作：<https://realfavicongenerator.net/>。
+
+---
+## CSS标准
+
+>所有标准 CSS 属性、伪类、伪元素、数据类型、功能表记以及 @ 规则：[MDN：CSS 参考](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Reference)。
+
+### 选择器类型
+1. CSS选择器
+
+    >来自：[阮一峰：CSS选择器笔记](http://www.ruanyifeng.com/blog/2009/03/css_selectors.html)。参考：[W3C:selectors](https://www.w3.org/TR/selectors/#selectors)。
+
+    1. 基本选择器
+
+        1. `*`
+
+            通配符选择器，匹配所有元素。
+        2. `E`
+
+            元素选择器，匹配使用E标签的元素。
+        3. `.className`
+
+            类选择器，匹配class属性中包含「className」的元素。
+        4. `#idName`
+
+            ID选择器，匹配id属性等于「idName」的元素。
+    2. 关系选择器
+
+        1. `E1,E2`
+
+            多元素选择器，同时匹配E1元素或E2元素。
+
+        >派生选择器：通过依据元素在其位置的上下文关系来定义样式。因此下面4个是派生选择器。
+
+        2. `E1 E2`
+
+            后代元素选择器，匹配属于E1元素后代的E2元素。
+        3. `E1>E2`
+
+            子元素选择器，匹配E1元素的直接子元素E2。
+        4. `E1+E2`
+
+            相邻兄弟选择器，匹配紧随E1元素之后的同级元素E2。
+        5. `E1~E2`
+
+            通用兄弟选择器，匹配在E1元素之后的同级E2元素。
+        >6. `A || B`
+        >
+        >    列选择器，指定 B 选择的元素在 A 指定的表格列中，跨越多列的元素被认为是所有这些列的成员。
+    3. 属性选择器
+
+        >1. 属性值的**引号**可加可不加；若属性值含有**空格**或**特殊字符**，必须用引号包围。
+        >2. 建议始终用（双）引号包围属性值。
+
+        1. `[attrName]`
+
+            匹配具有「attrName」属性的元素，不考虑它的值。
+        2. `[attrName=val]`
+
+            匹配「attrName」属性等于「val」的元素。
+        3. `[attrName~=val]`
+
+            匹配「attrName」属性具有多个空格分隔的值、其中一个值等于「val」的元素。
+        4. `[attrName|=val]`
+
+            匹配「attrName」属性等于「val」或以「val-」开头的元素。
+
+            >主要用于lang属性，如："en"、"en-us"、"en-gb"等。
+        5. `[attrName^=val]`
+
+            属性「attrName」的值以「val」开头的元素。
+        6. `[attrName$=val]`
+
+            属性「attrName」的值以「val」结尾的元素。
+        7. `[attrName*=val]`
+
+            属性「attrName」的值包含「val」字符串的元素。
+        8. `[上面的写法 i]`
+
+            在属性选择器的右方括号前添加一个用空格隔开的字母`i`（或`I`），可以在匹配属性值时忽略大小写（支持 ASCII 字符范围之内的字母）。
+        >9. `[上面的写法 s]`
+        >
+        >    在属性选择器的右方括号前添加一个用空格隔开的字母`s`（或`S`），可以在匹配属性值时区分大小写（支持 ASCII 字符范围之内的字母）。
+`
+    4. 伪元素选择器`::`（或`:`向下兼容）（Pseudo-elements）
+
+        代表不包含在 HTML 中的实体，允许对被选择元素的特定部分修改样式。
+
+        1. `::before`
+
+            在元素之前插入生成的内容。
+        2. `::after`
+
+            在元素之后插入生成的内容。
+        3. `::first-line`
+
+            匹配元素的第一行。
+        4. `::first-letter`
+
+            匹配元素的第一个字母。
+        5. `::backdrop`
+        6. `::cue`
+        7. `::cue-region`
+        8. `::file-selector-button`
+        9. `::grammar-error`
+        10. `::marker`
+        11. `::part()`
+        12. `::placeholder`
+        13. `::selection`
+        14. `::slotted()`
+        15. `::spelling-error`
+    5. 伪类选择器`:`（Pseudo-classes）
+
+        用于指定所选元素的特殊状态。
+
+        1. 普通伪类
+
+            1. `:link`
+
+                匹配未被点击的链接。
+            2. `:visited`
+
+                匹配已被点击的链接。
+            3. `:active`
+
+                匹配鼠标已经对其按下、还没有释放的元素。
+            4. `:hover`
+
+                匹配鼠标悬停其上的元素。
+            5. `:focus`
+
+                匹配获得当前焦点的元素。
+            6. `:lang(val)`
+
+                匹配lang属性等于「val」的元素。
+        2. 与用户界面有关的伪类
+
+            1. `:enabled`
+
+                匹配表单中激活的元素。
+            2. `:disabled`
+
+                匹配表单中禁用的元素。
+            3. `:checked`
+
+                匹配表单中被选中的`radio`（单选框）或`checkbox`（复选框）。
+        3. 结构性伪类
+
+            1. `:root`
+
+                匹配文档的根元素，对于HTML文档，就是HTML元素。
+            2. `:nth-child(num)`
+
+                匹配其父元素的第num个子元素，第一个编号为1。
+            3. `:nth-last-child(num)`
+
+                匹配其父元素的倒数第num个子元素，倒数第一个编号为1。
+            4. `:nth-of-type(num)`
+
+                与`:nth-child(num)`作用类似，但是仅匹配使用同种标签的元素。
+            5. `:nth-last-of-type(num)`
+
+                与`:nth-last-child(num)`作用类似，但是仅匹配使用同种标签的元素。
+            6. `:first-child`
+
+                匹配父元素的第一个子元素，等同于`:nth-child(1)`。
+            7. `:last-child`
+
+                匹配父元素的最后一个子元素，等同于`:nth-last-child(1)`。
+            8. `:first-of-type`
+
+                匹配父元素下使用同种标签的第一个子元素，等同于`:nth-of-type(1)`。
+            9. `:last-of-type`
+
+                匹配父元素下使用同种标签的最后一个子元素，等同于`:nth-last-of-type(1)`。
+            10. `:only-child`
+
+                匹配父元素下仅有的一个子元素，等同于`:first-child:last-child`或`:nth-child(1):nth-last-child(1)`。
+            11. `:only-of-type`
+
+                匹配父元素下使用同种标签的唯一一个子元素，等同于`:first-of-type:last-of-type`或`:nth-of-type(1):nth-last-of-type(1)`。
+            12. `:empty`
+
+                匹配一个不包含任意子元素的元素。注意：文本节点也被看作子元素。
+            13. `:not(selector)`
+
+                匹配不符合「selector」选择器的元素。注意：「selector」不能再包含`:not`。
+            14. `:target`
+
+                匹配文档URI的片段标识符，对应相同id属性的元素。
+        4. 其他
+
+            1. `:fullscreen`
+            1. `:dir()`
+            1. `:is()`
+            1. `:where()`
+            1. `:any-link`
+            1. `:autofill`
+            1. `:blank`
+            1. `:current`
+            1. `:default`
+            1. `:defined`
+            1. `:future`
+            1. `:focus-visible`
+            1. `:focus-within`
+            1. `:host`
+            1. `:host()`
+            1. `:host-context()`
+            1. `:indeterminate`
+            1. `:in-range`
+            1. `:invalid`
+            1. `:left`
+            1. `:local-link`
+            1. `:modal`
+            1. `:nth-col()`
+            1. `:nth-last-col()`
+            1. `:optional`
+            1. `:out-of-range`
+            1. `:past`
+            1. `:picture-in-picture`
+            1. `:placeholder-shown`
+            1. `:paused`
+            1. `:playing`
+            1. `:read-only`
+            1. `:read-write`
+            1. `:required`
+            1. `:right`
+            1. `:scope`
+            1. `:state()`
+            1. `:target-within`
+            1. `:user-invalid`
+            1. `:valid`
+2. <details>
+
+    <summary>jQuery专有选择器</summary>
+
+    >来自：[jQuery:Selectors](https://api.jquery.com/category/selectors/)。
+
+    jQuery兼容CSS所有选择器，并进行了扩展。
+
+    >因为不是CSS规范的一部分，专有选择器无法利用本机DOM的`document.querySelectorAll`提升性能。为了提高代码性能，建议使用`filter`、`not`、`has`、`eq`等jQuery方法以及转化为CSS规范的选择器，来合理使用。
+
+    1. `[attrName!=val]`
+
+        匹配「attrName」属性不等于「val」的元素。
+    2. `:first`
+
+        匹配文档顺序的第一个元素。
+    3. `:last`
+
+        匹配文档顺序的最后一个元素。
+    4. `:eq(num)`
+
+        匹配文档顺序的第num个元素，0位第一个，-1为倒数第一个。
+    5. `:even`
+
+        匹配文档顺序的偶数元素，索引为0、2、4…。
+    6. `:odd`
+
+        匹配文档顺序的奇数元素，索引为1、3、5…。
+    7. `:gt(num)`
+
+        匹配索引大于（不包括等于）num的元素，0位第一个，-1为倒数第一个。
+    8. `:lt(num)`
+
+        匹配索引小于（不包括等于）num的元素，0位第一个，-1为倒数第一个。
+    9. `:button`
+
+        匹配`button, [type=button]`的元素。
+    10. `:file`
+
+        匹配`['type=file']`的元素。
+    11. `:image`
+
+        匹配`[type=image]`的元素。
+    12. `:input`
+
+        匹配`input, textarea, select, button`的元素。
+    13. `:password`
+
+        匹配`[type=password]`的元素。
+    14. `:radio`
+
+        匹配`[type=radio]`的元素。
+    15. `:reset`
+
+        匹配`[type=reset]`的元素。
+    16. `:submit`
+
+        匹配`[type=submit]`的元素。
+    17. `:text`
+
+        匹配`[type=text]`的元素。
+    18. `:selected`
+
+        匹配选中的元素（适用于`<option>`）。
+    19. `:parent`
+
+        匹配一个包含任意子元素的元素。注意：文本节点也被看作子元素。
+    20. `:contains(val)`
+
+        匹配含有「val」字符串（区分大小写）的元素，可以是后代包含。
+    21. `:animated`
+
+        匹配此时处于动画进度中的元素。
+    22. `:has(selector)`
+
+        匹配符合「selector」选择器的元素。
+    23. `:header`
+
+        匹配`h1, h2, h3, h4, h5, h6`的元素。
+    24. `:hidden`
+
+        匹配隐藏的元素。
+    25. `:visible`
+
+        匹配显示的元素。
+
+    </details>
+
+### CSS变量（CSS Custom properties，CSS variables）
+1. 变量名：
+
+    以`--`开头，大小写敏感，不能包含 ~~`$`~~、~~`[`~~、~~`^`~~、~~`(`~~、~~`%`~~ 等字符。
+2. 定义、使用：
+
+    变量必须定义在某个选择器内部，嵌套作用域。
+
+    ```css
+    :root {
+      /* 全局定义 */
+      --main-color: red;    /* 必须定义在某个选择器内部 */
+      --main-bg: rgb(255, 255, 255);
+      --logo-border-color: rebeccapurple;
+      --header-height: 68px;
+      --content-padding: 10px 20px;
+      --base-line-height: 1.428571429;
+      --transition-duration: .35s;
+      --external-link: "external link";
+    }
+
+    p {
+      /* 局部定义 */
+      --padding: calc(2vh + 20px);
+      --main-color: blue; /* 嵌套作用域：局部定义的变量会覆盖全局定义的变量 */
+    }
+
+    p a {
+      /* 使用 */
+      color: var(--main-color2, yellow);   /* 因为变量未定义，因此 background:yellow */
+      /* 第二个参数表示变量未定义时的默认值（不包括变量值不合法）。参数内部不处理逗号和空格 */
+
+      background: var(--padding, yellow);  /* 因为变量的值不合法，因此 background这里未赋值 */
+
+      height: var(--header-height);
+    }
+    ```
+3. 用法
+
+    1. 只能用作CSS属性值，不可以用作~~CSS属性名~~
+
+        ```css
+        .foo {
+          --side: margin-top;
+
+          /* ❌无效 */
+          var(--side): 20px;
+        }
+        ```
+    2. 变量值类型
+
+        1. 字符串：可以与其他字符串拼接
+        2. 数值：
+
+            1. 不可以与单位连用，要用`calc`
+
+                ```css
+                .foo {
+                  --size: 20;
+
+                  /* ❌无效，解析为：font-size: 20 px; */
+                  font-size: var(--size)px;
+
+                  /* ✅有效 */
+                  margin-top: calc(var(--size) * 1px);
+                }
+                ```
+
+                >[`calc`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/calc)支持：可嵌套、不同单位间（或与无单位的数）、`val`变量计算、加减乘除（分别有空格或单位限制）
+            2. 若变量值带有单位，则不能写成字符串。
+
+                ```css
+                /* ❌无效 */
+                .foo {
+                  --foo: '20px';
+                  font-size: var(--foo);
+                }
+
+                /* ✅有效 */
+                .foo {
+                  --foo: 20px;
+                  font-size: var(--foo);
+                }
+                ```

@@ -621,7 +621,7 @@
 
                 1. 在`componentDidMount`或`componentDidUpdate`触发前，React会保证`回调Refs`一定是最新的；
                 2. 可以在组件间传递；
-                3. 若回调Refs的函数是以内联函数的方式定义的，在更新过程中它会被执行两次，第一次传入参数`null`，然后第二次会传入参数DOM元素。
+                3. 若回调Refs的函数是以内联函数的方式定义的，在更新过程中它会被执行2次，第1次传入参数`null`，然后第2次会传入参数DOM元素。
 
                     >这是因为在每次渲染时会创建一个新的函数实例，所以React清空旧的`ref`并且设置新的。通过将`ref`的回调函数定义成`class`的绑定函数的方式可以避免上述问题，但是大多数情况下它是无关紧要的。
             3. ~~`this.refs.值`~~（已废弃）
@@ -1401,7 +1401,7 @@
         3. 关于使用废弃的`findDOMNode`方法的警告
         4. 检测意外的副作用
 
-            - 故意重复调用以下函数来实现检测：
+            - 故意重复调用以下函数来实现检测——调用2次：
 
                 1. class组件的`constructor`、`render`、`shouldComponentUpdate`
                 2. class组件的生命周期方法`getDerivedStateFromProps`
@@ -2044,7 +2044,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
             Hooks鼓励使用函数式编程的风格编写组件，这有助于组件的可测试性和可维护性。由于Hooks是纯函数，不依赖于组件实例，因此更易于进行单元测试和模块化开发。
     </details>
 
-- 函数组件：每次渲染，都执行一遍函数，包含传入hook的参数也会执行一遍。注意尽量不要传递引用类型作为hook的参数。
+- 函数组件：每次渲染，都执行一遍函数，包含传入hook的参数也会执行一遍。注意尽量不要传递引用数据类型作为hook的参数。
 
     ```js
     // 每次渲染，若父级传参不变，则传入的props不变
@@ -2833,7 +2833,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
         <details>
 
-        <summary>e.g. 模拟来自：<a href="https://codesandbox.io/s/tinyreact-functional-component-x51ul?file=/src/index.js">codesandbox</a></summary>
+        <summary>e.g. 模拟来自：<a href="https://codesandbox.io/p/sandbox/tinyreact-functional-component-x51ul?file=/src/index.js">CodeSandbox</a></summary>
 
         ```js
         let rootInstance = null;
@@ -3166,7 +3166,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     setTimeout(() => {
       setCount(c => c + 1);
       setFlag(f => !f);
-      // React 会渲染两次，每次更新一个状态（没有批处理）
+      // React 会渲染2次，每次更新一个状态（没有批处理）
     }, 1000);
 
 
@@ -3805,7 +3805,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         1. `store.dispatch(参数)`时执行额外的逻辑（例如打印action的日志、状态）
         2. 暂停、修改、延迟、替换或停止dispatch的action
         3. 编写可以访问dispatch和getState的额外代码
-        4. 教dispatch如何接受除普通action对象之外的其他值（e.g. 函数、Promise实例），通过拦截它们并dispatch实际action对象来代替
+        4. 教dispatch如何接受除普通action对象之外的其他值（e.g. 函数、Promise实例），通过拦截它们并dispatch实际action对象来替代
 
     ![redux中间件](./images/redux-async.gif)
 

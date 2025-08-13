@@ -2,35 +2,35 @@
 
 ## 目录
 1. [Vue 3版本（core）](#vue-3版本core)
+
+    1. [Vue 3的组合式API](#vue-3的组合式api)
 1. [Vue 2版本（vue）](#vue-2版本vue)
 
     1. [模板插值](#模板插值)
     1. [指令 && 特殊attribute](#指令--特殊attribute)
-    1. [组件选项](#组件选项)
     1. [组件](#组件)
     1. [单文件组件（Single-File Component，SFC）](#单文件组件single-file-componentsfc)
     1. [过渡/动画](#过渡动画)
     1. [插件（plugin）](#插件plugin)
+    1. [组件选项](#组件选项)
     1. [全局API](#全局api)
     1. [Vue实例属性](#vue实例属性)
-    1. [特性](#特性)
-    1. [vue风格指南](#vue风格指南)
     1. [响应式系统](#响应式系统)
     1. [虚拟DOM系统](#虚拟dom系统)
     1. [SSR](#ssr)
-    1. [Vue实现原理](#vue实现原理)
     1. [Vue性能优化](#vue性能优化)
     1. [例子](#例子)
 1. [vue-router@4(Vue 3)](#vue-router4vue-3)
 1. [vue-router@3(Vue 2)](#vue-router3vue-2)
-1. [pinia（代替~~vuex~~）](#pinia代替vuex)
+1. [pinia（替代~~vuex~~）](#pinia替代vuex)
 
     1. [vuex](#vuex)
-1. [create-vue（代替~~vue-cli~~）](#create-vue代替vue-cli)
+1. [create-vue（替代~~vue-cli~~）](#create-vue替代vue-cli)
 
     1. [vue-cli](#vue-cli)
 1. [nuxt](#nuxt)
 1. [element-ui例子](#element-ui例子)
+1. [element-plus例子](#element-plus例子)
 1. [jQuery与Vue.js对比](#jquery与vuejs对比)
 
 ---
@@ -48,7 +48,7 @@
 
         使用选项式API，我们可以用包含多个选项的对象来描述组件的逻辑，如：methods、data、mounted、等。选项所定义的属性都会暴露在函数内部的`this`上，它会指向当前的组件实例。
 
-        >[`setup`](https://cn.vuejs.org/api/composition-api-setup)用于在选项式组件中使用组合式API，推荐直接用`<script setup>`替代。
+        >[`setup()`](https://cn.vuejs.org/api/composition-api-setup)用于在选项式组件中使用组合式API（一个钩子），推荐直接用`<script setup>`替代。
 
     >选项式API 是在 组合式API 的基础上实现的。
 
@@ -59,133 +59,1036 @@
         通过组合式API，我们可以使用导入的API函数来描述组件逻辑。定义数据变量和方法、生命周期钩子函数、父子通信 都不同于 选项式API。`this === undefined`
 
         >[优势](https://cn.vuejs.org/guide/extras/composition-api-faq.html)
-2. `:属性名`（等于`v-bind:同名="同名"`、`:同名="同名"`）
-
-    >Vue 3.4+。
+1. `:属性名`（等价于`v-bind:同名="同名"`、`:同名="同名"`）
 
     若 attribute名称 与 绑定的js值的名称 相同，则可以进一步简化缩写，省略`="绑定值"`。
-3. `<script setup>`、`ref`、`setup`、`nextTick`、`reactive`、`computed`、`watch`、`watchEffect`、`onWatcherCleanup`、`onMounted`、`onUpdated`、`onUnmounted`、`onBeforeMount`、`onBeforeUpdate`、`onBeforeUnmount`、`onErrorCaptured`、`onRenderTracked`、`onRenderTriggered`、`onActivated`、`onDeactivated`、`onServerPrefetch`、`useTemplateRef`、`defineProps`、`defineEmits`、`createApp`、`defineModel`、`defineOptions`、`provide/inject`、`defineAsyncComponent`、`<Suspense>`、`toValue`
-
-    1. `reactive()`只接受引用类型（使传入的引用类型对象本身具有响应性）；`ref()`可以接受任何值类型（包括组件），会返回一个包裹对象，并在`.value`属性下暴露内部值（使.value的值具有响应性）。
-    1. 不能解构：
-
-        1. `reactive`、`setup(props)`的`props`、`vue-router`的`useRoute`：需要用`toRefs`或`toRef`才能解构（`toRefs`或`toRef`产生有包裹的对象）
-        2. `pinia`的store：需要用`pinia`的`storeToRefs`才能解构（`storeToRefs`产生有包裹的对象）
-        3. `ref`的`.value`手动解包后不是响应式对象：一般直接`.value`去操作，不会进行解构
-    2. 在组件的`<script setup>`中的顶层的导入、声明的变量和函数可在同一组件的`模板`中直接使用（有包裹的对象会在模板中自动浅层解包，因此不需要再手动 ~~`.value`~~）。
-
-        有包裹的对象：`ref()`、`computed()`
-    1. `shallowRef()`：`ref()`的浅层作用形式；`shallowReactive()`：`reactive()`的浅层作用形式。
-    2. `watch(ref对象, 调用方法并传参)`
-    3. `defineProps`、`defineEmits`、`defineExpose`是一个编译器宏（compiler macro），并不需要导入（但也不能打印或赋值给其他变量）
-
-        ```vue
-        <script setup>
-        const props = defineProps({
-          msg: String           // 传参会变成驼峰变量
-        })
-        console.log(props.msg)  // 必须props.msg
-        </script>
-
-        <template>
-          <h2>{{ msg }} === {{ props.msg }}</h2> <!-- 可以直接用msg，也可以props.msg，都是响应式 -->
-        </template>
-        ```
-
-        ```js
-        const emit = defineEmits(['注册事件名1','注册事件名2',])
-
-        emit('注册事件名2', 参数1, 参数2, ) // 必须先注册事件再使用
-        ```
-    4. 不像react的函数组件（每次渲染，都执行一遍函数），`<script setup>`中的代码只会只会执行一次，但通过响应式系统追踪依赖
-    5. 直接递归渲染组件自己
-
-        >e.g. <https://cn.vuejs.org/examples/#tree>
-5. `ref`与`computed`自动浅层解包（automatically unwrapped），[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)
-
-    1. `ref`会在作为响应式对象的属性被访问或修改时自动浅层解包
-    2. `ref`、`computed`会在模板中自动浅层解包
-6. `computed`
-
-    上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；可写计算属性的`get`的第一个参数`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
-1. 支持Fragments（片段）
-
-    允许：`<template>多个节点</template>`
-7. 若组件有多个根元素，则不会默认添加在多个根元素上（`inheritAttrs: true（默认）`会在单独一个根元素上添加attribute）
-
-    可以通过组件的`$attrs`属性来指定接收的元素。
-
-    ```vue
-    <template>
-      <!--  显式使用 $attrs 设置父级传递的class -->
-      <p :class="$attrs.class">Hi!</p>
-      <span>This is a child component</span>
-    </template>
-    ```
-1. 支持`<Teleport>`
-8. <details>
-
-    <summary>生命周期图示</summary>
-
-    ![vue 3生命周期图](./images/vue-lifecycle-vue3.png)
-    </details>
-9. 深度选择器
+1. 深度选择器
 
     | 写法        | Vue版本支持  | 预处理器支持    | 官方推荐  | 备注 |
     |------------|-------------|--------------|----------|--------------------------|
     | `>>>`      | Vue 2       | ❌           | ❌       | 原生CSS，预处理器不兼容 |
-    | `/deep/`   | Vue 2       | ✔️           | ❌       | Vue 3已废弃，部分构建工具可能兼容但会警告 |
-    | `::v-deep` | Vue 2       | ✔️           | ❌       | Vue 3已废弃。`/deep/`的别名，语义更明确 |
-    | `:deep()`  | Vue 3       | ✔️           | ✔️       | 当前最佳实践。与Composition API兼容 |
-10. 当同时存在于一个节点上时，`v-if`比`v-for`的优先级更高（与vue 2正相反）
+    | `/deep/`   | Vue 2       | ✅           | ❌       | Vue 3已废弃，部分构建工具可能兼容但会警告 |
+    | `::v-deep` | Vue 2       | ✅           | ❌       | Vue 3已废弃。`/deep/`的别名，语义更明确 |
+    | `:deep()`  | Vue 3       | ✅           | ✅       | 当前最佳实践。与Composition API兼容 |
+1. 当同时存在于一个节点上时，`v-if`比`v-for`的优先级更高（与vue 2相反）
 
     <details>
     <summary>这意味着<code>v-if</code>的条件将无法访问到<code>v-for</code>作用域内定义的变量别名</summary>
 
     ```vue
-    <!--
-    这会抛出一个错误，因为属性 todo 此时
-    没有在该实例上定义
-    -->
+    <!-- 这会抛出一个错误，因为属性 todo 此时没有在该实例上定义 -->
     <li v-if="!todo.isComplete" v-for="todo in todos">
       {{ todo.name }}
     </li>
     ```
     </details>
-11. `$attrs`、`inheritAttrs`区别
+1. 内置组件
+
+    1. `<Teleport>`将一个组件内部的一部分模板“传送”到该组件的 DOM 结构外层的位置去
+    1. `<Suspense>`在组件树中协调对异步依赖的处理。它让我们可以在组件树上层等待下层的多个嵌套异步依赖项解析完成，并可以在等待时渲染一个加载状态
+1. 支持Fragments（片段）
+
+    允许：`<template>多个节点</template>`
+1. `$attrs`、`inheritAttrs`区别
 
     | 特性 | Vue 2 | Vue 3 |
     |------|-------|-------|
     | `$attrs`是否包含`class`、`style` | ❌ 不包含 | ✅ 包含 |
     | 事件监听器存储位置 | `$listeners` | `$attrs`（已移除 ~~`$listeners`~~） |
-    | 事件名 | `$listeners`中保持原样（事件名的大小写、`-`不会做任何变化） | `$attrs`中转化为`onClick`这样的驼峰事件名 |
-    | `inheritAttrs`影响（并非影响`$attrs`） | 影响根元素`不被认作props`的attribute传递，除了`class`、`style` | 影响根元素`不被认作props`的attribute传递，包括`class`、`style` |
-4. 响应式原理、数据绑定原理：使用了ES6的`Proxy`对数据代理
+    | 事件名 | `$listeners`中保持原样（事件名的大小写、`-`不会做任何变化） | `$attrs`中`@click`转化为`onClick`这样的驼峰事件名 |
+    | `inheritAttrs`影响（并非影响`$attrs`） | 影响**根元素**`不被认作props`的attribute传递，除了`class`、`style` | 影响**根元素**`不被认作props`的attribute传递，包括`class`、`style` |
+    | `$attrs`包含内容 | 除了`class`、`style`、`props`、`事件`之外的attributes（属性名的大小写、`-`不会做任何变化） | 除了`props`、`defineEmits`注册事件之外的attributes（属性名的大小写、`-`不会做任何变化）、`v-on`监听器（不只是原生事件，只要是未被`defineEmits`注册的。`@click`转化为`onClick`这样的驼峰事件名） |
+
+    - 若组件有多个根元素（Fragments），则不会默认添加在多个根元素上（`inheritAttrs: true（默认）`会在单独一个根元素上添加attribute）
+
+        可以通过组件的`$attrs`属性来指定接收的元素：
+
+        ```vue
+        <template>
+          <!--  显式使用 $attrs 设置父级传递的class -->
+          <p :class="$attrs.class">Hi!</p>
+          <span>This is a child component</span>
+        </template>
+        ```
+
+    - `$attrs`仅在template中，在`<script setup>`可以通过`useAttrs()`获取相同对象（不相等），都不具有响应性。
+1. `$slots`是唯一的插槽 API，所有插槽（包含Vue 2不包含的作用域插槽）都通过它访问，`vm.$slots.名字`返回函数（Vue 2返回VNode）。
+
+    - ~~$scopedSlots~~已废弃。
+    - `useSlots`从 setup 上下文中返回 slots 对象，其中包含父组件传递的插槽。这些插槽为可调用的函数，返回虚拟 DOM 节点。用于`<script setup>`中的，因为在`<script setup>`中无法获取 setup 上下文对象。
+1. `v-model`
+
+    >`defineModel`返回的是`ref`，支持解构返回`[model值, 修饰符对象]`
+    >
+    >```js
+    >// 无论传不传修饰符，都可以写成 解构或不解构 的方式。都能正确赋值变量
+    >const model1 = defineModel()                // 无论传不传修饰符，model1都是值
+    >const [model1, modifiers1] = defineModel()  // 无论传不传修饰符，model1都是值，modifiers1都是对象（空对象或{修饰符:true}）
+    >```
+
+    1. `v-model:xx`
+
+        1. `v-model`默认：props`modelValue`+事件`update:modelValue` 或 `defineModel()`
+        2. `v-model:xx`修改为：props`xx`+事件`update:xx` 或 `defineModel('xx')`
+    1. `v-model.修饰符`（除了`.trim`、`.number`、`.lazy`之外，也支持自定义修饰符）
+
+        1. defineModel
+
+            ```js
+            const [model, modifiers] = defineModel({
+              set(value) {
+                if (modifiers.自定义修饰符) {
+                  return value的相关
+                }
+                return value
+              },
+              // get (value) {
+              //   return value
+              // }
+            })
+            console.log(modifiers) // { 自定义修饰符: true或不存在 }
+            ```
+        2. 传入子级的props增加`modelModifiers`属性：`modelModifiers.自定义修饰符: true 或 undefined不存在`
+    1. `v-model:xx.修饰符`
+
+        1. defineModel
+
+            ```vue
+            // 父
+            <UserName
+              v-model:first-name.capitalize="first"
+              v-model:last-name.uppercase="last"
+            />
+
+            // 子
+            <script setup>
+            const [firstName, firstNameModifiers] = defineModel('firstName')
+            const [lastName, lastNameModifiers] = defineModel('lastName')
+
+            console.log(firstNameModifiers) // { capitalize: true }
+            console.log(lastNameModifiers) // { uppercase: true }
+            </script>
+            ```
+        2. props、emits
+
+            ```vue
+            // 子
+            <script setup>
+            const props = defineProps({
+              firstName: String,
+              lastName: String,
+              firstNameModifiers: { default: () => ({}) },
+              lastNameModifiers: { default: () => ({}) }
+            })
+            defineEmits(['update:firstName', 'update:lastName'])
+
+            console.log(props.firstNameModifiers) // { capitalize: true }
+            console.log(props.lastNameModifiers) // { uppercase: true }
+            </script>
+            ```
+
+    ```vue
+    // Parent.vue
+    <Child v-model="countModel" />
+
+    // Child.vue
+    <script setup>
+    const model = defineModel() // Vue 3.4+
+    </script>
+    <template>
+      <input v-model="model" />
+    </template>
+
+
+    等价于：
+
+
+    // Parent.vue
+    <Child
+      :modelValue="foo"
+      @update:modelValue="$event => (foo = $event)"
+    />
+
+    // Child.vue
+    <script setup>
+    const props = defineProps(['modelValue'])
+    const emit = defineEmits(['update:modelValue'])
+    </script>
+    <template>
+      <input
+        :value="props.modelValue"
+        @input="emit('update:modelValue', $event.target.value)"
+      />
+    </template>
+
+
+    // 可选参数
+    defineModel([名, ]{
+      type: 类型,
+      required: true/false
+      default: 值,    // 如果为 defineModel prop 设置了一个 default 值且父组件没有为该 prop 提供任何值，会导致父组件与子组件之间不同步
+      set(value){ return value的相关 },
+      get(value){ return value的相关 }
+    })
+    ```
+1. 在子组件上添加原生事件监听器，如`<SonCmp @click="方法">`
+
+    | 特性 | Vue 2 | Vue 3 |
+    |---|---|---|
+    | `@click` 默认行为 | 所有在子组件的事件都是自定义事件（除非手动加`.native`），需`$emit`触发 | 原生事件，自动绑定到单一根元素（多根元素不会绑定） |
+    | `.native`（监听组件根元素的原生事件，仅在父级引用子组件处添加） | 若需要监听原生事件，则添加 | 已移除，默认效果 |
+    | 事件触发次数 | 仅通过`$emit`触发一次 | 若子组件未通过`defineEmits`声明`click`事件，则父组件的@click会作为原生事件绑定到子组件的根元素。此时若子组件`$emit('click')`，则触发2次 |
+    | 执行顺序 | 依赖显式`$emit`顺序 | 子组件先执行，父组件后执行 |
+1. **全局**注册组件`const app = createApp(根组件); app.component( 名, 组件 )`
+1. props传参的`validator`支持第二个参数，传入完整的props
+1. 依赖注入
+
+    1. `provide`可以直接提供响应式值，后代组件可以由此和提供者建立响应式的联系。
+
+        ```js
+        import { ref, provide } from 'vue'
+
+        const count = ref(0)
+        provide('key', count) // 注入时是 ref 对象，不会自动解包
+        ```
+    1. `inject( 名, 默认值 )`、`inject( 名, 工厂函数, true )`
+
+        - Vue 要求 inject()必须在组件的`setup()`或`<script setup>`中同步调用。若在异步回调或非组件上下文中直接调用 inject()，会触发警告。`hasInjectionContext()`可以通过前置检查规避这一问题
+    1. **全局**提供依赖`const app = createApp(根组件); app.provide( 名, 值 )`
+    1. 若想确保提供的数据不能被注入方的组件更改，则使用`readonly()`来包装提供的值
+
+        ```vue
+        <script setup>
+        import { ref, provide, readonly } from 'vue'
+
+        const count = ref(0)
+        provide('read-only-count', readonly(count))
+        </script>
+        ```
+
+    ```vue
+    <!-- 在供给方组件内 -->
+    <script setup>
+    import { provide, ref } from 'vue'
+    const location = ref('North Pole')
+    function updateLocation() {
+      location.value = 'South Pole'
+    }
+    provide('location', {
+      location,
+      updateLocation
+    })
+    </script>
+
+    <!-- 在注入方组件 -->
+    <script setup>
+    import { inject } from 'vue'
+    const { location, updateLocation } = inject('location')
+    </script>
+    <template>
+      <button @click="updateLocation">{{ location }}</button>
+    </template>
+    ```
+    - 正常使用inject必须在组件实例中（setup内），然而`app.runWithContext(()=>{ return inject('名') })`在应用实例（app）中有效
+1. 在`<script setup>`中，任何**以`v`开头的驼峰式命名的变量**都可以当作 自定义指令
+
+    1. 如果指令是从别处导入的，可以通过重命名来使其符合命名规范：
+
+        ```vue
+        <script setup>
+        import { myDirective as vMyDirective } from './MyDirective.js'
+        </script>
+        ```
+
+    >不推荐在组件上使用自定义指令。当组件具有多个根节点时可能会出现预期外的行为：当在组件上使用自定义指令时，它会始终应用于组件的根节点，和透传 attributes 类似；当应用到一个多根组件时，指令将会被忽略且抛出一个警告。和 attribute 不同，指令不能通过 v-bind="$attrs" 来传递给一个不同的元素。
+
+    2. **全局**注册自定义指令`const app = createApp(根组件); app.directive('自定义指令名', 钩子对象)`
+
+    ><details>
+    ><summary><code>钩子对象中的钩子函数</code></summary>
+    >
+    >```js
+    >const myDirective = {
+    >  // 在绑定元素的 attribute 前
+    >  // 或事件监听器应用前调用
+    >  created(el, binding, vnode) {
+    >    // 下面会介绍各个参数的细节
+    >  },
+    >  // 在元素被插入到 DOM 前调用
+    >  beforeMount(el, binding, vnode) {},
+    >  // 在绑定元素的父组件
+    >  // 及他自己的所有子节点都挂载完成后调用
+    >  mounted(el, binding, vnode) {},
+    >  // 绑定元素的父组件更新前调用
+    >  beforeUpdate(el, binding, vnode, prevVnode) {},
+    >  // 在绑定元素的父组件
+    >  // 及他自己的所有子节点都更新后调用
+    >  updated(el, binding, vnode, prevVnode) {},
+    >  // 绑定元素的父组件卸载前调用
+    >  beforeUnmount(el, binding, vnode) {},
+    >  // 绑定元素的父组件卸载后调用
+    >  unmounted(el, binding, vnode) {}
+    >}
+    >```
+    >
+    >钩子函数参数：
+    >```js
+    >el：指令绑定到的元素。这可以用于直接操作 DOM。
+    >
+    >binding：一个对象，包含以下属性。
+    >  value：传递给指令的值。例如在 v-my-directive="1 + 1" 中，值是 2。
+    >  oldValue：之前的值，仅在 beforeUpdate 和 updated 中可用。无论值是否更改，它都可用。
+    >  arg：传递给指令的参数 (如果有的话)。例如在 v-my-directive:foo 中，参数是 "foo"。
+    >  modifiers：一个包含修饰符的对象 (如果有的话)。例如在 v-my-directive.foo.bar 中，修饰符对象是 { foo: true, bar: true }。
+    >  instance：使用该指令的组件实例。
+    >  dir：指令的定义对象。
+    >  vnode：代表绑定元素的底层 VNode。
+    >
+    >prevVnode：代表之前的渲染中指令所绑定元素的 VNode。仅在 beforeUpdate 和 updated 钩子中可用。
+    >```
+    ></details>
+1. 插件（Plugins）是一种能为 Vue 添加全局功能的工具代码`const app = createApp(根组件); app.use( 插件, 传递给install函数的第二个参数 )`
+
+    插件没有严格定义的使用范围，但是插件发挥作用的常见场景主要包括以下几种：
+
+    1. 通过`app.component()`、`app.directive()`注册一到多个全局组件或自定义指令。
+    2. 通过`app.provide()`使一个资源可被注入进整个应用。
+    3. 向`app.config.globalProperties`中添加一些全局实例属性或方法
+    4. ~~app.mixin()~~（不推荐）
+1. Vue 2全局功能注册在Vue上，Vue 3全局功能注册在app实例上
+1. 已移除~~filters过滤器~~
+1. `v-memo`
+1. Vue 2的[jsx](https://github.com/vuejs/jsx-vue2)与Vue 3的[jsx](https://github.com/vuejs/babel-plugin-jsx)有区别
+
+    1. Vue 2传递给组件的属性，①**先传递给[`createElement`的第二个参数](https://v2.cn.vuejs.org/v2/guide/render-function.html#深入数据对象)（`class`、`style`、`attrs`、`props`、`domProps`、`on`（`on-名`和`on`）、`nativeOn`、`directives`、`scopedSlots`、`slot`、`key`、`ref`、`refInFor`）**，②剩下未匹配的属性，若是`props`**定义了但未接收到的属性**，则再传递给`props`，③最后未匹配的剩余属性再传递给组件的`attrs`。
+    2. Vue 3传递给组件的属性是传递给[`h`的第二个参数](https://cn.vuejs.org/api/render-function.html#h)，直接就是prop（也是先props，剩下的再attrs），因此也不需要`{...对象}`的写法、也不需要`attrs={对象} props={对象}`写法（会解析成`attrs`和`props`的2个prop）。
+1. 响应式原理、数据绑定原理：使用了ES6的`Proxy`对数据代理
 
     - 相较于Vue 2（利用ES5的`Object.defineProperty`对数据进行劫持，结合发布订阅模式的方式来实现），Vue 3使用`Proxy`的优势：
 
-        1. `Object.defineProperty`只能监听某个属性，不能对全对象监听
+        1. `Object.defineProperty`需要遍历对象的所有属性并逐个设置监听，而`Proxy`可以一次性监听整个对象及其所有属性
         2. 可以省去`for-in`，闭包等内容来提升效率（直接绑定整个对象即可）
         3. 可以监听数组，不用再去单独的对数组做特异性操作，`Proxy`可以检测到数组内部数据的变化
-2. 虚拟DOM的diff算法不同
+1. 将 Vue 的响应性系统与外部状态管理方案集成的大致思路是：将外部状态放在一个`shallowRef`中。一个浅层的 ref 中只有它的 .value 属性本身被访问时才是有响应性的，而不关心它内部的值。当外部状态改变时，替换此 ref 的 .value 才会触发更新。
 
-    1. 2
+    1. `shallowRef()`：`ref()`的浅层作用形式；`shallowReactive()`：`reactive()`的浅层作用形式；`shallowReadonly()`：`readonly()`的浅层作用形式。
+
+        ```js
+        const state = shallowRef({ count: 1 })
+
+        // 不会触发更改
+        state.value.count = 2
+
+        // 会触发更改
+        state.value = { count: 2 }
+        ```
+
+        ```js
+        const state = shallowReactive({
+          foo: 1,
+          nested: {
+            bar: 2
+          }
+        })
+
+        // 更改状态自身的属性是响应式的
+        state.foo++
+
+        // ...但下层嵌套对象不会被转为响应式
+        isReactive(state.nested) // false
+
+        // 不是响应式的
+        state.nested.bar++
+        ```
+
+        ```js
+        const state = shallowReadonly({
+          foo: 1,
+          nested: {
+            bar: 2
+          }
+        })
+
+        // 更改状态自身的属性会失败
+        state.foo++
+
+        // ...但可以更改下层嵌套对象
+        isReadonly(state.nested) // false
+
+        // 这是可以通过的
+        state.nested.bar++
+        ```
+
+        - 手动触发`triggerRef(shallowRef返回对象)`
+1. <details>
+
+    <summary>虚拟DOM的diff算法不同</summary>
+
+    1. Vue 2
 
         双端比较，递归遍历两个虚拟DOM树，并比较每个节点上的每个属性（有点暴力算法），来确定实际DOM的哪些部分需要更新。无静态优化，每次更新递归对比所有节点，即使内容未变化。
-    2. 3
+    2. Vue 3
 
         1. 通过计算新旧节点索引映射表，仅移动非递增序列中的节点，减少 DOM 操作次数（LIS算法）
         2. 编译时通过 PatchFlag 标记动态属性（如文本、class），Diff 时直接跳过静态节点
         3. 将模板划分为动态区块后仅追踪动态节点集合（​Block Tree）
-1. ts的支持不同
+    </details>
+1. Vue 2支持Flow；Vue 3支持ts
+1. 新版本[devtools](https://github.com/vuejs/devtools)支持Vue 3，旧版本[devtools-v6](https://github.com/vuejs/devtools-v6)支持Vue 2。若2个插件一起启动则无法工作。
+1. 单文件组件（*.vue）
 
-    1. 2
+    1. 最多可以包含一个顶层`<template>`块
+    1. 最多可以包含一个`<script>`块
+    1. 最多可以包含一个`<script setup>`
 
-        支持Flow。
-    2. 3
+        >这个脚本块将被预处理为组件的`setup()`函数
+    1. 可以包含多个`<style>`标签
+1. 命名空间组件
 
-        支持ts。
-1. 新版本[devtools](https://github.com/vuejs/devtools)支持Vue 3，旧版本[devtools-v6](https://github.com/vuejs/devtools-v6)支持Vue 2。2个插件必须仅启动一个才能正常工作
+    ```vue
+    <script setup>
+    import * as Form from './form-components'
+    </script>
+
+    <template>
+      <Form.Input>
+        <Form.Label>label</Form.Label>
+      </Form.Input>
+    </template>
+    ```
+1. 样式
+
+    1. `scoped`
+
+        1. 默认情况下，作用域样式不会影响到`<slot/>`渲染出来的内容，因为它们被认为是父组件所持有并传递进来的。使用`:slotted`伪类以明确地将插槽内容作为选择器的目标：
+
+            ```vue
+            <style scoped>
+            :slotted(div) {
+              color: red;
+            }
+            </style>
+            ```
+        2. 如果想让其中一个样式规则应用到全局，比起另外创建一个`<style>`，可以使用`:global`伪类来实现：
+
+            ```vue
+            <style scoped>
+            :global(.red) {
+              color: red;
+            }
+            </style>
+            ```
+    2. `module`
+
+        一个`<style module>`标签会被编译为 CSS Modules 并且将生成的 CSS class 作为`$style`对象暴露给组件：
+
+        ```vue
+        <template>
+          <p :class="$style.red">This should be red</p>
+        </template>
+
+        <style module>
+        .red {
+          color: red;
+        }
+        </style>
+        ```
+
+        - 可以通过给 module attribute 一个值来自定义注入 class 对象的属性名：
+
+            ```vue
+            <template>
+              <p :class="classes.red">red</p>
+            </template>
+
+            <style module="classes">
+            .red {
+              color: red;
+            }
+            </style>
+            ```
+        - 可以通过`useCssModule`API 在`setup()`和`<script setup>`中访问注入的 class。对于使用了自定义注入名称的`<style module="名称">`块，`useCssModule`接收一个匹配的 module attribute 值作为第一个参数：
+
+            ```js
+            import { useCssModule } from 'vue'
+
+            // 在 setup() 作用域中...
+            // 默认情况下，返回 <style module> 的 class
+            useCssModule()
+
+            // 具名情况下，返回 <style module="classes"> 的 class
+            useCssModule('classes')
+            ```
+      3. `<style>`里的`v-bind(变量名 或 '变量名.属性名')`
+
+### Vue 3的组合式API
+
+>[Vue 3 API 参考](https://cn.vuejs.org/api/)
+
+1. 不像react的函数组件（每次渲染，都执行一遍函数），`<script setup>`中的代码会在每次组件实例被创建的时候执行一次，但通过响应式系统追踪依赖
+1. `reactive()`只接受引用数据类型（创建Proxy对象以引用数据类型对象作为目标，具有响应性）；`ref()`可以接受任何值类型（包括组件或DOM，此时建议初始化为`ref(null)`或`ref([])`），会返回一个包裹对象，并在`.value`属性下暴露内部值（使`.value`的值具有响应性）。
+1. Ref 具有深层响应性（`ref`、`reactive`、等）
+
+    Vue 3对具有深层响应性的代理对象 **新增属性** 能够保证新增属性的响应性。
+
+    >Vue 2需要用`Vue.set`或`vm.$set`（Vue 3已废弃）才能新增属性，直接`vm.新属性 = 值`不具有响应性。
+
+    <details>
+    <summary>e.g. </summary>
+
+    ```js
+    import { ref } from 'vue'
+    const data = ref({  // reactive效果相同
+      a: { b: { c: 1, d: [{ e: 1 }] } },
+    })
+    // 都会保持响应性
+    function changeData() {
+      data.value.a.b.d[data.value.a.b.d.length - 1].e = 2
+      data.value.a.b.d.push({ e: 3 })
+    }
+    function changeData2() {
+      data.value.a = { b: 1 }
+    }
+    function changeData3() {
+      data.value.a.b = 2
+    }
+    function changeData4() {
+      data.value.a.f = 2
+    }
+    ```
+    </details>
+1. 解包（.value）与自动解包（automatically unwrapped。不需要手动输入`.value`就能返回`.value`的值）
+
+    >自动解包：自动浅层解包。
+
+    1. 在组件的`<script setup>`中的**顶层的导入、声明的变量、函数**可在同一组件的`模板`中直接使用（有包裹的对象会在模板中自动浅层解包，因此不需要再手动 ~~`.value`~~）。
+
+        >`<script setup>`里面的代码会被编译成组件`setup()`函数的内容。这意味着与普通的`<script>`只在组件被首次引入的时候执行一次不同，`<script setup>`中的代码会在每次组件实例被创建的时候执行。因此顶层的变量、函数 不会在多个组件中~~共享~~。可以理解为：`<script>`执行一遍后，`export default`的是组件，因此可以在导出之外的代码中包含共用的变量、方法；`<script setup>`就是`setup()`钩子里的代码，同一个组件不同实例间没有任何共用的逻辑。
+
+        1. 有包裹的对象（`isRef()`返回`true`）：`ref()`、`shallowRef()`、`customRef()`、`computed()`、`toRefs()`、`toRef()`（、`pinia`的`storeToRefs()`）
+        2. 无包裹的对象（`isRef()`返回`false`，普通引用数据类型、普通基本数据类型也返回`false`）：`reactive`、`shallowReactive`、`readonly`、`shallowReadonly`
+    1. `ref`的自动解包逻辑
+
+        1. `ref`对象作为`reactive`对象的属性时，会自动解包
+
+            <details>
+            <summary>e.g. </summary>
+
+            ```js
+            const count = ref(0)
+            const state = reactive({  // state.count 指向ref对象，作为reactive因此会自动解包
+              count
+            })
+
+            console.log(state.count) // 0
+
+            state.count = 1
+            console.log(count.value) // 1
+
+            const otherCount = ref(2)
+
+            state.count = otherCount
+            console.log(state.count) // 2
+            // 原始 ref 现在已经和 state.count 失去联系
+            console.log(count.value) // 1
+            ```
+            </details>
+        1. `ref`对象作为`shallowReactive`对象的属性时 或 `shallowReadonly`对象的属性时，不会~~自动解包~~
+        1. `ref`对象作为`reactive`对象的数组或集合的项时，不会~~自动解包~~
+
+            <details>
+            <summary>e.g. </summary>
+
+            ```js
+            const books = reactive([ref('Vue 3 Guide')])
+            // 这里需要 .value
+            console.log(books[0].value)
+
+            const map = reactive(new Map([['count', ref(0)]]))
+            // 这里需要 .value
+            console.log(map.get('count').value)
+            ```
+            </details>
+        1. 在模板渲染上下文中，只有**顶级**的`ref`属性才会被解包
+
+            若`ref`是文本插值的最终计算值（即`{{ }}`标签），则它将被解包。
+
+            ```vue
+            const count = ref(0)          // 顶级属性count
+            const object = { id: ref(1) } // 顶级属性object；非顶级属性id
+            const { id } = object         // 顶级属性id
+
+            <template>
+            {{ count + 1 }} ✅
+            {{ object.id + 1 }} ❌ => [object Object]1
+            {{ object.id.value + 1 }} ✅
+            {{ object.id }} ✅ 若`ref`是文本插值的最终计算值（即`{{ }}`标签），则它将被解包。该特性仅仅是文本插值的一个便利特性，等价于 {{ object.id.value }}
+            {{ id + 1 }} ✅
+            </template>
+            ```
+1. 响应式对象 整体替换
+
+    1. `reactive`（、`shallowReactive`）对象：
+
+        >1. 只能在「属性层面」更新，不能替换整个Proxy
+        >2. 对同一个对象多次`reactive`，Vue返回的是同一个Proxy
+        >3. 对一个已存在的代理对象调用`reactive`会返回这个已存在的代理对象本身
+
+        ```js
+        const state = reactive({ a: 1, b: 2 })
+
+        Object.assign(state, { a: 100, b: 200 })  // ✅ 可以整体替换，响应式保留
+
+        // 不能赋值替换：state = { a: 100, b: 200 }  // ❌ 响应式丢失
+        ```
+    2. `ref`（、`shallowRef`）对象：
+
+        >ref本质是对任意值（包括对象）的响应式“壳子”，替换 .value 等于换了一个新引用。
+
+        ```js
+        const state = ref({ a: 1, b: 2 })
+
+        state.value = { a: 100, b: 200 }          // ✅ 可以整体替换，响应式保留
+        ```
+1. 复杂`reactive`赋值
+
+    >`ref`代理对象直接`.value =`赋新值，或类似`reactive`赋值的方式都行。
+
+    ```js
+    const apiData = reactive({
+      pagination: {
+        current: 1,
+        pageSize: 10,
+        total: 0,
+      },
+      list: [],
+    })
+
+    // 数组可以直接赋值，Vue 会自动处理。
+    apiData.list = 新数组
+    // 对象最好不要整体替换，用Object.assign 或 手动更新属性 或 赋值给reactive包裹的新对象
+    Object.assign(apiData.pagination, 新对象) // 或：apiData.pagination = reactive(新对象)
+    ```
+1. 不能解构：
+
+    >只是不能直接解构，不是不能使用，①可以通过特殊函数包裹后的解构使用（`toRefs`、`pinia`的`storeToRefs`），②也可以不解构直接`.属性`使用。
+
+    1. `reactive`、`setup(props)`的`props`、`vue-router`的`useRoute`：需要用`toRefs`才能解构
+    2. `pinia`的store：需要用`pinia`的`storeToRefs`才能解构
+    3. `ref`的`.value`手动解包后不是响应式对象：一般直接`.value`去操作，不会进行解构（除非`const object = { id: ref(1) }`需要`const {id} = object`解构为顶级属性）
+
+    - 支持解构：`toRefs`、`pinia`的`storeToRefs`、`defineProps`、`defineModel`
+1. `toRefs`、`toRef`创建的 ref 与其源属性保持同步：改变源属性的值将更新 ref 的值，反之亦然。
+
+    ```js
+    const state = reactive({
+      foo: 1,
+      bar: 2
+    })
+
+    // 双向 ref，会与源属性同步
+    const fooRef = toRef(state, 'foo')    // 不同于：const fooRef = ref(state.foo)，tate.foo是一个纯数值
+
+    // 更改该 ref 会更新源属性
+    fooRef.value++
+    console.log(state.foo) // 2
+
+    // 更改源属性也会更新该 ref
+    state.foo++
+    console.log(fooRef.value) // 3
+
+
+    const stateAsRefs = toRefs(state)   // 支持解构（保持响应式）： const {foo, bar} = stateAsRefs。通过 foo.value、bar.value 响应式访问
+    // 这个 ref 和源属性已经“链接上了”
+    state.foo++
+    console.log(stateAsRefs.foo.value) // 4
+
+    stateAsRefs.foo.value++
+    console.log(state.foo) // 5
+    ```
+
+    - `toRefs`在调用时只会为源对象上可以枚举的属性创建 ref。若要为可能还不存在的属性创建 ref，则改用`toRef`
+
+        ```js
+        const state = reactive({
+          foo: 1,
+        })
+
+        const fooRef = toRef(state, 'foo1') // 对目前不存在的属性设置toRef
+
+        state.foo1 = 1 // 新增属性
+        console.log('fooRef.value', fooRef.value) // 1
+
+        fooRef.value++
+        console.log('state.foo1', state.foo1) // 2
+
+
+        const stateAsRefs = toRefs(state) // stateAsRefs 不会包含目前不存在的属性foo2
+
+        state.foo2 = 1 // 新增属性
+        console.log('stateAsRefs', stateAsRefs) // 不存在foo2
+        ```
+1. `toRaw`
+
+    返回由`reactive()`、`readonly()`、`shallowReactive()`、`shallowReadonly()`、`ref().value`、`shallowRef().value`代理对应的原始对象。
+1. `markRaw`
+
+    将一个对象标记为不可被转为代理。返回该对象本身。
+1. `computed`
+
+    >返回值为一个计算属性`ref`。
+
+    1. 上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；
+    2. 可写计算属性：`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
+
+        >Vue 2也有get（但没有参数）、set写法。
+1. 侦听器
+
+    1. `watch(响应式对象 或 () => 包含响应式对象的表达式, (new, old, onCleanup) => {}, 配置对象)`、`watch([多个响应式对象 或 getter函数], ([new1, new2,], [old1, old2,], onCleanup) => {}, 配置对象)`
+
+        ```js
+        const obj1 = reactive({ count: 0 })
+        const obj2 = ref({ count: 0 })
+
+
+        // ❌不能直接侦听响应式对象的属性值，这里 watch() 得到的参数是一个 number，不是响应式对象
+        watch(obj1.count, (count) => {console.log(`Count: ${count}`)})
+        watch(obj2.value.count, (count) => {console.log(`Count: ${count}`)})
+
+
+        // ✅需要用一个返回该属性的 getter 函数
+        watch(
+          () => obj1.count,
+          (count) => {console.log(`Count: ${count}`)},
+        )
+        watch(
+          () => obj2.value.count,
+          (count) => {console.log(`Count: ${count}`)},
+        )
+        watch(
+          () => obj2.value.count + obj1.count + 2,  // 包含响应式对象即可
+          (count) => {console.log(`Count: ${count}`)},
+        )
+        ```
+
+        - **直接给`watch()`传入一个响应式对象，会隐式地创建一个深层侦听器**——该回调函数在所有嵌套的变更时都会被触发。相比之下，一个返回响应式对象的 getter 函数，只有在返回不同的对象时，才会触发回调
+
+            ```js
+            const state = reactive({ someObject: { count: 0 } })
+
+            watch(state.someObject, (newValue, oldValue) => {
+              console.log('state.someObject1',newValue, oldValue)
+              // 在嵌套的属性count变更时触发
+              // 注意：`newValue` 此处和 `oldValue` 是相等的
+              // 因为它们是同一个对象！
+
+              // 如果修改someObject对象，这个监听器会失效，再也无法触发
+            })
+
+            watch(
+              () => state.someObject,
+              (newValue, oldValue) => {
+                console.log('state.someObject2', newValue, oldValue)
+                // 仅当 state.someObject 被替换时触发（count变化不会触发）
+              }
+            )
+
+            watch(
+              () => state.someObject,
+              (newValue, oldValue) => {
+                console.log('state.someObject3', newValue, oldValue)
+                // state.someObject 被替换时触发（`newValue`和`oldValue`不相等）
+                // state.someObject.count 变化时也触发（`newValue`和`oldValue`相等）
+              },
+              { deep: true }
+            )
+            ```
+        - `deep`选项还可以是一个数字，表示最大遍历深度——即 Vue 应该遍历对象嵌套属性的级数。
+
+            >深度侦听需要遍历被侦听对象中的所有嵌套的属性，当用于大型数据结构时，开销很大。因此请只在必要时才使用它，并且要留意性能。
+        - `immediate`、`once`、`flush: 'pre'（默认）或'post'或'sync'`
+    1. `watchEffect`（类似：`watchPostEffect`、`watchSyncEffect`）
+
+        追踪以下期间的所有依赖项从而触发回调：在同步执行期间 或 异步回调的第一个`await`正常工作之前。
+
+        ```js
+        watchEffect(async () => {
+          const response = await fetch(
+            `https://jsonplaceholder.typicode.com/todos/${todoId.value}`
+          )
+          data.value = await response.json()
+        })
+        ```
+    1. 副作用清理
+
+        当侦听器失效并准备重新运行时会被调用：
+
+        1. `onWatcherCleanup`
+
+            必须在`watchEffect`效果函数或`watch`回调函数的同步执行期间调用：不能在异步函数的 await 语句之后调用它。
+        2. onCleanup 函数还作为`watch`回调函数的第三个参数，以及`watchEffect`作用函数的第一个参数：
+
+            >通过函数参数传递的 onCleanup 与侦听器实例相绑定，因此不受 `onWatcherCleanup` 的同步限制。
+
+            ```js
+            watch(id, (newId, oldId, onCleanup) => {
+              // ...
+              onCleanup(() => {
+                // 清理逻辑
+              })
+            })
+
+            watchEffect((onCleanup) => {
+              // ...
+              onCleanup(() => {
+                // 清理逻辑
+              })
+            })
+            ```
+      1. 触发时机：侦听器回调会在父组件更新 (如有) 之后、所属组件的 DOM 更新之前被调用。这意味着如果你尝试在侦听器回调中访问所属组件的 DOM，那么 DOM 将处于更新前的状态。
+
+          修改调用时机：`watch`或`watchEffect`传参配置`flush: 'post'或'sync'` 或`watchPostEffect`、`watchSyncEffect`。
+      1. 停止侦听器
+
+          1. 在`setup()`或`<script setup>`中用**同步语句**创建的侦听器，会自动绑定到宿主组件实例上，并且会在宿主组件卸载时自动停止
+
+              ```vue
+              <script setup>
+              import { watchEffect, watch } from 'vue'
+
+              // 它会自动停止
+              watchEffect(...)
+              watch(...)
+
+              // ...这个则不会！你必须手动停止它，以防内存泄漏
+              setTimeout(() => {
+                watchEffect(...)
+                watch(...)
+              }, 100)
+              </script>
+              ```
+          2. 手动停止：调用`watch`或`watchEffect`等返回的函数
+
+              `const unwatch = watchEffect(() => {}); unwatch();`
+1. `defineProps`、`defineEmits`、`defineExpose`、`defineModel`、`defineOptions`、`defineSlots`是一个编译器宏（compiler macro），并不需要导入（但也不能打印或赋值给其他变量），都是**只能在`<script setup>`顶层中使用（不能从其他文件引用，与生命周期钩子不同）**
+
+    ```vue
+    <script setup>
+    // defineProps内的参数，无法访问`<script setup>`定义的其他变量（因为在编译时整个表达式都会被移到外部的函数中）
+    const props = defineProps({ // 支持解构
+      msg: String           // 传参会变成驼峰变量
+    })
+    console.log(props.msg)  // 必须props.msg
+    </script>
+
+    <template>
+      <h2>{{ msg }} === {{ props.msg }}</h2> <!-- 可以直接用msg，也可以props.msg，都是响应式 -->
+    </template>
+    ```
+
+    ```js
+    // defineEmits内的参数，无法访问`<script setup>`定义的其他变量（因为在编译时整个表达式都会被移到外部的函数中）
+    const emit = defineEmits(['注册事件名1','注册事件名2',])
+
+    emit('注册事件名2', 参数1, 参数2, ) // 必须先注册事件再使用
+
+    // 在<template>中还是可以使用$emit（不能在`<script setup>`使用），但是已经被标记为已弃用
+
+
+    // 可传对象，进行校验（就算校验失败，也会触发事件并传参）
+    const emit2 = defineEmits({
+      // 没有校验
+      click: null,
+
+      // 校验 submit 事件
+      submit: ({ email, password }) => {
+        if (email && password) {
+          return true
+        } else {
+          console.warn('Invalid submit event payload!')
+          return false
+        }
+      }
+    })
+
+    function submitForm(email, password) {
+      emit2('submit', { email, password })
+    }
+    ```
+
+    ```vue
+    <script setup>
+      defineOptions({
+        inheritAttrs: false
+      })
+    </script>
+    ```
+1. 模板引用（组件、DOM）
+
+    1. `useTemplateRef`
+
+        Vue 3.5+
+
+        ```vue
+        <script setup>
+        import { useTemplateRef, onMounted } from 'vue'
+
+        // 第一个参数必须与模板中的 ref 值匹配
+        const input = useTemplateRef('my-input')
+        const div2Ref = useTemplateRef('div2')
+
+        onMounted(() => {
+          input.value.focus()
+          console.log(div2Ref.value)  // => 数组
+        })
+        </script>
+
+        <template>
+          <input ref="my-input" />
+          <div v-for="item in 5" ref="div2" :key="item" />
+        </template>
+        ```
+    1. `ref`
+
+        ```vue
+        <script setup>
+        import { ref, onMounted } from 'vue'
+
+        // 声明一个 ref 来存放该元素的引用
+        // 必须和模板里的 ref 同名
+        const myInput = ref(null)
+        const div1 = ref([])
+
+        onMounted(() => {
+          myInput.value.focus()
+          console.log(div1.value)  // => 数组
+        })
+        </script>
+
+        <template>
+          <input ref="myInput" />
+          <div v-for="item in 4" ref="div1" :key="item" />
+        </template>
+        ```
+    - 支持与`v-for`配合使用，对应的 ref 中包含的值是一个数组，它将在元素被挂载后包含对应整个列表的所有元素
+
+        >ref 数组并不保证与源数组相同的顺序。
+    - 除了使用字符串值作名字，`:ref`还可以绑定为一个函数，会在每次组件更新时都被调用。该函数会收到元素引用作为其第一个参数：
+
+        `<input :ref="(el) => { /* 将 el 赋值给一个数据属性或 ref 变量 */ }">`
+
+        当绑定的元素被卸载时，函数也会被调用一次，此时的 `el` 参数会是 `null`。你当然也可以绑定一个组件方法而不是内联函数。
+    - 子组件的暴露信息
+
+        1. 若一个 子组件 没有使用`<script setup>`（`选项式API`加了`setup()`也还是没有使用`<script setup>`的效果），则被引用的组件实例和该子组件的`this`完全一致，这意味着父组件对子组件的每一个属性和方法都有完全的访问权（强耦合）。
+        2. 使用了`<script setup>`的组件是默认私有的：一个父组件无法访问到一个使用了`<script setup>`的子组件中的任何东西，除非子组件在其中通过`defineExpose`宏显式暴露
+
+            >`defineExpose`必须在任何 await 操作之前调用。否则，在 await 操作后暴露的属性和方法将无法访问。
+        - 暴露的信息都会自动解包（无论子组件是组合式API还是选项式API）
+
+            ```vue
+            <script setup>
+            import { ref } from 'vue'
+
+            const a = 1
+            const b = ref(2)
+
+            defineExpose({
+              a,    // 父级：子ref.value.a => 1
+              b     // 父级：子ref.value.b => 2 （自动解包）
+            })
+            </script>
+            ```
+1. 生命周期钩子应当在组件初始化时被**同步**注册。
+
+    这并不意味着对生命周期钩子的调用必须放在`setup()`或`<script setup>`内的词法上下文中，也可以在一个外部函数中调用，只要调用栈是同步的，且最终起源自`setup()`就可以。
+
+    ```js
+    setTimeout(() => {
+      onMounted(() => {
+        // ❌ 异步注册时当前组件实例已丢失。这将不会正常工作
+      })
+    }, 100)
+    ```
+
+    - 组合式API没有 ~~`beforeCreate`~~、~~`created`~~ 相关的钩子，可以用直接写在`<script setup>`的同步逻辑（组件实例初始化前后时刻）作为替代。
+
+    `<script setup>`的同步代码、`onBeforeMount`、`onMounted`、`onBeforeUpdate`、`onUpdated`、`onBeforeUnmount`、`onUnmounted`，`onErrorCaptured`、`onRenderTracked`、`onRenderTriggered`、`onActivated`、`onDeactivated`、`onServerPrefetch`
+
+    <details>
+
+    <summary>生命周期图示</summary>
+
+    ![vue 3生命周期图](./images/vue-lifecycle-vue3.png)
+    </details>
+1. <details>
+
+    <summary>异步组件</summary>
+
+    ```js
+    import { defineAsyncComponent, hydrateOnIdle, IntersectionObserver, hydrateOnMediaQuery } from 'vue'
+
+    const AsyncComp = defineAsyncComponent(() => {
+      return new Promise((resolve, reject) => {
+        // ...从服务器获取组件
+        resolve(/* 获取到的组件 */)
+
+        // 加载失败
+        reject(reason)
+      })
+    })
+
+    const AsyncComp = defineAsyncComponent(() => import('./components/MyComponent.vue'))
+    // ... 像使用其他一般组件一样使用 `AsyncComp`
+
+    // 全局注册
+    const app = createApp(根组件);
+    app.component('MyComponent', defineAsyncComponent(() =>
+      import('./components/MyComponent.vue')
+    ))
+
+    // 传对象形式，配置加载与错误状态
+    const AsyncComp = defineAsyncComponent({
+      // 加载函数
+      loader: () => import('./Foo.vue'),
+
+      hydrate: hydrateOnIdle(/* 传递可选的最大超时 */),
+      hydrate: hydrateOnVisible(),  // 在元素变为可见时进行激活
+      hydrate: hydrateOnVisible({ rootMargin: '100px' }), // 监听选项
+      hydrate: hydrateOnMediaQuery('(max-width:500px)'),  // 媒体查询匹配才激活
+      hydrate: hydrateOnInteraction('click'), // 交互时激活
+      hydrate: hydrateOnInteraction(['wheel', 'mouseover']),  // 多个事件
+      hydrate: (hydrate, forEachElement) => { // 自定义策略
+        // forEachElement 是一个遍历组件未激活的 DOM 中所有根元素的辅助函数，
+        // 因为根元素可能是一个片段而非单个元素
+        forEachElement(el => {
+          // ...
+        })
+        // 准备好时调用 `hydrate`
+        hydrate()
+        return () => {
+          // 如必要，返回一个销毁函数
+        }
+      },
+
+      // 加载异步组件时使用的组件
+      loadingComponent: LoadingComponent,
+      // 展示加载组件前的延迟时间，默认为 200ms
+      delay: 200,
+
+      // 加载失败后展示的组件
+      errorComponent: ErrorComponent,
+      // 如果提供了一个 timeout 时间限制，并超时了
+      // 也会显示这里配置的报错组件，默认值是：Infinity
+      timeout: 3000
+    })
+    ```
+
+    搭配`<Suspense>`使用。
+    </details>
+1. `unref`若参数是 ref（`isRef()`返回`true`），则返回内部值，否则返回参数本身（`val = isRef(val) ? val.value : val`的语法糖）
+1. `toValue`若参数是 ref（`isRef()`返回`true`），则返回内部值（`unref(ref)`的值）；若参数是函数，则调用函数并返回其返回值。否则，原样返回参数
+1. `<script setup>`是唯一在调用`await`之后仍可调用组合式函数的地方。编译器会在异步操作之后自动为你恢复当前的组件实例。
 
 ---
 
@@ -223,6 +1126,16 @@
         1. 图片文件用：`_`；（除了.vue）其他所有文件用：`-`
         2. .vue组件用：大驼峰式（PascalCase）或`-`短横线隔开式（kebab-case）
         3. 路由.vue组件用：按该网站当前已有的路由规范命名，如：`-`短横线隔开式（kebab-case）
+    5. Vue实例代理的属性（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins/extends`传入的属性），在内部`vm.名字`访问，可以直接使用，**所有属性名字都不能重复**（filters不属于同一类）；也有以`$`开头的Vue实例属性（如：`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
+
+        只有已经被代理的内容是响应的（Vue实例被创建时传入的属性），值的改变（可能）会触发视图的重新渲染。
+    6. **Vue实例的属性**和**Vue实例的属性的属性**，慎用~~箭头函数~~，因为`this`的指向无法按预期指向Vue实例。
+    7. 因为HTML不区分大小写，所以大/小驼峰式命名的JS内容，在HTML使用时要转换为相应的`-`短横线隔开式。
+
+        不受限制、不需要转换：`.vue`组件、JS字符串模版（`<script type="text/x-template">`、内联模板字符串`template: '模板内容'`）。
+
+        >[DOM 内模板解析注意事项](https://cn.vuejs.org/guide/essentials/component-basics#in-dom-template-parsing-caveats)
+    8. Vue实例（`Vue`）或Vue组件实例（`VueComponent`）挂载在DOM，会在这个DOM上增加`__vue__`属性指向这个Vue实例或Vue组件实例（生产环境也行）。
 
 ### 模板插值
 双大括号——“Mustache”语法。
@@ -285,7 +1198,7 @@
 
         由表达式计算的结果为最终`:`后跟的值。表达式计算的结果应当是 字符串 或 `null`（意为显式移除该绑定）。注意在.html的DOM上书写模板时，对表达式的约束（应避免使用：**空格、引号、大写字母**）。
 
-        >e.g. `v-bind:[表达式]='xx'`（`:[表达式]='xx'`）、`v-on:[表达式]='xx'`（`@[表达式]='xx'`）、`v-slot:[表达式]`（`#[表达式]`）
+        >e.g. `v-bind:[表达式]='xx'`（`:[表达式]='xx'`）、`v-on:[表达式]='xx'`（`@[表达式]='xx'`）、`v-slot:[表达式]`（`#[表达式]`）、`v-自定义指令:[表达式]`
 2. `v-if`、`v-else`、`v-else-if`
 
     DOM或组件判定为`false`，则完全销毁（组件会调用`destroyed`）；判定为`true`，则新建。除非使用`<keep-alive/>`包裹。
@@ -347,7 +1260,7 @@
 
 >（相同标签名的DOM或相同组件切换展示时，）没有提供`key`属性：若数据项的展示/顺序被改变，则Vue将不会~~销毁再新建DOM/移动DOM来匹配数据项的顺序~~，而是保持原DOM尽量不变化，尽量仅在原DOM上修改属性和内部内容，以确保渲染正确。
 
-4. `v-bind`（`v-bind:xx`缩写：`:xx`）绑定DOM属性与JS表达式的结果
+4. `v-bind`（`v-bind:xx`缩写：`:xx`；`v-bind:[表达式]='xx'`缩写：`:[表达式]='xx'`）绑定DOM属性与JS表达式的结果
 
     >此DOM属性随表达式最终值改变而改变，直接修改此DOM属性值不改变表达式的值。若绑定的值是`null`或`undefined`，则该`attribute`将会从渲染的元素上移除。绑定的attribute也作为普通的 HTML attribute 设置在HTML标签上（e.g. `<p :a="'aa'" b="bb"/>` -> `<p a="aa" b="bb">`）。
 
@@ -384,15 +1297,19 @@
                 >不能将`v-bind.sync`用在一个字面量的对象上，错误：~~`v-bind.sync="{ title: doc.title }"`~~，必须是`v-bind.sync="对象变量"`。
             </details>
         2. `.prop`（绑定到DOM的`property`而不是HTML标签的 ~~`attribute`~~）
-        3. `.camel`（小驼峰式camelCase转换为大驼峰式PascalCase）
+        3. `.camel`（将kebab-case（短横线隔开式）转换为camelCase（小驼峰式））
     2. 特殊的DOM属性：
+
+        `:class`和`:style`指令可以和一般的`class attribute`和`style attribute`共存。
 
         1. 绑定`class`
 
             1. `:class="'a b'"`：`class="a b"`
             2. `:class="{ 'a': true, 'b': false }"`：`class="a"`
+
+                `` :class="level ? `level-${level}` : ''" `` === `` :class="{ [`level-${level}`]: level }" ``
             3. `:class="['a', 'b']"`：`class="a b"`
-            4. `:class="[{ 'a': true, 'b': false }, { 'c': true }, 'd', ['e']]"`：`class="a c d e"`
+            4. **`:class="[{ 'a': true, 'b': false }, { 'c': true }, 'd', ['e']]"`：`class="a c d e"`**
         2. 绑定`style`
 
             >1. 自动添加样式前缀。
@@ -406,7 +1323,7 @@
                 e.g. `:style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"`
         3. 对于[布尔型的attribute](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Attributes#布尔属性)，若绑定的值是 `真值 或 空字符串`，则这个属性存在，否则 绑定的值是其他假值时 这个属性被忽略。
 
-        当在一个自定义组件上使用`class`或`style`时，这些值将被添加到该组件的**根元素**上面（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签。永远不会成为向内子级的props声明接受，仅能作为普通的 HTML attribute），不受`inheritAttrs`影响；`class`、`style`属性会合并（而不是覆盖）；`class`、`style`永远不会传递进`$props`，无论子级`props`是否声明接受`class`、`style`。
+        当在一个自定义组件上使用`class`或`style`时，这些值将被添加到该组件的**根元素**上面（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签。永远不会被子组件的props声明接受，仅能作为普通的 HTML attribute），不受`inheritAttrs`影响；`class`、`style`属性会合并（而不是覆盖）；`class`、`style`永远不会传递进`$props`，无论子级`props`是否声明接受`class`、`style`。
     3. 传递给子组件DOM属性的值类型
 
         <details>
@@ -423,7 +1340,7 @@
         <my-component :some-prop="a">传递表达式：a（变量是什么类型就是什么类型）</my-component>
         ```
         </details>
-    4. 若不带参数的`v-bind="表达式"`（不能用缩写 ~~`:表达式`~~ —— Vue 3.4+），则绑定表达式的所有属性到DOM。
+    4. 若不带参数的`v-bind="表达式"`（不能用缩写 ~~`:属性名`~~：不是同一个含义，并且这个写法在Vue 3.4+才支持），则绑定表达式的所有属性到DOM。
 
         >同名的属性优先级：①`:同名属性="表达式"`与`同名属性="值"`，哪一个写在后面哪一个生效；②`v-bind="{同名属性:'值'}"`优先级最低；③`class`、`style`任何情况下都是合并处理。
 
@@ -449,14 +1366,18 @@
         </script>
         ```
 
-        `v-bind="{...$props, ...$attrs}"`（$props：组件显式接收的属性。$attrs：除了$props、class、style之外，传给组件的属性，**不受`inheritAttrs`取值影响**）
+        `v-bind="{...$props, ...$attrs}"`（$props：组件显式接收的属性，`-`转化为驼峰。$attrs：除了$props、class、style之外，传给组件的属性，**不受`inheritAttrs`取值影响**，属性名的大小写、`-`不会做任何变化）
         </details>
-5. `v-on`（`v-on:xx`缩写：`@xx`）事件监听
+5. `v-on`（`v-on:xx`缩写：`@xx`；`v-on:[表达式]='xx'`缩写：`@[表达式]='xx'`）事件监听
+
+    >和原生DOM事件不一样，组件触发的事件没有~~冒泡机制~~，只能监听到直接子组件触发的事件。
 
     0. 绑定方法名：`v-on:xx="方法名"`；内联JS语句`v-on:xx="方法名(参数)"`、
+
+        >模板编译器会通过检查 v-on 的值是否是合法的JS标识符或属性访问路径来断定是何种形式的事件处理器。举例来说，`foo、foo.bar、foo['bar']`会被视为方法事件处理器（指向一个在组件方法methods中预先定义好的函数），而`foo()、count++`会被视为内联事件处理器（内联地执行）。
     1. 事件修饰符：
 
-        1. `.stop`（阻止冒泡）、`.prevent`（阻止默认行为）、`.capture`或`!`前缀（捕获事件流）、`.self`（只当事件在该元素本身而不是子元素触发时才触发）、`.once`或`~`前缀（事件将只触发一次）、`.passive`或`&`前缀（滚动事件的默认滚动行为将立即触发，而不等待~~scroll~~事件完成）
+        1. `.stop`（阻止冒泡）、`.prevent`（阻止默认行为）、`.capture`或`!`前缀（捕获事件流）、`.self`（只当事件在该元素本身而不是子元素触发时才触发）、`.once`或`~`前缀（事件将只触发一次）、`.passive`或`&`前缀（滚动事件的默认滚动行为将立即触发，而不等待~~scroll~~事件处理函数完成）
 
             - 特殊：
 
@@ -464,6 +1385,10 @@
         2. `.enter`、`.tab`、`.delete`、`.esc`、`.space`、`.up`、`.down`、`.left`、`.right`、`.数字键值`、[KeyboardEvent.key的短横线形式](https://developer.mozilla.org/zh-CN/docs/Web/API/UI_Events/Keyboard_event_key_values)、`Vue.config.keyCodes`自定义的键位别名
 
             键盘。
+
+            - 系统按键：`.ctrl`、`.alt`、`.shift`、`.meta`
+
+                系统按键修饰符和常规按键不同：与`keyup`事件一起使用时，该按键必须在事件发出时处于按下状态。换句话说，`@keyup.ctrl`只会在你仍然按住`ctrl`但松开了另一个键时被触发。若你单独松开`ctrl`键将不会触发。
         3. `.left`、`.right`、`.middle`
 
             鼠标。
@@ -493,48 +1418,47 @@
         >    <div @click.self.prevent="doThat">...</div>
         >    ```
         >    </details>
-    2. `$event`原生DOM事件的变量，仅能由HTML内联传入 或 不调用的方法名默认传入
+    2. `$event`原生DOM事件的变量：①内联传入$event（但不能是内联箭头函数） 或 ②不调用的方法名默认传入第一个参数 或 ③内联箭头函数的第一个参数（内联箭头函数就不存在 ~~$event~~ 变量）
 
         <details>
         <summary>e.g.</summary>
 
         ```html
         <div id="test">
-          <a href="#" @click="a($event)">click（第一个）</a>
-          <a href="#" @click="a(1, $event)">click（第二个）</a>
-          <a href="#" @click="a">click（默认传入第一个参数）</a>
+          <a @click="a($event)">click（第一个）</a>
+          <a @click="a(1, $event)">click（1, 第二个）</a>
+          <a @click="a">click（默认传入第一个参数）</a>
+          <a @click="(e)=>a(1,e)">click（1, 内联箭头函数的第一个参数）</a>
+          <a @click="()=>a(1,$event)">click（1, undefined此时不存在）</a>
         </div>
 
-        <script>
-          const vm = new Vue({
-            el: '#test',
-            methods: {
-              a: function (e1, e2) {
-                console.log(e1, e2)
-              }
-            }
-          })
-        </script>
+        methods: {
+          a: function (e1, e2) {
+            console.log(e1, e2)
+          }
+        }
         ```
         </details>
     3. 自定义事件
 
         仅定义在父组件对子组件的引用上，只能由子组件内部`vm.$emit`触发，然后触发父级方法，再通过改变父级属性去改变子组件的`props`（或置换组件）。
+
+        >Vue 2所有写在子组件上的事件（无论是不是原生事件名）都需要由子组件内部触发，除非加了`.native`才表示原生事件。
     4. 支持不带参数绑定（值为**事件-监听器**的键-值的对象）
 
         >不支持修饰符。
 
         e.g. `<button v-on="{ mousedown: doThis, mouseup: doThat }"/>`
-6. `v-slot`（`v-slot:xx`缩写：`#xx`）插槽
+6. `v-slot`（`v-slot:xx`缩写：`#xx`；`v-slot:xx="变量"`缩写：`#xx="变量"`；`v-slot="变量"`缩写：`#default="变量"`；`v-slot:[表达式]`缩写：`#[表达式]`；`v-slot:[表达式]="变量"`缩写：`#[表达式]="变量"`）插槽
 
-    只允许添加在`<template>`上（特例见下），只允许在**引用子组件的顶级**使用（不允许上级是~~HTML标签~~、不能~~嵌套~~使用）。子组件使用`<slot>`在内部插入父级引入的内容。
+    只允许添加在`<template>`上（特例见下），只允许在**引用子组件的顶级**使用（不允许上级是~~HTML标签~~、不能~~嵌套~~使用）。子组件使用`<slot>`（插槽出口）在内部插入父级引入的内容。
 
-    >`v-slot`只允许添加在`<template>`上的特例：被引用的子组件**仅传入**默认插槽时，可以简写在引用的子组件上（若要使用多个插槽，则必须始终为所有的插槽使用完整的基于`<template>`的语法），e.g. 特例：`<子组件 v-slot:default="临时变量">`、`<子组件 v-slot="临时变量">`、`<子组件 #default="临时变量">`（若不使用临时变量则不需要加default在子组件上：默认所有未包含在具名插槽内的都是default插槽，除非有default具名插槽）。
+    >（若同时使用了具名插槽与默认插槽，则需要为默认插槽使用显式的`<template #default>`标签。）`v-slot`只允许添加在`<template>`上的特例：被引用的子组件**仅传入**默认插槽时，可以简写在引用的子组件上（若要使用多个插槽，则必须始终为所有的插槽使用完整的基于`<template>`的语法），e.g. 特例：`<子组件 v-slot:default="临时变量">`、`<子组件 v-slot="临时变量">`、`<子组件 #default="临时变量">`（若不使用临时变量则不需要加default在子组件上：默认所有未包含在具名插槽内的都是default插槽，除非有default具名插槽）。
 
     0. 抛弃内容
 
-        1. 若子组件没有包含`<slot name="某名字">`，则父组件引用子组件时的`v-slot:某名字"`的DOM会被抛弃。
-        2. 若父组件引用子组件时包含`v-slot=default`，则抛弃父组件引用子组件内的其他所有不包含在`v-slot`内的DOM。
+        1. 若子组件没有包含`<slot name="某名字">`，则父组件引用子组件时的`v-slot:某名字"`的DOM会被抛弃（没有对应的插槽出口）。
+        2. 若父组件引用子组件时包含`v-slot=default`，则抛弃父组件引用子组件内的其他所有不包含在`v-slot`内的DOM（同名插槽内容，优先级）。
 
     >组件内相同名字的`<slot>`可以使用任意多次、放在任意位置；传给某一个子组件相同名字的`v-slot`仅最后一个生效（不允许相同名字的`v-slot`）。
 
@@ -553,12 +1477,14 @@
 
         父级引用子组件时，使用子组件`<slot>`上的属性对应的值（除了`name`属性）。
 
-        1. 子组件的模板：
+        >`<slot>`插槽上的`name`是一个 Vue 特别保留的 attribute，不会作为 props 传递给插槽内容v-slot。
+
+        1. 子组件的模板，在插槽出口上添加：
 
             `<slot 子组件属性1="字符串" :子组件属性2="表达式">`
 
             >`<slot>`内部是子组件的作用域，和在其上添加的属性内容无关。
-        2. 父级使用子组件`<slot>`上显性提供的属性对应值：
+        2. 父级利用`v-slot="变量"`去使用 子组件`<slot>`上显性提供的属性对应值：
 
             `<template v-slot="临时变量">{{ 临时变量.子组件属性1 }}{{ 临时变量.子组件属性2 }}</template>`
 
@@ -568,6 +1494,7 @@
 
     - 子组件的`JSON.stringify(vm.$slots.名字)` === `JSON.stringify(vm.$scopedSlots.名字())`，都返回`Array<VNode> | undefined`
 
+        >0. `<slot>`模板里的插槽出口
         >1. `vm.$slots`不包含父级使用了 作用域插槽 的那个slot（`vm.$scopedSlots`都包含）。
         >2. `vm.$scopedSlots.名(参数)`会把 参数 传递给 父级 作用域插槽 的 临时变量。
         >
@@ -710,11 +1637,11 @@
     </details>
 7. `v-model`表单的双向绑定
 
-    >忽略表单元素上的`value`、`checked`、`selected`等初始值，而仅通过Vue实例赋值。
+    >忽略表单元素上的`value`、`checked`、`selected`等初始值、忽略`<textarea>`包裹的内容，而仅通过Vue实例赋值。
 
     1. 表单修饰符：
 
-        `.lazy`（`change`而不是~~input~~事件触发）、`.number`（输入值转为`Number`类型）、`.trim`（过滤首尾空格）
+        `.lazy`（`change`而不是~~input~~事件触发）、`.number`（输入值转为`Number`类型，若该值无法被`parseFloat()`处理，则返回原始值。会在输入框有`type="number"`时自动启用）、`.trim`（过滤首尾空格）
     2. 仅针对部分元素：`<input>`、`<textarea>`、`<select>`、组件
 
         1. 文本类型的`<input>`、`<textarea>`会绑定`value`并侦听`input`事件
@@ -739,7 +1666,7 @@
 
             `<my-input v-model="bar"/>`
 
-            等价于（默认：属性绑定为`value`、事件绑定为`input`。可由组件属性`model`修改）：`<my-input :value="bar" @input="bar = arguments[0]"/>`
+            等价于（默认：属性绑定为`value`、事件绑定为`input`。可由组件属性`model`修改，e.g. `model: { prop: 'checked', event: 'change' }`）：`<my-input :value="bar" @input="bar = arguments[0]"/>`
 
             >若`<my-input v-model.trim="bar"/>`达不到期望效果，则可以尝试`<my-input v-model="bar" @blur或@change="bar = bar.trim()"/>`
 
@@ -797,7 +1724,7 @@
     >    >`innerText`与`textContent`的区别：[MDN：textContent](https://developer.mozilla.org/zh-CN/docs/Web/API/Node/textContent#与innerText的区别)。
     ></details>
 
-    - 不能使用`v-html`来拼接组合模板，因为Vue不是一个基于字符串的模板引擎。在使用Vue时，应当使用组件作为UI重用和组合的基本单元。
+    - 不能使用`v-html`来拼接组合模板（会把值原封不动地`el.innerHTML=值`，而不会 ~~把值进行模板编译`<template>值</template>`~~），因为Vue不是一个基于字符串的模板引擎。在使用Vue时，应当使用组件作为UI重用和组合的基本单元。
 11. `v-pre`不编译
 
     >e.g. `<p v-pre>{{ 不编译 }}</p>`
@@ -870,7 +1797,9 @@
     </details>
 16. 自定义指令（在钩子函数中进行业务）
 
-    `v-自定义指令名`（或`v-自定义指令名="表达式"`、`v-自定义指令名:参数`、`v-自定义指令名.修饰符`）
+    >只有当所需功能只能通过直接的 DOM 操作来实现时，才应该使用自定义指令。
+
+    `v-自定义指令名`（或`v-自定义指令名="表达式"`、`v-自定义指令名:参数`（`v-自定义指令名:[动态指令]`）、`v-自定义指令名.修饰符` 这些组合）
 
     ><details>
     ><summary>同一个节点可以添加多个不同参数/修饰符的同一个自定义指令名</summary>
@@ -893,7 +1822,7 @@
     ```
 
     ><details>
-    ><summary><code>钩子对象</code></summary>
+    ><summary><code>钩子对象中的钩子函数</code></summary>
     >
     >```js
     >{
@@ -912,8 +1841,12 @@
     >  // 只调用一次，指令与元素解绑时调用
     >  unbind (el, binding, vnode) {}
     >}
+    >```
     >
+    >钩子函数参数：
+    >```js
     >// 可以把副作用的内容绑定到`el`，方便钩子函数之间传递信息
+    >el  //指令所绑定的元素，可以用来直接操作 DOM
     >
     >// 钩子对象的函数的第二个参数
     >binding: {
@@ -924,6 +1857,10 @@
     >  arg          // 传给指令的参数，可选。例如：`v-my-directive:foo`中，参数为`"foo"`
     >  modifiers    // 一个包含修饰符的对象。例如：`v-my-directive.foo.bar`中，修饰符对象为`{ foo: true, bar: true }`
     >}
+    >
+    >vnode  // Vue 编译生成的虚拟节点
+    >
+    >oldVnode // 上一个虚拟节点，仅在 update 和 componentUpdated 钩子中可用
     >```
     ></details>
 17. 特殊attribute
@@ -979,7 +1916,7 @@
 
         1. 添加在原生DOM：指向DOM元素
 
-            >代替原生JS获取DOM，如：~~`document.getElementById`~~。
+            >替代原生JS获取DOM，如：~~`document.getElementById`~~。
         2. 添加在子组件：指向子组件Vue实例。
         3. 当与`v-for`一起使用时：指向包含 DOM元素或子组件Vue实例 的数组。
     3. `is`
@@ -995,6 +1932,12 @@
         父级使用子组件字符串的作用域名字。
 
         `<组件 slot-scope="临时变量"/>`或`<template slot-scope="临时变量"><组件/></template>` 改为 `<template v-slot="临时变量"><组件/></template`。
+
+- 针对`<template>`
+
+    1. 支持的指令或attribute（结构型指令，影响DOM结构本身）：`v-if`、`v-else`、`v-else-if`、`v-for`、`key`（配合 v-for）
+    2. 不支持的指令或attribute（除了上面的之外，都不支持）：~~样式/类、事件、任何属性（无论是绑定值还是写死、`v-model`）、自定义指令~~
+
 - <details>
 
     <summary>官方建议的顺序：<a href="https://v2.cn.vuejs.org/v2/style-guide/index.html#元素-attribute-的顺序推荐">元素特性的顺序</a></summary>
@@ -1038,437 +1981,6 @@
 
         - `v-html`
         - `v-text`
-    </details>
-
-### 组件选项
-包含：`new Vue(组件选项)`、`Vue.component(名, 组件选项)`、`Vue.extend(组件选项)`/`extends(组件选项)`、`Vue.mixin(组件选项)`/`mixins([组件选项1, 组件选项2, ])`。
-
-1. `props`（数组或对象）：接受父级传递内容
-
-    1. 数组：接受的DOM属性名
-    2. 对象：`{ 接受的DOM属性名: 验证方式, }`
-
-        - 验证方式：
-
-            1. 原生构造器（`String`、`Number`、`Boolean`、`Function`、`Object`、`Array`、`Symbol`、`BigInt`）或 `自定义构造函数`（通过`instanceof`检查确认）或 `null/undefined`（允许任何类型）
-            2. 上面类型组成的数组
-            3. 对象
-
-                1. `type`：原生构造器、或`自定义构造函数`、或原生构造器和`自定义构造函数`的数组、或`null`
-                2. `required`：是否必须（默认：`false`）
-                3. `default`：基本数据类型的值；对象或数组必须从工厂函数返回默认值（当且仅当没有传入时才使用或调用）
-
-                    `Function`类型的`default`直接就是这个props的默认方法（不是再返回的）：e.g.`func: { type: Function, default(args) { return args }}`，而不是~~default() { return (args) => args }~~。
-
-                    >default是方法的，`this`返回组件实例，但因为执行顺序（beforeCreate -> props -> methods -> data -> computed -> watch -> created），因此此时的this只能拿到props写在当前参数之前的传参、拿不到之后的传参，拿不到methods、data、computed等属性。
-
-                >`required`和`default`二选一。
-
-                4. `validator`：验证方法（对子组件的任何修改包括`v-show`修改以及自身`default`，都会触发所有prop的验证方法）
-
-                    >props会在一个组件实例创建之前进行验证，因此`this`返回`undefined`（获取不到组件实例）。
-
-            - 任何类型都可以设置默认值为`undefined`
-    >- 子级修改props：
-    >
-    >    1. 修改props的值，不会影响父级，因此若父级再次修改props传入或父级重新渲染子级，则子级修改的内容会被覆盖（以父级传入props为准）
-    >
-    >        e.g. `<子组件 :子属性名="父属性名">`，子级内修改`this.子属性名=新值`，能够看到子组件内修改成功，但不会修改到`父属性名`，父级的任何新传入props或父级重新渲染子级，都会重新传递`:子属性名="父属性名"`给子级。
-    >    2. 修改props引用类型的属性，会影响父级，同步修改。
-    >
-    >        e.g. `this.子属性名.x=新值`会同步修改父级的`父属性名.x`。
-2. `propsData`（对象`{键:值}`）：创建实例时传递props。
-
-    >限制：只用于`new`创建的实例中。
-
-    主要作用是方便测试，代替`props`属性。
-3. `data`（对象或方法）：数据
-
-    >限制：组件的`data`是方法且返回一个数据对象。
-
-    以`_`或`$`开头的属性不会被Vue实例代理，但可以使用`vm.$data`访问（e.g. `vm.$data._property`）。
-
-    >Vue内置的属性、API方法会以 `_`或`$` 开头，因此若看到不带这些前缀的Vue实例的属性时，则一般可认为是Vue实例代理的属性（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins/extends`传入的属性）。
-4. `computed`（对象）：依赖其他值（`props`、`data`、`computed`）的改变而执行，最后`return`值
-
-    <details>
-    <summary>默认：<code>get</code>（初始化时会调用一次）；显式设置：<code>set</code>（被赋值时执行）和<code>get</code>。</summary>
-
-    当未设置`set`时，不能主动去设置`computed`的值（~~`this.计算属性 = 值`~~）；设置了`set`也不能改变自己的值（`set`函数里不能再循环设置自己的值）。
-
-    ```js
-    // e.g.
-    const vm = new Vue({
-      data: {
-        firstName: 'firstname',
-        lastName: 'lastname'
-      },
-      computed: {
-        fullName: {
-          // getter
-          get: function () { // 初始化和this.firstName或this.lastName改变时调用；this.fullName被赋值时不会直接调用
-            return this.firstName + ' ' + this.lastName
-          },
-          // setter
-          set: function (newValue) { // this.fullName被赋值时调用
-            const names = newValue.split(' ')
-            this.firstName = names[0]
-            this.lastName = names[names.length - 1]
-            // 这里不允许`this.fullName = 值`会导致死循环
-          }
-        }
-      }
-    })
-
-    // 运行 vm.fullName = 'John Doe' 时，setter 会被调用，vm.firstName 和 vm.lastName 也会相应地被更新
-    ```
-    </details>
-
-    若`return`的内容不涉及Vue实例的响应式内容（非Vue实例的属性、或已经被`Object.freeze`处理而非响应式的Vue实例的属性），则`computed`的内容就不是响应式的（不进行Vue的响应式绑定处理）。
-
-    ><details>
-    ><summary>最佳实践​</summary>
-    >
-    >1. Getter 不应有副作用​
-    >
-    >    计算属性的 getter 应只做计算而没有任何其他的副作用，这一点非常重要，请务必牢记。举例来说，不要改变其他状态、在 getter 中做异步请求或者更改 DOM！一个计算属性的声明中描述的是如何根据其他值派生一个值。因此 getter 的职责应该仅为计算和返回该值。
-    >2. 避免直接修改计算属性值​
-    >
-    >    从计算属性返回的值是派生状态。可以把它看作是一个“临时快照”，每当源状态发生变化时，就会创建一个新的快照。更改快照是没有意义的，因此计算属性的返回值应该被视为只读的，并且永远不应该被更改——应该更新它所依赖的源状态以触发新的计算。
-    ></details>
-
->在（`props`、）`data`、`computed`先定义再使用，而不要对未使用过的变量进行`this.新变量名 = 值`（不先定义就直接使用无法绑定到响应式系统，无法触发视图更新渲染）。
-
-5. `watch`（对象`{键: methods方法名/方法/对象/数组}`）：被watch的值改变而执行函数（观察的值必须是`props`或`data`或`computed`的属性）
-
-    1. 键名可以是`属性1.子属性2`，来观察嵌套的属性值
-    2. 值是对象情况：
-
-        1. `handler`方法
-        2. 可以设置`immediate`参数（侦听开始后立即调用一次）
-        3. 可以设置`deep`参数
-
-            1. `: false`（默认）：仅监听的值变化才调用（引用类型变化需要引用地址变化）
-            2. `: true`：（针对已存在的属性，新增属性不触发）监听的对象的属性修改时调用一次，无论嵌套多深的属性（性能开销大）
-    3. 值是数组情况：逐一调用，e.g. `[方法1, 对象1, ...]`
-
-    >还可以用`vm.$watch`（返回`unwatch`方法，取消观察）来观察属性改变。
-
->执行顺序是：（`props` -> ）`methods` -> `data` -> `computed` -> `watch`。
-
-6. `el`（CSS选择器字符串 或 HTMLElement实例）：挂载目标
-
-    >限制：只用于`new`创建的实例中。
-
-    若在实例化时存在`el`，则实例将立即进入编译过程，否则，需要显式调用`vm.$mount()`手动开启编译。
-
-    >若`render`和`template`都不存在，挂载DOM元素的HTML会被提取出来用作模板，此时，必须使用 Runtime + Compiler 构建的 Vue 库。
-7. `template`（字符串）：组件的字符串模板
-
-    >限制：只在[完整版](https://v2.cn.vuejs.org/v2/guide/installation.html#对不同构建版本的解释)时可用（需要编译器；运行时的runtime版本没有编译器）。
-
-    1. 直接字符串作为模板，e.g. `template: '<div>{{ msg }}</div'`。
-    2. 若字符串包含`#id名`，则去取`<script type="x-template" id="id名">`的innerHTML作为模板。
-8. `render`（`(createElement: () => VNode) => VNode`）：[字符串模板的代替方案，可使用JSX](https://v2.cn.vuejs.org/v2/guide/render-function.html)
-
-    若组件是一个函数组件（`functional: true`），则渲染函数还会接收第二个`context`参数，为没有实例的函数组件提供上下文信息。
-
-    >Vue选项中的`render`函数若存在，则Vue构造函数不会从`template`选项或通过`el`选项指定的挂载元素中提取出的HTML模板编译渲染函数。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```js
-    >render(createElement) {
-    >  return createElement("h1", '标题内容');
-    >},
-    >```
-    ></details>
-
-    - jsx
-
-        1. 注意有些是jsx或其他模板的语法，不是vue的template逻辑。如：[`<组件 {...{props: 对象值, on: 对象值, attrs: 对象值 }}>`](https://v2.cn.vuejs.org/v2/guide/render-function.html#深入数据对象)是jsx语法，不是vue的template语法。
-
-            ><details>
-            ><summary>无论顺序如何，都是<code>{...{}}</code>覆盖同名的属性</summary>
-            >
-            >```jsx
-            ><组件名
-            >  value1={1}
-            >  {...{
-            >    props: {value1: 2, value2: 2}
-            >  }}
-            >  value2={1}
-            >/>
-            >// 传入props：value1:2,value2:2
-            >```
-            ></details>
-
-            >无论顺序如何，vue的template语法中的`v-bind="对象"`都被其他同名的属性覆盖（除了`class`、`style`合并之外）。
-        2. 渲染非字符或非数字类型：
-
-            1. vue的template语法渲染
-
-                看起来都用`JSON.stringify`处理后展示。
-            2. jsx语法渲染
-
-                1. 正常渲染：组件、HTML标签、String类型、Number类型、数组；
-                2. 其他数据类型可能导致报错；
-                3. 渲染空白的返回：`false`、`true`、`null`、`undefined`、Symbol类型、BigInt类型。
-        3. vue的jsx和react的jsx有些区别
-
-            1. vue的模板语法
-
-                ```vue
-                // 父级（父级是vue的模板语法；子级是什么语法不影响）
-                <子级 :props="{a:1,b:2}" :c="3" :on="{d:()=>{}}" on-e="1" onF="2" @g-g="()=>{}"/>
-
-                // 子级
-                获得5个$props属性：`props`、`c`、`on`、`onE`、`onF`（`-`转化为驼峰）；1个$listeners属性：`g-g`（事件名的大小写、`-`不会做任何变化）
-                ```
-            2. vue的jsx语法
-
-                传递给组件的属性若匹配则会先传递给[`createElement`的第二个参数](https://v2.cn.vuejs.org/v2/guide/render-function.html#深入数据对象)（`class`、`style`、`attrs`、`props`、`domProps`、`on`、`nativeOn`、`directives`、`scopedSlots`、`slot`、`key`、`ref`、`refInFor`），剩下未匹配的属性传递给组件的props。
-
-                ```jsx
-                // 父级（父级是vue的jsx语法；子级是什么语法不影响）
-                <子级 props={{a:1,'b-b':2}} c-c={3} on={{'d-d':()=>{}}} on-e={()=>{}} onF-e={()=>{}}/>
-
-                // 子级
-                获得3个$props属性：`a`、`bB`、`cC`（`-`转化为驼峰）；3个$listeners属性：`d-d`、`e`、`f-e`（on-x等价于onX，之后事件名的大小写、`-`不会做任何变化）（不支持`@事件名`语法）
-                ```
-            3. react的jsx语法
-
-                ```jsx
-                <子级 props={{a:1,b:2}} c={3} onA={4} on-b={5}/>
-
-                // 子级
-                获得4个props属性：`props`、`c`、`onA`、`on-b`（属性的大小写、`-`不会做任何变化）（没有`@事件名`语法，html标签支持`on事件名`）
-                ```
-
->模板选择优先级：`render` > `template` > `el`挂载的DOM的HTML。若使用`render`或`template`，则挂载的节点会被完全替换（并非仅替换挂载节点的内部内容，而是直接把挂载节点整个替换），无论是`el`还是`vm.$mount(节点)`。`el`挂载的DOM的HTML 自然就没有替换逻辑。
-
-9. `renderError`（`(createElement: () => VNode, error: Error) => VNode`）：当`render`遭遇错误时，提供另外一种渲染输出
-
-    >限制：只在dev环境下工作。
-
-    `render`错误将会作为第二个参数传递到`renderError`。
-10. `components`（对象）：局部注册组件（仅在此Vue实例中可用）
-
-11. `filters`（对象）：过滤器方法
-
-    方法内部没有代理 ~~`this`~~ 到Vue实例。
-
-    >因为不会被Vue实例代理，所以可以和Vue实例代理的属性同名（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins/extends`传入的属性）。
-12. `mixins`（`[组件选项1, 组件选项2,...]`）：混入
-
-    mixin数组每一项中的属性，都会合并到组件本身的选项（e.g. mixin的`methods`/`data`/`watch`等，合并到组件的`methods`/`data`/`watch`）。
-
-    1. 同名属性的处理
-
-        1. 钩子函数、`watch` 同名的都会调用：外层->里层->实例（同名的多个生命周期钩子**不**会等待Promise完成）。
-        2. 其他属性 同名的由优先级最高的覆盖其他：优先级 实例>里层>外层
-
-            >e.g. `data`、`methods`、`components`、`directives`等，合并为同一个对象；对象内部键名冲突时（如：`methods`都有某同名方法），使用组件对象的内容、丢弃mixin的内容。
-    2. 作用域
-
-        1. 局部：组件局部注册，仅在本组件内起作用，对子组件无效。
-        2. 全局：`Vue.mixin`全局注册，将会影响之后创建的（之前的不受影响）Vue实例，包括第三方模板。
-
->1. `Vue.mixin`/`mixins`、`Vue.extend`/`extends`的合并逻辑、优先级逻辑、调用顺序一致。
->2. 若同时有mixin和extend 或 有互相嵌套的情况，则作为父子嵌套逻辑合并：都会执行的按照顺序 外层->里层->实例 执行；覆盖的按照优先级 实例>里层>外层 仅保留最高优先级的。
-
->Vue的mixin（、extend）有着同React的mixin一样的问题：[`Mixin`已被证伪](https://zh-hans.legacy.reactjs.org/blog/2016/07/13/mixins-considered-harmful.html)（隐式依赖、mixin还可以依赖其他mixin，没有依赖关系图、是扁平化结构，名称冲突，重构/改名 风险很大、mixin一旦编写完成就很难移除或修改，使用相同mixin的组件间互相耦合，随业务增长从而复杂性增加、封装边界逐渐瓦解）。
-
-13. `extends`（组件选项 或 Vue组件或Vue子类）：扩展、继承一个组件
-
-    主要是为了便于扩展单文件组件。
-14. `directives`（对象）：自定义指令
-15. `provide`（对象 或 返回对象的方法）/`inject`（`Array<string> | { [本地绑定名: string]: provide名 | Symbol | {from: provide名, default: 初始值} }`）
-
-    1. 两个需要一起使用，以允许一个祖辈组件向其所有孙辈组件注入一个依赖，不论组件层次有多深，并在其上下游关系成立的时间里始终生效。
-
-        孙辈组件 从组件树中离自身最近（**就近原则**）匹配`provide`中读取到当前的`inject`值。
-    2. `provide`/`inject`绑定并不是可响应的。然而，若传入了一个可监听的对象（如：vue实例的`data`、`computed`等），则其对象的property可响应。
-    3. `provide`若需要提供当前组件中的属性和方法等，则需要使用`返回对象的方法`方式来保证`this`的指向，否则`this`指向`undefined`（普通引用数据类型用哪种方式都正常注入）。
-    4. `inject`的`default`初始值（与`props`的`default`一致）：基本数据类型的值；对象或数组必须从工厂函数返回默认值（当且仅当没有传入时才使用或调用）。
-16. `methods`（对象）：可调用方法
-
-    >1. `new`methods里的方法，方法体内的`this`指向这个实例，而非~~Vue实例~~。建议不要在methods中添加构造函数，而改用`import`方式引入构造函数。
-    >2. template的每次改变，都会导致VNode重新渲染，也会导致methods重新调用（无论methods使用的值是否变化）。
-    >
-    >    若在`template`里调用`methods`中的方法从而绑定了数据（因为template最终是成为render函数，且每一次的数据改变都会导致整个组件的VNode重新渲染（VNode在differ之后的nextTick才会真的在DOM中重新渲染），其他方式的数据都有缓存，而调用`methods`的值没有缓存），则数据由调用`methods`而绑定的值，会随着任意模板数据改变而重新执行求值（无论methods使用的值是否变化）。因此：尽量不要在渲染内容中使用methods，尝试用computed或data数据代替。
-
-><details>
-><summary><code>methods</code>、生命周期钩子都能使用<code>async-await</code></summary>
->
->e.g.
->
->```js
->async mounted () {
->  await this.login()
->
->  console.log('等待上面await的Promise完成或失败后才往下继续执行')
->},
->methods: {
->  login () {
->    return new Promise((resolve, reject) => {
->      shouldLogin(err => {
->        if (err) {
->          reject(err)
->        }
->        resolve()
->      })
->    })
->  },
->
->  async openQuestion () {
->    await this.login()
->
->    console.log('等待上面await的Promise完成或失败后才往下继续执行')
->  }
->}
->```
-></details>
-
-17. 生命周期钩子
-
-    >`async-await`**不**会阻止继续向下执行生命周期，也**不**会阻止mixins/extends的多个同名生命周期执行。e.g. `beforeCreate(); mixins/extends的created(); created()...`
-
-    1. `beforeCreate`
-
-    >实例的（`props`、）`methods`、`data`、`computed`、`watch`等实例内容的创建。
-
-    2. `created`
-
-    >渲染模板。
-
-    3. `beforeMount`
-    4. `mounted`
-
-        >不判断子组件是否挂载完毕（虽然先子组件再父组件的挂载顺序）。若希望整个视图都渲染完毕（包括所有：自己、子级、父级、兄弟、所有），可以用`vm.$nextTick`。
-
-    >页面加载后就要展现的数据，可以在`created`、`beforeMount`、`mounted`请求（`vue-router`、`nuxt`等封装了更方便的钩子，可控制更多执行时机，如：路由切换前后、数据加载完毕前后）。
-
-    5. `beforeUpdate`
-    6. `updated`
-
-        >不判断子组件是否更新完毕（虽然先子组件再父组件的更新顺序）。若希望整个视图都渲染完毕（包括所有：自己、子级、父级、兄弟、所有），可以用`vm.$nextTick`。
-    7. `activated`
-
-        >`<keep-alive/>`组件特有，内部组件激活时在内部组件调用。
-    8. `deactivated`
-
-        >`<keep-alive/>`组件特有，内部组件停用时在内部组件调用。
-    9. `beforeDestroy`
-
-        >可将大部分内存清理工作放在`beforeDestroy`。
-
-    >卸载组件及其孙辈组件。
-
-    10. `destroyed`
-
-        >调用后，Vue实例指示的所有内容都会解绑，所有Vue事件监听器会被移除，所有子实例也会被销毁。
-
-    >`beforeDestroy`、`destroyed`是在组件卸载时触发，不会在页面关闭时触发（同理`deactivated`也不会在页面关闭时触发），需要用`vm.$destroy()`触发实例销毁来触发`beforeDestroy`、`destroyed`（已销毁的实例多次调用`vm.$destroy()`，不会多次执行销毁逻辑与生命周期）。
-    >
-    >e.g. 页面关闭：可以监听window的`beforeunload`或`unload`触发实例销毁；`<iframe>`关闭：可以监听window的`unload`触发实例销毁。
-
-    11. `errorCaptured`
-
-    <details>
-    <summary>生命周期图示</summary>
-
-    ![vue 2生命周期图](./images/vue-lifecycle-vue2.png)
-    </details>
-18. `parent`（Vue实例）：指定父组件
-19. `name`（字符串）
-
-    >限制：只有作为组件选项时起作用。
-
-    允许组件模板递归地调用自身。
-
-    >1. 组件在全局用`Vue.component()`注册时，全局ID自动作为组件的name。
-    >2. 指定 name 选项的另一个好处是便于调试。有名字的组件有更友好的警告信息。另外，当在有 vue-devtools，未命名组件将显示成`<AnonymousComponent>`，这很没有语义。通过提供 name 选项，可以获得更有语义信息的组件树。
-20. `delimiters`（`Array<string>`，默认值：`["{{", "}}"]`）：改变纯文本插入分隔符
-
-    >限制：只在[完整版](https://v2.cn.vuejs.org/v2/guide/installation.html#对不同构建版本的解释)时可用。
-21. `functional`（`boolean`）：函数式组件
-
-    使组件无状态 (没有 `data`) 和无实例 (没有 `this` 上下文)。他们用一个简单的 `render` 函数返回虚拟节点使它们渲染的代价更小。
-22. `model`（`{ prop?: string, event?: string }`）：修改`v-model`默认使用的属性和事件
-
-    默认：组件上的`v-model`会把`value`用作prop、把`input`用作event。
-23. `inheritAttrs`（`boolean`，默认：`true`）
-
-    默认情况下父作用域的`不被认作props`的attribute绑定将会“回退”且作为普通的 HTML attribute 应用在子组件的**根元素**上（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签。永远不会成为向内子级的props声明接受，仅能作为普通的 HTML attribute）。当撰写包裹一个目标元素或另一个组件的组件时，这可能不会总是符合预期行为。通过设置`inheritAttrs: false`，这些默认行为将会被去掉。而通过 $attrs 可以让这些 attribute 生效，且可以通过 v-bind 显性的绑定到非根元素上。
-
-    >inheritAttrs不会影响 class 和 style 绑定逻辑。
-24. `comments`（`boolean`，默认：`false`）
-
-    >限制：只在[完整版](https://v2.cn.vuejs.org/v2/guide/installation.html#对不同构建版本的解释)时可用。
-
-    当设为 true 时，将会保留且渲染模板中的 HTML 注释。默认行为是舍弃它们。
-
-- <details>
-
-    <summary>官方建议的顺序：<a href="https://v2.cn.vuejs.org/v2/style-guide/index.html#组件-实例的选项的顺序推荐">组件/实例的选项的顺序</a></summary>
-
-    1. 副作用（触发组件外的影响）
-
-        - `el`
-    2. 全局感知（要求组件以外的知识）
-
-        - `name`
-        - `parent`
-    3. 组件类型（更改组件的类型）
-
-        - `functional`
-    4. 模板修改器（改变模板的编译方式）
-
-        - `delimiters`
-        - `comments`
-    5. 模板依赖（模板内使用的资源）
-
-        - `components`
-        - `directives`
-        - `filters`
-    6. 组合（向选项里合并属性）
-
-        - `extends`
-        - `mixins`
-    7. 接口（组件的接口）
-
-        - `inheritAttrs`
-        - `model`
-        - `props/propsData`
-    8. 本地状态（本地的响应式属性）
-
-        - `data`
-        - `computed`
-    9. 事件（通过响应式事件触发的回调）
-
-        - `watch`
-        - 生命周期钩子（按照它们被调用的顺序）
-
-            - `beforeCreate`
-            - `created`
-            - `beforeMount`
-            - `mounted`
-            - `beforeUpdate`
-            - `updated`
-            - `activated`
-            - `deactivated`
-            - `beforeDestroy`
-            - `destroyed`
-            - `errorCaptured`
-    10. 非响应式的属性（不依赖响应系统的实例属性）
-
-        - `methods`
-    11. 渲染（组件输出的声明式描述）
-
-        - `template/render`
-        - `renderError`
     </details>
 
 ### 组件
@@ -1574,7 +2086,7 @@
 
             1. 父 -> 子：通过`props`向下传递初始化数据给子组件实例（不出现在DOM中）
 
-                >（当`inheritAttrs`默认`true`时，）若添加在子组件的props但不在子组件`props`的声明，则仅添加到子组件的根元素（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签。永远不会成为向内子级的props声明接受，仅能作为普通的 HTML attribute）。其中`class`和`style`属性会合并，其他属性会覆盖。`inheritAttrs`不影响`style`和`class`的绑定（style、class绑定逻辑固定不变）。
+                >（当`inheritAttrs`默认`true`时，）若添加在子组件的props但不在子组件`props`的声明，则仅添加到子组件的根元素（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签。永远不会被子组件的props声明接受，仅能作为普通的 HTML attribute）。其中`class`和`style`属性会合并，其他属性会覆盖。`inheritAttrs`不影响`style`和`class`的绑定（style、class绑定逻辑固定不变）。
 
                 1. `props`是单向传递的：当父级的属性变化时，将传导给子组件，不会反过来
 
@@ -1879,13 +2391,13 @@
 
             >`$listeners`
 
-        >注意`vm.$attrs/$listeners`对象的属性名和传参名完全一致，不会进行大小写或驼峰法的变化。e.g. 若父级传递`asd`、`aSd`、`a-sd`，则子级收到3个不同属性名。
+        >注意`vm.$attrs/$listeners`对象的属性名和传参名完全一致，属性名、事件名的大小写、`-`不会做任何变化。e.g. 若父级传递`asd`、`aSd`、`a-sd`，则子级收到3个不同属性名。
 
         >一般情况下`vm.$attrs/$listeners`不是响应式对象，但会在某些情况变成响应式对象，并且会出现项的值不变但触发更新（影响computed、watch等）。
 
         3. `slots`：允许外部环境将额外的内容组合在组件中。
 
-            >`$scopedSlots`（`$slots`不包含父级使用了 作用域插槽 的那个slot）
+            >`<slot>`、`$scopedSlots`、`$slots`
         - *ref直接引用*
 5. 内置组件
 
@@ -1950,7 +2462,7 @@
         >    配合inheritAttrs：false。根元素传递class和style。
         >2. vm.$listeners：包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器
         >
-        >注意`vm.$attrs/$listeners`对象的属性名和传参名完全一致，不会进行大小写或驼峰法的变化。e.g. 若父级传递`asd`、`aSd`、`a-sd`，则子级收到3个不同属性名。
+        >注意`vm.$attrs/$listeners`对象的属性名和传参名完全一致，属性名、事件名的大小写、`-`不会做任何变化。e.g. 若父级传递`asd`、`aSd`、`a-sd`，则子级收到3个不同属性名。
         >
         >3. vm.$scopedSlots：包含了父作用域中加入的所有插槽的函数
 
@@ -2021,7 +2533,9 @@
 <style src="./my-component.css"></style>
 ```
 
-1. （有导出的）组件内部可以直接引用自身组件（小心无止境的循环引用）
+1. （有导出的）组件内部可以直接引用自身组件（小心无止境的循环引用），Vue 2、Vue 3都可以
+
+    >e.g. Vue 3：<https://cn.vuejs.org/examples/#tree>
 2. 大部分都用局部注册。除非是大范围的统一功能，才用全局方式，才用插件方式。
 3. 样式引入
 
@@ -2035,7 +2549,7 @@
         ><details>
         ><summary>在多个组件多次引入同一个CSS文件（允许同时使用JS和CSS多种方式混合引入），认为是同一个样式，最终只会引入同一个CSS文件一次（打包）。</summary>
         >
-        >e.g. `<script>import '@/assets/文件名.css'</script>` 等于 `<style src="@/assets/文件名.css"/>` 等于 `<style>@import "@/assets/文件名.css"</style>`（加不加`url()`都一样） ~~不等于 `<style>@import "@/assets/文件名.css"; 其他内容</style>`~~
+        >e.g. `<script>import '@/assets/文件名.css'</script>` 等价于 `<style src="@/assets/文件名.css"/>` 等价于 `<style>@import "@/assets/文件名.css"</style>`（加不加`url()`都一样） ~~不等价于 `<style>@import "@/assets/文件名.css"; 其他内容</style>`~~
         ></details>
 
         2. 在任意地方引入没有 ~~`scoped`~~ 的`<style>样式内容</style>`（包含`<style>@import "../assets/文件名.css";</style>`，加不加`url()`都一样）
@@ -2057,25 +2571,187 @@
 
                 `<style scoped>样式内容</style>`
 
-            - 使用`scoped`的**单文件组件**内所有Element（包括 该组件 + **其引用的第一层子组件**），都会添加自定义`attributes`（如：`data-v-2185bf6b`）；非Vue内部生成的节点（手动添加）不会添加自定义`attributes`。
+            - 使用`scoped`的**单文件组件**内所有Element（包括：该组件直接写的所有DOM（包括slot） + **其引用的第一层子组件（子组件必须是`template`渲染才会有，如：element-ui；若是 ~~render函数~~ 生成的则没有，如：element-plus）**），都会添加自定义`attributes`（如：`data-v-2185bf6b`）；非Vue生成的节点（手动添加、第三方插件生成）不会添加自定义`attributes`。
 
-                若已添加`scoped`的子组件也添加`scoped`，则再增加一份子组件的自定义`attributes`。
+                >因为`scoped`会在该组件直接写的所有DOM（包括slot）都添加自定义`attributes`，所以deep的作用就只是针对子组件（或其他非当前组件直接书写的DOM），而不是针对 slot等书写在该组件上的任何DOM。
 
-                >深度作用选择器：若希望`scoped`样式中的一个选择器能够作用得「更深」（如：影响子组件），则可使用`>>>`或`/deep/`或`::v-deep`操作符。
+                - 若已添加`scoped`的父组件，它的子组件（假设是`template`渲染）也添加`scoped`，则：父组件写的所有DOM（包括slot）有父组件的自定义`attributes`；子组件的根节点有 父组件+子组件 的2份自定义`attributes`（如：`<div data-v-2185bf6b data-v-7a7a37b1>`）；Vue 3的Fragments没有根节点（多个最外层片段不是根节点），不会有父组件的自定义`attributes`；子组件除了根节点之外的其他DOM有子组件的自定义`attributes`；子组件的插槽，若被父组件匹配则仅有父组件的自定义`attributes`，否则仅有子组件的自定义`attributes`。
+
+            - 深度作用选择器：若希望`scoped`样式中的一个选择器能够作用得「更深」（如：影响子组件），则可使用`>>>`、`/deep/`、`::v-deep`（Vue 2） 或 `:deep()`（Vue 3）操作符
+
+                总结：编译结果：若增加deep，则自定义`attributes`添加在deep之前。否则添加在最后一个选择器。忽略伪元素、伪类。但Vue 2和Vue 3有区别。
+
+                >因此`:depp(不能填写组件根节点、可以填写引用的子节点甚至不出现在当前组件中的选择器)`）
+
+                ><details>
+                ><summary>Vue 2的 scoped、深度作用选择器 解析结果</summary>
                 >
-                >e.g.
                 >```vue
                 ><style scoped>
-                >  .a .b >>> .c { /* 等价于：`.a .b /deep/ .c`或`.a .b ::v-deep .c` */ }
-                >  .d > .e .f {}
+                >.a0 .b0 {
+                >  p{}
+                >}
+                >/*
+                >.a0 .b0[data-v-d4948df9]  {
+                >  p[data-v-d4948df9]{}
+                >}
+                >*/
                 >
-                >  // 编译为：（若增加deep，则自定义`attributes`添加在deep前。否则添加在最后）
-                >  .a .b[data-v-039c5b43] .c {}
-                >  .d > .e .f[data-v-039c5b43] {}
+                >/* >>>、/deep/、::v-deep、::v-deep() 解析结果完全一致 */
                 >
-                >  // todo：对于CSS预处理器（如：scss、less等），`{}`嵌套规则下的deep逻辑尚未研究
+                >.a1 >>> {
+                >  p{}
+                >}
+                >/*
+                >.a1[data-v-d4948df9]  {
+                >  p[data-v-d4948df9]{}
+                >}
+                >*/
+                >.a1 >>> .b1 {
+                >  p{}
+                >}
+                >/*
+                >.a1[data-v-d4948df9] .b1 {
+                >  p[data-v-d4948df9]{}
+                >}
+                >*/
+                >>>> .b1 {
+                >  p{}
+                >}
+                >/*
+                >[data-v-d4948df9] .b1 {
+                >  p[data-v-d4948df9]{}
+                >}
+                >*/
+                >>>> {
+                >  p{}
+                >}
+                >/*
+                >[data-v-d4948df9] {
+                >  p[data-v-d4948df9]{}
+                >}
+                >*/
+                >.a2 /deep/ {
+                >  p{}
+                >}
+                >.a2 /deep/ .b2 {
+                >  p{}
+                >}
+                >/deep/ .b2 {
+                >  p{}
+                >}
+                >/deep/ {
+                >  p{}
+                >}
+                >.a3 ::v-deep {
+                >  p{}
+                >}
+                >.a3 ::v-deep .b3 {
+                >  p{}
+                >}
+                >::v-deep .b3 {
+                >  p{}
+                >}
+                >/*
+                >::v-deep { 不支持这样写
+                >  p{}
+                >}
+                >*/
+                >.a4 ::v-deep() {
+                >  p{}
+                >}
+                >.a4 ::v-deep() .b4 {
+                >  p{}
+                >}
+                >.a4 ::v-deep(.b4) .c4 {
+                >  p{}
+                >}
+                >::v-deep() {
+                >  p{}
+                >}
+                >::v-deep() .b4 {
+                >  p{}
+                >}
+                >::v-deep(.b4) .c4 {
+                >  p{}
+                >}
                 ></style>
                 >```
+                ></details>
+
+                ><details>
+                ><summary>Vue 3的 scoped、深度作用选择器 解析结果</summary>
+                >
+                >```vue
+                ><style scoped>
+                >.a0 .b0 {
+                >  p{}
+                >}
+                >/*
+                >.a0 .b0 {
+                >  p[data-v-d4948df9] {}
+                >}
+                >*/
+                >/* Vue 3 的 >>>、/deep/、::v-deep、::v-deep() 解析结果不一致，已废弃，不要用 */
+                >.a5 :deep() {
+                >  p{}
+                >}
+                >/*
+                >.a5[data-v-d4948df9]  {
+                >  p{}
+                >}
+                >*/
+                >.a5 :deep() .b5 {
+                >  p{}
+                >}
+                >/*
+                >.a5[data-v-d4948df9] .b5 {
+                >  p{}
+                >}
+                >*/
+                >.a5 :deep(.b5) .c5 {
+                >  p{}
+                >}
+                >/*
+                >.a5[data-v-d4948df9] .b5 .c5 {
+                >  p{}
+                >}
+                >*/
+                >:deep() .b5 {
+                >  p{}
+                >}
+                >/*
+                >[data-v-d4948df9] .b5 {
+                >  p{}
+                >}
+                >*/
+                >:deep() {
+                >  p{}
+                >}
+                >/*
+                >[data-v-d4948df9] {
+                >  p{}
+                >}
+                >*/
+                >:deep(.b5) .c5 {
+                >  p{}
+                >}
+                >/*
+                >[data-v-d4948df9] .b5 .c5 {
+                >  p{}
+                >}
+                >*/
+                >:deep(.b5) {
+                >  p{}
+                >}
+                >/*
+                >[data-v-d4948df9] .b5 {
+                >  p{}
+                >}
+                >*/
+                ></style>
+                >```
+                ></details>
         2. `module`（[vue-loader的CSS Modules](https://vue-loader.vuejs.org/zh/guide/css-modules.html)）
 
             在`<style>`添加`module`，即在Vue实例内加入`$style`对象，访问单文件组件内`<style module>`的选择器。
@@ -2152,7 +2828,9 @@
 
         和父组件紧密耦合的子组件应该以父组件名作为前缀命名。
 
-### 过渡/动画
+<details>
+<summary><h3>过渡/动画</h3></summary>
+
 >此处描述的「帧」是`requestAnimationFrame`（在浏览器下一次重绘之前执行），而不是~~Vue的`nextTick`~~（在Vue控制的DOM下次更新循环结束之后执行）。
 
 - 插入、更新、移除DOM时，提供过渡/动画的操作
@@ -2298,6 +2976,8 @@
 
 >自制可复用的过渡组件：把`<transition/>`或`<transition-group/>`作为根组件。
 
+</details>
+
 ### 插件（plugin）
 `Vue.use(对象 或 方法[, 参数])`
 
@@ -2375,6 +3055,484 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         }
         ```
         </details>
+
+### 组件选项
+包含：`new Vue(组件选项)`、`Vue.component(名, 组件选项)`、`Vue.extend(组件选项)`/`extends(组件选项)`、`Vue.mixin(组件选项)`/`mixins([组件选项1, 组件选项2, ])`。
+
+1. `props`（数组或对象）：接受父级传递内容
+
+    1. 数组：接受的DOM属性名
+    2. 对象：`{ 接受的DOM属性名: 验证方式, }`
+
+        - 验证方式：
+
+            1. 原生构造器（`String`、`Number`、`Boolean`、`Function`、`Object`、`Array`、`Symbol`、`Date`，Vue 3多一个`Error`）或 `自定义构造函数`（通过`instanceof`检查确认）或 `null/undefined`（允许任何类型）
+            2. 上面类型组成的数组
+            3. 对象
+
+                1. `type`：原生构造器、或`自定义构造函数`、或原生构造器和`自定义构造函数`的数组、或`null`
+                2. `required`：是否必须（默认：`false`）
+                3. `default`：基本数据类型的值；对象或数组必须从工厂函数返回默认值（当且仅当没有传入时才使用或调用）
+
+                    `Function`类型的`default`直接就是这个props的默认方法（不是再返回的）：e.g.`func: { type: Function, default(args) { return args }}`，而不是~~default() { return (args) => args }~~。
+
+                    >default是方法的，`this`返回组件实例，但因为执行顺序（beforeCreate -> props -> methods -> data -> computed -> watch -> created），因此此时的this只能拿到props写在当前参数之前的传参、拿不到之后的传参，拿不到methods、data、computed等属性。
+
+                >若 未传递prop && 未设置`default`，则`Boolean`类型默认值是`false`，其他类型（基本数据类型+引用数据类型）默认值是`undefined`。
+
+                >`required`和`default`二选一。
+
+                4. `validator`：验证方法（对子组件的任何修改包括`v-show`修改以及自身`default`，都会触发所有prop的验证方法）
+
+                    >props会在一个组件实例创建之前进行验证，因此`this`返回`undefined`（获取不到组件实例）。
+
+            - 任何类型都可以设置默认值为`undefined`
+    >- 子级修改props：
+    >
+    >    1. 修改props的值，不会影响父级，因此若父级再次修改props传入或父级重新渲染子级，则子级修改的内容会被覆盖（以父级传入props为准）
+    >
+    >        e.g. `<子组件 :子属性名="父属性名">`，子级内修改`this.子属性名=新值`，能够看到子组件内修改成功，但不会修改到`父属性名`，父级的任何新传入props或父级重新渲染子级，都会重新传递`:子属性名="父属性名"`给子级。
+    >    2. 修改props引用数据类型的属性，会影响父级，同步修改。
+    >
+    >        e.g. `this.子属性名.x=新值`会同步修改父级的`父属性名.x`。
+2. `propsData`（对象`{键:值}`）：创建实例时传递props。
+
+    >限制：只用于`new`创建的实例中。
+
+    主要作用是方便测试，替代`props`属性。
+3. `data`（对象或方法）：数据
+
+    >限制：组件的`data`是方法且返回一个数据对象。
+
+    以`_`或`$`开头的属性不会被Vue实例代理，但可以使用`vm.$data`访问（e.g. `vm.$data._property`）。
+
+    >Vue内置的属性、API方法会以 `_`或`$` 开头，因此若看到不带这些前缀的Vue实例的属性时，则一般可认为是Vue实例代理的属性（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins/extends`传入的属性）。
+4. `computed`（对象）：依赖其他值（`props`、`data`、`computed`）的改变而执行，最后`return`值
+
+    >不支持~~副作用（改变其他值、异步操作、更改DOM、触发事件、路由跳转、日志记录、持久化写入）~~
+
+    <details>
+    <summary>默认：<code>get</code>（初始化时会调用一次）；显式设置：<code>set</code>（被赋值时执行）和<code>get</code>。</summary>
+
+    当未设置`set`时，不能主动去设置`computed`的值（~~`this.计算属性 = 值`~~）；设置了`set`也不能改变自己的值（`set`函数里不能再循环设置自己的值）。
+
+    >`get`（默认或显式设置get）不支持 ~~`async-await`~~。
+
+    ```js
+    // e.g.
+    const vm = new Vue({
+      data: {
+        firstName: 'firstname',
+        lastName: 'lastname'
+      },
+      computed: {
+        fullName: {
+          // getter
+          get: function () { // 初始化和this.firstName或this.lastName改变时调用；this.fullName被赋值时不会直接调用
+            return this.firstName + ' ' + this.lastName
+          },
+          // setter
+          set: function (newValue) { // this.fullName被赋值时调用
+            const names = newValue.split(' ')
+            this.firstName = names[0]
+            this.lastName = names[names.length - 1]
+            // 这里不允许`this.fullName = 值`会导致死循环
+          }
+        }
+      }
+    })
+
+    // 运行 vm.fullName = 'John Doe' 时，setter 会被调用，vm.firstName 和 vm.lastName 也会相应地被更新
+    ```
+    </details>
+
+    若`return`的内容不涉及Vue实例的响应式内容（非Vue实例的属性、或已经被`Object.freeze`处理而非响应式的Vue实例的属性），则`computed`的内容就不是响应式的（不进行Vue的响应式绑定处理）。
+
+    ><details>
+    ><summary>最佳实践​</summary>
+    >
+    >1. Getter 不应有副作用​
+    >
+    >    计算属性的 getter 应只做计算而没有任何其他的副作用，这一点非常重要，请务必牢记。举例来说，**不要改变其他值，不要在 getter 中做异步操作或更改DOM，注意数组的mutator方法会改变原数组，尤其是`reverse`、`sort`（用浅复制替代：`[...this.数组].reverse/sort()`）**。一个计算属性的声明中描述的是如何根据其他值派生一个值。因此 getter 的职责应该仅为计算和返回该值。
+    >2. 避免直接修改计算属性值​
+    >
+    >    从计算属性返回的值是派生状态。可以把它看作是一个“临时快照”，每当源状态发生变化时，就会创建一个新的快照。更改快照是没有意义的，因此计算属性的返回值应该被视为只读的，并且永远不应该被更改——应该更新它所依赖的源状态以触发新的计算。
+    ></details>
+
+>在（`props`、）`data`、`computed`先定义再使用，而不要对未使用过的变量进行`this.新变量名 = 值`（不先定义就直接使用无法绑定到响应式系统，无法触发视图更新渲染）。
+
+5. `watch`（对象`{键: methods方法名/方法/对象/数组}`）：被watch的值改变而执行函数（观察的值必须是`props`或`data`或`computed`的属性）
+
+    >支持副作用（改变其他值、异步操作、更改DOM、触发事件、路由跳转、日志记录、持久化写入）
+
+    1. 键名可以是`属性1.子属性2`，来观察嵌套的属性值
+    2. 值是对象情况：
+
+        1. `handler`方法（支持`async-await`）
+        2. 可以设置`immediate`参数（侦听开始后立即调用一次）
+        3. 可以设置`deep`参数
+
+            1. `: false`（默认）：仅监听的值变化才调用（引用数据类型变化需要引用地址变化）
+            2. `: true`：（针对已存在的属性，新增属性不触发）监听的对象的属性修改时调用一次，无论嵌套多深的属性（性能开销大）
+    3. 值是数组情况：逐一调用，e.g. `[方法1, 对象1, ...]`
+
+    >还可以用`vm.$watch`（返回`unwatch`方法，取消观察）来观察属性改变。
+
+>执行顺序是：（`props` -> ）`methods` -> `data` -> `computed` -> `watch`。
+
+6. `el`（CSS选择器字符串 或 HTMLElement实例）：挂载目标
+
+    >限制：只用于`new`创建的实例中。
+
+    若在实例化时存在`el`，则实例将立即进入编译过程，否则，需要显式调用`vm.$mount()`手动开启编译。
+
+    >若`render`和`template`都不存在，挂载DOM元素的HTML会被提取出来用作模板，此时，必须使用 Runtime + Compiler 构建的 Vue 库。
+7. `template`（字符串）：组件的字符串模板
+
+    >限制：只在[完整版](https://v2.cn.vuejs.org/v2/guide/installation.html#对不同构建版本的解释)时可用（需要编译器；运行时的runtime版本没有编译器）。
+
+    1. 直接字符串作为模板，e.g. `template: '<div>{{ msg }}</div'`。
+    2. 若字符串包含`#id名`，则去取`<script type="x-template" id="id名">`的innerHTML作为模板。
+8. `render`（`(createElement: () => VNode) => VNode`）：[字符串模板的替代方案，可使用JSX](https://v2.cn.vuejs.org/v2/guide/render-function.html)
+
+    若组件是一个函数组件（`functional: true`），则渲染函数还会接收第二个`context`参数，为没有实例的函数组件提供上下文信息。
+
+    >Vue选项中的`render`函数若存在，则Vue构造函数不会从`template`选项或通过`el`选项指定的挂载元素中提取出的HTML模板编译渲染函数。
+
+    ><details>
+    ><summary>e.g.</summary>
+    >
+    >```js
+    >render(createElement) {
+    >  return createElement("h1", '标题内容');
+    >},
+    >```
+    ></details>
+
+    - [jsx](https://github.com/vuejs/jsx-vue2)
+
+        1. vue的jsx和react的jsx有些区别
+
+            1. vue的模板语法
+
+                ```vue
+                // 父级（父级是vue的模板语法；子级是什么语法不影响）
+                <子级 :props="{a:1,b:2}" :c="3" :on="{d:()=>{}}" on-e="1" onF="2" @g-g="()=>{}"/>
+
+                // 子级
+                获得5个$props属性：`props`、`c`、`on`、`onE`、`onF`（`-`转化为驼峰）；1个$listeners属性：`g-g`（事件名的大小写、`-`不会做任何变化）
+                ```
+            2. vue的jsx语法
+
+                ①**先传递给[`createElement`的第二个参数](https://v2.cn.vuejs.org/v2/guide/render-function.html#深入数据对象)（`class`、`style`、`attrs`、`props`、`domProps`、`on`（`on-名`和`on`）、`nativeOn`、`directives`、`scopedSlots`、`slot`、`key`、`ref`、`refInFor`）**，②剩下未匹配的属性，若是`props`**定义了但未接收到的属性**，则再传递给`props`，③最后未匹配的剩余属性再传递给组件的`attrs`。
+
+                ```jsx
+                // 父级（父级是vue的jsx语法；子级是什么语法不影响）
+                <子级 props={{a:1,'b-b':2}} c-c={3} on={{'d-d':()=>{}}} on-e={()=>{}} onF-e={()=>{}}/>
+
+                // 子级
+                获得3个$props属性：`a`、`bB`、`cC`（`-`转化为驼峰）；3个$listeners属性：`d-d`、`e`、`f-e`（on-x等价于onX，之后事件名的大小写、`-`不会做任何变化）（不支持`@事件名`语法）
+                ```
+            3. react的jsx语法
+
+                ```jsx
+                <子级 props={{a:1,b:2}} c={3} onA={4} on-b={5}/>
+
+                // 子级
+                获得4个props属性：`props`、`c`、`onA`、`on-b`（属性的大小写、`-`不会做任何变化）（没有`@事件名`语法，html标签支持`on事件名`）
+                ```
+        2. 注意有些是jsx或其他模板的语法，不是vue的template逻辑。如：`<组件 {...{props: 对象值, on: 对象值, attrs: 对象值 }}>`是jsx语法，不是vue的template语法。
+
+            - 同名属性合并覆盖逻辑：多个`{...{ attrs或props或其他: { 属性: 值 } }}`、`attrs或props或其他={{ 属性: 值 }}`、`某attr或某prop={值}`，会合并 且 同名属性后面覆盖前面。（`attrs`全部搜集之后也按照逻辑：会合并 且 同名属性后面覆盖前面）
+
+                >（不同于vue的jsx逻辑，）vue的template语法中，无论顺序如何，`v-bind="对象"`都被其他同名的属性覆盖（除了`class`、`style`合并之外）。
+            - `{...对象}`的语法主要用于传递的对象可以包含多个[`createElement`的第二个参数](https://v2.cn.vuejs.org/v2/guide/render-function.html#深入数据对象)的属性，e.g. `{...{ props: 对象1, attrs: 对象2, on: 对象3, 其他: 对象4 }}`等价于`props={对象1} attrs={对象2} on={对象3} 其他={对象4}`
+        3. 渲染非字符或非数字类型：
+
+            1. vue的template语法渲染
+
+                看起来都用`JSON.stringify`处理后展示。
+            2. jsx语法渲染
+
+                1. 正常渲染：组件、HTML标签、String类型、Number类型、数组；
+                2. 其他数据类型可能导致报错；
+                3. 渲染空白的返回：`false`、`true`、`null`、`undefined`、Symbol类型、BigInt类型。
+
+>模板选择优先级：`render` > `template` > `el`挂载的DOM的HTML。若使用`render`或`template`，则挂载的节点会被完全替换（并非仅替换挂载节点的内部内容，而是直接把挂载节点整个替换），无论是`el`还是`vm.$mount(节点)`。`el`挂载的DOM的HTML 自然就没有替换逻辑。
+
+9. `renderError`（`(createElement: () => VNode, error: Error) => VNode`）：当`render`遭遇错误时，提供另外一种渲染输出
+
+    >限制：只在dev环境下工作。
+
+    `render`错误将会作为第二个参数传递到`renderError`。
+10. `components`（对象）：局部注册组件（仅在此Vue实例中可用）
+
+11. `filters`（对象）：过滤器方法
+
+    方法内部没有代理 ~~`this`~~ 到Vue实例。
+
+    >因为不会被Vue实例代理，所以可以和Vue实例代理的属性同名（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins/extends`传入的属性）。
+12. `mixins`（`[组件选项1, 组件选项2,...]`）：混入
+
+    mixin数组每一项中的属性，都会合并到组件本身的选项（e.g. mixin的`methods`/`data`/`watch`等，合并到组件的`methods`/`data`/`watch`）。
+
+    1. 同名属性的处理
+
+        1. 钩子函数、`watch` 同名的都会调用：外层->里层->实例（同名的多个生命周期钩子**不**会等待Promise完成）。
+        2. 其他属性 同名的由优先级最高的覆盖其他：优先级 实例>里层>外层
+
+            >e.g. `data`、`methods`、`components`、`directives`等，合并为同一个对象；对象内部键名冲突时（如：`methods`都有某同名方法），使用组件对象的内容、丢弃mixin的内容。
+    2. 作用域
+
+        1. 局部：组件局部注册，仅在本组件内起作用，对子组件无效。
+        2. 全局：`Vue.mixin`全局注册，将会影响之后创建的（之前的不受影响）Vue实例，包括第三方模板。
+
+>1. `Vue.mixin`/`mixins`、`Vue.extend`/`extends`的合并逻辑、优先级逻辑、调用顺序一致。
+>2. 若同时有mixin和extend 或 有互相嵌套的情况，则作为父子嵌套逻辑合并：都会执行的按照顺序 外层->里层->实例 执行；覆盖的按照优先级 实例>里层>外层 仅保留最高优先级的。
+
+>Vue的mixin（、extend）有着同React的mixin一样的问题：[不推荐在Vue 3中继续使用mixin](https://cn.vuejs.org/guide/reusability/composables.html#vs-mixins)（隐式依赖、mixin还可以依赖其他mixin，没有依赖关系图、是扁平化结构，名称冲突，重构/改名 风险很大、mixin一旦编写完成就很难移除或修改，使用相同mixin的组件间互相耦合，随业务增长从而复杂性增加、封装边界逐渐瓦解）。
+
+13. `extends`（组件选项 或 Vue组件或Vue子类）：扩展、继承一个组件
+
+    主要是为了便于扩展单文件组件。
+14. `directives`（对象）：自定义指令
+15. `provide`（对象 或 返回对象的方法）/`inject`（`Array<string> | { [本地绑定名: string]: provide名 | Symbol | {from: provide名, default: 初始值} }`）
+
+    1. 两个需要一起使用，以允许一个祖辈组件向其所有孙辈组件注入一个依赖，不论组件层次有多深，并在其上下游关系成立的时间里始终生效。
+
+        1. 祖辈组件：`provide`写入
+        2. 孙辈组件：从组件树中离自身最近（**就近原则**）匹配`provide`中读取到当前的`inject`值。
+    2. `provide`/`inject`绑定并不是可响应的。然而，若传入了一个可监听的对象，则其对象的property可响应：
+
+        1. 传递响应式对象
+
+            1. state的响应式对象（必须是引用数据类型；基本数据类型无法响应式更新）
+
+                >传递`computed`的响应式对象无法~~响应式更新~~。
+
+                ```js
+                export default {
+                  data() {
+                    return {
+                      info: { count: 0 }
+                    };
+                  },
+                  provide() {
+                    return {
+                      info: this.info // 不能是：this.info.count。若是computed的值则无法传递响应式
+                    };
+                  }
+                };
+                ```
+            2. `Vue.observable`创建
+
+                ```js
+                const state = Vue.observable({ count: 0 });
+
+                export default {
+                  provide() {
+                    return {
+                      state
+                    };
+                  },
+                };
+                ```
+        2. 传递方法，方法返回的值是响应式
+
+            ```js
+            export default {
+              data() {
+                return {
+                  message: 'Hello from parent'
+                }
+              },
+              provide() {
+                return {
+                  reactiveMessage: () => this.message // 使用函数返回响应式数据，getter
+                }
+              }
+            }
+            ```
+    3. `provide`若需要提供当前组件中的属性和方法等，则需要使用`返回对象的方法`方式来保证`this`的指向，否则`this`指向`undefined`（普通引用数据类型用哪种方式都正常注入）。
+    4. `inject`的`default`初始值（与`props`的`default`一致）：基本数据类型的值；对象或数组必须从工厂函数返回默认值（当且仅当没有传入时才使用或调用）。
+16. `methods`（对象）：可调用方法
+
+    >1. `new`methods里的方法，方法体内的`this`指向这个实例，而非~~Vue实例~~。建议不要在methods中添加构造函数，而改用`import`方式引入构造函数。
+    >2. template的每次改变，都会导致VNode重新渲染，也会导致methods重新调用（无论methods使用的值是否变化）。
+    >
+    >    若在`template`里调用`methods`中的方法从而绑定了数据（因为template最终是成为render函数，且每一次的数据改变都会导致整个组件的VNode重新渲染（VNode在differ之后的nextTick才会真的在DOM中重新渲染），其他方式的数据都有缓存，而调用`methods`的值没有缓存），则数据由调用`methods`而绑定的值，会随着任意模板数据改变而重新执行求值（无论methods使用的值是否变化）。因此：尽量不要在渲染内容中使用methods，尝试用computed或data数据替代。
+
+><details>
+><summary><code>methods</code>、生命周期钩子都能使用<code>async-await</code></summary>
+>
+>e.g.
+>
+>```js
+>async mounted () {
+>  await this.login()
+>
+>  console.log('等待上面await的Promise完成或失败后才往下继续执行')
+>},
+>methods: {
+>  login () {
+>    return new Promise((resolve, reject) => {
+>      shouldLogin(err => {
+>        if (err) {
+>          reject(err)
+>        }
+>        resolve()
+>      })
+>    })
+>  },
+>
+>  async openQuestion () {
+>    await this.login()
+>
+>    console.log('等待上面await的Promise完成或失败后才往下继续执行')
+>  }
+>}
+>```
+></details>
+
+17. 生命周期钩子
+
+    >`async-await`**不**会阻止继续向下执行生命周期，也**不**会阻止mixins/extends的多个同名生命周期执行。e.g. `beforeCreate(); mixins/extends的created(); created()...`
+
+    1. `beforeCreate`
+
+    >实例的（`props`、）`methods`、`data`、`computed`、`watch`等实例内容的创建。
+
+    2. `created`
+
+    >渲染模板。
+
+    3. `beforeMount`
+    4. `mounted`
+
+        >`mounted`不判断子组件是否挂载完毕（虽然先子组件再父组件的挂载顺序）。若希望整个视图都渲染完毕（包括所有：自己、子级、父级、兄弟、所有），可以用`vm.$nextTick`。
+
+    >页面加载后就要展现的数据，可以在`created`、`beforeMount`、`mounted`请求（`vue-router`、`nuxt`等封装了更方便的钩子，可控制更多执行时机，如：路由切换前后、数据加载完毕前后）。
+
+    5. `beforeUpdate`
+    6. `updated`
+
+        >不判断子组件是否更新完毕（虽然先子组件再父组件的更新顺序）。若希望整个视图都渲染完毕（包括所有：自己、子级、父级、兄弟、所有），可以用`vm.$nextTick`。
+    7. `activated`
+
+        >`<keep-alive/>`组件特有，内部组件激活时在内部组件调用。
+    8. `deactivated`
+
+        >`<keep-alive/>`组件特有，内部组件停用时在内部组件调用。
+    9. `beforeDestroy`
+
+        >可将大部分内存清理工作放在`beforeDestroy`。
+
+    >卸载组件及其孙辈组件。
+
+    10. `destroyed`
+
+        >调用后，Vue实例指示的所有内容都会解绑，所有Vue事件监听器会被移除，**所有子实例也会被销毁**。
+
+    >`beforeDestroy`、`destroyed`是在组件卸载时触发，不会在页面关闭时触发（同理`deactivated`也不会在页面关闭时触发），需要用`vm.$destroy()`触发实例销毁来触发`beforeDestroy`、`destroyed`（已销毁的实例多次调用`vm.$destroy()`，不会多次执行销毁逻辑与生命周期）。
+    >
+    >e.g. 页面关闭：可以监听window的`beforeunload`或`unload`触发实例销毁；`<iframe>`关闭：可以监听window的`unload`触发实例销毁。
+
+    11. `errorCaptured`
+
+    <details>
+    <summary>生命周期图示</summary>
+
+    ![vue 2生命周期图](./images/vue-lifecycle-vue2.png)
+    </details>
+18. `parent`（Vue实例）：指定父组件
+19. `name`（字符串）
+
+    >限制：只有作为组件选项时起作用。
+
+    允许组件模板递归地调用自身。
+
+    >1. 组件在全局用`Vue.component()`注册时，全局ID自动作为组件的name。
+    >2. 指定 name 选项的另一个好处是便于调试。有名字的组件有更友好的警告信息。另外，当在有 vue-devtools，未命名组件将显示成`<AnonymousComponent>`，这很没有语义。通过提供 name 选项，可以获得更有语义信息的组件树。
+20. `delimiters`（`Array<string>`，默认值：`["{{", "}}"]`）：改变纯文本插入分隔符
+
+    >限制：只在[完整版](https://v2.cn.vuejs.org/v2/guide/installation.html#对不同构建版本的解释)时可用。
+21. `functional`（`boolean`）：函数式组件
+
+    使组件无状态 (没有 `data`) 和无实例 (没有 `this` 上下文)。他们用一个简单的 `render` 函数返回虚拟节点使它们渲染的代价更小。
+22. `model`（`{ prop?: string, event?: string }`）：修改`v-model`默认使用的属性和事件
+
+    默认：组件上的`v-model`会把`value`用作prop、把`input`用作event。
+23. `inheritAttrs`（`boolean`，默认：`true`）
+
+    默认情况下父作用域的`不被认作props`的attribute绑定将会"回退"且作为普通的 HTML attribute 应用在子组件的**根元素**上（若根元素也是自定义组件，则还会继续向内添加至根元素，直到最后添加到HTML标签。永远不会被子组件的props声明接受，仅能作为普通的 HTML attribute）。当撰写包裹一个目标元素或另一个组件的组件时，这可能不会总是符合预期行为。通过设置`inheritAttrs: false`，这些默认行为将会被去掉。而通过 $attrs 可以让这些 attribute 生效，且可以通过 v-bind 显性的绑定到非根元素上。
+
+    >inheritAttrs不会影响 class 和 style 绑定逻辑。
+24. `comments`（`boolean`，默认：`false`）
+
+    >限制：只在[完整版](https://v2.cn.vuejs.org/v2/guide/installation.html#对不同构建版本的解释)时可用。
+
+    当设为 true 时，将会保留且渲染模板中的 HTML 注释。默认行为是舍弃它们。
+
+- <details>
+
+    <summary>官方建议的顺序：<a href="https://v2.cn.vuejs.org/v2/style-guide/index.html#组件-实例的选项的顺序推荐">组件/实例的选项的顺序</a></summary>
+
+    1. 副作用（触发组件外的影响）
+
+        - `el`
+    2. 全局感知（要求组件以外的知识）
+
+        - `name`
+        - `parent`
+    3. 组件类型（更改组件的类型）
+
+        - `functional`
+    4. 模板修改器（改变模板的编译方式）
+
+        - `delimiters`
+        - `comments`
+    5. 模板依赖（模板内使用的资源）
+
+        - `components`
+        - `directives`
+        - `filters`
+    6. 组合（向选项里合并属性）
+
+        - `extends`
+        - `mixins`
+    7. 接口（组件的接口）
+
+        - `inheritAttrs`
+        - `model`
+        - `props/propsData`
+    8. 本地状态（本地的响应式属性）
+
+        - `data`
+        - `computed`
+    9. 事件（通过响应式事件触发的回调）
+
+        - `watch`
+        - 生命周期钩子（按照它们被调用的顺序）
+
+            - `beforeCreate`
+            - `created`
+            - `beforeMount`
+            - `mounted`
+            - `beforeUpdate`
+            - `updated`
+            - `activated`
+            - `deactivated`
+            - `beforeDestroy`
+            - `destroyed`
+            - `errorCaptured`
+    10. 非响应式的属性（不依赖响应系统的实例属性）
+
+        - `methods`
+    11. 渲染（组件输出的声明式描述）
+
+        - `template/render`
+        - `renderError`
+    </details>
 
 ### 全局API
 1. `new Vue(包含组件选项的对象)`
@@ -2472,22 +3630,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     `$mount`、`$forceUpdate`、`$nextTick`、`$destroy`
 
-### 特性
-1. Vue实例代理的属性（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins/extends`传入的属性），在内部`vm.名字`访问，可以直接使用，**所有属性名字都不能重复**（filters不属于同一类）；也有以`$`开头的Vue实例属性（如：`vm.$el`、`vm.$props`、`vm.$data`、`vm.$watch`）。
-
-    只有已经被代理的内容是响应的（Vue实例被创建时传入的属性），值的改变（可能）会触发视图的重新渲染。
-2. **Vue实例的属性**和**Vue实例的属性的属性**，慎用~~箭头函数~~，因为`this`的指向无法按预期指向Vue实例。
-3. 因为HTML不区分大小写，所以大/小驼峰式命名的JS内容，在HTML使用时要转换为相应的`-`短横线隔开式。
-
-    不受限制、不需要转换：JS字符串模版、`.vue`组件。
-
-    >JS字符串模版：`<script type="text/x-template">`、JS内联模板字符串。
-4. Vue实例（`Vue`）或Vue组件实例（`VueComponent`）挂载在DOM，会在这个DOM上增加`__vue__`属性指向这个Vue实例或Vue组件实例（生产环境也行）。
-
-### [vue风格指南](https://v2.cn.vuejs.org/v2/style-guide)
-
 ### 响应式系统
-1. 当把对象传给Vue实例的`data`和vuex的store时，Vue将遍历此对象所有的属性，并使用`Object.defineProperty`把这些属性全部转为`getter/setter`（访问器属性）。
+1. 当把对象传给Vue实例的`data`和vuex的store时，Vue将遍历此对象所有的属性，并使用`Object.defineProperty`把这些属性全部转为`getter/setter`（访问器属性） 或使用`Proxy`。
 
     - `Object.defineProperty`
 
@@ -2509,7 +3653,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     >    </details>
     >2. 针对不需要展示到`template`的属性，可以不把属性初始化在`data`的返回对象中，而是直接`vm.属性 = 值`在JS中使用（这个属性变更不会导致响应式更新，意味着：若`template`展示`{{ 属性 }}`，则更新这个值之后，需要依赖其他更新视图的方式才能看到视图展示新的值）。
     >
-    >    这种属性最好也初始化在`date`函数里（数据初始化统一位置，且又是生命周期的前期），e.g. `data() { this.不响应式属性 = 值; return { 响应式属性: 值 }; }`。
+    >    这种属性最好也初始化在`data`函数里（数据初始化统一位置，且又是生命周期的前期），e.g. `data() { this.不响应式属性 = 值; return { 响应式属性: 值 }; }`。
     >3. 针对所有这个组件的实例全部共用同一个值、不响应式更新、不能放在`template`内的值，可以放在组件外部。
     >4. 在`created`生命周期钩子之前，`vm.属性值`还未被初始化
     >
@@ -2650,6 +3794,35 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     若使用非Vue控制的方法直接修改DOM结构，无法~~反向对响应式系统和虚拟DOM系统起效果~~，将导致虚拟DOM系统与DOM结构不匹配。因此若使用了虚拟DOM系统，必须严格控制仅用此系统操作DOM结构。
 
+- Vue实现原理
+
+    组件 -> `h`函数 -> VNode -> HTML
+
+    1. `h`函数
+
+        创建VNode的方法封装。
+    2. VNode
+
+        用对象来反映真实DOM的情况。
+
+        1. 种类
+
+            1. html/svg元素
+            2. 组件
+            3. 纯文本
+            4. Fragment
+            5. Portal
+    3. 渲染器（render）
+
+        将VNode渲染成特定平台下真实DOM的函数。
+
+        1. `mount`（原本没有VNode）
+        2. `patch`（原本有VNode）
+
+            相同类型的VNode才需要比较，不同类型直接完全替换；相同HTML标签才需要比较，不同标签直接完全替换。
+
+            1. `Diff`
+
 ### [SSR](https://v2.ssr.vuejs.org/zh/)
 1. 若在`mounted`之前改变DOM，会导致「客户端激活」（client-side hydration）时，客户端的虚拟DOM（从服务端渲染完毕传递来的JSON字符串，在客户端解析而成。如：nuxt的`window.__NUXT__`）和服务端传来的DOM（服务端渲染完毕传输来的HTML）不同而出问题。
 
@@ -2692,53 +3865,29 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     }
     ```
 
-### Vue实现原理
-组件 -> `h`函数 -> VNode -> HTML
-
-1. `h`函数
-
-    创建VNode的方法封装。
-2. VNode
-
-    用对象来反映真实DOM的情况。
-
-    1. 种类
-
-        1. html/svg元素
-        2. 组件
-        3. 纯文本
-        4. Fragment
-        5. Portal
-3. 渲染器（render）
-
-    将VNode渲染成特定平台下真实DOM的函数。
-
-    1. `mount`（原本没有VNode）
-    2. `patch`（原本有VNode）
-
-        相同类型的VNode才需要比较，不同类型直接完全替换；相同HTML标签才需要比较，不同标签直接完全替换。
-
-        1. `Diff`
-
 ### Vue性能优化
-1. `key`属性的组件/DOM复用。
-2. `v-once`只渲染元素和组件一次。
-3. 最小限度使用响应式系统。
+1. 最小限度使用响应式系统。
 
-    1. 若不需要响绑定到视图的变量
+    1. `key`属性的组件/DOM复用。
+    2. `v-once`只渲染元素和组件一次。
+    3. `v-memo`
+    4. 若不需要响绑定到视图的变量
 
         1. 不提前注册在`data`或`computed`中，直接this.来创建
         2. `Object.freeze()`
-4. 注意内存泄漏（全局副作用）：
+    5. prop传参优化，仅在必要时更新
+    6. 用computed归纳、代替部分data，因为computed变化才更新视图
+    7. 用`shallowRef`和`shallowReactive`绕开深度响应
+2. 注意内存泄漏（全局副作用）：
 
     1. 在Vue实例内部`new`的其他实例或DOM，应放在`data`内进行掌控，当使用完毕后引导垃圾回收。
     2. 在Vue实例内部手动绑定的事件（如：`addEventListener`）、定时器、http连接、以及任何需要手动关闭的内容，需要在`beforeDestroy`前手动清除（`destroyed`仅自动清除Vue自己定义、绑定的内容）。
-6. 长列表考虑虚拟列表（如：[vue-virtual-scroller](https://github.com/Akryum/vue-virtual-scroller)）
-7. 避免不必要的组件抽象
+3. 长列表考虑虚拟列表（如：[vue-virtual-scroller](https://github.com/Akryum/vue-virtual-scroller)）
+4. 避免不必要的组件抽象
 
     组件实例比普通DOM节点要昂贵得多，而且为了逻辑抽象创建太多组件实例将会导致性能损失。
 5. 异步组件
-8. SSR
+6. SSR
 
 - [网站性能优化](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#网站性能优化)-JS代码性能优化（JS通用）
 
@@ -2766,7 +3915,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
       },
       methods: {
         // 不要使用箭头函数，因为实现代码中有用`call/apply`
-        handleInput: debounce(function (params) {  // 或：throttle。传入handleInput的参数，会赋值给params
+        handleInput: debounce(function (params) {  // 传入handleInput的参数，会赋值给params
           console.log(this)
         }, 500)
       }
@@ -2814,7 +3963,9 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 ### [vue-router@4](https://github.com/vuejs/router)(Vue 3)
 [Vue Router API 从 v3（Vue2）到 v4（Vue3）的迁移](https://router.vuejs.org/zh/guide/migration/)
 
-### [vue-router@3](https://github.com/vuejs/vue-router)(Vue 2)
+<details>
+<summary><h3><a href="https://github.com/vuejs/vue-router">vue-router@3</a>(Vue 2)</h3></summary>
+
 1. 初始化
 
     ```js
@@ -3019,42 +4170,39 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
           ]
         }
         ```
+</details>
 
-### [pinia](https://github.com/vuejs/pinia)（代替~~vuex~~）
+### [pinia](https://github.com/vuejs/pinia)（替代~~vuex~~）
 1. `createPinia()`创建pinia实例
-2. `defineStore(id名, {state: 方法, getters: 对象, actions: 对象} 或 类似setup的方法[, 选项对象])`创建useStore函数（用于返回store实例）
+2. `defineStore(id名, {state: 方法, getters: 对象, actions: 对象} 或 类似setup的方法[, 选项对象])`创建一个 useStore 函数，检索 store 实例（`useStore()`返回store实例）
 
     ```js
     // 0️⃣ ./stores/XX.js，定义store
     export const useXXStore = defineStore('唯一ID', 对象或方法[, 插件选项]) // 插件的context.options：若第二个参数是对象，则是这个对象，否则是新增的第三个参数
+    // ID仅在pinia内部使用，开发者不需要使用这个id，只需要知道不可以设置相同id以及一些命名规范
 
 
     // 1️⃣ .vue（app已经注入pinia实例之后，才可以使用。组件的`setup`就是app启动后执行）
     <script setup>
     import { useXXStore } from '@/stores/XX'
-    // 在组件内部的任何地方均可以访问变量`store`（不需要store.state/getters/actions，直接使用定义的属性名store.属性1/计算属性1/方法1）
+    // 在组件内部的任何地方均可以访问变量`store`（不需要store.state/getters/actions，直接使用定义的属性名：store.属性1/计算属性1/方法1）
     const store = useXXStore()
     </script>
 
 
     // 2️⃣ 非SSR
-    // ❌  失败，因为它是在创建 pinia 之前被调用的
-    const store = useXXStore()
-
+    const store = useXXStore()  // ❌  失败，因为它是在创建 pinia 之前被调用的
     const pinia = createPinia()
-    const app = createApp(App)
+    const app = createApp(根组件)
     app.use(pinia)
-
-    // ✅ 成功，因为 pinia 实例现在激活了
-    const store = useXXStore()
+    const store = useXXStore()  // ✅ 成功，因为 pinia 实例现在激活了
 
 
     // 3️⃣ SSR，需要把pinia实例传递给useXX()函数
     const pinia = createPinia()
-    const app = createApp(App)
+    const app = createApp(根组件)
     app.use(router)
     app.use(pinia)
-
     router.beforeEach((to) => {
       // ✅这会正常工作，因为它确保了正确的 store 被用于
       // 当前正在运行的应用
@@ -3064,7 +4212,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     })
     ```
 
-    >新的属性如果没有在 state/getter/action 中被定义，则不能被添加。它必须包含初始状态。e.g. 若`secondCount`没有在`state()`中定义，则执行任何设置无效，比如 ~~store.secondCount = 2~~。
+    >新的属性若没有在 state/getter/action 中被定义，则不能被添加。它必须包含初始状态。e.g. 若`secondCount`没有在`state()`中定义，则执行任何设置均无效，比如 ~~store.secondCount = 2~~。
 
     1. state
 
@@ -3073,7 +4221,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
             1. 选项式API：store的`$reset()`方法将state重置为初始值
 
                 ```js
-                const store = useStore()
+                const store = useXXStore()
                 store.$reset()
                 ```
             2. Setup Stores：需要创建自己的`$reset()`方法（未默认提供）
@@ -3142,17 +4290,21 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
             `store.$subscribe((mutation/* type,storeId,payload */, state) => {}, {vue 3的watch选项 + detached})`
 
-            - 默认情况下，state subscription会被绑定到添加它们的组件上（如果 store 在组件的 setup() 里面）。这意味着，当该组件被卸载时，它们将被自动删除。如果你想在组件卸载后依旧保留它们，请将 `{ detached: true }` 作为第二个参数，以将state subscription从当前组件中分离。
+            - 默认情况下，state subscription会被绑定到添加它们的组件上（如果 store 在组件的 `setup()` 里面），当该组件被卸载时，它们将被自动删除。如果你想在组件卸载后依旧保留它们，请将 `{ detached: true }` 作为第二个参数，这将state subscription从当前组件中分离。
+
+            - 调用`$reset`一定会触发已注册的store订阅器，**即使 store 当前的状态已经和初始值完全相同**。
+
+                >因为 $reset() 本质上会执行一次 store.$patch(initialState)，这会算作一次“状态变更”。$subscribe 的回调会收到 mutation.type = 'direct'，以及变化前后的 state。
     2. getter
 
         1. 第一个参数是state
         2. （`this`获取当前store的整个实例）`this.当前store的其他getter`（注意不要用箭头函数）
-        3. 其他store实例的值（state、getter、action）：`import`引入直接使用
+        3. 其他store实例的值（state、getter、action）：直接执行其他store实例的useXXStore来用（跟组件中使用store一样）
 
         ```js
         import { useOtherStore } from './other-store'
 
-        export const useStore = defineStore('main', {
+        export const useXXStore = defineStore('XX', {
           state: () => ({
             // ...
           }),
@@ -3170,12 +4322,12 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     3. action
 
         1. `this`获取当前store的整个实例（包括state、getter、action）
-        2. 其他store实例的值（state、getter、action）：`import`引入直接使用
+        2. 其他store实例的值（state、getter、action）：直接执行其他store实例的useXXStore来用（跟组件中使用store一样）
         3. 可以异步（`async-await`）
         4. 订阅action
 
             ```js
-            // 传递给它的回调函数会在 action 本身之前执行
+            // 传递给它的回调函数会在 action 本身执行之前执行
             const unsubscribe = oneStore.$onAction(
               ({
                 name, // action 名称
@@ -3212,8 +4364,10 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
             unsubscribe()
             ```
 
-            - 默认情况下，action 订阅器会被绑定到添加它们的组件上(如果store在组件的`setup()`内)。这意味着，当该组件被卸载时，它们将被自动删除。如果你想在组件卸载后依旧保留它们，请将`true`作为第二个参数传递给 action 订阅器，以便将其从当前组件中分离。
+            - 默认情况下，action 订阅器会被绑定到添加它们的组件上（如果store在组件的`setup()`内），当该组件被卸载时，它们将被自动删除。如果你想在组件卸载后依旧保留它们，请将`true`作为第二个参数传递给 action 订阅器，以便将其从当前组件中分离。
 3. `pinia实例.use(插件)`
+
+    >插件只会在 执行`Vue实例.use(pinia实例)`后创建的 store 中生效。
 
     每个插件会按需执行：只有当首次使用到某个插件时才会执行该插件方法，并且只会执行一次。
 
@@ -3228,19 +4382,22 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
       // 做一些副作用的事情，e.g. 本地存储
       // 可以直接写入 store（不推荐，推荐在return的对象中添加属性） 、 app
 
-      store.属性1 = 'world' // 无法自动追踪，因此要添加以下代码
+      store.属性1 = '值' // 不在return的话，不会自动加入customProperties，需要以下代码手动加入 // 若是新属性，则赋值修改，无法触发订阅
       if (process.env.NODE_ENV === 'development') {
-          // 添加你在 store 中设置的键值
           store._customProperties.add('属性1')
       }
 
       // 返回对象，其属性会添加到所有store
-      return { 属性2, } // 任何由插件返回的属性都会被 devtools 自动追踪
+      return { 属性2, } // 会被加入到customProperties（若是新属性，则赋值修改，无法触发订阅）
     }
     ```
 
     1. 在插件中，state变更或添加（包括调用`store.$patch()`）都是发生在 store 被激活之前，因此不会触发任何订阅函数
+
+        >Store 创建 → 插件执行（若此时修改state，则不触发该Store的订阅）→ Store 激活（建立订阅机制）→ 后续状态变更开始触发该Store的订阅
     2. 若想给 store 添加新的 state 属性或者在服务端渲染的激活过程中使用的属性，则必须同时在两个地方添加它：
+
+        >按下面的方式两个地方添加完毕后，新增的属性就跟初始化在state效果一样了，也支持修改后触发Store订阅。
 
         1. 添加到 store 上，然后才可以用 store.myState 访问它；
         2. 添加到 store.$state 上，然后你才可以在 devtools 中使用它，并且在 SSR 时被正确序列化(serialized)。
@@ -3261,7 +4418,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
           // 在这种情况下，最好不要return `hasError`
           // 因为它将被显示在 devtools 的 `state` 部分
-          // 如果我们返回它，devtools 将显示两次。
+          // 如果我们返回它，devtools 将显示2次。
         })
         ```
     3. 当添加外部属性、第三方库的类实例或非响应式的简单值时，应该先用vue的`markRaw()`来包装一下它，再将它传给pinia
@@ -3276,7 +4433,51 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         })
         ```
     4. 可以在插件中使用 `store.$subscribe` 和 `store.$onAction`
-4. 作用于：选项式API
+
+- 每个 store 都是`reactive`包装对象（因此不能直接解构，要用`storeToRefs`解构，被`storeToRefs`解构后需要`.value`解包或自动解包），所以可以自动解包任何它所包含的 Ref（`ref()`、`computed()`、等）
+
+    ```vue
+    // 组件已自动解包
+    <script setup>
+    import { useXXStore } from '@/stores/xx'
+    const xxStore = useXXStore()
+
+    // 自动解包
+    console.log(xxStore.hello, xxStore.state1)
+    </script>
+    ```
+
+    ```js
+    // 插件已自动解包
+    const sharedRef = ref('shared')
+    pinia.use(({ store }) => {
+      // 每个 store 都有单独的 `hello` 属性
+      store.hello = ref('secret')
+      // 自动解包
+      store.hello // 'secret'
+
+      // 所有的 store 都在共享 `shared` 属性的值
+      store.shared = sharedRef
+      store.shared // 'shared'
+    })
+    ```
+
+4. `storeToRefs`产生有包裹的对象
+
+    不能直接解构store，需要用`storeToRefs`解构响应式引用，会跳过 **所有action或非响应式属性**（action和非响应式属性可以直接解构，~~不需要用`storeToRefs`~~）
+
+    ```vue
+    <script setup>
+    import { storeToRefs } from 'pinia'
+    const store = useCounterStore()
+    // 下面的代码同样会提取那些来自插件的属性的响应式引用
+    // 但是会跳过所有的 action 或者非响应式（非 ref 或者 非 reactive）的属性
+    const { name, doubleCount } = storeToRefs(store)
+    // 名为 increment 的 action 可以被解构
+    const { increment } = store
+    </script>
+    ```
+5. 作用于：选项式API
 
     1. `mapState`
 
@@ -3343,50 +4544,6 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         ```
     1. `mapStores`
     1. ~~`mapGetters`~~
-
-- 每个 store 都是`reactive`包装对象（因此不能直接解构，要用`storeToRefs`解构，被`storeToRefs`解构后需要`.vulue`解包或自动解包），所以可以自动解包任何它所包含的 Ref（`ref()`、`computed()`、等）
-
-    ```js
-    // 组件已自动解包
-    <script setup>
-    import { useXXStore } from '@/stores/xx'
-    const xxStore = useXXStore()
-
-    // 自动解包
-    console.log(xxStore.hello, xxStore.state1)
-    </script>
-
-
-    // 插件已自动解包
-    const sharedRef = ref('shared')
-    pinia.use(({ store }) => {
-      // 每个 store 都有单独的 `hello` 属性
-      store.hello = ref('secret')
-      // 自动解包
-      store.hello // 'secret'
-
-      // 所有的 store 都在共享 `shared` 属性的值
-      store.shared = sharedRef
-      store.shared // 'shared'
-    })
-    ```
-
-5. `storeToRefs`产生有包裹的对象
-
-    不能直接解构store，需要用`storeToRefs`解构响应式引用，会跳过 **所有action或非响应式属性**（action和非响应式属性可以直接解构，~~不需要用`storeToRefs`~~）
-
-    ```vue
-    <script setup>
-    import { storeToRefs } from 'pinia'
-    const store = useCounterStore()
-    // `name` 和 `doubleCount` 都是响应式引用
-    // 下面的代码同样会提取那些来自插件的属性的响应式引用
-    // 但是会跳过所有的 action 或者非响应式（非 ref 或者 非 reactive）的属性
-    const { name, doubleCount } = storeToRefs(store)
-    // 名为 increment 的 action 可以被解构
-    const { increment } = store
-    </script>
-    ```
 
 - TypeScript支持：“上述一切功能都有类型支持，所以你永远不需要使用 ~~`any`~~ 或 ~~`@ts-ignore`~~”
 - 支持SSR
@@ -3654,7 +4811,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
 </details>
 
-### [create-vue](https://github.com/vuejs/create-vue)（代替~~vue-cli~~）
+### [create-vue](https://github.com/vuejs/create-vue)（替代~~vue-cli~~）
 
 <details>
 <summary><h4><a href="https://github.com/vuejs/vue-cli">vue-cli</a></h4></summary>
@@ -3683,7 +4840,9 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 </details>
 
 ### [nuxt](https://github.com/nuxt/nuxt)
-基于Vue的通用应用框架（SPA或SSR），把webpack、babel、vue-server-renderer、vue-router、vuex、vue-meta等工具整合在一起，并通过自带的`nuxt.config.js`统一配置，不需要对每个工具进行单独配置。
+
+<details>
+<summary>基于Vue的通用应用框架（SPA或SSR），把webpack、babel、vue-server-renderer、vue-router、vuex、vue-meta等工具整合在一起，并通过自带的<code>nuxt.config.js</code>统一配置，不需要对每个工具进行单独配置。</summary>
 
 >框架内的Vue组件都是以**Vue单文件组件**的形式，每一个`pages`目录下的组件都是一个页面路由（约定式路由）。
 
@@ -4637,6 +5796,11 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         2. 针对**无法修改服务端设置**或**本地文件打开形式的访问（`file://`）**，用`hash`路由模式。
 
             >服务端是否设置重定向都可行。
+</details>
+
+---
+
+>element-ui与element-plus 交互逻辑基本一致，大部分满足其中一个的feature，也在另一个上满足（bug那就是活跃的库才会修了）。
 
 ### [element-ui](https://github.com/ElemeFE/element)例子
 1. <details>
@@ -4645,7 +5809,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     ```vue
     // 父级
-    <MyCmp v-if="showDialog" @update:is-show="(bool)=> showDialog = bool"/><!-- 省略了：`:is-show="showDialog"` -->
+    <MyCmp v-if="showDialog" @update:is-show="(bool)=> showDialog = bool"/><!-- 省略了：`:is-show="showDialog"`，因为好像子级也用不到 -->
     <MyCmp v-if="showDialog" :is-show.sync="showDialog"/><!-- 推荐（上面的语法糖） -->
 
     // 主动关闭子级用`this.$refs.子级.dialogVisible = false`，而不要用`this.showDialog = false`
@@ -4661,7 +5825,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     <script>
     export default {
-      props: [/* "isShow", */],
+      props: [/* "isShow", */], // isShow好像没有场景会用到
       mounted() {
         this.dialogVisible = true;
       },
@@ -4697,9 +5861,9 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         {{ loading }}
 
         <div slot="tip" class="el-upload__tip">
-          <p v-if="accept">可直接将文件拖拽到此处进行上传，支持格式: {{ accept }}</p>
+          <p v-if="accept">可直接将文件拖拽到此处进行上传，支持格式: {{ accept }}（不区分大小写）</p>
           <p v-if="limitSize">单个文件大小限制: {{ limitSize }}M</p>
-          <p v-if="limit">最大允许上传个数: {{ limit }}M</p>
+          <p v-if="limit">最大允许上传个数: {{ limit }}个</p>
         </div>
       </el-upload>
     </template>
@@ -4711,7 +5875,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
           type: Number,
           default: 0,
         },
-        accept: {   // 支持文件后缀类型（以文件后缀名，加,分割，如：'.xls,.xlsx'），若传空字符串则表示不限制
+        accept: {   // 支持文件后缀类型（以文件后缀名，加,分割，如：'.xls,.xlsx'，不区分大小写），若传空字符串则表示不限制
           type: String,
           default: '',
         },
@@ -4722,7 +5886,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
       },
       data() {
         return {
-          fileList: [], // 上传的文件列表
+          fileList: [], // 上传的文件数组
           loading: false
         };
       },
@@ -4730,11 +5894,11 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         beforeUpload(file) {        // 上传一个文件之前 钩子，若返回false或失败的Promise实例，则这一个文件停止上传且不再触发这一个文件其他钩子
           let passed = true;
 
-          // 代码一般跑不到这里，操作系统选择文件一般会限制文件后缀
+          // 代码一般跑不到这里，操作系统选择文件一般会限制文件后缀（不区分大小写）
           //// 限制后缀
           //if (this.accept) {
           //  const suffix = getFileExtension(file.name).toLowerCase();
-          //  if (this.accept.split(',').indexOf(suffix) === -1) {
+          //  if (this.accept.toLowerCase().split(',').indexOf(suffix) === -1) {
           //    setTimeout(() => {
           //      this.$message.error('请选择支持的文件后缀: ' + this.accept);
           //    });
@@ -4783,6 +5947,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     </script>
     ```
     </details>
+
+    >[CodePen demo](https://codepen.io/realgeoffrey/pen/bNVXmMw)
 3. <details>
 
     <summary>解决连续调用Message或Notification导致样式重叠</summary>
@@ -4883,30 +6049,45 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     ```vue
     <el-input
       ref="inputRef"
-      v-model="text1"
-      clearable
+      v-model="text"
+      placeholder="请选择"
+      suffix-icon="el-icon-search"
       @click.native.prevent="handlerClick($event)"
+      clearable
+      @clear="text = ''"
       @focus="$refs.inputRef?.blur()"
-      @clear="text2 = ''"
+      @keyup.enter.native="$message('搜索:' + text)"
     />
 
     data() {
       return {
-        text1: '展示的文案',
-        text2: '可能是表单用的真正文本',
+        text: '展示的文案',
       }
     }
 
     handlerClick(event) {
       // 点击到clear按钮
-      if (event?.target?.nodeName === 'I' && event?.target?.classList.contains('el-icon-circle-close')) {
+      if (event.target.nodeName === 'I' && event.target.classList.contains('el-icon-circle-close')) {
         return;
       }
+      // 点击到search按钮 或 没有文本时点击任意地方
+      else if (!this.text || (event.target.nodeName === 'I' && event.target.classList.contains('el-icon-search'))) {
+        this.$prompt('请输入', '模拟某个弹窗，用于确定后传递值', {
+          inputValue: this.text,
+        }).then(({ value }) => {
+          this.text = value.trim()
+        })
+        this.$refs.inputRef?.blur()
+      }
+      // 其他情况就是：text有值 && 未点击到search按钮
+      else {
 
-      // 进行其他逻辑，比如打开弹窗，这个弹窗最后修改 text1（展示）、text2（表单传参）
+      }
     }
     ```
     </details>
+
+    >[CodePen demo](https://codepen.io/realgeoffrey/pen/xbwjamm)
 6. <details>
 
     <summary>日期选择器，限制选择日期长度</summary>
@@ -5001,17 +6182,20 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     1. 若`rules`中传递了`message`，则命中校验失败只会展示`message`；若`rules`中未传递`message`，则展示`validator`中的`callback(new Error(错误信息))`
     2. 可动态插入或删除`rules`项（单独触发一个字段校验：`validateField`；触发整个表单所有字段校验：`validate`——有传回调处理回调，不传回调返回Promise）
-    3. 实现：仅提示校验问题，但不阻塞提交
+    3. <details>
 
-        1. `<el-input>`触发`@chage/input`后去修改`<col-form-item>`的`error`属性，可以做到既展示校验错误信息又提交时不校验
+        <summary>实现：仅提示校验问题，但不阻塞提交</summary>
+
+        1. `<el-input>`触发`@change/input`后去修改`<col-form-item>`的`error`属性，可以做到既展示校验错误信息又提交时不校验
 
             >修改`<col-form-item>`的`error`属性仅展示/隐藏校验失败信息、不影响校验逻辑，校验逻辑完全遵照rules。
         2. `validator`函数内，用其他方式提示错误、总是通过校验
 
             e.g. `{ validator(rule, value, callback) { $message('输入的有点问题，但不影响提交'); callback() }, trigger: [ 'blur' ] }`
-        3. `validate`忽略某些未通过校验的字段（不好判断具体哪一条rules校验未通过）
+        3. `validate`忽略某些未通过校验的字段
 
         >[CodePen demo](https://codepen.io/realgeoffrey/pen/xbGaBVY)
+        </details>
 9. `<el-tree>`已提供方法：①`仅选中的叶子` `getCheckedNodes(true)`、②`选中的叶子+全选的非叶子节点` `getCheckedNodes(false)`、③`选中的叶子+全选的非叶子节点+半选的非叶子节点` `getCheckedNodes(false,true)`、④`仅半选的非叶子节点` `getHalfCheckedNodes()`
 
     >若`:check-strictly="true"`，则没有~~半选的非叶子节点~~，只有`全选的非叶子节点`。
@@ -5026,7 +6210,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
 - 避免问题
 
-    1. `<el-option>`能够匹配 空字符串、`undefined`、`null`，并且多个相同的value值匹配后展示最后一个项的label值，注意传参为空时出现的问题。匹配是`===`，注意`<el-select>`的`v-model`值`6`不会匹配`<el-option>`的`value`值`'6'`。
+    1. `<el-option>`能够匹配 空字符串、`undefined`、`null`，并且多个相同的value值匹配后展示最后一个项的label值，注意传参为空时出现的问题。匹配是`===`，e.g. `<el-select>`的`v-model`值`6`不会匹配`<el-option>`的`value`值`'6'`。
 
         >[CodePen demo](https://codepen.io/realgeoffrey/pen/MWMpxNW)
     2. `<el-option>`的数组若不包含`<el-select>`的值，可以考虑`push`这个值到数组中（若要回显的不是value而是label）。
@@ -5036,16 +6220,27 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     4. `<el-input-number>`设置`max`、`min`、`precision`会直接“纠正”`value/v-model`绑定值，无论是不是`disabled`。
 
         >[CodePen demo](https://codepen.io/realgeoffrey/pen/VYZmYrB)
-    5. `<el-input-number>`的`v-model`不支持添加`.trim`（填写了没有效果、不会报错）
-    6. `<el-input>`、`el-button`等的`disabled`属性，会导致无法触发点击等事件
+    5. `<el-input>`、`<el-button>`等的`disabled`属性，会导致无法触发点击等事件
 
         >[CodePen demo](https://codepen.io/realgeoffrey/pen/KwpXvqZ)
-    7. [element-ui的日期格式](https://element.eleme.cn/#/zh-CN/component/date-picker#ri-qi-ge-shi)与[moment的格式](https://momentjs.cn/docs/#/displaying/format/)是不同的，要注意
+    6. [element-ui的日期格式](https://element.eleme.cn/#/zh-CN/component/date-picker#ri-qi-ge-shi)与[moment的格式](https://momentjs.cn/docs/#/displaying/format/)是不同的，要注意
 
         e.g. element-ui不支持 ~~`YYYY`、`DDDD`、等~~
-    8. `<el-upload>`的`http-request`默认会去使用`action`等参数，并且`action`是必传参数。因此，若要传递`http-request`重写，也必须传递`action`，建议重写的`http-request`也与源码一样去使用`action`
+- 注意（feature？）
+
+    1. `<el-input-number>`的`v-model`不支持添加`.trim`（填写了没有效果、不会报错）
+    2. `<el-upload>`的`http-request`默认会去使用`action`等参数，并且`action`是必传参数。因此，若要传递`http-request`重写，也必须传递`action`，建议重写的`http-request`也与源码一样去使用`action`
 
         >源码：<https://github.com/ElemeFE/element/blob/master/packages/upload/src/upload.vue#L137-L156>
+    3. `<el-pagination>`需要使用`.sync`才会同步修改传入`page-size`、`current-page`的值（或事件触发后手动修改），并且 **事件`size-change`、`current-change`是组件手动操作后触发相关内部值变化后才会触发**，~~任何方式修改传入值的变化都不会触发`size-change`、`current-change`事件~~
+
+        >[CodePen demo](https://codepen.io/realgeoffrey/pen/LEpqNjy)
+    4. `<el-date-picker>`若`type="daterange或datetimerange"`，则上下月份的日期选择没有选中样式
+
+### [element-plus](https://github.com/element-plus/element-plus)例子
+1. 基本的 Form表单 - Table表格 - Pagination分页 交互
+
+    >[CodeSandbox demo](https://codesandbox.io/p/github/realgeoffrey/vue3-element-plus-demo/master?file=/src/components/pagination/index.vue)
 
 ### jQuery与Vue.js对比
 1. 做的事情

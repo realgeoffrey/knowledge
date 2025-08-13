@@ -1066,7 +1066,7 @@ fn 参数1 参数2
 
             >执行脚本相当于新建一个非互动的Bash环境，但是这种情况不会 ~~调用`~/.bashrc`~~。
     2. `bash --norc`，可以禁止在非登录Session执行`~/.bashrc`脚本。
-    3. `bash --rcfile 「文件名」`，指定另一个脚本代替`.bashrc`。
+    3. `bash --rcfile 「文件名」`，指定另一个脚本替代`.bashrc`。
 
 - `~/.bash_logout`
 
