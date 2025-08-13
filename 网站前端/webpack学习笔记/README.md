@@ -65,7 +65,7 @@
 
         1. 优化`watchOptions.ignored: /node_modules/`配置（忽略自动刷新的文件监听）
         2. 优化`watchOptions.aggregateTimeout/poll`配置（减少重新构建的频率）
-        3. （webpack5删除）`devServer.inline`用`inline`（`<iframe>`）代替默认的websocket
+        3. （webpack5删除）`devServer.inline`用`inline`（`<iframe>`）替代默认的websocket
     6. 开启热更新
     7. 开启[Scope Hoisting](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/webpack学习笔记/README.md#scope-hoisting作用域提升)
 
@@ -209,7 +209,7 @@
         >2. 若引用仓库中某文件，则会按照该文件的引用链路去引用仓库文件。
         >3. 仓库中没有被引用到的文件不会打包进最终bundle。
         >
-        >    e.g. 可以用`import debounce from 'lodash/debounce'`替代`import { debounce } from 'lodash'`，这样最终打包的结果不会引用整个lodash，而只会引用debounce的引用链路文件（可以用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)分析并可视化构建后的打包文件进行对比；也可以直接用[lodash.debounce](https://www.npmjs.com/package/lodash.debounce)单独库代替）。
+        >    e.g. 可以用`import debounce from 'lodash/debounce'`替代`import { debounce } from 'lodash'`，这样最终打包的结果不会引用整个lodash，而只会引用debounce的引用链路文件（可以用[webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)分析并可视化构建后的打包文件进行对比；也可以直接用[lodash.debounce](https://www.npmjs.com/package/lodash.debounce)单独库替代）。
         ></details>
 
         <details>
