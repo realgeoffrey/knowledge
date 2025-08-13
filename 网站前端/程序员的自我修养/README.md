@@ -1185,7 +1185,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 
     0~1023（`2**10 - 1`）。它们紧密绑定于一些服务。通常这些端口的通讯明确表明了某种服务的协议。
 
-    >e.g. FTP:21、SSH:22、telnet:23、HTTP:80、HTTPS:443。
+    >e.g. FTP:21、SSH:22、TELNET:23、SMTP:25、DNS:53、HTTP:80、POP3:110、SFTP:115、RPC:135、NetBIOS:139、IMAP:143、IRC:194、SSL/TLS(HTTPS=HTTP+SSL/TLS):443、SMB:445、MSSQL:1433、MySQL:3306、Remote Desktop:3389、PCAnywhere:5632、VNC:5900、Minecraft:25565
 2. Registered Ports（注册端口）
 
     1024~49151。它们松散地绑定于一些服务。不同的程序可以根据自己的需要进行注册监听。
