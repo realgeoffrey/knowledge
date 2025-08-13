@@ -50,14 +50,14 @@
             RN、flutter、ionic、~~weex~~，小程序。
         2. web组件和微前端
 
-            1. shadow dom，custom elements
-            2. qiankun，single-spa，webpack模块联邦
+            1. shadow dom、custom elements
+            2. [qiankun](https://github.com/umijs/qiankun)、[single-spa](https://github.com/single-spa/single-spa)、webpack模块联邦（Module Federation）
         3. 低代码
 
             <https://github.com/alibaba/lowcode-engine>
         4. 性能优化
 
-            1. webpack，代替webpack的一系列轮子。
+            1. webpack，替代webpack的一系列轮子
             2. 监控、分析
             3. 性能api：`PerformanceNavigationTiming`
         5. 与人工智能结合
@@ -69,7 +69,24 @@
         6. WebAssembly
 
 ### 前端工程化
->参考：[张云龙：前端工程——基础篇](https://github.com/fouber/blog/issues/10)。
+[带你入门前端工程](https://github.com/woai3c/introduction-to-front-end-engineering)：
+
+1. 接到新需求，进行需求评审后根据具体情况做技术选型。
+2. 开发前需要统一规范。
+3. 学会模块化、组件化，对于写代码很有好处。
+4. 开发完，需要对代码进行测试。
+5. 构建打包。
+6. 部署上线。
+7. 对项目进行监控，随时发现问题。
+8. 根据项目运行情况决定是否要做性能优化。
+10. 项目越来越复杂，需要重构以提高可维护性。
+- 项目越来越大，可以考虑是否用微服务（微前端）对其进行拆分。
+- 不想自己管理服务器或数据库，可以考虑使用 Serverless。
+
+
+<details>
+
+<summary><a href="https://github.com/fouber/blog/issues/10">张云龙：前端工程——基础篇</a></summary>
 
 1. 第一阶段：库/框架选型
 
@@ -120,6 +137,8 @@
         5. 当不需要某个组件，或想要替换组件时，可以整个目录替换、删除。
 
 >[从零开始构建 JavaScript 技术栈](https://github.com/wooo-on/js-stack-from-scratch)。
+
+</details>
 
 ### 网站性能优化
 >性能优化是一个[工程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#前端工程化)问题。所有优化都是梳理完整个执行链路后，逐步优化链路中每个环节。
@@ -239,7 +258,7 @@
             4. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)（全局变量、闭包引用的变量、定时器、事件监听、DOM引用）。
             5. 长字符串拼接使用`Array.prototype.join()`，而不使用 ~~`+`~~ 或 ~~`String.prototype.concat`~~。
         2. 尽量使用事件代理，避免批量绑定事件。
-        3. [定时器取舍，合理使用重绘函数代替](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)。
+        3. [定时器取舍，合理使用重绘函数替代](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)。
         4. 高频事件（如：`scroll`、`mousemove`、`touchmove`）使用[函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)，避免在高频事件中进行运行时间长的代码。
         5. 避免强制同步布局、避免布局抖动。
         6. 使用`Web Worker`处理复杂的计算。
