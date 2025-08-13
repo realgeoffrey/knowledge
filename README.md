@@ -42,11 +42,11 @@
     <summary>前端构建工具</summary>
 
     1. [webpack学习笔记](./网站前端/webpack学习笔记/README.md)
-    2. [Babel学习笔记](./网站前端/Babel学习笔记/README.md)
-    3. [yarn+Lerna学习笔记](./网站前端/yarn+Lerna学习笔记/README.md)
-    4. [ESLint+Prettier+Stylelint学习笔记](./网站前端/ESLint+Prettier+Stylelint学习笔记/README.md)
-    5. [Node.js脚手架（TypeScript+pm2或nodemon+--inspect）](./网站前端/Node.js脚手架（TypeScript+pm2或nodemon+--inspect）/README.md)
-    6. [我安装的全局仓库](./网站前端/Node.js学习笔记/我安装的全局仓库.md)
+    1. [ESLint+Prettier+Stylelint学习笔记](./网站前端/ESLint+Prettier+Stylelint学习笔记/README.md)
+    1. [Babel学习笔记](./网站前端/Babel学习笔记/README.md)
+    1. [yarn+Lerna学习笔记](./网站前端/yarn+Lerna学习笔记/README.md)
+    1. [Node.js脚手架（TypeScript+pm2或nodemon+--inspect）](./网站前端/Node.js脚手架（TypeScript+pm2或nodemon+--inspect）/README.md)
+    1. [我安装的全局仓库](./网站前端/Node.js学习笔记/我安装的全局仓库.md)
     </details>
 9. 其他前端专项
 
@@ -66,7 +66,7 @@
     1. [无障碍](./网站前端/其他前端专项/无障碍/README.md)
     1. [压缩、加密混淆、逆向](./网站前端/其他前端专项/压缩、加密混淆、逆向/README.md)
     1. ~~[低代码](./网站前端/其他前端专项/低代码/README.md)~~
-    1. ~~[微前端](./网站前端/其他前端专项/微前端/README.md)~~
+    1. ~~[微前端（微服务在前端的应用——前端微服务）](./网站前端/其他前端专项/微前端（微服务在前端的应用——前端微服务）/README.md)~~
 
     - [微信生态相关](./网站前端/其他前端专项/微信生态相关/README.md)
     - [Lark生态开发](./网站前端/其他前端专项/Lark生态开发/README.md)
