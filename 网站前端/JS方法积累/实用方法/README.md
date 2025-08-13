@@ -1162,38 +1162,84 @@ function numConvert (operand, fromRadix, toRadix) {
 ```
 
 ### *原生JS*选取范围内随机值
+>可以直接用库：[chancejs](https://github.com/chancejs/chancejs)，e.g. `chance.integer({ min: -20, max: 20 })`、`chance.floating({ min: 0, max: 100, fixed: 8 })`。
+
 >注意：
 >
 >1. 检查不同语言原始返回的随机值两边端点开闭情况——不同的开闭区间影响最终算法。
->2. 获取到的每个整数的概率是否均等——用向下取整替代四舍五入可以使概率均等。
+>2. 获取到的每个整数的概率是否均等——用 向下/向上取整 替代四舍五入可以使概率均等。
 
 ```js
 /**
- * 选取范围内随机值
+ * 选取范围内随机值（仅整数）
  * @param {Number} min - 下限（或上限）
  * @param {Number} max - 上限（或下限）
  * @returns {Number} - 上下限区间内的随机值（闭区间，[下限, 上限]）
  */
 function randomFrom(min, max) {
-    var temp;
-
-    if (min > max) {
-        temp = min;
-        min = max;
-        max = temp;
-    }
-
+    if (min > max) [min, max] = [max, min];
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 ```
 ><details>
 ><summary><code>Math.random()</code>返回<code>[0,1)</code>。</summary>
 >
->假设返回的值的开闭区间改变：
+>假设返回的值的开闭区间改变，需要实现整数闭区间的[下限, 上限]：
 >
->1. 若返回的是：`(0,1)`，则返回`Math.floor(Math.random() * (max - min + 2) + min - 1);`。
->2. 若返回的是：`(0,1]`，则返回`Math.floor(Math.random() * (max - min + 1) + min - 1);`。
->3. 若返回的是：`[0,1]`，则返回`Math.floor(Math.random() * (max - min) + min);`。
+>0. JS返回的是：`[0,1)`，则`Math.floor(Math.random() * (max - min + 1) + min)`。
+>1. 若返回的是：`(0,1)`，则需要改为`Math.floor(Math.random() * (max - min + 1) + min);`。
+>2. 若返回的是：`(0,1]`，则需要改为`Math.ceil(Math.random() * (max - min + 1) + min - 1);`。
+>3. 若返回的是：`[0,1]`，则需要改为`Math.round(Math.random() * (max - min) + min);`。
+></details>
+
+```js
+/**
+ * 选取范围内随机值（仅小数）
+ * @param {Number} min - 下限（或上限）
+ * @param {Number} max - 上限（或下限）
+ * @returns {Number} - 上下限区间内的随机值（前闭后开区间，[下限, 上限)）
+ */
+function randomFrom(min, max) {
+    if (min > max) [min, max] = [max, min];
+    return Math.random() * (max - min) + min;
+}
+```
+
+><details>
+><summary>获取小数位</summary>
+>
+>```js
+>// 获取小数位（小数点后数字个数）
+>function getDecimalPlaces(num) {
+>  const str = String(num);
+>  if (str.includes('.')) return str.split('.')[1].length;
+>  return 0;
+>}
+>```
+></details>
+
+><details>
+><summary>mock数值</summary>
+>
+>```js
+>import Decimal from 'decimal.js'
+>
+>// 返回随机数，toDecimalPlaces 保留小数位数
+>export function randomNum(num = 0, toDecimalPlaces = getDecimalPlaces(num)) {
+>  return Decimal(randomFromDec(0, num)).toDecimalPlaces(toDecimalPlaces).toNumber()
+>}
+>// 获取小数位（小数点后数字个数）
+>function getDecimalPlaces(num) {
+>  const str = String(num)
+>  if (str.includes('.')) return str.split('.')[1].length
+>  return 0
+>}
+>// 选取范围内随机值（仅小数）
+>function randomFromDec(min, max) {
+>  if (min > max) [min, max] = [max, min]
+>  return Math.random() * (max - min) + min
+>}
+>```
 ></details>
 
 ### *原生JS*选取范围内多个随机值
@@ -1206,17 +1252,11 @@ function randomFrom(min, max) {
  * @returns {Array|Boolean} - 上下限区间内的num个随机值组成的数组（闭区间，[下限, 上限]） 或 false（错误）
  */
 function randomsFrom(min, max, num = 1) {
-  let temp;
-
-  if (min > max) {
-    temp = min;
-    min = max;
-    max = temp;
-  }
+  if (min > max) [min, max] = [max, min];
 
   const count = max - min + 1;
 
-  const arr = Array.apply(null, new Array(count)).map(
+  const arr = Array.from({length: count}).map(
     (item, index) => index + min
   );
 
@@ -1909,21 +1949,21 @@ function switchArr ({ arr, from, to, isLeft = false }) {
         ```
 2. `Array.prototype.map`赋值
 
-    1. `Array`：
+    1. `Array.apply`、`Array`构造函数：
 
         ```js
         var n = 55
 
         var arr = Array.apply(null, new Array(n)).map((item, index) => index)
         ```
-    2. `Array`、`join`、`split`：
+    2. `Array`构造函数、`join`、`split`：
 
         ```js
         var n = 55
 
         var arr = new Array(n + 1).join().split('').map((item, index) => index)
         ```
-    3. `Object.keys`、`Array`、`toString`、`split`：
+    3. `Object.keys`、`Array`构造函数、`toString`、`split`：
 
         ```js
         var n = 55
@@ -2484,7 +2524,7 @@ loadingFetch(() => { console.log('同步方法') })
 >1. `download`指示浏览器下载文件资源地址而不是导航跳转（若href的字符串不同源，则退回未添加download的逻辑——导航跳转）。
 >2. 支持多种文件类型。
 >3. ~~兼容性不佳。~~
->4. 若download未指定值或未指定文件后缀，则从多种方式中设置`文件名.文件类型`：响应头的`Content-Disposition`、`Content-Type`，URL的最后一段，Data URL的开头，Blob的`type`。
+>4. 若download未指定值或未指定文件后缀（未指定文件后缀，会仅用传值作为文件名、后缀从后面信息获取），则从多种方式中设置`文件名.文件类型`：响应头的`Content-Disposition`、`Content-Type`，URL的最后一段，Data URL的开头，Blob的`type`。
 >5. 响应头`Content-Disposition: inline`（默认）是预览，`Content-Disposition: attachment`是下载；可以通过先下载资源（blob格式），再设置a标签的`download`进行下载或预览。
 
 以下方法均依赖`<a>`的`download`属性（JS的Blob或Data URL，都需要先[CORS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#corscross-origin-resource-sharing跨域资源共享)下载文件资源地址成功后再进行操作）：

@@ -48,14 +48,15 @@
 >
 >    1. `「命令」 --help`
 >    2. `man 「命令」`
->    3. `info 「命令」`
->    4. `whatis 「命令」`
+>    3. `tldr 「命令」`（`npm i -g `[tldr](https://github.com/tldr-pages/tldr)）
+>    4. `info 「命令」`
+>    5. `whatis 「命令」`
 >
 >    >`「命令」`可以是 「命令」+「指令」，如：`docker info`。
 >
 >    阅读英文文档时，英文水平是痛点，跳着看容易看不懂……
 
->可阅读：[bash-guide](https://github.com/Idnan/bash-guide)。
+>可阅读：[You-Dont-Need-GUI](https://github.com/you-dont-need/You-Dont-Need-GUI)、[bash-guide](https://github.com/Idnan/bash-guide)。
 
 #### 命令花费时间
 ```shell

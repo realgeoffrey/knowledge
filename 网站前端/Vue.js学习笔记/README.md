@@ -137,6 +137,9 @@
     | `/deep/`   | Vue 2       | ✔️           | ❌       | Vue 3已废弃，部分构建工具可能兼容但会警告 |
     | `::v-deep` | Vue 2       | ✔️           | ❌       | Vue 3已废弃。`/deep/`的别名，语义更明确 |
     | `:deep()`  | Vue 3       | ✔️           | ✔️       | 当前最佳实践。与Composition API兼容 |
+
+    >`:deep(不能填写根节点选择器、可以填写引用的子节点甚至不出现在当前组件中的选择器)`？尚未总结用法。大致原理是：若未加`deep`，则`属性选择器`添加在最后一个选择器（不在伪类选择器），`a b[属性选择器]:hover`；若加了`deep`，则`属性选择器`添加在第一个选择器之前，`[属性选择器] a b:hover`？
+
 10. 当同时存在于一个节点上时，`v-if`比`v-for`的优先级更高（与vue 2正相反）
 
     <details>
@@ -391,8 +394,10 @@
 
             1. `:class="'a b'"`：`class="a b"`
             2. `:class="{ 'a': true, 'b': false }"`：`class="a"`
+
+                `` :class="level ? `level-${level}` : ''" `` === `` :class="{ [`level-${level}`]: level }" ``
             3. `:class="['a', 'b']"`：`class="a b"`
-            4. `:class="[{ 'a': true, 'b': false }, { 'c': true }, 'd', ['e']]"`：`class="a c d e"`
+            4. **`:class="[{ 'a': true, 'b': false }, { 'c': true }, 'd', ['e']]"`：`class="a c d e"`**
         2. 绑定`style`
 
             >1. 自动添加样式前缀。
@@ -1288,8 +1293,59 @@
 
     1. 两个需要一起使用，以允许一个祖辈组件向其所有孙辈组件注入一个依赖，不论组件层次有多深，并在其上下游关系成立的时间里始终生效。
 
-        孙辈组件 从组件树中离自身最近（**就近原则**）匹配`provide`中读取到当前的`inject`值。
-    2. `provide`/`inject`绑定并不是可响应的。然而，若传入了一个可监听的对象（如：vue实例的`data`、`computed`等），则其对象的property可响应。
+        1. 祖辈组件：`provide`写入
+        2. 孙辈组件：从组件树中离自身最近（**就近原则**）匹配`provide`中读取到当前的`inject`值。
+    2. `provide`/`inject`绑定并不是可响应的。然而，若传入了一个可监听的对象，则其对象的property可响应：
+
+        1. 传递响应式对象
+
+            1. state的响应式对象（必须是引用类型；基本数据类型无法响应式更新）
+
+                >传递`computed`的响应式对象无法~~响应式更新~~。
+
+                ```js
+                export default {
+                  data() {
+                    return {
+                      info: { count: 0 }
+                    };
+                  },
+                  provide() {
+                    return {
+                      info: this.info // 不能是：this.info.count。若是computed的值则无法传递响应式
+                    };
+                  }
+                };
+                ```
+            2. `Vue.observable`创建
+
+                ```js
+                const state = Vue.observable({ count: 0 });
+
+                export default {
+                  provide() {
+                    return {
+                      state
+                    };
+                  },
+                };
+                ```
+        2. 传递方法，方法返回的值是响应式
+
+            ```js
+            export default {
+              data() {
+                return {
+                  message: 'Hello from parent'
+                }
+              },
+              provide() {
+                return {
+                  reactiveMessage: () => this.message // 使用函数返回响应式数据，getter
+                }
+              }
+            }
+            ```
     3. `provide`若需要提供当前组件中的属性和方法等，则需要使用`返回对象的方法`方式来保证`this`的指向，否则`this`指向`undefined`（普通引用数据类型用哪种方式都正常注入）。
     4. `inject`的`default`初始值（与`props`的`default`一致）：基本数据类型的值；对象或数组必须从工厂函数返回默认值（当且仅当没有传入时才使用或调用）。
 16. `methods`（对象）：可调用方法
@@ -3022,31 +3078,28 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
 ### [pinia](https://github.com/vuejs/pinia)（代替~~vuex~~）
 1. `createPinia()`创建pinia实例
-2. `defineStore(id名, {state: 方法, getters: 对象, actions: 对象} 或 类似setup的方法[, 选项对象])`创建useStore函数（用于返回store实例）
+2. `defineStore(id名, {state: 方法, getters: 对象, actions: 对象} 或 类似setup的方法[, 选项对象])`创建一个 useStore 函数，检索 store 实例（`useStore()`返回store实例）
 
     ```js
     // 0️⃣ ./stores/XX.js，定义store
     export const useXXStore = defineStore('唯一ID', 对象或方法[, 插件选项]) // 插件的context.options：若第二个参数是对象，则是这个对象，否则是新增的第三个参数
+    // ID仅在pinia内部使用，开发者不需要使用这个id，只需要知道不可以设置相同id以及一些命名规范
 
 
     // 1️⃣ .vue（app已经注入pinia实例之后，才可以使用。组件的`setup`就是app启动后执行）
     <script setup>
     import { useXXStore } from '@/stores/XX'
-    // 在组件内部的任何地方均可以访问变量`store`（不需要store.state/getters/actions，直接使用定义的属性名store.属性1/计算属性1/方法1）
+    // 在组件内部的任何地方均可以访问变量`store`（不需要store.state/getters/actions，直接使用定义的属性名：store.属性1/计算属性1/方法1）
     const store = useXXStore()
     </script>
 
 
     // 2️⃣ 非SSR
-    // ❌  失败，因为它是在创建 pinia 之前被调用的
-    const store = useXXStore()
-
+    const store = useXXStore()  // ❌  失败，因为它是在创建 pinia 之前被调用的
     const pinia = createPinia()
     const app = createApp(App)
     app.use(pinia)
-
-    // ✅ 成功，因为 pinia 实例现在激活了
-    const store = useXXStore()
+    const store = useXXStore()  // ✅ 成功，因为 pinia 实例现在激活了
 
 
     // 3️⃣ SSR，需要把pinia实例传递给useXX()函数
@@ -3054,7 +3107,6 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     const app = createApp(App)
     app.use(router)
     app.use(pinia)
-
     router.beforeEach((to) => {
       // ✅这会正常工作，因为它确保了正确的 store 被用于
       // 当前正在运行的应用
@@ -3064,7 +3116,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     })
     ```
 
-    >新的属性如果没有在 state/getter/action 中被定义，则不能被添加。它必须包含初始状态。e.g. 若`secondCount`没有在`state()`中定义，则执行任何设置无效，比如 ~~store.secondCount = 2~~。
+    >新的属性若没有在 state/getter/action 中被定义，则不能被添加。它必须包含初始状态。e.g. 若`secondCount`没有在`state()`中定义，则执行任何设置均无效，比如 ~~store.secondCount = 2~~。
 
     1. state
 
@@ -3073,7 +3125,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
             1. 选项式API：store的`$reset()`方法将state重置为初始值
 
                 ```js
-                const store = useStore()
+                const store = useXXStore()
                 store.$reset()
                 ```
             2. Setup Stores：需要创建自己的`$reset()`方法（未默认提供）
@@ -3142,17 +3194,17 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
             `store.$subscribe((mutation/* type,storeId,payload */, state) => {}, {vue 3的watch选项 + detached})`
 
-            - 默认情况下，state subscription会被绑定到添加它们的组件上（如果 store 在组件的 setup() 里面）。这意味着，当该组件被卸载时，它们将被自动删除。如果你想在组件卸载后依旧保留它们，请将 `{ detached: true }` 作为第二个参数，以将state subscription从当前组件中分离。
+            - 默认情况下，state subscription会被绑定到添加它们的组件上（如果 store 在组件的 `setup()` 里面），当该组件被卸载时，它们将被自动删除。如果你想在组件卸载后依旧保留它们，请将 `{ detached: true }` 作为第二个参数，这将state subscription从当前组件中分离。
     2. getter
 
         1. 第一个参数是state
         2. （`this`获取当前store的整个实例）`this.当前store的其他getter`（注意不要用箭头函数）
-        3. 其他store实例的值（state、getter、action）：`import`引入直接使用
+        3. 其他store实例的值（state、getter、action）：直接执行其他store实例的useXXStore来用（跟组件中使用store一样）
 
         ```js
         import { useOtherStore } from './other-store'
 
-        export const useStore = defineStore('main', {
+        export const useXXStore = defineStore('XX', {
           state: () => ({
             // ...
           }),
@@ -3170,12 +3222,12 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     3. action
 
         1. `this`获取当前store的整个实例（包括state、getter、action）
-        2. 其他store实例的值（state、getter、action）：`import`引入直接使用
+        2. 其他store实例的值（state、getter、action）：直接执行其他store实例的useXXStore来用（跟组件中使用store一样）
         3. 可以异步（`async-await`）
         4. 订阅action
 
             ```js
-            // 传递给它的回调函数会在 action 本身之前执行
+            // 传递给它的回调函数会在 action 本身执行之前执行
             const unsubscribe = oneStore.$onAction(
               ({
                 name, // action 名称
@@ -3212,8 +3264,10 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
             unsubscribe()
             ```
 
-            - 默认情况下，action 订阅器会被绑定到添加它们的组件上(如果store在组件的`setup()`内)。这意味着，当该组件被卸载时，它们将被自动删除。如果你想在组件卸载后依旧保留它们，请将`true`作为第二个参数传递给 action 订阅器，以便将其从当前组件中分离。
+            - 默认情况下，action 订阅器会被绑定到添加它们的组件上(如果store在组件的`setup()`内)，当该组件被卸载时，它们将被自动删除。如果你想在组件卸载后依旧保留它们，请将`true`作为第二个参数传递给 action 订阅器，以便将其从当前组件中分离。
 3. `pinia实例.use(插件)`
+
+    >插件只会在 执行`Vue实例.use(pinia实例)`后创建的 store 中生效。
 
     每个插件会按需执行：只有当首次使用到某个插件时才会执行该插件方法，并且只会执行一次。
 
@@ -3228,19 +3282,22 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
       // 做一些副作用的事情，e.g. 本地存储
       // 可以直接写入 store（不推荐，推荐在return的对象中添加属性） 、 app
 
-      store.属性1 = 'world' // 无法自动追踪，因此要添加以下代码
+      store.属性1 = '值' // 不在return的话，不会自动加入customProperties，需要以下代码手动加入 // 若是新属性，则赋值修改，无法触发订阅
       if (process.env.NODE_ENV === 'development') {
-          // 添加你在 store 中设置的键值
           store._customProperties.add('属性1')
       }
 
       // 返回对象，其属性会添加到所有store
-      return { 属性2, } // 任何由插件返回的属性都会被 devtools 自动追踪
+      return { 属性2, } // 会被加入到customProperties（若是新属性，则赋值修改，无法触发订阅）
     }
     ```
 
     1. 在插件中，state变更或添加（包括调用`store.$patch()`）都是发生在 store 被激活之前，因此不会触发任何订阅函数
+
+        >Store 创建 → 插件执行（若此时修改state，则不触发该Store的订阅）→ Store 激活（建立订阅机制）→ 后续状态变更开始触发该Store的订阅
     2. 若想给 store 添加新的 state 属性或者在服务端渲染的激活过程中使用的属性，则必须同时在两个地方添加它：
+
+        >按下面的方式两个地方添加完毕后，新增的属性就跟初始化在state效果一样了，也支持修改后触发Store订阅。
 
         1. 添加到 store 上，然后才可以用 store.myState 访问它；
         2. 添加到 store.$state 上，然后你才可以在 devtools 中使用它，并且在 SSR 时被正确序列化(serialized)。
@@ -3276,7 +3333,51 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         })
         ```
     4. 可以在插件中使用 `store.$subscribe` 和 `store.$onAction`
-4. 作用于：选项式API
+
+- 每个 store 都是`reactive`包装对象（因此不能直接解构，要用`storeToRefs`解构，被`storeToRefs`解构后需要`.vulue`解包或自动解包），所以可以自动解包任何它所包含的 Ref（`ref()`、`computed()`、等）
+
+    ```vue
+    // 组件已自动解包
+    <script setup>
+    import { useXXStore } from '@/stores/xx'
+    const xxStore = useXXStore()
+
+    // 自动解包
+    console.log(xxStore.hello, xxStore.state1)
+    </script>
+    ```
+
+    ```js
+    // 插件已自动解包
+    const sharedRef = ref('shared')
+    pinia.use(({ store }) => {
+      // 每个 store 都有单独的 `hello` 属性
+      store.hello = ref('secret')
+      // 自动解包
+      store.hello // 'secret'
+
+      // 所有的 store 都在共享 `shared` 属性的值
+      store.shared = sharedRef
+      store.shared // 'shared'
+    })
+    ```
+
+4. `storeToRefs`产生有包裹的对象
+
+    不能直接解构store，需要用`storeToRefs`解构响应式引用，会跳过 **所有action或非响应式属性**（action和非响应式属性可以直接解构，~~不需要用`storeToRefs`~~）
+
+    ```vue
+    <script setup>
+    import { storeToRefs } from 'pinia'
+    const store = useCounterStore()
+    // 下面的代码同样会提取那些来自插件的属性的响应式引用
+    // 但是会跳过所有的 action 或者非响应式（非 ref 或者 非 reactive）的属性
+    const { name, doubleCount } = storeToRefs(store)
+    // 名为 increment 的 action 可以被解构
+    const { increment } = store
+    </script>
+    ```
+5. 作用于：选项式API
 
     1. `mapState`
 
@@ -3343,50 +3444,6 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         ```
     1. `mapStores`
     1. ~~`mapGetters`~~
-
-- 每个 store 都是`reactive`包装对象（因此不能直接解构，要用`storeToRefs`解构，被`storeToRefs`解构后需要`.vulue`解包或自动解包），所以可以自动解包任何它所包含的 Ref（`ref()`、`computed()`、等）
-
-    ```js
-    // 组件已自动解包
-    <script setup>
-    import { useXXStore } from '@/stores/xx'
-    const xxStore = useXXStore()
-
-    // 自动解包
-    console.log(xxStore.hello, xxStore.state1)
-    </script>
-
-
-    // 插件已自动解包
-    const sharedRef = ref('shared')
-    pinia.use(({ store }) => {
-      // 每个 store 都有单独的 `hello` 属性
-      store.hello = ref('secret')
-      // 自动解包
-      store.hello // 'secret'
-
-      // 所有的 store 都在共享 `shared` 属性的值
-      store.shared = sharedRef
-      store.shared // 'shared'
-    })
-    ```
-
-5. `storeToRefs`产生有包裹的对象
-
-    不能直接解构store，需要用`storeToRefs`解构响应式引用，会跳过 **所有action或非响应式属性**（action和非响应式属性可以直接解构，~~不需要用`storeToRefs`~~）
-
-    ```vue
-    <script setup>
-    import { storeToRefs } from 'pinia'
-    const store = useCounterStore()
-    // `name` 和 `doubleCount` 都是响应式引用
-    // 下面的代码同样会提取那些来自插件的属性的响应式引用
-    // 但是会跳过所有的 action 或者非响应式（非 ref 或者 非 reactive）的属性
-    const { name, doubleCount } = storeToRefs(store)
-    // 名为 increment 的 action 可以被解构
-    const { increment } = store
-    </script>
-    ```
 
 - TypeScript支持：“上述一切功能都有类型支持，所以你永远不需要使用 ~~`any`~~ 或 ~~`@ts-ignore`~~”
 - 支持SSR
@@ -4645,7 +4702,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     ```vue
     // 父级
-    <MyCmp v-if="showDialog" @update:is-show="(bool)=> showDialog = bool"/><!-- 省略了：`:is-show="showDialog"` -->
+    <MyCmp v-if="showDialog" @update:is-show="(bool)=> showDialog = bool"/><!-- 省略了：`:is-show="showDialog"`，因为好像子级也用不到 -->
     <MyCmp v-if="showDialog" :is-show.sync="showDialog"/><!-- 推荐（上面的语法糖） -->
 
     // 主动关闭子级用`this.$refs.子级.dialogVisible = false`，而不要用`this.showDialog = false`
@@ -4661,7 +4718,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     <script>
     export default {
-      props: [/* "isShow", */],
+      props: [/* "isShow", */], // isShow好像没有场景会用到
       mounted() {
         this.dialogVisible = true;
       },
@@ -4883,17 +4940,16 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     ```vue
     <el-input
       ref="inputRef"
-      v-model="text1"
+      v-model="text"
       clearable
       @click.native.prevent="handlerClick($event)"
       @focus="$refs.inputRef?.blur()"
-      @clear="text2 = ''"
+      @clear="text = ''"
     />
 
     data() {
       return {
-        text1: '展示的文案',
-        text2: '可能是表单用的真正文本',
+        text: '展示的文案',
       }
     }
 
@@ -4903,10 +4959,12 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         return;
       }
 
-      // 进行其他逻辑，比如打开弹窗，这个弹窗最后修改 text1（展示）、text2（表单传参）
+      // 进行其他逻辑，比如打开弹窗，这个弹窗最后修改 this.text
     }
     ```
     </details>
+
+    >[CodePen demo](https://codepen.io/realgeoffrey/pen/xbwjamm)
 6. <details>
 
     <summary>日期选择器，限制选择日期长度</summary>
