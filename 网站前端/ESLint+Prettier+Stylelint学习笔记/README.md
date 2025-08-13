@@ -123,6 +123,18 @@
             2. 不能在`overrides`属性中使用`ignorePatterns`。
             3. 优先级（降序）：`.eslintignore`文件、`ignorePatterns`配置、`package.json`的`eslintIgnore`
         14. `settings: {}`插件plugins使用来指定应该在其所有规则rules中共享的信息
+    4. 缓存文件`.eslintcache`
+
+        >当执行带`cache`的eslint命令时，若原本不存在`.eslintcache`文件，则不会进行仅缓存对比（没有缓存文件）；若存在`.eslintcache`文件，才会进行仅缓存对比。
+
+        - 产生条件：
+
+            1. 命令加了`--cache`（或配置文件包含`cache: true`）
+
+                - 执行一次未包含`--cache`（或配置文件未包含`cache: true`）的命令会删除已有的`.eslintcache`文件
+            2. && eslint匹配到了任何文件且没有报错退出
+            3. && 输入方式不是 ~~`stdin`~~（e.g. `echo "let a = 1" | eslint --stdin --cache`不会产生/删除`.eslintcache`文件）
+            - 注意生成路径（默认在运行命令的目录，可以命令`--cache-location 路径`或配置文件`cacheLocation: '路径'`指定其他位置）
 
 ### [Prettier](https://github.com/prettier/prettier)
 1. CLI命令
