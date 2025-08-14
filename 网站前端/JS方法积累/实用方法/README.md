@@ -2484,7 +2484,7 @@ loadingFetch(() => { console.log('同步方法') })
 >1. `download`指示浏览器下载文件资源地址而不是导航跳转（若href的字符串不同源，则退回未添加download的逻辑——导航跳转）。
 >2. 支持多种文件类型。
 >3. ~~兼容性不佳。~~
->4. 若download未指定值或未指定文件后缀，则从多种方式中设置`文件名.文件类型`：响应头的`Content-Disposition`、`Content-Type`，URL的最后一段，Data URL的开头，Blob的`type`。
+>4. 若download未指定值或未指定文件后缀（未指定文件后缀，会仅用传值作为文件名、后缀从后面信息获取），则从多种方式中设置`文件名.文件类型`：响应头的`Content-Disposition`、`Content-Type`，URL的最后一段，Data URL的开头，Blob的`type`。
 >5. 响应头`Content-Disposition: inline`（默认）是预览，`Content-Disposition: attachment`是下载；可以通过先下载资源（blob格式），再设置a标签的`download`进行下载或预览。
 
 以下方法均依赖`<a>`的`download`属性（JS的Blob或Data URL，都需要先[CORS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#corscross-origin-resource-sharing跨域资源共享)下载文件资源地址成功后再进行操作）：
