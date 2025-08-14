@@ -4645,7 +4645,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     ```vue
     // 父级
-    <MyCmp v-if="showDialog" @update:is-show="(bool)=> showDialog = bool"/><!-- 省略了：`:is-show="showDialog"` -->
+    <MyCmp v-if="showDialog" @update:is-show="(bool)=> showDialog = bool"/><!-- 省略了：`:is-show="showDialog"`，因为好像子级也用不到 -->
     <MyCmp v-if="showDialog" :is-show.sync="showDialog"/><!-- 推荐（上面的语法糖） -->
 
     // 主动关闭子级用`this.$refs.子级.dialogVisible = false`，而不要用`this.showDialog = false`
@@ -4661,7 +4661,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     <script>
     export default {
-      props: [/* "isShow", */],
+      props: [/* "isShow", */], // isShow好像没有场景会用到
       mounted() {
         this.dialogVisible = true;
       },
