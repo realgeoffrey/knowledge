@@ -3022,31 +3022,28 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
 ### [pinia](https://github.com/vuejs/pinia)（代替~~vuex~~）
 1. `createPinia()`创建pinia实例
-2. `defineStore(id名, {state: 方法, getters: 对象, actions: 对象} 或 类似setup的方法[, 选项对象])`创建useStore函数（用于返回store实例）
+2. `defineStore(id名, {state: 方法, getters: 对象, actions: 对象} 或 类似setup的方法[, 选项对象])`创建一个 useStore 函数，检索 store 实例（`useStore()`返回store实例）
 
     ```js
     // 0️⃣ ./stores/XX.js，定义store
     export const useXXStore = defineStore('唯一ID', 对象或方法[, 插件选项]) // 插件的context.options：若第二个参数是对象，则是这个对象，否则是新增的第三个参数
+    // ID仅在pinia内部使用，开发者不需要使用这个id，只需要知道不可以设置相同id以及一些命名规范
 
 
     // 1️⃣ .vue（app已经注入pinia实例之后，才可以使用。组件的`setup`就是app启动后执行）
     <script setup>
     import { useXXStore } from '@/stores/XX'
-    // 在组件内部的任何地方均可以访问变量`store`（不需要store.state/getters/actions，直接使用定义的属性名store.属性1/计算属性1/方法1）
+    // 在组件内部的任何地方均可以访问变量`store`（不需要store.state/getters/actions，直接使用定义的属性名：store.属性1/计算属性1/方法1）
     const store = useXXStore()
     </script>
 
 
     // 2️⃣ 非SSR
-    // ❌  失败，因为它是在创建 pinia 之前被调用的
-    const store = useXXStore()
-
+    const store = useXXStore()  // ❌  失败，因为它是在创建 pinia 之前被调用的
     const pinia = createPinia()
     const app = createApp(App)
     app.use(pinia)
-
-    // ✅ 成功，因为 pinia 实例现在激活了
-    const store = useXXStore()
+    const store = useXXStore()  // ✅ 成功，因为 pinia 实例现在激活了
 
 
     // 3️⃣ SSR，需要把pinia实例传递给useXX()函数
@@ -3054,7 +3051,6 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     const app = createApp(App)
     app.use(router)
     app.use(pinia)
-
     router.beforeEach((to) => {
       // ✅这会正常工作，因为它确保了正确的 store 被用于
       // 当前正在运行的应用
@@ -3064,7 +3060,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     })
     ```
 
-    >新的属性如果没有在 state/getter/action 中被定义，则不能被添加。它必须包含初始状态。e.g. 若`secondCount`没有在`state()`中定义，则执行任何设置无效，比如 ~~store.secondCount = 2~~。
+    >新的属性若没有在 state/getter/action 中被定义，则不能被添加。它必须包含初始状态。e.g. 若`secondCount`没有在`state()`中定义，则执行任何设置均无效，比如 ~~store.secondCount = 2~~。
 
     1. state
 
@@ -3073,7 +3069,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
             1. 选项式API：store的`$reset()`方法将state重置为初始值
 
                 ```js
-                const store = useStore()
+                const store = useXXStore()
                 store.$reset()
                 ```
             2. Setup Stores：需要创建自己的`$reset()`方法（未默认提供）
@@ -3142,17 +3138,17 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
             `store.$subscribe((mutation/* type,storeId,payload */, state) => {}, {vue 3的watch选项 + detached})`
 
-            - 默认情况下，state subscription会被绑定到添加它们的组件上（如果 store 在组件的 setup() 里面）。这意味着，当该组件被卸载时，它们将被自动删除。如果你想在组件卸载后依旧保留它们，请将 `{ detached: true }` 作为第二个参数，以将state subscription从当前组件中分离。
+            - 默认情况下，state subscription会被绑定到添加它们的组件上（如果 store 在组件的 `setup()` 里面），当该组件被卸载时，它们将被自动删除。如果你想在组件卸载后依旧保留它们，请将 `{ detached: true }` 作为第二个参数，这将state subscription从当前组件中分离。
     2. getter
 
         1. 第一个参数是state
         2. （`this`获取当前store的整个实例）`this.当前store的其他getter`（注意不要用箭头函数）
-        3. 其他store实例的值（state、getter、action）：`import`引入直接使用
+        3. 其他store实例的值（state、getter、action）：直接执行其他store实例的useXXStore来用（跟组件中使用store一样）
 
         ```js
         import { useOtherStore } from './other-store'
 
-        export const useStore = defineStore('main', {
+        export const useXXStore = defineStore('XX', {
           state: () => ({
             // ...
           }),
@@ -3170,7 +3166,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     3. action
 
         1. `this`获取当前store的整个实例（包括state、getter、action）
-        2. 其他store实例的值（state、getter、action）：`import`引入直接使用
+        2. 其他store实例的值（state、getter、action）：直接执行其他store实例的useXXStore来用（跟组件中使用store一样）
         3. 可以异步（`async-await`）
         4. 订阅action
 
@@ -3212,7 +3208,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
             unsubscribe()
             ```
 
-            - 默认情况下，action 订阅器会被绑定到添加它们的组件上(如果store在组件的`setup()`内)。这意味着，当该组件被卸载时，它们将被自动删除。如果你想在组件卸载后依旧保留它们，请将`true`作为第二个参数传递给 action 订阅器，以便将其从当前组件中分离。
+            - 默认情况下，action 订阅器会被绑定到添加它们的组件上(如果store在组件的`setup()`内)，当该组件被卸载时，它们将被自动删除。如果你想在组件卸载后依旧保留它们，请将`true`作为第二个参数传递给 action 订阅器，以便将其从当前组件中分离。
 3. `pinia实例.use(插件)`
 
     每个插件会按需执行：只有当首次使用到某个插件时才会执行该插件方法，并且只会执行一次。
