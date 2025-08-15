@@ -900,7 +900,7 @@
 21. `border`分为上、右、下、左，每一块区域的`border-width`不为`0`时都是梯形（`width`或`height`为`0`时为三角形），`border-width`决定梯形（或三角形）的高。
 
     某些边设为`border-width`不为`0`、`border-right-color`为`transparent`可以制造一些形状。
-22. 用`filter: drop-shadow`（图像本身形状和alpha通道的阴影）替代`box-shadow`（盒阴影）
+22. **用`filter: drop-shadow`（图像本身形状和alpha通道的阴影）替代`box-shadow`（盒阴影）**
 23. 若在视口中**添加/删除**节点导致滚动条变化，则浏览器会尽量保持视口最顶部节点固定不变（从而瞬间改变滚动条位置以使视口顶部节点尽量保持不随滚动条变化而位移）
 24. `overflow: hidden`无法处理`position: fixed`的子孙节点。
 
