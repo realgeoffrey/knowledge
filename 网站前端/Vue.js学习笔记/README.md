@@ -391,8 +391,10 @@
 
             1. `:class="'a b'"`：`class="a b"`
             2. `:class="{ 'a': true, 'b': false }"`：`class="a"`
+
+                `` :class="level ? `level-${level}` : ''" `` === `` :class="{ [`level-${level}`]: level }" ``
             3. `:class="['a', 'b']"`：`class="a b"`
-            4. `:class="[{ 'a': true, 'b': false }, { 'c': true }, 'd', ['e']]"`：`class="a c d e"`
+            4. **`:class="[{ 'a': true, 'b': false }, { 'c': true }, 'd', ['e']]"`：`class="a c d e"`**
         2. 绑定`style`
 
             >1. 自动添加样式前缀。
