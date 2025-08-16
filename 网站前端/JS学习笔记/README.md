@@ -3089,7 +3089,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
 - 竞争冒险（race hazard、竞态条件、竞争条件、race condition）
 
-    在前端JS中，​竞争冒险通常出现在异步操作（如：fetch、setTimeout、Promise）的执行顺序不确定时，导致最终结果依赖于不可控的操作完成顺序，如：快速输入内容后实时拉取数据展示、快速选择按钮后请求数据展示、React的`const [count, setCount] = useState(0); setCount(count + 1);`（用`setCount(prev => prev + 1);`代替）。通常可以用 防抖 + 标记最新请求 来规避。
+    在前端JS中，​竞争冒险通常出现在异步操作（如：fetch、setTimeout、Promise）的执行顺序不确定时，导致最终结果依赖于不可控的操作完成顺序，如：快速输入内容后实时拉取数据展示、快速选择按钮后请求数据展示、React的`const [count, setCount] = useState(0); setCount(count + 1);`（用`setCount(prev => prev + 1);`规避）。通常可以用 **防抖** + **标记最新请求** 来规避。
 
 ### 自执行匿名函数（拉姆达，λ，lambda）
 立即调用的函数表达式（IIFE，Immediately Invoked Function Expression）。
