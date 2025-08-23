@@ -69,6 +69,8 @@
     1. `reactive()`只接受引用类型（使传入的引用类型对象本身具有响应性）；`ref()`可以接受任何值类型（包括组件），会返回一个包裹对象，并在`.value`属性下暴露内部值（使.value的值具有响应性）。
     1. 不能解构：
 
+        >只是不能直接解构，不是不能使用，①可以通过特殊函数包裹后解构使用，②也可以不解构直接`.属性`使用。
+
         1. `reactive`、`setup(props)`的`props`、`vue-router`的`useRoute`：需要用`toRefs`或`toRef`才能解构（`toRefs`或`toRef`产生有包裹的对象）
         2. `pinia`的store：需要用`pinia`的`storeToRefs`才能解构（`storeToRefs`产生有包裹的对象）
         3. `ref`的`.value`手动解包后不是响应式对象：一般直接`.value`去操作，不会进行解构
