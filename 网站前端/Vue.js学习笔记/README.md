@@ -3206,7 +3206,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
             - 调用`$reset`一定会触发已注册的store订阅器，**即使 store 当前的状态已经和初始值完全相同**。
 
-                因为 $reset() 本质上会执行一次 store.$patch(initialState)，这会算作一次“状态变更”。$subscribe 的回调会收到 mutation.type = 'direct'，以及变化前后的 state。
+                >因为 $reset() 本质上会执行一次 store.$patch(initialState)，这会算作一次“状态变更”。$subscribe 的回调会收到 mutation.type = 'direct'，以及变化前后的 state。
     2. getter
 
         1. 第一个参数是state
