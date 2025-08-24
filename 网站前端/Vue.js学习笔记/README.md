@@ -1002,6 +1002,10 @@
         父级使用子组件字符串的作用域名字。
 
         `<组件 slot-scope="临时变量"/>`或`<template slot-scope="临时变量"><组件/></template>` 改为 `<template v-slot="临时变量"><组件/></template`。
+
+- 支持写在`<template>`上的指令或attribute（结构型指令，影响DOM结构本身）：`v-if`、`v-else`、`v-else-if`、`v-for`、`key`（配合 v-for）
+- 不支持写在`<template>`上的指令或attribute：样式/类、事件、任何属性（无论是绑定值还是写死、`v-model`）
+
 - <details>
 
     <summary>官方建议的顺序：<a href="https://v2.cn.vuejs.org/v2/style-guide/index.html#元素-attribute-的顺序推荐">元素特性的顺序</a></summary>
