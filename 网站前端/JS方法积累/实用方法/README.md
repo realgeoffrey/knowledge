@@ -2544,6 +2544,8 @@ loadingFetch(() => { console.log('同步方法') })
           if (xhr.status >= 200 && xhr.status < 300) {  // 只有部分2xx支持传递数据（建议只处理200的响应）；304不返回数据
             const link = document.createElement('a');
             link.href = URL.createObjectURL(xhr.response); // Blob URL。也可以用Data URL（base64）
+            // Blob URL和Data URL都不包含原http链接的任何响应头，所以文件名已无法从href的响应头中获取（只能依赖手动设置download=filename）
+
             link.download = filename ?? ''; // 若没有加download，则就是直接打开链接的逻辑（预览），a的href类似于window.open等
 
             link.style.display = 'none';
@@ -2575,6 +2577,7 @@ loadingFetch(() => { console.log('同步方法') })
     >  reader.addEventListener('loadend', (e) => {
     >    const link = document.createElement('a');
     >    link.href = e.target.result;
+    >    // Blob URL和Data URL都不包含原http链接的任何响应头，所以文件名已无法从href的响应头中获取（只能依赖手动设置download=filename）
     >    link.download = filename ?? ''; // 若没有加download，则就是直接打开链接的逻辑（预览），a的href类似于window.open等。但base64大概率会超过浏览器导航栏输入长度
     >    link.style.display = 'none';
     >    document.body.appendChild(link);
@@ -2686,6 +2689,7 @@ loadingFetch(() => { console.log('同步方法') })
         eleLink.download = filename
         eleLink.style.display = 'none'
         eleLink.href = base64
+        // Blob URL和Data URL都不包含原http链接的任何响应头，所以文件名已无法从href的响应头中获取（只能依赖手动设置download=filename）
 
         // 触发下载
         document.body.appendChild(eleLink)
