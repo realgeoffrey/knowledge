@@ -813,7 +813,7 @@ feat(details): 添加了分享功能
 ### 设置gitconfig
 >`git config --global/local/system/worktree/file 「参数」`要把`--global等`写在第三个参数位置，否则无效。写：默认`--local`；读：没有默认、必填。
 
->以下或许是配置的最简的最佳实践：
+>以下或许是git配置最简的最佳实践：
 
 1. 用户名和邮箱（用于判断推送者的账号信息）
 
@@ -839,7 +839,7 @@ feat(details): 添加了分享功能
         ```shell
         git config --global core.excludesfile ~/.gitignoreglobal
         ```
-    2. 打开添加的文件.gitignoreglobal，填写要全局忽略的文件（夹）
+    2. 新增.gitignoreglobal文件，填写要全局忽略的文件（夹）
 
         ><details>
         ><summary>e.g.</summary>
@@ -852,15 +852,13 @@ feat(details): 添加了分享功能
 3. HTTP代理、HTTPS代理
 
     ```text
-    git config --global http.proxy 'http://127.0.0.1:7890'
-    # 或 git config --global http.proxy 'socks5://127.0.0.1:7891'
+    git config --global http.proxy 'http://127.0.0.1:7890'  # 或 'socks5://127.0.0.1:7891'
 
-    git config --global https.proxy 'http://127.0.0.1:7890'
-    # 或 git config --global https.proxy 'socks5://127.0.0.1:7891'
+    git config --global https.proxy 'http://127.0.0.1:7890' # 或 'socks5://127.0.0.1:7891'
     ```
 4. 开启对文件名大小写敏感
 
-    >每个git项目都会默认显式设置为不敏感，因此可能需要去到每个项目单独配置敏感（项目配置优先于全局配置）。
+    >每个git项目都会默认显式设置为不敏感，因此需要去到每个项目单独开启敏感（项目配置优先于全局配置）。
 
     ```shell
     git config --global core.ignorecase false   # 全局
