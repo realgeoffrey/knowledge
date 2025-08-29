@@ -870,8 +870,8 @@ feat(details): 添加了分享功能
 
     ```shell
     git config --global core.autocrlf input     # 在提交时自动把 Windows 的 CRLF 换行符转换成 Unix 风格的 LF，但在 checkout 文件时不做任何修改
-    git config --global pull.rebase true        # 将Git的默认拉取行为改为使用 rebase（变基）而不是 merge
-    git config --global rebase.autoStash true   # 当有 未提交的变更（未暂存/已暂存） 的情况下，进行rebase或pull --rebase时，自动执行git stash → rebase或pull --rebase → git stash pop，而不是直接报错不允许执行
+    git config --global pull.rebase true        # 当有 落后的commit+领先的commit 情况下，执行pull时，将pull行为改为 rebase（变基）而不是 merge
+    git config --global rebase.autoStash true   # 当有 未commit的变更（未暂存/已暂存）+落后的commit 情况下，执行`rebase或pull --rebase`时，自动执行git stash → `rebase或pull --rebase` → git stash pop（若冲突，则需要手动解决），而不是直接报错不允许执行
     ```
 
     >感觉会导致更麻烦的配置：`git config --global pull.ff only  # 只允许fast-forward合并，否则报错退出。使 pull.rebase true 配置失效，因为若不是ff合并模式则直接退>出，不会改用rebase合并`
