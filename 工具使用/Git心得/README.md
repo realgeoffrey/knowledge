@@ -878,7 +878,7 @@ feat(details): 添加了分享功能
 
     ```shell
     git config --local --list   # 当前目录
-    git config --global --list  # 全局
+    git config --global --list  # 全局（ ~/.gitconfig）
     ```
 - 删除某个设置
 
