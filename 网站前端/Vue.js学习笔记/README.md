@@ -165,7 +165,7 @@
     | 事件监听器存储位置 | `$listeners` | `$attrs`（已移除 ~~`$listeners`~~） |
     | 事件名 | `$listeners`中保持原样（事件名的大小写、`-`不会做任何变化） | `$attrs`中转化为`onClick`这样的驼峰事件名 |
     | `inheritAttrs`影响（并非影响`$attrs`） | 影响根元素`不被认作props`的attribute传递，除了`class`、`style` | 影响根元素`不被认作props`的attribute传递，包括`class`、`style` |
-13. `$slots`是唯一的插槽 API，所有插槽（包括作用域插槽和普通插槽）都通过它访问，`vm.$slots.名字`返回函数（Vue 2返回VNode）。
+13. `$slots`是唯一的插槽 API，所有插槽（包含Vue 2不包含的作用域插槽）都通过它访问，`vm.$slots.名字`返回函数（Vue 2返回VNode）。
 
     - ~~$scopedSlots~~已废弃。
 14. 响应式原理、数据绑定原理：使用了ES6的`Proxy`对数据代理
@@ -578,6 +578,7 @@
 
     - 子组件的`JSON.stringify(vm.$slots.名字)` === `JSON.stringify(vm.$scopedSlots.名字())`，都返回`Array<VNode> | undefined`
 
+        >0. `<slot>`模板里的插槽出口
         >1. `vm.$slots`不包含父级使用了 作用域插槽 的那个slot（`vm.$scopedSlots`都包含）。
         >2. `vm.$scopedSlots.名(参数)`会把 参数 传递给 父级 作用域插槽 的 临时变量。
         >
@@ -1952,7 +1953,7 @@
 
         3. `slots`：允许外部环境将额外的内容组合在组件中。
 
-            >`$scopedSlots`（`$slots`不包含父级使用了 作用域插槽 的那个slot）
+            >`<slot>`、`$scopedSlots`、`$slots`
         - *ref直接引用*
 5. 内置组件
 
