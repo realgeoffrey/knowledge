@@ -67,19 +67,19 @@
 3. `<script setup>`、`ref`、`setup`、`nextTick`、`reactive`、`computed`、`watch`、`watchEffect`、`onWatcherCleanup`、`onMounted`、`onUpdated`、`onUnmounted`、`onBeforeMount`、`onBeforeUpdate`、`onBeforeUnmount`、`onErrorCaptured`、`onRenderTracked`、`onRenderTriggered`、`onActivated`、`onDeactivated`、`onServerPrefetch`、`useTemplateRef`、`defineProps`、`defineEmits`、`createApp`、`defineModel`、`defineOptions`、`provide/inject`、`defineAsyncComponent`、`<Suspense>`、`toValue`
 
     1. `reactive()`只接受引用类型（使传入的引用类型对象本身具有响应性）；`ref()`可以接受任何值类型（包括组件），会返回一个包裹对象，并在`.value`属性下暴露内部值（使.value的值具有响应性）。
-    1. 不能解构：
+    2. 不能解构：
 
         >只是不能直接解构，不是不能使用，①可以通过特殊函数包裹后解构使用，②也可以不解构直接`.属性`使用。
 
         1. `reactive`、`setup(props)`的`props`、`vue-router`的`useRoute`：需要用`toRefs`或`toRef`才能解构（`toRefs`或`toRef`产生有包裹的对象）
         2. `pinia`的store：需要用`pinia`的`storeToRefs`才能解构（`storeToRefs`产生有包裹的对象）
         3. `ref`的`.value`手动解包后不是响应式对象：一般直接`.value`去操作，不会进行解构
-    2. 在组件的`<script setup>`中的顶层的导入、声明的变量和函数可在同一组件的`模板`中直接使用（有包裹的对象会在模板中自动浅层解包，因此不需要再手动 ~~`.value`~~）。
+    3. 在组件的`<script setup>`中的顶层的导入、声明的变量和函数可在同一组件的`模板`中直接使用（有包裹的对象会在模板中自动浅层解包，因此不需要再手动 ~~`.value`~~）。
 
         有包裹的对象：`ref()`、`computed()`
-    1. `shallowRef()`：`ref()`的浅层作用形式；`shallowReactive()`：`reactive()`的浅层作用形式。
-    2. `watch(ref对象, 调用方法并传参)`
-    3. `defineProps`、`defineEmits`、`defineExpose`是一个编译器宏（compiler macro），并不需要导入（但也不能打印或赋值给其他变量）
+    4. `shallowRef()`：`ref()`的浅层作用形式；`shallowReactive()`：`reactive()`的浅层作用形式。
+    5. `watch(ref对象, 调用方法并传参)`
+    6. `defineProps`、`defineEmits`、`defineExpose`是一个编译器宏（compiler macro），并不需要导入（但也不能打印或赋值给其他变量）
 
         ```vue
         <script setup>
@@ -99,18 +99,18 @@
 
         emit('注册事件名2', 参数1, 参数2, ) // 必须先注册事件再使用
         ```
-    4. 不像react的函数组件（每次渲染，都执行一遍函数），`<script setup>`中的代码只会只会执行一次，但通过响应式系统追踪依赖
-    5. 直接递归渲染组件自己
+    7. 不像react的函数组件（每次渲染，都执行一遍函数），`<script setup>`中的代码只会只会执行一次，但通过响应式系统追踪依赖
+    8. 直接递归渲染组件自己
 
         >e.g. <https://cn.vuejs.org/examples/#tree>
-5. `ref`与`computed`自动浅层解包（automatically unwrapped），[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)
+4. `ref`与`computed`自动浅层解包（automatically unwrapped），[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)
 
     1. `ref`会在作为响应式对象的属性被访问或修改时自动浅层解包
     2. `ref`、`computed`会在模板中自动浅层解包
-6. `computed`
+5. `computed`
 
     上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；可写计算属性的`get`的第一个参数`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
-1. 支持Fragments（片段）
+6. 支持Fragments（片段）
 
     允许：`<template>多个节点</template>`
 7. 若组件有多个根元素，则不会默认添加在多个根元素上（`inheritAttrs: true（默认）`会在单独一个根元素上添加attribute）
@@ -124,14 +124,14 @@
       <span>This is a child component</span>
     </template>
     ```
-1. 支持`<Teleport>`
-8. <details>
+8. 支持`<Teleport>`
+9. <details>
 
     <summary>生命周期图示</summary>
 
     ![vue 3生命周期图](./images/vue-lifecycle-vue3.png)
     </details>
-9. 深度选择器
+10. 深度选择器
 
     | 写法        | Vue版本支持  | 预处理器支持    | 官方推荐  | 备注 |
     |------------|-------------|--------------|----------|--------------------------|
@@ -142,7 +142,7 @@
 
     >`:deep(不能填写根节点选择器、可以填写引用的子节点甚至不出现在当前组件中的选择器)`？尚未总结用法。大致原理是：若未加`deep`，则`属性选择器`添加在最后一个选择器（不在伪类选择器），`a b[属性选择器]:hover`；若加了`deep`，则`属性选择器`添加在第一个选择器之前，`[属性选择器] a b:hover`？
 
-10. 当同时存在于一个节点上时，`v-if`比`v-for`的优先级更高（与vue 2正相反）
+11. 当同时存在于一个节点上时，`v-if`比`v-for`的优先级更高（与vue 2正相反）
 
     <details>
     <summary>这意味着<code>v-if</code>的条件将无法访问到<code>v-for</code>作用域内定义的变量别名</summary>
@@ -157,7 +157,7 @@
     </li>
     ```
     </details>
-11. `$attrs`、`inheritAttrs`区别
+12. `$attrs`、`inheritAttrs`区别
 
     | 特性 | Vue 2 | Vue 3 |
     |------|-------|-------|
@@ -165,14 +165,17 @@
     | 事件监听器存储位置 | `$listeners` | `$attrs`（已移除 ~~`$listeners`~~） |
     | 事件名 | `$listeners`中保持原样（事件名的大小写、`-`不会做任何变化） | `$attrs`中转化为`onClick`这样的驼峰事件名 |
     | `inheritAttrs`影响（并非影响`$attrs`） | 影响根元素`不被认作props`的attribute传递，除了`class`、`style` | 影响根元素`不被认作props`的attribute传递，包括`class`、`style` |
-4. 响应式原理、数据绑定原理：使用了ES6的`Proxy`对数据代理
+13. `$slots`是唯一的插槽 API，所有插槽（包括作用域插槽和普通插槽）都通过它访问，`vm.$slots.名字`返回函数（Vue 2返回VNode）。
+
+    - ~~$scopedSlots~~已废弃。
+14. 响应式原理、数据绑定原理：使用了ES6的`Proxy`对数据代理
 
     - 相较于Vue 2（利用ES5的`Object.defineProperty`对数据进行劫持，结合发布订阅模式的方式来实现），Vue 3使用`Proxy`的优势：
 
         1. `Object.defineProperty`只能监听某个属性，不能对全对象监听
         2. 可以省去`for-in`，闭包等内容来提升效率（直接绑定整个对象即可）
         3. 可以监听数组，不用再去单独的对数组做特异性操作，`Proxy`可以检测到数组内部数据的变化
-2. 虚拟DOM的diff算法不同
+15. 虚拟DOM的diff算法不同
 
     1. 2
 
@@ -182,7 +185,7 @@
         1. 通过计算新旧节点索引映射表，仅移动非递增序列中的节点，减少 DOM 操作次数（LIS算法）
         2. 编译时通过 PatchFlag 标记动态属性（如文本、class），Diff 时直接跳过静态节点
         3. 将模板划分为动态区块后仅追踪动态节点集合（​Block Tree）
-1. ts的支持不同
+16. ts的支持不同
 
     1. 2
 
@@ -190,7 +193,7 @@
     2. 3
 
         支持ts。
-1. 新版本[devtools](https://github.com/vuejs/devtools)支持Vue 3，旧版本[devtools-v6](https://github.com/vuejs/devtools-v6)支持Vue 2。2个插件必须仅启动一个才能正常工作
+17. 新版本[devtools](https://github.com/vuejs/devtools)支持Vue 3，旧版本[devtools-v6](https://github.com/vuejs/devtools-v6)支持Vue 2。2个插件必须仅启动一个才能正常工作
 
 ---
 
