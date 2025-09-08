@@ -120,6 +120,9 @@
 1. `v-model:xx`
 
     `v-model`默认：props`modelValue`、事件`update:modelValue`；`v-model:xx`修改为：props`xx`、事件`update:xx`。
+1. 直接递归渲染组件自己
+
+    >e.g. <https://cn.vuejs.org/examples/#tree>
 1. 响应式原理、数据绑定原理：使用了ES6的`Proxy`对数据代理
 
     - 相较于Vue 2（利用ES5的`Object.defineProperty`对数据进行劫持，结合发布订阅模式的方式来实现），Vue 3使用`Proxy`的优势：
@@ -141,21 +144,98 @@
 1. 新版本[devtools](https://github.com/vuejs/devtools)支持Vue 3，旧版本[devtools-v6](https://github.com/vuejs/devtools-v6)支持Vue 2。若2个插件一起启动则无法工作。
 
 ### Vue 3的组合式API
-1. `reactive()`只接受引用类型（使传入的引用类型对象本身具有响应性）；`ref()`可以接受任何值类型（包括组件或DOM，此时建议初始化为`ref(null)`），会返回一个包裹对象，并在`.value`属性下暴露内部值（使`.value`的值具有响应性）。
-2. 不能解构：
+1. 在组件的`<script setup>`中的**顶层的导入、声明的变量、函数**可在同一组件的`模板`中直接使用（有包裹的对象会在模板中自动浅层解包，因此不需要再手动 ~~`.value`~~）。
+
+    有包裹的对象：`ref()`、`computed()`
+1. 不像react的函数组件（每次渲染，都执行一遍函数），`<script setup>`中的代码只会只会执行一次，但通过响应式系统追踪依赖
+1. `reactive()`只接受引用类型（创建Proxy对象以引用类型对象作为目标，具有响应性）；`ref()`可以接受任何值类型（包括组件或DOM，此时建议初始化为`ref(null)`），会返回一个包裹对象，并在`.value`属性下暴露内部值（使`.value`的值具有响应性）。
+1. Ref 具有深层响应性（`ref`、`reactive`、`computed`）
+
+    Vue 3对具有深层响应性的代理对象**新增属性**能够保证新增属性的响应性；Vue 2需要用`Vue.set`或`vm.$set`（Vue 3已废弃）才能新增属性，直接`vm.新属性 = 值`不具有响应性。
+
+    ```js
+    import { ref } from 'vue'
+    const data = ref({  // reactive效果相同
+      a: { b: { c: 1, d: [{ e: 1 }] } },
+    })
+    // 都会保持响应性
+    function changeData() {
+      data.value.a.b.d[data.value.a.b.d.length - 1].e = 2
+      data.value.a.b.d.push({ e: 3 })
+    }
+    function changeData2() {
+      data.value.a = { b: 1 }
+    }
+    function changeData3() {
+      data.value.a.b = 2
+    }
+    function changeData4() {
+      data.value.a.f = 2
+    }
+    ```
+1. `shallowRef()`：`ref()`的浅层作用形式；`shallowReactive()`：`reactive()`的浅层作用形式。
+
+    浅层Ref只有`.value`的访问会被追踪
+1. 响应式对象 整体替换
+
+    1. `reactive`（、`shallowReactive()`）对象：
+
+        >①只能在「属性层面」更新，不能替换整个Proxy；②对同一个对象多次`reactive`，Vue返回的是同一个Proxy；③对一个已存在的代理对象调用`reactive`会返回这个已存在的代理对象本身
+
+        ```js
+        const state = reactive({ a: 1, b: 2 })
+
+        Object.assign(state, { a: 100, b: 200 })  // ✅ 可以整体替换，响应式保留
+
+        // 不能赋值替换：state = { a: 100, b: 200 }  // ❌ 响应式丢失
+        ```
+    2. `ref`（、`shallowRef()`）对象：
+
+        >ref本质是对任意值（包括对象）的响应式“壳子”，替换 .value 等于换了一个新引用。
+
+        ```js
+        const state = ref({ a: 1, b: 2 })
+
+        state.value = { a: 100, b: 200 }          // ✅ 可以整体替换，响应式保留
+        ```
+1. 复杂`reactive`赋值
+
+    >`ref`代理对象直接`.value =`赋新值，或类似`reactive`赋值的方式都行。
+
+    ```js
+    const apiData = reactive({
+      pagination: {
+        current: 1,
+        pageSize: 10,
+        total: 0,
+      },
+      list: [],
+    })
+
+    // 数组可以直接赋值，Vue 会自动处理。
+    apiData.list = 新数组
+    // 对象最好不要整体替换，用Object.assign 或 手动更新属性 或 赋值给reactive包裹的新对象
+    Object.assign(apiData.pagination, 新对象) // 或：apiData.pagination = reactive(新对象)
+    ```
+1. 不能解构：
 
     >只是不能直接解构，不是不能使用，①可以通过特殊函数包裹后的解构使用，②也可以不解构直接`.属性`使用。
 
     1. `reactive`、`setup(props)`的`props`、`vue-router`的`useRoute`：需要用`toRefs`或`toRef`才能解构（`toRefs`或`toRef`产生有包裹的对象）
     2. `pinia`的store：需要用`pinia`的`storeToRefs`才能解构（`storeToRefs`产生有包裹的对象）
-    3. `ref`的`.value`手动解包后不是响应式对象：一般直接`.value`去操作，不会进行解构
-3. 在组件的`<script setup>`中的顶层的导入、声明的变量和函数可在同一组件的`模板`中直接使用（有包裹的对象会在模板中自动浅层解包，因此不需要再手动 ~~`.value`~~）。
+    3. `ref`的`.value`手动解包后不是响应式对象：一般直接`.value`去操作，不会进行解构（除非`const object = { id: ref(1) }`需要`const {id} = object`解构为顶级属性）
+1. `toRaw`
 
-    有包裹的对象：`ref()`、`computed()`
-7. 不像react的函数组件（每次渲染，都执行一遍函数），`<script setup>`中的代码只会只会执行一次，但通过响应式系统追踪依赖
-4. `shallowRef()`：`ref()`的浅层作用形式；`shallowReactive()`：`reactive()`的浅层作用形式。
-5. `watch(响应式对象 或 ()=>响应式对象, (new, old)=>{}))`、`watch([多个响应式对象], ([new1, new2,], [old1, old2,])=>{})`
-6. `defineProps`、`defineEmits`、`defineExpose`是一个编译器宏（compiler macro），并不需要导入（但也不能打印或赋值给其他变量）
+    返回由`reactive()`、`readonly()`、`shallowReactive()`、`shallowReadonly()`、`ref().value`、`shallowRef().value`代理对应的原始对象。
+1. `ref`与`computed`自动浅层解包（automatically unwrapped），[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)
+
+    1. `ref`会在作为响应式对象的属性被访问或修改时自动浅层解包
+    2. `ref`、`computed`会在模板中自动浅层解包
+1. `computed`
+
+    上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；可写计算属性的`get`的第一个参数`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
+1. `watch(响应式对象 或 ()=>响应式对象, (new, old)=>{}))`、`watch([多个响应式对象], ([new1, new2,], [old1, old2,])=>{})`
+1. `defineProps`、`defineEmits`、`defineExpose`是一个编译器宏（compiler macro），并不需要导入（但也不能打印或赋值给其他变量）
 
     ```vue
     <script setup>
@@ -177,59 +257,7 @@
 
     // 在<template>中还是可以使用$emit，但是已经被标记为已弃用
     ```
-8. 直接递归渲染组件自己
-
-    >e.g. <https://cn.vuejs.org/examples/#tree>
-1. `toRaw`
-
-    返回由`reactive()`、`readonly()`、`shallowReactive()`、`shallowReadonly()`、`ref().value`、`shallowRef().value`代理对应的原始对象。
-4. `ref`与`computed`自动浅层解包（automatically unwrapped），[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)
-
-    1. `ref`会在作为响应式对象的属性被访问或修改时自动浅层解包
-    2. `ref`、`computed`会在模板中自动浅层解包
-4. 响应式对象整体替换
-
-    1. `reactive`（、`shallowReactive()`）对象：
-
-        >①只能在「属性层面」更新，不能替换整个Proxy；②对同一个对象多次`reactive`，Vue返回的是同一个Proxy。
-
-        ```js
-        const state = reactive({ a: 1, b: 2 })
-
-        Object.assign(state, { a: 100, b: 200 })  // ✅ 可以整体替换，响应式保留
-
-        // 不能赋值替换：state = { a: 100, b: 200 }  // ❌ 响应式丢失
-        ```
-    2. `ref`（、`shallowRef()`）对象：
-
-        >ref本质是对任意值（包括对象）的响应式“壳子”，替换 .value 等于换了一个新引用。
-
-        ```js
-        const state = ref({ a: 1, b: 2 })
-
-        state.value = { a: 100, b: 200 }          // ✅ 可以整体替换，响应式保留
-        ```
-1. 复杂`reactive`赋值
-
-    ```js
-    const apiData = reactive({
-      pagination: {
-        current: 1,
-        pageSize: 10,
-        total: 0,
-      },
-      list: [],
-    })
-
-    // 数组可以直接赋值，Vue 会自动处理。
-    apiData.list = 新数组
-    // 对象最好不要整体替换，用Object.assign 或 手动更新属性 或 赋值给reactive包裹的新对象
-    Object.assign(apiData.pagination, 新对象) // 或：apiData.pagination = reactive(新对象)
-    ```
-5. `computed`
-
-    上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；可写计算属性的`get`的第一个参数`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
-9. <details>
+1. <details>
 
     <summary>生命周期图示</summary>
 
