@@ -119,7 +119,8 @@
     - ~~$scopedSlots~~已废弃。
 1. `v-model:xx`
 
-    `v-model`默认：props`modelValue`、事件`update:modelValue`；`v-model:xx`修改为：props`xx`、事件`update:xx`。
+    1. `v-model`默认：props`modelValue`、事件`update:modelValue`
+    2. `v-model:xx`修改为：props`xx`、事件`update:xx`。
 1. 直接递归渲染组件自己
 
     >e.g. <https://cn.vuejs.org/examples/#tree>
