@@ -158,17 +158,6 @@
 6. 支持Fragments（片段）
 
     允许：`<template>多个节点</template>`
-7. 若组件有多个根元素，则不会默认添加在多个根元素上（`inheritAttrs: true（默认）`会在单独一个根元素上添加attribute）
-
-    可以通过组件的`$attrs`属性来指定接收的元素。
-
-    ```vue
-    <template>
-      <!--  显式使用 $attrs 设置父级传递的class -->
-      <p :class="$attrs.class">Hi!</p>
-      <span>This is a child component</span>
-    </template>
-    ```
 8. 支持`<Teleport>`
 9. <details>
 
@@ -184,7 +173,7 @@
     | `/deep/`   | Vue 2       | ✅           | ❌       | Vue 3已废弃，部分构建工具可能兼容但会警告 |
     | `::v-deep` | Vue 2       | ✅           | ❌       | Vue 3已废弃。`/deep/`的别名，语义更明确 |
     | `:deep()`  | Vue 3       | ✅           | ✅       | 当前最佳实践。与Composition API兼容 |
-11. 当同时存在于一个节点上时，`v-if`比`v-for`的优先级更高（与vue 2正相反）
+11. 当同时存在于一个节点上时，`v-if`比`v-for`的优先级更高（与vue 2相反）
 
     <details>
     <summary>这意味着<code>v-if</code>的条件将无法访问到<code>v-for</code>作用域内定义的变量别名</summary>
@@ -206,7 +195,19 @@
     | `$attrs`是否包含`class`、`style` | ❌ 不包含 | ✅ 包含 |
     | 事件监听器存储位置 | `$listeners` | `$attrs`（已移除 ~~`$listeners`~~） |
     | 事件名 | `$listeners`中保持原样（事件名的大小写、`-`不会做任何变化） | `$attrs`中转化为`onClick`这样的驼峰事件名 |
-    | `inheritAttrs`影响（并非影响`$attrs`） | 影响根元素`不被认作props`的attribute传递，除了`class`、`style` | 影响根元素`不被认作props`的attribute传递，包括`class`、`style` |
+    | `inheritAttrs`影响（并非影响`$attrs`） | 影响**根元素**`不被认作props`的attribute传递，除了`class`、`style` | 影响**根元素**`不被认作props`的attribute传递，包括`class`、`style` |
+
+    - 若组件有多个根元素（Fragments），则不会默认添加在多个根元素上（`inheritAttrs: true（默认）`会在单独一个根元素上添加attribute）
+
+        可以通过组件的`$attrs`属性来指定接收的元素。
+
+        ```vue
+        <template>
+          <!--  显式使用 $attrs 设置父级传递的class -->
+          <p :class="$attrs.class">Hi!</p>
+          <span>This is a child component</span>
+        </template>
+        ```
 13. `$slots`是唯一的插槽 API，所有插槽（包含Vue 2不包含的作用域插槽）都通过它访问，`vm.$slots.名字`返回函数（Vue 2返回VNode）。
 
     - ~~$scopedSlots~~已废弃。
