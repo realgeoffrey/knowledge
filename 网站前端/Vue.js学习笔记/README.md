@@ -64,8 +64,6 @@
         >[优势](https://cn.vuejs.org/guide/extras/composition-api-faq.html)
 1. `:属性名`（等价于`v-bind:同名="同名"`、`:同名="同名"`）
 
-    >Vue 3.4+。
-
     若 attribute名称 与 绑定的js值的名称 相同，则可以进一步简化缩写，省略`="绑定值"`。
 1. 深度选择器
 
@@ -236,7 +234,7 @@
 
     上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；可写计算属性的`get`的第一个参数`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
 1. `watch(响应式对象 或 ()=>响应式对象, (new, old)=>{}))`、`watch([多个响应式对象], ([new1, new2,], [old1, old2,])=>{})`
-1. `defineProps`、`defineEmits`、`defineExpose`是一个编译器宏（compiler macro），并不需要导入（但也不能打印或赋值给其他变量）
+1. `defineProps`、`defineEmits`、`defineExpose`、`defineModel`是一个编译器宏（compiler macro），并不需要导入（但也不能打印或赋值给其他变量）
 
     ```vue
     <script setup>
