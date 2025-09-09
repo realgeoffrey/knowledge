@@ -175,6 +175,26 @@
 1. `shallowRef()`：`ref()`的浅层作用形式；`shallowReactive()`：`reactive()`的浅层作用形式。
 
     浅层Ref只有`.value`的访问会被追踪
+1. `ref`对象作为`reactive`对象属性时，会自动解包；`ref`对象作为`shallowReactive`对象属性是不会自动解包
+
+    ```js
+    const count = ref(0)
+    const state = reactive({  // state.count 指向ref对象，作为reactive因此会自动解包
+      count
+    })
+
+    console.log(state.count) // 0
+
+    state.count = 1
+    console.log(count.value) // 1
+
+    const otherCount = ref(2)
+
+    state.count = otherCount
+    console.log(state.count) // 2
+    // 原始 ref 现在已经和 state.count 失去联系
+    console.log(count.value) // 1
+    ```
 1. 响应式对象 整体替换
 
     1. `reactive`（、`shallowReactive()`）对象：
