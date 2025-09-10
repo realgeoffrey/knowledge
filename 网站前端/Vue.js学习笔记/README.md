@@ -225,6 +225,23 @@
             console.log(map.get('count').value)
             ```
             </details>
+        1. 在模板渲染上下文中，只有**顶级**的`ref`属性才会被解包
+
+            如果 `ref` 是文本插值的最终计算值 (即 `{{ }}` 标签)，那么它将被解包。
+
+            ```vue
+            const count = ref(0)          // 顶级属性count
+            const object = { id: ref(1) } // 顶级属性object；非顶级属性id
+            const { id } = object         // 顶级属性id
+
+            <template>
+            {{ count + 1 }} ✅
+            {{ object.id + 1 }} ❌
+            {{ object.id.value + 1 }} ✅
+            {{ id + 1 }} ✅
+            {{ object.id }} ✅ 如果 ref 是文本插值的最终计算值 (即 {{ }} 标签)，那么它将被解包。该特性仅仅是文本插值的一个便利特性，等价于 {{ object.id.value }}
+            </template>
+            ```
 1. 响应式对象 整体替换
 
     1. `reactive`（、`shallowReactive()`）对象：
