@@ -297,7 +297,12 @@
     返回由`reactive()`、`readonly()`、`shallowReactive()`、`shallowReadonly()`、`ref().value`、`shallowRef().value`代理对应的原始对象。
 1. `computed`
 
-    上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；可写计算属性的`get`的第一个参数`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
+    >返回值为一个计算属性`ref`。
+
+    1. 上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；
+    2. 可写计算属性：`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
+
+        >Vue 2也有get（没有参数）、set写法。
 1. `watch(响应式对象 或 ()=>响应式对象, (new, old)=>{}))`、`watch([多个响应式对象], ([new1, new2,], [old1, old2,])=>{})`
 1. `defineProps`、`defineEmits`、`defineExpose`、`defineModel`是一个编译器宏（compiler macro），并不需要导入（但也不能打印或赋值给其他变量）
 
@@ -527,6 +532,8 @@
         2. `.prop`（绑定到DOM的`property`而不是HTML标签的 ~~`attribute`~~）
         3. `.camel`（小驼峰式camelCase转换为大驼峰式PascalCase）
     2. 特殊的DOM属性：
+
+        `:class`和`:style`指令也可以和一般的`class attribute`和`style attribute`共存。
 
         1. 绑定`class`
 
