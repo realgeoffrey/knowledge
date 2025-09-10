@@ -79,10 +79,7 @@
     <summary>这意味着<code>v-if</code>的条件将无法访问到<code>v-for</code>作用域内定义的变量别名</summary>
 
     ```vue
-    <!--
-    这会抛出一个错误，因为属性 todo 此时
-    没有在该实例上定义
-    -->
+    <!-- 这会抛出一个错误，因为属性 todo 此时没有在该实例上定义 -->
     <li v-if="!todo.isComplete" v-for="todo in todos">
       {{ todo.name }}
     </li>
@@ -147,7 +144,9 @@
 1. `reactive()`只接受引用类型（创建Proxy对象以引用类型对象作为目标，具有响应性）；`ref()`可以接受任何值类型（包括组件或DOM，此时建议初始化为`ref(null)`），会返回一个包裹对象，并在`.value`属性下暴露内部值（使`.value`的值具有响应性）。
 1. Ref 具有深层响应性（`ref`、`reactive`、`computed`、等）
 
-    Vue 3对具有深层响应性的代理对象**新增属性**能够保证新增属性的响应性；Vue 2需要用`Vue.set`或`vm.$set`（Vue 3已废弃）才能新增属性，直接`vm.新属性 = 值`不具有响应性。
+    Vue 3对具有深层响应性的代理对象**新增属性**能够保证新增属性的响应性。
+
+    >Vue 2需要用`Vue.set`或`vm.$set`（Vue 3已废弃）才能新增属性，直接`vm.新属性 = 值`不具有响应性。
 
     <details>
     <summary>e.g. </summary>
@@ -186,7 +185,7 @@
         2. 无包裹的对象：`reactive`、`shallowReactive`、`readonly`、`shallowReadonly`
     1. `ref`的自动解包逻辑
 
-        1. `ref`对象作为`reactive`对象的属性时，会自动解包；`ref`对象作为`shallowReactive`对象的属性时，不会自动解包
+        1. `ref`对象作为`reactive`对象的属性时，会自动解包
 
             <details>
             <summary>e.g. </summary>
@@ -210,7 +209,8 @@
             console.log(count.value) // 1
             ```
             </details>
-        1. `ref`对象作为`reactive`对象的数组或集合的项时，不会自动解包
+        1. `ref`对象作为`shallowReactive`对象的属性时，不会~~自动解包~~
+        1. `ref`对象作为`reactive`对象的数组或集合的项时，不会~~自动解包~~
 
             <details>
             <summary>e.g. </summary>
