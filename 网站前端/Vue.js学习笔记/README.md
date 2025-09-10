@@ -246,7 +246,9 @@
 
     1. `reactive`（、`shallowReactive()`）对象：
 
-        >①只能在「属性层面」更新，不能替换整个Proxy；②对同一个对象多次`reactive`，Vue返回的是同一个Proxy；③对一个已存在的代理对象调用`reactive`会返回这个已存在的代理对象本身
+        >1. 只能在「属性层面」更新，不能替换整个Proxy
+        >2. 对同一个对象多次`reactive`，Vue返回的是同一个Proxy
+        >3. 对一个已存在的代理对象调用`reactive`会返回这个已存在的代理对象本身
 
         ```js
         const state = reactive({ a: 1, b: 2 })
