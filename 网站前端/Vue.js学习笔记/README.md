@@ -143,14 +143,14 @@
 1. 新版本[devtools](https://github.com/vuejs/devtools)支持Vue 3，旧版本[devtools-v6](https://github.com/vuejs/devtools-v6)支持Vue 2。若2个插件一起启动则无法工作。
 
 ### Vue 3的组合式API
-1. 在组件的`<script setup>`中的**顶层的导入、声明的变量、函数**可在同一组件的`模板`中直接使用（有包裹的对象会在模板中自动浅层解包，因此不需要再手动 ~~`.value`~~）。
-
-    有包裹的对象：`ref()`、`computed()`
 1. 不像react的函数组件（每次渲染，都执行一遍函数），`<script setup>`中的代码只会只会执行一次，但通过响应式系统追踪依赖
 1. `reactive()`只接受引用类型（创建Proxy对象以引用类型对象作为目标，具有响应性）；`ref()`可以接受任何值类型（包括组件或DOM，此时建议初始化为`ref(null)`），会返回一个包裹对象，并在`.value`属性下暴露内部值（使`.value`的值具有响应性）。
-1. Ref 具有深层响应性（`ref`、`reactive`、`computed`）
+1. Ref 具有深层响应性（`ref`、`reactive`、`computed`、等）
 
     Vue 3对具有深层响应性的代理对象**新增属性**能够保证新增属性的响应性；Vue 2需要用`Vue.set`或`vm.$set`（Vue 3已废弃）才能新增属性，直接`vm.新属性 = 值`不具有响应性。
+
+    <details>
+    <summary>e.g. </summary>
 
     ```js
     import { ref } from 'vue'
@@ -172,29 +172,59 @@
       data.value.a.f = 2
     }
     ```
+    </details>
 1. `shallowRef()`：`ref()`的浅层作用形式；`shallowReactive()`：`reactive()`的浅层作用形式。
 
     浅层Ref只有`.value`的访问会被追踪
-1. `ref`对象作为`reactive`对象属性时，会自动解包；`ref`对象作为`shallowReactive`对象属性是不会自动解包
+1. 解包（.value）与自动解包（automatically unwrapped。不需要手动输入`.value`就能返回`.value`的值）
 
-    ```js
-    const count = ref(0)
-    const state = reactive({  // state.count 指向ref对象，作为reactive因此会自动解包
-      count
-    })
+    >自动解包：自动浅层解包。
 
-    console.log(state.count) // 0
+    1. 在组件的`<script setup>`中的**顶层的导入、声明的变量、函数**可在同一组件的`模板`中直接使用（有包裹的对象会在模板中自动浅层解包，因此不需要再手动 ~~`.value`~~）。
 
-    state.count = 1
-    console.log(count.value) // 1
+        1. 有包裹的对象：`ref()`、`shallowRef()`、`customRef()`、`computed()`、`toRefs()`、`toRef()`（、`storeToRefs()`）
+        2. 无包裹的对象：`reactive`、`shallowReactive`、`readonly`、`shallowReadonly`
+    1. `ref`的自动解包逻辑
 
-    const otherCount = ref(2)
+        1. `ref`对象作为`reactive`对象的属性时，会自动解包；`ref`对象作为`shallowReactive`对象的属性时，不会自动解包
 
-    state.count = otherCount
-    console.log(state.count) // 2
-    // 原始 ref 现在已经和 state.count 失去联系
-    console.log(count.value) // 1
-    ```
+            <details>
+            <summary>e.g. </summary>
+
+            ```js
+            const count = ref(0)
+            const state = reactive({  // state.count 指向ref对象，作为reactive因此会自动解包
+              count
+            })
+
+            console.log(state.count) // 0
+
+            state.count = 1
+            console.log(count.value) // 1
+
+            const otherCount = ref(2)
+
+            state.count = otherCount
+            console.log(state.count) // 2
+            // 原始 ref 现在已经和 state.count 失去联系
+            console.log(count.value) // 1
+            ```
+            </details>
+        1. `ref`对象作为`reactive`对象的数组或集合的项时，不会自动解包
+
+            <details>
+            <summary>e.g. </summary>
+
+            ```js
+            const books = reactive([ref('Vue 3 Guide')])
+            // 这里需要 .value
+            console.log(books[0].value)
+
+            const map = reactive(new Map([['count', ref(0)]]))
+            // 这里需要 .value
+            console.log(map.get('count').value)
+            ```
+            </details>
 1. 响应式对象 整体替换
 
     1. `reactive`（、`shallowReactive()`）对象：
@@ -246,10 +276,6 @@
 1. `toRaw`
 
     返回由`reactive()`、`readonly()`、`shallowReactive()`、`shallowReadonly()`、`ref().value`、`shallowRef().value`代理对应的原始对象。
-1. `ref`与`computed`自动浅层解包（automatically unwrapped），[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)
-
-    1. `ref`会在作为响应式对象的属性被访问或修改时自动浅层解包
-    2. `ref`、`computed`会在模板中自动浅层解包
 1. `computed`
 
     上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；可写计算属性的`get`的第一个参数`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
