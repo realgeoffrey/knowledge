@@ -533,7 +533,7 @@
         3. `.camel`（小驼峰式camelCase转换为大驼峰式PascalCase）
     2. 特殊的DOM属性：
 
-        `:class`和`:style`指令也可以和一般的`class attribute`和`style attribute`共存。
+        `:class`和`:style`指令可以和一般的`class attribute`和`style attribute`共存。
 
         1. 绑定`class`
 
