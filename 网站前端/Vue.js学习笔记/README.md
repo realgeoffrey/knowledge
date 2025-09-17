@@ -306,7 +306,7 @@
     1. 上一次返回的值：第一个参数`computed((previous) => {/* 按需return */})`；
     2. 可写计算属性：`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
 
-        >Vue 2也有get（没有参数）、set写法。
+        >Vue 2也有get（但没有参数）、set写法。
 1. `watch(响应式对象 或 ()=>响应式对象, (new, old)=>{}))`、`watch([多个响应式对象], ([new1, new2,], [old1, old2,])=>{})`
 1. `defineProps`、`defineEmits`、`defineExpose`、`defineModel`是一个编译器宏（compiler macro），并不需要导入（但也不能打印或赋值给其他变量）
 
@@ -1255,7 +1255,7 @@
     >Vue内置的属性、API方法会以 `_`或`$` 开头，因此若看到不带这些前缀的Vue实例的属性时，则一般可认为是Vue实例代理的属性（`props`、`methods`、`data`、`computed`、`provide/inject`的属性，或`mixins/extends`传入的属性）。
 4. `computed`（对象）：依赖其他值（`props`、`data`、`computed`）的改变而执行，最后`return`值
 
-    >不支持~~副作用（改变其他值、异步操作、更改DOM、触发事件、触发路由跳转、日志记录、持久化写入）~~
+    >不支持~~副作用（改变其他值、异步操作、更改DOM、触发事件、路由跳转、日志记录、持久化写入）~~
 
     <details>
     <summary>默认：<code>get</code>（初始化时会调用一次）；显式设置：<code>set</code>（被赋值时执行）和<code>get</code>。</summary>
@@ -1309,7 +1309,7 @@
 
 5. `watch`（对象`{键: methods方法名/方法/对象/数组}`）：被watch的值改变而执行函数（观察的值必须是`props`或`data`或`computed`的属性）
 
-    >支持副作用（改变其他值、异步操作、更改DOM、触发事件、触发路由跳转、日志记录、持久化写入）
+    >支持副作用（改变其他值、异步操作、更改DOM、触发事件、路由跳转、日志记录、持久化写入）
 
     1. 键名可以是`属性1.子属性2`，来观察嵌套的属性值
     2. 值是对象情况：
