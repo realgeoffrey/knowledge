@@ -620,6 +620,10 @@
         2. `.enter`、`.tab`、`.delete`、`.esc`、`.space`、`.up`、`.down`、`.left`、`.right`、`.数字键值`、[KeyboardEvent.key的短横线形式](https://developer.mozilla.org/zh-CN/docs/Web/API/UI_Events/Keyboard_event_key_values)、`Vue.config.keyCodes`自定义的键位别名
 
             键盘。
+
+            - 系统按键：`.ctrl`、`.alt`、`.shift`、`.meta`
+
+                系统按键修饰符和常规按键不同：与`keyup`事件一起使用时，该按键必须在事件发出时处于按下状态。换句话说，`@keyup.ctrl`只会在你仍然按住`ctrl`但松开了另一个键时被触发。若你单独松开`ctrl`键将不会触发。
         3. `.left`、`.right`、`.middle`
 
             鼠标。
@@ -864,11 +868,11 @@
     </details>
 7. `v-model`表单的双向绑定
 
-    >忽略表单元素上的`value`、`checked`、`selected`等初始值，而仅通过Vue实例赋值。
+    >忽略表单元素上的`value`、`checked`、`selected`等初始值、忽略`<textarea>`包裹的内容，而仅通过Vue实例赋值。
 
     1. 表单修饰符：
 
-        `.lazy`（`change`而不是~~input~~事件触发）、`.number`（输入值转为`Number`类型）、`.trim`（过滤首尾空格）
+        `.lazy`（`change`而不是~~input~~事件触发）、`.number`（输入值转为`Number`类型，若该值无法被`parseFloat()`处理，则返回原始值。会在输入框有`type="number"`时自动启用）、`.trim`（过滤首尾空格）
     2. 仅针对部分元素：`<input>`、`<textarea>`、`<select>`、组件
 
         1. 文本类型的`<input>`、`<textarea>`会绑定`value`并侦听`input`事件
