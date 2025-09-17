@@ -307,7 +307,28 @@
     2. 可写计算属性：`computed({ get(previous) {/* 按需return */}, set(newValue) { /* 特殊设置给其他值 */ } })`
 
         >Vue 2也有get（但没有参数）、set写法。
-1. `watch(响应式对象 或 ()=>响应式对象, (new, old)=>{}))`、`watch([多个响应式对象], ([new1, new2,], [old1, old2,])=>{})`
+1. `watch(响应式对象 或 () => 包含响应式对象的表达式, (new, old)=>{}))`、`watch([多个响应式对象或getter函数], ([new1, new2,], [old1, old2,])=>{})`
+
+    ```js
+    const obj1 = reactive({ count: 0 })
+    const obj2 = ref({ count: 0 })
+
+
+    // ❌不能直接侦听响应式对象的属性值，这里 watch() 得到的参数是一个 number，不是响应式对象
+    watch(obj1.count, (count) => {console.log(`Count is: ${count}`)})
+    watch(obj2.value.count, (count) => {console.log(`Count is: ${count}`)})
+
+
+    // ✅需要用一个返回该属性的 getter 函数
+    watch(
+      () => obj1.count,
+      (count) => {console.log(`Count is: ${count}`)},
+    )
+    watch(
+      () => obj2.value.count,
+      (count) => {console.log(`Count is: ${count}`)},
+    )
+    ```
 1. `defineProps`、`defineEmits`、`defineExpose`、`defineModel`是一个编译器宏（compiler macro），并不需要导入（但也不能打印或赋值给其他变量）
 
     ```vue
