@@ -55,6 +55,8 @@
     git log --all --grep='「内容」' # 筛选符合「内容」的commit
 
     git log 「分支1」 ^「分支2」       # 筛选「分支1」存在、但「分支2」不存在的commit（可以用HEAD指代当前分支）
+
+    git log --author="「作者」" --since="2023-01-01" --until="2023-12-31"
     ```
 2. 撤销未push内容
 
