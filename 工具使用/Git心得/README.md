@@ -532,7 +532,7 @@ feat(details): 添加了分享功能
             >需要`package.json`：`npm init --yes`。
 
             `commitizen init cz-conventional-changelog --save-dev --save-exact --force`
-    3. 使用`git cz`代替`git commit`
+    3. 使用`git cz`替代`git commit`
 
         出现Zen-like的提交信息选择。
 2. changelog
@@ -951,7 +951,7 @@ feat(details): 添加了分享功能
 ### `husky`+`lint-staged`+`commitlint`+`commitizen`
 1. 使用[husky](https://github.com/typicode/husky)设置：方便的[git hooks](https://git-scm.com/book/zh/v2/自定义-Git-Git-钩子)。
 
-    >或[simple-git-hooks](https://github.com/toplenboren/simple-git-hooks)代替。
+    >或[simple-git-hooks](https://github.com/toplenboren/simple-git-hooks)替代。
 
     支持钩子`pre-commit`（如：执行`lint-staged`）、`commit-msg`（如：执行`commitlint`）等。
 2. 使用[lint-staged](https://github.com/okonet/lint-staged)设置：针对git的staged文件进行lints操作（如：eslint、prettier、等）。

@@ -3,21 +3,24 @@
 ## 目录
 1. [原生JS方法](#原生js方法)
 
-    1. 可用[moment](https://github.com/moment/moment/)（或[dayjs](https://github.com/iamkun/dayjs)、[date-fns](https://github.com/date-fns/date-fns)）代替
+    1. 可用[moment](https://github.com/moment/moment/)（或[dayjs](https://github.com/iamkun/dayjs)、[date-fns](https://github.com/date-fns/date-fns)）替代
 
         1. [格式化日期](#原生js格式化日期)
         1. [获取年龄](#原生js获取年龄)
         1. [倒计时显示](#原生js倒计时显示)
         1. [倒计时组件](#vuereact倒计时组件)
-    1. 可用[lodash](https://github.com/lodash/lodash)、[jQuery](https://github.com/jquery/jquery)或ES6或其他库代替
+    1. 可用[lodash](https://github.com/lodash/lodash)、[jQuery](https://github.com/jquery/jquery)或ES6或其他库替代
 
         1. [多异步返回后才执行总回调函数（利用jQuery的`$.ajax`）](#原生js多异步返回后才执行总回调函数利用jquery的ajax)
         1. [对象合二为一（改变第一个参数）](#原生js对象合二为一改变第一个参数)
         1. [通过类名获取DOM](#原生js通过类名获取dom)
-    1. 可用[js-cookie](https://github.com/js-cookie/js-cookie)代替
+    1. 可用[js-cookie](https://github.com/js-cookie/js-cookie)替代
 
         1. [操作cookie](#原生js操作cookie)
-    1. 可用js原生代替
+    1. 可用`URL`、`URLSearchParams`替代
+
+        1. [获取URL相关信息](#原生js获取url相关信息)
+    1. 可用js原生替代
 
         1. [实现类似jQuery的`$('html,body').animate({'scrollLeft': 像素, 'scrollTop': 像素}, 毫秒);`](#原生js实现类似jquery的htmlbodyanimatescrollleft-像素-scrolltop-像素-毫秒)
 1. [函数模板](#函数模板)
@@ -427,7 +430,7 @@ function multiCallback(func, url) {
                     dataType: 'json',
                     data: {}
                     /*,
-                     // Zepto默认：没有deferred的对象，用参数模式代替
+                     // Zepto默认：没有deferred的对象，用参数模式替代
                      success: function (data) {
                          handle.result[url] = data;
                          handle.count += 1;
@@ -521,6 +524,104 @@ function getElementsByClassName(className, parentDom) {
 }
 ```
 >可以使用jQuery的`$('.类名')`，完全替代。
+
+### *原生JS*获取URL相关信息
+```js
+/**
+ * 获取URL相关信息
+ * @param {String} [url = window.location.href] - URL
+ * @returns {Object} location - 包括：href、protocol、hostname、port、pathname、search、searchObj、hash 的对象。若不是合法URL，返回false
+ */
+function getLocation(url = window.location.href) {
+  try {
+    /* 为了方便阅读 */
+    const protocolStr = /^(?:([A-Za-z]+):)?/.source
+    const slashStr = /\/*/.source
+    const hostnameStr = /([0-9A-Za-z.-]+)/.source
+    const portStr = /(?::(\d+))?/.source
+    const pathnameStr = /(\/[^?#]*)?/.source
+    const searchStr = /(?:\?([^#]*))?/.source
+    const hashStr = /(?:#(.*))?$/.source
+
+    const regex = new RegExp(protocolStr + slashStr + hostnameStr + portStr + pathnameStr + searchStr + hashStr, 'g');
+    const regexArr = regex.exec(url);
+    const keyArr = [ 'href', 'protocol', 'hostname', 'port', 'pathname', 'search', 'hash' ];
+    const location = { 'searchObj': {} };
+
+    keyArr.forEach(function (item, index) {
+      location[item] = regexArr[index] || ''
+    })
+
+    const searchArr = location['search'].split('&')
+
+    for (let i = 0; i < searchArr.length; i++) {
+      if (searchArr[i] !== '') {
+        const searchItem = searchArr[i].split('=')
+        const key = searchItem.shift()
+        const value = searchItem.join('=')
+        if (!Object.prototype.hasOwnProperty.call(location['searchObj'], key)) {  // 用第一次出现的
+          location['searchObj'][key] = value
+        }
+      }
+    }
+
+    return location
+  } catch (e) {  // 不是合法URL
+    return false
+  }
+}
+```
+
+>参考：[用正则表达式分析 URL](https://harttle.land/2016/02/23/javascript-regular-expressions.html)。
+
+>可以使用`new URL(location.href)`，完全替代。
+
+>1. 获取某search值：
+>
+>    ```js
+>    /**
+>     * 获取某search值
+>     * @param {String} checkKey - search的key
+>     * @param {String} [search = window.location.search] - search总字符串（不校验）
+>     * @returns {String|Boolean} - search的value 或 不存在false
+>     */
+>    function getSearchValue (checkKey, search = window.location.search) {
+>      checkKey = checkKey.toString()
+>
+>      if (search.slice(0, 1) === '?') {
+>        search = search.slice(1)
+>      }
+>
+>      for (let i = 0, searchArr = search.split('&'); i < searchArr.length; i++) {
+>        if (searchArr[i] !== '') {
+>          const tempArr = searchArr[i].split('=')
+>          const key = tempArr.shift()
+>          const value = tempArr.join('=')
+>
+>          if (key === checkKey) {
+>
+>            return decodeURIComponent(value)
+>          }
+>        }
+>      }
+>
+>      return false
+>    }
+>    ```
+>
+>    可以使用`new URLSearchParams(location.search).get(search的key)`，完全替代。
+>2. 拼接接口URL时，可以在路由最后添加`?`并且加上一些固定不变的search参数，在使用URL时候都以`&参数=值`的形式添加额外参数：
+>
+>    >`xxx/xxx?&a=1`可以正常解析
+>
+>    ```js
+>    const api1 = 'xxx/xxx?'
+>    const api2 = 'xxx/xxx?v=1.0'
+>
+>    // 使用时
+>    url1 = api1 + '&a=1' + '&b=2' + '&c=3'
+>    url2 = api2 + '&a=1' + '&b=2' + '&c=3'
+>    ```
 
 ### *原生JS*操作cookie
 >参考：[MDN：cookie](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie#一个小框架：一个完整支持unicode的cookie读取写入器)。

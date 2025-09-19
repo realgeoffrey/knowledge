@@ -592,7 +592,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 
     >针对接口请求结果固定的页面。
 
-    Web后端渲染并输出内容（相对于：客户端AJAX请求数据并渲染DOM，CSR，Client Side Rendering），代替客户端耗费渲染性能。
+    Web后端渲染并输出内容（相对于：客户端AJAX请求数据并渲染DOM，CSR，Client Side Rendering），替代客户端耗费渲染性能。
 
     1. WebServer向CGI（common gateway interface，公共网关接口）拉取数据，把数据连同前端文件一起返回，客户端进行页面渲染。
 

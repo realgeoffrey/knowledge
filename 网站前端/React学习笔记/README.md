@@ -3805,7 +3805,7 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         1. `store.dispatch(参数)`时执行额外的逻辑（例如打印action的日志、状态）
         2. 暂停、修改、延迟、替换或停止dispatch的action
         3. 编写可以访问dispatch和getState的额外代码
-        4. 教dispatch如何接受除普通action对象之外的其他值（e.g. 函数、Promise实例），通过拦截它们并dispatch实际action对象来代替
+        4. 教dispatch如何接受除普通action对象之外的其他值（e.g. 函数、Promise实例），通过拦截它们并dispatch实际action对象来替代
 
     ![redux中间件](./images/redux-async.gif)
 

@@ -12,7 +12,6 @@
 1. `键-值`操作
 
     1. [判断是否存在某cookie](#原生js判断是否存在某cookie)
-    1. [获取URL相关信息](#原生js获取url相关信息)
     1. [在URL末尾修改search键-值](#原生js在url末尾修改search键-值)
 1. 事件相关
 
@@ -289,103 +288,6 @@ function hasCookie (checkKey) {
 }
 ```
 >全面操作cookie：[js操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js操作cookie)。
-
-### *原生JS*获取URL相关信息
-```js
-/**
- * 获取URL相关信息
- * @param {String} [url = window.location.href] - URL
- * @returns {Object} location - 包括：href、protocol、hostname、port、pathname、search、searchObj、hash 的对象。若不是合法URL，返回false
- */
-function getLocation(url = window.location.href) {
-  try {
-    /* 为了方便阅读 */
-    const protocolStr = /^(?:([A-Za-z]+):)?/.source
-    const slashStr = /\/*/.source
-    const hostnameStr = /([0-9A-Za-z.-]+)/.source
-    const portStr = /(?::(\d+))?/.source
-    const pathnameStr = /(\/[^?#]*)?/.source
-    const searchStr = /(?:\?([^#]*))?/.source
-    const hashStr = /(?:#(.*))?$/.source
-
-    const regex = new RegExp(protocolStr + slashStr + hostnameStr + portStr + pathnameStr + searchStr + hashStr, 'g');
-    const regexArr = regex.exec(url);
-    const keyArr = [ 'href', 'protocol', 'hostname', 'port', 'pathname', 'search', 'hash' ];
-    const location = { 'searchObj': {} };
-
-    keyArr.forEach(function (item, index) {
-      location[item] = regexArr[index] || ''
-    })
-
-    const searchArr = location['search'].split('&')
-
-    for (let i = 0; i < searchArr.length; i++) {
-      if (searchArr[i] !== '') {
-        const searchItem = searchArr[i].split('=')
-        const key = searchItem.shift()
-        const value = searchItem.join('=')
-        if (!Object.prototype.hasOwnProperty.call(location['searchObj'], key)) {  // 用第一次出现的
-          location['searchObj'][key] = value
-        }
-      }
-    }
-
-    return location
-  } catch (e) {  // 不是合法URL
-    return false
-  }
-}
-```
-
->参考：[用正则表达式分析 URL](https://harttle.land/2016/02/23/javascript-regular-expressions.html)。
-
->1. 获取某search值：
->
->    ```js
->    /**
->     * 获取某search值
->     * @param {String} checkKey - search的key
->     * @param {String} [search = window.location.search] - search总字符串（不校验）
->     * @returns {String|Boolean} - search的value 或 不存在false
->     */
->    function getSearchValue (checkKey, search = window.location.search) {
->      checkKey = checkKey.toString()
->
->      if (search.slice(0, 1) === '?') {
->        search = search.slice(1)
->      }
->
->      for (let i = 0, searchArr = search.split('&'); i < searchArr.length; i++) {
->        if (searchArr[i] !== '') {
->          const tempArr = searchArr[i].split('=')
->          const key = tempArr.shift()
->          const value = tempArr.join('=')
->
->          if (key === checkKey) {
->
->            return decodeURIComponent(value)
->          }
->        }
->      }
->
->      return false
->    }
->    ```
->2. 拼接接口URL时，可以在路由最后添加`?`并且加上一些固定不变的search参数，在使用URL时候都以`&参数=值`的形式添加额外参数：
->
->    >`xxx/xxx?&a=1`可以正常解析
->
->    ```js
->    const api1 = 'xxx/xxx?'
->    const api2 = 'xxx/xxx?v=1.0'
->
->    // 使用时
->    url1 = api1 + '&a=1' + '&b=2' + '&c=3'
->    url2 = api2 + '&a=1' + '&b=2' + '&c=3'
->    ```
->3. URL携带JSON数据：
->
->    search某key的值为`encodeURIComponent(JSON.stringify(JSON数据))`，获取某key值后`JSON.parse(decodeURIComponent(前面的值))`。
 
 ### *原生JS*在URL末尾修改search键-值
 1. 批量修改（未加`encodeURIComponent`）

@@ -259,7 +259,7 @@
     <details>
     <summary>固定的子级添加：<code>flex-shrink: 0; width: 固定宽度;</code>；自适应的子级添加：<code>flex-grow: 1;（overflow: hidden;）</code>。</summary>
 
-    >可以用`flex-basis: 固定宽度; overflow: hidden;`代替`width: 固定宽度`。
+    >可以用`flex-basis: 固定宽度; overflow: hidden;`替代`width: 固定宽度`。
 
     ```html
     <style>

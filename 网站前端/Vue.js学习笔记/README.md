@@ -25,10 +25,10 @@
     1. [例子](#例子)
 1. [vue-router@4(Vue 3)](#vue-router4vue-3)
 1. [vue-router@3(Vue 2)](#vue-router3vue-2)
-1. [pinia（代替~~vuex~~）](#pinia代替vuex)
+1. [pinia（替代~~vuex~~）](#pinia替代vuex)
 
     1. [vuex](#vuex)
-1. [create-vue（代替~~vue-cli~~）](#create-vue代替vue-cli)
+1. [create-vue（替代~~vue-cli~~）](#create-vue替代vue-cli)
 
     1. [vue-cli](#vue-cli)
 1. [nuxt](#nuxt)
@@ -1158,7 +1158,7 @@
 
         1. 添加在原生DOM：指向DOM元素
 
-            >代替原生JS获取DOM，如：~~`document.getElementById`~~。
+            >替代原生JS获取DOM，如：~~`document.getElementById`~~。
         2. 添加在子组件：指向子组件Vue实例。
         3. 当与`v-for`一起使用时：指向包含 DOM元素或子组件Vue实例 的数组。
     3. `is`
@@ -1266,7 +1266,7 @@
 
     >限制：只用于`new`创建的实例中。
 
-    主要作用是方便测试，代替`props`属性。
+    主要作用是方便测试，替代`props`属性。
 3. `data`（对象或方法）：数据
 
     >限制：组件的`data`是方法且返回一个数据对象。
@@ -1320,7 +1320,7 @@
     >
     >1. Getter 不应有副作用​
     >
-    >    计算属性的 getter 应只做计算而没有任何其他的副作用，这一点非常重要，请务必牢记。举例来说，**不要改变其他值，不要在 getter 中做异步操作或更改DOM，注意数组的mutator方法会改变原数组，尤其是`reverse`、`sort`（用浅复制代替：`[...this.数组].reverse/sort()`）**。一个计算属性的声明中描述的是如何根据其他值派生一个值。因此 getter 的职责应该仅为计算和返回该值。
+    >    计算属性的 getter 应只做计算而没有任何其他的副作用，这一点非常重要，请务必牢记。举例来说，**不要改变其他值，不要在 getter 中做异步操作或更改DOM，注意数组的mutator方法会改变原数组，尤其是`reverse`、`sort`（用浅复制替代：`[...this.数组].reverse/sort()`）**。一个计算属性的声明中描述的是如何根据其他值派生一个值。因此 getter 的职责应该仅为计算和返回该值。
     >2. 避免直接修改计算属性值​
     >
     >    从计算属性返回的值是派生状态。可以把它看作是一个“临时快照”，每当源状态发生变化时，就会创建一个新的快照。更改快照是没有意义的，因此计算属性的返回值应该被视为只读的，并且永远不应该被更改——应该更新它所依赖的源状态以触发新的计算。
@@ -1360,7 +1360,7 @@
 
     1. 直接字符串作为模板，e.g. `template: '<div>{{ msg }}</div'`。
     2. 若字符串包含`#id名`，则去取`<script type="x-template" id="id名">`的innerHTML作为模板。
-8. `render`（`(createElement: () => VNode) => VNode`）：[字符串模板的代替方案，可使用JSX](https://v2.cn.vuejs.org/v2/guide/render-function.html)
+8. `render`（`(createElement: () => VNode) => VNode`）：[字符串模板的替代方案，可使用JSX](https://v2.cn.vuejs.org/v2/guide/render-function.html)
 
     若组件是一个函数组件（`functional: true`），则渲染函数还会接收第二个`context`参数，为没有实例的函数组件提供上下文信息。
 
@@ -1527,7 +1527,7 @@
     >1. `new`methods里的方法，方法体内的`this`指向这个实例，而非~~Vue实例~~。建议不要在methods中添加构造函数，而改用`import`方式引入构造函数。
     >2. template的每次改变，都会导致VNode重新渲染，也会导致methods重新调用（无论methods使用的值是否变化）。
     >
-    >    若在`template`里调用`methods`中的方法从而绑定了数据（因为template最终是成为render函数，且每一次的数据改变都会导致整个组件的VNode重新渲染（VNode在differ之后的nextTick才会真的在DOM中重新渲染），其他方式的数据都有缓存，而调用`methods`的值没有缓存），则数据由调用`methods`而绑定的值，会随着任意模板数据改变而重新执行求值（无论methods使用的值是否变化）。因此：尽量不要在渲染内容中使用methods，尝试用computed或data数据代替。
+    >    若在`template`里调用`methods`中的方法从而绑定了数据（因为template最终是成为render函数，且每一次的数据改变都会导致整个组件的VNode重新渲染（VNode在differ之后的nextTick才会真的在DOM中重新渲染），其他方式的数据都有缓存，而调用`methods`的值没有缓存），则数据由调用`methods`而绑定的值，会随着任意模板数据改变而重新执行求值（无论methods使用的值是否变化）。因此：尽量不要在渲染内容中使用methods，尝试用computed或data数据替代。
 
 ><details>
 ><summary><code>methods</code>、生命周期钩子都能使用<code>async-await</code></summary>
@@ -3412,7 +3412,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         }
         ```
 
-### [pinia](https://github.com/vuejs/pinia)（代替~~vuex~~）
+### [pinia](https://github.com/vuejs/pinia)（替代~~vuex~~）
 1. `createPinia()`创建pinia实例
 2. `defineStore(id名, {state: 方法, getters: 对象, actions: 对象} 或 类似setup的方法[, 选项对象])`创建一个 useStore 函数，检索 store 实例（`useStore()`返回store实例）
 
@@ -4051,7 +4051,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
 </details>
 
-### [create-vue](https://github.com/vuejs/create-vue)（代替~~vue-cli~~）
+### [create-vue](https://github.com/vuejs/create-vue)（替代~~vue-cli~~）
 
 <details>
 <summary><h4><a href="https://github.com/vuejs/vue-cli">vue-cli</a></h4></summary>

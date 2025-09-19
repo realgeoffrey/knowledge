@@ -93,7 +93,7 @@
 
         - 针对文字高度问题，解决方案：
 
-            1. 不要写死`line-height`或`height`（或用`min-height`代替），让高的字体文字自动撑开。
+            1. 不要写死`line-height`或`height`（或用`min-height`替代），让高的字体文字自动撑开。
 
                 >无法按照UI设计的确定高度展示，因此处理比较粗糙。
             2. 针对特定的语言（如：泰文），设置更高的行高 或 计算dom.scrollHeight（渲染后的内容高度）大于dom.offsetHeight（设置高度、容器高度）就增加行高。

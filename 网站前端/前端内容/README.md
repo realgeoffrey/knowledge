@@ -57,7 +57,7 @@
             <https://github.com/alibaba/lowcode-engine>
         4. 性能优化
 
-            1. webpack，代替webpack的一系列轮子。
+            1. webpack，替代webpack的一系列轮子。
             2. 监控、分析
             3. 性能api：`PerformanceNavigationTiming`
         5. 与人工智能结合
@@ -239,7 +239,7 @@
             4. [避免内存泄漏](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存泄漏)（全局变量、闭包引用的变量、定时器、事件监听、DOM引用）。
             5. 长字符串拼接使用`Array.prototype.join()`，而不使用 ~~`+`~~ 或 ~~`String.prototype.concat`~~。
         2. 尽量使用事件代理，避免批量绑定事件。
-        3. [定时器取舍，合理使用重绘函数代替](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)。
+        3. [定时器取舍，合理使用重绘函数替代](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#定时器--重绘函数)。
         4. 高频事件（如：`scroll`、`mousemove`、`touchmove`）使用[函数防抖、函数节流](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#函数防抖函数节流)，避免在高频事件中进行运行时间长的代码。
         5. 避免强制同步布局、避免布局抖动。
         6. 使用`Web Worker`处理复杂的计算。
