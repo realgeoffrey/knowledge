@@ -935,6 +935,7 @@
 29. 若`<label>`和`<input>`相关联后，则点击`<label>`的默认行为（`preventDefault`）是聚焦或激活其关联的`<input>`
 
     >[MDN：label](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/label)
+30. 当`<a>`元素没有文本值但`href`属性有链接时显示链接：`a[href^="http"]:empty::before { content: attr(href); }`
 
 ---
 ## CSS
