@@ -50,14 +50,14 @@
             RN、flutter、ionic、~~weex~~，小程序。
         2. web组件和微前端
 
-            1. shadow dom，custom elements
-            2. qiankun，single-spa，webpack模块联邦
+            1. shadow dom、custom elements
+            2. [qiankun](https://github.com/umijs/qiankun)、[single-spa](https://github.com/single-spa/single-spa)、webpack模块联邦（Module Federation）
         3. 低代码
 
             <https://github.com/alibaba/lowcode-engine>
         4. 性能优化
 
-            1. webpack，替代webpack的一系列轮子。
+            1. webpack，替代webpack的一系列轮子
             2. 监控、分析
             3. 性能api：`PerformanceNavigationTiming`
         5. 与人工智能结合
