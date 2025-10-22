@@ -69,13 +69,24 @@
         6. WebAssembly
 
 ### 前端工程化
-查看：[带你入门前端工程](https://github.com/woai3c/introduction-to-front-end-engineering)
+[带你入门前端工程](https://github.com/woai3c/introduction-to-front-end-engineering)：
+
+1. 接到新需求，进行需求评审后根据具体情况做技术选型。
+2. 开发前需要统一规范。
+3. 学会模块化、组件化，对于写代码很有好处。
+4. 开发完，需要对代码进行测试。
+5. 构建打包。
+6. 部署上线。
+7. 对项目进行监控，随时发现问题。
+8. 根据项目运行情况决定是否要做性能优化。
+10. 项目越来越复杂，需要重构以提高可维护性。
+- 项目越来越大，可以考虑是否用微服务（微前端）对其进行拆分。
+- 不想自己管理服务器或数据库，可以考虑使用 Serverless。
+
 
 <details>
 
-<summary>基础</summary>
-
->参考：[张云龙：前端工程——基础篇](https://github.com/fouber/blog/issues/10)。
+<summary><a href="https://github.com/fouber/blog/issues/10">张云龙：前端工程——基础篇</a></summary>
 
 1. 第一阶段：库/框架选型
 
