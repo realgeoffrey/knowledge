@@ -999,7 +999,7 @@ MV\*的本质都一样：在于Model与View的桥梁\*。\*各种模式不同，
 1. 微服务（Microservices）是一种软件架构风格，它是以专注于单一责任与功能的小型功能区块 (Small Building Blocks) 为基础，利用模块化的方式组合出复杂的大型应用程序，各功能区块使用与语言无关（Language-Independent/Language agnostic）的API集相互通信。
 
     换句话说，就是将一个大型、复杂的应用分解成几个服务，每个服务就像是一个组件，组合起来一起构建成整个应用。
-2. [微前端](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/其他前端专项/微前端/README.md)就是微服务在前端的应用，也就是前端微服务。
+2. [微前端](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/其他前端专项/微前端（微服务在前端的应用——前端微服务）/README.md)就是微服务在前端的应用，也就是前端微服务。
 
 | 对比维度 | 微服务（Microservices） | 微前端（Micro-Frontends） |
 | ---------- | ---------------------------------- | --------------------------------------------------- |
