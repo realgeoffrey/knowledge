@@ -82,6 +82,8 @@
             1. 尽量避免使用`global`——全局变量会使代码难以维护和理解
             2. ​优先使用函数参数和返回值​——比修改外部变量更清晰
             3. 必要时使用`nonlocal`​——在闭包等场景下是合理的选择
+
+                >类似于JS，Python允许嵌套函数访问外部封闭函数的作用域。 这称为闭包。
             4. ​变量命名要明确​——特别是全局变量，可以用`G_`前缀等标识
 1. `del 变量或项`
 
@@ -488,6 +490,8 @@
         没有名字的函数；只能有一行代码，代码中的表达式产生的运算结果就是这个匿名函数的返回值。
     1. 装饰器
 
+        >装饰器是一种设计模式，允许用户在不修改对象结构的情况下为其添加新功能。装饰器通常在你想要装饰的函数定义之前调用。
+
         “用一个函数装饰另外一个函数并为其提供额外的能力”的语法现象。装饰器本身是一个函数，它的参数是被装饰的函数，它的返回值是一个带有装饰功能的函数——是一个高阶函数。
 
         ><details>
@@ -505,11 +509,22 @@
         >@wrapper_func
         >def real_func(props):   # 方法名可以使用，并且是经过装饰器之后的方法名
         >    print(f'{props}')   # do sth.
-        ># 等价于：
-        >#def real_func(props):
-        >#    print(f'{props}')
-        >#real_func = wrapper_func(real_func)
         >
+        >real_func(1)
+        >
+        ># 等价于：
+        >
+        >def wrapper_func(func):
+        >    def wrapper(*args, **kwargs):
+        >        # ...包裹逻辑
+        >        result = func(*args, **kwargs)
+        >        # ...包裹逻辑
+        >        return result
+        >    return wrapper
+        >
+        >def real_func(props):
+        >    print(f'{props}')
+        >real_func = wrapper_func(real_func)
         >
         >real_func(1)
         >```
