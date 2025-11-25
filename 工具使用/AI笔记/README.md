@@ -55,6 +55,7 @@
 1. 文本转语音（Text To Speech，TTS）
 1. 自动语音识别（Automatic Speech Recognition, ASR）或语音转文本：是流程和软件的组合,能够解码人类语音并将其转换为数字化文本。会收录人类语音，然后将其转换为可读文本。ASR 能够帮助我们免手动操作地编辑文本消息，并提供用于机器理解的框架
 1. BERT：是由Google开发的自然语言处理模型，可学习文本的双向表示，显著提升在情境中理解许多不同任务中的无标记文本的能力
+1. 计算机视觉（Computer Vision，CV）
 1. Transformer架构（encoder-decoder、self-attention）
 
     是一种基于自注意力机制（Self-Attention）​的深度学习模型架构，由 Google 团队在 2017 年的论文《Attention Is All You Need》中首次提出。它彻底改变了自然语言处理（NLP）领域，并成为现代大语言模型（如 GPT、BERT）的核心基础。
