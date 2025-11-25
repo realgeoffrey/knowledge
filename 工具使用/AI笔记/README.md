@@ -15,6 +15,21 @@
 1. SOP（Standard Operating Procedure）是通过标准化流程将复杂任务分解为可重复执行的具体步骤，以实现效率提升、质量控制和经验传承的核心工具。其核心在于细节量化与流程固化，适用于企业生产、个人管理乃至技术系统设计等领域
 1. ollama、label-studio、cherry-studio、dify、langchain
 1. MCP（Model Context Protocol）模型上下文协议
+
+    一个基于「标准输入输出（STDIO）」的通信协议，结合「JSON-RPC（JSON的请求-响应模式）」格式，让不同进程之间像调用本地函数一样调用 AI 工具或服务。
+
+    >MCP 是一个进程通信规范，它让 AI 模型、浏览器、终端、数据库等「彼此独立的软件」之间能像乐高一样拼接起来，互相调用功能。
+
+    1. 过去我们调用 AI，只能通过 REST API 或 SDK。 MCP 提供了一种更轻量的方式： 直接把本地进程注册为工具，AI 模型就能调用它
+    2. REST API 需要走网络，而 MCP 通过本地 STDIO
+    3. 数据不会经过外部网络，所有调用都在本地完成，非常适合对隐私敏感的场景
+
+    | 特性 | REST API/Playwright | MCP Server |
+    | :--- | :--- | :--- |
+    | 调用方式 | 远程网络请求 | 本地进程通信 |
+    | 延迟 | 较高（网络开销） | 极低 |
+    | 隐私安全 | 可能上传云端 | 完全本地 |
+    | 集成复杂度 | 需要额外依赖 | 即插即用 |
 1. A2A（the Agent2Agent Protocol）
 1. ANP（Agent Network Protocol）
 1. 知识库（knowledge base，KB）：一个包含文档集合的系统，用于存储和检索信息
