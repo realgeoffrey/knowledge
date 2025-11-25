@@ -1,9 +1,20 @@
 # AI笔记
 
 ## 目录
+1. [【一站式 LLM底层技术原理入门指南】](#一站式-llm底层技术原理入门指南)
 1. [词汇表](#词汇表)
 
 ---
+### [【一站式 LLM底层技术原理入门指南】](https://s3tlxskbq3.feishu.cn/docx/NyPqdCKraoXz9gxNVCfcIFdnnAc)
+1. 人工智能（Artificial Intelligence）：是让各类机器载体上模拟并拥有类似生物的智能，让机器可以进行感知、学习、识别、推理等行为的计算机科学技术
+
+    人工智能是计算机科学的分支，涉及领域包括 计算机视觉（Computer Vision,CV）、自然语言处理（Natural Language Processing, NLP）、语音识别（Voice Recognition）、语音生成（Text to Speech,TTS）、知识图谱（Knowledge Graph）等
+
+    1. 无监督学习
+
+        1. 有监督学习（Supervised Learning）：是机器学习中一种常见的学习范式，其基本思想是利用带有标签的训练数据来训练模型，从而使其能够学习到输入与输出之间的映射关系，然后可以利用这个映射关系对新的未标签数据进行预测。训练集要包括 输入（特征）和输出（目标），输出是人工标注的。
+    2. 有监督学习
+
 ### 词汇表
 1. 模型（Model）、Agent（智能体、代理）与多智能体框架（Multi-Agent Framework）
 1. 参数、显存大小、蒸馏
@@ -44,7 +55,6 @@
 1. 文本转语音（Text To Speech，TTS）
 1. 自动语音识别（Automatic Speech Recognition, ASR）或语音转文本：是流程和软件的组合,能够解码人类语音并将其转换为数字化文本。会收录人类语音，然后将其转换为可读文本。ASR 能够帮助我们免手动操作地编辑文本消息，并提供用于机器理解的框架
 1. BERT：是由Google开发的自然语言处理模型，可学习文本的双向表示，显著提升在情境中理解许多不同任务中的无标记文本的能力
-1. 计算机视觉（Computer Vision，CV）
 1. Transformer架构（encoder-decoder、self-attention）
 
     是一种基于自注意力机制（Self-Attention）​的深度学习模型架构，由 Google 团队在 2017 年的论文《Attention Is All You Need》中首次提出。它彻底改变了自然语言处理（NLP）领域，并成为现代大语言模型（如 GPT、BERT）的核心基础。
