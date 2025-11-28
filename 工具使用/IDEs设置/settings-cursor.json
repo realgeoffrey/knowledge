@@ -87,8 +87,6 @@
   "diffEditor.hideUnchangedRegions.enabled": true,
   "diffEditor.ignoreTrimWhitespace": false,
   "clipboard-manager.maxClips": 40,
-  "liveServer.settings.donotShowInfoMsg": true,
-  "liveServer.settings.donotVerifyTags": true,
   "markdown.updateLinksOnFileMove.enabled": "always",
   "workbench.list.smoothScrolling": true,
   "workbench.colorTheme": "Webstorm New Dark",
