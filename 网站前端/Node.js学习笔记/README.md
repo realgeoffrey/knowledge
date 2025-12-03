@@ -247,6 +247,7 @@ npm（Node Package Manager）。
 
                         4. `>`、`>=`、`<`、`<=`
                         5. `||`
+
                         - 非latest标签、加了其他标志的版本号（如：-beta、-alpha、-rc）：
 
                             只能限制某单一版本的这些标志，无法支持所有版本的-xx配置，这些标志 和 `peerDependencies` 无法方便配合使用。e.g. `>=0.13.0-0` 等价于 单一版本有标志的`0.13.0-xx` + 无标志的`>=0.13.0`。
@@ -329,6 +330,22 @@ npm（Node Package Manager）。
             1. `version`：版本号
             2. `resolved`：软件包位置
             3. `integrity`：校验码
+
+            - 当一个库被作为依赖安装到其他项目中时，npm（以及yarn/pnpm）会完全忽略库的`package-lock.json`文件
+
+                1. 发布到npm的库中的`package-lock.json`对安装不会产生任何影响（用户安装库时，npm会忽略库内的 lock 文件）
+                2. 只有库开发者 本地开发以及CI 会用到`package-lock.json`
+
+                >最终安装哪个版本的 依赖库，由 宿主项目（用户的项目）的package-lock.json + 库的dependencies 依赖扁平化算法决定。
+
+                - 风险：
+
+                    1. 开发环境依赖版本与用户环境不一致
+
+                        解决：固定依赖版本范围（用`~`或固定版本而不是~~^~~）
+                    2. 若不提交`package-lock.json`，则不同库开发者的开发环境安装依赖版本不同
+
+                        解决：考虑始终提交`package-lock.json`用于开发环境一致；*若不提交，则需要通过其他方式（如在`package.json`中精确指定版本号，并依赖完善的测试流程）来管理开发环境的一致性*
     4. 执行脚本
 
         1. `npm run 「package.json中scripts字段的命令」 -- 「添加脚本后面的参数」`
