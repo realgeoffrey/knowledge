@@ -55,6 +55,11 @@
 
         ![html标签翻译方案](./images/i18n.jpg)
         </details>
+    1. todo： ICU相关知识
+
+        1. <https://unicode-org.github.io/icu/>
+        2. <https://kazupon.github.io/vue-i18n/zh/>
+        3. <https://formatjs.github.io/docs/intl-messageformat/>
 
 ### 书写顺序
 >阿拉伯文、希伯来文，波斯文 等从右至左的语言文字。
