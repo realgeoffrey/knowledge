@@ -11,8 +11,6 @@
 
 ---
 ### 语言问题（翻译）
->ICU（International Components for Unicode）
-
 1. 文字长短不一、文字高度不一
 2. 书写顺序，`ltr`、`rtl`（整个界面布局习惯跟随书写顺序变化，关注用户交互体验）
 3. 时间问题：日期显示，时区（偏移量），历法
@@ -60,11 +58,7 @@ e.g. `将文件拖到此处，或<em>点击上传</em>`
 
     ![HTML标签翻译方案](./images/i18n.jpg)
     </details>
-1. todo： ICU相关知识
-
-    1. <https://unicode-org.github.io/icu/>
-    2. <https://kazupon.github.io/vue-i18n/zh/>
-    3. <https://formatjs.github.io/docs/intl-messageformat/>
+1. todo：[ICU相关](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/ICU相关/README.md)实现
 
 ### 书写顺序
 >阿拉伯文、希伯来文，波斯文 等从右至左的语言文字。
