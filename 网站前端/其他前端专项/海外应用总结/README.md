@@ -58,7 +58,7 @@ e.g. `将文件拖到此处，或<em>点击上传</em>`
 
     ![HTML标签翻译方案](./images/i18n.jpg)
     </details>
-1. todo：[ICU相关](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/ICU相关/README.md)实现
+1. todo：[ICU相关](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/其他前端专项/ICU相关/README.md)实现
 
 ### 书写顺序
 >阿拉伯文、希伯来文，波斯文 等从右至左的语言文字。
