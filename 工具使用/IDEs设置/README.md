@@ -1,10 +1,35 @@
 # IDEs' Setting
 
+## TOC
+
+1. [Cursor](#cursor)
+1. [Visual Studio Code](#visual-studio-code)
+1. [WebStorm](#webStorm)
+
+---
+
 ### Cursor
 >继承Visual Studio Code。
 
 1. [settings-cursor.json](./settings-cursor.json)
 2. [keybindings-cursor.json](./keybindings-cursor.json)
+
+- 规则、指令，都只作用于agents聊天（各种mode），不会作用于Tab补全或其他AI生成或IDE功能的地方。
+
+    1. 规则<https://cursor.com/cn/docs/context/rules>
+
+        1. 规则的描述（.mdc）带着元数据（`description`、`globs`、`alwaysApply`），能设置何时自动启用；也可以手动@某个规则启用。
+        1. 大型语言模型在不同补全之间不会保留记忆。规则在提示级别提供 持久、可重用的上下文。应用后，规则内容会被加入到模型上下文的开头。这为AI在生成代码、理解编辑或协助处理工作流时提供一致的指导、开发规范、约束。
+    1. 指令
+
+        必须手动输入`/`触发，用来执行特定的任务流（如写测试、重构代码）。快速调用常用的 Prompt 模板。
+
+    ><details>
+    ><summary>配置规则、指令</summary>
+    >
+    >![Cursor Settings: Rules and Commands](./images/Rules_and_Commands.png)
+    ></details>
+- 模型上下文协议（MCP）的安装使用<https://cursor.com/cn/docs/context/mcp>
 
 ### Visual Studio Code
 1. [settings.json](./settings.json)

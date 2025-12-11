@@ -4,6 +4,7 @@
 1. [Vue 3版本（core）](#vue-3版本core)
 
     1. [Vue 3的组合式API](#vue-3的组合式api)
+    1. [Vue 3最佳实践](#vue-3最佳实践)
 1. [Vue 2版本（vue）](#vue-2版本vue)
 
     1. [模板插值](#模板插值)
@@ -95,7 +96,7 @@
     |------|-------|-------|
     | `$attrs`是否包含`class`、`style` | ❌ 不包含 | ✅ 包含 |
     | 事件监听器存储位置 | `$listeners` | `$attrs`（已移除 ~~`$listeners`~~） |
-    | 事件名 | `$listeners`中保持原样（事件名的大小写、`-`不会做任何变化） | `$attrs`中`@click`转化为`onClick`这样的驼峰事件名 |
+    | 事件名 | `$listeners`中保持原样（事件名的大小写、`-`不会做任何变化） | `$attrs`中`@click`转化为`onClick`这样的驼峰事件名（`@`前缀被移除，事件名转为驼峰） |
     | `inheritAttrs`影响（并非影响`$attrs`） | 影响**根元素**`不被认作props`的attribute传递，除了`class`、`style` | 影响**根元素**`不被认作props`的attribute传递，包括`class`、`style` |
     | `$attrs`包含内容 | 除了`class`、`style`、`props`、`事件`之外的attributes（属性名的大小写、`-`不会做任何变化） | 除了`props`、`defineEmits`注册事件之外的attributes（属性名的大小写、`-`不会做任何变化）、`v-on`监听器（不只是原生事件，只要是未被`defineEmits`注册的。`@click`转化为`onClick`这样的驼峰事件名） |
 
@@ -122,8 +123,8 @@
     >
     >```js
     >// 无论传不传修饰符，都可以写成 解构或不解构 的方式。都能正确赋值变量
-    >const model1 = defineModel()                // 无论传不传修饰符，model1都是值
-    >const [model1, modifiers1] = defineModel()  // 无论传不传修饰符，model1都是值，modifiers1都是对象（空对象或{修饰符:true}）
+    >const model1 = defineModel()                // 无论传不传修饰符，model1都是ref对象
+    >const [model1, modifiers1] = defineModel()  // 无论传不传修饰符，model1都是ref对象，modifiers1都是对象（空对象或{修饰符:true}）
     >```
 
     1. `v-model:xx`
@@ -225,7 +226,7 @@
     // 可选参数
     defineModel([名, ]{
       type: 类型,
-      required: true/false
+      required: true/false,
       default: 值,    // 如果为 defineModel prop 设置了一个 default 值且父组件没有为该 prop 提供任何值，会导致父组件与子组件之间不同步
       set(value){ return value的相关 },
       get(value){ return value的相关 }
@@ -237,10 +238,10 @@
     |---|---|---|
     | `@click` 默认行为 | 所有在子组件的事件都是自定义事件（除非手动加`.native`），需`$emit`触发 | 原生事件，自动绑定到单一根元素（多根元素不会绑定） |
     | `.native`（监听组件根元素的原生事件，仅在父级引用子组件处添加） | 若需要监听原生事件，则添加 | 已移除，默认效果 |
-    | 事件触发次数 | 仅通过`$emit`触发一次 | 若子组件未通过`defineEmits`声明`click`事件，则父组件的@click会作为原生事件绑定到子组件的根元素。此时若子组件`$emit('click')`，则触发2次 |
-    | 执行顺序 | 依赖显式`$emit`顺序 | 子组件先执行，父组件后执行 |
+    | 事件触发次数 | 仅通过`$emit`触发一次 | 若子组件未通过`defineEmits`声明`click`事件，则父组件的`@click`会作为原生事件绑定到子组件的根元素。此时若子组件`$emit('click')`，则触发2次（原生事件1次 + 自定义事件1次） |
+    | 执行顺序 | 依赖显式`$emit`顺序 | 原生事件先执行，自定义事件后执行 |
 1. **全局**注册组件`const app = createApp(根组件); app.component( 名, 组件 )`
-1. props传参的`validator`支持第二个参数，传入完整的props
+1. props传参的`validator`支持第二个参数，传入所有的prop组成的对象
 1. 依赖注入
 
     1. `provide`可以直接提供响应式值，后代组件可以由此和提供者建立响应式的联系。
@@ -251,7 +252,7 @@
         const count = ref(0)
         provide('key', count) // 注入时是 ref 对象，不会自动解包
         ```
-    1. `inject( 名, 默认值 )`、`inject( 名, 工厂函数, true )`
+    1. `inject( 名 )`、`inject( 名, 默认值 )`、`inject( 名, 工厂函数, true )`
 
         - Vue 要求 inject()必须在组件的`setup()`或`<script setup>`中同步调用。若在异步回调或非组件上下文中直接调用 inject()，会触发警告。`hasInjectionContext()`可以通过前置检查规避这一问题
     1. **全局**提供依赖`const app = createApp(根组件); app.provide( 名, 值 )`
@@ -357,6 +358,7 @@
     4. ~~app.mixin()~~（不推荐）
 1. Vue 2全局功能注册在Vue上，Vue 3全局功能注册在app实例上
 1. 已移除~~filters过滤器~~
+1. 已移除 ~~`.sync`~~
 1. `v-memo`
 1. Vue 2的[jsx](https://github.com/vuejs/jsx-vue2)与Vue 3的[jsx](https://github.com/vuejs/babel-plugin-jsx)有区别
 
@@ -525,8 +527,8 @@
 
 >[Vue 3 API 参考](https://cn.vuejs.org/api/)
 
-1. 不像react的函数组件（每次渲染，都执行一遍函数），`<script setup>`中的代码会在每次组件实例被创建的时候执行一次，但通过响应式系统追踪依赖
-1. `reactive()`只接受引用数据类型（创建Proxy对象以引用数据类型对象作为目标，具有响应性）；`ref()`可以接受任何值类型（包括组件或DOM，此时建议初始化为`ref(null)`或`ref([])`），会返回一个包裹对象，并在`.value`属性下暴露内部值（使`.value`的值具有响应性）。
+1. 不像react的函数组件（每次渲染，都执行一遍函数），`<script setup>`中的代码会在每次组件实例被创建的时候仅执行一次，通过响应式系统追踪依赖
+1. `reactive()`只接受引用数据类型（创建Proxy对象以引用数据类型对象作为目标，具有响应性）；`ref()`可以接受任何值类型（包括组件或DOM，此时建议初始化为`ref(null)`或`ref([])`），会返回一个ref对象，并在`.value`属性下暴露内部值（使`.value`的值具有响应性）。
 1. Ref 具有深层响应性（`ref`、`reactive`、等）
 
     Vue 3对具有深层响应性的代理对象 **新增属性** 能够保证新增属性的响应性。
@@ -566,10 +568,10 @@
         >`<script setup>`里面的代码会被编译成组件`setup()`函数的内容。这意味着与普通的`<script>`只在组件被首次引入的时候执行一次不同，`<script setup>`中的代码会在每次组件实例被创建的时候执行。因此顶层的变量、函数 不会在多个组件中~~共享~~。可以理解为：`<script>`执行一遍后，`export default`的是组件，因此可以在导出之外的代码中包含共用的变量、方法；`<script setup>`就是`setup()`钩子里的代码，同一个组件不同实例间没有任何共用的逻辑。
 
         1. 有包裹的对象（`isRef()`返回`true`）：`ref()`、`shallowRef()`、`customRef()`、`computed()`、`toRefs()`、`toRef()`（、`pinia`的`storeToRefs()`）
-        2. 无包裹的对象（`isRef()`返回`false`，普通引用数据类型、普通基本数据类型也返回`false`）：`reactive`、`shallowReactive`、`readonly`、`shallowReadonly`
+        2. 无包裹的对象（`isRef()`返回`false`，普通引用数据类型、普通基本数据类型也返回`false`）：`reactive()`、`shallowReactive()`、`readonly()`、`shallowReadonly()`
     1. `ref`的自动解包逻辑
 
-        1. `ref`对象作为`reactive`对象的属性时，会自动解包
+        1. `ref`对象作为`reactive()`返回对象的属性时，会自动解包
 
             <details>
             <summary>e.g. </summary>
@@ -593,8 +595,8 @@
             console.log(count.value) // 1
             ```
             </details>
-        1. `ref`对象作为`shallowReactive`对象的属性时 或 `shallowReadonly`对象的属性时，不会~~自动解包~~
-        1. `ref`对象作为`reactive`对象的数组或集合的项时，不会~~自动解包~~
+        1. `ref`对象作为`shallowReactive()`返回对象的属性时 或 `shallowReadonly()`返回对象的属性时，不会~~自动解包~~
+        1. `ref`对象作为`reactive()`返回对象的数组或集合的项时，不会~~自动解包~~
 
             <details>
             <summary>e.g. </summary>
@@ -628,11 +630,11 @@
             ```
 1. 响应式对象 整体替换
 
-    1. `reactive`（、`shallowReactive`）对象：
+    1. `reactive()`（、`shallowReactive()`）返回的对象：
 
-        >1. 只能在「属性层面」更新，不能替换整个Proxy
-        >2. 对同一个对象多次`reactive`，Vue返回的是同一个Proxy
-        >3. 对一个已存在的代理对象调用`reactive`会返回这个已存在的代理对象本身
+        >1. 只能在「属性层面」更新，不能替换整个proxy
+        >2. 对同一个对象多次调用`reactive()`，Vue返回的是同一个proxy
+        >3. 对一个已存在的代理对象调用`reactive()`会返回这个已存在的代理对象本身
 
         ```js
         const state = reactive({ a: 1, b: 2 })
@@ -641,9 +643,9 @@
 
         // 不能赋值替换：state = { a: 100, b: 200 }  // ❌ 响应式丢失
         ```
-    2. `ref`（、`shallowRef`）对象：
+    2. `ref()`（、`shallowRef()`）返回的对象：
 
-        >ref本质是对任意值（包括对象）的响应式“壳子”，替换 .value 等于换了一个新引用。
+        >ref本质是对任意值（包括对象）的响应式"壳子"，替换 .value 等于换了一个新引用。
 
         ```js
         const state = ref({ a: 1, b: 2 })
@@ -673,11 +675,11 @@
 
     >只是不能直接解构，不是不能使用，①可以通过特殊函数包裹后的解构使用（`toRefs`、`pinia`的`storeToRefs`），②也可以不解构直接`.属性`使用。
 
-    1. `reactive`、`setup(props)`的`props`、`vue-router`的`useRoute`：需要用`toRefs`才能解构
+    1. `reactive()`返回的对象、`setup(props)`的`props`、`vue-router`的`useRoute()`返回的对象：需要用`toRefs()`才能解构
     2. `pinia`的store：需要用`pinia`的`storeToRefs`才能解构
     3. `ref`的`.value`手动解包后不是响应式对象：一般直接`.value`去操作，不会进行解构（除非`const object = { id: ref(1) }`需要`const {id} = object`解构为顶级属性）
 
-    - 支持解构：`toRefs`、`pinia`的`storeToRefs`、`defineProps`、`defineModel`
+    - 支持解构：`toRefs()`、`pinia`的`storeToRefs()`、`defineProps()`、`defineModel()`
 1. `toRefs`、`toRef`创建的 ref 与其源属性保持同步：改变源属性的值将更新 ref 的值，反之亦然。
 
     ```js
@@ -707,7 +709,7 @@
     console.log(state.foo) // 5
     ```
 
-    - `toRefs`在调用时只会为源对象上可以枚举的属性创建 ref。若要为可能还不存在的属性创建 ref，则改用`toRef`
+    - `toRefs()`在调用时只会为源对象上可以枚举的属性创建 ref。若要为可能还不存在的属性创建 ref，则改用`toRef()`
 
         ```js
         const state = reactive({
@@ -870,11 +872,12 @@
           2. 手动停止：调用`watch`或`watchEffect`等返回的函数
 
               `const unwatch = watchEffect(() => {}); unwatch();`
-1. `defineProps`、`defineEmits`、`defineExpose`、`defineModel`、`defineOptions`、`defineSlots`是一个编译器宏（compiler macro），并不需要导入（但也不能打印或赋值给其他变量），都是**只能在`<script setup>`顶层中使用（不能从其他文件引用，与生命周期钩子不同）**
+1. `defineProps`、`defineEmits`、`defineExpose`、`defineModel`、`defineOptions`、`defineSlots`是编译器宏（compiler macro），并不需要导入（但也不能打印或赋值给其他变量），都是**只能在`<script setup>`顶层中使用（只要代码不在`.vue`文件的`<script setup>`标签内部，这些宏就无法使用。不能在其他文件使用，也不能在其他文件以任何方式引用，与生命周期钩子不同）**
+
+    >`defineProps`、`defineEmits`、`defineOptions`（等其他能够引用变量的宏）内的参数只能依赖模块级的纯值或导入（宏在编译阶段会被移出到组件外部的“静态上下文”或以编译器能静态处理的方式处理，宏内表达式只能安全引用在模块评估阶段就已定义的东西，例如 import、const、顶层纯函数、不含 Vue runtime 的普通值）；不能依赖运行时/组件实例相关的 Vue 变量（`ref`、`reactive`、`computed`、生命周期等）。
 
     ```vue
     <script setup>
-    // defineProps内的参数，无法访问`<script setup>`定义的其他变量（因为在编译时整个表达式都会被移到外部的函数中）
     const props = defineProps({ // 支持解构
       msg: String           // 传参会变成驼峰变量
     })
@@ -887,7 +890,6 @@
     ```
 
     ```js
-    // defineEmits内的参数，无法访问`<script setup>`定义的其他变量（因为在编译时整个表达式都会被移到外部的函数中）
     const emit = defineEmits(['注册事件名1','注册事件名2',])
 
     emit('注册事件名2', 参数1, 参数2, ) // 必须先注册事件再使用
@@ -923,9 +925,11 @@
       })
     </script>
     ```
+
+    `defineSlots`为组件的插槽 (Slots) 提供严格的 TypeScript 类型检查和智能提示，仅用于ts，不支持纯js。
 1. 模板引用（组件、DOM）
 
-    1. `useTemplateRef`
+    1. `useTemplateRef()`
 
         Vue 3.5+
 
@@ -1086,9 +1090,163 @@
 
     搭配`<Suspense>`使用。
     </details>
-1. `unref`若参数是 ref（`isRef()`返回`true`），则返回内部值，否则返回参数本身（`val = isRef(val) ? val.value : val`的语法糖）
-1. `toValue`若参数是 ref（`isRef()`返回`true`），则返回内部值（`unref(ref)`的值）；若参数是函数，则调用函数并返回其返回值。否则，原样返回参数
-1. `<script setup>`是唯一在调用`await`之后仍可调用组合式函数的地方。编译器会在异步操作之后自动为你恢复当前的组件实例。
+1. `unref()`若参数是 ref（`isRef()`返回`true`），则返回内部值，否则返回参数本身（`val = isRef(val) ? val.value : val`的语法糖）
+1. `toValue()`若参数是 ref（`isRef()`返回`true`），则返回内部值（`unref(ref)`的值）；若参数是函数，则调用函数并返回其返回值。否则，原样返回参数
+1. `<script setup>`是唯一在**顶层**调用`await`之后仍可调用组合式函数的地方。编译器会在异步操作之后自动为你恢复当前的组件实例。
+
+    <details>
+
+    <summary>e.g.</summary>
+
+    ```vue
+    <script setup>
+    import { useRoute } from 'vue-router'
+
+    await fetchUser() // ✅顶层await
+
+    // 这里依然能工作！
+    const route = useRoute()
+    </script>
+    ```
+
+    ```js
+    // ❌ 普通 setup() 函数
+    export default {
+      async setup() {
+        // 此时 getCurrentInstance() 是有值的
+        await someAsyncWork()
+
+        // ❌ 此时 getCurrentInstance() 变成了 null
+        // 下面这行代码会报错，或者无法获取正确的值
+        const route = useRoute()
+      }
+    }
+    ```
+
+    ```vue
+    <script setup>
+    const myFunc = async () => {
+      await someAsyncOp() // ❌非顶层await
+      // ❌ 这里的上下文丢失了，编译器不会进入函数内部去注入恢复代码
+      useRoute()
+    }
+    </script>
+    ```
+    </details>
+
+    - 当`<script setup>`中包含顶层`await`时，Vue 会认为该组件是一个 异步组件 (Async Component)。
+
+        1. 异步组件：代码执行到 await 时会“暂停”，等待 Promise 完成。在 Promise 完成之前，该组件不会被挂载，对应的 DOM 结构也就不会出现在页面上。
+        2. Vue的规则： 若一个组件是异步的，则它的父组件必须使用`<Suspense>`组件包裹它，否则该组件将一直处于“挂起”状态，表现为“不显示内容”或“白屏”。
+
+            ```vue
+            <Suspense>
+              <template #default>
+                <异步组件 />
+              </template>
+              <template #fallback>
+                <div>Loading...</div>
+              </template>
+            </Suspense>
+            ```
+
+### Vue 3最佳实践
+>可维护性、TypeScript支持、代码复用、性能优化。
+
+1. 始终使用`<script setup>`语法糖
+
+    简洁、可读性好，自动暴露顶层变量到模板。
+
+    - `<script setup>`支持很多特殊逻辑：
+
+        1. 任何以`v`开头的驼峰式命名的变量都可以当作 自定义指令
+        2. 在组件的`<script setup>`中的顶层的导入、声明的变量、函数可在同一组件的模板中直接使用（有包裹的对象会在模板中自动浅层解包，因此不需要再手动 ~~.value~~）
+        3. 顶层变量、函数不会在多个组件中共享，可以理解为一个vue实例属性
+        4. `defineProps`、`defineEmits`、`defineExpose`、`defineModel`、`defineOptions`、`defineSlots`是编译器宏，并不需要导入（但也不能打印或赋值给其他变量），都是只能在`<script setup>`顶层中使用
+        5. `<script setup>`是唯一在**顶层**调用`await`之后仍可调用组合式函数的地方。编译器会在异步操作之后自动为你恢复当前的组件实例
+
+2. 用Composables（组合式函数）代替~~mixins~~
+
+    组合式函数常以`use`开头，提供更好的类型推断、逻辑复用、代码组织、明确的依赖关系、避免命名冲突、易于测试。
+
+    ```js
+    // composables/useCounter.js
+    import { ref } from 'vue'
+    export function useCounter(initialValue = 0) {
+      const count = ref(initialValue)
+      const increment = () => count.value++
+      const decrement = () => count.value--
+      return { count, increment, decrement }
+    }
+    ```
+3. 优先使用`ref`，谨慎使用`reactive`
+
+    >推荐`ref`一把梭，即使是对象，也使用`ref`
+
+    1. `ref`的特性：
+
+        1. 可以接受任何值类型，使用更灵活
+        1. 可以整体替换（`ref.value = 新值`），`reactive`只能属性层面更新
+        1. 是包裹对象，但在模板中能自动解包（还有其他自动解包逻辑）
+        1. 对象本身解构会失去响应性，但通常不需要解构（直接使用`ref.value`即可）
+
+    2. `reactive`的限制：
+
+        1. 只接受引用数据类型
+        1. 只能在「属性层面」更新，不能替换整个proxy
+        1. 属性修改
+
+            1. 若是数组则可以直接赋值`proxy.属性 = 新数组`
+            1. 若是对象则要`Object.assign(proxy.属性, 新对象)`或`proxy.属性 = reactive(新对象)`
+        1. 不能直接解构（需进行`toRefs()`才能解构）
+4. 使用 TypeScript 定义 Props 和 Emits
+
+    Vue 3 对 TS 的支持是一流的。使用纯类型注解来定义 props，能获得极好的 IDE 提示和类型检查。
+5. 状态管理：使用 Pinia 代替 Vuex
+6. 合理使用`v-model`和多个`v-model`（通过`v-model:propName`的形式）
+7. 性能优化
+
+    1. 异步组件
+
+        使用`defineAsyncComponent`延迟加载组件，减少初始包大小。
+
+        ```js
+        import { defineAsyncComponent } from 'vue'
+        const AsyncComp = defineAsyncComponent(() => import('./Heavy.vue'))
+        ```
+    2. `v-memo`指令
+
+        缓存组件片段，避免不必要的重新渲染。适用于`v-for`中渲染大型列表。
+
+        ```vue
+        <div v-for="item in list" :key="item.id" v-memo="[item.id, item.selected]">
+          <!-- 只有 item.id 或 item.selected 变化时才重新渲染 -->
+        </div>
+        ```
+    3. `shallowRef`和`shallowReactive`
+
+        对于大型数据结构，若只需要浅层响应性，则使用`shallowRef`或`shallowReactive`可以提升性能。
+    4. 合理使用`computed`和`watch`
+
+        - 使用`computed`处理派生状态，而不是在模板中写复杂表达式
+        - 使用`watchEffect`自动追踪依赖，避免手动维护依赖列表
+        - 对于大型数据结构，使用`watch`的`deep`选项要谨慎，考虑使用`shallowRef`
+        - 使用`watch`的`immediate`和`once`选项优化性能
+    5. 列表渲染优化
+
+        - 始终为`v-for`提供稳定的`key`
+        - 避免在`v-for`中使用复杂计算，使用`computed`预处理
+        - 对于超长列表，考虑虚拟滚动
+    6. 组件懒加载
+
+        使用动态导入和路由懒加载，按需加载组件。
+8. 组件设计原则
+
+    1. 单一职责：每个组件只做一件事
+    2. 组件命名：使用 PascalCase，语义清晰
+    3. Props 验证：使用 TypeScript 或运行时验证
+    4. 事件命名：使用 kebab-case，语义明确
+    5. 组件大小：保持组件小而专注，复杂逻辑提取到 Composables
 
 ---
 
@@ -1725,6 +1883,8 @@
     ></details>
 
     - 不能使用`v-html`来拼接组合模板（会把值原封不动地`el.innerHTML=值`，而不会 ~~把值进行模板编译`<template>值</template>`~~），因为Vue不是一个基于字符串的模板引擎。在使用Vue时，应当使用组件作为UI重用和组合的基本单元。
+
+    >可以用[v-dompurify-html](https://github.com/LeSuisse/vue-dompurify-html)代替`v-html`进行适量XSS处理。
 11. `v-pre`不编译
 
     >e.g. `<p v-pre>{{ 不编译 }}</p>`
@@ -3396,7 +3556,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
 17. 生命周期钩子
 
-    >`async-await`**不**会阻止继续向下执行生命周期，也**不**会阻止mixins/extends的多个同名生命周期执行。e.g. `beforeCreate(); mixins/extends的created(); created()...`
+    >`async-await`**不**会阻止继续向下执行生命周期，也**不**会阻止mixins/extends的多个同名生命周期执行。e.g. `beforeCreate(); mixins/extends的created(); created()...`。也**不**会阻止父子组件间生命周期执行、组件挂载。—— `async-await`仅影响函数内部执行，不影响函数之外的任何顺序执行逻辑。特殊：注意Vue 3的异步组件特性。
 
     1. `beforeCreate`
 
@@ -5803,6 +5963,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 >element-ui与element-plus 交互逻辑基本一致，大部分满足其中一个的feature，也在另一个上满足（bug那就是活跃的库才会修了）。
 
 ### [element-ui](https://github.com/ElemeFE/element)例子
+>注意二次开发的组件A，可能变化了被引用组件B的功能、逻辑（如：通信中丢失了信息，最终传入传出组件B的信息失真；直接copy后魔改源码导致逻辑变化）。在使用二次开发的组件库时，不能认为完全兼容被引用组件B的逻辑，虽然还是主观上认为组件A是完全依照组合式方式实现。
+
 1. <details>
 
     <summary>打开一个复杂的<code>el-dialog</code>或<code>el-drawer</code></summary>
@@ -6241,6 +6403,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 1. 基本的 Form表单 - Table表格 - Pagination分页 交互
 
     >[CodeSandbox demo](https://codesandbox.io/p/github/realgeoffrey/vue3-element-plus-demo/master?file=/src/components/pagination/index.vue)
+
+    >带有展开行的数据（如`<el-table>`展示的包含children的数据），一般来说数据条数仅统计父节点数量，子节点不计入分页总数。e.g. `<el-pagination>`的`total`仅包含数组第一维数据，不包含子数组数据。
 
 ### jQuery与Vue.js对比
 1. 做的事情
