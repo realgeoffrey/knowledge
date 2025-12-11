@@ -28,7 +28,7 @@
     作用：浏览器提供的JS API，封装 ICU 功能。
 
     >调用`new Intl.DateTimeFormat()`等 API 时，底层实际调用 ICU 引擎，查询 CLDR 数据，返回格式化结果。
-5. intl-messageformat——封装实现
+- intl-messageformat——封装实现
 
     作用：Intl API 的封装，实现 ICU MessageFormat 标准
 
@@ -39,7 +39,7 @@
 
 1. 占位符语法
 
-    1. 语法定界符：`{`、`}`（不被逃逸标志`'`覆盖）（、`'`、`#`）
+    1. 语法定界符：`{`、`}`、`'`、`#`、`<标签>`（不被逃逸标志`'`覆盖）
     1. `{key, type, format}`
 
         1. `key`：替换的对象属性名
@@ -53,9 +53,10 @@
             1. `selectordinal`：基于序数的复数规则（依赖 CLDR 序数规则）
         1. `format`：格式化选项，根据`type`不同而不同
     1. `{数字}`替换的数组下标
+    1. 支持[部分 HTML/XHTML/XML 规范](https://formatjs.github.io/docs/intl-messageformat#formatvalues-method)（HTML 标签上的任何属性会被忽略；不支持自闭标签，其被视为字符串字面量；所有标签都必须在`format`有对应的值）
 2. 逃逸标志`'`（以`'`结尾 或 覆盖到句子最后）
 
-    主要转义`{`、`}`、`'`、`#`。若需要输出单引号，则需要2个单引号`''`。
+    主要转义`{`、`}`、`'`、`#`、`<标签>`。若需要输出单引号，则需要2个单引号`''`。
 
     >e.g. `...'{param1}`、`...'{param1}'`、`...'{param1}' {param2}` ：param1 都不是key
 
@@ -223,7 +224,6 @@
         功能：将 ICU Message 字符串解析为抽象语法树（AST）。
 
         使用场景：库开发者使用，普通开发者无需直接使用。
-
     2. `intl-messageformat`（核心引擎）
 
         依赖：`@formatjs/icu-messageformat-parser`
@@ -231,7 +231,6 @@
         功能：基于 AST，结合变量数据和格式化规则，生成最终字符串。
 
         使用场景：纯 JS（无前端框架） 或 Node.js 环境。
-
     3. `@formatjs/intl`（统一 API 层）
 
         依赖：`intl-messageformat`
@@ -239,7 +238,6 @@
         功能：封装`intl-messageformat`，提供统一的国际化 API（日期、时间、数字、相对时间等）。
 
         使用场景：非 React 框架（Angular、Svelte、原生 JS）。
-
     4. `react-intl`（React 适配器）
 
         依赖：`@formatjs/intl`
@@ -247,7 +245,6 @@
         功能：将国际化功能封装为 React 组件（`<FormattedMessage />`）和 Hooks（`useIntl`），处理 Context 传递和重新渲染。
 
         使用场景：React 项目。
-
     5. ~~`vue-intl`~~（已废弃）
 
         说明：FormatJS 团队早期维护的 Vue 适配器，主要用于 Vue 2。Vue 生态更主流的选择是`vue-i18n`（与 FormatJS 无关）。
@@ -255,7 +252,7 @@
 ### vue-i18n
 [vue-i18n@8（for Vue 2）](https://github.com/kazupon/vue-i18n)、[vue-i18n@latest（for Vue 3）](https://github.com/intlify/vue-i18n)
 
-1. vue-i18n默认的消息模式：支持部分 ICU Message 格式，有自己特殊的[语法规则](https://vue-i18n.intlify.dev/guide/essentials/syntax.html)
+1. vue-i18n默认的消息模式：支持部分 ICU Message 格式，有自己特殊的[语法规则](https://vue-i18n.intlify.dev/guide/essentials/syntax.html)：
 
     1. plural
 
@@ -274,4 +271,5 @@
     1. 只有`{key}`写法，没有 ~~`{key,type,format}`~~ 写法
     1. `'`没有~~逃逸效果~~
     1. 需要转义的字符`@`、`|`、`{`、`$`（转义：`{'@'}`、`{'|'}`、`{'{'}`、`{'$'}`）
-2. vue-i18n@9.3+的`messageCompiler`（[Custom Message Format](https://vue-i18n.intlfy.dev/guide/advanced/format)）、vue-i18n@8的`formatter`（[自定义格式](https://kazupon.github.io/vue-i18n/zh/guide/formatting.html#自定义格式)）可以配置自定义消息模式，设置为ICU Message语法
+    1. 不支持 HTML/XHTML/XML 规范（当做普通字符）
+1. vue-i18n@9.3+的`messageCompiler`（[Custom Message Format](https://vue-i18n.intlify.dev/guide/advanced/format)）、vue-i18n@8的`formatter`（[自定义格式](https://kazupon.github.io/vue-i18n/zh/guide/formatting.html#自定义格式)）可以配置自定义消息模式，设置为ICU Message语法

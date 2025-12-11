@@ -1725,6 +1725,8 @@
     ></details>
 
     - 不能使用`v-html`来拼接组合模板（会把值原封不动地`el.innerHTML=值`，而不会 ~~把值进行模板编译`<template>值</template>`~~），因为Vue不是一个基于字符串的模板引擎。在使用Vue时，应当使用组件作为UI重用和组合的基本单元。
+
+    >可以用[v-dompurify-html](https://github.com/LeSuisse/vue-dompurify-html)代替`v-html`进行适量XSS处理。
 11. `v-pre`不编译
 
     >e.g. `<p v-pre>{{ 不编译 }}</p>`

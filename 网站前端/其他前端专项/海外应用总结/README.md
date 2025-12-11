@@ -30,35 +30,103 @@
 11. 词汇的上下文（如：某一个词汇有多重含义）、大小写含义变化的词
 
 #### 翻译内容中包含HTML标签
-一行文字中间需要插入HTML标签的情况（简单的数量或变量替换直接用占位符即可，不涉及插入html、XSS）
+（虽然应该尽量避免，）针对一行文字中间插入了HTML标签的情况（若是简单的数量或变量替换则直接用[intl-messageformat](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/其他前端专项/ICU与国际化（i18n）/README.md#intl-messageformat)占位符处理即可，不涉及插入HTML标签、XSS）
 
->1. 假设 字符串`replace` 和 ICU实现 类似；假设`$t`是翻译方法
->2. 插入html（`innerHTML`）会导致XSS，应尽量避免
->3. 方案的关注点：①是否让翻译人员看到完整句子？②是否会破坏语言语序？③是否会带来XSS风险？④是否会让机翻误处理HTML标签？
+>1. 以下用字符串`replace` 简化表示 ICU MessageFormat；假设`$t`是翻译方法
+>2. 插入HTML（`innerHTML`）会导致XSS，应尽量避免
+>3. 方案的关注点：①是否让翻译人员看到完整句子？②是否会破坏语言语序？③是否会带来XSS风险？④是否会让机翻或人译误处理占位符或HTML标签？
 
-e.g. `将文件拖到此处，或<em>点击上传</em>`
+e.g. 针对这一行的翻译：`将文件拖到此处，或<em>点击上传</em>`
 
-1. **（直接翻译）`$t('将文件拖到此处，或<em>点击上传</em>')`**
+1. 不依赖组件库方式：
 
-    XSS风险高（但没有其他翻译问题）
+    1. ⍻XSS风险高
 
-    >若是机翻，则可能对HTML标签处理不好；若是经过培训的人工翻译，能够解决翻译内容中包含HTML标签的情况。
-1. （占位符）`$t('将文件拖到此处，或{0}点击上传{1}').解决xss().replace('{0}', '<em>').replace('{1}', '</em>')`
+        1. **（直接翻译）`$t('将文件拖到此处，或<em>点击上传</em>')`**
 
-    无XSS风险。占位符作为HTML标签语义不明，不适用于从右至左书写的语言
-1. `$t('将文件拖到此处，或{0}').replace('{0}', "<em>{{ $t('点击上传') }}</em>")`
+            翻译维护性差（若需修改HTML标签内容，则会新生成需要翻译的文案）
 
-    XSS风险高。语序被分割，翻得不自然。不适用于语序变化强烈的语言
-1. `$t('将文件拖到此处，或{0}点击上传').split('{0}')[0]` + `<em>` +`$t('将文件拖到此处，或{0}点击上传').split('{0}')[1]` + `</em>`
+            >若是机翻，则可能对HTML标签、占位符符号处理不好；若是经过培训的人工翻译，则能够解决翻译内容中包含HTML标签、占位符符号的情况。
+    1. ×XSS风险低（还是有），但翻译质量堪忧，不能针对所有语言
 
-    无XSS风险。代码可读性差，占位符作为分隔符语义不明。不适用于语序变化强烈的语言
-1. <details>
+        1. `$t('将文件拖到此处，或{0}点击上传{1}').解决xss().replace('{0}', '<em>').replace('{1}', '</em>')`
 
-    <summary>完整方案过于复杂</summary>
+            占位符作为HTML标签语义不明，不适用于从右至左书写的语言
+        1. `$t('将文件拖到此处，或{0}').解决xss().replace('{0}', "<em>{{ $t('点击上传') }}</em>")`
 
-    ![HTML标签翻译方案](./images/i18n.jpg)
-    </details>
-1. todo[ICU与国际化（i18n）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/其他前端专项/ICU与国际化（i18n）/README.md)实现
+            语序被分割，翻得不自然。不适用于语序变化强烈的语言
+        1. `$t('将文件拖到此处，或{0}点击上传').解决xss().split('{0}')[0]` + `<em>` +`$t('将文件拖到此处，或{0}点击上传').解决xss().split('{0}')[1]` + `</em>`
+
+            码可读性差，占位符作为分隔符语义不明。不适用于语序变化强烈的语言
+    1. <details>
+
+        <summary>AI完整方案过于复杂</summary>
+
+        ![HTML标签翻译方案](./images/i18n.jpg)
+        </details>
+1. ⍻依赖组件库方式（无XSS风险，解耦翻译和结构，但写法复杂）：
+
+    1. [react-i18next](https://github.com/i18next/react-i18next)的`<Trans>` 或 [react-intl](https://formatjs.github.io/docs/react-intl)的`<FormattedMessage>`
+    2. [vue-i18n](https://github.com/intlify/vue-i18n)的`<i18n-t>`
+
+><details>
+><summary>e.g. 以Vue3的vue-i18n为例</summary>
+>
+>1. 直接翻译包含HTML标签字符串，再innerHTML插入（可以使用[DOMPurify](https://github.com/cure53/DOMPurify)、[vue-dompurify-html](https://github.com/LeSuisse/vue-dompurify-html)降低XSS风险）：
+>
+>
+>    ```vue
+>    // 翻译内容
+>    createI18n({
+>      locale: 'zh',
+>      messages: {
+>        zh: {
+>          message: {
+>            welcomeHTML: '你好，<em style="color: red;">{name1}</em>，我是 <em style="color: blue;">{name2}</em>。拉或<em>上传</em>',
+>          },
+>        },
+>      },
+>    })
+>
+>    <p v-dompurify-html="$t('message.welcomeHTML', { name1: 'Jack', name2: 'Geo' })"/>
+>    <!-- 输出：
+>      <p>你好，<em style="color: red;">Jack</em>，我是 <em style="color: blue;">Geo</em>。拉或<em>上传</em></p>
+>    -->
+>
+>    dompurify.sanitize(t('message.welcomeHTML', { name1: 'Jack', name2: 'Geo' }))  // 输出字符串
+>    ```
+>2. 利用`<i18n-t>`组件
+>
+>    ```vue
+>    // 翻译内容
+>    createI18n({
+>      locale: 'zh',
+>      messages: {
+>        zh: {
+>          message: {
+>            welcome: '你好，{name1}，我是 {name2}。拉或{upload}',
+>            upload: '上传'
+>          },
+>        },
+>      },
+>    })
+>
+>    <i18n-t keypath="message.welcome" tag="p"><!-- 若是Vue2的vue-i18n，则仅修改这里为`<i18n path="message.welcome" tag="p">` -->
+>      <template #name1>
+>        <em style="color: red">{{ data.yourName }}</em>
+>      </template>
+>      <template #name2>
+>        <em style="color: blue">{{ data.myName }}</em>
+>      </template>
+>      <template #upload>
+>        <em>{{ $t('message.upload') }}</em>
+>      </template>
+>    </i18n-t>
+>    <!-- 输出：
+>      <p>你好，<em style="color: red">{{ data.yourName }}</em>，我是 <em style="color: blue">{{ data.myName }}</em>。拉或<em>{{ $t('message.upload') }}</em></p>
+>    -->
+>    ```
+></details>
 
 ### 书写顺序
 >阿拉伯文、希伯来文，波斯文 等从右至左的语言文字。
