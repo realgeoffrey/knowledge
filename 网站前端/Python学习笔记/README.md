@@ -12,7 +12,27 @@
 1. [conda](https://github.com/conda/conda)
 
     环境、系统包管理器
-2. pip
+
+    | 功能 | 命令 | 说明 |
+    |------|------|------|
+    | 系统信息 | `conda info`<br>`--all` | 查看系统环境信息（包括配置文件位置、镜像源等） |
+    | 创建环境 | `conda create -n env_name python=3.8`<br>（`--clone old_env`克隆某个旧环境） | 创建指定 Python 版本的环境 |
+    | 激活环境 | `conda activate env_name` | 进入指定环境 |
+    | 退出环境 | `conda deactivate` | 返回基础环境 |
+    | 查看环境 | `conda env list`或`conda info --envs` | 列出所有环境 |
+    | 删除环境 | `conda remove -n env_name --all` | 彻底删除环境（`--all`） |
+    | 安装包 | `conda install numpy`<br>（`numpy=1.10`指定版本） | 安装指定包（当前环境） |
+    | 更新包 | `conda update numpy` | 更新指定包（当前环境）<br>`conda update -n base conda`更新conda到最新版（仅base环境）<br>`conda --version`查看Conda版本 |
+    | 卸载包 | `conda remove numpy` | 卸载指定包（当前环境） |
+    | 列出包 | `conda list` | 查看已安装包（当前环境） |
+    | 搜索包 | `conda search numpy` | 搜索包（是否有该包、可用版本） |
+    | 模拟安装 | `conda install numpy --dry-run` | 在不实际安装或修改任何包的情况下，模拟安装的过程：<br>解析依赖、冲突检测 → 计算最优解 → <br>生成变更计划（哪些包需要被安装、更新或删除）<br>但不执行变更，不对环境做任何修改 |
+    | 导出环境 | `conda env export > env.yml` | 导出环境配置（当前环境） |
+    | 导入环境 | `conda env create -f env.yml` | 从文件创建环境 |
+    | 清理缓存 | `conda clean`+<br>`-i`索引，`-p`未使用的包，`-t`压缩包，`-l`log<br>`--all`包含前面所有 |  |
+    | 查看配置 | `conda config --show`<br>`--add`、`--set`、`--remove` | e.g.<br>`conda config --add channels conda-forge`添加频道<br>`conda config --set channel_priority strict`设置频道优先级 |
+
+2. pip（Preferred installer program）
 
     python包管理器
 
@@ -90,13 +110,13 @@
     删除变量
 1. 与JS不同的运算符、语法：
 
-    `:=`（`print`、`if`、`while`等既能输出又能赋值）、`==`、`!=`、`not`（非）、`or`（或）、`and`（且）、`//`（整除）、`is`（是变量相等）、`is not`、`in`（包含）、`not in`、`*变量`（可变参数——元组）、`**变量`（可变参数——字典）
+    `:=`（海象运算符，Python 3.8+，在表达式中赋值）、`==`（值相等）、`!=`（值不等）、`not`（非）、`or`（或）、`and`（且）、`//`（整除）、`is`（身份相等，比较对象ID）、`is not`（身份不等）、`in`（包含）、`not in`（不包含）、`*变量`（可变参数——元组）、`**变量`（可变参数——字典）
 1. `if 「条件」:`（没有小括号 ~~`()`~~ ）、`elif 「条件」:`、`else:`
 
-    2. 支持`值1 <= 变量 < 值2`
+    支持链式比较：`值1 <= 变量 < 值2`（等价于`值1 <= 变量 and 变量 < 值2`）
 1. `for key, value in 列表或元组或集合或字符串或字典或range(参数):`
 
-    `for _ in xx:`不使用索引
+    `for _ in xx:`不使用索引（`_`是约定俗成的"丢弃"变量名）
 1. `for-else`
 
     若`for`语句未执行到`break`，则执行`else`
@@ -136,7 +156,7 @@
     # 支持三元运算符表达式： 值1 if 条件表达式 else 值2
     num = 2
     a = '偶数' if num%2==0 else '奇数'
-    b = f'{'偶数' if num%2==0 else '奇数'}'
+    b = f"{'偶数' if num%2==0 else '奇数'}"
     ```
 1. `break`、`continue`仅针对当前循环
 1. Python中没有用花括号 ~~`{}`~~ 来构造代码块，而是使用**缩进**的方式来表示代码的层次结构
@@ -145,15 +165,19 @@
     2. 缩进数量无所谓，1或更多空格都可以
     3. 相同层级的代码（同一个父级层级下的才算相同层级），缩进数量必须一致
     4. 非相同层级的代码，缩进数量不需要一致
-1. `match-case`
+1. `match-case`（模式匹配）
 
-    1. `case 值1 | 值2 | 值3:`
-    2. `case _:`默认匹配
+    1. `case 值1 | 值2 | 值3:`多值匹配（或）
+    2. `case _:`默认匹配（通配符）
+    3. `case [x, y]:`序列解构匹配（匹配项的数量）
+    4. `case {'key': value}:`字典匹配（匹配`key`的值）
+    5. `case 类型(参数):`类型和参数匹配
+    6. `case 值 if 条件:`守卫条件
 1. [内置函数](https://docs.python.org/zh-cn/3/library/functions.html)：不需要 ~~`import`~~ 就能够直接使用的函数
 
     >内置函数不是~~保留字或关键字~~，可以被赋值覆盖。查看保留字或关键字：`help('keywords')`。
 
-    1. `input(「描述值或变量」)`
+    1. `input(提示信息)`从标准输入读取一行字符串（返回字符串类型，需要类型转换）
 
         >e.g. `import math; print(int(input('输出半径，输出周长：')) * 2 * math.pi)`
     1. `print`
@@ -181,12 +205,30 @@
     1. `hash(hashable类型)`
 
         >传递`unhashable`会报错。
-    1. `open`
-    1. `zip`
-    1. `isinstance(值, 类型)`
+    1. `open(文件路径, mode='r', encoding=None)`打开文件
+
+        mode模式：`r`（读）、`w`（写，覆盖）、`a`（追加）、`x`（创建，已存在则失败）、`b`（二进制）、`t`（文本，默认）、`+`（读写）
+    1. `zip(可迭代对象1, 可迭代对象2, ...)`将多个可迭代对象打包成元组序列，返回zip对象
+    1. `isinstance(值, 类型)`检查对象是否为指定类型（支持类型元组）
+    1. `issubclass(类, 父类)`检查类是否为指定类的子类
+    1. `sorted(可迭代对象, key=None, reverse=False)`返回排序后的新列表（不修改原对象）
+    1. `min(可迭代对象)`、`max(可迭代对象)`、`sum(可迭代对象)`获取最小值、最大值、求和
+    1. `any(可迭代对象)`、`all(可迭代对象)`检查可迭代对象中是否有/全部为真值
+    1. `enumerate(可迭代对象, start=0)`返回枚举对象（索引和值的元组）
+    1. `map(函数, 可迭代对象)`对可迭代对象中的每个元素应用函数，返回map对象
+    1. `filter(函数, 可迭代对象)`过滤可迭代对象，返回filter对象
+    1. `reduce(函数, 可迭代对象, 初始值)`累积计算（需要`from functools import reduce`）
+    1. `abs(数值)`、`round(数值, 小数位数)`绝对值、四舍五入
+    1. `pow(底数, 指数, 模数)`幂运算（等价于`**`）
+    1. `divmod(被除数, 除数)`返回商和余数的元组
+    1. `bin(整数)`、`oct(整数)`、`hex(整数)`转换为二进制、八进制、十六进制字符串
+    1. `ord(字符)`、`chr(整数)`字符与ASCII码互转
+    1. `eval(字符串)`、`exec(字符串)`执行字符串中的Python代码（谨慎使用，有安全风险）
+    1. `repr(对象)`返回对象的官方字符串表示（通常可用来重新创建对象）
+    1. `vars(对象)`、`dir(对象)`返回对象的属性字典、属性列表
 1. 需要`import`才能使用的内置模块
 
-    `math`、`random`、`string`、`operator`、`functools`、`time`、`enum`、`json`、`csv`、`re`、`heapq`、`itertools`、`collections`、`threading`、`abc`、`gc`、`glob`、`os`、`concurrent`、`asyncio`、`lxml`
+    `math`、`random`、`string`、`operator`、`functools`、`time`、`enum`、`json`、`csv`、`re`、`heapq`、`itertools`、`collections`、`threading`、`abc`、`gc`、`glob`、`os`、`concurrent`、`asyncio`、`decimal`
 1. `import math`（仅导入了`math`）、`import math as m`（仅导入了`m`）、`from math import factorial`（仅导入了`factorial`）、`from math import factorial as f`（仅导入了`f`）
 
     1. 同名的后导入 覆盖 同名的前导入
@@ -215,6 +257,8 @@
 
     raise BaseException('手动抛出异常')
     ```
+
+    异常层次：`BaseException`（所有异常的基类）→ `Exception`（用户异常基类）→ `ValueError`、`TypeError`、`KeyError`、`IndexError`等具体异常。捕获异常时应该从具体到一般，避免使用裸露的`except:`（会捕获所有异常包括系统退出）。
 1. `with`
 
     用于上下文管理的语法结构，它简化了资源管理（如：文件操作、数据库连接、线程锁、等）的代码，确保资源被正确释放。
@@ -228,22 +272,39 @@
 1. 迭代器、生成器
 
     1. `__iter__`、`__next__`魔术方法就是迭代器协议。
+
+        实现了`__iter__()`方法的对象是可迭代对象，实现了`__next__()`方法的对象是迭代器。迭代器也是可迭代对象（`__iter__()`返回`self`）。
     2. 生成器是语法简化版的迭代器。`yield`
+
+        生成器函数使用`yield`关键字，调用时返回生成器对象。生成器是惰性求值的，只在需要时计算下一个值。
     3. 生成器进化为协程
 
-        生成器对象可以使用`send()`方法发送数据，发送的数据会成为生成器函数中通过`yield`表达式获得的值。
+        生成器对象可以使用`send(值)`方法发送数据，发送的数据会成为生成器函数中通过`yield`表达式获得的值。还可以使用`throw(异常)`抛出异常、`close()`关闭生成器。
+    4. 生成器表达式
+
+        `(表达式 for 变量 in 可迭代对象 if 条件)`语法类似列表推导式，但返回生成器对象，内存效率更高。
 1. 并发编程：多线程、多进程、异步I/O
+
+    - 多线程：`threading`模块，适合I/O密集型任务，受GIL（全局解释器锁）限制
+    - 多进程：`multiprocessing`模块，适合CPU密集型任务，可充分利用多核
+    - 异步I/O：`asyncio`模块，基于事件循环的协程，适合高并发I/O操作
 
 ### 数据类型
 1. 整型`int`
 
-    `0b100 == 4`、`0o100 == 64`、`0x100 == 256`
+    `0b100 == 4`（二进制）、`0o100 == 64`（八进制）、`0x100 == 256`（十六进制）
+
+    Python 3中`int`类型没有大小限制（仅受内存限制），可以表示任意大的整数
 1. 浮点型`float`
 
-    `123.456 == 1.23456e2`
+    `123.456 == 1.23456e2`（科学记数法）
+
+    浮点数使用IEEE 754双精度标准，可能存在精度问题（如`0.1 + 0.2 != 0.3`），需要精确计算时使用`decimal`模块
 1. 字符串型`str`
 
     单引号、双引号，`'''`或`"""`支持换行字符串（`\n`可以用回车换行表示）
+
+    常用方法：`upper()`、`lower()`、`capitalize()`、`title()`、`swapcase()`大小写转换；`strip()`、`lstrip()`、`rstrip()`去除空白；`split(分隔符, maxsplit)`、`join(可迭代对象)`分割和连接；`replace(旧, 新, count)`替换；`find(子串, start, end)`、`index(子串, start, end)`查找（find返回-1，index抛异常）；`startswith(前缀)`、`endswith(后缀)`判断开头结尾；`count(子串, start, end)`计数；`isalpha()`、`isdigit()`、`isalnum()`、`isspace()`类型判断；`format()`格式化；`encode(encoding)`编码为bytes
 
     1. `r'字符串'`或`R'字符串'`（也支持`'''`或`"""`）：原始字符串、不会转义（不需要用`\`处理会转义的符号）
 
@@ -262,7 +323,7 @@
         ```
 
         主要用于正则表达式。e.g. `import re; print(re.match(r'^[0-9a-zA-Z_]{6,20}$', input('请输入用户名: ')))`
-    1. `str()`
+    1. `str(对象)`将对象转换为字符串表示（调用对象的`__str__`方法）
     1. 字符串`%`变量：`'浮点数%f' % 变量1`、`'浮点数%.1f 整数%d 字符串%s' % (变量1, 变量2, 变量3)`（占位符`%s`、`%f`、`%.数f`）
 
         >v2.0-
@@ -305,7 +366,11 @@
 1. 布尔型`bool`
 
     `True`、`False`
+
+    `bool`是`int`的子类，`True == 1`、`False == 0`，但类型不同。在布尔上下文中，所有对象都可以被评估为真值或假值（空容器、0、None、False为假值，其他为真值）
 1. `None`
+
+    `None`是`NoneType`类型的唯一值，表示"无值"或"空值"。在布尔上下文中为假值。常用于表示函数没有返回值或变量未初始化。
 1. 列表（list`[值,]`）
 
     1. 列表是一种**可变**容器
@@ -319,14 +384,17 @@
         e.g. `items = [i for i in range(1, 100) if i % 3 == 0 or i % 5 == 0]`、`items2 = [num ** 2 for num in items]`
 
         >使用列表生成式创建列表不仅代码简单优雅，而且性能上也优于使用`for-in`循环和`append`方法向空列表中追加元素的方式。**强烈建议用生成式语法来创建列表**
+    8. 常用方法
+
+        `append(元素)`追加、`extend(可迭代对象)`扩展、`insert(索引, 元素)`插入、`remove(元素)`删除（首个匹配）、`pop(索引)`删除并返回（默认最后一个）、`clear()`清空、`index(元素, start, end)`查找索引、`count(元素)`计数、`sort(key=None, reverse=False)`排序（原地）、`reverse()`反转（原地）、`copy()`浅拷贝
 1. 元组（tuple`(值,)`）
 
     1. 元组是**不可变**类型
-    2. 类似列表的大部分操作
+    2. 类似列表的大部分操作（索引、切片、`in`、`not in`、`+`、`*`等）
     3. `()`（空元组）、`(值, )`（一元组：必须加逗号，否则是改变运算优先级的圆括号）
     4. 打包、解包
 
-        `*`解包成列表（0或多个元素）
+        `*`解包成列表（0或多个元素）。元组解包可以用于变量交换：`a, b = b, a`
 1. 集合（set`{值,}`）
 
     1. 集合是**可变**类型
@@ -355,18 +423,23 @@
         ></details>
     3. 集合中的元素必须是`hashable类型`（不可变类型）
 
-        所谓hashable类型指的是能够计算出哈希码的数据类型，通常**不可变类型**都是hashable类型。可变类型都不是hashable类型（unhashable），因为可变类型无法计算出确定的哈希码，所以它们不能放到集合中。如：我们不能将列表作为集合中的元素；同理，由于 集合 本身也是**可变类型**，所以集合也不能作为集合中的元素。我们可以创建出嵌套列表（列表的元素也是列表），但我们不能创建出嵌套的集合。
+        所谓hashable类型指的是能够计算出哈希码的数据类型，通常**不可变类型**都是hashable类型。可变类型都不是hashable类型（unhashable），因为可变类型无法计算出确定的哈希码，所以它们不能放到集合中。如：我们不能将列表作为集合中的元素；同理，由于 集合 本身也是**可变类型**，所以集合也不能作为集合中的元素。我们可以创建出嵌套列表（列表的元素也是列表），但我们不能创建出嵌套的集合。可以使用`frozenset`（不可变集合）作为集合的元素。
     4. `in`、`not in`
     5. 交集（`&`、`set1.intersection(set2)`）、并集（`|`、`set1.union(set2)`）、差集（`-`、`set1.difference(set2)`）、对称差（`^`、`set1.symmetric_difference(set2)`）
     6. 比较运算：`==`、`!=`、`<`、`<=`（`set1.issubset(set2)`）、`>`（`set1.issuperset(set2)`）、`>=`
 
     - 不可变集合（frozenset、冻结集合）
 
-    >集合的成员运算在性能上要优于列表的成员运算。
+        创建：`frozenset([1, 2, 3])`。frozenset是不可变类型，可以作为字典的键或集合的元素。
+
+    >集合的成员运算在性能上要优于列表的成员运算（集合使用哈希表，平均O(1)时间复杂度；列表需要遍历，O(n)时间复杂度）。
 1. 字典（dictionary`{键:值,}`）
 
     1. 字典是**可变**类型
     2. 创建
+    3. 常用方法
+
+        `get(键, 默认值)`安全获取（键不存在返回默认值）、`setdefault(键, 默认值)`获取或设置默认值、`keys()`、`values()`、`items()`获取键/值/键值对视图、`pop(键, 默认值)`删除并返回、`popitem()`删除并返回最后一个键值对、`update(字典或键值对)`更新、`clear()`清空、`copy()`浅拷贝、`fromkeys(可迭代对象, 值)`从键序列创建字典
 
         ><details>
         ><summary>e.g.</summary>
@@ -394,8 +467,8 @@
         >print(person)
         >
         ># dict函数(构造器)中的每一组参数就是字典中的一组键值对
-        >person = dict(name='王大锤', age=55, height=168, weight=60, addr='成都市武侯区科华北路62号1栋>101')
-        >print(person)  # {'name': '王大锤', 'age': 55, 'height': 168, 'weight': 60, 'addr': '成都市武>侯区科华北路62号1栋101'}
+        >person = dict(name='王大锤', age=55, height=168, weight=60, addr='成都市武侯区科华北路62号1栋101')
+        >print(person)  # {'name': '王大锤', 'age': 55, 'height': 168, 'weight': 60, 'addr': '成都市武侯区科华北路62号1栋101'}
         >
         ># 可以通过Python内置函数zip压缩两个序列并创建字典
         >items1 = dict(zip('ABCDE', '12345'))
@@ -414,6 +487,9 @@
         - 注意传递变量不会把变量名作为字符串
 
             >e.g. `a = '某个值'; { a: 1 } # { '某个值': 1 }`
+    4. 字典视图
+
+        `dict.keys()`、`dict.values()`、`dict.items()`返回的是视图对象，会反映字典的变化，支持集合操作（如交集、并集）
 1. 函数`def`
 
     1. 位置参数、关键字参数（参数位置可以随意打乱）
@@ -533,8 +609,10 @@
         - 支持多个装饰器用于单个函数
     1. 支持递归调用
 
-        函数自己调用自己称为递归调用。函数调用通过内存中的栈空间来保存现场和恢复现场，栈空间通常都很小，所以递归如果不能迅速收敛，很可能会引发栈溢出错误，从而导致程序的崩溃。
-    1. `async-await`
+        函数自己调用自己称为递归调用。函数调用通过内存中的栈空间来保存现场和恢复现场，栈空间通常都很小，所以递归如果不能迅速收敛，很可能会引发栈溢出错误，从而导致程序的崩溃。Python默认递归深度限制为1000（可通过`sys.setrecursionlimit()`修改，但不推荐）。
+    1. `async-await`异步函数
+
+        使用`async def`定义异步函数（协程函数），调用返回协程对象。使用`await`等待异步操作完成。需要在事件循环中运行（`asyncio.run()`或`asyncio.get_event_loop().run_until_complete()`）。
 1. 类`class`
 
     >形参名`self`、`cls`等只是约定俗成，可以改成任意变量名，但是因为可读性原因不建议换其他变量名。
@@ -572,9 +650,9 @@
     Student.__init__
     Student.study
     ```
-    3. `__name`表示一个私有属性，`_name`表示一个受保护属性
+    3. `__name`表示一个私有属性（名称修饰），`_name`表示一个受保护属性（约定）
 
-        Python语言并没有从语义上做出最严格的限定，可以用`stu._Student__属性名`的方式访问到私有属性`__属性名`或受保护属性`_属性名`
+        Python语言并没有从语义上做出最严格的限定，可以用`stu._Student__属性名`的方式访问到私有属性`__属性名`（Python会进行名称修饰，将`__name`转换为`_类名__name`）。受保护属性`_属性名`只是约定，不会进行名称修饰。
     4. Python是动态语言，若不希望在使用对象时动态的为对象添加属性，可以使用`__slots__`（若再动态添加其他属性则引发异常）
 
         ><details>
@@ -594,8 +672,10 @@
         >stu.sex = '男'     # AttributeError: 'Student' object has no attribute 'sex'
         >```
         ></details>
-    5. 类的静态方法`@staticmethod`（第一个参数不能是~~类cls或实例对象self~~）、类方法`@classmethod`（第一个参数必须是类cls）
+    5. 类的静态方法`@staticmethod`（第一个参数不能是类cls或实例对象self，与普通函数相同，但属于类命名空间）、类方法`@classmethod`（第一个参数必须是类cls，可以通过类或实例调用，常用于替代构造函数）
     6. `@property`指定属性（通过属性获取，经过方法计算）
+
+        可以将方法转换为属性访问，还可以配合`@属性名.setter`和`@属性名.deleter`实现属性的设置和删除
     7. Python语言允许多重继承；`object类`是Python中的顶级类（所有的类都是它的子类，要么直接继承它，要么间接继承它）
 
         1. 在子类的初始化方法中，可以通过`super().__init__()`来调用父类初始化方法（MRO）。
@@ -698,6 +778,9 @@
         class B(metaclass=A):   # 指定自定义元类（设置metaclass值）
             pass
         ```
+    10. 常用魔术方法
+
+        `__init__`初始化、`__del__`析构、`__str__`字符串表示（用户友好）、`__repr__`官方表示（开发者）、`__len__`长度、`__getitem__`、`__setitem__`、`__delitem__`索引操作、`__iter__`、`__next__`迭代、`__call__`使对象可调用、`__add__`、`__sub__`等运算符重载、`__eq__`、`__lt__`等比较运算符、`__hash__`哈希值、`__bool__`布尔值转换、`__enter__`、`__exit__`上下文管理
 - 各种数据类型都支持**解构**
 - 各种数据类型（支持序列索引的）都支持 正向索引、反向索引、**切片索引**（`[start:end:stride]`若start值等于0，则可以省略；若end值等于列表长度，则可以省略；若stride值等于1，则可以省略。支持批量修改切片）
 
@@ -760,3 +843,13 @@
 5. 爬虫是典型的 I/O 密集型任务
 
     >I/O 密集型任务的特点就是程序会经常性的因为 I/O 操作而进入阻塞状态。
+
+    适合使用异步I/O（`asyncio`+`aiohttp`）或多线程来提高效率
+6. 注意事项
+
+    - 遵守网站的robots.txt协议和使用条款
+    - 设置合理的请求间隔，避免对服务器造成压力
+    - 使用User-Agent标识自己，避免被误判为恶意请求
+    - 处理各种异常情况（网络错误、编码错误、超时等）
+    - 注意数据的去重和增量更新
+    - 考虑使用代理池和IP轮换应对反爬虫机制
