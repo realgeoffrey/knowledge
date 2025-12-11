@@ -3409,16 +3409,16 @@ var a = new ShowFPS();
         type CancelablePromise = Promise<any> & { cancel: any };
 
         function sleep(timeout: number): CancelablePromise {
-          let res: (v: string) => void;
+          let rejectFunc: (v: string) => void;
           let timer: ReturnType<typeof setTimeout>;
-          const promise = new Promise((resolve) => {
-            res = resolve;
+          const promise = new Promise((resolve, reject) => {
+            rejectFunc = reject;
             timer = setTimeout(() => {
               resolve("done");
             }, timeout);
           }) as CancelablePromise;
-          promise.cancel = function (data: string) {
-            res(data);
+          promise.cancel = function (reason?: any) {
+            rejectFunc(reason);
             clearTimeout(timer);
           };
 

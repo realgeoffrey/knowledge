@@ -554,7 +554,7 @@
 
         | 通用头部字段名 | 说明 |
         | :--- | :--- |
-        | Cache-Control | 控制缓存的行为 |
+        | [Cache-Control](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Reference/Headers/Cache-Control) | 控制缓存的行为<br>`no-store`：最严格，不允许任何缓存<br>`no-cache`：使用缓存前必须服务端验证（协商缓存）<br>`private`：禁止CDN、代理缓存<br>`public`：静态资源常用<br>`s-maxage`：仅用于共享缓存<br>`must-revalidate`若缓存过期则必须重新验证<br>`immutable`：有效期内不必重新验证 |
         | Pragma | 仅有`Pragma: no-cache`一个值，与`Cache-Control: no-cache`效果一致，强制要求缓存服务器在返回缓存的版本之前将请求提交到源头服务器进行验证 |
         | Connection | 逐跳头部（控制不再转发给代理的头部）、持久连接的管理 |
         | Date | 创建报文的日期时间 |
