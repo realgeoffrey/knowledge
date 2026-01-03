@@ -6402,7 +6402,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     >[CodeSandbox demo](https://codesandbox.io/p/github/realgeoffrey/vue3-element-plus-demo/master?file=/src/components/pagination/index.vue)
 
-    >ps. 带有展开行的数据（如`<el-table>`中包含children的数据），一般来说数据条数仅统计父节点数量，子节点不计入分页总数。e.g. `<el-pagination>`的`total`仅包含数组第一维数据，不包含子数组数据。
+    >带有展开行的数据（如`<el-table>`展示的包含children的数据），一般来说数据条数仅统计父节点数量，子节点不计入分页总数。e.g. `<el-pagination>`的`total`仅包含数组第一维数据，不包含子数组数据。
 
 ### jQuery与Vue.js对比
 1. 做的事情
