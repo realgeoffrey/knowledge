@@ -2673,7 +2673,7 @@
         </script>
         ```
 
-        >e.g. [时区的时间选择器利用了这个实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/其他前端专项/海外应用总结/README.md#多时区的一些问题解决方案)
+        >e.g. [时区的时间选择器利用了这个实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/其他前端专项/海外应用总结/多时区/README.md#多时区的一些问题解决方案)
 
 ### 单文件组件（Single-File Component，SFC）
 ```vue
@@ -6304,6 +6304,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
     <summary><code>el-form</code>或<code>el-form-item</code>的<code>rules</code>属性，对应的是<code>el-form-item</code>的<code>prop</code>属性，对应表单校验方法指向的prop（validate、validateField、resetFields、clearValidate）</summary>
 
+    >`<el-form>`的`rules`仅对存在对应`prop`的`<el-form-item>`的字段生效（rules可以设置很多，但是只有存在对应prop的规则起作用）。
+
     ```vue
     <!-- rules在form -->
     <el-form :model="formData" :rules="{ value1: [{具体规则}], 属性2: [{具体规则}] }">
@@ -6394,10 +6396,13 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     2. `<el-upload>`的`http-request`默认会去使用`action`等参数，并且`action`是必传参数。因此，若要传递`http-request`重写，也必须传递`action`，建议重写的`http-request`也与源码一样去使用`action`
 
         >源码：<https://github.com/ElemeFE/element/blob/master/packages/upload/src/upload.vue#L137-L156>
-    3. `<el-pagination>`需要使用`.sync`才会同步修改传入`page-size`、`current-page`的值（或事件触发后手动修改），并且 **事件`size-change`、`current-change`是组件手动操作后触发相关内部值变化后才会触发**，~~任何方式修改传入值的变化都不会触发`size-change`、`current-change`事件~~
+    3. `<el-upload>`达到limit限制后，无法再导入文件，因此也无法再触发除了`on-exceed`之外的事件
+
+        若想实现 超过limit后再导入文件替换之前文件，则可以考虑limit设置多一个，导入成功后再事件中手动替换前面的文件。
+    4. `<el-pagination>`需要使用`.sync`才会同步修改传入`page-size`、`current-page`的值（或事件触发后手动修改），并且 **事件`size-change`、`current-change`是组件手动操作后触发相关内部值变化后才会触发**，~~任何方式修改传入值的变化都不会触发`size-change`、`current-change`事件~~
 
         >[CodePen demo](https://codepen.io/realgeoffrey/pen/LEpqNjy)
-    4. `<el-date-picker>`若`type="daterange或datetimerange"`，则上下月份的日期选择没有选中样式
+    5. `<el-date-picker>`若`type="daterange或datetimerange"`，则上下月份的日期选择没有选中样式
 
 ### [element-plus](https://github.com/element-plus/element-plus)例子
 1. 基本的 Form表单 - Table表格 - Pagination分页 交互

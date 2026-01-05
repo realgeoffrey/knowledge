@@ -81,7 +81,6 @@
   "eslint.codeActionsOnSave.mode": "problems",
   "merge-conflict.autoNavigateNextConflict.enabled": true,
   "inlineChat.holdToSpeech": false,
-  "inlineChat.lineNaturalLanguageHint": false,
   "diffEditor.renderSideBySide": true,
   "diffEditor.experimental.showMoves": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
@@ -108,8 +107,8 @@
   "vsicons.dontShowNewVersionMessage": true,
   "extensions.ignoreRecommendations": true,
   "javascript.updateImportsOnFileMove.enabled": "always",
+    "liveServer.settings.donotShowInfoMsg": true,
 
   // vscode only
-  "github.copilot.nextEditSuggestions.fixes": true,
-  "github.copilot.nextEditSuggestions.enabled": true
+  "github.copilot.nextEditSuggestions.fixes": true
 }
