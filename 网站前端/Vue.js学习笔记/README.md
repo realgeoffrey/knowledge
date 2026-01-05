@@ -2673,7 +2673,7 @@
         </script>
         ```
 
-        >e.g. [时区的时间选择器利用了这个实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/其他前端专项/海外应用总结/README.md#多时区的一些问题解决方案)
+        >e.g. [时区的时间选择器利用了这个实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/其他前端专项/海外应用总结/多时区/README.md#多时区的一些问题解决方案)
 
 ### 单文件组件（Single-File Component，SFC）
 ```vue
