@@ -2673,7 +2673,7 @@
         </script>
         ```
 
-        >e.g. [时区的时间选择器利用了这个实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/其他前端专项/海外应用总结/README.md#多时区的一些问题解决方案)
+        >e.g. [时区的时间选择器利用了这个实现](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/其他前端专项/海外应用总结/多时区/README.md#多时区的一些问题解决方案)
 
 ### 单文件组件（Single-File Component，SFC）
 ```vue
@@ -6303,6 +6303,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 7. <details>
 
     <summary><code>el-form</code>或<code>el-form-item</code>的<code>rules</code>属性，对应的是<code>el-form-item</code>的<code>prop</code>属性，对应表单校验方法指向的prop（validate、validateField、resetFields、clearValidate）</summary>
+
+    >`<el-form>`的`rules`仅对存在对应`prop`的`<el-form-item>`的字段生效（rules可以设置很多，但是只有存在对应prop的规则起作用）。
 
     ```vue
     <!-- rules在form -->

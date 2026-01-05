@@ -6,6 +6,7 @@
 1. [vue-i18n](#vue-i18n)
 1. [`Intl`例子](#intl例子)
 1. [翻译内容中包含HTML标签](#翻译内容中包含html标签)
+1. [翻译输入输出case问题](#翻译输入输出case问题)
 
 ---
 >ICU（International Components for Unicode）是一个庞大的底层基础库（C/C++ 和 Java），它主要致力于解决计算机如何正确处理人类语言和文化习惯这一根本问题。包含：1. 文本边界分析 (Text Boundary Analysis) / Break Iterator；2. 排序与检索 (Collation)；3. Unicode 规范化 (Normalization)；4. 音译 (Transliteration)；5. 双向文本算法 (BiDi / Bidi Algorithm)；6. 复杂的日期/数字/列表格式化；7. 多语言文案替换、消息格式化（Message Formatting）。
@@ -45,7 +46,7 @@
     1. `{key, type, format}`
 
         1. `key`：替换的对象属性名
-        1. `type`：类型，决定如何处理该值
+        1. `type`（可选）：类型，决定如何处理该值
 
             1. `number`：数字格式化（依赖 CLDR 数字规则）
             1. `date`：日期格式化（依赖 CLDR 日期规则）
@@ -53,7 +54,7 @@
             1. `select`：基于值的分支选择（不依赖语言规则，完全依赖字符串匹配）
             1. `plural`：基于数量的复数规则（依赖 CLDR 复数规则）
             1. `selectordinal`：基于序数的复数规则（依赖 CLDR 序数规则）
-        1. `format`：格式化选项，根据`type`不同而不同
+        1. `format`（可选）：格式化选项，根据`type`不同而不同
     1. `{数字}`替换的数组下标
     1. 支持[部分 HTML/XHTML/XML 规范](https://formatjs.github.io/docs/intl-messageformat#formatvalues-method)
 
@@ -62,7 +63,10 @@
         3. 所有标签都必须在`format`有对应的值（否则报错）
 
             >e.g. `new IntlMessageFormat('我是 <em>{name1}</em>', 'en-US').format({ name1: 1, em: (chunks) => '<em>' + chunks + '</em>' })`
-    >变量`{key}`里应该只放动态数据（如：人名、数字、文件名），不要放句子结构的一部分（如：动词、名词），否则句子被分割，导致语序被破坏
+    >变量`{key}`里应该只放动态数据（如：人名、数字、文件名），不要放句子结构的一部分（注意：名词若不是动态数据，也是句子结构），否则句子被分割，导致语序被破坏
+    >
+    >1. 如何判断{key}是句子结构的一部分：①{key}需要被翻译吗？若不需要翻译则是动态数据，若需要翻译则是句子结构；②{key}能不能在不改变句子其他部分的情况下，随意替换？如会变格的名词、法语中的动词。若能随意替换则是动态数据，若替换了要修改翻译则是句子结构。
+    >2. ICU 的职责是：在 message 内部，统一处理语言结构。{key} 的职责是：传入语言无关的数据。一旦 {key} 本身需要翻译 或 会导致message变化，就说明它是语言的一部分，而不是数据。
 2. 逃逸标志`'`（以`'`结尾 或 覆盖到句子最后）
 
     主要转义`{`、`}`、`'`、`#`、`<标签>`。若需要输出单引号，则需要2个单引号`''`。
@@ -70,7 +74,7 @@
     >e.g. `...'{param1}`、`...'{param1}'`、`...'{param1}' {param2}` ：param1 都不是key
 
 ><details>
-><summary>e.g. </summary>
+><summary>e.g. 6种可选的type</summary>
 >
 >>可以使用<https://devpal.co/icu-message-editor/>测试。
 >
@@ -268,7 +272,7 @@
         管道符`|`
 
         ```js
-        // key: "值1 | 值2 | 值3" // singular | plural 或 zero | one | other
+        // key: "值1 | 值2 | 值3" // 2个值：singular | plural。或 3个值： zero | one | other
         $t('key', 0) // -> 值1
         $t('key', 1) // -> 值2
         $t('key', 5) // -> 值3
@@ -283,45 +287,122 @@
     1. 不支持 HTML/XHTML/XML 规范（当做普通字符）
 1. vue-i18n@9.3+的`messageCompiler`（[Custom Message Format](https://vue-i18n.intlify.dev/guide/advanced/format)）、vue-i18n@8的`formatter`（[自定义格式](https://kazupon.github.io/vue-i18n/zh/guide/formatting.html#自定义格式)）可以配置自定义消息模式，设置为ICU Message语法
 
+    >注意：配置ICU MessageFormat后，原有的vue-i18n默认语法（如管道符`|`、`@:`引用）可能不再工作，需要统一使用ICU语法。建议在项目初期就决定使用哪种模式，避免后期迁移成本。
+
 ### `Intl`例子
 1. `Intl.ListFormat`
 
-    列表格式化。
+    列表格式化，根据语言地区自动选择合适的连接词和格式。
 
-    >避免用`.join(固定分隔符)`。
+    >避免用`.join(固定分隔符)`，因为不同语言的列表连接方式不同（中文用"和"，英文用"and"，有些语言用逗号等）。
 
     ```js
-    function formatList (list) {
-      const formatter = new Intl.ListFormat('zh-CN', { style: 'long', type: 'conjunction' });
-      return formatter.format(list);
+    function formatList (list, options) {
+        const formatter = new Intl.ListFormat('zh-CN'/* 语言地区 */, {
+            style: 'long',  // 'long' | 'short' | 'narrow'
+            type: 'conjunction',  // 'conjunction'（和） | 'disjunction'（或） | 'unit'
+            ...options
+        });
+        return formatter.format(list);
     };
 
     formatList(['jpg', 'png'])   // -> jpg和png
     ```
 2. `Intl.Collator`
 
-    字符串比较。
+    字符串比较，根据语言地区的排序规则进行比较。
+
+    ```js
+    const collator = new Intl.Collator('sv'/* 语言地区 */);
+
+    ['z', 'ö'].sort(collator.compare)  // ['z', 'ö']
+    ```
 3. `Intl.DateTimeFormat`
 
-    日期、时间格式化。
+    日期、时间格式化，根据语言地区自动选择合适的格式。
+
+    ```js
+    const dateFormatter = new Intl.DateTimeFormat('zh-CN', {
+        dateStyle: 'medium',  // 'full' | 'long' | 'medium' | 'short'
+        timeStyle: 'short',
+        timeZone: 'Asia/Shanghai'
+    });
+
+    dateFormatter.format(new Date())  // '2024年1月12日 09:52'
+    ```
+
 4. `Intl.DisplayNames`
 
-    针对 `语言、地区、脚本、日历、、货币、日期时间字段` 显示名称的一致翻译。
+    针对`语言、地区、脚本、日历、、货币、日期时间字段`显示名称的一致翻译。
+
+    ```js
+    const displayNames = new Intl.DisplayNames('zh-CN', { type: 'region' });
+
+    displayNames.of('US')  // '美国'
+    displayNames.of('GB')  // '英国'
+    ```
+
 5. `Intl.DurationFormat`
 
     时长格式化。
+
+    ```js
+    const durationFormatter = new Intl.DurationFormat('zh-CN', {
+        style: 'long'
+    });
+
+    durationFormatter.format({ hours: 2, minutes: 30 })  // '2小时30分钟'
+    ```
+
 6. `Intl.NumberFormat`
 
     数字格式化（货币符号、百分比、科学计数法、单位）。
+
+    ```js
+    const numberFormatter = new Intl.NumberFormat('zh-CN', {
+        style: 'currency',
+        currency: 'CNY',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+
+    numberFormatter.format(1000)  // '¥1,000.00'
+    ```
 7. `Intl.PluralRules`
 
-    复数格式化。
+    复数格式化，根据数字值返回对应的复数类别。
+
+    ```js
+    const pluralRules = new Intl.PluralRules('ru');  // 俄语
+
+    pluralRules.select(1)   // 'one'
+    pluralRules.select(2)   // 'few'
+    pluralRules.select(5)   // 'many'
+    ```
 8. `Intl.RelativeTimeFormat`
 
-    相对时间格式化。
+    相对时间格式化，生成"2小时前"、"3天后"等相对时间表达。
+
+    ```js
+    const rtf = new Intl.RelativeTimeFormat('zh-CN', {
+        numeric: 'auto',  // 'always' | 'auto'
+        style: 'long'     // 'long' | 'short' | 'narrow'
+    });
+
+    rtf.format(-2, 'hour')  // '2小时前'
+    rtf.format(3, 'day')    // '3天后'
+    ```
+
 9. `Intl.Segmenter`
 
     文本分割，允许将一个字符串分割成有意义的片段（字、词、句），专门用于处理像中文、日文这种没有空格分隔词语的语言。
+
+    ```js
+    const segmenter = new Intl.Segmenter('zh-CN', { granularity: 'word' });
+    const segments = segmenter.segment('你好世界');
+
+    Array.from(segments).map(s => s.segment)  // ['你好', '世界']
+    ```
 
 ### 翻译内容中包含HTML标签
 >1. 以下用字符串`replace` 简化表示 ICU MessageFormat；假设`$t`是翻译方法
@@ -354,12 +435,6 @@ e.g. 针对一行文字中间插入了HTML标签的情况，如：`将文件拖�
         1. `$t('将文件拖到此处，或{0}点击上传').解决xss().split('{0}')[0]` + `<em>` +`$t('将文件拖到此处，或{0}点击上传').解决xss().split('{0}')[1]` + `</em>`
 
             码可读性差，占位符作为分隔符语义不明。不适用于语序变化强烈的语言
-    1. <details>
-
-        <summary>AI完整方案过于复杂</summary>
-
-        ![HTML标签翻译方案](./images/i18n.jpg)
-        </details>
 1. ⍻依赖组件库方式（无XSS风险，解耦翻译和结构，但写法复杂）：
 
     1. [react-i18next](https://github.com/i18next/react-i18next)的`<Trans>` 或 [react-intl](https://formatjs.github.io/docs/react-intl)的`<FormattedMessage>`
@@ -381,7 +456,7 @@ e.g. 针对一行文字中间插入了HTML标签的情况，如：`将文件拖�
 >        zh: {
 >          message: {
 >            welcomeHTML1: '你好，<em style="color: red;">{name1}</em>，我是 <em style="color: blue;">{name2}</em>。拉或<em>上传</em>', // × 原文中包含标签，不推荐。应该要分离内容和样式
->            welcomeHTML2: '你好，{name1}，我是 {name2}。拉或{upload}'  // ⍻ 变量`{key}`里应该只放动态数据（如：人名、数字、文件名），不要放句子结构的一部分（如：动词、名词）
+>            welcomeHTML2: '你好，{name1}，我是 {name2}。拉或{upload}'  // ⍻ 变量`{key}`里应该只放动态数据（如：人名、数字、文件名），不要放句子结构的一部分
 >          },
 >        },
 >      },
@@ -434,7 +509,170 @@ e.g. 针对一行文字中间插入了HTML标签的情况，如：`将文件拖�
     1. ×翻译内容包含HTML标签：XSS风险，内容和样式未分离，翻译维护性差（若需修改HTML标签内容，则会新生成需要翻译的文案）
 
         e.g. `你好，<em style="color: red;">{name1}</em>，我是 <em style="color: blue;">{name2}</em>。拉或<em>上传</em>`, `{ name1: 'Jack', name2: 'Geo' }`
-    2. ⍻翻译内容分割句子结构：变量`{key}`里应该只放动态数据（如：人名、数字、文件名），不要放句子结构的一部分（如：动词、名词），否则句子被分割、语序被破坏
+    2. ⍻翻译内容分割句子结构：变量`{key}`里应该只放动态数据（如：人名、数字、文件名），不要放句子结构的一部分，否则句子被分割、语序被破坏
 
         e.g. `你好，{name1}，我是 {name2}。拉或{upload}`, `{ name1: "<em style='color: red;'>Jack</em>", name2: "<em style='color: blue;'>Geo</em>", upload: '<em>上传</em>' }`
     3. ⎷利用`<i18n-t>`等组件实现：仅支持组件展示（无法仅输出字符串），稍微麻烦一些，其他没有问题
+
+### 翻译输入输出case问题
+在使用 ICU MessageFormat（或类似的现代 i18n 标准）之前，开发者经常会犯一些"硬编码逻辑"的错误。这些写法最大的问题在于：它们假设了所有语言的语法结构、语序和标点习惯都和英语（或中文）一样。
+
+1. "拼积木"式拼接
+
+    开发者试图通过代码把词拼成句子，但**不同语言的语序不同**（主谓宾顺序）、书写顺序也不同。一句话分割后分别翻译也导致翻译**上下文丢失**。
+
+    ```js
+    // ❌ 错误示例
+    const msg = $t('删除') + ' ' + itemName;    // 还有多余空格问题
+    const msg2 = $t('共') + count + $t('条');   // 语序问题：阿拉伯语是"条共3"
+
+    // ✅ 正确示例
+    $t('删除{itemName}', { itemName: x })
+    $t('共{count}条', { count: x })
+    ```
+
+    >解决方案：避免任何形式的拼接，将完整句子作为翻译单元。翻译时提供完整上下文，让翻译人员根据目标语言的语序调整。
+2. 肢解句子
+
+    1. 为了在句子中间插入 HTML 标签（如链接、加粗），强行把一个完整的句子切碎。
+
+        除了导致"拼积木"式拼接问题外，还引入**XSS风险**。
+
+        ```js
+        // ❌ 错误示例
+        $t('点击{action}查看详情', { action: '<a href="...">这里</a>' })  // XSS风险，语序破坏
+
+        // ⚠️ 示例（使用ICU的HTML标签功能）
+        $t('点击<action>这里</action>查看详情', { action: (chunks) => `<a href="...">${chunks}</a>` })   // 语序ok，但依然有XSS风险
+
+        // ✅ 正确示例（使用vue-i18n的<i18n-t>组件）
+        // 翻译：'点击{action}查看详情'
+        // <i18n-t keypath="message.clickToView" tag="span">
+        //   <template #action>
+        //     <a href="...">{{$t('这里')}}</a> /* ⚠️ 这里嵌套翻译了，也有问题 */
+        //   </template>
+        // </i18n-t>
+        ```
+
+        >解决方案：尽量避免句子中间插入 HTML 标签，若实在无法避免，查看[翻译内容中包含HTML标签](#翻译内容中包含html标签)。
+
+    2. 占位符不仅是动态数据，还错误地包含句子结构的一部分。
+
+        ```js
+        // ❌ 错误示例（连词不是“动态数据”，而是“句子结构”的一部分）
+        $t(`{conjunction, select, when {当} and {且}}我来了`, { conjunction: 'when或and' })
+
+        // ✅ 正确示例（若变量是句子结构的一部分，则只能包含完整句子）
+        $t(`{conjunction, select,
+          when {当我来了}
+          and  {且我来了}
+        }`, { conjunction: 'when或and' })
+        // ✅ 正确示例（再包含动态数据）
+        $t(`{conjunction, select,
+          when {当{name}来了}
+          and  {且{name}来了}
+        }`, { conjunction: 'when或and', name: '雷锋' })
+        ```
+
+        >解决方案：若一旦存在`结构`变量，则翻译必须**拥有整句控制权**。
+3. 嵌套翻译（在占位符中又包含翻译）
+
+    1. **变格问题**：在很多语言（德语、俄语、波兰语、芬兰语等）中，名词的形式取决于它在句子中的位置（主语、宾语、属格等）——变格。
+
+        ```js
+        // ❌ 错误示例（俄语）
+        $t('删除{fileName}', { fileName: $t('文件') })
+        // 问题：俄语中"文件"作为宾语需要变格，但嵌套翻译无法处理
+
+        // ✅ 正确示例
+        $t('删除文件{fileName}', { fileName: 'document.pdf' })
+        // 翻译人员可以在完整句子中正确处理变格
+        ```
+
+    2. **性别/阴阳性问题**：在法语中，"删除"(supprimé / supprimée) 这个词的拼写需要根据宾语的词性变化。
+
+        ```js
+        // ❌ 错误示例（法语）
+        $t('{action}成功', { action: $t('删除') })
+        // 问题：法语中"删除"需要根据宾语性别变化，但嵌套无法传递上下文
+
+        // ✅ 正确示例
+        $t('删除{fileName}成功', { fileName: 'document.pdf' })
+        // 翻译人员可以在完整句子中正确处理性别变化
+        ```
+
+    >解决方案：尽量避免，改造为翻译一句完整的话。如果这个`$t()`的结果在任何语言里"可能需要改写"（变格、性别、语序等），就禁止嵌套。使用ICU的`select`处理性别等分支逻辑。
+4. 硬编码标点符号
+
+    1. 代码写死冒号，会导致英文界面出现全角冒号，或中文界面出现半角冒号，不专业。
+    2. 语序：某些语言（如法语）在冒号前需要加空格。
+    3. 特殊标点：西班牙语的疑问句前面有一个倒问号`¿`。
+
+    ```js
+    // ❌ 错误示例
+    $t('名称') + ':' + value
+    $t('确认删除') + '?'
+
+    // ✅ 正确示例
+    $t('名称：{value}', { value })
+    $t('确认删除？')
+    ```
+
+    <details>
+    <summary>e.g. 列表连接的多语言实现</summary>
+
+    ```js
+    function formatList (list, options) {	// formatList(['jpg', 'png'])   // -> jpg和png（取决于浏览器实现）
+        const formatter = new Intl.ListFormat('zh-CN'/* 语言地区 */, { style: 'long', type: 'conjunction', ...options });
+        return formatter.format(list);
+    };
+
+    $t('仅支持上传{typeList}类型文件', { typeList: formatList(typeList) })
+    ```
+    </details>
+
+    >解决方案：把标点符号包含进完整的翻译句子，让翻译人员根据目标语言的标点习惯调整。或使用`Intl.ListFormat`等标准API。
+5. 手动 Replace 占位符
+
+    通过`String.prototype.replace`而非ICU的替换语法，无法处理复杂格式化需求（如：数字格式化、日期格式化、复数规则等）。
+
+    >解决方案：改用ICU占位符语法解决。ICU支持嵌套占位符、格式化选项、复数规则等复杂场景。
+6. 占位符key的命名未语义化
+
+    ```js
+    // ✅ 正确示例
+    $t('你好，{cityName}', { cityName: '厦门' })
+    $t('共{totalCount}条记录，已选择{selectedCount}条', { totalCount: 10, selectedCount: 3 })
+
+    // 👎🏻 错误示例
+    $t('你好，{0}', ['厦门'])                    // 数字索引不语义化
+    $t('你好，{item}', { item: '厦门' })         // 通用名称不明确
+    $t('共{count1}条记录，已选择{count2}条', { count1: 10, count2: 3 })  // 命名不清晰
+    ```
+
+    >解决方案：ICU的key尽量语义化，提高可读性和维护性。翻译人员也能更好地理解上下文。
+7. 忽略ICU的格式化能力
+
+    1. 不使用ICU的`number`、`date`、`time`格式化，手动处理数字、日期格式，导致格式不符合目标语言习惯。
+
+        >解决方案：充分利用ICU的格式化能力，让数字、日期、时间格式自动适配目标语言地区。
+    2. 逻辑里写复数
+
+        1. 复杂复数规则：英语、中文仅有单复数；俄语、波兰语有 3 种复数形式（1个、2-4个、5个以上不同）；阿拉伯语有 6 种形式（零、单数、双数、3-10、11-99等）。
+        2. 代码无法维护：不可能在代码里为每种语言写一套if/else。
+
+        >解决方案：使用ICU语法`{count, plural, ...}`解决。同理，6种类型的占位符type（plural、select、number、date、time、selectordinal），都是必要的功能，未使用或自实现一套一定会有遗漏。
+
+- 使用建议（要求）
+
+    1. 完整句子原则：将完整句子作为翻译单元，避免拆分拼接
+    2. 具名占位符：使用`{name}`而非 ~~`{0}`~~
+    3. 动态数据原则：占位符只放动态数据（数字、人名、文件名等），不放句子结构
+    4. 变量仅承载“数据值”，不得承载句法角色（句子结构）
+
+        若变量用于区分句式、语序或从句结构（如 `when`、`if`、`and`、`or`），必须使用`select`ICU占位符语法，且 `select`的每个分支必须是完整、可独立翻译的句法单元。
+    4. 避免嵌套：不在占位符值中调用`$t`
+    5. 利用 ICU 能力：使用 plural、select、number、date、time、selectordinal 等格式
+    6. HTML标签处理：使用`<i18n-t>`组件或ICU的HTML标签功能 而非字符串拼接，避免XSS风险并保持语序正确
+
+    >核心原则：永远把一整句话作为一个翻译单元（Translation Unit），不要在代码里拆解它。充分利用ICU的格式化能力，让翻译人员专注于语言表达，而非技术实现（关注点分离）。

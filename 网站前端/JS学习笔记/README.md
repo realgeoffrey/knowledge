@@ -3326,6 +3326,8 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 15. URL携带JSON数据：
 
     search某key的值为`encodeURIComponent(JSON.stringify(JSON数据))`，获取某key值后`JSON.parse(decodeURIComponent(前面的值))`。
+
+    >输入浏览器的链接都会经过 标准化编码（根据 RFC 3986 规范，将非 ASCII 字符转换为 UTF-8 字节流，再对每个字节进行 Percent-encoding（百分号编码）），发往服务端的 以及 `window.location.href`获得的 都是编码后的字符串。可以使用`decodeURI(window.location.href)`尝试获取输入前的链接（并非完美逆转）。
 16. 当一个`<script>`被执行时，在它之前的标签可以访问，但在它之后的标签无法访问（还不存在、未被解析到）
 
     ```html

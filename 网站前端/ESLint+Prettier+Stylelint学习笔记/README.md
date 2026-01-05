@@ -144,6 +144,23 @@
 
     prettier --check 「文件（夹）」    # 判断是否已经prettier
     ```
+
+    ><details>
+    ><summary>不要忘记 glob 周围的引号（<code>'</code>、<code>"</code>）。引号确保 Prettier CLI 扩展 glob 而不是你的 shell，这对于跨平台使用很重要。（对于其他命令同样适用，是该把解析通配符等字符串交给命令，还是交给Shell）</summary>
+    >
+    >e.g. `prettier "**/*.{vue,js}"`与`prettier **/*.{vue,js}`为什么前者能输出所有.js和.vue，而后者仅输出部分.js和所有.vue？
+    >
+    >1. Shell看到引号，直接把引号内字符串传递给命令（prettier），命令根据自己的规则（如.prettierignore等）解析这个字符串；
+    >1. Shell未看到引号的情况下遇到`**`，触发Shell展开机制，会先解析再传递给命令（prettier）：
+    >
+    >    >当 Shell 在命令行中遇到特定的保留字符（元字符）且这些字符没有被转义或引用时，才会触发展开机制。具体展开机制略。
+    >
+    >    1. 展开`**/*.{vue,js}`为`**/*.vue **/*.js`
+    >    2. 分别扫描`**/*.vue`与`**/*.js`最终分别输出所有匹配的路径
+    >
+    >        1. 因为`node_modules`里可能很多.js文件，甚至达到系统限制的ARG_MAX，因此.js的所有文件路径被部分截断，但所有.vue文件路径达不到截断长度因此被完整保留
+    >    3. 把扫描出的所有路径传递给命令（prettier）
+    ></details>
 2. 配置文件
 
     1. 项目级配置
