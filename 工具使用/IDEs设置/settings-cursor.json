@@ -64,7 +64,7 @@
   "terminal.integrated.allowChords": false,
   "terminal.integrated.cursorBlinking": true,
   "terminal.integrated.scrollback": 3000,
-  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.fontSize": 15,
   "terminal.integrated.enableVisualBell": true,
   "terminal.integrated.env.osx": {
     "PATH": "null"
@@ -81,7 +81,6 @@
   "eslint.codeActionsOnSave.mode": "problems",
   "merge-conflict.autoNavigateNextConflict.enabled": true,
   "inlineChat.holdToSpeech": false,
-  "inlineChat.lineNaturalLanguageHint": false,
   "diffEditor.renderSideBySide": true,
   "diffEditor.experimental.showMoves": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
@@ -108,11 +107,15 @@
   "vsicons.dontShowNewVersionMessage": true,
   "extensions.ignoreRecommendations": true,
   "javascript.updateImportsOnFileMove.enabled": "always",
+  "liveServer.settings.donotShowInfoMsg": true,
+  "cSpell.diagnosticLevel": "Hint",
 
   // curosr
+  "inlineChat.lineNaturalLanguageHint": false,
   "workbench.activityBar.orientation": "vertical",
   "window.commandCenter": true,
   "editor.minimap.enabled": true,
   "editor.experimentalEditContextEnabled": true,
-  "git.autoRepositoryDetection": true
+  "git.autoRepositoryDetection": true,
+  "cursor.composer.textSizeScale": 1.3
 }

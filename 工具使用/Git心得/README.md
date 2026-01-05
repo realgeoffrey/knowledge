@@ -853,12 +853,30 @@ feat(details): 添加了分享功能
         ></details>
 3. HTTP代理、HTTPS代理
 
-    ```text
-    git config --global http.proxy 'http://127.0.0.1:7890'  # 或 'socks5://127.0.0.1:7891'
+    >`http.proxy`（与`https.proxy`）仅作用于HTTP/HTTPS协议，SSH连接不走http/https代理。
 
-    git config --global https.proxy 'http://127.0.0.1:7890' # 或 'socks5://127.0.0.1:7891'
+    ```text
+    git config --global http.proxy 'http://127.0.0.1:7890'  # 或 'socks5://127.0.0.1:7891' # 作用于http请求、https请求（优先级低于https.proxy）
+
+    git config --global https.proxy 'http://127.0.0.1:7890' # 或 'socks5://127.0.0.1:7891' # 作用于https请求（优先级高于http.proxy）
+
+    # 去除设置：
+    # git config --global --unset http.proxy
+    # git config --global --unset https.proxy
     ```
-4. 开启对文件名大小写敏感
+4. http/https请求的凭据（密码）
+
+   >在Git中，credential.helper（凭据助手）决定了系统如何处理你的http/https账号和密码。
+   
+    | 选项名称 | 存储方式 | 存储时长 | 适用场景与特点 |
+    |---|---|---|---|
+    | 默认 | 不储存 | - | 每次执行git pull/push时，终端都会弹出提示要求你手动输入用户名和密码 |
+    | cache | 内存 | 默认 15 分钟 | 临时使用。凭据不落盘，适合公用电脑或 VPS。可通过`--timeout`修改时长 |
+    | store | 磁盘明文文件 | 永久 | 极度不安全。凭据以明文形式存储在磁盘中，任何能访问文件的人都能看到密码 |
+    | osxkeychain | 系统钥匙串 | 永久 | Mac用户首选。使用 macOS 加密钥匙串存储，安全且体验丝滑 |
+    | wincred | 凭据管理器 | 永久 | Windows用户首选。集成在系统自带的凭据管理器中，安全性高 |
+    | manager (GCM) | 加密存储 | 永久 | 全平台最强。支持多因子验证 (2FA) 和 OAuth，由微软维护 |
+5. 开启对文件名大小写敏感
 
     >每个git项目都会默认显式设置为不敏感，因此需要去到每个项目单独开启敏感（项目配置优先于全局配置）。
 
@@ -866,7 +884,7 @@ feat(details): 添加了分享功能
     git config --global core.ignorecase false   # 全局
     git config core.ignorecase false            # 当前目录
     ```
-5. 其他建议设置在全局的配置
+6. 其他建议设置在全局的配置
 
     ```shell
     # 推荐：
