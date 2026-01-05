@@ -14,7 +14,7 @@
 1. [settings-cursor.json](./settings-cursor.json)
 2. [keybindings-cursor.json](./keybindings-cursor.json)
 
-- 规则、指令，都只作用于agents聊天（各种mode），不会作用于Tab补全或其他AI生成或IDE功能的地方。
+- rules规则、commands指令，都只作用于agents聊天（各种mode），不会作用于Tab补全或其他AI生成或IDE功能的地方。
 
     1. 规则<https://cursor.com/cn/docs/context/rules>
 
@@ -29,7 +29,21 @@
     >
     >![Cursor Settings: Rules and Commands](./images/Rules_and_Commands.png)
     ></details>
-- 模型上下文协议（MCP）的安装使用<https://cursor.com/cn/docs/context/mcp>
+- Agent Skills
+- hook
+- subagents
+- 模型上下文协议（MCP）
+- AGENTS.md
+
+| cursor支持功能 | 自动生效 | 可手动调用 | 核心角色 |
+| --------- | ----- | ------- | ------ |
+| AGENTS.md | 是（隐式全局加载） | 否 | **描述整个项目大纲**，作为AI的README，`.cursor/rules`的简化替代<br>放高层策略、优先级和全局限制；不要放实现细节或敏感数据 |
+| Rules     | 是（隐式加载） | 是（可`@`引用） | **具体行为规则与约束**（安全、合规、格式等）<br>将规则拆成小模块，按优先级编号；支持被 Skill/Command 引用 |
+| Skills    | 是（隐式加载，根据上下文按需加载） | 是（可`/`引用） | **SOP**封装、标准化（描述、指令、工具定义）<br>规定审查标准和输出格式，按需加载资源成为上下文 |
+| Commands  | 否 | 是（`/`触发） | **快捷入口**：手动触发入口，封装执行其他功能 |
+| Hooks     | 是（事件触发） | 否 | **生命周期自动化**：在特定事件时执行操作 |
+| Subagents | 否（由主Agent委派启动） | 否 | **专项分工**：上下文隔离、并行处理、领域专业化 |
+| MCP       | 否（由AI调用） | 否 | **外部能力扩展**：打破沙箱限制，允许 Cursor 读写数据库、操作浏览器、访问本地文件系统以外的资源 |
 
 ### Visual Studio Code
 1. [settings.json](./settings.json)
