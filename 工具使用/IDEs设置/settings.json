@@ -110,6 +110,5 @@
   "javascript.updateImportsOnFileMove.enabled": "always",
 
   // vscode only
-  "github.copilot.nextEditSuggestions.fixes": true,
-  "github.copilot.nextEditSuggestions.enabled": true
+  "github.copilot.nextEditSuggestions.fixes": true
 }
