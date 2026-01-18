@@ -81,7 +81,6 @@
   "eslint.codeActionsOnSave.mode": "problems",
   "merge-conflict.autoNavigateNextConflict.enabled": true,
   "inlineChat.holdToSpeech": false,
-  "inlineChat.lineNaturalLanguageHint": false,
   "diffEditor.renderSideBySide": true,
   "diffEditor.experimental.showMoves": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
