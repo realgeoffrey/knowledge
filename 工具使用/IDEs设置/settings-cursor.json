@@ -114,5 +114,6 @@
   "window.commandCenter": true,
   "editor.minimap.enabled": true,
   "editor.experimentalEditContextEnabled": true,
-  "git.autoRepositoryDetection": true
+  "git.autoRepositoryDetection": true,
+  "cursor.composer.textSizeScale": 1.3
 }
