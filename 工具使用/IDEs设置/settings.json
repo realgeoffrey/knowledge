@@ -107,6 +107,7 @@
   "vsicons.dontShowNewVersionMessage": true,
   "extensions.ignoreRecommendations": true,
   "javascript.updateImportsOnFileMove.enabled": "always",
+    "liveServer.settings.donotShowInfoMsg": true,
 
   // vscode only
   "github.copilot.nextEditSuggestions.fixes": true
