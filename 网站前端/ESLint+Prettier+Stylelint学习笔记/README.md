@@ -146,7 +146,7 @@
     ```
 
     ><details>
-    ><summary>不要忘记 glob 周围的引号（<code>'</code>、<code>"</code>）！引号确保 Prettier CLI 扩展 glob 而不是你的 shell，这对于跨平台使用很重要。（对于其他命令同样适用，是该把解析通配符等字符串交给命令，还是交给Shell）</summary>
+    ><summary>不要忘记 glob 周围的引号（<code>'</code>、<code>"</code>）。引号确保 Prettier CLI 扩展 glob 而不是你的 shell，这对于跨平台使用很重要。（对于其他命令同样适用，是该把解析通配符等字符串交给命令，还是交给Shell）</summary>
     >
     >e.g. `prettier "**/*.{vue,js}"`与`prettier **/*.{vue,js}`为什么前者能输出所有.js和.vue，而后者仅输出部分.js和所有.vue？
     >
