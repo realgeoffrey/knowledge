@@ -83,7 +83,7 @@
 
     如：`left/right`、`margin左右`、`padding左右`、`border左右`、`borderRadius左右`等颠倒，flex项的几个CSS属性起始方向`flex-start`和`flex-end`颠倒（实现`direction: rtl;`设置后的默认效果）。类似：[rtlcss](https://github.com/MohammadYounes/rtlcss)。
 
-    >`margin`改成`margin-inline`，`padding`改成`padding-inline`
+    >`margin`改成`margin-inline`，`padding`改成`padding-inline`等，TODO
 
     ```js
     // e.g. React中重写`React.createElement`
