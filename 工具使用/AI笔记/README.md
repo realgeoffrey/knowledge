@@ -115,14 +115,16 @@
     <details>
     <summary>SDD核心特征与实现原理</summary>
 
-    1. **问题背景**：现有 AI 编程助手（GitHub Copilot、Cursor、Claude Code 等）采用"基于对话的开发"（Chat-Driven Development, CDD）模式，存在以下局限：
+    1. 问题背景：现有 AI 编程助手（GitHub Copilot、Cursor、Claude Code 等）采用"基于对话的开发"（Chat-Driven Development, CDD）模式，存在以下局限：
 
-        - 项目需求、设计决策和架构约束仅存在于瞬时对话历史或开发者记忆中
-        - 随着对话轮次增加，LLM 上下文窗口面临物理限制和注意力分散（Attention Dispersion）
-        - 模型易遗忘初始约束条件，产生"幻觉代码"或偏离预期的实现
-    1. **SDD 解决方案**：将**状态（State）**从易失的内存（LLM 上下文）迁移至持久化的文件系统（Filesystem），构建轻量级、持久化、版本可控的"规范层"（Spec Layer），通过结构化工件（Artifacts）强制执行"先对齐，后构建"（Agree-Build-Archive）的工程流程。
-    1. **核心特征**：
+        - "Vibe Coding"问题：需求分散在对话记录中，缺乏结构化文档，导致 AI 交互不可预测
+        - 上下文丢失：项目需求、设计决策和架构约束仅存在于瞬时对话历史或开发者记忆中
+        - 注意力分散：随着对话轮次增加，LLM 上下文窗口面临物理限制和注意力分散（Attention Dispersion）
+        - 约束遗忘：模型易遗忘初始约束条件，产生"幻觉代码"或偏离预期的实现
+        - 规格碎片化：传统方法将规格分散在多个文件中，难以整体把握系统意图，特征交互难以检测
+    1. SDD 解决方案：将 状态（State） 从易失的内存（LLM 上下文）迁移至持久化的文件系统（Filesystem），构建轻量级、持久化、版本可控的"规范层"（Spec Layer），通过结构化工件（Artifacts）强制执行"先对齐，后构建"（Agree-Build-Archive）的工程流程。
+    1. 核心特征：
 
-        1. **原子性与版本控制**：需求变更（Proposal）、技术规格（Specs）、设计文档（Design）和任务清单（Tasks）以 Markdown 或 YAML 文件形式存储在代码仓库中。Git 每次提交不仅包含代码变更，还包含导致该变更的"思维链条"，实现代码与文档的原子性同步。
-        1. **模型无关性（Model Agnosticism）**：通过纯文本作为交互介质，解耦底层推理引擎。任何能读取文件系统并理解 Markdown 语法的模型（GPT-4、Claude 3.5 Sonnet、Llama 3 等）均可接入该系统。
+        1. 原子性与版本控制：需求变更（Proposal）、技术规格（Specs）、设计文档（Design）和任务清单（Tasks）以 Markdown 或 YAML 文件形式存储在代码仓库中。Git 每次提交不仅包含代码变更，还包含导致该变更的"思维链条"，实现代码与文档的原子性同步。
+        1. 模型无关性（Model Agnosticism）：通过纯文本作为交互介质，解耦底层推理引擎。任何能读取文件系统并理解 Markdown 语法的模型（GPT-4、Claude 3.5 Sonnet、Llama 3 等）均可接入该系统。
     </details>
