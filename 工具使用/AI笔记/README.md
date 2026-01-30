@@ -110,16 +110,19 @@
 1. ​具身智能（Embodied Artificial Intelligence, EAI）：是一种通过物理实体（如机器人、自动驾驶车辆等）与环境交互，实现感知、决策和行动的智能系统。其核心在于“具身性”，即智能体通过身体感知物理世界，并在交互中动态学习与适应，形成“感知—行动”闭环
 1. SDD（Specification-Driven Development，规格/规范驱动开发）：通过可执行、可验收的规格，驱动人和 AI 协作交付的软件开发方式，是 Agent 化研发落地的核心基础设施。
 
-    <https://github.com/github/spec-kit>、<https://github.com/Fission-AI/OpenSpec>
+    相关实现：<https://github.com/github/spec-kit>、<https://github.com/Fission-AI/OpenSpec>
 
     <details>
-    <summary>SDD实现的特征</summary>
+    <summary>SDD核心特征与实现原理</summary>
 
-    现有的 AI 编程助手（如 GitHub Copilot, Cursor, Claude Code 等）虽然在代码生成方面表现出色，但本质上仍属于“基于对话的开发”（Chat-Driven Development, CDD）模式。在 CDD 模式下，项目需求、设计决策和架构约束仅存在于瞬时的对话历史（Chat History）或开发者的脑海中。随着对话轮次的增加，LLM 的上下文窗口（Context Window）不仅面临物理限制，还会出现注意力分散（Attention Dispersion），导致模型遗忘最初的约束条件，进而产生“幻觉代码”或偏离预期的实现。
+    1. **问题背景**：现有 AI 编程助手（GitHub Copilot、Cursor、Claude Code 等）采用"基于对话的开发"（Chat-Driven Development, CDD）模式，存在以下局限：
 
-    OpenSpec 框架正是为了解决这一核心矛盾而生。它提出了一种“规范驱动开发”（Spec-Driven Development, SDD）的架构范式，旨在为人类开发者与 AI 智能体之间构建一个轻量级、持久化、版本可控的“规范层”（Spec Layer）。该架构的核心理念是将**状态（State）**从易失的内存（LLM 上下文）迁移至持久化的文件系统（Filesystem），通过结构化的工件（Artifacts）来强制执行“先对齐，后构建”（Agree-Build-Archive）的工程流程。
+        - 项目需求、设计决策和架构约束仅存在于瞬时对话历史或开发者记忆中
+        - 随着对话轮次增加，LLM 上下文窗口面临物理限制和注意力分散（Attention Dispersion）
+        - 模型易遗忘初始约束条件，产生"幻觉代码"或偏离预期的实现
+    1. **SDD 解决方案**：将**状态（State）**从易失的内存（LLM 上下文）迁移至持久化的文件系统（Filesystem），构建轻量级、持久化、版本可控的"规范层"（Spec Layer），通过结构化工件（Artifacts）强制执行"先对齐，后构建"（Agree-Build-Archive）的工程流程。
+    1. **核心特征**：
 
-    原子性与版本控制：所有的需求变更（Proposal）、技术规格（Specs）、设计文档（Design）和任务清单（Tasks）都以 Markdown 或 YAML 文件的形式存储在代码仓库中。这意味着 Git 的每一次提交（Commit）都不仅包含代码变更，还包含了导致该变更的“思维链条”，实现了代码与文档的原子性同步。
-
-    模型无关性（Model Agnosticism）：通过使用纯文本作为交互介质，OpenSpec 解耦了底层推理引擎。无论是 OpenAI 的 GPT-4、Anthropic 的 Claude 3.5 Sonnet，还是本地运行的 Llama 3，只要能读取文件系统并理解 Markdown 语法，即可接入该系统
+        1. **原子性与版本控制**：需求变更（Proposal）、技术规格（Specs）、设计文档（Design）和任务清单（Tasks）以 Markdown 或 YAML 文件形式存储在代码仓库中。Git 每次提交不仅包含代码变更，还包含导致该变更的"思维链条"，实现代码与文档的原子性同步。
+        1. **模型无关性（Model Agnosticism）**：通过纯文本作为交互介质，解耦底层推理引擎。任何能读取文件系统并理解 Markdown 语法的模型（GPT-4、Claude 3.5 Sonnet、Llama 3 等）均可接入该系统。
     </details>
