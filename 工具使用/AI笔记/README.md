@@ -126,12 +126,14 @@
 
         1. 原子性与版本控制：需求变更（Proposal）、技术规格（Specs）、设计文档（Design）和任务清单（Tasks）以 Markdown 或 YAML 文件形式存储在代码仓库中。Git 每次提交不仅包含代码变更，还包含导致该变更的"思维链条"，实现代码与文档的原子性同步。
         1. 模型无关性（Model Agnosticism）：通过纯文本作为交互介质，解耦底层推理引擎。任何能读取文件系统并理解 Markdown 语法的模型（GPT-4、Claude 3.5 Sonnet、Llama 3 等）均可接入该系统。
-    1. spec-kit与OpenSpec的区别
+    1. spec-kit 与 OpenSpec 对比
 
-        | 特性 | GitHub spec-kit | Fission-AI OpenSpec |
-        | 首选场景 | Greenfield-first (绿地优先) | Brownfield-first (棕地优先) |
-        | 流程模型 | Macro-Waterfall (宏观瀑布) | Micro-Waterfall / Iterative (微型瀑布/迭代) |
-        | 核心隐喻 | 建筑师 (Architect) | 外科医生 (Surgeon) |
-        | 真理来源 | 文档 (Spec/Plan 是真理，代码是副产品) | 现状 (代码库是真理，Spec 是变更指令) |
-        | 对待旧代码 | 要求旧代码适配新规范 (Compliance) | 致力于理解并缝合旧代码 (Integration) |
+        | 维度 | GitHub spec-kit | Fission-AI OpenSpec |
+        | :--- | :--- | :--- |
+        | 体量 | 重量级 | 轻量级 |
+        | 场景 | 绿地（Greenfield）：从零立项 | 棕地（Brownfield）：存量改造 |
+        | 流程 | 宏观瀑布：先完整规划再实施 | 微型瀑布/迭代：小步规格、小步实现 |
+        | 隐喻 | 建筑师：蓝图驱动 | 外科医生：在现状上精准修改 |
+        | 真理来源 | 文档为真，代码为副产品 | 代码库为真，Spec 为变更指令 |
+        | 旧代码 | 要求合规新规范 | 理解并缝合进现有代码 |
     </details>
