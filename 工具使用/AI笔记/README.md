@@ -112,6 +112,8 @@
 
         1. 原子性与版本控制：需求变更（Proposal）、技术规格（Specs）、设计文档（Design）和任务清单（Tasks）以 Markdown 或 YAML 文件形式存储在代码仓库中。Git 每次提交不仅包含代码变更，还包含导致该变更的"思维链条"，实现代码与文档的原子性同步。
         1. 模型无关性（Model Agnosticism）：通过纯文本作为交互介质，解耦底层推理引擎。任何能读取文件系统并理解 Markdown 语法的模型（GPT-4、Claude 3.5 Sonnet、Llama 3 等）均可接入该系统。
+
+            >模型无关性（Model Agnosticism）：通过 **统一的“模型调用抽象层” + 协议化的输入输出（通常基于 JSON/DSL） + 工具级插件式适配器**，将 “业务逻辑/工具能力” 与 “具体模型 API” 解耦，从而实现模型可插拔。
     1. spec-kit 与 OpenSpec 对比
 
         | 维度 | GitHub spec-kit | Fission-AI OpenSpec |
