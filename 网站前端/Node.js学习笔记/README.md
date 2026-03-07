@@ -351,12 +351,12 @@ npm（Node Package Manager）。
                     2. 若不提交`package-lock.json`，则库开发者们的开发环境安装依赖版本不同
 
                         解决：考虑始终提交`package-lock.json`用于开发环境一致；*若不提交，则需要通过其他方式（如在`package.json`中精确指定版本号，并依赖完善的测试流程）来管理开发环境的一致性*
-        6. 安全审核（检查已知安全漏洞 并尽量通过升级到已修复的版本来自动修复）
+        6. 安全审计（检测并修复依赖中的已知安全漏洞）
 
-            1. `npm audit`扫描当前项目的依赖树，对照安全库检查已知漏洞并输出报告
-            2. `npm audit fix --dry-run`显示「如果执行`npm audit fix`会做哪些改动」，不真正安装或改lock文件
-            3. `npm audit fix`在**不升级主版本（major）**的前提下，尽量把有漏洞的包升级到已修复的版本（lock文件也改变）
-            4. `npm audit fix --force`允许跨主版本升级（major bump）来修漏洞，可能引入不兼容变更
+            1. `npm audit`：扫描依赖树，检查并报告已知安全漏洞
+            2. `npm audit fix --dry-run`：预览`npm audit fix`将执行的变更，不实际安装或修改lock文件
+            3. `npm audit fix`：在不升级主版本（major）的前提下，自动将有漏洞的包升级到安全版本，并更新lock文件
+            4. `npm audit fix --force`：允许跨主版本强制升级以修复漏洞，可能引入不兼容变更
     4. 执行脚本
 
         1. `npm run 「package.json中scripts字段的命令」 -- 「添加脚本后面的参数」`
