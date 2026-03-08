@@ -853,10 +853,16 @@ feat(details): 添加了分享功能
         ></details>
 3. HTTP代理、HTTPS代理
 
-    ```text
-    git config --global http.proxy 'http://127.0.0.1:7890'  # 或 'socks5://127.0.0.1:7891'
+    >`http.proxy`（或`https.proxy`）仅作用于http/https请求的，也就是说若git配置为ssh连接（[remote "origin"] url = ssh://...），则不会走http代理。
 
-    git config --global https.proxy 'http://127.0.0.1:7890' # 或 'socks5://127.0.0.1:7891'
+    ```text
+    git config --global http.proxy 'http://127.0.0.1:7890'  # 或 'socks5://127.0.0.1:7891' # 作用于http请求、https请求（优先级低于https.proxy）
+
+    git config --global https.proxy 'http://127.0.0.1:7890' # 或 'socks5://127.0.0.1:7891' # 作用于https请求（优先级高于http.proxy）
+
+    # 去除设置：
+    # git config --global --unset http.proxy
+    # git config --global --unset https.proxy
     ```
 4. 开启对文件名大小写敏感
 
