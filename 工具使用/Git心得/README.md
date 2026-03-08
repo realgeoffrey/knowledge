@@ -853,7 +853,7 @@ feat(details): 添加了分享功能
         ></details>
 3. HTTP代理、HTTPS代理
 
-    >`http.proxy`（或`https.proxy`）仅作用于http/https请求的，也就是说若git配置为ssh连接（[remote "origin"] url = ssh://...），则不会走http代理。
+    >`http.proxy`（与`https.proxy`）仅作用于HTTP/HTTPS协议，SSH连接不走http/https代理。
 
     ```text
     git config --global http.proxy 'http://127.0.0.1:7890'  # 或 'socks5://127.0.0.1:7891' # 作用于http请求、https请求（优先级低于https.proxy）
