@@ -44,6 +44,7 @@
   "git.closeDiffOnOperation": true,
   "git.blame.statusBarItem.template": "${authorName} (${authorDateAgo}) ${hashShort}",
   "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo}) ${hashShort}",
+  "git.openRepositoryInParentFolders": "never",
   "explorer.copyRelativePathSeparator": "/",
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {

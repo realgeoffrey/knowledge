@@ -53,7 +53,7 @@
     | Subagents    | （由主Agent委派启动） | 否 | **专项分工**：上下文隔离、并行处理、领域专业化 |
     | MCP          | （由AI调用） | 否 | **外部能力扩展**：打破沙箱限制，允许 Cursor 读写数据库、操作浏览器、访问本地文件系统以外的资源<br>用（隐性/显性）指令提示AI执行相关MCP指令解决问题 |
 
-    - plugins：将 rules、commands、skills、hooks、subagents、MCP 打包成可分发的包，配置都跟着插件安装路径（项目或个人），而不是各个功能路径
+    - plugins：将 [rules、commands、skills、hooks、subagents、MCP](https://cursor.com/cn/docs/reference/plugins) 打包成可分发的包，配置都跟着插件安装路径（项目或个人），而不是各个功能路径
 
     >与claude code的扩展基本一致：<https://code.claude.com/docs/zh-CN/features-overview>
 
