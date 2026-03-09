@@ -48,6 +48,9 @@
     1. [数组删去某值](#数组删去某值)
     1. [数组的某项插入某位置](#数组的某项插入某位置)
     1. [声明某长度并设定值的数组](#声明某长度并设定值的数组)
+1. JSON数据处理
+
+    1. [2个JSON对象的深比较，返回2个JSON的属性并集](#2个json对象的深比较返回2个json的属性并集)
 1. 功能
 
     1. [用请求图片作log统计](#原生js用请求图片作log统计)
@@ -1739,6 +1742,139 @@ function switchArr ({ arr, from, to, isLeft = false }) {
     var arr = Array.from({ length: n }, (value, index) => index)
     ```
 4. 纯手打字面量（性能最好方式）
+
+---
+## JSON数据处理
+
+### 2个JSON对象的深比较，返回2个JSON的属性并集
+>因为针对的是[JSON](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#json)，所以没有对JS的所有数据类型进行兼容兜底、也没有处理JS循环引用等边界问题。
+
+1. 若对比的一方缺失属性则直接返回，不再另一方深入分析
+
+    ```js
+    // 2个JSON对象的深比较，返回2个JSON的属性并集，属性值相同的返回 theSameFlag，不相同的返回 differentFlag（一方缺失属性的直接返回 differentFlag）
+    function diffJSON1(obj1, obj2, theSameFlag = true, differentFlag = false) {
+      // 【性能优化】如果引用相同 或 基本数据类型完全相等，直接返回 theSameFlag
+      if (Object.is(obj1, obj2)) return theSameFlag;
+
+      // 如果有一方不是对象/数组（基本数据类型），因为上面已经做过相等比较了，走到这里必然是不相等的，直接返回 differentFlag
+      if (!isObject(obj1) || !isObject(obj2)) {
+        return differentFlag;
+      }
+
+      // 【边界优化】如果一个是数组，一个是纯对象，类型不匹配，直接返回 differentFlag，没必要再去对比里面的 key
+      if (Array.isArray(obj1) !== Array.isArray(obj2)) {
+        return differentFlag;
+      }
+
+      // 初始化容器（此时 obj1 和 obj2 类型必定一致，要么都是数组，要么都是对象）
+      const result = Array.isArray(obj1) ? [] : {};
+
+      // 获取 keys/index 的并集
+      const keys = new Set([...Object.keys(obj1), ...Object.keys(obj2)]);
+
+      // 递归
+      keys.forEach((key) => {
+        result[key] = diffJSON1(obj1[key], obj2[key], theSameFlag, differentFlag);
+      });
+
+      return result;
+    }
+    // 判断是否为非null的对象或数组
+    function isObject(val) {
+      return val !== null && typeof val === "object";
+      // return !(value === null || (typeof value !== "object" && typeof value !== "function"))
+    }
+    ```
+2. 严格保留并集结构（对象合并属性，数组按最大长度补全结构，若一方有值，则继续深入分析）
+
+    ```js
+    // 2个JSON对象的深比较，返回2个JSON的属性并集，属性值相同的返回 theSameFlag，不相同的返回 differentFlag。（严格保留并集结构。若对象和数组对比时，则都作为对象；若数据值不同时，则保留的优先级：对象>数组>基本数据类型）
+    function diffJSON2(obj1, obj2, theSameFlag = true, differentFlag = false) {
+      // 1. 【性能与基础类型拦截】如果引用相同或基本类型完全相等
+      if (Object.is(obj1, obj2)) return theSameFlag;
+
+      const isObj1 = isObject(obj1);
+      const isObj2 = isObject(obj2);
+
+      // 2. 【递归终止条件】如果两者都不是对象/数组，直接返回不相同的标记
+      if (!isObj1 && !isObj2) return differentFlag;
+
+      // 3. 【容器类型推断】决定当前层级是数组还是对象
+      let isArrayResult = false;
+      if (isObj1 && isObj2) {
+        isArrayResult = Array.isArray(obj1) && Array.isArray(obj2);
+      } else {
+        // 单边缺失时，跟随存在的那个数据的结构
+        isArrayResult = isObj1 ? Array.isArray(obj1) : Array.isArray(obj2);
+      }
+
+      // 4. 【结构补全核心】如果一方缺失，强行塞入空对象或空数组，以保证提取 keys 时不会报错，且能继续递归
+      const safeObj1 = isObj1 ? obj1 : isArrayResult ? [] : {};
+      const safeObj2 = isObj2 ? obj2 : isArrayResult ? [] : {};
+
+      const result = isArrayResult ? [] : {};
+
+      // 5. 【获取并集】对象获取属性并集，数组获取最大索引并集（`{0:'',1:''}`与`['','']`算等价）
+      const keys = new Set([...Object.keys(safeObj1), ...Object.keys(safeObj2)]);
+
+      // 6. 递归
+      keys.forEach((key) => {
+        result[key] = diffJSON2(safeObj1[key], safeObj2[key], theSameFlag, differentFlag);
+      });
+
+      return result;
+    }
+    // 判断是否为非null的对象或数组
+    function isObject(val) {
+      return val !== null && typeof val === "object";
+      // return !(value === null || (typeof value !== "object" && typeof value !== "function"))
+    }
+    ```
+
+```js
+// 测试数据
+const jsonA = {
+  a: "a",
+  b: "b",
+  d: [1, 2, 3],
+  e: { 0: 1, 1: 2, 2: 3 },
+  f: [
+    1,
+    2,
+    3,
+    { g: [1, 2, 3] },
+    {
+      g2: {
+        0: 1,
+        1: 2,
+        2: 3,
+        a: 1,
+        b: 2,
+        c: { g4: { 0: 1, 1: 2, 2: 3 } },
+      },
+    },
+  ],
+  h: { a: 1, b: 2, c: 3 },
+  i: 1,
+};
+
+const jsonB = {
+  a: "a",
+  c: "c",
+  d: { 0: 1, 1: 2, 2: 3 },
+  e: [1, 2, 3],
+  f: {
+    0: 1,
+    1: 2,
+    2: 3,
+    3: { g: { 0: 1, 1: 2, 2: 3 } },
+    4: { g2: [1, { g3: { 0: 1, 1: 2, 2: 3, a: 1, b: 2, c: 3 } }] },
+  },
+  h: 1,
+  i: { a: 1, b: 2, c: 3 },
+};
+```
 
 ---
 ## 功能

@@ -34,25 +34,10 @@
 1. 上下文窗口（Context Window）：模型处理完整交互过程的能力范围，包括多轮对话历史和当前响应。
 1. Token：文本的最小处理单元，可能是单词、子词或字符，取决于分词策略。
 1. SOP（Standard Operating Procedure，标准操作程序）：通过标准化流程将复杂任务分解为可重复执行的具体步骤，实现效率提升、质量控制和经验传承。核心在于细节量化与流程固化，适用于企业生产、个人管理和技术系统设计。
-1. 工具与框架：ollama（本地LLM运行工具）、label-studio（数据标注平台）、cherry-studio（AI应用开发工具）、dify（LLM应用开发平台）、langchain（LLM应用开发框架）。
-1. MCP（Model Context Protocol，模型上下文协议）：基于标准输入输出（STDIO）和JSON-RPC格式的通信协议，让不同进程像调用本地函数一样调用AI工具或服务。
-
-    > MCP是进程通信规范，让AI模型、浏览器、终端、数据库等独立软件像乐高一样拼接，互相调用功能。
-
-    核心优势：
-
-    1. 轻量级：直接将本地进程注册为工具，无需REST API或SDK
-    2. 本地通信：通过STDIO而非网络，延迟极低
-    3. 隐私安全：数据不经过外部网络，所有调用在本地完成
-
-    | 特性 | REST API/Playwright | MCP Server |
-    | :--- | :--- | :--- |
-    | 调用方式 | 远程网络请求 | 本地进程通信 |
-    | 延迟 | 较高（网络开销） | 极低 |
-    | 隐私安全 | 可能上传云端 | 完全本地 |
-    | 集成复杂度 | 需要额外依赖 | 即插即用 |
-1. A2A（Agent2Agent Protocol）：智能体间通信协议。
-1. ANP（Agent Network Protocol）：智能体网络协议。
+1. 工具与框架：ollama（本地LLM运行工具）、label-studio（数据标注平台）、cherry-studio（多模型聚合与AI生产力平台，支持MCP与RAG）、dify（低代码LLM应用开发平台，生产级RAG与工作流）、langchain（代码优先的LLM应用开发框架）。
+1. MCP（Model Context Protocol，模型上下文协议）：基于 JSON-RPC 2.0 的开放协议，连接 LLM 应用与外部数据源、工具。传输方式包括 STDIO（本地）与 HTTP（远程；2025 年起推荐 Streamable HTTP，SSE 已逐步弃用）。服务端可提供 Tools、Prompts、Resources；客户端可提供 Elicitation、Roots、Sampling 等能力。
+1. A2A（Agent-to-Agent Protocol）：智能体间对等通信协议，解决“智能体如何互相发现、协商、委派任务”，与 MCP（智能体—工具）互补。
+1. ANP（Agent Network Protocol）：基于 W3C DIDs 与 JSON-LD 的开放网络智能体发现与协作协议，常用于去中心化智能体生态。
 1. 知识库（Knowledge Base，KB）：包含文档集合的系统，用于存储和检索结构化信息。
 1. RAG（Retrieval-Augmented Generation，检索增强生成）：结合信息检索和生成的技术，从知识库检索相关信息后生成回答，提升准确性和可追溯性。
 1. Embedding（嵌入）：将数据转换为数值向量的技术，用于表示语义信息。
@@ -69,9 +54,14 @@
 1. 预训练模型（Pre-trained Model）：在大规模数据上预先训练的模型，可通过微调适应特定任务。
 1. Hugging Face：提供预训练模型、数据集和工具的开源平台，简化NLP和AI模型的使用。
 1. 推理模型（Inference Model）：用于实际预测和生成的已训练模型，区别于训练阶段的模型。
-1. 大语言模型（Large Language Model，LLM）：使用超大数据集训练的深度学习算法，能够识别、总结、翻译、预测和生成内容。主要基于Transformer架构，通过追踪序列数据中的关系学习上下文和含义。采用无监督学习训练，无需大量人工标注，是构建AI模型的重大突破。
+1. 大语言模型（Large Language Model，LLM）：使用超大数据集训练的深度学习算法，能够识别、总结、翻译、预测和生成内容。主要基于**Transformer架构**，通过追踪序列数据中的关系学习上下文和含义。采用无监督学习训练，无需大量人工标注，是构建AI模型的重大突破。
 
-    代表模型：Claude、GPT、BERT、Gemini、Llama、Grok、DeepSeek、文心一言、通义千问、讯飞星火、Moonshot（Kimi）。
+    1. 开源模型（通常指开源模型权重，Open-Weights）：
+
+        Llama（Meta，含 3.2/3.3）、Qwen/通义千问（阿里巴巴）、DeepSeek、Mistral、BERT（Google）。xAI 的 Grok-1、Grok-2/2.5 已开源（后者为社区许可，有商业限制），Grok-3 为闭源旗舰。
+    2. 闭源模型（仅通过 API 或应用提供服务，Closed-Source）：
+
+        GPT（OpenAI）、Claude（Anthropic）、Gemini（Google）、Grok-3（xAI）、Moonshot/Kimi（月之暗面）、文心一言（百度）、讯飞星火（科大讯飞）
 1. 记忆模组（Memory Module）：AI智能体维护上下文的机制，包括短期记忆（工作记忆）和长期记忆（持久化存储）。
 1. 推理层（Reasoning Layer）：AI系统进行逻辑推理和决策的组件。
 1. AI智能体框架（AI Agent Frameworks）：简化AI智能体构建、部署和管理的开发平台或库，消除底层复杂性，让开发者专注于应用和智能体行为。
@@ -92,11 +82,11 @@
 1. 微调（fine-tuning）：通过在特定任务或领域上进一步训练，使LLM适应特定任务或领域
 1. 指令调优（instruction tuning）：通过提供具体的指导或指令来 fine-tuning LLM的行为
 1. FSD（Full-Self Driving，完全自动驾驶）：是特斯拉研发的自动驾驶系统
-1. ​边缘算力、边缘算力
+1. 边缘算力（Edge Computing）：在靠近数据源或用户的网络边缘部署计算与推理，降低延迟与带宽，适用于 IoT、端侧/轻量 LLM 部署。
 1. ​具身智能（Embodied Artificial Intelligence, EAI）：是一种通过物理实体（如机器人、自动驾驶车辆等）与环境交互，实现感知、决策和行动的智能系统。其核心在于“具身性”，即智能体通过身体感知物理世界，并在交互中动态学习与适应，形成“感知—行动”闭环
 1. SDD（Specification-Driven Development，规格/规范驱动开发）：通过可执行、可验收的规格，驱动人和 AI 协作交付的软件开发方式，是 Agent 化研发落地的核心基础设施。
 
-    相关实现：<https://github.com/github/spec-kit>（重量级、针对从零开始的项目（Greenfield-first））、<https://github.com/Fission-AI/OpenSpec>（轻量级、**针对已成熟的项目（Brownfield-first）**）
+    相关实现：<https://github.com/github/spec-kit>（重量级、Greenfield、Specify CLI）、<https://github.com/Fission-AI/OpenSpec>（轻量级、Brownfield、artifact 工作流）
 
     <details>
     <summary>SDD核心特征与实现原理</summary>
@@ -142,7 +132,7 @@
 
     >OpenClaw是一个AI智能体编排框架 (Orchestrator)。它本身不具备推理能力，需接入LLM（如：Claude、DeepSeek）作为决策大脑。
 
-    OpenClaw（核心、网关与框架） + LLMs（大脑与执行引擎，如claude、Gemini、deepseek、Ollama模型） + Channels（通讯渠道，如Telegram） + Skills（SOP封装与工具，<https://clawhub.ai/>）
+    OpenClaw（核心、网关与框架） + LLMs（如 Claude、Gemini、DeepSeek、Ollama） + Channels（如 Telegram） + Skills（SOP 与工具，官方注册中心 <https://clawhub.ai/>，数千社区 Skills）
 
     ```text
                   用户

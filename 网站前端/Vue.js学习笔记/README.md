@@ -669,7 +669,7 @@
     // 数组可以直接赋值，Vue 会自动处理。
     apiData.list = 新数组
     // 对象最好不要整体替换，用Object.assign 或 手动更新属性 或 赋值给reactive包裹的新对象
-    Object.assign(apiData.pagination, 新对象) // 或：apiData.pagination = reactive(新对象)
+    Object.assign(apiData.pagination, 新对象) // 或：apiData.pagination = reactive(新对象) // 真实业务一般只会更新total，因此也可以直接apiData.pagination.total = 新值
     ```
 1. 不能解构：
 
@@ -6374,9 +6374,11 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
 - 避免问题
 
-    1. `<el-option>`能够匹配 空字符串、`undefined`、`null`，并且多个相同的value值匹配后展示最后一个项的label值，注意传参为空时出现的问题。匹配是`===`，e.g. `<el-select>`的`v-model`值`6`不会匹配`<el-option>`的`value`值`'6'`。
+    1. `<el-option>`能够匹配 空字符串、`undefined`、`null`，并且多个相同的value值匹配后展示最后一个项的label值，注意传参为空时出现的问题。匹配是`===`，e.g. `<el-select>`的`v-model`值`6`不会匹配`<el-option>`的`value`值`'6'`。赋值`NaN`会导致JS死循环。
 
         >[CodePen demo](https://codepen.io/realgeoffrey/pen/MWMpxNW)
+
+        >element-plus与element-ui区别之一：element-plus的`<el-select>`会把空值（空字符串、`undefined`、`null`）认为是空，不会匹配值等于这些空值的选项，而是展示placeholder。赋值`NaN`不会导致JS死循环。
     2. `<el-option>`的数组若不包含`<el-select>`的值，可以考虑`push`这个值到数组中（若要回显的不是value而是label）。
 
         >[CodePen demo](https://codepen.io/realgeoffrey/pen/emNJOgp)
@@ -6410,6 +6412,8 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
     >[CodeSandbox demo](https://codesandbox.io/p/github/realgeoffrey/vue3-element-plus-demo/master?file=/src/components/pagination/index.vue)
 
     >带有展开行的数据（如`<el-table>`展示的包含children的数据），一般来说数据条数仅统计父节点数量，子节点不计入分页总数。e.g. `<el-pagination>`的`total`仅包含数组第一维数据，不包含子数组数据。
+
+>element-plus与element-ui区别之一：`<el-date-picker>`的`default-time`传参不一样
 
 ### jQuery与Vue.js对比
 1. 做的事情
