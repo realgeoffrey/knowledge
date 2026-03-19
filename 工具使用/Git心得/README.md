@@ -812,6 +812,8 @@ feat(details): 添加了分享功能
 
     - 推送：单次推送会推送到别名下所有`push`/`url`配置的远程仓库。
 
+>如需保持多个仓库间同步一致，建议`每个仓库均配置 push 到全部远程 url，pull 则指定自身仓库`。当任一仓库产生新 commit 时，直接 push，即可自动将变更同步到所有配置的远程仓库，实现多仓库内容统一。
+
 ### 设置gitconfig
 >`git config --global/local/system/worktree/file 「参数」`要把`--global等`写在第三个参数位置，否则无效。写：默认`--local`；读：没有默认、必填。
 
@@ -867,7 +869,7 @@ feat(details): 添加了分享功能
 4. http/https请求的凭据（密码）
 
    >在Git中，credential.helper（凭据助手）决定了系统如何处理你的http/https账号和密码。
-   
+
     | 选项名称 | 存储方式 | 存储时长 | 适用场景与特点 |
     |---|---|---|---|
     | 默认 | 不储存 | - | 每次执行git pull/push时，终端都会弹出提示要求你手动输入用户名和密码 |
