@@ -543,5 +543,18 @@
   {
     "key": "cmd+e",
     "command": "-actions.findWithSelection"
+  },
+  {
+    "key": "shift+cmd+0",
+    "command": "workbench.action.zoomReset"
+  },
+  {
+    "key": "cmd+numpad0",
+    "command": "-workbench.action.zoomReset"
+  },
+  {
+    "key": "cmd+f",
+    "command": "list.find",
+    "when": "listFocus && listSupportsFind"
   }
 ]

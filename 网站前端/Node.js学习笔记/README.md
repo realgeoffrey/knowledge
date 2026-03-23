@@ -159,6 +159,7 @@ npm（Node Package Manager）。
 
             >1. 标签tag 和 版本号version关系：每次发布version需要设置tag，一个tag只对应一个version，tag指向最后发布到这个tag的version，可以删除tag（仅latest无法删除），version可以没有tag（tag被删除 或 被新的version设置同名tag）。
             >2. 注意：设置源为npm的网站（`https://registry.npmjs.org/`）才可以推送到官方npm。
+            >3. 因为Two-Factor Authentication限制，不能使用手机Authenticator，可以选择保存在chrome的<chrome://settings/passkeys>中。
         5. 「下线」
 
             >`npm unpublish [<@scope>/]<pkg>[@<version>]`只能下线24小时内发布的版本。

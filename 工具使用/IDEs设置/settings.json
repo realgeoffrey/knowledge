@@ -29,7 +29,7 @@
   "editor.cursorSmoothCaretAnimation": "on",
   "editor.minimap.showSlider": "always",
   "editor.minimap.size": "fit",
-  "editor.fontSize": 16,
+  "editor.fontSize": 13,
   "files.autoSave": "onWindowChange",
   "files.insertFinalNewline": true,
   "files.exclude": {
@@ -112,5 +112,6 @@
   "cSpell.diagnosticLevel": "Hint",
 
   // vscode only
-  "github.copilot.nextEditSuggestions.fixes": true
+  "github.copilot.nextEditSuggestions.fixes": true,
+  "chat.mcp.gallery.enabled": true
 }

@@ -3,6 +3,8 @@
 ## 目录
 1. [【一站式 LLM底层技术原理入门指南】](#一站式-llm底层技术原理入门指南)
 1. [词汇表](#词汇表)
+1. [./MCP笔记.md](./MCP笔记.md)
+1. [./openclaw笔记.md](./openclaw笔记.md)
 
 ---
 ### [【一站式 LLM底层技术原理入门指南】](https://s3tlxskbq3.feishu.cn/docx/NyPqdCKraoXz9gxNVCfcIFdnnAc)
