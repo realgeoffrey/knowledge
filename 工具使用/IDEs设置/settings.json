@@ -29,7 +29,7 @@
   "editor.cursorSmoothCaretAnimation": "on",
   "editor.minimap.showSlider": "always",
   "editor.minimap.size": "fit",
-  "editor.fontSize": 13,
+  "editor.fontSize": 14,
   "files.autoSave": "onWindowChange",
   "files.insertFinalNewline": true,
   "files.exclude": {
@@ -98,6 +98,7 @@
     "workbench.panel.output": false
   },
   "workbench.view.alwaysShowHeaderActions": true,
+  "workbench.tree.indent": 16,
   "interactiveWindow.executeWithShiftEnter": true,
   "partialDiff.commandsOnContextMenu": {
     "togglePreComparisonTextNormalizationRules": false,

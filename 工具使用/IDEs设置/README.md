@@ -16,7 +16,7 @@
 
 3. AI配置相关
 
-    - rules规则、commands指令
+    1. rules规则、commands指令
 
         1. 规则<https://cursor.com/cn/docs/context/rules>
 
@@ -26,22 +26,26 @@
 
             必须手动输入`/`触发，用来执行特定的任务流（如写测试、重构代码）。快速调用常用的 Prompt 模板。
 
-        ><details>
-        ><summary>配置规则、指令</summary>
-        >
-        >![Cursor Settings: Rules and Commands](./images/Rules_and_Commands.png)
-        ></details>
+        - 可配置 项目级`.cursor/rules或commands/`、用户级`~/.cursor/rules或commands/`、团队级 的规则、指令
 
     ><details>
     ><summary>rules、commands、skills、hooks、subagents、MCP等 都只作用于agents聊天（各种mode），不会作用于Tab补全或其他AI功能</summary>
     >核心原因是延迟（Latency）。如：Tab补全，需要伴随你的每一次击键实时响应，要求极高的响应速度。如果你每敲一个字母都要等 GPT-4 思考一秒钟，编码体验将是灾难性的。因此，Cursor 专门设计了这个模型，让其在处理极其庞大的代码上下文时，只需生成很少的 Token（预测你的下一步代码），从而实现毫秒级的极速响应。
     ></details>
 
-    - Agent Skills
-    - hook
-    - subagents
-    - 模型上下文协议（MCP）
-    - AGENTS.md
+    2. Agent Skills
+
+        项目级、用户级
+    3. hook
+
+        项目级配置`.cursor/hooks.json`（被配置使用的具体hook脚本`.cursor/hooks/脚本`），用户级配置`~/.cursor/hooks.json`（被配置使用的具体hook脚本`~/.cursor/hooks/脚本`）
+    4. subagents
+
+        项目级子代理：`.cursor/agents/`，用户级子代理`~/.cursor/agents/`
+    5. MCP（模型上下文协议）
+
+        项目级配置`.cursor/mcp.json`，用户级配置`~/.cursor/mcp.json`
+    6. AGENTS.md
 
     | cursor支持功能 | 自动生效 | 可手动调用 | 核心角色 |
     | --------- | ----- | ------- | ------ |
@@ -53,7 +57,7 @@
     | Subagents    | （由主Agent委派启动） | 否 | **专项分工**：上下文隔离、并行处理、领域专业化 |
     | MCP          | （由AI调用） | 否 | **外部能力扩展**：打破沙箱限制，允许 Cursor 读写数据库、操作浏览器、访问本地文件系统以外的资源<br>用（隐性/显性）指令提示AI执行相关MCP指令解决问题 |
 
-    - plugins：将 [rules、commands、skills、hooks、subagents、MCP](https://cursor.com/cn/docs/reference/plugins) 打包成可分发的包，配置都跟着插件安装路径（项目或个人），而不是各个功能路径
+    7. plugins：将 [rules、commands、skills、hooks、subagents、MCP](https://cursor.com/cn/docs/reference/plugins) 打包成可分发的包，配置都跟着插件安装路径（项目级或用户级），而不是各个功能路径。也支持用户级私有plugins（不需要发布公开的github，仅把某plugin文件夹复制到`~/.cursor/plugins/local/某plugin`即可）
 
     >与claude code的扩展基本一致：<https://code.claude.com/docs/zh-CN/features-overview>
 

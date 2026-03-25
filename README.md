@@ -36,6 +36,7 @@
         1. [Node.js学习笔记](./网站前端/Node.js学习笔记/README.md)
         2. [服务端相关](./网站前端/服务端相关/README.md)
         3. [Python学习笔记](./网站前端/Python学习笔记/README.md)
+        4. [Java学习笔记](./网站前端/Java学习笔记/README.md)
     4. [Rust学习笔记](./网站前端/Rust学习笔记/README.md)
 8. <details>
 
@@ -75,7 +76,11 @@
     - [Lark生态开发](./网站前端/其他前端专项/Lark生态开发/README.md)
 10. [HTTP相关](./网站前端/HTTP相关/README.md)
 11. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
-12. <details>
+12. [AI笔记](./网站前端/AI笔记/README.md)
+
+    1. [MCP笔记](./网站前端/AI笔记/MCP笔记.md)
+    2. [openclaw笔记](./网站前端/AI笔记/openclaw笔记.md)
+13. <details>
 
     <summary><a href="https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/README.md">数据结构与算法</a></summary>
 
