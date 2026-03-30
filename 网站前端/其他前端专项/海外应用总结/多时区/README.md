@@ -107,6 +107,7 @@
     >          data() {
     >            return {
     >              parentRefName: undefined,
+    >              parentRefPath: undefined,
     >              originalValue: this.filterValueInput(this.value, this.$attrs),
     >            };
     >          },
@@ -133,22 +134,67 @@
     >          },
     >          mounted() {
     >            // 将内部组件的引用暴露给外部
-    >            const [name] =
-    >              Object.entries(this.$parent.$refs).find(([, vm]) => {
-    >                return vm === this;
-    >              }) ?? [];
-    >            if (name) {
-    >              this.parentRefName = name;
-    >              this.$parent.$refs[name] = this.$refs.innerComponent;
-    >            }
+    >            const refSlot = findThisFromParentRefs(this.$parent.$refs, this)
+    >            if (!refSlot) return
+    >            this.parentRefName = refSlot.refName
+    >            this.parentRefPath = refSlot.refArrayIndex
+    >            changeParentRef(
+    >              this.$parent.$refs,
+    >              refSlot.refName,
+    >              refSlot.refArrayIndex,
+    >              this.$refs.innerComponent
+    >            )
     >          },
     >          beforeDestroy() {
     >            // 清除引用以防内存泄漏
-    >            if (this.parentRefName && this.$parent.$refs[this.parentRefName] === this.$refs.innerComponent) {
-    >              this.$parent.$refs[this.parentRefName] = undefined;
-    >            }
-    >          },
+    >            if (!this.parentRefName) return
+    >            clearParentRef(
+    >              this.$parent.$refs,
+    >              this.parentRefName,
+    >              this.parentRefPath,
+    >              this.$refs.innerComponent
+    >            )
+    >          }
     >        };
+    >
+    >        /**
+    >         * 在父组件的 $refs 中查找当前实例（$refs的属性值指向：单个组件 或 v-for产生的一维实例数组）
+    >         * @returns {{ refName: string, refArrayIndex: number|null }} refArrayIndex 为 null 表示 refs[refName] 整项即 self；为 number 表示一维数组下标
+    >         */
+    >        function findThisFromParentRefs(parentRefs, self) {
+    >          for (const refName of Object.keys(parentRefs)) {
+    >            const vm = parentRefs[refName]
+    >            if (vm === self) return { refName, refArrayIndex: null }
+    >            if (Array.isArray(vm)) {
+    >              const refArrayIndex = vm.indexOf(self)
+    >              if (refArrayIndex !== -1) return { refName, refArrayIndex }
+    >            }
+    >          }
+    >          return null
+    >        }
+    >
+    >        // 将父级组件的 $refs 中指定位置替换为内层组件实例
+    >        function changeParentRef(refs, refName, refArrayIndex, selfRef) {
+    >          if (refArrayIndex === null) {
+    >            refs[refName] = selfRef
+    >          } else {
+    >            refs[refName][refArrayIndex] = selfRef
+    >          }
+    >        }
+    >
+    >        // 销毁前清理引用
+    >        function clearParentRef(refs, refName, refArrayIndex, selfRef) {
+    >          if (refArrayIndex === null) {
+    >            if (refs[refName] === selfRef) {
+    >              refs[refName] = undefined
+    >            }
+    >          } else {
+    >            const arr = refs[refName]
+    >            if (Array.isArray(arr) && arr[refArrayIndex] === selfRef) {
+    >              arr[refArrayIndex] = undefined
+    >            }
+    >          }
+    >        }
     >        </script>
     >
     >        <style lang="less">

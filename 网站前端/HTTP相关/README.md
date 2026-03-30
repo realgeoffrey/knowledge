@@ -65,7 +65,7 @@
 
         决定了向用户提供应用服务时通信的活动。
 
-        >SSL位于应用层和传输层中间。
+        >TLS位于应用层和传输层中间；SSL 是历史名称，现代 HTTPS 使用 TLS。
     2. 传输层：TCP、UDP
 
         对上层应用层，提供处于网络连接中的两台计算机之间的数据传输。
@@ -488,7 +488,7 @@
         （未出现）
     25. 426 Upgrade Required
 
-        客户端应当切换到TLS/1.0。
+        客户端应当按响应中的 `Upgrade` 头切换到服务器要求的协议；历史上常见于要求 TLS 或其他协议升级，不应写死为 TLS/1.0。
     26. 428 Precondition Required
     27. 429 Too Many Requests
 
@@ -684,7 +684,7 @@
                 1. 若请求时间在过期时间之前，命中缓存，返回`200 OK (from 某某 cache)`，从本地缓存中读取资源，不会发请求到服务器。
                 2. 若没有命中缓存，发请求到服务器，根据响应头更新这个资源的Cache-Control。
 
-    >建议：资源[配置超长时间的强缓存；采用文件的数字签名（如：MD5）作为缓存更新依据](https://github.com/fouber/blog/issues/6)，`.html`设置不缓存或协商缓存或超短时间强缓存。
+    >建议：资源[配置超长时间的强缓存；采用文件内容哈希（如：MD5/SHA 系列摘要）作为缓存更新依据](https://github.com/fouber/blog/issues/6)，`.html`设置不缓存或协商缓存或超短时间强缓存。
 
     - 启发式缓存（Heuristic Freshness）
 
@@ -793,7 +793,7 @@
         >中间人攻击（Man-In-The-Middle attack，MITM）。
 2. HTTPS（HTTP Secure） = HTTP + 通信加密 + 证书认证 + 完整性保护
 
-    >HTTPS并非是应用层的一种新协议。只是HTTP通信接口部分用SSL（Secure Socket Layer）或TLS（Transport Layer Security）协议替代（在应用层和传输层中间添加）。
+    >HTTPS并非是应用层的一种新协议。只是HTTP通信接口部分由 TLS（历史上常笼统称 SSL）承载，在应用层和传输层中间添加加密、认证和完整性保护。
 
     1. 加密
 
@@ -825,8 +825,8 @@
 
 - 为什么不一直使用HTTPS
 
-    1. SSL处理速度变慢：通信速度降低、消耗大量CPU和内存。
-    2. 证书需要购买。
+    1. TLS 会增加握手、加解密和证书校验成本；现代硬件和协议优化后开销已大幅降低，但高并发场景仍需容量规划。
+    2. 证书可免费获取（如 Let's Encrypt），但仍有申请、续期、部署、私钥保护等运维成本。
 - HTTPS也不一定安全，需要使用[HSTS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http严格传输安全http-strict-transport-securityhsts)才能最大限度避免被劫持。
 - 混用HTTPS与HTTP导致浏览器提示[`Mixed Content`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#mixed-content)。
 
@@ -924,9 +924,9 @@
     ![websocket-http](./images/websocket-1.jpg)
 3. 服务器推送
 
-    HTTP/2加入的，其允许服务器在客户端缓存中填充数据，通过一个叫**服务器推送**的机制来提前请求。
+    HTTP/2加入的，其允许服务器在客户端缓存中填充数据，通过一个叫**服务器推送**的机制来提前请求。该机制在实践中效果不稳定，已从多数主流浏览器引擎移除，现代项目更常用 `rel="preload"`、`103 Early Hints` 等方案。
 
-    >还没有收到浏览器的请求，服务器就把各种资源推送给浏览器。e.g. 浏览器只请求了index.html，但是服务器把index.html、style.css、example.png全部发送给浏览器。这样的话，只需要一轮HTTP通信，浏览器就得到了全部资源，提高了性能。
+    >还没有收到浏览器的请求，服务器就把各种资源推送给浏览器。e.g. 浏览器只请求了index.html，但是服务器把index.html、style.css、example.png全部发送给浏览器。这个设计目标是减少往返延迟，但现实中容易浪费带宽或与缓存策略冲突。
 
     ![服务器推送](./images/server-push.png)
 
@@ -1108,7 +1108,7 @@ todo: https://tsejx.github.io/blog/authentication/
         >3. 多路复用导致服务器压力上升：多路复用没有限制同时请求数。请求的平均数量与往常相同，但实际会有许多请求的短暂爆发，导致瞬时QPS暴增。
         >4. 多路复用容易Timeout：大批量的请求同时发送，由于HTTP/2连接内存在多个并行的流，而网络带宽和服务器资源有限，每个流的资源会被稀释，虽然它们开始时间相差更短，但却都可能超时。
     3. **压缩HTTP headers**。因为HTTP头在一系列请求中常常是相似的，其移除了重复和传输重复数据的成本。
-    4. 其允许服务器在客户端缓存中填充数据，通过一个叫**服务器推送**的机制来提前请求。
+    4. 其曾允许服务器通过**服务器推送**提前发送资源；该能力已从多数主流浏览器引擎移除，通常改用 `preload`、`preconnect`、`103 Early Hints` 等机制。
 
 - HTTPS
 - CORS、CSP

@@ -31,7 +31,7 @@
 ### nvm更新Node.js版本
 1. macOS或Linux的[nvm](https://github.com/nvm-sh/nvm)：
 
-    >若M1安装v15以下版本，建议终端打开[Rosetta模式](https://support.apple.com/en-hk/HT211861)：<https://github.com/nvm-sh/nvm/issues/2350>。
+    >若M1安装v15以下版本，建议终端打开[Rosetta模式](https://support.apple.com/en-hk/HT211861)：<https://github.com/nvm-sh/nvm/issues/2350>（任何应用：打开“应用程序”，右键 App → 显示简介，勾选：“使用 Rosetta 打开”，然后运行应用（记得用完后取消勾选）；终端：`arch -x86_64 zsh`进入临时会话，`exit`即可退出）。
 
     ```shell
     nvm list-remote
@@ -529,13 +529,26 @@ npm（Node Package Manager）。
     11. `browser`
 
         若是作用域浏览器客户端，则替代 ~~`main`~~ 使用。
-    12. [`scripts`](https://npm.nodejs.cn/cli/using-npm/scripts)
+    12. [`scripts`](https://docs.npmjs.com/cli/using-npm/scripts)
 
         可执行脚本，用`npm run 脚本名`执行。
 
-        - 钩子：`pre`（命令之前执行）、`post`（命令之后执行）、`prepare`、`dependencies`、等
+        - scripts的钩子（Hooks）机制（无需手动`npm run`就可触发；但也支持手动单独执行；`--ignore-scripts`忽略钩子触发）
 
-            若执行时打印不出信息，则尝试执行时添加`--foreground-scripts`。[As of npm@7 these scripts run in the background. To see the output, run with: `--foreground-scripts`](https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-scripts).
+            1. 自定义脚本钩子（配对机制）
+
+                执行顺序：运行`npm run <name>`时，自动按`pre<name>` → `<name>` → `post<name>` 顺序执行。
+
+                边界处理：`pre/post`缺失则静默跳过，核心脚本`<name>`缺失则直接报错。
+
+                >兼容性：Yarn@2+ 已废弃对自定义脚本的`pre/post`自动触发支持。
+            1. 内置命令钩子（自动触发）
+
+                触发机制：与`npm install/publish/pack`等内置核心命令绑定（前后缀`pre<event>`、`post<event>` 或特殊的钩子`prepare`、`prepublishOnly`、`dependencies`）。
+
+                执行方式：在对应的 npm 生命周期节点由系统自动触发。
+
+        >若执行时打印不出信息，则尝试执行时添加`--foreground-scripts`。[As of npm@7 these scripts run in the background. To see the output, run with: `--foreground-scripts`](https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-scripts).
 
     >`scripts`中命令能使用的环境变量：
     >
@@ -837,6 +850,8 @@ event loop ─→ │  ┌─────────────┴────
 over
 ```
 
+>注意：从 Node.js 20（libuv 1.45.0）开始，timers 只在 poll 阶段之后运行；上图仍可作为阶段模型理解，但不要把旧版“poll 前后都可能运行 timers”的细节当作当前行为。
+
 1. main
 
     启动入口文件，运行主函数。
@@ -844,14 +859,14 @@ over
 
     检查系统中是否有异步任务，决定是否进入事件循环。
 
-    1. 6个队列，每个队列都需要 全部执行完毕整个队列 才会进入下一个队列。
+    1. 事件循环按阶段处理回调；每个阶段会处理该阶段队列中的回调，但受系统上限、I/O状态和回调耗时影响，不应理解为无条件清空整个队列。
     2. poll队列
 
         1. 若poll中没有回调函数需要执行（已是空队列），但（系统中）有异步任务，则会在这里等待其他队列中出现回调：
 
             0. 若poll出现新的回调函数，则执行直到poll为空队列，然后继续等待其他队列出现回调；
             1. 若其他队列中出现回调，则从poll向下执行队列check、close callbacks，之后进行新的event loop判断（判断是否有异步任务，有就继续新的event loop，没有就结束over）；
-            3. 若Node.js线程一直holding在poll队列，等很长一段时间还是没有任务来临，则会自动断开等待（不自信表现），向下执行轮询流程，经过check、close callbacks后到达新的event loop判断；
+            3. 若Node.js线程一直 holding 在 poll 队列，等待时间会受定时器阈值和系统相关硬上限限制，随后向下执行 check、close callbacks，再进入新的 event loop 判断；
         2. 若poll中没有回调函数需要执行（已是空队列），也没有异步任务，则向下执行轮询流程，经过check、close callbacks后到达新的event loop判断，判断没有异步任务，结束over。
 3. over
 
@@ -861,7 +876,7 @@ over
 
 4. 微任务
 
-    **事件循环中，每执行一个回调之前，** 先按序清空`process.nextTick`、`Promise`。
+    **当前 JS 调用栈清空后、事件循环继续推进前，** Node.js 会优先处理`process.nextTick`队列，再处理 Promise 等微任务队列。
 
     1. `process.nextTick`优先级最高（最快执行的异步函数）
     2. `Promise`
@@ -917,7 +932,7 @@ over
 >
 >只有打通和后端技术的桥梁、实现互联互通，Node.js才能在公司业务中有更长远的发展。
 
-### Node.js[核心模块](http://nodejs.cn/api/)（需要`require`引入）
+### Node.js[核心模块](https://nodejs.org/api/)（需要`require`引入）
 >核心模块/内置模块 定义在[源代码的lib/文件](https://github.com/nodejs/node/tree/main/lib/)。同名加载时，核心模块优先级高于路径加载或自定义模块。可以使用`node:`前缀来识别核心模块（>=v16.0.0），在这种情况下它会绕过require缓存，不使用`node:`前缀就可以加载的核心模块列表暴露在`require('node:module').builtinModules`。
 
 1. `http`：HTTP请求相关API
@@ -1179,7 +1194,7 @@ over
     1. ~~`domain`~~
     2. ~~`punycode`~~
 
-### Node.js[全局变量](http://nodejs.cn/api/globals.html)
+### Node.js[全局变量](https://nodejs.org/api/globals.html)
 Node.js的全局对象`global`是所有全局变量的宿主。
 
 1. 仅在模块内有效
@@ -1289,7 +1304,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 
     代码运行完毕。包括：执行队列、任务队列、等待加入任务队列的其他线程任务，全都执行完毕，当不会有新的指令需要执行时，就自动退出Node.js的进程。e.g. 监听系统端口 或 `setTimeout`还未触发，意味着还有事件需要待执行。
 5. 不管任何情况，始终保证要有回包，就算代码运行错误，也要兜底回包（`.end()`）
-6. [CLI命令行](http://nodejs.cn/api/cli.html)（`man node`）
+6. [CLI命令行](https://nodejs.org/api/cli.html)（`man node`）
 
     ```shell
     node [options] [v8-options] [-e string | script.js | -] [--] [arguments ...]
@@ -1444,6 +1459,19 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 
     `app.config.属性`使用。
 
+    配置字段分两类：
+
+    1. Egg、插件、中间件常见约定字段示例：字段名会被已有加载逻辑读取，因此有默认功能。
+
+        - `middleware`：应用层全局中间件名称列表，数组顺序就是中间件执行顺序；启动时会合并到`app.config.appMiddleware`。
+        - `coreMiddleware`：框架、插件层全局中间件名称列表；一般在框架或插件的`app.js`中修改，比应用层中间件更靠前加载。
+        - `appMiddleware`：应用层中间件最终列表，通常由`middleware`合并生成，少直接手写。
+        - `中间件文件名`：同名中间件的参数对象，只在该中间件被`middleware`、`coreMiddleware`、`appMiddleware`或路由手动引用时传入`options`。
+        - `插件名`：同名插件的参数对象；插件是否启用由`config/plugin.js`决定，不由`config.插件名`决定。
+    2. 自定义业务字段：Egg只负责把它合并进`app.config`，不会自动触发功能；必须在自己的代码里读取，例如`app.config.myConfig`、`ctx.app.config.myConfig`。
+
+    配置文件类型：
+
     1. `config.default.js`
 
         任何情况都使用，与其他配置文件合并使用（通过[extend2](https://github.com/eggjs/extend2)深复制/深拷贝），其他配置优先级高于default。
@@ -1452,25 +1480,37 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         module.exports = {
           // 全局配置中间件：
 
-          // 配置需要的中间件，数组顺序即为中间件的加载顺序
+          // 配置需要的中间件，数组顺序即为中间件执行顺序
           middleware: [ '中间件文件名', ],
-          // 中间件的 options 参数
+          // 中间件的 options 参数；只写这个字段不会开启中间件
           中间件文件名: {
-            // 通用配置（enable、match、ignore）
-            enable: true, // 或 match或ignore: 正则匹配路由才使用当前中间件
-            配置
+            enable: true, // 仅控制已加载中间件是否执行；false 时关闭
+            // match: '/api', // 仅匹配到的请求执行
+            // ignore: '/static', // 匹配到的请求不执行；不能和 match 同时配置
+            配置 // 当前中间件自己的业务参数
           },
 
 
           // 插件的参数
           插件名: {
             配置
+          },
+
+          // 自定义业务配置；只有业务代码主动读取才生效
+          myConfig: {
+            配置
           }
         }
         ```
     2. `config.local.js`开发模式、`config.unittest.js`测试模式、`config.prod.js`正式、其他自定义环境名
 
-    - 插件、框架、应用 之间的配置文件 以及 具体环境、default 之间的配置文件，都是通过文件合并（通过[extend2](https://github.com/eggjs/extend2)深复制/深拷贝），而不是互相覆盖。
+    - 插件、框架、应用 之间的配置文件 以及 具体环境、default 之间的配置文件，会按优先级合并（通过[extend2](https://github.com/eggjs/extend2)深复制/深拷贝）；对象字段会合并，同名字段后加载配置覆盖先加载配置，数组整体覆盖、不逐项合并。
+    - 字段生效逻辑：
+
+        1. 配置文件先按加载顺序合并成最终`app.config`。
+        2. Egg、插件或中间件只识别自己约定的字段名；识别到了才执行对应默认逻辑。
+        3. 其他字段只是普通数据，业务代码不读取就没有效果。
+        4. 同一个字段可以既是配置又是“约定入口”，关键看是否有 Egg、插件、中间件或业务代码读取它。
 3. 扩展`./app/extend/`（全支持：应用、框架、插件） +
 
     1. `application.js`或`application.{env}.js`
@@ -1543,7 +1583,23 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     >Service在复杂业务场景下用于做业务逻辑封装的一个抽象层：处理复杂业务逻辑；调用数据库或第三方服务。
 6. 中间件`./app/middleware/`（全支持：应用、框架、插件）
 
-    导出方法，参数：`options, app`（options：中间件的配置项，会将`app.config.中间件文件名`的值传递进来），这个方法返回中间件（参数：`ctx, next`）。
+    导出方法，参数：`options, app`（全局加载时，options 会传入`app.config.中间件文件名`；路由局部使用时，由调用者手动传入 options），这个方法返回中间件（参数：`ctx, next`）。
+
+    中间件加载逻辑：
+
+    1. `./app/middleware/中间件文件名.js`负责定义中间件工厂，加载后挂到`app.middleware.中间件文件名`。
+    2. `config.middleware = ['中间件文件名']`负责在应用层开启全局中间件。
+    3. 启动时按`app.config.coreMiddleware + app.config.appMiddleware`生成全局中间件链。
+    4. 全局加载时，每个名称都会取`app.config.同名字段`作为`options`传入工厂；所以`config.中间件文件名`是参数，不是开关。
+    5. 只写`config.中间件文件名 = {}`不会自动执行中间件，除非该名称也出现在全局中间件列表里，或在路由中通过`app.middleware.中间件文件名(options)`手动使用。
+
+    中间件通用配置：
+
+    1. `enable`：是否启用该中间件；设为`false`时关闭。
+    2. `match`：只有匹配到的请求才执行该中间件。
+    3. `ignore`：匹配到的请求不执行该中间件。
+
+    `match`和`ignore`功能相反，不能同时配置；两者都支持字符串（URL路径前缀）、字符串数组、正则、函数`(ctx) => boolean`。除这 3 个通用字段外，其他字段都是当前中间件自己读取的业务参数。
 
     ```js
     // ./app/middleware/中间件文件名.js

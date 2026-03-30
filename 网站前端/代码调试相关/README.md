@@ -69,7 +69,7 @@
             2. 用 ~~<http://debugx5.qq.com/>~~（已失效）打开TBS内核调试功能的[腾讯X5内核WebView](https://x5.tencent.com/)（如：Android的QQ、QQ浏览器、旧版微信）
             3. 开启调试功能的debug包APP
 
-        >若PC端的Chrome识别不到手机WebView，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)（macOS可以用brew安装：`brew cask install android-platform-tools`）并运行（进入文件夹后运行`adb.exe devices`或`adb devices`连接手机设备）。
+        >若PC端的Chrome识别不到手机WebView，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)（macOS可以用brew安装：`brew install android-platform-tools`）并运行（进入文件夹后运行`adb.exe devices`或`adb devices`连接手机设备）。
 
         >若APP没有开启调试功能，只能连接电脑的logcat看日志。
     2. iOS
@@ -338,6 +338,16 @@
 ### 浏览器调试（以Chrome为主）
 
 >Chrome的DevTools文档：<https://developer.chrome.com/docs/devtools/overview/>
+
+#### Network面板
+
+1. Network的Filter支持普通字符串、正则（前后加`/`）、属性过滤（`key:value`）、负向过滤（前缀`-`）和界面上的Invert反转。
+
+    1. 普通包含或排除路径时，优先不用正则（推荐写法：`a/b/c/d`、`-a/b/c/d`），多个排除条件用空格分隔（`-a/b/c/d -e/f`），`-`后面不能跟着`/`（~~`-/b/c`~~）
+    1. 需要可复制、可沉淀的排除规则时，优先用`-`前缀，而不是勾选Invert；Invert适合临时查看，会反转当前整组过滤结果。`-`后面可以跟普通字符串、属性或正则，例如`-main.css`、`-status-code:404`、`-/api|xhr/`（，不能跟`/`：~~`-/b/c`~~）。
+    1. 需要OR时再用正则：`/api|xhr/`。如果正则里要匹配多级路径，不要连续写多个`\/`（正则里`|`的一个分支只支持写1个`\/`），DevTools的Filter解析容易截断；改用`\x2F`表示`/`，例如：`/a\x2Fb\x2Fc\x2Fd|e\x2Ff/`，排除则写`-/a\x2Fb\x2Fc\x2Fd|e\x2Ff/`。
+
+        不要写成`a/b/c/d | e/f`；`|`只有在`/.../`正则里才是OR。
 
 #### Console面板
 >来自：[Chrome Developers:Console Utilities API reference](https://developer.chrome.com/docs/devtools/console/utilities/)。

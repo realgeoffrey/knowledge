@@ -24,7 +24,7 @@
 
 - <details>
 
-    <summary>其他</summary>
+    <summary>其他（多为历史环境记录，使用前需确认系统版本仍受支持）</summary>
 
     1. [WAMP环境配置（Windows）](WAMP环境配置（Windows）/README.md)
     2. [LAMP环境配置（CentOS7.0）](LAMP环境配置（CentOS7.0）/README.md)
