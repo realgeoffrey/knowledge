@@ -1,0 +1,158 @@
+
+# AI繁多的词汇
+
+## 目录
+1. [【一站式 LLM底层技术原理入门指南】](#一站式-llm底层技术原理入门指南)
+1. [词汇表](#词汇表)
+
+---
+### [【一站式 LLM底层技术原理入门指南】](https://s3tlxskbq3.feishu.cn/docx/NyPqdCKraoXz9gxNVCfcIFdnnAc)
+1. 人工智能（Artificial Intelligence，AI）：让机器模拟生物智能，具备感知、学习、识别、推理等能力的计算机科学技术。作为计算机科学分支，涵盖计算机视觉（Computer Vision, CV）、自然语言处理（Natural Language Processing, NLP）、语音识别（Voice Recognition）、语音生成（Text to Speech, TTS）、知识图谱（Knowledge Graph）等领域。
+
+    1. 机器学习（Machine Learning,ML)是实现人工智能的核心方法，是从有限的观测数据中“学习”（or“猜测”）出一个具有一般性的规律，并利用这些规律对未知数据进行预测的方法。
+
+        1. 有监督学习（Supervised Learning）：使用带标签的训练数据训练模型，学习输入与输出的映射关系，用于预测未标签数据。训练集需包含输入（特征）和人工标注的输出（目标）。
+        1. 无监督学习（Unsupervised Learning）：从未标记数据中自动发现结构、模式、关联或表示，无需人工标签或先验知识。
+
+            1. 自监督学习（Self-supervised Learning）：通过辅助任务（Pretext）从大规模无监督数据中挖掘监督信息，训练网络学习对下游任务有价值的表征。
+        1. 强化学习（Reinforcement Learning）：智能体（Agent）与环境（Environment）交互，学习决策策略以最大化累积奖励的机器学习方法。
+        1. 特征（Feature）：从原始数据中提取的、用于表示样本的属性或信息。
+
+            > 特征即基于原始信息，具体输入给机器的数据。
+        1. 深度学习（Deep Learning）：使用深层、复杂结构的神经网络进行学习的方法。通过多层学习抽象和高级特征表示，更好地捕捉数据的内在结构和特性。
+
+            1. 端到端学习（End-to-End Learning）：也称端到端训练，不进行分模块或分阶段训练，直接优化任务的总体目标。
+
+                > 将复杂任务视为整体黑箱，仅关注输入输出对，基于输出结果调整模型。
+
+### 词汇表
+1. 模型（Model）：表示数据输入与输出之间映射关系的数学函数或算法结构。
+1. Agent（智能体、代理）：能够感知环境、做出决策并执行行动的自主实体。多智能体框架（Multi-Agent Framework）支持多个智能体协同工作的开发平台。
+1. 参数（Parameters）：模型内部可学习的权重，决定模型行为。显存大小（VRAM）影响可训练模型规模。模型蒸馏（Distillation）是将大模型知识压缩到小模型的技术。
+1. 半监督学习（Semi-supervised Learning）：结合少量标注数据和大量未标注数据进行训练的学习范式。标注（Annotation）是为数据添加标签的过程。
+1. Prompt（提示词）：向大型语言模型提供的精心制作的输入，用于引导生成期望的输出。
+1. 上下文长度（Context Length）：LLM在生成输出时考虑的输入单词/token的最大数量。
+1. 上下文窗口（Context Window）：模型处理完整交互过程的能力范围，包括多轮对话历史和当前响应。
+1. Token：文本的最小处理单元，可能是单词、子词或字符，取决于分词策略。
+1. SOP（Standard Operating Procedure，标准操作程序）：通过标准化流程将复杂任务分解为可重复执行的具体步骤，实现效率提升、质量控制和经验传承。核心在于细节量化与流程固化，适用于企业生产、个人管理和技术系统设计。
+1. 工具与框架：ollama（本地LLM运行工具）、label-studio（数据标注平台）、cherry-studio（多模型聚合与AI生产力平台，支持MCP与RAG）、dify（低代码LLM应用开发平台，生产级RAG与工作流）、langchain（代码优先的LLM应用开发框架）。
+1. MCP（Model Context Protocol，模型上下文协议）：基于 JSON-RPC 2.0 的开放协议，连接 LLM 应用与外部数据源、工具。传输方式包括 STDIO（本地）与 HTTP（远程；2025 年起推荐 Streamable HTTP，SSE 已逐步弃用）。服务端可提供 Tools、Prompts、Resources；客户端可提供 Elicitation、Roots、Sampling 等能力。
+1. A2A（Agent-to-Agent Protocol）：智能体间对等通信协议，解决“智能体如何互相发现、协商、委派任务”，与 MCP（智能体—工具）互补。
+1. ANP（Agent Network Protocol）：基于 W3C DIDs 与 JSON-LD 的开放网络智能体发现与协作协议，常用于去中心化智能体生态。
+1. 知识库（Knowledge Base，KB）：包含文档集合的系统，用于存储和检索结构化信息。
+1. RAG（Retrieval-Augmented Generation，检索增强生成）：结合信息检索和生成的技术，从知识库检索相关信息后生成回答，提升准确性和可追溯性。
+1. Embedding（嵌入）：将数据转换为数值向量的技术，用于表示语义信息。
+1. 嵌入模型（Embedding Model）：将文本、图像、图表、视频等数据转换为数值向量的模型，捕捉其在多维向量空间中的含义和细微差别。选择需兼顾语义深度、计算效率、数据类型和维度等因素。
+1. 向量数据库（Vector Database）：组织有序的向量嵌入集合，支持创建、读取、更新和删除操作。向量嵌入将数据块（如文本或图像）表示为数值，便于相似度检索。
+1. 对话式AI（Conversational AI）：能够进行自然对话交互的人工智能系统。
+1. 自然语言处理（Natural Language Processing，NLP）：利用计算机和软件理解人类语言（书面或口语）含义的技术。
+1. 自动语音识别（Automatic Speech Recognition，ASR）：收录人类语音并转换为可读文本的技术，也称语音转文本。支持免手动编辑文本消息，为机器理解提供框架。
+1. 自然语言理解（Natural Language Understanding，NLU）：理解文本上下文和意图，生成智能回复的技术。
+1. 文本转语音（Text to Speech，TTS）：将文本转换为语音输出的技术。
+1. BERT（Bidirectional Encoder Representations from Transformers）：Google开发的自然语言处理模型，学习文本双向表示，显著提升理解无标记文本的能力。
+1. 计算机视觉（Computer Vision，CV）：让计算机理解和分析视觉信息的技术。
+1. Transformer架构：基于自注意力机制（Self-Attention）的深度学习模型架构，由Google团队在2017年论文《Attention Is All You Need》中提出。包含编码器（Encoder）和解码器（Decoder）结构，彻底改变NLP领域，成为现代大语言模型（如GPT、BERT）的核心基础。
+1. 预训练模型（Pre-trained Model）：在大规模数据上预先训练的模型，可通过微调适应特定任务。
+1. Hugging Face：提供预训练模型、数据集和工具的开源平台，简化NLP和AI模型的使用。
+1. 推理模型（Inference Model）：用于实际预测和生成的已训练模型，区别于训练阶段的模型。
+1. 大语言模型（Large Language Model，LLM）：使用超大数据集训练的深度学习算法，能够识别、总结、翻译、预测和生成内容。主要基于**Transformer架构**，通过追踪序列数据中的关系学习上下文和含义。采用无监督学习训练，无需大量人工标注，是构建AI模型的重大突破。
+
+    1. 开源模型（通常指开源模型权重，Open-Weights）：
+
+        Llama（Meta，含 3.2/3.3）、Qwen/通义千问（阿里巴巴）、DeepSeek、Mistral、BERT（Google）。xAI 的 Grok-1、Grok-2/2.5 已开源（后者为社区许可，有商业限制），Grok-3 为闭源旗舰。
+    2. 闭源模型（仅通过 API 或应用提供服务，Closed-Source）：
+
+        GPT（OpenAI）、Claude（Anthropic）、Gemini（Google）、Grok-3（xAI）、Moonshot/Kimi（月之暗面）、文心一言（百度）、讯飞星火（科大讯飞）
+1. 记忆模组（Memory Module）：AI智能体维护上下文的机制，包括短期记忆（工作记忆）和长期记忆（持久化存储）。
+1. 推理层（Reasoning Layer）：AI系统进行逻辑推理和决策的组件。
+1. AI智能体框架（AI Agent Frameworks）：简化AI智能体构建、部署和管理的开发平台或库，消除底层复杂性，让开发者专注于应用和智能体行为。
+1. AI助手（AI Assistants）：协助用户完成任务的智能应用系统。
+1. PyTorch：Facebook开发的开源深度学习框架，提供动态计算图和丰富的工具生态。
+1. 生成式AI（Generative AI）：根据输入快速生成新内容的AI技术。输入输出可包括文本、图像、声音、动画、3D模型等。使用神经网络识别数据模式和结构，生成原创内容。
+1. 视觉语言模型（Vision-Language Models，VLM）：多模态生成式AI模型，能够理解和处理视频、图像和文本。
+1. 数字孪生（Digital Twin）：产品、流程和设施的虚拟表示，企业用于设计、模拟和操作实体对应物。
+1. 神经网络（neural network）：是一种受人脑启发的机器学习算法。这款强大的工具擅长解决传统计算机算法难以处理的复杂问题，例如图像识别和自然语言处理。神经网络由相互连接的节点（称为神经元）组成，它将这些单元分层排列。每个神经元接收来自其他神经元的输入、对其进行处理，并将输出传输给其他神经元。神经元之间的连接具有相关的权重，表示连接强度。在训练期间，神经网络会调整这些权重以改善其在给定任务上的表现。这种学习过程使得神经网络能够做出预测并识别模式，从而推动它们在图像识别、自然语言处理和机器翻译等各种领域的广泛应用。神经网络的学习是通过在训练过程中建立神经元之间的连接并调整连接权重来实现的。在该过程中，需要向神经网络提供海量数据集，之后神经网络会使用这些数据集来优化其权重，以最大限度地减少预测值与实际值之间的误差。这一过程与人类的学习过程类似，反复接触有助于识别模式。
+
+    1. 前馈神经网络（Feedforward）：这是一种基本的神经网络，它以线性方式处理数据，即从输入到输出且没有循环。这类神经网络通常用于分类和回归等简单任务。
+    2. 循环神经网络 (Recurrent，RNN)：RNN 专为时序或自然语言等序列数据而设计，它使用反馈环来保留先前输入的记忆，因此适合用于具有时间成分的数据。
+    3. 卷积神经网络 (Convolutional，CNN)：CNN 专为图像相关任务而设计，使用卷积层从图像中提取特征，从而识别边缘和形状等模式。
+    4. 生成对抗网络 (Generative Adversarial，GAN)：GAN 由生成器和判别器组成，并让这两个组件相互对抗。生成器负责创建数据，而判别器则评估其所创建数据的真实性。这种对抗过程使得生成器能够产生越来越真实的数据，通常用于生成图片、视频和音频。
+1. AGI（通用人工智能，artificial general intelligence）、强人工智能（strong AI）：是具备与人类同等智能、或超越人类的人工智能，能表现正常人类所具有的所有智能行为
+1. AIGC（人工智能生成内容，Artificial Intelligence Generated Content）
+1. 幻觉（hallucination）
+1. 微调（fine-tuning）：通过在特定任务或领域上进一步训练，使LLM适应特定任务或领域
+1. 指令调优（instruction tuning）：通过提供具体的指导或指令来 fine-tuning LLM的行为
+1. FSD（Full-Self Driving，完全自动驾驶）：是特斯拉研发的自动驾驶系统
+1. 边缘算力（Edge Computing）：在靠近数据源或用户的网络边缘部署计算与推理，降低延迟与带宽，适用于 IoT、端侧/轻量 LLM 部署。
+1. ​具身智能（Embodied Artificial Intelligence, EAI）：是一种通过物理实体（如机器人、自动驾驶车辆等）与环境交互，实现感知、决策和行动的智能系统。其核心在于“具身性”，即智能体通过身体感知物理世界，并在交互中动态学习与适应，形成“感知—行动”闭环
+1. SDD（Specification-Driven Development，规格/规范驱动开发）：通过可执行、可验收的规格，驱动人和 AI 协作交付的软件开发方式，是 Agent 化研发落地的核心基础设施。
+
+    相关实现：<https://github.com/github/spec-kit>（重量级、Greenfield、Specify CLI）、<https://github.com/Fission-AI/OpenSpec>（轻量级、Brownfield、artifact 工作流）
+
+    <details>
+    <summary>SDD核心特征与实现原理</summary>
+
+    1. 问题背景：现有 AI 编程助手（GitHub Copilot、Cursor、Claude Code、Codex 等）采用"基于对话的开发"（Chat-Driven Development, CDD）模式，存在以下局限：
+
+        - "Vibe Coding"问题：需求分散在对话记录中，缺乏结构化文档，导致 AI 交互不可预测
+        - 上下文丢失：项目需求、设计决策和架构约束仅存在于瞬时对话历史或开发者记忆中
+        - 注意力分散：随着对话轮次增加，LLM 上下文窗口面临物理限制和注意力分散（Attention Dispersion）
+        - 约束遗忘：模型易遗忘初始约束条件，产生"幻觉代码"或偏离预期的实现
+        - 规格碎片化：传统方法将规格分散在多个文件中，难以整体把握系统意图，特征交互难以检测
+    1. SDD 解决方案：将 状态（State） 从易失的内存（LLM 上下文）迁移至持久化的文件系统（Filesystem），构建轻量级、持久化、版本可控的"规范层"（Spec Layer），通过结构化工件（Artifacts）强制执行"先对齐，后构建"（Agree-Build-Archive）的工程流程。核心特征：
+
+        1. 原子性与版本控制：需求变更（Proposal）、技术规格（Specs）、设计文档（Design）和任务清单（Tasks）以 Markdown 或 YAML 文件形式存储在代码仓库中。Git 每次提交不仅包含代码变更，还包含导致该变更的"思维链条"，实现代码与文档的原子性同步。
+        1. 模型无关性（Model Agnosticism）：通过纯文本作为交互介质，解耦底层推理引擎。任何能读取文件系统并理解 Markdown 语法的模型（GPT-4、Claude 3.5 Sonnet、Llama 3 等）均可接入该系统。
+
+            >模型无关性（Model Agnosticism）：通过 **统一的“模型调用抽象层” + 协议化的输入输出（通常基于 JSON/DSL） + 工具级插件式适配器**，将 “业务逻辑/工具能力” 与 “具体模型 API” 解耦，从而实现模型可插拔。
+    1. <details>
+
+        <summary>SDD库对比</summary>
+
+        | 维度 | github/spec-kit | Fission-AI/OpenSpec | bmad-code-org/BMAD-METHOD | obra/superpowers |
+        | :--- | :--- | :--- | :--- | :--- |
+        | 体量 | 重量级 | 轻量级 | 体系级/全局框架 | 战术级/行为控制框架 |
+        | 场景 | 绿地（Greenfield）：从零立项 | 棕地（Brownfield）：存量改造 | 深水区（Deep Water）：高复杂度系统、跨生命周期开发 | 战壕（Trenches）：日常业务需求迭代、高复杂度组件封装与联调 |
+        | 流程 | 宏观瀑布：先完整规划再实施 | 微型瀑布/迭代：小步规格、小步实现 | 多智能体敏捷：严格的4阶段流水线（分析 > 规划 > 方案 > 实施） | 状态机流转：强迫 AI 按技能树循环（苏格拉底脑暴 > 微任务拆解 > TDD 执行 > 系统排错） |
+        | 隐喻 | 建筑师：蓝图驱动 | 外科医生：在现状上精准修改 | 虚拟软件公司：多角色（PM/架构师/研发/QA）接力协作 | 结对老兵/技术骨干：拿鞭子逼着 AI 守规矩（先盘逻辑、写测试再写代码）的结对伙伴 |
+        | 真理来源 | 文档为真，代码为副产品 | 代码库为真，Spec 为变更指令 | 全景上下文（代码库转化为 XML） + 阶段性规范文档共治 | 微型计划（Micro-plans）与 单元测试（Tests）为微观真理 |
+        | 旧代码 | 要求合规新规范 | 理解并缝合进现有代码 | 降维解析：通过脚本将全局旧代码“扁平化”喂给AI，避免修改时丢失全局视角 | 防御性修改：不盲猜，靠“系统化排错”推断旧逻辑；靠 TDD 红绿循环确保不破坏旧逻辑 |
+
+        | 工具 / 项目 | 核心定位（隐喻） | 存在形态 | 核心控制手段 | 解决的最大痛点 | 前端架构/工程最佳适用场景 |
+        | :--- | :--- | :--- | :--- | :--- | :--- |
+        | github/spec-kit | **宏观建筑蓝图** | 纯文本 / Markdown 规范模板 | **顶层架构规约**：文档即真理，代码只是副产品，强制先规划后实施 | 需求模糊、边界不清，导致最终代码严重偏离业务目标 | **新基建/新模块立项**。写第一行代码前，彻底厘清数据结构和接口契约。 |
+        | Fission-AI/OpenSpec | **轻量级局部手术刀** | 变更指令脚本 | **局部指令锁定**：基于当前代码库上下文，生成极小范围的精确变更指令 | 在庞大的祖传代码库中，AI 容易误伤或改坏无关的旧逻辑 | **存量系统维护**。在不了解全局的情况下，安全地为某个历史页面打补丁。 |
+        | bmad-code-org/BMAD-METHOD | **虚拟软件研发中心** | Python 全栈框架 + 多智能体协同 | **降维与角色接力**：将庞大代码库打包成 XML，利用 PM/架构师/研发 Agent 分阶段执行 | 面对不知深浅、高耦合的高复杂度巨石应用，AI 完全无从下手 | **深水区改造**。梳理极度复杂的历史财务系统依赖关系，制定全局迁移策略。 |
+        | obra/superpowers | **战术级结对导师** | 交互式 CLI 指令集 / 系统 Prompt | **状态机切换**：强制约束执行 TDD（红-绿-重构）与严格的系统化排错循环 | AI 遇到 Bug 时习惯盲目猜测、乱删代码，导致越改越乱 | **核心算法/底层封装**。手写复杂逻辑（如高精度数值计算 Hook）时防偏离。 |
+        | NeekChaw/RIPER-5 | **特种兵的铁血军规** | `.cursorrules` 提示词协议 | **思维状态机**：用话术锁死路径，强制 AI “先调研脑暴 -> 制定微任务清单 -> 逐一执行” | AI 拿到需求急于表现，直接输出缺乏边界考虑的“坨状代码” | **Cursor 日常主战武器**。编写涉及大量状态流转的复杂 Vue 3 组件。 |
+        | eyaltoledano/claude-task-master | **任务编排器 (PM)** | 离散文件管理系统 + MCP 服务协议 | **物理视界隔离**：将宏大需求拆解为独立的 Markdown 微工单，限制 AI 的单次视野 | AI 试图一次性 (One-shot) 吞下整个大需求，产出难以维护的“代码屎山” | **中大型需求拆解站**。比如将一整个复杂表单的重构，发牌拆分给 Cursor 去做。 |
+        | gsd-build/get-shit-done | **无情的自动化流水线** | Node.js 独立 CLI 应用程序 | **内存与上下文隔离**：为每个任务派生阅后即焚的子智能体，强制单次原子化 Git 提交 | **上下文腐烂 (Context Rot)**：聊久了 AI 记忆衰退、变蠢、遗忘你定的架构规范 | **跨文件批量重构**。如大面积替换旧版 vue-i18n 写法为 ICU 标准，彻底解放双手。 |
+        </details>
+    </details>
+1. openclaw
+
+    >OpenClaw是一个AI智能体编排框架 (Orchestrator)。它本身不具备推理能力，需接入LLM（如：Claude、DeepSeek）作为决策大脑。
+
+    OpenClaw（核心、网关与框架） + LLMs（如 Claude、Gemini、DeepSeek、Ollama） + Channels（如 Telegram） + Skills（SOP 与工具，官方注册中心 <https://clawhub.ai/>，数千社区 Skills）
+
+
+
+    ```mermaid
+    flowchart TB
+        U[用户] --> MG["Messaging Gateway<br/>(Telegram / Slack / etc)"]
+        MG --> AC["Agent Core<br/>(LLM + Planner)"]
+        AC --> T["Tools<br/>(Shell)"]
+        AC --> S["Skills<br/>(Plugins)"]
+        AC --> A["Automation<br/>(Cron)"]
+    ```
+
+    >对GUI渲染环境的兼容性：在有界面环境下直接截屏获取视觉输入；在无界面（Headless）环境下通过 xvfb 提供虚拟显示，使应用能够正常渲染界面，再通过截图获取图像供模型分析。
+    >
+    >```mermaid
+    >flowchart TB
+    >   A["Playwright<br/>控制浏览器(真实内核)"] --> B{"浏览器运行模式<br/>是否需要界面display server"}
+    >   B --> |headless|C["无需display server<br/>默认推荐(常规E2E与爬虫)"]
+    >   B --> |headed|D{"需要display server"}
+    >   D --> |有GUI环境|E["有屏幕"]
+    >   D --> |无GUI环境|F["可用 Xvfb 图形系统模拟层"]
+    >```

@@ -31,7 +31,7 @@
 ### nvm更新Node.js版本
 1. macOS或Linux的[nvm](https://github.com/nvm-sh/nvm)：
 
-    >若M1安装v15以下版本，建议终端打开[Rosetta模式](https://support.apple.com/en-hk/HT211861)：<https://github.com/nvm-sh/nvm/issues/2350>。
+    >若M1安装v15以下版本，建议终端打开[Rosetta模式](https://support.apple.com/en-hk/HT211861)：<https://github.com/nvm-sh/nvm/issues/2350>（任何应用：打开“应用程序”，右键 App → 显示简介，勾选：“使用 Rosetta 打开”，然后运行应用（记得用完后取消勾选）；终端：`arch -x86_64 zsh`进入临时会话，`exit`即可退出）。
 
     ```shell
     nvm list-remote
@@ -533,9 +533,22 @@ npm（Node Package Manager）。
 
         可执行脚本，用`npm run 脚本名`执行。
 
-        - 钩子：`pre`（命令之前执行）、`post`（命令之后执行）、`prepare`、`dependencies`、等
+        - scripts的钩子（Hooks）机制（无需手动`npm run`就可触发；但也支持手动单独执行；`--ignore-scripts`忽略钩子触发）
 
-            若执行时打印不出信息，则尝试执行时添加`--foreground-scripts`。[As of npm@7 these scripts run in the background. To see the output, run with: `--foreground-scripts`](https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-scripts).
+            1. 自定义脚本钩子（配对机制）
+
+                执行顺序：运行`npm run <name>`时，自动按`pre<name>` → `<name>` → `post<name>` 顺序执行。
+
+                边界处理：`pre/post`缺失则静默跳过，核心脚本`<name>`缺失则直接报错。
+
+                >兼容性：Yarn@2+ 已废弃对自定义脚本的`pre/post`自动触发支持。
+            1. 内置命令钩子（自动触发）
+
+                触发机制：与`npm install/publish/pack`等内置核心命令绑定（前后缀`pre<event>`、`post<event>` 或特殊的钩子`prepare`、`prepublishOnly`、`dependencies`）。
+
+                执行方式：在对应的 npm 生命周期节点由系统自动触发。
+
+        >若执行时打印不出信息，则尝试执行时添加`--foreground-scripts`。[As of npm@7 these scripts run in the background. To see the output, run with: `--foreground-scripts`](https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-scripts).
 
     >`scripts`中命令能使用的环境变量：
     >

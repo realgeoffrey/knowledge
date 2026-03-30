@@ -12,6 +12,7 @@
 1. [.gitkeep文件](#gitkeep文件)
 1. [GitLab CI](#gitlab-ci)
 1. [减少Git项目下载大小](#减少git项目下载大小)
+1. [找回删除的分支信息](#找回删除的分支信息)
 1. [`husky`+`lint-staged`+`commitlint`+`commitizen`](#huskylint-stagedcommitlintcommitizen)
 
 ---
@@ -271,7 +272,7 @@
     ```
 9. branch
 
-    >`HEAD`是指向目前所在的分支的游标（或不指向分支时，是detached狀態）。
+    >`HEAD`是指向目前所在的分支的游标（或不指向分支时，是detached状态）。
 
     1. 查看分支
 
@@ -795,7 +796,7 @@ feat(details): 添加了分享功能
 >
 >[remote "别名"]
 >	url = git@realgeoffrey.github.com:realgeoffrey/knowledge4.git
->	fetch = +refs/heads/*:refs/remotes/origin/*
+>	fetch = +refs/heads/*:refs/remotes/别名/*
 >```
 
 0. 查看跟踪的远程仓库
@@ -874,10 +875,12 @@ feat(details): 添加了分享功能
     |---|---|---|---|
     | 默认 | 不储存 | - | 每次执行git pull/push时，终端都会弹出提示要求你手动输入用户名和密码 |
     | cache | 内存 | 默认 15 分钟 | 临时使用。凭据不落盘，适合公用电脑或 VPS。可通过`--timeout`修改时长 |
-    | store | 磁盘明文文件 | 永久 | 极度不安全。凭据以明文形式存储在磁盘中，任何能访问文件的人都能看到密码 |
+    | store | 磁盘明文文件 | 永久 | 极度不安全。凭据以明文形式存储在磁盘中。一般在`~/.git-credentials` |
     | osxkeychain | 系统钥匙串 | 永久 | Mac用户首选。使用 macOS 加密钥匙串存储，安全且体验丝滑 |
     | wincred | 凭据管理器 | 永久 | Windows用户首选。集成在系统自带的凭据管理器中，安全性高 |
     | manager (GCM) | 加密存储 | 永久 | 全平台最强。支持多因子验证 (2FA) 和 OAuth，由微软维护 |
+
+    `git config --global credential.helper 「值」 # 设置`
 5. 开启对文件名大小写敏感
 
     >每个git项目都会默认显式设置为不敏感，因此需要去到每个项目单独开启敏感（项目配置优先于全局配置）。
@@ -893,15 +896,24 @@ feat(details): 添加了分享功能
     git config --global color.ui auto           # Git自动判断是否在终端输出中使用颜色（默认值就是auto）
     git config --global core.autocrlf input     # 在提交时自动把 Windows 的 CRLF 换行符转换成 Unix 风格的 LF，但在 checkout 文件时不做任何修改
     git config --global rebase.autoStash true   # 当有 未commit的变更（未暂存或已暂存）+落后的commit，执行`rebase或pull --rebase`时，自动执行git stash → `rebase或pull --rebase` → git stash pop（若冲突，则需要手动解决），而不是直接报错不允许执行
-
-
-    # 有门槛，新手慎重：
-    git config --global pull.rebase true        # （针对commit）执行pull时，将pull行为改为 rebase（变基）而不是 merge（默认）。注意：有已解决冲突的领先的commit，再使用rebase可能会导致更多麻烦的操作。注意vscode的同步sync会先执行pull
     ```
 
-    >感觉会导致更麻烦的配置：`git config --global pull.ff only  # 只允许fast-forward合并，否则报错退出。会使 pull.rebase true 配置失效，因为若不是ff合并模式则直接报错退出，不会改用rebase合并`
+    - 有门槛，新手慎重
 
-- 展示所有`configs`、`alias`
+        ```shell
+        git config --global pull.rebase true
+        # （针对commit）执行pull时，将pull行为改为 rebase（变基）而不是 merge（默认）。
+        # 注意：有已解决冲突的领先的commit，再使用rebase可能会导致更多麻烦的操作。注意vscode的同步sync会先执行pull
+        # pull.rebase=true ： git pull  ≈  git fetch + git rebase
+
+
+        # 感觉会导致更麻烦的配置
+        git config --global pull.ff only
+        # 只允许fast-forward合并，否则报错退出。会使 pull.rebase true 配置失效，因为若不是ff合并模式则直接报错退出，不会改用rebase合并
+        # pull.ff=only ：本地没有提交（纯落后）-> pull成功；本地有提交（需要 merge/rebase） -> pull直接失败
+        ```
+
+- 展示所有`configs`、`alias`（不是最终值，只是某一层的所有值）
 
     ```shell
     git config --local --list   # 当前目录
@@ -911,6 +923,19 @@ feat(details): 添加了分享功能
 
     ```shell
     git config --unset 「配置名」
+    ```
+- 展示某个key的最终值
+
+    >配置优先级：`.git/config` > `~/.gitconfig` > `/etc/gitconfig`
+
+    ```shell
+    git config 「配置名」   # 最终值
+
+    git config --show-origin 「配置名」   # 最终值 + 来源
+
+    git config --show-origin --get-all 「配置名」   # 所有值 + 来源。根据优先级自行判断
+
+    git config --list --show-origin # 列出所有配置、值 + 所有来源 。根据优先级自行判断
     ```
 
 ### .gitkeep文件
@@ -967,6 +992,80 @@ feat(details): 添加了分享功能
 2. 减少克隆深度
 
     `git clone 「仓库地址」 --depth 「数字」`
+
+### 找回删除的分支信息
+>适用场景：某个分支提交过代码，后来本地和远程分支都被删了，现在想找回提交信息。
+
+- 针对 本地、远程 git仓库：
+
+    - 删除分支通常只是删除引用，不会立刻删除 commit 对象。
+    - 只要相关 commit 还没被 `git gc` 清理，就还有机会找回。
+    - reflog 是本地的、有时效的操作流水账（详尽记录 checkout、reset、rebase 等操作）；分支删了看 HEAD reflog
+    - 默认情况下，reflog 和不可达对象（悬空commit）都会随时间过期；拖得越久，找回概率越低。
+
+1. 先找 `commit hash`
+
+    1. 先从远程平台找线索
+
+        - 查 PR / MR
+        - 查 CI/CD 记录、代码评审通知、邮件、IM 机器人消息、issue 中引用过的 commit hash
+        - GitHub / GitLab 的 活动流 有时能看到“创建分支 / 删除分支 / 推送 commit”等记录，但这取决于平台保留策略，不能当作稳定方案。
+    1. 再从本地找
+
+        >AI搞定。
+
+        ```shell
+        # 1. 先看这些提交是否其实还被其他分支引用着
+        git log --all --graph --decorate --oneline --date=iso
+
+        # 2. 查 HEAD reflog 和其他仍存在引用的 reflog
+        git reflog --date=iso
+        git reflog --date=iso --all | rg '分支名|提交日期|删除日期|提交信息'    # 都可选
+        # 常见线索：
+        # - checkout: moving from master to feature-xx
+        # - commit: xxxxx
+        # - branch: Created from ...
+        # - branch: deleted refs/heads/feature-xx
+
+        # 3. 拿到疑似 commit 后，先确认是不是目标提交（若能输出则说明还未被GC）
+        git show --stat --summary <commit-hash>
+
+        # 4. 看它是否已被你本地当前可见的分支包含
+        git branch --contains <commit-hash> -a
+
+        # 5. 如果 reflog 没找到，再查未被引用、但尚未被回收的 commit（悬空commit）
+        git fsck --full --unreachable --no-reflogs
+        git fsck --full --unreachable --no-reflogs | rg 'unreachable commit|不可达 commit'
+        ```
+
+        ><details>
+        ><summary>可达对象、不可达对象、悬空 Commit</summary>
+        >
+        >1. 可达对象 (Reachable Object)：“安全名单”
+        >
+        >    只要能通过现有的分支 (Branch)、标签 (Tag)、HEAD 指针或者引用日志 (reflog) 顺藤摸瓜找到的 Git 对象（包括提交、文件树、文件内容）。
+        >
+        >    它们是当前仓库正在使用的有效数据，绝对安全，永远不会被 Git 的垃圾回收机制（GC）清理。
+        >2. 不可达对象 (Unreachable Object)：“清理候选人”
+        >
+        >    与可达对象完全相反。由于引用被删除或重置，没有任何“线索”能关联到它们。它们像断了线的风筝，游离在 Git 对象库中。
+        >
+        >    它们处于危险状态。是否还能找回，取决于 reflog 过期策略、`gc.pruneExpire` 配置、对象是否仍被其他引用持有等因素；这就是为什么“拖得越久，找回概率越低”。
+        >3. 悬空 Commit (Dangling Commit)：“不可达对象的具体形态”
+        >
+        >    它是不可达对象中最常见的一类，特指那些没有任何分支或引用指向它的提交记录（Commit）。
+        >
+        >    产生原因： 通常因为你执行了 git reset --hard 退回了历史，或者删除了一个还没合并的分支。
+        ></details>
+1. 找到 `commit hash`后
+
+    1. 本地恢复
+
+        1. 恢复分支：`git switch -c 「新分支名」 <commit-hash>`
+        1. 恢复提交：`git cherry-pick <commit-hash>`
+    1. 尝试远程直接访问：`「网站前置路径」/commit/「commit-hash」`
+
+        这也不是绝对可行：只有远程服务器上该commit对象仍存在、且你有权限时，页面才能打开。
 
 ### `husky`+`lint-staged`+`commitlint`+`commitizen`
 1. 使用[husky](https://github.com/typicode/husky)设置：方便的[git hooks](https://git-scm.com/book/zh/v2/自定义-Git-Git-钩子)。

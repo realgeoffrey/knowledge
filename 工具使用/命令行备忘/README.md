@@ -30,6 +30,8 @@
 1. [`xargs`](#xargs)
 1. [批量删除文件](#批量删除文件)
 1. [`mysql`](#mysql)
+1. [postgresql](#postgresql)
+1. [redis](#redis)
 1. [`read`](#read)
 1. [`sed`](#sed)
 1. [`ln`](#ln)
@@ -63,6 +65,7 @@
 time 「命令」
 # e.g. time ls
 ```
+- 使用[hyperfine](https://github.com/sharkdp/hyperfine)（高精度命令行基准测试与性能对比工具）
 
 #### 判断命令来源
 ```shell
@@ -710,6 +713,70 @@ find ./ -name "文件名" -exec rm -rf {} \;
     5. 增删改查 数据
 
         `select/delete/update/insert`、`from 「表名」`、`order by 「字段名」`、`where`、`or`、`and`、`like`
+
+#### postgresql
+```shell
+brew install postgresql@17  # 安装，版本按需
+
+brew services start postgresql@17   # 或前台运行：/opt/homebrew/opt/postgresql@17/bin/postgres -D /opt/homebrew/var/postgresql@17
+brew services stop postgresql@17
+brew services restart postgresql@17
+brew services info postgresql@17    # 查看服务状态、PID、plist 和配置文件路径
+brew services list  # 查看 Homebrew 管理的后台服务（如：postgresql、redis）
+
+# 连接 postgres 数据库。（`-h 主机`；`-p 端口`；`-U 用户名`；`-d 数据库名`）
+psql -h localhost -p 5432 -U "$(whoami)" -d postgres
+    # 进入 psql 交互环境（`数据库名=>` 或 `数据库名=#`）后可输入：
+    # \? 查看 psql 命令；\h 查看 SQL 语句帮助
+    # SQL 语句要以 `;` 结束；psql 元命令（如 \l、\du）不需要
+
+    # 查看数据库列表
+    \l
+    # 创建数据库
+    CREATE DATABASE my_test_db; # 在shell中：createdb my_test_db
+    # 删除数据库
+    DROP DATABASE my_test_db;   # 在shell中：dropdb my_test_db
+    # 查看当前连接的数据库
+    SELECT current_database();
+    # 切换连接到指定数据库
+    \c my_test_db
+    # 在当前连接的数据库中创建模式（不能跨数据库写成~~「数据库名.模式名」~~）
+    CREATE SCHEMA IF NOT EXISTS "模式名";
+    # 删除当前数据库中的空模式；若包含对象，需先删除对象或使用 CASCADE
+    DROP SCHEMA "模式名";
+    # 查看用户列表
+    \du     # 或 \du+ 额外展示描述
+    # 创建普通用户
+    CREATE USER 用户名 WITH PASSWORD '密码';            # 在shell中：createuser -U "$(whoami)" -P 用户名（输入密码）
+    # 创建超级用户（`\help CREATE USER`查看所有选项）
+    CREATE USER 用户名 WITH SUPERUSER PASSWORD '密码';  # 在shell中：createuser -U "$(whoami)" -s -P 用户名（输入密码）
+    # 删除用户
+    DROP USER 用户名;                                   # 在shell中：dropuser -U "$(whoami)" 用户名
+```
+>1. PostgreSQL 的完整层级是：集群 (Cluster) -> 数据库 (Database) -> 模式 (Schema) -> 表/函数等对象。数据库、角色/用户、表空间等属于集群级对象，被同一 PostgreSQL 实例共享；连接任意已有数据库后，只要权限足够，就可以创建新的数据库或角色。
+>2. 每次 `psql` 连接只进入一个数据库；模式、表、视图、函数等属于当前数据库，不能用 `数据库名.模式名.表名` 跨库访问或创建。要给非当前数据库创建模式，需要先 `\c 「数据库名」` 切换连接，或在 shell 中执行 `psql -d 「数据库名」 -c 'CREATE SCHEMA 「模式名」;'`。
+>3. Schema 是数据库内的命名空间，用来组织表、视图、函数等对象；不同 Schema 下可以存在同名表。创建或访问对象时若不写 Schema，PostgreSQL 会按 `search_path` 顺序查找或选择目标 Schema；默认通常是 `"$user", public`，即先尝试当前用户名同名 Schema，找不到或不可用时再使用 `public`。可用 `SHOW search_path;` 查看，用 `SET search_path TO 「Schema名」, public;` 临时调整。
+
+#### redis
+```shell
+brew install redis      # 安装 Redis
+
+# 后台服务：启动并注册为登录时自动启动；若只想本次运行，用 brew services run redis
+brew services start redis
+brew services stop redis
+brew services restart redis
+brew services info redis     # 查看服务状态、PID、plist 和配置文件路径
+brew services list  # 查看 Homebrew 管理的后台服务（如：redis、postgresql）
+
+# 前台运行：建议显式指定配置文件，避免使用内置默认配置和当前目录作为持久化目录（dir是持久化文件目录，保存Redis持久化文件`dump.rdb`）
+redis-server    # 前台运行 Redis 服务。默认配置下，Redis持久化文件`dump.rdb`在启动目录下
+redis-server /opt/homebrew/etc/redis.conf   # 配置文件与 brew services 使用的一致
+redis-server /opt/homebrew/etc/redis.conf --port 6380 --dir /tmp  # 用指令覆盖配置
+
+# 连接与健康检查（默认 127.0.0.1:6379，逻辑库默认 0）
+redis-cli ping
+redis-cli -h 「地址」 -p 「端口」 -n 「逻辑库序号」 ping
+```
 
 #### `read`
 ```shell
