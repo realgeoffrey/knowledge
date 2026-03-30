@@ -516,7 +516,8 @@
     "command": "-notebook.cell.collapseCellInput",
     "when": "notebookCellListFocused && !inputFocus && !notebookCellInputIsCollapsed"
   },
-  // 以下cursor新增
+
+  // cursor only
   {
     "key": "cmd+i",
     "command": "cursorai.action.generateInTerminal",

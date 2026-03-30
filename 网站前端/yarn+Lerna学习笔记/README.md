@@ -8,6 +8,8 @@
 
 ---
 ### yarn
+>备注：本节主要记录 Yarn Classic（v1）。Yarn Berry（v2+）的配置文件、PnP 依赖解析和部分命令行为与 v1 有差异，使用前需按项目实际 Yarn 版本核对。
+
 1. [`.yarnrc`](https://classic.yarnpkg.com/zh-Hans/docs/yarnrc)
 
     ```text
@@ -35,7 +37,7 @@
 
         >默认安装主版本下的最新版（1.x.y）。
 
-        4. `--tilde`或`-T`安装急精确次要版本（1.2.x）
+        4. `--tilde`或`-T`安装同一小版本范围（1.2.x）
         5. `--exact`或`-E`安装精确版本（1.2.3）
 
         - 安装指定不同路径的包
@@ -111,7 +113,7 @@
         1. 先全局安装`create-「包名」`到最新版本；
         2. 再运行`create-「包名」 [「参数」]`（`「包名」`里package.json的`bin`命令）。
 
-        >e.g. `yarn create react-app my-app`等价于`yarn global add create-react-app`+`create-react-app my-app`。
+        >e.g. `yarn create react-app my-app`等价于`yarn global add create-react-app`+`create-react-app my-app`。该例仅用于说明`yarn create`机制；`create-react-app`已进入弃用/维护状态，新 React 项目优先使用 React 官方推荐框架或 Vite、Rsbuild 等现代构建工具。
     10. `yarn config` + `set`、`get`、`delete`、`list` + `--global`或`-g`
 
         设置或查看配置。
@@ -148,6 +150,8 @@
         21. `yarn help`
 
 ### Lerna
+>备注：Lerna 自 2022 年起由 Nx 团队维护，现代版本通常与 npm/yarn/pnpm workspaces、Nx 能力结合使用；`bootstrap`、`add`、`link` 等旧式依赖链接工作流在新项目中应优先考虑包管理器 workspaces、pnpm、Nx 或 Turborepo 等方案。
+
 - 文件结构
 
     ```text
@@ -200,7 +204,7 @@
     }
     ```
 
->[Lerna中文网](https://lerna.nodejs.cn/)
+>[Lerna官方文档](https://lerna.js.org/docs/introduction)
 
 2. 初始化
 
@@ -220,7 +224,7 @@
         更改自上次发布以来的包版本号
     2. `lerna bootstrap`
 
-        将本地包链接在一起并安装剩余的包依赖项
+        将本地包链接在一起并安装剩余的包依赖项（旧版本常用；现代 Lerna/workspaces 项目通常交给包管理器安装和链接依赖）。
     3. `lerna list`
 
         列出本地包

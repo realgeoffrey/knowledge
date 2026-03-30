@@ -31,7 +31,7 @@
 ### nvm更新Node.js版本
 1. macOS或Linux的[nvm](https://github.com/nvm-sh/nvm)：
 
-    >若M1安装v15以下版本，建议终端打开[Rosetta模式](https://support.apple.com/en-hk/HT211861)：<https://github.com/nvm-sh/nvm/issues/2350>。
+    >若M1安装v15以下版本，建议终端打开[Rosetta模式](https://support.apple.com/en-hk/HT211861)：<https://github.com/nvm-sh/nvm/issues/2350>（任何应用：打开“应用程序”，右键 App → 显示简介，勾选：“使用 Rosetta 打开”，然后运行应用（记得用完后取消勾选）；终端：`arch -x86_64 zsh`进入临时会话，`exit`即可退出）。
 
     ```shell
     nvm list-remote
@@ -529,13 +529,26 @@ npm（Node Package Manager）。
     11. `browser`
 
         若是作用域浏览器客户端，则替代 ~~`main`~~ 使用。
-    12. [`scripts`](https://npm.nodejs.cn/cli/using-npm/scripts)
+    12. [`scripts`](https://docs.npmjs.com/cli/using-npm/scripts)
 
         可执行脚本，用`npm run 脚本名`执行。
 
-        - 钩子：`pre`（命令之前执行）、`post`（命令之后执行）、`prepare`、`dependencies`、等
+        - scripts的钩子（Hooks）机制（无需手动`npm run`就可触发；但也支持手动单独执行；`--ignore-scripts`忽略钩子触发）
 
-            若执行时打印不出信息，则尝试执行时添加`--foreground-scripts`。[As of npm@7 these scripts run in the background. To see the output, run with: `--foreground-scripts`](https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-scripts).
+            1. 自定义脚本钩子（配对机制）
+
+                执行顺序：运行`npm run <name>`时，自动按`pre<name>` → `<name>` → `post<name>` 顺序执行。
+
+                边界处理：`pre/post`缺失则静默跳过，核心脚本`<name>`缺失则直接报错。
+
+                >兼容性：Yarn@2+ 已废弃对自定义脚本的`pre/post`自动触发支持。
+            1. 内置命令钩子（自动触发）
+
+                触发机制：与`npm install/publish/pack`等内置核心命令绑定（前后缀`pre<event>`、`post<event>` 或特殊的钩子`prepare`、`prepublishOnly`、`dependencies`）。
+
+                执行方式：在对应的 npm 生命周期节点由系统自动触发。
+
+        >若执行时打印不出信息，则尝试执行时添加`--foreground-scripts`。[As of npm@7 these scripts run in the background. To see the output, run with: `--foreground-scripts`](https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-scripts).
 
     >`scripts`中命令能使用的环境变量：
     >
@@ -837,6 +850,8 @@ event loop ─→ │  ┌─────────────┴────
 over
 ```
 
+>注意：从 Node.js 20（libuv 1.45.0）开始，timers 只在 poll 阶段之后运行；上图仍可作为阶段模型理解，但不要把旧版“poll 前后都可能运行 timers”的细节当作当前行为。
+
 1. main
 
     启动入口文件，运行主函数。
@@ -844,14 +859,14 @@ over
 
     检查系统中是否有异步任务，决定是否进入事件循环。
 
-    1. 6个队列，每个队列都需要 全部执行完毕整个队列 才会进入下一个队列。
+    1. 事件循环按阶段处理回调；每个阶段会处理该阶段队列中的回调，但受系统上限、I/O状态和回调耗时影响，不应理解为无条件清空整个队列。
     2. poll队列
 
         1. 若poll中没有回调函数需要执行（已是空队列），但（系统中）有异步任务，则会在这里等待其他队列中出现回调：
 
             0. 若poll出现新的回调函数，则执行直到poll为空队列，然后继续等待其他队列出现回调；
             1. 若其他队列中出现回调，则从poll向下执行队列check、close callbacks，之后进行新的event loop判断（判断是否有异步任务，有就继续新的event loop，没有就结束over）；
-            3. 若Node.js线程一直holding在poll队列，等很长一段时间还是没有任务来临，则会自动断开等待（不自信表现），向下执行轮询流程，经过check、close callbacks后到达新的event loop判断；
+            3. 若Node.js线程一直 holding 在 poll 队列，等待时间会受定时器阈值和系统相关硬上限限制，随后向下执行 check、close callbacks，再进入新的 event loop 判断；
         2. 若poll中没有回调函数需要执行（已是空队列），也没有异步任务，则向下执行轮询流程，经过check、close callbacks后到达新的event loop判断，判断没有异步任务，结束over。
 3. over
 
@@ -861,7 +876,7 @@ over
 
 4. 微任务
 
-    **事件循环中，每执行一个回调之前，** 先按序清空`process.nextTick`、`Promise`。
+    **当前 JS 调用栈清空后、事件循环继续推进前，** Node.js 会优先处理`process.nextTick`队列，再处理 Promise 等微任务队列。
 
     1. `process.nextTick`优先级最高（最快执行的异步函数）
     2. `Promise`
@@ -917,7 +932,7 @@ over
 >
 >只有打通和后端技术的桥梁、实现互联互通，Node.js才能在公司业务中有更长远的发展。
 
-### Node.js[核心模块](http://nodejs.cn/api/)（需要`require`引入）
+### Node.js[核心模块](https://nodejs.org/api/)（需要`require`引入）
 >核心模块/内置模块 定义在[源代码的lib/文件](https://github.com/nodejs/node/tree/main/lib/)。同名加载时，核心模块优先级高于路径加载或自定义模块。可以使用`node:`前缀来识别核心模块（>=v16.0.0），在这种情况下它会绕过require缓存，不使用`node:`前缀就可以加载的核心模块列表暴露在`require('node:module').builtinModules`。
 
 1. `http`：HTTP请求相关API
@@ -1179,7 +1194,7 @@ over
     1. ~~`domain`~~
     2. ~~`punycode`~~
 
-### Node.js[全局变量](http://nodejs.cn/api/globals.html)
+### Node.js[全局变量](https://nodejs.org/api/globals.html)
 Node.js的全局对象`global`是所有全局变量的宿主。
 
 1. 仅在模块内有效
@@ -1289,7 +1304,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 
     代码运行完毕。包括：执行队列、任务队列、等待加入任务队列的其他线程任务，全都执行完毕，当不会有新的指令需要执行时，就自动退出Node.js的进程。e.g. 监听系统端口 或 `setTimeout`还未触发，意味着还有事件需要待执行。
 5. 不管任何情况，始终保证要有回包，就算代码运行错误，也要兜底回包（`.end()`）
-6. [CLI命令行](http://nodejs.cn/api/cli.html)（`man node`）
+6. [CLI命令行](https://nodejs.org/api/cli.html)（`man node`）
 
     ```shell
     node [options] [v8-options] [-e string | script.js | -] [--] [arguments ...]

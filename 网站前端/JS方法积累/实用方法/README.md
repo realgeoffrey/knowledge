@@ -31,7 +31,7 @@
     1. [阿拉伯数字转中文](#原生js阿拉伯数字转中文)
 1. 字符串操作
 
-    1. [转化为Unicode、反转字符串、字符串长度、所占字节数](#原生js转化为unicode反转字符串字符串长度所占字节数)
+    1. [转化为码元/码点、反转字符串、字符串长度、所占字节数](#原生js转化为码元码点反转字符串字符串长度所占字节数)
     1. [字符串匹配、替换](#原生js字符串匹配替换)
     1. [分割字符串](#原生js分割字符串)
     1. [数字增加分隔符](#原生js数字增加分隔符)
@@ -1073,32 +1073,44 @@ function intToChinese(num = 0) {
 ---
 ## 字符串操作
 
-### *原生JS*转化为Unicode、反转字符串、字符串长度、所占字节数
->注意：Unicode码点大于`\uFFFF`（65535）的字符，如：`'💩'.codePointAt(0) // 128169`
+### *原生JS*转化为码元/码点、反转字符串、字符串长度、所占字节数
+>注意：Unicode是字符集/码点编号；UTF-16 escape（`\uXXXX`）按JS字符串的码元输出；Unicode code point escape（`\u{...}`）按码点输出。码点大于`0xffff`的字符会占用两个UTF-16码元，如：`'💩'.length // 2`、`'💩'.codePointAt(0) // 128169`
 
-1. 转化为Unicode
+1. 转化为UTF-16 escape（码元）序列
 
     ```js
-    // 转化为Unicode
-    function toUnicode (words) {
-      const arr = []
-
-      for (let i = 0; i < words.length; i++) {
-        const unicode = words.charCodeAt(i).toString(16)
-        arr[i] = '\\u' + '0'.repeat(4 - unicode.length) + unicode // 单个Unicode：\u+4位16进制数；一个字可能不止一个Unicode，如：💩
-      }
-
-      return arr.join('')
+    // 转化为 UTF-16 escape 序列
+    function toUtf16Escape (words) {
+      return Array.from({ length: words.length }, (_, i) => {
+        return '\\u' + words.charCodeAt(i).toString(16).padStart(4, '0')
+      }).join('')
     }
 
 
     /* 使用测试 */
-    console.log(toUnicode('💩'), toUnicode('哈'), toUnicode('©')) // => \ud83d\udca9 \u54c8 \u00a9
+    console.log(toUtf16Escape('💩'), toUtf16Escape('哈'), toUtf16Escape('©'), toUtf16Escape('𦤎'), toUtf16Escape('👩‍👩‍👧‍👦'))
+    // => \ud83d\udca9 \u54c8 \u00a9 \ud85a\udd0e \ud83d\udc69\u200d\ud83d\udc69\u200d\ud83d\udc67\u200d\ud83d\udc66
     ```
-2. 反转字符串
+2. 转化为Unicode code point escape（码点）序列
 
     ```js
-    // 反转字符串
+    // 转化为 Unicode code point escape 序列
+    function toCodePointEscape (words) {
+      return [...words].map((word) => {
+        return '\\u{' + word.codePointAt(0).toString(16) + '}'
+      }).join('')
+    }
+
+
+    /* 使用测试 */
+    console.log(toCodePointEscape('💩'), toCodePointEscape('哈'), toCodePointEscape('©'), toCodePointEscape('𦤎'), toCodePointEscape('👩‍👩‍👧‍👦'))
+    // => \u{1f4a9} \u{54c8} \u{a9} \u{2690e} \u{1f469}\u{200d}\u{1f469}\u{200d}\u{1f467}\u{200d}\u{1f466}
+    ```
+
+3. 按code point反转字符串
+
+    ```js
+    // 按 code point 反转字符串
     function reverseWords (words) {
       return Array.from(words).reverse().join('')
 
@@ -1107,24 +1119,51 @@ function intToChinese(num = 0) {
 
 
     /* 使用测试 */
-    console.log(reverseWords('💩哈©')) // => ©哈💩
+    console.log(reverseWords('💩哈©👩‍👩‍👧‍👦𦤎')) // => 𦤎👦‍👧‍👩‍👩©哈💩
     ```
-3. 字符串长度
+
+4. 按视觉字符反转字符串
 
     ```js
-    // 字符串长度
-    function codePointLength (words) {
-      const result = words.match(/[\s\S]/gu)
-      return result ? result.length : 0
-
-      // 或：return [...words].length;
+    // 按视觉字符反转字符串
+    function reverseGraphemeWords (words) {
+      return [...new Intl.Segmenter('zh', { granularity: 'grapheme' }).segment(words)]
+        .map(({ segment }) => segment)
+        .reverse()
+        .join('')
     }
 
 
     /* 使用测试 */
-    console.log(codePointLength('💩哈©'))  // => 3
+    console.log(reverseGraphemeWords('💩哈©👩‍👩‍👧‍👦𦤎')) // => 𦤎👩‍👩‍👧‍👦©哈💩
     ```
-4. 所占字节数
+
+5. 字符串的Unicode code point（码点）长度
+
+    ```js
+    // 字符串的Unicode code point（码点）长度（接近MySQL utf8mb4下`VARCHAR(M)`/`CHAR_LENGTH()`的字符数限制）
+    function codePointLength (words) {
+      return [...words].length
+    }
+
+
+    /* 使用测试 */
+    console.log(codePointLength('💩哈©𦤎'))  // => 4
+    console.log(codePointLength('👩‍👩‍👧‍👦'))      // => 7
+    ```
+6. 字符串的视觉长度
+
+    ```js
+    function graphemeLength (words) {
+      return [...new Intl.Segmenter('zh', { granularity: 'grapheme' }).segment(words)].length
+    }
+
+
+    /* 使用测试 */
+    console.log(graphemeLength('💩哈©𦤎'))  // => 4
+    console.log(graphemeLength('👩‍👩‍👧‍👦'))      // => 1
+    ```
+7. 所占字节数
 
     ```js
     /**
@@ -1137,60 +1176,34 @@ function intToChinese(num = 0) {
      * 00E000 - 00FFFF(61440个代码)    1110xxxx(E0-EF) 10yyyyyy 10zzzzzz           三个字节
      * 010000 - 10FFFF(1048576个代码)  11110www(F0-F7) 10xxxxxx 10yyyyyy 10zzzzzz  四个字节
      *
-     * UTF-16 编码65535以内使用两个字节编码，超出65535的使用四个字节（JS内部，字符储存格式是：UCS-2——UTF-16的子级；`<input>`的`maxlength/minlength`以UTF-16码元计算）
+     * UTF-16 编码65535以内使用两个字节编码，超出65535的使用四个字节（JS字符串是UTF-16 code units序列；`<input>`的`maxlength/minlength`以UTF-16码元计算）
      * 000000 - 00FFFF  两个字节
      * 010000 - 10FFFF  四个字节
      * e.g. <input maxlength="3">：字符是65535以内的占用1，超过65535占用2。因此可以输入上限：'aaa'、'哈哈哈'、'𦤎1'、'💩1'
      *
-     * GBK(ASCII的中文扩展) 除了0~126编号是1个字节之外，其他都2个字节（超过65535会由2个字显示）
-     * GB 2312、GB 18030 与 GBK相同实现
+     * GBK风格近似长度：0~127编号是1个字节，其他UTF-16码元按2个字节计算（不等同于真实GBK/GB18030编码）
      *
-     * @param  {String} str
-     * @param  {String} [charset= 'gbk'] utf-8, utf-16
+     * @param {String} str
+     * @param {String} [charset='gbk'] utf-8、utf-16；其他值按GBK风格近似长度计算
      * @return {Number}
      */
     function sizeofByte (str, charset = 'gbk') {
-      let total = 0
-      let charCode
+      const normalizedCharset = charset.toLowerCase()
 
-      charset = charset.toLowerCase()
-
-      if (charset === 'utf-8' || charset === 'utf8') {
-        for (let i = 0, len = str.length; i < len; i++) {
-          charCode = str.codePointAt(i)
-
-          if (charCode <= 0x007f) {
-            total += 1
-          } else if (charCode <= 0x07ff) {
-            total += 2
-          } else if (charCode <= 0xffff) {
-            total += 3
-          } else {
-            total += 4
-            i++
-          }
-        }
-      } else if (charset === 'utf-16' || charset === 'utf16') {
-        for (let i = 0, len = str.length; i < len; i++) {
-          charCode = str.codePointAt(i)
-
-          if (charCode <= 0xffff) {
-            total += 2
-          } else {
-            total += 4
-            i++
-          }
-        }
-      } else {
-        total = str.replace(/[^\x00-\xff]/g, 'aa').length
+      if (normalizedCharset === 'utf-8' || normalizedCharset === 'utf8') {
+        return new TextEncoder().encode(str).length
       }
 
-      return total
+      if (normalizedCharset === 'utf-16' || normalizedCharset === 'utf16') {
+        return str.length * 2
+      }
+
+      return str.replace(/[^\x00-\x7f]/g, 'aa').length
     }
 
 
     /* 使用测试 */
-    console.log(sizeofByte('𦤎'), sizeofByte('💩'), sizeofByte('哈'), sizeofByte('©')) // => 4 4 2 1
+    console.log(sizeofByte('𦤎'), sizeofByte('💩'), sizeofByte('哈'), sizeofByte('©'), sizeofByte('👩‍👩‍👧‍👦')) // => 4 4 2 2 22
     ```
 
 ### *原生JS*字符串匹配、替换

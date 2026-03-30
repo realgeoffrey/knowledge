@@ -1,0 +1,615 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Maven pom.xml 关键字速查模板
+
+    作用范围：
+    1. pom.xml 管项目构建模型，应提交到项目代码库。
+    2. 账号、密码、代理、个人镜像优先放 settings.xml。
+    3. 依赖、插件、模块、构建规则优先放 pom.xml。
+
+    project 顶层常见关键字：
+    modelVersion、parent、groupId、artifactId、version、packaging、
+    name、description、url、inceptionYear、organization、licenses、
+    developers、contributors、mailingLists、prerequisites、modules、
+    scm、issueManagement、ciManagement、distributionManagement、
+    properties、dependencyManagement、dependencies、repositories、
+    pluginRepositories、build、reports、reporting、profiles。
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!-- modelVersion：POM 模型版本。Maven 2/3/4 项目通常固定写 4.0.0。 -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+        parent：父 POM 坐标。用于继承依赖版本、插件版本、公共属性、模块配置。
+        relativePath：父 POM 相对路径，默认值 ../pom.xml；不从本地相对路径找父 POM 时可写空标签。
+
+        <parent>
+            <groupId>com.example</groupId>
+            <artifactId>example-parent</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <relativePath>../pom.xml</relativePath>
+        </parent>
+    -->
+
+    <!-- groupId：组织或团队反向域名，是项目坐标的一部分。 -->
+    <groupId>com.example</groupId>
+
+    <!-- artifactId：当前项目产物名，是项目坐标的一部分，也是默认 jar 文件名的一部分。 -->
+    <artifactId>java-study-notes</artifactId>
+
+    <!-- version：当前项目版本。SNAPSHOT 表示开发中版本，正式发布版本应尽量不可变。 -->
+    <version>1.0-SNAPSHOT</version>
+
+    <!-- packaging：打包类型。默认值 jar；常见值 jar、war、pom、maven-plugin。 -->
+    <packaging>jar</packaging>
+
+    <!-- name：项目显示名称。默认值通常可不写，很多插件和站点报告会展示它。 -->
+    <name>java-study-notes</name>
+
+    <!-- description：项目描述。默认值为空。 -->
+    <description>Default Maven pom.xml template for Java study notes.</description>
+
+    <!-- url：项目主页或文档地址。默认值为空。 -->
+    <!-- <url>https://example.com/java-study-notes</url> -->
+
+    <!-- inceptionYear：项目开始年份。默认值为空。 -->
+    <!-- <inceptionYear>2026</inceptionYear> -->
+
+    <!--
+        organization：组织信息。
+        name：组织名称。
+        url：组织地址。
+    -->
+    <!--
+    <organization>
+        <name>Example Organization</name>
+        <url>https://example.com</url>
+    </organization>
+    -->
+
+    <!--
+        licenses：许可证列表。
+        name：许可证名称。
+        url：许可证地址。
+        distribution：分发方式，常见 repo 或 manual。
+        comments：补充说明。
+    -->
+    <!--
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>Business projects often use internal license rules.</comments>
+        </license>
+    </licenses>
+    -->
+
+    <!--
+        developers：开发者列表，常用于开源项目元数据。
+        id/name/email/url/organization/organizationUrl：开发者身份信息。
+        roles：职责列表。
+        timezone：时区。
+        properties：扩展属性。
+    -->
+    <!--
+    <developers>
+        <developer>
+            <id>dev001</id>
+            <name>Developer Name</name>
+            <email>developer@example.com</email>
+            <url>https://example.com/developer</url>
+            <organization>Example Organization</organization>
+            <organizationUrl>https://example.com</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+8</timezone>
+            <properties>
+                <team>backend</team>
+            </properties>
+        </developer>
+    </developers>
+    -->
+
+    <!-- contributors：贡献者列表，结构和 developers 类似，但通常没有 id。 -->
+    <!--
+    <contributors>
+        <contributor>
+            <name>Contributor Name</name>
+            <email>contributor@example.com</email>
+            <roles>
+                <role>tester</role>
+            </roles>
+        </contributor>
+    </contributors>
+    -->
+
+    <!--
+        mailingLists：邮件列表，开源项目常用，企业内部项目通常不写。
+        name：列表名称。
+        subscribe/unsubscribe/post：订阅、退订、发信地址。
+        archive：主归档地址。
+        otherArchives：其他归档地址列表。
+    -->
+    <!--
+    <mailingLists>
+        <mailingList>
+            <name>Users</name>
+            <subscribe>users-subscribe@example.com</subscribe>
+            <unsubscribe>users-unsubscribe@example.com</unsubscribe>
+            <post>users@example.com</post>
+            <archive>https://example.com/archive</archive>
+            <otherArchives>
+                <otherArchive>https://example.com/archive-backup</otherArchive>
+            </otherArchives>
+        </mailingList>
+    </mailingLists>
+    -->
+
+    <!-- prerequisites：历史字段，主要用于 Maven 插件项目声明最低 Maven 版本。普通项目通常不写。 -->
+    <!--
+    <prerequisites>
+        <maven>3.9.0</maven>
+    </prerequisites>
+    -->
+
+    <!--
+        modules：多模块子项目列表。
+        默认值：空列表
+        规则：父工程通常 packaging=pom；module 写相对目录名。
+    -->
+    <!--
+    <modules>
+        <module>common</module>
+        <module>api</module>
+        <module>service</module>
+    </modules>
+    -->
+
+    <!--
+        scm：源码仓库信息。
+        connection：只读连接。
+        developerConnection：开发者写权限连接。
+        tag：发布标签，默认值 HEAD。
+        url：网页访问地址。
+    -->
+    <!--
+    <scm>
+        <connection>scm:git:https://example.com/repo.git</connection>
+        <developerConnection>scm:git:ssh://git@example.com/repo.git</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://example.com/repo</url>
+    </scm>
+    -->
+
+    <!-- issueManagement：缺陷管理系统信息。system 写 Jira、GitHub Issues 等；url 写访问地址。 -->
+    <!--
+    <issueManagement>
+        <system>Jira</system>
+        <url>https://jira.example.com/projects/DEMO</url>
+    </issueManagement>
+    -->
+
+    <!--
+        ciManagement：持续集成系统信息。
+        system：CI 系统名称，例如 Jenkins、GitLab CI。
+        url：CI 访问地址。
+        notifiers/notifier：构建通知配置。
+        type：通知类型，默认值 mail。
+        sendOnError/sendOnFailure/sendOnSuccess/sendOnWarning：对应状态是否发送通知，默认值 true。
+        address：通知目标地址。
+        configuration：通知器扩展配置。
+    -->
+    <!--
+    <ciManagement>
+        <system>Jenkins</system>
+        <url>https://jenkins.example.com/job/java-study-notes</url>
+        <notifiers>
+            <notifier>
+                <type>mail</type>
+                <sendOnError>true</sendOnError>
+                <sendOnFailure>true</sendOnFailure>
+                <sendOnSuccess>true</sendOnSuccess>
+                <sendOnWarning>true</sendOnWarning>
+                <address>dev@example.com</address>
+                <configuration>
+                    <subjectPrefix>[java-study-notes]</subjectPrefix>
+                </configuration>
+            </notifier>
+        </notifiers>
+    </ciManagement>
+    -->
+
+    <!--
+        distributionManagement：发布目标配置。
+        repository：正式版本发布仓库。
+        snapshotRepository：快照版本发布仓库。
+        uniqueVersion：是否为快照发布生成唯一时间戳版本，通常保持 true。
+        releases/snapshots：正式版本和快照版本策略，结构同 repositories。
+        site：mvn site 发布地址。
+        downloadUrl：项目下载页。
+        relocation：项目迁移坐标。
+        relocation/groupId、artifactId、version：迁移后的新坐标。
+        relocation/message：迁移提示。
+        status：发布状态，常见 none、converted、partner、deployed、verified。
+        认证信息不写在这里，写在 settings.xml 的 servers/server 中，id 要对应。
+    -->
+    <!--
+    <distributionManagement>
+        <repository>
+            <id>company-releases</id>
+            <name>Company Releases</name>
+            <url>https://maven.company.com/repository/releases/</url>
+            <layout>default</layout>
+            <uniqueVersion>true</uniqueVersion>
+        </repository>
+        <snapshotRepository>
+            <id>company-snapshots</id>
+            <name>Company Snapshots</name>
+            <url>https://maven.company.com/repository/snapshots/</url>
+            <layout>default</layout>
+            <uniqueVersion>true</uniqueVersion>
+        </snapshotRepository>
+        <site>
+            <id>company-site</id>
+            <name>Company Site</name>
+            <url>scp://docs.company.com/java-study-notes</url>
+        </site>
+        <downloadUrl>https://example.com/downloads</downloadUrl>
+        <status>none</status>
+    </distributionManagement>
+    -->
+
+    <!--
+        properties：项目属性。
+        默认值：空
+        用途：统一版本号、JDK 版本、编码、插件参数；可通过 ${属性名} 引用。
+    -->
+    <properties>
+        <!-- project.build.sourceEncoding：源码和资源编码。Maven 核心无统一默认值，建议显式写 UTF-8。 -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- maven.compiler.source/target：编译源码级别和目标字节码级别。Java 8 写 1.8；Java 17 写 17；Java 21 写 21。 -->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <!-- maven.compiler.release：JDK 9+ 可用，比 source/target 更严格地限制 API。Java 8 环境不要开启。 -->
+        <!-- <maven.compiler.release>17</maven.compiler.release> -->
+    </properties>
+
+    <!--
+        dependencyManagement：统一管理依赖版本，不会自动引入依赖。
+        默认值：空
+        常见用途：父 POM 统一版本；导入 BOM；子模块 dependencies 只写 groupId/artifactId。
+    -->
+    <!--
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.7.18</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    -->
+
+    <!--
+        dependencies：当前项目直接依赖。
+        默认值：空
+        dependency 关键字：
+        groupId/artifactId/version：依赖坐标；version 可由 dependencyManagement 提供。
+        type：依赖类型，默认值 jar。
+        classifier：分类器，默认值为空。
+        scope：依赖范围，默认值 compile；常见 compile、provided、runtime、test、system、import。
+        systemPath：scope=system 时使用，不推荐。
+        optional：是否阻断传递依赖，默认值 false。
+        exclusions/exclusion：排除传递依赖。
+    -->
+    <dependencies>
+        <!--
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version>
+            <type>jar</type>
+            <scope>test</scope>
+            <optional>false</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        -->
+    </dependencies>
+
+    <!--
+        repositories：项目依赖远程仓库。
+        默认值：Maven Super POM 提供 central。
+        说明：团队公共仓库可写进 POM；个人镜像优先写 settings.xml 的 mirrors。
+    -->
+    <!--
+    <repositories>
+        <repository>
+            <id>company-releases</id>
+            <name>Company Releases</name>
+            <url>https://maven.company.com/repository/releases/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+    -->
+
+    <!-- pluginRepositories：Maven 插件远程仓库，结构和 repositories 基本一致。 -->
+    <!--
+    <pluginRepositories>
+        <pluginRepository>
+            <id>company-plugins</id>
+            <name>Company Plugins</name>
+            <url>https://maven.company.com/repository/plugins/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+    -->
+
+    <!--
+        build：构建配置。
+        默认目录约定：
+        sourceDirectory=src/main/java
+        scriptSourceDirectory=src/main/scripts
+        testSourceDirectory=src/test/java
+        outputDirectory=target/classes
+        testOutputDirectory=target/test-classes
+        directory=target
+        finalName=${artifactId}-${version}
+    -->
+    <build>
+        <!-- defaultGoal：没有指定生命周期阶段或插件 goal 时执行的默认目标。默认值为空。 -->
+        <!-- <defaultGoal>clean package</defaultGoal> -->
+
+        <!-- directory：构建输出根目录。默认值 target。 -->
+        <!-- <directory>target</directory> -->
+
+        <!-- finalName：最终产物基础文件名。默认值 ${artifactId}-${version}。 -->
+        <!-- <finalName>${project.artifactId}-${project.version}</finalName> -->
+
+        <!-- sourceDirectory：主源码目录。默认值 src/main/java。 -->
+        <!-- <sourceDirectory>src/main/java</sourceDirectory> -->
+
+        <!-- scriptSourceDirectory：脚本源码目录。默认值 src/main/scripts。 -->
+        <!-- <scriptSourceDirectory>src/main/scripts</scriptSourceDirectory> -->
+
+        <!-- testSourceDirectory：测试源码目录。默认值 src/test/java。 -->
+        <!-- <testSourceDirectory>src/test/java</testSourceDirectory> -->
+
+        <!-- outputDirectory：主代码编译输出目录。默认值 target/classes。 -->
+        <!-- <outputDirectory>target/classes</outputDirectory> -->
+
+        <!-- testOutputDirectory：测试代码编译输出目录。默认值 target/test-classes。 -->
+        <!-- <testOutputDirectory>target/test-classes</testOutputDirectory> -->
+
+        <!--
+            resources：主资源目录列表。
+            默认值：src/main/resources
+            directory：资源目录。
+            targetPath：输出到 classpath 下的相对路径。
+            filtering：是否启用 ${} 资源过滤，默认值 false。
+            includes/excludes：包含或排除规则。
+        -->
+        <!--
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <targetPath>.</targetPath>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*.tmp</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        -->
+
+        <!-- testResources：测试资源目录列表。默认值 src/test/resources；结构和 resources 相同。 -->
+        <!--
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>false</filtering>
+            </testResource>
+        </testResources>
+        -->
+
+        <!--
+            filters：资源过滤属性文件列表。
+            默认值：空列表
+            作用：配合 resource/filtering=true，把属性文件中的值替换进资源文件。
+        -->
+        <!--
+        <filters>
+            <filter>src/main/filters/dev.properties</filter>
+        </filters>
+        -->
+
+        <!--
+            extensions：构建扩展。
+            默认值：空列表
+            说明：影响 Maven 构建行为，谨慎使用。
+        -->
+        <!--
+        <extensions>
+            <extension>
+                <groupId>com.example</groupId>
+                <artifactId>example-build-extension</artifactId>
+                <version>1.0.0</version>
+            </extension>
+        </extensions>
+        -->
+
+        <!--
+            pluginManagement：统一管理插件版本和默认配置，不会自动执行插件。
+            默认值：空
+            常见用途：父 POM 锁定插件版本，子模块 plugins 只声明 artifactId。
+        -->
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.13.0</version>
+                    <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <!--
+            plugins：当前项目实际使用的构建插件。
+            plugin 关键字：
+            groupId：插件 groupId，Maven 官方插件常用 org.apache.maven.plugins。
+            artifactId：插件 artifactId。
+            version：插件版本，建议显式固定或由 pluginManagement 管理。
+            extensions：是否作为构建扩展启用，默认值 false。
+            inherited：是否被子模块继承，默认值 true。
+            configuration：插件全局配置。
+            dependencies：插件自身依赖。
+            executions：把插件 goal 绑定到生命周期阶段。
+            executions/execution/id：执行配置标识，默认值 default。
+            executions/execution/phase：绑定的生命周期阶段，如 compile、test、package。
+            executions/execution/goals/goal：要执行的插件目标，如 compile、test、repackage。
+            executions/execution/inherited：该执行配置是否被子模块继承，默认值 true。
+            goals：插件目标列表，普通项目很少直接写在 plugin 下。
+        -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+
+            <!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <skipTests>false</skipTests>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skipTests>false</skipTests>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
+        </plugins>
+    </build>
+
+    <!-- reports：Maven 1 时代遗留字段，普通 Maven 3 项目不使用。 -->
+    <!--
+    <reports>
+        <report>maven-javadoc-plugin</report>
+    </reports>
+    -->
+
+    <!--
+        reporting：站点报告配置，供 mvn site 使用。
+        excludeDefaults：是否排除默认报告，默认值 false。
+        outputDirectory：报告输出目录，默认值 target/site。
+        plugins：报告插件列表。
+    -->
+    <!--
+    <reporting>
+        <excludeDefaults>false</excludeDefaults>
+        <outputDirectory>target/site</outputDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+            </plugin>
+        </plugins>
+    </reporting>
+    -->
+
+    <!--
+        profiles：项目级 profile 列表。
+        默认值：空列表
+        作用：按环境切换依赖、插件、属性、仓库等。命令行用 -PprofileId 激活。
+        activation/properties/dependencies/repositories/pluginRepositories/build 等可写在 profile 内。
+    -->
+    <!--
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <jdk>1.8</jdk>
+                <property>
+                    <name>env</name>
+                    <value>dev</value>
+                </property>
+                <file>
+                    <exists>src/main/resources/application-dev.properties</exists>
+                </file>
+            </activation>
+            <properties>
+                <active.profile>dev</active.profile>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                    <version>2.2.224</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <configuration>
+                            <encoding>${project.build.sourceEncoding}</encoding>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    -->
+</project>

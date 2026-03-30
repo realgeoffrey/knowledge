@@ -1,4 +1,4 @@
-# [Typescript](https://github.com/microsoft/TypeScript)学习笔记
+# [TypeScript](https://github.com/microsoft/TypeScript)学习笔记
 
 ## 目录
 1. [类型](#类型)
@@ -45,10 +45,10 @@
 ---
 >参考：[TypeScript 入门教程](https://github.com/xcatliu/typescript-tutorial)、[TypeScript 使用手册（中文版）翻译](https://github.com/zhongsp/TypeScript)、[TypeScript Deep Dive 中文版](https://github.com/jkchao/typescript-book-chinese)。
 
-- TypeScript是JS的一个超集，主要提供了类型系统和对ES6的支持。
+- TypeScript是JS的一个超集，主要提供类型系统，并持续跟进现代 ECMAScript/JS 语法。
 
     1. TS的类型系统被设计为可选的，因此，JS就是TS。
-    2. TS不会阻止JS的运行，即使存在类型错误也不例外，这能让JS逐步迁移至TS。
+    2. TS默认可以在存在类型错误时继续输出JS，便于渐进迁移；若配置 `noEmitOnError` 或由构建工具/CI拦截，则类型错误会阻止产物输出。
 
 ## 类型
 
@@ -159,7 +159,7 @@
     1. 任何值都可以赋给`unknown`。
     2. 当没有类型断言或基于控制流的类型细化时`unknown`不可以赋值给其它类型，除了它自己和`any`之外。
     3. 在`unknown`没有被类型断言或js代码细化到一个确切类型之前，不允许在其上进行任何操作。
-    4. `try-catch`抓到的是`unknown`，需要类型保护（e.g. `if (err instanceof Error) {){}`）之后才能认为`err`是`Error`类型。
+    4. `try-catch`的`catch`变量在开启 `useUnknownInCatchVariables`（`strict`会启用）时是`unknown`，需要类型保护（e.g. `if (err instanceof Error) {}`）之后才能认为`err`是`Error`类型。
     5. 用`?.`无效，只能用类型保护才能使用其属性。
 6. `Object`、`{}`、`object`区别
 
@@ -3029,7 +3029,7 @@ type Concrete<Type> = {
 
 1.  函数类型
 
-    >在TS中，参数类型是双向协变的，而这并不安全。可以设置`strictFunctionTypes`来修复这个问题，变成参数类型是协变的。
+    >未开启`strictFunctionTypes`时，函数参数可能按双向协变检查，这并不安全；开启后普通函数类型的参数按逆变检查（方法/构造器仍有特殊兼容规则）。
 
     `返回值类型`是协变的、`参数类型`是逆变的：若`B ≼ A`，则`(x: T) => B` ≼ `(x: T) => A`、`(x: A) => T` ≼ `(x: B) => T`。
 
@@ -3129,7 +3129,24 @@ type Concrete<Type> = {
             设置生成的JS语言的版本，并且会包含兼容的库（环境）的定义。
 
             >e.g. 若设置为`"es2017"`，则`Promise`包含`then`、`catch`；若设置为`"es2018"`，则`Promise`包含`then`、`catch`、`finally`。
+        1. `extends`：继承指定配置文件并与当前文件合并；同名项以当前文件为准，适合提取公共编译选项。
+        1. `references`：工程引用（project references）。各子项目保留独立配置原逻辑，由各自的 `include`/`rootDir` 等划定源码归属，`tsc --build` 时按依赖顺序分别增量编译。
         </details>
+
+    ```text
+    my-project/
+    ├── src/                  # 浏览器端代码
+    │   ├── main.ts
+    │   └── App.vue
+    ├── server/               # Node.js 服务端代码
+    │   └── index.ts
+    ├── vite.config.ts        # 构建脚本（运行于 Node.js，通常归入 server 或单独配置）
+    │
+    ├── tsconfig.base.json    # 公共基础配置，供 tsconfig.client或server.json 通过 extends 继承
+    ├── tsconfig.client.json  # 前端配置（include 指向 src/）
+    ├── tsconfig.server.json  # 服务端配置（include 指向 server/）
+    └── tsconfig.json         # 入口配置：通过 references 引用 tsconfig.client和server.json，供编辑器索引及 tsc --build 总调度（本身不参与编译）
+    ```
 2. 文件后缀
 
     `.ts`、`.tsx`（React、`JSX`）、`d.ts`
