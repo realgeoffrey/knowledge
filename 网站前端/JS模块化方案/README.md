@@ -712,7 +712,7 @@
         Node.js中使用的模块机制，适用于Node.js的所有版本。
     2. ES6 Module
 
-        ECMAScript 2015新增，在较新的浏览器或最新版本的Node.js（node 12 之后）中支持。
+        ECMAScript 2015新增，在现代浏览器和受支持的 Node.js LTS 版本中可用（node 12 之后）；旧 Node.js 版本需要结合`package.json`的`type`、`.mjs`或构建工具配置确认支持情况。
 
 ### JS模块规范
 

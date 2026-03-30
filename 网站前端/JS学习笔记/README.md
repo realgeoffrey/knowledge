@@ -1215,6 +1215,16 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
             Number(123n)        // 123
             ```
 
+            >数字分隔符（numeric separator）：只在**数字字面量的数字之间**加`_`提升可读性，`_`不参与数值。
+            >
+            >| 场景 | 合法 | 非法 / 注意 |
+            >| :--- | :--- | :--- |
+            >| 十进制整数、小数、指数 | `1_000_000`、`1_000.00_1`、`1e1_0` | 不能连续或开头结尾：`1__000`、`100_`、`_100` |
+            >| 其他进制 | `0b1010_0001`、`0o12_34`、`0xA0_B0` | 不能紧贴进制前缀：`0b_1010`、`0o_123`、`0x_FF` |
+            >| 小数点、指数符号 | `1_000.00_1`、`1e1_0` | 不能紧贴`.`、`e/E`或指数正负号：`1_.0`、`1._0`、`1_e3`、`1e_3`、`1e+_3` |
+            >| `BigInt` | `1_000n` | 不能紧贴`n`：`100_n` |
+            >| 字符串 / JSON | 不属于字符串数字格式 | `Number('1_000') // NaN`、`parseInt('1_000', 10) // 1`、`JSON.parse('1_000')`报错 |
+
             >`parseInt`与`Number`均忽略字符串前后的不可见字符。`parseInt`从前向后逐个解析字符，只要开头有数字则返回数值；`Number`判断只要有一个字符无法转成数值，则返回`NaN`。
         2. 引用数据类型（reference/object）：
 
@@ -2350,7 +2360,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         2. `sessionStorage`
 
             1. 同源且同会话（tab窗口）共享。
-            2. 会话级别存储。跳转页面为同源后仍旧有效（不同tab不共通），关闭浏览器后被清除（重新加载或关闭后恢复，任然存在）。
+            2. 会话级别存储。跳转页面为同源后仍旧有效（不同tab不共通），关闭浏览器后被清除（重新加载或关闭后恢复，仍然存在）。
             3. 应用场景：需要拆分成多个子页面分别存储的数据。
 2. cookie
 
@@ -2363,7 +2373,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     4. 单域名内，cookie保存的数据不超过4k，数量（最少）20个。
 
         >发送http请求时携带的cookie太多可能会导致nginx等阻绝访问，如返回：`400 Bad Request - request header or cookie too large`。可以设置更大的服务端接受配置 或 减少请求携带的cookie。
-    5. 源生的cookie接口不友好，需要自己[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js操作cookie)。
+    5. 原生的cookie接口不友好，需要自己[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js操作cookie)。
 
         同步。
 
@@ -3921,6 +3931,8 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 ---
 ## DOM操作
 >以纵轴为例。
+
+>[pretext](https://github.com/chenglou/pretext)：不触碰DOM、不引发页面重排（Reflow）的情况下，以极高的性能精准计算出一段长文本折行后的高度和尺寸（非常友好的 AI 迭代方法）。
 
 ### 获取位置信息
 1. DOM节点

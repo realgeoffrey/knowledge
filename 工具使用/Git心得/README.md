@@ -12,6 +12,8 @@
 1. [.gitkeep文件](#gitkeep文件)
 1. [GitLab CI](#gitlab-ci)
 1. [减少Git项目下载大小](#减少git项目下载大小)
+1. [找回删除的分支信息](#找回删除的分支信息)
+1. [修改`commit`与强推策略（`--amend` / `rebase -i` / `reset` / `--force-with-lease`）](#修改commit与强推策略--amend--rebase--i--reset----force-with-lease)
 1. [`husky`+`lint-staged`+`commitlint`+`commitizen`](#huskylint-stagedcommitlintcommitizen)
 
 ---
@@ -102,7 +104,7 @@
 
         # 若需要，则可以新增commit
 
-        git push origin HEAD --force    # 强制提交到远程版本库
+        git push origin HEAD -f         # 强制提交到远程版本库（最好用 --force-with-lease 替代 --force）
 
         # 若删除的是其他用户已经拉取的commit，则会变成其他用户本地的commit
         # 若删除的是其他用户还未拉取的commit，则其他用户不会有感知
@@ -124,7 +126,7 @@
              git reset --hard HEAD~1    # 取消之前的1次提交（若取消更多次提交，则只要覆盖过merge的「SHA」就可以撤销merge产生的所有commit，多出来的撤销会继续向之前取消提交）
              # 或 git reset --hard sha4  # 取消至merge之前的那个SHA
 
-             git push -f                # 强制提交到远程版本库
+             git push -f                # 强制提交到远程版本库（最好用 --force-with-lease 替代 --force）
             ```
     2. `rebase`
 
@@ -140,7 +142,7 @@
         # git rebase --continue        # 出现冲突时候能够合并继续处理
         # git rebase --skip            # （当无法使用--continue）出现冲突时丢弃commit，会造成内容丢失（慎重使用）
 
-        git push origin HEAD --force   # 强制提交到远程版本库
+        git push origin HEAD -f   # 强制提交到远程版本库（最好用 --force-with-lease 替代 --force）
 
         # 其他用户需要
         git pull --rebase
@@ -149,12 +151,12 @@
         >当处理太多commits时候容易造成冲突。
 
     ><details>
-    ><summary>不同项目对<code>git push --force</code>限制不同</summary>
+    ><summary>不同项目对<code>git push --force或--force-with-lease</code>限制不同</summary>
     >
-    >1. [GitLab](https://about.gitlab.com/)默认**master**分支是**protected**状态，无法`git push --force`。
+    >1. [GitLab](https://about.gitlab.com/)默认**master**分支是**protected**状态，无法强制推送。
     >
     >    可以在Gitlab设置里面通过：*project* > *Settings* > *Repository* > *Protected branches* > *Unprotect*，打开权限（不推荐长期开启）。
-    >2. Github默认允许`git push --force`。
+    >2. Github默认允许强制推送。
     ></details>
 4. 回退
 
@@ -271,7 +273,7 @@
     ```
 9. branch
 
-    >`HEAD`是指向目前所在的分支的游标（或不指向分支时，是detached狀態）。
+    >`HEAD`是指向目前所在的分支的游标（或不指向分支时，是detached状态）。
 
     1. 查看分支
 
@@ -424,7 +426,7 @@
 
     git branch -m 「原本分支名」       # 重新命名当前新分支为原本分支名
 
-    git push -f origin 「原本分支名」  # 强制推送
+    git push -f origin 「原本分支名」  # 强制推送（最好用 --force-with-lease 替代 --force）
     ```
 14. 使用[git-lfs](https://github.com/git-lfs/git-lfs)管理大文件。
 15. 遇到`unable to update local ref`
@@ -795,7 +797,7 @@ feat(details): 添加了分享功能
 >
 >[remote "别名"]
 >	url = git@realgeoffrey.github.com:realgeoffrey/knowledge4.git
->	fetch = +refs/heads/*:refs/remotes/origin/*
+>	fetch = +refs/heads/*:refs/remotes/别名/*
 >```
 
 0. 查看跟踪的远程仓库
@@ -874,10 +876,12 @@ feat(details): 添加了分享功能
     |---|---|---|---|
     | 默认 | 不储存 | - | 每次执行git pull/push时，终端都会弹出提示要求你手动输入用户名和密码 |
     | cache | 内存 | 默认 15 分钟 | 临时使用。凭据不落盘，适合公用电脑或 VPS。可通过`--timeout`修改时长 |
-    | store | 磁盘明文文件 | 永久 | 极度不安全。凭据以明文形式存储在磁盘中，任何能访问文件的人都能看到密码 |
+    | store | 磁盘明文文件 | 永久 | 极度不安全。凭据以明文形式存储在磁盘中。一般在`~/.git-credentials` |
     | osxkeychain | 系统钥匙串 | 永久 | Mac用户首选。使用 macOS 加密钥匙串存储，安全且体验丝滑 |
     | wincred | 凭据管理器 | 永久 | Windows用户首选。集成在系统自带的凭据管理器中，安全性高 |
     | manager (GCM) | 加密存储 | 永久 | 全平台最强。支持多因子验证 (2FA) 和 OAuth，由微软维护 |
+
+    `git config --global credential.helper 「值」 # 设置`
 5. 开启对文件名大小写敏感
 
     >每个git项目都会默认显式设置为不敏感，因此需要去到每个项目单独开启敏感（项目配置优先于全局配置）。
@@ -893,15 +897,24 @@ feat(details): 添加了分享功能
     git config --global color.ui auto           # Git自动判断是否在终端输出中使用颜色（默认值就是auto）
     git config --global core.autocrlf input     # 在提交时自动把 Windows 的 CRLF 换行符转换成 Unix 风格的 LF，但在 checkout 文件时不做任何修改
     git config --global rebase.autoStash true   # 当有 未commit的变更（未暂存或已暂存）+落后的commit，执行`rebase或pull --rebase`时，自动执行git stash → `rebase或pull --rebase` → git stash pop（若冲突，则需要手动解决），而不是直接报错不允许执行
-
-
-    # 有门槛，新手慎重：
-    git config --global pull.rebase true        # （针对commit）执行pull时，将pull行为改为 rebase（变基）而不是 merge（默认）。注意：有已解决冲突的领先的commit，再使用rebase可能会导致更多麻烦的操作。注意vscode的同步sync会先执行pull
     ```
 
-    >感觉会导致更麻烦的配置：`git config --global pull.ff only  # 只允许fast-forward合并，否则报错退出。会使 pull.rebase true 配置失效，因为若不是ff合并模式则直接报错退出，不会改用rebase合并`
+    - 有门槛，新手慎重
 
-- 展示所有`configs`、`alias`
+        ```shell
+        git config --global pull.rebase true
+        # （针对commit）执行pull时，将pull行为改为 rebase（变基）而不是 merge（默认）。
+        # 注意：有已解决冲突的领先的commit，再使用rebase可能会导致更多麻烦的操作。注意vscode的同步sync会先执行pull
+        # pull.rebase=true ： git pull  ≈  git fetch + git rebase
+
+
+        # 感觉会导致更麻烦的配置
+        git config --global pull.ff only
+        # 只允许fast-forward合并，否则报错退出。会使 pull.rebase true 配置失效，因为若不是ff合并模式则直接报错退出，不会改用rebase合并
+        # pull.ff=only ：本地没有提交（纯落后）-> pull成功；本地有提交（需要 merge/rebase） -> pull直接失败
+        ```
+
+- 展示所有`configs`、`alias`（不是最终值，只是某一层的所有值）
 
     ```shell
     git config --local --list   # 当前目录
@@ -911,6 +924,19 @@ feat(details): 添加了分享功能
 
     ```shell
     git config --unset 「配置名」
+    ```
+- 展示某个key的最终值
+
+    >配置优先级：`.git/config` > `~/.gitconfig` > `/etc/gitconfig`
+
+    ```shell
+    git config 「配置名」   # 最终值
+
+    git config --show-origin 「配置名」   # 最终值 + 来源
+
+    git config --show-origin --get-all 「配置名」   # 所有值 + 来源。根据优先级自行判断
+
+    git config --list --show-origin # 列出所有配置、值 + 所有来源 。根据优先级自行判断
     ```
 
 ### .gitkeep文件
@@ -967,6 +993,144 @@ feat(details): 添加了分享功能
 2. 减少克隆深度
 
     `git clone 「仓库地址」 --depth 「数字」`
+
+### 找回删除的分支信息
+>适用场景：某个分支提交过代码，后来本地和远程分支都被删了，现在想找回提交信息。
+
+- 针对 本地、远程 git仓库：
+
+    - 删除分支通常只是删除引用，不会立刻删除 commit 对象。
+    - 只要相关 commit 还没被 `git gc` 清理，就还有机会找回。
+    - reflog 是本地的、有时效的操作流水账（详尽记录 checkout、reset、rebase 等操作）；分支删了看 HEAD reflog
+    - 默认情况下，reflog 和不可达对象（悬空commit）都会随时间过期；拖得越久，找回概率越低。
+
+1. 先找 `commit hash`
+
+    1. 先从远程平台找线索
+
+        - 查 PR / MR
+        - 查 CI/CD 记录、代码评审通知、邮件、IM 机器人消息、issue 中引用过的 commit hash
+        - GitHub / GitLab 的 活动流 有时能看到“创建分支 / 删除分支 / 推送 commit”等记录，但这取决于平台保留策略，不能当作稳定方案。
+    1. 再从本地找
+
+        >AI搞定。
+
+        ```shell
+        # 1. 先看这些提交是否其实还被其他分支引用着
+        git log --all --graph --decorate --oneline --date=iso
+
+        # 2. 查 HEAD reflog 和其他仍存在引用的 reflog
+        git reflog --date=iso
+        git reflog --date=iso --all | rg '分支名|提交日期|删除日期|提交信息'    # 都可选
+        # 常见线索：
+        # - checkout: moving from master to feature-xx
+        # - commit: xxxxx
+        # - branch: Created from ...
+        # - branch: deleted refs/heads/feature-xx
+
+        # 3. 拿到疑似 commit 后，先确认是不是目标提交（若能输出则说明还未被GC）
+        git show --stat --summary <commit-hash>
+
+        # 4. 看它是否已被你本地当前可见的分支包含
+        git branch --contains <commit-hash> -a
+
+        # 5. 如果 reflog 没找到，再查未被引用、但尚未被回收的 commit（悬空commit）
+        git fsck --full --unreachable --no-reflogs
+        git fsck --full --unreachable --no-reflogs | rg 'unreachable commit|不可达 commit'
+        ```
+
+        ><details>
+        ><summary>可达对象、不可达对象、悬空 Commit</summary>
+        >
+        >1. 可达对象 (Reachable Object)：“安全名单”
+        >
+        >    只要能通过现有的分支 (Branch)、标签 (Tag)、HEAD 指针或者引用日志 (reflog) 顺藤摸瓜找到的 Git 对象（包括提交、文件树、文件内容）。
+        >
+        >    它们是当前仓库正在使用的有效数据，绝对安全，永远不会被 Git 的垃圾回收机制（GC）清理。
+        >2. 不可达对象 (Unreachable Object)：“清理候选人”
+        >
+        >    与可达对象完全相反。由于引用被删除或重置，没有任何“线索”能关联到它们。它们像断了线的风筝，游离在 Git 对象库中。
+        >
+        >    它们处于危险状态。是否还能找回，取决于 reflog 过期策略、`gc.pruneExpire` 配置、对象是否仍被其他引用持有等因素；这就是为什么“拖得越久，找回概率越低”。
+        >3. 悬空 Commit (Dangling Commit)：“不可达对象的具体形态”
+        >
+        >    它是不可达对象中最常见的一类，特指那些没有任何分支或引用指向它的提交记录（Commit）。
+        >
+        >    产生原因： 通常因为你执行了 git reset --hard 退回了历史，或者删除了一个还没合并的分支。
+        ></details>
+1. 找到 `commit hash`后
+
+    1. 本地恢复
+
+        1. 恢复分支：`git switch -c 「新分支名」 <commit-hash>`
+        1. 恢复提交：`git cherry-pick <commit-hash>`
+    1. 尝试远程直接访问：`「网站前置路径」/commit/「commit-hash」`
+
+        这也不是绝对可行：只有远程服务器上该commit对象仍存在、且你有权限时，页面才能打开。
+
+### 修改`commit`与强推策略（`--amend` / `rebase -i` / `reset` / `--force-with-lease`）
+
+>以下操作都会重写提交历史，被重写的`commit hash`会改变；若相关提交已`push`，按“推荐策略”处理。操作前可先建临时备份：`git branch backup/「分支名」`。
+
+1. 「修正」最近一次`commit`：用`git commit --amend`。适合补交遗漏文件、追加少量修改、修改`commit message`，或在PR前把小修小补并入同一个`commit`。
+
+    ```shell
+    git add 「遗漏或修改的文件」
+
+    git commit --amend              # 合并暂存区内容，并打开编辑器修改commit message
+        # --no-edit                 # 合并暂存区内容，沿用原commit message
+        # -m "「新的commit message」"  # 合并暂存区内容，并直接写入新的commit message
+    ```
+1. 修改多次`commit`
+
+    1. 精细修改多次`commit`：优先用交互式`rebase -i`整理历史。它可以逐个修改说明、合并、删除，或停在某次提交上修改内容；需要保留多个提交的独立边界时优先使用。
+
+        ```shell
+        git rebase -i HEAD~「数量」      # 修改最近N个commit
+
+        # reword：只修改commit message
+        # edit：停在指定commit，修改文件 -> git add -> git commit --amend -> git rebase --continue
+        # squash / fixup：把当前commit合并进上一个commit
+        # drop：删除该commit
+
+        git rebase --abort             # 放弃本次rebase
+        git rebase --continue          # 解决冲突或完成edit后继续
+        ```
+    1. 快速撤销多次`commit`并重新提交：可用`reset`（+`--soft`或默认`--mixed`）。它会撤销最近N个提交并保留修改，适合把多个提交重新压成一个新提交；这种方式不保留原来的提交边界。
+
+        ```shell
+        git reset HEAD~「数量」 # 默认--mixed：撤销最近 N 个 commit，修改保留在工作区，并取消暂存
+            # --soft         # 撤销最近 N 个 commit；不改工作区，被撤销 commit 的变化保留在暂存区
+        ```
+
+- 推荐策略：
+
+    1. 尚未`push`：可用`--amend`（仅最近一次）、`rebase -i`（精细整理多次）或`reset`（撤销多次后重新提交）整理历史；完成后普通`git push`即可，不需要`-f`（无条件覆盖远程分支）或`--force-with-lease`（仅在远程分支未被他人推进时允许覆盖）。
+    2. 已`push`但确认无人基于这些提交继续开发：可整理历史后（上面的方式）用`git push --force-with-lease`更新远程。
+    3. 已`push`且属于公共分支，或不确定是否有人依赖：不要重写历史后强推；优先新增`commit`解决问题，必要时用`git revert`回退错误提交。
+
+    ><details>
+    ><summary>强推前检查差异（辅助判断是否应该强推）</summary>
+    >
+    >```shell
+    >git fetch origin
+    >git log --oneline --left-right --graph HEAD...@{u}
+    ># 输出：
+    >  # 只有 < ：本地领先，上游没有新提交
+    >  # 只有 > ：本地落后
+    >  # 同时有 < 和 > ：本地和上游已经分叉
+    >  # 没有输出：本地和上游一致
+    >
+    ># 看到 > 时，先判断它是准备被替换的旧提交，还是他人新增的提交；若包含他人新增提交，不要直接强推。
+    ># 该命令只能辅助查看差异；最终能否推送，还取决于远程是否再次更新、分支是否受保护、当前账号是否有权限。
+    >
+    ># 更严格：改写历史前先记录上游当前hash，推送时显式指定lease。
+    >git rev-parse @{u} # 假设输出 abc123
+    >git push --force-with-lease=refs/heads/「分支名」:abc123
+    >```
+    ></details>
+
+>`--force-with-lease`仍然是强推，但会先检查远程分支是否还停在指定位置或本地记录的位置；若远程已变更，它会拒绝覆盖。`-f` / `--force`没有这层保护，可能把他人的提交从远程分支历史中移走，导致对方本地分支与远程分叉，需要重新`fetch`、`rebase`、`cherry-pick`，或从`reflog`找回。
 
 ### `husky`+`lint-staged`+`commitlint`+`commitizen`
 1. 使用[husky](https://github.com/typicode/husky)设置：方便的[git hooks](https://git-scm.com/book/zh/v2/自定义-Git-Git-钩子)。
