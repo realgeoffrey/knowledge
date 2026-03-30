@@ -26,7 +26,7 @@
 
             必须手动输入`/`触发，用来执行特定的任务流（如写测试、重构代码）。快速调用常用的 Prompt 模板。
 
-        - 可配置 项目级`.cursor/rules或commands/`、用户级`~/.cursor/rules或commands/`、团队级 的规则、指令
+        - 可配置 项目级`.cursor/rules或commands/`、用户级`~/.cursor/commands/`（用户级规则设置在ide中；`~/.cursor/rules/`放的规则会作为每个项目的规则）、团队级 的规则、指令
 
     ><details>
     ><summary>rules、commands、skills、hooks、subagents、MCP等 都只作用于agents聊天（各种mode），不会作用于Tab补全或其他AI功能</summary>
@@ -35,13 +35,16 @@
 
     2. Agent Skills
 
-        项目级、用户级
+        项目级配置`.agents/skills/` `.cursor/skills/` `.claude/skills/` `.codex/skills/`、用户级配置`~/.agents/skills/` `~/.cursor/skills/` `~/.claude/skills/` `~/.codex/skills/`
     3. hook
 
         项目级配置`.cursor/hooks.json`（被配置使用的具体hook脚本`.cursor/hooks/脚本`），用户级配置`~/.cursor/hooks.json`（被配置使用的具体hook脚本`~/.cursor/hooks/脚本`）
     4. subagents
 
-        项目级子代理：`.cursor/agents/`，用户级子代理`~/.cursor/agents/`
+        项目级配置：`.cursor/agents/` `.claude/agents/` `.codex/agents/`，用户级配置`~/.cursor/agents/` `~/.claude/agents/` `~/.codex/agents/`
+
+    >若关闭了「Include third-party Plugins, Skills, and other configs. Automatically import agent configs from other tools」，则不会加载其他AI的配置，如`.claude/`、`.codex/`等（`.agents/`无论如何都会加载）
+
     5. MCP（模型上下文协议）
 
         项目级配置`.cursor/mcp.json`，用户级配置`~/.cursor/mcp.json`
@@ -61,13 +64,68 @@
 
     >与claude code的扩展基本一致：<https://code.claude.com/docs/zh-CN/features-overview>
 
+    >各个AI工具都会在`~/`放置自己的全局AI配置，并且可能读取其他AI工具的配置路径，如：`.agents`、`.claude`、`.codex`、`.copilot`、`.cursor`、`.qoder`
+
 ### Visual Studio Code
-1. [settings.json](./settings.json)
-2. [keybindings.json](./keybindings.json)
+1. [settings-vscode.json](./settings-vscode.json)
+2. [keybindings-vscode.json](./keybindings-vscode.json)
 
     - ![文件: 比较活动文件与剪贴板](./images/compare.png)
 
     - IDE读取[jsconfig.json和tsconfig.json](https://www.typescriptlang.org/zh/tsconfig/)进行[JS语言服务](https://github.com/microsoft/TypeScript/wiki/JavaScript-Language-Service-in-Visual-Studio)。
+
+        `jsconfig.json`/`tsconfig.json`里的`baseUrl`/`paths`等不影响代码“执行”，它只影响IDE（+ TypeScript）编译阶段的“路径解析”，👉 运行时（Node / 浏览器）默认完全不认识这些 alias，需要再通过构建工具（Vite、webpack等）或运行时插件才能使代码指向正确路径。
+3. 运行和调试
+
+    <details>
+    <summary>支持 当前文件（浏览器的.html、.js，Node.js的.js等）、webpack或vite运行的框架项目（vue.js、React）、Node.js框架项目</summary>
+
+    1. launch模式（每次都启动一个全新的、纯净的 Chrome 实例）
+
+        1. 当前文件：直接运行，不能配置launch.json（没找到如何配置）
+        2. webpack或vite运行的项目（vue.js、React）
+
+            ```jsonc
+            {
+              "version": "0.2.0",
+              "configurations": [
+                {
+                  "type": "chrome",
+                  "request": "launch",
+                  "name": "针对 localhost 启动 Chrome",
+                  "url": "http://localhost:3000", // 本地项目启动的端口
+                  "webRoot": "${workspaceFolder}"
+                  // "webRoot": "${workspaceFolder}/create-vue3"
+                }
+              ]
+            }
+            ```
+    1. Node.js的不依赖浏览器调试服务
+
+        ```json
+        {
+          "version": "0.2.0",
+          "configurations": [
+            {
+              "type": "node",
+              "request": "launch",
+              "name": "Egg Debug",
+              "runtimeExecutable": "npm",
+              "runtimeArgs": [
+                "run",
+                "dev",
+                "--",
+                "--inspect-brk"
+              ],
+              "cwd": "${workspaceFolder}/egg",
+              "console": "integratedTerminal",
+              "restart": true,
+              "autoAttachChildProcesses": true
+            }
+          ]
+        }
+        ```
+    </details>
 
 ### WebStorm
 1. 在线同步设备可以用：

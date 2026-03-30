@@ -343,7 +343,7 @@ ClashX`的增强模式`原理：通过一个虚拟网卡接管所有流量。
 
     仅新增节点：设置 -> 节点 - 节点资源 -> 右上角添加 -> 资源 - 节点 - 资源路径（可能需要关闭翻墙才能添加成功？），**在原有配置的基础上添加节点**。
 
-    >e.g. 填上`https://mysub.cc/subscribe/****/******/ssr/`
+    >e.g. 填上`https://iplcsub.com/subscribe/****/****/ssr/`
 
 ### ClashX 配置
 支持满足其规则的配置，如：Shadowsocks(SS)、ShadowsocksR(SSR)、Socks、Snell、V2Ray、Trojan等代理协议。

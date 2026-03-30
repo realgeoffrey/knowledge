@@ -63,6 +63,7 @@
 time 「命令」
 # e.g. time ls
 ```
+- 使用[hyperfine](https://github.com/sharkdp/hyperfine)（高精度命令行基准测试与性能对比工具）
 
 #### 判断命令来源
 ```shell

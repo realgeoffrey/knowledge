@@ -73,6 +73,19 @@
         >忽略语法和[.gitignore](https://git-scm.com/docs/gitignore#_pattern_format)类似。
     3. 配置内容
 
+        >优先级从高到低：
+        >
+        >```text
+        >/* eslint-disable */ 内联注释（noInlineConfig:true 可全部禁用）
+        >    > --rule CLI 参数
+        >        > overrides 最后一项 > overrides 前面项
+        >            > 当前配置文件 rules
+        >                > extends 最后一项 rules > extends 前面项 rules
+        >                    > 父级目录配置文件（逐层向上，遇到 root:true 停止；若始终没有 root:true，则一直找到系统根目录）
+        >
+        >plugins 本身不影响优先级，只是注册规则，规则还是靠 rules/extends 启用
+        >```
+
         1. `root: true/false`是否不再向上搜索配置文件
         2. `extends: [ 配置名 或 plugin:缩写插件名/插件自定义的配置名 或 文件路径 ]`继承另一个配置文件的所有配置，extends后面的项优先级更高
 

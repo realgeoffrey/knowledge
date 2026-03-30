@@ -51,13 +51,13 @@
 
         >[`setup()`](https://cn.vuejs.org/api/composition-api-setup)用于在选项式组件中使用组合式API（一个钩子），推荐直接用`<script setup>`替代。
 
-    >选项式API 是在 组合式API 的基础上实现的。
+    >选项式API是基于组合式API实现的；Vue 3 仍支持，但新项目通常优先写组合式API。
 
     2. 组合式API（Composition API）
 
-        >Vue 2.7、Vue 3的内置功能。对于更老的Vue 2版本，安装[composition-api](https://github.com/vuejs/composition-api)后支持。
+        >[Vue 2.7](https://v2.cn.vuejs.org/v2/guide/migration-vue-2-7.html#与-Vue-3-的行为差异)、Vue 3的内置功能。对于更老的Vue 2版本，安装[composition-api](https://github.com/vuejs/composition-api)后支持。
 
-        通过组合式API，我们可以使用导入的API函数来描述组件逻辑。定义数据变量和方法、生命周期钩子函数、父子通信 都不同于 选项式API。`this === undefined`
+        通过组合式API，我们可以使用导入的API函数来描述组件逻辑。定义数据变量、方法、生命周期、父子通信的方式都与选项式API不同。`setup()`/`<script setup>`中不再依赖组件实例的`this`，通常可以认为 `this === undefined`。
 
         >[优势](https://cn.vuejs.org/guide/extras/composition-api-faq.html)
 1. `:属性名`（等价于`v-bind:同名="同名"`、`:同名="同名"`）
@@ -71,7 +71,9 @@
     | `/deep/`   | Vue 2       | ✅           | ❌       | Vue 3已废弃，部分构建工具可能兼容但会警告 |
     | `::v-deep` | Vue 2       | ✅           | ❌       | Vue 3已废弃。`/deep/`的别名，语义更明确 |
     | `:deep()`  | Vue 3       | ✅           | ✅       | 当前最佳实践。与Composition API兼容 |
-1. 当同时存在于一个节点上时，`v-if`比`v-for`的优先级更高（与vue 2相反）
+1. 当同时存在于一个节点上时，`v-if`比`v-for`的优先级更高（与 Vue 2 相反）
+
+    >最稳妥的写法仍然是不要把二者放在同一个节点上，而是先过滤数据，再渲染列表。
 
     <details>
     <summary>这意味着<code>v-if</code>的条件将无法访问到<code>v-for</code>作用域内定义的变量别名</summary>
@@ -86,10 +88,10 @@
 1. 内置组件
 
     1. `<Teleport>`将一个组件内部的一部分模板“传送”到该组件的 DOM 结构外层的位置去
-    1. `<Suspense>`在组件树中协调对异步依赖的处理。它让我们可以在组件树上层等待下层的多个嵌套异步依赖项解析完成，并可以在等待时渲染一个加载状态
+    1. `<Suspense>`统一协调异步依赖，在等待异步组件或异步setup完成时渲染loading状态
 1. 支持Fragments（片段）
 
-    允许：`<template>多个节点</template>`
+    允许：`<template>多个节点</template>`（组件不再被强制要求只有一个根节点）
 1. `$attrs`、`inheritAttrs`区别
 
     | 特性 | Vue 2 | Vue 3 |
@@ -112,7 +114,7 @@
         </template>
         ```
 
-    - `$attrs`仅在template中，在`<script setup>`可以通过`useAttrs()`获取相同对象（不相等），都不具有响应性。
+    - `$attrs`仅在template中，在`<script setup>`可以通过`useAttrs()`获取相同内容的对象（不相等），二者都不具有响应性。
 1. `$slots`是唯一的插槽 API，所有插槽（包含Vue 2不包含的作用域插槽）都通过它访问，`vm.$slots.名字`返回函数（Vue 2返回VNode）。
 
     - ~~$scopedSlots~~已废弃。
@@ -1153,9 +1155,16 @@
 ### Vue 3最佳实践
 >可维护性、TypeScript支持、代码复用、性能优化。
 
+- 结论先行：
+
+    1. 新项目默认：`<script setup>` + Composition API + TypeScript + Pinia
+    1. 状态声明默认优先：`ref`
+    1. 逻辑复用默认优先：Composables，而不是 mixins
+    1. 性能优化默认优先：稳定 `key`、异步组件、避免深度 watch 滥用
+
 1. 始终使用`<script setup>`语法糖
 
-    简洁、可读性好，自动暴露顶层变量到模板。
+    简洁、可读性好，自动暴露顶层变量到模板，是 Vue 3 单文件组件的默认写法。
 
     - `<script setup>`支持很多特殊逻辑：
 
@@ -1201,9 +1210,25 @@
         1. 不能直接解构（需进行`toRefs()`才能解构）
 4. 使用 TypeScript 定义 Props 和 Emits
 
-    Vue 3 对 TS 的支持是一流的。使用纯类型注解来定义 props，能获得极好的 IDE 提示和类型检查。
+    Vue 3 对 TS 的支持很好。使用类型注解定义 props / emits，通常比纯运行时声明更易维护。
+
+    ```ts
+    const props = defineProps<{
+      id: string
+      disabled?: boolean
+    }>()
+
+    const emit = defineEmits<{
+      change: [value: string]
+      submit: []
+    }>()
+    ```
 5. 状态管理：使用 Pinia 代替 Vuex
+
+    Pinia API 更贴近组合式API，类型推导更自然，也更适合 Vue 3 项目。
 6. 合理使用`v-model`和多个`v-model`（通过`v-model:propName`的形式）
+
+    组件需要支持多个受控字段时，优先考虑多个`v-model`，避免把多个值塞进一个对象再手动拆分。
 7. 性能优化
 
     1. 异步组件
@@ -1247,6 +1272,12 @@
     3. Props 验证：使用 TypeScript 或运行时验证
     4. 事件命名：使用 kebab-case，语义明确
     5. 组件大小：保持组件小而专注，复杂逻辑提取到 Composables
+9. 一个实用的团队约定（Vue 2、Vue 3都一样）
+
+    - 页面组件负责组装数据和交互流程
+    - 业务组件负责可复用的界面片段
+    - Composable 负责状态与副作用复用
+    - 工具函数负责纯逻辑，不依赖 Vue 实例上下文
 
 ---
 
@@ -2070,9 +2101,10 @@
 
         被用来给原生DOM元素或子组件注册引用信息。引用信息注册在`vm.$refs`对象上。
 
-        >1. 初始渲染时无法访问。
+        >1. `vm.$refs`初始渲染时无法访问。
         >2. `vm.$refs`不是响应式的，因此不应该在`template`或`computed`做数据绑定。
         >3. 多个DOM或子组件命名为同一个ref值，最后的会覆盖之前的，ref值只能取到最后的一个。
+        >4. `vm.$refs`属性值只会指向对象（单个引用）或者一维数组（v-for的引用），没有多维数组（多个嵌套的v-for也都平铺为一维数组）
 
         1. 添加在原生DOM：指向DOM元素
 
@@ -2631,15 +2663,14 @@
           <!-- 使用v-bind="$attrs"和v-on="$listeners"传递所有参数。ref传递给父级引用的ref -->
           <已有组件 ref="innerComponent" v-bind="$attrs" v-on="$listeners">
             <!-- 传递插槽 -->
-            <template v-for="(slotFunc, name) in $scopedSlots" v-slot:[name]="slotProps">
+            <template v-for="(slotFunc, name) in $scopedSlots" #[name]="slotProps">
               <slot :name="name" v-bind="slotProps" />
             </template>
           </已有组件>
         </template>
 
         <script>
-        import { 已有组件 } from "？";
-
+        import { 已有组件 } from '？'
         // 导出一个组件，所有调用方式都和直接调用`<已有组件>`一样，并可以做额外处理
         export default {
           components: { 已有组件 },
@@ -2647,29 +2678,72 @@
           data() {
             return {
               parentRefName: undefined,
-            };
+              parentRefPath: undefined,
+            }
           },
           mounted() {
             // 将内部组件的引用暴露给外部
-            const [name] =
-              Object.entries(this.$parent.$refs).find(([, vm]) => {
-                return vm === this;
-              }) ?? [];
-            if (name) {
-              this.parentRefName = name;
-              this.$parent.$refs[name] = this.$refs.innerComponent;
-            }
+            const refSlot = findThisFromParentRefs(this.$parent.$refs, this)
+            if (!refSlot) return
+            this.parentRefName = refSlot.refName
+            this.parentRefPath = refSlot.refArrayIndex
+            changeParentRef(
+              this.$parent.$refs,
+              refSlot.refName,
+              refSlot.refArrayIndex,
+              this.$refs.innerComponent
+            )
           },
           beforeDestroy() {
             // 清除引用以防内存泄漏
-            if (
-              this.parentRefName &&
-              this.$parent.$refs[this.parentRefName] === this.$refs.innerComponent
-            ) {
-              this.$parent.$refs[this.parentRefName] = undefined;
-            }
+            if (!this.parentRefName) return
+            clearParentRef(
+              this.$parent.$refs,
+              this.parentRefName,
+              this.parentRefPath,
+              this.$refs.innerComponent
+            )
           },
-        };
+        }
+
+        /**
+         * 在父组件的 $refs 中查找当前实例（$refs的属性值指向：单个组件 或 v-for产生的一维实例数组）
+         * @returns {{ refName: string, refArrayIndex: number|null }} refArrayIndex 为 null 表示 refs[refName] 整项即 self；为 number 表示一维数组下标
+         */
+        function findThisFromParentRefs(parentRefs, self) {
+          for (const refName of Object.keys(parentRefs)) {
+            const vm = parentRefs[refName]
+            if (vm === self) return { refName, refArrayIndex: null }
+            if (Array.isArray(vm)) {
+              const refArrayIndex = vm.indexOf(self)
+              if (refArrayIndex !== -1) return { refName, refArrayIndex }
+            }
+          }
+          return null
+        }
+
+        // 将父级组件的 $refs 中指定位置替换为内层组件实例
+        function changeParentRef(refs, refName, refArrayIndex, selfRef) {
+          if (refArrayIndex === null) {
+            refs[refName] = selfRef
+          } else {
+            refs[refName][refArrayIndex] = selfRef
+          }
+        }
+
+        // 销毁前清理引用
+        function clearParentRef(refs, refName, refArrayIndex, selfRef) {
+          if (refArrayIndex === null) {
+            if (refs[refName] === selfRef) {
+              refs[refName] = undefined
+            }
+          } else {
+            const arr = refs[refName]
+            if (Array.isArray(arr) && arr[refArrayIndex] === selfRef) {
+              arr[refArrayIndex] = undefined
+            }
+          }
+        }
         </script>
         ```
 
@@ -6345,7 +6419,66 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 8. 表单校验`rules: []`是数组，按顺序校验，可以用自定义`validator`方法，属性可以参考[async-validator](https://github.com/yiminghe/async-validator)
 
     1. 若`rules`中传递了`message`，则命中校验失败只会展示`message`；若`rules`中未传递`message`，则展示`validator`中的`callback(new Error(错误信息))`
-    2. 可动态插入或删除`rules`项（单独触发一个字段校验：`validateField`；触发整个表单所有字段校验：`validate`——有传回调处理回调，不传回调返回Promise）
+    2. 可动态插入或删除`rules`项（单独触发一个字段校验：`validateField`；触发整个表单所有字段校验：`validate`）
+
+        <details>
+
+        <summary>$refs.formRef.validate的ts形状</summary>
+
+        ```ts
+        // 验证失败时的错误字段对象类型(键为表单的 prop 名称，值为对应的错误信息数组)
+        type ValidateError = Record<string, { message: string; field: string }[]>;
+        // 传入 validate 的回调函数类型
+        interface ValidateCallback {
+          (isValid: boolean, invalidFields: ValidateError): void;
+        }
+        // $refs.formRef.validate 方法本身的类型形状 (使用函数重载)
+        export interface ElFormValidateMethod {
+          /**
+          * 重载 1：传入 callback 的传统调用方式
+          * @param callback 校验完成后的回调函数
+          */
+          (callback: ValidateCallback): void;
+
+          /**
+          * 重载 2：不传参数的 Promise 调用方式
+          * @returns 返回一个 Promise，校验通过 resolve(true)，失败 reject(ValidateError)
+          */
+          (): Promise<boolean>;
+        }
+        ```
+
+        ```ts
+        // e.g.
+        // 成功时逻辑类似于：
+        const validate1: ElFormValidateMethod = (callback?: ValidateCallback) => {
+          const isValid = true;
+          const invalidFields: ValidateError = {};
+
+          if (callback) {
+            callback(isValid, invalidFields);
+            return;
+          }
+
+          return Promise.resolve(true);
+        };
+
+        // 失败时逻辑类似于：
+        const validate2: ElFormValidateMethod = (callback?: ValidateCallback) => {
+          const isValid = false;
+          const invalidFields: ValidateError = {
+            name: [{ message: 'name is required', field: 'name' }],
+          };
+
+          if (callback) {
+            callback(isValid, invalidFields);
+            return;
+          }
+
+          return Promise.reject(invalidFields);
+        };
+        ```
+        </details>
     3. <details>
 
         <summary>实现：仅提示校验问题，但不阻塞提交</summary>
@@ -6371,6 +6504,182 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 10. `MessageBox`可以用`Vue实例.$msgbox.close()`关闭所有MessageBox（不会触发任何配置的事件处理函数，如：~~callback~~、~~Promise结果~~）
 
     >源码：<https://github.com/ElemeFE/element/blob/master/src/index.js#L200>、<https://github.com/ElemeFE/element/blob/master/packages/message-box/src/main.js#L208-L213>
+11. <details>
+
+    <summary>表单数据的一部分放到子组件，保证相对解耦，在子组件进行展示、校验、业务逻辑，在父级保持表单数据与子组件同步，提交由父级统一进行。额外要求：原表单数据可能不全，由子组件按业务逻辑补全数据</summary>
+
+    ```vue
+    // 父级
+    <template>
+      <div>
+        <p>数组顺序不固定，子组件按固定顺序展示：{{ form }}</p>
+        <FormList ref="formListRef" :list="form.list" />
+        <el-button @click="submit">校验并提交</el-button>
+      </div>
+    </template>
+
+    <script>
+    import FormList from './list.vue'
+    export default {
+      components: { FormList },
+      data() {
+        return {
+          form: {
+            list: [{key:'a',value:1},{key:'b',value:''},{key:'c'},{key:'e',value:1}]
+          },
+        }
+      },
+      methods: {
+        submit() {
+          this.$refs.formListRef.validate((ok) => {
+            if (ok) {
+              this.$message.success(JSON.stringify(this.form.list))
+            }
+          })
+        },
+      },
+    }
+    </script>
+
+
+    // 子级
+    <template>
+      <!-- fieldModel 与 list 同步，供 el-form 按 prop（即 key）校验 -->
+      <el-form ref="formRef" :model="fieldModel" :rules="rules" label-width="80px">
+        <el-form-item
+          v-for="item in orderedList"
+          :key="item.key"
+          :label="item.key"
+          :prop="item.key"
+        >
+          <el-input-number v-model="item.value" :step="0.5" :precision="1" :min="0" @blur="$nextTick(() => normalizeItemValue(item))"/>
+        </el-form-item>
+      </el-form>
+    </template>
+    <script>
+    /** 固定展示的 key 全集；父级 list 缺项时由子组件就地 push 补全 */
+    const FIXED_KEYS = ['a', 'b', 'c', 'd']
+
+    /** prop 名与 item.key 一致，对应 fieldModel 上的字段 */
+    const FIELD_RULES = {
+      a: [{ validator: myValidator, trigger: 'blur' }],
+      b: [{ validator: myValidator, trigger: 'blur' }],
+      c: [{ validator: myValidator, trigger: 'blur' }],
+      d: [{ validator: myValidator, trigger: 'blur' }],
+    }
+
+    export default {
+      props: {
+        /** 父组件传入的 [{ key, value }]，顺序任意；子组件内按固定 key 顺序展示 */
+        list: {
+          type: Array,
+          default: () => [],
+        },
+      },
+      computed: {
+        /** 先将 list 转成 key => item 的映射，避免 orderedList / fieldModel 各自重复扫描数组 */
+        listMap() {
+          return this.list.reduce((acc, item) => {
+            if (item && item.key) {
+              acc[item.key] = item
+            }
+            return acc
+          }, {})
+        },
+        /** 页面展示顺序固定为 FIXED_KEYS，从 props.list 中按 key 查找（缺项已由 ensureFixedKeys 补全） */
+        orderedList() {
+          return FIXED_KEYS.map((k) => this.listMap[k])
+        },
+        /** 从 list 归约为扁平对象，作为 el-form 的 model */
+        fieldModel() {
+          return FIXED_KEYS.reduce((acc, key) => {
+            const item = this.listMap[key]
+            acc[key] = item ? item.value : 0
+            return acc
+          }, {})
+        },
+        rules() {
+          return FIELD_RULES
+        },
+      },
+      watch: {
+        /**
+         * list 引用变化或初次挂载时补全 a～d；与父组件共用同一数组引用，push 即写回父级 form.list。
+         */
+        list: {
+          immediate: true,
+          handler(val) {
+            this.ensureFixedKeys(val)
+            this.normalizeListValues(val)
+            this.$nextTick(() => this.$refs.formRef && this.$refs.formRef.clearValidate())
+          },
+        },
+      },
+      methods: {
+        /** 父级缺少 FIXED_KEYS 中某项时，追加 { key, value: 0 } */
+        ensureFixedKeys(list) {
+          if (!Array.isArray(list)) return
+          FIXED_KEYS.forEach((k) => {
+            if (!list.some((x) => x && x.key === k)) {
+              list.push({ key: k, value: 0 })
+            }
+          })
+        },
+        /** 空 -> 0；非法或非有限、负数 -> 0 */
+        normalizeItemValue(item) {
+          if (!item) return
+          const v = item.value
+          if (v === null || v === undefined || v === '') {
+            this.$set(item, 'value', 0)
+            return
+          }
+          const n = Number(v)
+          if (!Number.isFinite(n) || n < 0) {
+            this.$set(item, 'value', 0)
+          }
+        },
+        /** 批量规整 list，保证进入校验前数据可控 */
+        normalizeListValues(list) {
+          if (!Array.isArray(list)) return
+          list.forEach((item) => {
+            if (item && item.key) this.normalizeItemValue(item)
+          })
+        },
+        /** 暴露给父组件调用，由父组件决定提交后的行为 */
+        validate(callback) {
+          this.normalizeListValues(this.list)
+          this.$nextTick(() => this.$refs.formRef.validate(callback)) // 注意，这里是异步。按需删除 this.$nextTick
+        },
+      },
+    }
+    // 某些业务逻辑校验：不允许负数；最多一位小数、最小单位 0.5 天。空值由 normalize 写入 0，此处若仍为空则直接通过（提交前会整体 normalize）。
+    function myValidator(rule, value, callback) {
+      if (value === null || value === undefined || value === '') {
+        callback()
+        return
+      }
+      const n = Number(value)
+      if (!Number.isFinite(n)) {
+        callback(new Error('须为有效数字'))
+        return
+      }
+      if (n < 0) {
+        callback(new Error('不能为负数'))
+        return
+      }
+      if (Math.abs(n * 10 - Math.round(n * 10)) > 1e-9) {
+        callback(new Error('最多保留一位小数'))
+        return
+      }
+      if (Math.abs(n * 2 - Math.round(n * 2)) > 1e-9) {
+        callback(new Error('最小单位为 0.5 天'))
+        return
+      }
+      callback()
+    }
+    </script>
+    ```
+    </details>
 
 - 避免问题
 

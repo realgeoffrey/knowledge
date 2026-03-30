@@ -3922,6 +3922,8 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 ## DOM操作
 >以纵轴为例。
 
+>[pretext](https://github.com/chenglou/pretext)：不触碰DOM、不引发页面重排（Reflow）的情况下，以极高的性能精准计算出一段长文本折行后的高度和尺寸（非常友好的 AI 迭代方法）。
+
 ### 获取位置信息
 1. DOM节点
 

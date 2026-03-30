@@ -3129,7 +3129,24 @@ type Concrete<Type> = {
             设置生成的JS语言的版本，并且会包含兼容的库（环境）的定义。
 
             >e.g. 若设置为`"es2017"`，则`Promise`包含`then`、`catch`；若设置为`"es2018"`，则`Promise`包含`then`、`catch`、`finally`。
+        1. `extends`：继承指定配置文件并与当前文件合并；同名项以当前文件为准，适合提取公共编译选项。
+        1. `references`：工程引用（project references）。各子项目保留独立配置原逻辑，由各自的 `include`/`rootDir` 等划定源码归属，`tsc --build` 时按依赖顺序分别增量编译。
         </details>
+
+    ```text
+    my-project/
+    ├── src/                  # 浏览器端代码
+    │   ├── main.ts
+    │   └── App.vue
+    ├── server/               # Node.js 服务端代码
+    │   └── index.ts
+    ├── vite.config.ts        # 构建脚本（运行于 Node.js，通常归入 server 或单独配置）
+    │
+    ├── tsconfig.base.json    # 公共基础配置，供 tsconfig.client或server.json 通过 extends 继承
+    ├── tsconfig.client.json  # 前端配置（include 指向 src/）
+    ├── tsconfig.server.json  # 服务端配置（include 指向 server/）
+    └── tsconfig.json         # 入口配置：通过 references 引用 tsconfig.client和server.json，供编辑器索引及 tsc --build 总调度（本身不参与编译）
+    ```
 2. 文件后缀
 
     `.ts`、`.tsx`（React、`JSX`）、`d.ts`

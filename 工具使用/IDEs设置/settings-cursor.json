@@ -65,23 +65,16 @@
   "terminal.integrated.allowChords": false,
   "terminal.integrated.cursorBlinking": true,
   "terminal.integrated.scrollback": 3000,
-  "terminal.integrated.fontSize": 15,
+  "terminal.integrated.fontSize": 14,
   "terminal.integrated.enableVisualBell": true,
   "terminal.integrated.env.osx": {
     "PATH": "null"
   },
   "vue.inlayHints.missingProps": true,
   "vue.inlayHints.inlineHandlerLeading": true,
-  "typescript.inlayHints.variableTypes.enabled": true,
-  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
-  "typescript.inlayHints.parameterTypes.enabled": true,
-  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
-  "typescript.inlayHints.enumMemberValues.enabled": true,
-  "typescript.updateImportsOnFileMove.enabled": "always",
   "js/ts.implicitProjectConfig.target": "ESNext",
   "eslint.codeActionsOnSave.mode": "problems",
   "merge-conflict.autoNavigateNextConflict.enabled": true,
-  "inlineChat.holdToSpeech": false,
   "diffEditor.renderSideBySide": true,
   "diffEditor.experimental.showMoves": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
@@ -108,15 +101,36 @@
   },
   "vsicons.dontShowNewVersionMessage": true,
   "extensions.ignoreRecommendations": true,
-  "javascript.updateImportsOnFileMove.enabled": "always",
   "liveServer.settings.donotShowInfoMsg": true,
   "cSpell.diagnosticLevel": "Hint",
 
-  // curosr
+  // curosr only
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.inlayHints.variableTypes.enabled": true,
+  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+  "typescript.inlayHints.parameterTypes.enabled": true,
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "typescript.inlayHints.enumMemberValues.enabled": true,
   "inlineChat.lineNaturalLanguageHint": false,
   "workbench.activityBar.orientation": "vertical",
   "window.commandCenter": true,
   "editor.minimap.enabled": true,
   "editor.experimentalEditContextEnabled": true,
-  "git.autoRepositoryDetection": true
+  "git.autoRepositoryDetection": true,
+  "inlineChat.holdToSpeech": false,
+
+  // Java相关插件
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml"
+  },
+  "xml.server.preferBinary": true,
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  },
+  "java.configuration.maven.userSettings": "~/.m2/settings-i.xml",
+  "maven.executable.path": "/usr/local/apache-maven-3.9.8/bin/mvn",
+  "maven.view": "hierarchical"
 }
