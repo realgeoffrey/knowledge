@@ -8,9 +8,9 @@
 
 ---
 ### [ESLint](https://github.com/eslint/eslint)
->eslint@8
+>eslint@8 旧配置为主；ESLint v9+ 默认使用 `eslint.config.js` flat config，`.eslintrc*` 已进入兼容/迁移阶段。
 
-1. [CLI命令](https://zh-hans.eslint.org/docs/latest/use/command-line-interface)
+1. [CLI命令](https://eslint.org/docs/latest/use/command-line-interface)
 
     ```shell
     eslint [options] file.js [file.js] [dir]
@@ -52,10 +52,10 @@
             1. `--global`
             2. `--rule`
             3. `--env`
-            4. `-c/--config`（可配合`--no-eslintrc`忽略所有规则默认查找）
+            4. `-c/--config`（ESLint v8 旧配置可配合`--no-eslintrc`忽略所有规则默认查找；ESLint v9+ flat config 使用方式不同）
         3. 项目级配置
 
-            会在每一个被检查文件的目录中寻找配置文件（不是~~命令执行的目录~~，而是每一个被检查文件的目录，因此不同文件夹的文件都可能有不同的规则配置），并在其直系祖先目录中寻找，直到触发任意停止条件：抵达文件系统的根目录（`/`）或 配置包含 `root: true` ~~或 抵达当前用户的主目录（`~/`）~~。
+            以下是 `.eslintrc*` 旧配置的查找逻辑：会在每一个被检查文件的目录中寻找配置文件（不是~~命令执行的目录~~，而是每一个被检查文件的目录，因此不同文件夹的文件都可能有不同的规则配置），并在其直系祖先目录中寻找，直到触发任意停止条件：抵达文件系统的根目录（`/`）或 配置包含 `root: true` ~~或 抵达当前用户的主目录（`~/`）~~。ESLint v9+ 默认从项目根部查找 `eslint.config.js`。
 
             - 同一级文件夹内的配置只会使用以下优先级最高的一个文件（降序）：
 
@@ -72,6 +72,19 @@
 
         >忽略语法和[.gitignore](https://git-scm.com/docs/gitignore#_pattern_format)类似。
     3. 配置内容
+
+        >优先级从高到低：
+        >
+        >```text
+        >/* eslint-disable */ 内联注释（noInlineConfig:true 可全部禁用）
+        >    > --rule CLI 参数
+        >        > overrides 最后一项 > overrides 前面项
+        >            > 当前配置文件 rules
+        >                > extends 最后一项 rules > extends 前面项 rules
+        >                    > 父级目录配置文件（逐层向上，遇到 root:true 停止；若始终没有 root:true，则一直找到系统根目录）
+        >
+        >plugins 本身不影响优先级，只是注册规则，规则还是靠 rules/extends 启用
+        >```
 
         1. `root: true/false`是否不再向上搜索配置文件
         2. `extends: [ 配置名 或 plugin:缩写插件名/插件自定义的配置名 或 文件路径 ]`继承另一个配置文件的所有配置，extends后面的项优先级更高
@@ -94,7 +107,7 @@
             2. glob在项目级配置中是相对于当前配置文件，在`--config`命令行配置中相对于命令执行目录。
         5. `env: { 环境名 或 缩写插件名/插件自定义的环境名: true/false, }`是否开启环境提供预设的全局变量
 
-            `browser`、`node`、`commonjs`、`shared-node-browser`、`es6`、`es2016~es2024`、`worker`、`amd`、`mocha`、`jasmine`、`jest`、`phantomjs`、`protractor`、`qunit`、`jquery`、`prototypejs`、`shelljs`、`meteor`、`mongo`、`applescript`、`nashorn`、`serviceworker`、`atomtest`、`embertest`、`webextensions`、`greasemonkey`
+            `browser`、`node`、`commonjs`、`shared-node-browser`、`es6`、`es2016~es2025`（或以当前 ESLint 支持为准）、`worker`、`amd`、`mocha`、`jasmine`、`jest`、`phantomjs`、`protractor`、`qunit`、`jquery`、`prototypejs`、`shelljs`、`meteor`、`mongo`、`applescript`、`nashorn`、`serviceworker`、`atomtest`、`embertest`、`webextensions`、`greasemonkey`
         6. `globals: { 全局变量名: "writable或readonly或off" }`
         7. `rules: { 规则名 或 缩写插件名/插件自定义的规则名: 值 或 [ 值, 额外选项 ] }`
 
@@ -188,7 +201,7 @@
 
     - 配置规则
 
-        [prettier: options](https://prettier.nodejs.cn/docs/en/options.html`)
+        [prettier: options](https://prettier.io/docs/options)
 
 3. 不对接下来的语句块进行prettier
 
@@ -242,7 +255,7 @@
     `.stylelintignore`（不会包含.gitignore）
 
     >忽略语法和[.gitignore](https://git-scm.com/docs/gitignore#_pattern_format)一致。
-3. [忽略代码](https://stylelint.nodejs.cn/user-guide/ignore-code)
+3. [忽略代码](https://stylelint.io/user-guide/ignore-code)
 
     `stylelint-disable stylelint-enable stylelint-disable-line stylelint-disable-next-line`
 

@@ -82,7 +82,7 @@
           "ext": "js,json,ts"
         }
         ```
-3. Chrome最新版的DevTools - Node.js已经支持对以上配置进行--inspect自动更新
+3. 现代 Chrome DevTools 与 Node.js 已支持通过`--inspect`进行调试连接和更新
 
     1. ~~安装Chrome插件[NIM](https://github.com/june07/NIM)（Visual Studio Code默认支持）~~
 
