@@ -136,7 +136,7 @@ flowchart TD
 
     >字节码是源代码经过编译器编译生成的，但它并不直接运行在物理硬件上，而是运行在虚拟机上。虚拟机会解释执行字节码指令，并将其转化为机器码让CPU实际执行。
 
-    >可通过 `java 类名 参数1 参数2` 向 `main` 传入命令行参数，如：`public class 类名 { public static void main(String[] args) {} }`。`main` 方法需满足标准签名（含 `String[] args` 形参），因为 JVM 启动程序时会按该签名传递参数。
+    >可通过 `java 类名 参数1 参数2` 向 `main` 传入命令行参数，如：`public class 类名 { public static void main(String[] args) {} }`。`main` 方法需满足标准签名（含 `String[] args` 形参），因为 JVM 启动程序时会按该签名传递参数。只有要被 JVM 直接当作程序入口启动的类，才必须有 main 方法。
 - `public` 顶级类的类名必须与文件名一致；一个 `.java` 文件最多只能有一个 `public` 顶级类。
 
 #### 基础语法
