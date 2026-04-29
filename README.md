@@ -76,7 +76,14 @@
     - [Lark生态开发](./网站前端/其他前端专项/Lark生态开发/README.md)
 10. [HTTP相关](./网站前端/HTTP相关/README.md)
 11. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
-12. [AI笔记](./网站前端/AI笔记/README.md)
+12. <details>
+
+    <summary><a href="https://github.com/realgeoffrey/knowledge/blob/master/网站前端/AI笔记/README.md">AI笔记</a></summary>
+
+    1. [AI繁多的词汇](./网站前端/AI笔记/AI繁多的词汇.md)
+    1. [MCP笔记](./网站前端/AI笔记/MCP笔记.md)
+    1. [openclaw笔记](./网站前端/AI笔记/openclaw笔记.md)
+    </details>
 13. <details>
 
     <summary><a href="https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/README.md">数据结构与算法</a></summary>

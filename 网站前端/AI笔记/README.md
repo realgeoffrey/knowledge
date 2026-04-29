@@ -3,9 +3,6 @@
 ## 目录
 1. [从 Vibe Coding 到 Agentic Engineering](#从-vibe-coding-到-agentic-engineering)
 1. [Agentic Engineering 工作流（针对实现某个需求）](#agentic-engineering-工作流针对实现某个需求)
-1. [./AI繁多的词汇.md](./AI繁多的词汇.md)
-1. [./MCP笔记.md](./MCP笔记.md)
-1. [./openclaw笔记.md](./openclaw笔记.md)
 
 ---
 
