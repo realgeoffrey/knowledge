@@ -806,81 +806,29 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
         1. 重载 overload：同名方法，不同参数
         1. this：当前对象
         1. super：父类部分
-- 嵌套类型：定义在另一个类型内部的类型。类或接口的成员位置支持嵌套类、嵌套接口、嵌套枚举、嵌套注解；Java 16+ 还支持嵌套 `record`。方法或代码块里可以定义局部类，Java 16+ 还支持局部 `record`；表达式里可以创建匿名类。
+- 嵌套、局部、匿名类型
 
-    >**成员位置**在这份笔记里指“直接写在类型 `{}` 里的第一层位置”，也就是不在方法、构造器、初始化代码块、局部类、匿名类内部的位置。严格说，字段、方法、嵌套类型是成员；构造器和初始化代码块不是成员，但它们也写在类体第一层。
+    先按“声明位置”判断：
 
-    ```java
-    class Outer {
-        int age;              // 成员位置：字段
-        static int total;     // 成员位置：静态字段
+    - **成员位置**：直接写在类 / 接口 / 枚举 / 注解的 `{}` 第一层。可声明成员类、成员接口、成员枚举、成员注解；Java 16+ 还支持成员 `record`。
+    - **局部位置**：写在方法、构造器、初始化代码块、普通代码块内部。可声明局部类；Java 16+ 还支持局部 `record`。
+    - **表达式位置**：不是单独声明一个类型，而是在需要一个对象值的地方直接写 `new 父类或接口() { ... }`。这会创建匿名类对象，常见于赋值、传参、返回值。
 
-        Outer() {             // 类体第一层：构造器（严格说不是成员）
-            int x = 1;        // 不是成员位置：这是构造器内部的局部变量
-        }
-
-        void test() {         // 成员位置：方法
-            int y = 2;        // 不是成员位置：这是方法内部的局部变量
-
-            class Local {}    // 不是成员位置：这是局部类
-
-            // Java 16+:
-            // record LocalPair(String key, String value) {} // 不是成员位置：这是局部 record
-
-            Runnable task = new Runnable() { // 不是成员位置：这是匿名类表达式
-                public void run() {}
-            };
-        }
-
-        {                     // 类体第一层：实例初始化代码块（严格说不是成员）
-            int z = 3;        // 不是成员位置：这是代码块内部的局部变量
-        }
-
-        static {              // 类体第一层：静态代码块（严格说不是成员）
-        }
-
-        class Inner {}        // 成员位置：成员类 / 内部类
-        static class Nested {} // 成员位置：静态嵌套类
-        interface Action {}   // 成员位置：成员接口
-        enum Role { ADMIN }   // 成员位置：成员枚举
-        @interface Mark {}    // 成员位置：成员注解
-
-        // Java 16+:
-        // record Pair(String key, String value) {} // 成员位置：成员 record，不是局部 record
-    }
-    ```
-
-    简单判断：**直接缩进在类/接口/枚举/注解的第一层，就是成员位置；继续进入方法体、构造器体、代码块体之后，就不是成员位置。**
+    >严格说，字段、方法、嵌套类型是类的成员；构造器和初始化代码块不是成员，但它们也写在类体第一层。
 
     ```java
     class User {
-        class Profile {
-            String nickname;
-        }
-
-        static class Address {
-            String city;
-        }
-
-        interface Validator {
-            boolean isValid(User user);
-        }
-
-        enum Role {
-            ADMIN, NORMAL
-        }
-
-        @interface FieldName {
-            String value();
-        }
+        class Profile {}        // 成员类：非 static，也叫内部类
+        static class Address {} // 静态嵌套类
+        interface Validator {}  // 成员接口，隐式 static
+        enum Role { ADMIN }     // 成员枚举，隐式 static
+        @interface FieldName {} // 成员注解，隐式 static
 
         // Java 16+:
-        // record Pair(String key, String value) {} // 成员 record
+        // record Pair(String key, String value) {} // 成员 record，隐式 static
 
         void test() {
-            class LocalHelper {
-                void run() {}
-            }
+            class LocalHelper {} // 局部类
 
             // Java 16+:
             // record LocalPair(String key, String value) {} // 局部 record
@@ -888,43 +836,29 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
             Runnable task = new Runnable() { // 匿名类
                 public void run() {}
             };
+
+            runTask(new Runnable() { // 匿名类作为方法实参
+                public void run() {}
+            });
         }
+
+        void runTask(Runnable task) {}
     }
     ```
 
-    >外层类用来组织一组强相关的类型。
+    | 类型形式 | 位置 | `static` 规则 | 重点 |
+    | --- | --- | --- | --- |
+    | 非静态成员类 | 成员位置 | 不默认 `static` | 会关联一个外部对象，也叫内部类 |
+    | 静态嵌套类 | 成员位置 | 显式写 `static` | 不关联外部对象，常用于组织辅助类型 |
+    | 成员接口 | 成员位置 | 隐式 `static` | 定义和外层类型强相关的能力规范 |
+    | 成员枚举 | 成员位置 | 隐式 `static` | 定义和外层类型强相关的固定选项 |
+    | 成员注解 | 成员位置 | 隐式 `static` | 定义和外层类型强相关的元数据标记 |
+    | 成员 `record` | 成员位置 | 隐式 `static` | Java 16+，定义和外层类型强相关的只读数据结构 |
+    | 局部类 | 局部位置 | 不适用 | 只在当前方法或代码块内可见 |
+    | 局部 `record` | 局部位置 | 不适用 | Java 16+，适合方法内部临时数据结构 |
+    | 匿名类 | 表达式位置 | 不适用 | 在需要对象值的位置直接 `new ... {}`，没有类名，通常一次性使用 |
 
-    - 嵌套类：如 `User.Profile`、`User.Address`，表示只和 `User` 强相关的辅助类型。
-    - 嵌套接口：如 `User.Validator`，表示只和 `User` 强相关的能力规范；接口本身不能 `new`，需要由类实现。
-    - 嵌套枚举：如 `User.Role`，表示只和 `User` 强相关的固定选项。
-    - 嵌套注解：如 `User.FieldName`，表示只和 `User` 强相关的元数据标记。
-    - 嵌套 `record`：Java 16+ 支持，`record` 是特殊类，成员 `record` 隐式是 `static`。
-    - 局部类：如 `LocalHelper`，定义在方法或代码块内部，只在该作用域内可见。
-    - 局部 `record`：Java 16+ 支持，`record` 是特殊类，适合在方法内部临时定义一组只读数据。
-    - 匿名类：如 `new Runnable() { ... }`，没有类名，常用于一次性实现接口或继承父类。
-    - 不能局部声明：`interface`、`enum`、`@interface` 不能直接声明在方法或普通代码块里。
-
-    | 类型形式 | 是否默认 `static` | 说明 |
-    | --- | --- | --- |
-    | 非静态成员类 | 否 | 也叫内部类（inner class），会关联一个外部对象 |
-    | 静态嵌套类 | 显式写 `static` | 不关联外部对象，常用来组织辅助类型 |
-    | 嵌套接口 | 是 | 接口不能依附某个对象，成员接口隐式是 `static` |
-    | 嵌套枚举 | 是 | 枚举表示固定类型集合，成员枚举隐式是 `static` |
-    | 嵌套注解 | 是 | 注解本质上是特殊接口，成员注解隐式是 `static` |
-    | 嵌套 `record` | 是 | Java 16+ 支持；`record` 是特殊类，成员 `record` 隐式是 `static` |
-    | 局部类 | 不适用 | 定义在方法或代码块中，不是类的成员 |
-    | 局部 `record` | 不适用 | Java 16+ 支持；定义在方法或代码块中，不是类的成员 |
-    | 匿名类 | 不适用 | 定义在表达式中，没有名字，不是类的成员 |
-
-    ```java
-    class NameValidator implements User.Validator {
-        public boolean isValid(User user) {
-            return user != null;
-        }
-    }
-    ```
-
-    >只有普通成员类需要重点区分 `static` 和非 `static`；嵌套接口、嵌套枚举、嵌套注解都可以按“属于外层类型本身的类型”理解。接口里声明的成员类型也隐式是 `public static`。
+    结论：**成员位置看是否属于外层类型；局部位置看是否只在当前代码块可见；匿名类看是否由 `new ... {}` 临时创建。** 局部位置不能直接声明 `interface`、`enum`、`@interface`。
 
 - 异常处理：`try-catch-finally`、`throw`、`throws`
 
