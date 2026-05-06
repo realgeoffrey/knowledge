@@ -761,11 +761,14 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 
                 >因为 `this(...)` 和 `super(...)` 都必须在第一行，因此一个构造器里只能直接选择其中一个。
             - 如果父类没有无参构造器，子类构造器必须显式写 `super(...)` 并传入匹配参数。
-    - `对象 instanceof 类或接口`：当对象的运行时类型 与该类型兼容（**即该类型本身、其子类或其实现类**）时，结果为 `true`
+    - `对象 instanceof 类或接口`：当对象的运行时类型（不是声明的类型） 与 右侧类型兼容（**即左边对象的类型 是否是 右边的类型本身 或 右边类型的子类型 或 右边类型的实现类**）时，结果为 `true`
 
         允许：`父类 变量 = new 子类();`（向上转型）。反过来不行。
 
         ```java
+        // class Dog extends Animal {}
+        // class Dog implements Living {}
+
         Animal a = new Dog();      // 向上转型：总是安全
         Dog d1 = (Dog) a;          // 向下转型：安全（a 真实指向 Dog）
 
@@ -773,9 +776,13 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
         Dog d2 = (Dog) b;          // 编译能过，但运行时抛 ClassCastException
 
         // 更稳妥写法
-        if (a instanceof Dog) {
+        if (a instanceof Dog) { // true
             Dog d3 = (Dog) a;
         }
+        a instanceof Animal;// true
+        a instanceof Living;// true
+        a instanceof Dog;   // true
+        b instanceof Dog;   // false
         ```
 
     - 多态
