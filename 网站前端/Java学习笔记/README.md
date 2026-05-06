@@ -726,15 +726,12 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
         ```java
         class User {
             String name; // 实际项目里更常见的是直接给字段赋值或写在构造器里，而不用初始化代码块
-
             static {
                 System.out.println("类初始化时执行一次");
             }
-
             {
                 name = "默认名"; // 初始化代码块
             }
-
             User() {
                 System.out.println(name);
             }
@@ -795,17 +792,6 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
         - 接口（`interface`）：定义能力或契约，一个类可以 `implements` 多个接口；接口中的抽象方法默认是 `public abstract`，字段默认是 `public static final`，也可以定义 `default` / `static` 方法，Java 9+ 还可以定义 `private` 辅助方法。
         - 枚举（`enum`）：表示固定有限的一组实例，适合状态码、类型码、开关选项、流程节点；枚举常量本质上是该枚举类型的固定对象。
         - 选择：有共同字段和部分实现用抽象类；只约定能力用接口；值集合固定用枚举。
-    - 总结：
-
-        1. 封装 encapsulation：把字段藏起来，用方法控制访问
-        1. 继承 inheritance：子类复用父类
-        1. 多态 polymorphism：父类引用指向子类对象
-        1. 抽象 abstract：提取共同能力，但不一定完整实现
-        1. 接口 interface：定义能力规范
-        1. 重写 override：子类改写父类方法
-        1. 重载 overload：同名方法，不同参数
-        1. this：当前对象
-        1. super：父类部分
 - 嵌套、局部、匿名类型
 
     先按“声明位置”判断：
