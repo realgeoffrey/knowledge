@@ -302,6 +302,8 @@ Java 的数据类型分为 基本类型（Primitive Types） 和 引用类型（
     ├─ 局部变量 Local Variable：声明在方法、代码块里
     └─ 参数 Parameter：声明在方法参数列表里
     ```
+
+    >变量不包含方法。
 - 变量：类变量（`static`）、实例变量、局部变量
 
     先记住一句真理：**变量不是对象；引用也不是对象；`new` 出来的东西才是对象。**
@@ -618,7 +620,9 @@ Java 的数据类型分为 基本类型（Primitive Types） 和 引用类型（
 
         `int[][][] a = { { { 1, 2 } }, { { 3, 4 } } };`
 
-    - 稀疏数组
+    - <details>
+
+        <summary>稀疏数组</summary>
 
         稀疏数组不是 Java 内置类型，而是一种压缩存储思路：当二维数组中大部分元素都是默认值（如 `0`）时，只保存有意义的数据。
 
@@ -638,7 +642,38 @@ Java 的数据类型分为 基本类型（Primitive Types） 和 引用类型（
         其他位置默认都是 0
         */
         ```
+        </details>
 
+- java的面向对象包含关系
+
+    ```text
+    包 package
+    └─ 类 class / 接口 interface / 枚举 enum / 注解 annotation
+       └─ 类 class
+          ├─ 静态成员：属于类本身
+          │  ├─ 静态字段 / 类变量：static field
+          │  ├─ 静态方法 / 类方法：static method
+          │  └─ 静态代码块：static {}
+          │
+          ├─ 实例成员：属于实例对象
+          │  ├─ 实例字段 / 实例变量：instance field
+          │  └─ 实例方法：instance method
+          │
+          ├─ 构造器 constructor：负责创建对象时初始化
+          ├─ 初始化代码块：{}，创建对象时执行
+          └─ 嵌套类型 nested type：类里面再定义类、接口、枚举等
+
+    实例对象 object / instance
+    ├─ 由类 new 出来
+    ├─ 拥有自己的一份实例字段
+    ├─ 可以调用实例方法
+    └─ 共享类里的 static 字段和 static 方法
+
+    方法 method
+    ├─ 参数 parameter：变量
+    ├─ 局部变量 local variable：变量
+    └─ 代码逻辑 statement / expression
+    ```
 - 面向对象：类与对象、封装、继承、多态
 
     >OO = Object-Oriented，面向对象（一种思想/范式）；OOP = Object-Oriented Programming，面向对象编程。以类的方式组织代码，以对象的方式组织（封装）数据
@@ -714,6 +749,17 @@ Java 的数据类型分为 基本类型（Primitive Types） 和 引用类型（
         - 接口（`interface`）：定义能力或契约，一个类可以 `implements` 多个接口；接口中的抽象方法默认是 `public abstract`，也可以定义 `default` / `static` 方法，Java 9+ 还可以定义 `private` 辅助方法。
         - 枚举（`enum`）：表示固定有限的一组实例，适合状态、类型、选项等场景。
         - 选择：有共同字段和部分实现用抽象类；只约定能力用接口；值集合固定用枚举。
+    - 总结：
+
+        1. 封装 encapsulation：把字段藏起来，用方法控制访问
+        1. 继承 inheritance：子类复用父类
+        1. 多态 polymorphism：父类引用指向子类对象
+        1. 抽象 abstract：提取共同能力，但不一定完整实现
+        1. 接口 interface：定义能力规范
+        1. 重写 override：子类改写父类方法
+        1. 重载 overload：同名方法，不同参数
+        1. this：当前对象
+        1. super：父类部分
 
 - 异常处理：`try-catch-finally`、`throws`
 
