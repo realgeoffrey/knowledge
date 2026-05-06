@@ -1,15 +1,14 @@
 # Java学习笔记
 
 ## 目录
-1. [背景](#背景)
+1. [Java 概览](#java-概览)
 1. [Java SE 基础](#java-se-基础)
-1. [开发框架](#开发框架)
-1. [中间件与数据](#中间件与数据)
+1. [后端工程与数据中间件](#后端工程与数据中间件)
 
 ---
 
 <details>
-<summary>定位、学习路线</summary>
+<summary>定位、资源与路线</summary>
 
 1. 这份笔记面向“前端转全栈 Java”的学习场景；与 JS 基本一致的内容尽量少写，重点建立能做业务开发的知识骨架。
 
@@ -50,8 +49,8 @@
 
 </details>
 
-### 背景
-#### Java 版本
+### Java 概览
+#### 版本演进
 - 1.2 以前通常叫 JDK（Java Development Kit）。
 - 1.2 到 1.4 常见叫法是 J2SE（Java 2 Platform, Standard Edition）。
 - Java 5 以后统一叫 Java SE（Java Platform, Standard Edition）。
@@ -91,12 +90,12 @@
     ```
     </details>
 
-#### Java 平台家族
+#### 平台体系
 - **Java SE**：标准版，覆盖语言基础、标准类库、集合、IO/NIO、日期时间、并发、网络、反射、注解。
 - **Java EE（Java Enterprise Edition） / Jakarta EE**：企业级规范体系，现已演进为 Jakarta EE。
 - **Java ME**（Java Micro Edition）：面向早期嵌入式/移动设备，现在基本不是主流。
 
-#### JDK、JRE、JVM
+#### 运行体系：JDK / JRE / JVM
 - **JDK**：开发套件，包含 JVM、标准类库，以及 `$JAVA_HOME/bin` 下的开发和诊断工具；业务常用命令包括 `java`、`javac`、`jar`、`javadoc`、`jshell`、`jdeps`、`jlink`、`jcmd`、`jmap`、`jstack`。
 - **JRE**（Java Runtime Environment）：运行环境，包含 JVM 和标准类库；Java 8 常见独立 JRE，现代 JDK 通常直接提供完整运行环境。
 - **JVM**（Java Virtual Machine）：负责加载并执行 `.class` 字节码。
@@ -130,7 +129,7 @@ flowchart TD
     JVM ==>|"4. 系统调用 / 本地接口"| OS
 ```
 
-#### Java 的核心优势
+#### 核心优势
 - 跨平台：同一套字节码可以运行在不同平台的 JVM 上（一次编写，到处运行。Write Once, Run Anywhere。WORA）。
 - 工程生态成熟：框架、数据库驱动、中间件集成非常完善。
 - 垃圾回收：不需要像 C/C++ 那样手动管理内存。
@@ -145,7 +144,7 @@ flowchart TD
 >“三高”主要是系统设计问题，语言和框架只是基础条件，不是全部答案。
 
 ### Java SE 基础
-#### 入门与环境
+#### 环境配置与运行
 - 安装 JDK、Maven，并配置 `JAVA_HOME`、`PATH`。
 
     下载并安装 JDK、Maven，然后配置环境变量。例如 `~/.zshrc`：
@@ -179,15 +178,14 @@ flowchart TD
     >可通过 `java 类名 参数1 参数2` 向 `main` 传入命令行参数，如：`public class 类名 { public static void main(String[] args) {} }`。传统项目入口常用这个标准签名。只有要被 JVM 直接当作程序入口启动的类，才必须有可启动的 `main` 方法。
 - 普通源文件中，`public` 顶级类的类名必须与文件名一致；一个 `.java` 文件最多只能有一个 `public` 顶级类。
 
-#### 基础语法
-##### 强类型
+#### 类型系统
 - Java 是强类型语言，变量声明必须有确定类型。
 - 小范围数值类型可以向大范围类型隐式转换。
 - 反向收窄转换需要显式强转，并可能丢失精度或溢出。
 - `boolean` 不能与数值类型互转。
 
 <details>
-<summary>e.g.</summary>
+<summary>类型转换示例</summary>
 
 ```java
 int a = 10;
@@ -209,7 +207,7 @@ String s = String.valueOf(a);
 ```
 </details>
 
-##### 数据类型
+#### 基本类型与引用类型
 Java 的数据类型分为基本类型（Primitive Types）和引用类型（Reference Types）。
 
 1. 基本类型一共 8 种：
@@ -243,7 +241,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
         - **字符串拼接**：只要一侧是 `String`，`+` 就表示字符串拼接，结果一定是 `String`；`boolean` 可以参与字符串拼接（不能参与数值运算）。
 
         <details>
-        <summary>e.g.</summary>
+        <summary>表达式类型提升示例</summary>
 
         ```java
         byte b1 = 1;
@@ -286,7 +284,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 
     引用类型变量中保存的是对象引用，值要么是 `null`，要么指向某个对象。
 
-##### 先掌握这些基础语法
+#### 语法基础与面向对象
 - Java 的 `变量` 含义
 
     ```text
@@ -873,7 +871,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 
     >实际读写资源优先用 `try-with-resources`，它会自动关闭实现了 `AutoCloseable` 的资源。
 
-#### 常用 API 与进阶
+#### 常用 API 与进阶主题
 业务开发里最常用的一批内容：
 
 - `String`：不可变字符串；频繁拼接优先用 `StringBuilder`。
@@ -885,8 +883,8 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 - 反射：运行期读取类、构造器、字段、方法、参数、注解、泛型签名信息；框架常用，业务代码少滥用。
 - 多线程基础：先掌握 `Thread`、`Runnable`、线程池、锁、可见性、原子性，再深入并发工具类。
 
-### 开发框架
-#### 构建与依赖
+### 后端工程与数据中间件
+#### 构建与依赖管理
 - **Maven**：最常见的 Java 项目构建与依赖管理工具。
 
     1. 配置 IDE 的 Maven 版本：
@@ -923,7 +921,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 
 >对于多数后端初学者，先掌握 Maven 即可。
 
-#### Web 与持久层
+#### Web 框架与持久层
 - **Java Web**：传统 Web 基础主要包括 Servlet、Filter、Listener、Session、Cookie。
 - **Spring MVC**：处理 HTTP 请求映射、参数绑定、数据校验、异常处理、视图解析、JSON 响应。
 - **MyBatis**：负责 SQL 映射、参数绑定、结果映射、动态 SQL、数据库访问。
@@ -933,7 +931,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 - Spring MVC 负责“接请求、回响应”
 - MyBatis 负责“连数据库、执行 SQL”
 
-#### Spring 全家桶
+#### Spring 生态
 - **Spring Framework**：核心框架，提供 IoC、AOP、事务管理、资源访问、事件、类型转换、校验。
 - **Spring Boot**：在 Spring 基础上做自动配置，简化项目搭建和开发。
 
@@ -945,18 +943,17 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 - Service：写业务逻辑
 - Mapper / DAO：访问数据库
 
-### 中间件与数据
-#### MySQL
+#### 关系型数据库：MySQL
 - 最常见的关系型数据库。
 - 先掌握建表、增删改查、索引、事务，再谈性能优化。
 - 业务开发重点：表结构设计、主键、唯一约束、外键取舍、分页查询、慢 SQL、事务隔离级别。
 
-#### Redis
+#### 缓存与内存数据：Redis
 - 常用作缓存，也可用于分布式锁、计数器、会话、排行榜、延迟队列场景。
 - 要先理解缓存命中、过期、穿透、击穿、雪崩这些基础问题。
 - 常见数据结构：String、Hash、List、Set、Sorted Set；先按业务场景选结构，不要只把 Redis 当 Map 用。
 
-#### 消息队列
+#### 消息队列：Kafka / RabbitMQ
 - **Kafka**：偏日志流、吞吐高，常用于异步削峰、流式处理。
 - **RabbitMQ**：偏传统消息队列，路由能力更丰富，业务系统里也很常见。
 - 核心问题：消息是否丢失、是否重复消费、消费失败怎么重试、顺序性是否重要、是否需要死信队列。
