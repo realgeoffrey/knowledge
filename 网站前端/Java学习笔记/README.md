@@ -444,7 +444,9 @@ Java 的数据类型分为 基本类型（Primitive Types） 和 引用类型（
         - `package` 只写包名，不写类名。
         - 包名通常全小写，常见写法是公司域名倒置，如 `com.baidu.project`。
         - 包路径通常与目录结构一致，如 `com.example.demo.service` 对应 `com/example/demo/service`。
-        - 不写 `package` 就是默认包；练习代码可以用，正式项目一般不要用。
+        - 不写 `package` 就是默认包（default package），意思是这个类不属于任何具名包；练习代码可以用，正式项目一般不要用。
+
+            >默认包和包访问权限不是同一个概念：默认包说的是“源文件有没有声明包名”；包访问权限说的是类、字段、方法、构造器不写 `public` / `protected` / `private` 时，只能被同一个包里的代码访问。
     - `import` 规则：
 
         - 使用其他包下的类型且不写全限定名时，通常需要 `import`。
@@ -467,8 +469,8 @@ Java 的数据类型分为 基本类型（Primitive Types） 和 引用类型（
     - 和访问权限的关系：
 
         - `public`：任何包都能访问。
-        - 不写修饰符：只有同包可访问，叫包访问权限（package-private）。
         - `protected`：同包可访问；跨包时仅子类在继承访问语境中可访问。
+        - 不写修饰符：只有同包可访问，叫包访问权限（package-private）。
         - `private`：只有当前类内部可访问。
     - 实际项目通常会按包分层，例如 `controller`、`service`、`mapper`、`entity`、`config`、`util`。
     - 常见坑：
@@ -491,8 +493,6 @@ Java 的数据类型分为 基本类型（Primitive Types） 和 引用类型（
     - 常见纠错：`Map` 不能直接 for-each，通常遍历 `entrySet()` / `keySet()` / `values()`。
 - 方法
 
-    方法就是“把一段逻辑封装起来，之后可以重复调用”。
-
     `可选修饰符 返回值类型 方法名(参数类型 参数名, ...) { 方法体 }`
 
     - 返回值类型写 `void` 表示没有返回值。
@@ -511,9 +511,7 @@ Java 的数据类型分为 基本类型（Primitive Types） 和 引用类型（
         int sum(int a, int b, int c) { return a + b + c; }
         ```
 
-        仅返回值类型不同，不算重载。
-
-        仅访问修饰符不同，不算重载。
+        仅返回值类型不同，不算重载；仅访问修饰符不同，不算重载。
     - 可变参数：`类型... 变量名`（`...`前后都可以加空格）
 
         ```java
@@ -528,7 +526,25 @@ Java 的数据类型分为 基本类型（Primitive Types） 和 引用类型（
 
         - 一个方法最多只能有一个可变参数。
         - 可变参数必须放在最后。
-        - 调用时可传 `0..N` 个同类型实参，也可传同类型数组。
+        - <details>
+
+            <summary>调用时可传 0或多个 同类型实参，也可传同类型数组。</summary>
+
+            ```java
+            int sum(int... nums) {
+                int total = 0;
+                for (int num : nums) {
+                    total += num;
+                }
+                return total;
+            }
+
+            sum();              // 传 0 个 int，nums 是长度为 0 的 int 数组
+            sum(1);             // 传 1 个 int
+            sum(1, 2, 3);       // 传多个 int
+            sum(new int[]{1, 2, 3}); // 也可以直接传 int 数组
+            ```
+            </details>
     - 调用方法的方式：`类.静态方法()`、`对象.实例方法()`（非静态方法 == 实例方法）。
 
         >成员方法 容易产生歧义，可能包含静态方法，也可能狭义地指代实例方法。因此建议抛弃这种叫法
