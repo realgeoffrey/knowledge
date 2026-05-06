@@ -92,12 +92,12 @@
     </details>
 
 #### Java 平台家族
-- **Java SE**：标准版，核心语法、集合、IO、并发等都在这里。
+- **Java SE**：标准版，覆盖语言基础、标准类库、集合、IO/NIO、日期时间、并发、网络、反射、注解。
 - **Java EE（Java Enterprise Edition） / Jakarta EE**：企业级规范体系，现已演进为 Jakarta EE。
 - **Java ME**（Java Micro Edition）：面向早期嵌入式/移动设备，现在基本不是主流。
 
 #### JDK、JRE、JVM
-- **JDK**：开发套件，包含运行 Java 程序所需组件，以及 `javac`、`jar`、`javadoc` 等开发工具。
+- **JDK**：开发套件，包含 JVM、标准类库，以及 `$JAVA_HOME/bin` 下的开发和诊断工具；业务常用命令包括 `java`、`javac`、`jar`、`javadoc`、`jshell`、`jdeps`、`jlink`、`jcmd`、`jmap`、`jstack`。
 - **JRE**（Java Runtime Environment）：运行环境，包含 JVM 和标准类库；Java 8 常见独立 JRE，现代 JDK 通常直接提供完整运行环境。
 - **JVM**（Java Virtual Machine）：负责加载并执行 `.class` 字节码。
 
@@ -108,7 +108,7 @@ flowchart TD
 
     subgraph JDK ["JDK (开发套件 = 运行环境 + 开发工具)"]
         direction TB
-        Tools["开发工具<br/>(javac, javadoc, jmap等)"]
+        Tools["开发工具<br/>(java, javac, jar, javadoc, jcmd, jmap, jstack)"]
 
         subgraph JRE ["运行环境 (JVM + 标准类库)"]
             direction TB
@@ -121,7 +121,7 @@ flowchart TD
 
     %% 核心流程
     BC["字节码 (.class)"]
-    OS["底层操作系统<br/>(Windows, Linux, macOS等)"]
+    OS["底层操作系统<br/>(Windows, Linux, macOS)"]
 
     %% 节点连接关系
     Src -->|"1. 编译 (javac)"| Tools
@@ -172,7 +172,7 @@ flowchart TD
         2. IDEA：「文件」-「项目结构」-「项目」-「SDK」（「编辑」配置好需要的SDK）
 - 初学期建议先用 LTS 版本；老项目常见 Java 8，新项目常见 Java 17/21，是否使用更高版本以团队基线为准（团队统一约定的技术标准下限/默认线）。
 
-- `javac 文件.java` → `类名.class`，编译为字节码；运行 `java 类名`（不写 `.class`）后，由 JVM 解释执行或经 JIT 编译为机器码，再交给 CPU 执行。
+- `javac 文件.java` → `类名.class`，编译为字节码；运行 `java 类名`（不写 `.class`）后，由 JVM 解释执行或经 JIT 编译为机器码，再交给CPU执行。
 
     >字节码是源代码经过编译器编译生成的，但它并不直接运行在物理硬件上，而是运行在虚拟机上。虚拟机会解释执行字节码指令，并将其转化为机器码让CPU实际执行。
 
@@ -227,7 +227,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 
     - 上表的默认值只适用于字段和数组元素：字段是声明在类里、方法外的变量，包括实例字段（实例变量）和静态字段（类变量）；局部变量不是字段，没有默认值，读取前必须明确赋值。
     - 浮点数有精度问题，金额计算优先用 `java.math.BigDecimal`。
-    - `char` 不等于“任意一个 Unicode 字符”，因为有些字符需要两个 UTF-16 代码单元表示。单引号是 `char`，双引号是 `String`。
+    - `char` 不是“任意一个 Unicode 字符”，因为有些字符需要两个 UTF-16 代码单元表示。单引号是 `char`，双引号是 `String`。
     - 经过运算符后的类型变化（表达式里会先做数值提升，再计算）：
 
         - **二元数值提升**：两个数值操作数做二元运算时，Java 会先把两边提升到同一种类型再计算；规则是 `int`<`long`<`float`<`double`，`byte`/`short`/`char` 都会先变成 `int`。
@@ -239,7 +239,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
         - **二元算术 / 整型位运算** `+`、`-`、`*`、`/`、`%`、`&`、`|`、`^`：先做二元数值提升，再得到结果类型。
         - **比较运算** `<`、`>`、`<=`、`>=`、`==`、`!=`：两个都是数值基本类型时，也会先做二元数值提升；`boolean` 只能和 `boolean` 比较。
         - **位移运算** `<<`、`>>`、`>>>`：左右两边先做一元数值提升；结果类型看左操作数提升后的类型。
-        - **复合赋值** `+=`、`-=` 等：先按普通运算计算，再隐式转换为左值类型；普通 `=` 不会自动做这种窄化转换。
+        - **复合赋值**：`+=`、`-=`、`*=`、`/=`、`%=`、`&=`、`|=`、`^=`、`<<=`、`>>=`、`>>>=` 会先按普通运算计算，再隐式转换为左值类型；普通 `=` 不会自动做这种窄化转换。
         - **字符串拼接**：只要一侧是 `String`，`+` 就表示字符串拼接，结果一定是 `String`；`boolean` 可以参与字符串拼接（不能参与数值运算）。
 
         <details>
@@ -320,9 +320,9 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
         | --- | --- | --- |
         | 核心职责 | 管方法调用过程 | 管对象生命周期 |
         | 归属 | 线程私有 | 线程共享 |
-        | 主要存放 | 每次方法调用产生的栈帧；栈帧里有参数、局部变量、临时计算数据等 | `new` 出来的对象、数组；对象里的实例字段、数组元素 |
-        | 生命周期 | 方法调用开始入栈，方法结束出栈 | 对象不再被任何可达引用指向后，等待 GC 回收 |
-        | 常见错误 | 递归太深等导致 `StackOverflowError` | 对象太多或太大导致 `OutOfMemoryError` |
+        | 主要存放 | 每次方法调用产生的栈帧；栈帧里有局部变量表、操作数栈、动态链接、方法返回地址 | `new` 出来的对象、数组；对象里的实例字段、数组元素 |
+        | 生命周期 | 方法调用开始入栈，方法结束出栈 | 对象不再被任何可达引用指向后，由 GC 回收 |
+        | 常见错误 | 递归过深会导致 `StackOverflowError` | 对象太多或太大导致 `OutOfMemoryError` |
 
         所以不要把“变量名在哪里”和“对象在哪里”混在一起。变量名主要是源码里的概念；程序运行时更接近于栈帧里的槽位、堆里的对象、对象里的字段。
 
@@ -409,7 +409,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
         - **引用只是指路牌**：引用可以存在栈帧里，也可以存在堆对象的字段里，还可以存在数组元素里。
         - **字段看归属**：实例字段属于对象，对象在堆里，所以实例字段也在对象内部；`static` 字段属于类，不属于某个对象。
         - **多个引用可以指向同一个对象**：改的是对象本体，不是某个变量名。
-        - **JVM 可能做逃逸分析等优化**，但不改变 Java 语义；学习时按这套规则理解即可。
+        - **JVM 可能做逃逸分析、标量替换、锁消除优化**，但不改变 Java 语义；学习时按这套规则理解即可。
 
     **一句话总结：** 看声明位置判断变量归属；看类型判断变量里装的是值还是引用；看 `new` 判断对象本体在堆里。
 - 常量与不可变：`final`
@@ -433,7 +433,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
     - **接口实例方法**：`default`
     - **封闭类型（Java 17+）**：`sealed`、`non-sealed`，以及类头上的 `permits` 子句
 
-    说明：顶级类只能用 `public` 或包访问权限；`private`、`protected` 通常用于成员或嵌套类型。局部变量只有 `final`（以及 `var` 推断类型，但 `var` 不算修饰符）；注解 `@…` 可写在修饰符前，但不算上述关键字修饰符。模块上的 `open` 等属于模块声明，不是成员/局部上的修饰符。
+    说明：顶级类只能用 `public` 或包访问权限；`private`、`protected` 通常用于成员或嵌套类型。局部变量只能用 `final`；`var` 是局部变量类型推断，不是修饰符。注解 `@…` 可写在修饰符前，但不算上述关键字修饰符。模块上的 `open` 属于模块声明，不是成员/局部上的修饰符。
 - 包机制
 
     包可以理解为 Java 的命名空间和目录组织方式，用来组织代码、避免同名冲突，并配合访问控制限制可见范围。
@@ -462,7 +462,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 
             >`import com.example.*;` 不会把 `com.example.service.UserService` 一起导入。
 
-        - `import` 只是简化类名书写，不会因为写了 `import` 就提前加载整个包或类；类加载由实际使用、反射、初始化等触发。
+        - `import` 只是简化类名书写，不会因为写了 `import` 就提前加载整个包或类；类加载常由首次主动使用触发，例如创建对象、访问静态成员、调用静态方法、反射访问。
 
             >`import` 是编译期语法，作用是把冗长的全限定类名简化为简单类名；它不像 JS 的 `import` 那样执行模块加载。
         - `import 包.类;`、`import 包.*;`、`import static 包.类.静态成员;`、`import static 包.类.*;`（导入所有静态成员，导入后可直接写成员名）
@@ -793,7 +793,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 
         - 抽象类（`abstract class`）：不能直接 `new`，适合放共同状态和部分实现，子类继承后补全抽象方法。
         - 接口（`interface`）：定义能力或契约，一个类可以 `implements` 多个接口；接口中的抽象方法默认是 `public abstract`，字段默认是 `public static final`，也可以定义 `default` / `static` 方法，Java 9+ 还可以定义 `private` 辅助方法。
-        - 枚举（`enum`）：表示固定有限的一组实例，适合状态、类型、选项等场景；枚举常量本质上是该枚举类型的固定对象。
+        - 枚举（`enum`）：表示固定有限的一组实例，适合状态码、类型码、开关选项、流程节点；枚举常量本质上是该枚举类型的固定对象。
         - 选择：有共同字段和部分实现用抽象类；只约定能力用接口；值集合固定用枚举。
     - 总结：
 
@@ -894,9 +894,9 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 - 日期时间 API：优先用 `java.time`，如 `LocalDateTime`、`Instant`、`Duration`，少用旧的 `Date` / `Calendar`。
 - 集合类：`List` 有序可重复；`Set` 不重复；`Map` 存键值对；遍历 `Map` 常用 `entrySet()`。
 - 泛型：把类型变成参数，如 `List<String>`，主要用于编译期类型检查，运行期有类型擦除。
-- 注解：给类、方法、字段等添加元数据，常配合框架、反射、编译器使用。
+- 注解：给类、接口、枚举、字段、方法、构造器、参数、局部变量、类型使用位置添加元数据，常配合框架、反射、编译器使用。
 - IO 流：字节流处理二进制，字符流处理文本；资源关闭优先用 `try-with-resources`。
-- 反射：运行期读取类、字段、方法、注解等信息；框架常用，业务代码少滥用。
+- 反射：运行期读取类、构造器、字段、方法、参数、注解、泛型签名信息；框架常用，业务代码少滥用。
 - 多线程基础：先掌握 `Thread`、`Runnable`、线程池、锁、可见性、原子性，再深入并发工具类。
 
 ### 开发框架
@@ -938,9 +938,9 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 >对于多数后端初学者，先掌握 Maven 即可。
 
 #### Web 与持久层
-- **Java Web**：Servlet、Filter、Listener 等传统 Web 基础。
-- **Spring MVC**：处理 HTTP 请求、参数绑定、返回 JSON 等 Web 层能力。
-- **MyBatis**：负责 SQL 映射和数据库访问。
+- **Java Web**：传统 Web 基础主要包括 Servlet、Filter、Listener、Session、Cookie。
+- **Spring MVC**：处理 HTTP 请求映射、参数绑定、数据校验、异常处理、视图解析、JSON 响应。
+- **MyBatis**：负责 SQL 映射、参数绑定、结果映射、动态 SQL、数据库访问。
 
 可以简单理解为：
 
@@ -948,7 +948,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 - MyBatis 负责“连数据库、执行 SQL”
 
 #### Spring 全家桶
-- **Spring Framework**：核心框架，提供 IoC、AOP、事务管理等能力。
+- **Spring Framework**：核心框架，提供 IoC、AOP、事务管理、资源访问、事件、类型转换、校验。
 - **Spring Boot**：在 Spring 基础上做自动配置，简化项目搭建和开发。
 
     启动标配：`@SpringBootApplication`（一个组合注解，主要包含：`@SpringBootConfiguration`、`@EnableAutoConfiguration`、`@ComponentScan`；其中 `@SpringBootConfiguration` 可视为 Spring Boot 场景下的 `@Configuration`）
@@ -966,7 +966,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 - 业务开发重点：表结构设计、主键、唯一约束、外键取舍、分页查询、慢 SQL、事务隔离级别。
 
 #### Redis
-- 常用作缓存，也可用于分布式锁、计数器、会话等场景。
+- 常用作缓存，也可用于分布式锁、计数器、会话、排行榜、延迟队列场景。
 - 要先理解缓存命中、过期、穿透、击穿、雪崩这些基础问题。
 - 常见数据结构：String、Hash、List、Set、Sorted Set；先按业务场景选结构，不要只把 Redis 当 Map 用。
 
