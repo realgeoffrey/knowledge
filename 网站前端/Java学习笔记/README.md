@@ -73,8 +73,8 @@
     # 不同候选项的 sdk list 展示格式可能不同，以输出底部图例为准
     # 针对maven，可以根据sdk list maven查看标志信息（如：`+`local version；`*`installed；`>`currently in use）
 
-    sdk install java              # 安装 Java 最新稳定版
-    sdk install java 「支持的版本标识」  # 安装指定版本，版本标识从 sdk list java 中复制
+    sdk install java                # 安装 Java 最新稳定版
+    sdk install java 「支持的版本标识」 # 安装指定版本，版本标识从 sdk list java 中复制
     sdk install java 8.0.192-local /Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home
     # 安装本地版本（sdk install java 「唯一的版本号」 「本地路径」）：先手动下载一个版本，然后让 SDKMAN! 接管（软链接）
 
@@ -298,8 +298,8 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
     └─ 参数 Parameter：声明在方法参数列表里
     ```
 
-    >变量不包含方法；方法是行为，不是变量。
-- 变量：静态字段（类变量）、实例字段（实例变量）、局部变量
+    >变量不包含方法（方法是行为，不是变量）。
+- 变量
 
     先记住一句真理：**变量不是对象；引用也不是对象；`new` 出来的东西才是对象。**
 
@@ -421,12 +421,6 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
     - `final` 修饰方法：子类不能重写该方法。
     - `final` 修饰类：不能被继承，如 `String`。
     - 真正常量通常写成 `public static final`，命名用全大写加下划线，如 `MAX_SIZE`。
-
-    ```java
-    final User user = new User();
-    user.name = "Tom";      // 可以：修改对象内部字段
-    // user = new User();   // 编译错误：final 引用不能重新赋值
-    ```
 - 关键字修饰符
 
     出现在类型（或方法返回值类型）**之前**的**关键字修饰符**按声明位置不同而不同；常见分类如下（同一条声明里可组合，但受语法限制）：
@@ -549,25 +543,14 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 
         - 一个方法最多只能有一个可变参数。
         - 可变参数必须放在最后。
-        - <details>
-
-            <summary>调用时可传 0个或多个 同类型实参，也可传同类型数组。</summary>
+        - 调用时可传 0个或多个 同类型实参，也可传同类型数组。
 
             ```java
-            int sum(int... nums) {
-                int total = 0;
-                for (int num : nums) {
-                    total += num;
-                }
-                return total;
-            }
-
             sum();              // 传 0 个 int，nums 是长度为 0 的 int 数组
             sum(1);             // 传 1 个 int
             sum(1, 2, 3);       // 传多个 int
             sum(new int[]{1, 2, 3}); // 也可以直接传 int 数组
             ```
-            </details>
     - 调用方法的方式：`类.静态方法()`、`对象.实例方法()`（非静态方法 == 实例方法）。
 
         >“成员方法”容易产生歧义，可能包含静态方法，也可能狭义地指代实例方法。建议直接说“静态方法”或“实例方法”。
@@ -667,11 +650,11 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
             {2, 3, 2}
         };
         /*
-        原数组是 11 行 11 列，一共有 2 个非 0 值
-        这 2 个值分别在：
-        array[1][2] = 1
-        array[2][3] = 2
-        其他位置默认都是 0
+          原数组是 11 行 11 列，一共有 2 个非 0 值
+          这 2 个值分别在：
+          array[1][2] = 1
+          array[2][3] = 2
+          其他位置默认都是 0
         */
         ```
         </details>
@@ -685,7 +668,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
           ├─ 静态成员：属于类本身
           │  ├─ 静态字段 / 类变量：static field
           │  ├─ 静态方法 / 类方法：static method
-          │  └─ 静态代码块：static {}
+          │  └─ 静态代码块：static {}：类初始化时执行一次
           │
           ├─ 实例成员：属于实例对象
           │  ├─ 实例字段 / 实例变量：instance field
@@ -715,7 +698,6 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 
         类是对象的模板，定义字段（属性）和方法（行为）；对象是类的实例，通常通过 `new` 创建。
 
-        - 字段描述对象状态，方法描述对象行为。
         - 实例字段 / 实例方法属于对象；`static` 字段 / 方法属于类。
         - 使用对象前，通常要先有引用变量指向一个对象：`User user = new User();`。
 
@@ -791,7 +773,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 
         多态指：同一个父类/接口类型的引用，指向不同子类/实现类对象时，同一段方法调用会在运行期执行不同实现。
 
-        编译期看引用的声明类型，决定“能调用哪些成员”；运行期看真实对象类型，决定“执行哪个重写后的实例方法”。字段和 `static` 方法是隐藏，`private` 方法不能被重写，`final` 方法禁止重写，都不参与运行时多态。
+        编译期看引用的声明类型，决定“能调用哪些成员”；运行期看真实对象类型，决定“执行哪个重写后的实例方法”。字段和 `static` 方法是隐藏，`private` 方法不能被重写，`final` 方法禁止重写：都不参与运行时多态。
 
         ```java
         Person p = new Student();
@@ -806,7 +788,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
 
         - 重写（Override）：子类重新实现父类实例方法，方法签名要兼容，访问权限不能更窄（`public` > `protected` > 包访问 > `private`），建议加 `@Override`，抛出的受检异常范围不能更宽。
 
-            >重载（Overload）：同一类中方法（实例方法或静态方法）“参数列表不同”；重写：父子类中“同一实例方法的不同实现”；多态：用父类/接口引用调用该实例方法时，运行期执行真实对象的实现。
+            >概念总结：重载（Overload），同一类中方法（实例方法或静态方法）“参数列表不同”。重写，父子类中“同一实例方法的不同实现”。多态，用父类/接口引用调用该实例方法时，运行期执行真实对象的实现。
     - 抽象类、接口、枚举
 
         - 抽象类（`abstract class`）：不能直接 `new`，适合放共同状态和部分实现，子类继承后补全抽象方法。
@@ -824,7 +806,51 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
         1. 重载 overload：同名方法，不同参数
         1. this：当前对象
         1. super：父类部分
-- 嵌套类型：定义在另一个类型内部的类型。类或接口的成员位置支持嵌套类、嵌套接口、嵌套枚举、嵌套注解；方法或代码块里可以定义局部类，Java 16+ 还支持局部 `record`；表达式里可以创建匿名类。
+- 嵌套类型：定义在另一个类型内部的类型。类或接口的成员位置支持嵌套类、嵌套接口、嵌套枚举、嵌套注解；Java 16+ 还支持嵌套 `record`。方法或代码块里可以定义局部类，Java 16+ 还支持局部 `record`；表达式里可以创建匿名类。
+
+    >**成员位置**在这份笔记里指“直接写在类型 `{}` 里的第一层位置”，也就是不在方法、构造器、初始化代码块、局部类、匿名类内部的位置。严格说，字段、方法、嵌套类型是成员；构造器和初始化代码块不是成员，但它们也写在类体第一层。
+
+    ```java
+    class Outer {
+        int age;              // 成员位置：字段
+        static int total;     // 成员位置：静态字段
+
+        Outer() {             // 类体第一层：构造器（严格说不是成员）
+            int x = 1;        // 不是成员位置：这是构造器内部的局部变量
+        }
+
+        void test() {         // 成员位置：方法
+            int y = 2;        // 不是成员位置：这是方法内部的局部变量
+
+            class Local {}    // 不是成员位置：这是局部类
+
+            // Java 16+:
+            // record LocalPair(String key, String value) {} // 不是成员位置：这是局部 record
+
+            Runnable task = new Runnable() { // 不是成员位置：这是匿名类表达式
+                public void run() {}
+            };
+        }
+
+        {                     // 类体第一层：实例初始化代码块（严格说不是成员）
+            int z = 3;        // 不是成员位置：这是代码块内部的局部变量
+        }
+
+        static {              // 类体第一层：静态代码块（严格说不是成员）
+        }
+
+        class Inner {}        // 成员位置：成员类 / 内部类
+        static class Nested {} // 成员位置：静态嵌套类
+        interface Action {}   // 成员位置：成员接口
+        enum Role { ADMIN }   // 成员位置：成员枚举
+        @interface Mark {}    // 成员位置：成员注解
+
+        // Java 16+:
+        // record Pair(String key, String value) {} // 成员位置：成员 record，不是局部 record
+    }
+    ```
+
+    简单判断：**直接缩进在类/接口/枚举/注解的第一层，就是成员位置；继续进入方法体、构造器体、代码块体之后，就不是成员位置。**
 
     ```java
     class User {
@@ -848,15 +874,18 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
             String value();
         }
 
+        // Java 16+:
+        // record Pair(String key, String value) {} // 成员 record
+
         void test() {
             class LocalHelper {
                 void run() {}
             }
 
             // Java 16+:
-            // record LocalPair(String key, String value) {}
+            // record LocalPair(String key, String value) {} // 局部 record
 
-            Runnable task = new Runnable() {
+            Runnable task = new Runnable() { // 匿名类
                 public void run() {}
             };
         }
@@ -869,6 +898,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
     - 嵌套接口：如 `User.Validator`，表示只和 `User` 强相关的能力规范；接口本身不能 `new`，需要由类实现。
     - 嵌套枚举：如 `User.Role`，表示只和 `User` 强相关的固定选项。
     - 嵌套注解：如 `User.FieldName`，表示只和 `User` 强相关的元数据标记。
+    - 嵌套 `record`：Java 16+ 支持，`record` 是特殊类，成员 `record` 隐式是 `static`。
     - 局部类：如 `LocalHelper`，定义在方法或代码块内部，只在该作用域内可见。
     - 局部 `record`：Java 16+ 支持，`record` 是特殊类，适合在方法内部临时定义一组只读数据。
     - 匿名类：如 `new Runnable() { ... }`，没有类名，常用于一次性实现接口或继承父类。
@@ -881,6 +911,7 @@ Java 的数据类型分为基本类型（Primitive Types）和引用类型（Ref
     | 嵌套接口 | 是 | 接口不能依附某个对象，成员接口隐式是 `static` |
     | 嵌套枚举 | 是 | 枚举表示固定类型集合，成员枚举隐式是 `static` |
     | 嵌套注解 | 是 | 注解本质上是特殊接口，成员注解隐式是 `static` |
+    | 嵌套 `record` | 是 | Java 16+ 支持；`record` 是特殊类，成员 `record` 隐式是 `static` |
     | 局部类 | 不适用 | 定义在方法或代码块中，不是类的成员 |
     | 局部 `record` | 不适用 | Java 16+ 支持；定义在方法或代码块中，不是类的成员 |
     | 匿名类 | 不适用 | 定义在表达式中，没有名字，不是类的成员 |
