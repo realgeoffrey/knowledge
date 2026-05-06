@@ -76,7 +76,7 @@
 
             全链路HTTPS（若使用CDN，则必须CDN请求和回源都是HTTPS）。
 
-            >额外增加劫持难度：前端还可以用[子资源完整性（SRI）](https://developer.mozilla.org/zh-CN/docs/Web/Security/子资源完整性)验证加载文件的数字签名。
+            >额外增加劫持难度：前端还可以用[子资源完整性（SRI）](https://developer.mozilla.org/zh-CN/docs/Web/Security/子资源完整性)验证加载文件的哈希摘要。
     2. DNS攻击
 
         使域名指往不正确的IP地址。

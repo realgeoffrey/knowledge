@@ -12,7 +12,7 @@
 1. [改密码](#改密码)
 1. [指令在PATH变量的路径](#指令在path变量的路径)
 1. [hosts文件位置](#hosts文件位置)
-1. [验证文件的数字签名](#验证文件的数字签名)
+1. [校验文件哈希](#校验文件哈希)
 1. [查看本机IP](#查看本机ip)
 1. [执行文件](#执行文件)
 1. [系统shell类型](#系统shell类型)
@@ -289,7 +289,9 @@ which 「指令」  # e.g. which python; which bash
 
     `C:\Windows\System32\drivers\etc\hosts`
 
-#### 验证文件的数字签名
+#### 校验文件哈希
+>哈希可用于下载完整性校验；MD5、SHA-1 不适合安全签名或抗碰撞场景，安全用途优先使用 SHA-256/SHA-512 等。
+
 1. MD5
 
     ```shell
@@ -327,7 +329,7 @@ which 「指令」  # e.g. which python; which bash
     echo -n 「字符串」 | sha1sum.exe
     # 使用特定算法：`sha224sum.exe sha256sum.exe sha384sum.exe sha512sum.exe`
     ```
-3. base64
+- base64（编码，不是哈希）
 
     ```shell
     # 编码
@@ -929,7 +931,7 @@ brew update && brew upgrade && brew upgrade --cask
 # 更新用brew安装的软件，也更新brew自身
 ```
 
->brew cask可以安装大部分软件，使用`brew search 「软件名」`进行搜索（建议对非App Store安装的应用，都尝试用brew cask安装）。
+>`brew install --cask 「软件名」`可以安装大部分 macOS 图形软件，使用`brew search 「软件名」`进行搜索（建议对非 App Store 安装的应用，都尝试用 Homebrew Cask 安装）。
 
 #### （macOS）打开文件（夹）
 ```shell

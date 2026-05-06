@@ -123,7 +123,7 @@
         2. [大公司的静态资源优化方案](https://github.com/fouber/blog/issues/6)：
 
             1. 配置超长时间的强缓存 —— 节省带宽，提高性能
-            2. 采用文件的数字签名（如：MD5）作为缓存更新依据 —— 精确的缓存控制
+            2. 采用文件内容哈希（如：MD5/SHA 系列摘要）作为缓存更新依据 —— 精确的缓存控制
             3. 静态资源CDN部署 —— 优化网络请求
             4. 非覆盖式更新资源 —— 平滑升级
     3. 组件化开发
@@ -164,7 +164,7 @@
         2. 使用[缓存相关HTTP头](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http缓存)
 
             `Expires` `Cache-Control` `Last-Modified/If-Modified-Since` `ETag/If-None-Match`
-        3. 配置超长时间的强缓存，采用文件的数字签名（如：MD5）作为缓存更新依据。
+        3. 配置超长时间的强缓存，采用文件内容哈希（如：MD5/SHA 系列摘要）作为缓存更新依据。
 
             >`.html`设置不缓存或协商缓存或超短时间强缓存。
 

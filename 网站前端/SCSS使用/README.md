@@ -4,7 +4,7 @@
 - 预编译工具
 
     1. 使用傻瓜式CSS预处理器语言图形编译工具：[Koala](http://koala-app.com/index-zh.html)。
-    2. 使用[node-sass](https://github.com/sass/node-sass)、[gulp-sass](https://github.com/dlmanning/gulp-sass)等构建工具。
+    2. 优先使用 Dart Sass 对应的 [`sass`](https://github.com/sass/dart-sass) 包；~~[node-sass](https://github.com/sass/node-sass)~~ 已 EOL，不建议新项目继续使用。`gulp-sass` 等构建工具也应确认底层实现为 Dart Sass。
 
 1. `变量`、`方法`和`引用`必须在使用前定义，`继承`不需要提前定义；声明相同内容不会报错，只会用最后一次声明复盖之前声明。
 2. 变量以`$`开头
@@ -168,13 +168,15 @@
         ```
 6. 引入文件`@import`
 
+    >Sass `@import` 已废弃，新代码优先使用模块系统 `@use` / `@forward`；以下为旧项目读写方式。
+
     ```scss
     @import "../css/1.css";     // 写入 @import url(../css/1.css);
     @import "../scss/1.scss";   // 写入 1.scss 文件内容
     ```
 7. 算术`+` `-` `*` `/`
 
-    >`/`需要用小括号包围运算（在`@return`最外层不用）。
+    >Sass 中把 `/` 当除法已废弃，新代码用 `math.div()`；`/`更多保留给 CSS 原生斜杠语法。以下为旧写法理解。
 
     ```scss
     @function func() {

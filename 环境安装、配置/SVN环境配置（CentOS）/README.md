@@ -1,5 +1,7 @@
 ### SVN环境配置（CentOS）
 
+>历史环境记录：CentOS Linux 已停止维护，新环境请使用仍受支持的发行版；SVN 本身仍可用，但新项目也可优先评估 Git。
+
 1. 安装subversion
 
     ```shell

@@ -2350,7 +2350,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         2. `sessionStorage`
 
             1. 同源且同会话（tab窗口）共享。
-            2. 会话级别存储。跳转页面为同源后仍旧有效（不同tab不共通），关闭浏览器后被清除（重新加载或关闭后恢复，任然存在）。
+            2. 会话级别存储。跳转页面为同源后仍旧有效（不同tab不共通），关闭浏览器后被清除（重新加载或关闭后恢复，仍然存在）。
             3. 应用场景：需要拆分成多个子页面分别存储的数据。
 2. cookie
 
@@ -2363,7 +2363,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     4. 单域名内，cookie保存的数据不超过4k，数量（最少）20个。
 
         >发送http请求时携带的cookie太多可能会导致nginx等阻绝访问，如返回：`400 Bad Request - request header or cookie too large`。可以设置更大的服务端接受配置 或 减少请求携带的cookie。
-    5. 源生的cookie接口不友好，需要自己[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js操作cookie)。
+    5. 原生的cookie接口不友好，需要自己[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js操作cookie)。
 
         同步。
 

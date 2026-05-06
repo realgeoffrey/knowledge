@@ -67,7 +67,7 @@
 1. 推理层（Reasoning Layer）：AI系统进行逻辑推理和决策的组件。
 1. AI智能体框架（AI Agent Frameworks）：简化AI智能体构建、部署和管理的开发平台或库，消除底层复杂性，让开发者专注于应用和智能体行为。
 1. AI助手（AI Assistants）：协助用户完成任务的智能应用系统。
-1. PyTorch：Facebook开发的开源深度学习框架，提供动态计算图和丰富的工具生态。
+1. PyTorch：由 Meta/Facebook 发起的开源深度学习框架，现由 Linux Foundation 旗下 PyTorch Foundation 治理，提供动态计算图和丰富的工具生态。
 1. 生成式AI（Generative AI）：根据输入快速生成新内容的AI技术。输入输出可包括文本、图像、声音、动画、3D模型等。使用神经网络识别数据模式和结构，生成原创内容。
 1. 视觉语言模型（Vision-Language Models，VLM）：多模态生成式AI模型，能够理解和处理视频、图像和文本。
 1. 数字孪生（Digital Twin）：产品、流程和设施的虚拟表示，企业用于设计、模拟和操作实体对应物。
@@ -82,7 +82,7 @@
 1. 幻觉（hallucination）
 1. 微调（fine-tuning）：通过在特定任务或领域上进一步训练，使LLM适应特定任务或领域
 1. 指令调优（instruction tuning）：通过提供具体的指导或指令来 fine-tuning LLM的行为
-1. FSD（Full-Self Driving，完全自动驾驶）：是特斯拉研发的自动驾驶系统
+1. FSD（Full Self-Driving）：是特斯拉的高级辅助驾驶功能品牌名。当前公开面向用户的 FSD（Supervised）仍要求驾驶员主动监督，不等同于无需人类接管的完全自动驾驶。
 1. 边缘算力（Edge Computing）：在靠近数据源或用户的网络边缘部署计算与推理，降低延迟与带宽，适用于 IoT、端侧/轻量 LLM 部署。
 1. ​具身智能（Embodied Artificial Intelligence, EAI）：是一种通过物理实体（如机器人、自动驾驶车辆等）与环境交互，实现感知、决策和行动的智能系统。其核心在于“具身性”，即智能体通过身体感知物理世界，并在交互中动态学习与适应，形成“感知—行动”闭环
 1. SDD（Specification-Driven Development，规格/规范驱动开发）：通过可执行、可验收的规格，驱动人和 AI 协作交付的软件开发方式，是 Agent 化研发落地的核心基础设施。

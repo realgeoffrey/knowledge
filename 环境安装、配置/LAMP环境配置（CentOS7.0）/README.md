@@ -1,5 +1,7 @@
 ### LAMP环境配置（CentOS7.0）
 
+>历史环境记录：CentOS Linux 7 已于 2024-06-30 EOL，新项目不建议继续使用；以下命令仅适合维护旧环境时参考。
+
 1. 新增用户
 
     创建一个新用户，并设置密码，增加进root，apache组内：
@@ -38,7 +40,7 @@
 
     安装**mysql**：
 
-    1. CentOS 7的yum源中似乎没有正常安装mysql时的mysql-sever文件，需要去官网上下载
+    1. CentOS 7 默认 yum 源不一定包含所需 MySQL Server 包；旧环境可通过官方 yum repo 安装，新环境应优先使用仍受支持的发行版和数据库版本
 
         ```shell
         wget http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm

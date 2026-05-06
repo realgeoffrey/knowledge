@@ -1,8 +1,10 @@
 ### WAMP环境配置（Windows）
 
+>历史环境记录：文中 Wampserver 3.0.6、PHP 5.x/7.0、Windows XP/7 等版本均已过期，新环境请使用仍受支持的 Windows、WampServer、Apache/PHP/MySQL 版本。
+
 >[官网](http://www.wampserver.com)下载。本文使用版本 **Wampserver 3.0.6 64 bit x64** ，其中包括Apache 2.4.23、PHP 5.6.25/7.0.10、MySQL 5.7.14、PhpMyAdmin 4.6.4、Adminer 4.2.5、PhpSysInfo 3.2.5。
 >
->win7以上系统可以安装最新版，xp只能安装2.2e及更低版本。
+>旧记录中提到的 Windows 7/XP 兼容方式仅适合维护遗留环境，不建议新装。
 
 >WAMP：Windows Apache MySQL PHP。
 

@@ -69,7 +69,7 @@
             2. 用 ~~<http://debugx5.qq.com/>~~（已失效）打开TBS内核调试功能的[腾讯X5内核WebView](https://x5.tencent.com/)（如：Android的QQ、QQ浏览器、旧版微信）
             3. 开启调试功能的debug包APP
 
-        >若PC端的Chrome识别不到手机WebView，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)（macOS可以用brew安装：`brew cask install android-platform-tools`）并运行（进入文件夹后运行`adb.exe devices`或`adb devices`连接手机设备）。
+        >若PC端的Chrome识别不到手机WebView，可以下载[Android Debug Bridge (adb)](https://developer.android.google.cn/studio/releases/platform-tools.html?hl=zh-cn#downloads)（macOS可以用brew安装：`brew install android-platform-tools`）并运行（进入文件夹后运行`adb.exe devices`或`adb devices`连接手机设备）。
 
         >若APP没有开启调试功能，只能连接电脑的logcat看日志。
     2. iOS

@@ -1,8 +1,10 @@
 ### Laravel框架配置+LNMP环境配置（Ubuntu15.04）
 
+>历史环境记录：Ubuntu 15.04、PHP 5 和对应 Laravel 安装方式均已过期，不建议用于新项目；以下内容仅适合维护旧环境时参考。
+
 1. 安装**Ubuntu Desktop**或**Ubuntu Server**
 
-    >安装完毕之后可以删除ios虚拟光盘
+    >安装完毕之后可以删除 iso 虚拟光盘
 2. 安装LNMP环境
 
     >LNMP：Linux Nginx MySQL PHP。

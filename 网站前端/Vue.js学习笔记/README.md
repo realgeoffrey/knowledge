@@ -69,7 +69,7 @@
     |------------|-------------|--------------|----------|--------------------------|
     | `>>>`      | Vue 2       | ❌           | ❌       | 原生CSS，预处理器不兼容 |
     | `/deep/`   | Vue 2       | ✅           | ❌       | Vue 3已废弃，部分构建工具可能兼容但会警告 |
-    | `::v-deep` | Vue 2       | ✅           | ❌       | Vue 3已废弃。`/deep/`的别名，语义更明确 |
+    | `::v-deep` | Vue 2 / Vue 3兼容旧写法 | ✅           | ❌       | Vue 3 中旧组合器写法已废弃，优先用 `:deep()` |
     | `:deep()`  | Vue 3       | ✅           | ✅       | 当前最佳实践。与Composition API兼容 |
 1. 当同时存在于一个节点上时，`v-if`比`v-for`的优先级更高（与 Vue 2 相反）
 
@@ -2758,7 +2758,7 @@
 
     Vue 2不支持Fragment，必须：`<template><div>多个节点</div></template>`。
 
-    Vue 2支持，允许：`<template>多个节点</template>`。
+    Vue 3支持Fragment，允许：`<template>多个节点</template>`。
   </div>
 </template>
 
@@ -5050,7 +5050,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 <details>
 <summary><h4><a href="https://github.com/vuejs/vue-cli">vue-cli</a></h4></summary>
 
-快速构建Vue应用的脚手架，可以使用Vue官方或第三方模板来进行Vue应用的配置，主要包括webpack等工具的配置。
+快速构建Vue应用的脚手架，可以使用Vue官方或第三方模板来进行Vue应用的配置，主要包括webpack等工具的配置。Vue CLI 已进入维护模式；新项目优先使用 `create-vue` + Vite。
 
 1. 任何放置在public文件夹的静态资源都会被简单的复制，而不经过~~webpack~~。需要通过**绝对路径**来引用。
 
@@ -5076,7 +5076,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 ### [nuxt](https://github.com/nuxt/nuxt)
 
 <details>
-<summary>基于Vue的通用应用框架（SPA或SSR），把webpack、babel、vue-server-renderer、vue-router、vuex、vue-meta等工具整合在一起，并通过自带的<code>nuxt.config.js</code>统一配置，不需要对每个工具进行单独配置。</summary>
+<summary>基于Vue的通用应用框架（SPA或SSR）。以下内容主要基于 Nuxt 2：把webpack、babel、vue-server-renderer、vue-router、vuex、vue-meta等工具整合在一起，并通过自带的<code>nuxt.config.js</code>统一配置。Nuxt 3 已转向 Vue 3、Nitro、Vite/Rollup、Pinia 等新体系。</summary>
 
 >框架内的Vue组件都是以**Vue单文件组件**的形式，每一个`pages`目录下的组件都是一个页面路由（约定式路由）。
 
@@ -5959,7 +5959,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         { name: 'World' }
     </script>
 
-    <!-- node-sass sass-loader -->
+    <!-- sass-loader（Dart Sass / sass） -->
     <style lang="sass">
       .red
         color: red
