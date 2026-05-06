@@ -131,7 +131,7 @@ flowchart TD
 ```
 
 #### Java 的核心优势
-- 跨平台：同一套字节码可以运行在不同平台的 JVM 上。
+- 跨平台：同一套字节码可以运行在不同平台的 JVM 上（一次编写，到处运行。Write Once, Run Anywhere。WORA）。
 - 工程生态成熟：框架、数据库驱动、中间件集成非常完善。
 - 垃圾回收：不需要像 C/C++ 那样手动管理内存。
 - 稳定：在企业级业务系统里长期被验证。
@@ -151,16 +151,16 @@ flowchart TD
     下载安装JDK、Maven，并配置环境变量。e.g. `~/.zshrc`：
 
     ```text
+    # 方式1，手动管理版本
     # JDK版本
     export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home
     export PATH=$JAVA_HOME/bin:$PATH
-
     # Maven版本
     export M2_HOME=/usr/local/apache-maven-3.9.14
     export PATH=$M2_HOME/bin:$PATH
 
-    ### ！！！上下二选一
 
+    # 方式2，SDKMAN管理
     #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
     export SDKMAN_DIR="$HOME/.sdkman"
     [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
@@ -170,13 +170,13 @@ flowchart TD
 
         1. cursor：`java.configuration.runtimes`
         2. IDEA：「文件」-「项目结构」-「项目」-「SDK」（「编辑」配置好需要的SDK）
-- 初学期建议先用 LTS 版本；老项目常见 Java 8，新项目常见 Java 17/21/25，具体以团队基线为准。
+- 初学期建议先用 LTS 版本；老项目常见 Java 8，新项目常见 Java 17/21/25，具体以团队基线为准（团队统一约定的技术标准下限/默认线）。
 
 - `javac 文件.java` → `类名.class`，编译为字节码；运行 `java 类名`（不写 `.class`）后，由 JVM 解释执行或经 JIT 编译为机器码，再交给 CPU 执行。
 
     >字节码是源代码经过编译器编译生成的，但它并不直接运行在物理硬件上，而是运行在虚拟机上。虚拟机会解释执行字节码指令，并将其转化为机器码让CPU实际执行。
 
-    >可通过 `java 类名 参数1 参数2` 向 `main` 传入命令行参数，如：`public class 类名 { public static void main(String[] args) {} }`。传统项目入口常用这个标准签名；Java 25 起还支持实例 `main` 方法和 compact source file 的更简化入口。只有要被 JVM 直接当作程序入口启动的类，才必须有可启动的 `main` 方法。
+    >可通过 `java 类名 参数1 参数2` 向 `main` 传入命令行参数，如：`public class 类名 { public static void main(String[] args) {} }`。传统项目入口常用这个标准签名。只有要被 JVM 直接当作程序入口启动的类，才必须有可启动的 `main` 方法。
 - 普通源文件中，`public` 顶级类的类名必须与文件名一致；一个 `.java` 文件最多只能有一个 `public` 顶级类。
 
 #### 基础语法
@@ -191,7 +191,7 @@ flowchart TD
 
 ```java
 int a = 10;
-double b = a; // int→double：隐式拓宽（按拓宽顺序：byte/short/char→int→long→float→double）
+double b = a; // int→double：隐式拓宽（按拓宽顺序：byte/short/char<int<long<float<double）
 int c = b; // 反过来不行。编译错误：double→int 不能隐式收窄，需 (int)
 int c1 = (int) b; // 强制收窄：小数部分截断，非四舍五入
 long L = a; // int→long：隐式拓宽
@@ -226,21 +226,21 @@ Java 的数据类型分为 基本类型（Primitive Types） 和 引用类型（
     | `boolean` | 未规定 | false    | true / false                   | 布尔型   |
 
     - 上表的默认值只适用于实例变量、静态变量、数组元素，局部变量必须先初始化。
-    - 浮点数有精度问题，金额计算优先用 `BigDecimal`。
+    - 浮点数有精度问题，金额计算优先用 `java.math.BigDecimal`。
     - `char` 不等于“任意一个 Unicode 字符”，因为有些字符需要两个 UTF-16 代码单元表示。单引号是 `char`，双引号是 `String`。
     - 经过运算符后的类型变化（表达式里会先做数值提升，再计算）：
 
-        - **二元数值提升**：两个数值操作数做二元运算时，Java 会先把两边提升到同一种类型再计算；规则是 `double` > `float` > `long` > `int`，`byte` / `short` / `char` 都会先变成 `int`。
+        - **二元数值提升**：两个数值操作数做二元运算时，Java 会先把两边提升到同一种类型再计算；规则是 `int`<`long`<`float`<`double`，`byte`/`short`/`char` 都会先变成 `int`。
         - **先记 2 条总规则**：
 
-            - `byte` / `short` / `char` 参与大多数算术运算时，都会先提升为 `int`。
-            - 表达式结果通常看“参与运算时最宽的数值类型”：`double` > `float` > `long` > `int`。
-        - **一元运算** `+`、`-`、`~`：`byte` / `short` / `char` → `int`；`long` / `float` / `double` 保持原类型。
+            - `byte`/`short`/`char` 参与大多数算术运算时，都会先提升为 `int`。
+            - 表达式结果通常看“参与运算时最宽的数值类型”：`int`<`long`<`float`<`double`。
+        - **一元运算** `+`、`-`、`~`：`byte`/`short`/`char` → `int`；`long`/`float`/`double` 保持原类型。
         - **二元算术 / 整型位运算** `+`、`-`、`*`、`/`、`%`、`&`、`|`、`^`：先做二元数值提升，再得到结果类型。
         - **比较运算** `<`、`>`、`<=`、`>=`、`==`、`!=`：两个都是数值基本类型时，也会先做二元数值提升；`boolean` 只能和 `boolean` 比较。
         - **位移运算** `<<`、`>>`、`>>>`：左右两边先做一元数值提升；结果类型看左操作数提升后的类型。
         - **复合赋值** `+=`、`-=` 等：先按普通运算计算，再隐式转换为左值类型；普通 `=` 不会自动做这种窄化转换。
-        - **字符串拼接**：只要一侧是 `String`，`+` 就表示字符串拼接，结果一定是 `String`；`boolean` 不能参与数值运算（可以参与字符串拼接）。
+        - **字符串拼接**：只要一侧是 `String`，`+` 就表示字符串拼接，结果一定是 `String`；`boolean`可以参与字符串拼接（不能参与数值运算）。
 
         <details>
         <summary>e.g.</summary>
