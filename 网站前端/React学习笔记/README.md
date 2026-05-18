@@ -3929,4 +3929,6 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
 1. 支持： **单选或多选，翻页或无限滚动加载展示结果，** 远程搜索，防抖控制，请求时序控制，加载状态
 
+    >[stackblitz demo](https://stackblitz.com/github/realgeoffrey/react19-antd6-demo?file=src/pages/selectPage/index.tsx)
+
     ><https://ant.design/components/select-cn>有一个例子：一个带有远程搜索，防抖控制，请求时序控制，加载状态的多选示例。
