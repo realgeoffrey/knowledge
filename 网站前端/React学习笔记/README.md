@@ -35,7 +35,7 @@
 
     1. [核心概念](#核心概念)
 1. [Vue与React对比](#vue与react对比)
-1. [ant-design例子](#antdesign例子)
+1. [ant-design例子](#ant-design例子)
 
 ---
 ## [react](https://github.com/facebook/react)
