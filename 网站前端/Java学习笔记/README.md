@@ -2292,33 +2292,41 @@ public class GenericExamples {
 
 >对于多数后端初学者，先掌握 Maven 即可。
 
-### Spring 生态
+### Spring Boot 学习顺序
 
->Java Web 是 Java 后端处理 HTTP 请求的基础体系，核心包括 Servlet、Filter、Listener、Session、Cookie；Spring 做 Web 开发时并不是绕开 Java Web，而是在 Java Web/Servlet 基础上进一步封装：SpringMVC 通过 `DispatcherServlet` 接收请求并分发到 `Controller`，Spring Boot 又建立在 Spring Framework/SpringMVC 之上，通过自动配置和内嵌 Servlet 容器简化项目启动。
+>Spring Boot 不是绕开 Java Web 和 Spring，而是站在它们之上做整合与自动配置。学习顺序可以按“Java Web 基础 → Spring Framework 核心 → Spring MVC Web 层 → MyBatis 持久层 → Spring Boot 整合开发”推进。
 
-1. Spring（Spring Framework）
+1. Java Web：HTTP 与 Servlet 基础
 
-    核心框架，提供 IoC、AOP、事务管理、资源访问、事件、类型转换、校验。
+    Java Web 是 Spring Web 开发的底层基础，核心包括 Servlet、Filter、Listener、Session、Cookie。Spring MVC 处理请求时，底层仍然依赖 Servlet 容器，例如 Tomcat。
 
-    >Spring Boot 是建立在 Spring Framework 之上的，Spring 的核心是容器管理对象和依赖注入。
+    >先理解：浏览器/前端发 HTTP 请求，Servlet 容器接收请求并交给 Web 应用处理。
 
-    1. SpringMVC
+1. Spring Framework：核心容器
 
-        处理 HTTP 请求映射、参数绑定、数据校验、异常处理、视图解析、JSON 响应。
+    Spring Framework 是 Spring 生态的核心框架，主要提供 IoC 容器、依赖注入、AOP、事务管理、资源访问、事件、类型转换、校验等能力。
 
-        >Spring Framework 里的 Web 模块。HTTP 请求 → Controller 方法 → Service → 返回 JSON
-1. MyBatis
+    >先理解：Spring 的核心不是“接请求”，而是管理对象、组织依赖、增强业务逻辑。
 
-    负责 SQL 映射、参数绑定、结果映射、动态 SQL、数据库访问。
+1. Spring MVC：Web 层封装
 
-    >UserController -> UserService -> UserMapper -> user 表
-1. SpringBoot
+    Spring MVC 是 Spring Framework 里的 Web MVC 模块，它基于 Java Web/Servlet 封装请求处理流程，通过 `DispatcherServlet` 接收请求，再分发到 `Controller` 方法。
 
-    在 Spring 基础上做自动配置，简化项目搭建和开发。
+    >典型流程：HTTP 请求 → Servlet 容器 → `DispatcherServlet` → `Controller` → `Service` → 返回 JSON/页面。
 
-    >Spring Boot = Spring + SpringMVC + 数据库访问 + 自动配置 + 快速启动
+1. MyBatis：持久层框架
 
-    启动标配：`@SpringBootApplication`（一个组合注解，主要包含：`@SpringBootConfiguration`、`@EnableAutoConfiguration`、`@ComponentScan`；其中 `@SpringBootConfiguration` 可视为 Spring Boot 场景下的 `@Configuration`）
+    MyBatis 不是 Spring Framework 的核心模块，而是常和 Spring/Spring Boot 集成使用的数据库访问框架，负责 SQL 映射、参数绑定、结果映射、动态 SQL、数据库访问。
+
+    >典型分层：`Controller` → `Service` → `Mapper` → 数据库表。
+
+1. Spring Boot：整合与快速启动
+
+    Spring Boot 建立在 Spring Framework/Spring MVC 之上，通过 Starter 依赖、自动配置、内嵌 Servlet 容器简化项目搭建和启动。
+
+    >可以粗略理解为：Spring Boot = Spring Framework + Spring MVC + 自动配置 + 内嵌服务器 + 常用框架整合。
+
+    启动标配：`@SpringBootApplication`（组合注解，主要包含 `@SpringBootConfiguration`、`@EnableAutoConfiguration`、`@ComponentScan`；其中 `@SpringBootConfiguration` 可视为 Spring Boot 场景下的 `@Configuration`）。
 
 ### 关系型数据库：MySQL
 - 最常见的关系型数据库。
