@@ -1260,14 +1260,14 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
         | 分类 | 知识点 |
         | --- | --- |
         | 定位 / 边界 | 枚举是特殊类，用于表达编译期固定、运行期不动态增删的一组实例：状态、类型、选项、策略分支；<br>不适合直接写死成枚举的场景：值需要运行期动态增删、频繁配置或来自数据库字典时 |
-        | 声明 / 类关系 | `enum Status { NEW, DONE }`；枚举不能声明类型参数（~~enum Status<T> { NEW, DONE }~~），方法可以声明自己的泛型；隐式继承 `java.lang.Enum<本枚举>`，不能再 `extends` 其他类，可 `implements` 接口，外部不能继承枚举 |
+        | 声明 / 类关系 | `enum Status { NEW, DONE }`；枚举不能声明类型参数（~~enum Status<T> { NEW, DONE }~~），方法可以声明自己的泛型；隐式继承 `java.lang.Enum<本枚举>`，不能再 `extends` 其他类，可 `implements` 接口，外部都不能继承枚举 |
         | 常量 / 实例本质 | 常量必须写在枚举体最前，逗号分隔；每个常量都是 `public static final` 固定实例，类加载时创建一次；外部只能引用，不能 `new`、继承或重新赋值 |
-        | 分号 / 构造参数 | 只有常量时 `;` 可省略；后面还有字段、构造器、方法或静态块时必须写 `;`；常量可不带参数，也可带构造参数；构造器可重载，实参必须匹配某个构造器 |
+        | 分号 / 构造参数 | 只有常量时 `;` 可省略；后面还有字段、构造器、方法或静态块时必须写 `;`；<br>常量可不带参数，也可带构造参数；构造器可重载，实参必须匹配某个构造器 |
         | 构造 / 初始化 | 构造器只能 `private` 或省略；每个常量初始化时调用一次；构造器/实例初始化中不能直接访问本枚举的非编译期常量静态字段，静态索引、缓存放 `static` 块 |
-        | 成员 / 常量类体 | 可有实例字段/方法、静态字段/方法、静态初始化块、嵌套类型；常量状态通常用 `private final` 字段保存；常量后可写 `{}` 覆盖方法或实现抽象方法，枚举声明抽象方法时每个常量都必须实现 |
-        | 内置 API / 顺序 | 编译器生成 `values()`、`valueOf(String)`；`java.lang.Enum` 提供 `name()`、`ordinal()`、`compareTo()`、`getDeclaringClass()`；`values()` 返回按声明顺序排列的常量数组，调用方修改返回数组不会改变枚举常量 |
+        | 成员 / 常量类体 | 可有实例字段/方法、静态字段/方法、静态初始化块、嵌套类型；<br>常量状态通常用 `private final` 字段保存；常量后可写 `{}` 覆盖方法或实现抽象方法，枚举声明抽象方法时每个常量都必须实现 |
+        | 内置 API / 顺序 | 编译器生成 `values()`、`valueOf(String)`；`java.lang.Enum` 提供 `name()`、`ordinal()`、`compareTo()`、`getDeclaringClass()`；`values()` 返回一个新的数组，数组元素是按声明顺序排列的枚举常量引用 |
         | 比较 / 分支 / 集合 | 枚举常量是固定单例，比较优先用 `==`；`switch` 支持枚举；自然顺序、`compareTo()`、`ordinal()` 都按声明顺序；多选用 `EnumSet`，枚举 key 用 `EnumMap` |
-        | 输出 / 持久化 | `name()` 来自常量名；`toString()` 可覆盖，仅适合展示；持久化优先存业务码或 `name()`，不要存 `ordinal()`；单常量枚举可实现单例，反序列化仍回到同一个常量 |
+        | 输出 / 持久化 | `name()` 来自常量名；`toString()` 可覆盖，仅适合展示；持久化优先存业务码或 `name()`，不要存 `ordinal()`（返回枚举常量在声明时的顺序下标，从 0 开始）；单常量枚举可实现单例，反序列化仍回到同一个常量 |
         | 异常 / 易错点 | `valueOf(String)` 按常量名精确匹配，大小写敏感，不认 `toString()` 或业务码；找不到名称抛 `IllegalArgumentException`，传 `null` 抛 `NullPointerException`；`switch` 未显式处理 `null` 时会抛空指针异常；`EnumSet` 不允许 `null` 元素，`EnumMap` 不允许 `null` key、允许 `null` value；常量类体会生成特殊子类，判断声明枚举类型用 `getDeclaringClass()` |
 
         <details>
