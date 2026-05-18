@@ -35,6 +35,7 @@
 
     1. [核心概念](#核心概念)
 1. [Vue与React对比](#vue与react对比)
+1. [ant-design例子](#antdesign例子)
 
 ---
 ## [react](https://github.com/facebook/react)
@@ -3922,3 +3923,10 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
 
         1. Vue的核心思想是尽可能的降低前端开发的门槛，是一个灵活易用的渐进式双向绑定的MVVM框架（由MVC发展而来）。
         2. React的核心思想是声明式渲染和组件化、单向数据流，前端组件化框架，不属于~~MVC或MVVM架构~~。
+
+---
+### [ant-design](https://github.com/ant-design/ant-design)例子
+
+1. 支持：**单选或多选，翻页或无限滚动加载展示结果，**远程搜索，防抖控制，请求时序控制，加载状态
+
+    ><https://ant.design/components/select-cn>有一个例子：一个带有远程搜索，防抖控制，请求时序控制，加载状态的多选示例。
