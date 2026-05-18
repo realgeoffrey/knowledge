@@ -2292,27 +2292,33 @@ public class GenericExamples {
 
 >对于多数后端初学者，先掌握 Maven 即可。
 
-### Web 框架与持久层
-- **Java Web**：传统 Web 基础主要包括 Servlet、Filter、Listener、Session、Cookie。
-- **Spring MVC**：处理 HTTP 请求映射、参数绑定、数据校验、异常处理、视图解析、JSON 响应。
-- **MyBatis**：负责 SQL 映射、参数绑定、结果映射、动态 SQL、数据库访问。
-
-可以简单理解为：
-
-- Spring MVC 负责“接请求、回响应”
-- MyBatis 负责“连数据库、执行 SQL”
-
 ### Spring 生态
-- **Spring Framework**：核心框架，提供 IoC、AOP、事务管理、资源访问、事件、类型转换、校验。
-- **Spring Boot**：在 Spring 基础上做自动配置，简化项目搭建和开发。
+
+>Java Web 是 Java 后端处理 HTTP 请求的基础体系，核心包括 Servlet、Filter、Listener、Session、Cookie；Spring 做 Web 开发时并不是绕开 Java Web，而是在 Java Web/Servlet 基础上进一步封装：SpringMVC 通过 `DispatcherServlet` 接收请求并分发到 `Controller`，Spring Boot 又建立在 Spring Framework/SpringMVC 之上，通过自动配置和内嵌 Servlet 容器简化项目启动。
+
+1. Spring（Spring Framework）
+
+    核心框架，提供 IoC、AOP、事务管理、资源访问、事件、类型转换、校验。
+
+    >Spring Boot 是建立在 Spring Framework 之上的，Spring 的核心是容器管理对象和依赖注入。
+
+    1. SpringMVC
+
+        处理 HTTP 请求映射、参数绑定、数据校验、异常处理、视图解析、JSON 响应。
+
+        >Spring Framework 里的 Web 模块。HTTP 请求 → Controller 方法 → Service → 返回 JSON
+1. MyBatis
+
+    负责 SQL 映射、参数绑定、结果映射、动态 SQL、数据库访问。
+
+    >UserController -> UserService -> UserMapper -> user 表
+1. SpringBoot
+
+    在 Spring 基础上做自动配置，简化项目搭建和开发。
+
+    >Spring Boot = Spring + SpringMVC + 数据库访问 + 自动配置 + 快速启动
 
     启动标配：`@SpringBootApplication`（一个组合注解，主要包含：`@SpringBootConfiguration`、`@EnableAutoConfiguration`、`@ComponentScan`；其中 `@SpringBootConfiguration` 可视为 Spring Boot 场景下的 `@Configuration`）
-
-对业务开发来说，最重要的不是背概念，而是先理解常见分层：
-
-- Controller：接收请求、返回响应
-- Service：写业务逻辑
-- Mapper / DAO：访问数据库
 
 ### 关系型数据库：MySQL
 - 最常见的关系型数据库。
