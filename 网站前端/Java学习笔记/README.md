@@ -1274,43 +1274,23 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
         <summary>e.g. </summary>
 
         ```java
-        enum PayStatus { UNPAID, PAID, REFUNDED }
-
-        class SimpleEnumDemo {
-            public static void main(String[] args) {
-                PayStatus status = PayStatus.PAID;
-
-                boolean paid = status == PayStatus.PAID;       // 固定单例，优先用 ==
-                PayStatus parsed = PayStatus.valueOf("PAID");  // 按常量名解析
-                String name = status.name();                   // "PAID"
-                System.out.println(status == parsed);          // true
-
-                String text = switch (status) {
-                    case UNPAID -> "待支付";
-                    case PAID -> "已支付";
-                    case REFUNDED -> "已退款";
-                };
-                System.out.println(text);                      // 已支付
-
-                for (PayStatus item : PayStatus.values()) {
-                    System.out.println(item.name());           // UNPAID, PAID, REFUNDED
-                }
-            }
-        }
-        ```
-
-        ```java
         import java.util.EnumMap;
         import java.util.EnumSet;
 
-        interface Labeled { String label(); } // 约定实现类必须提供展示名称
+        // 约定实现类必须提供展示名称；枚举可以 implements 接口。
+        interface Labeled {
+            String label();
+        }
 
-        // 每个枚举常量都是 OrderStatus 的固定实例；常量可带构造参数，也可有自己的类体。
+        // OrderStatus 是一组固定订单状态：外部只能使用这些常量，不能 new 新状态。
         enum OrderStatus implements Labeled {
+            // UNKNOWN 不写构造参数，会调用无参构造器。
             UNKNOWN {
                 @Override
                 boolean canCancel() { return false; } // 未知状态不可取消
             },
+
+            // NEW/PAID/SHIPPED/REFUNDED 写了构造参数，会调用 OrderStatus(String label)。
             NEW("新建") {
                 @Override
                 boolean canCancel() { return true; } // 新建状态可取消
@@ -1322,82 +1302,112 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
             SHIPPED("已发货") {
                 @Override
                 boolean canCancel() { return false; } // 已发货后不可取消
+            },
+            REFUNDED("已退款") {
+                @Override
+                boolean canCancel() { return false; } // 已退款后不可取消
             };
 
-            // 每个枚举常量各保存一份 text；构造参数来自常量声明。
-            private final String text;
+            // 每个枚举常量各保存一份 label；通常用 final 表示创建后不再改变。
+            private final String label;
 
             OrderStatus() { // 无参构造器：供 UNKNOWN 使用
                 this("未知");
             }
-            OrderStatus(String text) { // 枚举构造器默认 private，只能由枚举常量调用
-                this.text = text;
-            }
 
-            // 枚举也可以有实例方法。
-            public String text() { return text; }
+            OrderStatus(String label) { // 枚举构造器默认 private，只能由枚举常量调用
+                this.label = label;
+            }
 
             // 实现 Labeled 接口，返回展示名称。
             @Override
-            public String label() { return text; }
+            public String label() { return label; }
 
-            // 抽象行为：每个常量都要给出自己的取消规则。
+            // 抽象方法：每个枚举常量都必须在自己的常量类体中实现。
             abstract boolean canCancel();
 
-            // 判断是否为终态；这里把 SHIPPED 视为终态。
-            public boolean terminal() { return this == SHIPPED; }
+            // 普通实例方法：所有常量都能调用。
+            public boolean terminal() {
+                return this == SHIPPED || this == REFUNDED;
+            }
 
             // 自定义展示文本；不要把 toString() 当作稳定持久化值。
             @Override
-            public String toString() { return "OrderStatus:" + text; }
+            public String toString() { return "OrderStatus:" + label; }
         }
 
         class EnumDemo {
             public static void main(String[] args) {
-                // 按常量名解析，必须精确匹配 PAID。
-                OrderStatus status = OrderStatus.valueOf("PAID");
-                // java.lang.Enum.valueOf(...) 也是按常量名解析。
-                OrderStatus parsedByName = Enum.valueOf(OrderStatus.class, "PAID");
+                // 1. 最基础用法：直接引用枚举常量。
+                OrderStatus status = OrderStatus.PAID;
+                System.out.println(status); // OrderStatus:已支付，println 会调用 toString()
 
-                // name() 返回常量名；ordinal() 返回声明顺序下标。
-                String enumName = status.name(), text = status.text();
-                int index = status.ordinal(); // 只适合临时排序，不适合持久化
-                int order = OrderStatus.NEW.compareTo(OrderStatus.SHIPPED); // 按声明顺序比较
-                Class<OrderStatus> enumType = status.getDeclaringClass(); // 常量类体的声明枚举类型
-                System.out.println("status = " + status);       // status = OrderStatus:已支付
-                System.out.println("parsedByName = " + parsedByName); // parsedByName = OrderStatus:已支付
-                System.out.println("name = " + enumName + ", text = " + text); // name = PAID, text = 已支付
-                // label() 来自 Labeled 接口；可直接调用，也可按接口类型统一获取展示名称。
-                String label = status.label();
+                // 2. 枚举常量是固定单例，比较优先用 ==。
+                System.out.println(status == OrderStatus.PAID); // true
+
+                // 3. valueOf(String) 按常量名解析，字符串必须精确匹配 PAID。
+                OrderStatus parsed = OrderStatus.valueOf("PAID");
+                System.out.println(status == parsed); // true
+
+                // 4. name() 是代码里的常量名；label() 是业务展示文案。
+                System.out.println(status.name());  // PAID
+                System.out.println(status.label()); // 已支付
+
+                // 5. 枚举实现接口后，可以按接口类型统一调用方法。
                 Labeled labeled = status;
-                System.out.println("label = " + label + ", labeled = " + labeled.label()); // label = 已支付, labeled = 已支付
-                System.out.println("ordinal = " + index + ", compareTo = " + order); // ordinal = 2, compareTo = -2
-                System.out.println("declaringClass = " + enumType.getSimpleName()); // declaringClass = OrderStatus
+                System.out.println(labeled.label()); // 已支付
 
-                // 枚举常量是固定单例，比较优先用 ==。
-                boolean same = status == OrderStatus.PAID;
-                System.out.println("same = " + same);           // same = true
-                System.out.println("canCancel = " + status.canCancel() + ", terminal = " + status.terminal()); // canCancel = true, terminal = false
+                // 6. values() 遍历所有枚举常量，顺序就是声明顺序。
+                for (OrderStatus item : OrderStatus.values()) {
+                    System.out.println(item.name() + " -> " + item.label());
+                }
+                // UNKNOWN -> 未知
+                // NEW -> 新建
+                // PAID -> 已支付
+                // SHIPPED -> 已发货
+                // REFUNDED -> 已退款
 
-                // values() 返回所有枚举常量，顺序与声明顺序一致。
-                for (OrderStatus item : OrderStatus.values()) System.out.println("value = " + item.name()); // value = UNKNOWN,value = NEW, value = PAID, value = SHIPPED
+                // 7. switch 支持枚举，适合按状态分支。
+                String action;
+                switch (status) {
+                    case NEW:
+                    case PAID:
+                        action = "allow cancel";
+                        break;
+                    case SHIPPED:
+                        action = "track";
+                        break;
+                    case REFUNDED:
+                        action = "refund finished";
+                        break;
+                    case UNKNOWN:
+                    default:
+                        action = "unknown";
+                        break;
+                }
+                System.out.println(action); // allow cancel
 
-                // switch 支持枚举；这里按状态分支返回不同动作。
-                String action = switch (status) {
-                  case NEW, PAID -> "allow cancel";
-                  case SHIPPED -> "track";
-                  case UNKNOWN -> "unknown";
-                };
-                System.out.println("action = " + action);   // action = allow cancel
+                // 8. 调用每个常量自己的行为：PAID 的 canCancel() 返回 true。
+                System.out.println(status.canCancel()); // true
 
-                // EnumSet 是专门存放枚举值的高效 Set。
+                // 9. 调用普通实例方法：PAID 还不是终态。
+                System.out.println(status.terminal()); // false
+
+                // 10. ordinal() 是声明顺序下标，从 0 开始；只适合临时查看，不适合存数据库。
+                System.out.println(status.ordinal()); // 2
+
+                // 11. compareTo() 按声明顺序比较；NEW 在 SHIPPED 前面，所以结果为负数。
+                System.out.println(OrderStatus.NEW.compareTo(OrderStatus.SHIPPED)); // -2
+
+                // 12. EnumSet 存一组枚举值，适合表达“哪些状态属于同一类”。
                 EnumSet<OrderStatus> cancellable = EnumSet.of(OrderStatus.NEW, OrderStatus.PAID);
-                System.out.println("cancellable = " + cancellable); // cancellable = [OrderStatus:新建, OrderStatus:已支付]
-                // EnumMap 是专门以枚举为 key 的高效 Map。
+                System.out.println(cancellable.contains(status)); // true
+
+                // 13. EnumMap 用枚举当 key，适合给不同状态配置额外信息。
                 EnumMap<OrderStatus, String> labels = new EnumMap<>(OrderStatus.class);
                 labels.put(OrderStatus.NEW, "待处理");
                 labels.put(OrderStatus.SHIPPED, "配送中");
-                System.out.println("labels = " + labels);   // labels = {OrderStatus:新建=待处理, OrderStatus:已发货=配送中}
+                System.out.println(labels.get(OrderStatus.SHIPPED)); // 配送中
             }
         }
         ```
