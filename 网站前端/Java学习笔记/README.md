@@ -1259,8 +1259,8 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
 
         | 分类 | 知识点 |
         | --- | --- |
-        | 定位 / 边界 | 枚举是特殊类，用于表达编译期固定、运行期不动态增删的一组实例：状态、类型、选项、策略分支；值需要运行期动态增删、频繁配置或来自数据库字典时，不适合直接写死成枚举 |
-        | 声明 / 类关系 | `enum Status { NEW, DONE }`；枚举不能声明类型参数，方法可以声明自己的泛型；隐式继承 `java.lang.Enum<本枚举>`，不能再 `extends` 其他类，可 `implements` 接口，外部不能继承枚举 |
+        | 定位 / 边界 | 枚举是特殊类，用于表达编译期固定、运行期不动态增删的一组实例：状态、类型、选项、策略分支；<br>不适合直接写死成枚举的场景：值需要运行期动态增删、频繁配置或来自数据库字典时 |
+        | 声明 / 类关系 | `enum Status { NEW, DONE }`；枚举不能声明类型参数（~~enum Status<T> { NEW, DONE }~~），方法可以声明自己的泛型；隐式继承 `java.lang.Enum<本枚举>`，不能再 `extends` 其他类，可 `implements` 接口，外部不能继承枚举 |
         | 常量 / 实例本质 | 常量必须写在枚举体最前，逗号分隔；每个常量都是 `public static final` 固定实例，类加载时创建一次；外部只能引用，不能 `new`、继承或重新赋值 |
         | 分号 / 构造参数 | 只有常量时 `;` 可省略；后面还有字段、构造器、方法或静态块时必须写 `;`；常量可不带参数，也可带构造参数；构造器可重载，实参必须匹配某个构造器 |
         | 构造 / 初始化 | 构造器只能 `private` 或省略；每个常量初始化时调用一次；构造器/实例初始化中不能直接访问本枚举的非编译期常量静态字段，静态索引、缓存放 `static` 块 |
@@ -1367,6 +1367,10 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
                 System.out.println("status = " + status);       // status = OrderStatus:已支付
                 System.out.println("parsedByName = " + parsedByName); // parsedByName = OrderStatus:已支付
                 System.out.println("name = " + enumName + ", text = " + text); // name = PAID, text = 已支付
+                // label() 来自 Labeled 接口；可直接调用，也可按接口类型统一获取展示名称。
+                String label = status.label();
+                Labeled labeled = status;
+                System.out.println("label = " + label + ", labeled = " + labeled.label()); // label = 已支付, labeled = 已支付
                 System.out.println("ordinal = " + index + ", compareTo = " + order); // ordinal = 2, compareTo = -2
                 System.out.println("declaringClass = " + enumType.getSimpleName()); // declaringClass = OrderStatus
 
