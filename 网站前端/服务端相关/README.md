@@ -22,14 +22,12 @@
 
     >[分页加载mock](./分页加载mock.md)
 
-    1. 分页加载：前端用「current + pageSize(或offset、skip)」请求；服务端除列表数据外，宜返回 `total`（总量），供前端算总页数、渲染跳页。
+    1. 分页加载：前端用「current(或offset、start、skip、cursor、after) + pageSize(或limit、per_page)」请求；服务端除列表数据外，宜返回 `total`(或hasNext)，供前端算总页数、渲染跳页。
 
         - 带展开行或树形数据（如 `<el-table>` 含 `children`）时，`total` 通常仅统计 `父级行数`，~~子级~~不计入；与 `<el-pagination>` 的 `total` 对齐第一维数组即可。
 
         > 有`total`才能做「跳到第 N 页」；没有`total`时，只能实现 上一页/下一页 或 游标分页。
     2. 滚动加载：关键是「下一批从哪接着取」，一般用 **游标**（或等价的位置标记）。
-
-        >简单的游标可以由 current、pageSize(或offset、skip)、hasNext（或total） 实现。也可以由 游标id、hasNext 实现。
 
         - 游标由谁维护
 
