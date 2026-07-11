@@ -32,6 +32,7 @@
         1. [Node.js学习笔记](./网站前端/Node.js学习笔记/README.md)
         1. [服务端相关](./网站前端/服务端相关/README.md)
         1. [Python学习笔记](./网站前端/Python学习笔记/README.md)
+        1. [数据库使用](./网站前端/数据库使用/README.md)
     1. 向终端
 
         1. [Hybrid前端开发](./网站前端/Hybrid前端开发/README.md)
@@ -75,7 +76,7 @@
     1. ~~[微前端（微服务在前端的应用——前端微服务）](./网站前端/其他前端专项/微前端（微服务在前端的应用——前端微服务）/README.md)~~
 
     - [微信生态相关](./网站前端/其他前端专项/微信生态相关/README.md)
-    - [Lark生态开发](./网站前端/其他前端专项/Lark生态开发/README.md)
+    - ~~[Lark飞书生态开发](./网站前端/其他前端专项/Lark飞书生态开发/README.md)~~
 1. [HTTP相关](./网站前端/HTTP相关/README.md)
 1. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
 1. <details>
@@ -147,7 +148,7 @@
 
 ---
 ><details>
-><summary>完美不在于无以复加，而在于无可删减。</summary>
+><summary><del>完美不在于无以复加，而在于无可删减。</del></summary>
 >
 >[![Star History Chart](https://api.star-history.com/svg?repos=realgeoffrey/knowledge&type=Date)](https://star-history.com/#realgeoffrey/knowledge&Date)
 ></details>
