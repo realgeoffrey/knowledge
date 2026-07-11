@@ -210,7 +210,7 @@
 
             后台运行。所有的标准输出、错误输出都将被重定向到「文件地址」中。
 
-    >杀死后台进程：先找到进程id然后`kill`：[查看端口占用、网络链接，查看进程并杀死](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/命令行备忘/README.md#查看端口占用网络链接查看进程并杀死)。
+    >杀死后台进程：先找到进程id然后`kill`：[查看端口、网络连接和进程](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/命令行备忘/README.md#查看端口网络连接和进程)。
 
 ### 转义符`\`
 1. 转义：
@@ -1027,7 +1027,7 @@ fn 参数1 参数2
 ### 启动Bash
 用户每次使用Shell，都会开启一个与Shell的Session（对话）。
 
->以下顺序针对`bash`。若使用其他shell时（如：`zsh`等。查看或设置：[系统shell类型](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/命令行备忘/README.md#系统shell类型)），则执行启动脚本的顺序和文件会变化，详情可查看：[关于Linux下Bash与Zsh启动档的载入顺序研究](https://blog.miniasp.com/post/2021/07/26/Bash-and-Zsh-Initialization-Files)、[Zsh/Bash startup files loading order (.bashrc, .zshrc etc.)
+>以下顺序针对`bash`。若使用其他shell时（如：`zsh`等。查看或设置：[Shell 类型与登录 Shell](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/命令行备忘/README.md#shell-类型与登录-shell)），则执行启动脚本的顺序和文件会变化，详情可查看：[关于Linux下Bash与Zsh启动档的载入顺序研究](https://blog.miniasp.com/post/2021/07/26/Bash-and-Zsh-Initialization-Files)、[Zsh/Bash startup files loading order (.bashrc, .zshrc etc.)
 ](https://shreevatsa.wordpress.com/2008/03/30/zshbash-startup-files-loading-order-bashrc-zshrc-etc/)。
 
 1. 登录Session、login shell
