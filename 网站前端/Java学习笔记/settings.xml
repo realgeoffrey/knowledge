@@ -1,263 +1,153 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Maven settings.xml 关键字速查模板
-
-    作用范围：
-    1. settings.xml 管本机或用户运行环境，不管项目构建模型。
-    2. 用户级默认位置：${user.home}/.m2/settings.xml
-    3. 全局级默认位置：${maven.conf}/settings.xml
-    4. 用户级和全局级会合并生效，用户级优先级更高。
-
-    顶层关键字：
-    localRepository、interactiveMode、usePluginRegistry、offline、
-    proxies、servers、mirrors、profiles、activeProfiles、pluginGroups。
+    Maven settings 速查示例：Maven 3.9.x / Settings 1.2.0；可选配置均已注释，按场景启用并替换占位值。
+    用户级 ${user.home}/.m2/settings.xml；全局级 ${maven.home}/conf/settings.xml；合并时用户级冲突项优先。
+    -s / -gs 可指定这两类文件；此文件只作为知识示例，不会因放在项目目录就自动加载。
+    POM 管项目构建；settings 管仓库、认证、代理和本机差异，不存放项目 dependencies / build。
+    参考：https://maven.apache.org/settings.html
+          https://maven.apache.org/ref/3.9.15/maven-settings/settings.html
+    检查：mvn -s settings.xml help:effective-settings；mvn -s settings.xml help:active-profiles
 -->
 <settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
-    <!--
-        localRepository：本地仓库路径。
-        默认值：${user.home}/.m2/repository
-        作用：缓存远程依赖，也保存 mvn install 安装到本机的项目产物。
-    -->
+    <!-- 本地仓库默认如下，缓存下载制品并保存 install 产物；可用 -Dmaven.repo.local=路径 临时覆盖。 -->
     <!-- <localRepository>${user.home}/.m2/repository</localRepository> -->
-
-    <!--
-        interactiveMode：是否允许 Maven 在命令行交互式提问。
-        默认值：true
-        常见用法：CI 中可设为 false，避免构建等待人工输入。
-    -->
+    <!-- interactiveMode 默认 true；CI 用 -B 非交互。offline 默认 false，-o 离线时需已有依赖和插件。 -->
     <!-- <interactiveMode>true</interactiveMode> -->
-
-    <!--
-        usePluginRegistry：是否使用历史插件注册表。
-        默认值：false
-        说明：现在很少使用，通常保持默认即可。
-    -->
-    <!-- <usePluginRegistry>false</usePluginRegistry> -->
-
-    <!--
-        offline：是否离线构建。
-        默认值：false
-        true 时只使用本地仓库，不访问远程仓库；命令行 -o 也能开启离线模式。
-    -->
     <!-- <offline>false</offline> -->
+    <!-- usePluginRegistry 是已弃用的历史字段，现代 Maven 不需配置。 -->
 
-    <!--
-        proxies：网络代理列表。
-        默认值：空列表
-        作用：公司网络、受限网络访问远程仓库时配置。
-    -->
+    <!-- proxies 是网络代理，不是仓库账号；nonProxyHosts 用 | 分隔，支持 * 通配。 -->
     <proxies>
         <!--
-        proxy：单个代理配置。
-        id：代理标识，默认值 default。
-        active：是否启用，默认值 true。
-        protocol：协议，常见 http 或 https，默认值 http。
-        host：代理主机。
-        port：代理端口。
-        username/password：代理服务器要求认证时使用，可省略；这是网络代理账号，
-                           不是 Maven 仓库、镜像或私服账号。
-        nonProxyHosts：不走代理的主机，用 | 分隔。
-
         <proxy>
             <id>company-proxy</id>
             <active>true</active>
             <protocol>http</protocol>
-            <host>proxy.company.com</host>
+            <host>proxy.example.com</host>
             <port>8080</port>
-            <username>your-username</username>
-            <password>your-password-or-token</password>
-            <nonProxyHosts>localhost|127.0.0.1|*.company.com</nonProxyHosts>
+            <username>${env.PROXY_USER}</username>
+            <password>${env.PROXY_PASSWORD}</password>
+            <nonProxyHosts>localhost|127.0.0.1|*.example.com</nonProxyHosts>
         </proxy>
         -->
     </proxies>
 
     <!--
-        servers：远程仓库、发布仓库、私服的认证信息列表。
-        默认值：空列表
-        重要规则：server.id 必须匹配 pom.xml 中 repository、pluginRepository、
-        distributionManagement repository/snapshotRepository 的 id；
-        如果实际访问的是 mirror，则 server.id 要匹配 mirror.id。
+        servers 只提供认证，不声明仓库地址；id 匹配实际 repository / pluginRepository / mirror / 发布目标 id。
+        命中镜像时用 mirror.id；匿名下载通常不用凭证，下载 / 发布权限由服务端决定。
+        password 可为密码或 token；使用环境变量或 Maven 密码加密，不提交真实凭证。
+        Maven 3 加密：mvn -emp 加密主密码，结果存入 ~/.m2/settings-security.xml 的 settingsSecurity/master；mvn -ep 加密仓库密码。
+        加密值仍可被持有主密码者解密；settings 与 settings-security 文件均须限制访问。
+        参考：https://maven.apache.org/guides/mini/guide-encryption.html
     -->
     <servers>
+        <!-- 配合下方 company-mirror；若直接访问其他仓库，另配同 id 的 server。 -->
         <!--
-        server：单个仓库认证配置。
-        id：仓库标识，默认值 default。
-        username/password：远程仓库、镜像、私服或发布目标要求认证时使用。
-                           常见场景：
-                           1. 拉取公司私服中的内部依赖或插件；
-                           2. 访问需要登录的镜像仓库；
-                           3. mvn deploy 发布 jar 到 releases/snapshots 仓库；
-                           4. mvn site-deploy 发布站点到远程地址。
-                           公开中央仓库、匿名镜像、本地仓库通常不需要。
-                           password 可放密码或访问令牌；真实项目不要提交明文密码，
-                           可使用 Maven 密码加密或环境变量注入。
-        privateKey/passphrase：SSH 私钥和口令。
-        filePermissions/directoryPermissions：发布文件或目录权限。
-        configuration：扩展认证配置，不同传输插件可读取不同字段。
-
+        <server>
+            <id>company-mirror</id>
+            <username>${env.REPO_USER}</username>
+            <password>${env.REPO_TOKEN}</password>
+        </server>
         <server>
             <id>company-releases</id>
-            <username>your-username</username>
-            <password>your-password-or-token</password>
-            <privateKey>${user.home}/.ssh/id_rsa</privateKey>
-            <passphrase>your-passphrase</passphrase>
-            <filePermissions>664</filePermissions>
-            <directoryPermissions>775</directoryPermissions>
-            <configuration>
-                <httpHeaders>
-                    <property>
-                        <name>Authorization</name>
-                        <value>Bearer your-token</value>
-                    </property>
-                </httpHeaders>
-            </configuration>
+            <username>${env.REPO_USER}</username>
+            <password>${env.REPO_TOKEN}</password>
+        </server>
+        <server>
+            <id>company-snapshots</id>
+            <username>${env.REPO_USER}</username>
+            <password>${env.REPO_TOKEN}</password>
         </server>
         -->
+        <!-- SSH 认证是另一种方案：使用支持 SSH 的传输实现，privateKey 填路径，不同时设置 password。 -->
+        <!--
+        <server>
+            <id>company-ssh</id>
+            <username>${env.REPO_USER}</username>
+            <privateKey>${user.home}/.ssh/id_ed25519</privateKey>
+            <passphrase>${env.SSH_KEY_PASSPHRASE}</passphrase>
+        </server>
+        -->
+        <!-- configuration 可放传输实现特有参数，如 HTTP headers；filePermissions/directoryPermissions 也依赖实现。 -->
     </servers>
 
     <!--
-        mirrors：仓库镜像列表。
-        默认值：空列表
-        作用：把一个或一组远程仓库请求重定向到镜像地址，常用于公司 Nexus、Artifactory、Archiva。
+        mirrors 替换下载源，不改变 deploy 上传地址。mirrorOf 匹配仓库 id，不是 URL。
+        central：仅中央仓库；*：全部；external:*：排除 localhost 与 file；*,!company-direct：排除指定 id。
+        external:http:* 匹配外部 HTTP，Maven 3.8.1+ 默认阻止此类仓库；优先改用 HTTPS。
+        先精确匹配 id，否则按顺序选首个匹配模式；每个仓库只选一个镜像，失败不自动回退原地址。
+        * 要求入口能提供所有所需制品，通常使用私服仓库组；多个 mirror 不会自动聚合上游。
     -->
     <mirrors>
         <!--
-        mirror：单个镜像配置。
-        id：镜像标识，默认值 default。
-        mirrorOf：匹配哪些仓库；* 表示所有仓库，central 表示只镜像 central，
-                  external:* 表示所有非本机仓库，!repoId 表示排除某仓库。
-        name：显示名称。
-        url：镜像地址。
-        layout：仓库布局，默认值 default。
-        mirrorOfLayouts：匹配哪些布局，默认值 default,legacy。
-        blocked：是否阻止访问匹配仓库，默认值 false。
-
         <mirror>
             <id>company-mirror</id>
+            <name>Company Repository Group</name>
+            <url>https://repo.example.com/repository/maven-public/</url>
             <mirrorOf>*</mirrorOf>
-            <name>Company Maven Mirror</name>
-            <url>https://maven.company.com/repository/maven-public/</url>
-            <layout>default</layout>
-            <mirrorOfLayouts>default,legacy</mirrorOfLayouts>
+            <mirrorOfLayouts>*</mirrorOfLayouts>
             <blocked>false</blocked>
         </mirror>
         -->
     </mirrors>
 
     <!--
-        profiles：本机环境 profile 列表。
-        默认值：空列表
-        适合放本机仓库、插件仓库、本地变量类 properties。
-        不适合放项目公共依赖和构建规则，那些应放进 pom.xml。
+        settings profile 仅含 id、activation、properties、repositories、pluginRepositories；POM profile 能力更广。
+        下面用 -Pcompany-repo 或 -DuseCompanyRepo=true 激活；也可列入 activeProfiles。
+        activation 还可用 jdk（如 [17,)）、os（family/name/arch/version）、file（exists/missing）；多种条件为 AND。
+        activeByDefault 不等于始终激活，遇到同容器其他激活的 profile 会退让；显式 -P 不要求条件成立。
+        profile 的 properties 可供 POM 使用，但不能用于 settings 自身插值；这里仓库 URL 使用字面值。
+        settings 插值可用 ${user.home} 等系统属性和 ${env.REPO_URL} 等环境变量。
     -->
     <profiles>
         <!--
-        profile：单个本机环境配置。
-        id：profile 标识，默认值 default。
-        activation：自动激活条件。
-        properties：本机属性，可通过 ${name} 引用。
-        repositories：项目依赖远程仓库。
-        pluginRepositories：Maven 插件远程仓库。
-
         <profile>
             <id>company-repo</id>
-
             <activation>
-                activeByDefault：默认是否激活，默认值 false。
-                jdk：按 JDK 版本激活，例如 1.8、17、[17,)。
-                os：按操作系统激活，可写 name/family/arch/version。
-                property：按系统属性激活，例如 -Denv=test。
-                file：按文件存在或缺失激活。
-
-                <activeByDefault>false</activeByDefault>
-                <jdk>1.8</jdk>
-                <os>
-                    <family>mac</family>
-                    <name>Mac OS X</name>
-                    <arch>x86_64</arch>
-                    <version>10.16</version>
-                </os>
-                <property>
-                    <name>env</name>
-                    <value>test</value>
-                </property>
-                <file>
-                    <exists>${user.home}/.m2/company.flag</exists>
-                    <missing>${user.home}/.m2/skip-company.flag</missing>
-                </file>
+                <property><name>useCompanyRepo</name><value>true</value></property>
             </activation>
-
-            <properties>
-                <env>test</env>
-                <company.repo.url>https://maven.company.com/repository/maven-public/</company.repo.url>
-            </properties>
-
+            <properties><team.build.label>local</team.build.label></properties>
             <repositories>
-                repository：依赖仓库。
-                id：仓库标识，需与 servers/server/id 对应才可使用认证。
-                name：显示名称。
-                url：仓库地址。
-                layout：仓库布局，默认值 default。
-                releases：正式版本策略。
-                snapshots：快照版本策略。
-                enabled：是否启用，默认值 true。
-                updatePolicy：更新检查策略，默认值 daily；可选 always、daily、interval:分钟、never。
-                checksumPolicy：校验和策略，默认值 warn；可选 fail、warn、ignore。
-
                 <repository>
-                    <id>company-releases</id>
-                    <name>Company Releases</name>
-                    <url>${company.repo.url}</url>
-                    <layout>default</layout>
+                    <id>company-direct</id>
+                    <url>https://repo.example.com/repository/maven-public/</url>
                     <releases>
                         <enabled>true</enabled>
                         <updatePolicy>daily</updatePolicy>
-                        <checksumPolicy>warn</checksumPolicy>
+                        <checksumPolicy>fail</checksumPolicy>
                     </releases>
                     <snapshots>
-                        <enabled>false</enabled>
+                        <enabled>true</enabled>
                         <updatePolicy>daily</updatePolicy>
-                        <checksumPolicy>warn</checksumPolicy>
+                        <checksumPolicy>fail</checksumPolicy>
                     </snapshots>
                 </repository>
             </repositories>
-
             <pluginRepositories>
-                pluginRepository：插件仓库，结构和 repository 基本一致。
-
                 <pluginRepository>
-                    <id>company-plugins</id>
-                    <name>Company Plugins</name>
-                    <url>https://maven.company.com/repository/plugins/</url>
-                    <layout>default</layout>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
+                    <id>company-direct</id>
+                    <url>https://repo.example.com/repository/maven-public/</url>
+                    <snapshots><enabled>false</enabled></snapshots>
                 </pluginRepository>
             </pluginRepositories>
         </profile>
         -->
     </profiles>
-
     <!--
-        activeProfiles：手动激活的 profile id 列表。
-        默认值：空列表
-        等价场景：命令行 -Pcompany-repo 可临时激活 profile。
+        repositories 下载依赖，pluginRepositories 下载插件；被 mirrorOf=* 命中时仍走镜像。
+        releases/snapshots 是允许的版本类型，不是“启用所有仓库”；central 默认不提供快照。
+        updatePolicy：always、daily(默认)、interval:分钟、never；-U 强制检查更新快照和缺失 release。
+        checksumPolicy：fail、warn(Maven 3 默认)、ignore。这里 fail 表示校验失败即报错。
     -->
+
+    <!-- activeProfiles 持续激活指定 id；CLI -P 可临时激活，mvn help:active-profiles 查看结果。 -->
     <activeProfiles>
         <!-- <activeProfile>company-repo</activeProfile> -->
     </activeProfiles>
 
-    <!--
-        pluginGroups：插件组前缀解析列表。
-        默认值：Maven 内置 org.apache.maven.plugins、org.codehaus.mojo 等。
-        作用：添加后可用 mvn myplugin:goal，而不用写完整 groupId。
-    -->
+    <!-- 插件前缀搜索组，内置 org.apache.maven.plugins / org.codehaus.mojo；不提供插件版本或下载地址。 -->
     <pluginGroups>
         <!-- <pluginGroup>com.example.maven.plugins</pluginGroup> -->
     </pluginGroups>

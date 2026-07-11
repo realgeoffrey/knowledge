@@ -90,4 +90,4 @@
 
 >全套Node.js脚手架：[scaffolding-node（TypeScript+pm2+--inspect+ESLint+Prettier+simple-git-hooks+lint-staged）](https://github.com/realgeoffrey/scaffolding-node)。
 
-P.S. 也可以直接依赖IDE的debug配置，支持TypeScript+自动重启+IDE内查看调试。就不需要以上部分配置和Chrome。
+P.S. 也可以直接依赖[IDE的debug配置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/代码调试相关/README.md#nodejs调试)，支持TypeScript+自动重启+IDE内查看调试。就不需要以上部分配置和Chrome。
