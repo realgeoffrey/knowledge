@@ -5,6 +5,8 @@
 
     1. [JS](#js)
     1. [PC端](#pc端)
+
+        1. [Node.js调试](#nodejs调试)
     1. [WAP端](#wap端)
 
         1. [WebView调试](#webview调试)
@@ -45,9 +47,140 @@
 
 1. Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）。
 2. Elements，右键标签可以Break On：子节点修改、attribute修改、Node移除。
-3. Node.js
 
-    通过Chrome的`<chrome://inspect/#devices>`，监听Node.js程序运行`node --inspect 文件`，可使用`debugger`等进行断点调试、`console`打印等。
+#### Node.js调试
+
+- 基本原则：
+
+    1. 先用日志确认流程：`console.log/info/warn/error`、`console.trace`、`console.time/timeEnd`；复杂项目优先用已有logger（如Egg.js的`ctx.logger`、`app.logger`）。
+    2. 断点调试用Node.js Inspector：`node --inspect app.js`会立即执行并开放本地调试端口；`node --inspect-brk app.js`会在用户代码执行前暂停。默认监听`127.0.0.1:9229`，换端口用`--inspect=9230`或`--inspect-brk=9230`。
+    3. Chrome/Edge DevTools、Cursor/VS Code、WebStorm都是Inspector客户端。启动命令负责环境变量、`ts-node`、Babel/TypeScript转译、`nodemon`、Egg.js插件加载等运行上下文；调试器只负责连接进程。项目代码和`node_modules`里的依赖代码都可以调试。
+    4. 不要把Inspector绑定到公网或`0.0.0.0`；远程调试优先走SSH隧道。
+
+1. Cursor/VS Code调试Node.js项目
+
+    - 优先用JavaScript Debug Terminal（JavaScript调试终端）或Auto Attach（普通终端需配置`"debug.javascript.autoAttachFilter": "always"`或`"smart"`）：按原命令启动，单文件用`node xxx.js`，Egg.js用`npm run dev`。
+
+        > 需要指定Node版本时，先在终端执行`nvm use 版本号`，或在固定配置里按需加`runtimeVersion`。
+
+    - <details>
+
+        <summary>需要固定配置时，再建<code>.vscode/launch.json</code></summary>
+
+        ```json
+        {
+          "version": "0.2.0",
+          "configurations": [
+            {
+              "type": "node",
+              "request": "launch",
+              "name": "Node: 当前文件",
+              "runtimeVersion": "nvm安装的Node.js版本号",
+              "program": "${file}",
+              "cwd": "${workspaceFolder}",
+              "console": "integratedTerminal",
+              "skipFiles": ["<node_internals>/**"]
+            },
+            {
+              "type": "node",
+              "request": "launch",
+              "name": "npm: dev",
+              "runtimeVersion": "nvm安装的Node.js版本号",
+              "runtimeExecutable": "npm",
+              "runtimeArgs": ["run", "dev", "--", "--inspect"],
+              "cwd": "${workspaceFolder}",
+              "console": "integratedTerminal",
+              "autoAttachChildProcesses": true,
+              "skipFiles": ["<node_internals>/**"]
+            },
+            {
+              "type": "node",
+              "request": "attach",
+              "name": "Attach: 9229",
+              "port": 9229,
+              "restart": true,
+              "skipFiles": ["<node_internals>/**"]
+            }
+          ]
+        }
+        ```
+
+        用法：
+
+        1. `Node: 当前文件`：适合普通`.js`脚本、临时复现和工具脚本。若依赖TypeScript/Babel转译、ESM loader、环境变量或框架启动流程，改用项目真实启动命令。
+        2. `npm: dev`：适合`"dev": "egg-bin dev"`这类能接收Inspector参数的脚本。VS Code实际执行`npm run dev -- --inspect`；`egg-bin dev`会启动master、agent、worker，`autoAttachChildProcesses`用于跟随子进程。业务断点用`--inspect`，启动阶段断点改用`--inspect-brk`。
+
+            ```json
+            {
+              "scripts": {
+                "dev": "egg-bin dev"
+              }
+            }
+            ```
+
+            普通Node项目如果是`"dev": "node app.js"`，不要用`npm run dev -- --inspect`，因为`--inspect`会被当成应用参数。应改成真实调试脚本，并把`runtimeArgs`改成`["run", "debug"]`；调启动阶段时用`debug:brk`：
+
+            ```json
+            {
+              "scripts": {
+                "debug": "node --inspect app.js",
+                "debug:brk": "node --inspect-brk app.js"
+              }
+            }
+            ```
+
+        3. `Attach: 9229`：连接已启动的Inspector进程。先用`node --inspect app.js`、`node --inspect-brk app.js`、`egg-bin dev --inspect`，或对Egg.js使用`npm run dev -- --inspect`暴露端口；端口不是`9229`就同步修改`port`。Egg.js业务断点优先用`npm: dev`，手动attach时按终端打印的worker端口连接。
+
+        - 需要固定Node版本时再加`runtimeVersion`，该版本必须已通过nvm/nvs安装。
+        - `request: "launch"`的调试端口由启动命令决定；`port`主要用于`request: "attach"`。
+        - 要进入依赖库代码时，不要把`node_modules`加入`skipFiles`。
+        </details>
+
+1. WebStorm（JetBrains）调试Node.js
+
+    - 无配置最快路径：
+
+        1. 服务端Node调试：先让进程以Inspector模式启动，例如`node --inspect app.js`、`egg-bin dev --inspect`，或按需改用`--inspect-brk`。
+        2. 终端、Run窗口或Debug控制台出现`Debugger listening <host>:<port>`后，按住`Ctrl/command+Shift`点击该链接；WebStorm会生成临时`Attach to Node.js/Chrome`配置并连接对应Inspector端口。
+
+    - <details>
+
+        <summary>固定配置入口：<code>Run</code> -> <code>Edit Configurations</code> -> <code>+</code>。也可以从<code>package.json</code>脚本旁直接运行/调试，生成临时npm配置后按需保存</summary>
+
+        1. `Node.js`配置：由WebStorm直接启动Node入口文件，适合单文件脚本、临时复现、Express/Koa这类入口明确的项目。
+
+            调试当前文件：打开目标`.js`/`.mjs`/`.cjs`后，右键选择「Debug 文件名」。需要复用时保存临时配置；切换文件后需重新右键调试，或修改配置里的`JavaScript file`。
+
+            - `Name`：`Node: 当前文件`或具体文件名。
+            - `Node runtime`：选择项目Node版本（本机用nvm时，选择对应版本的`~/.nvm/versions/node/.../bin/node`）。
+            - `Node parameters`：一般留空；需要loader、require时再填。
+            - `Working directory`：项目根目录。
+            - `JavaScript file`：要调试的入口文件，如`app.js`、`scripts/test.js`。
+            - `Application parameters`：传给脚本的参数，没有就留空。
+
+            如果依赖TypeScript/Babel转译、框架上下文或环境变量，不要直接调当前文件，改用`npm`配置运行项目真实命令。
+
+        2. `npm`配置：由WebStorm执行`npm run xxx`，适合Egg.js、Vite、Next.js或封装过环境变量/插件加载的开发命令。原则是沿用原命令，只加必要的调试参数。
+
+            - `Name`：`npm: dev`。
+            - `package.json`：项目根目录的`package.json`。
+            - `Command`：`run`或`run-script`。
+            - `Scripts`：`dev`。
+            - `Arguments`：如果`dev`是`egg-bin dev`这类支持调试参数的脚本，普通业务断点填`-- --inspect`，等价于`npm run dev -- --inspect`；调启动阶段才填`-- --inspect-brk`。
+            - `Node runtime`：选择项目Node版本。
+            - `Node Options`：一般留空，不要把`--inspect`/`--inspect-brk`填在这里调npm自身。
+
+            普通Node项目如果`dev`是`node app.js`，不要用`npm run dev -- --inspect`；改成`"debug": "node --inspect app.js"`或`"debug:brk": "node --inspect-brk app.js"`，再调试对应脚本。
+
+        3. `Attach to Node.js/Chrome`配置：WebStorm只连接已经带Inspector启动的Node进程，适合手动终端、Docker、远程机器、框架多进程场景。
+
+            - `Host`：本机一般填`127.0.0.1`。
+            - `Port`：填终端`Debugger listening`打印的端口，默认常见是`9229`。
+            - 热重启框架或`nodemon`：勾选自动重连。
+
+            启动命令示例：`node --inspect app.js`、`node --inspect-brk app.js`、`egg-bin dev --inspect`；`npm run dev -- --inspect`仅适用于`egg-bin dev`等支持调试参数的脚本。本机用nvm时，先在启动终端`nvm use`到项目版本；`Attach`只连接端口，不选择Node版本。
+
+        </details>
 
 ### WAP端
 

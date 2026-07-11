@@ -1259,32 +1259,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     16. `DOMException`
 
 ### Tips
-1. Node.js调试方式：
-
-    1. 控制台输出`console`等。
-    2. 通过Chrome的`<chrome://inspect/#devices>`，监听Node.js程序运行`node --inspect 文件`，可以使用`debugger`等在代码中进行断点调试。
-    3. IDE调试
-
-        1. VSCode
-
-            <https://code.visualstudio.com/docs/debugtest/debugging>
-        2. WebStorm
-
-            右上角`运行/调试文件`（`调试文件`会自动添加`--inspect`、`运行文件`不会，因此配置和scripts中都不需添加 ~~`--inspect`~~），在IDE内拥有类似chrome调试有的所有操作。
-
-            >设置中关闭`不单步执行库脚本`。
-
-        >IDE的调试实现了Node.js调试接口（`--inspect`）与IDE界面联动，但没有实现自动重启等功能，需要在运行命令中包含自动重启等功能。
-
-    - 拓展调试
-
-        1. typescript
-
-            **运行/调试配置 - Node.js**：设置Node解释器（interpreter）+ ts配置文件（tsconfig.json），如：[ts-node](https://github.com/TypeStrong/ts-node)。
-        2. 自动重启（如：nodemon、等）
-
-            **运行/调试配置 - npm**：设置执行相关scripts，如：`"nodemon index.js"`、`"nodemon -e ts,tsx --exec ts-node index.ts"`（或通过配置文件）。
-2. 服务端开发注意点：
+1. 服务端开发注意点：
 
     1. 相对于客户端，服务端要处理大量并发的请求。
 
@@ -1297,14 +1272,14 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     3. 异常处理、错误报警
 
         对各种IO要进行异常处理（如：`try-catch`包裹所有IO代码），并需要把错误上报（打日志`console`或借助第三方监控告警）。
-3. 与浏览器JS的区别
+1. 与浏览器JS的区别
 
     除了全局变量、提供的模块、模块系统、API不同之外，在Node.js中，可以控制运行环境：除非构建的是任何人都可以在任何地方部署的开源应用程序，否则开发者知道会在哪个版本的Node.js上运行该应用程序——与浏览器环境（无法选择访客会使用的浏览器）相比起来非常方便。
-4. Node.js运行环境退出（命令行执行完毕后自动退出）：
+1. Node.js运行环境退出（命令行执行完毕后自动退出）：
 
     代码运行完毕。包括：执行队列、任务队列、等待加入任务队列的其他线程任务，全都执行完毕，当不会有新的指令需要执行时，就自动退出Node.js的进程。e.g. 监听系统端口 或 `setTimeout`还未触发，意味着还有事件需要待执行。
-5. 不管任何情况，始终保证要有回包，就算代码运行错误，也要兜底回包（`.end()`）
-6. [CLI命令行](https://nodejs.org/api/cli.html)（`man node`）
+1. 不管任何情况，始终保证要有回包，就算代码运行错误，也要兜底回包（`.end()`）
+1. [CLI命令行](https://nodejs.org/api/cli.html)（`man node`）
 
     ```shell
     node [options] [v8-options] [-e string | script.js | -] [--] [arguments ...]
@@ -1317,7 +1292,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     3. `--`：指示 node 选项的结束。 将其余参数传给脚本。 如果在此之前没有提供脚本文件名或评估/打印脚本，则下一个参数用作脚本文件名。
 
     >`node -e "「js代码文本」"`：eval执行字符串；`node -p "「js代码文本」"`：eval执行字符串（`-e`）并打印。
-7. 抓包Node.js发起的http/https请求
+1. 抓包Node.js发起的http/https请求
 
     1. 本机全局代理到抓包软件、或用Proxifier等软件转发到抓包软件
     2. <details>
@@ -1361,10 +1336,10 @@ Node.js的全局对象`global`是所有全局变量的宿主。
             ```
         2. [axios](https://github.com/axios/axios)的`proxy`参数
         3. [request](https://github.com/request/request)的`proxy`参数
-8. 最外层`return`语句
+1. 最外层`return`语句
 
     Node.js支持最外层`return`语句，作为文件执行完毕作用（不影响命令的退出码）。浏览器不允许 ~~最外层`return`语句~~，会报错。
-9. Node.js可以用ES6 Module规范运行文件
+1. Node.js可以用ES6 Module规范运行文件
 
     `.mjs`文件总是以ES6 Module规范加载，`.cjs`文件总是以CommonJS规范加载，`.js`文件的加载取决于`package.json`的`type`字段的设置（`"module"`、`"commonjs"`默认）。
 
@@ -1504,13 +1479,29 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         ```
     2. `config.local.js`开发模式、`config.unittest.js`测试模式、`config.prod.js`正式、其他自定义环境名
 
-    - 插件、框架、应用 之间的配置文件 以及 具体环境、default 之间的配置文件，会按优先级合并（通过[extend2](https://github.com/eggjs/extend2)深复制/深拷贝）；对象字段会合并，同名字段后加载配置覆盖先加载配置，数组整体覆盖、不逐项合并。
-    - 字段生效逻辑：
+    - 合并规则（[extend2](https://github.com/eggjs/extend2)深合并）：后加载覆盖先加载；对象合并、数组整段替换。层优先级：应用 > 框架 > 插件；同层`config.{env}` > `config.default`。只加载当前一个环境（`local`与`prod`互不叠加）。`middleware`列表与中间件同名`options`也走此合并；执行链为`coreMiddleware`（框架/插件）→ `appMiddleware`（应用）。
+    - 加载顺序示例（`{env}`为`local`或`prod`）：
 
-        1. 配置文件先按加载顺序合并成最终`app.config`。
-        2. Egg、插件或中间件只识别自己约定的字段名；识别到了才执行对应默认逻辑。
-        3. 其他字段只是普通数据，业务代码不读取就没有效果。
-        4. 同一个字段可以既是配置又是“约定入口”，关键看是否有 Egg、插件、中间件或业务代码读取它。
+        ```
+        plugin/framework/app 的 config.default.js
+        → plugin/framework/app 的 config.{env}.js（app 最高）
+        ```
+
+        - `local`：`egg-bin dev` / 未设`EGG_SERVER_ENV`时通常为此
+        - `prod`：`EGG_SERVER_ENV=prod`，或`NODE_ENV=production`且未显式设 EGG
+    - 本地若要叠目标环境业务配置，在`config.local.js`里手动`require`组合（勿改 Loader）；直接设`EGG_SERVER_ENV=test/prod`会离开`local`：
+
+        ```js
+        // ./config/config.local.js
+        const target = process.env.LOCAL_TARGET_ENV || 'test'
+        const targetConfig = require(`./env/${target}`)
+
+        module.exports = appInfo => ({
+          ...(typeof targetConfig === 'function' ? targetConfig(appInfo) : targetConfig),
+          // 本地专属覆盖
+        })
+        ```
+    - 字段生效：合并成`app.config`后，只有 Egg/插件/中间件/业务代码主动读取的字段才有作用。
 3. 扩展`./app/extend/`（全支持：应用、框架、插件） +
 
     1. `application.js`或`application.{env}.js`
