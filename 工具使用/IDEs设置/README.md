@@ -80,57 +80,6 @@
     - IDE读取[jsconfig.json和tsconfig.json](https://www.typescriptlang.org/zh/tsconfig/)进行[JS语言服务](https://github.com/microsoft/TypeScript/wiki/JavaScript-Language-Service-in-Visual-Studio)。
 
         `jsconfig.json`/`tsconfig.json`里的`baseUrl`/`paths`等不影响代码“执行”，它只影响IDE（+ TypeScript）编译阶段的“路径解析”，👉 运行时（Node / 浏览器）默认完全不认识这些 alias，需要再通过构建工具（Vite、webpack等）或运行时插件才能使代码指向正确路径。
-3. 运行和调试
-
-    <details>
-    <summary>支持 当前文件（浏览器的.html、.js，Node.js的.js等）、webpack或vite运行的框架项目（vue.js、React）、Node.js框架项目</summary>
-
-    1. launch模式（每次都启动一个全新的、纯净的 Chrome 实例）
-
-        1. 当前文件：直接运行，不能配置launch.json（没找到如何配置）
-        2. webpack或vite运行的项目（vue.js、React）
-
-            ```jsonc
-            {
-              "version": "0.2.0",
-              "configurations": [
-                {
-                  "type": "chrome",
-                  "request": "launch",
-                  "name": "针对 localhost 启动 Chrome",
-                  "url": "http://localhost:3000", // 本地项目启动的端口
-                  "webRoot": "${workspaceFolder}"
-                  // "webRoot": "${workspaceFolder}/create-vue3"
-                }
-              ]
-            }
-            ```
-    1. Node.js的不依赖浏览器调试服务
-
-        ```json
-        {
-          "version": "0.2.0",
-          "configurations": [
-            {
-              "type": "node",
-              "request": "launch",
-              "name": "Egg Debug",
-              "runtimeExecutable": "npm",
-              "runtimeArgs": [
-                "run",
-                "dev",
-                "--",
-                "--inspect-brk"
-              ],
-              "cwd": "${workspaceFolder}/egg",
-              "console": "integratedTerminal",
-              "restart": true,
-              "autoAttachChildProcesses": true
-            }
-          ]
-        }
-        ```
-    </details>
 
 ### JetBrains
 <https://github.com/zpj80231/idea-set>（激活）
@@ -167,22 +116,4 @@
 
     点击File,选择Invalidate Caches/Restart...
 
-- <details>
-
-    <summary>IDE针对Node.js调试（支持：TypeScript+自动重启）</summary>
-
-    ![debug图](./images/ide-node-debug-1.png)
-
-    ```xml
-    <component name="ProjectRunConfigurationManager">
-      <configuration default="false" name="app.ts" type="NodeJSConfigurationType" application-parameters="--project tsconfig.json" nameIsGenerated="true" node-parameters="$USER_HOME$/.nvm/versions/node/v14.17.5/bin/nodemon" path-to-js-file="app.ts" working-dir="$PROJECT_DIR$">
-        <envs>
-          <env name="NODE_ENV" value="development" />
-          <env name="DEBUG" value="koa*" />
-        </envs>
-        <method v="2" />
-      </configuration>
-    </component>
-    ```
-    </details>
 </details>

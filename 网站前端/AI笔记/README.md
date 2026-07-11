@@ -3,6 +3,8 @@
 ## 目录
 1. [从 Vibe Coding 到 Agentic Engineering](#从-vibe-coding-到-agentic-engineering)
 1. [Agentic Engineering 工作流（针对实现某个需求）](#agentic-engineering-工作流针对实现某个需求)
+1. [2026 补充：长任务、并行智能体与安全自治](#2026-补充长任务并行智能体与安全自治)
+1. [附录：需求输入模板](#附录需求输入模板)
 
 ---
 
@@ -195,12 +197,14 @@
 
     >例如：superpowers 按照 RED-GREEN-REFACTOR（红-绿-重构）测试驱动开发循环 + 双阶代码审查
 
-    1. 实现阶段（可用普通模型）
+    1. 实现阶段（按难度、风险和可验证性动态选择模型、推理强度与验证等级）
 
         1. 先让 AI 读相关文件并确认实现路径。
         1. 只授权必要工具和必要目录。
         1. 让 AI 按 Plan 实现，并在每个关键节点运行验证。
         1. 出现失败时要求修根因，不接受跳过测试、删除断言或扩大 mock 来制造通过。
+
+            >不要机械地用“强模型做 Plan、普通模型做实现”切分。样板修改可使用快速模型和较低推理强度；跨模块逻辑、疑难故障和高风险代码在实现阶段同样需要更强推理与更严格验证。连续失败、改动面超出 Plan 或无法解释验证结果时，先检查 Spec、上下文、工具、环境和验证方式；确认是能力瓶颈后，再升级模型或推理强度，否则回到 Plan。
     1. 自动化验证（优先用工具，可让低成本模型辅助）
 
         自动化验证的本质是用可重复反馈替代人工盯守。优先验证关键路径，不追求一开始就全量覆盖。
@@ -229,6 +233,62 @@
 
 ![Agentic Engineering工作流](./images/AgenticEngineering工作流.png)
 </details>
+
+### 2026 补充：长任务、并行智能体与安全自治
+
+单智能体的 `Explore -> Plan -> Execute -> Verify -> Learn` 仍是默认路径。状态持久化取决于任务是否跨会话，子智能体取决于工作是否能独立拆分；不要为了“多智能体”而多智能体。沙箱、权限和审批则始终按操作的副作用、运行环境、可逆性和数据敏感度决定，不能因为任务短或有人监督就降低安全边界。
+
+1. 上下文工程：选择、外置、压缩、隔离
+
+    1. **一个会话对应一个连贯结果**，不要用一个无限增长的聊天承载整个项目；真正分叉的任务再开新会话。
+    1. 默认上下文只保留高信号规则和引用，例如文件路径、文档链接、查询条件；详细资料通过工具按需读取，不要一次性塞满窗口。
+    1. 长会话在阶段边界做上下文压缩或摘要，并把不能丢失的状态写入仓库内的进度文件或任务系统；聊天记录不是唯一事实源。
+    1. 交接记录至少包含：目标与验收标准、已完成/未完成项、改动文件、关键决策、失败方案及原因、验证命令与结果、阻塞项、明确的下一步。
+    1. 新会话先读交接记录和当前 diff，再运行一项基础检查，确认环境与记录一致后继续。
+
+    >参考：[OpenAI Codex Best practices：长会话与单一工作单元](https://developers.openai.com/codex/learn/best-practices)、[Anthropic Effective context engineering：压缩、结构化笔记与按需检索](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)。
+
+2. 并行与子智能体：只拆独立问题
+
+    1. 适合委派：代码库检索、互不依赖的资料调研、测试执行、故障归类、独立安全或代码 review。
+    1. 不适合并行：多个智能体同时修改相同文件、共享可变状态或尚未定案的架构边界；协调和合并成本可能高于收益。
+    1. 会写代码的并行任务使用独立 Git worktree、checkout 或云端隔离环境，并通常配合独立分支；仅创建分支并不能隔离共享工作区。并行测试也应基于固定快照或隔离工作区。
+    1. 主智能体负责统一决策、合并结果，并对合并后的状态运行完整的相关验证。
+    1. 完成前增加一次**新上下文独立复核**：独立审查者不继承实现者的推理，但可以读取调用方和必要的仓库上下文，并依据原始需求、验收标准、diff 和测试证据判断，以减少确认偏误。
+
+    >参考：[OpenAI Codex Subagents](https://developers.openai.com/codex/subagents)、[OpenAI Codex Worktrees](https://developers.openai.com/codex/app/worktrees)、[Anthropic Claude Code best practices：新上下文对抗性审查](https://www.anthropic.com/engineering/claude-code-best-practices)。
+
+3. 长任务：按可恢复的增量推进
+
+    1. 首次运行先完成环境初始化、依赖安装和基线测试，确认任务具备本地可验证性。
+    1. 每轮只推进一个可验证增量，完成后留下检查点：干净可运行的代码状态、验证结果和进度更新。
+    1. 验收关注**最终状态**，复杂流程再拆成少量关键检查点；不要逐步规定 AI 的每一个动作，否则会限制它寻找更好的实现路径。
+    1. 自动循环必须设置停止条件：最大重试次数、时间/成本上限、连续失败升级、需求冲突或高风险操作转人工。
+
+    >参考：[Anthropic Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)、[Anthropic 多智能体系统：持久状态、重试与检查点](https://www.anthropic.com/engineering/multi-agent-research-system)。
+
+4. 自治与安全：按爆炸半径逐级授权
+
+    1. 读取和检索通常可以自动执行。构建与测试只有在脚本已审查、环境隔离且副作用明确时才按低风险处理；安装脚本、集成测试和自定义命令仍可能访问网络、密钥或外部服务。
+    1. 外部写入只在范围明确、可回滚且已预授权时自动执行；发布、生产数据、数据库迁移、权限变更、密钥操作和不可逆动作默认需要显式审批。
+    1. 使用沙箱、最小目录/网络权限和隔离环境限制影响范围。云角色和支持联合身份的内部服务优先使用 OIDC；其他密钥通过平台 Secrets 安全注入，并限制作用域、生命周期和日志暴露。
+    1. Rules / `AGENTS.md` 用于告诉 AI 应该怎么做；lint、测试、CI、审批和 hooks 作为可执行门禁，提高已编码约束的确定性。关键门禁还要防篡改并遵循最小权限，安全不能只依赖自然语言提醒或模型自审。
+    1. 自治程度随验证成熟度提升：先人工监督跑通，再半自动，最后才把稳定、可回滚、有观测的流程转为后台或定时任务。
+
+    >参考：[Cursor Cloud Agents Best Practices：环境、Secrets 与 OIDC](https://cursor.com/docs/cloud-agent/best-practices)、[Cursor Security Hardening：审批、沙箱与 hooks 的纵深防御](https://cursor.com/docs/enterprise/security-hardening)。
+
+5. 评估工作流，而不只评估模型
+
+    1. 核心指标是验收一次通过率、返工次数、回滚率、缺陷逃逸率和交付周期，而不是生成代码行数或对话轮数。
+    1. 同一类任务持续失败时，先定位缺的是 Spec、上下文、工具、环境还是验证，再把修复沉淀为规则、测试、脚本或 skill。
+    1. 上述指标用于评估软件交付工作流，不等同于模型或智能体能力基准；能力评估还需要固定任务集、环境和可重复评分方式。
+    1. 模型升级不能替代工程闭环；如果智能体无法看到真实运行结果，再强的模型也只能判断“看起来完成”。
+
+    >参考：[Anthropic 多智能体系统：最终状态评估与离散检查点](https://www.anthropic.com/engineering/multi-agent-research-system)。
+
+>任务分级建议：小改动用单智能体直接实现并验证；中等改动走 Explore -> Plan -> Execute -> Verify -> Review；跨会话或可并行的大任务再增加进度文件、检查点、隔离 worktree / 环境、子智能体和独立审查者。
+
+### 附录：需求输入模板
 
 <details>
 <summary>需求输入模板</summary>

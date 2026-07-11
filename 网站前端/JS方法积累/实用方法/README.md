@@ -1847,7 +1847,7 @@ function switchArr ({ arr, from, to, isLeft = false }) {
 
 ```js
 // 测试数据
-const jsonA = {
+const json1 = {
   a: "a",
   b: "b",
   d: [1, 2, 3],
@@ -1872,7 +1872,7 @@ const jsonA = {
   i: 1,
 };
 
-const jsonB = {
+const json2 = {
   a: "a",
   c: "c",
   d: { 0: 1, 1: 2, 2: 3 },

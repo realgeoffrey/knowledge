@@ -12,12 +12,14 @@
 1. [循环](#循环)
 1. [函数](#函数)
 1. [数组](#数组)
-1. [默认环境变量](#默认环境变量)
 1. [启动Bash](#启动bash)
 1. [文件描述符](#文件描述符)
+1. [set / shopt / trap](#set--shopt--trap)
 
 ---
 >Linux一切皆文件。
+
+>macOS 自带 `/bin/bash` 是 **3.2**；Linux / Homebrew 多为 **4+/5+**。文中标 **4+** 的语法在 3.2 可能不可用。写脚本可用 `#!/usr/bin/env bash`，并用 `echo $BASH_VERSION` 确认版本。
 
 ### 模式扩展（globbing）
 >Shell接收到用户输入的命令以后，会根据空格将用户的输入，拆分成一个个词元（token）。然后，Shell会扩展词元里面的特殊字符，扩展完成后才会调用相应的命令。
@@ -38,6 +40,8 @@
     4. `${变量名:开始:长度}`：
 
         提取子字符串。开始可负，长度可空可负。
+
+        >负偏移必须写成 `${变量名: -1}`（冒号后有空格）或 `${变量名:(-1)}`。~~`${变量名:-1}`~~ 是「变量空则取默认值 1」，不是取末字符。
     5. 字符串**头部**（`#`）、**尾部**（`%`）、**任意位置**（`/`）的模式匹配
 
         检查字符串开头、尾部、任意位置，是否匹配给定的模式（支持`*`、`?`、`[]`、等通配符）。若匹配成功，则删除匹配的部分，返回剩下的部分。原始变量不会发生变化。
@@ -55,7 +59,7 @@
         - `${变量名//pattern/替换内容}`
 
             最长匹配（贪婪匹配）进行替换所有匹配。
-    6. 改变大小写
+    6. 改变大小写（**4+**）
 
         1. `${变量名^^}`：
 
@@ -85,12 +89,18 @@
 3. `$((运算))`
 
     扩展成运算的结果。
-4. `~`
+4. `<(命令)`、`>(命令)`（进程替换）
+
+    扩展成临时文件/FIFO 路径，给只认文件的命令用。
+
+    >e.g. `diff <(sort a) <(sort b)`
+5. `~`
 
     1. `~`：当前用户的主目录
     2. `~用户名`：用户名的主目录
     3. `~+`：当前所在的目录，等同于`pwd`
-5. 属于**文件名扩展**，只有文件确实存在的前提下，才会发生扩展，若没有匹配的文件名，则会原样输出 或 提示错误。
+    4. `~-`：上一次所在的目录，等同于`$OLDPWD`（`cd -`）
+6. 属于**文件名扩展**，只有文件确实存在的前提下，才会发生扩展，若没有匹配的文件名，则会原样输出 或 提示错误。
 
     1. `?`
 
@@ -100,8 +110,8 @@
         代表文件路径里面的任意数量的任意字符，包括零个字符。
 
         1. `*`不会匹配隐藏文件（以`.`开头的文件），即`ls *`不会输出隐藏文件。若要匹配隐藏文件，则要写成`.*`。
-        2. 一层子目录：`ls */*.txt`。二层子目录：`ls */*/.txt`
-        3. 零个或多个子目录`ls **/*.txt`
+        2. 一层子目录：`ls */*.txt`。二层子目录：`ls */*/*.txt`
+        3. 零个或多个子目录`ls **/*.txt`（**4+**，需先 `shopt -s globstar`）
 
             >注意：部分Node.js库提供的cli命令，其`**/*.*`表示一或多个子目录，e.g. stylelint、prettier。
     3. `[多个字符]`
@@ -132,7 +142,7 @@
         - 字符类的第一个方括号`[]`后面，可以加上感叹号`!`，表示否定。
 
             >e.g. `[![:digit:]]`匹配所有非数字
-    6. 量词语法
+    6. 量词语法（需先 `shopt -s extglob`）
 
         1. `?(匹配内容)`：匹配零个或一个模式。
         2. `*(匹配内容)`：匹配零个或多个模式。
@@ -141,7 +151,9 @@
         5. `!(匹配内容)`：匹配给定模式以外的任何内容。
 
         >e.g. `ls abc+(.txt|.php)`
-6. 不属于~~文件名扩展~~，它会扩展成所有给定的值，而不管是否有对应的文件存在。
+
+    - 相关 `shopt`：`extglob` 开启量词语法；`nullglob` 无匹配变空；`failglob` 无匹配报错；`dotglob` 匹配点文件；`nocaseglob` 忽略大小写。
+7. 不属于~~文件名扩展~~，它会扩展成所有给定的值，而不管是否有对应的文件存在。
 
     1. `{字符,字符[,字符]}`
 
@@ -156,6 +168,8 @@
     2. `{开始字符..结束字符}`
 
         扩展成一个连续序列。
+
+        >**4+** 还支持步长与补零：`{1..10..2}`、`{00..03}`（3.2 的 `{00..03}` 会变成 `0 1 2 3`）。
 
 ### 命令行
 1. 进入命令行环境以后，用户会看到Shell的提示符
@@ -210,7 +224,7 @@
 
             后台运行。所有的标准输出、错误输出都将被重定向到「文件地址」中。
 
-    >杀死后台进程：先找到进程id然后`kill`：[查看端口占用、网络链接，查看进程并杀死](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/命令行备忘/README.md#查看端口占用网络链接查看进程并杀死)。
+    >杀死后台进程：先找到进程id然后`kill`：[查看端口、网络连接和进程](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/命令行备忘/README.md#查看端口网络连接和进程)。
 
 ### 转义符`\`
 1. 转义：
@@ -291,6 +305,99 @@ Bash只有一种数据类型：字符串。不管用户输入什么数据，Bash
     ```
 
     >仅支持字符类型。
+
+    - <details>
+
+        <summary>默认环境变量</summary>
+
+        >多数工具约定：`XXX_HOME` 指向安装根目录，再把 `$XXX_HOME/bin` 接到 `PATH` 前面。
+
+        1. 路径与身份（几乎每条命令都依赖）
+
+            1. `PATH`：找可执行文件的目录列表，冒号分隔；靠前的优先。`command not found` 或用错版本，先查它。
+            2. `HOME`：用户主目录；`~` 就是它。
+            3. `PWD`：当前工作目录（`pwd` 读它）。
+            4. `OLDPWD`：上一次 `cd` 之前的目录（`cd -` 用它）。
+            5. `USER` / `LOGNAME`：当前用户名。
+            6. `SHELL`：登录 Shell，如 `/bin/bash`、`/bin/zsh`。
+            7. `TMPDIR`：临时文件目录。Linux 常落到 `/tmp`；macOS 常是 `/var/folders/.../T/`。
+            8. `CDPATH`：`cd` 额外搜索的目录。用得少，配错会让 `cd` 跳到意外位置。
+        2. 常用工具环境变量（装了对应工具才配，开发里改得最多）
+
+            约定：根目录用 `*_HOME`，命令能否直接敲靠 `PATH`。
+
+            1. `JAVA_HOME`：JDK 根目录。Maven、Gradle、Tomcat、不少 IDE 读它，而不是猜 `PATH` 里的 `java`。
+            2. `MAVEN_HOME` / `M2_HOME`：Maven 根目录；`PATH` 再加 `$MAVEN_HOME/bin`。
+            3. `HTTP_PROXY` / `HTTPS_PROXY` / `ALL_PROXY`：HTTP(S) / 全局代理。很多工具只认大写；小写也有人设，同时设最省事。
+            4. `NO_PROXY`：不走代理的主机，如 `localhost,127.0.0.1,.local`。
+            5. `NVM_DIR`：nvm 根目录，用来切换 Node 版本。
+            6. `NODE_ENV`：`development` / `production` 等，很多 Node 框架读它。
+            7. `HOMEBREW_PREFIX`：Homebrew 前缀。Apple Silicon 一般是 `/opt/homebrew`，Intel 一般是 `/usr/local`。
+            8. `SDKMAN_DIR`：SDKMAN 根目录，常用来管 Java / Maven / Gradle 版本。
+            9. `VIRTUAL_ENV`：当前 Python venv 根目录（激活后自动设置）。
+            10. `PYTHONPATH`：额外的 Python 模块搜索路径。
+            11. `CONDA_PREFIX` / `CONDA_DEFAULT_ENV`：当前 conda 环境。
+            12. `GOROOT` / `GOPROXY`：Go 安装目录 / 模块代理（国内常用 `https://goproxy.cn,direct`）。`GOPATH` 是旧工作区，新项目多用 modules。
+            13. `DOCKER_HOST` / `KUBECONFIG`：Docker 守护进程地址 / kubectl 的 kubeconfig 路径。
+            14. `AWS_PROFILE` / `AWS_REGION`：AWS CLI 的配置档与默认区域。
+            15. `CARGO_HOME` / `RUSTUP_HOME`：Rust 工具链。
+            16. `CLASSPATH`：旧式手动指定 `.class`/`.jar` 搜索路径。现在项目多用 Maven/Gradle，一般不手改。
+
+            ```text
+            # 典型写法（zsh/bash 都适用）
+            export JAVA_HOME=/path/to/jdk
+            export PATH=$JAVA_HOME/bin:$PATH
+            export MAVEN_HOME=/path/to/maven
+            export PATH=$MAVEN_HOME/bin:$PATH
+            export HTTP_PROXY=http://127.0.0.1:7890
+            export HTTPS_PROXY=$HTTP_PROXY
+            export NO_PROXY=localhost,127.0.0.1
+            ```
+        3. 语言、终端、编辑器、历史
+
+            1. `LANG` / `LC_ALL` / `LC_*`：语言、编码、排序、日期格式。强制 UTF-8 常用 `export LANG=en_US.UTF-8`。
+            2. `TERM`：终端类型，影响颜色、清屏、光标。
+            3. `EDITOR` / `VISUAL`：`git commit`、`crontab -e` 等打开的编辑器。
+            4. `PAGER`：长输出分页器，默认常是 `less`。
+            5. `HISTFILE` / `HISTSIZE` / `HISTFILESIZE`：命令历史文件路径、内存条数、文件条数。
+            6. `MANPATH`：`man` 手册搜索路径。
+        4. 提示符
+
+            1. `PS1`：主提示符（平时看到的 `$` / `%`）。
+            2. `PS2`：续行提示符（未写完就回车，默认 `>`）。
+            3. `PS4`：`set -x` 跟踪时每行前面的前缀（默认 `+`）。
+            4. `PS3`：`select` 菜单的提示符，很少用。
+        5. 脚本里常用
+
+            1. `IFS`：词分割用的分隔符，默认空格、Tab、换行。改它会影响 `"$@"` 以外的未加引号展开。
+            2. `PIPESTATUS`：管道里每个命令的退出码数组。`$?` 只反映最后一个。
+            3. `REPLY`：`read` 没指定变量时写入这里；`select` 也会用。
+            4. `RANDOM`：每次读取得到 0–32767 的随机整数。
+            5. `SECONDS`：Shell 启动后经过的秒数。
+            6. `BASH` / `BASH_VERSION`：Bash 可执行文件路径、版本。
+        6. 进程与会话
+
+            1. `SSH_AUTH_SOCK`：ssh-agent 的 socket，SSH 免密依赖它。
+            2. `SHLVL`：Shell 嵌套层数。再开一层 `bash`/`zsh` 会 +1。
+            3. `HOSTNAME`：主机名。
+            4. `PPID`：父进程 PID。
+            5. `UID` / `EUID`：真实 / 有效用户 ID。
+            6. `BASHPID`：当前 Bash 进程 PID（子 Shell 里与 `$$` 可能不同）。
+        7. 行号，调用栈（排查脚本时才用）
+
+            1. `LINENO`
+
+                返回它在脚本里面的行号。
+            2. `FUNCNAME`
+
+                返回一个数组，内容是当前的函数调用堆栈。该数组的`0`项是当前调用的函数，`1`项是调用当前函数的函数，以此类推。
+            3. `BASH_SOURCE`
+
+                返回一个数组，内容是当前的脚本调用堆栈。该数组的`0`项是当前执行的脚本，`1`项是调用当前脚本的脚本，以此类推。
+            4. `BASH_LINENO`
+
+                返回一个数组，内容是每一轮调用对应的行号。`${BASH_LINENO[$i]}`跟`${FUNCNAME[$i]}`是一一对应关系，表示${FUNCNAME[$i]}在调用它的脚本文件${BASH_SOURCE[$i+1]}里面的行号。
+        </details>
 2. 自定义变量
 
     无法~~由用户从父Shell传入子Shell~~。自定义变量是用户在当前Shell里面自己定义的变量，仅在当前Shell可用（当前Shell的子或父Shell均不可用）。
@@ -407,7 +514,7 @@ Bash只有一种数据类型：字符串。不管用户输入什么数据，Bash
 
 2. `$((运算))`
 
-    语法返回运算结果，无论结果是多少都执行成功（退出码：`0`），其他与`((运算))`类似（变量`=`运算后赋值、无变量则仅运算）。
+    语法返回运算结果；**合法**表达式退出码为`0`，除零或语法错误则失败。其他与`((运算))`类似（变量`=`运算后赋值、无变量则仅运算）。
 
 - `((运算))`、`$((运算))` 的语法：
 
@@ -450,7 +557,7 @@ Bash只有一种数据类型：字符串。不管用户输入什么数据，Bash
         6. `**`：指数
         7. `++`、`--`（前缀：先运算后返回值；后缀：先返回值后运算）
 
-        若有小数参与，则返回小数点。否则仅返回整数（向下取整）。
+        Bash 算术只做**整数**（除法向 0 截断）；要小数用 `bc`/`awk`。
     7. 位运算
 
         1. `<<`：
@@ -563,7 +670,7 @@ Bash只有一种数据类型：字符串。不管用户输入什么数据，Bash
     读入文件并执行其内容。
 
     1. `source`（`.`）或`bash`（或其他Shell）：不需要拥有该文件的执行权限
-    2. 直接运行`./脚本`：需要当前用户拥有该文件的执行权限（`chmod 777 「文件」`）
+    2. 直接运行`./脚本`：需要当前用户拥有该文件的执行权限（`chmod +x 「文件」`，不必 `777`）
 4. 若文件没有路径，则去`$PATH`找
 
     >e.g. `「执行指令」 「文件」`或`「文件」`去`$PATH`找；`「执行指令」 ./「文件」`或`./「文件」`在指定目录找。
@@ -595,6 +702,19 @@ Bash只有一种数据类型：字符串。不管用户输入什么数据，Bash
     2. `getopts`
 
         用在脚本内部，可以解析复杂的脚本命令行参数，通常与while循环一起使用，取出脚本所有的带有前置连词线（`-`）的参数。
+
+        ```shell
+        while getopts ':ab:h' opt; do
+          case $opt in
+            a) flag=1 ;;
+            b) arg=$OPTARG ;;
+            h) echo usage; exit 0 ;;
+            :) echo "缺参数: -$OPTARG" >&2; exit 2 ;;
+            \?) echo "未知: -$OPTARG" >&2; exit 2 ;;
+          esac
+        done
+        shift $((OPTIND - 1))
+        ```
     3. `--`配置项参数终止符
 
         `-`、`--`开头的参数，会被Bash当作配置项解释。配置项参数终止符`--`的作用是告诉Bash，在它后面的参数开头的`-`、`--`不是配置项，只能当作实体参数解释。
@@ -637,34 +757,47 @@ Bash只有一种数据类型：字符串。不管用户输入什么数据，Bash
 
         >文件名最好放在双引号中。
 
-        ```shell
-        [ -a 「文件名」]
+        1. `-e` / `-a`：存在（`-a` 旧）
+        2. `-f`：普通文件；`-d`：目录；`-h`/`-L`：符号链接；`-b`/`-c`/`-p`/`-S`：块设备/字符设备/FIFO/套接字
+        3. `-r` `-w` `-x`：可读/写/执行；`-s`：大小 > 0；`-t fd`：fd 是终端
+        4. `-N`：自上次读后被改过；`-O`/`-G`：属主是 euid / 属组是 egid
+        5. `f1 -nt f2` / `-ot` / `-ef`：较新 / 较旧 / 同一 inode
 
+        ```shell
+        [ -f 「文件名」 ]
         [ 「文件名1」 -nt 「文件名2」 ]
         ```
     2. 字符串判断
 
+        1. `[ 「字符串」 ]` / `-n`：非空；`-z`：空
+        2. `=` / `==`：相等；`!=`：不等
+        3. `[[ a < b ]]`：按 locale 字典序（`[` 里 `<` `>` 要转义）
+
         ```shell
-        [ 「字符串」 ]
         [ -n 「字符串」 ]
         [ 「字符串1」 = 「字符串2」 ]
         ```
     3. 整数判断
+
+        `-eq -ne -lt -le -gt -ge`。整数比较优先 `((a > b))`；不要用 `[ 3 > 2 ]`（那是重定向）。
 
         ```shell
         [ 「数字1」 -eq 「数字2」 ]
         ```
     4. 正则判断（仅`[[  ]]`支持）
 
+        正则不要加引号（否则当字面量）；捕获在 `BASH_REMATCH`。
+
         ```shell
         [[ 「字符串」 =~ 「正则表达式」 ]]
         ```
     5. 逻辑运算
 
-        1. `&&` 或 `-a`
+        1. `&&` 或 `-a`（`[` 里 `-a`/`-o` 易踩坑，推荐多个 `[` 加 `&&`/`||`）
         2. `||` 或 `-o`
         3. `!`
     - `test`命令内部使用圆括号`()`必须使用引号或转义
+    - `[[ ]]` 是关键字：不做词分割/glob，可用 `&&` `||` `()`；`[` 是命令，空格和 `]` 不能省
 2. `if`
 
     ```shell
@@ -822,6 +955,14 @@ Bash只有一种数据类型：字符串。不管用户输入什么数据，Bash
 
     立即终止本轮循环，开始执行下一轮循环。
 
+- 按行读文件（避免 `for line in $(cat file)`）
+
+    ```shell
+    while IFS= read -r line || [[ -n $line ]]; do
+      echo "$line"
+    done < file
+    ```
+
 ### 函数
 ```shell
 fn() {  # 不能跟形参
@@ -829,7 +970,8 @@ fn() {  # 不能跟形参
   # 函数体内直接声明的变量，属于全局变量，整个脚本都可以读取
   # 函数体内可以修改全局变量
 
-  return # 可以返回空，也可以返回字符串
+  local x=1   # 局部变量；不写 local 就是全局
+  return 0    # 只能返回 0–255 的退出码，不是字符串；要「返回字符串」用 stdout + $(fn)
   # return之后不再执行
 }
 
@@ -849,7 +991,7 @@ fn 参数1 参数2
     >`source ./脚本`在当前Shell执行，`bash ./脚本`（或其他Shell）在新建的一个子Shell执行。
 2. 同名执行优先级：
 
-    别名 > 函数 > 脚本
+    别名 > 函数 > builtin > `$PATH` 里的脚本/二进制（同名函数会盖住 `test`/`[`）
 3. 删除一个函数
 
     `unset -f 「函数名」`
@@ -990,7 +1132,7 @@ fn 参数1 参数2
         数组名[下标]=
         ```
 
-- 关联数组
+- 关联数组（**4+**）
 
     关联数组使用字符串而不是整数作为数组索引。
 
@@ -1005,29 +1147,10 @@ fn 参数1 参数2
     declare -a  # 查看所有数组
     declare -aA # 查看所有关联数组
     ```
-### 默认环境变量
-1. 行号，调用栈
-
-    1. `LINENO`
-
-        返回它在脚本里面的行号。
-    2. `FUNCNAME`
-
-        返回一个数组，内容是当前的函数调用堆栈。该数组的`0`项是当前调用的函数，`1`项是调用当前函数的函数，以此类推。
-    3. `BASH_SOURCE`
-
-        返回一个数组，内容是当前的脚本调用堆栈。该数组的`0`项是当前执行的脚本，`1`项是调用当前脚本的脚本，以此类推。
-    4. `BASH_LINENO`
-
-        返回一个数组，内容是每一轮调用对应的行号。`${BASH_LINENO[$i]}`跟`${FUNCNAME[$i]}`是一一对应关系，表示${FUNCNAME[$i]}在调用它的脚本文件${BASH_SOURCE[$i+1]}里面的行号。
-2. 自定义用户命令行的字符显示
-
-    `PS1`、`PS2`、`PS3`、`PS4`
-
 ### 启动Bash
 用户每次使用Shell，都会开启一个与Shell的Session（对话）。
 
->以下顺序针对`bash`。若使用其他shell时（如：`zsh`等。查看或设置：[系统shell类型](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/命令行备忘/README.md#系统shell类型)），则执行启动脚本的顺序和文件会变化，详情可查看：[关于Linux下Bash与Zsh启动档的载入顺序研究](https://blog.miniasp.com/post/2021/07/26/Bash-and-Zsh-Initialization-Files)、[Zsh/Bash startup files loading order (.bashrc, .zshrc etc.)
+>以下顺序针对`bash`。若使用其他shell时（如：`zsh`等。查看或设置：[Shell 类型与登录 Shell](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/命令行备忘/README.md#shell-类型与登录-shell)），则执行启动脚本的顺序和文件会变化，详情可查看：[关于Linux下Bash与Zsh启动档的载入顺序研究](https://blog.miniasp.com/post/2021/07/26/Bash-and-Zsh-Initialization-Files)、[Zsh/Bash startup files loading order (.bashrc, .zshrc etc.)
 ](https://shreevatsa.wordpress.com/2008/03/30/zshbash-startup-files-loading-order-bashrc-zshrc-etc/)。
 
 1. 登录Session、login shell
@@ -1129,3 +1252,21 @@ fn 参数1 参数2
     1. `ulimit -n`：查看当前进程最多可同时打开多少个文件描述符。
     2. 这里的“文件”不只是普通文件，也包括管道、套接字、终端等。
     3. 若程序打开了太多 FD，且没有及时关闭，就可能报错：`Too many open files`。
+
+### set / shopt / trap
+1. `set` 常用（`set -o 名` / `set +o` 关；`$-` 里有短选项字母）
+
+    | 短 | 长 | 作用 |
+    | --- | --- | --- |
+    | `-e` | `errexit` | 命令失败则退出（管道要配 `pipefail`；`if`/`&&`/`||` 的判定命令除外） |
+    | `-u` | `nounset` | 用未定义变量就报错 |
+    | `-x` | `xtrace` | 展开后打印命令 |
+    | `-n` | `noexec` | 只解析不执行（查语法） |
+    | `-C` | `noclobber` | `>` 不覆盖已有文件 |
+    | `-f` | `noglob` | 关 glob |
+    | | `pipefail` | 管道退出码取最右一个非 0，全成功才 0 |
+    | `-a` | `allexport` | 新变量一律 export |
+
+    脚本开头常见：`set -euo pipefail`。
+2. `shopt -s/-u`：`extglob` `nullglob` `failglob` `dotglob` `nocasematch`。**4+**：`globstar`；`lastpipe`（无 job control 时最后一段管道在当前 Shell）。`shopt` 查看。
+3. `trap 'cmds' SIGNAL...`：捕获信号或钩子。`EXIT` 脚本结束；`ERR` 失败命令（配合 `-e`；函数里要 `set -E`/`errtrace` 才会继承）；`DEBUG` 每条前；`RETURN` 函数 return。`trap - SIGNAL` 恢复默认；`trap '' INT` 忽略。`kill -l` 列信号。
