@@ -4,7 +4,7 @@
 1. [Java 概览](#java-概览)
 1. [Java SE 基础](#java-se-基础)
 1. [后端工程与数据中间件](#后端工程与数据中间件)
-1. [缩写解析](#缩写解析)
+1. [名词解析](#名词解析)
 
 ---
 
@@ -37,11 +37,12 @@
     1. Java SE 基础
     2. Maven
     3. MySQL
-    4. Spring / Spring Boot
-    5. MyBatis
-    6. Redis
-    7. 消息队列
-    8. 并发、JVM、性能优化
+    4. JDBC
+    5. Spring / Spring Boot
+    6. MyBatis
+    7. Redis
+    8. 消息队列
+    9. 并发、JVM、性能优化
 
     - 前端转 Java 时，最容易卡住的点通常不是语法，而是下面三件事：
 
@@ -73,35 +74,7 @@
 
     >JDK 8u202解析：`8`代表主版本号，也就是 Java 8（在早期命名规范中也叫 JDK 1.8）。`u`是 Update（更新） 的缩写。`202`是更新号。Oracle 会定期发布这些 Update，主要包含安全漏洞修复、Bug 修复以及一些微小的性能调优，不涉及语法层面的大改动。
 - Java 9 起主版本号不再写成 `1.x`，而是直接使用 9、10、11、17、21、25 这种形式。
-- <details>
-
-    <summary>本地版本管理：<a href="https://github.com/sdkman/sdkman-cli">SDKMAN!</a></summary>
-
-    ```
-    sdk list            # 列出 SDKMAN! 支持管理的候选项（java、maven、gradle、...）
-    sdk list java       # 列出 Java 可安装、本地、已安装和当前使用的版本（通常 `>>>` 表示当前正在使用，底部图例为准）
-    sdk list java | grep -E "installed|local only"  # 查看已安装或通过本地路径接管的 Java
-    ls -l ~/.sdkman/candidates/java/                # 查看安装目录
-    # 不同候选项的 sdk list 展示格式可能不同，以输出底部图例为准
-    # 针对maven，可以根据sdk list maven查看标志信息（如：`+`local version；`*`installed；`>`currently in use）
-
-    sdk install java                # 安装 Java 最新稳定版
-    sdk install java 「支持的版本标识」 # 安装指定版本，版本标识从 sdk list java 中复制
-    sdk install java 8.0.192-local /Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home
-    # 安装本地版本（sdk install java 「唯一的版本号」 「本地路径」）：先手动下载一个版本，然后让 SDKMAN! 接管（软链接）
-
-    sdk use java 8.0.192-local          # 仅当前 shell 使用该 Java 版本
-
-    sdk default java 8.0.192-local      # 设为默认版本，后续新 shell 生效
-
-    sdk current             # 查看所有候选项当前使用的版本
-    sdk current java        # 查看 Java 当前使用的版本
-
-    sdk uninstall java 「已安装的版本号」
-
-    sdk selfupdate  # 更新 SDKMAN! 自身
-    ```
-    </details>
+- 本机多版本 JDK / Maven 可用 [SDKMAN!](https://github.com/sdkman/sdkman-cli) 管理。
 
 ### 平台体系
 - **Java SE**：标准版，覆盖语言基础、标准类库、集合、IO/NIO、日期时间、并发、网络、反射、注解。
@@ -157,23 +130,23 @@ flowchart TD
 >“三高”主要是系统设计问题，语言和框架只是基础条件，不是全部答案。
 
 ## Java SE 基础
-Java SE 基础按 8 个字回忆：**名、值、流、法、组、系、形、错**。
-
 ```text
-名：包、import、访问控制、修饰符、Javadoc，解决名字从哪里来、谁能用。
-值：变量、值、引用、内存、默认值、null、final、常量、事实不可变。
-流：表达式、语句、代码块、if/switch、while/for、break/continue/return/throw。
-法：方法、参数、返回、值传递、重载、可变参数、静态方法、实例方法、构造器。
-组：数组、类、对象、字段、成员、初始化、this/super、封装。
-系：继承、组合、转型、instanceof、多态、重写、字段隐藏、静态方法隐藏。
-形：抽象类、接口、default 方法、枚举、记录、嵌套类、局部类、匿名类。
-错：异常体系、受检/非受检、try-catch-finally、try-with-resources、throw/throws、自定义异常。
+Java SE 基础按 8 个字回忆：
+
+  名：包、import、访问控制、修饰符、Javadoc，解决名字从哪里来、谁能用。
+  值：基本/引用、拓宽收窄、变量、内存、默认值、null、final、常量、事实不可变。
+  流：表达式、语句、代码块、if/switch、while/for、break/continue/return/throw。
+  法：方法、参数、返回、值传递、重载、可变参数、静态方法、实例方法、构造器。
+  组：数组、类、对象、字段、成员、初始化、this/super、封装。
+  系：继承、组合、转型、instanceof、多态、重写、字段隐藏、静态方法隐藏。
+  形：抽象类、接口、default 方法、枚举、记录、嵌套类、局部类、匿名类。
+  错：异常体系、受检/非受检、try-catch-finally、try-with-resources、throw/throws、自定义异常。
 ```
 
 判断任何基础问题，只问三句：**名字能不能访问？编译期类型是什么？运行期对象和异常路径是什么？**
 
 ### 环境配置与运行
-- 安装 JDK、Maven，并配置 `JAVA_HOME`、`PATH`。
+- 安装 JDK、Maven，并配置 `JAVA_HOME`（JDK安装根目录）、`PATH`（可执行文件目录）。
 
     下载并安装 JDK、Maven，然后配置环境变量。例如 `~/.zshrc`：
 
@@ -186,66 +159,56 @@ Java SE 基础按 8 个字回忆：**名、值、流、法、组、系、形、�
     export M2_HOME=/usr/local/apache-maven-3.9.15
     export PATH=$M2_HOME/bin:$PATH
 
-
-    # 方式2，SDKMAN管理
+    # 方式2，SDKMAN（https://github.com/sdkman/sdkman-cli）
     #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
     export SDKMAN_DIR="$HOME/.sdkman"
     [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
     ```
 
+    - <details>
+
+        <summary>SDKMAN 常用命令</summary>
+
+        ```
+        sdk list            # 列出 SDKMAN! 支持管理的候选项（java、maven、gradle、...）
+        sdk list java       # 列出 Java 可安装、本地、已安装和当前使用的版本（通常 `>>>` 表示当前正在使用，底部图例为准）
+        sdk list java | grep -E "installed|local only"  # 查看已安装或通过本地路径接管的 Java
+        ls -l ~/.sdkman/candidates/java/                # 查看安装目录
+        # 不同候选项的 sdk list 展示格式可能不同，以输出底部图例为准
+        # 针对maven，可以根据sdk list maven查看标志信息（如：`+`local version；`*`installed；`>`currently in use）
+
+        sdk install java                # 安装 Java 最新稳定版
+        sdk install java 「支持的版本标识」 # 安装指定版本，版本标识从 sdk list java 中复制
+        sdk install java 8.0.192-local /Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home
+        # 安装本地版本（sdk install java 「唯一的版本号」 「本地路径」）：先手动下载一个版本，然后让 SDKMAN! 接管（软链接）
+
+        sdk use java 8.0.192-local          # 仅当前 shell 使用该 Java 版本
+
+        sdk default java 8.0.192-local      # 设为默认版本，后续新 shell 生效
+
+        sdk current             # 查看所有候选项当前使用的版本
+        sdk current java        # 查看 Java 当前使用的版本
+
+        sdk uninstall java 「已安装的版本号」
+
+        sdk selfupdate  # 更新 SDKMAN! 自身
+        ```
+        </details>
+
     - 配置 IDE 的 Java 版本：
 
         1. Cursor：`java.configuration.runtimes`
         2. IDEA：`「文件」-「项目结构」-「项目」-「SDK」`（「编辑」配置好需要的SDK）
+    - IDEA 正在运行/调试时，尽量不要让 Cursor 的 Java 语言服务对同一工程自动编译。仅打开 Cursor 本身不一定有问题；双方同时编译且共享 `target/` 等输出目录时，Cursor 侧可能清掉或覆盖 IDEA 刚产出的 class，表现为构建「回退」、类加载失败或热替换异常。若需同时打开，关掉 Cursor 的 `java.autobuild.enabled`，或只当纯文本编辑器。
+    - 标准 JVM HotSwap 一般只能改方法体；改字段、方法签名、类层次或 Spring Bean / 注解后通常要重启。DevTools 做自动重启，JRebel 能覆盖更多类结构变更但是商业软件。Cursor 的调试和 Hot Code Replace 取决于已装的 Java 调试扩展。
 - 初学期建议先用 LTS 版本；老项目常见 Java 8，新项目常见 Java 17/21，是否使用更高版本以团队基线为准（团队统一约定的技术标准下限/默认线）。
 
 - `javac 文件.java` → `类名.class`，编译为字节码；运行 `java 类名`（不写 `.class`）后，由 JVM 加载执行，热点代码可能经 JIT 编译为机器码。
 
     >可通过 `java 类名 参数1 参数2` 向 `main` 传入命令行参数，如：`public class 类名 { public static void main(String[] args) {} }`。传统项目入口常用这个标准签名。只有要被 JVM 直接当作程序入口启动的类，才必须有可启动的 `main` 方法。
 
-### 类型转换与强类型规则
-- Java 是强类型语言，变量和表达式都有编译期类型。
-- 赋值、传参、返回值等上下文中的自动转换主要是**拓宽基本类型转换**：
-
-    1. `byte` 可转为 `short/int/long/float/double`
-    1. `short` 可转为 `int/long/float/double`
-    1. `char` 可转为 `int/long/float/double`
-    1. `int` 可转为 `long/float/double`
-    1. `long` 可转为 `float/double`
-    1. `float` 可转为 `double`
-- 表达式运算中的规则叫**数值提升**：`byte`、`short`、`char` 参与大多数算术运算时先提升为 `int`，再按 `int -> long -> float -> double` 决定结果类型。
-- 反向或不在拓宽规则内的转换是**收窄基本类型转换**，通常需要显式强转，可能截断、溢出或丢失精度。
-- “拓宽”是 Java 官方转换规则，不等于完全无损；例如 `int -> float` 是拓宽转换，但大整数可能丢失低位精度。
-- `boolean` 不能与数值类型互转。
-
-<details>
-<summary>类型转换示例</summary>
-
-```java
-int a = 10;
-double b = a; // int -> double：拓宽基本类型转换，自动完成
-// ❌ int c = b; // 编译错误：double -> int 是收窄转换，不能隐式完成
-int c1 = (int) b; // 显式收窄：小数部分截断，非四舍五入
-long L = a; // int -> long：拓宽转换
-float F = a; // int -> float：拓宽转换，但大整数可能丢失精度
-double D = F; // float -> double：拓宽转换
-char ch = 'A';
-int chAsInt = ch; // char -> int：拓宽转换，得到 UTF-16 代码单元数值
-byte bt = (byte) a; // int -> byte：必须强转；超范围时按低位截断
-short sh = (short) 32768; // 字面量默认 int，赋给 short 需强制，值溢出则按位模式截断
-double expr = a + 1.0f; // 二元运算数值提升：int 与 float/double 运算时先提升到较宽类型再算
-byte n = 1;
-// ❌ char c2 = n; // 编译错误：byte -> char 不是拓宽转换，不能只按“范围大小”理解
-char c3 = (char) n;
-// String.valueOf 不是 (T)x 语法，是方法调用，把基本类型格式化成字符串。
-String s = String.valueOf(a);
-// ❌ String s1 = (String) a; // 编译错误：基本类型不能 (String) 强转
-// char -> String 用 String.valueOf(ch) 或 "" + ch 或 Character.toString(ch)，不能 (String)ch。
-```
-</details>
-
 ### 基本类型与引用类型
-Java 类型先分两类：**基本类型保存值本身**，**引用类型保存对象引用或 `null`**。变量具体在栈、堆还是对象内部，取决于它是局部变量、字段还是数组元素，不由“基本类型 / 引用类型”单独决定。
+Java 是强类型语言，变量和表达式都有编译期类型。类型先分两类：**基本类型保存值本身**，**引用类型保存对象引用或 `null`**。变量具体在栈、堆还是对象内部，取决于它是局部变量、字段还是数组元素，不由“基本类型 / 引用类型”单独决定。
 
 1. 基本类型一共 8 种
 
@@ -258,14 +221,15 @@ Java 类型先分两类：**基本类型保存值本身**，**引用类型保存
     | `float` | 4 字节 | 约 ±3.4E38 | 单精度浮点；浮点字面量通常要加 `F` |
     | `double` | 8 字节 | 约 ±1.8E308 | 默认浮点类型 |
     | `char` | 2 字节 | 0 ~ 65535 | UTF-16 代码单元，不等于任意 Unicode 字符 |
-    | `boolean` | 未规定 | `true` / `false` | 不能参与数值运算 |
+    | `boolean` | 未规定 | `true` / `false` | 不能参与数值运算；也不能与数值类型互转 |
 
     - 基本类型规则
 
         - 基本类型不是对象，不能为 `null`，不能直接调用方法；需要对象能力时使用包装类型，如 `Integer`、`Double`、`Boolean`。
         - 整数字面量默认是 `int`，可自动拓宽给 `long`；需要 long 语义或超出 int 范围时写 `1L`。浮点字面量（如 `1.0`、`1e3`）默认是 `double`，赋给 `float` 通常写 `1.0F` 或显式强转。
         - 单引号是 `char`，双引号是 `String`；`String` 是引用类型，不是基本类型。
-        - 位移运算结果看左操作数提升后的类型；复合赋值会隐式转回左值类型，普通 `=` 不会自动窄化。
+        - 赋值、传参、返回值等上下文中的自动转换主要是**拓宽基本类型转换**：整数侧大致是 `byte → short → int → long → float → double`；`char` 另走 `char → int → long → float → double`（`byte`/`short` 与 `char` 不能互相隐式拓宽）。反向或不在拓宽规则内的是**收窄基本类型转换**，通常要显式强转，可能截断、溢出或丢精度。“拓宽”不等于完全无损（如 `int → float` 大整数可能丢低位）。
+        - 表达式里的**数值提升**：`byte`、`short`、`char` 参与大多数算术运算时先提升为 `int`，再按 `int → long → float → double` 决定结果类型。位移结果看左操作数提升后的类型；复合赋值会隐式转回左值类型，普通 `=` 不会自动窄化。
         - 只要 `+` 的一侧是 `String`，结果就是字符串拼接；`boolean` 可以拼接成字符串，但不能参与数值运算。
         - 浮点数规则
 
@@ -278,35 +242,43 @@ Java 类型先分两类：**基本类型保存值本身**，**引用类型保存
             - `Math` / `StrictMath` 对 `NaN`、无穷大、正负零有明确规则；需要跨平台可复现时优先看 `StrictMath`。
 
     <details>
-    <summary>表达式类型提升示例</summary>
+    <summary>拓宽 / 收窄 / 数值提升示例</summary>
 
     ```java
-    byte b1 = 1;
-    byte b2 = 2;
-    int r1 = b1 + b2;      // byte + byte 先提升为 int
+    int a = 10;
+    double b = a;              // 拓宽：自动
+    // ❌ int c = b;           // 收窄：不能隐式
+    int c1 = (int) b;          // 显式收窄：小数截断，非四舍五入
+    float F = a;               // 拓宽，但大整数可能丢精度
+    byte bt = (byte) a;        // 收窄：超范围按低位截断
+    short sh = (short) 32768;  // 字面量默认 int，赋 short 需强转；32768 截断后是 -32768
+    byte n = 1;
+    // ❌ char c2 = n;         // byte → char 不是拓宽，不能只按“范围大小”理解
+    char c3 = (char) n;
 
-    char c = 'A';
-    int r2 = c + 1;        // char 先提升为 int，结果是 66
-
-    long l = 1L;
-    long r3 = l + 2;       // int 与 long 运算，结果是 long
-
-    float f = 1.5f;
-    float r4 = f + 2;      // int 与 float 运算，结果是 float
-
-    int r5 = 5 / 2;        // 两个 int 相除仍是 int，结果是 2
-    double r6 = 5 / 2.0;   // 有 double 参与，结果是 2.5
+    byte b1 = 1, b2 = 2;
+    int r1 = b1 + b2;          // byte + byte 先提升为 int
+    char ch = 'A';
+    int r2 = ch + 1;           // char 提升为 int → 66
+    long r3 = 1L + 2;          // 结果 long
+    float r4 = 1.5f + 2;       // 结果 float
+    double expr = a + 1.0f;    // 提升到较宽类型再算
+    int r5 = 5 / 2;            // int 除法 → 2
+    double r6 = 5 / 2.0;       // → 2.5
 
     byte b3 = 1;
-    b3 += 1;               // 等价于 b3 = (byte)(b3 + 1)
-    // ❌ b3 = b3 + 1;     // 编译错误：b3 + 1 是 int，普通 = 不自动窄化
+    b3 += 1;                   // 等价于 b3 = (byte)(b3 + 1)
+    // ❌ b3 = b3 + 1;         // b3 + 1 是 int，普通 = 不自动窄化
 
     String str = "sum=" + b1 + b2;    // "sum=12"
     String str2 = "sum=" + (b1 + b2); // "sum=3"
+    // String.valueOf 不是 (T)x；基本类型不能 (String) 强转
+    String s = String.valueOf(a);
+    // char → String：String.valueOf(ch) / "" + ch / Character.toString(ch)
     ```
     </details>
 
-3. 引用类型包括
+2. 引用类型包括
 
     | 类型 | 例子 | 说明 |
     | --- | --- | --- |
@@ -392,7 +364,7 @@ Java 类型先分两类：**基本类型保存值本身**，**引用类型保存
 | 类别 | 声明位置 | 默认值 | 归属与生命周期 |
 | --- | --- | --- | --- |
 | 局部变量 | 方法体、构造器体、代码块内部 | `没有默认值`，读取前必须明确赋值 | 随当前代码块级作用域结束而失效 |
-| 参数 | 方法、构造器、lambda、catch、<br>增强 for 参数位置 | 不能像 JS 那样在参数列表中设置默认值；<br>进入作用域时已绑定值：<br>普通参数由实参传入，catch 等参数由运行时提供 | 本质是当前调用中的局部变量 |
+| 参数 | 方法、构造器、lambda、catch、<br>增强 for 参数位置 | 不能像 JS 那样在参数列表中设置默认值；<br>进入作用域时已绑定值：<br>普通参数由实参传入，catch 等参数由运行期提供 | 本质是当前调用中的局部变量 |
 | 实例字段 | 类型成员位置，不带 `static` | `有默认值` | 属于对象；每个对象有自己的一份 |
 | 静态字段 | 类型成员位置，带 `static` | `有默认值` | 属于类型；同一个类加载器下共享一份 |
 | 数组元素 | 数组对象内部 | `有默认值` | 属于数组对象；数组活着元素就存在 |
@@ -538,7 +510,7 @@ public static final String DEFAULT_CHARSET = "UTF-8";
 
 ### 包、`import` 与访问控制
 
-包（`package`）是 Java 组织类型的命名空间。一个类型的全限定名 = 包名 + 类型名，例如 `com.example.demo.service.UserService`。包负责命名隔离、源码组织、编译输出组织、包访问权限边界。
+包（`package`）是 Java 组织类型的命名空间。一个类型的全限定名 = 包名 + 类型名，例如 `com.example.demo.service.UserService`。包负责命名隔离、源码组织、编译输出组织、`包访问权限`边界。
 
 ```java
 package com.example.demo.service;   // package 只写包名
@@ -549,46 +521,50 @@ import static java.lang.Math.PI;    // import static 写具体静态成员或 *�
 
 - 包声明规则
 
-    - 普通 `.java` 源文件最多声明一个 `package`。
+    - `.java` 源文件最多声明一个 `package`。
     - `package` 必须位于有效代码最前面：注释和包注解之后，`import` 与顶级类型声明之前。
     - 同一个源文件里的所有顶级类型属于同一个包。
     - 同一个包的类型可以分散在多个 `.java` 文件里，只要声明相同包名。
+
+        >Maven 里主代码与测试代码分属不同源码根（`src/main/java` 与 `src/test/java`），但可以声明相同包名；包是否相同只看 `package` 声明，不看源码根。同包时测试类可直接使用主代码类型（无需 `import`），也能访问其包访问权限成员。若测试写成 `com.example.test` 之类不同包名，则需 `import`，且不能访问对方的包访问权限成员。
     - 包名通常全小写，常用公司域名倒置加项目模块名，例如 `com.baidu.mall.order`。
     - 包路径通常与目录结构一致，例如 `com.example.demo.service` 对应 `com/example/demo/service`。
     - 不写 `package` 是默认包。默认包适合临时练习；具名包中的代码不能 `import` 默认包类型，也不能直接引用默认包类型。
     - 一个 `.java` 文件可以放多个顶级类型：类、接口、枚举、注解接口、记录。
     - 一个 `.java` 文件最多只能有一个 `public` 顶级类型，文件名必须与这个 `public` 顶级类型同名。
-    - 没有写 `public` 的顶级类型是包访问权限。
-    - 子包不是父包的一部分：`com.example` 与 `com.example.service` 是两个不同的包，包访问权限不能互通。
+    - 没有写 `public` 的顶级类型是`包访问权限`（只有同一个包里的代码能访问，包外不能访问）。
+    - 子包不是父包的一部分：`com.example` 与 `com.example.service` 是两个不同的包，`包访问权限`不能互通。
 
 - `import` 规则
 
     - `import` 是编译期语法，只负责简化名称书写，不会加载整个包，不会执行被导入类型的代码。
-    - 同包类型、同源文件里的其他顶级类型、`java.lang` 包下的类型可以直接使用。
-    - 使用其他包下的类型时，可以写全限定名，例如 `java.util.List`。
-    - 想把 `java.util.List` 简写成 `List`，写 `import java.util.List;`。
+    - 同包类型、同源文件里的其他顶级类型，以及 `java.lang` 包中直接声明的类型可以直接使用；`java.lang` 的子包不会自动导入，例如 `java.lang.annotation.ElementType` 仍需显式导入或使用全限定名。
+    - 使用其他包下的类型时：可以写全限定名，例如 `java.util.List`；想把 `java.util.List` 简写成 `List`，写 `import java.util.List;`。
     - 类型导入有两种：`import 包.类型;`、`import 包.*;`。
     - 静态导入有两种：`import static 包.类型.静态成员;`、`import static 包.类型.*;`。
-    - `import com.example.*;` 只导入 `com.example` 当前包下的类型，不递归导入 `com.example.service.UserService`。
+    - `import com.example.*;` 只导入 `com.example` 当前包下的类型，不递归导入子包 `com.example.service.UserService`。
     - Java 没有 `import ... as ...` 别名语法。
-    - 多个来源出现同名类型时，`import` 不能替你选择；冲突处写全限定名最清楚。
+    - 多个来源出现同名类型时，`import` 不能替你选择；冲突处最好写全限定名。
     - `import` 不改变访问权限。能不能访问只由访问修饰符、调用方所在包、继承关系共同决定。
 
 - 访问控制表
 
-    | 修饰符 | 顶级类型可用 | 成员可用 | 访问范围 |
+    | 写法 | 顶级类型是否可用 | 成员或构造器是否可用 | 访问范围 |
     | --- | --- | --- | --- |
     | `public` | 可用 | 可用 | 任意包中的代码可访问 |
-    | `protected` | 不可用 | 可用 | 同包可访问；跨包只允许子类在继承访问语境中访问 |
-    | 不写 | 可用 | 可用 | 同包可访问，称为包访问权限 |
-    | `private` | 不可用 | 可用 | 当前顶级类型及其嵌套类型内部可访问 |
+    | `protected` | 不可用 | 可用 | 同包可访问；跨包时，仅子类可在继承访问语境中访问 |
+    | 不写（包访问权限） | 可用 | 可用 | 仅同包可访问；子包不算同包 |
+    | `private` | 不可用 | 可用 | 仅当前顶级类型及其嵌套类型内部可访问 |
 
-    - 同一个源文件不会自动共享 `private` 权限；两个并列顶级类仍不能互相访问对方的 `private` 成员。
-    - 外部类与嵌套类属于同一个 nest，可以互相访问 `private` 成员；这是嵌套类型的特殊规则。
+    - 同文件不等于共享 `private`；嵌套关系才有 `private` 互访的特殊规则：
+
+        - 两个并列顶级类仍不能互相访问对方的 `private` 成员。
+        - 外部类与嵌套类属于同一个 nest，可以互相访问 `private` 成员（这是嵌套类型的特殊规则）。
 
 ### 关键字修饰符
 
-关键字修饰符要看声明位置，不能只背单词。
+<details>
+<summary>各声明位置可用的修饰符速查</summary>
 
 | 声明位置 | 可用关键字 |
 | --- | --- |
@@ -616,7 +592,7 @@ import static java.lang.Math.PI;    // import static 写具体静态成员或 *�
 
 - 组合限制
 
-    - 顶级类型只能是 `public` 或包访问权限，不能写 `protected`、`private`、`static`。
+    - 顶级类型只能是 `public` 或`包访问权限`，不能写 `protected`、`private`、`static`。
     - 同一声明中不能重复写同一个修饰符。
     - `abstract` 和 `final` 语义冲突，不能同时修饰同一个类或同一个方法。
     - `abstract` 方法不能同时是 `private`、`static`、`final`、`native`、`synchronized`、`strictfp`。
@@ -630,9 +606,11 @@ import static java.lang.Math.PI;    // import static 写具体静态成员或 *�
     - `strictfp` 自 Java 17 起没有实际必要，新代码不建议使用。
     - 注解 `@Override`、`@Deprecated`、`@SuppressWarnings` 可写在声明前，但注解不是关键字修饰符。
 
+</details>
+
 ### Javadoc
 <details>
-<summary></summary>
+<summary>常用标签与生成方式</summary>
 
 Javadoc 的类型信息来自 Java 签名，注释负责说明用途、参数语义、返回语义、异常语义、使用约束。
 
@@ -668,7 +646,7 @@ User findById(long id) {
 
 ### 语句、表达式与控制流
 <details>
-<summary></summary>
+<summary>语句种类与分支 / 循环要点</summary>
 
 Java 代码块用 `{}` 包起来。能单独执行的结构叫语句；能计算出值或触发副作用的结构叫表达式。
 
@@ -691,7 +669,7 @@ Java 代码块用 `{}` 包起来。能单独执行的结构叫语句；能计算
     if (count > 0) {}     // 合法
     ```
 
-- `switch` 先分传统语句和表达式
+- `switch`
 
     ```java
     int level = 2;
@@ -728,7 +706,7 @@ Java 代码块用 `{}` 包起来。能单独执行的结构叫语句；能计算
 
     ```java
     while (condition) {
-        // 先判断，再执行
+        // condition 为 true 时执行循环体
     }
 
     do {
@@ -777,23 +755,24 @@ Java 代码块用 `{}` 包起来。能单独执行的结构叫语句；能计算
     long sum(long a, long b) { return a + b; }
     ```
 
-- 重载（Overload）成立条件
+- 重载（Overload）
 
-    - 方法名相同。
-    - 参数个数不同，或参数类型不同，或参数类型顺序不同。
-    - 不构成重载
+    - 重载成立条件
 
-        - 返回值类型不同不构成重载。
-        - 参数名不同不构成重载。
-        - 访问修饰符不同不构成重载。
-        - `throws` 声明不同不构成重载。
+        - 方法名相同。
+        - 参数个数不同，或参数类型不同，或参数类型顺序不同。
+        - 不构成重载
 
-- 重载解析简化顺序
+            - 返回值类型不同不构成重载。
+            - 参数名不同不构成重载。
+            - 访问修饰符不同不构成重载。
+            - `throws` 声明不同不构成重载。
+    - 重载解析简化顺序
 
-    1. 优先选择不需要装箱、拆箱、可变参数的普通调用；这里包含基本类型拓宽和引用向上转型。
-    2. 再考虑需要装箱或拆箱的普通调用。
-    3. 最后考虑可变参数调用。
-    4. `null` 可匹配引用类型；多个互不隶属的引用类型同时匹配时会编译报“调用不明确”。
+        1. 优先选择不需要装箱、拆箱、可变参数的普通调用；这里包含基本类型拓宽和引用向上转型。
+        2. 再考虑需要装箱或拆箱的普通调用。
+        3. 最后考虑可变参数调用。
+        4. `null` 可匹配引用类型；多个互不隶属的引用类型同时匹配时会编译报“调用不明确”。
 
 - 可变参数规则
 
@@ -821,7 +800,7 @@ Java 代码块用 `{}` 包起来。能单独执行的结构叫语句；能计算
         ```
     - 传 `null` 时要小心：`sum(null)` 会把 `nums` 变成 `null`，方法体内访问 `nums.length` 会抛 `NullPointerException`。
 
-- 调用方式按归属区分
+- 方法调用方式按归属区分
 
     - 静态方法属于类，推荐写 `类名.静态方法()`。
     - 实例方法属于对象，写 `对象引用.实例方法()`。
@@ -830,7 +809,7 @@ Java 代码块用 `{}` 包起来。能单独执行的结构叫语句；能计算
 
 ### 数组
 
-数组是引用类型；数组对象在堆中；数组长度创建后不能改变；元素类型在编译期固定。
+数组是引用类型；数组对象在堆中；数组对象创建后长度固定，运行期真实元素类型也固定；编译期会按变量的数组类型检查元素读写，引用类型数组还会在运行期检查实际存入的对象类型。
 
 ```java
 int[] nums;   // 推荐
@@ -906,10 +885,10 @@ int nums2[];  // 合法，不推荐
     ```java
     String[] names = {"A"};
     Object[] objects = names;       // 合法：数组协变
-    // ❌ objects[0] = new Object(); // 运行时抛 ArrayStoreException
+    // objects[0] = new Object();   // 编译通过；❌运行期抛 ArrayStoreException
     ```
 
-    数组知道自己的运行时元素类型。`String[]` 可以赋给 `Object[]`，但不能真的存入非 `String` 对象。
+    数组知道自己的运行期元素类型。`String[]` 可以赋给 `Object[]`，但不能真的存入非 `String` 对象。
 
 - <details>
 
@@ -952,8 +931,8 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
 │  ├─ 实例字段：属于对象
 │  └─ 静态字段：属于类
 ├─ 方法 method
-│  ├─ 实例方法：通过对象调用，可参与运行时多态
-│  └─ 静态方法：通过类调用，不参与运行时多态
+│  ├─ 实例方法：通过对象调用，可参与运行期多态
+│  └─ 静态方法：通过类调用，不参与运行期多态
 ├─ 构造器 constructor：创建对象时初始化对象
 ├─ 实例初始化代码块 {}：每次 new 对象时执行
 ├─ 静态初始化代码块 static {}：类初始化时执行一次
@@ -968,53 +947,48 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
 
 - 类、对象、成员与初始化
 
-    类是对象的模板，定义状态和行为；对象是类在运行期创建出来的实例。
-
     ```java
     class User {
-        private String name;          // 实例字段
-        private long createdAt;       // 实例字段
-        private static int total;     // 静态字段
+        private String name;
+        private long createdAt;
+        private static int total;
 
-        static {                      // 静态初始化代码块：类初始化时执行一次
-            total = 0;
-        }
+        static { total = 0; }
 
-        {                             // 实例初始化代码块：每次 new 对象时执行
-            createdAt = System.currentTimeMillis();
-        }
+        { createdAt = System.currentTimeMillis(); }
 
-        User(String name) {           // 构造器
+        User(String name) {
             this.name = name;
             total++;
         }
 
-        String getName() {            // 实例方法
-            return name;
-        }
+        String getName() { return name; }
 
-        static int getTotal() {       // 静态方法
-            return total;
-        }
+        static int getTotal() { return total; }
     }
     ```
 
-    - 类体中的结构归属（写在类体第一层的：成员、构造器、初始化代码块）
+    - 类体第一层用法
 
-        | 类体元素 | 归属 | 调用方式 |
+        | 类体元素 | 使用依赖 | 使用方式 |
         | --- | --- | --- |
-        | 实例字段 | 对象 | `对象引用.字段`，通常字段设为 `private` |
-        | 实例方法 | 对象 | `对象引用.方法()` |
-        | 静态字段 | 类 | `类名.字段` |
-        | 静态方法 | 类 | `类名.方法()` |
-        | 构造器 | 类的创建逻辑 | `new 类名(...)` |
-        | 实例初始化代码块 | 对象初始化过程 | 不手动调用 |
-        | 静态初始化代码块 | 类初始化过程 | 不手动调用 |
+        | 实例字段 | 每个对象一份 | `对象引用.字段`，通常 `private` |
+        | 实例方法 | 有 `this` | `对象引用.方法()` |
+        | 静态字段 | 全类共享 | `类名.字段` |
+        | 静态方法 | 无 `this` | `类名.方法()` |
+        | 构造器 | 创建过程 | `new 类名(...)` |
+        | 实例初始化代码块 | 每次 `new` | 不手动调用 |
+        | 静态初始化代码块 | 类初始化一次 | 不手动调用 |
+        | 静态嵌套类型 | 不绑外部对象 | `Outer.Nested`；可 `new Outer.Nested(...)` |
+        | 非静态成员内部类 | 必须绑外部对象 | `outer.new Inner()` |
 
     - 构造器规则
 
         - 构造器名必须与类名相同。
         - 构造器没有返回值类型，不能写 `void`。
+        - 构造过程正常完成时，`new 类名(...)` 的结果固定是正在创建的那个对象引用；构造器本身不“返回”别的东西。Java 不允许 `return 某对象`，只能写空的 `return;` 提前结束构造器正文（其后正文语句不再执行；字段初始化与实例初始化块仍会在进入构造器正文前执行完毕）。构造器抛异常时，`new` 不会得到可用对象。
+
+            > 与 JS 不同：普通 / 基类 `constructor` 若 `return` 一个对象，会覆盖默认的 `this` 实例；若 `return` 非对象（原始值），则忽略该返回值，仍得到当前 `this`。派生类（`extends`）构造器若显式 `return` 非 `undefined` 的原始值，会抛 `TypeError`。
         - 构造器可以重载。
         - 没写任何构造器时，编译器生成一个无参构造器。
         - 手写任意构造器后，编译器不再生成无参构造器。
@@ -1022,6 +996,7 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
         - 构造器第一行可以写 `super(...)` 调用父类构造器。
         - 没写 `this(...)` 或 `super(...)` 时，编译器默认插入 `super()`（没有默认调用`this(...)`的场景）。
         - `this(...)` 与 `super(...)` 都要求第一行，所以一个构造器不能同时直接写这两个调用。
+        - `this(...)` 不会跳过父类构造；除 `java.lang.Object` 外，构造器链最终都会显式调用 `super(...)` 或隐式调用 `super()`。
         - 父类没有无参构造器时，子类构造器必须显式写 `super(...)` 并传入匹配参数。
 
     - 初始化顺序按这条链记
@@ -1044,17 +1019,17 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
             { System.out.println("Child init"); }
             Child() { System.out.println("Child constructor"); }
         }
-        ```
 
-        执行 `new Child()` 时，输出顺序是：
-
-        ```text
-        Parent static
-        Child static
-        Parent init
-        Parent constructor
-        Child init
-        Child constructor
+        new Child();
+        /*
+        输出顺序是：
+            Parent static
+            Child static
+            Parent init
+            Parent constructor
+            Child init
+            Child constructor
+        */
         ```
 
     - `this` 与 `super`
@@ -1069,7 +1044,8 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
 
 - 封装
 
-    封装不是“写 Getter / Setter”本身，而是把对象内部状态和实现细节收起来，只暴露稳定、必要、可校验的操作。
+    <details>
+    <summary>封装不是“写 Getter / Setter”本身，而是把对象内部状态和实现细节收起来，只暴露稳定、必要、可校验的操作。</summary>
 
     - 字段通常写 `private`。
     - 需要外部读取时提供 Getter。
@@ -1078,6 +1054,7 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
     - 对集合字段，不要直接返回内部可变集合引用；可返回不可变视图或拷贝。
     - 封装目标是降低调用方对内部结构的依赖，使字段名、存储方式、校验逻辑变化时不影响外部代码。
 
+    </details>
 - 继承、组合、转型与 `instanceof`
 
     继承表达 is-a 关系；组合表达 has-a 关系。只为复用代码而继承，后期容易让父子类语义变形。
@@ -1106,30 +1083,51 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
 
         ```text
         类型转换：大概念
-        ├─ 基本类型转换：int -> long、double -> int
+        ├─ 基本类型转换：int -> long（拓宽），double -> int（强转）
         ├─ 装箱 / 拆箱：int <-> Integer
         ├─ 引用类型转换
-        │  ├─ 转型：继承 / 接口 / 多态，如 Dog -> Animal、Animal -> Dog
+        │  ├─ 转型：继承 / 接口 / 多态，如 Dog -> Animal，Animal -> Dog
         │  └─ 其他：数组、泛型、null 有各自规则，不都叫“转型”
         └─ 字符串转换：任意值 -> String 表示，常见于字符串拼接；不是对象转型
         ```
 
-        - 向上转型总是安全
+        1. 向上转型总是安全
 
             ```java
             Dog dog = new Dog();
             Animal animal = dog;
             Object obj = dog;
             ```
-
-        - 向下转型需要真实对象支持
+        1. 向下转型需要真实对象支持
 
             ```java
             Animal animal = new Dog();
             Dog d1 = (Dog) animal; // 安全
 
             Animal other = new Animal();
-            // ❌ Dog d2 = (Dog) other; // 运行时抛 ClassCastException
+            // Dog d2 = (Dog) other; // 编译通过，❌ 运行期抛 ClassCastException
+            ```
+
+            - 向下转型的安全写法:先用 `instanceof` 判断真实对象类型，再强转：
+
+                ```java
+                Animal animal = new Dog();
+
+                if (animal instanceof Dog) {
+                  Dog dog = (Dog) animal;
+                  dog.run();
+                }
+
+                // Java 16+ 可以写得更短
+                if (animal instanceof Dog dog) {
+                  dog.run();
+                }
+                ```
+        1. 若类型完全不可能转换，则编译期就会报错
+
+            ```java
+            String s = "x";
+            Dog dog = (Dog) s; // ❌ 编译错误：String 和 Dog 没有可转换关系
             ```
 
     - `instanceof` 规则
@@ -1157,13 +1155,13 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
         null instanceof Dog; // false
 
         if (a instanceof Dog dog2) { // Java 16+ 模式匹配
-            dog2.bark();
+          dog2.bark();
         }
         ```
 
 - 多态与重写
 
-    运行时多态成立需要三件事：存在继承或接口实现关系；父类或接口引用指向子类或实现类对象；调用的是可被重写的实例方法。
+    运行期多态成立需要三件事：存在继承或接口实现关系；父类或接口引用指向子类或实现类对象；调用的是可被重写的实例方法。
 
     ```java
     class Person {
@@ -1189,12 +1187,8 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
 
         - 编译期看引用的声明类型，决定能不能访问某个成员。
         - 运行期看真实对象类型，决定重写后的实例方法执行哪一个实现。
-        - 字段不参与运行时多态。
-        - 静态方法不参与运行时多态；子类同名静态方法叫隐藏。
-
-            >隐藏：子类同名字段，子类同签名静态方法。
-        - `private` 方法不能被重写。
-        - `final` 方法不能被重写。
+        - 字段、静态方法不参与运行期多态；子类同名字段或同签名静态方法是**隐藏**，不是重写。
+        - `private`、`final` 方法不能被重写。
         - 构造器不能被重写。
 
     - 重写（Override）规则
@@ -1204,7 +1198,7 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
         - 参数类型列表相同。
         - 返回类型相同，或返回父方法返回类型的子类型。
         - 访问权限不能比父方法更窄。
-        - 受检异常范围不能比父方法更宽；运行时异常（RuntimeException 及其子类）不受这条限制。
+        - 受检异常范围不能比父方法更宽；运行期异常（RuntimeException 及其子类）不受这条限制。
         - 建议总是写 `@Override`，让编译器帮你检查。
 
 - 抽象类、接口、枚举与记录
@@ -1250,6 +1244,21 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
         | 封闭接口 | Java 17+ 的 `sealed interface` 可以限制允许实现它的类型 |
         | 使用边界 | 只表达能力规范时，优先考虑接口；需要共享状态、构造逻辑或较多部分实现时，优先考虑抽象类 |
 
+        - 方法引用 `::`：`::` 只记住怎么调，不立刻执行。`this.handle(x)` 才是现在就调。Java 方法不是值，不能写 `forEach(this.handle)`，也不能写 `this::handle(x)`。
+
+            `names.forEach(this::handle)` 等价于 `names.forEach(name -> this.handle(name))`，遍历时才执行。参数由 `forEach` / `map` 等稍后喂入。
+
+            `类名::方法名` 看起来一样，差在方法是静态还是实例：`Integer::valueOf` 因 `valueOf` 是静态方法；`String::length` 因 `length` 是实例方法。换方法就反过来，如 `String::valueOf`、`Integer::intValue`。
+
+            | 写法 | 等价 lambda | 种类 |
+            | --- | --- | --- |
+            | `this::m` / `obj::m` | `x -> this.m(x)` / `x -> obj.m(x)` | 绑定实例（对象已定） |
+            | `super::m` | `x -> super.m(x)` | 绑定到父类实现 |
+            | `类名::静态方法` | `s -> Integer.valueOf(s)` | 静态方法 |
+            | `类名::实例方法` | `s -> s.length()` | 未绑定；第一个参数当 `this` |
+            | `类名::new` | `name -> new Person(name)` | 构造器（对上哪个构造器看参数） |
+            | `类型[]::new` | `n -> new String[n]` | 数组构造 |
+
         <details>
         <summary>默认方法冲突：多个接口的<code>default</code>方法冲突时，实现类必须重写并明确选择行为</summary>
 
@@ -1290,193 +1299,151 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
     | 抽象方法实现压力 | 具体子类必须实现未实现的抽象方法 | 普通实现类必须实现未实现的抽象方法 |
     | 主要用途 | 复用共同状态、构造逻辑、部分实现 | 定义能力、契约、多实现多态边界 |
 
+    >- 契约（`contract`）
+    >
+    >    契约是调用方和实现方共同依赖的规则，不是 Java 关键字：能怎么调用、返回什么、何时抛异常、调用后状态如何变。不只等于类型签名，还包括参数 / 返回值能否为 `null`、异常约定等。
+    >
+    >    | 场景 | 契约来源 | 实践含义 |
+    >    | --- | --- | --- |
+    >    | Java 接口 | 方法签名、文档、默认方法 | 调用方依赖接口，实现类负责遵守 |
+    >    | 抽象类 | 抽象方法、`final` 模板方法、构造逻辑、可继承方法 | 子类补全差异，同时复用父类流程 |
+    >    | 标准约定 | `equals` / `hashCode`、`Comparable` 等 | 集合、排序、去重依赖这些规则 |
+
     - 枚举（`enum`）
 
-        - 定位与边界：
-            - 枚举是特殊类，用于表达编译期固定、运行期不动态增删的一组实例，常见场景是状态、类型、选项、策略分支。
-            - 如果值需要运行期动态增删、频繁配置、来自数据库字典或运营后台，不适合直接写死成枚举。
-        - 声明与类关系：
-            - 基本写法：`enum Status { NEW, DONE }`。
-            - 枚举不能声明自己的类型参数，不能写成 `enum Status<T> { ... }`；但枚举里的方法可以声明自己的泛型。
-            - 枚举隐式继承 `java.lang.Enum<本枚举>`，不能再 `extends` 其他类，可以 `implements` 接口。
-            - 外部代码不能继承枚举；带常量类体的枚举，常量类体会生成只服务于该常量的特殊子类。
-        - 常量与实例本质：
-            - 枚举常量必须写在枚举体最前面，用逗号分隔。
-            - 每个枚举常量本质上都是 `public static final` 的固定实例，类加载时创建一次。
-            - 外部只能引用枚举常量，不能 `new`、不能继承、不能重新赋值。
-            - 只有常量时末尾分号可省略；常量后面还有字段、构造器、方法、静态块或嵌套类型时必须写 `;`。
-        - 构造与初始化：
-            - 常量可以不带参数，也可以带构造参数；实参必须匹配某个枚举构造器。
-            - 构造器只能写 `private` 或省略访问修饰符，不能写 `public` / `protected`。
-            - 每个常量初始化时调用一次构造器；构造器只由枚举常量调用，外部不能直接调用。
-            - 构造器或实例初始化中不能直接访问本枚举的非编译期常量静态字段；静态索引、缓存、反向查找表放到 `static` 块里初始化。
-        - 可声明结构与常量类体：
-            - 枚举可以有实例字段、实例方法、静态字段、静态方法、静态初始化块和嵌套类型。
-            - 常量状态通常用 `private final` 字段保存，避免创建后再修改。
-            - 常量后可以写 `{}` 形成常量类体，用来覆盖方法或实现抽象方法。
-            - 枚举声明抽象方法时，每个常量都必须在自己的常量类体里实现。
-        - 内置 API 与顺序：
-            - 编译器为每个枚举生成 `values()` 和 `valueOf(String)`。
-            - `values()` 每次返回新的数组，数组元素按枚举常量声明顺序排列。
-            - `valueOf(String)` 按常量名精确解析，大小写敏感，不认 `toString()` 或业务码。
-            - `java.lang.Enum` 提供 `name()`、`ordinal()`、`compareTo()`、`getDeclaringClass()` 等方法。
-            - `ordinal()` 是声明顺序下标，从 0 开始；`compareTo()` 和自然顺序也按声明顺序。
-        - 比较、分支与集合：
-            - 枚举常量是固定单例，比较优先用 `==`。
-            - `switch` 支持枚举；把 `null` 交给未显式处理的枚举 `switch` 会抛空指针异常。
-            - 表达一组枚举值优先用 `EnumSet`，用枚举当 key 优先用 `EnumMap`。
-            - `EnumSet` 不允许 `null` 元素；`EnumMap` 不允许 `null` key，但允许 `null` value。
-        - 输出、持久化与单例：
-            - `name()` 来自代码里的常量名，`toString()` 可以覆盖但只适合展示。
-            - 持久化优先存稳定业务码；也可以存 `name()`，但重命名常量会影响兼容。
-            - 不要持久化 `ordinal()`，因为调整声明顺序或插入常量会改变旧数据含义。
-            - 单常量枚举可实现单例，序列化 / 反序列化仍回到同一个枚举常量。
-        - 异常与易错点：
-            - `valueOf(String)` 找不到名称抛 `IllegalArgumentException`，传 `null` 抛 `NullPointerException`。
-            - 常量类体会生成特殊子类，`constant.getClass()` 可能不是声明枚举类；判断声明枚举类型用 `getDeclaringClass()`。
-            - 枚举适合表达稳定闭集，不适合替代数据库字典、配置中心或可运营的分类数据。
+        枚举是特殊类，用于表达稳定闭集：状态、类型、选项、权限位、策略分支等。若值需要运行期动态增删、来自数据库字典或运营后台，则不适合直接写死成枚举。
+
+        >先会写固定常量，再给常量绑定字段，最后再使用接口、常量行为、`EnumSet`、`EnumMap`。
+
+        | 层次 | 解决的问题 | 关键写法 |
+        | --- | --- | --- |
+        | 固定常量 | 一组有限选项 | `enum Status { NEW, PAID }` |
+        | 常量带数据 | 每个常量绑定业务码、文案、配置 | `PAID("P", "已支付")` + 构造器 + `private final` 字段 |
+        | 常量带行为 | 不同常量有不同规则 | 常量类体 `{ ... }` 覆盖同一方法 |
+        | 工程使用 | 对外传输、持久化、集合处理 | 存稳定业务码；用 `EnumSet`、`EnumMap` 处理枚举集合和映射 |
+
+        | 主题 | 规则 |
+        | --- | --- |
+        | 常量位置 | 枚举常量必须写在枚举体最前面；后面还有成员时，常量列表必须以 `;` 结束 |
+        | 构造器 | 只能省略访问修饰符或写 `private`；可重载；枚举类初始化时每个常量构造一次，外部不能 `new` |
+        | 成员 | 可声明 实例字段、实例方法、静态字段、静态方法、静态初始化块和嵌套类型 |
+        | 类关系 | 隐式继承 `java.lang.Enum<本枚举>`，不能再 `extends` 其他类，不能被外部继承；可以 `implements` 接口 |
+        | 泛型限制 | 枚举不能声明自己的类型参数（不能写成`enum Xxx<T>`）；<br>枚举方法可以声明泛型方法（枚举里的某个方法可以写成`public <T> T method(...)`） |
+        | 比较与分支 | 枚举常量是固定单例，比较优先用 `==`；`switch` 支持枚举，`null` 仍要单独处理 |
+
+        | API / 约定 | 说明 |
+        | --- | --- |
+        | `values()` | 编译器生成，返回全部常量，顺序等于声明顺序 |
+        | `valueOf(String)` | 编译器生成，按常量名精确匹配，大小写敏感；不认 `toString()` 或业务码；找不到抛 `IllegalArgumentException`，传 `null` 抛 `NullPointerException` |
+        | `name()` | 返回常量名，适合代码内部识别；对外契约变化风险高 |
+        | `ordinal()` / `compareTo()` | 依赖常量声明顺序，只适合临时查看或内部排序；不要持久化 |
+        | `toString()` | 可重写，适合展示，不适合作为反查依据 |
+        | 业务码反查 | 少量解析可遍历 `values()`；频繁解析可用 `static Map` 建索引，索引放静态初始化里，不放构造器里 |
+        | `EnumSet` / `EnumMap` | 枚举专用集合和映射，比普通 `HashSet` / `HashMap` 更贴合枚举语义 |
+        | 单例 | 每个枚举常量在同一 `ClassLoader` 内唯一；单常量枚举可做单例，但业务代码更常用 Spring Bean |
+        | 低频细节 | 常量类体会生成特殊子类，`constant.getClass()` 可能不是声明枚举类；判断声明枚举类型用 `getDeclaringClass()` |
 
         <details>
         <summary>e.g. </summary>
 
-        ```java
-        import java.util.EnumMap;
-        import java.util.EnumSet;
+        - 简单示例：常量、构造器、字段
 
-        // 约定实现类必须提供展示名称；枚举可以 implements 接口。
-        interface Labeled {
-            String label();
-        }
+            ```java
+            enum OrderStatus {
+                NEW("N", "新建"),
+                PAID("P", "已支付"),
+                SHIPPED("S", "已发货");
 
-        // OrderStatus 是一组固定订单状态：外部只能使用这些常量，不能 new 新状态。
-        enum OrderStatus implements Labeled {
-            // UNKNOWN 不写构造参数，会调用无参构造器。
-            UNKNOWN {
-                @Override
-                boolean canCancel() { return false; } // 未知状态不可取消
-            },
+                private final String code;
+                private final String label;
 
-            // NEW/PAID/SHIPPED/REFUNDED 写了构造参数，会调用 OrderStatus(String label)。
-            NEW("新建") {
-                @Override
-                boolean canCancel() { return true; } // 新建状态可取消
-            },
-            PAID("已支付") {
-                @Override
-                boolean canCancel() { return true; } // 已支付但未发货，仍可取消
-            },
-            SHIPPED("已发货") {
-                @Override
-                boolean canCancel() { return false; } // 已发货后不可取消
-            },
-            REFUNDED("已退款") {
-                @Override
-                boolean canCancel() { return false; } // 已退款后不可取消
-            };
-
-            // 每个枚举常量各保存一份 label；通常用 final 表示创建后不再改变。
-            private final String label;
-
-            OrderStatus() { // 无参构造器：供 UNKNOWN 使用
-                this("未知");
-            }
-
-            OrderStatus(String label) { // 枚举构造器默认 private，只能由枚举常量调用
-                this.label = label;
-            }
-
-            // 实现 Labeled 接口，返回展示名称。
-            @Override
-            public String label() { return label; }
-
-            // 抽象方法：每个枚举常量都必须在自己的常量类体中实现。
-            abstract boolean canCancel();
-
-            // 普通实例方法：所有常量都能调用。
-            public boolean terminal() {
-                return this == SHIPPED || this == REFUNDED;
-            }
-
-            // 自定义展示文本；不要把 toString() 当作稳定持久化值。
-            @Override
-            public String toString() { return "OrderStatus:" + label; }
-        }
-
-        class EnumDemo {
-            public static void main(String[] args) {
-                // 1. 最基础用法：直接引用枚举常量。
-                OrderStatus status = OrderStatus.PAID;
-                System.out.println(status); // OrderStatus:已支付，println 会调用 toString()
-
-                // 2. 枚举常量是固定单例，比较优先用 ==。
-                System.out.println(status == OrderStatus.PAID); // true
-
-                // 3. valueOf(String) 按常量名解析，字符串必须精确匹配 PAID。
-                OrderStatus parsed = OrderStatus.valueOf("PAID");
-                System.out.println(status == parsed); // true
-
-                // 4. name() 是代码里的常量名；label() 是业务展示文案。
-                System.out.println(status.name());  // PAID
-                System.out.println(status.label()); // 已支付
-
-                // 5. 枚举实现接口后，可以按接口类型统一调用方法。
-                Labeled labeled = status;
-                System.out.println(labeled.label()); // 已支付
-
-                // 6. values() 遍历所有枚举常量，顺序就是声明顺序。
-                for (OrderStatus item : OrderStatus.values()) {
-                    System.out.println(item.name() + " -> " + item.label());
+                OrderStatus(String code, String label) {
+                    this.code = code;
+                    this.label = label;
                 }
-                // UNKNOWN -> 未知
-                // NEW -> 新建
-                // PAID -> 已支付
-                // SHIPPED -> 已发货
-                // REFUNDED -> 已退款
 
-                // 7. switch 支持枚举，适合按状态分支。
-                String action;
-                switch (status) {
-                    case NEW:
-                    case PAID:
-                        action = "allow cancel";
-                        break;
-                    case SHIPPED:
-                        action = "track";
-                        break;
-                    case REFUNDED:
-                        action = "refund finished";
-                        break;
-                    case UNKNOWN:
-                    default:
-                        action = "unknown";
-                        break;
-                }
-                System.out.println(action); // allow cancel
+                public String code() { return code; }
 
-                // 8. 调用每个常量自己的行为：PAID 的 canCancel() 返回 true。
-                System.out.println(status.canCancel()); // true
-
-                // 9. 调用普通实例方法：PAID 还不是终态。
-                System.out.println(status.terminal()); // false
-
-                // 10. ordinal() 是声明顺序下标，从 0 开始；只适合临时查看，不适合存数据库。
-                System.out.println(status.ordinal()); // 2
-
-                // 11. compareTo() 按声明顺序比较；NEW 在 SHIPPED 前面，所以结果为负数。
-                System.out.println(OrderStatus.NEW.compareTo(OrderStatus.SHIPPED)); // -2
-
-                // 12. EnumSet 存一组枚举值，适合表达“哪些状态属于同一类”。
-                EnumSet<OrderStatus> cancellable = EnumSet.of(OrderStatus.NEW, OrderStatus.PAID);
-                System.out.println(cancellable.contains(status)); // true
-
-                // 13. EnumMap 用枚举当 key，适合给不同状态配置额外信息。
-                EnumMap<OrderStatus, String> labels = new EnumMap<>(OrderStatus.class);
-                labels.put(OrderStatus.NEW, "待处理");
-                labels.put(OrderStatus.SHIPPED, "配送中");
-                System.out.println(labels.get(OrderStatus.SHIPPED)); // 配送中
+                public String label() { return label; }
             }
-        }
-        ```
+
+            class EnumBasicDemo {
+                public static void main(String[] args) {
+                    OrderStatus status = OrderStatus.PAID;
+
+                    System.out.println(status.name());  // PAID，常量名
+                    System.out.println(status.code());  // P，业务码
+                    System.out.println(status.label()); // 已支付，展示文案
+                    System.out.println(status == OrderStatus.valueOf("PAID")); // true
+                }
+            }
+            ```
+        - 拓展示例：接口、常量行为、反查、集合
+
+            ```java
+            import java.util.EnumMap;
+            import java.util.EnumSet;
+
+            interface Labeled {
+                String label();
+            }
+
+            enum WorkflowStatus implements Labeled {
+                NEW("N", "新建") {
+                    @Override
+                    boolean canCancel() { return true; }
+                },
+                PAID("P", "已支付") {
+                    @Override
+                    boolean canCancel() { return true; }
+                },
+                SHIPPED("S", "已发货"),
+                REFUNDED("R", "已退款");
+
+                private final String code;
+                private final String label;
+
+                WorkflowStatus(String code, String label) {
+                    this.code = code;
+                    this.label = label;
+                }
+
+                public String code() { return code; }
+
+                @Override
+                public String label() { return label; }
+
+                boolean canCancel() { return false; }
+
+                static WorkflowStatus fromCode(String code) {
+                    for (WorkflowStatus status : values()) {
+                        if (status.code.equals(code)) {
+                            return status;
+                        }
+                    }
+                    throw new IllegalArgumentException("Unknown status code: " + code);
+                }
+            }
+
+            class EnumAdvancedDemo {
+                public static void main(String[] args) {
+                    WorkflowStatus status = WorkflowStatus.fromCode("P");
+
+                    System.out.println(status.canCancel()); // true
+
+                    Labeled labeled = status;
+                    System.out.println(labeled.label()); // 已支付
+
+                    EnumSet<WorkflowStatus> terminal =
+                            EnumSet.of(WorkflowStatus.SHIPPED, WorkflowStatus.REFUNDED);
+                    System.out.println(terminal.contains(status)); // false
+
+                    EnumMap<WorkflowStatus, String> tips = new EnumMap<>(WorkflowStatus.class);
+                    tips.put(WorkflowStatus.PAID, "等待发货");
+                    System.out.println(tips.get(status)); // 等待发货
+                }
+            }
+            ```
         </details>
 
     - <details>
@@ -1560,7 +1527,7 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
     按声明位置记：
 
     - 成员类型：写在类型体第一层。
-        - 非静态成员类：`class Inner {}`，绑定外部对象，可访问外部实例成员。
+        - 非静态成员类：`class Inner {}`，**绑定外部对象**，可访问外部实例成员。
         - 静态成员类：`static class Nested {}`，不绑定外部对象。
         - 成员接口、成员枚举、成员注解接口、成员记录：`interface I {}`、`enum E {}`、`@interface A {}`、`record R(...) {}`，都隐式 `static`，不绑定外部对象。
     - 局部类型：写在方法、构造器或代码块内部。
@@ -1570,6 +1537,9 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
     - 匿名类：`new 父类或接口(...) { ... }`，没有类型名，只能在表达式中现场创建对象；可捕获 `final` 或事实不可变的局部变量。
 
     >字段、方法、成员类型是成员；构造器和初始化代码块写在类体第一层，但不是成员。
+
+    <details>
+    <summary>e.g.</summary>
 
     ```java
     class User {
@@ -1617,7 +1587,7 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
           boolean ok(String value);
         }
 
-        Runnable task = new Runnable() {
+        Runnable task = new Runnable() {    // java.lang.Runnable
           @Override
           public void run() {
             System.out.println(base); // 匿名类也要求 base 是 final 或事实不可变
@@ -1636,64 +1606,54 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
       }
     }
     ```
+    </details>
 
     - 创建或使用语法
 
-        - 非静态成员类：
-            - 在外部类外创建：`outer.new Inner()`，先有外部对象，再创建绑定到它的内部类对象。
-            - 在外部类实例代码中创建：`new Inner()`，默认绑定当前 `this`。
-        - 静态成员类型：
-            - 静态成员类 / 成员记录：`new Outer.Nested(...)`，只用外部类型名限定类型，不绑定外部对象。
-            - 成员枚举：`Outer.Role.ADMIN`，通过外部类型名访问枚举常量。
-            - 成员接口：接口本身不直接创建对象，使用实现类、匿名类；函数式接口可用 lambda。
-        - 局部类型：
-            - 局部普通类 / 局部记录：在当前块内 `new LocalType(...)`，只在声明所在块内可见。
-            - 局部枚举：在当前块内 `LocalEnum.VALUE`，只在声明所在块内可见。
-            - 局部接口：在当前块内作为类型使用，仍然通过实现类、匿名类提供实现；函数式接口可用 lambda。
-        - 匿名类：`new 父类或接口(...) { ... }`，现场声明匿名子类或接口实现类，并立刻创建对象。
+        先看类型写在哪里，再决定怎么创建：
+
+        | 写法 | 怎么创建 / 使用 | 重点 |
+        | --- | --- | --- |
+        | `class User { class Profile {} }` | `user.new Profile()` | 非静态成员类绑定某个 `user` 对象 |
+        | `class User { static class Address {} }` | `new User.Address()` | 静态成员类只借用 `User` 这个命名空间，不绑定 `user` 对象 |
+        | `class User { enum Role { ADMIN } }` | `User.Role.ADMIN` | 成员枚举通过外部类型名访问常量 |
+        | 方法里的 `class LocalHelper {}` | 当前方法内 `new LocalHelper()` | 只在当前代码块内可见 |
+        | `new Runnable() { ... }` | 表达式位置直接创建 | 匿名类没有名字，声明和创建写在一起 |
+
+        一句话：只有“非 `static` 成员类”创建时需要外部对象，所以语法是 `外部对象.new 内部类()`。
 
     - 细节规则
 
-        - 分类边界：
-            - 内部类不是所有嵌套类型，只包括非 `static` 的嵌套类：非静态成员类、局部普通类、匿名类。
-            - 静态成员类、成员接口、成员枚举、成员注解接口、成员记录都不持有关联外部对象。
-            - 局部接口、局部枚举、局部记录隐式是 `static`，不捕获外部局部变量，也不绑定外部对象。
-        - 外部对象：
-            - 非静态成员类一定持有关联外部对象，可用 `Outer.this` 指明外部对象。
-            - `outer.new Inner()` 里的 `outer` 是外部对象引用；如果是 `null`，运行期抛 `NullPointerException`。
-            - 不绑定外部对象的嵌套类型不能直接访问外部对象的实例字段或实例方法。
-        - 局部变量捕获：
-            - 局部普通类和匿名类可以读取外部局部变量，但变量必须是 `final` 或事实不可变。
-            - 局部接口、局部枚举、局部记录不能捕获局部变量。
-        - 声明限制：
-            - 成员接口、成员枚举、成员注解接口、成员记录隐式是 `static`；写在接口体内的成员类型还隐式是 `public`。
-            - 局部类型不能写访问控制修饰符、`static`、`sealed`、`non-sealed`。
-            - 局部位置可以声明普通 `class`、普通 `interface`、`enum`、`record`；不能声明局部 `@interface`。
-            - 外部类型和嵌套类型属于同一个 nest，可以互相访问对方的 `private` 成员。
-        - 匿名类：
-            - 匿名类没有类名，不能显式声明构造器；需要初始化逻辑时写实例初始化代码块。
-            - 匿名类只能继承一个父类或实现一个接口；用于一次性实现，单抽象方法接口优先用 lambda。
+        | 问题 | 结论 |
+        | --- | --- |
+        | 什么叫内部类 | 严格说只包括非 `static` 的嵌套类：非静态成员类、局部普通类、匿名类 |
+        | 谁绑定外部对象 | 非静态成员类一定绑定；静态成员类、成员接口、成员枚举、成员记录不绑定 |
+        | 谁能读取方法里的局部变量 | 局部普通类和匿名类可以读，但变量必须是 `final` 或事实不可变 |
+        | 局部接口 / 局部枚举 / 局部记录 | 隐式是 `static`，不捕获局部变量，也不绑定外部对象 |
+        | 匿名类限制 | 没有类名，不能写构造器；只能继承一个父类或实现一个接口 |
+
+        > 事实不可变：变量没有写 `final`，但赋值后没有再被修改。
 
 ### 异常处理：`try-catch-finally`、`throw`、`throws`
 <details>
-<summary></summary>
+<summary>异常体系、捕获与资源关闭</summary>
 
 ```text
 Throwable
-├─ Error：严重问题，通常不在业务代码中捕获
+├─ Error：严重问题，通常不在业务代码中捕获（非受检）
 └─ Exception
-    ├─ RuntimeException：运行时异常，不强制捕获
-    └─ 非 RuntimeException 的 Exception：受检异常，必须捕获或继续声明 throws
+    ├─ RuntimeException：运行期异常，不强制捕获（非受检）
+    └─ 其他 Exception：受检异常，必须捕获或继续声明 throws
 ```
 
 - 编译器检查规则
 
-    - 受检异常：`Throwable` 中不属于 `RuntimeException` 子类、也不属于 `Error` 子类的类型。
-    - 非受检异常：`RuntimeException` 子类和 `Error` 子类。
-    - 受检异常必须在当前方法内 `catch`，或在方法签名上 `throws`。
-    - 非受检异常可以捕获，但编译器不强制。
+    | 类型 | 怎么判断 | 编译器要求 |
+    | --- | --- | --- |
+    | 受检异常（`checked exception`） | `Exception` 及其子类，但排除 `RuntimeException` 及其子类 | 必须在当前方法内 `catch`，或在方法签名上 `throws`；否则不能通过编译 |
+    | 非受检异常（`unchecked`） | `RuntimeException`、`Error` 及其各自子类 | 可以捕获，但编译器不强制 |
 
-- 常见运行时异常
+- 常见运行期异常
 
     | 异常 | 常见原因 |
     | --- | --- |
@@ -1763,11 +1723,9 @@ Throwable
 
 - `finally` 规则
 
-    - `finally` 通常在 `try` 或 `catch` 结束后执行。
-    - `finally` 常用于释放资源、恢复状态、清理临时数据。
-    - 不建议在 `finally` 中写 `return`，因为它会覆盖 `try` 或 `catch` 中的返回值。
-    - 不建议在 `finally` 中抛新异常，除非明确要覆盖原异常。
-    - `System.exit(...)`、`Runtime.getRuntime().halt(...)`、JVM 崩溃、操作系统杀进程、机器断电、线程永远卡在 `try` 中时，`finally` 无法完成执行。
+    - `try` / `catch` 正常走完后，一般会执行 `finally`（适合释放资源、恢复状态）。
+    - 不建议在 `finally` 里 `return` 或抛新异常：前者会吞掉 `try`/`catch` 的返回值，后者可能盖住原异常。
+    - 例外：`System.exit` / `halt`、JVM 崩溃、进程被杀、断电，或线程在 `try` 里永久卡住时，`finally` 可能执行不到。
 
 - `try-with-resources` 规则
 
@@ -1800,211 +1758,67 @@ Throwable
 </details>
 
 ### 泛型
-泛型把“可变化的类型”抽象成参数，让类、接口、记录、方法和构造器在保持复用的同时获得编译期类型检查。Java 泛型主要靠**类型擦除**实现：编译期检查类型关系，编译后通常擦除成 `Object` 或第一个上界，运行期不会为 `List<String>`、`List<Integer>` 生成两套类。
+泛型就是把“类型”作为参数：同一段代码可以处理不同类型，并由编译器阻止类型混用。
+
+```java
+List<String> names = new ArrayList<>();
+names.add("Alice");
+// ❌ names.add(1);              // 编译错误：只能放 String
+String firstName = names.get(0); // 取出时不需要强转
+```
 
 - 核心术语
 
     | 术语 | 例子 | 含义 |
     | --- | --- | --- |
-    | 类型形参 | `T`、`E`、`K`、`V` | 声明泛型时定义的类型变量 |
-    | 类型实参 | `String`、`Integer`、`User` | 使用泛型时传入的具体引用类型 |
-    | 参数化类型 | `List<String>` | 带具体类型实参的泛型类型 |
-    | 原始类型 | `List` | 不带类型实参的兼容旧代码写法，会绕开泛型检查 |
-    | 通配符 | `?`、`? extends Number` | 表示某个未知类型，只用于使用泛型的位置 |
-    | 上界 | `<T extends Number>` | 限制 `T` 至少是某个父类型的子类型 |
-    | 下界 | `? super Integer` | 只存在于通配符，表示未知类型是某个类型的父类型 |
-    | 类型擦除 | `T -> Object` 或 `T -> 上界` | 编译后移除大多数泛型实参信息 |
-    | 可具体化类型 | `String`、`int[]`、`List<?>` | 运行期能完整或足够确定表示的类型 |
-    | 不可具体化类型 | `List<String>`、`T` | 运行期无法完整知道泛型实参的类型 |
-    | 堆污染 | `List<String>` 中混入非 `String` | 常由原始类型、未经检查强转、泛型可变参数导致 |
+    | 类型形参 | `T` | 声明泛型时使用的类型变量 |
+    | 类型实参 | `String` | 使用泛型时传入的具体类型 |
+    | 参数化类型 | `List<String>` | 已指定类型实参的泛型类型 |
+    | 原始类型 | `List` | 省略类型实参的旧式写法 |
+    | 通配符 `?` | `List<?>` | 表示元素类型未知 |
 
-- 泛型能力边界
+    常见命名：`T` 表示 type，`E` 表示 element，`K/V` 表示 key/value，`R` 表示 result。
 
-    | 维度 | 规则 |
-    | --- | --- |
-    | 解决什么 | 编译期类型安全、API 复用、减少强转、表达输入输出类型关系 |
-    | 不解决什么 | 运行期按泛型实参分派逻辑、运行期保存对象的具体泛型实参 |
-    | 类型形参命名 | 常用 `T`=type、`E`=element、`K/V`=key/value、`R`=return/result、`ID`=标识类型 |
-    | 与继承关系 | `String extends Object` 不代表 `List<String> extends List<Object>` |
-    | 与数组关系 | 数组协变且运行期检查；泛型默认不协变且主要编译期检查 |
+- 声明与使用范围
 
-- 声明位置穷举
+    1. 哪些声明可以声明自己的类型形参
 
-    | 位置 | 写法 | 说明 |
-    | --- | --- | --- |
-    | 泛型类 | `class Box<T> {}` | 类型参数属于这个类的实例类型 |
-    | 泛型接口 | `interface Repository<T, ID> {}` | 实现类可固定类型实参，也可继续保留类型参数 |
-    | 泛型记录 | `record Pair<K, V>(K key, V value) {}` | 记录可以声明类型参数，Java 16+ 可用 |
-    | 泛型方法 | `<T> T first(List<T> list) {}` | 类型参数写在返回值类型前，只在本方法内有效 |
-    | 静态泛型方法 | `static <T> T id(T value) {}` | 静态方法不能使用类上的 `T`，需要自己声明 `<T>` |
-    | 泛型构造器 | `<T> Holder(T value) {}` | 类型参数只属于本次构造调用，少见但合法 |
-    | 泛型异常声明 | `<E extends Exception> void run() throws E` | 类型变量可用于 `throws`，但泛型类不能继承 `Throwable` |
-    | 通配符类型 | `List<?>`、`List<? extends Number>` | 不是声明新类型形参，而是在使用处表达未知类型 |
+        | 声明位置 | 是否可以 | 示例或边界 |
+        | --- | --- | --- |
+        | 普通类 | ✅ | `class Box<T>`；顶层、成员、局部类以及 `abstract`、`final`、`sealed` 普通类都可以 |
+        | 普通接口 | ✅ | `interface Repository<T, ID>`；顶层、成员、局部接口都可以 |
+        | 记录 | ✅ | `record Pair<K, V>(K key, V value)` |
+        | 实例方法、静态方法 | ✅ | `<T> T id(T value)`；方法的 `T` 独立于所属类型 |
+        | 构造器 | ✅ | `<T> Box(T value)`；所属类不必是泛型类 |
+        | 枚举声明 | ❌ | 不能写 `enum Status<T>`；枚举中的方法和构造器可以自行声明类型形参 |
+        | 注解接口及其元素方法 | ❌ | 不能写 `@interface Label<T>`，注解元素也不能声明 `<T>` |
+        | `Throwable` 的直接或间接子类 | ❌ | 不能写 `class AppException<T> extends Exception` |
+        | 记录的规范构造器 | ❌ | 规范构造器不能泛型；非规范构造器可以 |
+        | 匿名类本身、Lambda | ❌ | 匿名类不能给自身声明类型形参，但类体中的方法仍可泛型；Lambda 不能声明 `<T>`，但可使用参数化目标类型 |
+        | 字段、参数、局部变量、初始化块、包、模块 | ❌ | 不能声明自己的 `<T>`，只能使用作用域内已有的类型变量 |
 
-    - 枚举和注解接口不能声明自己的泛型类型参数。
-    - 类级类型参数可用于实例字段、实例方法、构造器、实例初始化块、成员类型声明；不能直接用于静态字段、静态初始化块、静态方法签名。
-    - 方法级类型参数作用域只在该方法内；方法级 `<T>` 可以遮蔽类级 `T`，但不建议这样写。
+    2. 哪些内容可以作为参数化类型的类型实参
 
-- 使用位置穷举
+        | 内容 | 是否可以 | 示例或边界 |
+        | --- | --- | --- |
+        | 普通类、枚举、记录 | ✅ | `Box<String>`、`Box<Day>`、`Box<Pair<String, Integer>>` |
+        | 普通接口、注解接口 | ✅ | `Box<Runnable>`、`Box<Deprecated>` |
+        | 数组 | ✅ | `Box<String[]>`、`Box<int[]>`；数组本身是引用类型 |
+        | 参数化类型、类型变量 | ✅ | `Box<List<String>>`、`Box<T>` |
+        | 通配符 `?` | ✅ | `Box<?>`、`Box<? extends Number>`、`Box<? super Integer>` |
+        | 原始类型 | 语法允许 | `Box<List>` |
+        | 八种基本类型 | ❌ | `byte`、`short`、`int`、`long`、`float`、`double`、`char`、`boolean` 应改用包装类 |
+        | `void`、空类型 | ❌ | 不能写 `Box<void>`；`null` 是值，不是类型实参，空类型本身也没有名称 |
+        | 交叉类型 | 不可以直接使用 | 不能写 `Box<Number & Comparable<?>>`；交叉类型用于上界或强制类型转换等特定位置 |
+        | 数量或边界不匹配 | ❌ | `Pair<String>` 参数不足；若 `Box<T extends Number>`，则 `Box<String>` 违反上界 |
 
-    | 位置 | 例子 | 说明 |
-    | --- | --- | --- |
-    | 字段 | `private List<User> users;` | 约束字段保存的元素类型 |
-    | 局部变量 | `List<String> names = new ArrayList<>();` | 左侧提供目标类型，右侧 diamond 可推断 |
-    | 方法参数 | `void save(List<User> users)` | 调用方必须传入匹配的泛型类型 |
-    | 方法返回值 | `Optional<User> findById(Long id)` | 调用方拿到带泛型约束的返回值 |
-    | 构造调用 | `new Box<String>("A")`、`new Box<>("A")` | 可显式写类型实参，也可用 diamond 推断 |
-    | 继承父类 | `class StringBox extends Box<String>` | 子类固定父类的类型实参 |
-    | 实现接口 | `class UserRepository implements Repository<User, Long>` | 实现类固定接口的实体类型和 ID 类型 |
-    | 显式方法类型实参 | `GenericExamples.<String>first(names)` | 也叫 type witness，通常可省略 |
-    | 类型令牌 | `Class<User> type` | 常用于反射、反序列化、工厂方法 |
-    | 通配符参数 | `List<? extends Number>` | 提高参数兼容性，但会限制读写能力 |
+        >`Box<?>` 可作为变量或参数类型，但不能代替声明处的类型形参（`class Box<?>` 非法），也不能直接创建对象（`new Box<?>()` 非法，应写 `new Box<>()`）。显式方法或构造器类型实参同样不能使用通配符，例如 `Collections.<?>emptyList()`、`new <?> Box()` 非法。
 
-- 类型推断
+- 常用声明
 
-    | 写法 | 推断方向 | 结果 |
-    | --- | --- | --- |
-    | `Box<String> b = new Box<>("A");` | 左侧目标类型 + 构造器参数 | `<>` 推断为 `String` |
-    | `var b = new Box<String>("A");` | 右侧表达式 | `var` 推断为 `Box<String>` |
-    | `var b = new Box<>("A");` | 构造器参数 | `<>` 推断为 `String`，`var` 推断为 `Box<String>` |
-    | `var list = new ArrayList<>();` | 没有目标类型、没有元素参数 | 通常推断为 `ArrayList<Object>` |
-    | `List<String> list = new ArrayList<>();` | 左侧目标类型 | 右侧推断为 `ArrayList<String>` |
-    | `var list = new ArrayList<String>();` | 右侧显式类型实参 | `var` 推断为 `ArrayList<String>` |
-
-    - `var` 推断的是**局部变量类型**；`<>` 推断的是**构造调用的泛型实参**。
-    - 方法调用也会做类型推断：`first(List.of("A"))` 可推断返回 `String`。
-    - lambda、方法引用、泛型方法常依赖目标类型；目标类型不足时，需要显式类型实参或显式变量类型。
-    - diamond `<>` Java 7 起可用于普通构造调用；Java 9 起也可更好地用于匿名类场景。
-
-- 上界、多重边界与递归边界
-
-    | 写法 | 含义 | 典型用途 |
-    | --- | --- | --- |
-    | `<T>` | 等价于 `<T extends Object>` | 无特殊约束 |
-    | `<T extends Number>` | `T` 必须是 `Number` 或子类 | 方法内可按 `Number` 使用 |
-    | `<T extends Comparable<T>>` | `T` 能与同类对象比较 | 排序、最大值、最小值 |
-    | `<T extends Number & Comparable<T>>` | 多重上界 | 同时需要数值能力和比较能力 |
-    | `<T extends Comparable<? super T>>` | 更宽的递归比较边界 | 兼容父类型定义的比较能力 |
-
-    - 多重边界用 `&`，如果包含类上界，类必须写第一个；接口上界可以多个。
-    - 类型形参没有 `super` 下界写法；`super` 只用于通配符。
-    - 上界决定擦除结果：`T extends Number` 擦除后主要按 `Number` 处理。
-
-- 泛型不变、通配符与 PECS
-
-    | 类型关系 | 是否成立 | 说明 |
-    | --- | --- | --- |
-    | `String extends Object` | 成立 | 普通类继承关系 |
-    | `List<String> extends List<Object>` | 不成立 | 泛型默认不协变 |
-    | `List<String> extends List<?>` | 成立 | `?` 接收任意元素类型 |
-    | `List<Integer> extends List<? extends Number>` | 成立 | 上界通配符接收 `Number` 子类型列表 |
-    | `List<Number> extends List<? super Integer>` | 成立 | 下界通配符接收 `Integer` 父类型列表 |
-
-    | 写法 | 读能力 | 写能力 | 适合场景 |
-    | --- | --- | --- | --- |
-    | `List<T>` | 读出 `T` | 写入 `T` | 既读又写同一种类型 |
-    | `List<?>` | 读出 `Object` | 只能写入 `null` | 只关心大小、遍历、清空等与元素类型无关的操作 |
-    | `List<? extends Number>` | 读出 `Number` | 不能安全写入具体数值，`null` 除外 | 生产者，只读为主 |
-    | `List<? super Integer>` | 读出 `Object` | 可写入 `Integer` 及其子类对象 | 消费者，写入为主 |
-
-    - PECS：Producer Extends, Consumer Super。只从数据源取，用 `? extends T`；只向目标写，用 `? super T`。
-    - 通配符表达的是“我不知道具体类型”；类型参数 `<T>` 表达的是“多个位置是同一个类型”。
-    - 通配符捕获：编译器可把 `List<?>` 的未知类型临时捕获成某个类型；复杂场景可用私有泛型 helper 方法辅助。
-
-- 类型擦除、桥接方法与反射
-
-    - 无上界类型变量通常擦除为 `Object`；有上界时擦除为第一个上界。
-    - 编译器会在必要位置插入强制类型转换，例如从 `List<String>` 取值后转成 `String`。
-    - 子类重写泛型父类方法时，擦除后签名可能变化；编译器可能生成桥接方法保持多态正确。
-    - 两个方法如果擦除后签名相同，不能只靠不同泛型实参重载，例如 `m(List<String>)` 和 `m(List<Integer>)` 不能同时存在。
-    - class 文件可保留泛型签名元数据；反射能读到字段、方法、父类、接口声明上的泛型签名，但普通对象本身通常不知道自己是 `List<String>` 还是 `List<Integer>`。
-    - `Class<T>` 常作为类型令牌使用，但 `List<String>.class` 不存在；只能写 `List.class` 或借助框架的 `TypeReference` 思路保存泛型签名。
-
-- 运行期限制与非法写法
-
-    | 限制 | 非法或不推荐写法 | 原因 |
-    | --- | --- | --- |
-    | 基本类型不能作为类型实参 | ❌ `List<int>` | 类型实参必须是引用类型 |
-    | 不能直接创建类型变量对象 | ❌ `new T()` | 擦除后不知道要创建哪个类 |
-    | 不能取类型变量 class | ❌ `T.class` | 运行期没有具体 `T` |
-    | 不能精确判断参数化类型 | ❌ `obj instanceof List<String>` | 泛型实参被擦除 |
-    | 不能创建参数化类型数组 | ❌ `new List<String>[10]` | 数组运行期检查与泛型擦除冲突 |
-    | 静态成员不能用类级 `T` | ❌ `static T value;` | 类级 `T` 属于实例类型，不属于类静态区 |
-    | 泛型类不能继承异常 | ❌ `class X<T> extends Exception` | 异常捕获需要运行期确定类型 |
-    | `catch` 不能捕获类型变量 | ❌ `catch (T e)` | 捕获类型必须运行期可检查 |
-    | 不能只按泛型实参重载 | ❌ `m(List<String>)` / `m(List<Integer>)` | 擦除后签名冲突 |
-
-    - `List<?>[] array = new List<?>[10]` 这类“无界通配符数组”可以创建，因为 `List<?>` 是可具体化类型；但业务中仍要谨慎使用。
-    - `List<String>[]` 不能直接创建；优先用 `List<List<String>>`。
-
-- 原始类型、未经检查警告与堆污染
-
-    - 原始类型 `List` 主要为兼容 Java 5 之前的旧代码保留；新代码应写 `List<T>`、`List<?>` 或具体参数化类型。
-    - 原始类型赋给参数化类型、未经检查强转、泛型数组和泛型可变参数都可能触发 unchecked 警告。
-    - `@SuppressWarnings("unchecked")` 只能压在最小作用域，并且要确认数据来源真的满足目标泛型类型。
-    - 泛型可变参数如 `List<String>... lists` 可能产生堆污染；只有确认方法不会写入错误类型、不会暴露参数数组时，才使用 `@SafeVarargs`。
-    - `@SafeVarargs` 可用于构造器，以及 `static`、`final`、`private` 等不会被不安全重写的方法。
-
-- 设计原则
-
-    - 集合、缓存、仓储、结果包装、分页结果、树节点、事件、回调等“同一结构承载不同类型”的场景适合泛型。
-    - 类型参数要表达真实关系：如果入参、返回值、字段之间没有类型关联，泛型可能只是增加噪声。
-    - 只在一个方法内相关，用泛型方法；对象整个生命周期都绑定某个类型，用泛型类或泛型接口。
-    - 入参需要更灵活时使用通配符；返回值通常避免返回 `? extends T`、`? super T`，除非调用方确实只需要受限能力。
-    - API 返回值、字段、集合元素尽量写具体泛型类型，不要退化成原始类型。
-    - 边界写到刚好够用：能用 `<T extends Number>` 就不要写无界 `<T>` 后再强转。
-    - 优先用 `List<T>`、`Map<K, V>` 等集合抽象承载泛型数据；少用泛型数组。
-
-<details>
-<summary>Java 泛型例子</summary>
-
-```java
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class GenericExamples {
-    public static void main(String[] args) {
-        Map<String, Integer> scores = new HashMap<>();
-        scores.put("Tom", 90);
-        scores.put("Jerry", 85);
-        Integer tomScore = scores.get("Tom");
-
-        Box<String> nameBox = new Box<>("Alice"); // diamond 推断 String
-        String name = nameBox.get();
-
-        var inferredBox = new Box<>("Bob");       // var 推断 Box<String>
-        Box<String> explicitBox = new Box<>("Cat");
-
-        // var emptyList = new ArrayList<>();      // 推断为 ArrayList<Object>
-        var stringList = new ArrayList<String>();  // 推断为 ArrayList<String>
-
-        Repository<User, Long> repository = new UserRepository();
-        User user = repository.findById(1L);
-        repository.save(user);
-
-        String firstName = first(Arrays.asList("A", "B"));
-        Integer firstNumber = GenericExamples.<Integer>first(Arrays.asList(1, 2));
-
-        String biggerName = max("Tom", "Jerry");
-        Integer biggerNumber = max(10, 20);
-
-        List<Integer> integers = new ArrayList<>();
-        addDefaults(integers);                     // ? super Integer：写入
-        double total = sum(integers);              // ? extends Number：读取
-
-        List<Integer> src = Arrays.asList(1, 2, 3);
-        List<Number> dest = new ArrayList<>();
-        copy(src, dest);
-
-        System.out.println(tomScore + ", " + name + ", " + inferredBox.get() + ", " + explicitBox.get());
-        System.out.println(firstName + ", " + firstNumber + ", " + biggerName + ", " + biggerNumber);
-        System.out.println(user.name() + ", " + stringList.size() + ", " + total + ", " + dest);
-    }
-
-    static class Box<T> {
+    ```java
+    // 泛型类：一个 Box 对象始终保存同一种类型
+    class Box<T> {
         private final T value;
 
         Box(T value) {
@@ -2016,52 +1830,53 @@ public class GenericExamples {
         }
     }
 
-    interface Repository<T, ID> {
-        T findById(ID id);
-        void save(T entity);
-    }
+    Box<String> nameBox = new Box<>("Alice");
+    Box<Integer> ageBox = new Box<>(18);
 
-    static class User {
-        private final Long id;
-        private final String name;
-
-        User(Long id, String name) {
-            this.id = id;
-            this.name = name;
-        }
-
-        Long id() {
-            return id;
-        }
-
-        String name() {
-            return name;
-        }
-    }
-
-    static class UserRepository implements Repository<User, Long> {
-        @Override
-        public User findById(Long id) {
-            return new User(id, "Alice");
-        }
-
-        @Override
-        public void save(User entity) {
-            System.out.println(entity.name());
-        }
-    }
-
+    // 泛型方法：T 只在本次方法调用中有效
     static <T> T first(List<T> list) {
-        if (list.isEmpty()) {
-            throw new IllegalArgumentException("list is empty");
-        }
         return list.get(0);
     }
+    ```
 
-    static <T extends Comparable<? super T>> T max(T a, T b) {
-        return a.compareTo(b) >= 0 ? a : b;
-    }
+    - 泛型方法的类型形参写在返回类型前，例如 `<T> T func(...)`。静态方法不能直接使用类声明的 `T`；如果静态方法也需要类型形参，必须自行声明，例如 `static <T> T first(...)`。
 
+        >类上的泛型 T 是对象创建时才确定的实例类型，而 static 成员属于整个类、全局只有一份。由于不同实例可以对应不同的 T（如 String、Integer），静态成员无法同时代表所有可能的 T，因此 Java 禁止在静态成员中直接使用类级泛型 T。类泛型：`class Box<E>`，属于对象（实例），普通方法可以直接使用，static 方法不能使用。方法泛型：`<T> T method(T value)`，属于方法本身，普通方法和 static 方法都可以声明。
+    - 类型形参的价值是表达关系，例如 `T first(List<T>)` 表示“返回类型与列表元素类型相同”。
+
+- 类型推断
+
+    - diamond `<>` 根据左侧类型或构造器参数推断类型实参：`List<String> list = new ArrayList<>();`。
+    - `var` 推断整个局部变量类型：`var list = new ArrayList<String>();` 得到 `ArrayList<String>`；如果写成 `var list = new ArrayList<>();`，缺少目标类型和元素参数，通常得到 `ArrayList<Object>`。
+    - 泛型方法通常也能自动推断：`String name = first(List.of("A", "B"));`。
+
+- 上界
+
+    | 写法 | 含义 | 典型用途 |
+    | --- | --- | --- |
+    | `<T>` | `T` 可以是任意引用类型 | 无特殊约束 |
+    | `<T extends Number>` | `T` 必须是 `Number` 或子类 | 方法内可按 `Number` 使用 |
+    | `<T extends Number & Comparable<T>>` | 多重上界 | 同时需要数值能力和比较能力 |
+
+    - 多重边界用 `&`，如果包含类上界，类必须写第一个；接口上界可以多个。
+    - 类型形参没有 `super` 下界写法；`super` 只用于通配符 `?`。
+
+- 泛型不变、通配符 `?` 与 PECS
+
+    泛型默认不协变：虽然 `Integer` 是 `Number` 的子类，但 `List<Integer>` 不是 `List<Number>`。否则就能通过 `List<Number>` 放入 `Double`，破坏原列表只能保存 `Integer` 的约束。
+
+    **PECS**：Producer Extends, Consumer Super——生产者（只往外取）用 `? extends`，消费者（只往里放）用 `? super`；同一类型既取又放，用明确的 `<T>`。
+
+    判断方法：看编译器能把元素类型确定到什么范围。范围越宽，能安全执行的操作越少。
+
+    | 写法 | `get()` 取出什么 | `add()` 放入什么 | 一句话理解 |
+    | --- | --- | --- | --- |
+    | `List<T>` | `T` | `T` | 类型确定，可取可放 |
+    | `List<?>` | `Object` | 只能 `null` | 完全不知道元素类型 |
+    | `List<? extends Number>` | `Number` | 只能 `null` | 元素是某个 `Number` 子类型，适合只读取出 |
+    | `List<? super Integer>` | `Object` | `Integer`（及 `null`） | 元素是 `Integer` 的某个父类型，适合写入 `Integer` |
+
+    ```java
     static double sum(List<? extends Number> numbers) {
         double total = 0;
         for (Number number : numbers) {
@@ -2070,38 +1885,173 @@ public class GenericExamples {
         return total;
     }
 
-    static void addDefaults(List<? super Integer> target) {
-        target.add(0);
-        target.add(1);
+    static void addOne(List<? super Integer> target) {
+        target.add(1); // 可以；取出只能当 Object 用
+    }
+    ```
+
+    - `?` 表示“某个未知类型”；`<T>` 表示“多个位置绑定成同一个类型”。
+    - 同时既要取又要放同一种元素时，不要用通配符，改用 `List<T>` 或泛型方法（如 `copy`）。
+
+- 通配符捕获（capture）
+
+    编译器遇到 `List<?>` / `List<? extends Number>` 时，会为这个“未知类型”生成一个**捕获型**（可以理解为临时的、匿名的类型变量）。它只在该次类型检查里有效，所以会出现：
+
+    - 不能把一个 `List<?>` 的元素直接塞进另一个 `List<?>`（两边的 `?` 各自捕获，编译器不能证明是同一类型）。
+    - 报错信息里常见 `capture#1-of ?`，指的就是这个捕获型，不是让你在源码里手写 `capture`。
+
+    需要在方法体里对通配符列表做“同类型”操作时，用**捕获助手**：把通配符参数交给一个带命名类型形参的私有泛型方法，让编译器把捕获型固定成 `T`：
+
+    ```java
+    static void reverse(List<?> list) {
+        revHelper(list); // 把 List<?> 交给带 <T> 的助手
     }
 
-    static <T> void copy(List<? extends T> src, List<? super T> dest) {
-        for (T item : src) {
-            dest.add(item);
+    private static <T> void revHelper(List<T> list) {
+        // 此处 T 已确定：可 get/set 同一列表内的元素
+        for (int i = 0, j = list.size() - 1; i < j; i++, j--) {
+            T tmp = list.get(i);
+            list.set(i, list.get(j));
+            list.set(j, tmp);
+        }
+    }
+    ```
+
+    这不是绕过泛型安全，而是把“未知但固定”的捕获型显式命名，便于在同一列表内操作。
+
+- 类型擦除与常见限制
+
+    泛型主要在编译期工作：编译器先检查类型，再把参数化类型和类型变量转换为 JVM 使用的普通类型。类型擦除不等于“全部变成 `Object`”。
+
+    | 源码 | 擦除后 |
+    | --- | --- |
+    | `List<String>` | `List` |
+    | 无上界的 `T` | `Object` |
+    | `<T extends Number>` 中的 `T` | `Number` |
+    | `<T extends Number & Comparable<T>>` 中的 `T` | 第一个上界 `Number` |
+
+    ```java
+    // 源码
+    Box<Integer> box = new Box<>();
+    Integer value = box.get();
+
+    // 擦除后可近似理解为
+    Box box = new Box();
+    Integer value = (Integer) box.get(); // 编译器补上强转
+    ```
+
+    - `List<String>` 和 `List<Integer>` 在运行期都是同一个 `List` 类；`m(List<String>)` 和 `m(List<Integer>)` 也都会擦除为 `m(List)`，所以不能同时重载。
+    - 擦除导致重写前后的方法签名不一致时，编译器会生成桥接方法进行适配，保证重写和多态仍然有效。
+
+        >桥接方法是编译器自动生成的隐藏方法，用来在泛型擦除后仍保持重写与多态：保留父类擦除后的方法签名（如 `Object get()`），内部再转调子类真实实现（如 `String get()`）。不是业务代码要写的东西。
+    - class 文件可以保留声明处的泛型签名供反射读取，但普通对象通常不知道自己的实际类型实参。
+
+        >普通对象（实例）：由于泛型擦除，运行期通常只知道自己是 Box、ArrayList 等原始类型，而不知道自己最初是 Box<String>、Box<Integer> 或 ArrayList<String>。
+
+    | 写法 | 问题 |
+    | --- | --- |
+    | ❌ `new T()` | 擦除后不知道要创建哪个具体类型 |
+    | ❌ `T.class`、`List<String>.class` | 运行期没有对应的具体 `Class` 对象 |
+    | ❌ `obj instanceof List<String>` | 运行期无法检查 `String`，只能判断 `obj instanceof List<?>` |
+    | ❌ `new List<String>[10]` | 数组在运行期检查元素类型，与泛型擦除冲突 |
+
+- 原始类型、堆污染与使用建议
+
+    - 原始类型 `List` 只为兼容旧代码保留；新代码应使用 `List<T>`、`List<?>` 或具体参数化类型。
+    - 原始类型、未经检查的强转和泛型可变参数可能把错误类型混入集合，称为**堆污染**；错误往往在稍后读取时表现为 `ClassCastException`。
+    - 不要随意忽略 unchecked 警告。确需使用 `@SuppressWarnings("unchecked")` 时，应限制在最小作用域，并确认数据来源安全。
+    - 返回值和字段尽量使用明确的泛型类型，避免原始类型和不必要的通配符 `?`。
+    - 如果多个位置之间没有真实的类型关系，就不必为了“通用”而增加泛型。
+
+<details>
+<summary>e.g. </summary>
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class GenericExample {
+    interface Converter<T, R> {                 // 泛型接口
+        R convert(T value);
+    }
+
+    record Pair<K, V>(K key, V value) {}        // 泛型记录
+
+    static class Box<T extends Number & Comparable<T>> { // 泛型类和多重上界
+        private final T value;
+
+        <U> Box(U value, Converter<U, T> converter) { // 泛型构造器，U 独立于类的 T
+            this.value = converter.convert(value);
+        }
+
+        T get() { return value; }
+    }
+
+    public static void main(String[] args) {
+        Box<Integer> box = new Box<>("100", Integer::valueOf); // T 为 Integer，U 为 String
+        var pair = new Pair<>("score", box.get());              // diamond + var
+
+        List<Integer> source = List.of(pair.value());
+        List<Number> target = new ArrayList<>();
+        copy(source, target);                       // extends 读取，super 写入
+
+        Number first = first(target);               // 泛型方法推断 T 为 Number
+        printSize(target);                          // List<?>：元素类型未知
+        System.out.println(first);                  // 100
+
+        // List<Number> wrong = source;              // ❌ 泛型不变
+        Class<?> a = new ArrayList<String>().getClass();
+        Class<?> b = new ArrayList<Integer>().getClass();
+        System.out.println(a == b);                  // true：类型实参被擦除
+    }
+
+    static <T> T first(List<T> list) {
+        return list.get(0);
+    }
+
+    static <T> void copy(List<? extends T> source, List<? super T> target) {
+        for (T item : source) {
+            target.add(item);
         }
     }
 
+    static void printSize(List<?> list) {
+        System.out.println(list.size());
+    }
 }
 ```
 </details>
 
 ### 注解、反射
-1. 注解（Annotation）
 
-    注解是写在声明或类型使用位置上的元数据，本身不直接改变业务逻辑；真正读取和执行规则的是编译器、注解处理器、框架或反射代码。
+注解负责“标记”，反射负责在**运行期**读取类型结构和操作对象。两者经常配合，但彼此独立。
 
-    ```java
-    @注解名
-    @注解名(值)
-    @注解名(参数名 = 值)
-    ```
+| 概念 | 作用 | 谁处理 |
+| --- | --- | --- |
+| 注解（Annotation） | 给类、方法、字段、参数或类型附加元数据 | 编译器、注解处理器、框架或反射代码 |
+| 反射（Reflection） | 在运行期读取类型结构、创建对象、访问成员 | 应用程序、框架或通用工具 |
 
-    - 常见用途：编译器检查（`@Override`）、过时提示（`@Deprecated`）、抑制警告（`@SuppressWarnings`）、编译期代码生成（Lombok、MapStruct）、运行期框架配置（Spring、JUnit）、文档说明（`@Documented`）。
-    - 常见内置注解：`@Override`、`@Deprecated`、`@SuppressWarnings`、`@SafeVarargs`、`@FunctionalInterface`、`@Serial`、`@Native`。
-    - 元注解：`@Target` 限定使用位置；`@Retention` 限定保留阶段；`@Documented` 写入 Javadoc；`@Inherited` 只让类上的注解可被子类继承；`@Repeatable` 允许同一位置重复使用。
-    - `@Retention`：`SOURCE` 只保留源码；`CLASS` 写入 `.class` 但运行期一般不可读，是默认策略；`RUNTIME` 运行期可通过反射读取。
-    - `@Target`：常用 `TYPE`、`FIELD`、`METHOD`、`PARAMETER`、`CONSTRUCTOR`、`LOCAL_VARIABLE`、`ANNOTATION_TYPE`、`PACKAGE`、`MODULE`、`RECORD_COMPONENT`、`TYPE_PARAMETER`、`TYPE_USE`。
-    - 注解接口用 `@interface` 定义；`@interface` 是定义语法，不是使用注解；`@注解名` 才是使用注解。
+>元数据：描述其他数据的数据，它不参与业务逻辑，而是告诉编译器、JVM 或框架如何理解、检查或处理某个类、方法、字段等程序元素
+
+#### 注解（Annotation）
+
+注解只保存信息，不会自己执行逻辑。完整过程是：**声明注解 → 标注程序元素 → 读取注解 → 读取方执行规则**。
+
+```java
+@注解名
+@注解名(值)
+@注解名(参数名 = 值)
+```
+
+| 读取方 | 典型作用 | 示例 |
+| --- | --- | --- |
+| 编译器或开发工具 | 校验代码、提示过时、抑制警告 | `@Override`、`@Deprecated`、`@SuppressWarnings`、`@SafeVarargs`、`@FunctionalInterface`、`@Serial`、`@Native` |
+| 注解处理器 | 编译期检查或生成代码 | Lombok、MapStruct |
+| 框架或反射代码 | 运行期读取配置并执行规则 | Spring、JUnit、自定义注解 |
+
+1. 自定义注解
+
+    使用 `@interface` 声明注解接口，使用时才写 `@注解名`：
 
     ```java
     import java.lang.annotation.ElementType;
@@ -2109,109 +2059,262 @@ public class GenericExamples {
     import java.lang.annotation.RetentionPolicy;
     import java.lang.annotation.Target;
 
-    @Target({ElementType.FIELD, ElementType.PARAMETER})
+    @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     @interface Label {
-        String value();                  // 使用时可写 @Label("用户名")
+        // 注解元素
+        String value();
         boolean required() default true;
     }
 
     class User {
         @Label(value = "用户名", required = false)
         private String name;
+
+        User(String name) {
+            this.name = name;
+        }
+
+        String hello(String prefix) {
+            return prefix + name;
+        }
     }
     ```
 
-    - 注解元素规则：元素写成无参数方法；不能写方法体；可用 `default`；返回值只能是基本类型、`String`、`Class`、枚举、注解接口，或这些类型的一维数组；元素名为 `value` 且其他元素有默认值时，可省略 `value =`。
-    - 反射读取：只有 `@Retention(RetentionPolicy.RUNTIME)` 的注解才能稳定通过 `getAnnotation()`、`getDeclaredAnnotations()` 读取。
-    - 使用边界：注解适合描述元数据，不适合承载复杂业务流程；框架能读到注解，不代表 Java 语言会自动执行逻辑。
-1. 反射（Reflection）
+    - 注解元素是无参数、无方法体的方法，可以用 `default` 提供默认值。
+    - 元素返回值只能是基本类型、`String`、`Class`、枚举、注解接口，或这些类型的一维数组。
+    - 元素名是 `value` 且其他元素都有默认值时，`@Label(value = "用户名")` 可简写为 `@Label("用户名")`。
 
-    反射是在运行期以 `Class` 为入口读取类型元信息，并通过 `Field`、`Method`、`Constructor` 等对象间接访问字段、调用方法或调用构造器的机制。它把原本需要在编译期写死的类型操作延迟到运行期，常被框架用于扫描类、按配置创建对象、依赖注入、序列化 / 反序列化、ORM 映射、测试工具、插件系统和动态代理；代价是破坏封装、降低可读性、增加运行期开销，普通业务代码应少用。
+1. 元注解
 
-    >ORM（Object-Relational Mapping，对象关系映射）：数据访问技术，程序里操作的是对象，数据库里存的是表，ORM 负责把两者对应起来。JDBC 是底层 API，MyBatis 是 SQL Mapper，MyBatis-Plus 是 MyBatis 增强，JPA/Hibernate 才是更典型的 ORM。
+    元注解用于约束“注解本身”：
 
-    >框架关系：很多 Java 框架会在基础设施层使用反射读取注解、扫描类型、创建对象、注入依赖、调用方法或做对象映射，但不能说“所有框架底层都是反射”。框架还可能依赖接口、多态、配置解析、编译期注解处理、运行期字节码生成、代码生成或约定规则；反射只是常见手段之一。
+    | 元注解 | 作用 |
+    | --- | --- |
+    | `@Target` | 限定注解可以标在哪里；不写则几乎可用于所有声明位置 |
+    | `@Retention` | 决定注解保留到哪个阶段；**自定义注解默认是 `CLASS`** |
+    | `@Documented` | 让注解出现在 Javadoc 中 |
+    | `@Inherited` | 仅当注解放在**类**上时，子类的 `Class` 查询可继承到该注解；对接口、字段、方法无效，也不覆盖方法重写 |
+    | `@Repeatable` | 允许同一位置重复使用同一种注解 |
 
-    - 核心模型
+    | `@Retention` 策略 | 保留范围 | `getAnnotation()` 等反射 API |
+    | --- | --- | --- |
+    | `SOURCE` | 只在源码（如 `@Override`） | ❌ 读不到 |
+    | `CLASS`（默认） | 写入 `.class`，加载后通常丢掉注解数据 | ❌ 读不到 |
+    | `RUNTIME` | 保留到运行期 | ✅ 可读 |
 
-        | 层级 | 含义 | 关键点 |
-        | --- | --- | --- |
-        | 类型元信息 | `Class<T>` 表示 JVM 中已加载类型的运行期描述 | 同一个类型在同一个类加载器下通常只有一个 `Class` 对象；不同类加载器加载的同名类不是同一个运行期类型 |
-        | 结构元信息 | `Field`、`Method`、`Constructor` 描述字段、方法、构造器 | 这些对象只是结构描述，不等于字段值、方法执行结果或对象实例 |
-        | 运行期操作 | 通过 `Field` 对象的 `get(obj)` / `set(obj, value)`、`Method` 对象的 `invoke(obj, args...)`、`Constructor` 对象的 `newInstance(args...)` 执行访问、调用、创建 | 实例字段和实例方法必须传入目标对象；构造器只能创建新对象，不能反向找到堆里已有对象 |
+    Spring、校验、自定义业务注解要在运行期生效时，必须显式写 `@Retention(RUNTIME)`；只写 `@Target` 忘了 Retention，默认是 `CLASS`，反射读不到。
 
-        >`Type#member` 是文档引用写法，不是 Java 调用语法；本文优先写成 `Field` 对象的 `get(...)` / `set(...)` 方法，避免和 `field.get(obj)` 这类真实代码混淆。
+    `@Target` 常用值有 `TYPE`、`FIELD`、`METHOD`、`PARAMETER`、`CONSTRUCTOR`；其他值包括 `LOCAL_VARIABLE`、`ANNOTATION_TYPE`、`PACKAGE`、`MODULE`、`RECORD_COMPONENT`、`TYPE_PARAMETER` 和 `TYPE_USE`。`TYPE_USE` 表示几乎所有使用类型的位置。
 
-    - 获取 `Class` 的入口
+    >注解适合描述元数据，不适合承载业务流程。`getDeclaredAnnotation` 只看当前元素自己声明的注解；带 `@Inherited` 的类注解用 `getAnnotation` 才可能从父类查到。
 
-        | 入口 | 示例 | 含义 |
-        | --- | --- | --- |
-        | 类字面量 | `String.class` | 编译期已知类型，直接拿类型对应的 `Class` |
-        | 类名加载 | `Class.forName("java.lang.String")` | 通过全限定类名查找并加载类型，默认会触发类初始化 |
-        | 数组类型 | `int[].class`、`String[][].class` | 数组本身也是类型，元素类型和维度共同决定数组 `Class` |
-        | 基本类型 | `int.class`、`void.class` | 基本类型和 `void` 也有 `Class`，但没有普通对象实例成员 |
-        | 对象实例 | `"abc".getClass()` | 通过已有对象拿它的运行期实际类型；这只是拿 `Class`，不是已经对实例字段或方法做了反射操作 |
+#### 反射（Reflection）
 
-        ```java
-        // 从类型入口拿 Class
-        Class<String> c1 = String.class;
-        Class<?> c3 = Class.forName("java.lang.String");
-        Class<int[]> c4 = int[].class;
-        Class<Integer> c5 = int.class;
+反射把类、构造器、字段和方法表示为运行期对象，使程序可以查询类型结构、创建对象和访问成员。它补齐了 Java 普通语法无法在运行期按名称操作未知类型的能力，常用于框架扫描、依赖注入、序列化、ORM、测试工具和插件。
 
-        // 从实例入口拿运行期 Class
-        Class<?> c2 = "abc".getClass();
-        ```
+- <details>
 
-        >`Class` 描述类型结构，例如字段、方法、构造器、注解、父类和接口；但 `Class` 不持有对象实例，也不能自动枚举 JVM 堆中已经存在的对象。要反射操作某个实例，必须先拿到目标对象引用，再结合字段、方法或构造器元信息操作这个对象。
+    <summary>反射的「动态性」</summary>
 
-    - 常用能力按使用场景记：
+    “动态”不是指对象会自动变化，而是指：**类名、构造器、字段名或方法名可以推迟到运行期再确定。**
 
-        - 运行期判断类型关系时，用 `obj.getClass()` 拿对象的实际类型，用 `clazz.isInstance(obj)` 判断对象是否属于某个类型，用 `targetType.isAssignableFrom(sourceType)` 判断一个类型能否赋给另一个类型。普通业务代码优先用接口、多态和 `instanceof`，反射判断更适合框架校验和通用工具。
+    | | 普通调用 | 反射调用 |
+    | --- | --- | --- |
+    | 确定时间 | 编译期写明 `new User(...)`、`user.hello(...)` | 运行期根据名称查找类型和成员 |
+    | 错误发现 | 编译器检查名称和参数类型 | 名称或参数不匹配通常到运行期才报错 |
 
-        - 读取类型结构时，用 `getName()`、`getSuperclass()`、`getInterfaces()`、`getModifiers()` 读取 JVM 保存的类名、父类、接口和修饰符信息。反射读不到源码注释，也不一定能读到局部变量名，因为这些信息编译后可能根本不存在。
+    ```java
+    // 类名和方法名可以来自启动参数或配置文件
+    String className = args[0];  // main() 的第一个启动参数
+    String methodName = args[1]; // main() 的第二个启动参数
 
-        - 读取字段、方法、构造器时，先区分 `public` 视角和本类声明视角：`getFields()` / `getMethods()` 会包含继承来的 `public` 字段和方法；构造器不继承，`getConstructors()` 只取本类 `public` 构造器。`getDeclaredFields()`、`getDeclaredMethods()`、`getDeclaredConstructors()` 只取本类声明的结构，包含 `private`，不包含继承成员。
+    Class<?> type = Class.forName(className);
+    Object user = type.getDeclaredConstructor(String.class).newInstance("Tom");
+    Method method = type.getDeclaredMethod(methodName, String.class);
+    Object result = method.invoke(user, "用户名: ");
+    ```
 
-        - 执行运行期操作时，`getDeclaredConstructor(...).newInstance(...)` 是调用构造器创建新对象，不是查找堆里已有对象；`field.get(obj)` / `field.set(obj, value)` 是读写字段，实例字段要传目标对象，静态字段可传 `null`；`method.invoke(obj, args...)` 是调用方法，实例方法要传目标对象，静态方法可传 `null`，被调用方法抛出的异常会被包进 `InvocationTargetException`。
+    只要运行期提供的类型满足约定，同一段代码就能处理不同类型；代价是名称、参数或权限问题可能到运行期才暴露。
 
-        - 读取注解时，用 `getAnnotation()`、`getDeclaredAnnotations()` 等方法；只有 `@Retention(RetentionPolicy.RUNTIME)` 的注解才能在运行期稳定读取。读取泛型签名时，用 `getGenericSuperclass()`、`getGenericInterfaces()`、`getGenericType()` 等方法；这些 API 只能读声明处保留的泛型签名，不能恢复普通对象被类型擦除后的运行期实参。
+    >多态在编译期已经知道接口和方法名，只在运行期选择具体实现；反射连类型名或方法名也可以到运行期再确定。
 
-        - 运行期处理数组时，用 `Array.newInstance()`、`Array.get()`、`Array.set()`，适合元素类型或维度到运行期才知道的场景。需要运行期创建接口代理时，用 `Proxy.newProxyInstance()` 配合 `InvocationHandler`；JDK 动态代理主要代理接口，类代理通常依赖 CGLIB、Byte Buddy 等字节码工具。
+    </details>
+
+><details>
+><summary>Java 与 JavaScript 的反射对比</summary>
+>
+>两者都能在运行期查看对象或类型，并按名称读写成员、调用方法或创建对象。
+>
+>| 对比点 | Java | JavaScript |
+>| --- | --- | --- |
+>| 语言特点 | 静态类型语言，反射是一套独立的运行期机制 | 动态类型语言，`obj[key]` 本身就能动态访问属性 |
+>| 主要入口 | `Class`、`Constructor`、`Field`、`Method` | `Object`、`Reflect`、`Proxy` |
+>| 类型与元数据 | 可读取 class 文件保留的类型结构、运行期注解和部分泛型声明 | 没有 Java 那样统一的类成员类型和注解元数据；TypeScript 类型通常在编译后擦除 |
+>| 访问边界 | 受访问控制和模块规则限制 | 普通属性通常可查询，`#private` 私有字段不能直接反射访问 |
+>
+>`Reflect` 只是 JavaScript 反射能力的一部分；属性访问、原型查询和 `Proxy` 也体现了反射。
+></details>
+
+- 理解反射中的四类对象
+
+    | 对象 | 描述什么 | 如何执行操作 |
+    | --- | --- | --- |
+    | `Class<User>` | `User` 类型，不是 `User` 实例 | 查询类型和成员 |
+    | `Constructor<User>` | 构造器，不是创建出的对象 | `newInstance(...)` 创建对象 |
+    | `Field` | 字段声明，不是某个实例的字段值 | `get(...)`、`set(...)` 读写字段 |
+    | `Method` | 方法声明，不代表方法已经执行 | `invoke(...)` 调用方法 |
+
+    同一个 `Field` 或 `Method` 可以操作多个 `User` 实例，因此它描述的是类的成员，不绑定某个具体对象。
+
+1. 取得 `Class`
 
     ```java
     import java.lang.reflect.Constructor;
     import java.lang.reflect.Field;
     import java.lang.reflect.Method;
 
-    class User {
-        private String name;
-
-        public User(String name) {
-            this.name = name;
-        }
-
-        public String hello(String prefix) {
-            return prefix + name;
-        }
-    }
-
     Class<User> type = User.class;
-    Constructor<User> constructor = type.getDeclaredConstructor(String.class);
-    User user = constructor.newInstance("Tom");
-
-    Field field = type.getDeclaredField("name");
-    field.setAccessible(true);          // 尝试绕过访问检查，模块边界下不一定成功
-    field.set(user, "Jerry");
-
-    Method method = type.getDeclaredMethod("hello", String.class);
-    Object result = method.invoke(user, "Hi, ");
     ```
 
-    - 关键边界：`setAccessible(true)` / `trySetAccessible()` 只是尝试放开 Java 语言访问检查；Java 9 之后模块系统会加强封装，跨模块反射访问不一定成功。反射也不能绕过类型擦除、不能凭 `Class` 找到已有对象、不能自动保证编译期类型安全。
-    - 常见异常：`ClassNotFoundException`、`NoSuchFieldException`、`NoSuchMethodException`、`InstantiationException`、`IllegalAccessException`、`InvocationTargetException`、`IllegalArgumentException`、`SecurityException`。
-    - 使用哲学：反射适合写通用框架、工具和基础设施，不适合替代正常业务建模。业务逻辑优先使用接口、多态、泛型、枚举、注解配置和显式 API；确实要用反射时，应把反射代码隔离在少数边界层，缓存重复查询到的 `Class` / `Field` / `Method`，集中处理异常，尽早失败，并用测试覆盖字段名、方法名、构造器签名这类运行期才暴露的问题。
+    `User.class` 只是取得描述 `User` 类型的 `Class<User>`，不会创建 `User` 对象。普通类、接口、枚举、记录、注解接口、数组和基本类型都可以使用 `.class`；参数化类型 `List<String>.class` 和类型变量 `T.class` 不可以。
+
+    | 方式 | 示例 | 特点 |
+    | --- | --- | --- |
+    | 类字面量 | `User.class` | 编译期已知类型，得到 `Class<User>` |
+    | 已有对象 | `user.getClass()` | 取得非 `null` 对象的运行期实际类型 |
+    | 类的全限定名 | `Class.forName("com.example.User")` | 按名称加载并默认初始化类 |
+    | 指定类加载器 | `loader.loadClass("com.example.User")` | 使用指定的 `ClassLoader` 加载类，调用本身通常不触发初始化 |
+
+    ```java
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    Class<?> loadedType = loader.loadClass("com.example.User");
+    ```
+
+    - 数组、基本类型和 `void` 也有 `Class` 对象，通常使用 `String[].class`、`int.class`、`void.class`；`Class.forName("int")` 不可用。
+    - `Class.forName(name, false, loader)` 可以指定类加载器并禁止初始化；找不到类型时，`Class.forName()` 和 `loadClass()` 都会抛出 `ClassNotFoundException`。
+    - 嵌套类型的二进制名称使用 `$`，例如 `Class.forName("com.example.Outer$Inner")`。
+    - JVM 判断类型身份时同时考虑“全限定名 + 类加载器（`ClassLoader`）”；同名类由不同类加载器加载时仍是不同类型。
+
+1. 查看并判断类型
+
+    ```java
+    String simpleName = type.getSimpleName();  // User
+    String className = type.getName();         // User 或 com.example.User
+    Class<? super User> parent = type.getSuperclass();
+    Class<?>[] interfaces = type.getInterfaces();
+    int modifiers = type.getModifiers();
+
+    boolean a = type.isInstance(new User("Tom"));              // true
+    boolean b = Object.class.isAssignableFrom(User.class);      // true
+    ```
+
+    - `clazz.isInstance(obj)` 判断对象是否属于 `clazz` 表示的类型，是运行期版本的 `instanceof`。
+    - `target.isAssignableFrom(source)` 判断 `source` 类型的值能否赋给 `target` 类型的变量，阅读方向不能反过来。
+    - `isInterface()`、`isEnum()`、`isAnnotation()`、`isArray()`、`isPrimitive()`、`isRecord()`、`isSealed()` 可继续判断类型种类。
+
+1. 查找成员
+
+    ```java
+    Constructor<User> constructor =
+            type.getDeclaredConstructor(String.class);
+    Field field = type.getDeclaredField("name");
+    Method method = type.getDeclaredMethod("hello", String.class);
+    ```
+
+    这里只是取得三个成员的描述对象，还没有创建对象、读取字段或调用方法。查找重载方法和构造器时，必须按声明顺序提供准确的参数类型。
+
+    - `getFields()`、`getMethods()` 查找当前类型及继承得到的 `public` 成员；`getConstructors()` 只查找当前类的 `public` 构造器。
+    - `getDeclaredFields()`、`getDeclaredMethods()`、`getDeclaredConstructors()` 查找当前类型自己声明的所有访问级别成员，不包含继承成员。
+    - 成员对象可以继续查询名称、类型、修饰符、参数和异常；参数名只有使用 `-parameters` 编译后才可靠。
+
+1. 通过构造器创建对象
+
+    ```java
+    User user = constructor.newInstance("Tom");
+    ```
+
+    这相当于普通代码：
+
+    ```java
+    User user = new User("Tom");
+    ```
+
+    区别是普通写法在编译期确定构造器，反射在运行期根据参数类型查找并调用。接口、抽象类不能直接实例化；参数数量或类型不匹配也会失败。
+
+1. 读取注解并操作字段
+
+    ```java
+    Label label = field.getAnnotation(Label.class);
+
+    if (!field.trySetAccessible()) {
+        throw new IllegalAccessException("cannot access User.name");
+    }
+
+    Object oldValue = field.get(user); // Tom
+    field.set(user, "Jerry");
+    ```
+
+    - `field.get(user)` 返回字段值，类型统一表现为 `Object`；`field.set(user, value)` 要求值与字段类型兼容。
+    - 实例字段需要目标对象，静态字段可以传 `null`。
+    - 访问控制与「可访问性」是两层：
+
+        1. **语言访问级别**：`private` / 包可见 / `protected` / `public`。用 `getDeclaredField` 等可以**查到**非 public 成员，但默认仍按语言规则检查调用权限。
+        1. **反射压制检查**：`setAccessible(true)` 试图关闭上述检查；失败时抛 `InaccessibleObjectException`（Java 9+）。`trySetAccessible()` 语义相同，但失败时返回 `false`、不抛该异常，适合先探测再决定路径。
+        1. **模块边界（JPMS）**：即使压制语言检查，若目标类型所在**包未对该调用方 open**，深反射仍会被拒绝。常见场景：反射进 JDK 内部包（Java 16/17 起默认强封装）、或命名模块之间未 `opens … to …`。Classpath 上的未命名模块访问**应用自己的**私有成员通常仍可行；不要据此推断也能反射进 `java.base` 等 JDK 模块。
+        1. 运维侧可用 `--add-opens module/package=目标模块`（Classpath 代码目标常写 `ALL-UNNAMED`）临时放开；长期应优先公开 API，或在 `module-info` 里按需 `opens`，而不是全局关闭封装。
+
+    - 只有 `@Retention(RUNTIME)` 的注解才能被 `getAnnotation()` / `isAnnotationPresent()` 读到；`SOURCE` / `CLASS` 在这些 API 下都是“没有注解”。
+    - `getDeclaredAnnotation` 不查继承；类上带 `@Inherited` 的注解要用 `getAnnotation` 才可能从父类拿到。
+
+1. 调用方法
+
+    ```java
+    String result = (String) method.invoke(
+            user,
+            label.value() + ": "
+    );
+    System.out.println(result); // 用户名: Jerry
+    ```
+
+    这相当于普通调用：
+
+    ```java
+    String result = user.hello("用户名: ");
+    ```
+
+    - `invoke()` 的第一个参数是目标对象，后面是方法实参；调用静态方法时目标对象可以传 `null`。
+    - 反射调用的返回值统一表现为 `Object`；调用 `void` 方法时返回 `null`。
+    - 参数不匹配会抛出 `IllegalArgumentException`；目标方法内部的异常会包装在 `InvocationTargetException` 中，可通过 `getCause()` 取得原始异常。
+
+1. 读取泛型及其他运行期结构
+
+    | 需求 | API 与边界 |
+    | --- | --- |
+    | 读取声明处的泛型签名 | `getGenericSuperclass()`、`getGenericInterfaces()`、`getGenericType()` |
+    | 分析参数化类型 | `ParameterizedType.getActualTypeArguments()` |
+    | 创建或操作动态数组 | `Array.newInstance()`、`Array.get()`、`Array.set()` |
+    | 创建接口动态代理 | `Proxy.newProxyInstance()`、`InvocationHandler`；代理普通类通常需要字节码工具 |
+
+    反射能读取 class 文件中保留的泛型声明，但不能恢复普通对象因类型擦除而丢失的类型实参。例如 `ArrayList<String>` 和 `ArrayList<Integer>` 的对象在运行期都只对应 `ArrayList.class`。
+
+- 常见异常与使用边界
+
+    | 异常 | 常见原因 |
+    | --- | --- |
+    | `ClassNotFoundException` | 根据名称找不到类型 |
+    | `NoSuchFieldException`、`NoSuchMethodException` | 字段、方法或构造器名称、参数类型不匹配 |
+    | `IllegalAccessException` | 没有访问权限（含未成功 `setAccessible` 等） |
+    | `InaccessibleObjectException` | Java 9+：模块未 open 目标包，无法把成员设为可访问 |
+    | `InstantiationException` | 类型不能被实例化 |
+    | `IllegalArgumentException` | 目标对象或参数不匹配 |
+    | `InvocationTargetException` | 被调用方法或构造器内部抛出异常 |
+
+    反射不能绕过类型擦除，也不能凭 `Class` 枚举 JVM 堆中的已有对象；源码注释和局部变量名也不一定保存在 class 文件中。
+
+    需要比 `setAccessible` 更精细的访问控制时，可了解 `MethodHandles.Lookup()` / `privateLookupIn`：在模块规则允许的范围内查找与调用成员；它同样受 JPMS `opens` 约束，**不能**当作“无条件反射私有成员”的万能钥匙。业务代码仍应优先显式 API。
+
+    普通业务代码优先使用显式 API、接口和多态；确实需要反射时，应将它集中在少数边界层，缓存重复查询的 `Class`、`Field`、`Method`，统一处理异常，并测试只能在运行期发现的类名、成员名和参数签名。
 
 ### 常用 API 与进阶主题
 
@@ -2219,7 +2322,7 @@ public class GenericExamples {
 - 日期时间 API：优先用 `java.time`，如 `LocalDateTime`、`Instant`、`Duration`，少用旧的 `Date` / `Calendar`。
 - 集合类：`List` 有序可重复；`Set` 不重复；`Map` 存键值对；遍历 `Map` 常用 `entrySet()`。
 - IO 流：字节流处理二进制，字符流处理文本；资源关闭优先用 `try-with-resources`。
-- 多线程基础：先掌握 `Thread`、`Runnable`、线程池、锁、可见性、原子性，再深入并发工具类。
+- 多线程基础：先掌握 `Thread`、`Runnable`、线程池、锁、可见性、原子性，再深入并发工具类。进程内定时用 `ScheduledExecutorService`；业务日历式 cron、集群调度平台（如 XXL-JOB）再单独补。
 
 ---
 ## 后端工程与数据中间件
@@ -2227,135 +2330,159 @@ public class GenericExamples {
 ### 构建与依赖管理
 - **Maven**
 
-    Java 生态最常见的项目构建、依赖解析、插件执行和发布工具。
+    Java 项目构建与依赖管理工具：用 `pom.xml`（POM，Project Object Model，项目对象模型）描述项目，由插件完成编译、测试、打包和发布。
 
     1. 配置入口
 
-        - Maven 的最终行为由三类入口共同决定：`settings.xml` 负责本机/用户运行环境，`pom.xml` 负责项目构建模型，`mvn` 命令或 IDE 操作决定本次执行。
+        - 配置分工：`pom.xml` 管项目构建，`settings.xml` 管本机环境，`.mvn/` 管项目运行参数，命令行 / IDE 决定本次执行。
 
-            1. `settings.xml` 和 `pom.xml` 都是 XML，但根标签、schema、允许配置项和作用范围不同；不要把账号、代理、镜像等本机配置写进项目公共 `pom.xml`，也不要把依赖、插件构建规则放进 `settings.xml`。
-            1. IDE 的 Maven 版本、Profiles 选择、运行/调试配置通常保存在 IDE 本地配置中（如 `.idea` 或其他目录），跨设备、跨 IDE 不一定同步；`同步所有Maven项目` / `重新加载所有Maven项目` 本质是让 IDE 重新读取 `pom.xml`，刷新项目模型和依赖解析状态。
+            1. POM 与 settings 都是 XML，但 schema（元素与结构约束）不同：依赖、插件放 POM；账号、代理、镜像放 settings。
+            1. IDE 的 Maven 版本、JDK、settings 路径、Profiles 选择和运行配置通常保存在 IDE 本地配置中（如 `.idea` 或其他目录）。**同步 / 重载 Maven 项目**会重读 POM、解析下载依赖并更新 IDE 的模块、源码根和 classpath；不等于执行 `compile` / `package` / `install`，构建和运行需另行触发。
+            1. 运行参数：项目级 `.mvn/maven.config` 与环境变量 `MAVEN_ARGS` 提供传给 `mvn` 的命令行参数；`.mvn/jvm.config` 与 `MAVEN_OPTS` 提供**运行 Maven 进程**的 JVM 参数（不等于业务应用的 JVM 参数）。Maven 3.9.x 的 `maven.config` 中每个参数独占一行。
         1. 运行环境配置：[`settings.xml`](./settings.xml)
 
             >参考：<https://maven.apache.org/ref/3.9.15/maven-settings/settings.html>
 
-            1. 配置文件层级：用户级 `settings.xml` 通常位于 `${user.home}/.m2/settings.xml`；全局级 `settings.xml` 通常位于 Maven 安装目录的 `conf/settings.xml`；最终配置会合并生效，用户级配置优先级更高。
-            1. 根级配置：`localRepository` 指定本地仓库路径，默认 `${user.home}/.m2/repository`；`interactiveMode` 控制是否允许交互输入，默认 `true`；`offline` 控制是否离线构建，默认 `false`。
-            1. 仓库访问配置：`mirrors` 做远程仓库重定向；`servers` 保存仓库、镜像、发布目标认证；`proxies` 保存网络代理；这些配置属于本机运行环境，不应提交到公共项目 POM。
-
-                >私服可以设置“下载需要账号密码”，也可以只让发布需要账号密码；这是私服服务端权限控制决定的。仓库、镜像、发布目标认证使用 `servers/server` 凭证，Maven 按实际访问的仓库或镜像 `id` 匹配；网络代理认证才使用 `proxies/proxy` 凭证。
-            1. 本地环境扩展：`pluginGroups` 用于解析插件前缀；`profiles` / `activeProfiles` 用于注入本机差异，通常只适合放 `repositories`、`pluginRepositories` 和本地变量类 `properties`。
+            1. 层级：用户级 `${user.home}/.m2/settings.xml` 与全局级 `${maven.home}/conf/settings.xml` 合并，冲突项以用户级为主。
+            1. 根级配置：`localRepository` 指定本地仓库，默认 `${user.home}/.m2/repository`；交互开关 `interactiveMode` 默认 `true`，离线开关 `offline` 默认 `false`。
+            1. 仓库访问：`mirrors` 替换下载源，`servers` 提供仓库认证，`proxies` 配置网络代理及其认证；密码 / token 可用 `${env.变量名}` 注入，不提交真实凭证。
+            1. 环境扩展：`pluginGroups` 扩展插件前缀搜索的 groupId；`profiles` / `activeProfiles` 定义和激活环境配置。settings profile 仅支持 `id`、`activation`、`properties`、`repositories`、`pluginRepositories`。
         1. 项目构建模型：[`pom.xml`](./pom.xml)
 
             >参考：<https://maven.apache.org/ref/3.9.15/maven-model/maven.html>
 
-            1. 项目坐标：`groupId`、`artifactId`、`version`、`packaging`，用于唯一定位项目产物。
-            1. 核心区域：`properties` 管公共变量；`dependencies` 声明依赖；`dependencyManagement` 集中管理依赖元信息但不直接引入依赖；`build` / `plugins` / `pluginManagement` 管构建插件；`modules` 管多模块；`repositories` 管依赖拉取仓库；`distributionManagement` 管发布目标。
+            1. 坐标：`groupId:artifactId:version`（GAV）标识项目版本，制品还区分扩展名和 `classifier`。`packaging` 决定打包方式与默认插件绑定；依赖 `type` 决定制品类型，两者默认均为 `jar`，但 `type` 不总等于扩展名，如 `test-jar` 对应 classifier 为 `tests` 的 jar。
+            1. 核心区域：`properties` 定义 `${名称}` 属性；`dependencies` / `dependencyManagement` 声明 / 管理依赖；`build/plugins` / `build/pluginManagement` 配置 / 管理插件；`modules` 聚合模块；`repositories` / `pluginRepositories` 配置下载源，`distributionManagement` 配置发布目标。
             1. Maven 默认目录约定
 
-                <details>
-                <summary>“约定大于配置”</summary>
-
-                1. 标准场景下，遵守 Maven 约定，少写甚至不写配置。
-                1. Maven 用统一目录结构、生命周期、插件规则降低项目复杂度。
-                1. 偏离默认约定时，再通过 pom.xml 显式配置。
-                1. 它不是“不能配置”，而是“优先使用默认约定，配置只处理特殊情况”。
-                </details>
-
-                1. `pom.xml` 在项目根目录
-                1. `src/main/java` 放主程序 Java 源码
-                1. `src/main/resources` 放主程序资源配置（编译后进入 classpath）
-                1. `src/test/java` 放测试源码
-                1. `src/test/resources` 放测试资源
-                1. `target` 是构建输出目录。
+                >“约定大于配置”：沿用默认目录、生命周期和插件规则，按需覆盖；依赖 / 插件版本和 Java 编译目标仍应明确管理。
 
                 <details>
                 <summary>Maven 默认目录</summary>
 
                 ```text
                 my-maven-project/
-                ├── pom.xml                  # Maven 项目配置文件，项目根配置
-                │
+                ├── pom.xml                  # 项目配置
                 ├── src/
-                │   ├── main/                # 主程序代码
-                │   │   ├── java/            # 主程序 Java 源码
-                │   │   │   └── com/
-                │   │   │       └── example/
-                │   │   │           └── App.java
-                │   │   │
-                │   │   └── resources/       # 主程序配置文件资源文件，编译后进入 classpath
-                │   │       ├── application.properties
-                │   │       ├── logback.xml
-                │   │       └── static/
-                │   │
-                │   └── test/                # 测试代码
-                │       ├── java/            # 测试 Java 源码
-                │       │   └── com/
-                │       │       └── example/
-                │       │           └── AppTest.java
-                │       │
-                │       └── resources/       # 测试配置文件资源文件测试数据，测试时进入 test classpath
-                │           └── test-data.json
-                │
-                └── target/                  # Maven 构建输出目录，执行 mvn compile/package 后生成
-                    ├── classes/             # main/java 和 main/resources 编译后的结果
-                    ├── test-classes/        # test/java 和 test/resources 编译后的结果
-                    └── my-maven-project.jar # 打包产物，例如 jar/war
+                │   ├── main/
+                │   │   ├── java/            # 主程序源码
+                │   │   └── resources/       # 主程序资源
+                │   └── test/
+                │       ├── java/            # 测试源码
+                │       └── resources/       # 测试资源
+                └── target/                  # 构建输出
+                    ├── classes/             # 主程序 class 与资源
+                    ├── test-classes/        # 测试 class 与资源
+                    └── artifactId-version.jar # 默认 jar 文件名
                 ```
                 </details>
 
-                >Classpath（类路径）就是 Java 虚拟机（JVM）在运行程序时，用来寻找类（.class 文件）和资源文件（如 .xml、.yml、.properties、图片等）的“搜索目录”或“导航地图”。类似操作系统的`PATH`环境变量
+                >资源由资源插件按相对路径原样复制到输出目录，不经 Java 编译器编译；仅在开启 filtering 时替换文本中的 `${...}`（二进制文件不宜过滤）。Classpath（类路径）是查找类和资源的目录 / jar 路径，Maven 按 scope 组织编译、测试和运行的 classpath。
 
-            1. 多模块项目通常用父 `pom.xml` 的 `modules` 组织子模块，父工程常用 `packaging=pom` 并集中管理版本和公共插件配置；每个子模块再各自包含 `pom.xml` 与 `src/main` / `src/test` 目录；传统 `war` 项目还可能有 `src/main/webapp`。
-    1. 依赖、仓库与版本管理
+            1. **继承与聚合**：`parent` 继承公共配置，且只能有一个；`modules` 聚合模块参与构建，不自动建立继承或依赖。父 POM 与聚合 POM 常合一，使用 `packaging=pom`；模块间依赖仍用 `dependencies` 声明。
+            1. 父 POM 的 `relativePath` 默认 `../pom.xml`，`<relativePath/>` 关闭相对路径查找；无显式父 POM 仍继承 Super POM（Maven 内置的隐式父模型，提供默认插件绑定、中央仓库等）。纯父 POM / BOM 不需要源码；传统 `war` 项目可有 `src/main/webapp`。
+            1. 构建 profile：用 `-Pdev` 或 JDK、操作系统、属性、文件存在等条件激活；同一 POM 里若已有其他 profile 被激活，带 `activeByDefault` 的 profile 通常会停用。Maven profile 只影响构建期配置，不会自动激活 Spring 的运行期 profile。
+    1. <details>
+
+        <summary>依赖、仓库与版本管理</summary>
 
         1. 仓库类型
 
-            按解析机制，Maven 仓库先分为 **本地仓库** 和 **远程仓库**；中央仓库、第三方仓库、私服、依赖仓库、插件仓库、发布仓库都是远程仓库按来源或用途的细分；镜像仓库是访问重定向规则，不是新增依赖来源。
+            仓库分为 **本地** 与 **远程**；远程仓库再按来源或用途分类，同一服务可承担多种角色。
 
-            1. **本地仓库**：本机缓存和本机安装目录，默认 `${user.home}/.m2/repository`；远程下载的依赖、插件，以及 `mvn install` 安装的当前项目产物都会进入本地仓库。可在 `settings.xml` 的 `localRepository` 修改，也可用 `-Dmaven.repo.local=路径` 临时指定。
-            1. **远程仓库**：本地仓库之外、通过 URL 访问的 Maven 仓库统称，常见协议是 `https`，也可以是 `file` 等。
-            1. **中央仓库**：Maven 默认内置的公共远程仓库，仓库 `id` 通常是 `central`，地址是 `https://repo.maven.apache.org/maven2`；未额外配置仓库时，开源依赖通常从这里解析。
-            1. **第三方仓库**：中央仓库和本团队私服之外，由厂商、开源组织或其他平台维护的远程仓库；它是新的依赖来源，通常需要在 `repositories` / `pluginRepositories` 中显式配置，可能要求认证，也可能托管中央仓库没有的包。
-            1. **私服 / 内部仓库**：公司或团队自建的远程仓库，如 Nexus、Artifactory、Archiva；常用于缓存中央仓库、托管公司内部 jar、统一依赖来源和权限控制。
-            1. **依赖仓库**：解析普通项目依赖的远程仓库，由 `repositories` 配置。
-            1. **插件仓库**：解析 Maven 插件及插件依赖的远程仓库，由 `pluginRepositories` 配置。
-            1. **发布仓库**：`mvn deploy` 的上传目标，由 `distributionManagement` 配置；正式版本通常发布到 `repository`，快照版本通常发布到 `snapshotRepository`，不等同于拉取依赖用的 `repositories`。
-            1. **镜像仓库**：`settings.xml` 中 `mirrors` 配置的远程仓库替身；它用 `mirrorOf` 把匹配到的仓库请求改到镜像地址，常见值有 `central`、`*`、`external:*`、`*,!repoId`；同一个仓库最终只会选中一个镜像，聚合多个上游通常交给私服或仓库管理器。
+            1. **本地仓库**：缓存远程依赖 / 插件，保存 `install` 的产物；路径由 settings 的 `localRepository` 或 `-Dmaven.repo.local=路径` 指定。
+            1. **远程仓库**：通过 URL 访问，常用 `https`，也支持 `file` 等。按来源分为默认公共的**中央仓库** `central`（`https://repo.maven.apache.org/maven2`）、厂商或组织提供的**第三方仓库**，以及 Nexus、Artifactory 等**私服**（代理上游、托管内部制品、统一权限）。
+            1. 按用途在配置中分工：`repositories` 是依赖下载源，`pluginRepositories` 是插件及其依赖的下载源，`distributionManagement` 是 `deploy` 上传目标，settings 的 `mirrors` 替换匹配的下载源但不改变发布目标。
 
         1. 依赖解析逻辑与优先级
 
-            1. 解析顺序：先查本地仓库；本地没有，或 `SNAPSHOT` / 元数据按策略需要更新时，再查最终生效的远程仓库列表。
-            1. 远程仓库候选来自当前 POM、父 POM、激活的 profile、全局/用户 settings，以及 Super POM 内置的 `central`；最终结果用 `mvn help:effective-pom` 和 `mvn help:effective-settings` 查看。
-            1. 访问远程仓库前会先应用 `mirrors`：如果 `mirrorOf` 命中仓库 `id`，实际访问镜像地址；此时认证凭证匹配 `mirror.id`，不是原仓库 `id`。
-            1. `releases` / `snapshots` 控制仓库是否用于正式版本或快照版本；`updatePolicy` 控制检查频率；离线模式 `-o` 或 `offline=true` 只使用本地仓库；`-U` 强制检查快照依赖和远程元数据更新。
+            1. 先复用可用的本地制品，缺失或需检查更新时访问远程。本地仓库不是“有文件就能用”的简单缓存：解析器还会核对来源仓库、缓存的失败记录与元数据；目录里有 jar 不代表本次解析一定复用。
+            1. 远程仓库合并顺序：有效 settings → 当前构建的有效 POM（含父 POM、Super POM）→ 依赖路径上的 POM；激活的 profile 参与合并，同 id 的 settings 仓库覆盖 POM 仓库。
+            1. 下载前应用 `mirrors`：先精确匹配仓库 id，否则选首个匹配模式的镜像；同一仓库只选一个镜像，失败不自动回退原地址。
+            1. `releases` / `snapshots` 控制版本类型；`updatePolicy` 支持 `always`、`daily`（默认）、`interval:分钟`、`never`。`-o` 禁止远程访问；`-U` 强制检查更新的快照和缺失的 release，不会升级固定版本号。
 
         1. 配置方式
 
-            1. 只使用中央仓库：通常不需要写 `repositories`，Maven 会从 Super POM 内置的 `central` 解析依赖。
-            1. 项目共享依赖源：团队共同需要的第三方仓库或私服可写进项目 `pom.xml` 的 `repositories` / `pluginRepositories`；个人或机器差异更适合写在 `settings.xml` profile。
-            1. 镜像统一出口：写在用户级或全局级 `settings.xml` 的 `mirrors`；公司统一入口常用 `mirrorOf=*` 或 `external:*`，只替换中央仓库可用 `mirrorOf=central`。
-            1. 仓库认证：账号、密码、token、SSH key 写在 `settings.xml` 的 `servers`；拉取私服依赖、访问需登录镜像、`mvn deploy` 发布产物时才需要；`server.id` 必须匹配实际访问的 `repository`、`pluginRepository`、`distributionManagement` 或 `mirror` 的 `id`。
-            1. 发布目标：`mvn deploy` 不看 `repositories`，发布地址由 `pom.xml` 的 `distributionManagement` 决定；正式版本用 `repository`，快照版本用 `snapshotRepository`，认证仍由 `settings.xml` 的 `servers` 提供。
+            1. 仅用中央仓库通常无需配置，Super POM 已提供 `central`。
+            1. 团队共享下载源写 POM 的 `repositories` / `pluginRepositories`；机器差异写 settings profile。
+            1. `mirrorOf` 常用 `central`、`*`、`external:*`（排除本机与 `file`）、`*,!repoId`。`*` 要求镜像提供全部所需制品；多个镜像不会自动聚合，上游聚合交给私服。
+            1. 认证使用 `servers/server`，id 匹配实际仓库或镜像 id；下载 / 发布是否需要凭证由服务端决定。
+            1. 发布 release 用 `distributionManagement/repository`，快照优先用 `snapshotRepository`，未配置则回退到 `repository`；服务端须允许对应版本类型。
 
-        1. 依赖声明：普通依赖写在 `dependencies`；统一版本、scope、exclusions 等元信息写在父 POM、`dependencyManagement` 或 BOM（`type=pom`、`scope=import`）；`dependencyManagement` 不会自动引入依赖。
-        1. 依赖范围：常见有 `compile`、`provided`、`runtime`、`test`，少用 `system`；可用 `optional` 控制传递，用 `exclusions` 排除冲突依赖。
-        1. 版本仲裁：冲突通常按“路径最近优先”，路径相同再按声明顺序靠前优先；排查依赖冲突常用 `mvn dependency:tree`。
-        1. `SNAPSHOT` 表示开发中版本，Maven 可按策略检查更新；正式版本应尽量不可变，便于复现构建。
-        1. Maven 跨项目依赖通常认构建产物（jar），不是直接认另一个项目的源码；被依赖项目改动后，需要重新 `package` / `install`，或放到同一次 reactor 构建里。
+        1. 依赖声明与版本管理
 
-    1. 构建执行、生命周期与问题排查
+            1. `dependencies` 引入直接依赖，再递归解析其 POM 中的传递依赖；代码直接使用的库应显式声明。
+            1. `dependencyManagement` 管理版本、scope、exclusions 等默认值，可约束传递版本，但不引入依赖；父 POM 的 `dependencies` 则会被继承。
+            1. BOM 在 `dependencyManagement/dependencies` 中以 `type=pom`、`scope=import` 导入一组配套版本，再声明所需依赖；不继承 BOM 的插件配置。冲突时当前 POM 显式管理优先，其次通常先导入的 BOM 优先。
+            1. 管理匹配键为 `groupId + artifactId + type + classifier`；默认 `jar`、无 classifier 时通常只写 GA。项目侧的 `dependencyManagement` 管的是项目依赖树，不影响插件自身要下载的依赖。
 
-        1. Maven 有 `clean`、`default`、`site` 三套生命周期；常用默认生命周期阶段是 `validate`、`compile`、`test`、`package`、`verify`、`install`、`deploy`。
-        1. 生命周期阶段只定义顺序，真正执行编译、测试、打包、发布的是插件 goal；`packaging` 会影响默认插件绑定，如 `jar` 绑定 `jar:jar`，`war` 绑定 `war:war`，常见阶段还会绑定 `surefire:test`、`install:install`、`deploy:deploy` 等目标。
-        1. 常见构建配置包括 JDK 版本、编码、资源过滤、测试插件、打包插件、Spring Boot 插件、代码生成插件、静态检查插件；`jar` 常用于普通库或 Spring Boot 可执行包，`war` 常用于传统 Web 容器部署，`pom` 常用于父工程或 BOM。
-        1. `mvn` 基本格式：`mvn [全局选项] [生命周期阶段或插件目标] [系统属性]`，如 `mvn clean install`、`mvn dependency:tree`、`mvn spring-boot:run`。
-        1. 常用参数：`-s` 指定用户级 `settings.xml`，`-gs` 指定全局级 `settings.xml`，`-f` 指定 POM，`-P` 激活 profile，`-D` 传系统属性，`-o` 离线构建，`-U` 强制检查快照依赖更新。
-        1. 多模块 reactor 构建会按模块依赖关系排序；`-pl` 选择模块，`-am` 同时构建所选模块需要的依赖模块，常用于跨模块改动后的同次构建。
-        1. 阶段效果：`clean` 通常删除当前项目的 `target` 目录；`package` 生成 jar/war；`verify` 做集成测试或质量校验；`install` 把当前项目产物安装到本地仓库；`deploy` 发布到远程仓库，地址由 `distributionManagement` 决定，认证由 `settings.xml` 的 `servers` 提供。
-        1. 跳过测试：`-DskipTests` 跳过测试执行但仍编译测试代码；`-Dmaven.test.skip=true` 连测试编译也跳过。
-        1. 常用示例：`mvn -U -pl 项目路径 -am clean install -P环境 -Dmaven.test.skip=true`；`mvn -f 项目路径/pom.xml spring-boot:run -P环境 -Dmaven.test.skip=true`。日常优先用 IDE 的可视化操作（Profiles 选择、编辑配置、安装、运行或调试），排查或 CI 场景再显式写命令。
-        1. 问题排查：最终 POM 看 `mvn help:effective-pom`，最终 Maven 配置看 `mvn help:effective-settings`，构建异常重点看 lifecycle phase、plugin goal、profile、JDK 版本和仓库解析结果。项目可使用 Maven Wrapper（`mvnw` / `mvnw.cmd`）固定 Maven 版本。
+        1. 依赖范围与传递
+
+            | scope | 主代码编译 | 测试编译 / 运行 | 主代码运行 | 典型用途 |
+            | --- | --- | --- | --- | --- |
+            | `compile`（默认） | 是 | 是 | 是 | 通用库 |
+            | `provided` | 是 | 是 | 否，由环境提供 | 外部容器的 Servlet API |
+            | `runtime` | 否 | 是 | 是 | 经 JDBC 接口使用的驱动 |
+            | `test` | 否 | 是 | 否 | 单元测试框架 |
+            | `system` | 是 | 是 | 否，需自行提供 | `systemPath` 指定本机 jar，应避免 |
+            | `import` | 否 | 否 | 否 | 仅用于 BOM 导入 |
+
+            `provided`、`test` 不向下游传递；`compile`、`runtime` 的传递结果受路径上的 scope 组合影响。scope 决定 classpath，打包内容还取决于插件。
+
+            - `optional=true`：当前项目使用，下游需自行声明。
+            - `exclusions`：仅排除**当前这条依赖路径**上的指定传递依赖；同一坐标若仍从其他路径传入，仍会出现在依赖树中。
+
+        1. 版本仲裁：直接依赖显式版本优先于管理默认值；传递版本先受 `dependencyManagement` 约束，未管理时按“路径最近，同深度先声明”选择，**不是取最大版本**。如 `A → B → D:2.0` 与 `A → D:1.0`，选择 `1.0`。
+        1. `SNAPSHOT` 内容可变，远程快照通常以时间戳 / 构建号区分；release 应保持不可变。复现构建需固定依赖、插件、Maven 和 JDK 等版本。
+
+        </details>
+    1. 构建执行与生命周期
+
+        1. 生命周期分三条独立线：`clean`、`default`（日常构建）、`site`（站点文档）。执行某一阶段会先执行**同一条生命周期**上的前置阶段，因此 `package` 不会顺带执行 `clean`。下表按执行顺序列出常用入口（首行属 `clean` 线，其余属 `default` 线），其间的 `validate`、`process-resources` 等阶段日常可省略记忆。
+
+            | 阶段 | 效果与边界 |
+            | --- | --- |
+            | `clean` | 清理构建输出（通常为 `target`），不清空本地仓库（如 `~/.m2/repository`） |
+            | `compile` | 主代码 `.java` 编译成 `.class`，与复制来的主资源一同输出到 `target/classes`；不打包、不写入本地仓库 |
+            | `test` | 先把测试代码编译到 `target/test-classes`，再由 Surefire（默认）运行单元测试 |
+            | `package` | 打包。按 packaging 生成制品到 `target/`；普通 jar 默认不含测试代码，也不打入依赖 jar，Spring Boot 可执行包需 `spring-boot-maven-plugin` 的 `repackage` 把依赖重打进 fat jar；不写入本地仓库 |
+            | `verify` | 执行已绑定的校验，不自动配置集成测试；集成测试通常由 Failsafe 绑定到 `integration-test` 与 `verify`，因此跑集成测试用 `mvn verify`，只跑到 `package` / `integration-test` 可能漏掉测试后的清理与结果检查 |
+            | `install` | 将**本项目** POM、主制品和附加制品写入本地仓库（如 `~/.m2/repository`），供本机其他项目按坐标直接依赖 |
+            | `deploy` | 发布制品到远程仓库，不是启动应用 |
+
+        1. phase（阶段）定义顺序，插件 goal（目标）执行任务：如 `jar` 项目的 `compile` 默认绑定 `compiler:compile`，额外 goal 用 `executions` 绑定。直接调用 `dependency:tree` 等 goal 不代表完整构建，是否触发生命周期取决于该 goal。
+
+            `pluginManagement` 管理插件版本和配置，不新增执行；插件经 `build/plugins` 或默认生命周期绑定引入后才应用。关键插件版本应显式固定或由父 POM 管理。
+
+        1. 编译目标与编码：`mvn -v` 查看运行 Maven 的 JDK；JDK 9+ 编译优先用 `release` 约束语言、字节码和 Java SE API，`source` / `target` 不能阻止误用新 API。
+
+            ```xml
+            <properties>
+                <maven.compiler.release>17</maven.compiler.release>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+            </properties>
+            ```
+
+            编译 JDK 须支持目标版本，`maven-compiler-plugin` 须支持 `release`。若运行 Maven 的 JDK 与目标编译 / 测试 JDK 不同，可用 Toolchains（本机 `~/.m2/toolchains.xml` + POM 中 toolchain 配置）另行指定 JDK。JDK 8 搭配 Compiler Plugin 3.13.0+ 时，`release=8` 会改写成等价的 `source` / `target`。
+
+        1. 命令格式：`mvn [选项] [阶段或插件目标] [-D名称=值]`；`-D` 设置 Maven 用户属性，是否传给应用由插件配置决定。
+        1. 常用参数：`-s` / `-gs` 指定用户 / 全局 settings，`-f` 指定 POM，`-P` 激活 profile，`-o` 离线，`-U` 检查更新，`-B` 非交互（适合 CI），`-ntp` 隐藏下载进度，`-e` 打印异常栈，`-X` 打开调试日志。
+        1. 多模块一次构建时，Maven 用 reactor 按模块间依赖等关系排序：`-pl` 选模块（相对路径或 `:artifactId`），`-am` 追加所选模块需要的上游模块，`-amd` 追加依赖所选模块的下游模块。仅出现在 `dependencyManagement` / `pluginManagement` 中、未形成真实模块依赖的，不参与排序关系。同一次 reactor 构建可直接使用模块的构建结果；独立构建的本地项目联调，则需先 `install` 上游。
+        1. 跳过测试：`-DskipTests` 仍`测试编译`但`不跑 Surefire 执行`；`-DskipITs` 跳过 Failsafe 集成测试；`-Dmaven.test.skip=true` 同时`跳过测试编译和执行`。**Failsafe 3.6.0 起不直接响应 `skipTests`**（需用 `skipITs` 等），旧版或自定义绑定另核。日常校验不要默认跳过测试。
+        1. 常用示例（在项目根目录执行，`app`、`dev` 按实际模块 / profile 替换）
+
+            ```bash
+            mvn -v                          # Maven 版本与运行 JDK
+            mvn clean verify                # 清理、构建并校验
+            mvn -pl app -am install         # 构建 app 及上游模块，安装到本地仓库
+            mvn -Pdev package               # 用构建 profile 打包
+            mvn -B -ntp verify              # CI：非交互，隐藏下载进度
+            mvn -f app/pom.xml spring-boot:run -Dspring-boot.run.profiles=dev
+            ```
+
+            最后一条用 `spring-boot:run` 启动应用并指定 Spring 运行期 profile；要求该模块已配置 Boot 插件，且 `-pl` / `-am` 或本地仓库能解析上游依赖。
+
+        1. [Maven Wrapper](https://maven.apache.org/tools/wrapper/)：把 `mvnw`、`mvnw.cmd` 与 `.mvn/wrapper/` 提交进仓库，用 `./mvnw verify`（Windows：`mvnw.cmd verify`）按项目锁定的 Maven 版本执行构建，减少“本机 Maven 版本不一致”的问题；JDK、依赖和插件版本仍需另行固定与管理。
 
 - **Gradle**
 
@@ -2363,13 +2490,167 @@ public class GenericExamples {
 
 >对于多数后端初学者，先掌握 Maven 即可。
 
+### JDBC 与数据库访问演进
+
+>JDBC（Java Database Connectivity，Java数据库连接）是 Java SE 提供的数据库访问标准，Spring、MyBatis 等框架通常仍通过 JDBC 驱动访问数据库。
+>
+>调用链：**Java 程序 → JDBC API → 数据库驱动 → MySQL**。
+
+1. JDBC 基础
+
+    | 对象 | 作用 |
+    | --- | --- |
+    | `DriverManager` / `DataSource` | 获取数据库连接；实际项目优先使用带连接池的 `DataSource` |
+    | `Connection` | 表示一次数据库连接，并控制事务 |
+    | `PreparedStatement` | 预编译并执行带参数的 SQL，避免直接拼接参数 |
+    | `ResultSet` | 读取查询结果 |
+    | `SQLException` | 表示数据库访问异常 |
+
+    - 以 MySQL 为例的最简调用流程：
+
+        1. 添加 MySQL Connector/J 驱动；JDBC API 本身由 JDK 提供。
+        2. 加载驱动driver；JDBC 4 以后通常可以省略，由系统自动发现驱动。
+        3. 准备 JDBC URL、用户名、密码和 SQL。
+        4. 获取 `Connection`，再创建 `PreparedStatement`。
+        5. 执行 SQL：查询使用 `executeQuery()`，增删改使用 `executeUpdate()`。
+        6. 处理 `ResultSet`，最后释放结果集、语句和连接。
+
+        ```java
+        // 1. 加载驱动：JDBC 4+ 通常可省略
+        Class.forName("com.mysql.cj.jdbc.Driver");
+
+        // 2. 准备连接信息和 SQL
+        String url = "jdbc:mysql://localhost:3306/app";
+        String username = "root";
+        String password = "your_password";
+        String sql = "SELECT id, name FROM user WHERE id = ?";
+
+        // 3. 获取连接并创建 SQL 执行对象
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+            PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, 1L);
+
+            // 4. 执行 SQL 并处理查询结果
+            try (ResultSet result = statement.executeQuery()) {
+                while (result.next()) {
+                    long userId = result.getLong("id");
+                    String name = result.getString("name");
+                }
+            }
+        } // 5. try-with-resources 自动释放 ResultSet、PreparedStatement 和 Connection
+        ```
+
+2. JDBC 实际使用重点
+
+    | 问题 | 处理原则 |
+    | --- | --- |
+    | 资源释放 | 用 `try-with-resources` 关闭 `ResultSet`、`Statement` 和 `Connection`；连接池中的 `close()` 通常表示归还连接 |
+    | SQL 安全 | 值使用 `PreparedStatement` 占位符绑定；表名、列名和排序方向无法用 `?` 绑定，必须先做白名单校验 |
+    | 事务 | 同一事务的所有 SQL 必须共用同一个 `Connection`；默认常是自动提交（`autoCommit=true`），每条语句各自提交。要多语句原子成功/失败时：`setAutoCommit(false)` → 执行 → `commit()` / `rollback()` |
+    | 连接与并发 | 实际项目优先使用带连接池的 `DataSource`；不在多线程间共享 `Connection`、`Statement` 或 `ResultSet` |
+    | 可靠性与性能 | 按需设置查询超时、使用批处理；慢查询先检查 SQL、索引和执行计划，不要只调大连接池 |
+    | 配置与异常 | 账号密码放在环境变量或密钥管理中；记录必要的 SQL 上下文，但不记录密码和敏感参数 |
+
+    - <details>
+
+        <summary>池化技术与数据库连接池</summary>
+
+        - **池化（Pooling）**：是对一组可复用资源进行集中管理，核心流程是借出、使用和归还。
+
+            >- 产生原因：创建成本高或数量有限的资源，需要被频繁、并发使用；反复创建和销毁会增加延迟与系统开销。
+            >- 解决的问题：通过借用和归还来复用资源，降低创建成本；同时统一控制容量、等待、超时和回收，避免资源数量失控。
+            >
+            >    ```text
+            >    请求到来 → 从池中借出资源 → 使用资源 → 重置状态并归还
+            >    ```
+
+            - 常见例子有数据库连接池、线程池和 HTTP 连接池。只有创建成本较高、可重置且会反复使用的资源才适合池化，普通轻量对象不需要自建对象池。
+            - 池化复用的是“资源”；缓存复用的是“可重复读取的数据或结果”，两者不是同一个概念。
+
+        - **数据库连接池**：是池化技术的一种应用。建立数据库连接需要网络通信、身份验证和会话初始化；连接池在应用内管理一组可复用的连接，避免每次执行 SQL 都重新建立物理连接。
+
+            - `DataSource` 是获取连接的标准接口，是否使用连接池取决于它的具体实现。
+            - 每个请求通常独立借用一个 `Connection`，不是让多个线程共享同一个连接。
+            - `try-with-resources` 调用 `close()` 时，连接池通常把连接重置后收回，而不是立即断开数据库的物理连接。
+            - 事务从开始到提交或回滚会一直占用同一个连接，因此长事务也可能耗尽连接池。
+
+            | 常见配置（HikariCP 名） | 作用 |
+            | --- | --- |
+            | `maximumPoolSize` | 池内连接上限（含在用+空闲）；Boot 常写 `spring.datasource.hikari.maximum-pool-size`。默认常为 10，不是越大越好 |
+            | `minimumIdle` | 尽量维持的最少空闲连接；仅当它**小于** `maximumPoolSize` 时，`idleTimeout` 才有意义。固定大小池可两者相等 |
+            | `connectionTimeout` | **从池借连接**最多等多久（毫秒）；超时抛 SQLException。默认常 30s。这是“等池”，不是 SQL 执行多久 |
+            | `idleTimeout` | 空闲连接最多闲多久可被回收；默认常 10 分钟 |
+            | `maxLifetime` | 单条物理连接在池里的最长寿命；归还后可退役。应**短于**数据库 / 防火墙的空闲断连时间，默认常 30 分钟 |
+            | `validationTimeout` / 保活 | 借出前校验、keepalive 等，减少拿到已被服务端掐掉的连接 |
+
+            - 几种“超时”不要混：
+                - 池的 `connectionTimeout`：借不到连接就失败。
+                - JDBC / 语句查询超时、MyBatis 超时：单条 SQL 跑太久。
+                - `@Transactional(timeout=…)`：Spring 事务开始后的最长事务时间（秒级语义，且多在**新开事务**时生效）；到点标记回滚，与“借连接等多久”不是同一开关。
+                - HTTP 客户端 / 网关超时：调下游等多久，与数据库连接池无关。
+            - 连接池耗尽时，新请求会等待并最终在 `connectionTimeout` 失败。常见原因是连接未归还、慢 SQL、长事务，或池容量与并发量不匹配。
+            - 容量规划：`每应用实例 maximumPoolSize × 实例数 + 其他客户端` 必须低于库的 `max_connections`，并留运维余量。慢查询先修 SQL/索引，不要只靠调大池子。
+        </details>
+
+    - <details>
+
+        <summary>原生 JDBC 事务最小写法</summary>
+
+        ```java
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement debit = connection.prepareStatement(debitSql);
+                PreparedStatement credit = connection.prepareStatement(creditSql)) {
+                debit.executeUpdate();
+                credit.executeUpdate();
+                connection.commit();
+            } catch (SQLException error) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackError) {
+                    error.addSuppressed(rollbackError);
+                }
+                throw error;
+            }
+        }
+        ```
+
+        - 事务尽量短：不要在事务中等待用户输入或执行耗时的外部调用。
+        - 连接归还连接池前，驱动 / 池通常会恢复自动提交等会话状态；不要假设“上次事务关掉的 autoCommit 会留在下一次借出的连接上”。
+        - Spring 声明式事务（常见 `DataSourceTransactionManager`）大致等价于：从池取连接 → 绑到当前线程 → `setAutoCommit(false)` → 业务里的 JDBC / MyBatis 复用该连接 → 结束时 `commit`/`rollback` → 解绑并归还。没有外层事务时，每次访问往往各自取连接并按自动提交执行。
+        - 业务项目通常在 Service 用 `@Transactional`；是否生效仍取决于代理、异常类型与回滚规则。
+        </details>
+
+    >原生 JDBC 适合学习底层流程；实际项目通常交给连接池和持久层框架管理连接、异常与对象映射。
+
+3. 数据库访问方式的演进
+
+    >下面不是严格的版本替代关系，而是逐步增加的封装层；项目按复杂度选择即可。
+
+    | 阶段 | 解决的问题 | 仍需关注 |
+    | --- | --- | --- |
+    | 原生 JDBC | 统一 Java 访问不同数据库的接口 | 手动管理连接、SQL、参数和结果映射 |
+    | `DataSource` + 连接池 | 复用连接，控制连接数量 | SQL 与结果映射 |
+    | Spring JDBC：`JdbcTemplate` / `JdbcClient` | 减少资源关闭和异常处理样板代码 | 手写 SQL 与对象映射 |
+    | MyBatis | 用 Mapper 接口、注解或 XML 管理 SQL 和结果映射 | SQL 设计、索引和事务边界 |
+    | MyBatis-Plus | 在 MyBatis 上补充常用 CRUD 和条件构造 | 复杂 SQL 仍使用 MyBatis |
+    | JPA / Hibernate | 以对象关系映射为主，减少常规 SQL | 实体关系、生成 SQL 和性能 |
+    | Spring Boot | 自动装配所选技术及连接池，不是新的数据库访问规范 | 数据源配置和依赖版本兼容性 |
+
+    常见现代调用链：
+
+    ```text
+    Service → Mapper → MyBatis → DataSource / 连接池 → JDBC 驱动 → MySQL
+    ```
+
 ### Spring Boot 学习顺序
 
 >Spring Boot 不是绕开 Java Web 和 Spring，而是在常见 Web 项目里把容器、MVC、持久层、配置和启动方式整合起来。
 >
 >记忆主线：**请求怎么进来 → 对象谁来管 → 接口怎么写 → SQL 怎么跑 → Boot 怎么整合**。
 >
->学习顺序：**Java Web → Spring Framework → Spring MVC → MyBatis → Spring Boot**。
+>学习顺序：**JDBC → Java Web → Spring Framework → Spring MVC → MyBatis → Spring Boot**。
 
 1. Java Web：HTTP 与 Servlet 基础
 
@@ -2392,22 +2673,13 @@ public class GenericExamples {
         1. **传统部署边界**：Servlet 是 Java Web 的核心规范；Spring MVC 基于 Servlet 封装 Controller、参数绑定和返回值处理，Spring Boot 再整合内嵌容器与自动配置。
     1. **后端分层实践**：Servlet / Controller 接请求，Service 写业务，DAO / Mapper 访问数据库。
 
-        1. Servlet / Controller 负责入口，只做参数接收、校验、调用 Service、组织响应。
-        1. Service 负责业务规则，不直接拼 SQL。
-        1. DAO / Mapper 负责数据访问；DAO 是通用的数据访问对象概念，Mapper 通常指 MyBatis 的 SQL 接口。
+        1. Servlet / Controller 负责入口，只做参数接收、校验、调用 Service、组织响应。HTTP 契约包括路由、Method、DTO、校验和错误响应。
+        1. Service 负责业务规则，不直接拼 SQL。方法语义、事务边界、返回值、异常、幂等与并发约定都是业务契约。
+        1. DAO / Mapper 负责数据访问；DAO 是通用的数据访问对象概念，Mapper 通常指 MyBatis 的 SQL 接口。SQL 映射、参数与结果约定是数据访问契约。
 
             >1. DAO（Data Access Object，数据访问对象）：负责封装数据库操作。
-            >2. Mapper：MyBatis 的 Mapper 通常是接口，例如 `UserMapper`；方法对应 XML 或注解里的 SQL，运行时由 MyBatis 生成代理实现。
+            >2. Mapper：MyBatis 的 Mapper 通常是接口，例如 `UserMapper`；方法对应 XML 或注解里的 SQL，运行期由 MyBatis 生成代理实现。
         - 最小练习先做登录、退出、列表、新增，再迁移到 Spring MVC / Spring Boot。
-
-    ><details>
-    ><summary>对照只是帮助理解，不要完全等同：Java Web 多了 Servlet 规范、容器生命周期、线程模型、会话对象和 WAR 部署</summary>
-    >
-    >- Tomcat / Servlet 容器 ≈ HTTP Server + 应用组件生命周期管理。
-    >- Servlet / Controller ≈ Express 路由处理函数；`HttpServletRequest` / `HttpServletResponse` ≈ `req` / `res`。
-    >- Filter ≈ middleware；`JSESSIONID` ≈ session id cookie。
-    >- Controller → Service → Mapper ≈ router/controller → service → repository。
-    ></details>
 
 1. Spring Framework：核心容器
 
@@ -2415,16 +2687,7 @@ public class GenericExamples {
 
     - 总览：
 
-        Spring Framework 先按 6 个问题记；主线是**读定义、造对象、装依赖**，再扩展到生命周期、AOP 和事务。
-
-        1. **谁管对象**：IoC 容器按 `BeanDefinition` 创建和管理 Bean；业务代码少主动 `new`，改成声明自己需要什么。
-        1. **从哪注册**：XML、组件扫描、Java 配置、`@Import`、`FactoryBean`、Spring Boot 自动配置都能声明 Bean。
-        1. **怎么装配**：构造器、Setter、字段、普通方法、`@Bean` 方法参数、`ObjectProvider`、`@Lookup` 都能注入依赖。
-        1. **活多久**：常见作用域有 `singleton`、`prototype`、request、session、application、websocket；默认单例，同时要理解生命周期。
-        1. **怎么增强**：看 AOP 的代理、切面、通知、切点。
-        1. **事务怎么生效**：看事务边界、回滚规则和失效场景。
-
-        >实战顺序：先理解 IoC / DI / Bean，再看 AOP 和事务，最后补生命周期、扩展点和其他基础能力；注入方式通常推荐构造器注入 > Setter 注入 > 字段注入。
+        主线：**读定义 → 造对象 → 装依赖**，再补生命周期、AOP、事务。注入优先构造器 > Setter > 字段。
 
     1. **IoC 容器与 Bean：先理解“谁创建对象”**
 
@@ -2510,9 +2773,12 @@ public class GenericExamples {
                 - Spring Boot 项目优先引入 `spring-boot-starter-aop`，版本交给 Boot 依赖管理。
                 - 注解式 AOP 通常通过 `@EnableAspectJAutoProxy` 开启；Spring Boot 满足条件时可由自动配置开启。
             - 实现方式：Spring API 接口式、XML 自定义切面式、注解式；新项目通常用 `@Aspect`、`@Pointcut`、`@Before` / `@Around`。
-            - 代理机制：Spring AOP 可用 JDK 动态代理或 CGLIB；前者基于接口，后者基于运行期子类。
+            - 代理机制：Spring AOP 可用 JDK 动态代理（基于接口）或 CGLIB（基于子类）。Spring Boot 默认常开启类代理（`spring.aop.proxy-target-class=true`），有接口时也往往走 CGLIB；不要假设“有接口就一定是 JDK 代理”。
             - 生效边界：
-                - 必须通过代理对象调用目标方法，同类内部 `this.xxx()` 自调用会绕过代理。
+                - 必须通过**代理对象**调用目标方法，切面（含 `@Transactional`）才会介入。同类内部 `this.xxx()` 是目标对象直接调自己，**绕过代理**，内层注解等于没写。
+                - 常见改法（任选其一，按团队习惯）：把要增强的方法拆到另一个 Bean 再注入调用；或注入“自己”（另一个同类型 Bean / 接口引用）再调；或开启 `exposeProxy` 后经代理自调——`@EnableAspectJAutoProxy(exposeProxy = true)`（Boot 可用 `spring.aop.expose-proxy=true`），再 `(YourType) AopContext.currentProxy()` 调公开方法。`exposeProxy` **默认关闭**；未开启就取 `currentProxy()` 会失败。
+                - `exposeProxy` / `AopContext` 只解决“自调用要不要进代理”，不改变 `private` / `static` / `final` 方法或 `final` 类难以被 CGLIB 子类增强的限制。
+                - Spring AOP 是运行期代理，不是完整 AspectJ 织入；同类自调用在纯代理模型下本来就不会被拦截。真正的编译期/加载期织入能截到自调用，但业务项目多数不用那套。
                 - `private` 方法、`static` 方法、`final` 方法、`final` 类不适合作为代理增强目标。
             </details>
 
@@ -2532,11 +2798,51 @@ public class GenericExamples {
                 - 底层手动控制：直接使用 `PlatformTransactionManager` 的 `getTransaction`、`commit`、`rollback`；灵活但样板代码多。
                 - XML 声明事务：老项目中用 `<tx:advice>`、`<aop:config>` 或 `<tx:annotation-driven>` 配置。
                 - 响应式事务：WebFlux / R2DBC 场景使用 `TransactionalOperator`，不要直接套用阻塞式 JDBC 事务写法。
-            - 常用属性：`propagation`、`isolation`、`rollbackFor` / `noRollbackFor`、`timeout`、`readOnly`；`readOnly` 是只读提示，不应依赖它强制阻止写入。
-            - 默认回滚：默认对 `RuntimeException` 和 `Error` 回滚；受检异常默认不回滚，需要用 `rollbackFor` 指定。
-            - 隔离级别：`DEFAULT` 使用数据库默认级别；`READ_UNCOMMITTED`、`READ_COMMITTED`、`REPEATABLE_READ`、`SERIALIZABLE` 逐步增强隔离，实际效果受数据库实现影响。
+            - 常用属性：`propagation`、`isolation`、`rollbackFor` / `noRollbackFor`、`timeout`、`readOnly`。
+            - `readOnly`（官方定位是**提示**，不是写保护开关）：
+                - 文档写明：供运行时做只读优化；**不保证**写操作一定失败；事务管理器若不理解该提示，可能静默忽略。
+                - 常见 JDBC 路径（如 `DataSourceTransactionManager`）往往会在开事务时尝试 `Connection.setReadOnly(true)`，结束后再复位；具体库/驱动是否 accordingly 拒绝写、或只做优化，因实现而异（有的库会拒写，有的几乎无感）。
+                - JPA / Hibernate 路径还可能配合 flush 策略等只读优化，同样不是“绝对禁写”。
+                - 与 `isolation` 类似：多在**真正新开事务**时带上；内层只挂靠外层事务时，只读属性通常沿用外层。
+                - 正确用法：标明“这段业务预期只读、可优化”；真正禁止写入靠权限、SQL、库账号只读副本等，不要把 `readOnly=true` 当安全闸。
+            - 传播行为（`propagation`，默认 `REQUIRED`）。下表按 Spring `Propagation` / `TransactionDefinition` 语义：
+
+                | 值 | 已有事务时 | 没有事务时 | 备注 |
+                | --- | --- | --- | --- |
+                | `REQUIRED` | 加入当前事务 | 新建事务 | 最常见默认；内层若标记 rollback-only，通常整段物理事务都回滚 |
+                | `REQUIRES_NEW` | **挂起**外层，开独立新事务 | 新建事务 | 内层提交/回滚与外层物理分离；挂起能力依赖事务管理器（JTA 场景有额外要求） |
+                | `NESTED` | 在当前事务里嵌套（常映射为 JDBC **savepoint**） | 同 `REQUIRED` | 内层可回滚到保存点，外层仍可继续；开箱主要见于 `DataSourceTransactionManager`，不是所有管理器都支持 |
+                | `SUPPORTS` | 加入当前事务 | 非事务执行 | 不主动开事务 |
+                | `NOT_SUPPORTED` | 挂起当前事务，非事务执行 | 非事务执行 | |
+                | `MANDATORY` | 加入当前事务 | **抛异常** | 强制调用方已开事务 |
+                | `NEVER` | **抛异常** | 非事务执行 | 禁止在事务中调用 |
+
+            - `isolation` / `timeout` 等通常只在**真正新开事务**时生效；能新开事务的传播主要是：无事务时的 `REQUIRED`、以及 `REQUIRES_NEW`、`NESTED`。只“挂靠”已有事务时，隔离级别等一般沿用外层。
+            - 回滚规则（按 Spring 官方 *Rolling Back a Declarative Transaction*）：
+                - 未自定义规则时：`RuntimeException` 与 `Error`（及其子类）→ 标记回滚；受检异常（`Exception` 中非 `RuntimeException`）→ **默认提交**。
+                - 异常必须从带 `@Transactional` 的方法**向外抛到代理**后，拦截器才会按规则处理。方法内 `catch` 后正常返回 = 代理看到成功 → 默认 **commit**（除非业务里显式 `setRollbackOnly()`）。
+                - `rollbackFor` / `noRollbackFor`（及 ClassName 形式）按异常**类型及子类**匹配；可让受检异常也回滚，或让某些运行期异常不回滚。规则冲突时按 Spring 的“最具体匹配”裁决。
+                - 把运行期异常包成受检再抛、或把受检包成运行期再抛，会改变默认是否回滚——以**最终抛出的类型**为准（再叠加自定义规则）。
+                - Spring Framework 6.2+ 可用 `@EnableTransactionManagement(rollbackOn = ALL_EXCEPTIONS)` 把“未写自定义规则时的默认”改成几乎所有异常都回滚；方法上的 `rollbackFor` / `noRollbackFor` 仍优先。老项目不要假设已开启。
+            - 隔离级别（`isolation`，名称与 JDBC / `Connection` 对齐；`DEFAULT` = 用底层库默认）：
+
+                | 级别 | 教科书常见现象 | InnoDB 要点（MySQL 默认引擎） |
+                | --- | --- | --- |
+                | `READ_UNCOMMITTED` | 可能脏读 | 业务几乎不用 |
+                | `READ_COMMITTED` | 避免脏读；同一事务内两次普通读可能看到别人已提交的更新（不可重复读）；间隙锁弱，幻读更易出现 | 每次一致性读常用**新快照** |
+                | `REPEATABLE_READ` | 同一事务内普通读结果更稳 | **InnoDB 默认**。普通 `SELECT` 是一致性非锁定读：事务内首次此类读建立快照，之后复用，一般看不到他事务之后才提交的行变更/插入。`SELECT ... FOR UPDATE` / `UPDATE` / `DELETE` 等是当前读，走最新已提交数据 + 行锁/间隙锁（next-key），用于挡住扫描范围内的插入（幻影行）。官方不建议在同一 RR 事务里混用大量“非锁定读 + 锁定写”却指望两者看到同一世界 |
+                | `SERIALIZABLE` | 最强、最贵 | InnoDB 上会把普通 `SELECT` 也变成类似加锁读，进一步串行化并发 |
+
+                - 术语对齐：脏读 = 读到未提交；不可重复读 = 同一行两次读到不同已提交值；幻读 = 同一条件的行集合变了（多出/少了行）。Spring 只把级别设到连接上，**能不能出现上述现象仍看数据库实现**。
             - 生效条件：Bean 被 Spring 容器管理；调用经过代理对象；存在匹配的事务管理器；数据库连接和存储引擎支持事务；异常按回滚规则向外抛出。
-            - 常见失效场景：同类 `this.xxx()` 自调用；方法不适合代理；异常被吞；数据库或连接不支持事务；多数据源选错事务管理器；事务边界过细。
+            - 与连接的关系：开启的事务会把一个 JDBC `Connection`（经 `DataSource`）绑在当前线程上，同线程内参与该事务的数据访问应复用它；换线程（如 `@Async`）默认**带不走**这段绑定，除非另做传递。
+            - 多数据源与事务管理器：
+                - 常见 `DataSourceTransactionManager` **一对一**绑定一个 `DataSource`：开事务时从这个源取连接并绑线程。
+                - 容器里有多个 `PlatformTransactionManager` 时，默认会落到 `@Primary`、名为 `transactionManager` 的 Bean，或唯一候选；对不上就会“注解生效了，但绑的不是你正在用的那个库”。
+                - 指定方式：`@Transactional("txManagerBeanName")` / `transactionManager = "..."`（与 `@Qualifier` 选注入 Bean 是同一类问题）。
+                - `AbstractRoutingDataSource` 等动态路由：通常仍是**一个**事务管理器挂在路由 `DataSource` 上；事务已开启后再切路由目标，容易连错库或破坏“一事务一连接”假设。
+                - 两个独立库要**同成同败**：本地单个 `DataSourceTransactionManager` 做不到真正跨库原子性，需要 XA/JTA，或业务层用可靠消息 / 本地消息表 / 补偿（outbox、Saga）等。
+            - 常见失效场景：同类 `this.xxx()` 自调用；目标是 `private` / `static` / `final` 方法或 `final` 类；异常在方法内被吞导致代理以为成功；受检异常未配 `rollbackFor`（默认提交）；库表/引擎不支持事务；多数据源选错事务管理器；事务边界切得过碎。
             </details>
 
     1. <details>
@@ -2560,30 +2866,14 @@ public class GenericExamples {
         1. Spring 默认单例只表示实例数量，不保证字段状态线程安全。
         1. 构造器循环依赖通常无法解决；Setter 循环即使能绕过，也说明设计需要拆分。
 
-    ><details>
-    ><summary>与前端 / Node.js 类比</summary>
-    >
-    >1. IoC / DI：核心是“业务代码少主动 `new` / 少主动抓依赖，更多声明自己需要什么”。判断标准是：谁负责创建对象，谁负责把依赖交给使用方。
-    >
-    >    - Vue `provide` / `inject`、React `Context` / `useContext` 更像 DI：下层取上层 Provider 提供的值；但它们不负责像 Spring 一样扫描、创建、装配、销毁业务对象。
-    >    - Egg.js 更接近后端 IoC 直觉：Controller / Service 按目录约定被框架加载，业务代码通过 `ctx.service` / `this.service` 取用能力。
-    >2. AOP 对比：Express middleware / Koa 洋葱模型是 HTTP pipeline，不是 Spring AOP 的方法代理。
-    >    - React HOC、Nuxt middleware、Redux middleware、webpack plugin 都可以类比“统一入口增强”，但它们分别属于组件、路由、状态派发、构建流程，不等同于 Spring 运行期 AOP。
-    ></details>
-
 1. Spring MVC：Web 层封装
 
     >Spring MVC 把 Servlet 请求处理封装成 Controller 方法调用。
 
     - 总览：
 
-        - 请求主线：HTTP → Servlet 容器（如 Tomcat）→ `DispatcherServlet` → HandlerMapping → HandlerAdapter → 参数绑定 → Controller → 返回值处理 → JSON / 页面。
-        - 三层职责：
-            1. **入口调度层**：`DispatcherServlet`、HandlerMapping、HandlerAdapter，负责把请求找到并调用 Controller 方法。
-            1. **接口编排层**：Controller、参数解析、返回值处理，负责接参数、调 Service、返回 DTO / VO。
-            1. **扩展治理层**：校验、异常、拦截器、CORS、消息转换器、格式转换，负责统一接口行为。
-
-        >学习顺序：请求链路 → 路由映射 → 参数绑定 → 返回值 / JSON → 校验异常 → 扩展点。
+        - 请求主线：HTTP → Servlet 容器 → `DispatcherServlet` → HandlerMapping → HandlerAdapter → 参数绑定 → Controller → 返回值处理 → JSON / 页面。
+        - 再按：路由映射 → 参数绑定 → 返回值 / JSON → 校验异常 → 扩展点 展开。
 
     1. **请求入口与路由映射**
 
@@ -2620,6 +2910,7 @@ public class GenericExamples {
             - `MultipartFile` / `@RequestPart`：文件或 multipart 请求片段。
             - `@ModelAttribute`：把 Query / 表单字段绑定到对象。
             - `ConversionService` / Formatter：负责字符串到数字、枚举、时间等类型转换。
+            - 顺序直觉（进入 Controller 方法体之前）：按参数解析器解析 / 绑定 →（有 `@Valid`/`@Validated` 时）做 Bean Validation → 失败则通常**还没进方法体**就抛校验异常；绑定类型失败（如字符串转不成数字）也会在进方法前失败。校验通过后才执行 Controller 方法，再进 Service。
             </details>
 
     1. **返回值、JSON 与数据模型**
@@ -2650,9 +2941,16 @@ public class GenericExamples {
 
             <summary>细节：常用治理点</summary>
 
-            - `@Valid` / `@Validated`：触发参数校验，后者支持分组。
+            - `@Valid` / `@Validated`：触发参数校验，后者支持分组。常见挂在 `@RequestBody`、`@ModelAttribute`、`@RequestPart` 等“命令对象”参数上；单独标在简单 `@RequestParam` 上要配合方法级校验（较新 Spring 的 method validation），别默认以为“写了 `@Valid` 就一定校验了某个标量参数”。
             - 常见约束：`@NotNull`、`@NotBlank`、`@Size`、`@Email`。
-            - `BindingResult`：可接在被校验参数后面手动处理校验结果；不接时通常交给统一异常处理。
+            - 失败异常（要进统一异常处理时）：单个对象参数校验失败常见 `MethodArgumentNotValidException`；较新的方法级多参数校验可能是 `HandlerMethodValidationException`。两者都应能映射成稳定的 400 响应。表单/模型绑定失败还可能见到 `BindException`。
+            - `BindingResult` / `Errors`：若使用，必须紧跟在被校验的那个参数后面；有它时校验错误可进方法体自行处理，**不会**再自动抛上述异常。不接则默认抛异常，交给 `@ExceptionHandler`。
+            - 校验过了才进 Controller / Service：字段级 Bean Validation 替代不了业务规则（库存、权限、状态机、唯一性等），那些仍在 Service，失败应抛业务异常（通常是运行期异常）以便事务回滚。
+            - 统一异常与事务的配合：
+                - `@ControllerAdvice` 在**事务代理之外、更靠上的 Web 层**处理异常：它把已经发生的失败翻译成 HTTP 响应，**不会**替你决定库要不要回滚。
+                - 回滚仍看事务拦截器：异常是否从 `@Transactional` 方法抛出、以及 `rollbackFor` 规则。Service 抛出运行期业务异常 → 事务先按规则 rollback → 异常继续向上 → Advice 再写成 JSON。
+                - 若在 Service / Controller 里把异常吞掉并返回“成功”结构，事务会提交，Advice 也帮不上忙。
+                - Advice 里再抛或包装异常时，注意不要把本该回滚的运行期异常改成“看起来像成功”的返回值。
             - `ResponseStatusException` / `@ResponseStatus`：把异常映射成 HTTP 状态码。
             - 错误响应建议稳定包含：HTTP 状态码、业务错误码、错误消息、字段错误、trace id。
             </details>
@@ -2679,19 +2977,13 @@ public class GenericExamples {
 
         1. `@RequestParam` 不是 `@PathVariable`：一个来自 Query / 表单，一个来自 URL 路径模板。
         1. `@RequestBody` 读取请求体，通常一个请求体只能可靠绑定一次，不适合多个 body 参数分散接收。
+        1. 绑定 / 校验失败默认发生在进 Controller 方法体之前；`BindingResult` 紧跟被校验参数时可改为进方法内处理。
+        1. `@ControllerAdvice` 负责把异常写成 HTTP 响应，不代替事务回滚；回滚看 `@Transactional` 是否收到异常。
         1. `@RestController` 默认返回响应体；`@Controller` 默认可能走页面视图解析。
         1. Filter 比 Interceptor 更靠前；Interceptor 已经进入 Spring MVC。
         1. DTO / VO 属于接口层对象命名，团队习惯不同；不要把接口对象直接等同 Entity / DO。
         1. CORS 要看服务端响应头和预检请求，不能只改前端请求代码。
         1. Controller 负责 HTTP 入出口，不承载复杂业务。
-
-    ><details>
-    ><summary>与前端 / Node.js 类比</summary>
-    >
-    >1. 路由和参数：`@GetMapping` 类似 Express / Koa 路由；`@RequestParam`、`@PathVariable`、`@RequestBody` 分别对应 Query、路径参数、JSON body。
-    >1. 中间件和拦截：Filter / Interceptor 类似 middleware，但 Filter 在 Servlet 层，Interceptor 在 Spring MVC 层。
-    >1. 接口数据：DTO / VO 类似 TypeScript interface、Zod schema 或 API response type，用来约定接口数据结构，不等同数据库 Entity。
-    ></details>
 
 1. MyBatis（MyBatis-Plus）：持久层框架
 
@@ -2699,21 +2991,12 @@ public class GenericExamples {
 
     - 总览：
 
-        - 数据访问主线：Controller → Service → Mapper 接口 → MappedStatement → SQL → JDBC → 数据库 → ResultSet → 结果映射 → Java 对象。
-        - 七类知识：
-
-            1. **定位分层**：MyBatis 是 SQL Mapper，不是全自动 ORM；Service 管业务，Mapper 管 SQL 访问。
-            1. **配置注册**：`DataSource`、Mapper 扫描、XML 位置、类型别名、驼峰映射、日志输出。
-            1. **SQL 编写**：XML / 注解 / 动态 SQL；复杂查询、动态条件、复用片段通常放 XML 更清晰。
-            1. **参数传入**：`#{}` 做安全参数绑定，`${}` 做文本拼接；多参数常用 `@Param` 明确命名。
-            1. **结果映射**：`resultType` 处理简单映射，`resultMap` 处理列名、属性、关联关系和类型转换。
-            1. **MyBatis-Plus**：`BaseMapper`、`IService`、Wrapper、分页、逻辑删除、自动填充、乐观锁等减少样板代码。
-            1. **一致性与性能**：重点看分页、批量写入、N+1、索引、慢 SQL、SQL 注入。
+        - 主线：Controller → Service → Mapper → SQL → JDBC → 结果映射 → Java 对象；再按定位、配置、SQL / 参数、结果映射、Plus、性能安全展开。
 
     1. **定位与分层**
 
         - JDBC 是底层数据库 API；MyBatis 封装连接获取、参数设置、SQL 执行和结果映射，但 SQL 仍由开发者掌控。
-        - Mapper 是数据访问接口，通过 `@Mapper` 或 `@MapperScan` 注册到 Spring，运行时由 MyBatis 生成代理对象。
+        - Mapper 是数据访问接口，通过 `@Mapper` 或 `@MapperScan` 注册到 Spring，运行期由 MyBatis 生成代理对象。
         - Mapper 方法必须能找到对应 SQL：XML 中通常是 `namespace = Mapper 全限定名`，`id = 方法名`；注解 SQL 则直接写在方法上。
         - Mapper 只负责数据库读写，不承载复杂业务编排。
 
@@ -2722,7 +3005,7 @@ public class GenericExamples {
             <summary>细节：核心运行对象</summary>
 
             - Mapper 接口：定义 `findById`、`insert`、`update`、`deleteById` 等数据访问方法，本身通常没有实现类。
-            - Mapper 代理对象：MyBatis 运行时生成，拦截方法调用并找到对应的 SQL 定义。
+            - Mapper 代理对象：MyBatis 运行期生成，拦截方法调用并找到对应的 SQL 定义。
             - MappedStatement：一条 Mapper 方法对应的 SQL 元信息，包含 SQL、参数映射、返回映射等。
             - SqlSession：执行 SQL 的会话入口；Spring 项目通常由框架托管，不直接手写管理。
             - Executor：底层执行器，处理查询、更新、缓存和批处理等执行逻辑。
@@ -2731,10 +3014,57 @@ public class GenericExamples {
 
     1. **配置、SQL 与参数**
 
-        - Spring Boot 项目通常配置数据源、Mapper 扫描、Mapper XML 位置、驼峰映射、SQL 日志；配置错会导致 Mapper 找不到、SQL 找不到或字段映射失败。
+        - <details>
+
+            <summary>Spring Boot + MyBatis 最小配置</summary>
+
+            1. Maven 同时添加 MyBatis Starter 和数据库驱动；Starter 版本需要与 Spring Boot 版本匹配。
+
+                ```xml
+                <dependency>
+                    <groupId>org.mybatis.spring.boot</groupId>
+                    <artifactId>mybatis-spring-boot-starter</artifactId>
+                    <version>${mybatis-spring-boot.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.mysql</groupId>
+                    <artifactId>mysql-connector-j</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                ```
+
+            2. 在 `application.yml` 中配置数据源和 MyBatis；数据库密码使用环境变量，不写入仓库。
+
+                ```yaml
+                spring:
+                  datasource:
+                    url: jdbc:mysql://localhost:3306/app
+                    username: ${DB_USERNAME}
+                    password: ${DB_PASSWORD}
+
+                mybatis:
+                  mapper-locations: classpath*:mapper/**/*.xml
+                  configuration:
+                    map-underscore-to-camel-case: true
+                ```
+
+            3. Mapper 接口使用 `@Mapper`；接口较多时也可以在配置类统一使用 `@MapperScan`。
+            4. Starter 会自动使用 `DataSource` 创建 `SqlSessionFactory`、`SqlSessionTemplate` 和 Mapper 代理，通常不需要手动创建这些对象。
+            5. 事务通常放在 Service 层，由 Spring 的 `@Transactional` 统一控制。
+
+            </details>
+
         - SQL 可写在 XML 或注解里；短 SQL 可用注解，复杂查询、动态 SQL、复用片段优先 XML。
-        - `#{}` 是参数绑定，接近 PreparedStatement 占位符；`${}` 是文本替换，只能用于表名、排序字段等严格白名单场景，不能直接拼用户输入。
-        - 动态 SQL 用 `where`、`set`、`trim`、`if`、`choose`、`foreach` 组合条件，常用于搜索、批量操作、可选条件查询。
+        - `#{}` 与 `${}`（官方语义，不要混用）：
+
+            | 写法 | 机制 | 典型用途 | 风险 |
+            | --- | --- | --- | --- |
+            | `#{}` | 生成 JDBC `PreparedStatement` 占位符 `?`，再按类型用 `TypeHandler` 绑定参数值 | 用户输入、业务值 | 一般可防 SQL 注入；**不是**任意 OGNL 表达式入口（方法调用等应先用 `<bind>` 算出变量，再 `#{name}`） |
+            | `${}` | 把求值结果**直接拼进 SQL 文本**（求值侧会走 OGNL） | 表名、列名、`ORDER BY` 列等标识符 | 拼进不可信输入会 SQL 注入；必须白名单映射后再用 |
+
+        - 动态 SQL 的 `<if test="...">`、`<choose>`、`<foreach>`、`<bind>` 等条件 / 表达式使用 **OGNL**；这与 `#{}` 的「预备语句参数」不是同一条通路。
+        - 参数命名：单参数可直接写属性或简单类型；多参数应显式 `@Param("name")`。不加 `@Param` 时依赖默认名（如 `param1` / `param2`，以及是否开启真实参数名），版本与编译选项会影响可读名，业务代码不要赌默认名。
+        - 动态 SQL 标签用 `where`、`set`、`trim`、`if`、`choose`、`foreach` 组合条件，常用于搜索、批量操作、可选条件查询。
 
         - <details>
 
@@ -2742,10 +3072,10 @@ public class GenericExamples {
 
             - XML：`select`、`insert`、`update`、`delete`、`sql`、`include`，适合复杂查询和 SQL 复用。
             - 注解：`@Select`、`@Insert`、`@Update`、`@Delete`，适合短 SQL；复杂动态 SQL 不建议全部塞进注解。
-            - 参数：单参数可直接取值；多参数优先用 `@Param("name")`，避免默认参数名不直观。
+            - `#{}` 可写属性路径（如 `#{user.id}`）及 `jdbcType` 等映射属性；需要先对参数做字符串拼接 / 方法计算时，用 `<bind name="..." value="OGNL表达式"/>`，再引用 `#{...}`。
             - 批量：`foreach` 常用于 `IN (...)`、批量插入、批量更新条件。
             - 主键回填：插入后需要数据库生成主键时，关注 `useGeneratedKeys`、`keyProperty` 或对应数据库的主键返回方式。
-            - 排序字段：不要直接接收前端字符串拼 `${orderBy}`，必须做字段白名单映射。
+            - 排序 / 动态列名：禁止把前端字符串原样放进 `${}`；先映射到固定白名单列名，再替换。
             </details>
 
     1. **结果映射与对象边界**
@@ -2791,8 +3121,7 @@ public class GenericExamples {
 
     1. **事务、性能与安全**
 
-        - 多步数据库操作的事务边界见 Spring Framework 的事务小节；Mapper 层重点是 SQL 执行和结果映射。
-        - 同一个业务动作里有多次写库、先查后改、扣库存、创建订单等场景，要优先考虑事务边界和异常回滚规则。
+        - 多步写库、先查后改、扣库存、下单这类动作，事务边界通常放在 Service（`@Transactional`）；Mapper 层只做 SQL 执行和结果映射。注意代理自调用、异常被吞等常见失效情况。
         - 性能重点：分页、大批量写入、N+1 查询、索引命中、慢 SQL、SQL 日志、连接池。
         - 安全重点：优先使用 `#{}`；排序、表名、列名等必须白名单后才可进入 `${}`。
 
@@ -2805,7 +3134,13 @@ public class GenericExamples {
             - 批量写入：关注批大小、事务大小、数据库锁、驱动批处理支持和 MyBatis 批处理执行器。
             - 慢 SQL：先看执行计划、索引、过滤条件、排序、回表、锁等待，不要只怀疑框架。
             - SQL 日志：开发阶段打开 SQL 和参数日志能帮助定位映射、参数和性能问题；生产要控制日志量和敏感信息。
-            - 一级缓存 / 二级缓存：先知道有缓存机制，但业务里不要默认依赖它解决性能问题。
+            - **一级缓存**（MyBatis local cache，默认开，默认 `localCacheScope=SESSION`）：
+                - 作用域是**同一个** `SqlSession`：同语句、同参数的查询可能直接返回缓存里的**同一对象引用**（改缓存对象等于改“下次查询结果”）。
+                - 会清掉的情况：同会话内增删改、语句配置了 `flushCache`、显式 `clearCache`，以及会话 `commit` / `rollback` / `close`。
+                - 与 Spring 的关系（MyBatis-Spring）：无外层 Spring 事务时，`SqlSessionTemplate` / Mapper 调用常常是**方法级临时会话**——调完即关，一级缓存跨方法用不上。有 Spring 事务且走 `SpringManagedTransaction` 时，**整段事务共用一个 `SqlSession`**（绑在 `TransactionSynchronizationManager` 上），同事务内多次相同查询才容易命中一级缓存。
+                - `useCache=false` 管的是**二级**缓存，关不掉一级缓存；要弱化一级缓存可改 `localCacheScope=STATEMENT`，或对关键查询设 `flushCache`，或拆事务（如 `REQUIRES_NEW` 换新会话）。
+                - 不要把一级缓存当跨请求、跨用户的性能方案；它只是会话内去重，还可能掩盖“以为每次都打库”的错觉。
+            - **二级缓存**：可选，作用域更大（Mapper / namespace），跨会话共享；要额外配置，且和脏读、多数据源、集群一致性纠缠多，业务项目常关着或不用。
             </details>
 
     - 易混点与失效场景：
@@ -2813,19 +3148,10 @@ public class GenericExamples {
         1. MyBatis 是 SQL Mapper，不是 JPA / Hibernate 那类典型全自动 ORM。
         1. Mapper 方法名本身不自动生成 SQL；只有 MyBatis-Plus 的 `BaseMapper`、`IService` 等封装方法才有现成 CRUD。
         1. XML 的 `namespace`、SQL 的 `id`、Mapper 方法签名对不上，会出现绑定语句找不到或参数映射错误。
-        1. `#{}` 是参数绑定，`${}` 是文本替换；后者接用户输入容易 SQL 注入。
+        1. `#{}` 走预备语句参数绑定；`${}` 是文本替换（常配合 OGNL 求值）。标识符才考虑 `${}`，且必须白名单；动态 SQL 的 `test` / `<bind>` 才是 OGNL 表达式主战场。
         1. `resultMap` 解决对象映射问题，不解决 SQL 写错、N+1、索引失效这类查询问题。
         1. MyBatis-Plus 能减少 CRUD 样板，但复杂查询、复杂事务和性能问题仍要回到 SQL 与数据库设计。
         1. 逻辑删除、自动填充、乐观锁、分页都需要正确配置插件或字段注解，不是引入依赖后全部自动生效。
-
-    ><details>
-    ><summary>与前端 / Node.js 类比</summary>
-    >
-    >1. Mapper 类似 repository / dao：封装数据库访问，让 Service 不直接拼 SQL。
-    >1. XML / 注解 SQL 类似把 SQL 模板集中管理；Mapper 方法类似调用一个有类型约束的数据访问函数。
-    >1. `#{}` 类似参数化查询；`${}` 类似字符串拼接，只能用于白名单字段。
-    >1. `resultMap` 类似把数据库列转换成接口需要的数据结构；MyBatis-Plus 类似常用 CRUD helper，但不能替代理解 SQL。
-    ></details>
 
 1. Spring Boot：整合与快速启动
 
@@ -2833,18 +3159,9 @@ public class GenericExamples {
 
     - 总览：
 
-        - 组合关系：Spring Boot = Spring Framework + 自动配置 + Starter 依赖组合 + 版本管理（BOM）+ 外部化配置 + 生产级工程能力；常见后端 Web 项目再叠加 Spring MVC / Servlet 容器、数据访问框架和事务。
-        - 启动主线：启动类 → `SpringApplication.run(...)` → 加载配置与环境 → `@SpringBootApplication` 触发组件扫描和自动配置 → 创建 Bean → Web 项目启动内嵌服务器 → 对外提供 HTTP 接口。
-        - 学习目标：能独立创建项目、写接口、接数据库、管理配置、定位 Bean / 配置 / 事务 / JSON / SQL 问题，并知道测试、日志、监控和部署的基本闭环。
-        - 八类知识：
-            1. **启动与结构**：启动类、包扫描、Controller / Service / Mapper / DTO / 配置类 / 测试目录。
-            1. **依赖与版本管理**：Starter、BOM、父 POM / Gradle 插件、依赖覆盖、兼容矩阵。
-            1. **自动配置机制**：classpath、条件注解、默认 Bean、用户配置覆盖、条件报告。
-            1. **配置与环境**：`application.yml`、profile、环境变量、命令行参数、配置绑定、敏感配置外置。
-            1. **Web 接口工程**：Spring MVC、参数绑定、JSON、Validation、统一异常、CORS、文件上传、接口文档。
-            1. **数据与事务整合**：数据源、连接池、MyBatis / MyBatis-Plus、事务、数据库迁移、Redis / MQ / 第三方服务。
-            1. **测试与本地依赖**：单元测试、切片测试、集成测试、`@SpringBootTest`、Testcontainers、Docker Compose。
-            1. **运行、观测与部署**：打包运行、日志、Actuator、Micrometer、健康检查、容器镜像、优雅停机、AOT / Native Image。
+        - 组合关系：Spring Boot = Spring Framework + 自动配置 + Starter + BOM + 外部化配置 + 工程能力；Web 项目再叠 MVC、数据访问和事务。
+        - 启动主线：启动类 → `SpringApplication.run` → 配置与环境 → 扫描 / 自动配置 → Bean → 内嵌服务器 → HTTP。
+        - 再按：结构、依赖、自动配置、配置环境、Web、数据事务、测试、观测部署 展开。
 
     1. **启动入口与项目结构**
 
@@ -2909,7 +3226,9 @@ public class GenericExamples {
 
     1. **配置管理、多环境与配置绑定**
 
-        - `application.yml` / `application.properties` 放应用配置；profile 管理 dev / test / prod 等环境差异。
+        - `application.yml` / `application.properties` 放应用配置（端口、数据源、开关等键值外置，避免写死在代码里）；profile 管理 dev / test / prod 等环境差异，如`application-{profile名}.yml（或 .properties）`。
+
+            >`.properties` 是扁平 `key=value`（也可以用`:`），一行一项，如`server.port=8080`；`.yml` 用缩进表达层级，功能等价，新项目更常见后者。
         - 配置来源有优先级：默认配置、配置文件、profile 配置、环境变量、系统属性、命令行参数、测试配置等；后加载或高优先级来源可能覆盖前面的值。
         - `@ConfigurationProperties` 适合绑定一组结构化配置；`@Value` 适合少量单值配置；复杂配置优先前者，便于类型校验、复用和测试。
         - 端口、数据库连接、日志级别、第三方服务地址、密钥都应按环境管理，敏感配置不要写死进仓库。
@@ -2933,8 +3252,8 @@ public class GenericExamples {
         - Web 闭环：路由、参数绑定、参数校验、DTO / VO、统一返回、统一异常、CORS、文件上传、分页、接口文档、访问日志、trace id。
         - 常见 Controller 方法参数：`@PathVariable` 接路径变量，`@RequestParam` 接 Query / 表单字段，`@RequestBody` 接 JSON Body，`@RequestHeader` 接请求头。
         - JSON 序列化 / 反序列化通常由 Jackson 处理；重点关注时间格式、枚举、空值、字段名、循环引用、请求体只能读一次等问题。
-        - Validation 只解决字段和对象校验；跨字段、业务唯一性、权限、库存、状态机这类规则应放 Service。
-        - 统一异常不是吞异常，而是把可预期错误转成稳定的 HTTP 状态码和响应结构，同时保留日志和排查信息。
+        - Validation 只解决字段和对象校验（且通常在进 Controller 方法前就完成）；跨字段、业务唯一性、权限、库存、状态机这类规则应放 Service。
+        - 统一异常不是吞异常，而是把已发生的失败转成稳定的 HTTP 状态码和响应结构；**回滚仍由事务拦截器按抛出的异常决定**，Advice 只负责对外表述。
 
         - <details>
 
@@ -2942,9 +3261,9 @@ public class GenericExamples {
 
             - 路由：类上写资源前缀，方法上写 HTTP Method；接口语义尽量贴近 REST，但团队规范优先。
             - 入参：新增 / 修改用请求 DTO；查询用 Query 对象；分页参数统一约定页码、页大小、排序字段白名单。
-            - 校验：Controller 入参用 `@Valid` / `@Validated`，错误由统一异常处理转成前端可消费的响应。
+            - 校验：Controller 入参用 `@Valid` / `@Validated`（多在进方法前完成）；错误走 `MethodArgumentNotValidException` 等，由统一异常写成 400。业务规则仍在 Service。
             - 出参：返回 VO / Response DTO，不直接暴露 Entity；字段命名、时间格式、金额精度要和前端契约一致。
-            - 异常：`@ControllerAdvice` + `@ExceptionHandler` 处理校验失败、业务异常、权限异常、资源不存在、系统异常。
+            - 异常：`@ControllerAdvice` + `@ExceptionHandler` 处理校验失败、业务异常、权限异常、资源不存在、系统异常；它翻译 HTTP，不代替事务 rollback。
             - 跨域：开发环境和生产环境分开配置；CORS 不是认证授权，不能靠放开 CORS 解决安全问题。
             - 文件：限制大小、类型、存储位置、文件名安全、临时文件清理；大文件和对象存储要单独设计。
             - 接口文档：OpenAPI / Swagger 只描述契约，不替代真实测试；DTO 注释和校验规则要同步。
@@ -2955,17 +3274,17 @@ public class GenericExamples {
 
         - 数据闭环：配置 `DataSource` → 连接池 → Mapper / Repository → Service 事务 → SQL / ORM 映射 → 数据库迁移 → 监控慢 SQL。
         - MyBatis / MyBatis-Plus 项目重点看 Mapper 扫描、XML 位置、驼峰映射、SQL 日志、分页插件、逻辑删除、乐观锁、字段自动填充。
-        - 事务规则见 Spring Framework 的事务小节；这里重点看数据源、Mapper、迁移、Redis / MQ / 第三方服务如何接入。
+        - 事务关注：代理是否生效、异常是否按规则抛出到代理外、回滚规则、事务管理器是否对上正在用的 `DataSource`；本段重点是数据源、Mapper、迁移、Redis / MQ / 第三方如何接入。
         - 本地依赖服务优先用 Docker Compose 或 Testcontainers / `@ServiceConnection` 管理，减少“本机装一堆服务”的环境漂移。
-        - 扩展能力按业务需要补：Redis 缓存、消息队列、异步任务、定时任务、邮件、对象存储、第三方 HTTP 客户端。
+        - 扩展能力按业务需要补：Redis 缓存、消息队列、异步任务、定时调度、邮件、对象存储、第三方 HTTP 客户端。
 
         - <details>
 
             <summary>细节：数据和事务排查清单</summary>
 
-            - 数据源：URL、driver、账号密码、连接池最大连接数、连接超时、数据库时区和字符集。
+            - 数据源：URL、driver、账号密码；池参数分清 `maximum-pool-size`、`connection-timeout`（借连接）、与 `@Transactional(timeout)`（事务时长）、语句超时；再核时区与字符集。
             - Mapper：`@MapperScan` 包路径、XML `namespace`、SQL `id`、参数名、`resultMap`、分页插件是否配置。
-            - 事务：按 Spring Framework 的事务小节排查代理调用、异常传播和事务管理器。
+            - 事务：查代理调用、异常是否抛出到代理外、回滚规则、事务管理器；同类 `this.xxx()` 自调用、异常被吞常见导致“以为有事务其实没有”。统一异常处理不会自动 rollback。
             - 数据一致性：先定义事务边界，再考虑消息最终一致性、幂等、重试、补偿、分布式锁。
             - 数据库迁移：Flyway / Liquibase 管理表结构变更；避免手工改库后代码和环境不一致。
             - Redis：明确是缓存、会话、锁、计数器还是队列；关注过期、穿透、击穿、雪崩、一致性。
@@ -3038,38 +3357,13 @@ public class GenericExamples {
         1. 配置没读到：检查文件位置、文件格式、profile 激活、环境变量覆盖、配置前缀、字段名、配置绑定类是否注册。
         1. 接口 400 / 415 / 500：分别排查参数绑定、`Content-Type`、JSON 格式、校验异常、异常处理和返回序列化。
         1. 数据访问异常：检查数据源、事务、Mapper XML、参数名、字段映射、SQL 日志、数据库权限和连接池。
-        1. 事务没回滚：按 Spring Framework 的事务小节检查代理调用、异常传播和事务管理器。
+        1. 事务没回滚：检查是否走代理调用（同类 `this.xxx()` 会绕过；`exposeProxy` 默认未开）、异常是否被吞、回滚规则、`readOnly` 是否被误当成禁写、事务管理器是否选对。
         1. 测试过慢或不稳定：减少完整上下文测试，拆切片测试，用固定 profile 和容器化依赖，避免共享外部状态。
-
-    ><details>
-    ><summary>与前端 / Node.js 类比</summary>
-    >
-    >1. Starter 类似“依赖包组合入口”，但它还会配合自动配置接上默认 Bean。
-    >1. `application.yml` + profile 类似 `.env` / 多环境配置，但会被 Spring 类型绑定、条件装配和自动配置消费。
-    >1. `@SpringBootApplication` 类似应用入口 + 依赖扫描 + 默认插件装配的组合开关，不只是 main 函数。
-    >1. Controller 类似 router / controller，Service 类似业务层，Mapper / Repository 类似数据访问层。
-    >1. Servlet Web 项目使用内嵌 Tomcat 时，类似 Node 应用自己启动 HTTP Server；Actuator 类似健康检查、指标和运行期诊断入口。
-    >1. Testcontainers / Docker Compose 类似给本地和 CI 起真实依赖服务，避免每个人机器环境不同。
-    ></details>
 
 >1. 传统 SSM：**S**pring Framework + **S**pring MVC + **M**yBatis + XML/手动配置
 >1. Spring Boot 版 SSM：**S**pring Boot + **S**pring MVC + **M**yBatis/**M**yBatis-Plus + 自动配置/少量配置
 
-### 关系型数据库
-- MySQL
-
-    - 最常见的关系型数据库。
-    - 先掌握建表、增删改查、索引、事务，再谈性能优化。
-    - 业务开发重点：表结构设计、主键、唯一约束、外键取舍、分页查询、慢 SQL、事务隔离级别。
-
-- PostgreSQL
-
-### 缓存与内存数据
-- Redis
-
-    - 常用作缓存，也可用于分布式锁、计数器、会话、排行榜、延迟队列场景。
-    - 要先理解缓存命中、过期、穿透、击穿、雪崩这些基础问题。
-    - 常见数据结构：String、Hash、List、Set、Sorted Set；先按业务场景选结构，不要只把 Redis 当 Map 用。
+### [数据库、缓存](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据库使用/README.md)
 
 ### 消息队列
 - **Kafka**
@@ -3080,34 +3374,160 @@ public class GenericExamples {
     偏传统消息队列，路由能力更丰富，业务系统里也很常见。
 - 核心问题：消息是否丢失、是否重复消费、消费失败怎么重试、顺序性是否重要、是否需要死信队列。
 
----
-### 缩写解析
+### 定时任务
 
-- `AOP`：Aspect-Oriented Programming，面向切面编程；把日志、权限、事务、埋点这类“每个接口都可能要做”的横切逻辑从业务代码里抽出来，类似前端统一封装请求拦截器、路由守卫或错误上报。
-- `AOT`：Ahead-Of-Time，提前编译；在运行前先做一部分分析和生成，减少启动时的反射、扫描和动态处理成本，常见于 Spring AOT、Native Image 和启动优化。
-- `BO`：Business Object，业务对象；通常用来承载 Service 层内部的业务语义和处理过程数据，可以组合多个 PO、DTO 或外部接口返回值，并补充业务计算后的字段、状态、规则判断结果等。它不一定直接对应数据库表，也不一定直接暴露给前端，更像“为了完成某段业务逻辑而组织出来的对象”；阅读代码时要重点看它在哪一层创建、流转和转换，避免把它和 `PO`、`DTO`、`VO` 混用。
+>定时任务是「到点触发一段逻辑」。和 MQ 一样，落地前先问：多实例会不会每台都跑、失败怎么重试、任务是否幂等、上一轮没跑完下一轮能不能再进。
+
+1. 先分清两类需求，不要都做成 cron。
+
+    | 类型 | 含义 | 典型例子 | 优先选型 |
+    | --- | --- | --- | --- |
+    | 日历调度 | 按钟点 / cron 反复跑 | 每天 2:00 对账、每 5 分钟扫超时单 | 对账等业务日批用调度平台；本机短周期才用进程内 |
+    | 延时一次 | 某事件后再等 N 分钟做一次 | 下单 15 分钟未支付关单 | MQ 延时消息、落库扫描，而不是堆一堆一次性 Timer |
+
+1. 常见实现对照。
+
+    | 方式 | 优点 | 缺点 | 适用场景 |
+    | --- | --- | --- | --- |
+    | `Timer` / `TimerTask` | API 简单，JDK 自带 | 单线程；一个任务抛异常会拖垮后续；不处理时钟回拨 | 了解历史即可，生产不用 |
+    | `ScheduledExecutorService` | 线程池、JDK 自带；`schedule` / `fixedRate` / `fixedDelay` 语义清楚 | 无 cron；周期任务抛一次异常后后续执行会被取消（异常进 Future，默认不打日志）；多实例每台都跑；进程重启丢失未持久化的一次性任务 | 本机心跳、缓存刷新、延迟合并、短周期可重复执行 |
+    | Spring `@Scheduled` | 写 Bean 方法即可；支持 cron / `fixedDelay` / `fixedRate`；和 Spring 生命周期一体 | 默认单线程，多个任务会互相堵住；多实例重复执行；改 cron 通常要发版 | 单实例或可接受重复执行的轻量任务；学习 / 中小项目 |
+    | Quartz | cron 与 misfire 策略完整；Job 和 Trigger 分离；可持久化、可集群 | 比 `@Scheduled` 重；自建集群和运维成本高 | 需要复杂触发策略、任务持久化，且团队已有 Quartz 资产时 |
+    | 分布式调度平台（XXL-JOB、ElasticJob，或公司内部如 Chronus / Saturn） | 控制台改 cron；分片、失败告警、执行日志；集群只跑约定份数 | 多一个调度中心依赖；任务代码要按平台约定写 | 业务日批、对账、多机、要对齐时区 / 分片 |
+    | 系统 crontab + 调接口 / 起进程 | 应用无感知，运维能直接改点 | 观测差、和环境绑定、难分片 | 运维脚本、极少改动的机器级任务 |
+    | Redis 延时（ZSET 等）/ MQ 延时消息 | 跨进程；适合「事件后再等一会」 | 不是日历 cron；要自己做幂等、重复消费和失败重试；Kafka 没有一等延时，没有延时能力就改落库扫描 | 关单、超时取消、延迟通知 |
+
+    ```java
+    @EnableScheduling
+    @SpringBootApplication
+    public class App {}
+
+    @Component
+    public class Jobs {
+        @Scheduled(cron = "0 0 2 * * ?")   // 每天 2:00；Spring/Quartz 为 6 段：秒 分 时 日 月 周（Unix crontab 是 5 段，没有秒，也不能用 ?）
+        public void nightly() {}
+
+        @Scheduled(fixedDelay = 5000)      // 上次跑完再等 5s
+        public void poll() {}
+    }
+    ```
+
+    `fixedDelay` 是跑完再等。`fixedRate` 按开始时间对齐间隔，超时则推迟；Spring 默认定时线程只有 1 条，同一任务不会重叠，只会堆积，多个 `@Scheduled` 还会互相等待。要并行须扩 `spring.task.scheduling.pool.size`（或自定义 `TaskScheduler`），并自己保证幂等 / 互斥。`@Scheduled` 默认把异常记日志后**下一轮仍调度**；这和 SES 周期任务「抛一次就停」相反。
+
+1. 怎么选（懒人规则）。
+
+    1. 本机短周期、丢一次无所谓、可重复执行 → `ScheduledExecutorService` 或 `@Scheduled`。
+    1. 业务日批、要改 cron、分片、集群只跑一份 → 用公司已有的调度平台，不要在同一件事上再套一层 `@Scheduled`。
+    1. 「N 分钟后做一次」→ 中间件若有延时（如 RabbitMQ TTL / 延时插件）就用延时消息，否则落库 + 扫描。
+    1. 多实例必须二选一：调度平台，或执行时抢分布式锁（如 ShedLock：抢不到就跳过本轮，它不是调度器）；否则每台都会跑。
+
+    - 实现时固定补三件事：幂等、超时（防止上一轮没完下一轮再进）、不要假设「只有一台」。
+
+    - 易混点与失效场景：
+
+        1. `@Scheduled` 能跑不等于生产可上集群；副本数一加就会重复执行。
+        1. 定时任务没有 HTTP 请求，也就没有登录用户和现成 Trace；`@Transactional` 仍可打在任务调用的 Service 上，不要从 Controller 抄一套请求上下文。
+        1. 时钟、时区、夏令时会影响 cron；跨国业务要明确「按哪套墙钟触发」。
+        1. 任务里打外部接口或跑批 SQL 不设超时，会占满调度线程，后续任务全部卡住。
+
+---
+### 名词解析
+
+- `JDK` / `JRE` / `JVM`：`JDK` 是开发套件（含编译器、工具）；`JRE` 偏运行环境；`JVM` 是执行字节码、管内存与 GC 的虚拟机。日常开发安装 JDK 即可。
+- `Classpath` / 类路径：JVM 查找 `.class` 和资源文件（配置、图片等）的搜索路径，类似系统里的 `PATH`。跑程序、报 `ClassNotFoundException` 时，先怀疑类路径没把需要的 jar / 目录算进去。
+- `JAR`：Java Archive，Java 归档包；Spring Boot 最常见的可执行部署形态，常用 `java -jar app.jar` 启动（内嵌 Tomcat 等）。
+- `WAR`：Web Application Archive，Web 应用归档包；传统 Java Web 部署包，通常放到外部 Tomcat 等容器中运行。
+- `Maven` / `pom.xml`：Java 最常见的构建与依赖工具；`pom.xml` 描述坐标、依赖、插件与模块。本机环境用 `settings.xml`（镜像、仓库认证），不要和项目 POM 职责混写。日常常用 `test` / `package`。
 - `BOM`：Bill Of Materials，依赖版本清单；用一组统一版本约束管理依赖，类似前端项目用 lockfile 或 monorepo 版本策略避免包版本互相打架。
-- `Controller` / `controller`：控制器层；接收 HTTP / RPC 请求、做基础参数处理、调用 Service，再组织返回结果，前端可类比 router handler 或接口层。
-- `DAO` / `Dao`：Data Access Object，数据访问对象；封装数据库访问细节，让业务层不用直接关心 SQL、连接和底层存储实现。
-- `DDD`：Domain-Driven Design，领域驱动设计；围绕业务概念拆模型和边界，核心是让代码结构贴近业务语言，而不是只按数据库表或接口页面堆功能。
-- `DI`：Dependency Injection，依赖注入；对象不自己 new 依赖，而是由容器传进来，类似组件依赖由框架或上下文统一组装，便于替换、测试和解耦。
-- `DO`：Domain Object 或 Data Object，领域对象 / 数据对象；团队命名不完全统一，阅读时先看它服务于业务规则还是数据库结构。
-- `domain`：领域层；放置实体、值对象、聚合、领域服务等核心业务规则，是业务含义最集中的层。
-- `DTO` / `dto`：Data Transfer Object，数据传输对象；用于接口、RPC 或跨层传输数据，前端可理解为接口 request / response 的类型定义。
-- `Dubbo`：Java RPC 框架；让一个服务像调用本地方法一样调用另一个服务，背后处理序列化、网络传输、注册发现和治理。
-- `EasyExcel`：Java Excel 读写库；用于 XLSX 导入导出，适合大数据量流式处理，避免一次性把整份 Excel 都加载进内存。
-- `Entity` / `entity`：实体对象；常对应数据库表或领域实体，通常带有唯一身份，和前端只展示用的数据结构不完全等价。
-- `Impl` / `impl`：Implementation，实现类或实现包常用后缀；常见写法是接口定义能力，`Impl` 负责具体实现。
-- `IoC`：Inversion of Control，控制反转；对象创建、依赖组装和生命周期交给容器控制，业务代码只声明自己需要什么。
-- `Lombok`：Java 编译期代码生成工具；通过注解生成 getter、setter、构造方法等样板代码，读代码时要意识到有些方法不是手写出来的。
-- `Mapper` / `mapper`：MyBatis 数据访问接口；方法通常对应一条 SQL 或一组数据库操作，是 Service 访问数据库的常见入口。
-- `Nacos`：服务发现和配置管理组件；Spring Cloud Alibaba 生态常见，用于“服务在哪里”和“配置是什么”的集中管理。
-- `PO`：Persistent Object，持久化对象；通常贴近数据库表结构，字段往往和表字段一一对应，不建议直接暴露给前端。
-- `Repository`：仓储；DDD 中用于封装聚合持久化，Spring Data 中也作为数据访问抽象，可理解为比 DAO 更偏领域语义的数据入口。
 - `SNAPSHOT`：开发中快照版本；Maven 可按策略检查更新，适合联调期迭代，但线上依赖通常更偏向稳定 release 版本。
 - `Starter`：Spring Boot 依赖组合入口；把一组依赖和自动配置打包到一起，类似前端安装一个框架插件后获得默认配置和能力。
-- `VO` / `vo`：View Object 或 Value Object；在接口场景常指返回给前端展示的数据对象，在 DDD 场景也可能指值对象，要按团队约定理解。
-- `WAR`：Web Application Archive，Web 应用归档包；传统 Java Web 部署包，通常放到外部 Tomcat 等容器中运行。
+- `Auto-configuration` / 自动配置：Spring Boot 按 classpath 依赖和配置条件自动注册默认 Bean（数据源、MVC、Jackson 等）；Starter 常作为依赖入口，真正生效看条件注解是否匹配。排查可看启动 `--debug` 的 conditions report。
+- `profile`：Spring 环境分组；常用 `application-{profile}.yml`（如 `dev` / `test` / `prod`）切换数据源、日志、第三方地址。激活方式包括配置、环境变量、启动参数；和「哪份配置生效」强相关。
+- `Actuator`：Spring Boot 运行期观测端点（健康检查、指标、环境信息等）。生产要用权限和暴露范围控制，不要把敏感端点裸开到公网。
+- `Tomcat`：常见 Servlet 容器；负责听端口、管理 Servlet / Filter 生命周期。Spring Boot Web 项目常内嵌 Tomcat，打成 JAR 直接跑；传统方式也可把 WAR 丢进外部 Tomcat。
+- `Servlet` / `Filter` / `DispatcherServlet` / `Interceptor`：Java Web 请求处理积木。`Servlet` 处理请求；`Filter` 在 Servlet 前后做编码、鉴权、日志等；Spring MVC 的前端控制器是 `DispatcherServlet`；`Interceptor` 是 Spring 机制，在 Controller 前后介入，粒度比 Filter 更靠 MVC。顺序直觉：Filter → DispatcherServlet → Interceptor → Controller。
+- `IoC`：Inversion of Control，控制反转；对象创建、依赖组装和生命周期交给容器控制，业务代码只声明自己需要什么。
+- `DI`：Dependency Injection，依赖注入；对象不自己 new 依赖，而是由容器传进来，类似组件依赖由框架或上下文统一组装，便于替换、测试和解耦。
+- `Bean` / `BeanFactory` / `ApplicationContext`：Bean 是 Spring 容器创建、装配、管理生命周期的对象（自己 `new` 出来的不是 Bean）。`BeanFactory` 是最基础的 IoC 容器；`ApplicationContext` 是业务里最常见的那种，在前者之上还带配置环境、事件、AOP 等。读代码先问：谁注册、怎么注入、作用域是什么。
+- `AOP`：Aspect-Oriented Programming，面向切面编程；把日志、权限、事务、埋点这类横切逻辑抽成切面，由**代理**在方法调用时插入。Spring AOP 主要拦方法；同类 `this.xxx()` 绕过代理。需要自调用也进切面时，拆 Bean、注入自身，或开启 `exposeProxy` 再用 `AopContext.currentProxy()`（默认未开启）。
+- `controller`：控制器层；接收 HTTP / RPC 请求、做基础参数处理、调用 Service，再组织返回结果。类似 Egg.js 的 Controller。
+- `service`：业务层；承接 Controller 之后的业务规则、事务边界，并调用 Mapper / Repository 或外部服务。Controller 不写业务，Mapper 不拼业务规则；复杂领域规则也可下沉到 domain，此时 Service 更偏用例编排。类似 Egg.js 的 service。
+
+    >**用例编排**：把完成一件事需要的步骤按顺序串起来——查数据、执行业务、写库、调外部服务，并管事务和失败回滚；Service 负责组织这条链路。
+    >
+    >例：`placeOrder()` 查用户和商品 → 创建订单 → 扣库存 → 调支付 → 发消息；各步谁来做可以拆到不同类，但先后顺序和事务边界由 Service 定。
+- `dto`：Data Transfer Object，数据传输对象；用于接口、RPC 或跨层传输数据，前端可理解为接口 request / response 的类型定义。
+
+    >DTO 和 View Object（VO）对比：DTO 是更大的「传输」概念（入参、出参、RPC 都行）；VO 偏「给前端展示」的出参。很多 `XxxVO` 本质上是一种出参 DTO；有的团队不用 VO，出参统一叫 `RespDTO` / `XxxDTO`。关系是职责重叠、命名习惯不同：VO（View）⊆ 广义出参传输对象。读代码时 Controller 入参当 DTO，返回的 `XxxVO` 当 View Object（也是传输出参）。
+- `vo`：同缩写两义，按出现层判断，不要混用。
+
+    1. View Object（视图对象）：接口出参模型，按页面 / 接口需要组装字段，可含脱敏或拼装展示值；不直接暴露 Entity / PO，类似前端 API response type、typescript数据结构。
+    1. Value Object（值对象）：DDD 里用「属性值」定义相等的业务概念。
+
+        >Value Object 和 Entity 对比：Entity 靠稳定 ID 识别（改昵称还是同一用户）；Value Object 无独立 ID，属性全等即相等（两个 `Money(100, CNY)` 业务上等价）。
+
+        - 常见形态：`Money`、`Address`、`Email`、坐标、日期区间；多个字段总是一起出现、一起校验、一起运算时适合抽出。
+        - 通常不可变：创建后不 set，要改就返回新实例；校验和运算（如币种不同不能相加）收在对象内部，避免 Service 散落原始类型。
+        - 持久化：一般不单独建表 / CRUD，嵌在实体里，拆成多列或 ORM embed；Java 里常用 `record` 表达。
+    - 读代码提示：出现在 domain 层、强调 equals / 不变式 → 值对象；出现在 Controller 出参、类名 `XxxVO` → 多半是 View Object。
+- `BO`：Business Object，业务对象；通常用来承载 Service 层内部的业务语义和处理过程数据，可以组合多个 PO、DTO 或外部接口返回值，并补充业务计算后的字段、状态、规则判断结果等。它不一定直接对应数据库表，也不一定直接暴露给前端，更像“为了完成某段业务逻辑而组织出来的对象”；阅读代码时要重点看它在哪一层创建、流转和转换，避免把它和 `PO`、`DTO`、`VO` 混用。
+- `entity`：实体对象；常对应数据库表或领域实体，通常带有唯一身份（有 ID、可变；业务上「同一个东西」），和前端只展示用的数据结构不完全等价。
+
+    >PO ≈ Data Object ≈ Entity。 Domain Object ≈ DDD 的 Entity。
+- `PO`：Persistent Object，持久化对象；贴数据库表的内存投影，不建议直接暴露给前端。
+
+    - 对应关系：一张表 ≈ 一个 PO 类；表的一列 ≈ 类的一个字段；表的一行 ≈ 一个 PO 实例；多行 ≈ `List<PO>`。
+    - 所以 PO 是「一整行」的对象，不是「一列」；说字段和表一一对应，指的是类属性 ≈ 列。
+
+    >PO 和 View Object（VO） 对比：PO 面向数据库（怎么存），VO 面向前端展示（怎么给人看）；链路是 `DB 行 <-> PO -> 转换 -> VO -> JSON`。PO 常含密码哈希、删除标记等内部字段；VO 只放页面需要的字段，可脱敏或拼装展示值。表改列不必绑死 API，页面改字段也不该绑死表结构。
+- `DO`：同一个缩写，项目里可能指两种完全不同的东西，不能望文生义。
+
+    1. Domain Object（领域对象）：描述业务里的「东西」和规则，例如订单能不能支付。可以有业务方法。接近 DDD 里的 Entity。多出现在 `domain` 包。
+    1. Data Object（数据对象）：描述数据库「一行」怎么映射成 Java 对象，字段往往对表列。基本没有业务方法。接近 `PO`。国内 MyBatis 项目很常见 `UserDO` 这种命名，多在 `dal` / `mapper` 附近。
+
+    - 怎么分辨：看包名，再看有没有业务方法。一个项目里通常只约定其中一种叫法。无论哪一种，一般都不直接返回给前端。
+- `domain`：领域层；放置实体、值对象、聚合、领域服务等核心业务规则，是业务含义最集中的层。读项目时先分清：这里是真有不变式和领域行为，还是只是 Entity / PO 的另一个包名。
+- `DDD`：Domain-Driven Design，领域驱动设计；按业务概念建模和拆边界，让代码语言贴近业务，而不是只按数据库表或接口页面堆功能。
+
+    - 目标：复杂业务里，规则落在领域模型（实体、值对象、聚合）中，而不是全堆在 Controller / 贫血 Service。
+    - 通用语言（Ubiquitous Language）：代码里的类名、方法名尽量和业务方说的词一致（如「下单」「履约」），减少「表字段 ↔ 口头业务」翻译成本。
+    - 限界上下文（Bounded Context）：同一词在不同业务边界含义可能不同（如交易里的「订单」和售后里的「订单」）；边界内模型统一，跨边界用接口 / 事件协作，不硬揉成一张大模型。
+    - 核心积木：
+
+        1. Entity：有稳定身份（ID），生命周期内可变。
+        1. Value Object：按属性值相等，通常不可变（如 Money、Address）。
+        1. Aggregate / 聚合根：一组强一致对象的边界；外部只通过聚合根改内部，一次事务通常只改一个聚合。
+        1. Repository：按聚合存取，屏蔽表结构和 SQL。
+        1. Domain Service：规则不自然属于某个实体时，放领域服务（仍是纯业务，不是应用编排）。
+    - 和常见 Spring 分层对照：`Controller` / DTO / VO 在边缘；`Application Service` 编排用例、开事务；`domain` 放模型和规则；`Repository` / Mapper 在出站适配。很多 CRUD 项目只有分层命名、没有真正领域模型，读代码时不要假设「有 domain 包 = 做了 DDD」。
+    - 适用：业务规则多、长期演进、需要和业务共语；简单进出表 CRUD 不必硬上完整 DDD。
+- `DAO`：Data Access Object，数据访问对象；封装数据库访问细节，让业务层不用直接关心 SQL、连接和底层存储实现。
+- `mapper`：MyBatis 数据访问接口；方法通常对应一条 SQL 或一组数据库操作，是 Service 访问数据库的常见入口。
+- `Repository`：仓储；DDD 中用于封装聚合持久化，Spring Data 中也作为数据访问抽象，可理解为比 DAO 更偏领域语义的数据入口。
+- `JDBC`：Java Database Connectivity，Java 数据库访问标准 API；调用链是 `Java 程序 → JDBC API → 驱动 → 数据库`。Spring / MyBatis 底层仍走 JDBC。核心对象：`Connection`、`PreparedStatement`、`ResultSet`；值用占位符绑定，资源用 try-with-resources 关闭。
+- `DataSource` / 连接池 / 池化：`DataSource` 是取数据库连接的标准入口。生产环境用连接池（如 HikariCP）：预先准备若干连接，用时借出、用完归还。关注 `maximumPoolSize`、`connectionTimeout`（等池多久）、`idleTimeout`、`maxLifetime`（应短于库侧断连）；不要和 `@Transactional(timeout)` 或 SQL 超时混为一谈。容量按「实例数 × 池上限」对照库的 `max_connections`。池化管「可复用资源」；缓存管「可重复读的数据」。
+- `MyBatis` / `MyBatis-Plus`：`MyBatis` 把 Mapper 方法与 SQL（XML 或注解）绑定，并把结果映射成 Java 对象；`#{}` 生成 `PreparedStatement` 占位符并绑定参数，`${}` 把求值结果拼进 SQL 文本（标识符白名单才用）。动态 SQL 的 `test` / `<bind>` 使用 OGNL，与 `#{}` 不是同一通路。一级缓存绑在单个 `SqlSession`：无 Spring 事务时常方法级会话（跨方法难命中），有事务时常整段共用会话才容易命中。`MyBatis-Plus` 在其上补通用 CRUD、分页等，不取代理解 SQL 与映射。
+- `Transaction` / `@Transactional` / 事务：一组 SQL 要么都成功要么都回滚。Spring 里多用 `@Transactional` 声明边界；默认对 `RuntimeException`/`Error` 回滚，受检异常默认提交（可用 `rollbackFor` 改）。异常须抛出代理外才按规则处理，方法内吞掉再正常返回会提交。挂在 Service，依赖代理生效（自调用绕过代理）。`readOnly` 是优化提示，不保证禁写。开启后通常把一个 JDBC 连接绑在当前线程并关闭自动提交，同线程内数据访问复用该连接。传播默认 `REQUIRED`；`REQUIRES_NEW` 独立新事务，`NESTED` 多为 savepoint 且依赖管理器实现。隔离级别名称对齐 JDBC，现象看库（InnoDB 默认 `REPEATABLE READ`：普通读靠快照，当前读可加间隙锁）。一个 `DataSourceTransactionManager` 管一个数据源；多库原子性要 XA 或业务补偿，不能指望随便加一个注解。
+
+    - `ACID`：事务四属性的缩写——原子性、一致性、隔离性、持久性。多表一起写时尤其要清楚：中途失败会不会留下半成品数据。
+- `Jackson`：常用 JSON 库；Spring MVC 默认用它把请求 JSON 绑到对象、把返回对象写成 JSON（`HttpMessageConverter`）。字段名、时间格式、未知字段策略会影响前后端契约。
+- `Lombok`：Java 编译期代码生成工具；通过注解生成 getter、setter、构造方法等样板代码，读代码时要意识到有些方法不是手写出来的。
+- `EasyExcel`：Java Excel 读写库；用于 XLSX 导入导出，适合大数据量流式处理，避免一次性把整份 Excel 都加载进内存。
+- `impl`：Implementation，实现类或实现包常用后缀；常见写法是接口定义能力，`Impl` 负责具体实现。
+- `Redis`：常用作缓存、分布式锁、计数器、排行榜、Session。重点不是背命令，而是搞清命中、过期、穿透、击穿、雪崩会怎样拖垮接口。
+
+    - `TTL`：Time To Live，存活时间。缓存或消息到期后失效；前端偶发「数据有点旧」，后端有时就是在用 TTL 换性能。
+- `MQ` / `Kafka` / `RabbitMQ`：消息队列。把同步调用拆成异步投递，常见用途是削峰、解耦、重试、事件通知。
+- `cron` / `@Scheduled` / 调度平台：日历式定时。Unix crontab 是 5 段（分 时 日 月 周）；Spring / Quartz 的 `@Scheduled` cron 是 6 段（秒 分 时 日 月 周），`?` 表示该域不指定。XXL-JOB 等是带控制台的分布式调度。多实例部署时要处理重复执行、幂等和超时。
+- 延时任务：事件发生后再等一段时间执行一次（关单、超时取消），优先 MQ 延时或落库扫描，不要和每天定点的 cron 混用一种实现。
+- `ACK` / `NACK` / `DLQ`：消息消费结果。`ACK` 表示处理成功可确认；`NACK` 表示失败可重投；多次失败可进 `DLQ`（死信队列）再人工或专项处理。排消息问题先看这三者。
+- `Nacos`：服务发现和配置管理组件；Spring Cloud Alibaba 生态常见，用于“服务在哪里”和“配置是什么”的集中管理。
+- `Dubbo` / `Feign`（OpenFeign）：都是声明式远程调用；写接口 / 注解，像调本地方法一样调另一个服务，背后有序列化与网络传输。差别在协议与生态（谁管发现、治理）。
+
+    1. `Dubbo`：完整 Java RPC 框架；默认二进制协议（如 dubbo / Hessian / Protobuf），自带注册发现、负载均衡、超时重试、路由等治理；契约通常是共享 Java 接口 + 序列化模型，偏同语言、高性能的对内调用。读代码信号：`@DubboReference` / `dubbo:`。
+    1. `Feign`：Spring Cloud 里的声明式 HTTP 客户端；底层仍是 REST（URL + HTTP 方法 + 常为 JSON），发现与负载多交给 Nacos / Eureka + LoadBalancer，熔断限流常再配 Sentinel / Resilience4j；契约是 HTTP API，跨语言、对接任意 HTTP 服务更自然。读代码信号：`@FeignClient`。
+
+    >同一项目也可并存：对内 Dubbo、对外或跨栈 Feign。
 
 <details>
 <summary>Java 后端关键流程速查</summary>
@@ -3116,65 +3536,21 @@ public class GenericExamples {
 
     `.java 源码 -> javac 编译 -> .class 字节码 -> JAR / WAR 打包 -> JVM 运行 -> JIT 优化热点代码 -> GC 回收内存`
 
-    - `JDK`：开发和构建要用，包含 `javac`、`java`、诊断工具等；前端可类比 Node.js + npm CLI 的开发环境。
+    - `JDK`：开发和构建要用，包含 `javac`、`java`、诊断工具等。
     - `JRE` / `JVM`：运行 Java 程序的环境和虚拟机；JVM 负责加载类、执行字节码、管理内存。
     - `JAR`：Spring Boot 项目最常见的可运行包，常用 `java -jar app.jar` 启动。
     - `WAR`：传统 Web 应用包，通常交给外部 Tomcat 这类 Servlet 容器运行。
     - `GC` / `OOM`：GC 负责自动回收对象；OOM 表示内存不够，常和对象堆积、缓存过大、线程过多有关。
 
-2. Spring Boot 应用怎么启动
+2. Maven 生命周期（日常）
 
-    `main 方法 -> SpringApplication.run -> 读取配置 -> 组件扫描 -> 自动配置 -> 创建 Bean -> 启动内嵌 Tomcat -> 对外提供接口`
+    `validate -> compile -> test -> package -> verify -> install -> deploy`
 
-    - `@SpringBootApplication`：启动入口组合注解，包含配置类、组件扫描和自动配置语义。
-    - `application.yml` / `application.properties`：应用配置入口，类似前端 `.env` + 配置对象，但会被 Spring 类型绑定和自动配置消费。
-    - `profile`：环境分组，如 `dev`、`test`、`prod`，用于切换数据库、Redis、日志级别和第三方地址。
-    - `Bean`：Spring 容器管理的对象；Controller、Service、Repository、配置类通常都会成为 Bean。
-    - `DI` / `IoC`：依赖由容器注入，对象不用自己 new 依赖；这是 Spring 能统一装配、替换和测试的基础。
-    - `Auto-configuration` / `Starter`：根据依赖和配置自动补默认 Bean，减少手写配置。
-3. 一次接口请求怎么走
+    - 日常最常用：`test`（编译+单测）、`package`（打出 JAR/WAR）、`install`（装进本地仓库给其它模块用）。
+    - `clean` 常与上面组合，清掉 `target` 再构建。
+    - `deploy` 是发布到远程仓库，和「部署应用到服务器」不是一回事。
 
-    ```text
-    前端请求
-    ├─ 情况 1：直接打到 Spring Boot 服务
-    │  -> Spring MVC -> Controller -> Service -> Mapper / Repository -> MyBatis / JDBC -> DB -> Jackson JSON
-    │
-    └─ 情况 2：先打到网关
-       -> 网关 -> Adapter -> RPC -> 后端 Service -> Mapper -> MyBatis / JDBC -> DB -> 网关返回 HTTP 响应
-    ```
-
-    - `前端请求`：浏览器 / App 按 URL、HTTP 方法、Query、Header 或 JSON body 发起请求。
-    - `Spring MVC`：Spring Boot 直接接 HTTP 的入口链路，内部会经过 Filter、Interceptor、DispatcherServlet。
-    - `网关`：统一 HTTP 入口，常负责路由、鉴权、限流、协议转换，再把请求交给 Adapter。
-    - `Controller` / `Adapter`：接口入口；Controller 直接接 Spring MVC 请求，Adapter 接网关请求并适配成后端调用。
-    - `RPC`：远程调用另一个服务，常见 Dubbo / Feign；如果业务就在本服务内，可以没有这一步。
-    - `Service`：业务编排层，处理业务规则、事务边界，并调用数据访问层或外部服务。
-    - `Mapper` / `Repository`：数据访问入口；通常交给 MyBatis / JDBC 执行 SQL，最后访问 DB。
-    - `Jackson JSON` / `网关返回 HTTP 响应`：把后端对象转换成前端能接收的 HTTP 响应。
-4. 分层和对象怎么流转
-
-    `Query / Cmd / ReqDTO -> Controller / Adapter -> Application / Service -> domain / Entity -> Mapper -> PO / DB row -> VO / RespDTO -> response JSON`
-
-    - `DTO`：跨接口或跨层传输的数据结构，接收请求和 RPC 参数时很常见。
-    - `VO`：返回给前端展示的数据结构，应该贴近页面需要，不要直接暴露数据库对象。
-    - `Service`：业务编排层，负责业务规则、事务边界、调用数据访问层或外部服务。
-    - `domain`：领域层，放核心业务模型和规则；复杂业务不要把规则全塞进 Controller。
-    - `Entity` / `PO`：常贴近数据库表或领域实体；是否等同要看团队规范。
-    - `Mapper` / `Repository`：数据访问入口；Mapper 常见于 MyBatis，Repository 常见于 Spring Data 或 DDD 风格。
-    - `Converter` / `Assembler`：对象转换位置，避免 Controller / Service 到处手写重复字段映射。
-5. 数据库、SQL 和事务的主流程
-
-    `Service 开启事务 -> Mapper 生成 SQL -> DataSource 获取连接 -> JDBC 执行 -> DB 返回 ResultSet -> MyBatis 映射对象 -> 事务提交 / 回滚`
-
-    - `DataSource`：数据库连接来源，应用从连接池拿连接，避免每次请求都新建连接。
-    - `MyBatis`：把 Java Mapper 方法和 SQL 绑定，再把查询结果映射成 Java 对象。
-    - `MyBatis-Plus`：在 MyBatis 上补常用 CRUD、分页和拦截器能力，项目可能借它追加租户、数据权限等条件。
-    - `#{}`：参数绑定，适合用户输入，能降低 SQL 注入风险；`${}` 是文本替换，只能用于严格白名单字段。
-    - `resultMap`：复杂结果映射，如字段别名、一对一、一对多、枚举转换。
-    - `@Transactional`：声明事务边界，默认遇到运行时异常回滚。
-    - `ACID`：事务的原子性、一致性、隔离性、持久性；写操作联动多张表时尤其重要。
-    - `Index`：索引决定查询是否快；分页、排序、模糊搜索、唯一约束都要关注索引设计。
-6. 构建、依赖和部署怎么串起来
+3. 构建、依赖和部署怎么串起来
 
     `拉代码 -> 配 JDK / Maven -> 下载依赖 -> 编译 -> 测试 -> package -> 生成 JAR / WAR -> 启动服务 -> 看日志和健康检查`
 
@@ -3183,16 +3559,124 @@ public class GenericExamples {
     - `mvnw` / `gradlew`：项目自带构建脚本，用来固定构建工具版本。
     - `clean` / `test` / `package` / `install`：常见 Maven 阶段；日常最常跑的是测试和打包。
     - `Docker Compose`：本地启动 MySQL、Redis、MQ 等依赖服务，适合联调和集成测试。
-    - `Actuator`：Spring Boot 运行期端点，可看健康检查、指标、环境信息，生产环境要控制暴露范围。
-7. 缓存、消息和服务间调用
+    - `Actuator`：Spring Boot 运行期观测端点（健康检查、指标、环境信息等）；流程里用来看健康检查和指标，生产注意权限与暴露范围。
 
-    - `Redis`：常用作缓存、分布式锁、计数器、排行榜、Session；重点不是会命令，而是知道缓存命中、过期、穿透、击穿、雪崩怎么影响接口。
-    - `TTL`：缓存或消息的存活时间；前端看到“数据偶尔旧”时，后端可能在用 TTL 换性能。
-    - `MQ` / `Kafka` / `RabbitMQ`：把同步流程拆成异步流程，用于削峰、解耦、重试、事件通知。
-    - `ACK` / `NACK` / `DLQ`：消息是否处理成功、是否重投、失败后是否进死信队列，是排查消息问题的关键。
+4. Spring Boot 应用怎么启动
+
+    `main 方法 -> SpringApplication.run -> 读取配置 -> 组件扫描 -> 自动配置 -> 创建 Bean -> 启动内嵌 Tomcat -> 对外提供接口`
+
+    - `@SpringBootApplication`：启动入口组合注解，包含配置类、组件扫描和自动配置语义。
+    - `application.yml` / `application.properties`：应用配置入口，类似前端 `.env` + 配置对象，但会被 Spring 类型绑定和自动配置消费。
+    - `profile`：环境分组`application-{profile名}.yml（或 .properties）`，如 `dev`、`test`、`prod`，用于切换数据库、Redis、日志级别和第三方地址。
+    - `Bean`：Spring 容器管理的对象；Controller、Service、Repository、配置类通常都会成为 Bean。
+    - `DI` / `IoC`：依赖由容器注入，对象不用自己 new 依赖；这是 Spring 能统一装配、替换和测试的基础。
+    - `Auto-configuration` / `Starter`：根据依赖和配置自动补默认 Bean，减少手写配置。
+
+5. 配置从哪来（优先级直觉）
+
+    `默认配置 / 自动配置 < application.yml < application-{profile}.yml < 环境变量 < 命令行参数`
+
+    - 同名属性后者覆盖前者；容器里常把密钥、地址放进环境变量，避免写进仓库。
+    - `profile` 决定加载哪份环境文件；激活错环境是「连错库 / 配错地址」的常见原因。
+    - 绑定结果可用 Actuator 的 `env` / `configprops` 核对（生产注意权限）。
+
+6. Bean 怎么创建和注入
+
+    `读 Bean 定义（扫描 / @Bean / 自动配置） -> 创建实例 -> 注入依赖 -> 初始化回调 -> 放入容器备用`
+
+    - 注册来源：组件扫描（`@Service` 等）、Java/`@Bean` 配置、Boot 自动配置、少量 XML。
+    - 注入方式：构造器注入优先；字段注入能跑但不便测试。
+    - 默认多为单例；业务里少自己 `new` 本该由容器管理的对象，否则切面和事务可能挂不上。
+
+7. 一次接口请求怎么走
+
+    ```text
+    客户端 -> (可选网关) -> 内嵌 Tomcat
+      -> DispatcherServlet (Spring MVC) -> Controller
+      -> Service -> Mapper / Repository
+      -> MyBatis / JPA -> JDBC -> DB
+      -> 原路返回（Jackson 把返回对象写成 JSON）
+    ```
+
+    - 网关在应用外，只做路由 / 鉴权 / 限流；进了 Spring Boot 之后链路不变。
+    - `DispatcherServlet` 按 URL 找到 Controller；进方法前先做参数绑定，有 `@Valid`/`@Validated` 再做 Bean Validation——失败常直接 400，**还没进** Controller / Service / 事务。
+    - Controller 收参、调 Service、返回对象；字段校验过了，业务规则仍在 Service。
+    - `Service` 做业务和事务；失败抛运行期异常 → 事务回滚 → `@ControllerAdvice` 再写成 HTTP 错误（Advice 不负责 rollback）。
+    - `Mapper` / `Repository` 访问数据库。
+    - Dubbo 等 RPC 可跳过 MVC，但仍进同一套 Service 和数据访问层。
+
+8. Filter → Interceptor → Controller
+
+    `请求进入容器 -> Filter 链 -> DispatcherServlet -> Interceptor 前置 -> Controller -> Interceptor 后置 / 完成后 -> 返回 -> Filter 链回来`
+
+    - `Filter`：Servlet 规范，偏编码、CORS、鉴权、统一日志等容器级横切。
+    - `Interceptor`：Spring MVC，能拿到 Handler 信息，适合登录校验、权限、打点。
+    - 两者都不要塞核心业务规则；业务仍归 Service。
+
+9. 分层和对象怎么流转
+
+    `Query / Cmd / ReqDTO -> Controller / Adapter -> Application / Service -> domain / Entity -> Mapper -> PO / DB row -> VO / RespDTO -> response JSON`
+
+    - `DTO`：跨接口或跨层传输的数据结构，接收请求和 RPC 参数时很常见。
+    - `VO`：返回给前端展示的数据结构，应该贴近页面需要，不要直接暴露数据库对象。
+    - `Service`：业务层。简单项目里规则 + 事务 + 调数据访问都在 Service；有 domain 时更偏用例编排，核心规则下沉到 domain。
+    - `domain`：领域层，放核心业务模型和规则；复杂业务不要把规则全塞进 Controller。若项目宣称 DDD，优先在这里找 Entity / 值对象 / 聚合行为，而不是只在 Service 里堆 if。
+    - `Entity` / `PO`：常贴近数据库表或领域实体；是否等同要看团队规范。DDD 的 Entity 强调身份与不变式，PO 强调表映射，二者常分开。
+    - `Mapper` / `Repository`：数据访问入口；Mapper 常见于 MyBatis，Repository 常见于 Spring Data 或 DDD 风格（按聚合存取）。
+    - `Converter` / `Assembler`：对象转换位置，避免 Controller / Service 到处手写重复字段映射。
+    - DDD 速记：先认限界上下文和通用语言，再认 Entity / Value Object / Aggregate / Repository；边缘用 DTO / VO，别把表结构和页面结构当成领域模型。
+
+10. 原始 JDBC 最小闭环
+
+    `加载驱动（常可省略） -> DataSource/DriverManager 取 Connection -> PreparedStatement 绑参 -> executeQuery/Update -> 处理 ResultSet -> 关闭/归还连接`
+
+    - 值用 `?` 占位符，不要字符串拼 SQL。
+    - 优先 try-with-resources；连接池里的 `close()` 通常是归还，不是拆掉物理连接。
+    - 池的 `connectionTimeout` 是等借连接；`@Transactional(timeout)` 是事务时长；SQL/语句超时是单条查询——三者分开配。
+    - 理解这条链路后，再看 MyBatis / Spring 只是在上面自动做映射与资源管理。
+
+11. 数据库、SQL 和事务的主流程
+
+    `Service 开启事务 -> Mapper 生成 SQL -> DataSource 获取连接 -> JDBC 执行 -> DB 返回 ResultSet -> MyBatis 映射对象 -> 事务提交 / 回滚`
+
+    - `DataSource`：数据库连接来源，应用从连接池拿连接，避免每次请求都新建连接。
+    - `MyBatis`：把 Java Mapper 方法和 SQL 绑定，再把查询结果映射成 Java 对象。
+    - `MyBatis-Plus`：在 MyBatis 上补常用 CRUD、分页和拦截器能力，项目可能借它追加租户、数据权限等条件。
+    - `#{}`：预备语句参数绑定，适合用户输入；`${}`：文本替换，只用于白名单标识符。动态 SQL 条件表达式走 OGNL，不要和 `#{}` 混为一谈。
+    - `resultMap`：复杂结果映射，如字段别名、一对一、一对多、枚举转换。
+    - `@Transactional`：声明事务边界；默认运行期异常 / `Error` 回滚，受检异常默认提交。
+    - `ACID`：事务四属性——原子性、一致性、隔离性、持久性；多表写操作时尤其要关心失败会不会留下半成品。
+    - `Index`：索引决定查询是否快；分页、排序、模糊搜索、唯一约束都要关注索引设计。
+
+12. 事务怎么生效（及常见失效）
+
+    `调用带 @Transactional 的 Spring Bean 方法 -> 代理拦截 -> 取连接并绑当前线程、关自动提交 -> 执行业务与 SQL -> 正常 commit / 异常 rollback -> 解绑并归还连接`
+
+    - 注解通常打在 Service public 方法；事务通过 **代理** 生效。
+    - 同类 `this.xxx()` 自调用、`private` / `final` 方法：代理进不去，等于没开事务。自调用要进切面：拆 Bean / 注入自身，或 `exposeProxy` + `AopContext.currentProxy()`（默认未开）。
+    - 异常在方法内被吞后正常返回 → 默认提交；抛受检异常且未配 `rollbackFor` → 默认也提交。以最终抛到代理外的异常类型为准。
+    - `readOnly=true` 是提示（可能 `setReadOnly` / 优化），**不保证**写失败，别当安全闸。
+    - 传播默认 `REQUIRED`（有则加入，无则新建）。`REQUIRES_NEW` 是独立新事务；`NESTED` 多是同一连接上的 savepoint，且依赖具体事务管理器。
+    - 隔离：`DEFAULT` 跟库走；InnoDB 常用 `REPEATABLE READ`（普通读快照，当前读可防扫描范围内幻影插入）。脏读 / 不可重复读 / 幻读的具体能否发生看引擎，不看注解名字。
+    - 多数据源：事务管理器要和真正执行 SQL 的 `DataSource` 对应；跨两个独立库的同成同败不是单个本地事务管理器能保证的。
+    - MyBatis：无 Spring 事务时一级缓存常随方法级会话结束；有事务时同事务共用 `SqlSession`，相同查询才可能命中一级缓存。
+    - 换线程时，不要默认还在同一连接 / 同一事务里。
+
+13. 缓存、消息和服务间调用
+
+    - `Redis` / `TTL` / `MQ` / `ACK`·`NACK`·`DLQ`：缓存看命中、过期与穿透/击穿/雪崩；消息看确认、重试与死信。
     - `Dubbo` / `Feign`：服务间调用入口；一个后端接口可能还会继续请求其他服务。
     - `Nacos`：常见服务注册发现和配置管理组件；服务地址和配置不一定写死在代码里。
-8. 排障时优先看什么
+
+14. 消息：生产 → 消费 → ACK / 重试 / DLQ
+
+    `生产者发消息 -> Broker 存储/投递 -> 消费者处理业务 -> ACK 确认；失败则 NACK/重试；多次失败可进 DLQ`
+
+    - 先分清：至少一次 / 至多一次 / 正好一次，以及业务是否要做幂等。
+    - 消费失败不要静默吞掉；明确是重试、跳过还是进死信后人工处理。
+    - 需要顺序时看分区 / 队列模型，不要默认「全局有序」。
+
+15. 排障时优先看什么
 
     `接口状态码 -> 错误响应 -> traceId / 日志 -> Controller 入参 -> Service 分支 -> SQL / 外部服务 -> 事务 / 缓存 / 消息 -> JVM 资源`
 
