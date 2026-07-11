@@ -260,12 +260,63 @@
 15. 遇到`unable to update local ref`
 
     可先尝试执行`git fetch --prune`；若仍然失败，请根据报错中的具体引用检查`.git/refs`，或重新克隆仓库。
-16. 对比
+16. 对比（`diff` 比的是两棵**文件树**，不是提交列表）
 
-    ```shell
-    git diff 「分支名或tag或commit」 「分支名或tag或commit」 「多个文件或文件夹」
-    ```
+    1. 本地日常
 
+        ```shell
+        git diff                              # 工作区相对暂存区
+        git diff --staged                     # 暂存区相对 HEAD（`--cached` 同义）
+        git diff HEAD                         # 工作区+暂存区相对 HEAD
+        git diff 「commit」 -- 「路径」         # 某次提交 vs 工作区（可限路径）
+        git show 「commit」                   # 这次提交自己引入的改动
+        ```
+
+    2. 两点 vs 三点（分支 / tag / commit）
+
+        >- **tip**：分支/tag **现在指向**的那次提交（`main` 的 tip = `main` 当前那个 commit）
+        >- **merge-base**：两边历史往回走，最先碰到的共同祖先（`git merge-base A B`）
+
+        `git diff` 永远是「左树 vs 右树」。`.` 的个数只改**左边用谁**：
+
+        | | 左边 | 右边 | 看到的 |
+        | --- | --- | --- | --- |
+        | 两点 `A..B`（=`git diff A B`） | A 的 tip | B 的 tip | 两边**现在**差多少 |
+        | 三点 `A...B` | `merge-base(A,B)` | B 的 tip | 从分叉起 **B 引入了什么**（MR/PR 默认） |
+
+        ```shell
+        git diff 「目标」..「源」     # 两点
+        git diff 「目标」...「源」    # 三点 = git diff $(git merge-base 「目标」 「源」) 「源」
+        # 后面都可加 -- 「路径」
+        ```
+
+        审这条 MR 用**三点**。看「现在合进去，两边 tip 还差什么」用**两点**：目标分叉后自己前进的改动会出现在两点里（看起来像源「缺」这些）。源已经把目标合进来之后，两点和三点通常一样。
+
+        `git log` 的 `..` / `...` **不是同一套语义**：`log A..B` = B 有而 A 没有的**提交**；`log A...B` = 两边各自独有（对称差）。三点 **diff** 只看共同祖先 → 右侧，不是对称差。
+
+    3. GitLab / GitHub
+
+        - GitLab **比较修订**：默认「仅来自源的传入更改」= 三点；「包括对目标的更改」= 两点。MR Changes ≈ 三点
+        - GitHub PR / Compare 默认 URL `「目标」...「源」` = 三点。改成 `..` 才是两点。PR 页不能一键切换
+
+    4. 例子：文件一样，历史不同
+
+        从 `A` 分出 `B`、`C`，各 3 个 commit，但 **B、C 最新文件完全一样（都是 T）**：
+
+        ```text
+              b1 -- b2 -- b3 (B)     ← 文件 = T
+             /
+        ... A                        ← merge-base(B, C)
+             \
+              c1 -- c2 -- c3 (C)     ← 文件 = T
+        ```
+
+        - `git diff B C` / `B..C` → **空**（现在一样）
+        - `git diff B...C` → **非空**，等于 `git diff A C`（A → T）
+        - `git diff C...B` → 补丁相同（也是 A → T），只是「源」换边
+        - 路径差看 log：`B..C` = c1–c3；`C..B` = b1–b3；`log --left-right B...C` = 两边各 3 个（对称差，不是三点 diff）
+
+        **两点看最终文件，三点看源相对分叉点的净变更。** 历史可以完全不同、文件却相同。
 
 ### [Conventional Commits（约定式提交）格式](https://www.conventionalcommits.org/zh-hans/v1.0.0/)
 <details>

@@ -104,16 +104,23 @@
   "vsicons.dontShowNewVersionMessage": true,
   "extensions.ignoreRecommendations": true,
   "liveServer.settings.donotShowInfoMsg": true,
+  "liveServer.settings.donotVerifyTags": true,
   "cSpell.diagnosticLevel": "Hint",
+  "js/ts.updateImportsOnFileMove.enabled": "always",
+  "js/ts.inlayHints.variableTypes.enabled": true,
+  "js/ts.inlayHints.propertyDeclarationTypes.enabled": true,
+  "js/ts.inlayHints.parameterTypes.enabled": true,
+  "js/ts.inlayHints.functionLikeReturnTypes.enabled": true,
+  "js/ts.inlayHints.enumMemberValues.enabled": true,
+  "[markdown]": {
+    "diffEditor.ignoreTrimWhitespace": false
+  },
+  "xml.server.preferBinary": true,
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml"
+  },
 
   // curosr only
-  "javascript.updateImportsOnFileMove.enabled": "always",
-  "typescript.updateImportsOnFileMove.enabled": "always",
-  "typescript.inlayHints.variableTypes.enabled": true,
-  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
-  "typescript.inlayHints.parameterTypes.enabled": true,
-  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
-  "typescript.inlayHints.enumMemberValues.enabled": true,
   "workbench.activityBar.orientation": "vertical",
   "window.commandCenter": true,
   "editor.minimap.enabled": true,
@@ -121,20 +128,18 @@
   "git.autoRepositoryDetection": true,
   "cursor.composer.textSizeScale": 1.15,
   "cursor.composer.shouldChimeAfterChatFinishes": true,
+  "cursor.composer.editorConversationDensity": "detailed",
+  "cursor.composer.codeBlockWordWrap": true,
   "chatgpt.localeOverride": "zh-CN",
   "chatgpt.followUpQueueMode": "queue",
   "chatgpt.reviewDelivery": "inline",
 
   // Java相关插件
-  "[xml]": {
-    "editor.defaultFormatter": "redhat.vscode-xml"
-  },
-  "xml.server.preferBinary": true,
-  "java.configuration.updateBuildConfiguration": "automatic",
-  "java.compile.nullAnalysis.mode": "automatic",
   "[java]": {
     "editor.defaultFormatter": "redhat.java"
   },
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.compile.nullAnalysis.mode": "automatic",
   "java.jdt.ls.java.home": "~/.sdkman/candidates/java/21.0.11-ms",
   "java.configuration.runtimes": [
     {

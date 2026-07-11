@@ -32,6 +32,7 @@
         1. [Node.js学习笔记](./网站前端/Node.js学习笔记/README.md)
         1. [服务端相关](./网站前端/服务端相关/README.md)
         1. [Python学习笔记](./网站前端/Python学习笔记/README.md)
+        1. [数据库使用](./网站前端/数据库使用/README.md)
     1. 向终端
 
         1. [Hybrid前端开发](./网站前端/Hybrid前端开发/README.md)
@@ -75,7 +76,7 @@
     1. ~~[微前端（微服务在前端的应用——前端微服务）](./网站前端/其他前端专项/微前端（微服务在前端的应用——前端微服务）/README.md)~~
 
     - [微信生态相关](./网站前端/其他前端专项/微信生态相关/README.md)
-    - [Lark生态开发](./网站前端/其他前端专项/Lark生态开发/README.md)
+    - ~~[Lark飞书生态开发](./网站前端/其他前端专项/Lark飞书生态开发/README.md)~~
 1. [HTTP相关](./网站前端/HTTP相关/README.md)
 1. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
 1. <details>
@@ -95,13 +96,36 @@
     1. [JS手写代码](./网站前端/JS方法积累/手写代码/README.md)
     </details>
 
-- <details>
+1. 工具使用
 
-    <summary>其他</summary>
+    1. [Git心得](./工具使用/Git心得/README.md)
+    1. 命令行学习
 
-    1. [/工具使用](./工具使用/README.md)
-    1. [/环境安装、配置](./环境安装、配置/README.md)
-    </details>
+        1. [Bash学习笔记](./工具使用/Bash学习笔记/README.md)
+        1. [命令行备忘](./工具使用/命令行备忘/README.md)
+    1. [IDEs设置](./工具使用/IDEs设置/README.md)
+    1. [科学上网](./工具使用/科学上网/README.md)
+
+    - <details>
+
+        <summary>其他</summary>
+
+        1. 容器管理
+
+            1. [Docker使用](./工具使用/Docker使用/README.md)
+            1. [Kubernetes使用](./工具使用/Kubernetes使用/README.md)
+        1. 代理、抓包工具
+
+            1. 针对仅应用层
+
+                1. [whistle使用](./工具使用/whistle使用/README.md)
+                1. [Charles使用](./工具使用/Charles使用/README.md)
+            1. 针对整个网络通信
+
+                1. Wireshark、tcpdump
+        1. [Google搜索技巧](./工具使用/Google搜索技巧/README.md)
+        1. [OpenTelemetry](./工具使用/OpenTelemetry/README.md)
+        </details>
 
 ><details>
 ><summary>废弃内容</summary>
@@ -115,6 +139,7 @@
 >    1. [cssReset.scss](./网站前端/初始化模板/cssReset.scss)
 >    1. [init.html](./网站前端/初始化模板/init.html)
 >1. [SCSS使用](./网站前端/SCSS使用/README.md)
+>1. [/环境安装、配置](./环境安装、配置/README.md)
 ></details>
 
 ><details>
@@ -147,7 +172,7 @@
 
 ---
 ><details>
-><summary>完美不在于无以复加，而在于无可删减。</summary>
+><summary><del>完美不在于无以复加，而在于无可删减。</del></summary>
 >
 >[![Star History Chart](https://api.star-history.com/svg?repos=realgeoffrey/knowledge&type=Date)](https://star-history.com/#realgeoffrey/knowledge&Date)
 ></details>
