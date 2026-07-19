@@ -2148,22 +2148,20 @@ public class GenericExample {
 
     </details>
 
-- <details>
-
-    <summary>Java 与 JavaScript 的反射对比</summary>
-
-    两者都能在运行期查看对象或类型，并按名称读写成员、调用方法或创建对象。
-
-    | 对比点 | Java | JavaScript |
-    | --- | --- | --- |
-    | 语言特点 | 静态类型语言，反射是一套独立的运行期机制 | 动态类型语言，`obj[key]` 本身就能动态访问属性 |
-    | 主要入口 | `Class`、`Constructor`、`Field`、`Method` | `Object`、`Reflect`、`Proxy` |
-    | 类型与元数据 | 可读取 class 文件保留的类型结构、运行期注解和部分泛型声明 | 没有 Java 那样统一的类成员类型和注解元数据；TypeScript 类型通常在编译后擦除 |
-    | 访问边界 | 受访问控制和模块规则限制 | 普通属性通常可查询，`#private` 私有字段不能直接反射访问 |
-
-    `Reflect` 只是 JavaScript 反射能力的一部分；属性访问、原型查询和 `Proxy` 也体现了反射。
-
-    </details>
+><details>
+><summary>Java 与 JavaScript 的反射对比</summary>
+>
+>两者都能在运行期查看对象或类型，并按名称读写成员、调用方法或创建对象。
+>
+>| 对比点 | Java | JavaScript |
+>| --- | --- | --- |
+>| 语言特点 | 静态类型语言，反射是一套独立的运行期机制 | 动态类型语言，`obj[key]` 本身就能动态访问属性 |
+>| 主要入口 | `Class`、`Constructor`、`Field`、`Method` | `Object`、`Reflect`、`Proxy` |
+>| 类型与元数据 | 可读取 class 文件保留的类型结构、运行期注解和部分泛型声明 | 没有 Java 那样统一的类成员类型和注解元数据；TypeScript 类型通常在编译后擦除 |
+>| 访问边界 | 受访问控制和模块规则限制 | 普通属性通常可查询，`#private` 私有字段不能直接反射访问 |
+>
+>`Reflect` 只是 JavaScript 反射能力的一部分；属性访问、原型查询和 `Proxy` 也体现了反射。
+></details>
 
 - 理解反射中的四类对象
 
