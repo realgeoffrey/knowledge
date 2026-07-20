@@ -1534,10 +1534,10 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         扩展agent。
 - 运行环境
 
-    1. 设置：`./app/config/env`文件内容 或 环境变量`EGG_SERVER_ENV`的值 或 根据环境变量`NODE_ENV`设置
-    2. 代码获取：`app.config.env`
-    3. 影响：不同的运行环境会对应egg不同的配置（config、plugin、extend）以及不同内部逻辑
-    4. [与环境变量`NODE_ENV`关系](Https://www.eggjs.org/zh-CN/basics/env#与-node_env-的区别)
+    1. 指定方式：项目根目录的`config/env`文件，或环境变量`EGG_SERVER_ENV`；后者更适合启动时指定，例如`EGG_SERVER_ENV=sit npm start`。
+    2. 以上两种方式均未指定时，Egg根据`NODE_ENV`映射运行环境：未设置 → `local`、`test` → `unittest`、`production` → `prod`。服务器环境建议同时设置`NODE_ENV=production`。
+    3. 代码中通过`app.config.env`获取最终运行环境；该环境决定加载`config/config.{env}.js`、`config/plugin.{env}.js`和`app/extend/*.{env}.js`等环境文件。
+    4. [运行环境及其与`NODE_ENV`的区别](https://www.eggjs.org/zh-CN/basics/env)
 4. 启动初始化`./agent.js`、`./app.js`（全支持：应用、框架、插件）
 
     参数：`agent`或`app`
