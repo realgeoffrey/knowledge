@@ -554,6 +554,8 @@ import static java.lang.Math.PI;    // import static 写具体静态成员或 *�
     - `package` 必须位于有效代码最前面：注释和包注解之后，`import` 与顶级类型声明之前。
     - 同一个源文件里的所有顶级类型属于同一个包。
     - 同一个包的类型可以分散在多个 `.java` 文件里，只要声明相同包名。
+
+        >Maven 里主代码与测试代码分属不同源码根（`src/main/java` 与 `src/test/java`），但可以声明相同包名；包是否相同只看 `package` 声明，不看源码根。同包时测试类可直接使用主代码类型（无需 `import`），也能访问其包访问权限成员。若测试写成 `com.example.test` 之类不同包名，则需 `import`，且不能访问对方的包访问权限成员。
     - 包名通常全小写，常用公司域名倒置加项目模块名，例如 `com.baidu.mall.order`。
     - 包路径通常与目录结构一致，例如 `com.example.demo.service` 对应 `com/example/demo/service`。
     - 不写 `package` 是默认包。默认包适合临时练习；具名包中的代码不能 `import` 默认包类型，也不能直接引用默认包类型。
