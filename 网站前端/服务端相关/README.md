@@ -2,6 +2,7 @@
 
 ## 目录
 1. [前端与服务端配合细节](#前端与服务端配合细节)
+1. [HTTP请求的服务端拦截与限制](#http请求的服务端拦截与限制)
 1. [服务器日志查看](#服务器日志查看)
 1. [接口错误排查](#接口错误排查)
 1. [后端导出文件到浏览器（如：excel）](#后端导出文件到浏览器如excel)
@@ -214,6 +215,45 @@
             1. （特殊业务）不可使用的字段
 
                 接口会返回但页面逻辑不能依赖的字段，用特殊值标记，如`__MOCK_UNUSED_FIELD__`；如果页面展示或依赖该值，说明前端实现有错。
+
+### HTTP请求的服务端拦截与限制
+典型链路：`Client -> CDN/WAF -> 负载均衡/网关 -> HTTP Server（如：Nginx） -> 应用框架/业务代码 -> 数据库/RPC`。
+
+>每一层都可能直接返回响应或关闭连接，后续服务不再收到请求；对同一维度的大小、超时等限制，整条链路的实际上限是各层中的最小值。
+
+1. 常见拦截位置
+
+    | 位置 | 常见检查 |
+    | :--- | :--- |
+    | 网络/TLS | 防火墙、IP黑白名单、连接数、SNI、TLS版本/密码套件、mTLS客户端证书 |
+    | CDN/WAF | DDoS和机器人防护、IP/地域策略、SQL注入、XSS、路径穿越、恶意文件等规则 |
+    | 负载均衡/网关 | Host、路由、HTTP方法、认证/签名、请求配额、限流、超时、重试和熔断 |
+    | HTTP Server/反向代理 | HTTP格式、URI/请求头/请求体大小、读写超时、连接/并发数、上游节点健康状态 |
+    | 应用框架/容器 | `Content-Type`、JSON/表单/文件解析、字段长度与数量、数组元素数量、嵌套深度、CSRF和Session |
+    | 业务代码/下游依赖 | 对象、字段和操作权限，参数与业务状态，数据库或RPC超时/熔断 |
+
+2. 常见结果（状态码可被网关自定义）
+
+    | 类别 | 常见结果 |
+    | :--- | :--- |
+    | HTTP格式、路由、方法或媒体类型 | `400`、`404`、`405`、`414`、`415`、`421`、`431` |
+    | 未登录或无权限 | `401`、`403` |
+    | 请求体过大 | `413 Payload Too Large` |
+    | 客户端发送过慢 | `408 Request Timeout`或关闭连接 |
+    | 超过频率、配额、并发或排队上限 | `429`、`503`或关闭连接 |
+    | 上游响应无效、无健康节点或等待超时 | `502`、`503`、`504` |
+    | 参数、数据状态或业务规则不通过 | `400`、`409`、`422`或业务错误码 |
+
+3. 大小、超时和流量限制
+
+    1. 大小限制不只有请求体：URI过长可返回`414`，请求头过大可返回`400/431`，请求体过大可返回`413`。Nginx的`client_max_body_size`只限制请求体：有`Content-Length`时按字节直接比较，分块传输时按实际读取量累计。应用还应限制单个字段、数组、批处理数量、文件和解压后数据大小，避免内存、CPU或存储被耗尽。
+    2. 超时应分为：连接/TLS握手、读取请求头、读取请求体、网关连接上游、向上游发送、等待上游响应、连接空闲和整体最长执行时间。Nginx的多个`*_timeout`限制两次读写之间的等待时间，不是整个传输的总时间。
+    3. 网关超时只表示它不再等待，不代表后端一定停止执行；对写操作盲目重试可能造成重复数据，需要幂等性或幂等键保护。
+    4. 限流限制单位时间的请求数；并发/排队上限和熔断则用于负载过高、上游故障时快速失败，避免级联雪崩。
+
+>CORS通常是浏览器根据响应头阻止页面读取响应，或预检`OPTIONS`未通过；它不一定表示实际业务请求被网关拦截。状态码、错误页也可能被中间层改写，定位时应结合Trace ID和各层日志，见[接口错误排查](#接口错误排查)。
+
+>参考：[Nginx HTTP核心指令](https://nginx.org/en/docs/http/ngx_http_core_module.html)、[Nginx分块请求体限制](https://mailman.nginx.org/pipermail/nginx/2021-February/060436.html)、[Nginx反向代理超时](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)、[Envoy请求生命周期](https://www.envoyproxy.io/docs/envoy/latest/intro/life_of_a_request.html)、[Envoy熔断](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/circuit_breaking)、[OWASP API资源消耗限制](https://owasp.org/API-Security/editions/2023/en/0xa4-unrestricted-resource-consumption/)、[HTTP Semantics（RFC 9110）](https://datatracker.ietf.org/doc/rfc9110/)、[其他HTTP状态码（RFC 6585）](https://datatracker.ietf.org/doc/rfc6585/)。
 
 ### 服务器日志查看
 >可能在物理机、vps、容器（如：Docker、Kubernetes）中查看日志。
