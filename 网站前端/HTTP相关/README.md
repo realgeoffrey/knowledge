@@ -579,6 +579,13 @@
         | Content-Type | 实体主体的媒体类型（Multipurpose Internet Mail Extensions，MIME types）和编码格式。无论是前端还是后端发起，`Content-Type`必须要与传输的数据类型一一对应，否则解析失败 |
         | Expires | 实体主体过期的日期时间 |
         | Last-Modified | 资源的最后修改日期时间 |
+
+        >Nginx请求体大小限制：
+        >
+        >1. 若链路为“客户端 → LFE网关/负载均衡 → Nginx集群的某个节点 → 后端应用”，一次请求通常只由一个Nginx节点处理，不会叠加各节点的限额。实际可通过的请求体上限是链路各层限制的最小值；节点配置不一致可能导致同一请求偶发`413`。
+        >2. `client_max_body_size`限制客户端请求体大小，可配置于`http`、`server`或`location`，内层覆盖外层；默认为`1m`，`0`表示关闭检查，超过限制返回`413 Payload Too Large`。`client_body_buffer_size`只控制内存缓冲与临时文件，不是请求体上限。
+        >3. 存在`Content-Length`时，直接按字节比较`Content-Length <= client_max_body_size`，不用加上请求行、请求头或TCP/TLS开销；使用分块传输，或HTTP/2、HTTP/3请求未提供`Content-Length`时，Nginx会按实际读取的请求体累计检查。
+        >4. `multipart/form-data`的`Content-Length`还包含表单字段、分隔符和部件头，因此可上传文件会略小于限制值；文件转为Base64后通常增大约`1/3`。排查时应使用`nginx -T`确认目标URI命中的配置，并比对所有集群节点。
     3. 请求头部字段（request）
 
         >包含更多有关要获取的资源或客户端本身信息的消息头。
