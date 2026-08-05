@@ -3169,7 +3169,12 @@ MySQL 是关系型数据库管理系统。一个 MySQL 服务可包含多个数�
 
 后端访问链路：`页面 -> HTTP API -> Controller -> Service -> Mapper/JDBC -> MySQL`。前端不应直接连接数据库。
 
-建议按这条主线学习：`表与约束 -> CRUD -> JOIN/聚合 -> 索引与 EXPLAIN -> 事务与锁 -> Java 集成 -> 备份与监控`。以下示例面向 **MySQL 8.0.16+**，该版本开始真正执行 `CHECK` 约束。
+学习主线：
+
+- 基础：`表与约束 -> CRUD -> JOIN/聚合 -> 索引 -> 事务 -> Java 集成`
+- 进阶：`执行计划 -> 并发与幂等 -> 连接池 -> 读写一致性 -> 生产诊断与容灾`
+
+以下示例面向 **MySQL 8.0.16+**，该版本开始真正执行 `CHECK` 约束。
 
 先在系统终端连接，再在 `mysql>` 提示符后执行 SQL：
 
@@ -3178,7 +3183,7 @@ mysql -h 127.0.0.1 -P 3306 -u root -p
 ```
 
 ```sql
-SHOW DATABASES;
+SHOW DATABASES; -- SHOW SCHEMAS; 是同义写法
 ```
 
 1. **表设计与约束**
@@ -3219,6 +3224,7 @@ SHOW DATABASES;
         user_id BIGINT NOT NULL,
         status VARCHAR(16) NOT NULL DEFAULT 'PENDING',
         total_amount DECIMAL(12,2) NOT NULL,
+        version INT UNSIGNED NOT NULL DEFAULT 0,
         created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
         PRIMARY KEY (id),
         UNIQUE KEY uk_orders_order_no (order_no),
@@ -3263,8 +3269,16 @@ SHOW DATABASES;
     | 半结构化数据 | `JSON` | 不替代稳定、常查询的关系型列 |
     | 必填、唯一、关联 | `NOT NULL`、`UNIQUE`、`FOREIGN KEY` | 数据库约束是最终防线 |
 
+    关系型数据库的关联通常这样落表：
+
+    | 关系 | 常见建模方式 | 本例 |
+    | --- | --- | --- |
+    | 一对一 | 外键加 `UNIQUE`；生命周期完全一致时也可合并为一张表 | 用户与用户详情（本例未拆分） |
+    | 一对多 | 在“多”的一方保存外键 | `users -> orders` |
+    | 多对多 | 用中间表保存两侧外键，并根据业务加联合唯一约束 | `orders <-> products`，中间表为 `order_items` |
+
     - `utf8mb4` 可保存完整 Unicode；排序规则决定比较、排序及大小写/重音敏感性。
-    - 订单明细保存商品名和成交单价快照，避免商品改名或调价后旧订单失真。
+    - 表设计通常先减少重复存储；订单明细保存商品名和成交单价快照，是为了避免商品改名或调价后旧订单失真的有意冗余。
     - Java 校验负责尽早返回友好错误，数据库约束负责阻止绕过应用或并发造成的非法数据。
     - `NULL` 表示未知或不存在，不要用空字符串或 `0` 冒充。
 
@@ -3308,6 +3322,8 @@ SHOW DATABASES;
     HAVING COUNT(o.id) > 0;
     ```
 
+    查询结果可按 `FROM/JOIN -> WHERE -> GROUP BY -> HAVING -> SELECT -> DISTINCT -> ORDER BY -> LIMIT` 理解（不代表实际执行顺序）。`WHERE` 过滤行，`HAVING` 过滤分组；没有 `ORDER BY` 时返回顺序不确定。
+
     判断空值用 `IS NULL`，不要写 `= NULL`；查询只取需要的列，避免无边界的 `SELECT *`。CTE、窗口函数、子查询和集合操作可在掌握上述主线后再学。
 
 1. **索引与 `EXPLAIN`**
@@ -3341,6 +3357,13 @@ SHOW DATABASES;
     MySQL 8.0.18+ 的 `EXPLAIN ANALYZE` 会真正执行查询并显示实际时间、行数和循环次数，生产环境使用前必须评估查询成本与资源影响。
 
     优化顺序：`用代表性参数复现 -> 看执行计划 -> 减少扫描行和返回列 -> 只调整一个索引或一处 SQL -> 复测接口耗时`。不要同时乱改 SQL、索引和服务器参数。
+
+    高级排查关注“估算”与“实际”的差异：
+
+    - 估算行数偏差大：检查参数分布和统计信息，再评估 `ANALYZE TABLE` 或直方图。
+    - 同一 SQL 耗时差异大：对比真实参数、锁等待、返回行数和 P95/P99。
+    - 删除冗余索引：先设为不可见并观测；它仍占空间且有写入成本。
+    - 优化器未选预期索引：先修正 SQL、索引和统计信息，`FORCE INDEX` 只作有回归测试的最后手段。
 
 1. **分页与批量处理**
 
@@ -3391,10 +3414,22 @@ SHOW DATABASES;
     | `REPEATABLE READ` | InnoDB 默认级别；同一事务的一致性读通常复用快照 |
     | `SERIALIZABLE` | 隔离最强，并发成本最高 |
 
-    - 普通 `SELECT` 通常通过 MVCC 读取可见版本；`UPDATE`、`DELETE`、`SELECT ... FOR UPDATE` 读取当前版本并加锁。
-    - 单条条件 `UPDATE` 已能原子判断库存时，不要再“先查、再加锁、再更新”。
-    - InnoDB 的行锁依附于扫描到的索引记录和范围；缺少合适索引可能扩大扫描与锁定范围。
-    - 长事务会长期占用锁和旧版本；事务内不要等待用户输入、远程调用或长时间计算。
+    “脏读”是读到其他事务未提交的值；“不可重复读”是同一事务内两次读取同一行得到不同值；“幻读”是同一条件两次查询得到的记录集合发生变化。具体表现还取决于一致性读、当前读和加锁方式。
+
+    - 普通 `SELECT` 通常读取 MVCC 快照；`UPDATE`、`DELETE`、`SELECT ... FOR UPDATE` 读取当前版本并加锁。
+    - 能用单条条件 `UPDATE` 原子判断时，不要“先查再改”。
+    - 唯一索引等值命中通常只锁记录；`REPEATABLE READ` 下的范围/非唯一索引可能使用 next-key lock（记录锁 + gap lock）。锁范围取决于扫描的索引，不是返回行数。
+    - `SELECT ... FOR UPDATE` 必须放在明确事务中。事务应按固定顺序访问数据，且不包含远程调用或长时间计算。
+
+    多个请求可能同时修改订单时，可用 `version` 实现乐观锁：
+
+    ```sql
+    UPDATE orders
+    SET status = ?, version = version + 1
+    WHERE id = ? AND version = ? AND status = ?;
+    ```
+
+    影响行数为 `0` 表示数据已变，应重新读取后重试或返回冲突。
 
     死锁出现时，InnoDB 会回滚其中一个事务。降低死锁的方法：所有流程按一致顺序更新表和行、缩短事务、使用合适索引。应用应对可重试错误重跑**整个事务**，设置次数上限和退避，并保证幂等；可用 `SHOW ENGINE INNODB STATUS` 查看最近一次死锁信息。
 
@@ -3402,15 +3437,42 @@ SHOW DATABASES;
 
     职责链：`DataSource/连接池 -> Connection -> PreparedStatement/MyBatis -> ResultSet/对象映射 -> Service 事务`。
 
+    **类型映射**
+
+    | MySQL | Java | 注意 |
+    | --- | --- | --- |
+    | `DECIMAL` | `BigDecimal` | 金额指定精度和舍入规则；数值比较通常用 `compareTo` |
+    | `INT` / `BIGINT` | `Integer` / `Long` | 可空列使用包装类；`BIGINT UNSIGNED` 的上界超过 Java `long` |
+    | `DATE` / `DATETIME` / `TIMESTAMP` | `LocalDate` / `LocalDateTime` / `Instant` | `DATETIME` 不带时区；绝对时间点统一用 UTC |
+    | `JSON` | `String` 或领域对象 | 统一序列化和演进规则；高频查询字段优先拆成普通列 |
+
+    **JDBC 与 MyBatis**
+
     - SQL 值使用参数绑定；MyBatis 的 `#{userId}` 是绑定参数，`${orderBy}` 是文本替换，只能接收经过白名单映射的表名、列名或排序方向。
-    - 从连接池取得的 `Connection` 用完仍要 `close()`，通常表示归还连接；JDBC 优先使用 `try-with-resources`。
-    - Mapper 负责 SQL 和映射，Service 负责业务规则与事务，Controller 负责 HTTP 输入输出。
-    - 连接池容量、查询超时和事务超时都要有上限；三者保护的资源和时间范围不同。
+    - `Connection`、`Statement`、`ResultSet` 必须由 `try-with-resources` 或框架关闭；连接池的 `close()` 通常表示归还连接。
+    - 流式读取需正确配置 Connector/J `fetchSize` 和服务端预编译，且读完前不能归还连接。
+    - 批量写入使用 `executeBatch()` / MyBatis `BATCH`，控制批次和事务时长；驱动优化参数需经过压测和语义校验。
+    - MyBatis `fetchSize` 和 `timeout` 最终依赖 JDBC 驱动；二级缓存需显式评估失效与多实例一致性。
+
+    **连接池与事务边界**
+
+    - 按“单实例池大小 × 应用实例数”核算总连接，再根据 active/idle/pending/timeout 和数据库并发指标压测；连接池不是越大越快。
+    - HikariCP 的 `maxLifetime` 应略短于基础设施连接寿命，且 `keepaliveTime < maxLifetime`。获取连接、SQL、事务和 HTTP 超时应分层设置。
+    - Spring `@Transactional` 通常绑定当前线程和连接，不会自动传播到新线程；死锁重试应开启完整的新事务。
+    - MySQL 事务不能保证 HTTP/MQ 同时成功；可用本地 outbox、异步投递和消费端幂等实现最终一致性。
+
+1. **复制、读写分离与故障切换**
+
+    - MySQL 复制默认异步。强一致读应走主库或等待目标 GTID 在副本执行，不用固定 `sleep` 猜延迟。
+    - 路由必须感知事务：同一本地事务内的读写使用同一数据源和连接，不在事务中途把查询切到副本。
+    - GTID 简化副本定位和故障切换，但不代替幂等、流量切换和旧主库隔离。半同步只保证日志已被副本接收，不代表已应用且可查。
+    - 连接中断后 `COMMIT` 结果可能未知；重试前用幂等键、唯一约束或状态查询确认结果。
 
 1. **安全、迁移、备份与监控**
 
     - 应用账号遵循最小权限；迁移账号与应用账号分开。连接使用 TLS，密码通过密钥管理或环境注入，日志不要记录密码、令牌和敏感参数。
     - 用 Flyway 或 Liquibase 管理可审查、可重复的 DDL。MySQL 大多数 DDL 会隐式提交，不能依赖业务事务的 `ROLLBACK` 撤销；破坏性变更应准备回退或恢复方案。
+    - 生产结构变更宜按“先增加兼容字段/索引 -> 分批迁移数据并部署新代码 -> 确认旧代码停用后再删除旧结构”进行。大表 `ALTER TABLE` 前要评估执行算法、元数据锁、额外磁盘空间和复制延迟；即使是在线 DDL，也可能被长事务阻塞。
     - 副本不是备份，它也会复制误删。备份只有经过恢复演练才算可用；时间点恢复还依赖连续的二进制日志。下面的 `--single-transaction` 适用于 InnoDB 等事务表，导出期间应避免 DDL。
 
     ```bash
@@ -3420,20 +3482,35 @@ SHOW DATABASES;
     mysql shop_restore < shop.sql
     ```
 
-    - 优先监控连接池等待、查询延迟和错误率、慢查询、扫描行数、锁等待/死锁、磁盘与 I/O；有复制时再监控复制延迟。
-    - 先修查询、索引和事务，再根据实测瓶颈考虑读副本、分区或分库分表，不为猜测中的规模提前增加复杂度。
+    生产排障要从应用现象下钻到数据库证据：
+
+    | 现象 | 应用侧先看 | MySQL 侧先看 |
+    | --- | --- | --- |
+    | 接口慢 | P50/P95/P99、具体 SQL 标识、返回行数 | `sys.statement_analysis`、`performance_schema.events_statements_summary_by_digest`、慢日志和 `EXPLAIN ANALYZE` |
+    | 连接获取超时 | 池的 active/idle/pending/timeout、持有时长 | 当前连接/运行线程、慢 SQL、长事务；不先调大连接池 |
+    | 锁等待或死锁 | 事务入参、SQL 顺序、重试次数 | `performance_schema.data_lock_waits`、`INFORMATION_SCHEMA.INNODB_TRX`、`SHOW ENGINE INNODB STATUS` |
+    | DDL 长时间卡住 | 发布批次、迁移工具状态 | `sys.schema_table_lock_waits`、`performance_schema.metadata_locks`、未提交长事务 |
+    | 副本读到旧值 | 读写路由、业务一致性级别 | 接收/应用线程、GTID 执行位置、复制延迟与错误 |
+
+    - 监控连接池等待、P95/P99、扫描/返回行数、锁等待、I/O 和复制延迟。
+    - 先修查询、索引和事务，再根据实测考虑读副本、分区或分库分表。
 
 1. **常见错误与完成检查**
 
-    常见错误：拼接用户输入、金额使用浮点数、漏唯一约束、无边界 `SELECT *`、过度建索引、N+1 查询、深分页、长事务、忽略受影响行数、死锁无限重试、生产 DDL 无恢复方案、从未演练恢复。
+    常见错误：
+
+    - 数据：拼接输入、金额用浮点数、漏唯一约束、忽略受影响行数。
+    - 性能：无边界 `SELECT *`、N+1 查询、深分页、过度建索引、连接池盲目调大。
+    - 可靠性：长事务、无限重试、忽略复制延迟、直接重放未知提交、不演练恢复。
 
     完成这一节后，应能：
 
-    - [ ] 创建表、约束和常用 CRUD；
-    - [ ] 写 `JOIN` 与聚合查询；
-    - [ ] 用 `EXPLAIN` 验证复合索引；
-    - [ ] 划定事务并处理锁等待、死锁和重试；
-    - [ ] 使用参数化 Java 数据访问，并按固定顺序排查生产问题。
+    - [ ] 能建表并编写 CRUD、`JOIN` 和聚合查询；
+    - [ ] 能用 `EXPLAIN ANALYZE` 和真实参数验证索引；
+    - [ ] 能处理快照读、当前读、锁、死锁和幂等重试；
+    - [ ] 能设置 Java 类型映射、连接池和分层超时；
+    - [ ] 能处理写后读一致性、故障切换和未知提交；
+    - [ ] 能根据 Performance Schema / `sys` 定位慢 SQL、锁等待和复制延迟。
 
 #### PostgreSQL
 
