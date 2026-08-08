@@ -63,6 +63,10 @@
 >切换版本之后需重装Node.js的全局模块包。
 
 ### [n](https://github.com/tj/n)更新Node.js版本
+
+<details>
+<summary></summary>
+
 >不支持Windows。
 
 1. 安装
@@ -101,6 +105,7 @@
     # 删除当前版本安装的node和npm
     n uninstall
     ```
+</details>
 
 ---
 ### npm
