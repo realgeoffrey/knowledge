@@ -2,23 +2,31 @@
 
 ## 目录
 
-1. [数据库概述](#数据库概述)
-1. [服务安装、启动与连接](#服务安装启动与连接)
-1. [数据库类型详解](#数据库类型详解)
+
+1. [MySQL服务安装、启动与连接](#mysql服务安装启动与连接)
+1. [PostgreSQL服务安装、启动与连接](#postgresql服务安装启动与连接)
+1. [MongoDB服务安装、启动与连接](#mongodb服务安装启动与连接)
+1. [Redis服务安装、启动与连接](#redis服务安装启动与连接)
+1. [关系型数据库](#关系型数据库)
+
+    1. [MySQL](#mysql)
+    1. [PostgreSQL](#postgresql)
+1. [NoSQL 数据库](#nosql-数据库)
+
+    1. [MongoDB](#mongodb)
+    1. [Redis](#redis)
 1. [选型总结](#选型总结)
 
 ---
 
-## 数据库概述
-
 数据库是用于持久化、组织和查询数据的软件。广义的数据库既包括使用表和 SQL 的关系型数据库，也包括键值、文档等 NoSQL 数据库，因此 Redis 也属于数据库。
 
-| 数据库 | 类型 | 数据组织方式 | 本文定位 |
+| 数据库 | 类型 | 数据组织方式 |
 | --- | --- | --- | --- |
-| MySQL | 关系型数据库 | 表、行、列 | 重点 |
-| PostgreSQL | 关系型数据库 | 表、行、列，并支持丰富的类型和扩展 | 简要 |
-| MongoDB | NoSQL 文档数据库 | BSON 文档、集合 | 简要 |
-| Redis | NoSQL 键值数据库 | 内存中的键和多种数据结构 | 重点 |
+| MySQL | 关系型数据库 | 表、行、列 |
+| PostgreSQL | 关系型数据库 | 表、行、列，并支持丰富的类型和扩展 |
+| MongoDB | NoSQL 文档数据库 | BSON 文档、集合 |
+| Redis | NoSQL 键值数据库 | 内存中的键和多种数据结构 |
 
 关系型数据库适合结构稳定、关联和事务要求明确的数据；NoSQL 是多种非关系型数据模型的统称，通常针对特定访问方式简化存储和查询。两者不是替代关系，一个系统可以同时使用多种数据库。
 
@@ -26,7 +34,7 @@
 
 以下命令以 macOS 和 Homebrew 为例。先启动数据库服务，再使用对应客户端连接。
 
-### [`MySQL`](https://dev.mysql.com/doc/refman/en/)
+### [`MySQL`](https://dev.mysql.com/doc/refman/en/)服务安装、启动与连接
 
 ```shell
 # 1. 安装
@@ -85,7 +93,7 @@ DROP USER '「用户名」'@'「主机」';
 
 >MySQL 中 `DATABASE` 与 `SCHEMA` 基本同义；连接后可用 `USE 「数据库名」;` 切换当前数据库。
 
-### [PostgreSQL](https://www.postgresql.org/docs/)
+### [PostgreSQL](https://www.postgresql.org/docs/)服务安装、启动与连接
 
 ```shell
 # 1. 安装
@@ -134,7 +142,7 @@ CREATE USER 用户名 WITH SUPERUSER PASSWORD '密码';
 DROP USER 用户名;
 ```
 
-### [MongoDB](https://www.mongodb.com/docs/)
+### [MongoDB](https://www.mongodb.com/docs/)服务安装、启动与连接
 
 ```shell
 # 1. 安装（macOS）
@@ -169,7 +177,7 @@ db.「集合名」.deleteOne({ 「查询条件」 })
 
 >`updateOne()` 和 `deleteOne()` 会修改数据，执行前先用同一查询条件运行 `find()` 确认目标文档。
 
-### [Redis](https://redis.io/docs/latest/)
+### [Redis](https://redis.io/docs/latest/)服务安装、启动与连接
 
 ```shell
 # 1. 安装
@@ -215,11 +223,9 @@ SCAN 0 MATCH '「匹配模式，如 user:*」' COUNT 「数量」
 
 >`NX` 表示仅在 key 不存在时写入，`XX` 表示仅在 key 已存在时写入；`EX` 和 `PX` 分别以秒和毫秒设置过期时间。遍历键时将 `SCAN` 返回的游标传入下一次调用，直到游标再次为 `0`；生产环境避免使用可能长时间阻塞服务的 `KEYS *`。
 
-## 数据库类型详解
+## 关系型数据库
 
-### 关系型数据库
-
-#### MySQL
+### MySQL
 
 MySQL 是关系型数据库管理系统。一个 MySQL 服务可包含多个数据库（`DATABASE` 与 `SCHEMA` 在 MySQL 中基本同义）；数据库由表组成，约束保证数据规则，索引加快查询，SQL 用来读写和管理数据。
 
@@ -568,7 +574,7 @@ SHOW DATABASES; -- SHOW SCHEMAS; 是同义写法
     - [ ] 能处理写后读一致性、故障切换和未知提交；
     - [ ] 能根据 Performance Schema / `sys` 定位慢 SQL、锁等待和复制延迟。
 
-#### PostgreSQL
+### PostgreSQL
 
 PostgreSQL 是开源的对象关系型数据库管理系统，与 MySQL 一样使用表和 SQL，适合事务、关联查询和结构化数据。它强调标准 SQL、复杂查询以及类型、函数和扩展机制；是否选择它，应由项目需求和团队经验决定，而不是简单比较“谁更强”。
 
@@ -583,11 +589,11 @@ PostgreSQL 的对象层级：
 
 MySQL 与 PostgreSQL 都能处理常规 Web 业务。已有 MySQL 技术栈时通常继续使用 MySQL；明确需要 PostgreSQL 的复杂 SQL、扩展类型或特定扩展时，再选择 PostgreSQL。
 
-### NoSQL 数据库
+## NoSQL 数据库
 
 NoSQL 不是一种固定的数据模型，而是键值、文档、列族、图等非关系型数据库的统称。本节只介绍 MongoDB 和 Redis。
 
-#### MongoDB
+### MongoDB
 
 MongoDB 是文档数据库：一条记录是一个 BSON 文档，多个文档组成集合（Collection）。文档类似 JSON 对象，可以包含数组和嵌套文档；同一集合中的文档不必拥有完全相同的字段。
 
@@ -599,7 +605,7 @@ MongoDB 适合：
 
 灵活结构不等于不需要设计。仍要统一字段类型、建立必要索引，并决定相关数据是嵌入文档还是保存引用。如果业务依赖大量关联、严格约束和复杂事务，关系型数据库通常更直接。
 
-#### Redis
+### Redis
 
 Redis 是主要在内存中读写的 NoSQL 键值数据库。它不仅保存字符串，还提供多种数据结构和原子命令，常用于缓存、会话、计数器、排行榜、限流和消息处理。
 
@@ -638,7 +644,7 @@ Redis 是主要在内存中读写的 NoSQL 键值数据库。它不仅保存字�
 
 常见做法是由 MySQL 保存需要可靠持久化的事实数据，Redis 缓存热点结果：读取时先查 Redis，未命中再查 MySQL 并写入带 TTL 的缓存；更新时先保证 MySQL 写入成功，再删除或更新缓存。缓存一致性、并发回源和失败重试仍需按业务要求设计，不能把 Redis 缓存直接当作唯一事实来源。
 
-## 选型总结
+### 选型总结
 
 | 主要需求 | 优先考虑 | 原因 |
 | --- | --- | --- |
