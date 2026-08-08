@@ -148,7 +148,7 @@
 
 ---
 ><details>
-><summary>完美不在于无以复加，而在于无可删减。</summary>
+><summary><del>完美不在于无以复加，而在于无可删减。</del></summary>
 >
 >[![Star History Chart](https://api.star-history.com/svg?repos=realgeoffrey/knowledge&type=Date)](https://star-history.com/#realgeoffrey/knowledge&Date)
 ></details>
