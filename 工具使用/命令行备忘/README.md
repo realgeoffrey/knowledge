@@ -29,6 +29,7 @@
 1. [批量删除文件](#批量删除文件)
 1. [`mysql`](#mysql)
 1. [postgresql](#postgresql)
+1. [mongodb](#mongodb)
 1. [redis](#redis)
 1. [`read`](#read)
 1. [`sed`](#sed)
@@ -656,6 +657,40 @@ DROP USER 用户名;
 >2. 每次 `psql` 连接只进入一个数据库；模式、表、视图、函数等属于当前数据库，不能用 `数据库名.模式名.表名` 跨库访问或创建。要给非当前数据库创建模式，需要先 `\c 「数据库名」` 切换连接，或在 shell 中执行 `psql -d 「数据库名」 -c 'CREATE SCHEMA 「模式名」;'`。
 >3. Schema 是数据库内的命名空间，用来组织表、视图、函数等对象；不同 Schema 下可以存在同名表。创建或访问对象时若不写 Schema，PostgreSQL 会按 `search_path` 顺序查找或选择目标 Schema；默认通常是 `"$user", public`，即先尝试当前用户名同名 Schema，找不到或不可用时再使用 `public`。可用 `SHOW search_path;` 查看，用 `SET search_path TO 「Schema名」, public;` 临时调整。
 
+#### [mongodb](https://www.mongodb.com/docs/)
+```shell
+# 1. 安装（macOS）
+brew tap mongodb/brew
+brew install mongodb-community@8.0
+
+# 2. 管理服务
+brew services start mongodb-community@8.0
+brew services stop mongodb-community@8.0
+brew services restart mongodb-community@8.0
+brew services info mongodb-community@8.0
+
+# 3. 连接；本地默认地址为 mongodb://127.0.0.1:27017
+mongosh
+mongosh 'mongodb://「用户名」:「密码」@「主机」:「端口」/「数据库名」'
+```
+
+>进入 `mongosh` 后，`help` 查看帮助，`exit` 退出。`use` 只切换当前数据库；首次写入数据后，不存在的数据库和集合才会被创建。
+
+```javascript
+show dbs
+use 「数据库名」
+db
+show collections
+
+db.「集合名」.insertOne({ 「字段名」: 「值」 })
+db.「集合名」.find({ 「字段名」: 「值」 }).sort({ 「排序字段」: -1 }).limit(「数量」)
+db.「集合名」.countDocuments({ 「字段名」: 「值」 })
+db.「集合名」.updateOne({ 「查询条件」 }, { $set: { 「字段名」: 「新值」 } })
+db.「集合名」.deleteOne({ 「查询条件」 })
+```
+
+>`updateOne()` 和 `deleteOne()` 会修改数据，执行前先用同一查询条件运行 `find()` 确认目标文档。
+
 #### redis
 ```shell
 # 1. 安装
@@ -686,6 +721,29 @@ redis-cli -a 「密码」 ping     # 带密码；也可用 -u 见下
 redis-cli -u 'redis://:「密码」@「地址」:「端口」/「逻辑库序号」' ping
 redis-cli INFO server          # 看版本、uptime 等；确认连的是哪台实例
 ```
+
+>进入 `redis-cli` 后，可直接执行 Redis 命令；`HELP 「命令」` 查看帮助，`QUIT` 退出。
+
+```text
+SET 「key」 「value」
+SET 「key」 「value」 EX 「秒数」 NX
+GET 「key」
+DEL 「key1」 「key2」
+EXISTS 「key」
+TTL 「key」
+SCAN 0 MATCH '「匹配模式，如 user:*」' COUNT 「数量」
+```
+
+>`NX` 表示仅在 key 不存在时写入，`XX` 表示仅在 key 已存在时写入；`EX` 和 `PX` 分别以秒和毫秒设置过期时间。遍历键时将 `SCAN` 返回的游标传入下一次调用，直到游标再次为 `0`；生产环境避免使用可能长时间阻塞服务的 `KEYS *`。
+
+>Redis 主要在内存中读写数据，也可通过 RDB 快照、AOF 日志或两者组合持久化到磁盘。重启后是否丢失数据，取决于持久化配置和故障时机。
+
+| 常见缓存问题 | 含义 | 常用处理 |
+| --- | --- | --- |
+| 缓存雪崩 | 大量 key 在短时间内同时失效，请求集中转向数据库 | 错开过期时间并加随机值、缓存预热、限流或降级 |
+| 缓存穿透 | 缓存和数据库都没有目标数据，重复请求持续查询数据库 | 参数校验、布隆过滤器、短时间缓存空结果 |
+| 缓存击穿 | 某个热点 key 失效时，大量并发请求同时查询数据库 | 互斥更新（只允许一个请求回源）、逻辑过期、提前刷新热点数据 |
+| 缓存污染 | 低频或仅访问一次的数据长期占用内存 | 设置合理的 TTL、`maxmemory` 和键淘汰策略 |
 
 #### `read`
 >以下是 Bash 语法；Zsh 等 Shell 的部分选项含义不同。通常建议加 `-r`，避免把反斜杠当作转义符。
