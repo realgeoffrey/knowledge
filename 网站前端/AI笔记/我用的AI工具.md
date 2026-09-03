@@ -15,7 +15,7 @@
     - 使用的的配置
 
         1. [superpowers](https://github.com/obra/superpowers)
-        1. [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)
+        1. ~~[andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)~~
         1. [grill-me](https://github.com/mattpocock/skills/blob/main/skills/productivity/grill-me/SKILL.md)
         1. [ponytail](https://github.com/DietrichGebert/ponytail)
 1. chat ai
