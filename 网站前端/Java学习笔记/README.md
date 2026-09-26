@@ -2334,7 +2334,7 @@ public class GenericExample {
 
     1. 配置入口
 
-        - 配置分工：`pom.xml` 管项目构建，`settings.xml` 管本机环境，`.mvn/` 管项目运行参数，命令行 / IDE 决定本次执行。
+        - 配置分工：项目/`pom.xml` 管项目构建，全局/`settings.xml` 管本机环境，项目/`.mvn/` 管项目运行参数，命令行 / IDE 决定单次执行。
 
             1. POM 与 settings 都是 XML，但 schema（元素与结构约束）不同：依赖、插件放 POM；账号、代理、镜像放 settings。
             1. IDE 的 Maven 版本、JDK、settings 路径、Profiles 选择和运行配置通常保存在 IDE 本地配置中（如 `.idea` 或其他目录）。**同步 / 重载 Maven 项目**会重读 POM、解析下载依赖并更新 IDE 的模块、源码根和 classpath；不等于执行 `compile` / `package` / `install`，构建和运行需另行触发。
