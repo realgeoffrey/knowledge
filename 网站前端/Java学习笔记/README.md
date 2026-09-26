@@ -2352,7 +2352,33 @@ public class GenericExample {
             >参考：<https://maven.apache.org/ref/3.9.15/maven-model/maven.html>
 
             1. 坐标：`groupId:artifactId:version`（GAV）标识项目版本，制品还区分扩展名和 `classifier`。`packaging` 决定打包方式与默认插件绑定；依赖 `type` 决定制品类型，两者默认均为 `jar`，但 `type` 不总等于扩展名，如 `test-jar` 对应 classifier 为 `tests` 的 jar。
-            1. 核心区域：`properties` 定义 `${名称}` 属性；`dependencies` / `dependencyManagement` 声明 / 管理依赖；`build/plugins` / `build/pluginManagement` 配置 / 管理插件；`modules` 聚合模块；`repositories` / `pluginRepositories` 配置下载源，`distributionManagement` 配置发布目标。
+            1. 核心区域：`properties` 定义属性；`dependencies` / `dependencyManagement` 声明 / 管理依赖；`build/plugins` / `build/pluginManagement` 配置 / 管理插件；`modules` 聚合模块；`repositories` / `pluginRepositories` 配置下载源，`distributionManagement` 配置发布目标。
+            1. `properties`：就是一组「名字 = 值」。用法分两种——**特殊名字写了就生效**；**普通名字要拿 `${名字}` 去别处引用**。
+
+                ```xml
+                <properties>
+                    <!-- 特殊名字：编译插件会自己来读，不用再写 ${maven.compiler.release} -->
+                    <maven.compiler.release>8</maven.compiler.release>
+                    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+                    <!-- 普通名字：只是变量，下面依赖里要用 ${junit.version} 才有用 -->
+                    <junit.version>5.13.4</junit.version>
+                </properties>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.junit.jupiter</groupId>
+                        <artifactId>junit-jupiter</artifactId>
+                        <version>${junit.version}</version>
+                        <scope>test</scope>
+                    </dependency>
+                </dependencies>
+                ```
+
+                1. 常见特殊名字：`maven.compiler.release`（编译到哪个 Java 版本）、`project.build.sourceEncoding`（源码 / 资源默认编码）、`project.reporting.outputEncoding`（报告编码）、`project.build.outputTimestamp`（打 jar 的时间戳，方便可复现构建）。
+                1. Maven 自带的也能用 `${}`，不用你在 `properties` 里定义，如 `${project.version}`、`${project.basedir}`；环境变量用 `${env.CI}`。命令行 `mvn -Djunit.version=5.10.0 ...` 可临时改同名值。
+                1. 别把 `${java.version}` 当成「编译目标」——那是当前 JVM 自己的版本号；要设编译目标用 `maven.compiler.release`。
+                1. 若开启了资源 filtering，资源文件里的 `${...}` 也会被这些值替换；这和 Spring 配置文件里的 `${}` 不是同一套东西，别混。
             1. Maven 默认目录约定
 
                 >“约定大于配置”：沿用默认目录、生命周期和插件规则，按需覆盖；依赖 / 插件版本和 Java 编译目标仍应明确管理。
@@ -2454,7 +2480,7 @@ public class GenericExample {
 
             `pluginManagement` 管理插件版本和配置，不新增执行；插件经 `build/plugins` 或默认生命周期绑定引入后才应用。关键插件版本应显式固定或由父 POM 管理。
 
-        1. 编译目标与编码：`mvn -v` 查看运行 Maven 的 JDK；JDK 9+ 编译优先用 `release` 约束语言、字节码和 Java SE API，`source` / `target` 不能阻止误用新 API。
+        1. 编译目标与编码：用约定属性声明「按哪个 Java 版本编译」和「源文件编码」。`mvn -v` 可确认当前跑 Maven 的 JDK；该 JDK 版本须 ≥ `release`。
 
             ```xml
             <properties>
@@ -2463,7 +2489,7 @@ public class GenericExample {
             </properties>
             ```
 
-            编译 JDK 须支持目标版本，`maven-compiler-plugin` 须支持 `release`。若运行 Maven 的 JDK 与目标编译 / 测试 JDK 不同，可用 Toolchains（本机 `~/.m2/toolchains.xml` + POM 中 toolchain 配置）另行指定 JDK。JDK 8 搭配 Compiler Plugin 3.13.0+ 时，`release=8` 会改写成等价的 `source` / `target`。
+            优先用 `release`（同时约束语法、字节码和可用 API），不要用老的 `source` / `target` 组合。
 
         1. 命令格式：`mvn [选项] [阶段或插件目标] [-D名称=值]`；`-D` 设置 Maven 用户属性，是否传给应用由插件配置决定。
         1. 常用参数：`-s` / `-gs` 指定用户 / 全局 settings，`-f` 指定 POM，`-P` 激活 profile，`-o` 离线，`-U` 检查更新，`-B` 非交互（适合 CI），`-ntp` 隐藏下载进度，`-e` 打印异常栈，`-X` 打开调试日志。
