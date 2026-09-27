@@ -2423,6 +2423,9 @@ public class GenericExample {
         1. 依赖解析逻辑与优先级
 
             1. 先复用可用的本地制品，缺失或需检查更新时访问远程。本地仓库不是“有文件就能用”的简单缓存：解析器还会核对来源仓库、缓存的失败记录与元数据；目录里有 jar 不代表本次解析一定复用。
+
+                >下载中断或失败时 Maven 不会自动清掉残留（不完整 / 损坏 jar，或仅有 `.lastUpdated`），之后易反复命中坏缓存；应删该坐标版本目录（默认常在 `~/.m2/repository/<groupId路径>/<artifactId>/<version>/`）再重下，或 `mvn dependency:purge-local-repository`，一般不必清空整个本地仓库。`-U` 可强制复查快照与曾失败 / 缺失的 release，但修不好已损坏的半截 jar。
+
             1. 远程仓库合并顺序：有效 settings → 当前构建的有效 POM（含父 POM、Super POM）→ 依赖路径上的 POM；激活的 profile 参与合并，同 id 的 settings 仓库覆盖 POM 仓库。
             1. 下载前应用 `mirrors`：先精确匹配仓库 id，否则选首个匹配模式的镜像；同一仓库只选一个镜像，失败不自动回退原地址。
             1. `releases` / `snapshots` 控制版本类型；`updatePolicy` 支持 `always`、`daily`（默认）、`interval:分钟`、`never`。`-o` 禁止远程访问；`-U` 强制检查更新的快照和缺失的 release，不会升级固定版本号。
