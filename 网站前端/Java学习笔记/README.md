@@ -2346,6 +2346,7 @@ public class GenericExample {
             1. 层级：用户级 `${user.home}/.m2/settings.xml` 与全局级 `${maven.home}/conf/settings.xml` 合并，冲突项以用户级为主。
             1. 根级配置：`localRepository` 指定本地仓库，默认 `${user.home}/.m2/repository`；交互开关 `interactiveMode` 默认 `true`，离线开关 `offline` 默认 `false`。
             1. 仓库访问：`mirrors` 替换下载源，`servers` 提供仓库认证，`proxies` 配置网络代理及其认证；密码 / token 可用 `${env.变量名}` 注入，不提交真实凭证。
+            1. `${}` 插值：settings 只认系统属性与 `${env.变量}`，**不读** `pom.xml` 的 `properties` / `${project.*}`；激活的 settings profile 的 `properties` 可被 POM 引用，但不能用于 settings 自身插值。
             1. 环境扩展：`pluginGroups` 扩展插件前缀搜索的 groupId；`profiles` / `activeProfiles` 定义和激活环境配置。settings profile 仅支持 `id`、`activation`、`properties`、`repositories`、`pluginRepositories`。
         1. 项目构建模型：[`pom.xml`](./pom.xml)
 

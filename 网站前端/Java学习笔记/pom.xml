@@ -121,6 +121,7 @@
 
     <!--
         properties 用 ${名称} 引用；内置属性如 ${project.version}、${project.basedir}、${env.CI}。
+        不参与 settings.xml 插值；settings profile 的 properties 可反向进入 POM。
         CLI 的 -D 可覆盖多数同名项目属性；${java.version} 本身不是 Maven 的编译目标配置。
         release 在 JDK 9+ 同时约束语言、字节码和 Java SE API；source/target 不限制可用 API。
         Compiler Plugin 3.13.0+ 在 JDK 8 上把 release=8 转为 source/target；编译 JDK 必须支持目标版本。
