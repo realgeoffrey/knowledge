@@ -2336,25 +2336,25 @@ public class GenericExample {
 
         - 配置分工：项目/`pom.xml` 管项目构建，全局/`settings.xml` 管本机环境，项目/`.mvn/` 管项目运行参数，命令行 / IDE 决定单次执行。
 
-            1. POM 与 settings 都是 XML，但 schema（元素与结构约束）不同：依赖、插件放 POM；账号、代理、镜像放 settings。
-            1. IDE 的 Maven 版本、JDK、settings 路径、Profiles 选择和运行配置通常保存在 IDE 本地配置中（如 `.idea` 或其他目录）。**同步 / 重载 Maven 项目**会重读 POM、解析下载依赖并更新 IDE 的模块、源码根和 classpath；不等于执行 `compile` / `package` / `install`，构建和运行需另行触发。
-            1. 运行参数：项目级 `.mvn/maven.config` 与环境变量 `MAVEN_ARGS` 提供传给 `mvn` 的命令行参数；`.mvn/jvm.config` 与 `MAVEN_OPTS` 提供**运行 Maven 进程**的 JVM 参数（不等于业务应用的 JVM 参数）。Maven 3.9.x 的 `maven.config` 中每个参数独占一行。
+            1. schema 不同：依赖、插件放 POM；账号、代理、镜像放 settings。
+            1. IDE 的 Maven / JDK / settings / Profiles 等多保存在本地配置（如 `.idea`）。**同步 / 重载 Maven 项目**会重读 POM、解析依赖并更新模块与 classpath；不等于执行 `compile` / `package` / `install`。
+            1. 运行参数：`.mvn/maven.config` 与 `MAVEN_ARGS` 传给 `mvn`；`.mvn/jvm.config` 与 `MAVEN_OPTS` 给 **Maven 进程** JVM（不是业务应用）。Maven 3.9.x 的 `maven.config` 每参数一行。
         1. 运行环境配置：[`settings.xml`](./settings.xml)
 
             >参考：<https://maven.apache.org/ref/3.9.15/maven-settings/settings.html>
 
-            1. 层级：用户级 `${user.home}/.m2/settings.xml` 与全局级 `${maven.home}/conf/settings.xml` 合并，冲突项以用户级为主。
-            1. 根级配置：`localRepository` 指定本地仓库，默认 `${user.home}/.m2/repository`；交互开关 `interactiveMode` 默认 `true`，离线开关 `offline` 默认 `false`。
-            1. 仓库访问：`mirrors` 替换下载源，`servers` 提供仓库认证，`proxies` 配置网络代理及其认证；密码 / token 可用 `${env.变量名}` 注入，不提交真实凭证。
-            1. `${}` 插值：settings 只认系统属性与 `${env.变量}`，**不读** `pom.xml` 的 `properties` / `${project.*}`；激活的 settings profile 的 `properties` 可被 POM 引用，但不能用于 settings 自身插值。
-            1. 环境扩展：`pluginGroups` 扩展插件前缀搜索的 groupId；`profiles` / `activeProfiles` 定义和激活环境配置。settings profile 仅支持 `id`、`activation`、`properties`、`repositories`、`pluginRepositories`。
+            1. 层级：用户级 `~/.m2/settings.xml` 与全局级 `${maven.home}/conf/settings.xml` 合并，冲突以用户级为准；`-s` / `-gs` 可分别指定。
+            1. 根级：`localRepository`（默认 `~/.m2/repository`）、`interactiveMode`（默认 `true`）、`offline`（默认 `false`）。
+            1. 仓库访问：`mirrors` 换下载源，`servers` 认证，`proxies` 网络代理；密码 / token 用 `${env.变量}`，不提交真实凭证。
+            1. `${}`：settings 只认系统属性与 `${env.变量}`，**不读** POM 的 `properties` / `${project.*}`；激活的 settings profile 的 `properties` 可被 POM 引用，但不能用于 settings 自插值。
+            1. 扩展：`pluginGroups` 扩插件前缀 groupId；settings profile 仅含 `id` / `activation` / `properties` / `repositories` / `pluginRepositories`，由 `profiles` / `activeProfiles` 定义与激活。
         1. 项目构建模型：[`pom.xml`](./pom.xml)
 
             >参考：<https://maven.apache.org/ref/3.9.15/maven-model/maven.html>
 
-            1. 坐标：`groupId:artifactId:version`（GAV）标识项目版本，制品还区分扩展名和 `classifier`。`packaging` 决定打包方式与默认插件绑定；依赖 `type` 决定制品类型，两者默认均为 `jar`，但 `type` 不总等于扩展名，如 `test-jar` 对应 classifier 为 `tests` 的 jar。
-            1. 核心区域：`properties` 定义属性；`dependencies` / `dependencyManagement` 声明 / 管理依赖；`build/plugins` / `build/pluginManagement` 配置 / 管理插件；`modules` 聚合模块；`repositories` / `pluginRepositories` 配置下载源，`distributionManagement` 配置发布目标。
-            1. `properties`：就是一组「名字 = 值」。用法分两种——**特殊名字写了就生效**；**普通名字要拿 `${名字}` 去别处引用**。
+            1. 坐标：`groupId:artifactId:version`（GAV）；制品另有扩展名与 `classifier`。`packaging` 决定打包与默认插件绑定；依赖 `type` 决定制品类型；两者默认均为 `jar`（`type` 不总等于扩展名，如 `test-jar` → classifier `tests`）。
+            1. 核心区域：`properties`；`dependencies` / `dependencyManagement`；`build/plugins` / `pluginManagement`；`modules`；`repositories` / `pluginRepositories`（下载）；`distributionManagement`（发布）。
+            1. `properties`：特殊名字写了插件会读；普通名字须 `${名字}` 引用。
 
                 ```xml
                 <properties>
@@ -2376,13 +2376,8 @@ public class GenericExample {
                 </dependencies>
                 ```
 
-                1. 常见特殊名字：`maven.compiler.release`（编译到哪个 Java 版本）、`project.build.sourceEncoding`（源码 / 资源默认编码）、`project.reporting.outputEncoding`（报告编码）、`project.build.outputTimestamp`（打 jar 的时间戳，方便可复现构建）。
-                1. Maven 自带的也能用 `${}`，不用你在 `properties` 里定义，如 `${project.version}`、`${project.basedir}`；环境变量用 `${env.CI}`。命令行 `mvn -Djunit.version=5.10.0 ...` 可临时改同名值。
-                1. 别把 `${java.version}` 当成「编译目标」——那是当前 JVM 自己的版本号；要设编译目标用 `maven.compiler.release`。
-                1. 若开启了资源 filtering，资源文件里的 `${...}` 也会被这些值替换；这和 Spring 配置文件里的 `${}` 不是同一套东西，别混。
-            1. Maven 默认目录约定
-
-                >“约定大于配置”：沿用默认目录、生命周期和插件规则，按需覆盖；依赖 / 插件版本和 Java 编译目标仍应明确管理。
+                常见特殊名：`maven.compiler.release`（编译目标）、`project.build.sourceEncoding` / `project.reporting.outputEncoding`（编码）、`project.build.outputTimestamp`（归档时间戳，利于[可复现构建](https://maven.apache.org/guides/mini/guide-reproducible-builds.html)）。内置如 `${project.version}`、`${project.basedir}`、`${env.CI}`；`-D` 可临时覆盖。`${java.version}` 是当前 JVM 版本，不是编译目标。资源 filtering 的 `${}` ≠ Spring 配置占位符。
+            1. 默认目录（约定大于配置）：沿用 `src/main|test/{java,resources}` 与 `target/`，按需覆盖；依赖 / 插件版本与 Java 编译目标仍应显式管理。
 
                 <details>
                 <summary>Maven 默认目录</summary>
@@ -2404,47 +2399,47 @@ public class GenericExample {
                 ```
                 </details>
 
-                >资源由资源插件按相对路径原样复制到输出目录，不经 Java 编译器编译；仅在开启 filtering 时替换文本中的 `${...}`（二进制文件不宜过滤）。Classpath（类路径）是查找类和资源的目录 / jar 路径，Maven 按 scope 组织编译、测试和运行的 classpath。
+                >资源由资源插件按相对路径复制；开启 filtering 才替换 `${...}`（勿滤二进制）。Classpath 按 scope 组织编译 / 测试 / 运行路径。
 
-            1. **继承与聚合**：`parent` 继承公共配置，且只能有一个；`modules` 聚合模块参与构建，不自动建立继承或依赖。父 POM 与聚合 POM 常合一，使用 `packaging=pom`；模块间依赖仍用 `dependencies` 声明。
-            1. 父 POM 的 `relativePath` 默认 `../pom.xml`，`<relativePath/>` 关闭相对路径查找；无显式父 POM 仍继承 Super POM（Maven 内置的隐式父模型，提供默认插件绑定、中央仓库等）。纯父 POM / BOM 不需要源码；传统 `war` 项目可有 `src/main/webapp`。
-            1. 构建 profile：用 `-Pdev` 或 JDK、操作系统、属性、文件存在等条件激活；同一 POM 里若已有其他 profile 被激活，带 `activeByDefault` 的 profile 通常会停用。Maven profile 只影响构建期配置，不会自动激活 Spring 的运行期 profile。
+            1. **继承与聚合**：`parent` 只能一个，继承公共配置；`modules` 只聚合构建，不自动继承或产生依赖。二者常合一为 `packaging=pom`，模块间依赖仍用 `dependencies`。`relativePath` 默认 `../pom.xml`，`<relativePath/>` 关闭查找；无显式 parent 仍继承 Super POM（默认插件绑定、中央仓库等）。纯父 POM / BOM 无需源码；传统 `war` 可有 `src/main/webapp`。
+            1. 构建 profile：`-P` 或 jdk / os / property / file 等激活；同 POM 已有其他激活 profile 时，`activeByDefault` 通常停用。Maven profile 只影响构建期，不会自动激活 Spring 运行期 profile。
     1. <details>
 
         <summary>依赖、仓库与版本管理</summary>
 
         1. 仓库类型
 
-            仓库分为 **本地** 与 **远程**；远程仓库再按来源或用途分类，同一服务可承担多种角色。
+            仓库分 **本地** 与 **远程**；远程再按来源 / 用途分类，同一服务可兼多角色。
 
-            1. **本地仓库**：缓存远程依赖 / 插件，保存 `install` 的产物；路径由 settings 的 `localRepository` 或 `-Dmaven.repo.local=路径` 指定。
-            1. **远程仓库**：通过 URL 访问，常用 `https`，也支持 `file` 等。按来源分为默认公共的**中央仓库** `central`（`https://repo.maven.apache.org/maven2`）、厂商或组织提供的**第三方仓库**，以及 Nexus、Artifactory 等**私服**（代理上游、托管内部制品、统一权限）。
-            1. 按用途在配置中分工：`repositories` 是依赖下载源，`pluginRepositories` 是插件及其依赖的下载源，`distributionManagement` 是 `deploy` 上传目标，settings 的 `mirrors` 替换匹配的下载源但不改变发布目标。
+            1. **本地仓库**：缓存远程依赖 / 插件，保存 `install` 产物；路径由 `localRepository` 或 `-Dmaven.repo.local=` 指定。
+            1. **远程仓库**：常用 `https`（亦支持 `file` 等）。来源含中央仓库 `central`（`https://repo.maven.apache.org/maven2`）、第三方仓库，以及 Nexus / Artifactory 等私服（代理上游、托管内部制品、统一权限）。
+            1. 用途分工：`repositories` 依赖下载，`pluginRepositories` 插件下载，`distributionManagement` 是 `deploy` 上传目标；`mirrors` 只替换匹配的下载源，不改变发布地址。
 
         1. 依赖解析逻辑与优先级
 
-            1. 先复用可用的本地制品，缺失或需检查更新时访问远程。本地仓库不是“有文件就能用”的简单缓存：解析器还会核对来源仓库、缓存的失败记录与元数据；目录里有 jar 不代表本次解析一定复用（还需要校验）。
+            1. 先复用可用本地制品，缺失或需更新时访问远程。本地不是“有文件就能用”：还要核对来源、失败记录与元数据。
 
-                >下载中断或失败时 Maven 不会自动清掉残留（不完整 / 损坏 jar，或仅有 `.lastUpdated`），之后易反复命中坏缓存；应删该坐标版本目录（默认常在 `~/.m2/repository/<groupId路径>/<artifactId>/<version>/`）再重下，或 `mvn dependency:purge-local-repository`，一般不必清空整个本地仓库。`-U` 可强制复查快照与曾失败 / 缺失的 release，但修不好已损坏的半截 jar。
+                >下载失败残留（半截 jar、`.lastUpdated`）不会自动清除，易反复踩坑；删该坐标版本目录（常在 `~/.m2/repository/<groupId路径>/<artifactId>/<version>/`）或 `mvn dependency:purge-local-repository`，一般不必清空整个仓库。`-U` 可强制复查快照与曾失败 / 缺失的 release，但修不好已损坏的 jar。
 
-            1. 远程仓库合并顺序：有效 settings → 当前构建的有效 POM（含父 POM、Super POM）→ 依赖路径上的 POM；激活的 profile 参与合并，同 id 的 settings 仓库覆盖 POM 仓库。
-            1. 下载前应用 `mirrors`：先精确匹配仓库 id，否则选首个匹配模式的镜像；同一仓库只选一个镜像，失败不自动回退原地址。
-            1. `releases` / `snapshots` 控制版本类型；`updatePolicy` 支持 `always`、`daily`（默认）、`interval:分钟`、`never`。`-o` 禁止远程访问；`-U` 强制检查更新的快照和缺失的 release，不会升级固定版本号。
+            1. 远程仓库合并：有效 settings → 有效 POM（含父 POM、Super POM）→ 依赖路径上的 POM；同 id 时 settings 仓库覆盖 POM 仓库。
+            1. `mirrors`：先精确匹配仓库 id，否则取首个匹配模式；每仓库只选一个镜像，失败不回退原地址。
+            1. `releases` / `snapshots` 控制版本类型；`updatePolicy`：`always` / `daily`（默认）/ `interval:分钟` / `never`。`-o` 离线；`-U` 强制查更新快照与缺失 release，不升级固定版本号。
 
         1. 配置方式
 
-            1. 仅用中央仓库通常无需配置，Super POM 已提供 `central`。
-            1. 团队共享下载源写 POM 的 `repositories` / `pluginRepositories`；机器差异写 settings profile。
-            1. `mirrorOf` 常用 `central`、`*`、`external:*`（排除本机与 `file`）、`*,!repoId`。`*` 要求镜像提供全部所需制品；多个镜像不会自动聚合，上游聚合交给私服。
-            1. 认证使用 `servers/server`，id 匹配实际仓库或镜像 id；下载 / 发布是否需要凭证由服务端决定。
-            1. 发布 release 用 `distributionManagement/repository`，快照优先用 `snapshotRepository`，未配置则回退到 `repository`；服务端须允许对应版本类型。
+            1. 仅用中央仓库通常无需配置（Super POM 已提供 `central`）。
+            1. 团队共享下载源写 POM；机器差异写 settings profile。
+            1. `mirrorOf` 常用 `central`、`*`、`external:*`（排除本机与 `file`）、`*,!repoId`。`*` 要求镜像能提供全部制品；多镜像不会自动聚合，上游聚合交给私服。Maven 3.8.1+ 默认阻止外部 HTTP 仓库，优先 HTTPS。
+            1. 认证用 `servers/server`，id 匹配实际仓库或镜像 id。
+            1. 发布：release → `distributionManagement/repository`；快照优先 `snapshotRepository`（未配则回退 `repository`）。
 
         1. 依赖声明与版本管理
 
-            1. `dependencies` 引入直接依赖，再递归解析其 POM 中的传递依赖；代码直接使用的库应显式声明。
-            1. `dependencyManagement` 管理版本、scope、exclusions 等默认值，可约束传递版本，但不引入依赖；父 POM 的 `dependencies` 则会被继承。
-            1. BOM 在 `dependencyManagement/dependencies` 中以 `type=pom`、`scope=import` 导入一组配套版本，再声明所需依赖；不继承 BOM 的插件配置。冲突时当前 POM 显式管理优先，其次通常先导入的 BOM 优先。
-            1. 管理匹配键为 `groupId + artifactId + type + classifier`；默认 `jar`、无 classifier 时通常只写 GA。项目侧的 `dependencyManagement` 管的是项目依赖树，不影响插件自身要下载的依赖。
+            1. `dependencies` 引入直接依赖并解析传递依赖；代码直接使用的库应显式声明（官方推荐）。
+            1. `dependencyManagement` 管版本 / scope / exclusions 等默认值，可钉死传递版本，但不引入依赖；父 POM 的 `dependencies` 会被继承。
+            1. BOM：在 `dependencyManagement` 里以 `type=pom`、`scope=import` 导入配套版本，再声明所需依赖；不带插件配置。冲突时当前 POM 显式管理优先，其次通常先导入的 BOM 优先。
+            1. 匹配键：`groupId + artifactId + type + classifier`（默认 jar、无 classifier 时多只写 GA）。项目侧管理不影响插件自身依赖。
+            1. 应用 POM **慎用版本区间**（如 `[1.0,)`）：解析结果随仓库变化，不利于复现；业务依赖优先固定版本，版本族交给 BOM / `dependencyManagement`。
 
         1. 依赖范围与传递
 
@@ -2454,65 +2449,55 @@ public class GenericExample {
             | `provided` | 是 | 是 | 否，由环境提供 | 外部容器的 Servlet API |
             | `runtime` | 否 | 是 | 是 | 经 JDBC 接口使用的驱动 |
             | `test` | 否 | 是 | 否 | 单元测试框架 |
-            | `system` | 是 | 是 | 否，需自行提供 | `systemPath` 指定本机 jar，应避免 |
+            | `system` | 是 | 是 | 否，需自行提供 | `systemPath` 本机 jar，应避免 |
             | `import` | 否 | 否 | 否 | 仅用于 BOM 导入 |
 
-            `provided`、`test` 不向下游传递；`compile`、`runtime` 的传递结果受路径上的 scope 组合影响。scope 决定 classpath，打包内容还取决于插件。
+            `provided` / `test` 不向下游传递；`compile` / `runtime` 的传递结果受路径上 scope 组合影响。scope 决定 classpath，打包内容还取决于插件。
 
-            - `optional=true`：当前项目使用，下游需自行声明。
-            - `exclusions`：仅排除**当前这条依赖路径**上的指定传递依赖；同一坐标若仍从其他路径传入，仍会出现在依赖树中。
+            - `optional=true`：当前项目用，下游需自行声明。
+            - `exclusions`：只切**当前路径**；同坐标若从其他路径进入仍会出现。
 
-        1. 版本仲裁：直接依赖显式版本优先于管理默认值；传递版本先受 `dependencyManagement` 约束，未管理时按“路径最近，同深度先声明”选择，**不是取最大版本**。如 `A → B → D:2.0` 与 `A → D:1.0`，选择 `1.0`。
-        1. `SNAPSHOT` 内容可变，远程快照通常以时间戳 / 构建号区分；release 应保持不可变。复现构建需固定依赖、插件、Maven 和 JDK 等版本。
+        1. 版本仲裁（dependency mediation）：直接依赖显式版本 > `dependencyManagement`；未管理的传递依赖按「路径最近，同深度先声明」，**不是取最大版本**。如 `A → B → D:2.0` 与 `A → D:1.0` → 选 `1.0`。排查：`mvn dependency:tree`（可加 `-Dverbose`）；要对齐传递版本可用 Enforcer 的 `dependencyConvergence` / `requireUpperBoundDeps`。
+        1. `SNAPSHOT` 内容可变（远程常以时间戳 / 构建号区分）；release 应不可变。复现构建需固定依赖、插件、Maven、JDK；勿对业务依赖使用版本区间。
+        1. [CI Friendly Versions](https://maven.apache.org/guides/mini/guide-maven-ci-friendly.html)：多模块可用 `${revision}`（及 `${sha1}` / `${changelist}`）统一改版本；Maven 3.x 须配合 flatten（如 `flatten-maven-plugin`）再 `install` / `deploy`，否则仓库里的 POM 可能无法被消费。Maven 4 起内置支持更完整。
 
         </details>
     1. 构建执行与生命周期
 
-        1. 生命周期分三条独立线：`clean`、`default`（日常构建）、`site`（站点文档）。执行某一阶段会先执行**同一条生命周期**上的前置阶段，因此 `package` 不会顺带执行 `clean`。下表按执行顺序列出常用入口（首行属 `clean` 线，其余属 `default` 线），其间的 `validate`、`process-resources` 等阶段日常可省略记忆。
+        1. 三条独立生命周期：`clean`、`default`（日常）、`site`。执行某阶段会先跑**同线**前置阶段，故 `package` 不会顺带 `clean`。下表为常用入口（首行 `clean` 线，其余 `default` 线）；`validate`、`process-resources` 等日常可略记。
 
             | 阶段 | 效果与边界 |
             | --- | --- |
-            | `clean` | 清理构建输出（通常为 `target`），不清空本地仓库（如 `~/.m2/repository`） |
-            | `compile` | 主代码 `.java` 编译成 `.class`，与复制来的主资源一同输出到 `target/classes`；不打包、不写入本地仓库 |
-            | `test` | 先把测试代码编译到 `target/test-classes`，再由 Surefire（默认）运行单元测试 |
-            | `package` | 打包。按 packaging 生成制品到 `target/`；普通 jar 默认不含测试代码，也不打入依赖 jar，Spring Boot 可执行包需 `spring-boot-maven-plugin` 的 `repackage` 把依赖重打进 fat jar；不写入本地仓库 |
-            | `verify` | 执行已绑定的校验，不自动配置集成测试；集成测试通常由 Failsafe 绑定到 `integration-test` 与 `verify`，因此跑集成测试用 `mvn verify`，只跑到 `package` / `integration-test` 可能漏掉测试后的清理与结果检查 |
-            | `install` | 将**本项目** POM、主制品和附加制品写入本地仓库（如 `~/.m2/repository`），供本机其他项目按坐标直接依赖 |
-            | `deploy` | 发布制品到远程仓库，不是启动应用 |
+            | `clean` | 清 `target` 等构建输出，不清本地仓库 |
+            | `compile` | 主代码 → `target/classes`（含已复制的主资源）；不打包、不写本地仓库 |
+            | `test` | 测试编译到 `target/test-classes`，再由 Surefire（默认）跑单元测试 |
+            | `package` | 打包。按 packaging 生成 `target/` 制品；普通 jar 不含测试与依赖 jar；Boot 可执行包需 `spring-boot-maven-plugin:repackage`；不写本地仓库 |
+            | `verify` | 跑已绑定校验；集成测试多由 Failsafe 绑在 `integration-test` + `verify`，故用 `mvn verify`，只到 `package` 可能漏清理与结果检查 |
+            | `install` | 本项目 POM / 主制品 / 附加制品写入本地仓库（如 `~/.m2/repository`），供本机按坐标依赖 |
+            | `deploy` | 发布到远程仓库，不是启动应用 |
 
-        1. phase（阶段）定义顺序，插件 goal（目标）执行任务：如 `jar` 项目的 `compile` 默认绑定 `compiler:compile`，额外 goal 用 `executions` 绑定。直接调用 `dependency:tree` 等 goal 不代表完整构建，是否触发生命周期取决于该 goal。
-
-            `pluginManagement` 管理插件版本和配置，不新增执行；插件经 `build/plugins` 或默认生命周期绑定引入后才应用。关键插件版本应显式固定或由父 POM 管理。
-
-        1. 编译目标与编码：用约定属性声明「按哪个 Java 版本编译」和「源文件编码」。`mvn -v` 可确认当前跑 Maven 的 JDK；该 JDK 版本须 ≥ `release`。
-
-            ```xml
-            <properties>
-                <maven.compiler.release>17</maven.compiler.release>
-                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-            </properties>
-            ```
-
-            优先用 `release`（同时约束语法、字节码和可用 API），不要用老的 `source` / `target` 组合。
-
-        1. 命令格式：`mvn [选项] [阶段或插件目标] [-D名称=值]`；`-D` 设置 Maven 用户属性，是否传给应用由插件配置决定。
-        1. 常用参数：`-s` / `-gs` 指定用户 / 全局 settings，`-f` 指定 POM，`-P` 激活 profile，`-o` 离线，`-U` 检查更新，`-B` 非交互（适合 CI），`-ntp` 隐藏下载进度，`-e` 打印异常栈，`-X` 打开调试日志。
-        1. 多模块一次构建时，Maven 用 reactor 按模块间依赖等关系排序：`-pl` 选模块（相对路径或 `:artifactId`），`-am` 追加所选模块需要的上游模块，`-amd` 追加依赖所选模块的下游模块。仅出现在 `dependencyManagement` / `pluginManagement` 中、未形成真实模块依赖的，不参与排序关系。同一次 reactor 构建可直接使用模块的构建结果；独立构建的本地项目联调，则需先 `install` 上游。
-        1. 跳过测试：`-DskipTests` 仍`测试编译`但`不跑 Surefire 执行`；`-DskipITs` 跳过 Failsafe 集成测试；`-Dmaven.test.skip=true` 同时`跳过测试编译和执行`。**Failsafe 3.6.0 起不直接响应 `skipTests`**（需用 `skipITs` 等），旧版或自定义绑定另核。日常校验不要默认跳过测试。
-        1. 常用示例（在项目根目录执行，`app`、`dev` 按实际模块 / profile 替换）
+        1. phase 定顺序，goal 做事：如 `jar` 的 `compile` 默认绑 `compiler:compile`；额外 goal 用 `executions` 绑定。直接调 `dependency:tree` 等不等于完整构建。`pluginManagement` 只管版本 / 默认配置，经 `build/plugins` 或生命周期绑定后才执行；关键插件版本应固定。
+        1. 编译目标与编码：优先 `maven.compiler.release`（同时约束语法、字节码与可用 API），配 `project.build.sourceEncoding`；运行 Maven 的 JDK（`mvn -v`）须 ≥ `release`。勿再用单独的 `source` / `target` 组合代替 `release`。
+        1. 命令格式：`mvn [选项] [阶段或插件目标] [-D名称=值]`；`-D` 是否传给应用取决于插件。
+        1. 常用参数：`-s` / `-gs` settings，`-f` POM，`-P` profile，`-o` 离线，`-U` 检查更新，`-B` 非交互（CI），`-ntp` 藏下载进度，`-e` 异常栈，`-X` 调试。
+        1. 多模块（reactor）：按模块依赖排序；`-pl` 选模块（路径或 `:artifactId`），`-am` 加上游，`-amd` 加下游。仅出现在 `dependencyManagement` / `pluginManagement`、未形成真实模块依赖的不参与排序。同一次 reactor 可直接用模块产物；独立工程联调需先 `install` 上游。
+        1. 跳过测试：`-DskipTests` 仍编译测试、不跑 Surefire；`-DskipITs` 跳 Failsafe；`-Dmaven.test.skip=true` 连测试编译一起跳。**Failsafe 3.6.0+ 不直接认 `skipTests`**。日常校验不要默认跳过。
+        1. 排查常用：`mvn -v`；`help:effective-settings` / `help:effective-pom`（可加 `-Dverbose`）；`dependency:tree`；`help:active-profiles`。
+        1. 常用示例（在项目根执行，`app` / `dev` 按实际替换）
 
             ```bash
             mvn -v                          # Maven 版本与运行 JDK
             mvn clean verify                # 清理、构建并校验
-            mvn -pl app -am install         # 构建 app 及上游模块，安装到本地仓库
-            mvn -Pdev package               # 用构建 profile 打包
-            mvn -B -ntp verify              # CI：非交互，隐藏下载进度
+            mvn -pl app -am install         # 构建 app 及上游，装入本地仓库
+            mvn -Pdev package               # 构建 profile 打包
+            mvn -B -ntp verify              # CI：非交互，藏下载进度
+            mvn dependency:tree             # 看依赖树 / 版本冲突
             mvn -f app/pom.xml spring-boot:run -Dspring-boot.run.profiles=dev
             ```
 
-            最后一条用 `spring-boot:run` 启动应用并指定 Spring 运行期 profile；要求该模块已配置 Boot 插件，且 `-pl` / `-am` 或本地仓库能解析上游依赖。
+            最后一条需该模块已配 Boot 插件，且 `-pl` / `-am` 或本地仓库能解析上游。
 
-        1. [Maven Wrapper](https://maven.apache.org/tools/wrapper/)：把 `mvnw`、`mvnw.cmd` 与 `.mvn/wrapper/` 提交进仓库，用 `./mvnw verify`（Windows：`mvnw.cmd verify`）按项目锁定的 Maven 版本执行构建，减少“本机 Maven 版本不一致”的问题；JDK、依赖和插件版本仍需另行固定与管理。
+        1. [Maven Wrapper](https://maven.apache.org/tools/wrapper/)：提交 `mvnw`、`mvnw.cmd` 与 `.mvn/wrapper/`，用 `./mvnw verify` 锁定 Maven 版本；JDK、依赖和插件版本仍须另行固定。
 
 - **Gradle**
 
@@ -3467,9 +3452,10 @@ public class GenericExample {
 - `Classpath` / 类路径：JVM 查找 `.class` 和资源文件（配置、图片等）的搜索路径，类似系统里的 `PATH`。跑程序、报 `ClassNotFoundException` 时，先怀疑类路径没把需要的 jar / 目录算进去。
 - `JAR`：Java Archive，Java 归档包；Spring Boot 最常见的可执行部署形态，常用 `java -jar app.jar` 启动（内嵌 Tomcat 等）。
 - `WAR`：Web Application Archive，Web 应用归档包；传统 Java Web 部署包，通常放到外部 Tomcat 等容器中运行。
-- `Maven` / `pom.xml`：Java 最常见的构建与依赖工具；`pom.xml` 描述坐标、依赖、插件与模块。本机环境用 `settings.xml`（镜像、仓库认证），不要和项目 POM 职责混写。日常常用 `test` / `package`。
-- `BOM`：Bill Of Materials，依赖版本清单；用一组统一版本约束管理依赖，类似前端项目用 lockfile 或 monorepo 版本策略避免包版本互相打架。
-- `SNAPSHOT`：开发中快照版本；Maven 可按策略检查更新，适合联调期迭代，但线上依赖通常更偏向稳定 release 版本。
+- `Maven` / `pom.xml`：构建与依赖工具；`pom.xml` 描述坐标、依赖、插件与模块。本机环境用 `settings.xml`（镜像、认证），勿与 POM 职责混写。日常常用 `test` / `package` / `verify`；排查看 `dependency:tree`、`help:effective-pom`。
+- `BOM` / `dependencyManagement`：BOM 是配套版本清单（`type=pom` + `scope=import`）；`dependencyManagement` 钉版本但不引入依赖。业务依赖慎用版本区间。
+- `SNAPSHOT`：开发中快照版本，内容可变；联调方便，线上依赖优先不可变的 release。
+- `reactor` / `${revision}`：多模块一次构建的排序与选模块（`-pl` / `-am`）；`${revision}` 等 CI Friendly 属性可统一改版本（Maven 3 常需 flatten 再发布）。
 - `Starter`：Spring Boot 依赖组合入口；把一组依赖和自动配置打包到一起，类似前端安装一个框架插件后获得默认配置和能力。
 - `Auto-configuration` / 自动配置：Spring Boot 按 classpath 依赖和配置条件自动注册默认 Bean（数据源、MVC、Jackson 等）；Starter 常作为依赖入口，真正生效看条件注解是否匹配。排查可看启动 `--debug` 的 conditions report。
 - `profile`：Spring 环境分组；常用 `application-{profile}.yml`（如 `dev` / `test` / `prod`）切换数据源、日志、第三方地址。激活方式包括配置、环境变量、启动参数；和「哪份配置生效」强相关。
@@ -3576,20 +3562,19 @@ public class GenericExample {
 
     `validate -> compile -> test -> package -> verify -> install -> deploy`
 
-    - 日常最常用：`test`（编译+单测）、`package`（打出 JAR/WAR）、`install`（装进本地仓库给其它模块用）。
-    - `clean` 常与上面组合，清掉 `target` 再构建。
-    - `deploy` 是发布到远程仓库，和「部署应用到服务器」不是一回事。
+    - 日常最常用：`test`（编译+单测）、`package`（打 JAR/WAR）、`verify`（含已绑校验 / 集成测试）、`install`（进本地仓库）。
+    - `clean` 常与上面组合，清 `target` 再构建；与 `default` 线独立，`package` 不会自动 `clean`。
+    - `deploy` 是发布到远程仓库，≠ 部署应用到服务器。
 
 3. 构建、依赖和部署怎么串起来
 
     `拉代码 -> 配 JDK / Maven -> 下载依赖 -> 编译 -> 测试 -> package -> 生成 JAR / WAR -> 启动服务 -> 看日志和健康检查`
 
-    - `pom.xml`：Maven 项目配置，描述依赖、插件、构建和模块关系。
-    - `BOM` / `dependencyManagement`：统一依赖版本，避免 Spring Boot、Spring Cloud、三方库版本冲突。
-    - `mvnw` / `gradlew`：项目自带构建脚本，用来固定构建工具版本。
-    - `clean` / `test` / `package` / `install`：常见 Maven 阶段；日常最常跑的是测试和打包。
-    - `Docker Compose`：本地启动 MySQL、Redis、MQ 等依赖服务，适合联调和集成测试。
-    - `Actuator`：Spring Boot 运行期观测端点（健康检查、指标、环境信息等）；流程里用来看健康检查和指标，生产注意权限与暴露范围。
+    - `pom.xml` / `settings.xml`：项目构建 vs 本机仓库与认证，职责分开。
+    - `BOM` / `dependencyManagement`：统一版本；冲突先看 `dependency:tree`。
+    - `mvnw`：锁定项目 Maven 版本；JDK / 依赖 / 插件仍须另行固定。
+    - `Docker Compose`：本地起 MySQL、Redis、MQ 等，适合联调。
+    - `Actuator`：看健康检查与指标；生产注意权限与暴露范围。
 
 4. Spring Boot 应用怎么启动
 

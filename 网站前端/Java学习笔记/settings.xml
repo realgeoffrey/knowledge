@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Maven settings 速查示例：Maven 3.9.x / Settings 1.2.0；可选配置均已注释，按场景启用并替换占位值。
-    用户级 ${user.home}/.m2/settings.xml；全局级 ${maven.home}/conf/settings.xml；合并时用户级冲突项优先。
-    -s / -gs 可指定这两类文件；此文件只作为知识示例，不会因放在项目目录就自动加载。
-    POM 管项目构建；settings 管仓库、认证、代理和本机差异，不存放项目 dependencies / build。
-    ${} 插值只认系统属性（如 ${user.home}）与 ${env.变量}，不读 pom.xml 的 properties / ${project.*}；
-    反向可用：激活的 settings profile 的 properties 可被 POM 引用，但不能用于 settings 自身插值。
+    Maven settings 速查：Maven 3.9.x / Settings 1.2.0；可选配置均已注释，按场景启用。
+    用户级 ~/.m2/settings.xml；全局级 ${maven.home}/conf/settings.xml；冲突以用户级为准。
+    -s / -gs 可指定；放在项目目录不会自动加载。
+    POM 管项目构建；settings 管仓库、认证、代理与本机差异。
+    ${} 只认系统属性与 ${env.变量}；激活的 settings profile properties 可被 POM 引用。
     参考：https://maven.apache.org/settings.html
           https://maven.apache.org/ref/3.9.15/maven-settings/settings.html
-    检查：mvn -s settings.xml help:effective-settings；mvn -s settings.xml help:active-profiles
+    检查：mvn -s settings.xml help:effective-settings；help:active-profiles
 -->
 <settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
-    <!-- 本地仓库默认如下，缓存下载制品并保存 install 产物；可用 -Dmaven.repo.local=路径 临时覆盖。 -->
+    <!-- 本地仓库默认如下；-Dmaven.repo.local= 可临时覆盖。 -->
     <!-- <localRepository>${user.home}/.m2/repository</localRepository> -->
-    <!-- interactiveMode 默认 true；CI 用 -B 非交互。offline 默认 false，-o 离线时需已有依赖和插件。 -->
+    <!-- interactiveMode 默认 true（CI 用 -B）；offline 默认 false（-o）。 -->
     <!-- <interactiveMode>true</interactiveMode> -->
     <!-- <offline>false</offline> -->
-    <!-- usePluginRegistry 是已弃用的历史字段，现代 Maven 不需配置。 -->
 
-    <!-- proxies 是网络代理，不是仓库账号；nonProxyHosts 用 | 分隔，支持 * 通配。 -->
+    <!-- proxies：网络代理，不是仓库账号；nonProxyHosts 用 |，支持 *。 -->
     <proxies>
         <!--
         <proxy>
@@ -37,15 +35,11 @@
     </proxies>
 
     <!--
-        servers 只提供认证，不声明仓库地址；id 匹配实际 repository / pluginRepository / mirror / 发布目标 id。
-        命中镜像时用 mirror.id；匿名下载通常不用凭证，下载 / 发布权限由服务端决定。
-        password 可为密码或 token；使用环境变量或 Maven 密码加密，不提交真实凭证。
-        Maven 3 加密：mvn -emp 加密主密码，结果存入 ~/.m2/settings-security.xml 的 settingsSecurity/master；mvn -ep 加密仓库密码。
-        加密值仍可被持有主密码者解密；settings 与 settings-security 文件均须限制访问。
+        servers：只认证，不声明仓库地址；id 匹配 repository / mirror / 发布目标。
+        密码/token 用环境变量或加密（mvn -emp / -ep），不提交真实凭证。
         参考：https://maven.apache.org/guides/mini/guide-encryption.html
     -->
     <servers>
-        <!-- 配合下方 company-mirror；若直接访问其他仓库，另配同 id 的 server。 -->
         <!--
         <server>
             <id>company-mirror</id>
@@ -63,7 +57,7 @@
             <password>${env.REPO_TOKEN}</password>
         </server>
         -->
-        <!-- SSH 认证是另一种方案：使用支持 SSH 的传输实现，privateKey 填路径，不同时设置 password。 -->
+        <!-- SSH：privateKey 填路径，勿同时设 password。 -->
         <!--
         <server>
             <id>company-ssh</id>
@@ -72,15 +66,12 @@
             <passphrase>${env.SSH_KEY_PASSPHRASE}</passphrase>
         </server>
         -->
-        <!-- configuration 可放传输实现特有参数，如 HTTP headers；filePermissions/directoryPermissions 也依赖实现。 -->
     </servers>
 
     <!--
-        mirrors 替换下载源，不改变 deploy 上传地址。mirrorOf 匹配仓库 id，不是 URL。
-        central：仅中央仓库；*：全部；external:*：排除 localhost 与 file；*,!company-direct：排除指定 id。
-        external:http:* 匹配外部 HTTP，Maven 3.8.1+ 默认阻止此类仓库；优先改用 HTTPS。
-        先精确匹配 id，否则按顺序选首个匹配模式；每个仓库只选一个镜像，失败不自动回退原地址。
-        * 要求入口能提供所有所需制品，通常使用私服仓库组；多个 mirror 不会自动聚合上游。
+        mirrors：替换下载源，不改 deploy 地址。mirrorOf 匹配仓库 id。
+        常用：central / * / external:* / *,!repoId。先精确 id，否则首个匹配；失败不回退。
+        * 要求入口能提供全部制品（通常私服仓库组）。Maven 3.8.1+ 默认阻止外部 HTTP。
     -->
     <mirrors>
         <!--
@@ -96,11 +87,9 @@
     </mirrors>
 
     <!--
-        settings profile 仅含 id、activation、properties、repositories、pluginRepositories；POM profile 能力更广。
-        下面用 -Pcompany-repo 或 -DuseCompanyRepo=true 激活；也可列入 activeProfiles。
-        activation 还可用 jdk（如 [17,)）、os（family/name/arch/version）、file（exists/missing）；多种条件为 AND。
-        activeByDefault 不等于始终激活，遇到同容器其他激活的 profile 会退让；显式 -P 不要求条件成立。
-        下方 team.build.label 演示「settings → POM」属性注入；仓库 URL 用字面值（settings 自插值规则见文件头）。
+        settings profile 仅含 id / activation / properties / repositories / pluginRepositories。
+        -P、property、jdk、os、file 或 activeProfiles 激活；多条件 AND。
+        activeByDefault 遇同容器其他已激活 profile 会退让。
     -->
     <profiles>
         <!--
@@ -136,19 +125,13 @@
         </profile>
         -->
     </profiles>
-    <!--
-        repositories 下载依赖，pluginRepositories 下载插件；被 mirrorOf=* 命中时仍走镜像。
-        releases/snapshots 是允许的版本类型，不是“启用所有仓库”；central 默认不提供快照。
-        updatePolicy：always、daily(默认)、interval:分钟、never；-U 强制检查更新快照和缺失 release。
-        checksumPolicy：fail、warn(Maven 3 默认)、ignore。这里 fail 表示校验失败即报错。
-    -->
+    <!-- repositories 下依赖；pluginRepositories 下插件；被 mirrorOf=* 命中仍走镜像。central 默认无快照。 -->
 
-    <!-- activeProfiles 持续激活指定 id；CLI -P 可临时激活，mvn help:active-profiles 查看结果。 -->
     <activeProfiles>
         <!-- <activeProfile>company-repo</activeProfile> -->
     </activeProfiles>
 
-    <!-- 插件前缀搜索组，内置 org.apache.maven.plugins / org.codehaus.mojo；不提供插件版本或下载地址。 -->
+    <!-- 插件前缀搜索组；内置 org.apache.maven.plugins / org.codehaus.mojo。 -->
     <pluginGroups>
         <!-- <pluginGroup>com.example.maven.plugins</pluginGroup> -->
     </pluginGroups>
