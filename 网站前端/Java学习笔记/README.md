@@ -2427,6 +2427,19 @@ public class GenericExample {
         `provided` / `test` 不向下游传递。`optional=true`：下游需自行声明。`exclusions` 只切当前路径。
 
         1. 版本仲裁：直接依赖显式版本 > `dependencyManagement`；未管理传递依赖按「路径最近，同深度先声明」，**不是取最大版本**。例：`A → B → D:2.0` 与 `A → D:1.0` → `1.0`。看树：`mvn dependency:tree`（可 `-Dverbose`）；对齐可用 Enforcer 的 `dependencyConvergence` / `requireUpperBoundDeps`。
+
+            同一 `groupId + artifactId` 在一条 classpath 上只留一个版本。项目可以同时依赖 A、B，且 A 传递 `C:1`、B 传递 `C:2`；解析后仍只有一份 C。两边到 C 深度相同，则 POM 里先声明的那条路径赢。`groupId` 或 `artifactId` 不同才是两个制品，可以并存。运行期按全限定类名加载，编译期 API 与实际 jar 不一致时常见 `NoSuchMethodError`、`ClassNotFoundException`。真要两份同名类：独立 ClassLoader，或打包时改包名（shading）。
+
+            - 和 npm 的差别来自运行时能不能并存两个版本：
+
+                | | Maven | npm 3+ |
+                | --- | --- | --- |
+                | 同一库两个版本 | 压成一份 | 范围对不上就嵌套，多份并存 |
+                | 只留一份时 | 路径更近优先；同深度先声明。不取更高版本 | 一个版本能盖住各方范围时，取范围内最高，并提升到顶层 `node_modules` |
+                | 版本怎么写 | 直接依赖写死版本，传递依赖再仲裁 | `package.json` 写范围（如 `^1.2.3`），lock 文件复现本次解析 |
+                | 常见意外 | 某处声明 1.x，运行时加载的是另一版 | 依赖分身（多份拷贝）；幽灵依赖（没声明却引用到顶层那份） |
+
+                JVM 一条 classpath 上同一个全限定类名只能有一份实现，所以必须仲裁。Node 从当前文件目录往上找 `node_modules`，A、B 可以各自命中旁边的不同版本。有 BOM（如 Spring Boot）时多数传递版本已被钉死；依赖多且没有 BOM 时，最终版本经常和某个上游 POM 里写的不一致，用 `dependency:tree` 核对。
         1. `SNAPSHOT` 内容可变；release 应不可变。复现构建固定依赖、插件、Maven、JDK。
 
     4. 仓库与解析
@@ -3577,7 +3590,7 @@ public class GenericExample {
     `拉代码 -> 配 JDK / Maven -> 下载依赖 -> 编译 -> 测试 -> package -> 生成 JAR / WAR -> 启动服务 -> 看日志和健康检查`
 
     - `pom.xml` / `settings.xml`：项目构建 vs 本机仓库与认证，职责分开。
-    - `BOM` / `dependencyManagement`：统一版本；冲突先看 `dependency:tree`。
+    - `BOM` / `dependencyManagement`：统一版本；冲突先看 `dependency:tree`。同一 `groupId + artifactId` 只留一份（路径最近，同深度先声明），npm 则可嵌套多版本。
     - `mvnw`：锁定项目 Maven 版本；JDK / 依赖 / 插件仍须另行固定。
     - `Docker Compose`：本地起 MySQL、Redis、MQ 等，适合联调。
     - `Actuator`：看健康检查与指标；生产注意权限与暴露范围。
