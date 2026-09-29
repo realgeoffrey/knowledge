@@ -2,8 +2,6 @@
 <!--
     Maven POM 速查示例：Maven 3.9.x / POM 4.0.0；未注释部分为最小构建，注释块按场景启用。
     POM 管依赖、插件、模块；账号 / 代理 / 镜像放 settings.xml。示例版本不代表最新。
-    参考：https://maven.apache.org/pom.html
-          https://maven.apache.org/ref/3.9.15/maven-model/maven.html
     检查：mvn validate；help:effective-pom -Dverbose；dependency:tree
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -26,7 +24,7 @@
     </parent>
     -->
 
-    <!-- GAV；SNAPSHOT 可变，release 应不可变。多模块可用 ${revision}（CI Friendly，见 README）。 -->
+    <!-- GAV；SNAPSHOT 可变，release 应不可变。多模块可用 ${revision}（CI Friendly；Maven 3.x 常需 flatten 再 install/deploy）。 -->
     <groupId>com.example</groupId>
     <artifactId>java-study-notes</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -119,7 +117,6 @@
     <!--
         properties：${名称} 引用；内置如 ${project.version}、${env.CI}。-D 可覆盖同名项。
         ${java.version} 不是编译目标；用 maven.compiler.release（JDK 9+ 约束语法/字节码/API）。
-        参考：https://maven.apache.org/plugins/maven-compiler-plugin/examples/set-compiler-release.html
     -->
     <properties>
         <maven.compiler.release>8</maven.compiler.release>
@@ -151,8 +148,8 @@
     <!--
         dependencies：直接依赖 + 传递解析；代码直接用的库应显式声明。
         scope：compile 默认；provided/test 不向下游传递；system 应避免；import 仅 BOM。
-        optional / exclusions 见 README。版本仲裁：显式 > 管理 > 路径最近、同深度先声明。
-        参考：https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html
+        optional：下游需自行声明；exclusions 只切当前路径。
+        版本仲裁：显式 > 管理 > 路径最近、同深度先声明（不是取最大版本）。
     -->
     <dependencies>
         <!-- 须同时启用上方 JUnit BOM；测试插件见 build/plugins。 -->
@@ -286,8 +283,8 @@
 
             <!--
                 Failsafe：绑 integration-test + verify；用 mvn verify。
-                -DskipTests / -DskipITs / -Dmaven.test.skip=true；Failsafe 3.6.0+ 不直接认 skipTests。
-                参考：https://maven.apache.org/surefire/maven-failsafe-plugin/usage.html
+                -DskipTests 只跳 Surefire（Failsafe 3.6.0+ 不认）；-DskipITs 跳 Failsafe；
+                -Dmaven.test.skip=true 连测试编译一起跳。
             -->
             <!--
             <plugin>
@@ -347,7 +344,6 @@
     <!--
         profiles：-P 或 property/jdk/os/file 激活（多条件 AND）。Maven profile ≠ Spring profile。
         同 POM 其他 profile 已激活时，activeByDefault 通常停用。
-        参考：https://maven.apache.org/guides/introduction/introduction-to-profiles.html
     -->
     <!--
     <profiles>

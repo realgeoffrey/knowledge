@@ -5,8 +5,6 @@
     -s / -gs 可指定；放在项目目录不会自动加载。
     POM 管项目构建；settings 管仓库、认证、代理与本机差异。
     ${} 只认系统属性与 ${env.变量}；激活的 settings profile properties 可被 POM 引用。
-    参考：https://maven.apache.org/settings.html
-          https://maven.apache.org/ref/3.9.15/maven-settings/settings.html
     检查：mvn -s settings.xml help:effective-settings；help:active-profiles
 -->
 <settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
@@ -37,7 +35,6 @@
     <!--
         servers：只认证，不声明仓库地址；id 匹配 repository / mirror / 发布目标。
         密码/token 用环境变量或加密（mvn -emp / -ep），不提交真实凭证。
-        参考：https://maven.apache.org/guides/mini/guide-encryption.html
     -->
     <servers>
         <!--
@@ -90,6 +87,7 @@
         settings profile 仅含 id / activation / properties / repositories / pluginRepositories。
         -P、property、jdk、os、file 或 activeProfiles 激活；多条件 AND。
         activeByDefault 遇同容器其他已激活 profile 会退让。
+        profile 内 repositories 下依赖、pluginRepositories 下插件；被 mirrorOf=* 命中仍走镜像。central 默认无快照。
     -->
     <profiles>
         <!--
@@ -125,7 +123,6 @@
         </profile>
         -->
     </profiles>
-    <!-- repositories 下依赖；pluginRepositories 下插件；被 mirrorOf=* 命中仍走镜像。central 默认无快照。 -->
 
     <activeProfiles>
         <!-- <activeProfile>company-repo</activeProfile> -->
