@@ -211,7 +211,7 @@
     <!--
         默认目录：src/main|test/{java,resources} → target/{classes,test-classes}。
         package 只打包；install → 本地仓库；deploy → 远程（不是启动应用）。
-        普通 jar 不内嵌依赖；Boot 可执行包需 spring-boot-maven-plugin:repackage。
+        一分包：maven-jar-plugin 普通瘦包（无依赖）；二分包：spring-boot-maven-plugin:repackage 可执行胖包。
     -->
     <build>
         <!-- finalName 只改文件名不改坐标；defaultGoal 在 mvn 无目标时生效。 -->

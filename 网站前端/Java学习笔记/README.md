@@ -2576,10 +2576,22 @@ public class GenericExample {
         | `clean` | 清 `target`，不清本地仓 |
         | `compile` | → `target/classes`；不打包、不写本地仓 |
         | `test` | 测编译 + Surefire 单测 |
-        | `package` | 出 `target/` 制品；普通 jar 不含依赖；Boot 需 `repackage` |
+        | `package` | 出 `target/` 制品；见下「一分包 / 二分包」 |
         | `verify` | 已绑校验；Failsafe 常绑 `integration-test`+`verify`，IT 用 `mvn verify` |
         | `install` | 写入本地仓 |
         | `deploy` | 发远程仓，≠ 启动应用 |
+
+        **一分包 / 二分包**（Spring Boot 日常说法；官方叫 package + `repackage`）
+
+        | | 一分包 | 二分包 |
+        | --- | --- | --- |
+        | 谁做 | `maven-jar-plugin`（或 war 插件） | `spring-boot-maven-plugin` 的 `repackage` |
+        | 产物 | 普通 / 瘦包：本模块 `.class` + 资源，**不含**依赖 jar | 可执行 / 胖包：依赖进 `BOOT-INF/lib`，类进 `BOOT-INF/classes`，带 Loader |
+        | 用途 | 给别的模块当依赖；或再被二分包吃掉 | `java -jar app.jar` 直接跑（内嵌 Tomcat 等） |
+
+        - 同一次 `mvn package`：先一分包，再（若绑了 Boot 插件）二分包。默认二分包**替换**主制品；被替换的原始包常留下 `xxx.jar.original`。
+        - 模块还要被别人当依赖时：给可执行包加 `classifier`（如 `exec`），主制品保留一分包；或 `attach=false` 只安装/部署原始包。
+        - 多模块：库模块只一分包；**仅启动模块**配 Boot 插件做二分包（别在父 POM 全局绑，否则库也会被打成 `BOOT-INF` 布局，下游依赖不到裸类）。
 
         跳测：`-DskipTests` 只跳 Surefire（仍编译；Failsafe 3.6.0+ 不认）；`-DskipITs` 跳 Failsafe；`-Dmaven.test.skip=true` 连测编译一起跳。日常校验勿默认跳过。
 
@@ -3474,7 +3486,7 @@ public class GenericExample {
             <summary>细节：运行维护关注点</summary>
 
             - 启动：`java -jar`、Maven / Gradle 插件运行、IDE 运行配置、profile 和环境变量。
-            - 打包：Maven / Gradle 构建，常见命令是 test / package；可执行 JAR 和普通 JAR 的结构不同。
+            - 打包：Maven / Gradle 构建，常见命令是 test / package；普通 JAR（一分包）与 Boot 可执行 JAR（二分包 / `repackage`）结构不同。
             - 部署：JAR、WAR、容器镜像、配置外置、滚动发布、优雅停机、回滚策略。
             - 日志：区分访问日志、业务日志、错误日志、SQL 日志；生产日志要脱敏、可检索、带 trace id。
             - 指标：QPS、响应时间、错误率、JVM 内存、GC、线程池、连接池、数据库慢查询、MQ 堆积。
@@ -3706,6 +3718,7 @@ public class GenericExample {
 - `JDK` / `JRE` / `JVM`：`JDK` 是开发套件（含编译器、工具）；`JRE` 偏运行环境；`JVM` 是执行字节码、管内存与 GC 的虚拟机。日常开发安装 JDK 即可。
 - `Classpath` / 类路径：JVM 的「类与资源搜索路径」，查找 `.class` 和配置 / 图片等资源，类似系统里的 `PATH`。Maven / IDE 帮你拼；Spring Boot 用它决定自动配置。跑程序、报 `ClassNotFoundException` / 读不到配置时，先查有没有把需要的 jar / 目录算进去。
 - `JAR`：Java Archive，Java 归档包；Spring Boot 最常见的可执行部署形态，常用 `java -jar app.jar` 启动（内嵌 Tomcat 等）。
+- `一分包` / `二分包`：Boot 构建里对两次打包的俗称。一分包=`maven-jar-plugin` 打的普通瘦包（无依赖）；二分包=`spring-boot-maven-plugin:repackage` 再加工成可 `java -jar` 的胖包。
 - `WAR`：Web Application Archive，Web 应用归档包；传统 Java Web 部署包，通常放到外部 Tomcat 等容器中运行。
 - `Maven` / `pom.xml` / `settings.xml`：构建与依赖工具。POM 管坐标、依赖、插件与模块；settings 管本机镜像 / 认证 / 代理（职责勿混）。日常 `test` / `package` / `verify`；排查看 `dependency:tree`、`help:effective-pom` / `effective-settings`。`<id>` 对齐见上文 Settings 节。
 - `私服` / `mirror` / `proxy`：私服=团队远程入口（内部包 + 常代理 Central）。`mirrors` 只改下载、不改 `deploy`；`proxy` 是出网 HTTP 代理，与 `mirror` 的 id **无对应**。`<id>` 见上文 Settings 节；链路见「仓库与解析」。
