@@ -415,7 +415,7 @@ dom.addEventListener('事件名', function (e) {
 ### *原生JS*、jQuery实现判断按下具体某按键
 1. `KeyboardEvent.key`
 
-    >[MDN：KeyboardEvent.key](https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/key/Key_Values)、[W3C:KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)。
+    >[MDN：KeyboardEvent.key values](https://developer.mozilla.org/zh-CN/docs/Web/API/UI_Events/Keyboard_event_key_values)、[W3C:KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)。
 
     1. *原生JS*
 

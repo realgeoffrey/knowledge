@@ -294,7 +294,7 @@
 
     >若有错误信息，则方便直接定位出错点；若没有错误信息，则需要顺着链路查询。
 
-    1. [查看服务器日志](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/服务端相关/README.md#服务器日志查看)
+    1. [查看服务器日志](https://github.com/realgeoffrey/knowledge/blob/master/全栈/服务端相关/README.md#服务器日志查看)
     2. 进入服务器或容器内：
 
         1. 宿主机`curl`容器监听端口，确认是否能从宿主机进入容器。

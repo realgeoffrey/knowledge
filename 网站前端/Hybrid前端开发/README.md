@@ -15,7 +15,7 @@
 >随着技术的发展，有新的技术替代`桥协议`，如：JSI、等。
 >
 >1. `桥协议`：JS和C++互相无感知，只能通过`桥协议`作为中间层，**异步进行序列化/反序列化传输通讯**。
->2. [JSI](https://reactnative.cn/docs/next/the-new-architecture/why#旧架构的问题)：将C++中的常用类型、定义的对象和函数 映射到JS中，支持JS随时调用C++中方法，有更高的性能、更低的通信开销（不需要再~~异步进行序列化/反序列化传输通讯~~，可以同步直接调用方法、传输多种类型数据）。并且支持其他JS引擎。
+>2. JSI：将C++中的常用类型、定义的对象和函数 映射到JS中，支持JS随时调用C++中方法，有更高的性能、更低的通信开销（不需要再~~异步进行序列化/反序列化传输通讯~~，可以同步直接调用方法、传输多种类型数据）。并且支持其他JS引擎。
 >- `postMessage`实现通讯的方案，不影响底层实现是：`桥协议`的异步进行序列化/反序列化传输通讯 或 JSI实现。
 >
 >约定：本篇内容中描述`桥协议`的部分，都可以用这些新技术替代。
@@ -127,7 +127,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 
                 >需要HTTPS域名配置、iOS设置等其他端配合。
 
-                >参考：[通用链接（Universal Links）的使用详解](http://www.hangge.com/blog/cache/detail_1554.html)、[Universal Link 前端部署采坑记](http://awhisper.github.io/2017/09/02/universallink/)、[Support Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html#//apple_ref/doc/uid/TP40016308-CH12-SW2)。
+                >参考：[通用链接（Universal Links）的使用详解](http://www.hangge.com/blog/cache/detail_1554.html)、[Supporting universal links in your app](https://developer.apple.com/documentation/xcode/supporting-universal-links-in-your-app)、[Support Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html#//apple_ref/doc/uid/TP40016308-CH12-SW2)。
             3. Android支持`<iframe src="自定义URL Scheme">`和`window.location.href="自定义URL Scheme"`跳转
 
             - <details>

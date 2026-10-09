@@ -516,6 +516,16 @@
     "command": "-notebook.cell.collapseCellInput",
     "when": "notebookCellListFocused && !inputFocus && !notebookCellInputIsCollapsed"
   },
+    {
+    "key": "alt+cmd+left",
+    "command": "-workbench.action.terminal.focusPreviousPane",
+    "when": "terminalFocus && terminalHasBeenCreated && terminalSplitPaneActive || terminalFocus && terminalProcessSupported && terminalSplitPaneActive"
+  },
+  {
+    "key": "alt+cmd+right",
+    "command": "-workbench.action.terminal.focusNextPane",
+    "when": "terminalFocus && terminalHasBeenCreated && terminalSplitPaneActive || terminalFocus && terminalProcessSupported && terminalSplitPaneActive"
+  }
 
   // cursor only
   {
@@ -1503,6 +1513,16 @@
   {
     "key": "cmd+f",
     "command": "list.find",
-    "when": "listFocus && listSupportsFind"
+    "when": "listFocus && listSupportsFind",
+  },
+  {
+    "key": "alt+cmd+left",
+    "command": "-composer.selectPreviousComposer",
+    "when": "agentsPaneFocused && !editorTextFocus || composerFocused && !editorTextFocus"
+  },
+  {
+    "key": "alt+cmd+right",
+    "command": "-composer.selectNextComposer",
+    "when": "agentsPaneFocused && !editorTextFocus || composerFocused && !editorTextFocus"
   }
 ]

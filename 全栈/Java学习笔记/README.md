@@ -200,7 +200,7 @@ Java SE 基础按 8 个字回忆：
         1. Cursor：`java.configuration.runtimes`
         2. IDEA：`「文件」-「项目结构」-「项目」-「SDK」`（「编辑」配置好需要的SDK）
     - IDEA 正在运行/调试时，尽量不要让 Cursor 的 Java 语言服务对同一工程自动编译。仅打开 Cursor 本身不一定有问题；双方同时编译且共享 `target/` 等输出目录时，Cursor 侧可能清掉或覆盖 IDEA 刚产出的 class，表现为构建「回退」、类加载失败或热替换异常。若需同时打开，关掉 Cursor 的 `java.autobuild.enabled`，或只当纯文本编辑器。
-    - 标准 JVM HotSwap 一般只能改方法体；改字段、方法签名、类层次或 Spring Bean / 注解后通常要重启。DevTools 做自动重启，JRebel 能覆盖更多类结构变更但是商业软件。Cursor 的调试和 Hot Code Replace 取决于已装的 Java 调试扩展。
+    - 运行中的服务吃的是**内存里已加载的代码**。没有重新编译 / 热更新 / 重启时，只改磁盘源文件不会影响正在跑的进程——Java、Node、浏览器前端同理。Java 多一步：源码须先编成 `.class`；即便 `.class` 已写入 `target/`，JVM 仍用旧类，直到重启，或由 HotSwap / DevTools / JRebel 等主动替换。标准 JVM HotSwap 一般只能改方法体；改字段、方法签名、类层次或 Spring Bean / 注解后通常要重启。DevTools 做自动重启；JRebel 能覆盖更多类结构变更，但是商业软件。Cursor 的调试与 Hot Code Replace 取决于已装的 Java 调试扩展。改代码后要不要 `clean` / `compile` / `install` / 重启：见 Maven §11。
 - 初学期建议先用 LTS 版本；老项目常见 Java 8，新项目常见 Java 17/21，是否使用更高版本以团队基线为准（团队统一约定的技术标准下限/默认线）。
 
 - `javac 文件.java` → `类名.class`，编译为字节码；运行 `java 类名`（不写 `.class`）后，由 JVM 加载执行，热点代码可能经 JIT 编译为机器码。
@@ -2343,6 +2343,8 @@ public class GenericExample {
 
         IDE「同步 Maven」= 重读 POM / 解析依赖 / 更新 classpath，**不等于**跑 `compile` / `package`。
 
+        IDEA **Build Project**（`Build` → `Build Project`，`⌘F9` / `Ctrl+F9`）与 `mvn compile`：都是出 `.class`（多在 `target/classes`）。日常用 IDEA 自带增量编译；要对齐 CI，或注解处理器 / 生成源码异常时用 `mvn compile`（何时 `clean` / 重启见 §11）。可选：`Settings` → `Build Tools` → `Maven` → `Runner` → **Delegate IDE build/run actions to Maven**——此后 IDEA 的 Build / Run 改由 Maven 执行，更接近命令行与 CI，但更慢；日常不必开，出现「IDE 能跑、Maven/CI 不行」（或反过来）时再用来排查。
+
     2. POM
 
         **坐标与制品**
@@ -2576,10 +2578,22 @@ public class GenericExample {
         | `clean` | 清 `target`，不清本地仓 |
         | `compile` | → `target/classes`；不打包、不写本地仓 |
         | `test` | 测编译 + Surefire 单测 |
-        | `package` | 出 `target/` 制品；普通 jar 不含依赖；Boot 需 `repackage` |
+        | `package` | 出 `target/` 制品；见下「一分包 / 二分包」 |
         | `verify` | 已绑校验；Failsafe 常绑 `integration-test`+`verify`，IT 用 `mvn verify` |
         | `install` | 写入本地仓 |
         | `deploy` | 发远程仓，≠ 启动应用 |
+
+        **一分包 / 二分包**（Spring Boot 日常说法；官方叫 package + `repackage`）
+
+        | | 一分包 | 二分包 |
+        | --- | --- | --- |
+        | 谁做 | `maven-jar-plugin`（或 war 插件） | `spring-boot-maven-plugin` 的 `repackage` |
+        | 产物 | 普通 / 瘦包：本模块 `.class` + 资源，**不含**依赖 jar | 可执行 / 胖包：依赖进 `BOOT-INF/lib`，类进 `BOOT-INF/classes`，带 Loader |
+        | 用途 | 给别的模块当依赖；或再被二分包吃掉 | `java -jar app.jar` 直接跑（内嵌 Tomcat 等） |
+
+        - 同一次 `mvn package`：先一分包，再（若绑了 Boot 插件）二分包。默认二分包**替换**主制品；被替换的原始包常留下 `xxx.jar.original`。
+        - 模块还要被别人当依赖时：给可执行包加 `classifier`（如 `exec`），主制品保留一分包；或 `attach=false` 只安装/部署原始包。
+        - 多模块：库模块只一分包；**仅启动模块**配 Boot 插件做二分包（别在父 POM 全局绑，否则库也会被打成 `BOOT-INF` 布局，下游依赖不到裸类）。
 
         跳测：`-DskipTests` 只跳 Surefire（仍编译；Failsafe 3.6.0+ 不认）；`-DskipITs` 跳 Failsafe；`-Dmaven.test.skip=true` 连测编译一起跳。日常校验勿默认跳过。
 
@@ -2634,6 +2648,22 @@ public class GenericExample {
         | 多模块找不到上游 | `-am` / 是否已 `install` |
         | profile 没生效 | Maven `-P` vs Spring；`help:active-profiles` |
         | 有效配置不确定 | `help:effective-pom` / `help:effective-settings` |
+
+    11. 改代码后：要不要编译 / `clean` / `install` / 重启
+
+        按需，不是固定顺序。编译用 IDEA Build 或 `mvn compile`（区别见 §1）。**产物落盘 ≠ 进程生效**：`target/classes` 已更新，跑着的 JVM 仍可能用旧类；要不要重启按下表，边界见上文环境节（HotSwap / DevTools）。
+
+        | 改了什么 | 编译 | `clean` | `install` | 重启 |
+        | --- | --- | --- | --- | --- |
+        | 方法体（调试中可 HotSwap） | IDEA Build | 否 | 否 | 常不需要 |
+        | 方法签名 / 字段 / 类层次 / 注解 / Bean 定义 | 要 | 否 | 否 | 要（或 DevTools） |
+        | `application.yml`、多数 `resources`、MyBatis XML | 资源进 classpath | 否 | 否 | 多数要（或 DevTools） |
+        | `pom.xml` 依赖变更 | 先同步 Maven，再编译 | 产物/解析不对才要 | 否* | 要 |
+        | 多模块：改了被依赖的库模块 | 该模块编过；消费方用到新产物 | 产物不对才要 | 否* | 要 |
+        | ClassNotFound、旧 class、注解处理器 / 生成代码错乱 | 要 | **要**（`clean compile`） | 否* | 要 |
+
+        - `install`*：写入 `~/.m2`，给**别的独立构建**或外工程 SNAPSHOT 用；同工程 Run/Debug / `spring-boot:run` / 同一次 `-pl … -am` 日常不必。
+        - AI 大批量改完：先 `mvn -pl <模块> -am test`（或 `verify`），再按上表决定是否重启。
 
 - **Gradle**
 
@@ -3474,7 +3504,7 @@ public class GenericExample {
             <summary>细节：运行维护关注点</summary>
 
             - 启动：`java -jar`、Maven / Gradle 插件运行、IDE 运行配置、profile 和环境变量。
-            - 打包：Maven / Gradle 构建，常见命令是 test / package；可执行 JAR 和普通 JAR 的结构不同。
+            - 打包：Maven / Gradle 构建，常见命令是 test / package；普通 JAR（一分包）与 Boot 可执行 JAR（二分包 / `repackage`）结构不同。
             - 部署：JAR、WAR、容器镜像、配置外置、滚动发布、优雅停机、回滚策略。
             - 日志：区分访问日志、业务日志、错误日志、SQL 日志；生产日志要脱敏、可检索、带 trace id。
             - 指标：QPS、响应时间、错误率、JVM 内存、GC、线程池、连接池、数据库慢查询、MQ 堆积。
@@ -3633,7 +3663,7 @@ public class GenericExample {
 >1. 单服务主线：Java Web → Spring → MVC → MyBatis → **Spring Boot**
 >1. 多服务主线：在 Boot 之上加 **Spring Cloud**（发现 / 配置 / Feign / 网关 / 容错）；国内常见再叠 **Spring Cloud Alibaba**（Nacos、Sentinel 等）
 
-### [数据库、缓存](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据库使用/README.md)
+### [数据库、缓存](https://github.com/realgeoffrey/knowledge/blob/master/全栈/数据库使用/README.md)
 
 ### 消息队列
 - **Kafka**
@@ -3706,6 +3736,7 @@ public class GenericExample {
 - `JDK` / `JRE` / `JVM`：`JDK` 是开发套件（含编译器、工具）；`JRE` 偏运行环境；`JVM` 是执行字节码、管内存与 GC 的虚拟机。日常开发安装 JDK 即可。
 - `Classpath` / 类路径：JVM 的「类与资源搜索路径」，查找 `.class` 和配置 / 图片等资源，类似系统里的 `PATH`。Maven / IDE 帮你拼；Spring Boot 用它决定自动配置。跑程序、报 `ClassNotFoundException` / 读不到配置时，先查有没有把需要的 jar / 目录算进去。
 - `JAR`：Java Archive，Java 归档包；Spring Boot 最常见的可执行部署形态，常用 `java -jar app.jar` 启动（内嵌 Tomcat 等）。
+- `一分包` / `二分包`：Boot 构建里对两次打包的俗称。一分包=`maven-jar-plugin` 打的普通瘦包（无依赖）；二分包=`spring-boot-maven-plugin:repackage` 再加工成可 `java -jar` 的胖包。
 - `WAR`：Web Application Archive，Web 应用归档包；传统 Java Web 部署包，通常放到外部 Tomcat 等容器中运行。
 - `Maven` / `pom.xml` / `settings.xml`：构建与依赖工具。POM 管坐标、依赖、插件与模块；settings 管本机镜像 / 认证 / 代理（职责勿混）。日常 `test` / `package` / `verify`；排查看 `dependency:tree`、`help:effective-pom` / `effective-settings`。`<id>` 对齐见上文 Settings 节。
 - `私服` / `mirror` / `proxy`：私服=团队远程入口（内部包 + 常代理 Central）。`mirrors` 只改下载、不改 `deploy`；`proxy` 是出网 HTTP 代理，与 `mirror` 的 id **无对应**。`<id>` 见上文 Settings 节；链路见「仓库与解析」。
@@ -3774,11 +3805,19 @@ public class GenericExample {
         1. Repository：按聚合存取，屏蔽表结构和 SQL。
         1. Domain Service：规则不自然属于某个实体时，放领域服务（仍是纯业务，不是应用编排）。
     - 和常见 Spring 分层对照：`Controller` / DTO / VO 在边缘；`Application Service` 编排用例、开事务；`domain` 放模型和规则；`Repository` / Mapper 在出站适配。很多 CRUD 项目只有分层命名、没有真正领域模型，读代码时不要假设「有 domain 包 = 做了 DDD」。
+    - 跨边界协作：对接外部系统 / 别的限界上下文时，用防腐层（ACL）做模型翻译，见下条 `ACL`。
     - 适用：业务规则多、长期演进、需要和业务共语；简单进出表 CRUD 不必硬上完整 DDD。
+- `ACL`：Anti-Corruption Layer，防腐层；DDD 的集成模式。在本系统与外部系统（遗留库、第三方、别的限界上下文）之间加一层适配，把外面的模型 / 协议翻译成本域自己的模型，避免外部脏字段、奇怪语义直接渗进领域代码。
+
+    - 要防的「腐蚀」：对方叫 `customerId`、你这边是 `Member`；状态机、枚举、金额单位不一致；外部 API 字段乱、常变。若 Service / domain 直接吃对方 DTO，对方一改你核心业务到处炸。
+    - 做什么：入站（外部请求 / 事件 → 本域命令或领域对象）、出站（本域意图 → 外部 API 请求）。常见实现：Translator / Assembler、Adapter / Gateway，必要时再包一层 Facade。
+    - 和常见分层对照：看起来像「适配器 + 对象转换」，但目标是保护本域通用语言与模型边界，不只是少写几行 `setXxx`。读代码时若见 `xxxAdapter` / `xxxTranslator` / `xxxGateway` 专管外部契约，多半在做 ACL。
+    - 注意：ACL 不是 API 网关；网关管流量入口（路由、鉴权、限流），ACL 管模型隔离。简单 CRUD 调稳定内部接口不必硬套完整 ACL；边界乱、外部模型强时再上。
 - `DAO`：Data Access Object，数据访问对象；封装数据库访问细节，让业务层不用直接关心 SQL、连接和底层存储实现。
 - `mapper`：MyBatis 数据访问接口；方法通常对应一条 SQL 或一组数据库操作，是 Service 访问数据库的常见入口。
 - `Repository`：仓储；DDD 中用于封装聚合持久化，Spring Data 中也作为数据访问抽象，可理解为比 DAO 更偏领域语义的数据入口。
 - `JDBC`：Java Database Connectivity，Java 数据库访问标准 API；调用链是 `Java 程序 → JDBC API → 驱动 → 数据库`。Spring / MyBatis 底层仍走 JDBC。核心对象：`Connection`、`PreparedStatement`、`ResultSet`；值用占位符绑定，资源用 try-with-resources 关闭。
+- `InnoDB`：MySQL 默认**存储引擎**（落盘、B+树索引、行锁、事务）。JDBC / `@Transactional` 连上的表默认就是它；隔离默认 `REPEATABLE READ`。
 - `DataSource` / 连接池 / 池化：`DataSource` 是取数据库连接的标准入口。生产环境用连接池（如 HikariCP）：预先准备若干连接，用时借出、用完归还。关注 `maximumPoolSize`、`connectionTimeout`（等池多久）、`idleTimeout`、`maxLifetime`（应短于库侧断连）；不要和 `@Transactional(timeout)` 或 SQL 超时混为一谈。容量按「实例数 × 池上限」对照库的 `max_connections`。池化管「可复用资源」；缓存管「可重复读的数据」。
 - `MyBatis` / `MyBatis-Plus`：`MyBatis` 把 Mapper 方法与 SQL（XML 或注解）绑定，并把结果映射成 Java 对象；`#{}` 生成 `PreparedStatement` 占位符并绑定参数，`${}` 把求值结果拼进 SQL 文本（标识符白名单才用）。动态 SQL 的 `test` / `<bind>` 使用 OGNL，与 `#{}` 不是同一通路。一级缓存绑在单个 `SqlSession`：无 Spring 事务时常方法级会话（跨方法难命中），有事务时常整段共用会话才容易命中。`MyBatis-Plus` 在其上补通用 CRUD、分页等，不取代理解 SQL 与映射。
 - `Transaction` / `@Transactional` / 事务：一组 SQL 要么都成功要么都回滚。Spring 里多用 `@Transactional` 声明边界；默认对 `RuntimeException`/`Error` 回滚，受检异常默认提交（可用 `rollbackFor` 改）。异常须抛出代理外才按规则处理，方法内吞掉再正常返回会提交。挂在 Service，依赖代理生效（自调用绕过代理）。`readOnly` 是优化提示，不保证禁写。开启后通常把一个 JDBC 连接绑在当前线程并关闭自动提交，同线程内数据访问复用该连接。传播默认 `REQUIRED`；`REQUIRES_NEW` 独立新事务，`NESTED` 多为 savepoint 且依赖管理器实现。隔离级别名称对齐 JDBC，现象看库（InnoDB 默认 `REPEATABLE READ`：普通读靠快照，当前读可加间隙锁）。一个 `DataSourceTransactionManager` 管一个数据源；多库原子性要 XA 或业务补偿，不能指望随便加一个注解。
@@ -3821,7 +3860,7 @@ public class GenericExample {
     `validate -> compile -> test -> package -> verify -> install -> deploy`
 
     - 日常最常用：`test`（编译+单测）、`package`（打 JAR/WAR）、`verify`（含已绑校验 / 集成测试）、`install`（进本地仓库）。
-    - `clean` 常与上面组合，清 `target` 再构建；与 `default` 线独立，`package` 不会自动 `clean`。
+    - `clean` 常与上面组合，清 `target` 再构建；与 `default` 线独立，`package` 不会自动 `clean`。改代码后何时 `clean` / `install` / 重启：见 Maven §11。
     - `deploy` 是发布到远程仓库，≠ 部署应用到服务器。
 
 3. 构建、依赖和部署怎么串起来
