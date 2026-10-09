@@ -619,7 +619,7 @@ ln -s "「源文件/目录」" "「目标链接」"  # 符号链接：存路径�
 #### Shell环境的运行参数
 - `set` 改当前 Shell 选项；子 Shell 会继承，新开的独立 Shell 不一定继承。
 
-    1. [`set`](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html) + 配置项
+    1. [`set`](https://ss64.com/bash/set.html) + 配置项
 
         >e.g. `set -u`
     2. `bash`（或其他 Shell）+ 配置项 + 脚本

@@ -167,8 +167,8 @@
             ><details>
             ><summary>可以使用基于class的方式，如：BEM</summary>
             >
-            >1. `block-name__element-name--modifier-name--modifier-val`（[getbem.com](http://getbem.com/naming/)）
-            >2. `block-name__element-name_modifier-name_modifier-val`（[en.bem.info](https://en.bem.info/methodology/naming-convention/)）
+            >1. `block-name__element-name--modifier-name--modifier-val`（[CSS-Tricks: BEM 101](https://css-tricks.com/bem-101/)）
+            >2. `block-name__element-name_modifier-name_modifier-val`（[bem.info naming](https://bem.info/en/methodology/naming-convention/)）
             ></details>
         2. 减少需要执行样式计算的元素的个数（随着元素递增而计算量线性递增）。
     3. 避免大规模、复杂的layout与reflow
@@ -1516,7 +1516,7 @@
 ### 安全区域适配
 1. iOS
 
-    iPhone的安全区域（[Apple: Adaptivity and Layout](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/adaptivity-and-layout/#layout-guides-and-safe-area)）：一个可视窗口范围，处于安全区域的内容不受 ~~圆角（corners）~~、~~齐刘海（sensor housing）~~、~~小黑条（Home Indicator）~~ 影响，如下图蓝色区域。
+    iPhone的安全区域（[Apple: Layout — Safe areas](https://developer.apple.com/design/human-interface-guidelines/layout#Safe-areas)）：一个可视窗口范围，处于安全区域的内容不受 ~~圆角（corners）~~、~~齐刘海（sensor housing）~~、~~小黑条（Home Indicator）~~ 影响，如下图蓝色区域。
 
     ![Chrome任务管理器图](./images/safe-area-1.png)
 
@@ -1703,7 +1703,7 @@ CSS渐变是以CSS背景图的形式展示，但没有内在尺寸（没有固�
     2. [`repeating-linear-gradient()`](https://developer.mozilla.org/en-US/docs/Web/CSS/repeating-linear-gradient)
     3. [`radial-gradient()`](https://developer.mozilla.org/en-US/docs/Web/CSS/radial-gradient)
     4. [`repeating-radial-gradient()`](https://developer.mozilla.org/en-US/docs/Web/CSS/repeating-radial-gradient)
-    5. [`conic-gradient()`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/conic-gradient)
+    5. [`conic-gradient()`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/gradient/conic-gradient)
     6. [`repeating-conic-gradient()`](https://developer.mozilla.org/en-US/docs/Web/CSS/repeating-conic-gradient)
 
 - 文字渐变：

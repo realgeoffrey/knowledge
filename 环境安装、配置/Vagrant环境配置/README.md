@@ -3,7 +3,7 @@
 1. 官网下载、安装**virtualbox**和**vagrant**
 2. 选择Vagrant Boxes：
 
-    - [Vagrant cloud](https://atlas.hashicorp.com/boxes/search)
+    - [Vagrant cloud](https://portal.cloud.hashicorp.com/vagrant/discover)
     - [个性化配置](https://www.puphpet.com)
 3. 下载脚本配置文件**VagrantFile**：
 

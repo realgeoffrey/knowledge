@@ -7,7 +7,7 @@
 
 1. IDE
 
-    1. cursor、qoder（、IDEA）
+    1. cursor、~~qoder~~（、IDEA）
 1. agent
 
     cursor、codex、qoder
@@ -20,4 +20,4 @@
         1. [ponytail](https://github.com/DietrichGebert/ponytail)
 1. chat ai
 
-    gemini、chatgpt、豆包、元宝(deepseek)
+    chatgpt、豆包、deepseek、~~元宝~~、~~gemini~~

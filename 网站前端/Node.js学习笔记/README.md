@@ -29,6 +29,8 @@
 ## 安装
 
 ### nvm更新Node.js版本
+>新安装的话，推荐使用[fnm](https://github.com/Schniz/fnm)。
+
 1. macOS或Linux的[nvm](https://github.com/nvm-sh/nvm)
 
     >若M1安装v15以下版本，建议终端打开[Rosetta模式](https://support.apple.com/en-hk/HT211861)：<https://github.com/nvm-sh/nvm/issues/2350>（任何应用：打开“应用程序”，右键 App → 显示简介，勾选：“使用 Rosetta 打开”，然后运行应用（记得用完后取消勾选）；终端：`arch -x86_64 zsh`进入临时会话，`exit`即可退出）。
@@ -839,7 +841,7 @@ npm（Node Package Manager）。
 
 - <details>
 
-    <summary><a href="https://nodejs.org/zh-cn/docs/meta/topics/dependencies/">Node.js依赖项</a></summary>
+    <summary>Node.js依赖项</summary>
 
     1. 类库
 

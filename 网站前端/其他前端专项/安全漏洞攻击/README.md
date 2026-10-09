@@ -156,7 +156,7 @@
         2. 通过攻击安全漏洞使服务停止。
     17. Hash Collision DoS
 
-        >参考：[HASH COLLISION DOS 问题](http://coolshell.cn/articles/6424.html)。
+        >参考：[Wikipedia：Hash flooding](https://en.wikipedia.org/wiki/Hash_flooding)。
 
         Hash碰撞的拒绝式服务攻击（Hash Collision DoS）是对服务器进行恶意负载。
 

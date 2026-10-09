@@ -5,7 +5,7 @@
 
 ---
 ### OpenTelemetry
->参考：[OpenTelemetry官方中文文档](https://github.com/open-telemetry/docs-cn)、[OpenTelemetry 可观测性的未来](https://github.com/rootsongjc/opentelemetry-obervability)。
+>参考：[OpenTelemetry官方中文文档](https://github.com/open-telemetry/docs-cn)、[kubernetes-handbook：OpenTelemetry](https://github.com/rootsongjc/kubernetes-handbook/blob/main/observability/opentelemetry/index.md)。
 
 1. 介绍OpenTelemetry（OTel）
 

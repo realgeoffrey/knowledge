@@ -391,7 +391,7 @@
 
         1. 浏览器请求服务端 ->
         2. 服务端返回status为302，包含响应header的`Location` ->
-        3. 浏览器得到以上返回，向 响应header的`Location` 发起重定向请求（请求header、请求method：和上一个请求发起的一致、不能变化；同源cookie策略，上一个请求可以修改cookie以传递额外信息给重定向链接）
+        3. 浏览器得到以上返回，向响应header的`Location`发起重定向请求（POST可能改为GET，且不再发送原请求体；请求header也可能被修改或移除。需要保持请求method和请求体时使用`307`，永久重定向使用`308`；cookie按目标地址的域、路径、SameSite等规则重新匹配）。见[RFC 9110 §15.4.3](https://www.rfc-editor.org/rfc/rfc9110.html#section-15.4.3)。
 
         >[Chrome在302重定向时对原请求产生2次请求](http://www.cnblogs.com/lyzg/p/6237841.html)
     4. **303 See Other**
@@ -471,9 +471,9 @@
     19. 418 I'm a teapot
 
          客户端错误响应代码表示服务器拒绝冲泡咖啡，因为它是一个茶壶（这个错误是超文本咖啡壶控制协议的参考，这是1998年愚人节的笑话）。
-    20. 421 There are too many connections from your internet address
+    20. [421 Misdirected Request](https://www.rfc-editor.org/rfc/rfc9110.html#section-15.5.20)
 
-        从当前客户端所在的IP地址到服务器的连接数超过了服务器许可的最大范围。
+        请求被发往无法或不愿为目标URI提供权威响应的服务器，例如复用的连接不适用于该目标源。客户端可以换一个连接重试。
     21. 422 Unprocessable Entity
 
         请求格式正确，但是由于含有语义错误，无法响应。
@@ -483,9 +483,9 @@
     23. 424 Failed Dependency
 
         由于之前的某个请求发生的错误，导致当前请求失败，如：PROPPATCH。
-    24. *425 Unordered Collection*
+    24. [425 Too Early](https://www.rfc-editor.org/rfc/rfc8470.html#section-5.2)
 
-        （未出现）
+        服务器不愿承担处理可能被重放的早期数据请求的风险。客户端重试时不能继续使用early data（0-RTT），应在握手完成后发送。
     25. 426 Upgrade Required
 
         客户端应当按响应中的 `Upgrade` 头切换到服务器要求的协议；历史上常见于要求 TLS 或其他协议升级，不应写死为 TLS/1.0。
@@ -707,7 +707,7 @@
         `304 Not Modified`
     2. 利用之前HTTP response header返回的`Last-Modified`、`ETag`作为HTTP request head发起的`If-Modified-Since`、`If-None-Match`
 
-        >`ETag/If-None-Match`的优先级高于`Last-Modified/If-Modified-Since`（当服务器同时使用时，先判断If-None-Match。若中协议缓存，再判断If-Modified-Since；若没有中，不再判断）。
+        >请求包含`If-None-Match`时，服务器必须忽略`If-Modified-Since`，不能在ETag匹配后继续用修改时间否定缓存命中。见[RFC 9110 §13.1.3](https://www.rfc-editor.org/rfc/rfc9110.html#section-13.1.3)。
 
         1. `Last-Modified`与`If-Modified-Since`：
 
@@ -733,7 +733,7 @@
             3. 浏览器再请求这个资源时，带上If-None-Match请求头（ETag的值）；
             4. 服务器收到资源请求时，拿If-None-Match和资源在服务器上生成新的ETag进行对比：
 
-                1. 若值相同，命中缓存（还要考虑`Last-Modified/If-Modified-Since`），返回`304 Not Modified`，但不返回资源内容。浏览器从本地缓存中读取资源。
+                1. 若匹配，GET/HEAD请求的缓存校验命中，返回`304 Not Modified`，但不返回资源内容。浏览器从本地缓存中读取资源；此时忽略`If-Modified-Since`。
                 2. 若没有命中缓存，则返回资源内容，根据响应头更新这个资源的ETag。
 
     - 使用选择
@@ -806,7 +806,7 @@
 
         1. 对称密钥加密（Common key crypto system，共享密钥加密）
 
-            加密和解密同用一个密钥，必须将密钥发送给对方。
+            加密和解密使用同一个密钥。通信双方需要安全地共享密钥，或通过密钥协商派生密钥，不必直接传输密钥本身。
         2. 非对称加密（Public-key cryptography，公开密钥加密）：
 
             >处理速度较慢、安全性很高。
@@ -819,12 +819,12 @@
             >它需要两个密钥，一个是公开密钥，另一个是私有密钥；一个用作加密，另一个则用作解密。使用其中一个密钥把明文加密后所得的密文，只能用相对应的另一个密钥才能解密得到原本的明文；甚至连最初用来加密的密钥也不能用作解密。虽然两个密钥在数学上相关，但若知道了其中一个，则并不能凭此计算出另外一个；因此其中一个可以公开，称为公钥，任意向外发布；不公开的密钥为私钥，必须由用户自行严格秘密保管，绝不通过任何途径向任何人提供，也不会透露给要通信的另一方，即使他被信任。
             ></details>
 
-        - 加密保证 = 对称密钥加密 + 非对称加密
+        - HTTPS中的密钥建立（以[TLS 1.3](https://www.rfc-editor.org/rfc/rfc8446.html#section-2)为例）
 
-            1. （建立TCP/IP连接、验证完证书有效性、获得服务器的公开密钥）
-            2. 客户端传给服务器：使用公开密钥加密信息「后续会话采用对称加密的算法和密钥」；
-            3. 服务器收到信息后，使用私有密钥提取出客户端提供的对称加密的算法和密钥，返回客户端：同意使用此对称密钥加密；
-            4. 后续两者之间信息的传输就可以使用对称加密的方式。
+            1. 客户端与服务器通过握手协商TLS版本、密码套件和密钥交换参数。
+            2. 常见的证书认证模式下，双方通过`(EC)DHE`交换临时公钥材料，各自在本地计算共享秘密；服务器使用证书对应的私钥签名，客户端验证证书和签名以确认服务器身份。
+            3. 双方结合共享秘密与握手上下文派生对称流量密钥，不会直接发送会话密钥。
+            4. 后续通信使用对称密钥保护。TLS 1.3也支持PSK（预共享密钥）握手；历史静态RSA密钥传输已从TLS 1.3移除，不能把“公钥加密会话密钥”当作通用HTTPS流程。
     2. 认证：公开密钥的证书。
 
         由发布机构CA保证。
@@ -863,25 +863,26 @@
 ### `Mixed Content`
 `Mixed Content`（混合内容）：初始HTML内容通过安全的HTTPS连接加载（.html），但其他资源（如：样式表、脚本、图像、多媒体资源等）通过不安全的HTTP连接加载。
 
-1. 现代浏览器会显示警告/错误，以向用户表明此页面包含不安全的资源
+1. 现代浏览器按[可升级内容、阻止内容](https://www.w3.org/TR/mixed-content/#categories)处理混合内容，并可能显示警告或错误
 
-    1. 被动混合内容（提示warning，但还可以正常发出请求）：
+    1. 可升级内容（自动将HTTP地址升级为HTTPS；升级失败则加载失败，不回退到HTTP）：
 
-        1. `<img>`的`src`
+        1. 普通`<img>`的`src`（不含`srcset`、`<picture>`）
         2. `<audio>`的`src`
-        3. `video`的`src`
-        4. `object`的子资源
-    2. 主动混合内容（提示error，阻止发出请求）：
+        3. `<video>`的`src`
+        4. CSS的`background-image`
+
+        >以不可信IP地址为主机的HTTP资源不会自动升级，而是直接阻止。见[升级算法](https://www.w3.org/TR/mixed-content/#upgrade-algorithm)。
+    2. 阻止内容（返回网络错误，阻止加载）：
 
         1. `<script>`的`src`
-        2. `<link>`的`href`
-        3. 样式内的地址（如：`@font-sace`、`cursor`、`background-image`、等）
-        4. `<picture>`的子资源（如：`<img>`）
-        5. `XMLHttpRequest`请求
+        2. 样式表`<link>`的`href`
+        3. 样式内的字体地址（如：`@font-face`）
+        4. `<picture>`的子资源、使用`srcset`的图片
+        5. `XMLHttpRequest`、`fetch`请求
         6. `<iframe>`的`src`
         7. `<object>`的`data`
         8. `navigator.sendBeacon`请求
-        9. Flash
 2. 让页面中发起的HTTP请求自动转化为HTTPS请求进行发出（若资源没有https的资源，则考虑其他方案）：
 
     1. HTTP响应头：
@@ -973,10 +974,12 @@
 
             1. `Access-Control-Allow-Origin`：值为请求头`Origin`的值或`*`，表明接受跨域请求
 
-                >若`Access-Control-Allow-Credentials`为`true`，则`Access-Control-Allow-Origin`不能为`*`，需要是明确的、与请求网页一致的域名。
-            2. `Access-Control-Allow-Credentials`：（可选）是否允许发送cookie
+                >若请求的凭证模式为`include`，则`Access-Control-Allow-Origin`必须明确匹配请求的`Origin`，不能为`*`，且`Access-Control-Allow-Credentials`必须为`true`，否则脚本不能读取跨源响应。
+            2. `Access-Control-Allow-Credentials`：（可选）是否允许脚本读取携带凭证的跨源响应
 
-                >跨域发送cookie需要：后台响应包含`Access-Control-Allow-Credentials: true`（且`Access-Control-Allow-Origin`不能为`*`） 且 前端请求包含`xhr = new XMLHttpRequest(); xhr.withCredentials = true`（`fetch(url,{ credentials: 'include', mode: 'cors' })`），浏览器才能在跨域请求中携带 未被标记为`samesite: strict`的cookie。
+                >前端使用`xhr.withCredentials = true`或`fetch(url, { credentials: 'include', mode: 'cors' })`请求跨源API。cookie仍须符合目标域、路径、Secure、SameSite等规则：跨源不一定跨站，同站跨源请求也可携带`SameSite=Strict/Lax`的cookie；跨站fetch/XHR需要`SameSite=None; Secure`，且仍受浏览器第三方cookie策略限制。见[SameSite说明](https://web.dev/articles/samesite-cookies-explained)。
+                >
+                >若要让脚本读取带凭证的跨源响应，后台必须返回`Access-Control-Allow-Credentials: true`，且`Access-Control-Allow-Origin`明确匹配请求的`Origin`。简单请求可能在收到响应头前就已携带cookie发出；不返回这些响应头不能作为CSRF防护。见[Fetch规范](https://fetch.spec.whatwg.org/#cors-protocol-and-credentials)。
             3. `Access-Control-Expose-Headers`：（可选）CORS请求时，`XMLHttpRequest`只能拿到6个基本字段（`Cache-Control`、`Content-Language`、`Content-Type`、`Expires`、`Last-Modified`、`Pragma`），若需要其他字段，需在此指定
         2. 不允许跨域：
 
@@ -998,12 +1001,12 @@
 
                 1. `Access-Control-Allow-Origin`：值为请求头`Origin`的值或`*`，表明接受跨域请求
 
-                    >若`Access-Control-Allow-Credentials`为`true`，则`Access-Control-Allow-Origin`不能为`*`，需要是明确的、与请求网页一致的域名。
+                    >若后续请求的凭证模式为`include`，则`Access-Control-Allow-Origin`必须明确匹配请求的`Origin`，不能为`*`，且`Access-Control-Allow-Credentials`必须为`true`。
                 2. `Access-Control-Allow-Methods`：服务器支持的所有跨域请求的请求方法
                 3. `Access-Control-Allow-Headers`：（若HTTP请求头有`Access-Control-Request-Headers`则必须）服务器支持的所有跨域请求的请求头字段，以`,`分割
-                4. `Access-Control-Allow-Credentials`：（可选）是否允许发送cookie
+                4. `Access-Control-Allow-Credentials`：（可选）是否允许后续请求携带凭证并共享响应
 
-                    >跨域发送cookie需要：后台响应包含`Access-Control-Allow-Credentials: true`（且`Access-Control-Allow-Origin`不能为`*`） 且 前端请求包含`xhr = new XMLHttpRequest(); xhr.withCredentials = true`（`fetch(url,{ credentials: 'include', mode: 'cors' })`），浏览器才能在跨域请求中携带 未被标记为`samesite: strict`的cookie。
+                    >前端配置、cookie的SameSite及第三方cookie限制与简单请求一致。预检请求本身不携带cookie；若后续请求的凭证模式为`include`，预检响应必须返回`Access-Control-Allow-Credentials: true`及明确匹配请求`Origin`的`Access-Control-Allow-Origin`，否则浏览器不会发送后续请求。实际响应也必须返回这两个头，否则脚本仍不能读取响应。
                 5. `Access-Control-Max-Age`：（可选）本次预检请求的有效期，单位秒（-1：禁用预检缓存）
             2. 不允许跨域：
 
@@ -1029,7 +1032,20 @@ HTTP是无状态协议，通过session-cookie或token判断客户端的用户状
 
         服务器生成，发送给客户端保存（`Set-Cookie`），再由客户端发送给服务器（`Cookie`）。cookie携带session_id（可以经过加密），能够匹配服务端的session。
 
-    >若请求cookie未携带session_id，则服务端创建后设置进cookie；若请求cookie已携带session_id，则服务端直接使用它（无论是否登录）。因此一个会话从未登录到登录的session_id都会保持一致（跨越登录前后，保持同一个会话，利用session_id的取值就能取到同一个值）。
+    - 登录前后的 session_id 不能沿用同一个值。这叫会话固定（session fixation）防护。
+
+        1. 还没登录时：
+
+            请求未携带 session_id，服务端创建一个匿名 session，并用 `Set-Cookie` 写入 cookie。这时这个标识只代表「某个游客」，不代表某个已登录用户。匿名 session 里可以暂存购物车等数据。
+        2. 认证成功时：
+
+            服务端必须签发一个新的 session_id，作废原来的标识，再把已登录状态写在新 session 上。匿名 session 里还要用的数据（如购物车）拷到新 session。之后浏览器只用新 cookie。
+        3. 为什么不能沿用旧的：
+
+            登录前的 session_id 可能已经被别人拿到（别的子域种过父域 cookie、日志泄露、未设 `HttpOnly` 时被 XSS 读到）。若登录后继续用同一个值，持有旧标识的人就等于拿到了已登录会话。
+        4. 一句话：
+
+            匿名会话可以先有；一旦变成已登录用户，标识必须换新的。
 2. token（令牌）
 
     >最简单的token组成：uid（用户唯一的身份标识）、time（当前时间的时间戳）、sign（签名，加盐后哈希）。
@@ -1045,7 +1061,7 @@ HTTP是无状态协议，通过session-cookie或token判断客户端的用户状
 
         >**跨域认证**解决方案。
 
-        服务器认证以后，生成一个JSON对象（转成特殊结构的字符串）发回给客户端，客户端本地保存，当客户端与服务端通信时，都要发回这个token。服务端不保存任何session数据、变成无状态，从而比较容易实现扩展。JWT自包含用户信息、加密签名等数据，因此不需要（或很少）查数据库——但已颁发的JWT不方便通过服务端管理（如：失效销毁、修改信息）。
+        服务器认证以后，生成一个JSON对象（转成特殊结构的字符串）发回给客户端，客户端本地保存，当客户端与服务端通信时，都要发回这个token。服务端不保存任何session数据、变成无状态，从而比较容易实现扩展。JWT可自包含用户声明，通过JWS签名或MAC保护完整性，需要保密时使用JWE加密；签名不等于加密。校验自包含JWT通常不需要（或很少）查数据库——但已颁发的JWT不方便通过服务端管理（如：失效销毁、修改信息）。
 
 - <details>
 
@@ -1055,38 +1071,298 @@ HTTP是无状态协议，通过session-cookie或token判断客户端的用户状
 
         session_id存储在客户端的cookie，session数据存储在服务端，存储开销随用户量增加而增大。
 
-        1. cookie的特性：http请求自动携带、同源同路径、JS可获取、容易受到CSRF攻击。
+        1. cookie的特性：http请求自动携带、同源同路径、未设置`HttpOnly`时JS可获取、容易受到CSRF攻击。登录会话cookie要设`HttpOnly`。
         2. session_id很短，请求响应体积小。
         3. （有状态）依赖服务端存储管理session（如：Redis），服务端方便删除、修改session。
     2. token：
 
-        token存在客户端的任意形式，数据加密存储在token里（服务端不存）。
+        这里比较的是自包含token：数据随token保存在客户端，服务端可以不保存会话。普通签名JWT的载荷可直接解码，不提供保密性，不能存放秘密。
 
         1. 不一定依赖cookie，需要前后端配合使用token。
-        2. token自身包含身份验证、权限选择等的所有或部分信息，因此比较大，请求响应体积大。服务端颁发时需要加密，服务端验证时需要解密。
-        3. （无状态）服务端不存储token，已颁发的token不方便通过服务端管理（如：失效销毁、修改信息），因此需要设置较短有效期。
-        4. （token中的一种基于JSON的开放标准：）JWT不需要（或很少）查数据库，直接在服务端进行校验（因为用户信息、加密签名都自包含在JWT中），不需要设计分布式存储方案、扩展性好。
+        2. 自包含token可以携带身份、权限等信息，因此可能较大，增加请求响应体积。签发JWS时使用签名或MAC，验证时检查签名或MAC及相关声明；只有采用JWE等加密格式时才涉及加密、解密。
+        3. （无状态）服务端不存储这类自包含token，已颁发的token不方便通过服务端管理（如：失效销毁、修改信息），因此需要设置较短有效期。授权码和refresh_token不在此列：授权服务器要保存它们（至少保存哈希和代次）才能作废和轮换。
+        4. （token中的一种基于JSON的开放标准：）JWT不需要（或很少）查数据库，直接在服务端进行校验（因为用户声明和签名或MAC可以自包含在JWT中），不需要设计分布式存储方案、扩展性好。`id_token`和签发给资源服务器的access_token可以是这种JWT。跨站交给业务应用的仍是一次性授权码，不是把JWT放进浏览器当跨站会话。
     </details>
 
 >从已经登录的客户端提取出登录信息（session_id或token），传递给其他客户端，再由其他客户端把登录信息注入cookie等存储-传输机制中，就可以转移登录状态到其他客户端（除非有做额外的逻辑去阻止转移登录状态，如：对设备信息、IP等进行存储对比）。
 
 #### 登录策略
-1. 单点登录（Single Sign On，SSO）
+登录要分开看两件事：
 
-    在多个应用系统中，只需要登录一次，就可以访问其他相互信任的应用系统。
+- **怎样证明身份**：用户输入密码、确认Passkey，或在微信等平台完成认证。
+- **怎样让应用记住这次登录**：认证成功后，应用建立自己的会话；多个应用之间还需要安全地传递认证结果。
 
-    1. 同域名：
+先按场景找到对应流程，再阅读后面的实现细节：
 
-        设置cookie的domain为顶级域名，其他按照正常登录策略即可。
-    2. 跨域名：
+| 场景 | 采用的流程 | 用户在哪里认证 |
+| :--- | :--- | :--- |
+| 单个应用自己处理登录 | 本系统直接登录，完成后建立本域会话 | 当前应用 |
+| 多个自有应用免重复输入凭证 | 单点登录（SSO），通过OIDC授权码流程接入 | 统一登录系统 |
+| 外部应用需要访问本方API | OAuth 2.0；还需要用户身份时叠加OIDC | 本方授权服务器 |
+| 使用微信、Apple、Google或企业账号 | 三方身份登录，先接到统一登录系统 | 对方平台 |
+| 手机确认PC端登录 | 扫码登录，以一次性票据关联两端 | 已登录手机端，或手机上的登录页 |
+| 手机App希望减少输入手机号的步骤 | 运营商一键登录，失败时提供其他登录方式 | 运营商授权页及本方服务端 |
 
-        通过在一个中间域名网站统一登录后（认证），登录信息以cookie形式存储session_id在中间域名（授权）；当在这个中间域名网站鉴权成功后，重定向回原域名网站并带上能够验证登录状态的token；在原域名网站用token请求登录接口，鉴权成功后以cookie形式存储session_id在原域名（授权）。
+几个会反复出现的术语：
 
-todo: https://tsejx.github.io/blog/authentication/
+| 术语 | 在本文中的意思 |
+| :--- | :--- |
+| IdP（Identity Provider，身份提供方） | 负责认证用户并提供身份声明的系统 |
+| OIDC（OpenID Connect） | 在OAuth 2.0之上提供身份认证；应用通过`id_token`核对用户身份 |
+| PKCE | 让授权码与本次客户端发起的登录事务关联，减少授权码被截获后遭冒用的风险 |
+| 凭证、会话与令牌受众 | 凭证用于证明请求身份；会话保存登录状态；受众表示令牌签发给谁使用 |
 
-2. OAuth2.0
-3. 扫码登录
-4. 一键登录
+下文会按六个边界说明每种方式的适用范围：
+
+| 边界 | 怎样理解 |
+| :--- | :--- |
+| 登录系统 | 负责认证、保存自己的登录会话，并决定各应用能得到哪些身份信息。密码、Passkey、短信和三方登录都在这里汇合。 |
+| 三方系统 | 可能是给我们提供身份的微信、Apple或企业IdP，也可能是申请访问我们资源的外部应用。先确认它在本次流程中是哪种角色。 |
+| 同应用 | 同一产品的Web、iOS、Android仍是不同客户端，各自持有会话；一个端登录，不代表其他端自动登录。 |
+| 不同应用 | 即使属于同一公司，也要按信任边界隔离会话、权限和令牌受众。 |
+| 同域名 | 本文指同一注册域及其子域，且协议相同，例如两个HTTPS子域都在`example.com`下。不设`Domain`的cookie只属于当前主机；设为`example.com`才可覆盖其子域。 |
+| 不同域名 | 例如`example.com`与`example.cn`。不能共享cookie，需要跳转到登录系统，再把一次性授权码交回业务应用。 |
+
+<details>
+<summary>“注册域”与eTLD+1是什么</summary>
+
+浏览器依据[Public Suffix List](https://publicsuffix.org/)识别公共后缀。eTLD+1表示公共后缀再加一级，例如`.com`对应`example.com`，`.co.uk`对应`example.co.uk`，`.github.io`对应`user.github.io`。
+
+因此，`app1.example.com`与`app2.example.com`同属一个注册域；`user1.github.io`与`user2.github.io`则不属于同一个注册域。cookie的`Domain`不能设为`.com`等公共后缀。
+
+</details>
+
+新系统接入遵循[OAuth 2.0安全最佳实践（RFC 9700）](https://datatracker.ietf.org/doc/html/rfc9700)：使用授权码流程和[PKCE（RFC 7636）](https://datatracker.ietf.org/doc/html/rfc7636)，精确匹配`redirect_uri`，不让浏览器持有长期令牌。这些约束也纳入了仍在制定的OAuth 2.1草案；隐式授权（implicit）与资源所有者密码凭证（ROPC）已废弃。
+
+国内消费端常见短信、微信、App一键取号和账密登录；办公场景常对接企业微信、飞书、钉钉或客户企业IdP。新建多应用登录时，可统一接到登录系统：自有应用用OIDC，各业务应用再建立自己的会话。对接存量企业系统时，还可能需要SAML 2.0。
+
+认证因子可优先考虑[Passkey（WebAuthn）](https://www.w3.org/TR/webauthn-3/)，其余用户保留密码等方式。短信OTP可能被钓鱼站中继；绑定已登记包名或域名的一键取号主要需要防范换卡和终端恶意软件。这两种方式方便用户，但不宜单独承担高价值系统的全部身份验证。
+
+1. 本系统直接登录
+
+    用户在应用自身域名完成认证，服务端换发本域会话。适用范围：同应用 + 当前主机。
+
+    1. 认证因子
+
+        1. Passkey（首选）
+
+            认证器持有私钥，登录系统仅存公钥。私钥不交付网页或登录系统。同步型 Passkey 在用户设备间端到端加密同步；硬件安全密钥则将私钥留在该认证器内。断言绑定真实 origin，仿冒站上的确认无法产生对本站有效的签名。注册须要求用户验证（锁屏、生物识别或 PIN）；满足后本身构成多因子。
+
+            1. 注册（已登录态，或注册流程中）：
+
+                1. 服务端生成一次性 challenge，绑定当前会话后下发。
+                2. 浏览器请求认证器创建可发现凭证（discoverable / resident key），并要求用户验证。仅当前主机使用时，RP ID 取完整主机名；同注册域多子域复用同一 Passkey 时，RP ID 取注册域（如 `example.com`）。公钥与凭证 ID 提交服务端。
+                3. 服务端校验 challenge、origin、RP ID 后保存公钥，并作废 challenge。origin 须落在服务端白名单内。
+            2. 登录：
+
+                1. 服务端签发新的 challenge，绑定当前会话；用后即删，超时亦删。
+                2. 浏览器按 RP ID 枚举该站可发现 Passkey，用户确认后认证器对 challenge 签名。
+                3. 服务端以公钥校验签名、origin、RP ID、challenge 与用户验证标志；通过后按下方规则换发本域会话。
+        2. 密码
+
+            1. 仅经 HTTPS 提交凭证。
+            2. 服务端以慢哈希校验，不明文存储、不直接比对明文。
+            3. 通过后按下方规则换发本域会话。高价值操作可再要求 Passkey 或一次性验证码。
+        3. 短信验证码
+
+            1. 用户提交手机号；服务端生成短时验证码并下发，对号码与 IP 限频。
+            2. 用户回传验证码；校验成功后立即作废。
+            3. 按手机号定位或创建用户，再按下方规则换发本域会话。
+    2. 登录态落地
+
+        1. 无会话时，服务端创建匿名 session，经 `Set-Cookie` 写入 session_id。
+        2. cookie 不设 `Domain`（仅当前主机），并设置 `Secure`、`HttpOnly`、`SameSite=Lax`。
+        3. 认证成功后换发新的 session_id，作废匿名会话标识，将已登录状态写入新 session。此后同源请求携带新 cookie，服务端据此鉴权。
+    3. 接入边界
+
+        1. 登录系统：即本应用服务端，无独立认证中心。
+        2. 三方系统：不向三方下发本 cookie，亦不接受三方传入的 session_id。
+        3. 同应用：Web 使用本 cookie；同产品 App 独立登录，会话存于系统安全存储。将 Web 的 session_id 注入 App 等同于会话转移。
+        4. 不同应用：邻子域亦不得读取本 cookie；需免二次输入时使用单点登录。
+        5. 同域名：会话仅属当前主机。子域复用不得仅靠扩大 `Domain`，应改用单点登录。
+        6. 不同域名：不适用；cookie 无法跨域传递。
+2. 单点登录（Single Sign On，SSO）
+
+    多个互信自有应用中，用户仅在登录系统认证一次；各应用仍各自签发会话，互不读取对方 cookie。
+
+    父域cookie可以作为一种受限的捷径，但要同时满足两个条件：各主机使用同一注册域和协议，并且本来就属于同一信任边界。
+
+    - 做法：认证成功后换发session_id，设置`Domain=example.com`，各子域用它查询同一份会话。旧标识必须作废，不能把子域预先植入的标识直接升级为已登录会话。
+    - 代价：任一子域都能覆盖父域cookie，子域失陷可能影响其他站点。管理后台与面向用户的网站权限不同时，不使用这条捷径。
+
+    其余场景使用OIDC授权码流程。登录系统只在自己的主机保存会话cookie，不设父域`Domain`，并设置`Secure`、`HttpOnly`、`SameSite=Lax`。
+
+    这里使用Lax，是为了让业务站发起的跨站顶层GET跳转能带上已有登录cookie。若设为Strict，登录系统在这次跳转中收不到它，用户就可能被要求重新登录。
+
+    1. 首次登录（业务站 `https://a.com`，登录系统 `https://login.company.com`，跨域）
+
+        1. 用户访问 `a.com`，无本域会话。
+        2. `a.com`后端为这次登录生成`state`、`nonce`和PKCE的`code_verifier`，写入本域短期HttpOnly cookie。再把`code_verifier`做SHA-256，将摘要的原始字节用无填充Base64URL编码，得到`code_challenge`。
+        3. 浏览器顶层重定向至：
+
+            `https://login.company.com/authorize?response_type=code&client_id=a&redirect_uri=https://a.com/callback&scope=openid&state=...&nonce=...&code_challenge=...&code_challenge_method=S256`
+        4. 登录系统检查自身主机会话 cookie；缺失则展示登录页，以上文认证因子完成认证并写入 `login.company.com` 会话 cookie。认证仅发生在登录系统域。
+        5. 登录系统确认用户可访问 `client_id=a`。自有应用可配置为跳过同意页。
+        6. 重定向回 `https://a.com/callback?code=一次性授权码&state=...`。回跳仅含授权码与 `state`，不含 session_id 或 access_token。
+        7. `a.com`后端核对`state`，再带着授权码、`code_verifier`和同一`redirect_uri`，向登录系统的token端点换取令牌。有后端密钥的机密客户端还要提交`client_secret`。这一步由服务端直连；换取成功后，授权码立即作废。
+        8. 登录系统返回`id_token`，也可能附带`access_token`、`refresh_token`。`a.com`按下面的检查表验证身份令牌；任何检查失败，都不能建立登录会话。
+        9. `a.com`按发行方与`sub`绑定本地用户，换发本域会话cookie；后续页面与接口使用这份本域会话。
+
+        校验`id_token`时，至少保留以下检查。完整规则见[OIDC身份令牌校验](https://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation)。
+
+        | 检查项 | 本例中的要求 |
+        | :--- | :--- |
+        | 签名与算法 | 只接受预先允许的算法，拒绝`alg=none`；按`kid`选择受信任登录系统的公钥验签 |
+        | `iss`（发行方） | 必须是预期的登录系统 |
+        | `exp`（过期时间） | 令牌仍在有效期内 |
+        | `nonce`（本次认证的随机值） | 必须与本次登录事务保存的值一致 |
+        | `aud`（受众） | 字符串时等于自己的`client_id`；数组时包含自己的`client_id` |
+        | `azp`（获授权客户端） | 本例中`aud`为数组时，要求等于自己的`client_id` |
+
+        `state`用于关联回跳与本次登录请求；`nonce`用于关联身份令牌与本次认证；PKCE让换取授权码的人还必须持有`code_verifier`。三者作用不同，不能互相替代。
+    2. 第二应用免二次输入（`https://b.net`，不同应用、不同域名）
+
+        1. `b.net` 无本域会话时，同流程重定向至登录系统。`client_id=b`，`redirect_uri` 为预先登记的 b 回调，不复用 a 的客户端。
+        2. 浏览器访问 `login.company.com` 时携带登录系统 `SameSite=Lax` 会话 cookie；已登录则跳过凭证输入。
+        3. 登录系统签发仅面向 b 的新授权码，回跳 `b.net`。
+        4. `b.net` 换票并确认 `aud` 为 b，签发本域会话。
+        5. `a.com` 与 `b.net` cookie 互不可见；面向 a 的令牌不得用作 b 的登录凭证。两侧仅共享登录系统中的 `sub`。
+    3. 同域名另一应用（`app1.example.com` 与 `app2.example.com`）
+
+        仍走上述跳转，登录系统部署于 `login.example.com`。三者同站，`SameSite=Lax` 会话 cookie 可在顶层跳转中携带。不得为省略跳转而让两应用直接共享同一会话 cookie。
+    4. 同产品 App
+
+        1. 禁止在内嵌 WebView 打开登录页。使用系统浏览器或系统认证会话（iOS ASWebAuthenticationSession、Android Custom Tabs）访问同一 authorize 端点。原生客户端单独登记 `client_id`，回调为已登记的私有 scheme 或 HTTPS 通用链接。见 [RFC 8252](https://datatracker.ietf.org/doc/html/rfc8252)。
+        2. 系统浏览器已有登录系统会话时可免输密码。凭证留在系统浏览器，App 不可读取。
+        3. 公开客户端不持有 `client_secret`，换票仅依赖 PKCE。本端会话存于系统安全存储。
+        4. App 登录不使同设备浏览器或其他端自动登录。
+    5. 静默登录与登出
+
+        1. 第二应用可带 `prompt=none`：有会话则直接回授权码，否则返回 `login_required`，再发起交互式跳转。将 `prompt=none` 置于隐藏 iframe 依赖第三方 cookie，在 Safari 等环境会失败，默认使用顶层跳转。
+        2. 只退出`a.com`时，登录系统的会话可能仍在。再次访问`a.com`，用户可能无需输入凭证就重新进入；这并不等于已经全局退出。
+        3. 清除登录系统会话后，各应用已签发的本域会话不会自动失效。若需即时全局失效，各应用会话宜设短 TTL，或由登录系统在登出时通知各应用；通知失败时以本域会话过期为准。
+    6. 接入边界
+
+        1. 登录系统：独立部署；会话 cookie 仅属其主机；按 `client_id` 签发授权码，并公布校验 `id_token` 的公钥。
+        2. 三方系统：不适用「自有应用免同意」；三方须单独注册客户端，见下一节。
+        3. 同应用：各端各自走授权码流程，共享同一 `sub`，各持一份会话。
+        4. 不同应用：一应用一 `client_id`、一精确回调、一本域会话；不共用客户端与令牌。
+        5. 同域名：跳转流程与跨域相同；仅「本属同一站点」时可用父域 cookie 捷径。
+        6. 不同域名：顶层跳转至登录系统，回传一次性授权码；禁止将长期令牌放入回跳 URL。
+3. OAuth 2.0
+
+    行业标准授权协议，见上文 OAuth。其向第三方颁发的是资源访问令牌，而非本方登录会话。用户认证仍发生在授权服务器；若第三方需建立自身登录态，必须叠加 OIDC（`scope` 含 `openid` 并校验 `id_token`），不得仅凭 access_token 视为认证成功。
+
+    跳转、PKCE、授权码、服务端换票与单点登录相同；差异在于客户端身份、令牌类型与用途。
+
+    1. 本方为登录系统，三方为客户端
+
+        1. 三方单独注册 `client_id`、精确 `redirect_uri`、允许的 `scope`，不与自有应用共用客户端。有后端者为机密客户端，`client_secret` 仅存于其服务端；纯前端与原生 App 为公开客户端，仅使用 PKCE，禁止将 secret 写入安装包。
+        2. 三方将浏览器顶层重定向至本方 authorize 端点；用户在本方域名认证。
+        3. 本方展示同意页（列出拟授予的 `scope`）；用户同意后重定向至已登记回调，仅携带一次性授权码与 `state`。
+        4. 三方服务端以授权码换取 access_token。若需认人，本方同时签发 `id_token`；三方按 OIDC 校验 `iss`、`aud`、`exp`、签名、`nonce`，以 `sub` 绑定本地用户后签发自身会话。
+        5. 三方以 access_token 调用本方资源服务器；资源服务器验证签名，或向授权服务器查询令牌状态（内省），并核对有效期、`aud`、`scope`。`aud` 不符则拒绝。
+        6. 授权码和refresh_token由授权服务器保存或跟踪，至少保存哈希与轮换代次，以便作废。refresh_token只放在三方后端；使用后作废旧值并换发新值。若旧值再次出现，作废整条令牌链。
+
+            access_token与`id_token`可以是自包含JWT，但三方浏览器仍使用三方自己的会话cookie。本方不会向三方域名写入session cookie。
+    2. 本方为客户端，三方为授权服务器
+
+        即下一节三方身份登录。需要对方用户身份时走 OIDC；需要代用户调用对方 API 时保存对方 access_token 并遵守其 `scope`。对方令牌不是本方会话；校验身份后仍签发本方会话。
+    3. 接入边界
+
+        1. 登录系统：协议中的授权服务器。负责认证、同意、签发授权码与令牌；不负责写入三方域名 cookie。
+        2. 三方系统：作为客户端接入；一三方一 `client_id`。令牌受众为约定资源，而非三方站点的登录 cookie。
+        3. 同应用：同产品 Web 与 App 分别登记客户端。App 使用系统浏览器 + PKCE，禁止内嵌 WebView 收集密码。
+        4. 不同应用：信任边界不同则按三方方式隔离客户端与令牌受众，不得因同属一组织而共用 access_token。
+        5. 同域名：不因此改用共享 cookie；回调仍为预先登记的完整 URI，授权服务器逐字比对。
+        6. 不同域名：常规场景。依赖顶层重定向与服务端换票，不依赖 cookie `Domain`。
+4. 三方身份登录
+
+    用户在微信、Apple、Google、企业微信、飞书、钉钉或客户企业 IdP 完成认证；本方为客户端。认证结果回落本方登录系统，绑定本地用户后，再经单点登录分发至各业务应用。业务应用不得各自直连三方，亦不得以三方令牌作为本方登录态。
+
+    1. 流程
+
+        1. 在对方平台登记应用，获取客户端标识；后端密钥仅存本方服务端。回调地址为本方登录系统 URI，预先登记。
+        2. 业务应用先重定向至登录系统，携带自身 `client_id`、精确 `redirect_uri`、`state`、`nonce`、PKCE。登录系统将该授权请求存入短期会话，再展示三方选择。
+        3. 登录系统生成面向三方的 `state`（及对方支持时的 PKCE），记录预期发行方，顶层重定向至对方授权端点。
+        4. 用户在对方域名完成认证与同意。对方回跳本方登录系统回调，仅带一次性授权码；拒绝授权则无码，登录系统结束流程，不建会话、不向业务应用发码。
+        5. 登录系统换票并核对面向三方的 `state`。多 IdP 共用回调时，仅使用事务中记录的发行方换票。OIDC 发行方（Apple、Google、支持 OIDC 的企业 IdP）校验 `id_token`；微信等 OAuth 接口则以 access_token 换取用户标识。
+        6. 以「发行方 + 对方稳定用户 ID」查找绑定；命中则登录对应用户，未命中则进入绑定或注册。禁止按昵称、头像、邮箱展示名合并账号。
+        7. 登录系统在自身主机写入会话，再按已保存的业务授权请求（`client_id`、`redirect_uri`）继续签发一次性授权码。三方令牌留存于登录系统，不交业务应用。
+    2. 绑定标识
+
+        1. 微信开放平台（同账号下的网站扫码、移动应用、小程序）：绑定 `unionid`。`openid` 仅在单一 AppID 内稳定。
+        2. 公众号网页授权（微信内置浏览器）：先得该公众号 `openid`。公众号绑定至同一开放平台账号后，授权结果才含 `unionid`，方可与开放平台下其他应用对齐同一用户。
+        3. Apple：绑定身份令牌中的 `sub`。邮箱可能为中继地址，且常仅首次授权返回，不得作主键。
+        4. Google 等 OIDC：绑定 `id_token` 的 `sub`；不信任前端自报用户资料。
+        5. 企业微信、飞书、钉钉：按应用类型选择绑定键。属企业内身份，非个人微信。
+
+            1. 企业自建且可获取租户员工标识：企业微信 / 钉钉绑定 `userid`，飞书绑定 `user_id`。飞书 `user_id` 仅自建应用申请「获取用户 User ID」后可得；管理员可将其设为工号或邮箱前缀。离职再入职若复用同一值，会接管本地账号，须核对在职状态。
+            2. 同一服务商多应用对齐用户：飞书用 `union_id`（`on_`；企业多个自建应用时，服务商即该企业），钉钉用 `unionId`，企业微信第三方应用用该服务商在此企业下的 `open_userid`。均不跨企业。
+            3. 飞书 `open_id`（`ou_`）及钉钉 / 企业微信中仅属当前应用的标识，仅用于调用该应用接口；跨应用使用会被拒绝。
+        6. 客户只提供SAML 2.0时，本方充当服务提供方（SP）。浏览器带着认证请求跳转客户IdP，对方再把签名断言提交到已登记的断言消费服务（ACS）。
+
+            建立会话前，逐项检查：
+
+            - 签名确实覆盖断言本身，受众与有效期符合预期。
+            - `InResponseTo`对应本次请求。
+            - `Destination`（或`Recipient`）指向已登记的ACS。
+            - 断言ID只消费一次；使用NameID或双方约定的稳定字段识别用户。
+
+            检查通过后才创建登录系统会话。每个客户分别配置IdP与回调白名单；对方支持OIDC时优先使用OIDC。
+    3. 接入边界
+
+        1. 登录系统：唯一对接三方之处；负责换票、绑定、签发自身会话。
+        2. 三方系统：充当本次 IdP；仅交付授权码所换取的身份，不共享 cookie。
+        3. 同应用：业务应用将「三方登录」入口指向本方登录系统，不持有三方密钥。
+        4. 不同应用：统一经同一登录系统完成三方认证，本地用户仅一条绑定；禁止各应用分别申请三方客户端并各自绑定 `openid`。
+        5. 同域名：三方回调集中于登录系统单一地址；业务子域不各自注册回调。
+        6. 不同域名：三方平台登记的是登录系统域名。业务域不同不影响；登录系统认证后再向业务应用发授权码。新增业务域只需在本方登录系统登记，除非该域绕过登录系统直连三方。
+5. 扫码登录
+
+    指自有账号的跨端确认：PC 展示二维码，已登录手机端确认后，PC 获得本端会话。传递的是「同意在该浏览器登录」，而非复制手机 cookie。微信扫码属上一节三方身份登录，二维码仅为对方授权页的展示形态，不使用本节票据。
+
+    1. 流程
+
+        1. PC 未登录时向本域后端申请扫码票据。后端生成不可预测的 ticket，状态为待扫，TTL 约一至两分钟，并绑定该浏览器已有的临时会话。
+        2. 页面将 ticket 编码为二维码，内容为登录系统确认地址或 App 可打开的链接；不含 session_id。
+        3. PC 携带原临时会话轮询或订阅 ticket。无该临时会话则即使持有 ticket 亦无法兑换登录结果。
+        4. 已登录手机端扫码打开确认页：展示应用名、PC 环境及 PC 屏上的短核对码；用户核对后确认。确认请求携带手机端登录态与 ticket。
+        5. 登录系统将 ticket 标为已确认并绑定用户；ticket 一次性成功消费。
+        6. PC 在仍持有申请时临时会话的前提下，以 ticket 换取本域新 session_id，作废临时会话旧标识，并作废 ticket。无该临时会话时，仅凭 ticket 不可兑换会话。
+        7. 超时或手机端取消：PC 结束等待并更换二维码；旧 ticket 作废。
+    2. 手机端尚未登录
+
+        二维码打开手机浏览器，在登录系统完成认证——等同单点登录跳转，认证发生于手机。PC 仍仅以本端 ticket 兑换本端会话，不读取手机 cookie。
+    3. 接入边界
+
+        1. 登录系统：签发与消费 ticket，确认「已登录手机端同意 PC 该浏览器登录」。
+        2. 三方系统：不消费本内部票据。三方登录走 OAuth 授权码；若微信扫码目的为微信身份，走三方身份登录。
+        3. 同应用：典型为同产品 PC 站与手机 App，两端各持会话。
+        4. 不同应用：已登录 App 可确认另一自有应用的 PC 登录，确认页须标明目标应用；登录系统按该应用客户端签发对应端会话，不得将 App 令牌交给 PC。
+        5. 同域名：PC 与登录系统可同域；ticket 仍一次性，PC 会话 cookie 仍仅属 PC 主机。
+        6. 不同域名：二维码指向登录系统域名；确认后由登录系统按单点登录将结果回交 PC 域。不得将手机域 cookie 设为 PC 父域。
+6. 一键登录
+
+    运营商（或封装移动 / 联通 / 电信网关的号码认证服务）基于当前设备蜂窝网络识别本机号码。结果仅为「已登记客户端的本机号」，不建立跨应用会话，亦不适用于 PC 浏览器。
+
+    1. 流程
+
+        1. 向服务商登记客户端包名与签名，或 iOS Bundle ID；H5 另须登记页面域名。未登记应用无法取号。
+        2. 用户须走移动数据；纯 Wi-Fi 下常失败。
+        3. 客户端拉起运营商授权页；用户同意后 SDK 返回一次性取号凭证（字段名因服务商而异，如 `loginToken`）。界面展示的号码不可直接采信。
+        4. 业务服务端以该凭证与服务商密钥向服务商换取手机号。凭证一次性，不可转交其他应用再换。
+        5. 服务端按手机号定位或创建用户，签发本客户端会话。
+        6. 取号失败、用户拒绝或双卡无法判定时，回退短信验证码，校验成功后同样签发本端会话。
+    2. 本机号码校验：业务已持有手机号，以同次取号证明当前设备号码与之一致；失败不发会话。
+    3. 接入边界
+
+        1. 登录系统：服务端以服务商返回的手机号完成认证并写本端会话；客户端不得自报号码即视为登录成功。
+        2. 三方系统：无一键登录可用的对外授权码，亦非微信式三方身份；三方获取本方用户仍走 OAuth 2.0。
+        3. 同应用：每个已登记安装包单独取号；其他设备须重新取号或改用短信。
+        4. 不同应用：各自向服务商登记并各自取号；账号打通依赖用户中心同一手机号，禁止转发取号凭证。
+        5. 同域名：PC 无运营商网关，不得因与 App 同域而使用一键登录；PC 改用扫码或短信。已登记 H5 可在蜂窝网络下取号，结果仅登录该 H5。
+        6. 不同域名：各需取号的 H5 域名分别向服务商登记；登记本身不产生会话共享。
 
 ---
 ### HTTP协议迭代（HTTP/3、HTTP/2、HTTP/1）
@@ -1096,7 +1372,9 @@ todo: https://tsejx.github.io/blog/authentication/
 
     传输层使用QUIC协议（快速UDP网络连接）而不是~~TCP~~（建立连接慢；1个TCP连接的队头阻塞）。
 
-    类似于HTTP/2（但HTTP/2通过1个TCP连接运行，所以在TCP层处理的数据包丢失检测和重传会阻止所有流），它是一个**多路复用协议**，QUIC通过UDP（无连接，不需要“握手”、“挥手”，因此快速）运行多个流，并为每个流独立实现数据包丢失检测和重传，因此如果发生错误，只有该数据包中包含数据的流才会被阻止。
+    类似于HTTP/2（但HTTP/2通过1个TCP连接运行，TCP丢包后的按序交付会阻塞所有流），它是一个**多路复用协议**。QUIC在UDP上提供多个可靠流，各流独立按序交付数据，某个流等待丢失数据重传时，不会像TCP那样直接阻塞其他流的数据交付。
+
+    >UDP自身无连接，但[QUIC仍需要握手](https://www.rfc-editor.org/rfc/rfc9000.html#section-7)：它合并传输与TLS 1.3加密握手以降低建连延迟；首次连接并非自动成为0-RTT，满足连接恢复条件时才可发送0-RTT早期数据。
 2. [HTTP/2](https://www.rfc-editor.org/rfc/rfc9113.html)：为了更优异的表现
 
     与HTTP/1.1完全语义兼容，进一步减少网络延迟：
@@ -1233,7 +1511,7 @@ todo: https://tsejx.github.io/blog/authentication/
 
     URI（URL）的结构：`scheme` `://` [`user:passwd@`] `host` [`:port`] `/path` [`?query`] [`#fragment`]
 
-    >URL的锚点（`#fragment`）不会出现在HTTP请求中，因此可以避免中间人攻击。
+    >URL的锚点（`#fragment`）不会作为HTTP请求目标发送，但不能防止中间人攻击。HTTP页面仍可被篡改，注入的脚本可以读取[`location.hash`](https://html.spec.whatwg.org/multipage/nav-history-apis.html#dom-location-hash)并外传，因此仍需HTTPS保护页面与通信。
 2. 协议（protocol）：
 
     计算机与网络设备要互相通信，双方就必须基于相同的方法，确定的规则就是协议。

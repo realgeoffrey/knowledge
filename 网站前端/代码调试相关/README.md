@@ -508,4 +508,4 @@
     获取注册到一个DOM上的所有事件监听器。
 
 ---
-## [服务端调试](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/服务端相关/README.md#接口错误排查)
+## [服务端调试](https://github.com/realgeoffrey/knowledge/blob/master/全栈/服务端相关/README.md#接口错误排查)

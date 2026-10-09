@@ -163,7 +163,7 @@
     5. 用`?.`无效，只能用类型保护才能使用其属性。
 6. `Object`、`{}`、`object`区别
 
-    1. [`Object`](https://github.com/microsoft/TypeScript/blob/main/src/lib/es5.d.ts#L105)
+    1. `Object`
 
         包含所有`Object.prototype.`方法类型（也就是所有JS类型原型链抵达的方法）；匹配任何值（基本数据类型+引用数据类型），`strictNullChecks`模式下不匹配`undefined`、`null`。
     2. `{}`
@@ -490,7 +490,7 @@
     1. 输入的参数、输出的返回值都需要设置类型。
     2. 支持：函数声明、函数表达式。
 
-        1. 函数表达式定义类型方式：[`Function`](https://github.com/microsoft/TypeScript/blob/main/src/lib/es5.d.ts#L257)（类似于`(...args: any) => any`，但缺少参数和返回值定义） 或 `参数类型 => 返回类型` 或 `接口`（、类型别名、内联类型注解）
+        1. 函数表达式定义类型方式：`Function`（类似于`(...args: any) => any`，但缺少参数和返回值定义） 或 `参数类型 => 返回类型` 或 `接口`（、类型别名、内联类型注解）
 
             若函数表达式需要表示重载，则只能通过 `接口`（、类型别名、内联类型注解） 定义。
         2. 函数声明使用定义类型方式：内联类型注解
@@ -626,7 +626,7 @@
 
     1. 浏览器环境
 
-        [TypeScript核心库的定义文件](https://github.com/Microsoft/TypeScript/tree/main/src/lib)定义了所有浏览器环境需要用到的类型（预置在TypeScript中）。
+        [TypeScript `lib` 配置](https://www.typescriptlang.org/tsconfig/#lib)对应的核心库定义文件定义了所有浏览器环境需要用到的类型（预置在TypeScript中；也可浏览 [lib.es5.d.ts](https://cdn.jsdelivr.net/npm/typescript/lib/lib.es5.d.ts)）。
 
         1. [ECMAScript标准提供的内置对象](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects)
         2. 文档对象模型（DOM）、浏览器对象模型（BOM）的内置对象
@@ -1675,7 +1675,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ></details>
 
 ### 内置类型别名（Utility Types）
->来自：[src/lib/es5.d.ts](https://github.com/microsoft/TypeScript/blob/main/src/lib/es5.d.ts#L1504)、[typescript: Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html)。
+>来自：[lib.es5.d.ts](https://cdn.jsdelivr.net/npm/typescript/lib/lib.es5.d.ts)、[typescript: Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html)。
 
 1. `Awaited<T>`
 
@@ -3011,7 +3011,7 @@ type Concrete<Type> = {
 
         >[DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/README.zh-Hans.md)
 
-- [lib.d.ts](https://github.com/microsoft/TypeScript/tree/main/src/lib)
+- [lib（`tsconfig` lib / `lib.*.d.ts`）](https://www.typescriptlang.org/tsconfig/#lib)
 
     当安装TS时，会顺带安装一个`lib.d.ts`声明文件。该文件包含JS运行时以及DOM中存在各种常见的环境声明，它自动包含在TS项目的编译上下文中。
 

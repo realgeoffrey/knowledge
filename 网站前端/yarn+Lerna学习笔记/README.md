@@ -10,12 +10,12 @@
 ### yarn
 >备注：本节主要记录 Yarn Classic（v1）。Yarn Berry（v2+）的配置文件、PnP 依赖解析和部分命令行为与 v1 有差异，使用前需按项目实际 Yarn 版本核对。
 
-1. [`.yarnrc`](https://classic.yarnpkg.com/zh-Hans/docs/yarnrc)
+1. [`.yarnrc`](https://classic.yarnpkg.com/en/docs/yarnrc)
 
     ```text
     registry "https://mirrors.tencent.com/npm/"
     ```
-2. [`yarn`CLI](https://classic.yarnpkg.com/zh-Hans/docs/cli/)
+2. [`yarn`CLI](https://classic.yarnpkg.com/en/docs/cli/)
 
     1. `yarn init`
 
@@ -80,7 +80,7 @@
         检查过时的包依赖。
     7. `yarn`或`yarn install`
 
-        >[yarn: install](https://classic.yarnpkg.com/zh-Hans/docs/cli/install)。
+        >[yarn: install](https://classic.yarnpkg.com/en/docs/cli/install)。
 
         （按照`yarn.lock`）安装`package.json`的所有依赖包。
 
