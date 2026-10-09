@@ -8,7 +8,7 @@
 ---
 
 ### JS压缩细节
->来自：[Javascript代码压缩细节](https://w3ctech.com/topic/254)。
+>来自：[UglifyJS：Compressor](https://lisperator.net/uglifyjs/compress)。
 
 >类似[编译器编译原理](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#编译器编译原理)：parse -> AST -> 转换（压缩逻辑） -> code generate。
 

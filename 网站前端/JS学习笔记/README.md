@@ -1391,7 +1391,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         若多个`??`，则取第一个 不是`null`或`undefined`值 或最后一个值，短路求值。
 
 ### 浏览器的`事件循环（event loop）`
->参考：[阮一峰：再谈Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)、[Help, I’m stuck in an event-loop.](https://vimeo.com/96425312)、[Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)。
+>参考：[阮一峰：再谈Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)、[What the heck is the event loop anyway?（Philip Roberts）](https://www.youtube.com/watch?v=8aGhZQkoFbQ)、[Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)。
 
 >不是在ECMAScript中定义，而是在[HTML Standard](https://html.spec.whatwg.org/#event-loops)中定义。
 
@@ -3729,7 +3729,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     1. 播放事件
 
-        >参考：[MDN：媒体相关事件](https://developer.mozilla.org/zh-CN/docs/Web/Guide/Events/Media_events)。
+        >参考：[MDN：HTMLMediaElement 事件](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLMediaElement#events)。
 
         1. 正在播放
 

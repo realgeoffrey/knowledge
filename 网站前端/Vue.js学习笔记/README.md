@@ -4019,7 +4019,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 2. 结合响应式系统，Vue能够智能地计算出最少需要重新渲染多少组件，并把DOM操作次数减到最少。
 
 ><details>
-><summary>虚拟DOM系统的辩证思考：<a href="https://medium.com/@hayavuk/why-virtual-dom-is-slower-2d9b964b4c9e">Why Virtual DOM is slower</a></summary>
+><summary>虚拟DOM系统的辩证思考：<a href="https://svelte.dev/blog/virtual-dom-is-pure-overhead">Virtual DOM is pure overhead</a></summary>
 >
 >根据定义，**虚拟DOM** 比 **精细地直接更新DOM（`innerHTML`）** 更慢。虚拟DOM是执行DOM更新的一种折衷方式、一种权衡，尽管没有提升性能，但带来很多好处，可以提升开发人员的开发效率（提供了开发人员：「用数据驱动视图」替代「频繁操作DOM」的能力）。
 ></details>
@@ -6688,6 +6688,12 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         >[CodePen demo](https://codepen.io/realgeoffrey/pen/MWMpxNW)
 
         >element-plus与element-ui区别之一：element-plus的`<el-select>`会把空值（空字符串、`undefined`、`null`）认为是空，不会匹配值等于这些空值的选项，而是展示placeholder。赋值`NaN`不会导致JS死循环。
+
+        - 跨类型匹配（`number`/`string`，如 `1` 与 `'1'`、`0` 与 `'0'`）：枚举 `value` 与后端回显均保持原类型，仅在交给 `<el-select>` / `<el-option>` 时 `String()` 再比较。约定同一组选项中，不存在 `String()` 结果相同的两个 value。选中后用该字符串找回选项，将选项原有的 value 写回 `v-model` 并提交。`''`、`undefined`、`null` 视为空，不参与匹配。单选、多选同理。
+
+            作用：解决回显类型与选项类型不一致时选不中的问题（输入框只显示裸值、下拉无选中态）。改选后提交的是枚举自身类型，而非后台回显类型。
+
+            >社区认为：枚举值与后台返回值的类型一致应由业务保证，组件不做兜底。因此element实现上都是`===`判断。
     2. `<el-option>`的数组若不包含`<el-select>`的值，可以考虑`push`这个值到数组中（若要回显的不是value而是label）。
 
         >[CodePen demo](https://codepen.io/realgeoffrey/pen/emNJOgp)

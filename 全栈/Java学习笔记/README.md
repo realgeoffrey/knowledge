@@ -200,7 +200,7 @@ Java SE 基础按 8 个字回忆：
         1. Cursor：`java.configuration.runtimes`
         2. IDEA：`「文件」-「项目结构」-「项目」-「SDK」`（「编辑」配置好需要的SDK）
     - IDEA 正在运行/调试时，尽量不要让 Cursor 的 Java 语言服务对同一工程自动编译。仅打开 Cursor 本身不一定有问题；双方同时编译且共享 `target/` 等输出目录时，Cursor 侧可能清掉或覆盖 IDEA 刚产出的 class，表现为构建「回退」、类加载失败或热替换异常。若需同时打开，关掉 Cursor 的 `java.autobuild.enabled`，或只当纯文本编辑器。
-    - 标准 JVM HotSwap 一般只能改方法体；改字段、方法签名、类层次或 Spring Bean / 注解后通常要重启。DevTools 做自动重启，JRebel 能覆盖更多类结构变更但是商业软件。Cursor 的调试和 Hot Code Replace 取决于已装的 Java 调试扩展。
+    - 运行中的服务吃的是**内存里已加载的代码**。没有重新编译 / 热更新 / 重启时，只改磁盘源文件不会影响正在跑的进程——Java、Node、浏览器前端同理。Java 多一步：源码须先编成 `.class`；即便 `.class` 已写入 `target/`，JVM 仍用旧类，直到重启，或由 HotSwap / DevTools / JRebel 等主动替换。标准 JVM HotSwap 一般只能改方法体；改字段、方法签名、类层次或 Spring Bean / 注解后通常要重启。DevTools 做自动重启；JRebel 能覆盖更多类结构变更，但是商业软件。Cursor 的调试与 Hot Code Replace 取决于已装的 Java 调试扩展。改代码后要不要 `clean` / `compile` / `install` / 重启：见 Maven §11。
 - 初学期建议先用 LTS 版本；老项目常见 Java 8，新项目常见 Java 17/21，是否使用更高版本以团队基线为准（团队统一约定的技术标准下限/默认线）。
 
 - `javac 文件.java` → `类名.class`，编译为字节码；运行 `java 类名`（不写 `.class`）后，由 JVM 加载执行，热点代码可能经 JIT 编译为机器码。
@@ -357,9 +357,8 @@ Java 是强类型语言，变量和表达式都有编译期类型。类型先分
 └─ 数组元素 array component：数组对象内部的槽位，可通过下标访问
 ```
 
->成员，包括：（静态、非静态）字段、方法、成员类型（第一层的嵌套类型）；不包括：构造器、（静态、实例）初始化代码块、局部变量、参数、局部类型。
-
->变量不包含方法。方法是行为，字段、局部变量、参数、数组元素才保存值。
+>- 成员，包括：（静态、非静态）字段、方法、成员类型（第一层的嵌套类型）；不包括：构造器、（静态、实例）初始化代码块、局部变量、参数、局部类型。
+>- 变量不包含方法。方法是行为，字段、局部变量、参数、数组元素才保存值。
 
 | 类别 | 声明位置 | 默认值 | 归属与生命周期 |
 | --- | --- | --- | --- |
@@ -2343,6 +2342,8 @@ public class GenericExample {
 
         IDE「同步 Maven」= 重读 POM / 解析依赖 / 更新 classpath，**不等于**跑 `compile` / `package`。
 
+        IDEA **Build Project**（`Build` → `Build Project`，`⌘F9` / `Ctrl+F9`）与 `mvn compile`：都是出 `.class`（多在 `target/classes`）。日常用 IDEA 自带增量编译；要对齐 CI，或注解处理器 / 生成源码异常时用 `mvn compile`（何时 `clean` / 重启见 §11）。可选：`Settings` → `Build Tools` → `Maven` → `Runner` → **Delegate IDE build/run actions to Maven**——此后 IDEA 的 Build / Run 改由 Maven 执行，更接近命令行与 CI，但更慢；日常不必开，出现「IDE 能跑、Maven/CI 不行」（或反过来）时再用来排查。
+
     2. POM
 
         **坐标与制品**
@@ -2576,10 +2577,22 @@ public class GenericExample {
         | `clean` | 清 `target`，不清本地仓 |
         | `compile` | → `target/classes`；不打包、不写本地仓 |
         | `test` | 测编译 + Surefire 单测 |
-        | `package` | 出 `target/` 制品；普通 jar 不含依赖；Boot 需 `repackage` |
+        | `package` | 出 `target/` 制品；见下「一分包 / 二分包」 |
         | `verify` | 已绑校验；Failsafe 常绑 `integration-test`+`verify`，IT 用 `mvn verify` |
         | `install` | 写入本地仓 |
         | `deploy` | 发远程仓，≠ 启动应用 |
+
+        **一分包 / 二分包**（Spring Boot 日常说法；官方叫 package + `repackage`）
+
+        | | 一分包 | 二分包 |
+        | --- | --- | --- |
+        | 谁做 | `maven-jar-plugin`（或 war 插件） | `spring-boot-maven-plugin` 的 `repackage` |
+        | 产物 | 普通 / 瘦包：本模块 `.class` + 资源，**不含**依赖 jar | 可执行 / 胖包：依赖进 `BOOT-INF/lib`，类进 `BOOT-INF/classes`，带 Loader |
+        | 用途 | 给别的模块当依赖；或再被二分包吃掉 | `java -jar app.jar` 直接跑（内嵌 Tomcat 等） |
+
+        - 同一次 `mvn package`：先一分包，再（若绑了 Boot 插件）二分包。默认二分包**替换**主制品；被替换的原始包常留下 `xxx.jar.original`。
+        - 模块还要被别人当依赖时：给可执行包加 `classifier`（如 `exec`），主制品保留一分包；或 `attach=false` 只安装/部署原始包。
+        - 多模块：库模块只一分包；**仅启动模块**配 Boot 插件做二分包（别在父 POM 全局绑，否则库也会被打成 `BOOT-INF` 布局，下游依赖不到裸类）。
 
         跳测：`-DskipTests` 只跳 Surefire（仍编译；Failsafe 3.6.0+ 不认）；`-DskipITs` 跳 Failsafe；`-Dmaven.test.skip=true` 连测编译一起跳。日常校验勿默认跳过。
 
@@ -2635,15 +2648,30 @@ public class GenericExample {
         | profile 没生效 | Maven `-P` vs Spring；`help:active-profiles` |
         | 有效配置不确定 | `help:effective-pom` / `help:effective-settings` |
 
+    11. 改代码后：要不要编译 / `clean` / `install` / 重启
+
+        按需，不是固定顺序。编译用 IDEA Build 或 `mvn compile`（区别见 §1）。**产物落盘 ≠ 进程生效**：`target/classes` 已更新，跑着的 JVM 仍可能用旧类；要不要重启按下表，边界见上文环境节（HotSwap / DevTools）。
+
+        | 改了什么 | 编译 | `clean` | `install` | 重启 |
+        | --- | --- | --- | --- | --- |
+        | 方法体（调试中可 HotSwap） | IDEA Build | 否 | 否 | 常不需要 |
+        | 方法签名 / 字段 / 类层次 / 注解 / Bean 定义 | 要 | 否 | 否 | 要（或 DevTools） |
+        | `application.yml`、多数 `resources`、MyBatis XML | 资源进 classpath | 否 | 否 | 多数要（或 DevTools） |
+        | `pom.xml` 依赖变更 | 先同步 Maven，再编译 | 产物/解析不对才要 | 否* | 要 |
+        | 多模块：改了被依赖的库模块 | 该模块编过；消费方用到新产物 | 产物不对才要 | 否* | 要 |
+        | ClassNotFound、旧 class、注解处理器 / 生成代码错乱 | 要 | **要**（`clean compile`） | 否* | 要 |
+
+        - `install`*：写入 `~/.m2`，给**别的独立构建**或外工程 SNAPSHOT 用；同工程 Run/Debug / `spring-boot:run` / 同一次 `-pl … -am` 日常不必。
+        - AI 大批量改完：先 `mvn -pl <模块> -am test`（或 `verify`），再按上表决定是否重启。
+
 - **Gradle**
 
     更灵活，Android 和部分现代项目里较常见。
 
 ### JDBC 与数据库访问演进
 
->JDBC（Java Database Connectivity，Java数据库连接）是 Java SE 提供的数据库访问标准，Spring、MyBatis 等框架通常仍通过 JDBC 驱动访问数据库。
->
->调用链：**Java 程序 → JDBC API → 数据库驱动 → MySQL**。
+>- JDBC（Java Database Connectivity，Java数据库连接）是 Java SE 提供的数据库访问标准，Spring、MyBatis 等框架通常仍通过 JDBC 驱动访问数据库。
+>- 调用链：**Java 程序 → JDBC API → 数据库驱动 → MySQL**。
 
 1. JDBC 基础
 
@@ -2712,9 +2740,9 @@ public class GenericExample {
             >    ```text
             >    请求到来 → 从池中借出资源 → 使用资源 → 重置状态并归还
             >    ```
-
-            - 常见例子有数据库连接池、线程池和 HTTP 连接池。只有创建成本较高、可重置且会反复使用的资源才适合池化，普通轻量对象不需要自建对象池。
-            - 池化复用的是“资源”；缓存复用的是“可重复读取的数据或结果”，两者不是同一个概念。
+            >
+            >- 常见例子有数据库连接池、线程池和 HTTP 连接池。只有创建成本较高、可重置且会反复使用的资源才适合池化，普通轻量对象不需要自建对象池。
+            >- 池化复用的是“资源”；缓存复用的是“可重复读取的数据或结果”，两者不是同一个概念。
 
         - **数据库连接池**：是池化技术的一种应用。建立数据库连接需要网络通信、身份验证和会话初始化；连接池在应用内管理一组可复用的连接，避免每次执行 SQL 都重新建立物理连接。
 
@@ -2733,6 +2761,7 @@ public class GenericExample {
             | `validationTimeout` / 保活 | 借出前校验、keepalive 等，减少拿到已被服务端掐掉的连接 |
 
             - 几种“超时”不要混：
+
                 - 池的 `connectionTimeout`：借不到连接就失败。
                 - JDBC / 语句查询超时、MyBatis 超时：单条 SQL 跑太久。
                 - `@Transactional(timeout=…)`：Spring 事务开始后的最长事务时间（秒级语义，且多在**新开事务**时生效）；到点标记回滚，与“借连接等多久”不是同一开关。
@@ -2795,11 +2824,9 @@ public class GenericExample {
 
 ### Spring Boot 学习顺序
 
->Spring Boot 不是绕开 Java Web 和 Spring，而是在常见 Web 项目里把容器、MVC、持久层、配置和启动方式整合起来。Spring Cloud 再叠一层：多服务怎么发现、调用、配置和容错。
->
->记忆主线：**请求怎么进来 → 对象谁来管 → 接口怎么写 → SQL 怎么跑 → Boot 怎么整合 → 多服务怎么协作**。
->
->学习顺序：**JDBC → Java Web → Spring Framework → Spring MVC → MyBatis → Spring Boot → Spring Cloud**。
+>- Spring Boot 不是绕开 Java Web 和 Spring，而是在常见 Web 项目里把容器、MVC、持久层、配置和启动方式整合起来。Spring Cloud 再叠一层：多服务怎么发现、调用、配置和容错。
+>- 记忆主线：**请求怎么进来 → 对象谁来管 → 接口怎么写 → SQL 怎么跑 → Boot 怎么整合 → 多服务怎么协作**。
+>- 学习顺序：**JDBC → Java Web → Spring Framework → Spring MVC → MyBatis → Spring Boot → Spring Cloud**。
 
 1. Java Web：HTTP 与 Servlet 基础
 
@@ -3474,7 +3501,7 @@ public class GenericExample {
             <summary>细节：运行维护关注点</summary>
 
             - 启动：`java -jar`、Maven / Gradle 插件运行、IDE 运行配置、profile 和环境变量。
-            - 打包：Maven / Gradle 构建，常见命令是 test / package；可执行 JAR 和普通 JAR 的结构不同。
+            - 打包：Maven / Gradle 构建，常见命令是 test / package；普通 JAR（一分包）与 Boot 可执行 JAR（二分包 / `repackage`）结构不同。
             - 部署：JAR、WAR、容器镜像、配置外置、滚动发布、优雅停机、回滚策略。
             - 日志：区分访问日志、业务日志、错误日志、SQL 日志；生产日志要脱敏、可检索、带 trace id。
             - 指标：QPS、响应时间、错误率、JVM 内存、GC、线程池、连接池、数据库慢查询、MQ 堆积。
@@ -3514,9 +3541,8 @@ public class GenericExample {
 
 6. Spring Cloud：微服务协作
 
-    >Spring Cloud 不是再写一套 Web 框架，而是基于 Spring Boot 的微服务工具集：解决「很多服务怎么互相发现、调用、配置、网关入口和容错」。
-    >
-    >先会把单个 Boot 服务跑稳，再学 Cloud；否则注册中心、Feign、网关会叠在尚未理解的分层和配置之上。
+    >- Spring Cloud 不是再写一套 Web 框架，而是基于 Spring Boot 的微服务工具集：解决「很多服务怎么互相发现、调用、配置、网关入口和容错」。
+    >- 先会把单个 Boot 服务跑稳，再学 Cloud；否则注册中心、Feign、网关会叠在尚未理解的分层和配置之上。
 
     - 总览：
 
@@ -3633,72 +3659,49 @@ public class GenericExample {
 >1. 单服务主线：Java Web → Spring → MVC → MyBatis → **Spring Boot**
 >1. 多服务主线：在 Boot 之上加 **Spring Cloud**（发现 / 配置 / Feign / 网关 / 容错）；国内常见再叠 **Spring Cloud Alibaba**（Nacos、Sentinel 等）
 
-### [数据库、缓存](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据库使用/README.md)
+### [数据库、缓存](https://github.com/realgeoffrey/knowledge/blob/master/全栈/数据库使用/README.md)
 
 ### 消息队列
-- **Kafka**
 
-    偏日志流、吞吐高，常用于异步削峰、流式处理。
-- **RabbitMQ**
+- **Kafka**：高吞吐日志流；**无原生延时**。
+- **RabbitMQ**：路由更灵活；短延时常用 TTL + 死信（一档一队），新建别默认上 `x-delayed-message`。
+  >- **一档一队**：一种延时时长对应一个带 TTL 的队列（如 5m / 15m / 30m 各一队）。同队 TTL 有队头阻塞：先入队但更晚到期的会挡住后面更早就期的，故按档位拆队；到期进死信再被业务消费。固定 15 分钟关单就进 `delay.15m` 这一队。任意毫秒级、不想拆很多队才考虑 `x-delayed-message`（别默认上）。
+- 上线前想清：丢消息、重复消费、失败重试、顺序、死信。
+- **延时一次**（如 15 分钟关单）：用 MQ / Redis / 落库扫描，不要 Timer，也不要一单一条 cron。到点先看业务状态，该跳过就跳过。落库时到期写在字段里，定时任务只负责短周期扫。
 
-    偏传统消息队列，路由能力更丰富，业务系统里也很常见。
-- 核心问题：消息是否丢失、是否重复消费、消费失败怎么重试、顺序性是否重要、是否需要死信队列。
+  >- **延时一次**：相对「现在」只触发一次，不是每天/每周重复的墙钟任务；每笔业务各自有到期时间，处理完即结束。
+  >- **15 分钟关单**：典型例子——下单起算，到点仍未支付则关单。
+  >- **MQ**：有延时能力的 MQ（如 Rabbit TTL+死信，一档一队见上）；Kafka 无原生延时见上。到期后消费者执行；适合短～中等延时。
+  >- **Redis**：主推 ZSET（score=到期时间）+ 轮询取出到期项；勿依赖 key 过期通知做业务触发。比 MQ 轻，可靠性/重复/宕机要自己兜。
+  >- **落库扫描**：到期时间写入 DB 字段（如 `expire_at`），定时任务周期性查出已到期行再处理；适合长延时、要可查可改、要强业务一致。
+  >- **不要 Timer**：别用进程内 `Timer` / `sleep` / 内存倒计时——重启丢、多副本重复、扩缩容对不齐。
+  >- **不要一单一条 cron**：别给每个订单挂一条「到点跑」的调度任务——调度平台扛不住海量一次性任务，也难运维（改延时、取消、查状态都麻烦）。应走共享延时通道，或一个短周期任务扫全部到期行。
+  >- **到点先看业务状态，该跳过就跳过**：到期时先查当前状态（已支付/已取消/已关过则幂等跳过），再决定是否执行。
+  >- **到期写在字段里**：落库方案下，权威到期时间在库字段，不靠「心里记着再等 15 分钟」。
+  >- **定时任务只负责短周期扫**：任务不做「等 15 分钟」本身，只做例如每 30s/1min 扫一批；墙钟短周期=扫描器，延时语义在数据库字段（如 `expire_at`）。
 
 ### 定时任务
 
->定时任务是「到点触发一段逻辑」。和 MQ 一样，落地前先问：多实例会不会每台都跑、失败怎么重试、任务是否幂等、上一轮没跑完下一轮能不能再进。
+>到点跑一段逻辑。先问：多机会不会都跑、失败怎么办、是否幂等、上一轮没完能不能再进。
 
-1. 先分清两类需求，不要都做成 cron。
+| 需求 | 例子 | 怎么做 |
+| --- | --- | --- |
+| 业务日批 | 每天对账、改 cron、多机只跑一份 | 调度平台（XXL-JOB 等）：控制台定「几点跑」，代码写「跑什么」 |
+| 本机短周期 | 心跳、本地缓存刷新 | `@Scheduled` / `ScheduledExecutorService` |
+| 延时一次 | 下单后 N 分钟关单 | 见消息队列；不要写成 cron |
 
-    | 类型 | 含义 | 典型例子 | 优先选型 |
-    | --- | --- | --- | --- |
-    | 日历调度 | 按钟点 / cron 反复跑 | 每天 2:00 对账、每 5 分钟扫超时单 | 对账等业务日批用调度平台；本机短周期才用进程内 |
-    | 延时一次 | 某事件后再等 N 分钟做一次 | 下单 15 分钟未支付关单 | MQ 延时消息、落库扫描，而不是堆一堆一次性 Timer |
+>**业务日批（daily batch：按业务日或自然日跑的一批任务）**——几点跑放控制台，跑什么在代码；**本机短周期**才把 cron / `fixedDelay` 写在服务里。若任务要求全集群只跑一份（日批、关单扫描等），扩到多副本须改调度平台或加分布式锁；本机短周期可每台各跑。`Timer` 不用。
 
-1. 常见实现对照。
+```java
+@EnableScheduling  // 没有它，@Scheduled 不会跑
+@Component
+public class Jobs {
+    @Scheduled(fixedDelay = 5000)  // 跑完再等；默认单线程，多个 @Scheduled 会互堵，并行需扩 pool.size
+    public void poll() {}
+}
+```
 
-    | 方式 | 优点 | 缺点 | 适用场景 |
-    | --- | --- | --- | --- |
-    | `Timer` / `TimerTask` | API 简单，JDK 自带 | 单线程；一个任务抛异常会拖垮后续；不处理时钟回拨 | 了解历史即可，生产不用 |
-    | `ScheduledExecutorService` | 线程池、JDK 自带；`schedule` / `fixedRate` / `fixedDelay` 语义清楚 | 无 cron；周期任务抛一次异常后后续执行会被取消（异常进 Future，默认不打日志）；多实例每台都跑；进程重启丢失未持久化的一次性任务 | 本机心跳、缓存刷新、延迟合并、短周期可重复执行 |
-    | Spring `@Scheduled` | 写 Bean 方法即可；支持 cron / `fixedDelay` / `fixedRate`；和 Spring 生命周期一体 | 默认单线程，多个任务会互相堵住；多实例重复执行；改 cron 通常要发版 | 单实例或可接受重复执行的轻量任务；学习 / 中小项目 |
-    | Quartz | cron 与 misfire 策略完整；Job 和 Trigger 分离；可持久化、可集群 | 比 `@Scheduled` 重；自建集群和运维成本高 | 需要复杂触发策略、任务持久化，且团队已有 Quartz 资产时 |
-    | 分布式调度平台（XXL-JOB、ElasticJob，或公司内部如 Chronus / Saturn） | 控制台改 cron；分片、失败告警、执行日志；集群只跑约定份数 | 多一个调度中心依赖；任务代码要按平台约定写 | 业务日批、对账、多机、要对齐时区 / 分片 |
-    | 系统 crontab + 调接口 / 起进程 | 应用无感知，运维能直接改点 | 观测差、和环境绑定、难分片 | 运维脚本、极少改动的机器级任务 |
-    | Redis 延时（ZSET 等）/ MQ 延时消息 | 跨进程；适合「事件后再等一会」 | 不是日历 cron；要自己做幂等、重复消费和失败重试；Kafka 没有一等延时，没有延时能力就改落库扫描 | 关单、超时取消、延迟通知 |
-
-    ```java
-    @EnableScheduling
-    @SpringBootApplication
-    public class App {}
-
-    @Component
-    public class Jobs {
-        @Scheduled(cron = "0 0 2 * * ?")   // 每天 2:00；Spring/Quartz 为 6 段：秒 分 时 日 月 周（Unix crontab 是 5 段，没有秒，也不能用 ?）
-        public void nightly() {}
-
-        @Scheduled(fixedDelay = 5000)      // 上次跑完再等 5s
-        public void poll() {}
-    }
-    ```
-
-    `fixedDelay` 是跑完再等。`fixedRate` 按开始时间对齐间隔，超时则推迟；Spring 默认定时线程只有 1 条，同一任务不会重叠，只会堆积，多个 `@Scheduled` 还会互相等待。要并行须扩 `spring.task.scheduling.pool.size`（或自定义 `TaskScheduler`），并自己保证幂等 / 互斥。`@Scheduled` 默认把异常记日志后**下一轮仍调度**；这和 SES 周期任务「抛一次就停」相反。
-
-1. 怎么选（懒人规则）。
-
-    1. 本机短周期、丢一次无所谓、可重复执行 → `ScheduledExecutorService` 或 `@Scheduled`。
-    1. 业务日批、要改 cron、分片、集群只跑一份 → 用公司已有的调度平台，不要在同一件事上再套一层 `@Scheduled`。
-    1. 「N 分钟后做一次」→ 中间件若有延时（如 RabbitMQ TTL / 延时插件）就用延时消息，否则落库 + 扫描。
-    1. 多实例必须二选一：调度平台，或执行时抢分布式锁（如 ShedLock：抢不到就跳过本轮，它不是调度器）；否则每台都会跑。
-
-    - 实现时固定补三件事：幂等、超时（防止上一轮没完下一轮再进）、不要假设「只有一台」。
-
-    - 易混点与失效场景：
-
-        1. `@Scheduled` 能跑不等于生产可上集群；副本数一加就会重复执行。
-        1. 定时任务没有 HTTP 请求，也就没有登录用户和现成 Trace；`@Transactional` 仍可打在任务调用的 Service 上，不要从 Controller 抄一套请求上下文。
-        1. 时钟、时区、夏令时会影响 cron；跨国业务要明确「按哪套墙钟触发」。
-        1. 任务里打外部接口或跑批 SQL 不设超时，会占满调度线程，后续任务全部卡住。
+方言见 [Cron表达式](../../工具使用/Cron表达式/README.md)。实现时补齐：幂等、超时、别假设只有一台。
 
 ---
 ### 名词解析
@@ -3706,6 +3709,7 @@ public class GenericExample {
 - `JDK` / `JRE` / `JVM`：`JDK` 是开发套件（含编译器、工具）；`JRE` 偏运行环境；`JVM` 是执行字节码、管内存与 GC 的虚拟机。日常开发安装 JDK 即可。
 - `Classpath` / 类路径：JVM 的「类与资源搜索路径」，查找 `.class` 和配置 / 图片等资源，类似系统里的 `PATH`。Maven / IDE 帮你拼；Spring Boot 用它决定自动配置。跑程序、报 `ClassNotFoundException` / 读不到配置时，先查有没有把需要的 jar / 目录算进去。
 - `JAR`：Java Archive，Java 归档包；Spring Boot 最常见的可执行部署形态，常用 `java -jar app.jar` 启动（内嵌 Tomcat 等）。
+- `一分包` / `二分包`：Boot 构建里对两次打包的俗称。一分包=`maven-jar-plugin` 打的普通瘦包（无依赖）；二分包=`spring-boot-maven-plugin:repackage` 再加工成可 `java -jar` 的胖包。
 - `WAR`：Web Application Archive，Web 应用归档包；传统 Java Web 部署包，通常放到外部 Tomcat 等容器中运行。
 - `Maven` / `pom.xml` / `settings.xml`：构建与依赖工具。POM 管坐标、依赖、插件与模块；settings 管本机镜像 / 认证 / 代理（职责勿混）。日常 `test` / `package` / `verify`；排查看 `dependency:tree`、`help:effective-pom` / `effective-settings`。`<id>` 对齐见上文 Settings 节。
 - `私服` / `mirror` / `proxy`：私服=团队远程入口（内部包 + 常代理 Central）。`mirrors` 只改下载、不改 `deploy`；`proxy` 是出网 HTTP 代理，与 `mirror` 的 id **无对应**。`<id>` 见上文 Settings 节；链路见「仓库与解析」。
@@ -3727,9 +3731,8 @@ public class GenericExample {
 - `controller`：控制器层；接收 HTTP / RPC 请求、做基础参数处理、调用 Service，再组织返回结果。类似 Egg.js 的 Controller。
 - `service`：业务层；承接 Controller 之后的业务规则、事务边界，并调用 Mapper / Repository 或外部服务。Controller 不写业务，Mapper 不拼业务规则；复杂领域规则也可下沉到 domain，此时 Service 更偏用例编排。类似 Egg.js 的 service。
 
-    >**用例编排**：把完成一件事需要的步骤按顺序串起来——查数据、执行业务、写库、调外部服务，并管事务和失败回滚；Service 负责组织这条链路。
-    >
-    >例：`placeOrder()` 查用户和商品 → 创建订单 → 扣库存 → 调支付 → 发消息；各步谁来做可以拆到不同类，但先后顺序和事务边界由 Service 定。
+    >- **用例编排**：把完成一件事需要的步骤按顺序串起来——查数据、执行业务、写库、调外部服务，并管事务和失败回滚；Service 负责组织这条链路。
+    >- 例：`placeOrder()` 查用户和商品 → 创建订单 → 扣库存 → 调支付 → 发消息；各步谁来做可以拆到不同类，但先后顺序和事务边界由 Service 定。
 - `dto`：Data Transfer Object，数据传输对象；用于接口、RPC 或跨层传输数据，前端可理解为接口 request / response 的类型定义。
 
     >DTO 和 View Object（VO）对比：DTO 是更大的「传输」概念（入参、出参、RPC 都行）；VO 偏「给前端展示」的出参。很多 `XxxVO` 本质上是一种出参 DTO；有的团队不用 VO，出参统一叫 `RespDTO` / `XxxDTO`。关系是职责重叠、命名习惯不同：VO（View）⊆ 广义出参传输对象。读代码时 Controller 入参当 DTO，返回的 `XxxVO` 当 View Object（也是传输出参）。
@@ -3774,11 +3777,19 @@ public class GenericExample {
         1. Repository：按聚合存取，屏蔽表结构和 SQL。
         1. Domain Service：规则不自然属于某个实体时，放领域服务（仍是纯业务，不是应用编排）。
     - 和常见 Spring 分层对照：`Controller` / DTO / VO 在边缘；`Application Service` 编排用例、开事务；`domain` 放模型和规则；`Repository` / Mapper 在出站适配。很多 CRUD 项目只有分层命名、没有真正领域模型，读代码时不要假设「有 domain 包 = 做了 DDD」。
+    - 跨边界协作：对接外部系统 / 别的限界上下文时，用防腐层（ACL）做模型翻译，见下条 `ACL`。
     - 适用：业务规则多、长期演进、需要和业务共语；简单进出表 CRUD 不必硬上完整 DDD。
+- `ACL`：Anti-Corruption Layer，防腐层；DDD 的集成模式。在本系统与外部系统（遗留库、第三方、别的限界上下文）之间加一层适配，把外面的模型 / 协议翻译成本域自己的模型，避免外部脏字段、奇怪语义直接渗进领域代码。
+
+    - 要防的「腐蚀」：对方叫 `customerId`、你这边是 `Member`；状态机、枚举、金额单位不一致；外部 API 字段乱、常变。若 Service / domain 直接吃对方 DTO，对方一改你核心业务到处炸。
+    - 做什么：入站（外部请求 / 事件 → 本域命令或领域对象）、出站（本域意图 → 外部 API 请求）。常见实现：Translator / Assembler、Adapter / Gateway，必要时再包一层 Facade。
+    - 和常见分层对照：看起来像「适配器 + 对象转换」，但目标是保护本域通用语言与模型边界，不只是少写几行 `setXxx`。读代码时若见 `xxxAdapter` / `xxxTranslator` / `xxxGateway` 专管外部契约，多半在做 ACL。
+    - 注意：ACL 不是 API 网关；网关管流量入口（路由、鉴权、限流），ACL 管模型隔离。简单 CRUD 调稳定内部接口不必硬套完整 ACL；边界乱、外部模型强时再上。
 - `DAO`：Data Access Object，数据访问对象；封装数据库访问细节，让业务层不用直接关心 SQL、连接和底层存储实现。
 - `mapper`：MyBatis 数据访问接口；方法通常对应一条 SQL 或一组数据库操作，是 Service 访问数据库的常见入口。
 - `Repository`：仓储；DDD 中用于封装聚合持久化，Spring Data 中也作为数据访问抽象，可理解为比 DAO 更偏领域语义的数据入口。
 - `JDBC`：Java Database Connectivity，Java 数据库访问标准 API；调用链是 `Java 程序 → JDBC API → 驱动 → 数据库`。Spring / MyBatis 底层仍走 JDBC。核心对象：`Connection`、`PreparedStatement`、`ResultSet`；值用占位符绑定，资源用 try-with-resources 关闭。
+- `InnoDB`：MySQL 默认**存储引擎**（落盘、B+树索引、行锁、事务）。JDBC / `@Transactional` 连上的表默认就是它；隔离默认 `REPEATABLE READ`。
 - `DataSource` / 连接池 / 池化：`DataSource` 是取数据库连接的标准入口。生产环境用连接池（如 HikariCP）：预先准备若干连接，用时借出、用完归还。关注 `maximumPoolSize`、`connectionTimeout`（等池多久）、`idleTimeout`、`maxLifetime`（应短于库侧断连）；不要和 `@Transactional(timeout)` 或 SQL 超时混为一谈。容量按「实例数 × 池上限」对照库的 `max_connections`。池化管「可复用资源」；缓存管「可重复读的数据」。
 - `MyBatis` / `MyBatis-Plus`：`MyBatis` 把 Mapper 方法与 SQL（XML 或注解）绑定，并把结果映射成 Java 对象；`#{}` 生成 `PreparedStatement` 占位符并绑定参数，`${}` 把求值结果拼进 SQL 文本（标识符白名单才用）。动态 SQL 的 `test` / `<bind>` 使用 OGNL，与 `#{}` 不是同一通路。一级缓存绑在单个 `SqlSession`：无 Spring 事务时常方法级会话（跨方法难命中），有事务时常整段共用会话才容易命中。`MyBatis-Plus` 在其上补通用 CRUD、分页等，不取代理解 SQL 与映射。
 - `Transaction` / `@Transactional` / 事务：一组 SQL 要么都成功要么都回滚。Spring 里多用 `@Transactional` 声明边界；默认对 `RuntimeException`/`Error` 回滚，受检异常默认提交（可用 `rollbackFor` 改）。异常须抛出代理外才按规则处理，方法内吞掉再正常返回会提交。挂在 Service，依赖代理生效（自调用绕过代理）。`readOnly` 是优化提示，不保证禁写。开启后通常把一个 JDBC 连接绑在当前线程并关闭自动提交，同线程内数据访问复用该连接。传播默认 `REQUIRED`；`REQUIRES_NEW` 独立新事务，`NESTED` 多为 savepoint 且依赖管理器实现。隔离级别名称对齐 JDBC，现象看库（InnoDB 默认 `REPEATABLE READ`：普通读靠快照，当前读可加间隙锁）。一个 `DataSourceTransactionManager` 管一个数据源；多库原子性要 XA 或业务补偿，不能指望随便加一个注解。
@@ -3792,8 +3803,8 @@ public class GenericExample {
 
     - `TTL`：Time To Live，存活时间。缓存或消息到期后失效；前端偶发「数据有点旧」，后端有时就是在用 TTL 换性能。
 - `MQ` / `Kafka` / `RabbitMQ`：消息队列。把同步调用拆成异步投递，常见用途是削峰、解耦、重试、事件通知。
-- `cron` / `@Scheduled` / 调度平台：日历式定时。Unix crontab 是 5 段（分 时 日 月 周）；Spring / Quartz 的 `@Scheduled` cron 是 6 段（秒 分 时 日 月 周），`?` 表示该域不指定。XXL-JOB 等是带控制台的分布式调度。多实例部署时要处理重复执行、幂等和超时。
-- 延时任务：事件发生后再等一段时间执行一次（关单、超时取消），优先 MQ 延时或落库扫描，不要和每天定点的 cron 混用一种实现。
+- `cron` / `@Scheduled` / 调度平台：日历定时。方言见 [Cron表达式](../../工具使用/Cron表达式/README.md)。业务日批用平台；`@Scheduled` 偏本机短周期。
+- 延时任务：事件后再等一会做一次（关单等），见消息队列；到点已处理完就跳过。
 - `ACK` / `NACK` / `DLQ`：消息消费结果。`ACK` 表示处理成功可确认；`NACK` 表示失败可重投；多次失败可进 `DLQ`（死信队列）再人工或专项处理。排消息问题先看这三者。
 - `Nacos`：服务发现和配置管理组件；Spring Cloud Alibaba 生态常见，用于“服务在哪里”和“配置是什么”的集中管理。
 - `Dubbo` / `Feign`（OpenFeign）：都是声明式远程调用；写接口 / 注解，像调本地方法一样调另一个服务，背后有序列化与网络传输。差别在协议与生态（谁管发现、治理）。
@@ -3855,11 +3866,13 @@ public class GenericExample {
 
 6. Bean 怎么创建和注入
 
-    `读 Bean 定义（扫描 / @Bean / 自动配置） -> 创建实例 -> 注入依赖 -> 初始化回调 -> 放入容器备用`
+    `读 Bean 定义（扫描 / @Bean / 自动配置） -> 创建实例 -> 注入依赖 -> 初始化回调（如 @PostConstruct） -> 放入容器备用`
 
-    - 注册来源：组件扫描（`@Service` 等）、Java/`@Bean` 配置、Boot 自动配置、少量 XML。
-    - 注入方式：构造器注入优先；字段注入能跑但不便测试。
-    - 默认多为单例；业务里少自己 `new` 本该由容器管理的对象，否则切面和事务可能挂不上。
+    - 注册来源（都是给容器提供 Bean 定义）：组件扫描（`@Component` / `@Service` 等）、`@Configuration` + `@Bean`（第三方/复杂对象）、Boot 自动配置（classpath + 条件）、少量 XML（老项目）。
+    - 注入优先级：构造器（必需依赖）> Setter（可选）> 字段（Demo/老代码）。单构造器可省略 `@Autowired`；字段注入藏依赖、不便单测、不能 `final`。
+    - 按类型装配；同类型多个时用 `@Primary` / `@Qualifier`（或参数名）收窄，否则常 `NoUniqueBeanDefinitionException`。
+    - 默认 `singleton`（一容器一实例）；`prototype` 每次新建。单例只保证实例数，**不保证**字段状态线程安全。
+    - 业务里少自己 `new` 本该由容器管的对象：不是 Bean → 无注入、无 AOP/`@Transactional` 代理；同类 `this.xxx()` 也会绕过代理。
 
 7. 一次接口请求怎么走
 
@@ -3875,16 +3888,18 @@ public class GenericExample {
     - `DispatcherServlet` 按 URL 找到 Controller；进方法前先做参数绑定，有 `@Valid`/`@Validated` 再做 Bean Validation——失败常直接 400，**还没进** Controller / Service / 事务。
     - Controller 收参、调 Service、返回对象；字段校验过了，业务规则仍在 Service。
     - `Service` 做业务和事务；失败抛运行期异常 → 事务回滚 → `@ControllerAdvice` 再写成 HTTP 错误（Advice 不负责 rollback）。
-    - `Mapper` / `Repository` 访问数据库。
+    - `Mapper`（MyBatis / MyBatis-Plus） / `Repository`（Spring Data JPA / Spring Data） 访问数据库。
     - Dubbo 等 RPC 可跳过 MVC，但仍进同一套 Service 和数据访问层。
 
 8. Filter → Interceptor → Controller
 
     `请求进入容器 -> Filter 链 -> DispatcherServlet -> Interceptor 前置 -> Controller -> Interceptor 后置 / 完成后 -> 返回 -> Filter 链回来`
 
-    - `Filter`：Servlet 规范，偏编码、CORS、鉴权、统一日志等容器级横切。
-    - `Interceptor`：Spring MVC，能拿到 Handler 信息，适合登录校验、权限、打点。
-    - 两者都不要塞核心业务规则；业务仍归 Service。
+    - 两者**主要都是横切**：对多请求统一插手，不是某一条业务规则本身；差别在站哪一层、能看见什么。
+    - `Filter`：Servlet 规范，更靠外（容器级）；偏编码、CORS、统一鉴权入口、访问日志。
+    - `Interceptor`：Spring MVC，在 `DispatcherServlet` 内；能拿到要进哪个 Handler，偏登录态、权限、打点。
+    - 和别的横切怎么分：容器/全链路 → Filter；贴 Handler → Interceptor；方法级（事务等）→ AOP；统一异常/绑定 → `@ControllerAdvice`。
+    - 「主要」不等于「只能」：都能塞业务，但核心业务（下单、算价等）仍归 Service，别写进这两层。
 
 9. 分层和对象怎么流转
 
@@ -3904,6 +3919,11 @@ public class GenericExample {
     `加载驱动（常可省略） -> DataSource/DriverManager 取 Connection -> PreparedStatement 绑参 -> executeQuery/Update -> 处理 ResultSet -> 关闭/归还连接`
 
     - 值用 `?` 占位符，不要字符串拼 SQL。
+
+        >- 错：`"SELECT * FROM user WHERE name = '" + name + "'"`——`name` 若为 `'; DROP TABLE user; --` 可能被拼成恶意语句（SQL 注入）。
+        >- 对：`"SELECT * FROM user WHERE name = ?"`，再 `ps.setString(1, name)`——值当数据绑定，不当 SQL 代码。
+        >- MyBatis 对应：`#{}` ≈ 这里的 `?` 绑参；`${}` ≈ 字符串拼进 SQL，只用于白名单里的表名 / 列名等标识符。
+
     - 优先 try-with-resources；连接池里的 `close()` 通常是归还，不是拆掉物理连接。
     - 池的 `connectionTimeout` 是等借连接；`@Transactional(timeout)` 是事务时长；SQL/语句超时是单条查询——三者分开配。
     - 理解这条链路后，再看 MyBatis / Spring 只是在上面自动做映射与资源管理。
@@ -3949,13 +3969,30 @@ public class GenericExample {
     - 消费失败不要静默吞掉；明确是重试、跳过还是进死信后人工处理。
     - 需要顺序时看分区 / 队列模型，不要默认「全局有序」。
 
+        >- 分区（如 Kafka）：把一类消息拆成多条可并行消费的子流；同一分区内可有序，跨分区一般无序。要局部有序时常用业务 key（如订单 ID）打进同一分区。
+        >- 队列模型（如 RabbitMQ）：以队列为单位存消息、消费消息；单队列 + 单消费者较易有序，多队列或同队列多消费者并行时不要默认全局有序。
+
 15. 排障时优先看什么
 
     `接口状态码 -> 错误响应 -> traceId / 日志 -> Controller 入参 -> Service 分支 -> SQL / 外部服务 -> 事务 / 缓存 / 消息 -> JVM 资源`
 
-    - 先确认请求是否打到正确环境、路径、方法和参数，很多问题是 profile、网关路径或参数结构不一致。
-    - 再用 `traceId` 串日志，定位异常栈、SQL、外部接口耗时和返回码。
+    - 先确认请求是否打到正确环境、路径、方法和参数，很多问题是 profile、网关路径或参数结构不一致；先对齐「打没打到对的服务、对的接口」，再怀疑业务逻辑。
+    - 再用 `traceId` 串日志（多实例、多线程时尤其重要），定位异常栈、SQL、外部接口耗时和返回码。
     - 慢接口优先看 SQL、索引、外部服务、锁等待、缓存命中率，不要一上来就怀疑 JVM。
+
+        >- 例：商品列表 P99 从 80ms 变成 3s——`LIKE '%手机%'` 没走索引全表扫；或每次同步调推荐服务偶发 2s；或 Redis 未命中反复打库；或更新库存时行锁等待很久。
+        >- 这些都不是堆内存不够。慢 ≈ 先当 IO / 数据库 / 下游 / 锁 / 缓存问题；JVM 是后手。
+
     - 线上内存和线程问题再看 `GC`、`jstack`、`jmap`、`JFR`、`OOM` 等 JVM 诊断信息。
+
+        >- JVM 资源问题：Java 进程自己的内存或线程（含 GC）出问题——堆涨满 / OOM、Full GC 频繁停顿、线程池打满、大量线程卡死——而不是业务逻辑写错、SQL 慢、参数不对。可类比前端「Chrome Tab 内存爆 / 主线程卡死」，这里是 JVM 进程吃紧。
+        >- 例（内存）：服务跑几天后重启，堆使用率锯齿越来越高最后 OOM → GC 日志里 Full GC 越来越勤、回收后堆几乎不降 → 用 `jmap`（查堆内存、必要时导出 heap dump）拿到堆快照，发现某个 `Map` 或本地缓存几百万条从未淘汰。heap dump 是堆内存快照；线程卡在哪用 `jstack`（thread dump），不要和 `jmap` 混为一谈。
+        >- 例（线程）：所有接口一起超时但 CPU 不高 → `jstack` 见大量线程等数据库连接池（池已耗尽），或线程池队列满、新任务被拒绝。
+        >- 只有监控 / 现象指向堆、GC、线程、OOM 时，才上这些工具；日常排障仍先走上面业务链路。
+
     - 回归验证按风险选择：简单逻辑跑单测，涉及数据库 / Redis / MQ 的流程跑集成测试或本地联调。
+
+        >- 例（单测够用）：修了优惠券折扣算错——补满减、上限、0 元单等单测即可。
+        >- 例（单测不够）：修了「下单写 Redis，事务回滚后缓存仍脏」——mock 掉 DB/Redis 测不出真实回滚行为，要集成测试或本地起 MySQL + Redis 真跑：失败后缓存应不存在。
+        >- 例（MQ）：修了「消费失败进 DLQ」——要真发坏消息看重试和死信，不能只靠 mock Consumer。
 </details>
