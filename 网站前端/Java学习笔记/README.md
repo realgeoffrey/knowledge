@@ -3787,7 +3787,14 @@ public class GenericExample {
         1. Repository：按聚合存取，屏蔽表结构和 SQL。
         1. Domain Service：规则不自然属于某个实体时，放领域服务（仍是纯业务，不是应用编排）。
     - 和常见 Spring 分层对照：`Controller` / DTO / VO 在边缘；`Application Service` 编排用例、开事务；`domain` 放模型和规则；`Repository` / Mapper 在出站适配。很多 CRUD 项目只有分层命名、没有真正领域模型，读代码时不要假设「有 domain 包 = 做了 DDD」。
+    - 跨边界协作：对接外部系统 / 别的限界上下文时，用防腐层（ACL）做模型翻译，见下条 `ACL`。
     - 适用：业务规则多、长期演进、需要和业务共语；简单进出表 CRUD 不必硬上完整 DDD。
+- `ACL`：Anti-Corruption Layer，防腐层；DDD 的集成模式。在本系统与外部系统（遗留库、第三方、别的限界上下文）之间加一层适配，把外面的模型 / 协议翻译成本域自己的模型，避免外部脏字段、奇怪语义直接渗进领域代码。
+
+    - 要防的「腐蚀」：对方叫 `customerId`、你这边是 `Member`；状态机、枚举、金额单位不一致；外部 API 字段乱、常变。若 Service / domain 直接吃对方 DTO，对方一改你核心业务到处炸。
+    - 做什么：入站（外部请求 / 事件 → 本域命令或领域对象）、出站（本域意图 → 外部 API 请求）。常见实现：Translator / Assembler、Adapter / Gateway，必要时再包一层 Facade。
+    - 和常见分层对照：看起来像「适配器 + 对象转换」，但目标是保护本域通用语言与模型边界，不只是少写几行 `setXxx`。读代码时若见 `xxxAdapter` / `xxxTranslator` / `xxxGateway` 专管外部契约，多半在做 ACL。
+    - 注意：ACL 不是 API 网关；网关管流量入口（路由、鉴权、限流），ACL 管模型隔离。简单 CRUD 调稳定内部接口不必硬套完整 ACL；边界乱、外部模型强时再上。
 - `DAO`：Data Access Object，数据访问对象；封装数据库访问细节，让业务层不用直接关心 SQL、连接和底层存储实现。
 - `mapper`：MyBatis 数据访问接口；方法通常对应一条 SQL 或一组数据库操作，是 Service 访问数据库的常见入口。
 - `Repository`：仓储；DDD 中用于封装聚合持久化，Spring Data 中也作为数据访问抽象，可理解为比 DAO 更偏领域语义的数据入口。
