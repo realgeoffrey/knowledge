@@ -28,11 +28,8 @@
 
     1. 向后端
 
-        1. [Java学习笔记](./网站前端/Java学习笔记/README.md)
         1. [Node.js学习笔记](./网站前端/Node.js学习笔记/README.md)
-        1. [服务端相关](./网站前端/服务端相关/README.md)
         1. [Python学习笔记](./网站前端/Python学习笔记/README.md)
-        1. [数据库使用](./网站前端/数据库使用/README.md)
     1. 向终端
 
         1. [Hybrid前端开发](./网站前端/Hybrid前端开发/README.md)
@@ -42,6 +39,11 @@
 
     >[装饰器（注解）对比](./网站前端/装饰器（注解）对比/README.md)
 1. [全栈](./全栈/README.md)
+
+    1. [Java学习笔记](./全栈/Java学习笔记/README.md)
+    1. [数据库使用](./全栈/数据库使用/README.md)
+    1. [服务端相关](./全栈/服务端相关/README.md)
+
 1. <details>
 
     <summary>前端构建工具</summary>
@@ -172,8 +174,14 @@
 ></details>
 
 ---
-><details>
-><summary><del>完美不在于无以复加，而在于无可删减。</del></summary>
->
->[![Star History Chart](https://api.star-history.com/svg?repos=realgeoffrey/knowledge&type=Date)](https://star-history.com/#realgeoffrey/knowledge&Date)
-></details>
+<details>
+<summary>完美不在于无以复加，而在于无可删减。</summary>
+
+<a href="https://www.star-history.com/?repos=realgeoffrey%2Fknowledge&type=date&legend=bottom-right">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=realgeoffrey/knowledge&type=date&theme=dark&legend=bottom-right" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=realgeoffrey/knowledge&type=date&legend=bottom-right" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=realgeoffrey/knowledge&type=date&legend=bottom-right" />
+ </picture>
+</a>
+</details>

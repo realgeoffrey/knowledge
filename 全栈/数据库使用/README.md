@@ -306,7 +306,7 @@ DEL 「key」
     | 主题 | 规则 |
     | --- | --- |
     | 参数 | 值用绑定 / `#{}`；`${}` 只许白名单标识符 |
-    | [连接池](../Java学习笔记/README.md#jdbc-与数据库访问演进) | `每实例池上限 × 实例数 + 其他客户端` < `max_connections` |
+    | [连接池](https://github.com/realgeoffrey/knowledge/blob/master/全栈/Java学习笔记/README.md#jdbc-与数据库访问演进) | `每实例池上限 × 实例数 + 其他客户端` < `max_connections` |
     | `@Transactional` | 通常不进新线程；同类自调用可能不生效 |
     | 跨边界 | 跨库/HTTP/MQ 靠 outbox、重试、消费幂等 |
 
@@ -473,7 +473,7 @@ PostgreSQL 是开源的对象关系型数据库管理系统，与 MySQL 一样�
     | 能力 | 适合场景 | 边界 |
     | --- | --- | --- |
     | `UUID` | 跨系统生成标识 | 评估索引大小和写入局部性 |
-    | [PostgreSQL `jsonb`](../前端内容/基础知识.md#postgresql-jsonb) | 查询半结构化数据 | 稳定且高频查询的字段仍优先使用普通列 |
+    | [PostgreSQL `jsonb`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#postgresql-jsonb) | 查询半结构化数据 | 稳定且高频查询的字段仍优先使用普通列 |
     | 数组、范围类型 | 短小同类值、区间与重叠判断 | 高频关联或独立更新的数据更适合子表 |
     | `RETURNING` | 直接返回增删改后的值 | 减少额外查询，不改变事务边界 |
     | `INSERT ... ON CONFLICT` | 依靠唯一约束实现原子 upsert | 冲突目标必须与约束匹配 |
@@ -515,7 +515,7 @@ NoSQL 不是一种固定的数据模型，而是键值、文档、列族、图�
 
 MongoDB 是文档数据库：一条记录是一个 BSON 文档，多个文档组成集合（Collection）。文档类似 JSON 对象，可以包含数组和嵌套文档；同一集合中的文档不必拥有完全相同的字段。
 
-- **[BSON](../前端内容/基础知识.md#bson) 与文档建模**
+- **[BSON](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#bson) 与文档建模**
 
     BSON 是 MongoDB 存储和传输文档使用的带类型二进制格式；具体类型、Extended JSON、使用边界以及与 PostgreSQL `jsonb` 的区别见上方链接。此处重点是文档建模。
 

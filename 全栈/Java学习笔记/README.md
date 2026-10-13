@@ -3663,7 +3663,7 @@ public class GenericExample {
 >1. 单服务主线：Java Web → Spring → MVC → MyBatis → **Spring Boot**
 >1. 多服务主线：在 Boot 之上加 **Spring Cloud**（发现 / 配置 / Feign / 网关 / 容错）；国内常见再叠 **Spring Cloud Alibaba**（Nacos、Sentinel 等）
 
-### [数据库、缓存](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据库使用/README.md)
+### [数据库、缓存](https://github.com/realgeoffrey/knowledge/blob/master/全栈/数据库使用/README.md)
 
 ### 消息队列
 - **Kafka**
