@@ -114,7 +114,6 @@
     >
     >    广义上可能包含祖先级、孙辈级之间关系，不仅仅是一层父子间关系。
     ></details>
-1. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
 1. <details>
 
     <summary><a href="https://github.com/realgeoffrey/knowledge/blob/master/网站前端/AI笔记/README.md">AI笔记</a></summary>
@@ -124,6 +123,7 @@
     1. [MCP笔记](./网站前端/AI笔记/MCP笔记.md)
     1. [openclaw笔记](./网站前端/AI笔记/openclaw笔记.md)
     </details>
+1. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
 1. <details>
 
     <summary><a href="https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/README.md">数据结构与算法</a></summary>
@@ -142,27 +142,6 @@
     1. [IDEs设置](./工具使用/IDEs设置/README.md)
     1. [科学上网](./工具使用/科学上网/README.md)
 
-    - <details>
-
-        <summary>其他</summary>
-
-        1. 容器管理
-
-            1. [Docker使用](./工具使用/Docker使用/README.md)
-            1. [Kubernetes使用](./工具使用/Kubernetes使用/README.md)
-        1. 代理、抓包工具
-
-            1. 针对仅应用层
-
-                1. [whistle使用](./工具使用/whistle使用/README.md)
-                1. [Charles使用](./工具使用/Charles使用/README.md)
-            1. 针对整个网络通信
-
-                1. Wireshark、tcpdump
-        1. [Google搜索技巧](./工具使用/Google搜索技巧/README.md)
-        1. [OpenTelemetry](./工具使用/OpenTelemetry/README.md)
-        </details>
-
 ><details>
 ><summary>废弃内容</summary>
 >
@@ -176,6 +155,21 @@
 >    1. [init.html](./网站前端/初始化模板/init.html)
 >1. [SCSS使用](./网站前端/SCSS使用/README.md)
 >1. [/环境安装、配置](./环境安装、配置/README.md)
+>1. 容器管理
+>
+>    1. [Docker使用](./工具使用/Docker使用/README.md)
+>    1. [Kubernetes使用](./工具使用/Kubernetes使用/README.md)
+>1. 代理、抓包工具
+>
+>    1. 针对仅应用层
+>
+>        1. [whistle使用](./工具使用/whistle使用/README.md)
+>        1. [Charles使用](./工具使用/Charles使用/README.md)
+>    1. 针对整个网络通信
+>
+>        1. Wireshark、tcpdump
+>1. [Google搜索技巧](./工具使用/Google搜索技巧/README.md)
+>1. [OpenTelemetry](./工具使用/OpenTelemetry/README.md)
 ></details>
 
 ---
