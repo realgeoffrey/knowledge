@@ -944,7 +944,7 @@ function animateTo(endX, endY, time) {
     }, runEvery);
 }
 ```
->1. 使用[velocity动画库](https://github.com/julianshapiro/velocity)（[中文文档](http://www.mrfront.com/docs/velocity.js/)）做所有的动画（包括JS和CSS）才是最简单且性能最佳的选择。
+>1. 使用[velocity动画库](https://github.com/julianshapiro/velocity)做所有的动画（包括JS和CSS）才是最简单且性能最佳的选择。
 >
 >    如：滚动到某位置`$('html').velocity('scroll', {offset: y轴像素, duration: 毫秒});`。
 >2. 原生js已支持：支持顺滑滚动，但不支持设定滚动时间

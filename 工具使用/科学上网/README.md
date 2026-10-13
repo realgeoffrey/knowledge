@@ -30,7 +30,7 @@
 
 1. Shadowsocks服务端安装
 
-    >来自：[Shadowsocks-libev Docker Image](https://github.com/shadowsocks/shadowsocks-libev/blob/master/docker/alpine/README.md#shadowsocks-libev-docker-image)。
+    >来自：[Shadowsocks-libev Docker（alpine）](https://github.com/shadowsocks/shadowsocks-libev/tree/master/docker/alpine)。
 
     ```shell
     docker pull shadowsocks/shadowsocks-libev

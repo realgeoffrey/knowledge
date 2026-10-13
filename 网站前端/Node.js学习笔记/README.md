@@ -839,7 +839,7 @@ npm（Node Package Manager）。
 
 - <details>
 
-    <summary><a href="https://nodejs.org/zh-cn/docs/meta/topics/dependencies/">Node.js依赖项</a></summary>
+    <summary>Node.js依赖项</summary>
 
     1. 类库
 

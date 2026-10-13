@@ -321,7 +321,7 @@ flowchart TD
 
 **FDE（Forward Deployed Engineer，前线部署工程师）**，可以理解为深入客户业务现场、把技术做成可用系统的工程师。这里的“部署”包含理解问题、设计方案、开发集成、上线和持续改进，不只是在服务器上发布程序。
 
-这个岗位并非生成式 AI 出现后才有：Palantir 在 2020 年的官方介绍中就使用了 **FDSE（Forward Deployed Software Engineer）**，强调与客户共同解决问题，并把现场经验反馈给产品团队。[Palantir 岗位介绍](https://blog.palantir.com/a-day-in-the-life-of-a-palantir-forward-deployed-software-engineer-45ef2de257b1)。
+这个岗位并非生成式 AI 出现后才有：Palantir 在 2020 年的官方介绍中就使用了 **FDSE（Forward Deployed Software Engineer）**，强调与客户共同解决问题，并把现场经验反馈给产品团队。
 
 在 AI 公司，FDE 常负责把模型能力接入客户的数据、权限和业务流程，从原型推进到稳定生产。OpenAI 的岗位说明也把生产采用情况、可衡量的业务流程改进和评估反馈作为重要成果。[OpenAI FDE 岗位说明](https://openai.com/careers/forward-deployed-engineer-%28fde%29-sf-san-francisco/)。
 

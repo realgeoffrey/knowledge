@@ -946,7 +946,7 @@ function createMaxHeapify(arr) {
 
         1. 二分搜索 或 每轮缩减一半的递归函数 的时间复杂度： $O(log n)$。
 
-            原因：[为什么说二分查找的时间复杂度是O(log n)](https://github.com/JasonGaoH/KnowledgeSummary/blob/master/Docs/Algorithm/为什么说二分查找的时间复杂度是O(log%20n).md)。
+            原因：[为什么说二分查找的时间复杂度是O(logn](https://github.com/JasonGaoH/KnowledgeSummary/blob/master/docs/Algorithm/为什么说二分查找的时间复杂度是O(logn).md)。
 
             e.g. `function logRecur(n) { if (n <= 1) return 0; return logRecur(n / 2) + 1; }`
         2. 嵌套循环中，两层循环的时间复杂度分别为 $O(log n)$和 $O(n)$的函数： $O(n * log n)$
