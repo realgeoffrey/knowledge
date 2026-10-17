@@ -3817,6 +3817,7 @@ public class GenericExample {
 - `mapper`：MyBatis 数据访问接口；方法通常对应一条 SQL 或一组数据库操作，是 Service 访问数据库的常见入口。
 - `Repository`：仓储；DDD 中用于封装聚合持久化，Spring Data 中也作为数据访问抽象，可理解为比 DAO 更偏领域语义的数据入口。
 - `JDBC`：Java Database Connectivity，Java 数据库访问标准 API；调用链是 `Java 程序 → JDBC API → 驱动 → 数据库`。Spring / MyBatis 底层仍走 JDBC。核心对象：`Connection`、`PreparedStatement`、`ResultSet`；值用占位符绑定，资源用 try-with-resources 关闭。
+- `InnoDB`：MySQL 默认**存储引擎**（落盘、B+树索引、行锁、事务）。JDBC / `@Transactional` 连上的表默认就是它；隔离默认 `REPEATABLE READ`。
 - `DataSource` / 连接池 / 池化：`DataSource` 是取数据库连接的标准入口。生产环境用连接池（如 HikariCP）：预先准备若干连接，用时借出、用完归还。关注 `maximumPoolSize`、`connectionTimeout`（等池多久）、`idleTimeout`、`maxLifetime`（应短于库侧断连）；不要和 `@Transactional(timeout)` 或 SQL 超时混为一谈。容量按「实例数 × 池上限」对照库的 `max_connections`。池化管「可复用资源」；缓存管「可重复读的数据」。
 - `MyBatis` / `MyBatis-Plus`：`MyBatis` 把 Mapper 方法与 SQL（XML 或注解）绑定，并把结果映射成 Java 对象；`#{}` 生成 `PreparedStatement` 占位符并绑定参数，`${}` 把求值结果拼进 SQL 文本（标识符白名单才用）。动态 SQL 的 `test` / `<bind>` 使用 OGNL，与 `#{}` 不是同一通路。一级缓存绑在单个 `SqlSession`：无 Spring 事务时常方法级会话（跨方法难命中），有事务时常整段共用会话才容易命中。`MyBatis-Plus` 在其上补通用 CRUD、分页等，不取代理解 SQL 与映射。
 - `Transaction` / `@Transactional` / 事务：一组 SQL 要么都成功要么都回滚。Spring 里多用 `@Transactional` 声明边界；默认对 `RuntimeException`/`Error` 回滚，受检异常默认提交（可用 `rollbackFor` 改）。异常须抛出代理外才按规则处理，方法内吞掉再正常返回会提交。挂在 Service，依赖代理生效（自调用绕过代理）。`readOnly` 是优化提示，不保证禁写。开启后通常把一个 JDBC 连接绑在当前线程并关闭自动提交，同线程内数据访问复用该连接。传播默认 `REQUIRED`；`REQUIRES_NEW` 独立新事务，`NESTED` 多为 savepoint 且依赖管理器实现。隔离级别名称对齐 JDBC，现象看库（InnoDB 默认 `REPEATABLE READ`：普通读靠快照，当前读可加间隙锁）。一个 `DataSourceTransactionManager` 管一个数据源；多库原子性要 XA 或业务补偿，不能指望随便加一个注解。
