@@ -117,7 +117,7 @@
     ></details>
 1. <details>
 
-    <summary><a href="https://github.com/realgeoffrey/knowledge/blob/master/网站前端/AI笔记/README.md">AI笔记</a></summary>
+    <summary><a href="./网站前端/AI笔记/README.md">AI笔记</a></summary>
 
     1. [我用的AI工具](./网站前端/AI笔记/我用的AI工具.md)
     1. [AI繁多的词汇](./网站前端/AI笔记/AI繁多的词汇.md)
@@ -127,7 +127,7 @@
 1. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
 1. <details>
 
-    <summary><a href="https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/README.md">数据结构与算法</a></summary>
+    <summary><a href="./网站前端/数据结构与算法/README.md">数据结构与算法</a></summary>
 
     1. [LeetCode记录](./网站前端/数据结构与算法/LeetCode记录/README.md)
     1. [JS手写代码](./网站前端/JS方法积累/手写代码/README.md)
