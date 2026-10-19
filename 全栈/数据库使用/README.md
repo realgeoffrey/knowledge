@@ -855,7 +855,7 @@ MongoDB 是文档数据库：一条记录是一个 BSON 文档，多个文档组
 
 Redis 主要在内存读写。事实数据仍在 MySQL；Redis 做缓存、会话、计数、排行、限流和分布式锁。丢了可以重建的才适合当缓存。接口突然打满数据库，根因经常是缓存失效或穿透，而不是页面多渲染了一次。访问链路：`页面 -> HTTP API -> 后端 -> Redis 客户端 -> Redis`。前端不直连。
 
-学习顺序：`场景与 key -> 数据结构 -> 原子/Pipeline -> Cache Aside -> Java -> 锁 -> 过期与持久化 -> 复制`。命令入口见安装节的 `redis-cli`；机制对比见「原子操作」。
+学习顺序：`场景与 key -> 数据结构 -> 原子/Pipeline -> Cache Aside -> Java -> 锁 -> 过期与持久化 -> 复制`。
 
 1. **什么时候用**
 
@@ -870,9 +870,103 @@ Redis 主要在内存读写。事实数据仍在 MySQL；Redis 做缓存、会�
 
     key 用稳定前缀：`「环境」:「业务」:「对象」:「id」`。每个缓存 key 都要有 TTL。不要把无界列表塞进一个 key。
 
+    - <details>
+
+        <summary>无界列表与大 key</summary>
+
+        >「无界」指元素会随业务持续增长、没有自然上限的集合。常见误用：把某用户全部订单、某帖全部评论、全站消息 / 浏览历史，整包序列化进一个 String，或塞进同一个 List / Set / Sorted Set，指望「一次 GET 全拿走」。
+
+        Redis 按 key 计内存与淘汰。单 key 体积与元素数没有业务上限时，问题会叠在一起：
+
+        | 风险 | 表现 |
+        | --- | --- |
+        | 内存失控 | 活跃用户 / 热门对象各自拖一个越来越大的 value，实例被少数大 key 占满 |
+        | 读写变重 | `GET`、整段 `LRANGE`、反序列化都按「整份数据」付费，延迟随体积上涨 |
+        | 局部改不动 | 只增删一条也常要读改写整包；TTL 一过要整份回填，雪崩时重建更贵 |
+        | 运维卡顿 | 大 key 删除、过期、主从复制、`RDB`/`AOF` 时更容易抖动；应用侧偶发超时 |
+
+        和后面「大 key / 热 key」同源：规模不可预期的列表，本质就是在制造大 key。
+
+        做法上，让每个 key 里的数据**规模可预期、可过期**：
+
+        1. 只缓存有界结果：详情对象、配置、排行榜 Top N、限流计数——本身就有上限。
+        2. 列表只留窗口：最近 N 条时间线用 List + `LTRIM`；排行用 Sorted Set 只保留 Top N，完整历史走 MySQL / ES 分页。
+        3. 按页或时间窗拆 key：如 `prod:order:user:123:p:1`、`prod:feed:2026-10-19`，单 key 体积可控，失效粒度也更细。
+        4. 需要集合运算时，成员集合本身也要有边界或淘汰策略，不要把「全站用户 ID」当成一个永久 Set。
+
+        >判别：这个 key 一年后会不会大一个数量级？会，就不要整包进一个 key。
+
+        </details>
+
 1. **数据结构**
 
     按操作选型，不要把所有对象都序列化成大字符串。计数用 `INCR`，集合运算用 Set，排名用 Sorted Set。
+
+    - <details>
+
+        <summary>怎么读 Redis 命令（语法入门）</summary>
+
+        >Redis 命令行（`redis-cli`）和多数客户端，本质都是：**命令名 + 空格分隔的参数**。没有 SQL 那种 `SELECT ... FROM`；一条命令做一件事。
+
+        **通用形状**
+
+        ```text
+        命令  key  [参数...]  [选项...]
+        ```
+
+        | 位置 | 是什么 | 例子里的词 |
+        | --- | --- | --- |
+        | 命令 | 动词，全大写习惯写法 | `SET`、`HGET`、`ZADD` |
+        | key | 数据名字，你自己定 | `prod:user:42` |
+        | 参数 | 值、字段名、分数、下标等 | `'{"id":42}'`、`userId`、`980` |
+        | 选项 | 改命令行为的关键字 | `EX 600`（600 秒后过期） |
+
+        **拆一条读**
+
+        ```text
+        SET   prod:user:42   '{"id":42,"name":"Ada"}'   EX 600
+        │     │              │                          │
+        │     │              │                          └─ 选项：600 秒后过期
+        │     │              └─ 参数：要存的值（一段 JSON 字符串）
+        │     └─ key：环境 prod、对象 user、id 42
+        └─ 命令：写入一个 String
+        ```
+
+        **命令名前缀 ≈ 数据结构**（看到前缀就知道在操作哪种类型）
+
+        | 前缀 | 类型 | 记忆 |
+        | --- | --- | --- |
+        | （无，如 `SET`/`GET`/`INCR`） | String | 最基础 |
+        | `H` | Hash | Hash field |
+        | `L` / `R` / `B` | List | Left / Right / Blocking（阻塞） |
+        | `S`（非 `SET` 那条） | Set | Set，如 `SADD` |
+        | `Z` | Sorted Set | 有序，带 score |
+        | `X` | Stream | 流式消息 |
+
+        **常见选项词**（后面示例会反复出现）
+
+        | 词 | 含义 |
+        | --- | --- |
+        | `EX 秒` | 多少秒后过期（和 `SET` 连用） |
+        | `PX 毫秒` | 多少毫秒后过期 |
+        | `NX` | 仅当 key **不存在** 时才写入（常用于锁） |
+        | `XX` | 仅当 key **已存在** 时才写入 |
+        | `WITHSCORES` | 查出成员时带上分数 |
+        | `LIMIT 偏移 条数` | 只取一段结果 |
+
+        **和 SQL 的直觉对照**
+
+        | 你熟悉的 | Redis 里大致对应 |
+        | --- | --- |
+        | 表名 + 主键 | 一个 **key**（整份数据的名字） |
+        | 一行里的列 | Hash 的 **field**，或 String 里整段 JSON |
+        | `UPDATE t SET c=1` | `SET key value` 或 `HSET key field value` |
+        | `SELECT c FROM t WHERE id=?` | `GET key` / `HGET key field` |
+        | 没有「查所有表」的常规写法 | 禁止用 `KEYS *` 扫全库；按已知 key 读写 |
+
+        >Java 里一般不手敲这些字符串，而是 `stringRedisTemplate.opsForValue().set(...)`；但客户端发出去的仍是同一套命令。先会读 `redis-cli` 示例，再去对模板方法名。
+
+        </details>
 
     | 数据结构 | 特点 | 常见用途 |
     | --- | --- | --- |
@@ -883,9 +977,125 @@ Redis 主要在内存读写。事实数据仍在 MySQL；Redis 做缓存、会�
     | Sorted Set | 成员不重复，按分数排序 | 排行榜、按时间排序 |
     | Stream | 只追加，支持消费组 | 要确认和重试的消息流 |
 
+    - <details>
+
+        <summary>各数据结构怎么选（含示例）</summary>
+
+        >选型看「要做的操作」，不是看「业务对象叫什么」。能用原子命令完成的，就不要整对象序列化成大 String 再在应用里改。下面每行右侧 / `#` 后是人话翻译。
+
+        1. **String**：一个 key 对应一块二进制 / 文本 / 数字。适合整份缓存、计数、简单状态。
+
+            ```text
+            # 命令  key            值                         选项
+            SET    prod:user:42   '{"id":42,"name":"Ada"}'   EX 600
+            # → 把用户 42 的详情缓存 600 秒
+
+            INCR   prod:article:9:views
+            # → 文章 9 的阅读数 +1（值必须是整数）
+
+            SET    prod:feature:dark_mode   1   EX 3600
+            # → 功能开关打开，1 小时后过期
+            ```
+
+            >整份 JSON 缓存详情没问题；若经常只改其中一个字段，用 Hash 更合适。计数用 `INCR` / `INCRBY`，不要 `GET` 再 `SET`。
+
+        2. **Hash**：一个 key 下多个 field-value，像「小对象」。写法：`HSET key 字段 值 [字段 值 ...]`。
+
+            ```text
+            # 命令  key                 字段      值   字段  值     字段      值
+            HSET   prod:session:abc    userId    42   role  admin  lastSeen  1730000000
+            # → 会话 abc：三个字段一次写好
+
+            HINCRBY  prod:sku:1001  stock  -1
+            # →          key         字段   增量：库存减 1
+
+            HGET  prod:session:abc  role
+            # → 只取一个字段，返回 admin
+            ```
+
+            >会话元数据、商品可展示字段、配置块常用。字段很多或 value 很大时，仍要注意单 key 体积；不是无限字段的垃圾桶。
+
+        3. **List**：有序、可重复；`L`=左边（头），`R`=右边（尾），`B`=阻塞等待。
+
+            ```text
+            LPUSH  prod:queue:email  '{"to":"a@x.com","tpl":"welcome"}'
+            # → 从左边推进一条待发邮件
+
+            BRPOP  prod:queue:email  5
+            # → 从右边取一条；没有就最多等 5 秒（左进右出 ≈ 队列）
+
+            LPUSH  prod:feed:42  post:9
+            LTRIM  prod:feed:42  0  99
+            # → 用户 42 时间线塞入 post:9，再只保留下标 0..99（最近 100 条）
+            ```
+
+            >`LTRIM` 把时间线截成最近 100 条，避免无界膨胀。要确认、重试、多消费者协作时，升级到 Stream 或外部 MQ，不要硬扛 List。
+
+        4. **Set**：无序、成员唯一。`SADD key 成员...`；判断用 `SISMEMBER`；交集 `SINTER`。
+
+            ```text
+            SADD  prod:post:9:tags  redis  cache  java
+            # → 文章 9 打上三个标签（重复添加无效）
+
+            SISMEMBER  prod:post:9:tags  redis
+            # → redis 是不是该文章的标签？返回 1/0
+
+            SINTER  prod:user:1:liked  prod:user:2:liked
+            # → 用户 1 和 2「都喜欢」的成员（交集）
+            ```
+
+            >「共同喜欢」「双方好友」这类集合运算是 Set 的强项。成员集合本身也要有边界或 TTL，不要把全站 ID 灌进一个永久 Set。
+
+        5. **Sorted Set（ZSet）**：成员唯一，各带一个 **score（分数）** 用来排序。`ZADD key 分数 成员 [分数 成员 ...]`。
+
+            ```text
+            ZADD  prod:rank:game  980  u:42  1200  u:7
+            # →                分数 成员   分数  成员：u:7 分更高
+
+            ZREVRANGE  prod:rank:game  0  9  WITHSCORES
+            # → 按分数从高到低取第 0..9 名，并带上分数（Top 10）
+
+            ZADD  prod:delay:jobs  1730003600  job:55
+            # → score = 执行时间戳，到点再捞
+
+            ZRANGEBYSCORE  prod:delay:jobs  0  1730003600  LIMIT 0 20
+            # → 取出 score 在 [0, 该时刻] 的任务，最多 20 条
+            ```
+
+            >排行榜只保留 Top N 或定期裁剪；延迟任务用「执行时间戳当 score」。需要按多个维度排序时，往往要多个 ZSet 或回表，不要指望一个 ZSet 解决所有排序。
+
+        6. **Stream**：只追加的消息流。字段成对出现：`XADD key * 字段 值 [字段 值 ...]`（`*` = 让 Redis 自动生成消息 ID）。
+
+            ```text
+            XADD  prod:events:order  *  orderId  88  status  paid
+            # → 追加一条订单事件；* 表示自动分配 ID
+
+            XGROUP CREATE  prod:events:order  cg1  0  MKSTREAM
+            # → 建消费组 cg1；从 ID 0 开始；没有流就建流
+
+            XREADGROUP GROUP  cg1  worker1  COUNT 10  STREAMS  prod:events:order  >
+            # → 组 cg1、消费者 worker1，最多读 10 条；> = 尚未派给组内的新消息
+
+            XACK  prod:events:order  cg1  1730000000000-0
+            # → 确认这条消息已处理完（ID 形如 时间戳-序号）
+            ```
+
+            >比 List 多了消费进度与确认；仍不是 Kafka 的完整替代——跨机房、长期堆积、复杂路由优先专业 MQ。Redis 丢了可重建的事件可以进 Stream；不能丢的核心业务事件优先 MQ + 落库。
+
+        | 你想做的事 | 优先选 |
+        | --- | --- |
+        | 缓存整份详情 / 计数 / 开关 | String |
+        | 改对象的某几个字段 | Hash |
+        | 简单排队、最近 N 条 | List（定长） |
+        | 标签、去重、交并差 | Set |
+        | 排行、按分取 Top、延迟队列 | Sorted Set |
+        | 要 ACK / 消费组的消息 | Stream（或 MQ） |
+
+        </details>
+
 1. **原子、Pipeline、事务**
 
-    Redis 的“原子”是单条命令执行时不被插队，**不是** MySQL 那种失败整笔回滚。先 `GET` 再 `SET` 仍会被别的请求穿插。批量降低 RTT 用 Pipeline；要条件 + 多步不被打断，用短 Lua，不要自己拼一长串客户端往返。
+    Redis 的“原子”是单条命令执行时不被插队，**不是** MySQL 那种失败整笔回滚。先 `GET` 再 `SET` 仍会被别的请求穿插。批量降低 RTT（Round-Trip Time，一次请求打到 Redis 再收到响应的网络往返耗时）用 Pipeline；要条件 + 多步不被打断，用短 Lua，不要自己拼一长串客户端往返。
 
     - <details>
 
