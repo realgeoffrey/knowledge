@@ -234,6 +234,19 @@
         | REPEATABLE READ | 否 | 否 | 视实现 | InnoDB 默认；快照读常可缓解幻读，锁定读见 MySQL 间隙锁 |
         | SERIALIZABLE | 否 | 否 | 否 | 最严，并发最贵 |
 
+        级别在事务开始前设置。`autocommit=1` 时每条语句自成事务，看不出 `READ COMMITTED` 与 `REPEATABLE READ` 的差别，要把多条语句放进同一个事务。
+
+        | 哪里设 | 写法 |
+        | --- | --- |
+        | MySQL，本连接之后 | `SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;` |
+        | MySQL，仅下一事务 | `SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;` 然后 `START TRANSACTION` … `COMMIT`（结束回到会话级别） |
+        | MySQL，查看 | `SELECT @@transaction_isolation;` |
+        | JDBC | 第一条 SQL 前 `connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED)`（另有 `TRANSACTION_READ_UNCOMMITTED` / `TRANSACTION_REPEATABLE_READ` / `TRANSACTION_SERIALIZABLE`） |
+        | Spring 注解 | `@Transactional(isolation = Isolation.READ_COMMITTED)`；`Isolation.DEFAULT` 用库默认 |
+        | Spring 编程式 | `TransactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED)` |
+
+        >`SET GLOBAL transaction_isolation` 只影响之后新建的会话。Spring 的 `isolation` 在新开事务时写到连接上（当时没有事务的 `REQUIRED`，以及 `REQUIRES_NEW`、`NESTED`）；加入外层事务时沿用外层。语句细则见 [MySQL](#mysql) 的事务与 Java 访问。防重复、改同一行仍用下面的唯一约束、乐观锁、悲观锁。
+
         >隔离越强，锁或版本维护成本越高。实践：事务尽量短；不要把 HTTP / RPC / 发消息包进事务；死锁则整笔回滚后按上限重试。
 
         - 写冲突解决方案（多人改同一行 / 争同一业务键）：
@@ -577,6 +590,16 @@ DEL 「key」
     | `REPEATABLE READ` | InnoDB 默认；同事务一致性读通常复用快照 |
     | `SERIALIZABLE` | 最强，并发最贵 |
 
+    事务开始前设置（进行中不能改）。`autocommit=1` 时每条语句自成事务，单语句上看不出 RC 与 RR 的差别。
+
+    | 范围 | 写法 |
+    | --- | --- |
+    | 本连接之后 | `SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;` |
+    | 仅下一事务 | `SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;` 然后 `START TRANSACTION`；该事务结束回到会话级别 |
+    | 查看 | `SELECT @@transaction_isolation;` |
+
+    >`SET GLOBAL transaction_isolation` 只影响之后新建的会话。JDBC / Spring 见下一节。
+
     | 现象 | 含义 |
     | --- | --- |
     | 脏读 | 读到未提交 |
@@ -604,6 +627,8 @@ DEL 「key」
     | 参数 | 值用绑定 / `#{}`；`${}` 只许白名单标识符 |
     | [连接池](https://github.com/realgeoffrey/knowledge/blob/master/全栈/Java学习笔记/README.md#jdbc-与数据库访问演进) | `每实例池上限 × 实例数 + 其他客户端` < `max_connections` |
     | `@Transactional` | 通常不进新线程；同类自调用可能不生效 |
+    | 隔离级别 JDBC | 第一条 SQL 前 `connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED)`；常量还有 `TRANSACTION_READ_UNCOMMITTED`、`TRANSACTION_REPEATABLE_READ`、`TRANSACTION_SERIALIZABLE` |
+    | 隔离级别 Spring | `@Transactional(isolation = Isolation.READ_COMMITTED)`；`Isolation.DEFAULT` 跟库。只在新开事务时生效（当时没有事务的 `REQUIRED`、`REQUIRES_NEW`、`NESTED`），加入外层则沿用外层。编程式：`TransactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED)` |
     | 跨边界 | 跨库/HTTP/MQ 靠 outbox、重试、消费幂等 |
 
 1. **复制、迁移、备份、监控**
