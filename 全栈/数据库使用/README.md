@@ -3,8 +3,6 @@
 ## 目录
 
 1. [数据库](#数据库)
-
-    1. 类型 · 范式 · 设计 · 事务 · SQL · 索引与查询优化 · 应用访问 · 运维底线
 1. [服务安装、启动与连接](#服务安装启动与连接)
 
     1. [MySQL](#mysql服务安装启动与连接)
@@ -227,27 +225,7 @@
         2. 不可重复读：同一事务内两次读同一行，结果因别人已提交的更新/删除而不同。
         3. 幻读：同一事务内按相同条件两次查，行集合因别人已提交的插入/删除而变化。
 
-        | 级别 | 脏读 | 不可重复读 | 幻读 | 常见默认 |
-        | --- | --- | --- | --- | --- |
-        | READ UNCOMMITTED | 可能 | 可能 | 可能 | 几乎不用 |
-        | READ COMMITTED | 否 | 可能 | 可能 | PostgreSQL 等 |
-        | REPEATABLE READ | 否 | 否 | 视实现 | InnoDB 默认；快照读常可缓解幻读，锁定读见 MySQL 间隙锁 |
-        | SERIALIZABLE | 否 | 否 | 否 | 最严，并发最贵 |
-
-        级别在事务开始前设置。`autocommit=1` 时每条语句自成事务，看不出 `READ COMMITTED` 与 `REPEATABLE READ` 的差别，要把多条语句放进同一个事务。
-
-        | 哪里设 | 写法 |
-        | --- | --- |
-        | MySQL，本连接之后 | `SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;` |
-        | MySQL，仅下一事务 | `SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;` 然后 `START TRANSACTION` … `COMMIT`（结束回到会话级别） |
-        | MySQL，查看 | `SELECT @@transaction_isolation;` |
-        | JDBC | 第一条 SQL 前 `connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED)`（另有 `TRANSACTION_READ_UNCOMMITTED` / `TRANSACTION_REPEATABLE_READ` / `TRANSACTION_SERIALIZABLE`） |
-        | Spring 注解 | `@Transactional(isolation = Isolation.READ_COMMITTED)`；`Isolation.DEFAULT` 用库默认 |
-        | Spring 编程式 | `TransactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED)` |
-
-        >`SET GLOBAL transaction_isolation` 只影响之后新建的会话。Spring 的 `isolation` 在新开事务时写到连接上（当时没有事务的 `REQUIRED`，以及 `REQUIRES_NEW`、`NESTED`）；加入外层事务时沿用外层。语句细则见 [MySQL](#mysql) 的事务与 Java 访问。防重复、改同一行仍用下面的唯一约束、乐观锁、悲观锁。
-
-        >隔离越强，锁或版本维护成本越高。实践：事务尽量短；不要把 HTTP / RPC / 发消息包进事务；死锁则整笔回滚后按上限重试。
+        标准四级从弱到强：`READ UNCOMMITTED`、`READ COMMITTED`、`REPEATABLE READ`、`SERIALIZABLE`。哪一级挡住哪种异常、引擎默认与 `SET` 写法见 [MySQL](#mysql) 的事务、隔离与锁；JDBC / Spring 见其后的 Java 访问。
 
         - 写冲突解决方案（多人改同一行 / 争同一业务键）：
 
@@ -258,81 +236,6 @@
             >可组合：用唯一约束防「多造一行」；改已有行再用乐观或悲观。持有 `FOR UPDATE` 时不要调外部 HTTP / RPC。
 
     - 与分布式的关系：单库事务靠 ACID；跨库 / 跨服务常用本地事务 + 消息出箱、幂等、最终一致，而不是处处上分布式强事务。
-5. SQL 要点
-
-    SQL 是声明式：写「要什么」，优化器决定「怎么拿」。业务库日常就是 CRUD + JOIN + 聚合。写法细则见 [MySQL](#mysql)。
-
-    1. 增删改查
-
-        | 语句 | 要点 |
-        | --- | --- |
-        | `SELECT` | 只取需要的列；列表加合理 `LIMIT` |
-        | `INSERT` | 写明列名；批量有上限，避免超大单包 |
-        | `UPDATE` / `DELETE` | **必须**有 `WHERE`；改前用同一条件先 `SELECT` |
-        | `TRUNCATE` | 清空留结构；多属 DDL，常不可当事务 DML 回滚（见具体引擎） |
-
-    2. 过滤与聚合
-
-        | 易混 | 记法 |
-        | --- | --- |
-        | `WHERE` vs `HAVING` | 滤行 vs 滤聚合结果；`COUNT`/`SUM` 不能进 `WHERE` |
-        | `NULL` | 用 `IS NULL` / `IS NOT NULL`，不要 `= NULL` |
-        | `DISTINCT` | 按选出的整行去重；分组统计用 `GROUP BY` |
-        | 理解顺序 | `FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT`（写作辅助序，非引擎真实执行序） |
-
-    3. 连接
-
-        | 关系 | SQL 形态 |
-        | --- | --- |
-        | 内连接 `INNER JOIN` | 两侧都匹配才保留 |
-        | 左连接 `LEFT JOIN` | 保留左表全部；右表条件写在 `ON`，放进 `WHERE` 易变成内连接效果 |
-        | 多对多 | 中间表 + 两次关联 |
-
-        >循环里按主键查子表 = N+1；改成一次 `JOIN` 或 `WHERE id IN (...)`。深分页少用大 `OFFSET`，用上一页排序键 + 唯一 ID 续查。
-6. 索引与查询优化
-
-    索引用空间和写放大换读加速。读多写少、条件稳定的路径值得建；写极多、条件飘忽的少建。常见引擎用 **B+ 树**（查找近似二分）。以下以 **InnoDB** 为例：聚簇索引按主键排数据，二级索引叶子常带到主键再**回表**取整行；查询列都在索引里则**覆盖索引**，免回表。PostgreSQL 多为索引指向堆元组，语义相近但实现不同。字段级细则见 [MySQL](#mysql)。
-
-    1. 该建什么
-
-        1. 高频 `WHERE` / `JOIN` / `ORDER BY` 用到的列。
-        2. 联合索引按区分度与查询顺序排，遵守**最左前缀**：`(a, b, c)` 可服务 `a`、`a+b`、`a+b+c`，一般不能单独服务 `b` 或 `c`。
-        3. 主键宜短、稳、递增（减少页分裂）；业务唯一用 `UNIQUE`，别轻易拿可变业务号当聚簇主键。
-
-    2. 常见用不上索引
-
-        `LIKE '%xx'`；对索引列做函数 / 运算 / 隐式类型转换；跳过最左前缀；`OR` 两侧索引能力差；无界结果又 `SELECT *` 放大回表与网络。
-
-    3. 写法习惯
-
-        | 倾向 | 原因 |
-        | --- | --- |
-        | `IN` 优于乱写的 `NOT IN`（注意 `NULL` 语义） | 否定范围更难用好索引；最终以 `EXPLAIN` 为准 |
-        | 避免 `≠` / `NOT` 当主过滤 | 选择性差时易退化扫表 |
-        | 小结果集驱动大表（嵌套循环直觉） | 教学直觉；优化器可能改写，以执行计划为准 |
-        | 批量写、短事务 | 少锁时间、少日志抖动 |
-        | 热点读加缓存（如 Redis Cache Aside） | 削峰；缓存不是事实源 |
-
-    4. 怎么查慢因
-
-        先 `EXPLAIN`（有则再用 `EXPLAIN ANALYZE` / 慢查询日志）：看是否命中预期索引、估扫行数、是否临时表 / filesort。改完用同一条真实 SQL 复测。
-7. 应用访问
-
-    1. 前端不直连业务库；经 API → 连接池 → 预编译 / Mapper / ORM。
-    2. **参数绑定**防注入（值走占位符；表名列名不能绑则白名单）。
-    3. 连接池：`实例池上限 × 实例数` 小于库 `max_connections`，留余量给管理与批跑。
-    4. ORM（如 Sequelize、MyBatis、JPA）省样板，仍要会看生成 SQL；事务边界、批量、索引定义要主动管，别默认「框架搞定」。
-    5. 结构变更走迁移脚本（版本化、可回滚或可向前兼容）；密码与连接串不进仓库明文。
-    6. 权限最小：应用账号只有需要的库表权限；生产禁用超级用户跑业务。
-8. 运维底线
-
-    | 主题 | 要点 |
-    | --- | --- |
-    | 备份 | 定期全量 + 按需增量；**要演练恢复**；binlog / WAL / 复制都不是备份替代品 |
-    | 复制 | 读扩展、容灾常用；默认多异步——刚写再读可能读到旧值，关键读走主库 |
-    | 监控 | 连接等待、慢 SQL、锁等待、磁盘、复制延迟；先 SQL / 执行计划，再谈扩容 |
-    | 高可用 | 自动切换不等于零丢失；事先接受 RPO / RTO |
-    | 扩展顺序 | 先索引 / SQL / 缓存 / 归档 → 读写分离 → 分库分表（见 [知识点备忘](#知识点备忘)） |
 
 ---
 
@@ -506,7 +409,7 @@ DEL 「key」
     | --- | --- |
     | 一对一 | 外键 + `UNIQUE` |
     | 一对多 | 外键在「多」侧 |
-    | 多对多 | 中间表存两侧外键 |
+    | 多对多 | 中间表存两侧外键；查询时经中间表两次关联 |
     | 建删顺序 | 先父后子建；先子后父删。（因为外键） |
 
     | 操作 | 含义 |
@@ -517,23 +420,26 @@ DEL 「key」
 
 1. **查询与改数据**
 
+    SQL 是声明式：写「要什么」，优化器决定「怎么拿」。
+
     | 主题 | 规则 |
     | --- | --- |
     | 注释 | `--` 后须空格；`#` MySQL 扩展；`/* */` 可跨行；逗号别跟列名一起注释掉 |
-    | `INSERT` | 写明列名，限制批次 |
+    | `INSERT` | 写明列名；批量有上限，避免超大单包 |
     | `SELECT` | 只取需要的列 |
     | `UPDATE`/`DELETE` | 必须有 `WHERE`；改前同一条件先查 |
-    | 空值 | `IS NULL` / `IS NOT NULL` |
-    | 理解顺序 | `FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT`（非引擎真实执行序） |
+    | 空值 | `IS NULL` / `IS NOT NULL`，不要 `= NULL` |
+    | 理解顺序 | `FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT`（写作辅助序，非引擎真实执行序） |
 
     | 易混 | 记法 |
     | --- | --- |
-    | `WHERE` vs `HAVING` | 滤行 vs 滤聚合；`COUNT`/`SUM` 不能进 `WHERE` |
+    | `WHERE` vs `HAVING` | 滤行 vs 滤聚合结果；`COUNT`/`SUM` 不能进 `WHERE` |
     | `DISTINCT` | 按选出的整行去重；统计用 `GROUP BY` |
-    | `LEFT JOIN` | 右表过滤条件放 `ON`；放 `WHERE` 易滤掉左表行 |
-    | N+1 | 循环查子表 → `JOIN` 或一次 `IN` |
+    | `INNER JOIN` | 两侧都匹配才保留 |
+    | `LEFT JOIN` | 保留左表全部；右表条件放 `ON`，放进 `WHERE` 易变成内连接 |
+    | N+1 | 循环按主键查子表 → 一次 `JOIN` 或 `WHERE id IN (...)` |
     | 深分页 | 少用大 `OFFSET`；用上一页排序键 + 唯一 ID 续查 |
-    | `LIMIT` | 有上限；勿让前端传无界 `pageSize` |
+    | `LIMIT` | 列表要有上限；勿让前端传无界 `pageSize` |
 
     | 视图 | 要点 |
     | --- | --- |
@@ -545,11 +451,11 @@ DEL 「key」
 
 1. **索引与 `EXPLAIN`**
 
-    加速 `WHERE`/`JOIN`/`ORDER BY`。接口慢先看 SQL 是否走索引。只为真实查询建；索引越多，写与存储越贵。InnoDB 默认 B+Tree。
+    用空间和写放大换读加速。读多写少、条件稳定的路径才建；写极多、条件飘忽的少建。只服务真实的 `WHERE` / `JOIN` / `ORDER BY`。InnoDB 默认 B+ 树。
 
     | | 单列 | 复合 `(列1, 列2)` |
     | --- | --- | --- |
-    | 写法 | 一列 | 多列，**顺序有意义**（最左前缀） |
+    | 写法 | 一列 | 多列，**顺序有意义**（最左前缀；按区分度与查询排） |
     | 能覆盖 | 该列过滤/排序/关联 | `列1=?`、`列1=? AND 列2=?`；一般**不能**单独服务 `列2=?` |
 
     | | 普通索引 | 唯一索引 |
@@ -563,10 +469,13 @@ DEL 「key」
     | --- | --- |
     | `UNIQUE` 约束 | 自动建唯一索引 = `CREATE UNIQUE INDEX`；`SHOW INDEX` 里 `Non_unique=0` |
     | 组合唯一 | `UNIQUE(user_id, sku_id)` ≠ `UNIQUE(sku_id)` |
-    | 聚簇 | 数据按主键排；二级索引带主键 → 主键宜短 |
+    | 聚簇 | 数据按主键排；二级索引叶子带到主键再回表取整行。主键宜递增，减少页分裂 |
     | 覆盖索引 | 查询列全在索引里 → 免回表 |
-    | 用不上索引 | `LIKE '%xx'`、隐式类型转换、对索引列做函数/运算、跳过最左前缀 |
-    | `EXPLAIN` | 先看 `type`/`key`/`rows`/`filtered`/`Extra`；`EXPLAIN ANALYZE` 真跑查询 |
+    | 用不上索引 | `LIKE '%xx'`、对索引列做函数/运算/隐式类型转换、跳过最左前缀、`OR` 两侧难同时用上、无界 `SELECT *` 放大回表与网络 |
+    | `IN` / `NOT` | 优先 `IN`；`NOT IN`、`≠`、`NOT` 不宜当主过滤（`NOT IN` 还要当心 `NULL`）。以 `EXPLAIN` 为准 |
+    | 驱动表 | 小结果集驱动大表只是嵌套循环直觉；优化器可能改写，以执行计划为准 |
+    | 批量写 | 短事务、限制批次，少锁时间、少日志抖动 |
+    | `EXPLAIN` | 接口慢先看 `type`/`key`/`rows`/`filtered`/`Extra`（临时表、filesort）；`EXPLAIN ANALYZE` 真跑，对照慢查询日志。改完用同一条 SQL 复测 |
 
 1. **事务、隔离与锁**
 
@@ -581,16 +490,18 @@ DEL 「key」
     | `UPDATE` 0 行 | 通常不算错；需要时查 `ROW_COUNT()` |
     | `SAVEPOINT` | 部分回滚：`ROLLBACK TO` 后继续（其后保存点失效） |
     | 重试 | 锁超时等瞬时失败可同语句重试；唯一冲突换键或整笔 `ROLLBACK` |
-    | 客户端 | 服务端不自动提交/回滚；JDBC 抛错停后续；`mysql>` 粘贴仍可能继续；`mysql < 文件` 默认遇错停 |
+    | 客户端 | 显式事务里语句失败不会自动整笔回滚，须客户端 `COMMIT` / `ROLLBACK`；JDBC 抛错停后续；`mysql>` 粘贴仍可能继续；`mysql < 文件` 默认遇错停 |
 
-    | 隔离级别 | 表现 |
-    | --- | --- |
-    | `READ UNCOMMITTED` | 可能脏读，业务几乎不用 |
-    | `READ COMMITTED` | 每次一致性读见当时已提交 |
-    | `REPEATABLE READ` | InnoDB 默认；同事务一致性读通常复用快照 |
-    | `SERIALIZABLE` | 最强，并发最贵 |
+    三种异常的含义见上文事务。下表按 InnoDB；PostgreSQL 默认是 `READ COMMITTED`。
 
-    事务开始前设置（进行中不能改）。`autocommit=1` 时每条语句自成事务，单语句上看不出 RC 与 RR 的差别。
+    | 隔离级别 | 脏读 | 不可重复读 | 幻读 | 说明 |
+    | --- | --- | --- | --- | --- |
+    | `READ UNCOMMITTED` | 可能 | 可能 | 可能 | 几乎不用 |
+    | `READ COMMITTED` | 否 | 可能 | 可能 | 每次一致性读见当时已提交 |
+    | `REPEATABLE READ` | 否 | 否 | 快照读通常不见；锁定读靠间隙锁 | InnoDB 默认；同事务一致性读复用快照 |
+    | `SERIALIZABLE` | 否 | 否 | 否 | 最强，并发最贵 |
+
+    事务开始前设置（进行中不能改）。`autocommit=1` 时每条语句自成事务，单语句上看不出 `READ COMMITTED` 与 `REPEATABLE READ` 的差别，要把多条语句放进同一个事务。
 
     | 范围 | 写法 |
     | --- | --- |
@@ -600,16 +511,12 @@ DEL 「key」
 
     >`SET GLOBAL transaction_isolation` 只影响之后新建的会话。JDBC / Spring 见下一节。
 
-    | 现象 | 含义 |
+    | 机制 | 含义 |
     | --- | --- |
-    | 脏读 | 读到未提交 |
-    | 不可重复读 | 同一行两次结果不同 |
-    | 幻读 | 同一条件的行集合变了 |
     | MVCC | Read View 判可见性；长事务拖清理 |
     | `FOR UPDATE` | 必须在事务里；锁范围跟扫描索引走 |
     | 行锁 / 表锁 | 锁跟索引走；条件无合适索引易扫太多行甚至表级影响 |
-    | 间隙锁 | RR 下锁定读可能锁间隙，用来防幻；事务短、固定顺序碰数据 |
-    | 实践 | 乐观锁用 `version`；死锁重试整笔重跑 + 上限/退避/幂等 |
+    | 间隙锁 | `REPEATABLE READ` 下锁定读可能锁间隙，用来防幻；事务短、固定顺序碰数据 |
 
 1. **Java 访问**
 
@@ -624,24 +531,26 @@ DEL 「key」
 
     | 主题 | 规则 |
     | --- | --- |
-    | 参数 | 值用绑定 / `#{}`；`${}` 只许白名单标识符 |
-    | [连接池](https://github.com/realgeoffrey/knowledge/blob/master/全栈/Java学习笔记/README.md#jdbc-与数据库访问演进) | `每实例池上限 × 实例数 + 其他客户端` < `max_connections` |
+    | 参数 | 值用绑定 / `#{}` 防注入；`${}` 只许白名单标识符（表名、列名） |
+    | [连接池](https://github.com/realgeoffrey/knowledge/blob/master/全栈/Java学习笔记/README.md#jdbc-与数据库访问演进) | `每实例池上限 × 实例数 + 其他客户端` < `max_connections`，留余量给管理与批跑 |
+    | ORM | MyBatis、JPA、Sequelize 等省样板，仍要看生成 SQL；事务边界、批量、索引要自己管 |
     | `@Transactional` | 通常不进新线程；同类自调用可能不生效 |
     | 隔离级别 JDBC | 第一条 SQL 前 `connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED)`；常量还有 `TRANSACTION_READ_UNCOMMITTED`、`TRANSACTION_REPEATABLE_READ`、`TRANSACTION_SERIALIZABLE` |
-    | 隔离级别 Spring | `@Transactional(isolation = Isolation.READ_COMMITTED)`；`Isolation.DEFAULT` 跟库。只在新开事务时生效（当时没有事务的 `REQUIRED`、`REQUIRES_NEW`、`NESTED`），加入外层则沿用外层。编程式：`TransactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED)` |
+    | 隔离级别 Spring | `@Transactional(isolation = Isolation.READ_COMMITTED)`；`Isolation.DEFAULT` 跟库。只写到新开的事务上：当时没有事务的 `REQUIRED` / `NESTED`，以及总会新开的 `REQUIRES_NEW`。加入外层的 `REQUIRED`，和已有事务上的 `NESTED`（保存点），沿用外层。编程式：`TransactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED)` |
     | 跨边界 | 跨库/HTTP/MQ 靠 outbox、重试、消费幂等 |
 
 1. **复制、迁移、备份、监控**
 
     | 主题 | 要点 |
     | --- | --- |
-    | redo / binlog | 崩溃恢复 / 复制与时间点恢复；**都不能替代备份** |
-    | 复制 | 默认异步；误删也会跟上副本 |
+    | redo / binlog | 崩溃恢复 / 复制与时间点恢复；**都不能替代备份**（PostgreSQL 的 WAL 同理） |
+    | 复制 | 读扩展与容灾；默认异步，误删也会跟上副本。复制本身不是备份 |
     | 读自己 | 刚写再读走主库；事务内勿切副本 |
-    | 安全 | 最小权限 + TLS；密码不进代码/日志 |
-    | DDL | 用迁移工具；大表先估锁、磁盘、复制延迟 |
-    | 备份 | 范围、保留期、恢复目标；定期隔离环境恢复验证 |
-    | 监控 | 连接等待、慢 SQL、扫描行、锁等待、I/O、复制延迟 → 先 SQL/`EXPLAIN`，再扩容/分库 |
+    | 高可用 | 自动切换不等于零丢失；事先接受 RPO / RTO |
+    | 安全 | 最小权限，生产不用超级用户跑业务；TLS；密码与连接串不进仓库、代码、日志 |
+    | DDL | 结构变更走版本化迁移（可回滚或向前兼容）；大表先估锁、磁盘、复制延迟 |
+    | 备份 | 定期全量 + 按需增量；定范围、保留期、恢复目标，并在隔离环境演练恢复 |
+    | 监控 | 连接等待、慢 SQL、扫描行、锁等待、I/O、复制延迟。扩展顺序：索引 / SQL / 缓存 / 归档 → 读写分离 → 分库分表（见 [知识点备忘](#知识点备忘)） |
 
     | 诊断命令 | 用途 |
     | --- | --- |
@@ -819,7 +728,7 @@ PostgreSQL 是开源的对象关系型数据库管理系统，与 MySQL 一样�
 
 - **与 MySQL 的学习差异**
 
-    MySQL 中 `SCHEMA` 与 `DATABASE` 基本同义，PostgreSQL 的 Schema 则是数据库内的命名空间；两者默认隔离级别分别为 InnoDB 的 `REPEATABLE READ` 和 PostgreSQL 的 `READ COMMITTED`。整数 ID 在 MySQL 常用 `AUTO_INCREMENT`，PostgreSQL 推荐标识列（Identity）。
+    MySQL 中 `SCHEMA` 与 `DATABASE` 基本同义，PostgreSQL 的 Schema 则是数据库内的命名空间；两者默认隔离级别分别为 InnoDB 的 `REPEATABLE READ` 和 PostgreSQL 的 `READ COMMITTED`。整数 ID 在 MySQL 常用 `AUTO_INCREMENT`，PostgreSQL 推荐标识列（Identity）。PostgreSQL 索引通常指向堆元组，行不聚在主键索引里。
 
 </details>
 
