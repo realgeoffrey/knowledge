@@ -2762,10 +2762,10 @@ public class GenericExample {
 
             - 几种“超时”不要混：
 
-                >- 池的 `connectionTimeout`：借不到连接就失败。
-                >- JDBC / 语句查询超时、MyBatis 超时：单条 SQL 跑太久。
-                >- `@Transactional(timeout=…)`：Spring 事务开始后的最长事务时间（秒级语义，且多在**新开事务**时生效）；到点标记回滚，与“借连接等多久”不是同一开关。
-                >- HTTP 客户端 / 网关超时：调下游等多久，与数据库连接池无关。
+                - 池的 `connectionTimeout`：借不到连接就失败。
+                - JDBC / 语句查询超时、MyBatis 超时：单条 SQL 跑太久。
+                - `@Transactional(timeout=…)`：Spring 事务开始后的最长事务时间（秒级语义，且多在**新开事务**时生效）；到点标记回滚，与“借连接等多久”不是同一开关。
+                - HTTP 客户端 / 网关超时：调下游等多久，与数据库连接池无关。
             - 连接池耗尽时，新请求会等待并最终在 `connectionTimeout` 失败。常见原因是连接未归还、慢 SQL、长事务，或池容量与并发量不匹配。
             - 容量规划：`每应用实例 maximumPoolSize × 实例数 + 其他客户端` 必须低于库的 `max_connections`，并留运维余量。慢查询先修 SQL/索引，不要只靠调大池子。
         </details>
@@ -3909,7 +3909,7 @@ public class GenericExample {
     - `DispatcherServlet` 按 URL 找到 Controller；进方法前先做参数绑定，有 `@Valid`/`@Validated` 再做 Bean Validation——失败常直接 400，**还没进** Controller / Service / 事务。
     - Controller 收参、调 Service、返回对象；字段校验过了，业务规则仍在 Service。
     - `Service` 做业务和事务；失败抛运行期异常 → 事务回滚 → `@ControllerAdvice` 再写成 HTTP 错误（Advice 不负责 rollback）。
-    - `Mapper` / `Repository` 访问数据库。
+    - `Mapper`（MyBatis / MyBatis-Plus） / `Repository`（Spring Data JPA / Spring Data） 访问数据库。
     - Dubbo 等 RPC 可跳过 MVC，但仍进同一套 Service 和数据访问层。
 
 8. Filter → Interceptor → Controller
