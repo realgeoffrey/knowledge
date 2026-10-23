@@ -357,9 +357,8 @@ Java 是强类型语言，变量和表达式都有编译期类型。类型先分
 └─ 数组元素 array component：数组对象内部的槽位，可通过下标访问
 ```
 
->成员，包括：（静态、非静态）字段、方法、成员类型（第一层的嵌套类型）；不包括：构造器、（静态、实例）初始化代码块、局部变量、参数、局部类型。
-
->变量不包含方法。方法是行为，字段、局部变量、参数、数组元素才保存值。
+>- 成员，包括：（静态、非静态）字段、方法、成员类型（第一层的嵌套类型）；不包括：构造器、（静态、实例）初始化代码块、局部变量、参数、局部类型。
+>- 变量不包含方法。方法是行为，字段、局部变量、参数、数组元素才保存值。
 
 | 类别 | 声明位置 | 默认值 | 归属与生命周期 |
 | --- | --- | --- | --- |
@@ -2671,9 +2670,8 @@ public class GenericExample {
 
 ### JDBC 与数据库访问演进
 
->JDBC（Java Database Connectivity，Java数据库连接）是 Java SE 提供的数据库访问标准，Spring、MyBatis 等框架通常仍通过 JDBC 驱动访问数据库。
->
->调用链：**Java 程序 → JDBC API → 数据库驱动 → MySQL**。
+>- JDBC（Java Database Connectivity，Java数据库连接）是 Java SE 提供的数据库访问标准，Spring、MyBatis 等框架通常仍通过 JDBC 驱动访问数据库。
+>- 调用链：**Java 程序 → JDBC API → 数据库驱动 → MySQL**。
 
 1. JDBC 基础
 
@@ -2742,9 +2740,9 @@ public class GenericExample {
             >    ```text
             >    请求到来 → 从池中借出资源 → 使用资源 → 重置状态并归还
             >    ```
-
-            - 常见例子有数据库连接池、线程池和 HTTP 连接池。只有创建成本较高、可重置且会反复使用的资源才适合池化，普通轻量对象不需要自建对象池。
-            - 池化复用的是“资源”；缓存复用的是“可重复读取的数据或结果”，两者不是同一个概念。
+            >
+            >- 常见例子有数据库连接池、线程池和 HTTP 连接池。只有创建成本较高、可重置且会反复使用的资源才适合池化，普通轻量对象不需要自建对象池。
+            >- 池化复用的是“资源”；缓存复用的是“可重复读取的数据或结果”，两者不是同一个概念。
 
         - **数据库连接池**：是池化技术的一种应用。建立数据库连接需要网络通信、身份验证和会话初始化；连接池在应用内管理一组可复用的连接，避免每次执行 SQL 都重新建立物理连接。
 
@@ -2763,10 +2761,11 @@ public class GenericExample {
             | `validationTimeout` / 保活 | 借出前校验、keepalive 等，减少拿到已被服务端掐掉的连接 |
 
             - 几种“超时”不要混：
-                - 池的 `connectionTimeout`：借不到连接就失败。
-                - JDBC / 语句查询超时、MyBatis 超时：单条 SQL 跑太久。
-                - `@Transactional(timeout=…)`：Spring 事务开始后的最长事务时间（秒级语义，且多在**新开事务**时生效）；到点标记回滚，与“借连接等多久”不是同一开关。
-                - HTTP 客户端 / 网关超时：调下游等多久，与数据库连接池无关。
+
+                >- 池的 `connectionTimeout`：借不到连接就失败。
+                >- JDBC / 语句查询超时、MyBatis 超时：单条 SQL 跑太久。
+                >- `@Transactional(timeout=…)`：Spring 事务开始后的最长事务时间（秒级语义，且多在**新开事务**时生效）；到点标记回滚，与“借连接等多久”不是同一开关。
+                >- HTTP 客户端 / 网关超时：调下游等多久，与数据库连接池无关。
             - 连接池耗尽时，新请求会等待并最终在 `connectionTimeout` 失败。常见原因是连接未归还、慢 SQL、长事务，或池容量与并发量不匹配。
             - 容量规划：`每应用实例 maximumPoolSize × 实例数 + 其他客户端` 必须低于库的 `max_connections`，并留运维余量。慢查询先修 SQL/索引，不要只靠调大池子。
         </details>
@@ -2825,11 +2824,9 @@ public class GenericExample {
 
 ### Spring Boot 学习顺序
 
->Spring Boot 不是绕开 Java Web 和 Spring，而是在常见 Web 项目里把容器、MVC、持久层、配置和启动方式整合起来。Spring Cloud 再叠一层：多服务怎么发现、调用、配置和容错。
->
->记忆主线：**请求怎么进来 → 对象谁来管 → 接口怎么写 → SQL 怎么跑 → Boot 怎么整合 → 多服务怎么协作**。
->
->学习顺序：**JDBC → Java Web → Spring Framework → Spring MVC → MyBatis → Spring Boot → Spring Cloud**。
+>- Spring Boot 不是绕开 Java Web 和 Spring，而是在常见 Web 项目里把容器、MVC、持久层、配置和启动方式整合起来。Spring Cloud 再叠一层：多服务怎么发现、调用、配置和容错。
+>- 记忆主线：**请求怎么进来 → 对象谁来管 → 接口怎么写 → SQL 怎么跑 → Boot 怎么整合 → 多服务怎么协作**。
+>- 学习顺序：**JDBC → Java Web → Spring Framework → Spring MVC → MyBatis → Spring Boot → Spring Cloud**。
 
 1. Java Web：HTTP 与 Servlet 基础
 
@@ -3544,9 +3541,8 @@ public class GenericExample {
 
 6. Spring Cloud：微服务协作
 
-    >Spring Cloud 不是再写一套 Web 框架，而是基于 Spring Boot 的微服务工具集：解决「很多服务怎么互相发现、调用、配置、网关入口和容错」。
-    >
-    >先会把单个 Boot 服务跑稳，再学 Cloud；否则注册中心、Feign、网关会叠在尚未理解的分层和配置之上。
+    >- Spring Cloud 不是再写一套 Web 框架，而是基于 Spring Boot 的微服务工具集：解决「很多服务怎么互相发现、调用、配置、网关入口和容错」。
+    >- 先会把单个 Boot 服务跑稳，再学 Cloud；否则注册中心、Feign、网关会叠在尚未理解的分层和配置之上。
 
     - 总览：
 
@@ -3758,9 +3754,8 @@ public class GenericExample {
 - `controller`：控制器层；接收 HTTP / RPC 请求、做基础参数处理、调用 Service，再组织返回结果。类似 Egg.js 的 Controller。
 - `service`：业务层；承接 Controller 之后的业务规则、事务边界，并调用 Mapper / Repository 或外部服务。Controller 不写业务，Mapper 不拼业务规则；复杂领域规则也可下沉到 domain，此时 Service 更偏用例编排。类似 Egg.js 的 service。
 
-    >**用例编排**：把完成一件事需要的步骤按顺序串起来——查数据、执行业务、写库、调外部服务，并管事务和失败回滚；Service 负责组织这条链路。
-    >
-    >例：`placeOrder()` 查用户和商品 → 创建订单 → 扣库存 → 调支付 → 发消息；各步谁来做可以拆到不同类，但先后顺序和事务边界由 Service 定。
+    >- **用例编排**：把完成一件事需要的步骤按顺序串起来——查数据、执行业务、写库、调外部服务，并管事务和失败回滚；Service 负责组织这条链路。
+    >- 例：`placeOrder()` 查用户和商品 → 创建订单 → 扣库存 → 调支付 → 发消息；各步谁来做可以拆到不同类，但先后顺序和事务边界由 Service 定。
 - `dto`：Data Transfer Object，数据传输对象；用于接口、RPC 或跨层传输数据，前端可理解为接口 request / response 的类型定义。
 
     >DTO 和 View Object（VO）对比：DTO 是更大的「传输」概念（入参、出参、RPC 都行）；VO 偏「给前端展示」的出参。很多 `XxxVO` 本质上是一种出参 DTO；有的团队不用 VO，出参统一叫 `RespDTO` / `XxxDTO`。关系是职责重叠、命名习惯不同：VO（View）⊆ 广义出参传输对象。读代码时 Controller 入参当 DTO，返回的 `XxxVO` 当 View Object（也是传输出参）。
@@ -3944,9 +3939,9 @@ public class GenericExample {
 
     - 值用 `?` 占位符，不要字符串拼 SQL。
 
-        >错：`"SELECT * FROM user WHERE name = '" + name + "'"`——`name` 若为 `'; DROP TABLE user; --` 可能被拼成恶意语句（SQL 注入）。
-        >对：`"SELECT * FROM user WHERE name = ?"`，再 `ps.setString(1, name)`——值当数据绑定，不当 SQL 代码。
-        >MyBatis 对应：`#{}` ≈ 这里的 `?` 绑参；`${}` ≈ 字符串拼进 SQL，只用于白名单里的表名 / 列名等标识符。
+        >- 错：`"SELECT * FROM user WHERE name = '" + name + "'"`——`name` 若为 `'; DROP TABLE user; --` 可能被拼成恶意语句（SQL 注入）。
+        >- 对：`"SELECT * FROM user WHERE name = ?"`，再 `ps.setString(1, name)`——值当数据绑定，不当 SQL 代码。
+        >- MyBatis 对应：`#{}` ≈ 这里的 `?` 绑参；`${}` ≈ 字符串拼进 SQL，只用于白名单里的表名 / 列名等标识符。
 
     - 优先 try-with-resources；连接池里的 `close()` 通常是归还，不是拆掉物理连接。
     - 池的 `connectionTimeout` 是等借连接；`@Transactional(timeout)` 是事务时长；SQL/语句超时是单条查询——三者分开配。
@@ -3993,8 +3988,8 @@ public class GenericExample {
     - 消费失败不要静默吞掉；明确是重试、跳过还是进死信后人工处理。
     - 需要顺序时看分区 / 队列模型，不要默认「全局有序」。
 
-        >分区（如 Kafka）：把一类消息拆成多条可并行消费的子流；同一分区内可有序，跨分区一般无序。要局部有序时常用业务 key（如订单 ID）打进同一分区。
-        >队列模型（如 RabbitMQ）：以队列为单位存消息、消费消息；单队列 + 单消费者较易有序，多队列或同队列多消费者并行时不要默认全局有序。
+        >- 分区（如 Kafka）：把一类消息拆成多条可并行消费的子流；同一分区内可有序，跨分区一般无序。要局部有序时常用业务 key（如订单 ID）打进同一分区。
+        >- 队列模型（如 RabbitMQ）：以队列为单位存消息、消费消息；单队列 + 单消费者较易有序，多队列或同队列多消费者并行时不要默认全局有序。
 
 15. 排障时优先看什么
 
@@ -4002,29 +3997,29 @@ public class GenericExample {
 
     - 先确认请求是否打到正确环境、路径、方法和参数，很多问题是 profile、网关路径或参数结构不一致。
 
-        >例：前端联调「改密码 404」——打到了 `api-dev` 而 Postman 通的是 `api-test`；网关文档是 `/api/user/password`，后端实际是 `/api/v1/users/password`；前端发 `PUT`，Controller 只挂了 `POST`；后端要 `oldPassword` / `newPassword`，前端却发了 `old_pwd` / `new_pwd`。
-        >先对齐「打没打到对的服务、对的接口」，再怀疑业务逻辑。
+        >- 例：前端联调「改密码 404」——打到了 `api-dev` 而 Postman 通的是 `api-test`；网关文档是 `/api/user/password`，后端实际是 `/api/v1/users/password`；前端发 `PUT`，Controller 只挂了 `POST`；后端要 `oldPassword` / `newPassword`，前端却发了 `old_pwd` / `new_pwd`。
+        >- 先对齐「打没打到对的服务、对的接口」，再怀疑业务逻辑。
 
     - 再用 `traceId` 串日志，定位异常栈、SQL、外部接口耗时和返回码。
 
-        >例：下单返回 500，前端只看到「系统繁忙」。用同一个 `traceId` 串日志：Controller 收到请求 → 调库存服务耗时 2.1s、返回 503 → 抛 `FeignException`。
-        >`traceId` 把「这一次请求」的日志绑在一起（多实例、多线程时尤其重要），用来追异常栈、SQL、下游耗时和返回码。
+        >- 例：下单返回 500，前端只看到「系统繁忙」。用同一个 `traceId` 串日志：Controller 收到请求 → 调库存服务耗时 2.1s、返回 503 → 抛 `FeignException`。
+        >- `traceId` 把「这一次请求」的日志绑在一起（多实例、多线程时尤其重要），用来追异常栈、SQL、下游耗时和返回码。
 
     - 慢接口优先看 SQL、索引、外部服务、锁等待、缓存命中率，不要一上来就怀疑 JVM。
 
-        >例：商品列表 P99 从 80ms 变成 3s——`LIKE '%手机%'` 没走索引全表扫；或每次同步调推荐服务偶发 2s；或 Redis 未命中反复打库；或更新库存时行锁等待很久。
-        >这些都不是堆内存不够。慢 ≈ 先当 IO / 数据库 / 下游 / 锁 / 缓存问题；JVM 是后手。
+        >- 例：商品列表 P99 从 80ms 变成 3s——`LIKE '%手机%'` 没走索引全表扫；或每次同步调推荐服务偶发 2s；或 Redis 未命中反复打库；或更新库存时行锁等待很久。
+        >- 这些都不是堆内存不够。慢 ≈ 先当 IO / 数据库 / 下游 / 锁 / 缓存问题；JVM 是后手。
 
     - 线上内存和线程问题再看 `GC`、`jstack`、`jmap`、`JFR`、`OOM` 等 JVM 诊断信息。
 
-        >JVM 资源问题：Java 进程自己的内存或线程（含 GC）出问题——堆涨满 / OOM、Full GC 频繁停顿、线程池打满、大量线程卡死——而不是业务逻辑写错、SQL 慢、参数不对。可类比前端「Chrome Tab 内存爆 / 主线程卡死」，这里是 JVM 进程吃紧。
-        >例（内存）：服务跑几天后重启，堆使用率锯齿越来越高最后 OOM → GC 日志里 Full GC 越来越勤、回收后堆几乎不降 → 用 `jmap`（查堆内存、必要时导出 heap dump）拿到堆快照，发现某个 `Map` 或本地缓存几百万条从未淘汰。heap dump 是堆内存快照；线程卡在哪用 `jstack`（thread dump），不要和 `jmap` 混为一谈。
-        >例（线程）：所有接口一起超时但 CPU 不高 → `jstack` 见大量线程等数据库连接池（池已耗尽），或线程池队列满、新任务被拒绝。
-        >只有监控 / 现象指向堆、GC、线程、OOM 时，才上这些工具；日常排障仍先走上面业务链路。
+        >- JVM 资源问题：Java 进程自己的内存或线程（含 GC）出问题——堆涨满 / OOM、Full GC 频繁停顿、线程池打满、大量线程卡死——而不是业务逻辑写错、SQL 慢、参数不对。可类比前端「Chrome Tab 内存爆 / 主线程卡死」，这里是 JVM 进程吃紧。
+        >- 例（内存）：服务跑几天后重启，堆使用率锯齿越来越高最后 OOM → GC 日志里 Full GC 越来越勤、回收后堆几乎不降 → 用 `jmap`（查堆内存、必要时导出 heap dump）拿到堆快照，发现某个 `Map` 或本地缓存几百万条从未淘汰。heap dump 是堆内存快照；线程卡在哪用 `jstack`（thread dump），不要和 `jmap` 混为一谈。
+        >- 例（线程）：所有接口一起超时但 CPU 不高 → `jstack` 见大量线程等数据库连接池（池已耗尽），或线程池队列满、新任务被拒绝。
+        >- 只有监控 / 现象指向堆、GC、线程、OOM 时，才上这些工具；日常排障仍先走上面业务链路。
 
     - 回归验证按风险选择：简单逻辑跑单测，涉及数据库 / Redis / MQ 的流程跑集成测试或本地联调。
 
-        >例（单测够用）：修了优惠券折扣算错——补满减、上限、0 元单等单测即可。
-        >例（单测不够）：修了「下单写 Redis，事务回滚后缓存仍脏」——mock 掉 DB/Redis 测不出真实回滚行为，要集成测试或本地起 MySQL + Redis 真跑：失败后缓存应不存在。
-        >例（MQ）：修了「消费失败进 DLQ」——要真发坏消息看重试和死信，不能只靠 mock Consumer。
+        >- 例（单测够用）：修了优惠券折扣算错——补满减、上限、0 元单等单测即可。
+        >- 例（单测不够）：修了「下单写 Redis，事务回滚后缓存仍脏」——mock 掉 DB/Redis 测不出真实回滚行为，要集成测试或本地起 MySQL + Redis 真跑：失败后缓存应不存在。
+        >- 例（MQ）：修了「消费失败进 DLQ」——要真发坏消息看重试和死信，不能只靠 mock Consumer。
 </details>
