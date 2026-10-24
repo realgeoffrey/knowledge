@@ -3916,9 +3916,12 @@ public class GenericExample {
 
     `请求进入容器 -> Filter 链 -> DispatcherServlet -> Interceptor 前置 -> Controller -> Interceptor 后置 / 完成后 -> 返回 -> Filter 链回来`
 
-    - `Filter`：Servlet 规范，偏编码、CORS、鉴权、统一日志等容器级横切。
-    - `Interceptor`：Spring MVC，能拿到 Handler 信息，适合登录校验、权限、打点。
-    - 两者都不要塞核心业务规则；业务仍归 Service。
+    - 两者**主要都是横切**：对多请求统一插手，不是某一条业务规则本身；差别在站哪一层、能看见什么。
+    - `Filter`：Servlet 规范，更靠外（容器级）；偏编码、CORS、统一鉴权入口、访问日志。
+    - `Interceptor`：Spring MVC，在 `DispatcherServlet` 内；能拿到要进哪个 Handler，偏登录态、权限、打点。
+    - Interceptor 短路与收尾：`preHandle` 返回 `false` → 不进 Controller，且**本拦截器** `afterCompletion` 不会走（若已写 ThreadLocal，须在 `return false` 前清掉）；`preHandle` 已返回 `true` 后，无论 Controller 成败都会走 `afterCompletion`（适合清 ThreadLocal）。
+    - 和别的横切怎么分：容器/全链路 → Filter；贴 Handler → Interceptor；方法级（事务等）→ AOP；统一异常/绑定 → `@ControllerAdvice`。
+    - 「主要」不等于「只能」：都能塞业务，但核心业务（下单、算价等）仍归 Service，别写进这两层。
 
 9. 分层和对象怎么流转
 
@@ -3995,16 +3998,8 @@ public class GenericExample {
 
     `接口状态码 -> 错误响应 -> traceId / 日志 -> Controller 入参 -> Service 分支 -> SQL / 外部服务 -> 事务 / 缓存 / 消息 -> JVM 资源`
 
-    - 先确认请求是否打到正确环境、路径、方法和参数，很多问题是 profile、网关路径或参数结构不一致。
-
-        >- 例：前端联调「改密码 404」——打到了 `api-dev` 而 Postman 通的是 `api-test`；网关文档是 `/api/user/password`，后端实际是 `/api/v1/users/password`；前端发 `PUT`，Controller 只挂了 `POST`；后端要 `oldPassword` / `newPassword`，前端却发了 `old_pwd` / `new_pwd`。
-        >- 先对齐「打没打到对的服务、对的接口」，再怀疑业务逻辑。
-
-    - 再用 `traceId` 串日志，定位异常栈、SQL、外部接口耗时和返回码。
-
-        >- 例：下单返回 500，前端只看到「系统繁忙」。用同一个 `traceId` 串日志：Controller 收到请求 → 调库存服务耗时 2.1s、返回 503 → 抛 `FeignException`。
-        >- `traceId` 把「这一次请求」的日志绑在一起（多实例、多线程时尤其重要），用来追异常栈、SQL、下游耗时和返回码。
-
+    - 先确认请求是否打到正确环境、路径、方法和参数，很多问题是 profile、网关路径或参数结构不一致；先对齐「打没打到对的服务、对的接口」，再怀疑业务逻辑。
+    - 再用 `traceId` 串日志（多实例、多线程时尤其重要），定位异常栈、SQL、外部接口耗时和返回码。
     - 慢接口优先看 SQL、索引、外部服务、锁等待、缓存命中率，不要一上来就怀疑 JVM。
 
         >- 例：商品列表 P99 从 80ms 变成 3s——`LIKE '%手机%'` 没走索引全表扫；或每次同步调推荐服务偶发 2s；或 Redis 未命中反复打库；或更新库存时行锁等待很久。
