@@ -1,0 +1,25 @@
+网站前端/HTTP相关/README.md
+  s_09f469d5ef56b0::t_d2ef2b1e2bb0c6 1101-1104,1106,1108-1113,1115,1117
+  s_09f469d5ef56b0::t_9251084df3ee5f 1090,1092-1093,1095,1097-1100,1118-1124,1126-1139,1143,1147,1149,1151,1153-1155,1158-1160,1163-1165,1168-1170,1173-1183,1186,1188,1190-1191,1193,1195-1201,1204-1251,1254-1256,1258,1260-1265,1267-1268,1270-1271,1273-1278,1281-1320,1323,1325,1327-1334,1336-1337,1339-1344,1347-1365
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "afbb3ee044f65c00528af0f98b624ed0d5fb0823",
+  "prompts": {},
+  "humans": {
+    "h_06cb06e03d194e": {
+      "author": "feijie.zheng <feijie.zheng@lkcoffee.com>"
+    }
+  },
+  "sessions": {
+    "s_09f469d5ef56b0": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1a51b-daaa-7851-93ac-093196da7a93",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "feijie.zheng <feijie.zheng@lkcoffee.com>"
+    }
+  }
+}
