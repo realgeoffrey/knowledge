@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="design-version" content="D1.10">
+  <title>采购申请 · FDE 静态交互稿示例</title>
+  <style id="design-tokens">
+/* DESIGN_TOKENS_START */
+:root {
+  --colors-primary: #235b43;
+  --colors-primary-soft: #e7eee7;
+  --colors-text: #1f2329;
+  --colors-muted: #5b6370;
+  --colors-sidebar: #183b31;
+  --colors-sidebar-hover: #254b3d;
+  --colors-sidebar-active: #315b49;
+  --colors-sidebar-text: #f0f4ef;
+  --colors-sidebar-muted: #b8ccbe;
+  --colors-sidebar-accent: #a8c3a7;
+  --colors-brand-mark: #d5be83;
+  --colors-canvas: #f5f1e8;
+  --colors-surface: #fcfaf5;
+  --colors-border: #ded7ca;
+  --colors-control-border: #877e70;
+  --colors-on-primary: #ffffff;
+  --colors-success: #17665b;
+  --colors-warning: #8a5200;
+  --colors-danger: #b42318;
+  --colors-screen-bg: #0c1c16;
+  --colors-screen-surface: #142d23;
+  --colors-screen-text: #edf7f0;
+  --colors-screen-muted: #a8c5b7;
+  --colors-screen-accent: #a8c3a7;
+  --typography-body-md-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  --typography-body-md-font-size: 14px;
+  --typography-body-md-font-weight: 400;
+  --typography-body-md-line-height: 22px;
+  --typography-title-font-size: 20px;
+  --typography-title-font-weight: 600;
+  --typography-title-line-height: 28px;
+  --typography-subtitle-font-size: 16px;
+  --typography-subtitle-font-weight: 500;
+  --typography-subtitle-line-height: 24px;
+  --typography-caption-font-size: 12px;
+  --typography-caption-line-height: 20px;
+  --typography-screen-body-font-family: system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --typography-screen-body-font-size: 14px;
+  --typography-screen-body-font-weight: 400;
+  --typography-screen-body-line-height: 1.6;
+  --rounded-sm: 4px;
+  --rounded-md: 8px;
+  --rounded-lg: 12px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --components-button-primary-background-color: var(--colors-primary);
+  --components-button-primary-hover-background-color: #2e6d50;
+  --components-button-primary-active-background-color: #194532;
+  --components-button-primary-text-color: var(--colors-on-primary);
+  --components-button-primary-height: 32px;
+  --components-nav-item-min-height: 44px;
+  --components-nav-item-line-height: 24px;
+  --components-table-row-height: 48px;
+  --components-table-row-compact-height: 40px;
+}
+/* DESIGN_TOKENS_END */
+  </style>
+  <style>
+    :root { color-scheme: light; font-family: var(--typography-body-md-font-family); font-size: var(--typography-body-md-font-size); font-weight: var(--typography-body-md-font-weight); line-height: var(--typography-body-md-line-height); color: var(--colors-text); background: var(--colors-canvas); }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, input, select, textarea { font: inherit; }
+    button, select { cursor: pointer; }
+    button { min-height: var(--components-button-primary-height); padding: 3px 12px; border: 1px solid var(--colors-control-border); border-radius: var(--rounded-sm); background: var(--colors-surface); color: var(--colors-text); }
+    button:hover:not(:disabled) { color: var(--colors-primary); background: var(--colors-primary-soft); }
+    button.primary { color: var(--components-button-primary-text-color); background: var(--components-button-primary-background-color); border-color: transparent; }
+    button.primary:hover:not(:disabled) { color: var(--components-button-primary-text-color); background: var(--components-button-primary-hover-background-color); }
+    button.primary:active:not(:disabled) { color: var(--components-button-primary-text-color); background: var(--components-button-primary-active-background-color); }
+    button.primary:disabled { color: var(--colors-muted); background: var(--colors-canvas); border-color: var(--colors-border); opacity: 1; }
+    button.danger { color: var(--colors-danger); border-color: color-mix(in srgb, var(--colors-danger) 45%, var(--colors-surface)); }
+    button.danger:hover:not(:disabled) { color: var(--colors-danger); background: color-mix(in srgb, var(--colors-danger) 8%, var(--colors-surface)); }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    :focus-visible { outline: 2px solid var(--colors-primary); outline-offset: 2px; }
+    [hidden] { display: none !important; }
+    header { padding: var(--spacing-md) var(--spacing-lg); background: var(--colors-sidebar); color: var(--colors-sidebar-text); border-bottom: 1px solid var(--colors-border); }
+    h1 { font-size: var(--typography-title-font-size); line-height: var(--typography-title-line-height); font-weight: var(--typography-title-font-weight); margin: var(--spacing-xs) 0 var(--spacing-sm); }
+    header p { color: var(--colors-sidebar-muted); font-size: var(--typography-caption-font-size); line-height: var(--typography-caption-line-height); margin: 0; }
+    header a { color: var(--colors-sidebar-text); }
+    header .eyebrow { color: var(--colors-sidebar-muted); }
+    header :focus-visible { outline-color: var(--colors-sidebar-accent); }
+    .eyebrow, .page-id, small { font-size: var(--typography-caption-font-size); color: var(--colors-muted); }
+    main { padding: var(--spacing-md) var(--spacing-lg); }
+    .panel { background: var(--colors-surface); padding: var(--spacing-md); border: 1px solid var(--colors-border); border-radius: var(--rounded-md); margin-bottom: var(--spacing-md); min-width: 0; }
+    .bar { display: flex; gap: var(--spacing-md); align-items: center; justify-content: space-between; flex-wrap: wrap; }
+    .controls { display: flex; align-items: center; gap: var(--spacing-sm); flex-wrap: wrap; }
+    .controls label, .field label { font-weight: 500; }
+    .muted { color: var(--colors-muted); }
+    .hint { background: var(--colors-canvas); border-left: 2px solid var(--colors-border); padding: var(--spacing-sm) 12px; margin: var(--spacing-md) 0; color: var(--colors-muted); }
+    h2, h3 { font-size: var(--typography-subtitle-font-size); line-height: var(--typography-subtitle-line-height); font-weight: var(--typography-title-font-weight); margin: 0 0 var(--spacing-xs); }
+    h3 { margin-top: var(--spacing-lg); }
+    p { margin: 0 0 var(--spacing-sm); }
+    .page-id { margin: 0; }
+    input, select, textarea { min-height: var(--components-button-primary-height); padding: 4px 10px; border: 1px solid var(--colors-control-border); border-radius: var(--rounded-sm); background: var(--colors-surface); color: inherit; max-width: 100%; min-width: 0; }
+    .controls input { width: 280px; }
+    textarea { resize: vertical; }
+    .field { display: grid; grid-template-columns: 112px minmax(0, 480px); align-items: start; gap: var(--spacing-xs) var(--spacing-md); margin: var(--spacing-md) 0; }
+    .field label { padding-top: 5px; }
+    .field small { grid-column: 2; }
+    #request-form > .controls, #approval > .controls { padding-left: 128px; }
+    .table-wrap { overflow-x: auto; margin-top: var(--spacing-md); }
+    table { width: 100%; min-width: 800px; border-collapse: collapse; table-layout: fixed; }
+    th, td { padding: 4px 12px; height: var(--components-table-row-compact-height); text-align: left; border-bottom: 1px solid var(--colors-border); }
+    th { color: var(--colors-muted); font-weight: 500; background: var(--colors-canvas); }
+    th:first-child { width: 104px; }
+    th:nth-child(3) { width: 140px; }
+    th:nth-child(4) { width: 104px; }
+    th:nth-child(5) { width: 132px; }
+    th:last-child { width: 80px; }
+    td:not(.title-cell) { white-space: nowrap; }
+    th:nth-child(3), td:nth-child(3) { text-align: right; font-variant-numeric: tabular-nums; }
+    td.title-cell { overflow-wrap: anywhere; font-weight: 500; }
+    tbody tr:hover { background: var(--colors-primary-soft); }
+    td:last-child button { border-color: transparent; background: transparent; color: var(--colors-primary); padding: 0 4px; }
+    .badge { display: inline-block; padding: 1px 7px; border-radius: var(--rounded-sm); background: color-mix(in srgb, var(--colors-warning) 8%, var(--colors-surface)); color: var(--colors-warning); }
+    .badge.done { background: color-mix(in srgb, var(--colors-success) 8%, var(--colors-surface)); color: var(--colors-success); }
+    .badge.rejected { background: color-mix(in srgb, var(--colors-danger) 8%, var(--colors-surface)); color: var(--colors-danger); }
+    .empty { text-align: center; padding: var(--spacing-xl) var(--spacing-md); color: var(--colors-muted); }
+    dl { display: grid; grid-template-columns: 100px minmax(0, 1fr) 100px minmax(0, 1fr); gap: 12px var(--spacing-md); margin: var(--spacing-md) 0; }
+    dt { color: var(--colors-muted); }
+    dd { margin: 0; overflow-wrap: anywhere; }
+    #detail-amount { font-variant-numeric: tabular-nums; font-weight: 600; }
+    #approval { padding-top: var(--spacing-xs); border-top: 1px solid var(--colors-border); }
+    li { margin: var(--spacing-sm) 0; overflow-wrap: anywhere; }
+    .notice { padding: 10px var(--spacing-md); border-radius: var(--rounded-sm); margin-bottom: var(--spacing-md); background: color-mix(in srgb, var(--colors-success) 8%, var(--colors-surface)); color: var(--colors-success); }
+    .notice.error { background: color-mix(in srgb, var(--colors-danger) 8%, var(--colors-surface)); color: var(--colors-danger); }
+    .inline-error { color: var(--colors-danger); }
+    footer { padding: 0 var(--spacing-lg) var(--spacing-md); color: var(--colors-muted); font-size: var(--typography-caption-font-size); line-height: var(--typography-caption-line-height); }
+    @media (max-width: 680px) {
+      main, header { padding: var(--spacing-md); } .bar { align-items: flex-start; }
+      .field, dl { grid-template-columns: 1fr; } .field small { grid-column: auto; }
+      dl { grid-template-columns: 90px minmax(0, 1fr); }
+      #request-form > .controls, #approval > .controls { padding-left: 0; }
+      footer { padding-left: var(--spacing-md); padding-right: var(--spacing-md); }
+    }
+    @media (pointer: coarse) { button, input, select { min-height: 44px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="eyebrow">业务样板 / 采购管理 · 设计 <span data-design-version>D1.10</span></span>
+    <h1>采购申请</h1>
+    <p>示例原型 P1.0 · 示例需求 R1.0 · 演示数据 · 尚无客户确认</p>
+    <p>角色、权限和操作均为本地模拟。刷新或重置会还原数据；不连接任何真实系统。</p>
+    <nav class="eyebrow" aria-label="原型参考"><a href="../design-system.html">设计规范</a> · <a href="../README.md">原型说明</a></nav>
+  </header>
+  <main>
+    <section class="panel bar" aria-label="演示控制">
+      <div class="controls">
+        <label for="role">演示角色</label>
+        <select id="role"><option value="employee">员工甲 · 研发部</option><option value="manager">主管甲 · 研发部</option></select>
+        <label for="scenario">模拟失败</label>
+        <select id="scenario"><option value="normal">正常</option><option value="forbidden">无权限</option><option value="conflict">状态冲突</option></select>
+      </div>
+      <button id="reset" type="button">重置演示数据</button>
+    </section>
+    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+
+    <section id="list" class="panel" aria-labelledby="list-heading">
+      <div class="bar">
+        <div><h2 id="list-heading" tabindex="-1">申请列表</h2><p class="page-id">PAGE-001 · REQ-001 / REQ-003</p></div>
+        <button id="new-request" class="primary" type="button">新建申请</button>
+      </div>
+      <p id="scope" class="hint"></p>
+      <div class="controls"><label for="search">搜索事项</label><input id="search" type="search" placeholder="输入事项关键词" maxlength="60"></div>
+      <div class="table-wrap">
+        <table><thead><tr><th>编号</th><th>采购事项</th><th>金额（元）</th><th>提交人</th><th>状态</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table>
+      </div>
+      <p id="empty" class="empty" hidden>没有匹配的申请，请调整关键词或新建申请。</p>
+    </section>
+
+    <section id="create" class="panel" aria-labelledby="create-heading" hidden>
+      <h2 id="create-heading" tabindex="-1">新建采购申请</h2><p class="page-id">PAGE-002 · REQ-001</p>
+      <p class="hint">员工甲 · 研发部。合法提交后进入“待主管审批”。本例直接提交，不演示草稿编辑。</p>
+      <form id="request-form" novalidate>
+        <div class="field"><label for="item">采购事项 *</label><input id="item" required maxlength="60" autocomplete="off" aria-describedby="item-help"><small id="item-help">1～60 字，示例：设计用显示器。</small></div>
+        <div class="field"><label for="amount">金额（元）*</label><input id="amount" required inputmode="decimal" autocomplete="off" aria-describedby="amount-help"><small id="amount-help">大于 0，最多两位小数，上限 99,999,999.99。</small></div>
+        <p id="form-error" class="inline-error" role="alert" hidden></p>
+        <div class="controls"><button id="submit-request" class="primary" type="submit">提交申请</button><button id="cancel" type="button">取消，返回列表</button></div>
+      </form>
+    </section>
+
+    <section id="detail" class="panel" aria-labelledby="detail-heading" hidden>
+      <div class="bar"><div><h2 id="detail-heading" tabindex="-1">申请详情</h2><p class="page-id">PAGE-003 · REQ-002 / REQ-003</p></div><button id="back" type="button">返回列表</button></div>
+      <dl><dt>申请编号</dt><dd id="detail-id"></dd><dt>采购事项</dt><dd id="detail-item"></dd><dt>金额</dt><dd id="detail-amount"></dd><dt>提交人 / 部门</dt><dd id="detail-owner"></dd><dt>状态</dt><dd id="detail-status"></dd></dl>
+      <p id="action-hint" class="hint"></p>
+      <section id="approval" aria-label="审批操作" hidden>
+        <div class="field"><label for="reason">审批说明（驳回必填）</label><textarea id="reason" rows="3" maxlength="200" aria-describedby="reason-help"></textarea><small id="reason-help">最多 200 字。</small></div>
+        <p id="approval-error" class="inline-error" role="alert" hidden></p>
+        <div class="controls"><button id="approve" class="primary" type="button">审批通过</button><button id="reject" class="danger" type="button">驳回申请</button></div>
+      </section>
+      <h3>处理记录</h3><ol id="history"></ol>
+    </section>
+  </main>
+  <footer>评审重点：字段、角色范围、审批状态、异常反馈。<br>此示例不证明真实系统的权限、并发、持久化和事务正确性。</footer>
+  <script>
+    const $ = id => document.getElementById(id);
+    const initialRequests = () => [
+      { id: 'PR-001', item: '研发显示器', cents: 299900, owner: '员工甲', dept: '研发部', status: '待主管审批', history: ['员工甲提交申请'] },
+      { id: 'PR-002', item: '销售展示物料', cents: 180000, owner: '员工丙', dept: '销售部', status: '待主管审批', history: ['员工丙提交申请'] },
+      { id: 'PR-003', item: '研发键盘', cents: 68000, owner: '员工乙', dept: '研发部', status: '待主管审批', history: ['员工乙提交申请'] },
+      { id: 'PR-004', item: '主管办公支架', cents: 39000, owner: '主管甲', dept: '研发部', status: '待主管审批', history: ['主管甲提交申请'] },
+      { id: 'PR-005', item: '员工办公耗材', cents: 12000, owner: '员工甲', dept: '研发部', status: '已通过', history: ['员工甲提交申请', '主管甲审批通过'] }
+    ];
+    let requests = initialRequests();
+    let selectedId = null;
+    let nextId = 6;
+    const isManager = () => $('role').value === 'manager';
+    const canView = request => isManager() ? request.dept === '研发部' : request.owner === '员工甲';
+    const canApprove = request => isManager() && canView(request) && request.owner !== '主管甲' && request.status === '待主管审批';
+    const money = cents => (cents / 100).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    function parseCents(value) {
+      if (!/^(0|[1-9]\d{0,7})(\.\d{1,2})?$/.test(value)) return null;
+      const [whole, fraction = ''] = value.split('.');
+      const cents = Number(whole) * 100 + Number(fraction.padEnd(2, '0'));
+      return cents > 0 ? cents : null;
+    }
+    function notify(message, error = false) {
+      $('notice').textContent = message;
+      $('notice').className = error ? 'notice error' : 'notice';
+      $('notice').hidden = false;
+    }
+    function inlineError(id, message) {
+      $(id).textContent = message;
+      $(id).hidden = !message;
+    }
+    function show(page) {
+      for (const id of ['list', 'create', 'detail']) $(id).hidden = id !== page;
+      $(page + '-heading').focus();
+    }
+    function badge(status) {
+      const element = document.createElement('span');
+      element.className = 'badge' + (status === '已通过' ? ' done' : status === '已驳回' ? ' rejected' : '');
+      element.textContent = status;
+      return element;
+    }
+    function renderList() {
+      $('new-request').hidden = isManager();
+      $('scope').textContent = isManager() ? '模拟数据范围：研发部申请；可审批他人的待审申请，不能审批自己的申请。' : '模拟数据范围：只显示员工甲自己的申请。';
+      const keyword = $('search').value.trim().toLowerCase();
+      const visible = requests.filter(request => canView(request) && request.item.toLowerCase().includes(keyword));
+      $('rows').replaceChildren();
+      for (const request of visible) {
+        const row = document.createElement('tr');
+        for (const [index, value] of [request.id, request.item, money(request.cents), request.owner].entries()) {
+          const cell = document.createElement('td');
+          if (index === 1) cell.className = 'title-cell';
+          cell.textContent = value;
+          row.append(cell);
+        }
+        const statusCell = document.createElement('td');
+        statusCell.append(badge(request.status));
+        const actionCell = document.createElement('td');
+        const open = document.createElement('button');
+        open.type = 'button';
+        open.textContent = '查看';
+        open.setAttribute('aria-label', '查看 ' + request.id + ' ' + request.item);
+        open.addEventListener('click', () => openDetail(request.id));
+        actionCell.append(open);
+        row.append(statusCell, actionCell);
+        $('rows').append(row);
+      }
+      $('empty').hidden = visible.length > 0;
+    }
+    function renderDetail() {
+      const request = requests.find(item => item.id === selectedId);
+      if (!request || !canView(request)) { notify('当前演示角色无权查看该申请。', true); renderList(); show('list'); return; }
+      $('detail-id').textContent = request.id;
+      $('detail-item').textContent = request.item;
+      $('detail-amount').textContent = money(request.cents) + ' 元';
+      $('detail-owner').textContent = request.owner + ' / ' + request.dept;
+      $('detail-status').replaceChildren(badge(request.status));
+      $('approval').hidden = !canApprove(request);
+      $('action-hint').textContent = request.status !== '待主管审批' ? '当前为终态，不再提供审批操作。' : !isManager() ? '等待部门主管处理，员工可查看进度。' : request.owner === '主管甲' ? '禁止审批自己的申请，请由其他有权主管处理。' : '您可以审批此申请；驳回时需要填写原因。';
+      $('history').replaceChildren();
+      for (const entry of request.history) { const item = document.createElement('li'); item.textContent = entry; $('history').append(item); }
+    }
+    function openDetail(id) {
+      selectedId = id;
+      $('reason').value = '';
+      inlineError('approval-error', '');
+      renderDetail();
+      if (requests.some(item => item.id === id && canView(item))) show('detail');
+    }
+    function simulatedFailure() {
+      if ($('scenario').value === 'forbidden') { notify('模拟无权限：操作被拒绝，数据未改变。', true); return true; }
+      if ($('scenario').value === 'conflict') { notify('模拟状态冲突：记录状态已变化，请刷新确认；本次未写入数据。', true); return true; }
+      return false;
+    }
+    function decide(approved) {
+      const request = requests.find(item => item.id === selectedId);
+      if (!request || !canApprove(request)) { notify('当前角色或状态不允许审批，数据未改变。', true); return; }
+      const reason = $('reason').value.trim();
+      if (!approved && !reason) { inlineError('approval-error', '请填写驳回原因。'); $('reason').focus(); return; }
+      inlineError('approval-error', '');
+      if (simulatedFailure()) return;
+      request.status = approved ? '已通过' : '已驳回';
+      request.history.push('主管甲' + (approved ? '审批通过' : '驳回申请') + (reason ? '：' + reason : ''));
+      renderDetail();
+      $('detail-heading').focus();
+      notify('申请 ' + request.id + ' ' + request.status + '。这是本地模拟结果。');
+    }
+    $('role').addEventListener('change', () => { selectedId = null; $('notice').hidden = true; renderList(); show('list'); });
+    $('search').addEventListener('input', renderList);
+    $('new-request').addEventListener('click', () => { if (isManager()) return; $('notice').hidden = true; $('request-form').reset(); inlineError('form-error', ''); show('create'); });
+    $('cancel').addEventListener('click', () => { renderList(); show('list'); });
+    $('back').addEventListener('click', () => { renderList(); show('list'); });
+    $('approve').addEventListener('click', () => decide(true));
+    $('reject').addEventListener('click', () => decide(false));
+    $('request-form').addEventListener('submit', event => {
+      event.preventDefault();
+      if (isManager() || $('create').hidden) { notify('当前演示状态不允许提交，数据未改变。', true); return; }
+      const item = $('item').value.trim();
+      const cents = parseCents($('amount').value.trim());
+      if (!item || item.length > 60) { inlineError('form-error', '采购事项需填写 1～60 字。'); $('item').focus(); return; }
+      if (cents === null) { inlineError('form-error', '请输入大于 0、最多两位小数且不超过上限的金额。'); $('amount').focus(); return; }
+      inlineError('form-error', '');
+      if (simulatedFailure()) return;
+      const request = { id: 'PR-' + String(nextId++).padStart(3, '0'), item, cents, owner: '员工甲', dept: '研发部', status: '待主管审批', history: ['员工甲提交申请'] };
+      requests.unshift(request);
+      $('search').value = '';
+      renderList();
+      show('list');
+      notify('申请 ' + request.id + ' 已提交，等待主管审批。');
+    });
+    $('reset').addEventListener('click', () => { requests = initialRequests(); selectedId = null; nextId = 6; $('role').value = 'employee'; $('scenario').value = 'normal'; $('search').value = ''; renderList(); show('list'); notify('演示数据已重置。'); });
+    renderList();
+  </script>
+</body>
+</html>

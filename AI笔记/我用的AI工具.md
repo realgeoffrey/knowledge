@@ -10,7 +10,7 @@
     1. cursor、~~qoder~~（、IDEA）
 1. agent
 
-    cursor、codex、qoder
+    codex、cursor、~~qoder~~
 
     - 使用的的配置
 
@@ -20,4 +20,4 @@
         1. [ponytail](https://github.com/DietrichGebert/ponytail)
 1. chat ai
 
-    chatgpt、豆包、deepseek、~~元宝~~、~~gemini~~
+    chatgpt、deepseek、豆包、~~元宝~~、~~gemini~~

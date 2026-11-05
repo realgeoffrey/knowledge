@@ -1,6 +1,12 @@
 # knowledge
 
 ## 目录
+
+1. [AI笔记](./AI笔记/README.md)
+
+    1. [FDE项目流程](./AI笔记/FDE项目流程)
+
+    >[我用的AI工具](./AI笔记/我用的AI工具.md)
 1. [全栈](./全栈/README.md)
 
     1. [Java学习笔记](./全栈/Java学习笔记/README.md)
@@ -59,7 +65,9 @@
         1. [Babel学习笔记](./网站前端/Babel学习笔记/README.md)
         1. [yarn+Lerna学习笔记](./网站前端/yarn+Lerna学习笔记/README.md)
         1. [Node.js脚手架（TypeScript+pm2或nodemon+--inspect）](./网站前端/Node.js脚手架（TypeScript+pm2或nodemon+--inspect）/README.md)
-        1. [我安装的全局仓库](./网站前端/Node.js学习笔记/我安装的全局仓库.md)
+
+        >[我安装的全局仓库](./网站前端/Node.js学习笔记/我安装的全局仓库.md)
+
         </details>
     1. 其他前端专项
 
@@ -115,15 +123,6 @@
     >
     >    广义上可能包含祖先级、孙辈级之间关系，不仅仅是一层父子间关系。
     ></details>
-1. <details>
-
-    <summary><a href="./网站前端/AI笔记/README.md">AI笔记</a></summary>
-
-    1. [我用的AI工具](./网站前端/AI笔记/我用的AI工具.md)
-    1. [AI繁多的词汇](./网站前端/AI笔记/AI繁多的词汇.md)
-    1. [MCP笔记](./网站前端/AI笔记/MCP笔记.md)
-    1. [openclaw笔记](./网站前端/AI笔记/openclaw笔记.md)
-    </details>
 1. [程序员的自我修养](./网站前端/程序员的自我修养/README.md)
 1. <details>
 
@@ -147,6 +146,11 @@
 ><details>
 ><summary>废弃内容</summary>
 >
+>1. AI笔记
+>
+>    1. [AI繁多的词汇](./AI笔记/AI繁多的词汇.md)
+>    1. [MCP笔记](./AI笔记/MCP笔记.md)
+>    1. [openclaw笔记](./AI笔记/openclaw笔记.md)
 >1. [兼容至ie6](./网站前端/兼容至ie6/README.md)
 >1. [JS废弃代码](./网站前端/JS方法积累/废弃代码/README.md)
 >1. [原生JS宽高](./网站前端/JS学习笔记/原生JS宽高.md)

@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="design-version" content="D1.10">
+  <title>管理后台 · 设计规范展示</title>
+<style id="design-tokens">
+/* DESIGN_TOKENS_START */
+:root {
+  --colors-primary: #235b43;
+  --colors-primary-soft: #e7eee7;
+  --colors-text: #1f2329;
+  --colors-muted: #5b6370;
+  --colors-sidebar: #183b31;
+  --colors-sidebar-hover: #254b3d;
+  --colors-sidebar-active: #315b49;
+  --colors-sidebar-text: #f0f4ef;
+  --colors-sidebar-muted: #b8ccbe;
+  --colors-sidebar-accent: #a8c3a7;
+  --colors-brand-mark: #d5be83;
+  --colors-canvas: #f5f1e8;
+  --colors-surface: #fcfaf5;
+  --colors-border: #ded7ca;
+  --colors-control-border: #877e70;
+  --colors-on-primary: #ffffff;
+  --colors-success: #17665b;
+  --colors-warning: #8a5200;
+  --colors-danger: #b42318;
+  --colors-screen-bg: #0c1c16;
+  --colors-screen-surface: #142d23;
+  --colors-screen-text: #edf7f0;
+  --colors-screen-muted: #a8c5b7;
+  --colors-screen-accent: #a8c3a7;
+  --typography-body-md-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  --typography-body-md-font-size: 14px;
+  --typography-body-md-font-weight: 400;
+  --typography-body-md-line-height: 22px;
+  --typography-title-font-size: 20px;
+  --typography-title-font-weight: 600;
+  --typography-title-line-height: 28px;
+  --typography-subtitle-font-size: 16px;
+  --typography-subtitle-font-weight: 500;
+  --typography-subtitle-line-height: 24px;
+  --typography-caption-font-size: 12px;
+  --typography-caption-line-height: 20px;
+  --typography-screen-body-font-family: system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --typography-screen-body-font-size: 14px;
+  --typography-screen-body-font-weight: 400;
+  --typography-screen-body-line-height: 1.6;
+  --rounded-sm: 4px;
+  --rounded-md: 8px;
+  --rounded-lg: 12px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --components-button-primary-background-color: var(--colors-primary);
+  --components-button-primary-hover-background-color: #2e6d50;
+  --components-button-primary-active-background-color: #194532;
+  --components-button-primary-text-color: var(--colors-on-primary);
+  --components-button-primary-height: 32px;
+  --components-nav-item-min-height: 44px;
+  --components-nav-item-line-height: 24px;
+  --components-table-row-height: 48px;
+  --components-table-row-compact-height: 40px;
+}
+/* DESIGN_TOKENS_END */
+</style>
+  <style>
+    :root {
+      color-scheme: light;
+      --primary: var(--colors-primary);
+      --soft: var(--colors-primary-soft);
+      --ink: var(--colors-text);
+      --muted: var(--colors-muted);
+      --surface: var(--colors-surface);
+      --canvas: var(--colors-canvas);
+      --border: var(--colors-border);
+      --success: var(--colors-success);
+      --warning: var(--colors-warning);
+      --danger: var(--colors-danger);
+      --screen-bg: var(--colors-screen-bg);
+      --screen-surface: var(--colors-screen-surface);
+      --screen-text: var(--colors-screen-text);
+      --screen-muted: var(--colors-screen-muted);
+      --screen-accent: var(--colors-screen-accent);
+      --radius: var(--rounded-md);
+      --radius-lg: var(--rounded-lg);
+      --gap: var(--spacing-md);
+      font-family: var(--typography-body-md-font-family);
+      font-size: var(--typography-body-md-font-size);
+      font-weight: var(--typography-body-md-font-weight);
+      line-height: var(--typography-body-md-line-height);
+      color: var(--ink);
+      background: var(--canvas);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 28px; }
+    body { margin: 0; }
+    a { color: var(--primary); text-underline-offset: 3px; }
+    button, input, select, textarea { font: inherit; }
+    button, input, select, textarea, a { -webkit-tap-highlight-color: transparent; }
+    button { min-height: var(--components-button-primary-height); border: 1px solid var(--colors-control-border); border-radius: var(--rounded-sm); padding: 0 13px; line-height: 1.2; color: var(--ink); background: var(--surface); cursor: pointer; transition: background .15s; }
+    button:hover:not(:disabled) { color: var(--primary); background: var(--soft); }
+    button.primary { color: var(--components-button-primary-text-color); background: var(--components-button-primary-background-color); border-color: transparent; }
+    button.primary:hover:not(:disabled) { color: var(--components-button-primary-text-color); background: var(--components-button-primary-hover-background-color); }
+    button.primary:active:not(:disabled) { color: var(--components-button-primary-text-color); background: var(--components-button-primary-active-background-color); }
+    button.primary:disabled { color: var(--colors-muted); background: var(--colors-canvas); border-color: var(--colors-border); opacity: 1; }
+    button.danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, var(--surface)); }
+    button.danger:hover:not(:disabled) { color: var(--danger); background: color-mix(in srgb, var(--danger) 7%, var(--surface)); }
+    button:disabled { color: color-mix(in srgb, var(--muted) 65%, var(--surface)); background: var(--canvas); border-color: var(--border); cursor: not-allowed; }
+    button.link { border-color: transparent; padding: 2px 5px; min-height: 28px; color: var(--primary); background: transparent; }
+    :focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+    [hidden] { display: none !important; }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: var(--typography-title-font-size); letter-spacing: -.02em; line-height: var(--typography-title-line-height); font-weight: var(--typography-title-font-weight); }
+    h2 { font-size: var(--typography-title-font-size); letter-spacing: -.02em; line-height: var(--typography-title-line-height); font-weight: var(--typography-title-font-weight); }
+    h3 { font-size: var(--typography-subtitle-font-size); line-height: var(--typography-subtitle-line-height); font-weight: var(--typography-subtitle-font-weight); }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
+    .muted, small { color: var(--muted); }
+    small { font-size: var(--typography-caption-font-size); line-height: var(--typography-caption-line-height); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .skip-link { position: fixed; top: 8px; left: 8px; padding: 10px 16px; background: var(--surface); z-index: 20; transform: translateY(-150%); }
+    .skip-link:focus { transform: translateY(0); }
+    .sidebar { position: fixed; inset: 0 auto 0 0; overflow-y: auto; scroll-padding-block: 6px; scrollbar-color: color-mix(in srgb, var(--colors-sidebar-accent) 65%, var(--colors-sidebar)) var(--colors-sidebar); width: 218px; padding: 28px 18px; border-right: 1px solid var(--border); background: var(--colors-sidebar); color: var(--colors-sidebar-text); display: flex; flex-direction: column; gap: 28px; }
+    .sidebar :focus-visible { outline-color: var(--colors-sidebar-accent); }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px; }
+    .brand-mark { width: 32px; height: 32px; background: var(--colors-brand-mark); color: var(--colors-sidebar); display: grid; place-items: center; border-radius: var(--radius); font-size: 16px; font-weight: 700; }
+    .brand strong { display: block; font-size: 14px; letter-spacing: .02em; }
+    .brand small { font-size: 10px; letter-spacing: .14em; color: var(--colors-sidebar-muted); }
+    .nav-label { font-size: var(--typography-caption-font-size); line-height: var(--typography-caption-line-height); font-weight: 500; letter-spacing: .08em; color: var(--colors-sidebar-muted); padding: 0 11px; margin-bottom: 10px; }
+    .sidebar nav { display: grid; gap: 6px; }
+    .sidebar nav a { display: flex; gap: 10px; align-items: center; min-width: 0; min-height: var(--components-nav-item-min-height); border-radius: var(--radius); padding: 8px 12px; color: var(--colors-sidebar-text); font-size: var(--typography-body-md-font-size); line-height: var(--components-nav-item-line-height); letter-spacing: .02em; overflow-wrap: anywhere; text-decoration: none; }
+    .sidebar nav a span { flex: none; color: var(--colors-sidebar-muted); font-variant-numeric: tabular-nums; font-size: 11px; font-weight: 400; }
+    .sidebar nav a:hover { background: var(--colors-sidebar-hover); }
+    .sidebar nav a[aria-current="location"] { background: var(--colors-sidebar-active); font-weight: 600; box-shadow: inset 3px 0 var(--colors-sidebar-accent); }
+    .sidebar-note { margin-top: auto; padding: 14px 12px; border-top: 1px solid var(--colors-sidebar-active); font-size: 12px; color: var(--colors-sidebar-muted); }
+    .sidebar-note strong { display: block; color: var(--colors-sidebar-text); margin-bottom: 5px; font-weight: 600; }
+    .page { margin-left: 218px; max-width: 1730px; }
+    .topbar { padding: 12px 24px; border-bottom: 1px solid var(--border); background: var(--surface); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .breadcrumbs { color: var(--muted); font-size: 12px; }
+    .breadcrumbs b { color: var(--ink); font-weight: 500; }
+    .top-links { display: flex; gap: 18px; font-size: 12px; }
+    main { padding: 24px; max-width: 1440px; margin: auto; }
+    section[id] { scroll-margin-top: 28px; }
+    .hero { margin-bottom: 24px; }
+    .eyebrow { display: flex; align-items: center; gap: 10px; font-size: 11px; letter-spacing: .13em; color: var(--primary); margin-bottom: 15px; }
+    .eyebrow::before { content: ""; width: 24px; height: 2px; background: var(--primary); }
+    .hero h1 { margin: 8px 0 14px; }
+    .hero .lead { font-size: 15px; color: var(--muted); max-width: 760px; margin-bottom: 20px; }
+    .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .between { justify-content: space-between; }
+    .pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 99px; font-size: 11px; background: var(--soft); color: var(--primary); font-weight: 600; }
+    .pill.neutral { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+    .pill.warning { color: var(--warning); background: color-mix(in srgb, var(--warning) 8%, var(--surface)); }
+    .section { margin-top: 24px; }
+    .section-header { margin-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; flex-wrap: wrap; }
+    .section-header h2 span { color: var(--primary); font-size: 12px; margin-right: 10px; font-variant-numeric: tabular-nums; letter-spacing: .08em; vertical-align: middle; }
+    .section-header p { color: var(--muted); margin-top: 5px; font-size: 13px; }
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rounded-md); padding: var(--spacing-md); min-width: 0; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap); }
+    .principles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); margin-top: var(--spacing-lg); }
+    .principle { padding: 12px 16px; border-top: 1px solid var(--border); background: var(--surface); }
+    .principle small { display: block; margin: 6px 0 0; }
+    .principle .number { display: block; color: var(--primary); font-size: 11px; margin-bottom: 10px; }
+    .note { border-left: 3px solid var(--primary); padding: 11px 14px; background: var(--soft); font-size: 12px; color: var(--muted); }
+    .note strong { color: var(--ink); }
+    .maintenance { margin-top: 16px; }
+    .maintenance code { color: var(--ink); }
+    .swatches { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+    .swatch { height: 54px; border-radius: var(--rounded-sm); border: 1px solid color-mix(in srgb, var(--border) 50%, transparent); margin-bottom: 8px; }
+    .swatch-name { font-size: 12px; font-weight: 600; }
+    .swatches code { display: block; font-size: 10px; color: var(--muted); margin-top: 3px; }
+    .type-sample { margin-top: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .type-title { font-size: var(--typography-title-font-size); font-weight: var(--typography-title-font-weight); line-height: var(--typography-title-line-height); }
+    .type-sample small { display: block; margin-top: 6px; }
+    .spacing-samples { display: flex; align-items: flex-end; gap: 16px; margin-top: 18px; }
+    .spacing-samples span { display: block; height: 6px; background: var(--primary); border-radius: 2px; margin-bottom: 5px; }
+    .component-label { font-size: 11px; letter-spacing: .08em; color: var(--muted); margin-bottom: 14px; }
+    .button-sample { gap: 8px; }
+    .component-help { font-size: 12px; color: var(--muted); margin-top: 14px; }
+    .status-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px; }
+    .badge { display: inline-flex; align-items: center; gap: 5px; font-size: var(--typography-body-md-font-size); border-radius: var(--rounded-sm); padding: 2px 7px; background: var(--soft); color: var(--primary); white-space: nowrap; }
+    .badge::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+    .badge.success { color: var(--success); background: color-mix(in srgb, var(--success) 8%, var(--surface)); }
+    .badge.warning { color: var(--warning); background: color-mix(in srgb, var(--warning) 8%, var(--surface)); }
+    .badge.danger { color: var(--danger); background: color-mix(in srgb, var(--danger) 8%, var(--surface)); }
+    .badge.muted { background: var(--canvas); color: var(--muted); }
+    .subheading { margin-bottom: 16px; }
+    .field { display: grid; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); min-width: 0; }
+    .field label { font-size: 14px; font-weight: 500; }
+    .required { color: var(--danger); }
+    input, select, textarea { width: 100%; min-width: 0; min-height: var(--components-button-primary-height); border: 1px solid var(--colors-control-border); padding: 4px 11px; border-radius: var(--rounded-sm); background: var(--surface); color: var(--ink); }
+    input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--muted) 85%, var(--surface)); }
+    textarea { resize: vertical; min-height: 72px; }
+    input[aria-invalid="true"], select[aria-invalid="true"] { border-color: var(--danger); }
+    .field-error { color: var(--danger); font-size: 12px; }
+    .form-result { margin-top: 15px; border-radius: var(--rounded-sm); padding: 10px 12px; background: color-mix(in srgb, var(--success) 8%, var(--surface)); color: var(--success); font-size: 12px; }
+    .filter-form { display: grid; grid-template-columns: minmax(220px, 360px) 160px auto; align-items: end; gap: 12px; margin: 16px 0; }
+    .filter-form .field { margin: 0; }
+    .filter-actions { display: flex; gap: 8px; }
+    .table-scroll { overflow-x: auto; }
+    .table-scroll table { min-width: 880px; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: var(--typography-body-md-font-size); }
+    caption { text-align: left; color: var(--muted); margin-bottom: 9px; font-size: 11px; }
+    th, td { text-align: left; border-bottom: 1px solid var(--border); padding: 6px 12px; height: var(--components-table-row-height); overflow-wrap: anywhere; }
+    th { font-weight: 500; color: var(--muted); background: var(--canvas); }
+    th:first-child { width: 118px; }
+    th:nth-child(3) { width: 100px; }
+    th:nth-child(4) { width: 112px; }
+    th:nth-child(5) { width: 112px; }
+    th:nth-child(6) { width: 164px; }
+    th:last-child { width: 72px; }
+    .number-cell { text-align: right; font-variant-numeric: tabular-nums; }
+    .time-cell, .status-cell, .action-cell { white-space: nowrap; }
+    .time-cell { font-size: 12px; font-variant-numeric: tabular-nums; }
+    table[data-density="compact"] td { height: var(--components-table-row-compact-height); padding-top: 2px; padding-bottom: 2px; }
+    .pattern-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-md); }
+    .pattern-item { border-top: 2px solid var(--border); padding: var(--spacing-md) 0; min-width: 0; }
+    .pattern-item p { margin-top: var(--spacing-sm); color: var(--muted); font-size: 13px; }
+    .pattern-item small { display: block; margin-top: var(--spacing-sm); color: var(--primary); }
+    .admin-sample { margin-top: var(--spacing-lg); }
+    .list-toolbar { margin: 16px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-md); }
+    .list-toolbar .field { margin: 0; display: flex; align-items: center; gap: var(--spacing-sm); }
+    .list-toolbar select { width: auto; }
+    .form-layout { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 var(--spacing-lg); max-width: 880px; }
+    .form-layout .wide { grid-column: 1/-1; }
+    .option-screen { margin-top: var(--spacing-xl); border-top: 1px solid var(--border); }
+    .option-screen > summary { cursor: pointer; padding: var(--spacing-lg) 0; font-weight: 500; color: var(--muted); }
+    .option-screen .section { margin-top: 0; }
+    tbody tr:hover { background: color-mix(in srgb, var(--soft) 55%, var(--surface)); }
+    .table-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 15px; color: var(--muted); font-size: 11px; }
+    .page-number { display: inline-grid; place-items: center; min-width: 25px; min-height: 25px; background: var(--soft); color: var(--primary); border-radius: var(--rounded-sm); }
+    .empty { text-align: center; padding: 35px 15px; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .empty strong { display: block; color: var(--ink); margin-bottom: 4px; }
+    .state-toolbar { padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+    .state-toolbar .field { margin: 0; min-width: 180px; }
+    .state-stage { display: grid; justify-items: center; text-align: center; min-height: 218px; align-content: center; gap: 10px; padding: 24px; background: var(--canvas); margin-top: 20px; border: 1px dashed var(--border); border-radius: var(--radius); }
+    .state-icon { width: 38px; height: 38px; border: 1px solid var(--border); border-radius: 50%; display: grid; place-items: center; font-size: 17px; color: var(--primary); background: var(--surface); font-weight: 600; }
+    .state-icon.loading { border: 3px solid var(--border); border-top-color: var(--primary); animation: spin .9s linear infinite; }
+    .state-stage p { color: var(--muted); font-size: 12px; max-width: 500px; }
+    .state-stage[data-kind="error"] .state-icon, .state-stage[data-kind="conflict"] .state-icon { color: var(--danger); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .detail-title { margin-bottom: 12px; }
+    .detail-title small { display: block; margin-top: 4px; }
+    dl { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 10px 16px; font-size: 12px; margin: 18px 0 24px; }
+    dt { color: var(--muted); }
+    dd { margin: 0; overflow-wrap: anywhere; }
+    .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); list-style: none; margin: 20px 0; padding: 0; }
+    .steps li { display: flex; flex-direction: column; align-items: center; gap: 7px; position: relative; color: var(--muted); font-size: 11px; text-align: center; }
+    .steps li:not(:last-child)::after { content: ""; position: absolute; height: 1px; background: var(--border); top: 13px; left: calc(50% + 18px); right: calc(-50% + 18px); }
+    .step-dot { width: 27px; height: 27px; border-radius: 50%; border: 1px solid var(--border); display: grid; place-items: center; background: var(--surface); }
+    .steps li[aria-current="step"] { color: var(--primary); font-weight: 600; }
+    .steps li[aria-current="step"] .step-dot { color: var(--colors-on-primary); background: var(--primary); border-color: var(--primary); }
+    .steps li.complete .step-dot { color: var(--primary); background: var(--soft); border-color: color-mix(in srgb, var(--primary) 35%, var(--surface)); }
+    .screen { color-scheme: dark; padding: 24px; border-radius: var(--radius-lg); background: var(--screen-bg); color: var(--screen-text); min-width: 0; font-family: var(--typography-screen-body-font-family); font-size: var(--typography-screen-body-font-size); font-weight: var(--typography-screen-body-font-weight); line-height: var(--typography-screen-body-line-height); }
+    .screen :focus-visible { outline-color: var(--screen-accent); }
+    .screen-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; flex-wrap: wrap; border-bottom: 1px solid color-mix(in srgb, var(--screen-muted) 22%, var(--screen-bg)); padding-bottom: 18px; margin-bottom: 18px; }
+    .screen h3 { font-size: 21px; font-weight: 600; letter-spacing: .03em; margin-bottom: 4px; }
+    .screen small, .screen .muted { color: var(--screen-muted); }
+    .screen-time { text-align: right; font-size: 11px; color: var(--screen-muted); }
+    .screen-time strong { display: block; color: var(--screen-text); font-size: 14px; font-variant-numeric: tabular-nums; font-weight: 500; margin-top: 4px; }
+    .screen .screen-badge { color: var(--screen-accent); border: 1px solid color-mix(in srgb, var(--screen-accent) 50%, var(--screen-bg)); padding: 2px 7px; border-radius: var(--rounded-sm); display: inline-block; font-size: 10px; margin-right: 6px; }
+    .screen-meta { font-size: 11px; color: var(--screen-muted); margin: 0 0 18px; }
+    .screen-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .screen-card { padding: 17px 18px; border: 1px solid color-mix(in srgb, var(--screen-muted) 16%, var(--screen-surface)); background: var(--screen-surface); border-radius: var(--radius); min-width: 0; }
+    .screen-card .label { color: var(--screen-muted); font-size: 11px; }
+    .screen-card .value { font-size: clamp(26px, 3.3vw, 38px); font-variant-numeric: tabular-nums; line-height: 1.2; margin: 9px 0 6px; letter-spacing: -.03em; color: var(--screen-text); }
+    .screen-card .value em { font-size: 12px; font-style: normal; margin-left: 5px; color: var(--screen-muted); }
+    .screen-card .caption { font-size: 10px; color: var(--screen-muted); }
+    .charts { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 12px; margin-top: 12px; }
+    .chart-title { color: var(--screen-text); font-size: 12px; font-weight: 600; margin-bottom: 18px; }
+    .bars { display: grid; gap: 16px; margin-top: 20px; }
+    .bar-item { display: grid; grid-template-columns: 40px minmax(0, 1fr) 35px; gap: 10px; align-items: center; font-size: 10px; color: var(--screen-muted); }
+    .bar-track { height: 9px; background: color-mix(in srgb, var(--screen-muted) 13%, var(--screen-surface)); border-radius: 2px; }
+    .bar-fill { height: 100%; background: var(--screen-accent); border-radius: 2px; }
+    .bar-item strong { text-align: right; font-weight: 500; color: var(--screen-text); }
+    .trend { display: block; width: 100%; height: auto; overflow: visible; }
+    .trend text { fill: var(--screen-muted); font-size: 10px; font-family: inherit; }
+    .trend .grid-line { stroke: var(--screen-muted); stroke-opacity: .18; stroke-dasharray: 3 5; }
+    .trend .area { fill: var(--screen-accent); fill-opacity: .08; }
+    .trend .line { stroke: var(--screen-accent); fill: none; stroke-width: 2; stroke-linejoin: round; }
+    .trend circle { fill: var(--screen-bg); stroke: var(--screen-accent); stroke-width: 2; }
+    .screen-feedback { margin-top: 14px; padding: 10px 12px; border: 1px solid color-mix(in srgb, var(--screen-accent) 35%, var(--screen-bg)); color: var(--screen-accent); font-size: 11px; border-radius: var(--rounded-sm); }
+    .screen-controls { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; margin-top: 18px; padding-top: 16px; border-top: 1px solid color-mix(in srgb, var(--screen-muted) 22%, var(--screen-bg)); }
+    .screen-controls .field { margin: 0; width: 155px; }
+    .screen label { color: var(--screen-muted); font-size: 10px; }
+    .screen select, .screen button { background: var(--screen-surface); color: var(--screen-text); border-color: color-mix(in srgb, var(--screen-muted) 55%, var(--screen-bg)); font-size: 11px; }
+    .screen button:hover { background: var(--screen-surface); color: var(--screen-accent); }
+    .rules { padding-left: 19px; margin: 12px 0 0; color: var(--muted); font-size: 12px; }
+    .rules li { padding-left: 3px; margin: 8px 0; }
+    .rules strong { color: var(--ink); font-weight: 600; }
+    .delivery { margin-top: 24px; }
+    .delivery .panel { padding: 20px 24px; }
+    .footer { margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: 11px; }
+    .feedback { position: fixed; right: 24px; bottom: 20px; width: min(460px, calc(100% - 32px)); z-index: 15; background: var(--surface); color: var(--ink); border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: var(--radius); padding: 12px 42px 12px 15px; box-shadow: 0 6px 24px color-mix(in srgb, var(--ink) 13%, transparent); font-size: 12px; overflow-wrap: anywhere; }
+    .feedback button { position: absolute; right: 6px; top: 6px; border: 0; background: transparent; min-height: 28px; padding: 3px 8px; }
+    dialog { width: min(440px, calc(100% - 32px)); color: var(--ink); background: var(--surface); padding: 24px; border: 1px solid var(--border); border-radius: var(--radius-lg); }
+    dialog::backdrop { background: color-mix(in srgb, var(--ink) 40%, transparent); }
+    dialog p { color: var(--muted); margin: 12px 0 22px; font-size: 13px; }
+    @media (min-width: 1600px) { main { padding-left: 24px; padding-right: 24px; } }
+    @media (max-width: 1180px) { .sidebar { width: 190px; padding: 25px 12px; } .page { margin-left: 190px; } main { padding: 30px 24px; } .topbar { padding: 16px 24px; } .grid { grid-template-columns: 1fr; } .filter-form { grid-template-columns: minmax(0, 1fr) 150px auto; } }
+    @media (max-width: 760px) {
+      .sidebar { position: static; width: auto; padding: 15px 16px 0; gap: 14px; border-right: 0; border-bottom: 1px solid var(--border); }
+      .brand { padding: 0; } .brand small { display: none; } .brand-mark { width: 27px; height: 27px; font-size: 13px; }
+      .nav-label, .sidebar-note { display: none; }
+      .sidebar nav { display: flex; flex-wrap: wrap; gap: 4px; padding-bottom: 12px; }
+      .sidebar nav a { min-height: 36px; font-size: var(--typography-caption-font-size); line-height: var(--typography-caption-line-height); padding: 6px 9px; }
+      .sidebar nav a span { display: none; }
+      .page { margin-left: 0; } .topbar { padding: 12px 18px; } .top-links { gap: 12px; }
+      main { padding: 26px 18px; } .hero { margin-bottom: 26px; } .hero .lead { font-size: 13px; }
+      .principles { grid-template-columns: 1fr; gap: 10px; } .principle { padding: 15px 17px; } .principle .number { margin-bottom: 5px; }
+      .section { margin-top: 28px; } .panel { padding: 18px; }
+      .pattern-grid { grid-template-columns: 1fr; } .form-layout { grid-template-columns: 1fr; }
+      .form-layout .wide { grid-column: auto; }
+      th:first-child { width: 100px; } th:nth-child(3) { width: 70px; } th:nth-child(4) { width: 112px; } th:nth-child(5) { width: 80px; } th:nth-child(6) { width: 140px; }
+      .table-scroll { overflow-x: auto; } .table-scroll table { min-width: 880px; }
+      .screen { padding: 18px; } .screen-kpis { gap: 8px; } .screen-card { padding: 12px; } .screen-card .value { font-size: 27px; }
+      .screen-card .value em { display: block; margin: 4px 0 0; font-size: 10px; } .screen-card .caption { display: none; }
+      .charts { grid-template-columns: 1fr; } .screen-time { text-align: left; } .screen h3 { font-size: 18px; }
+      .filter-form { grid-template-columns: minmax(0, 1fr) 115px; } .filter-actions { grid-column: 1 / -1; }
+      .swatches { gap: 10px; } .swatches code { font-size: 9px; } .swatch { height: 45px; }
+      .feedback { right: 16px; bottom: 16px; }
+    }
+    @media (max-width: 440px) {
+      main { padding: 24px 14px; } .topbar { padding: 12px 14px; } .breadcrumbs { width: 100%; }
+      .section-header h2 span { margin-right: 6px; }
+      .swatches { grid-template-columns: repeat(2, minmax(0, 1fr)); } .swatches code { font-size: 10px; }
+      .panel, .screen { padding: 16px; } .state-stage { padding: 20px 12px; }
+      .screen-kpis { grid-template-columns: 1fr; } .screen-kpis .screen-card { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 12px; } .screen-card .value { margin: 0; font-size: 27px; } .screen-card .value em { display: inline; margin-left: 5px; }
+      .screen-controls .field { width: 100%; } .screen-controls button { width: 100%; }
+      .filter-form { grid-template-columns: 1fr; } .filter-actions { grid-column: auto; }
+      .table-responsive thead { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); }
+      .table-scroll { overflow: visible; } .table-scroll table { min-width: 0; }
+      .table-responsive, .table-responsive tbody { display: block; width: 100%; }
+      .table-responsive tr { display: grid; grid-template-columns: minmax(0,1fr); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+      .table-responsive td { width: auto; height: auto; min-height: 34px; border: 0; display: grid; grid-template-columns: 66px minmax(0,1fr); gap: 8px; align-items: center; padding: 5px 10px; }
+      .table-responsive td::before { content: attr(data-label); color: var(--muted); font-size: 12px; }
+      .table-responsive td:first-child { background: var(--canvas); padding-top: 8px; padding-bottom: 8px; }
+      .table-responsive td:last-child { padding-bottom: 8px; } .table-responsive .badge, .table-responsive button { justify-self: start; }
+      .table-responsive .number-cell { text-align: left; }
+      table[data-density="compact"] td { height: auto; }
+      .table-footer { align-items: flex-start; }
+      dl { grid-template-columns: 68px minmax(0, 1fr); gap: 9px; }
+    }
+    @media (pointer: coarse) { button, input, select, .sidebar nav a, .option-screen > summary { min-height: 44px; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+    @media print { .sidebar, .top-links, .feedback, .filter-actions, .screen-controls, #reset-all { display: none !important; } .page { margin: 0; } main { padding: 20px 0; } .panel, .screen { break-inside: avoid; } }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到规范正文</a>
+  <aside class="sidebar" aria-label="设计规范导航">
+    <div class="brand"><div class="brand-mark" aria-hidden="true">规</div><div><strong>界面设计规范</strong><small>INTERFACE DESIGN</small></div></div>
+    <div><p class="nav-label">DESIGN REFERENCE</p><nav>
+      <a href="#overview" aria-current="location"><span>00</span>规范概览</a>
+      <a href="#foundation"><span>01</span>视觉基础</a>
+      <a href="#patterns"><span>02</span>功能与页面模式</a>
+      <a href="#admin"><span>03</span>后台页面</a>
+      <a href="#states"><span>04</span>状态与反馈</a>
+      <a href="#detail"><span>05</span>详情与步骤</a>
+      <a href="#usage"><span>06</span>使用与评审</a>
+      <a href="#screen-option"><span>＋</span>可选：数据大屏</a>
+    </nav></div>
+    <div class="sidebar-note"><strong><span data-design-version>D1.10</span> · 候选规范</strong>供设计讨论与实现对齐。<br>批准范围以项目记录为准。</div>
+  </aside>
+  <div class="page">
+    <header class="topbar"><div class="breadcrumbs">FDE 项目流程 <span aria-hidden="true"> / </span> <b>设计规范展示</b></div><div class="top-links"><a href="../specs/design.md">规范源文件</a><a href="README.md">原型说明</a><a href="pages/index.html">业务交互稿</a></div></header>
+    <main id="main">
+      <section id="overview" class="hero" aria-labelledby="overview-title">
+        <div class="eyebrow">DESIGN SYSTEM <span aria-hidden="true">/</span> <span data-design-version>D1.10</span></div>
+        <div class="row between"><h1 id="overview-title">管理后台设计规范</h1><span class="pill warning">候选 · 待项目评审</span></div>
+        <p class="lead">专业、克制、统一的业务界面。以高密度列表、筛选、表单、详情和审批为核心，复用项目已有组件，让信息好查、操作明确、结果可核对。</p>
+        <div class="row"><span class="pill">默认：管理后台</span><span class="pill neutral">可选：独立大屏</span><span class="pill neutral">纯本地演示</span><button id="reset-all" type="button">重置全部演示</button></div>
+        <div class="principles">
+          <div class="principle"><span class="number">01 / 信息优先</span><strong>密度服务于业务</strong><small>减少重复留白，保留可读字号；关键字段、单位和操作完整。</small></div>
+          <div class="principle"><span class="number">02 / 组件统一</span><strong>复用所选组件库</strong><small>Element Plus 或 Ant Design 体系按项目固定，不混用、不另造基础控件。</small></div>
+          <div class="principle"><span class="number">03 / 按需复用</span><strong>以项目样板为基准</strong><small>沿用已定布局和主题，仅在设计有缺口时查询外部技能。</small></div>
+        </div>
+        <div class="note maintenance"><strong>演示边界：</strong>本页展示设计语言与交互状态，所有事项、数量和时间均为模拟。它不构成真实业务原型或客户批准。规范维护：修改 <a href="../specs/design.md">design.md</a> 后，在项目根目录运行 <code>python3 ai/scripts/sync_design.py</code> 同步本页。</div>
+      </section>
+
+      <section id="foundation" class="section" aria-labelledby="foundation-title">
+        <div class="section-header"><div><h2 id="foundation-title"><span>01</span>视觉基础</h2><p>用少量、稳定的基础值建立可重复的视觉秩序。</p></div><span class="pill neutral">设计 tokens 驱动</span></div>
+        <div class="grid">
+          <div class="panel"><h3>色彩与语义</h3><p class="component-help">墨绿导航与米纸工作区分层。政务绿突出操作，谷穗金只点缀标识，待办与异常用独立状态色和文字说明。</p><div class="swatches">
+            <div><div class="swatch" style="background:var(--colors-sidebar)"></div><div class="swatch-name">导航 / 深墨绿</div><code>colors.sidebar</code></div>
+            <div><div class="swatch" style="background:var(--canvas)"></div><div class="swatch-name">工作区 / 米纸色</div><code>colors.canvas</code></div>
+            <div><div class="swatch" style="background:var(--surface)"></div><div class="swatch-name">卡片与表单 / 亮纸色</div><code>colors.surface</code></div>
+            <div><div class="swatch" style="background:var(--border)"></div><div class="swatch-name">边界 / 分隔</div><code>colors.border</code></div>
+            <div><div class="swatch" style="background:var(--primary)"></div><div class="swatch-name">政务绿 / 主操作</div><code>colors.primary</code></div>
+            <div><div class="swatch" style="background:var(--soft)"></div><div class="swatch-name">内容提示 / 浅绿</div><code>colors.primary-soft</code></div>
+            <div><div class="swatch" style="background:var(--colors-sidebar-active)"></div><div class="swatch-name">导航 / 当前项</div><code>colors.sidebar-active</code></div>
+            <div><div class="swatch" style="background:var(--colors-brand-mark)"></div><div class="swatch-name">标识 / 谷穗金</div><code>colors.brand-mark</code></div>
+            <div><div class="swatch" style="background:var(--success)"></div><div class="swatch-name">完成 / 正常</div><code>colors.success</code></div>
+            <div><div class="swatch" style="background:var(--warning)"></div><div class="swatch-name">提醒 / 待处理</div><code>colors.warning</code></div>
+            <div><div class="swatch" style="background:var(--danger)"></div><div class="swatch-name">异常 / 危险</div><code>colors.danger</code></div>
+            <div><div class="swatch" style="background:var(--colors-control-border)"></div><div class="swatch-name">控件 / 边框</div><code>colors.control-border</code></div>
+          </div></div>
+          <div class="panel"><h3>字体、间距与层级</h3><div class="type-sample"><div class="type-title">页面标题，表达当前任务</div><small>标题层级 · 本地系统字体 · 稳定的中英文阅读体验</small></div><div class="type-sample"><p>正文说明保持简短，重要规则紧邻操作区域。</p><small>正文层级 · 字号与行高由规范同步</small></div><p class="component-help">间距以 8px 为主要节奏，4px 用于紧密关联项；各档当前值见下方。</p><div class="spacing-samples" aria-label="间距示例，当前值见各样例下方"><div><span style="width:var(--spacing-xs)"></span><small>4</small></div><div><span style="width:var(--spacing-sm)"></span><small>8</small></div><div><span style="width:var(--spacing-md)"></span><small>16</small></div><div><span style="width:var(--spacing-lg)"></span><small>24</small></div><div><span style="width:var(--spacing-xl)"></span><small>32</small></div></div></div>
+        </div>
+      </section>
+
+      <section id="patterns" class="section" aria-labelledby="patterns-title">
+        <div class="section-header"><div><h2 id="patterns-title"><span>02</span>功能与页面模式</h2><p>以 RuoYi-Vue-Pro 的系统功能与基础设施为参考。下面是设计覆盖范围，具体模块按需求选用。</p></div></div>
+        <div class="panel pattern-grid">
+          <article class="pattern-item"><h3>账号与组织</h3><p>用户、部门、岗位：树形导航配合查询列表，编辑后保留原查询上下文。</p><small>部门树 / 查询列表 / 编辑表单</small></article>
+          <article class="pattern-item"><h3>角色与权限</h3><p>角色、菜单、数据范围：菜单权限与数据范围分开，部分选中和不可分配原因可辨。</p><small>角色列表 / 权限树 / 分组配置</small></article>
+          <article class="pattern-item"><h3>字典与配置</h3><p>字典、参数、消息模板：编码、显示值和启停状态有区分，变更影响清楚。</p><small>主子列表 / 类型字段 / 编辑反馈</small></article>
+          <article class="pattern-item"><h3>日志与任务</h3><p>登录、操作日志与定时任务：按时间定位，结果可读，详情保留失败原因。</p><small>时间筛选 / 只读详情 / 执行记录</small></article>
+          <article class="pattern-item"><h3>文件与数据交换</h3><p>文件、导入导出：说明类型与范围，展示处理进度、失败项和恢复入口。</p><small>文件列表 / 上传反馈 / 结果明细</small></article>
+          <article class="pattern-item"><h3>流程与业务处理 · 按需</h3><p>待办、单据、处理记录：以已确认状态与动作组织页面，不预设审批路径。</p><small>待办列表 / 详情 / 处理记录</small></article>
+        </div>
+        <p class="component-help">这是页面模式索引，不是功能已实现的声明。正式项目复用已选库的组件：Vue 对应 Element Plus / Ant Design Vue，React 对应 Ant Design。一次只采用一个库；业务样板见<a href="pages/index.html">采购申请列表、录入、详情与审批</a>。</p>
+      </section>
+
+      <section id="admin" class="section" aria-labelledby="admin-title">
+        <div class="section-header"><div><h2 id="admin-title"><span>03</span>后台页面</h2><p>先看完整查询列表，再看录入与操作反馈。示例使用原生控件，正式实现映射到既有组件。</p></div></div>
+        <div class="panel"><div class="component-label">操作层级</div><div class="row button-sample"><button class="primary" id="primary-demo" type="button">主要操作</button><button id="secondary-demo" type="button">次要操作</button><button class="danger" id="danger-demo" type="button">危险操作示例</button><button class="primary" type="button" disabled>禁用操作</button><span class="muted" style="font-size:12px">禁用原因：请先完成必填信息</span></div><div class="status-pills" aria-label="状态标签"><span class="badge">处理中</span><span class="badge success">已完成</span><span class="badge warning">待处理</span><span class="badge danger">异常</span><span class="badge muted">未开始</span></div><p class="component-help">每个操作区域仅突出一个主动作。政务绿主按钮悬停提亮、按下加深，文字保持白色。按钮悬停只改变背景或文字。条件暂不满足时解释原因；没有权限时不展示受限内容。</p></div>
+        <div class="panel admin-sample">
+          <div class="component-label">查询列表 / 可用于账号、配置、日志及业务记录</div>
+          <div class="row between"><div><h3>示例事项清单</h3><p class="component-help">查询条件、操作栏、结果与分页分区明确，核心数据保持可读。</p></div><span class="pill neutral">本地演示数据</span></div>
+          <form id="filter-form" class="filter-form" role="search">
+            <div class="field"><label for="search">事项关键词</label><input id="search" type="search" placeholder="输入事项名称，例如：核验" maxlength="40"></div>
+            <div class="field"><label for="status-filter">展示状态</label><select id="status-filter"><option value="">全部状态</option><option>待处理</option><option>处理中</option><option>已完成</option></select></div>
+            <div class="filter-actions"><button class="primary" type="submit">查询</button><button id="reset-filter" type="button">重置</button></div>
+          </form>
+          <div class="list-toolbar"><button id="new-record" class="primary" type="button">＋ 新增示例</button><div class="field"><label for="table-density">列表密度</label><select id="table-density"><option value="compact">紧凑（默认）</option><option value="standard">标准</option></select></div></div>
+          <div class="table-scroll"><table id="sample-table" class="table-responsive" data-density="compact"><caption>默认紧凑；数字右对齐，时间与状态完整，空字段为“—”，有效的 0 保留。</caption><thead><tr><th scope="col">编号</th><th scope="col">事项名称</th><th scope="col">归属</th><th scope="col">状态</th><th scope="col" class="number-cell">关联项（条）</th><th scope="col">更新时间</th><th scope="col">操作</th></tr></thead><tbody id="table-rows"></tbody></table></div>
+          <div id="table-empty" class="empty" hidden><strong>没有匹配的记录</strong><small>请调整关键词或状态，也可以重置筛选。</small></div>
+          <div class="table-footer"><span id="table-count" aria-live="polite">共 4 条 · 当前页面内模拟</span><span><span class="page-number" aria-label="当前第1页">1</span> / 1 页</span></div>
+        </div>
+        <div class="panel admin-sample"><div class="component-label">表单录入 / 基本信息与归属</div><h3 class="subheading">建立一条示例记录</h3><form id="sample-form" novalidate class="form-layout">
+          <div class="field"><label for="record-name">事项名称 <span class="required" aria-hidden="true">*</span></label><input id="record-name" name="recordName" required maxlength="40" placeholder="输入用于预览的事项名称" autocomplete="off" aria-describedby="name-help name-error"><small id="name-help">必填，1–40 字；仅在当前页面中预览。</small><span id="name-error" class="field-error" hidden></span></div>
+          <div class="field"><label for="record-group">演示分组 <span class="required" aria-hidden="true">*</span></label><select id="record-group" name="recordGroup" required aria-describedby="group-error"><option value="">请选择分组</option><option>演示分组 A</option><option>演示分组 B</option></select><span id="group-error" class="field-error" hidden></span></div>
+          <div class="field wide"><label for="record-note">补充说明 <span class="muted">（选填）</span></label><textarea id="record-note" name="recordNote" rows="2" maxlength="120" placeholder="最多 120 字" aria-describedby="note-help"></textarea><small id="note-help">字段标签始终可见，错误提示靠近字段，校验失败不清空输入。</small></div>
+          <div class="row wide"><button class="primary" type="submit">校验并预览</button><button id="reset-form" type="button">重置表单</button></div><p id="form-result" class="form-result wide" role="status" hidden></p>
+        </form></div>
+      </section>
+
+      <section id="states" class="section" aria-labelledby="states-title">
+        <div class="section-header"><div><h2 id="states-title"><span>04</span>状态与反馈</h2><p>说明发生了什么、影响了什么，以及下一步可以做什么。</p></div></div>
+        <div class="panel"><div class="row between state-toolbar"><div><h3>同一区域的状态切换</h3><p class="component-help">选择一个状态，检查文案、恢复入口与辅助技术反馈。</p></div><div class="field"><label for="demo-state">演示状态</label><select id="demo-state"><option value="ready">正常</option><option value="loading">加载中</option><option value="error">加载失败</option><option value="forbidden">无权限</option><option value="conflict">状态冲突</option><option value="empty">暂无数据</option></select></div></div><div id="state-stage" class="state-stage" data-kind="ready" aria-live="polite" aria-atomic="true"><div id="state-icon" class="state-icon" aria-hidden="true">✓</div><h3 id="state-title">内容已就绪</h3><p id="state-copy">内容区正常展示。操作结果应在附近反馈，并保持当前上下文。</p><button id="state-action" type="button">演示操作反馈</button></div><p class="component-help">无权限不显示受限数据；冲突应先重新核对状态；加载失败保留重试入口。这里仅演示展示方式，真实权限与并发由服务端验证。</p></div>
+      </section>
+
+      <section id="detail" class="section" aria-labelledby="detail-title">
+        <div class="section-header"><div><h2 id="detail-title" tabindex="-1"><span>05</span>详情与步骤</h2><p>详情保留对象标识和当前状态，步骤帮助理解位置与后续动作。</p></div></div>
+        <div class="grid"><div class="panel"><div class="component-label">OBJECT DETAIL / 对象详情</div><div class="detail-title"><h3 id="detail-name">数据核验记录</h3><small>本地预览 · 从上方列表“查看”或表单“校验并预览”更新</small></div><dl><dt>示例编号</dt><dd id="detail-id">DEMO-002</dd><dt>归属分组</dt><dd id="detail-group">演示分组 B</dd><dt>展示状态</dt><dd id="detail-status"><span class="badge">处理中</span></dd><dt>补充说明</dt><dd id="detail-note">用于展示详情字段的对齐、换行与信息层级。</dd></dl><div class="note">编号、状态与关键规则放在容易找到的位置；空字段统一显示“—”。</div></div><div class="panel"><div class="component-label">PROGRESS / 步骤示意</div><h3>过程可见，当前步骤明确</h3><ol class="steps" id="steps"><li class="complete"><span class="step-dot">1</span><span>建立记录</span></li><li aria-current="step"><span class="step-dot">2</span><span>信息核对</span></li><li><span class="step-dot">3</span><span>完成确认</span></li></ol><p id="step-description" class="component-help" aria-live="polite">当前：信息核对。此处演示步骤样式，不定义业务审批规则。</p><div class="row" style="margin-top:20px"><button id="previous-step" type="button">上一步示意</button><button id="next-step" class="primary" type="button">下一步示意</button></div><p class="component-help">实际流转条件、角色、驳回和撤回路径应在需求与状态机中明确。</p></div></div>
+      </section>
+
+      <section id="usage" class="section" aria-labelledby="usage-title">
+        <div class="section-header"><div><h2 id="usage-title"><span>06</span>使用与评审</h2><p>把设计选择变成可核对的规则，再映射到实际技术栈。</p></div></div>
+        <div class="grid"><div class="panel"><h3>默认范围与扩展边界</h3><ul class="rules"><li><strong>默认：</strong>管理后台优先，围绕查询、录入、配置和处理任务设计。</li><li><strong>后台：</strong>优先键盘操作、字段校验、筛选效率、权限和操作反馈。</li><li><strong>可选大屏：</strong>独立确定品牌、主题和观看环境；选用后单独确认范围与验收。</li><li><strong>跨端一致：</strong>同一业务的术语、单位、口径与权限含义一致；视觉样式可以独立。</li></ul></div><div class="panel"><h3>建议按这个顺序浏览</h3><ol class="rules"><li>确认基础色彩、文字层级和主次操作。</li><li>空表单点击“校验并预览”，再填写并检查详情。</li><li>筛选出空结果，切换失败、无权限与冲突状态。</li><li>用键盘操作控件，缩窄窗口检查阅读与操作。</li><li>仅在选用大屏时，再核对单位、范围、更新时间与异常展示。</li></ol></div></div><div class="delivery"><div class="panel"><h3>从候选规范到项目基准</h3><p class="component-help"><span data-design-version>D1.10</span> 为默认候选。项目中先约定适用页面、目标设备与差异，再固定规范及原型版本，由有权确认人记录批准范围。视觉规范、业务交互与运行代码分别维护关联，AI 不代替客户批准。</p><p class="component-help">离线入口：<a href="../specs/design.md">查看规范源文件</a> · <a href="README.md">查看原型说明</a> · <a href="pages/index.html">查看独立业务原型示例</a></p></div></div>
+      </section>
+      <details id="screen-option" class="option-screen"><summary>可选能力：数据大屏 · 展开独立设计示例</summary>
+      <section id="screen" class="section" aria-labelledby="screen-title">
+        <div class="section-header"><div><h2 id="screen-title"><span>＋</span>独立大屏示例</h2><p>按需提供，独立确定主题、字号与画布；不作为后台项目的默认交付要求。</p></div><span class="pill neutral">CSS + 内嵌 SVG · 无地图</span></div>
+        <div class="screen" aria-label="深色大屏设计示例"><div class="screen-header"><div><span class="screen-badge">模拟数据</span><small>大屏模式 · 视觉展示</small><h3 style="margin-top:9px">运行态势 · 样式示例</h3><small>所有数值均为固定样例，不代表任何地区或机构的实际情况</small></div><div class="screen-time">示例更新时间<strong id="screen-time">2026-01-15 10:30:00</strong></div></div><p class="screen-meta">统计范围：演示分组 A–D　｜　时间范围：2026-01-01 至 2026-01-15　｜　单位见各指标与图表</p><div id="screen-data"><div class="screen-kpis"><div class="screen-card"><div class="label">示例完成量</div><div class="value">248<em>件</em></div><div class="caption">四个演示分组合计</div></div><div class="screen-card"><div class="label">示例完成率</div><div class="value">97.6<em>%</em></div><div class="caption">固定样例 · 独立指标</div></div><div class="screen-card"><div class="label">示例平均用时</div><div class="value">18<em>分钟</em></div><div class="caption">固定样例 · 非实际绩效</div></div></div><div class="charts"><div class="screen-card"><h4 class="chart-title" style="margin-top:0">分组完成量 <span class="muted">/ 件</span></h4><div class="bars" aria-label="演示分组A 48件、B 72件、C 56件、D 72件"><div class="bar-item"><span>分组 A</span><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><strong>48</strong></div><div class="bar-item"><span>分组 B</span><div class="bar-track"><div class="bar-fill" style="width:90%"></div></div><strong>72</strong></div><div class="bar-item"><span>分组 C</span><div class="bar-track"><div class="bar-fill" style="width:70%"></div></div><strong>56</strong></div><div class="bar-item"><span>分组 D</span><div class="bar-track"><div class="bar-fill" style="width:90%"></div></div><strong>72</strong></div></div><p class="caption" style="margin-top:20px">横向刻度上限 80 件，数值标签保留精确读数。</p></div><div class="screen-card"><h4 class="chart-title" style="margin-top:0">六个采样点 <span class="muted">/ 件</span></h4><svg class="trend" viewBox="0 0 360 174" role="img" aria-labelledby="trend-title trend-desc"><title id="trend-title">模拟采样点完成量折线图</title><desc id="trend-desc">2026年1月10日至15日，模拟值依次为24、38、30、44、50、62件。用于展示图表样式。</desc><line class="grid-line" x1="30" y1="20" x2="343" y2="20"/><line class="grid-line" x1="30" y1="76" x2="343" y2="76"/><line class="grid-line" x1="30" y1="132" x2="343" y2="132"/><text x="4" y="24">80</text><text x="4" y="80">40</text><text x="10" y="136">0</text><path class="area" d="M35 98.4 L95 78.8 L155 90 L215 70.4 L275 62 L335 45.2 L335 132 L35 132Z"/><path class="line" d="M35 98.4 L95 78.8 L155 90 L215 70.4 L275 62 L335 45.2"/><circle cx="35" cy="98.4" r="3"/><circle cx="95" cy="78.8" r="3"/><circle cx="155" cy="90" r="3"/><circle cx="215" cy="70.4" r="3"/><circle cx="275" cy="62" r="3"/><circle cx="335" cy="45.2" r="3"/><text x="35" y="87" text-anchor="middle">24</text><text x="95" y="67" text-anchor="middle">38</text><text x="155" y="78" text-anchor="middle">30</text><text x="215" y="59" text-anchor="middle">44</text><text x="275" y="50" text-anchor="middle">50</text><text x="335" y="33" text-anchor="middle">62</text><text x="35" y="157" text-anchor="middle">01-10</text><text x="95" y="157" text-anchor="middle">01-11</text><text x="155" y="157" text-anchor="middle">01-12</text><text x="215" y="157" text-anchor="middle">01-13</text><text x="275" y="157" text-anchor="middle">01-14</text><text x="335" y="157" text-anchor="middle">01-15</text></svg><p class="caption">日期与数值直接标注，不依赖悬停读取。</p></div></div></div><p id="screen-feedback" class="screen-feedback" role="status" hidden></p><div class="screen-controls"><div class="field"><label for="screen-state">模拟数据状态</label><select id="screen-state"><option value="normal">正常展示</option><option value="loading">加载中</option><option value="stale">数据延迟</option><option value="error">加载失败</option><option value="empty">暂无数据</option></select></div><button id="screen-refresh" type="button">模拟刷新</button><small>本按钮只更新示例时间，不发起网络请求。</small></div></div>
+      </section>
+
+      </details>
+      <footer class="footer"><span>管理后台设计规范 · <span data-design-version>D1.10</span> 候选</span><span>演示数据 / 无外部资源 / 不保存本地配置</span></footer>
+    </main>
+  </div>
+  <div id="feedback" class="feedback" role="status" aria-live="polite" aria-atomic="true" hidden><span id="feedback-text"></span><button id="dismiss-feedback" type="button" aria-label="关闭操作反馈">×</button></div>
+  <dialog id="danger-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-copy"><h3 id="dialog-title">危险操作确认示例</h3><p id="dialog-copy">真实操作应明确对象、影响和恢复方式。本次仅演示二次确认，不会删除任何记录。</p><form method="dialog" class="row" style="justify-content:flex-end"><button value="cancel" autofocus>取消</button><button class="danger" value="confirm">确认演示</button></form></dialog>
+  <script>
+    const $ = id => document.getElementById(id);
+    const records = [
+      { id: 'DEMO-001', name: '服务事项清单', group: '演示分组 A', status: '待处理', step: 0, count: 0, updated: '2026-01-15 09:20' },
+      { id: 'DEMO-002', name: '数据核验记录', group: '演示分组 B', status: '处理中', step: 1, count: 12, updated: '2026-01-15 10:10' },
+      { id: 'DEMO-003', name: '协同处理条目', group: '演示分组 A', status: '处理中', step: 1, count: null, updated: '2026-01-15 10:20' },
+      { id: 'DEMO-004', name: '示例归档记录', group: '演示分组 B', status: '已完成', step: 2, count: 8, updated: '2026-01-14 16:30' }
+    ];
+    const stateContent = {
+      ready: ['✓', '内容已就绪', '内容区正常展示。操作结果应在附近反馈，并保持当前上下文。', '演示操作反馈'],
+      loading: ['', '正在加载演示内容', '请稍候。真实系统应说明必要的等待信息，并防止重复提交。', '完成模拟加载'],
+      error: ['!', '内容加载失败', '本次模拟没有取得新数据。保留当前筛选条件，您可以重试。', '重试演示'],
+      forbidden: ['—', '暂无查看权限', '受限内容不予展示。实际项目应提供对应的权限申请或联系渠道。', '查看权限说明'],
+      conflict: ['!', '记录状态已变化', '操作尚未继续。请先载入最新状态，核对后再决定下一步。', '载入最新演示'],
+      empty: ['∅', '这里还没有数据', '请先确认筛选条件和统计范围。空数据与加载失败应明确区分。', '重置筛选演示']
+    };
+    const stepNames = ['建立记录', '信息核对', '完成确认'];
+    let currentStep = 1;
+    let refreshCount = 0;
+
+    function notify(message) {
+      $('feedback-text').textContent = message;
+      $('feedback').hidden = false;
+    }
+    function makeBadge(status) {
+      const badge = document.createElement('span');
+      badge.className = 'badge' + (status === '已完成' ? ' success' : status === '待处理' ? ' warning' : '');
+      badge.textContent = status;
+      return badge;
+    }
+    function setSteps(step) {
+      currentStep = step;
+      [...$('steps').children].forEach((element, index) => {
+        element.classList.toggle('complete', index < step);
+        if (index === step) element.setAttribute('aria-current', 'step');
+        else element.removeAttribute('aria-current');
+      });
+      $('previous-step').disabled = step === 0;
+      $('next-step').disabled = step === 2;
+      $('step-description').textContent = `当前：${stepNames[step]}。此处演示步骤样式，不定义业务审批规则。`;
+    }
+    function showDetail(record, note, moveFocus = true) {
+      $('detail-name').textContent = record.name;
+      $('detail-id').textContent = record.id;
+      $('detail-group').textContent = record.group;
+      $('detail-status').replaceChildren(makeBadge(record.status));
+      $('detail-note').textContent = note || '—';
+      setSteps(record.step);
+      if (moveFocus) {
+        $('detail-title').focus({ preventScroll: true });
+        $('detail').scrollIntoView({ block: 'start' });
+      }
+    }
+    function renderTable() {
+      const keyword = $('search').value.trim().toLocaleLowerCase();
+      const status = $('status-filter').value;
+      const visible = records.filter(record => record.name.toLocaleLowerCase().includes(keyword) && (!status || record.status === status));
+      $('table-rows').replaceChildren();
+      visible.forEach(record => {
+        const row = document.createElement('tr');
+        [record.id, record.name, record.group.replace('演示', ''), record.status, record.count, record.updated, ''].forEach((value, index) => {
+          const cell = document.createElement('td');
+          cell.dataset.label = ['编号', '事项名称', '归属', '状态', '关联项（条）', '更新时间', '操作'][index];
+          if (index === 3) { cell.className = 'status-cell'; cell.append(makeBadge(value)); }
+          else if (index === 4) { cell.className = 'number-cell'; cell.textContent = value ?? '—'; }
+          else if (index === 5) { cell.className = 'time-cell'; const time = document.createElement('time'); time.dateTime = value.replace(' ', 'T'); time.textContent = value; cell.append(time); }
+          else if (index === 6) {
+            cell.className = 'action-cell';
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'link';
+            button.textContent = '查看';
+            button.setAttribute('aria-label', `查看${record.name}`);
+            button.addEventListener('click', () => { showDetail(record, '用于展示详情字段的对齐、换行与信息层级。'); notify(`已打开“${record.name}”的演示详情。`); });
+            cell.append(button);
+          } else cell.textContent = value;
+          row.append(cell);
+        });
+        $('table-rows').append(row);
+      });
+      $('table-empty').hidden = visible.length > 0;
+      $('table-count').textContent = `共 ${visible.length} 条 · 当前页面内模拟`;
+      return visible.length;
+    }
+    function resetFilters() { $('filter-form').reset(); renderTable(); }
+    function clearFormErrors() {
+      ['record-name', 'record-group'].forEach(id => $(id).removeAttribute('aria-invalid'));
+      ['name-error', 'group-error'].forEach(id => { $(id).hidden = true; $(id).textContent = ''; });
+      $('form-result').hidden = true;
+    }
+    function renderState() {
+      const state = $('demo-state').value;
+      const [icon, title, copy, action] = stateContent[state];
+      $('state-stage').dataset.kind = state;
+      $('state-stage').setAttribute('aria-busy', String(state === 'loading'));
+      $('state-icon').textContent = icon;
+      $('state-icon').className = 'state-icon' + (state === 'loading' ? ' loading' : '');
+      $('state-title').textContent = title;
+      $('state-copy').textContent = copy;
+      $('state-action').textContent = action;
+    }
+    function renderScreen() {
+      const state = $('screen-state').value;
+      const messages = {
+        normal: '',
+        loading: '模拟加载中：正在等待新内容，以下保留的样例数值尚未更新。',
+        stale: '模拟数据延迟：以下为上次样例，更新时间未变化。真实项目需约定过期阈值。',
+        error: '模拟加载失败：当前未获得可用数据。请使用“模拟刷新”恢复展示。',
+        empty: '模拟暂无数据：当前统计范围内无可展示记录，请先核对范围。'
+      };
+      $('screen-data').hidden = state === 'error' || state === 'empty';
+      $('screen-data').setAttribute('aria-busy', String(state === 'loading'));
+      $('screen-feedback').textContent = messages[state];
+      $('screen-feedback').hidden = state === 'normal';
+    }
+
+    $('table-density').addEventListener('change', () => { $('sample-table').dataset.density = $('table-density').value; notify('列表密度已更新，正文字号保持不变。'); });
+    $('new-record').addEventListener('click', () => { $('record-name').focus({ preventScroll: true }); $('sample-form').scrollIntoView({ block: 'center' }); notify('已定位到录入区，现有输入保留。'); });
+    $('primary-demo').addEventListener('click', () => notify('主要操作反馈示例：操作已触发，本页没有向系统提交数据。'));
+    $('secondary-demo').addEventListener('click', () => notify('次要操作反馈示例：用于返回、取消或辅助操作。'));
+    $('danger-demo').addEventListener('click', () => { $('danger-dialog').returnValue = ''; $('danger-dialog').showModal(); });
+    $('danger-dialog').addEventListener('close', () => notify($('danger-dialog').returnValue === 'confirm' ? '已确认危险操作演示，没有删除任何记录。' : '已取消危险操作演示。'));
+    $('dismiss-feedback').addEventListener('click', () => { $('feedback').hidden = true; });
+    $('sample-form').addEventListener('submit', event => {
+      event.preventDefault();
+      clearFormErrors();
+      const name = $('record-name').value.trim();
+      const group = $('record-group').value;
+      let invalid = null;
+      if (!name || name.length > 40) {
+        $('record-name').setAttribute('aria-invalid', 'true');
+        $('name-error').textContent = '请填写 1–40 字的事项名称。';
+        $('name-error').hidden = false;
+        invalid = $('record-name');
+      }
+      if (!group) {
+        $('record-group').setAttribute('aria-invalid', 'true');
+        $('group-error').textContent = '请选择一个演示分组。';
+        $('group-error').hidden = false;
+        invalid ||= $('record-group');
+      }
+      if (invalid) { invalid.focus(); notify('校验未通过，请检查标记的必填字段。'); return; }
+      showDetail({ id: 'DEMO-PREVIEW', name, group, status: '待处理', step: 0 }, $('record-note').value.trim(), false);
+      $('form-result').textContent = '演示校验通过，详情区已更新为本页预览。未提交到系统，也未加入列表。';
+      $('form-result').hidden = false;
+      notify('演示校验通过，可前往“详情与步骤”查看预览。');
+    });
+    $('reset-form').addEventListener('click', () => { $('sample-form').reset(); clearFormErrors(); notify('演示表单已清空。'); });
+    $('filter-form').addEventListener('submit', event => { event.preventDefault(); notify(`查询演示完成，共 ${renderTable()} 条匹配记录。`); });
+    $('reset-filter').addEventListener('click', () => { resetFilters(); notify('筛选已重置，恢复 4 条初始演示记录。'); });
+    $('demo-state').addEventListener('change', () => { renderState(); notify(`已切换为“${stateContent[$('demo-state').value][1]}”演示。`); });
+    $('state-action').addEventListener('click', () => {
+      const state = $('demo-state').value;
+      if (state === 'forbidden') { notify('权限说明示例：请在真实项目中提供有权处理人的联系渠道。本页不会授予权限。'); return; }
+      if (state === 'empty') resetFilters();
+      $('demo-state').value = 'ready';
+      renderState();
+      notify(state === 'ready' ? '操作反馈示例：界面已响应，当前演示内容保持可见。' : '已恢复正常演示视图。没有发起网络请求或改变真实业务状态。');
+    });
+    $('previous-step').addEventListener('click', () => { setSteps(Math.max(0, currentStep - 1)); notify(`步骤样式已切换至“${stepNames[currentStep]}”。`); });
+    $('next-step').addEventListener('click', () => { setSteps(Math.min(2, currentStep + 1)); notify(`步骤样式已切换至“${stepNames[currentStep]}”。`); });
+    $('screen-state').addEventListener('change', () => { renderScreen(); notify('大屏模拟状态已更新；固定样例数值未变化。'); });
+    $('screen-refresh').addEventListener('click', () => {
+      refreshCount++;
+      $('screen-time').textContent = new Date(Date.UTC(2026, 0, 15, 10, 30 + refreshCount)).toISOString().slice(0, 19).replace('T', ' ');
+      $('screen-state').value = 'normal';
+      renderScreen();
+      notify('模拟刷新完成：示例时间增加 1 分钟，数值仍为固定模拟数据。');
+    });
+    $('reset-all').addEventListener('click', () => {
+      $('sample-form').reset();
+      clearFormErrors();
+      resetFilters();
+      $('table-density').value = 'compact'; $('sample-table').dataset.density = 'compact';
+      $('demo-state').value = 'ready';
+      renderState();
+      showDetail(records[1], '用于展示详情字段的对齐、换行与信息层级。', false);
+      refreshCount = 0;
+      $('screen-time').textContent = '2026-01-15 10:30:00';
+      $('screen-state').value = 'normal';
+      renderScreen();
+      if ($('danger-dialog').open) $('danger-dialog').close();
+      notify('全部演示已重置：表单、筛选、详情、步骤、状态与大屏时间均恢复初始值。');
+    });
+    const sidebar = document.querySelector('.sidebar');
+    const navigation = [...sidebar.querySelectorAll('nav a')];
+    const sections = navigation.map(link => document.querySelector(link.hash));
+    function syncNavigation() {
+      const { scrollHeight, clientHeight } = document.documentElement;
+      const atBottom = window.scrollY + clientHeight >= scrollHeight - 1;
+      // Keep the activation line just below the combined anchor offsets.
+      let index = sections.findLastIndex(section => section.getBoundingClientRect().top <= 64);
+      if (atBottom) {
+        // Near the end, an explicit anchor can be visible without reaching the activation line.
+        const anchor = navigation.findIndex(link => link.hash === location.hash);
+        index = anchor > index ? anchor : navigation.length - 1;
+      }
+      const link = navigation[Math.max(0, index)];
+      const current = sidebar.querySelector('[aria-current="location"]');
+      if (current !== link) {
+        current?.removeAttribute('aria-current');
+        link.setAttribute('aria-current', 'location');
+      }
+      if (sidebar.scrollHeight > sidebar.clientHeight) {
+        // Keep the section's smooth scroll separate from the sidebar reveal.
+        const viewport = sidebar.getBoundingClientRect();
+        const item = link.getBoundingClientRect();
+        const padding = parseFloat(getComputedStyle(sidebar).scrollPaddingTop) || 0;
+        if (item.top < viewport.top + padding) sidebar.scrollTop += item.top - viewport.top - padding;
+        else if (item.bottom > viewport.bottom - padding) sidebar.scrollTop += item.bottom - viewport.bottom + padding;
+      }
+    }
+    sidebar.querySelector('a[href="#screen-option"]').addEventListener('click', () => {
+      $('screen-option').open = true;
+    });
+    window.addEventListener('scroll', syncNavigation, { passive: true });
+    window.addEventListener('resize', syncNavigation);
+    window.addEventListener('hashchange', syncNavigation);
+    syncNavigation();
+    document.querySelectorAll('.spacing-samples small').forEach(label => { label.textContent = getComputedStyle(label.previousElementSibling).width; });
+    renderTable();
+    setSteps(1);
+  </script>
+</body>
+</html>
