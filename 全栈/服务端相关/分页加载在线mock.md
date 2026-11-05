@@ -1,10 +1,5 @@
 # 分页加载在线mock
 
-## 目录
-1. []()
-
----
-
 | 服务 | 搜索 | 分页 | 每页大小 | total | 结论 | 直接可用链接 |
 | --- | --- | --- | --- | --- | --- | --- |
 | DummyJSON User Search | ✅，`q=em` | ✅，`skip=0` | ✅，`limit=10` | ✅，body `total` | 四项都支持，适合作为搜索 + 分页 + 总量示例。 | <l>https://dummyjson.com/users/search?q=em&limit=10&skip=0</l> |

@@ -627,6 +627,12 @@
     5. `import '模块'`
 
         不引入模块里导出的内容，仅执行该模块代码。
+    6. 导入属性（Import Attributes）和 JSON 模块（ECMAScript 2025）
+
+        - 静态导入：`import data from './a.json' with { type: 'json' }`
+        - 动态导入：`const { default: data } = await import('./a.json', { with: { type: 'json' } })`
+
+        `type: 'json'`声明模块类型；解析后的 JSON 值是模块的默认导出。
 
 ><details>
 ><summary>使用ES6 Module前提</summary>
