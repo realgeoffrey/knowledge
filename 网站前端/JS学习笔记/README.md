@@ -800,6 +800,7 @@ new new F().func(); // => 1  === new (new F()).func();
     ```
 
     - 类似的有：`setTimeout/setInterval`的第一个参数是字符串、`new Function`的最后一个字符串参数，都能动态生成代码，都能在运行期修改书写期的词法作用域。
+    - 从 ECMAScript 2025 起，后续脚本的全局`let`、`const`或`class`声明可以遮蔽非严格`eval`创建的同名全局`var`。原值仍可通过`globalThis`访问。若同名全局词法声明已存在，`eval`再尝试创建全局`var`仍会抛出`SyntaxError`。
 2. `with`
 
     ```js
@@ -2430,6 +2431,8 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     >来自：[MDN：Error](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Error)。
 
     错误类型：`Error`、`EvalError`、`RangeError`、`ReferenceError`、`SyntaxError`、`TypeError`、`URIError`。
+
+    `Error.isError(值)`（ECMAScript 2026）可以识别跨执行环境的错误对象，例如由另一个`<iframe>`创建的`Error`，不受`instanceof Error`的原型判断限制。
 
     >代码错误 或 `throw 错误类型`才包含堆栈信息，`throw 非错误类型`不包含堆栈信息。
 2. 自定义错误
