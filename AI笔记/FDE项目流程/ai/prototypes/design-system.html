@@ -3,28 +3,29 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="design-version" content="D1.10">
+  <meta name="design-version" content="D1.12">
   <title>管理后台 · 设计规范展示</title>
 <style id="design-tokens">
 /* DESIGN_TOKENS_START */
 :root {
-  --colors-primary: #235b43;
-  --colors-primary-soft: #e7eee7;
-  --colors-text: #1f2329;
-  --colors-muted: #5b6370;
-  --colors-sidebar: #183b31;
-  --colors-sidebar-hover: #254b3d;
-  --colors-sidebar-active: #315b49;
-  --colors-sidebar-text: #f0f4ef;
-  --colors-sidebar-muted: #b8ccbe;
-  --colors-sidebar-accent: #a8c3a7;
-  --colors-brand-mark: #d5be83;
-  --colors-canvas: #f5f1e8;
-  --colors-surface: #fcfaf5;
-  --colors-border: #ded7ca;
-  --colors-control-border: #877e70;
+  --colors-primary: #0e5f41;
+  --colors-primary-soft: #eaf6f0;
+  --colors-text: #16211d;
+  --colors-muted: #50635b;
+  --colors-sidebar: #103b2e;
+  --colors-sidebar-hover: #1b4b3b;
+  --colors-sidebar-active: #225944;
+  --colors-sidebar-text: #f0f7f3;
+  --colors-sidebar-muted: #b8d1c4;
+  --colors-sidebar-accent: #9cdbb8;
+  --colors-brand-mark: #d3ebdd;
+  --colors-canvas: #f3f6f4;
+  --colors-surface: #ffffff;
+  --colors-border: #dce5e0;
+  --colors-control-border: #72877c;
   --colors-on-primary: #ffffff;
   --colors-success: #17665b;
+  --colors-info: #225888;
   --colors-warning: #8a5200;
   --colors-danger: #b42318;
   --colors-screen-bg: #0c1c16;
@@ -57,14 +58,15 @@
   --spacing-lg: 24px;
   --spacing-xl: 32px;
   --components-button-primary-background-color: var(--colors-primary);
-  --components-button-primary-hover-background-color: #2e6d50;
-  --components-button-primary-active-background-color: #194532;
+  --components-button-primary-hover-background-color: #157a54;
+  --components-button-primary-active-background-color: #083d2c;
   --components-button-primary-text-color: var(--colors-on-primary);
   --components-button-primary-height: 32px;
   --components-nav-item-min-height: 44px;
   --components-nav-item-line-height: 24px;
   --components-table-row-height: 48px;
   --components-table-row-compact-height: 40px;
+  --components-drawer-width: 520px;
 }
 /* DESIGN_TOKENS_END */
 </style>
@@ -79,6 +81,7 @@
       --canvas: var(--colors-canvas);
       --border: var(--colors-border);
       --success: var(--colors-success);
+      --info: var(--colors-info);
       --warning: var(--colors-warning);
       --danger: var(--colors-danger);
       --screen-bg: var(--colors-screen-bg);
@@ -108,10 +111,10 @@
     button.primary:hover:not(:disabled) { color: var(--components-button-primary-text-color); background: var(--components-button-primary-hover-background-color); }
     button.primary:active:not(:disabled) { color: var(--components-button-primary-text-color); background: var(--components-button-primary-active-background-color); }
     button.primary:disabled { color: var(--colors-muted); background: var(--colors-canvas); border-color: var(--colors-border); opacity: 1; }
-    button.danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, var(--surface)); }
+    button.danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 70%, var(--surface)); }
     button.danger:hover:not(:disabled) { color: var(--danger); background: color-mix(in srgb, var(--danger) 7%, var(--surface)); }
     button:disabled { color: color-mix(in srgb, var(--muted) 65%, var(--surface)); background: var(--canvas); border-color: var(--border); cursor: not-allowed; }
-    button.link { border-color: transparent; padding: 2px 5px; min-height: 28px; color: var(--primary); background: transparent; }
+    button.link { border-color: transparent; padding: 2px 5px; color: var(--primary); background: transparent; }
     :focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
     [hidden] { display: none !important; }
     h1, h2, h3, p { margin: 0; }
@@ -131,7 +134,7 @@
     .brand strong { display: block; font-size: 14px; letter-spacing: .02em; }
     .brand small { font-size: 10px; letter-spacing: .14em; color: var(--colors-sidebar-muted); }
     .nav-label { font-size: var(--typography-caption-font-size); line-height: var(--typography-caption-line-height); font-weight: 500; letter-spacing: .08em; color: var(--colors-sidebar-muted); padding: 0 11px; margin-bottom: 10px; }
-    .sidebar nav { display: grid; gap: 6px; }
+    .sidebar nav { display: grid; gap: 4px; }
     .sidebar nav a { display: flex; gap: 10px; align-items: center; min-width: 0; min-height: var(--components-nav-item-min-height); border-radius: var(--radius); padding: 8px 12px; color: var(--colors-sidebar-text); font-size: var(--typography-body-md-font-size); line-height: var(--components-nav-item-line-height); letter-spacing: .02em; overflow-wrap: anywhere; text-decoration: none; }
     .sidebar nav a span { flex: none; color: var(--colors-sidebar-muted); font-variant-numeric: tabular-nums; font-size: 11px; font-weight: 400; }
     .sidebar nav a:hover { background: var(--colors-sidebar-hover); }
@@ -142,7 +145,8 @@
     .topbar { padding: 12px 24px; border-bottom: 1px solid var(--border); background: var(--surface); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
     .breadcrumbs { color: var(--muted); font-size: 12px; }
     .breadcrumbs b { color: var(--ink); font-weight: 500; }
-    .top-links { display: flex; gap: 18px; font-size: 12px; }
+    .top-links { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 12px; }
+    .top-links a { display: inline-flex; align-items: center; cursor: pointer; }
     main { padding: 24px; max-width: 1440px; margin: auto; }
     section[id] { scroll-margin-top: 28px; }
     .hero { margin-bottom: 24px; }
@@ -162,7 +166,7 @@
     .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rounded-md); padding: var(--spacing-md); min-width: 0; }
     .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap); }
     .principles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); margin-top: var(--spacing-lg); }
-    .principle { padding: 12px 16px; border-top: 1px solid var(--border); background: var(--surface); }
+    .principle { padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
     .principle small { display: block; margin: 6px 0 0; }
     .principle .number { display: block; color: var(--primary); font-size: 11px; margin-bottom: 10px; }
     .note { border-left: 3px solid var(--primary); padding: 11px 14px; background: var(--soft); font-size: 12px; color: var(--muted); }
@@ -172,7 +176,7 @@
     .swatches { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
     .swatch { height: 54px; border-radius: var(--rounded-sm); border: 1px solid color-mix(in srgb, var(--border) 50%, transparent); margin-bottom: 8px; }
     .swatch-name { font-size: 12px; font-weight: 600; }
-    .swatches code { display: block; font-size: 10px; color: var(--muted); margin-top: 3px; }
+    .swatches code { display: block; font-size: var(--typography-caption-font-size); color: var(--muted); margin-top: 3px; }
     .type-sample { margin-top: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
     .type-title { font-size: var(--typography-title-font-size); font-weight: var(--typography-title-font-weight); line-height: var(--typography-title-line-height); }
     .type-sample small { display: block; margin-top: 6px; }
@@ -181,9 +185,9 @@
     .component-label { font-size: 11px; letter-spacing: .08em; color: var(--muted); margin-bottom: 14px; }
     .button-sample { gap: 8px; }
     .component-help { font-size: 12px; color: var(--muted); margin-top: 14px; }
-    .status-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px; }
-    .badge { display: inline-flex; align-items: center; gap: 5px; font-size: var(--typography-body-md-font-size); border-radius: var(--rounded-sm); padding: 2px 7px; background: var(--soft); color: var(--primary); white-space: nowrap; }
-    .badge::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+    .status-pills { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+    .badge { display: inline-flex; align-items: center; gap: 5px; font-size: var(--typography-body-md-font-size); border-radius: var(--rounded-sm); padding: 2px 7px; background: color-mix(in srgb, var(--info) 8%, var(--surface)); color: var(--info); white-space: normal; overflow-wrap: anywhere; }
+    .badge::before { content: ""; flex: 0 0 5px; height: 5px; border-radius: 50%; background: currentColor; }
     .badge.success { color: var(--success); background: color-mix(in srgb, var(--success) 8%, var(--surface)); }
     .badge.warning { color: var(--warning); background: color-mix(in srgb, var(--warning) 8%, var(--surface)); }
     .badge.danger { color: var(--danger); background: color-mix(in srgb, var(--danger) 8%, var(--surface)); }
@@ -197,7 +201,6 @@
     textarea { resize: vertical; min-height: 72px; }
     input[aria-invalid="true"], select[aria-invalid="true"] { border-color: var(--danger); }
     .field-error { color: var(--danger); font-size: 12px; }
-    .form-result { margin-top: 15px; border-radius: var(--rounded-sm); padding: 10px 12px; background: color-mix(in srgb, var(--success) 8%, var(--surface)); color: var(--success); font-size: 12px; }
     .filter-form { display: grid; grid-template-columns: minmax(220px, 360px) 160px auto; align-items: end; gap: 12px; margin: 16px 0; }
     .filter-form .field { margin: 0; }
     .filter-actions { display: flex; gap: 8px; }
@@ -221,6 +224,10 @@
     .pattern-item { border-top: 2px solid var(--border); padding: var(--spacing-md) 0; min-width: 0; }
     .pattern-item p { margin-top: var(--spacing-sm); color: var(--muted); font-size: 13px; }
     .pattern-item small { display: block; margin-top: var(--spacing-sm); color: var(--primary); }
+    .layout-map { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--spacing-sm); }
+    .layout-map li { display: grid; grid-template-columns: minmax(7em, auto) minmax(0, 1fr); gap: var(--spacing-xs) var(--spacing-md); align-items: baseline; padding: var(--spacing-sm) var(--spacing-md); background: var(--canvas); border-radius: var(--rounded-sm); }
+    .layout-map li span { color: var(--muted); }
+    .layout-map li b { color: var(--primary); margin-right: var(--spacing-sm); font-variant-numeric: tabular-nums; }
     .admin-sample { margin-top: var(--spacing-lg); }
     .list-toolbar { margin: 16px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-md); }
     .list-toolbar .field { margin: 0; display: flex; align-items: center; gap: var(--spacing-sm); }
@@ -243,8 +250,6 @@
     .state-stage p { color: var(--muted); font-size: 12px; max-width: 500px; }
     .state-stage[data-kind="error"] .state-icon, .state-stage[data-kind="conflict"] .state-icon { color: var(--danger); }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .detail-title { margin-bottom: 12px; }
-    .detail-title small { display: block; margin-top: 4px; }
     dl { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 10px 16px; font-size: 12px; margin: 18px 0 24px; }
     dt { color: var(--muted); }
     dd { margin: 0; overflow-wrap: anywhere; }
@@ -289,24 +294,24 @@
     .screen label { color: var(--screen-muted); font-size: 10px; }
     .screen select, .screen button { background: var(--screen-surface); color: var(--screen-text); border-color: color-mix(in srgb, var(--screen-muted) 55%, var(--screen-bg)); font-size: 11px; }
     .screen button:hover { background: var(--screen-surface); color: var(--screen-accent); }
-    .rules { padding-left: 19px; margin: 12px 0 0; color: var(--muted); font-size: 12px; }
+    .rules { padding-left: 19px; margin: 12px 0 0; color: var(--muted); }
     .rules li { padding-left: 3px; margin: 8px 0; }
     .rules strong { color: var(--ink); font-weight: 600; }
     .delivery { margin-top: 24px; }
     .delivery .panel { padding: 20px 24px; }
     .footer { margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: 11px; }
     .feedback { position: fixed; right: 24px; bottom: 20px; width: min(460px, calc(100% - 32px)); z-index: 15; background: var(--surface); color: var(--ink); border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: var(--radius); padding: 12px 42px 12px 15px; box-shadow: 0 6px 24px color-mix(in srgb, var(--ink) 13%, transparent); font-size: 12px; overflow-wrap: anywhere; }
-    .feedback button { position: absolute; right: 6px; top: 6px; border: 0; background: transparent; min-height: 28px; padding: 3px 8px; }
-    dialog { width: min(440px, calc(100% - 32px)); color: var(--ink); background: var(--surface); padding: 24px; border: 1px solid var(--border); border-radius: var(--radius-lg); }
-    dialog::backdrop { background: color-mix(in srgb, var(--ink) 40%, transparent); }
-    dialog p { color: var(--muted); margin: 12px 0 22px; font-size: 13px; }
+    .feedback button { position: absolute; right: 6px; top: 6px; border: 0; background: transparent; padding: 3px 8px; }
+    #danger-dialog { width: min(440px, calc(100% - 32px)); color: var(--ink); background: var(--surface); padding: 24px; border: 1px solid var(--border); border-radius: var(--radius-lg); }
+    #danger-dialog::backdrop { background: color-mix(in srgb, var(--ink) 40%, transparent); }
+    #danger-dialog p { color: var(--muted); margin: 12px 0 22px; font-size: 13px; }
     @media (min-width: 1600px) { main { padding-left: 24px; padding-right: 24px; } }
     @media (max-width: 1180px) { .sidebar { width: 190px; padding: 25px 12px; } .page { margin-left: 190px; } main { padding: 30px 24px; } .topbar { padding: 16px 24px; } .grid { grid-template-columns: 1fr; } .filter-form { grid-template-columns: minmax(0, 1fr) 150px auto; } }
     @media (max-width: 760px) {
       .sidebar { position: static; width: auto; padding: 15px 16px 0; gap: 14px; border-right: 0; border-bottom: 1px solid var(--border); }
       .brand { padding: 0; } .brand small { display: none; } .brand-mark { width: 27px; height: 27px; font-size: 13px; }
       .nav-label, .sidebar-note { display: none; }
-      .sidebar nav { display: flex; flex-wrap: wrap; gap: 4px; padding-bottom: 12px; }
+      .sidebar nav { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 12px; }
       .sidebar nav a { min-height: 36px; font-size: var(--typography-caption-font-size); line-height: var(--typography-caption-line-height); padding: 6px 9px; }
       .sidebar nav a span { display: none; }
       .page { margin-left: 0; } .topbar { padding: 12px 18px; } .top-links { gap: 12px; }
@@ -321,13 +326,13 @@
       .screen-card .value em { display: block; margin: 4px 0 0; font-size: 10px; } .screen-card .caption { display: none; }
       .charts { grid-template-columns: 1fr; } .screen-time { text-align: left; } .screen h3 { font-size: 18px; }
       .filter-form { grid-template-columns: minmax(0, 1fr) 115px; } .filter-actions { grid-column: 1 / -1; }
-      .swatches { gap: 10px; } .swatches code { font-size: 9px; } .swatch { height: 45px; }
+      .swatches { gap: 10px; } .swatch { height: 45px; }
       .feedback { right: 16px; bottom: 16px; }
     }
     @media (max-width: 440px) {
       main { padding: 24px 14px; } .topbar { padding: 12px 14px; } .breadcrumbs { width: 100%; }
       .section-header h2 span { margin-right: 6px; }
-      .swatches { grid-template-columns: repeat(2, minmax(0, 1fr)); } .swatches code { font-size: 10px; }
+      .swatches { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .panel, .screen { padding: 16px; } .state-stage { padding: 20px 12px; }
       .screen-kpis { grid-template-columns: 1fr; } .screen-kpis .screen-card { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 12px; } .screen-card .value { margin: 0; font-size: 27px; } .screen-card .value em { display: inline; margin-left: 5px; }
       .screen-controls .field { width: 100%; } .screen-controls button { width: 100%; }
@@ -340,44 +345,52 @@
       .table-responsive td::before { content: attr(data-label); color: var(--muted); font-size: 12px; }
       .table-responsive td:first-child { background: var(--canvas); padding-top: 8px; padding-bottom: 8px; }
       .table-responsive td:last-child { padding-bottom: 8px; } .table-responsive .badge, .table-responsive button { justify-self: start; }
-      .table-responsive .number-cell { text-align: left; }
+      .table-responsive .number-cell { text-align: right; }
+      .table-responsive .number-cell::before { text-align: left; }
       table[data-density="compact"] td { height: auto; }
       .table-footer { align-items: flex-start; }
       dl { grid-template-columns: 68px minmax(0, 1fr); gap: 9px; }
     }
-    @media (pointer: coarse) { button, input, select, .sidebar nav a, .option-screen > summary { min-height: 44px; } }
+    @media (max-width: 520px) { .layout-map li { grid-template-columns: 1fr; } }
+    @media (pointer: coarse) {
+      button, input, select, textarea, .sidebar nav a, .top-links a, .option-screen > summary { min-width: 44px; min-height: 44px; }
+      .feedback { min-height: 56px; padding-right: 62px; }
+    }
+    @media (max-width: 760px) and (pointer: coarse) { input, select, textarea, .screen select { font-size: 16px; } }
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
     @media print { .sidebar, .top-links, .feedback, .filter-actions, .screen-controls, #reset-all { display: none !important; } .page { margin: 0; } main { padding: 20px 0; } .panel, .screen { break-inside: avoid; } }
   </style>
+  <link rel="stylesheet" href="pages/assets/drawer.css">
 </head>
 <body>
   <a class="skip-link" href="#main">跳到规范正文</a>
   <aside class="sidebar" aria-label="设计规范导航">
-    <div class="brand"><div class="brand-mark" aria-hidden="true">规</div><div><strong>界面设计规范</strong><small>INTERFACE DESIGN</small></div></div>
-    <div><p class="nav-label">DESIGN REFERENCE</p><nav>
+    <div class="brand"><div class="brand-mark" aria-hidden="true">规</div><div><strong>界面设计规范</strong><small>FDE UI</small></div></div>
+    <div><p class="nav-label">规范目录</p><nav aria-label="规范目录">
       <a href="#overview" aria-current="location"><span>00</span>规范概览</a>
       <a href="#foundation"><span>01</span>视觉基础</a>
       <a href="#patterns"><span>02</span>功能与页面模式</a>
-      <a href="#admin"><span>03</span>后台页面</a>
-      <a href="#states"><span>04</span>状态与反馈</a>
-      <a href="#detail"><span>05</span>详情与步骤</a>
-      <a href="#usage"><span>06</span>使用与评审</a>
+      <a href="#layout"><span>03</span>布局与骨架</a>
+      <a href="#admin"><span>04</span>列表与表单</a>
+      <a href="#states"><span>05</span>状态与反馈</a>
+      <a href="#detail"><span>06</span>详情与步骤</a>
+      <a href="#usage"><span>07</span>交付检查</a>
       <a href="#screen-option"><span>＋</span>可选：数据大屏</a>
     </nav></div>
-    <div class="sidebar-note"><strong><span data-design-version>D1.10</span> · 候选规范</strong>供设计讨论与实现对齐。<br>批准范围以项目记录为准。</div>
+    <div class="sidebar-note"><strong><span data-design-version>D1.12</span> · 候选规范</strong>供设计讨论与实现对齐。<br>批准范围以项目记录为准。</div>
   </aside>
   <div class="page">
     <header class="topbar"><div class="breadcrumbs">FDE 项目流程 <span aria-hidden="true"> / </span> <b>设计规范展示</b></div><div class="top-links"><a href="../specs/design.md">规范源文件</a><a href="README.md">原型说明</a><a href="pages/index.html">业务交互稿</a></div></header>
-    <main id="main">
+    <main id="main" tabindex="-1">
       <section id="overview" class="hero" aria-labelledby="overview-title">
-        <div class="eyebrow">DESIGN SYSTEM <span aria-hidden="true">/</span> <span data-design-version>D1.10</span></div>
+        <div class="eyebrow">DESIGN SYSTEM <span aria-hidden="true">/</span> <span data-design-version>D1.12</span></div>
         <div class="row between"><h1 id="overview-title">管理后台设计规范</h1><span class="pill warning">候选 · 待项目评审</span></div>
         <p class="lead">专业、克制、统一的业务界面。以高密度列表、筛选、表单、详情和审批为核心，复用项目已有组件，让信息好查、操作明确、结果可核对。</p>
         <div class="row"><span class="pill">默认：管理后台</span><span class="pill neutral">可选：独立大屏</span><span class="pill neutral">纯本地演示</span><button id="reset-all" type="button">重置全部演示</button></div>
         <div class="principles">
-          <div class="principle"><span class="number">01 / 信息优先</span><strong>密度服务于业务</strong><small>减少重复留白，保留可读字号；关键字段、单位和操作完整。</small></div>
-          <div class="principle"><span class="number">02 / 组件统一</span><strong>复用所选组件库</strong><small>Element Plus 或 Ant Design 体系按项目固定，不混用、不另造基础控件。</small></div>
-          <div class="principle"><span class="number">03 / 按需复用</span><strong>以项目样板为基准</strong><small>沿用已定布局和主题，仅在设计有缺口时查询外部技能。</small></div>
+          <div class="principle"><span class="number">01 / 数据</span><strong>数字可以核对</strong><small>金额右对齐，列名注明单位，0 与空值分别显示，汇总和明细使用同一口径。</small></div>
+          <div class="principle"><span class="number">02 / 状态</span><strong>同一状态统一表达</strong><small>列表和详情使用同一文案与语义色，徽标始终带文字。</small></div>
+          <div class="principle"><span class="number">03 / 操作</span><strong>操作前能判断后果</strong><small>主操作清楚，危险操作写明对象和影响，提供明确的取消入口。</small></div>
         </div>
         <div class="note maintenance"><strong>演示边界：</strong>本页展示设计语言与交互状态，所有事项、数量和时间均为模拟。它不构成真实业务原型或客户批准。规范维护：修改 <a href="../specs/design.md">design.md</a> 后，在项目根目录运行 <code>python3 ai/scripts/sync_design.py</code> 同步本页。</div>
       </section>
@@ -385,17 +398,17 @@
       <section id="foundation" class="section" aria-labelledby="foundation-title">
         <div class="section-header"><div><h2 id="foundation-title"><span>01</span>视觉基础</h2><p>用少量、稳定的基础值建立可重复的视觉秩序。</p></div><span class="pill neutral">设计 tokens 驱动</span></div>
         <div class="grid">
-          <div class="panel"><h3>色彩与语义</h3><p class="component-help">墨绿导航与米纸工作区分层。政务绿突出操作，谷穗金只点缀标识，待办与异常用独立状态色和文字说明。</p><div class="swatches">
+          <div class="panel"><h3>色彩与语义</h3><p class="component-help">墨绿导航、灰绿工作区和白色内容面分层。深绿突出主要操作，业务状态使用独立语义色和文字。</p><div class="swatches">
             <div><div class="swatch" style="background:var(--colors-sidebar)"></div><div class="swatch-name">导航 / 深墨绿</div><code>colors.sidebar</code></div>
-            <div><div class="swatch" style="background:var(--canvas)"></div><div class="swatch-name">工作区 / 米纸色</div><code>colors.canvas</code></div>
-            <div><div class="swatch" style="background:var(--surface)"></div><div class="swatch-name">卡片与表单 / 亮纸色</div><code>colors.surface</code></div>
+            <div><div class="swatch" style="background:var(--canvas)"></div><div class="swatch-name">工作区 / 灰绿</div><code>colors.canvas</code></div>
+            <div><div class="swatch" style="background:var(--surface)"></div><div class="swatch-name">内容面 / 白色</div><code>colors.surface</code></div>
             <div><div class="swatch" style="background:var(--border)"></div><div class="swatch-name">边界 / 分隔</div><code>colors.border</code></div>
-            <div><div class="swatch" style="background:var(--primary)"></div><div class="swatch-name">政务绿 / 主操作</div><code>colors.primary</code></div>
+            <div><div class="swatch" style="background:var(--primary)"></div><div class="swatch-name">深绿 / 主操作</div><code>colors.primary</code></div>
             <div><div class="swatch" style="background:var(--soft)"></div><div class="swatch-name">内容提示 / 浅绿</div><code>colors.primary-soft</code></div>
             <div><div class="swatch" style="background:var(--colors-sidebar-active)"></div><div class="swatch-name">导航 / 当前项</div><code>colors.sidebar-active</code></div>
-            <div><div class="swatch" style="background:var(--colors-brand-mark)"></div><div class="swatch-name">标识 / 谷穗金</div><code>colors.brand-mark</code></div>
+            <div><div class="swatch" style="background:var(--info)"></div><div class="swatch-name">正常流转 / 待审批</div><code>colors.info</code></div>
             <div><div class="swatch" style="background:var(--success)"></div><div class="swatch-name">完成 / 正常</div><code>colors.success</code></div>
-            <div><div class="swatch" style="background:var(--warning)"></div><div class="swatch-name">提醒 / 待处理</div><code>colors.warning</code></div>
+            <div><div class="swatch" style="background:var(--warning)"></div><div class="swatch-name">提醒 / 待补资料</div><code>colors.warning</code></div>
             <div><div class="swatch" style="background:var(--danger)"></div><div class="swatch-name">异常 / 危险</div><code>colors.danger</code></div>
             <div><div class="swatch" style="background:var(--colors-control-border)"></div><div class="swatch-name">控件 / 边框</div><code>colors.control-border</code></div>
           </div></div>
@@ -416,43 +429,84 @@
         <p class="component-help">这是页面模式索引，不是功能已实现的声明。正式项目复用已选库的组件：Vue 对应 Element Plus / Ant Design Vue，React 对应 Ant Design。一次只采用一个库；业务样板见<a href="pages/index.html">采购申请列表、录入、详情与审批</a>。</p>
       </section>
 
+      <section id="layout" class="section" aria-labelledby="layout-title">
+        <div class="section-header"><div><h2 id="layout-title"><span>03</span>布局与骨架</h2><p>桌面用稳定侧栏和轻量顶栏，查询结果占据工作区主要宽度。</p></div></div>
+        <div class="panel">
+          <ol class="layout-map" aria-label="后台列表布局">
+            <li><strong><b>01</b>页面头</strong><span>标题、路径和当前数据范围。</span></li>
+            <li><strong><b>02</b>筛选区</strong><span>常用条件、查询和重置；条件变化后回到第一页。</span></li>
+            <li><strong><b>03</b>操作栏</strong><span>左侧新增和必要的批量操作，右侧放密度等视图设置。</span></li>
+            <li><strong><b>04</b>结果区</strong><span>列表、记录数和分页；从详情返回时保留查询上下文。</span></li>
+          </ol>
+        </div>
+      </section>
+
       <section id="admin" class="section" aria-labelledby="admin-title">
-        <div class="section-header"><div><h2 id="admin-title"><span>03</span>后台页面</h2><p>先看完整查询列表，再看录入与操作反馈。示例使用原生控件，正式实现映射到既有组件。</p></div></div>
-        <div class="panel"><div class="component-label">操作层级</div><div class="row button-sample"><button class="primary" id="primary-demo" type="button">主要操作</button><button id="secondary-demo" type="button">次要操作</button><button class="danger" id="danger-demo" type="button">危险操作示例</button><button class="primary" type="button" disabled>禁用操作</button><span class="muted" style="font-size:12px">禁用原因：请先完成必填信息</span></div><div class="status-pills" aria-label="状态标签"><span class="badge">处理中</span><span class="badge success">已完成</span><span class="badge warning">待处理</span><span class="badge danger">异常</span><span class="badge muted">未开始</span></div><p class="component-help">每个操作区域仅突出一个主动作。政务绿主按钮悬停提亮、按下加深，文字保持白色。按钮悬停只改变背景或文字。条件暂不满足时解释原因；没有权限时不展示受限内容。</p></div>
+        <div class="section-header"><div><h2 id="admin-title"><span>04</span>列表与表单</h2><p>先看完整查询列表，再通过右侧抽屉查看详情和录入。示例使用原生控件，正式实现映射到既有组件。</p></div></div>
+        <div class="panel"><div class="component-label">操作层级</div><div class="row button-sample"><button class="primary" id="primary-demo" type="button">主要操作</button><button id="secondary-demo" type="button">次要操作</button><button class="danger" id="danger-demo" type="button">危险操作示例</button><button class="primary" type="button" disabled>禁用操作</button><span class="muted" style="font-size:12px">禁用原因：请先完成必填信息</span></div><p class="component-help">每个操作区域仅突出一个主动作。深绿主按钮悬停提亮、按下加深，文字保持白色。按钮悬停只改变背景或文字。条件暂不满足时解释原因；没有权限时不展示受限内容。</p></div>
         <div class="panel admin-sample">
           <div class="component-label">查询列表 / 可用于账号、配置、日志及业务记录</div>
           <div class="row between"><div><h3>示例事项清单</h3><p class="component-help">查询条件、操作栏、结果与分页分区明确，核心数据保持可读。</p></div><span class="pill neutral">本地演示数据</span></div>
           <form id="filter-form" class="filter-form" role="search">
             <div class="field"><label for="search">事项关键词</label><input id="search" type="search" placeholder="输入事项名称，例如：核验" maxlength="40"></div>
-            <div class="field"><label for="status-filter">展示状态</label><select id="status-filter"><option value="">全部状态</option><option>待处理</option><option>处理中</option><option>已完成</option></select></div>
+            <div class="field"><label for="status-filter">展示状态</label><select id="status-filter"><option value="">全部状态</option><option>待补资料</option><option>处理中</option><option>已完成</option></select></div>
             <div class="filter-actions"><button class="primary" type="submit">查询</button><button id="reset-filter" type="button">重置</button></div>
           </form>
           <div class="list-toolbar"><button id="new-record" class="primary" type="button">＋ 新增示例</button><div class="field"><label for="table-density">列表密度</label><select id="table-density"><option value="compact">紧凑（默认）</option><option value="standard">标准</option></select></div></div>
-          <div class="table-scroll"><table id="sample-table" class="table-responsive" data-density="compact"><caption>默认紧凑；数字右对齐，时间与状态完整，空字段为“—”，有效的 0 保留。</caption><thead><tr><th scope="col">编号</th><th scope="col">事项名称</th><th scope="col">归属</th><th scope="col">状态</th><th scope="col" class="number-cell">关联项（条）</th><th scope="col">更新时间</th><th scope="col">操作</th></tr></thead><tbody id="table-rows"></tbody></table></div>
+          <div class="table-scroll" role="region" aria-label="示例事项结果" tabindex="0"><table id="sample-table" class="table-responsive" data-density="compact"><caption>默认紧凑；数字右对齐，时间与状态完整，空字段为“—”，有效的 0 保留。</caption><thead><tr><th scope="col">编号</th><th scope="col">事项名称</th><th scope="col">归属</th><th scope="col">状态</th><th scope="col" class="number-cell">关联项（条）</th><th scope="col">更新时间</th><th scope="col">操作</th></tr></thead><tbody id="table-rows"></tbody></table></div>
           <div id="table-empty" class="empty" hidden><strong>没有匹配的记录</strong><small>请调整关键词或状态，也可以重置筛选。</small></div>
           <div class="table-footer"><span id="table-count" aria-live="polite">共 4 条 · 当前页面内模拟</span><span><span class="page-number" aria-label="当前第1页">1</span> / 1 页</span></div>
         </div>
-        <div class="panel admin-sample"><div class="component-label">表单录入 / 基本信息与归属</div><h3 class="subheading">建立一条示例记录</h3><form id="sample-form" novalidate class="form-layout">
-          <div class="field"><label for="record-name">事项名称 <span class="required" aria-hidden="true">*</span></label><input id="record-name" name="recordName" required maxlength="40" placeholder="输入用于预览的事项名称" autocomplete="off" aria-describedby="name-help name-error"><small id="name-help">必填，1–40 字；仅在当前页面中预览。</small><span id="name-error" class="field-error" hidden></span></div>
-          <div class="field"><label for="record-group">演示分组 <span class="required" aria-hidden="true">*</span></label><select id="record-group" name="recordGroup" required aria-describedby="group-error"><option value="">请选择分组</option><option>演示分组 A</option><option>演示分组 B</option></select><span id="group-error" class="field-error" hidden></span></div>
-          <div class="field wide"><label for="record-note">补充说明 <span class="muted">（选填）</span></label><textarea id="record-note" name="recordNote" rows="2" maxlength="120" placeholder="最多 120 字" aria-describedby="note-help"></textarea><small id="note-help">字段标签始终可见，错误提示靠近字段，校验失败不清空输入。</small></div>
-          <div class="row wide"><button class="primary" type="submit">校验并预览</button><button id="reset-form" type="button">重置表单</button></div><p id="form-result" class="form-result wide" role="status" hidden></p>
-        </form></div>
       </section>
 
       <section id="states" class="section" aria-labelledby="states-title">
-        <div class="section-header"><div><h2 id="states-title"><span>04</span>状态与反馈</h2><p>说明发生了什么、影响了什么，以及下一步可以做什么。</p></div></div>
-        <div class="panel"><div class="row between state-toolbar"><div><h3>同一区域的状态切换</h3><p class="component-help">选择一个状态，检查文案、恢复入口与辅助技术反馈。</p></div><div class="field"><label for="demo-state">演示状态</label><select id="demo-state"><option value="ready">正常</option><option value="loading">加载中</option><option value="error">加载失败</option><option value="forbidden">无权限</option><option value="conflict">状态冲突</option><option value="empty">暂无数据</option></select></div></div><div id="state-stage" class="state-stage" data-kind="ready" aria-live="polite" aria-atomic="true"><div id="state-icon" class="state-icon" aria-hidden="true">✓</div><h3 id="state-title">内容已就绪</h3><p id="state-copy">内容区正常展示。操作结果应在附近反馈，并保持当前上下文。</p><button id="state-action" type="button">演示操作反馈</button></div><p class="component-help">无权限不显示受限数据；冲突应先重新核对状态；加载失败保留重试入口。这里仅演示展示方式，真实权限与并发由服务端验证。</p></div>
+        <div class="section-header"><div><h2 id="states-title"><span>05</span>状态与反馈</h2><p>说明发生了什么、影响了什么，以及下一步可以做什么。</p></div></div>
+        <div class="panel">
+          <h3>状态映射</h3>
+          <div class="status-pills" aria-label="状态标签示例">
+            <span class="badge">待审批</span>
+            <span class="badge warning">待补资料</span>
+            <span class="badge success">已完成</span>
+            <span class="badge danger">已驳回</span>
+            <span class="badge muted">已关闭</span>
+          </div>
+          <p class="muted">蓝色表示正常流转，琥珀色提醒补充或关注。标签在列表和详情中沿用同一文案，颜色辅助识别。</p>
+        </div>
+        <div class="panel admin-sample"><div class="row between state-toolbar"><div><h3>同一区域的状态切换</h3><p class="component-help">选择一个状态，检查文案、恢复入口与辅助技术反馈。</p></div><div class="field"><label for="demo-state">演示状态</label><select id="demo-state"><option value="ready">正常</option><option value="loading">加载中</option><option value="error">加载失败</option><option value="forbidden">无权限</option><option value="conflict">状态冲突</option><option value="empty">暂无数据</option></select></div></div><div id="state-stage" class="state-stage" data-kind="ready" aria-live="polite" aria-atomic="true"><div id="state-icon" class="state-icon" aria-hidden="true">✓</div><h3 id="state-title">内容已就绪</h3><p id="state-copy">内容区正常展示。操作结果应在附近反馈，并保持当前上下文。</p><button id="state-action" type="button">演示操作反馈</button></div><p class="component-help">无权限不显示受限数据；冲突应先重新核对状态；加载失败保留重试入口。这里仅演示展示方式，真实权限与并发由服务端验证。</p></div>
       </section>
 
       <section id="detail" class="section" aria-labelledby="detail-title">
-        <div class="section-header"><div><h2 id="detail-title" tabindex="-1"><span>05</span>详情与步骤</h2><p>详情保留对象标识和当前状态，步骤帮助理解位置与后续动作。</p></div></div>
-        <div class="grid"><div class="panel"><div class="component-label">OBJECT DETAIL / 对象详情</div><div class="detail-title"><h3 id="detail-name">数据核验记录</h3><small>本地预览 · 从上方列表“查看”或表单“校验并预览”更新</small></div><dl><dt>示例编号</dt><dd id="detail-id">DEMO-002</dd><dt>归属分组</dt><dd id="detail-group">演示分组 B</dd><dt>展示状态</dt><dd id="detail-status"><span class="badge">处理中</span></dd><dt>补充说明</dt><dd id="detail-note">用于展示详情字段的对齐、换行与信息层级。</dd></dl><div class="note">编号、状态与关键规则放在容易找到的位置；空字段统一显示“—”。</div></div><div class="panel"><div class="component-label">PROGRESS / 步骤示意</div><h3>过程可见，当前步骤明确</h3><ol class="steps" id="steps"><li class="complete"><span class="step-dot">1</span><span>建立记录</span></li><li aria-current="step"><span class="step-dot">2</span><span>信息核对</span></li><li><span class="step-dot">3</span><span>完成确认</span></li></ol><p id="step-description" class="component-help" aria-live="polite">当前：信息核对。此处演示步骤样式，不定义业务审批规则。</p><div class="row" style="margin-top:20px"><button id="previous-step" type="button">上一步示意</button><button id="next-step" class="primary" type="button">下一步示意</button></div><p class="component-help">实际流转条件、角色、驳回和撤回路径应在需求与状态机中明确。</p></div></div>
+        <div class="section-header"><div><h2 id="detail-title"><span>06</span>详情与步骤</h2><p>用右侧抽屉承载详情、录入和审批，保留原列表上下文。</p></div></div>
+        <div class="panel">
+          <h3>右侧抽屉</h3>
+          <p class="component-help">默认宽 520px，窄屏全宽。顶部提供标题与关闭入口，内容区独立滚动，主要操作放在底部。列表筛选和位置在关闭后保留。</p>
+          <div class="row" style="margin-top:var(--spacing-md)"><button id="detail-demo" type="button">打开详情抽屉</button><a href="pages/index.html">查看采购审批样板</a></div>
+        </div>
       </section>
 
       <section id="usage" class="section" aria-labelledby="usage-title">
-        <div class="section-header"><div><h2 id="usage-title"><span>06</span>使用与评审</h2><p>把设计选择变成可核对的规则，再映射到实际技术栈。</p></div></div>
-        <div class="grid"><div class="panel"><h3>默认范围与扩展边界</h3><ul class="rules"><li><strong>默认：</strong>管理后台优先，围绕查询、录入、配置和处理任务设计。</li><li><strong>后台：</strong>优先键盘操作、字段校验、筛选效率、权限和操作反馈。</li><li><strong>可选大屏：</strong>独立确定品牌、主题和观看环境；选用后单独确认范围与验收。</li><li><strong>跨端一致：</strong>同一业务的术语、单位、口径与权限含义一致；视觉样式可以独立。</li></ul></div><div class="panel"><h3>建议按这个顺序浏览</h3><ol class="rules"><li>确认基础色彩、文字层级和主次操作。</li><li>空表单点击“校验并预览”，再填写并检查详情。</li><li>筛选出空结果，切换失败、无权限与冲突状态。</li><li>用键盘操作控件，缩窄窗口检查阅读与操作。</li><li>仅在选用大屏时，再核对单位、范围、更新时间与异常展示。</li></ol></div></div><div class="delivery"><div class="panel"><h3>从候选规范到项目基准</h3><p class="component-help"><span data-design-version>D1.10</span> 为默认候选。项目中先约定适用页面、目标设备与差异，再固定规范及原型版本，由有权确认人记录批准范围。视觉规范、业务交互与运行代码分别维护关联，AI 不代替客户批准。</p><p class="component-help">离线入口：<a href="../specs/design.md">查看规范源文件</a> · <a href="README.md">查看原型说明</a> · <a href="pages/index.html">查看独立业务原型示例</a></p></div></div>
+        <div class="section-header"><div><h2 id="usage-title"><span>07</span>交付检查</h2><p>用代表页核对桌面密度、窄屏操作、键盘与异常恢复。</p></div></div>
+        <div class="grid">
+          <div class="panel">
+            <h3>可用性与布局</h3>
+            <ul class="rules">
+              <li><strong>对比</strong> · 正文和徽标至少 4.5:1。控件识别边界与焦点至少 3:1。</li>
+              <li><strong>键盘</strong> · Tab 顺序与页面一致，焦点清楚，抽屉和确认弹窗可用 Esc 退出并回到原入口。</li>
+              <li><strong>触屏</strong> · 检查 44×44px 操作区，缩窄窗口后标签与数据保持可读。</li>
+              <li><strong>视口</strong> · 375、768、1024、1440px；后台补查 1366、1920px。</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>内容与交互</h3>
+            <ul class="rules">
+              <li><strong>列表</strong> · 核对 0 与空值、金额和单位、长文本、跨页状态。</li>
+              <li><strong>表单</strong> · 打开录入抽屉，空提交后检查首错焦点、字段提示与输入保留。</li>
+              <li><strong>反馈</strong> · 走查空态、失败、无权限、冲突和恢复操作，检查减少动效。</li>
+              <li><strong>可选大屏</strong> · 核对统计范围、单位、更新时间和数据失效反馈。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="delivery note">采用范围和版本由项目确认。具体规则见 <a href="../specs/design.md">规范源文件</a>，业务路径见 <a href="pages/index.html">采购申请交互稿</a>。</div>
       </section>
       <details id="screen-option" class="option-screen"><summary>可选能力：数据大屏 · 展开独立设计示例</summary>
       <section id="screen" class="section" aria-labelledby="screen-title">
@@ -461,15 +515,50 @@
       </section>
 
       </details>
-      <footer class="footer"><span>管理后台设计规范 · <span data-design-version>D1.10</span> 候选</span><span>演示数据 / 无外部资源 / 不保存本地配置</span></footer>
+      <footer class="footer"><span>管理后台设计规范 · <span data-design-version>D1.12</span> 候选</span><span>演示数据 / 无外部资源 / 不保存本地配置</span></footer>
     </main>
   </div>
   <div id="feedback" class="feedback" role="status" aria-live="polite" aria-atomic="true" hidden><span id="feedback-text"></span><button id="dismiss-feedback" type="button" aria-label="关闭操作反馈">×</button></div>
+  <dialog id="sample-create" class="drawer" aria-labelledby="sample-create-title">
+    <div class="drawer-head">
+      <div><h2 id="sample-create-title">建立一条示例记录</h2><small>基本信息与归属</small></div>
+      <form method="dialog"><button autofocus aria-label="关闭录入抽屉">关闭</button></form>
+    </div>
+    <div class="drawer-body">
+      <form id="sample-form" novalidate class="form-layout">
+          <div class="field"><label for="record-name">事项名称 <span class="required" aria-hidden="true">*</span></label><input id="record-name" name="recordName" required maxlength="40" placeholder="输入用于预览的事项名称" autocomplete="off" aria-describedby="name-help name-error"><small id="name-help">必填，1–40 字；仅在当前页面中预览。</small><span id="name-error" class="field-error" hidden></span></div>
+          <div class="field"><label for="record-group">演示分组 <span class="required" aria-hidden="true">*</span></label><select id="record-group" name="recordGroup" required aria-describedby="group-error"><option value="">请选择分组</option><option>演示分组 A</option><option>演示分组 B</option></select><span id="group-error" class="field-error" hidden></span></div>
+          <div class="field wide"><label for="record-note">补充说明 <span class="muted">（选填）</span></label><textarea id="record-note" name="recordNote" rows="2" maxlength="120" placeholder="最多 120 字" aria-describedby="note-help"></textarea><small id="note-help">字段标签始终可见，错误提示靠近字段，校验失败不清空输入。</small></div>
+      </form>
+    </div>
+    <div class="drawer-footer">
+      <form method="dialog"><button>取消</button></form>
+      <button id="reset-form" type="button">重置表单</button>
+      <button class="primary" type="submit" form="sample-form">校验并预览</button>
+    </div>
+  </dialog>
+  <dialog id="sample-detail" class="drawer" aria-labelledby="detail-name">
+    <div class="drawer-head">
+      <div><h2 id="detail-name">数据核验记录</h2><small id="detail-id">DEMO-002</small></div>
+      <form method="dialog"><button autofocus aria-label="关闭详情抽屉">关闭</button></form>
+    </div>
+    <div class="drawer-body">
+      <h3>基本信息</h3>
+      <dl><dt>归属分组</dt><dd id="detail-group"></dd><dt>展示状态</dt><dd id="detail-status"></dd><dt>补充说明</dt><dd id="detail-note"></dd></dl>
+      <p class="note">本地预览。表单预览数据只在抽屉里展示。</p>
+      <h3 class="subheading" style="margin-top:var(--spacing-lg)">处理步骤</h3>
+      <ol class="steps" id="steps"><li class="complete"><span class="step-dot">1</span><span>建立记录</span></li><li aria-current="step"><span class="step-dot">2</span><span>信息核对</span></li><li><span class="step-dot">3</span><span>完成确认</span></li></ol><p id="step-description" class="component-help" aria-live="polite">当前：信息核对。此处演示步骤样式，不定义业务审批规则。</p>
+    </div>
+    <div class="drawer-footer">
+      <button id="previous-step" type="button">上一步示意</button>
+      <button id="next-step" class="primary" type="button">下一步示意</button>
+    </div>
+  </dialog>
   <dialog id="danger-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-copy"><h3 id="dialog-title">危险操作确认示例</h3><p id="dialog-copy">真实操作应明确对象、影响和恢复方式。本次仅演示二次确认，不会删除任何记录。</p><form method="dialog" class="row" style="justify-content:flex-end"><button value="cancel" autofocus>取消</button><button class="danger" value="confirm">确认演示</button></form></dialog>
   <script>
     const $ = id => document.getElementById(id);
     const records = [
-      { id: 'DEMO-001', name: '服务事项清单', group: '演示分组 A', status: '待处理', step: 0, count: 0, updated: '2026-01-15 09:20' },
+      { id: 'DEMO-001', name: '服务事项清单', group: '演示分组 A', status: '待补资料', step: 0, count: 0, updated: '2026-01-15 09:20' },
       { id: 'DEMO-002', name: '数据核验记录', group: '演示分组 B', status: '处理中', step: 1, count: 12, updated: '2026-01-15 10:10' },
       { id: 'DEMO-003', name: '协同处理条目', group: '演示分组 A', status: '处理中', step: 1, count: null, updated: '2026-01-15 10:20' },
       { id: 'DEMO-004', name: '示例归档记录', group: '演示分组 B', status: '已完成', step: 2, count: 8, updated: '2026-01-14 16:30' }
@@ -492,7 +581,7 @@
     }
     function makeBadge(status) {
       const badge = document.createElement('span');
-      badge.className = 'badge' + (status === '已完成' ? ' success' : status === '待处理' ? ' warning' : '');
+      badge.className = 'badge' + (status === '已完成' ? ' success' : status === '待补资料' ? ' warning' : '');
       badge.textContent = status;
       return badge;
     }
@@ -507,17 +596,15 @@
       $('next-step').disabled = step === 2;
       $('step-description').textContent = `当前：${stepNames[step]}。此处演示步骤样式，不定义业务审批规则。`;
     }
-    function showDetail(record, note, moveFocus = true) {
+    function openDetail(record, note) {
       $('detail-name').textContent = record.name;
       $('detail-id').textContent = record.id;
       $('detail-group').textContent = record.group;
       $('detail-status').replaceChildren(makeBadge(record.status));
       $('detail-note').textContent = note || '—';
       setSteps(record.step);
-      if (moveFocus) {
-        $('detail-title').focus({ preventScroll: true });
-        $('detail').scrollIntoView({ block: 'start' });
-      }
+      $('sample-detail').showModal();
+      $('sample-detail').querySelector('.drawer-body').scrollTop = 0;
     }
     function renderTable() {
       const keyword = $('search').value.trim().toLocaleLowerCase();
@@ -539,7 +626,7 @@
             button.className = 'link';
             button.textContent = '查看';
             button.setAttribute('aria-label', `查看${record.name}`);
-            button.addEventListener('click', () => { showDetail(record, '用于展示详情字段的对齐、换行与信息层级。'); notify(`已打开“${record.name}”的演示详情。`); });
+            button.addEventListener('click', () => openDetail(record));
             cell.append(button);
           } else cell.textContent = value;
           row.append(cell);
@@ -554,7 +641,6 @@
     function clearFormErrors() {
       ['record-name', 'record-group'].forEach(id => $(id).removeAttribute('aria-invalid'));
       ['name-error', 'group-error'].forEach(id => { $(id).hidden = true; $(id).textContent = ''; });
-      $('form-result').hidden = true;
     }
     function renderState() {
       const state = $('demo-state').value;
@@ -583,8 +669,13 @@
     }
 
     $('table-density').addEventListener('change', () => { $('sample-table').dataset.density = $('table-density').value; notify('列表密度已更新，正文字号保持不变。'); });
-    $('new-record').addEventListener('click', () => { $('record-name').focus({ preventScroll: true }); $('sample-form').scrollIntoView({ block: 'center' }); notify('已定位到录入区，现有输入保留。'); });
-    $('primary-demo').addEventListener('click', () => notify('主要操作反馈示例：操作已触发，本页没有向系统提交数据。'));
+    function openSampleForm() {
+      $('sample-create').showModal();
+      $('sample-create').querySelector('.drawer-body').scrollTop = 0;
+    }
+    $('new-record').addEventListener('click', openSampleForm);
+    $('primary-demo').addEventListener('click', openSampleForm);
+    $('detail-demo').addEventListener('click', () => openDetail(records[1]));
     $('secondary-demo').addEventListener('click', () => notify('次要操作反馈示例：用于返回、取消或辅助操作。'));
     $('danger-demo').addEventListener('click', () => { $('danger-dialog').returnValue = ''; $('danger-dialog').showModal(); });
     $('danger-dialog').addEventListener('close', () => notify($('danger-dialog').returnValue === 'confirm' ? '已确认危险操作演示，没有删除任何记录。' : '已取消危险操作演示。'));
@@ -607,13 +698,11 @@
         $('group-error').hidden = false;
         invalid ||= $('record-group');
       }
-      if (invalid) { invalid.focus(); notify('校验未通过，请检查标记的必填字段。'); return; }
-      showDetail({ id: 'DEMO-PREVIEW', name, group, status: '待处理', step: 0 }, $('record-note').value.trim(), false);
-      $('form-result').textContent = '演示校验通过，详情区已更新为本页预览。未提交到系统，也未加入列表。';
-      $('form-result').hidden = false;
-      notify('演示校验通过，可前往“详情与步骤”查看预览。');
+      if (invalid) { invalid.focus(); return; }
+      $('sample-create').close();
+      openDetail({ id: 'DEMO-PREVIEW', name, group, status: '待补资料', step: 0 }, $('record-note').value.trim());
     });
-    $('reset-form').addEventListener('click', () => { $('sample-form').reset(); clearFormErrors(); notify('演示表单已清空。'); });
+    $('reset-form').addEventListener('click', () => { $('sample-form').reset(); clearFormErrors(); $('record-name').focus(); });
     $('filter-form').addEventListener('submit', event => { event.preventDefault(); notify(`查询演示完成，共 ${renderTable()} 条匹配记录。`); });
     $('reset-filter').addEventListener('click', () => { resetFilters(); notify('筛选已重置，恢复 4 条初始演示记录。'); });
     $('demo-state').addEventListener('change', () => { renderState(); notify(`已切换为“${stateContent[$('demo-state').value][1]}”演示。`); });
@@ -625,8 +714,8 @@
       renderState();
       notify(state === 'ready' ? '操作反馈示例：界面已响应，当前演示内容保持可见。' : '已恢复正常演示视图。没有发起网络请求或改变真实业务状态。');
     });
-    $('previous-step').addEventListener('click', () => { setSteps(Math.max(0, currentStep - 1)); notify(`步骤样式已切换至“${stepNames[currentStep]}”。`); });
-    $('next-step').addEventListener('click', () => { setSteps(Math.min(2, currentStep + 1)); notify(`步骤样式已切换至“${stepNames[currentStep]}”。`); });
+    $('previous-step').addEventListener('click', () => { setSteps(Math.max(0, currentStep - 1)); });
+    $('next-step').addEventListener('click', () => { setSteps(Math.min(2, currentStep + 1)); });
     $('screen-state').addEventListener('change', () => { renderScreen(); notify('大屏模拟状态已更新；固定样例数值未变化。'); });
     $('screen-refresh').addEventListener('click', () => {
       refreshCount++;
@@ -642,7 +731,6 @@
       $('table-density').value = 'compact'; $('sample-table').dataset.density = 'compact';
       $('demo-state').value = 'ready';
       renderState();
-      showDetail(records[1], '用于展示详情字段的对齐、换行与信息层级。', false);
       refreshCount = 0;
       $('screen-time').textContent = '2026-01-15 10:30:00';
       $('screen-state').value = 'normal';

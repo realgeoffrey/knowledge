@@ -3,28 +3,29 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="design-version" content="D1.10">
+  <meta name="design-version" content="D1.12">
   <title>采购申请 · FDE 静态交互稿示例</title>
   <style id="design-tokens">
 /* DESIGN_TOKENS_START */
 :root {
-  --colors-primary: #235b43;
-  --colors-primary-soft: #e7eee7;
-  --colors-text: #1f2329;
-  --colors-muted: #5b6370;
-  --colors-sidebar: #183b31;
-  --colors-sidebar-hover: #254b3d;
-  --colors-sidebar-active: #315b49;
-  --colors-sidebar-text: #f0f4ef;
-  --colors-sidebar-muted: #b8ccbe;
-  --colors-sidebar-accent: #a8c3a7;
-  --colors-brand-mark: #d5be83;
-  --colors-canvas: #f5f1e8;
-  --colors-surface: #fcfaf5;
-  --colors-border: #ded7ca;
-  --colors-control-border: #877e70;
+  --colors-primary: #0e5f41;
+  --colors-primary-soft: #eaf6f0;
+  --colors-text: #16211d;
+  --colors-muted: #50635b;
+  --colors-sidebar: #103b2e;
+  --colors-sidebar-hover: #1b4b3b;
+  --colors-sidebar-active: #225944;
+  --colors-sidebar-text: #f0f7f3;
+  --colors-sidebar-muted: #b8d1c4;
+  --colors-sidebar-accent: #9cdbb8;
+  --colors-brand-mark: #d3ebdd;
+  --colors-canvas: #f3f6f4;
+  --colors-surface: #ffffff;
+  --colors-border: #dce5e0;
+  --colors-control-border: #72877c;
   --colors-on-primary: #ffffff;
   --colors-success: #17665b;
+  --colors-info: #225888;
   --colors-warning: #8a5200;
   --colors-danger: #b42318;
   --colors-screen-bg: #0c1c16;
@@ -57,14 +58,15 @@
   --spacing-lg: 24px;
   --spacing-xl: 32px;
   --components-button-primary-background-color: var(--colors-primary);
-  --components-button-primary-hover-background-color: #2e6d50;
-  --components-button-primary-active-background-color: #194532;
+  --components-button-primary-hover-background-color: #157a54;
+  --components-button-primary-active-background-color: #083d2c;
   --components-button-primary-text-color: var(--colors-on-primary);
   --components-button-primary-height: 32px;
   --components-nav-item-min-height: 44px;
   --components-nav-item-line-height: 24px;
   --components-table-row-height: 48px;
   --components-table-row-compact-height: 40px;
+  --components-drawer-width: 520px;
 }
 /* DESIGN_TOKENS_END */
   </style>
@@ -80,7 +82,7 @@
     button.primary:hover:not(:disabled) { color: var(--components-button-primary-text-color); background: var(--components-button-primary-hover-background-color); }
     button.primary:active:not(:disabled) { color: var(--components-button-primary-text-color); background: var(--components-button-primary-active-background-color); }
     button.primary:disabled { color: var(--colors-muted); background: var(--colors-canvas); border-color: var(--colors-border); opacity: 1; }
-    button.danger { color: var(--colors-danger); border-color: color-mix(in srgb, var(--colors-danger) 45%, var(--colors-surface)); }
+    button.danger { color: var(--colors-danger); border-color: color-mix(in srgb, var(--colors-danger) 70%, var(--colors-surface)); }
     button.danger:hover:not(:disabled) { color: var(--colors-danger); background: color-mix(in srgb, var(--colors-danger) 8%, var(--colors-surface)); }
     button:disabled { opacity: .6; cursor: not-allowed; }
     :focus-visible { outline: 2px solid var(--colors-primary); outline-offset: 2px; }
@@ -88,7 +90,8 @@
     header { padding: var(--spacing-md) var(--spacing-lg); background: var(--colors-sidebar); color: var(--colors-sidebar-text); border-bottom: 1px solid var(--colors-border); }
     h1 { font-size: var(--typography-title-font-size); line-height: var(--typography-title-line-height); font-weight: var(--typography-title-font-weight); margin: var(--spacing-xs) 0 var(--spacing-sm); }
     header p { color: var(--colors-sidebar-muted); font-size: var(--typography-caption-font-size); line-height: var(--typography-caption-line-height); margin: 0; }
-    header a { color: var(--colors-sidebar-text); }
+    header nav { display: flex; gap: var(--spacing-md); }
+    header a { display: inline-flex; align-items: center; color: var(--colors-sidebar-text); }
     header .eyebrow { color: var(--colors-sidebar-muted); }
     header :focus-visible { outline-color: var(--colors-sidebar-accent); }
     .eyebrow, .page-id, small { font-size: var(--typography-caption-font-size); color: var(--colors-muted); }
@@ -105,11 +108,10 @@
     .page-id { margin: 0; }
     input, select, textarea { min-height: var(--components-button-primary-height); padding: 4px 10px; border: 1px solid var(--colors-control-border); border-radius: var(--rounded-sm); background: var(--colors-surface); color: inherit; max-width: 100%; min-width: 0; }
     .controls input { width: 280px; }
+    #new-request { margin-top: var(--spacing-md); }
     textarea { resize: vertical; }
-    .field { display: grid; grid-template-columns: 112px minmax(0, 480px); align-items: start; gap: var(--spacing-xs) var(--spacing-md); margin: var(--spacing-md) 0; }
-    .field label { padding-top: 5px; }
-    .field small { grid-column: 2; }
-    #request-form > .controls, #approval > .controls { padding-left: 128px; }
+    .field { display: grid; gap: var(--spacing-xs); margin: var(--spacing-md) 0; }
+    .field [aria-invalid="true"] { border-color: var(--colors-danger); }
     .table-wrap { overflow-x: auto; margin-top: var(--spacing-md); }
     table { width: 100%; min-width: 800px; border-collapse: collapse; table-layout: fixed; }
     th, td { padding: 4px 12px; height: var(--components-table-row-compact-height); text-align: left; border-bottom: 1px solid var(--colors-border); }
@@ -124,11 +126,12 @@
     td.title-cell { overflow-wrap: anywhere; font-weight: 500; }
     tbody tr:hover { background: var(--colors-primary-soft); }
     td:last-child button { border-color: transparent; background: transparent; color: var(--colors-primary); padding: 0 4px; }
-    .badge { display: inline-block; padding: 1px 7px; border-radius: var(--rounded-sm); background: color-mix(in srgb, var(--colors-warning) 8%, var(--colors-surface)); color: var(--colors-warning); }
+    .badge { display: inline-block; padding: 2px 7px; border-radius: var(--rounded-sm); background: color-mix(in srgb, var(--colors-info) 8%, var(--colors-surface)); color: var(--colors-info); }
     .badge.done { background: color-mix(in srgb, var(--colors-success) 8%, var(--colors-surface)); color: var(--colors-success); }
     .badge.rejected { background: color-mix(in srgb, var(--colors-danger) 8%, var(--colors-surface)); color: var(--colors-danger); }
     .empty { text-align: center; padding: var(--spacing-xl) var(--spacing-md); color: var(--colors-muted); }
-    dl { display: grid; grid-template-columns: 100px minmax(0, 1fr) 100px minmax(0, 1fr); gap: 12px var(--spacing-md); margin: var(--spacing-md) 0; }
+    #list-count { margin: var(--spacing-sm) 0 0; }
+    dl { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 12px var(--spacing-md); margin: var(--spacing-md) 0; }
     dt { color: var(--colors-muted); }
     dd { margin: 0; overflow-wrap: anywhere; }
     #detail-amount { font-variant-numeric: tabular-nums; font-weight: 600; }
@@ -136,25 +139,26 @@
     li { margin: var(--spacing-sm) 0; overflow-wrap: anywhere; }
     .notice { padding: 10px var(--spacing-md); border-radius: var(--rounded-sm); margin-bottom: var(--spacing-md); background: color-mix(in srgb, var(--colors-success) 8%, var(--colors-surface)); color: var(--colors-success); }
     .notice.error { background: color-mix(in srgb, var(--colors-danger) 8%, var(--colors-surface)); color: var(--colors-danger); }
+    .drawer-footer > .notice { flex: 1 0 100%; margin: 0; }
     .inline-error { color: var(--colors-danger); }
     footer { padding: 0 var(--spacing-lg) var(--spacing-md); color: var(--colors-muted); font-size: var(--typography-caption-font-size); line-height: var(--typography-caption-line-height); }
     @media (max-width: 680px) {
       main, header { padding: var(--spacing-md); } .bar { align-items: flex-start; }
-      .field, dl { grid-template-columns: 1fr; } .field small { grid-column: auto; }
       dl { grid-template-columns: 90px minmax(0, 1fr); }
-      #request-form > .controls, #approval > .controls { padding-left: 0; }
       footer { padding-left: var(--spacing-md); padding-right: var(--spacing-md); }
     }
-    @media (pointer: coarse) { button, input, select { min-height: 44px; } }
+    @media (pointer: coarse) { button, input, select, textarea, header a { min-width: 44px; min-height: 44px; } }
+    @media (max-width: 760px) and (pointer: coarse) { input, select, textarea { font-size: 16px; } }
   </style>
+  <link rel="stylesheet" href="assets/drawer.css">
 </head>
 <body>
   <header>
-    <span class="eyebrow">业务样板 / 采购管理 · 设计 <span data-design-version>D1.10</span></span>
+    <span class="eyebrow">业务样板 / 采购管理 · 设计 <span data-design-version>D1.12</span></span>
     <h1>采购申请</h1>
     <p>示例原型 P1.0 · 示例需求 R1.0 · 演示数据 · 尚无客户确认</p>
     <p>角色、权限和操作均为本地模拟。刷新或重置会还原数据；不连接任何真实系统。</p>
-    <nav class="eyebrow" aria-label="原型参考"><a href="../design-system.html">设计规范</a> · <a href="../README.md">原型说明</a></nav>
+    <nav class="eyebrow" aria-label="原型参考"><a href="../design-system.html">设计规范</a><a href="../README.md">原型说明</a></nav>
   </header>
   <main>
     <section class="panel bar" aria-label="演示控制">
@@ -169,42 +173,56 @@
     <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
 
     <section id="list" class="panel" aria-labelledby="list-heading">
-      <div class="bar">
-        <div><h2 id="list-heading" tabindex="-1">申请列表</h2><p class="page-id">PAGE-001 · REQ-001 / REQ-003</p></div>
-        <button id="new-request" class="primary" type="button">新建申请</button>
-      </div>
+      <h2 id="list-heading" tabindex="-1">申请列表</h2><p class="page-id">PAGE-001 · REQ-001 / REQ-003</p>
       <p id="scope" class="hint"></p>
-      <div class="controls"><label for="search">搜索事项</label><input id="search" type="search" placeholder="输入事项关键词" maxlength="60"></div>
-      <div class="table-wrap">
-        <table><thead><tr><th>编号</th><th>采购事项</th><th>金额（元）</th><th>提交人</th><th>状态</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table>
+      <div class="controls" role="search"><label for="search">搜索事项</label><input id="search" type="search" placeholder="输入事项关键词" maxlength="60"><button id="clear-search" type="button">重置筛选</button></div>
+      <button id="new-request" class="primary" type="button">新建申请</button>
+      <div class="table-wrap" role="region" aria-label="采购申请结果" tabindex="0">
+        <table><thead><tr><th scope="col">编号</th><th scope="col">采购事项</th><th scope="col">金额（元）</th><th scope="col">提交人</th><th scope="col">状态</th><th scope="col">操作</th></tr></thead><tbody id="rows"></tbody></table>
       </div>
-      <p id="empty" class="empty" hidden>没有匹配的申请，请调整关键词或新建申请。</p>
+      <p id="empty" class="empty" hidden>没有匹配的申请，请调整关键词或重置筛选。</p>
+      <p id="list-count" class="page-id" role="status"></p>
     </section>
 
-    <section id="create" class="panel" aria-labelledby="create-heading" hidden>
-      <h2 id="create-heading" tabindex="-1">新建采购申请</h2><p class="page-id">PAGE-002 · REQ-001</p>
-      <p class="hint">员工甲 · 研发部。合法提交后进入“待主管审批”。本例直接提交，不演示草稿编辑。</p>
+  </main>
+  <footer>评审重点：字段、角色范围、审批状态、异常反馈。<br>此示例不证明真实系统的权限、并发、持久化和事务正确性。</footer>
+  <dialog id="create" class="drawer" aria-labelledby="create-heading">
+    <div class="drawer-head">
+      <div><h2 id="create-heading">新建采购申请</h2><p class="page-id">PAGE-002 · REQ-001</p></div>
+      <form method="dialog"><button autofocus aria-label="关闭新建申请抽屉">关闭</button></form>
+    </div>
+    <div class="drawer-body">
+      <p class="hint">员工甲 · 研发部。提交后进入“待主管审批”。</p>
       <form id="request-form" novalidate>
-        <div class="field"><label for="item">采购事项 *</label><input id="item" required maxlength="60" autocomplete="off" aria-describedby="item-help"><small id="item-help">1～60 字，示例：设计用显示器。</small></div>
-        <div class="field"><label for="amount">金额（元）*</label><input id="amount" required inputmode="decimal" autocomplete="off" aria-describedby="amount-help"><small id="amount-help">大于 0，最多两位小数，上限 99,999,999.99。</small></div>
-        <p id="form-error" class="inline-error" role="alert" hidden></p>
-        <div class="controls"><button id="submit-request" class="primary" type="submit">提交申请</button><button id="cancel" type="button">取消，返回列表</button></div>
+        <div class="field"><label for="item">采购事项 *</label><input id="item" required maxlength="60" autocomplete="off" aria-describedby="item-help item-error"><small id="item-help">1～60 字，示例：设计用显示器。</small><small id="item-error" class="inline-error" hidden></small></div>
+        <div class="field"><label for="amount">金额（元）*</label><input id="amount" required inputmode="decimal" autocomplete="off" aria-describedby="amount-help amount-error"><small id="amount-help">大于 0，最多两位小数，上限 99,999,999.99。</small><small id="amount-error" class="inline-error" hidden></small></div>
       </form>
-    </section>
-
-    <section id="detail" class="panel" aria-labelledby="detail-heading" hidden>
-      <div class="bar"><div><h2 id="detail-heading" tabindex="-1">申请详情</h2><p class="page-id">PAGE-003 · REQ-002 / REQ-003</p></div><button id="back" type="button">返回列表</button></div>
+    </div>
+    <div class="drawer-footer">
+      <p id="create-notice" class="notice" role="status" hidden></p>
+      <form method="dialog"><button id="cancel">取消</button></form>
+      <button id="submit-request" class="primary" type="submit" form="request-form">提交申请</button>
+    </div>
+  </dialog>
+  <dialog id="detail" class="drawer" aria-labelledby="detail-heading">
+    <div class="drawer-head">
+      <div><h2 id="detail-heading" tabindex="-1">申请详情</h2><p class="page-id">PAGE-003 · REQ-002 / REQ-003</p></div>
+      <form method="dialog"><button autofocus aria-label="关闭申请详情抽屉">关闭</button></form>
+    </div>
+    <div class="drawer-body">
       <dl><dt>申请编号</dt><dd id="detail-id"></dd><dt>采购事项</dt><dd id="detail-item"></dd><dt>金额</dt><dd id="detail-amount"></dd><dt>提交人 / 部门</dt><dd id="detail-owner"></dd><dt>状态</dt><dd id="detail-status"></dd></dl>
       <p id="action-hint" class="hint"></p>
       <section id="approval" aria-label="审批操作" hidden>
-        <div class="field"><label for="reason">审批说明（驳回必填）</label><textarea id="reason" rows="3" maxlength="200" aria-describedby="reason-help"></textarea><small id="reason-help">最多 200 字。</small></div>
-        <p id="approval-error" class="inline-error" role="alert" hidden></p>
-        <div class="controls"><button id="approve" class="primary" type="button">审批通过</button><button id="reject" class="danger" type="button">驳回申请</button></div>
+        <div class="field"><label for="reason">审批说明（驳回必填）</label><textarea id="reason" rows="3" maxlength="200" aria-describedby="reason-help reason-error"></textarea><small id="reason-help">最多 200 字。</small><small id="reason-error" class="inline-error" hidden></small></div>
       </section>
       <h3>处理记录</h3><ol id="history"></ol>
-    </section>
-  </main>
-  <footer>评审重点：字段、角色范围、审批状态、异常反馈。<br>此示例不证明真实系统的权限、并发、持久化和事务正确性。</footer>
+    </div>
+    <div class="drawer-footer">
+      <p id="detail-notice" class="notice" role="status" hidden></p>
+      <form method="dialog"><button id="back">返回列表</button></form>
+      <div id="approval-actions" class="controls" hidden><button id="reject" class="danger" type="button">驳回申请</button><button id="approve" class="primary" type="button">审批通过</button></div>
+    </div>
+  </dialog>
   <script>
     const $ = id => document.getElementById(id);
     const initialRequests = () => [
@@ -227,18 +245,16 @@
       const cents = Number(whole) * 100 + Number(fraction.padEnd(2, '0'));
       return cents > 0 ? cents : null;
     }
-    function notify(message, error = false) {
-      $('notice').textContent = message;
-      $('notice').className = error ? 'notice error' : 'notice';
-      $('notice').hidden = false;
-    }
-    function inlineError(id, message) {
+    function notify(message, error = false, id = 'notice') {
       $(id).textContent = message;
-      $(id).hidden = !message;
+      $(id).classList.toggle('error', error);
+      $(id).hidden = false;
     }
-    function show(page) {
-      for (const id of ['list', 'create', 'detail']) $(id).hidden = id !== page;
-      $(page + '-heading').focus();
+    function inlineError(field, message) {
+      $(field + '-error').textContent = message;
+      $(field + '-error').hidden = !message;
+      if (message) $(field).setAttribute('aria-invalid', 'true');
+      else $(field).removeAttribute('aria-invalid');
     }
     function badge(status) {
       const element = document.createElement('span');
@@ -254,6 +270,7 @@
       $('rows').replaceChildren();
       for (const request of visible) {
         const row = document.createElement('tr');
+        row.dataset.requestId = request.id;
         for (const [index, value] of [request.id, request.item, money(request.cents), request.owner].entries()) {
           const cell = document.createElement('td');
           if (index === 1) cell.className = 'title-cell';
@@ -273,69 +290,80 @@
         $('rows').append(row);
       }
       $('empty').hidden = visible.length > 0;
+      $('list-count').textContent = '共 ' + visible.length + ' 条';
     }
-    function renderDetail() {
-      const request = requests.find(item => item.id === selectedId);
-      if (!request || !canView(request)) { notify('当前演示角色无权查看该申请。', true); renderList(); show('list'); return; }
+    function renderDetail(request) {
       $('detail-id').textContent = request.id;
       $('detail-item').textContent = request.item;
       $('detail-amount').textContent = money(request.cents) + ' 元';
       $('detail-owner').textContent = request.owner + ' / ' + request.dept;
       $('detail-status').replaceChildren(badge(request.status));
-      $('approval').hidden = !canApprove(request);
+      $('approval').hidden = $('approval-actions').hidden = !canApprove(request);
       $('action-hint').textContent = request.status !== '待主管审批' ? '当前为终态，不再提供审批操作。' : !isManager() ? '等待部门主管处理，员工可查看进度。' : request.owner === '主管甲' ? '禁止审批自己的申请，请由其他有权主管处理。' : '您可以审批此申请；驳回时需要填写原因。';
       $('history').replaceChildren();
       for (const entry of request.history) { const item = document.createElement('li'); item.textContent = entry; $('history').append(item); }
     }
     function openDetail(id) {
+      const request = requests.find(item => item.id === id);
+      if (!request || !canView(request)) { notify('当前演示角色无权查看该申请。', true); return; }
       selectedId = id;
+      $('detail-notice').hidden = true;
       $('reason').value = '';
-      inlineError('approval-error', '');
-      renderDetail();
-      if (requests.some(item => item.id === id && canView(item))) show('detail');
+      inlineError('reason', '');
+      renderDetail(request);
+      $('detail').showModal();
+      $('detail').querySelector('.drawer-body').scrollTop = 0;
     }
-    function simulatedFailure() {
-      if ($('scenario').value === 'forbidden') { notify('模拟无权限：操作被拒绝，数据未改变。', true); return true; }
-      if ($('scenario').value === 'conflict') { notify('模拟状态冲突：记录状态已变化，请刷新确认；本次未写入数据。', true); return true; }
+    function simulatedFailure(notice) {
+      if ($('scenario').value === 'forbidden') { notify('模拟无权限：操作被拒绝，数据未改变。', true, notice); return true; }
+      if ($('scenario').value === 'conflict') { notify('模拟状态冲突：请重新核对记录状态，本次未写入数据。', true, notice); return true; }
       return false;
     }
     function decide(approved) {
       const request = requests.find(item => item.id === selectedId);
-      if (!request || !canApprove(request)) { notify('当前角色或状态不允许审批，数据未改变。', true); return; }
+      if (!$('detail').open || !request || !canApprove(request)) { notify('当前角色或状态不允许审批，数据未改变。', true, 'detail-notice'); return; }
       const reason = $('reason').value.trim();
-      if (!approved && !reason) { inlineError('approval-error', '请填写驳回原因。'); $('reason').focus(); return; }
-      inlineError('approval-error', '');
-      if (simulatedFailure()) return;
+      if (!approved && !reason) { inlineError('reason', '请填写驳回原因。'); $('reason').focus(); return; }
+      inlineError('reason', '');
+      if (simulatedFailure('detail-notice')) return;
       request.status = approved ? '已通过' : '已驳回';
       request.history.push('主管甲' + (approved ? '审批通过' : '驳回申请') + (reason ? '：' + reason : ''));
-      renderDetail();
+      renderDetail(request);
+      $('rows').querySelector(`[data-request-id="${request.id}"] .badge`)?.replaceWith(badge(request.status));
       $('detail-heading').focus();
-      notify('申请 ' + request.id + ' ' + request.status + '。这是本地模拟结果。');
+      notify('申请 ' + request.id + ' ' + request.status + '。这是本地模拟结果。', false, 'detail-notice');
     }
-    $('role').addEventListener('change', () => { selectedId = null; $('notice').hidden = true; renderList(); show('list'); });
+    $('role').addEventListener('change', () => { selectedId = null; $('notice').hidden = true; renderList(); });
     $('search').addEventListener('input', renderList);
-    $('new-request').addEventListener('click', () => { if (isManager()) return; $('notice').hidden = true; $('request-form').reset(); inlineError('form-error', ''); show('create'); });
-    $('cancel').addEventListener('click', () => { renderList(); show('list'); });
-    $('back').addEventListener('click', () => { renderList(); show('list'); });
+    $('clear-search').addEventListener('click', () => { $('search').value = ''; renderList(); $('search').focus(); });
+    $('new-request').addEventListener('click', () => {
+      if (isManager()) return;
+      $('create-notice').hidden = true;
+      $('request-form').reset();
+      inlineError('item', '');
+      inlineError('amount', '');
+      $('create').showModal();
+      $('create').querySelector('.drawer-body').scrollTop = 0;
+    });
     $('approve').addEventListener('click', () => decide(true));
     $('reject').addEventListener('click', () => decide(false));
     $('request-form').addEventListener('submit', event => {
       event.preventDefault();
-      if (isManager() || $('create').hidden) { notify('当前演示状态不允许提交，数据未改变。', true); return; }
+      if (isManager() || !$('create').open) return;
       const item = $('item').value.trim();
       const cents = parseCents($('amount').value.trim());
-      if (!item || item.length > 60) { inlineError('form-error', '采购事项需填写 1～60 字。'); $('item').focus(); return; }
-      if (cents === null) { inlineError('form-error', '请输入大于 0、最多两位小数且不超过上限的金额。'); $('amount').focus(); return; }
-      inlineError('form-error', '');
-      if (simulatedFailure()) return;
+      const invalidItem = !item || item.length > 60;
+      inlineError('item', invalidItem ? '采购事项需填写 1～60 字。' : '');
+      inlineError('amount', cents === null ? '请输入大于 0、最多两位小数且不超过上限的金额。' : '');
+      if (invalidItem || cents === null) { $(invalidItem ? 'item' : 'amount').focus(); return; }
+      if (simulatedFailure('create-notice')) return;
       const request = { id: 'PR-' + String(nextId++).padStart(3, '0'), item, cents, owner: '员工甲', dept: '研发部', status: '待主管审批', history: ['员工甲提交申请'] };
       requests.unshift(request);
-      $('search').value = '';
+      $('create').close();
       renderList();
-      show('list');
       notify('申请 ' + request.id + ' 已提交，等待主管审批。');
     });
-    $('reset').addEventListener('click', () => { requests = initialRequests(); selectedId = null; nextId = 6; $('role').value = 'employee'; $('scenario').value = 'normal'; $('search').value = ''; renderList(); show('list'); notify('演示数据已重置。'); });
+    $('reset').addEventListener('click', () => { requests = initialRequests(); selectedId = null; nextId = 6; $('role').value = 'employee'; $('scenario').value = 'normal'; $('search').value = ''; renderList(); notify('演示数据已重置。'); });
     renderList();
   </script>
 </body>
