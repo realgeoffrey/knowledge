@@ -2,7 +2,7 @@
 
 > AI 维护实现决定。状态：草稿；对应业务 BL：<待填写>。技术方案不能覆盖已确认业务规则。
 
-问题与答复只在 [OPEN](../records/clarifications.md) 保存，核对后的技术结论回写本文件。第二个独立模块出现时，按 [维护步骤](../handbook/maintenance.md) 拆到 `ai/specs/solutions/<module>.md`，保留公共方案/索引及旧入口。
+未决问题与答复保存在 [OPEN](../records/clarifications.md)；已核对的技术决定回写本文件，当场写入方案的结论不必另开 OPEN。独立模块确有维护或定位困难时，按 [维护步骤](../handbook/maintenance.md) 拆分，保留公共方案、索引与旧入口。
 
 ## 固定版本与工程位置
 

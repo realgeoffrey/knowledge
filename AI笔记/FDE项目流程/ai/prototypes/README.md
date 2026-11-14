@@ -13,13 +13,13 @@
 
 - 业务 HTML 与本地资源放 `ai/prototypes/pages/`，固定入口 `pages/index.html`，资源按需放 `pages/assets/`。不在原型根散放业务 HTML，也不复制设计规范。
 - 规则源为 `ai/specs/design.md`，规范展示为 `ai/prototypes/design-system.html`。页面用相对链接离线互通：规范页 → `pages/index.html`，业务页 → `../design-system.html`。
-- 先读相关设计章节/tokens、REQ/AC、有效基线和本次范围，复用已采纳代表页；无项目样板时用采购例的表达方式，不继承其业务规则。设计缺口才查 [按需参考](../handbook/ui-reference.md)。
+- 从目标页面、相邻样板和适用设计章节开始；改到业务语义、共享依赖或客户承诺时再展开相关 REQ/AC 与有效基线。无项目样板时参考采购例的表达方式，不继承其业务规则。设计缺口才查 [按需参考](../handbook/ui-reference.md)。
 
 1. HTML/CSS/少量原生 JS 双击可用，无网络、构建或真实系统写入；使用设计 CSS 变量，不逐控件配色，共享资源进入原型固定清单。
 2. 按已选 Element Plus / Ant Design 模式表达列表、表单、详情与审批；无工程时默认 Element Plus。原生控件表达语义，不安装组件库、Tailwind、外部字体，不自造交互机制。正式组件/主题差异按 [库映射](../handbook/ui-reference.md#ruoyi-迁移约束) 写 [方案](../specs/solution.md#设计落地与页面验证)，不将整页 HTML、模拟权限或内存数据层搬进正式系统。
 3. 只生成约定业务和适用状态，未知标待确认，未演示注明；显示项目名、PAGE/REQ、需求/原型版本、演示数据标记，规范页标设计版本与批准状态。需求前不虚构编号或批准。
 4. 提供本期加载、空、错误、无权限、冲突等反馈，场景可重置并说明刷新丢失数据。按 [原型交付检查](../specs/design.md#原型交付检查) 实际渲染并验证代表路径。共享主题变化复核受影响代表页。
-5. 重生成页面保留 `DESIGN_TOKENS_START/END`、`design-version`、`data-design-version` 槽。`ai/prototypes/` 内全部 HTML 均须登记到同步脚本 `PAGE_FILES`，遗漏会在检查或写入前失败；不存手工 token 副本。在项目根执行 `python3 ai/scripts/sync_design.py`、`python3 ai/scripts/sync_design.py --check`；同步不证明布局、行为或框架兼容，实际检查结果和未覆盖项记下方。
+5. 重生成页面保留 `DESIGN_TOKENS_START/END`、`design-version`、`data-design-version` 槽。`ai/prototypes/` 内新 HTML 均登记到同步脚本 `PAGE_FILES`，不存手工 token 副本。只在 tokens、规范版本或页面登记变化时按 [设计维护步骤](../specs/design.md#修改与项目确认) 同步。生成槽、登记或链接变化时跑结构检查；小改复核实际受影响的页面，正式评审证据与未覆盖项记下方。
 
 模板 [采购申请](pages/index.html) 覆盖列表、实时筛选、录入、详情与审批。两页共用 [抽屉样式](pages/assets/drawer.css)，默认宽度由设计 tokens 同步。复制后按实际终端、组件库和范围验证，仅固定采用片段。
 
@@ -52,7 +52,7 @@
 
 ## 真实项目启用后填写
 
-- 创建 / 最近更新日期：<YYYYMMDD>；各轮页面/需求版本、日期和变更关联 TASK/CR/RUN，运行入口保持不变。
+- 日期：<影响追溯的评审或变更日期>；页面/需求版本和变更关联已有任务、CR 或正式验证记录，运行入口保持不变。
 
 - 原型 / 需求版本：<待填写，未确认>
 - 适用设计、样板与组件映射：<版本、章节、代表页入口及方案；草稿/已采纳明确，采纳后指向 BL 固定清单与共享依赖，不自动升级>

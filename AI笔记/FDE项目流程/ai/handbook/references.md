@@ -8,7 +8,7 @@
 | --- | --- |
 | [Palantir：FDE](https://jobs.lever.co/palantir/2e6b0ac8-83e9-4be5-a3aa-cf319f751728) | 岗位英文与端到端落地含义 |
 | [IREB 术语表](https://cpre.ireb.org/en/downloads-and-resources/glossary) / [ISTQB 验收测试](https://istqb.org/certifications/certified-tester-acceptance-testing/) | AC、BL、CR、UAT 概念 |
-| [OpenAI：AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) / [Cursor：Rules](https://cursor.com/docs/rules) | 按工具核对规则范围、加载、覆盖和权限 |
+| [OpenAI：AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) / [DeepSeek：Tool Calls](https://api-docs.deepseek.com/guides/tool_calls/) / [gitignore](https://git-scm.com/docs/gitignore) / [ripgrep：.ignore](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md#automatic-filtering) | 按客户端核对加载与工具执行。检索排除用 `.ignore`，版本库排除用 `.gitignore`；两者都不等于访问隔离 |
 | [RuoYi-Vue-Pro](https://github.com/YunaiV/ruoyi-vue-pro) / [项目结构](https://doc.iocoder.cn/project-intro/) | 固定分支/提交，遵循相邻代码，不混用其他若依项目 |
 | [代码生成](https://doc.iocoder.cn/new-feature/) / [数据权限](https://doc.iocoder.cn/data-permission/) / [多租户](https://doc.iocoder.cn/saas-tenant/) / [测试](https://doc.iocoder.cn/unit-test/) | 按需核对采用能力；新业务仍须验证 |
 | [设计来源与取舍](../specs/design.md#参考来源与本项目取舍) | 设计依据，不表示更换组件库 |
@@ -29,7 +29,7 @@ G/S 分级、编号格式和 R/P 前缀是模板约定，不是工具强制标�
 | MEET / FB | Meeting / Feedback：真实会议/待分类反馈 |
 | CR / BL | Change Request / Baseline：改变已确认行为的申请/已批准完整组合；申请不等于批准 |
 | TASK | 有产出与完成条件的工作，不限开发 |
-| TEST / RUN | 验证用例或入口/一次完整技术执行记录 |
+| TEST / RUN | 验证用例或入口 / 可追溯的技术验证记录 |
 | UAT | User Acceptance Testing，客户参与的验收；UAT-001 表示一轮记录 |
 | BUG / LESSON | 违反有效规则的缺陷/有证据及防错动作的教训 |
 
