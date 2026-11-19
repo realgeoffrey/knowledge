@@ -1,7 +1,7 @@
 # Vue.js学习笔记
 
 ## 目录
-1. [Vue 3版本（core）](#vue-3版本core)
+1. [Vue 3版本（core）（与Vue 2的区别）](#vue-3版本core与vue-2的区别)
 
     1. [Vue 3的组合式API](#vue-3的组合式api)
     1. [Vue 3最佳实践](#vue-3最佳实践)
@@ -38,9 +38,16 @@
 
 >约定：`vm`（ViewModel）变量名表示：Vue实例。
 
-## Vue 3版本（[core](https://github.com/vuejs/core)）
->以下记录与Vue 2的区别部分。参考：[Vue 3 迁移指南](https://v3-migration.vuejs.org/zh/)。
+## Vue 3版本（[core](https://github.com/vuejs/core)）（与Vue 2的区别）
+>参考：[Vue 3 迁移指南](https://v3-migration.vuejs.org/zh/)。
 
+1. 响应式原理、数据绑定原理：使用了ES6的`Proxy`对数据代理
+
+    - 相较于Vue 2（利用ES5的`Object.defineProperty`对数据进行劫持，结合发布订阅模式的方式来实现），Vue 3使用`Proxy`的优势：
+
+        1. `Object.defineProperty`需要遍历对象的所有属性并逐个设置监听，而`Proxy`可以一次性监听整个对象及其所有属性
+        2. 可以省去`for-in`，闭包等内容来提升效率（直接绑定整个对象即可）
+        3. 可以监听数组，不用再去单独的对数组做特异性操作，`Proxy`可以检测到数组内部数据的变化
 1. API风格
 
     1. 选项式API（Options API）
@@ -366,13 +373,6 @@
 
     1. Vue 2传递给组件的属性，①**先传递给[`createElement`的第二个参数](https://v2.cn.vuejs.org/v2/guide/render-function.html#深入数据对象)（`class`、`style`、`attrs`、`props`、`domProps`、`on`（`on-名`和`on`）、`nativeOn`、`directives`、`scopedSlots`、`slot`、`key`、`ref`、`refInFor`）**，②剩下未匹配的属性，若是`props`**定义了但未接收到的属性**，则再传递给`props`，③最后未匹配的剩余属性再传递给组件的`attrs`。
     2. Vue 3传递给组件的属性是传递给[`h`的第二个参数](https://cn.vuejs.org/api/render-function.html#h)，直接就是prop（也是先props，剩下的再attrs），因此也不需要`{...对象}`的写法、也不需要`attrs={对象} props={对象}`写法（会解析成`attrs`和`props`的2个prop）。
-1. 响应式原理、数据绑定原理：使用了ES6的`Proxy`对数据代理
-
-    - 相较于Vue 2（利用ES5的`Object.defineProperty`对数据进行劫持，结合发布订阅模式的方式来实现），Vue 3使用`Proxy`的优势：
-
-        1. `Object.defineProperty`需要遍历对象的所有属性并逐个设置监听，而`Proxy`可以一次性监听整个对象及其所有属性
-        2. 可以省去`for-in`，闭包等内容来提升效率（直接绑定整个对象即可）
-        3. 可以监听数组，不用再去单独的对数组做特异性操作，`Proxy`可以检测到数组内部数据的变化
 1. 将 Vue 的响应性系统与外部状态管理方案集成的大致思路是：将外部状态放在一个`shallowRef`中。一个浅层的 ref 中只有它的 .value 属性本身被访问时才是有响应性的，而不关心它内部的值。当外部状态改变时，替换此 ref 的 .value 才会触发更新。
 
     1. `shallowRef()`：`ref()`的浅层作用形式；`shallowReactive()`：`reactive()`的浅层作用形式；`shallowReadonly()`：`readonly()`的浅层作用形式。
