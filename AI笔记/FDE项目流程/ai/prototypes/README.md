@@ -21,7 +21,7 @@
 4. 提供本期加载、空、错误、无权限、冲突等反馈，场景可重置并说明刷新丢失数据。按 [原型交付检查](../specs/design.md#原型交付检查) 实际渲染并验证代表路径。共享主题变化复核受影响代表页。
 5. 重生成页面保留 `DESIGN_TOKENS_START/END`、`design-version`、`data-design-version` 槽。`ai/prototypes/` 内新 HTML 均登记到同步脚本 `PAGE_FILES`，不存手工 token 副本。只在 tokens、规范版本或页面登记变化时按 [设计维护步骤](../specs/design.md#修改与项目确认) 同步。生成槽、登记或链接变化时跑结构检查；小改复核实际受影响的页面，正式评审证据与未覆盖项记下方。
 
-模板 [采购申请](pages/index.html) 覆盖列表、实时筛选、录入、详情与审批。两页共用 [抽屉样式](pages/assets/drawer.css)和[层叠交互](pages/assets/drawer.js)，当前为候选 DESIGN D1.13。默认宽度由设计 tokens 同步；新抽屉用 `DrawerLayers.open(dialog)` 打开，关闭、取消、Esc 或遮罩只退一层，保留父层 DOM、输入、滚动和焦点。页面跳转或角色切换先调用 `DrawerLayers.closeAll()`。桌面子层至少收窄 48px（最小 320px），窄屏全宽。复制后按实际终端、组件库和范围验证，仅固定采用片段。
+模板 [采购申请](pages/index.html) 覆盖列表、实时筛选、录入、详情与审批。两页共用 [抽屉样式](pages/assets/drawer.css)和[层叠交互](pages/assets/drawer.js)，当前为候选 DESIGN D1.13。默认宽度由设计 tokens 同步；新抽屉用 `DrawerLayers.open(dialog)` 打开，关闭、取消、Esc 或遮罩只退一层，保留父层 DOM、输入、滚动和焦点。页面跳转或角色切换先调用 `DrawerLayers.closeAll()`。桌面子层按父层宽度减 48px 收窄（最小 320px），窄屏全宽。复制后按实际终端、组件库和范围验证，仅固定采用片段。
 
 ## 当前业务交互稿是示例
 

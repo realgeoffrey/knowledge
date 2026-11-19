@@ -9,13 +9,17 @@ window.DrawerLayers = (() => {
     });
   }
   function forget(modal) {
+    // Native close events are queued; this drawer may already have reopened.
+    if (modal.open) return;
     const index = stack.findIndex(layer => layer.modal === modal);
     if (index < 0) return;
     const wasTop = index === stack.length - 1;
     const [layer] = stack.splice(index, 1);
     if (wasTop && layer.opener?.isConnected) layer.opener.focus({preventScroll: true});
   }
-  function close(modal = stack.at(-1)?.modal) {
+  function close(modal) {
+    while (stack.length && !stack.at(-1).modal.open) forget(stack.at(-1).modal);
+    modal ??= stack.at(-1)?.modal;
     if (!modal || modal !== stack.at(-1)?.modal) return;
     modal.close();
     forget(modal);

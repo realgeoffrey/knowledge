@@ -53,10 +53,12 @@ test('多层抽屉逐层返回，保留父节点与焦点，复用为首层时�
   document.activeElement = opener;
   layers.open(child);
   assert.equal(child.style.values['--drawer-parent-width'], undefined);
+  child.listeners.close();
   layers.open(leaf);
   leaf.close();
+  child.listeners.cancel({preventDefault() {}});
+  assert.equal(child.open, false);
   leaf.listeners.close();
-  assert.equal(child.open, true);
   layers.closeAll();
   assert(drawers.every(modal => !modal.open));
 });
