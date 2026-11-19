@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="design-version" content="D1.12">
+  <meta name="design-version" content="D1.13">
   <title>管理后台 · 设计规范展示</title>
 <style id="design-tokens">
 /* DESIGN_TOKENS_START */
@@ -377,13 +377,13 @@
       <a href="#usage"><span>07</span>交付检查</a>
       <a href="#screen-option"><span>＋</span>可选：数据大屏</a>
     </nav></div>
-    <div class="sidebar-note"><strong><span data-design-version>D1.12</span> · 候选规范</strong>供设计讨论与实现对齐。<br>批准范围以项目记录为准。</div>
+    <div class="sidebar-note"><strong><span data-design-version>D1.13</span> · 候选规范</strong>供设计讨论与实现对齐。<br>批准范围以项目记录为准。</div>
   </aside>
   <div class="page">
     <header class="topbar"><div class="breadcrumbs">FDE 项目流程 <span aria-hidden="true"> / </span> <b>设计规范展示</b></div><div class="top-links"><a href="../specs/design.md">规范源文件</a><a href="README.md">原型说明</a><a href="pages/index.html">业务交互稿</a></div></header>
     <main id="main" tabindex="-1">
       <section id="overview" class="hero" aria-labelledby="overview-title">
-        <div class="eyebrow">DESIGN SYSTEM <span aria-hidden="true">/</span> <span data-design-version>D1.12</span></div>
+        <div class="eyebrow">DESIGN SYSTEM <span aria-hidden="true">/</span> <span data-design-version>D1.13</span></div>
         <div class="row between"><h1 id="overview-title">管理后台设计规范</h1><span class="pill warning">候选 · 待项目评审</span></div>
         <p class="lead">专业、克制、统一的业务界面。以高密度列表、筛选、表单、详情和审批为核心，复用项目已有组件，让信息好查、操作明确、结果可核对。</p>
         <div class="row"><span class="pill">默认：管理后台</span><span class="pill neutral">可选：独立大屏</span><span class="pill neutral">纯本地演示</span><button id="reset-all" type="button">重置全部演示</button></div>
@@ -481,6 +481,7 @@
           <h3>右侧抽屉</h3>
           <p class="component-help">默认宽 520px，窄屏全宽。顶部提供标题与关闭入口，内容区独立滚动，主要操作放在底部。列表筛选和位置在关闭后保留。</p>
           <div class="row" style="margin-top:var(--spacing-md)"><button id="detail-demo" type="button">打开详情抽屉</button><a href="pages/index.html">查看采购审批样板</a></div>
+          <p class="component-help">抽屉内继续打开详情或录入时，父层保留，子层从右侧叠加。可在详情中连续打开三层，关闭、取消、Esc 或点击遮罩只退出最上层；窄屏逐层全宽显示。</p>
         </div>
       </section>
 
@@ -515,7 +516,7 @@
       </section>
 
       </details>
-      <footer class="footer"><span>管理后台设计规范 · <span data-design-version>D1.12</span> 候选</span><span>演示数据 / 无外部资源 / 不保存本地配置</span></footer>
+      <footer class="footer"><span>管理后台设计规范 · <span data-design-version>D1.13</span> 候选</span><span>演示数据 / 无外部资源 / 不保存本地配置</span></footer>
     </main>
   </div>
   <div id="feedback" class="feedback" role="status" aria-live="polite" aria-atomic="true" hidden><span id="feedback-text"></span><button id="dismiss-feedback" type="button" aria-label="关闭操作反馈">×</button></div>
@@ -546,6 +547,7 @@
       <h3>基本信息</h3>
       <dl><dt>归属分组</dt><dd id="detail-group"></dd><dt>展示状态</dt><dd id="detail-status"></dd><dt>补充说明</dt><dd id="detail-note"></dd></dl>
       <p class="note">本地预览。表单预览数据只在抽屉里展示。</p>
+      <button id="nested-demo" type="button">查看关联资料</button>
       <h3 class="subheading" style="margin-top:var(--spacing-lg)">处理步骤</h3>
       <ol class="steps" id="steps"><li class="complete"><span class="step-dot">1</span><span>建立记录</span></li><li aria-current="step"><span class="step-dot">2</span><span>信息核对</span></li><li><span class="step-dot">3</span><span>完成确认</span></li></ol><p id="step-description" class="component-help" aria-live="polite">当前：信息核对。此处演示步骤样式，不定义业务审批规则。</p>
     </div>
@@ -554,7 +556,22 @@
       <button id="next-step" class="primary" type="button">下一步示意</button>
     </div>
   </dialog>
+  <dialog id="sample-related" class="drawer" aria-labelledby="related-title">
+    <div class="drawer-head"><h2 id="related-title">关联资料</h2><form method="dialog"><button autofocus aria-label="关闭关联资料">关闭</button></form></div>
+    <div class="drawer-body">
+      <p class="note">第二层抽屉。上一层仍保留，当前只操作这一层。</p>
+      <label for="related-note">核对备注</label><textarea id="related-note" rows="4" placeholder="填写后打开下一层，返回时输入仍在"></textarea>
+      <button id="nested-more" type="button">查看资料明细</button>
+    </div>
+    <div class="drawer-footer"><form method="dialog"><button>返回记录详情</button></form></div>
+  </dialog>
+  <dialog id="sample-leaf" class="drawer" aria-labelledby="leaf-title">
+    <div class="drawer-head"><h2 id="leaf-title">资料明细</h2><form method="dialog"><button autofocus aria-label="关闭资料明细">关闭</button></form></div>
+    <div class="drawer-body"><p>第三层抽屉。关闭本层后，返回关联资料并保留核对备注。</p></div>
+    <div class="drawer-footer"><form method="dialog"><button>返回关联资料</button></form></div>
+  </dialog>
   <dialog id="danger-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-copy"><h3 id="dialog-title">危险操作确认示例</h3><p id="dialog-copy">真实操作应明确对象、影响和恢复方式。本次仅演示二次确认，不会删除任何记录。</p><form method="dialog" class="row" style="justify-content:flex-end"><button value="cancel" autofocus>取消</button><button class="danger" value="confirm">确认演示</button></form></dialog>
+  <script src="pages/assets/drawer.js"></script>
   <script>
     const $ = id => document.getElementById(id);
     const records = [
@@ -603,8 +620,7 @@
       $('detail-status').replaceChildren(makeBadge(record.status));
       $('detail-note').textContent = note || '—';
       setSteps(record.step);
-      $('sample-detail').showModal();
-      $('sample-detail').querySelector('.drawer-body').scrollTop = 0;
+      DrawerLayers.open($('sample-detail'));
     }
     function renderTable() {
       const keyword = $('search').value.trim().toLocaleLowerCase();
@@ -670,11 +686,12 @@
 
     $('table-density').addEventListener('change', () => { $('sample-table').dataset.density = $('table-density').value; notify('列表密度已更新，正文字号保持不变。'); });
     function openSampleForm() {
-      $('sample-create').showModal();
-      $('sample-create').querySelector('.drawer-body').scrollTop = 0;
+      DrawerLayers.open($('sample-create'));
     }
     $('new-record').addEventListener('click', openSampleForm);
     $('primary-demo').addEventListener('click', openSampleForm);
+    $('nested-demo').addEventListener('click', () => DrawerLayers.open($('sample-related')));
+    $('nested-more').addEventListener('click', () => DrawerLayers.open($('sample-leaf')));
     $('detail-demo').addEventListener('click', () => openDetail(records[1]));
     $('secondary-demo').addEventListener('click', () => notify('次要操作反馈示例：用于返回、取消或辅助操作。'));
     $('danger-demo').addEventListener('click', () => { $('danger-dialog').returnValue = ''; $('danger-dialog').showModal(); });
@@ -699,7 +716,6 @@
         invalid ||= $('record-group');
       }
       if (invalid) { invalid.focus(); return; }
-      $('sample-create').close();
       openDetail({ id: 'DEMO-PREVIEW', name, group, status: '待补资料', step: 0 }, $('record-note').value.trim());
     });
     $('reset-form').addEventListener('click', () => { $('sample-form').reset(); clearFormErrors(); $('record-name').focus(); });
