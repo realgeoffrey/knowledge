@@ -17,7 +17,7 @@ import tempfile
 
 
 GROUPS = ("colors", "typography", "rounded", "spacing", "components")
-PAGE_FILES = ("ai/prototypes/design-system.html", "ai/prototypes/pages/index.html")
+PAGE_FILES = ("prototypes/design-system.html", "prototypes/interactive/index.html")
 FORMAT_VERSION = "alpha"
 START = "/* DESIGN_TOKENS_START */"
 END = "/* DESIGN_TOKENS_END */"
@@ -32,7 +32,7 @@ VERSION_SLOT = re.compile(r"<[a-zA-Z][^>]*\bdata-design-version\b[^>]*>")
 
 def page_files(root):
     """Reject omitted HTML pages before checking or writing any registered page."""
-    folder = root / "ai/prototypes"
+    folder = root / "prototypes"
     if folder.is_symlink():
         raise ValueError("原型目录不支持符号链接")
     discovered = set()
@@ -159,9 +159,9 @@ def main():
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     try:
-        design_path = root / "ai/specs/design.md"
+        design_path = root / "prototypes/design.md"
         if design_path.resolve() != design_path:
-            raise ValueError("ai/specs/design.md: 设计规范不支持符号链接")
+            raise ValueError("prototypes/design.md: 设计规范不支持符号链接")
         document = design_path.read_text(encoding="utf-8")
         pages = []
         for name in page_files(root):

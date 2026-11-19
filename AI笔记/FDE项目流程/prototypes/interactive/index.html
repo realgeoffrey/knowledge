@@ -94,7 +94,7 @@
     header a { display: inline-flex; align-items: center; color: var(--colors-sidebar-text); }
     header .eyebrow { color: var(--colors-sidebar-muted); }
     header :focus-visible { outline-color: var(--colors-sidebar-accent); }
-    .eyebrow, .page-id, small { font-size: var(--typography-caption-font-size); color: var(--colors-muted); }
+    .eyebrow, .caption, small { font-size: var(--typography-caption-font-size); color: var(--colors-muted); }
     main { padding: var(--spacing-md) var(--spacing-lg); }
     .panel { background: var(--colors-surface); padding: var(--spacing-md); border: 1px solid var(--colors-border); border-radius: var(--rounded-md); margin-bottom: var(--spacing-md); min-width: 0; }
     .bar { display: flex; gap: var(--spacing-md); align-items: center; justify-content: space-between; flex-wrap: wrap; }
@@ -105,7 +105,7 @@
     h2, h3 { font-size: var(--typography-subtitle-font-size); line-height: var(--typography-subtitle-line-height); font-weight: var(--typography-title-font-weight); margin: 0 0 var(--spacing-xs); }
     h3 { margin-top: var(--spacing-lg); }
     p { margin: 0 0 var(--spacing-sm); }
-    .page-id { margin: 0; }
+    .caption { margin: 0; }
     input, select, textarea { min-height: var(--components-button-primary-height); padding: 4px 10px; border: 1px solid var(--colors-control-border); border-radius: var(--rounded-sm); background: var(--colors-surface); color: inherit; max-width: 100%; min-width: 0; }
     .controls input { width: 280px; }
     #new-request { margin-top: var(--spacing-md); }
@@ -155,7 +155,7 @@
   <header>
     <span class="eyebrow">业务样板 / 采购管理 · 设计 <span data-design-version>D1.13</span></span>
     <h1>采购申请</h1>
-    <p>示例原型 P1.0 · 示例需求 R1.0 · 演示数据 · 尚无客户确认</p>
+    <p>通用交互示例 · 演示数据 · 尚无客户确认</p>
     <p>角色、权限和操作均为本地模拟。刷新或重置会还原数据；不连接任何真实系统。</p>
     <nav class="eyebrow" aria-label="原型参考"><a href="../design-system.html">设计规范</a><a href="../README.md">原型说明</a></nav>
   </header>
@@ -172,7 +172,7 @@
     <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
 
     <section id="list" class="panel" aria-labelledby="list-heading">
-      <h2 id="list-heading" tabindex="-1">申请列表</h2><p class="page-id">PAGE-001 · REQ-001 / REQ-003</p>
+      <h2 id="list-heading" tabindex="-1">申请列表</h2>
       <p id="scope" class="hint"></p>
       <div class="controls" role="search"><label for="search">搜索事项</label><input id="search" type="search" placeholder="输入事项关键词" maxlength="60"><button id="clear-search" type="button">重置筛选</button></div>
       <button id="new-request" class="primary" type="button">新建申请</button>
@@ -180,14 +180,14 @@
         <table><thead><tr><th scope="col">编号</th><th scope="col">采购事项</th><th scope="col">金额（元）</th><th scope="col">提交人</th><th scope="col">状态</th><th scope="col">操作</th></tr></thead><tbody id="rows"></tbody></table>
       </div>
       <p id="empty" class="empty" hidden>没有匹配的申请，请调整关键词或重置筛选。</p>
-      <p id="list-count" class="page-id" role="status"></p>
+      <p id="list-count" class="caption" role="status"></p>
     </section>
 
   </main>
   <footer>评审重点：字段、角色范围、审批状态、异常反馈。<br>此示例不证明真实系统的权限、并发、持久化和事务正确性。</footer>
   <dialog id="create" class="drawer" aria-labelledby="create-heading">
     <div class="drawer-head">
-      <div><h2 id="create-heading">新建采购申请</h2><p class="page-id">PAGE-002 · REQ-001</p></div>
+      <div><h2 id="create-heading">新建采购申请</h2></div>
       <form method="dialog"><button autofocus aria-label="关闭新建申请抽屉">关闭</button></form>
     </div>
     <div class="drawer-body">
@@ -205,7 +205,7 @@
   </dialog>
   <dialog id="detail" class="drawer" aria-labelledby="detail-heading">
     <div class="drawer-head">
-      <div><h2 id="detail-heading" tabindex="-1">申请详情</h2><p class="page-id">PAGE-003 · REQ-002 / REQ-003</p></div>
+      <div><h2 id="detail-heading" tabindex="-1">申请详情</h2></div>
       <form method="dialog"><button autofocus aria-label="关闭申请详情抽屉">关闭</button></form>
     </div>
     <div class="drawer-body">

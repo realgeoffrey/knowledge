@@ -20,7 +20,7 @@ class SyncDesignCLI(unittest.TestCase):
         source = Path(__file__).with_name("sync_design.py")
         if source.exists():
             shutil.copyfile(source, self.script)
-        self.page = self.root / "ai/prototypes/design-system.html"
+        self.page = self.root / "prototypes/design-system.html"
         self.page.parent.mkdir()
         self.page.write_text(
             '<!doctype html><html lang="zh-CN"><head>'
@@ -31,8 +31,8 @@ class SyncDesignCLI(unittest.TestCase):
             '<strong data-design-version>old</strong><p>手工布局保留</p>'
             '</body></html>', encoding="utf-8",
         )
-        (self.root / "ai/prototypes/pages").mkdir()
-        (self.root / "ai/prototypes/pages/index.html").write_bytes(self.page.read_bytes())
+        (self.root / "prototypes/interactive").mkdir()
+        (self.root / "prototypes/interactive/index.html").write_bytes(self.page.read_bytes())
         self.tokens = {
             "name": "Fixture", "version": "alpha",
             "colors": {"primary": "#1d4ed8"},
@@ -42,8 +42,8 @@ class SyncDesignCLI(unittest.TestCase):
         self.write_design()
 
     def write_design(self, revision="D1.0"):
-        (self.root / "ai/specs").mkdir(parents=True, exist_ok=True)
-        (self.root / "ai/specs/design.md").write_text(
+        (self.root / "prototypes").mkdir(parents=True, exist_ok=True)
+        (self.root / "prototypes/design.md").write_text(
             "---\n" + json.dumps(self.tokens, ensure_ascii=False, indent=2)
             + "\n---\n# 设计规范\n\n规范版本：" + revision + "\n",
             encoding="utf-8",
@@ -82,7 +82,7 @@ class SyncDesignCLI(unittest.TestCase):
         self.assertEqual(self.run_sync("--check").returncode, 0)
 
     def test_design_spec_linked_to_human_input_is_rejected_before_writing(self):
-        document = self.root / "ai/specs/design.md"
+        document = self.root / "prototypes/design.md"
         protected = self.root / "待定&待确认.md"
         document.rename(protected)
         document.symlink_to(protected)
@@ -120,7 +120,7 @@ class SyncDesignCLI(unittest.TestCase):
 
     def test_duplicate_group_is_rejected_instead_of_silently_replacing_values(self):
         previous = self.page.read_bytes()
-        path = self.root / "ai/specs/design.md"
+        path = self.root / "prototypes/design.md"
         document = path.read_text(encoding="utf-8")
         path.write_text(document.replace('"colors": {', '"colors": {"primary": "#eeeeee"}, "colors": {'))
         result = self.run_sync()
@@ -161,7 +161,7 @@ class SyncDesignCLI(unittest.TestCase):
 
     def test_duplicate_revision_line_keeps_page_unchanged(self):
         previous = self.page.read_bytes()
-        path = self.root / "ai/specs/design.md"
+        path = self.root / "prototypes/design.md"
         path.write_text(path.read_text(encoding="utf-8") + "规范版本：D9.9\n", encoding="utf-8")
         result = self.run_sync()
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
@@ -183,7 +183,7 @@ class SyncDesignCLI(unittest.TestCase):
                 self.assertEqual(self.page.read_bytes(), previous)
 
     def test_business_page_is_synced_and_its_drift_is_read_only(self):
-        business = self.root / "ai/prototypes/pages/index.html"
+        business = self.root / "prototypes/interactive/index.html"
         business.write_bytes(self.page.read_bytes())
         result = self.run_sync()
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -197,14 +197,14 @@ class SyncDesignCLI(unittest.TestCase):
         self.assertEqual(business.read_bytes(), before)
 
     def test_invalid_business_page_does_not_update_showcase(self):
-        (self.root / "ai/prototypes/pages/index.html").write_text("<html></html>", encoding="utf-8")
+        (self.root / "prototypes/interactive/index.html").write_text("<html></html>", encoding="utf-8")
         before = self.page.read_bytes()
         result = self.run_sync()
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
         self.assertEqual(self.page.read_bytes(), before)
 
     def test_repository_showcase_uses_tokens_without_a_second_value(self):
-        page = Path(__file__).resolve().parents[2] / "ai/prototypes/design-system.html"
+        page = Path(__file__).resolve().parents[2] / "prototypes/design-system.html"
         text = page.read_text(encoding="utf-8")
         self.assertIsNone(re.search(r"var\(--[a-z0-9-]+,", text))
         self.assertIn("h1 { font-size: var(--typography-title-font-size);", text)
@@ -216,7 +216,7 @@ class SyncDesignCLI(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_unregistered_page_fails_check_and_sync_before_any_write(self):
-        extra = self.root / 'ai/prototypes/pages/new.html'
+        extra = self.root / 'prototypes/interactive/new.html'
         extra.write_bytes(self.page.read_bytes())
         before = self.page.read_bytes()
         for args in (('--check',), ()):
@@ -227,8 +227,9 @@ class SyncDesignCLI(unittest.TestCase):
                 self.assertIn('new.html', result.stderr)
                 self.assertEqual(self.page.read_bytes(), before)
 
+
     def test_unreadable_prototype_directory_fails_before_any_write(self):
-        blocked = self.root / 'ai/prototypes/restricted'
+        blocked = self.root / 'prototypes/restricted'
         blocked.mkdir()
         (blocked / 'extra.html').write_bytes(self.page.read_bytes())
         blocked.chmod(0)

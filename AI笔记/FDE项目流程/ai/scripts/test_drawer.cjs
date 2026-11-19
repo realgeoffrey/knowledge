@@ -17,7 +17,7 @@ test('多层抽屉逐层返回，保留父节点与焦点，复用为首层时�
   const opener = drawer('opener');
   const document = {activeElement: opener, querySelectorAll: () => drawers};
   const context = {window: {addEventListener() {}}, document};
-  const file = path.join(__dirname, '../prototypes/pages/assets/drawer.js');
+  const file = path.join(__dirname, '../../prototypes/interactive/assets/drawer.js');
   vm.runInNewContext(existsSync(file) ? readFileSync(file, 'utf8') : '', context);
   const layers = context.window.DrawerLayers;
   assert.equal(typeof layers?.open, 'function');

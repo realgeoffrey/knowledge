@@ -360,7 +360,7 @@
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
     @media print { .sidebar, .top-links, .feedback, .filter-actions, .screen-controls, #reset-all { display: none !important; } .page { margin: 0; } main { padding: 20px 0; } .panel, .screen { break-inside: avoid; } }
   </style>
-  <link rel="stylesheet" href="pages/assets/drawer.css">
+  <link rel="stylesheet" href="interactive/assets/drawer.css">
 </head>
 <body>
   <a class="skip-link" href="#main">跳到规范正文</a>
@@ -380,7 +380,7 @@
     <div class="sidebar-note"><strong><span data-design-version>D1.13</span> · 候选规范</strong>供设计讨论与实现对齐。<br>批准范围以项目记录为准。</div>
   </aside>
   <div class="page">
-    <header class="topbar"><div class="breadcrumbs">FDE 项目流程 <span aria-hidden="true"> / </span> <b>设计规范展示</b></div><div class="top-links"><a href="../specs/design.md">规范源文件</a><a href="README.md">原型说明</a><a href="pages/index.html">业务交互稿</a></div></header>
+    <header class="topbar"><div class="breadcrumbs">FDE 项目流程 <span aria-hidden="true"> / </span> <b>设计规范展示</b></div><div class="top-links"><a href="design.md">规范源文件</a><a href="README.md">原型说明</a><a href="interactive/index.html">业务交互稿</a></div></header>
     <main id="main" tabindex="-1">
       <section id="overview" class="hero" aria-labelledby="overview-title">
         <div class="eyebrow">DESIGN SYSTEM <span aria-hidden="true">/</span> <span data-design-version>D1.13</span></div>
@@ -392,7 +392,7 @@
           <div class="principle"><span class="number">02 / 状态</span><strong>同一状态统一表达</strong><small>列表和详情使用同一文案与语义色，徽标始终带文字。</small></div>
           <div class="principle"><span class="number">03 / 操作</span><strong>操作前能判断后果</strong><small>主操作清楚，危险操作写明对象和影响，提供明确的取消入口。</small></div>
         </div>
-        <div class="note maintenance"><strong>演示边界：</strong>本页展示设计语言与交互状态，所有事项、数量和时间均为模拟。它不构成真实业务原型或客户批准。规范维护：修改 <a href="../specs/design.md">design.md</a> 后，在项目根目录运行 <code>python3 ai/scripts/sync_design.py</code> 同步本页。</div>
+        <div class="note maintenance"><strong>演示边界：</strong>本页展示设计语言与交互状态，所有事项、数量和时间均为模拟。它不构成真实业务原型或客户批准。规范维护：修改 <a href="design.md">design.md</a> 后，在项目根目录运行 <code>python3 ai/scripts/sync_design.py</code> 同步本页。</div>
       </section>
 
       <section id="foundation" class="section" aria-labelledby="foundation-title">
@@ -426,7 +426,7 @@
           <article class="pattern-item"><h3>文件与数据交换</h3><p>文件、导入导出：说明类型与范围，展示处理进度、失败项和恢复入口。</p><small>文件列表 / 上传反馈 / 结果明细</small></article>
           <article class="pattern-item"><h3>流程与业务处理 · 按需</h3><p>待办、单据、处理记录：以已确认状态与动作组织页面，不预设审批路径。</p><small>待办列表 / 详情 / 处理记录</small></article>
         </div>
-        <p class="component-help">这是页面模式索引，不是功能已实现的声明。正式项目复用已选库的组件：Vue 对应 Element Plus / Ant Design Vue，React 对应 Ant Design。一次只采用一个库；业务样板见<a href="pages/index.html">采购申请列表、录入、详情与审批</a>。</p>
+        <p class="component-help">这是页面模式索引，不是功能已实现的声明。正式项目复用已选库的组件：Vue 对应 Element Plus / Ant Design Vue，React 对应 Ant Design。一次只采用一个库；业务样板见<a href="interactive/index.html">采购申请列表、录入、详情与审批</a>。</p>
       </section>
 
       <section id="layout" class="section" aria-labelledby="layout-title">
@@ -480,7 +480,7 @@
         <div class="panel">
           <h3>右侧抽屉</h3>
           <p class="component-help">默认宽 520px，窄屏全宽。顶部提供标题与关闭入口，内容区独立滚动，主要操作放在底部。列表筛选和位置在关闭后保留。</p>
-          <div class="row" style="margin-top:var(--spacing-md)"><button id="detail-demo" type="button">打开详情抽屉</button><a href="pages/index.html">查看采购审批样板</a></div>
+          <div class="row" style="margin-top:var(--spacing-md)"><button id="detail-demo" type="button">打开详情抽屉</button><a href="interactive/index.html">查看采购审批样板</a></div>
           <p class="component-help">抽屉内继续打开详情或录入时，父层保留，子层从右侧叠加。可在详情中连续打开三层，关闭、取消、Esc 或点击遮罩只退出最上层；窄屏逐层全宽显示。</p>
         </div>
       </section>
@@ -507,7 +507,7 @@
             </ul>
           </div>
         </div>
-        <div class="delivery note">采用范围和版本由项目确认。具体规则见 <a href="../specs/design.md">规范源文件</a>，业务路径见 <a href="pages/index.html">采购申请交互稿</a>。</div>
+        <div class="delivery note">采用范围和版本由项目确认。具体规则见 <a href="design.md">规范源文件</a>，业务路径见 <a href="interactive/index.html">采购申请交互稿</a>。</div>
       </section>
       <details id="screen-option" class="option-screen"><summary>可选能力：数据大屏 · 展开独立设计示例</summary>
       <section id="screen" class="section" aria-labelledby="screen-title">
@@ -571,7 +571,7 @@
     <div class="drawer-footer"><form method="dialog"><button>返回关联资料</button></form></div>
   </dialog>
   <dialog id="danger-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-copy"><h3 id="dialog-title">危险操作确认示例</h3><p id="dialog-copy">真实操作应明确对象、影响和恢复方式。本次仅演示二次确认，不会删除任何记录。</p><form method="dialog" class="row" style="justify-content:flex-end"><button value="cancel" autofocus>取消</button><button class="danger" value="confirm">确认演示</button></form></dialog>
-  <script src="pages/assets/drawer.js"></script>
+  <script src="interactive/assets/drawer.js"></script>
   <script>
     const $ = id => document.getElementById(id);
     const records = [
