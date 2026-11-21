@@ -236,7 +236,6 @@
 | 来源 | 采用的原则 / 项目取舍 |
 | --- | --- |
 | [Ant Design 字体](https://ant.design/docs/spec/font-cn/) / [布局](https://ant.design/docs/spec/layout-cn/) | 中文层级、数字等宽、自适应与 8px 节奏；14/22px 正文、20px 标题和具体留白为项目选择 |
-| [国家农产品质量安全追溯管理信息平台](https://www.qsst.moa.gov.cn/xxcj/) | 参考农产品追溯、监管与监测的业务场景 |
 | [Ant Design 色彩](https://ant.design/docs/spec/colors/) / [WCAG 文字对比](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) / [非文本对比](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html) | 以中性色分层，品牌色用于重点与反馈，分别核对文字和控件识别所需的对比度 |
 | [数据展示](https://ant.design/docs/spec/data-display-cn/) / [数据录入](https://ant.design/docs/spec/data-entry-cn/) | 列表优先级、状态/操作完整、标签与上下文 |
 | [TDesign 尺寸](https://github.com/Tencent/tdesign-common/blob/develop/style/web/theme/_size.less) / [字体](https://github.com/Tencent/tdesign-common/blob/develop/style/web/theme/_font.less) | 尺寸与字阶分级；32px 控件、48/40px 行高为本项目组合 |
