@@ -525,7 +525,7 @@
     "key": "alt+cmd+right",
     "command": "-workbench.action.terminal.focusNextPane",
     "when": "terminalFocus && terminalHasBeenCreated && terminalSplitPaneActive || terminalFocus && terminalProcessSupported && terminalSplitPaneActive"
-  }
+  },
 
   // cursor only
   {

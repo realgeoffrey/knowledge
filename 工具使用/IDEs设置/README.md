@@ -6,7 +6,7 @@
 1. [Visual Studio Code](#visual-studio-code)
 1. [JetBrains](#jetbrains)
 1. [IntelliJ IDEA](#intellij-idea)
-1. [WebStorm](#webStorm)
+1. [WebStorm](#webstorm)
 
 ---
 
@@ -27,11 +27,11 @@
 
             必须手动输入`/`触发，用来执行特定的任务流（如写测试、重构代码）。快速调用常用的 Prompt 模板。
 
-        - 可配置 项目级`.cursor/rules或commands/`、用户级`~/.cursor/commands/`（用户级规则设置在ide中；`~/.cursor/rules/`放的规则会作为每个项目的规则）、团队级 的规则、指令
+        - 项目规则放在 `.cursor/rules/`，项目指令放在 `.cursor/commands/`。用户指令放在 `~/.cursor/commands/`；用户规则可在 Cursor 设置中配置，也可保存在本机的 `~/.cursor/rules/`。
 
     ><details>
-    ><summary>rules、commands、skills、hooks、subagents、MCP等 都只作用于agents聊天（各种mode），不会作用于Tab补全或其他AI功能</summary>
-    >核心原因是延迟（Latency）。如：Tab补全，需要伴随你的每一次击键实时响应，要求极高的响应速度。如果你每敲一个字母都要等 GPT-4 思考一秒钟，编码体验将是灾难性的。因此，Cursor 专门设计了这个模型，让其在处理极其庞大的代码上下文时，只需生成很少的 Token（预测你的下一步代码），从而实现毫秒级的极速响应。
+    ><summary>哪些配置会作用于 Tab 补全？</summary>
+    >Rules 作用于 Agent 聊天。Tab 有自己的 hook，例如 `beforeTabFileRead` 可控制补全读取文件，`afterTabFileEdit` 可在接受 Tab 编辑后执行脚本。[Cursor Hooks 文档](https://cursor.com/docs/hooks)
     ></details>
 
     2. Agent Skills
@@ -52,18 +52,18 @@
 
         项目级配置`.cursor/mcp.json`，用户级配置`~/.cursor/mcp.json`
 
-        >MCP 中若使用 `npx` 等 Node 命令，子进程继承的是 IDE 进程启动时的环境（如 `PATH`），与你在终端里用 nvm 改默认版本不是同一会话：nvm 通过改写当前 shell 的 `PATH` 生效，已运行的 IDE 不会随其他终端里的 `nvm use` 而更新子进程环境。因此 nvm 切换默认版本后需重启 IDE，MCP 才会用到新的 Node。
+        >MCP 若通过 `npx` 等命令启动本地服务，Node 版本取决于服务启动时的 `PATH`。另一个终端里的 `nvm use` 只改变该 Shell；要固定版本，可在启动配置中指定 Node 的绝对路径并重启该服务。
     6. AGENTS.md
 
     | cursor支持功能 | 自动生效 | 可手动调用 | 核心角色 |
     | --------- | ----- | ------- | ------ |
-    | AGENTS.md    | 是（隐式全局加载） | 否 | **描述整个项目大纲**，作为AI的README，`.cursor/rules`的简化替代<br>放高层策略、优先级和全局限制；不要放实现细节或敏感数据 |
-    | Rules(*.mdc) | 是（隐式加载） | 是（可`@`引用） | **具体行为规则与约束**（安全、合规、格式等）<br>将规则拆成小模块，按优先级编号；支持被 Skill/Command 引用 |
+    | AGENTS.md    | 是（根目录作用于全项目，子目录可细化） | 否 | **项目说明**，作为 AI 的 README，可记录开发约定和构建、测试方法 |
+    | Rules(*.mdc) | 取决于规则类型（始终、按文件、由 Agent 判断或仅手动） | 是（可`@`引用） | **具体行为规则与约束**（安全、合规、格式等） |
     | Skills       | 是（隐式加载，根据上下文按需加载） | 是（可`/`引用） | **SOP**封装、标准化（描述、指令、工具定义）<br>规定审查标准和输出格式，按需加载资源成为上下文 |
     | Commands     | 否 | 是（用`/`触发） | **快捷入口**：手动触发入口，封装执行其他功能 |
     | Hooks        | 是（事件触发） | 否 | **生命周期自动化**：在特定事件时执行操作 |
-    | Subagents    | （由主Agent委派启动） | 否 | **专项分工**：上下文隔离、并行处理、领域专业化 |
-    | MCP          | （由AI调用） | 否 | **外部能力扩展**：打破沙箱限制，允许 Cursor 读写数据库、操作浏览器、访问本地文件系统以外的资源<br>用（隐性/显性）指令提示AI执行相关MCP指令解决问题 |
+    | Subagents    | 由主 Agent 委派 | 是（`/名称`） | **专项分工**：上下文隔离、并行处理、领域专业化 |
+    | MCP          | 由 Agent 调用已启用的工具 | 可提示 Agent 调用 | **外部能力扩展**：通过已配置的服务访问数据库、浏览器等资源，具体能力取决于服务提供的工具及其权限 |
 
     7. plugins：将 [rules、commands、skills、hooks、subagents、MCP](https://cursor.com/cn/docs/reference/plugins) 打包成可分发的包，配置都跟着插件安装路径（项目级或用户级），而不是各个功能路径。也支持用户级私有plugins（不需要发布公开的github，仅把某plugin文件夹复制到`~/.cursor/plugins/local/某plugin`即可）
 
@@ -82,7 +82,7 @@
         `jsconfig.json`/`tsconfig.json`里的`baseUrl`/`paths`等不影响代码“执行”，它只影响IDE（+ TypeScript）编译阶段的“路径解析”，👉 运行时（Node / 浏览器）默认完全不认识这些 alias，需要再通过构建工具（Vite、webpack等）或运行时插件才能使代码指向正确路径。
 
 ### JetBrains
-<https://github.com/zpj80231/idea-set>（激活）
+通过 JetBrains Account 或离线激活码激活许可证。[JetBrains 激活说明](https://www.jetbrains.com/help/idea/register.html)
 
 ### IntelliJ IDEA
 1. [Backup and Sync](https://plugins.jetbrains.com/plugin/20868-backup-and-sync)

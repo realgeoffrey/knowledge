@@ -1,22 +1,22 @@
 # [OpenTelemetry](https://opentelemetry.io)
 
 ## 目录
-1. [OpenTelemetry](#opentelemetry)
+1. [OpenTelemetry](#opentelemetry-1)
 
 ---
 ### OpenTelemetry
->参考：[OpenTelemetry官方中文文档](https://github.com/open-telemetry/docs-cn)、[kubernetes-handbook：OpenTelemetry](https://github.com/rootsongjc/kubernetes-handbook/blob/main/observability/opentelemetry/index.md)。
+>参考：[OpenTelemetry 官方中文文档](https://opentelemetry.io/zh/docs/)、[追踪中的核心概念](https://opentelemetry.io/docs/concepts/signals/traces/)。
 
 1. 介绍OpenTelemetry（OTel）
 
     1. 是什么？
 
-        OpenTelemetry是一组标准和工具的集合，旨在管理观测类数据、**分布式链路追踪**，如：trace、metrics、logs、等（未来可能有新的观测类数据类型出现）。这些数据可供支持OpenTelemetry的后端中间件（OpenTelemetry不涉及的）进行：存储、查询、可视化等服务，用以实现数据观测、性能分析、系统监控、服务告警等能力。
+        OpenTelemetry 是一组用于生成、采集、处理和导出遥测数据的标准和工具。常见信号包括链路追踪（traces）、指标（metrics）和日志（logs）。
 
-        OpenTelemetry提供与厂商（vendor）无关的实现，旨在提供基于云环境的可观测性软件的标准化方案，是用于收集远程监测数据并将其导出到目标系统的专用协议（遥测），根据用户的需要将观测类数据导出到不同的后端（如：开源的Prometheus、Jaeger或云厂商的服务中），遥测产生数据的方式与分析数据的方式相分离。
+        OpenTelemetry 提供与厂商无关的 API、SDK 和 Collector。应用可直接导出数据，也可先发给 Collector 处理，再送到相应的后端（如 Prometheus 存指标、Jaeger 存追踪）。OTLP 是这套工具使用的遥测传输协议之一。
 
         >1. 可观测性（observability）：是一种根据系统生成外部数据（可观测性的 "三大支柱"：日志Logging、指标Metric、跟踪Tracing）研判系统内部发生情况的能力。帮助跨职能团队理解和回答有关高度分布式系统中正在发生的事情的具体问题。
-        >2. 遥测（telemetering）：广义上是，对象参量的近距离测量值传输至远距离的测量站来实现远距离测量的技术。
+        >2. 遥测（telemetry）：在这里指应用或基础设施产生并导出的运行数据。
     2. 不是什么？
 
         OpenTelemetry不提供与可观测性相关的后端服务，这类后端服务通常提供：存储、查询、可视化等服务。
@@ -28,47 +28,47 @@
         规范了观测数据的数据模型以及采集、处理、导出方法，包括：trace、metrics、logs（未来不排除会有新的类型）。
     4. 描述：[opentelemetry-proto](https://github.com/open-telemetry/opentelemetry-proto)
 
-        同时为了方便使用，通过[protobuf](https://github.com/protocolbuffers/protobuf)来描述。
+        该仓库用 [Protocol Buffers](https://github.com/protocolbuffers/protobuf) 定义 OTLP 消息和服务接口。
 2. 概念
 
     - 事务（transaction）
 
-        分布式系统需要执行的所有动作，以便服务能够做一些有用的事情，事务都需要消耗资源。特定某个事务，就是完成某一个特定动作进行的完整链路。
+        这里指一次业务操作，例如提交订单。OpenTelemetry 用 trace 描述执行链路，用 span 记录其中的一步。
     - 属性（attribute）
 
-        最基本的数据结构。定义为一个键和一个值。OpenTelemetry的每个数据结构都包含一个属性列表。
+        描述遥测数据的键值对。例如在 HTTP span 上记录 `http.request.method=GET`。
     - 事件（event）
 
-        最基本的对象。事件只是一个时间戳和一组属性。
+        span event 记录操作过程中某个时刻发生的事，包含名称、时间戳和可选属性。
 
         >使用一组属性而不是简单的消息/报文，可以使分析工具正确地索引事件，并使它们可以被搜索到。
     - 上下文（context）
 
-        把不独特、一组事件共有的属性拉出到围绕事件的封装中写入。整个链路都能访问到。
+        在执行过程中传递当前 span、baggage 等信息。跨服务调用时，发送方把追踪上下文注入请求，接收方提取后可创建子 span。读链路时，还要区分数据来自哪个实体、描述了哪次操作：
 
         1. 资源（resource）
 
-            静态上下文。一旦程序启动，这些资源属性的值通常不会改变。观察服务和机器。
+            标识产生遥测数据的实体，例如用 `service.name` 标识服务。同一资源可关联多个 span、指标和日志。
         2. 跨度（span）
 
-            动态上下文。观察事务。
+            链路中的一次操作，有名称、开始和结束时间，可附带属性和事件。
 
-            - 通过添加以下这些基础属性，所有的事件现在可以被组织成一个**图**，代表它们的因果关系。
+            - 以下标识符把多个 span 关联成一条链路：
 
                 1. traceid
 
-                    识别整个事务
+                    标识整条链路，同一链路中的 span 共享此 ID。
                 2. spanid
 
-                    识别当前操作（同个parentid下，spanid从小到大表示请求顺序）
+                    标识当前操作。ID 的数值没有先后含义；要看哪些操作并行，可比较起止时间。
                 3. parentid
 
-                    识别父操作
+                    指向父 span 的 ID；根 span 没有父 span。
 
-        >不是所有的事件都有两种类型的上下文。只有资源的自由浮动事件，如程序启动时发出的事件，被称为日志（log）。作为分布式事务的一部分而发生的事件被称为跨度事件（span event）。
+        >日志可以独立产生，也可以携带 Trace ID 和 Span ID，与具体操作关联。span event 直接记录在所属 span 上。
     - 追踪（trace）
 
-        用traceid、spanid、parentid等属性把 事件 组织成的 图的事件。提供了一个请求从接收到处理完成整个生命周期的跟踪路径，一次请求通常经过N个系统，因此也被称为分布式链路追踪。
+        由共享 Trace ID 的一个或多个 span 组成。沿父子关系可以追踪一次请求在多个服务间的处理路径。
 
         >Jaeger（分布式追踪系统）、Zipkin（分布式实时数据追踪系统）
 
@@ -84,11 +84,11 @@
         传统的日志，提供精确的系统记录。
     - baggage
 
-        上下文透传。
+        随上下文跨服务传递的键值对。需要在后端检索某个值时，应在埋点中显式把它记录为属性。避免传递凭据等敏感信息。
     - 采样
 
-        由于每一个请求都会生成一个链路，为了减少性能消耗，避免存储资源的浪费，[Dapper](https://research.google/pubs/pub36356/)并不会上报所有的span数据，而是使用采样的方式。e.g. 每秒有1000个请求访问系统，如果设置采样率为1/1000，那么只会上报一个请求到存储端。
-3. APM（Application Performance Monitoring，应用性能观测）通过Tracing+Metrics+Logging的解决方案：
+        按比例采样可以减少上报和存储的链路数据。例如每秒有 1000 条新链路，按 1/1000 的概率采样，长期平均每秒采中一条，单秒的实际数量会波动。
+3. APM（Application Performance Monitoring，应用性能监控）通过Tracing+Metrics+Logging的解决方案：
 
    1. 基于Metrics告警发现异常
    2. 通过Tracing定位到具体的系统和方法

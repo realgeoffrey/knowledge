@@ -65,7 +65,7 @@ time 「命令」
 ```shell
 command -v 「命令」  # 输出将被执行的路径或定义（POSIX 推荐）
 type -a 「命令」     # 列出同名别名、函数、内建与可执行文件
-which 「命令」       # 仅查 PATH 中的可执行文件，看不到别名/函数
+which 「命令」       # 行为因 Shell 而异，Zsh 内建 which 也能显示别名和函数
 ```
 
 #### 网络连接测试
@@ -135,7 +135,7 @@ nslookup -type=AAAA 「域名」
 
 dig 「域名」 AAAA
 
-ping6 「域名」    # macOS（也可用 ping -6）
+ping6 「域名」    # macOS
 ping -6 「域名」  # Linux
 curl -6 "「URL」"
 ```
@@ -180,7 +180,7 @@ rsync -av --progress 「来源路径」 「目标路径」
 rsync -avn 「来源路径」 「目标路径」   # dry-run：只预览，不真正写
 ```
 
-后续同步只传差异。源路径末尾有 `/` 表示“同步目录**内容**”，无 `/` 表示“同步目录**本身**”（目标下多一层同名目录）。
+默认按大小和修改时间跳过未变的文件。远程同步可只传变化的数据块，本地复制默认整文件传输。源路径末尾有 `/` 表示“同步目录**内容**”，无 `/` 表示“同步目录**本身**”（目标下多一层同名目录）。
 
 #### 图形界面文件上传/下载（[lrzsz](https://www.ohse.de/uwe/software/lrzsz.html)）
 ```shell
@@ -214,11 +214,11 @@ passwd                 # 改当前用户密码
     ```shell
     # macOS
     md5 「文件」
-    md5 -s 「字符串」    # 或 echo -n 「字符串」 | md5
+    md5 -s 「字符串」    # 或 printf '%s' '「字符串」' | md5
 
     # Linux
     md5sum 「文件」
-    echo -n 「字符串」 | md5sum
+    printf '%s' '「字符串」' | md5sum
 
     # Windows PowerShell / cmd.exe
     certutil -hashfile 「文件」 MD5
@@ -235,7 +235,7 @@ passwd                 # 改当前用户密码
     ```shell
     # macOS、Linux（默认算法多为 SHA-1，校验请显式指定）
     shasum -a 256 「文件」
-    echo -n 「字符串」 | shasum -a 256
+    printf '%s' '「字符串」' | shasum -a 256
     # -a：1（默认）、224、256、384、512、512224、512256
     # Linux 也可：sha256sum / sha512sum 等
 
@@ -247,8 +247,8 @@ passwd                 # 改当前用户密码
     ```shell
     # 字符串
     printf '%s' '字符串' | base64
-    printf '%s' '5a2X56ym5LiyCg==' | base64 -d  # Linux
-    printf '%s' '5a2X56ym5LiyCg==' | base64 -D  # macOS
+    printf '%s' '5a2X56ym5Liy' | base64 -d  # Linux
+    printf '%s' '5a2X56ym5Liy' | base64 -D  # macOS
 
     # 文件
     base64 「文件」                 # Linux 编码
@@ -327,7 +327,7 @@ vi ~/.zprofile    # 登录
 
 # Bash
 vi ~/.bashrc        # 交互式非登录
-vi ~/.bash_profile  # 登录（若无此文件，部分系统会读 ~/.profile）
+vi ~/.bash_profile  # 登录（依次查找 ~/.bash_profile、~/.bash_login、~/.profile，读取第一个可读文件）
 
 # 改完立即生效，或重开终端
 source "「刚修改的配置文件」"
@@ -562,7 +562,7 @@ read -r 「变量名，默认 REPLY」
 read -r -t 「秒数」 「变量名」          # 超时
 read -r -p '「提示信息」' 「变量名」  # 提示
 read -r -a 「数组名」                   # 从下标 0 起
-read -r -n 「字符数」 「变量名」       # 读满指定字符数
+read -r -n 「字符数」 「变量名」       # 最多读指定字符数，遇到行结束符可提前返回
 read -r -e 「变量名」                  # 启用 Readline
 read -r -d '「结束符」' 「变量名」      # 读到指定结束符
 read -r -s 「变量名」                  # 不回显（密码）
@@ -576,7 +576,7 @@ read -r -u 「文件描述符」 「变量名」   # 从指定 fd 读
 
     filename='「文件绝对路径」'
 
-    while IFS= read -r myline; do
+    while IFS= read -r myline || [[ -n $myline ]]; do
       printf '%s\n' "$myline"
     done < "$filename"
     ```
@@ -596,8 +596,9 @@ sed -i '' 's/「匹配内容」/「修改内容」/g' "「原文件」"  # 不�
 sed -i.bak 's/「匹配内容」/「修改内容」/g' "「原文件」"
 sed -i 's/「匹配内容」/「修改内容」/g' "「原文件」"  # 不备份
 
-# 匹配内容含 / 时换分隔符
-sed "s#abc/def#${变量名}#g" "文件1" > "文件2"
+# 匹配内容含 / 时换分隔符；替换值里的 &、反斜杠和分隔符仍需转义
+replacement=xyz
+sed "s#abc/def#${replacement}#g" "文件1" > "文件2"
 ```
 
 #### `ln`

@@ -24,7 +24,7 @@
 >使用Docker是最快捷的方式。
 
 ### 通过Docker安装服务器：Shadowsocks、Cisco IPSec（IPSec Xauth PSK）或IPsec/L2TP（L2TP/IPsec PSK）
->[Docker](https://www.docker.com/)建议Linux内核在3.0以上。[Bandwagon](https://bwh1.net/)内核只有2.6，无法使用Docker；[vultr](https://my.vultr.com/)可以使用Docker。
+>先确认服务器的发行版、架构和虚拟化环境支持 Docker。各发行版的要求见 [Docker Engine 安装文档](https://docs.docker.com/engine/install/)。
 
 - [安装、启动Docker](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Docker使用/README.md#docker使用)（若已安装Docker，不要再次安装/启动）
 
@@ -43,24 +43,26 @@
 
     1. 新建一个配置文件，包含：共享的密钥、帐户名称、密码。（帐户名称和密码可以设置多个）
 
-        >文件位置和文件名可任意。
+        >文件位置和文件名可任意。仅有一个帐户时省略两个 `VPN_ADDL_` 项；有多个额外帐户时，用户名和密码分别按相同顺序用空格分隔。
 
         ```text
         VPN_IPSEC_PSK=共享的密钥
-        VPN_USER=帐户名称1 帐户名称2
-        VPN_PASSWORD=密码1 密码2
+        VPN_USER=帐户名称1
+        VPN_PASSWORD=密码1
+        VPN_ADDL_USERS=帐户名称2
+        VPN_ADDL_PASSWORDS=密码2
         ```
     2. 启动
 
         ```shell
         docker pull hwdsl2/ipsec-vpn-server
 
-        docker run --name ipsec-vpn-server --env-file 「配置文件地址」 --restart=always -p 500:500/udp -p 4500:4500/udp -d --privileged hwdsl2/ipsec-vpn-server
+        docker run --name ipsec-vpn-server --env-file 「配置文件地址」 --restart=always -v /lib/modules:/lib/modules:ro -p 500:500/udp -p 4500:4500/udp -d --privileged hwdsl2/ipsec-vpn-server
         ```
 
 ### 非Docker环境安装服务器：Shadowsocks、IKEv2（IKEv1）
 <details>
-<summary>（建议<a href="https://github.com/realgeoffrey/knowledge/blob/master/工具使用/科学上网/README.md#通过docker安装服务器shadowsockscisco-ipsecipsec-xauth-psk">通过Docker安装服务器</a>）</summary>
+<summary>（建议<a href="https://github.com/realgeoffrey/knowledge/blob/master/工具使用/科学上网/README.md#通过docker安装服务器shadowsockscisco-ipsecipsec-xauth-psk或ipsecl2tpl2tpipsec-psk">通过Docker安装服务器</a>）</summary>
 
 1. Shadowsocks服务端安装
 
@@ -69,13 +71,13 @@
     1. 在Linux服务器（CentOS，Debian，Ubuntu）安装[shadowsocks-go](https://github.com/shadowsocks/shadowsocks-go)。
 
         ```shell
-        wget --no-check-certificate -O shadowsocks-go.sh https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks-go.sh
+        wget -O shadowsocks-go.sh https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks-go.sh
 
         chmod +x shadowsocks-go.sh
         ./shadowsocks-go.sh 2>&1 | tee shadowsocks-go.log
         ```
 
-        >1. 密码：自己设定（默认：teddysun.com）
+        >1. 密码：设置独立的随机密码
         >2. 服务器端口号：自己设定（默认：8989）
     2. 查看状态
 
@@ -94,17 +96,10 @@
 
     >来自：[quericy:one-key-ikev2-vpn](https://github.com/quericy/one-key-ikev2-vpn)。
 
-    >除了第一个vps类型选择、倒数第二个独立IP使用SNAT规则，其他都可以简单使用默认。
+    >以下是该脚本使用 strongSwan 5.5.1 时的历史步骤。证书、网络和启动方式取决于服务器环境。
 
-    1. 下载、运行脚本
-
-        ```shell
-        wget --no-check-certificate https://raw.githubusercontent.com/quericy/one-key-ikev2-vpn/master/one-key-ikev2.sh
-
-        chmod +x one-key-ikev2.sh
-        bash one-key-ikev2.sh
-        ```
-    2. 输入配置
+    1. 新部署请使用发行版提供的 strongSwan 软件包，按所选软件包的文档配置服务。[strongSwan 官方安装指南](https://docs.strongswan.org/docs/latest/install/install.html)
+    2. 旧版脚本的配置提示
         1. 选择**vps类型**：
 
             1. Xen、KVM
@@ -141,7 +136,6 @@
             ipsec restart
             ```
 
-            >隔段时间需要人工重启一次。
     4. 客户端验证
 
         1. 将提示信息中生成的证书文件**ca.cert.pem**复制到客户端，修改后缀名为**ca.cert.cer**后导入。
@@ -151,10 +145,10 @@
             ```shell
             scp -P 端口号 服务器名@服务器地址:/root/my_key/ca.cert.pem 本地存放路径
             ```
-        2. 设备使用Ikev1无需导入证书，而是需要在连接时输入密钥（PSK）。
+        2. 此脚本的 IKEv1 预共享密钥模式在连接时输入密钥（PSK）。
     5. ipsec启动问题
 
-        服务器重启后ipsec不会自启动。
+        此旧版脚本安装的 ipsec 默认不会随服务器启动。
 
         1. 命令需要手动开启，
 
@@ -201,7 +195,7 @@
 
     1. PAC自动模式：
 
-        监听特定端口号的请求（默认代理端口号：`1080`），再按照PAC（代理自动配置）列表决定是否使用Shadowsocks代理。
+        遵循系统代理的应用先执行 PAC（代理自动配置）脚本，按其返回结果直连或使用本地代理。
     2. 全局模式：
 
         走系统代理（系统层面的默认代理）的所有请求都走Shadowsocks代理。
@@ -223,15 +217,15 @@
         代理自动配置，一般使用[gfwlist](https://github.com/gfwlist/gfwlist)列表。
     4. 允许来自局域网的连接：
 
-        同局域网下，其他设备设置HTTP代理为主机IP和端口号（可以用Charles），则走代理主机的Shadowsocks代理。
+        其他设备可连接主机局域网 IP 和客户端监听的端口。代理类型须与该端口提供的协议一致（如 SOCKS5）。
 
-- Chrome插件[SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega)，能够对Chrome发出的所有请求都进行代理配置。
+- Chrome插件[SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega)，用于配置 Chrome 的代理规则，原项目已停止维护。
 
 3. iOS
 
-    >所有本机的科学上网方式最终都是在`设置`-`VPN`中配置（包括：Shadowsocks、Cisco IPSec、IKEv2、等）。成功开启后，都会在顶部bar显示`VPN`字样。
+    >使用 VPN 配置的客户端可在系统 VPN 设置中查看连接状态。Wi-Fi 的 HTTP 代理单独配置。
 
-    在App Store使用美国区Apple ID安装`Quantumult X`等客户端，添加服务器之后会在`设置`-`VPN`中添加一个手机全局使用Shadowsocks的VPN配置。
+    从提供相应应用的 App Store 安装 `Quantumult X` 等客户端，添加服务器并授权添加 VPN 配置；具体流量按客户端的路由规则处理。
 
 ### Cisco IPSec（IPSec Xauth PSK）或IPsec/L2TP（L2TP/IPsec PSK）客户端配置
 >1. 参考：[配置 IPSec/Xauth VPN 客户端](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-xauth-zh.md)。
@@ -253,8 +247,8 @@
         3. 密码：服务端设置的值。
     6. 证书
 
-        1. 若服务器使用**CA 签发的 TLS/SSL 证书**，则客户端不需要导入证书。
-        2. 若服务器使用**自签名证书**，则客户端必须导入证书。
+        1. 若客户端已信任签发服务器证书的 CA，且证书名称与服务器身份匹配，可直接验证服务器。
+        2. 若使用该脚本生成的私有 CA，需要在客户端导入并信任该 CA 的证书。
 
             客户端用Safari导入ca.cert.cer并选择**始终信任此证书**。
 
@@ -276,8 +270,8 @@
         3. 密码：服务端设置的值。
     6. 证书
 
-        1. 若服务器使用**CA 签发的 TLS/SSL 证书**，则客户端不需要导入证书。
-        2. 若服务器使用**自签名证书**，则客户端必须导入证书。
+        1. 若客户端已信任签发服务器证书的 CA，且证书名称与服务器身份匹配，可直接验证服务器。
+        2. 若使用该脚本生成的私有 CA，需要在客户端导入并信任该 CA 的证书。
 
             客户端添加ca.cert.cer后，进入「钥匙串访问」把证书设置为「始终信任」。
 3. Windows
@@ -291,13 +285,13 @@
     5. 密码：服务端设置的值。
     6. 证书
 
-        1. 若服务器使用**CA 签发的 TLS/SSL 证书**，则客户端不需要导入证书。
-        2. 若服务器使用**自签名证书**，则客户端必须导入证书。
+        1. 若客户端已信任签发服务器证书的 CA，且证书名称与服务器身份匹配，可直接验证服务器。
+        2. 若使用该脚本生成的私有 CA，需要在客户端导入并信任该 CA 的证书。
 
             1. 搜索`mmc.exe`，打开控制台
             2. 文件 -> 添加/删除管理单元
 
-                选择「证书」添加。
+                选择「证书」→「计算机帐户」→「本地计算机」。
             3. 证书 -> 受信任的根证书颁发机构 -> 证书，右键 -> 所有任务 -> 导入，选择ca.cert.cer导入成功。
 
 ---
@@ -327,12 +321,12 @@
 
     即可HTTP请求通过上面手机Quantumult X的VPN功能。
 
->以上同样支持设置SOCK5代理。
+>使用 SOCKS5 时，服务端需开启相应监听端口，客户端也须选择 SOCKS5。
 
 ### ClashX的`增强模式`
-ClashX`的增强模式`原理：通过一个虚拟网卡接管所有流量。
+ClashX`的增强模式`原理：通过虚拟网卡接收路由到该接口的流量。
 
-- 有些应用可能不会遵循`系统代理`设置，使用`增强模式`可以让 ClashX 处理所有应用流量
+- 有些应用可能不会遵循`系统代理`设置，使用`增强模式`可以让 ClashX 处理其中按路由进入虚拟网卡的流量
 
     1. ClashX 会安装一个虚拟网卡并设置为默认路由
     2. ClashX 虚拟网卡只能处理 TCP，UDP 和 ICMP 流量
@@ -350,7 +344,7 @@ ClashX`的增强模式`原理：通过一个虚拟网卡接管所有流量。
     >e.g. 填上`https://dler.cloud/subscribe/**********?quantumultx=smart`
 2. 方案二
 
-    仅新增节点：设置 -> 节点 - 节点资源 -> 右上角添加 -> 资源 - 节点 - 资源路径（可能需要关闭翻墙才能添加成功？），**在原有配置的基础上添加节点**。
+    仅新增节点：设置 -> 节点 - 节点资源 -> 右上角添加 -> 资源 - 节点 - 资源路径，**在原有配置的基础上添加节点**。
 
     >e.g. 填上`https://iplcsub.com/subscribe/****/****/ssr/`
 
@@ -359,7 +353,7 @@ ClashX`的增强模式`原理：通过一个虚拟网卡接管所有流量。
 
 1. 配置 -> 托管配置 -> 管理，可以新增/删除进行配置管理。
 
-    可以多配置切换（Quantumult X仅能有一个配置？）。
+    可以在多个配置间切换。
 
     >e.g. 添加`https://mysub.cc/subscribe/****/*****/clash/`或`https://dler.cloud/subscribe/**********?clash=smart`
 

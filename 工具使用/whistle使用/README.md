@@ -1,5 +1,5 @@
 ### [whistle](https://github.com/avwo/whistle)使用
-whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所有操作都可以通过类似配置hosts的方式实现。功能文档齐全，建议查看官方文档。
+whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所有操作都可以通过类似配置hosts的方式实现。功能文档见[官方快速上手](https://wproxy.org/docs/getting-started.html)。
 
 1. 启动
 
@@ -13,16 +13,15 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
 
     # w2是whistle命令的简写
 
-    # 运行参数
-    -p 「端口号数字，默认8899」
-    -t
+    # 启动参数示例：指定端口（默认 8899）和请求超时（毫秒）
+    w2 start -p 8899 -t 30000
     ```
+    启动后，将测试浏览器的 HTTP 代理指向运行 Whistle 的主机和端口；本机调试默认使用 `127.0.0.1:8899`。
 2. 配置原则
 
     1. 相同协议规则的默认优先级从上到下，即前面的规则优先级匹配高于后面。
 
-        >与传统的hosts配置优先级相反。
-    2. 一些属于不同协议，但功能有冲突的规则，按常用优先级为`rule`>`host`>`proxy`。
+    2. 当同一请求同时匹配 `host` 和 `proxy` 时，默认只有 `host` 生效。[proxy 规则说明](https://wproxy.org/docs/rules/proxy.html)
     3. 部分相同协议会匹配及合并所有可以匹配的规则。
     4. 建议：
 
@@ -50,7 +49,7 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
 
         ```text
         # 不带IP地址
-        请求域名 指向域名
+        请求域名 host://指向域名
 
         # 带IP地址（IP地址均为指向地址）
         请求域名 指向的IP地址:端口号
@@ -79,17 +78,17 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
         URL file://E:\xx\test            # Windows的路径分隔符可以用 \ 或者 /
         ```
 
-        1. 若文件替换替换之后，还需要解决CORS问题，则增加resCors协议：
+        1. 若文件替换之后，还需要解决CORS问题，则增加resCors协议：
 
             ```text
             URL file:///User/username/test   # macOS、Linux
             URL resCors://{变量名1}
             ```
 
-            Values添加一个新的变量：变量名1
+            Values 添加变量名1，填入测试页面的实际来源：
 
             ```text
-            origin: *
+            origin: https://app.example.com
             ```
     4. 往`content-type`为`html`的响应内容的前面或后面添加文本内容
 
@@ -127,7 +126,7 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
 
         在**Values**设置的`变量名`为HTML内容，可以写入：HTML文本、`<script>`作为JS、`<link>`作为CSS。
 
-        >外部链接的地址最好使用外网CDN，不要使用本地服务器地址。
+        >外部脚本的地址需要能从测试设备访问；手机上的 localhost 指手机本身。
 
         ><details>
         ><summary>e.g.</summary>
@@ -152,8 +151,6 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
         ></details>
     7. log信息
 
-        >开启后会阻止把错误信息输入到vconsole和eruda。
-
         1. 获取页面的`console`和错误信息
 
             ```text
@@ -170,8 +167,6 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
             URL log:///User/xxx/test/test.js
             ```
     8. **Weinre**查看页面结构
-
-        >开启后会阻止把`console`输入到vconsole和eruda。
 
         ```text
         域名 weinre://任意值做为id
@@ -201,7 +196,7 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
         pattern ignore://*
         ```
 
-    - 所有协议均支持以下[匹配模式](https://wproxy.org/whistle/pattern.html)
+    - 所有协议均支持以下[匹配模式](https://wproxy.org/docs/rules/pattern.html)
 
         1. 域名（端口号、请求协议）
         2. 路径
@@ -234,7 +229,7 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
 
     配置resPrepend、log等协议中添加的`{变量名}`的HTML内容或JS脚本。
 
-    - [操作值](https://wproxy.org/whistle/data.html)
+    - [操作值](https://wproxy.org/docs/rules/operation.html)
 
         1. 可以内嵌多行操作值
 
@@ -254,8 +249,4 @@ whistle基本上覆盖了所有抓包调试代理可以实现的功能，且所�
 
     查看右边`log->console`抓取的页面console信息（需要设置**Rules**的log协议）。
 
-- 证书安装，可能也需要进行信任证书操作：[安装、信任证书](https://github.com/realgeoffrey/knowledge/blob/master/工具使用/Charles使用/README.md#https分析)
-
-    >ps. 所有系统（电脑、手机、等）关于证书安装的，都可能经历 如何安装、是否需要进一步信任 的流程。
-
-    打开`Capture TUNNEL CONNECTS`后，原本不支持https的本地开发，也可以通过whistle使用https开发方式。
+- HTTPS 抓包：在 Whistle 的 HTTPS 对话框下载当前实例的根证书，并在测试客户端安装、信任。打开 `Enable HTTPS (Capture Tunnel Traffic)` 后，可查看通过代理的 HTTPS 请求。本地开发服务若仅支持 HTTP，还需要将测试域名的 HTTPS 请求映射到该 HTTP 服务。[HTTPS 对话框](https://wproxy.org/docs/gui/https.html)

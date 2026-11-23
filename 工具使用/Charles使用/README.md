@@ -16,10 +16,10 @@
 1. [web界面](#web界面)
 
 ---
-HTTP调试工具：通过将Charles设置成**系统的网络访问代理服务器**，使得所有的网络访问请求都通过它来完成，从而实现网络封包的截取和分析。
+HTTP调试工具：通过将Charles设置成**系统的网络访问代理服务器**，记录并分析使用该代理的 HTTP 请求和响应。
 
 >1. 旧版 Charles 可能需要匹配的 Java/JRE；现代安装包通常会处理运行环境。能否截取请求取决于应用是否走系统代理或显式代理；防火墙、浏览器代理插件、证书信任和代理绕过规则都会影响捕获结果。
->2. 移动设备设置HTTP代理之后就能以代理环境并经过电脑hosts访问网络（HTTP代理至WAMPSERVER无法经过电脑hosts）。
+>2. 移动设备使用 Charles 的 HTTP 代理时，通常由代理端解析目标域名；电脑上的 hosts 配置可能影响解析结果。
 >
 >- Charles默认端口号：**8888**。
 
@@ -27,7 +27,7 @@ HTTP调试工具：通过将Charles设置成**系统的网络访问代理服务�
 
 ![Charles图](./images/1.png)
 
->当你刷新页面时，只会在当前session中捕获请求。当关闭session后会导致已经在此session捕获的网站无法在其他session捕获，需要重新启动Charles或新建session。
+>开启录制后，刷新页面产生的代理请求会记录在当前 session 中。可以新建 session 来单独记录下一次调试。
 
 ### 显示捕获列表方式
 1. Structure
@@ -46,7 +46,7 @@ HTTP调试工具：通过将Charles设置成**系统的网络访问代理服务�
 
 ### 查找
 
-Ctrl/commad + f调出。
+Ctrl + F（macOS 为 Command + F）调出。
 
 ![Charles图](./images/5.png)
 
@@ -56,7 +56,7 @@ Ctrl/commad + f调出。
 
 ### 捕获系统请求
 
-设置是否成为系统代理，取消勾选**Window Proxy**或**macOS Proxy**后不再抓取本机请求（仅抓取8888端口号内容）。
+设置是否成为系统代理，取消勾选**Windows Proxy**或**macOS Proxy**后，显式配置为使用 Charles 的应用仍可被记录。
 
 ![Charles图](./images/14.png)
 
@@ -64,17 +64,17 @@ Ctrl/commad + f调出。
 
 移动设备的调试，我们需要把HTTP代理到Charles上：
 
-1. 使移动设备和本机在一个局域网内（不需要同一个IP段、也不需要是电脑发射的Wi-Fi，只要是同一个路由器下即可）；
+1. 使移动设备能访问电脑的局域网 IP 和 Charles 的代理端口；
 
-    >若无法抓取信息，则可以重启Charles、重新设置HTTP代理或查看**Access Control Settings**是否允许访问。有可能某些路由器设置成无法捕获，就需要使用自备发射的Wi-Fi。
-2. 移动设备的Wi-Fi设置：服务器IP设置成电脑IP，端口号设置成8888；
+    >若无法抓取信息，则可以重启Charles、重新设置HTTP代理或查看**Access Control Settings**是否允许访问。同时检查 Wi-Fi 是否开启客户端隔离，以及电脑防火墙是否允许该连接。
+2. 移动设备的Wi-Fi设置：服务器IP设置成电脑IP，端口号设置成 Charles 的监听端口（默认 8888）；
 
     ![Charles图](./images/13.png)
 3. Charles设置允许接收的IP地址的范围（有新的不在允许范围内的IP地址请求时，会自动询问是否允许接收）：
 
     ![Charles图](./images/15.png)
 
-    >进入设置**Proxy - Access Control Settings**，若接收的IP范围是192.168.1.xxx的话，则添加并设置成`192.168.1.0/24`；若全部范围都接收的话，则直接设置成`0.0.0.0/0`。
+    >进入设置**Proxy - Access Control Settings**，添加允许调试的设备 IP。如果需要允许整个受信任的测试网段，可填写该网段（如 `192.168.1.0/24`）。
 
 >Charles主要面向 HTTP、HTTPS、WebSocket 等基于代理的流量分析；原始 TCP/UDP socket 不属于常规 HTTP 代理抓包范围。
 
@@ -118,7 +118,7 @@ Ctrl/commad + f调出。
 
     ![Charles图](./images/12.png)
 
-    >把一个原html地址Map至新网址后，要注意新网址发起的资源请求也会是以原html域名发起，因此需要再配置原html域名下的`/*`Map至新网址（建议直接从源头就修改请求地址，这样就不用配置很多Map至网址）。
+    >把一个原html地址Map至新网址后，要注意相对资源地址仍按浏览器看到的原页面地址解析（页面另设 `<base>` 时按其指定地址解析），因此可能还需要为这些资源路径配置映射（建议直接从源头就修改请求地址，这样就不用配置很多Map至网址）。
 
 ### 网速模拟功能
 
@@ -146,14 +146,14 @@ Charles能够截断发送请求前（篡改Request）和响应后（篡改Respon
 
 repeat功能不需要刷新页面，只需要repeat请求，还可以进行压力测试。
 
-**repeat**重复发送一次请求；**repeat Advances**可以自定义重复次数和重复间隔（压测利器）。
+**repeat**重复发送一次请求；**Repeat Advanced** 可以设置重复次数和并发数。
 
 ![Charles图](./images/23.png)
 
 ![Charles图](./images/24.png)
 
 ### HTTPS分析
-若未安装Charles根证书，则仅能捕获加密后的HTTPS请求。
+默认只记录 HTTPS 隧道连接。查看请求和响应的明文，需要为目标域名开启 SSL Proxying，且客户端须信任此次 Charles 安装使用的根证书。
 
 1. 安装、信任证书：
 
@@ -168,16 +168,16 @@ repeat功能不需要刷新页面，只需要repeat请求，还可以进行压�
             2. Windows：把证书安装至**受信任的根证书颁发机构**
     2. 移动设备安装证书
 
-        移动设备设置好HTTP代理后，访问[chls.pro/ssl](chls.pro/ssl)下载证书并信任。
+        移动设备设置好HTTP代理后，访问[chls.pro/ssl](https://chls.pro/ssl)下载证书并信任。
 
-        1. Android系统在设置中搜索「证书」关键字；部分手机若下载安装失败或不信任已安装的证书，可以用连线导入手机方式安装（.cer文件）；Android 7.0版本以后，系统不再默认信任安装的CA证书（需要Android代码设置），因此选择能够信任证书的APP进行抓包 或 网上搜索安卓系统信任CA证书的方案（手机root、用Android小于7的系统、CA证书处理成系统证书来安装、等）。
+        1. Android：在系统设置中安装 CA 证书。以 Android 7.0（API 24）或更高版本为目标的应用默认不信任用户安装的 CA；调试自己的应用时，可仅在调试构建中配置信任。[Android 网络安全配置](https://developer.android.com/privacy-and-security/security-config)
         2. iOS
 
             1. 在`VPN与设备管理`可以查询、删除证书。
             2. 在`证书信任设置`可以开关信任的证书。
 2. 设置需要针对的域名：
 
-    设置**Proxy -> SSL Proxying Settings**，把需要抓包的`host+端口号443`添加进去。
+    设置**Proxy -> SSL Proxying Settings**，把需要抓包的主机和实际 HTTPS 端口（默认 443）添加进去。
 
     ![Charles图](./images/26.png)
 
@@ -198,6 +198,6 @@ Charles有个有趣的web界面：
 ![Charles图](./images/2.png)
 
 强大的是可以控制是否远程可以访问这个界面，还可以设置用户名和密码。
-浏览器输入<http://control.charles/>
+开启 Web Interface 后，使用已配置 Charles 代理的浏览器访问 <http://control.charles/>。
 
 >tips：若charles是非正常状态下关闭的话，则有些浏览器的代理就不会被自动取消，会出现无法访问网络情况。重新打开Charles再正常关闭可以解决。

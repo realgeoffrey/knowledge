@@ -20,7 +20,7 @@
 | 日 | 1–31 | — |
 | 月 | 1–12 | `JAN`–`DEC` |
 | 周 | 见下「两套数字」 | `SUN`–`SAT` |
-| 年（可选） | 约 1970–2099 | — |
+| 年 | 取决于调度器；AWS EventBridge 为 1970–2199 | — |
 
 ### 通用符号（各家都认）
 
@@ -29,18 +29,18 @@
 | `*` | 任意 | `*` |
 | `,` | 列举 | `1,15` |
 | `-` | 范围 | `MON-FRI`、`9-17` |
-| `/` | 步长 | `*/5`＝每 5；`10/15`＝从 10 起每 15 |
+| `/` | 字段内的步长 | 分钟位 `*/5`＝每小时的 0、5、…、55 分；`10-59/15`＝10、25、40、55 分 |
 
 ### 扩展符号（多见于 Quartz / XXL-JOB；日、周）
 
 | 符号 | 字段 | 含义 | 例 |
 | --- | --- | --- | --- |
 | `?` | 日或周 | 一侧不指定 | `0 0 2 ? * MON` |
-| `L` | 日、周 | last | 日：`L`＝月末，`L-1`＝倒数第 2 天；<br>周：`5L`/`FRIL`＝月末最后一个周五 |
-| `W` | 仅日 | 离该日最近的工作日（不跨月，可向前向后） | `15W`；`LW`＝月末最后一个工作日 |
+| `L` | 日、周 | last | 日：`L`＝月末，`L-1`＝倒数第 2 天；<br>周：最后一个周五在 Spring 写 `5L`，在 Quartz 写 `6L` |
+| `W` | 仅日 | 离该日最近的工作日（月末边界因实现而异） | `15W`；`LW`＝月末最后一个工作日 |
 | `#` | 仅周 | 第 n 个周几（n 一般 1–5） | `MON#2`＝每月第 2 个周一 |
 
-Unix crontab / Spring 原生 / K8s / GitHub Actions：**不认** `?` `L` `W` `#`。
+Spring 5.3 起使用 `CronExpression`，支持上表的日、周扩展写法。这里的「工作日」均指周一到周五，忽略节假日和调休。[Spring 字段说明](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronExpression.html)
 
 ### 谁认什么
 
@@ -48,17 +48,19 @@ Unix crontab / Spring 原生 / K8s / GitHub Actions：**不认** `?` `L` `W` `#`
 | --- | --- | --- | --- | --- |
 | 秒 | 无 | 有（最左） | 有（最左） | 无 |
 | 年 | 无 | 无 | 可选（最右） | 有（最右） |
-| `?` `L` `W` `#` | 否 | 否 | 是 | 部分（有 `?`/`L`/`W`/`#`） |
-| `@hourly` 等别名 | 是 | 是 | 一般否 | 否 |
+| `?` `L` `W` `#` | 常见 crontab、GHA 不支持；K8s 接受 `?`，等同 `*` | 是（5.3+，日/周的 `?` 等同 `*`） | 是 | 是（按字段使用） |
+| `@hourly` 等别名 | 常见 crontab、K8s 支持；GHA 不支持 | 是（5.3+） | 否 | 否 |
 | `@reboot` | 仅系统 cron | 否 | 否 | 否 |
+
+GitHub Actions 的最短调度间隔为 5 分钟。[GitHub Actions 定时触发](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule) · [Kubernetes CronJob 语法](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#schedule-syntax)
 
 ### 容易踩的坑
 
 1. **段数抄错**：Unix 5 段贴进 Spring 会坏（对照上表）。
 2. **周的数字两套**：Unix / Spring：`0`/`7`=周日、`1`=周一；Quartz / AWS：`1`=周日、`2`=周一。跨家复制用名字。
 3. **日和周同时写具体值**：crontab 是**或**；Spring 是**与**（`?`≈`*`，两侧可都 `*`）；Quartz / AWS 必须一侧 `?`，否则拒。
-4. **Spring ≠ Quartz**：classpath 有 Quartz 时，`@Scheduled(cron)` 仍按 Spring 解析；XXL-JOB 按 Quartz（日/周一侧须 `?`）。
-5. **`W` 不跨月**：1 号是周六 → `1W` 往往落到 3 号（周一），不会滚到上月末。
+4. **Spring ≠ Quartz**：classpath 有 Quartz 时，`@Scheduled(cron)` 仍按 Spring 解析。XXL-JOB 使用自己的 Quartz 风格解析器，日/周一侧须写 `?`。
+5. **`W` 的月初和月末边界**：1 号是周六时，`1W` 落到 3 号（周一）。月末则要看实现：从 2026 年 5 月 1 日算起，`31W` 在 Quartz 2.3.2 / 2.5.2 命中 5 月 29 日，在 Spring 5.3.39 / 6.2.14 的下一次匹配是 7 月 31 日。要在每月最后一个工作日运行，两者都用 `LW`。
 6. **夏令时**：墙钟表达式可能跳过或重复一小时；关键任务看调度器文档，别假设一年 365×24 次。
 
 ### 常用写法
@@ -69,10 +71,10 @@ Unix crontab / Spring 原生 / K8s / GitHub Actions：**不认** `?` `L` `W` `#`
 | 每 5 分钟 | `*/5 * * * *` | `0 */5 * * * *` | `0 */5 * * * ?` |
 | 工作日 09:30 | `30 9 * * MON-FRI` | `0 30 9 * * MON-FRI` | `0 30 9 ? * MON-FRI` |
 | 每月 1 号 00:00 | `0 0 1 * *` | `0 0 0 1 * *` | `0 0 0 1 * ?` |
-| 月末 23:00 | —（无 `L`） | — | `0 0 23 L * ?` |
-| 倒数第 2 天 | — | — | `0 0 0 L-1 * ?` |
-| 每月第 2 个周一 | — | — | `0 0 0 ? * MON#2` |
-| 离 15 号最近工作日 | — | — | `0 0 0 15W * ?` |
+| 月末 23:00 | —（无 `L`） | `0 0 23 L * *` | `0 0 23 L * ?` |
+| 倒数第 2 天 | — | `0 0 0 L-1 * *` | `0 0 0 L-1 * ?` |
+| 每月第 2 个周一 | — | `0 0 0 * * MON#2` | `0 0 0 ? * MON#2` |
+| 离 15 号最近工作日 | — | `0 0 0 15W * *` | `0 0 0 15W * ?` |
 
 ### 别名（crontab、Spring 认；Quartz 一般不认）
 
@@ -83,7 +85,7 @@ Unix crontab / Spring 原生 / K8s / GitHub Actions：**不认** `?` `L` `W` `#`
 | `@weekly` | `0 0 * * 0` | `0 0 0 * * 0` | 每周日 00:00 |
 | `@monthly` | `0 0 1 * *` | `0 0 0 1 * *` | 每月 1 号 00:00 |
 | `@yearly` / `@annually` | `0 0 1 1 *` | `0 0 0 1 1 *` | 每年 1 月 1 日 00:00 |
-| `@reboot` | — | — | 开机跑一次；**仅系统 cron**，Spring/Quartz 都不认 |
+| `@reboot` | — | — | 支持该别名的 cron 守护进程启动时跑一次 |
 
 **crontab**（用户 crontab，`crontab -e`）：
 
@@ -103,4 +105,4 @@ Unix crontab / Spring 原生 / K8s / GitHub Actions：**不认** `?` `L` `W` `#`
 void run() { /* ... */ }
 ```
 
-业务日批用调度平台；本机短周期才写 `@Scheduled`。多副本必须平台或分布式锁，否则每台都跑。
+`@Scheduled` 会在每个应用实例上独立触发。多副本部署且任务只需执行一次时，可交给调度平台统一触发，或使用分布式锁协调，并让任务可幂等重试。

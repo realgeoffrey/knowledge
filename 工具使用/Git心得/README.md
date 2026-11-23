@@ -78,7 +78,7 @@
     ```
 3. 修改已推送的提交历史
 
-    >以下操作会改变`commit hash`。公共分支应优先新增提交或使用`git revert`；确需改写历史时，请先备份分支，并使用`--force-with-lease`。
+    >以下操作会改变分支指向或创建新提交。公共分支应优先新增提交或使用`git revert`；确需改写历史时，请先备份分支，并使用`--force-with-lease`。
 
     ```shell
     git branch backup/「分支名」
@@ -203,7 +203,7 @@
     git stash list
     git stash show -p stash@{「数字」}
     git stash apply stash@{「数字」}                    # 应用但保留储藏；省略名称则使用最新项
-    git stash pop stash@{「数字」}                      # 应用并删除储藏；省略名称则使用最新项
+    git stash pop stash@{「数字」}                      # 成功应用后删除储藏，发生冲突时保留；省略名称则使用最新项
     git stash drop stash@{「数字」}
     git stash clear                                    # 清空所有储藏
     ```
@@ -244,17 +244,17 @@
 13. 清空一个分支中的所有commit记录
 
     ```shell
-    git switch --orphan 「新分支名」
-
-    git add -A                       # 将所有文件变更加入暂存区
-
-    git commit -m "「commit内容」"    # 提交
-
-    git branch -D 「原本分支名」       # 删除原分支
-
-    git branch -m 「原本分支名」       # 将当前新分支重命名为原分支名
-
-    git push --force-with-lease origin 「原本分支名」
+    # 在原分支的仓库根目录执行，先确认工作区干净；新分支名和备份分支名须未被占用
+    original_tree=$(git rev-parse '「原本分支名」^{tree}') &&
+    git switch --orphan 「新分支名」 &&
+    git restore --source=「原本分支名」 --staged --worktree -- . &&
+    git commit -m "「commit内容」" &&
+    # 新提交的文件树一致后，才保留旧分支为备份，并将原名交给新分支
+    test "$(git rev-parse 'HEAD^{tree}')" = "$original_tree" &&
+    git branch -m 「原本分支名」 「备份分支名」 &&
+    git branch -m 「原本分支名」 &&
+    # 仅当远程分支仍指向备份的旧提交时才推送
+    git push -u --force-with-lease=refs/heads/「原本分支名」:「备份分支名」 origin 「原本分支名」
     ```
 14. 使用[git-lfs](https://github.com/git-lfs/git-lfs)管理大文件。
 15. 遇到`unable to update local ref`
@@ -530,16 +530,16 @@ feat(details): 添加分享功能
 
     `git remote set-url --add 「别名」 「git远程仓库」`
 
-    - 单次推送会推送到该别名下所有由`push`/`url`配置的远程仓库。
+    - 若设置了`pushurl`，只推送到所有`pushurl`；否则推送到所有`url`。
 
->如需保持多个仓库同步，建议`在每个仓库中配置向全部远程 URL push，并将 pull 地址设为仓库自身`。任一仓库产生新 commit 后，直接 push 即可将变更同步到所有已配置的远程仓库，从而保持内容一致。
+>如需保持多个仓库同步，建议`在每个仓库中配置向全部远程 URL push，并将 pull 地址设为仓库自身`。任一仓库产生新 commit 后，直接 push 即可将变更同步到所有已配置的远程仓库。多目标推送可能部分成功；若有失败，应核对各目标状态后重试。
 
 ### 设置gitconfig
->使用`git config --global/local/system/worktree/file 「参数」`时，`--global`等作用域选项应放在第三个参数位置，否则无效。写入配置时默认使用`--local`；读取配置时没有默认作用域，必须显式指定。
+>在仓库内，`git config`默认写入本地配置，读取时会合并各作用域的配置。用`--local`、`--global`等可限定作用域。
 
 >以下是较为精简的 Git 配置实践：
 
-1. 用户名和邮箱（用于判断推送者的账号信息）
+1. 用户名和邮箱（记录提交的作者和提交者信息，推送身份由远程认证决定）
 
     >GitHub 不会校验提交中的用户名和邮箱是否与 Git 服务器账户一致，因此理论上可以将任意账户设置为提交者（即伪装成其他用户）。不过，可在账户设置中开启[警戒模式](https://docs.github.com/zh/authentication/managing-commit-signature-verification/displaying-verification-statuses-for-all-of-your-commits)，用于标识该账户的 commit 是`Verified`、`Unverified`还是`Partially verified`。
 
@@ -575,16 +575,16 @@ feat(details): 添加分享功能
         ></details>
 3. HTTP代理、HTTPS代理
 
-    >`http.proxy`和`https.proxy`仅作用于 HTTP/HTTPS 协议，SSH 连接不使用 HTTP/HTTPS 代理。
+    >Git 的`http.proxy`同时作用于 HTTP 和 HTTPS；可用`http.<url>.proxy`为特定站点设置代理。SSH 连接单独配置。
 
     ```text
-    git config --global http.proxy 'http://127.0.0.1:7890'  # 或 'socks5://127.0.0.1:7891' # 作用于 HTTP 和 HTTPS 请求（优先级低于 https.proxy）
+    git config --global http.proxy 'http://127.0.0.1:7890'  # 或 'socks5://127.0.0.1:7891'
 
-    git config --global https.proxy 'http://127.0.0.1:7890' # 或 'socks5://127.0.0.1:7891' # 作用于 HTTPS 请求（优先级高于 http.proxy）
+    git config --global http.https://github.com.proxy 'http://127.0.0.1:7890' # 仅为该 HTTPS 站点设置
 
     # 去除设置：
     # git config --global --unset http.proxy
-    # git config --global --unset https.proxy
+    # git config --global --unset http.https://github.com.proxy
     ```
 4. http/https请求的凭据（密码）
 
@@ -592,21 +592,21 @@ feat(details): 添加分享功能
 
     | 选项名称 | 存储方式 | 存储时长 | 适用场景与特点 |
     |---|---|---|---|
-    | 默认 | 不储存 | - | 每次执行`git pull`或`git push`时，终端都会提示手动输入用户名和密码 |
+    | 未配置助手 | Git 不缓存 | — | 私有仓库需要认证时，Git 向用户获取凭据；安装程序可能已配置助手 |
     | cache | 内存 | 默认 15 分钟 | 临时使用。凭据不落盘，适合公用电脑或 VPS。可通过`--timeout`修改时长 |
     | store | 磁盘明文文件 | 永久 | 安全性较低。凭据以明文形式存储在磁盘中，通常位于`~/.git-credentials` |
     | osxkeychain | 系统钥匙串 | 永久 | Mac 用户首选。使用 macOS 加密钥匙串存储，安全且使用方便 |
     | wincred | 凭据管理器 | 永久 | Windows用户首选。集成在系统自带的凭据管理器中，安全性高 |
-    | manager (GCM) | 加密存储 | 永久 | 支持跨平台、多因子验证（2FA）和 OAuth，由微软维护 |
+    | manager (GCM) | 取决于存储后端 | 取决于后端和凭据有效期 | 支持跨平台、多因子验证（2FA）和 OAuth；Linux 需选择存储后端。[GCM 存储说明](https://github.com/git-ecosystem/git-credential-manager/blob/main/docs/credstores.md) |
 
     `git config --global credential.helper 「值」 # 设置`
-5. 开启对文件名大小写敏感
+5. 文件名大小写
 
-    >每个 Git 项目默认都会显式配置为不区分文件名大小写，因此需要在各项目中单独开启大小写敏感（项目配置优先于全局配置）。
+    >Git 在 init/clone 时探测文件系统，并在需要时设置`core.ignoreCase=true`。修改该值无法改变文件系统的大小写规则。
 
     ```shell
-    git config --global core.ignorecase false   # 全局
-    git config core.ignorecase false            # 当前目录
+    git config --show-origin --get core.ignoreCase  # 未配置时默认 false
+    git mv old.txt temp-name && git mv temp-name OLD.txt  # 仅改大小写时可经未占用的临时名中转
     ```
 6. 其他建议设置在全局的配置
 
@@ -629,7 +629,7 @@ feat(details): 添加分享功能
         # 可能增加操作复杂度的配置
         git config --global pull.ff only
         # 只允许 fast-forward 合并，否则报错退出。该设置会使 pull.rebase true 失效，因为无法 fast-forward 时会直接退出，不会改用 rebase
-        # pull.ff=only：本地没有新增提交（仅落后）-> pull 成功；本地有新增提交（需要 merge/rebase）-> pull 直接失败
+        # pull.ff=only：本地没有新增提交（仅落后）-> pull 成功；仅领先 -> 无需更新；双方各有新提交（已分叉）-> pull 失败
         ```
 
 - 查看所有`configs`、`alias`（不是最终值，而是某一层级中的全部值）
@@ -711,7 +711,7 @@ Git不跟踪空目录。需要保留目录时，在其中添加并提交`.gitkee
     - 删除分支通常只是删除引用，不会立即删除 commit 对象。
     - 只要相关 commit 尚未被`git gc`清理，就仍有机会找回。
     - reflog 是保存在本地且有时效的操作记录，会详细记录 checkout、reset、rebase 等操作；分支删除后可查看 HEAD reflog。
-    - 默认情况下，reflog 和不可达对象（悬空commit）都会随时间过期；拖得越久，找回概率越低。
+    - 默认情况下，reflog 和不可达对象都有保留期限；拖得越久，找回概率越低。
 
 1. 先找 `commit hash`
 
@@ -735,7 +735,6 @@ Git不跟踪空目录。需要保留目录时，在其中添加并提交`.gitkee
         # - checkout: moving from master to feature-xx
         # - commit: xxxxx
         # - branch: Created from ...
-        # - branch: deleted refs/heads/feature-xx
 
         # 3. 找到疑似 commit 后，先确认是否为目标提交（若能正常输出，则说明尚未被 GC）
         git show --stat --summary <commit-hash>
@@ -743,7 +742,7 @@ Git不跟踪空目录。需要保留目录时，在其中添加并提交`.gitkee
         # 4. 看它是否已被你本地当前可见的分支包含
         git branch --contains <commit-hash> -a
 
-        # 5. 若 reflog 中未找到，再检查未被引用但尚未回收的 commit（悬空 commit）
+        # 5. 若 reflog 中未找到，再检查不可达且尚未回收的 commit
         git fsck --full --unreachable --no-reflogs
         git fsck --full --unreachable --no-reflogs | rg 'unreachable commit|不可达 commit'
         ```
@@ -763,7 +762,7 @@ Git不跟踪空目录。需要保留目录时，在其中添加并提交`.gitkee
         >    这些对象可能被清理。能否找回取决于 reflog 过期策略、`gc.pruneExpire`配置，以及对象是否仍被其他引用持有等因素；因此，间隔时间越长，找回概率越低。
         >3. 悬空 Commit (Dangling Commit)：“不可达对象的具体形态”
         >
-        >    它是不可达对象中最常见的一类，特指那些没有任何分支或引用指向它的提交记录（Commit）。
+        >    没有引用或其他对象直接指向的不可达提交。一条不可达提交链的末端可以是悬空提交，其祖先仍被后代引用。
         >
         >    产生原因：通常是执行`git reset --hard`回退历史，或删除尚未合并的分支。
         ></details>
@@ -779,7 +778,7 @@ Git不跟踪空目录。需要保留目录时，在其中添加并提交`.gitkee
 
 ### 修改`commit`与强推策略（`--amend` / `rebase -i` / `reset` / `--force-with-lease`）
 
->以下操作都会重写提交历史，被重写的`commit hash`会改变；若相关提交已`push`，按“推荐策略”处理。操作前可先建临时备份：`git branch backup/「分支名」`。
+>`--amend`和变基可创建新提交并改变哈希。对提交执行 `git reset` 时，`--soft` 只移动 HEAD（在分支上也会移动分支指针），默认的 `--mixed` 还重置暂存区，`--hard` 还会覆盖已跟踪文件的工作区修改。若相关提交已推送，按下文“推荐策略”处理。可先用 `git branch backup/「分支名」` 备份提交历史；未提交的修改需另行保存。
 
 1. 修正最近一次`commit`：使用`git commit --amend`。适合补交遗漏文件、追加少量修改、修改`commit message`，或在 PR 前将小幅修改并入同一个`commit`。
 
@@ -835,7 +834,7 @@ Git不跟踪空目录。需要保留目录时，在其中添加并提交`.gitkee
     >
     ># 更严格：改写历史前先记录上游当前hash，推送时显式指定lease。
     >git rev-parse @{u}     # 假设输出 abc123
-    >git push --force-with-lease=refs/heads/「分支名」:abc123
+    >git push --force-with-lease=refs/heads/「分支名」:abc123 origin HEAD:refs/heads/「分支名」
     >```
     ></details>
 
