@@ -21,7 +21,7 @@
 
 ---
 
-- 数据库是用于持久化、组织和查询数据的软件。广义的数据库既包括使用表和 SQL 的关系型数据库，也包括键值、文档等 NoSQL 数据库，因此 Redis 也属于数据库。
+- 数据库是有组织的数据集合，数据库管理系统（DBMS）是管理、存取这些数据的软件。下文按惯例把 MySQL、Redis 等产品简称为数据库。
 
     | 数据库 | 类型 | 数据组织方式 |
     | --- | --- | --- |
@@ -38,11 +38,11 @@
 
 1. 数据库类型
 
-    1. 关系型数据库（relational database management system，RDBMS）
+    1. 关系型数据库管理系统（relational database management system，RDBMS）
 
         Oracle、MySQL、PostgreSQL、SQL Server。
 
-        >- MySQL 读作 `/maɪ ˈsiːkwəl/` 或 `My S-Q-L`，不是 ~~`maɪ ˈsəkoʊ`~~。
+        >- MySQL 的官方读法是 `My S-Q-L`，也有人读作 `my sequel`。
         >- database → table → row / column。用 SQL 声明式查询；强 schema、外键、事务与复杂关联是强项。
     2. 非关系型数据库（Not only SQL，NoSQL）
 
@@ -75,7 +75,7 @@
             >倒排索引做全文与聚合检索；一般作查询副本，主数据仍落在 RDBMS / 文档库。
 
     >- 选型直觉：结构稳定 + 关联 + 事务 → RDBMS；热点读 / 会话 / 限流 → Redis；文档形态易变 → MongoDB；多跳关系 → 图库；全文检索 → ES。可组合，不是二选一。
-    >- 分布式系统还会谈到 CAP（一致性 / 可用性 / 分区容错，分区时最多保其二）与 BASE（基本可用、软状态、最终一致）。实践上多为取舍与补偿，不是口号。
+    >- 分布式系统还会谈到 CAP 与 BASE。CAP 指网络发生分区时，无法同时保证线性一致性和可用性（每个发给正常节点的请求都能得到有效响应）。BASE 指基本可用、软状态、最终一致。
 2. 关系型数据库的范式
 
     表结构设计所符合的级别：减少冗余与更新异常，让数据组织更干净。越高冗余越小，但联表越多、读路径往往更贵。
@@ -89,17 +89,17 @@
 
         （符合 1NF，）非主属性**完全依赖**于每一个候选键，而不是只依赖候选键的一部分。
 
-        >只有单列主键（如：	`PRIMARY KEY (user_id)`。因而通常也只有这一组候选键）的表，若已满足 1NF，一定满足 2NF。违反例：订单明细用 `(order_id, product_id)` 作主键，却把 `product_name` 放在明细里——`product_name` 只依赖 `product_id`，应放到商品表。
+        >若所有候选键都是单列，满足 1NF 的表就满足 2NF；单列主键之外若还有复合候选键，也要检查后者。违反例：订单明细用 `(order_id, product_id)` 作主键，却把 `product_name` 放在明细里——`product_name` 只依赖 `product_id`，应放到商品表。
 
         >键的常见说法：
         >
         >1. 候选键：能唯一标识一行的最小属性集；可有多组。
         >2. 主键：从候选键中选定的那一组，非空、唯一，一表一个。
         >3. 复合主键（也常称联合主键）：同一表内主键由多列组成，如 `PRIMARY KEY (字段1, 字段2)`；单列不必唯一，合在一起必须唯一。跨表关联用外键（或中间表）表达，不要把「多表主键拼起来查」叫作联合主键。
-        >4. 外键：引用另一表（通常是其主键 / 唯一键），表达关联并可由 DBMS 做参照完整性约束。
+        >4. 外键：引用本表或另一表的键（通常是主键 / 唯一键），由 DBMS 维护参照完整性。
     3. 第三范式（3NF）
 
-        （符合 2NF，）消除非主属性对非主属性的**传递依赖**。
+        对每个非平凡函数依赖 `X → A`，`X` 是超键，或 `A` 属于某个候选键（主属性）。这消除了非主属性对候选键的传递依赖。
 
         >非主属性只应直接依赖候选键。违反例：员工表存 `dept_id` 又存 `dept_name`，而 `dept_name` 由 `dept_id` 决定——部门名应在部门表。
     4. 巴斯-科德范式（BCNF）
@@ -145,7 +145,7 @@
             >- 生命周期：活多久、何时归档 / 删除。e.g. 会话三十分钟过期；订单保留数年再归档。
             >- 增长速度：预估增量，决定分区、分表或独立存储。e.g. 访问日志日增千万行，不宜与核心业务表同库同表策略。
             >- 读写比：读多可索引 / 缓存 / 冗余；写多少建索引、慎用重联表。e.g. 商品详情读多写少；埋点几乎只写。
-            >- 一致性：能否接受短暂不一致。强一致用事务；最终一致可用缓存、消息、异步校正。e.g. 扣库存要强一致；个人主页粉丝数可最终一致。
+            >- 一致性：能否接受短暂不一致。e.g. 扣库存可用带余量条件的原子更新，或在事务中加锁检查；个人主页粉丝数可通过消息异步更新。
             >- 是否进库：不是所有数据都进业务库。大文件进对象存储只存 URL；验证码 / 限流进 Redis；可重建的搜索索引 / 报表可丢了再算。
     2. 逻辑设计
 
@@ -167,10 +167,10 @@
             3. 长名原则：宁可全称，少用晦涩缩写；团队内缩写表要文档化。
         3. 按 DBMS 选类型与约束。
 
-            1. 能用数值 / 枚举就不要用字符串存「看起来像数」的编码（视查询与比较需求而定）。
+            1. 参与算术的数量用数值类型；邮编等编码若要保留前导零，用字符串。
             2. `CHAR` 定长；`VARCHAR` 变长；超长文本用 `TEXT` / 对象存储，避免无意义的超大 `VARCHAR`。
             3. 金额用 `DECIMAL`（或整数分），不用 `FLOAT` / `DOUBLE`。
-            4. 时间：按引擎区分——MySQL 常用 `DATETIME` 存业务墙钟，`TIMESTAMP` 按 session `time_zone` 转 UTC 存放（注意范围与坑）；PostgreSQL 用 `timestamp` / `timestamptz`（后者带时区语义）。也有人存 Unix 秒（`INT` / `BIGINT`）。亦可统一存 UTC、展示交给应用；读写约定必须一致。
+            4. 时间：按引擎区分——MySQL 常用 `DATETIME` 存业务墙钟，`TIMESTAMP` 按 session `time_zone` 转 UTC 存放（注意范围与坑）；PostgreSQL 用 `timestamp` / `timestamptz`（后者存时间点，按会话时区显示，不保留原时区名）。也有人存 Unix 秒（`INT` / `BIGINT`）。亦可统一存 UTC、展示交给应用；读写约定必须一致。
             5. 主键倾向短、稳、不业务含义（自增或 UUID，按分布式与索引局部性权衡）；状态、软删（`deleted_at`）提前想好查询条件。
         4. 索引与反范式。
 
@@ -209,14 +209,14 @@
 
         1. 脏读：读到别的事务未提交的数据。
         2. 不可重复读：同一事务内两次读同一行，结果因别人已提交的更新/删除而不同。
-        3. 幻读：同一事务内按相同条件两次查，行集合因别人已提交的插入/删除而变化。
+        3. 幻读：同一事务内按相同条件两次查，行集合因别人已提交的插入、删除或改变匹配条件的更新而变化。
 
         标准四级从弱到强：`READ UNCOMMITTED`、`READ COMMITTED`、`REPEATABLE READ`、`SERIALIZABLE`。哪一级挡住哪种异常、引擎默认与 `SET` 写法见 [MySQL](#mysql) 的事务、隔离与锁；JDBC / Spring 见其后的 Java 访问。
 
         - 写冲突解决方案（多人改同一行 / 争同一业务键）：
 
             1. 唯一约束：表上规定某列（或几列组合）不能重复，第二个相同写入直接失败。e.g. `UNIQUE(order_no)` 防同号订单；`UNIQUE(user_id, activity_id)` 防同一人重复报名。能靠它挡的优先用——不必先查再插（两人都查到「没有」仍可能双双插入）。注意：多行 `NULL` 在 MySQL/PG 的 `UNIQUE` 下通常不互斥，可空列别单靠 UNIQUE 防重。
-            2. 乐观锁：默认觉得很少撞车，先读后改，写时再验。行上有 `version`，必须**验旧值并抬版本**：`UPDATE … SET …, version = version + 1 WHERE id=? AND version=?`；影响 0 行 = 期间被人改过，整笔重读重试。缺「抬版本」则冲突检测形同虚设。适合个人资料等冲突少的场景。
+            2. 乐观锁：默认觉得很少撞车，先读后改，写时再验。行上有 `version`，必须**验旧值并抬版本**：`UPDATE … SET …, version = version + 1 WHERE id=? AND version=?`；影响 0 行表示记录不存在或版本已变，重读后按业务决定是否重试。缺「抬版本」则冲突检测形同虚设。适合个人资料等冲突少的场景。
             3. 悲观锁：默认会撞车，先占住再改。事务内 `SELECT … FOR UPDATE` 锁住该行，别人要改同一行必须等你提交。适合库存扣减等热点；锁期间只做本库读写，事务要短。
 
             >可组合：用唯一约束防「多造一行」；改已有行再用乐观或悲观。持有 `FOR UPDATE` 时不要调外部 HTTP / RPC。
@@ -264,12 +264,12 @@ brew services restart postgresql@17
 brew services info postgresql@17  # 查看服务状态和PID
 # brew services list        # 列出全部已安装服务的名称和状态
 # brew services info --all  # 列出全部已安装服务的状态和PID
-# 前台运行；数据目录以 Homebrew 实际路径为准
+# 或前台运行（二选一，同一数据目录只能由一个实例使用）
 "$(brew --prefix postgresql@17)/bin/postgres" -D "$(brew --prefix)/var/postgresql@17"
 
 # 3. 连接服务
 # 连接 postgres 数据库：`-h 主机`；`-p 端口`；`-U 用户名`；`-d 数据库名`
-psql -h localhost -p 5432 -U "$(whoami)" -d postgres
+"$(brew --prefix postgresql@17)/bin/psql" -h localhost -p 5432 -U "$(whoami)" -d postgres
 ```
 
 >进入 psql 交互环境（`数据库名=>` 或 `数据库名=#`）后，`\?` 查看 psql 命令，`\h 「SQL 语句」` 查看 SQL 帮助。SQL 语句以 `;` 结束，psql 元命令（如 `\l`、`\du`）不需要。
@@ -299,10 +299,10 @@ brew services info mongodb-community@8.0
 
 # 3. 连接；本地默认地址为 mongodb://127.0.0.1:27017
 mongosh
-mongosh 'mongodb://「用户名」:「密码」@「主机」:「端口」/「数据库名」'
+mongosh 'mongodb://「主机」:「端口」/「数据库名」' --username '「用户名」' --authenticationDatabase '「认证库」'  # 按提示输入密码
 ```
 
->进入 `mongosh` 后，`help` 查看帮助，`exit` 退出。`use` 只切换当前数据库；首次写入数据后，不存在的数据库和集合才会被创建。
+>进入 `mongosh` 后，`help` 查看帮助，`exit` 退出。`use` 只切换当前数据库；首次插入可隐式创建数据库和集合，也可用 `db.createCollection("集合名")` 显式创建集合。
 
 ```javascript
 show dbs
@@ -344,8 +344,8 @@ redis-server "$(brew --prefix)/etc/redis.conf" --port 6380 --dir /tmp  # 命令�
 redis-cli                      # 进入交互式 REPL；可尝试执行 SCAN 0
 redis-cli ping                 # 单次命令，不进 REPL
 redis-cli -h 「地址」 -p 「端口」 -n 「逻辑库序号」 ping
-# URL 形式：redis://[:密码@]主机:端口[/逻辑库序号]
-redis-cli -u 'redis://:「密码」@「地址」:「端口」/「逻辑库序号」' ping
+# URL 形式；--askpass 交互输入密码，使用 TLS 时协议为 rediss://
+redis-cli -u 'redis://「地址」:「端口」/「逻辑库序号」' --askpass ping
 redis-cli INFO server          # 看版本、uptime 等；确认连的是哪台实例
 ```
 
@@ -359,7 +359,7 @@ TTL 「key」
 DEL 「key」
 ```
 
->`NX` 表示仅在 key 不存在时写入；`EX` 和 `PX` 分别以秒和毫秒设置过期时间。
+>`NX` 表示仅在 key 不存在时写入；`EX` 和 `PX` 分别以秒和毫秒设置过期时间。用 `SET` 覆盖已有 key 默认会清除原 TTL，需要保留时加 `KEEPTTL`。
 
 ---
 
@@ -400,7 +400,7 @@ DEL 「key」
 
     | 操作 | 含义 |
     | --- | --- |
-    | `TRUNCATE` | 清空留结构；InnoDB 上是 **DDL**：隐式提交、不可 `ROLLBACK`、重置 `AUTO_INCREMENT`；有外键指向本表则失败 → 用 `DELETE` |
+    | `TRUNCATE` | 清空留结构；InnoDB 上是 **DDL**：隐式提交、不可 `ROLLBACK`、重置 `AUTO_INCREMENT`；有其他表的外键指向本表则失败，改用 `DELETE` 仍须遵守外键约束 |
     | `DROP TABLE`/`DATABASE` | 删对象 |
     | `COMMENT` | 表/列元数据（`SHOW CREATE TABLE`）；改列注释须 `MODIFY`/`CHANGE` 写全列定义 |
 
@@ -413,7 +413,7 @@ DEL 「key」
     | 注释 | `--` 后须空格；`#` MySQL 扩展；`/* */` 可跨行；逗号别跟列名一起注释掉 |
     | `INSERT` | 写明列名；批量有上限，避免超大单包 |
     | `SELECT` | 只取需要的列 |
-    | `UPDATE`/`DELETE` | 必须有 `WHERE`；改前同一条件先查 |
+    | `UPDATE`/`DELETE` | 省略 `WHERE` 会作用于全表；只改部分行时用同一条件先查 |
     | 空值 | `IS NULL` / `IS NOT NULL`，不要 `= NULL` |
     | 理解顺序 | `FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT`（写作辅助序，非引擎真实执行序） |
 
@@ -431,7 +431,7 @@ DEL 「key」
     | --- | --- |
     | 是什么 | 给 `SELECT` 起名；普通视图不另存数据 |
     | 物化 | MySQL **没有**；要落结果自己建表再 `INSERT`（底表变了不自动更新） |
-    | 写入 | 改的是底表；`JOIN`/`GROUP BY`/聚合通常不可写 |
+    | 写入 | 改的是底表；含 `GROUP BY` 或聚合的视图不可更新，部分内连接视图可一次更新其中一张底表 |
     | `WITH CHECK OPTION` | 拒绝写出视图条件外的行 |
     | `DROP VIEW` | 不删底表 |
 
@@ -458,7 +458,7 @@ DEL 「key」
     | 聚簇 | 数据按主键排；二级索引叶子带到主键再回表取整行。主键宜递增，减少页分裂 |
     | 覆盖索引 | 查询列全在索引里 → 免回表 |
     | 用不上索引 | `LIKE '%xx'`、对索引列做函数/运算/隐式类型转换、跳过最左前缀、`OR` 两侧难同时用上、无界 `SELECT *` 放大回表与网络 |
-    | `IN` / `NOT` | 优先 `IN`；`NOT IN`、`≠`、`NOT` 不宜当主过滤（`NOT IN` 还要当心 `NULL`）。以 `EXPLAIN` 为准 |
+    | `IN` / `NOT IN` | 按包含或排除的语义选；若排除集合含 `NULL`，未匹配行的 `NOT IN` 结果为 UNKNOWN，会被 `WHERE` 滤掉。可按业务空值规则改用 `NOT EXISTS` |
     | 驱动表 | 小结果集驱动大表只是嵌套循环直觉；优化器可能改写，以执行计划为准 |
     | 批量写 | 短事务、限制批次，少锁时间、少日志抖动 |
     | `EXPLAIN` | 接口慢先看 `type`/`key`/`rows`/`filtered`/`Extra`（临时表、filesort）；`EXPLAIN ANALYZE` 真跑，对照慢查询日志。改完用同一条 SQL 复测 |
@@ -469,14 +469,14 @@ DEL 「key」
 
     | 主题 | 规则 |
     | --- | --- |
-    | 边界 | 一个 HTTP 请求开一段；勿把 HTTP/RPC/发 MQ 包进事务 |
+    | 边界 | 按必须同成同败的业务操作划分；勿把 HTTP/RPC/发 MQ 包进数据库事务 |
     | 幂等 | 重复点击靠接口幂等；`UNIQUE` 只挡相同唯一键，挡不住两次不同下单 |
-    | DDL vs DML | DDL 常隐式提交、不可当 DML 回滚；某句 DML 失败只撤该句，失败应整笔 `ROLLBACK` |
-    | 死锁 | InnoDB 常整笔回滚 → 须重新 `START TRANSACTION` |
+    | DDL vs DML | DDL 常隐式提交；多数 DML 错误只撤该句。若业务无法继续，应整笔 `ROLLBACK` |
+    | 死锁 | InnoDB 回滚被选为牺牲者的整个事务；重试须从事务开头开始 |
     | `UPDATE` 0 行 | 通常不算错；需要时查 `ROW_COUNT()` |
     | `SAVEPOINT` | 部分回滚：`ROLLBACK TO` 后继续（其后保存点失效） |
-    | 重试 | 锁超时等瞬时失败可同语句重试；唯一冲突换键或整笔 `ROLLBACK` |
-    | 客户端 | 显式事务里语句失败不会自动整笔回滚，须客户端 `COMMIT` / `ROLLBACK`；JDBC 抛错停后续；`mysql>` 粘贴仍可能继续；`mysql < 文件` 默认遇错停 |
+    | 重试 | 锁等待超时默认只撤当前语句；启用 `innodb_rollback_on_timeout` 时须整笔重试。唯一键冲突按业务判断重复或报错，幂等键应保留 |
+    | 客户端 | 事务仍活跃时须显式提交或回滚；JDBC 抛出异常后由调用方处理；`mysql>` 粘贴仍可能继续；`mysql < 文件` 默认遇错停 |
 
     三种异常的含义见上文事务。下表按 InnoDB；PostgreSQL 默认是 `READ COMMITTED`。
 
@@ -487,7 +487,7 @@ DEL 「key」
     | `REPEATABLE READ` | 否 | 否 | 快照读通常不见；锁定读靠间隙锁 | InnoDB 默认；同事务一致性读复用快照 |
     | `SERIALIZABLE` | 否 | 否 | 否 | 最强，并发最贵 |
 
-    事务开始前设置（进行中不能改）。`autocommit=1` 时每条语句自成事务，单语句上看不出 `READ COMMITTED` 与 `REPEATABLE READ` 的差别，要把多条语句放进同一个事务。
+    当前事务的隔离级别须在开始前设置；事务中执行 `SET SESSION TRANSACTION` 只影响后续事务。默认自动提交时，把多次一致性读放进同一个显式事务，才能比较两次读取之间的快照变化。
 
     | 范围 | 写法 |
     | --- | --- |
@@ -512,7 +512,7 @@ DEL 「key」
     | --- | --- | --- |
     | `DECIMAL` | `BigDecimal` | 定精度/舍入；比较用 `compareTo` |
     | `INT`/`BIGINT` | `Integer`/`Long` | 可空用包装类；`BIGINT UNSIGNED` 可能超 `long` |
-    | `DATE`/`DATETIME`/`TIMESTAMP` | `LocalDate`/`LocalDateTime`/`Instant` | `DATETIME` 无时区；绝对时间用 UTC |
+    | `DATE`/`DATETIME`/`TIMESTAMP` | `LocalDate`/`LocalDateTime`/`java.sql.Timestamp`（可转 `Instant`） | `DATETIME` 无时区；读写绝对时间时统一连接时区 |
     | `JSON` | `String` 或对象 | 统一序列化；高频查询字段拆普通列 |
 
     | 主题 | 规则 |
@@ -532,7 +532,7 @@ DEL 「key」
     | redo / binlog | 崩溃恢复 / 复制与时间点恢复；**都不能替代备份**（PostgreSQL 的 WAL 同理） |
     | 复制 | 读扩展与容灾；默认异步，误删也会跟上副本。复制本身不是备份 |
     | 读自己 | 刚写再读走主库；事务内勿切副本 |
-    | 高可用 | 自动切换不等于零丢失；事先接受 RPO / RTO |
+    | 高可用 | 自动切换仍可能丢数据；约定可接受的数据丢失时间窗口（RPO）和恢复服务的目标时长（RTO） |
     | 安全 | 最小权限，生产不用超级用户跑业务；TLS；密码与连接串不进仓库、代码、日志 |
     | DDL | 结构变更走版本化迁移（可回滚或向前兼容）；大表先估锁、磁盘、复制延迟 |
     | 备份 | 定期全量 + 按需增量；定范围、保留期、恢复目标，并在隔离环境演练恢复 |
@@ -589,7 +589,7 @@ DEL 「key」
     | 字符串值 | 单引号 `'` | `WHERE name = 'Alice'` |
     | 数字 / 布尔 / `NULL` | 不加引号 | `WHERE id = 1` |
 
-    >含 `-`/空格/数字开头/保留字 → 标识符**必须**反引号；单引号会变成字符串常量。优先 `snake_case`。串内 `'` 写成 `''`。双引号 `"` 勿当默认：无 `ANSI_QUOTES` 当字符串，有则当标识符 → 字符串只用 `'`。
+    >含 `-` 或空格、全为数字或使用保留字的标识符用反引号；以数字开头本身不要求加引号。优先 `snake_case`。串内 `'` 写成 `''`。双引号 `"` 勿当默认：无 `ANSI_QUOTES` 当字符串，有则当标识符 → 字符串只用 `'`。
 
     ```sql
     SELECT 'order-id' FROM t;   -- 常量
@@ -640,7 +640,8 @@ DEL 「key」
     CREATE [UNIQUE] INDEX 「名」 ON 「表」 (「列」);
     DROP INDEX 「名」 ON 「表」;
     START TRANSACTION;  -- 等价 BEGIN / BEGIN WORK
-    -- 三选一，不要连着跑：COMMIT;  |  ROLLBACK;  |  先 SAVEPOINT 「名」; 再 ROLLBACK TO SAVEPOINT 「名」;
+    -- 事务中可先 SAVEPOINT 「名」; 再用 ROLLBACK TO SAVEPOINT 「名」; 部分回滚
+    -- 结束事务二选一：COMMIT; 或 ROLLBACK;
     CREATE OR REPLACE VIEW 「视图」 AS SELECT ...;  -- 可加 WITH CHECK OPTION
     SHOW CREATE VIEW 「视图」;
     DROP VIEW IF EXISTS 「视图」;
@@ -742,7 +743,7 @@ MongoDB 是文档数据库：一条记录是一个 BSON 文档，多个文档组
     | 数据规模 | 数量有明确上限 | 数量可能持续增长 |
     | 典型关系 | 一对少量明细 | 多对多、共享对象、高基数关系 |
 
-    >文档结构应从主要读写路径反推：把需要原子更新、经常一起读取且规模可控的数据嵌入；不要为了减少一次查询，把会无限增长的数组塞进单个文档。
+    >文档结构应从主要读写路径反推：把需要原子更新、经常一起读取且规模可控的数据嵌入；单个 BSON 文档上限为 16 MiB，应避免无限增长的数组。
 
 - **查询与聚合管道**
 
@@ -765,7 +766,7 @@ MongoDB 是文档数据库：一条记录是一个 BSON 文档，多个文档组
 
 - **原子性、事务与高可用**
 
-    - 单文档写操作具有原子性；多文档事务会增加协调成本，应保持简短。大量关联和复杂事务是主线时，关系型数据库通常更直接。
+    - 单文档写操作具有原子性；多文档事务需要副本集或分片集群，会增加协调成本，应保持简短。大量关联和复杂事务是主线时，关系型数据库通常更直接。
     - 副本集提供冗余和故障转移，但读写保证还取决于 read concern、write concern 和 read preference。
     - 分片用于扩展容量和吞吐，分片键决定数据分布、查询路由和热点；只有需求明确且团队能承担运维复杂度时再引入。
 
@@ -785,7 +786,7 @@ Redis 主要在内存读写。事实数据仍在 MySQL；Redis 做缓存、会�
     | --- | --- | --- |
     | 热点详情、配置 | 缓存查询结果，带 TTL | 写入和强一致读 |
     | 登录会话 | 可存 Session / token 元数据 | 账号、权限等事实 |
-    | 计数、限流 | `INCR` + TTL | 对账、累计以库为准 |
+    | 计数、限流 | 固定窗口可用短 Lua 原子执行 `INCR` 并在首次计数时设 TTL，避免两步之间中断留下永久 key | 对账、累计以库为准 |
     | 排行榜 | Sorted Set | 结算、发奖落库 |
     | 简易队列 | List；要确认/重试再用 Stream 或 MQ | 不能丢的业务事件优先 MQ |
     | 余额、库存 | 可缓存展示，不作唯一真相 | 扣减走库事务或明确方案 |
@@ -854,7 +855,7 @@ Redis 主要在内存读写。事实数据仍在 MySQL；Redis 做缓存、会�
         └─ 命令：写入一个 String
         ```
 
-        **命令名前缀 ≈ 数据结构**（看到前缀就知道在操作哪种类型）
+        **常见命令前缀**（帮助记忆，具体类型以命令定义为准）
 
         | 前缀 | 类型 | 记忆 |
         | --- | --- | --- |
@@ -998,8 +999,8 @@ Redis 主要在内存读写。事实数据仍在 MySQL；Redis 做缓存、会�
             XREADGROUP GROUP  cg1  worker1  COUNT 10  STREAMS  prod:events:order  >
             # → 组 cg1、消费者 worker1，最多读 10 条；> = 尚未派给组内的新消息
 
-            XACK  prod:events:order  cg1  1730000000000-0
-            # → 确认这条消息已处理完（ID 形如 时间戳-序号）
+            XACK  prod:events:order  cg1  「XREADGROUP 返回的消息 ID」
+            # → 业务处理成功后确认；消费者中途退出，待确认消息可由其他消费者认领重试
             ```
 
             >比 List 多了消费进度与确认；仍不是 Kafka 的完整替代——跨机房、长期堆积、复杂路由优先专业 MQ。Redis 丢了可重建的事件可以进 Stream；不能丢的核心业务事件优先 MQ + 落库。
@@ -1029,7 +1030,7 @@ Redis 主要在内存读写。事实数据仍在 MySQL；Redis 做缓存、会�
         | --- | --- | --- |
         | 单条命令 | 一次数据结构操作不被打断 | 多条命令之间仍可被穿插 |
         | Pipeline | 一次发送多条，减少网络往返 | 不是事务，整批不原子 |
-        | [`MULTI` / `EXEC`](https://redis.io/docs/latest/develop/using-commands/transactions/) | 排队后连续执行 | 某条报错，其余仍继续，已成功的不回滚；可配合 `WATCH` |
+        | [`MULTI` / `EXEC`](https://redis.io/docs/latest/develop/using-commands/transactions/) | 排队后连续执行 | 入队时报错会使 `EXEC` 放弃整批；执行时某条报错，其余仍继续，已成功的不回滚；可配合 `WATCH` |
         | [Lua / Redis Functions](https://redis.io/docs/latest/develop/programmability/) | 服务端原子做判断和多步 | 执行期间阻塞其他活动，必须短 |
 
         | 对比项 | Redis | MySQL 事务 |
@@ -1065,7 +1066,7 @@ Redis 主要在内存读写。事实数据仍在 MySQL；Redis 做缓存、会�
 
 1. **Java 访问**
 
-    Spring Boot 默认常用 Lettuce 连接；序列化要全项目统一（JSON 与 JDK 序列化不能混读）。`@Cacheable` 必须明确 key 和 TTL，不要用默认“永不超时”。在 `@Transactional` 提交成功后再删/写缓存，避免库回滚了缓存还在。锁不要手写一长串 `SETNX`，用短 Lua 或成熟客户端（如 Redisson）。Redis 连接和 MySQL 连接池不是一回事，超时、重试要单独配。
+    Spring Boot 默认常用 Lettuce 连接；序列化要全项目统一（JSON 与 JDK 序列化不能混读）。`@Cacheable` 可按方法参数生成 key；Redis 缓存默认不过期，需要 TTL 时在 `RedisCacheConfiguration` 中配置。在 `@Transactional` 提交成功后再删/写缓存，避免库回滚了缓存还在。锁不要手写一长串 `SETNX`，用短 Lua 或成熟客户端（如 Redisson）。Redis 连接和 MySQL 连接池不是一回事，超时、重试要单独配。
 
 1. **分布式锁**
 
@@ -1091,14 +1092,14 @@ Redis 主要在内存读写。事实数据仍在 MySQL；Redis 做缓存、会�
 
 1. **分库分表**
 
-    把原本「一个库、一张表」里的数据，按规则拆到多个库、多张物理表，摊薄单机容量与 QPS。中间件（如 ShardingSphere、TDDL）或应用路由把逻辑表映射到物理表；业务仍写逻辑表名。可只分库、只分表，或两者并用。
+    把原本「一个库、一张表」里的数据按规则拆到多个库、多张物理表。同机分表缩小单表规模；分片部署到不同机器后可分摊存储和请求负载。中间件（如 ShardingSphere、TDDL）或应用路由把逻辑表映射到物理表。可只分库、只分表，或两者并用。
 
     | 做法 | 做什么 | 例子 |
     | --- | --- | --- |
     | 分表 | 同一库内一张逻辑表 → 多张物理表 | `order` → `order_0` … `order_15` |
     | 分库 | 拆到多个库（常多机） | `db_0.order_*` … `db_3.order_*` |
 
-    路由靠**分片键**（如 `user_id`）：`库 = user_id % 4`，`表 = ⌊user_id / 4⌋ % 16`（整除）。带分片键的读写只打一台库一张表；没有分片键就要广播或另建映射。主键需全局唯一（雪花 ID / 号段等），不能依赖各分片本地自增当全局 ID。
+    路由靠**分片键**（如 `user_id`）：`库 = user_id % 4`，`表 = ⌊user_id / 4⌋ % 16`（整除）。按单个 `user_id` 等值读写只打一台库一张表；没有分片键就要广播或另建映射。业务需要跨分片唯一 ID 时，可用雪花 ID / 号段等，各分片本地自增只保证本地唯一。
 
     >- 雪花 ID：按「时间 + 机器号 + 序列」拼出的 64 位整数，本地发号自己算、不查库。
     >- 号段：向发号中心一次领一段连续号，本地慢慢用，仍像自增整数。
@@ -1128,7 +1129,7 @@ Redis 主要在内存读写。事实数据仍在 MySQL；Redis 做缓存、会�
     | 语法、对象名、部分权限与依赖冲突 | 生产真实耗时、锁等待、磁盘打满、并发下的竞态 |
     | 「打算执行什么」（计划是否符合预期） | 工具若仍写 changelog、或短暂加锁——名义 dry-run 也可能有副作用 |
 
-    深度大致三档（越往后越「像真跑」，也越可能碰到库）：只出计划 → 连库校验但不落变更 → 在事务里执行再 `ROLLBACK`（手工 dry-run）。后两档仍可能读生产元数据或短暂占锁。
+    深度大致三档（越往后越「像真跑」，也越可能碰到库）：只出计划 → 连库校验但不落变更 → 在事务里执行再 `ROLLBACK`（手工 dry-run）。后两档仍可能读生产元数据或占锁，回滚也不会归还已分配的自增值或序列值。
 
     >- **`EXPLAIN`**：看查询怎么走，不预演「改库」。
     >- **事务里试跑再回滚**：一种手工 dry-run；自动提交、或 DDL 在部分引擎上隐式提交时，回滚救不了。

@@ -2,7 +2,7 @@
 <!--
     Maven POM 速查示例：Maven 3.9.x / POM 4.0.0；未注释部分为最小构建，注释块按场景启用。
     POM 管依赖、插件、模块；账号 / 代理 / 镜像放 settings.xml。示例版本不代表最新。
-    检查：mvn validate；help:effective-pom -Dverbose；dependency:tree
+    检查：mvn validate；mvn help:effective-pom -Dverbose；mvn dependency:tree
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -116,7 +116,7 @@
 
     <!--
         properties：${名称} 引用；内置如 ${project.version}、${env.CI}。-D 可覆盖同名项。
-        ${java.version} 不是编译目标；用 maven.compiler.release（JDK 9+ 约束语法/字节码/API）。
+        本 POM 用 maven.compiler.release 设置编译目标（JDK 9+ 约束语法/字节码/API）。
     -->
     <properties>
         <maven.compiler.release>8</maven.compiler.release>
@@ -130,7 +130,7 @@
         dependencyManagement：统一版本/scope/exclusions，不进业务 classpath、不引入成员依赖；
         import BOM 仍会解析/下载该 BOM POM；不管插件自身依赖。
         BOM：type=pom + scope=import；当前 POM 显式管理优先，多 BOM 通常先导入者优先。
-        坐标 groupId:artifactId:version[:type][:classifier]（type/classifier 默认可省，type 默认 jar）。
+        基本坐标为 groupId:artifactId:version；依赖可另外声明 type（默认 jar）和 classifier。
         项目 packaging ≠ 依赖 type。业务依赖慎用版本区间。匹配键 GA + type + classifier（不含 version）。
         classifier：同 GAV 的制品变体后缀（sources / javadoc / tests 等）；默认无，主 jar 与 -sources 各算一条。
     -->
@@ -286,7 +286,7 @@
 
             <!--
                 Failsafe：绑 integration-test + verify；用 mvn verify。
-                -DskipTests 只跳 Surefire（Failsafe 3.6.0+ 不认）；-DskipITs 跳 Failsafe；
+                -DskipTests 跳过 Surefire 单测；Failsafe 3.5.x 也读取它，3.6.x 默认仅用 -DskipITs 跳集成测试；
                 -Dmaven.test.skip=true 连测试编译一起跳。
             -->
             <!--

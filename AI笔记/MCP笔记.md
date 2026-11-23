@@ -2,75 +2,103 @@
 
 ### 定义
 
-模型上下文协议（Model Context Protocol，MCP）是开源的标准化通信协议，用于在 LLM 应用与外部数据源、工具、服务之间做安全、双向集成。对话型模型演进到能执行任务的 Agent 后，需要动态拉取上下文并对环境产生副作用；MCP 统一了「多源上下文 + 工具集」的交互方式。
+模型上下文协议（Model Context Protocol，MCP）是开放的通信协议，用于连接 LLM 应用与外部数据源、工具、服务。对话型模型演进到能执行任务的 Agent 后，需要动态拉取上下文，也可能通过工具修改外部状态。MCP 统一了「多源上下文 + 工具集」的交互方式，访问权限仍由宿主和服务端执行。
 
-协议以 JSON-RPC 2.0 为消息格式，强调 **有状态连接** 与 **能力协商**。它不规定宿主（Host）如何调模型，而规范传输层、生命周期与核心原语的交互方式；与具体大模型厂商解耦，同一套服务端逻辑可接入 Claude Desktop、Cursor 等兼容宿主的客户端。
+协议以 JSON-RPC 2.0 为消息格式，规范传输、能力声明与核心原语。宿主（Host）决定如何调用模型，同一套服务端逻辑可接入 Claude Desktop、Cursor 等兼容宿主。
 
-协议与版本对齐的类型与消息结构见 **[schema](https://modelcontextprotocol.io/specification/2025-11-25/schema)**（[schema.ts](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/schema/2025-11-25/schema.ts)），便于强类型解析与兼容演进。
+**版本约定**：`2026-07-28` 改为逐请求声明版本与能力。下面同时保留 `2025-11-25` 的握手、传输表和完整报文，便于对照已有实现。两版字段与方法各有差异。[新版变更](https://modelcontextprotocol.io/specification/2026-07-28/changelog) · [旧版 schema](https://modelcontextprotocol.io/specification/2025-11-25/schema) · [旧版 schema.ts](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/schema/2025-11-25/schema.ts)
 
 ### 相关产物
 
 1. **[SDK](https://modelcontextprotocol.io/docs/sdk)**：各语言分仓实现，封装传输、生命周期与原语。
 2. **[Inspector](https://github.com/modelcontextprotocol/inspector)**：可视化调试 MCP 服务器与消息流。
 3. **[servers](https://github.com/modelcontextprotocol/servers)**：官方参考服务器集合。
-- **[registry](https://github.com/modelcontextprotocol/registry)**：社区驱动的服务器注册与发现。
-- **[llms.txt](https://modelcontextprotocol.io/llms.txt)**：文档索引，便于工具/模型按需拉取规范页面。
+4. **[registry](https://github.com/modelcontextprotocol/registry)**：社区驱动的服务器注册与发现。
+5. **[llms.txt](https://modelcontextprotocol.io/llms.txt)**：文档索引，便于工具/模型按需拉取规范页面。
 
 ### 生命周期
 
-三阶段： **初始化**（能力协商与协议版本）、**运行**、**关闭**。
+**2026-07-28**：已知服务端支持新版时，客户端可直接发业务请求。每个请求都在 `params._meta` 中携带协议版本和客户端能力。[新版版本协商](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning)
 
-1. **初始化**：首次交互须为 `initialize`；服务端返回能力与 `serverInfo` 后，客户端 **必须** 再发 `notifications/initialized`，此后进入正常运行。收到 `initialize` 的响应前，客户端 **不应** 发送除 ping 以外的请求；收到 `initialized` 前，服务端 **不应** 发送除 ping 与 logging 以外的请求。
-2. **运行与版本**：客户端在 `initialize` 中携带其支持的 `protocolVersion`；服务端支持则原样返回，否则回退到自己支持的版本；客户端不接受则应断开。HTTP 传输下，协商完成后客户端 **必须** 在后续请求中带 `MCP-Protocol-Version`（协商结果）；若服务端收不到该头且无法从别处得知版本，**应** 假定 `2025-03-26`；版本非法或不支持则 **必须** 响应 `400`。
-3. **关闭**：**stdio** — 客户端宜先关闭子进程 stdin，等待进程退出或响应 `SIGTERM`，必要时 `SIGKILL`；服务端也可关闭 stdout 并退出。**HTTP** — 关闭对应连接即可。
+兼容新旧两版的客户端通过 stdio 连接版本未知的服务端时，应先用 `server/discover` 探测。探测成功后选用双方支持的版本。若返回 `UnsupportedProtocolVersionError`，从错误列出的版本中选择兼容版本重试，无共同版本则报错。只有遇到无法识别为新版的错误或探测超时，才回退到旧版 `initialize` 握手。[stdio 兼容流程](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio#backward-compatibility)
+
+**2025-11-25** 分为 **初始化**、**运行**、**关闭** 三阶段。[旧版生命周期](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle)
+
+1. **初始化**：首次交互须为 `initialize`。服务端返回能力与 `serverInfo`、客户端接受协议版本后，客户端 **必须** 再发 `notifications/initialized`。客户端在收到初始化响应前应只发 ping 请求，服务端在收到就绪通知前应只发 ping 请求或日志通知。
+2. **运行与版本**：客户端在 `initialize` 中携带其支持的 `protocolVersion`。服务端支持则原样返回，否则返回自己支持的另一版本。若客户端不支持返回的版本，则应断开。HTTP 传输下，协商完成后客户端 **必须** 在后续请求中带 `MCP-Protocol-Version`（应为协商结果）。若服务端收不到该头且无法从别处得知版本，**应** 假定 `2025-03-26`。版本非法或不支持则 **必须** 响应 `400`。
+3. **关闭**：**stdio** — 客户端宜先关闭子进程 stdin，超时未退出再发 `SIGTERM`，必要时发 `SIGKILL`。服务端也可关闭 stdout 并退出。**HTTP** — 若服务端分配了会话 ID，客户端用完后应携该 ID 发送 HTTP DELETE。服务端可用 `405` 表示不支持主动结束会话。无论是否分配了 ID 或接受 DELETE，客户端退出时都应关闭仍打开的 HTTP 连接（包括 SSE 流）。
 
 ### 分层
 
-1. **数据层**：生命周期与能力协商；
+1. **数据层**：生命周期、能力声明，以及工具、资源、提示词等方法的请求与响应。
 
-    数据层承载 MCP 的核心语义：交互由生命周期状态机驱动，起点是初始化。
+    例如，客户端用 `tools/list` 发现工具，再用 `tools/call` 指定工具名和实参。两版都保留这两个方法，但报文字段有变化，见下文示例。
 
-    传输连通后，客户端须先发送 `initialize`，与对方协商协议版本与能力（Capabilities）。在客户端发出 `notifications/initialized` 之前，通道处于受限态：除 ping 与面向客户端的日志通知外，不得发送其他业务请求。若服务端无法支持客户端声明的协议版本，应断开连接，避免后续解析失败。
 2. **传输层**：
 
-    承载 JSON-RPC。
+    承载 JSON-RPC。stdio 每行一条 UTF-8 消息，服务端 stdout 专供协议报文，普通日志可写 stderr。Streamable HTTP 可返回 JSON 或 SSE 事件流。
 
     1. 标准输入输出 (stdio) 机制
     2. 可流式 HTTP (Streamable HTTP) 机制
+
+    下表按 [2025-11-25 传输规范](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)。
 
     | 评估维度        | stdio 传输机制                               | Streamable HTTP 传输机制                                 |
     |----------------|--------------------------------------------|---------------------------------------------------------|
     | 应用场景        | 本地工具集成、CLI 脚本、同物理机或容器内通信       | 远程 API 代理、云端微服务、多用户并发访问的数据源               |
     | 进程与生命周期   | 由客户端作为子进程启动，生命周期与客户端进程强绑定   | 独立运行的 Web 服务或守护进程，具备独立的生命周期               |
-    | 并发与多路复用   | 单一连接，独占式 1:1 通信，无原生并发处理         | 支持多客户端并发连接，通过多线程或异步 I/O 处理请求              |
-    | 会话状态追踪机制 | 隐式关联（完全依赖于子进程实例的内存状态与管道连接）  | 显式关联（强制依赖 MCP-Session-Id 头部维持状态机）            |
-    | 容错与重连能力   | 脆弱（管道断裂或进程崩溃即视为连接永久终止）        | 健壮（支持基于 Last-Event-ID 的断点续传与消息重放）            |
-    | 安全模型与授权   | 进程级隔离，天然继承宿主操作系统的用户权限边界      | 需配置远程服务器侧鉴权（如 OAuth 2.0）、CORS 与 Origin 校验     |
+    | 并发与多路复用   | 一个客户端连接一个子进程，可用请求 ID 匹配多个在途请求 | 独立服务可处理多个客户端，每条客户端消息用独立 POST 发送 |
+    | 会话状态追踪机制 | 通过该子进程与管道关联 | 服务端可选发放 `MCP-Session-Id`，该会话的后续请求必须携带。带此 ID 的请求若收到 `404`，客户端必须丢弃旧 ID，发送不带会话 ID 的 `initialize` 重建会话 |
+    | 容错与重连能力   | 管道断裂后需重启子进程并重新初始化 | 服务端可选择支持 SSE 续传，此时客户端可用 `Last-Event-ID` 恢复原流 |
+    | 安全模型与授权   | 子进程以启动账号的权限运行，文件和网络访问取决于实际隔离配置 | 服务端须检查 `Origin`，存在且非法时返回 `403`。受保护服务还需身份验证与授权 |
+
+    **2026-07-28 的 HTTP 差异**：移除了协议会话 ID 和 SSE 断点续传。跨调用状态可用服务端发放的句柄作为工具参数传递。订阅用 `subscriptions/listen` 建立长 POST 响应流。响应流中断后需要以新的请求 ID 重新发起调用，涉及写操作时要考虑重复执行。[新版传输规范](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
 
 ### 角色
 
-1. **宿主（Host）**：发起连接的 LLM 应用（如 AI IDE、智能体平台、对话界面）。既是模型运行环境，也是安全与用户权限的最终执行者：管理人机交互、决定向模型注入哪些工具，并承担 Human-in-the-loop 等确认职责。
-2. **客户端（Client）**：嵌在宿主内的协议栈；每个接入的 Server 对应一个 Client，维持独立有状态连接。负责状态机与报文解析，把宿主意图转成符合 MCP 的 JSON-RPC 请求，并处理服务端异步通知。
-3. **服务端（Server）**：对外部提供上下文（如文件、数据库）与执行能力（如 API、编译）的实例，可本地或远程部署。响应客户端请求；在授权前提下可反向请求采样、用户输入等，**不**绑定任一 LLM 厂商的 API Key。
+1. **宿主（Host）**：使用 MCP 的 AI 应用（如 AI IDE、智能体平台、对话界面）。它管理客户端、模型调用与人机交互，决定向模型提供哪些工具、哪些操作需要用户确认。受保护资源的访问权限由服务端校验。
+2. **客户端（Client）**：嵌在宿主内的协议栈，通常为每个接入的 Server 管理独立的通信。它负责解析报文，把宿主意图转成 JSON-RPC 请求，并处理响应与通知。
+3. **服务端（Server）**：对外提供上下文（如文件、数据库）与执行能力（如 API、编译）的实例，可本地或远程部署。服务端响应客户端请求，需要用户补充信息时可使用双方支持的 elicitation 机制。
 
 ### 原语
 
-| 原语方向归属           | 核心能力类别            | JSON-RPC 典型方法调用                                   | 功能定位与系统职责描述                                           |
+下表按 **2025-11-25** 的能力提供方排列。方法列同时列出请求和通知，例如 `roots/list` 由 Server 请求，`notifications/roots/list_changed` 由 Client 通知。
+
+| 能力提供方           | 核心能力类别            | JSON-RPC 典型方法与通知                                   | 功能定位与系统职责描述                                           |
 |----------------------|----------------------|-------------------------------------------------------|--------------------------------------------------------------|
 | Server 提供给 Client  | Tools (工具)          | tools/list, tools/call                                | 暴露可产生副作用的执行动作，供模型发现与调用。 |
 |                      | Resources (资源)      | resources/list, resources/read                        | 暴露只读或可订阅的状态与配置，供拉取长上下文或 RAG。 |
 |                      | Prompts (提示词)      | prompts/list, prompts/get                              | 暴露可复用模板与工作流预设，统一交互口径。 |
 | Client 提供给 Server  | Sampling (采样)       | sampling/createMessage                                 | Server 经宿主调用模型，无需自持厂商 API 密钥。 |
-|                      | Elicitation (信息诱导) | elicitation/create, notifications/elicitation/complete | Server 向用户索取结构化输入或 OAuth 等确认。 |
-|                      | Roots (根路径)        | roots/list, notifications/roots/list_changed           | Server 获知客户端允许访问的路径边界，便于沙盒。 |
-| 基础实用工具 (双向)     | 日志 (Logging)        | logging/setLevel, notifications/message                | Client 设日志级别，Server 向宿主推送运行信息。 |
-|                      | 长任务 (Tasks)        | tasks/result, tasks/cancel                              | 实验能力：封装长耗时或异步操作，减轻单次 RPC 阻塞。 |
+|                      | Elicitation (请求用户输入) | elicitation/create, notifications/elicitation/complete | 表单可收集非敏感输入。密码、令牌等须经 URL 模式在站外处理，完成通知仅适用于 URL 模式。 |
+|                      | Roots (根路径)        | roots/list, notifications/roots/list_changed           | Server 从 Client 获取工作范围（`file://` URI），实际文件访问边界由权限或沙盒执行。 |
+| Server 提供给 Client  | 日志 (Logging)        | logging/setLevel, notifications/message                | Client 设日志级别，Server 向宿主推送运行信息。 |
+| 基础实用工具 (双向)     | 长任务 (Tasks)        | tasks/get, tasks/result, tasks/cancel                  | 实验能力：双方按声明的支持范围查询状态、取回结果或取消任务。 |
 
-**通知**：无 `id` 的 JSON-RPC 消息；收到 `notifications/*/list_changed` 后应再调用对应 `*/list` 刷新列表。
+**通知**是带 `method`、省略 `id` 的 JSON-RPC 消息，接收方不得发送 JSON-RPC 响应。使用 2025-11-25 的 Streamable HTTP 时，服务端接受通知 POST（如 `notifications/initialized`）后，必须返回 HTTP `202 Accepted`，响应体为空。收到列表变更通知后，可再次调用对应的 `*/list` 刷新列表。列表结果若含 `nextCursor`，用它作为下次请求的 `cursor` 继续翻页。
+
+**2026-07-28** 的 `tools/call`、`resources/read`、`prompts/get` 可用多轮请求。服务端返回 `resultType: "input_required"` 时，至少携带 `inputRequests`、`requestState` 之一。客户端重试时用新的请求 ID，原样回传收到的 `requestState`，如有 `inputRequests` 则在 `inputResponses` 中逐项回应。该版也将 Roots、Sampling、Logging 标为弃用，Tasks 移至官方扩展。[多轮请求](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr) · [新版原语变更](https://modelcontextprotocol.io/specification/2026-07-28/changelog)
 
 ### JSON-RPC 示例
 
-`initialize` 请求 / 响应：
+**2026-07-28** 可以直接列工具。下面是请求体，HTTP POST 还须设置 `Content-Type: application/json`、接受 JSON 与 SSE 的 `Accept`、`MCP-Protocol-Version: 2026-07-28` 和 `Mcp-Method: tools/list`。成功的列表响应含 `resultType: "complete"`、`tools`、`ttlMs` 与 `cacheScope`。[新版工具规范](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/list",
+  "params": {
+    "_meta": {
+      "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+      "io.modelcontextprotocol/clientCapabilities": {},
+      "io.modelcontextprotocol/clientInfo": { "name": "example-client", "version": "1.0.0" }
+    }
+  }
+}
+```
+
+**以下是 2025-11-25 的完整交互**，从 `initialize` 请求 / 响应开始：
 
 ```jsonc
 // 请求
@@ -103,7 +131,7 @@
       "resources": {}
     },
     "serverInfo": { // 服务器身份（代码里`new McpServer({ name: "example-server", version: "1.0.0" })`设置）
-      "name": "example-server", // 服务器名不影响 MCP 是否被调用
+      "name": "example-server", // 服务端实现的名称，工具调用使用 tools/list 返回的工具名
       "version": "1.0.0"
     }
   }
@@ -209,6 +237,8 @@
 }
 ```
 
+工具执行失败（如天气 API 返回错误）可用 `result.isError: true` 和 `content` 说明原因。调用未知工具、请求结构错误等协议问题则返回 JSON-RPC 顶层 `error`。[旧版工具错误处理](https://modelcontextprotocol.io/specification/2025-11-25/server/tools#error-handling)
+
 `notifications/tools/list_changed`（收到后客户端通常会再发 `tools/list`）：
 
 ```json
@@ -220,4 +250,4 @@
 
 ### 模型何时调用 MCP 工具
 
-是否调用某一 MCP 工具由模型与宿主策略共同决定：MCP 只声明能力。实际选用受 Host 规则、用户意图，以及模型对 **`name`、`description`（及 `title` 等）** 的解读影响。配置里 **mcpServers 的键名**、服务端身份的`serverInfo.name`（`new McpServer({ name: "xxx" })`） 等 **不会** 与「选哪个工具」一一对应；应把 **工具级** `name` / `description` 写清楚，并在用户指令中明确动作与对象，以提高命中率。
+宿主决定哪些工具可用，可以按用户操作或程序逻辑直接调用，也可以让模型选择。让模型选择时，工具级 `name` 和 `description` 应写清动作、适用条件和参数含义。宿主配置里的 `mcpServers` 键名可能用作显示名或前缀，`serverInfo.name` 标识服务端实现。向该服务端发送 `tools/call` 时，`params.name` 应使用它在 `tools/list` 中公布的工具名。[工具规范](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)

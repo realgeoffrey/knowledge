@@ -39,8 +39,8 @@
 1. 执行/处理时机：TS/Babel 场景通常编译到 JS 后运行；语义上是在类定义求值期间调用。
 1. 行为能力：
 
-    - 可以替换被装饰值，但通常只能替换为语义匹配的值，如方法替换为方法、类替换为类。
-    - 可以读取 `context.kind`、`context.name`、`context.static`、`context.private` 等上下文信息。
+    - 方法装饰器可以返回替换方法。字段装饰器收到的第一个参数是 `undefined`，可以返回一个函数，在字段初始化时接收并转换初始值。
+    - 可以读取 `context.kind`、`context.name`。类成员的上下文还提供 `context.static` 和 `context.private`。
     - 可以用 `context.addInitializer()` 注入初始化逻辑。
     - 可以用装饰器工厂传参，如 `@logged('prefix')`。
 
@@ -58,7 +58,7 @@
 ## TS 装饰器
 1. TypeScript 装饰器需要区分两套语义：
 
-    1. 新版装饰器：TS 5+ 不需要 `experimentalDecorators`；典型签名是 `(value, context) => value?`；不支持参数装饰器；不兼容 `emitDecoratorMetadata`。
+    1. 新版装饰器：TS 5.0 起无需开启 `experimentalDecorators`。装饰器接收 `(value, context)`，返回值取决于装饰目标。不支持参数装饰器，也不兼容 `emitDecoratorMetadata`。[TypeScript 5.0 文档](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators)
     1. 旧版实验装饰器：通过 `experimentalDecorators: true` 开启；典型签名是 `target`、`propertyKey`、`descriptor` 等；支持参数装饰器；可配合 `emitDecoratorMetadata`、`reflect-metadata`。
 
 1. 作用对象：
@@ -67,10 +67,10 @@
     - 旧版 TS：类和类成员之外，还常见参数装饰器，尤其在依赖注入框架里。
 
 1. 执行/处理时机：TS/Babel 场景通常编译到 JS 后运行；语义上是在类定义求值期间调用。
-1. 行为能力：
+1. 新版装饰器的行为能力：
 
-    - 可以替换被装饰值，但通常只能替换为语义匹配的值，如方法替换为方法、类替换为类。
-    - 可以读取 `context.kind`、`context.name`、`context.static`、`context.private` 等上下文信息。
+    - 方法可以返回替换方法，字段可以返回初始值转换函数。
+    - 可以读取 `context.kind`、`context.name`。类成员的上下文还提供 `context.static` 和 `context.private`。
     - 可以用 `context.addInitializer()` 注入初始化逻辑。
     - 可以用装饰器工厂传参，如 `@logged('prefix')`。
 
@@ -113,7 +113,7 @@
 ## Java 注解
 1. 语法：`@Annotation`、`@Annotation(value)`、`@Annotation(key = value)`。
 1. 作用对象：类、字段、方法、参数、构造器、类型使用等。
-1. 执行/处理时机：由保留策略决定，可以是源码、编译期或运行期。
+1. 处理时机取决于读取方。例如编译器检查 `@Override`，框架可在运行时用反射读取注解。保留策略决定注解在哪些阶段可见。
 1. 行为能力：注解本身不改变业务逻辑；真正读取和执行规则的是编译器、注解处理器、框架或反射代码。
 1. 常见用法：
 
@@ -154,9 +154,9 @@
 1. 元注解：
 
     - `@Target`：限定注解使用位置，如 `TYPE`、`FIELD`、`METHOD`、`PARAMETER`、`CONSTRUCTOR`、`TYPE_USE`。
-    - `@Retention`：限定保留阶段，`SOURCE`、`CLASS`、`RUNTIME`。
+    - `@Retention`：`SOURCE` 在编译后丢弃；默认的 `CLASS` 写入类文件；`RUNTIME` 还支持运行时反射读取。
     - `@Documented`：进入 Javadoc。
-    - `@Inherited`：类级注解可被子类继承，不适用于方法/字段。
+    - `@Inherited`：查询类上的注解时可沿父类向上查找，不包括已实现的接口，也不适用于方法或字段。
     - `@Repeatable`：允许同一位置重复使用同类注解。
 
 1. 注解元素规则：
@@ -202,19 +202,24 @@
     f = a(b(f))
     ```
 
-1. 装饰器工厂：`@decorator(args)` 会先调用工厂，返回真正的装饰器。
+1. 装饰器工厂：`@decorator(args)` 会先调用工厂，返回真正的装饰器。下面仅对可安全重试的同步操作处理超时，`times` 包含首次调用。
 
     ```py
+    from functools import wraps
+
     def retry(times):
+        if times < 1:
+            raise ValueError("times must be at least 1")
+
         def deco(fn):
+            @wraps(fn)
             def wrapper(*args, **kwargs):
-                last_error = None
-                for _ in range(max(1, times)):
+                for attempt in range(1, times + 1):
                     try:
                         return fn(*args, **kwargs)
-                    except Exception as err:
-                        last_error = err
-                raise last_error
+                    except TimeoutError:
+                        if attempt == times:
+                            raise
             return wrapper
         return deco
     ```

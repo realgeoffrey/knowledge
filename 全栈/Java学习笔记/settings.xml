@@ -29,7 +29,7 @@
       deploy 走 distributionManagement，不被 mirror 改写。
 -->
 <settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
-          xmlns:xsi="http://maven.apache.org/2001/XMLSchema-instance"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
     <!-- 本地仓库默认如下；-Dmaven.repo.local= 可临时覆盖。 -->
     <!-- <localRepository>${user.home}/.m2/repository</localRepository> -->
@@ -94,7 +94,7 @@
           *           全部远程仓（含 company-direct）都走镜像；入口须能提供全部制品（私服仓库组）
           *,!repoId   除 repoId 外走镜像（该仓直连，认证用 servers.id=repoId）
           external:*  只镜像非 file、非本机（localhost / 127.0.0.1）的外部仓
-        按 <mirrors> 声明顺序取首个命中（精确 id 写在 * 前）；失败不回退原仓。
+        先找 mirrorOf 与仓库 id 完全相等的镜像；没有精确匹配时，按声明顺序取首个匹配模式。失败不回退原仓。
         缺制品靠私服代理回源（不是 Maven 绕开 mirror）。Maven 3.8.1+ 默认阻止外部 HTTP。
 
         下列 Super POM 默认仓（Maven 3.9.x）仅说明用，勿取消注释进 settings；
@@ -121,7 +121,7 @@
     </pluginRepositories>
     -->
     <mirrors>
-        <!-- 下列示例择一启用（勿同时开 central + *）。 -->
+        <!-- 若同时启用，central 走 aliyun-central，其余匹配的仓库走 company-mirror。 -->
         <!--
         <mirror>
             <id>aliyun-central</id>

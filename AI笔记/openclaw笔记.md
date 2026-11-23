@@ -1,18 +1,20 @@
-# openclaw笔记
+# OpenClaw 笔记
 
-| 对比维度 | [OpenClaw](https://github.com/openclaw/openclaw) | [CoPaw](https://github.com/agentscope-ai/CoPaw) | [NanoBot](https://github.com/HKUDS/nanobot) | [NanoClaw](https://github.com/qwibitai/nanoclaw) | [ZeroClaw](https://github.com/zeroclaw-labs/zeroclaw) | [MemU](https://github.com/NevaMind-AI/memU) |
+| 对比维度 | [OpenClaw](https://github.com/openclaw/openclaw) | [QwenPaw（原 CoPaw）](https://github.com/agentscope-ai/QwenPaw) | [nanobot](https://github.com/HKUDS/nanobot) | [NanoClaw](https://github.com/nanocoai/nanoclaw) | [ZeroClaw](https://github.com/zeroclaw-labs/zeroclaw) | [memU](https://github.com/NevaMind-AI/memU) |
 | --- | --- | --- | --- | --- | --- | --- |
-| 核心定位 | 个人 AI 助手；任意 OS / 平台 | 个人 AI 助手；易装；本机或云；多聊天应用、易扩展 | 超轻量 OpenClaw（仓库副标题） | 容器内轻量替代 OpenClaw（强调安全）；多消息端；记忆与定时任务；Anthropic Agents SDK | 快、小、全自主的个人助理基础设施；任意 OS / 平台；随处部署、组件可换 | 面向 24/7 **主动式（proactive）** agent 的记忆框架；结构化记忆、降常驻 token；对标 OpenClaw 系产品的说法见 [memUBot](https://github.com/NevaMind-AI/memUBot) README |
-| 开源许可 | MIT | Apache-2.0 | MIT | MIT | Apache-2.0 | Apache-2.0 |
-| 主语言（GitHub 标注） | TypeScript | Python | Python | TypeScript | Rust | Python |
-| 安全与隔离 | 配置与工具权限决定边界；本地执行命令有误操作与越权面 | 发行说明含敏感路径 file access guard 等；以当前版文档为准 | 轻量实现，策略多在部署与自改代码 | 默认容器收敛攻击面；强度取决于镜像与挂载 | Rust 内存安全；隔离看设计与部署 | 记忆与编排层；系统级安全依赖宿主与其它组件 |
-| 架构与性能 | 功能面大，默认栈偏重 | 多代理、工作空间、Skills，偏工程化整合 | 刻意做减法，体量小 | 容器有固定开销，换稳定性与边界 | fast、small，资源敏感场景 | 记忆管线与外部存储有持续开销；长期在线成本为自述重点 |
-| 渠道与集成 | 插件多；第三方协议变更可能波及个别通道 | 钉钉、飞书、QQ、Discord、iMessage 等（README Core capabilities）；细节以发行说明为准 | 易作轻量网关对接外部通道 | WhatsApp、Telegram、Slack、Discord、Gmail 等（自述） | 偏基础设施与吞吐，多平台 UI 非卖点 | 本库重心在记忆；完整助理形态见 memUBot |
-| 记忆与上下文 | 依赖配置与插件；长期记忆需自设计一致性与清理 | 记忆与个性化可控；工作空间级隔离类能力 | 偏会话级，长期记忆需自研 | 记忆与定时任务；绑定 Anthropic Agents SDK | 深度记忆非主叙事 | 类文件系统结构化记忆、proactive 生命周期、意图捕捉 |
-| 更贴场景 | 快速试全功能，安全与运维自理 | 个人助理、多通道与国内 IM、AgentScope 栈 | 少量代码定制极简 Bot | 默认容器化又要常见 IM | 低配机或偏后端高性能栈 | 长期记忆与 proactive 底座；若要对标 OpenClaw 产品路线看 memUBot |
-| 一句话 | 生态大、跨平台、插件多 | AgentScope 系：多通道、工程化、路径类守护 | 极简 OpenClaw 路线 | 容器 + 多消息端 + Agents SDK | Rust、轻快的自治助理基础设施 | proactive 记忆框架；产品叙事在 memUBot |
+| 核心定位 | 自托管、多渠道 AI 助手 | 个人 AI 助手，可在本机或云上部署，支持多聊天应用 | 轻量、可自托管的 Python 个人助手 | 在容器中运行智能体的轻量个人助手，默认使用 Claude Agent SDK，也可选 Codex、Cursor 或 OpenCode | 可替换组件的 Rust 智能体运行时 | 跨智能体、会话和设备共享的个人记忆系统。完整助理项目见 [memUBot](https://github.com/NevaMind-AI/memUBot) |
+| 许可证 | MIT | Apache-2.0 | MIT | MIT | MIT 或 Apache-2.0，可任选其一 | README 标注 Apache-2.0，仓库许可文件第 2 条措辞有改动。[许可原文](https://github.com/NevaMind-AI/memU/blob/main/LICENSE.txt) |
+| 核心实现语言 | TypeScript | Python | Python | TypeScript | Rust | Python |
+| 安全与隔离 | 工具沙盒默认关闭，启用后也须控制宿主权限与文件挂载 | Tool Guard 检查工具调用，File Guard 保护敏感路径，可配置系统级沙盒 | 可分别配置工作区路径限制与 shell 进程沙盒 | 默认容器隔离，强度取决于镜像与挂载 | 默认受监督模式按风险控制操作，可另配系统沙盒 | 记忆层的系统级隔离依赖宿主与存储后端 |
+| 架构与性能 | Gateway 统一接入渠道并调度智能体 | 多代理、工作空间、Skills | Python 网关服务 Web UI、终端及聊天应用 | 单个宿主进程调度每个会话的容器 | 单个 Rust 二进制，可替换模型、工具、记忆组件 | 智能体提炼记忆，memU 负责存储、索引与检索 |
+| 渠道与集成 | WhatsApp、Telegram、Slack 等，支持渠道插件 | 钉钉、飞书、QQ、Discord、iMessage 等 | Web UI、终端、聊天通道，支持 MCP | WhatsApp、Telegram、Slack、Discord 等适配器按需安装 | Discord、Telegram、Matrix、邮件、CLI 等 | 接入已有智能体，共享同一记忆后端 |
+| 记忆与上下文 | 工作区 `MEMORY.md` 保存长期事实与决策，`memory/YYYY-MM-DD.md` 保存每日记录 | ReMe 管理可编辑、可检索的 Markdown 记忆 | 内置跨会话的长期记忆，可通过 Dream 整理 | 每个智能体组有自己的工作区与记忆 | 支持 SQLite 记忆存储和嵌入检索 | 用 Wiki 组织可复用记忆，也可从历史任务中提炼 Markdown 技能 |
+| 更贴场景 | 快速试全功能，安全与运维自理 | 个人助理、多通道与国内 IM、AgentScope 栈 | 使用 Python 定制个人 Bot | 默认容器化又要常见 IM | 偏好单二进制部署或已有 Rust 后端 | 给多个已有智能体共享长期记忆 |
+| 一句话 | 跨平台、插件多 | AgentScope 系的多通道个人助手 | Python 轻量个人助手 | 容器隔离、多消息端、可选运行时 | Rust 自治助理基础设施 | 跨智能体的个人记忆系统 |
 
-1. 较完整openclaw流程图
+1. OpenClaw 流程图
+
+    一条入站消息由 Gateway 路由到会话。智能体组装上下文、请求模型，必要时运行工具并把结果送回模型，最终由 Gateway 对应的渠道适配器投递回复。[网关架构](https://docs.openclaw.ai/concepts/architecture) · [智能体循环](https://docs.openclaw.ai/concepts/agent-loop)
 
     ```mermaid
     flowchart TB
@@ -28,7 +30,7 @@
             direction LR
             User((用户))
             Gateway["Gateway Control Plane<br/>(网关控制平面)<br/>WhatsApp, Telegram, ..."]
-            Canvas["Nodes & Live Canvas<br/>(终端节点与实时画布)<br/>Windows, macOS, 移动端"]
+            Canvas["设备节点 (Nodes)<br/>可按设备能力提供 Canvas 等功能"]
 
             User -- "1.发送消息/交互" --> Gateway
             User -- "2.查看/操作 UI" --> Canvas
@@ -36,51 +38,54 @@
         end
         class L1 layerL1
 
-        subgraph L2["2. 智能体核心 (Agent Core - 本地驻留 大脑与记忆)"]
+        subgraph L2["2. 智能体核心 (Agent Core)"]
             direction LR
             subgraph CoreService["OpenClaw 核心服务 (Local / Self-hosted)"]
                 direction LR
-                Context["上下文引擎(Context Engine)<br/>-------------------<br/>• 短期会话记忆<br/>• 长期语义知识库(Vector DB)<br/>• 本地配置<br/>(~/.openclaw/openclaw.json)"]
+                Context["上下文组装 (Context Engine)<br/>-------------------<br/>• 当前会话历史<br/>• 工作区记忆文件<br/>• 可用工具与技能说明"]
                 Decision(("决策与推理循环<br/>(Decision Loop)"))
 
                 Context <--> Decision
             end
             LLM{"多模型路由与容灾<br/>(Model Failover)<br/>Claude, DeepSeek, GPT, ..."}
 
-            Decision -- "执行指令<br/>(支持OAuth/API密钥轮换)" --> LLM
-            LLM -- "推理结果" --> Decision
+            Decision -- "调用模型，可按配置轮换凭据或切换备用模型" --> LLM
+            LLM -- "回复文本或工具调用请求" --> Decision
         end
         class L2 layerL2
 
         subgraph L3["3. 执行与能力生态 (Execution & Capability Layer)"]
             direction LR
-            Tools["沙盒系统工具(Sandboxed Tools)<br/>-------------------<br/>• Docker隔离 & Tailscale VPN<br/>• 节点命令白名单<br/>(system.run)"]
-            Skills["扩展技能生态(Skills & Plugins)<br/>-------------------<br/>• 基于 SKILL.md 声明式驱动<br/>• NPM插件生态 (Voice,微信等)"]
+            Tools["执行工具 (Tools)<br/>-------------------<br/>• 可配置沙盒执行<br/>• 节点命令受权限与审批控制<br/>(system.run)"]
+            Skills["技能与插件 (Skills & Plugins)<br/>-------------------<br/>• SKILL.md 提供使用说明<br/>• 插件可注册工具和渠道"]
             Auto["主动触发引擎<br/>(Cron / Event / Webhook)"]
         end
         class L3 layerL3
 
         subgraph L4["4. 响应与持续性 (Response & Persistence)"]
-            DB[("本地存储 / 数据库<br/>(状态审计, 记录日志)")]
+            DB[("持久化存储<br/>会话历史、工作区记忆文件")]
         end
         class L4 layerL4
 
         %% 层级间核心连线
         Gateway -- "3.转发请求" --> Decision
-        Canvas -. "状态/UI 同步" .- Decision
 
         Decision -- "4.调用" --> Tools
-        Decision -- "4.调用" --> Skills
-        Auto -- "触发自动化任务" --> LLM
+        Tools -- "返回工具结果" --> Decision
+        Skills -. "提供技能说明" .-> Context
+        Skills -. "插件注册工具" .-> Tools
+        Auto -- "唤醒会话或发起运行" --> Gateway
 
-        Tools -. "写入执行结果" .-> DB
-        Skills -. "写入执行结果" .-> DB
         Decision -. "持久化记忆/状态" .-> DB
+        DB -. "读取会话与记忆" .-> Context
 
-        DB -- "5.生成最终响应" --> Gateway
+        Decision -- "5.返回最终响应" --> Gateway
+        Gateway -- "6.向原渠道投递回复" --> User
 
         %% 节点基础样式应用
         class User,Gateway,Context,Decision,Tools,Auto,DB defaultNode
-        %% 高亮显示最新架构中的核心升级点
+        %% 高亮显示节点、模型与扩展能力
         class Canvas,LLM,Skills highlightNode
     ```
+
+    图中的沙盒只在启用时隔离工具执行，Tailscale 用于远程访问 Gateway。工作区 Markdown 文件保存长期记忆，搜索索引帮助检索。[沙盒](https://docs.openclaw.ai/gateway/sandboxing) · [Tailscale](https://docs.openclaw.ai/gateway/tailscale) · [记忆](https://docs.openclaw.ai/concepts/memory)

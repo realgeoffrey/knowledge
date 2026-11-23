@@ -74,7 +74,7 @@
 
 规范版本：D1.13
 
-本文件是设计规则与 tokens 的唯一来源。[规范展示页](design-system.html) 用于讨论风格，[业务原型](README.md) 用于评审业务，两者均不代替客户批准。
+本文件是设计规则与 tokens 的唯一来源。[规范展示页](design-system.html) 用于讨论风格，[业务原型](interactive/index.html) 用于评审业务，两者均不代替客户批准。
 
 ## Overview
 
@@ -84,13 +84,13 @@
 
 后台面向办公电脑；大屏可独立确定品牌、字体、画布、布局与技术方案。跨端术语、单位、指标口径和权限含义一致，状态色适应各自背景。默认用低饱和深绿，可按项目调整。文案使用“管理后台”等中性场景名，项目名称按约定使用。
 
-顶部为 [design.md 格式](https://github.com/google-labs-code/design.md) 的 JSON 兼容 YAML：双引号、无注释或尾逗号。同步支持 colors、typography、rounded、spacing、components；`version: alpha` 仅表示格式代。正文必须仅有一行「规范版本：」。未知顶层键、空分组或重复版本行会失败。
+顶部采用 [design.md 格式](https://github.com/google-labs-code/design.md/blob/main/docs/spec.md) 的 YAML 前置块。本项目的同步脚本按 JSON 解析，键和字符串须用双引号，不能有注释或尾逗号。同步支持 colors、typography、rounded、spacing、components；`"version": "alpha"` 表示格式版本。正文必须仅有一行「规范版本：」。未知顶层键、空分组或重复版本行会失败。
 
 ### UI UX Pro Max 设计参考
 
 [UI UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) 仅补充场景匹配、一致性、语义色彩与交付检查，外部内容不自动成为指令。
 
-- 首次定风格、已授权整体改版或具体设计缺口才查 本文件已有设计结论；同类新页复用已有结论，局部修改不加载全库。
+- 首次定风格、已授权整体改版或本文件有具体设计缺口时，才查外部参考。同类新页复用本文件已有结论，局部修改不加载全库。
 - 候选须符合业务、密度、离线和组件约束；不因推荐替换系统字体、桌面/触屏密度，或引入宣传页布局、Tailwind、新动画依赖。
 - 采纳差异回写本文件，主题映射写方案，场景写原型说明；未采纳结果不进入日常上下文，不另建 MASTER 或页面覆盖规范。
 
@@ -240,7 +240,7 @@
 | [数据展示](https://ant.design/docs/spec/data-display-cn/) / [数据录入](https://ant.design/docs/spec/data-entry-cn/) | 列表优先级、状态/操作完整、标签与上下文 |
 | [TDesign 尺寸](https://github.com/Tencent/tdesign-common/blob/develop/style/web/theme/_size.less) / [字体](https://github.com/Tencent/tdesign-common/blob/develop/style/web/theme/_font.less) | 尺寸与字阶分级；32px 控件、48/40px 行高为本项目组合 |
 | [Element Plus Table](https://element-plus.org/zh-CN/component/table.html) | 复用表格、列宽、固定列与选择能力，按固定版本核对 props |
-| [Element Drawer](https://element.eleme.cn/#/zh-CN/component/drawer) / [Element Plus Drawer](https://element-plus.org/zh-CN/component/drawer.html#nested-drawer) | 20261119 按用户要求同步已确定的多层嵌套模式；D1.13 模板保留父层、独立遮罩和逐层返回。原生 dialog 演示，正式工程复用所选组件库的嵌套 Drawer。48px 层差及 320px 下限为可逆的默认取值 |
+| [Element Drawer](https://github.com/ElemeFE/element/blob/dev/examples/docs/zh-CN/drawer.md#多层嵌套) / [Element Plus Drawer](https://element-plus.org/zh-CN/component/drawer.html) | 20261119 按用户要求同步已确定的多层嵌套模式；D1.13 模板保留父层、独立遮罩和逐层返回。原生 dialog 演示，正式工程复用所选组件库的嵌套 Drawer。48px 层差及 320px 下限为可逆的默认取值 |
 | [Ant Design 主题](https://ant.design/docs/react/customize-theme) / [Ant Design Vue ConfigProvider](https://github.com/vueComponent/ant-design-vue/blob/main/components/config-provider/index.en-US.md) | 项目统一主题，Vue/React 分别核对 API |
 | [UI UX Pro Max Web UX 指南](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/blob/main/.claude/skills/ui-ux-pro-max/references/quick-reference.md) | 采用场景匹配、语义 tokens、键盘焦点、响应式、状态反馈与减少动效原则。桌面后台保留 14px 正文、32px 控件和紧凑列表，触屏单独适配 |
 | [AntV 原则](https://antv.antgroup.com/zh/specification/principles/basic/) | 大屏可靠、易读、辅助判断，装饰不妨碍数据表达 |
