@@ -327,8 +327,10 @@
         -f      # 不提示确认
         -a      # 删除所有未使用的镜像，而不仅仅是悬空的镜像
         --filter    # 过滤器
-        --volumes   # 同时清理未被容器引用的匿名卷
+        --volumes   # 同时清理未被容器引用的数据卷，范围取决于 Engine API 版本
         ```
+
+        Docker Engine 23.0 引入的 API 1.42 起，此选项仅清理未被容器引用的匿名卷。使用 API 1.41 或更早版本时，未被容器引用的命名卷也可能被删除，包括移除数据库容器后留下的数据卷。执行前确认客户端实际使用的 API 版本及要保留的数据卷。[Docker Engine API 版本记录](https://docs.docker.com/reference/api/engine/version-history/#v142-api-changes)
 
     6. 新建、提交镜像
 

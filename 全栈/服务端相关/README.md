@@ -54,25 +54,42 @@
     >
     >        <summary>前端也可以给页码分页封装一个无参数的「加载更多」方法，在方法内部维护进度</summary>
     >
-    >        ```js
-    >        let arr = []    // 数据
-    >        const size = 10 // 每页数量
-    >        const total = 111 // 总量
+    >        请求页码独立于已展示的条数。接口返回 `hasNext`，成功后才推进页码。失败时保留原页码，供用户重试。
     >
-    >        function loadMore () {
-    >          if (arr.length < total) {
-    >            const start = arr.length
-    >            console.log('请求页码：', Math.floor(start / size) + 1)
-    >            // 模拟本页返回的数据；实际请求成功后再追加，同一页只发一个在途请求
-    >            const count = Math.min(size, total - start)
-    >            arr = arr.concat(Array.from({ length: count }, (_, i) => start + i + 1))
-    >          } else {
-    >            // 已经加载所有内容
+    >        ```js
+    >        let arr = [] // 已展示的 ID
+    >        const size = 10
+    >        let nextPage = 1
+    >        let hasNext = true
+    >        let pending = null
+    >
+    >        // 模拟页码接口。接入实际接口时替换该函数。
+    >        async function requestPage(page, pageSize) {
+    >          const total = 111
+    >          const start = (page - 1) * pageSize
+    >          const count = Math.min(pageSize, total - start)
+    >          return {
+    >            items: Array.from({ length: count }, (_, i) => start + i + 1),
+    >            hasNext: start + count < total,
     >          }
-    >          return arr
     >        }
     >
-    >        loadMore()  // 加载更多直接调用，不用管理状态
+    >        async function loadMore() {
+    >          if (pending) return pending
+    >          if (!hasNext) return arr
+    >
+    >          pending = requestPage(nextPage, size)
+    >            .then(page => {
+    >              arr = [...new Set([...arr, ...page.items])]
+    >              hasNext = page.hasNext
+    >              nextPage += 1
+    >              return arr
+    >            })
+    >            .finally(() => { pending = null })
+    >          return pending
+    >        }
+    >
+    >        loadMore().then(console.log, console.error)
     >        ```
     >        </details>
 3. 服务端文档要求

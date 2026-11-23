@@ -1120,9 +1120,9 @@
     - `<script setup>`支持很多特殊逻辑：
 
         1. 任何以`v`开头的驼峰式命名的变量都可以当作 自定义指令
-        2. 顶层绑定可直接用于模板。上面的工单示例中，`view` 是顶层 ref，所以模板读取 `view.status`，脚本写入 `view.value`。普通对象内嵌的 ref 参与模板运算时须显式读取 `.value`。
+        2. 顶层绑定可直接用于模板。模板读取顶层 ref 时会自动解包。普通对象内嵌的 ref 参与模板运算时须显式读取 `.value`。
         3. 在 setup 中创建的状态归各个实例所有，模块级导入仍可在实例间共享。
-        4. 编译器处理顶层宏调用。工单示例直接解构 `defineProps()` 的结果，也可以先绑定为 `props` 对象再读取；`defineEmits()` 返回的 `emit` 同样可赋值并调用。
+        4. 编译器处理顶层宏调用。`defineEmits()` 返回的 `emit` 同样可赋值并调用。
         5. `<script setup>`是唯一在**顶层**调用`await`之后仍可调用组合式函数的地方。编译器会在异步操作之后自动为你恢复当前的组件实例
 
 2. 用Composables（组合式函数）替代~~mixins~~
@@ -4148,7 +4148,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 ### [vue-router@4](https://github.com/vuejs/router)(Vue 3)
 Vue Router 5 将基于文件的路由插件并入主包。已有 Router 4 项目如果手写路由表，可继续使用相同 API；使用 `unplugin-vue-router` 的项目需按迁移指南更新插件与类型导入，直接使用 IIFE 构建的项目还需核对 DevTools 依赖。[Vue Router 4 → 5](https://router.vuejs.org/guide/migration/v4-to-v5.html) · [Vue Router 3 → 4](https://router.vuejs.org/guide/migration/)
 
-例如，路由记录 `{ path: '/issues/:id', component: IssueDetail, props: true }` 将 URL 参数作为 prop 交给[工单详情组件](#切换工单时防止旧请求覆盖新内容)。从 `/issues/A` 导航到 `/issues/B` 可以复用同一实例；只在 `onMounted` 读取 ID 会遗漏第二次加载，侦听 ID 可以覆盖两次导航。
+路由启用 `props: true` 时，路径参数会作为 props 传给组件。同一路由记录的参数变化时，Router 可复用组件实例。需要重新加载数据时，用带 `immediate: true` 的侦听器处理首次加载和后续变化，并清理前一次异步请求。
 
 <details>
 <summary><h3><a href="https://github.com/vuejs/vue-router">vue-router@3</a>(Vue 2)</h3></summary>

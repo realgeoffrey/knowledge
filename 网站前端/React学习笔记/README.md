@@ -3,7 +3,7 @@
 ## 目录
 1. [react](#react)
 
-    1. [切换面板时保留草稿与释放订阅](#切换面板时保留草稿与释放订阅)
+    1. [Activity 与 useEffectEvent](#activity-与-useeffectevent)
     1. [JSX](#jsx)
     1. [组件](#组件)
 
@@ -41,45 +41,11 @@
 ---
 ## [react](https://github.com/facebook/react)
 
-### 切换面板时保留草稿与释放订阅
+### Activity 与 useEffectEvent
 
-2026-11-23 核对的稳定版为 React 19.3.1。下面的 `Activity` 和 `useEffectEvent` 从 19.2 起可用。19.3 稳定发布的 `ViewTransition` 解决另一类问题：例如用 `startTransition` 切换页面时，让支持浏览器视图过渡的区域参与进出动画。保存编辑器内容取决于组件身份与状态的存放位置。[React 版本](https://react.dev/versions) · [19.3.1 包记录](https://registry.npmjs.org/react/19.3.1) · [19.2 发布说明](https://react.dev/blog/2025/10/01/react-19-2) · [19.3 发布说明](https://react.dev/blog/2026/09/09/react-19-3)
+2026-11-23 核对的稳定版为 React 19.3.1。`Activity` 和 `useEffectEvent` 从 19.2 起可用。`ViewTransition` 在 19.3 转为稳定 API，用于协调浏览器视图过渡。[React 版本](https://react.dev/versions) · [19.3.1 包记录](https://registry.npmjs.org/react/19.3.1) · [19.2 发布说明](https://react.dev/blog/2025/10/01/react-19-2) · [19.3 发布说明](https://react.dev/blog/2026/09/09/react-19-3)
 
-工单编辑页有“暂时收起”和“放弃草稿”两个动作。`open && <Draft />` 在收起时卸载编辑器，草稿也随之丢失。只用 CSS 隐藏则会继续监听断线重连。把编辑器放入同一个 `Activity` 边界，隐藏时 React 保留状态、清理 Effect，重新显示时再建立订阅。需要真正放弃草稿时，父组件可以移除编辑器或改变它的 `key`。[Activity](https://react.dev/reference/react/Activity)
-
-```jsx
-import { Activity, useEffect, useEffectEvent, useState } from 'react'
-
-function Draft() {
-  const [text, setText] = useState('')
-  const onOnline = useEffectEvent(() => {
-    console.log('网络恢复，当前草稿字数', text.length)
-  })
-
-  useEffect(() => {
-    const handleOnline = () => onOnline()
-    window.addEventListener('online', handleOnline)
-    return () => window.removeEventListener('online', handleOnline)
-  }, [])
-
-  return <textarea aria-label="工单草稿" value={text}
-    onChange={event => setText(event.target.value)} />
-}
-
-export default function Editor() {
-  const [open, setOpen] = useState(true)
-  return <>
-    <button onClick={() => setOpen(value => !value)}>
-      {open ? '收起草稿' : '继续编辑'}
-    </button>
-    <Activity mode={open ? 'visible' : 'hidden'}><Draft /></Activity>
-  </>
-}
-```
-
-可在浏览器控制台用 `window.dispatchEvent(new Event('online'))` 模拟网络恢复。先输入 `abc` 再派发，控制台应报告 3；收起后派发应安静；重新打开后仍可见 `abc`，再派发只报告一次。给 Effect 加上 `text` 依赖会在每次输入后重绑监听；只删除依赖又会让普通闭包读取初始值。`useEffectEvent` 让监听器读取最近一次提交的草稿。如果订阅目标本身也变化，例如工单频道 ID，就要将 ID 放进 Effect 依赖并重新订阅。[useEffectEvent](https://react.dev/reference/react/useEffectEvent)
-
-验证环境为 React 与 React DOM 19.3.1、jsdom 16.7.0。在根节点开启 StrictMode 后，依次模拟输入、收起、恢复和卸载；上述事件计数和草稿值均通过断言。
+`Activity` 隐藏子树时保留组件状态并清理 Effect，重新显示时恢复 Effect。`useEffectEvent` 让 Effect 中注册的回调读取最近一次提交的 props 和 state。订阅目标变化时，仍应把目标放进 Effect 的依赖数组。[Activity](https://react.dev/reference/react/Activity) · [useEffectEvent](https://react.dev/reference/react/useEffectEvent)
 
 ### JSX
 >（TS转译.tsx成为.jsx或.js，）Babel转译.jsx成为.js。

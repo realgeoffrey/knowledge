@@ -62,7 +62,7 @@
         Unicode 模式，按 Unicode 码点处理并支持`\u{...}`转义。`u`和`v`都未启用时，按 UTF-16 码元匹配。
     5. `y`：
 
-        sticky，只在指定起点尝试匹配，失败时将 `lastIndex` 重置为 0。`lastIndex` 按 UTF-16 码元计数；与 `u` 或 `v` 合用时，若它落在代理对的第二个码元，会从该码点的开头尝试。例如 `/./uy` 的 `lastIndex` 为 1 时，匹配 `'😀'` 得到的 `index` 为 0。
+        sticky，只在指定起点尝试匹配，失败时将 `lastIndex` 重置为 0。`lastIndex` 按 UTF-16 码元计数。与 `u` 或 `v` 合用时，手动设置索引应落在 Unicode 码点边界上。例如把 `/./uy` 的 `lastIndex` 设为 1 再匹配 `'😀'`，V8 可返回索引 0，JavaScriptCore 可返回 `null`。[TC39 讨论](https://github.com/tc39/ecma262/issues/128)
     6. `s`：
 
         使得`.`可以匹配任意单个字符（包括终止符）。

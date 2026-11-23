@@ -100,39 +100,9 @@
 
 #### 2026-07-28 的 HTTP 调用怎样联调
 
-以只读工具 `ticket_status` 为例，假设服务端已在 `tools/list` 公布这个名字，参数 `id` 为字符串。在上例相同的 HTTP 端点发送 POST，保留 `Content-Type: application/json` 和 `Accept: application/json, text/event-stream`。路由头另设 `MCP-Protocol-Version: 2026-07-28`、`Mcp-Method: tools/call`、`Mcp-Name: ticket_status`，与正文保持一致。[Streamable HTTP 请求头](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
+调用 `tools/call` 时，使用与 `tools/list` 相同的 HTTP 端点和传输头。将 `Mcp-Method` 设为 `tools/call`，`Mcp-Name` 设为正文 `params.name` 中的工具名。按该工具在 `tools/list` 公布的输入 schema 构造参数。[Streamable HTTP 请求头](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
 
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 2,
-  "method": "tools/call",
-  "params": {
-    "_meta": {
-      "io.modelcontextprotocol/protocolVersion": "2026-07-28",
-      "io.modelcontextprotocol/clientCapabilities": {},
-      "io.modelcontextprotocol/clientInfo": { "name": "example-client", "version": "1.0.0" }
-    },
-    "name": "ticket_status",
-    "arguments": { "id": "T-42" }
-  }
-}
-```
-
-如果工具声明了 `outputSchema`，成功结果中的 `structuredContent` 应符合该 schema，消费方按契约取字段。保留序列化为文本的副本有助于兼容只读文本的客户端。这里的 `status` 属于工单系统，`resultType` 属于协议，JSON-RPC 的 `id` 用来匹配本次请求。[工具结果与结构化输出](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 2,
-  "result": {
-    "resultType": "complete",
-    "content": [{ "type": "text", "text": "{\"id\":\"T-42\",\"status\":\"open\"}" }],
-    "structuredContent": { "id": "T-42", "status": "open" },
-    "isError": false
-  }
-}
-```
+如果工具声明了 `outputSchema`，成功结果中的 `structuredContent` 应符合该 schema。保留序列化为文本的副本有助于兼容只读文本的客户端。JSON-RPC 的 `id` 用来匹配请求和响应。[工具结果与结构化输出](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
 
 联调时分三层查。① 若新版服务端校验发现 `Mcp-Name` 与正文不一致，预期 HTTP 400 和协议错误 `HeaderMismatch`（`-32020`）；先修请求，看到 400 就切回旧握手会掩盖问题。② 协议报未知工具时，核对该服务端公布的工具名。③ 工具已运行但业务失败时，检查结果里的 `isError`；收到 `input_required` 则按多轮请求继续，页面要等到业务结果可确认后再展示完成。[传输与版本回退](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http#backward-compatibility) · [工具错误处理](https://modelcontextprotocol.io/specification/2026-07-28/server/tools#error-handling)
 

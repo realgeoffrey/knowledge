@@ -1,6 +1,8 @@
 ### Laravel框架配置+LNMP环境配置（Ubuntu15.04）
 
->历史环境记录：Ubuntu 15.04、PHP 5 和对应 Laravel 安装方式均已过期，不建议用于新项目；以下内容仅适合维护旧环境时参考。若默认 apt 镜像找不到 vivid，先将源地址改为 [Ubuntu 旧版本归档](https://old-releases.ubuntu.com/ubuntu/dists/vivid/) 对应的仓库根地址 `https://old-releases.ubuntu.com/ubuntu/`，保留原发行代号和组件，运行 `sudo apt-get update`。
+>历史环境记录：Ubuntu 15.04、PHP 5 和对应 Laravel 安装方式均已过期，不建议用于新项目；以下内容仅适合维护旧环境时参考。
+>
+>若默认 apt 镜像找不到 vivid，将 Ubuntu 源改指向[官方旧版本归档](https://old-releases.ubuntu.com/ubuntu/dists/vivid/)，保留对应的发行代号和组件。Vivid 的 APT 需要安装 `apt-transport-https` 才能使用 HTTPS。缺少该包时，可先用 `http://old-releases.ubuntu.com/ubuntu/`，保留 APT 仓库签名校验，运行 `sudo apt-get update` 和 `sudo apt-get install apt-transport-https`。装有该包时，可将源设为 `https://old-releases.ubuntu.com/ubuntu/`，再运行 `sudo apt-get update`。[Ubuntu APT 手册](https://manpages.ubuntu.com/manpages/bionic/man1/apt-transport-https.1.html)
 
 1. 安装**Ubuntu Desktop**或**Ubuntu Server**
 
@@ -65,7 +67,9 @@
     cd /opt/www/mylaravel.com
     ```
 
-    Laravel 4.2 还需要部署用户和 PHP 服务都能写入 `app/storage`。共享写入时，目录的 setgid 位让新文件继承 www-data 组，创建文件的进程也应使用允许组写入的权限：
+    Laravel 4.2 还需要部署用户和 PHP 服务都能写入 `app/storage`。先用 `sudo usermod -aG www-data "$USER"` 将当前部署用户加入 `www-data`，退出会话后重新登录，用 `id -nG` 确认组成员资格，再回到项目目录。
+
+    目录的 setgid 位让新文件继承 `www-data` 组。部署命令和 PHP 进程创建文件时应保留组写权限，例如对该运行目录使用合适的 `umask`（如 `0007`），并确认应用创建文件时请求的权限允许组写。
 
     ```shell
     sudo chmod -R ug+rwX,o-rwx app/storage

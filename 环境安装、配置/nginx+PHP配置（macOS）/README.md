@@ -72,7 +72,7 @@
             ```
         2. `vi "$(brew --prefix)/etc/nginx/servers/域名.conf"`：
 
-            1. 静态文件虚拟主机。若还要运行 PHP，将 `root` 放到 `server` 层，并用上例的 PHP 处理块替换下面返回 404 的规则。
+            1. 静态文件虚拟主机。若还要运行 PHP，将 `root` 放到 `server` 层，在 `location /` 添加 `index index.php index.html index.htm;`，并用上例的 PHP 处理块替换下面返回 404 的规则。这样访问 `/` 时会优先查找 `index.php`。
 
                 ```text
                 # servers/域名1.conf

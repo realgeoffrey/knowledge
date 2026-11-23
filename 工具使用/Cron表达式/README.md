@@ -85,7 +85,9 @@ GitHub Actions 的最短调度间隔为 5 分钟。[GitHub Actions 定时触发]
 | `@weekly` | `0 0 * * 0` | `0 0 0 * * 0` | 每周日 00:00 |
 | `@monthly` | `0 0 1 * *` | `0 0 0 1 * *` | 每月 1 号 00:00 |
 | `@yearly` / `@annually` | `0 0 1 1 *` | `0 0 0 1 1 *` | 每年 1 月 1 日 00:00 |
-| `@reboot` | — | — | 支持该别名的 cron 守护进程启动时跑一次 |
+| `@reboot` | — | — | Cronie 和 Debian cron 在每次系统启动后首次启动守护进程时执行一次 |
+
+在同一次系统启动期间重启 Cronie 或 Debian cron 不会再次触发 `@reboot`。[Cronie 实现](https://github.com/cronie-crond/cronie/blob/master/src/cron.c) · [Debian cron 实现](https://sources.debian.org/src/cron/3.0pl1-162/cron.c/)
 
 **crontab**（用户 crontab，`crontab -e`）：
 

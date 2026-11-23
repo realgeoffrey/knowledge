@@ -1892,9 +1892,9 @@ uncompress('3(ab2(c))') // 'abccabccabcc'
 请完成一个函数，将16进制格式的颜色转换为函数格式。
 
 ```
-hexToRgba('#fff')      // 'rgba(255,255,255,1)'
-hexToRgba('#12A8')     // 'rgba(17,34,170,0.53)'
-hexToRgba('#12AB3480') // 'rgba(18,171,52,0.5)'
+hexToRgb('#fff')      // 'rgba(255,255,255,1)'
+hexToRgb('#12A8')     // 'rgba(17,34,170,0.53)'
+hexToRgb('#12AB3480') // 'rgba(18,171,52,0.5)'
 ```
 
 - 接受带 `#` 的 3、4、6、8 位十六进制字符串。3 位和 4 位写法将每位数字重复一次，4 位和 8 位写法的最后一个通道表示 Alpha。[CSS Color 4](https://www.w3.org/TR/css-color-4/#hex-notation)
@@ -1903,7 +1903,7 @@ hexToRgba('#12AB3480') // 'rgba(18,171,52,0.5)'
 1. 解法一
 
     ```js
-    function hexToRgba(hex) {
+    function hexToRgb(hex) {
       // 三、四、六、八值语法
       if (typeof hex !== "string" || !/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(hex)) {
         throw new Error("无效的hex");
@@ -1933,7 +1933,7 @@ hexToRgba('#12AB3480') // 'rgba(18,171,52,0.5)'
 2. 解法二
 
     ```js
-    function hexToRgba(hex) {
+    function hexToRgb(hex) {
       // 三、四、六、八值语法
       if (typeof hex !== "string" || !/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(hex)) {
         throw new Error("无效的hex");
