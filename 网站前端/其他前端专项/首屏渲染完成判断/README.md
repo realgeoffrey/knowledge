@@ -1,11 +1,11 @@
 ### 首屏渲染完成判断
 >首先确定首屏渲染完成的标准。如：有DOM或图片加载完成 或 严格首屏内所有内容加载完成。
 
-针对“严格首屏内所有内容加载完成”的方案：
+若关注首屏主体内容何时可见，可观察 [Largest Contentful Paint（LCP）](https://web.dev/articles/lcp)。它记录视口内符合条件的最大图片或文本块的绘制时间。若业务要求首屏内所有内容就绪，还需单独定义哪些内容必须完成。
 
 1. 业务型：
 
-    业务插一个一定是跨屏才有的DOM，观测其变化情况：①`MutationObserver`触发后`performance.now()` 或 ②各种生命周期钩子触发后`performance.now()`（React的`componentDidMount(){/* 渲染完成 */}`或`useEffect(()=>{/* 渲染完成 */},[])`；Vue的`mounted(){ this.$nextTick(function (){/* 渲染完成 */}) }`）。
+    在首屏业务内容的末尾放置标记节点，可在 `MutationObserver` 或组件挂载回调中用 `performance.now()` 记录 DOM 已更新的时刻。若首屏还依赖异步数据或图片，应在必要内容就绪后再打点；这些回调本身无法确认像素何时上屏。
 2. 通用型：
 
     >参考：<https://gitee.com/hoholove/study-code-snippet/blob/master/FIRST_SCREEN_TIME/index.js>
@@ -18,4 +18,4 @@
         2. n秒后假设页面渲染完毕后，关闭观察，再次筛选出在首屏内的DOM，找到耗时最久的时间记录。
     2. 首屏内图片加载时间
 
-        n秒后假设页面渲染完毕后，用`performance.getEntriesByType('resource')`获取所有资源图的加载时间，筛选出在首屏内的图片，找到耗时最久的时间记录。
+        先记录首屏必需图片的加载结果（`load`、`error`）。到截止时仍有图片在加载，就上报超时；有图片失败则记录失败。只有全部加载成功，且每张图都能用实际 URL（如 `img.currentSrc`）匹配到对应的资源计时条目时，才取最晚的 `responseEnd`。缺少条目就标记计时不完整。这个值表示资源接收结束，图片解码和绘制还可能发生在之后。

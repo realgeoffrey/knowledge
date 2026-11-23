@@ -13,7 +13,7 @@
 
     >来自：[前端调试](https://hippyjs.org/#/guide/debug)。
 
-    1. （可选）使用官网的发布版本（Latest release），不要用master分支代码跑demo
+    1. （可选）复现本笔记时使用 Hippy 2.x 的发布标签，demo 与客户端 SDK 使用同一版本
     2. 根目录执行`npm run build`
     3. 客户端demo运行
 
@@ -422,8 +422,8 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
                         ><View style={样式1}>
                         >  <View style={样式2}>
                         >    内容
-                        >  <View>
-                        ><View>
+                        >  </View>
+                        ></View>
                         >```
                         ></details>
             2. 获取：滚动距离、内容总高度（视口高度+最大滚动距离 === 子级的总高度）、布局总高度（视口高度）
@@ -488,7 +488,7 @@ hippy-react是基于React的官方自定义渲染器react-reconciler重新开发
         11. `key`的diff有bug
 
             1. 带着`key`的组件可能挂载2次（触发2次`componentDidMount`）
-            2. 复用组件会导致bug，可以用`key="index"`规避
+            2. 需要区分同级列表项时，使用稳定且唯一的 `key={item.id}`。固定顺序的静态列表可用 `key={index}`，写成 `key="index"` 会使各项共用同一个键。
         12. 各组件转换为H5组件时，可能会多套一层节点，注意`padding`或`margin`翻倍问题
         13. `render`返回多个节点会有渲染问题（React已支持）
 

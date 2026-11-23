@@ -28,3 +28,4 @@
 5. [react-native：无障碍功能](https://www.react-native.cn/docs/accessibility)
 
     [Hippy：无障碍](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Hippy学习笔记/README.md#user-content-hippy-react-无障碍)
+6. 页面自测：用键盘完成主要操作，检查焦点顺序和焦点是否可见；再用读屏软件检查标题层级、表单标签、按钮名称和图片替代文本。[W3C WAI 初步检查](https://www.w3.org/WAI/test-evaluate/easy-checks/)

@@ -1637,7 +1637,7 @@ myLinkedList.get(1);              // 返回 3
 
 1. 解法一
 
-    递归，把完全二叉树拆分成 根节点+左右2棵满二叉树。利用满二叉树原理：h层（h从1开始）节点总数等于`2^h - 1`。时间复杂度：O(log n × log n)。
+    递归比较完全二叉树最左、最右路径的层数。两者相等时整棵子树是满二叉树，h 层共有 `2^h - 1` 个节点。否则递归统计左右子树，其中至少一棵是满二叉树。时间复杂度：O(log n × log n)。
 
     ```js
     /**
@@ -4019,7 +4019,7 @@ for (int i = 0; i < k; i++) {
 
 1. 解法
 
-    分别计算左右乘积，2次循环、用result存储计算过程，从而减少空间复杂度。时间复杂度：O(1)。
+    分别计算左右乘积，两次遍历的时间复杂度为 O(n)。复用输出数组保存前缀积，额外空间为 O(1)。
 
     ```js
     /**
@@ -4042,7 +4042,7 @@ for (int i = 0; i < k; i++) {
         // 除自身以外数组的乘积 result[i] = 左边的乘积 result[i] * 右边的乘积 r
         result[i] = result[i] * r;
 
-        r *= nums[i]; // 下一个循环时，索引i+1右侧所有元素的乘积
+        r *= nums[i]; // 下一个循环时，索引i-1右侧所有元素的乘积
       }
 
       return result;
@@ -4409,7 +4409,7 @@ n = 2
 
 1. 解法
 
-    双指针。模拟的 C++ 语言中的可变长度字符串的实现原理，将其 O(n^2) 的空间复杂度降低到 O(1)。
+    双指针。先扩容数组，再从后向前填入替换后的字符。JavaScript 字符串不可变，此实现耗时 O(n)，中间数组占用 O(n) 空间。
 
     ```js
     var replaceSpace = function (s) {
@@ -5124,7 +5124,7 @@ F(n) = F(n - 1) + F(n - 2)，其中 n > 1
 
     ```js
     var maxSubArray = function (nums) {
-      let result;
+      let result = nums[0];
 
       // dp[i]：以nums[i]为结尾的最大连续子序列和为dp[i]。
       const dp = [];
@@ -5137,7 +5137,7 @@ F(n) = F(n - 1) + F(n - 2)，其中 n > 1
           dp[i] = dp[i - 1] + nums[i];
         }
 
-        result = Math.max(dp[i - 1], dp[i]);
+        result = Math.max(result, dp[i]);
       }
       return result;
     };
@@ -8347,7 +8347,7 @@ grid2 中标红的 1 区域是子岛屿，总共有 2 个子岛屿。
       const stack = [];
 
       let sum = 0;
-      for (let i = 0; i <= height.length; i++) {
+      for (let i = 0; i < height.length; i++) {
         // 第一个元素 || i项 小于等于 栈顶元素
         if (stack.length === 0 || height[i] <= height[stack[stack.length - 1]]) {
           // i项如栈

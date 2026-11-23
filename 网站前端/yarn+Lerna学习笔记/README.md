@@ -21,7 +21,7 @@
 
         初始化`package.json`。
 
-    >新增或更新或删除等，都会同步更新`yarn.lock`，大部分会同步更新`package.json`（`upgrade`不会）。
+    >新增或更新或删除等，都会同步更新`yarn.lock`，依赖声明变化时也会更新 `package.json`。
 
     2. `yarn add 「包名」[@「version或tag」]`
 
@@ -50,7 +50,7 @@
         移除某个依赖包。
     4. `yarn upgrade [「包名」[@「version或tag」]]`
 
-        >不更新`package.json`。
+        >仅指定包名时按 `package.json` 已声明的范围更新。显式指定版本或 tag（如 `yarn upgrade foo@^2.0.0`），也会更新 `package.json` 中的声明。[Yarn Classic `upgrade`](https://classic.yarnpkg.com/en/docs/cli/upgrade/)
 
         更新某个或所有依赖包。
 
@@ -59,10 +59,10 @@
             >使用[syncyarnlock](https://github.com/vasilevich/sync-yarnlock-into-packagejson)。
 
             ```shell
-            yarn global add syncyarnlock          // install syncyarnlock globally
-            yarn upgrade [「包名」[@「version或tag」]] // update dependencies, updates yarn.lock
-            syncyarnlock -s -k                    // updates package.json with versions installed from yarn.lock
-            yarn install                          // updates yarn.lock with current version constraint from package.json
+            yarn global add syncyarnlock          # install syncyarnlock globally
+            yarn upgrade [「包名」[@「version或tag」]] # update dependencies, updates yarn.lock
+            syncyarnlock -s -k                    # updates package.json with versions installed from yarn.lock
+            yarn install                          # updates yarn.lock with current version constraint from package.json
             ```
 
         - `yarn upgrade-interactive`
@@ -150,7 +150,7 @@
         21. `yarn help`
 
 ### Lerna
->备注：Lerna 自 2022 年起由 Nx 团队维护，现代版本通常与 npm/yarn/pnpm workspaces、Nx 能力结合使用；`bootstrap`、`add`、`link` 等旧式依赖链接工作流在新项目中应优先考虑包管理器 workspaces、pnpm、Nx 或 Turborepo 等方案。
+>备注：Lerna 自 2022 年起由 Nx 团队维护，现代版本通常与 npm/yarn/pnpm workspaces、Nx 能力结合使用；下文的 `bootstrap`、`add`、`link` 在 v7 起默认移除，v9 起彻底移除。新版本由包管理器的 workspaces 安装、链接依赖。[Lerna 迁移说明](https://lerna.js.org/docs/legacy-package-management)
 
 - 文件结构
 
@@ -287,14 +287,13 @@ Monorepo（单一仓库，monolithic repository）是一种软件开发管理策
 
         ```shell
         yarn workspace packageB remove packageA # 给packageB去除packageA
-        yarn workspaces remove packageA         # 给所有package去除packageA
-        yarn remove -W -D packageA              # 给root去除packageA（-D：--dev保存至devDependencies，-W：在workspaces根目录进行）
+        yarn remove -W packageA                 # 从根 package 的依赖声明中移除 packageA
         # add 同理
         ```
     4. 执行scripts
 
         ```shell
-        yarn script1                        # 根目录执行script1（->`node_modules/.bin`的二进制文件->若命令包含`:`，则可以针对workspaces下某一个包的`package.json`的scripts）
+        yarn script1                        # 在根目录执行该项目的 script1
 
         yarn workspace package1 run script1 # 在package1中执行script1
 

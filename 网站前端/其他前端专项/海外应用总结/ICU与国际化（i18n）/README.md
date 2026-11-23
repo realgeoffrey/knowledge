@@ -30,7 +30,7 @@
 
     作用：浏览器提供的JS API，封装 ICU 功能。
 
-    >调用`new Intl.DateTimeFormat()`等 API 时，底层实际调用 ICU 引擎，查询 CLDR 数据，返回格式化结果。
+    >ECMA-402 规定 `Intl` 的接口和行为；ICU 是常见的实现基础，不同运行环境自带的语言数据和版本可能不同。
 - intl-messageformat——封装实现
 
     作用：Intl API 的封装，实现 ICU MessageFormat 标准。
@@ -208,7 +208,7 @@
 >    ```
 >6. selectordinal
 >
->    根据数字值，使用 CLDR 定义的序数规则选择分支（用于生成 1st、2nd、3rd 等序数形式）。依赖语言规则，不同语言地区对同一数字可能选择不同分支。e.g. `en`：1->one，2->two，3->few，其他->other；`zh`：所有->other。
+>    根据数字值，使用 CLDR 的序数规则选择分支。例如英语整数按末位 1、2、3 选 one、two、few，但末两位是 11、12、13 时选 other（21st、112th）；中文序数统一选 other。[CLDR 各语言规则](https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html)
 >
 >    分支输出可以是字面字符串，也可以嵌套其他占位符。
 >
@@ -658,7 +658,7 @@ e.g. 针对一行文字中间插入了HTML标签的情况，如：`将文件拖�
         >解决方案：充分利用ICU的格式化能力，让数字、日期、时间格式自动适配目标语言地区。
     2. 逻辑里写复数
 
-        1. 复杂复数规则：英语、中文仅有单复数；俄语、波兰语有 3 种复数形式（1个、2-4个、5个以上不同）；阿拉伯语有 6 种形式（零、单数、双数、3-10、11-99等）。
+        1. 基数规则按语言选择：中文只有 other，英语有 one、other；俄语和波兰语还会区分 few、many，小数也要单独考虑；阿拉伯语有六个类别。类别名称不能直接当作固定的数值区间。
         2. 代码无法维护：不可能在代码里为每种语言写一套if/else。
 
         >解决方案：使用ICU语法`{count, plural, ...}`解决。同理，6种类型的占位符type（plural、select、number、date、time、selectordinal），都是必要的功能，未使用或自实现一套一定会有遗漏。

@@ -27,15 +27,15 @@
 
 ---
 ### HTTP特点
->HTTP（HyperText Transfer Protocol，超文本传输协议）通信通常通过TCP/IP连接进行，默认端口是TCP 80，但可以使用其他端口，以ASCII码传输。这并不妨碍HTTP在任何其他协议之上实现，HTTP只是假定了一个可靠的传输，任何能够提供可靠传输的协议都能够被使用。
+>HTTP（HyperText Transfer Protocol，超文本传输协议）是应用层协议。HTTP/1.x使用文本形式的起始行和头部，消息体可以是二进制数据。HTTP/2和HTTP/3使用二进制帧。`http`的默认端口为80，`https`为443。
 
 1. 灵活可扩展
 
-    1. 语义上自由：只规定了基本格式，比如空格分隔单词，换行分隔字段，其他的各个部分都没有严格的语法限制。
+    1. 语义可扩展：可以按协议规则定义新的请求方法、状态码和字段。
     2. 传输形式的多样性：允许传输任意类型的数据对象（`Content-Type`设置类型）。
 2. 可靠传输
 
-    （默认）基于TCP/IP。
+    HTTP/1.x和HTTP/2通常使用TCP；HTTP/3使用基于UDP的QUIC可靠流。
 3. client-server协议
 
     使用HTTP时，必定是一端担任客户端角色，另一端担任服务器端角色。虽然客户端和服务器端的角色可能会互换，但一条通信路线中角色是确定的。请求由客户端开始。
@@ -44,9 +44,9 @@
 4. 无状态（[cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#服务端验证用户状态)弥补）
 
     通信过程不保存上下文信息，每次HTTP请求都是独立、无关的。
-5. 无连接、短连接（[持久连接](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http持久连接websocket服务器推送)弥补）
+5. 连接复用（[持久连接](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http持久连接websocket服务器推送)）
 
-    每次TCP连接只处理一个请求-响应。每一次完整的HTTP通信都要建立单独的TCP连接，服务器处理完客户的请求、并收到客户的应答后，即断开TCP连接。可以节省传输时间。
+    HTTP/1.0默认在一次响应后关闭连接，HTTP/1.1默认可在同一连接上连续处理多个请求。HTTP/2和HTTP/3还能在同一连接中并发处理多个流。
 
 ### TCP/IP协议四层模型
 >TCP/IP协议族：利用IP进行通信时所必须用到的协议群的统称，是为使用互联网而开发制定的协议族。
@@ -93,7 +93,7 @@
         提供可靠的字节流服务（Byte Stream Service）：
 
         1. 字节流服务：为了方便传输，将大块数据分割成以报文段（segment）为单位的数据包进行管理。
-        2. 可靠的：能够确认数据最终是否送达对方。三次握手（three-way handshaking）策略确保数据能到达目标。
+        2. 可靠的：能够确认数据最终是否送达对方。序号、确认和重传用来保证有序交付；三次握手用于建立连接并同步初始序号。
     3. 网络层：IP（Internet Protocol，网际协议）
 
         把各种数据包经过中转传送给对方。使用ARP协议（Address Resolution Protocol）凭借MAC地址（Media Access Control Address）进行通信：
@@ -131,7 +131,7 @@
 >    资源的数据序列。
 >2. `acknowledgement number`（`ack`）
 >
->    对方所期望接收到的下一个序号，是上次已成功接收到`seq+1`。
+>    发送此ACK的一方期望收到的下一个字节序号。每个数据字节各占一个序号，SYN和FIN也各占一个。
 >3. `ACK`
 >
 >    `1`：应答域（acknowledgement number）有效；`0`：应答域无效。
@@ -177,13 +177,13 @@
 1. 获取域名的IP地址
 
     DNS解析：浏览器自身DNS缓存 -> 操作系统DNS缓存 -> 本地hosts文件 -> 路由器DNS缓存 -> 宽带运营商。
-2. 建立TCP/IP连接
+2. 建立或复用连接
 
-    发起「三次握手」（验证客户端），试图建立TCP/IP链接。
+    HTTP/1.x、HTTP/2新建TCP连接时进行三次握手；HTTP/3使用QUIC握手。
 
     >关闭TCP链接要「四次挥手」。
 
-    - 建立TLS连接
+    - HTTPS还需要TLS握手；QUIC在建立连接时集成TLS 1.3握手。
 3. 浏览器发送HTTP请求，服务器响应
 
     服务器端接受请求，根据路径参数、经过后端处理之后，把结果的数据返回浏览器。
@@ -192,6 +192,8 @@
 - [页面解析渲染步骤](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面解析渲染步骤) -> [每一帧渲染流程](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTML+CSS学习笔记/README.md#渲染性能rendering-performance)
 
 ### HTTP报文组成
+以下是HTTP/1.x的文本报文格式。
+
 1. request：
 
     ```text
@@ -219,7 +221,7 @@
 >    Accept: */*
 >    User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 2.0.50727)
 >    Host: a.com
->    Content-Length: 465
+>    Content-Length: 11
 >    Pragma: no-cache
 >
 >    {"info":""}
@@ -231,11 +233,11 @@
 >    Server: nginx/1.9.15
 >    Date: Tue, 27 Feb 2018 08:40:25 GMT
 >    Content-Type: application/json;charset=UTF-8
->    Content-Length: 979
+>    Content-Length: 33
 >    Cache-Control: max-age=0
 >    Proxy-Connection: Close
 >
->    {"errno":0,"errmsg":"","data":{""}}
+>    {"errno":0,"errmsg":"","data":{}}
 >    ```
 ></details>
 
@@ -253,8 +255,8 @@
 >
 >1. 幂等性、副作用
 >
->    1. GET，幂等，无副作用
->    2. POST，非幂等，有副作用
+>    1. GET，语义上安全且幂等，服务器仍可记录访问日志等
+>    2. POST，语义上不保证安全或幂等
 >2. 浏览器
 >
 >    1. GET
@@ -262,21 +264,21 @@
 >        1. URL可以被收藏，在导航栏会被保留成历史记录
 >        2. 可以被HTTP缓存
 >        3. 绝大部分HTML标签、CSS属性、等的地址只能是GET请求
->        4. 浏览器会把http header和data一并发送出去，服务器响应200 ok
+>        4. 表单数据编码在查询字符串中
 >    2. POST
 >
->        1. URL不可以被收藏，不会被保存历史记录
->        2. 不可以被HTTP缓存（除非手动设置）
->        3. 只有`<form method="post">`（`<button formmethod="">`或`<input formmethod="">`可以覆盖）或JS能发起POST请求
->        4. （有些浏览器的实现：）浏览器先发送header，服务器响应100 continue，浏览器再发送data，服务器响应200 ok
+>        1. 可以收藏URL，但书签不能保存并重放POST请求体
+>        2. 响应满足特定条件时可缓存，见下文HTTP缓存
+>        3. 常见方式是`<form method="post">`（`<button formmethod="">`或`<input formmethod="">`可以覆盖）或JS能发起POST请求
+>        4. 通常直接发送请求体。`100 Continue`用于带`Expect: 100-continue`的协商，与POST方法没有固定对应关系
 >3. 安全性
 >
 >    1. GET，参数在URL上暴露
->    2. POST，参数一般不在URL上暴露，而在响应消息主体中
+>    2. POST，参数一般不在URL上暴露，而在请求消息主体中
 >4. 编码类型（`enctype`）
 >
->    1. GET，`application/x-www-form-urlencoded`。在表单中使用GET方法时，数据类型中只接受 ASCII 字符。
->    2. POST，``multipart/form-data`或`application/x-www-form-urlencoded`对二进制数据使用多部分编码。在表单提交时，POST方法不绑定表单数据类型，并允许二进制和ASCII字符。
+>    1. GET，`application/x-www-form-urlencoded`。非ASCII字符可以经过编码后提交。
+>    2. POST，表单支持`application/x-www-form-urlencoded`、`multipart/form-data`和`text/plain`，上传文件一般使用`multipart/form-data`。
 >5. 语义
 ></details>
 
@@ -315,17 +317,17 @@
 
     >1. 副作用
     >
-    >     当发送完一个请求后，网站上的资源状态发生修改，即认为这个请求有副作用；反之，则无副作用。
+    >     「安全」指客户端请求的是只读操作。服务端仍可记录日志等附带效果。
     >2. 幂等性（idempotence）
     >
-    >     多次请求某一个资源应该具有同样的副作用。
+    >     连续多次发送相同请求，其预期服务端效果与发送一次相同；响应可以不同。
 
-    | 请求类型 | 幂等 | 副作用 | 请求消息主体 |
+    | 请求类型 | 幂等 | 语义上安全 | 请求消息主体 |
     | :--- | :--- | :--- | :--- |
-    | GET | 幂等 | 无副作用 | 一般不携带 |
-    | POST | 非幂等 | 副作用 | 携带 |
-    | PUT | 幂等 | 副作用 | 携带 |
-    | DELETE | 幂等 | 副作用 | 一般不携带 |
+    | GET | 幂等 | 是 | 一般不携带 |
+    | POST | 不保证 | 否 | 可携带 |
+    | PUT | 幂等 | 否 | 携带 |
+    | DELETE | 幂等 | 否 | 一般不携带 |
 
 ### HTTP状态码（HTTP status codes）
 >来自：[维基百科：HTTP状态码](https://zh.wikipedia.org/wiki/HTTP状态码)、[MDN：HTTP 响应代码](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status)。
@@ -648,7 +650,7 @@
 ### HTTP缓存
 >参考：[浏览器缓存知识小结及应用](http://www.cnblogs.com/lyzg/p/5125934.html)。
 
-只缓存**GET**请求。
+常见HTTP缓存主要存储GET响应。POST响应只有同时给出明确的新鲜期、且`Content-Location`等于请求目标URI时才可缓存，以供后续GET或HEAD使用。见[RFC 9110 §9.3.3](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.3)。
 
 1. 强缓存（本地缓存，Freshness）
 
@@ -661,7 +663,7 @@
         >Chrome的DevTools的Network会显示该资源的Request Headers：`Provisional headers are shown.`
     2. 利用之前HTTP response header返回的`Expires`和`Cache-Control`
 
-        >`Cache-Control`的优先级高于`Expires`（当服务器同时使用时，忽略~~Expires~~）。
+        >响应含`Cache-Control: max-age`时忽略`Expires`；共享缓存优先使用`s-maxage`。
 
         1. `Expires`：
 
@@ -678,13 +680,13 @@
             >缺陷：受限于系统时间，若更改则会缓存失效；浏览器与服务端两端的实际时间不一致，可能会造成缓存混乱。
         2. `Cache-Control`：
 
-            相对时间。秒级。HTTP/1.1提出。
+            可用`max-age`指定新鲜期，单位为秒。HTTP/1.1提出。
 
             1. 浏览器第一次跟服务器请求一个资源，服务器在返回这个资源的同时，会返回一系列响应头；
 
-                Cache-Control响应头表示（相对于请求发起时间的）资源过期的相对时间。
+                例如`Cache-Control: max-age=60`表示响应的新鲜期为60秒；共享缓存转发的`Age`也要计入响应年龄。
             2. 浏览器在接收到这个资源后，会把这个资源连同所有响应头一起缓存下来；
-            3. 浏览器再请求这个资源时，先从缓存中寻找。找到这个资源后，根据它请求时间和Cache-Control设定的有效期，计算出一个资源过期时间，再拿这个过期时间跟当前的请求时间进行对比：
+            3. 浏览器再请求这个资源时，先从缓存中寻找。找到这个资源后，比较响应当前年龄与`max-age`设定的新鲜期：
 
                 >若请求头设置`cache-control: max-age=0`，则忽略强缓存（本地缓存），直接进行协商缓存。
 
@@ -697,7 +699,7 @@
 
         >只有在服务端没有返回明确的缓存策略时才会激活浏览器的启发式缓存策略。
 
-        若一个资源响应头未设置 ~~`Expires`~~、~~`Cache-Control`~~，但响应头有设置`Last-Modified`信息，则浏览器会有一个默认的缓存策略（效果、状态码等，与 强缓存 一致），缓存时间：`(响应头的Date - 响应头的Last-Modified) * 0.1`。
+        若一个资源响应头未设置 ~~`Expires`~~、~~`Cache-Control`~~，但响应头有设置`Last-Modified`信息，则缓存可估算新鲜期；一种常见的启发式取值为`(响应头的Date - 响应头的Last-Modified) * 0.1`。
 2. 协商缓存（Validation）
 
     若没有命中强缓存，浏览器发送一个请求到服务器，服务端根据这个资源的`If-Modified-Since`（`Last-Modified`）、`If-None-Match`（`ETag`）判断它是否命中协商缓存（判断缓存资源和服务端资源是否一致）。
@@ -755,7 +757,7 @@
     1. 相同：
 
         1. 若命中，则都是从客户端缓存中加载资源，而不是从服务器加载资源数据。
-        2. 只有GET请求会被缓存，POST请求不会。
+        2. 能否复用已存响应，还取决于请求方法、缓存指令及`Vary`等匹配条件。
     2. 区别：
 
         1. 强缓存不发请求到服务器，协商缓存会发请求到服务器。
@@ -980,7 +982,7 @@
                 >前端使用`xhr.withCredentials = true`或`fetch(url, { credentials: 'include', mode: 'cors' })`请求跨源API。cookie仍须符合目标域、路径、Secure、SameSite等规则：跨源不一定跨站，同站跨源请求也可携带`SameSite=Strict/Lax`的cookie；跨站fetch/XHR需要`SameSite=None; Secure`，且仍受浏览器第三方cookie策略限制。见[SameSite说明](https://web.dev/articles/samesite-cookies-explained)。
                 >
                 >若要让脚本读取带凭证的跨源响应，后台必须返回`Access-Control-Allow-Credentials: true`，且`Access-Control-Allow-Origin`明确匹配请求的`Origin`。简单请求可能在收到响应头前就已携带cookie发出；不返回这些响应头不能作为CSRF防护。见[Fetch规范](https://fetch.spec.whatwg.org/#cors-protocol-and-credentials)。
-            3. `Access-Control-Expose-Headers`：（可选）CORS请求时，`XMLHttpRequest`只能拿到6个基本字段（`Cache-Control`、`Content-Language`、`Content-Type`、`Expires`、`Last-Modified`、`Pragma`），若需要其他字段，需在此指定
+            3. `Access-Control-Expose-Headers`：（可选）CORS响应默认可读取7个基本字段（`Cache-Control`、`Content-Language`、`Content-Length`、`Content-Type`、`Expires`、`Last-Modified`、`Pragma`），其他允许暴露的字段需在此指定
         2. 不允许跨域：
 
             若`Origin`指定的源不在许可范围内，服务器会返回一个正常的HTTP响应（状态码200，并可以返回正确数据），但没有任何CORS相关的头信息字段。浏览器根据响应头没有包含~~Access-Control-Allow-Origin~~则认定为跨域错误（被`XMLHttpRequest`的`onerror`回调函数捕获）。
@@ -990,7 +992,7 @@
 
     1. 预检请求（preflight）
 
-        >一般来说预检请求，指的就是`OPTIONS`请求。它会在浏览器认为即将要执行的请求可能会对服务器造成不可预知的影响时，由浏览器自动发出。通过预检请求，浏览器能够知道当前的服务器是否允许执行即将要进行的请求，只有获得了允许，浏览器才会真正执行接下来的请求。通常preflight请求不需要用户自己去管理和干预，它的发出的响应都是由浏览器和服务器自动管理的。HTTP状态码可以是200、204、等2XX，会被浏览器认为预检请求成功。
+        >一般来说预检请求，指的就是`OPTIONS`请求。它会在浏览器认为即将要执行的请求可能会对服务器造成不可预知的影响时，由浏览器自动发出。通过预检请求，浏览器能够知道当前的服务器是否允许执行即将要进行的请求，只有获得了允许，浏览器才会真正执行接下来的请求。通常preflight请求不需要用户自己去管理和干预，它的发出的响应都是由浏览器和服务器自动管理的。预检响应须为2xx（如200或204），并包含满足该请求的CORS响应头。
 
         1. 浏览器判断为非简单请求，自动发出`OPTIONS`方法的HTTP请求：
 
@@ -1011,7 +1013,7 @@
             2. 不允许跨域：
 
                 若服务器否定了预检请求，服务器会返回一个正常的HTTP响应，但没有任何CORS相关的头信息字段。浏览器根据响应没有包含相关响应头则认定为跨域错误（被`XMLHttpRequest`的`onerror`回调函数捕获）。
-    2. 一旦服务器通过预检请求，之后的每次跨域请求都与简单请求一致。
+    2. 预检通过后，浏览器发送实际请求。满足预检缓存条件时，后续匹配的请求可省去预检；实际响应仍须通过CORS检查。
 
 ---
 ### 服务端验证用户状态
@@ -1381,16 +1383,16 @@ HTTP是无状态协议，通过session-cookie或token判断客户端的用户状
 
     1. **二进制协议**（二进制分帧层，frame）而不是~~文本协议~~。
 
-        把请求、响应内容拆成多个二进制帧来传输，解析效率高；多个帧可以乱序发送，根据帧首部的流标识可以重新组装。
+        把请求、响应内容拆成多个二进制帧来传输，解析效率高；不同流的帧可以交错发送，各流内仍遵守帧顺序。
     2. **多路复用协议**。
 
-        同域名下所有通信都在一个TCP连接上完成。一个TCP连接可以承载任意数量并行的双向数据流（stream）。移除了HTTP/1中顺序和阻塞的约束。
+        一个TCP连接可以承载多个并行的双向数据流（stream），对端可通过`SETTINGS_MAX_CONCURRENT_STREAMS`限制并发流数。移除了HTTP/1中顺序和阻塞的约束。
 
         >问题：
         >
         >1. TCP需要客户端-服务端三次握手建立连接。
         >2. TCP为了保证可靠传输，有一个“超时重传”机制，丢失的包必须等待重传确认，HTTP/2出现丢包时，整个TCP都要等待重传，那么就会阻塞该TCP连接中的所有请求。
-        >3. 多路复用导致服务器压力上升：多路复用没有限制同时请求数。请求的平均数量与往常相同，但实际会有许多请求的短暂爆发，导致瞬时QPS暴增。
+        >3. 多路复用导致服务器压力上升：并发流上限设置较高时，短时间内可能收到大量请求。请求的平均数量与往常相同，但实际会有许多请求的短暂爆发，导致瞬时QPS暴增。
         >4. 多路复用容易Timeout：大批量的请求同时发送，由于HTTP/2连接内存在多个并行的流，而网络带宽和服务器资源有限，每个流的资源会被稀释，虽然它们开始时间相差更短，但却都可能超时。
     3. **压缩HTTP headers**。因为HTTP头在一系列请求中常常是相似的，其移除了重复和传输重复数据的成本。
     4. 其曾允许服务器通过**服务器推送**提前发送资源；该能力已从多数主流浏览器引擎移除，通常改用 `preload`、`preconnect`、`103 Early Hints` 等机制。
@@ -1406,7 +1408,7 @@ HTTP是无状态协议，通过session-cookie或token判断客户端的用户状
 
         >问题：
         >
-        >复用但是按顺序复用，导致队头阻塞：虽然能公用一个TCP管道，但是在一个管道中同一时刻只能处理一个请求，在当前的请求没有结束之前，其他的请求只能处于阻塞状态。当顺序发送的请求序列中的一个请求因为某种原因被阻塞时，在后面排队的所有请求也一并被阻塞，会导致客户端迟迟收不到数据。针对方案：①将同一页面的资源分散到不同域名下，提升连接上限；②减少请求数量，合并小文件；③内联一些资源：css、base64图片、等。
+        >复用但是按顺序复用，导致队头阻塞：即使通过管线化提前发送了后续请求，服务器也必须按收到请求的顺序发送响应。排在前面的响应耗时过长，会延迟后续响应的交付。针对方案：①将同一页面的资源分散到不同域名下，提升连接上限；②减少请求数量，合并小文件；③内联一些资源：css、base64图片、等。
     2. 增加管线化技术，允许在第一个应答被完全发送之前就发送第二个请求，以降低通信延迟。
     3. 支持响应分块。
     4. 引入额外的缓存控制机制。
@@ -1570,7 +1572,7 @@ HTTP是无状态协议，通过session-cookie或token判断客户端的用户状
         | 有序性 | 消息在传输过程中可能会乱序，后发送的消息可能会先到达，TCP会对其进行重新排序。 | 无序。 |
         | 协议头部字节数 | 20字节。 | 8字节。 |
         | 传输速度 | 慢（需要建立连接、保证可靠性、有序性） | 快 |
-        | 最短的单次client-server发送数据包次数 | 三次握手初始化TCP + 查询包 + 响应包 + 四次分手断开TCP = 9 | 查询包 + 响应包 = 2 |
+        | 单次查询与响应的报文数量 | 随连接复用、确认合并、分段和重传而变化 | 若查询、响应各用一个数据报，则为2个数据报 |
 
     在注重性能、传输速度且不需要重传的应用（如：视频电话、即时通讯），会选择使用UDP。其他情况，when in doubt, use TCP。
 

@@ -157,7 +157,7 @@
     2. 优先开启使用[HTTP/3或HTTP/2](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#http协议迭代http3http2http1)（替代HTTP/1.1、HTTP/1.0）
     3. 减少DNS查找，设置合适的TTL值，避免重定向。
     4. 使用CDN。
-    5. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#静态资源使用额外域名的原因)；尽量减少保存进cookie的数据种类和大小（因为同源的cookie会全部参与HTTP通讯）；合理减少HTTP头数量。
+    5. [静态资源和API分开域名放置](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#静态资源使用额外域名的原因)；尽量减少保存进cookie的数据种类和大小（浏览器会随请求发送符合域名、路径、Secure、SameSite等条件的cookie）；合理减少HTTP头数量。
     6. 对资源进行缓存：
 
         1. 减少~~内嵌JS、CSS~~，使用外部JS、CSS。
@@ -196,7 +196,7 @@
                 当用GET方式时添加缓存HTTP头：`Expires` `Cache-Control` `Last-Modified/If-Modified-Since`。
         4. 使用缓存替代每次请求。
 
-            客户端： Web Storage（`localStorage`、`sessionStorage`）、cookie、IndexDB等；服务端：Redis等。
+            客户端： Web Storage（`localStorage`、`sessionStorage`）、cookie、IndexedDB等；服务端：Redis等。
         5. 利用空闲时间[预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
         6. 第三方资源异步加载（`<script>`添加`defer/async`属性、动态创建或修改`<script>`）、第三方资源使用统一的CDN服务和设置[`<link>`预加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#预加载)。
         - 其他
@@ -406,12 +406,12 @@
         ><a href="javascript:">a标签</a>
         >```
         ></details>
-    2. 加载DOM中所有JS，对DOM和CSSOM进行访问和更改。
+    2. 加载并执行脚本。以下以解析器插入的同步经典脚本为例。
 
         1. 解析到JS，在脚本执行完之前，**阻塞解析HTML**（DOM构造被暂停）。
 
             >1. 解析到JS时，若该文件还在下载，则保持阻塞解析HTML，直到下载并执行完毕。
-            >2. 带有`defer`或`async`的`<script>`是异步加载的JS，不会阻塞解析HTML。
+            >2. 外部经典脚本的`defer`或`async`使下载与解析并行；`async`脚本若在解析期间执行，仍会占用主线程。
         2. 等待之前已经解析的所有CSS被提取且CSSOM被构造完毕。
         3. 执行脚本，访问、更改DOM和CSSOM。
 
@@ -439,14 +439,14 @@
         4. DOM构造完毕；
 
             `DOM构造完毕` -> `<script>`的`defer`脚本执行完毕 -> `document`的`DOMContentLoaded`事件触发 或 jQuery的`$(document).ready(function () {})`执行回调
-        5. 解析HTML完成、且所有资源加载完毕（包括：`<img>`等资源文件、样式引用的`background`图片、异步加载的JS、动态加载的资源）。
+        5. 解析HTML完成、且会延迟`load`的资源结束加载（如普通图片、样式表、脚本）。启用脚本时，`loading="lazy"`的图片不延迟`load`。禁用脚本时，这些图片按普通图片加载，也可能延迟`load`。
 
             完毕后触发：`window`的`load`事件。
 2. DOM和CSSOM构造完成后（解析HTML完成），进行渲染：
 
     Render Tree（渲染树）：Layout -> Paint -> Composite
 
-    >1. 只有可见的元素才会进入渲染树。
+    >1. `display: none`的元素及其后代不生成布局盒；`visibility: hidden`的元素仍占据布局空间。
     >2. DOM不存在伪元素（CSSOM中才有定义），伪元素存在render tree中。
 
     - 渲染在每一帧都会进行

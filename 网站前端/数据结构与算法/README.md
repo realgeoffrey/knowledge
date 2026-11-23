@@ -946,7 +946,7 @@ function createMaxHeapify(arr) {
 
       if (arr[dadIndex] <= arr[sonIndex]) {
         _swap(dadIndex, sonIndex); // 保证父节点大于子节点
-        arguments.callee(sonIndex, endIndex); // 因为子节点变化，所以递归一遍原本是最大堆的子节点
+        _maxHeapify(sonIndex, endIndex); // 因为子节点变化，所以递归一遍原本是最大堆的子节点
       }
     }
   }
@@ -984,7 +984,7 @@ function createMaxHeapify(arr) {
 
         <summary>时间复杂度举例</summary>
 
-        1. 二分搜索 或 每轮缩减一半的递归函数 的时间复杂度： $O(log n)$。
+        1. 二分搜索，或每次只递归一次、规模减半且本层工作为 O(1) 的函数 的时间复杂度： $O(log n)$。
 
             原因：[为什么说二分查找的时间复杂度是O(logn](https://github.com/JasonGaoH/KnowledgeSummary/blob/master/docs/Algorithm/为什么说二分查找的时间复杂度是O(logn).md)。
 
@@ -992,10 +992,10 @@ function createMaxHeapify(arr) {
         2. 嵌套循环中，两层循环的时间复杂度分别为 $O(log n)$和 $O(n)$的函数： $O(n * log n)$
 
             主流排序算法，如：快速排序、归并排序、堆排序等。
-        3. 一分为二的递归函数 的时间复杂度： $O(2^n)$。
+        3. 每层分出两个规模为 n-1 的子问题，且本层工作为 O(1) 的递归函数的时间复杂度： $O(2^n)$。
 
             e.g. `function expRecur(n) { if (n == 1) return 1; return expRecur(n - 1) + expRecur(n - 1) + 1; }`
-        4. 每次减少1的递归： $O(n!)$
+        4. 规模为 n 时递归调用 n 次，每次规模减少 1： $O(n!)$
 
             e.g. `function factorialRecur(n) { if (n == 0) return 1; let count = 0; for (let i = 0; i < n; i++) { count += factorialRecur(n - 1); } return count; }`
         </details>
@@ -1101,7 +1101,7 @@ function createMaxHeapify(arr) {
     >若一个排序算法是稳定的，则当有两个相等键值的纪录R和S，且在原本的列表中R出现在S之前，在排序过的列表中R也将会是在S之前。
 3. 比较排序/非比较排序：
 
-    1. 「基于比较的排序」依赖于比较运算符（`<`、`=`、`>`）来判断元素的相对顺序，从而排序整个数组，理论最好时间复杂度为 $O(n*log n)$。
+    1. 「基于比较的排序」依赖于比较运算符（`<`、`=`、`>`）来判断元素的相对顺序，从而排序整个数组，对任意输入正确排序时，最坏情况下的比较次数下界为 $\Omega(n\log n)$。
     2. 「非比较排序」不使用~~比较运算符~~，时间复杂度可达 $O(n)$，但其*通用性*相对较差。
 4. 自适应排序/非自适应排序：
 
@@ -1118,7 +1118,7 @@ function createMaxHeapify(arr) {
 
 ---
 ### 比较排序
->比较排序理论最好时间复杂度为 $O(n*log n)$。
+>下列空间复杂度区分排序过程和输入副本：示例开头的 `arr.slice()` 另占 O(n) 空间。
 
 #### 插入排序（insertion sort）
 ```js
@@ -1216,7 +1216,7 @@ function quickSort(arr) {
             }
         }
 
-        return arguments.callee(leftArr).concat([middle], arguments.callee(rightArr));   // 顺序合并左、中、右数组
+        return quickSort(leftArr).concat([middle], quickSort(rightArr));   // 顺序合并左、中、右数组
     }
 }
 ```
@@ -1227,13 +1227,11 @@ function quickSort(arr) {
 >        >此处可以优化，选择越靠近中位数的元素，时间复杂度越接近平均时间复杂度。
 >    2. 遍历其他元素，比基准值小的摆放在基准前面，比基准值大的摆在基准的后面（相同可以到放置任一边）；
 >    3. 递归地把前后两数组进行相同操作（分治策略：将一个较长数组的排序问题简化为两个较短数组的排序问题）。
->2. 非稳定、比较排序
->3. 时间复杂度： $O(n*log n)$（自适应排序）
+>2. 常见的原地快速排序不稳定。本例顺序追加到左右数组，保留了相等元素的相对顺序。
+>3. 时间复杂度：平均 $O(n*log n)$
 >
 >    平均 $O(n*log n)$；在最坏情况下，每轮划分操作都将长度为n的数组划分为长度为0和n-1的两个子数组，此时递归层数达到n层，每层中的循环数为n，总体使用 $O(n^2)$时间。
->4. 空间复杂度： $O(n)$（非原地排序）
->
->    可以优化分割数组算法，不需要额外数组存储，变成空间复杂度 $O(n)$（原地排序）。
+>4. 此实现为每层分配子数组：划分均衡时同时存活的数据占 O(n) 空间，极端不均衡时可达 O(n²)。若改用原地划分，额外空间主要来自递归栈，深度平均 O(log n)，最坏 O(n)。
 
 ![快速排序图](./images/quick-sort-1.gif)
 
@@ -1264,7 +1262,7 @@ function shellSort(arr) {
 >
 >    将元素分为几个区域来提升*插入排序*的性能：让一个元素可以一次性朝最终位置前进一大步。算法再取越来越小的步长进行排序，最后是步长为1的插入排序。
 >2. 非稳定、比较排序
->3. 时间复杂度：根据步长取值而变化，最好 $O(n*log^2 n)$，最坏 $O(n^2)$
+>3. 时间复杂度：根据步长取值而变化，本例使用折半步长，每趟最好只需线性扫描，最好 $O(n\log n)$，最坏 $O(n^2)$
 >4. 空间复杂度： $O(1)$
 
 #### 梳排序
@@ -1325,24 +1323,25 @@ function mergeSort(arr) {
     left = arr.slice(0, midIndex);
     right = arr.slice(midIndex);
 
-    return _merge(arguments.callee(left), arguments.callee(right));
+    return _merge(mergeSort(left), mergeSort(right));
   }
 }
 
 /* 合并2个已经分别排序好的数组 */
 function _merge(arrA, arrB) {
   var newArr = [];
+  var i = 0, j = 0;
 
-  /* 对比2个数组第一个元素，小的元素加入新数组并从原数组删去，直到至少一个数组为空 */
-  while (arrA.length && arrB.length) {
-    if (arrA[0] < arrB[0]) {
-      newArr.push(arrA.shift());
+  /* 两个游标只向前移动。键相等时先取左边，以保留原有顺序。 */
+  while (i < arrA.length && j < arrB.length) {
+    if (arrA[i] <= arrB[j]) {
+      newArr.push(arrA[i++]);
     } else {
-      newArr.push(arrB.shift());
+      newArr.push(arrB[j++]);
     }
   }
 
-  return newArr.concat(arrA.concat(arrB)); // 顺序合并newArr、arrA、arrB数组
+  return newArr.concat(arrA.slice(i), arrB.slice(j));
 }
 ```
 >1. 思路：
@@ -1422,7 +1421,7 @@ function heapSort(arr) {
 
       if (arr[dadIndex] <= arr[sonIndex]) {
         _swap(dadIndex, sonIndex); // 保证父节点大于子节点
-        arguments.callee(sonIndex, endIndex); // 因为子节点变化，所以递归一遍原本是最大堆的子节点
+        _maxHeapify(sonIndex, endIndex); // 因为子节点变化，所以递归一遍原本是最大堆的子节点
       }
     }
   }
@@ -1450,7 +1449,7 @@ function heapSort(arr) {
 >    循环进行：创建[最大堆](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/数据结构与算法/README.md#堆heap)，移除在顶端的最大元素。
 >2. 非稳定、比较排序
 >3. 时间复杂度： $O(n*log n)$（非自适应排序）
->4. 空间复杂度： $O(1)$（原地排序）
+>4. 本例递归调整堆，占 O(log n) 栈空间；改用循环可将调整过程的额外空间降为 O(1)。
 
 ![堆排序图](./images/heap-sort-1.gif)
 
@@ -1466,7 +1465,7 @@ function bucketSort(arr) {
   arr = arr.slice(); // 浅复制
 
   // 初始化k=n/2个桶，预期向每个桶分配2个元素（可调整）
-  const k = arr.length / 2;
+  const k = Math.max(1, Math.ceil(arr.length / 2));
   const buckets = [];
   for (let i = 0; i < k; i++) {
     buckets.push([]);
@@ -1554,11 +1553,12 @@ function countingSort(arr) {
 ![计数排序图](./images/counting-sort-1.gif)
 
 #### 基数排序（radix sort）
->相较于计数排序，基数排序适用于数值范围较大的情况，但前提是数据必须可以表示为固定位数的格式，且位数不能过大。e.g. 浮点数不适合使用基数排序，因为其位数k过大，可能导致时间复杂度 $O(n*k)$ 远大于 $O(n^2)$。
+>基数排序按位分配元素。本例处理非负安全整数，按十进制从个位排到最高位，缺少的高位视为 0。
 
 ```js
 function radixSort(arr) {
     arr = arr.slice();  // 浅复制
+    if (arr.length < 2) return arr;
 
     var len = arr.length,
         i, bucket, max, maxLen, str, j, num, k, kLen;
@@ -1667,10 +1667,10 @@ function radixSort(arr) {
         } else {
             if (searchVal < arr[middle]) { /* 目标小于中间数，在小的一堆找 */
 
-                return arguments.callee(arr, searchVal, leftIndex, middle - 1);
+                return binarySearch(arr, searchVal, leftIndex, middle - 1);
             } else if (searchVal > arr[middle]) {  /* 目标大于中间数，在大的一堆找 */
 
-                return arguments.callee(arr, searchVal, middle + 1, rightIndex);
+                return binarySearch(arr, searchVal, middle + 1, rightIndex);
             } else {    /* 递归边界条件：找到 */
 
                 return middle;

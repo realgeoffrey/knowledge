@@ -3,7 +3,7 @@
 
 ## 目录
 1. [富文本编辑器实现方式](#富文本编辑器实现方式)
-1. [我的富文本编辑器实现（`contenteditable` + `document.execCommand`）](#我的富文本编辑器实现contenteditable--documentexecCommand)
+1. [我的富文本编辑器实现（`contenteditable` + `document.execCommand`）](#我的富文本编辑器实现contenteditable--documentexeccommand)
 
 ---
 >富文本、纯文本、markdown。
@@ -23,7 +23,7 @@
 
     如：[腾讯文档](https://docs.qq.com/)
 
-难度升序，自由度降序：`contenteditable`+`document.execCommand` < `contenteditable`+`getSelection`+`Range` < DOM实现 ≪ Canvas
+从浏览器内置编辑命令到自行用 Canvas 排版，通常需要接管越来越多的能力，如选区、输入法和无障碍支持，定制空间也随之增大。
 
 ### 我的富文本编辑器实现（`contenteditable` + `document.execCommand`）
 >富文本编辑器（rich text editor）：一种可内嵌于浏览器，所见即所得（what you see is what you get，WYSIWYG）的文本编辑器。

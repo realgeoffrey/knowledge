@@ -72,8 +72,8 @@
         >2. `a: 某类型 | undefined`表示：`a`必须存在或必传参，类型是`某类型`或`undefined`。
     7. `null`
 
-    >1. `undefined`和`null`值 可以赋值给所有类型的变量（除了`never`类型）；`undefined`和`null`类型 是所有类型的子类型（除了`never`类型）。
-    >2. 若配置`strictNullChecks`，则：`undefined`只能赋值给类型`any`、`undefined`、`void`；`null`只能赋值给类型`any`、`null`。
+    >1. 关闭 `strictNullChecks` 时，`undefined` 和 `null` 可以赋值给所有类型的变量（除了`never`类型）；`undefined`和`null`类型 是所有类型的子类型（除了`never`类型）。
+    >2. 开启 `strictNullChecks` 后，两者均可赋给 `any`、`unknown` 或包含自身的类型（如 `string | null` 可接受 `null`）。`undefined` 还可赋给 `void`。
 2. `void`
 
     1. 变量类型void，表示：仅允许被`null`（只在配置`strictNullChecks`未指定时）或`undefined`赋值。
@@ -416,7 +416,7 @@
 
         - `ReadonlyArray<数据类型>`
 
-            与`Array<数据类型>`相似，只是把所有可变方法去掉了，因此可以确保数组创建后再也不能被修改（readonly）。
+            通过这个只读引用访问数组时，类型检查会阻止写入元素和调用 `push` 等方法。同一数组仍可通过可写引用修改。
 
             ><details>
             ><summary>e.g.</summary>
@@ -449,7 +449,7 @@
         1. 规定`数组`每一项的数据类型：
 
             1. 直接赋值不能少于或多于约定长度。
-            2. 下标赋值或`push`等可以大于规定长度，但要用前面所有数据类型的联合类型。
+            2. 固定长度元组的越界字面量下标会报错。可变元组仍可用 `push` 追加元素，参数须满足成员类型的联合类型。
         2. `元组[数字]`可以获取内部某一项的类型
 
         ><details>
@@ -484,7 +484,7 @@
         >```
         ></details>
 
-    >枚举被编译为.js是数组。
+    >元组编译后是普通 JavaScript 数组。
 9. 函数类型（方法类型）
 
     1. 输入的参数、输出的返回值都需要设置类型。
@@ -637,7 +637,7 @@
 
 - 返回Promise类型
 
-    `Promise<resolve的类型>`仅能定义完成的Promise实例，不能定义失败的。失败的Promise实例总是认为是`unknown`（与`try-catch`中`catch`的参数类型一致）。
+    `Promise<T>` 的 `T` 表示兑现值的类型。标准库把 `.catch()` 回调的拒绝原因声明为 `any`。若要在使用前检查类型，可写 `.catch((reason: unknown) => …)`。
 
     ><details>
     ><summary>e.g.</summary>
@@ -1333,9 +1333,9 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
         ></details>
 2. 常数枚举、外部枚举
 
-    与普通枚举的区别是：①在编译阶段被删除、②不能包含计算所得项、③若手动赋值则枚举值必须是数字。
+    `const enum` 的成员须能在编译时确定，可以是数字或字符串常量。`declare enum` 描述由外部代码提供的枚举对象，声明本身不生成 JavaScript。[TypeScript 手册](https://www.typescriptlang.org/docs/handbook/enums.html)
 
-    >作用：仅编译前使用其值，而不会导出它的对象供使用。
+    >默认情况下，访问常数枚举成员会被编译成对应的常量值。
 
     1. 常数枚举（Const Enums）
 
@@ -1360,7 +1360,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
         >```
         ></details>
 
-        （外部）常数枚举 生成的.js，不会生成~~枚举的变量~~，而是直接把枚举的值硬编码出来。配置`preserveConstEnums`可保持编译出枚举的变量。
+        `preserveConstEnums` 可保留本地 `const enum` 的运行时对象。`declare const enum` 声明本身始终不生成对象。
     2. 外部枚举（Ambient Enums）
 
         使用`declare enum`定义的枚举类型。

@@ -49,7 +49,7 @@
 
     >功能有限，很多样式问题无法处理到，如：`float`、绝对定位布局，更复杂的一些布局。
 
-    `<html dir="ltr或rtl">`或`html{ direction: ltr或rtl; }`（该属性指定了块的基本书写方向，以及针对 Unicode 双向算法的嵌入和覆盖方向）
+    用 `<html dir="rtl">` 或 `<html dir="ltr">` 声明文档的基本书写方向。布局优先使用 `margin-inline-start`、`padding-inline-end`、`text-align: start` 等逻辑属性或值。[W3C 书写方向指南](https://www.w3.org/International/questions/qa-html-dir)
 1. CSS设置左右翻转（镜像）
 
     1. 父级整体：`transform: scaleX(-1)`
@@ -65,8 +65,6 @@
         居右 على الرغم من أن لديه بعض الصعوبات على سبيل المثال
         <br>، بعض الرجل يمكن أن مجرد فتح devtools وإزالة أو تغيير قسم
         'لانغ'. لمنع هذا ، أوصي بوضعه في المتغير.
-        </Text>
-        </View>
       </p>
 
       <!-- 镜像（左右颠倒） -->
@@ -83,20 +81,20 @@
 
     如：`left/right`、`margin左右`、`padding左右`、`border左右`、`borderRadius左右`等颠倒，flex项的几个CSS属性起始方向`flex-start`和`flex-end`颠倒（实现`direction: rtl;`设置后的默认效果）。类似：[rtlcss](https://github.com/MohammadYounes/rtlcss)。
 
-    >`margin`改成`margin-inline`，`padding`改成`padding-inline`等，TODO
+    >若布局已经使用逻辑属性并继承了 `dir`，应避免再次手工交换左右。
 
     ```js
-    // e.g. React中重写`React.createElement`
+    // e.g. 仅演示调用 React.createElement 的旧式 JSX 转换；自动 JSX 运行时使用独立入口
     const oldCreateElement = React.createElement;
 
     export default function rtlReactHook() {
       if (!React._rtlHooked) {
-        React.createElement = (type, props) => {
-          if (isRtl) {
+        React.createElement = (type, props, ...children) => {
+          if (isRtl && props && props.style) {
             // RTL样式统一镜像处理
-            props.style = getRTLStyle(props.style);
+            props = { ...props, style: getRTLStyle(props.style) };
           }
-          return oldCreateElement.apply(null, arguments);
+          return oldCreateElement(type, props, ...children);
         };
         React._rtlHooked = true;
       }

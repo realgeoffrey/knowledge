@@ -1203,7 +1203,7 @@ if (!Function.prototype.bind) {
             fBound = function () {
                 return fToBind.apply(this instanceof fNOP
                         ? this
-                        : oThis || this,
+                        : oThis,
                     aArgs.concat(Array.prototype.slice.call(arguments)));
             };
 
@@ -1241,13 +1241,13 @@ if (!String.prototype.repeat) {
     if (count != count) {
       count = 0;
     }
+    count = count < 0 ? Math.ceil(count) : Math.floor(count);
     if (count < 0) {
       throw new RangeError('repeat count must be non-negative');
     }
     if (count == Infinity) {
       throw new RangeError('repeat count must be less than infinity');
     }
-    count = Math.floor(count);
     if (str.length == 0 || count == 0) {
       return '';
     }
@@ -1304,6 +1304,6 @@ Number.isInteger = Number.isInteger || function (value) {
 
 ```js
 Number.isSafeInteger = Number.isSafeInteger || function (value) {
-  return Number.isInteger(value) && Math.abs(value) <= Number.MAX_SAFE_INTEGER;
+  return Number.isInteger(value) && Math.abs(value) <= 9007199254740991; // 2^53 - 1，兼容没有 MAX_SAFE_INTEGER 的环境
 };
 ```

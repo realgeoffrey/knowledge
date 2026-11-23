@@ -2,53 +2,26 @@
 
 1. `client`
 
-    1. `document.body`或`DOM`的`.clientWidth` = ` 可视部分宽度 ＋ padding左右宽度 - 滚动条宽度`。
+    1. 普通块元素的 `.clientWidth` 是内边距盒的宽度，扣除占据布局空间的垂直滚动条，不含边框和外边距。
 
-        使用方式：`document.documentElement.clientWidth || document.body.clientWidth`。
-    2. `document.body`或`DOM`的`.clientLeft` = `border左宽度`。
+        读布局视口宽度（不含滚动条）时，标准模式使用 `document.documentElement.clientWidth`，怪异模式使用 `document.body.clientWidth`。
+    2. `.clientLeft` 通常等于左边框宽度；当垂直滚动条位于元素左侧并占用空间时，还包括该滚动条的宽度。
 2. `offset`
 
-    1. `document.body`或`DOM`的`.offsetWidth` = ` 可视部分宽度 ＋ padding左右宽度 + border左右宽度`。
-    2. `document.body`或`DOM`的`.offsetLeft`
+    1. 普通块元素的 `.offsetWidth` 是布局边框盒的整数宽度，包含内边距、边框和占据布局空间的滚动条。
+    2. `.offsetLeft`
 
-        >相对于`offsetParent`(祖先节点有定位或body)。
+        有 `offsetParent` 时，取元素第一个布局盒的左边框外缘到 `offsetParent` 左内边距边缘的横向距离。它取决于实际布局，计算时忽略 CSS 变换。
 
-        1. ie6/7：
-
-            `.offsetLeft` = `当前元素的margin左宽度 + offsetParent的(padding左宽度)`。
-        2. ie8/9/10、Chrome：
-
-            `.offsetLeft` = `当前元素的margin左宽度 + offsetParent的(padding左宽度 + margin左宽度 + border左宽度)`。
-        3. Firefox：
-
-            `.offsetLeft` = `当前元素的margin左宽度 + offsetParent的(padding左宽度 + margin左宽度)`。
+        >`body` 或没有布局盒的元素返回 0；其他没有 `offsetParent` 的元素按初始包含块的原点计算。
 3. `scroll`
 
     1. `.scrollWidth`
 
-        >`document.body`和`DOM`有区别。
-
-        1. `document.body`
-
-            1. 给定宽度 < 浏览器窗口宽度：
-
-                `document.body.scrollWidth` = `浏览器窗口宽度`。
-            2. 内容宽度 < 给定宽度 > 浏览器窗口宽度：
-
-                `document.body.scrollWidth` = `给定宽度 + padding左右宽度 + border左右宽度 + margin左右宽度`。
-            3. 内容宽度 > 给定宽度 > 浏览器窗口宽度：
-
-                `document.body.scrollWidth` = `内容宽度 + padding未超出边宽度 + border未超出边宽度 + margin未超出边宽度`。
-        2. `DOM`
-
-            1. 内容宽度 < 给定宽度
-
-                1. 无滚动条：
-
-                    `DOM.scrollWidth` = `DOM.clientWidth` = `给定宽度 + padding左右宽度`。
-                2. 有滚动条：
-
-                    `DOM.scrollWidth` = `内容宽度 + padding左右宽度`。
+        1. 文档的滚动宽度：标准模式读取 `document.documentElement.scrollWidth`，其值至少等于布局视口宽度。
+        2. 普通块元素：包含溢出内容在内的滚动区域宽度。没有横向溢出时通常等于 `clientWidth`，横向滚动可见的内容会使它增大。
     2. `.scrollLeft`
 
-        可读写。是内容宽度超出其宽度时，元素**被卷起**的宽度。
+        可读写，表示水平滚动位置。常见的从左向右布局中，向右滚动时数值增大；从右向左布局中，向左滚动时可取负值。
+
+参考：[CSSOM View 规范](https://drafts.csswg.org/cssom-view/#extensions-to-the-element-interface)。

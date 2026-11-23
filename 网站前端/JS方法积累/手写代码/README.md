@@ -70,14 +70,13 @@
 ---
 ### 手写`Object.create`
 ```js
-function create(proto, propertiesObject) { // 不支持null
-  function F() {}
+function create(proto, propertiesObject) {
+  if (proto !== null && typeof proto !== "object" && typeof proto !== "function") {
+    throw new TypeError("Prototype must be an object or null");
+  }
 
-  F.prototype = proto;
-  F.prototype.constructor = F;
-
-  const obj = new F();
-  propertiesObject && Object.defineProperties(obj, propertiesObject);
+  const obj = { __proto__: proto }; // 对象字面量语法，可直接设置 null 原型
+  if (propertiesObject !== undefined) Object.defineProperties(obj, propertiesObject);
 
   return obj;
 }
@@ -104,6 +103,7 @@ function myInstanceof(obj, constructor) {
 
 ### 手写`new`
 ```js
+// 演示具有对象原型且可用 apply 调用的普通构造函数。
 function myNew(constructor, ...args) {
   // 创建：原型是传入构造函数的 空对象
   const obj = Object.create(constructor.prototype); // 或：const obj = {}; obj.__proto__ = constructor.prototype;
@@ -112,8 +112,7 @@ function myNew(constructor, ...args) {
   const value = constructor.apply(obj, args);
 
   // 若构造函数返回是 对象，则返回；否则返回obj
-  return value instanceof Object ? value : obj;
-  // (typeof value === "object" && value !== null) || typeof value === "function" 等价于 value instanceof Object
+  return (value !== null && typeof value === "object") || typeof value === "function" ? value : obj;
 }
 ```
 
@@ -425,11 +424,7 @@ class MyPromise {
     ```js
     Promise.myAll = function (iterable) {
       return new Promise((resolve, reject) => {
-        // if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
-        //   return reject(new Error("不是可迭代对象"));
-        // }
-
-        const promises = Array.from(iterable); // 将可迭代对象转换为数组
+        const promises = [...iterable]; // 将可迭代对象转换为数组
         const results = Array.from({length: promises.length}); // 存储所有 Promise 对象的完成信息
         let fulfilledCount = 0;
 
@@ -460,16 +455,12 @@ class MyPromise {
     ```js
     Promise.myAny = function (iterable) {
       return new Promise((resolve, reject) => {
-        // if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
-        //   return reject(new Error("不是可迭代对象"));
-        // }
-
-        const promises = Array.from(iterable); // 将可迭代对象转换为数组
+        const promises = [...iterable]; // 将可迭代对象转换为数组
         const errors = Array.from({length: promises.length}); // 存储所有 Promise 对象的失败信息
         let rejectedCount = 0;
 
         if (promises.length === 0) {
-          reject(new AggregateError("All promises were rejected"));
+          reject(new AggregateError([], "All promises were rejected"));
         }
 
         promises.forEach((promise, index) => {
@@ -482,7 +473,7 @@ class MyPromise {
               rejectedCount++;
 
               if (rejectedCount === promises.length) {
-                reject(new AggregateError(errors)); // 所有 Promise 对象都被拒绝时，拒绝并返回一个 AggregateError 对象
+                reject(new AggregateError(errors, "All promises were rejected")); // 所有 Promise 对象都被拒绝时，拒绝并返回一个 AggregateError 对象
               }
             },
           );
@@ -495,11 +486,7 @@ class MyPromise {
     ```js
     Promise.myRace = function (iterable) {
       return new Promise((resolve, reject) => {
-        // if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
-        //   return reject(new Error("不是可迭代对象"));
-        // }
-
-        const promises = Array.from(iterable); // 将可迭代对象转换为数组
+        const promises = [...iterable]; // 将可迭代对象转换为数组
 
         promises.forEach((promise) => {
           Promise.resolve(promise).then(
@@ -519,11 +506,7 @@ class MyPromise {
     ```js
     Promise.myAllSettled = function (iterable) {
       return new Promise((resolve, reject) => {
-        // if (iterable === undefined || iterable === null || typeof iterable[Symbol.iterator] !== "function") {
-        //   return reject(new Error("不是可迭代对象"));
-        // }
-
-        const promises = Array.from(iterable); // 将可迭代对象转换为数组
+        const promises = [...iterable]; // 将可迭代对象转换为数组
         const results = Array.from({length:promises.length}); // 存储所有 Promise 对象的完成信息或失败信息
         let settledCount = 0;
 
@@ -610,20 +593,22 @@ Function.prototype.myBind = function (context, ...args) {
 ### 手写`Array.prototype.reduce`
 ```javascript
 Array.prototype.myReduce = function (callback, current) {
-  if (typeof callback !== "function") { throw TypeError("undefined is not a function");}
-  if (this.length === 0 && arguments.length === 1) { throw TypeError("Reduce of empty array with no initial value");}
+  "use strict";
+  if (this === null || this === undefined) { throw TypeError("Array receiver is null or undefined"); }
+  const arr = Object(this);
+  const integerLength = Math.trunc(+arr.length) || 0;
+  const length = Math.min(Math.max(integerLength, 0), Number.MAX_SAFE_INTEGER);
+  if (typeof callback !== "function") { throw TypeError("callback must be a function"); }
 
-  const arr = this;
-
-  // 第二个参数可选（有第二个参数则多一次执行回调）
-  if (current === undefined) {
-    current = arr[0];
-  } else {
-    current = callback(current, arr[0], 0, arr);
+  let i = 0;
+  if (arguments.length < 2) {
+    while (i < length && !(i in arr)) i++;
+    if (i === length) throw TypeError("Reduce of empty array with no initial value");
+    current = arr[i++];
   }
 
-  for (let i = 1; i < arr.length; i++) {
-    current = callback(current, arr[i], i, arr);
+  for (; i < length; i++) {
+    if (i in arr) current = callback(current, arr[i], i, arr);
   }
 
   return current;
@@ -641,11 +626,11 @@ function stringify(data, weakmap = new WeakMap()) {
     if (typeof BigInt.prototype.toJSON === "function") {
       return stringify(data.toJSON(), weakmap);
     }
-    throw new Error("Do not know how to serialize a BigInt at JSON.stringify");
+    throw new TypeError("Do not know how to serialize a BigInt");
   }
 
   // String
-  if (typeof data === "string") { return `"${data}"`; }
+  if (typeof data === "string") { return JSON.stringify(data); } // 复用字符串转义
 
   // Number
   if (data !== data) { return "null"; }  // NaN
@@ -673,6 +658,7 @@ function stringify(data, weakmap = new WeakMap()) {
         }
       }
 
+      weakmap.delete(data);
       return `[${newData.join(",")}]`;
     }
     if (typeof data === "object") {
@@ -685,13 +671,14 @@ function stringify(data, weakmap = new WeakMap()) {
           return acc;
         }
 
-        acc.push(`"${key}":${stringify(value, weakmap)}`);
+        acc.push(`${JSON.stringify(key)}:${stringify(value, weakmap)}`);
         return acc;
       }, newData);
+      weakmap.delete(data);
       return `{${newData.join(",")}}`;
     }
   } else {
-    throw new Error("Converting circular structure to JSON");
+    throw new TypeError("Converting circular structure to JSON");
     // 或：
     // if(Array.isArray(data)){
     //   return `[${weakmap.get(data)}]`
@@ -1411,7 +1398,7 @@ function memo(func, resolver) {
 ```js
 class EventEmitter {
   // 事件名: 回调列表
-  events = { /* eventName1: [callback1, ...] */ };
+  events = Object.create(null); // 事件名映射到回调列表
 
   // 订阅事件
   on(eventName, callback) {
@@ -1427,9 +1414,12 @@ class EventEmitter {
       this.events[eventName] = [];
     }
 
+    let fired = false;
     const onceCallback = (...data) => {
-      callback(...data);
+      if (fired) return;
+      fired = true;
       this.off(eventName, onceCallback);
+      callback(...data);
     };
     onceCallback.originCallback = callback; // 用于unsubscribe
     this.events[eventName].push(onceCallback);
@@ -1466,7 +1456,7 @@ class EventEmitter {
 
 ```js
 class EventEmitter {
-  events = {};
+  events = Object.create(null);
 
   subscribe(eventName, callback) {
     if (!this.events[eventName]) {
@@ -1533,14 +1523,16 @@ schedular.add(task(50, 4)).then(res => console.log(res));
       }
 
       add(task) {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
           this.tasks.push(async () => {
-            // 真正执行任务
-            resolve(await task());
-            this.runningCount--;
-
-            // 执行当前任务后继续尝试执行剩下任务
-            this.schedule();
+            try {
+              resolve(await task());
+            } catch (error) {
+              reject(error);
+            } finally {
+              this.runningCount--;
+              queueMicrotask(() => this.schedule()); // 同步抛错时避免递归调度
+            }
           });
 
           // 启动执行

@@ -8,7 +8,7 @@
 
 ---
 ### [ESLint](https://github.com/eslint/eslint)
->eslint@8 旧配置为主；ESLint v9+ 默认使用 `eslint.config.js` flat config，`.eslintrc*` 已进入兼容/迁移阶段。
+>本节以 ESLint v8 的 `.eslintrc*` 为主。v9 默认使用 flat config，仍可显式切回旧配置。v10 已移除旧配置支持。[ESLint v10 迁移说明](https://eslint.org/docs/latest/use/migrate-to-10.0.0)
 
 1. [CLI命令](https://eslint.org/docs/latest/use/command-line-interface)
 
@@ -55,7 +55,7 @@
             4. `-c/--config`（ESLint v8 旧配置可配合`--no-eslintrc`忽略所有规则默认查找；ESLint v9+ flat config 使用方式不同）
         3. 项目级配置
 
-            以下是 `.eslintrc*` 旧配置的查找逻辑：会在每一个被检查文件的目录中寻找配置文件（不是~~命令执行的目录~~，而是每一个被检查文件的目录，因此不同文件夹的文件都可能有不同的规则配置），并在其直系祖先目录中寻找，直到触发任意停止条件：抵达文件系统的根目录（`/`）或 配置包含 `root: true` ~~或 抵达当前用户的主目录（`~/`）~~。ESLint v9+ 默认从项目根部查找 `eslint.config.js`。
+            以下是 `.eslintrc*` 旧配置的查找逻辑：会在每一个被检查文件的目录中寻找配置文件（不是~~命令执行的目录~~，而是每一个被检查文件的目录，因此不同文件夹的文件都可能有不同的规则配置），并在其直系祖先目录中寻找，直到触发任意停止条件：抵达文件系统的根目录（`/`）或 配置包含 `root: true` ~~或 抵达当前用户的主目录（`~/`）~~。flat config 的默认查找起点在 v9 为命令执行目录，在 v10 为每个被检查文件的目录，然后逐级向上查找。
 
             - 同一级文件夹内的配置只会使用以下优先级最高的一个文件（降序）：
 
@@ -142,12 +142,12 @@
 
         - 产生条件：
 
-            1. 命令加了`--cache`（或配置文件包含`cache: true`）
+            1. 命令加 `--cache`，或在 Node.js API 的 `ESLint` 构造选项中传 `cache: true`
 
-                - 执行一次未包含`--cache`（或配置文件未包含`cache: true`）的命令会删除已有的`.eslintcache`文件
-            2. && eslint匹配到了任何文件且没有报错退出
+                - 执行一次未包含 `--cache` 的文件检查命令，会删除默认位置已有的 `.eslintcache`
+            2. 文件检查即使报告 lint 错误，也可能写出缓存并以非零状态退出
             3. && 输入方式不是 ~~`stdin`~~（e.g. `echo "let a = 1" | eslint --stdin --cache`不会产生/删除`.eslintcache`文件）
-            - 注意生成路径（默认在运行命令的目录，可以命令`--cache-location 路径`或配置文件`cacheLocation: '路径'`指定其他位置）
+            - 注意生成路径（默认在运行命令的目录，可以命令`--cache-location 路径`或 Node.js API 选项 `cacheLocation: '路径'`指定其他位置）
 
 ### [Prettier](https://github.com/prettier/prettier)
 1. CLI命令
@@ -161,24 +161,24 @@
     ><details>
     ><summary>不要忘记 glob 周围的引号（<code>'</code>、<code>"</code>）。引号确保 Prettier CLI 扩展 glob 而不是你的 shell，这对于跨平台使用很重要。（对于其他命令同样适用，是该把解析通配符等字符串交给命令，还是交给Shell）</summary>
     >
-    >e.g. `prettier "**/*.{vue,js}"`与`prettier **/*.{vue,js}`为什么前者能输出所有.js和.vue，而后者仅输出部分.js和所有.vue？
+    >e.g. `prettier "**/*.{vue,js}"` 和 `prettier **/*.{vue,js}` 的匹配范围为何可能不同？
     >
     >1. Shell看到引号，直接把引号内字符串传递给命令（prettier），命令根据自己的规则（如.prettierignore等）解析这个字符串；
-    >1. Shell未看到引号的情况下遇到`**`，触发Shell展开机制，会先解析再传递给命令（prettier）：
+    >1. 没有引号时，Shell 可能先展开通配符，递归匹配取决于 Shell 及其选项（例如 Bash 的 `globstar`）：
     >
     >    >当 Shell 在命令行中遇到特定的保留字符（元字符）且这些字符没有被转义或引用时，才会触发展开机制。具体展开机制略。
     >
     >    1. 展开`**/*.{vue,js}`为`**/*.vue **/*.js`
     >    2. 分别扫描`**/*.vue`与`**/*.js`最终分别输出所有匹配的路径
     >
-    >        1. 因为`node_modules`里可能很多.js文件，甚至达到系统限制的ARG_MAX，因此.js的所有文件路径被部分截断，但所有.vue文件路径达不到截断长度因此被完整保留
+    >        1. 如果展开的参数总长度超过系统上限，命令会因 `Argument list too long` 启动失败。
     >    3. 把扫描出的所有路径传递给命令（prettier）
     ></details>
 2. 配置文件
 
     1. 项目级配置
 
-        会在每一个被检查文件的目录中寻找配置文件（不是~~命令执行的目录~~，而是每一个被检查文件的目录，因此不同文件夹的文件都可能有不同的规则配置），并在其直系祖先目录中寻找，直到触发停止条件：抵达执行prettier命令的目录。
+        从要格式化的文件所在目录逐级向上查找，遇到第一个配置文件即停止，找不到则一直到文件系统根目录。[Prettier 配置文件](https://prettier.io/docs/configuration)
 
         - 同一级文件夹内的配置只会使用以下优先级最高的一个文件（降序）：
 
@@ -192,7 +192,7 @@
                 6. `.prettierrc.toml`
 
                 - 配置简单，导出对象，没有config概念，分享使用通过导出对象进行。
-        - 不同文件夹的规则嵌套覆盖。若未达到停止条件，会一直往上查找并合并配置，相同规则 以 越接近文件的（越先被搜索到的）优先。
+        - 不同目录可使用各自最近的 Prettier 配置；父目录的 Prettier 配置不会自动合并。
     2. 忽略文件
 
         `.prettierignore`（prettier@3会默认加上`.gitignore`的内容；`prettier@2`不会）

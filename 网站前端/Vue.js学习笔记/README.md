@@ -128,7 +128,7 @@
     - `useSlots`从 setup 上下文中返回 slots 对象，其中包含父组件传递的插槽。这些插槽为可调用的函数，返回虚拟 DOM 节点。用于`<script setup>`中的，因为在`<script setup>`中无法获取 setup 上下文对象。
 1. `v-model`
 
-    >`defineModel`返回的是`ref`，支持解构返回`[model值, 修饰符对象]`
+    >`defineModel` 返回模型 ref，数组解构可取得 `[模型 ref, 修饰符对象]`
     >
     >```js
     >// 无论传不传修饰符，都可以写成 解构或不解构 的方式。都能正确赋值变量
@@ -569,7 +569,7 @@
 
         >`<script setup>`里面的代码会被编译成组件`setup()`函数的内容。这意味着与普通的`<script>`只在组件被首次引入的时候执行一次不同，`<script setup>`中的代码会在每次组件实例被创建的时候执行。因此顶层的变量、函数 不会在多个组件中~~共享~~。可以理解为：`<script>`执行一遍后，`export default`的是组件，因此可以在导出之外的代码中包含共用的变量、方法；`<script setup>`就是`setup()`钩子里的代码，同一个组件不同实例间没有任何共用的逻辑。
 
-        1. 有包裹的对象（`isRef()`返回`true`）：`ref()`、`shallowRef()`、`customRef()`、`computed()`、`toRefs()`、`toRef()`（、`pinia`的`storeToRefs()`）
+        1. 有包裹的对象（`isRef()`返回`true`）：`ref()`、`shallowRef()`、`customRef()`、`computed()`、`toRef()`。`toRefs()` 和 Pinia 的 `storeToRefs()` 返回普通对象，各属性的值才是 ref。
         2. 无包裹的对象（`isRef()`返回`false`，普通引用数据类型、普通基本数据类型也返回`false`）：`reactive()`、`shallowReactive()`、`readonly()`、`shallowReadonly()`
     1. `ref`的自动解包逻辑
 
@@ -641,7 +641,7 @@
         ```js
         const state = reactive({ a: 1, b: 2 })
 
-        Object.assign(state, { a: 100, b: 200 })  // ✅ 可以整体替换，响应式保留
+        Object.assign(state, { a: 100, b: 200 })  // ✅ 更新已有代理上的属性，未列出的属性会保留
 
         // 不能赋值替换：state = { a: 100, b: 200 }  // ❌ 响应式丢失
         ```
@@ -670,18 +670,18 @@
 
     // 数组可以直接赋值，Vue 会自动处理。
     apiData.list = 新数组
-    // 对象最好不要整体替换，用Object.assign 或 手动更新属性 或 赋值给reactive包裹的新对象
-    Object.assign(apiData.pagination, 新对象) // 或：apiData.pagination = reactive(新对象) // 真实业务一般只会更新total，因此也可以直接apiData.pagination.total = 新值
+    // 对象属性也可以直接替换。若其他代码持有原 pagination 引用，则用 Object.assign 原地更新。
+    apiData.pagination = 新对象
     ```
 1. 不能解构：
 
     >只是不能直接解构，不是不能使用，①可以通过特殊函数包裹后的解构使用（`toRefs`、`pinia`的`storeToRefs`），②也可以不解构直接`.属性`使用。
 
     1. `reactive()`返回的对象、`setup(props)`的`props`、`vue-router`的`useRoute()`返回的对象：需要用`toRefs()`才能解构
-    2. `pinia`的store：需要用`pinia`的`storeToRefs`才能解构
-    3. `ref`的`.value`手动解包后不是响应式对象：一般直接`.value`去操作，不会进行解构（除非`const object = { id: ref(1) }`需要`const {id} = object`解构为顶级属性）
+    2. Pinia 的 state 和 getter 用 `storeToRefs(store)` 保持响应性，action 可以直接从 store 解构
+    3. 普通 `ref` 中的对象可通过 `.value` 取得响应式代理。直接解构它的基本类型属性只会取出当时的值
 
-    - 支持解构：`toRefs()`、`pinia`的`storeToRefs()`、`defineProps()`、`defineModel()`
+    - 支持解构：`toRefs()`、Pinia 的 `storeToRefs()`。Vue 3.5+ 在同一 `<script setup>` 中直接从 `defineProps()` 解构的变量也保留响应性。`defineModel()` 的数组解构用于取得模型 ref 和修饰符。[Vue `<script setup>`](https://vuejs.org/api/sfc-script-setup.html#reactive-props-destructure)
 1. `toRefs`、`toRef`创建的 ref 与其源属性保持同步：改变源属性的值将更新 ref 的值，反之亦然。
 
     ```js
@@ -691,7 +691,7 @@
     })
 
     // 双向 ref，会与源属性同步
-    const fooRef = toRef(state, 'foo')    // 不同于：const fooRef = ref(state.foo)，tate.foo是一个纯数值
+    const fooRef = toRef(state, 'foo')    // 不同于：const fooRef = ref(state.foo)，state.foo是一个纯数值
 
     // 更改该 ref 会更新源属性
     fooRef.value++
@@ -786,7 +786,7 @@
               // 注意：`newValue` 此处和 `oldValue` 是相等的
               // 因为它们是同一个对象！
 
-              // 如果修改someObject对象，这个监听器会失效，再也无法触发
+              // 替换 state.someObject 后，此监听器仍侦听旧对象，新对象的变化不会触发它
             })
 
             watch(
@@ -807,7 +807,7 @@
               { deep: true }
             )
             ```
-        - `deep`选项还可以是一个数字，表示最大遍历深度——即 Vue 应该遍历对象嵌套属性的级数。
+        - Vue 3.5+ 的 `deep` 选项还可以是一个数字，表示最大遍历深度——即 Vue 应该遍历对象嵌套属性的级数。
 
             >深度侦听需要遍历被侦听对象中的所有嵌套的属性，当用于大型数据结构时，开销很大。因此请只在必要时才使用它，并且要留意性能。
         - `immediate`、`once`、`flush: 'pre'（默认）或'post'或'sync'`
@@ -827,7 +827,7 @@
 
         当侦听器失效并准备重新运行时会被调用：
 
-        1. `onWatcherCleanup`
+        1. `onWatcherCleanup`（Vue 3.5+）
 
             必须在`watchEffect`效果函数或`watch`回调函数的同步执行期间调用：不能在异步函数的 await 语句之后调用它。
         2. onCleanup 函数还作为`watch`回调函数的第三个参数，以及`watchEffect`作用函数的第一个参数：
@@ -896,10 +896,13 @@
 
     emit('注册事件名2', 参数1, 参数2, ) // 必须先注册事件再使用
 
-    // 在<template>中还是可以使用$emit（不能在`<script setup>`使用），但是已经被标记为已弃用
+    // 在模板中可以直接使用 $emit，在 <script setup> 中调用 defineEmits 返回的函数。
 
 
-    // 可传对象，进行校验（就算校验失败，也会触发事件并传参）
+    ```
+
+    ```js
+    // 或者使用对象形式声明并校验事件（就算校验失败，也会触发事件并传参）
     const emit2 = defineEmits({
       // 没有校验
       click: null,
@@ -1206,7 +1209,7 @@
         1. 属性修改
 
             1. 若是数组则可以直接赋值`proxy.属性 = 新数组`
-            1. 若是对象则要`Object.assign(proxy.属性, 新对象)`或`proxy.属性 = reactive(新对象)`
+            1. 若是对象也可以直接赋值 `proxy.属性 = 新对象`，要保留原对象引用时用 `Object.assign(proxy.属性, 新对象)`
         1. 不能直接解构（需进行`toRefs()`才能解构）
 4. 使用 TypeScript 定义 Props 和 Emits
 
@@ -4668,7 +4671,7 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
         ```
     4. 可以在插件中使用 `store.$subscribe` 和 `store.$onAction`
 
-- 每个 store 都是`reactive`包装对象（因此不能直接解构，要用`storeToRefs`解构，被`storeToRefs`解构后需要`.value`解包或自动解包），所以可以自动解包任何它所包含的 Ref（`ref()`、`computed()`、等）
+- 每个 store 都是`reactive`包装对象（state 和 getter 用 `storeToRefs` 解构后按 ref 读取，action 可以直接解构），所以可以自动解包任何它所包含的 Ref（`ref()`、`computed()`、等）
 
     ```vue
     // 组件已自动解包

@@ -1,9 +1,10 @@
 # 低代码
 
 ## 目录
-1. [](#)
+1. [低代码引擎](#低代码引擎)
 
 ---
-<https://github.com/alibaba/lowcode-engine>
+### 低代码引擎
+以 [LowCodeEngine](https://github.com/alibaba/lowcode-engine) 为例，搭建者在设计器中选择组件、配置属性和事件，保存的是页面描述（schema）。渲染器读取这份描述，找到对应组件，生成实际页面。
 
-todo
+自定义组件和业务逻辑仍由开发者维护。升级组件时，应检查旧页面保存的属性和事件绑定能否继续使用。

@@ -2736,22 +2736,24 @@ export default function Demo(props: { show: boolean }) {
 
 ### *原生JS*判断是否有循环引用
 ```js
-function hasCircularReference(obj, weakmap = new WeakMap()) {
+// 检查可枚举自有字符串键构成的引用路径。
+function hasCircularReference(obj, ancestors = new WeakSet()) {
   // 基本数据类型
   if (obj === null || (typeof obj !== "object" && typeof obj !== "function")) {
     return false;
   }
 
-  if (weakmap.has(obj)) {
+  if (ancestors.has(obj)) {
     return true;
   } else {
-    weakmap.set(obj, true);
+    ancestors.add(obj);
 
     for (const key of Object.keys(obj)) {
-      if (hasCircularReference(obj[key], weakmap)) {
+      if (hasCircularReference(obj[key], ancestors)) {
         return true;
       }
     }
+    ancestors.delete(obj); // 兄弟属性可以共享同一个对象
     return false;
   }
 }

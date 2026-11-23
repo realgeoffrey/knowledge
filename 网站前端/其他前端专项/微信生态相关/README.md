@@ -36,7 +36,7 @@
 
 - 字段概念
 
-    >来自：[小程序登录](https://developers.weixin.qq.com/minigame/dev/guide/open-ability/login.html)。
+    >来自：[小程序登录](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/login.html)。
 
     1. AppID
 
@@ -50,9 +50,9 @@
     2. OpenID
 
         用户唯一标识，一个用户id（uid）针对某个AppID生成的唯一且不变化的id
-    3. session_key（或openkey、access_token）
+    3. session_key（小程序会话密钥）
 
-        会话密钥，每次登录会变化且一定时间会过期无效。与OpenID一起确定某个用户id的登录态
+        小程序调用 `wx.login` 获得临时 code，服务端用它换取 OpenID 和 session_key，再向客户端签发业务自己的登录凭证。调用微信服务端 API 所用的 access_token 是另一种凭证。
 
         >后台获得并保存。涉及签名校验以及数据加解密，因此不要把它发还给前端。
 

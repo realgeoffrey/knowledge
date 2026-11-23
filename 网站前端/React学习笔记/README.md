@@ -133,7 +133,7 @@
             `某prop`
     3. `{...某对象}`展开元素
 
-        很容易将不必要的props传递给不相关的组件，或者将无效的HTML属性传递给DOM。需要谨慎的使用该语法，如：`const {children, xx, otherProps} = props; return <组件名 {...otherProps} />`。
+        很容易将不必要的props传递给不相关的组件，或者将无效的HTML属性传递给DOM。需要谨慎的使用该语法，如：`const {children, xx, ...otherProps} = props; return <组件名 {...otherProps} />`。
 
         >e.g. `<组件名 {...某对象} />`、`<组件名 {...{ key: value, }} />`
     4. 包含在开始和结束标签之间的表达式内容将作为特定属性：`props.children`
@@ -329,7 +329,7 @@
 
     1. Props不能被修改（只读）。
     2. 组件只能显性接受传入的Props内容（在外层传`style`、`className`等，需要在组件内接受并处理）。
-    3. 组件需要以`default`方式导出。
+    3. 组件支持默认导出和具名导出，导入方式要与导出方式对应。
 3. State
 
     State是私有的，并且完全受控于当前组件，其父、子组件均不可见。
@@ -357,7 +357,7 @@
 
         // 结果：初始化的State为`{value1: 1, value2: 2}`
         ```
-    2. 不要~~直接修改State~~，仅用`setState`（或`forceUpdate`）修改
+    2. 初始化后用 `setState` 更新状态。`forceUpdate()` 只请求重新渲染。
     3. 调用`setState`之后的代码，**大部分**情况下（react18的concurrent模式是必然）是异步更新到最新的State值（取不到期望的最新值）
 
         >同一周期内会对多个`setState`进行批处理，浅合并。
@@ -449,9 +449,9 @@
             </details>
     4. `setState`设置相同的值：
 
-        根据`shouldComponentUpdate`返回的值决定是否更新真实DOM（是否触发`render`）。
+        `shouldComponentUpdate` 可以跳过本次重新渲染。执行了 `render` 之后，React 会根据输出差异决定是否修改 DOM。
 
-        >1. `React.Component`的`shouldComponentUpdate`默认返回`true`：总会更新DOM。
+        >1. `React.Component`的`shouldComponentUpdate`默认按 `true` 处理，会重新渲染。
         >2. `React.PureComponent`的`shouldComponentUpdate`默认实现（修改实现会Warning提示）：浅比较`props`和`state`，若相同则返回`false`不更新，若不相同则返回`true`更新。
     5. 若父组件重新渲染，则会导致所有子组件也重新渲染，但子组件可以根据`shouldComponentUpdate`（class组件）或`React.memo`（函数组件）来跳过（相同props的）重新渲染。
     6. 属性值改变的策略
@@ -598,9 +598,9 @@
             因为JSX的灵活，只要是能够`切换或条件判断`的都需要考虑`key`。包括：`Array`方法、数组、条件判断（`switch-case`、`if`）等。
         2. `ref`
 
-            >`ref`不是Props（经过React特殊处理），无法传递给子节点。
+            >React 18 及以前会特殊处理 `ref`，普通函数组件的 props 无法直接取得它。React 19 起，函数组件可将 `ref` 作为 prop 接收并转发。
 
-            >不能在函数组件上使用`ref`属性，因为他们没有实例。e.g. ~~`<函数组件 ref={React.createRef()} />`~~。
+            >函数组件没有类实例，通常将收到的 `ref` 传给内部 DOM 节点，或用 `useImperativeHandle` 暴露方法。
 
             1. 由`React.createRef()`创建，`.current`获取DOM或子组件实例。
 
@@ -609,7 +609,7 @@
                 1. 本组件内使用，获取DOM。
                 2. 可以从父级传递`React.createRef()`实例到子组件：
 
-                    >不能在函数组件中传入`ref`（因为函数组件没有实例）。
+                    >React 18 及以前的函数组件要接收 `ref`，可使用 `forwardRef`，如下例。
 
                     1. 引用子组件`ref=React.createRef()`，父组件获取子组件（不是子组件内部节点）。
                     2. 引用子组件`参数=React.createRef()`，父组件获得子组件内部节点的`ref`。
@@ -953,7 +953,7 @@
 
     1. `style`
 
-        `style={[ 对象1, 判断 ? 对象2 : ''或null或undefined ]}`，空不能用`{}`。
+        React DOM 的 `style` 接受样式对象，例如 `style={{ ...基础样式, ...(选中 ? 高亮样式 : {}) }}`。
 
         1. `style`在React应用中多用于在渲染过程中添加**动态计算**的样式。
 
@@ -992,7 +992,7 @@
 
         React应用中，元素绑定的事件并不是原生事件，而是React合成的事件（如：onClick是由click合成，onChange是由blur、change、focus等多个事件合成），它符合与底层DOM事件相同的标准，但修复了一些浏览器不一致性。
 
-        1. 参数只能同步使用，异步不保存。
+        1. React DOM 16 及以前会复用事件，异步读取时需先保存用到的值或调用 `e.persist()`。React DOM 17 起移除了事件池。
         2. 阻止默认行为、阻止冒泡，必须显式调用：`e.preventDefault()`、`e.stopPropagation()`。
         3. 触发流程：dom原生捕获事件 -> dom原生冒泡事件 -> document（render的根元素）react捕获事件、react冒泡事件 -> document（render的根元素）原生冒泡事件
 
@@ -1025,9 +1025,9 @@
 
             1. 减少内存消耗，提升性能，不需要注册那么多的事件，一种事件类型只在document（render的根元素）上注册一次。方便事件统一管理和事务机制。
             2. 统一规范，进行浏览器兼容，实现更好的跨平台
-            3. 避免垃圾回收
+            3. 减少旧版 React DOM 中的事件对象分配（16 及以前）
 
-                事件对象可能会被频繁创建和回收，因此React引入事件池，在事件池中获取或释放事件对象。即React事件对象不会被释放掉，而是存放进一个数组中，当事件触发，就从这个数组中弹出，避免频繁地去创建和销毁(垃圾回收) 。
+                事件对象可能会被频繁创建和回收，因此旧版 React DOM 引入事件池，在事件池中获取或释放事件对象。即React事件对象不会被释放掉，而是存放进一个数组中，当事件触发，就从这个数组中弹出，避免频繁地去创建和销毁(垃圾回收) 。
         </details>
     - debounce/throttle事件处理
 
@@ -1978,7 +1978,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     function useState(initialState){
       // 如果有老值取老值,没有取默认值
-      hookStates[hookIndex] = hookStates[hookIndex] || initialState;
+      if (!(hookIndex in hookStates)) hookStates[hookIndex] = initialState;
       // 暂存索引
       let currentIndex = hookIndex;
       function setState(newState){
@@ -2073,7 +2073,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     2. `修改变量的方法名`（返回空）
 
         1. 可传入：新值 或 函数（`(旧值) => 新值`）
-        2. 若`修改变量的方法名`的返回值和当前的值完全相同，则不会产生渲染、effect不会执行、也不会运行整个函数组件（子组件也跳过）。
+        2. 若新状态与当前值相同，React 通常跳过本次更新；有时仍会调用组件函数再跳过子组件。
 
             >使用`Object.is`进行浅比较。
         3. 与`this.setState`不同点：不会把新的state和旧的state进行合并，而是用新的state整个替换旧的state。
@@ -2084,7 +2084,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     `const [变量名, 修改变量的方法名] = useReducer(reducer函数, 初始值或传入初始函数的值[, 初始函数])`
 
-    1. 若`修改变量的方法名`的返回值和当前的值完全相同，则不会产生渲染、effect不会执行、也不会运行整个函数组件（子组件也跳过）。
+    1. 若 reducer 返回的状态与当前值相同，React 通常跳过本次更新；有时仍会调用组件函数再跳过子组件。
 
         >使用`Object.is`进行浅比较。
 
@@ -2141,16 +2141,16 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
       return () => {
        /* 清除副作用逻辑 */
       }
-    }[, 依赖项数组])
+    }, [/* 用到的响应式依赖 */])
     ```
 
-    1. React会在每次渲染**完成后**调用副作用函数，包括第一次渲染时。
+    1. 首次挂载后会执行 Effect。省略依赖数组时，后续每次提交也会执行。
 
-        虽然useEffect会在浏览器绘制后延迟执行，但会保证在任何新的渲染前执行。
+        非交互更新时，浏览器通常先绘制页面。点击等交互触发更新时，Effect 也可能在绘制前执行。[React `useEffect`](https://react.dev/reference/react/useEffect#caveats)
 
         >e.g. 第一次渲染展示`useRef`某个值，若在`useEffect`里修改这个值（`useRef`值修改不触发重新渲染），则在没有其他触发重新渲染的情况下，页面会继续展示旧的`useRef`值，尽管此时这个值已经更新，需要触发重新渲染才能把新值上屏。
-    2. return的清除方法，会在下一次effect触发之前调用，也会在组件卸载前调用。
-    3. `依赖项`，仅当依赖项内的值都变化才触发执行。
+    2. return的清除方法，会在依赖变化后、下一次 Effect 执行前清理旧的副作用，组件卸载时也会执行清理。
+    3. `依赖项`，数组中任意一项与上次不同，都会重新执行 Effect。
 
         >依赖项数组的每一项进行浅比较`Object.is`判断是否变化（数组顺序和长度不能变化）。
 
@@ -2159,7 +2159,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
             >变量一般是其他hook方法产生的变量，也可以是任意变量。
         2. 若想执行只运行一次的effect（仅在组件挂载和卸载时执行），可以传递一个空数组（`[]`）作为第二个参数。
 
-            >这就告诉React你的effect不依赖于props或state中的任何值，所以它永远都不需要重复执行。
+            >在根节点启用严格模式时，开发环境会额外执行一次「建立 → 清理 → 建立」，以便检验清理逻辑。
 
             此时，effect内部的`props`和`state`就会一直保持其初始值。
 
@@ -2173,7 +2173,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     4. 可以把引用的函数放到effect内部，方便确认使用了哪些props和state。
     5. 使用`async-await`
 
-        >`useEffect`应该返回一个方法（有其特别的意义：清除方法）。async方法返回的是Promise实例。
+        >Effect 可以返回清理函数，也可以省略返回值。`async` 函数会返回 Promise，因此把异步操作写在 Effect 内部。
 
         ```jsx
         // 不可以
@@ -2182,12 +2182,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
         // 可以
         useEffect(() => {
           async function func1 () {}
-          func()
-
-          const func2 = async function () {}
-          func2()
-
-          (async function(){}())
+          func1()
         },)
         ```
 
@@ -2198,13 +2193,13 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 >
 >    1. 首次渲染：
 >
->        函数组件执行 -> React渲染 -> DOM修改 -> useEffect执行 -> 浏览器渲染
+>        React 提交 DOM 更新后执行 Effect，与浏览器绘制的相对顺序见上文。
 >    2. 非首次渲染：
 >
->        函数组件执行 -> React渲染 -> DOM修改 -> 浏览器渲染 -> 上一个useEffect清除执行（使用上次useState产生值） -> useEffect执行
+>        需要重新执行时：提交 DOM 更新 -> 使用旧依赖执行清理 -> 使用新依赖执行 Effect
 >    3. 卸载组件：
 >
->        函数组件执行 -> React渲染 -> DOM修改 -> 浏览器渲染 -> 上一个useEffect清除执行（使用上次useState产生值）
+>        执行最后一次 Effect 留下的清理函数。
 >
 >2. `useLayoutEffect`
 >
@@ -2233,7 +2228,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
         1. `useEffect`
 
-            DOM更新完、浏览器渲染完毕之后，**异步**调用useEffect函数。
+            提交 DOM 更新后执行，通常允许浏览器先绘制。
         2. `useLayoutEffect`
 
             DOM变更之后**同步**执行useLayoutEffect函数，阻塞浏览器渲染（useLayoutEffect执行完毕之后线程才会去执行浏览器绘制）。
@@ -2396,7 +2391,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
         >e.g. `const ref = useRef()`
 
-        1. `useRef`创建`ref`后将保持其永远返回同一个对象，因此不能把`ref`作为依赖项。
+        1. `useRef` 在同一组件实例中返回稳定对象，依赖数组可以省略这个本地 `ref`。通过 props 接收的 `ref` 可能被替换，使用时应列入依赖。
         2. `ref.current`改变不会触发重新渲染，就算放在依赖项里面也不会因为值变化而触发重新渲染；但是，若放在依赖项里，则其他情况触发本组件重新渲染后，判断 本次和上次ref.current是否同一个值，若不是同一个值则触发方法体执行（但方法体内的ref.current永远是最新值）。
 
         ```js
@@ -2572,7 +2567,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
         ```
         </details>
 
-    >函数组件可以直接返回`useMemo(() => (组件内容), [依赖项])`，这样仅依赖项变化才会重新渲染整个组件。
+    >`useMemo(() => (组件内容), [依赖项])` 可以复用同一个 JSX 节点，组件函数本身仍可能重新执行。
 
 >`useMemo(() => fn, deps)`相当于`useCallback(fn, deps)`，均返回`fn`。
 

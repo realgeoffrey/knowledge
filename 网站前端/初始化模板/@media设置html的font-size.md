@@ -1,188 +1,189 @@
+WAP和PC是两套独立示例，按页面选用。
+
 ```css
 /* WAP端媒体查询（320px~640px），单行最大width:32rem */
-@media (max-width: 351px) {
-  html {font-size: 10px;}
-}
-@media (min-width: 352px) and (max-width: 383px) {
+html {font-size: 10px;}
+@media (min-width: 352px) {
   html {font-size: 11px;}
 }
-@media (min-width: 384px) and (max-width: 415px) {
+@media (min-width: 384px) {
   html {font-size: 12px;}
 }
-@media (min-width: 416px) and (max-width: 447px) {
+@media (min-width: 416px) {
   html {font-size: 13px;}
 }
-@media (min-width: 448px) and (max-width: 479px) {
+@media (min-width: 448px) {
   html {font-size: 14px;}
 }
-@media (min-width: 480px) and (max-width: 511px) {
+@media (min-width: 480px) {
   html {font-size: 15px;}
 }
-@media (min-width: 512px) and (max-width: 543px) {
+@media (min-width: 512px) {
   html {font-size: 16px;}
 }
-@media (min-width: 544px) and (max-width: 575px) {
+@media (min-width: 544px) {
   html {font-size: 17px;}
 }
-@media (min-width: 576px) and (max-width: 607px) {
+@media (min-width: 576px) {
   html {font-size: 18px;}
 }
-@media (min-width: 608px) and (max-width: 639px) {
+@media (min-width: 608px) {
   html {font-size: 19px;}
 }
 @media (min-width: 640px) {
   html {font-size: 20px;}
 }
 /* /WAP端媒体查询 */
+```
+
+```css
 /* PC端媒体查询（960px~2560px），单行最大width:32rem */
-@media (max-width: 991px) {
-  html {font-size: 30px;}
-}
-@media (min-width: 992px) and (max-width: 1023px) {
+html {font-size: 30px;}
+@media (min-width: 992px) {
   html {font-size: 31px;}
 }
-@media (min-width: 1024px) and (max-width: 1055px) {
+@media (min-width: 1024px) {
   html {font-size: 32px;}
 }
-@media (min-width: 1056px) and (max-width: 1087px) {
+@media (min-width: 1056px) {
   html {font-size: 33px;}
 }
-@media (min-width: 1088px) and (max-width: 1119px) {
+@media (min-width: 1088px) {
   html {font-size: 34px;}
 }
-@media (min-width: 1120px) and (max-width: 1151px) {
+@media (min-width: 1120px) {
   html {font-size: 35px;}
 }
-@media (min-width: 1152px) and (max-width: 1183px) {
+@media (min-width: 1152px) {
   html {font-size: 36px;}
 }
-@media (min-width: 1184px) and (max-width: 1215px) {
+@media (min-width: 1184px) {
   html {font-size: 37px;}
 }
-@media (min-width: 1216px) and (max-width: 1247px) {
+@media (min-width: 1216px) {
   html {font-size: 38px;}
 }
-@media (min-width: 1248px) and (max-width: 1279px) {
+@media (min-width: 1248px) {
   html {font-size: 39px;}
 }
-@media (min-width: 1280px) and (max-width: 1311px) {
+@media (min-width: 1280px) {
   html {font-size: 40px;}
 }
-@media (min-width: 1312px) and (max-width: 1343px) {
+@media (min-width: 1312px) {
   html {font-size: 41px;}
 }
-@media (min-width: 1344px) and (max-width: 1375px) {
+@media (min-width: 1344px) {
   html {font-size: 42px;}
 }
-@media (min-width: 1376px) and (max-width: 1407px) {
+@media (min-width: 1376px) {
   html {font-size: 43px;}
 }
-@media (min-width: 1408px) and (max-width: 1439px) {
+@media (min-width: 1408px) {
   html {font-size: 44px;}
 }
-@media (min-width: 1440px) and (max-width: 1471px) {
+@media (min-width: 1440px) {
   html {font-size: 45px;}
 }
-@media (min-width: 1472px) and (max-width: 1503px) {
+@media (min-width: 1472px) {
   html {font-size: 46px;}
 }
-@media (min-width: 1504px) and (max-width: 1535px) {
+@media (min-width: 1504px) {
   html {font-size: 47px;}
 }
-@media (min-width: 1536px) and (max-width: 1567px) {
+@media (min-width: 1536px) {
   html {font-size: 48px;}
 }
-@media (min-width: 1568px) and (max-width: 1599px) {
+@media (min-width: 1568px) {
   html {font-size: 49px;}
 }
-@media (min-width: 1600px) and (max-width: 1631px) {
+@media (min-width: 1600px) {
   html {font-size: 50px;}
 }
-@media (min-width: 1632px) and (max-width: 1663px) {
+@media (min-width: 1632px) {
   html {font-size: 51px;}
 }
-@media (min-width: 1664px) and (max-width: 1695px) {
+@media (min-width: 1664px) {
   html {font-size: 52px;}
 }
-@media (min-width: 1696px) and (max-width: 1727px) {
+@media (min-width: 1696px) {
   html {font-size: 53px;}
 }
-@media (min-width: 1728px) and (max-width: 1759px) {
+@media (min-width: 1728px) {
   html {font-size: 54px;}
 }
-@media (min-width: 1760px) and (max-width: 1791px) {
+@media (min-width: 1760px) {
   html {font-size: 55px;}
 }
-@media (min-width: 1792px) and (max-width: 1823px) {
+@media (min-width: 1792px) {
   html {font-size: 56px;}
 }
-@media (min-width: 1824px) and (max-width: 1855px) {
+@media (min-width: 1824px) {
   html {font-size: 57px;}
 }
-@media (min-width: 1856px) and (max-width: 1887px) {
+@media (min-width: 1856px) {
   html {font-size: 58px;}
 }
-@media (min-width: 1888px) and (max-width: 1919px) {
+@media (min-width: 1888px) {
   html {font-size: 59px;}
 }
-@media (min-width: 1920px) and (max-width: 1951px) {
+@media (min-width: 1920px) {
   html {font-size: 60px;}
 }
-@media (min-width: 1952px) and (max-width: 1983px) {
+@media (min-width: 1952px) {
   html {font-size: 61px;}
 }
-@media (min-width: 1984px) and (max-width: 2015px) {
+@media (min-width: 1984px) {
   html {font-size: 62px;}
 }
-@media (min-width: 2016px) and (max-width: 2047px) {
+@media (min-width: 2016px) {
   html {font-size: 63px;}
 }
-@media (min-width: 2048px) and (max-width: 2079px) {
+@media (min-width: 2048px) {
   html {font-size: 64px;}
 }
-@media (min-width: 2080px) and (max-width: 2111px) {
+@media (min-width: 2080px) {
   html {font-size: 65px;}
 }
-@media (min-width: 2112px) and (max-width: 2143px) {
+@media (min-width: 2112px) {
   html {font-size: 66px;}
 }
-@media (min-width: 2144px) and (max-width: 2175px) {
+@media (min-width: 2144px) {
   html {font-size: 67px;}
 }
-@media (min-width: 2176px) and (max-width: 2207px) {
+@media (min-width: 2176px) {
   html {font-size: 68px;}
 }
-@media (min-width: 2208px) and (max-width: 2239px) {
+@media (min-width: 2208px) {
   html {font-size: 69px;}
 }
-@media (min-width: 2240px) and (max-width: 2271px) {
+@media (min-width: 2240px) {
   html {font-size: 70px;}
 }
-@media (min-width: 2272px) and (max-width: 2303px) {
+@media (min-width: 2272px) {
   html {font-size: 71px;}
 }
-@media (min-width: 2304px) and (max-width: 2335px) {
+@media (min-width: 2304px) {
   html {font-size: 72px;}
 }
-@media (min-width: 2336px) and (max-width: 2367px) {
+@media (min-width: 2336px) {
   html {font-size: 73px;}
 }
-@media (min-width: 2368px) and (max-width: 2399px) {
+@media (min-width: 2368px) {
   html {font-size: 74px;}
 }
-@media (min-width: 2400px) and (max-width: 2431px) {
+@media (min-width: 2400px) {
   html {font-size: 75px;}
 }
-@media (min-width: 2432px) and (max-width: 2463px) {
+@media (min-width: 2432px) {
   html {font-size: 76px;}
 }
-@media (min-width: 2464px) and (max-width: 2495px) {
+@media (min-width: 2464px) {
   html {font-size: 77px;}
 }
-@media (min-width: 2496px) and (max-width: 2527px) {
+@media (min-width: 2496px) {
   html {font-size: 78px;}
 }
-@media (min-width: 2528px) and (max-width: 2559px) {
+@media (min-width: 2528px) {
   html {font-size: 79px;}
 }
 @media (min-width: 2560px) {
@@ -191,4 +192,4 @@
 /* /PC端媒体查询 */
 ```
 
->可以使用vm/vh方案完全替代。
+>每档从标出的宽度起生效。例如WAP端在351.5px时仍用10px，从352px起用11px。需要随视口宽度连续缩放时可用`vw`。

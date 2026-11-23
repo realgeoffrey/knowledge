@@ -25,7 +25,7 @@
     3. 模块的加载逻辑：
 
         1. 模块加载的顺序：按照其在代码中出现的顺序、引用则嵌套加载。
-        2. 注入`exports`、`require`、`module`三个全局变量。
+        2. 模块包装函数提供局部变量 `exports`、`require`、`module`、`__filename`、`__dirname`。
         3. 执行模块的源码：
 
             1. `require`第一次加载某模块，执行整个脚本，在内存生成一个缓存对象：
@@ -72,7 +72,7 @@
         2. 内存中a模块的属性可以被任何模块（a模块或其他模块）修改
 
             注意：修改 `导出的模块内` 值引用的部分不会修改导出的值。导出模块时出现的`引用:`或`赋值=`，就都遵循JS的[值传递](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存机制)。
-        3. 导出过之后，再次修改`module.exports = 其他`不影响a模块的缓存（原来缓存是基本数据类型或基本数据类型都不影响）。
+        3. 重新赋值 `module.exports` 后，先前的调用者仍持有原值，之后的 `require` 会从缓存的模块对象读取新的导出值。
 
         ><details>
         ><summary>e.g.</summary>
@@ -111,8 +111,8 @@
 
         1. 所有要输出的对象统统挂载在`module.exports`上，然后暴露给外界。
         2. 通过`require`加载别的模块，`require`的返回值就是模块暴露的对象。
-    6. `this`指向`export.modules`（若`export.modules = xx`，则`this`指向之前的引用地址，此时不再等于xx）
-    7. 不能`require`ES6 Module的文件（.mjs）或代码（ES6 Module的语法）。
+    6. 模块顶层的 `this` 指向最初的 `module.exports` 对象。重新赋值 `module.exports` 后，顶层 `this` 仍指向原对象。
+    7. Node.js 20.19 和 22.12 起对应版本线默认支持用 `require()` 加载同步 ES 模块。模块或其传递依赖含顶层 `await` 时，使用 `import()`。如果顶层加载形成跨 CommonJS 和 ES 模块的即时循环，Node.js 会抛出 `ERR_REQUIRE_CYCLE_MODULE`。可将环中的 `require()` 延迟到模块初始化之后调用。[Node.js 模块加载](https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require) · [循环加载错误](https://nodejs.org/api/errors.html#err_require_cycle_module)
 1. `module.exports`
 
     模块提供使用的`exports`值。
@@ -335,9 +335,9 @@
 ### ES6 Module
 >参考：[阮一峰：Module 的语法](http://es6.ruanyifeng.com/#docs/module)、[阮一峰：Module 的加载实现](http://es6.ruanyifeng.com/#docs/module-loader)。
 
-一个模块就是一个独立的文件。
+模块可以来自独立文件，也可以写在浏览器的 `<script type="module">` 中。
 
->`.js`、`.mjs`文件、`<script>`遵循相同模块规则。
+>Node.js 将 `.mjs` 识别为 ES 模块。浏览器通过模块脚本或模块导入来加载它们，响应需使用 JavaScript MIME 类型。
 
 - 概述（可对比CommonJS）
 
@@ -371,7 +371,7 @@
         >不推荐`window.属性`。
     3. 模块的加载逻辑：
 
-        1. 预编译阶段确定模块加载顺序（最底层被依赖的模块——最后一个被`import`的模块，最先执行），代码运行时按照确定的顺序一次性执行整个模块代码。
+        1. 静态导入在求值前链接。对于没有环和顶层 `await` 的模块图，按源码中的导入顺序深度优先遍历依赖，先执行依赖模块，再执行引用它的模块。
 
             >感官上：遇到`import`时，不会跳去执行其他模块（模块执行顺序已经在预编译阶段确定），而是直接利用其他模块的引用。
         2. 一个模块仅能执行一次，无论被多少模块引入。模块引用只是获得其他模块的引用地址。
@@ -401,15 +401,15 @@
                 >
                 >// b模块
                 >... // ①
-                >import 'a模块'; // a模块未执行，导出为空
+                >import 'a模块'; // a模块尚未执行，导出绑定已建立
                 >... // ②
                 >```
                 ></details>
-            2. 「循环加载」的最先被执行模块无法获取其他模块的`import`值（除了`function`的提升），仅尝试声明。
+            2. 循环依赖中，导入绑定已建立，读取时的结果取决于对应导出的初始化状态。
 
                 1. 若`import`module实例，则module实例被声明。
-                2. 若`import`内容为`var`，则变量被声明，但未赋值。
-                3. 若`import`内容为`let/const`，则变量未声明。
+                2. 若`import`内容为`var`，则初始化为 `undefined`，执行赋值语句后才有新值。
+                3. 若`import`内容为`let/const`，则绑定在声明执行前处于暂时性死区，读取会抛出 `ReferenceError`。
                 4. 若`import`内容为`function`，则方法被声明，可以使用（后加载的模块内方法声明会提升至先加载模块中使用）。
 
                     <details>
@@ -417,7 +417,7 @@
 
                     ```js
                     // a.mjs
-                    import { bar } from './b'  // ①
+                    import { bar } from './b.mjs'  // ①
                     console.log('a.mjs')
                     console.log(bar())
                     function foo1 () { return 'foo1' }  // 方法在执行①前就提升，从而有定义
@@ -426,7 +426,7 @@
 
 
                     // b.mjs
-                    import { foo1, foo2 } from './a'
+                    import { foo1, foo2 } from './a.mjs'
                     console.log('b.mjs')
                     console.log(foo1())
                     try {console.log(foo2())} catch (e) {console.log(e)}
@@ -442,21 +442,19 @@
                     bar
                     ```
                     </details>
-                >1. 非「循环加载」的模块和「循环加载」第二个之后的模块，都能先获得`import`值（类似提升，还获得了引用值）。
+                >1. 循环中任何模块都有可能在另一个模块完成初始化前读取其导出。
                 >2. JS不关心是否发生了「循环加载」，只生成一个指向被加载模块的引用，引用那个被导出的变量。
-        4. （除了「循环加载」的第一个模块之外，）模块可以提升使用`import`内容（类似变量提升，且可获得引用值）。
+        4. 模块内可以在静态 `import` 声明之前使用导入绑定，读取时仍受初始化顺序约束。
     4. `import`内容与原模块导出的变量是**动态绑定**
 
         1. `import`导入的内容不能赋值（类似于`const`）。
         2. 导入/导出的内容 的属性可以被任何模块（自己或其他模块）修改。
-        3. 导出/导入的接口名与原模块内部变量间，建立了一一对应的关系。使用接口就是**引用**原模块的变量（`default`被看做是对象）。
-
-            注意：修改 `导出的模块内` 值引用的部分不会修改导出的值。导出模块都是导出变量，要注意变量`引用:`或`赋值=`时需要遵循JS的[值传递](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#内存机制)。
+        3. 命名导入绑定到导出模块的变量。导出方给变量重新赋值后，导入方再次读取时会看到新值。
 
             >`import { a } from '模块'`可以理解为：`'模块'`是一个固定对象，`a`是这个对象的属性名，且属性名不能赋值（但可以修改`a`内部属性）。
         4. 导出过之后，再次修改导出的变量会改变导出值。
 
-            `default`当做是一个导出变量，因此`let obj = [];export default obj/* 值引用：obj的值传递给default */; obj = {};`并不能改变`default`导出的内容。
+            `export default obj` 在执行时求出表达式的值，随后重新赋值 `obj` 不会改变该默认导出；`export { obj as default }` 则直接导出 `obj` 的绑定。
 
         ><details>
         ><summary>e.g.</summary>
@@ -503,12 +501,12 @@
 
             `import A from ''`、`import * as A from ''`、`import { A, B } from ''`、`import { A as a, B } from ''`
     6. `this`指向`undefined`
-    7. 可以整体`import`CommonJS的文件（.js且CommonJS语法）。
+    7. Node.js 的 ES 模块可以导入 CommonJS 模块。
 
         1. 支持：`import 外号变量 from '模块'`（等价支持`import {default as 外号变量} from '模块'`）、`import * as Module实例 from '模块'`、`import '模块'`
-        2. 不支持：`import {导出的变量[, 导出的变量]} from '模块'`
+        2. Node.js 可通过静态分析识别部分具名导出。需要可靠读取 CommonJS 导出内容时，使用默认导入取得 `module.exports`。[Node.js 模块互操作说明](https://nodejs.org/api/esm.html#interoperability-with-commonjs)
 
-    >（CORS）跨域的模块资源无法`import`引入，也无法通过`<script>`以模块方式加载。
+    >浏览器使用 CORS 获取跨源模块。资源服务器返回允许当前源的 CORS 响应头时，`import` 和 `<script type="module">` 都可以加载该模块。
 
 1. `export`
 
@@ -657,7 +655,7 @@
     1. CommonJS
 
         ```js
-        const module = require('module')
+        const mod = require('module')
         const { namedExport } = require('module')
 
         exports.xxx = xxx;
@@ -676,7 +674,7 @@
 
     1. CommonJS
 
-        `require`是对导出内容（`module.exports`）的浅拷贝。
+        `require` 返回当时的 `module.exports` 值。导出对象时，调用者取得同一对象的引用。
     2. ES6 Module
 
         `import`是对导出变量的引用。
@@ -689,7 +687,7 @@
             `require`是**运行时**执行，会在模块代码执行到`require`语句时加载下一个模块，若下个模块有缓存则返回缓存、若没有缓存则立即执行下一个模块中的代码（一个模块被执行过但没有执行完毕，也会缓存该模块供其他模块引用）。因此能够在任何位置使用`module.exports`和`require`（包括块级作用域）。
         2. ES6 Module
 
-            `import`是**编译时**执行，在编译阶段，解析器会检查和处理`import`语句，并在编译阶段确定模块的依赖关系，模块必须完全执行完毕才会执行下一个模块（有一个独立的静态解析阶段，依赖关系的分析是在那个阶段完成的，最底层的模块第一个执行）。因此**只能在代码顶层使用`import`和`export`**。
+            静态 `import` 声明和 `export` 声明只能出现在模块顶层。模块求值前先链接依赖，动态 `import()` 则可以在运行时按条件调用。
 
             >利用ES6 Module的静态解析的webpack功能：tree shaking、scope hoisting。
     2. 同步、异步区别
@@ -699,7 +697,7 @@
             `require`是同步执行（本地文件索引；后面的代码必须等待这个命令执行完，才会执行）。
         2. ES6 Module
 
-            `import`在浏览器是异步执行（URL索引），循环引用时提升依赖项。
+            浏览器异步获取模块文件，再按依赖关系执行模块。动态 `import()` 返回 Promise。
     3. 循环引用逻辑不同
 
         详情看上面各自的循环引用逻辑（搜索`「循环加载」（circular dependency）`）。
@@ -707,10 +705,10 @@
 
     1. CommonJS
 
-        `this`指向`export.modules`；不能`require`ES6 Module的文件或代码。
+        模块顶层的 `this` 指向初始的 `module.exports`。在支持 `require(esm)` 的 Node.js 版本中，同步加载要求依赖图中没有顶层 `await`，且加载时没有跨 CommonJS 和 ES 模块的即时循环。
     2. ES6 Module
 
-        `this`指向`undefined`；可以整体`import`CommonJS的文件；严格模式下运行。
+        模块顶层的 `this` 是 `undefined`，模块在严格模式下运行。Node.js 支持通过默认导入取得 CommonJS 的 `module.exports`。
 5. 环境兼容
 
     1. CommonJS

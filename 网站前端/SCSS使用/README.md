@@ -139,7 +139,7 @@
         ```
 5. 继承`@extend`
 
-    查找所有满足`@extend`后的**选择器**的内容，把此选择器替换成使用继承的选择器。
+    `@extend .clearfix` 会扩展已有规则的选择器，让 `.name` 也匹配 `.clearfix` 的样式。例如下例会生成 `.clearfix, .name` 和 `.clearfix:after, .name:after`。
 
     1. 正常情况
 
@@ -176,7 +176,7 @@
     ```
 7. 算术`+` `-` `*` `/`
 
-    >Sass 中把 `/` 当除法已废弃，新代码用 `math.div()`；`/`更多保留给 CSS 原生斜杠语法。以下为旧写法理解。
+    >Sass 中把 `/` 当除法已废弃，新代码先用 `@use "sass:math"` 引入模块，再用 `math.div(20px, 2)`；`/`更多保留给 CSS 原生斜杠语法。以下为旧写法理解。
 
     ```scss
     @function func() {
@@ -196,7 +196,7 @@
     // 不出现在.css
     /* 出现在.css */
     ```
-    >有中文注释时，要在.scss文件顶部增加`@charset "utf-8";`，否则编译报错。
+    >Dart Sass 按 UTF-8 读取源文件，中文注释只需保存为 UTF-8。[Sass 源文件编码](https://sass-lang.com/documentation/syntax/parsing/#input-encoding)
 9. 方法`@function`
 
     ```scss

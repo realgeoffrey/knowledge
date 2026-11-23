@@ -82,7 +82,7 @@
           "ext": "js,json,ts"
         }
         ```
-3. 现代 Chrome DevTools 与 Node.js 已支持通过`--inspect`进行调试连接和更新
+3. 启动 `npm run dev:pm2` 或 `npm run dev:nodemon` 后，在 Chrome 打开 `chrome://inspect`，点击 `Open dedicated DevTools for Node`。保存文件后由 pm2 或 nodemon 重启进程，专用 DevTools 可重新连接同一调试端口。
 
     1. ~~安装Chrome插件[NIM](https://github.com/june07/NIM)（Visual Studio Code默认支持）~~
 

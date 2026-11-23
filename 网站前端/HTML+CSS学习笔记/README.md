@@ -1128,7 +1128,7 @@
         >CSS4。
     5. `all: inherit/initial/unset/revert`
 
-        将该元素所有属性（除了 ~~`unicode-bidi`~~、~~`direction`~~）重置为：`inherit/initial/unset/revert`。
+        将该元素所有属性（除了`unicode-bidi`、`direction`和`--`开头的自定义属性）重置为：`inherit/initial/unset/revert`。
 
 ### CSS盒模型
 1. 每个元素都被表示为一个矩形的盒子，盒子有四个边：
@@ -1155,8 +1155,8 @@
 1. W3C定义：在CSS中，两个或多个毗邻（父子元素或兄弟元素）的普通流中的块元素**垂直方向**上的margin会发生叠加。这种方式形成的外边距即可称为外边距叠加（collapsed margin）。
 
     1. 毗邻：是指没有被**非空内容**、**padding**、**border**或**clear**分隔开。
-    2. 普通流：除了`float: left/right`、`positon: absolute/fixed`之外的内容，父级是`flex`的节点不是普通流。
-2. 产生独立的BFC结构可避免margin合并。
+    2. 普通流：除了`float: left/right`、`position: absolute/fixed`之外的内容；flex子项参与弹性布局，其外边距不合并。
+2. 容器建立独立的BFC后，其外边距与子元素的外边距不合并；同一BFC内相邻块的外边距仍可能合并。
 
 >ie6、7触发[haslayout](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/兼容至ie6/README.md#haslayout)会影响margin合并的发生。
 
@@ -1166,7 +1166,7 @@
 
     <summary>W3C定义</summary>
 
-    1. 浮动元素、绝对定位元素、非块级盒子的块级容器（如：`inline-blocks`、`table-cells`、`table-captions`）、`overflow`值不为「visiable」的块级盒子，都会为它们的内容创建新的块级格式化上下文。
+    1. 浮动元素、绝对定位元素、非块级盒子的块级容器（如：`inline-blocks`、`table-cells`、`table-captions`）、`overflow`计算值为`hidden`、`auto`或`scroll`的块级盒子，都会为它们的内容创建新的块级格式化上下文。
     2. 在一个块级格式化上下文里，盒子从包含块的顶端开始垂直地一个接一个地排列，两个盒子之间的垂直的间隙是由它们的margin 值所决定的。两个相邻的块级盒子的垂直外边距会发生叠加。
     3. 在块级格式化上下文中，每一个盒子的左外边缘（margin-left）会触碰到容器的左边缘（border-left）（对于从右到左的格式来说，则触碰到右边缘），即使存在浮动也是如此，除非这个盒子创建一个新的块级格式化上下文。
     </details>
@@ -1176,7 +1176,7 @@
 
     1. `float: left / right;`
     2. `overflow: hidden / auto / scroll;`
-    3. `display: inline-block / table-cell / table-caption / flex / inline-flex;`
+    3. `display: flow-root / inline-block / table-cell / table-caption;`（`flex`和`inline-flex`建立弹性格式化上下文）
     4. `position: absolute / fixed;`
 
 >ie6、7不支持BFC，但是有[haslayout](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/兼容至ie6/README.md#haslayout)。
@@ -1352,13 +1352,12 @@
     字符的间距。
 
 ### CSS的小数、百分比
-1. 浏览器会把小数以及百分比换算成整数的单位（px）
+1. 浏览器布局支持小数CSS像素；绘制边界和读取DOM尺寸时要区分单位与精度。
 
-    1. 四舍五入：Firefox、ie8+。
-    2. 直接向下取整：Chrome、Safari、ie7。
+    1. `getBoundingClientRect().width`可返回小数，`offsetWidth`返回整数CSS像素。
+    2. 绘制边界可能对齐到设备像素，结果与设备像素比和缩放有关。
 
-    >RN（客户端）可以用小数点的数值，不会~~取整~~（以具体机型的具体样式为准）。
-2. 多个子节点浮动的总宽度接近100%会表现成100%
+2. 多个浮动子节点的百分比宽度近似合计100%时，边缘可能有细小误差
 
     <details>
     <summary>设置百分比宽度时，用百分比小数点后<strong>六位</strong>的四舍五入值可以兼容大多数浏览器</summary>

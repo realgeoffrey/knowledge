@@ -27,7 +27,7 @@
 
             1. PV、UV、访问时段、访问时长
 
-                - SPA需要处理监听`hashchange`（hash）或`popstate`（history）事件
+                - SPA 可在路由切换成功后统计 PV。自行监听时，片段变化可用 `hashchange`，历史记录前进、后退可用 `popstate`；主动调用 `pushState`、`replaceState` 本身不会触发这两个事件，需在实际切页处记录并去重。
             2. 设备、浏览器语言、浏览器、活跃时间段、页面版本号等的用户特征（多维度）
 
                 - 数据隐私和安全：信息脱敏（合规），通信安全。
@@ -47,7 +47,7 @@
 
             1. JS代码运行错误
 
-                - 兜底上报（浏览器的window监听`error`，`unhandledrejection`，Node.js的`process.on('uncaughtException', err => {})`、`process.on('unhandledRejection', err => {})`）
+                - 浏览器在 window 上监听 `error` 和 `unhandledrejection`。Node.js 若只想记录致命异常，可监听 `uncaughtExceptionMonitor`，保留进程默认的退出行为。
                 - React的错误边界
                 - 异步错误（异步代码内`try-catch`）
             2. 静态资源加载错误
@@ -66,7 +66,7 @@
 
             监控页面加载的静态资源的 加载时间、成功与否、资源大小、类型等信息，以便进行性能分析和优化。
 
-            >[`performance.getEntriesByType("resource")`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/getEntriesByType)获得所有静态资源的`PerformanceResourceTiming`实例，根据每个`PerformanceResourceTiming`实例属性判断 各种绝对时间、加载成功/加载失败、资源大小、类型 等信息。
+            >[`performance.getEntriesByType("resource")`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/getEntriesByType) 返回缓冲区内已有的资源计时条目，时间相对于 `performance.timeOrigin`。跨源资源的部分字段受 `Timing-Allow-Origin` 限制；判断资源能否使用还应结合元素的 `load`、`error` 或请求结果。
     2. 实现细节
 
         1. 上报方式：[`XMLHttpRequest`、`fetch`、`navigator.sendBeacon`、`<img src>`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#浏览器发起网络请求方式)

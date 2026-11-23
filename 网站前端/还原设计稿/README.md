@@ -78,7 +78,7 @@
 
     （约定）360dp总宽，保证资源（图片）有`1x图`、`1.5x图`、`2x图`、`3x图`、`4x图`。利用约束布局（flex布局）。
 
->设备根据分辨率情况，去选择对应的N倍图，若取不到则自动降级取低倍图。
+>系统按显示密度选择对应的倍图。例如Android在缺少对应密度的图片时，会选用最匹配的资源并缩放，可能选到更高倍图。见[Android屏幕密度适配](https://developer.android.com/training/multiscreen/screendensities)。
 
 - 设备无关的逻辑像素，能够像素级还原设计稿
 
@@ -86,7 +86,7 @@
 
         默认配置规定屏幕总宽为750rpx。
 
-        >rpx（responsive pixel，响应单位）是微信小程序独有的、解决屏幕自适应的尺寸单位，可以根据屏幕宽度进行自适应，不论大小屏幕，规定屏幕宽为750rpx（类似CSS的100vw）。
+        >rpx（responsive pixel，响应单位）是微信小程序中用于屏幕自适应的尺寸单位，可以根据屏幕宽度进行自适应，不论大小屏幕，规定屏幕宽为750rpx（类似CSS的100vw）。
     2. iOS、Android、React Native、Hippy、Flutter（可利用[flutter_screenutil](https://github.com/OpenFlutter/flutter_screenutil)）
 
         按设计稿和设备视口比例进行换算，如：`设计稿中某长度 * 设备视口宽度 / 设计稿总宽`、等。

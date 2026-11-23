@@ -43,7 +43,7 @@
 
 ### PC端
 >1. 遵循[devtools-protocol](https://github.com/chromedevtools/devtools-protocol)协议的应用都拥有打开Chrome的[DevTools](https://developers.google.com/web/tools/chrome-devtools/)进行调试的能力。
->2. 遵循[JavaScriptCore](https://developer.apple.com/documentation/javascriptcore)协议的应用都拥有打开Safari的`开发`进行调试的能力。
+>2. Safari 的「开发」菜单可检查应用开放调试的 `WKWebView` 或 JavaScriptCore 的 `JSContext`。[WebKit 检查机制](https://webkit.org/blog/13936/enabling-the-inspection-of-web-content-in-apps/)
 
 1. Sources断点（`debugger`、配合SourceMap，通过Call Stack查看调用栈）。
 2. Elements，右键标签可以Break On：子节点修改、attribute修改、Node移除。
@@ -188,13 +188,13 @@
 1. 使用页面模拟调试，如：[eruda](https://github.com/liriliri/eruda)、[vConsole](https://github.com/Tencent/vConsole)。
 2. 针对**已开启调试功能的APP**连接对应的调试工具：
 
-    >最佳方式：连接上电脑后借助 Chrome的DevTools（遵循devtools-protocol） 或 Safari的`开发`（遵循JavaScriptCore）。
+    >连接电脑后，Android WebView 用 Chrome DevTools，iOS 的 WKWebView 用 Safari 的「开发」菜单。
 
     1. Android
 
         PC端的Chrome的Remote devices（`<chrome://inspect/#devices>`）可以调试**Android已开启调试功能的APP**的WebView。
 
-        >Remote devices需要能够访问google，否则首次打开inspect页面会404。会自动联网更新相关SDK：控制台界面修复（低端机原本乱码，更新后会正常显示）、渲染器升级（低端机一开始不支持的CSS特性，更新后会支持）。
+        >远程调试连接的是设备上实际运行的 WebView。打开桌面 DevTools 不会更新设备的渲染引擎，排查 CSS 兼容性时应核对设备端 WebView 版本。[Chrome 远程调试文档](https://developer.chrome.com/docs/devtools/remote-debugging/webviews)
 
         - Android已开启调试功能的APP：
 

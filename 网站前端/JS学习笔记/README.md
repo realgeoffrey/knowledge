@@ -1011,6 +1011,8 @@ new new F().func(); // => 1  === new (new F()).func();
 1. JS自动完成内存分配、[回收](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#垃圾回收)。
 2. [变量](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#js数据类型)在内存中的存储
 
+    下文用栈、堆示意值复制与对象共享。ECMAScript 规定可观察的行为，实际存储位置和优化策略由引擎决定。
+
     1. 栈内存（stack）：
 
         >先进后出，寄存速度快，栈数据可共享，系统自动分配，数据固定不灵活，空间大小有限制，超出则栈溢出。
@@ -1108,18 +1110,16 @@ new new F().func(); // => 1  === new (new F()).func();
     </details>
 
 ### 内存泄漏
-> 内存泄露：计算机内存逐渐丢失。当某个程序总是无法释放内存时，出现内存泄露。
+> 内存泄漏指程序已不再需要的数据仍被保留，长期占用内存。
 
-- 不是内存泄漏，只是不会被垃圾回收：
+- 常见的引用来源。对象是否可回收，取决于从垃圾回收根是否仍能到达它：
 
     1. 全局变量不会被垃圾回收：合理创建全局变量，[严格模式（`"use strict"`）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#严格模式)可以避免意外创建全局变量。
-    2. 被闭包引用的变量不会被垃圾回收：合理使用闭包。
+    2. 可达的闭包可能保留其引用的数据，及时释放不再需要的回调。
     3. 被遗忘的定时器或事件监听的回调函数：不使用时及时清除。
-    4. `console`打印的`对象`，不会被垃圾回收：生产环境去除`console`日志。
+    4. 开发者工具可能为展开查看而保留输出的对象，排查泄漏时需考虑这类引用。
 
-1. DOM清空或删除时事件绑定未清除，引起的内存泄漏：删除DOM前，先移除事件绑定。
-
-    浏览器已优化，原生的事件可以不关注解绑，第三方库的自定义事件要关注解绑。
+1. 删除 DOM 节点后，如果只有节点和其监听器相互引用，两者仍可回收。如果回调注册在长生命周期的 `window` 或 `document` 上并持有已删除节点，应在销毁时解绑。
 
     >jQuery的`empty`和`remove`会移除元素内部的一切，包括绑定的事件及与该元素相关的jQuery数据（data、promise等所有数据）；`detach`则保留所有jQuery数据。
 2. <details>
@@ -1184,7 +1184,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
 >不考虑原型链。
 
-4. `Proxy`
+4. `Proxy` 可以拦截对象操作。代理与目标共享底层数据，创建代理本身不会生成深拷贝。
 
 ### 数据类型转换
 >参考：[阮一峰：数据类型转换](http://javascript.ruanyifeng.com/grammar/conversion.html)、[ecma-262等于比较](https://262.ecma-international.org/#sec-islooselyequal)。
@@ -1405,16 +1405,16 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     2. 结果：
 
         1. 程序在执行时必须排队，且一个程序不能中断另一个程序的执行。
-        2. 没有任何代码是立即执行的，但一旦进程空闲则尽快执行。
+        2. 当前调用栈内的同步代码立即执行，排队的任务须等待调度。
     3. 弥补单线程计算量太大、事件耗时太久影响浏览器体验：
 
-        1. 新增**Web Worker**标准，但不能~~操作DOM~~，完全受主线程控制。
+        1. **Web Worker** 在独立线程中执行脚本，可与主线程交换消息，无法直接访问页面 DOM。
 
             >1. Worker与主线程通信，都通过`postMessage`（或`MessageChannel`）传递信息、通过监听`message`事件接受信息，信息通过[结构化克隆算法](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)（一种深复制）复制后传递。
-            >2. 在浏览器tab没有被激活时（inactive），定时器间隔的最小值会提升、进程执行会变慢。用`Web Worker`不会受浏览器是否激活的影响。
-        2. 多个异步线程分别处理：**网络请求**、**定时器**、**读写文件**、**I/O设备事件**、**页面渲染**等。
+            >2. 在浏览器tab没有被激活时（inactive），定时器间隔的最小值会提升、进程执行会变慢。Worker 也可能随页面生命周期被挂起，不能保证后台执行频率。
+        2. 浏览器负责协调网络、定时器、I/O 和页面渲染；其中一些工作可在主线程之外进行。
 
-            >DOM的变动（尤其是涉及页面重新渲染的部分），通常不会立即执行，而是每16毫秒执行一次。
+            >DOM 属性修改立即生效。浏览器通常在后续渲染机会统一更新画面，频率取决于显示器和页面状态。
 2. 任务类型
 
     1. 同步任务（synchronous）：
@@ -1422,9 +1422,9 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         在主线程上排队执行的任务。
     2. 异步任务（asynchronous）：
 
-        1. 先挂起到（对应种类的）工作线程等待结果，主线程不会因此阻塞；有结果后，发起通知进入（对应种类的）「任务队列」（task queue）；「执行栈」（execution context stack）为空后会读取并执行「任务队列」的通知对应的回调函数。
+        1. 异步操作让调用方先继续执行。结果就绪后，宿主按相应 API 的规则调度任务或微任务来运行回调。
 
-            >相同类型的异步工作线程是串行工作；不同类型的异步工作线程互不影响执行。
+            >异步 API 的实现可以使用线程、系统 I/O 或事件通知；任务类型和工作线程没有一一对应关系。
         2. 异步任务分为两种类型：
 
             1. macrotask（task，宏任务）一般包括:
@@ -1441,7 +1441,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
                 1. `Promise`（`Promise.prototype.then/catch/finally(回调)`的回调）
 
-                    `new Promise(回调)`的回调、`Promise.all/race/any/allSettled([回调])`的回调、`Promise.resolve/reject()`，都是同步任务。
+                    `new Promise(executor)` 会同步调用 executor。组合方法接受可迭代对象及其中的值或 Promise，不会调用数组里的普通函数。已落定 Promise 的 `.then()` 回调仍在微任务中执行。
                 2. `async-await`（只有`await`是异步）
 
                     >生成器（generators）是中断-恢复同步运行-中断，不是异步任务。
@@ -1526,9 +1526,9 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     3. 浏览器渲染相关的异步任务
 
-        1. 渲染前执行
+        1. 渲染更新期间
 
-            `requestAnimationFrame` -> `IntersectionObserver`
+            浏览器执行 `requestAnimationFrame` 回调并计算交叉状态。若状态变化，`IntersectionObserver` 的回调由单独的任务异步通知。
         2. 渲染后若还有空闲时间：
 
             `requestIdleCallback`
@@ -1537,14 +1537,14 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     1. 「执行栈」进行：
 
         1. 所有同步任务都在主线程上执行，形成一个「执行栈」，串行执行直到「执行栈」为空（只有前一个任务执行完毕，才能执行后一个任务）。
-        2. 主线程之外，还存在「任务队列」。「执行栈」遇到异步任务则把其挂起到异步线程，只要异步线程有了运行结果，就在「任务队列」之中放置通知。
+        2. 每个事件循环可以有多个任务队列，例如定时器和用户交互可来自不同任务源。
     2. 一旦「执行栈」中的所有同步任务执行完毕，系统就会（按照macrotask、microtask的事件循环运行机制）读取「任务队列」，把**一个**通知对应的回调函数加入执行栈。跳回步骤1（「执行栈」又有内容可以执行）。
 
         - macrotask、microtask的事件循环运行机制：
 
             1. 检查macrotask队列：
 
-                1. 选择最早加入的任务X，设置为「目前运行的任务」并进入「执行栈」；若macrotask队列为空，则跳到第4步；
+                1. 浏览器从有可运行任务的队列中选择一个，取该队列中最早可运行的任务 X。若没有可运行任务，则跳到第4步；
 
                     >最初时刻：「执行栈」为空，`<script>`作为第一个macrotask被运行。
                 2. 「执行栈」运行任务X（运行对应的回调函数）；
@@ -1559,7 +1559,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                 5. 跳出microtask队列、进行：检查macrotask队列 或 浏览器渲染。
             3. 浏览器渲染（根据屏幕刷新率、浏览器performance策略，如：每16.6ms才会触发一次）。
 
-            >macrotask和microtast选择：若想让一个任务立即执行，则把它设置为microtask，除此之外都用macrotask。因为虽然JS是异步非阻塞，但在一个事件循环中，microtask的执行方式基本上是用同步的。
+            >当前同步代码先运行。微任务检查点会持续处理新加入的微任务，直到队列为空；连续追加微任务可能推迟绘制和用户输入。
 
     ![事件循环图](./images/event-loop-1.png)
 4. 由于异步函数是立刻返回，异步事务中发生的错误是无法通过外层的：`try-catch`、`Promise`、`async-await`来捕捉（但可以捕获`await`的`reject`）。
@@ -1637,21 +1637,21 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     >[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
 
-    1. 浏览器重绘之前，进行一次：发起通知进入「任务队列」，等待「执行栈」调用。
+    1. 浏览器在更新渲染的过程中、下一次绘制前执行回调。
 
-        大部分浏览器是1秒钟60帧，也就是16.67ms进行一帧重绘。
+        60 Hz 屏幕的刷新间隔约为 16.67 ms，实际回调频率会随刷新率、页面可见性和主线程负载变化。
     2. 替代执行时机无法保证的`setTimeout`、`setInterval`进行动画操作，提升渲染性能：
 
         1. 把每一帧中的所有DOM操作集中起来，在一次重绘或重排中完成动画，且时间间隔紧随浏览器的刷新频率。
-        2. 仅仅绘制用户可见的动画。这意味着没把CPU或电池寿命浪费在绘制处于背景标签，最小化窗口，或页面隐藏区域的动画上。
-        3. 当浏览器准备好绘制时（空闲时），才绘制一帧，此时没有等待中的帧。意味着其绘制动画不可能出现多个排队的回调函数，或阻塞浏览器。因此动画更平滑，CPU和电池使用被进一步优化。
+        2. 浏览器通常会暂停后台标签页的动画帧回调。前台页面中，元素位于视口外并不会自动取消回调。
+        3. 同一帧可以执行多个动画帧回调。回调运行在主线程上，耗时过长会推迟绘制。
 
 - 空闲函数（`requestIdleCallback`、`cancelIdleCallback`）
 
     在浏览器空闲时期依次调用函数。
 
-    >1. 只有当前帧的运行时间小于16.66ms时，回调函数才会执行。否则，就推迟到下一帧，若下一帧也没有空闲时间，则推迟到下下一帧，以此类推。
-    >2. 第二个参数表示指定的毫秒数。若在指定的这段时间之内，每一帧都没有空闲时间，那么回调函数将会强制执行。
+    >1. 浏览器在预估有空闲时间时调度回调，可用参数 `deadline.timeRemaining()` 查询剩余时间。
+    >2. 第二个参数是可选的配置对象，如 `{ timeout: 1000 }`。超时后会排队执行回调，主线程繁忙时仍可能推迟。
 
 ---
 ## 功能归纳
@@ -2332,7 +2332,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         3. 主窗口可以读取子窗口的`window.name`值作为信息的传递。
 
 ### Web Storage && cookie && IndexedDB
->1. 因为HTTP请求都会携带cookie，因此cookie最好仅用于服务端判定状态。
+>1. 浏览器会在符合条件的 HTTP 请求中附带 cookie，常用于向服务端传递会话标识。
 >2. 浏览器数据存储方式：变量、cookie、Web Storage、IndexedDB、~~Web SQL~~、~~`<html>`的Manifest~~、Service Workers。
 
 1. Web Storage（`localStorage`、`sessionStorage`）
@@ -2347,7 +2347,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         同步。
 
-        1. 调用`localStorage`、`sessionStorage`对象会为每个源（每个tab）创建独立的`Storage`对象，每个对象都拥有：
+        1. `localStorage` 的存储区通常按源共享，`sessionStorage` 还按顶层浏览上下文（如标签页）隔离。两者都提供：
 
             `setItem`、`getItem`、`removeItem`、`clear`、`key`方法，`length`属性。没有~~索引功能~~。
         2. `window`的`storage`事件，会在其他tab的同源页面修改`localStorage`值时触发（增、删、改，`setItem`相同值时不触发）。
@@ -2365,13 +2365,13 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
             3. 应用场景：需要拆分成多个子页面分别存储的数据。
 2. cookie
 
-    1. 客户端保存（JS添加或响应头设置），始终在HTTP请求中携带（同源同路径，或父域名、父路径），明文传递，服务端接收、操作客户端cookie。
+    1. 客户端保存（JS 添加或响应头设置）。浏览器按域、路径、Secure、SameSite 等规则及请求的凭据模式决定是否发送，HTTPS 会加密传输。
 
         >1. cookie中的`domain`（默认：当前域名），可设置为父域名或当前域名，不能设置为其他域名（设置失效）。
-        >2. 当前域名可以访问`domain`为当前域名或父域名的cookie；浏览器发起HTTP请求时会向请求地址发送与请求域名相同或是其父域名的cookie。
+        >2. 省略 `Domain` 产生仅匹配当前主机的 cookie。显式指定合法的 `Domain` 时，匹配该域及其子域。
     2. 字符串形式：`名1=值1[; 名2=值2]`。不能包含任何`,`、`;`、` `（使用`encodeURIComponent/decodeURIComponent`处理属性名和属性值）。
     3. 所有浏览器都支持。
-    4. 单域名内，cookie保存的数据不超过4k，数量（最少）20个。
+    4. 单条 cookie 的大小通常限制在约 4 KiB，每域可保存的数量因浏览器而异。
 
         >发送http请求时携带的cookie太多可能会导致nginx等阻绝访问，如返回：`400 Bad Request - request header or cookie too large`。可以设置更大的服务端接受配置 或 减少请求携带的cookie。
     5. 原生的cookie接口不友好，需要自己[封装操作cookie](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/废弃代码/README.md#原生js操作cookie)。
@@ -2380,23 +2380,23 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         1. JS的`document.cookie`：
 
-            1. 新建或更新cookie（一条命令只能设置一条cookie）类似于服务端`Set-Cookie`响应头（一条命令可以设置多条cookie）：
+            1. 一次 `document.cookie` 赋值或一个 `Set-Cookie` 响应头设置一条 cookie；同一响应可包含多个 `Set-Cookie` 头。
 
-                `名=值[; expires=绝对时间（时间戳）][; max-age=相对时间（秒）][; domain=域名][; path=路径][; secure][; samesite=Strict或Lax或None][; priority=low或medium或high]`
+                `名=值[; expires=HTTP 日期字符串（GMT）][; max-age=相对时间（秒）][; domain=域名][; path=路径][; secure][; samesite=Strict或Lax或None][; priority=low或medium或high]`
 
                 >1. `Set-Cookie`可以额外设置`HttpOnly`属性；客户端的`document.cookie`不能修改、不能查看以及不能任何操作被设置为`HttpOnly`的cookie（获取不到值，也删除不了）。
                 >2. 标记为`Secure`的cookie只能通过被HTTPS协议加密过的请求发送给服务端。非安全站点（HTTP）不能在cookie中设置`secure`，若设置，则此条新建或更新cookie无效。
                 >3. `SameSite`是否应该限制在跨站点请求中发送。
                 >4. `priority`是Chrome的提案。
                 >5. 若设置cookie时不设置`expires`和`max-age`，则该cookie的过期时间是`session`或`会话`，表示：在当前的浏览器会话结束之后删除该cookie；若同时设置`expires`和`max-age`，则`max-age`优先级更高、优先生效；部分App会在App非激活状态或息屏状态下删除会话状态下的cookie；不同浏览器对cookie过期时间有不同上限，如：chrome上限400天。
-            2. 读取cookie等同于客户端`Cookie`请求头：
+            2. 读取当前文档可访问且非 `HttpOnly` 的 cookie：
 
                 展示所有cookie`名1=值1[; 名2=值2]`（无法查看其他信息）。
             3. cookie的`名称`、`domain`（默认当前完整域名）、`path`（默认当前路由的path）一同唯一确定一个cookie，因此删除cookie项，需要关注这3个属性。
-        2. 没有~~改变`cookie`的事件通知~~，只能轮询检测。
-    6. 同源同路径，或父域名、父路径 共享。
+        2. 支持 Cookie Store API 的安全上下文可用 `cookieStore.addEventListener("change", handler)` 监听可见 cookie 的更改。[Cookie Store 规范](https://cookiestore.spec.whatwg.org/)
+    6. 域和路径决定 cookie 的匹配范围。
 
-        >子域名可以访问（获取/修改/删除）主域名的cookie。e.g. `a.b.c.com`可以获取`a.b.c.com`、`b.c.com`、`c.com`的cookie，但无法获取`d.a.b.c.com`或`d.com`的cookie。
+        >例如，`a.b.c.com` 可在路径匹配时读取具有 `Domain=b.c.com` 且非 `HttpOnly` 的 cookie。由 `b.c.com` 设置且省略 `Domain` 的 cookie 则仅对 `b.c.com` 有效。
     7. 默认：关闭浏览器后失效（存储在内存）；设置失效时间则到期后失效（存储在硬盘）。
     8. 应用场景：服务端确定请求是否来自于同一个客户端（cookie的session_id与服务端session配合），以确认、保持用户状态。
 
@@ -2461,7 +2461,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     ```
 4. 处理代码中抛出的错误
 
-    >语法错误无法被各种方式捕获，e.g. `const a.c.`。
+    >脚本自身解析失败时，其中的 `try` 块不会执行。若是在已运行的代码中解析新输入（如 `JSON.parse`），抛出的 `SyntaxError` 可以捕获。
 
     1. `try-catch-finally`
 
@@ -2503,7 +2503,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     2. `window`的`error`事件
 
-        1. 没有经过`try-catch`处理的错误都会触发`window`的`error`事件。
+        1. 页面脚本未捕获的同步异常会触发 `window` 的 `error` 事件。未处理的 Promise 拒绝由 `unhandledrejection` 报告。
         2. 传参
 
             1. `window.onerror`方法会传入多个参数：`message`、`fileName`、`lineNumber`、`columnNumber`、`errorObject`。
@@ -2513,7 +2513,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
             1. `window.onerror`，若方法返回`true`，则浏览器不再显示错误信息。
             2. `window.addEventListener('error', (event) => {})`，若回调函数调用`event.preventDefault()`，则浏览器不再显示错误信息。
 
-        - 无法捕获：~~语法错误~~、~~接口异常~~。
+        - 提前注册在另一个脚本中的监听器可以收到后续经典脚本的语法错误。HTTP 错误状态需在请求处理逻辑中检查。
 
         >控制台输入的同步错误代码无法被`window`的`error`事件捕获，代码中、控制台输入的异步错误代码可以被捕获。
 
@@ -3662,14 +3662,14 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     1. 先按**捕获**顺序依次执行节点注册**捕获**的事件。
     2. 处于目标
 
-        1. 依据注册顺序执行事件处理程序，分为捕获、冒泡两种抵达类型。浏览器默认行为：冒泡抵达类型（在捕获、冒泡的事件处理程序执行之后才执行默认行为）。
+        1. 目标上先调用捕获监听器，再调用非捕获监听器；每组按注册顺序执行。
         2. 可设置不再冒泡（、不再捕获） 或 不执行浏览器默认行为。
         3. 建议仅在**需要在事件到达目标之前截获它的情况**才设置捕获的事件处理程序。
 
-        >DOM2规范要求：实际的目标不接收~~捕获~~事件，仅接收冒泡事件。但浏览器的实现却都让实际目标接收捕获和冒泡事件。
-    3. 再按**冒泡**顺序依次执行节点注册**冒泡**的事件。
+        >两组监听器在目标上读取的 `event.eventPhase` 都是 `Event.AT_TARGET`。[DOM 规范](https://dom.spec.whatwg.org/#concept-event-dispatch)
+    3. 若事件允许冒泡，再从父节点向外依次调用非捕获监听器。
 
-    >ie10-的DOM事件流只有冒泡，没有~~捕获~~。
+    >旧 IE 的 `attachEvent` 接口仅支持非捕获监听器。
 
 ### WAP端相关
 1. WAP端点透bug

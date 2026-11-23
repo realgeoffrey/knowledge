@@ -39,15 +39,14 @@
             优化产物缓存、优化构建缓存。预编译资源模块
     3. 构建缓存
 
-        >提升非首次构建速度。缓存位于：`/node_modules/.cache/`。
+        >webpack 5 的 `cache: { type: 'filesystem' }` 可跨进程复用构建结果，默认写入项目的 `node_modules/.cache/webpack`。
 
         1. loader缓存
 
             1. [babel-loader](https://github.com/babel/babel-loader)开启`cacheDirectory`缓存参数
-            2. webpack的`oneof`配置
         2. 压缩缓存
 
-            ~~[uglifyjs-webpack-plugin](https://github.com/webpack-contrib/uglifyjs-webpack-plugin)~~、[terser-webpack-plugin](https://github.com/webpack-contrib/terser-webpack-plugin)开启`cache`缓存参数（terser-webpack-plugin@5默认强制开启缓存）
+            旧版压缩插件有自己的 `cache` 选项。[terser-webpack-plugin v5](https://github.com/webpack-contrib/terser-webpack-plugin/releases/tag/v5.0.0) 起改为遵循 webpack 的 `cache` 配置。
         3. plugin缓存
 
             ~~[hard-source-webpack-plugin](https://github.com/mzgoddard/hard-source-webpack-plugin)~~（webpack5 已内置 filesystem cache，优先使用 webpack 自带缓存）
@@ -86,10 +85,10 @@
 
             1. [purgecss](https://github.com/FullHuman/purgecss) + [mini-css-extract-plugin](https://github.com/webpack-contrib/mini-css-extract-plugin)
 
-                >实现原理：通过[jsdom](https://github.com/jsdom/jsdom)加载、[postcss](https://github.com/postcss/postcss)解析所有样式表，通过`document.querySelector`筛选出HTML文件中未找到的选择器。
+                >实现原理：PurgeCSS 从配置的内容文件中提取候选名称，与 CSS 选择器匹配。运行时拼接的类名可能需要加入 `safelist`。
             2. [uncss](https://github.com/uncss/uncss)
 
-                >实现原理：遍历代码（对所有文件进行匹配），识别已用到的CSS class。
+                >实现原理：UnCSS 用 jsdom 加载页面、PostCSS 解析样式表，再通过 `document.querySelector` 检查选择器是否匹配页面。
     5. [动态加载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/webpack学习笔记/README.md#动态加载按需加载代码分割异步组件路由组件-懒加载)
     6. 动态polyfill
 
@@ -333,7 +332,7 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
         当Webpack构建项目时，它会根据代码分离**配置**将module分组为不同的块（①构建安装使用`@babel/plugin-syntax-dynamic-import`babel配置，②代码遇到`import()`或其他）。每个块都是一个独立的文件，可以被异步加载。
     2. 页面运行至**动态加载**部分时：
 
-        先尝试读取module缓存，若没有，则创建`<scrip>`加载chunk包（JSONP），chunk写入`window.webpackJsonp`并被webpack的module加载体系（`__webpack_require__`）引入执行。返回Promise实例。
+        以 webpack 4 的 Web 输出为例：先检查缓存，未命中时创建 `<script>` 加载 chunk（JSONP），chunk 写入 `window.webpackJsonp`并被webpack的module加载体系（`__webpack_require__`）引入执行。返回Promise实例。
 
         - 动态module的代码存放在`window.webpackJsonp`：
 
@@ -426,10 +425,9 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
     devServer: {
       hot: true,
     },
-    plugins: [
-      new webpack.HotModuleReplacementPlugin(), // 负责加载热更新清单和chunk，并更新替换模块缓存
-    ],
     ```
+
+    >webpack-dev-server v4 起默认开启 HMR，并自动应用 `HotModuleReplacementPlugin`。[webpack HMR 配置](https://webpack.js.org/configuration/dev-server/#devserverhot)
 2. 流程
 
     1. 服务启动（webpack-dev-server）：
@@ -528,12 +526,12 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 1. 使用
 
     1. ES6 Module的静态语法
-    2. plugin增加`new require('webpack/lib/optimize/ModuleConcatenationPlugin')()`
+    2. 生产模式默认开启。其他模式可配置 `optimization.concatenateModules: true`。
 
 #### 文件监听工作原理
-1. 定时的去获取**文件的最后编辑时间**，每次都存下最新的最后编辑时间，如果发现当前获取的和最后一次保存的最后编辑时间不一致，就认为该文件发生了变化。配置项中的`watchOptions.poll: 毫秒`用于控制定时检查的周期。
+1. 默认使用文件系统的变更通知。共享目录等环境收不到通知时，可设置 `watchOptions.poll: 毫秒` 按指定间隔轮询。
 
-    对于多个文件来说，会对列表中的每一个文件都定时的执行检查（默认情况下Webpack会从配置的Entry文件出发，递归解析出Entry文件所依赖的文件，把这些依赖的文件都加入到监听列表中去）。
+    webpack 从入口解析依赖，并监听构建所依赖的文件。
 2. 当发现某个文件发生了变化时，并不会立刻告诉监听者，而是先缓存起来，收集一段时间的变化后，再一次性告诉监听者。配置项中的`watchOptions.aggregateTimeout: 毫秒` 用于配置这个等待时间。因为我们在编辑代码的过程中可能会高频的输入文字导致文件变化的事件高频的发生，如果每次都重新执行构建就会让构建卡死。
 
 #### webpack-dev-server自动刷新原理
@@ -708,7 +706,7 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 >- 想自定义输出文件的位置和名称，配置`output`。
 >- 想自定义寻找依赖模块时的策略，配置`resolve`。
 >- 想自定义解析和转换文件的策略，配置`module`，通常是配置`module.rules`里的Loader。
->- 其它的大部分需求可能要通过Plugin去实现，配置`plugin`。
+>- 其它的大部分需求可能要通过Plugin去实现，配置`plugins`。
 
 <details>
 <summary><del>简单实践的配置</del></summary>
@@ -731,7 +729,7 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 
     1. `.rules`（数组，每一项是一个对象）
 
-        >rules数组执行有顺序之分，数组逆序链式执行。执行完毕一个loader之后，返回的内容再传入下一个loader进行执行。
+        >`rules` 可以命中多条规则；要让一组子规则只采用第一个匹配项，可使用 `oneOf`。同一条规则中 `use` 的执行顺序见下文。
 
         loader，接受源文件，返回转化后的module。处理webpack无法解析的文件。
 
@@ -741,13 +739,13 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
         2. `.use`：指定使用的loader、参数（字符串或数组）。
 
             >`use`执行有顺序之分，数组逆序链式执行。执行完毕一个loader之后，返回的内容再传入下一个loader进行执行。
-4. `plugin`：对编译完成后的module（loader处理之后）进行二度加工，增强webpack功能
+4. `plugins`：注册插件，在构建过程的各个阶段扩展 webpack 的行为
 
     >每个plugin都会绑定各种webpack生命周期钩子进行执行plugin内某些具体内容，用户一般不用关注各plugins之间执行顺序。
 
     用于bundle文件的优化、资源管理、环境变量注入。作用于整个构建过程。进行任何loader无法处理的事情。
 
-    1. 在构建结束后向项目代码中注入变量：`new webpack.DefinePlugin({键-值})`
+    1. 在编译时替换代码中的标识符，例如 `new webpack.DefinePlugin({ APP_NAME: JSON.stringify('demo') })`。
 
         若项目代码中要使用的Node.js的环境变量，建议都用此方式注入后再使用，而不要直接使用由webpack额外处理的Node.js环境变量。
 5. `mode`：使用相应环境的内置优化
@@ -762,9 +760,9 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
     [webpack-dev-server](https://github.com/webpack/webpack-dev-server)、webpack-hot-middleware、webpack-dev-middleware，可以写入内存中（而不是写入磁盘、看不见文件）编译并serve资源来提高性能。
 
     1. `static`（替代 ~~`contentBase`~~）
-    2. `hot`（添加`new webpack.HotModuleReplacementPlugin()`配合）：[热更新](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/webpack学习笔记/README.md#热更新hot-module-replacementhmr模块热替换)
+    2. `hot`（webpack-dev-server v4 起自动应用 HMR 插件）：[热更新](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/webpack学习笔记/README.md#热更新hot-module-replacementhmr模块热替换)
 
-        >利用websocket实现，websocket-server识别到html、css和js的改变，就向websocket-client发送一个消息，websocket-client判断若是html和css则操作dom，实现局部刷新，若是js则重载页面。
+        >客户端通过 WebSocket 收到更新通知。能否局部更新取决于模块或其父模块是否接受该更新；例如 JS 模块也可以通过 `module.hot.accept()` 接受更新。
 8. `resolve`
 
     1. `.alias`：定义路径的别名
@@ -797,7 +795,7 @@ Webpack的运行流程是一个串行的过程，从启动到结束会依次执�
             ```
     2. `.extensions`（数组）：能够使用户在引入module时不带扩展，自动查找数组中的后缀（若赋值则覆盖默认数组）
 
-- 可以导出数组，分别进行配置，串行执行多个webpack任务（如：前后端同构任务）
+- 可以导出配置数组，一次运行多个 webpack 任务（如前后端构建）。独立配置可并行编译，需要指定顺序时可用配置项 `dependencies`。
 
     ```js
     module.exports = [配置1, 配置2]
@@ -832,7 +830,7 @@ App级别的复杂应用（开发、打包）——webpack/Rspack 等。JS库级
 
     1. 存在开发和构建之间的不一致性
 
-        1. 开发环境中，利用现代浏览器已支持 ES Module 的 import 能力，遇到 import 就会发送 HTTP 请求去加载 ES Module 文件，整个过程中没有对文件进行打包编译。在开发环境使用 esbuild（Go）进行预构建（提高页面加载速度、将 CommonJS/UMD 转换为 ESM 格式）
+        1. 开发环境中，利用现代浏览器已支持 ES Module 的 import 能力，遇到 import 就会发送 HTTP 请求去加载 ES Module 文件，源码按需转换和提供，依赖可预构建。Vite 7 默认使用 esbuild，Vite 8 改用 Rolldown 进行依赖预构建（提高页面加载速度、将 CommonJS/UMD 转换为 ESM 格式）
 
             ><details>
             ><summary>Vite通过在一开始将应用中的模块区分为<strong>依赖</strong>和<strong>源码</strong>两类，改进了开发服务器启动时间。</summary>
@@ -841,7 +839,7 @@ App级别的复杂应用（开发、打包）——webpack/Rspack 等。JS库级
             >
             >    大多为在开发时不会变动的纯 JavaScript。一些较大的依赖（例如有上百个模块的组件库）处理的代价也很高。依赖也通常会存在多种模块化格式（例如 ESM 或者 CommonJS）。
             >
-            >    Vite将会使用`esbuild`预构建依赖。esbuild 使用 Go 编写，并且比以 JavaScript 编写的打包器预构建依赖快 10-100 倍。
+            >    预构建可将包含许多小模块的依赖合并，减少浏览器首次加载需要发送的请求。
             >
             >    利用HTTP头的`Cache-Control: max-age=31536000,immutable`进行强缓存。
             >2. 源码
@@ -854,7 +852,7 @@ App级别的复杂应用（开发、打包）——webpack/Rspack 等。JS库级
             ></details>
 
             快速的冷启动能力，提供了快速的开发体验。在开发阶段使用原生ES6 Module直接引入模块，而不需要像Webpack和Rollup一样进行打包，从而提供了更快的热重载和构建速度。
-        2. 生产环境中，使用 Rollup/Rolldown 体系打包（具体取决于 Vite 版本）
+        2. 生产环境中，Vite 7 默认使用 Rollup，Vite 8 改用 Rolldown 打包。[Vite 8 发布说明](https://vite.dev/blog/announcing-vite8)
 
             >1. 因为每个模块引用都需要 ES Module 网络请求，网络请求开销大，所以生产环境仍使用打包方式。
             >2. Vite 需要兼顾插件生态、产物优化和浏览器兼容性，不能只用 esbuild 的速度作为唯一目标。

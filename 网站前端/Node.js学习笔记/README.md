@@ -198,9 +198,9 @@ npm（Node Package Manager）。
             >3. 因为Two-Factor Authentication限制，不能使用手机Authenticator，可以选择保存在chrome的<chrome://settings/passkeys>中。
         5. 「下线」
 
-            >`npm unpublish [<@scope>/]<pkg>[@<version>]`只能下线24小时内发布的版本。
+            >npm 公共仓库允许新包在发布后 72 小时内撤回，前提是没有其他包依赖它。超过 72 小时，还须同时满足上周下载量少于 300 且只有一名维护者等条件。[npm 撤回政策](https://docs.npmjs.com/policies/unpublish/)
 
-            `npm deprecate <pkg>[@<version>] <message>`
+            `npm deprecate <pkg>[@<version>] "<message>"` 会在安装时提示弃用，原版本仍可下载。
         6. 打印登录名
 
             `npm whoami`
@@ -252,6 +252,8 @@ npm（Node Package Manager）。
             1. 安装方式
 
                 1. `npm install`安装所在目录的`package.json`文件描述内容
+
+                    >CI 中可用 [`npm ci`](https://docs.npmjs.com/cli/v11/commands/npm-ci/) 按已提交的锁文件干净安装。它会清理已有 `node_modules`，依赖声明与锁文件不一致时会报错。
 
                     1. 最新（主版本号最新，第一个数）：
 
@@ -733,7 +735,7 @@ npm（Node Package Manager）。
         `@scope/project-name`
 4. [`.npmrc`](https://docs.npmjs.com/cli/configuring-npm/npmrc)
 
-    npm的配置文件，或全局修改：`npm config set xxx=yyy`（`npm config get xxx`查看`.npmrc`->全局；`npm config get xxx -g`查看全局）。
+    `npm config set xxx=yyy` 默认写入用户配置。`--location=project` 写入项目配置，`--location=global` 写入全局配置。用 `npm config get xxx` 查看当前生效的值。
 
     >`npm config ls -l`查看所有已有配置和默认配置。
 
@@ -832,7 +834,7 @@ npm（Node Package Manager）。
 2. 解析后的代码，能够与操作系统进行交互。
 
     >代码 -> Node.js内置模块 -> V8（internalBinding） -> C/C++ -> 操作系统
-3. [libuv](https://github.com/libuv/libuv)负责Node.js的API的执行。将不同的任务分配给不同的线程，形成一个[Event Loop（事件循环）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Node.js学习笔记/README.md#nodejs的事件循环event-loop)，以异步的方式将任务的执行结果返回给V8引擎。
+3. [libuv](https://github.com/libuv/libuv)负责事件循环和异步 I/O。网络 I/O 通常依靠操作系统的就绪或完成通知，文件系统等部分操作使用线程池。主线程通过[Event Loop（事件循环）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Node.js学习笔记/README.md#nodejs的事件循环event-loop)处理相应的回调。
 4. V8引擎再将结果返回给应用程序。
 
 >JS本身的`throw-try-catch`异常处理机制并不会导致内存泄漏，也不会让程序的执行结果出乎意料，但Node.js并不是存粹的JS。Node.js里大量的API内部是由C/C++实现，因此Node.js程序的运行过程中，代码执行路径穿梭于JS引擎内部和外部，而JS的异常抛出机制可能会打断正常的代码执行流程，导致C/C++部分的代码表现异常，进而导致内存泄漏等问题。
@@ -912,10 +914,9 @@ over
 
 4. 微任务
 
-    **当前 JS 调用栈清空后、事件循环继续推进前，** Node.js 会优先处理`process.nextTick`队列，再处理 Promise 等微任务队列。
+    在普通事件循环回调返回后，Node.js 先清空 `process.nextTick` 队列，再处理 Promise 回调和 `queueMicrotask`。CommonJS 入口的顶层代码也遵循这个顺序。
 
-    1. `process.nextTick`优先级最高（最快执行的异步函数）
-    2. `Promise`
+    直接运行 ES 模块或通过 `import()` 加载时，模块顶层在微任务中执行，此时排入的 Promise 回调和 `queueMicrotask` 会先于 `process.nextTick` 执行。如果在 CommonJS 入口顶层用 `require()` 同步加载 ES 模块，则模块顶层排入的 `process.nextTick` 先执行。[Node.js 微任务顺序](https://nodejs.org/api/process.html#when-to-use-queuemicrotask-vs-processnexttick)
 
 ### 特性
 1. 单线程
@@ -989,8 +990,9 @@ over
     >    http
     >      .createServer((req, res) => {
     >        let body = "";
+    >        req.setEncoding("utf8"); // 保证跨数据块的多字节字符完整解码
     >        req.on("data", (chunk) => {
-    >          body += chunk.toString();
+    >          body += chunk;
     >        });
     >        req.on("end", () => {
     >          // 接受完成
@@ -1214,7 +1216,7 @@ over
     2. C/C++ addons with Node-API
     3. C++ embedder API
 
-- Experimental功能
+- 其他功能（稳定性以所用 Node.js 版本为准）
 
     1. `wasi`：实现WebAssembly系统接口规范
     2. `diagnostics_channel`：诊断通道
@@ -1222,7 +1224,7 @@ over
     4. `async_hooks`：异步钩子去跟踪异步资源
     5. `Corepack`：管理包管理器的版本的工具
     6. `require('crypto').webcrypto`：实现Web Crypto API规范
-    7. `require('stream').web`：网络流
+    7. `require('node:stream/web')`：Web Streams API
     8. `test`：测试
 
 - 弃用
@@ -1233,7 +1235,7 @@ over
 ### Node.js[全局变量](https://nodejs.org/api/globals.html)
 Node.js的全局对象`global`是所有全局变量的宿主。
 
-1. 仅在模块内有效
+1. CommonJS 模块内提供的变量
 
     1. `require`
     2. `exports`
@@ -1242,7 +1244,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     5. `__dirname`：当前正在执行的脚本所在文件夹的绝对路径。
 2. `process`：描述当前Node.js进程状态的对象，提供了一个与操作系统的简单接口。
 
-    1. `process.cwd()`：运行node命令时所在文件夹的绝对路径。
+    1. `process.cwd()`：进程当前工作目录的绝对路径，可由 `process.chdir()` 改变。
 3. `Buffer`：二进制数据流。
 
     >虽然`Buffer`在全局作用域内可用，但仍然建议通过`import/require`语句显式地引用它：`const { Buffer } = require('node:buffer')`。
@@ -1256,13 +1258,15 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     3. `URL`、`URLSearchParams`
     4. `Error`
 
-        >若在程序执行过程中引发了**未捕获的异常**或**未捕获的失败Promise实例**，则程序将崩溃。捕获未捕获的异常：
+        >默认情况下，未捕获的异常会导致进程以非零状态退出。需要在退出前同步记录异常时，可以监听 `uncaughtExceptionMonitor`，保留默认退出行为。未处理的 Promise 拒绝还受 `--unhandled-rejections` 配置影响。
         >
-        >1. 捕获未捕获的异常
+        >1. 将未捕获的异常同步追加到当前目录的日志文件
         >
         >    ```js
-        >    process.on('uncaughtException', err => {
-        >      // 执行逻辑
+        >    const { appendFileSync } = require('node:fs')
+        >    const { inspect } = require('node:util')
+        >    process.on('uncaughtExceptionMonitor', err => {
+        >      appendFileSync('fatal.log', inspect(err) + '\n')
         >    })
         >    ```
         >2. 捕获未捕获的失败Promise实例
@@ -1275,11 +1279,11 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     5. `debugger`
 
         1. `node inspect 脚本.js`：命令行调试
-        2. `node --inspect 脚本.js`：与Chrome配合调试（默认：`--inspect=127.0.0.1:9229`。开启远程调试：`--inspect=「公共IP或0.0.0.0」:9229`）
+        2. `node --inspect 脚本.js`：与Chrome配合调试（默认监听 `127.0.0.1:9229`。远程调试可用 [SSH 隧道](https://nodejs.org/en/learn/getting-started/debugging#enabling-remote-debugging-scenarios) 转发本地端口，避免将调试器暴露到公网）
 
             >有时因为运行的代码，就算退出了程序也无法关闭占用inspect的9229（默认）端口。需要手动杀死占用端口的进程，e.g. `lsof -i :9229`然后`kill -9 「PID」`。
 
-            - `--debug-brk`：直接从第一行代码开始进行断点调试。
+            - `--inspect-brk`：在用户脚本开头暂停，等待调试器。
     6. `Blob`
     7. `Event`、`EventTarget`
     8. `TextDecoder`、`TextEncoder`
@@ -1644,9 +1648,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 
         >[koa的错误处理](https://github.com/koajs/koa/blob/master/docs/error-handling.md)。
 
-        错误处理，中间件产生的 未捕获的 同步错误（或同步`ctx.throw`）都会捕获到这里
-
-        >未捕获的异步错误用`process.on('uncaughtException', err => {})`捕获；未捕获的失败Promise实例用`process.on('unhandledRejection', err => {})`捕获。
+        若请求的中间件链抛出异常或返回被拒绝的 Promise（包括 `await next()` 传回的错误），Koa 默认会触发 `app` 的 `error` 事件。脱离请求链的异步任务需要自行处理错误。
     7. `app.keys = `
 
         设置签名的cookie密钥

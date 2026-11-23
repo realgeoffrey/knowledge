@@ -82,7 +82,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
 
     Native创建WebView时，根据客户端登录情况注入跟登录有关的信息（session_id或token）至WebView（可注入到全局对象或cookie）。
 
-    >cookie有同源策略，所以客户端可以对指定白名单域名添加cookie。
+    >注入登录cookie时应核对白名单主机及cookie的Domain范围。cookie按域名、路径等条件匹配，不按端口隔离。
 5. 开发测试
 
     1. 提供**切换成线上资源请求方式**的功能，用代理工具代理成本地资源。
@@ -96,8 +96,8 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
     >    2. 匿名函数 -> 客户端调用`(匿名函数(JSON数据))`
     >2. WebView无法判断是否安装了其他App。
     >3. 可以通过`查看注入的全局方法`、或`客户端调用回调函数`（、或`navigator.userAgent`）来判定页面是否在具体App内打开。
-    >4. `桥协议`仅在App内部起作用；`自定义URL Scheme`是系统层面，所以可以额外针对跨App起作用（如：分享去其他App）；iOS的**通用链接**可以认为是高级的`自定义URL Scheme`。
-    >5. `桥协议`、`自定义URL Scheme`方式的Native和WebView交互需要时间，对时效性很高的操作会有问题；JSI认为是同步的。
+    >4. `桥协议`仅在App内部起作用；`自定义URL Scheme`是系统层面，所以可以额外针对跨App起作用（如：分享去其他App）；iOS的**通用链接**使用与App建立关联的HTTP(S)网址。
+    >5. `桥协议`、`自定义URL Scheme`方式的Native和WebView交互需要时间，对时效性很高的操作会有问题；JSI允许直接同步调用，实际是否异步取决于接口。
     >6. 对前端操作（如：跳转`自定义URL Scheme`、全局方法调用）的监听拦截，都需要和客户端确认是否支持，以客户端描述为准。
 
     1. `桥协议`：Native注入全局方法至WebView的`window`，若WebView调用则触发Native行为。
@@ -110,7 +110,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         ><details>
         ><summary><code>URL Scheme</code></summary>
         >
-        >是iOS和Android提供给开发者的一种WAP唤起Native App方式（客户端用DeepLink、Deferred Deeplink实现）。Android应用在mainfest中注册自己的Scheme；iOS应用在App属性中配置。典型的URL Scheme：`myscheme://my.hostxxxxxxx`。
+        >是iOS和Android提供给开发者的一种WAP唤起Native App方式（客户端用DeepLink、Deferred Deeplink实现）。Android应用在AndroidManifest.xml中注册自己的Scheme；iOS应用在App属性中配置。典型的URL Scheme：`myscheme://my.hostxxxxxxx`。
         ></details>
 
         >1. 客户端可以监听拦截任何行为（如：`console`、`alert`）。相对于注入全局变量，监听拦截方式可以隐藏具体JS业务代码，且不会被重载，方便针对不可控的环境。
@@ -123,7 +123,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         1. JS触发
 
             1. iOS8-支持`<iframe src="自定义URL Scheme">`和`window.location.href="自定义URL Scheme"`跳转；iOS9+不支持 ~~`<iframe>`~~，仅支持`window.location.href="自定义URL Scheme"`跳转
-            2. iOS9+的Universal links（通用链接），可以从底层打开其他App客户端，跳过白名单（微信已禁用），若未安装则打开配置好的落地页（落地页再提示下载App，不需要~~JS判断是否页面被隐藏从而跳转落地页~~）
+            2. iOS9+的Universal links（通用链接），通过关联域名将符合条件的网页链接交给已安装的App处理；未安装时在浏览器打开同一网址。打开方式还受来源及用户选择影响。
 
                 >需要HTTPS域名配置、iOS设置等其他端配合。
 
@@ -165,12 +165,12 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
                     }
 
                     function removeEventListener() {
-                      window.removeEventListener('visibilitychange', clearFunc1);
+                      document.removeEventListener('visibilitychange', clearFunc1);
                       window.removeEventListener('pagehide', clearFunc2);
                     }
 
                     // 若检测到隐藏页面，则阻止跳转落地页/下载地址（认为App已安装、已成功跳转URL Scheme）
-                    window.addEventListener('visibilitychange', clearFunc1);
+                    document.addEventListener('visibilitychange', clearFunc1);
                     window.addEventListener('pagehide', clearFunc2);
                     ```
                 2. 方法二：
@@ -253,7 +253,7 @@ Hybrid底层依赖Native提供的容器（WebView），上层使用HTML、CSS、
         >```js
         >let _localCounter = 1 // 同一个方法名快速请求时，可能 Date.now() 还没有变化
         >
-        >function invokeJSBridge (method, arg, { hasCallback = true }) {
+        >function invokeJSBridge (method, arg, { hasCallback = true } = {}) {
         >  return new Promise((resolve, reject) => {
         >    if (typeof window.客户端定义方法 === 'function') {
         >      let callbackName = ''

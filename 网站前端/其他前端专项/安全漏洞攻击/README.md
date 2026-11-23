@@ -7,21 +7,21 @@
 
     1. 攻击方式
 
-        >所有可输入的地方，若没有对输入数据进行处理的话，则都存在XSS漏洞。
+        >风险取决于不可信数据最终如何写入页面。作为纯文本展示的内容与被浏览器解析为 HTML 或脚本的内容，需要不同的处理。
 
         - 通过巧妙的方法注入恶意指令代码（HTML、JS、Flash、`<iframe>`，任何能写url的地方包含`javascript: 可执行代码`）到网页内容，使用户加载并执行恶意程序。
 
             攻击成功后，能够：盗取用户cookie、破坏页面结构、重定向到其它地址、利用用户机器执行各种非客户意愿的行为（如：发起请求、向其他网站发起DDoS攻击）等。
     2. 防御措施：
 
-        1. 过滤用户输入（白名单HTML标签和标签属性）
+        1. 按输出位置处理不可信数据
 
-            去除或转义（如：HTML的字符实体）、对URL编码（`encodeURI`）。
+            纯文本用 `textContent`；业务需要富文本时，用维护中的净化库限制标签、属性和 URL 协议。`encodeURI` 本身无法验证 URL 的协议。[OWASP XSS 防御指南](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
 
             >e.g. [js-xss](https://github.com/leizongmin/js-xss)
         2. HttpOnly
 
-            cookie设置为HttpOnly不能在客户端使用~~document.cookie~~访问。
+            `HttpOnly` 限制脚本通过 `document.cookie` 读取该 Cookie；浏览器仍会在符合条件的请求中携带它。
         3. 开启浏览器CSP（Content-Security-Policy，内容安全策略），设置不允许加载白名单外的域名资源
 
             >指令细节：[MDN：Content-Security-Policy](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Security-Policy)。
@@ -32,8 +32,7 @@
             2. `.html`的`<meta>`
 
                 `<meta http-equiv="Content-Security-Policy" content="具体指令">`
-            - （已被CSP拒绝执行）避免动态执行JS脚本的方式（执行字符串）：`eval`、`new Function`、`setTimeout/setInterval`。
-        >Flash的安全沙盒机制配置跨域传输：crossdomian.xml
+            - 脚本策略未放行 `'unsafe-eval'` 时，浏览器会阻止 `eval`、`new Function` 和字符串形式的定时器回调；可以向定时器传入函数。
 2. CSRF
 
     跨站请求伪造（Cross-Site Request Forgery，CSRF）是 第三方网站 挟制用户 在已登录的网页上执行非本意操作。利用网站对用户浏览器的信任。
@@ -42,27 +41,27 @@
 
         - 当用户已经得到目标网站的认可后，在第三方网站 对 目标网站 进行请求操作。
 
-            攻击成功后，能够：进行所有目标网站的请求操作。
+            潜在影响取决于用户权限、浏览器携带的凭证和服务端对该操作的校验。
     2. 防御措施
 
-        1. 同源策略
+        1. 校验来源，限制跨站凭证
 
-            1. 检查HTTP请求的Referer字段（Referer：请求来源地址），若不是信任的请求来源地址，则拒绝
+            1. 对更改状态的请求，服务端可校验 `Origin`，缺失时再核对 `Referer` 的来源是否匹配受信任源。
 
                 >地址栏直接输入内容不会提供`Referer`。
-            2. 跨域请求的限制（利用CORS等）
-            3. cookie设置`SameSite`属性（cookie不随着跨域请求发送）
+            2. 同源策略和 CORS 会限制跨源脚本读取响应，但跨站表单仍可发送请求。
+            3. 给会话 Cookie 显式设置合适的 `SameSite`。它按「站点」判断；`Lax` 仍允许部分跨站顶层导航携带 Cookie。
         2. 添加校验token
 
-            >token：判断用户当前的会话状态是否有效（短时效性）。思路是请求需要携带一个攻击者无法获取到的令牌，服务端通过校验请求是否携带了合法的令牌，来判断是否是正常合法的请求。
+            >同步令牌模式中，服务端为会话生成不可预测的 CSRF token，并在更改状态时校验它。[OWASP CSRF 防御指南](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html)
 
-            目标网站请求 需要额外提供 保存在页面中的随机校验码（校验码不保存在cookie即可，因为需保证用户必须实时在目标网站才能获取到）。可以放进请求参数、或自定义HTTP请求头。
+            页面通过表单字段或自定义请求头回传令牌，避免将其写入 URL。
         3. 验证码
 
-            保证用户必须和目标网站进行交互后才可以发起请求。
+            对敏感操作可要求二次确认或重新认证。
         4. `POST`请求替代`GET`请求
 
-            >都可能被利用，但`POST`安全性高些：不会明文把参数写在url上；HTML标签自动请求GET请求（如：`<img src="GET请求">`），更容易被利用。
+            >`GET` 应用于读取。改用 `POST` 表达状态变更后，服务端仍需校验 CSRF token 或采用等效防护。
 3. 其他攻击
 
     1. 注入型劫持
@@ -139,12 +138,12 @@
 
         - 一种安全的服务端存储密码方式：
 
-            先利用给密码加盐（salt）的方式增加额外信息，再使用散列（hash）函数计算出散列值后保存。
+            使用专门的密码哈希算法（如 Argon2id），为每个密码生成独立的随机盐，保存算法参数、盐和结果。[OWASP 密码存储指南](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 
             ><details>
             ><summary>加盐</summary>
             >
-            >由服务器随机生成的一个字符串，保证长度足够长，且是真正随机生成。然后把它和密码字符串相连接（前后都可以）生成散列值。当两个用户使用了同一个密码时，由于随机生成的salt值不同，对应的散列值也将不同。这样一来，很大程度上减少了密码特征，攻击者也就很难利用自己手中的密码特征库进行破解。
+            >盐可以和结果一起保存。相同密码使用不同的盐会产生不同结果，避免多个账户共用一份预计算结果。常用密码哈希库会代为生成盐并编码参数。
             ></details>
     16. DoS攻击（Denial of Service attack）、服务停止攻击或拒绝服务攻击
 
@@ -163,11 +162,7 @@
         1. 攻击方式
 
             >1. Hash：把任意长度的输入，通过散列算法，输出固定长度的散列值。
-            >2. Hash Collision DoS：利用各语言Hash算法的「非随机性」，制造出无数value不同、key相同的数据，让Hash表成为一张单向链表，而导致整个网站的运行性能下降。
-
-            - 找到hash算法漏洞，不断提交服务器请求导致无数hash碰撞，进而形成类似单向链表的存储结构。
-
-                攻击成功后，能够：hash堆积、查询缓慢、服务器CPU高负荷、服务器内存溢出。
+            >2. 不同的键可能落入同一个桶。碰撞过多时，插入和查找的开销可能上升，具体影响取决于哈希表如何处理碰撞。
         2. 防御措施
 
             1. 升级hash算法。
