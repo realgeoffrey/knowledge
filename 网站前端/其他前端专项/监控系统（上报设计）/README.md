@@ -14,13 +14,12 @@
 
     1. 上报内容
 
-        1. 性能分析，利用[`PerformanceNavigationTiming`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceNavigationTiming)获取页面加载完成时间数据
+        1. 性能分析
 
-            - 若是客户端性能数据，则统一性能口径后在关键链路埋点上报。
-            - 帧数（`requestAnimationFrame`）。
-            - 自定义需要监测性能、测速的上报。
-
-            >[首屏渲染完成判断](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/其他前端专项/首屏渲染完成判断/README.md)
+            - 常规文档导航记录 `PerformanceNavigationTiming`，如 `responseStart` 和 `loadEventEnd`。业务路由、首屏内容、宿主启动分别定义起止点和单位。[浏览器性能 API 示例](../../前端内容/标准库文档.md#performance) · [首屏渲染完成判断](../首屏渲染完成判断/README.md)
+            - 线上 Web Vitals 采用 `web-vitals` 的 `onLCP`、`onINP`、`onCLS`。同一采集口径在每个文档初始化一次。页面多次进入后台或启用 `reportAllChanges` 时，同一指标实例可能多次上报，服务端按指标名和 `metric.id` 保留最新的完整指标值 `value`（可由客户端附单调递增序号以应对乱序）。从后退缓存恢复会产生新的指标实例。按发布版本、路由和设备组计算 p75，同时给出有效样本数；无交互的访问缺少 INP，不能填零。[web-vitals 作者文档](https://github.com/GoogleChrome/web-vitals)
+            - SPA 若要分析一次切页，可在支持的浏览器用 web-vitals v6 的 `{ reportSoftNavs: true }` 单独采集。按库提供的 `navigationId` 和 `navigationURL` 归属，避免延迟上报时读到下一页的 `location.href`。分别保留整次文档访问和分段口径，比较升级前后的数据时注明口径、浏览器覆盖率及未识别的路由比例。[Chrome 软导航采集示例](https://developer.chrome.com/docs/web-platform/soft-navigations)
+            - `requestAnimationFrame` 回调间隔可观察前台页面调度抖动，后台节流和屏幕刷新率都会影响读数。排查掉帧时补录 Performance 的 Frames 轨道。排查慢交互时观察同一交互的输入、处理和呈现阶段。[Performance 面板](https://developer.chrome.com/docs/devtools/performance/reference)
         2. 用户行为
 
             >用户习惯、行为模式。
@@ -78,7 +77,9 @@
 
                 1. 先加载 最小化 需要立即监听的 逻辑。e.g. 路由变化、请求监听。
                 2. 其他延后异步加载。e.g. 静态资源监控、性能上报。
-            2. 上报时机：日志池，缓存后统一合并上报；`requestIdleCallback`；频控；根据网络情况、根据APP内存占用情况。
+            2. 使用小批量队列，按数量或时间在前台冲刷；`visibilitychange` 进入 `hidden` 时再尝试发送剩余数据。为每条事件生成稳定 ID，重复传输时在接收端去重。记录客户端排队失败数，接收端核对实际到达量；`sendBeacon()` 返回 `true` 只说明浏览器接受入队。[Beacon](https://www.w3.org/TR/beacon/)
+
+                联调时保持 Network 的 Preserve log 开启，切到另一标签页后返回，再切出一次。检查第一批事件是否在隐藏时发出，第二批是否仅含新事件；用同一事件 ID 对照接收日志。随后测试离线或接收端失败，确认该类缺数在看板上有明确口径。
 
             - SDK容错，出现SDK异常不影响客户端功能（`try-catch`包裹SDK？）。
             - 减少上报数据类型，压缩上报数据。

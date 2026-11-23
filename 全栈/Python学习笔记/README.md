@@ -101,13 +101,20 @@
     `for _ in xx:`不使用索引（`_`是约定俗成的"丢弃"变量名）
 1. `for-else`
 
-    若`for`语句未执行到`break`，则执行`else`
+    `for` 正常迭代完毕时才执行 `else`，空序列也算。若 `break`、`return` 或未捕获的异常提前离开循环，就会跳过 `else`。[Python 官方教程](https://docs.python.org/zh-cn/3/tutorial/controlflow.html#else-clauses-on-loops)
 
     ```py
-    for item in range(3):
-        pass  # 在此处理每一项
-    else:
-        print('若for内部未执行到 break 则执行')
+    def find_index(items, target):
+        for index, item in enumerate(items):
+            if item == target:
+                break
+        else:
+            return None
+        return index
+
+    print(find_index(['a', 'b'], 'b'))  # 1
+    print(find_index(['a', 'b'], 'c'))  # None
+    print(find_index([], 'c'))          # None
     ```
 1. `pass`不执行任何代码，占位符
 1. for、if等可以放在表达式中

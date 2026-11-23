@@ -35,7 +35,7 @@
     - 保持可读性：不要把核心业务流程藏进装饰器。
 
 ## JS 装饰器
-1. JavaScript 装饰器：当前文档记录为 TC39 提案语义，不等同于已经进入所有 JS 运行时的稳定标准；项目里通常通过 TypeScript、Babel 或框架编译链使用。
+1. 本节按 TC39 Stage 3 类装饰器提案讨论。阅读现有项目时，先看实际负责生成 JS 的编译器及装饰器配置；同样的 `@logged` 在旧版编译链上可能收到另一组参数。[TC39 Decorators](https://github.com/tc39/proposal-decorators)
 1. 执行/处理时机：TS/Babel 场景通常编译到 JS 后运行；语义上是在类定义求值期间调用。
 1. 行为能力：
 
@@ -89,20 +89,23 @@
     }
 
     class Service {
+      private total = 0;
+
       @logged
-      save() {}
+      save(amount: number) {
+        this.total += amount;
+        return this.total;
+      }
+
+      submit() { return this.save(2); }
     }
+
+    console.log(new Service().submit());
     ```
 
-1. 多个装饰器：
+    在独立空目录保存为 `demo.ts`。用项目里的 TS 5.x 编译器运行 `tsc --target es2022 --strict demo.ts && node demo.js`，依次输出 `enter save`、`2`。这次经过同一实例的 `this.save` 也会打印日志，因为类上的方法已被替换。包装器通过 `method.call(this, ...args)` 保留接收者、参数和返回值。用同一份源码加 `--experimentalDecorators --noEmit` 重新检查，会在 `@logged` 处得到签名错误，旧模式的方法装饰器收到的是原型、键和描述符。[TypeScript 5.0 装饰器](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators)
 
-    ```ts
-    @a
-    @b
-    method() {}
-    ```
-
-    同一元素上，装饰器表达式通常先自上而下求值，装饰器函数再按相反顺序应用；写装饰器时不要依赖难读的副作用顺序。
+1. 迁移使用依赖注入的类时，先查框架如何找构造器依赖。旧项目可能用参数装饰器或读取 `Reflect.getMetadata("design:paramtypes", Service)`。TS 5.2 起，新模式的装饰器可以把**自己写入的值**留在 `context.metadata`，在类上通过 `Symbol.metadata` 取得；运行环境缺少这个 symbol 时要在类求值前补齐。它不会自动生成构造器类型列表。依赖这些数据的容器需要保留旧编译配置，或按框架支持的方式显式传入依赖标识。迁移测试应真正从容器解析服务并调用方法。[TypeScript 5.2 装饰器元数据](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-2.html#decorator-metadata)
 
 1. 注意点：
 
@@ -134,6 +137,15 @@
     ```
 
     `@Override` 不包装方法，只让编译器检查“确实覆盖了父类/接口方法”。
+
+1. Spring 默认代理模式下，可以用与上面 TS 示例相同的调用路径验证 `@Transactional`。假设开启事务管理，调用者未开启事务，`submit()` 没有注解，只有同一 Bean 的公共方法 `save()` 标了 `@Transactional`。在 `save()` 内返回 `TransactionSynchronizationManager.isActualTransactionActive()`，从容器取 Bean 执行以下两条路径。[Spring 声明式事务](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html)
+
+    | 调用路径 | 预期结果 | 原因 |
+    | --- | --- | --- |
+    | 测试 → 注入的 Bean → `save()` | `true` | 调用经过代理，事务拦截器开启事务 |
+    | 测试 → 注入的 Bean → `submit()` → `this.save()` | `false` | 进入目标对象后直接自调用，绕过事务拦截器 |
+
+    如果入口 `submit()` 已经开启事务，两条路径都可能返回 `true`。这时内层仍沿用外层事务，即使内层声明了 `REQUIRES_NEW` 也不会因此新开事务。需要独立提交时，可把 `save()` 放到另一个注入的 Bean，由外层调用其代理；用“内层写入成功、外层随后回滚”检验内层数据是否保留。
 
 1. 自定义注解：
 
@@ -190,16 +202,24 @@
     run = log(run)
     ```
 
-1. 多个装饰器从**下到上**包裹：
+1. 多个装饰器分两步。装饰器表达式从**上到下**求值，再把求值得到的装饰器从**下到上**应用到函数。[Python 函数定义](https://docs.python.org/3.13/reference/compound_stmts.html#function-definitions)
 
     ```py
-    @a
-    @b
+    def mark(name):
+        print(f"evaluate {name}")
+
+        def decorate(fn):
+            print(f"apply {name}")
+            return fn
+
+        return decorate
+
+    @mark("a")
+    @mark("b")
     def f():
         pass
 
-    # 近似等价于：
-    f = a(b(f))
+    # 定义 f 时输出：evaluate a → evaluate b → apply b → apply a
     ```
 
 1. 装饰器工厂：`@decorator(args)` 会先调用工厂，返回真正的装饰器。下面仅对可安全重试的同步操作处理超时，`times` 包含首次调用。
@@ -227,6 +247,7 @@
 1. 注意点：
 
     - 包装函数会改变 `__name__`、`__doc__` 等元信息，通常用 `functools.wraps(fn)` 保留。
+    - 给 `async def` 函数写重试装饰器时，包装器也用 `async def`，并在 `try` 里写 `return await fn(*args, **kwargs)`。调用协程函数只得到协程对象，协程里的超时异常会在 `await` 时传播到包装器。[Python 协程](https://docs.python.org/3.13/library/asyncio-task.html#coroutines)
     - 装饰器可以有副作用，如注册路由、写入全局表、修改类属性。
     - 类型标注可用 `ParamSpec`、`TypeVar` 保留参数和返回类型，但运行期不自动校验类型。
 

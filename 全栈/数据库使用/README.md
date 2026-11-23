@@ -693,8 +693,17 @@ PostgreSQL 是开源的对象关系型数据库管理系统，与 MySQL 一样�
     | [PostgreSQL `jsonb`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/基础知识.md#postgresql-jsonb) | 查询半结构化数据 | 稳定且高频查询的字段仍优先使用普通列 |
     | 数组、范围类型 | 短小同类值、区间与重叠判断 | 高频关联或独立更新的数据更适合子表 |
     | `RETURNING` | 直接返回增删改后的值 | 减少额外查询，不改变事务边界 |
-    | `INSERT ... ON CONFLICT` | 依靠唯一约束实现原子 upsert | 冲突目标必须与约束匹配 |
+    | `INSERT ... ON CONFLICT` | `DO UPDATE` 做原子 upsert，`DO NOTHING` 跳过冲突行 | `DO UPDATE` 必须写冲突目标；`DO NOTHING` 可省略目标，此时会处理所有可用的冲突约束 / 唯一索引 |
     | CTE、窗口函数 | 拆分复杂查询，计算排名或累计值 | 仍需结合执行计划判断成本 |
+
+    >e.g. 报名表有 `UNIQUE (user_id, event_id)` 时，可以只把「同一人重复报名」当作无操作。第一次插入返回报名键，重复提交返回空结果，`RETURNING` 只返回实际插入或更新的行。若只有其他唯一约束冲突（如另一人用了相同票号），仍会报错。[PostgreSQL `INSERT`](https://www.postgresql.org/docs/17/sql-insert.html)
+
+    ```sql
+    INSERT INTO signup (user_id, event_id, ticket_code)
+    VALUES (42, 7, 'T-001')
+    ON CONFLICT (user_id, event_id) DO NOTHING
+    RETURNING user_id, event_id;
+    ```
 
 - **索引与执行计划**
 

@@ -3,6 +3,7 @@
 ## 目录
 1. [react](#react)
 
+    1. [切换面板时保留草稿与释放订阅](#切换面板时保留草稿与释放订阅)
     1. [JSX](#jsx)
     1. [组件](#组件)
 
@@ -39,6 +40,46 @@
 
 ---
 ## [react](https://github.com/facebook/react)
+
+### 切换面板时保留草稿与释放订阅
+
+2026-11-23 核对的稳定版为 React 19.3.1。下面的 `Activity` 和 `useEffectEvent` 从 19.2 起可用。19.3 稳定发布的 `ViewTransition` 解决另一类问题：例如用 `startTransition` 切换页面时，让支持浏览器视图过渡的区域参与进出动画。保存编辑器内容取决于组件身份与状态的存放位置。[React 版本](https://react.dev/versions) · [19.3.1 包记录](https://registry.npmjs.org/react/19.3.1) · [19.2 发布说明](https://react.dev/blog/2025/10/01/react-19-2) · [19.3 发布说明](https://react.dev/blog/2026/09/09/react-19-3)
+
+工单编辑页有“暂时收起”和“放弃草稿”两个动作。`open && <Draft />` 在收起时卸载编辑器，草稿也随之丢失。只用 CSS 隐藏则会继续监听断线重连。把编辑器放入同一个 `Activity` 边界，隐藏时 React 保留状态、清理 Effect，重新显示时再建立订阅。需要真正放弃草稿时，父组件可以移除编辑器或改变它的 `key`。[Activity](https://react.dev/reference/react/Activity)
+
+```jsx
+import { Activity, useEffect, useEffectEvent, useState } from 'react'
+
+function Draft() {
+  const [text, setText] = useState('')
+  const onOnline = useEffectEvent(() => {
+    console.log('网络恢复，当前草稿字数', text.length)
+  })
+
+  useEffect(() => {
+    const handleOnline = () => onOnline()
+    window.addEventListener('online', handleOnline)
+    return () => window.removeEventListener('online', handleOnline)
+  }, [])
+
+  return <textarea aria-label="工单草稿" value={text}
+    onChange={event => setText(event.target.value)} />
+}
+
+export default function Editor() {
+  const [open, setOpen] = useState(true)
+  return <>
+    <button onClick={() => setOpen(value => !value)}>
+      {open ? '收起草稿' : '继续编辑'}
+    </button>
+    <Activity mode={open ? 'visible' : 'hidden'}><Draft /></Activity>
+  </>
+}
+```
+
+可在浏览器控制台用 `window.dispatchEvent(new Event('online'))` 模拟网络恢复。先输入 `abc` 再派发，控制台应报告 3；收起后派发应安静；重新打开后仍可见 `abc`，再派发只报告一次。给 Effect 加上 `text` 依赖会在每次输入后重绑监听；只删除依赖又会让普通闭包读取初始值。`useEffectEvent` 让监听器读取最近一次提交的草稿。如果订阅目标本身也变化，例如工单频道 ID，就要将 ID 放进 Effect 依赖并重新订阅。[useEffectEvent](https://react.dev/reference/react/useEffectEvent)
+
+验证环境为 React 与 React DOM 19.3.1、jsdom 16.7.0。在根节点开启 StrictMode 后，依次模拟输入、收起、恢复和卸载；上述事件计数和草稿值均通过断言。
 
 ### JSX
 >（TS转译.tsx成为.jsx或.js，）Babel转译.jsx成为.js。
@@ -407,7 +448,7 @@
 
         - <details>
 
-            <summary>同步/异步原理</summary>
+            <summary>历史行为：React 17 及更早版本的 legacy root</summary>
 
             [setState是同步还是异步?](https://github.com/Advanced-Frontend/Daily-Interview-Question/issues/17#issuecomment-709493442)
 
@@ -445,7 +486,7 @@
                     - 在执行上下文不为空（react源码的executionContext）时去调用`setState`
                     1. 合成事件中的回调。
                     2. 生命周期函数。
-                2. 在`concurrent`模式下都为异步
+            React 18 起，使用现代根节点时，定时器和 Promise 回调中的更新也能批处理。需要根据前值更新时传入 updater，需要读取已提交的 DOM 时使用提交后的回调。
             </details>
     4. `setState`设置相同的值：
 
@@ -1104,7 +1145,7 @@
                 >}
                 >```
                 ></details>
-            3. `ref`（和`key`一样）不会被传递，需要使用`React.forwardRef`
+            3. 包装函数组件时，React 19 可从 props 接收 `ref` 并继续传递给内部组件。18 及以前使用 `forwardRef`；各版本的 `key` 均由 React 自身使用。[forwardRef](https://react.dev/reference/react/forwardRef)
 
         ><details>
         ><summary>e.g.</summary>
@@ -1707,11 +1748,7 @@
 >2. 若某些数据可以由Props或State推导得出，则它就不应该存在于State中
 
 #### 元素渲染
->由`ReactDOM.render`对根DOM组件开始初始化-渲染，随着引入的子组件再以树状结构对子组件进行初始化-渲染。
-
-1. `ReactDOM.render`
-
-    渲染到根DOM（可多次调用）。
+1. React 18 起，从 `react-dom/client` 导入 `createRoot`。客户端空容器创建一次根节点，用 `root.render(<App />)` 挂载；服务端输出的 React HTML 则用 `hydrateRoot(container, <App />)` 接管，客户端首次输出应与服务端一致。React 17 及更早的 `ReactDOM.render` 在 18 属于兼容入口，19 已移除。[React 19 迁移指南](https://react.dev/blog/2024/04/25/react-19-upgrade-guide#removed-reactdom-render)
 2. React DOM
 
     1. 管理根DOM内所有内容。
@@ -1930,7 +1967,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
 - 使用规则（eslint-plugin-react-hooks）：
 
-    1. 只能在函数组件内的最外层调用Hook。不要在~~循环、条件判断或嵌套函数~~中调用。
+    1. `useState`、`useEffect` 等 Hook 在函数组件或自定义 Hook 顶层按固定顺序调用。React 19 的 `use(resource)` 有专门规则，允许在循环和条件内读取资源，但仍须在组件或 Hook 中调用；处理 Promise 拒绝应交给错误边界。[use](https://react.dev/reference/react/use)
 
         若想要有条件地执行一个effect，可以将判断放到Hook内部。
 
@@ -2662,7 +2699,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
     >依赖项数组的每一项进行浅比较`Object.is`判断是否变化（数组顺序和长度不能变化）。
 
-    在使用`ref`时自定义暴露给父组件的实例值，与`forwardRef`一起使用。
+    自定义父组件通过 ref 能调用的方法。React 19 函数组件可直接接收 `ref` prop；下面展示兼容 React 18 的 `forwardRef` 写法。
 
     ><details>
     ><summary>e.g.</summary>
@@ -2701,8 +2738,8 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 14. `useId`
 15. `useInsertionEffect`
 16. `useSyncExternalStore`
-17. `useMutableSource`
-18. `useCacheRefresh`
+
+    > 旧实验资料中的 `useMutableSource` 和 `useCacheRefresh` 不属于这里列举的稳定 Hook。订阅外部 store 可使用 `useSyncExternalStore`。
 
 ><details>
 ><summary>从class迁移到Hook</summary>
@@ -3069,12 +3106,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 ### React18新增
 1. 新的客户端和服务端渲染APIs
 
-    用react18方法渲染，才能开启concurrent mode并发渲染模式。
-
-    >React 18 正式稳定 API 主要区分旧入口和新入口；`createBlockingRoot`是早期实验/过渡 API，不应在新代码中使用。
-    >
-    >1. 旧入口：`ReactDOM.render(<App />, rootNode)`（React 18 下按 legacy 行为运行，React 18+ 不推荐）
-    >2. 新入口：`ReactDOM.createRoot(rootNode).render(<App />)`
+    React 18 的 `createRoot` / `hydrateRoot` 带来自动批处理，并让启用 Transition 的更新可以被更紧急的更新打断。18 仍保留 legacy root 以便逐步迁移，19 已移除旧入口。以下 React 17 片段仅供维护旧项目时对照。
 
     1. 渲染组件API变化
 
@@ -3130,7 +3162,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
 
         const app = document.getElementById('app');
 
-        ReactDOM.render(app, <App tab="home" />, function() {
+        ReactDOM.render(<App tab="home" />, app, function() {
           // 在初始渲染或任何更新后调用。
           console.log('Rendered or Updated').
         });
@@ -3174,7 +3206,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
       // 最终，React 将仅会重新渲染一次（这就是批处理！）
     }, 1000);
     ```
-- `flushSync(回调)`强制React刷新整个树结构，并同步渲染DOM，然后执行回调，非常谨慎、尽量少用。
+    `flushSync(() => setOpen(true))` 同步调用回调，返回时 DOM 已反映其中的更新；React 也可能一并处理其他待执行的工作。适用于第三方接口要求下一行就能测量新 DOM 的场景。[flushSync](https://react.dev/reference/react-dom/flushSync)
 3. 过渡（transition）更新，区分紧急（直接的交互，如：输入、点击、按压）和非紧急（过度更新：UI从一个视图过渡到另一个）的更新
 
     `startTransition`、`useTransition`、`useDeferredValue`更新可以中断，可以跟踪挂起的更新，并且它会立即执行。意味着他们可以被其他紧急渲染所抢占。这种渲染优先级的调整手段可以帮助我们解决各种性能伪瓶颈，提升用户体验。
@@ -3205,7 +3237,7 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     ```
 4. `<Suspense>`允许你声明式地为一部分还没有准备好被展示的组件树指定加载状态
 
-    react17的`<Suspense>`主要是配合`React.lazy`进行组件层面的code spliting。react18希望`<Suspense>`用于所有异步场景（异步代码+过渡更新）
+    React 17 常用于 `lazy` 加载组件。现代 React 的边界也可响应支持 Suspense 的框架数据源，以及 React 19 的 `use` 读取缓存的 Promise。在 Effect、点击回调中自行发起的 `fetch` 不会触发 fallback，要显式维护请求状态。[Suspense](https://react.dev/reference/react/Suspense)
 
     ```jsx
     <Suspense fallback={<Spinner />}>
@@ -3261,18 +3293,12 @@ Hook是一些可以在**函数组件**里“钩入”React state及生命周期�
     ></details>
 
 #### 类型检查
-1. PropTypes
-
-    >利用：[prop-types](https://github.com/facebook/prop-types)。
-
-    `类名.propTypes = { props名: 类型 }`
-2. TypeScript
-
-    >当出现.js使用正常（说明功能正常），但是换成.tsx就类型报错的情况，除了检查自己是否写错之外，也可能是框架bug，只能用设置为`any`来绕过。
+1. 历史项目会使用组件静态属性 `propTypes` 做开发期校验。React 19 已移除这项检查。组件 props 可用 TypeScript 声明，来自接口的 JSON 仍需在运行时检查。[React 19 迁移指南](https://react.dev/blog/2024/04/25/react-19-upgrade-guide)
+2. 遇到 JSX 类型错误，先对照 `react`、`react-dom` 和对应 `@types` 的主版本，再核实 props 和返回值的类型。
 
 #### 测试
-1. react-dom/test-utils
-2. react-test-renderer
+
+React 19 从 `react` 导出 `act`，旧路径 `react-dom/test-utils` 的其余工具已移除，`react-test-renderer` 已弃用。交互测试可在 DOM 上通过可访问名称找到输入框、输入内容、点击按钮，再断言用户能看到的值；Effect 订阅则通过派发事件验证清理。[React 19 迁移指南](https://react.dev/blog/2024/04/25/react-19-upgrade-guide)
 
 ---
 ### [create-react-app](https://github.com/facebook/create-react-app)
@@ -3598,17 +3624,16 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
     ><summary>e.g.</summary>
     >
     >```jsx
-    >// ./index.js
-    >import ReactDOM from 'react-dom';
+    >// ./index.js（React 18+）
+    >import { createRoot } from 'react-dom/client';
     >import store from './store';
     >import { Provider } from 'react-redux';
     >import Counter from '../features/counter/Counter';
     >
-    >ReactDOM.render(
+    >createRoot(document.getElementById('root')).render(
     >  <Provider store={store}>
     >    <Counter />
-    >  </Provider>,
-    >  document.getElementById('root')
+    >  </Provider>
     >);
     >```
     >
@@ -3871,48 +3896,23 @@ Web应用是一个状态机，视图与状态是一一对应的。让state的变
         2. react的`Mixin`（已被证伪） -> HOC（props来源不明） & render props（嵌套地狱） -> Hook
     4. 数据响应式原理
 
-        1. vue直接修改原数据属性，渲染系统自动更新。
+        1. 通过 Vue 3 响应式代理写入属性，依赖对应属性的视图会更新。
 
-            >利用数据劫持（Vue 2：`defineProperty`；Vue 3：`Proxy`），属性变化后触发属性setter方法，通知订阅者，驱动视图变化。
+            >Vue 2 使用 `Object.defineProperty` 改写已有属性；Vue 3 对响应式对象使用 Proxy，对 ref 的 `.value` 使用 getter/setter。
         2. react手动触发state设置为新的不可变对象（如：`setState`），明确告知渲染系统更新。
-    5. 渲染过程不同
+    5. 更新范围
 
-        1. vue可以更快地计算出Virtual DOM的差异，这是由于它在渲染过程中，会跟踪每一个组件的依赖关系，不需要重新渲染整个组件树。
-        2. react在应用的状态被改变时，全部子组件都会重新渲染。
+        Vue 3 在执行组件渲染时跟踪读取过的响应式属性，编译器会给动态节点生成更新提示。React 从发起更新的组件调度工作，父组件重新执行时通常也计算子组件输出；稳定的子元素、`memo` 或编译器优化都可能跳过子树。两者都可能调用渲染函数而无需写 DOM。[Vue 渲染机制](https://vuejs.org/guide/extras/rendering-mechanism.html) · [React 渲染与提交](https://react.dev/learn/render-and-commit)
+    6. 列表身份
 
-            >可以通过（class组件）`shouldComponentUpdate`返回`false` 或 （函数组件）`React.memo`浅比较，进行控制不更新，但vue将此视为默认的优化。
-    6. diff算法实现
-
-        1. react
-
-            1. 主要使用diff队列保存需要更新哪些DOM，得到patch树，再统一操作批量更新DOM。
-            2. 列表比对，采用从左到右依次比对的方式。当一个集合，只是把最后一个节点移动到了第一个：react会把前面的节点依次移动。
-
-                <details>
-                <summary>React的diff算法不采用Vue的双端对比原因</summary>
-
-                ><https://github.com/facebook/react/blob/main/packages/react-reconciler/src/ReactChildFiber.js#L841-L858>
-
-                React 不能通过双端对比进行 Diff 算法优化是因为目前 Fiber 上没有设置反向链表，而且想知道就目前这种方案能持续多久，如果目前这种模式不理想的话，那么也可以增加双端对比算法。
-                即使是双端对比算法，我们也要对这种情况进行优化，我们应该使用 Map 这种数据结构方案去替代原来那种几乎没有什么变化也进行暴力比较的方案。它第一次搜索循环是通过 forward-only 这种模式（就是只从左向右查找），（第一次循环可能还没有结束，还有节点没有比对的时候）如果还要继续向前循环查找那么就要通过 Map 这种数据类型了。（就目前这个单向链表的数据结构，如果采用）双端对比查找算法比较难控制它反向查找的，但它确实是一种成功的算法。此外，双端对比算法的实现也在我们的工作迭代当中。我们不想用占用更多的内存空间的方式去优化性能。
-
-                第一次迭代，我们就先将就使用这种不好的方案吧，每次新增/移动都要添加所有的数据到一个 Map 的数据类型对象中。
-                </details>
-            3. 只比较节点类型和key，对同类型节点修改属性。
-            - 属于应用级更新。因为先天的不足（无法精确更新），所以需要react fiber把组件渲染工作 切片。
-        2. vue
-
-            1. 基于snabbdom库，它有较好的速度以及模块机制。Diff使用双向链表，边对比，边更新DOM。
-            2. 列表比对，采用从两端到中间的比对方式。当一个集合，只是把最后一个节点移动到了第一个：vue只会把最后一个节点移动到第一个。
-            3. 比较节点类型和key，还有属性（若className不同，则认为是不同类型元素，删除重建）
-            - 属于组件级更新。基于数据劫持，更新粒度很小，没有更新耗时压力，**不需要fiber**。
+        在同一父节点下，两者都用元素类型与稳定的 `key` 对应前后的子项。只改 `class` 通常更新原元素的属性；改 `key` 可让原组件卸载并重新创建。可在排序前编辑一行再排序，核对编辑状态是否跟随记录 ID。单次 DOM 移动的数量取决于具体顺序与框架实现。[Vue 列表渲染](https://vuejs.org/guide/essentials/list.html#maintaining-state-with-key) · [React 状态与身份](https://react.dev/learn/preserving-and-resetting-state)
     7. 数据流
 
         1. vue父子组件间单向数据流，组件与DOM间利用`v-model`实现双向绑定（语法糖）。
         2. react父子组件间单向数据流，不支持~~双向绑定~~。
     8. 状态管理方案
 
-        1. vue强绑定专门的vuex。
+        1. Vue 组件可以持有本地状态；跨页面共享的业务状态可放入 Pinia，Vuex 常见于存量项目。
         2. react使用通用的第三方库redux、mobx等。
     9. 核心思想
 

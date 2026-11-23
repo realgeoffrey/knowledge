@@ -3062,7 +3062,9 @@ type Concrete<Type> = {
     ></details>
 2. 数组类型
 
-    允许不变的列表（immutable）在它的参数类型上是协变的；但对于可变的列表（mutable），其参数类型则必须是不变的（invariant），既不是协变也不是逆变（类型不会报错，但运行时可能出错-不安全）。
+    在 TypeScript 中，即使开启 `strict`，可变的 `B[]` 也可以赋值给 `A[]`（`B` 是 `A` 的子类型），反向赋值会报错。两个变量指向同一个数组，因此通过 `A[]` 引用写入的元素可能不具备 `B` 的成员。[TypeScript 2.6 发布说明](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-6.html#strict-function-types)
+
+    只读取元素的函数可以把形参声明为 `readonly A[]`（等同于 `ReadonlyArray<A>`），这样也能接收 `B[]` 或 `readonly B[]`。只读约束作用于该引用，其他可变引用仍可修改同一个数组。[TypeScript ReadonlyArray 文档](https://www.typescriptlang.org/docs/handbook/2/objects.html#the-readonlyarray-type)
 
     ><details>
     ><summary>e.g.</summary>
@@ -3075,11 +3077,16 @@ type Concrete<Type> = {
     >  b() {}
     >}
     >
-    >let a: A[] = [];
-    >let b: B[] = [];
+    >const children: B[] = [new B()];
+    >const readOnly: readonly A[] = children;
+    >// readOnly.push(new A()); // 类型错误，readonly A[] 没有 push
     >
-    >a = b;             // ok，协变 没问题
-    >b = a;             // 错误，a不能赋值给b
+    >const base: A[] = children;
+    >base.push(new A()); // 类型检查通过，写入同一个数组
+    >
+    >for (const child of children) {
+    >  child.b(); // 第二个元素是 A，运行时抛出 TypeError
+    >}
     >```
     ></details>
 

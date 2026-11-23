@@ -44,7 +44,7 @@
 1. [CSS标准](#css标准)
 
     1. [选择器类型](#选择器类型)
-    1. [CSS变量（CSS Custom properties，CSS variables）](#CSS变量css-custom-propertiescss-variables)
+    1. [CSS变量（CSS Custom properties，CSS variables）](#css变量css-custom-propertiescss-variables)
 
 ---
 ## 经验总结

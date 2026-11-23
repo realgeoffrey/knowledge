@@ -32,9 +32,7 @@
 
                 `{ id: '...', exports: {...}, loaded: true/false, ... }`
             2. a模块执行时出现`require(b)`则进入b模块代码中执行，执行完毕后再回到a模块继续向下执行。
-            3. 无论加载多少次，仅在第一次加载时运行，之后再被引用则直接返回已导出内容。
-
-                >除非手动清除系统缓存。
+            3. 模块成功加载后，后续引用直接返回缓存中的导出值。执行抛错会清除该模块的缓存项，下一次引用会重新加载。
             4. 「循环加载」（circular dependency）：
 
                 引用之前已经被引用过的模块b，会直接返回模块b已导出的内容，而不会再进入模块b内执行。
@@ -218,14 +216,13 @@
 
         <summary><code>require</code>实现逻辑模拟</summary>
 
+        示例只处理路径形式的 CommonJS `.js` 和 `.json` 文件，可省略后缀。相对路径以调用 `require()` 的文件所在目录为基准。加载前写入缓存，让循环依赖能读到当时已导出的内容。[Node.js 模块文档](https://nodejs.org/api/modules.html#cycles)
+
         ```js
         // 执行`myRequire(filename)`逻辑：
-        // 1. 先将filename转化为绝对路径（跳过Node.js查找流程）。若有缓存，则直接导出缓存
-        // 2. fs读取这个绝对路径文件，获取`代码字符串`，根据绝对路径的文件后缀，执行不同的文件处理方法
-        //  2.1. 若是.js文件，则包装成匿名函数执行 `(function(exports, require, module, __filename, __dirname) {代码字符串转化为的JS代码}(传参))`
-        //  2.2. 若是.json文件，则直接 `module.exports=JSON.parse(代码字符串)`
-        //  2.3. 其他（如：.node需要二进制插件加载），略
-        // 3. 缓存模块（`{id: 绝对路径, exports: module.exports}`），并最终返回`module.exports`
+        // 1. 将路径解析为绝对路径。若命中缓存，直接返回缓存中的 module.exports。
+        // 2. 创建模块并放入缓存。按后缀加载：.js 用包装函数执行，.json 用 JSON.parse 解析。
+        // 3. 加载成功则返回 module.exports，失败则移除此模块的缓存项并抛出原错误。
 
         const path = require("node:path");
         const fs = require("node:fs");
@@ -238,9 +235,8 @@
         }
 
         // 返回查找到的最终文件路径
-        function resolveFileName(filename) {
-          // 先将路径 转化为 绝对路径
-          const r = path.resolve(__dirname, filename);
+        function resolveFileName(filename, dirname) {
+          const r = path.resolve(dirname, filename);
           // 文件路径是否存在，如果不存在，尝试添加 .js、.json 等后缀
           const isExists = fs.existsSync(r);
           if (isExists) {
@@ -276,45 +272,45 @@
             const fnStr = wrapper[0] + scripts + wrapper[1];
             const fn = vm.runInThisContext(fnStr);
             const exports = module.exports; // exports 和 module.exports
+            const dirname = path.dirname(module.id);
+            const localRequire = (filename) => myRequire(filename, dirname);
             fn.call(
               exports, // this
-              exports, myRequire, module, module.id, path.dirname(module.id),
+              exports, localRequire, module, module.id, dirname,
             );
           },
           ".json"(module) {
-            const scripts = fs.readFileSync(module.id, "utf8"); // 模块代码字符串
-            try {
-              module.exports = JSON.parse(scripts);
-            } catch (err) {
-              console.log("转换 失败！", err);
-            }
+            const scripts = fs.readFileSync(module.id, "utf8");
+            module.exports = JSON.parse(scripts);
           },
         };
         Module._cache = {};
 
-        function myRequire(filename) {
-          const id = resolveFileName(filename);
+        function myRequire(filename, dirname = __dirname) {
+          const id = resolveFileName(filename, dirname);
           const cacheModule = Module._cache[id];
           if (cacheModule) {
-            console.log("缓存了");
             return cacheModule.exports;
           }
           const module = new Module(id);
-          // 缓存模块
           Module._cache[id] = module;
-          // 执行模块（加载这个模块）
-          tryModuleLoad(module);
+          try {
+            tryModuleLoad(module);
+          } catch (err) {
+            delete Module._cache[id];
+            throw err;
+          }
 
           return module.exports;
         }
 
 
-        /* 使用测试 */
-        var str1 = myRequire("./a");
-        var str2 = myRequire("./a");
-
-        console.log(myRequire("./a.json"));
-        console.log(str1, str2);
+        /* 使用测试
+         * 在本脚本旁创建 nested/main.js，内容为 module.exports = require("./data");
+         * 在同一子目录创建 nested/data.json，内容为 {"value":42}
+         */
+        const result = myRequire("./nested/main");
+        console.log(result, result === myRequire("./nested/main")); // { value: 42 } true
         ```
         </details>
 

@@ -1892,19 +1892,20 @@ uncompress('3(ab2(c))') // 'abccabccabcc'
 请完成一个函数，将16进制格式的颜色转换为函数格式。
 
 ```
-hexToRgb('#fff')
-// 'rgba(255,255,255,1)'
+hexToRgba('#fff')      // 'rgba(255,255,255,1)'
+hexToRgba('#12A8')     // 'rgba(17,34,170,0.53)'
+hexToRgba('#12AB3480') // 'rgba(18,171,52,0.5)'
 ```
 
-- Alpha 通道的小数部分请限制在最多2位，需要的话请round up。
-- 别忘了做参数有效性检测
+- 接受带 `#` 的 3、4、6、8 位十六进制字符串。3 位和 4 位写法将每位数字重复一次，4 位和 8 位写法的最后一个通道表示 Alpha。[CSS Color 4](https://www.w3.org/TR/css-color-4/#hex-notation)
+- Alpha 缺省为 `1`。题面写的是“最多两位小数，round up if needed”。下面按四舍五入处理，`0x80 / 255` 输出 `0.5`。如果业务约定一律向上取整，两份解法都应将 `Math.round` 换为 `Math.ceil`，同一输入会得到 `0.51`。
 
 1. 解法一
 
     ```js
-    function hexToRGB(hex) {
+    function hexToRgba(hex) {
       // 三、四、六、八值语法
-      if (!/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(hex)) {
+      if (typeof hex !== "string" || !/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(hex)) {
         throw new Error("无效的hex");
       }
 
@@ -1917,23 +1918,24 @@ hexToRgb('#fff')
         r = parseInt(hex[0] + hex[0], 16);
         g = parseInt(hex[1] + hex[1], 16);
         b = parseInt(hex[2] + hex[2], 16);
-        a = hex[3] === undefined ? 1 : parseInt(hex[3] + hex[3], 16) / 255;
+        a = hex.length === 4 ? parseInt(hex[3] + hex[3], 16) : 255;
       } else {
         r = parseInt(hex.slice(0, 2), 16);
         g = parseInt(hex.slice(2, 4), 16);
         b = parseInt(hex.slice(4, 6), 16);
-        a = hex[7] === undefined ? 1 : parseInt(hex.slice(6, 8), 16) / 255;
+        a = hex.length === 8 ? parseInt(hex.slice(6, 8), 16) : 255;
       }
 
-      return `rgba(${r},${g},${b},${a})`;
+      const alpha = Math.round(a * 100 / 255) / 100;
+      return `rgba(${r},${g},${b},${alpha})`;
     }
     ```
 2. 解法二
 
     ```js
-    function hexToRGB(hex) {
+    function hexToRgba(hex) {
       // 三、四、六、八值语法
-      if (!/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(hex)) {
+      if (typeof hex !== "string" || !/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(hex)) {
         throw new Error("无效的hex");
       }
 
@@ -1948,7 +1950,8 @@ hexToRgb('#fff')
         .match(/../g)
         .map((hex) => parseInt(hex, 16));
 
-      return `rgba(${r},${g},${b},${a / 255})`;
+      const alpha = Math.round(a * 100 / 255) / 100;
+      return `rgba(${r},${g},${b},${alpha})`;
     }
     ```
 

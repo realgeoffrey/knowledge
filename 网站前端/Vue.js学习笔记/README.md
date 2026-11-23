@@ -21,7 +21,7 @@
     1. [SSR](#ssr)
     1. [Vue性能优化](#vue性能优化)
     1. [例子](#例子)
-1. [vue-router@4(Vue 3)](#vue-router4vue-3)
+1. [Vue Router 4 / 5（Vue 3）](#vue-router4vue-3)
 1. [vue-router@3(Vue 2)](#vue-router3vue-2)
 1. [pinia（替代~~vuex~~）](#pinia替代vuex)
 
@@ -39,15 +39,9 @@
 >约定：`vm`（ViewModel）变量名表示：Vue实例。
 
 ## Vue 3版本（[core](https://github.com/vuejs/core)）（与Vue 2的区别）
->参考：[Vue 3 迁移指南](https://v3-migration.vuejs.org/zh/)。
+> 2026-11-23 核对的稳定版为 Vue 3.5.46。Vue 2 已于 2023-12-31 结束官方维护，后面的 Vue 2 章节用于对照存量代码。3.5 的响应式 props 解构依赖单文件组件编译器，升级时核对应用实际使用的 `vue` 与 `@vue/compiler-sfc` 版本。[Vue Core 稳定发布](https://github.com/vuejs/core/releases/tag/v3.5.46) · [Vue 2 维护状态](https://v2.vuejs.org/eol/) · [迁移指南](https://v3-migration.vuejs.org/zh/)
 
-1. 响应式原理、数据绑定原理：使用了ES6的`Proxy`对数据代理
-
-    - 相较于Vue 2（利用ES5的`Object.defineProperty`对数据进行劫持，结合发布订阅模式的方式来实现），Vue 3使用`Proxy`的优势：
-
-        1. `Object.defineProperty`需要遍历对象的所有属性并逐个设置监听，而`Proxy`可以一次性监听整个对象及其所有属性
-        2. 可以省去`for-in`，闭包等内容来提升效率（直接绑定整个对象即可）
-        3. 可以监听数组，不用再去单独的对数组做特异性操作，`Proxy`可以检测到数组内部数据的变化
+1. Vue 3 用 `Proxy` 拦截对响应式对象的读取、赋值、删除等操作，用 getter/setter 跟踪 `ref.value`。渲染或副作用执行时读取哪些键，就建立对应依赖；嵌套对象可在访问时被包装。绕过代理直接修改原始对象不会通知依赖它的视图。与 Vue 2 相比，Vue 3 可跟踪通过代理添加属性、通过数组下标替换元素等操作。[响应性详解](https://vuejs.org/guide/extras/reactivity-in-depth.html)
 1. API风格
 
     1. 选项式API（Options API）
@@ -69,7 +63,7 @@
         >[优势](https://cn.vuejs.org/guide/extras/composition-api-faq.html)
 1. `:属性名`（等价于`v-bind:同名="同名"`、`:同名="同名"`）
 
-    若 attribute名称 与 绑定的js值的名称 相同，则可以进一步简化缩写，省略`="绑定值"`。
+    Vue 3.4 起，attribute 名称与绑定的 JS 变量同名时可以省略属性值，例如 `<img :src>` 等价于 `<img :src="src">`。
 1. 深度选择器
 
     | 写法        | Vue版本支持  | 预处理器支持    | 官方推荐  | 备注 |
@@ -95,7 +89,7 @@
 1. 内置组件
 
     1. `<Teleport>`将一个组件内部的一部分模板“传送”到该组件的 DOM 结构外层的位置去
-    1. `<Suspense>`统一协调异步依赖，在等待异步组件或异步setup完成时渲染loading状态
+    1. `<Suspense>` 可在等待子树中的异步依赖时展示 fallback；Vue 3.5 仍将该内置组件标为实验性 API。[Suspense](https://vuejs.org/guide/built-ins/suspense.html)
 1. 支持Fragments（片段）
 
     允许：`<template>多个节点</template>`（组件不再被强制要求只有一个根节点）
@@ -245,10 +239,11 @@
 
     | 特性 | Vue 2 | Vue 3 |
     |---|---|---|
-    | `@click` 默认行为 | 所有在子组件的事件都是自定义事件（除非手动加`.native`），需`$emit`触发 | 原生事件，自动绑定到单一根元素（多根元素不会绑定） |
+    | `@click` 默认行为 | 所有在子组件的事件都是自定义事件（除非手动加`.native`），需`$emit`触发 | 已在 emits 声明的事件由子组件显式发出；其余监听器默认透传到单一根元素 |
     | `.native`（监听组件根元素的原生事件，仅在父级引用子组件处添加） | 若需要监听原生事件，则添加 | 已移除，默认效果 |
     | 事件触发次数 | 仅通过`$emit`触发一次 | 若子组件未通过`defineEmits`声明`click`事件，则父组件的`@click`会作为原生事件绑定到子组件的根元素。此时若子组件`$emit('click')`，则触发2次（原生事件1次 + 自定义事件1次） |
-    | 执行顺序 | 依赖显式`$emit`顺序 | 原生事件先执行，自定义事件后执行 |
+
+    封装按钮时，若希望自己决定何时通知父级，就声明 `emits: ['click']` 并显式发出一次。若希望父级直接监听原生点击，就让监听器透传到按钮。验证一次点击只增加一次计数。[组件事件](https://vuejs.org/guide/components/events.html#declaring-emitted-events) · [透传事件监听器](https://vuejs.org/guide/components/attrs.html#v-on-listener-inheritance)
 1. **全局**注册组件`const app = createApp(根组件); app.component( 名, 组件 )`
 1. props传参的`validator`支持第二个参数，传入所有的prop组成的对象
 1. 依赖注入
@@ -563,14 +558,12 @@
     </details>
 1. 解包（.value）与自动解包（automatically unwrapped。不需要手动输入`.value`就能返回`.value`的值）
 
-    >自动解包：自动浅层解包。
+    1. `<script setup>` 的顶层绑定可直接用于模板。模板表达式会解包顶层 ref，例如 `const count = ref(0)` 在模板中写作 `count + 1`。普通对象内嵌的 ref 参与运算时要取 `.value`；如果 ref 已经是文本插值的最终结果，插值会显示其值。[模板中的 ref 解包](https://vuejs.org/guide/essentials/reactivity-fundamentals.html#caveat-when-unwrapping-in-templates)
 
-    1. 在组件的`<script setup>`中的**顶层的导入、声明的变量、函数**可在同一组件的`模板`中直接使用（有包裹的对象会在模板中自动浅层解包，因此不需要再手动 ~~`.value`~~）。
+        `<script setup>` 的初始化代码会为每个组件实例执行一次。在其中创建的 ref 通常为实例所有；从模块导入的同一个 ref 仍由多个实例共享。
 
-        >`<script setup>`里面的代码会被编译成组件`setup()`函数的内容。这意味着与普通的`<script>`只在组件被首次引入的时候执行一次不同，`<script setup>`中的代码会在每次组件实例被创建的时候执行。因此顶层的变量、函数 不会在多个组件中~~共享~~。可以理解为：`<script>`执行一遍后，`export default`的是组件，因此可以在导出之外的代码中包含共用的变量、方法；`<script setup>`就是`setup()`钩子里的代码，同一个组件不同实例间没有任何共用的逻辑。
-
-        1. 有包裹的对象（`isRef()`返回`true`）：`ref()`、`shallowRef()`、`customRef()`、`computed()`、`toRef()`。`toRefs()` 和 Pinia 的 `storeToRefs()` 返回普通对象，各属性的值才是 ref。
-        2. 无包裹的对象（`isRef()`返回`false`，普通引用数据类型、普通基本数据类型也返回`false`）：`reactive()`、`shallowReactive()`、`readonly()`、`shallowReadonly()`
+        1. `ref()`、`shallowRef()`、`customRef()`、`computed()` 和 `toRef()` 可返回 ref。`toRefs()` 和 Pinia 的 `storeToRefs()` 返回普通对象，属性值才是 ref。
+        2. `reactive()`、`shallowReactive()`、`readonly()` 和 `shallowReadonly()` 用于创建代理。读取代理属性时对 ref 的处理还取决于代理种类与容器类型，见下文。
     1. `ref`的自动解包逻辑
 
         1. `ref`对象作为`reactive()`返回对象的属性时，会自动解包
@@ -618,16 +611,19 @@
             若`ref`是文本插值的最终计算值（即`{{ }}`标签），则它将被解包。
 
             ```vue
-            const count = ref(0)          // 顶级属性count
-            const object = { id: ref(1) } // 顶级属性object；非顶级属性id
-            const { id } = object         // 顶级属性id
+            <script setup>
+            import { ref } from 'vue'
+            const count = ref(0)
+            const object = { id: ref(1) }
+            const { id } = object
+            </script>
 
             <template>
-            {{ count + 1 }} ✅
-            {{ object.id + 1 }} ❌ => [object Object]1
-            {{ object.id.value + 1 }} ✅
-            {{ object.id }} ✅ 若`ref`是文本插值的最终计算值（即`{{ }}`标签），则它将被解包。该特性仅仅是文本插值的一个便利特性，等价于 {{ object.id.value }}
-            {{ id + 1 }} ✅
+              <p>{{ count + 1 }}</p>           <!-- 1，count 是顶层 ref -->
+              <p>{{ object.id + 1 }}</p>       <!-- [object Object]1，普通对象内的 ref 参与运算 -->
+              <p>{{ object.id.value + 1 }}</p> <!-- 2，显式读取后运算 -->
+              <p>{{ object.id }}</p>           <!-- 1，ref 是文本插值的最终结果 -->
+              <p>{{ id + 1 }}</p>              <!-- 2，id 是顶层 ref -->
             </template>
             ```
 1. 响应式对象 整体替换
@@ -673,15 +669,11 @@
     // 对象属性也可以直接替换。若其他代码持有原 pagination 引用，则用 Object.assign 原地更新。
     apiData.pagination = 新对象
     ```
-1. 不能解构：
+1. 解构时区分值、代理和编译器改写
 
-    >只是不能直接解构，不是不能使用，①可以通过特殊函数包裹后的解构使用（`toRefs`、`pinia`的`storeToRefs`），②也可以不解构直接`.属性`使用。
-
-    1. `reactive()`返回的对象、`setup(props)`的`props`、`vue-router`的`useRoute()`返回的对象：需要用`toRefs()`才能解构
-    2. Pinia 的 state 和 getter 用 `storeToRefs(store)` 保持响应性，action 可以直接从 store 解构
-    3. 普通 `ref` 中的对象可通过 `.value` 取得响应式代理。直接解构它的基本类型属性只会取出当时的值
-
-    - 支持解构：`toRefs()`、Pinia 的 `storeToRefs()`。Vue 3.5+ 在同一 `<script setup>` 中直接从 `defineProps()` 解构的变量也保留响应性。`defineModel()` 的数组解构用于取得模型 ref 和修饰符。[Vue `<script setup>`](https://vuejs.org/api/sfc-script-setup.html#reactive-props-destructure)
+    1. 从普通 `reactive()` 对象、`setup(props)` 的 props 或 `ref.value` 解构基本类型属性，得到当时的值。嵌套对象可能仍是代理，但父对象替换这个属性后，手中的旧引用仍指向原对象。传递 `() => state.field` 或 `toRef(state, 'field')` 可以持续读取该属性。
+    2. Vue 3.5+ 的 SFC 编译器会改写同一 `<script setup>` 中直接从 `defineProps()` 解构的属性读取。传给组合式函数时，传 `() => id` 才能在函数内部再次读取最新值；`useDetail(id)` 已经计算成普通实参。Vue 3.4 及更早的默认配置用 `const props = defineProps(...)` 和 `() => props.id`。[响应式 props 解构](https://vuejs.org/api/sfc-script-setup.html#reactive-props-destructure)
+    3. Pinia 的 state 和 getter 可用 `storeToRefs(store)` 解构，action 可以直接从 store 解构。`defineModel()` 的数组解构则用于取得模型 ref 和修饰符。
 1. `toRefs`、`toRef`创建的 ref 与其源属性保持同步：改变源属性的值将更新 ref 的值，反之亦然。
 
     ```js
@@ -874,16 +866,16 @@
           2. 手动停止：调用`watch`或`watchEffect`等返回的函数
 
               `const unwatch = watchEffect(() => {}); unwatch();`
-1. `defineProps`、`defineEmits`、`defineExpose`、`defineModel`、`defineOptions`、`defineSlots`是编译器宏（compiler macro），并不需要导入（但也不能打印或赋值给其他变量），都是**只能在`<script setup>`顶层中使用（只要代码不在`.vue`文件的`<script setup>`标签内部，这些宏就无法使用。不能在其他文件使用，也不能在其他文件以任何方式引用，与生命周期钩子不同）**
+1. SFC 编译器在 `<script setup>` 中识别 `defineProps`、`defineEmits`、`defineExpose`、`defineModel`、`defineOptions` 和 `defineSlots` 等宏调用，使用时无需导入。宏名本身不作为普通运行时函数传递。有返回值的宏可以赋值，例如 `const props = defineProps(...)` 取得 props，`const emit = defineEmits(...)` 取得事件发送函数，`const model = defineModel()` 取得模型 ref。[SFC 编译器宏](https://vuejs.org/api/sfc-script-setup.html#defineprops-defineemits)
 
-    >`defineProps`、`defineEmits`、`defineOptions`（等其他能够引用变量的宏）内的参数只能依赖模块级的纯值或导入（宏在编译阶段会被移出到组件外部的“静态上下文”或以编译器能静态处理的方式处理，宏内表达式只能安全引用在模块评估阶段就已定义的东西，例如 import、const、顶层纯函数、不含 Vue runtime 的普通值）；不能依赖运行时/组件实例相关的 Vue 变量（`ref`、`reactive`、`computed`、生命周期等）。
+    `defineProps` 和 `defineEmits` 的运行时选项会提升到组件实例作用域外，可引用导入的定义。需要依赖某个实例中的 ref 或 computed 时，把这段逻辑放在实例的处理函数中。`defineExpose({ focus })` 则可以显式暴露该实例定义的方法。
 
     ```vue
     <script setup>
     const props = defineProps({ // 支持解构
-      msg: String           // 传参会变成驼峰变量
+      msg: String
     })
-    console.log(props.msg)  // 必须props.msg
+    console.log(props.msg)  // 此例将返回值绑定为 props
     </script>
 
     <template>
@@ -894,7 +886,7 @@
     ```js
     const emit = defineEmits(['注册事件名1','注册事件名2',])
 
-    emit('注册事件名2', 参数1, 参数2, ) // 必须先注册事件再使用
+    emit('注册事件名2', 参数1, 参数2) // 发送已声明的组件事件
 
     // 在模板中可以直接使用 $emit，在 <script setup> 中调用 defineEmits 返回的函数。
 
@@ -1035,65 +1027,21 @@
     <summary>异步组件</summary>
 
     ```js
-    import { defineAsyncComponent, hydrateOnIdle, IntersectionObserver, hydrateOnMediaQuery } from 'vue'
+    import { defineAsyncComponent, hydrateOnVisible } from 'vue'
+    import LoadingCard from './LoadingCard.vue'
+    import ErrorCard from './ErrorCard.vue'
 
-    const AsyncComp = defineAsyncComponent(() => {
-      return new Promise((resolve, reject) => {
-        // ...从服务器获取组件
-        resolve(/* 获取到的组件 */)
-
-        // 加载失败
-        reject(reason)
-      })
-    })
-
-    const AsyncComp = defineAsyncComponent(() => import('./components/MyComponent.vue'))
-    // ... 像使用其他一般组件一样使用 `AsyncComp`
-
-    // 全局注册
-    const app = createApp(根组件);
-    app.component('MyComponent', defineAsyncComponent(() =>
-      import('./components/MyComponent.vue')
-    ))
-
-    // 传对象形式，配置加载与错误状态
-    const AsyncComp = defineAsyncComponent({
-      // 加载函数
-      loader: () => import('./Foo.vue'),
-
-      hydrate: hydrateOnIdle(/* 传递可选的最大超时 */),
-      hydrate: hydrateOnVisible(),  // 在元素变为可见时进行激活
-      hydrate: hydrateOnVisible({ rootMargin: '100px' }), // 监听选项
-      hydrate: hydrateOnMediaQuery('(max-width:500px)'),  // 媒体查询匹配才激活
-      hydrate: hydrateOnInteraction('click'), // 交互时激活
-      hydrate: hydrateOnInteraction(['wheel', 'mouseover']),  // 多个事件
-      hydrate: (hydrate, forEachElement) => { // 自定义策略
-        // forEachElement 是一个遍历组件未激活的 DOM 中所有根元素的辅助函数，
-        // 因为根元素可能是一个片段而非单个元素
-        forEachElement(el => {
-          // ...
-        })
-        // 准备好时调用 `hydrate`
-        hydrate()
-        return () => {
-          // 如必要，返回一个销毁函数
-        }
-      },
-
-      // 加载异步组件时使用的组件
-      loadingComponent: LoadingComponent,
-      // 展示加载组件前的延迟时间，默认为 200ms
+    const ReportCard = defineAsyncComponent({
+      loader: () => import('./ReportCard.vue'),
+      loadingComponent: LoadingCard,
+      errorComponent: ErrorCard,
       delay: 200,
-
-      // 加载失败后展示的组件
-      errorComponent: ErrorComponent,
-      // 如果提供了一个 timeout 时间限制，并超时了
-      // 也会显示这里配置的报错组件，默认值是：Infinity
-      timeout: 3000
+      timeout: 10000,
+      hydrate: hydrateOnVisible({ rootMargin: '100px' })
     })
     ```
 
-    搭配`<Suspense>`使用。
+    纯客户端首次渲染 `<ReportCard />` 时才调用 loader，等待期间可以显示 LoadingCard。SSR 中，HTML 已由服务端生成；3.5+ 的 `hydrateOnVisible` 将客户端激活推迟到元素接近视口。项目可按需求选择一种策略，如 `hydrateOnIdle`、`hydrateOnMediaQuery` 或 `hydrateOnInteraction`。被父级 `<Suspense>` 接管时，默认由边界决定加载状态；若组件需要自己的 loading/error/delay/timeout，设置 `suspensible: false`。[异步组件与延迟激活](https://vuejs.org/guide/components/async.html) · [Suspense](https://vuejs.org/guide/built-ins/suspense.html)
     </details>
 1. `unref()`若参数是 ref（`isRef()`返回`true`），则返回内部值，否则返回参数本身（`val = isRef(val) ? val.value : val`的语法糖）
 1. `toValue()`若参数是 ref（`isRef()`返回`true`），则返回内部值（`unref(ref)`的值）；若参数是函数，则调用函数并返回其返回值。否则，原样返回参数
@@ -1139,10 +1087,10 @@
     ```
     </details>
 
-    - 当`<script setup>`中包含顶层`await`时，Vue 会认为该组件是一个 异步组件 (Async Component)。
+    - SFC 顶层 `await` 会被编译为 `async setup()`。
 
         1. 异步组件：代码执行到 await 时会“暂停”，等待 Promise 完成。在 Promise 完成之前，该组件不会被挂载，对应的 DOM 结构也就不会出现在页面上。
-        2. Vue的规则： 若一个组件是异步的，则它的父组件必须使用`<Suspense>`组件包裹它，否则该组件将一直处于“挂起”状态，表现为“不显示内容”或“白屏”。
+        2. 在客户端，`async setup()` 需要祖先 `<Suspense>` 边界协调首次渲染。只想懒加载组件代码时可用 `defineAsyncComponent`，它自带加载机制，可以独立使用。[异步依赖](https://vuejs.org/guide/built-ins/suspense.html#async-dependencies)
 
             ```vue
             <Suspense>
@@ -1160,21 +1108,21 @@
 
 - 结论先行：
 
-    1. 新项目默认：`<script setup>` + Composition API + TypeScript + Pinia
+    1. 新项目采用 SFC 和组合式 API 时可用 `<script setup>` 配合 TypeScript。状态只服务于一个组件时放在组件内，需要跨页面共享且独立于组件生命周期时再考虑 Pinia。
     1. 状态声明默认优先：`ref`
     1. 逻辑复用默认优先：Composables，而不是 mixins
     1. 性能优化默认优先：稳定 `key`、异步组件、避免深度 watch 滥用
 
-1. 始终使用`<script setup>`语法糖
+1. 使用组合式 API 编写 SFC 时优先考虑 `<script setup>`
 
     简洁、可读性好，自动暴露顶层变量到模板，是 Vue 3 单文件组件的默认写法。
 
     - `<script setup>`支持很多特殊逻辑：
 
         1. 任何以`v`开头的驼峰式命名的变量都可以当作 自定义指令
-        2. 在组件的`<script setup>`中的顶层的导入、声明的变量、函数可在同一组件的模板中直接使用（有包裹的对象会在模板中自动浅层解包，因此不需要再手动 ~~.value~~）
-        3. 顶层变量、函数不会在多个组件中共享，可以理解为一个vue实例属性
-        4. `defineProps`、`defineEmits`、`defineExpose`、`defineModel`、`defineOptions`、`defineSlots`是编译器宏，并不需要导入（但也不能打印或赋值给其他变量），都是只能在`<script setup>`顶层中使用
+        2. 顶层绑定可直接用于模板。上面的工单示例中，`view` 是顶层 ref，所以模板读取 `view.status`，脚本写入 `view.value`。普通对象内嵌的 ref 参与模板运算时须显式读取 `.value`。
+        3. 在 setup 中创建的状态归各个实例所有，模块级导入仍可在实例间共享。
+        4. 编译器处理顶层宏调用。工单示例直接解构 `defineProps()` 的结果，也可以先绑定为 `props` 对象再读取；`defineEmits()` 返回的 `emit` 同样可赋值并调用。
         5. `<script setup>`是唯一在**顶层**调用`await`之后仍可调用组合式函数的地方。编译器会在异步操作之后自动为你恢复当前的组件实例
 
 2. 用Composables（组合式函数）替代~~mixins~~
@@ -1193,7 +1141,7 @@
     ```
 3. 优先使用`ref`，谨慎使用`reactive`
 
-    >推荐`ref`一把梭，即使是对象，也使用`ref`
+    >接口结果需要整体替换时用 `ref`，例如 `result.value = nextPage`。一组字段需要保留同一对象引用、逐项更新时，`reactive` 也合适。
 
     1. `ref`的特性：
 
@@ -1210,7 +1158,7 @@
 
             1. 若是数组则可以直接赋值`proxy.属性 = 新数组`
             1. 若是对象也可以直接赋值 `proxy.属性 = 新对象`，要保留原对象引用时用 `Object.assign(proxy.属性, 新对象)`
-        1. 不能直接解构（需进行`toRefs()`才能解构）
+        1. 持续跟踪属性可用 getter 或 `toRef`/`toRefs`；普通解构保留当时读到的值或对象引用。
 4. 使用 TypeScript 定义 Props 和 Emits
 
     Vue 3 对 TS 的支持很好。使用类型注解定义 props / emits，通常比纯运行时声明更易维护。
@@ -1259,7 +1207,7 @@
         - 使用`computed`处理派生状态，而不是在模板中写复杂表达式
         - 使用`watchEffect`自动追踪依赖，避免手动维护依赖列表
         - 对于大型数据结构，使用`watch`的`deep`选项要谨慎，考虑使用`shallowRef`
-        - 使用`watch`的`immediate`和`once`选项优化性能
+        - `immediate` 决定创建时是否运行，`once`（3.4+）适合只需响应一次的业务。两者改变副作用时机，详情页需要响应后续 ID 变化时应保持持续侦听。
     5. 列表渲染优化
 
         - 始终为`v-for`提供稳定的`key`
@@ -4198,7 +4146,9 @@ Vue.use(MyPlugin, { /* 向MyPlugin传入的参数 */ })
 
 ---
 ### [vue-router@4](https://github.com/vuejs/router)(Vue 3)
-[Vue Router API 从 v3（Vue2）到 v4（Vue3）的迁移](https://router.vuejs.org/zh/guide/migration/)
+Vue Router 5 将基于文件的路由插件并入主包。已有 Router 4 项目如果手写路由表，可继续使用相同 API；使用 `unplugin-vue-router` 的项目需按迁移指南更新插件与类型导入，直接使用 IIFE 构建的项目还需核对 DevTools 依赖。[Vue Router 4 → 5](https://router.vuejs.org/guide/migration/v4-to-v5.html) · [Vue Router 3 → 4](https://router.vuejs.org/guide/migration/)
+
+例如，路由记录 `{ path: '/issues/:id', component: IssueDetail, props: true }` 将 URL 参数作为 prop 交给[工单详情组件](#切换工单时防止旧请求覆盖新内容)。从 `/issues/A` 导航到 `/issues/B` 可以复用同一实例；只在 `onMounted` 读取 ID 会遗漏第二次加载，侦听 ID 可以覆盖两次导航。
 
 <details>
 <summary><h3><a href="https://github.com/vuejs/vue-router">vue-router@3</a>(Vue 2)</h3></summary>

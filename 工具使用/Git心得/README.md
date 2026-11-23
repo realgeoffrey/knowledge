@@ -60,8 +60,8 @@
 2. 撤销未推送内容
 
     ```shell
-    git restore 「文件或.」                   # 丢弃未暂存修改
-    git restore --staged 「文件或.」          # 取消暂存，保留工作区修改
+    git restore -- 「文件或.」                # 从暂存区恢复工作区，丢弃未暂存修改
+    git restore --staged -- 「文件或.」       # 从 HEAD 恢复暂存区，保留工作区修改
 
     git reset --soft HEAD~「数量」            # 撤销提交，修改保留在暂存区
     git reset HEAD~「数量」                   # 撤销提交，修改保留在工作区并取消暂存
@@ -78,7 +78,7 @@
     ```
 3. 修改已推送的提交历史
 
-    >以下操作会改变分支指向或创建新提交。公共分支应优先新增提交或使用`git revert`；确需改写历史时，请先备份分支，并使用`--force-with-lease`。
+    >以下操作会改变分支指向或创建新提交。公共分支应优先新增提交或使用`git revert`。确需改写历史时，先按下文「强推前检查差异」核对并记录远端提交，再备份本地分支。
 
     ```shell
     git branch backup/「分支名」
@@ -86,9 +86,9 @@
     git reset --hard 「目标SHA」               # 将分支回退到目标提交
     # 或
     git rebase -i --root                       # 交互式修改全部提交
-
-    git push --force-with-lease origin HEAD
     ```
+
+    推送时指定目标分支和预期提交，见下文的强推前检查。
 
     如需在保留历史的前提下撤销已推送的合并提交，应使用`revert`，而非`reset`：
 
@@ -140,7 +140,7 @@
     git cherry-pick --abort
     ```
 
-    从其他分支或提交中获取文件，但不自动提交：
+    用其他分支或提交中的版本替换工作区文件。默认只写工作区，暂存区仍保留之前暂存的内容。匹配范围内的已跟踪文件若在来源中缺失，会从工作区移除，指定目录时尤其要留意。[git restore 手册](https://git-scm.com/docs/git-restore)
 
     ```shell
     git restore --source 「分支或SHA」 -- 「文件或目录」
@@ -267,15 +267,17 @@
         ```shell
         git diff                              # 工作区相对暂存区
         git diff --staged                     # 暂存区相对 HEAD（`--cached` 同义）
-        git diff HEAD                         # 工作区+暂存区相对 HEAD
+        git diff HEAD                         # 工作区最终内容相对 HEAD（不包含未跟踪文件）
         git diff 「commit」 -- 「路径」         # 某次提交 vs 工作区（可限路径）
         git show 「commit」                   # 这次提交自己引入的改动
         ```
 
+        同一处修改若暂存后又在工作区改回 HEAD，`git diff HEAD` 可能为空，提交仍会包含暂存区里的修改。提交前用 `git diff --staged` 核对。[git diff 手册](https://git-scm.com/docs/git-diff)
+
     2. 两点 vs 三点（分支 / tag / commit）
 
         >- **tip**：分支/tag **现在指向**的那次提交（`main` 的 tip = `main` 当前那个 commit）
-        >- **merge-base**：两边历史往回走，最先碰到的共同祖先（`git merge-base A B`）
+        >- **merge-base**：两边的最佳共同祖先。用 `git merge-base A B` 查看一个，用 `git merge-base --all A B` 列出所有结果。[git merge-base 手册](https://git-scm.com/docs/git-merge-base)
 
         `git diff` 永远是「左树 vs 右树」。`.` 的个数只改**左边用谁**：
 
@@ -813,32 +815,26 @@ Git不跟踪空目录。需要保留目录时，在其中添加并提交`.gitkee
 
 - 推荐策略：
 
-    1. 尚未`push`：可用`--amend`（仅最近一次）、`rebase -i`（精细整理多次）或`reset`（撤销多次后重新提交）整理历史；完成后普通`git push`即可，不需要`-f`（无条件覆盖远程分支）或`--force-with-lease`（仅在远程分支未被他人推进时允许覆盖）。
-    2. 已`push`但确认无人基于这些提交继续开发：可整理历史后（上面的方式）用`git push --force-with-lease`更新远程。
+    1. 尚未`push`：可用`--amend`（仅最近一次）、`rebase -i`（整理多次）或`reset`（撤销多次后重新提交）整理历史。整理后若仍能快进远端分支，普通`git push`即可。
+    2. 已`push`但确认无人基于这些提交继续开发：整理历史后，用带预期提交的`--force-with-lease`更新指定远程分支。
     3. 已`push`且属于公共分支，或不确定是否有人依赖：不要重写历史后强推；优先新增`commit`解决问题，必要时用`git revert`回退错误提交。
 
     ><details>
     ><summary>强推前检查差异（辅助判断是否应该强推）</summary>
     >
     >```shell
-    >git fetch origin
-    >git log --oneline --left-right --graph HEAD...@{u}
-    ># 输出：
-    >  # 只有 < ：本地领先，上游没有新提交
-    >  # 只有 > ：本地落后
-    >  # 同时有 < 和 > ：本地和上游已经分叉
-    >  # 没有输出：本地和上游一致
+    ># 示例目标是 origin 上的 feature 分支。整理历史前记录远端提交并检查差异
+    >reviewed_tip=$(git fetch origin >&2 && git rev-parse --verify refs/remotes/origin/feature) &&
+    >  git log --oneline --left-right --graph "HEAD...$reviewed_tip"
+    ># < 是本地独有，> 是远端独有。看到 > 时先确认这些提交是否可以被替换
     >
-    ># 看到 > 时，先判断它是准备被替换的旧提交，还是他人新增的提交；若包含他人新增提交，不要直接强推。
-    ># 该命令只能辅助查看差异；最终能否推送，还取决于远程是否再次更新、分支是否受保护、当前账号是否有权限。
-    >
-    ># 更严格：改写历史前先记录上游当前hash，推送时显式指定lease。
-    >git rev-parse @{u}     # 假设输出 abc123
-    >git push --force-with-lease=refs/heads/「分支名」:abc123 origin HEAD:refs/heads/「分支名」
+    ># 整理提交后，在同一 Shell 用刚才核对过的哈希推送
+    >test -n "$reviewed_tip" &&
+    >  git push --force-with-lease="refs/heads/feature:$reviewed_tip" origin HEAD:refs/heads/feature
     >```
     ></details>
 
->`--force-with-lease`仍然是强推，但会先检查远程分支是否还停在指定位置或本地记录的位置；若远程已变更，它会拒绝覆盖。`-f` / `--force`没有这层保护，可能把他人的提交从远程分支历史中移走，导致对方本地分支与远程分叉，需要重新`fetch`、`rebase`、`cherry-pick`，或从`reflog`找回。
+>带预期提交的 `--force-with-lease` 只在远端分支仍指向该提交时允许强推，分支保护和权限仍然生效。省略预期提交时，Git 用本地远程跟踪分支做检查。IDE 等工具在后台 `fetch` 后，这个引用可能已经指向你没检查过的新提交，强推便可能覆盖它们。[git push 手册](https://git-scm.com/docs/git-push)
 
 ### `husky`+`lint-staged`+`commitlint`+`commitizen`
 1. 使用[husky](https://github.com/typicode/husky)配置[Git hooks](https://git-scm.com/book/zh/v2/自定义-Git-Git-钩子)。

@@ -537,13 +537,15 @@ sleep 「秒数」           # 延迟后再继续；多数实现支持小数，�
 ```
 
 #### `xargs`
-将标准输入转为命令行参数。
+将标准输入转为命令行参数，参数过多时分批执行。传文件名时用 `-0` 读取 NUL 分隔的输入，可保留文件名里的空格和换行。
 
 ```shell
-printf '%s\0' '1.txt' '2.txt' '3.txt' | xargs -0 touch  # -0 正确处理空格/特殊字符
-# 每批一个参数示例：
-# find . -name '*.log' -print0 | xargs -0 -n1 rm
+printf '%s\0' 'first file.txt' '-draft.txt' | xargs -0 touch --
+find . -type f -name '*.log' -print0 | xargs -0 -n 1 ls -ld  # 每次传一个文件
+find . -type f -name '*.log' -exec ls -ld {} +              # 批量传参，无匹配则跳过
 ```
+
+GNU `xargs` 在空输入时默认仍执行一次，需加 `-r` 才跳过。macOS 的系统 `xargs` 默认跳过。处理 `find` 的结果时，两边都可以用 `-exec ... {} +`。[GNU Findutils 手册](https://www.gnu.org/software/findutils/manual/html_node/find_html/xargs-options.html)
 
 #### 批量删除文件
 ```shell
@@ -557,15 +559,15 @@ find . -type f -name "「文件名或通配模式」" -delete
 >以下为 Bash 语法；Zsh 等部分选项含义不同。通常加 `-r`，避免把 `\` 当转义。
 
 ```shell
-# 按 IFS 拆分赋给变量；无变量名时用 REPLY
-read -r 「变量名，默认 REPLY」
+# 指定变量名时按 IFS 拆分；省略变量名时整行存到 REPLY
+read -r 「变量名」
 read -r -t 「秒数」 「变量名」          # 超时
-read -r -p '「提示信息」' 「变量名」  # 提示
+read -r -p '「提示信息」' 「变量名」  # 输入来自终端时才显示提示
 read -r -a 「数组名」                   # 从下标 0 起
 read -r -n 「字符数」 「变量名」       # 最多读指定字符数，遇到行结束符可提前返回
 read -r -e 「变量名」                  # 启用 Readline
-read -r -d '「结束符」' 「变量名」      # 读到指定结束符
-read -r -s 「变量名」                  # 不回显（密码）
+read -r -d '「结束符」' 「变量名」      # 取参数的首字符作结束符，-d '' 表示 NUL
+read -r -s 「变量名」                  # 终端输入不回显（密码）
 read -r -u 「文件描述符」 「变量名」   # 从指定 fd 读
 ```
 
@@ -605,9 +607,14 @@ sed "s#abc/def#${replacement}#g" "文件1" > "文件2"
 ```shell
 ln "「源文件」" "「目标文件」"             # 硬链接：同 inode，不复制内容
 ln -s "「源文件/目录」" "「目标链接」"  # 符号链接：存路径，源移动/删除后可能失效
+
+# 当前目录下有 notes.txt 和 links/，从 links/ 往上找 notes.txt
+ln -s ../notes.txt links/notes.txt
 ```
 
 >硬链接不能跨文件系统，通常也不能指向目录；符号链接可以。
+
+符号链接中的相对路径从链接所在的目录起算。`ln -s` 即使成功，目标路径也可能不存在，用 `readlink 「目标链接」` 查看记录的路径。[GNU Coreutils 手册](https://www.gnu.org/software/coreutils/manual/html_node/ln-invocation.html)
 
 #### `vi`
 1. `:set nu` 显示行号；`:set nonu` 关闭

@@ -79,9 +79,11 @@
     >
     >```shell
     >echo "Today is $(date). A fine day."    # 先计算出`date`，再传给`echo`。
-    >export res=$(curl baidu.com)            # 先`curl`返回内容，再赋值给`res`
+    >res=$(date '+%F') && export res       # 取值成功才导出
     >```
     ></details>
+
+    单独赋值 `res=$(命令)` 的退出状态来自命令替换。写成 `export res=$(命令)` 或在函数里写 `local res=$(命令)`，得到的是 `export` 或 `local` 的退出状态，取值失败时也可能返回 `0`。在函数里先用 `local res` 声明，再另起一行赋值并检查结果。[Bash 手册](https://www.gnu.org/software/bash/manual/html_node/Simple-Command-Expansion.html)
 
     - 可以嵌套
 
@@ -384,7 +386,7 @@
             3. `HOSTNAME`：主机名。
             4. `PPID`：父进程 PID。
             5. `UID` / `EUID`：真实 / 有效用户 ID。
-            6. `BASHPID`：当前 Bash 进程 PID（子 Shell 里与 `$$` 可能不同）。
+            6. `BASHPID`（**4+**）：当前 Bash 进程 PID（子 Shell 里与 `$$` 可能不同）。
         7. 行号，调用栈（排查脚本时才用）
 
             1. `LINENO`
@@ -752,7 +754,7 @@
     [[ 「expression」 ]]    # 空格是必须的。支持正则判断
     ```
 
-    若表达式成立，则执行成功（退出码：`0`）。否则执行失败（退出码：`1`）。
+    条件为真返回 `0`，条件为假返回 `1`。表达式出错时可能返回 `2`，例如 `[[ ... =~ ... ]]` 收到无效正则。
 
     1. 文件判断
 
@@ -771,8 +773,8 @@
     2. 字符串判断
 
         1. `[ 「字符串」 ]` / `-n`：非空；`-z`：空
-        2. `=` / `==`：相等；`!=`：不等
-        3. `[[ a < b ]]`：按 locale 字典序（`[` 里 `<` `>` 要转义）
+        2. `=` / `==`：相等；`!=`：不等。`[[ $value == *.txt ]]` 用通配模式匹配，`[[ $value == "$expected" ]]` 逐字比较。
+        3. `[[ a < b ]]`：Bash 4.1 起按 locale 排序，旧版本按 ASCII 排序。`[ ]` 中用 `<` 或 `>` 时需转义，Bash 的 `test` 按 ASCII 排序。
 
         ```shell
         [ -n 「字符串」 ]
@@ -787,10 +789,13 @@
         ```
     4. 正则判断（仅`[[  ]]`支持）
 
-        正则不要加引号（否则当字面量）；捕获在 `BASH_REMATCH`。
+        可把 POSIX 扩展正则存进变量，匹配时直接展开 `$pattern`。给展开加引号（`"$pattern"`）会按字面匹配。默认可匹配字符串的一部分，整串匹配用 `^` 和 `$`。`BASH_REMATCH[0]` 是完整匹配，第一个括号捕获在 `BASH_REMATCH[1]`。[Bash 手册](https://www.gnu.org/software/bash/manual/html_node/Conditional-Constructs.html)
 
         ```shell
-        [[ 「字符串」 =~ 「正则表达式」 ]]
+        pattern='^v([0-9]+)$'
+        if [[ v42 =~ $pattern ]]; then
+          printf '%s\n' "${BASH_REMATCH[1]}"  # 42
+        fi
         ```
     5. 逻辑运算
 
@@ -910,21 +915,16 @@
     1. e.g.
 
         ```shell
-        # 列表由多个单词产生
-        for i in word1 word2 $PATH; do
-          echo $i
+        # 列表由数组产生，保留空元素、空格和通配符
+        words=('one word' '' '*')
+        for word in "${words[@]}"; do
+          printf '[%s]\n' "$word"
         done
 
-        # 列表由通配符产生
-        for i in *.png; do
-          ls -l -- "$i"
-        done
-
-        # 列表由子命令产生
-        count=0
-        for i in $(cat ~/.bash_profile); do
-          count=$((count + 1))
-          echo "Word $count ($i) contains $(echo -n $i | wc -c) characters"
+        # 列表由通配符产生。默认无匹配时会留下字面的 ./*.png
+        for path in ./*.png; do
+          [[ -f $path ]] || continue
+          ls -l -- "$path"
         done
         ```
     2. `in 「list」`可以省略，默认等于`"$@"`（脚本或函数的参数值）
@@ -956,7 +956,7 @@
 
     立即终止本轮循环，开始执行下一轮循环。
 
-- 按行读文件（避免 `for line in $(cat file)`）
+- 按行读文件。`for line in $(cat file)` 会按 `IFS` 分割，再展开文件名通配符。用 `IFS= read -r` 保留空格和反斜杠，`|| [[ -n $line ]]` 也处理末尾没有换行的一行。
 
     ```shell
     while IFS= read -r line || [[ -n $line ]]; do
@@ -1269,5 +1269,5 @@ fn 参数1 参数2
     | `-a` | `allexport` | 新变量一律 export |
 
     脚本开头常见：`set -euo pipefail`。
-2. `shopt -s/-u`：`extglob` `nullglob` `failglob` `dotglob` `nocasematch`。**4+**：`globstar`；`lastpipe`（无 job control 时最后一段管道在当前 Shell）。`shopt` 查看。
+2. `shopt -s/-u`：`extglob` `nullglob` `failglob` `dotglob` `nocasematch`。**4+**：`globstar`。**4.2+**：`lastpipe`（关闭作业控制时，前台管道的最后一段在当前 Shell 执行）。`shopt` 查看。
 3. `trap 'cmds' SIGNAL...`：捕获信号或钩子。`EXIT` 脚本结束；`ERR` 失败命令（触发例外与 `-e` 相似，无需开启 `-e`；函数里要 `set -E`/`errtrace` 才会继承）；`DEBUG` 每条前；`RETURN` 函数 return。`trap - SIGNAL` 恢复默认；`trap '' INT` 忽略。`kill -l` 列信号。

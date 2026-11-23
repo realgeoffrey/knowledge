@@ -2778,12 +2778,15 @@ public class GenericExample {
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
 
-            try (PreparedStatement debit = connection.prepareStatement(debitSql);
-                PreparedStatement credit = connection.prepareStatement(creditSql)) {
-                debit.executeUpdate();
-                credit.executeUpdate();
+            try {
+                try (PreparedStatement debit = connection.prepareStatement(debitSql);
+                    PreparedStatement credit = connection.prepareStatement(creditSql)) {
+                    if (debit.executeUpdate() != 1 || credit.executeUpdate() != 1) {
+                        throw new SQLException("Expected one row for each update");
+                    }
+                }
                 connection.commit();
-            } catch (SQLException error) {
+            } catch (SQLException | RuntimeException | Error error) {
                 try {
                     connection.rollback();
                 } catch (SQLException rollbackError) {
@@ -2794,6 +2797,8 @@ public class GenericExample {
         }
         ```
 
+        - 这个例子要求扣款和入账各更新一行。`executeUpdate()` 返回 `0` 也可能正常结束（例如条件没匹配），需要按业务检查影响行数。
+        - 两条语句执行并关闭后再提交。提交前失败时，趁连接还开着显式回滚。活动事务直接 `close()` 的结果取决于 JDBC 实现。[JDBC `Connection`](https://docs.oracle.com/en/java/javase/21/docs/api/java.sql/java/sql/Connection.html#close())
         - 事务尽量短：不要在事务中等待用户输入或执行耗时的外部调用。
         - 连接归还连接池前，驱动 / 池通常会恢复自动提交等会话状态；不要假设“上次事务关掉的 autoCommit 会留在下一次借出的连接上”。
         - Spring 声明式事务（常见 `DataSourceTransactionManager`）大致等价于：从池取连接 → 绑到当前线程 → `setAutoCommit(false)` → 业务里的 JDBC / MyBatis 复用该连接 → 结束时 `commit`/`rollback` → 解绑并归还。没有外层事务时，每次访问往往各自取连接并按自动提交执行。

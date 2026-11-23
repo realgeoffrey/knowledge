@@ -48,7 +48,7 @@
 
     1. `g`（不添加则默认：每次都重新匹配、匹配到字符串结束）：
 
-        global，允许连续查找。`exec`、`test` 每次只尝试一次匹配；成功时更新 `lastIndex`，失败时将其重置为 0。
+        global，允许连续查找。`exec`、`test` 从 `lastIndex` 开始搜索，可以继续尝试后续位置。成功时将 `lastIndex` 设为匹配结束位置，失败时重置为 0。
 
         >例如 `str.match(/a/g)` 返回所有匹配到的子串。
     2. `i`（不添加则默认：大小写敏感）：
@@ -251,7 +251,7 @@
 
         1. `RegExp.prototype.source`
 
-            当前正则表达式对象的模式文本的字符串，该字符串不会包含正则字面量两边的反斜线以及任何标志字符，并会自动添加字符串的`\`转义（基本仅对`\`、`"`、`'`转义）。
+            返回可放入正则字面量的模式文本，省略两端的斜杠和标志。必要时转义模式里的 `/` 和行终止符，空模式返回 `(?:)`。[ECMAScript 规范](https://tc39.es/ecma262/multipage/text-processing.html#sec-get-regexp.prototype.source)
 
             <details>
             <summary>e.g.</summary>
@@ -259,11 +259,23 @@
             ```js
             /\w/g.source === '\\w';                  // true
             new RegExp('\\w', 'g').source === '\\w'; // true
+            new RegExp('/').source === '\\/';        // true
+            new RegExp('\n').source === '\\n';       // true
+            new RegExp().source === '(?:)';          // true
             ```
             </details>
         2. `实例.lastIndex`
 
-            下次匹配开始的 UTF-16 码元索引。`exec` 和 `test` 会在设置了 `g` 或 `y` 标志时读取和更新它。
+            下次匹配开始的 UTF-16 码元索引。`exec` 和 `test` 会在设置了 `g` 或 `y` 标志时读取和更新它。换一个字符串继续使用同一个正则时，`lastIndex` 仍保留上次的值。要从新字符串开头查找，可以先设为 0。
+
+            `exec` 匹配到空字符串时，匹配的起点和终点相同。循环调用 `exec` 如果一直停在这个位置，会重复得到相同结果。可用带 `g` 的正则配合 `matchAll`，由迭代器在空匹配后推进位置。
+
+            ```js
+            const regexp = /(?=a)/g;
+            regexp.exec('aa').index; // 0
+            regexp.lastIndex; // 0
+            Array.from('aa'.matchAll(regexp), match => match.index); // [0, 1]
+            ```
         3. `RegExp.prototype.flags`
 
             返回修饰符。
