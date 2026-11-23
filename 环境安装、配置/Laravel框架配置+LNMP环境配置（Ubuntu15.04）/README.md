@@ -1,10 +1,10 @@
 ### Laravel框架配置+LNMP环境配置（Ubuntu15.04）
 
->历史环境记录：Ubuntu 15.04、PHP 5 和对应 Laravel 安装方式均已过期，不建议用于新项目；以下内容仅适合维护旧环境时参考。
+>历史环境记录：Ubuntu 15.04、PHP 5 和对应 Laravel 安装方式均已过期，不建议用于新项目；以下内容仅适合维护旧环境时参考。若默认 apt 镜像找不到 vivid，先将源地址改为 [Ubuntu 旧版本归档](https://old-releases.ubuntu.com/ubuntu/dists/vivid/) 对应的仓库根地址 `https://old-releases.ubuntu.com/ubuntu/`，保留原发行代号和组件，运行 `sudo apt-get update`。
 
 1. 安装**Ubuntu Desktop**或**Ubuntu Server**
 
-    >安装完毕之后可以删除 iso 虚拟光盘
+    >安装完毕之后可以弹出安装用的 ISO 虚拟光盘
 2. 安装LNMP环境
 
     >LNMP：Linux Nginx MySQL PHP。
@@ -15,13 +15,14 @@
         sudo apt-get install php5-fpm php5-mcrypt php5-curl php5-cli php5-gd
         ```
 
-        开启php5enmod mcrypt：
+        启用 mcrypt 模块：
 
         ```shell
         sudo php5enmod mcrypt
+        sudo service php5-fpm restart
         ```
 
-        >若升级了php5导致产生「permission denied」错误，则打开 `/etc/php5/fpm/pool.d/www.conf` 更改第44行开始，把「；」去除，打开listen.owner和listen.group
+        >若 Nginx 日志提示连接 FPM 套接字时权限不足，检查 `/etc/php5/fpm/pool.d/www.conf` 的 `listen` 路径和套接字权限。默认 Nginx 用户为 www-data 时，可设置 `listen.owner = www-data`、`listen.group = www-data`、`listen.mode = 0660`，再重启 php5-fpm。
     2. 安装**mysql-server**、**php5-mysql**
 
         >desktop还可以安装：**mysql-client**、**mysql-workbench**
@@ -34,64 +35,49 @@
         ```shell
         sudo apt-get install nginx
         ```
-3. 卸载apache扩展
+3. 检查 Apache 与 Nginx 的端口
 
-    ```shell
-    sudo apt-get autoremove apache2
-    sudo apt-get autoremove apache
-    ```
+    如果已有 Apache 占用 80 端口，可按第 7 步将 Apache 改为监听 8080，再启动 Nginx；只运行 Nginx 时，可停用 Apache。
 4. 修改项目权限
 
-    把自己的帐号加入www-data组(ubuntu的linux所在组)中:
+    以普通用户部署项目。以下以 /opt/www/mylaravel.com 为项目根目录。新建项目先按第 5 步将文件放到该位置，再设置权限，使 Web 服务组可以读取代码、进入目录。
 
     ```shell
-    sudo usermod -a -G www-data "用户名"
+    sudo chown -R "$USER":www-data /opt/www/mylaravel.com
+    sudo chmod -R g=rX,o-rwx /opt/www/mylaravel.com
+    ```
+5. *可选：下载 PHP 框架 Laravel 并安装*
+
+    本文的 `app/storage` 路径对应 [Laravel 4.2](https://laravel.com/docs/4.2/installation)。新建同版本测试项目时，先安装兼容 PHP 5 的 [Composer 2.2 LTS](https://getcomposer.org/download/)，然后在自己的主目录运行：
+
+    ```shell
+    cd ~
+    composer create-project laravel/laravel mylaravel.com '4.2.*'
     ```
 
-    更改项目文件夹的所有权，把组设置为www-data所有：
+    维护已有项目时，保留原来的 `composer.lock`，在项目目录运行 `composer install`。旧依赖需要有可用的下载源或备份。
+
+    将新建项目移至 */opt/www*（目标项目目录应尚不存在），然后按第 4 步设置代码权限：
 
     ```shell
-    sudo chown -R 「用户名」:www-data "项目目录"
+    sudo mkdir -p /opt/www
+    sudo mv "$HOME/mylaravel.com" /opt/www/
+    cd /opt/www/mylaravel.com
     ```
 
-    更改项目文件夹的权限（r=4 w=2 x=1 所有者、组、其他）：
+    Laravel 4.2 还需要部署用户和 PHP 服务都能写入 `app/storage`。共享写入时，目录的 setgid 位让新文件继承 www-data 组，创建文件的进程也应使用允许组写入的权限：
 
     ```shell
-    sudo chmod -R 775 "项目目录"
-    ```
-5. *可选：下载php框架Laravel（<http://laravel.com/>）并安装*
-
-    将下载的安装文件移动至 */usr/local/bin* ：
-
-    ```shell
-    sudo mv 「laravel地址」 /usr/local/bin
-    cd /usr/local/bin
-    sudo laravel new mylaravel.com
-    ```
-
-    若无法安装，检查LNMP环境是否安装、apache是否删除、php5扩展是否安装和开启
-
-    安装完成，移动文件夹至 *www文件夹* 中：
-
-    ```shell
-    sudo mv /home/kyo/mylaravel.com /opt/www
-    ```
-
-    可以再设置文件夹的所有者和权限
-
-    要注意把下载下来的文档中app/storage/下的文件设置权限为组www-data可修改和访问，否则会有权限问题。每一次对app/storage下文件或文件夹进行修改（一般是新建），都要把内容修改所在组为www-data，这样才可以用浏览器访问得到storage下的文件，并且把权限改为775：
-
-    ```shell
-    sudo chown –R 「用户名」:www-data 「地址前缀」/app/storage
-    sudo chmod –R 775 「地址前缀」/app/storage
+    sudo chmod -R ug+rwX,o-rwx app/storage
+    sudo find app/storage -type d -exec chmod g+s {} \;
     ```
 6. 在服务器nginx配置虚拟主机：
 
     ```shell
-    sudo gedit /etc/nginx/sites-enabled/default
+    sudoedit /etc/nginx/sites-available/default
     ```
 
-    >在文件开头加入虚拟主机地址(以下代码很容易造成服务器各种坑，建议把以下代码复制进txt文档中编辑过再复制出，因为编码问题很可能导致服务器配置无法识别以下代码)：
+    >在已有 server 块之外加入以下配置。默认站点应已链接到 sites-enabled，fastcgi_pass 路径应与 PHP-FPM 的 listen 一致：
     >
     >```text
     >server{
@@ -102,36 +88,23 @@
     >    location / {
     >        try_files $uri $uri/ /index.php?$query_string;
     >    }
-    >    location ~ \.php$ {
+    >    location = /index.php {
     >        try_files $uri =404;
-    >        fastcgi_split_path_info ^(.+\.php)(/.+)$;
     >        fastcgi_pass unix:/var/run/php5-fpm.sock;
-    >        fastcgi_index index.php;
     >        include fastcgi_params;
-    >        #include snippets/fastcgi-php.conf;
+    >        fastcgi_param SCRIPT_FILENAME $document_root/index.php;
     >    }
+    >    location ~* \.php(?:/|$) { return 404; }
     >}
     >```
 
-    若要换端口号，仅需修改虚拟机配置的端口号（`listen 端口号`）
-
-    删除备份文件default~(有修改的话都需要删除备份文件)：
+    要换端口号，修改虚拟主机的 `listen`，并在客户端使用相应端口访问。备份文件放在 sites-enabled 目录之外，避免被通配符重复加载。先检查配置，再重载 Nginx：
 
     ```shell
-    sudo rm /etc/nginx/sites-enabled/default~
+    sudo nginx -t && sudo service nginx reload
     ```
 
-    删除了备份文件，就可以执行重启nginx（若没有删除就无法重启，只能先stop再start）：
-
-    ```shell
-    sudo service nginx restart
-    ```
-
-    配置dns域名解析：
-
-    ```shell
-    sudo vi /etc/hosts
-    ```
+    本机测试可修改**运行浏览器的客户端**的 hosts 文件（Linux 为 `/etc/hosts`）。下例适用于浏览器与服务器在同一台机器上，远程访问时换成服务器 IP。
 
     加入解析域名：
 
@@ -139,49 +112,34 @@
     127.0.0.1    mylaravel.com
     ```
 
-    有问题可以查看nginx错误日志 */var/log/nginx* ，或查看laravel错误日志 *mylaravel.com/app/storage/logs/laravel.log*
+    有问题可以查看nginx错误日志 */var/log/nginx/error.log* ，或查看laravel错误日志 *mylaravel.com/app/storage/logs/laravel.log*
 7. *可选：用apache2配置虚拟主机*
 
-    配置虚拟机文件：打开目录 */etc/apache2/sites-available/* ，新建虚拟主机配置文件：命名为域名.conf（如：abc.com.conf或192.168.20.111..conf），添加内容：
+    以下示例假设已安装 Apache 2.4 并启用 PHP 处理器（如 Ubuntu 的 `libapache2-mod-php5`）。与 Nginx 共存时，在 */etc/apache2/ports.conf* 将冲突的 `Listen 80` 改为 `Listen 8080`。为 abc.com 设置客户端域名解析，再建立 */etc/apache2/sites-available/abc.com.conf*：
 
     ```text
     <VirtualHost *:8080>
-    DocumentRoot /home/kyo/www/abc    #文件路径
-    ServerName abc.com    #域名(或192.168.20.111)
-    ErrorLog    /home/www/abc/app/storage/logs/apache.log    #错误log
-    CustomLog    /home/www/abc/app/storage/logs/access.log combined    #用户log
-    <Directory /home/kyo/VirtualXP/htdocs/>
-       AllowOverride All    #为了伪静态与可能发生的权限问题
-    </Directory>
+        DocumentRoot /opt/www/mylaravel.com/public
+        ServerName abc.com
+        ErrorLog ${APACHE_LOG_DIR}/abc-error.log
+        CustomLog ${APACHE_LOG_DIR}/abc-access.log combined
+        <Directory /opt/www/mylaravel.com/public>
+            Require all granted
+            Options -Indexes +FollowSymLinks
+            AllowOverride All
+        </Directory>
     </VirtualHost>
     ```
 
-    激活虚拟主机配置：
-    ```shell
-    sudo a2ensite abc.com
-    #或
-    sudo a2ensite 192.168.20.111
-    ```
-
-    注销虚拟主机配置：
+    启用站点和 rewrite 模块，使 Laravel 的 public/.htaccess 生效。验证配置后重启 Apache，访问 `http://abc.com:8080/`：
 
     ```shell
-    sudo a2dissite abc.com
-    ```
-
-    重启Apache服务器：
-
-    ```shell
-    sudo service apache2 restart
-    ```
-
-    激活rewrite模块，才能使用.htaccess伪静态技术：
-
-    ```shell
+    sudo a2ensite abc.com.conf
     sudo a2enmod rewrite
+    sudo apache2ctl configtest && sudo service apache2 restart
     ```
 
-    若要换端口号，①需要修改虚拟机配置的端口号，②在 */etc/apache2/ports.conf* 中修改默认端口号，或额外添加一个Listen 端口号（这样可以达到用一个服务器配置不同端口号）。
+    以后停用该站点时，运行 `sudo a2dissite abc.com.conf`，检查配置后重载 Apache。
 8. 修改服务器上传文件大小
 
     1. 修改php上传文件大小限制
@@ -189,7 +147,7 @@
         查找php配置文件路径，在终端输入：
 
         ```shell
-        php5-fpm -i|grep php.ini
+        php5-fpm -i | grep 'Loaded Configuration File'
         ```
 
         根据找到的路径打开php.ini，修改 upload_max_filesize 为100M、修改 post_max_size 为150M，重启php：
@@ -199,23 +157,25 @@
         ```
     2. 修改nginx上传文件大小限制
 
-        修改nginx配置文件，在虚拟主机配置文件 */etc/nginx/sites-enabled/default* 或全局配置文件 */etc/nginx/nginx.conf* 内增加：
+        在虚拟主机配置文件的 `server` 块或 */etc/nginx/nginx.conf* 的 `http` 块中增加：
 
         ```text
         client_max_body_size 150m;
         ```
-9. 服务器开启gzip压缩（在apache或nginx里设置）
+        保存后运行 `sudo nginx -t && sudo service nginx reload` 使配置生效。
+9. 在 Nginx 开启 gzip 压缩
 
-    在配置文件中，加入：
+    在 nginx.conf 的 http 块中设置，已有同名指令时修改原值：
 
     ```text
-    gzip on;    // 开启gzip
-    gzip_min_length 1k; // 不压缩临界值
-    gzip_buffers 4 16k; // 缓存
-    gzip_comp_level 2;  // 压缩级别1~10
-    gzip_types text/html application/x-javascript text/css application/xml  text/javascript;    // 压缩文件类型
-    gzip_disable "MSIE [1-6]\.";    // ie对gzip不友好支持，禁止对ie压缩
+    gzip on;
+    gzip_min_length 1k; # 最小响应长度
+    gzip_buffers 4 16k;
+    gzip_comp_level 2;  # 范围 1 至 9
+    gzip_types application/javascript text/javascript text/css application/xml;
     ```
+
+    text/html 默认已包含。保存后检查配置并重载 Nginx。
 10. 安装软件
 
     1. 安装**openssh-server**
@@ -226,19 +186,21 @@
 
         用于被远程连接，windows安装xshell程序可以远程连接安装了openssh-server的主机。
     2.
-        >desktop版设置共享文件夹（安装完毕之后可以删除安装盘和增强功能安装包）：
+        >desktop版设置共享文件夹（安装完毕后可以弹出安装光盘）：
         >
         >    1. 虚拟机为linux（desktop）：
         >
-        >        虚拟机运行期间，在虚拟机窗口选择「设备」 -> 「安装增强设备」，成功执行之后，关闭虚拟机，在虚拟机设置共享文件夹：
+        >        虚拟机运行期间，在虚拟机窗口选择「设备」 -> 「插入增强功能光盘镜像」，在客户机内运行安装程序，成功执行之后，关闭虚拟机，在虚拟机设置共享文件夹：
         >
         >         ![Laravel图](./images/1.png)
         >
         >         再次运行虚拟机，终端执行：
-        >        `mkdir "文件夹路径"
-        >         sudo mount -t vboxsf "虚拟机设置的文件夹名称" "文件夹路径"`
+        >         ```shell
+        >         mkdir -p "文件夹路径"
+        >         sudo mount -t vboxsf "虚拟机设置的文件夹名称" "文件夹路径"
+        >         ```
         >
-        >         把挂载共享文件夹写入开机启动中：
+        >         如需通过 /etc/rc.local 开机挂载，请使用绝对挂载路径：
         >         `sudo vim /etc/rc.local`
         >
         >        在「exit 0」之前添加：
@@ -246,8 +208,8 @@
         >    2. 虚拟机为windows xp：
         >
         >         在「软件中心」安装Virtual Box，配置安装xp镜像iso。
-        >         安装「增强功能」（虚拟机中双击我的电脑中virtul box图标或在视窗下选择「设备」 -> 「安装增强功能」）；安装完毕后在视窗下选择「设备」 -> 「共享文件夹」，分配好共享路径（勾选「自动挂载」）；最后在虚拟机中映射路径 (注意：文件名不要有空格号)。
-        >    3. 虚拟机为linux(server)暂无好的解决办法
+        >         安装「增强功能」（虚拟机中双击我的电脑中virtul box图标或在视窗下选择「设备」 -> 「安装增强功能」）；安装完毕后在视窗下选择「设备」 -> 「共享文件夹」，分配好共享路径（勾选「自动挂载」）；最后在虚拟机中映射路径。
+        >    3. Linux Server 客户机同样可安装增强功能，并按第 1 项使用 vboxsf 挂载。
 
     3.
         >安装Less（CSS预处理器）
@@ -257,21 +219,10 @@
         >>  `lessc 地址file.less > 地址file.css`
     4. 安装shadowsocks客户端
 
-        下载linux版本shadowsocks-go版本并解压：
-        <http://shadowsocks.org/en/download/clients.html>
-
-        右键选择shadowsocks属性，在「权限」选项卡选中「允许作为程序执行文件」，运行客户端：
-
-        ```shell
-        sudo 路径/shadowsocks -k="密钥" -l=本地端口号 -m="aes-256-cfb加密方式" -p=服务器端口号 -s="服务器地址"
-        ```
-
-        可以把以上代码（删除sudo）写入 */etc/rc.local* 中开机启动。
-
-        安装并配置Chrome插件switchysharp :socks V5 127.0.0.1 本地端口号。
+        原笔记使用 shadowsocks-go 配合 SwitchySharp，将浏览器的 SOCKS5 代理指向本机。该客户端已由[上游项目标记为弃用](https://github.com/shadowsocks/shadowsocks-go)，仅作历史记录。
     5. 安装WebStorm/PhpStorm
 
-        先安装JDK：可以下载安装，也可以在「软件中心」输入JDK，点击「显示不常用项」，安装完毕后安装下载linux版本WebStorm/PhpStorm，解压出软件，根据安装文档打开bin路径，然后执行./的sh脚本文件。
+        下载与此系统兼容的历史版本。若该版本未附带 Java 运行时，按对应版本要求安装 JDK，再解压并运行 bin 目录下的启动脚本。
     6. 安装rapid SVN
 
         图形界面：
@@ -279,16 +230,17 @@
         增加：文件右键 -> Add
         删除：文件右键 -> 删除
         提交：文件或总的文件夹选择commit
-        Server：
+        安装命令行客户端：
+
         ```shell
-        sudo apt-get intall subversion
+        sudo apt-get install subversion
         ```
     7. 安装meld diff
 
         在「软件中心」搜索安装meld diff，并在rapid SVN中配置此软件：svn -> 查看 -> 首选项 -> 程序选项卡 「diff tool」填入①meld ②%1 %2。
     8. 安装服务器搜索工具xunsearch
 
-        [xunsearch官网](http://www.xunsearch.com/)下载，并解压出文件夹，打开文件夹，运行脚本即可完成安装。
+        [xunsearch官网](https://www.xunsearch.com/)下载，并解压出文件夹，打开文件夹，运行脚本即可完成安装。
 
         ```shell
         cd 文件夹
@@ -309,9 +261,9 @@
         路径/xunsearch/bin/xs-ctl.sh restart
         ```
     9. 安装groovy语言`sudo apt-get install groovy`
-    10. 设置vpn
+    10. 设置 VPN（历史配置）
 
-        「系统设置」 -> 「网络」，添加一个接口为「VPN」、连接类型为「点到点隧道协议（PPTP）」的连接；VPN网关、用户名、密码设置正确后，高级设置里选开「使用点到点加密」、选开「发送PPP回响包」。保存之后会新增一个vpn连接，成功选择vpn连接成功后，会在连接图标上出现一把锁。
+        PPTP 已过时，不适合保护敏感通信。原笔记的入口为「系统设置」 -> 「网络」，添加一个接口为「VPN」、连接类型为「点到点隧道协议（PPTP）」的连接；VPN网关、用户名、密码设置正确后，高级设置里选开「使用点到点加密」、选开「发送PPP回响包」。保存之后会新增一个vpn连接，成功选择vpn连接成功后，会在连接图标上出现一把锁。
     11.
         >安卓环境配置
         >   *JDK -> Genymotion -> Android sdk -> IDE -> ndk*

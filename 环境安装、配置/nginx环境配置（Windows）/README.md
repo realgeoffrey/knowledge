@@ -2,7 +2,7 @@
 
 1. 安装
 
-    [官网](https://nginx.org/)下载，解压缩后把文件夹放置系统路径并把文件夹改名为`nginx`。
+    从[官网下载页](https://nginx.org/en/download.html)下载 Windows 版 ZIP，解压到本地目录（例如 `C:\nginx`）。
 2. 配置nginx
 
     1. 编辑`路径\nginx\conf\nginx.conf`：
@@ -26,18 +26,15 @@
 
             keepalive_timeout   65;
 
-            proxy_connect_timeout 1s;   # 若反向代理每次都很慢，则降低：服务器连接的超时时间
-
             server {
-                listen      80;
+                listen      127.0.0.1:80;
                 server_name localhost;
 
                 location / {
-                    root    '文件夹路径';    # 如：'E:\www'
-                    index   index.php index.html index.htm;
-                    try_files $uri $uri/ /index.html;
-                    #try_files $uri $uri/ /index.php?$query_string;
-                    autoindex   on;
+                    root    E:/www;    # 改为实际静态站点目录，路径使用正斜杠
+                    index   index.html index.htm;
+                    try_files $uri $uri/ =404;
+                    # 单页应用可改为 try_files $uri $uri/ /index.html;（须有 index.html）
                 }
 
                 error_page  500 502 503 504  /50x.html;
@@ -46,53 +43,60 @@
                 }
             }
 
-            include servers/*.conf;
+            # 创建 conf/servers 并添加站点配置后，取消下一行注释
+            # include servers/*.conf;
         }
         ```
-    2. 编辑`路径\nginx\conf\servers\域名.conf`：
+    2. 如需虚拟主机，创建 `conf\servers` 文件夹，每个站点单独保存一个 `.conf` 文件。以管理员权限编辑 `%SystemRoot%\System32\drivers\etc\hosts`，添加一行 `127.0.0.1 dev.test proxy.test`。
 
         1. 虚拟主机
 
             ```text
-            # 路径\nginx\conf\servers\域名1.conf
+            # 路径\nginx\conf\servers\dev.test.conf
 
             server {
-                listen      80;
-                server_name 域名1;
+                listen      127.0.0.1:80;
+                server_name dev.test;
 
                 location / {
-                    root    '文件夹路径';    # 如：'E:\www\dev.me'
+                    root    E:/www/dev.test;    # 改为实际静态站点目录
                 }
             }
             ```
         2. 代理转发
 
             ```text
-            # 路径\nginx\conf\servers\域名2.conf
+            # 路径\nginx\conf\servers\proxy.test.conf
 
             server {
-                listen      80;
-                server_name 域名2;
+                listen      127.0.0.1:80;
+                server_name proxy.test;
 
                 location / {
-                    proxy_pass  http://域名3:端口号;
+                    proxy_pass  http://127.0.0.1:8080;    # 改为实际后端地址和端口
                 }
             }
             ```
 3. 启动nginx
 
-    用Windows自带的cmd终端，`cd`进入nginx文件夹。
+    在 Windows 的 cmd 中执行 `cd /d "C:\nginx"`（替换为实际解压目录）。以下命令均在此目录执行，以便 nginx 找到相对路径下的配置和日志。
 
-    1. 检查脚本（语法正确性、配置脚本位置）
+    1. 检查配置语法及配置中引用的文件
 
         `nginx -t`
     2. 启动
 
         `start nginx`或运行`nginx.exe`
 
-        >1. 重启
+        确保 80 端口可用，并在站点目录放入 `index.html`。启动后在本机打开 `http://127.0.0.1/`，虚拟主机按各自站名访问。静态站点目录只放可公开的静态文件。PHP 需要另行配置 FastCGI。
+
+        若需局域网测试，给目标站点另加一条监听主机局域网 IP 的 `listen`，放行相应防火墙端口，客户端按[目录页](../README.md)设置 hosts。
+
+        >1. 重新加载配置
         >
         >    `nginx -s reload`
         >2. 关闭
         >
-        >    `nginx -s stop`或`nginx -s quit`
+        >    `nginx -s quit` 等待当前请求完成后退出，`nginx -s stop` 快速停止。
+
+    [nginx 官方 Windows 使用说明](https://nginx.org/en/docs/windows.html)

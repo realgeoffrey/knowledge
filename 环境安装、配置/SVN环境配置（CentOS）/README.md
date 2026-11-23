@@ -2,16 +2,17 @@
 
 >历史环境记录：CentOS Linux 已停止维护，新环境请使用仍受支持的发行版；SVN 本身仍可用，但新项目也可优先评估 Git。
 
-1. 安装subversion
+1. 安装 Subversion（历史命令需要可用的 CentOS 软件源）
 
     ```shell
     sudo yum install subversion
     ```
 2. 创建仓库
 
-    建立文件夹后执行
+    由管理员准备专用的非 root 系统账户，用作仓库所有者并运行 svnserve。确保该账户可写 /home/svn，并以此账户创建两个仓库（目录名尚未使用）：
 
     ```shell
+    umask 077
     svnadmin create /home/svn/one
     svnadmin create /home/svn/two
     ```
@@ -22,7 +23,7 @@
     针对每个仓库单独配置，分别修改每个仓库conf目录下面的三个配置文件（**authz**、**passwd**、**svnserve.conf**）
     1. 修改**authz**文件，这个配置文件里面可以设置用户组和用户目录权限
 
-        ```shell
+        ```ini
         [groups]
         # harry_and_sally = harry,sally
         # harry_sally_and_joe = harry,sally,&joe
@@ -38,24 +39,22 @@
 
         >前面是配置一个用户组admin 有成员user1,user2两个；
         >后面开始配置目录权限，设置admin组（前面加@符号）的权限为读写权限，其他成员没有权限（* = ）
-    2. 修改**passwd**文件，设置访问当前仓库的用户和密码
+    2. 修改**passwd**文件，设置访问当前仓库的用户和密码。将两个占位符分别替换为独立的强密码。该文件保存明文，权限设为 600，由运行 svnserve 的账户持有。
 
-        ```shell
+        ```ini
         [users]
-        # harry = harryssecret
-        # sally = sallyssecret
-        user1  = 123456
-        user2  = 123456
+        user1 = <user1 的密码>
+        user2 = <user2 的密码>
         ```
     3. 修改**svnserve.conf**文件，开启权限控制等功能
 
-        找到第一个常规选项[general]，把前面是一个#号的去掉#号，以下是我的demo仓库配置内容
+        在已有的 `[general]` 节中启用以下配置项，注释说明保留行首的 `#`。
 
         ```text
         [general]
         ### These options control access to the repository for unauthenticated
         ### and authenticated users.  Valid values are "write", "read",
-        ### and "none".  The sample settings below are the defaults.
+        ### and "none".
         #匿名访问的权限，可以是read,write,none,默认为read
         anon-access = none
         #使授权用户有写权限
@@ -81,42 +80,44 @@
         ### have the same password database, and vice versa.  The default realm
         ### is repository's uuid.
         #认证命名空间，subversion会在认证提示里显示，并且作为凭证缓存的关键字
-        realm = feijie’s svndata
+        # 此处保留默认 realm（仓库 UUID），两个仓库各用自己的密码文件。
         ```
 
-        >所有的行都必须顶格，否则报错。
+        >节名和配置项从行首开始写，避免缩进被当作上一项的续行。
 4. 启动和关闭服务
 
     1. 启动服务
 
         ```shell
-        svnserve -d -r /home/svn
+        svnserve -d --foreground -r /home/svn
         ```
-        要在SVN根目录下，这样SVN下的多个仓库都可以根据 *svn://IP地址/仓库名* 来进行SVN。
 
-        >不要用sudo权限启动服务，否则无法commit。
-        >若无法进行写权限：解决方法：停止SVN服务：`killall svnserve`，在创建版本库的用户下启动`svn ： svnserve -d -r /home/svn`
+        以仓库所有者身份执行，终端保持打开。参数 `-r` 指定两个仓库的父目录，与启动时所在目录无关。服务默认监听 TCP 3690，远程访问需要客户端能连接此端口。
     2. 停止服务
 
-        ```shell
-        killall svnserve
-        ```
+        在启动服务的终端按 Ctrl+C 即可停止本次启动的实例。
 5. 访问仓库项目
 
-    我们有两个代码仓库 */home/svn/one、/home/svn/two* ，用`svnserve -d -r /home/svn`启动服务后，可以在通过以下地址访问两个项目：
-
-    `svn://IP地址/one, svn://IP地址/two`
+    将下面的 IP地址 替换为服务器地址，两个仓库分别为 `svn://IP地址/one` 和 `svn://IP地址/two`。
 6. SVN客户端操作
 
-    ```shell
-    svn checkout svn://IP地址/one    /var/www/abc/
-    ```
-
-    输入user1或user2的账户名和密码
+    在客户端选一个可写目录，检出工作副本，按提示输入对应密码：
 
     ```shell
-    svn add /var/www/abc/*
-    svn delete /var/www/abc/某文件
-    svn commit -m "信息" /var/www/abc/*
-    svn update [-r 版本号] /var/www/abc
+    svn checkout --username user1 svn://IP地址/one abc
+    cd abc
     ```
+
+    以下命令按需使用，将文件名替换为实际路径。先用 `svn status` 核对待提交的改动：
+
+    ```shell
+    svn add 新建的文件
+    svn delete 已受版本控制的文件
+    svn status
+    svn commit -m "信息" .
+    svn update
+    ```
+
+    更新到指定版本时使用 `svn update -r 版本号`。
+
+参考：[Subversion 手册：svnserve 配置](https://svnbook.red-bean.com/en/1.7/svn.serverconfig.svnserve.html)、[svnserve 启动选项](https://svnbook.red-bean.com/en/1.7/svn.ref.svnserve.html)。

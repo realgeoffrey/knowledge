@@ -1,34 +1,18 @@
 ### LAMP环境配置（CentOS7.0）
 
->历史环境记录：CentOS Linux 7 已于 2024-06-30 EOL，新项目不建议继续使用；以下命令仅适合维护旧环境时参考。
+>历史环境记录：CentOS Linux 7 已于 2024-06-30 EOL，新项目不建议继续使用；以下命令仅适合维护旧环境时参考。默认镜像下线后，yum 需要指向对应版本的 [CentOS Vault 归档](https://vault.centos.org/)。
 
 1. 新增用户
 
-    创建一个新用户，并设置密码，增加进root，apache组内：
+    用 root 登录后创建用户、设置密码。如果该用户需要管理服务器，再把它加入 wheel 组：
 
     ```shell
     useradd 用户名
     passwd 用户名
-    usermod -a -G root,apache 用户名
+    usermod -aG wheel 用户名
     ```
 
-    >若无法使用**sudo**命令：
-    >
-    >1. 进入root模式：
-    >
-    >    `su root`
-    >2. 添加 */etc/sudoers* 文件的写权限：
-    >
-    >    `chmod u+w /etc/sudoers`
-    >3. 编辑 */etc/sudoers* 文件：
-    >
-    >    `vim /etc/sudoers`
-    >
-    >    找到这一行：**root ALL=(ALL) ALL**在下面添加：
-    >    `用户名 ALL=(ALL) ALL`
-    >4. 撤销文件的写权限：
-    >
-    >    `chmod u-w /etc/sudoers`
+    >重新登录后可使用 sudo。若 wheel 组尚未获授权，由 root 运行 `visudo`，启用 `%wheel ALL=(ALL) ALL`。
 2. 安装环境
 
     安装**apache，php**：
@@ -40,34 +24,29 @@
 
     安装**mysql**：
 
-    1. CentOS 7 默认 yum 源不一定包含所需 MySQL Server 包；旧环境可通过官方 yum repo 安装，新环境应优先使用仍受支持的发行版和数据库版本
+    1. CentOS 7 默认提供 MariaDB。以下以当时常用的 MySQL 5.6 为例，需要已配置可用、启用签名校验的 EL7 MySQL 5.6 软件源；旧版 RPM 可从 [MySQL 官方归档](https://downloads.mysql.com/archives/community/) 查找。已有数据库时先核对版本及备份。
 
         ```shell
-        wget http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm
-        sudo rpm -ivh mysql-community-release-el7-5.noarch.rpm
         sudo yum install mysql-community-server
         ```
-    2. 成功安装之后重启mysql服务
+    2. 启动 MySQL 服务
 
         ```shell
-        sudo service mysqld restart
+        sudo systemctl start mysqld
         ```
-    3. 设置mysql的root账户密码
+    3. 首次初始化后按提示设置 MySQL 的 root 密码
 
         ```shell
-        mysql -uroot
-        mysql> set password for 「root」@「localhost」 = password('密码');
-        mysql> exit
+        mysql_secure_installation
         ```
 
-        再次登录时候用命令：`mysql –uroot –p密码`
+        再次登录时运行 `mysql -u root -p`，在提示符处输入密码。
     4. 安装依赖软件：
 
         ```shell
         sudo yum install php-mysql
         ```
 
-        >有可能需要：`sudo yum php-ZendFramework-Db-Adapter-Mysqli.noarch`
 3. 配置apache（ */etc/httpd/conf/httpd.conf* ）
 
     >以下事例，用3个域名a.com、b.com、c.com都指向本服务器，现在配置前两个域名的虚拟主机，使前两个指向各自的文件夹，第三个和其他没有配置的域名都指向默认的文件夹。
@@ -88,13 +67,13 @@
         sudo chown -R 用户名:apache /var/www/b.com
         ```
 
-        修改文件夹权限：
+        设置新建网站目录的权限：
 
         ```shell
-        sudo chmod -R 755 /var/www
+        sudo chmod 755 /var/www/a.com /var/www/b.com
         ```
 
-        新建网站index.php页面，可以添加phpinfo()内容：
+        新建网站index.php页面，可以写入 `<?php echo "OK";` 验证 PHP 解析：
 
         ```shell
         vi /var/www/a.com/index.php
@@ -102,7 +81,7 @@
         ```
     2. 配置apache虚拟主机
 
-        新建虚拟机配置文件夹：
+        新建虚拟主机配置文件夹：
 
         ```shell
         sudo mkdir /etc/httpd/sites-available
@@ -115,21 +94,20 @@
         sudo vi /etc/httpd/conf/httpd.conf
         ```
 
-        第一行增加：
+        在模块加载之后、第一个虚拟主机配置之前增加默认主机：
 
         ```text
         <VirtualHost *:80>
             ServerName localhost
-            ServerAlias localhost
             DocumentRoot /var/www/html
-            ErrorLog /var/www/html/error.log
-            CustomLog /var/www/html/requests.log combined
+            ErrorLog /var/log/httpd/html-error.log
+            CustomLog /var/log/httpd/html-access.log combined
         </VirtualHost>
         ```
 
         最后一行增加：
 
-        ```shell
+        ```text
         IncludeOptional sites-enabled/*.conf
         ```
 
@@ -148,8 +126,8 @@
                 ServerName www.a.com
                 ServerAlias a.com
                 DocumentRoot /var/www/a.com
-                ErrorLog /var/www/a.com/error.log
-                CustomLog /var/www/a.com/requests.log combined
+                ErrorLog /var/log/httpd/a.com-error.log
+                CustomLog /var/log/httpd/a.com-access.log combined
             </VirtualHost>
             ```
         2. b.com
@@ -165,23 +143,23 @@
                 ServerName www.b.com
                 ServerAlias b.com
                 DocumentRoot /var/www/b.com
-                ErrorLog /var/www/b.com/error.log
-                CustomLog /var/www/b.com/requests.log combined
+                ErrorLog /var/log/httpd/b.com-error.log
+                CustomLog /var/log/httpd/b.com-access.log combined
             </VirtualHost>
             ```
 
-            链接配置文件：
+        链接配置文件：
 
-            ```shell
-            sudo ln –s /etc/httpd/sites-available/a.com.conf /etc/httpd/sites-enabled/a.com.conf
-            sudo ln -s /etc/httpd/sites-available/b.com.conf /etc/httpd/sites-enabled/b.com.conf
-            ```
+        ```shell
+        sudo ln -s /etc/httpd/sites-available/a.com.conf /etc/httpd/sites-enabled/a.com.conf
+        sudo ln -s /etc/httpd/sites-available/b.com.conf /etc/httpd/sites-enabled/b.com.conf
+        ```
 
-            重启apache：
+        验证配置后重启 Apache：
 
-            ```shell
-            sudo service httpd restart
-            ```
+        ```shell
+        sudo apachectl configtest && sudo systemctl restart httpd
+        ```
 4. 使用phpmyadmin
 
-    下载[phpmyadmin](http://www.phpmyadmin.net)放在项目文件夹下，即可使用。
+    仅在确需管理旧库时安装与现有 PHP、MySQL 版本兼容的 phpMyAdmin，并在 Apache 中限制为本机或受控的管理网络访问。按对应版本的[官方安装说明](https://docs.phpmyadmin.net/en/latest/setup.html)完成配置。
