@@ -210,8 +210,9 @@
 
     <!--
         默认目录：src/main|test/{java,resources} → target/{classes,test-classes}。
-        package 只打包；install → 本地仓库；deploy → 远程（不是启动应用）。
-        一分包：maven-jar-plugin 普通瘦包（无依赖）；二分包：spring-boot-maven-plugin:repackage 可执行胖包。
+        执行 package 会先经过编译、测试等阶段，再打包。install 继续将制品写入本地仓库，deploy 再发布到远程仓库。
+        本例用 maven-jar-plugin 生成普通 JAR，默认包含项目的类和资源。
+        Spring Boot 应用可用 spring-boot-maven-plugin 的 repackage 目标将普通 JAR 重打包成含依赖和启动器的可执行 JAR。
     -->
     <build>
         <!-- finalName 只改文件名不改坐标；defaultGoal 在 mvn 无目标时生效。 -->

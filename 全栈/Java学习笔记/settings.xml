@@ -12,8 +12,7 @@
       server.id       认证 → 对齐实际生效目标：
                         走镜像 = mirror.id；直连 = repository.id；发布 = distributionManagement 目标 id
       mirror.id       镜像自己的名字；走镜像时对 servers
-      mirrorOf        （非 id）匹配被劫持的 repository / pluginRepository 的 id
-                      （不是 URL、不是 mirror.id、不是 profile.id）
+      mirrorOf        按 repository / pluginRepository 的 id 决定哪些仓库走镜像
       profile.id      本机开关（-P / activeProfiles）；不参与 mirrorOf
       repository.id   仓库逻辑名；被 mirrorOf 匹配；直连时对 servers
 
@@ -21,7 +20,7 @@
         profile.id=company-repo
           └── repository.id=company-direct  ← mirrorOf 对象；直连时对 servers
         mirror.id=company-mirror            ← 走镜像时对 servers
-        mirrorOf=central|*|…                ← 被替换的仓库 id
+        mirrorOf=*,!company-direct          ← 其余仓库走镜像，company-direct 直连
         proxy.id=company-proxy              ← 独立，与上列全无对应
 
       要点：proxy 管出网、mirror 管下载改道，可同时开。mirrorOf=* 时声明的直连 URL
@@ -54,7 +53,8 @@
     </proxies>
 
     <!--
-        servers：只认证，不写仓库 URL；密码/token 用 ${env.变量} 或加密（mvn -emp / -ep）。
+        servers 按 id 提供凭证、传输参数、部署文件权限等。密码或 token 可从 ${env.变量} 读取。
+        Maven 3 的密码加密命令为 mvn -emp 和 mvn -ep。
         id 对齐见文件头「<id> 关系」。
     -->
     <servers>
@@ -88,9 +88,8 @@
 
     <!--
         mirrors：只换下载源，不改 deploy。匹配与认证见文件头「<id> 关系」。
-        mirrorOf 常用：central | * | external:* | *,!repoId | repo1,repo2
-          central     只换 Super POM 默认中央仓（不必写 profile；按 id 字符串，非域名——
-                      别的 URL 若也叫 central 一样被劫持）
+        mirrorOf 常用值如下。多个仓库 id 用逗号分隔，如 repo1,repo2。
+          central     匹配 id 为 central 的仓库，包括 Super POM 默认的中央仓库
           *           全部远程仓（含 company-direct）都走镜像；入口须能提供全部制品（私服仓库组）
           *,!repoId   除 repoId 外走镜像（该仓直连，认证用 servers.id=repoId）
           external:*  只镜像非 file、非本机（localhost / 127.0.0.1）的外部仓

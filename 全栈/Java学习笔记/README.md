@@ -1,10 +1,14 @@
 # Java学习笔记
 
 ## 目录
-1. [Java 概览](#java-概览)
-1. [Java SE 基础](#java-se-基础)
-1. [后端工程与数据中间件](#后端工程与数据中间件)
-1. [名词解析](#名词解析)
+
+| 我想做什么 | 从哪里读起 |
+| --- | --- |
+| 跑通第一个 Java 程序 | [Java 概览](#java-概览) → [环境配置与运行](#环境配置与运行) |
+| 从 JavaScript 转到 Java | [Java SE 基础](#java-se-基础) → [基本类型与引用类型](#基本类型与引用类型) → [方法](#方法) → [面向对象](#面向对象) |
+| 读懂业务代码里的类型和数据处理 | [泛型](#泛型) → [常用 API 与进阶主题](#常用-api-与进阶主题) |
+| 跟着一个请求找到数据库 | [后端工程与数据中间件](#后端工程与数据中间件) → [构建与依赖管理](#构建与依赖管理) → [JDBC](#jdbc-与数据库访问演进) → [Spring Boot](#spring-boot-学习顺序) |
+| 查消息投递、定时执行或陌生术语 | [消息队列](#消息队列) · [定时任务](#定时任务) · [名词解析](#名词解析) |
 
 ---
 
@@ -29,6 +33,7 @@
         1. 文本
 
             1. [廖雪峰：Java教程](https://liaoxuefeng.com/books/java/introduction/index.html)
+            1. 查语法和标准库时按项目的 Java 版本阅读。[Java 语言规范（Java 21）](https://docs.oracle.com/javase/specs/jls/se21/html/index.html) · [Java SE 21 API](https://docs.oracle.com/en/java/javase/21/docs/api/index.html)
         </details>
 1. 学习路线
 
@@ -65,16 +70,14 @@
 
 ## Java 概览
 ### 版本演进
-- Java 1.0 / 1.1 常见称呼是 JDK 1.0 / 1.1（Java Development Kit）。
-- 1.2 到 1.4 常见叫法是 J2SE（Java 2 Platform, Standard Edition）。
-- Java 5 的正式品牌常见写作 J2SE 5.0，也常被称为 Java 5；Java 6 起通常叫 Java SE（Java Platform, Standard Edition）。
-- 日常说版本时，Java SE 8 / Java 8 / JDK 8 / JDK 1.8 通常指同一代（2014年）。
 
-    下载地址：[Java SE 8 Archive Downloads (JDK 8u202 and earlier)](https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html)、[Java SE 8 Archive Downloads (JDK 8u211 and later)](https://www.oracle.com/java/technologies/javase/javase8u211-later-archive-downloads.html)（[Java downloads](https://www.oracle.com/java/technologies/downloads/)、[Java Archive](https://www.oracle.com/java/technologies/downloads/archive/)）
+跟着本文做入门练习可用 JDK 21。接手已有工程时，先从项目的构建配置和 CI 确认编译目标、运行环境，再选择本机 JDK。Oracle 将 Java 8、11、17、21、25 列为长期支持（LTS）版本，各发行商的支持周期以其说明为准。[Oracle 支持路线图](https://www.oracle.com/java/technologies/java-se-support-roadmap.html) · [JDK 下载](https://www.oracle.com/java/technologies/downloads/)
 
-    >JDK 8u202解析：`8`代表主版本号，也就是 Java 8（在早期命名规范中也叫 JDK 1.8）。`u`是 Update（更新） 的缩写。`202`是更新号。Oracle 会定期发布这些 Update，主要包含安全漏洞修复、Bug 修复以及一些微小的性能调优，不涉及语法层面的大改动。
-- Java 9 起主版本号不再写成 `1.x`，而是直接使用 9、10、11、17、21、25 这种形式。
-- 本机多版本 JDK / Maven 可用 [SDKMAN!](https://github.com/sdkman/sdkman-cli) 管理。
+| 读旧项目时看到的写法 | 如何理解 |
+| --- | --- |
+| JDK 1.0 / 1.1、J2SE 1.2～1.4、J2SE 5.0 | 早期版本名称。Java 6 起使用 Java SE（Java Platform, Standard Edition） |
+| Java 8、JDK 1.8、`1.8.0_202`、8u202 | 都属于 Java 8 这一代，后两种写法还标出了第 202 号更新 |
+| Java 9、11、17、21、25 | Java 9 起主版本号直接用整数，如 `21.0.11` 的主版本是 21 |
 
 ### 平台体系
 - **Java SE**：标准版，覆盖语言基础、标准类库、集合、IO/NIO、日期时间、并发、网络、反射、注解。
@@ -82,7 +85,7 @@
 - **Java ME**（Java Micro Edition）：面向早期嵌入式/移动设备，现在基本不是主流。
 
 ### 运行体系：JDK / JRE / JVM
-- **JDK**：开发套件，包含 JVM、标准类库，以及 `$JAVA_HOME/bin` 下的开发和诊断工具；业务常用命令包括 `java`、`javac`、`jar`、`javadoc`、`jshell`、`jdeps`、`jlink`、`jcmd`、`jmap`、`jstack`。
+- **JDK**：开发套件，包含 JVM、标准类库和开发工具。先认识 `javac`（编译）、`java`（启动程序）和 `jar`（打包）。查运行中的 JVM 可用 `jcmd`，JDK 9 起还可以用 `jshell` 交互试写表达式。
 - **JRE**（Java Runtime Environment）：运行环境，包含 JVM 和标准类库；Java 8 常见独立 JRE，现代 JDK 通常直接提供完整运行环境。
 - **JVM**（Java Virtual Machine）：负责加载并执行 `.class` 字节码。
 
@@ -116,7 +119,7 @@ flowchart TD
 ```
 
 ### 核心优势
-- 跨平台：同一套字节码可以运行在不同平台的 JVM 上（一次编写，到处运行。Write Once, Run Anywhere。WORA）。
+- 跨平台：同一份字节码可在不同操作系统上运行，前提是目标 JVM 支持该字节码版本，运行时所需的类库和本地依赖也可用。
 - 工程生态成熟：框架、数据库驱动、中间件集成非常完善。
 - 垃圾回收：不需要像 C/C++ 那样手动管理内存。
 - 稳定：在企业级业务系统里长期被验证。
@@ -146,24 +149,39 @@ Java SE 基础按 8 个字回忆：
 判断任何基础问题，只问三句：**名字能不能访问？编译期类型是什么？运行期对象和异常路径是什么？**
 
 ### 环境配置与运行
-- 安装 JDK、Maven，并配置 `JAVA_HOME`（JDK安装根目录）、`PATH`（可执行文件目录）。
 
-    下载并安装 JDK、Maven，然后配置环境变量。例如 `~/.zshrc`：
+**先跑通一个类。** 安装 JDK 后，在终端运行 `java -version` 和 `javac -version`，确认启动器和编译器的主版本一致。这个练习只需要 JDK。
 
-    ```text
-    # 方式1，手动管理版本
-    # JDK版本
-    export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home
-    export PATH=$JAVA_HOME/bin:$PATH
-    # Maven版本
-    export M2_HOME=/usr/local/apache-maven-3.9.15
-    export PATH=$M2_HOME/bin:$PATH
+在空目录中新建 `Hello.java`。文件名与公开类名的大小写要一致。
 
-    # 方式2，SDKMAN（https://github.com/sdkman/sdkman-cli）
-    #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-    export SDKMAN_DIR="$HOME/.sdkman"
-    [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+```java
+package demo;
+
+public class Hello {
+    public static void main(String[] args) {
+        String name = args.length == 0 ? "Java" : args[0];
+        System.out.println("你好，" + name);
+    }
+}
+```
+
+```sh
+mkdir out
+javac -encoding UTF-8 -d out Hello.java
+java -cp out demo.Hello Ada
+# 输出：你好，Ada
+```
+
+`javac -d out` 根据包名生成 `out/demo/Hello.class`。`-cp out` 告诉启动器从哪个目录查找类，`demo.Hello` 是带包名的类名，`Ada` 进入 `args[0]`。在 JDK 11+ 也可从同一目录直接运行 `java Hello.java Ada`。使用较新的 JDK 为旧运行环境编译时，例如 JDK 21 面向 Java 8，可用 `javac --release 8 -encoding UTF-8 -d out Hello.java`，同时检查语言语法、目标字节码和可用的标准库 API。[javac 命令手册](https://docs.oracle.com/en/java/javase/21/docs/specs/man/javac.html) · [Java 11 源文件启动模式](https://docs.oracle.com/en/java/javase/11/tools/java.html)
+
+- **配置本机工具**。手动安装时，将 `JAVA_HOME` 指向 JDK 根目录，并把 `$JAVA_HOME/bin` 加入 `PATH`。macOS / zsh 可将下例写入 `~/.zshrc`（适用于已向系统注册的 JDK 21）：
+
+    ```sh
+    export JAVA_HOME="$(/usr/libexec/java_home -F -v 21)"
+    export PATH="$JAVA_HOME/bin:$PATH"
     ```
+
+    也可以用 SDKMAN! 统一管理 JDK 和 Maven，让它的初始化脚本在 `~/.zshrc` 末尾设置当前版本。进入 Maven 工程后，运行项目的 `./mvnw -v` 或本机的 `mvn -v`，核对输出中的 Java 版本和路径。[SDKMAN! 用法](https://sdkman.io/usage/)
 
     - <details>
 
@@ -179,12 +197,12 @@ Java SE 基础按 8 个字回忆：
 
         sdk install java                # 安装 Java 最新稳定版
         sdk install java 「支持的版本标识」 # 安装指定版本，版本标识从 sdk list java 中复制
-        sdk install java 8.0.192-local /Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home
+        sdk install java 8.0.191-local /Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home
         # 安装本地版本（sdk install java 「唯一的版本号」 「本地路径」）：先手动下载一个版本，然后让 SDKMAN! 接管（软链接）
 
-        sdk use java 8.0.192-local          # 仅当前 shell 使用该 Java 版本
+        sdk use java 8.0.191-local          # 仅当前 shell 使用该 Java 版本
 
-        sdk default java 8.0.192-local      # 设为默认版本，后续新 shell 生效
+        sdk default java 8.0.191-local      # 设为默认版本，后续新 shell 生效
 
         sdk current             # 查看所有候选项当前使用的版本
         sdk current java        # 查看 Java 当前使用的版本
@@ -200,12 +218,7 @@ Java SE 基础按 8 个字回忆：
         1. Cursor：`java.configuration.runtimes`
         2. IDEA：`「文件」-「项目结构」-「项目」-「SDK」`（「编辑」配置好需要的SDK）
     - IDEA 正在运行/调试时，尽量不要让 Cursor 的 Java 语言服务对同一工程自动编译。仅打开 Cursor 本身不一定有问题；双方同时编译且共享 `target/` 等输出目录时，Cursor 侧可能清掉或覆盖 IDEA 刚产出的 class，表现为构建「回退」、类加载失败或热替换异常。若需同时打开，关掉 Cursor 的 `java.autobuild.enabled`，或只当纯文本编辑器。
-    - 运行中的服务吃的是**内存里已加载的代码**。没有重新编译 / 热更新 / 重启时，只改磁盘源文件不会影响正在跑的进程——Java、Node、浏览器前端同理。Java 多一步：源码须先编成 `.class`；即便 `.class` 已写入 `target/`，JVM 仍用旧类，直到重启，或由 HotSwap / DevTools / JRebel 等主动替换。标准 JVM HotSwap 一般只能改方法体；改字段、方法签名、类层次或 Spring Bean / 注解后通常要重启。DevTools 做自动重启；JRebel 能覆盖更多类结构变更，但是商业软件。Cursor 的调试与 Hot Code Replace 取决于已装的 Java 调试扩展。改代码后要不要 `clean` / `compile` / `install` / 重启：见 Maven §11。
-- 初学期建议先用 LTS 版本；老项目常见 Java 8，新项目常见 Java 17/21，是否使用更高版本以团队基线为准（团队统一约定的技术标准下限/默认线）。
-
-- `javac 文件.java` → `类名.class`，编译为字节码；运行 `java 类名`（不写 `.class`）后，由 JVM 加载执行，热点代码可能经 JIT 编译为机器码。
-
-    >可通过 `java 类名 参数1 参数2` 向 `main` 传入命令行参数，如：`public class 类名 { public static void main(String[] args) {} }`。传统项目入口常用这个标准签名。只有要被 JVM 直接当作程序入口启动的类，才必须有可启动的 `main` 方法。
+    - 调试时，`target/classes` 里的字节码更新后，JVM 通常仍执行已加载的类。标准 HotSwap 一般能替换方法体；改了字段、方法签名或 Bean 定义，通常要重启应用或由 Spring Boot DevTools 自动重启。Cursor 的 Hot Code Replace 取决于 Java 调试扩展，JRebel 等工具可支持更多类结构变更。按改动判断是否需要重新编译、清理或重启，见[构建与依赖管理](#构建与依赖管理)中的 Maven 第 11 项。
 
 ### 基本类型与引用类型
 Java 是强类型语言，变量和表达式都有编译期类型。类型先分两类：**基本类型保存值本身**，**引用类型保存对象引用或 `null`**。变量具体在栈、堆还是对象内部，取决于它是局部变量、字段还是数组元素，不由“基本类型 / 引用类型”单独决定。
@@ -262,7 +275,7 @@ Java 是强类型语言，变量和表达式都有编译期类型。类型先分
     int r2 = ch + 1;           // char 提升为 int → 66
     long r3 = 1L + 2;          // 结果 long
     float r4 = 1.5f + 2;       // 结果 float
-    double expr = a + 1.0f;    // 提升到较宽类型再算
+    double expr = a + 1.0f;    // 先按 float 做加法，再把结果拓宽为 double
     int r5 = 5 / 2;            // int 除法 → 2
     double r6 = 5 / 2.0;       // → 2.5
 
@@ -307,14 +320,13 @@ Java 是强类型语言，变量和表达式都有编译期类型。类型先分
         | `double` | `Double` |
         | `char` | `Character` |
         | `boolean` | `Boolean` |
-        | `void` | `Void`，表示 `void` 对应的类型对象，不能像普通值一样创建实例 |
 
         - 包装类是基本类型的引用类型版本，主要用于泛型、集合、可空值和工具方法。
         - 自动装箱：基本类型转包装类；自动拆箱：包装类转基本类型。拆箱 `null` 会抛 `NullPointerException`。
-        - 包装类对象比较值优先用 `equals`；`==` 比较引用，只有判断 `null` 时稳定使用。
+        - 两个 `Integer` 变量用 `==` 比较引用，按值比较可用 `equals`（可能为 `null` 时用 `Objects.equals`）。若一侧是 `int`，如 `boxed == 10`，则先拆箱再比较数值，`boxed` 为 `null` 时会抛异常。
         - 包装类可能缓存常用值，如 `Integer.valueOf(int)` 保证缓存 `-128 ~ 127`，实现还可扩大范围；不要依赖缓存结果写 `==` 做值比较。
         - 常用方法：`Integer.parseInt("123")` 返回 `int`，`Integer.valueOf("123")` 返回 `Integer`，`String.valueOf(123)` 返回 `String`。
-        - Java 可以有自定义包装类型，但它们只是普通类，不属于 Java 内置的 8 个基本类型包装类，也不支持自动装箱/拆箱。Void 是 void 的特殊占位类，主要用于泛型和反射场景。
+        - 自定义包装类不支持自动装箱 / 拆箱。`Void` 是占位类，常见于 `Callable<Void>` 等无结果的泛型声明。反射中代表 `void` 的类型对象是 `void.class`，等于 `Void.TYPE`。
 
     - <details>
 
@@ -369,7 +381,7 @@ Java 是强类型语言，变量和表达式都有编译期类型。类型先分
 | 数组元素 | 数组对象内部 | `有默认值` | 属于数组对象；数组活着元素就存在 |
 
 ><details>
-><summary>e.g. </summary>
+><summary>字段、数组元素的默认值与局部变量赋值</summary>
 >
 >```java
 >public class Xx {
@@ -502,7 +514,7 @@ public static final String DEFAULT_CHARSET = "UTF-8";
 
 - 更细的规则
 
-    - `static final` 基本类型或 `String` 字段，如果用编译期常量表达式赋值，就是编译期常量；其他类使用它时，编译后可能直接把值写进自己的字节码。
+    - 用常量表达式初始化的 `final` 基本类型或 `String` 变量是编译期常量，局部变量也适用。其他类读取 `static final int LIMIT = 3` 时，常量值会写入调用方的字节码；只更新声明方，旧调用方仍会用 `3`。
     - `final` 字段可以先声明、后初始化，这叫空白 final 字段；实例字段必须在每条构造路径中赋值一次，静态字段必须在声明处或静态初始化代码块中赋值一次。
     - 局部变量没写 `final`，但赋值后不再修改，就是事实不可变。`lambda、局部类、匿名类`如果读取`外部局部变量`，该变量必须是 `final` 或事实不可变，否则编译报错；若读取的是字段则没有这个规则。
     - `final` 引用只保证变量不能改指向，不保证对象内容不变；真正的不可变类还要限制继承、字段修改、构造入参拷贝和 Getter 暴露。
@@ -539,7 +551,7 @@ import static java.lang.Math.PI;    // import static 写具体静态成员或 *�
     - `import` 是编译期语法，只负责简化名称书写，不会加载整个包，不会执行被导入类型的代码。
     - 同包类型、同源文件里的其他顶级类型，以及 `java.lang` 包中直接声明的类型可以直接使用；`java.lang` 的子包不会自动导入，例如 `java.lang.annotation.ElementType` 仍需显式导入或使用全限定名。
     - 使用其他包下的类型时：可以写全限定名，例如 `java.util.List`；想把 `java.util.List` 简写成 `List`，写 `import java.util.List;`。
-    - 类型导入有两种：`import 包.类型;`、`import 包.*;`。
+    - 类型可以单独导入或按需导入，如 `import java.util.List;`、`import java.util.*;`。Java 25 起还可用 `import module java.base;` 按需导入该模块导出包中的公开类型。[模块导入](https://docs.oracle.com/en/java/javase/25/language/module-import-declarations.html)
     - 静态导入有两种：`import static 包.类型.静态成员;`、`import static 包.类型.*;`。
     - `import com.example.*;` 只导入 `com.example` 当前包下的类型，不递归导入子包 `com.example.service.UserService`。
     - Java 没有 `import ... as ...` 别名语法。
@@ -615,15 +627,15 @@ import static java.lang.Math.PI;    // import static 写具体静态成员或 *�
 Javadoc 的类型信息来自 Java 签名，注释负责说明用途、参数语义、返回语义、异常语义、使用约束。
 
 ```java
-/**
- * 根据用户 id 查询用户。
- *
- * @param id 用户 id，必须大于 0
- * @return 用户对象；不存在时返回 null
- * @throws IllegalArgumentException id 不大于 0 时抛出
- */
-User findById(long id) {
-    return null;
+interface UserRepository {
+    /**
+     * 根据用户 id 查询用户。
+     *
+     * @param id 用户 id，必须大于 0
+     * @return 用户对象；不存在时返回 null
+     * @throws IllegalArgumentException id 不大于 0 时抛出
+     */
+    User findById(long id);
 }
 ```
 
@@ -696,11 +708,11 @@ Java 代码块用 `{}` 包起来。能单独执行的结构叫语句；能计算
 
         - 传统 `case:` 写法会继续向下执行，通常需要 `break`。
         - `case ->` 写法不会向下穿透。箭头分支和 `switch` 表达式在 Java 14 转正，Java 21 起还支持类型模式与 `case null`。
-        - `switch` 表达式必须产生结果；代码块形式用 `yield` 返回分支结果。
+        - `switch` 表达式必须穷尽分支。正常结束的分支要给出值，箭头后的代码块用 `yield` 交出结果；分支也可以直接 `throw`。
         - 传统 `switch` 选择值支持 `byte`、`short`、`char`、`int`、`Byte`、`Short`、`Character`、`Integer`、`String`、枚举类型。
         - `long`、`float`、`double`、`boolean` 不能作为传统 `switch` 选择值。
         - `case` 标签不能重复；传统常量 `case` 必须是编译期常量或枚举常量。
-        - `default` 最多写一个，可以放在任意位置；为了阅读，通常放最后。
+        - `default` 最多写一个，通常放最后。它不能写在类型模式或 `case null` 前面。选择值为 `null` 且没有显式处理 `null` 的标签时，即使有 `default` 也会抛 `NullPointerException`。[JLS §14.11](https://docs.oracle.com/javase/specs/jls/se25/html/jls-14.html#jls-14.11.1)
 
 - 循环规则
 
@@ -747,7 +759,7 @@ Java 代码块用 `{}` 包起来。能单独执行的结构叫语句；能计算
     - 方法可以通过 `throw` 异常结束，此时不需要再写正常返回值。
     - 返回引用类型时，返回的是引用值；不是对象拷贝。
 
-- 方法签名只看方法名和参数类型列表
+- 非泛型方法的签名由方法名和形参类型列表决定。泛型方法还要比较类型形参及其上界。返回类型和 `throws` 声明不属于签名。
 
     ```java
     int sum(int a, int b) { return a + b; }
@@ -772,7 +784,7 @@ Java 代码块用 `{}` 包起来。能单独执行的结构叫语句；能计算
         1. 优先选择不需要装箱、拆箱、可变参数的普通调用；这里包含基本类型拓宽和引用向上转型。
         2. 再考虑需要装箱或拆箱的普通调用。
         3. 最后考虑可变参数调用。
-        4. `null` 可匹配引用类型；多个互不隶属的引用类型同时匹配时会编译报“调用不明确”。
+        4. 在首个有匹配的方法组中选择最具体的方法。例如同时有 `m(Object)` 和 `m(String)` 时，`m(null)` 选 `m(String)`；若再增加 `m(Integer)`，编译器就无法唯一选择。
 
 - 可变参数规则
 
@@ -1000,8 +1012,8 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
 
     - 初始化顺序按这条链记
 
-        1. 首次主动使用某个类时，先初始化父类，再初始化当前类。
-        2. 同一个类中，静态字段赋值和静态代码块按源码顺序执行一次。
+        1. 首次主动使用某个类（如 `new Child()`）会触发初始化。读取编译期常量或取得 `Child.class` 不会触发初始化。
+        2. 类初始化时先给本类的静态编译期常量赋值，再初始化父类及声明了默认方法的父接口，最后按源码顺序执行本类其余静态字段初始化器和静态块。[JLS §12.4](https://docs.oracle.com/javase/specs/jls/se25/html/jls-12.html#jls-12.4)
         3. `new` 对象时，先为整条继承链上的实例字段填默认值。
         4. 构造器链从子类构造器入口开始，最终先进入最顶层父类构造。
         5. 每一层在父类构造器返回后，按源码顺序执行该层的实例字段初始化器和实例初始化块，再执行构造器剩余语句。Java 25 起，显式构造器调用前的语句已先执行。
@@ -1343,7 +1355,7 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
         | 低频细节 | 常量类体会生成特殊子类，`constant.getClass()` 可能不是声明枚举类；判断声明枚举类型用 `getDeclaringClass()` |
 
         <details>
-        <summary>e.g. </summary>
+        <summary>用订单状态演示枚举业务码、行为和集合</summary>
 
         - 简单示例：常量、构造器、字段
 
@@ -1538,7 +1550,7 @@ OO = Object-Oriented，面向对象思想。OOP = Object-Oriented Programming，
     >字段、方法、成员类型是成员；构造器和初始化代码块写在类体第一层，但不是成员。
 
     <details>
-    <summary>e.g.</summary>
+    <summary>成员类、局部类型和匿名类的声明与使用</summary>
 
     ```java
     class User {
@@ -1723,7 +1735,7 @@ Throwable
 - `finally` 规则
 
     - 控制流离开 `try` / `catch` 时（含 `return`、`throw`）一般会执行 `finally`（适合释放资源、恢复状态）。
-    - 不建议在 `finally` 里 `return` 或抛新异常：前者会吞掉 `try`/`catch` 的返回值，后者可能盖住原异常。
+    - `finally` 中的 `return` 或 `throw` 会覆盖原先的返回值或异常。例如 `try { throw new IllegalStateException(); } finally { return 0; }` 最终返回 `0`，调用方收不到原异常。
     - 例外：`System.exit` / `halt`、JVM 崩溃、进程被杀、断电，或线程在 `try` 里永久卡住时，`finally` 可能执行不到。
 
 - `try-with-resources` 规则
@@ -1873,7 +1885,9 @@ String firstName = names.get(0); // 取出时不需要强转
     | `List<T>` | `T` | `T` | 类型确定，可取可放 |
     | `List<?>` | `Object` | 只能 `null` | 完全不知道元素类型 |
     | `List<? extends Number>` | `Number` | 只能 `null` | 元素是某个 `Number` 子类型，适合只读取出 |
-    | `List<? super Integer>` | `Object` | `Integer`（及 `null`） | 元素是 `Integer` 的某个父类型，适合写入 `Integer` |
+    | `List<? super Integer>` | `Object` | `Integer`（及 `null`） | 元素类型可以是 `Integer` 本身或其父类型，适合写入 `Integer` |
+
+    表中是编译期规则。实际能否写入还取决于列表实现，例如 `List.of(1).add(2)` 能编译，运行时会抛 `UnsupportedOperationException`。
 
     ```java
     static double sum(List<? extends Number> numbers) {
@@ -1940,9 +1954,7 @@ String firstName = names.get(0); // 取出时不需要强转
     ```
 
     - `List<String>` 和 `List<Integer>` 都擦除为 `List` 接口，具体对象的实现类可以不同；`m(List<String>)` 和 `m(List<Integer>)` 也都会擦除为 `m(List)`，所以不能同时重载。
-    - 擦除导致重写前后的方法签名不一致时，编译器会生成桥接方法进行适配，保证重写和多态仍然有效。
-
-        >桥接方法是编译器自动生成的隐藏方法，用来在泛型擦除后仍保持重写与多态：保留父类擦除后的方法签名（如 `Object get()`），内部再转调子类真实实现（如 `String get()`）。不是业务代码要写的东西。
+    - 擦除后，父类的 `T get()` 可能变成 `Object get()`，子类实现的却是 `String get()`。JVM 的方法描述符包含返回类型，因此编译器在子类生成桥接方法 `Object get()`，转调 `String get()`，让通过父类引用的调用仍执行子类实现。
     - class 文件可以保留声明处的泛型签名供反射读取，但普通对象通常不知道自己的实际类型实参。
 
         >普通对象（实例）：由于泛型擦除，运行期通常只知道自己是 Box、ArrayList 等原始类型，而不知道自己最初是 Box<String>、Box<Integer> 或 ArrayList<String>。
@@ -1963,7 +1975,7 @@ String firstName = names.get(0); // 取出时不需要强转
     - 如果多个位置之间没有真实的类型关系，就不必为了“通用”而增加泛型。
 
 <details>
-<summary>e.g. </summary>
+<summary>用泛型转换数值并在不同元素类型的列表间复制</summary>
 
 ```java
 import java.util.ArrayList;
@@ -2099,10 +2111,10 @@ public class GenericExample {
     | `@Retention` 策略 | 保留范围 | `getAnnotation()` 等反射 API |
     | --- | --- | --- |
     | `SOURCE` | 只在源码（如 `@Override`） | ❌ 读不到 |
-    | `CLASS`（默认） | 写入 `.class`，加载后通常丢掉注解数据 | ❌ 读不到 |
+    | `CLASS`（默认） | 写入 `.class`，字节码工具可读取 | ❌ 读不到 |
     | `RUNTIME` | 保留到运行期 | ✅ 可读 |
 
-    Spring、校验、自定义业务注解要在运行期生效时，必须显式写 `@Retention(RUNTIME)`；只写 `@Target` 忘了 Retention，默认是 `CLASS`，反射读不到。
+    上表以类、字段、方法等声明为例。自定义注解若要由框架通过标准反射读取，须声明 `@Retention(RUNTIME)`。局部变量声明和 lambda 形参声明上的注解即使指定 `RUNTIME` 也不会写入 `.class`。[JLS §9.6.4.2](https://docs.oracle.com/javase/specs/jls/se25/html/jls-9.html#jls-9.6.4.2)
 
     `@Target` 常用值有 `TYPE`、`FIELD`、`METHOD`、`PARAMETER`、`CONSTRUCTOR`；其他值包括 `LOCAL_VARIABLE`、`ANNOTATION_TYPE`、`PACKAGE`、`MODULE`、`RECORD_COMPONENT`、`TYPE_PARAMETER` 和 `TYPE_USE`。`TYPE_USE` 表示几乎所有使用类型的位置。
 
@@ -2193,7 +2205,7 @@ public class GenericExample {
     - 数组、基本类型和 `void` 也有 `Class` 对象，通常使用 `String[].class`、`int.class`、`void.class`；`Class.forName("int")` 不可用。
     - `Class.forName(name, false, loader)` 可以指定类加载器并禁止初始化；找不到类型时，`Class.forName()` 和 `loadClass()` 都会抛出 `ClassNotFoundException`。
     - 嵌套类型的二进制名称使用 `$`，例如 `Class.forName("com.example.Outer$Inner")`。
-    - JVM 判断类型身份时同时考虑“全限定名 + 类加载器（`ClassLoader`）”；同名类由不同类加载器加载时仍是不同类型。
+    - 同一二进制类名由不同的类加载器**定义**时，JVM 视为不同类型。两个类加载器若都委托给同一父加载器定义，则会拿到同一个 `Class` 对象。
 
 1. 查看并判断类型
 
@@ -2209,7 +2221,7 @@ public class GenericExample {
     ```
 
     - `clazz.isInstance(obj)` 判断对象是否属于 `clazz` 表示的类型，是运行期版本的 `instanceof`。
-    - `target.isAssignableFrom(source)` 判断 `source` 类型的值能否赋给 `target` 类型的变量，阅读方向不能反过来。
+    - `target.isAssignableFrom(source)` 判断两个类型是否相同，或 `source` 是否可以向上转型为 `target`。它不做数值拓宽或装箱，例如 `long.class.isAssignableFrom(int.class)` 和 `Integer.class.isAssignableFrom(int.class)` 都是 `false`。[Class API](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html#isAssignableFrom(java.lang.Class))
     - `isInterface()`、`isEnum()`、`isAnnotation()`、`isArray()`、`isPrimitive()`、`isRecord()`、`isSealed()` 可继续判断类型种类。
 
 1. 查找成员
@@ -2256,11 +2268,11 @@ public class GenericExample {
 
     - `field.get(user)` 返回字段值，类型统一表现为 `Object`；`field.set(user, value)` 要求值与字段类型兼容。
     - 实例字段需要目标对象，静态字段可以传 `null`。
-    - 访问控制与「可访问性」是两层：
+    - 反射访问权限：
 
         1. **语言访问级别**：`private` / 包可见 / `protected` / `public`。用 `getDeclaredField` 等可以**查到**非 public 成员，但默认仍按语言规则检查调用权限。
         1. **反射压制检查**：`setAccessible(true)` 试图关闭上述检查；失败时抛 `InaccessibleObjectException`（Java 9+）。`trySetAccessible()` 语义相同，但失败时返回 `false`、不抛该异常，适合先探测再决定路径。
-        1. **模块边界（JPMS）**：即使压制语言检查，若目标类型所在**包未对该调用方 open**，深反射仍会被拒绝。常见场景：反射进 JDK 内部包（Java 16/17 起默认强封装）、或命名模块之间未 `opens … to …`。Classpath 上的未命名模块访问**应用自己的**私有成员通常仍可行；不要据此推断也能反射进 `java.base` 等 JDK 模块。
+        1. **模块边界（JPMS）**：同一模块内可以压制对私有成员的语言访问检查。跨模块读取私有字段时，目标包须向调用模块开放（`opens`）；仅导出包（`exports`）不足以访问私有字段。[AccessibleObject API](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/AccessibleObject.html#setAccessible(boolean))
         1. 运维侧可用 `--add-opens module/package=目标模块`（Classpath 代码目标常写 `ALL-UNNAMED`）临时放开；长期应优先公开 API，或在 `module-info` 里按需 `opens`，而不是全局关闭封装。
 
     - 只有 `@Retention(RUNTIME)` 的注解才能被 `getAnnotation()` / `isAnnotationPresent()` 读到；`SOURCE` / `CLASS` 在这些 API 下都是“没有注解”。
@@ -2317,19 +2329,64 @@ public class GenericExample {
 
 ### 常用 API 与进阶主题
 
-- `String`：不可变字符串；频繁拼接优先用 `StringBuilder`。
-- 日期时间 API：优先用 `java.time`，如 `LocalDateTime`、`Instant`、`Duration`，少用旧的 `Date` / `Calendar`。
-- 集合类：`List` 有序可重复；`Set` 不重复；`Map` 存键值对；遍历 `Map` 常用 `entrySet()`。自定义 `HashMap` 键或 `HashSet` 元素时，`equals` 相等的对象必须有相同 `hashCode`，入集合后应保持参与比较的字段稳定。
-- IO 流：字节流处理二进制，字符流处理文本；资源关闭优先用 `try-with-resources`。
-- 多线程基础：先掌握 `Thread`、`Runnable`、线程池、锁、可见性、原子性，再深入并发工具类。`volatile` 提供跨线程可见性，但 `count++` 仍是读、改、写三个步骤；共享计数可用 `AtomicInteger.incrementAndGet()` 或加锁。进程内定时用 `ScheduledExecutorService`；业务日历式 cron、集群调度平台（如 XXL-JOB）再单独补。
+#### 集合与 Stream
+
+| 业务需求 | 常用类型 | 要留意的行为 |
+| --- | --- | --- |
+| 按顺序保存一页订单，允许重复 | `List<Order>`，常用 `ArrayList` | 可按下标读取。需要增删元素时应选择可修改的实现，`List.of(...)`（Java 9+）返回的列表不支持增删或替换元素 |
+| 判断用户是否出现过 | `Set<Long>`，常用 `HashSet` | `add(id)` 返回 `false` 表示已有该元素。要保留插入顺序可用 `LinkedHashSet` |
+| 按用户 ID 查用户 | `Map<Long, User>`，常用 `HashMap` | `put` 同一个键会替换旧值，同时需要键和值时可遍历 `entrySet()` |
+
+自定义 `HashMap` 的键或 `HashSet` 的元素时，要一起考虑 `equals` 和 `hashCode`。两个对象只要相等，其哈希值就必须相同。放进集合后若改变参与这两个方法的字段，即使拿原对象去查也可能找不到。
+
+**练习：列出已付款订单的用户 ID，每位用户只保留第一次出现的位置。** 将下面保存为 `OrderSummary.java`，直接用 JDK 17+ 运行 `java OrderSummary.java`。本目录的示例 POM 将编译目标设为 Java 8，这里用单文件启动来练习 `record` 和 `Stream.toList()`。
+
+```java
+import java.util.List;
+
+public class OrderSummary {
+    record Order(long id, long userId, boolean paid) {}
+
+    public static void main(String[] args) {
+        List<Order> orders = List.of(
+            new Order(101, 7, false), new Order(102, 9, true),
+            new Order(103, 7, true),  new Order(104, 9, true)
+        );
+
+        List<Long> userIds = orders.stream()
+            .filter(Order::paid)
+            .map(Order::userId)
+            .distinct()
+            .toList();
+
+        System.out.println(userIds); // [9, 7]
+    }
+}
+```
+
+- 从前端读这段代码，可以把 `Order::paid` 展开成 `order -> order.paid()`。`filter` 保留已付款的订单，`map` 取出用户 ID，`distinct` 按 ID 去重。试试把 `distinct()` 移到 `map` 前面：三笔已付款订单的订单号各不相同，此时按整个订单去重，最后会得到 `[9, 7, 9]`。
+- Stream 的中间操作是惰性的，由 `toList()` 等终结操作触发遍历。一次消费结束后，要再次计算就从 `orders.stream()` 新建流。这里的 `Stream.toList()` 自 Java 16 提供，返回的列表不能增删元素。需要可修改的列表时，可以用 `collect(Collectors.toCollection(ArrayList::new))`（Java 8+）。[Stream API](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/stream/Stream.html)
+
+#### 时间、文本与 I/O
+
+- **日期和时间**。生日、账期日用 `LocalDate`；订单支付成功的时刻用 `Instant`。展示给用户时再指定时区，例如 `Instant.parse("2025-01-01T16:30:00Z").atZone(ZoneId.of("Asia/Shanghai")).toLocalDate()` 得到 `2025-01-02`。`LocalDateTime` 只包含本地日期和时间，单凭它无法确定对应的时刻。超时长度用 `Duration`，如 `Duration.ofSeconds(30)`。[java.time API](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/package-summary.html)
+- **字符串**。`String` 不可变，少量值拼接直接用 `+`。循环里不断向同一份结果追加内容时用 `StringBuilder`，最后调用 `toString()`。
+- **文件**。图片等二进制内容用 `InputStream` / `OutputStream`。文本要明确字符编码，例如用 `Files.newBufferedReader(path, StandardCharsets.UTF_8)` 逐行读取；用 `try-with-resources` 在正常或异常退出时关闭 reader。
+
+#### 多线程与共享状态
+
+`Runnable` 表示待执行的任务，`ExecutorService` 可以负责调度它。多个任务更新同一字段时，先判断操作是否需要整体完成：`volatile` 能让其他线程看见对字段的写入，但两个线程执行 `count++` 仍可能读到同一个旧值，导致少计一次。单个计数器可用 `AtomicInteger.incrementAndGet()`；若要同时检查余额和扣款，所有访问共享余额的相关操作要遵守同一套同步规则。
+
+进程内按固定间隔执行任务可用 `ScheduledExecutorService`。需要按日历触发或跨实例调度时，见[定时任务](#定时任务)。
 
 ---
 ## 后端工程与数据中间件
 
 ### 构建与依赖管理
+
 - **Maven**
 
-    POM 描述项目；插件完成编译 / 测试 / 打包 / 发布。
+    POM 描述项目，插件负责编译、测试和打包。本目录的 [pom.xml](./pom.xml) 和 [settings.xml](./settings.xml) 是 Maven 3.9.x 示例。在本目录运行 `mvn -s settings.xml validate` 可检查 Maven 能否读取两份配置。可选的仓库、模块和测试依赖都写在 XML 注释里。
 
     1. 配置分工
 
@@ -2342,7 +2399,7 @@ public class GenericExample {
 
         IDE「同步 Maven」= 重读 POM / 解析依赖 / 更新 classpath，**不等于**跑 `compile` / `package`。
 
-        IDEA **Build Project**（`Build` → `Build Project`，`⌘F9` / `Ctrl+F9`）与 `mvn compile`：都是出 `.class`（多在 `target/classes`）。日常用 IDEA 自带增量编译；要对齐 CI，或注解处理器 / 生成源码异常时用 `mvn compile`（何时 `clean` / 重启见 §11）。可选：`Settings` → `Build Tools` → `Maven` → `Runner` → **Delegate IDE build/run actions to Maven**——此后 IDEA 的 Build / Run 改由 Maven 执行，更接近命令行与 CI，但更慢；日常不必开，出现「IDE 能跑、Maven/CI 不行」（或反过来）时再用来排查。
+        IDEA 的 **Build Project** 可用于日常增量编译，需要委托给 Maven 时可启用 Maven Runner 的 **Delegate IDE build/run actions to Maven**。排查与 CI 的差异时，用项目的 Maven Wrapper（如有）执行 CI 使用的阶段和 profile。`compile` 编译主代码，要连测试和打包后的检查一起跑，用 `verify`。何时需要 `clean` 或重启见 §11。
 
     2. POM
 
@@ -2375,7 +2432,7 @@ public class GenericExample {
 
         - 普通名：须 `${名字}` 引用才生效。
         - 特殊名：写了插件会读，如 `maven.compiler.release`（优先于单独 `source`/`target`）、`project.build.sourceEncoding` / `project.reporting.outputEncoding`、`project.build.outputTimestamp`（可复现归档）。
-        - 内置：`${project.version}`、`${project.basedir}`、`${env.CI}`；`-D` 可临时覆盖。
+        - `${project.version}` 和 `${project.basedir}` 读取项目模型，`${env.CI}` 读取环境变量。普通属性可用 `-D名字=值` 临时覆盖；要从命令行设置项目版本，可用 §9 的 `${revision}`。
         - 未被项目覆盖时，`${java.version}` 取自运行 Maven 的 JVM；Spring Boot 父 POM 等可用同名属性设置编译目标。资源 filtering 的 `${}` ≠ Spring 占位符。
         - 编译：`release` + encoding；实际使用的 `javac` 须支持目标版本；默认使用运行 Maven 的 JDK，Toolchains 可另选编译 / 测试 JDK。
 
@@ -2426,7 +2483,7 @@ public class GenericExample {
         | 位置 | 作用 | 对齐谁 |
         | --- | --- | --- |
         | `proxy.id` | 出网 HTTP 代理条目名 | **无** |
-        | `server.id` | 认证（只凭证、不写 URL） | 走镜像 → `mirror.id`；直连 → `repository.id`；发布 → `distributionManagement` 目标 id |
+        | `server.id` | 关联目标服务器的凭证和传输配置 | 走镜像 → `mirror.id`；直连 → `repository.id`；发布 → `distributionManagement` 目标 id |
         | `mirror.id` | 镜像自己的名字 | 走镜像时对 `servers` |
         | `mirrorOf` | （非 id）哪些原仓改道 | 被劫持的 `repository` / `pluginRepository` **id**（非 URL / 非 `mirror.id` / 非 `profile.id`） |
         | `profile.id` | 本机开关（`-P` / `activeProfiles`） | 只对齐激活；**不参与** `mirrorOf` |
@@ -2438,7 +2495,7 @@ public class GenericExample {
         profile.id=company-repo
           └── repository.id=company-direct  ← mirrorOf 对象；直连时对 servers
         mirror.id=company-mirror            ← 走镜像时对 servers
-        mirrorOf=central|*|…                ← 被替换的仓库 id
+        mirrorOf=*,!company-direct          ← 其余仓库走镜像，company-direct 直连
         proxy.id=company-proxy              ← 独立
         ```
 
@@ -2450,7 +2507,7 @@ public class GenericExample {
         **块职责**
 
         - `mirrors`：换下载源（≈ npm `registry`；可配 `mirrorOfLayouts` / `blocked`）。
-        - `servers`：只凭证、不写 URL；凭证用 `${env.变量}` 或 `mvn -emp` / `-ep`；SSH 用 `privateKey`，勿同时设 `password`。
+        - `servers` 按 id 配置凭证，也可配置传输参数和部署文件权限。凭证可从 `${env.变量}` 读取，Maven 3 支持用 `mvn -emp` / `-ep` 设置加密密码。SSH 私钥认证用 `privateKey`。[Maven Settings](https://maven.apache.org/settings.html#servers)
         - `proxies`：出网代理；`nonProxyHosts` 用 `|`，支持 `*`。
         - `${}`：只认系统属性与 `${env.变量}`；激活 profile 的 `properties` 可被 POM 引用，但不能 settings 自插值。
         - settings profile：仅 `id` / `activation` / `properties` / `repositories` / `pluginRepositories`（多条件 AND；`activeByDefault` 遇同容器其他已激活 profile 会退让；激活后的 `repositories` 与 Super POM `central` 并列候选）。
@@ -2499,7 +2556,7 @@ public class GenericExample {
         | `dependencyManagement` | 只登记版本 / scope / exclusions；不进业务 classpath、不引入成员依赖（`import` BOM 仍会解析 / 下载该 BOM POM） | 父 POM 集中；使用处省略 `<version>` |
 
         - 单模块：写死或 `${属性}`。多模块：版本放父 `dependencyManagement`。
-        - 配套版本用 BOM（`type=pom` + `scope=import`），再在 `dependencies` 声明成员、不写版本。BOM 不含插件。
+        - 配套版本用 BOM（`type=pom` + `scope=import`），再在 `dependencies` 声明所需成员。导入 BOM 只导入依赖管理规则，插件版本和执行配置须单独管理。
         - 当前 POM 显式管理优先；多 BOM 通常先导入优先。业务依赖固定版本，慎用区间。
 
         ```xml
@@ -2539,7 +2596,7 @@ public class GenericExample {
         - 优先级：直接依赖显式版本 > `dependencyManagement`；未管理传递依赖「路径最近，同深度先声明」，**不是取最大版**。例：`A→B→D:2.0` 与 `A→D:1.0` → `1.0`。
         - 匹配键：`groupId + artifactId + type + classifier`（**不含 version**）；同键 classpath 只留一版。跑错 jar 常见 `NoSuchMethodError` / `ClassNotFoundException`。
         - 查树：`dependency:tree`（可 `-Dverbose`）；对齐可用 Enforcer（`dependencyConvergence` / `requireUpperBoundDeps`）。
-        - vs npm：JVM 同 classpath 不能两份同名类，故必须仲裁；Node 可嵌套多份。
+        - Maven 会为同一个依赖选定版本。两个不同坐标的 JAR 仍可含有同名类，同一类加载器通常加载先找到的那份；这类重复类问题要检查实际运行时的 classpath。
         - `SNAPSHOT` 可变，release 应不可变。
 
     5. 仓库与解析
@@ -2569,36 +2626,35 @@ public class GenericExample {
 
         三条独立线：`clean`、`default`（日常）、`site`。执行某阶段会先跑**同线**前置，故 `package` 不带 `clean`。phase 定序，goal 做事。
 
-        - `pluginManagement`：只登记版本与默认配置。
-        - `plugins`（或生命周期绑定）：才真正执行。`configuration` + `executions`（`phase` + `goals`）；同插件多次执行用多个 `execution`；`inherited=false` 阻止继承；插件自身 `dependencies` 不受项目 `dependencyManagement` 管。
+        - `pluginManagement` 登记插件版本和默认配置。运行某阶段时，只执行绑定到该阶段及其前置阶段的目标。绑定来自项目的 packaging 或插件的 `executions`；命令行也可直接调用 `插件:目标`。[Maven 生命周期](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html)
+        - `configuration` 配置插件参数，多个 `execution` 可分别配置目标和执行阶段。`inherited=false` 可阻止子 POM 继承相应配置。插件自身的依赖由插件单独管理。
 
         | 阶段 | 边界 |
         | --- | --- |
         | `clean` | 清 `target`，不清本地仓 |
         | `compile` | → `target/classes`；不打包、不写本地仓 |
         | `test` | 测编译 + Surefire 单测 |
-        | `package` | 出 `target/` 制品；见下「一分包 / 二分包」 |
+        | `package` | 默认在 `target/` 生成制品，如 JAR 或 WAR |
         | `verify` | 已绑校验；Failsafe 常绑 `integration-test`+`verify`，IT 用 `mvn verify` |
         | `install` | 写入本地仓 |
         | `deploy` | 发远程仓，≠ 启动应用 |
 
-        **一分包 / 二分包**（本文对普通 JAR 打包与 Spring Boot `repackage` 的简称）
+        **普通 JAR 与 Spring Boot 可执行 JAR**
 
-        | | 一分包 | 二分包 |
+        | | 普通 JAR | Boot 可执行 JAR |
         | --- | --- | --- |
-        | 谁做 | `maven-jar-plugin` | `spring-boot-maven-plugin` 的 `repackage` |
-        | 产物 | 普通 / 瘦包：本模块 `.class` + 资源，**不含**依赖 jar | 可执行 / 胖包：依赖进 `BOOT-INF/lib`，类进 `BOOT-INF/classes`，带 Loader |
-        | 用途 | 给别的模块当依赖；或再被二分包吃掉 | `java -jar app.jar` 直接跑（内嵌 Tomcat 等） |
+        | 生成方式 | `jar` 项目的 `package` 默认调用 `maven-jar-plugin` | `spring-boot-maven-plugin:repackage` 重新打包已有 JAR |
+        | 布局 | 本模块的类和资源从 JAR 根目录开始，依赖另行提供 | 应用类在 `BOOT-INF/classes/`，依赖在 `BOOT-INF/lib/`，由 Boot Loader 加载 |
+        | 用途 | 作为其他模块的依赖 | 运行应用，例如 `java -jar app.jar` |
 
-        - 同一次 `mvn package`：先一分包，再（若绑了 Boot 插件）二分包。默认二分包**替换**主制品；被替换的原始包常留下 `xxx.jar.original`。
-        - 模块还要被别人当依赖时：给可执行包加 `classifier`（如 `exec`），主制品保留一分包；或 `attach=false` 只安装/部署原始包。
-        - 多模块：库模块只一分包；**仅启动模块**配 Boot 插件做二分包（别在父 POM 全局绑，否则库也会被打成 `BOOT-INF` 布局，下游依赖不到裸类）。
+        - 继承 `spring-boot-starter-parent` 时，启动模块在 `build/plugins` 声明 Boot 插件即可使用父 POM 预设的 `repackage` 执行。只导入 `spring-boot-dependencies` BOM 时，还需指定插件版本并在 `executions` 绑定 `repackage`。[Spring Boot 打包说明](https://docs.spring.io/spring-boot/maven-plugin/packaging.html)
+        - 默认由可执行 JAR 替换主制品，原包在 `target/` 留作 `*.jar.original`。多模块项目通常只给启动模块配置 `repackage`。同一模块要发布两种包时，可给可执行包加 `classifier`（如 `exec`），将普通 JAR 保留为主制品。只需发布原包时，设 `attach=false`。
 
         跳测：`-DskipTests` 跳过 Surefire 单测但仍编译测试。Failsafe 3.5.x 也读取它，3.6.x 不再默认绑定该命令行属性；`-DskipITs` 跳 Failsafe；`-Dmaven.test.skip=true` 连测编译一起跳。日常校验勿默认跳过。
 
     7. 命令速查
 
-        `mvn [选项] [阶段|插件:目标] [-D名=值]`
+        `mvn [选项] [阶段|插件:目标] [-D名=值]`。以下按场景选用。`app` 代表实际模块，`-Pdev` 激活 Maven 构建 profile，`spring-boot.run.profiles=dev` 选择 Spring 运行时 profile。
 
         | 选项 | 含义 |
         | --- | --- |
@@ -2641,8 +2697,8 @@ public class GenericExample {
         | 现象 | 先查 |
         | --- | --- |
         | 依赖版本不对 / 冲突 | `dependency:tree`；仲裁、BOM、是否显式声明 |
-        | 下不动包 / 认证失败 / 反复解析失败 | mirrors、servers、`-s`；半截 jar / `.lastUpdated`（删坐标目录或 purge）；`-U` 修不好损坏 jar |
-        | 改了 POM IDE 没变 | 是否只「同步」未跑构建阶段 |
+        | 下载 / 认证失败 | 核对实际仓库 URL、`servers.id` 与 `-s`，修正后用 `-U` 重试。仅在确认本地 JAR 损坏时清理对应版本缓存 |
+        | 改了 POM，IDE 仍报缺依赖 | 重新同步 Maven，对照 `mvn dependency:tree` 检查模块、版本和 scope |
         | 测试没跑 / IT 漏 | skip 参数；是否到 `verify`；Failsafe 绑定 |
         | 多模块找不到上游 | `-am` / 是否已 `install` |
         | profile 没生效 | Maven `-P` vs Spring；`help:active-profiles` |
@@ -2654,19 +2710,29 @@ public class GenericExample {
 
         | 改了什么 | 编译 | `clean` | `install` | 重启 |
         | --- | --- | --- | --- | --- |
-        | 方法体（调试中可 HotSwap） | IDEA Build | 否 | 否 | 常不需要 |
+        | 方法体 | 要 | 否 | 否 | 调试器成功 HotSwap 可继续，否则重启 |
         | 方法签名 / 字段 / 类层次 / 注解 / Bean 定义 | 要 | 否 | 否 | 要（或 DevTools） |
         | `application.yml`、多数 `resources`、MyBatis XML | 资源进 classpath | 否 | 否 | 多数要（或 DevTools） |
-        | `pom.xml` 依赖变更 | 先同步 Maven，再编译 | 产物/解析不对才要 | 否* | 要 |
+        | `pom.xml` 依赖变更 | 先同步 Maven，再编译 | 通常不用 | 否* | 要 |
         | 多模块：改了被依赖的库模块 | 该模块编过；消费方用到新产物 | 产物不对才要 | 否* | 要 |
-        | ClassNotFound、旧 class、注解处理器 / 生成代码错乱 | 要 | **要**（`clean compile`） | 否* | 要 |
+        | 旧 class 残留 / 生成代码未更新 | 要 | 可用 `clean compile` 重新生成 | 否* | 运行中的应用重启 |
 
-        - `install`*：写入 `~/.m2`，给**别的独立构建**或外工程 SNAPSHOT 用；同工程 Run/Debug / `spring-boot:run` / 同一次 `-pl … -am` 日常不必。
-        - AI 大批量改完：先 `mvn -pl <模块> -am test`（或 `verify`），再按上表决定是否重启。
+        - `install`* 将制品写入本地仓库（默认 `~/.m2/repository`）。同一次 reactor 构建可直接使用上游制品；若单独构建消费方，所需版本须已在本地仓库或远程仓库中。
+        - 遇到 `ClassNotFoundException` 先查缺失类所在的 JAR 是否进入运行时 classpath，再查打包方式。多模块改动可在根目录运行 `mvn -pl app -am verify`，把 `app` 换成目标模块。
 
 - **Gradle**
 
-    更灵活，Android 和部分现代项目里较常见。
+    `settings.gradle(.kts)` 定义项目及子项目，`build.gradle(.kts)` 配置插件和依赖。在带 Gradle Wrapper 的项目根目录用 `./gradlew`（Windows 用 `gradlew.bat`）执行项目指定版本。以下以应用了 Java 插件的项目为例。
+
+    | 目的 | 命令 |
+    | --- | --- |
+    | 编译主代码并处理资源 | `./gradlew classes` |
+    | 运行测试 | `./gradlew test` |
+    | 打包并执行检查（含测试） | `./gradlew build`，默认 JAR 在 `build/libs/` |
+    | 查运行时依赖树 | `./gradlew dependencies --configuration runtimeClasspath` |
+    | 查某个依赖的版本为何被选中 | `./gradlew dependencyInsight --dependency mysql-connector-j --configuration runtimeClasspath` |
+
+    在多项目构建中可用任务路径指定子项目，例如 `./gradlew :app:dependencies --configuration runtimeClasspath`。[Java 插件任务](https://docs.gradle.org/current/userguide/java_plugin.html) · [依赖报告](https://docs.gradle.org/current/userguide/viewing_debugging_dependencies.html)
 
 ### JDBC 与数据库访问演进
 
@@ -2683,39 +2749,29 @@ public class GenericExample {
     | `ResultSet` | 读取查询结果 |
     | `SQLException` | 表示数据库访问异常 |
 
-    - 以 MySQL 为例的最简调用流程：
+    - **按主键查一位用户（MySQL）**。假设库中有表 `app_user(id BIGINT PRIMARY KEY, name VARCHAR(100))`。设置环境变量 `DB_URL`（如 `jdbc:mysql://localhost:3306/app`）、`DB_USERNAME` 和 `DB_PASSWORD`。
 
-        1. 添加 MySQL Connector/J 驱动；JDBC API 本身由 JDK 提供。
-        2. 加载驱动driver；JDBC 4 以后通常可以省略，由系统自动发现驱动。
-        3. 准备 JDBC URL、用户名、密码和 SQL。
-        4. 获取 `Connection`，再创建 `PreparedStatement`。
-        5. 执行 SQL：查询使用 `executeQuery()`，增删改使用 `executeUpdate()`。
-        6. 处理 `ResultSet`，最后释放结果集、语句和连接。
+        JDBC 接口由 JDK 提供。将 MySQL 驱动 `com.mysql:mysql-connector-j` 加入运行时依赖（Maven 用 `runtime`，Gradle 用 `runtimeOnly`）。没有 BOM 管理时须指定兼容的驱动版本。驱动 JAR 在运行时 classpath 上，`DriverManager` 可通过 JDBC 服务提供机制发现驱动。[Connector/J 坐标](https://dev.mysql.com/doc/connector-j/en/connector-j-installing-maven.html) · [DriverManager](https://docs.oracle.com/en/java/javase/21/docs/api/java.sql/java/sql/DriverManager.html)
 
         ```java
-        // 1. 加载驱动：JDBC 4+ 通常可省略
-        Class.forName("com.mysql.cj.jdbc.Driver");
+        import java.sql.*;
 
-        // 2. 准备连接信息和 SQL
-        String url = "jdbc:mysql://localhost:3306/app";
-        String username = System.getenv("DB_USERNAME");
-        String password = System.getenv("DB_PASSWORD");
-        String sql = "SELECT id, name FROM user WHERE id = ?";
-
-        // 3. 获取连接并创建 SQL 执行对象
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-            PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setLong(1, 1L);
-
-            // 4. 执行 SQL 并处理查询结果
-            try (ResultSet result = statement.executeQuery()) {
-                while (result.next()) {
-                    long userId = result.getLong("id");
-                    String name = result.getString("name");
+        public class UserLookup {
+            public static void main(String[] args) throws SQLException {
+                String sql = "SELECT name FROM app_user WHERE id = ?";
+                try (Connection connection = DriverManager.getConnection(
+                            System.getenv("DB_URL"), System.getenv("DB_USERNAME"), System.getenv("DB_PASSWORD"));
+                     PreparedStatement statement = connection.prepareStatement(sql)) {
+                    statement.setLong(1, 1L); // 参数从 1 开始，这里查询 id = 1
+                    try (ResultSet result = statement.executeQuery()) {
+                        System.out.println(result.next() ? result.getString("name") : "用户不存在");
+                    }
                 }
             }
-        } // 5. try-with-resources 自动释放 ResultSet、PreparedStatement 和 Connection
+        }
         ```
+
+        查询用 `executeQuery()` 取得结果集，先调用 `next()` 移到第一行。增删改用 `executeUpdate()` 取得影响行数。离开上面的 `try` 块时，结果集、语句、连接按创建顺序的逆序关闭。
 
 2. JDBC 实际使用重点
 
@@ -2758,7 +2814,7 @@ public class GenericExample {
             | `connectionTimeout` | **从池借连接**最多等多久（毫秒）；超时抛 SQLException。默认常 30s。这是“等池”，不是 SQL 执行多久 |
             | `idleTimeout` | 空闲连接最多闲多久可被回收；默认常 10 分钟 |
             | `maxLifetime` | 单条物理连接的最长寿命，默认 30 分钟；在用连接归还后才退役。宜略短于数据库或网络设施的连接寿命上限。空闲连接保活另看 `keepaliveTime` |
-            | `validationTimeout` / 保活 | 借出前校验、keepalive 等，减少拿到已被服务端掐掉的连接 |
+            | `validationTimeout` / `keepaliveTime` | 前者限制一次连接存活检查可用的时间，须小于 `connectionTimeout`。后者设置空闲连接的保活间隔，启用时须小于 `maxLifetime`。[HikariCP 配置](https://github.com/brettwooldridge/HikariCP#configuration-knobs-baby) |
 
             - 几种“超时”不要混：
 
@@ -2774,15 +2830,25 @@ public class GenericExample {
 
         <summary>原生 JDBC 事务最小写法</summary>
 
+        假设账户表使用 InnoDB，`id` 为主键，`balance_cents BIGINT NOT NULL` 以分存储余额。下面从账户 1 向账户 2 转入 100 分，任一更新失败都回滚。片段中的 `dataSource` 是已配置的数据源，所在方法声明 `throws SQLException`。
+
         ```java
+        long cents = 100L;
+        String debitSql = "UPDATE account SET balance_cents = balance_cents - ? WHERE id = ? AND balance_cents >= ?";
+        String creditSql = "UPDATE account SET balance_cents = balance_cents + ? WHERE id = ?";
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
                 try (PreparedStatement debit = connection.prepareStatement(debitSql);
-                    PreparedStatement credit = connection.prepareStatement(creditSql)) {
+                     PreparedStatement credit = connection.prepareStatement(creditSql)) {
+                    debit.setLong(1, cents);
+                    debit.setLong(2, 1L);
+                    debit.setLong(3, cents);
+                    credit.setLong(1, cents);
+                    credit.setLong(2, 2L);
                     if (debit.executeUpdate() != 1 || credit.executeUpdate() != 1) {
-                        throw new SQLException("Expected one row for each update");
+                        throw new SQLException("余额不足或账户不存在");
                     }
                 }
                 connection.commit();
@@ -2801,7 +2867,7 @@ public class GenericExample {
         - 两条语句执行并关闭后再提交。提交前失败时，趁连接还开着显式回滚。活动事务直接 `close()` 的结果取决于 JDBC 实现。[JDBC `Connection`](https://docs.oracle.com/en/java/javase/21/docs/api/java.sql/java/sql/Connection.html#close())
         - 事务尽量短：不要在事务中等待用户输入或执行耗时的外部调用。
         - 连接归还连接池前，驱动 / 池通常会恢复自动提交等会话状态；不要假设“上次事务关掉的 autoCommit 会留在下一次借出的连接上”。
-        - Spring 声明式事务（常见 `DataSourceTransactionManager`）大致等价于：从池取连接 → 绑到当前线程 → `setAutoCommit(false)` → 业务里的 JDBC / MyBatis 复用该连接 → 结束时 `commit`/`rollback` → 解绑并归还。没有外层事务时，每次访问往往各自取连接并按自动提交执行。
+        - 在 Spring 的本地 JDBC 事务里，`JdbcTemplate` 和使用同一数据源的 MyBatis-Spring Mapper 会复用当前线程绑定的连接，事务结束时由 Spring 提交或回滚。手写 JDBC 可通过 `DataSourceUtils.getConnection` 获取并用 `releaseConnection` 释放。直接对原始连接池调用 `getConnection()` 会另借一条连接。[Spring JDBC 事务管理](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/datasource/DataSourceTransactionManager.html)
         - 业务项目通常在 Service 用 `@Transactional`；是否生效仍取决于代理、异常类型与回滚规则。
         </details>
 
@@ -2831,9 +2897,11 @@ public class GenericExample {
 
 >- Spring Boot 不是绕开 Java Web 和 Spring，而是在常见 Web 项目里把容器、MVC、持久层、配置和启动方式整合起来。Spring Cloud 再叠一层：多服务怎么发现、调用、配置和容错。
 >- 记忆主线：**请求怎么进来 → 对象谁来管 → 接口怎么写 → SQL 怎么跑 → Boot 怎么整合 → 多服务怎么协作**。
->- 学习顺序：**JDBC → Java Web → Spring Framework → Spring MVC → MyBatis → Spring Boot → Spring Cloud**。
+>- 学习顺序：[JDBC](#jdbc-与数据库访问演进) → [Java Web](#java-web-与-servlet) → [Spring 容器](#spring-framework-核心容器) → [Spring MVC](#spring-mvc-处理请求) → [MyBatis](#mybatis-访问数据库) → [Spring Boot](#spring-boot-整合与启动) → [Spring Cloud](#spring-cloud-微服务协作)。
 
-1. Java Web：HTTP 与 Servlet 基础
+可以一直用「创建订单」这一个练习：先用 JDBC 插入订单，再把写库操作移到 Mapper，由 Service 开事务，最后用 MVC 暴露 `POST /orders`。用三个结果检查自己是否走通：合法请求能查到新订单；数量为 0 时返回 400；写完订单后若扣库存失败并抛出运行期异常，订单和库存都应保持请求前的状态。
+
+1. #### Java Web 与 Servlet
 
     >Tomcat 接请求，Servlet 处理请求，Filter 做链路前后处理，Cookie / Session 维持状态。
 
@@ -2862,7 +2930,7 @@ public class GenericExample {
             >2. Mapper：MyBatis 的 Mapper 通常是接口，例如 `UserMapper`；方法对应 XML 或注解里的 SQL，运行期由 MyBatis 生成代理实现。
         - 最小练习先做登录、退出、列表、新增，再迁移到 Spring MVC / Spring Boot。
 
-2. Spring Framework：核心容器
+2. #### Spring Framework 核心容器
 
     >Spring Framework 的核心不是接请求，而是管对象、装依赖、加增强、管事务。
 
@@ -2930,7 +2998,7 @@ public class GenericExample {
 
         - AOP 把日志、权限、事务、监控、异常处理等横切逻辑从业务方法中抽出，由代理统一插入。
         - Spring AOP 主要基于方法代理，不是任意代码点增强。
-        - 只增强 Spring 容器管理的 Bean；自己 `new` 的对象不会被增强。
+        - 常见项目由容器为匹配切点的 Bean 创建代理。直接 `new` 出对象并调用，会绕过这层代理。
 
         - <details>
 
@@ -2956,8 +3024,8 @@ public class GenericExample {
             - 实现方式：Spring API 接口式、XML 自定义切面式、注解式；新项目通常用 `@Aspect`、`@Pointcut`、`@Before` / `@Around`。
             - 代理机制：Spring AOP 可用 JDK 动态代理（基于接口）或 CGLIB（基于子类）。Spring Boot 默认常开启类代理（`spring.aop.proxy-target-class=true`），有接口时也往往走 CGLIB；不要假设“有接口就一定是 JDK 代理”。
             - 生效边界：
-                - 必须通过**代理对象**调用目标方法，切面（含 `@Transactional`）才会介入。同类内部 `this.xxx()` 是目标对象直接调自己，**绕过代理**，内层注解等于没写。
-                - 常见改法（任选其一，按团队习惯）：把要增强的方法拆到另一个 Bean 再注入调用；或注入“自己”（另一个同类型 Bean / 接口引用）再调；或开启 `exposeProxy` 后经代理自调——`@EnableAspectJAutoProxy(exposeProxy = true)`，再 `(YourType) AopContext.currentProxy()` 调公开方法。`exposeProxy` **默认关闭**；未开启就取 `currentProxy()` 会失败。
+                - 通过**代理对象**调用时，拦截器才会应用该方法的增强。同类内部 `this.xxx()` 会绕过代理：例如内层标了 `REQUIRES_NEW` 也不会另开事务，已有的外层事务仍然有效。
+                - 优先把需要独立增强的方法拆到另一个 Bean，注入后调用。老代码也可能经自身的代理引用调用；`AopContext.currentProxy()` 还要求开启 `exposeProxy` 且当前调用已通过代理，业务代码因此依赖 Spring AOP。[Spring 代理机制](https://docs.spring.io/spring-framework/reference/core/aop/proxying.html)
                 - `exposeProxy` / `AopContext` 只解决“自调用要不要进代理”，不改变 `private` / `static` / `final` 方法或 `final` 类难以被 CGLIB 子类增强的限制。
                 - Spring AOP 是运行期代理，不是完整 AspectJ 织入；同类自调用在纯代理模型下本来就不会被拦截。真正的编译期/加载期织入能截到自调用，但业务项目多数不用那套。
                 - JDK 动态代理拦截公开接口方法，目标类或其方法是 `final` 也可以；CGLIB 需要继承类、重写方法，因此受 `final` 限制。
@@ -2982,7 +3050,7 @@ public class GenericExample {
             - 常用属性：`propagation`、`isolation`、`rollbackFor` / `noRollbackFor`、`timeout`、`readOnly`。
             - `readOnly`（官方定位是**提示**，不是写保护开关）：
                 - 文档写明：供运行时做只读优化；**不保证**写操作一定失败；事务管理器若不理解该提示，可能静默忽略。
-                - 常见 JDBC 路径（如 `DataSourceTransactionManager`）往往会在开事务时尝试 `Connection.setReadOnly(true)`，结束后再复位；具体库/驱动是否 accordingly 拒绝写、或只做优化，因实现而异（有的库会拒写，有的几乎无感）。
+                - JDBC 事务管理器通常在开事务时尝试 `Connection.setReadOnly(true)`，结束后再复位。写操作能否执行，取决于数据库、驱动和事务管理器配置。
                 - JPA / Hibernate 路径还可能配合 flush 策略等只读优化，同样不是“绝对禁写”。
                 - 与 `isolation` 类似：多在**真正新开事务**时带上；内层只挂靠外层事务时，只读属性通常沿用外层。
                 - 正确用法：标明“这段业务预期只读、可优化”；真正禁止写入靠权限、SQL、库账号只读副本等，不要把 `readOnly=true` 当安全闸。
@@ -2998,10 +3066,10 @@ public class GenericExample {
                 | `MANDATORY` | 加入当前事务 | **抛异常** | 强制调用方已开事务 |
                 | `NEVER` | **抛异常** | 非事务执行 | 禁止在事务中调用 |
 
-            - `isolation` / `timeout` 等通常只在**真正新开事务**时生效；能新开事务的传播主要是：无事务时的 `REQUIRED`、以及 `REQUIRES_NEW`、`NESTED`。只“挂靠”已有事务时，隔离级别等一般沿用外层。
+            - `isolation` / `timeout` 通常在新开物理事务时生效。加入外层事务，或用 `NESTED` 在同一连接上建保存点时，仍沿用已有事务的隔离级别。[Spring 事务传播](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/tx-propagation.html)
             - 回滚规则（按 Spring 官方 *Rolling Back a Declarative Transaction*）：
                 - 未自定义规则时：`RuntimeException` 与 `Error`（及其子类）→ 标记回滚；受检异常（`Exception` 中非 `RuntimeException`）→ **默认提交**。
-                - 异常必须从带 `@Transactional` 的方法**向外抛到代理**后，拦截器才会按规则处理。方法内 `catch` 后正常返回 = 代理看到成功 → 默认 **commit**（除非业务里显式 `setRollbackOnly()`）。
+                - 对普通同步方法，拦截器按从方法抛出的异常匹配回滚规则。方法内 `catch` 后正常返回，外层代理会尝试提交；若共享事务已被内层标为 rollback-only，仍会回滚。
                 - `rollbackFor` / `noRollbackFor` 按异常**类型及子类**匹配。`*ClassName` 形式按异常全限定名的子串匹配，可能误中名称相似的异常。规则冲突时按 Spring 的“最具体匹配”裁决。
                 - 把运行期异常包成受检再抛、或把受检包成运行期再抛，会改变默认是否回滚——以**最终抛出的类型**为准（再叠加自定义规则）。
                 - Spring Framework 6.2+ 可用 `@EnableTransactionManagement(rollbackOn = ALL_EXCEPTIONS)` 把“未写自定义规则时的默认”改成几乎所有异常都回滚；方法上的 `rollbackFor` / `noRollbackFor` 仍优先。老项目不要假设已开启。
@@ -3010,8 +3078,8 @@ public class GenericExample {
                 | 级别 | 教科书常见现象 | InnoDB 要点（MySQL 默认引擎） |
                 | --- | --- | --- |
                 | `READ_UNCOMMITTED` | 可能脏读 | 业务几乎不用 |
-                | `READ_COMMITTED` | 避免脏读；同一事务内两次普通读可能看到别人已提交的更新（不可重复读）；间隙锁弱，幻读更易出现 | 每次一致性读常用**新快照** |
-                | `REPEATABLE_READ` | 同一事务内普通读结果更稳 | **InnoDB 默认**。普通 `SELECT` 是一致性非锁定读：事务内首次此类读建立快照，之后复用，一般看不到他事务之后才提交的行变更/插入。`SELECT ... FOR UPDATE` / `UPDATE` / `DELETE` 等是当前读，走最新已提交数据 + 行锁/间隙锁（next-key），用于挡住扫描范围内的插入（幻影行）。官方不建议在同一 RR 事务里混用大量“非锁定读 + 锁定写”却指望两者看到同一世界 |
+                | `READ_COMMITTED` | 避免脏读，可能出现不可重复读、幻读 | 每次一致性读取新快照；其他事务在两次查询之间提交的改动，第二次就能看到 |
+                | `REPEATABLE_READ` | 避免脏读和不可重复读；标准仍允许幻读 | **InnoDB 默认**。普通 `SELECT` 复用首次一致性读的快照，也能看到本事务自己的修改。锁定读和写操作使用当前状态；通过唯一索引精确命中一行时只锁该记录，范围扫描可用间隙锁或 next-key 锁阻止插入。[InnoDB 隔离级别](https://dev.mysql.com/doc/refman/8.4/en/innodb-transaction-isolation-levels.html) |
                 | `SERIALIZABLE` | 最强、最贵 | InnoDB 关闭自动提交时，将普通 `SELECT` 隐式转为 `SELECT ... FOR SHARE`；自动提交下的独立只读查询可使用一致性读 |
 
                 - 术语对齐：脏读 = 读到未提交；不可重复读 = 同一行两次读到不同已提交值；幻读 = 同一条件的行集合变了（多出/少了行）。Spring 只把级别设到连接上，**能不能出现上述现象仍看数据库实现**。
@@ -3019,7 +3087,7 @@ public class GenericExample {
             - 与连接的关系：开启的事务会把一个 JDBC `Connection`（经 `DataSource`）绑在当前线程上，同线程内参与该事务的数据访问应复用它；换线程（如 `@Async`）默认**带不走**这段绑定；异步数据库操作应独立确定事务边界。
             - 多数据源与事务管理器：
                 - 常见 `DataSourceTransactionManager` **一对一**绑定一个 `DataSource`：开事务时从这个源取连接并绑线程。
-                - 容器里有多个 `PlatformTransactionManager` 时，默认会落到 `@Primary`、名为 `transactionManager` 的 Bean，或唯一候选；对不上就会“注解生效了，但绑的不是你正在用的那个库”。
+                - Java 注解配置按类型找事务管理器。多个候选时可用 `@Primary` 或显式指定；XML 的 `<tx:annotation-driven/>` 才默认按 `transactionManager` 这个名称查找。MyBatis 的事务管理器要与 `SqlSessionFactory` 使用同一数据源。[Spring 声明式事务](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html) · [MyBatis-Spring 事务](https://mybatis.org/spring/transactions.html)
                 - 指定方式：`@Transactional("txManagerBeanName")` / `transactionManager = "..."`（与 `@Qualifier` 选注入 Bean 是同一类问题）。
                 - `AbstractRoutingDataSource` 等动态路由：通常仍是**一个**事务管理器挂在路由 `DataSource` 上；事务已开启后再切路由目标，容易连错库或破坏“一事务一连接”假设。
                 - 两个独立库若要求**原子提交**，可用支持 XA 的资源与 JTA 事务协调器。允许最终一致性时，可用本地消息表（outbox）可靠发布事件，或用 Saga 协调本地事务与补偿。
@@ -3047,7 +3115,7 @@ public class GenericExample {
         1. Spring 默认单例只表示实例数量，不保证字段状态线程安全。
         1. 构造器循环依赖通常无法解决；Setter 循环即使能绕过，也说明设计需要拆分。
 
-3. Spring MVC：Web 层封装
+3. #### Spring MVC 处理请求
 
     >Spring MVC 把 Servlet 请求处理封装成 Controller 方法调用。
 
@@ -3122,9 +3190,9 @@ public class GenericExample {
 
             <summary>细节：常用治理点</summary>
 
-            - `@Valid` / `@Validated`：触发参数校验，后者支持分组。常见挂在 `@RequestBody`、`@ModelAttribute`、`@RequestPart` 等“命令对象”参数上；单独标在简单 `@RequestParam` 上要配合方法级校验（较新 Spring 的 method validation），别默认以为“写了 `@Valid` 就一定校验了某个标量参数”。
+            - 对象参数：在 `@RequestBody`、`@ModelAttribute`、`@RequestPart` 等 DTO 参数上用 `@Valid` 校验对象内的约束，`@Validated` 还支持分组。标量参数直接写约束，如 `@RequestParam("page") @Min(1) int page`。Spring MVC 6.1+ 内建方法校验，单独的 `@Valid` 不会给数字加上取值限制。[Spring MVC 校验](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html)
             - 常见约束：`@NotNull`、`@NotBlank`、`@Size`、`@Email`。
-            - 失败异常（要进统一异常处理时）：单个对象参数校验失败常见 `MethodArgumentNotValidException`；较新的方法级多参数校验可能是 `HandlerMethodValidationException`。输入校验错误通常返回 400；返回值校验失败属于服务端错误，默认返回 500。表单/模型绑定失败还可能见到 `BindException`。
+            - 失败异常：按对象参数校验时常见 `MethodArgumentNotValidException`；走 MVC 内建方法校验时用 `HandlerMethodValidationException`，一个标量参数也能触发。输入校验失败通常返回 400，返回值校验失败默认返回 500。
             - `BindingResult` / `Errors`：若使用，必须紧跟在被校验的那个参数后面；所有出错参数都有对应的 `Errors` 时可进入方法体处理；其他参数若也校验失败，仍会抛异常。不接则默认抛异常，交给 `@ExceptionHandler`。
             - 校验过了才进 Controller / Service：字段级 Bean Validation 替代不了业务规则（库存、权限、状态机、唯一性等），那些仍在 Service，失败应抛业务异常（通常是运行期异常）以便事务回滚。
             - 统一异常与事务的配合：
@@ -3166,7 +3234,7 @@ public class GenericExample {
         1. CORS 要看服务端响应头和预检请求，不能只改前端请求代码。
         1. Controller 负责 HTTP 入出口，不承载复杂业务。
 
-4. MyBatis（MyBatis-Plus）：持久层框架
+4. #### MyBatis 访问数据库
 
     >MyBatis 把 Mapper 方法调用映射成 SQL 执行，再把数据库结果映射回 Java 对象；MyBatis-Plus 是 MyBatis 增强工具，补通用 CRUD、条件构造器和常用插件，但不替代 SQL 能力。
 
@@ -3199,7 +3267,7 @@ public class GenericExample {
 
             <summary>Spring Boot + MyBatis 最小配置</summary>
 
-            1. Maven 同时添加 MyBatis Starter 和数据库驱动；Starter 版本需要与 Spring Boot 版本匹配。
+            1. 在已启用 Spring Boot 依赖管理的 Maven 项目中添加 MyBatis Starter 和数据库驱动。先按项目的 Boot 版本选 Starter，在 POM 的 `<properties>` 中定义下例用到的 `mybatis-spring-boot.version`。[MyBatis Starter 兼容表](https://mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/#Requirements)
 
                 ```xml
                 <dependency>
@@ -3334,7 +3402,7 @@ public class GenericExample {
         1. MyBatis-Plus 能减少 CRUD 样板，但复杂查询、复杂事务和性能问题仍要回到 SQL 与数据库设计。
         1. 逻辑删除、自动填充、乐观锁、分页都需要正确配置插件或字段注解，不是引入依赖后全部自动生效。
 
-5. Spring Boot：整合与快速启动
+5. #### Spring Boot 整合与启动
 
     >Spring Boot 不是新的一套后端框架，而是把 Spring 应用常见的依赖、配置、启动、Web、数据访问、测试、观测和部署方式整合成可快速落地的工程模型。
 
@@ -3347,7 +3415,7 @@ public class GenericExample {
     1. **启动入口与项目结构**
 
         - `@SpringBootApplication` = `@SpringBootConfiguration` + `@EnableAutoConfiguration` + `@ComponentScan`。
-        - 启动类通常放在根包下；它所在包会成为默认扫描起点，Controller、Service、Mapper、配置类、Entity、配置绑定类要放在扫描范围内。
+        - 启动类通常放在应用根包，如 `com.example.orders`。默认组件扫描覆盖该包及子包中的 Controller、Service、配置类。JPA 实体、MyBatis Mapper、配置绑定类各有自己的发现或注册机制；它们可以共用包结构。[Spring Boot 包结构](https://docs.spring.io/spring-boot/reference/using/structuring-your-code.html)
         - `SpringApplication.run(...)` 创建并刷新 Spring 应用上下文；Servlet Web 项目还会创建内嵌 Web 服务器并注册 Spring MVC 的 `DispatcherServlet`。
         - 常见结构：启动类、Controller、Service、Mapper、Entity / DO、DTO / VO、配置类、异常处理、配置文件、测试目录、资源目录。
         - 前端转后端先建立分层习惯：接口对象、业务对象、数据对象边界清楚，不把 DTO / VO 直接等同数据库表。
@@ -3369,7 +3437,7 @@ public class GenericExample {
 
         - Starter 是“依赖组合入口”，不是功能本身；它把一组常用库、自动配置和默认依赖组合在一起。
         - 常见 Starter：Web / WebMVC、WebFlux、Validation、AOP、JDBC、Test、Actuator、Security、Redis、Kafka、Mail；MyBatis / MyBatis-Plus 通常来自对应生态的 Boot Starter。
-        - BOM / `spring-boot-starter-parent` / Gradle 插件负责统一依赖版本；普通业务依赖尽量不手写被 Boot 管理的版本号。
+        - Maven 继承 `spring-boot-starter-parent` 或导入 `spring-boot-dependencies` BOM 后，可以省略受管依赖的版本号。Gradle 可用原生 `platform(...)` 导入 BOM，或同时应用 Boot 插件与 `io.spring.dependency-management`。[Spring Boot 的 Gradle 依赖管理](https://docs.spring.io/spring-boot/gradle-plugin/managing-dependencies.html)
         - 新建或升级项目时要查当前官方兼容矩阵：Spring Boot 主版本、Spring Framework、Java、Jakarta EE、Servlet 容器、Spring Cloud、MyBatis / MyBatis-Plus、数据库驱动、监控 SDK 要一起匹配。
         - 依赖问题先看 `mvn dependency:tree` / Gradle dependency insight，再判断是版本冲突、重复依赖、缺 Starter、scope 错误，还是手动覆盖破坏了 Boot BOM。
 
@@ -3409,7 +3477,7 @@ public class GenericExample {
 
         - `application.yml` / `application.properties` 放应用配置（端口、数据源、开关等键值外置，避免写死在代码里）；profile 管理 dev / test / prod 等环境差异，如`application-{profile名}.yml（或 .properties）`。
 
-            >`.properties` 是扁平 `key=value`（也可以用`:`），一行一项，如`server.port=8080`；`.yml` 用缩进表达层级，功能等价，新项目更常见后者。
+            >`.properties` 通常写成扁平的 `key=value`，如 `server.port=8080`。`.yml` 用缩进表达层级。同一位置同时存在两种格式时，同名属性以 `.properties` 为准。
         - 配置来源有优先级：默认配置、配置文件、profile 配置、环境变量、系统属性、命令行参数、测试配置等；后加载或高优先级来源可能覆盖前面的值。
         - `@ConfigurationProperties` 适合绑定一组结构化配置；`@Value` 适合少量单值配置；复杂配置优先前者，便于类型校验、复用和测试。
         - 端口、数据库连接、日志级别、第三方服务地址、密钥都应按环境管理，敏感配置不要写死进仓库。
@@ -3506,7 +3574,7 @@ public class GenericExample {
             <summary>细节：运行维护关注点</summary>
 
             - 启动：`java -jar`、Maven / Gradle 插件运行、IDE 运行配置、profile 和环境变量。
-            - 打包：Maven / Gradle 构建，常见命令是 test / package；普通 JAR（一分包）与 Boot 可执行 JAR（二分包 / `repackage`）结构不同。
+            - 打包：Maven 用 `./mvnw package`（需已绑定 `repackage`），Gradle 用 `./gradlew bootJar`。Boot 可执行 JAR 把应用类放在 `BOOT-INF/classes/`，依赖放在 `BOOT-INF/lib/`。
             - 部署：JAR、WAR、容器镜像、配置外置、滚动发布、优雅停机、回滚策略。
             - 日志：区分访问日志、业务日志、错误日志、SQL 日志；生产日志要脱敏、可检索、带 trace id。
             - 指标：QPS、响应时间、错误率、JVM 内存、GC、线程池、连接池、数据库慢查询、MQ 堆积。
@@ -3544,7 +3612,7 @@ public class GenericExample {
 >1. 传统 SSM：**S**pring Framework + **S**pring MVC + **M**yBatis + XML/手动配置
 >1. Spring Boot 版 SSM：**S**pring Boot + **S**pring MVC + **M**yBatis/**M**yBatis-Plus + 自动配置/少量配置
 
-6. Spring Cloud：微服务协作
+6. #### Spring Cloud 微服务协作
 
     >- Spring Cloud 不是再写一套 Web 框架，而是基于 Spring Boot 的微服务工具集：解决「很多服务怎么互相发现、调用、配置、网关入口和容错」。
     >- 先会把单个 Boot 服务跑稳，再学 Cloud；否则注册中心、Feign、网关会叠在尚未理解的分层和配置之上。
@@ -3590,7 +3658,7 @@ public class GenericExample {
 
     1. **服务间调用：OpenFeign 与 REST 契约**
 
-        - OpenFeign：声明式 HTTP 客户端；写接口 + `@FeignClient`，像调本地方法一样调另一个服务；底层仍是 HTTP，接口可采用 REST 风格。
+        - 存量项目常用 Spring Cloud OpenFeign：在接口上写 `@FeignClient`，调用方法就会发起 HTTP 请求。官方已将该项目列为功能完备，后续开发优先了解 Spring HTTP Service Clients（`@HttpExchange`）。[Spring Cloud OpenFeign 项目说明](https://docs.spring.io/spring-cloud-openfeign/reference/)
         - 发现与负载多交给注册中心 + LoadBalancer；超时、重试、熔断限流再配 Resilience4j / Sentinel 等。
         - 与 Dubbo 对比（见后文「名词解析」）：Feign 契约是 HTTP API，跨语言、对接任意 HTTP 服务更自然；Dubbo 提供 RPC 与内建治理，Triple 配合 Protobuf IDL 也支持跨语言。同一项目也可并存：对内 Dubbo、对外或跨栈 Feign。
 
@@ -3664,26 +3732,23 @@ public class GenericExample {
 >1. 单服务主线：Java Web → Spring → MVC → MyBatis → **Spring Boot**
 >1. 多服务主线：在 Boot 之上加 **Spring Cloud**（发现 / 配置 / Feign / 网关 / 容错）；国内常见再叠 **Spring Cloud Alibaba**（Nacos、Sentinel 等）
 
-### [数据库、缓存](https://github.com/realgeoffrey/knowledge/blob/master/全栈/数据库使用/README.md)
+### [数据库、缓存](../数据库使用/README.md)
 
 ### 消息队列
 
 - **Kafka**：分区日志，普通主题没有供生产者指定每条消息首次投递时间的机制。
 - **RabbitMQ**：路由更灵活；短延时可用 TTL + 死信（一档一队）；4.4 起 quorum queue 还支持生产者设置投递延时。[RabbitMQ 4.4 说明](https://www.rabbitmq.com/blog/2026/10/20/rabbitmq-4.4-release)
-  >- **一档一队**：一种延时时长对应一个带 TTL 的队列（如 5m / 15m / 30m 各一队）。同队 TTL 有队头阻塞：先入队但更晚到期的会挡住后面更早到期的，故按档位拆队；到期进死信再被业务消费。固定 15 分钟关单就进 `delay.15m` 这一队。旧 `x-delayed-message` 插件已停止维护。
+  >- **一档一队**：每个等待队列给消息设统一 TTL，例如 `delay.15m` 设 15 分钟，不挂业务消费者；过期后通过死信交换机路由到业务队列。如果在同一队列给每条消息设不同时长，后面先到期的消息可能要等队头移走才进入死信。[RabbitMQ 的消息 TTL](https://www.rabbitmq.com/docs/ttl)
 - 上线前想清：丢消息、重复消费、失败重试、顺序、死信。
-- **延时一次**（如 15 分钟关单）：用 MQ / Redis / 落库扫描，不要 Timer，也不要一单一条 cron。到点先看业务状态，该跳过就跳过。落库时到期写在字段里，定时任务只负责短周期扫。
+- **延时一次**（如下单 15 分钟后关单）：每笔订单有自己的到期时间。进程内的 `Timer` 在重启后会丢失；大量订单可共用以下任一种机制。
 
-  >- **延时一次**：相对「现在」只触发一次，不是每天/每周重复的墙钟任务；每笔业务各自有到期时间，处理完即结束。
-  >- **15 分钟关单**：典型例子——下单起算，到点仍未支付则关单。
-  >- **MQ**：有延时能力的 MQ（如 RabbitMQ 4.4 quorum queue 延时投递，或 TTL + 死信）；Kafka 普通主题需要应用另行调度。到期后消费者执行；适合短～中等延时。
-  >- **Redis**：主推 ZSET（score=到期时间）+ 轮询取出到期项；勿依赖 key 过期通知做业务触发。比 MQ 轻，可靠性/重复/宕机要自己兜。
-  >- **落库扫描**：到期时间写入 DB 字段（如 `expire_at`），定时任务周期性查出已到期行再处理；适合长延时、要可查可改、要强业务一致。
-  >- **不要 Timer**：别用进程内 `Timer` / `sleep` / 内存倒计时——重启丢、多副本重复、扩缩容对不齐。
-  >- **不要一单一条 cron**：别给每个订单挂一条「到点跑」的调度任务——调度平台扛不住海量一次性任务，也难运维（改延时、取消、查状态都麻烦）。应走共享延时通道，或一个短周期任务扫全部到期行。
-  >- **到点先看业务状态，该跳过就跳过**：用带状态与到期条件的更新原子地把「待支付」改为「已关闭」，按受影响行数决定是否触发后续动作，避免查询后恰好支付的竞态。
-  >- **到期写在字段里**：落库方案下，权威到期时间在库字段，不靠「心里记着再等 15 分钟」。
-  >- **定时任务只负责短周期扫**：任务不做「等 15 分钟」本身，只做例如每 30s/1min 扫一批；墙钟短周期=扫描器，延时语义在数据库字段（如 `expire_at`）。
+  | 方案 | 到期后怎么找到订单 | 要处理什么 |
+  | --- | --- | --- |
+  | MQ | 发布延时消息，消息可投递后由消费者取出订单 ID | 投递可能滞后或重复，消费时核对订单状态 |
+  | Redis ZSET | 把到期时间放入 score，轮询领取已到期的成员 | 领取后、处理前可能宕机，要能重新领取或补扫 |
+  | 落库扫描 | 下单时保存 `expire_at`，一个定时任务分批查到期的待支付订单 | 扫描间隔决定额外等待时间，按状态和到期时间设计索引 |
+
+  支付和关单可能同时发生。关单使用带订单 ID、待支付状态和到期条件的原子更新；只有受影响行数为 1 时才触发后续动作。这样重试时也不会再次关闭同一订单。
 
 ### 定时任务
 
@@ -3695,26 +3760,26 @@ public class GenericExample {
 | 本机短周期 | 心跳、本地缓存刷新 | `@Scheduled` / `ScheduledExecutorService` |
 | 延时一次 | 下单后 N 分钟关单 | 见消息队列；不要写成 cron |
 
->**业务日批（daily batch：按业务日或自然日跑的一批任务）**——几点跑放控制台，跑什么在代码；**本机短周期**才把 cron / `fixedDelay` 写在服务里。若任务要求全集群只跑一份（日批、关单扫描等），扩到多副本须改调度平台或加分布式锁；本机短周期可每台各跑。`Timer` 不用。
+>`cron` 按日历时间触发，`fixedDelay` 从上次执行结束后开始计时，`fixedRate` 按执行开始时间的间隔调度。每个应用实例都会注册自己的 `@Scheduled` 任务。本地缓存刷新可以每台各跑；日批只允许一份结果时，要协调实例并让重试保持幂等。
 
 ```java
-@EnableScheduling  // 没有它，@Scheduled 不会跑
-@Component
+@Configuration(proxyBeanMethods = false)
+@EnableScheduling
 public class Jobs {
-    @Scheduled(fixedDelay = 5000)  // 跑完再等；默认单线程，多个 @Scheduled 会互堵，并行需扩 pool.size
+    @Scheduled(fixedDelay = 5000)  // 本次返回 5 秒后再执行
     public void poll() {}
 }
 ```
 
-方言见 [Cron表达式](../../工具使用/Cron表达式/README.md)。实现时补齐：幂等、超时、别假设只有一台。
+Spring Boot 自动配置的平台线程调度器默认只有一个线程，耗时任务会拖慢其他任务，可调 `spring.task.scheduling.pool.size`。启用虚拟线程后，自动配置的调度器忽略线程池参数，所有 `fixedDelay` 任务仍共用一个调度线程。[Boot 任务调度](https://docs.spring.io/spring-boot/reference/features/task-execution-and-scheduling.html) · [Spring 调度器](https://docs.spring.io/spring-framework/reference/integration/scheduling.html) · [Cron 表达式](../../工具使用/Cron表达式/README.md)
 
 ---
-### 名词解析
+## 名词解析
 
 - `JDK` / `JRE` / `JVM`：`JDK` 是开发套件（含编译器、工具）；`JRE` 偏运行环境；`JVM` 是执行字节码、管内存与 GC 的虚拟机。日常开发安装 JDK 即可。
 - `Classpath` / 类路径：JVM 的「类与资源搜索路径」，查找 `.class` 和配置 / 图片等资源，类似系统里的 `PATH`。Maven / IDE 帮你拼；Spring Boot 用它决定自动配置。跑程序、报 `ClassNotFoundException` / 读不到配置时，先查有没有把需要的 jar / 目录算进去。
 - `JAR`：Java Archive，Java 归档包；Spring Boot 最常见的可执行部署形态，常用 `java -jar app.jar` 启动（内嵌 Tomcat 等）。
-- `一分包` / `二分包`：本文对普通 JAR 打包和 Boot 再打包的简称。一分包=`maven-jar-plugin` 打的普通瘦包（无依赖）；二分包=`spring-boot-maven-plugin:repackage` 再加工成可 `java -jar` 的胖包。
+- 普通 JAR / Boot 可执行 JAR：`maven-jar-plugin` 默认只把本模块的类和资源打入 JAR。Boot Maven 插件的 `repackage` 在它的基础上加入启动器和依赖，使应用可通过 `java -jar` 启动。[Boot 可执行归档](https://docs.spring.io/spring-boot/maven-plugin/packaging.html)
 - `WAR`：Web Application Archive，Web 应用归档包；传统 Java Web 部署包，通常放到外部 Tomcat 等容器中运行。
 - `Maven` / `pom.xml` / `settings.xml`：构建与依赖工具。POM 管坐标、依赖、插件与模块；settings 管本机镜像 / 认证 / 代理（职责勿混）。日常 `test` / `package` / `verify`；排查看 `dependency:tree`、`help:effective-pom` / `effective-settings`。`<id>` 对齐见上文 Settings 节。
 - `私服` / `mirror` / `proxy`：私服=团队远程入口（内部包 + 常代理 Central）。`mirrors` 只改下载、不改 `deploy`；`proxy` 是出网 HTTP 代理，与 `mirror` 的 id **无对应**。`<id>` 见上文 Settings 节；链路见「仓库与解析」。
@@ -3753,9 +3818,7 @@ public class Jobs {
         - 持久化：一般不单独建表 / CRUD，嵌在实体里，拆成多列或 ORM embed；Java 里常用 `record` 表达。
     - 读代码提示：出现在 domain 层、强调 equals / 不变式 → 值对象；出现在 Controller 出参、类名 `XxxVO` → 多半是 View Object。
 - `BO`：Business Object，业务对象；通常用来承载 Service 层内部的业务语义和处理过程数据，可以组合多个 PO、DTO 或外部接口返回值，并补充业务计算后的字段、状态、规则判断结果等。它不一定直接对应数据库表，也不一定直接暴露给前端，更像“为了完成某段业务逻辑而组织出来的对象”；阅读代码时要重点看它在哪一层创建、流转和转换，避免把它和 `PO`、`DTO`、`VO` 混用。
-- `entity`：实体对象；常对应数据库表或领域实体，通常带有唯一身份（有 ID、可变；业务上「同一个东西」），和前端只展示用的数据结构不完全等价。
-
-    >PO ≈ Data Object ≈ Entity。 Domain Object ≈ DDD 的 Entity。
+- `entity`：在 JPA 里，`@Entity` 声明可持久化的实体；在 DDD 里，Entity 靠持续的业务身份识别（用户改了昵称，还是同一个用户）。同一个类可以兼任两种角色，也可以让持久化类与领域实体分开。
 - `PO`：Persistent Object，持久化对象；贴数据库表的内存投影，不建议直接暴露给前端。
 
     - 对应关系：一张表 ≈ 一个 PO 类；表的一列 ≈ 类的一个字段；表的一行 ≈ 一个 PO 实例；多行 ≈ `List<PO>`。
@@ -3764,7 +3827,7 @@ public class Jobs {
     >PO 和 View Object（VO） 对比：PO 面向数据库（怎么存），VO 面向前端展示（怎么给人看）；链路是 `DB 行 <-> PO -> 转换 -> VO -> JSON`。PO 常含密码哈希、删除标记等内部字段；VO 只放页面需要的字段，可脱敏或拼装展示值。表改列不必绑死 API，页面改字段也不该绑死表结构。
 - `DO`：同一个缩写，项目里可能指两种完全不同的东西，不能望文生义。
 
-    1. Domain Object（领域对象）：描述业务里的「东西」和规则，例如订单能不能支付。可以有业务方法。接近 DDD 里的 Entity。多出现在 `domain` 包。
+    1. Domain Object（领域对象）：描述业务里的概念和规则，例如订单能不能支付、两笔金额能不能相加。实体和值对象都可以是领域对象，多出现在 `domain` 包。
     1. Data Object（数据对象）：描述数据库「一行」怎么映射成 Java 对象，字段往往对表列。基本没有业务方法。接近 `PO`。国内 MyBatis 项目很常见 `UserDO` 这种命名，多在 `dal` / `mapper` 附近。
 
     - 怎么分辨：看包名，再看有没有业务方法。一个项目里通常只约定其中一种叫法。无论哪一种，一般都不直接返回给前端。
@@ -3794,7 +3857,7 @@ public class Jobs {
 - `mapper`：MyBatis 数据访问接口；方法通常对应一条 SQL 或一组数据库操作，是 Service 访问数据库的常见入口。
 - `Repository`：仓储；DDD 中用于封装聚合持久化，Spring Data 中也作为数据访问抽象，可理解为比 DAO 更偏领域语义的数据入口。
 - `JDBC`：Java Database Connectivity，Java 数据库访问标准 API；调用链是 `Java 程序 → JDBC API → 驱动 → 数据库`。Spring / MyBatis 底层仍走 JDBC。核心对象：`Connection`、`PreparedStatement`、`ResultSet`；值用占位符绑定，资源用 try-with-resources 关闭。
-- `InnoDB`：MySQL 默认**存储引擎**（落盘、B+树索引、行锁、事务）。JDBC / `@Transactional` 连上的表默认就是它；隔离默认 `REPEATABLE READ`。
+- `InnoDB`：MySQL 默认的**存储引擎**，支持事务和行级锁，默认事务隔离级别为 `REPEATABLE READ`。查具体表用 `SHOW CREATE TABLE` 看 `ENGINE`；JDBC 和 `@Transactional` 都不决定表使用哪个引擎。
 - `DataSource` / 连接池 / 池化：`DataSource` 是取数据库连接的标准入口。生产环境用连接池（如 HikariCP）：预先准备若干连接，用时借出、用完归还。关注 `maximumPoolSize`、`connectionTimeout`（等池多久）、`idleTimeout`、`maxLifetime`（连接寿命，应略短于库或网络设施的寿命上限）；不要和 `@Transactional(timeout)` 或 SQL 超时混为一谈。容量按「实例数 × 池上限」对照库的 `max_connections`。池化管「可复用资源」；缓存管「可重复读的数据」。
 - `MyBatis` / `MyBatis-Plus`：`MyBatis` 把 Mapper 方法与 SQL（XML 或注解）绑定，并把结果映射成 Java 对象；`#{}` 生成 `PreparedStatement` 占位符并绑定参数，`${}` 把求值结果拼进 SQL 文本（标识符白名单才用）。动态 SQL 的 `test` / `<bind>` 使用 OGNL，与 `#{}` 不是同一通路。一级缓存绑在单个 `SqlSession`：无 Spring 事务时常方法级会话（跨方法难命中），有事务时常整段共用会话才容易命中。`MyBatis-Plus` 在其上补通用 CRUD、分页等，不取代理解 SQL 与映射。
 - `Transaction` / `@Transactional` / 事务：一组 SQL 要么都成功要么都回滚。Spring 里多用 `@Transactional` 声明边界；默认对 `RuntimeException`/`Error` 回滚，受检异常默认提交（可用 `rollbackFor` 改）。异常须抛出代理外才按规则处理，方法正常返回时通常尝试提交，已标记 rollback-only 的事务仍会回滚。挂在 Service，依赖代理生效（自调用绕过代理）。`readOnly` 是优化提示，不保证禁写。开启后通常把一个 JDBC 连接绑在当前线程并关闭自动提交，同线程内数据访问复用该连接。传播默认 `REQUIRED`；`REQUIRES_NEW` 独立新事务，`NESTED` 多为 savepoint 且依赖管理器实现。隔离级别名称对齐 JDBC，现象看库（InnoDB 默认 `REPEATABLE READ`：普通读靠快照，当前读可加间隙锁）。一个 `DataSourceTransactionManager` 管一个数据源；跨库原子提交可用 XA/JTA；业务补偿属于最终一致性方案。
@@ -3802,13 +3865,13 @@ public class Jobs {
     - `ACID`：事务四属性的缩写——原子性、一致性、隔离性、持久性。多表一起写时尤其要清楚：中途失败会不会留下半成品数据。
 - `Jackson`：常用 JSON 库；Spring MVC 默认用它把请求 JSON 绑到对象、把返回对象写成 JSON（`HttpMessageConverter`）。字段名、时间格式、未知字段策略会影响前后端契约。
 - `Lombok`：Java 编译期代码生成工具；通过注解生成 getter、setter、构造方法等样板代码，读代码时要意识到有些方法不是手写出来的。
-- `EasyExcel`：Java Excel 读写库；用于 XLSX 导入导出，适合大数据量流式处理，避免一次性把整份 Excel 都加载进内存。
+- `EasyExcel`：Java Excel 读写库，存量项目常用它逐行处理 XLSX 导入数据。官方仓库已于 2025 年归档。[EasyExcel 项目仓库](https://github.com/alibaba/easyexcel)
 - `impl`：Implementation，实现类或实现包常用后缀；常见写法是接口定义能力，`Impl` 负责具体实现。
 - `Redis`：常用作缓存、分布式锁、计数器、排行榜、Session。重点不是背命令，而是搞清命中、过期、穿透、击穿、雪崩会怎样拖垮接口。
 
     - `TTL`：Time To Live，存活时间。缓存或消息到期后失效；前端偶发「数据有点旧」，后端有时就是在用 TTL 换性能。
 - `MQ` / `Kafka` / `RabbitMQ`：消息队列。把同步调用拆成异步投递，常见用途是削峰、解耦、重试、事件通知。
-- `cron` / `@Scheduled` / 调度平台：日历定时。方言见 [Cron表达式](../../工具使用/Cron表达式/README.md)。业务日批用平台；`@Scheduled` 偏本机短周期。
+- `cron` / `@Scheduled` / 调度平台：cron 表达日历时间，Spring 的 `@Scheduled` 也支持固定频率和固定延迟。需要多实例协调、集中改计划或查看执行记录时，可接调度平台。[Cron 表达式](../../工具使用/Cron表达式/README.md)
 - 延时任务：事件后再等一会做一次（关单等），见消息队列；到点已处理完就跳过。
 - `ACK` / `NACK` / `DLQ`：消息消费结果。RabbitMQ 消费者 `ACK` 确认已处理，`NACK` 可选择重新入队或按配置转死信；Kafka 的传统消费组提交消费位点，重试和死信由应用或框架安排；share group 支持逐条确认。排消息问题先看这三者。
 - `Nacos`：服务发现和配置管理组件；Spring Cloud Alibaba 生态常见，用于“服务在哪里”和“配置是什么”的集中管理。
@@ -3835,7 +3898,7 @@ public class Jobs {
 - `SkyWalking` / `TraceId` / `MDC`：分布式链路追踪与日志串联。`TraceId` 把一次请求跨服务的日志串起来；`MDC` 是日志框架的线程上下文（可放 TraceId、用户、租户）。排障先对齐同一 TraceId，再看单服务栈。
 - `Freemarker`：Java 模板引擎；常用于邮件、消息、文档渲染（`${}` 插值）。和前端模板不是同一套运行时。
 - `OkHttp`：HTTP 客户端库；直连外部 HTTP API、下载上传时常见。和 Feign 比更偏「手写调用」；超时、重试、连接池要自己管或再包一层。
-- `Spring Retry` / `@Retryable`：声明式重试瞬时失败（网络抖动等）。只适合幂等或可安全重试的操作；和 MQ 重试、业务补偿分工要清楚。
+- `@Retryable`：对网络抖动等瞬时失败重试，先确认重复执行不会多扣款、多写数据。读代码先看导入：`org.springframework.retry.annotation.Retryable` 来自已归档的 Spring Retry，Spring Framework 7 起提供 `org.springframework.resilience.annotation.Retryable`。[Spring Retry 项目说明](https://github.com/spring-attic/spring-retry) · [Spring Framework 重试](https://docs.spring.io/spring-framework/reference/core/resilience.html)
 - `Cmd` / `Query` / `Req` / `Resp`：接口模型命名习惯。`Cmd` / `Req` 偏写操作入参；`Query` 偏读操作入参；`Resp` / `Result` 偏出参。同一项目可能混用，按包名与用法判断，不要假设全是 DDD CQRS。
 - `Facade`：门面；对外提供一组简化接口，内部再调多个服务 / 领域能力。读代码时 `*Facade` 多是编排入口，不是另一套业务规则堆放处。
 - `adapter` / `app`（application）/ `domain` / `infra`（infrastructure）：六边形 / 整洁架构常见分包。`adapter` 接 HTTP / RPC / 消息；`app` 编排用例；`domain` 核心规则；`infra` 落库、缓存、外部客户端。有包名不等于做了完整 DDD，仍以「规则落在哪」为准。
@@ -3887,9 +3950,9 @@ public class Jobs {
 
 5. 配置从哪来（优先级直觉）
 
-    `默认配置 / 自动配置 < application.yml < application-{profile}.yml < 环境变量 < 命令行参数`
+    `默认属性 < 包内配置（通用 → profile）< 包外配置（通用 → profile）< 环境变量 < JVM 系统属性（-D）< 应用命令行参数（--）`
 
-    - 同名属性后者覆盖前者；容器里常把密钥、地址放进环境变量，避免写进仓库。
+    - 这是默认搜索位置下常见来源的优先级，右侧覆盖左侧。例如 `java -Dserver.port=8081 -jar app.jar --server.port=8082` 中，最终端口是 `8082`。自动配置会读取这些属性来创建 Bean。[Spring Boot 外部化配置](https://docs.spring.io/spring-boot/reference/features/external-config.html)
     - `profile` 决定加载哪份环境文件；激活错环境是「连错库 / 配错地址」的常见原因。
     - 绑定结果可用 Actuator 的 `env` / `configprops` 核对（生产注意权限）。
 
@@ -3972,10 +4035,10 @@ public class Jobs {
 
 12. 事务怎么生效（及常见失效）
 
-    `调用带 @Transactional 的 Spring Bean 方法 -> 代理拦截 -> 取连接并绑当前线程、关自动提交 -> 执行业务与 SQL -> 正常 commit / 异常 rollback -> 解绑并归还连接`
+    `本地 JDBC 事务：外部调用 Service -> 代理按传播规则加入或新建事务 -> 同事务内复用连接 -> 最外层事务边界按回滚规则提交或回滚 -> 归还连接`
 
     - 注解通常打在 Service public 方法；事务通过 **代理** 生效。
-    - 同类自调用不会触发内层方法的事务设置，已有外层事务仍然有效。代理模式无法增强 `private` 方法，类代理还受 `final` 限制。自调用要进切面：拆 Bean / 注入自身，或 `exposeProxy` + `AopContext.currentProxy()`（默认未开）。
+    - 同类自调用不会触发内层方法的事务设置，已有外层事务仍然有效。代理模式无法增强 `private` 方法，类代理还受 `final` 限制。内层方法需要独立事务时，可拆到另一个 Bean 后注入调用。
     - 异常在方法内被吞后正常返回 → 默认提交；抛受检异常且未配 `rollbackFor` → 默认也提交。以最终抛到代理外的异常类型为准。
     - `readOnly=true` 是提示（可能 `setReadOnly` / 优化），**不保证**写失败，别当安全闸。
     - 传播默认 `REQUIRED`（有则加入，无则新建）。`REQUIRES_NEW` 是独立新事务；`NESTED` 多是同一连接上的 savepoint，且依赖具体事务管理器。
@@ -3992,9 +4055,9 @@ public class Jobs {
 
 14. 消息：生产 → 消费 → ACK / 重试 / DLQ
 
-    `生产者发消息 -> Broker 存储/投递 -> 消费者处理业务 -> ACK 确认；失败则 NACK/重试；多次失败可进 DLQ`
-
-    - 先分清：至少一次 / 至多一次 / 正好一次，以及业务是否要做幂等。
+    - RabbitMQ 手动确认：生产者向 Broker 发布 → 消费者处理业务并提交 → 向 Broker 发 ACK。发布端的 publisher confirm 仅确认 Broker 接手消息；消费者失败时，拒收后是否重入队或转死信取决于参数和队列配置。[RabbitMQ 消费确认与发布确认](https://www.rabbitmq.com/docs/confirms)
+    - Kafka 传统消费组：从分区拉取记录 → 处理并提交业务 → 提交下一条待消费的 offset。业务已提交、位点尚未提交时发生重启，记录可能重读；写库时可用业务唯一键去重。[Kafka 消息交付语义](https://kafka.apache.org/44/design/design/)
+    - 分清至多一次、至少一次和恰好一次各自覆盖的范围。Broker 的交付保证不会自动让外部支付、写库等副作用只发生一次。
     - 消费失败不要静默吞掉；明确是重试、跳过还是进死信后人工处理。
     - 需要顺序时看分区 / 队列模型，不要默认「全局有序」。
 

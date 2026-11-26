@@ -1,126 +1,113 @@
-# [TypeScript](https://github.com/microsoft/TypeScript)学习笔记
+# [TypeScript](https://github.com/microsoft/TypeScript) 学习笔记
+
+TypeScript 在 JavaScript 的基础上增加静态类型检查。接口、类型别名和类型断言会在编译时擦除。接口响应是否缺字段、DOM 元素是否存在，仍要在运行时判断。[官方手册：基础](https://www.typescriptlang.org/docs/handbook/2/basic-types.html)
+
+本文按 **TypeScript 7.0、`strict: true`** 说明。除标明文件名的配套示例外，每个代码块均可独立阅读，标有“报错”或 `@ts-expect-error` 的行用于观察编译器诊断。文末附浏览器项目的配置和检查命令。[项目配置与类型检查](#项目配置与类型检查) · [TypeScript 7.0 发布说明](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)
 
 ## 目录
-1. [类型](#类型)
 
-    1. [数据类型](#数据类型)
-    1. [类](#类)
-    1. [接口（Interfaces）](#接口interfaces)
-    1. [类型别名（Type Alias）](#类型别名type-alias)
-    1. [字面量类型](#字面量类型)
-    1. [枚举（Enum）](#枚举enum)
-    1. [泛型（Generics）](#泛型generics)
-    1. [内置类型别名（Utility Types）](#内置类型别名utility-types)
-    1. [操作固有字符串的类型（不是~~值~~）](#操作固有字符串的类型不是值)
-1. [语法](#语法)
-
-    1. [类型推论（Type Inference）](#类型推论type-inference)
-    1. [类型断言（Type Assertion）](#类型断言type-assertion)
-    1. [类型保护/类型守卫（Type Guards）](#类型保护类型守卫type-guards)
-    1. [联合类型（Union Types）](#联合类型union-types)
-    1. [交叉类型（Intersection Types）](#交叉类型intersection-types)
-    1. [`表达式!`](#表达式)
-    1. [`typeof 值`](#typeof-值)
-    1. [`keyof 数据类型`（输入索引类型查询）](#keyof-数据类型输入索引类型查询)
-    1. [`类型[键名]`（索引访问类型）](#类型键名索引访问类型)
-    1. [`in`](#in)
-    1. [装饰器（Decorators）](#装饰器decorators)
-    1. [`readonly`](#readonly)
-    1. [映射修饰符（mapping modifiers）`+`、`-`](#映射修饰符mapping-modifiers-)
-    1. [`this`](#this)
-    1. [`类型1 extends 类型2 ? 类型3 : 类型4`（条件类型）](#类型1-extends-类型2--类型3--类型4条件类型)
-    1. [`infer`](#infer)
-    1. [`...`展开类型](#展开类型)
-    1. [`///`（三斜线指令，triple-slash directives）](#三斜线指令triple-slash-directives)
-    1. [`namespace`（命名空间）](#namespace命名空间)
-
-        1. [TS中的命名空间和模块的区别](#ts中的命名空间和模块的区别)
-    1. [模块化](#模块化)
-    1. [`名字.d.ts`（声明文件）](#名字dts声明文件)
-    1. [协变与逆变](#协变与逆变)
-    1. [注释指令](#注释指令)
-1. [其他](#其他)
-1. [ts的优缺点](#ts的优缺点)
+- [类型](#类型)
+    - [数据类型](#数据类型)
+    - [类](#类)
+    - [接口（Interfaces）](#接口interfaces)
+    - [类型别名（Type Alias）](#类型别名type-alias)
+    - [字面量类型](#字面量类型)
+    - [枚举（Enum）](#枚举enum)
+    - [泛型（Generics）](#泛型generics)
+    - [内置工具类型（Utility Types）](#内置工具类型utility-types)
+    - [内置字符串操作类型](#内置字符串操作类型)
+- [语法](#语法)
+    - [类型推论（Type Inference）](#类型推论type-inference)
+    - [类型断言（Type Assertion）](#类型断言type-assertion)
+    - [`satisfies`（类型校验）](#satisfies类型校验)
+    - [类型保护/类型守卫（Type Guards）](#类型保护类型守卫type-guards)
+    - [联合类型（Union Types）](#联合类型union-types)
+    - [交叉类型（Intersection Types）](#交叉类型intersection-types)
+    - [`表达式!`](#表达式)
+    - [`typeof 值`](#typeof-值)
+    - [`keyof 数据类型`（索引类型查询）](#keyof-数据类型索引类型查询)
+    - [`类型[键名]`（索引访问类型）](#类型键名索引访问类型)
+    - [`in`](#in)
+    - [装饰器（Decorators）](#装饰器decorators)
+    - [`readonly`](#readonly)
+    - [映射修饰符（mapping modifiers）`+`、`-`](#映射修饰符mapping-modifiers-)
+    - [`this`](#this)
+    - [`类型1 extends 类型2 ? 类型3 : 类型4`（条件类型）](#类型1-extends-类型2--类型3--类型4条件类型)
+    - [`infer`](#infer)
+    - [`...`展开类型](#展开类型)
+    - [`///`（三斜线指令，triple-slash directives）](#三斜线指令triple-slash-directives)
+    - [`namespace`（命名空间）](#namespace命名空间)
+        - [命名空间和模块的区别](#命名空间和模块的区别)
+    - [模块化](#模块化)
+    - [`名字.d.ts`（声明文件）](#名字dts声明文件)
+    - [协变与逆变](#协变与逆变)
+    - [注释指令](#注释指令)
+- [工程实践](#工程实践)
+    - [项目配置与类型检查](#项目配置与类型检查)
+    - [前端示例：校验接口响应](#前端示例校验接口响应)
+    - [声明的类型空间和值空间](#声明的类型空间和值空间)
+    - [采用 TypeScript 的收益与成本](#采用-typescript-的收益与成本)
 
 ---
->参考：[TypeScript 入门教程](https://github.com/xcatliu/typescript-tutorial)、[TypeScript 使用手册（中文版）翻译](https://github.com/zhongsp/TypeScript)、[TypeScript Deep Dive 中文版](https://github.com/jkchao/typescript-book-chinese)。
-
-- TypeScript是JS的一个超集，主要提供类型系统，并持续跟进现代 ECMAScript/JS 语法。
-
-    1. TS的类型系统被设计为可选的，因此，JS就是TS。
-    2. TS默认可以在存在类型错误时继续输出JS，便于渐进迁移；若配置 `noEmitOnError` 或由构建工具/CI拦截，则类型错误会阻止产物输出。
 
 ## 类型
 
 ### 数据类型
 
->1. `Number`、`String`、`Boolean`、`Symbol`、`BigInt`、`Object`：（大写的）几乎在任何时候都不应该被用作一个类型。
->2. 除了`Object`之外的引用数据类型（如：`Function`、`Date`），他们的实例类型用（大写的）构造函数名称（如：`: Function`、`: Date`）。
+写类型注解时，原始值用小写的 `number`、`string`、`boolean`、`symbol`、`bigint`。大写的 `Number`、`String` 等还会接受包装对象。对于类实例则写类名，如 `const today: Date = new Date()`。函数用具体的调用签名描述参数和返回值。[官方手册：日常类型](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html)
 
 1. 基本数据类型
 
-    1. `number`
+    1. `number`，包含整数、浮点数、`NaN` 和正负无穷。
     2. `string`
     3. `boolean`
     4. `symbol`
-    5. `bigint`
+    5. `bigint`。整数字面量写成 `1n`，算术运算时不能与 `number` 混用。
     6. `undefined`
-
-        `undefined`可以赋值给可选参数（`?:`）。
-
-        >1. `a?: 某类型`表示：`a`不存在或不传参，也可以是`某类型`或`undefined`。
-        >2. `a: 某类型 | undefined`表示：`a`必须存在或必传参，类型是`某类型`或`undefined`。
     7. `null`
 
-    >1. 关闭 `strictNullChecks` 时，`undefined` 和 `null` 可以赋值给所有类型的变量（除了`never`类型）；`undefined`和`null`类型 是所有类型的子类型（除了`never`类型）。
-    >2. 开启 `strictNullChecks` 后，两者均可赋给 `any`、`unknown` 或包含自身的类型（如 `string | null` 可接受 `null`）。`undefined` 还可赋给 `void`。
+    开启 `strictNullChecks` 后，`null` 和 `undefined` 是不同的类型。例如 `string | null` 接受 `null`，要接受 `undefined` 需再写入联合类型。`undefined` 还可以赋给 `void`。关闭这项检查时，编译器允许把空值赋给 `string` 等类型，运行时访问空值仍会报错。
+
+    参数 `a?: number` 可省略，也可显式传 `undefined`。参数 `a: number | undefined` 仍占一个必传位置。对于对象，`{ a?: number }` 接受 `{}`，而 `{ a: number | undefined }` 要求存在 `a`。打开 `exactOptionalPropertyTypes` 后，前一种写法只允许在提供 `a` 时写入数字。要显式写入 `undefined`，写成 `{ a?: number | undefined }`。读取可选属性时仍须考虑其缺失的情况。[配置说明](https://www.typescriptlang.org/tsconfig/exactOptionalPropertyTypes.html)
+
 2. `void`
 
-    1. 变量类型void，表示：仅允许被`null`（只在配置`strictNullChecks`未指定时）或`undefined`赋值。
-    2. 函数返回值类型void，表示：`return null`（只在配置`strictNullChecks`未指定时）、`return undefined`、`return`、没有`return`。
+    显式声明返回 `void` 的函数可以执行到末尾、写 `return` 或 `return undefined`。开启 `strictNullChecks` 时，`return null` 会报错。当调用方把**回调类型**写成 `() => void`，表示调用方忽略结果，传入的函数可以返回值。[官方手册：返回类型 void](https://www.typescriptlang.org/docs/handbook/2/functions.html#return-type-void)
 
-        - 函数返回值类型void的变量，可以被赋值任何返回类型的函数（函数`返回值类型`是协变的）
+    ```ts
+    const collected: number[] = []
+    const collect: (n: number) => void = n => collected.push(n)
+    const result = collect(1) // result 的静态类型是 void，push 在运行时返回新长度
+    ```
 
-        ><details>
-        ><summary>Promise的默认返回可以用<code>void</code>（不能用<del><code>undefined</code></del>）</summary>
-        >
-        >e.g.
-        >
-        >```ts
-        >function a (): Promise<void> {
-        >  return new Promise((resolve, reject) => {
-        >    resolve();
-        >  }).then(() => {
-        >       // 支持：`return null`（只在配置`strictNullChecks`未指定时）、`return undefined`、`return`、没有`return`。
-        >  });
-        >}
-        >
-        >
-        >function b (): Promise<undefined> {
-        >  return new Promise((resolve, reject) => {
-        >    resolve();
-        >  }).then(() => {
-        >    return undefined   // 或：return null（只在配置`strictNullChecks`未指定时）
-        >  });
-        >}
-        >```
-        ></details>
+    `Promise<void>` 适合等待异步操作完成而无需使用其兑现值。`Promise<undefined>` 则表示兑现值是 `undefined`。TS 5.1 起，显式标注返回 `undefined` 的函数也可以省略 `return`。[TS 5.1 发布说明](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-1.html#easier-implicit-returns-for-undefined-returning-functions)
+
+    ```ts
+    function a(): Promise<void> {
+      return new Promise<void>(resolve => resolve())
+    }
+
+    function b(): Promise<undefined> {
+      return Promise.resolve(undefined)
+    }
+    ```
+
 3. `never`
 
     1. 表示永不存在的值的类型
 
-        >e.g. 总是会抛出异常 或 根本就不会有返回值（如：死循环） 的函数表达式；变量也可能是never类型，当它们被永不为真的类型保护所约束时。
-    2. 当类型不存在时通常返回`never`
+        >e.g. 总是抛出异常或一直循环的函数可以标注为 `never`。遍历联合类型的全部分支后，剩余分支中的变量也会被收窄为 `never`。
+    2. 没有共同取值的交叉类型或筛选后没有任何成员的联合类型会得到 `never`。
 
-        >e.g. `number & string`、`Extract<string | number , boolean>`）。
+        >e.g. `number & string`、`Extract<string | number, boolean>`。
 
     `never`可以赋值给所有类型的变量（包括`undefined`和`null`），`never`是所有类型的子类型。`never`类型的变量仅能被`never`类型的值赋值。
 
     ><details>
-    ><summary>e.g.</summary>
+    ><summary>抛错函数与 never 的赋值规则</summary>
     >
     >```ts
-    >// 返回never的函数必须存在无法达到的终点
+    >// 抛错或一直循环，调用方都得不到正常返回值
     >function error (message: string): never {
     >  throw new Error(message)
     >}
@@ -130,7 +117,7 @@
     >  return error('Something failed')
     >}
     >
-    >// 返回never的函数必须存在无法达到的终点
+    >// 抛错或一直循环，调用方都得不到正常返回值
     >function infiniteLoop (): never {
     >  while (true) {
     >  }
@@ -151,30 +138,28 @@
     ></details>
 4. `any`
 
-    能够兼容所有的类型（包括它自己）。当使用`any`时，基本上是在告诉TS编译器不要进行任何的类型检查，TS将会把类型检查关闭。
-
-    >未声明类型的（且没有类型推论的）被认为是`any`。
+    `any` 让该值的属性访问、调用、赋值等跳过多数类型检查。它也会传播到后续表达式。它能赋给几乎所有类型，`never` 是例外。开启 `noImplicitAny` 可以发现无法推断类型的未注解参数，显式写出的 `any` 仍然有效。
 5. `unknown`
 
-    1. 任何值都可以赋给`unknown`。
-    2. 当没有类型断言或基于控制流的类型细化时`unknown`不可以赋值给其它类型，除了它自己和`any`之外。
-    3. 在`unknown`没有被类型断言或js代码细化到一个确切类型之前，不允许在其上进行任何操作。
-    4. `try-catch`的`catch`变量在开启 `useUnknownInCatchVariables`（`strict`会启用）时是`unknown`，需要类型保护（e.g. `if (err instanceof Error) {}`）之后才能认为`err`是`Error`类型。
-    5. 用`?.`无效，只能用类型保护才能使用其属性。
-6. `Object`、`{}`、`object`区别
+    任何值都可以赋给 `unknown`。可以直接做 `typeof`、相等性比较等检查。要调用它或读取业务属性，需要先缩小范围。`?.` 只能处理空值。它无法证实某个属性存在。
 
-    1. `Object`
+    ```ts
+    function readMessage(input: unknown): string | undefined {
+      if (typeof input === 'object' && input !== null && 'message' in input) {
+        return typeof input.message === 'string' ? input.message : undefined
+      }
+    }
+    ```
 
-        包含所有`Object.prototype.`方法类型（也就是所有JS类型原型链抵达的方法）；匹配任何值（基本数据类型+引用数据类型），`strictNullChecks`模式下不匹配`undefined`、`null`。
-    2. `{}`
+    `useUnknownInCatchVariables`（随 `strict` 开启）把 `catch (err)` 中的 `err` 设为 `unknown`。例如，可以先检查 `err instanceof Error`，再读取 `err.message`。
+6. `Object`、`{}`、`object` 区别（以下开启 `strictNullChecks`）
 
-        空对象，不包含任何属性也不包含对象原型属性；匹配任何值（基本数据类型+引用数据类型），`strictNullChecks`模式下不匹配`undefined`、`null`。
-    3. `object`
-
-        表示非~~基本数据类型~~（匹配除了`boolean`、`number`、`string`、`symbol`、`bigint`、`undefined`、`null`之外的类型）。允许给它赋任意非基本数据类型的值和访问`Object.prototype`上的属性，但不能调用任意其他属性/方法，即便它真的有这些属性/方法。
+    1. `Object` 描述 `toString` 等公共成员。字符串、数字等原始值也能赋给它。对象若自己声明了不兼容的同名成员，赋值仍可能失败。
+    2. `{}` 表示没有要求任何特定成员。任何非空值都可以赋给它，包括 `0`、空字符串和有属性的对象。
+    3. `object` 接受非原始值，例如对象、数组、函数。有了这个类型，编译器仍然不知道对象有哪些业务属性。[官方手册：object](https://www.typescriptlang.org/docs/handbook/2/functions.html#object)
 
         ><details>
-        ><summary>e.g.</summary>
+        ><summary>用 object 注解后可以访问哪些成员</summary>
         >
         >```ts
         >let obj1: object
@@ -186,32 +171,32 @@
         >obj1.length      // 报错，只允许使用Object.prototype上的属性
         >
         >
-        >let obj2: { a }
+        >let obj2: { a(): void }
         >
         >obj2 = { a: () => {} }
         >
         >obj2.toString()  // 允许访问Object.prototype上的属性
         >obj2.a()         // 允许访问定义的属性a
-        >obj2.length      // 报错，只允许使用Object.prototype上的属性
+        >obj2.length      // 报错，声明的类型中没有 length
         >```
         ></details>
 7. 对象类型
 
     1. 用`接口`定义。
 
-        1. 确定属性（`属性名: 数据类型`），对象不允许多于或少于约定的属性数量（若有`索引签名`时，则允许多定义属性）。
+        1. 必需属性（`属性名: 数据类型`）必须存在且类型兼容。已有变量可以有额外的属性，直接赋值或传参的对象字面量还会接受额外属性检查。
         2. 可选属性（`属性名?: 数据类型`）。
-        3. 只读类型（`readonly 属性名: 数据类型`），创建对象时必须给此属性赋值，并且之后不能修改此属性。
+        3. 只读属性（`readonly 属性名: 数据类型`）限制通过这个类型重新赋值。可选性另外用 `?` 表示。若值是对象，内部可写的属性仍可修改。
 
-            >作为变量使用用`const`，作为属性使用用`readonly`。
-        4. `索引签名`（`[任意名: string]: 数据类型`），确定属性、可选属性、只读属性的类型都必须是`索引签名`的类型的子集。
+            >`const` 限制变量重新绑定，`readonly` 限制属性写入。
+        4. 索引签名（如 `[key: string]: T`）描述一组键对应的值。被该签名覆盖的已知属性也要与值类型兼容。用 `[key: number]` 可以只描述数字索引，或用模板字符串键描述某一类属性，如 ``[key: `data-${string}`]``。
 
             >不能用`in`替代`:`。
 
-            1. 尽量不要把 `索引签名` 与 属性 混合使用。若属性名称中有拼写错误，则这个错误不会被捕获到
+            1. 当对象同时有固定属性和动态键时，宽泛的字符串索引可能让拼写错误通过检查。例如，把子选择器放到单独的属性后，编译器就能发现拼错的 CSS 属性。
 
                 <details>
-                <summary>e.g.</summary>
+                <summary>给嵌套 CSS 的选择器单独设一个属性</summary>
 
                 ```ts
                 // 错误示范：
@@ -219,7 +204,7 @@
                   color?: string;
                   [selector: string]: string | undefined | NestedCSS1;
                 }
-                const example: NestedCSS1 = {
+                const example1: NestedCSS1 = {
                   color: 'red',
                   colorxxx: 'red',      // 无法检查出错误
 
@@ -237,23 +222,22 @@
                     [selector: string]: NestedCSS2;
                   };
                 }
-                const example: NestedCSS2 = {
+                const example2: NestedCSS2 = {
                   color: 'red',
-                  colorxxx: 'red'       // TS Error: 未知属性 'colorxxx'
 
                   nest: {
                     '.subclass': {
                       color: 'blue',
-                      colorxxx: 'red'   // TS Error: 未知属性 'colorxxx'
+                      colorxxx: 'red'   // 报错，未知属性 colorxxx
                     }
                   }
                 }
                 ```
                 </details>
-            2. 当 属性 和 `索引签名` 直接合并会出错的情况（当 属性的类型 并非 `索引签名`的类型 的子集时），也可以用`&`，只是不能用这个交叉类型创建对象
+            2. 如果已存在的 JavaScript 对象把表单元数据和动态字段放在同一层，可用交叉类型描述它。下面的 `isValid` 同时受到布尔属性和字符串索引签名约束，含有布尔值 `isValid` 的对象字面量无法满足这两个约束。设计新类型时可以把字段放进 `fields: Record<string, FieldState>`。
 
                 <details>
-                <summary>e.g.</summary>
+                <summary>用交叉类型描述已有表单对象</summary>
 
                 ```ts
                 type FieldState = {
@@ -268,17 +252,12 @@
                 const isValidBool = foo.isValid;
                 const somethingFieldState = foo['something'];
 
-                // 使用它来创建一个对象时，将必然报错
-                const bar: FormState = {
-                  // isValid 不能设置值类型 FieldState、也不能设置值类型 boolean
-                  // isValid: { value: '' },    // 类型错误
-                  // isValid: true              // 类型错误
-                };
+                const bar: FormState = { isValid: true }; // 报错，布尔值不符合 FieldState
                 ```
                 </details>
 
         ><details>
-        ><summary>e.g.</summary>
+        ><summary>给接口添加可选、只读和动态属性</summary>
         >
         >```ts
         >interface Person {
@@ -286,12 +265,12 @@
         >
         >  func(): string
         >
-        >  score?: number   // -> 不存在 或 number | undefined
+        >  score?: number   // 可省略，读取时为 number | undefined
         >
         >  readonly id: number
         >
         >  // 索引签名：描述对象的属性
-        >  [任意名: string]: string | Function | number | undefined | boolean // 必须包含：所有其他属性的类型的联合类型（|）
+        >  [任意名: string]: string | (() => string) | number | undefined | boolean // 覆盖 name、func、score、id
         >}
         >
         >let tom: Person = {
@@ -307,17 +286,20 @@
         >tom.id = 2   // 报错，readonly
         >tom.x = 'x'
         >tom.xx = 'xx'
-        >tom.xxx = 1n // 报错，1n不是 string | Function | number | undefined | boolean
+        >tom.xxx = 1n // 报错，bigint 不在索引签名的值类型内
         >```
         ></details>
     2. `: 类型别名`、`: { 属性: 数据类型, }`（内联类型注解）
 
-        `{ [任意名: string]: any }`等价于`Record<string, any>`，表示对象类型，比 ~~`object`~~、~~`{}`~~ 更严格定义对象类型。
+        `{ [key: string]: T }` 和 `Record<string, T>` 都可以描述字符串键到 `T` 的映射。值类型未知时可以写 `unknown`。开启 `noUncheckedIndexedAccess` 后，读取未显式声明的键会带上 `undefined`，例如 `Record<string, number>` 的任意键可能读到 `number | undefined`。[配置说明](https://www.typescriptlang.org/tsconfig/noUncheckedIndexedAccess.html)
 
         ><details>
-        ><summary>e.g.</summary>
+        ><summary>字符串、数字和枚举键的映射</summary>
         >
         >```ts
+        >type 数据类型 = string
+        >enum 状态 { 草稿, 已发布 }
+        >
         >type A ={
         >  [key: string]: 数据类型;
         >}
@@ -329,16 +311,16 @@
         >  [key in 0|1]: 数据类型;       // 不能用`:`替代`in`
         >}
         >type C ={
-        >  [key in 枚举类型]: 数据类型;  // 不能用`:`替代`in`
+        >  [key in 状态]: 数据类型;  // 不能用`:`替代`in`
         >}
         >```
         ></details>
     3. `: 类名`
 
-        取**实例**的类型，而不是~~类~~的类型，不包含类的所有 ~~`静态属性/方法`~~ 和 ~~`构造函数`~~。
+        类名用在类型位置时描述**实例**的成员。要表示构造函数及静态成员，用 `typeof 类名`。
 
         ><details>
-        ><summary>e.g.</summary>
+        ><summary>比较类的实例类型和对象字面量</summary>
         >
         >```ts
         >class A {
@@ -359,12 +341,12 @@
         >```
         ></details>
 
-    - Freshness（更严格的`对象字面量`检查）
+    - 额外属性检查（Excess Property Checks）
 
-        只会发生在`对象字面量`上的错误提示。
+        把对象字面量直接赋给带有目标类型的变量或传给函数时，编译器会检查是否显式写入未知属性。传入已有变量时通常按结构检查，只要有要求的成员即可。缺少必需属性在两种写法中都会报错。[官方手册：额外属性检查](https://www.typescriptlang.org/docs/handbook/2/objects.html#excess-property-checks)
 
         ><details>
-        ><summary>e.g.</summary>
+        ><summary>传入对象变量与直接传入字面量</summary>
         >
         >```ts
         >function logName(something: { name: string }) {
@@ -373,15 +355,15 @@
         >
         >const person = { name: 'matt' };
         >const animal = { name: 'cow', diet: 'vegan, but has milk of own specie' };
-        >const randow = { note: `I don't have a name property` };
+        >const noName = { note: `I don't have a name property` };
         >
         >logName(person); // ok
         >logName(animal); // ok
-        >logName(randow); // Error: 没有 `name` 属性
+        >logName(noName); // Error: 没有 `name` 属性
         >
         >logName({ name: 'matt' });                          // ok
         >logName({ name: 'matt', job: 'being awesome' });    // Error: 对象字面量只能指定已知属性，`job` 属性在这里并不存在。
-        >logName({});                                        // Error: 对象字面量只能指定已知属性，非可选
+        >logName({});                                        // 报错，缺少必需属性 name
         >```
         ></details>
 8. 数组类型
@@ -389,7 +371,7 @@
     1. `数据类型[]`
 
         ><details>
-        ><summary>e.g.</summary>
+        ><summary>对象数组和联合类型数组</summary>
         >
         >```ts
         >let arr1: (number | string)[] = [1, "1"];
@@ -410,16 +392,16 @@
         >];
         >```
         ></details>
-    2. 泛型`Array<数据类型>`
+    2. 泛型 `Array<T>`，与 `T[]` 等价
 
         >e.g. `let arr: Array<number | string> = [1, '1']`
 
         - `ReadonlyArray<数据类型>`
 
-            通过这个只读引用访问数组时，类型检查会阻止写入元素和调用 `push` 等方法。同一数组仍可通过可写引用修改。
+            也可写作 `readonly T[]`。通过这个只读引用访问数组时，类型检查会阻止写入元素和调用 `push` 等方法。同一数组仍可通过可写引用修改。
 
             ><details>
-            ><summary>e.g.</summary>
+            ><summary>通过只读引用访问同一个数组</summary>
             >
             >```ts
             >let a: number[] = [1, 2, 3, 4]
@@ -430,12 +412,12 @@
             >ro.length = 100 // 报错
             >
             >let b: number[] = ro               // 报错，ReadonlyArray赋值给一个普通数组也是不可以的
-            >let c: number[] = ro as number[]   // 允许，类型断言重写
+            >let c: number[] = [...ro]          // 复制得到新数组，可以写入且不影响原数组
             >```
             ></details>
     3. 用`接口`定义
 
-        用`索引签名`来定义索引和项。
+        用数字索引签名描述按下标访问的元素。这种接口也接受对应的类数组对象。若要使用 `length`、`map` 等成员，应使用数组类型或显式声明这些成员。
 
         ```ts
         interface NumberArray {
@@ -448,16 +430,17 @@
 
         1. 规定`数组`每一项的数据类型：
 
-            1. 直接赋值不能少于或多于约定长度。
-            2. 固定长度元组的越界字面量下标会报错。可变元组仍可用 `push` 追加元素，参数须满足成员类型的联合类型。
-        2. `元组[数字]`可以获取内部某一项的类型
+            1. 没有可选元素或剩余元素时，初始化需要给出约定数量的元素。可选元素如 `[string, number?]`，带剩余元素如 `[string, ...number[]]`。
+            2. 固定长度元组的越界字面量下标会报错。非只读元组可以调用 `push`，即使运行时长度增加，静态类型也不会随之扩展。只读元组（如 `readonly [string, number]`）还能阻止这类改动。
+        2. 用字面量下标取指定位置的类型，例如 `[string, number][0]` 得到 `string`。用 `[number]` 则得到所有元素类型的联合。
 
         ><details>
-        ><summary>e.g.</summary>
+        ><summary>元组的长度、下标与 push</summary>
         >
         >```ts
         >let arr1: [string, number] = ['string', 1]
         >arr1.push(2)
+        >arr1[2]                                          // 报错，固定元组没有下标 2
         >arr1.push(true)                                  // 报错，只能添加联合类型
         >
         >let arr2: [string, number] = ['string', 1, '啊'] // 报错，直接赋值不能多于约定长度
@@ -472,7 +455,7 @@
     - 将`索引签名`设置为只读
 
         ><details>
-        ><summary>e.g.</summary>
+        ><summary>让数字索引只读</summary>
         >
         >```ts
         >interface ReadonlyStringArray {
@@ -484,63 +467,44 @@
         >```
         ></details>
 
-    >元组编译后是普通 JavaScript 数组。
+    >元组编译后是普通 JavaScript 数组。[官方手册：元组](https://www.typescriptlang.org/docs/handbook/2/objects.html#tuple-types)
 9. 函数类型（方法类型）
 
-    1. 输入的参数、输出的返回值都需要设置类型。
-    2. 支持：函数声明、函数表达式。
-
-        1. 函数表达式定义类型方式：`Function`（类似于`(...args: any) => any`，但缺少参数和返回值定义） 或 `参数类型 => 返回类型` 或 `接口`（、类型别名、内联类型注解）
-
-            若函数表达式需要表示重载，则只能通过 `接口`（、类型别名、内联类型注解） 定义。
-        2. 函数声明使用定义类型方式：内联类型注解
-    3. 支持：可选参数、默认参数、剩余参数。
-
-        1. 可选参数 和 默认参数 不能同时设置（默认参数有可选参数的含义）。
-
-            >e.g. 不允许：~~`x?: number = 1`~~；`x: number = 1`，可以传`number`或`undefined`，或不传参。
-        2. 设置 所有参数类型（空参数也满足）：`(...args: 数组类型)`。
-    4. 引用函数传入的参数不允许多于或少于约定的参数数量（若有可选参数`?`、或默认参数`=`、或剩余参数`...`，则允许少传入参数）。
-    5. 函数的参数和返回值可以自动进行类型推论。
-    6. `new`可实例化
-
-        >声明构造函数，最好还是用`class`，不要用`new`关键字。
-
-        在各种函数类型的前面加上`new`，表示实例化类型。
+    1. 函数声明可直接在参数和返回值上标注类型。返回值通常可以从函数体推断。回调参数还可能由上下文推断，例如 `[1, 2].map(n => n * 2)` 中的 `n` 是 `number`。
+    2. 函数表达式的类型可以写成 `(x: number) => string`，也可以用带调用签名的接口、类型别名或内联对象类型表示。全局 `Function` 允许任意参数并返回 `any`，会丢失调用检查。
+    3. 支持可选参数、默认参数、剩余参数。带默认值的参数不再写 `?`，传 `undefined` 会触发默认值。若它后面还有必需参数，需要保留它的位置，例如 `f(undefined, required)`。
+    4. 调用时必须满足签名要求的参数个数。剩余参数可以用数组类型接收任意数量的同类参数，或用元组限制位置和数量。
+    5. 回调的类型应按调用方**实际传入的参数**声明。例如 `(value: string, index: number) => void` 的实现可以只声明 `value`。`index?: number` 则表示调用方可能省略索引，要求使用索引的回调也要处理 `undefined`。
+    6. 构造签名描述能用 `new` 调用的值。对象类型中写成 `new (参数): 实例类型`，类型表达式可以写成 `new (参数) => 实例类型`。
 
         ><details>
-        ><summary>e.g.</summary>
+        ><summary>用构造签名描述 Point</summary>
         >
         >```ts
-        >interface A1 {     // 或：类型别名、内联类型注解
-        >  new (): string;
+        >class Point {
+        >  constructor(public x: number) {}
         >}
-        >// 使用
-        >declare const A1Func: A1;
-        >const bar1 = new A1Func(); // bar1 被推断为 string 类型
+        >interface PointConstructor {
+        >  new (x: number): Point
+        >}
+        >type PointFactory = new (x: number) => Point
         >
-        >
-        >type A2 = new (a: number) => string
-        >// 使用
-        >declare const A2Func: A2
-        >const bar2 = new A2Func(1); // bar2 被推断为 string 类型
+        >const makePoint: PointConstructor = Point
+        >const AnotherPoint: PointFactory = makePoint
+        >const point = new AnotherPoint(1) // Point
         >```
         ></details>
-    7. 函数类型的[协变与逆变](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Typescript学习笔记/README.md#协变与逆变)
+    7. 函数类型的[协变与逆变](#协变与逆变)
 
     ><details>
-    ><summary>e.g.</summary>
+    ><summary>用声明、表达式和接口描述函数</summary>
     >
     >```ts
     >// 函数声明
     >
     >// 可选参数
     >function sum1 (x: number, y?: number): string {
-    >  if (y) {
-    >    return x + ''
-    >  } else {
-    >    return x + y + ''
-    >  }
+    >  return String(x + (y ?? 0)) // 未传 y 时加 0，也保留 y = 0 的情况
     >}
     >
     >// 默认参数
@@ -557,7 +521,7 @@
     >// 函数表达式
     >
     >// 类型推论
-    >let mySum1 = function (x: number, y: number): string {
+    >let mySum1 = function (x: number, y: number) { // 推断返回类型为 string
     >  return x + y + ''
     >}
     >
@@ -586,16 +550,16 @@
     >```
     ></details>
 
-    >仅定义数据类型、不实现的方法都只有`()`、没有`{}`（`(参数: 类型): 类型`）：函数声明的重载、`interface/type/内联类型注解 中的方法`、`declare class 中的 方法`、`abstract class 中的 abstract 方法`。
+    >重载签名、对象类型中的方法、`declare class` 的方法以及抽象方法都只写签名。普通函数的实现则要写函数体。
 
     - 支持：重载
 
         1. 优先从最前面的函数定义开始匹配，因此若多个函数定义有包含关系，则需优先把精确的定义写在前面。
-        2. 函数实现签名，它并不是重载的一部分。当至少具有一个函数重载的签名时，只有重载是可见的。最后一个声明签名（也可以被称为签名的实现）对签名的形状并没有贡献。
-        3. 最终函数体及其函数形状需要兼容前面的所有重载。
+        2. 调用者只能看到列出的重载签名。紧接在最后一个重载后面的**实现签名**负责检查函数体，不能用来匹配调用。
+        3. 实现签名需要兼容每个重载。如果参数个数和返回类型都相同，只是输入有几种类型，通常可直接用联合类型。这样也能接收类型已经是联合的变量。
 
         ><details>
-        ><summary>e.g.</summary>
+        ><summary>为字符串和数字提供重载签名</summary>
         >
         >```ts
         >// 函数声明
@@ -621,29 +585,34 @@
         >```
         ></details>
 
-        >TS中的函数重载没有任何运行时开销。
+        >编译后只保留一个函数体。若要对不同输入采取不同操作，由实现中的 JavaScript 条件分支负责。[官方手册：重载](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads)
 10. 内置对象类型
 
     1. 浏览器环境
 
-        [TypeScript `lib` 配置](https://www.typescriptlang.org/tsconfig/#lib)对应的核心库定义文件定义了所有浏览器环境需要用到的类型（预置在TypeScript中；也可浏览 [lib.es5.d.ts](https://cdn.jsdelivr.net/npm/typescript/lib/lib.es5.d.ts)）。
+        `lib` 决定编译器认识哪些内置 API。`ES2022` 等 ECMAScript 库提供 `Date`、`Promise` 等声明，浏览器的 `document`、`HTMLElement`、`Window` 等来自 `DOM`。如果手动指定 `lib`，浏览器项目可写 `"lib": ["ES2022", "DOM", "DOM.Iterable"]`。这些声明不会给旧浏览器安装运行时 API。[配置说明](https://www.typescriptlang.org/tsconfig/lib.html)
 
-        1. [ECMAScript标准提供的内置对象](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects)
-        2. 文档对象模型（DOM）、浏览器对象模型（BOM）的内置对象
+        ```ts
+        const email = document.querySelector('input[name="email"]')
+        // 带属性的选择器只推断为 Element | null。检查后才能安全读取输入框的值。
+        if (email instanceof HTMLInputElement) {
+          console.log(email.value)
+        }
+        ```
 
-    - ~~Node.js~~
+    2. Node.js 环境
 
-        Node.js不是内置对象的一部分，需引入第三方声明文件：`npm install @types/node --save-dev`。
+        `process`、`Buffer` 等 Node.js 专属 API 的声明由 `@types/node` 提供。安装与运行时对应的主版本（例如 Node.js 22 用 `npm install -D @types/node@22`），并在需要这些全局声明的项目配置中设置 `"types": ["node"]`。TS 6.0 起，`types` 默认是空数组。[TS 6.0 发布说明](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html#types-now-defaults-to-)
 
 - 返回Promise类型
 
     `Promise<T>` 的 `T` 表示兑现值的类型。标准库把 `.catch()` 回调的拒绝原因声明为 `any`。若要在使用前检查类型，可写 `.catch((reason: unknown) => …)`。
 
     ><details>
-    ><summary>e.g.</summary>
+    ><summary>Promise 的兑现值和拒绝原因</summary>
     >
     >```ts
-    >function a(): Promise<number | string> {  // 仅能定义resolve
+    >function a(): Promise<number | string> {  // 兑现值可以是数字或字符串
     >  return new Promise((resolve, reject) => {
     >    const random = Math.random();
     >    if (random < 0.3) {
@@ -651,7 +620,7 @@
     >    } else if (random < 0.6) {
     >      resolve("1");             // string
     >    } else {
-    >      reject(false);            // 完全忽略reject
+    >      reject(false);            // 拒绝原因不受兑现值类型约束
     >    }
     >  });
     >}
@@ -661,26 +630,27 @@
     >}
     >
     >function c(): Promise<string> {
-    >  return Promise.reject(123);   // 没问题，完全忽略reject
+    >  return Promise.reject(123);   // 拒绝路径不会产生 string 兑现值
     >}
     >```
     ></details>
 
 ### 类
->class在ts里既是类型，也是函数（构造函数）。相对于函数，使用 类 可以省去给函数声明类型。
+
+类声明同时引入实例类型和运行时的构造函数。例如，`const a: Animal = new Animal(...)` 中，冒号后描述实例，`new` 后使用构造函数。
 
 1. 访问修饰符（Access Modifiers）
 
-    规定类的属性/方法的访问权限。
+    规定类的属性或方法在类型检查中的访问权限。如果需要 JavaScript 运行时也强制私有性，可使用 `#age` 这样的私有字段。[官方手册：成员可见性](https://www.typescriptlang.org/docs/handbook/2/classes.html#member-visibility)
 
-    1. `public`（默认）：公有的，在任何地方都可以被访问。
-    2. `private`：私有的，只能在声明的类中访问。（继承和实例化对象不能访问）
+    1. `public`（默认）成员可以在类内外访问。
+    2. `private` 成员可以在声明它的类中访问，包括通过该类的其他实例读取。类外和子类中直接用点语法访问会报错。
 
-        >若类的构造函数设置为`private`，则这个类不能实例化、也不能够被继承。
-    3. `protected`：受保护的，只能在声明的类中、声明的继承子类中访问。（实例化对象不能访问）
+        >`private constructor` 允许类内部创建实例（例如静态工厂方法），禁止外部直接 `new` 或继承。
+    3. `protected` 成员可在声明类及其子类内访问，例如子类方法中的 `this.sex`。类外通过实例直接访问会报错。
 
         ><details>
-        ><summary>若类的构造函数设置为<code>protected</code>，则这个类不能实例化，但继承的子级能够调用这个构造函数（<code>super()</code>）。</summary>
+        ><summary><code>protected constructor</code> 允许类内部构造实例，也允许子类调用 <code>super()</code>。外部不能直接 <code>new</code> 基类。</summary>
         >
         >e.g.
         >
@@ -695,26 +665,24 @@
         >  }
         >}
         >
-        >let john = new Person()     // 报错，Person的构造函数是protected，只能够被子类调用
+        >let john = new Person()     // 报错，Person 的构造函数是 protected，外部不能直接调用
         >let howard = new Employee()
         >```
         ></details>
 
     ><details>
-    ><summary>e.g.</summary>
+    ><summary>从类内、类外及子类访问成员</summary>
     >
     >```ts
     >class Animal {
-    >  public constructor (name, age, sex) {    // 默认返回值类型是当前类：Animal
-    >    // （默认值会在编译后的.js的构造函数最前面加上：）this.age = 100
-    >
+    >  public constructor (name: string, age: number, sex: boolean) {
     >    this.name = name
     >    this.age = age // 类的只读属性在构造函数里初始化
     >    this.sex = sex
     >  }
     >
     >  public name: string
-    >  // 类的只读属性，必须在声明时默认赋值 或 在构造函数里初始化。
+    >  // 开启 strictPropertyInitialization 后，非可选且类型不含 undefined 的普通字段需要初始化。
     >  private readonly age: number = 100   // 类的只读属性在声明时默认赋值
     >  protected sex: boolean
     >
@@ -740,7 +708,7 @@
     >console.log(a.getSex())          // 报错，protected
     >
     >class Cat extends Animal {
-    >  constructor (name, age, sex) {
+    >  constructor (name: string, age: number, sex: boolean) {
     >    super(name, age, sex)
     >
     >    console.log(this.name)
@@ -764,13 +732,13 @@
 
     - 参数属性
 
-        若在类的构造函数的**参数**上设置访问修饰符（`private/public/protected`），则在实例化时会用参数名新建一个实例属性/方法。
+        在构造函数参数前加 `public`、`protected`、`private` 或 `readonly`，会同时声明并初始化同名实例属性。
 
         ><details>
-        ><summary>e.g.</summary>
+        ><summary>用参数属性初始化实例</summary>
         >
         >```ts
-        >// A1和A2编译出的.js结果一致
+        >// 两种写法都将构造参数保存为实例属性
         >
         >class A1 {
         >  private a: string
@@ -788,22 +756,22 @@
         >```
         ></details>
 
-    - `class-extends`重载属性
+    - 子类重写成员（override）
 
-        1. `public`仅可被`public`重载
-        2. `private`不可被重载
-        3. `protected`仅可被`public`或`protected`重载
+        1. 公有成员重写后仍须为 `public`。
+        2. 基类的 `private` 成员只能在声明类内访问。子类不能重新声明同名成员。
+        3. 受保护成员可保持 `protected` 或扩大为 `public`。使用 `override` 可让编译器核对基类中是否存在该成员。开启 `noImplicitOverride` 可要求显式标记对具体成员的重写。
 2. `typeof 类名`
 
-    取**类**的类型，而不是~~实例~~的类型，包含类的所有`静态属性/方法`和`prototype`。
+    取类构造函数的类型，包含静态成员、`prototype` 以及构造信息。对于有公开构造函数的具体类，这个类型可以直接作为 `new` 的目标。
 
     ><details>
-    ><summary>e.g.</summary>
+    ><summary>区分 Greeter 实例与构造函数</summary>
     >
     >```ts
     >class Greeter {
     >  static staticGreeting = 'Hello, there'
-    >  greeting: string
+    >  greeting: string = 'welcome'
     >
     >  greet () {
     >    return Greeter.staticGreeting
@@ -830,18 +798,16 @@
 
     抽象类、抽象方法。
 
-    1. 抽象类不能实例化
-    2. 抽象类包含抽象方法、非抽象方法
+    1. TS 禁止直接 `new` 一个抽象类，可用它作为基类或类型注解。
+    2. 抽象类可以同时包含抽象成员和有实现的方法。
 
         抽象方法仅允许出现在抽象类中。
-    3. 抽象方法**必须**被子类实现
+    3. 具体子类必须实现所有尚未实现的抽象成员。抽象子类可以留给后续的具体子类实现。
 
-        抽象类自己不能实现自己的抽象方法。
-
-    >抽象类的主要作用是规范其子类的行为，让代码更加规范和易于维护或扩展，利用抽象方法规定子类必须实现的方法类型，利用非抽象方法定义通用逻辑在子类中共享。
+    >下面的 `Animal` 负责保存名字，并通过抽象方法 `sayHi` 让每种动物提供自己的问候语。
 
     ><details>
-    ><summary>e.g.</summary>
+    ><summary>由具体子类实现抽象方法</summary>
     >
     >```ts
     >abstract class Animal {    // 抽象类
@@ -851,11 +817,11 @@
     >    this.name = name
     >  }
     >
-    >  public abstract sayHi () // 抽象方法
+    >  public abstract sayHi (): void // 抽象方法
     >  public func () {}        // 抽象类中允许存在非抽象方法
     >}
     >
-    >class Cat extends Animal {  // 继承抽象类，必须实现抽象方法
+    >class Cat extends Animal {  // 具体子类，实现抽象方法
     >  public sayHi (): void {
     >    console.log(`Meow, My name is ${this.name}`)
     >  }
@@ -867,12 +833,10 @@
     ></details>
 4. `implements`
 
-    `class`实现`interface`
-
-    >仅对`class`的实例属性/方法进行类型检查；被实现的`interface`定义的内容不包括`class`的：静态属性/方法、`private/protected`成员、构造函数（因此`interface`内不能定义`new (类型): 类型`）。
+    `class C implements I` 检查类的实例是否符合接口。它不会给方法参数推断类型，也不会为类补充接口上的可选属性。普通接口描述的是公开成员。要检查构造函数或静态方法，可另外定义带 `new` 或静态成员的接口，再把**类本身**赋给该接口类型的变量，例如函数类型一节的 `PointConstructor`。[官方手册：implements](https://www.typescriptlang.org/docs/handbook/2/classes.html#implements-clauses)
 
     ><details>
-    ><summary>e.g.</summary>
+    ><summary>用 implements 检查类的实例成员</summary>
     >
     >```ts
     >interface Alarm {
@@ -889,7 +853,7 @@
     >  public lightOn(str: string) {
     >    console.log("Car1 light on", str, this.x1, this.x2);
     >    return true;
-    >}
+    >  }
     >
     >  protected x1() {}
     >  private x2() {}
@@ -900,8 +864,8 @@
     >    console.log("Car2 alert", num);
     >  }
     >
-    >  public lightOn(str: string) {
-    >    console.log("Car2 light on", str,this.xx1, this.xx2);
+    >  public override lightOn(str: string) {
+    >    console.log("Car2 light on", str, this.xx1, this.xx2);
     >    return true;
     >  }
     >
@@ -917,1177 +881,438 @@
 
 - 类型兼容性
 
-    1. 仅有 实例属性/方法 会相比较，构造函数和静态成员 不会被检查。
-    2. private/protected的成员 必须来自于相同的类。
+    1. 比较实例类型时按实例成员的结构匹配。比较构造函数或静态成员，要使用 `typeof 类名`。
+    2. 如果目标实例类型包含 `private` 或 `protected` 成员，源类型必须具有源自同一份类声明的相应成员。子类继承来的成员符合这一条件。[官方手册：类的兼容性](https://www.typescriptlang.org/docs/handbook/type-compatibility.html#classes)
 
 ### 接口（Interfaces）
-`interface`
 
-1. 定义`对象`、`数组`、`函数`的形状（Shape：数量和数据类型）
-
-    >e.g.
-    >
-    >1. 对象类型：`interface X { a(): any, b: any }`
-    >2. 函数类型：`interface Y { (): any }`
-    >3. 数组类型：`interface Z { [任意名: number]: any }`
-
-    - 还可以定义混合类型（一个对象同时作为函数和对象使用）。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```ts
-        >interface Counter {
-        >  (start: number): string  // 描述方法（没有属性名）
-        >
-        >  interval: number         // 描述对象的属性
-        >
-        >  reset (): void           // 描述对象的方法（有属性名）
-        >}
-        >
-        >function getCounter (): Counter {
-        >  let counter = <Counter>function (start: number) { }
-        >  counter.interval = 123
-        >  counter.reset = function () { }
-        >  return counter
-        >}
-        >
-        >let c = getCounter()
-        >c(10)            // 作为函数使用
-        >c.reset()        // 作为对象使用
-        >c.interval = 5.0 // 作为对象使用
-        >```
-        ></details>
-2. 对`类`的一部分行为进行抽象（`类`实现`接口`）
-
-- `extends`
-
-    >与`class-extends`的不完全一致。
-
-    接口继承。`interface B extends A`满足：B可以赋值给A（概括下面的`继承`+`重载`）。
-
-    1. 接口继承`接口`
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```ts
-        >interface Alarm {
-        >  alert ()
-        >}
-        >
-        >interface LightableAlarm extends Alarm {
-        >  lightOn ()
-        >
-        >  lightOff ()
-        >}
-        >
-        >const obj: LightableAlarm = {
-        >  alert(){},
-        >  lightOn(){},
-        >  lightOff(){}
-        >}
-        >```
-        ></details>
-    2. 接口继承`类`
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```ts
-        >class Point {
-        >  x?: number
-        >  y: number
-        >}
-        >
-        >interface Point3d extends Point {
-        >  z: number
-        >}
-        >
-        >let point3d: Point3d = { y: 2, z: 3 }
-        >```
-        ></details>
-
-        - 接口会继承类的访问修饰符（`public`、`private`、`protected`）
-
-            >`public/private/protected`只能显式写在class上，其他地方不能显式设置。
-
-            当一个接口继承了一个拥有`private`或`protected`的成员的类时，这个接口类型只能被这个类或其子类所实现（implement）。
-
-            ><details>
-            ><summary>e.g.</summary>
-            >
-            >```ts
-            >class Control {
-            >  private state: any;
-            >}
-            >
-            >interface SelectableControl extends Control {
-            >  select(): void;
-            >}
-            >
-            >class Button extends Control implements SelectableControl {
-            >  select() {}
-            >}
-            >
-            >class TextBox extends Control {
-            >  select() {}
-            >}
-            >
-            >class ImageControl implements SelectableControl {
-            >  // Error: Class 'ImageControl' incorrectly implements interface 'SelectableControl'.
-            >  //  Types have separate declarations of a private property 'state'.
-            >  private state: any;
-            >
-            >  select() {}
-            >}
-            >```
-            ></details>
-    3. 接口继承`别名`
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```ts
-        >type Name = {
-        >  name: string;
-        >}
-        >interface User extends Name {
-        >  age: number;
-        >}
-        >```
-        ></details>
-
-- 支持：合并
-
-    同名的interface会自动合并（`type`不可以有同名的定义）。
-
-    1. 接口中的属性在合并时会简单的合并到一个接口中
-
-        >合并的相同属性的类型必须是相同的。
-    2. 接口中方法的重载，与函数的重载一样，支持：重载。
-    3. 接口中属性的 内联类型注解 可以重载覆盖，但是需要用更多属性的对象（协变），不能用更少属性的对象
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```ts
-        >interface a {
-        >  aa: { a: string; b: string }
-        >}
-        >
-        >interface b extends a {
-        >  aa: { a: string; b: string; c: string };
-        >}
-        >
-        >interface c extends a {            // 报错，不能用更少的属性覆盖
-        >  aa: { a: string; c: string };
-        >}
-        >```
-        ></details>
-
->`接口` 和 类型别名 有时很像，区别：
->
->1. `接口`
->
->    1. 仅定义：对象、数组、函数。
->    2. 扩展用`extends`，能被class实现`implements`。
->    3. 同名的`interface`自动聚合，也可以跟同名的`class`自动聚合。
->2. 类型别名
->
->    1. 可以作用于：原始值、联合类型、交叉类型、元组以及其它任何需要手写的类型，只需要给它一个语义化的名字即可。
->    2. 扩展用`&`。
->    3. 不能重名（自然不存在同名聚合）。
-
-### 类型别名（Type Alias）
-`type`：与其原始的类型完全一致；它们只是简单的替代名。
-
-><details>
-><summary>e.g.</summary>
->
->```ts
->type Name = string
->type NameResolver = () => string
->type NameOrResolver = Name | NameResolver
->function getName(n: NameOrResolver): Name {
->    if (typeof n === 'string') {
->        return n
->    } else {
->        return n()
->    }
->}
->```
-></details>
-
-1. 起别名不会新建一个类型，仅创建了一个新名字来引用那个类型
-2. 可以使用类型别名来在属性里引用自己（接口`也可以）
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >type Tree<T> = {
-    >  value: T;
-    >  left: Tree<T>;
-    >  right: Tree<T>;
-    >}
-    >
-    >type LinkedList<T> = T & { next: LinkedList<T> };
-    >```
-    ></details>
-3. 扩展用`&`（`接口`用`extends`）
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >type Name1 = {
-    >  name: string;
-    >}
-    >type User1 = Name1 & { age: number; };
-    >
-    >
-    >interface Name2 {
-    >  name: string;
-    >}
-    >type User2 = Name2 & { age: number; };
-    >```
-    ></details>
-
-### 字面量类型
-一个字面量是一个集体类型（字符串、数字、布尔值、大数）中更为具体的一种子类型。通过使用字面量类型，可以规定一个字符串、数字、布尔值或大数必须含有的确定值。
-
-><details>
-><summary>e.g.</summary>
->
->```ts
->type aa = "ease-in" | "ease-out" | "ease-in-out";
->type bb = 8 | 16 | 32;
->type cc = { c1: true; c2: string } | { c1: false; c2: number };
->
->interface MapType {
->  a: "ease-in" | "ease-out" | "ease-in-out";
->  aa: aa;
->  b: 8 | 16 | 32;
->  bb: bb;
->  c: { c1: true; c2: string } | { c1: false; c2: number };
->  cc: cc;
->}
->
->const obj: MapType = {
->  a: "ease-in",
->  aa: "ease-in",
->  b: 8,
->  bb: 8,
->  c: { c1: true, c2: "123" },
->  cc: { c1: false, c2: 13 },
->};
->```
-></details>
-
-- 模版字面量类型
-
-    若在替换字符串的位置是联合类型，则结果类型是由每个联合类型成员构成的字符串字面量的集合。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >type World = 'world';
-    >type Greeting = `hello ${World}`;  // -> 'hello world'
-    >
-    >
-    >type EmailLocaleIDs = 'welcome_email' | 'email_heading';
-    >type FooterLocaleIDs = 'footer_title' | 'footer_sendoff';
-    >type Id = 'id1' | 'id2'
-    >type AllLocaleIDs = `${EmailLocaleIDs | FooterLocaleIDs}_${Id}`;
-    >// -> "welcome_email_id1" | "email_heading_id1" | "footer_title_id1" | "footer_sendoff_id1" | "welcome_email_id2" | "email_heading_id2" | "footer_title_id2" | "footer_sendoff_id2"
-    >```
-    ></details>
-
-### 枚举（Enum）
-用于取值被限定在一定范围内的场景。语义化、限制值的范围（只允许使用已定义的枚举名）。
-
->使用枚举类型可以为一组数值赋予友好的名字。
-
-<details>
-<summary>e.g.</summary>
+`interface` 描述对象应提供的成员。TypeScript 按结构检查兼容性，调用方可以传入具有更多成员的对象。直接传入或赋值的对象字面量还会做多余属性检查，能及早发现配置项拼写错误。[对象类型与多余属性检查](https://www.typescriptlang.org/docs/handbook/2/objects.html#excess-property-checks)
 
 ```ts
-enum E {
-  aa,
-  bb = 123,
-  cc,
-  dd = 222,
-  ee,
+interface Alarm {
+  alert(): void;
 }
 
-console.log(E.aa, E.bb, E.cc, E.dd, E.ee);                  // => 0 123 124 222 223
-console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc" "dd" "ee"
+function testAlarm(alarm: Alarm) {
+  alarm.alert();
+}
+
+const device = { alert() {}, lightOn() {} };
+testAlarm(device);
+// @ts-expect-error 直接传入的字面量中多了 Alarm 未声明的 lightOn
+testAlarm({ alert() {}, lightOn() {} });
 ```
+
+接口可以同时描述属性、调用签名和索引签名。`[index: number]: string` 只规定用数字索引时的元素类型。需要数组的 `length`、`map` 等成员时，通常直接用 `string[]` 或 `readonly string[]`。
+
+<details>
+<summary>例：一个可以调用、也有属性和方法的计数器</summary>
+
+```ts
+interface Counter {
+  (start: number): string;
+  interval: number;
+  reset(): void;
+}
+
+function getCounter(): Counter {
+  let count = 0;
+  function counter(start: number) {
+    count += start;
+    return String(count);
+  }
+  counter.interval = 123;
+  counter.reset = () => { count = 0; };
+  return counter;
+}
+
+const c = getCounter();
+c(10);          // "10"
+c.reset();
+c.interval = 5;
+```
+
 </details>
 
-1. 普通枚举 及 枚举成员的类型
+- **继承与实现。** `interface B extends A` 要求 `B` 的值可赋给 `A`。接口可继承多个接口、类的实例类型，或成员静态可知的对象类型别名。类可用 `implements` 检查实例是否符合接口或这类对象别名。继承已有属性时，新属性的类型须可赋给原类型。
+- **声明合并。** 同一作用域中的同名接口会合并。重复的普通属性要用相同类型和修饰符。同名方法签名可形成重载。接口也可与同名的类合并，给实例类型补充成员。合并只影响类型，新增的方法需要有对应的运行时实现。[声明合并](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-interfaces)
 
-    （除了~~常数枚举、外部枚举~~之外，）枚举名映射到枚举值；若枚举值不是~~字符类型~~，则枚举值也映射到枚举名（反向映射）。
+```ts
+type Named = { name: string };
+interface Alarm { alert(): void }
+interface LightableAlarm extends Alarm, Named { lightOn(): void }
+interface LightableAlarm { lightOff(): void } // 给同一个接口补充成员
 
-    1. 常数项（constant member）
+const deskAlarm: LightableAlarm = {
+  name: "desk", alert() {}, lightOn() {}, lightOff() {},
+};
+```
 
-        1. 枚举成员会被赋值为从`0`开始递增的数字。
+<details>
+<summary>例：接口继承带有私有成员的类</summary>
 
-            ><details>
-            ><summary>e.g.</summary>
-            >
-            >```ts
-            >// .ts
-            >enum Days {Sun, Mon, Tue, Wed, Thu, Fri, Sat}
-            >
-            >
-            >// 被编译为.js
-            >var Days;
-            >(function (Days) {
-            >    Days[Days["Sun"] = 0] = "Sun";
-            >    Days[Days["Mon"] = 1] = "Mon";
-            >    Days[Days["Tue"] = 2] = "Tue";
-            >    Days[Days["Wed"] = 3] = "Wed";
-            >    Days[Days["Thu"] = 4] = "Thu";
-            >    Days[Days["Fri"] = 5] = "Fri";
-            >    Days[Days["Sat"] = 6] = "Sat";
-            >})(Days || (Days = {}));
-            >
-            >
-            >/* 使用测试 */
-            >console.log(Days["Sun"] === 0); // => true
-            >console.log(Days["Mon"] === 1); // => true
-            >console.log(Days["Tue"] === 2); // => true
-            >console.log(Days["Sat"] === 6); // => true
-            >
-            >console.log(Days[0] === "Sun"); // => true
-            >console.log(Days[1] === "Mon"); // => true
-            >console.log(Days[2] === "Tue"); // => true
-            >console.log(Days[6] === "Sat"); // => true
-            >```
-            ></details>
-        2. 枚举项可以手动赋值（仅可赋值为数字或字符串），未手动赋值的枚举项会接着上一个枚举项递增。
+类的 `private`、`protected` 成员在兼容性检查中要求有相同的声明来源。下面的 `Button` 从 `Control` 继承了 `state`，另一个类自己声明的同名字段无法满足接口。
 
-            1. 若未手动赋值的枚举项与手动赋值的重复了，则编译器不会察觉到（易产生错误，应避免）。
-            2. 手动赋值的枚举项允许不是数字或字符串，此时需要使用类型断言`<any>`来让编译器无视类型检查。
+```ts
+class Control {
+  private state = 0;
+  isActive() { return this.state > 0; }
+}
+interface SelectableControl extends Control {
+  select(): void;
+}
+class Button extends Control implements SelectableControl {
+  select() {}
+}
 
-                若紧接在不是数字的枚举项后面的是未手动赋值的项，则会因为无法获得初始值而报错。
+// @ts-expect-error 两个 state 来自不同的私有声明
+class ImageControl implements SelectableControl {
+  private state = 0;
+  isActive() { return this.state > 0; }
+  select() {}
+}
+```
 
-                ><details>
-                ><summary>e.g.</summary>
-                >
-                >```ts
-                >// .ts
-                >enum Days {Sun = 7, Mon, Tue, Wed, Thu, Fri, Sat = <any>true, a = 13, b}
-                >
-                >
-                >// 被编译为.js
-                >var Days;
-                >(function (Days) {
-                >    Days[Days["Sun"] = 7] = "Sun";
-                >    Days[Days["Mon"] = 8] = "Mon";
-                >    Days[Days["Tue"] = 9] = "Tue";
-                >    Days[Days["Wed"] = 10] = "Wed";
-                >    Days[Days["Thu"] = 11] = "Thu";
-                >    Days[Days["Fri"] = 12] = "Fri";
-                >    Days[Days["Sat"] = true] = "Sat";
-                >    Days[Days["a"] = 13] = "a";
-                >    Days[Days["b"] = 14] = "b";
-                >})(Days || (Days = {}));
-                >```
-                ></details>
-            3. 手动赋值的枚举项也可以为小数或负数，此时后续未手动赋值的项的递增步长仍为`1`。
-            4. 支持编译时计算出最终值的方式：（不是~~计算所得项~~）
+</details>
 
-                1. 数字字面量 或 字符串字面量
-                2. 对先前定义的常量枚举成员的引用
-                3. 括号
-                4. 一元运算符`+`、`-`、`~`
-                5. 二进制运算符`+`、`-`、`*`、`/`、`%`、`<<`、`>>`、`>>>`、`&``|`、`^`
-    2. 计算所得项（computed member）
+### 类型别名（Type Alias）
 
-        1. 编译后会保留原始的计算语句（不会计算后赋值），如：`Math.random()`、`'123'.length`。
-        2. 若紧接在计算所得项后面的是未手动赋值的项，则会因为无法获得初始值而报错。
+`type` 给已有类型取名字，可表示原始类型、对象、函数、元组、联合类型等。同一作用域内不能重复声明同名类型别名。给 `string` 起名为 `Name` 后，两者仍然可以互相赋值。[类型别名与接口](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#differences-between-type-aliases-and-interfaces)
 
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```ts
-        >// .ts
-        >enum Color {Red = 'red', Green = 3, Blue = "blue".length, Yellow = 5, White, X = Math.random()}
-        >
-        >
-        >// 被编译为.js
-        >var Color;
-        >(function (Color) {
-        >    Color["Red"] = "red";
-        >    Color[Color["Green"] = 3] = "Green";
-        >    Color[Color["Blue"] = "blue".length] = "Blue";
-        >    Color[Color["Yellow"] = 5] = "Yellow";
-        >    Color[Color["White"] = 6] = "White";
-        >    Color[Color["X"] = Math.random()] = "X";
-        >})(Color || (Color = {}));
-        >```
-        ></details>
-2. 常数枚举、外部枚举
+```ts
+type Name = string;
+type NameResolver = () => string;
+type NameOrResolver = Name | NameResolver;
 
-    `const enum` 的成员须能在编译时确定，可以是数字或字符串常量。`declare enum` 描述由外部代码提供的枚举对象，声明本身不生成 JavaScript。[TypeScript 手册](https://www.typescriptlang.org/docs/handbook/enums.html)
+function getName(value: NameOrResolver): Name {
+  return typeof value === "string" ? value : value();
+}
+```
 
-    >默认情况下，访问常数枚举成员会被编译成对应的常量值。
+别名可以在属性中递归引用自身。表示有限树或链表时，需要允许叶子或末尾节点结束。
 
-    1. 常数枚举（Const Enums）
+```ts
+type Tree<T> = { value: T; left?: Tree<T>; right?: Tree<T> };
+type LinkedList<T> = { value: T; next: LinkedList<T> | null };
 
-        使用`const enum`定义的枚举类型。
+const names: LinkedList<string> = { value: "Lin", next: null };
+```
 
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```ts
-        >// .ts
-        >const enum Directions {
-        >  Up,
-        >  Down,
-        >  Left,
-        >  Right
-        >}
-        >let directions = [Directions.Up, Directions.Down, Directions.Left, Directions.Right]
-        >
-        >
-        >// 被编译为.js（不会生成枚举的变量）
-        >var directions = [0 /* Up */, 1 /* Down */, 2 /* Left */, 3 /* Right */];
-        >```
-        ></details>
+`&` 组合类型，结果须同时满足两边的要求。它也可组合接口。两个类型出现同名属性时，冲突可以进入交叉类型，影响后续赋值。接口的 `extends` 则会在继承处检查兼容性。[接口继承与交叉类型](https://www.typescriptlang.org/docs/handbook/2/objects.html#interface-extension-vs-intersection)
 
-        `preserveConstEnums` 可保留本地 `const enum` 的运行时对象。`declare const enum` 声明本身始终不生成对象。
-    2. 外部枚举（Ambient Enums）
+```ts
+interface Named { name: string }
+type User = Named & { age: number };
+type Bad = { id: string } & { id: number };
+type BadId = Bad["id"]; // never，值须同时是 string 和 number
+```
 
-        使用`declare enum`定义的枚举类型。
+### 字面量类型
 
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```ts
-        >// .ts
-        >declare enum Directions1 {
-        >  Up,
-        >  Down,
-        >  Left,
-        >  Right
-        >}
-        >let directions1 = [Directions1.Up, Directions1.Down, Directions1.Left, Directions1.Right]
-        >
-        >
-        >// 被编译为.js
-        >var directions1 = [Directions1.Up, Directions1.Down, Directions1.Left, Directions1.Right];
-        >```
-        ></details>
-    3. 外部枚举 + 常数枚举
+字符串、数字、布尔值和 bigint 的字面量可以直接用作类型。用 `|` 列出允许的取值，也可以让对象的某个字段标识不同分支。
 
-        使用`declare const enum`定义的枚举类型。
+```ts
+type Easing = "ease-in" | "ease-out" | "ease-in-out";
+type FontSize = 12 | 16 | 24;
+type Result = { ok: true; value: string } | { ok: false; error: Error };
 
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```ts
-        >// .ts
-        >declare const enum Directions2 {
-        >  Up,
-        >  Down,
-        >  Left,
-        >  Right
-        >}
-        >let directions2 = [Directions2.Up, Directions2.Down, Directions2.Left, Directions2.Right]
-        >
-        >
-        >// 被编译为.js（不会生成枚举的变量）
-        >var directions2 = [0 /* Up */, 1 /* Down */, 2 /* Left */, 3 /* Right */];
-        >```
-        ></details>
-3. 有静态方法的枚举
+function getMessage(result: Result) {
+  return result.ok ? result.value : result.error.message;
+}
+```
 
-    `enum` + `namespace`
+模板字面量类型可将前缀、后缀与已有联合类型组合。在多个位置插入联合类型时，结果包含每个位置取值的所有组合。[模板字面量类型](https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html)
 
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >// .ts
-    >enum Weekday {
-    >  Monday,
-    >  Tuesday,
-    >  Wednesday,
-    >  Thursday,
-    >  Friday,
-    >  Saturday,
-    >  Sunday
-    >}
-    >
-    >namespace Weekday {
-    >  export function isBusinessDay(day: Weekday) {
-    >    switch (day) {
-    >      case Weekday.Saturday:
-    >      case Weekday.Sunday:
-    >        return false;
-    >      default:
-    >        return true;
-    >    }
-    >  }
-    >}
-    >
-    >// const mon = Weekday.Monday;
-    >// const sun = Weekday.Sunday;
-    >
-    >// console.log(Weekday.isBusinessDay(mon));
-    >// console.log(Weekday.isBusinessDay(sun));
-    >
-    >
-    >// 被编译为.js
-    >"use strict";
-    >var Weekday;
-    >(function (Weekday) {
-    >    Weekday[Weekday["Monday"] = 0] = "Monday";
-    >    Weekday[Weekday["Tuesday"] = 1] = "Tuesday";
-    >    Weekday[Weekday["Wednesday"] = 2] = "Wednesday";
-    >    Weekday[Weekday["Thursday"] = 3] = "Thursday";
-    >    Weekday[Weekday["Friday"] = 4] = "Friday";
-    >    Weekday[Weekday["Saturday"] = 5] = "Saturday";
-    >    Weekday[Weekday["Sunday"] = 6] = "Sunday";
-    >})(Weekday || (Weekday = {}));
-    >(function (Weekday) {
-    >    function isBusinessDay(day) {
-    >        switch (day) {
-    >            case Weekday.Saturday:
-    >            case Weekday.Sunday:
-    >                return false;
-    >            default:
-    >                return true;
-    >        }
-    >    }
-    >    Weekday.isBusinessDay = isBusinessDay;
-    >})(Weekday || (Weekday = {}));
-    >// const mon = Weekday.Monday;
-    >// const sun = Weekday.Sunday;
-    >// console.log(Weekday.isBusinessDay(mon));
-    >// console.log(Weekday.isBusinessDay(sun));
-    >```
-    ></details>
+```ts
+type Locale = "en" | "zh";
+type Message = "welcome" | "footer";
+type MessageID = `${Locale}_${Message}`;
+// "en_welcome" | "en_footer" | "zh_welcome" | "zh_footer"
+```
 
-- 遍历枚举类型
+### 枚举（Enum）
 
-    `in`
+普通 `enum` 同时声明一个类型和一个运行时对象。数字成员默认从 `0` 开始，后续未初始化的成员接着前一个数值常量递增。成员也可显式指定数值或字符串。字符串成员和运行时计算出的成员之后，下一项要显式初始化。[枚举](https://www.typescriptlang.org/docs/handbook/enums.html)
 
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >enum A {
-    >  'top',
-    >  'down',
-    >}
-    >
-    >function func() {
-    >  for (var key in A) {
-    >    console.log(key);
-    >  }
-    >}
-    >
-    >func(); // => '0' => '1' => 'top' => 'down'
-    >```
-    ></details>
+```ts
+enum Level { Low, Normal = 3, High }
+enum Direction { Up = "UP", Down = "DOWN" }
 
-- 赋值兼容
+console.log(Level.Low, Level.Normal, Level.High); // 0 3 4
+console.log(Level[4]);                           // "High"
+console.log(Direction.Up);                      // "UP"
+type LevelName = keyof typeof Level;            // "Low" | "Normal" | "High"
+```
 
-    1. 枚举与数字类型相互兼容，但具体的 数字字面量类型 不能超出枚举类型的定义
-    2. 来自于不同枚举的枚举变量，被认为是不兼容
+- **运行时映射。** 数字成员有正向和反向映射。两个成员共用一个数值时，反向查到的是最后写入的成员名。`Object.keys(Level)` 会同时枚举名字和数字键（字符串形式）。字符串成员只有从名字到值的映射。
+- **常量与计算成员。** `Read = 1 << 1` 可以在编译时求值，`Random = Math.random()` 需要运行时求值。从 TS 5.0 起，含计算成员的枚举也可按成员类型收窄。[TS 5.0 枚举变更](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#all-enums-are-union-enums)
+- **数值兼容。** 数字枚举可赋给 `number`。以数值常量定义的枚举能在编译期拒绝未声明的数字字面量，但一个宽泛的 `number` 仍可赋给它。例如从接口读到数字状态码时，应先验证该值属于业务允许的范围。
 
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >enum Status {
-    > Ready,
-    > Waiting
-    >}
-    >enum Color {
-    > Red,
-    > Blue
-    >}
-    >
-    >const a: Status = 3;           // Error, Type '3' is not assignable to type 'Status'.
-    >const aa: Status = 3 as number;
-    >const b: Status.Ready = 1;     // Error, Type '1' is not assignable to type 'Status.Ready'.
-    >const bb: Status.Ready = 1 as number;
-    >
-    >
-    >let status1 = Status.Ready;
-    >let num1 = 3
-    >let num2 = 3 as const
-    >
-    >status1 = num1;
-    >status1 = num2;    // Error, Type '3' is not assignable to type 'Status'
-    >num1 = status1;
-    >num2 = status1     // Error, Type 'Status' is not assignable to type '3'.
-    >
-    >
-    >
-    >let color = Color.Red;
-    >let status2 = Status.Ready;
-    >
-    >status1 = color;   // Error, Type 'Color.Red' is not assignable to type 'Status'.
-    >```
-    ></details>
+```ts
+enum Status { Ready, Waiting }
+const ready: Status = Status.Ready;
+// @ts-expect-error 这个数字枚举的成员值只有 0、1
+const missing: Status = 3;
+
+function isStatus(value: number): value is Status {
+  return value === Status.Ready || value === Status.Waiting;
+}
+```
+
+<details>
+<summary>常数枚举、外部枚举、通过命名空间增加方法</summary>
+
+- `const enum` 只允许编译期可计算的成员。`tsc` 在常规整项目编译下会内联成员访问，默认移除枚举声明。`preserveConstEnums` 可保留本地枚举对象。
+- `declare enum` 描述外部已有的枚举对象。声明本身没有 JavaScript 产物，程序读取成员时需要有真实对象。
+- `declare const enum` 可让消费者内联外部成员。启用 `isolatedModules` 时不能访问外部常数枚举成员。库公开这种声明还可能使编译时内联值与运行时依赖版本不一致。[常数枚举的跨项目限制](https://www.typescriptlang.org/docs/handbook/enums.html#const-enum-pitfalls)
+- 在普通枚举之后声明同名 `namespace`，可向枚举对象增加方法。
+
+```ts
+enum Weekday { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday }
+namespace Weekday {
+  export function isBusinessDay(day: Weekday) {
+    return day !== Weekday.Saturday && day !== Weekday.Sunday;
+  }
+}
+Weekday.isBusinessDay(Weekday.Monday); // true
+```
+
+</details>
+
+前端项目也常用 `as const` 对象存放一组协议值。对象能直接在运行时遍历，用索引访问类型即可得到值的联合。
+
+```ts
+const Direction = { Up: "UP", Down: "DOWN" } as const;
+type DirectionValue = (typeof Direction)[keyof typeof Direction]; // "UP" | "DOWN"
+const initial: DirectionValue = "UP";
+```
 
 ### 泛型（Generics）
-泛型是指 在定义属性函数（`<多个类型名>(参数): 返回值`）、接口（`interface 接口名<多个类型名>`）、类型别名（`type 类型别名<多个类型名>`）或类（`class 类名<多个类型名>`）时，不预先指定具体的类型，而在使用时再指定类型的一种特性。
-
-- 定义 - 赋值
-
-    1. 定义：类型变量/泛型变量（用任意的非保留关键字）
-
-        >当使用简单的泛型时，泛型常用`T`、`U`、`V`表示。若在参数里，不止拥有一个泛型，则应该使用一个更语义化名称，如`TKey`、`TValue`（通常情况下，以`T`作为泛型的前缀，在其他语言如C++里，也被称为模板）。
-    2. 赋值：传入类型，可以是自定义类型，可以是类型推论
-
-><details>
-><summary>e.g.</summary>
->
->```ts
->function func<T, P>(a: T, b: P, c: Array<T | P>) {
->  return `${a} ${b} ${c}`;
->}
->
->func<string, number>("aaa", 222, ["a", "b", 3]);   // 显式定义（不是类型推论）
->func<"aaa", 222>("aaa", 222, ["aaa", "aaa", 222]); // 显式定义（不是类型推论）
->func("a", 2, ["aa", 22]);                          // 类型推论。会报错，等价于：func<"a", 2>("a", 2, ["aa", 22])
->func("a" as string, 2 as number, ["aa", 22]);      // 类型推论
->
->
->class A<T extends number | string> {
->  constructor(private paras: T[]) {}
->}
->
->new A<string>(["a1", "a2", "123"]);        // 显式定义（不是类型推论）
->new A<number | string>(["a1", "a2", 123]); // 显式定义（不是类型推论）
->new A(["a1", 123]);                        // 类型推论
->```
-></details>
-
-1. 泛型函数
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >function identity<T>(arg: T): T {
-    >    return arg;
-    >}
-    >
-    >let myIdentity1: <U>(arg: U) => U = identity;
-    >let myIdentity2: {<T>(arg: T): T} = identity;
-    >let myIdentity3 = identity<string>;
-    >```
-    ></details>
-2. 泛型接口、泛型类型别名
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >// 泛型接口1
-    >interface GenericIdentityFn {
-    >    <T>(arg: T): T;
-    >}
-    >function identity<T>(arg: T): T {
-    >    return arg;
-    >}
-    >let myIdentity: GenericIdentityFn = identity;
-    >
-    >// 泛型接口2
-    >interface GenericIdentityFn<T> {
-    >    (arg: T): T;
-    >}
-    >function identity<T>(arg: T): T {
-    >    return arg;
-    >}
-    >let myIdentity: GenericIdentityFn<number> = identity;
-    >
-    >
-    >// 泛型类型别名
-    >type LinkedList<T> = { name: T; next: LinkedList<T> };
-    >
-    >var people: LinkedList<string>;
-    >var s = people.name;
-    >var s = people.next.name;
-    >var s = people.next.next.name;
-    >var s = people.next.next.next.name;
-    >```
-    ></details>
-3. 泛型类
-
-    >类的静态属性不能使用泛型类型。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >class GenericNumber<T> {
-    >  zeroValue: T;
-    >  add: (x: T, y: T) => T = function (x, y) {
-    >    return x;
-    >  };
-    >
-    >  constructor(zeroValue: T) {
-    >    this.zeroValue = zeroValue;
-    >  }
-    >}
-    >
-    >let myGenericNumber = new GenericNumber<number>(0);
-    >```
-    ></details>
-
-4. 没有~~泛型枚举~~、~~泛型命名空间~~。
-
-- 泛型参数的默认类型：`<类型名 = 默认数据类型>`
-- 泛型约束：`<类型名 extends 已有数据类型>`
-
-    类型名 需要包含 已有数据类型。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >function loggingIdentity<T extends { length: number }> (arg: T): T {
-    >  console.log(arg.length);
-    >
-    >  return arg;
-    >}
-    >loggingIdentity(3);                     // 报错
-    >loggingIdentity({length: 10, value: 3});
-    >
-    >
-    >function getProperty<T, K extends keyof T> (obj: T, key: K) {
-    >  return obj[key];
-    >}
-    >getProperty({ a: 1 }, "a");
-    >getProperty({ a: 1 }, "m"); // 报错
-    >```
-    ></details>
-
-### 内置类型别名（Utility Types）
->来自：[lib.es5.d.ts](https://cdn.jsdelivr.net/npm/typescript/lib/lib.es5.d.ts)、[typescript: Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html)。
-
-1. `Awaited<T>`
-
-    获取Promise实例类型T（递归到最终）的返回值类型。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >type basic = Awaited<Promise<string>>;                     // -> string
-    >
-    >type recursive = Awaited<Promise<Promise<string>>>;        // -> string
-    >
-    >type nonThenObj = Awaited<boolean>;                        // -> boolean
-    >
-    >type unions = Awaited<Date | Promise<Promise<string>>>;    // -> string | Date
-    >
-    >type FakePromise = { then: () => string };
-    >type fake = Awaited<FakePromise>;                          // -> never
-    >```
-    ></details>
-2. `Partial<T>`
-
-    将类型定义T的所有属性都修改为可选（非~~必须~~）。
-
-    ```ts
-    type Partial<T> = {
-        [P in keyof T]?: T[P];
-    };
-    ```
-3. `Required<T>`
-
-    将类型定义T的所有属性都修改为必须（非~~可选~~）。
-
-    ```ts
-    type Required<T> = {
-        [P in keyof T]-?: T[P];
-    };
-    ```
-4. `Readonly<T>`
-
-    将类型定义T的所有属性都修改为只读（readonly）。
-
-    ```ts
-    type Readonly<T> = {
-        readonly [P in keyof T]: T[P];
-    };
-    ```
-5. `Record<Keys, T>`
-
-    定义一个对象类型：属性名是类型Keys，属性值是类型T。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >type A = 'dog' | 'cat' | 'fish';
-    >interface B {
-    >   name: string,
-    >   age: number,
-    >}
-    >
-    >type C = Record<A, B>;
-    >
-    >const c: C = {
-    >   dog: {
-    >       name: 'dogName',
-    >       age: 2
-    >   },
-    >   cat: {
-    >       name: 'catName',
-    >       age: 3
-    >   },
-    >   fish: {
-    >       name: 'fishName',
-    >       age: 5
-    >   }
-    >}
-    >```
-    ></details>
-
-    ```ts
-    type Record<K extends keyof any, T> = {
-        [P in K]: T;
-    };
-    ```
-6. `Pick<T, Keys>`
-
-    定义一个类型：从类型T中 选择 仅包含 类型Keys的属性名 的部分。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >interface A {
-    >  title: string
-    >  completed: boolean
-    >  description: string
-    >}
-    >
-    >type someA = Pick<A, 'title'|'completed'>
-    >
-    >const a: someA = {
-    >  title: 'Clean room',
-    >  completed: false
-    >}
-    >```
-    ></details>
-
-    ```ts
-    type Pick<T, K extends keyof T> = {
-        [P in K]: T[P];
-    };
-    ```
-7. `Omit<T, Keys>`
-
-    定义一个类型：选择类型T，再剔除 类型Keys的属性名 的部分。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >interface A {
-    >  title: string
-    >  completed: boolean
-    >  description: string
-    >}
-    >
-    >type AB = Omit<A, "completed"|"description">
-    >
-    >const a: AB = {
-    >  title: 'Clean room'
-    >}
-    >```
-    ></details>
-
-    ```ts
-    type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
-    ```
-8. `Extract<Union1, Union2>`
-
-    定义一个类型：从联合类型Union1中 提取 可分配给联合类型Union2 的联合类型。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >type T0 = Extract<'a' | 'b' | 'c', 'a' | 'b'>          // -> 'a' | 'b'
-    >type T1 = Extract<string | boolean, boolean | number>  // -> boolean
-    >type T2 = Extract<string | number , boolean>           // -> never
-    >```
-    ></details>
-
-    ```ts
-    type Extract<T, U> = T extends U ? T : never;
-    ```
-9. `Exclude<Union1, Union2>`
-
-    定义一个类型：从联合类型Union1中 剔除 联合类型Union2 之后的剩余的联合类型。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >type a = number | string | boolean
-    >type b = Exclude<a, number | boolean>  // -> string
-    >
-    >enum c { A, B, C }
-    >type d = Exclude<c, c.A>       // -> c.B | c.C
-    >```
-    ></details>
-
-    ```ts
-    type Exclude<T, U> = T extends U ? never : T;
-    ```
-10. `NonNullable<Union>`
-
-    定义一个类型：从联合类型Union中剔除`null`和`undefined`类型后的类型。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >type T1 = NonNullable<string | null | undefined>;  // -> string
-    >type T2 = NonNullable<null | undefined>;           // -> never
-    >```
-    ></details>
-
-    ```ts
-    type NonNullable<T> = T & {};
-    ```
-11. `ReturnType<FunctionT>`
-
-    定义一个类型：从函数类型FunctionT中获取的返回值类型。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >type F1 = () => Date;
-    >function F2 (): Date { return new Date() }
-    >
-    >type F1ReturnType = ReturnType<F1>;        // -> Date
-    >type F2ReturnType = ReturnType<typeof F2>; // -> Date
-    >type F3 = ReturnType<typeof setTimeout>;   // -> number
-    >type F4 = ReturnType<Function>;            // Error: Type 'Function' does not satisfy the constraint '(...args: any) => any'
-    >```
-    ></details>
-
-    ```ts
-    type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any;
-    ```
-12. `Parameters<FunctionT>`
-
-    定义一个元组类型：从函数类型FunctionT中获取的参数类型形成的元组类型（若空参数则空元组`[]`）。
-
-    获取函数类型的全部参数类型，以`元组`返回。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >type F0 = (a: string, b: number) => boolean;
-    >type F1 = Parameters<F0>;                      // -> [a: string, b: number] 或 [string, number]
-    >type F2 = F1[1];                               // -> number
-    >
-    >type F3 = () => boolean;
-    >type F4 = Parameters<F3>;                      // -> []
-    >
-    >declare function ajax<T, R>(params: T): Promise<R>;
-    >type F5 = Parameters<typeof ajax<number, string>>[0]; // -> number
-    >
-    >type F6 = Parameters<Function>;    // -> never。Error： Type 'Function' provides no match for the signature '(...args: any): any'
-    >```
-    ></details>
-
-    ```ts
-    type Parameters<T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never;
-    ```
-13. `InstanceType<ConstructorT>`
-
-    定义一个类型：从构造函数类型ConstructorT（class类型）中获取实例的类型。
-
-    获得构造函数类型的实例类型。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >class C {
-    >  x = 0;
-    >  y = 0;
-    >}
-    >type T0 = InstanceType<typeof C>; // -> C
-    >
-    >type T1 = InstanceType<Function>; // Error: Type 'Function' does not satisfy the constraint 'abstract new (...args: any) => any'
-    >```
-    ></details>
-
-    ```ts
-    type InstanceType<T extends abstract new (...args: any) => any> = T extends abstract new (...args: any) => infer R ? R : any;
-    ```
-14. `ConstructorParameters<ConstructorT>`
-
-    定义一个元组类型：从构造函数类型ConstructorT（class类型）中获取参数类型形成的元组类型（若空参数则空元组`[]`）。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >type T0 = ConstructorParameters<ErrorConstructor>;     // -> [message?: string]
-    >type T1 = ConstructorParameters<FunctionConstructor>;  // -> string[]
-    >type T2 = ConstructorParameters<RegExpConstructor>;    // -> [pattern: string | RegExp, flags?: string]
-    >type T3 = ConstructorParameters<any>;                  // -> unknown[]
-    >type T4 = ConstructorParameters<typeof Object>;        // typeof 类名：取 类 的类型，而不是 实例的类型
-    >type T5 = ConstructorParameters<Object>;               // Error：实例的类型
-    >type T6 = ConstructorParameters<Function>;             // -> never。Error：Type 'Function' does not satisfy the constraint 'abstract new (...args: any) => any'.
-    >```
-    ></details>
-
-    ```ts
-    type ConstructorParameters<T extends abstract new (...args: any) => any> = T extends abstract new (...args: infer P) => any ? P : never;
-    ```
-15. `ThisParameterType<FunctionT>`
-
-    提取函数类型FunctionT中`this`的类型。
-
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >function toHex(this: Number) {
-    >    return this.toString(16);
-    >}
-    >
-    >function numberToString(n: ThisParameterType<typeof toHex>) {
-    >    return toHex.apply(n);
-    >}
-    >```
-    ></details>
-
-    ```ts
-    type ThisParameterType<T> = T extends (this: infer U, ...args: never) => any ? U : unknown;
-    ```
-16. `OmitThisParameter<FunctionT>`
-
-    提取 函数类型FunctionT中 剔除`this`的类型 之外的函数类型。
-
-    ```ts
-    type OmitThisParameter<T> = unknown extends ThisParameterType<T> ? T : T extends (...args: infer A) => infer R ? (...args: A) => R : T;
-    ```
-17. `ThisType<T>`
-
-    >若使用，则需要开启`--noImplicitThis`。
-18. `Promise<T>`
-
-    Promise实例类型。
-19. `PromiseLike<T>`
-
-    仅有`then`属性的对象类型，类似Promise实例的then属性（是`Promise`类型的数据也满足`PromiseLike`类型）。
-
-### 操作固有字符串的类型（不是~~值~~）
->这些类型内置于编译器之中，以便提高性能，它们不存在于~~TypeScript提供的`.d.ts`文件中~~。
-
-1. `Uppercase<StringType>`
-
-    将字符串中的每个字符转换为大写字母。
-2. `Lowercase<StringType>`
-
-    将字符串中的每个字符转换为小写字母。
-3. `Capitalize<StringType>`
-
-    将字符串中的首字母转换为大写字母。
-4. `Uncapitalize<StringType>`
-
-    将字符串中的首字母转换为小写字母。
-
-><details>
-><summary>e.g.</summary>
->
->```ts
->// Uppercase改成Lowercase、Capitalize、Uncapitalize，均可行
->
->type Greeting = 'Hello, world' | 'Hi';
->type ShoutyGreeting = Uppercase<Greeting>;  // -> "HELLO, WORLD" | "HI"
->
->
->type ASCIICacheKey<Str extends string> = `ID-${Uppercase<Str>}`;
->type MainID = ASCIICacheKey<'my_app'>;  // -> "ID-MY_APP"
->```
-></details>
+
+泛型用类型参数表达多个位置之间的关系。比如函数 `identity<T>(arg: T): T` 保留输入的具体类型。调用者可以显式给出 `T`，也可以让编译器根据实参推断。[泛型](https://www.typescriptlang.org/docs/handbook/2/generics.html)
+
+```ts
+function identity<T>(arg: T): T { return arg; }
+
+const title = identity("首页");             // "首页"
+const count = identity<number>(1);         // number
+const stringIdentity = identity<string>;   // (arg: string) => string
+```
+
+- **泛型函数与泛型接口。** 类型参数写在调用签名上时，每次调用都可以选择不同类型。写在接口名上时，使用接口的地方先确定类型，随后各次调用共用它。类型别名也可以带参数，例如上面的 `LinkedList<T>`。
+
+```ts
+interface GenericCall { <T>(arg: T): T }
+interface FixedCall<T> { (arg: T): T }
+
+const anyIdentity: GenericCall = value => value;
+const numberIdentity: FixedCall<number> = value => value;
+anyIdentity("a");
+anyIdentity(2);
+numberIdentity(2);
+```
+
+<details>
+<summary>例：同一类型参数出现多次时，显式选择要允许的元素类型</summary>
+
+```ts
+function combine<T, U>(first: T, second: U, rest: Array<T | U>): Array<T | U> {
+  return [first, second, ...rest];
+}
+combine<string, number>("a", 2, ["aa", 22]);
+combine<"a", 2>("a", 2, ["a", 2]);
+// @ts-expect-error 推断到的元素类型是 "a" | 2，无法放入 "aa" 或 22
+combine("a", 2, ["aa", 22]);
+```
+
+</details>
+
+- **约束与默认值。** `extends` 指定实参类型必须满足的约束，如 `T extends { length: number }`。默认类型写在 `=` 后，例如 `Page<T = string>`。约束也可引用其他类型参数，下面让返回值随传入的属性名变化。
+
+```ts
+type Page<T = string> = { items: T[]; total: number };
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];
+}
+const settings = { theme: "dark", fontSize: 16 };
+const size = getProperty(settings, "fontSize"); // number
+// @ts-expect-error settings 没有 zoom 属性
+getProperty(settings, "zoom");
+```
+
+- **泛型类。** 类的类型参数对实例成员生效。不同 `T` 的实例共享同一个类的静态成员，所以静态成员无法引用类上的 `T`。静态方法可以声明自己的类型参数。
+
+```ts
+class Box<T> {
+  constructor(readonly value: T) {}
+  static of<U>(value: U) { return new Box(value); }
+}
+const countBox = Box.of(42); // Box<number>
+```
+
+- **保留字面量。** TS 5.0 的 `const` 类型参数可以保留直接传入的对象或数组字面量的具体形状，适合从选项列表推导允许值。已经扩宽的变量仍保留原类型。[const 类型参数](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#const-type-parameters)
+
+```ts
+function options<const T extends readonly string[]>(values: T): T {
+  return values;
+}
+const tabs = options(["home", "settings"]); // readonly ["home", "settings"]
+type Tab = (typeof tabs)[number];           // "home" | "settings"
+```
+
+### 内置工具类型（Utility Types）
+
+工具类型从已有类型推导出新类型，常用于给表单、请求参数、回调等建模。它们在编译后被擦除。[内置工具类型](https://www.typescriptlang.org/docs/handbook/utility-types.html)
+
+**调整对象属性**
+
+| 写法 | 用途 |
+| --- | --- |
+| `Partial<T>` | 将顶层属性改为可选，常用于表示局部更新。 |
+| `Required<T>` | 去掉顶层属性的可选标记。 |
+| `Readonly<T>` | 将顶层属性改为只读，不会冻结运行时对象。 |
+| `Record<K, V>` | 把键 `K` 映射到值类型 `V`。有限键联合会逐个检查键是否齐全。 |
+| `Pick<T, K>` | 选取 `T` 的指定属性，`K` 必须是 `T` 的键。 |
+| `Omit<T, K>` | 移除指定键的类型信息，运行时对象仍保有原字段。 |
+
+```ts
+interface Todo { title: string; completed: boolean; description?: string }
+type TodoPatch = Partial<Todo>;
+type FullTodo = Required<Todo>;
+type TodoPreview = Pick<Todo, "title" | "completed">;
+type NewTodo = Omit<Todo, "completed">;
+
+const patch: TodoPatch = { completed: true };
+const labels: Record<"open" | "done", string> = { open: "进行中", done: "已完成" };
+```
+
+`Partial` 等工具只处理一层。比如 `Partial<{ theme: { color: string } }>` 允许整个 `theme` 缺省，一旦提供 `theme`，其中的 `color` 仍然必填。可以用映射类型写出这一过程。
+
+```ts
+type MyPartial<T> = { [K in keyof T]?: T[K] };
+type MyRequired<T> = { [K in keyof T]-?: T[K] };
+type MyReadonly<T> = { readonly [K in keyof T]: T[K] };
+```
+
+**筛选联合成员**
+
+`Extract<T, U>` 保留 `T` 中可赋给 `U` 的成员。`Exclude<T, U>` 移除这些成员。`NonNullable<T>` 去掉 `null` 和 `undefined`。筛选按成员的可赋值关系判断，例如 `Exclude<string, "done">` 仍是 `string`。
+
+```ts
+type Result = { ok: true; data: string } | { ok: false; error: Error };
+type Failure = Extract<Result, { ok: false }>; // { ok: false; error: Error }
+type Pending = Exclude<"idle" | "busy" | "done", "done">; // "idle" | "busy"
+type Present = NonNullable<string | null | undefined>;   // string
+```
+
+**从函数与构造函数提取类型**
+
+`Parameters<F>` 提取参数元组，`ReturnType<F>` 提取返回值。函数值用 `typeof` 取得其类型。普通的 `Function` 没有足够具体的调用签名。针对带重载的函数，这两个工具按最后一个对外可见的签名提取。浏览器的 `window.setTimeout` 返回 `number`，跨环境保存计时器句柄时可用 `ReturnType<typeof setTimeout>` 跟随当前项目的声明。
+
+```ts
+function format(value: number, digits: number) { return value.toFixed(digits); }
+type FormatArgs = Parameters<typeof format>; // [value: number, digits: number]
+type Formatted = ReturnType<typeof format>;  // string
+// @ts-expect-error Function 没有提取返回类型所需的调用签名
+type Invalid = ReturnType<Function>;
+
+class Point { constructor(public x: number, public y: number) {} }
+type Coordinates = ConstructorParameters<typeof Point>; // [x: number, y: number]
+type PointInstance = InstanceType<typeof Point>;        // Point
+```
+
+**异步结果与 this**
+
+- `Awaited<T>` 模拟 `await` 对值的处理，递归解开 `Promise` 和具有相应 `then` 签名的对象，并对联合类型的成员分别处理。`Promise<T>` 描述标准 Promise 实例，`PromiseLike<T>` 则只要求兼容的泛型 `then` 方法。[Awaited](https://www.typescriptlang.org/docs/handbook/utility-types.html#awaitedtype)
+
+```ts
+type Loaded = Awaited<boolean | Promise<Promise<string>>>; // boolean | string
+async function loadItems() { return [{ id: 1, title: "首页" }]; }
+type Items = Awaited<ReturnType<typeof loadItems>>; // { id: number; title: string }[]
+```
+
+- `ThisParameterType<F>` 提取显式声明的 `this` 参数类型，未声明时得到 `unknown`。`OmitThisParameter<F>` 给出移除该参数后的调用签名。运行时要固定接收者，可用 `bind`。
+- `ThisType<T>` 用在对象字面量的上下文类型中，使方法内部的 `this` 按 `T` 检查。需要开启 `noImplicitThis`（包含在 `strict` 中）。对象在运行时如何绑定 `this`，仍由实际调用方式决定。
+
+```ts
+function toHex(this: number) { return this.toString(16); }
+type Receiver = ThisParameterType<typeof toHex>; // number
+const toHex15: OmitThisParameter<typeof toHex> = toHex.bind(15);
+toHex15(); // "f"
+
+type Methods = { increment(): void } & ThisType<{ count: number }>;
+const methods: Methods = {
+  increment() { this.count += 1; },
+};
+const counter = { count: 0, ...methods };
+counter.increment();
+```
+
+**指定泛型的推断来源**
+
+`NoInfer<T>`（TS 5.4）让某个参数按 `T` 检查，同时阻止编译器从该位置推断 `T`。下面只从选项列表推断 `T`，避免无效默认值被推断进允许值的联合。[NoInfer](https://www.typescriptlang.org/docs/handbook/utility-types.html#noinfertype)
+
+```ts
+function selectDefault<T extends string>(options: readonly T[], value: NoInfer<T>): T {
+  if (!options.includes(value)) throw new Error("无效选项");
+  return value;
+}
+selectDefault(["light", "dark"], "dark");
+// @ts-expect-error "auto" 不在第一个参数给出的允许值中
+selectDefault(["light", "dark"], "auto");
+```
+
+### 内置字符串操作类型
+
+`Uppercase<S>`、`Lowercase<S>` 转换整段字符串的大小写。`Capitalize<S>`、`Uncapitalize<S>` 只处理开头字符。标准库用 `intrinsic` 声明这些类型，具体转换由编译器实现，不随区域设置变化。JavaScript 字符串值需要通过运行时方法转换。[内置字符串操作类型](https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html#intrinsic-string-manipulation-types)
+
+```ts
+type Greeting = "Hello, world" | "Hi";
+type ShoutyGreeting = Uppercase<Greeting>;            // "HELLO, WORLD" | "HI"
+type CacheKey<S extends string> = `ID-${Uppercase<S>}`;
+type MainID = CacheKey<"my_app">;                     // "ID-MY_APP"
+type EventName = `on${Capitalize<"click" | "focus">}`; // "onClick" | "onFocus"
+```
 
 ---
+
 ## 语法
 
 ### 类型推论（Type Inference）
-若没有明确的指定类型，则依照类型推论规则推断出一个类型。
 
-1. 最佳通用类型（从右向左）
+类型注解省略时，TS 可以根据初始值、候选元素和表达式所在的位置推断类型。[官方手册：类型推论](https://www.typescriptlang.org/docs/handbook/type-inference.html)
 
-    1. 当需要从几个表达式中推断类型时，会使用这些表达式的类型来推断出一个最合适的通用类型。
-    2. （数组的情况下，）若没有找到最佳通用类型，则使用联合（数组）类型。
+1. 从值推断。`let title = '首页'` 可重新赋值，推断为 `string`。`const title = '首页'` 保留字面量类型 `'首页'`。对象的可写属性和普通数组的元素通常会拓宽。
+2. 最佳通用类型。从多个候选类型中寻找能容纳所有元素的类型。例如 `const ids = [1, 2, 'guest']` 推断为 `(number | string)[]`。
+3. 上下文类型。表达式所在的位置可以提供预期类型，例如事件回调的参数来自 `addEventListener` 的签名。
 
-    - 声明时
+    ```ts
+    document.addEventListener('keydown', event => {
+      console.log(event.key); // event 推断为 KeyboardEvent
+    });
+    ```
 
-        1. 若声明时有赋值，则推断成此赋值的类型。
-        2. 若声明时没赋值，则推断成`any`。
-
-    >配置`noImplicitAny`：当无法推断一个变量（或只能推断为一个隐式的`any`类型）时发出一个错误（显式添加`any`不报错）。
-2. 上下文归类（从左向右）
-
-    若等号左侧已经确定了类型，则右侧的赋值也会吸收左侧的类型，并尝试约束自己的行为。通常包含：函数的参数，赋值表达式的右边，类型断言，对象成员，数组字面量，返回值语句。
+开启 `noImplicitAny` 后，普通函数参数若既无注解又无上下文，会因隐式 `any` 报错。未初始化的局部变量还可以根据后续赋值确定使用处的类型。例如 `let value; value = 'ok'; value.toUpperCase();` 可以通过检查。[官方说明：后续赋值对类型推断的影响](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-1.html#improved-any-inference)
 
 ### 类型断言（Type Assertion）
-`<数据类型>变量名` 或 `变量名 as 数据类型`
 
->若JSX中使用`<数据类型>变量名`断言语法时，则与JSX的语法存在歧义（如：`let foo = <string>bar;</string>`），因此在`.tsx`中必须用`变量名 as 数据类型`的断言语法。
+`值 as 类型` 告诉编译器按指定类型检查这个表达式。`.ts` 也支持 `<类型>值`，`.tsx` 中使用 `as` 以避免与 JSX 标签混淆。断言会在编译时擦除，运行时的值和属性都保持原样。[官方手册：类型断言](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-assertions)
 
-- 可以绕过检查
+- 直接断言通常要求源类型和目标类型有足够重叠。对不相关的类型，编译器会提示错误。`as unknown as T` 可以绕过这项检查，所以缺少运行时证据时，即使能编译也可能出错。
 
-    1. 变量的类型（或类型推论） 和 断言的类型 可以单向赋值才能够成功（A类型是B类型的子级，或反过来），否则报错。
-    2. `双重断言` 可以断言成任何类型：先断言成`any`或`unknown`，再断言成某类型。
+    ```ts
+    const numericId = 42;
+    // @ts-expect-error number 和 string 没有足够重叠
+    const wrong = numericId as string;
+    const forced = numericId as unknown as string; // 静态类型是 string，实际值仍是 42
+    ```
 
-        任何类型都可以被断言为`any`或`unknown`，而`any`和`unknown`可以被断言为任何类型。
+- `const` 断言（const assertions）
 
-        >慎用双重断言。
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >interface A {
-    >  aa?: number
-    >}
-    >interface B {
-    >  bb: number
-    >}
-    >
-    >let a: A = { aa: 2 };
-    >let b: B = a as B;                  // 不报错
-    >let c: B = a as any;                // 不报错
-    >let d: B = {} as B;                 // 不报错
-    >let e: B = { aa: 2 } as B;          // 报错
-    >let f: B = ({ aa: 2 } as any) as B; // 不报错，双重断言
-    >```
-    ></details>
-
-1. const断言（const assertions）
-
-    `as const`或`<const>`，该表达式中：①字面量类型不会被扩展（如：不能从`"hello"`转换为`string`），②对象类型的属性成为只读字面量类型，③数组成为只读元组。
+    对字面量使用 `as const`，可以保留字面量类型，把对象字面量的属性推断为只读，把数组字面量推断为只读元组。这些限制作用于类型检查。若属性引用外部已创建的可变数组，该数组的内容仍可修改。[官方说明：const 断言](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions)
 
     ><details>
-    ><summary>e.g.</summary>
+    ><summary>观察 as const 对对象和数组的推断</summary>
     >
     >```ts
     >const x1 = 'x1';        // -> 'x1'
@@ -2102,21 +1327,34 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >```
     ></details>
 
-### 类型保护/类型守卫（Type Guards）
-一些表达式，它们会在运行时检查以确保在块级作用域中获得更为精确的变量类型，从而减少不必要的类型断言，同时改善代码的可读性。
+### `satisfies`（类型校验）
 
->TS能够理解`if-else`、`switch-case`等的逻辑分支下的类型变化。
+TS 4.9+ 可以用 `表达式 satisfies 目标类型` 检查配置是否满足约束，同时保留表达式各成员推断出的具体类型。适合在书写配置时发现缺项、拼错的键或错误值。[官方说明：satisfies](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator)
+
+```ts
+type Page = 'home' | 'help';
+const routes = {
+  home: '/',
+  help: '/help',
+} as const satisfies Record<Page, string>;
+
+type HomePath = typeof routes.home; // -> '/'
+```
+
+### 类型保护/类型守卫（Type Guards）
+
+TS 会沿控制流分析条件、赋值和提前返回等语句，缩小某一位置上变量可能的类型。类型守卫是 TS 能理解的运行时检查。[官方手册：类型收窄](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)
 
 1. 类型判断
 
-    `typeof 变量 !==或=== 值`
+    `typeof 变量 === 'string'` 等。`typeof null` 也等于 `'object'`，访问可能为 `null` 的对象前要单独排除 `null`。
 
     ><details>
-    ><summary>e.g.</summary>
+    ><summary>用 typeof 区分字符串和数字</summary>
     >
     >```ts
     >function test(input: string | number) {
-    >  if (typeof input == 'string') {
+    >  if (typeof input === 'string') {
     >    // 这里 input 的类型「收紧」为 string
     >  } else {
     >    // 这里 input 的类型「收紧」为 number
@@ -2127,14 +1365,14 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ></details>
 2. 实例判断
 
-    `变量 instanceof 构造函数`
+    `变量 instanceof 构造函数` 检查原型链。右侧需要运行时存在的值，`interface` 会在编译时擦除。
 
     ><details>
-    ><summary>e.g.</summary>
+    ><summary>用 instanceof 区分两个类的实例</summary>
     >
     >```ts
-    >class Foo {}
-    >class Bar {}
+    >class Foo { foo = 1; }
+    >class Bar { bar = 2; }
     >
     >function test(input: Foo | Bar) {
     >  if (input instanceof Foo) {
@@ -2148,10 +1386,10 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ></details>
 3. 属性判断
 
-    `字面量 in 变量`
+    `属性名 in 对象` 检查对象及其原型链。某个成员若将该属性声明为可选，它可能同时出现在两个分支。
 
     ><details>
-    ><summary>e.g.</summary>
+    ><summary>用 in 检查成员是否存在</summary>
     >
     >```ts
     >interface Foo {
@@ -2174,16 +1412,16 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     ></details>
 4. 字面量相等判断
 
-    `变量 !==或=== 字面量`
+    `变量 === 字面量` 或 `变量 !== 字面量`。
 
     ><details>
-    ><summary>e.g.</summary>
+    ><summary>用字面量比较排除一个成员</summary>
     >
     >```ts
     >type Foo = 'foo' | 'bar' | 'unknown';
     >
     >function test(input: Foo) {
-    >  if (input != 'unknown') {
+    >  if (input !== 'unknown') {
     >    // 这里 input 的类型「收紧」为 'foo' | 'bar'
     >  } else {
     >    // 这里 input 的类型「收紧」为 'unknown'
@@ -2193,85 +1431,68 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >```
     ></details>
 
-><details>
-><summary>若上述条件不是直接通过字面量书写，而是通过一个条件函数来替代时，则类型保护便会失效</summary>
->
->```ts
->function isString (input: any) {
->  return typeof input === 'string';
->}
->
->function foo (input: string | number) {
->  if (isString(input)) {
->    // 这里 input 的类型没有「收紧」，仍为 string | number
->  } else {
->    // 这里也一样
->  }
->}
->```
->
->1. 这是因为TS只能推断出`isString`是一个返回布尔值的函数，而并不知道这个布尔值的具体含义。
->2. 并且JS并没有内置非常丰富的、运行时的自我检查机制。当你在使用普通的JS对象时，你甚至无法访问`instanceof`或`typeof`。
->
->需要使用：自定义类型保护。
-></details>
-
 5. 自定义类型保护
 
-    定义一个函数，它的返回值是一个`类型谓词`：`参数名 is 类型`。通过这个函数，可以缩小参数的类型范围。
-
-    >本质是一种类型断言。
+    返回类型写作 `参数名 is 类型`。返回 `true` 表示参数属于该类型，返回 `false` 时，调用方可以排除该类型。编译器信任显式谓词，函数实现需要保证两个方向都正确。
 
     ```ts
-    // 传进来参数的类型是`Fish | Bird`。函数返回`true`参数类型是`Fish`；函数返回`false`参数类型是除去`Fish`
+    interface Fish { swim(): void }
+    interface Bird { fly(): void }
+
     function isFish(pet: Fish | Bird): pet is Fish {
-        return (pet as Fish).swim !== undefined;    // 自定义类型保护若要用到非共有的属性/方法，也需要用类型断言
+      return 'swim' in pet && typeof pet.swim === 'function';
     }
 
-    // Both calls to 'swim' and 'fly' are now okay.
-    let pet = getSmallPet() as Fish | Bird;
-
-    if (isFish(pet)) {
-      pet.swim();
-    } else {
-      pet.fly();
+    function move(pet: Fish | Bird) {
+      if (isFish(pet)) {
+        pet.swim();
+      } else {
+        pet.fly();
+      }
     }
     ```
 
+    从 TS 5.5 起，简单的守卫函数也能推断出类型谓词。函数需省略返回类型、只有一个返回点且没有隐式返回、不修改参数，并返回能够区分参数类型的布尔条件。[官方说明：推断类型谓词](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-5.html#inferred-type-predicates)
+
+    ```ts
+    const isString = (input: unknown) => typeof input === 'string';
+    const names = ['Ada', null, 'Lin'].filter(isString); // -> string[]
+    const scores = [0, undefined, 8].filter(n => n !== undefined); // -> number[]，保留 0
+    ```
+
+    对校验失败就抛错的函数，可以写 `asserts 参数名 is 类型`。调用正常返回后，后面的语句就能使用收窄后的类型。
+
+    ```ts
+    function assertInput(el: Element | null): asserts el is HTMLInputElement {
+      if (!(el instanceof HTMLInputElement)) throw new Error('找不到输入框');
+    }
+
+    const el = document.querySelector('#search');
+    assertInput(el);
+    console.log(el.value); // HTMLInputElement
+    ```
+
 ### 联合类型（Union Types）
-`|`
 
-仅满足其中一个类型。
+`A | B` 接受属于 `A` 或 `B` 的值，也允许同时满足两者。读取联合类型的值时，只能直接使用对当前所有候选类型都有效的操作。类型守卫和赋值都可能使变量在当前位置收窄。
 
-1. 若未赋值，则只能访问此联合类型的所有类型里共有的属性/方法（不确定联合类型的变量到底是哪个类型）。
+```ts
+function getLength(value: string | number) {
+  return typeof value === 'string' ? value.length : String(value).length;
+}
 
-    - 类型断言 或 js逻辑判断（类型保护） 联合类型的变量成为联合类型其中的某一种类型，就可以访问此类型的属性/方法。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```ts
-        >function getLength(something: string | number) {
-        >  something.toString(); // 访问此联合类型的所有类型里共有的属性/方法
-        >  (something as string).length; // 类型断言
-        >  (<number>something).toFixed(); // 类型断言
-        >  if (typeof something === 'string') {
-        >    something.length;  // js逻辑判断（类型保护）
-        >  }
-        >
-        >  something.length; // 报错，只能访问此联合类型的所有类型里共有的属性/方法
-        >  (<boolean>something).toString(); // 报错，只能类型断言成一个联合类型中存在的类型
-        >}
-        >```
-        ></details>
-2. 若已赋值，则只能访问类型推论出的某一个类型的属性/方法。
+let id: string | number = 42;
+id.toFixed();           // 这里是 number
+id = 'guest';
+id.toUpperCase();       // 这里是 string，声明类型仍允许以后赋 number
+```
 
 - 可辨识联合（Discriminated Unions）
 
-    可辨识（公共属性名） + 联合类型（`|`） + 类型保护。
+    各成员用同名属性的不同字面量值标识自己。用 `switch` 按该属性分支，剩余情况赋给 `never` 可以检查是否穷尽所有成员。以后若新增车型却漏掉对应分支，赋给 `never` 的那一行就会报错。
 
     ><details>
-    ><summary>e.g.</summary>
+    ><summary>按车型分支并检查是否遗漏</summary>
     >
     >```ts
     >// 可辨识：vType
@@ -2310,77 +1531,59 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
     >```
     ></details>
 
->第一个值前面也可以添加`|`（主要为了格式化美观）。e.g. `type a = | number | string;`
+> 多行书写联合类型时，第一个成员前也可以添加 `|`，例如 `type Id = | number | string;`。
 
 ### 交叉类型（Intersection Types）
-`&`
 
-将多个类型合并为一个类型（必须同时满足所有类型）。
+`A & B` 表示一个值必须同时满足 `A` 和 `B` 的要求。
 
-- 用法
+1. 没有值能同时满足 `number` 和 `string`，因此 `number & string` 为 `never`。
+2. 交叉多个对象类型，得到同时具有它们全部属性的类型。
 
-    1. e.g. `number & string    // -> never`
-    2. `{ 属性: 数据类型, } &` +
+    ><details>
+    ><summary>交叉类型对对象成员的要求</summary>
+    >
+    >```ts
+    >interface A {
+    >  a: number;
+    >}
+    >interface B {
+    >  b: string;
+    >}
+    >type C = {
+    >  c: boolean;
+    >};
+    >
+    >const aa: A & B & C & { d: number } = {
+    >  a: 1,
+    >  b: "",
+    >  c: false,
+    >  d: 1,
+    >};
+    >```
+    ></details>
 
-        1. 合并起来成为一个显式类型
-
-            ><details>
-            ><summary>e.g.</summary>
-            >
-            >```ts
-            >interface A {
-            >  a: number;
-            >}
-            >interface B {
-            >  b: string;
-            >}
-            >type C = {
-            >  c: boolean;
-            >};
-            >
-            >const aa: A & B & C & { d: number } = {
-            >  a: 1,
-            >  b: "",
-            >  c: false,
-            >  d: 1,
-            >};
-            >```
-            ></details>
-        2. 与起来成为一个显式类型
-
-            >e.g. `type X = string & (1 | '2' | true) // -> '2'`
-        3. `{ 属性: 数据类型, } & 其他类型  // -> 可能没法直接给变量（可用于类型断言）`
-
-            >e.g. `{ 'x': {}, } & string`
-        4. `{ 属性: 数据类型1 } & { [key: string]: 数据类型2 }    // -> 可能没法直接给变量，用于二次获取属性`
+3. 对联合类型取交叉，可以留下两者共有的成员。例如 `type X = string & (1 | '2' | true)` 得到 `'2'`。
+4. 同名属性也要同时满足两个约束。例如 `({ id: number } & { id: string })['id']` 得到 `never`。交叉类型不会像 JS 对象展开那样用后面的值覆盖前面的值。
 
 ### `表达式!`
-表示从前面的表达式（值，不是~~类型~~）里移除 ~~`null`~~ 和 ~~`undefined`~~。
 
-><details>
-><summary>e.g.</summary>
->
->```ts
->// 配置文件：compilerOptions.strictNullChecks: true
->let foo: string | undefined
->
->foo.length     // 报错， - 'foo' is possibly 'undefined'
->foo!.length
->
->
->function func (x: undefined | string): string{
->  return x!
->}
->```
-></details>
+开启 `strictNullChecks` 时，后缀 `!` 告诉编译器在这个表达式的类型中排除 `null` 和 `undefined`。生成的 JS 不包含空值检查。例如 `document.querySelector('#save')!.classList` 在找不到元素时会抛出异常。需要处理元素缺失时，用条件判断或可选链。
+
+```ts
+const button = document.querySelector('#save');
+button?.classList.add('ready'); // 找不到按钮就跳过
+if (button) {
+  button.addEventListener('click', () => console.log('保存'));
+}
+```
 
 ### `typeof 值`
->也保留js中的含义，但优先使用TS的语义。作为TS语法 比 作为JS语法，值支持的写法更少。
 
-获取一个值（不是~~类型~~）的声明类型（或类型推论）。
+在表达式中，JS 的 `typeof value` 返回字符串，例如 `'string'`。在类型位置，TS 的 `typeof` 查询变量或其属性的类型，适合从已有值派生类型。要表示函数调用的返回类型，可以写 `ReturnType<typeof fn>`。[官方手册：typeof 类型运算符](https://www.typescriptlang.org/docs/handbook/2/typeof-types.html)
 
 ><details>
-><summary>e.g.</summary>
+><summary>查询函数、类和字面量的类型</summary>
 >
 >```ts
 >function foo(x: number): Array<number> {
@@ -2390,7 +1593,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
 >
 >
 >class A {
->  a: string;
+>  a = '';
 >  constructor() {
 >    console.log("I'm A");
 >  }
@@ -2400,7 +1603,7 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
 >
 >type A2 = A;        // -> A的实例类型
 >type A3 = typeof a; // -> a的类型（ === A的实例类型）
->type A4 = typeof A; // -> A的类型
+>type A4 = typeof A; // -> 类 A 的构造函数及静态成员的类型
 >
 >let a1: A2 = { a: "" };
 >
@@ -2424,7 +1627,8 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
 >let bar1: typeof foo1;
 >// bar1 仅能被赋值 'Hello World'
 >bar1 = 'Hello World';      // ok
->bar1 = 'anything else';    // Error
+>// @ts-expect-error 只接受特定字面量
+>bar1 = 'anything else';
 >
 >
 >let foo2 = 'Hello World';
@@ -2436,15 +1640,17 @@ console.log(E[E.aa], E[E.bb], E[E.cc], E[E.dd], E[E.ee]);   // => "aa" "bb" "cc"
 >let bar3: typeof foo3;
 >// bar3 仅能被赋值 'Hello World'
 >bar3 = 'Hello World';      // ok
->bar3 = 'anything else';    // Error
+>// @ts-expect-error 只接受特定字面量
+>bar3 = 'anything else';
 >```
 ></details>
 
-### `keyof 数据类型`（输入索引类型查询）
-获取某种**数据类型**的所有公共键（属性名），以联合类型（`|`）返回。
+### `keyof 数据类型`（索引类型查询）
+
+`keyof T` 得到可以用于访问 `T` 的键类型，键可以是 `string`、`number` 或 `symbol`。对于联合类型，`keyof (A | B)` 只包含各成员都支持的键。[官方手册：keyof](https://www.typescriptlang.org/docs/handbook/2/keyof-types.html)
 
 <details>
-<summary>e.g.</summary>
+<summary>查询对象、数组与索引签名的键</summary>
 
 ```ts
 interface Person {
@@ -2455,15 +1661,13 @@ interface Person {
 
 type K1 = keyof Person;                        // -> "name" | "age" | "location"
 type K2 = keyof Person[];                      // -> number | "length" | "push" | "pop" | "concat" | ...
-type K3 = keyof { [任意名: string]: Person };   // -> string | number （隐式转换key为number）
+type K3 = keyof { [任意名: string]: Person };   // -> string | number （JS 会将数字属性键转为字符串，obj[0] 与 obj["0"] 等价）
 
 const a = { 'b': 1, 'c': '2', 3: 3, '4': 4 };
 type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 ```
 
-- 获取 对象或类型 的所有属性值，以联合类型（`|`）返回：
-
-    >类似`enum`的功能，若非特别必要，请用`enum`替代。
+- 用 `T[keyof T]` 获取对象各属性值类型的联合。对于 `as const` 声明的配置对象，可以直接派生值的字面量联合。
 
     ```ts
     const obj1 = {
@@ -2491,24 +1695,19 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 
     type Class1Values = Class1[keyof Class1]                // -> "value1" | "value2"
 
-    // enum EnumValues {
-    //   'key1' = 'value1',
-    //   'key2' = 'value2'
-    // }
     ```
 </details>
 
 ### `类型[键名]`（索引访问类型）
-在语法上，它们看起来像属性或元素访问，但最终会被转换为类型。
 
->不支持：~~`类型.键名`~~。
+在类型位置，用 `T[K]` 查询键 `K` 对应的属性值类型。键也可以是联合类型，查询结果是各属性类型的联合。[官方手册：索引访问类型](https://www.typescriptlang.org/docs/handbook/2/indexed-access-types.html)
 
-1. `类型[键名]`获取某个键名的类型
-2. `数组类型[number]`获取数组所有项的联合类型
-3. `{ [x:string]: 类型A }[string]`获取对象所有项的联合类型（其实就是类型A）
+1. `Person["name"]` 取出属性 `name` 的值类型。
+2. `数组类型[number]` 取出元素类型，对元组可得到各位置元素类型的联合。
+3. `{ [key: string]: V }[string]` 得到字符串索引签名的值类型 `V`。
 
 ><details>
-><summary>e.g.</summary>
+><summary>从属性、方法和数组中提取类型</summary>
 >
 >```ts
 >interface Person {
@@ -2528,122 +1727,112 @@ type K4 = keyof typeof a;                      // -> 'b' | 'c' | 3 | '4'
 >```
 ></details>
 
-- <details>
+<details>
+<summary>从已有响应类型挑选页面所需的部分属性</summary>
 
-    <summary>若想获取一个已有类型的部分属性</summary>
+```ts
+interface TaskResponse {
+  stTask: {
+    uId: number;
+    uType: number;
+    uState: number;
+    strRewardId: string;
+    stNormal: { stRewardProgress: { vctNode: number[]; total: number } };
+  };
+}
 
-    ```ts
-    import { $Rsp } from "其他模块";
+type Task = TaskResponse['stTask'];
+type Progress = Task['stNormal']['stRewardProgress'];
+type TaskView = Pick<Task, 'uId' | 'uType' | 'uState' | 'strRewardId'> & {
+  stNormal: { stRewardProgress: Pick<Progress, 'vctNode'> };
+};
 
-    // 写法1？
-    interface Data1 {
-    stTask: {
-      uId: $Rsp["stTask"]["uId"];
-      uType: $Rsp["stTask"]["uType"];
-      uState: $Rsp["stTask"]["uState"];
-      strRewardId: $Rsp["stTask"]["strRewardId"];
-      stNormal: {
-        stRewardProgress: {
-          vctNode: $Rsp["stTask"]["stNormal"]["stRewardProgress"]["vctNode"];
-        };
-      };
-    };
-    }
-
-    let data1: Data1 = {
-    stTask: {
-      uId: 0,
-      uType: 0,
-      uState: 0,
-      strRewardId: "",
-      stNormal: { stRewardProgress: { vctNode: [] } },
-    },
-    };
-
-
-    // 写法2？
-    type Data2 = { stTask: Pick<$Rsp["stTask"], "uId" | "uType" | "uState" | "strRewardId"> } & {
-    stTask: {
-      stNormal: {
-        stRewardProgress: {
-          vctNode: $Rsp["stTask"]["stNormal"]["stRewardProgress"]["vctNode"];
-        };
-      };
-    };
-    };
-
-    let data2: Data2 = {
-    stTask: {
-      uId: 0,
-      uType: 0,
-      uState: 0,
-      strRewardId: "",
-      stNormal: { stRewardProgress: { vctNode: [] } },
-    },
-    };
-    ```
-    </details>
+const data: { stTask: TaskView } = {
+  stTask: {
+    uId: 0, uType: 0, uState: 0, strRewardId: '',
+    stNormal: { stRewardProgress: { vctNode: [] } },
+  },
+};
+```
+</details>
 
 ### `in`
-类型的属性、枚举的项名 通过`in`遍历获得。
 
-><details>
-><summary>e.g.</summary>
->
->```ts
->type Keys = "a" | "b"
->type Obj = {
->  [p in Keys]: any         // 不能用：p: Keys
->} // -> { a: any, b: any }
->
->
->enum Keys2 {
->  'top',
->  'down'
->}
->type Obj2 = {
->  [p in Keys2]: any        // 不能用：p: Keys2
->} // -> { 0: any, 1: any }
->```
-></details>
+在映射类型中，`[P in K]` 为键类型 `K` 的每个成员生成一个属性。`[P in keyof T]` 遍历 `T` 的键。这里的 `in` 出现在类型位置，运行时的 `'key' in obj` 则检查属性是否存在。
+
+```ts
+type Keys = 'a' | 'b';
+type Flags = { [P in Keys]: boolean }; // -> { a: boolean; b: boolean }
+
+enum Direction { Up, Down }
+type ByValue = { [P in Direction]: boolean };              // 键为 0 和 1
+type ByName = { [P in keyof typeof Direction]: boolean };  // 键为 'Up' 和 'Down'
+```
+
+TS 4.1+ 可用 `as` 重命名映射后的键。把键映射为 `never`，该键就会从结果中移除。[官方手册：映射类型](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html#key-remapping-via-as)
+
+```ts
+type PublicFields<T> = {
+  [P in keyof T as P extends `_${string}` ? never : P]: T[P];
+};
+type Card = PublicFields<{ title: string; _cache: number }>; // -> { title: string }
+```
 
 ### 装饰器（Decorators）
-`@装饰器表达式-最终求值后是一个函数`，可以被附加到`类声明`、`方法`、 `访问符(getter/setter)`、`属性`、`参数`上。不能用在声明文件(`.d.ts`)、（方法的重载、）任何外部上下文（如：`declare`的类）中。
 
-1. `@expression`的expression求值后为一个函数，它在运行时被调用，被装饰的声明信息会被做为参数传入。
-2. 当多个装饰器应用在一个声明上时：
+`@expression` 中的表达式会求值为装饰器函数。TS 支持两套调用约定，阅读库文档时先看项目的 `experimentalDecorators` 设置。[TS 5.0 装饰器说明](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators) · [旧版实验性装饰器手册](https://www.typescriptlang.org/docs/handbook/decorators.html)
 
-    ```ts
-    // 书写在同一行上
-    @f @g x
+| | TS 5.0+ 的标准提案语义 | 旧版实验性语义 |
+| --- | --- | --- |
+| 配置 | `experimentalDecorators` 关闭或省略 | `experimentalDecorators: true` |
+| 适用位置 | 类、方法、字段、getter/setter、`accessor` | 类、方法、属性、访问器以及构造函数或方法的参数 |
+| 方法装饰器收到的参数 | 原方法和 `context`，例如 `context.name` | `target`、属性键和属性描述符 |
+| 元数据选项 | 不支持 `emitDecoratorMetadata` | 可配合 `emitDecoratorMetadata` 发出类型元数据 |
 
+下面是标准提案语义的方法装饰器。装饰器在定义类时执行，返回的新函数在调用方法时执行。
 
-    // 书写在多行上
-    @f
-    @g
-    x
-    ```
+```ts
+function trimResult<This>(
+  method: (this: This) => string,
+  _context: ClassMethodDecoratorContext<This, (this: This) => string>,
+) {
+  return function (this: This) {
+    return method.call(this).trim();
+  };
+}
 
-    1. 由上至下依次对装饰器表达式求值。
-    2. 求值的结果会被当作函数，由下至上依次调用。
+class Page {
+  @trimResult
+  title() { return ' 首页 '; }
+}
+
+new Page().title(); // -> '首页'
+```
+
+同一声明叠加多个装饰器时，表达式从上到下求值，所得装饰器函数从下到上调用。例如叠写 `@f()`、`@g()`，先求值 `f()`，再求值 `g()`，然后依次应用 `g` 和 `f` 返回的装饰器。
 
 ### `readonly`
-属性标记为只读。
 
-1. 方法的形参
-2. 类、interface、type、内联类型注解 的属性
+`readonly` 可以标记对象或类的属性，也可以声明只读数组和元组。类中只有 getter 的属性自动是只读的。构造函数的参数属性可以写作 `public readonly id: string`。对于普通函数参数，可以在其**类型**上表达只读要求。
 
-    >与访问修饰符同时使用时要放在其后面：`访问修饰符 readonly 属性名`。
+```ts
+interface Config {
+  readonly options: { pageSize: number };
+}
 
-- 自动推断
+function total(scores: readonly number[]) {
+  // scores.push(0); // 报错，readonly number[] 没有 push 方法
+  return scores.reduce((sum, score) => sum + score, 0);
+}
 
-    在一些情况下，编译器能把一些特定的属性推断为readonly。
+const config: Config = { options: { pageSize: 20 } };
+config.options.pageSize = 50; // 属性 options 的引用只读，内部 pageSize 仍可写
+```
 
-    >e.g. 在一个class中，如果你有一个只含有getter但是没有setter的属性，它能被推断为只读。
-
->相关内置：`Readonly`类型别名、`ReadonlyArray`泛型接口。
+相关内置类型有 `Readonly<T>` 和 `ReadonlyArray<T>`。它们提供静态检查。需要在运行时冻结对象时可使用 `Object.freeze`，其冻结效果也是浅层的。
 
 ### 映射修饰符（mapping modifiers）`+`、`-`
+
 增加（不写默认`+`）或去除：`readonly`或`?`
 
 ```ts
@@ -2659,20 +1848,36 @@ type Concrete<Type> = {
 ```
 
 ### `this`
-1. 返回类型`this`
 
-    定义函数的返回值是`this`。
-2. 参数`this`
+1. 返回类型 `this` 表示调用者的具体实例类型，子类也能保留自己的类型，常用于链式调用。
+2. 函数参数列表开头可以写 `this: 类型`，显式约束函数的调用接收者。这个参数在生成 JS 时会被擦除。箭头函数捕获外层 `this`。
 
-    >`this`参数是个假的参数，它出现在参数列表的最前面。
+```ts
+class Counter {
+  value = 0;
+  increment(): this {
+    this.value += 1;
+    return this;
+  }
+}
+class Resettable extends Counter {
+  reset() { this.value = 0; }
+}
+new Resettable().increment().reset();
 
-    定义函数中`this`的类型。
+function readValue(this: HTMLInputElement) {
+  return this.value;
+}
+const input = document.createElement('input');
+readValue.call(input);
+```
 
 ### `类型1 extends 类型2 ? 类型3 : 类型4`（条件类型）
-若 类型1可以赋值给类型2（或 类型1是类型2的extends），则返回类型 类型3，否则返回 类型4。
+
+若 `类型1` 可赋值给 `类型2`，结果为 `类型3`，否则为 `类型4`。当 `extends` 左侧是单独的泛型类型参数 `T` 时，传入联合类型会分别判断每个成员，再把结果合并。写成 `[T] extends [U]` 可以整体判断。[官方手册：条件类型](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types)
 
 ><details>
-><summary>e.g.</summary>
+><summary>比较联合类型逐项判断与整体判断</summary>
 >
 >```ts
 >type Type1 = number | boolean;
@@ -2682,11 +1887,16 @@ type Concrete<Type> = {
 >type W1 = W<number>;                               // -> 'yes'
 >type W2 = W<1>;                                    // -> 'yes'
 >type W3 = W<W1>;                                   // -> string
->type W4 = W<number | boolean | string>;            // -> string
+>type W4 = W<number | boolean | string>;            // -> 'yes' | string，简化为 string
+>
+>type OnlyNumbers<T> = T extends number ? T : never;
+>type Part = OnlyNumbers<1 | 'x'>;                  // -> 1
+>type AllNumbers<T> = [T] extends [number] ? true : false;
+>type Whole = AllNumbers<1 | 'x'>;                  // -> false
 >
 >
 >class A {
->  a: number;
+>  a = 0;
 >}
 >interface B extends A {
 >  b: string;
@@ -2718,24 +1928,25 @@ type Concrete<Type> = {
 1. 表示继承/拓展的含义
 
     1. `class` `extends` `class/abstract class`
-    2. `interface` `extends` `interface/class/type`
+    2. `interface` 可扩展具有静态已知成员的对象类型，例如其他接口、类的实例类型或对象类型别名
 2. 表示约束的含义
 
     泛型约束`<类型名 extends 数据类型>`
-3. 表示分配的含义
+3. 在条件类型中判断可赋值性
 
     条件类型`类型1 extends 类型2 ? 类型3 : 类型4`（可以有`infer`）
 </details>
 
 ### `infer`
-`infer`表示在`extends`条件类型语句中待推断的类型变量。
+
+`infer` 在条件类型的 `extends` 匹配模式中声明待推断的类型变量。匹配成功时，可在 `?` 分支引用它。
 
 ><details>
-><summary>e.g.</summary>
+><summary>推断函数参数和数组元素的类型</summary>
 >
 >```ts
->// 整句表示为：若`T`能赋值给 `(arg: infer P) => any`，则结果是`(arg: infer P) => any`类型中的参数`P`，否则返回为`T`
->type ParamType<T> = T extends (arg: infer P) => any ? P : T;
+>// 整句表示为：若`T`能赋值给 `(arg: infer P) => unknown`，则结果是`(arg: infer P) => unknown`类型中的参数`P`，否则返回为`T`
+>type ParamType<T> = T extends (arg: infer P) => unknown ? P : T;
 >
 >
 >interface User {
@@ -2756,7 +1967,8 @@ type Concrete<Type> = {
 ></details>
 
 ### `...`展开类型
-元组包裹：`...` + 类型、类型变量/泛型变量、`infer`。
+
+在元组类型中，`...` 可以展开数组或元组类型，也可以和 `infer` 配合匹配元组的开头或末尾。
 
 1. 元组
 
@@ -2769,442 +1981,257 @@ type Concrete<Type> = {
 2. 元组 + 类型变量/泛型变量
 
     ```ts
-    type MyConcat<T extends any[], U extends any[]> = [...T, ...U]
+    type MyConcat<T extends readonly unknown[], U extends readonly unknown[]> = [...T, ...U]
 
     type result = MyConcat<[1, 2], [3, 4]>  // -> [1, 2, 3, 4]
     ```
 3. 元组 + 类型变量/泛型变量 + `infer`
 
     ```ts
-    // 数组首项匹配
-    type FirstOfArray<T extends any[]> = T extends [infer L, ...infer R] ? L : never
+    // 匹配已知非空的元组，支持 as const 推断的只读元组
+    type FirstOfArray<T extends readonly unknown[]> = T extends readonly [infer L, ...unknown[]] ? L : never
     type result1 = FirstOfArray<[1, 2, 3]>   // -> 1
 
 
-    // 数组尾项匹配
-    type LastOfArray<T extends any[]> = T extends [...infer L, infer R] ? R : never
+    // 匹配元组尾项。普通数组可能为空，无法保证有尾项
+    type LastOfArray<T extends readonly unknown[]> = T extends readonly [...unknown[], infer R] ? R : never
     type result2 = LastOfArray<[1, 2, 3]>   // -> 3
     ```
 
 ### `///`（三斜线指令，triple-slash directives）
-包含单个XML标签的单行注释。注释的内容会做为编译器指令使用。
 
->1. 三斜线指令**仅**可放在包含它的文件的最顶端。
->2. 一个三斜线指令的前面只能出现单行或多行注释，这包括其它的三斜线指令。
->3. 如果它们出现在一个语句或声明之后，那么它们会被当做普通的单行注释，并且不具有特殊的涵义。
+三斜线指令写在文件顶部，前面可以有注释或其他三斜线指令。出现在语句或声明之后时，它只是普通注释。
 
-1. `/// <reference path="..." />`
-2. `/// <reference types="..." />`
-3. `/// <reference no-default-lib="true"/>`
-4. `/// <amd-module />`
-5. `/// <amd-dependency />`
+| 指令 | 用途 |
+| --- | --- |
+| `/// <reference path="./globals.d.ts" />` | 按路径纳入另一个文件，常见于旧式全局声明 |
+| `/// <reference types="node" />` | 引用已安装的类型包，例如 `@types/node` |
+| `/// <reference lib="es2018.promise" />` | 引入指定的内置库声明，例如 `Promise.prototype.finally` |
+
+普通源码之间的依赖用 `import` 表达。阅读旧代码时还可能遇到 `amd-module`、`amd-dependency` 和 `no-default-lib`。TypeScript 7.0 已移除 AMD 模块输出；项目需要选择环境声明时，可在 `tsconfig.json` 中设置 `lib`。[三斜线指令](https://www.typescriptlang.org/docs/handbook/triple-slash-directives.html) · [TypeScript 7.0 发布说明](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)
 
 ### `namespace`（命名空间）
-生成的.js有一层命名空间包含内容（不容易污染全局变量），可嵌套。
 
-><details>
-><summary>e.g.</summary>
->
->```ts
->// .ts
->namespace A1 {
->  class B1 {}
->  namespace A2 {
->    class B2 {}
->  }
->}
->
->
->// 被编译为.js
->var A1;
->(function (A1) {
->  var B1 = /** @class */ (function () {
->    function B1() {}
->    return B1;
->  })();
->
->  var A2;
->  (function (A2) {
->    var B2 = /** @class */ (function () {
->      function B2() {}
->      return B2;
->    })();
->  })(A2 || (A2 = {}));
->
->})(A1 || (A1 = {}));
->```
-></details>
+命名空间可以嵌套，同一作用域内同名的命名空间可以合并。只有导出的成员才能用 `命名空间.成员` 访问。下面的 `format` 会使 `Labels` 生成运行时对象，`type Id` 和函数参数上的注解会被擦除。
 
-- 支持：合并
+```ts
+namespace Labels {
+  export type Id = number;
+  const prefix = "item";
+  export function format(id: Id) {
+    return `${prefix}-${id}`;
+  }
+}
 
-#### TS中的命名空间和模块的区别
-1. TS命名空间
+Labels.format(3); // "item-3"
+// Labels.prefix; // 类型错误，prefix 仅在命名空间内部可见
+```
 
-    1. 全局性：命名空间中的声明是全局可见的，意味着我们可以在代码的任何地方访问它们，只要我们引入了相应的命名空间。
-    2. 层级结构：命名空间可以形成层级结构嵌套，可以在命名空间内部创建更深层次的命名空间，以更好地组织代码。
-    3. **防止命名冲突**：命名空间提供了一种避免全局命名冲突的机制。
-    - 较小代码库或简单场景使用，建议不用。
-2. TS模块
+#### 命名空间和模块的区别
 
-    1. 作用域限制：模块具有自己的作用域，模块中的声明默认是私有的，只有通过导出才能在外部访问。
-    2. 依赖管理：模块可以通过导入和导出来管理它们之间的依赖关系。这使得代码的组织和维护更加清晰和可靠。
-    3. 可重用性：通过将代码封装在模块中，我们可以轻松地在不同的项目中重用代码，提高开发效率。
-    4. 异步加载：模块支持异步加载，可以按需加载模块，减少初始加载时间。
-    - 建议仅用模块。
+脚本里的顶层命名空间可以成为全局名字。模块里的命名空间只在本模块中可见，其他文件需要通过导出、导入访问它。维护全局脚本或为已有全局库写声明时会遇到 `namespace`；前端应用通常用 ES 模块组织文件和依赖，需要按需加载时使用动态 `import()`。[命名空间与模块](https://www.typescriptlang.org/docs/handbook/namespaces-and-modules.html)
 
 ### 模块化
-- 文件作用域
 
-    1. 全局模块
+包含顶层 `import` 或 `export` 的文件具有模块作用域，`export {}` 也可以显式标记模块。其余文件的判定还取决于 `moduleDetection`、模块模式和文件后缀等因素。例如，`"moduleDetection": "force"` 会把所有非声明源文件视为模块。脚本文件的顶层声明可能与项目中的其他全局声明重名。[模块](https://www.typescriptlang.org/docs/handbook/2/modules.html) · [moduleDetection](https://www.typescriptlang.org/tsconfig/moduleDetection.html)
 
-        若一个文件的根级位置没有`export`或`import`，则默认是全局命名空间（定义的变量/类型是全局作用域，会污染全局命名空间，也能直接使用其他全局作用域文件的变量/类型）。
-    2. 文件模块/外部模块
+* **区分值导入和类型导入。** `import type` 和 `export type` 只服务于类型检查，整个语句都会被擦除。`class` 同时声明了类型和值：仅用作类型时可写 `import type`，执行 `new` 或 `instanceof` 时需要导入运行时的类。
 
-        若一个文件的根级位置含有`export`或`import`，则该文件就是一个本地作用域的模块（全局作用域、本地作用域共同作用于该文件模块）。
+```ts
+// user.ts
+export interface User { id: number }
+export const guest: User = { id: 0 };
+```
 
->配置和书写建议：配置`module: commonjs`选项、使用ES6 Module语法（完全支持所有写法）导入、导出、编写模块。
+```ts
+// main.ts，与 user.ts 同目录
+import { guest, type User } from "./user.js";
 
-1. 任何声明（如：变量、函数、类、类型别名、接口、namespace、枚举）
+const current: User = guest; // 生成的 JS 保留 guest 导入
+console.log(current.id);
+```
 
-    1. 导出
+* **按实际加载代码的工具选择配置。** 浏览器应用由打包器处理导入时，可用 `module: "ESNext"` 与 `moduleResolution: "Bundler"`。直接由 Node.js 加载 `tsc` 输出时，可让 `module` 和 `moduleResolution` 都使用 `"NodeNext"`，并用 `package.json` 的 `"type": "module"` 或 `.mts` 标识 ESM。原生 Node ESM 的相对导入需要扩展名：上例的 `./user.js` 是输出路径，TypeScript 做类型检查时可解析到 `user.ts`。实际运行时由宿主解析导入，`paths` 也不会自动改写输出路径。[模块解析与扩展名替换](https://www.typescriptlang.org/docs/handbook/modules/reference.html#file-extension-substitution) · [按宿主选择编译选项](https://www.typescriptlang.org/docs/handbook/modules/guides/choosing-compiler-options.html)
 
-        1. TS特定写法：`export =`
-        2. ES6 Module的`export`
-        - 未见过 ~~CommonJS的`exports`或`module.exports`~~ 导出
-    2. 引入
-
-        1. 有类型声明
-
-            1. TS特定写法：`import xx = require('xx')`
-            2. ES6 Module的`import`
-
-        2. 没有类型声明
-
-            1. CommonJS的`require`
-
-                `const xx = require('xx')`（默认导入为`any`类型）
-2. 仅导入、导出类型（不能包含值；在编译结果中会被删除）
-
-    1. `import type { xx, yy } from 'aa'`、`import type xx from 'aa'`
-
-        >不能同时写：~~`import type xx, { yy, zz } from 'aa'`~~。
-    2. `export type { xx, yy }`、`export type { xx as default, yy as zz }`
+* **维护 CommonJS 时对照库的实际导出。** 现有库可能通过 `module.exports = value` 导出整个值，声明文件可用 `export = value` 描述这种形状。TypeScript 的对应导入写法是 `import value = require("包名")`。给未声明的库补上准确的声明，可以保留参数检查和编辑器提示。[CommonJS 与 ES 模块互操作](https://www.typescriptlang.org/docs/handbook/modules/appendices/esm-cjs-interop.html)
 
 ### `名字.d.ts`（声明文件）
->只能定义数据类型，不能定义具体实现，否则报错。
 
-`declare`声明各种类型（`interface`、`type`可以忽略`declare`关键字）。
+声明文件描述运行环境或 JavaScript 库**已经提供**的 API。它可以描述类型，也可以声明可用的变量、函数、类或枚举；加载这份声明不会创建任何运行时对象。[声明文件入门](https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html)
 
-1. 全局变量的声明文件
+| 需要描述的内容 | 写法 |
+| --- | --- |
+| 全局值 | `declare const BUILD_ID: string`；可重新赋值的绑定可用 `declare let` |
+| 全局函数 | `declare function render(id: string): void`；有多个调用签名时可写重载 |
+| 类与枚举 | `declare class Player { play(): void }`、`declare enum Mode { Read, Write }` |
+| 接口与别名 | `interface Options { debug?: boolean }`、`type Id = string` |
+| 带成员的全局对象 | `declare namespace SDK { function init(): void }` |
+| 自己的模块 | 在声明文件顶层用 `export` 描述实际导出的类型和值 |
 
-    `declare`并没有真的定义一个变量（只是定义了`全局变量/方法/类/枚举/接口/类型别名/命名空间/模块`的数据类型）：仅仅用于编译时的检查，在编译结果中会被删除。多种声明可以组合使用（对同一个名字进行多种不同的声明），是**或**的声明关系。
+**给已有的浏览器全局对象补类型。** 假设页面上的另一个脚本可能会设置 `window.buildId`，模块形式的 `.d.ts` 中可以使用 `declare global` 扩展现有的 `Window` 接口。可选属性提醒调用方处理脚本未设置值的情况。
 
-    1. 声明全局变量：
+```ts
+// globals.d.ts
+export {};
 
-        `declare var/let/const 变量名: 数据类型`
+declare global {
+  interface Window {
+    buildId?: string;
+  }
+}
+```
 
-        >`var/let`可赋值此全局变量；`const`不可赋值此全局变量。
-    2. 声明全局方法：
+若 `.d.ts` 本身是全局脚本，也可以直接在顶层写 `interface Window { buildId?: string }`。两种写法都要求声明文件已被当前项目纳入，例如放在 `include` 包含的 `src/` 下。[全局扩充](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#global-augmentation)
 
-        `declare function 方法名 (参数: 数据类型): 数据类型`
+**描述模块或静态资源。** 下面假设打包器将 JPG 的默认导出处理成 URL 字符串。在一个按脚本处理、没有顶层导入导出的 `.d.ts` 中，可以这样描述这一约定：
 
-        >支持：重载。
-    3. 声明全局类：
+```ts
+// assets.d.ts
+declare module "*.jpg" {
+  const url: string;
+  export default url;
+}
+```
 
-        ```ts
-        declare class 类名 {
-          属性名: 数据类型                // 没有()是属性
-          方法名1(参数: 数据类型): 数据类型  // 有()是方法
-          方法名2()                     // 有()是方法
-        }
-        ```
-    4. 声明全局枚举类型：
+给已有模块补成员时，在模块文件里写 `declare module "包名" { … }` 表示**模块扩充**。两种写法的含义受所在文件作用域影响。声明只负责类型，静态资源仍需打包器支持相应的加载方式。[环境模块与模块扩充](https://www.typescriptlang.org/docs/handbook/modules/reference.html#ambient-modules)
 
-        ```ts
-        declare enum 变量名 {
-          属性名
-        }
-
-        declare const enum 变量名 {
-          属性名
-        }
-        ```
-    5. 声明全局的接口、type
-
-        >`declare`关键字是可选的。
-
-        ```ts
-        // 可加可不加 declare
-        interface 名字 {
-            属性名: 数据类型
-        }
-
-
-        // 可加可不加 declare
-        type 属性名 = 数据类型 或 字符串字面量类型
-        ```
-    6. 声明命名空间：
-
-        >暴露在最外层的声明会作为全局类型作用于整个项目中，应该尽可能少定义全局类型，因此最好将它们方法`namespace`中。
-
-        ```ts
-        declare namespace 变量名 {
-            变量和数据类型
-        }
-        ```
-
-        - 命名空间内可以包括所有类型的声明，也可以包含`namespace`（嵌套）
-    7. 声明模块（提供给`import/require`）：
-
-        ```ts
-        declare module 模块名 {
-          export var bar: number;
-        }
-        ```
-
-        - 利用webpack，TS也可以导入任何文件
-
-            e.g. 在`某.d.ts`中书写：`declare module '*.css'`则允许导入.css文件，`declare module '*.jpg'`则允许导入.jpg文件。
-
-    - 全局命名空间
-
-        定义在 全局命名空间 的 变量、类型、命名空间 能在项目的所有TS代码里使用（全局模块、文件模块）。
-
-        1. `.d.ts`中定义的内容
-
-            >默认情况下，TS会解析项目内所有`.d.ts`文件。
-        2. 在 全局模块 中定义的内容
-        3. 在 文件模块 内的`declare global {}`中定义的内容
-
-            >仅能在 文件模块 内使用`declare global {}`，在 全局模块 内使用会报错，在 `.d.ts`内使用无效果。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >要定义全局的`window.a`
-        >
-        >```ts
-        >// 某.d.ts
-        >interface Window {a: any;}
-        >```
-        >
-        >```ts
-        >// 全局模块（没有import/export的文件）
-        >interface Window {a: any;}
-        >```
-        >
-        >```ts
-        >// 文件模块（有import/export的文件）
-        >declare global {
-        >  interface Window {a: any;}
-        >}
-        >```
-        ></details>
-2. 导出`export`
-
-- 第三方库支持TS
-
-    ><https://www.typescriptlang.org/docs/handbook/declaration-files/publishing.html>
-
-    1. 类型随着npm一起导出，第三方库的package.json包含`types`（或`typings`）
-    2. 额外引入第三方库声明文件（不需任何配置，引入就可声明成功），可搜索：<https://www.npmjs.com/~types>
-
-        >[DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/README.zh-Hans.md)
-
-- [lib（`tsconfig` lib / `lib.*.d.ts`）](https://www.typescriptlang.org/tsconfig/#lib)
-
-    当安装TS时，会顺带安装一个`lib.d.ts`声明文件。该文件包含JS运行时以及DOM中存在各种常见的环境声明，它自动包含在TS项目的编译上下文中。
-
-    - 配置`noLib`从上下文中排除此文件。
-
-    >若需要的话，则自建的`global.d.ts`是一种扩充`lib.d.ts`很好的方式。
+**查找第三方库及环境的类型。** 先看库是否自带声明，例如包在 `package.json` 中声明 `types` 或经 `exports` 暴露类型。没有自带声明时，可查找匹配的 `@types/包名`。从 TS 6.0 起，`compilerOptions.types` 默认为 `[]`；如果 Node 子项目需要 `process` 等全局声明，应安装 `@types/node` 并将 `"node"` 列入该项目的 `types`。普通模块导入仍按模块解析规则查找对应声明。[发布声明文件](https://www.typescriptlang.org/docs/handbook/declaration-files/publishing.html) · [TS 6.0 的 types 默认值](https://devblogs.microsoft.com/typescript/announcing-typescript-6-0/#types-now-defaults-to)
 
 ### 协变与逆变
->多态性：对一个简单类型Base和Child来说，若Child是Base的子类（Child ≼ Base），则Child类型的实例能赋值给Base类型的变量。
->
->1. 协变（Covariant）：只在同一个方向；
->2. 逆变（Contravariant）：只在相反的方向；
->3. 双向协变（Bivariant）：包括同一个方向和不同方向；
->4. 不变（Invariant）：若类型不完全相同，则它们是不兼容的。
 
-1.  函数类型
+设 `B` 可赋给 `A`，例如 `HTMLButtonElement` 可赋给 `HTMLElement`。比较 `F<B>` 和 `F<A>` 时，保持这个赋值方向称为**协变**，反向称为**逆变**，两个方向均接受称为**双变**，两个方向都不由这个子类型关系保证称为**不变**。
 
-    >未开启`strictFunctionTypes`时，函数参数可能按双向协变检查，这并不安全；开启后普通函数类型的参数按逆变检查（方法/构造器仍有特殊兼容规则）。
+**函数类型。** 在 `strictFunctionTypes` 下，普通函数类型的参数按逆变检查，返回值通常按协变检查。能处理任意元素的函数当然能处理按钮；只会处理按钮的函数，无法承担处理任意元素的职责。方法和构造器声明的参数保留了双变的兼容规则。[严格函数类型](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-6.html#strict-function-types)
 
-    `返回值类型`是协变的、`参数类型`是逆变的：若`B ≼ A`，则`(x: T) => B` ≼ `(x: T) => A`、`(x: A) => T` ≼ `(x: B) => T`。
+```ts
+type Handler<T> = (element: T) => void;
+const showId: Handler<HTMLElement> = element => console.log(element.id);
+const disable: Handler<HTMLButtonElement> = button => { button.disabled = true; };
 
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >class A {
-    >  a() {}
-    >}
-    >class B extends A {
-    >  b() {}
-    >}
-    >class C extends B {
-    >  c() {}
-    >}
-    >
-    >let a: (x: B) => B = (x) => x;
-    >let b: (x: A) => C = (x) => { return x as C; };
-    >let c: (x: A) => A = (x) => { return x as A; };
-    >let d: (x: C) => C = (x) => { return x as C; };
-    >let e: (x: C) => A = (x) => { return x as A; };
-    >
-    >a = b; // ok， 返回值类型是协变的、参数类型是逆变 没问题
-    >a = c; // 错误
-    >a = d; // 错误
-    >a = e; // 错误
-    >e = a; // ok， 返回值类型是协变的、参数类型是逆变 没问题
-    >```
-    ></details>
-2. 数组类型
+const onButton: Handler<HTMLButtonElement> = showId;
+// @ts-expect-error 普通元素可能没有 disabled 属性
+const onElement: Handler<HTMLElement> = disable;
 
-    在 TypeScript 中，即使开启 `strict`，可变的 `B[]` 也可以赋值给 `A[]`（`B` 是 `A` 的子类型），反向赋值会报错。两个变量指向同一个数组，因此通过 `A[]` 引用写入的元素可能不具备 `B` 的成员。[TypeScript 2.6 发布说明](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-6.html#strict-function-types)
+const createElement: () => HTMLElement = () => document.createElement("button");
+```
 
-    只读取元素的函数可以把形参声明为 `readonly A[]`（等同于 `ReadonlyArray<A>`），这样也能接收 `B[]` 或 `readonly B[]`。只读约束作用于该引用，其他可变引用仍可修改同一个数组。[TypeScript ReadonlyArray 文档](https://www.typescriptlang.org/docs/handbook/2/objects.html#the-readonlyarray-type)
+**数组类型。** 即使开启 `strict`，可变的 `B[]` 仍可赋给 `A[]`。两个变量指向同一数组，通过 `A[]` 写入的元素可能缺少 `B` 的成员。只读取元素的函数可以把形参声明为 `readonly A[]`（等同于 `ReadonlyArray<A>`），同时接收可变和只读数组。[只读数组](https://www.typescriptlang.org/docs/handbook/2/objects.html#the-readonlyarray-type)
 
-    ><details>
-    ><summary>e.g.</summary>
-    >
-    >```ts
-    >class A {
-    >  a() {}
-    >}
-    >class B extends A {
-    >  b() {}
-    >}
-    >
-    >const children: B[] = [new B()];
-    >const readOnly: readonly A[] = children;
-    >// readOnly.push(new A()); // 类型错误，readonly A[] 没有 push
-    >
-    >const base: A[] = children;
-    >base.push(new A()); // 类型检查通过，写入同一个数组
-    >
-    >for (const child of children) {
-    >  child.b(); // 第二个元素是 A，运行时抛出 TypeError
-    >}
-    >```
-    ></details>
+```ts
+class A { a() {} }
+class B extends A { b() {} }
+
+const children: B[] = [new B()];
+const readOnly: readonly A[] = children;
+// readOnly.push(new A()); // 类型错误，readonly A[] 没有 push
+const base: A[] = children;
+base.push(new A()); // 类型检查通过，写入的是同一个数组
+for (const child of children) {
+  child.b(); // 第二次迭代会在运行时抛出 TypeError
+}
+```
 
 ### 注释指令
-1. `// @ts-ignore`
 
-    **下一行**代码忽略TS错误。
+| 指令 | 作用 |
+| --- | --- |
+| `// @ts-expect-error` | 下一行预期有类型错误。若错误消失，指令自身会报错，适合验证 API 拒绝某种输入 |
+| `// @ts-ignore` | 抑制下一行的 TypeScript 诊断，错误消失后也不会提示 |
+| `// @ts-check` | 写在 JS 文件顶部，单独启用该文件的类型检查 |
+| `// @ts-nocheck` | 写在 JS 或 TS 文件顶部，跳过当前文件的语义检查 |
 
-    - 若eslint报错，则：
+例如给输入框更新函数写一条负例，以免重构后意外允许传入数字。[TS 3.9 的预期错误指令](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html#-ts-expect-error-comments)
 
-        1. eslint的rule配置：`"@typescript-eslint/ban-ts-comment": "off"`
-        2. 或
+```ts
+function setQuery(text: string) { return text.trim(); }
+// @ts-expect-error 查询条件只接受字符串
+setQuery(42);
+```
 
-            ```
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            报错行
-            ```
-2. `// @ts-expect-error`
+## 工程实践
 
-    >主要用在测试用例。
+### 项目配置与类型检查
 
-    当**下一行**有类型错误时，它会压制TS的报错信息（即不显示报错信息）；若下一行没有类型错误，则会显示一行提示：`Unused '@ts-expect-error' directive.`。
-3. `// @ts-nocheck`
+下例适用于**由打包器生成 JavaScript 的浏览器应用**。把配置放在项目根目录，将源码放在 `src/`。已有项目先看自己的 `tsconfig.json` 和 TypeScript 版本。
 
-    放置在文档顶部。告诉编译器不对当前脚本进行类型检查，可用于 TS脚本、JS脚本。
-4. `// @ts-check`
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "verbatimModuleSyntax": true,
+    "strict": true,
+    "noEmit": true
+  },
+  "include": ["src"]
+}
+```
 
-    放置在文档顶部。告诉编译器对该脚本进行类型检查，不论是否启用了checkJs编译选项。
+在安装了 TypeScript 的项目中运行以下命令：
 
----
-## 其他
-1. 配置
+```sh
+npx tsc --version
+npx tsc -p tsconfig.json --noEmit
+npx tsc -p tsconfig.json --showConfig
+```
 
-    [`tsconfig.json`](https://www.typescriptlang.org/zh/tsconfig)
+* 不指定文件运行 `tsc` 会从当前目录向上查找 `tsconfig.json`。`-p` 接受配置文件或项目目录，不能再与源文件参数混用。TS 6.0 起，在含 `tsconfig.json` 的目录执行 `tsc src/main.ts` 会报 TS5112。确实需要忽略项目配置、单独检查文件时，可用 `tsc --ignoreConfig --strict --noEmit src/main.ts`。[TS 6.0 命令行变更](https://devblogs.microsoft.com/typescript/announcing-typescript-6-0/#specifying-command-line-files-when-tsconfigjson-exists-is-now-an-error)
+* `target` 设置 `tsc` 输出的 JavaScript 语法目标，也会影响默认库的选择。`lib` 显式决定哪些 API 的声明可见：例如 `ES2018.Promise` 声明 `Promise.prototype.finally`，`DOM` 声明 `document`。这些选项都不会为浏览器安装 polyfill。使用打包器输出时，还要在打包器中设置兼容目标。[target](https://www.typescriptlang.org/tsconfig/target.html) · [lib](https://www.typescriptlang.org/tsconfig/lib.html)
+* `strict` 开启一组严格检查。可进一步启用 `noUncheckedIndexedAccess`，让不保证存在的下标读取带上 `undefined`；启用 `exactOptionalPropertyTypes` 后，给可选属性显式写入 `undefined` 需要该类型本身允许它。这两项需单独开启。[索引访问检查](https://www.typescriptlang.org/tsconfig/noUncheckedIndexedAccess.html) · [精确可选属性](https://www.typescriptlang.org/tsconfig/exactOptionalPropertyTypes.html)
+* `noEmit: true` 让 `tsc` 只检查类型，适合已由打包器负责输出的项目。如果让 `tsc` 生成 JavaScript，在普通项目编译中即使出现类型错误也可能生成文件。需要在报错时阻止输出，可设置 `noEmitOnError: true`。[noEmitOnError](https://www.typescriptlang.org/tsconfig/noEmitOnError.html)
+* `extends` 复用配置。`references` 声明项目之间的依赖，使 `tsc --build` 能按顺序构建。浏览器项目和 Node 服务可各自选择 `lib`、`types`、模块模式和 `include`。`rootDir` 影响输出目录结构，源文件范围由 `files`、`include` 及依赖关系等决定。[项目引用](https://www.typescriptlang.org/docs/handbook/project-references.html)
 
-    - 类型的校验、ts转化后的js、IDE的代码补全和提示 等，都会依赖`tsconfig.json`的配置而变化。
+```text
+my-project/
+├── src/                  # 浏览器端代码
+├── server/               # 由 Node.js 加载的代码
+├── tsconfig.base.json    # 公共选项
+├── tsconfig.client.json  # 浏览器项目，include 指向 src/
+├── tsconfig.server.json  # 服务端项目，include 指向 server/
+└── tsconfig.json         # 只作构建入口时，设置 files: [] 并列出 references
+```
 
-        `tsc`（不带任何输入文件）会自动查找命令目录下的`tsconfig.json`；若带输入文件参数（`-p 「配置文件」`），则忽略 ~~`tsconfig.json`~~。
+在这个多项目结构中，从根目录运行 `npx tsc -b` 才会依次构建引用的项目。只想检查浏览器子项目时可以运行 `npx tsc -p tsconfig.client.json --noEmit`。对仅含 `files: []` 和 `references` 的根配置运行 `tsc -p tsconfig.json` 会漏掉子项目里的错误。
 
-    - <details>
+**文件后缀。** `.ts` 用于普通源码，`.tsx` 支持 JSX（同时配置 `jsx`），`.d.ts` 用于声明。`.mts`、`.cts` 可以分别显式标记 ESM、CommonJS，对应声明后缀为 `.d.mts`、`.d.cts`。组件文件可以叫 `UserCard.tsx`。遇到 TS1128（预期声明或语句）时，先检查报错处及前面的括号、JSX 标签和语法；导入路径的大小写应与文件名一致。[JSX](https://www.typescriptlang.org/docs/handbook/jsx.html) · [模块文件格式](https://www.typescriptlang.org/docs/handbook/modules/reference.html#module-format-detection)
 
-        <summary>配置字段</summary>
+### 前端示例：校验接口响应
 
-        1. `target`
+假设用户头像组件要显示接口返回的昵称。`fetch()` 收到 404 时通常也会返回 `Response`。先用 `response.ok` 检查状态码是否为 200–299，再把 JSON 当作 `unknown`，检查 `name` 后交给组件。这个函数可以接收 `await fetch("/api/me")` 的返回值。[Fetch 标准](https://fetch.spec.whatwg.org/#ok-status) · [类型收窄](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)
 
-            设置生成的JS语言的版本，并且会包含兼容的库（环境）的定义。
+```ts
+type Profile = { name: string };
 
-            >e.g. 若设置为`"es2017"`，则`Promise`包含`then`、`catch`；若设置为`"es2018"`，则`Promise`包含`then`、`catch`、`finally`。
-        1. `extends`：继承指定配置文件并与当前文件合并；同名项以当前文件为准，适合提取公共编译选项。
-        1. `references`：工程引用（project references）。各子项目保留独立配置原逻辑，由各自的 `include`/`rootDir` 等划定源码归属，`tsc --build` 时按依赖顺序分别增量编译。
-        </details>
+async function readProfile(response: Response): Promise<Profile> {
+  if (!response.ok) throw new Error(`读取用户资料失败：HTTP ${response.status}`);
+  const data: unknown = await response.json();
+  if (typeof data !== "object" || data === null ||
+      !("name" in data) || typeof data.name !== "string") {
+    throw new Error("用户资料缺少字符串字段 name");
+  }
+  return { name: data.name };
+}
+```
 
-    ```text
-    my-project/
-    ├── src/                  # 浏览器端代码
-    │   ├── main.ts
-    │   └── App.vue
-    ├── server/               # Node.js 服务端代码
-    │   └── index.ts
-    ├── vite.config.ts        # 构建脚本（运行于 Node.js，通常归入 server 或单独配置）
-    │
-    ├── tsconfig.base.json    # 公共基础配置，供 tsconfig.client或server.json 通过 extends 继承
-    ├── tsconfig.client.json  # 前端配置（include 指向 src/）
-    ├── tsconfig.server.json  # 服务端配置（include 指向 server/）
-    └── tsconfig.json         # 入口配置：通过 references 引用 tsconfig.client和server.json，供编辑器索引及 tsc --build 总调度（本身不参与编译）
-    ```
-2. 文件后缀
+### 声明的类型空间和值空间
 
-    `.ts`、`.tsx`（React、`JSX`）、`d.ts`
+同一条声明可以占据多个空间。比如 `class Player` 在类型位置表示实例，在值位置表示构造函数。`declare class Player` 也允许在值位置引用构造函数，但运行时的构造函数必须由外部实现提供。[声明合并](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#basic-concepts)
 
-    >TypeScript错误`TS1128: Declaration or statement expected.`，可能导致的原因是：tsx文件名命名必须为全小写。
-3. TS的声明
+| 声明 | 命名空间 | 类型 | 值 |
+| --- | :---: | :---: | :---: |
+| `class`、`enum` | | ✓ | ✓ |
+| `interface`、`type` | | ✓ | |
+| `function`、变量 | | | ✓ |
+| `namespace` | ✓ | | 含运行时声明或语句时可作值 |
 
-    TypeScript中的声明会创建以下三种实体之一：`命名空间`（Namespace），`类型`（Type）、`值`（Value）。
+普通枚举会生成运行时对象；`const enum` 的成员在常见的 `tsc` 配置下会内联。判断名字在哪个空间可用，与判断它是否生成 JavaScript，应分开看。
 
-    1. 创建`命名空间`的声明：会新建一个命名空间，它包含了用`.`符号来访问时使用的名字。
-    2. 创建`类型`的声明（类型声明空间）：包含可用来当做类型注解的内容。
-    3. 创建`值`的声明（变量声明空间）：包含可用作变量的内容。
+### 采用 TypeScript 的收益与成本
 
-    | Declaration Type | Namespace | Type | Value（`declare`都不会生成Value） |
-    | :--- | :---: | :---: | :---: |
-    | Class |  | X | X |
-    | Enum |  | X | X（除了~~常数枚举~~之外） |
-    | Interface |  | X |  |
-    | Type Alias |  | X |  |
-    | Function |  |  | X |
-    | Variable |  |  | X |
-    | Namespace | X |  | X |
-4. Tips
+* **收益。** 参数、返回值和联合类型能表达组件或 API 的使用约定；编辑器据此补全、跳转和重构。把类型检查接入 CI，可以在部署前发现遗漏的分支、传错的参数和拼错的属性。
+* **成本和边界。** 项目需要维护类型声明及编译配置，复杂类型也会增加阅读和检查成本。来自网络、表单或存储的值仍要在运行时检查，尤其是把 JSON 转为业务对象时。
+* **渐进迁移。** 可以用 `allowJs` 将 JS 纳入项目，用 `checkJs` 或单文件的 `// @ts-check` 逐步开展检查。迁到 `.ts` 后，对暂时不确定的输入可先标记为 `unknown`，在实际使用处逐步收窄。[从 JavaScript 迁移](https://www.typescriptlang.org/docs/handbook/migrating-from-javascript.html)
 
-    1. 已经定义好的属性的数据类型，不能在之后赋值时再次定义新的数据类型（静态类型）。只能用其他变量来保存新的数据类型。
-
-        ><details>
-        ><summary>e.g.</summary>
-        >
-        >```ts
-        >let a: number = 1
-        >a: string = String(a)      // 报错
-        >let _a: string = String(a)
-        >```
-        ></details>
-    2. 对于同名、后缀分别为`.js`和`.ts`的文件，引用时优先引用`.js`的文件
-
-### ts的优缺点
-1. 优点
-
-    1. 增加代码的可读性和可维护性，尤其针对 大型项目、与外部接口交互部分、发布给其他人使用的项目
-
-        1. 类型系统是最好的文档，大部分函数看类型定义即可；方便重构
-        2. 在编译阶段就发现大部分错误，避免在运行时试错
-        3. 代码可预测（变量指定类型就不能再修改类型）
-        3. 增强编辑器、IDE的功能，如：代码补全、接口提示、跳转到定义、重构、等
-    2. 渐进式采用、包容性高：.js文件可以直接改成.ts文件，类型报错可以通过any跳过
-    3. 社区支持、生态良好
-2. 缺点
-
-    1. 有学习成本
-    2. 开发成本大；为了避免any，可能需要去搜索DOM类型、React类型
-    3. 编译成JS需要时间（JS引擎大概率只支持JS，不支持TS）
-    - 避免用any，否则将丢失类型定义优势
+**延伸阅读**　[TypeScript 入门教程](https://github.com/xcatliu/typescript-tutorial) · [TypeScript 使用手册中文翻译](https://github.com/zhongsp/TypeScript) · [TypeScript Deep Dive 中文版](https://github.com/jkchao/typescript-book-chinese)
