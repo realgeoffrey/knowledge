@@ -33,7 +33,7 @@
 
 1. macOS或Linux的[nvm](https://github.com/nvm-sh/nvm)
 
-    >若M1安装v15以下版本，建议终端打开[Rosetta模式](https://support.apple.com/en-hk/HT211861)：<https://github.com/nvm-sh/nvm/issues/2350>（任何应用：打开“应用程序”，右键 App → 显示简介，勾选：“使用 Rosetta 打开”，然后运行应用（记得用完后取消勾选）；终端：`arch -x86_64 zsh`进入临时会话，`exit`即可退出）。
+    >旧 Node.js 版本可能缺少 macOS arm64 官方二进制包。若项目必须在 Apple Silicon 上运行 x64 版本，可在已安装 Rosetta 的机器上打开[Rosetta模式](https://support.apple.com/en-hk/HT211861)：<https://github.com/nvm-sh/nvm/issues/2350>（任何应用：打开“应用程序”，右键 App → 显示简介，勾选：“使用 Rosetta 打开”，然后运行应用（记得用完后取消勾选）；终端：`arch -x86_64 zsh`进入临时会话，`exit`即可退出）。
 
     ```shell
     nvm list-remote
@@ -42,7 +42,7 @@
     nvm alias default v新版本号
 
     nvm list
-    nvm uninstall v旧版本号 # 若无法删除，则用管理员权限按要求设置文件夹权限，还可以去目录删除 /Users/「用户名」/.nvm/versions/node/v「版本号」
+    nvm uninstall v旧版本号 # 先切换到其他版本，再卸载旧版本
     ```
 
     >安装的全局软件包位置：`/Users/「用户名」/.nvm/versions/node/v「版本号」/lib/node_modules`
@@ -79,12 +79,12 @@
     }
     ```
 
-    >配合严格检查：npm / pnpm 可在 `.npmrc` 写 `engine-strict=true`（或 `npm config set engine-strict true`），安装时版本不符会报错。Yarn Berry（v2+）默认不因 `engines` 失败，勿照搬该配置名。
+    >配合严格检查：npm 可在 `.npmrc` 写 `engine-strict=true`（或 `npm config set engine-strict true`），安装时版本不符会报错。Yarn Berry（v2+）默认不因 `engines` 失败，勿照搬该配置名。
 
     **`.nvmrc` 的作用**（以 [nvm-sh/nvm](https://github.com/nvm-sh/nvm) 为主）：读取项目根目录该文件后，本目录执行 `nvm use` / `nvm install` 无需再手写版本号。主要用于本地版本管理器切换，**不能替代** `engines`。nvm-windows 官方不支持 `.nvmrc`，仍需 `nvm use <版本号>`。
 
     ```shell
-    # .nvmrc 钉一个落在 engines 范围内的具体版本（不能写 >=20 <21 这类 range）
+    # .nvmrc 选择 engines 范围内的主版本（精确复现时写完整的 x.y.z 版本号）
     echo "20" > .nvmrc
 
     nvm install   # 按 .nvmrc 安装（若尚未安装）
@@ -96,7 +96,7 @@
 ### [n](https://github.com/tj/n)更新Node.js版本
 
 <details>
-<summary></summary>
+<summary>安装 n 并切换 Node.js 版本</summary>
 
 >不支持Windows。
 
@@ -153,7 +153,7 @@ npm（Node Package Manager）。
             `npm login`
         2. 初始化`package.json`
 
-            `npm init/create/innit`
+            `npm init`（采用默认值可用 `npm init -y`）
 
             - 修改初始化信息
 
@@ -193,9 +193,9 @@ npm（Node Package Manager）。
 
             `npm publish [--tag <tag名，默认：latest>]`
 
-            >1. 标签tag 和 版本号version关系：每次发布version需要设置tag，一个tag只对应一个version，tag指向最后发布到这个tag的version，可以删除tag（仅latest无法删除），version可以没有tag（tag被删除 或 被新的version设置同名tag）。
+            >1. 标签tag 和 版本号version关系：发布时使用指定的 tag，省略时通常为 latest。一个 tag 同时只指向一个版本，可通过 dist-tag 调整，version可以没有tag（tag被删除 或 被新的version设置同名tag）。
             >2. 注意：设置源为npm的网站（`https://registry.npmjs.org/`）才可以推送到官方npm。
-            >3. 因为Two-Factor Authentication限制，不能使用手机Authenticator，可以选择保存在chrome的<chrome://settings/passkeys>中。
+            >3. 交互式发布按 npm 登录流程完成双因素认证。自动化发布可使用受支持的 [trusted publishing](https://docs.npmjs.com/trusted-publishers/)。
         5. 「下线」
 
             >npm 公共仓库允许新包在发布后 72 小时内撤回，前提是没有其他包依赖它。超过 72 小时，还须同时满足上周下载量少于 300 且只有一名维护者等条件。[npm 撤回政策](https://docs.npmjs.com/policies/unpublish/)
@@ -224,7 +224,7 @@ npm（Node Package Manager）。
             `npm outdated [[<@scope>/]<pkg> ...]`
         4. 查看、添加、删除 仓库的标签
 
-            >latest标签无法删除，仅有latest标签对npm有特殊意义；标签名可以自定义，能够无限制地新增、删除；每个标签仅指向最后指向这个标签的版本号。
+            >latest 是常用默认标签，也可设置 next、beta 等标签。标签名不能与有效的 semver 范围冲突。
 
             ```shell
             npm dist-tag ls [<pkg>]                     # 打印所有标签
@@ -247,7 +247,7 @@ npm（Node Package Manager）。
 
         1. 安装包
 
-            安装的版本号受version和tag影响。安装到本地或全局的`node_modules`。全局安装会额外创建系统命令。
+            安装的版本号受version和tag影响。安装到本地或全局的`node_modules`。包声明了 bin 时，全局安装会把对应命令链接到全局 bin 目录。
 
             1. 安装方式
 
@@ -257,7 +257,7 @@ npm（Node Package Manager）。
 
                     1. 最新（主版本号最新，第一个数）：
 
-                        `*`、`x`（最新latest）
+                        `*`、`x`（任意稳定版本范围）；`latest` 是发布标签
                     2. 次版本号最新（第二个数）：
 
                         `1`、`1.x`、`^1.2.3`
@@ -294,12 +294,7 @@ npm（Node Package Manager）。
                             ![npm版本](./images/npm.png)
                 2. `npm install [<@scope>/]<name>[@<tag>]`
 
-                    >- 若不确定安装具体版本号，则按下面的方式查找安装范围：
-                    >
-                    >    0. 除了latest标签，其他标签都不会默认被安装；无标签的版本号（曾经是latest标签）可以被默认安装。
-                    >    1. 若范围内有latest标签，则使用latest标签的版本号。
-                    >    2. 若范围内没有latest标签，则选用 无标签（曾经是latest标签）、且版本号满足<https://semver.org/lang/zh-CN/>的非先行版、且最后发布的版本号；
-                    >    3. 若找不到满足前面要求的版本号，则安装报错。
+                    >显式指定版本号、标签或 semver 范围分别表示精确选择、跟随标签和按范围解析。npm 11 按名称添加新依赖时也会考虑包的 `engines.node`，裸包名与显式 `@latest` 的结果可能不同。[npm install](https://docs.npmjs.com/cli/v11/commands/npm-install/)
 
                     1. 没有后缀，查找安装范围。
                     2. `@内容`
@@ -311,9 +306,7 @@ npm（Node Package Manager）。
                             >e.g. `npm install npm-devil@">=0.0.1 <0.0.5"`
                 3. 参数
 
-                    1. `--force`、`-f`：强制重新安装。
-
-                        >当目录中已经存在指定模块，默认：不会重新安装已经安装的模块。或删除`node_modules`目录再重新安装。
+                    1. `--force`、`-f`：解除多项保护（如允许某些依赖冲突），不能保证重新下载所有包。
                     2. `--save`、`-S`：安装信息保存到`package.json`的`dependencies`（执行时依赖插件）。
                     3. `--save-dev`、`-D`：安装信息保存到`package.json`的`devDependencies`（开发时依赖插件）。
                     4. `--save-optional`、`-O`：安装信息保存到`package.json`的`optionalDependencies`。
@@ -337,27 +330,13 @@ npm（Node Package Manager）。
 
             - 升级npm自己
 
-                1. macOS：`npm install -g npm`
-                2. Windows：
-
-                    >来自：[npm-windows-upgrade](https://github.com/felixrieseberg/npm-windows-upgrade)。
-
-                    1. 以管理员身份运行[PowerShell](https://github.com/powershell/powershell)（Windows 7 SP1以上的系统自带）
-                    2. 在PowerShell内执行
-
-                        ```shell
-                        Set-ExecutionPolicy Unrestricted -Scope CurrentUser -Force
-                        npm install -g npm-windows-upgrade
-                        npm-windows-upgrade
-                        ```
+                通过版本管理器安装或更新 Node.js 时会随附兼容的 npm。单独升级 npm 前先核对其 engines 要求。
         3. 卸载
 
             `npm uninstall [<@scope>/]<pkg>[@<version>]... [--save-prod|--save-dev|--save-optional] [--no-save]`
         4. 重装npm
 
-            `curl -L https://www.npmjs.org/install.sh | sh`
-
-            >若还是无法使用npm，建议重装Node.js。
+            使用原先的版本管理器或官方安装程序重新安装对应的 Node.js 版本，可恢复随附的 npm。
         5. 验证缓存（垃圾收集不需要的数据、验证缓存的完整性）
 
             `npm cache verify`
@@ -368,7 +347,7 @@ npm（Node Package Manager）。
 
         - `package-lock.json`
 
-            更新成功（`npm update`）或第一次安装（`npm install`）时生成，用以记录当前状态下实际安装的各个npm包的具体来源和版本号。在存在此文件的根目录进行`npm install`，会按照完全相同的依赖关系进行安装。
+            更新成功（`npm update`）或第一次安装（`npm install`）时生成，用以记录当前状态下实际安装的各个npm包的具体来源和版本号。执行 `npm install` 时，锁定版本若仍满足依赖声明就会复用，声明不匹配时会更新锁文件。
 
             >1. 若使用lock机制，则应该将`package-lock.json`提交到版本控制。
             >2. 若不使用lock机制，则应该把`package-lock=false`加入`.npmrc`，并把`.npmrc`提交到版本控制。
@@ -396,7 +375,7 @@ npm（Node Package Manager）。
 
             1. `npm audit`：扫描依赖树，检查并报告已知安全漏洞
             2. `npm audit fix --dry-run`：预览`npm audit fix`将执行的变更，不实际安装或修改lock文件
-            3. `npm audit fix`：在不升级主版本（major）的前提下，自动将有漏洞的包升级到安全版本，并更新lock文件
+            3. `npm audit fix`：尝试在现有依赖约束内应用修复并更新锁文件；部分问题需要人工处理
             4. `npm audit fix --force`：允许跨主版本强制升级以修复漏洞，可能引入不兼容变更
     4. 执行脚本
 
@@ -405,13 +384,11 @@ npm（Node Package Manager）。
             非`-`开头的参数可以忽略`--`而传递。e.g. `npm run gulp runCss`等价于：`npm run gulp -- runCss`
 
             >执行的命令，优先找本地`node_modules/.bin`的命令，然后才找`$PATH`的命令（暂时未找到绕过**先找本地的**方法）。
-        2. [npx](https://github.com/npm/npx)
+        2. [npx](https://docs.npmjs.com/cli/v11/commands/npm-exec/)
 
-            >1. 去`node_modules/.bin`路径检查命令是否存在，找到之后执行；
-            >2. 找不到，就去环境变量`$PATH`里，检查命令是否存在，找到之后执行;
-            >3. 还是找不到，自动下载一个临时的依赖包最新版本在一个临时目录，然后再运行命令，运行完之后删除，不污染全局环境。
-        3. `npm exec`（类似npx）
-        4. `npm init/create/innit <initializer>` 等价于 `npm init/create/innit create-<initializer>`：安装`create-<initializer>`后执行其主bin，类似`npm exec`或`npx`。
+            npm 7 起，npx 由 npm exec 实现。请求的包在本地有匹配版本时可直接使用；缺少时可安装到 npm 缓存，并将其 bin 临时加入本次命令的 PATH。缓存可供后续调用复用。
+        3. `npm exec -- <命令> [参数]`：用 `--` 区分 npm 的参数与要执行的命令。
+        4. `npm init <initializer>` 会执行对应的初始化包。以下箭头表示两侧命令等价：
 
            ```shell
            npm init foo -> npm exec create-foo
@@ -508,22 +485,20 @@ npm（Node Package Manager）。
         >    3. `npm install --production`不会安装自己的`devDependencies`。
     5. `peerDependencies`
 
-        >本插件要使用的依赖库，但是本插件不去安装，要求宿主环境使用本插件时需要同时安装这些依赖库。
+        声明插件与宿主库的兼容范围。例如 React 组件库可将 React 声明为 peer，同时在开发依赖中安装测试使用的版本。[npm package.json](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/#peerdependencies)
 
-        在开发插件时，你的插件需要某些依赖的支持，但是你又没必要去安装，因为插件的宿主会去安装这些依赖。此时就可以用 peerDependencies 去声明一下需要依赖的插件和版本。如果出问题的话，npm 会有警告来提示使用者去解决版本中的冲突。
+        | 版本 | npm v3～v6 | npm v7+ |
+        | --- | --- | --- |
+        | 安装过程 | 使用者安装 peer，缺失或版本不兼容时警告 | 默认尝试解析并安装非可选 peer |
+        | 冲突处理 | 检查警告并调整宿主或插件版本 | 无法解析依赖树时可能报 ERESOLVE；使用 --legacy-peer-deps 会忽略 peer 约束 |
 
-        | `peerDependencies`特性 / 版本 | npm v3~v6 | npm v7+ |
-        | --------------------------- | ------------------ | -------------------------------------------- |
-        | `peerDependencies`是否自动安装 | ❌ 不自动安装 | ✅ 尝试自动安装到顶层（若版本满足且无冲突） |
-        | 安装冲突处理 | ❌ 冲突时无提示或简单警告 | ⚠️ 冲突时安装失败（默认行为），可通过`--legacy-peer-deps`忽略退回成npm v6安装peer逻辑（不自动安装） |
-        | 依赖冲突提示 | ⚠️ 简单警告 | ⛔ 安装失败（报错退出），严格 |
+    | 字段 | 安装时的用途 | 常见例子 |
+    | --- | --- | --- |
+    | dependencies | 随使用方安装，供运行时引用 | HTTP 客户端 |
+    | devDependencies | 开发项目自身时安装 | 构建工具、测试框架 |
+    | peerDependencies | 要求插件所在位置能解析到兼容的宿主版本 | React、webpack |
 
-    | 维度​ | dependencies | devDependencies | peerDependencies |
-    | --- | --- | --- | --- |
-    | ​安装目标​ | 生产环境 | 开发环境 | 宿主环境 |
-    | ​是否打包进产物​ | 是 | 否 | 否（宿主环境会打包） |
-    | ​版本冗余风险 | 高（允许不同版本共存） | 无 | 无（npm v7+强制共享同一版本；npm v3~v6不自动安装） |
-    | 典型使用场景 | 核心功能库（如 axios、lodash）、框架（如 react） | 构建工具（如 webpack）、测试框架（如 jest）、代码检查工具（如 eslint） | 插件开发（如 webpack-plugin）、框架组件库（如 ant-design） |
+    >前端产物包含哪些模块由引用关系和打包配置决定。peer 约束也不保证整棵依赖树只含一个版本。
 
     - e.g. 宿主有3个依赖库a、b、c，他们的依赖逻辑是a->b->c，a、b、c描述依赖的不同方式产生的不同效果
 
@@ -532,7 +507,7 @@ npm（Node Package Manager）。
             可能导致：依赖分身
         2. 依赖放在`peerDependencies`：
 
-            宿主环境会安装要求的版本；但不认可`-alpha`等版本号（因为npm SemVer逻辑，查看上面的「npm的版本号限制逻辑」）
+            宿主环境会安装要求的版本；预发布版需要兼容范围显式纳入（因为npm SemVer逻辑，查看上面的「npm的版本号限制逻辑」）
         3. 删掉依赖项：
 
             需要宿主环境手动引入所有依赖。没有上述问题，但运行报错后宿主环境才能发现原来要手动引入依赖
@@ -549,7 +524,7 @@ npm（Node Package Manager）。
 
         可以重写项目依赖的依赖，及其依赖树下某个依赖的版本号，进行包的替换。overrides 支持任意深度的嵌套。
 
-        >如果在 yarn 里也想复写依赖版本号，需要使用 `resolution` 字段；在 pnpm 里复写版本号需要使用 `pnpm.overrides`或`pnpm.resolutions` 字段。
+        >npm 只读取根项目的 overrides。Yarn 使用根 package.json 的 [resolutions](https://yarnpkg.com/configuration/manifest#resolutions)。现代 pnpm 可在根 pnpm-workspace.yaml 中声明 overrides，旧版项目也常用 package.json 的 pnpm.overrides。
     9. `bundleDependencies`
 
         指定的包也将在发布或`npm pack`的时候一并被打包（当其他人使用这个包时，就可以直接使用打包在项目内的依赖，而不需要在通过包管理器去下载）。
@@ -590,7 +565,7 @@ npm（Node Package Manager）。
 
     >`scripts`中命令能使用的环境变量：
     >
-    >    1. `npm_package_多个名字`：可以拿到`package.json`里面的字段。e.g. `npm_package_version`、`npm_package_repository_type`等。
+    >    1. npm 提供部分包信息，如 `npm_package_name`、`npm_package_version`。需要其他字段时可从 `npm_package_json` 指向的文件读取。
     >    2. `npm_config_名字`：可以拿到npm配置（`.npmrc`）。
 
     13. `config`
@@ -641,7 +616,7 @@ npm（Node Package Manager）。
         支持运行的操作系统。
     20. `cpu`
 
-        支持运行的cpi架构。
+        支持运行的 CPU 架构。
     21. `private`
 
         设置为`true`，则无法`npm publish`，用于避免不小心公开项目。
@@ -709,7 +684,7 @@ npm（Node Package Manager）。
         6. `sideEffects`
 
             >webpack
-        7. `exports`
+        7. `exports`（Node.js 原生支持，定义包对外开放的入口和子路径；与 main 同时存在时优先）
         8. `types`
         9. `jest`
         10. `husky`
@@ -718,7 +693,7 @@ npm（Node Package Manager）。
 
     1. 制作：
 
-        按照CommonJS规范编写代码。
+        可按 CommonJS 或 ES modules 编写，入口与扩展名、package.json 的 type 保持一致。
     2. 使用：
 
         1. 在Node.js环境下使用（`require`）
@@ -768,20 +743,16 @@ npm（Node Package Manager）。
           "「别名」": "npm:「[<@scope>/]<pkg>[@<version>]」"
         }
         ```
-    3. 使用时，根据「别名」进入指定的版本中
-2. 发布一个其他依赖包，包含引用指定版本的目标依赖包，然后通过 其他依赖包+相对路径 引用
+    3. 使用时，根据「别名」进入指定的版本中。例如依赖声明里同时写 `"chalk4": "npm:chalk@4"` 和 `"chalk5": "npm:chalk@5"`，在 ES module 中即可分别使用 `import chalk4 from "chalk4"` 与 `import chalk5 from "chalk5"`。
+2. 包装模块可声明指定版本的目标依赖，再从自己的公共入口导出功能。调用方引用包装模块的入口，不依赖 node_modules 的具体布局。
+3. Monorepo
 
-    >安装依赖（`npm install`）是从（项目根目录）最外层往（引用处）最里层安装，若本层已经有同名但不同版本的库文件夹，则往里层尝试安装。
-
-    `"「其他依赖包」/node_modules/「目标依赖包」"`（若没有不同版本的同个依赖包，则路径错误）
-3. （仅适合全新项目）Monorepo
-
-    各子项目中的依赖互相隔离。
+    各工作区可声明不同版本。物理布局及依赖提升取决于包管理器和配置。
 
 #### 依赖管理（npm、yarn、pnpm）
 1. npm
 
-    npm install：npm向registry查询模块压缩包的网址 -> 下载压缩包，存放在`~/.npm`目录 -> 解压压缩包到当前项目的node_modules目录。串行执行以上任务（慢）。
+    npm 根据依赖声明、锁文件和缓存解析依赖树，获取缺少的包，再按安装策略布置到 node_modules。
 
     1. npm@2-
 
@@ -793,16 +764,16 @@ npm（Node Package Manager）。
         >一些安装方式（可能与引用不同版本或循环引用之类的有关），会导致没有把依赖包安装到node_modules顶层，而是直接安装到嵌套的内部。尝试：`npm i npm-package-i@0.0.13 vue-eslint-parser@9.4.2`，然后观察`eslint-plugin-vue`被安装到了/node_modules/npm-package-i/node_modules/，而没有平铺在最外层。
 2. yarn
 
-    yarn install和npm install流程类似，但并行执行安装任务（快）。`yarn.lock`、扁平化（不同于npm，会把使用频率较大的版本安装到顶层目录），依然存在问题：幽灵依赖、依赖分身。
+    Yarn Classic 默认使用 node_modules 和依赖提升。现代 Yarn 默认使用 Plug'n'Play，通过映射表解析依赖，也可配置 nodeLinker 使用 node_modules。
 
     >`yarn.lock`只包含版本锁定，并不确定依赖结构，需要结合`package.json`确定依赖结构。
 3. pnpm
 
-    pnpm install：项目直接依赖，作为软链接平铺安装在`./项目/node_modules` -> 真实依赖代码，从全局store硬链接到本地虚拟store（`./项目/node_modules/.pnpm`） -> 真实依赖内部 需要依赖其他仓库的，都通过 软链接 指向本地虚拟store。
+    pnpm install：项目直接依赖，作为软链接平铺安装在`./项目/node_modules` -> 真实依赖代码，从内容可寻址的 store 导入本地虚拟 store（可使用写时复制、硬链接或复制）（`./项目/node_modules/.pnpm`） -> 真实依赖内部 需要依赖其他仓库的，都通过 软链接 指向本地虚拟store。
 
     1. hard link（硬链接）
 
-        全局store目录里存储依赖的hard links，所有项目都可以从全局store寻找到同一个依赖。不需要重复下载同一个包，只需要硬链接关联；一个包的不同版本也会用增量更新的方式维护多版本包。
+        store 以内容标识文件；同一文件系统上选择硬链接导入时，项目中的文件与 store 中的文件共享 inode。不同包版本中内容相同的文件也可复用。
 
         >1. hard links指通过索引节点来进行连接。在 Linux 的文件系统中，保存在磁盘分区中的文件不管是什么类型都给它分配一个编号，称为索引节点号(Inode Index)。在 Linux 中，多个文件名指向同一索引节点是存在的。比如：A 是 B 的硬链接（A 和 B 都是文件名`ln A B`），则 A 的目录项中的 inode 节点号与 B 的目录项中的 inode 节点号相同，即一个 inode 节点对应两个不同的文件名，两个文件名指向同一个文件，A 和 B 对文件系统来说是完全平等的。删除其中任何一个都不会影响另外一个的访问。
         >2. inode通过唯一的编号（inode number）标识文件，系统通过此编号而非文件名操作文件。inode是文件系统的基石，通过分离文件名与元数据实现了高效的文件管理。
@@ -812,14 +783,28 @@ npm（Node Package Manager）。
 
         真实依赖内部 需要依赖其他仓库的 和 项目直接依赖，都通过 软链接 指向本地虚拟store（`./项目/node_modules/.pnpm`）。
 
-    >硬链接+软链接：包安装速度极快、磁盘空间利用非常高效，解决了~~幽灵依赖~~、~~依赖分身~~问题。
+    >独立链接布局让项目直接看到自己声明的依赖，提升配置、不同的 peer 组合也会影响实际可见性和包实例数量。
 
     ![pnpm-install.png](./images/pnpm-install.png)
 
-    - 缺点：全局hard link，改了link的代码，所有项目都受影响（同一份代码）；不支持软链接的环境中，无法使用pnpm，如：Electron。
+    - 部署工具若不能保留软链接，可评估 pnpm 的 hoisted 布局。避免直接编辑 node_modules 中的文件，需修改依赖时可使用包管理器的 patch 功能。
 
 ---
 ### [CommonJS规范](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS模块化方案/README.md#commonjs规范)
+
+`require()` 同步加载模块。模块初始状态下，`exports` 和 `module.exports` 指向同一对象，所以添加属性可以使用 `exports.name = value`。需要整体导出函数或替换对象时，给 `module.exports` 赋值。单独给 `exports` 重新赋值只会改变模块内部的局部变量。
+
+```js
+// sum.cjs
+module.exports = (a, b) => a + b;
+
+// main.cjs
+const sum = require('./sum.cjs');
+console.log(sum(2, 3)); // 5
+```
+
+同一进程中，按同一文件名解析到的普通模块通常只求值一次。循环依赖期间，调用方可能读到尚未初始化完成的导出。[Node.js CommonJS 模块](https://nodejs.org/api/modules.html)
+
 
 ---
 ## 原理机制
@@ -827,17 +812,17 @@ npm（Node Package Manager）。
 ### Node.js的运行机制
 1. [V8](https://v8.dev/)引擎（JS引擎）解析应用程序输入的JS脚本。
 
-    >V8处理JS，除了 **正则表达式**、**JSON的处理** 之外，对于大部分操作都很快。
+    >大量同步计算会占用事件循环线程。常见例子包括复杂正则匹配和大型 JSON 的编解码。
     >
     >1. 使用正则表达式时注意ReDoS（Regular expression Denial of Service，正则表达式拒绝服务攻击）风险。
     >2. `JSON.parse/stringify`随着输入参数线性增加执行时间。
 2. 解析后的代码，能够与操作系统进行交互。
 
-    >代码 -> Node.js内置模块 -> V8（internalBinding） -> C/C++ -> 操作系统
+    >以文件读取为例：JS 调用 node:fs → Node.js 的原生绑定 → libuv → 操作系统。
 3. [libuv](https://github.com/libuv/libuv)负责事件循环和异步 I/O。网络 I/O 通常依靠操作系统的就绪或完成通知，文件系统等部分操作使用线程池。主线程通过[Event Loop（事件循环）](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/Node.js学习笔记/README.md#nodejs的事件循环event-loop)处理相应的回调。
 4. V8引擎再将结果返回给应用程序。
 
->JS本身的`throw-try-catch`异常处理机制并不会导致内存泄漏，也不会让程序的执行结果出乎意料，但Node.js并不是存粹的JS。Node.js里大量的API内部是由C/C++实现，因此Node.js程序的运行过程中，代码执行路径穿梭于JS引擎内部和外部，而JS的异常抛出机制可能会打断正常的代码执行流程，导致C/C++部分的代码表现异常，进而导致内存泄漏等问题。
+>异步 I/O 的错误按接口约定传递：回调检查 err，Promise 使用 await 配合 try/catch，流可通过 pipeline 统一处理错误。资源的关闭应放在对应的清理路径。
 
 ![Node.js系统图](./images/nodejs-system-1.png)
 
@@ -898,17 +883,14 @@ over
     检查系统中是否有异步任务，决定是否进入事件循环。
 
     1. 事件循环按阶段处理回调；每个阶段会处理该阶段队列中的回调，但受系统上限、I/O状态和回调耗时影响，不应理解为无条件清空整个队列。
-    2. poll队列
+    2. poll 阶段
 
-        1. 若poll中没有回调函数需要执行（已是空队列），但（系统中）有异步任务，则会在这里等待其他队列中出现回调：
-
-            0. 若poll出现新的回调函数，则执行直到poll为空队列，然后继续等待其他队列出现回调；
-            1. 若其他队列中出现回调，则从poll向下执行队列check、close callbacks，之后进行新的event loop判断（判断是否有异步任务，有就继续新的event loop，没有就结束over）；
-            3. 若Node.js线程一直 holding 在 poll 队列，等待时间会受定时器阈值和系统相关硬上限限制，随后向下执行 check、close callbacks，再进入新的 event loop 判断；
-        2. 若poll中没有回调函数需要执行（已是空队列），也没有异步任务，则向下执行轮询流程，经过check、close callbacks后到达新的event loop判断，判断没有异步任务，结束over。
+        1. 有 I/O 回调就依次执行，直到队列耗尽或达到系统限制。
+        2. 队列为空且有 setImmediate() 回调时，进入 check。否则可以等待 I/O，等待时间受定时器等条件限制。
+        3. 在同一个 I/O 回调里安排 setImmediate() 与 setTimeout(fn, 0)，通常先进入 check 执行 immediate。入口顶层的这两个回调不应依赖固定先后顺序。[Node.js 事件循环](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick)
 3. over
 
-    所有事情都完毕，也没有异步任务，结束。
+    当没有维持事件循环的活动句柄、请求或待处理的回调时，进程可自然退出。
 
 ![Node.js事件循环图](./images/node-event-loop-1.webp)
 
@@ -944,17 +926,12 @@ over
     >    3. `child_process.execFileSync`
     ></details>
 
-    不为单个客户端连接创建一个新的线程，而仅仅使用单一线程支持所有客户端连接。通过非阻塞I/O和事件驱动机制，让Node.js程序宏观上并行。
-
-    1. 优点：没有线程创建、销毁的时间开销；不需维护多个线程耗费的内存，可同时处理更多的客户端连接；运行中的单线程CPU利用率饱和。
-    2. 缺点：若单一客户端连接造成线程的阻塞或奔溃，则影响所有客户端连接。
-
-    >事件循环不同于许多其他语言的模型，其它语言创建额外线程来处理并发工作：Java、PHP或.NET等服务器语言，会为每一个客户端连接创建一个新的线程或使用协程。
+    一个事件循环线程可处理多个并发连接。长时间执行的 JS 会推迟该线程上其他请求的回调。CPU 密集型任务可分配给 worker_threads，文件系统等操作可使用 libuv 线程池。
 2. 非阻塞I/O
 
     回调函数异步执行，通过事件循环检查已完成的I/O进行依次处理。
 
-    >1. 阻塞I/O、非阻塞I/O的区别：系统接收输入再到输出期间，能不能接收其他输入。
+    >1. 阻塞I/O、非阻塞I/O的区别：阻塞调用会占用调用线程直到操作返回；非阻塞调用允许该线程继续处理其他工作。
     >2. I/O主要指由[libuv](https://github.com/libuv/libuv)支持的，与系统磁盘和网络之间的交互。
     >3. 大多数Node.js核心API所提供的异步方法都遵从惯例：**错误信息优先**的回调模式（Error-first Callback，第一个参数是错误信息，若不报错则其值为`null`）。
     >
@@ -970,9 +947,9 @@ over
 >只有打通和后端技术的桥梁、实现互联互通，Node.js才能在公司业务中有更长远的发展。
 
 ### Node.js[核心模块](https://nodejs.org/api/)（需要`require`引入）
->核心模块/内置模块 定义在[源代码的lib/文件](https://github.com/nodejs/node/tree/main/lib/)。同名加载时，核心模块优先级高于路径加载或自定义模块。可以使用`node:`前缀来识别核心模块（>=v16.0.0），在这种情况下它会绕过require缓存，不使用`node:`前缀就可以加载的核心模块列表暴露在`require('node:module').builtinModules`。
+>核心模块随 Node.js 提供，支持 CommonJS require 和 ES module import。使用 node: 前缀可明确引用内置模块；require 从 Node.js 14.18.0 / 16.0.0 起支持该前缀。有些模块必须写前缀，如 node:test。
 
-1. `http`：HTTP请求相关API
+1. `http`：HTTP 请求相关 API
 
     1. 接口永远不会缓冲整个请求或响应，所以用户可以流式地传输数据。
     2. 为了支持所有可能的HTTP应用程序，Node.js的HTTP API都是非常底层的。
@@ -1001,7 +978,7 @@ over
     >          res.end(text);
     >        });
     >      })
-    >      .listen(3000, "0.0.0.0");
+    >      .listen(3000, "127.0.0.1");
     >    ```
     >2. Node.js原生发起POST请求
     >
@@ -1009,7 +986,7 @@ over
     >    const http = require("http");
     >
     >    const req = http.request(
-    >      "路径",
+    >      "http://127.0.0.1:3000/",
     >      {
     >        method: "POST",
     >        headers: {
@@ -1042,7 +1019,7 @@ over
     >    const http = require("http");
     >
     >    const req = http.request(
-    >      "路径",
+    >      "http://127.0.0.1:3000/",
     >      {
     >        method: "GET",
     >      },
@@ -1070,7 +1047,7 @@ over
 3. `https`
 4. `fs`：以标准POSIX函数为模型的方式与文件系统进行交互
 
-    提供版本：异步、同步（+`Sync`）、基于Promise（`require("fs").promises`）。其他模块也类似。
+    大多数文件操作提供回调、同步（方法名以 Sync 结尾）和 Promise（node:fs/promises）三种接口。下面是同一次重命名的三种独立写法，请任选其一。
 
     ><details>
     ><summary>e.g.</summary>
@@ -1112,16 +1089,16 @@ over
 
         - 导出文件需求：
 
-            1. 后端返回json数据（无法利用流技术，只能完整保存在服务端内存中），前端根据数据生成文件并[创建下载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js点击下载)。
+            1. 后端返回 JSON（一次 JSON.stringify 整个对象需要相应内存；逐条生成时可采用 NDJSON 等流式格式），前端根据数据生成文件并[创建下载](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js点击下载)。
             2. 后端直接返回文件，前端请求下载文件（get请求）
 
-                1. 利用流技术，创建并保存文件在服务端；
-                2. 利用流技术，把刚刚保存的文件传递给前端进行下载。
+                1. 可选择先在服务端生成文件，也可直接把生成的数据流交给响应；
+                2. 已保存的文件可用可读流传给前端。
 5. `events`：事件触发器
 
     >`EventEmitter`类：`require('events')`
 
-    1. 所有能触发事件的对象都是`EventEmitter`类的实例。
+    1. 使用 EventEmitter 接口的对象通过 on/emit 订阅和触发事件。Node.js 也支持 EventTarget。
     2. `EventEmitter`以注册的顺序同步地调用所有监听器。
 6. `path`：处理文件路径
 
@@ -1132,11 +1109,11 @@ over
 
     >e.g. 在传统的方式中，当告诉程序读取文件或通信时，这会将文件或信息从头到尾读入内存，然后进行处理。若使用流，则可以逐个片段地读取并处理（而无需全部保存在内存中），能够一边读取一边处理更加高效。
 
-    1. 所有的流都是`EventEmitter`类的实例。
+    1. 经典 Node.js stream 继承 EventEmitter。Web Streams 使用另一套接口。
     2. Node.js提供了多种流对象（`fs`、`http`、`process`等都有流操作方式），除非要创建新类型的流实例，否则极少需要直接使用`stream`。
     3. 流类型：可读（Readable）、可写（Writable）、可读可写（Duplex）、可修改或转换数据（Transform）。
 
-    >stream不需要手动创建缓冲区（buffer），在Node.js的流中将会自动创建。
+    >将可读流复制到可写流时，可用 node:stream/promises 的 pipeline 处理背压、结束和错误。手动写入时，write() 返回 false 表示应等 drain 再继续。
 8. `readline`：用于一次一行地读取可读流中的数据
 
 >Buffer是数据以二进制形式临时存放在内存中的物理映射，stream为搬运数据的传送带和加工器，有方向、状态、缓冲大小。
@@ -1145,7 +1122,7 @@ over
 
     `Buffer`用于表示固定长度的字节序列。是JS`Uint8Array`的子类，并使用涵盖额外用例的方法对其进行扩展。
 
-    >由于Buffer需要处理的是大量的二进制数据，假如用一点就向系统去申请，则会造成频繁的向系统申请内存调用，**所以Buffer所占用的内存不再由V8分配，而是在Node.js的C++层面完成申请，在JavaScript中进行内存分配。** 因此，这部分内存我们称之为堆外内存。
+    >小块 Buffer 可能共享内存池。Buffer.from(arrayBuffer) 与源共享底层字节，Buffer.from(buffer) 则复制内容。
 10. `string_decoder`：字符串解码器
 
     提供了用于将`Buffer`对象解码为字符串（以保留编码的多字节UTF-8和UTF-16字符的方式）的API。
@@ -1222,7 +1199,7 @@ over
     2. `diagnostics_channel`：诊断通道
     3. `trace_events`：跟踪事件
     4. `async_hooks`：异步钩子去跟踪异步资源
-    5. `Corepack`：管理包管理器的版本的工具
+    5. `Corepack`：管理包管理器版本的独立工具；从 Node.js 25 起需单独安装
     6. `require('crypto').webcrypto`：实现Web Crypto API规范
     7. `require('node:stream/web')`：Web Streams API
     8. `test`：测试
@@ -1233,7 +1210,7 @@ over
     2. ~~`punycode`~~
 
 ### Node.js[全局变量](https://nodejs.org/api/globals.html)
-Node.js的全局对象`global`是所有全局变量的宿主。
+用 globalThis 访问全局对象。模块顶层声明属于当前模块作用域。
 
 1. CommonJS 模块内提供的变量
 
@@ -1245,7 +1222,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 2. `process`：描述当前Node.js进程状态的对象，提供了一个与操作系统的简单接口。
 
     1. `process.cwd()`：进程当前工作目录的绝对路径，可由 `process.chdir()` 改变。
-3. `Buffer`：二进制数据流。
+3. `Buffer`：固定长度的字节序列。
 
     >虽然`Buffer`在全局作用域内可用，但仍然建议通过`import/require`语句显式地引用它：`const { Buffer } = require('node:buffer')`。
 
@@ -1305,20 +1282,20 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 
         >需要学习服务端的各种 高并发、数据库IO 解决方案。前端处理客户端问题无法接触到这些，需要重新踩服务端的坑。
 
-        虽然Node.js是单线程，但是各种异步的操作（如：数据库IO等）需要按照服务端的技术解决方案处理。
+        同一事件循环上的 JS 回调依次执行，但发出的数据库请求可能同时在途。连接池大小和数据库容量仍会限制吞吐量。
     2. 基本数据库的使用，以及如何在Node.js中使用。
 
         如：MySQL、Redis、MongoDB、等。
     3. 异常处理、错误报警
 
-        对各种IO要进行异常处理（如：`try-catch`包裹所有IO代码），并需要把错误上报（打日志`console`或借助第三方监控告警）。
+        按 API 的错误通道处理 I/O 失败（同步抛错、await 拒绝、回调 err 或流 error），并需要把错误上报（打日志`console`或借助第三方监控告警）。
 1. 与浏览器JS的区别
 
     除了全局变量、提供的模块、模块系统、API不同之外，在Node.js中，可以控制运行环境：除非构建的是任何人都可以在任何地方部署的开源应用程序，否则开发者知道会在哪个版本的Node.js上运行该应用程序——与浏览器环境（无法选择访客会使用的浏览器）相比起来非常方便。
 1. Node.js运行环境退出（命令行执行完毕后自动退出）：
 
-    代码运行完毕。包括：执行队列、任务队列、等待加入任务队列的其他线程任务，全都执行完毕，当不会有新的指令需要执行时，就自动退出Node.js的进程。e.g. 监听系统端口 或 `setTimeout`还未触发，意味着还有事件需要待执行。
-1. 不管任何情况，始终保证要有回包，就算代码运行错误，也要兜底回包（`.end()`）
+    活跃的服务器、被引用的定时器及待完成的 I/O 可维持进程运行。仅创建一个永远 pending 的 Promise 通常不会维持事件循环。
+1. 每个 HTTP 请求应有明确的结束路径。错误发生时若响应头尚未发送，可写入错误状态；已发送部分响应时应交给框架错误处理或结束连接。
 1. [CLI命令行](https://nodejs.org/api/cli.html)（`man node`）
 
     ```shell
@@ -1375,13 +1352,14 @@ Node.js的全局对象`global`是所有全局变量的宿主。
             req.end();
             ```
         2. [axios](https://github.com/axios/axios)的`proxy`参数
-        3. [request](https://github.com/request/request)的`proxy`参数
+        3. 旧项目中的 [request](https://github.com/request/request) 也提供 `proxy` 参数。
+        </details>
 1. 最外层`return`语句
 
-    Node.js支持最外层`return`语句，作为文件执行完毕作用（不影响命令的退出码）。浏览器不允许 ~~最外层`return`语句~~，会报错。
+    CommonJS 文件由 Node.js 包装在函数中，顶层 return 会结束当前模块的求值，其他活动任务可继续运行。ES module 中的顶层 return 是语法错误。
 1. Node.js可以用ES6 Module规范运行文件
 
-    `.mjs`文件总是以ES6 Module规范加载，`.cjs`文件总是以CommonJS规范加载，`.js`文件的加载取决于`package.json`的`type`字段的设置（`"module"`、`"commonjs"`默认）。
+    .mjs 总是 ES module，.cjs 总是 CommonJS。.js 通常由最近的 package.json 的 type 决定。缺少明确类型时，Node.js 20.19.0 / 22.7.0 起默认对有歧义的输入检测 ESM 专属语法。建议包作者显式声明 type。[模块判定规则](https://nodejs.org/api/packages.html#syntax-detection)
 
 ---
 ## 工具使用
@@ -1571,7 +1549,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     const Koa = require('koa')
     const app = new Koa()
 
-    // 按照①②③④⑤⑥执行后输出
+    // 单次请求按①②③④⑤⑥执行，最后发送响应
 
     app.use(async (ctx, next) => {
       // ①
@@ -1593,6 +1571,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
 
     app.use(async ctx => {
       // ④
+      ctx.body = "OK"
     })
 
     app.use(async ctx => {
@@ -1603,13 +1582,13 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     ```
 
     >1. 为了能够更好的链式调用中间件，要使用`await next()`或`return next()`的方式，否则虽然会`next`进入下一个中间件，但下一个中间件的异步代码会导致请求先返回之后再处理异步后代码。
-    >2. 中间件/拦截器的流程：从上到下，执行中间件，直到抵达路由匹配到的中间件为止，不再继续向下执行（若所有都不匹配，则执行兜底中间件）。
+    >2. 是否继续由当前中间件决定。匹配到路由的处理函数也可以调用 next()。
     >3. 不允许一个中间件中执行多次`next`（[koa-compose源码](https://github.com/koajs/compose/blob/master/index.js#L36)）。
 
     - 洋葱模型优点：
 
         1. 可读性和可维护性：洋葱模型将中间件按照顺序组织成层次结构，使得代码更具可读性和可维护性。每个中间件函数只需关注自身的特定任务，降低了代码的复杂性。
-        2. 异步流程控制：洋葱模型使得开发人员可以方便地控制异步请求的处理流程。每个中间件函数可以在请求到达服务器之前和发送响应之后执行特定的操作，处理验证、日志记录、错误处理等任务。
+        2. 异步流程控制：洋葱模型使得开发人员可以方便地控制异步请求的处理流程。每个中间件函数可以在执行下游中间件之前和下游处理完成之后执行特定的操作，处理验证、日志记录、错误处理等任务。
         3. 错误处理：洋葱模型在处理错误时非常灵活。中间件函数可以通过`try-catch`捕获和处理错误，从而避免错误导致整个应用程序崩溃或中断请求处理流程。
         4. 中间件的扩展和定制：洋葱模型允许开发人员在请求的处理流程中动态地添加、删除或修改中间件函数。这种灵活性使得可以根据具体需求定制中间件的功能，从而满足不同的业务需求。
         5. 中间件能使用之后的中间件所添加的东西，方便中间件之间互相组合使用。
@@ -1621,7 +1600,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     2. `app.env`
 
         获取`NODE_ENV`的值（默认：`'development'`）
-    3. `app.use(async (上下文, next) => {}))`
+    3. `app.use(async (上下文, next) => {})`
 
         使用中间件
     4. `app.callback()`
@@ -1689,8 +1668,9 @@ Node.js的全局对象`global`是所有全局变量的宿主。
             2. 中间件写入
 
                 ```js
-                app.use((ctx) => {
+                app.use(async (ctx, next) => {
                   ctx.新属性 = 值
+                  await next()
                 })
                 ```
         2. 读取：
@@ -1721,11 +1701,11 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         1. `.path=` === `.request.path=`
         1. `.query` === `.request.query`可能已经经过一次解码（和.url结果不一致）
 
-            >框架或浏览器，都会默认解码一次query方便使用。
+            >ctx.query 是解析后的键值，ctx.querystring 保留查询字符串。已解码的值不宜再统一调用 decodeURIComponent。
         1. `.query=` === `.request.query=`
         1. `.querystring` === `.request.querystring`
         1. `.querystring=` === `.request.querystring=`
-        1. `.request.body`
+        1. `.request.body`（由请求体解析中间件提供，Koa 核心不解析请求体）
         1. `.request.search`
         1. `.request.search=`
         1. `.host` === `.request.host`
@@ -1827,31 +1807,22 @@ Node.js的全局对象`global`是所有全局变量的宿主。
     运行前添加环境变量：`DEBUG=koa*`
 
 ### [express](https://github.com/expressjs/express)
-1. 通过回调实现异步函数，在多个回调、多个中间件中写起来容易逻辑混乱。
-2. 回调函数的参数数量：
-
-    1. 2个参数一般认为是路由（中间件）
-    2. 3个参数一般认为是通用中间件
-    3. 4个参数是错误处理中间件
-
-        错误处理中间件，需要回调函数固定传4个参数（Error-first）。
-
-    >无论是哪种类型的中间件，都是按代码顺序依次执行。
+1. 路由按注册时的路径与 HTTP 方法匹配。普通中间件可结束响应，或调用 next() 把控制交给后续匹配项。
+2. 错误处理中间件使用四个参数 `(err, req, res, next)`，放在路由之后。Express 4 中要将异步拒绝传给 next(err)；Express 5 会自动转发处理函数返回的 Promise 的拒绝。[Express 错误处理](https://expressjs.com/en/guide/error-handling/)
 
 - express 与 koa 对比
 
     | 区别 | express | koa |
     | :--- | :--- | :--- |
-    | 中间件模型 | 线性模型（没有 ~~async/await~~） | 洋葱模型（级联） |
-    | 异步方式 | 基于回调函数 | 基于async/await |
-    | 捕获错误 | Error-First模式（中间件的回调函数若写4个参数则固定作为错误处理中间件） | 使用try/catch的方式 |
-    | 响应机制 | 调用API后立刻响应 | 所有中间件执行完之后才响应 |
-    | 集成成度 | 集成度高，自带部分中间件 | 集成度低，没有捆绑任何中间件 |
+    | 中间件模型 | next() 继续匹配，不能用 await next() 等待下游完成 | await next() 等待下游返回 |
+    | 捕获错误 | next(err) 进入后续错误处理中间件 | 上游可用 try/catch 包住 await next() |
+    | 响应机制 | res.send()、res.json() 或 res.end() 结束响应 | 通常由框架在中间件链完成后发送 ctx.body |
+    | 内置能力 | 路由、静态文件、请求体解析等 | 路由和请求体解析通常由独立中间件提供 |
 
 ### [pm2](https://github.com/Unitech/pm2)
 后台运行、进程管理（自动重启、永保活动状态、不停机重新加载，显示进程信息，配置进程处理条件）、多进程运行、负载均衡、处理log输出。
 
-1. [`pm2`CI](https://pm2.keymetrics.io/docs/usage/pm2-doc-single-page/)
+1. [`pm2` CLI](https://pm2.keymetrics.io/docs/usage/pm2-doc-single-page/)
 
     `pm2` +
 
@@ -1924,7 +1895,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         5. `delete all或进程名或进程id或执行文件或配置脚本`
         6. `reload all或进程名或进程id或配置脚本`
 
-            如果是在cluster mode，reload会依序升级重启每一个程序，达到zero downtime升级
+            如果是在cluster mode，reload会依序升级重启每一个程序，应用正确报告就绪并排空请求时可减少中断，重载超时可能回退到 restart
         7. `start/stop/restart/startOrRestart/delete/reload 配置脚本 --only 「进程名」`
 
             仅对某一个进程进行操作。
@@ -1955,7 +1926,7 @@ Node.js的全局对象`global`是所有全局变量的宿主。
         判断pm2守护进程正在运行。
     11. `kill`
 
-        杀掉pm2自己，包括所有：pm2程序、pm2运行的进程、等，然后重启pm2。
+        停止 PM2 守护进程及其管理的应用。之后再运行需要守护进程的命令会启动新的守护进程。
 
         >pm2卡死的时候使用。
     12. 系统重启或pm2自己的重启

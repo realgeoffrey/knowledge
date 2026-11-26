@@ -64,7 +64,7 @@
 
         1. `length`：希望接收的命名参数个数（计数到`默认参数`或`剩余参数`之前的形参）
         2. `name`：函数名
-        3. `prototype`：（函数独有）指向函数的原型对象
+        3. `prototype`：普通函数声明会创建这个自有属性，供 `new` 设置实例原型使用。
 
             箭头函数、`bind`生成的函数，没有 ~~`prototype`~~，不能作为 ~~类`extends`的基类~~。
     2. ES6不推荐使用（部分情况下导致报错）：
@@ -86,7 +86,7 @@
 
         >函数名绑定在所在作用域。
 
-    >若`function`（或箭头函数的`()`）是声明中的第一个词，则是函数声明，否则是函数表达式。
+    >函数声明出现在允许声明的语法位置。赋值右侧的函数、作为实参传入的函数以及箭头函数都是表达式。
 
     2. 函数表达式（function expression）
 
@@ -102,10 +102,10 @@
 
         `var 名字 = new Function([多个参数, ]函数体字符串);`
 
-        >直接调用`Function`（不使用`new`操作符）的效果与调用构造函数一样，区别是`this`指向`window`。
+        >直接调用 `Function(...)` 与 `new Function(...)` 的效果相同。创建的函数在全局作用域解析自由变量，调用方式与函数自身的严格模式决定其 `this`。
 4. [匿名函数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#自执行匿名函数拉姆达λlambda)、[箭头函数](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#箭头函数)
 
-    只能提供给其他变量引用、或自执行。
+    可以赋给变量、用作回调或返回值，也可以立即调用。
 
     ><details>
     ><summary>匿名函数：可以添加仅在匿名函数内部才能使用的函数名字，主要用于在执行栈中标记匿名函数的函数名（主要针对：自执行匿名函数），而不只是显示<code>anonymous</code></summary>
@@ -127,7 +127,7 @@
 5. 实例化（`new`）一个构造函数
 
     >1. 相对于单全局变量，构造函数更加灵活，可以生成多个对象进行互相独立的操作。
-    >2. 构造函数，其实就是一个普通函数，没有任何特殊。
+    >2. 普通函数声明可以用作构造函数；箭头函数、对象方法简写和异步函数不能用 `new` 调用。
 
     1. `new`得到的实例对象（若构造函数不是返回一个引用数据类型），拥有构造函数体内使用`this`定义的属性和方法，且拥有构造函数的原型对象上的属性和方法（因为实例的`[[Prototype]]`指向`构造函数.prototype`）；在构造函数体内`var`的变量和`function`无法被这个对象使用，只能在构造函数里使用（类似私有变量）。
     2. <details>
@@ -158,7 +158,7 @@
 
         <summary><code>new</code>一个构造函数执行的步骤</summary>
 
-        e.g. `var newObj = new Func(para1, para2);`
+        e.g. `var newObj = new Func(para1, para2);`。下面示意普通构造函数且 `Func.prototype` 为对象的情况；需要完整的构造语义时可用 `Reflect.construct(Func, [para1, para2])`。
 
         1. 创建一个空对象（假设为obj）：
 
@@ -171,7 +171,7 @@
 
         3. 使用obj作为上下文调用构造函数，并传入参数：
 
-            `Func.apply(obj, arguments);`
+            `var result = Func.apply(obj, [para1, para2]);`
         4. newObj赋值
 
             1. 若Func返回**引用数据类型**，则这个引用数据类型的值赋值给newObj。
@@ -183,13 +183,13 @@
     2. 使用**参数默认值**时的特殊情况：
 
         1. 调用函数时，根据传参为`undefined`或不传，才进行参数默认值的表达式值计算（惰性求值），默认值是运行时执行而不是~~定义时执行~~（若默认值是调用其他函数，则当且仅当传参为`undefined`或不传参时才执行其他函数）。
-        2. 调用函数时，所有参数会形成一个单独作用域（context）进行初始化，初始化结束则作用域消失。此作用域中的参数进行类似`let`定义，因此函数不能有同名参数。
+        2. 默认值从左到右求值，可以引用已初始化的前序参数。默认值表达式所在的作用域位于函数体外层，无法访问函数体内的局部声明；参数列表含默认值时不能重名。
 
             ><details>
             ><summary>e.g.</summary>
             >
             >```js
-            >function f1(y1 = x1) {     // 形成短暂的单独作用域，x1没有定义，向父级作用域取值，取不到则报错
+            >function f1(y1 = x1) {     // 参数作用域中，x1没有定义，向父级作用域取值，取不到则报错
             >  let x1 = 'x1'
             >  console.log(y1)
             >}
@@ -197,7 +197,7 @@
             >
             >
             >let x2 = 'outer x2'
-            >function f2(y2 = x2) {     // 形成短暂的单独作用域，x2没有定义，向父级作用域取值
+            >function f2(y2 = x2) {     // 参数作用域中，x2没有定义，向父级作用域取值
             >  let x2 = 'x2'
             >  console.log(y2)
             >}
@@ -205,7 +205,7 @@
             >
             >
             >let x3 = 'outer x3'
-            >function f3(x3, y3 = x3) { // 形成短暂的单独作用域，x3是传参定义的值，不向父级作用域取值
+            >function f3(x3, y3 = x3) { // 参数作用域中，x3是传参定义的值，不向父级作用域取值
             >  console.log(y3)
             >}
             >f3()                       // => undefined
@@ -213,10 +213,10 @@
             >
             >
             >let x4 = 'outer x4'
-            >function f4(x4 = x4) {     // 形成短暂的单独作用域，实际执行类似let x = x，暂时性死区导致报错
+            >function f4(x4 = x4) {     // 参数作用域中，实际执行类似let x = x，暂时性死区导致报错
             >
             >}
-            >f4()                       // ReferenceError: x is not defined
+            >f4()                       // ReferenceError：x4 尚未初始化
             >```
             ></details>
         3. 不能~~在参数默认值中调用函数体内的方法~~（参数默认值总是被首先执行，而函数体内的函数声明之后生效）。
@@ -273,10 +273,9 @@
 
         1. ES5
 
-            函数声明是唯一拥有自身作用域的结构。
+            函数调用会创建函数作用域，函数表达式也适用。ES5 的 `catch (e)` 另有自己的异常参数作用域。
 
-            >1. 若`function`或`箭头函数`**声明**出现，则在父级作用域中新增一个子级作用域。
-            >2. 父级不能访问子级作用域，子级能完全使用父级作用域。
+            >内部可以按词法嵌套访问外部作用域中的绑定，外部不能直接访问函数的局部绑定。
         2. ES6
 
             在ES5的基础上，增加块级作用域概念（[`let`、`const`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#letconst)）。
@@ -285,11 +284,11 @@
         >与~~调用函数时所在的作用域、时机、以何种方式被调用~~无关（函数赋值给任何变量或属性也不改变变量取值）。
     2. 遍历嵌套作用域链，在当前执行的作用域开始（函数声明处），向上遍历查找直到全局作用域或找到；
 
-        >1. 对于`变量 = 值`赋值（LHS），若直到全局作用域也没查找到变量，则创建一个全局变量，用`值`赋值给这个新建的全局变量。
+        >1. 为未声明的名字赋值时，非严格模式通常在全局对象上创建属性；严格模式（包括 ES 模块）抛出 `ReferenceError`。
         >2. 对于`变量`引用（RHS），若直到全局作用域也没查找到变量，则报错`ReferenceError: 变量 is not defined`。
     3. 多层的嵌套作用域中，可以定义同名的标识符（变量、函数），遮蔽效应使内部的标识符「遮蔽」外部的标识符（若查找到第一个匹配的标识符则停止再向上查找）。
 
-        >`window.某变量`可以访问被同名变量`某变量`遮蔽的全局变量。
+        >浏览器经典脚本的顶层 `var` 通常可通过 `window.某变量` 访问。顶层 `let`、`const` 和模块变量不会因此成为 `window` 的属性。
     4. 产生[闭包](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS学习笔记/README.md#闭包closure)
 
         <details>
@@ -308,8 +307,8 @@
         var a = 1
         bar() // => 1
 
-        // JS是词法作用域的流程：执行 foo 函数，先从 foo 函数内部查找是否有局部变量 value，如果没有，就根据书写的位置（声明位置），查找上面一层的代码，也就是 value 等于 1，所以结果会打印 1。
-        // 其他语言是动态作用域的流程：执行 foo 函数，依然是从 foo 函数内部查找是否有局部变量 value。如果没有，就从调用函数的作用域，也就是 bar 函数内部查找 value 变量，所以结果会打印 2。
+        // JS是词法作用域的流程：执行 foo 函数，先从 foo 函数内部查找是否有局部变量 a，如果没有，就根据书写的位置（声明位置），查找上面一层的代码，也就是 a 等于 1，所以结果会打印 1。
+        // 假设使用动态作用域：执行 foo 函数，依然是从 foo 函数内部查找是否有局部变量 a。如果没有，就从调用函数的作用域，也就是 bar 函数内部查找 a 变量，所以结果会打印 2。
         ```
         </details>
 
@@ -662,17 +661,14 @@ new new F().func(); // => 1  === new (new F()).func();
 ### 闭包（closure）
 >因为JS是[词法作用域](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/程序员的自我修养/README.md#词法作用域动态作用域)，所以产生了闭包效果。
 
-1. 当函数体内定义了其他函数时，就创建了闭包。内部函数总是可以访问其所在的外部函数中声明的内容（链式作用域），即使外部函数执行完毕（寿命终结）之后。
-
-    >有了[`let`、`const`](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/标准库文档.md#letconst)之后，闭包应该改为：内部函数总是可以访问其所在的外部作用域中声明的内容。
-2. 无论通过何种手段将内部函数传递到它所在的词法作用域以外，函数都会持有对原始定义作用域的引用（函数记住并访问它原始所在的词法作用域），无论在何处执行这个函数都会使用闭包。
+1. 闭包是函数和它创建时的词法环境的组合。函数读取的是环境中的变量绑定；之后修改同一绑定，下一次调用时也能读到新值。
+2. 即使外层函数已返回，内部函数仍可以访问定义处的变量。
 3. 闭包通常用来创建私有变量或方法，使得这些内容不被外部访问，同时又可以通过指定的闭包函数访问。
 
 - 产生效果：
 
     1. 可以操作函数体内的私有内容（特权方法）。
-    2. 让被操作的私有内容始终保持在内存中不被垃圾回收。
-    3. 占用较多的内存。
+    2. 只要闭包仍可访问，之后还会用到的数据就会保留。长期持有捕获大对象的回调可能增加内存占用。
 
 ><details>
 ><summary>e.g.</summary>
@@ -823,7 +819,7 @@ new new F().func(); // => 1  === new (new F()).func();
 ### 原型
 1. 构造函数、原型对象、实例、原型链
 
-    1. 只有函数有`prototype`属性，指向函数的原型对象。
+    1. 普通构造函数自带 `prototype`。它与函数对象自身的 `[[Prototype]]` 分别描述两条不同的关系。
 
         互相连接：函数拥有`prototype`属性指向其原型对象，原型对象拥有`constructor`属性指向函数。
 
@@ -832,21 +828,16 @@ new new F().func(); // => 1  === new (new F()).func();
 
         >访问对象的`[[Prototype]]`属性：（非标准）`对象.__proto__`、`Object.getPrototypeOf(对象)/Object.setPrototypeOf(对象, 原型对象)`。
 
-        1. 连接存在于**实例**与**构造函数的原型对象**之间，而不直接存在于~~实例与构造函数~~之间。
-        2. 内置构造函数的原型上有各种方法和属性，实例对象通过原型链进行调用。
-    3. 每个引用数据类型都有`[[Prototype]]`属性，指向`自己的构造函数.prototype`（原型对象）。
+    3. 普通对象的 `[[Prototype]]` 可以指向另一个对象，也可以是 `null`。例如 `Object.create(null)` 创建没有原型的对象。
 
-        >每个引用数据类型都显式或隐式由某个构造函数创建。
-    4. 不断向上的`[[Prototype]]`属性，构成了原型链。
+    4. 读取属性时先查找对象自身，再逐层查找原型，直到找到属性或抵达原型链终点。
 
-        >访问一个引用数据类型的属性：若这个属性在对象自身中不存在，则向上查找其`[[Prototype]]`指向的对象；若依然找不到，则继续向上查找（其`[[Prototype]]`指向的对象的）`[[Prototype]]`指向的对象，直到原型终点。
-
-        原型链终点是`null`，倒数第二是`Object.prototype`。
+        原型链终点是 `null`。普通对象字面量会经过 `Object.prototype`，自定义的原型链也可以直接到达 `null`。
 
         ```js
-        Object或Function或任意函数.__proto_ === Function.prototype
-        Function.prototype.__proto__ === Object.prototype
-        Object.prototype.__proto__ === null
+        Object.getPrototypeOf(Object) === Function.prototype
+        Object.getPrototypeOf(Function.prototype) === Object.prototype
+        Object.getPrototypeOf(Object.prototype) === null
         ```
 
     <details>
@@ -1027,10 +1018,10 @@ new new F().func(); // => 1  === new (new F()).func();
 
     变量（包括函数的参数）都是**值传递**（变量指向的值复制给另一个变量去指向）。
 
-    1. 引用数据类型的浅复制
+    1. 引用赋值与浅复制
 
-        1. 复制对象A时，对象B将复制A的所有字段。若字段是引用数据类型（内存地址），B将复制地址；若字段是基本数据类型，B将复制其值。
-        2. 缺点：若改变了对象B（或A）所指向的内存地址所存储的值，则同时也改变了对象A（或B）指向这个地址所存储的值。
+        1. `const b = a` 复制引用，两个变量指向同一对象。
+        2. `const b = {...a}` 创建新对象，复制自有可枚举属性。给 `b` 的顶层属性重新赋值不会修改 `a`；修改共享的嵌套对象，两边都能观察到。
     2. 引用数据类型的深复制（深拷贝）
 
         1. 新开辟一个内存空间，完全复制所有数据至新的空间，新对象指向这个新空间的地址（原对象不变化）。
@@ -1170,18 +1161,17 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 ### 深复制（深拷贝）实现思路
 >参考：[深入剖析JavaScript的深复制](http://jerryzou.com/posts/dive-into-deep-clone-in-javascript/)。
 
-1. 递归赋值（最全面方式）
+1. 递归复制（按业务支持的数据类型实现）
 
     >深复制要处理的坑：循环引用、各种引用数据类型、执行性能。
 
     >[lodash](https://github.com/lodash/lodash)直接使用：深拷贝`_.cloneDeep()`、深合并`_.merge()`、深对比`_.isEqual()`。
 2. 针对**仅能够被JSON直接表示的数据结构（对象、数组、数值、字符串、布尔值、null）**：
 
-    `JSON.parse(JSON.stringify(obj));`
+    `JSON.parse(JSON.stringify(obj));`。循环引用会抛错，日期会变成字符串，非有限数值会变成 `null`。
 3. [`structuredClone(value[, { transfer }])`](https://developer.mozilla.org/zh-CN/docs/Web/API/structuredClone)
 
-    使用[结构化克隆算法](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)（注意支持的类型，对不支持的类型会导致抛出异常）。
-
+    使用[结构化克隆算法](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)（注意支持的类型，对不支持的类型会导致抛出异常）。支持循环引用、`Map`、`Set` 和 `Date`，函数无法克隆。用 `transfer` 转移 `ArrayBuffer` 后，原缓冲区会分离。
 >不考虑原型链。
 
 4. `Proxy` 可以拦截对象操作。代理与目标共享底层数据，创建代理本身不会生成深拷贝。
@@ -1229,7 +1219,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
             >`parseInt`与`Number`均忽略字符串前后的不可见字符。`parseInt`从前向后逐个解析字符，只要开头有数字则返回数值；`Number`判断只要有一个字符无法转成数值，则返回`NaN`。
         2. 引用数据类型（reference/object）：
 
-            若参数是**单个数值的数组**、**空数组**、**单个数值为undefined的数组**，则返回`数值`、`0`、`0`；否则返回`NaN`。
+            先将对象转换为原始值，再按该原始值转换成数值。例如普通数组通常先得到逗号连接的字符串，`Number(["5"])` 为 `5`。
 
             e.g.
 
@@ -1242,14 +1232,10 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
             Number({})              // NaN
             ```
 
-            - `Number(对象)`具体规则：
-
-                1. 调用原对象自身的`valueOf`，若返回值是基本数据类型，则再使用`Number`，不再进行后续步骤；
-                2. 调用原对象自身的`toString`，若返回值是基本数据类型，则再使用`Number`，不再进行后续步骤；
-                3. 若以上返回都还是对象，报错`TypeError: Cannot convert object to primitive value`。
+            - `Number(对象)` 优先调用可用的 `[Symbol.toPrimitive]("number")`。没有这个方法时，依次尝试可调用的 `valueOf`、`toString`，取第一个原始值；都得不到原始值则抛出 `TypeError`。
     2. `String(参数)`
 
-        >与`` `${参数}` ``返回效果一致。
+        >显式 `String(Symbol("a"))` 得到 `"Symbol(a)"`，在模板字符串中直接插入这个 Symbol 会抛出 `TypeError`。
 
         1. 基本数据类型：
 
@@ -1283,31 +1269,30 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                 `String(1n)         // '1'`
         2. 引用数据类型：
 
-            若是数组，则返回该数组的字符串形式；否则返回一个类型字符串。
+            普通数组默认用逗号连接各项，普通对象默认得到 `"[object Object]"`；自定义转换方法会改变结果。
 
             ```js
             // e.g.
             String([1, 2, 3])                  // '1,2,3'
             String([1, [2], [3, [4, [5, 6]]]]) // '1,2,3,4,5,6'
-            String({a: 1})                     // '[object Object]''
+            String({a: 1})                     // '[object Object]'
             ```
 
             - `String(对象)`具体规则：
 
-                1. 调用原对象自身的`toString`，若返回值是基本数据类型，则再使用`String`，不再进行后续步骤；
-                2. 调用原对象自身的`valueOf`，若返回值是基本数据类型，则再使用`String`，不再进行后续步骤；
-                3. 若以上返回都还是对象，报错`TypeError: Cannot convert object to primitive value`。
+                优先调用可用的 `[Symbol.toPrimitive]("string")`。没有这个方法时，依次尝试可调用的 `toString`、`valueOf`，取第一个原始值；都得不到原始值则抛出 `TypeError`。
     3. `Boolean(参数)`
 
         | 数据类型 | 转换为`true`的值 | 转换为`false`的值 |
         | :--- | :--- | :--- |
         | Undefined | 无 | `undefined` |
         | Boolean | `true` | `false` |
-        | Number | 任何非零`Number`类型的值（包括无穷大） | `0`、`-0`、`+0`、（+-）`NaN` |
+        | Number | 除零和 `NaN` 外的数值（包括无穷大） | `0`、`-0`、`+0`、`NaN` |
         | String | 任何非空`String`类型的值 | `''` |
         | Symbol | 任何`Symbol`类型的值 | 无 |
-        | BigInt | 任何非零`BigInt`类型的值 | `0n`、`-0n`、`+0n` |
-        | Object（引用数据类型） | 任何对象（包括基本包装类型） | `null` |
+        | BigInt | 任何非零`BigInt`类型的值 | `0n` |
+        | Null | 无 | `null` |
+        | Object（引用数据类型） | 除浏览器历史特例 `document.all` 外的对象（包括包装对象） | `document.all` |
 
         >`数组.filter(Boolean)`等价于`数组.filter((item)=>Boolean(item))`简化筛选逻辑。
 2. 自动转换
@@ -1332,7 +1317,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
             </details>
     2. 行为：
 
-        预期什么类型的值，就调用该类型的转换函数。
+        各运算符使用规范里的抽象转换步骤，它们与显式的 `Number()`、`String()` 在 Symbol、BigInt 等边界上有区别。
 
         1. 自动转换为`Boolean`：
 
@@ -1344,33 +1329,20 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
             主要发生在加法运算时：当一个值为字符串，另一个值为非字符串，则后者转为字符串。
         3. 自动转换为`Number`：
 
-            除了~~加法运算符~~有可能把运算数转为字符串，其他运算符都会把运算数自动转成数值（包括一元运算符）。
+            算术运算通常先转换为数值，二元算术一般要求双方同为 `Number` 或同为 `BigInt`。一元 `+` 不接受 `BigInt`。
 
         - `+`加法运算：
 
-            >`Symbol`不能进行~~加法运算~~；`BigInt`只能和 `BigInt`、字符串、对象 进行加法运算。
+            1. 对象先按默认提示转为原始值。
+            2. 只要有一方是字符串，就按字符串拼接；隐式转字符串遇到 `Symbol` 会抛错。
+            3. 否则转换为数值并相加，混用 `Number` 和 `BigInt` 或尝试把 `Symbol` 转成数值都会抛出 `TypeError`。
+3. `==` 的常见比较规则（`!=` 对结果取反）：
 
-            1. 若运算数有对象，先`ToPrimitive(对象)`转换为的基本数据类型，再按照下面方式继续自动转换或运算出结果；
-            2. 若运算数有字符串，则都转换为字符串（`String(基本数据类型)`）进行；
-            3. 若运算数是数值与布尔值，则布尔值转换为数值（`true` -> 1、`false` -> 0）进行。
-3. `==`与`!=`进行的强制类型转换步骤
-
-    1. 运算数若存在`NaN`，则返回`false`；
-
-        >除了`!=`和`!==`，只要对比（`==`、`===`、`>`、`>=`、`<`、`<=`）的操作数有一个是`NaN`，则返回`false`。
-    2. 运算数若存在`布尔值`，将布尔转换为数字（`true` -> 1、`false` -> 0）；
-    3. 运算数若存在`字符串`, 有三种情况：
-
-        1. 对方是`对象`，则进行`ToPrimitive(对象, 'string')`后进行对比；
-        2. 对方是`数字`，字符串转数字；
-        3. 对方是`字符串`，直接比较；
-        4. 其他返回`false`。
-    4. 若运算数是`数字`与`对象`，则对象进行`ToPrimitive(对象, 'number')`，再比较；
-    5. 若运算数都是`对象`，则比较它们的`引用值`（若两个运算数指向同一对象，则返回`true`，否则`false`）；
-    6. `null`与`undefined`不会进行类型转换, 但相等。
-
->1. `ToPrimitive`：依次调用对象的`valueOf`、`toString`，将对象转化了基本数据类型。
->2. `{ toString: () => {console.log('toString');return {}}, valueOf: () => {console.log('valueOf');return {}} }`对象来判断先调用哪个属性。
+    1. 同类型按严格相等比较：对象比较身份，`NaN == NaN` 为 `false`。
+    2. `null == undefined` 为 `true`，两者与其他类型通常不相等（浏览器历史特例为 `document.all`）。
+    3. 布尔值先转成 `0` 或 `1` 再比较。字符串与 Number 比较时转为 Number，与 BigInt 比较时尝试解析成 BigInt，例如 `"01" == 1n` 为 `true`。
+    4. Number 与 BigInt 比较数学值，例如 `1 == 1n` 为 `true`，`1.5 == 1n` 为 `false`。
+    5. 对象与字符串、数值或 Symbol 比较时，先按默认提示把对象转为原始值，再比较。两个独立的空数组不相等，但 `[] == 0` 为 `true`。
 
 ### `||`和`&&`和`??`
 1. `expr1 || expr2`：
@@ -1432,28 +1404,28 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                 1. I/O、UI交互
 
                     监听的事件。
-                2. `setTimeout`、`setInterval`、`setImmediate`
+                2. `setTimeout`、`setInterval`
 
-                    在当前「任务队列」的尾部，添加事件。
-                3. AJAX、`fetch`
-                4. `新的<script>`
+                    延迟结束后排入定时器任务源。
+                3. 网络响应可产生网络任务；`fetch` 返回的 Promise 上注册的回调在微任务中运行。
+                4. 脚本的执行时机依加载方式而定，动态插入的内联经典脚本可同步执行。
             2. microtask（job，微任务）一般包括:
 
                 1. `Promise`（`Promise.prototype.then/catch/finally(回调)`的回调）
 
                     `new Promise(executor)` 会同步调用 executor。组合方法接受可迭代对象及其中的值或 Promise，不会调用数组里的普通函数。已落定 Promise 的 `.then()` 回调仍在微任务中执行。
-                2. `async-await`（只有`await`是异步）
+                2. `async` 函数在首个 `await` 之前同步执行并返回 Promise。
 
                     >生成器（generators）是中断-恢复同步运行-中断，不是异步任务。
 
-                    `await`后若是方法则同步执行该方法，执行结果交给`await`后才是microtask（无论结果如何）。
+                    `await` 先求值右侧表达式，再暂停当前函数。等该值对应的 Promise 落定，以微任务恢复执行；拒绝时在暂停处抛出。
 
                     ><details>
                     ><summary>e.g.</summary>
                     >
                     >```js
                     >async function func () {
-                    >  await // 同步执行，执行完无论未完成/完成/失败，都异步microtask执行后面代码
+                    >  await // 同步执行，等待 Promise 落定后，以微任务恢复执行
                     >    new Promise((resolve) => {
                     >        console.log('a')       // 同步
                     >        resolve()
@@ -1481,7 +1453,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                     >}
                     >
                     >async function func () {
-                    >  await // 同步执行，执行完无论未完成/完成/失败，都异步microtask执行后面代码
+                    >  await // 同步执行，等待 Promise 落定后，以微任务恢复执行
                     >    obj.a() // 同步
                     >      .b()  // 同步
                     >
@@ -1506,7 +1478,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                     >}
                     >
                     >async function func () {
-                    >  await // 同步执行，执行完无论未完成/完成/失败，都异步microtask执行后面代码
+                    >  await // 同步执行，等待 Promise 落定后，以微任务恢复执行
                     >    obj.a() // 同步
                     >      .b()  // 同步
                     >      .then(() => {console.log('then1')}) // 异步microtask
@@ -1557,14 +1529,12 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
                 3. 设置「目前运行的任务」为`null`，从microtask队列中移除任务a；
                 4. 跳到第1步（检查下一个最早加入的microtask任务）；
                 5. 跳出microtask队列、进行：检查macrotask队列 或 浏览器渲染。
-            3. 浏览器渲染（根据屏幕刷新率、浏览器performance策略，如：每16.6ms才会触发一次）。
+            3. 浏览器在合适的渲染机会更新页面，时机取决于屏幕刷新率、可见性和负载。
 
             >当前同步代码先运行。微任务检查点会持续处理新加入的微任务，直到队列为空；连续追加微任务可能推迟绘制和用户输入。
 
     ![事件循环图](./images/event-loop-1.png)
-4. 由于异步函数是立刻返回，异步事务中发生的错误是无法通过外层的：`try-catch`、`Promise`、`async-await`来捕捉（但可以捕获`await`的`reject`）。
-
-    每个事件循环都是一个独立的调用栈，不同调用栈之间无法互相`try-catch`错误，所以新的事件循环不会被原调用栈捕获错误，导致向上抛出错误（若新的事件循环内没有在自己的调用栈上设置`try-catch`）。
+4. `try` 只能捕获其执行期间抛出的异常。定时器回调稍后独立执行，外层已结束的 `try` 无法捕获其中的异常。Promise 链的拒绝可通过 `.catch()` 处理，也可以在 `try` 内 `await` 该 Promise。
 
     ```js
     try {
@@ -1610,17 +1580,15 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     >不适合制作动画。
 
-    定时器触发后，会把**定时器处理程序（回调函数）**插入至等待执行的**任务队列**最后面。`setInterval`和`setTimeout`的内部运行机制完全一致。
+    延迟时间到达后，浏览器将定时器任务排队；主线程繁忙时，回调会推迟执行。
 
     1. `setInterval/clearInterval`：
 
-        1. 同一个被setInterval执行的函数只能插入一个**定时器处理程序**到**任务队列**。
-        2. setInterval是间隔时间去尝试执行函数，不关注上一次是何时执行。
-        3. 若setInterval触发时已有它的**定时器处理程序**在**任务队列**中，则忽略此次触发。直到没有它的**定时器处理程序**在**任务队列**后才可以再次插入（正在执行的不算在**任务队列**中）。
-        4. 相邻的2次**定时器处理程序**可能小于或大于（或等于）设定的间隔时间。无法确定**定时器处理程序**何时执行。
+        1. 重复调度回调，直到取消。每次注册都有自己的定时器 ID，同一个函数可以独立注册多次。
+        2. 同一线程上的同步回调依次执行。若回调发出异步请求，下一次调用可能在上一次请求完成前开始。
     2. `setTimeout/clearTimeout`:
 
-        [用setTimeout模拟setInterval](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用settimeout模拟setinterval)，可以提高性能（上一次执行完毕后延迟时间再执行下一次，而不是固定间隔时间都尝试执行），并且可以确保每次**定时器处理程序**执行间隔一定大于（或等于）设置的间隔时间。
+        [用setTimeout模拟setInterval](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生js用settimeout模拟setinterval)。若要让两次请求串行，可在上一次请求完成后再设置下一次定时器。
 
     - `setImmediate/clearImmediate`：
 
@@ -1630,9 +1598,8 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     >`setInterval`、`setTimeout`有最短延迟时间、最长延迟时间：
     >
-    >1. 最短延迟时间大概是>4ms（从其他地方调用`setInterval`，或在嵌套函数达到特定深度时调用`setTimeout`）。浏览器和Node.js等的最短时间不同。
-    >2. 若处于未激活窗口，则最短延迟时间可能扩大到>1000ms。
-    >3. 有最大延迟时间，若延迟时间设置>`Math.pow(2, 31) - 1`ms，则延时溢出导致立即执行回调函数。
+    >1. HTML 规定，当定时器嵌套层级大于 5 时，小于 4 ms 的延迟提升至 4 ms。后台标签页还可能受到额外节流。[HTML 定时器规范](https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers)
+    >2. 延迟参数按有符号 32 位整数处理，避免一次传入超过 `2 ** 31 - 1` ms 的延迟。
 2. 重绘函数（`requestAnimationFrame/cancelAnimationFrame`）
 
     >[递归调用](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/JS方法积累/实用方法/README.md#原生jsrequestanimationframe的递归)。
@@ -1662,7 +1629,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     1. 没有跨帧问题。
     2. 放入**内置对象**，返回`'[object 构造函数的名称]'`的字符串
 
-        >特例：自定义类型返回`'[object Object]'`，`undefined/null`返回对应名字。
+        >对象可以通过 `Symbol.toStringTag` 自定义标签，因此结果不能单独证明对象类型。通常自定义类型返回`'[object Object]'`，`undefined/null`返回对应名字。
 
         1. `undefined` 或 不填 -> `'[object Undefined]'`
         2. `null` -> `'[object Null]'`
@@ -1688,7 +1655,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         17. WeakMap实例 -> `'[object WeakMap]'`
         18. WeakSet实例 -> `'[object WeakSet]'`
         19. Promise实例 -> `'[object Promise]'`
-        20. 生成器实例 -> `'[object GeneratorFunction]'`
+        20. 生成器函数 -> `'[object GeneratorFunction]'`
         21. `window` -> `'[object Window]'`
         22. `document` -> `'[object HTMLDocument]'`
 
@@ -1751,7 +1718,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         若`构造函数或类.prototype === 对象.__proto__/对象.__proto__.__proto__/.../Object.prototype`，则返回`true`。否则返回`false`。
         >e.g. `new Number() instanceof Object; // true`
-    3. （`instanceof`、`Object.prototype.isPrototypeOf`）**检测自定义类型的唯一方法。**
+    3. 自定义的 `Symbol.hasInstance` 可以改变 `instanceof` 的判断方式。跨窗口判断数组可用 `Array.isArray`。
 4. `属性名 in 对象`
 
     判断对象或对象的整条原型链（`[[Prototype]]`）上是否拥有属性名，不读取属性值。
@@ -2064,6 +2031,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         });
         ```
+        </details>
     3. `$.grep`
 
         类似`Array.prototype.filter`
@@ -2099,9 +2067,9 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     </details>
 2. Array方法配合`async-await`（或`Promise`）的执行顺序：
 
-    1. 无效：回调函数内部加`async`（e.g. `arr.map(async()=>{})`）
+    1. 回调内部加 `async`：各项各自返回 Promise。
 
-        Array遍历方法内的每一项按项的顺序执行但不互相依赖（后面的项不会等前面的执行完毕才开始执行），`async-await`只能处理每一项自己方法内的执行顺序，不影响外部和其他项。
+        `forEach` 忽略回调返回值；`map` 收集返回值，可用 `await Promise.all(arr.map(asyncFunc))` 等待全部成功，结果保持输入顺序。不要把异步函数直接当作 `filter`、`every` 的谓词，它们会把返回的 Promise 当作真值。
 
         <details>
         <summary>e.g. </summary>
@@ -2130,19 +2098,19 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         </details>
     2. 无效：方法外部加`await`（e.g. `await arr.map(()=>{})`）：
 
-        Array遍历方法没有返回Promise实例，因此直接在外部加上`await`也是同步执行、无法达到预期效果。
-    3. 利用`Array.prototype.reduce`实现
+        `await arr.map(asyncFunc)` 等待的是数组本身，恢复执行时数组中的 Promise 仍可能未完成。
+    3. 利用`Array.prototype.reduce`串联。示例会记录前一项的失败并继续；最后一项的结果或异常由返回的 Promise 传给调用方。
 
         ```js
         const chainingAsyncRun = (callbackArr) => {
-          callbackArr.reduce(async (prevPromise, currentCallback) => {
+          return callbackArr.reduce(async (prevPromise, currentCallback) => {
             try {
               await prevPromise;
             } catch (e) {
               console.error(e);
             }
             return currentCallback();
-          }, null);
+          }, Promise.resolve());
         };
         ```
         <details>
@@ -2205,7 +2173,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
 1. [CORS](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/HTTP相关/README.md#corscross-origin-resource-sharing跨域资源共享)（服务端需要支持）
 
-    >1. 不受同源政策限制。
+    >1. 浏览器按 CORS 响应头判断脚本能否读取跨源响应；需要预检的请求只有预检通过才会发送实际请求。
     >2. ie9-的jQuery的非JSONP的AJAX跨域，要添加`jQuery.support.cors = true`。
 2. JSONP（json with padding）（服务端需要支持）
 
@@ -2247,30 +2215,18 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 >解决浏览器显示`Script error`错误：①引用资源添加`<script src="CDN地址" crossorigin="anonymous"></script>` 且 ②CDN地址资源响应头包含`Access-Control-Allow-Origin: 请求头的Origin值 或 *`。
 
 ### 浏览器文档间的数据交互（文档与`<iframe>`、文档与`window.open()`的新窗口）
->若是完全独立、不存在父子关系的文档间，则只能通过后台服务或宿主环境服务进行通讯，`SharedWorker`支持同源的文档共同使用。
+>没有父子关系的同源页面也可用 `BroadcastChannel` 通信，前提是位于同一存储分区。
 
-1. `document.domain`相同则可以文档间互相操作
+1. 同源且持有对方窗口引用时，可以直接操作文档。
 
     ><details>
     ><summary>不同源的文档间不能进行JS交互操作</summary>
     >
     >1. 可以获取window对象，但无法进一步获取相应的属性、方法。
-    >2. 无法获取DOM、`cookie`、`Web Storage`、`IndexDB`。仅允许调用部分方法（白名单）。
+    >2. 无法获取DOM、`cookie`、`Web Storage`、`IndexedDB`。仅允许调用部分方法（白名单）。
     ></details>
 
-    把不同文档的`document.domain`设置为一致的值，即可双向通信、互相操作（`cookie`可以直接操作；`localStorage`、`IndexDB`只能通过`postMessage`或`MessageChannel`通信）。
-
-    ><details>
-    ><summary><code>document.domain</code>使用限制</summary>
-    >
-    >1. `document.domain = `仅允许设置为当前域名或向上N级域，e.g. 域名为`a.b.c.com`的文档仅允许设置`document.domain`为：`a.b.c.com`或`b.c.com`或`c.com`。
-    >2. `document.domain`（类似`location.hostname`）不包含端口号，意味着不同端口号的相同域名，默认`document.domain`相同，e.g. `http://localhost:3000`与`http://localhost:8899`默认的`document.domain`都是`localhost`。
-    >3. 现代浏览器禁止修改`document.domain`解决办法：
-    >
-    >    1. 方案一：目标文档响应头包含`Origin-Agent-Cluster: ?0`，可允许浏览器在当前文档修改`document.domain`。
-    >    2. 方案二：使用`postMessage`（或`MessageChannel`）传递信息的方案，替代相同`document.domain`共用cookie
-    的方案。
-    ></details>
+    历史代码可能通过设置 `document.domain` 放宽同站子域间的部分 DOM 访问限制。该机制已弃用，也不会合并 Web Storage 或 IndexedDB。跨源窗口可使用下文的 `postMessage`。
 
     1. 与`<iframe>`通信：
 
@@ -2299,10 +2255,10 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     ```js
     // 发送方（允许自己发给自己接受）
-    目标window对象.postMessage(信息内容, '目标源地址或*');
+    目标window对象.postMessage(信息内容, '目标窗口的确切源');
 
 
-    // 监听的文档
+    // 接收方先核对 e.origin、e.source 和 e.data 的结构，再处理消息。
     window.addEventListener('message', function (e) {...}, false) // e.data === 信息内容
     ```
 3. 其他方式
@@ -2325,7 +2281,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         ```
     2. 通过监听`window.name`传递信息
 
-        >同会话（tab窗口）前后跳转的页面都可以读取、设置同一个`window.name`值。
+        >以下是历史做法。现代浏览器会在跨站导航时清空 `window.name`，不能依赖它在不同站点间传递数据。
 
         1. 父窗口打开一个子窗口，载入一个不同源的网页，该网页将信息写入`window.name`属性。
         2. 子窗口跳回一个与主窗口同域的网址（文档间访问`window.name`遵循同源策略）。
@@ -2342,7 +2298,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     3. ie8+支持（ie及FF需在web服务器里运行）。
 
         >ie6/7可以用它们独有的`UserData`替代使用。
-    4. 单个对象数据大小5M+（或2.5MB~10MB）。
+    4. 配额由浏览器管理；空间不足时写入会抛出 `QuotaExceededError`。
     5. 拥有方便的API
 
         同步。
@@ -2407,20 +2363,20 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 3. IndexedDB
 
     1. 客户端保存，不参与服务器通信。
-    2. 所有类型的数据都可以直接存入。
+    2. 记录值须支持结构化序列化；函数和 DOM 节点无法存入。[IndexedDB 规范](https://w3c.github.io/IndexedDB/#value-construct)
 
         1. 不属于~~关系型数据库~~（不支持~~SQL查询语句~~），更接近NoSQL数据库。
         2. 对象仓库中，数据以"键-值"的形式保存，每一个数据记录都有对应的主键，主键是独一无二的，不能有重复，否则会抛出一个错误。
         3. IndexedDB不仅可以储存字符串，还可以储存二进制数据（ArrayBuffer实例和Blob实例）。
     3. ie10+。
-    4. 单个库储存空间250MB+。
+    4. 可用空间取决于源的配额和设备可用空间，不能假定每个数据库有固定容量。
     5. 异步。支持事务。
 
         复杂的API。
     6. 同源共享。
     7. 持久化本地存储。
 
->隐身模式策略：存储API仍然可用，并且看起来功能齐全，只是无法真正储存（如：分配储存空间为0）。
+>隐私浏览通常允许临时写入，存储配额和访问策略由浏览器决定。结束隐私会话后通常会清除数据。
 
 ### 错误处理机制
 >1. 当JS出现错误时，JS引擎会根据JS调用栈逐级寻找对应的`catch`（每个异步任务会创建各自独立的调用栈，不同调用栈之间不能互相`catch`），若**没有找到相应的catch handler**或**catch handler本身又有error**或**又抛出新的error**，则会把这个error抛给全局（浏览器会用各自不同的方式显示错误信息，可以用`window`的`error`进行自定义操作）。
@@ -2829,12 +2785,12 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     >因为保存在客户端，因此都不应该保存用户的隐私数据。
 
-    Web Storage（`localStorage`、`sessionStorage`）、cookie、IndexDB、等。
+    Web Storage（`localStorage`、`sessionStorage`）、cookie、IndexedDB、等。
 3. 其他缓存机制（不推荐）
 
     1. HTML的`<meta>`设置缓存情况：
 
-        e.g. 设置不缓存：
+        以下是历史写法。缓存策略应由服务器发送 HTTP 响应头。`no-cache` 要求复用前验证，`no-store` 要求不存储响应。
 
         ```html
         <meta http-equiv="pragma" content="no-cache">
@@ -3107,7 +3063,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 ### 自执行匿名函数（拉姆达，λ，lambda）
 立即调用的函数表达式（IIFE，Immediately Invoked Function Expression）。
 
->ES6拥有了块级作用域之后，不再需要~~自执行匿名函数~~。
+>表达式可以有名字，也可以匿名。块作用域可以隔离局部变量，IIFE 还可直接返回初始化结果。
 
 1. 写法：
 
@@ -3573,7 +3529,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     `绑定事件接口`将回调函数压入该事件的回调函数队列，当事件发生时，回调函数队列会被遍历，其中的函数会被逐个执行。`解除绑定事件接口`将回调函数从该事件的回调函数队列中移除，当事件发生时，队列中没有该函数，于是该函数便不会执行。
 
     1. HTML事件处理程序、DOM0级事件处理程序，用赋值覆盖解绑。
-    2. `attachEvent/detachEvent`，必须一一对应具体的**handle**进行解绑。**handle**是匿名函数无法解绑。
+    2. `attachEvent/detachEvent`，必须一一对应具体的**handle**进行解绑。需保存注册时使用的函数引用，重新书写的函数表达式会创建不同的函数。
 
         ><details>
         ><summary>ie的<strong>handle</strong>中<code>this</code>指向<code>window</code>的兼容方式</summary>
@@ -3595,7 +3551,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         >        }
         >        ```
         ></details>
-    3. `addEventListener/removeEventListener`，必须一一对应具体的**handle**、**布尔值**进行解绑。**handle**是匿名函数无法解绑。
+    3. `removeEventListener` 要在同一目标上使用相同的事件类型、回调对象和 `capture` 值。匿名函数也可解绑，保存注册时的函数引用即可。[DOM 规范](https://dom.spec.whatwg.org/#dom-eventtarget-removeeventlistener)
     4. jQuery的`on/off`（以及其他绑定解绑方法）：
 
         1. 写具体**handle**时解绑具体**handle**。
@@ -4012,9 +3968,9 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         `dom.getBoundingClientRect().bottom >= 0`
 
         >jQuery：`$dom.offset().top + $dom.outerHeight() >= $(window).scrollTop()`
-    3. 节点在视口内
+    3. 节点与视口有面积重叠
 
-        以上`&&`结合。
+        还要检查水平方向，并排除仅边缘相接和尺寸为零的情况。
 
         <details>
         <summary>e.g.</summary>
@@ -4025,14 +3981,13 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
           const viewPortWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
           const rect = dom.getBoundingClientRect()
-          const { top, bottom, left, right } = rect;
+          const { top, bottom, left, right, width, height } = rect;
 
-          // 只要在视口露一点头就返回true（可以按业务逻辑修改）
+          // 边界框与视口重叠且面积大于零；没有判断其他元素的遮挡。
           return (
-            top <= viewPortHeight &&
-            bottom >= 0 &&
-            left <= viewPortWidth &&
-            right >= 0
+            width > 0 && height > 0 &&
+            top < viewPortHeight && bottom > 0 &&
+            left < viewPortWidth && right > 0
           );
         }
         ```
@@ -4082,7 +4037,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     <details>
     <summary><code>getBoundingClientRect</code>实现</summary>
 
-    >2种算法，会有一些对border数值取值的误差。
+    >`getBoundingClientRect()` 反映当前布局和 CSS 变换；嵌套滚动、定位和变换都可能使它与累加 `offsetTop` 的结果不同。
 
     ```js
     // 获取距离顶部距离（对fixed处理：加上浏览器滚动距离，就好像fixed内容跟随视口滚动、与视口距离相对不变化）
@@ -4101,6 +4056,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
       };
     }
     ```
+    </details>
 2. DOM节点是否在首屏内
 
     ```js
@@ -4110,8 +4066,9 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
       const { top, bottom, left, right } = getToTop(dom);
 
-      // 只要在视口露一点头就返回true（可以按业务逻辑修改）
+      // 按文档坐标与初始视口比较，排除零面积的边界框。
       return (
+        bottom > top && right > left &&
         top < viewPortHeight &&
         bottom > 0 &&
         left < viewPortWidth &&
@@ -4127,7 +4084,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
     1. 内容滚动到底部：
 
-        `dom.offsetHeight + dom.scrollTop >= dom.scrollHeight`
+        `dom.scrollHeight - dom.clientHeight - dom.scrollTop <= 1`（普通自上而下的滚动容器；预留 1 CSS 像素容差以处理小数滚动量。）
     2. 内容滚动到顶部：
 
         `dom.scrollTop === 0`
@@ -4227,9 +4184,9 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     </details>
 
 ### DOM修改
-1. 用HTML文本覆盖：
+1. 用 HTML 或文本覆盖：
 
-    `dom.innerHTML/outerHTML/innerText/textContent = HTML文本`
+    `innerHTML` 解析 HTML 并替换子节点，`outerHTML` 替换元素自身。写入纯文本用 `textContent`；`innerText` 的读写还涉及渲染文本和换行规则。
 2. 用新的DOM插入或覆盖旧的DOM：
 
     >若要被添加的DOM（newDom）已存在于页面上，则会移动该DOM到目标容器元素下。
@@ -4258,7 +4215,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         >`Element`继承了`Node`。
     2. `3 === Node.TEXT_NODE`
 
-        `Element`的`文本`或`属性`
+        文本节点。属性是 `Attr` 节点（`nodeType === 2`）。
     3. `7 === Node.PROCESSING_INSTRUCTION_NODE`
     4. `8 === Node.COMMENT_NODE`
 
@@ -4283,7 +4240,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
         >2. `.getAttribute/setAttribute/removeAttribute/hasAttribute/toggleAttribute`操作`attribute`
     2. `properties`：DOM对象的属性。
 
-    >浏览器的 前进/后退/重新打开关闭的标签页（~~刷新~~不行），会进行：重新下载HTML后进行常规的[解析HTML-加载资源-渲染](https://github.com/realgeoffrey/knowledge/blob/master/网站前端/前端内容/README.md#页面解析渲染步骤)，但会尝试恢复之前页面的`properties`（包括页面滚动、每个DOM对象的`properties`、等）。仅针对文档对象模型（DOM构造），不包括`attributes`；仅针对新加载出来页面能匹配之前页面的部分，新增的DOM没有匹配。
+    >前进、后退时，浏览器可能通过往返缓存恢复整个页面，也可能重新加载并恢复部分表单值、滚动位置。任意自定义 DOM 属性没有跨加载的持久化保证。
 2. 当一个DOM节点为某个HTML标签所创建时，其大多数`properties`与对应`attributes`拥有相同或相近的名字，但并非一对一的关系：
 
     >浏览器在加载页面之后会对页面中的标签进行解析，并生成与之相符的DOM对象，每个标签中都可能包含一些属性。若这些属性是[标准属性](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Attributes)，则解析生成的DOM对象中也会包含与之对应的属性。
@@ -4296,15 +4253,12 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
 
         1. `type`的值被限制在已知值（即`<input>`的合法类型，如：`text`、`checkbox`等）。
         2. `href/src`的`property`值会计算出最终完整路由，它的`attribute`只是HTML标签上显示的路径。
-        3. 部分动态属性（如：`checked`、`selected`、`disabled`、`value`、`muted`等）遵循下面规则：
-
-            1. 若没有设置`property`：页面展示跟随`attribute`，`property`值跟随`attribute`。
-            2. 若设置过`property`：页面展示跟随`property`，`property`与`attribute`值不互通。
-            - 操作页面展示，修改的是`property`，`attribute`不会随之变化。操作页面展示时，也就设置了`property`。
+        3. 表单控件要区分默认值与当前状态。复选框的 `checked` 内容属性反映在 `defaultChecked` 上，`input.checked` 读取当前状态。用户切换或脚本设置过当前状态后，两者可以不同。
+        4. 布尔属性按是否存在判断。`disabled="false"` 仍然禁用控件；设置 `input.disabled = false` 会移除该属性。
 
 - 判断一个标签的动态属性（DOM对象的`property`）
 
-    >以`<input>`的`checked`为例，类似的特性还有`selected`、`disabled`、`value`、`muted`等。
+    >以下以复选框为例。
 
     ```html
     <input type="checkbox" checked="checked" id="j-input">
@@ -4314,7 +4268,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
       var dom = $dom.get(0);
 
       // ①
-      // 共通的值，存储在jQuery内部
+      // 两种方式都访问 DOM 对象的 checked 属性
       // 获取：真实效果的值
       // 设置：可以改变页面上显示效果、不会改变HTML上属性的值
       dom.checked; // 设置 dom.checked = true/false
@@ -4353,19 +4307,15 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     ```js
     // e.g.
     var num = 1;
-    var dom = $('div').get();
+    var dom = $('div').get(0);
     var $dom = $('div');
     ```
 2. 选择器
-    1. `$('子','父') === $('父').find('子')`
-
-        找到所有父级，若子级在此父级后面，则选择。
-    2. ~~`$('父 子')`~~（效率低）
-
-        找到所有子级，然后向前找出有父级的，则选择（与CSS相同的查询方式）。
+    1. `$('子', '父')` 与 `$('父').find('子')` 都在匹配的父元素中查找后代。两次查询分别返回 jQuery 对象，不能用 `===` 对比匹配结果。
+    2. `$('父 子')` 也能用后代选择器表达这层关系。
 3. 判断选择器选择到空内容
 
-    选择器选取的内容返回数组（空内容返回`[]`），所以`if($(...)) {}`永远成立。因此用以下方法：
+    jQuery 选择器返回类数组的 jQuery 对象；即使没有匹配项，对象本身也是真值。可检查长度或第一项：
 
     1. `if($(...).length > 0) {}    // 若无则为0`
     2. `if($(...)[0]) {}    // 若无则为undefined`
@@ -4375,7 +4325,7 @@ fixme: chrome如何查内存和内存泄漏，Node.js如何查隐蔽的内存泄
     >
     >    1. 原理：DOM元素的事件冒泡。
     >    2. 好处：提高性能，避免~~批量绑定~~。
-    >2. `paste`、`reset`不支持事件代理，仅能够直接绑定；事件代理不能用于SVG。
+    >2. 委托要求事件能传播到监听目标。原生 `paste` 和表单 `reset` 都会冒泡。
 
     >e.g. `$(eventHandler).on(event, selector, func);`
 
